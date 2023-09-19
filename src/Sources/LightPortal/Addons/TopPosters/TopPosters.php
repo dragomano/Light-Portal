@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 28.06.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\TopPosters;
@@ -25,7 +25,7 @@ class TopPosters extends Block
 {
 	public string $icon = 'fas fa-users';
 
-	public function blockOptions(array &$options)
+	public function blockOptions(array &$options): void
 	{
 		$options['top_posters']['parameters'] = [
 			'show_avatars'      => true,
@@ -34,7 +34,7 @@ class TopPosters extends Block
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type)
+	public function validateBlockData(array &$parameters, string $type): void
 	{
 		if ($type !== 'top_posters')
 			return;
@@ -44,7 +44,7 @@ class TopPosters extends Block
 		$parameters['show_numbers_only'] = FILTER_VALIDATE_BOOLEAN;
 	}
 
-	public function prepareBlockFields()
+	public function prepareBlockFields(): void
 	{
 		if ($this->context['lp_block']['type'] !== 'top_posters')
 			return;
@@ -125,15 +125,15 @@ class TopPosters extends Block
 		return $posters;
 	}
 
-	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
+	public function prepareContent($data, array $parameters): void
 	{
-		if ($type !== 'top_posters')
+		if ($data->type !== 'top_posters')
 			return;
 
 		$parameters['show_numbers_only'] ??= false;
 
-		$top_posters = $this->cache('top_posters_addon_b' . $block_id . '_u' . $this->user_info['id'])
-			->setLifeTime($cache_time)
+		$top_posters = $this->cache('top_posters_addon_b' . $data->block_id . '_u' . $this->user_info['id'])
+			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getData', $parameters);
 
 		if (empty($top_posters))

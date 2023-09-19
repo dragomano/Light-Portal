@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.05.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -24,7 +24,7 @@ class PluginMaker extends Plugin
 {
 	public string $type ='other';
 
-	public function init()
+	public function init(): void
 	{
 		$this->context['lp_plugin_option_types'] = array_combine(
 			['text', 'url', 'color', 'int', 'float', 'check', 'multicheck', 'select'],
@@ -32,7 +32,7 @@ class PluginMaker extends Plugin
 		);
 	}
 
-	public function addAdminAreas(array &$admin_areas)
+	public function addAdminAreas(array &$admin_areas): void
 	{
 		$admin_areas['lp_portal']['areas']['lp_plugins']['subsections'] = array_merge(
 			['main' => $admin_areas['lp_portal']['areas']['lp_plugins']['subsections']['main']],
@@ -41,12 +41,12 @@ class PluginMaker extends Plugin
 		);
 	}
 
-	public function addPluginAreas(array &$subActions)
+	public function addPluginAreas(array &$subActions): void
 	{
 		$subActions['add'] = [new Handler, 'add'];
 	}
 
-	public function credits(array &$links)
+	public function credits(array &$links): void
 	{
 		$links[] = [
 			'title' => 'Nette PHP Generator',

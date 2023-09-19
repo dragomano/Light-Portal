@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.05.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\Todays;
@@ -26,17 +26,17 @@ class Todays extends Block
 
 	public string $icon = 'fas fa-calendar-day';
 
-	public function init()
+	public function init(): void
 	{
 		$this->applyHook('menu_buttons');
 	}
 
-	public function menuButtons(array &$buttons)
+	public function menuButtons(array &$buttons): void
 	{
 		$buttons['calendar']['show'] = $this->context['allow_calendar'] && empty($this->context['lp_todays_plugin']['hide_calendar_in_menu']);
 	}
 
-	public function addSettings(array &$config_vars)
+	public function addSettings(array &$config_vars): void
 	{
 		$config_vars['todays'][] = [
 			'check',
@@ -45,7 +45,7 @@ class Todays extends Block
 		];
 	}
 
-	public function blockOptions(array &$options)
+	public function blockOptions(array &$options): void
 	{
 		$options['todays']['parameters'] = [
 			'widget_type' => 'calendar',
@@ -53,7 +53,7 @@ class Todays extends Block
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type)
+	public function validateBlockData(array &$parameters, string $type): void
 	{
 		if ($type !== 'todays')
 			return;
@@ -62,7 +62,7 @@ class Todays extends Block
 		$parameters['max_items']   = FILTER_VALIDATE_INT;
 	}
 
-	public function prepareBlockFields()
+	public function prepareBlockFields(): void
 	{
 		if ($this->context['lp_block']['type'] !== 'todays')
 			return;
@@ -103,9 +103,9 @@ class Todays extends Block
 		return $this->getFromSsi('todays' . ucfirst($type), $output_method);
 	}
 
-	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
+	public function prepareContent($data, array $parameters): void
 	{
-		if ($type !== 'todays')
+		if ($data->type !== 'todays')
 			return;
 
 		$result = $this->getData($parameters['widget_type'], 'array');

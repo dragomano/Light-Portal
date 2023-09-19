@@ -26,9 +26,9 @@ class ChessBoard extends Block
 
 	public string $icon = 'fas fa-chess';
 
-	public function prepareContent(string $type, int $block_id)
+	public function prepareContent($data): void
 	{
-		if ($type !== 'chess_board')
+		if ($data->type !== 'chess_board')
 			return;
 
 		$this->loadExtCSS('https://unpkg.com/@chrisoakman/chessboard2@0/dist/chessboard2.min.css');
@@ -36,10 +36,10 @@ class ChessBoard extends Block
 		$this->loadExtJS('https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.12.1/chess.js');
 
 		echo '
-		<div id="chessBoard', $block_id, '"></div>
+		<div id="chessBoard', $data->block_id, '"></div>
 		<div class="floatright" style="margin: 10px">
-			<label for="depth', $block_id, '">', $this->txt['lp_chess_board']['search_depth'], ':</label>
-			<select id="depth', $block_id, '">
+			<label for="depth', $data->block_id, '">', $this->txt['lp_chess_board']['search_depth'], ':</label>
+			<select id="depth', $data->block_id, '">
 				<option value="1">1</option>
 				<option value="2">2</option>
 				<option value="3" selected>3</option>
@@ -49,11 +49,11 @@ class ChessBoard extends Block
 		</div>
 		<script>
 			const gameOver = "', $this->txt['lp_chess_board']['game_over'], '";
-			const board', $block_id, ' = new ChessboardMaker(', $block_id, ');
+			const board', $data->block_id, ' = new ChessboardMaker(', $data->block_id, ');
 		</script>';
 	}
 
-	public function credits(array &$links)
+	public function credits(array &$links): void
 	{
 		$links[] = [
 			'title' => 'chessboard2 javascript library',

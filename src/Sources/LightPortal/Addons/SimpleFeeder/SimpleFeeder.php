@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 03.06.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\SimpleFeeder;
 
 use Bugo\LightPortal\Addons\Block;
+use IntlException;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -24,7 +25,7 @@ class SimpleFeeder extends Block
 {
 	public string $icon = 'fas fa-rss';
 
-	public function blockOptions(array &$options)
+	public function blockOptions(array &$options): void
 	{
 		$options['rss_feed']['parameters'] = [
 			'url'       => '',
@@ -32,7 +33,7 @@ class SimpleFeeder extends Block
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type)
+	public function validateBlockData(array &$parameters, string $type): void
 	{
 		if ($type !== 'rss_feed')
 			return;
@@ -41,7 +42,7 @@ class SimpleFeeder extends Block
 		$parameters['show_text'] = FILTER_VALIDATE_BOOLEAN;
 	}
 
-	public function prepareBlockFields()
+	public function prepareBlockFields(): void
 	{
 		if ($this->context['lp_block']['type'] !== 'rss_feed')
 			return;
@@ -81,15 +82,18 @@ class SimpleFeeder extends Block
 		return $rss ? ['data' => $rss->channel->item] : [];
 	}
 
-	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
+	/**
+	 * @throws IntlException
+	 */
+	public function prepareContent($data, array $parameters): void
 	{
-		if ($type !== 'rss_feed')
+		if ($data->type !== 'rss_feed')
 			return;
 
 		$parameters['show_text'] ??= false;
 
-		$feed = $this->cache('rss_feed_addon_b' . $block_id)
-			->setLifeTime($cache_time)
+		$feed = $this->cache('rss_feed_addon_b' . $data->block_id)
+			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getData', $parameters['url']);
 
 		if (empty($feed))

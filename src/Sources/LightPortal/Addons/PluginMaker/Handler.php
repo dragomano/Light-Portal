@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.06.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -30,7 +30,7 @@ class Handler extends Plugin
 
 	private const ADDON_NAME_PATTERN = '^[A-Z][a-zA-Z]+$';
 
-	public function add()
+	public function add(): void
 	{
 		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_plugin_maker']['add_title'];
 		$this->context['page_area_title'] = $this->txt['lp_plugin_maker']['add_title'];
@@ -77,7 +77,7 @@ class Handler extends Plugin
 		);
 	}
 
-	private function validateData()
+	private function validateData(): void
 	{
 		$post_data = [];
 
@@ -180,7 +180,7 @@ class Handler extends Plugin
 		$this->cleanBbcode($this->context['lp_plugin']['description']);
 	}
 
-	private function findErrors(array $data)
+	private function findErrors(array $data): void
 	{
 		$post_errors = [];
 
@@ -206,7 +206,7 @@ class Handler extends Plugin
 		}
 	}
 
-	private function prepareFormFields()
+	private function prepareFormFields(): void
 	{
 		$this->checkSubmitOnce('register');
 
@@ -381,7 +381,7 @@ class Handler extends Plugin
 		$this->preparePostFields();
 	}
 
-	private function setData()
+	private function setData(): void
 	{
 		if (! empty($this->context['post_errors']) || empty($this->context['lp_plugin']) || $this->request()->hasNot('save'))
 			return;
@@ -414,20 +414,20 @@ class Handler extends Plugin
 		$plugin_name = $this->getSnakeName($this->context['lp_plugin']['name']);
 
 		if ($this->context['lp_plugin']['type'] === 'parser') {
-			$class->addMethod('init')
+			$class->addMethod('init')->setReturnType('void')
 				->setBody("\$this->context['lp_content_types']['$plugin_name'] = '{$this->context['lp_plugin']['name']}';");
 		} else if ($this->context['lp_plugin']['type'] === 'comment') {
-			$class->addMethod('init')
+			$class->addMethod('init')->setReturnType('void')
 				->setBody("\$this->txt['lp_show_comment_block_set']['$plugin_name'] = '{$this->context['lp_plugin']['name']}';");
 		} else if (! empty($this->context['lp_plugin']['smf_hooks'])) {
-			$class->addMethod('init')
+			$class->addMethod('init')->setReturnType('void')
 				->setBody("// \$this->applyHook('hook_name');");
 		}
 
 		$blockParams = $this->getSpecialParams();
 
 		if ($this->context['lp_plugin']['type'] === 'block') {
-			$blockOptions = $class->addMethod('blockOptions');
+			$blockOptions = $class->addMethod('blockOptions')->setReturnType('void');
 			$blockOptions->addParameter('options')
 				->setReference()
 				->setType('array');
@@ -442,7 +442,7 @@ class Handler extends Plugin
 				$blockOptions->addBody("];");
 			}
 
-			$validateBlockData = $class->addMethod('validateBlockData');
+			$validateBlockData = $class->addMethod('validateBlockData')->setReturnType('void');
 			$validateBlockData->addParameter('parameters')
 				->setReference()
 				->setType('array');
@@ -458,7 +458,8 @@ class Handler extends Plugin
 			$class->addMethod('prepareBlockFields')
 				->addBody("if (\$this->context['lp_block']['type'] !== '$plugin_name')")
 				->addBody("\treturn;" . PHP_EOL)
-				->addBody("// Your code" . PHP_EOL);
+				->addBody("// Your code" . PHP_EOL)
+				->setReturnType('void');
 		}
 
 		if ($this->context['lp_plugin']['type'] === 'block_options') {
@@ -471,7 +472,7 @@ class Handler extends Plugin
 				$blockOptions->addBody("\$options[\$this->context['current_block']['type']]['parameters']['{$param['name']}'] = {$this->getDefaultValue($param)};");
 			}
 
-			$validateBlockData = $class->addMethod('validateBlockData');
+			$validateBlockData = $class->addMethod('validateBlockData')->setReturnType('void');
 			$validateBlockData->addParameter('parameters')
 				->setReference()
 				->setType('array');
@@ -481,11 +482,12 @@ class Handler extends Plugin
 			}
 
 			$class->addMethod('prepareBlockFields')
-				->setBody("// Your code" . PHP_EOL);
+				->setBody("// Your code" . PHP_EOL)
+				->setReturnType('void');
 		}
 
 		if ($this->context['lp_plugin']['type'] === 'page_options') {
-			$pageOptions = $class->addMethod('pageOptions');
+			$pageOptions = $class->addMethod('pageOptions')->setReturnType('void');
 			$pageOptions->addParameter('options')
 				->setReference()
 				->setType('array');
@@ -496,7 +498,7 @@ class Handler extends Plugin
 				}
 			}
 
-			$validatePageData = $class->addMethod('validatePageData');
+			$validatePageData = $class->addMethod('validatePageData')->setReturnType('void');
 			$validatePageData->addParameter('parameters')
 				->setReference()
 				->setType('array');
@@ -516,7 +518,7 @@ class Handler extends Plugin
 		}
 
 		if (! empty($this->context['lp_plugin']['options'])) {
-			$method = $class->addMethod('addSettings');
+			$method = $class->addMethod('addSettings')->setReturnType('void');
 			$method->addParameter('config_vars')
 				->setReference()
 				->setType('array');
@@ -544,17 +546,13 @@ class Handler extends Plugin
 
 		if ($this->context['lp_plugin']['type'] === 'block') {
 			$method = $class->addMethod('prepareContent');
-			$method->addParameter('type')
-				->setType('string');
-			$method->addParameter('block_id')
-				->setType('int');
-			$method->addParameter('cache_time')
-				->setType('int');
+			$method->addParameter('data');
 			$method->addParameter('parameters')
 				->setType('array');
-			$method->addBody("if (\$type !== '$plugin_name')")
+			$method->addBody("if (\$data->type !== '$plugin_name')")
 				->addBody("\treturn;" . PHP_EOL)
 				->addBody("echo 'Your html code';");
+			$method->setReturnType('void');
 		}
 
 		if ($this->context['lp_plugin']['type'] === 'editor') {
@@ -584,6 +582,7 @@ class Handler extends Plugin
 				->addBody("\t\t'link' => '{$this->txt['lp_plugin_maker']['license_link']}'")
 				->addBody("\t]")
 				->addBody("];");
+			$method->setReturnType('void');
 		}
 
 		switch ($this->context['lp_plugin']['license']) {

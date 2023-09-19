@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.04.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\BoardNews;
@@ -26,7 +26,7 @@ class BoardNews extends Block
 
 	public string $icon = 'fas fa-newspaper';
 
-	public function blockOptions(array &$options)
+	public function blockOptions(array &$options): void
 	{
 		$options['board_news']['parameters'] = [
 			'board_id'      => 0,
@@ -35,7 +35,7 @@ class BoardNews extends Block
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type)
+	public function validateBlockData(array &$parameters, string $type): void
 	{
 		if ($type !== 'board_news')
 			return;
@@ -45,7 +45,7 @@ class BoardNews extends Block
 		$parameters['teaser_length'] = FILTER_VALIDATE_INT;
 	}
 
-	public function prepareBlockFields()
+	public function prepareBlockFields(): void
 	{
 		if ($this->context['lp_block']['type'] !== 'board_news')
 			return;
@@ -97,15 +97,15 @@ class BoardNews extends Block
 		];
 	}
 
-	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
+	public function prepareContent($data, array $parameters): void
 	{
-		if ($type !== 'board_news')
+		if ($data->type !== 'board_news')
 			return;
 
 		$teaser_length = empty($parameters['teaser_length']) ? null : $parameters['teaser_length'];
 
-		$board_news = $this->cache('board_news_addon_b' . $block_id . '_u' . $this->user_info['id'])
-			->setLifeTime($cache_time)
+		$board_news = $this->cache('board_news_addon_b' . $data->block_id . '_u' . $this->user_info['id'])
+			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getFromSsi', 'boardNews', (int) $parameters['board_id'], (int) $parameters['num_posts'], null, $teaser_length, 'array');
 
 		if (empty($board_news)) {

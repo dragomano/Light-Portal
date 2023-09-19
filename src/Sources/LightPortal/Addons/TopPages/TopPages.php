@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 03.06.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\TopPages;
@@ -24,7 +24,7 @@ class TopPages extends Block
 {
 	public string $icon = 'fas fa-balance-scale-left';
 
-	public function blockOptions(array &$options)
+	public function blockOptions(array &$options): void
 	{
 		$options['top_pages']['parameters'] = [
 			'popularity_type'   => 'comments',
@@ -33,7 +33,7 @@ class TopPages extends Block
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type)
+	public function validateBlockData(array &$parameters, string $type): void
 	{
 		if ($type !== 'top_pages')
 			return;
@@ -43,7 +43,7 @@ class TopPages extends Block
 		$parameters['show_numbers_only'] = FILTER_VALIDATE_BOOLEAN;
 	}
 
-	public function prepareBlockFields()
+	public function prepareBlockFields(): void
 	{
 		if ($this->context['lp_block']['type'] !== 'top_pages')
 			return;
@@ -125,15 +125,15 @@ class TopPages extends Block
 		return $pages;
 	}
 
-	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
+	public function prepareContent($data, array $parameters): void
 	{
-		if ($type !== 'top_pages')
+		if ($data->type !== 'top_pages')
 			return;
 
 		$parameters['show_numbers_only'] ??= false;
 
-		$top_pages = $this->cache('top_pages_addon_b' . $block_id . '_u' . $this->user_info['id'])
-			->setLifeTime($cache_time)
+		$top_pages = $this->cache('top_pages_addon_b' . $data->block_id . '_u' . $this->user_info['id'])
+			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getData', $parameters);
 
 		if ($top_pages) {

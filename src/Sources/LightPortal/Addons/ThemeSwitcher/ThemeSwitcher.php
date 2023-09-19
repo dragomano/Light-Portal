@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.04.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\ThemeSwitcher;
@@ -24,20 +24,20 @@ class ThemeSwitcher extends Block
 {
 	public string $icon = 'fas fa-desktop';
 
-	public function init()
+	public function init(): void
 	{
 		$this->applyHook('manage_themes');
 	}
 
-	public function manageThemes()
+	public function manageThemes(): void
 	{
 		if ($this->request()->only(['done', 'do']))
 			$this->cache()->flush();
 	}
 
-	public function prepareContent(string $type, int $block_id, int $cache_time)
+	public function prepareContent($data): void
 	{
-		if ($type !== 'theme_switcher')
+		if ($data->type !== 'theme_switcher')
 			return;
 
 		$available_themes = $this->getForumThemes(true);
@@ -47,7 +47,7 @@ class ThemeSwitcher extends Block
 
 		echo '
 			<div class="themeswitcher centertext">
-				<select id="lp_block_', $block_id, '_themeswitcher" onchange="lp_block_', $block_id, '_themeswitcher_change();"', count($available_themes) < 2 ? ' disabled' : '', '>';
+				<select id="lp_block_', $data->block_id, '_themeswitcher" onchange="lp_block_', $data->block_id, '_themeswitcher_change();"', count($available_themes) < 2 ? ' disabled' : '', '>';
 
 		foreach ($available_themes as $theme_id => $name) {
 			echo '
@@ -59,15 +59,15 @@ class ThemeSwitcher extends Block
 		echo '
 				</select>
 				<script>
-					function lp_block_', $block_id, '_themeswitcher_change() {
-						let lp_block_', $block_id, '_themeswitcher_theme_id = document.getElementById("lp_block_', $block_id, '_themeswitcher").value;
+					function lp_block_', $data->block_id, '_themeswitcher_change() {
+						let lp_block_', $data->block_id, '_themeswitcher_theme_id = document.getElementById("lp_block_', $data->block_id, '_themeswitcher").value;
 						let search = window.location.search.split(";");
 						let search_args = search.filter(function (item) {
 							return ! item.startsWith("theme=") && ! item.startsWith("?theme=")
 						});
 						search = search_args.join(";");
 						search = search != "" ? search + ";" : "?";
-						window.location = window.location.origin + window.location.pathname + search + "theme=" + lp_block_', $block_id, '_themeswitcher_theme_id;
+						window.location = window.location.origin + window.location.pathname + search + "theme=" + lp_block_', $data->block_id, '_themeswitcher_theme_id;
 					}
 				</script>
 			</div>';

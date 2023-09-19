@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.06.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\Swiper;
@@ -37,12 +37,12 @@ class Swiper extends Block
 
 	private array $effects = ['slide', 'fade', 'cube', 'coverflow', 'flip', 'cards', 'creative'];
 
-	public function blockOptions(array &$options)
+	public function blockOptions(array &$options): void
 	{
 		$options['swiper']['parameters'] = $this->params;
 	}
 
-	public function validateBlockData(array &$parameters, string $type)
+	public function validateBlockData(array &$parameters, string $type): void
 	{
 		if ($type !== 'swiper')
 			return;
@@ -74,7 +74,7 @@ class Swiper extends Block
 		$parameters['images']          = FILTER_DEFAULT;
 	}
 
-	public function prepareBlockFields()
+	public function prepareBlockFields(): void
 	{
 		if ($this->context['lp_block']['type'] !== 'swiper')
 			return;
@@ -232,15 +232,15 @@ class Swiper extends Block
 		return ['content' => $html];
 	}
 
-	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
+	public function prepareContent($data, array $parameters): void
 	{
-		if ($type !== 'swiper')
+		if ($data->type !== 'swiper')
 			return;
 
-		$block_id = $this->request()->has('preview') ? uniqid() : $block_id;
+		$block_id = $this->request()->has('preview') ? uniqid() : $data->block_id;
 
 		$swiper_html = $this->cache('swiper_addon_b' . $block_id . '_' . $this->user_info['language'])
-			->setLifeTime($cache_time)
+			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getData', $block_id, $parameters);
 
 		if (empty($swiper_html))
@@ -299,7 +299,7 @@ class Swiper extends Block
 		echo $swiper_html['content'] ?? '';
 	}
 
-	public function credits(array &$links)
+	public function credits(array &$links): void
 	{
 		$links[] = [
 			'title' => 'Swiper',

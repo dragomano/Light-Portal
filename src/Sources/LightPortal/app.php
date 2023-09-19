@@ -14,7 +14,7 @@ $loader->registerNamespace('Bugo\LightPortal', __DIR__);
 $loader->register();
 
 // Define important helper functions
-function call_portal_hook(string $hook, array $params = [], array $plugins = [])
+function call_portal_hook(string $hook, array $params = [], array $plugins = []): void
 {
 	AddonHandler::getInstance()->run($hook, $params, $plugins);
 }
@@ -23,7 +23,22 @@ function prepare_content(string $type = 'bbc', int $block_id = 0, int $cache_tim
 {
 	ob_start();
 
-	call_portal_hook('prepareContent', [$type, $block_id, $cache_time, $parameters]);
+	$data = new class($type, $block_id, $cache_time) {
+		public function __construct(public string $type = 'bbc', public int $block_id = 0, public int $cache_time = 0)
+		{
+		}
+
+		public function toArray(): array
+		{
+			return [
+				'type'       => $this->type,
+				'block_id'   => $this->block_id,
+				'cache_time' => $this->cache_time,
+			];
+		}
+	};
+
+	call_portal_hook('prepareContent', [$data, $parameters]);
 
 	return ob_get_clean();
 }

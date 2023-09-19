@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.04.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\Polls;
@@ -26,12 +26,12 @@ class Polls extends Block
 
 	public string $icon = 'fas fa-poll';
 
-	public function blockOptions(array &$options)
+	public function blockOptions(array &$options): void
 	{
 		$options['polls']['parameters']['selected_item'] = 0;
 	}
 
-	public function validateBlockData(array &$parameters, string $type)
+	public function validateBlockData(array &$parameters, string $type): void
 	{
 		if ($type !== 'polls')
 			return;
@@ -39,7 +39,7 @@ class Polls extends Block
 		$parameters['selected_item'] = FILTER_VALIDATE_INT;
 	}
 
-	public function prepareBlockFields()
+	public function prepareBlockFields(): void
 	{
 		if ($this->context['lp_block']['type'] !== 'polls')
 			return;
@@ -77,9 +77,9 @@ class Polls extends Block
 		}
 	}
 
-	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
+	public function prepareContent($data, array $parameters): void
 	{
-		if ($type !== 'polls')
+		if ($data->type !== 'polls')
 			return;
 
 		$poll = $this->getFromSsi('showPoll', $parameters['selected_item'], 'array');

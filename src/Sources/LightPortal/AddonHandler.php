@@ -14,9 +14,9 @@
 
 namespace Bugo\LightPortal;
 
-use SplObjectStorage;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use MatthiasMullie\Minify\{CSS, JS};
+use SplObjectStorage;
 
 if (! defined('SMF'))
 	die('No direct access...');

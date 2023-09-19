@@ -28,7 +28,7 @@ class CustomTranslate extends Plugin
 
 	private array $langTitles = ['عربي', 'Deutsch', 'Ελληνικά', 'English', 'Esperanto', 'Español', 'Français', 'हिन्दी', 'Italiano', 'Nederlands', 'Português', 'Русский', 'Svenska', 'Türkçe', 'Українська', '中文 (简体)'];
 
-	public function init()
+	public function init(): void
 	{
 		if (isset($this->context['uninstalling']) || $this->request()->has('xml') || empty($this->context['lp_custom_translate_plugin']['languages']))
 			return;
@@ -50,12 +50,12 @@ class CustomTranslate extends Plugin
 		$this->setTemplate()->withLayer('custom_translate');
 	}
 
-	public function addSettings(array &$config_vars)
+	public function addSettings(array &$config_vars): void
 	{
 		$config_vars['custom_translate'][] = ['callback', 'languages', [$this, 'selectLanguages']];
 	}
 
-	public function selectLanguages()
+	public function selectLanguages(): void
 	{
 		echo (new LanguageSelect)([
 			'data'  => array_combine($this->langCodes, $this->txt['lp_custom_translate']['languages_set']),
@@ -63,7 +63,7 @@ class CustomTranslate extends Plugin
 		]);
 	}
 
-	public function credits(array &$links)
+	public function credits(array &$links): void
 	{
 		$links[] = [
 			'title' => 'yandex-translate-custom-widget',

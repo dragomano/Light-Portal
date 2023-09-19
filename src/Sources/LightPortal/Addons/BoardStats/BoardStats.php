@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 03.06.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\BoardStats;
@@ -26,7 +26,7 @@ class BoardStats extends Block
 
 	public string $icon = 'fas fa-chart-pie';
 
-	public function blockOptions(array &$options)
+	public function blockOptions(array &$options): void
 	{
 		$options['board_stats']['parameters'] = [
 			'show_latest_member' => false,
@@ -37,7 +37,7 @@ class BoardStats extends Block
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type)
+	public function validateBlockData(array &$parameters, string $type): void
 	{
 		if ($type !== 'board_stats')
 			return;
@@ -49,7 +49,7 @@ class BoardStats extends Block
 		$parameters['update_interval']    = FILTER_VALIDATE_INT;
 	}
 
-	public function prepareBlockFields()
+	public function prepareBlockFields(): void
 	{
 		if ($this->context['lp_block']['type'] !== 'board_stats')
 			return;
@@ -123,9 +123,9 @@ class BoardStats extends Block
 		];
 	}
 
-	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
+	public function prepareContent($data, array $parameters): void
 	{
-		if ($type !== 'board_stats')
+		if ($data->type !== 'board_stats')
 			return;
 
 		if ($this->request()->has('preview'))
@@ -133,8 +133,8 @@ class BoardStats extends Block
 
 		$parameters['show_latest_member'] ??= false;
 
-		$board_stats = $this->cache('board_stats_addon_b' . $block_id . '_u' . $this->user_info['id'])
-			->setLifeTime($parameters['update_interval'] ?? $cache_time)
+		$board_stats = $this->cache('board_stats_addon_b' . $data->block_id . '_u' . $this->user_info['id'])
+			->setLifeTime($parameters['update_interval'] ?? $data->cache_time)
 			->setFallback(self::class, 'getData', $parameters);
 
 		if (empty($board_stats))

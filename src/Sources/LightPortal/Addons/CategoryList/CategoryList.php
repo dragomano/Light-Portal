@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 30.04.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\CategoryList;
@@ -30,13 +30,13 @@ class CategoryList extends Block
 		return (new Category)->getAll(0, 0, 'c.priority');
 	}
 
-	public function prepareContent(string $type, int $block_id, int $cache_time)
+	public function prepareContent($data): void
 	{
-		if ($type !== 'category_list')
+		if ($data->type !== 'category_list')
 			return;
 
 		$categories = $this->cache('category_list_addon_u' . $this->context['user']['id'])
-			->setLifeTime($cache_time)
+			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getData');
 
 		if (empty($categories)) {
