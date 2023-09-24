@@ -205,12 +205,14 @@ class Plugin extends PortalEntity {
 		const el = document.getElementById(target.dataset.id + '_settings');
 
 		this.toggleSpin(target);
-		el.style.display = el.ownerDocument.defaultView.getComputedStyle(el, null).display === 'none' ? 'block' : 'none';
-		setTimeout(() => this.toggleSpin(target), 1000);
+
+		el.style.display = el.ownerDocument.defaultView.getComputedStyle(el, null).display === 'none' ? 'block' : 'none'
 	}
 
 	hideSettings(refs) {
-		refs.settings.style.display = 'none'
+		refs.settings.style.display = 'none';
+
+		this.toggleSpin(refs.settings.previousElementSibling.previousElementSibling.children[0])
 	}
 
 	async saveSettings(target, refs) {
