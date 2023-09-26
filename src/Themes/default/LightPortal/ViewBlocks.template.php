@@ -21,7 +21,7 @@ function template_lp_portal_above()
 	}
 
 	echo '
-		<div class="row', empty($modSettings['lp_swap_left_right']) ? '' : ' reverse', '">';
+		<div class="row', empty($context['lp_swap_left_right']) ? '' : ' reverse', '">';
 
 	// Left Side | Левая панель
 	if (! empty($context['lp_blocks']['left'])) {
