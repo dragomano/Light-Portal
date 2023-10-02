@@ -92,6 +92,10 @@ final class CreditArea
 
 		$this->context['tools'] = [
 			[
+				'name' => 'Open Server Panel',
+				'link' => 'https://github.com/OSPanel/OpenServerPanel'
+			],
+			[
 				'name' => 'Visual Studio Code',
 				'link' => 'https://code.visualstudio.com/Download'
 			],
