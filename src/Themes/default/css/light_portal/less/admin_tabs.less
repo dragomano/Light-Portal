@@ -2,17 +2,6 @@
 	padding: 0;
 	margin: 0 auto;
 
-	> input {
-		display: none;
-		position: absolute;
-
-		&:checked + label {
-			color: @tabs-input-color;
-			border-top: 1px solid @tabs-input-border-color;
-			border-bottom: 1px solid @color-white;
-		}
-	}
-
 	input,
 	textarea {
 		&:invalid {
@@ -20,46 +9,47 @@
 		}
 	}
 
-	> label {
-		.bradius(top, 6px);
-		display: inline-block;
-		margin: 0 0 -1px;
-		padding: 15px 25px;
-		font-weight: 600;
-		text-align: center;
-		color: @tabs-label-color;
-		border: 1px solid @color-light-gray;
+	div[data-navigation] {
+		> div {
+			.bradius(top, 6px);
+			display: inline-block;
+			margin: 0 0 -1px;
+			padding: 15px 25px;
+			font-weight: 600;
+			text-align: center;
+			color: @tabs-label-color;
+			border: 1px solid @color-light-gray;
 
-		&:hover {
-			.pointer;
-			color: @tabs-label-hover-color;
-		}
+			&.active_navigation {
+				color: @tabs-input-color !important;
+				border-top: 1px solid @tabs-input-border-color !important;
+				border-bottom: 1px solid @color-white !important;
+			}
 
-		i,
-		svg {
-			font-size: 1.2em !important;
-		}
+			&:hover {
+				.pointer;
+				color: @tabs-label-hover-color;
+			}
 
-		@media screen and (max-width: 680px) {
 			i,
 			svg {
-				font-size: 1.6em !important;
+				font-size: 1.2em !important;
 			}
-			span {
-				font-size: 0;
+
+			@media screen and (max-width: 680px) {
+				i,
+				svg {
+					font-size: 1.6em !important;
+				}
+				span {
+					font-size: 0;
+				}
+			}
+
+			@media screen and (max-width: 400px) {
+				padding: 15px;
 			}
 		}
-
-		@media screen and (max-width: 400px) {
-			padding: 15px;
-		}
-	}
-
-	#tab1:checked ~ #content-tab1,
-	#tab2:checked ~ #content-tab2,
-	#tab3:checked ~ #content-tab3,
-	#tab4:checked ~ #content-tab4 {
-		display: block;
 	}
 
 	section {
@@ -67,6 +57,10 @@
 		padding: 15px;
 		border: 1px solid @color-light-gray;
 		.bradius(0, 7px, 7px, 7px);
+
+		&.active_content {
+			display: block;
+		}
 
 		> div {
 			margin-top: 1em;

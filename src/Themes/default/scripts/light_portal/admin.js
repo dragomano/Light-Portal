@@ -46,20 +46,14 @@ class PortalEntity {
 	}
 
 	post(target) {
-		const formElements = target.elements;
+		const formElements = target.elements
 
 		for (let i = 0; i < formElements.length; i++) {
 			if ((formElements[i].required && formElements[i].value === '') || ! formElements[i].checkValidity()) {
-				const elem = formElements[i].closest('section').id;
+				const tab = formElements[i].closest('section').dataset.content
+				const nav = target.querySelector(`[data-tab=${tab}]`)
 
-				document.getElementsByName('tabs').checked = false;
-				document.getElementById(elem.replace('content-', '')).checked = true;
-
-				const focusElement = document.getElementById(formElements[i].id);
-
-				focusElement ? focusElement.focus() : document.querySelector(".pf_title a").click()
-
-				return false
+				nav.click()
 			}
 		}
 	}
@@ -363,5 +357,43 @@ class Category extends PortalEntity {
 		})
 
 		if (! response.ok) console.error(response)
+	}
+}
+
+class Tabs {
+	#refs = null
+
+	constructor(selector) {
+		this.#refs = {
+			navigation: document.querySelector(`${selector} [data-navigation]`),
+			content: document.querySelector(`${selector} [data-content]`)
+		}
+
+		this.#refs.navigation.addEventListener('click', this.#onChangeNavigation.bind(this))
+	}
+
+	#onChangeNavigation({ target }) {
+		if (target.nodeName !== 'DIV') return
+
+		this.#removeActiveClasses()
+		this.#addActiveClasses(target)
+	}
+
+	#removeActiveClasses() {
+		const prevActiveButton = this.#refs.navigation.querySelector('.active_navigation')
+		const prevActiveContent = this.#refs.content.querySelector('.active_content')
+
+		if (prevActiveButton) {
+			prevActiveButton.classList.remove('active_navigation')
+			prevActiveContent.classList.remove('active_content')
+		}
+	}
+
+	#addActiveClasses(currentButton) {
+		const currentTab = currentButton.dataset.tab
+		const currentContent = this.#refs.content.querySelector(`[data-content=${currentTab}]`)
+
+		currentButton.classList.add('active_navigation')
+		currentContent.classList.add('active_content')
 	}
 }
