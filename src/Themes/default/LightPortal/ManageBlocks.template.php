@@ -212,11 +212,15 @@ function template_block_post()
 	global $context, $txt, $language;
 
 	if (isset($context['preview_content']) && empty($context['post_errors'])) {
+		echo '
+	<div class="preview_frame">';
+
 		echo sprintf($context['lp_all_title_classes'][$context['lp_block']['title_class']], $context['preview_title']);
 
 		echo '
-	<div class="preview block_', $context['lp_block']['type'], '">
-		', sprintf($context['lp_all_content_classes'][$context['lp_block']['content_class']], $context['preview_content']), '
+		<div class="preview block_', $context['lp_block']['type'], '">
+			', sprintf($context['lp_all_content_classes'][$context['lp_block']['content_class']], $context['preview_content']), '
+		</div>
 	</div>';
 	} else {
 		echo '
