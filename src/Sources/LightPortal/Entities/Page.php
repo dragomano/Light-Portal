@@ -387,7 +387,7 @@ final class Page
 			'date DESC'
 		];
 
-		$within_category = str_contains(filter_input(INPUT_SERVER, 'HTTP_REFERER'), 'action=portal;sa=categories;id');
+		$within_category = str_contains(filter_input(INPUT_SERVER, 'HTTP_REFERER') ?? '', 'action=portal;sa=categories;id');
 
 		$result = $this->smcFunc['db_query']('', '
 			(
