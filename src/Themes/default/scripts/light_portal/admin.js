@@ -93,9 +93,9 @@ class Block extends PortalEntity {
 	}
 
 	add(target) {
-		const thisForm = document.forms.block_add_form;
+		const thisForm = document.forms['block_add_form'];
 
-		thisForm.add_block.value = target.dataset.type;
+		thisForm['add_block'].value = target.dataset.type;
 		thisForm.submit()
 	}
 
@@ -147,9 +147,9 @@ class Page extends PortalEntity {
 	}
 
 	add(target) {
-		const thisForm = document.forms.page_add_form;
+		const thisForm = document.forms['page_add_form'];
 
-		thisForm.add_page.value = target.dataset.type;
+		thisForm['add_page'].value = target.dataset.type;
 		thisForm.submit()
 	}
 }
@@ -294,7 +294,7 @@ class Category extends PortalEntity {
 	}
 
 	async add(refs) {
-		if (! refs.cat_name) return false;
+		if (! refs['cat_name']) return false;
 
 		const response = await fetch(this.workUrl, {
 			method: 'POST',
@@ -302,8 +302,8 @@ class Category extends PortalEntity {
 				'Content-Type': 'application/json; charset=utf-8'
 			},
 			body: JSON.stringify({
-				new_name: refs.cat_name.value,
-				new_desc: refs.cat_desc.value
+				new_name: refs['cat_name'].value,
+				new_desc: refs['cat_desc'].value
 			})
 		})
 
@@ -312,9 +312,9 @@ class Category extends PortalEntity {
 		const json = await response.json();
 
 		if (json.success) {
-			refs.category_list.insertAdjacentHTML('beforeend', json.section);
-			refs.cat_name.value = '';
-			refs.cat_desc.value = '';
+			refs['category_list'].insertAdjacentHTML('beforeend', json.section);
+			refs['cat_name'].value = '';
+			refs['cat_desc'].value = '';
 			document.getElementById('category_desc' + json.item).focus()
 		}
 	}

@@ -276,7 +276,9 @@ function show_comment_block()
 				toggleAltCollapsedTitle: ', JavaScriptEscape($txt['show']), ',
 				toggleMsgBlockTitle: ', JavaScriptEscape($txt['lp_comments']), ',
 				useThemeSettings: true,
-				useCookie: false
+				useCookie: false,
+				session_id: smf_session_id,
+				session_var: smf_session_var
 			});
 		</script>';
 }
