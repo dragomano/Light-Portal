@@ -373,10 +373,10 @@ class Tabs {
 	}
 
 	#onChangeNavigation({ target }) {
-		if (target.nodeName !== 'DIV') return
+		if (! ['DIV', 'I'].includes(target.nodeName)) return
 
 		this.#removeActiveClasses()
-		this.#addActiveClasses(target)
+		this.#addActiveClasses(target.nodeName === 'I' ? target.parentNode : target)
 	}
 
 	#removeActiveClasses() {
