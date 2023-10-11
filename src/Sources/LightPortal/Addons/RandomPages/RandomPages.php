@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 30.04.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\RandomPages;
 
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Partials\CategorySelect;
+use IntlException;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -25,7 +26,7 @@ class RandomPages extends Block
 {
 	public string $icon = 'fas fa-random';
 
-	public function blockOptions(array &$options)
+	public function blockOptions(array &$options): void
 	{
 		$options['random_pages']['no_content_class'] = true;
 
@@ -35,7 +36,7 @@ class RandomPages extends Block
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type)
+	public function validateBlockData(array &$parameters, string $type): void
 	{
 		if ($type !== 'random_pages')
 			return;
@@ -44,7 +45,7 @@ class RandomPages extends Block
 		$parameters['num_pages']  = FILTER_VALIDATE_INT;
 	}
 
-	public function prepareBlockFields()
+	public function prepareBlockFields(): void
 	{
 		if ($this->context['lp_block']['type'] !== 'random_pages')
 			return;
@@ -192,13 +193,16 @@ class RandomPages extends Block
 		return $pages;
 	}
 
-	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
+	/**
+	 * @throws IntlException
+	 */
+	public function prepareContent($data, array $parameters): void
 	{
-		if ($type !== 'random_pages')
+		if ($data->type !== 'random_pages')
 			return;
 
-		$randomPages = $this->cache('random_pages_addon_b' . $block_id . '_u' . $this->user_info['id'])
-			->setLifeTime($cache_time)
+		$randomPages = $this->cache('random_pages_addon_b' . $data->block_id . '_u' . $this->user_info['id'])
+			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getData', $parameters);
 
 		if ($randomPages) {

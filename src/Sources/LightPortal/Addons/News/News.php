@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.04.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\News;
@@ -26,12 +26,12 @@ class News extends Block
 
 	public string $icon = 'far fa-newspaper';
 
-	public function blockOptions(array &$options)
+	public function blockOptions(array &$options): void
 	{
 		$options['news']['parameters']['selected_item'] = 0;
 	}
 
-	public function validateBlockData(array &$parameters, string $type)
+	public function validateBlockData(array &$parameters, string $type): void
 	{
 		if ($type !== 'news')
 			return;
@@ -39,7 +39,7 @@ class News extends Block
 		$parameters['selected_item'] = FILTER_VALIDATE_INT;
 	}
 
-	public function prepareBlockFields()
+	public function prepareBlockFields(): void
 	{
 		if ($this->context['lp_block']['type'] !== 'news')
 			return;
@@ -80,9 +80,9 @@ class News extends Block
 		return $this->getFromSsi('news', 'return');
 	}
 
-	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
+	public function prepareContent($data, array $parameters): void
 	{
-		if ($type !== 'news')
+		if ($data->type !== 'news')
 			return;
 
 		echo $this->getData($parameters['selected_item']) ?: $this->txt['lp_news']['no_items'];

@@ -1,4 +1,8 @@
 class PortalEntity {
+	constructor() {
+		this.workUrl = smf_scripturl + '?action=admin'
+	}
+
 	toggleSpin(target) {
 		target.classList.toggle('fa-spin')
 	}
@@ -42,20 +46,14 @@ class PortalEntity {
 	}
 
 	post(target) {
-		const formElements = target.elements;
+		const formElements = target.elements
 
 		for (let i = 0; i < formElements.length; i++) {
 			if ((formElements[i].required && formElements[i].value === '') || ! formElements[i].checkValidity()) {
-				const elem = formElements[i].closest('section').id;
+				const tab = formElements[i].closest('section').dataset.content
+				const nav = target.querySelector(`[data-tab=${tab}]`)
 
-				document.getElementsByName('tabs').checked = false;
-				document.getElementById(elem.replace('content-', '')).checked = true;
-
-				const focusElement = document.getElementById(formElements[i].id);
-
-				focusElement ? focusElement.focus() : document.querySelector(".pf_title a").click()
-
-				return false
+				nav.click()
 			}
 		}
 	}
@@ -95,9 +93,9 @@ class Block extends PortalEntity {
 	}
 
 	add(target) {
-		const thisForm = document.forms.block_add_form;
+		const thisForm = document.forms['block_add_form'];
 
-		thisForm.add_block.value = target.dataset.type;
+		thisForm['add_block'].value = target.dataset.type;
 		thisForm.submit()
 	}
 
@@ -149,9 +147,9 @@ class Page extends PortalEntity {
 	}
 
 	add(target) {
-		const thisForm = document.forms.page_add_form;
+		const thisForm = document.forms['page_add_form'];
 
-		thisForm.add_page.value = target.dataset.type;
+		thisForm['add_page'].value = target.dataset.type;
 		thisForm.submit()
 	}
 }
@@ -179,23 +177,20 @@ class Plugin extends PortalEntity {
 
 		if (! response.ok) return console.error(response);
 
-		let togglerClass;
-
-		const classes = ['fa', 'bi']
-		classes.forEach(function(item) {
+		let toggledClass;
+		['fa', 'bi'].forEach(function(item) {
 			if ((new RegExp(item, 'i')).test(target.classList[1])) {
-				togglerClass = item;
-				return
+				toggledClass = item;
 			}
 		});
 
 		if (target.dataset.toggle === 'on') {
-			target.classList.toggle(togglerClass + '-toggle-on');
-			target.classList.toggle(togglerClass + '-toggle-off');
+			target.classList.toggle(toggledClass + '-toggle-on');
+			target.classList.toggle(toggledClass + '-toggle-off');
 			target.setAttribute('data-toggle', 'off')
 		} else {
-			target.classList.toggle(togglerClass + '-toggle-off');
-			target.classList.toggle(togglerClass + '-toggle-on');
+			target.classList.toggle(toggledClass + '-toggle-off');
+			target.classList.toggle(toggledClass + '-toggle-on');
 			target.setAttribute('data-toggle', 'on')
 		}
 	}
@@ -204,12 +199,14 @@ class Plugin extends PortalEntity {
 		const el = document.getElementById(target.dataset.id + '_settings');
 
 		this.toggleSpin(target);
-		el.style.display = el.ownerDocument.defaultView.getComputedStyle(el, null).display === 'none' ? 'block' : 'none';
-		setTimeout(() => this.toggleSpin(target), 1000);
+
+		el.style.display = el.ownerDocument.defaultView.getComputedStyle(el, null).display === 'none' ? 'block' : 'none'
 	}
 
-	hideSettings(target) {
-		document.getElementById(target.parentNode.parentNode.id).style.display = 'none'
+	hideSettings(refs) {
+		refs.settings.style.display = 'none';
+
+		this.toggleSpin(refs.settings.previousElementSibling.previousElementSibling.children[0])
 	}
 
 	async saveSettings(target, refs) {
@@ -244,6 +241,8 @@ class Plugin extends PortalEntity {
 	}
 
 	toggleToListView(el) {
+		if (! this.isCardView()) return;
+
 		document.getElementById('addon_list').classList.toggle('addon_list');
 		localStorage.setItem('lpAddonListView', 'list');
 		el.style.opacity = 1;
@@ -251,6 +250,8 @@ class Plugin extends PortalEntity {
 	}
 
 	toggleToCardView(el) {
+		if (this.isCardView()) return;
+
 		document.getElementById('addon_list').classList.toggle('addon_list');
 		localStorage.setItem('lpAddonListView', 'card');
 		el.style.opacity = 1;
@@ -293,7 +294,7 @@ class Category extends PortalEntity {
 	}
 
 	async add(refs) {
-		if (! refs.cat_name) return false;
+		if (! refs['cat_name']) return false;
 
 		const response = await fetch(this.workUrl, {
 			method: 'POST',
@@ -301,8 +302,8 @@ class Category extends PortalEntity {
 				'Content-Type': 'application/json; charset=utf-8'
 			},
 			body: JSON.stringify({
-				new_name: refs.cat_name.value,
-				new_desc: refs.cat_desc.value
+				new_name: refs['cat_name'].value,
+				new_desc: refs['cat_desc'].value
 			})
 		})
 
@@ -311,9 +312,9 @@ class Category extends PortalEntity {
 		const json = await response.json();
 
 		if (json.success) {
-			refs.category_list.insertAdjacentHTML('beforeend', json.section);
-			refs.cat_name.value = '';
-			refs.cat_desc.value = '';
+			refs['category_list'].insertAdjacentHTML('beforeend', json.section);
+			refs['cat_name'].value = '';
+			refs['cat_desc'].value = '';
 			document.getElementById('category_desc' + json.item).focus()
 		}
 	}
@@ -356,5 +357,43 @@ class Category extends PortalEntity {
 		})
 
 		if (! response.ok) console.error(response)
+	}
+}
+
+class Tabs {
+	#refs = null
+
+	constructor(selector) {
+		this.#refs = {
+			navigation: document.querySelector(`${selector} [data-navigation]`),
+			content: document.querySelector(`${selector} [data-content]`)
+		}
+
+		this.#refs.navigation.addEventListener('click', this.#onChangeNavigation.bind(this))
+	}
+
+	#onChangeNavigation({ target }) {
+		if (! ['DIV', 'I'].includes(target.nodeName)) return
+
+		this.#removeActiveClasses()
+		this.#addActiveClasses(target.nodeName === 'I' ? target.parentNode : target)
+	}
+
+	#removeActiveClasses() {
+		const prevActiveButton = this.#refs.navigation.querySelector('.active_navigation')
+		const prevActiveContent = this.#refs.content.querySelector('.active_content')
+
+		if (prevActiveButton) {
+			prevActiveButton.classList.remove('active_navigation')
+			prevActiveContent.classList.remove('active_content')
+		}
+	}
+
+	#addActiveClasses(currentButton) {
+		const currentTab = currentButton.dataset.tab
+		const currentContent = this.#refs.content.querySelector(`[data-content=${currentTab}]`)
+
+		currentButton.classList.add('active_navigation')
+		currentContent.classList.add('active_content')
 	}
 }

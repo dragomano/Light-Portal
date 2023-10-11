@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 16.06.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\SimpleChat;
@@ -34,12 +34,12 @@ class SimpleChat extends Block
 		$this->chat = new Chat;
 	}
 
-	public function init()
+	public function init(): void
 	{
 		$this->applyHook('actions');
 	}
 
-	public function actions()
+	public function actions(): void
 	{
 		if ($this->request()->isNot('portal'))
 			return;
@@ -53,19 +53,19 @@ class SimpleChat extends Block
 		}
 	}
 
-	public function addSettings()
+	public function addSettings(): void
 	{
 		$this->prepareTable();
 	}
 
-	public function blockOptions(array &$options)
+	public function blockOptions(array &$options): void
 	{
 		$options['simple_chat']['parameters'] = [
 			'show_avatars' => false,
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type)
+	public function validateBlockData(array &$parameters, string $type): void
 	{
 		if ($type !== 'simple_chat')
 			return;
@@ -73,7 +73,7 @@ class SimpleChat extends Block
 		$parameters['show_avatars'] = FILTER_VALIDATE_BOOLEAN;
 	}
 
-	public function prepareBlockFields()
+	public function prepareBlockFields(): void
 	{
 		if ($this->context['lp_block']['type'] !== 'simple_chat')
 			return;
@@ -99,9 +99,9 @@ class SimpleChat extends Block
 		return $messages;
 	}
 
-	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
+	public function prepareContent($data, array $parameters): void
 	{
-		if ($type !== 'simple_chat')
+		if ($data->type !== 'simple_chat')
 			return;
 
 		$this->loadCssFile('admin.css');
@@ -109,18 +109,18 @@ class SimpleChat extends Block
 
 		$parameters['show_avatars'] ??= false;
 
-		$messages = $this->cache('simple_chat_addon_b' . $block_id)
-			->setLifeTime($cache_time)
-			->setFallback(self::class, 'getData', $block_id, $parameters);
+		$messages = $this->cache('simple_chat_addon_b' . $data->block_id)
+			->setLifeTime($data->cache_time)
+			->setFallback(self::class, 'getData', $data->block_id, $parameters);
 
-		$this->context['lp_chats'][$block_id] = json_encode($messages, JSON_UNESCAPED_UNICODE);
+		$this->context['lp_chats'][$data->block_id] = json_encode($messages, JSON_UNESCAPED_UNICODE);
 
 		$this->setTemplate();
 
-		show_chat_block($block_id, (bool) $parameters['show_avatars'], $this->isInSidebar($block_id));
+		show_chat_block($data->block_id, (bool) $parameters['show_avatars'], $this->isInSidebar($data->block_id));
 	}
 
-	public function onBlockRemoving(array $items)
+	public function onBlockRemoving(array $items): void
 	{
 		$this->smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_simple_chat_messages
@@ -131,7 +131,7 @@ class SimpleChat extends Block
 		);
 	}
 
-	private function prepareTable()
+	private function prepareTable(): void
 	{
 		$tables = [];
 

@@ -9,7 +9,7 @@
         "ext-dom": "*"
     },
     "require-dev": {
-        "rector/rector": "^0.15.21",
+        "rector/rector": "^0.17",
         "phing/phing": "2.*"
     },
     "scripts": {

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.05.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\Likely;
@@ -26,14 +26,14 @@ class Likely extends Block
 
 	private array $buttons = ['facebook', 'linkedin', 'odnoklassniki', 'pinterest', 'reddit', 'telegram', 'twitter', 'viber', 'vkontakte', 'whatsapp'];
 
-	public function blockOptions(array &$options)
+	public function blockOptions(array &$options): void
 	{
 		$options['likely']['parameters']['size']      = 'small';
 		$options['likely']['parameters']['dark_mode'] = false;
 		$options['likely']['parameters']['buttons']   = $this->buttons;
 	}
 
-	public function validateBlockData(array &$parameters, string $type)
+	public function validateBlockData(array &$parameters, string $type): void
 	{
 		if ($type !== 'likely')
 			return;
@@ -43,7 +43,7 @@ class Likely extends Block
 		$parameters['buttons']   = FILTER_DEFAULT;
 	}
 
-	public function prepareBlockFields()
+	public function prepareBlockFields(): void
 	{
 		if ($this->context['lp_block']['type'] !== 'likely')
 			return;
@@ -81,15 +81,15 @@ class Likely extends Block
 		$this->context['posting_fields']['buttons']['input']['tab']  = 'content';
 	}
 
-	public function prepareAssets(array &$assets)
+	public function prepareAssets(array &$assets): void
 	{
 		$assets['css']['likely'][] = 'https://cdn.jsdelivr.net/npm/ilyabirman-likely@3/release/likely.min.css';
 		$assets['scripts']['likely'][] = 'https://cdn.jsdelivr.net/npm/ilyabirman-likely@3/release/likely.min.js';
 	}
 
-	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
+	public function prepareContent($data, array $parameters): void
 	{
-		if ($type !== 'likely' || empty($parameters['buttons']))
+		if ($data->type !== 'likely' || empty($parameters['buttons']))
 			return;
 
 		$this->loadCSSFile('light_portal/likely/likely.min.css');
@@ -114,7 +114,7 @@ class Likely extends Block
 			</div>';
 	}
 
-	public function credits(array &$links)
+	public function credits(array &$links): void
 	{
 		$links[] = [
 			'title' => 'Likely',

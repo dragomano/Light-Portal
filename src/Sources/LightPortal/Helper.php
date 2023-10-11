@@ -115,10 +115,7 @@ trait Helper
 		if (empty($this->memberContext[$userId]))
 			return '';
 
-		if (isset($this->memberContext[$userId]['avatar']) && isset($this->memberContext[$userId]['avatar']['image']))
-			return $this->memberContext[$userId]['avatar']['image'];
-
-		return '<img class="avatar" width="100" height="100" src="' . $this->modSettings['avatar_url'] . '/default.png" loading="lazy" alt="' . $this->memberContext[$userId]['name'] . '">';
+		return $this->memberContext[$userId]['avatar']['image'] ?? '<img class="avatar" width="100" height="100" src="' . $this->modSettings['avatar_url'] . '/default.png" loading="lazy" alt="' . $this->memberContext[$userId]['name'] . '">';
 	}
 
 	public function getItemsWithUserAvatars(array $items, string $entity = 'author'): array

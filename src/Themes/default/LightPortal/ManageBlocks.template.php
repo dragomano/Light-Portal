@@ -212,11 +212,15 @@ function template_block_post()
 	global $context, $txt, $language;
 
 	if (isset($context['preview_content']) && empty($context['post_errors'])) {
+		echo '
+	<div class="preview_frame">';
+
 		echo sprintf($context['lp_all_title_classes'][$context['lp_block']['title_class']], $context['preview_title']);
 
 		echo '
-	<div class="preview block_', $context['lp_block']['type'], '">
-		', sprintf($context['lp_all_content_classes'][$context['lp_block']['content_class']], $context['preview_content']), '
+		<div class="preview block_', $context['lp_block']['type'], '">
+			', sprintf($context['lp_all_content_classes'][$context['lp_block']['content_class']], $context['preview_content']), '
+		</div>
 	</div>';
 	} else {
 		echo '
@@ -261,64 +265,26 @@ function template_block_post()
 	>
 		<div class="windowbg">
 			<div class="lp_tabs">
-				<input id="tab1" type="radio" name="tabs" checked>
-				<label for="tab1" class="bg odd">', $context['lp_icon_set']['content'], '<span>', $txt['lp_tab_content'], '</span></label>
-				<input id="tab2" type="radio" name="tabs">
-				<label for="tab2" class="bg odd">', $context['lp_icon_set']['access'], '<span>', $txt['lp_tab_access_placement'], '</span></label>';
-
-	if ($context['lp_block_tab_appearance']) {
-		echo '
-				<input id="tab3" type="radio" name="tabs">
-				<label for="tab3" class="bg odd">', $context['lp_icon_set']['design'], '<span>', $txt['lp_tab_appearance'], '</span></label>';
-	}
-
-	echo '
-				<input id="tab4" type="radio" name="tabs">
-				<label for="tab4" class="bg odd">' . $context['lp_icon_set']['tools'] . '<span>', $txt['lp_tab_tuning'], '</span></label>
-				<section id="content-tab1" class="bg even">';
-
-	template_post_tab($fields);
-
-	echo '
-				</section>
-				<section id="content-tab2" class="bg even">';
-
-	template_post_tab($fields, 'access_placement');
-
-	echo '
-				</section>';
-
-	if ($context['lp_block_tab_appearance']) {
-		echo '
-				<section id="content-tab3" class="bg even">';
-
-		template_post_tab($fields, 'appearance');
-
-		echo '
-				</section>';
-	}
-
-	echo '
-				<section id="content-tab4" class="bg even">';
-
-	template_post_tab($fields, 'tuning');
-
-	echo '
-				</section>
+				<div data-navigation>
+					<div class="bg odd active_navigation" data-tab="common">', $context['lp_icon_set']['content'], $txt['lp_tab_content'], '</div>
+					<div class="bg odd" data-tab="access">', $context['lp_icon_set']['access'], $txt['lp_tab_access_placement'], '</div>
+					<div class="bg odd" data-tab="appearance" x-show="', (int) $context['lp_block_tab_appearance'], '">', $context['lp_icon_set']['design'], $txt['lp_tab_appearance'], '</div>
+					<div class="bg odd" data-tab="tuning">', $context['lp_icon_set']['tools'], $txt['lp_tab_tuning'], '</div>
+				</div>
+				<div data-content>
+					<section class="bg even active_content" data-content="common">', template_post_tab($fields), '</section>
+					<section class="bg even" data-content="access">', template_post_tab($fields, 'access_placement'), '</section>
+					<section class="bg even" data-content="appearance" x-show="', (int) $context['lp_block_tab_appearance'], '">', template_post_tab($fields, 'appearance'), '</section>
+					<section class="bg even" data-content="tuning">', template_post_tab($fields, 'tuning'), '</section>
+				</div>
 			</div>
 			<br class="clear">
 			<div class="centertext">
 				<input type="hidden" name="block_id" value="', $context['lp_block']['id'], '">
 				<input type="hidden" name="add_block" value="', $context['lp_block']['type'], '">
 				<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '">
-				<input type="hidden" name="seqnum" value="', $context['form_sequence_number'], '">';
-
-	if (! empty($context['lp_block']['id'])) {
-		echo '
-				<button type="submit" class="button active" name="remove" style="float: left">', $txt['remove'], '</button>';
-	}
-
-	echo '
+				<input type="hidden" name="seqnum" value="', $context['form_sequence_number'], '">
+				<button type="submit" class="button active" name="remove" style="float: left" x-show="!', (int) empty($context['lp_block']['id']), '">', $txt['remove'], '</button>
 				<button type="submit" class="button" name="preview" @click="block.post($root)">', $context['lp_icon_set']['preview'], $txt['preview'], '</button>
 				<button type="submit" class="button" name="save" @click="block.post($root)">', $context['lp_icon_set']['save'], $txt['save'], '</button>
 				<button type="submit" class="button" name="save_exit" @click="block.post($root)">', $context['lp_icon_set']['save_exit'], $txt['lp_save_and_exit'], '</button>
@@ -327,6 +293,7 @@ function template_block_post()
 	</form>
 	<script>
 		const block = new Block();
+		const tabs = new Tabs(".lp_tabs");
 	</script>';
 }
 

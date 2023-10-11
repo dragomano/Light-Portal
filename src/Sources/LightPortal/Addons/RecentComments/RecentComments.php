@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 27.04.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\RecentComments;
 
 use Bugo\LightPortal\Addons\Block;
+use IntlException;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -27,7 +28,7 @@ class RecentComments extends Block
 {
 	public string $icon = 'fas fa-comments';
 
-	public function blockOptions(array &$options)
+	public function blockOptions(array &$options): void
 	{
 		$options['recent_comments']['no_content_class'] = true;
 
@@ -37,7 +38,7 @@ class RecentComments extends Block
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type)
+	public function validateBlockData(array &$parameters, string $type): void
 	{
 		if ($type !== 'recent_comments')
 			return;
@@ -48,7 +49,7 @@ class RecentComments extends Block
 		];
 	}
 
-	public function prepareBlockFields()
+	public function prepareBlockFields(): void
 	{
 		if ($this->context['lp_block']['type'] !== 'recent_comments')
 			return;
@@ -128,13 +129,16 @@ class RecentComments extends Block
 		return $comments;
 	}
 
-	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
+	/**
+	 * @throws IntlException
+	 */
+	public function prepareContent($data, array $parameters): void
 	{
-		if ($type !== 'recent_comments')
+		if ($data->type !== 'recent_comments')
 			return;
 
-		$comments = $this->cache('recent_comments_addon_b' . $block_id . '_u' . $this->user_info['id'])
-			->setLifeTime($cache_time)
+		$comments = $this->cache('recent_comments_addon_b' . $data->block_id . '_u' . $this->user_info['id'])
+			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getData', (int) $parameters['num_comments'], (int) $parameters['length']);
 
 		if (empty($comments))

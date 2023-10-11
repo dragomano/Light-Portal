@@ -1,13 +1,14 @@
 class Comment {
+	#currentComment = []
+	#currentCommentText = []
+	#cacheNode = null
+
 	constructor(data) {
 		this.pageUrl = data.pageUrl
 		this.start = data.start
 		this.lastStart = data.lastStart
 		this.parentCommentsCount = data.parentCommentsCount
 		this.commentsPerPage = data.commentsPerPage
-		this.currentComment = []
-		this.currentCommentText = []
-		this.cacheNode = null
 	}
 
 	focus(target, refs) {
@@ -19,13 +20,13 @@ class Comment {
 	}
 
 	pasteNick(target, refs) {
-		const textarea = refs.reply_message.value;
-		const position = refs.reply_message.selectionStart;
+		const textarea = refs['reply_message'].value;
+		const position = refs['reply_message'].selectionStart;
 
 		document.querySelector('.reply_button[data-id="' + target.dataset.id + '"]').click();
 
-		refs.reply_message.value = textarea.substring(0, position) + target.innerText + ', ' + textarea.substring(position);
-		refs.reply_message.focus()
+		refs['reply_message'].value = textarea.substring(0, position) + target.innerText + ', ' + textarea.substring(position);
+		refs['reply_message'].focus()
 	}
 
 	async add(target, refs) {
@@ -51,27 +52,27 @@ class Comment {
 		const data = await response.json();
 		const comment = data.comment;
 
-		this.addParentNode(refs.page_comments, comment);
+		this.#addParentNode(refs['page_comments'], comment);
 
 		refs.comment.style.display = 'none';
 		refs.message.style.height = '30px';
 		refs.message.value = '';
 
-		const toolbar = refs.comment_form.querySelector('.toolbar');
+		const toolbar = refs['comment_form'].querySelector('.toolbar');
 
 		if (toolbar) toolbar.style.display = 'none';
 
 		this.parentCommentsCount++;
 
-		this.goToComment(data)
+		this.#goToComment(data)
 	}
 
 	async addReply(target, refs) {
 		const parent = document.getElementById('comment' + target.dataset.id);
 
-		if (this.cacheNode && this.cacheNode.isEqualNode(parent)) return;
+		if (this.#cacheNode && this.#cacheNode.isEqualNode(parent)) return;
 
-		this.cacheNode = parent;
+		this.#cacheNode = parent;
 
 		const response = await fetch(this.pageUrl + 'sa=add_comment', {
 			method: 'POST',
@@ -84,7 +85,7 @@ class Comment {
 				level: parent.dataset.level,
 				start: parent.dataset.start,
 				commentator: parent.dataset.commentator,
-				message: refs.reply_message.value,
+				message: refs['reply_message'].value,
 				page_id: target.dataset.page,
 				page_url: this.pageUrl
 			})
@@ -95,56 +96,56 @@ class Comment {
 		const data = await response.json();
 		const comment = data.comment;
 
-		this.addChildNode(parent, comment);
+		this.#addChildNode(parent, comment);
 
-		refs.reply_message.value = '';
+		refs['reply_message'].value = '';
 		target.previousElementSibling.click();
 
-		this.cacheNode = null;
+		this.#cacheNode = null;
 
-		this.goToComment(data)
+		this.#goToComment(data)
 	}
 
-	addChildNode(parent, comment) {
+	#addChildNode(parent, comment) {
 		const commentList = parent.querySelector('ul.comment_list');
 
-		if (commentList) return this.addNode(commentList, comment);
+		if (commentList) return this.#addNode(commentList, comment);
 
-		this.addNewList(parent.querySelector('.comment_wrapper'), comment)
+		this.#addNewList(parent.querySelector('.comment_wrapper'), comment)
 	}
 
-	addParentNode(el, comment) {
+	#addParentNode(el, comment) {
 		const commentList = el.querySelector('ul.comment_list');
 
-		if (commentList) return this.addNode(commentList, comment);
+		if (commentList) return this.#addNode(commentList, comment);
 
-		this.addNewList(el, comment, 'afterbegin')
+		this.#addNewList(el, comment, 'afterbegin')
 	}
 
-	addNode(list, comment) {
+	#addNode(list, comment) {
 		list.insertAdjacentHTML('beforeend', comment);
 		list.style.transition = 'height 3s'
 	}
 
-	addNewList(el, comment, position = 'beforeend') {
+	#addNewList(el, comment, position = 'beforeend') {
 		el.insertAdjacentHTML(position, '<ul class="comment_list row"></ul>');
 
-		this.addNode(el.querySelector('ul.comment_list'), comment)
+		this.#addNode(el.querySelector('ul.comment_list'), comment)
 	}
 
-	goToComment(data) {
+	#goToComment({item, parent}) {
 		const firstSeparator = window.location.search ? '=' : '.';
 		const lastSeparator  = window.location.search ? '' : '/';
 
-		if (data.parent === 0 && this.parentCommentsCount > this.commentsPerPage) {
-			return window.location.replace(this.pageUrl + 'start' + firstSeparator + (this.lastStart + this.commentsPerPage) + lastSeparator + '#comment' + data.item)
+		if (parent === 0 && this.parentCommentsCount > this.commentsPerPage) {
+			return window.location.replace(this.pageUrl + 'start' + firstSeparator + (this.lastStart + this.commentsPerPage) + lastSeparator + '#comment' + item)
 		}
 
 		if (this.start) {
-			return window.location.replace(this.pageUrl + 'start' + firstSeparator + this.start + lastSeparator + '#comment' + data.item)
+			return window.location.replace(this.pageUrl + 'start' + firstSeparator + this.start + lastSeparator + '#comment' + item)
 		}
 
-		window.location.replace((window.location.search ? (smf_scripturl + window.location.search) : this.pageUrl) + '#comment' + data.item)
+		window.location.replace((window.location.search ? (smf_scripturl + window.location.search) : this.pageUrl) + '#comment' + item)
 	}
 
 	modify(target) {
@@ -159,13 +160,13 @@ class Comment {
 		updateButton.style.display = 'inline-block';
 		cancelButton.style.display = 'inline-block';
 
-		this.currentComment[item] = commentContent.innerHTML;
-		this.focusEditor(item, commentContent, commentRawContent);
-		this.selectContent(commentContent)
+		this.#currentComment[item] = commentContent.innerHTML;
+		this.#focusEditor(item, commentContent, commentRawContent);
+		this.#selectContent(commentContent)
 	}
 
-	focusEditor(item, comment, rawContent) {
-		comment.innerText = this.currentCommentText[item] ?? rawContent.innerText;
+	#focusEditor(item, comment, rawContent) {
+		comment.innerText = this.#currentCommentText[item] ?? rawContent.innerText;
 		comment.setAttribute('contenteditable', true);
 		comment.style.boxShadow = 'inset 2px 2px 5px rgba(154, 147, 140, 0.5), 1px 1px 5px rgba(255, 255, 255, 1)';
 		comment.style.borderRadius = '4px';
@@ -173,7 +174,7 @@ class Comment {
 		comment.focus()
 	}
 
-	selectContent(commentContent) {
+	#selectContent(commentContent) {
 		const selection = window.getSelection();
 		const range = document.createRange();
 
@@ -188,7 +189,7 @@ class Comment {
 
 		if (! item) return;
 
-		this.currentCommentText[item] = message.innerText;
+		this.#currentCommentText[item] = message.innerText;
 
 		const response = await fetch(this.pageUrl + 'sa=edit_comment', {
 			method: 'POST',
@@ -215,8 +216,8 @@ class Comment {
 		const updateButton = document.querySelector('#comment' + item + ' .update_button');
 		const cancelButton = document.querySelector('#comment' + item + ' .cancel_button');
 
-		commentContent.innerHTML = source ?? this.currentComment[item];
-		commentContent.setAttribute('contenteditable', false);
+		commentContent.innerHTML = source ?? this.#currentComment[item];
+		commentContent.setAttribute('contenteditable', 'false');
 		commentContent.style.boxShadow = 'none';
 		commentContent.style.borderRadius = 0;
 		commentContent.style.padding = '0 14px';
@@ -278,60 +279,72 @@ class Toolbar {
 			'quote'  : ['[quote]', '[/quote]']
 		}
 
-		return this.insertTags(...tags[type])
+		return this.#insertTags(...tags[type])
 	}
 
-	insertTags(open, close) {
+	#insertTags(open, close) {
 		const start = this.message.selectionStart;
 		const end   = this.message.selectionEnd;
 		const text  = this.message.value;
+		const sel = open.length + end;
 
 		this.message.value = text.substring(0, start) + open + text.substring(start, end) + close + text.substring(end);
 		this.message.focus();
-
-		const sel = open.length + end;
-
 		this.message.setSelectionRange(sel, sel);
 
 		return false
 	}
 }
 
+class ForumToggler extends smc_Toggle {
+	constructor(options) {
+		super(options);
+	}
+}
+
 class Toggler {
 	constructor(options) {
-		this.options = options
+		this.isCurrentlyCollapsed = options.isCurrentlyCollapsed
+		this.toggleAltExpandedTitle = options.toggleAltExpandedTitle
+		this.toggleAltCollapsedTitle = options.toggleAltCollapsedTitle
+		this.toggleMsgBlockTitle = options.toggleMsgBlockTitle
+		this.useThemeSettings = options.useThemeSettings
+		this.useCookie = options.useCookie
+		this.session_id = options.session_id
+		this.session_var = options.session_var
+
 		this.create()
 	}
 
 	create() {
-		new smc_Toggle({
+		new ForumToggler({
 			bToggleEnabled: true,
-			bCurrentlyCollapsed: this.options.isCurrentlyCollapsed,
+			bCurrentlyCollapsed: this.isCurrentlyCollapsed,
 			aSwappableContainers: [
 				"page_comments"
 			],
 			aSwapImages: [
 				{
 					sId: "page_comments_toggle",
-					altExpanded: this.options.toggleAltExpandedTitle,
-					altCollapsed: this.options.toggleAltCollapsedTitle
+					altExpanded: this.toggleAltExpandedTitle,
+					altCollapsed: this.toggleAltCollapsedTitle
 				}
 			],
 			aSwapLinks: [
 				{
 					sId: "page_comments_link",
-					msgExpanded: this.options.toggleMsgBlockTitle,
-					msgCollapsed: this.options.toggleMsgBlockTitle
+					msgExpanded: this.toggleMsgBlockTitle,
+					msgCollapsed: this.toggleMsgBlockTitle
 				}
 			],
 			oThemeOptions: {
-				bUseThemeSettings: this.options.useThemeSettings,
+				bUseThemeSettings: this.useThemeSettings,
 				sOptionName: "collapse_header_page_comments",
-				sSessionId: smf_session_id,
-				sSessionVar: smf_session_var
+				sSessionId: this.session_id,
+				sSessionVar: this.session_var
 			},
 			oCookieOptions: {
-				bUseCookie: this.options.useCookie,
+				bUseCookie: this.useCookie,
 				sCookieName: "upshrinkPC"
 			}
 		})

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 03.06.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\Translator;
@@ -24,7 +24,7 @@ class Translator extends Block
 {
 	public string $icon = 'fas fa-language';
 
-	public function blockOptions(array &$options)
+	public function blockOptions(array &$options): void
 	{
 		$options['translator']['no_content_class'] = true;
 
@@ -35,7 +35,7 @@ class Translator extends Block
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type)
+	public function validateBlockData(array &$parameters, string $type): void
 	{
 		if ($type !== 'translator')
 			return;
@@ -45,7 +45,7 @@ class Translator extends Block
 		$parameters['auto_mode']    = FILTER_VALIDATE_BOOLEAN;
 	}
 
-	public function prepareBlockFields()
+	public function prepareBlockFields(): void
 	{
 		if ($this->context['lp_block']['type'] !== 'translator')
 			return;
@@ -100,27 +100,27 @@ class Translator extends Block
 		];
 	}
 
-	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
+	public function prepareContent($data, array $parameters): void
 	{
-		if ($type !== 'translator')
+		if ($data->type !== 'translator')
 			return;
 
 		$parameters['auto_mode'] ??= false;
 
 		if ($parameters['engine'] === 'yandex') {
 			echo '
-		<div id="ytWidget', $block_id, '" class="centertext noup"></div>
-		<script src="https://translate.yandex.net/website-widget/v1/widget.js?widgetId=ytWidget', $block_id, '&amp;pageLang=', substr($this->language, 0, 2), '&amp;widgetTheme=', $parameters['widget_theme'], '&amp;autoMode=', (bool) $parameters['auto_mode'], '"></script>';
+		<div id="ytWidget', $data->block_id, '" class="centertext noup"></div>
+		<script src="https://translate.yandex.net/website-widget/v1/widget.js?widgetId=ytWidget', $data->block_id, '&amp;pageLang=', substr($this->language, 0, 2), '&amp;widgetTheme=', $parameters['widget_theme'], '&amp;autoMode=', (bool) $parameters['auto_mode'], '"></script>';
 		} else {
 			echo '
 		<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 		<div class="centertext noup">
-			<div id="google_translate_element', $block_id, '"></div>
+			<div id="google_translate_element', $data->block_id, '"></div>
 			<script>
 				function googleTranslateElementInit() {
 					new google.translate.TranslateElement({
 						pageLanguage: "', substr($this->language, 0, 2), '"
-					}, "google_translate_element', $block_id, '");
+					}, "google_translate_element', $data->block_id, '");
 				}
 			</script>
 		</div>';

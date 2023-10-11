@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.06.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\RecentPosts;
@@ -27,7 +27,7 @@ class RecentPosts extends Block
 
 	public string $icon = 'far fa-comment-alt';
 
-	public function blockOptions(array &$options)
+	public function blockOptions(array &$options): void
 	{
 		$options['recent_posts']['no_content_class'] = true;
 
@@ -46,7 +46,7 @@ class RecentPosts extends Block
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type)
+	public function validateBlockData(array &$parameters, string $type): void
 	{
 		if ($type !== 'recent_posts')
 			return;
@@ -64,7 +64,7 @@ class RecentPosts extends Block
 		$parameters['update_interval']  = FILTER_VALIDATE_INT;
 	}
 
-	public function prepareBlockFields()
+	public function prepareBlockFields(): void
 	{
 		if ($this->context['lp_block']['type'] !== 'recent_posts')
 			return;
@@ -217,9 +217,9 @@ class RecentPosts extends Block
 		return $posts;
 	}
 
-	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
+	public function prepareContent($data, array $parameters): void
 	{
-		if ($type !== 'recent_posts')
+		if ($data->type !== 'recent_posts')
 			return;
 
 		if ($this->request()->has('preview'))
@@ -228,8 +228,8 @@ class RecentPosts extends Block
 		$parameters['show_avatars'] ??= false;
 		$parameters['limit_body'] ??= false;
 
-		$recent_posts = $this->cache('recent_posts_addon_b' . $block_id . '_u' . $this->user_info['id'])
-			->setLifeTime($parameters['update_interval'] ?? $cache_time)
+		$recent_posts = $this->cache('recent_posts_addon_b' . $data->block_id . '_u' . $this->user_info['id'])
+			->setLifeTime($parameters['update_interval'] ?? $data->cache_time)
 			->setFallback(self::class, 'getData', $parameters);
 
 		if (empty($recent_posts))
@@ -237,6 +237,6 @@ class RecentPosts extends Block
 
 		$this->setTemplate();
 
-		show_posts($recent_posts, $parameters, $this->isInSidebar($block_id) === false);
+		show_posts($recent_posts, $parameters, $this->isInSidebar($data->block_id) === false);
 	}
 }

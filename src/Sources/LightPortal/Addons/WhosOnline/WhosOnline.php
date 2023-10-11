@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 03.06.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\WhosOnline;
@@ -26,7 +26,7 @@ class WhosOnline extends Block
 
 	public string $icon = 'far fa-eye';
 
-	public function blockOptions(array &$options)
+	public function blockOptions(array &$options): void
 	{
 		$options['whos_online']['parameters'] = [
 			'show_group_key'  => false,
@@ -35,7 +35,7 @@ class WhosOnline extends Block
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type)
+	public function validateBlockData(array &$parameters, string $type): void
 	{
 		if ($type !== 'whos_online')
 			return;
@@ -45,7 +45,7 @@ class WhosOnline extends Block
 		$parameters['update_interval'] = FILTER_VALIDATE_INT;
 	}
 
-	public function prepareBlockFields()
+	public function prepareBlockFields(): void
 	{
 		if ($this->context['lp_block']['type'] !== 'whos_online')
 			return;
@@ -79,9 +79,9 @@ class WhosOnline extends Block
 		];
 	}
 
-	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
+	public function prepareContent($data, array $parameters): void
 	{
-		if ($type !== 'whos_online')
+		if ($data->type !== 'whos_online')
 			return;
 
 		if ($this->request()->has('preview'))
@@ -90,8 +90,8 @@ class WhosOnline extends Block
 		$parameters['show_group_key'] ??= false;
 		$parameters['show_avatars'] ??= false;
 
-		$whos_online = $this->cache('whos_online_addon_b' . $block_id . '_u' . $this->user_info['id'])
-			->setLifeTime($parameters['update_interval'] ?? $cache_time)
+		$whos_online = $this->cache('whos_online_addon_b' . $data->block_id . '_u' . $this->user_info['id'])
+			->setLifeTime($parameters['update_interval'] ?? $data->cache_time)
 			->setFallback(self::class, 'getFromSsi', 'whosOnline', 'array');
 
 		if (empty($whos_online))

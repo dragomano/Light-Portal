@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 30.04.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\PageList;
@@ -27,7 +27,7 @@ class PageList extends Block
 
 	private const SORTING_SET = ['page_id', 'author_name', 'title', 'alias', 'type', 'num_views', 'created_at', 'updated_at'];
 
-	public function blockOptions(array &$options)
+	public function blockOptions(array &$options): void
 	{
 		$options['page_list']['parameters'] = [
 			'categories' => '',
@@ -36,7 +36,7 @@ class PageList extends Block
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type)
+	public function validateBlockData(array &$parameters, string $type): void
 	{
 		if ($type !== 'page_list')
 			return;
@@ -46,7 +46,7 @@ class PageList extends Block
 		$parameters['num_pages']  = FILTER_VALIDATE_INT;
 	}
 
-	public function prepareBlockFields()
+	public function prepareBlockFields(): void
 	{
 		if ($this->context['lp_block']['type'] !== 'page_list')
 			return;
@@ -150,13 +150,13 @@ class PageList extends Block
 		return $pages;
 	}
 
-	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
+	public function prepareContent($data, array $parameters): void
 	{
-		if ($type !== 'page_list')
+		if ($data->type !== 'page_list')
 			return;
 
-		$page_list = $this->cache('page_list_addon_b' . $block_id . '_u' . $this->user_info['id'])
-			->setLifeTime($cache_time)
+		$page_list = $this->cache('page_list_addon_b' . $data->block_id . '_u' . $this->user_info['id'])
+			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getData', $parameters);
 
 		if ($page_list) {

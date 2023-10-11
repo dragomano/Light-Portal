@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.06.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\TinySlider;
@@ -46,12 +46,12 @@ class TinySlider extends Block
 		'images'             => ''
 	];
 
-	public function blockOptions(array &$options)
+	public function blockOptions(array &$options): void
 	{
 		$options['tiny_slider']['parameters'] = $this->params;
 	}
 
-	public function validateBlockData(array &$parameters, string $type)
+	public function validateBlockData(array &$parameters, string $type): void
 	{
 		if ($type !== 'tiny_slider')
 			return;
@@ -94,7 +94,7 @@ class TinySlider extends Block
 		$parameters['images']             = FILTER_DEFAULT;
 	}
 
-	public function prepareBlockFields()
+	public function prepareBlockFields(): void
 	{
 		if ($this->context['lp_block']['type'] !== 'tiny_slider')
 			return;
@@ -376,25 +376,25 @@ class TinySlider extends Block
 		return ['content' => $html];
 	}
 
-	public function prepareAssets(array &$assets)
+	public function prepareAssets(array &$assets): void
 	{
 		$assets['css']['tiny_slider'][]     = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css';
 		$assets['scripts']['tiny_slider'][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/min/tiny-slider.js';
 	}
 
-	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
+	public function prepareContent($data, array $parameters): void
 	{
-		if ($type !== 'tiny_slider')
+		if ($data->type !== 'tiny_slider')
 			return;
 
 		$parameters['nav'] ??= false;
 		$parameters['controls'] ??= false;
 		$parameters['nav_as_thumbnails'] ??= false;
 
-		$block_id = $this->request()->has('preview') ? uniqid() : $block_id;
+		$block_id = $this->request()->has('preview') ? uniqid() : $data->block_id;
 
 		$tiny_slider_html = $this->cache('tiny_slider_addon_b' . $block_id . '_' . $this->user_info['language'])
-			->setLifeTime($cache_time)
+			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getData', $block_id, $parameters);
 
 		if (empty($tiny_slider_html))
@@ -448,7 +448,7 @@ class TinySlider extends Block
 		echo $tiny_slider_html['content'] ?? '';
 	}
 
-	public function credits(array &$links)
+	public function credits(array &$links): void
 	{
 		$links[] = [
 			'title' => 'Tiny Slider 2',

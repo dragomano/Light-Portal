@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.04.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\TagList;
@@ -25,13 +25,13 @@ class TagList extends Block
 {
 	public string $icon = 'fas fa-tags';
 
-	public function blockOptions(array &$options)
+	public function blockOptions(array &$options): void
 	{
 		$options['tag_list']['parameters']['source']  = 'lp_tags';
 		$options['tag_list']['parameters']['sorting'] = 'name';
 	}
 
-	public function validateBlockData(array &$parameters, string $type)
+	public function validateBlockData(array &$parameters, string $type): void
 	{
 		if ($type !== 'tag_list')
 			return;
@@ -40,7 +40,7 @@ class TagList extends Block
 		$parameters['sorting'] = FILTER_DEFAULT;
 	}
 
-	public function prepareBlockFields()
+	public function prepareBlockFields(): void
 	{
 		if ($this->context['lp_block']['type'] !== 'tag_list')
 			return;
@@ -116,18 +116,18 @@ class TagList extends Block
 		return $keywords;
 	}
 
-	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
+	public function prepareContent($data, array $parameters): void
 	{
-		if ($type !== 'tag_list')
+		if ($data->type !== 'tag_list')
 			return;
 
 		if ($parameters['source'] == 'lp_tags') {
-			$tag_list = $this->cache('tag_list_addon_b' . $block_id . '_u' . $this->user_info['id'])
-				->setLifeTime($cache_time)
+			$tag_list = $this->cache('tag_list_addon_b' . $data->block_id . '_u' . $this->user_info['id'])
+				->setLifeTime($data->cache_time)
 				->setFallback(Tag::class, 'getAll', 0, 0, $parameters['sorting'] === 'name' ? 'value' : 'num DESC');
 		} else {
-			$tag_list = $this->cache('tag_list_addon_b' . $block_id . '_u' . $this->user_info['id'])
-				->setLifeTime($cache_time)
+			$tag_list = $this->cache('tag_list_addon_b' . $data->block_id . '_u' . $this->user_info['id'])
+				->setLifeTime($data->cache_time)
 				->setFallback(self::class, 'getAllTopicKeywords', $parameters['sorting'] === 'name' ? 'ok.name' : 'frequency DESC');
 		}
 

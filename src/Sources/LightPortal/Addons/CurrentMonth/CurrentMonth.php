@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.04.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\CurrentMonth;
@@ -24,7 +24,7 @@ class CurrentMonth extends Block
 {
 	public string $icon = 'fas fa-calendar-check';
 
-	public function blockOptions(array &$options)
+	public function blockOptions(array &$options): void
 	{
 		$options['current_month']['no_content_class'] = true;
 	}
@@ -57,25 +57,25 @@ class CurrentMonth extends Block
 		return getCalendarGrid(date_format($start_object, 'Y-m-d'), $calendarOptions);
 	}
 
-	public function prepareContent(string $type, int $block_id, int $cache_time)
+	public function prepareContent($data): void
 	{
-		if ($type !== 'current_month')
+		if ($data->type !== 'current_month')
 			return;
 
 		$calendar_data = $this->cache('current_month_addon_u' . $this->user_info['id'])
-			->setLifeTime($cache_time)
+			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getData');
 
 		if ($calendar_data) {
-			$calendar_data['block_id'] = $block_id;
+			$calendar_data['block_id'] = $data->block_id;
 
 			$title = $this->txt['months_titles'][$calendar_data['current_month']] . ' ' . $calendar_data['current_year'];
 
 			// Auto title
 			if (isset($this->context['preview_title']) && empty($this->context['preview_title'])) {
 				$this->context['preview_title'] = $title;
-			} elseif ($block_id && empty($this->context['lp_active_blocks'][$block_id]['title'][$this->user_info['language']])) {
-				$this->context['lp_active_blocks'][$block_id]['title'][$this->user_info['language']] = $title;
+			} elseif ($data->block_id && empty($this->context['lp_active_blocks'][$data->block_id]['title'][$this->user_info['language']])) {
+				$this->context['lp_active_blocks'][$data->block_id]['title'][$this->user_info['language']] = $title;
 			}
 
 			$this->setTemplate();

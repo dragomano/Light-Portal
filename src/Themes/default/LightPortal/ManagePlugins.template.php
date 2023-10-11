@@ -137,7 +137,7 @@ function show_plugin_settings(array $plugin)
 
 	echo '
 	<br class="clear">
-	<div class="roundframe" id="', $plugin['snake_name'], '_', $context['session_id'], '_settings" style="display: none" x-data="{ success: false }">
+	<div class="roundframe" id="', $plugin['snake_name'], '_', $context['session_id'], '_settings" x-ref="settings" style="display: none" x-data="{ success: false }">
 		<div class="title_bar">
 			<h5 class="titlebg">', $txt['settings'], '</h5>
 		</div>
@@ -259,7 +259,7 @@ function show_plugin_settings(array $plugin)
 		</div>
 		<div class="footer">
 			<span x-ref="info" x-show="success" x-transition class="infobox floatleft">', $txt['settings_saved'], '</span>
-			<button type="button" class="button" @click="plugin.hideSettings($event.target)">', $context['lp_icon_set']['close'], $txt['find_close'], '</button>
+			<button type="button" class="button" @click="plugin.hideSettings($refs)">', $context['lp_icon_set']['close'], $txt['find_close'], '</button>
 			<button form="', $plugin['snake_name'], '_form_', $context['session_id'], '" type="submit" class="button">', $context['lp_icon_set']['save'], $txt['save'], '</button>
 		</div>
 	</div>';

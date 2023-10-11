@@ -93,52 +93,26 @@ function template_page_post()
 	>
 		<div class="roundframe', isset($context['preview_content']) ? '' : ' noup', '">
 			<div class="lp_tabs">
-				<input id="tab1" type="radio" name="tabs" checked>
-				<label for="tab1" class="bg odd">', $context['lp_icon_set']['content'], '<span>', $txt['lp_tab_content'], '</span></label>
-				<input id="tab2" type="radio" name="tabs">
-				<label for="tab2" class="bg odd">', $context['lp_icon_set']['access'], '<span>', $txt['lp_tab_access_placement'], '</span></label>
-				<input id="tab3" type="radio" name="tabs">
-				<label for="tab3" class="bg odd">', $context['lp_icon_set']['spider'], '<span>', $txt['lp_tab_seo'], '</span></label>
-				<input id="tab4" type="radio" name="tabs">
-				<label for="tab4" class="bg odd">', $context['lp_icon_set']['tools'], '<span>', $txt['lp_tab_tuning'], '</span></label>
-				<section id="content-tab1" class="bg even">';
-
-	template_post_tab($fields);
-
-	echo '
-				</section>
-				<section id="content-tab2" class="bg even">';
-
-	template_post_tab($fields, 'access_placement');
-
-	echo '
-				</section>
-				<section id="content-tab3" class="bg even">';
-
-	template_post_tab($fields, 'seo');
-
-	echo '
-				</section>
-				<section id="content-tab4" class="bg even">';
-
-	template_post_tab($fields, 'tuning');
-
-	echo '
-				</section>
+				<div data-navigation>
+					<div class="bg odd active_navigation" data-tab="common">', $context['lp_icon_set']['content'], $txt['lp_tab_content'], '</div>
+					<div class="bg odd" data-tab="access">', $context['lp_icon_set']['access'], $txt['lp_tab_access_placement'], '</div>
+					<div class="bg odd" data-tab="seo">', $context['lp_icon_set']['spider'], $txt['lp_tab_seo'], '</div>
+					<div class="bg odd" data-tab="tuning">', $context['lp_icon_set']['tools'], $txt['lp_tab_tuning'], '</div>
+				</div>
+				<div data-content>
+					<section class="bg even active_content" data-content="common">', template_post_tab($fields), '</section>
+					<section class="bg even" data-content="access">', template_post_tab($fields, 'access_placement'), '</section>
+					<section class="bg even" data-content="seo">', template_post_tab($fields, 'seo'), '</section>
+					<section class="bg even" data-content="tuning">', template_post_tab($fields, 'tuning'), '</section>
+				</div>
 			</div>
 			<br class="clear">
 			<div class="centertext">
 				<input type="hidden" name="page_id" value="', $context['lp_page']['id'], '">
 				<input type="hidden" name="add_page" value="', $context['lp_page']['type'], '">
 				<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '">
-				<input type="hidden" name="seqnum" value="', $context['form_sequence_number'], '">';
-
-	if (! empty($context['lp_page']['id'])) {
-		echo '
-				<button type="submit" class="button active" name="remove" style="float: left">', $txt['remove'], '</button>';
-	}
-
-	echo '
+				<input type="hidden" name="seqnum" value="', $context['form_sequence_number'], '">
+				<button type="submit" class="button active" name="remove" style="float: left" x-show="!', (int) empty($context['lp_page']['id']), '">', $txt['remove'], '</button>
 				<button type="submit" class="button" name="preview" @click="page.post($root)">', $context['lp_icon_set']['preview'], $txt['preview'], '</button>
 				<button type="submit" class="button" name="save" @click="page.post($root)">', $context['lp_icon_set']['save'], $txt['save'], '</button>
 				<button type="submit" class="button" name="save_exit" @click="page.post($root)">', $context['lp_icon_set']['save_exit'], $txt['lp_save_and_exit'], '</button>
@@ -147,5 +121,6 @@ function template_page_post()
 	</form>
 	<script>
 		const page = new Page();
+		const tabs = new Tabs(".lp_tabs");
 	</script>';
 }

@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 03.06.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\TopPosters;
 
 use Bugo\LightPortal\Addons\Block;
+use Exception;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -24,7 +25,7 @@ class TopPosters extends Block
 {
 	public string $icon = 'fas fa-users';
 
-	public function blockOptions(array &$options)
+	public function blockOptions(array &$options): void
 	{
 		$options['top_posters']['parameters'] = [
 			'show_avatars'      => true,
@@ -33,7 +34,7 @@ class TopPosters extends Block
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type)
+	public function validateBlockData(array &$parameters, string $type): void
 	{
 		if ($type !== 'top_posters')
 			return;
@@ -43,7 +44,7 @@ class TopPosters extends Block
 		$parameters['show_numbers_only'] = FILTER_VALIDATE_BOOLEAN;
 	}
 
-	public function prepareBlockFields()
+	public function prepareBlockFields(): void
 	{
 		if ($this->context['lp_block']['type'] !== 'top_posters')
 			return;
@@ -91,19 +92,19 @@ class TopPosters extends Block
 			]
 		);
 
-		$result = $this->smcFunc['db_fetch_all']($result);
+		$members = $this->smcFunc['db_fetch_all']($result);
 
-		if (empty($result))
+		if (empty($members))
 			return [];
 
-		$loadedUserIds = $this->loadMemberData(array_column($result, 'id_member'));
+		$loadedUserIds = $this->loadMemberData(array_column($members, 'id_member'));
 
 		$posters = [];
-		foreach ($result as $row) {
+		foreach ($members as $row) {
 			if (! isset($this->memberContext[$row['id_member']]) && in_array($row['id_member'], $loadedUserIds)) {
 				try {
 					$this->loadMemberContext($row['id_member']);
-				} catch (\Exception $e) {
+				} catch (Exception $e) {
 					$this->logError('[LP] TopPosters addon: ' . $e->getMessage());
 				}
 			}
@@ -124,15 +125,15 @@ class TopPosters extends Block
 		return $posters;
 	}
 
-	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
+	public function prepareContent($data, array $parameters): void
 	{
-		if ($type !== 'top_posters')
+		if ($data->type !== 'top_posters')
 			return;
 
 		$parameters['show_numbers_only'] ??= false;
 
-		$top_posters = $this->cache('top_posters_addon_b' . $block_id . '_u' . $this->user_info['id'])
-			->setLifeTime($cache_time)
+		$top_posters = $this->cache('top_posters_addon_b' . $data->block_id . '_u' . $this->user_info['id'])
+			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getData', $parameters);
 
 		if (empty($top_posters))

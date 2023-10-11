@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 21.04.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\RandomTopics;
 
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Partials\BoardSelect;
+use IntlException;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -25,7 +26,7 @@ class RandomTopics extends Block
 {
 	public string $icon = 'fas fa-random';
 
-	public function blockOptions(array &$options)
+	public function blockOptions(array &$options): void
 	{
 		$options['random_topics']['no_content_class'] = true;
 
@@ -36,7 +37,7 @@ class RandomTopics extends Block
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type)
+	public function validateBlockData(array &$parameters, string $type): void
 	{
 		if ($type !== 'random_topics')
 			return;
@@ -46,7 +47,7 @@ class RandomTopics extends Block
 		$parameters['num_topics']     = FILTER_VALIDATE_INT;
 	}
 
-	public function prepareBlockFields()
+	public function prepareBlockFields(): void
 	{
 		if ($this->context['lp_block']['type'] !== 'random_topics')
 			return;
@@ -222,13 +223,16 @@ class RandomTopics extends Block
 		return $topics;
 	}
 
-	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
+	/**
+	 * @throws IntlException
+	 */
+	public function prepareContent($data, array $parameters): void
 	{
-		if ($type !== 'random_topics')
+		if ($data->type !== 'random_topics')
 			return;
 
-		$randomTopics = $this->cache('random_topics_addon_b' . $block_id . '_u' . $this->user_info['id'])
-			->setLifeTime($cache_time)
+		$randomTopics = $this->cache('random_topics_addon_b' . $data->block_id . '_u' . $this->user_info['id'])
+			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getData', $parameters);
 
 		if ($randomTopics) {

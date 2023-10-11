@@ -662,17 +662,13 @@ final class PageArea
 			'keywords'    => $post_data['keywords'] ?? $this->context['lp_current_page']['tags'] ?? [],
 			'type'        => $post_data['type'] ?? $this->context['lp_current_page']['type'] ?? 'bbc',
 			'permissions' => $post_data['permissions'] ?? $this->context['lp_current_page']['permissions'] ?? $this->modSettings['lp_permissions_default'] ?? 2,
-			'status'      => $post_data['status'] ?? $this->context['lp_current_page']['status'] ?? Page::STATUS_UNAPPROVED,
+			'status'      => $post_data['status'] ?? $this->context['lp_current_page']['status'] ?? (int) ($this->context['allow_light_portal_approve_pages'] || $this->context['allow_light_portal_manage_pages_any']),
 			'created_at'  => $this->context['lp_current_page']['created_at'] ?? time(),
 			'date'        => $post_data['date'] ?? $dateTime->format('Y-m-d'),
 			'time'        => $post_data['time'] ?? $dateTime->format('H:i'),
 			'content'     => $post_data['content'] ?? $this->context['lp_current_page']['content'] ?? '',
 			'options'     => $options,
 		];
-
-		if ($this->context['allow_light_portal_approve_pages'] || $this->context['allow_light_portal_manage_pages_any']) {
-			$this->context['lp_page']['status'] = $post_data['status'] ?? Page::STATUS_ACTIVE;
-		}
 
 		$this->context['lp_page']['page_author'] = empty($post_data['page_author']) ? $this->context['lp_page']['page_author'] : $post_data['page_author'];
 

@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.06.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\Search;
 
 use Bugo\LightPortal\Addons\Block;
+use IntlException;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -24,12 +25,12 @@ class Search extends Block
 {
 	public string $icon = 'fas fa-search';
 
-	public function init()
+	public function init(): void
 	{
 		$this->applyHook('actions');
 	}
 
-	public function addSettings(array &$config_vars)
+	public function addSettings(array &$config_vars): void
 	{
 		$this->addDefaultValues([
 			'min_chars' => 3,
@@ -45,9 +46,14 @@ class Search extends Block
 
 		if ($this->request()->is(LP_ACTION) && $this->context['current_subaction'] === 'search')
 			return call_user_func([$this, 'showResults']);
+
+		return false;
 	}
 
-	public function showResults()
+	/**
+	 * @throws IntlException
+	 */
+	public function showResults(): void
 	{
 		$this->context['page_title']     = $this->txt['lp_search']['title'];
 		$this->context['robot_no_index'] = true;
@@ -63,7 +69,10 @@ class Search extends Block
 		$this->obExit();
 	}
 
-	private function prepareQuickResults()
+	/**
+	 * @throws IntlException
+	 */
+	private function prepareQuickResults(): void
 	{
 		$data = $this->request()->json();
 
@@ -75,6 +84,9 @@ class Search extends Block
 		exit(json_encode($this->query($query)));
 	}
 
+	/**
+	 * @throws IntlException
+	 */
 	private function getResults(): array
 	{
 		if ($this->request()->isNotEmpty('search') === false)
@@ -88,6 +100,9 @@ class Search extends Block
 		return $this->query($query);
 	}
 
+	/**
+	 * @throws IntlException
+	 */
 	private function query(string $query): array
 	{
 		$title_words = explode(' ', $query);
@@ -139,15 +154,15 @@ class Search extends Block
 		return $items;
 	}
 
-	public function prepareAssets(array &$assets)
+	public function prepareAssets(array &$assets): void
 	{
 		$assets['css']['search'][]     = 'https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.css';
 		$assets['scripts']['search'][] = 'https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.min.js';
 	}
 
-	public function prepareContent(string $type)
+	public function prepareContent($data): void
 	{
-		if ($type !== 'search')
+		if ($data->type !== 'search')
 			return;
 
 		$this->loadCSSFile('light_portal/search/auto-complete.css');
@@ -159,8 +174,8 @@ class Search extends Block
 		</form>
 		<script>
 			new autoComplete({
-				selector: ".search_addon input",' . (empty($this->context['lp_search_plugin']['min_chars']) ? '' : '
-				minChars: ' . $this->context['lp_search_plugin']['min_chars'] . ',') . '
+				selector: ".search_addon input",', (empty($this->context['lp_search_plugin']['min_chars']) ? '' : '
+				minChars: ' . $this->context['lp_search_plugin']['min_chars'] . ','), '
 				source: async function(term, response) {
 					const results = await fetch("', LP_BASE_URL, ';sa=qsearch", {
 						method: "POST",
@@ -190,7 +205,7 @@ class Search extends Block
 		</script>';
 	}
 
-	public function credits(array &$links)
+	public function credits(array &$links): void
 	{
 		$links[] = [
 			'title' => 'Vanilla JavaScript autoComplete',

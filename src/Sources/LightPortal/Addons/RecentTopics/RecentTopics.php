@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.06.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\RecentTopics;
@@ -27,7 +27,7 @@ class RecentTopics extends Block
 
 	public string $icon = 'fas fa-book-open';
 
-	public function blockOptions(array &$options)
+	public function blockOptions(array &$options): void
 	{
 		$options['recent_topics']['no_content_class'] =  true;
 
@@ -43,7 +43,7 @@ class RecentTopics extends Block
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type)
+	public function validateBlockData(array &$parameters, string $type): void
 	{
 		if ($type !== 'recent_topics')
 			return;
@@ -58,7 +58,7 @@ class RecentTopics extends Block
 		$parameters['update_interval']  = FILTER_VALIDATE_INT;
 	}
 
-	public function prepareBlockFields()
+	public function prepareBlockFields(): void
 	{
 		if ($this->context['lp_block']['type'] !== 'recent_topics')
 			return;
@@ -167,9 +167,9 @@ class RecentTopics extends Block
 		return $topics;
 	}
 
-	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
+	public function prepareContent($data, array $parameters): void
 	{
-		if ($type !== 'recent_topics')
+		if ($data->type !== 'recent_topics')
 			return;
 
 		if ($this->request()->has('preview'))
@@ -177,8 +177,8 @@ class RecentTopics extends Block
 
 		$parameters['show_avatars'] ??= false;
 
-		$recent_topics = $this->cache('recent_topics_addon_b' . $block_id . '_u' . $this->user_info['id'])
-			->setLifeTime($parameters['update_interval'] ?? $cache_time)
+		$recent_topics = $this->cache('recent_topics_addon_b' . $data->block_id . '_u' . $this->user_info['id'])
+			->setLifeTime($parameters['update_interval'] ?? $data->cache_time)
 			->setFallback(self::class, 'getData', $parameters);
 
 		if (empty($recent_topics))
@@ -186,6 +186,6 @@ class RecentTopics extends Block
 
 		$this->setTemplate();
 
-		show_topics($recent_topics, $parameters, $this->isInSidebar($block_id) === false);
+		show_topics($recent_topics, $parameters, $this->isInSidebar($data->block_id) === false);
 	}
 }

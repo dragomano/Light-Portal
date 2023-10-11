@@ -31,7 +31,7 @@ function template_callback_panel_layout()
 					</div>
 				</div>
 			</div>
-			<div class="row', empty($modSettings['lp_swap_left_right']) ? '' : ' reverse', '">
+			<div class="row', empty($context['lp_swap_left_right']) ? '' : ' reverse', '">
 				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-', $context['lp_left_panel_width']['lg'], ' col-xl-', $context['lp_left_panel_width']['xl'], '">
 					<div class="title_bar">
 						<h3 class="titlebg">', $context['lp_block_placements']['left'], '</h3>

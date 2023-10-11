@@ -7,8 +7,8 @@
 [![](https://img.shields.io/badge/Demo-Forum-brightgreen.svg)](https://demo.dragomano.ru)
 [![](https://img.shields.io/badge/Docs-Site-orange.svg)](https://dragomano.github.io/Light-Portal/)
 
-* **Tested on:** PHP 8.2.6 / MariaDB 10.11.2, MySQL 5.7.41/8.0.32, PostgreSQL 15.2
-* **Languages:** Russian, English, Polish, Spanish, French, Turkish, Ukrainian, German, Italian, Portuguese, Greek, Czech, Danish, Dutch, Norwegian, Swedish
+* **Tested on:** PHP 8.2.10 / MariaDB 10.6.7
+* **Languages:** Russian, English, Polish, Spanish, French, Turkish, Ukrainian, German, Italian, Portuguese, Greek, Czech, Danish, Dutch, Norwegian, Swedish, Arabic
 
 ## Description ([обзор на русском](https://dragomano.ru/mods/light-portal))
 This modification will transform your forum into a portal that includes:

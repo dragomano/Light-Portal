@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 14.05.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\ArticleList;
@@ -25,7 +25,7 @@ class ArticleList extends Block
 {
 	public string $icon = 'far fa-file-alt';
 
-	public function blockOptions(array &$options)
+	public function blockOptions(array &$options): void
 	{
 		$options['article_list']['no_content_class'] = true;
 
@@ -38,7 +38,7 @@ class ArticleList extends Block
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type)
+	public function validateBlockData(array &$parameters, string $type): void
 	{
 		if ($type !== 'article_list')
 			return;
@@ -50,7 +50,7 @@ class ArticleList extends Block
 		$parameters['seek_images']    = FILTER_VALIDATE_BOOLEAN;
 	}
 
-	public function prepareBlockFields()
+	public function prepareBlockFields(): void
 	{
 		if ($this->context['lp_block']['type'] !== 'article_list')
 			return;
@@ -133,7 +133,7 @@ class ArticleList extends Block
 
 			$value = null;
 			$image = empty($parameters['seek_images']) ? '' : preg_match('/\[img.*]([^]\[]+)\[\/img]/U', $row['body'], $value);
-			$image = empty($image) ? ($this->modSettings['lp_image_placeholder'] ?? '') : array_pop($value);
+			$image = $value ? array_pop($value) : ($image ?: $this->modSettings['lp_image_placeholder'] ?? '');
 
 			$body = $this->parseBbc($row['body'], $row['smileys_enabled'], $row['id_msg']);
 
@@ -198,13 +198,13 @@ class ArticleList extends Block
 		return $pages;
 	}
 
-	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
+	public function prepareContent($data, array $parameters): void
 	{
-		if ($type !== 'article_list')
+		if ($data->type !== 'article_list')
 			return;
 
-		$article_list = $this->cache('article_list_addon_b' . $block_id . '_u' . $this->user_info['id'])
-			->setLifeTime($cache_time)
+		$article_list = $this->cache('article_list_addon_b' . $data->block_id . '_u' . $this->user_info['id'])
+			->setLifeTime($data->cache_time)
 			->setFallback(self::class, empty($parameters['display_type']) ? 'getTopics' : 'getPages', $parameters);
 
 		if ($article_list) {

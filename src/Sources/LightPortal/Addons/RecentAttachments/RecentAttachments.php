@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.06.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\RecentAttachments;
@@ -26,7 +26,7 @@ class RecentAttachments extends Block
 
 	public string $icon = 'fas fa-paperclip';
 
-	public function blockOptions(array &$options)
+	public function blockOptions(array &$options): void
 	{
 		$options['recent_attachments']['parameters'] = [
 			'num_attachments' => 5,
@@ -34,7 +34,7 @@ class RecentAttachments extends Block
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type)
+	public function validateBlockData(array &$parameters, string $type): void
 	{
 		if ($type !== 'recent_attachments')
 			return;
@@ -43,7 +43,7 @@ class RecentAttachments extends Block
 		$parameters['extensions']      = FILTER_DEFAULT;
 	}
 
-	public function prepareBlockFields()
+	public function prepareBlockFields(): void
 	{
 		if ($this->context['lp_block']['type'] !== 'recent_attachments')
 			return;
@@ -78,13 +78,13 @@ class RecentAttachments extends Block
 		return $this->getFromSsi('recentAttachments', $parameters['num_attachments'], $extensions, 'array');
 	}
 
-	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
+	public function prepareContent($data, array $parameters): void
 	{
-		if ($type !== 'recent_attachments')
+		if ($data->type !== 'recent_attachments')
 			return;
 
-		$attachment_list = $this->cache('recent_attachments_addon_b' . $block_id . '_u' . $this->user_info['id'])
-			->setLifeTime($cache_time)
+		$attachment_list = $this->cache('recent_attachments_addon_b' . $data->block_id . '_u' . $this->user_info['id'])
+			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getData', $parameters);
 
 		if (empty($attachment_list))
@@ -93,13 +93,13 @@ class RecentAttachments extends Block
 		$fancybox = class_exists('FancyBox');
 
 		echo '
-		<div class="recent_attachments' . ($this->isInSidebar($block_id) ? ' column_direction' : '') . '">';
+		<div class="recent_attachments' . ($this->isInSidebar($data->block_id) ? ' column_direction' : '') . '">';
 
 		foreach ($attachment_list as $attach) {
 			if ($attach['file']['image']) {
 				echo '
 			<div class="item">
-				<a', ($fancybox ? ' class="fancybox" data-fancybox="recent_attachments_' . $block_id . '"' : ''), ' href="', $attach['file']['href'], ';image">', $attach['file']['image']['thumb'], '</a>
+				<a', ($fancybox ? ' class="fancybox" data-fancybox="recent_attachments_' . $data->block_id . '"' : ''), ' href="', $attach['file']['href'], ';image">', $attach['file']['image']['thumb'], '</a>
 			</div>';
 			} else {
 				echo '

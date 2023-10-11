@@ -19,7 +19,7 @@ Light Portal is wonderfully extensible thanks to plugins. And hooks help plugins
 > parsing content of custom block/page types
 
 ### prepareContent
-(`&$content, $type, $block_id, $type`)
+(`$data, $parameters`)
 > adding custom content of your plugin
 
 ### credits

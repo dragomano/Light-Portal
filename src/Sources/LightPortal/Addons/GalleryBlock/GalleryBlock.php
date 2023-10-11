@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.06.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\GalleryBlock;
@@ -24,7 +24,7 @@ class GalleryBlock extends Block
 {
 	public string $icon = 'fas fa-image';
 
-	public function blockOptions(array &$options)
+	public function blockOptions(array &$options): void
 	{
 		$options['gallery_block']['parameters'] = [
 			'categories' => '',
@@ -32,7 +32,7 @@ class GalleryBlock extends Block
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type)
+	public function validateBlockData(array &$parameters, string $type): void
 	{
 		if ($type !== 'gallery_block')
 			return;
@@ -41,7 +41,7 @@ class GalleryBlock extends Block
 		$parameters['num_images'] = FILTER_VALIDATE_INT;
 	}
 
-	public function prepareBlockFields()
+	public function prepareBlockFields(): void
 	{
 		if ($this->context['lp_block']['type'] !== 'gallery_block')
 			return;
@@ -121,15 +121,15 @@ class GalleryBlock extends Block
 		return $images;
 	}
 
-	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
+	public function prepareContent($data, array $parameters): void
 	{
-		if ($type !== 'gallery_block')
+		if ($data->type !== 'gallery_block')
 			return;
 
 		$this->middleware('smfgallery_view');
 
-		$images = $this->cache('gallery_block_addon_b' . $block_id . '_u' . $this->context['user']['id'])
-			->setLifeTime($cache_time)
+		$images = $this->cache('gallery_block_addon_b' . $data->block_id . '_u' . $this->context['user']['id'])
+			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getData', $parameters);
 
 		if (empty($images)) {
@@ -138,7 +138,7 @@ class GalleryBlock extends Block
 		}
 
 		echo '
-		<div class="gallery_block"' . ($this->isInSidebar($block_id) ? ' style="grid-auto-flow: row"' : '') . '>';
+		<div class="gallery_block"' . ($this->isInSidebar($data->block_id) ? ' style="grid-auto-flow: row"' : '') . '>';
 
 		foreach ($images as $image) {
 			echo '

@@ -17,7 +17,6 @@ namespace Bugo\LightPortal\Utils;
 use MessageFormatter;
 use IntlException;
 use DateTime;
-use DateTimeZone;
 use IntlDateFormatter;
 
 if (! defined('SMF'))
@@ -36,8 +35,6 @@ trait IntlTrait
 	 * @param array  $values  The values to substitute in the message.
 	 *
 	 * @return string The translated message.
-	 *
-	 * @throws IntlException If the message pattern syntax is invalid.
 	 */
 	public function translate(string $pattern, array $values = []): string
 	{
@@ -54,7 +51,7 @@ trait IntlTrait
 
 			return $formatter->format($values);
 		} catch (IntlException $e) {
-			$this->logError("[LP] translate helper: {$e->getMessage()} in '\$txt[{$pattern}]'", 'critical');
+			$this->logError("[LP] translate helper: {$e->getMessage()} in '\$txt[$pattern]'", 'critical');
 
 			return '';
 		}
@@ -64,6 +61,7 @@ trait IntlTrait
 	 * Get the time in the format "Yesterday at ...", "Today at ...", "X minutes ago", etc.
 	 *
 	 * Получаем время в формате «Вчера в ...», «Сегодня в ...», «X минут назад» и т. д.
+	 * @throws IntlException
 	 */
 	public function getFriendlyTime(int $timestamp): string
 	{

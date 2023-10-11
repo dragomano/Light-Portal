@@ -36,8 +36,6 @@ final class PanelConfig
 		$this->context['post_url']   = $this->scripturl . '?action=admin;area=lp_settings;sa=panels;save';
 
 		$addSettings = [];
-		if (! isset($this->modSettings['lp_swap_left_right']))
-			$addSettings['lp_swap_left_right'] = (bool) $this->txt['lang_rtl'];
 		if (! isset($this->modSettings['lp_header_panel_width']))
 			$addSettings['lp_header_panel_width'] = 12;
 		if (! isset($this->modSettings['lp_left_panel_width']))

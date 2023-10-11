@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 14.05.23
+ * @version 19.09.23
  */
 
 namespace Bugo\LightPortal\Addons\BoardList;
@@ -25,7 +25,7 @@ class BoardList extends Block
 {
 	public string $icon = 'far fa-list-alt';
 
-	public function blockOptions(array &$options)
+	public function blockOptions(array &$options): void
 	{
 		$options['board_list']['no_content_class'] = true;
 
@@ -35,7 +35,7 @@ class BoardList extends Block
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type)
+	public function validateBlockData(array &$parameters, string $type): void
 	{
 		if ($type !== 'board_list')
 			return;
@@ -44,7 +44,7 @@ class BoardList extends Block
 		$parameters['board_class']    = FILTER_DEFAULT;
 	}
 
-	public function prepareBlockFields()
+	public function prepareBlockFields(): void
 	{
 		if ($this->context['lp_block']['type'] !== 'board_list')
 			return;
@@ -70,13 +70,13 @@ class BoardList extends Block
 		return $this->getBoardList();
 	}
 
-	public function prepareContent(string $type, int $block_id, int $cache_time, array $parameters)
+	public function prepareContent($data, array $parameters): void
 	{
-		if ($type !== 'board_list')
+		if ($data->type !== 'board_list')
 			return;
 
-		$board_list = $this->cache('board_list_addon_b' . $block_id . '_u' . $this->context['user']['id'])
-			->setLifeTime($cache_time)
+		$board_list = $this->cache('board_list_addon_b' . $data->block_id . '_u' . $this->context['user']['id'])
+			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getData');
 
 		if (empty($board_list))

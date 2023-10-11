@@ -69,6 +69,7 @@ final class CreditArea
 			'Dutch'      => ['Crowdin Translate'],
 			'Norwegian'  => ['Crowdin Translate'],
 			'Swedish'    => ['Crowdin Translate'],
+			'Arabic'     => ['Crowdin Translate'],
 		];
 
 		$this->context['testers'] = [
@@ -90,6 +91,10 @@ final class CreditArea
 		];
 
 		$this->context['tools'] = [
+			[
+				'name' => 'Open Server Panel',
+				'link' => 'https://github.com/OSPanel/OpenServerPanel'
+			],
 			[
 				'name' => 'Visual Studio Code',
 				'link' => 'https://code.visualstudio.com/Download'
