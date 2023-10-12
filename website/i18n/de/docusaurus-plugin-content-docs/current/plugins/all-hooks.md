@@ -19,7 +19,7 @@ Dank Plugins ist Light Portal wundervoll erweiterbar. Hooks helfen Plugins, mit 
 > Den Inhalt von benutzerdefinierten Block-/Seitentypen parsen
 
 ### prepareContent
-(`&$content, $type, $block_id, $type`)
+(`$data, $parameters`)
 > Den benutzerdefinierten Inhalt Ihres Plugins hinzufügen
 
 ### credits

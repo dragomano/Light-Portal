@@ -19,7 +19,7 @@ sidebar_position: 4
 > ανάλυση περιεχομένου προσαρμοσμένων τύπων μπλοκ/σελίδων
 
 ### prepareContent
-(`&$content, $type, $block_id, $type`)
+(`$data, $parameters`)
 > προσθήκη προσαρμοσμένου περιεχομένου της προσθήκης σας
 
 ### credits
