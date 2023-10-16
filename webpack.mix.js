@@ -1,6 +1,6 @@
 let mix = require('laravel-mix');
 
-mix.js('src/Themes/default/scripts/light_portal/app.js', 'src/Themes/default/scripts/light_portal/alpine.min.js');
+mix.js('src/Themes/default/scripts/light_portal/app.js', 'src/Themes/default/scripts/light_portal/bundle.min.js');
 
 mix.copy('node_modules/@eastdesire/jscolor/jscolor.min.js', 'src/Themes/default/scripts/light_portal');
 mix.copy('node_modules/sortablejs/Sortable.min.js', 'src/Themes/default/scripts/light_portal');

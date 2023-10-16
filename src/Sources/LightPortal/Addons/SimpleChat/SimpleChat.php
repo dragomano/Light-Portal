@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 19.09.23
+ * @version 16.10.23
  */
 
 namespace Bugo\LightPortal\Addons\SimpleChat;
@@ -105,7 +105,7 @@ class SimpleChat extends Block
 			return;
 
 		$this->loadCssFile('admin.css');
-		$this->loadJavaScriptFile('light_portal/alpine.min.js', ['defer' => true]);
+		$this->loadJavaScriptFile('light_portal/bundle.min.js', ['defer' => true]);
 
 		$parameters['show_avatars'] ??= false;
 

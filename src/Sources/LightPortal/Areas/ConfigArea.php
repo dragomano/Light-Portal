@@ -42,7 +42,7 @@ final class ConfigArea
 		$this->loadCSSFile('light_portal/virtual-select.min.css');
 		$this->loadJavaScriptFile('light_portal/virtual-select.min.js');
 
-		$this->loadJavaScriptFile('light_portal/alpine.min.js', ['defer' => true]);
+		$this->loadJavaScriptFile('light_portal/bundle.min.js', ['defer' => true]);
 		$this->loadJavaScriptFile('light_portal/admin.js', ['minimize' => true]);
 
 		$this->loadLanguage('ManageSettings');
