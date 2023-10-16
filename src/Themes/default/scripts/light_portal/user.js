@@ -30,29 +30,20 @@ class Comment {
 	}
 
 	async add(target, refs) {
-		const response = await fetch(this.pageUrl + 'sa=add_comment', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json; charset=utf-8'
-			},
-			body: JSON.stringify({
-				parent_id: 0,
-				counter: this.parentCommentsCount - 1,
-				level: 0,
-				start: this.lastStart,
-				commentator: 0,
-				message: refs.message.value,
-				page_id: target.dataset.page,
-				page_url: this.pageUrl
-			})
+		const response = await axios.post(this.pageUrl + 'sa=add_comment', {
+			parent_id: 0,
+			counter: this.parentCommentsCount - 1,
+			level: 0,
+			start: this.lastStart,
+			commentator: 0,
+			message: refs.message.value,
+			page_id: target.dataset.page,
+			page_url: this.pageUrl
 		})
 
-		if (! response.ok) return console.error(response);
+		const data = response.data
 
-		const data = await response.json();
-		const comment = data.comment;
-
-		this.#addParentNode(refs['page_comments'], comment);
+		this.#addParentNode(refs['page_comments'], data.comment);
 
 		refs.comment.style.display = 'none';
 		refs.message.style.height = '30px';
@@ -74,29 +65,20 @@ class Comment {
 
 		this.#cacheNode = parent;
 
-		const response = await fetch(this.pageUrl + 'sa=add_comment', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json; charset=utf-8'
-			},
-			body: JSON.stringify({
-				parent_id: parent.dataset.id,
-				counter: parent.dataset.counter,
-				level: parent.dataset.level,
-				start: parent.dataset.start,
-				commentator: parent.dataset.commentator,
-				message: refs['reply_message'].value,
-				page_id: target.dataset.page,
-				page_url: this.pageUrl
-			})
+		const response = await axios.post(this.pageUrl + 'sa=add_comment', {
+			parent_id: parent.dataset.id,
+			counter: parent.dataset.counter,
+			level: parent.dataset.level,
+			start: parent.dataset.start,
+			commentator: parent.dataset.commentator,
+			message: refs['reply_message'].value,
+			page_id: target.dataset.page,
+			page_url: this.pageUrl
 		})
 
-		if (! response.ok) return console.error(response);
+		const data = response.data
 
-		const data = await response.json();
-		const comment = data.comment;
-
-		this.#addChildNode(parent, comment);
+		this.#addChildNode(parent, data.comment);
 
 		refs['reply_message'].value = '';
 		target.previousElementSibling.click();
@@ -133,7 +115,7 @@ class Comment {
 		this.#addNode(el.querySelector('ul.comment_list'), comment)
 	}
 
-	#goToComment({item, parent}) {
+	#goToComment({ item, parent }) {
 		const firstSeparator = window.location.search ? '=' : '.';
 		const lastSeparator  = window.location.search ? '' : '/';
 
@@ -191,22 +173,12 @@ class Comment {
 
 		this.#currentCommentText[item] = message.innerText;
 
-		const response = await fetch(this.pageUrl + 'sa=edit_comment', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json; charset=utf-8'
-			},
-			body: JSON.stringify({
-				comment_id: item,
-				message: message.innerHTML
-			})
+		const response = await axios.post(this.pageUrl + 'sa=edit_comment', {
+			comment_id: item,
+			message: message.innerHTML
 		})
 
-		if (! response.ok) return console.error(response);
-
-		const comment = await response.json();
-
-		this.cancel(target, comment)
+		this.cancel(target, response.data)
 	}
 
 	cancel(target, source = null) {
@@ -242,17 +214,9 @@ class Comment {
 			if (el.dataset.id) items.push(el.dataset.id)
 		})
 
-		const response = await fetch(this.pageUrl + 'sa=remove_comment', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json; charset=utf-8'
-			},
-			body: JSON.stringify({
-				items
-			})
+		await axios.post(this.pageUrl + 'sa=remove_comment', {
+			items
 		})
-
-		if (! response.ok) return console.error(response);
 
 		setTimeout(() => {
 			removedItem.style.opacity = 0;
@@ -298,7 +262,7 @@ class Toolbar {
 
 class ForumToggler extends smc_Toggle {
 	constructor(options) {
-		super(options);
+		super(options)
 	}
 }
 
@@ -313,10 +277,10 @@ class Toggler {
 		this.session_id = options.session_id
 		this.session_var = options.session_var
 
-		this.create()
+		this.#create()
 	}
 
-	create() {
+	#create() {
 		new ForumToggler({
 			bToggleEnabled: true,
 			bCurrentlyCollapsed: this.isCurrentlyCollapsed,

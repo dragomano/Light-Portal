@@ -43,32 +43,26 @@ function show_page_reactions(): void
 	<script>
 		document.addEventListener("alpine:init", () => {
 			document.addEventListener("addReaction", (event) => {
-				let isComment = typeof event.detail.comment !== "undefined"
-				let options = isComment ? {
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({ comment: event.detail.comment })
-				} : []
+				const isComment = typeof event.detail.comment !== "undefined"
 
-				fetch("', $context['reaction_url'], ';add_reaction", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json"
-					},
-					body: JSON.stringify(event.detail)
-				}).then(() => {
-					fetch("', $context['reaction_url'], ';get_reactions", options)
-						.then(response => response.json())
-						.then(data => {
-							if (isComment) {
+				axios.post("', $context['reaction_url'], ';add_reaction", event.detail)
+					.then(() => {
+						isComment
+						? axios
+							.post("', $context['reaction_url'], ';get_reactions", {
+								comment: event.detail.comment
+							})
+							.then(response => {
 								window["commentReactions" + event.detail.comment].showButtons = false
-								window["commentReactions" + event.detail.comment].reactions = data
-							} else {
+								window["commentReactions" + event.detail.comment].reactions = response.data
+							})
+						: axios
+							.get("', $context['reaction_url'], ';get_reactions")
+							.then(response => {
 								window.pageReactions.showButtons = false
-								window.pageReactions.reactions = data
-							}
-						})
-				})
+								window.pageReactions.reactions = response.data
+							})
+					})
 			})
 		})
 	</script>';

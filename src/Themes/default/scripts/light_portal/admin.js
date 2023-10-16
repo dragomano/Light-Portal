@@ -12,17 +12,9 @@ class PortalEntity {
 
 		if (! item) return false;
 
-		const response = await fetch(this.workUrl, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json; charset=utf-8'
-			},
-			body: JSON.stringify({
-				toggle_item: item
-			})
+		await axios.post(this.workUrl, {
+			toggle_item: item
 		})
-
-		if (! response.ok) console.error(response)
 	}
 
 	async remove(target) {
@@ -32,17 +24,11 @@ class PortalEntity {
 
 		if (! item) return false;
 
-		const response = await fetch(this.workUrl, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json; charset=utf-8'
-			},
-			body: JSON.stringify({
-				del_item: item
-			})
+		await axios.post(this.workUrl, {
+			del_item: item
 		})
 
-		response.ok ? target.closest('tr').remove() : console.error(response)
+		target.closest('tr').remove()
 	}
 
 	post(target) {
@@ -70,24 +56,16 @@ class Block extends PortalEntity {
 
 		if (! item) return false;
 
-		const response = await fetch(this.workUrl, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json; charset=utf-8'
-			},
-			body: JSON.stringify({
-				clone_block: item
-			})
+		const response = await axios.post(this.workUrl, {
+			clone_block: item
 		})
 
-		if (! response.ok) return console.error(response);
+		const { success, id } = response.data
 
-		const json = await response.json();
-
-		if (json.success) {
+		if (success) {
 			const div = target.cloneNode(true);
 
-			div.dataset.id = json.id;
+			div.dataset.id = id;
 			target.after(div)
 		}
 	}
@@ -116,18 +94,10 @@ class Block extends PortalEntity {
 			if (key !== null) priority.push(key)
 		}
 
-		const response = await fetch(this.workUrl, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json; charset=utf-8'
-			},
-			body: JSON.stringify({
-				update_priority: priority,
-				update_placement: placement
-			})
+		await axios.post(this.workUrl, {
+			update_priority: priority,
+			update_placement: placement
 		})
-
-		if (! response.ok) return console.error(response.status, priority);
 
 		const nextElem = e.item.nextElementSibling;
 		const prevElem = e.item.previousElementSibling;
@@ -164,18 +134,10 @@ class Plugin extends PortalEntity {
 		const plugin = target.closest('.features').dataset.id;
 		const status = target.dataset.toggle;
 
-		const response = await fetch(this.workUrl + ';toggle', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json; charset=utf-8'
-			},
-			body: JSON.stringify({
-				plugin,
-				status
-			})
+		await axios.post(this.workUrl + ';toggle', {
+			plugin,
+			status
 		})
-
-		if (! response.ok) return console.error(response);
 
 		let toggledClass;
 		['fa', 'bi'].forEach(function(item) {
@@ -217,14 +179,15 @@ class Plugin extends PortalEntity {
 			formData.append(val.getAttribute('name'), val.matches(':checked'))
 		})
 
-		const response = await fetch(this.workUrl + ';save', {
-			method: 'POST',
-			body: formData
+		const response = await axios.post(this.workUrl + ';save', formData, {
+			headers: {
+				'Content-Type': 'multipart/form-data'
+			}
 		})
 
 		this.fadeOut(refs.info);
 
-		return response.ok
+		return response.statusText === 'OK'
 	}
 
 	fadeOut(el) {
@@ -280,42 +243,26 @@ class Category extends PortalEntity {
 			if (id !== null) priority.push(id)
 		}
 
-		const response = await fetch(this.workUrl, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json; charset=utf-8'
-			},
-			body: JSON.stringify({
-				update_priority: priority
-			})
-		});
-
-		if (! response.ok) console.error(response.status, priority)
+		await axios.post(this.workUrl, {
+			update_priority: priority
+		})
 	}
 
 	async add(refs) {
 		if (! refs['cat_name']) return false;
 
-		const response = await fetch(this.workUrl, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json; charset=utf-8'
-			},
-			body: JSON.stringify({
-				new_name: refs['cat_name'].value,
-				new_desc: refs['cat_desc'].value
-			})
+		const response = await axios.post(this.workUrl, {
+			new_name: refs['cat_name'].value,
+			new_desc: refs['cat_desc'].value
 		})
 
-		if (! response.ok) return console.error(response);
+		const { success, section, item } = response.data
 
-		const json = await response.json();
-
-		if (json.success) {
-			refs['category_list'].insertAdjacentHTML('beforeend', json.section);
+		if (success) {
+			refs['category_list'].insertAdjacentHTML('beforeend', section);
 			refs['cat_name'].value = '';
 			refs['cat_desc'].value = '';
-			document.getElementById('category_desc' + json.item).focus()
+			document.getElementById('category_desc' + item).focus()
 		}
 	}
 
@@ -323,21 +270,15 @@ class Category extends PortalEntity {
 		const item = target.dataset.id;
 
 		if (item && event.value) {
-			const response = await fetch(this.workUrl, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json; charset=utf-8'
-				},
-				body: JSON.stringify({
-					item,
-					name: event.value
-				})
+			await axios.post(this.workUrl, {
+				item,
+				name: event.value
 			})
-
-			if (! response.ok) console.error(response)
 		}
 
-		if (! event.value) event.value = event.defaultValue
+		if (! event.value) {
+			event.value = event.defaultValue
+		}
 	}
 
 	async updateDescription(target, value) {
@@ -345,18 +286,10 @@ class Category extends PortalEntity {
 
 		if (! item) return false;
 
-		const response = await fetch(this.workUrl, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json; charset=utf-8'
-			},
-			body: JSON.stringify({
-				item,
-				desc: value
-			})
+		await axios.post(this.workUrl, {
+			item,
+			desc: value
 		})
-
-		if (! response.ok) console.error(response)
 	}
 }
 

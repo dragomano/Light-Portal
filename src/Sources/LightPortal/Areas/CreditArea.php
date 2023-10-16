@@ -195,6 +195,15 @@ final class CreditArea
 				]
 			],
 			[
+				'title' => 'Axios',
+				'link' => 'https://github.com/axios/axios',
+				'author' => 'Matt Zabriskie & Collaborators',
+				'license' => [
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/axios/axios/blob/v1.x/LICENSE'
+				]
+			],
+			[
 				'title' => 'Tom Select',
 				'link' => 'https://tom-select.js.org/',
 				'author' => 'Brian Reavis and contributors',

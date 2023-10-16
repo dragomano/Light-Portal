@@ -30,29 +30,23 @@ final class PageAuthorSelect extends AbstractPartial
 				placeholder: "' . $this->txt['search'] . '",
 				noSearchResultsText: "' . $this->txt['lp_no_such_members'] . '",
 				searchPlaceholderText: "' . $this->txt['search'] . '",
-				onServerSearch: async function (search, virtualSelect) {
-					let response = await fetch("' . $this->context['canonical_url'] . ';members", {
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json; charset=utf-8"
-						},
-						body: JSON.stringify({
-							search
-						})
-					});
+				onServerSearch: function (search, virtualSelect) {
+					return axios.post("' . $this->context['canonical_url'] . ';members", {
+						search
+					}).then(response => {
+						const data = response.data
+						const members = []
 
-					if (response.ok) {
-						const json = await response.json();
-
-						let data = [];
-						for (let i = 0; i < json.length; i++) {
-							data.push({label: json[i].text, value: json[i].value})
+						for (let i = 0; i < data.length; i++) {
+							members.push({ label: data[i].text, value: data[i].value })
 						}
 
-						virtualSelect.setServerOptions(data)
-					} else {
+						virtualSelect.setServerOptions(members)
+					}).catch(error => {
+						console.error(error)
+
 						virtualSelect.setServerOptions(false)
-					}
+					})
 				}
 			});
 		</script>';
