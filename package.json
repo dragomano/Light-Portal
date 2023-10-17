@@ -16,7 +16,6 @@
     "alpinejs-slug": "^1.1.0",
     "axios": "^1.5.1",
     "sortablejs": "^1.15.0",
-    "tom-select": "^2.2.2",
     "vanilla-lazyload": "^17.8.3",
     "virtual-select-plugin": "^1.0.37"
   },
