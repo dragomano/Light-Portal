@@ -176,7 +176,7 @@ function show_related_pages()
 
 function show_comment_block()
 {
-	global $modSettings, $context, $options, $txt;
+	global $modSettings, $context, $txt;
 
 	if (empty($modSettings['lp_show_comment_block']) || empty($context['lp_page']['options']['allow_comments']))
 		return;
@@ -195,24 +195,9 @@ function show_comment_block()
 	echo '
 		<aside class="comments"', empty($context['user']['is_guest']) ? ' x-data' : '', '>
 			<div class="cat_bar">
-				<h3 class="catbg">
-					<span id="page_comments_toggle" class="fa toggle_', empty($options['collapse_header_page_comments']) ? 'up' : 'down', ' floatright fa-lg" style="display: none"></span>';
-
-	if (empty($context['user']['is_guest'])) {
-		echo '
-					<a id="page_comments_link">', $txt['lp_comments'], '</a>';
-	} else {
-		echo $txt['lp_comments'];
-	}
-
-	echo '
-				</h3>
+				<h3 class="catbg">', $txt['lp_comments'], '</h3>
 			</div>
-			<div
-				id="page_comments"', empty($options['collapse_header_page_comments']) ? '' : '
-				style="display: none"', empty($context['user']['is_guest']) ? '
-				x-ref="page_comments"' : '', '
-			>';
+			<div id="page_comments"', empty($context['user']['is_guest']) ? 'x-ref="page_comments"' : '', '>';
 
 	if ($context['page_info']['num_pages'] > 1)
 		echo '
@@ -266,21 +251,6 @@ function show_comment_block()
 	echo '
 			</div>
 		</aside>';
-
-	if ($context['user']['is_logged'])
-		echo '
-		<script>
-			new Toggler({
-				isCurrentlyCollapsed: ', empty($options['collapse_header_page_comments']) ? 'false' : 'true', ',
-				toggleAltExpandedTitle: ', JavaScriptEscape($txt['hide']), ',
-				toggleAltCollapsedTitle: ', JavaScriptEscape($txt['show']), ',
-				toggleMsgBlockTitle: ', JavaScriptEscape($txt['lp_comments']), ',
-				useThemeSettings: true,
-				useCookie: false,
-				session_id: smf_session_id,
-				session_var: smf_session_var
-			});
-		</script>';
 }
 
 function show_single_comment(array $comment, int $i = 0, int $level = 1)
