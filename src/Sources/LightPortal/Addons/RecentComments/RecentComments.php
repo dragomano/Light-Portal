@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.09.23
+ * @version 21.10.23
  */
 
 namespace Bugo\LightPortal\Addons\RecentComments;
@@ -117,7 +117,7 @@ class RecentComments extends Block
 
 			$comments[$row['id']] = [
 				'link'        => LP_PAGE_URL . $row['alias'] . ($start > 0 && empty($this->modSettings['lp_comment_sorting']) ? ';start=' . $start : '') . '#comment' . $row['id'],
-				'message'     => $this->getTeaser($this->parseBbc($row['message']), $length),
+				'message'     => $this->getTeaser($row['message'], $length),
 				'created_at'  => (int) $row['created_at'],
 				'author_name' => $row['author_name'],
 			];

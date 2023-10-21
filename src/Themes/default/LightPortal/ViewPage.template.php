@@ -225,11 +225,7 @@ function show_comment_block()
 
 	if ($context['user']['is_logged']) {
 		echo '
-				<div class="comment_add roundframe descbox" x-ref="comment_form">';
-
-		show_toolbar();
-
-		echo '
+				<div class="comment_add roundframe descbox" x-ref="comment_form">
 					<textarea
 						class="content"
 						placeholder="', $txt['lp_comment_placeholder'], '"
@@ -344,11 +340,7 @@ function show_single_comment(array $comment, int $i = 0, int $level = 1)
 				class="comment_reply roundframe descbox"
 				x-ref="reply_comment_form"
 				x-show="replyForm"
-			>';
-
-		show_toolbar();
-
-		echo '
+			>
 				<textarea
 					class="content"
 					placeholder="', $txt['lp_comment_placeholder'], '"
@@ -382,45 +374,4 @@ function show_single_comment(array $comment, int $i = 0, int $level = 1)
 	echo '
 		</div>
 	</li>';
-}
-
-function show_toolbar()
-{
-	global $context, $editortxt;
-
-	if (empty($context['lp_allowed_bbc']))
-		return;
-
-	echo '
-	<div class="toolbar descbox" x-ref="toolbar" @click="toolbar.pressButton($event.target)">';
-
-	if (in_array('b', $context['lp_allowed_bbc']))
-		echo str_replace(' class="', ' data-type="bold" title="' . $editortxt['bold'] . '" class="button ', $context['lp_icon_set']['bold']);
-
-	if (in_array('i', $context['lp_allowed_bbc']))
-		echo str_replace(' class="', ' data-type="italic" title="' . $editortxt['italic'] . '" class="button ', $context['lp_icon_set']['italic']);
-
-	if (in_array('b', $context['lp_allowed_bbc']) || in_array('i', $context['lp_allowed_bbc']))
-		echo '&nbsp;';
-
-	if (in_array('youtube', $context['lp_allowed_bbc']))
-		echo str_replace(' class="', ' data-type="youtube" title="' . $editortxt['insert_youtube_video'] . '" class="button ', $context['lp_icon_set']['youtube']);
-
-	if (in_array('img', $context['lp_allowed_bbc']))
-		echo str_replace(' class="', ' data-type="image" title="' . $editortxt['insert_image'] . '" class="button ', $context['lp_icon_set']['image']);
-
-	if (in_array('url', $context['lp_allowed_bbc']))
-		echo str_replace(' class="', ' data-type="link" title="' . $editortxt['insert_link'] . '" class="button ', $context['lp_icon_set']['link']);
-
-	if (in_array('youtube', $context['lp_allowed_bbc']) || in_array('img', $context['lp_allowed_bbc']) || in_array('url', $context['lp_allowed_bbc']))
-		echo '&nbsp;';
-
-	if (in_array('code', $context['lp_allowed_bbc']))
-		echo str_replace(' class="', ' data-type="code" title="' . $editortxt['code'] . '" class="button ', $context['lp_icon_set']['code']);
-
-	if (in_array('quote', $context['lp_allowed_bbc']))
-		echo str_replace(' class="', ' data-type="quote" title="' . $editortxt['insert_quote'] . '" class="button ', $context['lp_icon_set']['quote']);
-
-	echo '
-	</div>';
 }

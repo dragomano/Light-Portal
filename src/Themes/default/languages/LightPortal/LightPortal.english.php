@@ -85,8 +85,6 @@ $txt['lp_page_og_image_set'] = ['None', 'First found', 'Last found'];
 $txt['lp_show_prev_next_links'] = 'Show links to the previous and next pages';
 $txt['lp_show_related_pages'] = 'Show related pages';
 $txt['lp_show_comment_block'] = 'Show page comments';
-$txt['lp_disabled_bbc_in_comments'] = 'Allowed BBCode in comments';
-$txt['lp_disabled_bbc_in_comments_subtext'] = 'You can use any tags <a class="bbc_link" href="%1$s">allowed</a> on the forum.';
 $txt['lp_show_comment_block_set'] = ['None', 'Integrated'];
 $txt['lp_time_to_change_comments'] = 'Maximum time after commenting to allow edit';
 $txt['lp_num_comments_per_page'] = 'Number of parent comments per page';

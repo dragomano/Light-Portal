@@ -40,10 +40,6 @@ final class Comment
 		if (empty($this->alias))
 			return;
 
-		$disabledBbc = isset($this->modSettings['disabledBBC']) ? explode(',', $this->modSettings['disabledBBC']) : [];
-		$this->context['lp_allowed_bbc'] = empty($this->modSettings['lp_enabled_bbc_in_comments']) ? [] : explode(',', $this->modSettings['lp_enabled_bbc_in_comments']);
-		$this->context['lp_allowed_bbc'] = array_diff($this->context['lp_allowed_bbc'], array_intersect($disabledBbc, $this->context['lp_allowed_bbc']));
-
 		if ($this->request()->isNotEmpty('sa')) {
 			switch ($this->request('sa')) {
 				case 'add_comment':
@@ -103,8 +99,7 @@ final class Comment
 			lastStart: ' . $this->context['page_info']['start'] . ',
 			parentCommentsCount: ' . count($this->context['lp_page']['comments']) . ',
 			commentsPerPage: ' . $limit . '
-		});
-		const toolbar = new Toolbar();');
+		});');
 		}
 	}
 
@@ -153,7 +148,7 @@ final class Comment
 				'id'          => $item,
 				'start'       => $start,
 				'parent_id'   => $parent,
-				'message'     => empty($this->context['lp_allowed_bbc']) ? $message : $this->parseBbc($message, true, 'lp_comments_' . $item, $this->context['lp_allowed_bbc']),
+				'message'     => $message,
 				'created_at'  => date('Y-m-d', $time),
 				'created'     => $this->getFriendlyTime($time),
 				'raw_message' => $this->unPreparseCode($message),
@@ -217,8 +212,6 @@ final class Comment
 			'id'      => $item,
 			'user'    => $this->context['user']['id']
 		]);
-
-		$message = empty($this->context['lp_allowed_bbc']) ? $message : $this->parseBbc($message, true, 'lp_comments_' . $item, $this->context['lp_allowed_bbc']);
 
 		$this->cache()->forget('page_' . $this->alias . '_comments');
 

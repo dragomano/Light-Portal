@@ -91,24 +91,9 @@ final class ExtraConfig
 
 		$this->loadTemplate('LightPortal/ManageSettings');
 
-		$this->prepareBbcodes();
-
 		// Save
 		if ($this->request()->has('save')) {
 			$this->checkSession();
-
-			// Clean up the tags
-			$parse_tags = (array) $this->parseBbc(false);
-			$bbcTags = array_map(fn($tag): string => $tag['tag'], $parse_tags);
-
-			if ($this->request()->hasNot('lp_disabled_bbc_in_comments_enabledTags')) {
-				$this->post()->put('lp_disabled_bbc_in_comments_enabledTags', '');
-			} elseif (! is_array($this->request('lp_disabled_bbc_in_comments_enabledTags'))) {
-				$this->post()->put('lp_disabled_bbc_in_comments_enabledTags', $this->request('lp_disabled_bbc_in_comments_enabledTags'));
-			}
-
-			$this->post()->put('lp_enabled_bbc_in_comments', $this->request('lp_disabled_bbc_in_comments_enabledTags'));
-			$this->post()->put('lp_disabled_bbc_in_comments', implode(',', array_diff($bbcTags, explode(',', $this->request('lp_disabled_bbc_in_comments_enabledTags') ?? ''))));
 
 			if ($this->request()->isNotEmpty('lp_fa_custom'))
 				$this->post()->put('lp_fa_custom', $this->validate($this->request('lp_fa_custom'), 'url'));
@@ -118,8 +103,6 @@ final class ExtraConfig
 
 			$save_vars = $config_vars;
 			$save_vars[] = ['text', 'lp_show_comment_block'];
-			$save_vars[] = ['text', 'lp_enabled_bbc_in_comments'];
-			$save_vars[] = ['text', 'lp_disabled_bbc_in_comments'];
 			$save_vars[] = ['int', 'lp_time_to_change_comments'];
 			$save_vars[] = ['int', 'lp_num_comments_per_page'];
 			$save_vars[] = ['int', 'lp_comment_sorting'];
@@ -133,35 +116,5 @@ final class ExtraConfig
 		}
 
 		$this->prepareDBSettingContext($config_vars);
-	}
-
-	private function prepareBbcodes(): void
-	{
-		$disabledBbc = empty($this->modSettings['lp_disabled_bbc_in_comments']) ? [] : explode(',', $this->modSettings['lp_disabled_bbc_in_comments']);
-		$disabledBbc = isset($this->modSettings['disabledBBC']) ? [...$disabledBbc, ...explode(',', $this->modSettings['disabledBBC'])] : $disabledBbc;
-
-		$temp = $this->parseBbc(false);
-		$bbcTags = [];
-		foreach ($temp as $tag) {
-			if (! isset($tag['require_parents']))
-				$bbcTags[] = $tag['tag'];
-		}
-
-		$bbcTags = array_unique($bbcTags);
-
-		$this->context['bbc_sections'] = [
-			'title'        => $this->txt['enabled_bbc_select'],
-			'disabled'     => $disabledBbc ?: [],
-			'all_selected' => empty($disabledBbc),
-			'columns'      => []
-		];
-
-		$sectionTags = array_diff($bbcTags, $this->context['legacy_bbc']);
-
-		foreach ($sectionTags as $tag) {
-			$this->context['bbc_sections']['columns'][] = [
-				'tag' => $tag
-			];
-		}
 	}
 }

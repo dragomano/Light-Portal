@@ -14,8 +14,6 @@ class Comment {
 	focus(target, refs) {
 		target.style.height = 'auto';
 
-		if (refs.toolbar) refs.toolbar.style.display = 'block';
-
 		refs.comment.style.display = 'block'
 	}
 
@@ -49,12 +47,7 @@ class Comment {
 		refs.message.style.height = '30px';
 		refs.message.value = '';
 
-		const toolbar = refs['comment_form'].querySelector('.toolbar');
-
-		if (toolbar) toolbar.style.display = 'none';
-
 		this.parentCommentsCount++;
-
 		this.#goToComment(data)
 	}
 
@@ -222,40 +215,5 @@ class Comment {
 			removedItem.style.opacity = 0;
 			setTimeout(() => removedItem.remove(), 300);
 		}, 300);
-	}
-}
-
-class Toolbar {
-	pressButton(target) {
-		if (target.tagName !== 'I') return;
-
-		const type = target.dataset.type;
-
-		this.message = target.parentNode.nextElementSibling;
-
-		const tags = {
-			'bold'   : ['[b]', '[/b]'],
-			'italic' : ['[i]', '[/i]'],
-			'youtube': ['[youtube]', '[/youtube]'],
-			'image'  : ['[img]', '[/img]'],
-			'link'   : ['[url]', '[/url]'],
-			'code'   : ['[code]', '[/code]'],
-			'quote'  : ['[quote]', '[/quote]']
-		}
-
-		return this.#insertTags(...tags[type])
-	}
-
-	#insertTags(open, close) {
-		const start = this.message.selectionStart;
-		const end   = this.message.selectionEnd;
-		const text  = this.message.value;
-		const sel = open.length + end;
-
-		this.message.value = text.substring(0, start) + open + text.substring(start, end) + close + text.substring(end);
-		this.message.focus();
-		this.message.setSelectionRange(sel, sel);
-
-		return false
 	}
 }
