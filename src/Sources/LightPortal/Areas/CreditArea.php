@@ -168,15 +168,6 @@ final class CreditArea
 				]
 			],
 			[
-				'title' => '@shat/stylenames',
-				'link' => 'https://github.com/shatstack/stylenames',
-				'author' => 'Kevin Mathmann',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/shatstack/stylenames/blob/master/LICENSE'
-				]
-			],
-			[
 				'title' => 'Sortable.js',
 				'link' => 'https://github.com/SortableJS/Sortable',
 				'author' => 'All contributors to Sortable',

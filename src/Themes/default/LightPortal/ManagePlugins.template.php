@@ -29,7 +29,7 @@ function template_manage_plugins()
 	<div class="information" x-data>
 		', $txt['lp_plugins_desc'], '
 		<div class="hidden-xs floatright" style="cursor: pointer">
-			', str_replace(' class=', ' @click="plugin.toggleToListView($event.target)" :style="styleNames({ opacity: plugin.isCardView() ? \'.5\' : \'1\' })" class=', $context['lp_icon_set']['simple']), ' ', str_replace(' class=', ' @click="plugin.toggleToCardView($event.target)" :style="styleNames({ opacity: plugin.isCardView() ? \'1\' : \'.5\' })" class=', $context['lp_icon_set']['tile']), '
+			', str_replace(' class=', ' @click="plugin.toggleToListView($event.target)" :style="{ opacity: plugin.isCardView() ? \'.5\' : \'1\' }" class=', $context['lp_icon_set']['simple']), ' ', str_replace(' class=', ' @click="plugin.toggleToCardView($event.target)" :style="{ opacity: plugin.isCardView() ? \'1\' : \'.5\' }" class=', $context['lp_icon_set']['tile']), '
 		</div>
 	</div>';
 
