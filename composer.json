@@ -16,7 +16,7 @@
         "check": "vendor/bin/rector process --dry-run --clear-cache",
         "mix": [
             "npm update",
-            "npm run prod"
+            "npm run build"
         ],
         "build": [
             "vendor/bin/phing"
