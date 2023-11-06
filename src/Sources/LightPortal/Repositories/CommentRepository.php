@@ -77,7 +77,6 @@ final class CommentRepository
 				'page_id'     => (int) $row['page_id'],
 				'parent_id'   => (int) $row['parent_id'],
 				'message'     => $row['message'],
-				'raw_message' => $this->unPreparseCode($row['message']),
 				'created_at'  => (int) $row['created_at'],
 				'can_edit'    => $this->isCanEdit((int) $row['created_at']),
 				'poster'      => [

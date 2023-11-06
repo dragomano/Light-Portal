@@ -150,6 +150,69 @@ final class CreditArea
 				]
 			],
 			[
+				'title' => 'Vue.js',
+				'link' => 'https://github.com/vuejs/core',
+				'author' => 'Yuxi (Evan) You',
+				'license' => [
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/vuejs/core/blob/main/LICENSE'
+				]
+			],
+			[
+				'title' => 'vue3-sfc-loader',
+				'link' => 'https://github.com/FranckFreiburger/vue3-sfc-loader',
+				'author' => 'Franck Freiburger',
+				'license' => [
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/vuejs/core/blob/main/LICENSE'
+				]
+			],
+			[
+				'title' => 'Pinia',
+				'link' => 'https://github.com/vuejs/pinia',
+				'author' => 'Eduardo San Martin Morote',
+				'license' => [
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/vuejs/pinia/blob/v2/LICENSE'
+				]
+			],
+			[
+				'title' => 'VueDemi',
+				'link' => 'https://github.com/vueuse/vue-demi',
+				'author' => 'Anthony Fu',
+				'license' => [
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/vueuse/vue-demi/blob/main/LICENSE'
+				]
+			],
+			[
+				'title' => 'Showdown',
+				'link' => 'https://github.com/showdownjs/showdown',
+				'author' => 'ShowdownJS',
+				'license' => [
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/showdownjs/showdown/blob/master/LICENSE'
+				]
+			],
+			[
+				'title' => 'Vue Showdown',
+				'link' => 'https://github.com/meteorlxy/vue-showdown/',
+				'author' => 'meteorlxy & contributors',
+				'license' => [
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/meteorlxy/vue-showdown/blob/main/LICENSE'
+				]
+			],
+			[
+				'title' => 'vue-i18n-next',
+				'link' => 'https://github.com/intlify/vue-i18n-next/',
+				'author' => 'kazuya kawaguchi',
+				'license' => [
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/intlify/vue-i18n-next/blob/master/LICENSE'
+				]
+			],
+			[
 				'title' => 'Latte',
 				'link' => 'https://latte.nette.org',
 				'author' => 'David Grudl',

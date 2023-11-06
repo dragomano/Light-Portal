@@ -100,6 +100,8 @@ final class Page
 			];
 		}
 
+		$this->context['lp_page']['url'] = $this->context['canonical_url'] . ($this->request()->has(LP_PAGE_PARAM) ? ';' : '?');
+
 		$this->loadTemplate('LightPortal/ViewPage', 'show_page');
 
 		$this->promote();
@@ -109,10 +111,7 @@ final class Page
 		$this->prepareComments();
 		$this->updateNumViews();
 
-		if ($this->context['user']['is_logged']) {
-			$this->loadJavaScriptFile('light_portal/bundle.min.js', ['defer' => true]);
-			$this->loadJavaScriptFile('light_portal/user.js', ['minimize' => true]);
-		}
+		$this->loadJavaScriptFile('light_portal/bundle.min.js', ['defer' => true]);
 	}
 
 	public function getData(array $params): array
@@ -552,7 +551,43 @@ final class Page
 		if (isset($this->context['lp_' . $this->modSettings['lp_show_comment_block'] . '_comment_block']))
 			return;
 
+		$this->prepareJsonData();
+
 		(new Comment($this->context['lp_page']['alias']))->prepare();
+	}
+
+	private function prepareJsonData(): void
+	{
+		$txtData = [
+			'pages'                  => $this->txt['pages'],
+			'author'                 => $this->txt['author'],
+			'reply'                  => $this->txt['reply'],
+			'modify'                 => $this->txt['modify'],
+			'modify_cancel'          => $this->txt['modify_cancel'],
+			'remove'                 => $this->txt['remove'],
+			'lp_comment_placeholder' => $this->txt['lp_comment_placeholder'],
+			'post'                   => $this->txt['post'],
+			'save'                   => $this->txt['save'],
+			'title'                  => $this->txt['lp_comments_title'],
+			'prev'                   => $this->txt['prev'],
+			'next'                   => $this->txt['next'],
+		];
+
+		$contextData = [
+			'locale'  => $this->txt['lang_dictionary'],
+			'pageUrl' => $this->context['lp_page']['url'],
+			'charset' => $this->context['character_set'],
+		];
+
+		$settingsData = [
+			'lp_comment_sorting' => $this->modSettings['lp_comment_sorting'] ?? '0',
+		];
+
+		$this->context['lp_json']['txt']      = json_encode($txtData);
+		$this->context['lp_json']['context']  = json_encode($contextData);
+		$this->context['lp_json']['settings'] = json_encode($settingsData);
+		$this->context['lp_json']['icons']    = json_encode($this->context['lp_icon_set']);
+		$this->context['lp_json']['user']     = json_encode($this->context['user']);
 	}
 
 	private function getTags(string $tags): array

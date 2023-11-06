@@ -21,7 +21,8 @@ src/Themes/default/scripts/light_portal/*
 !src/Themes/default/scripts/light_portal/index.php
 !src/Themes/default/scripts/light_portal/admin.js
 !src/Themes/default/scripts/light_portal/app.js
-!src/Themes/default/scripts/light_portal/user.js
+!src/Themes/default/scripts/light_portal/helpers.js
+!src/Themes/default/scripts/light_portal/vue_comments.js
 
 **/Addons/**/*.less
 **/Addons/**/langs/*

@@ -37,76 +37,81 @@ final class Comment
 	 */
 	public function prepare(): void
 	{
-		if (empty($this->alias))
+		if (empty($this->alias) || $this->request()->isEmpty('api'))
 			return;
 
-		if ($this->request()->isNotEmpty('sa')) {
-			switch ($this->request('sa')) {
-				case 'add_comment':
-					$this->add();
-					break;
-				case 'edit_comment':
-					$this->edit();
-					break;
-				case 'remove_comment':
-					$this->remove();
-					break;
-			}
-		}
+		header('Content-Type: application/json; charset=utf-8');
 
+		switch ($this->request('api')) {
+			case 'add_comment':
+				$this->add();
+				break;
+			case 'update_comment':
+				$this->update();
+				break;
+			case 'remove_comment':
+				$this->remove();
+				break;
+			default:
+				$this->get();
+		}
+	}
+
+	/**
+	 * @throws IntlException
+	 */
+	private function get(): void
+	{
 		$comments = $this->cache('page_' . $this->alias . '_comments')
 			->setFallback(CommentRepository::class, 'getByPageId', $this->context['lp_page']['id']);
 
 		$comments = array_map(function ($comment) {
-			$comment['created']    = $this->getFriendlyTime($comment['created_at']);
-			$comment['created_at'] = date('Y-m-d', $comment['created_at']);
+			$comment['human_date']    = $this->getFriendlyTime($comment['created_at']);
+			$comment['published_at']  = date('Y-m-d', $comment['created_at']);
+			$comment['authorial']     = $this->context['lp_page']['author_id'] === $comment['poster']['id'];
+			$comment['extra_buttons'] = [];
+
+			$this->hook('commentButtons', [$comment, &$comment['extra_buttons']]);
 
 			return $comment;
 		}, $comments);
 
-		$this->txt['lp_comments'] = $this->translate('lp_comments_set', ['comments' => sizeof($comments)]);
-
 		$limit = (int) ($this->modSettings['lp_num_comments_per_page'] ?? 10);
+
 		$commentTree = $this->getTree($comments);
-		$parentCommentsCount = sizeof($commentTree);
+
+		$parentsCount = sizeof($commentTree);
 
 		$this->context['current_start'] = $this->request('start');
 
 		$this->context['page_index'] = $this->constructPageIndex(
 			$this->getPageIndexUrl(),
 			$this->request()->get('start'),
-			$parentCommentsCount,
+			$parentsCount,
 			$limit
 		);
 
 		$start = $this->request('start');
 
-		$this->context['page_info'] = [
-			'num_pages' => $num_pages = floor($parentCommentsCount / $limit) + 1,
-			'start'     => $num_pages * $limit - $limit
+		http_response_code(200);
+
+		$result = [
+			'comments'     => array_slice($commentTree, $start, $limit),
+			'parentsCount' => $parentsCount,
+			'total'        => sizeof($comments),
+			'limit'        => $limit
 		];
 
-		if ($this->context['current_start'] > $parentCommentsCount)
-			$this->sendStatus(404);
-
-		$this->context['lp_page']['comments'] = array_slice($commentTree, $start, $limit);
-
-		if ($this->context['user']['is_logged']) {
-			$this->addInlineJavaScript('
-		const comment = new Comment({
-			pageUrl: "' . $this->context['canonical_url'] . ($this->request()->has(LP_PAGE_PARAM) ? ';' : '?') . '",
-			start: ' . $start . ',
-			lastStart: ' . $this->context['page_info']['start'] . ',
-			parentCommentsCount: ' . count($this->context['lp_page']['comments']) . ',
-			commentsPerPage: ' . $limit . '
-		});');
-		}
+		exit(json_encode($result));
 	}
 
+	/**
+	 * @throws IntlException
+	 */
 	private function add(): void
 	{
 		$result = [
-			'error' => true
+			'id' => null
 		];
 
 		if (empty($this->user_info['id']))
@@ -117,22 +122,17 @@ final class Comment
 		if (empty($data['message']))
 			exit(json_encode($result));
 
-		$parent      = filter_var($data['parent_id'], FILTER_VALIDATE_INT);
-		$counter     = filter_var($data['counter'], FILTER_VALIDATE_INT);
-		$level       = filter_var($data['level'], FILTER_VALIDATE_INT);
-		$page_id     = filter_var($data['page_id'], FILTER_VALIDATE_INT);
-		$page_url    = filter_var($data['page_url'], FILTER_VALIDATE_URL);
-		$message     = filter_var($data['message'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-		$start       = filter_var($data['start'], FILTER_VALIDATE_INT);
-		$commentator = filter_var($data['commentator'], FILTER_VALIDATE_INT);
+		$parent_id = $this->validate($data['parent_id'], 'int');
+		$message   = $this->smcFunc['htmlspecialchars']($data['message']);
+		$author    = $this->validate($data['author'], 'int');
+		$page_id   = $this->context['lp_page']['id'];
+		$page_url  = $this->context['canonical_url'];
 
 		if (empty($page_id) || empty($message))
 			exit(json_encode($result));
 
-		$this->preparseCode($message);
-
 		$item = $this->repository->save([
-			'parent_id'  => $parent,
+			'parent_id'  => $parent_id,
 			'page_id'    => $page_id,
 			'author_id'  => $this->user_info['id'],
 			'message'    => $message,
@@ -142,70 +142,57 @@ final class Comment
 		if ($item) {
 			$this->repository->updateLastCommentId($item, $page_id);
 
-			ob_start();
-
-			show_single_comment([
-				'id'          => $item,
-				'start'       => $start,
-				'parent_id'   => $parent,
-				'message'     => $message,
-				'created_at'  => date('Y-m-d', $time),
-				'created'     => $this->getFriendlyTime($time),
-				'raw_message' => $this->unPreparseCode($message),
-				'can_edit'    => true,
-				'poster'      => [
+			$result = [
+				'id'           => $item,
+				'parent_id'    => $parent_id,
+				'message'      => $message,
+				'created_at'   => $time,
+				'published_at' => date('Y-m-d', $time),
+				'human_date'   => $this->getFriendlyTime($time),
+				'can_edit'     => true,
+				'poster'       => [
 					'id'     => $this->user_info['id'],
 					'name'   => $this->user_info['name'],
 					'avatar' => $this->getUserAvatar($this->user_info['id']),
 				],
-			], $counter + 1, $level + 1);
-
-			$comment = ob_get_clean();
-
-			$result = [
-				'item'        => $item,
-				'parent'      => $parent,
-				'comment'     => $comment,
-				'created'     => $time,
-				'title'       => $this->context['page_title'],
-				'alias'       => $this->alias,
-				'page_url'    => $page_url,
-				'start'       => $start,
-				'commentator' => $commentator,
 			];
 
 			$notifyOptions = [
 				'item'      => $item,
 				'time'      => $time,
-				'author_id' => empty($parent) ? $this->context['lp_page']['author_id'] : $commentator,
+				'author_id' => empty($parent_id) ? $this->context['lp_page']['author_id'] : $author,
 				'title'     => $this->context['page_title'],
-				'url'       => $page_url . 'start=' . $start . '#comment' . $item,
+				'url'       => $page_url . '#comment' . $item,
 			];
 
-			empty($parent)
+			empty($parent_id)
 				? $this->makeNotify('new_comment', 'page_comment', $notifyOptions)
 				: $this->makeNotify('new_reply', 'page_comment_reply', $notifyOptions);
 
 			$this->cache()->forget('page_' . $this->alias . '_comments');
 		}
 
+		http_response_code(201);
+
 		exit(json_encode($result));
 	}
 
-	private function edit(): void
+	private function update(): void
 	{
 		$data = $this->request()->json();
 
+		$result = [
+			'success' => false
+		];
+
 		if (empty($data) || $this->context['user']['is_guest'])
-			exit;
+			exit(json_encode($result));
 
 		$item    = $data['comment_id'];
-		$message = $this->validate($data['message']);
+		$message = $this->smcFunc['htmlspecialchars']($data['message']);
 
-		if (empty($item) || empty($message))
-			exit;
-
-		$this->preparseCode($message);
+		if (empty($item) || empty($message) || empty(trim($message)))
+			exit(json_encode($result));
 
 		$this->repository->update([
 			'message' => $this->getShortenText($message, 65531),
@@ -213,9 +200,14 @@ final class Comment
 			'user'    => $this->context['user']['id']
 		]);
 
+		$result = [
+			'success' => true,
+			'message' => $message
+		];
+
 		$this->cache()->forget('page_' . $this->alias . '_comments');
 
-		exit(json_encode($message));
+		exit(json_encode($result));
 	}
 
 	private function remove(): void
@@ -223,13 +215,13 @@ final class Comment
 		$items = $this->request()->json('items');
 
 		if (empty($items))
-			return;
+			exit(json_encode(['success' => false]));
 
 		$this->repository->remove($items, $this->alias);
 
 		$this->cache()->forget('page_' . $this->alias . '_comments');
 
-		exit;
+		exit(json_encode(['success' => true]));
 	}
 
 	private function getTree(array $data): array
@@ -239,7 +231,7 @@ final class Comment
 		foreach ($data as $id => &$node) {
 			empty($node['parent_id'])
 				? $tree[$id] = &$node
-				: $data[$node['parent_id']]['children'][$id] = &$node;
+				: isset($data[$node['parent_id']]['id']) && $data[$node['parent_id']]['replies'][$id] = &$node;
 		}
 
 		return $tree;
