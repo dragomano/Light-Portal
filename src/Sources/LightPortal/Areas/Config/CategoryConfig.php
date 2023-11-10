@@ -129,6 +129,14 @@ final class CategoryConfig
 		);
 
 		$this->context['lp_num_queries']++;
+
+		$result = [
+			'success' => $this->smcFunc['db_affected_rows']()
+		];
+
+		$this->cache()->forget('all_categories');
+
+		exit(json_encode($result));
 	}
 
 	private function updateName(int $item, string $value): void
@@ -147,6 +155,12 @@ final class CategoryConfig
 		);
 
 		$this->context['lp_num_queries']++;
+
+		$result = [
+			'success' => $this->smcFunc['db_affected_rows']()
+		];
+
+		exit(json_encode($result));
 	}
 
 	private function updateDescription(int $item, string $value): void
@@ -165,6 +179,12 @@ final class CategoryConfig
 		);
 
 		$this->context['lp_num_queries']++;
+
+		$result = [
+			'success' => $this->smcFunc['db_affected_rows']()
+		];
+
+		exit(json_encode($result));
 	}
 
 	private function remove(array $items): void
@@ -180,6 +200,10 @@ final class CategoryConfig
 			]
 		);
 
+		$result = [
+			'success' => $this->smcFunc['db_affected_rows']()
+		];
+
 		$this->smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_pages
 			SET category_id = {int:category}
@@ -193,6 +217,8 @@ final class CategoryConfig
 		$this->context['lp_num_queries'] += 2;
 
 		$this->cache()->flush();
+
+		exit(json_encode($result));
 	}
 
 	private function getPriority(): int
