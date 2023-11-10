@@ -13,6 +13,7 @@
             <include name="Sources/**" />
             <exclude name="Sources/LightPortal/Addons/BladeLayouts/**" />
             <exclude name="Sources/LightPortal/Addons/BootstrapIcons/**" />
+            <exclude name="Sources/LightPortal/Addons/CrowdinContext/**" />
             <exclude name="Sources/LightPortal/Addons/DiceBear/**" />
             <exclude name="Sources/LightPortal/Addons/Disqus/**" />
             <exclude name="Sources/LightPortal/Addons/EasyMarkdownEditor/**" />
@@ -33,7 +34,6 @@
             <exclude name="Sources/LightPortal/Addons/PageScroll/**" />
             <exclude name="Sources/LightPortal/Addons/PluginMaker/**" />
             <exclude name="Sources/LightPortal/Addons/PrettyUrls/**" />
-            <exclude name="Sources/LightPortal/Addons/SiteList/**" />
             <exclude name="Sources/LightPortal/Addons/TinyPortal/**" />
             <exclude name="Sources/LightPortal/Addons/TopicRatingBar/**" />
             <exclude name="Sources/LightPortal/Addons/TwigLayouts/**" />

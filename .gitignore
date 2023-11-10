@@ -33,7 +33,6 @@ src/Themes/default/scripts/light_portal/*
 **/Addons/Jodit/*
 **/Addons/MediaBlock/*
 **/Addons/PageScroll/*
-**/Addons/SiteList/*
 **/Addons/YandexTurbo/*
 
 !**/Addons/**/index.php
