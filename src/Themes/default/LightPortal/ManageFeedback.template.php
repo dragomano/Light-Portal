@@ -36,7 +36,10 @@ function template_feedback()
 				</tr>
 				<tr class="windowbg">
 					<td><label for="message">', $txt['message'], '</label></td>
-					<td><textarea id="message" name="message" rows="10" required style="width: 100%" autofocus></textarea></td>
+					<td>
+						<textarea id="message" name="message" rows="10" required style="width: 100%" autofocus></textarea>
+						<span></span>
+					</td>
 				</tr>
 				<tr class="windowbg">
 					<td colspan="2"><button class="button" type="submit">', $txt['post'], '</button></td>
