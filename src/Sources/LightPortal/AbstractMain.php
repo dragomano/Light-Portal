@@ -66,7 +66,7 @@ abstract class AbstractMain
 		$this->context['lp_panel_direction'] = $this->jsonDecode($this->modSettings['lp_panel_direction'] ?? '', true, false);
 
 		$this->context['lp_active_blocks'] = (new Block)->getActive();
-		
+
 		$this->context['lp_icon_set'] = $this->getEntityList('icon');
 	}
 
