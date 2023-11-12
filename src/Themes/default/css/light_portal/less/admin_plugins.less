@@ -1,3 +1,11 @@
+#vue_plugins {
+	@media screen and (max-width: 468px) {
+		label[for="filter"] {
+			display: none;
+		}
+	}
+}
+
 .addon_list {
 	display: grid;
 	grid-template-columns: auto auto;
@@ -14,15 +22,14 @@
 	}
 
 	.floatright {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 6px;
 		.pointer;
 
-		.gear {
-			position: relative;
-			top: -5px;
-			right: 5px;
-		}
-
-		i {
+		i,
+		span {
 			&[data-toggle="on"] {
 				color: @color-checked;
 			}
@@ -40,17 +47,28 @@
 	> div {
 		margin: 1.2em;
 	}
+
 	label {
 		font-weight: bold;
 	}
+
 	input {
+		height: 28px;
+
 		&[type="text"],
 		&[type="url"] {
 			width: 100%;
 		}
+
 		&[type="number"] {
 			width: auto;
 		}
+	}
+
+	.checkbox_field {
+		display: flex;
+		align-items: center;
+		gap: 10px
 	}
 }
 
@@ -58,4 +76,13 @@
 	.button {
 		margin-left: 2px;
 	}
+
+	@media screen and (max-width: 500px) {
+		display: grid;
+		gap: 4px;
+	}
+}
+
+#addon_chart {
+	margin-bottom: 1em;
 }

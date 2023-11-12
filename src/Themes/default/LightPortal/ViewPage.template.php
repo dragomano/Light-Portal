@@ -176,7 +176,7 @@ function show_related_pages()
 
 function show_comments()
 {
-	global $modSettings, $context, $settings;
+	global $modSettings, $context, $db_show_debug, $settings;
 
 	if (empty($modSettings['lp_show_comment_block']) || empty($context['lp_page']['options']['allow_comments']))
 		return;
@@ -203,7 +203,7 @@ function show_comments()
 			txt: ', $context['lp_json']['txt'], ',
 		}
 	</script>
-	<script src="https://cdn.jsdelivr.net/combine/npm/vue@3/dist/vue.global.prod.min.js,npm/vue3-sfc-loader@0.8.4,npm/vue-demi@0.14.6,npm/pinia@2,npm/showdown@2,npm/vue-showdown@4,npm/vue-i18n@9/dist/vue-i18n.global.prod.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/combine/npm/vue@3/dist/vue.global', ($db_show_debug ? '' : '.prod'), '.min.js,npm/vue3-sfc-loader@0.8.4,npm/vue-demi@0.14.6,npm/pinia@2,npm/showdown@2,npm/vue-showdown@4,npm/vue-i18n@9/dist/vue-i18n.global.prod.min.js"></script>
 	<script src="', $settings['default_theme_url'], '/scripts/light_portal/helpers.js"></script>
 	<script src="', $settings['default_theme_url'], '/scripts/light_portal/vue_comments.js"></script>';
 }

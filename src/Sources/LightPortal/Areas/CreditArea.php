@@ -204,6 +204,24 @@ final class CreditArea
 				]
 			],
 			[
+				'title' => 'Vue 3 Multiselect',
+				'link' => 'https://github.com/vueform/multiselect',
+				'author' => 'Adam Berecz',
+				'license' => [
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/vueform/multiselect/blob/main/LICENSE.md'
+				]
+			],
+			[
+				'title' => 'Vue 3 Toggle',
+				'link' => 'https://github.com/vueform/toggle',
+				'author' => 'Adam Berecz',
+				'license' => [
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/vueform/toggle/blob/main/LICENSE.md'
+				]
+			],
+			[
 				'title' => 'vue-i18n-next',
 				'link' => 'https://github.com/intlify/vue-i18n-next/',
 				'author' => 'kazuya kawaguchi',
