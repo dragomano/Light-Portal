@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.11.23
+ * @version 12.11.23
  */
 
 namespace Bugo\LightPortal\Addons\MainMenu;
@@ -96,7 +96,7 @@ class MainMenu extends Plugin
 
 	private function prepareVariables()
 	{
-		$this->context['lp_main_menu_addon_portal_langs'] = $this->jsonDecode($this->context['lp_main_menu_plugin']['portal_langs'] ?? '', true);
-		$this->context['lp_main_menu_addon_forum_langs']  = $this->jsonDecode($this->context['lp_main_menu_plugin']['forum_langs'] ?? '', true);
+		$this->context['lp_main_menu_addon_portal_langs'] = $this->jsonDecode($this->context['lp_main_menu_plugin']['portal_langs'] ?? '');
+		$this->context['lp_main_menu_addon_forum_langs']  = $this->jsonDecode($this->context['lp_main_menu_plugin']['forum_langs'] ?? '');
 	}
 }

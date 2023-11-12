@@ -225,7 +225,7 @@ trait SMFTrait
 		addInlineJavaScript($javascript, $defer);
 	}
 
-	protected function jsonDecode($json, $returnAsArray = false, $logIt = true): array
+	protected function jsonDecode($json, $returnAsArray = true, $logIt = true): array
 	{
 		return smf_json_decode($json, $returnAsArray, $logIt);
 	}

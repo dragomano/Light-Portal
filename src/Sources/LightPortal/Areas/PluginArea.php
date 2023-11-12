@@ -310,7 +310,7 @@ final class PluginArea
 			if (empty($addon_list))
 				return;
 
-			$xml = $this->jsonDecode($addon_list, true);
+			$xml = $this->jsonDecode($addon_list);
 
 			$this->cache()->put('custom_addon_list', $xml, 259200);
 		}

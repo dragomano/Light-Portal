@@ -135,7 +135,7 @@ final class Notifier extends SMF_BackgroundTask
 				$replacements = [
 					'MEMBERNAME'  => $this->_details['sender_name'],
 					'PROFILELINK' => $this->scripturl . '?action=profile;u=' . $this->_details['sender_id'],
-					'PAGELINK'    => $this->jsonDecode($this->_details['extra'], true, false)['content_link'],
+					'PAGELINK'    => $this->jsonDecode($this->_details['extra'], logIt: false)['content_link'],
 				];
 
 				$this->loadLanguage('LightPortal/LightPortal', $this_lang);

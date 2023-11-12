@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.09.23
+ * @version 12.11.23
  */
 
 namespace Bugo\LightPortal\Addons\SimpleMenu;
@@ -93,7 +93,7 @@ class SimpleMenu extends Plugin
 		$html = '
 		<ul class="dropmenu">';
 
-		$items = $this->jsonDecode($items, true, false);
+		$items = $this->jsonDecode($items, logIt: false);
 
 		foreach ($items as $item) {
 			[$title, $link] = [$item['name'], $item['link']];
