@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 30.10.23
+ * @version 10.11.23
  */
 
 namespace Bugo\LightPortal\Addons\CrowdinContext;
@@ -29,15 +29,7 @@ class CrowdinContext extends Plugin
 
 	public function addSettings(array &$config_vars): void
 	{
-		$config_vars['crowdin_context'][] = ['callback', 'admins', [$this, 'selectAdmins']];
-	}
-
-	public function selectAdmins(): void
-	{
-		echo (new AdminSelect)([
-			'data'  => $this->getAdminList(),
-			'value' => $this->context['lp_crowdin_context_plugin']['admins'] ?? ''
-		]);
+		$config_vars['crowdin_context'][] = ['select', 'admins', $this->getAdminList(), 'multiple' => true];
 	}
 
 	public function init(): void
@@ -61,7 +53,7 @@ class CrowdinContext extends Plugin
 		_jipt.push([\'project\', \'light-portal\']);
 		_jipt.push([\'preload_texts\', true]);
 		_jipt.push([\'escape\', function() {
-			window.location.href = smf_scripturl + "?action=portal;disable_crowdin";
+			window.location.href = smf_scripturl + "?action=' . LP_ACTION . ';disable_crowdin";
 		}]);');
 
 		$this->loadExtJS('//cdn.crowdin.com/jipt/jipt.js', ['defer' => true]);

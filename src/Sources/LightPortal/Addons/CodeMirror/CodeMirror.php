@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.05.23
+ * @version 12.11.23
  */
 
 namespace Bugo\LightPortal\Addons\CodeMirror;
@@ -28,11 +28,7 @@ class CodeMirror extends Plugin
 
 	public function addSettings(array &$config_vars)
 	{
-		$this->addDefaultValues([
-			'modes' => '{"html":1,"php":1,"markdown":0}'
-		]);
-
-		$config_vars['code_mirror'][] = ['multicheck', 'modes', $this->modes];
+		$config_vars['code_mirror'][] = ['select', 'modes', $this->modes, 'multiple' => true];
 		$config_vars['code_mirror'][] = ['desc', 'small_hint'];
 	}
 

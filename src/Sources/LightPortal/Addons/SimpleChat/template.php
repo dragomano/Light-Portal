@@ -6,7 +6,7 @@ function show_chat_block(int $block_id, bool $show_avatars, bool $full_width): v
 
 	echo /** @lang text */ '
 	<script>
-		const chat', $block_id, ' = new SimpleChat(', ($context['lp_chats'][$block_id] ?: '[]'), ');
+		const chat', $block_id, ' = new SimpleChat("', LP_ACTION, '", ', ($context['lp_chats'][$block_id] ?: '[]'), ');
 	</script>
 
 	<div x-data="chat', $block_id, '.handleComments()">

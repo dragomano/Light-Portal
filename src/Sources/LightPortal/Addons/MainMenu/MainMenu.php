@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 30.04.23
+ * @version 10.11.23
  */
 
 namespace Bugo\LightPortal\Addons\MainMenu;
@@ -51,7 +51,7 @@ class MainMenu extends Plugin
 
 	public function addSettings(array &$config_vars)
 	{
-		$config_vars['main_menu'][] = ['callback', 'items', [$this, 'showList']];
+		$config_vars['main_menu'][] = ['callback', 'items', $this->showList()];
 	}
 
 	public function showList()
@@ -62,7 +62,11 @@ class MainMenu extends Plugin
 
 		$this->setTemplate();
 
+		ob_start();
+
 		callback_main_menu_table();
+
+		return ob_get_clean();
 	}
 
 	public function saveSettings(array &$plugin_options)

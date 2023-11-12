@@ -199,7 +199,7 @@ function template_plugin_post()
 	</form>
 
 	<script>
-		class PluginMaker extends Plugin {
+		class PluginMaker extends PortalEntity {
 			change(target) {
 				if (target !== "block") {
 					document.querySelector("dt.pf_icon").style.display = "none";

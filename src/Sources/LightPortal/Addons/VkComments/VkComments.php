@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.04.22
+ * @version 12.11.22
  */
 
 namespace Bugo\LightPortal\Addons\VkComments;
@@ -33,7 +33,6 @@ class VkComments extends Plugin
 	{
 		$this->addDefaultValues([
 			'comments_per_page' => 10,
-			'allow_attachments' => true,
 		]);
 
 		$config_vars['vk_comments'][] = ['text', 'api_id', 'subtext' => $this->txt['lp_vk_comments']['api_id_subtext'], 'required' => true];
