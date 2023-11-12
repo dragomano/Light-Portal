@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.09.23
+ * @version 10.11.23
  */
 
 namespace Bugo\LightPortal\Addons\SimpleFeeder;
@@ -27,7 +27,7 @@ class SimpleFeeder extends Block
 
 	public function blockOptions(array &$options): void
 	{
-		$options['rss_feed']['parameters'] = [
+		$options['simple_feeder']['parameters'] = [
 			'url'       => '',
 			'show_text' => false,
 		];
@@ -35,7 +35,7 @@ class SimpleFeeder extends Block
 
 	public function validateBlockData(array &$parameters, string $type): void
 	{
-		if ($type !== 'rss_feed')
+		if ($type !== 'simple_feeder')
 			return;
 
 		$parameters['url']       = FILTER_VALIDATE_URL;
@@ -44,10 +44,10 @@ class SimpleFeeder extends Block
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'rss_feed')
+		if ($this->context['lp_block']['type'] !== 'simple_feeder')
 			return;
 
-		$this->context['posting_fields']['url']['label']['text'] = $this->txt['lp_rss_feed']['url'];
+		$this->context['posting_fields']['url']['label']['text'] = $this->txt['lp_simple_feeder']['url'];
 		$this->context['posting_fields']['url']['input'] = [
 			'type' => 'url',
 			'attributes' => [
@@ -60,7 +60,7 @@ class SimpleFeeder extends Block
 			'tab' => 'content'
 		];
 
-		$this->context['posting_fields']['show_text']['label']['text'] = $this->txt['lp_rss_feed']['show_text'];
+		$this->context['posting_fields']['show_text']['label']['text'] = $this->txt['lp_simple_feeder']['show_text'];
 		$this->context['posting_fields']['show_text']['input'] = [
 			'type' => 'checkbox',
 			'attributes' => [
@@ -87,12 +87,12 @@ class SimpleFeeder extends Block
 	 */
 	public function prepareContent($data, array $parameters): void
 	{
-		if ($data->type !== 'rss_feed')
+		if ($data->type !== 'simple_feeder')
 			return;
 
 		$parameters['show_text'] ??= false;
 
-		$feed = $this->cache('rss_feed_addon_b' . $data->block_id)
+		$feed = $this->cache('simple_feeder_addon_b' . $data->block_id)
 			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getData', $parameters['url']);
 
