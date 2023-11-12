@@ -52,27 +52,9 @@
         <label :id="id">{{ $t(txtKey) }}</label>
       </div>
     </template>
-    <template v-if="isType('multicheck')">
-      <fieldset class="bbc_code">
-        <ul>
-          <li v-for="(option_label, key) in extra" :key="key">
-            <label :for="`${name}[${key}]`">
-              <input
-                type="checkbox"
-                :id="`${name}[${key}]`"
-                :name="`${name}[${key}]`"
-                :checked="multicheckOptions[key]"
-                value="1"
-              />{{ option_label }}</label
-            >
-          </li>
-        </ul>
-      </fieldset>
-    </template>
-    <template v-if="isType('select')">
-      <input v-if="multiple" type="hidden" :name="name + '[]'" value="" />
+    <template v-if="isType('multiselect')">
+      <input type="hidden" :name="name + '[]'" value="" />
       <Multiselect
-        v-if="multiple"
         v-model="multiSelect"
         mode="tags"
         :allow-absent="true"
@@ -87,9 +69,10 @@
         :no-results-text="$t('no_matches')"
         @clear="clear"
       />
+    </template>
+    <template v-if="isType('select')">
       <Multiselect
-        v-else
-        v-model="multiSelect"
+        v-model="value"
         mode="single"
         :append-to-body="true"
         :can-clear="false"
@@ -169,26 +152,11 @@ const isType = (t) =>
   (t === 'number' && ['float', 'int'].includes(type.value)) ||
   (t === type.value && (extra.value || true));
 
-const isJSON = (str) => {
-  try {
-    JSON.parse(str);
-    return true;
-  } catch (error) {
-    return false;
-  }
-};
-
-const multicheckOptions = computed(
-  () => isType('multicheck') && isJSON(value.value) && JSON.parse(value.value)
-);
-
 const options = computed(() =>
   extra.value ? Object.entries(extra.value).map(([value, label]) => ({ label, value })) : null
 );
 
-const multiSelect = computed(() =>
-  isType('select') && multiple.value ? value.value?.split(',') : value.value
-);
+const multiSelect = computed(() => (isType('multiselect') ? value.value?.split(',') : []));
 
 const toggler = ref(!!value.value);
 

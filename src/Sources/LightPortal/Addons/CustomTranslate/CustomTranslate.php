@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.11.23
+ * @version 12.11.23
  */
 
 namespace Bugo\LightPortal\Addons\CustomTranslate;
@@ -52,7 +52,7 @@ class CustomTranslate extends Plugin
 
 	public function addSettings(array &$config_vars): void
 	{
-		$config_vars['custom_translate'][] = ['select', 'languages', array_combine($this->langCodes, $this->txt['lp_custom_translate']['languages_set']), 'multiple' => true];
+		$config_vars['custom_translate'][] = ['multiselect', 'languages', array_combine($this->langCodes, $this->txt['lp_custom_translate']['languages_set'])];
 	}
 
 	public function credits(array &$links): void

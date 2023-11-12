@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.09.23
+ * @version 12.11.23
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -193,9 +193,7 @@ class Handler extends Plugin
 		if (! empty($data['name']) && ! $this->isUnique($data['name']))
 			$post_errors[] = 'no_unique_name';
 
-		if (! empty($this->modSettings['userLanguage']) && empty($data['description_english']))
-			$post_errors[] = 'no_description';
-		elseif (empty($data['description_' . $this->language]))
+		if (empty($data['description_english']))
 			$post_errors[] = 'no_description';
 
 		if (! empty($post_errors)) {
@@ -523,20 +521,22 @@ class Handler extends Plugin
 				->setReference()
 				->setType('array');
 
-			if (! empty($this->context['lp_plugin']['options']))
+			$arrayWithDefaultOptions = array_filter($this->context['lp_plugin']['options'], function($optionArray) {
+				return array_key_exists('default', $optionArray);
+			});
+
+			if (! empty($arrayWithDefaultOptions)) {
 				$method->addBody("\$this->addDefaultValues([");
 
-			foreach ($this->context['lp_plugin']['options'] as $option) {
-				if (! empty($option['default'])) {
+				foreach ($arrayWithDefaultOptions as $option) {
 					$method->addBody("\t'{$option['name']}' => {$this->getDefaultValue($option)},");
 				}
+
+				$method->addBody("]);" . PHP_EOL);
 			}
 
-			if (! empty($this->context['lp_plugin']['options']))
-				$method->addBody("]);" . PHP_EOL);
-
 			foreach ($this->context['lp_plugin']['options'] as $option) {
-				if (in_array($option['type'], ['multicheck', 'select'])) {
+				if (in_array($option['type'], ['multiselect', 'select'])) {
 					$method->addBody("\$config_vars['$plugin_name'][] = ['{$option['type']}', '{$option['name']}', \$this->txt['lp_$plugin_name']['{$option['name']}_set']];");
 				} else {
 					$method->addBody("\$config_vars['$plugin_name'][] = ['{$option['type']}', '{$option['name']}'];");
@@ -647,9 +647,11 @@ class Handler extends Plugin
 
 			foreach ($this->context['lp_plugin']['options'] as $option) {
 				foreach ($option['translations'] as $lang => $value) {
+					if (empty($languages[$lang])) continue;
+
 					$languages[$lang][] = PHP_EOL . "\t'{$option['name']}' => '$value',";
 
-					if (in_array($option['type'], ['multicheck', 'select'])) {
+					if (in_array($option['type'], ['multiselect', 'select'])) {
 						if (! empty($option['variants'])) {
 							$variants  = explode('|', $option['variants']);
 							$variants = "'" . implode("','", $variants) . "'";
@@ -700,15 +702,10 @@ class Handler extends Plugin
 	private function getFilter(array $param): string
 	{
 		return match ($param['type']) {
-			'url' => 'FILTER_VALIDATE_URL',
-			'int' => 'FILTER_VALIDATE_INT',
+			'url'   => 'FILTER_VALIDATE_URL',
+			'int'   => 'FILTER_VALIDATE_INT',
 			'float' => 'FILTER_VALIDATE_FLOAT',
 			'check' => 'FILTER_VALIDATE_BOOLEAN',
-			'multicheck' => "[
-	'name'   => '{$param['name']}',
-	'filter' => FILTER_DEFAULT,
-	'flags'  => FILTER_REQUIRE_ARRAY
-]",
 			default => 'FILTER_DEFAULT',
 		};
 	}

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.05.22
+ * @version 12.11.23
  */
 
 namespace Bugo\LightPortal\Addons\FacebookComments;
@@ -40,7 +40,7 @@ class FacebookComments extends Plugin
 
 		$config_vars['facebook_comments'][] = ['int', 'comments_per_page'];
 		$config_vars['facebook_comments'][] = ['select', 'comment_order_by', array_combine($this->sort_order, $this->txt['lp_facebook_comments']['comment_order_by_set'])];
-		$config_vars['facebook_comments'][] = ['multicheck', 'dark_themes', $this->getForumThemes()];
+		$config_vars['facebook_comments'][] = ['multiselect', 'dark_themes', $this->getForumThemes()];
 	}
 
 	public function comments()

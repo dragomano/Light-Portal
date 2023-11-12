@@ -126,22 +126,19 @@ function template_plugin_post()
 															<template x-if="option.type == \'check\'">
 																<input type="checkbox" x-model="option.default" :name="`option_defaults[${index}]`" :id="default_id">
 															</template>
-															<template x-if="option.type == \'multicheck\'">
-																<input x-model="option.default" :name="`option_defaults[${index}]`" :id="default_id">
-															</template>
-															<template x-if="option.type == \'select\'">
+															<template x-if="[\'multiselect\', \'select\'].includes(option.type)">
 																<input x-model="option.default" :name="`option_defaults[${index}]`" :id="default_id">
 															</template>
 														</td>
 													</tr>
-													<template x-if="! [\'multicheck\', \'select\'].includes(option.type)">
+													<template x-if="! [\'multiselect\', \'select\'].includes(option.type)">
 														<tr class="windowbg" style="display: none">
 															<td colspan="4">
 																<input x-model="option.variants" name="option_variants[]">
 															</td>
 														</tr>
 													</template>
-													<template x-if="[\'multicheck\', \'select\'].includes(option.type)">
+													<template x-if="[\'multiselect\', \'select\'].includes(option.type)">
 														<tr class="windowbg">
 															<td colspan="1"><strong>', $txt['lp_plugin_maker']['option_variants'], '</strong></td>
 															<td colspan="3">
@@ -160,7 +157,7 @@ function template_plugin_post()
 																	<tr class="windowbg">
 																		<td><strong>', $lang['name'], '</strong></td>
 																		<td>
-																			<input type="text" x-model="option.translations[\'', $lang['filename'], '\']" name="option_translations[', $lang['filename'], '][]"', in_array($lang['filename'], [$context['user']['language'], 'english']) ? ' required' : '', ' placeholder="', $lang['filename'], '">
+																			<input type="text" x-model="option.translations[\'', $lang['filename'], '\']" name="option_translations[', $lang['filename'], '][]"', $lang['filename'] === 'english' ? ' required' : '', ' placeholder="', $lang['filename'], '">
 																		</td>
 																	</tr>';
 	}

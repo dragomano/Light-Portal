@@ -115,20 +115,10 @@ final class PluginArea
 					$plugin_options[$var[1]] = $this->validate($this->request($var[1]), 'int');
 				} elseif ($var[0] === 'float') {
 					$plugin_options[$var[1]] = $this->validate($this->request($var[1]), 'float');
-				} elseif ($var[0] === 'multicheck') {
-					$plugin_options[$var[1]] = [];
-
-					foreach ($this->request($var[1]) as $key => $value) {
-						$plugin_options[$var[1]][$key] = (int) $this->validate($value, 'bool');
-					}
-
-					$plugin_options[$var[1]] = json_encode($plugin_options[$var[1]]);
 				} elseif ($var[0] === 'url') {
 					$plugin_options[$var[1]] = $this->validate($this->request($var[1]), 'url');
-				} elseif ($var[0] === 'select') {
-					$data = $this->request($var[1]);
-					$options = is_array($data) ? implode(',', $data) : $data;
-					$plugin_options[$var[1]] = ltrim($options, ',');
+				} elseif ($var[0] === 'multiselect') {
+					$plugin_options[$var[1]] = ltrim(implode(',', $this->request($var[1])), ',');
 				} else {
 					$plugin_options[$var[1]] = $this->request($var[1]);
 				}

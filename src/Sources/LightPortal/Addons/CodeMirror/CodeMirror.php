@@ -28,7 +28,7 @@ class CodeMirror extends Plugin
 
 	public function addSettings(array &$config_vars)
 	{
-		$config_vars['code_mirror'][] = ['select', 'modes', $this->modes, 'multiple' => true];
+		$config_vars['code_mirror'][] = ['multiselect', 'modes', $this->modes];
 		$config_vars['code_mirror'][] = ['desc', 'small_hint'];
 	}
 
