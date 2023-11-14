@@ -50,7 +50,8 @@ export default {
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
-import { usePluginStore } from 'stores';
+import { useStorage } from '@vueuse/core';
+import { usePluginStore } from '../../scripts/light_portal/dev/plugin_stores.js';
 import Button from './BaseButton.vue';
 import ListTransition from './ListTransition.vue';
 import PluginItem from './PluginItem.vue';
@@ -59,9 +60,8 @@ const pluginStore = usePluginStore();
 
 const plugins = ref(pluginStore.list);
 const types = ref(pluginStore.types);
-const filter = ref('all');
-const layout = ref('list');
-const showChart = ref(false);
+const filter = useStorage('lpPluginsFilter', 'all', localStorage);
+const layout = useStorage('lpPluginsLayout', 'list', localStorage);
 
 const count = computed(() => plugins.value.length);
 const isCardView = computed(() => layout.value === 'card');
@@ -72,33 +72,9 @@ const changeType = () => {
       !Object.keys(types.value).includes(filter.value) ||
       Object.keys(item.types).includes(types.value[filter.value])
   );
-
-  localStorage.setItem('lpAddonListFilter', filter.value);
 };
 
-const changeView = () => localStorage.setItem('lpAddonListLayout', layout.value);
-
-onMounted(() => {
-  filter.value = localStorage.getItem('lpAddonListFilter') || 'all';
-  layout.value = localStorage.getItem('lpAddonListLayout') || 'list';
-});
+onMounted(() => changeType());
 
 watch(filter, changeType);
-watch(layout, changeView);
 </script>
-
-<style scoped>
-#filter {
-  margin-left: 4px;
-  cursor: pointer;
-}
-#addon_list {
-  .windowbg {
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-
-    &:only-child {
-      grid-column: 1 / -1;
-    }
-  }
-}
-</style>

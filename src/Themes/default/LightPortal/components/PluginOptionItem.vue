@@ -48,8 +48,11 @@
     </template>
     <template v-if="isType('check')">
       <div class="checkbox_field">
-        <Toggle :name="name" v-model="toggler" true-value="1" false-value="0" :labelledby="id" />
-        <label :id="id">{{ $t(txtKey) }}</label>
+        <Toggle :labelledby="id" :name="name" v-model="toggler" true-value="1" false-value="0">
+          <template v-slot:label="{ classList }">
+            <label :id="id" :class="classList.label">{{ $t(txtKey) }}</label>
+          </template>
+        </Toggle>
       </div>
     </template>
     <template v-if="isType('multiselect')">
@@ -67,7 +70,6 @@
         :native-support="true"
         :placeholder="$t('lp_plugins_select')"
         :no-results-text="$t('no_matches')"
-        @clear="clear"
       />
     </template>
     <template v-if="isType('select')">
@@ -109,9 +111,8 @@ export default {
 </script>
 
 <script setup>
-import { toRefs, ref, computed, onMounted } from 'vue';
-import { useContextStore } from 'stores';
-import Button from './BaseButton.vue';
+import { toRefs, computed, ref, onMounted } from 'vue';
+import { useContextStore } from '../../scripts/light_portal/dev/base_stores.js';
 import Multiselect from '@vueform/multiselect';
 import Toggle from '@vueform/toggle';
 
@@ -141,40 +142,21 @@ const placeholder = computed(() => option.value.placeholder);
 const min = computed(() => option.value.min ?? 0);
 const max = computed(() => option.value.max);
 const step = computed(() => option.value.step ?? (type.value === 'int' ? 1 : 0.01));
-const multiple = computed(() => option.value.multiple);
-
 const showLabel = computed(() => !['callback', 'title', 'desc', 'check'].includes(type.value));
 const txtKey = computed(() => `lp_${plugin.value}.${name.value}`);
 const id = computed(() => `${plugin.value}_${name.value}`);
-const value = computed(() => contextStore[`lp_${plugin.value}`]?.[name.value]);
+const options = computed(() =>
+  extra.value ? Object.entries(extra.value).map(([value, label]) => ({ label, value })) : null
+);
 
 const isType = (t) =>
   (t === 'number' && ['float', 'int'].includes(type.value)) ||
   (t === type.value && (extra.value || true));
 
-const options = computed(() =>
-  extra.value ? Object.entries(extra.value).map(([value, label]) => ({ label, value })) : null
-);
-
-const multiSelect = computed(() => (isType('multiselect') ? value.value?.split(',') : []));
-
+const value = ref(contextStore[`lp_${plugin.value}`]?.[name.value]);
+const multiSelect = ref(isType('multiselect') ? value.value?.split(',') : []);
 const toggler = ref(!!value.value);
-
-const colorInput = ref(null);
+const colorInput = ref();
 
 onMounted(() => jscolor.install(colorInput.value));
 </script>
-
-<style scoped>
-.postfix {
-  margin-left: 4px;
-}
-</style>
-
-<style>
-.multiselect-tags-search {
-  box-shadow: none;
-  height: auto !important;
-  line-height: unset;
-}
-</style>

@@ -75,7 +75,8 @@ export default {
 
 <script setup>
 import { ref, computed } from 'vue';
-import { useAppStore, usePluginStore, useContextStore, useIconStore } from 'stores';
+import { useContextStore, useIconStore } from '../../scripts/light_portal/dev/base_stores.js';
+import { useAppStore, usePluginStore } from '../../scripts/light_portal/dev/plugin_stores.js';
 import Button from './BaseButton.vue';
 import PluginOptionList from './PluginOptionList.vue';
 
@@ -114,11 +115,3 @@ const toggle = async () => {
   if (data.success) props.item.status = props.item.status === 'on' ? 'off' : 'on';
 };
 </script>
-
-<style scoped>
-h4 {
-  strong {
-    margin-right: 4px;
-  }
-}
-</style>

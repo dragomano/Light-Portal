@@ -3,14 +3,12 @@ class VueAdapter {
     const options = {
       moduleCache: {
         vue: Vue,
-        '@vueform/multiselect': window.VueformMultiselect,
-        '@vueform/toggle': window.VueformToggle,
+        '@vueuse/core': window.VueUse,
         ...modules,
       },
 
       async getFile(url) {
         if (url.includes('.vue')) url = smf_default_theme_url + '/LightPortal/components/' + url;
-        if (url.includes('.js')) url = smf_default_theme_url + '/scripts/light_portal/' + url;
 
         const res = await fetch(url);
 

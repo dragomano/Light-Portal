@@ -1,10 +1,8 @@
 **/.idea/
-**/.vscode/
 **/vendor/
 **/composer.lock
 **/package-lock.json
 node_modules/
-mix-manifest.json
 src/Sources/LightPortal/Libs/*
 
 src/Themes/default/languages/LightPortal/*
@@ -21,8 +19,9 @@ src/Themes/default/scripts/light_portal/*
 !src/Themes/default/scripts/light_portal/index.php
 !src/Themes/default/scripts/light_portal/admin.js
 !src/Themes/default/scripts/light_portal/app.js
-!src/Themes/default/scripts/light_portal/helpers.js
-!src/Themes/default/scripts/light_portal/vue_comments.js
+!src/Themes/default/scripts/light_portal/app_comments.js
+!src/Themes/default/scripts/light_portal/app_plugins.js
+!src/Themes/default/scripts/light_portal/dev
 
 **/Addons/**/*.less
 **/Addons/**/langs/*

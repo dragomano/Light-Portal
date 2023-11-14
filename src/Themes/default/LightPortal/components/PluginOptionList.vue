@@ -45,7 +45,8 @@ export default {
 
 <script setup>
 import { ref, computed } from 'vue';
-import { useAppStore, useContextStore } from 'stores';
+import { useContextStore } from '../../scripts/light_portal/dev/base_stores.js';
+import { useAppStore } from '../../scripts/light_portal/dev/plugin_stores.js';
 import Button from './BaseButton.vue';
 import PluginOptionItem from './PluginOptionItem.vue';
 
@@ -66,7 +67,7 @@ const props = defineProps({
 const emit = defineEmits(['hide']);
 
 const success = ref(false);
-const form = ref(null);
+const form = ref();
 
 const blockId = computed(() => props.item.snake_name + '_' + appStore.sessionId + '_settings');
 const formId = computed(() => props.item.snake_name + '_form_' + appStore.sessionId);
@@ -92,28 +93,3 @@ const saveSettings = async () => {
   }
 };
 </script>
-
-<style scoped>
-.infobox {
-  opacity: 0;
-  height: 25px;
-  margin-bottom: 0;
-  width: auto;
-  transition: opacity 3s ease-in-out;
-}
-
-.infobox.show {
-  opacity: 1;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: all 0.5s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-  transform: scale(0.5);
-}
-</style>

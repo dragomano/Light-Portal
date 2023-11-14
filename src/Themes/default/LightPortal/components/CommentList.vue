@@ -44,34 +44,31 @@ export default {
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
-import { useAppStore, useIconStore, useSettingStore } from 'stores';
-import { api, helper } from 'tools';
+import { useStorage, useUrlSearchParams } from '@vueuse/core';
+import { useContextStore, useIconStore } from '../../scripts/light_portal/dev/base_stores.js';
+import { useSettingStore } from '../../scripts/light_portal/dev/comment_stores.js';
+import { CommentManager, ObjectHelper } from '../../scripts/light_portal/dev/comment_helpers.js';
 import ListTransition from './ListTransition.vue';
 import CommentItem from './CommentItem.vue';
 import Pagination from './BasePagination.vue';
 import ReplyForm from './ReplyForm.vue';
 
-const appStore = useAppStore();
+const contextStore = useContextStore();
 const iconStore = useIconStore();
 const settingStore = useSettingStore();
+
+const api = new CommentManager(contextStore.pageUrl);
+const helper = new ObjectHelper();
 
 const comments = ref([]);
 const parentsCount = ref(0);
 const total = ref(0);
 const limit = ref(0);
-const start = ref(0);
+const start = useStorage('lpCommentsStart', 0, localStorage);
 
 const totalOnPage = computed(() => comments.value.length);
-
 const showBottomPagination = computed(() => totalOnPage.value > 5);
-
 const showReplyFormOnTop = computed(() => settingStore.lp_comment_sorting === '1');
-
-onMounted(() => {
-  start.value = parseInt(localStorage.getItem('currentStart')) || 0;
-
-  if (start.value === 0) getComments();
-});
 
 const getComments = async () => {
   const data = await api.get(start.value);
@@ -82,8 +79,6 @@ const getComments = async () => {
   parentsCount.value = data.parentsCount;
   total.value = data.total;
   limit.value = data.limit;
-
-  localStorage.setItem('currentStart', start.value);
 };
 
 const addComment = async ({ content }) => {
@@ -92,14 +87,14 @@ const addComment = async ({ content }) => {
   if (!response.id) return;
 
   if (showReplyFormOnTop.value) {
-    start.value !== 0 ? (start.value = 0) : getComments();
+    start.value !== 0 ? (start.value = 0) : await getComments();
   } else {
     const maxStart = Math.ceil((parentsCount.value + 1) / limit.value) * limit.value - limit.value;
 
-    start.value !== maxStart ? (start.value = maxStart) : getComments();
+    start.value !== maxStart ? (start.value = maxStart) : await getComments();
   }
 
-  goToComment(response.id);
+  setCommentHash(response.id);
 };
 
 const addReply = async ({ parent, content }) => {
@@ -119,7 +114,7 @@ const addReply = async ({ parent, content }) => {
 
   total.value++;
 
-  goToComment(response.id);
+  setCommentHash(response.id);
 };
 
 const updateComment = async ({ id, content }) => await api.update(id, content);
@@ -129,6 +124,8 @@ const removeComment = async (items) => {
 
   if (!success) return;
 
+  setCommentHash();
+
   const currentParents = comments.value.map((comment) => comment.id);
 
   parentsCount.value -= items.filter((i) => currentParents.includes(i)).length;
@@ -136,18 +133,23 @@ const removeComment = async (items) => {
   total.value -= items.length;
 
   if (totalOnPage.value === 0) {
-    start.value !== 0 ? (start.value -= limit.value) : getComments();
+    start.value !== 0 ? (start.value -= limit.value) : await getComments();
   }
 };
 
-const changeStart = (newStart) => (start.value = newStart);
+const changeStart = (newStart) => {
+  setCommentHash();
 
-const goToComment = (comment) => {
-  window.location.href =
-    (window.location.search ? appStore.baseUrl + window.location.search : appStore.pageUrl) +
-    '#comment' +
-    comment;
+  start.value = newStart;
 };
+
+const setCommentHash = (comment) => {
+  const params = useUrlSearchParams('hash-params');
+
+  params.comment = comment;
+};
+
+onMounted(() => getComments());
 
 watch(start, getComments);
 </script>

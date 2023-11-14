@@ -6,9 +6,11 @@
         </fileset>
         <fileset dir="./src" id="files">
             <include name="Themes/**" />
+            <exclude name="Themes/default/LightPortal/components/**" />
             <exclude name="Themes/default/css/light_portal/plugins.css" />
             <exclude name="Themes/default/css/light_portal/portal.css" />
-            <exclude name="Themes/default/scripts/light_portal/app.js" />
+            <exclude name="Themes/default/scripts/light_portal/dev/**" />
+            <exclude name="Themes/default/scripts/light_portal/app*" />
             <exclude name="Themes/default/scripts/light_portal/plugins.js" />
             <include name="Sources/**" />
             <exclude name="Sources/LightPortal/Addons/BladeLayouts/**" />

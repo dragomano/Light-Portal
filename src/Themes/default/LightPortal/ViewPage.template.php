@@ -202,8 +202,16 @@ function show_comments()
 			icons: ', $context['lp_json']['icons'], ',
 			txt: ', $context['lp_json']['txt'], ',
 		}
-	</script>
-	<script src="https://cdn.jsdelivr.net/combine/npm/vue@3/dist/vue.global', ($db_show_debug ? '' : '.prod'), '.min.js,npm/vue3-sfc-loader@0.8.4,npm/vue-demi@0.14.6,npm/pinia@2,npm/showdown@2,npm/vue-showdown@4,npm/vue-i18n@9/dist/vue-i18n.global.prod.min.js"></script>
-	<script src="', $settings['default_theme_url'], '/scripts/light_portal/helpers.js"></script>
-	<script src="', $settings['default_theme_url'], '/scripts/light_portal/vue_comments.js"></script>';
+	</script>';
+
+	if ($db_show_debug) {
+		echo '
+	<script src="https://cdn.jsdelivr.net/combine/npm/vue@3/dist/vue.global.min.js,npm/vue3-sfc-loader@0.8.4,npm/vue-demi@0.14.6,npm/pinia@2,npm/showdown@2,npm/vue-showdown@4,npm/vue-i18n@9/dist/vue-i18n.global.prod.min.js,npm/@vueuse/shared@10,npm/@vueuse/core@10"></script>
+	<script src="', $settings['default_theme_url'], '/scripts/light_portal/dev/helpers.js"></script>
+	<script type="module" src="', $settings['default_theme_url'], '/scripts/light_portal/dev/comment_helpers.js"></script>
+	<script type="module" src="', $settings['default_theme_url'], '/scripts/light_portal/dev/vue_comments.js"></script>';
+	} else {
+		echo '
+	<script type="module" src="', $settings['default_theme_url'], '/scripts/light_portal/bundle_comments.js"></script>';
+	}
 }

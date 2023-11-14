@@ -1,13 +1,16 @@
 <template>
-  <div @keyup.esc="handleCancel">
+  <div class="edit_form" @keyup.esc="handleCancel">
     <MarkdownPreview v-show="content" :content="content" />
 
     <textarea v-model="content" v-focus required></textarea>
 
-    <div class="comment_buttons">
-      <span v-show="content" @click="handleSubmit" v-html="iconStore.save + $t('save')"></span>
-      <span @click="handleCancel" v-html="iconStore.undo + $t('modify_cancel')"></span>
-      <span></span>
+    <div class="comment_edit_buttons">
+      <Button v-show="content" @click="handleSubmit" view="span" icon="save">
+        {{ $t('save') }}
+      </Button>
+      <Button @click="handleCancel" view="span" icon="undo">
+        {{ $t('modify_cancel') }}
+      </Button>
     </div>
   </div>
 </template>
@@ -20,8 +23,9 @@ export default {
 
 <script setup>
 import { ref } from 'vue';
-import { useIconStore } from 'stores';
+import { useIconStore } from '../../scripts/light_portal/dev/base_stores.js';
 import MarkdownPreview from './MarkdownPreview.vue';
+import Button from './BaseButton.vue';
 
 const props = defineProps({
   comment: {
@@ -31,18 +35,12 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['submit', 'cancel']);
+
 const iconStore = useIconStore();
+
 const content = ref(props.comment.message);
 
 const handleSubmit = () => emit('submit', { id: props.comment.id, content: content.value });
 
 const handleCancel = () => emit('cancel');
 </script>
-
-<style scoped>
-textarea {
-  resize: none;
-  width: 100%;
-  height: 100px;
-}
-</style>

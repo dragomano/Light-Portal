@@ -186,6 +186,15 @@ final class CreditArea
 				]
 			],
 			[
+				'title' => 'VueUse',
+				'link' => 'https://github.com/vueuse/vueuse',
+				'author' => 'Anthony Fu',
+				'license' => [
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/vueuse/vueuse/blob/main/LICENSE'
+				]
+			],
+			[
 				'title' => 'Showdown',
 				'link' => 'https://github.com/showdownjs/showdown',
 				'author' => 'ShowdownJS',

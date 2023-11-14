@@ -13,7 +13,7 @@ export default {
 
 <script setup>
 import { computed } from 'vue';
-import { useIconStore } from 'stores';
+import { useIconStore } from '../../scripts/light_portal/dev/base_stores.js';
 
 const iconStore = useIconStore();
 
@@ -44,9 +44,3 @@ const button = computed(() =>
 
 const preparedIcon = computed(() => iconStore[props.icon] ?? '');
 </script>
-
-<style scoped>
-[role='button'] {
-  cursor: pointer;
-}
-</style>

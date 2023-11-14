@@ -14,9 +14,11 @@
   },
   "scripts": {
     "check": "vendor/bin/rector process --dry-run --clear-cache",
-    "mix": [
+    "assets": [
       "pnpm update",
-      "pnpm run build"
+      "pnpm run build",
+      "pnpm run build:comments",
+      "pnpm run build:plugins"
     ],
     "up": [
       "cd src/Sources/LightPortal && composer update",

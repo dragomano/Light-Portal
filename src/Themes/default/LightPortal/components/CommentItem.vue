@@ -9,7 +9,7 @@
     itemscope
     itemtype="https://schema.org/Comment"
   >
-    <div class="comment_wrapper">
+    <div class="comment_wrapper" :id="`comment=${comment.id}`">
       <div class="comment_avatar">
         <span v-html="comment.poster.avatar"></span>
         <span v-if="comment.authorial" class="new_posts">{{ $t('author') }}</span>
@@ -26,7 +26,7 @@
           <div class="comment_date bg" :class="['even', 'odd'][index % 2]">
             <span itemprop="datePublished" :content="comment.published_at">
               <span v-html="comment.human_date"></span>
-              <a class="bbc_link" :href="`#comment${comment.id}`" v-text="`#${comment.id}`"></a>
+              <a class="bbc_link" :href="`#comment=${comment.id}`" v-text="`#${comment.id}`"></a>
             </span>
           </div>
         </div>
@@ -91,7 +91,7 @@ export default {
 
 <script setup>
 import { ref, computed } from 'vue';
-import { useUserStore } from 'stores';
+import { useUserStore } from '../../scripts/light_portal/dev/comment_stores.js';
 import ListTransition from './ListTransition.vue';
 import EditForm from './EditForm.vue';
 import ReplyForm from './ReplyForm.vue';
@@ -120,7 +120,7 @@ const emit = defineEmits(['add-comment', 'update-comment', 'remove-comment']);
 const isHover = ref(false);
 const replyMode = ref(false);
 const editMode = ref(false);
-const parent = ref(null);
+const parent = ref();
 
 const showReplyButton = computed(() => props.level < 5 && userStore.id !== props.comment.poster.id);
 

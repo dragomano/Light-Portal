@@ -115,40 +115,4 @@ class ObjectHelper {
   }
 }
 
-const pinia = window.Pinia;
-
-const useAppStore = pinia.defineStore('app', {
-  state: () => ({
-    baseUrl: smf_scripturl,
-    pageUrl: vueGlobals.context.pageUrl,
-    loading: ajax_notification_text,
-  }),
-});
-
-const useUserStore = pinia.defineStore('user', {
-  state: () => vueGlobals.user,
-});
-
-const useContextStore = pinia.defineStore('context', {
-  state: () => vueGlobals.context,
-});
-
-const useSettingStore = pinia.defineStore('settings', {
-  state: () => vueGlobals.settings,
-});
-
-const useIconStore = pinia.defineStore('icons', {
-  state: () => vueGlobals.icons,
-});
-
-const modules = {
-  stores: { useAppStore, useUserStore, useContextStore, useSettingStore, useIconStore },
-  tools: {
-    api: new CommentManager(vueGlobals.context.pageUrl),
-    helper: new ObjectHelper(),
-  },
-};
-
-const app = new VueAdapter();
-
-app.mount('CommentList', '#vue_comments', modules);
+export { CommentManager, ObjectHelper };

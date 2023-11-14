@@ -3,19 +3,32 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:comments": "vite build --config=vite.config.comments.js",
+    "build:plugins": "vite build --config=vite.config.plugins.js",
     "preview": "vite preview"
   },
   "dependencies": {
     "@eastdesire/jscolor": "^2.5.1",
-    "alpinejs": "^3.12.1",
-    "alpinejs-slug": "^1.1.0",
-    "axios": "^1.5.1",
+    "@vitejs/plugin-vue": "^4.4.1",
+    "@vueform/multiselect": "^2.6.6",
+    "@vueform/toggle": "^2.1.4",
+    "@vueuse/core": "^10.6.1",
+    "@vueuse/shared": "^10.6.1",
+    "alpinejs": "^3.13.2",
+    "alpinejs-slug": "^1.1.2",
+    "axios": "^1.6.1",
+    "pinia": "^2.1.7",
+    "showdown": "^2.1.0",
     "sortablejs": "^1.15.0",
-    "vanilla-lazyload": "^17.8.3",
-    "virtual-select-plugin": "^1.0.37"
+    "vanilla-lazyload": "^17.8.5",
+    "virtual-select-plugin": "^1.0.40",
+    "vite-plugin-minify": "^1.5.2",
+    "vue": "^3.3.8",
+    "vue-i18n": "^9.6.5",
+    "vue-showdown": "^4.2.0"
   },
   "devDependencies": {
-    "vite": "^4.4.5",
+    "vite": "^4.5.0",
     "vite-plugin-static-copy": "^0.17.0"
   }
 }

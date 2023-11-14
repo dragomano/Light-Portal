@@ -1,12 +1,11 @@
 <template>
-  <div v-if="userStore.id" class="comment_reply_form roundframe descbox">
+  <div v-if="userStore.id" class="reply_form roundframe descbox">
     <MarkdownPreview v-show="preview && message" :content="message" />
 
     <textarea
       ref="textarea"
       v-model="message"
       v-focus
-      class="content"
       aria-labelledby="bottom-label"
       :placeholder="$t('lp_comment_placeholder')"
       @focus="focus"
@@ -28,7 +27,7 @@ export default {
 
 <script setup>
 import { ref } from 'vue';
-import { useUserStore } from 'stores';
+import { useUserStore } from '../../scripts/light_portal/dev/comment_stores.js';
 import MarkdownPreview from './MarkdownPreview.vue';
 import Button from './BaseButton.vue';
 
@@ -46,7 +45,7 @@ const props = defineProps({
 const emit = defineEmits(['submit']);
 const userStore = useUserStore();
 const message = ref('');
-const textarea = ref(null);
+const textarea = ref();
 
 const focus = () => (textarea.value.style.height = '100px');
 
@@ -57,11 +56,3 @@ const submit = () => {
   message.value = '';
 };
 </script>
-
-<style scoped>
-textarea {
-  resize: none;
-  width: 100%;
-  height: 30px;
-}
-</style>

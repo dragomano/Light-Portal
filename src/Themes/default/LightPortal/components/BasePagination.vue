@@ -56,11 +56,8 @@ const props = defineProps({
 const emit = defineEmits(['change-start']);
 
 const showPagination = computed(() => totalPages.value > 1);
-
 const activePage = computed(() => Math.floor(props.start / props.limit) + 1);
-
 const totalPages = computed(() => Math.ceil(props.total / props.limit));
-
 const maxStart = computed(() => totalPages.value * props.limit - props.limit);
 
 const changeStart = (start) => emit('change-start', start);
@@ -69,10 +66,3 @@ onMounted(() => {
   if (props.start > maxStart.value) changeStart(0);
 });
 </script>
-
-<style scoped>
-button:disabled {
-  opacity: 0.5;
-  pointer-events: none;
-}
-</style>
