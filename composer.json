@@ -18,7 +18,8 @@
       "pnpm update",
       "pnpm run build",
       "pnpm run build:comments",
-      "pnpm run build:plugins"
+      "pnpm run build:plugins",
+      "pnpm run build:less"
     ],
     "up": [
       "cd src/Sources/LightPortal && composer update",

@@ -2,9 +2,10 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "build:comments": "vite build --config=vite.config.comments.js",
-    "build:plugins": "vite build --config=vite.config.plugins.js",
+    "build": "vite build --config=configs/vite.config.js",
+    "build:comments": "vite build --config=configs/vite.comments.js",
+    "build:plugins": "vite build --config=configs/vite.plugins.js",
+    "build:less": "vite build --config=configs/vite.less.js",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -17,6 +18,7 @@
     "alpinejs": "^3.13.2",
     "alpinejs-slug": "^1.1.2",
     "axios": "^1.6.1",
+    "less": "^4.2.0",
     "pinia": "^2.1.7",
     "showdown": "^2.1.0",
     "sortablejs": "^1.15.0",
