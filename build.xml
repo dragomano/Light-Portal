@@ -48,7 +48,7 @@
             <include name="uninstall.php" />
             <include name="uninstall-optional.php" />
         </fileset>
-        <version releasetype="Bugfix" file="version.txt" property="version.number" />
+        <version releasetype="Minor" file="version.txt" property="version.number" />
         <delete file="light_portal_${version.number}.zip" quiet="true" />
         <zip destfile="light_portal_${version.number}.zip">
             <fileset refid="license" />

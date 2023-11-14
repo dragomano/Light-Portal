@@ -8,7 +8,7 @@
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
- * @version 2.2
+ * @version 2.3
  */
 
 namespace Bugo\LightPortal\Impex;
