@@ -1,9 +1,10 @@
 **/.idea/
 **/vendor/
-**/composer.lock
 **/package-lock.json
+**/composer.lock
 node_modules/
 src/Sources/LightPortal/Libs/*
+!/composer.lock
 
 src/Themes/default/languages/LightPortal/*
 !src/Themes/default/languages/LightPortal/index.php
