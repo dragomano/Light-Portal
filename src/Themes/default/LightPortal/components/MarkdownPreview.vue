@@ -1,6 +1,6 @@
 <template>
   <fieldset class="comment_content bg odd">
-    <VueShowdown :markdown="content" />
+    <VueShowdown :markdown="content" :extensions="['bindings']" />
   </fieldset>
 </template>
 

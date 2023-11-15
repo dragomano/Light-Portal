@@ -195,15 +195,6 @@ final class CreditArea
 				]
 			],
 			[
-				'title' => 'Showdown',
-				'link' => 'https://github.com/showdownjs/showdown',
-				'author' => 'ShowdownJS',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/showdownjs/showdown/blob/master/LICENSE'
-				]
-			],
-			[
 				'title' => 'Vue Showdown',
 				'link' => 'https://github.com/meteorlxy/vue-showdown/',
 				'author' => 'meteorlxy & contributors',

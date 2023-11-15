@@ -35,7 +35,12 @@
           <EditForm :comment="comment" @submit="update" @cancel="editMode = false"></EditForm>
         </template>
         <template v-else>
-          <VueShowdown :markdown="comment.message" class="comment_content" itemprop="text" />
+          <VueShowdown
+            :markdown="comment.message"
+            :extensions="['bindings']"
+            class="comment_content"
+            itemprop="text"
+          />
           <div v-if="userStore.id" class="comment_buttons">
             <Button v-if="showReplyButton" @click="replyMode = !replyMode" view="span" icon="reply">
               {{ $t('reply') }}

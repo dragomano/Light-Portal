@@ -53,13 +53,35 @@ class VueAdapter {
 
     app.use(i18n);
 
-    if (window.VueShowdownPlugin)
+    if (window.VueShowdownPlugin) {
+      const classMap = {
+        blockquote: 'bbc_standard_quote',
+        code: 'bbc_code',
+        h1: 'titlebg',
+        h2: 'titlebg',
+        h3: 'titlebg',
+        image: 'bbc_img',
+        a: 'bbc_link',
+        ul: 'bbc_list',
+        table: 'table_grid',
+        tr: 'windowbg',
+      };
+
+      const bindings = Object.keys(classMap).map((key) => ({
+        type: 'output',
+        regex: new RegExp(`<${key}(.*)>`, 'g'),
+        replace: `<${key} class="${classMap[key]}" $1>`,
+      }));
+
+      window.showdown.extension('bindings', bindings);
+
       app.use(VueShowdownPlugin, {
         flavor: 'github',
         options: {
           emoji: true,
         },
       });
+    }
 
     app.directive('focus', {
       mounted(el) {
