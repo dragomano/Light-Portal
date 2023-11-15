@@ -106,6 +106,8 @@ abstract class AbstractMain
 		$cssFile  = $this->settings['default_theme_dir'] . '/css/light_portal/portal.css';
 		$lessFile = $this->settings['default_theme_dir'] . '/css/light_portal/less/portal.less';
 
+		if (! is_file($lessFile)) return;
+
 		if (is_file($cssFile) && filemtime($lessFile) < filemtime($cssFile))
 			return;
 
