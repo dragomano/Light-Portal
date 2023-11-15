@@ -17,5 +17,13 @@ export default defineConfig({
       },
     },
   },
-  plugins: [vue()],
+  plugins: [
+    vue({
+      template: {
+        compilerOptions: {
+          isCustomElement: (tag) => tag === 'markdown-toolbar' || tag.startsWith('md-'),
+        },
+      },
+    }),
+  ],
 });

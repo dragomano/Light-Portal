@@ -83,12 +83,6 @@ class VueAdapter {
       });
     }
 
-    app.directive('focus', {
-      mounted(el) {
-        el.focus();
-      },
-    });
-
     app.mount(selector);
   }
 }

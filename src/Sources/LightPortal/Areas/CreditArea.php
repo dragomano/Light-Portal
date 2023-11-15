@@ -231,6 +231,15 @@ final class CreditArea
 				]
 			],
 			[
+				'title' => '<markdown-toolbar> element',
+				'link' => 'https://github.com/github/markdown-toolbar-element',
+				'author' => 'GitHub, Inc.',
+				'license' => [
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/github/markdown-toolbar-element/blob/main/LICENSE'
+				]
+			],
+			[
 				'title' => 'Latte',
 				'link' => 'https://latte.nette.org',
 				'author' => 'David Grudl',

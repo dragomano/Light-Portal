@@ -35,14 +35,19 @@
           <EditForm :comment="comment" @submit="update" @cancel="editMode = false"></EditForm>
         </template>
         <template v-else>
-          <VueShowdown
-            :markdown="comment.message"
-            :extensions="['bindings']"
+          <MarkdownPreview
+            :content="comment.message"
             class="comment_content"
+            :style="{ border: 'none' }"
             itemprop="text"
           />
           <div v-if="userStore.id" class="comment_buttons">
-            <Button v-if="showReplyButton" @click="replyMode = !replyMode" view="span" icon="reply">
+            <Button
+              v-if="!showReplyButton"
+              @click="replyMode = !replyMode"
+              view="span"
+              icon="reply"
+            >
               {{ $t('reply') }}
             </Button>
             <Button v-if="canEdit" @click="editMode = true" view="span" icon="edit">
@@ -100,6 +105,7 @@ import { useUserStore } from '../../scripts/light_portal/dev/comment_stores.js';
 import ListTransition from './ListTransition.vue';
 import EditForm from './EditForm.vue';
 import ReplyForm from './ReplyForm.vue';
+import MarkdownPreview from './MarkdownPreview.vue';
 import Button from './BaseButton.vue';
 
 const userStore = useUserStore();

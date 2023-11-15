@@ -2,6 +2,7 @@ import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import { createI18n } from 'vue-i18n';
 import { VueShowdownPlugin, showdown } from 'vue-showdown';
+import '@github/markdown-toolbar-element';
 import CommentList from '../../LightPortal/components/CommentList.vue';
 
 const app = createApp(CommentList);
@@ -73,12 +74,6 @@ app.use(VueShowdownPlugin, {
   flavor: 'github',
   options: {
     emoji: true,
-  },
-});
-
-app.directive('focus', {
-  mounted(el) {
-    el.focus();
   },
 });
 

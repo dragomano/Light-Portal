@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@eastdesire/jscolor": "^2.5.1",
+    "@github/markdown-toolbar-element": "^2.2.1",
     "@vitejs/plugin-vue": "^4.4.1",
     "@vueform/multiselect": "^2.6.6",
     "@vueform/toggle": "^2.1.4",

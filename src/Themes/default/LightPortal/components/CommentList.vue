@@ -7,7 +7,7 @@
       </h3>
     </div>
     <div>
-      <ReplyForm v-if="showReplyFormOnTop" :preview="true" @submit="addComment" />
+      <ReplyForm v-if="showReplyFormOnTop" @submit="addComment" />
 
       <Pagination :total="parentsCount" :limit="limit" :start="start" @change-start="changeStart" />
 
@@ -31,7 +31,7 @@
         @change-start="changeStart"
       />
 
-      <ReplyForm v-if="!showReplyFormOnTop" :preview="true" @submit="addComment" />
+      <ReplyForm v-if="!showReplyFormOnTop" @submit="addComment" />
     </div>
   </aside>
 </template>
@@ -68,7 +68,7 @@ const start = useStorage('lpCommentsStart', 0, localStorage);
 
 const totalOnPage = computed(() => comments.value.length);
 const showBottomPagination = computed(() => totalOnPage.value > 5);
-const showReplyFormOnTop = computed(() => settingStore.lp_comment_sorting === '1');
+const showReplyFormOnTop = settingStore.lp_comment_sorting === '1';
 
 const getComments = async () => {
   const data = await api.get(start.value);
@@ -86,7 +86,7 @@ const addComment = async ({ content }) => {
 
   if (!response.id) return;
 
-  if (showReplyFormOnTop.value) {
+  if (showReplyFormOnTop) {
     start.value !== 0 ? (start.value = 0) : await getComments();
   } else {
     const maxStart = Math.ceil((parentsCount.value + 1) / limit.value) * limit.value - limit.value;
@@ -109,7 +109,7 @@ const addReply = async ({ parent, content }) => {
   comments.value = helper
     .getTree(allComments)
     .sort((a, b) =>
-      showReplyFormOnTop.value ? a.created_at < b.created_at : a.created_at > b.created_at
+      showReplyFormOnTop ? a.created_at < b.created_at : a.created_at > b.created_at
     );
 
   total.value++;
