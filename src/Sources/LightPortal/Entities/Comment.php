@@ -162,7 +162,7 @@ final class Comment
 				'time'      => $time,
 				'author_id' => empty($parent_id) ? $this->context['lp_page']['author_id'] : $author,
 				'title'     => $this->context['page_title'],
-				'url'       => $page_url . '#comment' . $item,
+				'url'       => $page_url . '#comment=' . $item,
 			];
 
 			empty($parent_id)
