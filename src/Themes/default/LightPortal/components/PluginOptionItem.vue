@@ -153,8 +153,8 @@ const isType = (t) =>
   (t === 'number' && ['float', 'int'].includes(type.value)) ||
   (t === type.value && (extra.value || true));
 
-const value = ref(contextStore[`lp_${plugin.value}`]?.[name.value]);
-const multiSelect = ref(isType('multiselect') ? value.value?.split(',') : []);
+const value = computed(() => contextStore[`lp_${plugin.value}`]?.[name.value]);
+const multiSelect = computed(() => (isType('multiselect') ? value.value?.split(',') : []));
 const toggler = ref(!!value.value);
 const colorInput = ref();
 
