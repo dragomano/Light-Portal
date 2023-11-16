@@ -42,12 +42,7 @@
             itemprop="text"
           />
           <div v-if="userStore.id" class="comment_buttons">
-            <Button
-              v-if="!showReplyButton"
-              @click="replyMode = !replyMode"
-              view="span"
-              icon="reply"
-            >
+            <Button v-if="showReplyButton" @click="replyMode = !replyMode" view="span" icon="reply">
               {{ $t('reply') }}
             </Button>
             <Button v-if="canEdit" @click="editMode = true" view="span" icon="edit">
