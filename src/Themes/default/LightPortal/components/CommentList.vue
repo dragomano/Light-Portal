@@ -8,8 +8,7 @@
     </div>
     <div>
       <ReplyForm v-if="showReplyFormOnTop" @submit="addComment" />
-
-      <Pagination :total="parentsCount" :limit="limit" :start="start" @change-start="changeStart" />
+      <PurePagination v-model:start="start" :total-items="parentsCount" :items-per-page="limit" />
 
       <ListTransition v-if="comments.length" class="comment_list row">
         <CommentItem
@@ -23,14 +22,12 @@
         />
       </ListTransition>
 
-      <Pagination
+      <PurePagination
         v-if="showBottomPagination"
-        :total="parentsCount"
-        :limit="limit"
-        :start="start"
-        @change-start="changeStart"
+        v-model:start="start"
+        :total-items="parentsCount"
+        :items-per-page="limit"
       />
-
       <ReplyForm v-if="!showReplyFormOnTop" @submit="addComment" />
     </div>
   </aside>
@@ -50,7 +47,7 @@ import { useSettingStore } from '../../scripts/light_portal/dev/comment_stores.j
 import { CommentManager, ObjectHelper } from '../../scripts/light_portal/dev/comment_helpers.js';
 import ListTransition from './ListTransition.vue';
 import CommentItem from './CommentItem.vue';
-import Pagination from './BasePagination.vue';
+import PurePagination from './PurePagination.vue';
 import ReplyForm from './ReplyForm.vue';
 
 const contextStore = useContextStore();
@@ -137,12 +134,6 @@ const removeComment = async (items) => {
   }
 };
 
-const changeStart = (newStart) => {
-  setCommentHash();
-
-  start.value = newStart;
-};
-
 const setCommentHash = (comment) => {
   const params = useUrlSearchParams('hash-params');
 
@@ -151,5 +142,8 @@ const setCommentHash = (comment) => {
 
 onMounted(() => getComments());
 
-watch(start, getComments);
+watch(start, () => {
+  setCommentHash();
+  getComments();
+});
 </script>
