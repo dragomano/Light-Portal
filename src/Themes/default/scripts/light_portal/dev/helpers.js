@@ -79,6 +79,8 @@ class VueAdapter {
         flavor: 'github',
         options: {
           emoji: true,
+          encodeEmails: true,
+          openLinksInNewWindow: true,
         },
       });
     }

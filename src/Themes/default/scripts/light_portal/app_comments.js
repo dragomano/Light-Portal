@@ -74,6 +74,8 @@ app.use(VueShowdownPlugin, {
   flavor: 'github',
   options: {
     emoji: true,
+    encodeEmails: true,
+    openLinksInNewWindow: true,
   },
 });
 
