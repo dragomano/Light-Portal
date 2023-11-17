@@ -42,19 +42,12 @@ final class Comment
 
 		header('Content-Type: application/json; charset=utf-8');
 
-		switch ($this->request('api')) {
-			case 'add_comment':
-				$this->add();
-				break;
-			case 'update_comment':
-				$this->update();
-				break;
-			case 'remove_comment':
-				$this->remove();
-				break;
-			default:
-				$this->get();
-		}
+		match ($this->request('api')) {
+			'add_comment'    => $this->add(),
+			'update_comment' => $this->update(),
+			'remove_comment' => $this->remove(),
+			default          => $this->get(),
+		};
 	}
 
 	/**

@@ -521,9 +521,7 @@ class Handler extends Plugin
 				->setReference()
 				->setType('array');
 
-			$arrayWithDefaultOptions = array_filter($this->context['lp_plugin']['options'], function($optionArray) {
-				return array_key_exists('default', $optionArray);
-			});
+			$arrayWithDefaultOptions = array_filter($this->context['lp_plugin']['options'], fn($optionArray) => array_key_exists('default', $optionArray));
 
 			if (! empty($arrayWithDefaultOptions)) {
 				$method->addBody("\$this->addDefaultValues([");
