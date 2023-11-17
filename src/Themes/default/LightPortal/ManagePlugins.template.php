@@ -20,7 +20,7 @@ function template_manage_plugins()
 		}
 	</script>';
 
-	if ($db_show_debug) {
+	if ($db_show_debug && is_file($settings['default_theme_dir'] . '/scripts/light_portal/dev/helpers.js')) {
 		echo '
 	<script src="https://cdn.jsdelivr.net/combine/npm/vue@3/dist/vue.global', ($db_show_debug ? '' : '.prod'), '.min.js,npm/vue3-sfc-loader@0.8.4,npm/vue-demi@0.14.6,npm/pinia@2,npm/vue-i18n@9/dist/vue-i18n.global.prod.min.js,npm/@vueform/multiselect@2,npm/@vueform/toggle@2/dist/toggle.global.min.js,npm/@vueuse/shared@10,npm/@vueuse/core@10"></script>
 	<script src="', $settings['default_theme_url'], '/scripts/light_portal/dev/helpers.js"></script>
