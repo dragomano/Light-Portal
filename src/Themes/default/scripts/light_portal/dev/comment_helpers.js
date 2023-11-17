@@ -82,16 +82,15 @@ class ObjectHelper {
 
   getTree(data) {
     const tree = [];
+    const nodes = data.map((node) => ({ ...node, replies: [] }));
 
-    const nodes = data.reduce((acc, node) => {
-      acc[node.id] = { ...node, replies: [] };
-      return acc;
-    }, {});
-
-    for (const node of Object.values(nodes)) {
+    for (const node of nodes) {
       if (node.parent_id) {
-        const parent = nodes[node.parent_id];
-        parent.replies.push(node);
+        const parent = nodes.find((n) => n.id === node.parent_id);
+
+        if (parent) {
+          parent.replies.push(node);
+        }
       } else {
         tree.push(node);
       }
@@ -100,14 +99,20 @@ class ObjectHelper {
     return tree;
   }
 
-  filterTree(arr, condition) {
-    if (typeof arr === 'object' && !Array.isArray(arr)) {
-      arr = Object.values(arr);
+  getSortedTree(data, condition) {
+    return this.getTree(
+      data.sort((a, b) => (condition ? a.created_at < b.created_at : a.created_at > b.created_at))
+    );
+  }
+
+  getFilteredTree(data, condition) {
+    if (typeof data === 'object' && !Array.isArray(data)) {
+      data = Object.values(data);
     }
 
-    return arr.filter((item) => {
+    return data.filter((item) => {
       if (item.replies) {
-        item.replies = this.filterTree(item.replies, condition);
+        item.replies = this.getFilteredTree(item.replies, condition);
       }
 
       return condition(item);

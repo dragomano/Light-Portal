@@ -82,8 +82,6 @@ final class Comment
 
 		$parentsCount = sizeof($commentTree);
 
-		$this->context['current_start'] = $this->request('start');
-
 		$this->context['page_index'] = $this->constructPageIndex(
 			$this->getPageIndexUrl(),
 			$this->request()->get('start'),

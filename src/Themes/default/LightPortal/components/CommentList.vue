@@ -72,7 +72,7 @@ const getComments = async () => {
 
   if (!data.total) return;
 
-  comments.value = data.comments;
+  comments.value = helper.getSortedTree(helper.getData(data.comments), showReplyFormOnTop);
   parentsCount.value = data.parentsCount;
   total.value = data.total;
   limit.value = data.limit;
@@ -101,13 +101,7 @@ const addReply = async ({ parent, content }) => {
 
   const allComments = helper.getData(comments.value);
 
-  allComments.push(response);
-
-  comments.value = helper
-    .getTree(allComments)
-    .sort((a, b) =>
-      showReplyFormOnTop ? a.created_at < b.created_at : a.created_at > b.created_at
-    );
+  comments.value = helper.getSortedTree([...allComments, response], showReplyFormOnTop);
 
   total.value++;
 
@@ -126,7 +120,7 @@ const removeComment = async (items) => {
   const currentParents = comments.value.map((comment) => comment.id);
 
   parentsCount.value -= items.filter((i) => currentParents.includes(i)).length;
-  comments.value = helper.filterTree(comments.value, (comment) => !items.includes(comment.id));
+  comments.value = helper.getFilteredTree(comments.value, (comment) => !items.includes(comment.id));
   total.value -= items.length;
 
   if (totalOnPage.value === 0) {
