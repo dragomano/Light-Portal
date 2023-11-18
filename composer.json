@@ -10,8 +10,9 @@
   },
   "require-dev": {
     "rector/rector": "^0.18",
-    "phing/phing": "2.*"
+    "phing/phing": "3.*"
   },
+  "minimum-stability": "alpha",
   "scripts": {
     "check": "vendor/bin/rector process --dry-run --clear-cache",
     "assets": [
@@ -25,8 +26,6 @@
       "cd src/Sources/LightPortal && composer update",
       "composer update"
     ],
-    "build": [
-      "vendor/bin/phing"
-    ]
+    "build": "vendor/bin/phing"
   }
 }
