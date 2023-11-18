@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.05.23
+ * @version 12.11.23
  */
 
 namespace Bugo\LightPortal\Addons\LayoutHelper;
@@ -95,13 +95,13 @@ class DemoArticle extends AbstractArticle
 	{
 		$products = $this->fetchWebData('https://reqres.in/api/products');
 
-		return $this->jsonDecode($products, true)['data'] ?? [];
+		return $this->jsonDecode($products)['data'] ?? [];
 	}
 
 	public function getUsers(): array
 	{
 		$users = $this->fetchWebData('https://reqres.in/api/users');
 
-		return $this->jsonDecode($users, true)['data'] ?? [];
+		return $this->jsonDecode($users)['data'] ?? [];
 	}
 }

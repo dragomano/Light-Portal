@@ -333,7 +333,7 @@ function template_callback_standalone_mode_settings()
 
 function template_callback_comment_settings()
 {
-	global $modSettings, $txt, $scripturl, $context;
+	global $modSettings, $txt;
 
 	echo '
 	</dl>
@@ -352,56 +352,6 @@ function template_callback_comment_settings()
 	echo '
 			</select>
 		</dd>
-
-		<template x-if="comment_block === \'default\'">
-			<dt>
-				<a id="setting_lp_disabled_bbc_in_comments"></a>
-				<span>
-					<label for="lp_disabled_bbc_in_comments">', $txt['lp_disabled_bbc_in_comments'], '</label>
-				</span>
-				<div class="smalltext">
-					', sprintf($txt['lp_disabled_bbc_in_comments_subtext'], $scripturl . '?action=admin;area=featuresettings;sa=bbc;' . $context['session_var'] . '=' . $context['session_id'] . '#disabledBBC'), '
-				</div>
-			</dt>
-		</template>
-		<template x-if="comment_block === \'default\'">
-			<dd>
-				<fieldset>
-					<select id="lp_disabled_bbc_in_comments" name="lp_disabled_bbc_in_comments_enabledTags" multiple>';
-
-	foreach ($context['bbc_sections']['columns'] as $bbcColumn) {
-		foreach ($bbcColumn as $bbcTag) {
-			echo '
-						<option id="tag_lp_disabled_bbc_in_comments_', $bbcTag, '" value="', $bbcTag, '"', in_array($bbcTag, $context['bbc_sections']['disabled']) ? '' : ' selected', '>
-							', $bbcTag, '
-						</option>';
-		}
-	}
-
-	echo '
-					</select>
-					<input type="checkbox" id="lp_disabled_bbc_in_comments_select_all" @click="toggleSelectAll($event.target)"', $context['bbc_sections']['all_selected'] ? ' selected' : '', '> <label for="lp_disabled_bbc_in_comments_select_all"><em>', $txt['enabled_bbc_select_all'], '</em></label>
-					<script>
-						VirtualSelect.init({
-							ele: "#lp_disabled_bbc_in_comments",', ($context['right_to_left'] ? '
-							textDirection: "rtl",' : ''), '
-							dropboxWrapper: "body",
-							maxWidth: "100%",
-							search: true,
-							showValueAsTags: true,
-							showSelectedOptionsFirst: true,
-							placeholder: "', $txt['no'], '",
-							noSearchResultsText: "', $txt['no_matches'], '",
-							searchPlaceholderText: "', $txt['search'], '",
-							clearButtonText: "', $txt['remove'], '"
-						});
-						function toggleSelectAll(target) {
-							document.querySelector("#lp_disabled_bbc_in_comments").toggleSelectAll(target.checked);
-						}
-					</script>
-				</fieldset>
-			</dd>
-		</template>
 
 		<template x-if="comment_block === \'default\'">
 			<dt>

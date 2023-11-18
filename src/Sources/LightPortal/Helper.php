@@ -9,7 +9,7 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.2
+ * @version 2.3
  */
 
 namespace Bugo\LightPortal;
@@ -261,14 +261,14 @@ trait Helper
 	}
 
 	/**
-	 * Get the filtered $obj[$key]
+	 * Get the filtered $var
 	 *
-	 * Получаем отфильтрованное значение $obj[$key]
+	 * Получаем отфильтрованное значение $var
 	 */
-	public function validate(string $key, array|string $type = 'string'): mixed
+	public function validate(mixed $var, array|string $type = 'string'): mixed
 	{
 		if (is_array($type)) {
-			return filter_var($key, FILTER_VALIDATE_REGEXP, $type);
+			return filter_var($var, FILTER_VALIDATE_REGEXP, $type);
 		}
 
 		$filter = match ($type) {
@@ -280,7 +280,7 @@ trait Helper
 			default  => FILTER_DEFAULT,
 		};
 
-		return filter_var($key, $filter);
+		return filter_var($var, $filter);
 	}
 
 	public function getImageFromText(string $text): string

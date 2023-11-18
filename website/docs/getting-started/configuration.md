@@ -53,7 +53,6 @@ In this section, you can change the general settings of pages and blocks used bo
 * Show links to the previous and next pages — enable if you want to see links to pages created before and after the current page.
 * Show related pages — if a page has similar pages (by title and alias), they will be displayed at the bottom of the page.
 * Show page comments — if you are allowed to comment a page, a comment form will be displayed at the bottom of the page.
-* Allowed BBCode in comments — you can specify tags that are allowed to be used when commenting pages.
 * Maximum time after commenting to allow edit — after the specified time (after creating a comment), you will not be able to change comments.
 * Number of parent comments per page — specify the maximum number of non-children comments to display on a single page.
 * Sorting comments by default — select the desired sorting type for comments on portal pages.

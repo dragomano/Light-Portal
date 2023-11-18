@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.09.23
+ * @version 16.11.23
  */
 
 namespace Bugo\LightPortal\Addons\RecentComments;
@@ -111,13 +111,9 @@ class RecentComments extends Block
 		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
 			$this->censorText($row['message']);
 
-			$limit     = $this->modSettings['lp_num_comments_per_page'];
-			$num_pages = floor($row['num_comments'] / $limit) + 1;
-			$start     = $num_pages * $limit - $limit;
-
 			$comments[$row['id']] = [
-				'link'        => LP_PAGE_URL . $row['alias'] . ($start > 0 && empty($this->modSettings['lp_comment_sorting']) ? ';start=' . $start : '') . '#comment' . $row['id'],
-				'message'     => $this->getTeaser($this->parseBbc($row['message']), $length),
+				'link'        => LP_PAGE_URL . $row['alias'] . '#comment=' . $row['id'],
+				'message'     => $this->getTeaser($row['message'], $length),
 				'created_at'  => (int) $row['created_at'],
 				'author_name' => $row['author_name'],
 			];

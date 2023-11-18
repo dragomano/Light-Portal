@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 13.05.23
+ * @version 1.11.23
  */
 
 namespace Bugo\LightPortal\Addons\Reactions;
@@ -102,7 +102,7 @@ class Reactions extends Plugin
 		show_page_reactions();
 	}
 
-	public function commentButtons(array $comment): void
+	public function commentButtons(array $comment, array &$buttons): void
 	{
 		if (empty($this->context['lp_page']['options']['allow_reactions']))
 			return;
@@ -112,7 +112,11 @@ class Reactions extends Plugin
 		$comment['prepared_reactions'] = $this->getReactionsWithCount($comment['reactions']);
 		$comment['prepared_buttons'] = json_decode($comment['prepared_reactions'], true);
 
+		ob_start();
+
 		show_comment_reactions($comment);
+
+		$buttons[] = ob_get_clean();
 	}
 
 	private function getReactionsWithCount(array $reactions): string

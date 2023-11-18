@@ -9,7 +9,7 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.2
+ * @version 2.3
  */
 
 namespace Bugo\LightPortal\Lists;
@@ -58,6 +58,7 @@ final class IconList implements ListInterface
 			'italic'        => 'italic',
 			'like'          => 'arrow-up',
 			'link'          => 'link',
+			'list'          => 'list-ul',
 			'main'          => 'table-list',
 			'map_signs'     => 'signs-post',
 			'pager'         => 'pager',
@@ -80,8 +81,10 @@ final class IconList implements ListInterface
 			'submit'        => 'paper-plane',
 			'tag'           => 'tag',
 			'tags'          => 'tags fa-fw',
+			'task'          => 'list-check',
 			'tile'          => 'border-all fa-2x',
-			'toggle'        => '3x fa-toggle-',
+			'toggle-on'     => '3x fa-toggle-on',
+			'toggle-off'    => '3x fa-toggle-off',
 			'tools'         => 'sliders',
 			'undo'          => 'rotate-left',
 			'unlike'        => 'heart-crack',

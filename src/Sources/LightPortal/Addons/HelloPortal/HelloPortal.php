@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 14.05.23
+ * @version 12.11.23
  */
 
 namespace Bugo\LightPortal\Addons\HelloPortal;
@@ -76,12 +76,6 @@ class HelloPortal extends Plugin
 
 	public function addSettings(array &$config_vars)
 	{
-		$this->addDefaultValues([
-			'show_progress'       => 1,
-			'show_buttons'        => 1,
-			'keyboard_navigation' => 1,
-		]);
-
 		$config_vars['hello_portal'][] = ['select', 'theme', array_combine($this->themes, $this->txt['lp_hello_portal']['theme_set'])];
 		$config_vars['hello_portal'][] = ['check', 'show_progress'];
 		$config_vars['hello_portal'][] = ['check', 'show_buttons'];

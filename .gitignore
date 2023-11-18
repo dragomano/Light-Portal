@@ -1,11 +1,10 @@
 **/.idea/
-**/.vscode/
 **/vendor/
-**/composer.lock
 **/package-lock.json
+**/composer.lock
 node_modules/
-mix-manifest.json
 src/Sources/LightPortal/Libs/*
+!/composer.lock
 
 src/Themes/default/languages/LightPortal/*
 !src/Themes/default/languages/LightPortal/index.php
@@ -21,7 +20,9 @@ src/Themes/default/scripts/light_portal/*
 !src/Themes/default/scripts/light_portal/index.php
 !src/Themes/default/scripts/light_portal/admin.js
 !src/Themes/default/scripts/light_portal/app.js
-!src/Themes/default/scripts/light_portal/user.js
+!src/Themes/default/scripts/light_portal/app_comments.js
+!src/Themes/default/scripts/light_portal/app_plugins.js
+!src/Themes/default/scripts/light_portal/dev
 
 **/Addons/**/*.less
 **/Addons/**/langs/*
@@ -32,7 +33,6 @@ src/Themes/default/scripts/light_portal/*
 **/Addons/Jodit/*
 **/Addons/MediaBlock/*
 **/Addons/PageScroll/*
-**/Addons/SiteList/*
 **/Addons/YandexTurbo/*
 
 !**/Addons/**/index.php

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.05.23
+ * @version 13.11.23
  */
 
 namespace Bugo\LightPortal\Addons\CodeMirror;
@@ -28,11 +28,7 @@ class CodeMirror extends Plugin
 
 	public function addSettings(array &$config_vars)
 	{
-		$this->addDefaultValues([
-			'modes' => '{"html":1,"php":1,"markdown":0}'
-		]);
-
-		$config_vars['code_mirror'][] = ['multicheck', 'modes', $this->modes];
+		$config_vars['code_mirror'][] = ['multiselect', 'modes', $this->modes];
 		$config_vars['code_mirror'][] = ['desc', 'small_hint'];
 	}
 
@@ -41,12 +37,12 @@ class CodeMirror extends Plugin
 		if ($object['type'] === 'bbc' || (isset($object['options']['content']) && $object['options']['content'] === 'bbc'))
 			return;
 
-		if (empty($modes = $this->jsonDecode($this->context['lp_code_mirror_plugin']['modes'] ?? '', true)))
+		if (empty($modes =  array_filter(explode(',', $this->context['lp_code_mirror_plugin']['modes'] ?? ''))))
 			return;
 
 		$types = array_keys($this->modes);
 		foreach ($types as $type) {
-			if (($object['type'] === $type || (isset($object['options']['content']) && $object['options']['content'] === $type)) && $modes[$type] === 1) {
+			if (($object['type'] === $type || (isset($object['options']['content']) && $object['options']['content'] === $type)) && in_array($type, $modes)) {
 				$current_mode = $type;
 				break;
 			}

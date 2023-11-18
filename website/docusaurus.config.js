@@ -1,7 +1,7 @@
 // @ts-check
-
-const lightCodeTheme = require('prism-react-renderer/themes/oceanicNext');
-const darkCodeTheme = require('prism-react-renderer/themes/dracula');
+const { themes } = require('prism-react-renderer');
+const lightTheme = themes.oceanicNext;
+const darkTheme = themes.dracula;
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -49,7 +49,7 @@ const config = {
           {
             href: 'https://demo.dragomano.ru',
             label: 'Demo',
-            position: 'left'
+            position: 'left',
           },
           {
             type: 'localeDropdown',
@@ -67,33 +67,34 @@ const config = {
         copyright: `<a href="https://crowdin.com/project/light-portal">Help us improve the documentation</a>`,
       },
       prism: {
-        theme: lightCodeTheme,
-        darkTheme: darkCodeTheme,
+        theme: lightTheme,
+        darkTheme: darkTheme,
         additionalLanguages: ['php', 'latte'],
       },
     }),
 
-    i18n: {
-      defaultLocale: 'en',
-      locales: ['en', 'ru', 'el', 'de'],
-    },
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en', 'ru', 'el', 'de'],
+  },
 
-    plugins: [
-      [
-        'docusaurus-plugin-yandex-metrica', {
-          counterID: '89104842',
-          webvisor: true,
-          trackHash: true
-        },
-      ],
-      [
-        require.resolve("@cmfcmf/docusaurus-search-local"),
-        {
-          language: ['en', 'ru', 'es', 'de'],
-          indexBlog: false,
-        },
-      ],
+  plugins: [
+    [
+      'docusaurus-plugin-yandex-metrica',
+      {
+        counterID: '89104842',
+        webvisor: true,
+        trackHash: true,
+      },
     ],
+    [
+      require.resolve('@cmfcmf/docusaurus-search-local'),
+      {
+        language: ['en', 'ru', 'es', 'de'],
+        indexBlog: false,
+      },
+    ],
+  ],
 };
 
 module.exports = config;

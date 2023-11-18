@@ -9,7 +9,7 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.2
+ * @version 2.3
  */
 
 namespace Bugo\LightPortal\Partials;
@@ -25,75 +25,44 @@ final class IconSelect extends AbstractPartial
 
 		$template = $this->getIcon($icon) . $icon;
 
-		$this->loadCSSFile('light_portal/tom-select.min.css');
-		$this->loadJavaScriptFile('light_portal/tom-select.complete.min.js');
-
 		return /** @lang text */ '
-		<select id="' . $id . '" name="' . $id . '"></select>
+		<div id="' . $id . '" name="' . $id . '"></div>
 		<script>
-			new TomSelect("#' . $id . '", {
-				plugins: {
-					remove_button:{
-						title: "' . $this->txt['remove'] . '",
-					}
-				},
-				searchField: "value",
-				allowEmptyOption: true,
-				closeAfterSelect: false,
-				placeholder: "cheese",' . (empty($icon) ? '' : '
+			VirtualSelect.init({
+				ele: "#' . $id . '",' . ($this->context['right_to_left'] ? '
+				textDirection: "rtl",' : '') . '
+				dropboxWrapper: "body",
+				search: true,
+				allowNewOption: true,
+				placeholder: "cheese",
+				noSearchResultsText: "' . $this->txt['no_matches'] . '",
+				searchPlaceholderText: "' . $this->txt['search'] . '",
 				options: [
-					{text: `' . $template . '`, value: "' . $icon . '"}
+					{
+						label: ' . $this->jsEscape($template) . ',
+						value: "' . $icon . '"
+					}
 				],
-				items: ["' . $icon . '"],') . '
-				shouldLoad: function (search) {
-					return search.length >= 3;
+				selectedValue: "' . $icon . '",
+				labelRenderer: function (data) {
+					return `<i class="${data.value} fa-fw"></i> ${data.value}`;
 				},
-				load: function (search, callback) {
-					fetch("' . $this->context['canonical_url'] . ';icons", {
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json; charset=utf-8"
-						},
-						body: JSON.stringify({
-							search,
-							add_block: "' . $type . '"
-						})
+				onServerSearch: async function (search, virtualSelect) {
+					await axios.post("' . $this->context['canonical_url'] . ';icons", {
+						search,
+						add_block: "' . $type . '"
 					})
-					.then(response => response.json())
-					.then(function (json) {
-						let data = [];
-						for (let i = 0; i < json.length; i++) {
-							data.push({text: json[i].innerHTML, value: json[i].value})
-						}
+						.then(({ data }) => {
+							const icons = [];
+							for (let i = 0; i < data.length; i++) {
+								icons.push({ label: data[i].innerHTML, value: data[i].value })
+							}
 
-						callback(data)
-					})
-					.catch(function (error) {
-						callback(false)
-					})
-				},
-				render: {
-					option: function (item, escape) {
-						return `<div><i class="${item.value} fa-fw"></i>&nbsp;${item.value}</div>`;
-					},
-					item: function (item, escape) {
-						return `<div><i class="${item.value} fa-fw"></i>&nbsp;${item.value}</div>`;
-					},
-					option_create: function(data, escape) {
-						return `<div class="create">' . $this->txt['ban_add'] . ' <strong>` + escape(data.input) + `</strong>&hellip;</div>`;
-					},
-					no_results: function(data, escape) {
-						return `<div class="no-results">' . $this->txt['no_matches'] . '</div>`;
-					},
-					not_loading: function(data, escape) {
-						return `<div class="optgroup-header">' . sprintf($this->txt['lp_min_search_length'], 3) . '</div>`;
-					}
-				},
-				create: function(input) {
-					return {
-						value: input.toLowerCase(),
-						text: input.toLowerCase()
-					}
+							virtualSelect.setServerOptions(icons)
+						})
+						.catch(function (error) {
+							virtualSelect.setServerOptions(false)
+						})
 				}
 			});
 		</script>';

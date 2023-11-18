@@ -9,7 +9,7 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.2
+ * @version 2.3
  */
 
 namespace Bugo\LightPortal\Partials;
@@ -50,27 +50,20 @@ final class PageIconSelect extends AbstractPartial
 					return `<i class="${data.value} fa-fw"></i> ${data.value}`;
 				},
 				onServerSearch: async function (search, virtualSelect) {
-					fetch("' . $this->context['canonical_url'] . ';icons", {
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json; charset=utf-8"
-						},
-						body: JSON.stringify({
-							search
-						})
+					await axios.post("' . $this->context['canonical_url'] . ';icons", {
+						search
 					})
-					.then(response => response.json())
-					.then(function (json) {
-						let data = [];
-						for (let i = 0; i < json.length; i++) {
-							data.push({label: json[i].innerHTML, value: json[i].value})
-						}
+						.then(({ data }) => {
+							const icons = [];
+							for (let i = 0; i < data.length; i++) {
+								icons.push({ label: data[i].innerHTML, value: data[i].value })
+							}
 
-						virtualSelect.setServerOptions(data)
-					})
-					.catch(function (error) {
-						virtualSelect.setServerOptions(false)
-					})
+							virtualSelect.setServerOptions(icons)
+						})
+						.catch(function (error) {
+							virtualSelect.setServerOptions(false)
+						})
 				}
 			});
 			document.querySelector("#show_in_menu").addEventListener("change", function (e) {

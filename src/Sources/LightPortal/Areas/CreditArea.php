@@ -9,7 +9,7 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.2
+ * @version 2.3
  */
 
 namespace Bugo\LightPortal\Areas;
@@ -150,6 +150,96 @@ final class CreditArea
 				]
 			],
 			[
+				'title' => 'Vue.js',
+				'link' => 'https://github.com/vuejs/core',
+				'author' => 'Yuxi (Evan) You',
+				'license' => [
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/vuejs/core/blob/main/LICENSE'
+				]
+			],
+			[
+				'title' => 'vue3-sfc-loader',
+				'link' => 'https://github.com/FranckFreiburger/vue3-sfc-loader',
+				'author' => 'Franck Freiburger',
+				'license' => [
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/vuejs/core/blob/main/LICENSE'
+				]
+			],
+			[
+				'title' => 'Pinia',
+				'link' => 'https://github.com/vuejs/pinia',
+				'author' => 'Eduardo San Martin Morote',
+				'license' => [
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/vuejs/pinia/blob/v2/LICENSE'
+				]
+			],
+			[
+				'title' => 'VueDemi',
+				'link' => 'https://github.com/vueuse/vue-demi',
+				'author' => 'Anthony Fu',
+				'license' => [
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/vueuse/vue-demi/blob/main/LICENSE'
+				]
+			],
+			[
+				'title' => 'VueUse',
+				'link' => 'https://github.com/vueuse/vueuse',
+				'author' => 'Anthony Fu',
+				'license' => [
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/vueuse/vueuse/blob/main/LICENSE'
+				]
+			],
+			[
+				'title' => 'Vue Showdown',
+				'link' => 'https://github.com/meteorlxy/vue-showdown/',
+				'author' => 'meteorlxy & contributors',
+				'license' => [
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/meteorlxy/vue-showdown/blob/main/LICENSE'
+				]
+			],
+			[
+				'title' => 'Vue 3 Multiselect',
+				'link' => 'https://github.com/vueform/multiselect',
+				'author' => 'Adam Berecz',
+				'license' => [
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/vueform/multiselect/blob/main/LICENSE.md'
+				]
+			],
+			[
+				'title' => 'Vue 3 Toggle',
+				'link' => 'https://github.com/vueform/toggle',
+				'author' => 'Adam Berecz',
+				'license' => [
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/vueform/toggle/blob/main/LICENSE.md'
+				]
+			],
+			[
+				'title' => 'vue-i18n-next',
+				'link' => 'https://github.com/intlify/vue-i18n-next/',
+				'author' => 'kazuya kawaguchi',
+				'license' => [
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/intlify/vue-i18n-next/blob/master/LICENSE'
+				]
+			],
+			[
+				'title' => '&lt;markdown-toolbar&gt; element',
+				'link' => 'https://github.com/github/markdown-toolbar-element',
+				'author' => 'GitHub, Inc.',
+				'license' => [
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/github/markdown-toolbar-element/blob/main/LICENSE'
+				]
+			],
+			[
 				'title' => 'Latte',
 				'link' => 'https://latte.nette.org',
 				'author' => 'David Grudl',
@@ -165,15 +255,6 @@ final class CreditArea
 				'license' => [
 					'name' => 'the Apache License 2.0',
 					'link' => 'https://github.com/wikimedia/less.php/blob/master/LICENSE'
-				]
-			],
-			[
-				'title' => '@shat/stylenames',
-				'link' => 'https://github.com/shatstack/stylenames',
-				'author' => 'Kevin Mathmann',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/shatstack/stylenames/blob/master/LICENSE'
 				]
 			],
 			[
@@ -195,12 +276,12 @@ final class CreditArea
 				]
 			],
 			[
-				'title' => 'Tom Select',
-				'link' => 'https://tom-select.js.org/',
-				'author' => 'Brian Reavis and contributors',
+				'title' => 'Axios',
+				'link' => 'https://github.com/axios/axios',
+				'author' => 'Matt Zabriskie & Collaborators',
 				'license' => [
-					'name' => 'the Apache License 2.0',
-					'link' => 'https://github.com/orchidjs/tom-select/blob/master/LICENSE'
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/axios/axios/blob/v1.x/LICENSE'
 				]
 			],
 			[
@@ -210,15 +291,6 @@ final class CreditArea
 				'license' => [
 					'name' => 'the MIT License',
 					'link' => 'https://github.com/sa-si-dev/virtual-select/blob/master/LICENSE'
-				]
-			],
-			[
-				'title' => 'jscolor Color Picker',
-				'link' => 'https://jscolor.com',
-				'author' => 'Jan Odvárko – East Desire',
-				'license' => [
-					'name' => 'the GNU GPL v3',
-					'link' => 'https://jscolor.com/download/#open-source-license'
 				]
 			],
 			[

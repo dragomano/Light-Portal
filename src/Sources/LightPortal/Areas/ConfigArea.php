@@ -9,7 +9,7 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.2
+ * @version 2.3
  */
 
 namespace Bugo\LightPortal\Areas;
@@ -42,7 +42,7 @@ final class ConfigArea
 		$this->loadCSSFile('light_portal/virtual-select.min.css');
 		$this->loadJavaScriptFile('light_portal/virtual-select.min.js');
 
-		$this->loadJavaScriptFile('light_portal/alpine.min.js', ['defer' => true]);
+		$this->loadJavaScriptFile('light_portal/bundle.min.js', ['defer' => true]);
 		$this->loadJavaScriptFile('light_portal/admin.js', ['minimize' => true]);
 
 		$this->loadLanguage('ManageSettings');

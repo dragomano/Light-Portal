@@ -1,25 +1,31 @@
 {
-    "autoload": {
-        "psr-4": {
-            "Bugo\\LightPortal\\": "src\\Sources\\LightPortal"
-        }
-    },
-    "require": {
-        "php": "^8.0",
-        "ext-dom": "*"
-    },
-    "require-dev": {
-        "rector/rector": "^0.17",
-        "phing/phing": "2.*"
-    },
-    "scripts": {
-        "check": "vendor/bin/rector process --dry-run --clear-cache",
-        "mix": [
-            "npm update",
-            "npm run prod"
-        ],
-        "build": [
-            "vendor/bin/phing"
-        ]
+  "autoload": {
+    "psr-4": {
+      "Bugo\\LightPortal\\": "src\\Sources\\LightPortal"
     }
+  },
+  "require": {
+    "php": "^8.0",
+    "ext-dom": "*"
+  },
+  "require-dev": {
+    "rector/rector": "^0.18",
+    "phing/phing": "3.*"
+  },
+  "minimum-stability": "alpha",
+  "scripts": {
+    "check": "vendor/bin/rector process --dry-run --clear-cache",
+    "assets": [
+      "pnpm update",
+      "pnpm run build",
+      "pnpm run build:comments",
+      "pnpm run build:plugins",
+      "pnpm run build:less"
+    ],
+    "up": [
+      "cd src/Sources/LightPortal && composer update",
+      "composer update"
+    ],
+    "build": "vendor/bin/phing"
+  }
 }

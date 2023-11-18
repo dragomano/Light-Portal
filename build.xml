@@ -1,56 +1,68 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8" ?>
+
 <project name="Light Portal" default="build">
-    <target name="build">
-        <fileset dir="." id="license">
-            <include name="LICENSE" />
-        </fileset>
-        <fileset dir="./src" id="files">
-            <include name="Themes/**" />
-            <exclude name="Themes/default/css/light_portal/plugins.css" />
-            <exclude name="Themes/default/css/light_portal/portal.css" />
-            <exclude name="Themes/default/scripts/light_portal/app.js" />
-            <exclude name="Themes/default/scripts/light_portal/plugins.js" />
-            <include name="Sources/**" />
-            <exclude name="Sources/LightPortal/Addons/BladeLayouts/**" />
-            <exclude name="Sources/LightPortal/Addons/BootstrapIcons/**" />
-            <exclude name="Sources/LightPortal/Addons/DiceBear/**" />
-            <exclude name="Sources/LightPortal/Addons/Disqus/**" />
-            <exclude name="Sources/LightPortal/Addons/EasyMarkdownEditor/**" />
-            <exclude name="Sources/LightPortal/Addons/EhPortal/**" />
-            <exclude name="Sources/LightPortal/Addons/EzPortal/**" />
-            <exclude name="Sources/LightPortal/Addons/FaBoardIcons/**" />
-            <exclude name="Sources/LightPortal/Addons/FacebookComments/**" />
-            <exclude name="Sources/LightPortal/Addons/Giscus/**" />
-            <exclude name="Sources/LightPortal/Addons/ImageUpload/**" />
-            <exclude name="Sources/LightPortal/Addons/IndexNow/**" />
-            <exclude name="Sources/LightPortal/Addons/Jodit/**" />
-            <exclude name="Sources/LightPortal/Addons/KarmaPostRating/**" />
-            <exclude name="Sources/LightPortal/Addons/LineAwesomeIcons/**" />
-            <exclude name="Sources/LightPortal/Addons/Markdown/**" />
-            <exclude name="Sources/LightPortal/Addons/MaterialDesignIcons/**" />
-            <exclude name="Sources/LightPortal/Addons/MediaBlock/**" />
-            <exclude name="Sources/LightPortal/Addons/Optimus/**" />
-            <exclude name="Sources/LightPortal/Addons/PageScroll/**" />
-            <exclude name="Sources/LightPortal/Addons/PluginMaker/**" />
-            <exclude name="Sources/LightPortal/Addons/PrettyUrls/**" />
-            <exclude name="Sources/LightPortal/Addons/SiteList/**" />
-            <exclude name="Sources/LightPortal/Addons/TinyPortal/**" />
-            <exclude name="Sources/LightPortal/Addons/TopicRatingBar/**" />
-            <exclude name="Sources/LightPortal/Addons/TwigLayouts/**" />
-            <exclude name="Sources/LightPortal/Addons/Uicons/**" />
-            <exclude name="Sources/LightPortal/Addons/VkComments/**" />
-            <exclude name="Sources/LightPortal/Addons/YandexTurbo/**" />
-            <include name="database.php" />
-            <include name="package-info.xml" />
-            <include name="portal.php" />
-            <include name="uninstall.php" />
-            <include name="uninstall-optional.php" />
-        </fileset>
-        <version releasetype="Bugfix" file="version.txt" property="version.number" />
-        <delete file="light_portal_${version.number}.zip" quiet="true" />
-        <zip destfile="light_portal_${version.number}.zip">
-            <fileset refid="license" />
-            <fileset refid="files" />
-        </zip>
-    </target>
+  <target name="update_version">
+    <property file="build.properties" />
+    <xmlproperty file="${source_file}" keepRoot="false" />
+    <echo message="Current version is ${version}" />
+    <input message="What is your release type?" propertyName="release.type" defaultValue="bugfix" validargs="major,minor,bugfix" />
+    <echo message="Release type: ${release.type}" />
+    <version releasetype="${release.type}" startingVersion="${version}" property="release.version" />
+    <delete file="build.version" quiet="true" />
+    <echo message="${release.version}" />
+    <replaceregexp file="${source_file}" match="${version_search_pattern}" replace="${version_replace_pattern}" />
+    <replaceregexp file="${integration_file}" match="'LP_VERSION',\s*'(\d+\.\d+\.\d+)'" replace="'LP_VERSION', '${release.version}'"/>
+  </target>
+  <target name="build" depends="update_version">
+    <delete file="light_portal_${release.version}.zip" quiet="true" />
+    <zip destfile="light_portal_${release.version}.zip">
+      <fileset dir=".">
+        <include name="LICENSE" />
+      </fileset>
+      <fileset dir="./src">
+        <include name="Themes/**" />
+        <exclude name="Themes/default/LightPortal/components/**" />
+        <exclude name="Themes/default/css/light_portal/less/**" />
+        <exclude name="Themes/default/css/light_portal/plugins.css" />
+        <exclude name="Themes/default/scripts/light_portal/dev/**" />
+        <exclude name="Themes/default/scripts/light_portal/app*" />
+        <exclude name="Themes/default/scripts/light_portal/plugins.js" />
+        <include name="Sources/**" />
+        <exclude name="Sources/LightPortal/Addons/BladeLayouts/**" />
+        <exclude name="Sources/LightPortal/Addons/BootstrapIcons/**" />
+        <exclude name="Sources/LightPortal/Addons/CrowdinContext/**" />
+        <exclude name="Sources/LightPortal/Addons/DiceBear/**" />
+        <exclude name="Sources/LightPortal/Addons/Disqus/**" />
+        <exclude name="Sources/LightPortal/Addons/EasyMarkdownEditor/**" />
+        <exclude name="Sources/LightPortal/Addons/EhPortal/**" />
+        <exclude name="Sources/LightPortal/Addons/EzPortal/**" />
+        <exclude name="Sources/LightPortal/Addons/FaBoardIcons/**" />
+        <exclude name="Sources/LightPortal/Addons/FacebookComments/**" />
+        <exclude name="Sources/LightPortal/Addons/Giscus/**" />
+        <exclude name="Sources/LightPortal/Addons/ImageUpload/**" />
+        <exclude name="Sources/LightPortal/Addons/IndexNow/**" />
+        <exclude name="Sources/LightPortal/Addons/Jodit/**" />
+        <exclude name="Sources/LightPortal/Addons/KarmaPostRating/**" />
+        <exclude name="Sources/LightPortal/Addons/LineAwesomeIcons/**" />
+        <exclude name="Sources/LightPortal/Addons/Markdown/**" />
+        <exclude name="Sources/LightPortal/Addons/MaterialDesignIcons/**" />
+        <exclude name="Sources/LightPortal/Addons/MediaBlock/**" />
+        <exclude name="Sources/LightPortal/Addons/Optimus/**" />
+        <exclude name="Sources/LightPortal/Addons/PageScroll/**" />
+        <exclude name="Sources/LightPortal/Addons/PluginMaker/**" />
+        <exclude name="Sources/LightPortal/Addons/PrettyUrls/**" />
+        <exclude name="Sources/LightPortal/Addons/TinyPortal/**" />
+        <exclude name="Sources/LightPortal/Addons/TopicRatingBar/**" />
+        <exclude name="Sources/LightPortal/Addons/TwigLayouts/**" />
+        <exclude name="Sources/LightPortal/Addons/Uicons/**" />
+        <exclude name="Sources/LightPortal/Addons/VkComments/**" />
+        <exclude name="Sources/LightPortal/Addons/YandexTurbo/**" />
+        <include name="database.php" />
+        <include name="package-info.xml" />
+        <include name="portal.php" />
+        <include name="uninstall.php" />
+        <include name="uninstall-optional.php" />
+      </fileset>
+    </zip>
+  </target>
 </project>

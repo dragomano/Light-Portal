@@ -156,11 +156,11 @@ return [
 			position: "right"
 		},
 		{
-			element: document.querySelector(".features .gear"),
+			element: document.querySelector(".features .fa-gear"),
 			intro: "' . $this->txt['lp_hello_portal']['plugins_tour'][3] . '"
 		},
 		{
-			element: document.querySelector(".features .gear + i"),
+			element: document.querySelector(".features span[data-toggle]"),
 			intro: "' . $this->txt['lp_hello_portal']['plugins_tour'][4] . '"
 		}',
 	'add_plugins' => '

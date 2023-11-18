@@ -9,7 +9,7 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.2
+ * @version 2.3
  */
 
 namespace Bugo\LightPortal\Utils;
@@ -225,7 +225,7 @@ trait SMFTrait
 		addInlineJavaScript($javascript, $defer);
 	}
 
-	protected function jsonDecode($json, $returnAsArray = false, $logIt = true): array
+	protected function jsonDecode($json, $returnAsArray = true, $logIt = true): array
 	{
 		return smf_json_decode($json, $returnAsArray, $logIt);
 	}

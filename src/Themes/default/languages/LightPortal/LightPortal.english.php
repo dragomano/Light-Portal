@@ -85,8 +85,6 @@ $txt['lp_page_og_image_set'] = ['None', 'First found', 'Last found'];
 $txt['lp_show_prev_next_links'] = 'Show links to the previous and next pages';
 $txt['lp_show_related_pages'] = 'Show related pages';
 $txt['lp_show_comment_block'] = 'Show page comments';
-$txt['lp_disabled_bbc_in_comments'] = 'Allowed BBCode in comments';
-$txt['lp_disabled_bbc_in_comments_subtext'] = 'You can use any tags <a class="bbc_link" href="%1$s">allowed</a> on the forum.';
 $txt['lp_show_comment_block_set'] = ['None', 'Integrated'];
 $txt['lp_time_to_change_comments'] = 'Maximum time after commenting to allow edit';
 $txt['lp_num_comments_per_page'] = 'Number of parent comments per page';
@@ -297,6 +295,7 @@ $txt['lp_plugins_types'][9] = 'Page options';
 $txt['lp_plugins_types'][10] = 'Icons';
 $txt['lp_plugins_types'][11] = 'SEO';
 $txt['lp_plugins_types'][12] = 'Other';
+$txt['lp_plugins_select'] = 'Make a choice';
 
 // Tags
 $txt['lp_all_page_tags'] = 'All portal page tags';
@@ -322,9 +321,8 @@ $txt['lp_related_pages'] = 'Related pages';
 
 // Comments
 $txt['lp_comments'] = 'Comments';
+$txt['lp_comments_title'] = 'No comments | One comment | {count} comments';
 $txt['lp_comment_placeholder'] = 'Leave a comment...';
-$txt['lp_like_button'] = 'Like';
-$txt['lp_dislike_button'] = 'Dislike';
 
 // Alerts
 $txt['alert_page_comment'] = 'When my page gets a comment';

@@ -11,7 +11,7 @@ declare(strict_types=1);
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.2
+ * @version 2.3
  */
 
 namespace Bugo\LightPortal\Repositories;
@@ -64,8 +64,7 @@ final class CommentRepository
 			WHERE com.page_id = {int:id}' : '') . '
 			ORDER BY ' . $sorts[$this->modSettings['lp_comment_sorting'] ?? 0],
 			[
-				'id'   => $page_id,
-				'user' => $this->context['user']['id']
+				'id' => $page_id
 			]
 		);
 
@@ -77,13 +76,12 @@ final class CommentRepository
 				'id'          => (int) $row['id'],
 				'page_id'     => (int) $row['page_id'],
 				'parent_id'   => (int) $row['parent_id'],
-				'message'     => empty($this->context['lp_allowed_bbc']) ? $row['message'] : $this->parseBbc($row['message'], true, 'lp_comments_' . $page_id, $this->context['lp_allowed_bbc']),
-				'raw_message' => $this->unPreparseCode($row['message']),
+				'message'     => $row['message'],
 				'created_at'  => (int) $row['created_at'],
 				'can_edit'    => $this->isCanEdit((int) $row['created_at']),
 				'poster'      => [
 					'id'   => (int) $row['author_id'],
-					'name' => $row['author_name']
+					'name' => $row['author_name'],
 				],
 			];
 
