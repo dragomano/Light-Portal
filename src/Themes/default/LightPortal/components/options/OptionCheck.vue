@@ -29,7 +29,7 @@ const props = defineProps({
   },
   value: {
     type: String,
-    required: true,
+    default: '',
   },
 });
 

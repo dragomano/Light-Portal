@@ -231,7 +231,7 @@ final class CreditArea
 				]
 			],
 			[
-				'title' => '<markdown-toolbar> element',
+				'title' => '&lt;markdown-toolbar&gt; element',
 				'link' => 'https://github.com/github/markdown-toolbar-element',
 				'author' => 'GitHub, Inc.',
 				'license' => [

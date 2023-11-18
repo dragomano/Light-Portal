@@ -24,7 +24,7 @@ const props = defineProps({
   },
   value: {
     type: String,
-    required: true,
+    default: '',
   },
   option: {
     type: Object,

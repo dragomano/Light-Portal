@@ -6,15 +6,7 @@
         <h5 class="titlebg">{{ $t('settings') }}</h5>
       </div>
       <div class="noticebox">
-        <form
-          ref="form"
-          class="form_settings"
-          method="post"
-          :id="formId"
-          :action="contextStore.postUrl"
-          :accept-charset="contextStore.charset"
-          @submit.prevent="saveSettings"
-        >
+        <form ref="form" class="form_settings" :id="formId" @submit.prevent="saveSettings">
           <input type="hidden" name="plugin_name" :value="item.snake_name" />
           <input type="hidden" :name="appStore.sessionVar" :value="appStore.sessionId" />
 
