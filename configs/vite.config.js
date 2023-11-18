@@ -20,7 +20,6 @@ export default defineConfig({
   plugins: [
     viteStaticCopy({
       targets: [
-        { src: 'node_modules/@eastdesire/jscolor/jscolor.min.js', dest: dist },
         { src: 'node_modules/sortablejs/Sortable.min.js', dest: dist },
         { src: 'node_modules/vanilla-lazyload/dist/lazyload.esm.min.js', dest: dist },
         { src: 'node_modules/virtual-select-plugin/dist/virtual-select.min.css', dest: dist },

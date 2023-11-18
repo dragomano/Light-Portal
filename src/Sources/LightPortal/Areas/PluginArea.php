@@ -39,7 +39,6 @@ final class PluginArea
 	{
 		$this->loadLanguage('ManageMaintenance');
 		$this->loadTemplate('LightPortal/ManagePlugins', 'manage_plugins');
-		$this->loadJavaScriptFile('light_portal/jscolor.min.js', ['minimize' => true]);
 		$this->loadExtCSS('https://cdn.jsdelivr.net/combine/npm/@vueform/multiselect@2/themes/default.min.css,npm/@vueform/toggle@2/themes/default.min.css');
 
 		$this->context['page_title'] = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_plugins_manage'];

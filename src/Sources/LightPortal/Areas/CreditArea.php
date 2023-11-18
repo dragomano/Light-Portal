@@ -294,15 +294,6 @@ final class CreditArea
 				]
 			],
 			[
-				'title' => 'jscolor Color Picker',
-				'link' => 'https://jscolor.com',
-				'author' => 'Jan Odvárko – East Desire',
-				'license' => [
-					'name' => 'the GNU GPL v3',
-					'link' => 'https://jscolor.com/download/#open-source-license'
-				]
-			],
-			[
 				'title' => 'LazyLoad',
 				'link' => 'https://github.com/verlok/vanilla-lazyload',
 				'author' => 'Andrea Verlicchi',

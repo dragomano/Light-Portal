@@ -5,9 +5,6 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
-  '@eastdesire/jscolor':
-    specifier: ^2.5.1
-    version: 2.5.1
   '@github/markdown-toolbar-element':
     specifier: ^2.2.1
     version: 2.2.1
@@ -98,10 +95,6 @@ packages:
       '@babel/helper-string-parser': 7.22.5
       '@babel/helper-validator-identifier': 7.22.20
       to-fast-properties: 2.0.0
-    dev: false
-
-  /@eastdesire/jscolor@2.5.1:
-    resolution: {integrity: sha512-+D7Xz2f1Zxpc438q0s7wwKHwWal596dcAGcWp+pxfHlYtt0LVdynMFrf0PYdmwHt8idKfeglyU2h2LdkATFcbQ==}
     dev: false
 
   /@esbuild/android-arm64@0.18.20:

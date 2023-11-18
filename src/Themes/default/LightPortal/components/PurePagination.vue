@@ -1,5 +1,5 @@
 <template>
-  <div v-if="showPagination" class="col-xs-12 centertext">
+  <div v-if="showPagination" class="centertext">
     <div class="pagesection">
       <Button
         icon="arrow_left"

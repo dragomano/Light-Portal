@@ -9,7 +9,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@eastdesire/jscolor": "^2.5.1",
     "@github/markdown-toolbar-element": "^2.2.1",
     "@vitejs/plugin-vue": "^4.5.0",
     "@vueform/multiselect": "^2.6.6",
