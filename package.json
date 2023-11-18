@@ -11,7 +11,7 @@
   "dependencies": {
     "@eastdesire/jscolor": "^2.5.1",
     "@github/markdown-toolbar-element": "^2.2.1",
-    "@vitejs/plugin-vue": "^4.4.1",
+    "@vitejs/plugin-vue": "^4.5.0",
     "@vueform/multiselect": "^2.6.6",
     "@vueform/toggle": "^2.1.4",
     "@vueuse/core": "^10.6.1",
@@ -26,11 +26,11 @@
     "virtual-select-plugin": "^1.0.40",
     "vite-plugin-minify": "^1.5.2",
     "vue": "^3.3.8",
-    "vue-i18n": "^9.6.5",
+    "vue-i18n": "^9.7.0",
     "vue-showdown": "^4.2.0"
   },
   "devDependencies": {
     "vite": "^4.5.0",
-    "vite-plugin-static-copy": "^0.17.0"
+    "vite-plugin-static-copy": "^0.17.1"
   }
 }
