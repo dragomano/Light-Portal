@@ -53,7 +53,6 @@ In diesem Abschnitt können Sie die allgemeinen Einstellungen von Seiten und Bl�
 * Links zu den vorherigen und nächsten Seiten anzeigen – aktivieren Sie dies, falls Sie Links auf Seiten sehen möchten, die vor und nach der aktuellen Seite erzeugt wurden.
 * Verwandte Seiten anzeigen – falls es Seiten gibt, die einer Seite ähnlich sind (bezüglich Titel und Alias), werden Sie unten auf der Seite angezeigt.
 * Seitenkommentare zeigen – für Benutzergruppen mit der Berechtigung, Seiten zu kommentieren, wird am Seitenende ein Kommentarformular angezeigt.
-* In Kommentaren erlaubter BBCode – Sie können Tags angeben, die beim Kommentieren von Seiten verwendet werden dürfen.
 * Maximale Zeit nach dem Kommentieren, in der Änderungen vorgenommen werden können - nach der angegebenen Zeit (nach dem Erzeugen eines Kommentars) werden Sie Ihre Kommentare nicht mehr anpassen können.
 * Anzahl der direkten Kommentare pro Seite – geben Sie die maximale Anzahl von Kommentaren an, die keine Antworten auf andere Kommentare sind, die auf einer einzelnen Seite angezeigt werden sollen.
 * Sortiere Kommentare standardmäßig — wählen Sie das gewünschte Sortierverfahren für Kommentare auf Portalseiten aus.
