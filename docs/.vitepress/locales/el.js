@@ -1,49 +1,64 @@
 export default {
-  label: 'Ελληνικά',
+  // replace with your native language name
+  label: 'Αγγλικά',
+  // replace with your native language code
   lang: 'el',
   title: 'Έγγραφα Light Portal',
-  description: 'Light Portal Online Documentation',
+  description: 'Light Portal Online Τεκμηρίωση',
   themeConfig: {
     nav: [
-      { text: 'Κύριος', link: '/' },
-      { text: 'Εισαγωγή', link: '/intro' },
-      { text: 'Επίδειξη', link: 'https://demo.dragomano.ru/' },
+      {
+        text: 'Αρχική',
+        link: '/'
+      },
+      {
+        text: 'Εισαγωγή',
+        link: '/intro'
+      },
+      {
+        text: 'Επίδειξη',
+        link: 'https://demo.dragomano.ru/'
+      }
     ],
-    outline: {
-      label: 'Содержание',
-    },
+    outline: { label: 'Σε αυτήν την σελίδα' },
     docFooter: {
-      prev: 'Предыдущая страница',
-      next: 'Следующая страница',
+      prev: 'Προηγούμενη σελίδα',
+      next: 'Επόμενη σελίδα'
     },
-    darkModeSwitchLabel: 'Оформление',
-    sidebarMenuLabel: 'Меню',
-    returnToTopLabel: 'Вернуться наверх',
-    langMenuLabel: 'Изменить язык',
+    darkModeSwitchLabel: 'Εμφάνιση',
+    sidebarMenuLabel: 'Μενού',
+    returnToTopLabel: 'Επιστροφή στην κορυφή',
+    langMenuLabel: 'Αλλαγή γλώσσας',
+    notFound: {
+      title: 'Η ΣΕΛΙΔΑ ΔΕΝ ΒΡΕΘΗΚΕ',
+      quote: 'Αλλά αν δεν αλλάξετε κατεύθυνση και αν συνεχίσετε να ψάχνετε, μπορεί να καταλήξετε εκεί που πηγαίνετε.',
+      linkLabel: 'πήγαινε στην αρχική',
+      linkText: 'Πήγαινε με στην αρχική'
+    },
     search: {
       options: {
         locales: {
           ru: {
             translations: {
               button: {
-                buttonText: 'Поиск',
-                buttonAriaLabel: 'Поиск',
+                buttonText: 'Αναζήτηση',
+                buttonAriaLabel: 'Αναζήτηση'
               },
               modal: {
-                displayDetails: 'Отобразить подробный список',
-                resetButtonTitle: 'Сбросить поиск',
-                backButtonTitle: 'Закрыть поиск',
-                noResultsText: 'Нет результатов для',
+                displayDetails: 'Εμφάνιση λεπτομερούς λίστας',
+                resetButtonTitle: 'Επαναφορά αναζήτησης',
+                backButtonTitle: 'Κλείσιμο αναζήτησης',
+                noResultsText: 'Δεν υπάρχουν αποτελέσματα για',
                 footer: {
-                  selectText: 'выбрать',
-                  navigateText: 'перейти',
-                  closeText: 'закрыть',
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  },
+                  selectText: 'επέλεξε',
+                  navigateText: 'να πλοηγηθείς',
+                  closeText: 'να κλείσεις'
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 };
