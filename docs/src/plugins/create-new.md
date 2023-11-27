@@ -1,6 +1,6 @@
 ---
 description: Brief description of the plugin creation interface
-order: 1
+order: 2
 ---
 
 # Add plugin

@@ -1,6 +1,6 @@
 ---
 description: Description of the page management page
-order: 2
+order: 1
 ---
 
 # Manage pages

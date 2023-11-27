@@ -1,6 +1,7 @@
 ---
 description: List of all available portal hooks
 order: 4
+outline: [2, 3]
 ---
 
 # Portal hooks

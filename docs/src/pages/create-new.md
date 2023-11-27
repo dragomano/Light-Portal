@@ -1,6 +1,6 @@
 ---
 description: Brief description of the page creation interface
-order: 1
+order: 2
 ---
 
 # Add page

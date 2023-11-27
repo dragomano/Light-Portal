@@ -1,6 +1,6 @@
 ---
 description: Description of the block management page
-order: 2
+order: 1
 ---
 
 # Manage blocks
