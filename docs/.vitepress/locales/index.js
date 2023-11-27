@@ -1,6 +1,7 @@
 import en from './en';
 import ru from './ru';
 import el from './el';
+import it from './it';
 
 function addPrefixToLinks(prefix, obj) {
   for (const key in obj) {
@@ -18,4 +19,5 @@ export default {
   root: en,
   ru: addPrefixToLinks('ru', ru),
   el: addPrefixToLinks('el', el),
+  it: addPrefixToLinks('it', it),
 };
