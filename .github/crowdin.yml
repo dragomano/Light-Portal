@@ -1,38 +1,28 @@
 project_id_env: CROWDIN_PROJECT_ID
 api_token_env: CROWDIN_API_TOKEN
-base_path: ".."
-base_url: "https://api.crowdin.com"
+base_path: '..'
+base_url: 'https://api.crowdin.com'
 preserve_hierarchy: true
 
-files: [
-  {
-    source: "/src/Themes/default/languages/LightPortal/LightPortal.english.php",
-    dest: "/Themes/default/languages/LightPortal/LightPortal.english.php",
-    translation: "%original_path%/LightPortal.%language%.php",
-  },
-  {
-    source: "/src/Sources/LightPortal/Addons/**/english.php",
-    dest: "/Sources/LightPortal/Addons/**/english.php",
-    translation: "%original_path%/%language%.php",
-  },
-  {
-    source: "/website/docs/**/*",
-    translation: "/website/i18n/%two_letters_code%/docusaurus-plugin-content-docs/current/**/%original_file_name%",
-  },
-  {
-    source: "/website/i18n/en/docusaurus-plugin-content-docs/current.json",
-    translation: "/website/i18n/%two_letters_code%/docusaurus-plugin-content-docs/%original_file_name%",
-  },
-  {
-    source: "/website/i18n/en/docusaurus-theme-classic/footer.json",
-    translation: "/website/i18n/%two_letters_code%/docusaurus-theme-classic/%original_file_name%",
-  },
-  {
-    source: "/website/i18n/en/docusaurus-theme-classic/navbar.json",
-    translation: "/website/i18n/%two_letters_code%/docusaurus-theme-classic/%original_file_name%",
-  },
-  {
-    source: "/website/i18n/en/code.json",
-    translation: "/website/i18n/%two_letters_code%/%original_file_name%",
-  }
-]
+files:
+  [
+    {
+      source: '/src/Themes/default/languages/LightPortal/LightPortal.english.php',
+      dest: '/Themes/default/languages/LightPortal/LightPortal.english.php',
+      translation: '%original_path%/LightPortal.%language%.php',
+    },
+    {
+      source: '/src/Sources/LightPortal/Addons/**/english.php',
+      dest: '/Sources/LightPortal/Addons/**/english.php',
+      translation: '%original_path%/%language%.php',
+    },
+    {
+      source: '/docs/.vitepress/locales/en.js',
+      translation: '/docs/.vitepress/locales/%two_letters_code%.js',
+    },
+    {
+      source: '/docs/src/en/**/*',
+      translation: '/docs/src/%two_letters_code%/**/%original_file_name%',
+      ignore: ['/docs/src/el', '/docs/src/de', '/docs/src/it', '/docs/src/ru', '/docs/src/tr'],
+    },
+  ]
