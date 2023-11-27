@@ -5,7 +5,7 @@ order: 2
 
 # Add block
 
-All portal blocks currently available (depending on enabled [plugins](/plugins/manage)) are displayed here. To add, click on the desired block.
+All portal blocks currently available (depending on enabled [plugins](../plugins/manage)) are displayed here. To add, click on the desired block.
 
 Depending on the type of block, various settings will be available, spread across different tabs. Common are:
 

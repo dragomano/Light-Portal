@@ -29,7 +29,7 @@ In this section, you can fully customize the portal frontpage, enable standalone
 - Show the number of views and comments
 - First to display articles with the highest number of comments — you can display the most commented articles first, regardless of the selected sorting type.
 - Sorting articles — you can choose the type of sorting of articles on the frontpage.
-- Template layout for article cards — you can add _[your own template](/how-to/create-layout)_, if you want.
+- Template layout for article cards — you can add _[your own template](../how-to/create-layout)_, if you want.
 - Number of columns for displaying articles — specify the number of columns in which the article cards will be displayed.
 - Show the pagination — specify where the pagination should be displayed.
 - Use simple pagination — displaying "next page" and "previous page" links instead of full navigation.
