@@ -1,5 +1,5 @@
 ---
-description: Description of the page management page
+description: Description of the page management area
 order: 1
 ---
 

@@ -11,6 +11,8 @@ Plugins are the extensions that expand the capabilities of the Light Portal. To 
 
 You can use the **PluginMaker** as a helper to create your own plugins. Download and enable it on the page _Admin -> Portal settings -> Plugins_.
 
+![Create a new plugin with PluginMaker](create_plugin.png)
+
 :::
 
 ## Choosing the type of plugin

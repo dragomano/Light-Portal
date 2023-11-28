@@ -1,5 +1,5 @@
 ---
-description: Description of the block management page
+description: Description of the block management area
 order: 1
 ---
 

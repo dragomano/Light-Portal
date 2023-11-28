@@ -1,5 +1,5 @@
 ---
-description: Description of the plugin management page
+description: Description of the plugin management area
 order: 1
 ---
 

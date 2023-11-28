@@ -7,8 +7,6 @@ order: 2
 
 In this section, you can create a portal page with the content you need. Required fields are highlighted with a colored frame.
 
-![Here we add a new page](new_page.png)
-
 ## Content tab
 
 Here you can configure:
@@ -17,13 +15,17 @@ Here you can configure:
 - page type
 - content
 
-## Access and placement
+![Content tab](content_tab.png)
+
+## Access and placement tab
 
 Here you can configure:
 
 - permissions — specify who will access your page
 - category — if you like to keep things organized
 - transfer of authorship — if you want to change the author
+
+![Access tab](access_tab.png)
 
 ## SEO tab
 
@@ -32,6 +34,8 @@ Here you can configure:
 - alias — the page will be available at `?page=alias`
 - description — the meta description
 - keywords — the meta keywords
+
+![SEO tab](seo_tab.png)
 
 ## Tuning tab
 
@@ -42,3 +46,5 @@ Here you can configure:
 - display the author and creation date
 - display related pages
 - comments — you can allow or deny them separately for each page
+
+![Tuning tab](tuning_tab.png)

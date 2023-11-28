@@ -6,7 +6,7 @@ hero:
   name: 'Light Portal'
   tagline: Fast, nice, modern
   image:
-    src: logo.png
+    src: /logo.png
     alt: Logotype
   actions:
     - theme: brand

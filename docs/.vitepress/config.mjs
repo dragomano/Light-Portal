@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitepress';
+import { fileURLToPath, URL } from 'node:url';
 import { generateSidebar } from 'vitepress-sidebar';
 import locales from './locales';
 
@@ -8,6 +9,7 @@ const sidebar = {
   useTitleFromFrontmatter: true,
   useFolderTitleFromIndexFile: true,
   sortMenusByFrontmatterOrder: true,
+  excludeFiles: ['examples.md', 'team.md'],
   manualSortFileNameByPriority: [
     'intro.md',
     'getting-started',
@@ -35,8 +37,8 @@ languages.forEach((lang) => {
 
 export default defineConfig({
   head: [
-    ['link', { rel: 'icon', href: '/Light-Portal/favicon.ico' }],
-    [
+    /*  ['link', { rel: 'icon', href: '/Light-Portal/favicon.ico' }], */
+    /* [
       'script',
       {},
       `(function (m, e, t, r, i, k, a) {
@@ -64,9 +66,9 @@ export default defineConfig({
         webvisor: true,
         trackHash: true,
       });`,
-    ],
+    ], */
   ],
-  base: '/Light-Portal/',
+  //base: '/Light-Portal/',
   srcDir: './src',
   cleanUrls: true,
   themeConfig: {
@@ -83,5 +85,15 @@ export default defineConfig({
   locales,
   sitemap: {
     hostname: 'https://dragomano.github.io/Light-Portal/',
+  },
+  vite: {
+    resolve: {
+      alias: [
+        {
+          find: /^.*\/ExampleSites\.vue$/,
+          replacement: fileURLToPath(new URL('./components/ExampleSites.vue', import.meta.url)),
+        },
+      ],
+    },
   },
 });

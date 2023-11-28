@@ -1,12 +1,21 @@
 :root {
   --vp-layout-max-width: 80%;
 }
+
 .content-container {
   max-width: 100% !important;
 }
+
 .DocSearch-Button .DocSearch-Button-Key:first-child:after {
   content: '/';
 }
+
 .DocSearch-Button-Key:last-child {
-  display:  none;
+  display: none;
+}
+
+@media (max-width: 400px) {
+  .VPNavBar > .container {
+    max-width: none;
+  }
 }
