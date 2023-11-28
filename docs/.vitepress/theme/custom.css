@@ -4,3 +4,9 @@
 .content-container {
   max-width: 100% !important;
 }
+.DocSearch-Button .DocSearch-Button-Key:first-child:after {
+  content: '/';
+}
+.DocSearch-Button-Key:last-child {
+  display:  none;
+}

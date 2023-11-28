@@ -3,7 +3,6 @@ import { useData, useRoute } from 'vitepress';
 import codeblocksFold from 'vitepress-plugin-codeblocks-fold';
 import 'vitepress-plugin-codeblocks-fold/style/index.scss';
 import './custom.css';
-import './custom.js';
 
 export default {
   ...DefaultTheme,
