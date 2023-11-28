@@ -1,2 +1,4 @@
 User-agent: *
 Disallow:
+
+Sitemap: https://dragomano.github.io/Light-Portal/sitemap.xml
