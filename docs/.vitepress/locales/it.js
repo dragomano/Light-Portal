@@ -1,7 +1,7 @@
 export default {
   // replace with your native language name
   label: 'Italiano',
-  // replace with your native language code
+  // replace with your native language code (https://gist.github.com/Josantonius/b455e315bc7f790d14b136d61d9ae469)
   lang: 'it',
   title: 'Documentazione Light Portal',
   description: 'Documentazione Online Light Portal',
@@ -37,24 +37,20 @@ export default {
     },
     search: {
       options: {
-        locales: {
-          ru: {
-            translations: {
-              button: {
-                buttonText: 'Cerca',
-                buttonAriaLabel: 'Cerca'
-              },
-              modal: {
-                displayDetails: 'Visualizza lista dettagliata',
-                resetButtonTitle: 'Azzera la ricerca',
-                backButtonTitle: 'Chiudi ricerca',
-                noResultsText: 'Nessun risultato per',
-                footer: {
-                  selectText: 'per selezionare',
-                  navigateText: 'per navigare',
-                  closeText: 'per chiudere'
-                }
-              }
+        translations: {
+          button: {
+            buttonText: 'Cerca',
+            buttonAriaLabel: 'Cerca'
+          },
+          modal: {
+            displayDetails: 'Visualizza lista dettagliata',
+            resetButtonTitle: 'Azzera la ricerca',
+            backButtonTitle: 'Chiudi ricerca',
+            noResultsText: 'Nessun risultato per',
+            footer: {
+              selectText: 'per selezionare',
+              navigateText: 'per navigare',
+              closeText: 'per chiudere'
             }
           }
         }

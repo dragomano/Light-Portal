@@ -1,7 +1,7 @@
 export default {
   // replace with your native language name
   label: 'Русский',
-  // replace with your native language code
+  // replace with your native language code (https://gist.github.com/Josantonius/b455e315bc7f790d14b136d61d9ae469)
   lang: 'ru',
   title: 'Документация Light Portal',
   description: 'Онлайн-документация Light Portal',
@@ -37,24 +37,20 @@ export default {
     },
     search: {
       options: {
-        locales: {
-          ru: {
-            translations: {
-              button: {
-                buttonText: 'Поиск',
-                buttonAriaLabel: 'Поиск'
-              },
-              modal: {
-                displayDetails: 'Отобразить подробный список',
-                resetButtonTitle: 'Сбросить поиск',
-                backButtonTitle: 'Закрыть поиск',
-                noResultsText: 'Нет результатов для',
-                footer: {
-                  selectText: 'выбрать',
-                  navigateText: 'перейти',
-                  closeText: 'закрыть'
-                }
-              }
+        translations: {
+          button: {
+            buttonText: 'Поиск',
+            buttonAriaLabel: 'Поиск'
+          },
+          modal: {
+            displayDetails: 'Отобразить подробный список',
+            resetButtonTitle: 'Сбросить поиск',
+            backButtonTitle: 'Закрыть поиск',
+            noResultsText: 'Нет результатов для',
+            footer: {
+              selectText: 'выбрать',
+              navigateText: 'перейти',
+              closeText: 'закрыть'
             }
           }
         }
