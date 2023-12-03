@@ -21,7 +21,7 @@ files:
       translation: '/docs/.vitepress/locales/%two_letters_code%.js',
     },
     {
-      source: '/docs/src/en/**/*',
+      source: '/docs/src/**/*',
       translation: '/docs/src/%two_letters_code%/**/%original_file_name%',
       ignore:
         [

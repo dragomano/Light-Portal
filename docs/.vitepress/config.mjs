@@ -37,8 +37,8 @@ languages.forEach((lang) => {
 
 export default defineConfig({
   head: [
-    /*  ['link', { rel: 'icon', href: '/Light-Portal/favicon.ico' }], */
-    /* [
+    ['link', { rel: 'icon', href: '/Light-Portal/favicon.ico' }],
+    [
       'script',
       {},
       `(function (m, e, t, r, i, k, a) {
@@ -66,9 +66,9 @@ export default defineConfig({
         webvisor: true,
         trackHash: true,
       });`,
-    ], */
+    ],
   ],
-  //base: '/Light-Portal/',
+  base: '/Light-Portal/',
   srcDir: './src',
   cleanUrls: true,
   themeConfig: {
