@@ -9,11 +9,19 @@ export default {
     nav: [
       {
         text: 'Inizio',
-        link: '/'
+        link: './'
       },
       {
         text: 'Introduzione',
-        link: '/intro'
+        link: './intro'
+      },
+      {
+        text: 'Team',
+        link: './team'
+      },
+      {
+        text: 'Esempi',
+        link: './examples'
       },
       {
         text: 'Demo',

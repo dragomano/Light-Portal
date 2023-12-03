@@ -9,14 +9,22 @@ export default {
     nav: [
       {
         text: 'Αρχική',
-        link: '/'
+        link: './'
       },
       {
         text: 'Εισαγωγή',
-        link: '/intro'
+        link: './intro'
       },
       {
-        text: 'Επίδειξη',
+        text: 'Ομάδα',
+        link: './team'
+      },
+      {
+        text: 'Παραδείγματα',
+        link: './examples'
+      },
+      {
+        text: 'Παρουσίαση',
         link: 'https://demo.dragomano.ru/'
       }
     ],
