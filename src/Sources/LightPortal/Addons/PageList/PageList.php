@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.09.23
+ * @version 02.12.23
  */
 
 namespace Bugo\LightPortal\Addons\PageList;
@@ -89,7 +89,7 @@ class PageList extends Block
 			]
 		];
 
-		$this->setTemplate()->withLayer('page_list');
+		$this->getFromTemplate('page_list_select');
 	}
 
 	public function getData(array $parameters): array

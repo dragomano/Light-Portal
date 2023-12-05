@@ -57,6 +57,13 @@ abstract class Plugin
 		$this->context['template_layers'][] = $layer;
 	}
 
+	public function getFromTemplate(string $function, ...$params): string
+	{
+		$this->setTemplate();
+
+		return $function(...$params);
+	}
+
 	public function getFromSsi(string $function, ...$params)
 	{
 		require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'SSI.php';

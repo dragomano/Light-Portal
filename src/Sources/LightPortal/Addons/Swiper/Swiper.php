@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.11.23
+ * @version 02.12.23
  */
 
 namespace Bugo\LightPortal\Addons\Swiper;
@@ -160,26 +160,8 @@ class Swiper extends Block
 			]
 		];
 
-		$this->setTemplate();
-
-		$this->addInlineJavaScript('
-		function handleImages() {
-			return {
-				images: ' . ($this->context['lp_block']['options']['parameters']['images'] ?: '[]') . ',
-				addNewImage() {
-					this.images.push({
-						link: "",
-						title: ""
-					})
-				},
-				removeImage(index) {
-					this.images.splice(index, 1)
-				}
-			}
-		}');
-
 		$this->context['posting_fields']['images']['label']['html'] = $this->txt['lp_swiper']['images'];
-		$this->context['posting_fields']['images']['input']['html'] = swiper_images();
+		$this->context['posting_fields']['images']['input']['html'] = $this->getFromTemplate('swiper_images');
 		$this->context['posting_fields']['images']['input']['tab']  = 'content';
 	}
 
@@ -237,7 +219,7 @@ class Swiper extends Block
 		if ($data->type !== 'swiper')
 			return;
 
-		$block_id = $this->request()->has('preview') ? uniqid() : $data->block_id;
+		$block_id = $data->block_id;
 
 		$swiper_html = $this->cache('swiper_addon_b' . $block_id . '_' . $this->user_info['language'])
 			->setLifeTime($data->cache_time)

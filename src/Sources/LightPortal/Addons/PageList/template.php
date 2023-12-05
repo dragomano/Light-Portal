@@ -1,12 +1,10 @@
 <?php
 
-function template_page_list_above() {}
-
-function template_page_list_below()
+function page_list_select(): string
 {
 	global $context;
 
-	echo '
+	return '
 	<script>
 		VirtualSelect.init({
 			ele: "#sort",
