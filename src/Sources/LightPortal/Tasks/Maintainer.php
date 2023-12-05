@@ -204,6 +204,7 @@ final class Maintainer extends SMF_BackgroundTask
 			'lp_comments',
 			'lp_pages',
 			'lp_params',
+			'lp_plugins',
 			'lp_tags',
 			'lp_titles'
 		];
