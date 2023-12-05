@@ -181,7 +181,8 @@ trait SMFTrait
 
 		template_control_richedit($this->context['post_box_name'], 'smileyBox_message', 'bbcBox_message');
 
-		$this->context['posting_fields']['content']['input']['html'] = '<div>' . ob_get_clean() . '</div>';
+		$this->context['posting_fields']['content']['label']['html'] = '<label>' . $this->txt['lp_content'] . '</label>';
+		$this->context['posting_fields']['content']['input']['html'] = ob_get_clean();
 		$this->context['posting_fields']['content']['input']['tab'] = 'content';
 	}
 

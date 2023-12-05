@@ -727,10 +727,8 @@ final class PageArea
 	{
 		$this->prepareTitleFields();
 
-		$this->context['posting_fields']['content']['label']['html'] = ' ';
-		$this->context['posting_fields']['content']['input']['tab'] = 'content';
-
 		if ($this->context['lp_page']['type'] !== 'bbc') {
+			$this->context['posting_fields']['content']['label']['text'] = $this->txt['lp_content'];
 			$this->context['posting_fields']['content']['input'] = [
 				'type'       => 'textarea',
 				'tab'        => 'content',

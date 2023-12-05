@@ -444,9 +444,8 @@ final class BlockArea
 		}
 
 		if (isset($this->context['lp_block']['options']['content'])) {
-			$this->context['posting_fields']['content']['label']['html'] = ' ';
-
 			if ($this->context['lp_block']['type'] !== 'bbc') {
+				$this->context['posting_fields']['content']['label']['text'] = $this->txt['lp_content'];
 				$this->context['posting_fields']['content']['input'] = [
 					'type'       => 'textarea',
 					'tab'        => 'content',
