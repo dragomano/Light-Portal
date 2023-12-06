@@ -81,6 +81,14 @@ final class Integration extends AbstractMain
 
 		if (! isset($this->modSettings['lp_fa_source']) || $this->modSettings['lp_fa_source'] === 'css_cdn')
 			echo "\n\t" . '<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" as="style" onload="this.onload=null;this.rel=\'stylesheet\'">';
+
+		$links = [];
+
+		$this->hook('preloadLinks', [&$links]);
+
+		foreach ($links as $link) {
+			echo "\n\t" . '<link rel="preload" href="' . $link . '" as="style" onload="this.onload=null;this.rel=\'stylesheet\'">';
+		}
 	}
 
 	public function loadTheme(): void
