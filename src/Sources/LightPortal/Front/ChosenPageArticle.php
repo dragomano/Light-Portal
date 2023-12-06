@@ -21,7 +21,7 @@ final class ChosenPageArticle extends PageArticle
 {
 	private array $selected_pages = [];
 
-	public function init()
+	public function init(): void
 	{
 		parent::init();
 

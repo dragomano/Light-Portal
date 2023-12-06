@@ -16,8 +16,11 @@ namespace Bugo\LightPortal\Partials;
 
 final class PlacementSelect extends AbstractPartial
 {
-	public function __invoke(array $params = []): string
+	public function __invoke(): string
 	{
+		$params = func_get_args();
+		$params = $params[0] ?? [];
+
 		$params['id'] ??= 'placement';
 		$params['value'] ??= $this->context['lp_block']['placement'];
 

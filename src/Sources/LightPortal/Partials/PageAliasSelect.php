@@ -16,8 +16,11 @@ namespace Bugo\LightPortal\Partials;
 
 final class PageAliasSelect extends AbstractPartial
 {
-	public function __invoke(array $params = []): string
+	public function __invoke(): string
 	{
+		$params = func_get_args();
+		$params = $params[0] ?? [];
+
 		$params['id'] ??= 'lp_frontpage_alias';
 		$params['value'] ??= $this->modSettings['lp_frontpage_alias'] ?? '';
 		$params['data'] ??= $this->getEntityList('page');

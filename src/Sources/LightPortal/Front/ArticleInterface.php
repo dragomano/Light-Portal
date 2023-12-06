@@ -19,7 +19,7 @@ if (! defined('SMF'))
 
 interface ArticleInterface
 {
-	public function init();
+	public function init(): void;
 
 	public function getData(int $start, int $limit): array;
 

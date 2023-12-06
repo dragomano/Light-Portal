@@ -16,8 +16,11 @@ namespace Bugo\LightPortal\Partials;
 
 final class PageSelect extends AbstractPartial
 {
-	public function __invoke(array $params = []): string
+	public function __invoke(): string
 	{
+		$params = func_get_args();
+		$params = $params[0] ?? [];
+
 		$params['id'] ??= 'lp_frontpage_pages';
 		$params['value'] ??= $this->modSettings['lp_frontpage_pages'] ?? '';
 		$params['data'] ??= $this->getEntityList('page');

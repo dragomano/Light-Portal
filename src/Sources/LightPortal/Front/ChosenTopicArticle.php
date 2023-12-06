@@ -21,7 +21,7 @@ final class ChosenTopicArticle extends TopicArticle
 {
 	private array $selected_topics = [];
 
-	public function init()
+	public function init(): void
 	{
 		parent::init();
 

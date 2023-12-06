@@ -22,4 +22,11 @@ if (! defined('SMF'))
 abstract class AbstractPartial
 {
 	use Helper;
+
+	abstract public function __invoke(): string;
+
+	public function __toString(): string
+	{
+		return static::__invoke();
+	}
 }

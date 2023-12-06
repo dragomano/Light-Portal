@@ -29,7 +29,7 @@ abstract class AbstractArticle implements ArticleInterface
 	protected array $params  = [];
 	protected array $orders  = [];
 
-	abstract public function init();
+	abstract public function init(): void;
 
 	abstract public function getData(int $start, int $limit): array;
 

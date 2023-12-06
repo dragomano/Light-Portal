@@ -71,6 +71,9 @@ final class FrontPage
 		return false;
 	}
 
+	/**
+	 * @throws IntlException
+	 */
 	public function prepare(ArticleInterface $article): void
 	{
 		$start = (int) $this->request('start');
@@ -251,6 +254,7 @@ final class FrontPage
 	 * Post processing for articles
 	 *
 	 * Заключительная обработка статей
+	 * @throws IntlException
 	 */
 	private function postProcess(ArticleInterface $article, array $articles): array
 	{

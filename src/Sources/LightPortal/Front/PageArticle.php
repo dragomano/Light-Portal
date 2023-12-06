@@ -23,7 +23,7 @@ class PageArticle extends AbstractArticle
 {
 	protected array $selected_categories = [];
 
-	public function init()
+	public function init(): void
 	{
 		$this->selected_categories = empty($this->modSettings['lp_frontpage_categories']) ? [] : explode(',', $this->modSettings['lp_frontpage_categories']);
 
@@ -44,7 +44,7 @@ class PageArticle extends AbstractArticle
 			'date DESC'
 		];
 
-		$this->hook('frontPages', [&$this->columns, &$this->tables, &$this->wheres, &$this->params, &$this->orders]);
+		$this->hook('frontPages', [&$this->columns, &$this->tables, &$this->params, &$this->wheres, &$this->orders]);
 	}
 
 	public function getData(int $start, int $limit): array
@@ -157,7 +157,7 @@ class PageArticle extends AbstractArticle
 		return (int) $num_pages;
 	}
 
-	private function prepareTags(array &$pages)
+	private function prepareTags(array &$pages): void
 	{
 		if (empty($pages))
 			return;

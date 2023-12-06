@@ -21,7 +21,7 @@ class TopicArticle extends AbstractArticle
 {
 	protected array $selected_boards = [];
 
-	public function init()
+	public function init(): void
 	{
 		$this->selected_boards = empty($this->modSettings['lp_frontpage_boards']) ? [] : explode(',', $this->modSettings['lp_frontpage_boards']);
 
@@ -41,7 +41,7 @@ class TopicArticle extends AbstractArticle
 			'date DESC'
 		];
 
-		$this->hook('frontTopics', [&$this->columns, &$this->tables, &$this->wheres, &$this->params, &$this->orders]);
+		$this->hook('frontTopics', [&$this->columns, &$this->tables, &$this->params, &$this->wheres, &$this->orders]);
 	}
 
 	public function getData(int $start, int $limit): array
@@ -146,7 +146,7 @@ class TopicArticle extends AbstractArticle
 						'after' => ''
 					],
 					'css_class' => $row['is_sticky'] ? ' sticky' : '',
-					'image' => $image ?? '',
+					'image' => $image,
 					'can_edit' => $this->user_info['is_admin'] || ($this->user_info['id'] && $row['id_member'] == $this->user_info['id']),
 					'edit_link' => $this->scripturl . '?action=post;msg=' . $row['id_first_msg'] . ';topic=' . $row['id_topic'] . '.0'
 				];

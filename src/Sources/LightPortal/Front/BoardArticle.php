@@ -21,7 +21,7 @@ class BoardArticle extends AbstractArticle
 {
 	private array $selected_boards = [];
 
-	public function init()
+	public function init(): void
 	{
 		$this->selected_boards = empty($this->modSettings['lp_frontpage_boards']) ? [] : explode(',', $this->modSettings['lp_frontpage_boards']);
 
@@ -38,7 +38,7 @@ class BoardArticle extends AbstractArticle
 			'last_updated DESC'
 		];
 
-		$this->hook('frontBoards', [&$this->columns, &$this->tables, &$this->wheres, &$this->params, &$this->orders]);
+		$this->hook('frontBoards', [&$this->columns, &$this->tables, &$this->params, &$this->wheres, &$this->orders]);
 	}
 
 	public function getData(int $start, int $limit): array

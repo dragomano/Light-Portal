@@ -16,8 +16,11 @@ namespace Bugo\LightPortal\Partials;
 
 final class TitleClassSelect extends AbstractPartial
 {
-	public function __invoke(array $params = []): string
+	public function __invoke(): string
 	{
+		$params = func_get_args();
+		$params = $params[0] ?? [];
+
 		$params['id'] ??= 'title_class';
 		$params['data'] ??= $this->context['lp_all_title_classes'] ?? [];
 		$params['value'] ??= $this->context['lp_block']['title_class'] ?? '';

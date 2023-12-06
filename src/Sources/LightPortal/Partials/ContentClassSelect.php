@@ -16,8 +16,11 @@ namespace Bugo\LightPortal\Partials;
 
 final class ContentClassSelect extends AbstractPartial
 {
-	public function __invoke(array $params = []): string
+	public function __invoke(): string
 	{
+		$params = func_get_args();
+		$params = $params[0] ?? [];
+
 		$params['id'] ??= 'content_class';
 		$params['data'] ??= $this->context['lp_all_content_classes'] ?? [];
 		$params['value'] ??= $this->context['lp_block']['content_class'] ?? '';

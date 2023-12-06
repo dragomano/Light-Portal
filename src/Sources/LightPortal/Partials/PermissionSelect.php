@@ -16,8 +16,11 @@ namespace Bugo\LightPortal\Partials;
 
 final class PermissionSelect extends AbstractPartial
 {
-	public function __invoke(string $entity = 'page'): string
+	public function __invoke(): string
 	{
+		$params = func_get_args();
+		$entity = $params[0]['type'] ?? 'page';
+
 		$data = [];
 		foreach ($this->txt['lp_permissions'] as $level => $title) {
 			if (empty($this->context['user']['is_admin']) && empty($level))

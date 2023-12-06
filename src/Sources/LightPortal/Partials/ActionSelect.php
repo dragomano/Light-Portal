@@ -16,8 +16,11 @@ namespace Bugo\LightPortal\Partials;
 
 final class ActionSelect extends AbstractPartial
 {
-	public function __invoke(array $params = []): string
+	public function __invoke(): string
 	{
+		$params = func_get_args();
+		$params = $params[0] ?? [];
+
 		$params['id'] ??= 'lp_disabled_actions';
 		$params['data'] ??= (empty($this->modSettings['lp_disabled_actions']) ? [] : explode(',', $this->modSettings['lp_disabled_actions']));
 		$params['value'] = [];

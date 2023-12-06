@@ -16,8 +16,11 @@ namespace Bugo\LightPortal\Partials;
 
 final class IconSelect extends AbstractPartial
 {
-	public function __invoke(array $params = []): string
+	public function __invoke(): string
 	{
+		$params = func_get_args();
+		$params = $params[0] ?? [];
+
 		$id = empty($params['id']) ? 'icon' : $params['id'];
 
 		$icon = empty($params['icon']) ? ($this->context['lp_block']['icon'] ?? '') : $params['icon'];

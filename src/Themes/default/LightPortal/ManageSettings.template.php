@@ -1,6 +1,6 @@
 <?php
 
-function template_callback_frontpage_mode_settings()
+function template_callback_frontpage_mode_settings(): void
 {
 	global $modSettings, $txt, $context, $scripturl, $settings;
 
@@ -267,7 +267,7 @@ function template_callback_frontpage_mode_settings()
 		</template>';
 }
 
-function template_callback_standalone_mode_settings()
+function template_callback_standalone_mode_settings(): void
 {
 	global $modSettings, $txt, $scripturl, $boardurl, $context;
 
@@ -331,7 +331,7 @@ function template_callback_standalone_mode_settings()
 		</template>';
 }
 
-function template_callback_comment_settings()
+function template_callback_comment_settings(): void
 {
 	global $modSettings, $txt;
 
@@ -395,7 +395,7 @@ function template_callback_comment_settings()
 		</template>';
 }
 
-function template_post_tab(array $fields, string $tab = 'content')
+function template_post_tab(array $fields, string $tab = 'content'): bool
 {
 	global $context;
 
@@ -414,4 +414,6 @@ function template_post_tab(array $fields, string $tab = 'content')
 	LoadTemplate('Post');
 
 	template_post_header();
+
+	return false;
 }

@@ -16,8 +16,11 @@ namespace Bugo\LightPortal\Partials;
 
 final class PageIconSelect extends AbstractPartial
 {
-	public function __invoke(array $params = []): string
+	public function __invoke(): string
 	{
+		$params = func_get_args();
+		$params = $params[0] ?? [];
+
 		$id = empty($params['id']) ? 'page_icon' : $params['id'];
 
 		$icon = empty($params['icon']) ? ($this->context['lp_page']['options']['page_icon'] ?? '') : $params['icon'];

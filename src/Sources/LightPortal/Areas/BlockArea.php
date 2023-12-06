@@ -14,6 +14,7 @@
 
 namespace Bugo\LightPortal\Areas;
 
+use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, TextField};
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Repositories\BlockRepository;
 use Bugo\LightPortal\Partials\{
@@ -406,66 +407,52 @@ final class BlockArea
 	{
 		$this->prepareTitleFields('block', false);
 
-		$this->context['posting_fields']['note']['label']['text'] = $this->txt['lp_block_note'];
-		$this->context['posting_fields']['note']['input'] = [
-			'type'       => 'text',
-			'tab'        => 'content',
-			'attributes' => [
-				'maxlength' => 255,
-				'value'     => $this->context['lp_block']['note'] ?? '',
-			],
-		];
-
-		$this->context['posting_fields']['placement']['label']['html'] = $this->txt['lp_block_placement'];
-		$this->context['posting_fields']['placement']['input']['html'] = (new PlacementSelect)();
-		$this->context['posting_fields']['placement']['input']['tab']  = 'access_placement';
-
-		$this->context['posting_fields']['permissions']['label']['html'] = $this->txt['edit_permissions'];
-		$this->context['posting_fields']['permissions']['input']['html'] = (new PermissionSelect)('block');
-		$this->context['posting_fields']['permissions']['input']['tab']  = 'access_placement';
-
-		$this->context['posting_fields']['areas']['label']['html']  = $this->txt['lp_block_areas'];
-		$this->context['posting_fields']['areas']['input']['html']  = (new AreaSelect)();
-		$this->context['posting_fields']['areas']['input']['tab']   = 'access_placement';
-		$this->context['posting_fields']['areas']['input']['after'] = $this->getAreasInfo();
-
-		$this->context['posting_fields']['icon']['label']['html'] = $this->txt['current_icon'];
-		$this->context['posting_fields']['icon']['input']['html'] = (new IconSelect)();
-		$this->context['posting_fields']['icon']['input']['tab']  = 'appearance';
-
-		$this->context['posting_fields']['title_class']['label']['html'] = $this->txt['lp_block_title_class'];
-		$this->context['posting_fields']['title_class']['input']['html'] = (new TitleClassSelect)();
-		$this->context['posting_fields']['title_class']['input']['tab']  = 'appearance';
-
-		if (empty($this->context['lp_block']['options']['no_content_class'])) {
-			$this->context['posting_fields']['content_class']['label']['html'] = $this->txt['lp_block_content_class'];
-			$this->context['posting_fields']['content_class']['input']['html'] = (new ContentClassSelect)();
-			$this->context['posting_fields']['content_class']['input']['tab']  = 'appearance';
-		}
+		TextField::make('note', $this->txt['lp_block_note'])
+			->setTab('content')
+			->setAttribute('maxlength', 255)
+			->setValue($this->context['lp_block']['note']);
 
 		if (isset($this->context['lp_block']['options']['content'])) {
 			if ($this->context['lp_block']['type'] !== 'bbc') {
-				$this->context['posting_fields']['content']['label']['text'] = $this->txt['lp_content'];
-				$this->context['posting_fields']['content']['input'] = [
-					'type'       => 'textarea',
-					'tab'        => 'content',
-					'attributes' => [
-						'value' => $this->prepareContent($this->context['lp_block']),
-					],
-				];
+				TextareaField::make('content', $this->txt['lp_content'])
+					->setTab('content')
+					->setValue($this->prepareContent($this->context['lp_block']));
 			} else {
 				$this->createBbcEditor($this->context['lp_block']['content']);
 			}
 		}
 
-		$this->context['posting_fields']['hide_header']['label']['text'] = $this->txt['lp_block_hide_header'];
-		$this->context['posting_fields']['hide_header']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'hide_header',
-				'checked' => (bool) ($this->context['lp_block']['options']['parameters']['hide_header'] ?? false)
-			]
-		];
+		CustomField::make('placement', $this->txt['lp_block_placement'])
+			->setTab('access_placement')
+			->setValue(fn() => new PlacementSelect);
+
+		CustomField::make('permissions', $this->txt['edit_permissions'])
+			->setTab('access_placement')
+			->setValue(fn() => new PermissionSelect, [
+				'type' => 'block'
+			]);
+
+		CustomField::make('areas', $this->txt['lp_block_areas'])
+			->setTab('access_placement')
+			->setAfter($this->getAreasInfo())
+			->setValue(fn() => new AreaSelect);
+
+		CustomField::make('icon', $this->txt['current_icon'])
+			->setTab('appearance')
+			->setValue(fn() => new IconSelect);
+
+		CustomField::make('title_class', $this->txt['lp_block_title_class'])
+			->setTab('appearance')
+			->setValue(fn() => new TitleClassSelect);
+
+		if (empty($this->context['lp_block']['options']['no_content_class'])) {
+			CustomField::make('content_class', $this->txt['lp_block_content_class'])
+				->setTab('appearance')
+				->setValue(fn() => new ContentClassSelect);
+		}
+
+		CheckboxField::make('hide_header', $this->txt['lp_block_hide_header'])
+			->setValue($this->context['lp_block']['options']['parameters']['hide_header']);
 
 		$this->context['lp_block_tab_appearance'] = true;
 

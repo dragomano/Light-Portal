@@ -76,17 +76,17 @@ final class BasicConfig
 
 		$this->context['lp_frontpage_layouts'] = (new FrontPage)->getLayouts();
 
-		$this->context['lp_frontpage_alias_select'] = (new PageAliasSelect)();
+		$this->context['lp_frontpage_alias_select'] = new PageAliasSelect;
 
-		$this->context['lp_frontpage_categories_select'] = (new CategorySelect)();
+		$this->context['lp_frontpage_categories_select'] = new CategorySelect;
 
-		$this->context['lp_frontpage_boards_select'] = (new BoardSelect)();
+		$this->context['lp_frontpage_boards_select'] = new BoardSelect;
 
-		$this->context['lp_frontpage_topics_select'] = (new TopicSelect)();
+		$this->context['lp_frontpage_topics_select'] = new TopicSelect;
 
-		$this->context['lp_frontpage_pages_select'] = (new PageSelect)();
+		$this->context['lp_frontpage_pages_select'] = new PageSelect;
 
-		$this->context['lp_disabled_actions_select'] = (new ActionSelect)();
+		$this->context['lp_disabled_actions_select'] = new ActionSelect;
 
 		$config_vars = [
 			['callback', 'frontpage_mode_settings'],
