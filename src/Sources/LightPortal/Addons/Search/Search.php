@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.10.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\Search;
@@ -170,14 +170,14 @@ class Search extends Block
 
 		echo '
 		<form class="search_addon centertext" action="', LP_BASE_URL, ';sa=search" method="post" accept-charset="', $this->context['character_set'], '">
-			<input type="search" name="search" placeholder="', $this->txt['lp_search']['title'], '">
+			<input type="search" name="search" placeholder="', $this->txt['lp_search']['title'], /** @lang text */ '">
 		</form>
 		<script>
 			new autoComplete({
 				selector: ".search_addon input",', (empty($this->context['lp_search_plugin']['min_chars']) ? '' : '
 				minChars: ' . $this->context['lp_search_plugin']['min_chars'] . ','), '
 				source: async function(term, response) {
-					const results = await fetch("', LP_BASE_URL, ';sa=qsearch", {
+					const results = await fetch("', LP_BASE_URL, /** @lang text */ ';sa=qsearch", {
 						method: "POST",
 						headers: {
 							"Content-Type": "application/json; charset=utf-8"

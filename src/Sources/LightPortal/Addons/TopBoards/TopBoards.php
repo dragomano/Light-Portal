@@ -10,12 +10,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.09.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\TopBoards;
 
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\Fields\CheckboxField;
+use Bugo\LightPortal\Areas\Fields\NumberField;
+use Bugo\LightPortal\Areas\Fields\RadioField;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -50,42 +53,16 @@ class TopBoards extends Block
 		if ($this->context['lp_block']['type'] !== 'top_boards')
 			return;
 
-		$this->context['posting_fields']['num_boards']['label']['text'] = $this->txt['lp_top_boards']['num_boards'];
-		$this->context['posting_fields']['num_boards']['input'] = [
-			'type' => 'number',
-			'attributes' => [
-				'id'    => 'num_boards',
-				'min'   => 1,
-				'value' => $this->context['lp_block']['options']['parameters']['num_boards']
-			]
-		];
+		NumberField::make('num_boards', $this->txt['lp_top_boards']['num_boards'])
+			->setAttribute('min', 1)
+			->setValue($this->context['lp_block']['options']['parameters']['num_boards']);
 
-		$this->context['posting_fields']['entity_type']['label']['text'] = $this->txt['lp_top_boards']['entity_type'];
-		$this->context['posting_fields']['entity_type']['input'] = [
-			'type' => 'radio_select',
-			'attributes' => [
-				'id' => 'entity_type'
-			],
-			'options' => []
-		];
+		RadioField::make('entity_type', $this->txt['lp_top_boards']['entity_type'])
+			->setOptions(array_combine(['num_topics', 'num_posts'], $this->txt['lp_top_boards']['entity_type_set']))
+			->setValue($this->context['lp_block']['options']['parameters']['entity_type']);
 
-		$entity_types = array_combine(['num_topics', 'num_posts'], $this->txt['lp_top_boards']['entity_type_set']);
-
-		foreach ($entity_types as $key => $value) {
-			$this->context['posting_fields']['entity_type']['input']['options'][$value] = [
-				'value'    => $key,
-				'selected' => $key == $this->context['lp_block']['options']['parameters']['entity_type']
-			];
-		}
-
-		$this->context['posting_fields']['show_numbers_only']['label']['text'] = $this->txt['lp_top_boards']['show_numbers_only'];
-		$this->context['posting_fields']['show_numbers_only']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'show_numbers_only',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_numbers_only']
-			]
-		];
+		CheckboxField::make('show_numbers_only', $this->txt['lp_top_boards']['show_numbers_only'])
+			->setValue($this->context['lp_block']['options']['parameters']['show_numbers_only']);
 	}
 
 	public function prepareContent($data, array $parameters): void

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.03.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortal;
@@ -24,7 +24,7 @@ class BlockImport extends AbstractOtherBlockImport
 {
 	private array $supported_types = [5, 10, 11];
 
-	public function main()
+	public function main(): void
 	{
 		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_tiny_portal']['label_name'];
 		$this->context['page_area_title'] = $this->txt['lp_blocks_import'];

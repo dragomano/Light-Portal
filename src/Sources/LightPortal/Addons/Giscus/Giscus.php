@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.04.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\Giscus;
@@ -43,12 +43,12 @@ class Giscus extends Plugin
 		'cobalt'              => 'RStudio Cobalt',
 	];
 
-	public function init()
+	public function init(): void
 	{
 		$this->txt['lp_show_comment_block_set']['giscus'] = 'Giscus';
 	}
 
-	public function addSettings(array &$config_vars)
+	public function addSettings(array &$config_vars): void
 	{
 		$this->addDefaultValues([
 			'theme' => 'light'
@@ -61,14 +61,15 @@ class Giscus extends Plugin
 		$config_vars['giscus'][] = ['select', 'theme', $this->themes];
 	}
 
-	public function comments()
+	public function comments(): void
 	{
 		if (! empty($this->modSettings['lp_show_comment_block']) && $this->modSettings['lp_show_comment_block'] === 'giscus'
 			&& ! empty($this->context['lp_giscus_plugin']['repo'])
 			&& ! empty($this->context['lp_giscus_plugin']['repo_id'])
 			&& ! empty($this->context['lp_giscus_plugin']['category'])
 			&& ! empty($this->context['lp_giscus_plugin']['category_id'])) {
-			$this->context['lp_giscus_comment_block'] = '
+			$this->context['lp_giscus_comment_block'] = /** @lang text */
+				'
 			<div class="giscus windowbg"></div>
 			<script src="https://giscus.app/client.js"
 				data-repo="' . $this->context['lp_giscus_plugin']['repo'] . '"

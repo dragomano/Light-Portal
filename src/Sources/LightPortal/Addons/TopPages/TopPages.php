@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.09.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\TopPages;
 
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\Fields\{CheckboxField, NumberField, RadioField};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -48,42 +49,16 @@ class TopPages extends Block
 		if ($this->context['lp_block']['type'] !== 'top_pages')
 			return;
 
-		$this->context['posting_fields']['popularity_type']['label']['text'] = $this->txt['lp_top_pages']['type'];
-		$this->context['posting_fields']['popularity_type']['input'] = [
-			'type' => 'radio_select',
-			'attributes' => [
-				'id' => 'popularity_type'
-			],
-			'options' => []
-		];
+		RadioField::make('popularity_type', $this->txt['lp_top_pages']['type'])
+			->setOptions(array_combine(['comments', 'views'], $this->txt['lp_top_pages']['type_set']))
+			->setValue($this->context['lp_block']['options']['parameters']['popularity_type']);
 
-		$types = array_combine(['comments', 'views'], $this->txt['lp_top_pages']['type_set']);
+		NumberField::make('num_pages', $this->txt['lp_top_pages']['num_pages'])
+			->setAttribute('min', 1)
+			->setValue($this->context['lp_block']['options']['parameters']['num_pages']);
 
-		foreach ($types as $key => $value) {
-			$this->context['posting_fields']['popularity_type']['input']['options'][$value] = [
-				'value'    => $key,
-				'selected' => $key == $this->context['lp_block']['options']['parameters']['popularity_type']
-			];
-		}
-
-		$this->context['posting_fields']['num_pages']['label']['text'] = $this->txt['lp_top_pages']['num_pages'];
-		$this->context['posting_fields']['num_pages']['input'] = [
-			'type' => 'number',
-			'attributes' => [
-				'id'    => 'num_pages',
-				'min'   => 1,
-				'value' => $this->context['lp_block']['options']['parameters']['num_pages']
-			]
-		];
-
-		$this->context['posting_fields']['show_numbers_only']['label']['text'] = $this->txt['lp_top_pages']['show_numbers_only'];
-		$this->context['posting_fields']['show_numbers_only']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'show_numbers_only',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_numbers_only']
-			]
-		];
+		CheckboxField::make('show_numbers_only', $this->txt['lp_top_pages']['show_numbers_only'])
+			->setValue($this->context['lp_block']['options']['parameters']['show_numbers_only']);
 	}
 
 	public function getData(array $parameters): array

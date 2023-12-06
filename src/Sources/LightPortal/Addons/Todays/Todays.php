@@ -10,12 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.09.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\Todays;
 
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\Fields\NumberField;
+use Bugo\LightPortal\Areas\Fields\SelectField;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -67,35 +69,15 @@ class Todays extends Block
 		if ($this->context['lp_block']['type'] !== 'todays')
 			return;
 
-		$this->context['posting_fields']['widget_type']['label']['text'] = $this->txt['lp_todays']['type'];
-		$this->context['posting_fields']['widget_type']['input'] = [
-			'type' => 'select',
-			'attributes' => [
-				'id' => 'widget_type'
-			],
-			'options' => [],
-			'tab' => 'content'
-		];
+		SelectField::make('widget_type', $this->txt['lp_todays']['type'])
+			->setTab('content')
+			->setOptions(array_combine(['birthdays', 'holidays', 'events', 'calendar'], $this->txt['lp_todays']['type_set']))
+			->setValue($this->context['lp_block']['options']['parameters']['widget_type']);
 
-		$types = array_combine(['birthdays', 'holidays', 'events', 'calendar'], $this->txt['lp_todays']['type_set']);
-
-		foreach ($types as $key => $value) {
-			$this->context['posting_fields']['widget_type']['input']['options'][$value] = [
-				'value'    => $key,
-				'selected' => $key == $this->context['lp_block']['options']['parameters']['widget_type']
-			];
-		}
-
-		$this->context['posting_fields']['max_items']['label']['text'] = $this->txt['lp_todays']['max_items'];
-		$this->context['posting_fields']['max_items']['input'] = [
-			'type' => 'number',
-			'after' => $this->txt['lp_todays']['max_items_subtext'],
-			'attributes' => [
-				'id'    => 'max_items',
-				'min'   => 1,
-				'value' => $this->context['lp_block']['options']['parameters']['max_items']
-			]
-		];
+		NumberField::make('max_items', $this->txt['lp_todays']['max_items'])
+			->setAfter($this->txt['lp_todays']['max_items_subtext'])
+			->setAttribute('min', 1)
+			->setValue($this->context['lp_block']['options']['parameters']['max_items']);
 	}
 
 	public function getData(string $type, string $output_method = 'echo')

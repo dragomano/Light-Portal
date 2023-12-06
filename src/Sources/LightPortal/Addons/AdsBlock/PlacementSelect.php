@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 27.04.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
@@ -19,8 +19,11 @@ use Bugo\LightPortal\Partials\AbstractPartial;
 
 final class PlacementSelect extends AbstractPartial
 {
-	public function __invoke(array $params = []): string
+	public function __invoke(): string
 	{
+		$params = func_get_args();
+		$params = $params[0] ?? [];
+
 		if (! is_array($params['value'])) {
 			$params['value'] = explode(',', $params['value']);
 		}

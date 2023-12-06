@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.12.22
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\Optimus;
@@ -24,13 +24,13 @@ class Optimus extends Plugin
 {
 	public string $type = 'article';
 
-	public function addSettings(array &$config_vars)
+	public function addSettings(array &$config_vars): void
 	{
 		$config_vars['optimus'][] = ['check', 'use_topic_descriptions'];
 		$config_vars['optimus'][] = ['check', 'show_topic_keywords'];
 	}
 
-	public function frontTopics(array &$custom_columns)
+	public function frontTopics(array &$custom_columns): void
 	{
 		if (empty($this->context['lp_optimus_plugin']['use_topic_descriptions']) || ! class_exists('\Bugo\Optimus\Integration'))
 			return;
@@ -38,7 +38,7 @@ class Optimus extends Plugin
 		$custom_columns[] = 't.optimus_description';
 	}
 
-	public function frontTopicsOutput(array &$topics, array $row)
+	public function frontTopicsOutput(array &$topics, array $row): void
 	{
 		if (! class_exists('\Bugo\Optimus\Integration'))
 			return;

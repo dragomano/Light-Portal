@@ -10,12 +10,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.09.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\Likely;
 
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\Fields\CheckboxField;
+use Bugo\LightPortal\Areas\Fields\CustomField;
+use Bugo\LightPortal\Areas\Fields\RadioField;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -48,37 +51,21 @@ class Likely extends Block
 		if ($this->context['lp_block']['type'] !== 'likely')
 			return;
 
-		$this->context['posting_fields']['size']['label']['text'] = $this->txt['lp_likely']['size'];
-		$this->context['posting_fields']['size']['input'] = [
-			'type' => 'radio_select',
-			'attributes' => [
-				'id' => 'size'
-			],
-			'options' => []
-		];
+		CustomField::make('buttons', $this->txt['lp_likely']['buttons'])
+			->setTab('content')
+			->setValue(fn() => new ButtonSelect, [
+				'data'  => $this->buttons,
+				'value' => is_array($this->context['lp_block']['options']['parameters']['buttons'])
+							? $this->context['lp_block']['options']['parameters']['buttons']
+							: explode(',', $this->context['lp_block']['options']['parameters']['buttons'])
+			]);
 
-		foreach ($this->txt['lp_likely']['size_set'] as $value => $title) {
-			$this->context['posting_fields']['size']['input']['options'][$title] = [
-				'value'    => $value,
-				'selected' => $value == $this->context['lp_block']['options']['parameters']['size']
-			];
-		}
+		RadioField::make('size', $this->txt['lp_likely']['size'])
+			->setOptions($this->txt['lp_likely']['size_set'])
+			->setValue($this->context['lp_block']['options']['parameters']['size']);
 
-		$this->context['posting_fields']['dark_mode']['label']['text'] = $this->txt['lp_likely']['dark_mode'];
-		$this->context['posting_fields']['dark_mode']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'dark_mode',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['dark_mode']
-			],
-		];
-
-		$this->context['posting_fields']['buttons']['label']['html'] = $this->txt['lp_likely']['buttons'];
-		$this->context['posting_fields']['buttons']['input']['html'] = (new ButtonSelect)([
-			'data'  => $this->buttons,
-			'value' => is_array($this->context['lp_block']['options']['parameters']['buttons']) ? $this->context['lp_block']['options']['parameters']['buttons'] : explode(',', $this->context['lp_block']['options']['parameters']['buttons'])
-		]);
-		$this->context['posting_fields']['buttons']['input']['tab']  = 'content';
+		CheckboxField::make('dark_mode', $this->txt['lp_likely']['dark_mode'])
+			->setValue($this->context['lp_block']['options']['parameters']['dark_mode']);
 	}
 
 	public function prepareAssets(array &$assets): void
@@ -95,7 +82,7 @@ class Likely extends Block
 		$this->loadCSSFile('light_portal/likely/likely.min.css');
 		$this->loadJavaScriptFile('light_portal/likely/likely.min.js', ['minimize' => true]);
 
-		echo '
+		echo /** @lang text */ '
 			<div class="centertext likely_links">
 				<div class="likely likely-', $parameters['size'], (empty($parameters['dark_mode']) ? '' : ' likely-dark-theme'), '">';
 
@@ -109,7 +96,7 @@ class Likely extends Block
 					<div class="', $service, '" tabindex="0" role="link" aria-label="', $this->txt['lp_likely']['buttons_set'][$service], '"', (! empty($this->modSettings['optimus_tw_cards']) && $service === 'twitter' ? ' data-via="' . $this->modSettings['optimus_tw_cards'] . '"' : ''), (! empty($this->settings['og_image']) && $service === 'pinterest' ? ' data-media="' . $this->settings['og_image'] . '"' : ''), (! empty($this->settings['og_image']) && $service === 'odnoklassniki' ? ' data-imageurl="' . $this->settings['og_image'] . '"' : ''), '>', $this->txt['lp_likely']['buttons_set'][$service], '</div>';
 		}
 
-		echo '
+		echo /** @lang text */ '
 				</div>
 			</div>';
 	}

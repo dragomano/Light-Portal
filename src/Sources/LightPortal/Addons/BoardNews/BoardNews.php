@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * BoardNews.php
@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.09.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\BoardNews;
 
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\Fields\NumberField;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -50,51 +51,19 @@ class BoardNews extends Block
 		if ($this->context['lp_block']['type'] !== 'board_news')
 			return;
 
-		$this->context['posting_fields']['board_id']['label']['text'] = $this->txt['lp_board_news']['board_id'];
-		$this->context['posting_fields']['board_id']['input'] = [
-			'type' => 'select',
-			'attributes' => [
-				'id' => 'board_id',
-			],
-			'options' => [],
-			'tab' => 'content',
-		];
+		CustomSelectField::make('board_id', $this->txt['lp_board_news']['board_id'])
+			->setTab('content')
+			->setOptions($this->getBoardList([
+				'ignore_boards'  => false,
+				'selected_board' => $this->context['lp_block']['options']['parameters']['board_id'] ?? false
+			]));
 
-		$board_list = $this->getBoardList([
-			'ignore_boards'  => false,
-			'selected_board' => empty($this->context['lp_block']['options']['parameters']['board_id']) ? false : $this->context['lp_block']['options']['parameters']['board_id']
-		]);
+		NumberField::make('num_posts', $this->txt['lp_board_news']['num_posts'])
+			->setAttribute('min', 1)
+			->setValue($this->context['lp_block']['options']['parameters']['num_posts']);
 
-		foreach ($board_list as $category) {
-			$this->context['posting_fields']['board_id']['input']['options'][$category['name']] = ['options' => []];
-
-			foreach ($category['boards'] as $board) {
-				$this->context['posting_fields']['board_id']['input']['options'][$category['name']]['options'][$board['name']] = [
-					'value'    => $board['id'],
-					'selected' => (bool) $board['selected'],
-					'label'    => ($board['child_level'] > 0 ? str_repeat('==', $board['child_level'] - 1) . '=&gt;' : '') . ' ' . $board['name']
-				];
-			}
-		}
-
-		$this->context['posting_fields']['num_posts']['label']['text'] = $this->txt['lp_board_news']['num_posts'];
-		$this->context['posting_fields']['num_posts']['input'] = [
-			'type' => 'number',
-			'attributes' => [
-				'id'    => 'num_posts',
-				'min'   => 1,
-				'value' => $this->context['lp_block']['options']['parameters']['num_posts']
-			]
-		];
-
-		$this->context['posting_fields']['teaser_length']['label']['text'] = $this->txt['lp_board_news']['teaser_length'];
-		$this->context['posting_fields']['teaser_length']['input'] = [
-			'type' => 'number',
-			'attributes' => [
-				'id'    => 'teaser_length',
-				'value' => $this->context['lp_block']['options']['parameters']['teaser_length']
-			]
-		];
+		NumberField::make('teaser_length', $this->txt['lp_board_news']['teaser_length'])
+			->setValue($this->context['lp_block']['options']['parameters']['teaser_length']);
 	}
 
 	public function prepareContent($data, array $parameters): void

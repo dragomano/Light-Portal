@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.11.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\MainMenu;
@@ -27,12 +27,12 @@ class MainMenu extends Plugin
 {
 	public string $type = 'other';
 
-	public function init()
+	public function init(): void
 	{
 		$this->applyHook('menu_buttons');
 	}
 
-	public function menuButtons(array &$buttons)
+	public function menuButtons(array &$buttons): void
 	{
 		$this->prepareVariables();
 
@@ -43,18 +43,18 @@ class MainMenu extends Plugin
 			$buttons[empty($this->modSettings['lp_standalone_mode']) ? 'home' : 'forum']['title'] = $this->context['lp_main_menu_addon_forum_langs'][$this->user_info['language']];
 	}
 
-	public function frontCustomTemplate()
+	public function frontCustomTemplate(): void
 	{
 		if (! empty($this->context['lp_main_menu_addon_portal_langs'][$this->user_info['language']]) && ! empty($this->context['linktree'][1]))
 			$this->context['linktree'][1]['name'] = $this->context['lp_main_menu_addon_portal_langs'][$this->user_info['language']];
 	}
 
-	public function addSettings(array &$config_vars)
+	public function addSettings(array &$config_vars): void
 	{
 		$config_vars['main_menu'][] = ['callback', 'items', $this->showList()];
 	}
 
-	public function showList()
+	public function showList(): bool|string
 	{
 		$this->prepareForumLanguages();
 
@@ -69,7 +69,7 @@ class MainMenu extends Plugin
 		return ob_get_clean();
 	}
 
-	public function saveSettings(array &$plugin_options)
+	public function saveSettings(array &$plugin_options): void
 	{
 		if (! isset($plugin_options['items']))
 			return;
@@ -94,7 +94,7 @@ class MainMenu extends Plugin
 		$plugin_options['forum_langs']  = json_encode($forum_langs, JSON_UNESCAPED_UNICODE);
 	}
 
-	private function prepareVariables()
+	private function prepareVariables(): void
 	{
 		$this->context['lp_main_menu_addon_portal_langs'] = $this->jsonDecode($this->context['lp_main_menu_plugin']['portal_langs'] ?? '');
 		$this->context['lp_main_menu_addon_forum_langs']  = $this->jsonDecode($this->context['lp_main_menu_plugin']['forum_langs'] ?? '');

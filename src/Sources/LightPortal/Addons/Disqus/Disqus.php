@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.04.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\Disqus;
@@ -24,20 +24,21 @@ class Disqus extends Plugin
 {
 	public string $type = 'comment';
 
-	public function init()
+	public function init(): void
 	{
 		$this->txt['lp_show_comment_block_set']['disqus'] = 'Disqus';
 	}
 
-	public function addSettings(array &$config_vars)
+	public function addSettings(array &$config_vars): void
 	{
 		$config_vars['disqus'][] = ['text', 'shortname', 'subtext' => $this->txt['lp_disqus']['shortname_subtext'], 'required' => true];
 	}
 
-	public function comments()
+	public function comments(): void
 	{
 		if (! empty($this->modSettings['lp_show_comment_block']) && $this->modSettings['lp_show_comment_block'] === 'disqus' && ! empty($this->context['lp_disqus_plugin']['shortname'])) {
-			$this->context['lp_disqus_comment_block'] = '
+			$this->context['lp_disqus_comment_block'] = /** @lang text */
+				'
 				<div id="disqus_thread" class="windowbg"></div>
 				<script>
 					let disqus_config = function () {
@@ -54,7 +55,7 @@ class Disqus extends Plugin
 		}
 	}
 
-	public function frontAssets()
+	public function frontAssets(): void
 	{
 		if (empty($this->context['lp_frontpage_articles']))
 			return;

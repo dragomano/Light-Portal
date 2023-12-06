@@ -10,12 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.09.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\Polls;
 
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\Fields\InputField;
+use Bugo\LightPortal\Areas\Fields\SelectField;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -44,36 +46,19 @@ class Polls extends Block
 		if ($this->context['lp_block']['type'] !== 'polls')
 			return;
 
-		$this->context['posting_fields']['selected_item']['label']['text'] = $this->txt['lp_polls']['selected_item'];
-
 		$polls = $this->getAll();
 
 		if (empty($polls)) {
-			$this->context['posting_fields']['selected_item']['input'] = [
-				'type' => 'input',
-				'after' => $this->txt['lp_polls']['no_items'],
-				'attributes' => [
-					'id' => 'selected_item',
-					'disabled' => true
-				],
-				'tab' => 'content'
-			];
+			InputField::make('selected_item', $this->txt['lp_polls']['selected_item'])
+				->setType('input')
+				->setTab('content')
+				->setAfter($this->txt['lp_polls']['no_items'])
+				->setAttribute('disabled', true);
 		} else {
-			$this->context['posting_fields']['selected_item']['input'] = [
-				'type' => 'select',
-				'attributes' => [
-					'id' => 'selected_item'
-				],
-				'options' => [],
-				'tab' => 'content'
-			];
-
-			foreach ($polls as $key => $value) {
-				$this->context['posting_fields']['selected_item']['input']['options'][$value] = [
-					'value'    => $key,
-					'selected' => $key == $this->context['lp_block']['options']['parameters']['selected_item']
-				];
-			}
+			SelectField::make('selected_item', $this->txt['lp_polls']['selected_item'])
+				->setTab('content')
+				->setOptions($polls)
+				->setValue($this->context['lp_block']['options']['parameters']['selected_item']);
 		}
 	}
 

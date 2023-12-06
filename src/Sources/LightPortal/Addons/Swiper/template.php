@@ -4,7 +4,7 @@ function swiper_images(): string
 {
 	global $txt, $context, $settings;
 
-	return '
+	return /** @lang text */ '
 	<div x-data="handleImages()">
 		<table class="add_option centertext table_grid">
 			<tbody>

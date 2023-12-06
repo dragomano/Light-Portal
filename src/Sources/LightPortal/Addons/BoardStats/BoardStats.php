@@ -10,12 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.09.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\BoardStats;
 
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\Fields\CheckboxField;
+use Bugo\LightPortal\Areas\Fields\NumberField;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -54,55 +56,25 @@ class BoardStats extends Block
 		if ($this->context['lp_block']['type'] !== 'board_stats')
 			return;
 
-		$this->context['posting_fields']['show_latest_member']['label']['text'] = $this->txt['lp_board_stats']['show_latest_member'];
-		$this->context['posting_fields']['show_latest_member']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'show_latest_member',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_latest_member']
-			],
-			'tab' => 'content'
-		];
+		CheckboxField::make('show_latest_member', $this->txt['lp_board_stats']['show_latest_member'])
+			->setTab('content')
+			->setValue($this->context['lp_block']['options']['parameters']['show_latest_member']);
 
-		$this->context['posting_fields']['show_basic_info']['label']['text'] = $this->txt['lp_board_stats']['show_basic_info'];
-		$this->context['posting_fields']['show_basic_info']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'show_basic_info',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_basic_info']
-			],
-			'tab' => 'content'
-		];
+		CheckboxField::make('show_basic_info', $this->txt['lp_board_stats']['show_basic_info'])
+			->setTab('content')
+			->setValue($this->context['lp_block']['options']['parameters']['show_basic_info']);
 
-		$this->context['posting_fields']['show_whos_online']['label']['text'] = $this->txt['lp_board_stats']['show_whos_online'];
-		$this->context['posting_fields']['show_whos_online']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'show_whos_online',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_whos_online']
-			],
-			'tab' => 'content'
-		];
+		CheckboxField::make('show_whos_online', $this->txt['lp_board_stats']['show_whos_online'])
+			->setTab('content')
+			->setValue($this->context['lp_block']['options']['parameters']['show_whos_online']);
 
-		$this->context['posting_fields']['use_fa_icons']['label']['text'] = $this->txt['lp_board_stats']['use_fa_icons'];
-		$this->context['posting_fields']['use_fa_icons']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'use_fa_icons',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['use_fa_icons']
-			],
-			'tab' => 'appearance'
-		];
+		CheckboxField::make('use_fa_icons', $this->txt['lp_board_stats']['use_fa_icons'])
+			->setTab('appearance')
+			->setValue($this->context['lp_block']['options']['parameters']['use_fa_icons']);
 
-		$this->context['posting_fields']['update_interval']['label']['text'] = $this->txt['lp_board_stats']['update_interval'];
-		$this->context['posting_fields']['update_interval']['input'] = [
-			'type' => 'number',
-			'attributes' => [
-				'id' => 'update_interval',
-				'min' => 0,
-				'value' => $this->context['lp_block']['options']['parameters']['update_interval']
-			]
-		];
+		NumberField::make('update_interval', $this->txt['lp_board_stats']['update_interval'])
+			->setAttribute('min', 0)
+			->setValue($this->context['lp_block']['options']['parameters']['update_interval']);
 	}
 
 	public function getData(array $parameters): array

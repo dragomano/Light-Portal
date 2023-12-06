@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 09.05.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\KarmaPostRating;
@@ -24,7 +24,7 @@ class KarmaPostRating extends Plugin
 {
 	public string $type = 'article';
 
-	public function frontTopics(array &$custom_columns, array &$custom_tables, array &$custom_wheres, array &$custom_params)
+	public function frontTopics(array &$custom_columns, array &$custom_tables, array &$custom_params): void
 	{
 		if (! class_exists('\Bugo\KarmaPostRating\Subs'))
 			return;
@@ -36,12 +36,12 @@ class KarmaPostRating extends Plugin
 		$custom_params['kpr_item_type'] = 'message';
 	}
 
-	public function frontTopicsOutput(array &$topics, array $row)
+	public function frontTopicsOutput(array &$topics, array $row): void
 	{
 		$topics[$row['id_topic']]['kpr_rating'] = $row['rating'] ?? 0;
 	}
 
-	public function frontAssets()
+	public function frontAssets(): void
 	{
 		foreach ($this->context['lp_frontpage_articles'] as $id => $topic) {
 			if (! empty($topic['kpr_rating'])) {

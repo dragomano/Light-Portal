@@ -10,12 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.09.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\GalleryBlock;
 
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\Fields\CustomField;
+use Bugo\LightPortal\Areas\Fields\NumberField;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -46,21 +48,15 @@ class GalleryBlock extends Block
 		if ($this->context['lp_block']['type'] !== 'gallery_block')
 			return;
 
-		$this->context['posting_fields']['categories']['label']['html'] = $this->txt['lp_gallery_block']['categories'];
-		$this->context['posting_fields']['categories']['input']['html'] = (new CategorySelect)();
-		$this->context['posting_fields']['categories']['input']['tab'] = 'content';
+		CustomField::make('categories', $this->txt['lp_gallery_block']['categories'])
+			->setTab('content')
+			->setValue(fn() => new CategorySelect);
 
-		$this->context['posting_fields']['num_images']['label']['text'] = $this->txt['lp_gallery_block']['num_images'];
-		$this->context['posting_fields']['num_images']['input'] = [
-			'type' => 'number',
-			'after' => $this->txt['lp_gallery_block']['num_images_subtext'],
-			'attributes' => [
-				'id'    => 'num_images',
-				'min'   => 0,
-				'max'   => 999,
-				'value' => $this->context['lp_block']['options']['parameters']['num_images']
-			]
-		];
+		NumberField::make('num_images', $this->txt['lp_gallery_block']['num_images'])
+			->setAfter($this->txt['lp_gallery_block']['num_images_subtext'])
+			->setAttribute('min', 0)
+			->setAttribute('max', 999)
+			->setValue($this->context['lp_block']['options']['parameters']['num_images']);
 	}
 
 	public function getData(array $parameters): array

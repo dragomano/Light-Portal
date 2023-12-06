@@ -10,12 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.09.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\WhosOnline;
 
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\Fields\CheckboxField;
+use Bugo\LightPortal\Areas\Fields\NumberField;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -50,33 +52,15 @@ class WhosOnline extends Block
 		if ($this->context['lp_block']['type'] !== 'whos_online')
 			return;
 
-		$this->context['posting_fields']['show_group_key']['label']['text'] = $this->txt['lp_whos_online']['show_group_key'];
-		$this->context['posting_fields']['show_group_key']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'show_group_key',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_group_key']
-			]
-		];
+		CheckboxField::make('show_group_key', $this->txt['lp_whos_online']['show_group_key'])
+			->setValue($this->context['lp_block']['options']['parameters']['show_group_key']);
 
-		$this->context['posting_fields']['show_avatars']['label']['text'] = $this->txt['lp_whos_online']['show_avatars'];
-		$this->context['posting_fields']['show_avatars']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'show_avatars',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_avatars']
-			]
-		];
+		CheckboxField::make('show_avatars', $this->txt['lp_whos_online']['show_avatars'])
+			->setValue($this->context['lp_block']['options']['parameters']['show_avatars']);
 
-		$this->context['posting_fields']['update_interval']['label']['text'] = $this->txt['lp_whos_online']['update_interval'];
-		$this->context['posting_fields']['update_interval']['input'] = [
-			'type' => 'number',
-			'attributes' => [
-				'id'    => 'update_interval',
-				'min'   => 0,
-				'value' => $this->context['lp_block']['options']['parameters']['update_interval']
-			]
-		];
+		NumberField::make('update_interval', $this->txt['lp_whos_online']['update_interval'])
+			->setAttribute('min', 0)
+			->setValue($this->context['lp_block']['options']['parameters']['update_interval']);
 	}
 
 	public function prepareContent($data, array $parameters): void

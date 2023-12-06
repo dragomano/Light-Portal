@@ -10,19 +10,20 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.12.22
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\EhPortal;
 
 use Bugo\LightPortal\Impex\AbstractOtherPageImport;
+use IntlException;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
 class Import extends AbstractOtherPageImport
 {
-	public function main()
+	public function main(): void
 	{
 		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_eh_portal']['label_name'];
 		$this->context['page_area_title'] = $this->txt['lp_pages_import'];
@@ -116,6 +117,9 @@ class Import extends AbstractOtherPageImport
 		$this->createList($listOptions);
 	}
 
+	/**
+	 * @throws IntlException
+	 */
 	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id_page'): array
 	{
 		$this->dbExtend();

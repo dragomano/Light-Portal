@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 20.05.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
 
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Partials\{BoardSelect, PageSelect, TopicSelect};
+use Bugo\LightPortal\Areas\Fields\{CustomField, TextareaField, TextField};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -25,12 +26,12 @@ class AdsBlock extends Block
 {
 	public string $icon = 'fas fa-ad';
 
-	public function addSettings(array &$config_vars)
+	public function addSettings(array &$config_vars): void
 	{
 		$config_vars['ads_block'][] = ['int', 'min_replies'];
 	}
 
-	public function blockOptions(array &$options)
+	public function blockOptions(array &$options): void
 	{
 		$options['ads_block']['content'] = 'html';
 
@@ -44,13 +45,13 @@ class AdsBlock extends Block
 		];
 	}
 
-	public function parseContent(string &$content, string $type)
+	public function parseContent(string &$content, string $type): void
 	{
 		if ($type === 'ads_block')
 			$content = parse_content($content, 'html');
 	}
 
-	public function validateBlockData(array &$parameters, string $type)
+	public function validateBlockData(array &$parameters, string $type): void
 	{
 		if ($type !== 'ads_block')
 			return;
@@ -63,82 +64,67 @@ class AdsBlock extends Block
 		$parameters['end_date']       = FILTER_DEFAULT;
 	}
 
-	public function prepareBlockFields()
+	public function prepareBlockFields(): void
 	{
 		if ($this->context['lp_block']['type'] !== 'ads_block')
 			return;
 
-		$this->context['posting_fields']['loader_code']['label']['text'] = $this->txt['lp_ads_block']['loader_code'];
-		$this->context['posting_fields']['loader_code']['input'] = [
-			'type' => 'textarea',
-			'attributes' => [
-				'id'    => 'loader_code',
-				'value' => $this->context['lp_block']['options']['parameters']['loader_code']
-			],
-			'tab' => 'content'
-		];
+		$this->addInlineCss('
+		.pf_placement, .pf_areas {
+			display: none;
+		}');
 
-		$this->context['posting_fields']['placement']['label']['text'] = '';
-		$this->context['posting_fields']['placement']['input'] = [
-			'type' => 'text',
-			'attributes' => [
-				'maxlength' => 255,
-				'value'     => 'ads',
-				'required'  => true,
-				'style'     => 'display: none'
-			],
-			'tab' => 'content'
-		];
+		TextareaField::make('loader_code', $this->txt['lp_ads_block']['loader_code'])
+			->setTab('content')
+			->setValue($this->context['lp_block']['options']['parameters']['loader_code']);
 
-		$this->context['posting_fields']['areas']['label']['text'] = '';
-		$this->context['posting_fields']['areas']['input'] = [
-			'type' => 'text',
-			'attributes' => [
-				'maxlength' => 255,
-				'value'     => 'all',
-				'required'  => true,
-				'style'     => 'display: none'
-			],
-			'tab' => 'content'
-		];
+		TextField::make('placement', '')
+			->setTab('content')
+			->setAttribute('class', 'hidden')
+			->setValue('ads');
 
-		$this->context['posting_fields']['ads_placement']['label']['html'] = $this->txt['lp_block_placement'];
-		$this->context['posting_fields']['ads_placement']['input']['tab']  = 'access_placement';
-		$this->context['posting_fields']['ads_placement']['input']['html'] = (new PlacementSelect)([
-			'data'  => $this->getPlacements(),
-			'value' => $this->context['lp_block']['options']['parameters']['ads_placement']
-		]);
+		TextField::make('areas', '')
+			->setTab('content')
+			->setAttribute('class', 'hidden')
+			->setValue('all');
 
-		$this->context['posting_fields']['include_boards']['label']['html'] = $this->txt['lp_ads_block']['include_boards'];
-		$this->context['posting_fields']['include_boards']['input']['tab'] = 'access_placement';
-		$this->context['posting_fields']['include_boards']['input']['html'] = (new BoardSelect)([
-			'id'    => 'include_boards',
-			'hint'  => $this->txt['lp_ads_block']['include_boards_select'],
-			'value' => $this->context['lp_block']['options']['parameters']['include_boards'] ?? '',
-		]);
+		CustomField::make('ads_placement', $this->txt['lp_block_placement'])
+			->setTab('access_placement')
+			->setValue(fn() => new PlacementSelect, [
+				'data'  => $this->getPlacements(),
+				'value' => $this->context['lp_block']['options']['parameters']['ads_placement']
+			]);
 
-		$this->context['posting_fields']['include_topics']['label']['html'] = $this->txt['lp_ads_block']['include_topics'];
-		$this->context['posting_fields']['include_topics']['input']['tab'] = 'access_placement';
-		$this->context['posting_fields']['include_topics']['input']['html'] = (new TopicSelect)([
-			'id'    => 'include_topics',
-			'hint'  => $this->txt['lp_ads_block']['include_topics_select'],
-			'value' => $this->context['lp_block']['options']['parameters']['include_topics'] ?? '',
-		]);
+		CustomField::make('include_boards', $this->txt['lp_ads_block']['include_boards'])
+			->setTab('access_placement')
+			->setValue(fn() => new BoardSelect, [
+				'id'    => 'include_boards',
+				'hint'  => $this->txt['lp_ads_block']['include_boards_select'],
+				'value' => $this->context['lp_block']['options']['parameters']['include_boards'] ?? '',
+			]);
 
-		$this->context['posting_fields']['include_pages']['label']['html'] = $this->txt['lp_ads_block']['include_pages'];
-		$this->context['posting_fields']['include_pages']['input']['tab'] = 'access_placement';
-		$this->context['posting_fields']['include_pages']['input']['html'] = (new PageSelect)([
-			'id'    => 'include_pages',
-			'hint'  => $this->txt['lp_ads_block']['include_pages_select'],
-			'value' => $this->context['lp_block']['options']['parameters']['include_pages'] ?? '',
-		]);
+		CustomField::make('include_topics', $this->txt['lp_ads_block']['include_topics'])
+			->setTab('access_placement')
+			->setValue(fn() => new TopicSelect, [
+				'id'    => 'include_pages',
+				'hint'  => $this->txt['lp_ads_block']['include_pages_select'],
+				'value' => $this->context['lp_block']['options']['parameters']['include_pages'] ?? '',
+			]);
 
-		$this->context['posting_fields']['end_date']['label']['html'] = $this->txt['lp_ads_block']['end_date'];
-		$this->context['posting_fields']['end_date']['input']['html'] = '
-			<input type="date" id="end_date" name="end_date" min="' . date('Y-m-d') . '" value="' . $this->context['lp_block']['options']['parameters']['end_date'] . '">';
+		CustomField::make('include_pages', $this->txt['lp_ads_block']['include_pages'])
+			->setTab('access_placement')
+			->setValue(fn() => new PageSelect, [
+				'id'    => 'include_pages',
+				'hint'  => $this->txt['lp_ads_block']['include_pages_select'],
+				'value' => $this->context['lp_block']['options']['parameters']['include_pages'] ?? '',
+			]);
+
+		CustomField::make('end_date', $this->txt['lp_ads_block']['end_date'])
+			->setValue('
+			<input type="date" id="end_date" name="end_date" min="' . date('Y-m-d') . '" value="' . $this->context['lp_block']['options']['parameters']['end_date'] . '">');
 	}
 
-	public function findBlockErrors(array &$post_errors, array $data)
+	public function findBlockErrors(array &$post_errors, array $data): void
 	{
 		if ($data['placement'] !== 'ads')
 			return;
@@ -149,7 +135,7 @@ class AdsBlock extends Block
 			$post_errors[] = 'no_ads_placement';
 	}
 
-	public function init()
+	public function init(): void
 	{
 		if (! function_exists('lp_show_blocks'))
 			$this->loadTemplate('LightPortal/ViewBlocks');
@@ -168,7 +154,7 @@ class AdsBlock extends Block
 	 *
 	 * @hook integrate_menu_buttons
 	 */
-	public function menuButtons()
+	public function menuButtons(): void
 	{
 		$this->context['lp_block_placements']['ads'] = $this->txt['lp_ads_block']['ads_type'];
 
@@ -195,7 +181,7 @@ class AdsBlock extends Block
 		}
 	}
 
-	public function adminAreas()
+	public function adminAreas(): void
 	{
 		if ($this->request()->has('area') && $this->request('area') === 'lp_blocks')
 			$this->setTemplate()->withLayer('ads_block_form');
@@ -214,7 +200,7 @@ class AdsBlock extends Block
 	 *
 	 * @hook integrate_messageindex_buttons
 	 */
-	public function messageindexButtons()
+	public function messageindexButtons(): void
 	{
 		$this->setTemplate()->withLayer('ads_placement_board');
 	}
@@ -226,7 +212,7 @@ class AdsBlock extends Block
 	 *
 	 * @hook integrate_display_buttons
 	 */
-	public function displayButtons()
+	public function displayButtons(): void
 	{
 		if ($this->isTopicNumRepliesLesserThanMinReplies())
 			return;
@@ -241,7 +227,7 @@ class AdsBlock extends Block
 	 *
 	 * @hook preparePageData (portal)
 	 */
-	public function preparePageData()
+	public function preparePageData(): void
 	{
 		$this->setTemplate()->withLayer('ads_placement_page');
 	}
@@ -253,12 +239,14 @@ class AdsBlock extends Block
 	 *
 	 * @hook integrate_prepare_display_context
 	 */
-	public function prepareDisplayContext(array $output, array &$message, int $counter)
+	public function prepareDisplayContext(array $output): void
 	{
 		if (empty($this->context['lp_ads_blocks']) || ($this->isTopicNumRepliesLesserThanMinReplies()))
 			return;
 
 		$showOldestFirst = empty($this->options['view_newest_first']);
+
+		$counter = $output['counter'] + 1;
 
 		$current_counter = $showOldestFirst ? $this->context['start'] : $this->context['total_visible_posts'] - $this->context['start'];
 
@@ -471,7 +459,7 @@ class AdsBlock extends Block
 		return $end_time;
 	}
 
-	private function disableBlock(int $item)
+	private function disableBlock(int $item): void
 	{
 		$this->smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_blocks

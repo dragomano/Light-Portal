@@ -10,12 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.09.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\TopPosters;
 
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\Fields\CheckboxField;
+use Bugo\LightPortal\Areas\Fields\NumberField;
 use Exception;
 
 if (! defined('LP_NAME'))
@@ -49,33 +51,15 @@ class TopPosters extends Block
 		if ($this->context['lp_block']['type'] !== 'top_posters')
 			return;
 
-		$this->context['posting_fields']['show_avatars']['label']['text'] = $this->txt['lp_top_posters']['show_avatars'];
-		$this->context['posting_fields']['show_avatars']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'show_avatars',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_avatars']
-			]
-		];
+		CheckboxField::make('show_avatars', $this->txt['lp_top_posters']['show_avatars'])
+			->setValue($this->context['lp_block']['options']['parameters']['show_avatars']);
 
-		$this->context['posting_fields']['num_posters']['label']['text'] = $this->txt['lp_top_posters']['num_posters'];
-		$this->context['posting_fields']['num_posters']['input'] = [
-			'type' => 'number',
-			'attributes' => [
-				'id'    => 'num_posters',
-				'min'   => 1,
-				'value' => $this->context['lp_block']['options']['parameters']['num_posters']
-			]
-		];
+		NumberField::make('num_posters', $this->txt['lp_top_posters']['num_posters'])
+			->setAttribute('min', 1)
+			->setValue($this->context['lp_block']['options']['parameters']['num_posters']);
 
-		$this->context['posting_fields']['show_numbers_only']['label']['text'] = $this->txt['lp_top_posters']['show_numbers_only'];
-		$this->context['posting_fields']['show_numbers_only']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'show_numbers_only',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_numbers_only']
-			]
-		];
+		CheckboxField::make('show_numbers_only', $this->txt['lp_top_posters']['show_numbers_only'])
+			->setValue($this->context['lp_block']['options']['parameters']['show_numbers_only']);
 	}
 
 	public function getData(array $parameters): array

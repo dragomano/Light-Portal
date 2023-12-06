@@ -1,6 +1,6 @@
 <?php
 
-function show_user_info($data)
+function show_user_info($data): void
 {
 	global $txt, $context, $scripturl;
 
@@ -60,7 +60,7 @@ function show_user_info($data)
 	</ul>';
 }
 
-function show_user_info_for_guests()
+function show_user_info_for_guests(): void
 {
 	global $txt, $modSettings, $context, $scripturl;
 

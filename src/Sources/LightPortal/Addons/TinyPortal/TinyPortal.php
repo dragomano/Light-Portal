@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 09.04.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortal;
@@ -24,7 +24,7 @@ class TinyPortal extends Plugin
 {
 	public string $type = 'impex';
 
-	public function addAdminAreas(array &$admin_areas)
+	public function addAdminAreas(array &$admin_areas): void
 	{
 		if ($this->user_info['is_admin']) {
 			$admin_areas['lp_portal']['areas']['lp_blocks']['subsections']['import_from_tp'] = [$this->context['lp_icon_set']['import'] . $this->txt['lp_tiny_portal']['label_name']];
@@ -32,19 +32,19 @@ class TinyPortal extends Plugin
 		}
 	}
 
-	public function addBlockAreas(array &$subActions)
+	public function addBlockAreas(array &$subActions): void
 	{
 		if ($this->user_info['is_admin'])
 			$subActions['import_from_tp'] = [new BlockImport, 'main'];
 	}
 
-	public function addPageAreas(array &$subActions)
+	public function addPageAreas(array &$subActions): void
 	{
 		if ($this->user_info['is_admin'])
 			$subActions['import_from_tp'] = [new PageImport, 'main'];
 	}
 
-	public function importPages(array &$items, array &$titles, array &$params, array &$comments)
+	public function importPages(array &$items, array &$titles, array &$params, array &$comments): void
 	{
 		if ($this->request('sa') !== 'import_from_tp')
 			return;

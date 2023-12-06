@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.09.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\ArticleList;
 
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, RadioField};
 use Bugo\LightPortal\Partials\{ContentClassSelect, PageSelect, TopicSelect};
 
 if (! defined('LP_NAME'))
@@ -55,54 +56,36 @@ class ArticleList extends Block
 		if ($this->context['lp_block']['type'] !== 'article_list')
 			return;
 
-		$this->context['posting_fields']['body_class']['label']['html'] = $this->txt['lp_article_list']['body_class'];
-		$this->context['posting_fields']['body_class']['input']['tab']  = 'appearance';
-		$this->context['posting_fields']['body_class']['input']['html'] = (new ContentClassSelect)([
-			'id'    => 'body_class',
-			'value' => $this->context['lp_block']['options']['parameters']['body_class'],
-		]);
+		CustomField::make('body_class', $this->txt['lp_article_list']['body_class'])
+			->setTab('appearance')
+			->setValue(fn() => new ContentClassSelect, [
+				'id'    => 'body_class',
+				'value' => $this->context['lp_block']['options']['parameters']['body_class'],
+			]);
 
-		$this->context['posting_fields']['display_type']['label']['text'] = $this->txt['lp_article_list']['display_type'];
-		$this->context['posting_fields']['display_type']['input'] = [
-			'type' => 'radio_select',
-			'attributes' => [
-				'id' => 'display_type'
-			],
-			'options' => [],
-			'tab' => 'content'
-		];
+		RadioField::make('display_type', $this->txt['lp_article_list']['display_type'])
+			->setTab('content')
+			->setOptions($this->txt['lp_article_list']['display_type_set'])
+			->setValue($this->context['lp_block']['options']['parameters']['display_type']);
 
-		foreach ($this->txt['lp_article_list']['display_type_set'] as $article_type => $title) {
-			$this->context['posting_fields']['display_type']['input']['options'][$title] = [
-				'value'    => $article_type,
-				'selected' => $article_type == $this->context['lp_block']['options']['parameters']['display_type']
-			];
-		}
+		CustomField::make('include_topics', $this->txt['lp_article_list']['include_topics'])
+			->setTab('content')
+			->setValue(fn() => new TopicSelect, [
+				'id'    => 'include_topics',
+				'hint'  => $this->txt['lp_article_list']['include_topics_select'],
+				'value' => $this->context['lp_block']['options']['parameters']['include_topics'] ?? '',
+			]);
 
-		$this->context['posting_fields']['include_topics']['label']['html'] = $this->txt['lp_article_list']['include_topics'];
-		$this->context['posting_fields']['include_topics']['input']['tab'] = 'content';
-		$this->context['posting_fields']['include_topics']['input']['html'] = (new TopicSelect)([
-			'id'    => 'include_topics',
-			'hint'  => $this->txt['lp_article_list']['include_topics_select'],
-			'value' => $this->context['lp_block']['options']['parameters']['include_topics'] ?? '',
-		]);
-
-		$this->context['posting_fields']['include_pages']['label']['html'] = $this->txt['lp_article_list']['include_pages'];
-		$this->context['posting_fields']['include_pages']['input']['tab'] = 'content';
-		$this->context['posting_fields']['include_pages']['input']['html'] = (new PageSelect)([
+		CustomField::make('include_pages', $this->txt['lp_article_list']['include_pages'])
+			->setTab('content')
+			->setValue(fn() => new PageSelect, [
 			'id'    => 'include_pages',
 			'hint'  => $this->txt['lp_article_list']['include_pages_select'],
 			'value' => $this->context['lp_block']['options']['parameters']['include_pages'] ?? '',
 		]);
 
-		$this->context['posting_fields']['seek_images']['label']['text'] = $this->txt['lp_article_list']['seek_images'];
-		$this->context['posting_fields']['seek_images']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'seek_images',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['seek_images']
-			]
-		];
+		CheckboxField::make('seek_images', $this->txt['lp_article_list']['seek_images'])
+			->setValue($this->context['lp_block']['options']['parameters']['seek_images']);
 	}
 
 	public function getTopics(array $parameters): array

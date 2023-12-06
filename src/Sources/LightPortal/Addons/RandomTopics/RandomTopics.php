@@ -10,12 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.09.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\RandomTopics;
 
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\Fields\CustomField;
+use Bugo\LightPortal\Areas\Fields\NumberField;
 use Bugo\LightPortal\Partials\BoardSelect;
 use IntlException;
 
@@ -52,31 +54,25 @@ class RandomTopics extends Block
 		if ($this->context['lp_block']['type'] !== 'random_topics')
 			return;
 
-		$this->context['posting_fields']['exclude_boards']['label']['html'] = '<label for="exclude_boards">' . $this->txt['lp_random_topics']['exclude_boards'] . '</label>';
-		$this->context['posting_fields']['exclude_boards']['input']['tab'] = 'content';
-		$this->context['posting_fields']['exclude_boards']['input']['html'] = (new BoardSelect)([
-			'id'    => 'exclude_boards',
-			'hint'  => $this->txt['lp_random_topics']['exclude_boards_select'],
-			'value' => $this->context['lp_block']['options']['parameters']['exclude_boards'] ?? '',
-		]);
+		CustomField::make('exclude_boards', $this->txt['lp_random_topics']['exclude_boards'])
+			->setTab('content')
+			->setValue(fn() => new BoardSelect, [
+				'id'    => 'exclude_boards',
+				'hint'  => $this->txt['lp_random_topics']['exclude_boards_select'],
+				'value' => $this->context['lp_block']['options']['parameters']['exclude_boards'] ?? '',
+			]);
 
-		$this->context['posting_fields']['include_boards']['label']['html'] = '<label for="include_boards">' . $this->txt['lp_random_topics']['include_boards'] . '</label>';
-		$this->context['posting_fields']['include_boards']['input']['tab'] = 'content';
-		$this->context['posting_fields']['include_boards']['input']['html'] = (new BoardSelect)([
-			'id'    => 'include_boards',
-			'hint'  => $this->txt['lp_random_topics']['include_boards_select'],
-			'value' => $this->context['lp_block']['options']['parameters']['include_boards'] ?? '',
-		]);
+		CustomField::make('include_boards', $this->txt['lp_random_topics']['include_boards'])
+			->setTab('content')
+			->setValue(fn() => new BoardSelect, [
+				'id'    => 'include_boards',
+				'hint'  => $this->txt['lp_random_topics']['include_boards_select'],
+				'value' => $this->context['lp_block']['options']['parameters']['include_boards'] ?? '',
+			]);
 
-		$this->context['posting_fields']['num_topics']['label']['text'] = $this->txt['lp_random_topics']['num_topics'];
-		$this->context['posting_fields']['num_topics']['input'] = [
-			'type' => 'number',
-			'attributes' => [
-				'id'    => 'num_topics',
-				'min'   => 1,
-				'value' => $this->context['lp_block']['options']['parameters']['num_topics']
-			]
-		];
+		NumberField::make('num_topics', $this->txt['lp_random_topics']['num_topics'])
+			->setAttribute('min', 1)
+			->setValue($this->context['lp_block']['options']['parameters']['num_topics']);
 	}
 
 	public function getData(array $parameters): array

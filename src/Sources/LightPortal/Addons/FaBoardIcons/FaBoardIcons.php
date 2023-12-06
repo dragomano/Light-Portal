@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 30.12.21
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\FaBoardIcons;
@@ -24,7 +24,7 @@ class FaBoardIcons extends Plugin
 {
 	public string $type = 'article';
 
-	public function frontBoards(array &$custom_columns)
+	public function frontBoards(array &$custom_columns): void
 	{
 		if (! $this->isBaseModInstalled())
 			return;
@@ -32,7 +32,7 @@ class FaBoardIcons extends Plugin
 		$custom_columns[] = 'b.fabi_icon, b.fabi_color';
 	}
 
-	public function frontBoardsOutput(array &$boards, array $row)
+	public function frontBoardsOutput(array &$boards, array $row): void
 	{
 		if (! $this->isBaseModInstalled())
 			return;

@@ -2,7 +2,7 @@
 
 function template_custom_translate_above() {}
 
-function template_custom_translate_below()
+function template_custom_translate_below(): void
 {
 	global $txt, $context;
 

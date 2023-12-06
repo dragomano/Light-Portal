@@ -10,12 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.09.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\RandomPages;
 
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\Fields\CustomField;
+use Bugo\LightPortal\Areas\Fields\NumberField;
 use Bugo\LightPortal\Partials\CategorySelect;
 use IntlException;
 
@@ -50,23 +52,17 @@ class RandomPages extends Block
 		if ($this->context['lp_block']['type'] !== 'random_pages')
 			return;
 
-		$this->context['posting_fields']['categories']['label']['html'] = $this->txt['lp_categories'];
-		$this->context['posting_fields']['categories']['input']['tab'] = 'content';
-		$this->context['posting_fields']['categories']['input']['html'] = (new CategorySelect)([
-			'id'    => 'categories',
-			'hint'  => $this->txt['lp_random_pages']['categories_select'],
-			'value' => $this->context['lp_block']['options']['parameters']['categories'] ?? '',
-		]);
+		CustomField::make('categories', $this->txt['lp_categories'])
+			->setTab('content')
+			->setValue(fn() => new CategorySelect, [
+				'id'    => 'categories',
+				'hint'  => $this->txt['lp_random_pages']['categories_select'],
+				'value' => $this->context['lp_block']['options']['parameters']['categories'] ?? '',
+			]);
 
-		$this->context['posting_fields']['num_pages']['label']['text'] = $this->txt['lp_random_pages']['num_pages'];
-		$this->context['posting_fields']['num_pages']['input'] = [
-			'type' => 'number',
-			'attributes' => [
-				'id'    => 'num_pages',
-				'min'   => 1,
-				'value' => $this->context['lp_block']['options']['parameters']['num_pages']
-			]
-		];
+		NumberField::make('num_pages', $this->txt['lp_random_pages']['num_pages'])
+			->setAttribute('min', 1)
+			->setValue($this->context['lp_block']['options']['parameters']['num_pages']);
 	}
 
 	public function getData(array $parameters): array

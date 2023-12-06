@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.05.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\Likely;
@@ -19,8 +19,11 @@ use Bugo\LightPortal\Partials\AbstractPartial;
 
 final class ButtonSelect extends AbstractPartial
 {
-	public function __invoke(array $params = []): string
+	public function __invoke(): string
 	{
+		$params = func_get_args();
+		$params = $params[0] ?? [];
+
 		$params['data']  ??= [];
 		$params['value'] ??= [];
 

@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.11.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
 
 use Bugo\LightPortal\Addons\{Block, Plugin};
 use Bugo\LightPortal\Areas\Area;
+use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, SelectField, TextField};
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Partials\IconSelect;
 use Nette\PhpGenerator\{PhpNamespace, PhpFile, Printer};
@@ -207,62 +208,92 @@ class Handler extends Plugin
 	private function prepareFormFields(): void
 	{
 		$this->checkSubmitOnce('register');
-
 		$this->prepareIconList();
 
+		TextField::make('name', $this->txt['lp_plugin_maker']['name'])
+			->setTab('content')
+			->setAfter($this->txt['lp_plugin_maker']['name_subtext'])
+			->setAttribute('maxlength', 255)
+			->setAttribute('required', true)
+			->setAttribute('pattern', self::ADDON_NAME_PATTERN)
+			->setAttribute('style', 'width: 100%')
+			->setAttribute('@change', 'plugin.updateState($event.target.value, $refs)')
+			->setValue($this->context['lp_plugin']['name']);
+
+		SelectField::make('type', $this->txt['lp_plugin_maker']['type'])
+			->setTab('content')
+			->setAttribute('@change', 'plugin.change($event.target.value)')
+			->setOptions(array_filter($this->context['lp_plugin_types'], fn($type) => $type !== 'ssi'))
+			->setValue($this->context['lp_plugin']['type']);
+
+		CustomField::make('icon', $this->txt['current_icon'])
+			->setTab('content')
+			->setValue(fn() => new IconSelect, [
+				'icon' => $this->context['lp_plugin']['icon'],
+				'type' => $this->context['lp_plugin']['type'],
+			]);
+
+		$this->setTitleField();
+
+		TextField::make('author', $this->txt['author'])
+			->setTab('copyrights')
+			->setAttribute('maxlength', 255)
+			->setAttribute('required', true)
+			->setValue($this->context['lp_plugin']['author']);
+
+		TextField::make('email', $this->txt['email'])
+			->setTab('copyrights')
+			->setAttribute('maxlength', 255)
+			->setAttribute('style', 'width: 100%')
+			->setType('email')
+			->setValue($this->context['lp_plugin']['email']);
+
+		TextField::make('site', $this->txt['website'])
+			->setTab('copyrights')
+			->setAfter($this->txt['lp_plugin_maker']['site_subtext'])
+			->setType('url')
+			->setAttribute('maxlength', 255)
+			->setAttribute('style', 'width: 100%')
+			->setAttribute('placeholder', 'https://custom.simplemachines.org/index.php?mod=4244')
+			->setValue($this->context['lp_plugin']['site']);
+
+		SelectField::make('license', $this->txt['lp_plugin_maker']['license'])
+			->setTab('copyrights')
+			->setOptions([
+				'gpl' => 'GPL 3.0+',
+				'mit' => 'MIT',
+				'bsd' => 'BSD',
+				'own' => $this->txt['lp_plugin_maker']['license_own']
+			])
+			->setValue($this->context['lp_plugin']['license']);
+
+		CheckboxField::make('smf_hooks', $this->txt['lp_plugin_maker']['use_smf_hooks'])
+			->setValue($this->context['lp_plugin']['smf_hooks']);
+
+		CheckboxField::make('mf_ssi', $this->txt['lp_plugin_maker']['use_smf_ssi'])
+			->setValue($this->context['lp_plugin']['smf_ssi']);
+
+		CheckboxField::make('components', $this->txt['lp_plugin_maker']['use_components'])
+			->setValue($this->context['lp_plugin']['components']);
+
+		$this->preparePostFields();
+	}
+
+	private function setTitleField(): void
+	{
 		$languages = empty($this->modSettings['userLanguage']) ? [$this->language] : ['english', $this->language];
 		$languages = array_unique(['english', ...$languages]);
 
-		$this->context['posting_fields']['name']['label']['text'] = $this->txt['lp_plugin_maker']['name'];
-		$this->context['posting_fields']['name']['input'] = [
-			'type' => 'text',
-			'after' => $this->txt['lp_plugin_maker']['name_subtext'],
-			'attributes' => [
-				'maxlength' => 255,
-				'value'     => $this->context['lp_plugin']['name'],
-				'required'  => true,
-				'pattern'   => self::ADDON_NAME_PATTERN,
-				'style'     => 'width: 100%',
-				'@change'   => 'plugin.updateState($event.target.value, $refs)'
-			],
-			'tab' => 'content'
-		];
-
-		$this->context['posting_fields']['type']['label']['text'] = $this->txt['lp_plugin_maker']['type'];
-		$this->context['posting_fields']['type']['input'] = [
-			'type' => 'select',
-			'attributes' => [
-				'@change' => 'plugin.change($event.target.value)'
-			],
-			'tab' => 'content'
-		];
-
-		unset($this->context['lp_plugin_types']['ssi']);
-		foreach ($this->context['lp_plugin_types'] as $value => $text) {
-			$this->context['posting_fields']['type']['input']['options'][$text] = [
-				'value'    => $value,
-				'selected' => $value === $this->context['lp_plugin']['type']
-			];
-		}
-
-		$this->context['posting_fields']['icon']['label']['html'] = $this->txt['current_icon'];
-		$this->context['posting_fields']['icon']['input']['tab']  = 'content';
-		$this->context['posting_fields']['icon']['input']['html'] = (new IconSelect)([
-			'icon' => $this->context['lp_plugin']['icon'],
-			'type' => $this->context['lp_plugin']['type'],
-		]);
-
-		$this->context['posting_fields']['title']['label']['html'] = $this->txt['lp_title'] . ' | ' . $this->txt['lp_page_description'];
-		$this->context['posting_fields']['title']['input']['tab']  = 'content';
-		$this->context['posting_fields']['title']['input']['html'] = '
+		$value = /** @lang text */	'
 			<div>';
 
 		if (count($this->context['languages']) > 1) {
-			$this->context['posting_fields']['title']['input']['html'] .= '
+			$value .= '
 			<nav' . ($this->context['right_to_left'] ? '' : ' class="floatleft"') . '>';
 
 			foreach ($this->context['languages'] as $lang) {
-				$this->context['posting_fields']['title']['input']['html'] .= '
+				$value .= /** @lang text */
+					'
 				<a
 					class="button floatnone"
 					:class="{ \'active\': tab === \'' . $lang['filename'] . '\' }"
@@ -270,13 +301,14 @@ class Handler extends Plugin
 				>' . $lang['name'] . '</a>';
 			}
 
-			$this->context['posting_fields']['title']['input']['html'] .= '
+			$value .= /** @lang text */	'
 			</nav>';
 		}
 
 		$i = count($languages) - 1;
 		foreach ($this->context['languages'] as $lang) {
-			$this->context['posting_fields']['title']['input']['html'] .= '
+			$value .= /** @lang text */
+				'
 				<div x-show="tab === \'' . $lang['filename'] . '\'">
 					<input
 						type="text"
@@ -294,89 +326,12 @@ class Handler extends Plugin
 				</div>';
 		}
 
-		$this->context['posting_fields']['title']['input']['html'] .= '
+		$value .= /** @lang text */	'
 			</div>';
 
-		$this->context['posting_fields']['author']['label']['text'] = $this->txt['author'];
-		$this->context['posting_fields']['author']['input'] = [
-			'type' => 'text',
-			'attributes' => [
-				'maxlength' => 255,
-				'value'     => $this->context['lp_plugin']['author'],
-				'required'  => true,
-			],
-			'tab' => 'copyrights'
-		];
-
-		$this->context['posting_fields']['email']['label']['text'] = $this->txt['email'];
-		$this->context['posting_fields']['email']['input'] = [
-			'type' => 'email',
-			'attributes' => [
-				'maxlength' => 255,
-				'value'     => $this->context['lp_plugin']['email'],
-				'style'     => 'width: 100%'
-			],
-			'tab' => 'copyrights'
-		];
-
-		$this->context['posting_fields']['site']['label']['text'] = $this->txt['website'];
-		$this->context['posting_fields']['site']['input'] = [
-			'type' => 'url',
-			'after' => $this->txt['lp_plugin_maker']['site_subtext'],
-			'attributes' => [
-				'maxlength'   => 255,
-				'value'       => $this->context['lp_plugin']['site'],
-				'style'       => 'width: 100%',
-				'placeholder' => 'https://custom.simplemachines.org/index.php?mod=4244'
-			],
-			'tab' => 'copyrights'
-		];
-
-		$this->context['posting_fields']['license']['label']['text'] = $this->txt['lp_plugin_maker']['license'];
-		$this->context['posting_fields']['license']['input'] = [
-			'type' => 'select',
-			'tab'  => 'copyrights'
-		];
-
-		$licenses = [
-			'gpl' => 'GPL 3.0+',
-			'mit' => 'MIT',
-			'bsd' => 'BSD',
-			'own' => $this->txt['lp_plugin_maker']['license_own']
-		];
-
-		foreach ($licenses as $value => $text) {
-			$this->context['posting_fields']['license']['input']['options'][$text] = [
-				'value'    => $value,
-				'selected' => $value === $this->context['lp_plugin']['license']
-			];
-		}
-
-		$this->context['posting_fields']['smf_hooks']['label']['text'] = $this->txt['lp_plugin_maker']['use_smf_hooks'];
-		$this->context['posting_fields']['smf_hooks']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'checked' => (bool) $this->context['lp_plugin']['smf_hooks']
-			]
-		];
-
-		$this->context['posting_fields']['smf_ssi']['label']['text'] = $this->txt['lp_plugin_maker']['use_smf_ssi'];
-		$this->context['posting_fields']['smf_ssi']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'checked' => (bool) $this->context['lp_plugin']['smf_ssi']
-			]
-		];
-
-		$this->context['posting_fields']['components']['label']['text'] = $this->txt['lp_plugin_maker']['use_components'];
-		$this->context['posting_fields']['components']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'checked' => (bool) $this->context['lp_plugin']['components']
-			]
-		];
-
-		$this->preparePostFields();
+		CustomField::make('title', $this->txt['lp_title'] . ' | ' . $this->txt['lp_page_description'])
+			->setTab('content')
+			->setValue($value);
 	}
 
 	private function setData(): void

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 14.04.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\MaterialDesignIcons;
@@ -29,12 +29,12 @@ class MaterialDesignIcons extends Plugin
 
 	private string $prefix = 'mdi mdi-';
 
-	public function init()
+	public function init(): void
 	{
 		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/@mdi/font@7/css/materialdesignicons.min.css', ['seed' => false]);
 	}
 
-	public function prepareIconList(array &$all_icons)
+	public function prepareIconList(array &$all_icons): void
 	{
 		if (($icons = $this->cache()->get('all_mi_icons', 30 * 24 * 60 * 60)) === null) {
 			$content = file_get_contents('https://raw.githubusercontent.com/Templarian/MaterialDesign/master/meta.json');
@@ -51,7 +51,7 @@ class MaterialDesignIcons extends Plugin
 		$all_icons = array_merge($all_icons, $icons);
 	}
 
-	public function credits(array &$links)
+	public function credits(array &$links): void
 	{
 		$links[] = [
 			'title' => 'Material Design Icons',

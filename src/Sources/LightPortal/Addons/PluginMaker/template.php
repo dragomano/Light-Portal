@@ -1,6 +1,6 @@
 <?php
 
-function template_plugin_post()
+function template_plugin_post(): void
 {
 	global $context, $txt;
 

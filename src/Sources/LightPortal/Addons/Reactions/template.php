@@ -6,7 +6,7 @@ function show_page_reactions(): void
 
 	// Use valid markup for guests and simple viewers
 	if (empty($context['can_react']) || empty($context['user']['is_logged'])) {
-		echo '
+		echo /** @lang text */ '
 	<hr>
 	<div class="reactions">';
 
@@ -17,16 +17,16 @@ function show_page_reactions(): void
 			}
 		}
 
-		echo '
+		echo /** @lang text */ '
 	</div>';
 
 		return;
 	}
 
 	// Use Alpine.js for users with proper permissions
-	echo '
+	echo /** @lang text */ '
 	<hr>
-	<div x-data=\'{ showButtons: false, buttons: ', $context['reaction_buttons'], ', reactions: ', json_encode($context['prepared_reactions']), ', init() { window.pageReactions = this } }\'>
+	<div x-data=\'{ showButtons: false, buttons: ', $context['reaction_buttons'], ', reactions: ', json_encode($context['prepared_reactions']), /** @lang text */ ', init() { window.pageReactions = this } }\'>
 		<div class="reactions">
 			<template x-for="reaction in buttons">
 				<button x-show="reactions[reaction.name] > 0" :title="reaction.title" x-text="reaction.emoji + \' \' + reactions[reaction.name]"></button>
@@ -57,7 +57,7 @@ function show_page_reactions(): void
 								window["commentReactions" + event.detail.comment].reactions = response.data
 							})
 						: axios
-							.get("', $context['reaction_url'], ';get_reactions")
+							.get("', $context['reaction_url'], /** @lang text */ ';get_reactions")
 							.then(response => {
 								window.pageReactions.showButtons = false
 								window.pageReactions.reactions = response.data
@@ -84,14 +84,14 @@ function show_comment_reactions(array $comment): void
 	}
 
 	echo '
-	<span x-data=\'{ showButtons: false, buttons: ', $context['reaction_buttons'], ', reactions: ', $comment['prepared_reactions'], ', init() { window.commentReactions', $comment['id'], ' = this } }\'>
+	<span x-data=\'{ showButtons: false, buttons: ', $context['reaction_buttons'], ', reactions: ', $comment['prepared_reactions'], ', init() { window.commentReactions', $comment['id'], /** @lang text */ ' = this } }\'>
 		<template x-for="reaction in buttons">
 			<span class="reaction_button" x-show="reactions[reaction.name] > 0" :title="reaction.title" x-text="reaction.emoji + \' \' + reactions[reaction.name]"></span>
 		</template>
 		<span class="add_comment_reaction" x-show="!showButtons" @click="showButtons = true" :style="reactions == \'\' && { marginLeft: \'0\' }">➕</span>
 		<span class="reactions" x-show="showButtons" @click.outside="showButtons = false">
 			<template x-for="reaction in buttons">
-				<span class="reaction_button" @click="$dispatch(\'addReaction\', { reaction: reaction.name, comment: ', $comment['id'], ' })" :title="reaction.title" x-text="reaction.emoji"></span>
+				<span class="reaction_button" @click="$dispatch(\'addReaction\', { reaction: reaction.name, comment: ', $comment['id'], /** @lang text */ ' })" :title="reaction.title" x-text="reaction.emoji"></span>
 			</template>
 		</span>
 	</span>';

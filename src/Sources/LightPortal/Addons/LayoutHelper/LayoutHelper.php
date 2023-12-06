@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.05.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\LayoutHelper;
@@ -26,13 +26,13 @@ class LayoutHelper extends Plugin
 
 	private string $mode = 'layout_helper_addon_mode';
 
-	public function addSettings(array &$config_vars)
+	public function addSettings(array &$config_vars): void
 	{
 		$config_vars['layout_helper'][] = ['check', 'show_template_switcher'];
 		$config_vars['layout_helper'][] = ['check', 'fake_cards', 'subtext' => $this->txt['lp_layout_helper']['fake_cards_subtext']];
 	}
 
-	public function frontModes(array &$modes)
+	public function frontModes(array &$modes): void
 	{
 		if (empty($this->context['lp_layout_helper_plugin']['fake_cards']))
 			return;
@@ -42,7 +42,7 @@ class LayoutHelper extends Plugin
 		$this->modSettings['lp_frontpage_mode'] = $this->mode;
 	}
 
-	public function frontCustomTemplate(array $layouts)
+	public function frontCustomTemplate(array $layouts): void
 	{
 		if (empty($this->context['lp_layout_helper_plugin']['show_template_switcher']))
 			return;
@@ -62,7 +62,7 @@ class LayoutHelper extends Plugin
 		$this->setTemplate()->withLayer('layout_switcher');
 	}
 
-	public function credits(array &$links)
+	public function credits(array &$links): void
 	{
 		$links[] = [
 			'title' => 'LoremFlickr',

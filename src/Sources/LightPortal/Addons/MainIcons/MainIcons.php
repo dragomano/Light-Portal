@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.03.22
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\MainIcons;
@@ -29,7 +29,7 @@ class MainIcons extends Plugin
 
 	private string $prefix = 'main_icons ';
 
-	public function prepareIconList(array &$all_icons)
+	public function prepareIconList(array &$all_icons): void
 	{
 		if (($icons = $this->cache()->get('all_main_icons', 30 * 24 * 60 * 60)) === null) {
 			$set = $this->getIconSet();

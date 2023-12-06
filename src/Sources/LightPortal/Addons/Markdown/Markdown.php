@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  *
  * @category addon
- * @version 02.06.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\Markdown;
@@ -28,6 +28,7 @@ use Bugo\LightPortal\Addons\Markdown\Smf\{
 	TableRenderer,
 };
 use League\CommonMark\Environment\Environment;
+use League\CommonMark\Exception\CommonMarkException;
 use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\Extension\CommonMark\Node\Block\{BlockQuote, FencedCode, Heading, ListBlock, ListItem};
@@ -44,18 +45,21 @@ class Markdown extends Plugin
 
 	public string $type = 'parser';
 
-	public function init()
+	public function init(): void
 	{
 		$this->context['lp_content_types']['markdown'] = 'Markdown';
 	}
 
-	public function parseContent(string &$content, string $type)
+	/**
+	 * @throws CommonMarkException
+	 */
+	public function parseContent(string &$content, string $type): void
 	{
 		if ($type === 'markdown')
 			$content = $this->getParsedContent($content);
 	}
 
-	public function credits(array &$links)
+	public function credits(array &$links): void
 	{
 		$links[] = [
 			'title' => 'league/commonmark',
@@ -68,6 +72,9 @@ class Markdown extends Plugin
 		];
 	}
 
+	/**
+	 * @throws CommonMarkException
+	 */
 	private function getParsedContent(string $text): string
 	{
 		require_once __DIR__ . '/vendor/autoload.php';

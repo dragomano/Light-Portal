@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.11.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\HelloPortal;
@@ -29,12 +29,12 @@ class HelloPortal extends Plugin
 
 	private array $themes = [false, 'dark', 'modern', 'flattener'];
 
-	public function init()
+	public function init(): void
 	{
 		$this->applyHook('menu_buttons');
 	}
 
-	public function menuButtons()
+	public function menuButtons(): void
 	{
 		if ($this->request()->isNot('admin') || empty($steps = $this->getStepData()))
 			return;
@@ -74,7 +74,7 @@ class HelloPortal extends Plugin
 		}');
 	}
 
-	public function addSettings(array &$config_vars)
+	public function addSettings(array &$config_vars): void
 	{
 		$config_vars['hello_portal'][] = ['select', 'theme', array_combine($this->themes, $this->txt['lp_hello_portal']['theme_set'])];
 		$config_vars['hello_portal'][] = ['check', 'show_progress'];
@@ -84,7 +84,7 @@ class HelloPortal extends Plugin
 		$config_vars['hello_portal'][] = ['check', 'disable_interaction'];
 	}
 
-	public function credits(array &$links)
+	public function credits(array &$links): void
 	{
 		$links[] = [
 			'title' => 'Intro.js',

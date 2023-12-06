@@ -2,7 +2,7 @@
 
 function show_calculator_block(int $block_id): string
 {
-	return '
+	return /** @lang text */ '
 	<div id="calc' . $block_id . '" class="calculator">
 		<div class="calculator__display">0</div>
 		<div class="calculator__keys">

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 13.11.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\CodeMirror;
@@ -26,13 +26,13 @@ class CodeMirror extends Plugin
 
 	private array $modes = ['html' => 'HTML', 'php' => 'PHP', 'markdown' => 'Markdown'];
 
-	public function addSettings(array &$config_vars)
+	public function addSettings(array &$config_vars): void
 	{
 		$config_vars['code_mirror'][] = ['multiselect', 'modes', $this->modes];
 		$config_vars['code_mirror'][] = ['desc', 'small_hint'];
 	}
 
-	public function prepareEditor(array $object)
+	public function prepareEditor(array $object): void
 	{
 		if ($object['type'] === 'bbc' || (isset($object['options']['content']) && $object['options']['content'] === 'bbc'))
 			return;
@@ -121,7 +121,7 @@ class CodeMirror extends Plugin
 		});', true);
 	}
 
-	public function credits(array &$links)
+	public function credits(array &$links): void
 	{
 		$links[] = [
 			'title' => 'CodeMirror',

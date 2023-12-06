@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 28.05.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\EasyMarkdownEditor;
@@ -24,7 +24,7 @@ class EasyMarkdownEditor extends Plugin
 {
 	public string $type = 'editor';
 
-	public function prepareEditor(array $object)
+	public function prepareEditor(array $object): void
 	{
 		if ($object['type'] !== 'markdown')
 			return;
@@ -158,7 +158,7 @@ class EasyMarkdownEditor extends Plugin
 		});', true);
 	}
 
-	public function credits(array &$links)
+	public function credits(array &$links): void
 	{
 		$links[] = [
 			'title' => 'EasyMDE',

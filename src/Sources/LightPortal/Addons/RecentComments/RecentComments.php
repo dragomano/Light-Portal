@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.11.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\RecentComments;
 
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\Fields\NumberField;
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -54,25 +55,13 @@ class RecentComments extends Block
 		if ($this->context['lp_block']['type'] !== 'recent_comments')
 			return;
 
-		$this->context['posting_fields']['num_comments']['label']['text'] = $this->txt['lp_recent_comments']['num_comments'];
-		$this->context['posting_fields']['num_comments']['input'] = [
-			'type' => 'number',
-			'attributes' => [
-				'id'    => 'num_comments',
-				'min'   => 1,
-				'value' => $this->context['lp_block']['options']['parameters']['num_comments']
-			]
-		];
+		NumberField::make('num_comments', $this->txt['lp_recent_comments']['num_comments'])
+			->setAttribute('min', 1)
+			->setValue($this->context['lp_block']['options']['parameters']['num_comments']);
 
-		$this->context['posting_fields']['length']['label']['text'] = $this->txt['lp_recent_comments']['length'];
-		$this->context['posting_fields']['length']['input'] = [
-			'type' => 'number',
-			'attributes' => [
-				'id'    => 'length',
-				'min'   => 10,
-				'value' => $this->context['lp_block']['options']['parameters']['length']
-			]
-		];
+		NumberField::make('length', $this->txt['lp_recent_comments']['length'])
+			->setAttribute('min', 10)
+			->setValue($this->context['lp_block']['options']['parameters']['length']);
 	}
 
 	public function getData(int $num_comments, int $length = 80): array

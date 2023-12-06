@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 09.05.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\LanguageAccess;
 
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Areas\Fields\CustomField;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -24,7 +25,7 @@ class LanguageAccess extends Plugin
 {
 	public string $type = 'block_options';
 
-	public function init()
+	public function init(): void
 	{
 		foreach ($this->context['lp_active_blocks'] as $id => $block) {
 			if (empty($block['parameters']) || empty($block['parameters']['allowed_languages']))
@@ -37,20 +38,20 @@ class LanguageAccess extends Plugin
 		}
 	}
 
-	public function blockOptions(array &$options)
+	public function blockOptions(array &$options): void
 	{
 		$options[$this->context['current_block']['type']]['parameters']['allowed_languages'] = [];
 	}
 
-	public function validateBlockData(array &$parameters)
+	public function validateBlockData(array &$parameters): void
 	{
 		$parameters['allowed_languages'] = FILTER_DEFAULT;
 	}
 
-	public function prepareBlockFields()
+	public function prepareBlockFields(): void
 	{
-		$this->context['posting_fields']['allowed_languages']['label']['html'] = $this->txt['lp_language_access']['allowed_languages'];
-		$this->context['posting_fields']['allowed_languages']['input']['html'] = (new LanguageSelect)();
-		$this->context['posting_fields']['allowed_languages']['input']['tab']  = 'access_placement';
+		CustomField::make('allowed_languages', $this->txt['lp_language_access']['allowed_languages'])
+			->setTab('access_placement')
+			->setValue(fn() => new LanguageSelect);
 	}
 }

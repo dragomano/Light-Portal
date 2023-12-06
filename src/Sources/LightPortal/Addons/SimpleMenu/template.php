@@ -4,7 +4,7 @@ function simple_menu_items(): string
 {
 	global $txt, $settings, $context;
 
-	return '
+	return /** @lang text */ '
 	<div x-data="handleItems()">
 		<table class="add_option centertext table_grid">
 			<tbody>
