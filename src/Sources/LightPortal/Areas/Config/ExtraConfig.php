@@ -41,13 +41,10 @@ final class ExtraConfig
 
 		$this->txt['lp_fa_source_title'] .= ' <img class="floatright" src="https://data.jsdelivr.com/v1/package/npm/@fortawesome/fontawesome-free/badge?style=rounded" alt="">';
 
-		// Initial settings
-		$addSettings = [];
-		if (! isset($this->modSettings['lp_num_comments_per_page']))
-			$addSettings['lp_num_comments_per_page'] = 10;
-		if (! isset($this->modSettings['lp_page_maximum_keywords']))
-			$addSettings['lp_page_maximum_keywords'] = 10;
-		$this->updateSettings($addSettings);
+		$this->addDefaultValues([
+			'lp_num_comments_per_page' => 10,
+			'lp_page_maximum_keywords' => 10,
+		]);
 
 		$config_vars = [
 			['check', 'lp_show_tags_on_page'],

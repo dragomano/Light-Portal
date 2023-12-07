@@ -49,19 +49,13 @@ final class BasicConfig
 		$this->context['permissions_excluded']['light_portal_manage_pages_any'] = [-1, 0];
 		$this->context['permissions_excluded']['light_portal_approve_pages']    = [-1, 0];
 
-		// Initial settings
-		$addSettings = [];
-		if (! isset($this->modSettings['lp_frontpage_title']))
-			$addSettings['lp_frontpage_title'] = str_replace(["'", "\""], "", $this->context['forum_name']);
-		if (! isset($this->modSettings['lp_show_views_and_comments']))
-			$addSettings['lp_show_views_and_comments'] = 1;
-		if (! isset($this->modSettings['lp_frontpage_article_sorting']))
-			$addSettings['lp_frontpage_article_sorting'] = 1;
-		if (! isset($this->modSettings['lp_num_items_per_page']))
-			$addSettings['lp_num_items_per_page'] = 10;
-		if (! isset($this->modSettings['lp_standalone_url']))
-			$addSettings['lp_standalone_url'] = $this->boardurl . '/portal.php';
-		$this->updateSettings($addSettings);
+		$this->addDefaultValues([
+			'lp_frontpage_title'           => str_replace(["'", "\""], "", $this->context['forum_name']),
+			'lp_show_views_and_comments'   => 1,
+			'lp_frontpage_article_sorting' => 1,
+			'lp_num_items_per_page'        => 10,
+			'lp_standalone_url'            => $this->boardurl . '/portal.php',
+		]);
 
 		$this->context['lp_frontpage_modes'] = array_combine(
 			[0, 'chosen_page', 'all_pages', 'chosen_pages', 'all_topics', 'chosen_topics', 'chosen_boards'],

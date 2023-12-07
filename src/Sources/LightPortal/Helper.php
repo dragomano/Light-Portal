@@ -320,4 +320,19 @@ trait Helper
 				&& $this->user_profile[$this->user_info['id']]['options']['cust_gender'] === '{gender_2}' ? 'female' : 'male'
 		);
 	}
+
+	public function addDefaultValues(array $values): void
+	{
+		$addSettings = [];
+
+		foreach ($values as $key => $value) {
+			if (empty($value)) continue;
+
+			if (! isset($this->modSettings[$key])) {
+				$addSettings[$key] = $value;
+			}
+		}
+
+		$this->updateSettings($addSettings);
+	}
 }

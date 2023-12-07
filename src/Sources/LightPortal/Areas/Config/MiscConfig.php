@@ -29,14 +29,11 @@ final class MiscConfig
 		$this->context['page_title'] = $this->txt['lp_misc'];
 		$this->context['post_url']   = $this->scripturl . '?action=admin;area=lp_settings;sa=misc;save';
 
-		$addSettings = [];
-		if (! isset($this->modSettings['lp_cache_update_interval']))
-			$addSettings['lp_cache_update_interval'] = LP_CACHE_TIME;
-		if (! isset($this->modSettings['lp_portal_action']))
-			$addSettings['lp_portal_action'] = LP_ACTION;
-		if (! isset($this->modSettings['lp_page_param']))
-			$addSettings['lp_page_param'] = LP_PAGE_PARAM;
-		$this->updateSettings($addSettings);
+		$this->addDefaultValues([
+			'lp_cache_update_interval' => LP_CACHE_TIME,
+			'lp_portal_action'         => LP_ACTION,
+			'lp_page_param'            => LP_PAGE_PARAM,
+		]);
 
 		$config_vars = [
 			['title', 'lp_debug_and_caching'],
