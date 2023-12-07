@@ -15,7 +15,6 @@
 namespace Bugo\LightPortal\Areas\Fields;
 
 use Bugo\LightPortal\Helper;
-use Closure;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -76,7 +75,7 @@ abstract class AbstractField
 		return $this;
 	}
 
-	public function setValue(Closure|string|int|bool $value, ...$params): self
+	public function setValue(mixed $value, ...$params): self
 	{
 		if (is_callable($value) && get_class($value))
 			$this->setAttribute('value', $value()(...$params));

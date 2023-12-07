@@ -13,7 +13,6 @@
  */
 
 namespace Bugo\LightPortal\Areas\Fields;
-use Closure;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -30,7 +29,7 @@ class CheckboxField extends InputField
 			->setAttribute('class', 'checkbox');
 	}
 
-	public function setValue(Closure|string|int|bool $value, ...$params): self
+	public function setValue(mixed $value, ...$params): self
 	{
 		$this->setAttribute('checked', (bool) $value);
 
