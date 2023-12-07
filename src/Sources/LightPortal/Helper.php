@@ -14,23 +14,9 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Lists\{
-	CategoryList,
-	IconList,
-	PageList,
-	TagList,
-	TitleList
-};
+use Bugo\LightPortal\Lists\{CategoryList, IconList, PageList, TagList, TitleList};
 use Bugo\LightPortal\Tasks\Notifier;
-use Bugo\LightPortal\Utils\{
-	File,
-	IntlTrait,
-	Post,
-	Request,
-	Session,
-	SMFCache,
-	SMFTrait,
-};
+use Bugo\LightPortal\Utils\{File, IntlTrait, Post, Request, Session, SMFCache, SMFTrait};
 use Exception;
 
 if (! defined('SMF'))

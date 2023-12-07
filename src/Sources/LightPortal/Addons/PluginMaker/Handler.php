@@ -18,9 +18,9 @@ namespace Bugo\LightPortal\Addons\PluginMaker;
 use Bugo\LightPortal\Addons\{Block, Plugin};
 use Bugo\LightPortal\Areas\Area;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, SelectField, TextField};
+use Bugo\LightPortal\Areas\Partials\IconSelect;
 use Bugo\LightPortal\Repositories\PluginRepository;
-use Bugo\LightPortal\Partials\IconSelect;
-use Nette\PhpGenerator\{PhpNamespace, PhpFile, Printer};
+use Nette\PhpGenerator\{PhpFile, PhpNamespace, Printer};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

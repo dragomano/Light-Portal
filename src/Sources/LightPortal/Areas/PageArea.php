@@ -17,9 +17,7 @@ declare(strict_types=1);
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, TextField};
-use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Entities\Page;
-use Bugo\LightPortal\Partials\{
+use Bugo\LightPortal\Areas\Partials\{
 	CategorySelect,
 	KeywordSelect,
 	PageAuthorSelect,
@@ -27,6 +25,8 @@ use Bugo\LightPortal\Partials\{
 	PermissionSelect,
 	StatusSelect,
 };
+use Bugo\LightPortal\Entities\Page;
+use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Repositories\PageRepository;
 
 if (! defined('SMF'))

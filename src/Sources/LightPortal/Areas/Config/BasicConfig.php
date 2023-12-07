@@ -14,17 +14,15 @@
 
 namespace Bugo\LightPortal\Areas\Config;
 
-use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Areas\Partials\CategorySelect;
+use Bugo\LightPortal\Areas\Partials\ActionSelect;
+use Bugo\LightPortal\Areas\Partials\BoardSelect;
+use Bugo\LightPortal\Areas\Partials\PageAliasSelect;
+use Bugo\LightPortal\Areas\Partials\PageSelect;
+use Bugo\LightPortal\Areas\Partials\TopicSelect;
 use Bugo\LightPortal\Areas\Query;
 use Bugo\LightPortal\Entities\FrontPage;
-use Bugo\LightPortal\Partials\{
-	ActionSelect,
-	BoardSelect,
-	CategorySelect,
-	PageAliasSelect,
-	PageSelect,
-	TopicSelect
-};
+use Bugo\LightPortal\Helper;
 use IntlException;
 
 if (! defined('SMF'))

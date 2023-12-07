@@ -10,14 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 07.12.23
  */
 
 namespace Bugo\LightPortal\Addons\BoardList;
 
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\CustomField;
-use Bugo\LightPortal\Partials\{ContentClassSelect, TitleClassSelect};
+use Bugo\LightPortal\Areas\Partials\{ContentClassSelect, TitleClassSelect};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

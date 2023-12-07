@@ -15,19 +15,19 @@
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\{
-	Helper,
-	Impex\BlockExport,
-	Impex\BlockImport,
-	Impex\PageExport,
-	Impex\PageImport,
-	Impex\PluginExport,
-	Impex\PluginImport,
 	Areas\Config\BasicConfig,
-	Areas\Config\ExtraConfig,
 	Areas\Config\CategoryConfig,
-	Areas\Config\PanelConfig,
-	Areas\Config\MiscConfig,
+	Areas\Config\ExtraConfig,
 	Areas\Config\FeedbackConfig,
+	Areas\Config\MiscConfig,
+	Areas\Config\PanelConfig,
+	Areas\Export\BlockExport,
+	Areas\Export\PageExport,
+	Areas\Export\PluginExport,
+	Areas\Import\BlockImport,
+	Areas\Import\PageImport,
+	Areas\Import\PluginImport,
+	Helper,
 };
 
 if (! defined('SMF'))

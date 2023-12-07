@@ -10,14 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 07.12.23
  */
 
 namespace Bugo\LightPortal\Addons\ArticleList;
 
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, RadioField};
-use Bugo\LightPortal\Partials\{ContentClassSelect, PageSelect, TopicSelect};
+use Bugo\LightPortal\Areas\Partials\{TopicSelect, ContentClassSelect, PageSelect};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

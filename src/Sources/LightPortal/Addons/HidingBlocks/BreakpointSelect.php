@@ -15,7 +15,7 @@
 
 namespace Bugo\LightPortal\Addons\HidingBlocks;
 
-use Bugo\LightPortal\Partials\AbstractPartial;
+use Bugo\LightPortal\Areas\Partials\AbstractPartial;
 
 final class BreakpointSelect extends AbstractPartial
 {

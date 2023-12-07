@@ -15,9 +15,9 @@
 namespace Bugo\LightPortal;
 
 use Bugo\LightPortal\Entities\{Block, Page};
-use Less_Parser;
-use Less_Exception_Parser;
 use Exception;
+use Less_Exception_Parser;
+use Less_Parser;
 
 if (! defined('SMF'))
 	die('No direct access...');

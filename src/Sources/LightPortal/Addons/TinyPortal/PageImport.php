@@ -15,7 +15,7 @@
 
 namespace Bugo\LightPortal\Addons\TinyPortal;
 
-use Bugo\LightPortal\Impex\AbstractOtherPageImport;
+use Bugo\LightPortal\Areas\Import\AbstractOtherPageImport;
 use IntlException;
 
 if (! defined('LP_NAME'))

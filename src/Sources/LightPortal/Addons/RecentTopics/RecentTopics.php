@@ -20,7 +20,7 @@ use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Areas\Fields\NumberField;
 use Bugo\LightPortal\Areas\Fields\RadioField;
-use Bugo\LightPortal\Partials\BoardSelect;
+use Bugo\LightPortal\Areas\Partials\BoardSelect;
 use IntlException;
 
 if (! defined('LP_NAME'))

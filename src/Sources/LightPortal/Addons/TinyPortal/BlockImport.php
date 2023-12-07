@@ -15,7 +15,7 @@
 
 namespace Bugo\LightPortal\Addons\TinyPortal;
 
-use Bugo\LightPortal\Impex\AbstractOtherBlockImport;
+use Bugo\LightPortal\Areas\Import\AbstractOtherBlockImport;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

@@ -15,16 +15,14 @@
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, TextField};
+use Bugo\LightPortal\Areas\Partials\AreaSelect;
+use Bugo\LightPortal\Areas\Partials\ContentClassSelect;
+use Bugo\LightPortal\Areas\Partials\IconSelect;
+use Bugo\LightPortal\Areas\Partials\PermissionSelect;
+use Bugo\LightPortal\Areas\Partials\PlacementSelect;
+use Bugo\LightPortal\Areas\Partials\TitleClassSelect;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Repositories\BlockRepository;
-use Bugo\LightPortal\Partials\{
-	AreaSelect,
-	ContentClassSelect,
-	IconSelect,
-	PermissionSelect,
-	PlacementSelect,
-	TitleClassSelect
-};
 
 if (! defined('SMF'))
 	die('No direct access...');

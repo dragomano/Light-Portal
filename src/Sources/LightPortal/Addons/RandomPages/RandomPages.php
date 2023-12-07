@@ -18,7 +18,7 @@ namespace Bugo\LightPortal\Addons\RandomPages;
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Areas\Fields\NumberField;
-use Bugo\LightPortal\Partials\CategorySelect;
+use Bugo\LightPortal\Areas\Partials\CategorySelect;
 use IntlException;
 
 if (! defined('LP_NAME'))

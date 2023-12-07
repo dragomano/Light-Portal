@@ -17,7 +17,7 @@ namespace Bugo\LightPortal\Addons\PageList;
 
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField, VirtualSelectField};
-use Bugo\LightPortal\Partials\CategorySelect;
+use Bugo\LightPortal\Areas\Partials\CategorySelect;
 use IntlException;
 
 if (! defined('LP_NAME'))

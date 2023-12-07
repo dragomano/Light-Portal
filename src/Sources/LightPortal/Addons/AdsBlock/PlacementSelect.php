@@ -15,7 +15,7 @@
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
 
-use Bugo\LightPortal\Partials\AbstractPartial;
+use Bugo\LightPortal\Areas\Partials\AbstractPartial;
 
 final class PlacementSelect extends AbstractPartial
 {
