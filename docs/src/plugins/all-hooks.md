@@ -1,7 +1,6 @@
 ---
 description: List of all available portal hooks
 order: 4
-outline: [2, 3]
 ---
 
 # Portal hooks
@@ -13,12 +12,6 @@ Light Portal is wonderfully extensible thanks to plugins. And hooks help plugins
 ### init
 
 > redefining $txt variables, running SMF hooks, etc.
-
-### prepareEditor
-
-(`$context['lp_block']` for block, `$context['lp_page']` for page)
-
-> adding any code on block/page editing area
 
 ### parseContent
 
@@ -32,17 +25,29 @@ Light Portal is wonderfully extensible thanks to plugins. And hooks help plugins
 
 > adding custom content of your plugin
 
-### credits
-
-(`&$links`)
-
-> adding copyrights of used libraries/scripts, etc.
-
 ### addAdminAreas
 
 (`&$admin_areas`)
 
 > adding custom areas to SMF's integrate_admin_areas hook
+
+### prepareEditor
+
+(`$context['lp_block']` for block, `$context['lp_page']` for page)
+
+> adding any code on block/page editing area
+
+### preloadLinks
+
+(`&$links`)
+
+> helps with preloading the stylesheets you need
+
+### credits
+
+(`&$links`)
+
+> adding copyrights of used libraries/scripts, etc.
 
 ## Work with blocks
 
