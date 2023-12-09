@@ -9,19 +9,19 @@ export default {
     nav: [
       {
         text: 'Αρχική',
-        link: './'
+        link: '/'
       },
       {
         text: 'Εισαγωγή',
-        link: './intro'
+        link: '/intro'
       },
       {
         text: 'Ομάδα',
-        link: './team'
+        link: '/team'
       },
       {
         text: 'Παραδείγματα',
-        link: './examples'
+        link: '/examples'
       },
       {
         text: 'Παρουσίαση',

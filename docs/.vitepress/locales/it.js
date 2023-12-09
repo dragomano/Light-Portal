@@ -9,19 +9,19 @@ export default {
     nav: [
       {
         text: 'Inizio',
-        link: './'
+        link: '/'
       },
       {
         text: 'Introduzione',
-        link: './intro'
+        link: '/intro'
       },
       {
         text: 'Team',
-        link: './team'
+        link: '/team'
       },
       {
         text: 'Esempi',
-        link: './examples'
+        link: '/examples'
       },
       {
         text: 'Demo',
@@ -56,9 +56,9 @@ export default {
             backButtonTitle: 'Chiudi ricerca',
             noResultsText: 'Nessun risultato per',
             footer: {
-              selectText: 'per selezionare',
-              navigateText: 'per navigare',
-              closeText: 'per chiudere'
+              selectText: 'seleziona',
+              navigateText: 'naviga',
+              closeText: 'chiudi'
             }
           }
         }
