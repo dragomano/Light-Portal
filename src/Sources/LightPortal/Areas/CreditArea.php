@@ -64,12 +64,6 @@ final class CreditArea
 			'Italian'    => ['Darknico'],
 			'Portuguese' => ['Costa'],
 			'Greek'      => ['Panoulis64'],
-			'Czech'      => ['Crowdin Translate'],
-			'Danish'     => ['Crowdin Translate'],
-			'Dutch'      => ['Crowdin Translate'],
-			'Norwegian'  => ['Crowdin Translate'],
-			'Swedish'    => ['Crowdin Translate'],
-			'Arabic'     => ['Crowdin Translate'],
 		];
 
 		$this->context['testers'] = [
@@ -116,9 +110,13 @@ final class CreditArea
 				'link' => 'https://www.mozilla.org/firefox/developer/'
 			],
 			[
-				'name' => 'Docusaurus',
-				'link' => 'https://docusaurus.io'
-			]
+				'name' => 'VitePress',
+				'link' => 'https://vitepress.dev'
+			],
+			[
+				'name' => 'Vite',
+				'link' => 'https://vitejs.dev'
+			],
 		];
 
 		$links = [
