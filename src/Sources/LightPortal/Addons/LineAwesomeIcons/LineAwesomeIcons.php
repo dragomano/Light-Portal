@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 09.12.23
  */
 
 namespace Bugo\LightPortal\Addons\LineAwesomeIcons;
@@ -27,9 +27,9 @@ class LineAwesomeIcons extends Plugin
 {
 	public string $type = 'icons';
 
-	public function preloadLinks(array &$links): void
+	public function preloadStyles(array &$styles): void
 	{
-		$links[] = 'https://cdn.jsdelivr.net/npm/line-awesome@1/dist/line-awesome/css/line-awesome.min.css';
+		$styles[] = 'https://cdn.jsdelivr.net/npm/line-awesome@1/dist/line-awesome/css/line-awesome.min.css';
 	}
 
 	public function prepareIconList(array &$all_icons): void

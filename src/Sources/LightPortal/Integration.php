@@ -15,7 +15,6 @@
 namespace Bugo\LightPortal;
 
 use Bugo\LightPortal\Entities\{Block, Category, FrontPage, Page, Tag};
-use IntlException;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -28,6 +27,7 @@ final class Integration extends AbstractMain
 	public function hooks(): void
 	{
 		$this->applyHook('user_info');
+		$this->applyHook('pre_javascript_output');
 		$this->applyHook('pre_css_output');
 		$this->applyHook('load_theme');
 		$this->applyHook('redirect', 'changeRedirect');
@@ -69,6 +69,20 @@ final class Integration extends AbstractMain
 		defined('LP_PAGE_URL') || define('LP_PAGE_URL', $this->scripturl . '?' . LP_PAGE_PARAM . '=');
 	}
 
+	public function preJavascriptOutput(): void
+	{
+		if (SMF === 'BACKGROUND')
+			return;
+
+		$scripts = [];
+
+		$this->hook('preloadScripts', [&$scripts]);
+
+		foreach ($scripts as $script) {
+			echo "\n\t" . '<link rel="preload" href="' . $script . '" as="script">';
+		}
+	}
+
 	public function preCssOutput(): void
 	{
 		if (SMF === 'BACKGROUND')
@@ -82,12 +96,12 @@ final class Integration extends AbstractMain
 		if (! isset($this->modSettings['lp_fa_source']) || $this->modSettings['lp_fa_source'] === 'css_cdn')
 			echo "\n\t" . '<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" as="style" onload="this.onload=null;this.rel=\'stylesheet\'">';
 
-		$links = [];
+		$styles = [];
 
-		$this->hook('preloadLinks', [&$links]);
+		$this->hook('preloadStyles', [&$styles]);
 
-		foreach ($links as $link) {
-			echo "\n\t" . '<link rel="preload" href="' . $link . '" as="style" onload="this.onload=null;this.rel=\'stylesheet\'">';
+		foreach ($styles as $style) {
+			echo "\n\t" . '<link rel="preload" href="' . $style . '" as="style" onload="this.onload=null;this.rel=\'stylesheet\'">';
 		}
 	}
 
@@ -330,9 +344,6 @@ final class Integration extends AbstractMain
 		];
 	}
 
-	/**
-	 * @throws IntlException
-	 */
 	public function fetchAlerts(array &$alerts): void
 	{
 		foreach ($alerts as $id => $alert) {

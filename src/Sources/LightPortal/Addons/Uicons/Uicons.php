@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 09.12.23
  */
 
 namespace Bugo\LightPortal\Addons\Uicons;
@@ -29,9 +29,9 @@ class Uicons extends Plugin
 
 	private string $prefix = 'fi fi-';
 
-	public function preloadLinks(array &$links): void
+	public function preloadStyles(array &$styles): void
 	{
-		$links[] = 'https://cdn.jsdelivr.net/npm/@flaticon/flaticon-uicons@1/css/all/all.css';
+		$styles[] = 'https://cdn.jsdelivr.net/npm/@flaticon/flaticon-uicons@1/css/all/all.css';
 	}
 
 	public function addSettings(array &$config_vars): void
