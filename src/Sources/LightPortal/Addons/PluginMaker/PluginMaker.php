@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.11.23
+ * @version 10.12.23
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -32,12 +32,12 @@ class PluginMaker extends Plugin
 		);
 	}
 
-	public function addAdminAreas(array &$admin_areas): void
+	public function updateAdminAreas(array &$areas): void
 	{
-		$admin_areas['lp_portal']['areas']['lp_plugins']['subsections'] = array_merge(
-			['main' => $admin_areas['lp_portal']['areas']['lp_plugins']['subsections']['main']],
+		$areas['lp_plugins']['subsections'] = array_merge(
+			['main' => $areas['lp_plugins']['subsections']['main']],
 			['add'  => [$this->context['lp_icon_set']['plus'] . $this->txt['lp_plugin_maker']['add']]],
-			$admin_areas['lp_portal']['areas']['lp_plugins']['subsections']
+			$areas['lp_plugins']['subsections']
 		);
 	}
 

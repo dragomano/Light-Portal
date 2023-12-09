@@ -37,7 +37,7 @@ final class ConfigArea
 {
 	use Helper;
 
-	public function adminAreas(array &$admin_areas): void
+	public function adminAreas(array &$areas): void
 	{
 		$this->loadCSSFile('light_portal/virtual-select.min.css');
 		$this->loadJavaScriptFile('light_portal/virtual-select.min.js');
@@ -47,10 +47,10 @@ final class ConfigArea
 
 		$this->loadLanguage('ManageSettings');
 
-		$counter = array_search('layout', array_keys($admin_areas)) + 1;
+		$counter = array_search('layout', array_keys($areas)) + 1;
 
-		$admin_areas = array_merge(
-			array_slice($admin_areas, 0, $counter, true),
+		$areas = array_merge(
+			array_slice($areas, 0, $counter, true),
 			[
 				'lp_portal' => [
 					'title' => $this->txt['lp_portal'],
@@ -105,28 +105,28 @@ final class ConfigArea
 					]
 				]
 			],
-			array_slice($admin_areas, $counter, count($admin_areas), true)
+			array_slice($areas, $counter, count($areas), true)
 		);
 
 		if ($this->context['user']['is_admin']) {
-			$admin_areas['lp_portal']['areas']['lp_blocks']['subsections'] += [
+			$areas['lp_portal']['areas']['lp_blocks']['subsections'] += [
 				'export' => [$this->context['lp_icon_set']['export'] . $this->txt['lp_blocks_export']],
 				'import' => [$this->context['lp_icon_set']['import'] . $this->txt['lp_blocks_import']]
 			];
 
-			$admin_areas['lp_portal']['areas']['lp_pages']['subsections'] += [
+			$areas['lp_portal']['areas']['lp_pages']['subsections'] += [
 				'export' => [$this->context['lp_icon_set']['export'] . $this->txt['lp_pages_export']],
 				'import' => [$this->context['lp_icon_set']['import'] . $this->txt['lp_pages_import']]
 			];
 
 			if (extension_loaded('zip'))
-				$admin_areas['lp_portal']['areas']['lp_plugins']['subsections'] += [
+				$areas['lp_portal']['areas']['lp_plugins']['subsections'] += [
 					'export' => [$this->context['lp_icon_set']['export'] . $this->txt['lp_plugins_export']],
 					'import' => [$this->context['lp_icon_set']['import'] . $this->txt['lp_plugins_import']]
 				];
 		}
 
-		$this->hook('addAdminAreas', [&$admin_areas]);
+		$this->hook('updateAdminAreas', [&$areas['lp_portal']['areas']]);
 	}
 
 	/**
