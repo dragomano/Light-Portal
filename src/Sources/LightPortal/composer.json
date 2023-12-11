@@ -1,20 +1,20 @@
 {
-    "require": {
-        "ext-dom": "*",
-        "ext-intl": "*",
-        "ext-simplexml": "*",
-        "ext-zip": "*",
-        "laminas/laminas-loader": "^2.9",
-        "latte/latte": "^3.0",
-        "wikimedia/less.php": "^4.1"
-    },
-    "config": {
-        "vendor-dir": "Libs",
-        "optimize-autoloader": true,
-        "preferred-install": "dist",
-        "sort-packages": true
-    },
-    "scripts": {
-        "post-update-cmd": "@php create_index.php"
-    }
+  "require": {
+    "ext-dom": "*",
+    "ext-intl": "*",
+    "ext-simplexml": "*",
+    "ext-zip": "*",
+    "laminas/laminas-loader": "^2.9",
+    "latte/latte": "^3.0",
+    "wikimedia/less.php": "^4.1"
+  },
+  "config": {
+    "vendor-dir": "Libs",
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "sort-packages": true
+  },
+  "scripts": {
+    "post-update-cmd": "@php create_index.php"
+  }
 }
