@@ -72,7 +72,7 @@ function site_list_handle_func(array $urls): string
 				},';
 	}
 
-	$js .= /** @lang text */ '
+	return $js . /** @lang text */ '
 			],
 			add() {
 				this.sites.push({
@@ -87,6 +87,4 @@ function site_list_handle_func(array $urls): string
 			}
 		}
 	}';
-
-	return $js;
 }

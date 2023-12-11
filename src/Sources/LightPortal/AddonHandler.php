@@ -123,7 +123,7 @@ final class AddonHandler
 			$this->cssMinifier->minify($cssFile);
 		}
 
-		$jsFile  = $this->settings['default_theme_dir'] . '/scripts/light_portal/plugins.js';
+		$jsFile = $this->settings['default_theme_dir'] . '/scripts/light_portal/plugins.js';
 		if (! is_file($jsFile) || $this->maxJsFilemtime > filemtime($jsFile)) {
 			$this->jsMinifier->minify($jsFile);
 		}

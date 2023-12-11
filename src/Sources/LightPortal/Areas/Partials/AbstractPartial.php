@@ -14,12 +14,13 @@
 
 namespace Bugo\LightPortal\Areas\Partials;
 
+use Stringable;
 use Bugo\LightPortal\Helper;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-abstract class AbstractPartial
+abstract class AbstractPartial implements Stringable
 {
 	use Helper;
 
