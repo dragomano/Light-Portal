@@ -146,7 +146,7 @@ final class ConfigArea
 	{
 		$this->middleware('admin_forum');
 
-		$subActions = [
+		$areas = [
 			'basic'      => [new BasicConfig, 'show'],
 			'extra'      => [new ExtraConfig, 'show'],
 			'categories' => [new CategoryConfig, 'show'],
@@ -182,65 +182,65 @@ final class ConfigArea
 			]
 		];
 
-		$this->loadGeneralSettingParameters($subActions, 'basic');
+		$this->callActionFromAreas($areas, 'basic');
 	}
 
 	public function blockAreas(): void
 	{
 		$this->middleware('admin_forum');
 
-		$subActions = [
+		$areas = [
 			'main' => [new BlockArea, 'main'],
 			'add'  => [new BlockArea, 'add'],
 			'edit' => [new BlockArea, 'edit']
 		];
 
 		if ($this->user_info['is_admin']) {
-			$subActions['export'] = [new BlockExport, 'main'];
-			$subActions['import'] = [new BlockImport, 'main'];
+			$areas['export'] = [new BlockExport, 'main'];
+			$areas['import'] = [new BlockImport, 'main'];
 		}
 
-		$this->hook('addBlockAreas', [&$subActions]);
+		$this->hook('updateBlockAreas', [&$areas]);
 
-		$this->loadGeneralSettingParameters($subActions);
+		$this->callActionFromAreas($areas);
 	}
 
 	public function pageAreas(): void
 	{
 		$this->middleware(['light_portal_manage_pages_own', 'light_portal_manage_pages_any']);
 
-		$subActions = [
+		$areas = [
 			'main' => [new PageArea, 'main'],
 			'add'  => [new PageArea, 'add'],
 			'edit' => [new PageArea, 'edit']
 		];
 
 		if ($this->user_info['is_admin']) {
-			$subActions['export'] = [new PageExport, 'main'];
-			$subActions['import'] = [new PageImport, 'main'];
+			$areas['export'] = [new PageExport, 'main'];
+			$areas['import'] = [new PageImport, 'main'];
 		}
 
-		$this->hook('addPageAreas', [&$subActions]);
+		$this->hook('updatePageAreas', [&$areas]);
 
-		$this->loadGeneralSettingParameters($subActions);
+		$this->callActionFromAreas($areas);
 	}
 
 	public function pluginAreas(): void
 	{
 		$this->middleware('admin_forum');
 
-		$subActions = [
+		$areas = [
 			'main' => [new PluginArea, 'main']
 		];
 
 		if ($this->user_info['is_admin'] && extension_loaded('zip')) {
-			$subActions['export'] = [new PluginExport, 'main'];
-			$subActions['import'] = [new PluginImport, 'main'];
+			$areas['export'] = [new PluginExport, 'main'];
+			$areas['import'] = [new PluginImport, 'main'];
 		}
 
-		$this->hook('addPluginAreas', [&$subActions]);
+		$this->hook('updatePluginAreas', [&$areas]);
 
-		$this->loadGeneralSettingParameters($subActions);
+		$this->callActionFromAreas($areas);
 	}
 
 	/**
@@ -248,7 +248,7 @@ final class ConfigArea
 	 *
 	 * Вызывает метод, если он существует; в противном случае вызывается метод по умолчанию
 	 */
-	private function loadGeneralSettingParameters(array $subActions = [], string $defaultAction = 'main'): void
+	private function callActionFromAreas(array $areas = [], string $defaultAction = 'main'): void
 	{
 		$this->showDocsLink();
 
@@ -256,9 +256,9 @@ final class ConfigArea
 
 		$this->context['sub_template'] = 'show_settings';
 
-		$this->context['sub_action'] = $this->request()->has('sa') && isset($subActions[$this->request('sa')]) ? $this->request('sa') : $defaultAction;
+		$this->context['sub_action'] = $this->request()->has('sa') && isset($areas[$this->request('sa')]) ? $this->request('sa') : $defaultAction;
 
-		$this->callHelper($subActions[$this->context['sub_action']]);
+		$this->callHelper($areas[$this->context['sub_action']]);
 	}
 
 	private function showDocsLink(): void

@@ -41,9 +41,9 @@ class PluginMaker extends Plugin
 		);
 	}
 
-	public function addPluginAreas(array &$subActions): void
+	public function updatePluginAreas(array &$areas): void
 	{
-		$subActions['add'] = [new Handler, 'add'];
+		$areas['add'] = [new Handler, 'add'];
 	}
 
 	public function credits(array &$links): void

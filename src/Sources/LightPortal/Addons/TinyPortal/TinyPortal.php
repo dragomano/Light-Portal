@@ -32,16 +32,16 @@ class TinyPortal extends Plugin
 		}
 	}
 
-	public function addBlockAreas(array &$subActions): void
+	public function updateBlockAreas(array &$areas): void
 	{
 		if ($this->user_info['is_admin'])
-			$subActions['import_from_tp'] = [new BlockImport, 'main'];
+			$areas['import_from_tp'] = [new BlockImport, 'main'];
 	}
 
-	public function addPageAreas(array &$subActions): void
+	public function updatePageAreas(array &$areas): void
 	{
 		if ($this->user_info['is_admin'])
-			$subActions['import_from_tp'] = [new PageImport, 'main'];
+			$areas['import_from_tp'] = [new PageImport, 'main'];
 	}
 
 	public function importPages(array &$items, array &$titles, array &$params, array &$comments): void

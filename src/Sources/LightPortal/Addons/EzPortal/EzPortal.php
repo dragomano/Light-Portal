@@ -30,10 +30,10 @@ class EzPortal extends Plugin
 			$areas['lp_pages']['subsections']['import_from_ez'] = [$this->context['lp_icon_set']['import'] . $this->txt['lp_ez_portal']['label_name']];
 	}
 
-	public function addPageAreas(array &$subActions): void
+	public function updatePageAreas(array &$areas): void
 	{
 		if ($this->user_info['is_admin'])
-			$subActions['import_from_ez'] = [new Import, 'main'];
+			$areas['import_from_ez'] = [new Import, 'main'];
 	}
 
 	public function importPages(array &$items, array &$titles): void
