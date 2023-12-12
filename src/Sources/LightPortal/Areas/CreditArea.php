@@ -94,6 +94,10 @@ final class CreditArea
 				'link' => 'https://code.visualstudio.com/Download'
 			],
 			[
+				'name' => 'Unreal Commander',
+				'link' => 'https://x-diesel.com'
+			],
+			[
 				'name' => 'JetBrains',
 				'link' => 'https://www.jetbrains.com/?from=LightPortal'
 			],
