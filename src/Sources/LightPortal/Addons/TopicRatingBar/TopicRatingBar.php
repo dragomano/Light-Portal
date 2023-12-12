@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 09.05.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\TopicRatingBar;
@@ -29,7 +29,7 @@ class TopicRatingBar extends Plugin
 	 *
 	 * Выбираем столбцы total_votes и total_value из таблицы topic_ratings при выборке тем-статей
 	 */
-	public function frontTopics(array &$custom_columns, array &$custom_tables)
+	public function frontTopics(array &$custom_columns, array &$custom_tables): void
 	{
 		if (! class_exists('TopicRatingBar'))
 			return;
@@ -43,7 +43,7 @@ class TopicRatingBar extends Plugin
 	 *
 	 * Меняем некоторые результаты выборки
 	 */
-	public function frontTopicsOutput(array &$topics, array $row)
+	public function frontTopicsOutput(array &$topics, array $row): void
 	{
 		$topics[$row['id_topic']]['rating'] = empty($row['total_votes']) ? 0 : (number_format($row['total_value'] / $row['total_votes']));
 	}
@@ -53,7 +53,7 @@ class TopicRatingBar extends Plugin
 	 *
 	 * Отображаем рейтинг каждой темы
 	 */
-	public function frontAssets()
+	public function frontAssets(): void
 	{
 		foreach ($this->context['lp_frontpage_articles'] as $id => $topic) {
 			if (! empty($topic['rating'])) {

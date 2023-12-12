@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.03.23
+ * @version 09.12.23
  */
 
 namespace Bugo\LightPortal\Addons\LineAwesomeIcons;
@@ -27,20 +27,12 @@ class LineAwesomeIcons extends Plugin
 {
 	public string $type = 'icons';
 
-	public function init()
+	public function preloadStyles(array &$styles): void
 	{
-		$this->applyHook('pre_css_output');
+		$styles[] = 'https://cdn.jsdelivr.net/npm/line-awesome@1/dist/line-awesome/css/line-awesome.min.css';
 	}
 
-	public function preCssOutput()
-	{
-		if (SMF === 'BACKGROUND')
-			return;
-
-		echo "\n\t" . '<link rel="preload" href="https://cdn.jsdelivr.net/npm/line-awesome@1/dist/line-awesome/css/line-awesome.min.css" as="style" onload="this.onload=null;this.rel=\'stylesheet\'">';
-	}
-
-	public function prepareIconList(array &$all_icons)
+	public function prepareIconList(array &$all_icons): void
 	{
 		if (($icons = $this->cache()->get('all_la_icons', 30 * 24 * 60 * 60)) === null) {
 			$icons = $this->getIconList();
@@ -51,7 +43,7 @@ class LineAwesomeIcons extends Plugin
 		$all_icons = array_merge($all_icons, $icons);
 	}
 
-	public function credits(array &$links)
+	public function credits(array &$links): void
 	{
 		$links[] = [
 			'title' => 'Line Awesome',

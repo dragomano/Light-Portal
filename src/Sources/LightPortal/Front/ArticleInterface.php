@@ -9,7 +9,7 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.3
+ * @version 2.4
  */
 
 namespace Bugo\LightPortal\Front;
@@ -19,7 +19,7 @@ if (! defined('SMF'))
 
 interface ArticleInterface
 {
-	public function init();
+	public function init(): void;
 
 	public function getData(int $start, int $limit): array;
 

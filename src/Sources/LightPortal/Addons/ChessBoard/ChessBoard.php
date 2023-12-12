@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.04.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\ChessBoard;
@@ -35,11 +35,13 @@ class ChessBoard extends Block
 		$this->loadExtJS('https://unpkg.com/@chrisoakman/chessboard2@0/dist/chessboard2.min.js');
 		$this->loadExtJS('https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.12.1/chess.js');
 
-		echo '
-		<div id="chessBoard', $data->block_id, '"></div>
+		$id = $data->block_id;
+
+		echo /** @lang text */ '
+		<div id="chessBoard' . $id . '"></div>
 		<div class="floatright" style="margin: 10px">
-			<label for="depth', $data->block_id, '">', $this->txt['lp_chess_board']['search_depth'], ':</label>
-			<select id="depth', $data->block_id, '">
+			<label for="depth' . $id . '">' . $this->txt['lp_chess_board']['search_depth'] . ':</label>
+			<select id="depth' . $id . '">
 				<option value="1">1</option>
 				<option value="2">2</option>
 				<option value="3" selected>3</option>
@@ -48,8 +50,8 @@ class ChessBoard extends Block
 			</select>
 		</div>
 		<script>
-			const gameOver = "', $this->txt['lp_chess_board']['game_over'], '";
-			const board', $data->block_id, ' = new ChessboardMaker(', $data->block_id, ');
+			const gameOver = "' . $this->txt['lp_chess_board']['game_over'] . '";
+			const board' . $id . ' = new ChessboardMaker(' . $id . ');
 		</script>';
 	}
 

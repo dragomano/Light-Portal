@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.11.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\BootstrapIcons;
@@ -29,12 +29,12 @@ class BootstrapIcons extends Plugin
 
 	private string $prefix = 'bi bi-';
 
-	public function init()
+	public function init(): void
 	{
 		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/bootstrap-icons@1/font/bootstrap-icons.min.css', ['seed' => false]);
 	}
 
-	public function prepareIconList(array &$all_icons)
+	public function prepareIconList(array &$all_icons): void
 	{
 		if (($icons = $this->cache()->get('all_bi_icons', 30 * 24 * 60 * 60)) === null) {
 			$content = file_get_contents('https://cdn.jsdelivr.net/npm/bootstrap-icons@1/font/bootstrap-icons.json');
@@ -51,7 +51,7 @@ class BootstrapIcons extends Plugin
 		$all_icons = array_merge($all_icons, $icons);
 	}
 
-	public function credits(array &$links)
+	public function credits(array &$links): void
 	{
 		$links[] = [
 			'title' => 'Bootstrap Icons',

@@ -9,13 +9,12 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.3
+ * @version 2.4
  */
 
 namespace Bugo\LightPortal;
 
 use Bugo\LightPortal\Entities\{Block, Category, FrontPage, Page, Tag};
-use IntlException;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -28,6 +27,7 @@ final class Integration extends AbstractMain
 	public function hooks(): void
 	{
 		$this->applyHook('user_info');
+		$this->applyHook('pre_javascript_output');
 		$this->applyHook('pre_css_output');
 		$this->applyHook('load_theme');
 		$this->applyHook('redirect', 'changeRedirect');
@@ -58,8 +58,8 @@ final class Integration extends AbstractMain
 		$this->context['lp_num_queries'] ??= 0;
 
 		defined('LP_NAME') || define('LP_NAME', 'Light Portal');
-		defined('LP_VERSION') || define('LP_VERSION', '2.3.0');
-		defined('LP_PLUGIN_LIST') || define('LP_PLUGIN_LIST', 'https://api.jsonserve.com/aHEjSk');
+		defined('LP_VERSION') || define('LP_VERSION', '2.4.0');
+		defined('LP_PLUGIN_LIST') || define('LP_PLUGIN_LIST', 'https://api.jsonserve.com/ZukdkN');
 		defined('LP_ADDON_URL') || define('LP_ADDON_URL', $this->boardurl . '/Sources/LightPortal/Addons');
 		defined('LP_ADDON_DIR') || define('LP_ADDON_DIR', __DIR__ . '/Addons');
 		defined('LP_CACHE_TIME') || define('LP_CACHE_TIME', (int) ($this->modSettings['lp_cache_update_interval'] ?? 72000));
@@ -67,6 +67,20 @@ final class Integration extends AbstractMain
 		defined('LP_PAGE_PARAM') || define('LP_PAGE_PARAM', $this->modSettings['lp_page_param'] ?? 'page');
 		defined('LP_BASE_URL') || define('LP_BASE_URL', $this->scripturl . '?action=' . LP_ACTION);
 		defined('LP_PAGE_URL') || define('LP_PAGE_URL', $this->scripturl . '?' . LP_PAGE_PARAM . '=');
+	}
+
+	public function preJavascriptOutput(): void
+	{
+		if (SMF === 'BACKGROUND')
+			return;
+
+		$scripts = [];
+
+		$this->hook('preloadScripts', [&$scripts]);
+
+		foreach ($scripts as $script) {
+			echo "\n\t" . '<link rel="preload" href="' . $script . '" as="script">';
+		}
 	}
 
 	public function preCssOutput(): void
@@ -81,6 +95,14 @@ final class Integration extends AbstractMain
 
 		if (! isset($this->modSettings['lp_fa_source']) || $this->modSettings['lp_fa_source'] === 'css_cdn')
 			echo "\n\t" . '<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" as="style" onload="this.onload=null;this.rel=\'stylesheet\'">';
+
+		$styles = [];
+
+		$this->hook('preloadStyles', [&$styles]);
+
+		foreach ($styles as $style) {
+			echo "\n\t" . '<link rel="preload" href="' . $style . '" as="style" onload="this.onload=null;this.rel=\'stylesheet\'">';
+		}
 	}
 
 	public function loadTheme(): void
@@ -322,9 +344,6 @@ final class Integration extends AbstractMain
 		];
 	}
 
-	/**
-	 * @throws IntlException
-	 */
 	public function fetchAlerts(array &$alerts): void
 	{
 		foreach ($alerts as $id => $alert) {

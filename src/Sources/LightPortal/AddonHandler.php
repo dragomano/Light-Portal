@@ -9,7 +9,7 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.3
+ * @version 2.4
  */
 
 namespace Bugo\LightPortal;
@@ -123,7 +123,7 @@ final class AddonHandler
 			$this->cssMinifier->minify($cssFile);
 		}
 
-		$jsFile  = $this->settings['default_theme_dir'] . '/scripts/light_portal/plugins.js';
+		$jsFile = $this->settings['default_theme_dir'] . '/scripts/light_portal/plugins.js';
 		if (! is_file($jsFile) || $this->maxJsFilemtime > filemtime($jsFile)) {
 			$this->jsMinifier->minify($jsFile);
 		}

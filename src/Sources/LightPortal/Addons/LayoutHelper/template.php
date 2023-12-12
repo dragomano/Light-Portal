@@ -1,6 +1,6 @@
 <?php
 
-function template_layout_switcher_above()
+function template_layout_switcher_above(): void
 {
 	global $context, $txt;
 

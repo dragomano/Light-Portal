@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 1.11.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\Reactions;
 
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Areas\Fields\CheckboxField;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -39,17 +40,11 @@ class Reactions extends Plugin
 
 	public function preparePageFields(): void
 	{
-		$this->context['posting_fields']['allow_reactions']['label']['text'] = $this->txt['lp_reactions']['allow_reactions'];
-		$this->context['posting_fields']['allow_reactions']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'allow_reactions',
-				'checked' => (bool) $this->context['lp_page']['options']['allow_reactions']
-			]
-		];
+		CheckboxField::make('allow_reactions', $this->txt['lp_reactions']['allow_reactions'])
+			->setValue($this->context['lp_page']['options']['allow_reactions']);
 	}
 
-	public function preparePageData(array &$data, bool $is_author): void
+	public function preparePageData(array $data, bool $is_author): void
 	{
 		if (empty($data['options']['allow_reactions']))
 			return;
@@ -94,7 +89,7 @@ class Reactions extends Plugin
 		$this->setTemplate();
 	}
 
-	public function afterPageContent()
+	public function afterPageContent(): void
 	{
 		if (empty($this->context['lp_page']['options']['allow_reactions']))
 			return;

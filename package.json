@@ -1,5 +1,6 @@
 {
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build --config=configs/vite.config.js",
@@ -10,26 +11,26 @@
   },
   "dependencies": {
     "@github/markdown-toolbar-element": "^2.2.1",
-    "@vitejs/plugin-vue": "^4.5.0",
+    "@vitejs/plugin-vue": "^4.5.2",
     "@vueform/multiselect": "^2.6.6",
     "@vueform/toggle": "^2.1.4",
-    "@vueuse/core": "^10.6.1",
-    "@vueuse/shared": "^10.6.1",
-    "alpinejs": "^3.13.2",
+    "@vueuse/core": "^10.7.0",
+    "@vueuse/shared": "^10.7.0",
+    "alpinejs": "^3.13.3",
     "alpinejs-slug": "^1.1.2",
     "axios": "^1.6.2",
     "less": "^4.2.0",
     "pinia": "^2.1.7",
-    "sortablejs": "^1.15.0",
+    "sortablejs": "^1.15.1",
     "vanilla-lazyload": "^17.8.5",
     "virtual-select-plugin": "^1.0.40",
     "vite-plugin-minify": "^1.5.2",
-    "vue": "^3.3.8",
-    "vue-i18n": "^9.7.0",
+    "vue": "^3.3.11",
+    "vue-i18n": "^9.8.0",
     "vue-showdown": "^4.2.0"
   },
   "devDependencies": {
-    "vite": "^4.5.0",
-    "vite-plugin-static-copy": "^0.17.1"
+    "vite": "^5.0.8",
+    "vite-plugin-static-copy": "^1.0.0"
   }
 }

@@ -9,7 +9,7 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.3
+ * @version 2.4
  */
 
 namespace Bugo\LightPortal\Entities;
@@ -25,7 +25,7 @@ final class Block
 
 	public function show(): void
 	{
-		if ($this->isHideBlocksInAdmin() || $this->request()->is('devtools'))
+		if ($this->isHideBlocksInAdmin() || $this->request()->is('devtools') || $this->request()->has('preview'))
 			return;
 
 		if (empty($this->context['allow_light_portal_view']) || empty($this->context['template_layers']) || empty($this->context['lp_active_blocks']))

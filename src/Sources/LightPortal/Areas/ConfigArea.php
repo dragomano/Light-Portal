@@ -9,25 +9,25 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.3
+ * @version 2.4
  */
 
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\{
-	Helper,
-	Impex\BlockExport,
-	Impex\BlockImport,
-	Impex\PageExport,
-	Impex\PageImport,
-	Impex\PluginExport,
-	Impex\PluginImport,
 	Areas\Config\BasicConfig,
-	Areas\Config\ExtraConfig,
 	Areas\Config\CategoryConfig,
-	Areas\Config\PanelConfig,
-	Areas\Config\MiscConfig,
+	Areas\Config\ExtraConfig,
 	Areas\Config\FeedbackConfig,
+	Areas\Config\MiscConfig,
+	Areas\Config\PanelConfig,
+	Areas\Export\BlockExport,
+	Areas\Export\PageExport,
+	Areas\Export\PluginExport,
+	Areas\Import\BlockImport,
+	Areas\Import\PageImport,
+	Areas\Import\PluginImport,
+	Helper,
 };
 
 if (! defined('SMF'))
@@ -37,7 +37,7 @@ final class ConfigArea
 {
 	use Helper;
 
-	public function adminAreas(array &$admin_areas): void
+	public function adminAreas(array &$areas): void
 	{
 		$this->loadCSSFile('light_portal/virtual-select.min.css');
 		$this->loadJavaScriptFile('light_portal/virtual-select.min.js');
@@ -47,10 +47,10 @@ final class ConfigArea
 
 		$this->loadLanguage('ManageSettings');
 
-		$counter = array_search('layout', array_keys($admin_areas)) + 1;
+		$counter = array_search('layout', array_keys($areas)) + 1;
 
-		$admin_areas = array_merge(
-			array_slice($admin_areas, 0, $counter, true),
+		$areas = array_merge(
+			array_slice($areas, 0, $counter, true),
 			[
 				'lp_portal' => [
 					'title' => $this->txt['lp_portal'],
@@ -105,28 +105,28 @@ final class ConfigArea
 					]
 				]
 			],
-			array_slice($admin_areas, $counter, count($admin_areas), true)
+			array_slice($areas, $counter, count($areas), true)
 		);
 
 		if ($this->context['user']['is_admin']) {
-			$admin_areas['lp_portal']['areas']['lp_blocks']['subsections'] += [
+			$areas['lp_portal']['areas']['lp_blocks']['subsections'] += [
 				'export' => [$this->context['lp_icon_set']['export'] . $this->txt['lp_blocks_export']],
 				'import' => [$this->context['lp_icon_set']['import'] . $this->txt['lp_blocks_import']]
 			];
 
-			$admin_areas['lp_portal']['areas']['lp_pages']['subsections'] += [
+			$areas['lp_portal']['areas']['lp_pages']['subsections'] += [
 				'export' => [$this->context['lp_icon_set']['export'] . $this->txt['lp_pages_export']],
 				'import' => [$this->context['lp_icon_set']['import'] . $this->txt['lp_pages_import']]
 			];
 
 			if (extension_loaded('zip'))
-				$admin_areas['lp_portal']['areas']['lp_plugins']['subsections'] += [
+				$areas['lp_portal']['areas']['lp_plugins']['subsections'] += [
 					'export' => [$this->context['lp_icon_set']['export'] . $this->txt['lp_plugins_export']],
 					'import' => [$this->context['lp_icon_set']['import'] . $this->txt['lp_plugins_import']]
 				];
 		}
 
-		$this->hook('addAdminAreas', [&$admin_areas]);
+		$this->hook('updateAdminAreas', [&$areas['lp_portal']['areas']]);
 	}
 
 	/**
@@ -146,7 +146,7 @@ final class ConfigArea
 	{
 		$this->middleware('admin_forum');
 
-		$subActions = [
+		$areas = [
 			'basic'      => [new BasicConfig, 'show'],
 			'extra'      => [new ExtraConfig, 'show'],
 			'categories' => [new CategoryConfig, 'show'],
@@ -182,65 +182,65 @@ final class ConfigArea
 			]
 		];
 
-		$this->loadGeneralSettingParameters($subActions, 'basic');
+		$this->callActionFromAreas($areas, 'basic');
 	}
 
 	public function blockAreas(): void
 	{
 		$this->middleware('admin_forum');
 
-		$subActions = [
+		$areas = [
 			'main' => [new BlockArea, 'main'],
 			'add'  => [new BlockArea, 'add'],
 			'edit' => [new BlockArea, 'edit']
 		];
 
 		if ($this->user_info['is_admin']) {
-			$subActions['export'] = [new BlockExport, 'main'];
-			$subActions['import'] = [new BlockImport, 'main'];
+			$areas['export'] = [new BlockExport, 'main'];
+			$areas['import'] = [new BlockImport, 'main'];
 		}
 
-		$this->hook('addBlockAreas', [&$subActions]);
+		$this->hook('updateBlockAreas', [&$areas]);
 
-		$this->loadGeneralSettingParameters($subActions);
+		$this->callActionFromAreas($areas);
 	}
 
 	public function pageAreas(): void
 	{
 		$this->middleware(['light_portal_manage_pages_own', 'light_portal_manage_pages_any']);
 
-		$subActions = [
+		$areas = [
 			'main' => [new PageArea, 'main'],
 			'add'  => [new PageArea, 'add'],
 			'edit' => [new PageArea, 'edit']
 		];
 
 		if ($this->user_info['is_admin']) {
-			$subActions['export'] = [new PageExport, 'main'];
-			$subActions['import'] = [new PageImport, 'main'];
+			$areas['export'] = [new PageExport, 'main'];
+			$areas['import'] = [new PageImport, 'main'];
 		}
 
-		$this->hook('addPageAreas', [&$subActions]);
+		$this->hook('updatePageAreas', [&$areas]);
 
-		$this->loadGeneralSettingParameters($subActions);
+		$this->callActionFromAreas($areas);
 	}
 
 	public function pluginAreas(): void
 	{
 		$this->middleware('admin_forum');
 
-		$subActions = [
+		$areas = [
 			'main' => [new PluginArea, 'main']
 		];
 
 		if ($this->user_info['is_admin'] && extension_loaded('zip')) {
-			$subActions['export'] = [new PluginExport, 'main'];
-			$subActions['import'] = [new PluginImport, 'main'];
+			$areas['export'] = [new PluginExport, 'main'];
+			$areas['import'] = [new PluginImport, 'main'];
 		}
 
-		$this->hook('addPluginAreas', [&$subActions]);
+		$this->hook('updatePluginAreas', [&$areas]);
 
-		$this->loadGeneralSettingParameters($subActions);
+		$this->callActionFromAreas($areas);
 	}
 
 	/**
@@ -248,7 +248,7 @@ final class ConfigArea
 	 *
 	 * Вызывает метод, если он существует; в противном случае вызывается метод по умолчанию
 	 */
-	private function loadGeneralSettingParameters(array $subActions = [], string $defaultAction = 'main'): void
+	private function callActionFromAreas(array $areas = [], string $defaultAction = 'main'): void
 	{
 		$this->showDocsLink();
 
@@ -256,9 +256,9 @@ final class ConfigArea
 
 		$this->context['sub_template'] = 'show_settings';
 
-		$this->context['sub_action'] = $this->request()->has('sa') && isset($subActions[$this->request('sa')]) ? $this->request('sa') : $defaultAction;
+		$this->context['sub_action'] = $this->request()->has('sa') && isset($areas[$this->request('sa')]) ? $this->request('sa') : $defaultAction;
 
-		$this->callHelper($subActions[$this->context['sub_action']]);
+		$this->callHelper($areas[$this->context['sub_action']]);
 	}
 
 	private function showDocsLink(): void

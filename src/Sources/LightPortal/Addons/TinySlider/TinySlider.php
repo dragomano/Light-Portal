@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.11.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\TinySlider;
 
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, NumberField, RadioField};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -99,216 +100,74 @@ class TinySlider extends Block
 		if ($this->context['lp_block']['type'] !== 'tiny_slider')
 			return;
 
-		$this->context['posting_fields']['axis']['label']['text'] = $this->txt['lp_tiny_slider']['axis'];
-		$this->context['posting_fields']['axis']['input'] = [
-			'type' => 'radio_select',
-			'attributes' => [
-				'id' => 'axis'
-			],
-			'options' => []
-		];
+		CustomField::make('images', $this->txt['lp_tiny_slider']['images'])
+			->setTab('content')
+			->setValue($this->getFromTemplate('tiny_slider_images'));
 
-		$axis_directions = array_combine(['vertical', 'horizontal'], $this->txt['lp_panel_direction_set']);
+		RadioField::make('axis', $this->txt['lp_tiny_slider']['axis'])
+			->setOptions(array_combine(['vertical', 'horizontal'], $this->txt['lp_panel_direction_set']))
+			->setValue($this->context['lp_block']['options']['parameters']['axis']);
 
-		foreach ($axis_directions as $key => $value) {
-			$this->context['posting_fields']['axis']['input']['options'][$value] = [
-				'value'    => $key,
-				'selected' => $key == $this->context['lp_block']['options']['parameters']['axis']
-			];
-		}
+		NumberField::make('num_items', $this->txt['lp_tiny_slider']['num_items'])
+			->setAfter($this->txt['lp_tiny_slider']['num_items_subtext'])
+			->setAttribute('min', 1)
+			->setValue($this->context['lp_block']['options']['parameters']['num_items']);
 
-		$this->context['posting_fields']['num_items']['label']['text'] = $this->txt['lp_tiny_slider']['num_items'];
-		$this->context['posting_fields']['num_items']['input'] = [
-			'after' => $this->txt['lp_tiny_slider']['num_items_subtext'],
-			'type' => 'number',
-			'attributes' => [
-				'id'    => 'num_items',
-				'min'   => 1,
-				'value' => $this->context['lp_block']['options']['parameters']['num_items']
-			]
-		];
+		NumberField::make('gutter', $this->txt['lp_tiny_slider']['gutter'])
+			->setAttribute('min', 0)
+			->setValue($this->context['lp_block']['options']['parameters']['gutter']);
 
-		$this->context['posting_fields']['gutter']['label']['text'] = $this->txt['lp_tiny_slider']['gutter'];
-		$this->context['posting_fields']['gutter']['input'] = [
-			'type' => 'number',
-			'attributes' => [
-				'id'    => 'gutter',
-				'min'   => 0,
-				'value' => $this->context['lp_block']['options']['parameters']['gutter']
-			]
-		];
+		NumberField::make('edge_padding', $this->txt['lp_tiny_slider']['edge_padding'])
+			->setAttribute('min', 0)
+			->setValue($this->context['lp_block']['options']['parameters']['edge_padding']);
 
-		$this->context['posting_fields']['edge_padding']['label']['text'] = $this->txt['lp_tiny_slider']['edge_padding'];
-		$this->context['posting_fields']['edge_padding']['input'] = [
-			'type' => 'number',
-			'attributes' => [
-				'id'    => 'edge_padding',
-				'min'   => 0,
-				'value' => $this->context['lp_block']['options']['parameters']['edge_padding']
-			]
-		];
+		CheckboxField::make('controls', $this->txt['lp_tiny_slider']['controls'])
+			->setValue($this->context['lp_block']['options']['parameters']['controls']);
 
-		$this->context['posting_fields']['controls']['label']['text'] = $this->txt['lp_tiny_slider']['controls'];
-		$this->context['posting_fields']['controls']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'controls',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['controls']
-			]
-		];
+		CheckboxField::make('nav', $this->txt['lp_tiny_slider']['nav'])
+			->setValue($this->context['lp_block']['options']['parameters']['nav']);
 
-		$this->context['posting_fields']['nav']['label']['text'] = $this->txt['lp_tiny_slider']['nav'];
-		$this->context['posting_fields']['nav']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'nav',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['nav']
-			]
-		];
+		CheckboxField::make('nav_as_thumbnails', $this->txt['lp_tiny_slider']['nav_as_thumbnails'])
+			->setValue($this->context['lp_block']['options']['parameters']['nav_as_thumbnails']);
 
-		$this->context['posting_fields']['nav_as_thumbnails']['label']['text'] = $this->txt['lp_tiny_slider']['nav_as_thumbnails'];
-		$this->context['posting_fields']['nav_as_thumbnails']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'nav_as_thumbnails',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['nav_as_thumbnails']
-			]
-		];
+		CheckboxField::make('arrow_keys', $this->txt['lp_tiny_slider']['arrow_keys'])
+			->setValue($this->context['lp_block']['options']['parameters']['arrow_keys']);
 
-		$this->context['posting_fields']['arrow_keys']['label']['text'] = $this->txt['lp_tiny_slider']['arrow_keys'];
-		$this->context['posting_fields']['arrow_keys']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'arrow_keys',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['arrow_keys']
-			]
-		];
+		NumberField::make('fixed_width', $this->txt['lp_tiny_slider']['fixed_width'])
+			->setAfter($this->txt['zero_for_no_limit'])
+			->setAttribute('min', 0)
+			->setValue($this->context['lp_block']['options']['parameters']['fixed_width']);
 
-		$this->context['posting_fields']['fixed_width']['label']['text'] = $this->txt['lp_tiny_slider']['fixed_width'];
-		$this->context['posting_fields']['fixed_width']['input'] = [
-			'after' => $this->txt['zero_for_no_limit'],
-			'type' => 'number',
-			'attributes' => [
-				'id'    => 'fixed_width',
-				'min'   => 0,
-				'value' => $this->context['lp_block']['options']['parameters']['fixed_width']
-			]
-		];
+		NumberField::make('slide_by', $this->txt['lp_tiny_slider']['slide_by'])
+			->setAttribute('min', 1)
+			->setValue($this->context['lp_block']['options']['parameters']['slide_by']);
 
-		$this->context['posting_fields']['slide_by']['label']['text'] = $this->txt['lp_tiny_slider']['slide_by'];
-		$this->context['posting_fields']['slide_by']['input'] = [
-			'type' => 'number',
-			'attributes' => [
-				'id'    => 'slide_by',
-				'min'   => 1,
-				'value' => $this->context['lp_block']['options']['parameters']['slide_by']
-			]
-		];
+		NumberField::make('speed', $this->txt['lp_tiny_slider']['speed'])
+			->setAttribute('min', 1)
+			->setValue($this->context['lp_block']['options']['parameters']['speed']);
 
-		$this->context['posting_fields']['speed']['label']['text'] = $this->txt['lp_tiny_slider']['speed'];
-		$this->context['posting_fields']['speed']['input'] = [
-			'type' => 'number',
-			'attributes' => [
-				'id'    => 'speed',
-				'min'   => 1,
-				'value' => $this->context['lp_block']['options']['parameters']['speed']
-			]
-		];
+		CheckboxField::make('autoplay', $this->txt['lp_tiny_slider']['autoplay'])
+			->setValue($this->context['lp_block']['options']['parameters']['autoplay']);
 
-		$this->context['posting_fields']['autoplay']['label']['text'] = $this->txt['lp_tiny_slider']['autoplay'];
-		$this->context['posting_fields']['autoplay']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'autoplay',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['autoplay']
-			]
-		];
+		NumberField::make('autoplay_timeout', $this->txt['lp_tiny_slider']['autoplay_timeout'])
+			->setAttribute('min', 1)
+			->setValue($this->context['lp_block']['options']['parameters']['autoplay_timeout']);
 
-		$this->context['posting_fields']['autoplay_timeout']['label']['text'] = $this->txt['lp_tiny_slider']['autoplay_timeout'];
-		$this->context['posting_fields']['autoplay_timeout']['input'] = [
-			'type' => 'number',
-			'attributes' => [
-				'id'    => 'autoplay_timeout',
-				'min'   => 1,
-				'value' => $this->context['lp_block']['options']['parameters']['autoplay_timeout']
-			]
-		];
+		RadioField::make('autoplay_direction', $this->txt['lp_tiny_slider']['autoplay_direction'])
+			->setOptions(array_combine(['forward', 'backward'], $this->txt['lp_tiny_slider']['autoplay_direction_set']))
+			->setValue($this->context['lp_block']['options']['parameters']['autoplay_direction']);
 
-		$this->context['posting_fields']['autoplay_direction']['label']['text'] = $this->txt['lp_tiny_slider']['autoplay_direction'];
-		$this->context['posting_fields']['autoplay_direction']['input'] = [
-			'type' => 'radio_select',
-			'attributes' => [
-				'id' => 'autoplay_direction'
-			],
-			'options' => []
-		];
+		CheckboxField::make('loop', $this->txt['lp_tiny_slider']['loop'])
+			->setValue($this->context['lp_block']['options']['parameters']['loop']);
 
-		$autoplay_directions = array_combine(['forward', 'backward'], $this->txt['lp_tiny_slider']['autoplay_direction_set']);
+		CheckboxField::make('rewind', $this->txt['lp_tiny_slider']['rewind'])
+			->setValue($this->context['lp_block']['options']['parameters']['rewind']);
 
-		foreach ($autoplay_directions as $key => $value) {
-			$this->context['posting_fields']['autoplay_direction']['input']['options'][$value] = [
-				'value'    => $key,
-				'selected' => $key == $this->context['lp_block']['options']['parameters']['autoplay_direction']
-			];
-		}
+		CheckboxField::make('lazyload', $this->txt['lp_tiny_slider']['lazyload'])
+			->setValue($this->context['lp_block']['options']['parameters']['lazyload']);
 
-		$this->context['posting_fields']['loop']['label']['text'] = $this->txt['lp_tiny_slider']['loop'];
-		$this->context['posting_fields']['loop']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'loop',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['loop']
-			]
-		];
-
-		$this->context['posting_fields']['rewind']['label']['text'] = $this->txt['lp_tiny_slider']['rewind'];
-		$this->context['posting_fields']['rewind']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'rewind',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['rewind']
-			]
-		];
-
-		$this->context['posting_fields']['lazyload']['label']['text'] = $this->txt['lp_tiny_slider']['lazyload'];
-		$this->context['posting_fields']['lazyload']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'lazyload',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['lazyload']
-			]
-		];
-
-		$this->context['posting_fields']['mouse_drag']['label']['text'] = $this->txt['lp_tiny_slider']['mouse_drag'];
-		$this->context['posting_fields']['mouse_drag']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'mouse_drag',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['mouse_drag']
-			]
-		];
-
-		$this->setTemplate();
-
-		$this->addInlineJavaScript('
-		function handleImages() {
-			return {
-				images: ' . ($this->context['lp_block']['options']['parameters']['images'] ?: '[]') . ',
-				addNewImage() {
-					this.images.push({
-						link: "",
-						title: ""
-					})
-				},
-				removeImage(index) {
-					this.images.splice(index, 1)
-				}
-			}
-		}');
-
-		$this->context['posting_fields']['images']['label']['html'] = $this->txt['lp_tiny_slider']['images'];
-		$this->context['posting_fields']['images']['input']['html'] = tiny_slider_images();
-		$this->context['posting_fields']['images']['input']['tab']  = 'content';
+		CheckboxField::make('mouse_drag', $this->txt['lp_tiny_slider']['mouse_drag'])
+			->setValue($this->context['lp_block']['options']['parameters']['mouse_drag']);
 	}
 
 	public function getData(int|string $block_id, array $parameters): array
@@ -324,7 +183,8 @@ class TinySlider extends Block
 		foreach ($images as $image) {
 			[$link, $title] = [$image['link'], $image['title']];
 
-			$html .= '
+			$html .= /** @lang text */
+				'
 			<div class="item">
 				<img ' . (empty($parameters['lazyload']) ? '' : 'class="tns-lazy-img" data-') . 'src="' . $link . '" alt="' . ($title ?: '') . '"' . (empty($parameters['fixed_width']) ? '' : (' width="' . $parameters['fixed_width'] . '"')) . '>';
 
@@ -359,7 +219,8 @@ class TinySlider extends Block
 		if ($parameters['controls']) {
 			$buttons = array_combine(['prev', 'next'], $this->txt['lp_tiny_slider']['controls_buttons']);
 
-			$html .= '
+			$html .= /** @lang text */
+				'
 			<ul id="tiny_slider_controls' . $block_id . '" class="controls customize-controls">
 				<li class="prev">
 					<span class="button"><i class="fas fa-arrow-left"></i> ' . $buttons['prev'] . '</span>
@@ -391,7 +252,7 @@ class TinySlider extends Block
 		$parameters['controls'] ??= false;
 		$parameters['nav_as_thumbnails'] ??= false;
 
-		$block_id = $this->request()->has('preview') ? uniqid() : $data->block_id;
+		$block_id = $data->block_id;
 
 		$tiny_slider_html = $this->cache('tiny_slider_addon_b' . $block_id . '_' . $this->user_info['language'])
 			->setLifeTime($data->cache_time)

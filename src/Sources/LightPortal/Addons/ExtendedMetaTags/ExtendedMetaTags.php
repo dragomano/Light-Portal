@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.03.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\ExtendedMetaTags;
 
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Areas\Fields\VirtualSelectField;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -30,12 +31,12 @@ class ExtendedMetaTags extends Plugin
 	private array $meta_robots = ['', 'index, follow', 'index, nofollow', 'noindex, follow', 'noindex, nofollow'];
 	private array $meta_rating = ['', '14 years', 'adult', 'general', 'mature', 'restricted', 'save for kids'];
 
-	public function init()
+	public function init(): void
 	{
 		$this->applyHook('theme_context');
 	}
 
-	public function themeContext()
+	public function themeContext(): void
 	{
 		if ($this->request()->hasNot('page') || empty($this->context['lp_page']['options']))
 			return;
@@ -49,13 +50,13 @@ class ExtendedMetaTags extends Plugin
 		}
 	}
 
-	public function pageOptions(array &$options)
+	public function pageOptions(array &$options): void
 	{
 		$options['meta_robots'] = '';
 		$options['meta_rating'] = '';
 	}
 
-	public function validatePageData(array &$parameters)
+	public function validatePageData(array &$parameters): void
 	{
 		$parameters += [
 			'meta_robots' => FILTER_DEFAULT,
@@ -63,54 +64,16 @@ class ExtendedMetaTags extends Plugin
 		];
 	}
 
-	public function preparePageFields()
+	public function preparePageFields(): void
 	{
-		// Meta robots
-		$this->context['posting_fields']['meta_robots']['label']['text'] = $this->txt['lp_extended_meta_tags']['meta_robots'];
-		$this->context['posting_fields']['meta_robots']['input'] = [
-			'type' => 'select',
-			'tab'  => 'seo'
-		];
+		VirtualSelectField::make('meta_robots', $this->txt['lp_extended_meta_tags']['meta_robots'])
+			->setTab('seo')
+			->setOptions(array_combine($this->meta_robots, $this->txt['lp_extended_meta_tags']['meta_robots_set']))
+			->setValue($this->context['lp_page']['options']['meta_robots']);
 
-		$robots_variants = array_combine($this->meta_robots, $this->txt['lp_extended_meta_tags']['meta_robots_set']);
-
-		foreach ($robots_variants as $value => $title) {
-			$this->context['posting_fields']['meta_robots']['input']['options'][$title] = [
-				'value'    => $value,
-				'selected' => $value == $this->context['lp_page']['options']['meta_robots']
-			];
-		}
-
-		$this->addInlineJavaScript('
-		VirtualSelect.init({
-			ele: "#meta_robots",
-			hideClearButton: true,' . ($this->context['right_to_left'] ? '
-			textDirection: "rtl",' : '') . '
-			dropboxWrapper: "body"
-		});', true);
-
-		// Meta rating
-		$this->context['posting_fields']['meta_rating']['label']['text'] = $this->txt['lp_extended_meta_tags']['meta_rating'];
-		$this->context['posting_fields']['meta_rating']['input'] = [
-			'type' => 'select',
-			'tab'  => 'seo'
-		];
-
-		$rating_variants = array_combine($this->meta_rating, $this->txt['lp_extended_meta_tags']['meta_rating_set']);
-
-		foreach ($rating_variants as $value => $title) {
-			$this->context['posting_fields']['meta_rating']['input']['options'][$title] = [
-				'value'    => $value,
-				'selected' => $value == $this->context['lp_page']['options']['meta_rating']
-			];
-		}
-
-		$this->addInlineJavaScript('
-		VirtualSelect.init({
-			ele: "#meta_rating",
-			hideClearButton: true,' . ($this->context['right_to_left'] ? '
-			textDirection: "rtl",' : '') . '
-			dropboxWrapper: "body"
-		});', true);
+		VirtualSelectField::make('meta_rating', $this->txt['lp_extended_meta_tags']['meta_rating'])
+			->setTab('seo')
+			->setOptions(array_combine($this->meta_rating, $this->txt['lp_extended_meta_tags']['meta_rating_set']))
+			->setValue($this->context['lp_page']['options']['meta_rating']);
 	}
 }

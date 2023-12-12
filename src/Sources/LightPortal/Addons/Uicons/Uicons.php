@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.03.23
+ * @version 09.12.23
  */
 
 namespace Bugo\LightPortal\Addons\Uicons;
@@ -29,20 +29,12 @@ class Uicons extends Plugin
 
 	private string $prefix = 'fi fi-';
 
-	public function init()
+	public function preloadStyles(array &$styles): void
 	{
-		$this->applyHook('pre_css_output');
+		$styles[] = 'https://cdn.jsdelivr.net/npm/@flaticon/flaticon-uicons@1/css/all/all.css';
 	}
 
-	public function preCssOutput()
-	{
-		if (SMF === 'BACKGROUND')
-			return;
-
-		echo "\n\t" . '<link rel="preload" href="https://cdn.jsdelivr.net/npm/@flaticon/flaticon-uicons@1/css/all/all.css" as="style" onload="this.onload=null;this.rel=\'stylesheet\'">';
-	}
-
-	public function addSettings(array &$config_vars)
+	public function addSettings(array &$config_vars): void
 	{
 		$this->addDefaultValues([
 			'weight' => 'r',
@@ -53,7 +45,7 @@ class Uicons extends Plugin
 		$config_vars['uicons'][] = ['select', 'corner', array_combine(['r', 's'], $this->txt['lp_uicons']['corner_set'])];
 	}
 
-	public function prepareIconList(array &$all_icons)
+	public function prepareIconList(array &$all_icons): void
 	{
 		if (($icons = $this->cache()->get('all_uicons', 30 * 24 * 60 * 60)) === null) {
 			$weight = empty($this->context['lp_uicons_plugin']['weight']) ? 'r' : $this->context['lp_uicons_plugin']['weight'];
@@ -72,7 +64,7 @@ class Uicons extends Plugin
 		$all_icons = array_merge($all_icons, $icons);
 	}
 
-	public function credits(array &$links)
+	public function credits(array &$links): void
 	{
 		$links[] = [
 			'title' => 'Uicons',

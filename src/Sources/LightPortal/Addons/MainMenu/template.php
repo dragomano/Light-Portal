@@ -1,8 +1,8 @@
 <?php
 
-function callback_main_menu_table()
+function callback_main_menu_table(): void
 {
-	global $txt, $scripturl, $context;
+	global $txt, $context;
 
 	echo '
 	<table class="table_grid centertext">

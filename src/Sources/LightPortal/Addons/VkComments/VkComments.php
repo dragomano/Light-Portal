@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.11.22
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\VkComments;
@@ -24,12 +24,12 @@ class VkComments extends Plugin
 {
 	public string $type = 'comment';
 
-	public function init()
+	public function init(): void
 	{
 		$this->txt['lp_show_comment_block_set']['vk'] = 'VKontakte';
 	}
 
-	public function addSettings(array &$config_vars)
+	public function addSettings(array &$config_vars): void
 	{
 		$this->addDefaultValues([
 			'comments_per_page' => 10,
@@ -41,14 +41,15 @@ class VkComments extends Plugin
 		$config_vars['vk_comments'][] = ['check', 'auto_publish'];
 	}
 
-	public function comments()
+	public function comments(): void
 	{
 		if (! empty($this->modSettings['lp_show_comment_block']) && $this->modSettings['lp_show_comment_block'] === 'vk' && ! empty($this->context['lp_vk_comments_plugin']['api_id'])) {
 			$num_comments      = $this->context['lp_vk_comments_plugin']['comments_per_page'] ?? 10;
 			$allow_attachments = $this->context['lp_vk_comments_plugin']['allow_attachments'] ?? true;
 			$auto_publish      = $this->context['lp_vk_comments_plugin']['auto_publish'] ?? false;
 
-			$this->context['lp_vk_comment_block'] = '
+			$this->context['lp_vk_comment_block'] = /** @lang text */
+				'
 				<script src="https://vk.com/js/api/openapi.js?167"></script>
 				<script>
 					VK.init({

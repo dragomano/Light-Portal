@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 09.05.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\HidingBlocks;
 
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Areas\Fields\CustomField;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -26,7 +27,7 @@ class HidingBlocks extends Plugin
 
 	private array $classes = ['xs', 'sm', 'md', 'lg', 'xl'];
 
-	public function init()
+	public function init(): void
 	{
 		foreach ($this->context['lp_active_blocks'] as $id => $block) {
 			if (empty($block['parameters']) || empty($block['parameters']['hidden_breakpoints']))
@@ -44,20 +45,20 @@ class HidingBlocks extends Plugin
 		}
 	}
 
-	public function blockOptions(array &$options)
+	public function blockOptions(array &$options): void
 	{
 		$options[$this->context['current_block']['type']]['parameters']['hidden_breakpoints'] = [];
 	}
 
-	public function validateBlockData(array &$parameters)
+	public function validateBlockData(array &$parameters): void
 	{
 		$parameters['hidden_breakpoints'] = FILTER_DEFAULT;
 	}
 
-	public function prepareBlockFields()
+	public function prepareBlockFields(): void
 	{
-		$this->context['posting_fields']['hidden_breakpoints']['label']['html'] = $this->txt['lp_hiding_blocks']['hidden_breakpoints'];
-		$this->context['posting_fields']['hidden_breakpoints']['input']['html'] = (new BreakpointSelect)();
-		$this->context['posting_fields']['hidden_breakpoints']['input']['tab']  = 'access_placement';
+		CustomField::make('hidden_breakpoints', $this->txt['lp_hiding_blocks']['hidden_breakpoints'])
+			->setTab('access_placement')
+			->setValue(fn() => new BreakpointSelect);
 	}
 }

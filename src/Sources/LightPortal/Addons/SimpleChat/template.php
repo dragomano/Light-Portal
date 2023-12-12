@@ -9,7 +9,7 @@ function show_chat_block(int $block_id, bool $show_avatars, bool $full_width): v
 		const chat', $block_id, ' = new SimpleChat("', LP_ACTION, '", ', ($context['lp_chats'][$block_id] ?: '[]'), ');
 	</script>
 
-	<div x-data="chat', $block_id, '.handleComments()">
+	<div x-data="chat', $block_id, /** @lang text */ '.handleComments()">
 		<ul class="moderation_notes">
 			<template x-for="(comment, index) in comments" :key="index">
 				<li class="smalltext">

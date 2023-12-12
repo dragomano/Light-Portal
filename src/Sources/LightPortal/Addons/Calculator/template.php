@@ -1,9 +1,9 @@
 <?php
 
-function show_calculator_block(int $block_id): void
+function show_calculator_block(int $block_id): string
 {
-	echo '
-	<div id="calc', $block_id, '" class="calculator">
+	return /** @lang text */ '
+	<div id="calc' . $block_id . '" class="calculator">
 		<div class="calculator__display">0</div>
 		<div class="calculator__keys">
 			<button class="button active key--operator" data-action="add">+</button>
@@ -25,5 +25,5 @@ function show_calculator_block(int $block_id): void
 			<button class="button active key--equal" data-action="calculate">=</button>
 		</div>
 	</div>
-	<script>new Calc(', $block_id, ')</script>';
+	<script>new Calc(' . $block_id . ')</script>';
 }

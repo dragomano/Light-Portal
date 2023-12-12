@@ -10,12 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.11.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\SimpleFeeder;
 
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\Fields\CheckboxField;
+use Bugo\LightPortal\Areas\Fields\TextField;
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -47,28 +49,18 @@ class SimpleFeeder extends Block
 		if ($this->context['lp_block']['type'] !== 'simple_feeder')
 			return;
 
-		$this->context['posting_fields']['url']['label']['text'] = $this->txt['lp_simple_feeder']['url'];
-		$this->context['posting_fields']['url']['input'] = [
-			'type' => 'url',
-			'attributes' => [
-				'maxlength'   => 255,
-				'value'       => $this->context['lp_block']['options']['parameters']['url'],
-				'placeholder' => $this->scripturl . '?action=.xml;type=rss2',
-				'required'    => true,
-				'style'       => 'width: 100%'
-			],
-			'tab' => 'content'
-		];
+		TextField::make('url', $this->txt['lp_simple_feeder']['url'])
+			->setType('url')
+			->setTab('content')
+			->setAttribute('maxlength', 255)
+			->setAttribute('placeholder', $this->scripturl . '?action=.xml;type=rss2')
+			->setAttribute('required', true)
+			->setAttribute('style', 'width: 100%')
+			->setValue($this->context['lp_block']['options']['parameters']['url']);
 
-		$this->context['posting_fields']['show_text']['label']['text'] = $this->txt['lp_simple_feeder']['show_text'];
-		$this->context['posting_fields']['show_text']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'show_text',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_text']
-			],
-			'tab' => 'content'
-		];
+		CheckboxField::make('show_text', $this->txt['lp_simple_feeder']['show_text'])
+			->setTab('content')
+			->setValue($this->context['lp_block']['options']['parameters']['show_text']);
 	}
 
 	public function getData(string $url): array
@@ -103,7 +95,7 @@ class SimpleFeeder extends Block
 			$feed = $feed['data'];
 
 		foreach ($feed as $item) {
-			echo '
+			echo /** @lang text */ '
 		<div class="windowbg">
 			<div class="block">
 				<span class="floatleft half_content">

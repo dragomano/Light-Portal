@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.09.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\News;
 
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\Fields\SelectField;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -44,16 +45,6 @@ class News extends Block
 		if ($this->context['lp_block']['type'] !== 'news')
 			return;
 
-		$this->context['posting_fields']['selected_item']['label']['text'] = $this->txt['lp_news']['selected_item'];
-		$this->context['posting_fields']['selected_item']['input'] = [
-			'type' => 'select',
-			'attributes' => [
-				'id' => 'selected_item'
-			],
-			'options' => [],
-			'tab' => 'content'
-		];
-
 		$this->getData();
 
 		$news = [$this->txt['lp_news']['random_news']];
@@ -62,12 +53,10 @@ class News extends Block
 			$news = $this->context['news_lines'];
 		}
 
-		foreach ($news as $key => $value) {
-			$this->context['posting_fields']['selected_item']['input']['options'][$value] = [
-				'value'    => $key,
-				'selected' => $key == $this->context['lp_block']['options']['parameters']['selected_item']
-			];
-		}
+		SelectField::make('selected_item', $this->txt['lp_news']['selected_item'])
+			->setTab('content')
+			->setOptions($news)
+			->setValue($this->context['lp_block']['options']['parameters']['selected_item']);
 	}
 
 	public function getData(int $item = 0): string

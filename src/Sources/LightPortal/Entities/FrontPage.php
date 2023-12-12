@@ -9,25 +9,25 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.3
+ * @version 2.4
  */
 
 namespace Bugo\LightPortal\Entities;
 
-use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Front\{
 	ArticleInterface,
 	BoardArticle,
-	PageArticle,
-	TopicArticle,
 	ChosenPageArticle,
 	ChosenTopicArticle,
+	PageArticle,
+	TopicArticle,
 };
+use Bugo\LightPortal\Helper;
+use Exception;
 use IntlException;
 use Latte\Engine;
-use Latte\Loaders\FileLoader;
 use Latte\Essential\RawPhpExtension;
-use Exception;
+use Latte\Loaders\FileLoader;
 use Latte\RuntimeException;
 
 final class FrontPage
@@ -71,6 +71,9 @@ final class FrontPage
 		return false;
 	}
 
+	/**
+	 * @throws IntlException
+	 */
 	public function prepare(ArticleInterface $article): void
 	{
 		$start = (int) $this->request('start');
@@ -251,6 +254,7 @@ final class FrontPage
 	 * Post processing for articles
 	 *
 	 * Заключительная обработка статей
+	 * @throws IntlException
 	 */
 	private function postProcess(ArticleInterface $article, array $articles): array
 	{

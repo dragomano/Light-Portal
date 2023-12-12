@@ -9,7 +9,7 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.3
+ * @version 2.4
  */
 
 namespace Bugo\LightPortal\Areas\Config;
@@ -35,20 +35,14 @@ final class PanelConfig
 		$this->context['page_title'] = $this->context['settings_title'] = $this->txt['lp_panels'];
 		$this->context['post_url']   = $this->scripturl . '?action=admin;area=lp_settings;sa=panels;save';
 
-		$addSettings = [];
-		if (! isset($this->modSettings['lp_header_panel_width']))
-			$addSettings['lp_header_panel_width'] = 12;
-		if (! isset($this->modSettings['lp_left_panel_width']))
-			$addSettings['lp_left_panel_width'] = json_encode($this->context['lp_left_panel_width']);
-		if (! isset($this->modSettings['lp_right_panel_width']))
-			$addSettings['lp_right_panel_width'] = json_encode($this->context['lp_right_panel_width']);
-		if (! isset($this->modSettings['lp_footer_panel_width']))
-			$addSettings['lp_footer_panel_width'] = 12;
-		if (! isset($this->modSettings['lp_left_panel_sticky']))
-			$addSettings['lp_left_panel_sticky'] = 1;
-		if (! isset($this->modSettings['lp_right_panel_sticky']))
-			$addSettings['lp_right_panel_sticky'] = 1;
-		$this->updateSettings($addSettings);
+		$this->addDefaultValues([
+			'lp_header_panel_width' => 12,
+			'lp_left_panel_width'   => json_encode($this->context['lp_left_panel_width']),
+			'lp_right_panel_width'  => json_encode($this->context['lp_right_panel_width']),
+			'lp_footer_panel_width' => 12,
+			'lp_left_panel_sticky'  => 1,
+			'lp_right_panel_sticky' => 1,
+		]);
 
 		$this->context['lp_left_right_width_values']    = [2, 3, 4];
 		$this->context['lp_header_footer_width_values'] = [6, 8, 10, 12];

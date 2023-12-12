@@ -10,12 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.09.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\Translator;
 
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\Fields\CheckboxField;
+use Bugo\LightPortal\Areas\Fields\RadioField;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -50,54 +52,19 @@ class Translator extends Block
 		if ($this->context['lp_block']['type'] !== 'translator')
 			return;
 
-		$this->context['posting_fields']['engine']['label']['text'] = $this->txt['lp_translator']['engine'];
-		$this->context['posting_fields']['engine']['input'] = [
-			'type' => 'radio_select',
-			'attributes' => [
-				'id' => 'engine'
-			],
-			'options' => []
-		];
+		RadioField::make('engine', $this->txt['lp_translator']['engine'])
+			->setOptions(array_combine(['google', 'yandex'], $this->txt['lp_translator']['engine_set']))
+			->setValue($this->context['lp_block']['options']['parameters']['engine']);
 
-		$engines = array_combine(['google', 'yandex'], $this->txt['lp_translator']['engine_set']);
-
-		foreach ($engines as $key => $value) {
-			$this->context['posting_fields']['engine']['input']['options'][$value] = [
-				'value'    => $key,
-				'selected' => $key == $this->context['lp_block']['options']['parameters']['engine']
-			];
-		}
-
-		if ($this->context['lp_block']['options']['parameters']['engine'] == 'google')
+		if ($this->context['lp_block']['options']['parameters']['engine'] === 'google')
 			return;
 
-		$this->context['posting_fields']['widget_theme']['label']['text'] = $this->txt['lp_translator']['widget_theme'];
-		$this->context['posting_fields']['widget_theme']['input'] = [
-			'type' => 'select',
-			'attributes' => [
-				'id' => 'widget_theme'
-			]
-		];
+		RadioField::make('widget_theme', $this->txt['lp_translator']['widget_theme'])
+			->setOptions(array_combine(['light', 'dark'], $this->txt['lp_translator']['widget_theme_set']))
+			->setValue($this->context['lp_block']['options']['parameters']['widget_theme']);
 
-		$this->context['posting_fields']['widget_theme']['input']['options'] = [
-			'light' => [
-				'value'    => 'light',
-				'selected' => 'light' == $this->context['lp_block']['options']['parameters']['widget_theme']
-			],
-			'dark' => [
-				'value'    => 'dark',
-				'selected' => 'dark' == $this->context['lp_block']['options']['parameters']['widget_theme']
-			]
-		];
-
-		$this->context['posting_fields']['auto_mode']['label']['text'] = $this->txt['lp_translator']['auto_mode'];
-		$this->context['posting_fields']['auto_mode']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'auto_mode',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['auto_mode']
-			]
-		];
+		CheckboxField::make('auto_mode', $this->txt['lp_translator']['auto_mode'])
+			->setValue($this->context['lp_block']['options']['parameters']['auto_mode']);
 	}
 
 	public function prepareContent($data, array $parameters): void
@@ -109,18 +76,18 @@ class Translator extends Block
 
 		if ($parameters['engine'] === 'yandex') {
 			echo '
-		<div id="ytWidget', $data->block_id, '" class="centertext noup"></div>
+		<div id="ytWidget', $data->block_id, /** @lang text */ '" class="centertext noup"></div>
 		<script src="https://translate.yandex.net/website-widget/v1/widget.js?widgetId=ytWidget', $data->block_id, '&amp;pageLang=', substr($this->language, 0, 2), '&amp;widgetTheme=', $parameters['widget_theme'], '&amp;autoMode=', (bool) $parameters['auto_mode'], '"></script>';
 		} else {
-			echo '
+			echo /** @lang text */ '
 		<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 		<div class="centertext noup">
-			<div id="google_translate_element', $data->block_id, '"></div>
+			<div id="google_translate_element', $data->block_id, /** @lang text */ '"></div>
 			<script>
 				function googleTranslateElementInit() {
 					new google.translate.TranslateElement({
 						pageLanguage: "', substr($this->language, 0, 2), '"
-					}, "google_translate_element', $data->block_id, '");
+					}, "google_translate_element', $data->block_id, /** @lang text */ '");
 				}
 			</script>
 		</div>';

@@ -9,10 +9,12 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.3
+ * @version 2.4
  */
 
 namespace Bugo\LightPortal\Areas;
+
+use Bugo\LightPortal\Areas\Fields\CustomField;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -56,17 +58,15 @@ trait Area
 
 		$languages = empty($this->modSettings['userLanguage']) ? [$this->language] : array_unique([$this->context['user']['language'], $this->language]);
 
-		$this->context['posting_fields']['title']['label']['html'] = $this->txt['lp_title'];
-		$this->context['posting_fields']['title']['input']['tab']  = 'content';
-		$this->context['posting_fields']['title']['input']['html'] = '
+		$value = '
 			<div>';
 
 		if (count($this->context['languages']) > 1) {
-			$this->context['posting_fields']['title']['input']['html'] .= '
+			$value .= '
 				<nav' . ($this->context['right_to_left'] ? '' : ' class="floatleft"') . '>';
 
 			foreach ($this->context['languages'] as $lang) {
-				$this->context['posting_fields']['title']['input']['html'] .= '
+				$value .= '
 					<a
 						class="button floatnone"
 						:class="{ \'active\': tab === \'' . $lang['filename'] . '\' }"
@@ -74,12 +74,12 @@ trait Area
 					>' . $lang['name'] . '</a>';
 			}
 
-			$this->context['posting_fields']['title']['input']['html'] .= '
+			$value .= '
 				</nav>';
 		}
 
 		foreach ($this->context['languages'] as $lang) {
-			$this->context['posting_fields']['title']['input']['html'] .= '
+			$value .= '
 				<div x-show="tab === \'' . $lang['filename'] . '\'">
 					<input
 						type="text"
@@ -91,14 +91,18 @@ trait Area
 				</div>';
 		}
 
-		$this->context['posting_fields']['title']['input']['html'] .= '
+		$value .= '
 			</div>';
+
+		CustomField::make('title', $this->txt['lp_title'])
+			->setTab('content')
+			->setValue($value);
 	}
 
 	public function preparePostFields(): void
 	{
 		foreach ($this->context['posting_fields'] as $item => $data) {
-			if (isset($data['input']['after'])) {
+			if (! empty($data['input']['after'])) {
 				$tag = 'div';
 
 				if (isset($data['input']['type']) && in_array($data['input']['type'], ['checkbox', 'number']))

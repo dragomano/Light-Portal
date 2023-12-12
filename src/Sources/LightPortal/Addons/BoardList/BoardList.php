@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.09.23
+ * @version 07.12.23
  */
 
 namespace Bugo\LightPortal\Addons\BoardList;
 
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Partials\{ContentClassSelect, TitleClassSelect};
+use Bugo\LightPortal\Areas\Fields\CustomField;
+use Bugo\LightPortal\Areas\Partials\{ContentClassSelect, TitleClassSelect};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -49,20 +50,20 @@ class BoardList extends Block
 		if ($this->context['lp_block']['type'] !== 'board_list')
 			return;
 
-		$this->context['posting_fields']['category_class']['label']['html'] = $this->txt['lp_board_list']['category_class'];
-		$this->context['posting_fields']['category_class']['input']['tab']  = 'appearance';
-		$this->context['posting_fields']['category_class']['input']['html'] = (new TitleClassSelect)([
-			'id'    => 'category_class',
-			'data'  => $this->getCategoryClasses(),
-			'value' => $this->context['lp_block']['options']['parameters']['category_class']
-		]);
+		CustomField::make('category_class', $this->txt['lp_board_list']['category_class'])
+			->setTab('appearance')
+			->setValue(fn() => new TitleClassSelect, [
+				'id'    => 'category_class',
+				'data'  => $this->getCategoryClasses(),
+				'value' => $this->context['lp_block']['options']['parameters']['category_class']
+			]);
 
-		$this->context['posting_fields']['board_class']['label']['html'] = $this->txt['lp_board_list']['board_class'];
-		$this->context['posting_fields']['board_class']['input']['tab']  = 'appearance';
-		$this->context['posting_fields']['board_class']['input']['html'] = (new ContentClassSelect)([
-			'id'    => 'board_class',
-			'value' => $this->context['lp_block']['options']['parameters']['board_class'],
-		]);
+		CustomField::make('board_class', $this->txt['lp_board_list']['board_class'])
+			->setTab('appearance')
+			->setValue(fn() => new ContentClassSelect, [
+				'id'    => 'board_class',
+				'value' => $this->context['lp_block']['options']['parameters']['board_class'],
+			]);
 	}
 
 	public function getData(): array

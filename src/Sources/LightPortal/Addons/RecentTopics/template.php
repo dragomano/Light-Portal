@@ -1,6 +1,6 @@
 <?php
 
-function show_topics(array $recent_topics, array $parameters, bool $full_width)
+function show_topics(array $recent_topics, array $parameters, bool $full_width): void
 {
 	global $scripturl, $txt, $context;
 

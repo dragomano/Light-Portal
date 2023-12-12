@@ -9,7 +9,7 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.3
+ * @version 2.4
  */
 
 namespace Bugo\LightPortal\Front;
@@ -29,7 +29,7 @@ abstract class AbstractArticle implements ArticleInterface
 	protected array $params  = [];
 	protected array $orders  = [];
 
-	abstract public function init();
+	abstract public function init(): void;
 
 	abstract public function getData(int $start, int $limit): array;
 

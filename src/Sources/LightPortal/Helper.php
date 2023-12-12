@@ -9,28 +9,14 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.3
+ * @version 2.4
  */
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Lists\{
-	CategoryList,
-	IconList,
-	PageList,
-	TagList,
-	TitleList
-};
+use Bugo\LightPortal\Lists\{CategoryList, IconList, PageList, TagList, TitleList};
 use Bugo\LightPortal\Tasks\Notifier;
-use Bugo\LightPortal\Utils\{
-	File,
-	IntlTrait,
-	Post,
-	Request,
-	Session,
-	SMFCache,
-	SMFTrait,
-};
+use Bugo\LightPortal\Utils\{File, IntlTrait, Post, Request, Session, SMFCache, SMFTrait};
 use Exception;
 
 if (! defined('SMF'))
@@ -333,5 +319,20 @@ trait Helper
 				&& isset($this->user_profile[$this->user_info['id']]['options']['cust_gender'])
 				&& $this->user_profile[$this->user_info['id']]['options']['cust_gender'] === '{gender_2}' ? 'female' : 'male'
 		);
+	}
+
+	public function addDefaultValues(array $values): void
+	{
+		$addSettings = [];
+
+		foreach ($values as $key => $value) {
+			if (empty($value)) continue;
+
+			if (! isset($this->modSettings[$key])) {
+				$addSettings[$key] = $value;
+			}
+		}
+
+		$this->updateSettings($addSettings);
 	}
 }

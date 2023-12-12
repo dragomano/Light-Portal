@@ -9,7 +9,7 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.3
+ * @version 2.4
  */
 
 namespace Bugo\LightPortal\Front;
@@ -21,7 +21,7 @@ class BoardArticle extends AbstractArticle
 {
 	private array $selected_boards = [];
 
-	public function init()
+	public function init(): void
 	{
 		$this->selected_boards = empty($this->modSettings['lp_frontpage_boards']) ? [] : explode(',', $this->modSettings['lp_frontpage_boards']);
 
@@ -38,7 +38,7 @@ class BoardArticle extends AbstractArticle
 			'last_updated DESC'
 		];
 
-		$this->hook('frontBoards', [&$this->columns, &$this->tables, &$this->wheres, &$this->params, &$this->orders]);
+		$this->hook('frontBoards', [&$this->columns, &$this->tables, &$this->params, &$this->wheres, &$this->orders]);
 	}
 
 	public function getData(int $start, int $limit): array

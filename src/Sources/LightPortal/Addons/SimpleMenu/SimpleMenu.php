@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.11.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\SimpleMenu;
 
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Areas\Fields\CustomField;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -62,27 +63,9 @@ class SimpleMenu extends Plugin
 		if ($this->context['lp_block']['type'] !== 'simple_menu')
 			return;
 
-		$this->setTemplate();
-
-		$this->addInlineJavaScript('
-		function handleItems() {
-			return {
-				items: ' . ($this->context['lp_block']['options']['parameters']['items'] ?: '[]') . ',
-				addNewItem() {
-					this.items.push({
-						name: "",
-						link: ""
-					})
-				},
-				removeItem(index) {
-					this.items.splice(index, 1)
-				}
-			}
-		}');
-
-		$this->context['posting_fields']['items']['label']['html'] = $this->txt['lp_simple_menu']['items'];
-		$this->context['posting_fields']['items']['input']['html'] = simple_menu_items();
-		$this->context['posting_fields']['items']['input']['tab']  = 'content';
+		CustomField::make('items', $this->txt['lp_simple_menu']['items'])
+			->setTab('content')
+			->setValue($this->getFromTemplate('simple_menu_items'));
 	}
 
 	public function getData(string $items): array

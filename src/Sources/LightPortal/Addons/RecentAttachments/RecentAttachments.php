@@ -10,12 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.09.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\RecentAttachments;
 
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\Fields\NumberField;
+use Bugo\LightPortal\Areas\Fields\TextField;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -48,27 +50,15 @@ class RecentAttachments extends Block
 		if ($this->context['lp_block']['type'] !== 'recent_attachments')
 			return;
 
-		$this->context['posting_fields']['num_attachments']['label']['text'] = $this->txt['lp_recent_attachments']['num_attachments'];
-		$this->context['posting_fields']['num_attachments']['input'] = [
-			'type' => 'number',
-			'attributes' => [
-				'id' => 'num_attachments',
-				'min' => 1,
-				'value' => $this->context['lp_block']['options']['parameters']['num_attachments']
-			]
-		];
+		NumberField::make('num_attachments', $this->txt['lp_recent_attachments']['num_attachments'])
+			->setAttribute('min', 1)
+			->setValue($this->context['lp_block']['options']['parameters']['num_attachments']);
 
-		$this->context['posting_fields']['extensions']['label']['text']  = $this->txt['lp_recent_attachments']['extensions'];
-		$this->context['posting_fields']['extensions']['input'] = [
-			'type' => 'text',
-			'after' => $this->txt['lp_recent_attachments']['extensions_subtext'],
-			'attributes' => [
-				'id'        => 'extensions',
-				'maxlength' => 30,
-				'value'     => $this->context['lp_block']['options']['parameters']['extensions'],
-				'style'     => 'width: 100%'
-			]
-		];
+		TextField::make('extensions', $this->txt['lp_recent_attachments']['extensions'])
+			->setAfter($this->txt['lp_recent_attachments']['extensions_subtext'])
+			->setAttribute('maxlength', 30)
+			->setAttribute('style', 'width: 100%')
+			->setValue($this->context['lp_block']['options']['parameters']['extensions']);
 	}
 
 	public function getData(array $parameters): array

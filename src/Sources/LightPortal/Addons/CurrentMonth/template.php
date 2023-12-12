@@ -3,7 +3,7 @@
 if (function_exists('show_current_month_grid'))
 	return;
 
-function show_current_month_grid(array $data)
+function show_current_month_grid(array $data): void
 {
 	global $txt, $modSettings, $scripturl;
 

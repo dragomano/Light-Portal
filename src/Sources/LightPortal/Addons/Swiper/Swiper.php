@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.11.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\Swiper;
 
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, NumberField, RadioField, SelectField};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -79,108 +80,32 @@ class Swiper extends Block
 		if ($this->context['lp_block']['type'] !== 'swiper')
 			return;
 
-		$this->context['posting_fields']['direction']['label']['text'] = $this->txt['lp_swiper']['direction'];
-		$this->context['posting_fields']['direction']['input'] = [
-			'type' => 'radio_select',
-			'attributes' => [
-				'id' => 'direction'
-			],
-			'options' => []
-		];
+		CustomField::make('images', $this->txt['lp_swiper']['images'])
+			->setTab('content')
+			->setValue($this->getFromTemplate('swiper_images'));
 
-		$directions = array_combine(['vertical', 'horizontal'], $this->txt['lp_panel_direction_set']);
+		RadioField::make('direction', $this->txt['lp_swiper']['direction'])
+			->setOptions(array_combine(['vertical', 'horizontal'], $this->txt['lp_panel_direction_set']))
+			->setValue($this->context['lp_block']['options']['parameters']['direction']);
 
-		foreach ($directions as $key => $value) {
-			$this->context['posting_fields']['direction']['input']['options'][$value] = [
-				'value'    => $key,
-				'selected' => $key == $this->context['lp_block']['options']['parameters']['direction']
-			];
-		}
+		SelectField::make('effect', $this->txt['lp_swiper']['effect'])
+			->setOptions(array_combine($this->effects, $this->effects))
+			->setValue($this->context['lp_block']['options']['parameters']['effect']);
 
-		$this->context['posting_fields']['effect']['label']['text'] = $this->txt['lp_swiper']['effect'];
-		$this->context['posting_fields']['effect']['input'] = [
-			'type' => 'select',
-			'attributes' => [
-				'id'      => 'effect',
-			],
-			'options' => [],
-		];
+		NumberField::make('slides_per_view', $this->txt['lp_swiper']['slides_per_view'])
+			->setValue($this->context['lp_block']['options']['parameters']['slides_per_view']);
 
-		$effects = array_combine($this->effects, $this->effects);
+		CheckboxField::make('loop', $this->txt['lp_swiper']['loop'])
+			->setValue($this->context['lp_block']['options']['parameters']['loop']);
 
-		foreach ($effects as $value => $title) {
-			$this->context['posting_fields']['effect']['input']['options'][$title] = [
-				'value'    => $value,
-				'selected' => $value == $this->context['lp_block']['options']['parameters']['effect']
-			];
-		}
+		CheckboxField::make('show_pagination', $this->txt['lp_swiper']['show_pagination'])
+			->setValue($this->context['lp_block']['options']['parameters']['show_pagination']);
 
-		$this->context['posting_fields']['slides_per_view']['label']['text'] = $this->txt['lp_swiper']['slides_per_view'];
-		$this->context['posting_fields']['slides_per_view']['input'] = [
-			'type' => 'number',
-			'attributes' => [
-				'id'    => 'slides_per_view',
-				'value' => $this->context['lp_block']['options']['parameters']['slides_per_view']
-			]
-		];
+		CheckboxField::make('show_navigation', $this->txt['lp_swiper']['show_navigation'])
+			->setValue($this->context['lp_block']['options']['parameters']['show_navigation']);
 
-		$this->context['posting_fields']['loop']['label']['text'] = $this->txt['lp_swiper']['loop'];
-		$this->context['posting_fields']['loop']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'loop',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['loop']
-			]
-		];
-
-		$this->context['posting_fields']['show_pagination']['label']['text'] = $this->txt['lp_swiper']['show_pagination'];
-		$this->context['posting_fields']['show_pagination']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'show_pagination',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_pagination']
-			]
-		];
-
-		$this->context['posting_fields']['show_navigation']['label']['text'] = $this->txt['lp_swiper']['show_navigation'];
-		$this->context['posting_fields']['show_navigation']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'show_navigation',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_navigation']
-			]
-		];
-
-		$this->context['posting_fields']['show_scrollbar']['label']['text'] = $this->txt['lp_swiper']['show_scrollbar'];
-		$this->context['posting_fields']['show_scrollbar']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'show_scrollbar',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['show_scrollbar']
-			]
-		];
-
-		$this->setTemplate();
-
-		$this->addInlineJavaScript('
-		function handleImages() {
-			return {
-				images: ' . ($this->context['lp_block']['options']['parameters']['images'] ?: '[]') . ',
-				addNewImage() {
-					this.images.push({
-						link: "",
-						title: ""
-					})
-				},
-				removeImage(index) {
-					this.images.splice(index, 1)
-				}
-			}
-		}');
-
-		$this->context['posting_fields']['images']['label']['html'] = $this->txt['lp_swiper']['images'];
-		$this->context['posting_fields']['images']['input']['html'] = swiper_images();
-		$this->context['posting_fields']['images']['input']['tab']  = 'content';
+		CheckboxField::make('show_scrollbar', $this->txt['lp_swiper']['show_scrollbar'])
+			->setValue($this->context['lp_block']['options']['parameters']['show_scrollbar']);
 	}
 
 	public function getData(int|string $block_id, array $parameters): array
@@ -237,7 +162,7 @@ class Swiper extends Block
 		if ($data->type !== 'swiper')
 			return;
 
-		$block_id = $this->request()->has('preview') ? uniqid() : $data->block_id;
+		$block_id = $data->block_id;
 
 		$swiper_html = $this->cache('swiper_addon_b' . $block_id . '_' . $this->user_info['language'])
 			->setLifeTime($data->cache_time)

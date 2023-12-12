@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.09.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\TagList;
 
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\Fields\RadioField;
 use Bugo\LightPortal\Entities\Tag;
 
 if (! defined('LP_NAME'))
@@ -50,39 +51,15 @@ class TagList extends Block
 		if (! class_exists('\Bugo\Optimus\Keywords'))
 			unset($sources['keywords']);
 
-		$this->context['posting_fields']['source']['label']['text'] = $this->txt['lp_tag_list']['source'];
-		$this->context['posting_fields']['source']['input'] = [
-			'type' => 'radio_select',
-			'attributes' => [
-				'id' => 'source'
-			],
-			'options' => [],
-			'tab' => 'content'
-		];
+		RadioField::make('source', $this->txt['lp_tag_list']['source'])
+			->setTab('content')
+			->setOptions($sources)
+			->setValue($this->context['lp_block']['options']['parameters']['source']);
 
-		foreach ($sources as $key => $value) {
-			$this->context['posting_fields']['source']['input']['options'][$value] = [
-				'value'    => $key,
-				'selected' => $key == $this->context['lp_block']['options']['parameters']['source']
-			];
-		}
-
-		$this->context['posting_fields']['sorting']['label']['text'] = $this->txt['lp_tag_list']['sorting'];
-		$this->context['posting_fields']['sorting']['input'] = [
-			'type' => 'radio_select',
-			'attributes' => [
-				'id' => 'sorting'
-			],
-			'options' => []
-		];
-
-		$sortingSet = array_combine(['name', 'frequency'], $this->txt['lp_tag_list']['sorting_set']);
-		foreach ($sortingSet as $key => $value) {
-			$this->context['posting_fields']['sorting']['input']['options'][$value] = [
-				'value'    => $key,
-				'selected' => $key == $this->context['lp_block']['options']['parameters']['sorting']
-			];
-		}
+		RadioField::make('sorting', $this->txt['lp_tag_list']['sorting'])
+			->setTab('content')
+			->setOptions(array_combine(['name', 'frequency'], $this->txt['lp_tag_list']['sorting_set']))
+			->setValue($this->context['lp_block']['options']['parameters']['sorting']);
 	}
 
 	public function getAllTopicKeywords(string $sort = 'ok.name'): array

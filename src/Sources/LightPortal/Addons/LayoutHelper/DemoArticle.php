@@ -17,14 +17,18 @@ namespace Bugo\LightPortal\Addons\LayoutHelper;
 
 use Bugo\LightPortal\Front\AbstractArticle;
 use DateTime;
+use Exception;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 class DemoArticle extends AbstractArticle
 {
-	public function init() {}
+	public function init(): void {}
 
+	/**
+	 * @throws Exception
+	 */
 	public function getData(int $start, int $limit): array
 	{
 		$products = $this->cache('layout_helper_addon_demo_products')

@@ -10,13 +10,18 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.09.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\RecentTopics;
 
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Partials\BoardSelect;
+use Bugo\LightPortal\Areas\Fields\CheckboxField;
+use Bugo\LightPortal\Areas\Fields\CustomField;
+use Bugo\LightPortal\Areas\Fields\NumberField;
+use Bugo\LightPortal\Areas\Fields\RadioField;
+use Bugo\LightPortal\Areas\Partials\BoardSelect;
+use IntlException;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -63,92 +68,51 @@ class RecentTopics extends Block
 		if ($this->context['lp_block']['type'] !== 'recent_topics')
 			return;
 
-		$this->context['posting_fields']['use_simple_style']['label']['text'] = $this->txt['lp_recent_topics']['use_simple_style'];
-		$this->context['posting_fields']['use_simple_style']['input'] = [
-			'type' => 'checkbox',
-			'after' => $this->txt['lp_recent_topics']['use_simple_style_subtext'],
-			'attributes' => [
-				'id'      => 'use_simple_style',
-				'checked' => (bool) $this->context['lp_block']['options']['parameters']['use_simple_style']
-			],
-			'tab' => 'appearance'
-		];
+		CustomField::make('exclude_boards', $this->txt['lp_recent_topics']['exclude_boards'])
+			->setTab('content')
+			->setValue(fn() => new BoardSelect, [
+				'id'    => 'exclude_boards',
+				'hint'  => $this->txt['lp_recent_topics']['exclude_boards_select'],
+				'value' => $this->context['lp_block']['options']['parameters']['exclude_boards'] ?? '',
+			]);
 
-		$this->context['posting_fields']['show_avatars']['label']['text'] = $this->txt['lp_recent_topics']['show_avatars'];
-		$this->context['posting_fields']['show_avatars']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'show_avatars',
-				'checked' => $this->context['lp_block']['options']['parameters']['show_avatars'] && empty($this->context['lp_block']['options']['parameters']['use_simple_style'])
-			],
-			'tab' => 'appearance'
-		];
+		CustomField::make('include_boards', $this->txt['lp_recent_topics']['include_boards'])
+			->setTab('content')
+			->setValue(fn() => new BoardSelect, [
+				'id'    => 'include_boards',
+				'hint'  => $this->txt['lp_recent_topics']['include_boards_select'],
+				'value' => $this->context['lp_block']['options']['parameters']['include_boards'] ?? '',
+			]);
 
-		$this->context['posting_fields']['show_icons']['label']['text'] = $this->txt['lp_recent_topics']['show_icons'];
-		$this->context['posting_fields']['show_icons']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'show_icons',
-				'checked' => $this->context['lp_block']['options']['parameters']['show_icons'] && empty($this->context['lp_block']['options']['parameters']['use_simple_style'])
-			],
-			'tab' => 'appearance'
-		];
+		CheckboxField::make('use_simple_style', $this->txt['lp_recent_topics']['use_simple_style'])
+			->setTab('appearance')
+			->setAfter($this->txt['lp_recent_topics']['use_simple_style_subtext'])
+			->setValue($this->context['lp_block']['options']['parameters']['use_simple_style']);
 
-		$this->context['posting_fields']['num_topics']['label']['text'] = $this->txt['lp_recent_topics']['num_topics'];
-		$this->context['posting_fields']['num_topics']['input'] = [
-			'type' => 'number',
-			'attributes' => [
-				'id'    => 'num_topics',
-				'min'   => 1,
-				'value' => $this->context['lp_block']['options']['parameters']['num_topics']
-			]
-		];
+		CheckboxField::make('show_avatars', $this->txt['lp_recent_topics']['show_avatars'])
+			->setTab('appearance')
+			->setValue($this->context['lp_block']['options']['parameters']['show_avatars'] && empty($this->context['lp_block']['options']['parameters']['use_simple_style']));
 
-		$this->context['posting_fields']['link_type']['label']['text'] = $this->txt['lp_recent_topics']['type'];
-		$this->context['posting_fields']['link_type']['input'] = [
-			'type' => 'radio_select',
-			'attributes' => [
-				'id' => 'link_type'
-			],
-			'options' => [],
-		];
+		CheckboxField::make('show_icons', $this->txt['lp_recent_topics']['show_icons'])
+			->setTab('appearance')
+			->setValue($this->context['lp_block']['options']['parameters']['show_icons'] && empty($this->context['lp_block']['options']['parameters']['use_simple_style']));
 
-		$link_types = array_combine(['link', 'preview'], $this->txt['lp_recent_topics']['type_set']);
+		NumberField::make('num_topics', $this->txt['lp_recent_topics']['num_topics'])
+			->setAttribute('min', 1)
+			->setValue($this->context['lp_block']['options']['parameters']['num_topics']);
 
-		foreach ($link_types as $key => $value) {
-			$this->context['posting_fields']['link_type']['input']['options'][$value] = [
-				'value'    => $key,
-				'selected' => $key == $this->context['lp_block']['options']['parameters']['link_type']
-			];
-		}
+		RadioField::make('link_type', $this->txt['lp_recent_topics']['type'])
+			->setOptions(array_combine(['link', 'preview'], $this->txt['lp_recent_topics']['type_set']))
+			->setValue($this->context['lp_block']['options']['parameters']['link_type']);
 
-		$this->context['posting_fields']['exclude_boards']['label']['html'] = $this->txt['lp_recent_topics']['exclude_boards'];
-		$this->context['posting_fields']['exclude_boards']['input']['tab'] = 'content';
-		$this->context['posting_fields']['exclude_boards']['input']['html'] = (new BoardSelect)([
-			'id'    => 'exclude_boards',
-			'hint'  => $this->txt['lp_recent_topics']['exclude_boards_select'],
-			'value' => $this->context['lp_block']['options']['parameters']['exclude_boards'] ?? '',
-		]);
-
-		$this->context['posting_fields']['include_boards']['label']['html'] = $this->txt['lp_recent_topics']['include_boards'];
-		$this->context['posting_fields']['include_boards']['input']['tab'] = 'content';
-		$this->context['posting_fields']['include_boards']['input']['html'] = (new BoardSelect)([
-			'id'    => 'include_boards',
-			'hint'  => $this->txt['lp_recent_topics']['include_boards_select'],
-			'value' => $this->context['lp_block']['options']['parameters']['include_boards'] ?? '',
-		]);
-
-		$this->context['posting_fields']['update_interval']['label']['text'] = $this->txt['lp_recent_topics']['update_interval'];
-		$this->context['posting_fields']['update_interval']['input'] = [
-			'type' => 'number',
-			'attributes' => [
-				'id'    => 'update_interval',
-				'min'   => 0,
-				'value' => $this->context['lp_block']['options']['parameters']['update_interval']
-			]
-		];
+		NumberField::make('update_interval', $this->txt['lp_recent_topics']['update_interval'])
+			->setAttribute('min', 0)
+			->setValue($this->context['lp_block']['options']['parameters']['update_interval']);
 	}
 
+	/**
+	 * @throws IntlException
+	 */
 	public function getData(array $parameters): array
 	{
 		$exclude_boards = empty($parameters['exclude_boards']) ? null : explode(',', $parameters['exclude_boards']);

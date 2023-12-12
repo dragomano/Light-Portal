@@ -9,7 +9,7 @@
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.3
+ * @version 2.4
  */
 
 namespace Bugo\LightPortal\Addons;
@@ -55,6 +55,13 @@ abstract class Plugin
 	public function withLayer(string $layer): void
 	{
 		$this->context['template_layers'][] = $layer;
+	}
+
+	public function getFromTemplate(string $function, ...$params): string
+	{
+		$this->setTemplate();
+
+		return $function(...$params);
 	}
 
 	public function getFromSsi(string $function, ...$params)

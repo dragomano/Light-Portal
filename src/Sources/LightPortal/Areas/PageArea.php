@@ -11,21 +11,22 @@ declare(strict_types=1);
  * @copyright 2019-2023 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.3
+ * @version 2.4
  */
 
 namespace Bugo\LightPortal\Areas;
 
-use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Entities\Page;
-use Bugo\LightPortal\Partials\{
+use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, TextField};
+use Bugo\LightPortal\Areas\Partials\{
 	CategorySelect,
 	KeywordSelect,
 	PageAuthorSelect,
 	PageIconSelect,
 	PermissionSelect,
-	StatusSelect
+	StatusSelect,
 };
+use Bugo\LightPortal\Entities\Page;
+use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Repositories\PageRepository;
 
 if (! defined('SMF'))
@@ -210,9 +211,9 @@ final class PageArea
 						'value' => $this->txt['status'],
 					],
 					'data' => [
-						'function' => fn($entry) => $this->context['allow_light_portal_approve_pages'] || $this->context['allow_light_portal_manage_pages_any'] ? '<div data-id="' . $entry['id'] . '" x-data="{status: ' . ($entry['status'] === $status ? 'true' : 'false') . '}" x-init="$watch(\'status\', value => page.toggleStatus($el))">
+						'function' => fn($entry) => $this->context['allow_light_portal_approve_pages'] || $this->context['allow_light_portal_manage_pages_any'] ? /** @lang text */ '<div data-id="' . $entry['id'] . '" x-data="{status: ' . ($entry['status'] === $status ? 'true' : 'false') . '}" x-init="$watch(\'status\', value => page.toggleStatus($el))">
 								<span :class="{\'on\': status, \'off\': !status}" :title="status ? \'' . $this->txt['lp_action_off'] . '\' : \'' . $this->txt['lp_action_on'] . '\'" @click.prevent="status = !status"></span>
-							</div>' : '<div x-data="{status: ' . ($entry['status'] === $status ? 'true' : 'false') . '}">
+							</div>' : /** @lang text */ '<div x-data="{status: ' . ($entry['status'] === $status ? 'true' : 'false') . '}">
 								<span :class="{\'on\': status, \'off\': !status}" style="cursor: inherit">
 							</div>',
 						'class' => 'centertext',
@@ -228,7 +229,7 @@ final class PageArea
 						'style' => 'width: 8%',
 					],
 					'data' => [
-						'function' => fn($entry) => '
+						'function' => fn($entry) => /** @lang text */ '
 						<div data-id="' . $entry['id'] . '" x-data="{showContextMenu: false}">
 							<div class="context_menu" @click.outside="showContextMenu = false">
 								<button class="button floatnone" @click.prevent="showContextMenu = true">
@@ -727,123 +728,85 @@ final class PageArea
 	{
 		$this->prepareTitleFields();
 
-		$this->context['posting_fields']['content']['label']['html'] = ' ';
-		$this->context['posting_fields']['content']['input']['tab'] = 'content';
-
 		if ($this->context['lp_page']['type'] !== 'bbc') {
-			$this->context['posting_fields']['content']['input'] = [
-				'type'       => 'textarea',
-				'tab'        => 'content',
-				'attributes' => [
-					'value' => $this->prepareContent($this->context['lp_page']),
-					'style' => 'height: 300px',
-				],
-			];
+			TextareaField::make('content', $this->txt['lp_content'])
+				->setTab('content')
+				->setAttribute('style', 'height: 300px')
+				->setValue($this->prepareContent($this->context['lp_page']));
 		} else {
 			$this->createBbcEditor($this->context['lp_page']['content']);
 		}
 
-		$this->context['posting_fields']['alias']['label']['text'] = $this->txt['lp_page_alias'];
-		$this->context['posting_fields']['alias']['input'] = [
-			'type'       => 'text',
-			'after'      => $this->txt['lp_page_alias_subtext'],
-			'tab'        => 'seo',
-			'attributes' => array_merge([
-				'maxlength' => 255,
-				'value'     => $this->context['lp_page']['alias'],
-				'required'  => true,
-				'pattern'   => self::ALIAS_PATTERN,
-			], empty($this->context['lp_page']['id']) ? ['x-slug.replacement._' => 'title_' . $this->user_info['language']] : []),
-		];
-
-		$this->context['posting_fields']['description']['label']['text'] = $this->txt['lp_page_description'];
-		$this->context['posting_fields']['description']['input'] = [
-			'type'       => 'textarea',
-			'tab'        => 'seo',
-			'attributes' => [
-				'maxlength' => 255,
-				'value'     => $this->context['lp_page']['description'],
-			],
-		];
-
-		$this->context['posting_fields']['keywords']['label']['html'] = $this->txt['lp_page_keywords'];
-		$this->context['posting_fields']['keywords']['input']['html'] = (new KeywordSelect)();
-		$this->context['posting_fields']['keywords']['input']['tab']  = 'seo';
-
 		if ($this->context['user']['is_admin']) {
-			$this->context['posting_fields']['show_in_menu']['label']['html'] = $this->txt['lp_page_show_in_menu'];
-			$this->context['posting_fields']['show_in_menu']['input']['html'] = (new PageIconSelect)();
-			$this->context['posting_fields']['show_in_menu']['input']['tab']  = 'access_placement';
+			CustomField::make('show_in_menu', $this->txt['lp_page_show_in_menu'])
+				->setTab('access_placement')
+				->setValue(fn() => new PageIconSelect);
 		}
 
-		$this->context['posting_fields']['permissions']['label']['html'] = $this->txt['edit_permissions'];
-		$this->context['posting_fields']['permissions']['input']['html'] = (new PermissionSelect)();
-		$this->context['posting_fields']['permissions']['input']['tab']  = 'access_placement';
+		CustomField::make('permissions', $this->txt['edit_permissions'])
+			->setTab('access_placement')
+			->setValue(fn() => new PermissionSelect);
 
-		$this->context['posting_fields']['category']['label']['html'] = $this->txt['lp_category'];
-		$this->context['posting_fields']['category']['input']['tab']  = 'access_placement';
-		$this->context['posting_fields']['category']['input']['html'] = (new CategorySelect)([
-			'id'         => 'category',
-			'multiple'   => false,
-			'full_width' => false,
-			'data'       => $this->getEntityList('category'),
-			'value'      => $this->context['lp_page']['category']
-		]);
+		CustomField::make('category', $this->txt['lp_category'])
+			->setTab('access_placement')
+			->setValue(fn() => new CategorySelect, [
+				'id'         => 'category',
+				'multiple'   => false,
+				'full_width' => false,
+				'data'       => $this->getEntityList('category'),
+				'value'      => $this->context['lp_page']['category']
+			]);
+
+		if ($this->context['user']['is_admin']) {
+			CustomField::make('status', $this->txt['status'])
+				->setTab('access_placement')
+				->setValue(fn() => new StatusSelect);
+
+			CustomField::make('page_author', $this->txt['lp_page_author'])
+				->setTab('access_placement')
+				->setAfter($this->txt['lp_page_author_placeholder'])
+				->setValue(fn() => new PageAuthorSelect);
+		}
+
+		TextField::make('alias', $this->txt['lp_page_alias'])
+			->setTab('seo')
+			->setAfter($this->txt['lp_page_alias_subtext'])
+			->setAttribute('maxlength', 255)
+			->setAttribute('required', true)
+			->setAttribute('pattern', self::ALIAS_PATTERN)
+			->setAttribute('x-slug.lazy.replacement._', empty($this->context['lp_page']['id']) ? 'title_' . $this->user_info['language'] : '{}')
+			->setValue($this->context['lp_page']['alias']);
+
+		TextareaField::make('description', $this->txt['lp_page_description'])
+			->setTab('seo')
+			->setAttribute('maxlength', 255)
+			->setValue($this->context['lp_page']['description']);
+
+		CustomField::make('keywords', $this->txt['lp_page_keywords'])
+			->setTab('seo')
+			->setValue(fn() => new KeywordSelect);
 
 		if ($this->context['lp_page']['created_at'] >= time()) {
-			$this->context['posting_fields']['datetime']['label']['html'] = $this->txt['lp_page_publish_datetime'];
-			$this->context['posting_fields']['datetime']['input']['html'] = '
+			CustomField::make('datetime', $this->txt['lp_page_publish_datetime'])
+				->setValue('
 			<input type="date" id="datetime" name="date" min="' . date('Y-m-d') . '" value="' . $this->context['lp_page']['date'] . '">
-			<input type="time" name="time" value="' . $this->context['lp_page']['time'] . '">';
+			<input type="time" name="time" value="' . $this->context['lp_page']['time'] . '">');
 		}
 
-		if ($this->context['user']['is_admin']) {
-			$this->context['posting_fields']['status']['label']['html'] = $this->txt['status'];
-			$this->context['posting_fields']['status']['input']['html'] = (new StatusSelect)();
-			$this->context['posting_fields']['status']['input']['tab']  = 'access_placement';
+		CheckboxField::make('show_title', $this->txt['lp_page_show_title'])
+			->setValue($this->context['lp_page']['options']['show_title']);
 
-			$this->context['posting_fields']['page_author']['label']['html']  = $this->txt['lp_page_author'];
-			$this->context['posting_fields']['page_author']['input']['html']  = (new PageAuthorSelect)();
-			$this->context['posting_fields']['page_author']['input']['tab']   = 'access_placement';
-			$this->context['posting_fields']['page_author']['input']['after'] = $this->txt['lp_page_author_placeholder'];
-		}
-
-		$this->context['posting_fields']['show_title']['label']['text'] = $this->txt['lp_page_show_title'];
-		$this->context['posting_fields']['show_title']['input'] = [
-			'type'       => 'checkbox',
-			'attributes' => [
-				'id'      => 'show_title',
-				'checked' => (bool) $this->context['lp_page']['options']['show_title'],
-			],
-		];
-
-		$this->context['posting_fields']['show_author_and_date']['label']['text'] = $this->txt['lp_page_show_author_and_date'];
-		$this->context['posting_fields']['show_author_and_date']['input'] = [
-			'type'       => 'checkbox',
-			'attributes' => [
-				'id'      => 'show_author_and_date',
-				'checked' => (bool) $this->context['lp_page']['options']['show_author_and_date'],
-			],
-		];
+		CheckboxField::make('show_author_and_date', $this->txt['lp_page_show_author_and_date'])
+			->setValue($this->context['lp_page']['options']['show_author_and_date']);
 
 		if (! empty($this->modSettings['lp_show_related_pages'])) {
-			$this->context['posting_fields']['show_related_pages']['label']['text'] = $this->txt['lp_page_show_related_pages'];
-			$this->context['posting_fields']['show_related_pages']['input'] = [
-				'type'       => 'checkbox',
-				'attributes' => [
-					'checked' => (bool) $this->context['lp_page']['options']['show_related_pages'],
-				],
-			];
+			CheckboxField::make('show_related_pages', $this->txt['lp_page_show_related_pages'])
+				->setValue($this->context['lp_page']['options']['show_related_pages']);
 		}
 
 		if (! (empty($this->modSettings['lp_show_comment_block']) || $this->modSettings['lp_show_comment_block'] === 'none')) {
-			$this->context['posting_fields']['allow_comments']['label']['text'] = $this->txt['lp_page_allow_comments'];
-			$this->context['posting_fields']['allow_comments']['input'] = [
-				'type'       => 'checkbox',
-				'attributes' => [
-					'checked' => (bool) $this->context['lp_page']['options']['allow_comments'],
-				],
-			];
+			CheckboxField::make('allow_comments', $this->txt['lp_page_allow_comments'])
+				->setValue($this->context['lp_page']['options']['allow_comments']);
 		}
 
 		$this->hook('preparePageFields');

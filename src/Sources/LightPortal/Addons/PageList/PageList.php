@@ -10,13 +10,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.09.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\PageList;
 
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Partials\CategorySelect;
+use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField, VirtualSelectField};
+use Bugo\LightPortal\Areas\Partials\CategorySelect;
+use IntlException;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -51,45 +53,23 @@ class PageList extends Block
 		if ($this->context['lp_block']['type'] !== 'page_list')
 			return;
 
-		$this->context['posting_fields']['categories']['label']['html'] = $this->txt['lp_categories'];
-		$this->context['posting_fields']['categories']['input']['tab'] = 'content';
-		$this->context['posting_fields']['categories']['input']['html'] = (new CategorySelect)([
-			'id'    => 'categories',
-			'hint'  => $this->txt['lp_page_list']['categories_select'],
-			'value' => $this->context['lp_block']['options']['parameters']['categories'] ?? '',
-		]);
+		CustomField::make('categories', $this->txt['lp_categories'])
+			->setTab('content')
+			->setValue(fn() => new CategorySelect, [
+				'id'    => 'categories',
+				'hint'  => $this->txt['lp_page_list']['categories_select'],
+				'value' => $this->context['lp_block']['options']['parameters']['categories'] ?? '',
+			]);
 
-		$this->context['posting_fields']['sort']['label']['text'] = $this->txt['lp_page_list']['sort'];
-		$this->context['posting_fields']['sort']['input'] = [
-			'type' => 'select',
-			'attributes' => [
-				'id' => 'sort'
-			],
-			'options' => []
-		];
+		VirtualSelectField::make('sort', $this->txt['lp_page_list']['sort'])
+			->setOptions(array_combine(self::SORTING_SET, $this->txt['lp_page_list']['sort_set']))
+			->setValue($this->context['lp_block']['options']['parameters']['sort']);
 
-		$sort_set = array_combine(self::SORTING_SET, $this->txt['lp_page_list']['sort_set']);
-
-		foreach ($sort_set as $key => $value) {
-			$this->context['posting_fields']['sort']['input']['options'][$value] = [
-				'value'    => $key,
-				'selected' => $key == $this->context['lp_block']['options']['parameters']['sort']
-			];
-		}
-
-		$this->context['posting_fields']['num_pages']['label']['text'] = $this->txt['lp_page_list']['num_pages'];
-		$this->context['posting_fields']['num_pages']['input'] = [
-			'type' => 'number',
-			'after' => $this->txt['lp_page_list']['num_pages_subtext'],
-			'attributes' => [
-				'id'    => 'num_pages',
-				'min'   => 0,
-				'max'   => 999,
-				'value' => $this->context['lp_block']['options']['parameters']['num_pages']
-			]
-		];
-
-		$this->setTemplate()->withLayer('page_list');
+		NumberField::make('num_pages', $this->txt['lp_page_list']['num_pages'])
+			->setAfter($this->txt['lp_page_list']['num_pages_subtext'])
+			->setAttribute('min', 0)
+			->setAttribute('max', 999)
+			->setValue($this->context['lp_block']['options']['parameters']['num_pages']);
 	}
 
 	public function getData(array $parameters): array
@@ -150,6 +130,9 @@ class PageList extends Block
 		return $pages;
 	}
 
+	/**
+	 * @throws IntlException
+	 */
 	public function prepareContent($data, array $parameters): void
 	{
 		if ($data->type !== 'page_list')
@@ -160,28 +143,28 @@ class PageList extends Block
 			->setFallback(self::class, 'getData', $parameters);
 
 		if ($page_list) {
-			echo '
+			echo /** @lang text */ '
 		<ul class="normallist page_list">';
 
 			foreach ($page_list as $page) {
 				if (empty($title = $this->getTranslatedTitle($page['title'])))
 					continue;
 
-				echo '
+				echo /** @lang text */ '
 			<li>
 				<a href="', $this->scripturl, '?', LP_PAGE_PARAM, '=', $page['alias'], '">', $title, '</a> ', $this->txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . $this->scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', $this->getFriendlyTime($page['created_at']), ' (', $this->translate('lp_views_set', ['views' => $page['num_views']]);
 
 				if ($page['num_comments'] && ! empty($this->modSettings['lp_show_comment_block']) && $this->modSettings['lp_show_comment_block'] === 'default')
 					echo ', ' . $this->translate('lp_comments_set', ['comments' => $page['num_comments']]);
 
-				echo ')
+				echo /** @lang text */ ')
 			</li>';
 			}
 
-			echo '
+			echo /** @lang text */ '
 		</ul>';
 		} else {
-			echo '<div class="errorbox">', $this->txt['lp_page_list']['no_items'], '</div>';
+			echo /** @lang text */ '<div class="errorbox">', $this->txt['lp_page_list']['no_items'], '</div>';
 		}
 	}
 }

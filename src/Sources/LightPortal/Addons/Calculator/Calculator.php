@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 19.09.23
+ * @version 02.12.23
  */
 
 namespace Bugo\LightPortal\Addons\Calculator;
@@ -37,8 +37,6 @@ class Calculator extends Block
 		if ($data->type !== 'calculator')
 			return;
 
-		$this->setTemplate();
-
-		show_calculator_block($data->block_id);
+		echo $this->getFromTemplate('show_calculator_block', $data->block_id);
 	}
 }

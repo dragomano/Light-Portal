@@ -10,12 +10,13 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 16.10.23
+ * @version 06.12.23
  */
 
 namespace Bugo\LightPortal\Addons\SimpleChat;
 
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\Fields\CheckboxField;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -78,15 +79,9 @@ class SimpleChat extends Block
 		if ($this->context['lp_block']['type'] !== 'simple_chat')
 			return;
 
-		$this->context['posting_fields']['show_avatars']['label']['text'] = $this->txt['lp_simple_chat']['show_avatars'];
-		$this->context['posting_fields']['show_avatars']['input'] = [
-			'type' => 'checkbox',
-			'attributes' => [
-				'id'      => 'show_avatars',
-				'checked' => $this->context['lp_block']['options']['parameters']['show_avatars']
-			],
-			'tab' => 'appearance'
-		];
+		CheckboxField::make('show_avatars', $this->txt['lp_simple_chat']['show_avatars'])
+			->setTab('appearance')
+			->setValue($this->context['lp_block']['options']['parameters']['show_avatars']);
 	}
 
 	public function getData(int $block_id, array $parameters): array

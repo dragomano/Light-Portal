@@ -5,13 +5,21 @@
     <property file="build.properties" />
     <xmlproperty file="${source_file}" keepRoot="false" />
     <echo message="Current version is ${version}" />
-    <input message="What is your release type?" propertyName="release.type" defaultValue="bugfix" validargs="major,minor,bugfix" />
+    <input message="What is your release type?" propertyName="release.type" defaultValue="thesame" validargs="thesame,major,minor,bugfix" />
     <echo message="Release type: ${release.type}" />
-    <version releasetype="${release.type}" startingVersion="${version}" property="release.version" />
-    <delete file="build.version" quiet="true" />
-    <echo message="${release.version}" />
-    <replaceregexp file="${source_file}" match="${version_search_pattern}" replace="${version_replace_pattern}" />
-    <replaceregexp file="${integration_file}" match="'LP_VERSION',\s*'(\d+\.\d+\.\d+)'" replace="'LP_VERSION', '${release.version}'"/>
+    <if>
+      <equals arg1="${release.type}" arg2="thesame" />
+      <then>
+        <property name="release.version" value="${version}" />
+      </then>
+      <else>
+        <version releasetype="${release.type}" startingVersion="${version}" property="release.version" />
+        <delete file="build.version" quiet="true" />
+        <echo message="${release.version}" />
+        <replaceregexp file="${source_file}" match="${version_search_pattern}" replace="${version_replace_pattern}" />
+        <replaceregexp file="${integration_file}" match="'LP_VERSION',\s*'(\d+\.\d+\.\d+)'" replace="'LP_VERSION', '${release.version}'"/>
+      </else>
+    </if>
   </target>
   <target name="build" depends="update_version">
     <delete file="light_portal_${release.version}.zip" quiet="true" />
@@ -28,6 +36,7 @@
         <exclude name="Themes/default/scripts/light_portal/app*" />
         <exclude name="Themes/default/scripts/light_portal/plugins.js" />
         <include name="Sources/**" />
+        <exclude name="Sources/LightPortal/Addons/ApexCharts/**" />
         <exclude name="Sources/LightPortal/Addons/BladeLayouts/**" />
         <exclude name="Sources/LightPortal/Addons/BootstrapIcons/**" />
         <exclude name="Sources/LightPortal/Addons/CrowdinContext/**" />
@@ -51,6 +60,7 @@
         <exclude name="Sources/LightPortal/Addons/PageScroll/**" />
         <exclude name="Sources/LightPortal/Addons/PluginMaker/**" />
         <exclude name="Sources/LightPortal/Addons/PrettyUrls/**" />
+        <exclude name="Sources/LightPortal/Addons/SiteList/**" />
         <exclude name="Sources/LightPortal/Addons/TinyPortal/**" />
         <exclude name="Sources/LightPortal/Addons/TopicRatingBar/**" />
         <exclude name="Sources/LightPortal/Addons/TwigLayouts/**" />
