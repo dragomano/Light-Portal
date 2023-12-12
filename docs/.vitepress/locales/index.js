@@ -18,6 +18,6 @@ function addPrefixToLinks(prefix, obj) {
 export default {
   root: en,
   ru: addPrefixToLinks('ru', ru),
-  /* el: addPrefixToLinks('el', el), */
+  el: addPrefixToLinks('el', el),
   it: addPrefixToLinks('it', it),
 };
