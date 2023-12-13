@@ -26,7 +26,7 @@ In any case, the title of each of your commits should continue such a phrase —
 
 ### PHP Styleguide
 
-- Use [PHP 8.0+](https://smknstd.github.io/modern-php-cheatsheet/)
+- Use [PHP 8.0+](https://smknstd.github.io/modern-php-cheatsheet/) with tabs instead of spaces
 
 ```php
 /**
@@ -76,7 +76,7 @@ $test = isset($variable) ? $variable : 'default_value';
 
 ### CSS Styleguide
 
-- Use LESS (portal.less) to modify desired rules.
+- Use LESS (`portal.less`) to modify desired rules.
 
 ```less
 #comment_form {
@@ -98,7 +98,6 @@ $test = isset($variable) ? $variable : 'default_value';
 ### JavaScript Styleguide
 
 - Use native JavaScript, or [Alpine.js](https://github.com/alpinejs/alpine) (3.x), or [Vue.js](https://vuejs.org) (3.x) instead of jQuery.
-- Use [strict mode](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode) in your scripts.
 - Use [`const`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const) or [`let`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let) instead of `var`.
 
 ```js
