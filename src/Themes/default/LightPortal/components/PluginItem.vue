@@ -15,11 +15,7 @@
         <div>
           <p v-if="item.special" v-html="specialDesc"></p>
           <p v-else v-html="item.desc"></p>
-          <p v-if="item.author">
-            {{ item.author }}{{ item.link && ` |
-            <a class="bbc_link" href="${item.link}" target="_blank" rel="noopener">${item.link}</a>`
-            }}
-          </p>
+          <p v-if="item.author">{{ item.author }}<span v-html="link"></span></p>
         </div>
       </div>
 
@@ -104,6 +100,12 @@ const settingsId = computed(() => props.item.snake_name + '_' + appStore.session
 
 const index = computed(() =>
   Object.values(pluginStore.list).findIndex((plugin) => plugin.snake_name === props.item.snake_name)
+);
+
+const link = computed(() =>
+  props.item.link
+    ? ` | <a class="bbc_link" href="${props.item.link}" target="_blank" rel="noopener">${props.item.link}</a>`
+    : ''
 );
 
 const toggle = async () => {
