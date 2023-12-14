@@ -7,6 +7,7 @@
     <keep-alive>
       <component :is="dynamicComponentProps.is" v-bind="dynamicComponentProps"></component>
     </keep-alive>
+    <div v-if="subtext" class="roundframe" v-html="subtext"></div>
   </div>
 </template>
 
@@ -19,7 +20,6 @@ import OptionLargeText from './options/OptionLargeText.vue';
 import OptionMultiSelect from './options/OptionMultiSelect.vue';
 import OptionNumber from './options/OptionNumber.vue';
 import OptionSelect from './options/OptionSelect.vue';
-import OptionSubtext from './options/OptionSubtext.vue';
 import OptionText from './options/OptionText.vue';
 import OptionTitle from './options/OptionTitle.vue';
 import OptionUrl from './options/OptionUrl.vue';
@@ -35,7 +35,6 @@ export default {
     OptionMultiSelect,
     OptionNumber,
     OptionSelect,
-    OptionSubtext,
     OptionText,
     OptionTitle,
     OptionUrl,
@@ -67,16 +66,32 @@ const value = computed(() => contextStore[`lp_${props.plugin}`]?.[name.value]);
 
 const showLabel = computed(() => !['callback', 'title', 'desc', 'check'].includes(type.value));
 const postfix = computed(() => props.option.postfix);
+const subtext = computed(() => props.option.subtext);
 
 const isType = computed(() => (['float', 'int'].includes(type.value) ? 'number' : type.value));
 
 const dynamicComponentProps = computed(() => {
   const typeMap = {
     callback: { is: 'OptionCallback', option: props.option },
-    check: { is: 'OptionCheck', id: id.value, name: name.value, value: value.value },
-    color: { is: 'OptionColor', id: id.value, name: name.value, value: value.value },
+    check: {
+      is: 'OptionCheck',
+      id: id.value,
+      name: name.value,
+      value: value.value,
+    },
+    color: {
+      is: 'OptionColor',
+      id: id.value,
+      name: name.value,
+      value: value.value,
+    },
     desc: { is: 'OptionDesc', id: id.value },
-    large_text: { is: 'OptionLargeText', id: id.value, name: name.value, value: value.value },
+    large_text: {
+      is: 'OptionLargeText',
+      id: id.value,
+      name: name.value,
+      value: value.value,
+    },
     multiselect: {
       is: 'OptionMultiSelect',
       id: id.value,
@@ -98,7 +113,6 @@ const dynamicComponentProps = computed(() => {
       value: value.value,
       option: props.option,
     },
-    subtext: { is: 'OptionSubtext', option: props.option },
     text: {
       is: 'OptionText',
       id: id.value,
