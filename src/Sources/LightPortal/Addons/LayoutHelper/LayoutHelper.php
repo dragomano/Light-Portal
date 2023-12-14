@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 14.12.23
  */
 
 namespace Bugo\LightPortal\Addons\LayoutHelper;
@@ -42,7 +42,7 @@ class LayoutHelper extends Plugin
 		$this->modSettings['lp_frontpage_mode'] = $this->mode;
 	}
 
-	public function frontCustomTemplate(array $layouts): void
+	public function frontLayouts(array $layouts): void
 	{
 		if (empty($this->context['lp_layout_helper_plugin']['show_template_switcher']))
 			return;

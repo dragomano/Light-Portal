@@ -119,8 +119,8 @@ final class FrontPage
 			$this->context['sub_template'] = empty($this->modSettings['lp_frontpage_layout']) ? 'wrong_template' : 'layout';
 		}
 
-		// Mod authors can define their own templates
-		$this->hook('frontCustomTemplate', [$this->getLayouts()]);
+		// Mod authors can use their own logic here
+		$this->hook('frontLayouts', [$this->getLayouts()]);
 
 		$this->view($this->modSettings['lp_frontpage_layout']);
 	}
@@ -133,6 +133,7 @@ final class FrontPage
 
 		$layouts = glob($this->settings['default_theme_dir'] . '/LightPortal/layouts/*.latte');
 		$customs = glob($this->settings['default_theme_dir'] . '/portal_layouts/*.latte');
+
 		$layouts = array_merge($layouts, $customs);
 
 		foreach ($layouts as $layout) {

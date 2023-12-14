@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 16.11.23
+ * @version 14.12.23
  */
 
 namespace Bugo\LightPortal\Addons\BladeLayouts;
@@ -40,17 +40,17 @@ class BladeLayouts extends Plugin
 			'subtext' => sprintf(
 				$this->txt['lp_blade_layouts']['template_subtext'],
 				'.blade.php',
-				$this->settings['default_theme_dir'] . '/portal_layouts'
+				$this->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . 'portal_layouts'
 			)
 		];
 	}
 
-	public function frontCustomTemplate(): void
+	public function frontLayouts(): void
 	{
 		require_once __DIR__ . '/vendor/autoload.php';
 
 		$templates = [
-			__DIR__ . '/layouts/',
+			__DIR__ . '/layouts',
 			$this->settings['default_theme_dir'] . '/portal_layouts'
 		];
 
@@ -65,6 +65,7 @@ class BladeLayouts extends Plugin
 		try {
 			$blade = new BladeOne($templates, $this->cachedir);
 			$blade->setAuth($this->context['user']['is_logged'] ? $this->context['user']['name'] : null);
+
 			echo $blade->run($this->context['lp_blade_layouts_plugin']['template'], $params);
 		} catch (Exception $e) {
 			$this->fatalError($e->getMessage());

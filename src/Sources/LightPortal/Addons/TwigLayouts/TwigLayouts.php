@@ -3,14 +3,14 @@
 /**
  * TwigLayouts.php
  *
- * @package BladeOneLayouts (Light Portal)
+ * @package TwigLayouts (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2023 Bugo
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 25.05.23
+ * @version 14.12.23
  */
 
 namespace Bugo\LightPortal\Addons\TwigLayouts;
@@ -43,12 +43,12 @@ class TwigLayouts extends Plugin
 			'subtext' => sprintf(
 				$this->txt['lp_twig_layouts']['template_subtext'],
 				'.twig',
-				$this->settings['default_theme_dir'] . '/portal_layouts'
+				$this->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . 'portal_layouts'
 			)
 		];
 	}
 
-	public function frontCustomTemplate(): void
+	public function frontLayouts(): void
 	{
 		require_once __DIR__ . '/vendor/autoload.php';
 
@@ -61,21 +61,26 @@ class TwigLayouts extends Plugin
 		ob_start();
 
 		try {
-			$loader = new FilesystemLoader(__DIR__ . '/layouts/');
+			$loader = new FilesystemLoader(__DIR__ . '/layouts');
 			$loader->addPath($this->settings['default_theme_dir'] . '/portal_layouts');
+
 			$twig = new Environment($loader, [
 				'cache' => empty($this->modSettings['cache_enable']) ? false : $this->cachedir,
 				'debug' => false
 			]);
+
 			$twig->addExtension(new DebugExtension());
+
 			$show_pagination_function = new TwigFunction('show_pagination', function (string $position = 'top') {
 				show_pagination($position);
 			});
 			$twig->addFunction($show_pagination_function);
+
 			$debug_function = new TwigFunction('debug', function (array $data) {
 				echo parse_bbc('[code]' . print_r($data, true) . '[/code]');
 			});
 			$twig->addFunction($debug_function);
+
 			echo $twig->render($this->context['lp_twig_layouts_plugin']['template'] . '.twig', $params);
 		} catch (Error $e) {
 			$this->fatalError($e->getMessage());

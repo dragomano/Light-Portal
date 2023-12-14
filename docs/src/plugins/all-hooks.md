@@ -410,22 +410,31 @@ public function frontModes(array &$modes): void
 }
 ```
 
-### frontCustomTemplate
+### frontLayouts
 
 (`$layouts`)
 
-> adding custom templates for the frontpage
+> using frontpage layouts in custom plugins
 
 ```php
-public function frontCustomTemplate(): void
+public function frontLayouts(array $layouts): void
 {
-    ob_start();
+    if (empty($this->context['lp_layout_helper_plugin']['show_template_switcher']))
+        return;
 
-    // Your code
+    $this->context['frontpage_layouts'] = $layouts;
 
-    $this->context['lp_layout'] = ob_get_clean();
+    if ($this->session()->isEmpty('lp_frontpage_layout')) {
+        $this->context['current_layout'] = $this->request('layout', $this->modSettings['lp_frontpage_layout'] ?? 'default.latte');
+    } else {
+        $this->context['current_layout'] = $this->request('layout', $this->session()->get('lp_frontpage_layout'));
+    }
 
-    $this->modSettings['lp_frontpage_layout'] = '';
+    $this->session()->put('lp_frontpage_layout', $this->context['current_layout']);
+
+    $this->modSettings['lp_frontpage_layout'] = $this->session()->get('lp_frontpage_layout');
+
+    $this->setTemplate()->withLayer('layout_switcher');
 }
 ```
 
