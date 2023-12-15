@@ -26,6 +26,8 @@ class BladeLayouts extends Plugin
 {
 	public string $type = 'frontpage';
 
+	public bool $saveable = false;
+
 	private string $extension = '.blade.php';
 
 	public function addSettings(array &$config_vars): void

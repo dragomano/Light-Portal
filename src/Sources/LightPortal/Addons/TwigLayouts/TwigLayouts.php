@@ -29,6 +29,8 @@ class TwigLayouts extends Plugin
 {
 	public string $type = 'frontpage';
 
+	public bool $saveable = false;
+
 	private string $extension = '.twig';
 
 	public function addSettings(array &$config_vars): void

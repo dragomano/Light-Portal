@@ -26,6 +26,8 @@ class PlatesLayouts extends Plugin
 {
 	public string $type = 'frontpage';
 
+	public bool $saveable = false;
+
 	private string $extension = '.tpl.php';
 
 	public function addSettings(array &$config_vars): void
