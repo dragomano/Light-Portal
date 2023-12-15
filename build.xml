@@ -58,6 +58,7 @@
         <exclude name="Sources/LightPortal/Addons/MediaBlock/**" />
         <exclude name="Sources/LightPortal/Addons/Optimus/**" />
         <exclude name="Sources/LightPortal/Addons/PageScroll/**" />
+        <exclude name="Sources/LightPortal/Addons/PlatesLayouts/**" />
         <exclude name="Sources/LightPortal/Addons/PluginMaker/**" />
         <exclude name="Sources/LightPortal/Addons/PrettyUrls/**" />
         <exclude name="Sources/LightPortal/Addons/SiteList/**" />
