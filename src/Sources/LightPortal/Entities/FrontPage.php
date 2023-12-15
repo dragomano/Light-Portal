@@ -121,10 +121,30 @@ final class FrontPage
 
 		$this->context['lp_frontpage_layouts'] = $this->getLayouts();
 
+		$this->prepareLayoutSwitcher();
+
 		// Mod authors can use their own logic here
 		$this->hook('frontLayouts');
 
 		$this->view($this->modSettings['lp_frontpage_layout']);
+	}
+
+	public function prepareLayoutSwitcher(): void
+	{
+		if (empty($this->modSettings['lp_show_layout_switcher']))
+			return;
+
+		$this->context['template_layers'][] = 'layout_switcher';
+
+		if ($this->session()->isEmpty('lp_frontpage_layout')) {
+			$this->context['lp_current_layout'] = $this->request('layout', $this->modSettings['lp_frontpage_layout'] ?? 'default.latte');
+		} else {
+			$this->context['lp_current_layout'] = $this->request('layout', $this->session()->get('lp_frontpage_layout'));
+		}
+
+		$this->session()->put('lp_frontpage_layout', $this->context['lp_current_layout']);
+
+		$this->modSettings['lp_frontpage_layout'] = $this->session()->get('lp_frontpage_layout');
 	}
 
 	public function getLayouts(): array
