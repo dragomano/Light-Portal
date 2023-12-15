@@ -412,29 +412,18 @@ public function frontModes(array &$modes): void
 
 ### frontLayouts
 
-(`$layouts`)
+> adding custom logic on the frontpage
 
-> using frontpage layouts in custom plugins
+### customLayoutExtensions
+
+(`&$extensions`)
+
+> lets add custom layout extensions
 
 ```php
-public function frontLayouts(array $layouts): void
+public function customLayoutExtensions(array &$extensions): void
 {
-    if (empty($this->context['lp_layout_helper_plugin']['show_template_switcher']))
-        return;
-
-    $this->context['frontpage_layouts'] = $layouts;
-
-    if ($this->session()->isEmpty('lp_frontpage_layout')) {
-        $this->context['current_layout'] = $this->request('layout', $this->modSettings['lp_frontpage_layout'] ?? 'default.latte');
-    } else {
-        $this->context['current_layout'] = $this->request('layout', $this->session()->get('lp_frontpage_layout'));
-    }
-
-    $this->session()->put('lp_frontpage_layout', $this->context['current_layout']);
-
-    $this->modSettings['lp_frontpage_layout'] = $this->session()->get('lp_frontpage_layout');
-
-    $this->setTemplate()->withLayer('layout_switcher');
+    $extensions[] = '.twig';
 }
 ```
 

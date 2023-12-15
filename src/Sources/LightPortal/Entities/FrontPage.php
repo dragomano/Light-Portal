@@ -119,26 +119,37 @@ final class FrontPage
 			$this->context['sub_template'] = empty($this->modSettings['lp_frontpage_layout']) ? 'wrong_template' : 'layout';
 		}
 
+		$this->context['lp_frontpage_layouts'] = $this->getLayouts();
+
 		// Mod authors can use their own logic here
-		$this->hook('frontLayouts', [$this->getLayouts()]);
+		$this->hook('frontLayouts');
 
 		$this->view($this->modSettings['lp_frontpage_layout']);
 	}
 
 	public function getLayouts(): array
 	{
-		$values = $titles = [];
-
 		$this->loadTemplate('LightPortal/ViewFrontPage');
 
 		$layouts = glob($this->settings['default_theme_dir'] . '/LightPortal/layouts/*.latte');
-		$customs = glob($this->settings['default_theme_dir'] . '/portal_layouts/*.latte');
 
-		$layouts = array_merge($layouts, $customs);
+		$extensions = ['.latte'];
+
+		// Mod authors can add custom extensions for layouts
+		$this->hook('customLayoutExtensions', [&$extensions]);
+
+		foreach ($extensions as $extension) {
+			$layouts = array_merge($layouts, glob($this->settings['default_theme_dir'] . '/portal_layouts/*' . $extension));
+		}
+
+		$values = $titles = [];
 
 		foreach ($layouts as $layout) {
 			$values[] = $title = basename($layout);
-			$titles[] = $title === 'default.latte' ? $this->txt['lp_default'] : ucfirst(str_replace('.latte', '', $title));
+
+			$shortName = ucfirst(strstr($title, '.', true) ?: $title);
+
+			$titles[] = $title === 'default.latte' ? $this->txt['lp_default'] : str_replace('_', ' ', $shortName);
 		}
 
 		$layouts = array_combine($values, $titles);
