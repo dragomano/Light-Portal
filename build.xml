@@ -62,6 +62,7 @@
         <exclude name="Sources/LightPortal/Addons/PluginMaker/**" />
         <exclude name="Sources/LightPortal/Addons/PrettyUrls/**" />
         <exclude name="Sources/LightPortal/Addons/SiteList/**" />
+        <exclude name="Sources/LightPortal/Addons/Snowflakes/**" />
         <exclude name="Sources/LightPortal/Addons/TinyPortal/**" />
         <exclude name="Sources/LightPortal/Addons/TopicRatingBar/**" />
         <exclude name="Sources/LightPortal/Addons/TwigLayouts/**" />
