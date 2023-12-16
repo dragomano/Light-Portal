@@ -16,7 +16,7 @@ import ExampleSites from './ExampleSites.vue'
 const sites = [
   {
     image: '/example_1.png',
-    title: 'Light Portal Sandbox',
+    title: 'Light Portal Showcase',
     link: 'https://demo.dragomano.ru',
   },
   {
