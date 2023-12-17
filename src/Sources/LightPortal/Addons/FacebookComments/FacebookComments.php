@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 18.12.23
  */
 
 namespace Bugo\LightPortal\Addons\FacebookComments;
@@ -46,12 +46,12 @@ class FacebookComments extends Plugin
 	public function comments(): void
 	{
 		if (! empty($this->modSettings['lp_show_comment_block']) && $this->modSettings['lp_show_comment_block'] === 'facebook') {
-			$dark_themes = array_filter(explode(',', $this->context['lp_facebook_comments_plugin']['dark_themes'] ?? ''));
+			$dark_themes = array_flip(array_filter(explode(',', $this->context['lp_facebook_comments_plugin']['dark_themes'] ?? '')));
 
 			$this->context['lp_facebook_comment_block'] = /** @lang text */ '
 				<div id="fb-root"></div>
 				<script async defer crossorigin="anonymous" src="https://connect.facebook.net/' . $this->txt['lang_locale'] . '/sdk.js#xfbml=1"></script>
-				<div class="fb-comments" data-href="' . $this->context['canonical_url'] . '" data-numposts="' . ($this->context['lp_facebook_comments_plugin']['comments_per_page'] ?? 10) . '" data-width="100%" data-colorscheme="' . ($dark_themes && ! empty($dark_themes[$this->settings['theme_id']]) ? 'dark' : 'light') . '"' . (empty($this->context['lp_facebook_comments_plugin']['comment_order_by']) ? '' : (' data-order-by="' . $this->context['lp_facebook_comments_plugin']['comment_order_by'] . '"')) . ' data-lazy="true"></div>';
+				<div class="fb-comments" data-href="' . $this->context['canonical_url'] . '" data-numposts="' . ($this->context['lp_facebook_comments_plugin']['comments_per_page'] ?? 10) . '" data-width="100%" data-colorscheme="' . ($dark_themes && isset($dark_themes[$this->settings['theme_id']]) ? 'dark' : 'light') . '"' . (empty($this->context['lp_facebook_comments_plugin']['comment_order_by']) ? '' : (' data-order-by="' . $this->context['lp_facebook_comments_plugin']['comment_order_by'] . '"')) . ' data-lazy="true"></div>';
 		}
 	}
 
