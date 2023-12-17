@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 17.12.23
  */
 
 namespace Bugo\LightPortal\Addons\Translator;
@@ -78,19 +78,19 @@ class Translator extends Block
 			echo '
 		<div id="ytWidget', $data->block_id, /** @lang text */ '" class="centertext noup"></div>
 		<script src="https://translate.yandex.net/website-widget/v1/widget.js?widgetId=ytWidget', $data->block_id, '&amp;pageLang=', substr($this->language, 0, 2), '&amp;widgetTheme=', $parameters['widget_theme'], '&amp;autoMode=', (bool) $parameters['auto_mode'], '"></script>';
-		} else {
+		}
+
+		if ($parameters['engine'] === 'google') {
 			echo /** @lang text */ '
+		<div id="google_translate_element', $data->block_id, /** @lang text */ '" class="centertext noup"></div>
 		<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-		<div class="centertext noup">
-			<div id="google_translate_element', $data->block_id, /** @lang text */ '"></div>
-			<script>
-				function googleTranslateElementInit() {
-					new google.translate.TranslateElement({
-						pageLanguage: "', substr($this->language, 0, 2), '"
-					}, "google_translate_element', $data->block_id, /** @lang text */ '");
-				}
-			</script>
-		</div>';
+		<script>
+			function googleTranslateElementInit() {
+				new google.translate.TranslateElement({
+					pageLanguage: "', substr($this->language, 0, 2), '"
+				}, "google_translate_element', $data->block_id, /** @lang text */ '");
+			}
+		</script>';
 		}
 	}
 }

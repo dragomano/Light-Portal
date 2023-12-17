@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 15.12.23
+ * @version 17.12.23
  */
 
 namespace Bugo\LightPortal\Addons\PlatesLayouts;
@@ -60,9 +60,7 @@ class PlatesLayouts extends Plugin
 
 		try {
 			$templates = new Engine($this->settings['default_theme_dir'] . '/portal_layouts', 'tpl.php');
-			$templates->registerFunction('debug', function (array $data) {
-				return parse_bbc('[code]' . print_r($data, true) . '[/code]');
-			});
+			$templates->registerFunction('debug', fn(array $data) => parse_bbc('[code]' . print_r($data, true) . '[/code]'));
 
 			$layout = strstr($this->modSettings['lp_frontpage_layout'], '.', true) ?: $this->modSettings['lp_frontpage_layout'];
 
