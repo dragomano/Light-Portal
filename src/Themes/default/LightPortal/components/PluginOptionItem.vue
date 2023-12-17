@@ -2,7 +2,7 @@
   <div>
     <label v-if="showLabel" :for="id">
       {{ $t(`lp_${id}`) }}
-      <span v-if="postfix" class="postfix">({{ postfix }})</span>
+      <span v-if="postfix && isType !== 'number'" class="postfix">({{ postfix }})</span>
     </label>
     <keep-alive>
       <component :is="dynamicComponentProps.is" v-bind="dynamicComponentProps"></component>
