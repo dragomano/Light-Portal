@@ -25,12 +25,12 @@
     "vanilla-lazyload": "^17.8.5",
     "virtual-select-plugin": "^1.0.40",
     "vite-plugin-minify": "^1.5.2",
-    "vue": "^3.3.11",
+    "vue": "^3.3.12",
     "vue-i18n": "^9.8.0",
     "vue-showdown": "^4.2.0"
   },
   "devDependencies": {
-    "vite": "^5.0.8",
+    "vite": "^5.0.10",
     "vite-plugin-static-copy": "^1.0.0"
   }
 }
