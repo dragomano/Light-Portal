@@ -21,7 +21,6 @@ export default {
 
 <script setup>
 import { ref } from 'vue';
-import { useIconStore } from '../../scripts/light_portal/dev/base_stores.js';
 import MarkdownEditor from './MarkdownEditor.vue';
 import Button from './BaseButton.vue';
 
@@ -33,8 +32,6 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['submit', 'cancel']);
-
-const iconStore = useIconStore();
 
 const message = ref(props.comment.message);
 
