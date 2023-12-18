@@ -21,9 +21,9 @@
 					<div>
 						<span n:if="!empty($modSettings[lp_show_views_and_comments])" class="floatleft">
 							{if !empty($article[views][num])}{icon('views', $article['views']['title'])|noescape}{$article[views][num]}{/if}
-							{if !empty($article[views][after])}{$article[views][after]}{/if}
+							{if !empty($article[views][after])}{$article[views][after]|noescape}{/if}
 							{if !empty($article[replies][num])} {icon('replies', $article['replies']['title'])|noescape}{$article[replies][num]}{/if}
-							{if !empty($article[replies][after])}{$article[replies][after]}{/if}
+							{if !empty($article[replies][after])}{$article[replies][after]|noescape}{/if}
 						</span>
 						<a n:if="!empty($article[section][name])" class="floatright" href="{$article[section][link]}">{icon('category')|noescape}{$article[section][name]}</a>
 					</div>

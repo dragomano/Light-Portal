@@ -16,10 +16,10 @@
 				<div class="card-header">
 					<span n:if="!empty($modSettings[lp_show_views_and_comments])" class="floatright">
 						{if !empty($article[views][num])}{icon('views', $article[views][title])|noescape}{$article[views][num]}{/if}
-						{if !empty($article[views][after])}{$article[views][after]}{/if}
+						{if !empty($article[views][after])}{$article[views][after]|noescape}{/if}
 						{if !empty($article[is_redirect])}{icon('redirect')|noescape}{/if}
 						{if !empty($article[replies][num])}{icon('replies', $article[replies][title])|noescape}{$article[replies][num]}{/if}
-						{if !empty($article[replies][after])}{$article[replies][after]}{/if}
+						{if !empty($article[replies][after])}{$article[replies][after]|noescape}{/if}
 					</span>
 					<a class="card-title" href="{$article[link]}">{$article[title]}</a>
 					<div class="card-subtitle">{$article[date]|noescape}</div>
