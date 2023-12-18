@@ -123,6 +123,7 @@ final class BasicConfig
 				$save_vars[] = ['check', 'lp_frontpage_order_by_replies'];
 				$save_vars[] = ['int', 'lp_frontpage_article_sorting'];
 				$save_vars[] = ['text', 'lp_frontpage_layout'];
+				$save_vars[] = ['check', 'lp_show_layout_switcher'];
 				$save_vars[] = ['int', 'lp_frontpage_num_columns'];
 				$save_vars[] = ['int', 'lp_show_pagination'];
 				$save_vars[] = ['check', 'lp_use_simple_pagination'];

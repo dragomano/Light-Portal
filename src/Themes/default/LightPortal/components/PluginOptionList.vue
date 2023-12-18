@@ -23,7 +23,9 @@
           {{ $t('settings_saved') }}
         </span>
         <Button icon="close" @click="emit('hide')">{{ $t('find_close') }}</Button>
-        <Button icon="save" :form="formId" type="submit">{{ $t('save') }}</Button>
+        <Button v-if="item.saveable" icon="save" :form="formId" type="submit">
+          {{ $t('save') }}
+        </Button>
       </div>
     </div>
   </transition>

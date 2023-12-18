@@ -128,9 +128,18 @@
 		height: 28px;
 
 		&[type='text'],
-		&[type='url'],
-		&[type='number'] {
+		&[type='url'] {
 			width: 100%;
+		}
+
+		&[type='number'] {
+			width: 15%;
+
+			& {
+				@media screen and (max-width: 600px) {
+					width: 100%;
+				}
+			}
 		}
 	}
 

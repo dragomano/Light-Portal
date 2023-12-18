@@ -28,6 +28,47 @@ function template_layout()
 }
 
 /**
+ * Список шаблонов оформления карточек для быстрого переключения
+ *
+ * List of template layouts for quick switching
+ */
+function template_layout_switcher_above(): void
+{
+	global $modSettings, $context, $txt;
+
+	if (empty($modSettings['lp_show_layout_switcher']))
+		return;
+
+	if (empty($context['lp_frontpage_articles']) || empty($context['lp_frontpage_layouts']))
+		return;
+
+	echo '
+	<div class="windowbg layout_switcher">
+		<div class="floatleft">', $context['lp_icon_set']['views'], '</div>
+		<div class="floatright">
+			<form method="post">
+				<label for="layout">', $txt['lp_template'], '</label>
+				<select id="layout" name="layout" onchange="this.form.submit()">';
+
+	foreach ($context['lp_frontpage_layouts'] as $layout => $title) {
+		echo '
+					<option value="', $layout, '"', $context['lp_current_layout'] === $layout ? ' selected' : '', '>
+						', $title, '
+					</option>';
+	}
+
+	echo '
+				</select>
+			</form>
+		</div>
+	</div>';
+}
+
+function template_layout_switcher_below()
+{
+}
+
+/**
  * Шаблон списка сортировки для страниц рубрик и тегов
  *
  * Template of sort list for category pages and tags

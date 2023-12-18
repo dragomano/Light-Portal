@@ -119,25 +119,57 @@ final class FrontPage
 			$this->context['sub_template'] = empty($this->modSettings['lp_frontpage_layout']) ? 'wrong_template' : 'layout';
 		}
 
-		// Mod authors can define their own templates
-		$this->hook('frontCustomTemplate', [$this->getLayouts()]);
+		$this->context['lp_frontpage_layouts'] = $this->getLayouts();
+
+		$this->prepareLayoutSwitcher();
+
+		// Mod authors can use their own logic here
+		$this->hook('frontLayouts');
 
 		$this->view($this->modSettings['lp_frontpage_layout']);
 	}
 
+	public function prepareLayoutSwitcher(): void
+	{
+		if (empty($this->modSettings['lp_show_layout_switcher']))
+			return;
+
+		$this->context['template_layers'][] = 'layout_switcher';
+
+		if ($this->session()->isEmpty('lp_frontpage_layout')) {
+			$this->context['lp_current_layout'] = $this->request('layout', $this->modSettings['lp_frontpage_layout'] ?? 'default.latte');
+		} else {
+			$this->context['lp_current_layout'] = $this->request('layout', $this->session()->get('lp_frontpage_layout'));
+		}
+
+		$this->session()->put('lp_frontpage_layout', $this->context['lp_current_layout']);
+
+		$this->modSettings['lp_frontpage_layout'] = $this->session()->get('lp_frontpage_layout');
+	}
+
 	public function getLayouts(): array
 	{
-		$values = $titles = [];
-
 		$this->loadTemplate('LightPortal/ViewFrontPage');
 
 		$layouts = glob($this->settings['default_theme_dir'] . '/LightPortal/layouts/*.latte');
-		$customs = glob($this->settings['default_theme_dir'] . '/portal_layouts/*.latte');
-		$layouts = array_merge($layouts, $customs);
+
+		$extensions = ['.latte'];
+
+		// Mod authors can add custom extensions for layouts
+		$this->hook('customLayoutExtensions', [&$extensions]);
+
+		foreach ($extensions as $extension) {
+			$layouts = array_merge($layouts, glob($this->settings['default_theme_dir'] . '/portal_layouts/*' . $extension));
+		}
+
+		$values = $titles = [];
 
 		foreach ($layouts as $layout) {
 			$values[] = $title = basename($layout);
-			$titles[] = $title === 'default.latte' ? $this->txt['lp_default'] : ucfirst(str_replace('.latte', '', $title));
+
+			$shortName = ucfirst(strstr($title, '.', true) ?: $title);
+
+			$titles[] = $title === 'default.latte' ? $this->txt['lp_default'] : str_replace('_', ' ', $shortName);
 		}
 
 		$layouts = array_combine($values, $titles);

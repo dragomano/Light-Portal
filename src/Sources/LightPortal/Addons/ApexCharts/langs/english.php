@@ -27,7 +27,6 @@ return [
 	'full_stacked' => '100% stacked bar charts',
 	'full_stacked_after' => 'The bars are stacked on top of each other based on their percentage or weightage among the groups.',
 	'legend' => 'Show legend',
-	'width' => 'Chart width (in pixels)',
 	'toolbar' => 'Display the toolbar / menu in the top right corner',
 	'no_data' => 'There is no data yet',
 	'exportToSVG' => 'Download SVG',

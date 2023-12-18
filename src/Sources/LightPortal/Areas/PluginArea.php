@@ -150,6 +150,9 @@ final class PluginArea
 				if ($addonClass->hasProperty('link'))
 					$link = $addonClass->getProperty('link')->getValue(new $className);
 
+				if ($addonClass->hasProperty('saveable'))
+					$saveable = $addonClass->getProperty('saveable')->getValue(new $className);
+
 				$composer = is_file(dirname($addonClass->getFileName()) . DIRECTORY_SEPARATOR . 'composer.json');
 			} catch (ReflectionException) {
 				if (isset($this->context['lp_can_donate'][$item])) {
@@ -164,16 +167,17 @@ final class PluginArea
 			}
 
 			return [
-				'name'       => $item,
-				'snake_name' => $snake_name,
-				'desc'       => $this->txt['lp_' . $snake_name]['description'] ?? '',
-				'author'     => $author ?? '',
-				'link'       => $link ?? '',
-				'status'     => in_array($item, $this->context['lp_enabled_plugins']) ? 'on' : 'off',
-				'types'      => $this->getTypes($snake_name),
-				'special'    => $special ?? '',
-				'settings'   => $config_vars[$snake_name] ?? [],
-				'composer'   => $composer,
+				'name'        => $item,
+				'snake_name'  => $snake_name,
+				'desc'        => $this->txt['lp_' . $snake_name]['description'] ?? '',
+				'author'      => $author ?? '',
+				'link'        => $link ?? '',
+				'status'      => in_array($item, $this->context['lp_enabled_plugins']) ? 'on' : 'off',
+				'types'       => $this->getTypes($snake_name),
+				'special'     => $special ?? '',
+				'settings'    => $config_vars[$snake_name] ?? [],
+				'composer'    => $composer,
+				'saveable'    => $saveable ?? true,
 			];
 		}, $this->context['lp_plugins']);
 	}

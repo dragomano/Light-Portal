@@ -206,6 +206,17 @@ function template_callback_frontpage_mode_settings(): void
 
 		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
 			<dt>
+				<a id="setting_lp_show_layout_switcher"></a> <span><label for="lp_show_layout_switcher">', $txt['lp_show_layout_switcher'], '</label></span>
+			</dt>
+		</template>
+		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dd>
+				<input type="checkbox" name="lp_show_layout_switcher" id="lp_show_layout_switcher"', empty($modSettings['lp_show_layout_switcher']) ? '' : ' checked', ' value="1">
+			</dd>
+		</template>
+
+		<template x-if="! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+			<dt>
 				<a id="setting_lp_frontpage_num_columns"></a> <span><label for="lp_frontpage_num_columns">', $txt['lp_frontpage_num_columns'], '</label></span>
 			</dt>
 		</template>

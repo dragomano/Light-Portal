@@ -2,7 +2,7 @@
 description: Instructions on how to help the Light Portal project
 ---
 
-# How to help the project?
+# How to help the project
 
 There are many options:
 
