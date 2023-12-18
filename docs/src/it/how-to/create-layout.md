@@ -49,7 +49,7 @@ Per farlo, crea un file `custom.latte` nella cartella `/Themes/default/portal_la
 {/if}
 ```
 
-Successivamente vedrai un nuovo layout del frontpage - "Personalizzato" - nelle impostazioni del portale:
+Successivamente vedrai un nuovo layout del frontpage - "Custom" - nelle impostazioni del portale:
 
 ![Select custom template](set_custom_template.png)
 
