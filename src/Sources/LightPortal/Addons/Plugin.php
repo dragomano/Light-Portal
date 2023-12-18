@@ -95,4 +95,14 @@ abstract class Plugin
 
 		(new PluginRepository)->addSettings($settings);
 	}
+
+	public function isDarkTheme(string $option): bool
+	{
+		if (empty($option))
+			return false;
+
+		$dark_themes = array_flip(array_filter(explode(',', $option)));
+
+		return $dark_themes && isset($dark_themes[$this->settings['theme_id']]);
+	}
 }
