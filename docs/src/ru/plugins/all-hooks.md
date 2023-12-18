@@ -410,22 +410,20 @@ public function frontModes(array &$modes): void
 }
 ```
 
-### frontCustomTemplate
+### frontLayouts
 
-(`$layouts`)
+> добавление пользовательской логики на главной странице
 
-> добавление собственных шаблонов для главной страницы
+### customLayoutExtensions
+
+(`&$extensions`)
+
+> позволяет добавлять пользовательские расширения макетов
 
 ```php
-public function frontCustomTemplate(): void
+public function customLayoutExtensions(array &$extensions): void
 {
-    ob_start();
-
-    // Your code
-
-    $this->context['lp_layout'] = ob_get_clean();
-
-    $this->modSettings['lp_frontpage_layout'] = '';
+    $extensions[] = '.twig';
 }
 ```
 

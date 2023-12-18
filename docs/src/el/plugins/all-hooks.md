@@ -410,22 +410,20 @@ public function frontModes(array &$modes): void
 }
 ```
 
-### frontCustomTemplate
+### frontLayouts
 
-(`$layouts`)
+> προσθέτοντας προσαρμοσμένες λειτουργίες για την πρώτη σελίδα
 
-> adding custom templates for the frontpage
+### customLayoutExtensions
+
+(`&$extensions`)
+
+> ας προσθέσουμε επεκτάσεις προσαρμοσμένης διάταξης
 
 ```php
-public function frontCustomTemplate(): void
+public function customLayoutExtensions(array &$extensions): void
 {
-    ob_start();
-
-    // Your code
-
-    $this->context['lp_layout'] = ob_get_clean();
-
-    $this->modSettings['lp_frontpage_layout'] = '';
+    $extensions[] = '.twig';
 }
 ```
 

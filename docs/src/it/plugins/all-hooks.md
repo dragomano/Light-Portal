@@ -410,22 +410,20 @@ public function frontModes(array &$modes): void
 }
 ```
 
-### frontCustomTemplate
+### frontLayouts
 
-(`$layouts`)
+> aggiunta di logica personalizzata per il frontpage
 
-> aggiunta di layout personalizzate per il frontpage
+### customLayoutExtensions
+
+(`&$extensions`)
+
+> aggiunta di estensioni di layout personalizzate
 
 ```php
-public function frontCustomTemplate(): void
+public function customLayoutExtensions(array &$extensions): void
 {
-    ob_start();
-
-    // Your code
-
-    $this->context['lp_layout'] = ob_get_clean();
-
-    $this->modSettings['lp_frontpage_layout'] = '';
+    $extensions[] = '.twig';
 }
 ```
 
