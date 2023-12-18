@@ -77,7 +77,7 @@ abstract class AbstractField
 
 	public function setValue(mixed $value, ...$params): self
 	{
-		if (is_callable($value) && $value::class)
+		if (is_callable($value) && is_object($value))
 			$this->setAttribute('value', $value()(...$params));
 		else
 			$this->setAttribute('value', $value);
