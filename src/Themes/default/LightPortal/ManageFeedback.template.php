@@ -23,6 +23,7 @@ function template_feedback()
 		<input type="hidden" name="smf_version" value="', SMF_VERSION, '">
 		<input type="hidden" name="php_version" value="', PHP_VERSION, '">
 		<input type="hidden" name="enabled_plugins" value="', str_replace(',', "\n", $modSettings['lp_enabled_plugins']), '">
+		<input type="hidden" name="language" value="', $context['user']['language'], '">
 		<input type="checkbox" name="botcheck" class="hidden" style="display: none">
 		<table class="table_grid">
 			<tbody>
