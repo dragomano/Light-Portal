@@ -8,6 +8,15 @@
     "latte/latte": "^3.0",
     "wikimedia/less.php": "^4.1"
   },
+  "require-dev": {
+    "mockery/mockery": "^1.5",
+    "nette/tester": "^2.5"
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "Tests/"
+    }
+  },
   "config": {
     "vendor-dir": "Libs",
     "optimize-autoloader": true,
@@ -15,6 +24,7 @@
     "sort-packages": true
   },
   "scripts": {
-    "post-update-cmd": "@php create_index.php"
+    "post-update-cmd": "@php create_index.php",
+    "test": "@php Libs/bin/tester Tests -C"
   }
 }

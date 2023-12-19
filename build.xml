@@ -69,6 +69,7 @@
         <exclude name="Sources/LightPortal/Addons/Uicons/**" />
         <exclude name="Sources/LightPortal/Addons/VkComments/**" />
         <exclude name="Sources/LightPortal/Addons/YandexTurbo/**" />
+        <exclude name="Sources/LightPortal/Tests/**" />
         <include name="database.php" />
         <include name="package-info.xml" />
         <include name="portal.php" />
