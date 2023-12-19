@@ -102,8 +102,7 @@ final class BlockRepository extends AbstractRepository
 
 			$data['title'][$row['lang']] = $row['title'];
 
-			if (! empty($row['value']))
-				$data['options']['parameters'][$row['name']] = $row['value'];
+			$data['options']['parameters'][$row['name']] = $row['value'];
 
 			$this->prepareMissingBlockTypes($row['type']);
 		}
