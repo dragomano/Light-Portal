@@ -211,8 +211,7 @@ final class PluginArea
 		$this->context['insert_after_template'] .= '
 		<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.js"></script>
 		<script>
-			const pageChart = document.querySelector("#addon_chart");
-			const myChart = new Chart(pageChart, {
+			new Chart("addon_chart", {
 				type: "pie",
 				data: {
 					labels: ["' . implode('", "', $this->context['lp_plugin_types']) . '"],
@@ -222,7 +221,6 @@ final class PluginArea
 					}]
 				},
 				options: {
-					responsive: true,
 					plugins: {
 						legend: {
 							position: "top"
