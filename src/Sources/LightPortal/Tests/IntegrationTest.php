@@ -60,19 +60,27 @@ test('loadTheme method', function () {
 });
 
 test('actions method', function () {
-	$actions = [
-		'forum' => true,
-	];
+	$actions = [];
 
-	Assert::hasNotKey(LP_ACTION, $actions);
+	(new Integration)->actions($actions);
+
+	Assert::hasKey('forum', $actions);
 });
 
 test('actions method with portal', function () {
-	$actions = [
-		'forum' => true,
-		'portal' => true,
-	];
+	global $modSettings;
+
+	$actions = [];
+
+	$modSettings['lp_frontpage_mode'] = false;
+
+	(new Integration)->actions($actions);
+
+	Assert::hasNotKey(LP_ACTION, $actions);
+
+	$modSettings['lp_frontpage_mode'] = true;
+
+	(new Integration)->actions($actions);
 
 	Assert::hasKey(LP_ACTION, $actions);
-	Assert::hasKey('forum', $actions);
 });
