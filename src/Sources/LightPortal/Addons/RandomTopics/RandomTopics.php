@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 22.12.23
  */
 
 namespace Bugo\LightPortal\Addons\RandomTopics;
@@ -246,6 +246,8 @@ class RandomTopics extends Block
 
 			echo '
 			</ul>';
+		} else {
+			echo '<div class="infobox">', $this->txt['lp_random_topics']['none'], '</div>';
 		}
 	}
 }
