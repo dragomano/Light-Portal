@@ -154,6 +154,34 @@ trait SMFTrait
 		return membersAllowedTo($permission);
 	}
 
+	protected function getNotifyPrefs(int|array $members, string|array $prefs = '', bool $process_default = false): array
+	{
+		require_once $this->sourcedir . '/Subs-Notify.php';
+
+		return getNotifyPrefs($members, $prefs, $process_default);
+	}
+
+	protected function loadEssential(): void
+	{
+		require_once $this->sourcedir . '/ScheduledTasks.php';
+
+		loadEssentialThemeData();
+	}
+
+	protected function loadEmailTemplate(string $template, array $replacements = [], string $lang = '', bool $loadLang = true): array
+	{
+		require_once $this->sourcedir . '/Subs-Post.php';
+
+		return loadEmailTemplate($template, $replacements, $lang, $loadLang);
+	}
+
+	protected function sendmail(array $to, string $subject, string $message, string $from = null, string $message_id = null, bool $send_html = false, int $priority = 3)
+	{
+		require_once $this->sourcedir . '/Subs-Post.php';
+
+		sendmail($to, $subject, $message, $from, $message_id, $send_html, $priority);
+	}
+
 	protected function createControlRichedit(array $editorOptions): void
 	{
 		require_once $this->sourcedir . '/Subs-Editor.php';

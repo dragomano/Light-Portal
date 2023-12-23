@@ -36,9 +36,7 @@ final class Notifier extends SMF_BackgroundTask
 		if ($this->_details['sender_id'])
 			$members = array_diff($members, [$this->_details['sender_id']]);
 
-		require_once $this->sourcedir . '/Subs-Notify.php';
-
-		$prefs = getNotifyPrefs($members, match ($this->_details['content_type']) {
+		$prefs = $this->getNotifyPrefs($members, match ($this->_details['content_type']) {
 			'new_comment' => 'page_comment',
 			'new_reply'   => 'page_comment_reply',
 			default       => 'page_unapproved'
@@ -107,10 +105,7 @@ final class Notifier extends SMF_BackgroundTask
 		}
 
 		if (! empty($notifies['email'])) {
-			require_once $this->sourcedir . '/Subs-Post.php';
-			require_once $this->sourcedir . '/ScheduledTasks.php';
-
-			loadEssentialThemeData();
+			$this->loadEssential();
 
 			$emails = [];
 			$result = $this->smcFunc['db_query']('', '
@@ -140,10 +135,10 @@ final class Notifier extends SMF_BackgroundTask
 
 				$this->loadLanguage('LightPortal/LightPortal', $this_lang);
 
-				$emaildata = loadEmailTemplate('page_unapproved', $replacements, empty($this->modSettings['userLanguage']) ? $this->language : $this_lang, false);
+				$emaildata = $this->loadEmailTemplate('page_unapproved', $replacements, empty($this->modSettings['userLanguage']) ? $this->language : $this_lang, false);
 
 				foreach ($recipients as $email_address)
-					sendmail($email_address, $emaildata['subject'], $emaildata['body'], null, 'page#' . $this->_details['content_id'], $emaildata['is_html'], 2);
+					$this->sendmail($email_address, $emaildata['subject'], $emaildata['body'], null, 'page#' . $this->_details['content_id'], $emaildata['is_html'], 2);
 			}
 		}
 
