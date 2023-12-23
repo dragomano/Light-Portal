@@ -154,13 +154,6 @@ trait SMFTrait
 		return membersAllowedTo($permission);
 	}
 
-	protected function prepareInstalledThemes(): void
-	{
-		require_once $this->sourcedir . '/Subs-Themes.php';
-
-		get_installed_themes();
-	}
-
 	protected function createControlRichedit(array $editorOptions): void
 	{
 		require_once $this->sourcedir . '/Subs-Editor.php';
