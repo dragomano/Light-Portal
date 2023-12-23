@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.12.23
+ * @version 24.12.23
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
@@ -28,7 +28,7 @@ class AdsBlock extends Block
 
 	public function addSettings(array &$config_vars): void
 	{
-		$config_vars['ads_block'][] = ['int', 'min_replies'];
+		$config_vars['ads_block'][] = ['range', 'min_replies'];
 	}
 
 	public function blockOptions(array &$options): void

@@ -19,6 +19,7 @@ import OptionDesc from './options/OptionDesc.vue';
 import OptionLargeText from './options/OptionLargeText.vue';
 import OptionMultiSelect from './options/OptionMultiSelect.vue';
 import OptionNumber from './options/OptionNumber.vue';
+import OptionRange from './options/OptionRange.vue';
 import OptionSelect from './options/OptionSelect.vue';
 import OptionText from './options/OptionText.vue';
 import OptionTitle from './options/OptionTitle.vue';
@@ -34,6 +35,7 @@ export default {
     OptionLargeText,
     OptionMultiSelect,
     OptionNumber,
+    OptionRange,
     OptionSelect,
     OptionText,
     OptionTitle,
@@ -101,6 +103,13 @@ const dynamicComponentProps = computed(() => {
     },
     number: {
       is: 'OptionNumber',
+      id: id.value,
+      name: name.value,
+      value: value.value,
+      option: props.option,
+    },
+    range: {
+      is: 'OptionRange',
       id: id.value,
       name: name.value,
       value: value.value,

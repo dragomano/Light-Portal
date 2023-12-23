@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 24.12.23
  */
 
 namespace Bugo\LightPortal\Addons\Search;
@@ -36,7 +36,7 @@ class Search extends Block
 			'min_chars' => 3,
 		]);
 
-		$config_vars['search'][] = ['int', 'min_chars'];
+		$config_vars['search'][] = ['range', 'min_chars', 'min' => 1, 'max' => 10];
 	}
 
 	public function actions()
