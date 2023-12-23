@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 24.12.23
  */
 
 namespace Bugo\LightPortal\Addons\TinySlider;
 
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, NumberField, RadioField};
+use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, NumberField, RadioField, RangeField};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -108,9 +108,9 @@ class TinySlider extends Block
 			->setOptions(array_combine(['vertical', 'horizontal'], $this->txt['lp_panel_direction_set']))
 			->setValue($this->context['lp_block']['options']['parameters']['axis']);
 
-		NumberField::make('num_items', $this->txt['lp_tiny_slider']['num_items'])
-			->setAfter($this->txt['lp_tiny_slider']['num_items_subtext'])
+		RangeField::make('num_items', $this->txt['lp_tiny_slider']['num_items'])
 			->setAttribute('min', 1)
+			->setAttribute('max', 12)
 			->setValue($this->context['lp_block']['options']['parameters']['num_items']);
 
 		NumberField::make('gutter', $this->txt['lp_tiny_slider']['gutter'])
@@ -138,8 +138,9 @@ class TinySlider extends Block
 			->setAttribute('min', 0)
 			->setValue($this->context['lp_block']['options']['parameters']['fixed_width']);
 
-		NumberField::make('slide_by', $this->txt['lp_tiny_slider']['slide_by'])
+		RangeField::make('slide_by', $this->txt['lp_tiny_slider']['slide_by'])
 			->setAttribute('min', 1)
+			->setAttribute('max', 12)
 			->setValue($this->context['lp_block']['options']['parameters']['slide_by']);
 
 		NumberField::make('speed', $this->txt['lp_tiny_slider']['speed'])

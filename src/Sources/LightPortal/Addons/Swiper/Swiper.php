@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 24.12.23
  */
 
 namespace Bugo\LightPortal\Addons\Swiper;
 
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, NumberField, RadioField, SelectField};
+use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, RadioField, RangeField, SelectField};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -92,7 +92,9 @@ class Swiper extends Block
 			->setOptions(array_combine($this->effects, $this->effects))
 			->setValue($this->context['lp_block']['options']['parameters']['effect']);
 
-		NumberField::make('slides_per_view', $this->txt['lp_swiper']['slides_per_view'])
+		RangeField::make('slides_per_view', $this->txt['lp_swiper']['slides_per_view'])
+			->setAttribute('min', 1)
+			->setAttribute('max', 12)
 			->setValue($this->context['lp_block']['options']['parameters']['slides_per_view']);
 
 		CheckboxField::make('loop', $this->txt['lp_swiper']['loop'])

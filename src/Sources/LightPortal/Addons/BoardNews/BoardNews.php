@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 24.12.23
  */
 
 namespace Bugo\LightPortal\Addons\BoardNews;
 
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\NumberField;
+use Bugo\LightPortal\Areas\Fields\RangeField;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -62,7 +63,9 @@ class BoardNews extends Block
 			->setAttribute('min', 1)
 			->setValue($this->context['lp_block']['options']['parameters']['num_posts']);
 
-		NumberField::make('teaser_length', $this->txt['lp_board_news']['teaser_length'])
+		RangeField::make('teaser_length', $this->txt['lp_board_news']['teaser_length'])
+			->setAttribute('max', 1000)
+			->setAttribute('step', 5)
 			->setValue($this->context['lp_block']['options']['parameters']['teaser_length']);
 	}
 
