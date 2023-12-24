@@ -96,7 +96,7 @@ abstract class Plugin
 		(new PluginRepository)->addSettings($settings);
 	}
 
-	public function isDarkTheme(string $option): bool
+	public function isDarkTheme(?string $option): bool
 	{
 		if (empty($option))
 			return false;
