@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 25.12.23
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -471,7 +471,8 @@ class Handler extends Plugin
 		}
 
 		if (! empty($this->context['lp_plugin']['options'])) {
-			$method = $class->addMethod('addSettings')->setReturnType('void');
+			$method = $class->addMethod('addSettings')
+				->setReturnType('void');
 			$method->addParameter('config_vars')
 				->setReference()
 				->setType('array');
@@ -498,31 +499,34 @@ class Handler extends Plugin
 		}
 
 		if ($this->context['lp_plugin']['type'] === 'block') {
-			$method = $class->addMethod('prepareContent');
+			$method = $class->addMethod('prepareContent')
+				->setReturnType('void');
 			$method->addParameter('data');
 			$method->addParameter('parameters')
 				->setType('array');
 			$method->addBody("if (\$data->type !== '$plugin_name')")
 				->addBody("\treturn;" . PHP_EOL)
 				->addBody("echo 'Your html code';");
-			$method->setReturnType('void');
 		}
 
 		if ($this->context['lp_plugin']['type'] === 'editor') {
-			$method = $class->addMethod('prepareEditor');
+			$method = $class->addMethod('prepareEditor')
+				->setReturnType('void');
 			$method->addParameter('object')
 				->setType('array');
 		}
 
 		if ($this->context['lp_plugin']['type'] === 'comment') {
-			$method = $class->addMethod('comments');
+			$method = $class->addMethod('comments')
+				->setReturnType('void');
 			$method->addBody("if (! empty(\$this->modSettings['lp_show_comment_block']) && \$this->modSettings['lp_show_comment_block'] === '$plugin_name') {");
 			$method->addBody("\t// Your code");
 			$method->addBody("}");
 		}
 
 		if (! empty($this->context['lp_plugin']['components'])) {
-			$method = $class->addMethod('credits');
+			$method = $class->addMethod('credits')
+				->setReturnType('void');
 			$method->addParameter('links')
 				->setReference()
 				->setType('array');
@@ -535,7 +539,6 @@ class Handler extends Plugin
 				->addBody("\t\t'link' => '{$this->txt['lp_plugin_maker']['license_link']}'")
 				->addBody("\t]")
 				->addBody("];");
-			$method->setReturnType('void');
 		}
 
 		switch ($this->context['lp_plugin']['license']) {
