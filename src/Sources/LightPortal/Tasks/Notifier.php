@@ -14,14 +14,10 @@
 
 namespace Bugo\LightPortal\Tasks;
 
-use Bugo\LightPortal\Helper;
-use SMF_BackgroundTask;
 use ErrorException;
 
-final class Notifier extends SMF_BackgroundTask
+final class Notifier extends BackgroundTask
 {
-	use Helper;
-
 	/**
 	 * @throws ErrorException
 	 */
