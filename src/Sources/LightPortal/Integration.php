@@ -290,6 +290,8 @@ final class Integration extends AbstractMain
 		$this->context['non_guest_permissions'] = array_merge(
 			$this->context['non_guest_permissions'],
 			[
+				'light_portal_manage_pages_own',
+				'light_portal_manage_pages_any',
 				'light_portal_manage_pages',
 				'light_portal_approve_pages',
 			]
@@ -299,9 +301,6 @@ final class Integration extends AbstractMain
 	public function loadPermissions(array &$permissionGroups, array &$permissionList, array &$leftPermissionGroups): void
 	{
 		$this->txt['permissiongroup_light_portal'] = LP_NAME;
-
-		$this->context['permissions_excluded']['light_portal_manage_pages'][]  = 0;
-		$this->context['permissions_excluded']['light_portal_approve_pages'][] = 0;
 
 		$permissionList['membergroup']['light_portal_view']          = [false, 'light_portal'];
 		$permissionList['membergroup']['light_portal_manage_pages']  = [true, 'light_portal'];

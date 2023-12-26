@@ -45,10 +45,6 @@ final class BasicConfig
 		$this->context['canonical_url'] = $this->scripturl . '?action=admin;area=lp_settings;sa=basic';
 		$this->context['post_url']      = $this->context['canonical_url'] . ';save';
 
-		$this->context['permissions_excluded']['light_portal_manage_pages_own'] = [-1, 0];
-		$this->context['permissions_excluded']['light_portal_manage_pages_any'] = [-1, 0];
-		$this->context['permissions_excluded']['light_portal_approve_pages']    = [-1, 0];
-
 		$this->addDefaultValues([
 			'lp_frontpage_title'           => str_replace(["'", "\""], "", $this->context['forum_name']),
 			'lp_show_views_and_comments'   => 1,
