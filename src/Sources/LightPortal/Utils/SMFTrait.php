@@ -14,6 +14,7 @@
 
 namespace Bugo\LightPortal\Utils;
 
+use ErrorException;
 use Exception;
 
 if (! defined('SMF'))
@@ -134,9 +135,9 @@ trait SMFTrait
 		return shorten_subject($text, $length);
 	}
 
-	protected function loadMemberData(array|string|int $users, bool $is_name = false, string $set = 'normal'): array
+	protected function loadMemberData(array $users, string $set = 'normal'): array
 	{
-		return loadMemberData($users, $is_name, $set);
+		return loadMemberData($users, false, $set);
 	}
 
 	/**
@@ -175,7 +176,10 @@ trait SMFTrait
 		return loadEmailTemplate($template, $replacements, $lang, $loadLang);
 	}
 
-	protected function sendmail(array $to, string $subject, string $message, string $from = null, string $message_id = null, bool $send_html = false, int $priority = 3)
+	/**
+	 * @throws ErrorException
+	 */
+	protected function sendmail(array $to, string $subject, string $message, string $from = null, string $message_id = null, bool $send_html = false, int $priority = 3): void
 	{
 		require_once $this->sourcedir . '/Subs-Post.php';
 

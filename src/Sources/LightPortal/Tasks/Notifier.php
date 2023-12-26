@@ -39,7 +39,7 @@ final class Notifier extends BackgroundTask
 		}, true);
 
 		if ($this->_details['sender_id'] && empty($this->_details['sender_name'])) {
-			$this->loadMemberData($this->_details['sender_id'], set: 'minimal');
+			$this->loadMemberData([$this->_details['sender_id']], 'minimal');
 
 			empty($this->user_profile[$this->_details['sender_id']])
 				? $this->_details['sender_id']   = 0

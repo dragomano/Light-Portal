@@ -88,7 +88,7 @@ trait Helper
 			return '';
 
 		if (empty($userData))
-			$userData = $this->loadMemberData($userId);
+			$userData = $this->loadMemberData([$userId]);
 
 		if (! isset($this->memberContext[$userId]) && in_array($userId, $userData)) {
 			try {
