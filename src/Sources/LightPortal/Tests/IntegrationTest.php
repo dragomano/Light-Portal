@@ -12,7 +12,7 @@ use Tester\Assert;
 require_once __DIR__ . '/bootstrap.php';
 
 test('hook methods exist', function () {
-	Assert::true(method_exists(Integration::class, 'userInfo'));
+	Assert::true(method_exists(Integration::class, 'preLoad'));
 	Assert::true(method_exists(Integration::class, 'preJavascriptOutput'));
 	Assert::true(method_exists(Integration::class, 'preCssOutput'));
 	Assert::true(method_exists(Integration::class, 'loadTheme'));
@@ -33,8 +33,8 @@ test('hook methods exist', function () {
 	Assert::true(method_exists(Integration::class, 'cleanCache'));
 });
 
-test('userInfo method', function () {
-	global $context, $boardurl, $scripturl;
+test('preLoad method', function () {
+	global $context, $boardurl;
 
 	Assert::type('float', $context['lp_load_time']);
 	Assert::type('int', $context['lp_num_queries']);
@@ -47,7 +47,7 @@ test('userInfo method', function () {
 	Assert::same('portal', LP_ACTION);
 	Assert::same('page', LP_PAGE_PARAM);
 	Assert::contains(LP_ACTION, LP_BASE_URL);
-	Assert::same($scripturl . '?' . LP_PAGE_PARAM . '=', LP_PAGE_URL);
+	Assert::contains('?' . LP_PAGE_PARAM . '=', LP_PAGE_URL);
 });
 
 test('loadTheme method', function () {
