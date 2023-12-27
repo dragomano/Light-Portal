@@ -103,7 +103,7 @@ class TopPosters extends Block
 		return array_column($posters, 'poster');
 	}
 
-	public function prepareContent($data, array $parameters): void
+	public function prepareContent(object $data, array $parameters): void
 	{
 		if ($data->type !== 'top_posters')
 			return;

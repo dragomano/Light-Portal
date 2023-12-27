@@ -160,7 +160,7 @@ class Search extends Block
 		$assets['scripts']['search'][] = 'https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.min.js';
 	}
 
-	public function prepareContent($data): void
+	public function prepareContent(object $data): void
 	{
 		if ($data->type !== 'search')
 			return;

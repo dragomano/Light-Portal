@@ -172,7 +172,7 @@ class RecentPosts extends Block
 		return $posts;
 	}
 
-	public function prepareContent($data, array $parameters): void
+	public function prepareContent(object $data, array $parameters): void
 	{
 		if ($data->type !== 'recent_posts')
 			return;

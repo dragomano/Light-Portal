@@ -35,7 +35,7 @@ class ThemeSwitcher extends Block
 			$this->cache()->flush();
 	}
 
-	public function prepareContent($data): void
+	public function prepareContent(object $data): void
 	{
 		if ($data->type !== 'theme_switcher')
 			return;

@@ -30,7 +30,7 @@ class CategoryList extends Block
 		return (new Category)->getAll(0, 0, 'c.priority');
 	}
 
-	public function prepareContent($data): void
+	public function prepareContent(object $data): void
 	{
 		if ($data->type !== 'category_list')
 			return;

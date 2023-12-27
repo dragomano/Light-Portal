@@ -159,7 +159,7 @@ class Swiper extends Block
 		return ['content' => $html];
 	}
 
-	public function prepareContent($data, array $parameters): void
+	public function prepareContent(object $data, array $parameters): void
 	{
 		if ($data->type !== 'swiper')
 			return;

@@ -69,7 +69,7 @@ class BoardNews extends Block
 			->setValue($this->context['lp_block']['options']['parameters']['teaser_length']);
 	}
 
-	public function prepareContent($data, array $parameters): void
+	public function prepareContent(object $data, array $parameters): void
 	{
 		if ($data->type !== 'board_news')
 			return;

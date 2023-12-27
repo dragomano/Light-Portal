@@ -222,7 +222,7 @@ class RandomTopics extends Block
 	/**
 	 * @throws IntlException
 	 */
-	public function prepareContent($data, array $parameters): void
+	public function prepareContent(object $data, array $parameters): void
 	{
 		if ($data->type !== 'random_topics')
 			return;

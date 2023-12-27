@@ -35,7 +35,7 @@ class UserInfo extends Block
 		return $this->loadMemberContext($this->user_info['id']);
 	}
 
-	public function prepareContent($data): void
+	public function prepareContent(object $data): void
 	{
 		if ($data->type !== 'user_info')
 			return;

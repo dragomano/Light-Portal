@@ -63,7 +63,7 @@ class WhosOnline extends Block
 			->setValue($this->context['lp_block']['options']['parameters']['update_interval']);
 	}
 
-	public function prepareContent($data, array $parameters): void
+	public function prepareContent(object $data, array $parameters): void
 	{
 		if ($data->type !== 'whos_online')
 			return;

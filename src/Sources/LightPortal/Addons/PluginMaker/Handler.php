@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 25.12.23
+ * @version 27.12.23
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -501,7 +501,8 @@ class Handler extends Plugin
 		if ($this->context['lp_plugin']['type'] === 'block') {
 			$method = $class->addMethod('prepareContent')
 				->setReturnType('void');
-			$method->addParameter('data');
+			$method->addParameter('data')
+				->setType('object');
 			$method->addParameter('parameters')
 				->setType('array');
 			$method->addBody("if (\$data->type !== '$plugin_name')")

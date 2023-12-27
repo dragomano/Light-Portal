@@ -181,7 +181,7 @@ class ArticleList extends Block
 		return $pages;
 	}
 
-	public function prepareContent($data, array $parameters): void
+	public function prepareContent(object $data, array $parameters): void
 	{
 		if ($data->type !== 'article_list')
 			return;

@@ -86,7 +86,7 @@ class Todays extends Block
 		return $this->getFromSsi('todays' . ucfirst($type), $output_method);
 	}
 
-	public function prepareContent($data, array $parameters): void
+	public function prepareContent(object $data, array $parameters): void
 	{
 		if ($data->type !== 'todays')
 			return;
