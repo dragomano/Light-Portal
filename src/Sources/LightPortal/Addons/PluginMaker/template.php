@@ -60,8 +60,13 @@ function template_plugin_post(): void
 											<table class="plugin_options table_grid">
 												<thead>
 													<tr class="title_bar">
-														<th>#</th>
-														<th colspan="3">', $txt['lp_plugin_maker']['option_name'], '</th>
+														<th style="width: 20%"></th>
+														<th colspan="3">
+															<span>', $txt['lp_plugin_maker']['option'], '</span>
+															<button type="button" class="button" @click="removeOption(index)">
+																<span class="main_icons delete"></span> <span class="remove_label">', $txt['remove'], '</span>
+															</button>
+														</th>
 													</tr>
 												</thead>
 												<tbody>
@@ -70,31 +75,36 @@ function template_plugin_post(): void
 															<div class="infobox">', $txt['lp_plugin_maker']['option_desc'], '</div>
 														</td>
 													</tr>
-													<tr class="windowbg">
-														<td x-text="index + 1"></td>
-														<td colspan="2">
+													<tr class="windowbg" x-data="{ option_name: $id(\'option-name\') }">
+														<td>
+															<label :for="option_name">
+																<strong>', $txt['lp_plugin_maker']['option_name'], '</strong>
+															</label>
+														</td>
+														<td colspan="3">
 															<input
 																type="text"
 																x-model="option.name"
 																name="option_name[]"
+																:id="option_name"
 																pattern="^[a-z][a-z_]+$"
 																maxlength="100"
 																placeholder="option_name"
 																required
 															>
 														</td>
-														<td>
-															<button type="button" class="button" @click="removeOption(index)" style="width: 100%">
-																<span class="main_icons delete"></span> ', $txt['remove'], '
-															</button>
-														</td>
 													</tr>
 													<tr class="windowbg" x-data="{ type_id: $id(\'option-type\'), default_id: $id(\'option-default\') }">
 														<td>
-															<label :for="type_id"><strong>', $txt['lp_plugin_maker']['option_type'], '</strong></label>
+															<label :for="type_id">
+																<strong>', $txt['lp_plugin_maker']['option_type'], '</strong>
+															</label>
 														</td>
 														<td>
-															<select x-model="option.type" name="option_type[]" :id="type_id">';
+															<select
+																x-model="option.type"
+																name="option_type[]"
+																:id="type_id">';
 
 	foreach ($context['lp_plugin_option_types'] as $type => $name) {
 		echo '
@@ -105,7 +115,9 @@ function template_plugin_post(): void
 															</select>
 														</td>
 														<td>
-															<label :for="default_id"><strong>', $txt['lp_plugin_maker']['option_default_value'], '</strong></label>
+															<label :for="default_id">
+																<strong>', $txt['lp_plugin_maker']['option_default_value'], '</strong>
+															</label>
 														</td>
 														<td>
 															<template x-if="option.type == \'text\'">
@@ -117,7 +129,7 @@ function template_plugin_post(): void
 															<template x-if="option.type == \'color\'">
 																<input type="color" x-model="option.default" :name="`option_defaults[${index}]`" :id="default_id">
 															</template>
-															<template x-if="option.type == \'int\'">
+															<template x-if="[\'int\', \'range\'].includes(option.type)">
 																<input type="number" min="0" step="1" x-model="option.default" :name="`option_defaults[${index}]`" :id="default_id">
 															</template>
 															<template x-if="option.type == \'float\'">
@@ -128,6 +140,9 @@ function template_plugin_post(): void
 															</template>
 															<template x-if="[\'multiselect\', \'select\'].includes(option.type)">
 																<input x-model="option.default" :name="`option_defaults[${index}]`" :id="default_id">
+															</template>
+															<template x-if="[\'title\', \'desc\', \'callback\'].includes(option.type)">
+																<span>', $txt['no'], '</span>
 															</template>
 														</td>
 													</tr>
@@ -140,14 +155,14 @@ function template_plugin_post(): void
 													</template>
 													<template x-if="[\'multiselect\', \'select\'].includes(option.type)">
 														<tr class="windowbg">
-															<td colspan="1"><strong>', $txt['lp_plugin_maker']['option_variants'], '</strong></td>
+															<td><strong>', $txt['lp_plugin_maker']['option_variants'], '</strong></td>
 															<td colspan="3">
 																<input x-model="option.variants" name="option_variants[]" placeholder="', $txt['lp_plugin_maker']['option_variants_placeholder'], '">
 															</td>
 														</tr>
 													</template>
 													<tr class="windowbg">
-														<td colspan="1"><strong>', $txt['lp_plugin_maker']['option_translations'], '</strong></td>
+														<td><strong>', $txt['lp_plugin_maker']['option_translations'], '</strong></td>
 														<td colspan="3">
 															<table class="table_grid">
 																<tbody>';
@@ -155,9 +170,8 @@ function template_plugin_post(): void
 	foreach ($context['languages'] as $lang) {
 		echo '
 																	<tr class="windowbg">
-																		<td><strong>', $lang['name'], '</strong></td>
 																		<td>
-																			<input type="text" x-model="option.translations[\'', $lang['filename'], '\']" name="option_translations[', $lang['filename'], '][]"', $lang['filename'] === 'english' ? ' required' : '', ' placeholder="', $lang['filename'], '">
+																			<input type="text" x-model="option.translations[\'', $lang['filename'], '\']" name="option_translations[', $lang['filename'], '][]"', $lang['filename'] === 'english' ? ' required' : '', ' placeholder="', $lang['name'], '">
 																		</td>
 																	</tr>';
 	}
