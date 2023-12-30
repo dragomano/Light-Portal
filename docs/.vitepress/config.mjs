@@ -41,36 +41,28 @@ export default defineConfig({
     [
       'script',
       {},
-      `(function (m, e, t, r, i, k, a) {
-        m[i] =
-          m[i] ||
+      (function (c, l, a, r, i, t, y) {
+        c[a] =
+          c[a] ||
           function () {
-            (m[i].a = m[i].a || []).push(arguments);
+            (c[a].q = c[a].q || []).push(arguments);
           };
-        m[i].l = 1 * new Date();
-        for (var j = 0; j < document.scripts.length; j++) {
-          if (document.scripts[j].src === r) {
-            return;
-          }
-        }
-        (k = e.createElement(t)),
-          (a = e.getElementsByTagName(t)[0]),
-          (k.async = 1),
-          (k.src = r),
-          a.parentNode.insertBefore(k, a);
-      })(window, document, 'script', 'https://cdn.jsdelivr.net/npm/yandex-metrica-watch@1/tag.js', 'ym');
-      ym(89104842, 'init', {
-        clickmap: true,
-        trackLinks: true,
-        accurateTrackBounce: true,
-        webvisor: true,
-        trackHash: true,
-      });`,
+        t = l.createElement(r);
+        t.async = 1;
+        t.src = 'https://www.clarity.ms/tag/' + i;
+        y = l.getElementsByTagName(r)[0];
+        y.parentNode.insertBefore(t, y);
+      })(window, document, 'clarity', 'script', 'ke5jb39203'),
     ],
   ],
   base: '/Light-Portal/',
   srcDir: './src',
   cleanUrls: true,
+  markdown: {
+    image: {
+      lazyLoading: true,
+    },
+  },
   themeConfig: {
     externalLinkIcon: true,
     search: {
