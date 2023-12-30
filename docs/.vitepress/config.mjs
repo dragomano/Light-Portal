@@ -41,7 +41,7 @@ export default defineConfig({
     [
       'script',
       {},
-      (function (c, l, a, r, i, t, y) {
+      `(function (c, l, a, r, i, t, y) {
         c[a] =
           c[a] ||
           function () {
@@ -52,7 +52,7 @@ export default defineConfig({
         t.src = 'https://www.clarity.ms/tag/' + i;
         y = l.getElementsByTagName(r)[0];
         y.parentNode.insertBefore(t, y);
-      })(window, document, 'clarity', 'script', 'ke5jb39203'),
+      })(window, document, 'clarity', 'script', 'ke5jb39203')`,
     ],
   ],
   base: '/Light-Portal/',
