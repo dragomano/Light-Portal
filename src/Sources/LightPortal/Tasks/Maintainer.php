@@ -14,13 +14,8 @@
 
 namespace Bugo\LightPortal\Tasks;
 
-use Bugo\LightPortal\Helper;
-use SMF_BackgroundTask;
-
-final class Maintainer extends SMF_BackgroundTask
+final class Maintainer extends BackgroundTask
 {
-	use Helper;
-
 	public function execute(): bool
 	{
 		@ini_set('opcache.enable', '0');

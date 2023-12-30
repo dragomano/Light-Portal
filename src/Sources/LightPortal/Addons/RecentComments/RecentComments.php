@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 24.12.23
  */
 
 namespace Bugo\LightPortal\Addons\RecentComments;
 
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\NumberField;
+use Bugo\LightPortal\Areas\Fields\RangeField;
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -59,7 +60,7 @@ class RecentComments extends Block
 			->setAttribute('min', 1)
 			->setValue($this->context['lp_block']['options']['parameters']['num_comments']);
 
-		NumberField::make('length', $this->txt['lp_recent_comments']['length'])
+		RangeField::make('length', $this->txt['lp_recent_comments']['length'])
 			->setAttribute('min', 10)
 			->setValue($this->context['lp_block']['options']['parameters']['length']);
 	}
@@ -117,7 +118,7 @@ class RecentComments extends Block
 	/**
 	 * @throws IntlException
 	 */
-	public function prepareContent($data, array $parameters): void
+	public function prepareContent(object $data, array $parameters): void
 	{
 		if ($data->type !== 'recent_comments')
 			return;

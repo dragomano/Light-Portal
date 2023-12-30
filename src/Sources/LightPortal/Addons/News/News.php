@@ -69,7 +69,7 @@ class News extends Block
 		return $this->getFromSsi('news', 'return');
 	}
 
-	public function prepareContent($data, array $parameters): void
+	public function prepareContent(object $data, array $parameters): void
 	{
 		if ($data->type !== 'news')
 			return;

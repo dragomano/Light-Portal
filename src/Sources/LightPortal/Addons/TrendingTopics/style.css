@@ -1,0 +1,18 @@
+.trending_topics {
+	list-style: none;
+	padding-left: 0;
+}
+
+.trending_topics li {
+	margin: 4px 0 0 0;
+	padding: 6px 12px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 10px;
+}
+
+.trending_topics li .poster_avatar img {
+	width: 32px;
+	height: 32px;
+}

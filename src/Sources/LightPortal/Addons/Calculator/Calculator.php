@@ -32,7 +32,7 @@ class Calculator extends Block
 		$options['calculator']['no_content_class'] = true;
 	}
 
-	public function prepareContent($data): void
+	public function prepareContent(object $data): void
 	{
 		if ($data->type !== 'calculator')
 			return;

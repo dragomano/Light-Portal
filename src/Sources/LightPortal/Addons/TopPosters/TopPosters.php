@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 26.12.23
  */
 
 namespace Bugo\LightPortal\Addons\TopPosters;
@@ -18,7 +18,6 @@ namespace Bugo\LightPortal\Addons\TopPosters;
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\LightPortal\Areas\Fields\NumberField;
-use Exception;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -81,47 +80,45 @@ class TopPosters extends Block
 		if (empty($members))
 			return [];
 
-		$loadedUserIds = $this->loadMemberData(array_column($members, 'id_member'));
-
 		$posters = [];
 		foreach ($members as $row) {
-			if (! isset($this->memberContext[$row['id_member']]) && in_array($row['id_member'], $loadedUserIds)) {
-				try {
-					$this->loadMemberContext($row['id_member']);
-				} catch (Exception $e) {
-					$this->logError('[LP] TopPosters addon: ' . $e->getMessage());
-				}
-			}
-
 			$posters[] = [
-				'name'   => $row['real_name'],
-				'link'   => $this->allowedTo('profile_view')
-					? '<a href="' . $this->scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>'
-					: $row['real_name'],
-				'avatar' => empty($parameters['show_avatars']) ? '' : $this->memberContext[$row['id_member']]['avatar']['image'],
-				'posts'  => $row['posts']
+				'poster' => [
+					'id'     => $row['id_member'],
+					'name'   => $row['real_name'],
+					'posts'  => $row['posts'],
+					'link'   => $this->allowedTo('profile_view')
+						? '<a href="' . $this->scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>'
+						: $row['real_name'],
+				]
 			];
 		}
 
 		$this->smcFunc['db_free_result']($result);
 		$this->context['lp_num_queries']++;
 
-		return $posters;
+		if ($parameters['show_avatars'] && empty($parameters['use_simple_style']))
+			$posters = $this->getItemsWithUserAvatars($posters, 'poster');
+
+		return array_column($posters, 'poster');
 	}
 
-	public function prepareContent($data, array $parameters): void
+	public function prepareContent(object $data, array $parameters): void
 	{
 		if ($data->type !== 'top_posters')
 			return;
 
 		$parameters['show_numbers_only'] ??= false;
+		$parameters['num_posters'] ??= 10;
 
 		$top_posters = $this->cache('top_posters_addon_b' . $data->block_id . '_u' . $this->user_info['id'])
 			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getData', $parameters);
 
-		if (empty($top_posters))
+		if (empty($top_posters)) {
+			echo $this->txt['lp_top_posters']['none'];
 			return;
+		}
 
 		echo '
 		<dl class="top_posters stats">';

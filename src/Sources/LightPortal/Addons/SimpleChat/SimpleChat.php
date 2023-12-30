@@ -94,7 +94,7 @@ class SimpleChat extends Block
 		return $messages;
 	}
 
-	public function prepareContent($data, array $parameters): void
+	public function prepareContent(object $data, array $parameters): void
 	{
 		if ($data->type !== 'simple_chat')
 			return;

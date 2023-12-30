@@ -56,19 +56,15 @@ $result = getBubbleSortedArray($array);
 var_dump($result);
 ```
 
-```php
-// Use this
-$test = $variable ?: 'default_value';
+#### In short
 
-// Instead of
-$test = empty($variable) ? 'default_value' : $variable;
-
-// Use this
-$test = $variable ?? 'default_value';
-
-// Instead of
-$test = isset($variable) ? $variable : 'default_value';
-```
+- Variable names: `$camelCase = true`
+- Function names: `snake_case()`
+- Class names: `class PascalCase`
+- Method names: `$this->camelCase()`
+- Array key names: `$var['snake_case']`
+- Object key names: `$obj->camelCase`
+- Constant names: `CONSTANT_NAME`
 
 ### HTML Styleguide
 

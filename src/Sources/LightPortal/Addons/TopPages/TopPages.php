@@ -100,7 +100,7 @@ class TopPages extends Block
 		return $pages;
 	}
 
-	public function prepareContent($data, array $parameters): void
+	public function prepareContent(object $data, array $parameters): void
 	{
 		if ($data->type !== 'top_pages')
 			return;

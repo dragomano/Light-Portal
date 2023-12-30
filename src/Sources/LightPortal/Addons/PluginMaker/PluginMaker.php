@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.12.23
+ * @version 29.12.23
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -27,7 +27,7 @@ class PluginMaker extends Plugin
 	public function init(): void
 	{
 		$this->context['lp_plugin_option_types'] = array_combine(
-			['text', 'url', 'color', 'int', 'float', 'check', 'multiselect', 'select'],
+			['text', 'url', 'color', 'int', 'float', 'check', 'multiselect', 'select', 'range', 'title', 'desc', 'callback'],
 			$this->txt['lp_plugin_maker']['option_type_set']
 		);
 	}

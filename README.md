@@ -8,7 +8,7 @@
 [![](https://img.shields.io/badge/Demo-Forum-brightgreen.svg)](https://demo.dragomano.ru)
 [![](https://img.shields.io/badge/Docs-Site-orange.svg)](https://dragomano.github.io/Light-Portal/)
 
-- **Tested on:** PHP 8.2.13 / MariaDB 10.6.7
+- **Tested on:** PHP 8.2.13 / MariaDB 10.11.6
 - **Languages:** Russian, English, Polish, Spanish, French, Turkish, Ukrainian, German, Italian, Portuguese, Greek, Czech, Danish, Dutch, Norwegian, Swedish, Arabic
 
 ## Description ([обзор на русском](https://dragomano.ru/mods/light-portal))
@@ -32,9 +32,10 @@ The portal supports BBC, HTML, PHP, as well as Markdown content within pages and
 - Open Graph markup for pages and comments.
 - Manage blocks in Admin: drag-n-drop of blocks, including updating of the priority.
 - Built-in ad manager (AdsBlock plugin).
-- Import and export for pages and blocks.
-- Support for plugins (+ PluginMaker).
+- Import and export for pages, blocks, and plugins.
+- Support for plugins.
 - Support for standalone mode.
+- Feedback area.
 
 ## Supported by
 

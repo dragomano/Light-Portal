@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.09.23
+ * @version 26.12.23
  */
 
 namespace Bugo\LightPortal\Addons\UserInfo;
@@ -25,20 +25,17 @@ class UserInfo extends Block
 {
 	public string $icon = 'fas fa-user';
 
+	/**
+	 * @throws Exception
+	 */
 	public function getData(): array
 	{
-		if (! isset($this->memberContext[$this->user_info['id']]) && in_array($this->user_info['id'], $this->loadMemberData($this->user_info['id']))) {
-			try {
-				$this->loadMemberContext($this->user_info['id']);
-			} catch (Exception $e) {
-				$this->logError('[LP] UserInfo addon: ' . $e->getMessage());
-			}
-		}
+		$this->loadMemberData([$this->user_info['id']]);
 
-		return $this->memberContext[$this->user_info['id']];
+		return $this->loadMemberContext($this->user_info['id']);
 	}
 
-	public function prepareContent($data): void
+	public function prepareContent(object $data): void
 	{
 		if ($data->type !== 'user_info')
 			return;

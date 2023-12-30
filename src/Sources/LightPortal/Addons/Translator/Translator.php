@@ -67,7 +67,7 @@ class Translator extends Block
 			->setValue($this->context['lp_block']['options']['parameters']['auto_mode']);
 	}
 
-	public function prepareContent($data, array $parameters): void
+	public function prepareContent(object $data, array $parameters): void
 	{
 		if ($data->type !== 'translator')
 			return;

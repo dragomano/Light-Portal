@@ -26,7 +26,7 @@ class ChessBoard extends Block
 
 	public string $icon = 'fas fa-chess';
 
-	public function prepareContent($data): void
+	public function prepareContent(object $data): void
 	{
 		if ($data->type !== 'chess_board')
 			return;

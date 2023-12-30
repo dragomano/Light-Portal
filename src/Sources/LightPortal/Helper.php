@@ -88,7 +88,7 @@ trait Helper
 			return '';
 
 		if (empty($userData))
-			$userData = $this->loadMemberData($userId);
+			$userData = $this->loadMemberData([$userId]);
 
 		if (! isset($this->memberContext[$userId]) && in_array($userId, $userData)) {
 			try {
@@ -121,17 +121,31 @@ trait Helper
 		return $this->user_info['is_admin'] ? $types : array_slice($types, 0, 2);
 	}
 
-	public function getForumThemes(bool $only_available = false): array
+	public function getForumThemes(): array
 	{
 		$themes = $this->cache()->get('forum_themes');
 
 		if ($themes === null) {
-			$this->prepareInstalledThemes();
-			$themes = $this->context['themes'];
+			$result = $this->smcFunc['db_query']('', '
+				SELECT id_theme, value
+				FROM {db_prefix}themes
+				WHERE id_theme IN ({array_int:themes})
+					AND variable = {literal:name}',
+				[
+					'themes' => empty($this->modSettings['knownThemes']) ? [] : explode(',', $this->modSettings['knownThemes']),
+				]
+			);
 
-			if ($only_available) {
-				$themes = array_filter($themes, fn($theme) => $theme['known'] && $theme['enable']);
+			$themes = [];
+			while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
+				$themes[$row['id_theme']] = [
+					'id'   => (int) $row['id_theme'],
+					'name' => $row['value'],
+				];
 			}
+
+			$this->smcFunc['db_free_result']($result);
+			$this->context['lp_num_queries']++;
 
 			$themes = array_column($themes, 'name', 'id');
 			$this->cache()->put('forum_themes', $themes);

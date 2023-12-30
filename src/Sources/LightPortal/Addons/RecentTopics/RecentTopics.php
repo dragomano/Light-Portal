@@ -131,7 +131,7 @@ class RecentTopics extends Block
 		return $topics;
 	}
 
-	public function prepareContent($data, array $parameters): void
+	public function prepareContent(object $data, array $parameters): void
 	{
 		if ($data->type !== 'recent_topics')
 			return;

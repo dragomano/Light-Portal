@@ -68,7 +68,7 @@ class RecentAttachments extends Block
 		return $this->getFromSsi('recentAttachments', $parameters['num_attachments'], $extensions, 'array');
 	}
 
-	public function prepareContent($data, array $parameters): void
+	public function prepareContent(object $data, array $parameters): void
 	{
 		if ($data->type !== 'recent_attachments')
 			return;

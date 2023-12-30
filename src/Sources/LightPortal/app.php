@@ -27,15 +27,6 @@ function prepare_content(string $type = 'bbc', int $block_id = 0, int $cache_tim
 		public function __construct(public string $type = 'bbc', public int $block_id = 0, public int $cache_time = 0)
 		{
 		}
-
-		public function toArray(): array
-		{
-			return [
-				'type'       => $this->type,
-				'block_id'   => $this->block_id,
-				'cache_time' => $this->cache_time,
-			];
-		}
 	};
 
 	call_portal_hook('prepareContent', [$data, $parameters]);

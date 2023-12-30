@@ -5,7 +5,6 @@ return [
 	'description' => 'Tiny slider for all purposes.',
 	'axis' => 'The axis of the slider',
 	'num_items' => 'Number of slides being displayed in the viewport',
-	'num_items_subtext' => 'If slides less or equal than items, the slider won\'t be initialized.',
 	'gutter' => 'Space between slides (in pixels)',
 	'edge_padding' => 'Space on the outside (in pixels)',
 	'controls' => 'Display prev/next buttons',
