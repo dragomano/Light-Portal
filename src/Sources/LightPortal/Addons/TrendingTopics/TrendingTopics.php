@@ -126,7 +126,7 @@ class TrendingTopics extends Block
 		return $parameters['show_avatars'] ? $this->getItemsWithUserAvatars($topics, 'poster') : $topics;
 	}
 
-	public function prepareContent($data, array $parameters): void
+	public function prepareContent(object $data, array $parameters): void
 	{
 		if ($data->type !== 'trending_topics')
 			return;
