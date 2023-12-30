@@ -1,6 +1,6 @@
 <template>
   <div>
-    <input type="range" :id="id" :name="name" v-model="value" :min="min" :max="max" :step="step" />
+    <input type="range" :id="id" :name="name" :value="value" :min="min" :max="max" :step="step" />
     <span class="range_field" v-text="value"></span>
   </div>
 </template>
