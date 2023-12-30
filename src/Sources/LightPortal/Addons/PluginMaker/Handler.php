@@ -10,14 +10,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 29.12.23
+ * @version 31.12.23
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
 
 use Bugo\LightPortal\Addons\{Block, Plugin};
 use Bugo\LightPortal\Areas\Area;
-use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, SelectField, TextField};
+use Bugo\LightPortal\Areas\Fields\{CheckboxField, ColorField, CustomField, NumberField, RadioField, RangeField,
+	SelectField, TextField};
 use Bugo\LightPortal\Areas\Partials\IconSelect;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Nette\PhpGenerator\{PhpFile, PhpNamespace, Printer};
@@ -451,65 +452,65 @@ class Handler extends Plugin
 
 			foreach ($blockParams as $param) {
 				if ($param['type'] === 'text') {
-					$namespace->addUse('Bugo\LightPortal\Areas\Fields\TextField');
+					$namespace->addUse(TextField::class);
 					$method->addBody("TextField::make('{$param['name']}', \$this->txt['lp_$plugin_name']['{$param['name']}'])")
 						->addBody("\t->setValue(\$this->context['lp_block']['options']['parameters']['{$param['name']}']);" . PHP_EOL);
 				}
 
 				if ($param['type'] === 'url') {
-					$namespace->addUse('Bugo\LightPortal\Areas\Fields\TextField');
+					$namespace->addUse(TextField::class);
 					$method->addBody("TextField::make('{$param['name']}', \$this->txt['lp_$plugin_name']['{$param['name']}'])")
 						->addBody("\t->setType('url')")
 						->addBody("\t->setValue(\$this->context['lp_block']['options']['parameters']['{$param['name']}']);" . PHP_EOL);
 				}
 
 				if ($param['type'] === 'check') {
-					$namespace->addUse('Bugo\LightPortal\Areas\Fields\CheckboxField');
+					$namespace->addUse(CheckboxField::class);
 					$method->addBody("CheckboxField::make('{$param['name']}', \$this->txt['lp_$plugin_name']['{$param['name']}'])")
 						->addBody("\t->setValue(\$this->context['lp_block']['options']['parameters']['{$param['name']}']);" . PHP_EOL);
 				}
 
 				if ($param['type'] === 'color') {
-					$namespace->addUse('Bugo\LightPortal\Areas\Fields\ColorField');
+					$namespace->addUse(ColorField::class);
 					$method->addBody("ColorField::make('{$param['name']}', \$this->txt['lp_$plugin_name']['{$param['name']}'])")
 						->addBody("\t->setValue(\$this->context['lp_block']['options']['parameters']['{$param['name']}']);" . PHP_EOL);
 				}
 
 				if ($param['type'] === 'int') {
-					$namespace->addUse('Bugo\LightPortal\Areas\Fields\NumberField');
+					$namespace->addUse(NumberField::class);
 					$method->addBody("NumberField::make('{$param['name']}', \$this->txt['lp_$plugin_name']['{$param['name']}'])")
 						->addBody("\t->setValue(\$this->context['lp_block']['options']['parameters']['{$param['name']}']);" . PHP_EOL);
 				}
 
 				if ($param['type'] === 'float') {
-					$namespace->addUse('Bugo\LightPortal\Areas\Fields\NumberField');
+					$namespace->addUse(NumberField::class);
 					$method->addBody("NumberField::make('{$param['name']}', \$this->txt['lp_$plugin_name']['{$param['name']}'])")
 						->addBody("\t->setAttribute('step', 0.1)")
 						->addBody("\t->setValue(\$this->context['lp_block']['options']['parameters']['{$param['name']}']);" . PHP_EOL);
 				}
 
 				if ($param['type'] === 'select') {
-					$namespace->addUse('Bugo\LightPortal\Areas\Fields\RadioField');
+					$namespace->addUse(RadioField::class);
 					$method->addBody("RadioField::make('{$param['name']}', \$this->txt['lp_$plugin_name']['{$param['name']}'])")
 						->addBody("\t->setOptions(\$this->txt['lp_$plugin_name']['{$param['name']}_set'])")
 						->addBody("\t->setValue(\$this->context['lp_block']['options']['parameters']['{$param['name']}']);" . PHP_EOL);
 				}
 
 				if ($param['type'] === 'multiselect') {
-					$namespace->addUse('Bugo\LightPortal\Areas\Fields\SelectField');
+					$namespace->addUse(SelectField::class);
 					$method->addBody("SelectField::make('{$param['name']}', \$this->txt['lp_$plugin_name']['{$param['name']}'])")
 						->addBody("\t->setOptions(\$this->txt['lp_$plugin_name']['{$param['name']}_set'])")
 						->addBody("\t->setValue(\$this->context['lp_block']['options']['parameters']['{$param['name']}']);" . PHP_EOL);
 				}
 
 				if ($param['type'] === 'range') {
-					$namespace->addUse('Bugo\LightPortal\Areas\Fields\RangeField');
+					$namespace->addUse(RangeField::class);
 					$method->addBody("RangeField::make('{$param['name']}', \$this->txt['lp_$plugin_name']['{$param['name']}'])")
 						->addBody("\t->setValue(\$this->context['lp_block']['options']['parameters']['{$param['name']}']);" . PHP_EOL);
 				}
 
 				if (in_array($param['type'], ['title', 'desc', 'callback'])) {
-					$namespace->addUse('Bugo\LightPortal\Areas\Fields\CustomField');
+					$namespace->addUse(CustomField::class);
 					$method->addBody("CustomField::make('{$param['name']}', \$this->txt['lp_$plugin_name']['{$param['name']}'])")
 						->addBody("\t->setValue(fn() => '', []);" . PHP_EOL);
 				}

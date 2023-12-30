@@ -15,7 +15,7 @@
 }
 
 @media (max-width: 400px) {
-  .VPNavBar > .container {
+  .VPNavBar .container {
     max-width: none;
   }
 }

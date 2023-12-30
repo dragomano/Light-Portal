@@ -21,6 +21,8 @@ export default {
       next: 'Next page',
     },
     darkModeSwitchLabel: 'Appearance',
+    lightModeSwitchTitle: 'Switch to light theme',
+    darkModeSwitchTitle: 'Switch to dark theme',
     sidebarMenuLabel: 'Menu',
     returnToTopLabel: 'Back to top',
     langMenuLabel: 'Change language',

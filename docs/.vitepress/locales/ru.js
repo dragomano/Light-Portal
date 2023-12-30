@@ -34,6 +34,8 @@ export default {
       next: 'Следующая страница'
     },
     darkModeSwitchLabel: 'Оформление',
+    lightModeSwitchTitle: 'Переключить на светлую тему',
+    darkModeSwitchTitle: 'Переключить на тёмную тему',
     sidebarMenuLabel: 'Меню',
     returnToTopLabel: 'Вернуться к началу',
     langMenuLabel: 'Изменить язык',
