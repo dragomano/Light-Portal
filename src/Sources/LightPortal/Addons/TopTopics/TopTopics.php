@@ -63,7 +63,7 @@ class TopTopics extends Block
 			->setValue($this->context['lp_block']['options']['parameters']['show_numbers_only']);
 	}
 
-	public function prepareContent($data, array $parameters): void
+	public function prepareContent(object $data, array $parameters): void
 	{
 		if ($data->type !== 'top_topics')
 			return;

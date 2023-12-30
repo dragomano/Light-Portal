@@ -57,7 +57,7 @@ class CurrentMonth extends Block
 		return getCalendarGrid(date_format($start_object, 'Y-m-d'), $calendarOptions);
 	}
 
-	public function prepareContent($data): void
+	public function prepareContent(object $data): void
 	{
 		if ($data->type !== 'current_month')
 			return;

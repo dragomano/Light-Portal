@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.09.23
+ * @version 23.12.23
  */
 
 namespace Bugo\LightPortal\Addons\ThemeSwitcher;
@@ -35,21 +35,21 @@ class ThemeSwitcher extends Block
 			$this->cache()->flush();
 	}
 
-	public function prepareContent($data): void
+	public function prepareContent(object $data): void
 	{
 		if ($data->type !== 'theme_switcher')
 			return;
 
-		$available_themes = $this->getForumThemes(true);
+		$themes = $this->getForumThemes();
 
-		if (empty($available_themes))
+		if (empty($themes))
 			return;
 
 		echo '
 			<div class="themeswitcher centertext">
-				<select id="lp_block_', $data->block_id, '_themeswitcher" onchange="lp_block_', $data->block_id, '_themeswitcher_change();"', count($available_themes) < 2 ? ' disabled' : '', '>';
+				<select id="lp_block_', $data->block_id, '_themeswitcher" onchange="lp_block_', $data->block_id, '_themeswitcher_change();"', count($themes) < 2 ? ' disabled' : '', '>';
 
-		foreach ($available_themes as $theme_id => $name) {
+		foreach ($themes as $theme_id => $name) {
 			echo '
 					<option value="', $theme_id, '"', $this->settings['theme_id'] == $theme_id ? ' selected="selected"' : '', '>
 						', $name, '

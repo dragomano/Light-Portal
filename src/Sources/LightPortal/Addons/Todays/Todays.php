@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 24.12.23
  */
 
 namespace Bugo\LightPortal\Addons\Todays;
 
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\Fields\NumberField;
+use Bugo\LightPortal\Areas\Fields\RangeField;
 use Bugo\LightPortal\Areas\Fields\SelectField;
 
 if (! defined('LP_NAME'))
@@ -74,9 +74,10 @@ class Todays extends Block
 			->setOptions(array_combine(['birthdays', 'holidays', 'events', 'calendar'], $this->txt['lp_todays']['type_set']))
 			->setValue($this->context['lp_block']['options']['parameters']['widget_type']);
 
-		NumberField::make('max_items', $this->txt['lp_todays']['max_items'])
+		RangeField::make('max_items', $this->txt['lp_todays']['max_items'])
 			->setAfter($this->txt['lp_todays']['max_items_subtext'])
 			->setAttribute('min', 1)
+			->setAttribute('max', 100)
 			->setValue($this->context['lp_block']['options']['parameters']['max_items']);
 	}
 
@@ -85,7 +86,7 @@ class Todays extends Block
 		return $this->getFromSsi('todays' . ucfirst($type), $output_method);
 	}
 
-	public function prepareContent($data, array $parameters): void
+	public function prepareContent(object $data, array $parameters): void
 	{
 		if ($data->type !== 'todays')
 			return;

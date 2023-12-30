@@ -14,6 +14,7 @@
 
 namespace Bugo\LightPortal\Utils;
 
+use ErrorException;
 use Exception;
 
 if (! defined('SMF'))
@@ -134,9 +135,9 @@ trait SMFTrait
 		return shorten_subject($text, $length);
 	}
 
-	protected function loadMemberData(array|string|int $users, bool $is_name = false, string $set = 'normal'): array
+	protected function loadMemberData(array $users, string $set = 'normal'): array
 	{
-		return loadMemberData($users, $is_name, $set);
+		return loadMemberData($users, false, $set);
 	}
 
 	/**
@@ -147,11 +148,6 @@ trait SMFTrait
 		return loadMemberContext($user, $display_custom_fields);
 	}
 
-	protected function loadUserInfo(array $ids): array
-	{
-		return loadMinUserInfo($ids);
-	}
-
 	protected function membersAllowedTo(string $permission): array
 	{
 		require_once $this->sourcedir . '/Subs-Members.php';
@@ -159,11 +155,35 @@ trait SMFTrait
 		return membersAllowedTo($permission);
 	}
 
-	protected function prepareInstalledThemes(): void
+	protected function getNotifyPrefs(int|array $members, string|array $prefs = '', bool $process_default = false): array
 	{
-		require_once $this->sourcedir . '/Subs-Themes.php';
+		require_once $this->sourcedir . '/Subs-Notify.php';
 
-		get_installed_themes();
+		return getNotifyPrefs($members, $prefs, $process_default);
+	}
+
+	protected function loadEssential(): void
+	{
+		require_once $this->sourcedir . '/ScheduledTasks.php';
+
+		loadEssentialThemeData();
+	}
+
+	protected function loadEmailTemplate(string $template, array $replacements = [], string $lang = '', bool $loadLang = true): array
+	{
+		require_once $this->sourcedir . '/Subs-Post.php';
+
+		return loadEmailTemplate($template, $replacements, $lang, $loadLang);
+	}
+
+	/**
+	 * @throws ErrorException
+	 */
+	protected function sendmail(array $to, string $subject, string $message, string $from = null, string $message_id = null, bool $send_html = false, int $priority = 3): void
+	{
+		require_once $this->sourcedir . '/Subs-Post.php';
+
+		sendmail($to, $subject, $message, $from, $message_id, $send_html, $priority);
 	}
 
 	protected function createControlRichedit(array $editorOptions): void

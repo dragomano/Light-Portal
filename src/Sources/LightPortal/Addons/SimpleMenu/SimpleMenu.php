@@ -102,7 +102,7 @@ class SimpleMenu extends Plugin
 		return ['content' => $html];
 	}
 
-	public function prepareContent($data, array $parameters): void
+	public function prepareContent(object $data, array $parameters): void
 	{
 		if ($data->type !== 'simple_menu' || empty($parameters['items']))
 			return;

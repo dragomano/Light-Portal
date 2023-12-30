@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 22.12.23
  */
 
 namespace Bugo\LightPortal\Addons\RandomPages;
@@ -192,7 +192,7 @@ class RandomPages extends Block
 	/**
 	 * @throws IntlException
 	 */
-	public function prepareContent($data, array $parameters): void
+	public function prepareContent(object $data, array $parameters): void
 	{
 		if ($data->type !== 'random_pages')
 			return;
@@ -219,6 +219,8 @@ class RandomPages extends Block
 
 			echo '
 			</ul>';
+		} else {
+			echo '<div class="infobox">', $this->txt['lp_random_pages']['none'], '</div>';
 		}
 	}
 }

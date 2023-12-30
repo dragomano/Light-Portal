@@ -26,7 +26,7 @@ final class Integration extends AbstractMain
 {
 	public function hooks(): void
 	{
-		$this->applyHook('user_info');
+		$this->applyHook('pre_load');
 		$this->applyHook('pre_javascript_output');
 		$this->applyHook('pre_css_output');
 		$this->applyHook('load_theme');
@@ -52,13 +52,13 @@ final class Integration extends AbstractMain
 		$this->applyHook('clean_cache');
 	}
 
-	public function userInfo(): void
+	public function preLoad(): void
 	{
 		$this->context['lp_load_time'] ??= microtime(true);
 		$this->context['lp_num_queries'] ??= 0;
 
 		defined('LP_NAME') || define('LP_NAME', 'Light Portal');
-		defined('LP_VERSION') || define('LP_VERSION', '2.4.1');
+		defined('LP_VERSION') || define('LP_VERSION', '2.4.2');
 		defined('LP_PLUGIN_LIST') || define('LP_PLUGIN_LIST', 'https://api.jsonserve.com/EuTOcP');
 		defined('LP_ADDON_URL') || define('LP_ADDON_URL', $this->boardurl . '/Sources/LightPortal/Addons');
 		defined('LP_ADDON_DIR') || define('LP_ADDON_DIR', __DIR__ . '/Addons');
@@ -290,6 +290,8 @@ final class Integration extends AbstractMain
 		$this->context['non_guest_permissions'] = array_merge(
 			$this->context['non_guest_permissions'],
 			[
+				'light_portal_manage_pages_own',
+				'light_portal_manage_pages_any',
 				'light_portal_manage_pages',
 				'light_portal_approve_pages',
 			]
@@ -299,9 +301,6 @@ final class Integration extends AbstractMain
 	public function loadPermissions(array &$permissionGroups, array &$permissionList, array &$leftPermissionGroups): void
 	{
 		$this->txt['permissiongroup_light_portal'] = LP_NAME;
-
-		$this->context['permissions_excluded']['light_portal_manage_pages'][]  = 0;
-		$this->context['permissions_excluded']['light_portal_approve_pages'][] = 0;
 
 		$permissionList['membergroup']['light_portal_view']          = [false, 'light_portal'];
 		$permissionList['membergroup']['light_portal_manage_pages']  = [true, 'light_portal'];

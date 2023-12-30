@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 17.12.23
+ * @version 24.12.23
  */
 
 namespace Bugo\LightPortal\Addons\Snowflakes;
@@ -54,9 +54,9 @@ class Snowflakes extends Plugin
 
 		$config_vars['snowflakes'][] = ['color', 'icon_color'];
 		$config_vars['snowflakes'][] = ['int', 'icon_size', 'min' => 1];
-		$config_vars['snowflakes'][] = ['int', 'snowflakes_count', 'min' => 0, 'max' => 100];
+		$config_vars['snowflakes'][] = ['range', 'snowflakes_count'];
 		$config_vars['snowflakes'][] = ['check', 'enable_snowdrifts'];
-		$config_vars['snowflakes'][] = ['int', 'snowdrifts_count', 'min' => 0, 'max' => 10];
+		$config_vars['snowflakes'][] = ['range', 'snowdrifts_count', 'max' => 10];
 	}
 
 	public function prepareAssets(array &$assets): void

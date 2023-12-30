@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.11.23
+ * @version 23.12.23
  */
 
 namespace Bugo\LightPortal\Addons\CrowdinContext;
@@ -79,10 +79,23 @@ class CrowdinContext extends Plugin
 
 	private function getAdminList(): array
 	{
-		$ids = $this->membersAllowedTo('admin_forum');
+		$result = $this->smcFunc['db_query']('', '
+			SELECT id_member, real_name
+			FROM {db_prefix}members
+			WHERE id_group = {int:id_group}
+				OR FIND_IN_SET({int:id_group}, additional_groups) != 0',
+			[
+				'id_group' => 1,
+			]
+		);
 
-		$users = $this->loadUserInfo($ids);
+		$users = [];
+		while ($row = $this->smcFunc['db_fetch_assoc']($result))
+			$users[$row['id_member']] = $row['real_name'];
 
-		return array_column($users, 'name', 'id');
+		$this->smcFunc['db_free_result']($result);
+		$this->context['lp_num_queries']++;
+
+		return $users;
 	}
 }

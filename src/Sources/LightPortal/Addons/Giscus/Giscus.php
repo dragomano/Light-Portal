@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 24.12.23
  */
 
 namespace Bugo\LightPortal\Addons\Giscus;
@@ -82,7 +82,7 @@ class Giscus extends Plugin
 				data-emit-metadata="0"
 				data-input-position="bottom"
 				data-theme="' . $this->context['lp_giscus_plugin']['theme'] . '"
-				data-lang="' . (in_array($this->txt['lang_dictionary'], ['ar', 'de', 'es', 'fa', 'fr', 'id', 'it', 'ja', 'ko', 'nl', 'pl', 'pt', 'ro', 'ru', 'th', 'tr', 'vi', 'zh-CN', 'zh-TW']) ? $this->txt['lang_dictionary'] : 'en') . '"
+				data-lang="' . $this->txt['lang_dictionary'] . '"
 				data-loading="lazy"
 				crossorigin="anonymous"
 				async>

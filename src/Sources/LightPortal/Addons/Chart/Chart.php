@@ -118,7 +118,7 @@ class Chart extends Block
 		$assets['scripts']['chart'][] = 'https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js';
 	}
 
-	public function prepareContent($data, array $parameters): void
+	public function prepareContent(object $data, array $parameters): void
 	{
 		if ($data->type !== 'chart')
 			return;

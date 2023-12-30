@@ -117,7 +117,7 @@ class GalleryBlock extends Block
 		return $images;
 	}
 
-	public function prepareContent($data, array $parameters): void
+	public function prepareContent(object $data, array $parameters): void
 	{
 		if ($data->type !== 'gallery_block')
 			return;

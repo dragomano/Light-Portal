@@ -95,7 +95,7 @@ class BoardStats extends Block
 		];
 	}
 
-	public function prepareContent($data, array $parameters): void
+	public function prepareContent(object $data, array $parameters): void
 	{
 		if ($data->type !== 'board_stats')
 			return;
