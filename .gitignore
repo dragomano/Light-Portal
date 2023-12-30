@@ -2,6 +2,7 @@
 **/vendor/
 **/package-lock.json
 **/composer.lock
+**/output/
 node_modules/
 src/Sources/LightPortal/Libs/*
 !/composer.lock
