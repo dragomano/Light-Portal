@@ -58,7 +58,7 @@ final class Integration extends AbstractMain
 		$this->context['lp_num_queries'] ??= 0;
 
 		defined('LP_NAME') || define('LP_NAME', 'Light Portal');
-		defined('LP_VERSION') || define('LP_VERSION', '2.4.1');
+		defined('LP_VERSION') || define('LP_VERSION', '2.4.2');
 		defined('LP_PLUGIN_LIST') || define('LP_PLUGIN_LIST', 'https://api.jsonserve.com/EuTOcP');
 		defined('LP_ADDON_URL') || define('LP_ADDON_URL', $this->boardurl . '/Sources/LightPortal/Addons');
 		defined('LP_ADDON_DIR') || define('LP_ADDON_DIR', __DIR__ . '/Addons');
