@@ -92,6 +92,11 @@ abstract class AbstractField
 		return $this;
 	}
 
+	public function required(): self
+	{
+		return $this->setAttribute('required', true);
+	}
+
 	public function build(): void
 	{
 		$this->context['posting_fields'][$this->name]['label']['text'] = $this->label;

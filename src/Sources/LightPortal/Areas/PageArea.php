@@ -771,8 +771,8 @@ final class PageArea
 		TextField::make('alias', $this->txt['lp_page_alias'])
 			->setTab('seo')
 			->setAfter($this->txt['lp_page_alias_subtext'])
+			->required()
 			->setAttribute('maxlength', 255)
-			->setAttribute('required', true)
 			->setAttribute('pattern', self::ALIAS_PATTERN)
 			->setAttribute('x-slug.lazy.replacement._', empty($this->context['lp_page']['id']) ? 'title_' . $this->user_info['language'] : '{}')
 			->setValue($this->context['lp_page']['alias']);

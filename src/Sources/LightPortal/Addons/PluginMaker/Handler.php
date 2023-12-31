@@ -214,8 +214,8 @@ class Handler extends Plugin
 		TextField::make('name', $this->txt['lp_plugin_maker']['name'])
 			->setTab('content')
 			->setAfter($this->txt['lp_plugin_maker']['name_subtext'])
+			->required()
 			->setAttribute('maxlength', 255)
-			->setAttribute('required', true)
 			->setAttribute('pattern', self::ADDON_NAME_PATTERN)
 			->setAttribute('style', 'width: 100%')
 			->setAttribute('@change', 'plugin.updateState($event.target.value, $refs)')
@@ -239,7 +239,7 @@ class Handler extends Plugin
 		TextField::make('author', $this->txt['author'])
 			->setTab('copyrights')
 			->setAttribute('maxlength', 255)
-			->setAttribute('required', true)
+			->required()
 			->setValue($this->context['lp_plugin']['author']);
 
 		TextField::make('email', $this->txt['email'])

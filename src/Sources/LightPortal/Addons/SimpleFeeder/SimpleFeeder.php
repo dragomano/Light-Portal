@@ -52,9 +52,9 @@ class SimpleFeeder extends Block
 		TextField::make('url', $this->txt['lp_simple_feeder']['url'])
 			->setType('url')
 			->setTab('content')
+			->required()
 			->setAttribute('maxlength', 255)
 			->setAttribute('placeholder', $this->scripturl . '?action=.xml;type=rss2')
-			->setAttribute('required', true)
 			->setAttribute('style', 'width: 100%')
 			->setValue($this->context['lp_block']['options']['parameters']['url']);
 

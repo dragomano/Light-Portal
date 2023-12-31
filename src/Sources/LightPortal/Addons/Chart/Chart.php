@@ -98,7 +98,7 @@ class Chart extends Block
 		TextField::make('labels', $this->txt['lp_chart']['labels'])
 			->setTab('content')
 			->setAttribute('placeholder', $this->txt['lp_chart']['labels_placeholder'])
-			->setAttribute('required', true)
+			->required()
 			->setValue($this->context['lp_block']['options']['parameters']['labels'] ?? $this->params['labels']);
 
 		CheckboxField::make('default_palette', $this->txt['lp_chart']['default_palette'])
