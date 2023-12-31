@@ -1,12 +1,12 @@
 <template>
   <div>
-    <textarea :id="id" :name="name">{{ value }}</textarea>
+    <input type="color" :id="id" :name="name" :value="value" />
   </div>
 </template>
 
 <script>
 export default {
-  name: 'OptionLargeText',
+  name: 'ColorOption',
 };
 </script>
 

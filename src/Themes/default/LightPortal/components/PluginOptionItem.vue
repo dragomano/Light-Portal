@@ -12,34 +12,34 @@
 </template>
 
 <script>
-import OptionCallback from './options/OptionCallback.vue';
-import OptionCheck from './options/OptionCheck.vue';
-import OptionColor from './options/OptionColor.vue';
-import OptionDesc from './options/OptionDesc.vue';
-import OptionLargeText from './options/OptionLargeText.vue';
-import OptionMultiSelect from './options/OptionMultiSelect.vue';
-import OptionNumber from './options/OptionNumber.vue';
-import OptionRange from './options/OptionRange.vue';
-import OptionSelect from './options/OptionSelect.vue';
-import OptionText from './options/OptionText.vue';
-import OptionTitle from './options/OptionTitle.vue';
-import OptionUrl from './options/OptionUrl.vue';
+import CallbackOption from './options/CallbackOption.vue';
+import CheckOption from './options/CheckOption.vue';
+import ColorOption from './options/ColorOption.vue';
+import DescOption from './options/DescOption.vue';
+import LargeTextOption from './options/LargeTextOption.vue';
+import MultiSelectOption from './options/MultiSelectOption.vue';
+import NumberOption from './options/NumberOption.vue';
+import RangeOption from './options/RangeOption.vue';
+import SelectOption from './options/SelectOption.vue';
+import TextOption from './options/TextOption.vue';
+import TitleOption from './options/TitleOption.vue';
+import UrlOption from './options/UrlOption.vue';
 
 export default {
   name: 'PluginOptionItem',
   components: {
-    OptionCallback,
-    OptionCheck,
-    OptionColor,
-    OptionDesc,
-    OptionLargeText,
-    OptionMultiSelect,
-    OptionNumber,
-    OptionRange,
-    OptionSelect,
-    OptionText,
-    OptionTitle,
-    OptionUrl,
+    CallbackOption,
+    CheckOption,
+    ColorOption,
+    DescOption,
+    LargeTextOption,
+    MultiSelectOption,
+    NumberOption,
+    RangeOption,
+    SelectOption,
+    TextOption,
+    TitleOption,
+    UrlOption,
   },
 };
 </script>
@@ -74,64 +74,64 @@ const isType = computed(() => (['float', 'int'].includes(type.value) ? 'number' 
 
 const dynamicComponentProps = computed(() => {
   const typeMap = {
-    callback: { is: 'OptionCallback', option: props.option },
+    callback: { is: 'CallbackOption', option: props.option },
     check: {
-      is: 'OptionCheck',
+      is: 'CheckOption',
       id: id.value,
       name: name.value,
       value: value.value,
     },
     color: {
-      is: 'OptionColor',
+      is: 'ColorOption',
       id: id.value,
       name: name.value,
       value: value.value,
     },
-    desc: { is: 'OptionDesc', id: id.value },
+    desc: { is: 'DescOption', id: id.value },
     large_text: {
-      is: 'OptionLargeText',
+      is: 'LargeTextOption',
       id: id.value,
       name: name.value,
       value: value.value,
     },
     multiselect: {
-      is: 'OptionMultiSelect',
+      is: 'MultiSelectOption',
       id: id.value,
       name: name.value,
       value: value.value,
       option: props.option,
     },
     number: {
-      is: 'OptionNumber',
+      is: 'NumberOption',
       id: id.value,
       name: name.value,
       value: value.value,
       option: props.option,
     },
     range: {
-      is: 'OptionRange',
+      is: 'RangeOption',
       id: id.value,
       name: name.value,
       value: value.value,
       option: props.option,
     },
     select: {
-      is: 'OptionSelect',
+      is: 'SelectOption',
       id: id.value,
       name: name.value,
       value: value.value,
       option: props.option,
     },
     text: {
-      is: 'OptionText',
+      is: 'TextOption',
       id: id.value,
       name: name.value,
       value: value.value,
       option: props.option,
     },
-    title: { is: 'OptionTitle', id: id.value },
+    title: { is: 'TitleOption', id: id.value },
     url: {
-      is: 'OptionUrl',
+      is: 'UrlOption',
       id: id.value,
       name: name.value,
       value: value.value,

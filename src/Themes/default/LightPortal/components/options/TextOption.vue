@@ -1,13 +1,19 @@
 <template>
   <div>
-    <input type="range" :id="id" :name="name" :value="value" :min="min" :max="max" :step="step" />
-    <span class="range_field" v-text="value"></span>
+    <input
+      type="text"
+      :id="id"
+      :name="name"
+      :value="value"
+      :pattern="pattern"
+      :required="required"
+    />
   </div>
 </template>
 
 <script>
 export default {
-  name: 'OptionRange',
+  name: 'TextOption',
 };
 </script>
 
@@ -33,7 +39,6 @@ const props = defineProps({
   },
 });
 
-const min = computed(() => props.option.min ?? 0);
-const max = computed(() => props.option.max ?? 100);
-const step = computed(() => props.option.step ?? 1);
+const pattern = computed(() => props.option.pattern);
+const required = computed(() => props.option.required);
 </script>

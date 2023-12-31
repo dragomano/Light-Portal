@@ -1,19 +1,13 @@
 <template>
   <div>
-    <input
-      type="url"
-      :id="id"
-      :name="name"
-      :value="value"
-      :placeholder="placeholder"
-      :required="required"
-    />
+    <input type="range" :id="id" :name="name" :value="value" :min="min" :max="max" :step="step" />
+    <span class="range_field" v-text="value"></span>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'OptionUrl',
+  name: 'RangeOption',
 };
 </script>
 
@@ -39,6 +33,7 @@ const props = defineProps({
   },
 });
 
-const placeholder = computed(() => props.option.placeholder);
-const required = computed(() => props.option.required);
+const min = computed(() => props.option.min ?? 0);
+const max = computed(() => props.option.max ?? 100);
+const step = computed(() => props.option.step ?? 1);
 </script>
