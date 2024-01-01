@@ -8,7 +8,7 @@ declare(strict_types=1);
  * @package Markdown (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2023 Bugo
+ * @copyright 2020-2024 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  *
  * @category addon

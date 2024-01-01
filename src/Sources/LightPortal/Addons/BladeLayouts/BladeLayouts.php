@@ -6,7 +6,7 @@
  * @package BladeLayouts (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2023 Bugo
+ * @copyright 2023-2024 Bugo
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon

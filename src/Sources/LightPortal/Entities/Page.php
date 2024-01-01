@@ -6,7 +6,7 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2023 Bugo
+ * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 2.4
@@ -180,6 +180,9 @@ final class Page
 		return $data ?? [];
 	}
 
+	/**
+	 * @throws IntlException
+	 */
 	public function getDataByAlias(string $alias): array
 	{
 		if (empty($alias))
@@ -192,6 +195,9 @@ final class Page
 		return $data;
 	}
 
+	/**
+	 * @throws IntlException
+	 */
 	public function getDataByItem(int $item): array
 	{
 		if (empty($item))
@@ -508,6 +514,9 @@ final class Page
 		$this->context['lp_num_queries']++;
 	}
 
+	/**
+	 * @throws IntlException
+	 */
 	private function prepareData(?array &$data): void
 	{
 		if (empty($data))
