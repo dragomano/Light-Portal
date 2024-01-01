@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 15.12.23
+ * @version 29.12.23
  */
 
 namespace Bugo\LightPortal\Addons\TwigLayouts;
@@ -76,7 +76,7 @@ class TwigLayouts extends Plugin
 			});
 			$twig->addFunction($show_pagination_function);
 
-			$debug_function = new TwigFunction('debug', function (array $data) {
+			$debug_function = new TwigFunction('debug', function (mixed $data) {
 				echo parse_bbc('[code]' . print_r($data, true) . '[/code]');
 			});
 			$twig->addFunction($debug_function);
@@ -111,6 +111,6 @@ class TwigLayouts extends Plugin
 
 	private function showExample(): string
 	{
-		return '<div class="roundframe">' . $this->parseBbc('[php]' . file_get_contents(__DIR__. '/layouts/example.twig') . '[/php]') . '</div>';
+		return '<div class="roundframe">' . $this->parseBbc('[php]' . file_get_contents(__DIR__. '/layouts/example' . $this->extension) . '[/php]') . '</div>';
 	}
 }

@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 15.12.23
+ * @version 29.12.23
  */
 
 namespace Bugo\LightPortal\Addons\BladeLayouts;
@@ -93,6 +93,6 @@ class BladeLayouts extends Plugin
 
 	private function showExample(): string
 	{
-		return '<div class="roundframe">' . $this->parseBbc('[php]' . file_get_contents(__DIR__. '/layouts/example.blade.php') . '[/php]') . '</div>';
+		return '<div class="roundframe">' . $this->parseBbc('[php]' . file_get_contents(__DIR__. '/layouts/example' . $this->extension) . '[/php]') . '</div>';
 	}
 }
