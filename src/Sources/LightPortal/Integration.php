@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Entities\{Block, Category, FrontPage, Page, Tag};
+use Bugo\LightPortal\Entities\{BoardIndex, Block, Category, FrontPage, Page, Tag};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -136,7 +136,7 @@ final class Integration extends AbstractMain
 		if (! empty($this->modSettings['lp_frontpage_mode']))
 			$actions[LP_ACTION] = [false, [new FrontPage, 'show']];
 
-		$actions['forum'] = ['BoardIndex.php', 'BoardIndex'];
+		$actions['forum'] = [false, [new BoardIndex, 'show']];
 
 		if ($this->request()->is(LP_ACTION) && $this->context['current_subaction'] === 'categories')
 			(new Category)->show(new Page);
@@ -160,11 +160,8 @@ final class Integration extends AbstractMain
 		if ($this->request()->isNotEmpty(LP_PAGE_PARAM))
 			return call_user_func([new Page, 'show']);
 
-		if (empty($this->modSettings['lp_frontpage_mode']) || ! (empty($this->modSettings['lp_standalone_mode']) || empty($this->modSettings['lp_standalone_url']))) {
-			$this->require('BoardIndex');
-
-			return call_user_func('BoardIndex');
-		}
+		if (empty($this->modSettings['lp_frontpage_mode']) || ! (empty($this->modSettings['lp_standalone_mode']) || empty($this->modSettings['lp_standalone_url'])))
+			return call_user_func([new BoardIndex, 'show']);
 
 		return call_user_func([new FrontPage, 'show']);
 	}
