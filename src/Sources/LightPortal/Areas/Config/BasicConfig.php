@@ -94,10 +94,10 @@ final class BasicConfig
 			$this->checkSession();
 
 			if ($this->request()->isNotEmpty('lp_image_placeholder'))
-				$this->post()->put('lp_image_placeholder', $this->validate($this->request('lp_image_placeholder'), 'url'));
+				$this->post()->put('lp_image_placeholder', $this->filterVar($this->request('lp_image_placeholder'), 'url'));
 
 			if ($this->request()->isNotEmpty('lp_standalone_url'))
-				$this->post()->put('lp_standalone_url', $this->validate($this->request('lp_standalone_url'), 'url'));
+				$this->post()->put('lp_standalone_url', $this->filterVar($this->request('lp_standalone_url'), 'url'));
 
 			$save_vars = $config_vars;
 			$save_vars[] = ['text', 'lp_frontpage_mode'];

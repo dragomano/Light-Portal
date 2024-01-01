@@ -93,10 +93,10 @@ final class ExtraConfig
 			$this->checkSession();
 
 			if ($this->request()->isNotEmpty('lp_fa_custom'))
-				$this->post()->put('lp_fa_custom', $this->validate($this->request('lp_fa_custom'), 'url'));
+				$this->post()->put('lp_fa_custom', $this->filterVar($this->request('lp_fa_custom'), 'url'));
 
 			if ($this->request()->isNotEmpty('lp_fa_kit'))
-				$this->post()->put('lp_fa_kit', $this->validate($this->request('lp_fa_kit'), 'url'));
+				$this->post()->put('lp_fa_kit', $this->filterVar($this->request('lp_fa_kit'), 'url'));
 
 			$save_vars = $config_vars;
 			$save_vars[] = ['text', 'lp_show_comment_block'];

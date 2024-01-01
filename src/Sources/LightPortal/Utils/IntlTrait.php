@@ -38,7 +38,7 @@ trait IntlTrait
 	 */
 	public function translate(string $pattern, array $values = []): string
 	{
-		if (!extension_loaded('intl')) {
+		if (! extension_loaded('intl')) {
 			$this->logError('[LP] translate helper: you should enable the intl extension', 'critical');
 
 			return '';

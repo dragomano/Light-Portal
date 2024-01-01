@@ -73,5 +73,4 @@ function parse_content(string $content, string $type = 'bbc'): string
 }
 
 // This is the way
-$portal = new Integration();
-$portal->hooks();
+(new Integration)->hooks();

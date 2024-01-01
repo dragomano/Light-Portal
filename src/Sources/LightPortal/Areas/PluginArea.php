@@ -110,13 +110,13 @@ final class PluginArea
 		foreach ($config_vars[$plugin_name] as $var) {
 			if ($this->request()->has($var[1])) {
 				if ($var[0] === 'check') {
-					$plugin_options[$var[1]] = $this->validate($this->request($var[1]), 'bool');
+					$plugin_options[$var[1]] = $this->filterVar($this->request($var[1]), 'bool');
 				} elseif ($var[0] === 'int') {
-					$plugin_options[$var[1]] = $this->validate($this->request($var[1]), 'int');
+					$plugin_options[$var[1]] = $this->filterVar($this->request($var[1]), 'int');
 				} elseif ($var[0] === 'float') {
-					$plugin_options[$var[1]] = $this->validate($this->request($var[1]), 'float');
+					$plugin_options[$var[1]] = $this->filterVar($this->request($var[1]), 'float');
 				} elseif ($var[0] === 'url') {
-					$plugin_options[$var[1]] = $this->validate($this->request($var[1]), 'url');
+					$plugin_options[$var[1]] = $this->filterVar($this->request($var[1]), 'url');
 				} elseif ($var[0] === 'multiselect') {
 					$plugin_options[$var[1]] = ltrim(implode(',', $this->request($var[1])), ',');
 				} else {

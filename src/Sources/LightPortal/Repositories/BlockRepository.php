@@ -203,7 +203,7 @@ final class BlockRepository extends AbstractRepository
 		return $item;
 	}
 
-	private function updateData(int $item)
+	private function updateData(int $item): void
 	{
 		$this->smcFunc['db_transaction']('begin');
 
@@ -244,7 +244,7 @@ final class BlockRepository extends AbstractRepository
 	 *
 	 * Формируем список неустановленных плагинов
 	 */
-	private function prepareMissingBlockTypes(string $type)
+	private function prepareMissingBlockTypes(string $type): void
 	{
 		if (isset($this->txt['lp_' . $type]['title']))
 			return;

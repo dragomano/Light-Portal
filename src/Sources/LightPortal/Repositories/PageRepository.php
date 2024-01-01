@@ -16,6 +16,8 @@ declare(strict_types=1);
 
 namespace Bugo\LightPortal\Repositories;
 
+use IntlException;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -23,6 +25,9 @@ final class PageRepository extends AbstractRepository
 {
 	protected string $entity = 'page';
 
+	/**
+	 * @throws IntlException
+	 */
 	public function getAll(int $start, int $items_per_page, string $sort, string $query_string = '', array $query_params = []): array
 	{
 		$result = $this->smcFunc['db_query']('', '
@@ -92,7 +97,7 @@ final class PageRepository extends AbstractRepository
 		return (int) $num_entries;
 	}
 
-	public function setData(int $item = 0)
+	public function setData(int $item = 0): void
 	{
 		if (isset($this->context['post_errors']) || (
 			$this->request()->hasNot('save') &&
@@ -185,7 +190,7 @@ final class PageRepository extends AbstractRepository
 		return $item;
 	}
 
-	private function updateData(int $item)
+	private function updateData(int $item): void
 	{
 		$this->smcFunc['db_transaction']('begin');
 
@@ -224,7 +229,7 @@ final class PageRepository extends AbstractRepository
 		$this->smcFunc['db_transaction']('commit');
 	}
 
-	private function saveTags()
+	private function saveTags(): void
 	{
 		$newTagIds = array_diff($this->context['lp_page']['keywords'], array_keys($this->context['lp_tags']));
 		$oldTagIds = array_intersect($this->context['lp_page']['keywords'], array_keys($this->context['lp_tags']));
@@ -250,14 +255,14 @@ final class PageRepository extends AbstractRepository
 		$this->context['lp_page']['options']['keywords'] = array_merge($oldTagIds, $newTagIds);
 	}
 
-	private function prepareDescription()
+	private function prepareDescription(): void
 	{
 		$this->cleanBbcode($this->context['lp_page']['description']);
 
 		$this->context['lp_page']['description'] = strip_tags($this->context['lp_page']['description']);
 	}
 
-	private function prepareKeywords()
+	private function prepareKeywords(): void
 	{
 		// Remove all punctuation symbols
 		$this->context['lp_page']['keywords'] = preg_replace("#[[:punct:]]#", "", $this->context['lp_page']['keywords']);

@@ -265,7 +265,7 @@ trait Helper
 	 *
 	 * Получаем отфильтрованное значение $var
 	 */
-	public function validate(mixed $var, array|string $type = 'string'): mixed
+	public function filterVar(mixed $var, array|string $type = 'string'): mixed
 	{
 		if (is_array($type)) {
 			return filter_var($var, FILTER_VALIDATE_REGEXP, $type);

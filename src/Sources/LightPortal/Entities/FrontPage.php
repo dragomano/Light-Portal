@@ -14,14 +14,8 @@
 
 namespace Bugo\LightPortal\Entities;
 
-use Bugo\LightPortal\Front\{
-	ArticleInterface,
-	BoardArticle,
-	ChosenPageArticle,
-	ChosenTopicArticle,
-	PageArticle,
-	TopicArticle,
-};
+use Bugo\LightPortal\Front\{ArticleInterface, BoardArticle, ChosenPageArticle};
+use Bugo\LightPortal\Front\{ChosenTopicArticle, PageArticle, TopicArticle};
 use Bugo\LightPortal\Helper;
 use Exception;
 use IntlException;

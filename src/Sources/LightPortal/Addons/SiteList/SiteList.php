@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.12.23
+ * @version 02.01.24
  */
 
 namespace Bugo\LightPortal\Addons\SiteList;
@@ -55,7 +55,7 @@ class SiteList extends Plugin
 
 		if ($this->request()->has('url')) {
 			foreach ($this->request('url') as $key => $value) {
-				$sites[$this->validate($value, 'url')] = [$this->validate($this->request('image')[$key], 'url'), $this->request('title')[$key], $this->request('desc')[$key]];
+				$sites[$this->filterVar($value, 'url')] = [$this->filterVar($this->request('image')[$key], 'url'), $this->request('title')[$key], $this->request('desc')[$key]];
 			}
 		}
 

@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * Session.php
+ * AbstractValidator.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -12,17 +12,13 @@
  * @version 2.4
  */
 
-namespace Bugo\LightPortal\Utils;
+namespace Bugo\LightPortal\Areas\Validators;
 
-final class Session extends GlobalArray
+use Bugo\LightPortal\Helper;
+
+abstract class AbstractValidator
 {
-	public function __construct()
-	{
-		$this->storage = &$_SESSION;
-	}
+	use Helper;
 
-	public function free(string $key): void
-	{
-		unset($this->storage[$key]);
-	}
+	abstract public function validate(): array;
 }

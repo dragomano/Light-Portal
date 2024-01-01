@@ -113,9 +113,9 @@ final class Comment
 		if (empty($data['message']))
 			exit(json_encode($result));
 
-		$parent_id = $this->validate($data['parent_id'], 'int');
+		$parent_id = $this->filterVar($data['parent_id'], 'int');
 		$message   = $this->smcFunc['htmlspecialchars']($data['message']);
-		$author    = $this->validate($data['author'], 'int');
+		$author    = $this->filterVar($data['author'], 'int');
 		$page_id   = $this->context['lp_page']['id'];
 		$page_url  = $this->context['canonical_url'];
 
