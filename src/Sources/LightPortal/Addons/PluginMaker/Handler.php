@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.23
+ * @version 01.01.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -255,7 +255,7 @@ class Handler extends Plugin
 			->setType('url')
 			->setAttribute('maxlength', 255)
 			->setAttribute('style', 'width: 100%')
-			->setAttribute('placeholder', 'https://custom.simplemachines.org/index.php?mod=4244')
+			->placeholder('https://custom.simplemachines.org/index.php?mod=4244')
 			->setValue($this->context['lp_plugin']['site']);
 
 		SelectField::make('license', $this->txt['lp_plugin_maker']['license'])

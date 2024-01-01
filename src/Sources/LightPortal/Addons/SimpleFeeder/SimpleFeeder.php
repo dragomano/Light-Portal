@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 01.01.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleFeeder;
@@ -54,7 +54,7 @@ class SimpleFeeder extends Block
 			->setTab('content')
 			->required()
 			->setAttribute('maxlength', 255)
-			->setAttribute('placeholder', $this->scripturl . '?action=.xml;type=rss2')
+			->placeholder($this->scripturl . '?action=.xml;type=rss2')
 			->setAttribute('style', 'width: 100%')
 			->setValue($this->context['lp_block']['options']['parameters']['url']);
 
