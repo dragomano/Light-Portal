@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 15.12.23
+ * @version 03.01.24
  */
 
 namespace Bugo\LightPortal\Addons\DummyArticleCards;
@@ -29,6 +29,7 @@ class DummyArticleCards extends Plugin
 	public function addSettings(array &$config_vars): void
 	{
 		$config_vars['dummy_article_cards'][] = ['check', 'use_lorem_ipsum'];
+		$config_vars['dummy_article_cards'][] = ['text', 'keywords', 'placeholder' => 'paris,girl'];
 	}
 
 	public function frontModes(array &$modes): void
