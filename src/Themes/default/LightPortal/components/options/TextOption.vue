@@ -6,6 +6,7 @@
       :name="name"
       :value="value"
       :pattern="pattern"
+      :placeholder="placeholder"
       :required="required"
     />
   </div>
@@ -40,5 +41,6 @@ const props = defineProps({
 });
 
 const pattern = computed(() => props.option.pattern);
+const placeholder = computed(() => props.option.placeholder);
 const required = computed(() => props.option.required);
 </script>
