@@ -105,7 +105,7 @@ function show_block_entry(int $id, array $data)
 	<tr
 		class="windowbg"
 		data-id="', $id, '"
-		x-data="{status: ' . (empty($data['status']) ? 'false' : 'true') . ', showContextMenu: false}"
+		x-data="{ status: ' . (empty($data['status']) ? 'false' : 'true') . ', showContextMenu: false }"
 		x-init="$watch(\'status\', value => block.toggleStatus($el))"
 	>
 		<td class="icon hidden-xs hidden-sm">
