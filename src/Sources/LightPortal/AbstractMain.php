@@ -85,7 +85,7 @@ abstract class AbstractMain
 
 	protected function loadFontAwesome(): void
 	{
-		if (empty($this->modSettings['lp_fa_source']))
+		if (empty($this->modSettings['lp_fa_source']) || $this->modSettings['lp_fa_source'] === 'none')
 			return;
 
 		if ($this->modSettings['lp_fa_source'] === 'css_local') {
