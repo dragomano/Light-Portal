@@ -250,7 +250,7 @@ function template_block_post()
 	$fields = $context['posting_fields'];
 
 	$titles = '';
-	foreach ($context['languages'] as $lang) {
+	foreach ($context['lp_languages'] as $lang) {
 		$titles .= ', title_' . $lang['filename'] . ': `' . ($context['lp_block']['title'][$lang['filename']] ?? '') . '`';
 	}
 

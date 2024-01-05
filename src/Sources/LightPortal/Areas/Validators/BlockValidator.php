@@ -43,7 +43,7 @@ class BlockValidator extends AbstractValidator
 		$parameters = [];
 
 		if ($this->request()->only(['save', 'save_exit', 'preview'])) {
-			foreach ($this->context['languages'] as $lang) {
+			foreach ($this->context['lp_languages'] as $lang) {
 				$this->args['title_' . $lang['filename']] = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
 			}
 

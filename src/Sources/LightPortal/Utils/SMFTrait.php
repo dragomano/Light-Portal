@@ -125,9 +125,9 @@ trait SMFTrait
 		log_error($message, $level);
 	}
 
-	protected function getLanguages(): void
+	protected function getLanguages(): array
 	{
-		getLanguages();
+		return getLanguages();
 	}
 
 	protected function getShortenText(string $text, int $length = 150): string

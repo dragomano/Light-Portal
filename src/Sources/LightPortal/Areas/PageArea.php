@@ -641,7 +641,7 @@ final class PageArea
 			$this->context['lp_page']['options'][$option] = $post_data[$option] ?? $page_options[$option] ?? $value;
 		}
 
-		foreach ($this->context['languages'] as $lang) {
+		foreach ($this->context['lp_languages'] as $lang) {
 			$this->context['lp_page']['title'][$lang['filename']] = $post_data['title_' . $lang['filename']] ?? $this->context['lp_page']['title'][$lang['filename']] ?? '';
 		}
 

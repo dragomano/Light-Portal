@@ -156,25 +156,23 @@ trait Helper
 
 	public function prepareForumLanguages(): void
 	{
-		$this->getLanguages();
-
-		$temp = $this->context['languages'];
+		$temp = $this->getLanguages();
 
 		if (empty($this->modSettings['userLanguage'])) {
-			$this->context['languages'] = [
+			$this->context['lp_languages'] = [
 				$this->language => $temp[$this->language]
 			];
 
 			return;
 		}
 
-		$this->context['languages'] = array_merge(
+		$this->context['lp_languages'] = array_merge(
 			[
-				$this->language => $temp[$this->language],
 				$this->user_info['language'] => $temp[$this->user_info['language']],
+				$this->language => $temp[$this->language],
 				'english' => $temp['english'],
 			],
-			$this->context['languages']
+			$temp
 		);
 	}
 

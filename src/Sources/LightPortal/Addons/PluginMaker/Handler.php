@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 02.01.24
+ * @version 05.01.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -56,24 +56,22 @@ class Handler extends Plugin
 
 	public function prepareForumLanguages(): void
 	{
-		$this->getLanguages();
-
-		$temp = $this->context['languages'];
+		$temp = $this->getLanguages();
 
 		if (empty($this->modSettings['userLanguage'])) {
-			$this->context['languages'] = ['english' => $temp['english']];
+			$this->context['lp_languages'] = ['english' => $temp['english']];
 
 			if ($this->language !== 'english')
-				$this->context['languages'][$this->language] = $temp[$this->language];
+				$this->context['lp_languages'][$this->language] = $temp[$this->language];
 		}
 
-		$this->context['languages'] = array_merge(
+		$this->context['lp_languages'] = array_merge(
 			[
 				'english'                    => $temp['english'],
 				$this->user_info['language'] => $temp[$this->user_info['language']],
 				$this->language              => $temp[$this->language]
 			],
-			$this->context['languages']
+			$temp
 		);
 	}
 
@@ -114,7 +112,7 @@ class Handler extends Plugin
 			}
 		}
 
-		foreach ($this->context['languages'] as $lang) {
+		foreach ($this->context['lp_languages'] as $lang) {
 			$this->context['lp_plugin']['title'][$lang['filename']]       = $post_data['title_' . $lang['filename']] ?? $this->context['lp_plugin']['title'][$lang['filename']] ?? '';
 			$this->context['lp_plugin']['description'][$lang['filename']] = $post_data['description_' . $lang['filename']] ?? $this->context['lp_plugin']['description'][$lang['filename']] ?? '';
 
@@ -214,11 +212,11 @@ class Handler extends Plugin
 		$value = /** @lang text */	'
 			<div>';
 
-		if (count($this->context['languages']) > 1) {
+		if (count($this->context['lp_languages']) > 1) {
 			$value .= '
 			<nav' . ($this->context['right_to_left'] ? '' : ' class="floatleft"') . '>';
 
-			foreach ($this->context['languages'] as $lang) {
+			foreach ($this->context['lp_languages'] as $lang) {
 				$value .= /** @lang text */
 					'
 				<a
@@ -233,7 +231,7 @@ class Handler extends Plugin
 		}
 
 		$i = count($languages) - 1;
-		foreach ($this->context['languages'] as $lang) {
+		foreach ($this->context['lp_languages'] as $lang) {
 			$value .= /** @lang text */
 				'
 				<div x-show="tab === \'' . $lang['filename'] . '\'">

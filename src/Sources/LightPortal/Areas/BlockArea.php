@@ -332,7 +332,7 @@ final class BlockArea
 			}
 		}
 
-		foreach ($this->context['languages'] as $lang) {
+		foreach ($this->context['lp_languages'] as $lang) {
 			$this->context['lp_block']['title'][$lang['filename']] = $post_data['title_' . $lang['filename']] ?? $this->context['lp_block']['title'][$lang['filename']] ?? '';
 		}
 

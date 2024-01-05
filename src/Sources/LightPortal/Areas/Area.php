@@ -61,11 +61,11 @@ trait Area
 		$value = '
 			<div>';
 
-		if (count($this->context['languages']) > 1) {
+		if (count($this->context['lp_languages']) > 1) {
 			$value .= '
 				<nav' . ($this->context['right_to_left'] ? '' : ' class="floatleft"') . '>';
 
-			foreach ($this->context['languages'] as $lang) {
+			foreach ($this->context['lp_languages'] as $lang) {
 				$value .= '
 					<a
 						class="button floatnone"
@@ -78,7 +78,7 @@ trait Area
 				</nav>';
 		}
 
-		foreach ($this->context['languages'] as $lang) {
+		foreach ($this->context['lp_languages'] as $lang) {
 			$value .= '
 				<div x-show="tab === \'' . $lang['filename'] . '\'">
 					<input

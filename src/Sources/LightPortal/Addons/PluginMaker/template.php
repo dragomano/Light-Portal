@@ -167,7 +167,7 @@ function template_plugin_post(): void
 															<table class="table_grid">
 																<tbody>';
 
-	foreach ($context['languages'] as $lang) {
+	foreach ($context['lp_languages'] as $lang) {
 		echo '
 																	<tr class="windowbg">
 																		<td>
@@ -216,7 +216,7 @@ function template_plugin_post(): void
 					document.querySelector("dt.pf_icon").style.display = "none";
 					document.querySelector("dd.pf_icon").style.display = "none";';
 
-	foreach ($context['languages'] as $lang) {
+	foreach ($context['lp_languages'] as $lang) {
 		echo '
 					document.querySelector("input[name=title_', $lang['filename'], ']").style.display = "none";';
 	}
@@ -226,7 +226,7 @@ function template_plugin_post(): void
 					document.querySelector("dt.pf_icon").style.display = "block";
 					document.querySelector("dd.pf_icon").style.display = "block";';
 
-	foreach ($context['languages'] as $lang) {
+	foreach ($context['lp_languages'] as $lang) {
 		echo '
 					document.querySelector("input[name=title_', $lang['filename'], ']").style.display = "inline-block";';
 	}
