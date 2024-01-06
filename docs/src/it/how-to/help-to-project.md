@@ -2,7 +2,7 @@
 description: Istruzioni su come aiutare il progetto Light Portal
 ---
 
-# Come aiutare il progetto
+# Aiuta il progetto
 
 Ci sono molte opzioni:
 

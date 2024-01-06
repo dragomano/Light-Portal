@@ -34,6 +34,8 @@ export default {
       next: 'Pagina successiva'
     },
     darkModeSwitchLabel: 'Aspetto',
+    lightModeSwitchTitle: 'Passa al tema chiaro',
+    darkModeSwitchTitle: 'Passa al tema scuro',
     sidebarMenuLabel: 'Menu',
     returnToTopLabel: 'Torna in cima',
     langMenuLabel: 'Cambia lingua',
