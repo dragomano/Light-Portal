@@ -79,7 +79,24 @@ final class BasicConfig
 		$config_vars = [
 			['callback', 'frontpage_mode_settings'],
 			['title', 'lp_standalone_mode_title'],
-			['callback', 'standalone_mode_settings'],
+			['callback', 'standalone_mode_settings_before'],
+			[
+				'check',
+				'lp_standalone_mode',
+				'label' => $this->txt['lp_action_on'],
+				'javascript' => '
+					@change="standalone_mode = ! standalone_mode"
+					:disabled="[\'0\', \'chosen_page\'].includes(frontpage_mode)"
+				'
+			],
+			[
+				'text',
+				'lp_standalone_url',
+				'help' => 'lp_standalone_url_help',
+				'size' => '80" placeholder="' . $this->txt['lp_example'] . $this->boardurl . '/portal.php',
+				'javascript' => ':disabled="! standalone_mode || [\'0\', \'chosen_page\'].includes(frontpage_mode)"'
+			],
+			['callback', 'standalone_mode_settings_after'],
 			['title', 'edit_permissions'],
 			['permissions', 'light_portal_view', 'help' => 'permissionhelp_light_portal_view'],
 			['permissions', 'light_portal_manage_pages_own', 'help' => 'permissionhelp_light_portal_manage_pages_own'],
@@ -126,12 +143,9 @@ final class BasicConfig
 				$save_vars[] = ['int', 'lp_num_items_per_page'];
 			}
 
-			$save_vars[] = ['check', 'lp_standalone_mode'];
-			$save_vars[] = ['text', 'lp_standalone_url'];
 			$save_vars[] = ['text', 'lp_disabled_actions'];
 
 			$this->saveDBSettings($save_vars);
-
 			$this->session()->put('adm-save', true);
 			$this->cache()->flush();
 

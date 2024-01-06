@@ -278,68 +278,52 @@ function template_callback_frontpage_mode_settings(): void
 		</template>';
 }
 
-function template_callback_standalone_mode_settings(): void
+function template_callback_standalone_mode_settings_before(): void
 {
-	global $modSettings, $txt, $scripturl, $boardurl, $context;
+	global $modSettings;
 
 	echo '
-	</dl>
-	<dl
-		class="settings"
-		style="margin-top: -2em"
-		x-data="{ standalone_mode: ', empty($modSettings['lp_standalone_mode']) ? 'false' : 'true', ', frontpage_mode: \'', $modSettings['lp_frontpage_mode'] ?? 0, '\' }"
+	<div
+		x-data="{
+			standalone_mode: ', empty($modSettings['lp_standalone_mode']) ? 'false' : 'true', ',
+			frontpage_mode: \'', $modSettings['lp_frontpage_mode'] ?? 0, '\'
+		}"
 		@change-mode.window="frontpage_mode = $event.detail.front"
-	>
-		<dt>
-			<a id="setting_lp_standalone_mode"></a> <span><label for="lp_standalone_mode">', $txt['lp_action_on'], '</label></span>
-		</dt>
-		<dd>
-			<input
-				type="checkbox"
-				name="lp_standalone_mode"
-				id="lp_standalone_mode"
-				value="1"', empty($modSettings['lp_standalone_mode']) ? '' : ' checked', '
-				@change="standalone_mode = ! standalone_mode"
-				:disabled="[\'0\', \'chosen_page\'].includes(frontpage_mode)"
-			>
-		</dd>
+	>';
+}
 
-		<template x-if="standalone_mode && ! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
-			<dt>
-				<a id="setting_lp_standalone_url_help" href="', $scripturl, '?action=helpadmin;help=lp_standalone_url_help" onclick="return reqOverlayDiv(this.href);">
-					<span class="main_icons help" title="', $txt['help'], '"></span>
-				</a>
-				<a id="setting_lp_standalone_url"></a> <span><label for="lp_standalone_url">', $txt['lp_standalone_url'], '</label></span>
-			</dt>
-		</template>
-		<template x-if="standalone_mode && ! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
-			<dd>
-				<input
-					type="text"
-					name="lp_standalone_url"
-					id="lp_standalone_url"
-					value="', $modSettings['lp_standalone_url'] ?? '', '"
-					size="80"
-					placeholder="', $txt['lp_example'], $boardurl, '/portal.php"
-				>
-			</dd>
-		</template>
+function template_callback_standalone_mode_settings_after(): void
+{
+	global $scripturl, $txt, $context;
 
-		<template x-if="standalone_mode && ! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
-			<dt>
-				<a
-					id="setting_lp_disabled_actions_help"
-					href="', $scripturl, '?action=helpadmin;help=lp_disabled_actions_help"
-					onclick="return reqOverlayDiv(this.href);"
-				>
-					<span class="main_icons help" title="', $txt['help'], '"></span>
-				</a>
-				<a id="setting_lp_disabled_actions"></a> <span><label for="lp_disabled_actions">', $txt['lp_disabled_actions'], '</label><br><span class="smalltext">', $txt['lp_disabled_actions_subtext'], '</span></span>
-			</dt>
-		</template>
-		<template x-if="standalone_mode && ! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
-			<dd>', $context['lp_disabled_actions_select'], '</dd>
-		</template>';
+	echo '
+		<table class="lp_table_settings">
+			<tbody>
+				<tr>
+					<template x-if="standalone_mode && ! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+						<td>
+							<a
+								id="setting_lp_disabled_actions_help"
+								href="', $scripturl, '?action=helpadmin;help=lp_disabled_actions_help"
+								onclick="return reqOverlayDiv(this.href);"
+							>
+								<span class="main_icons help" title="', $txt['help'], '"></span>
+							</a>
+							<a id="setting_lp_disabled_actions"></a>
+							<span>
+								<label for="lp_disabled_actions">', $txt['lp_disabled_actions'], '</label>
+								<br>
+								<span class="smalltext">', $txt['lp_disabled_actions_subtext'], '</span>
+							</span>
+						</td>
+					</template>
+					<template x-if="standalone_mode && ! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
+						<td style="width: 44%">', $context['lp_disabled_actions_select'], '</td>
+					</template>
+				</tr>
+			</tbody>
+		</table>
+	</div>';
 }
 
 function template_callback_comment_settings_before(): void
