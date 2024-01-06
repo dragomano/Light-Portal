@@ -34,6 +34,8 @@ export default {
       next: 'Επόμενη σελίδα'
     },
     darkModeSwitchLabel: 'Εμφάνιση',
+    lightModeSwitchTitle: 'Εναλλαγή σε φωτεινό θέμα',
+    darkModeSwitchTitle: 'Εναλλαγή σε σκοτεινό θέμα',
     sidebarMenuLabel: 'Μενού',
     returnToTopLabel: 'Επιστροφή στην κορυφή',
     langMenuLabel: 'Αλλαγή γλώσσας',

@@ -6,11 +6,11 @@
  * @package DummyArticleCards (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2021-2023 Bugo
+ * @copyright 2021-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 15.12.23
+ * @version 03.01.24
  */
 
 namespace Bugo\LightPortal\Addons\DummyArticleCards;
@@ -48,6 +48,8 @@ class DummyArticle extends AbstractArticle
 
 		$demo_articles = [];
 
+		$keywords = empty($this->context['lp_dummy_article_cards_plugin']['keywords']) ? '' : ($this->context['lp_dummy_article_cards_plugin']['keywords'] . '/all');
+
 		foreach ($products as $id => $article) {
 			if (empty($this->context['lp_dummy_article_cards_plugin']['use_lorem_ipsum'])) {
 				$section = $article['brand'];
@@ -58,7 +60,7 @@ class DummyArticle extends AbstractArticle
 			} else {
 				$section = $this->getShortenText(Lorem::ipsum(1), 20);
 				$title   = $this->getShortenText(Lorem::ipsum(1), 40);
-				$image   = 'https://loremflickr.com/470/235?random=' . $article['id'];
+				$image   = 'https://loremflickr.com/470/235/' . $keywords . '?random=' . $article['id'];
 				$teaser  = empty($this->modSettings['lp_show_teaser']) ? '' : $this->getTeaser(Lorem::ipsum(4));
 				$tag     = $this->getShortenText(Lorem::ipsum(1), 10);
 			}

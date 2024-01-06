@@ -6,11 +6,11 @@
  * @package PlatesLayouts (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2023 Bugo
+ * @copyright 2023-2024 Bugo
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 17.12.23
+ * @version 29.12.23
  */
 
 namespace Bugo\LightPortal\Addons\PlatesLayouts;
@@ -60,7 +60,7 @@ class PlatesLayouts extends Plugin
 
 		try {
 			$templates = new Engine($this->settings['default_theme_dir'] . '/portal_layouts', 'tpl.php');
-			$templates->registerFunction('debug', fn(array $data) => parse_bbc('[code]' . print_r($data, true) . '[/code]'));
+			$templates->registerFunction('debug', fn(mixed $data) => parse_bbc('[code]' . print_r($data, true) . '[/code]'));
 
 			$layout = strstr($this->modSettings['lp_frontpage_layout'], '.', true) ?: $this->modSettings['lp_frontpage_layout'];
 
@@ -94,6 +94,6 @@ class PlatesLayouts extends Plugin
 
 	private function showExample(): string
 	{
-		return '<div class="roundframe">' . $this->parseBbc('[php]' . file_get_contents(__DIR__. '/layouts/example.tpl.php') . '[/php]') . '</div>';
+		return '<div class="roundframe">' . $this->parseBbc('[php]' . file_get_contents(__DIR__. '/layouts/example' . $this->extension) . '[/php]') . '</div>';
 	}
 }

@@ -6,7 +6,7 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2023 Bugo
+ * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 2.4
@@ -76,10 +76,122 @@ final class BasicConfig
 
 		$this->context['lp_disabled_actions_select'] = new ActionSelect;
 
+		$javascript = ':disabled="[\'0\', \'chosen_page\'].includes(frontpage_mode)"';
+
 		$config_vars = [
-			['callback', 'frontpage_mode_settings'],
+			['callback', 'frontpage_mode_settings_before'],
+			[
+				'select',
+				'lp_frontpage_mode',
+				$this->context['lp_frontpage_modes'],
+				'javascript' => '
+					@change="frontpage_mode = $event.target.value; $dispatch(\'change-mode\', {front: frontpage_mode})"
+				'
+			],
+			[
+				'text',
+				'lp_frontpage_title',
+				'size' => '80" placeholder="' . str_replace(["'", "\""], "", $this->context['forum_name']) . ' - ' . $this->txt['lp_portal'],
+				'javascript' => $javascript
+			],
+			['callback', 'frontpage_mode_settings_middle'],
+			'<hr>',
+			[
+				'check',
+				'lp_show_images_in_articles',
+				'help' => 'lp_show_images_in_articles_help',
+				'javascript' => $javascript
+			],
+			[
+				'text',
+				'lp_image_placeholder',
+				'size' => '80" placeholder="' . $this->txt['lp_example'] . $this->settings['default_images_url'] . '/smflogo.svg',
+				'javascript' => $javascript
+			],
+			[
+				'check',
+				'lp_show_teaser',
+				'javascript' => $javascript
+			],
+			[
+				'check',
+				'lp_show_author',
+				'help' => 'lp_show_author_help',
+				'javascript' => $javascript
+			],
+			[
+				'check',
+				'lp_show_views_and_comments',
+				'javascript' => $javascript
+			],
+			[
+				'check',
+				'lp_frontpage_order_by_replies',
+				'javascript' => $javascript
+			],
+			[
+				'select',
+				'lp_frontpage_article_sorting',
+				$this->txt['lp_frontpage_article_sorting_set'],
+				'help' => 'lp_frontpage_article_sorting_help',
+				'javascript' => $javascript
+			],
+			'<hr>',
+			[
+				'select',
+				'lp_frontpage_layout',
+				$this->context['lp_frontpage_layouts'],
+				'javascript' => $javascript
+			],
+			[
+				'check',
+				'lp_show_layout_switcher',
+				'javascript' => $javascript
+			],
+			[
+				'select',
+				'lp_frontpage_num_columns',
+				$this->context['lp_column_set'],
+				'javascript' => $javascript
+			],
+			'<hr>',
+			[
+				'select',
+				'lp_show_pagination',
+				$this->txt['lp_show_pagination_set'],
+				'javascript' => $javascript
+			],
+			[
+				'check',
+				'lp_use_simple_pagination',
+				'javascript' => $javascript
+			],
+			[
+				'int',
+				'lp_num_items_per_page',
+				'min' => 1,
+				'javascript' => $javascript
+			],
+			['callback', 'frontpage_mode_settings_after'],
 			['title', 'lp_standalone_mode_title'],
-			['callback', 'standalone_mode_settings'],
+			['callback', 'standalone_mode_settings_before'],
+			[
+				'check',
+				'lp_standalone_mode',
+				'label' => $this->txt['lp_action_on'],
+				'javascript' => '
+					@change="standalone_mode = ! standalone_mode"
+					:disabled="[\'0\', \'chosen_page\'].includes(frontpage_mode)"
+				'
+			],
+			[
+				'text',
+				'lp_standalone_url',
+				'help' => 'lp_standalone_url_help',
+				'size' => '80" placeholder="' . $this->txt['lp_example'] . $this->boardurl . '/portal.php',
+				'javascript' => ':disabled="! standalone_mode || [\'0\', \'chosen_page\'].includes(frontpage_mode)"'
+			],
+			['callback', 'standalone_mode_settings_after'],
 			['title', 'edit_permissions'],
 			['permissions', 'light_portal_view', 'help' => 'permissionhelp_light_portal_view'],
 			['permissions', 'light_portal_manage_pages_own', 'help' => 'permissionhelp_light_portal_manage_pages_own'],
@@ -94,44 +206,26 @@ final class BasicConfig
 			$this->checkSession();
 
 			if ($this->request()->isNotEmpty('lp_image_placeholder'))
-				$this->post()->put('lp_image_placeholder', $this->validate($this->request('lp_image_placeholder'), 'url'));
+				$this->post()->put('lp_image_placeholder', $this->filterVar($this->request('lp_image_placeholder'), 'url'));
 
 			if ($this->request()->isNotEmpty('lp_standalone_url'))
-				$this->post()->put('lp_standalone_url', $this->validate($this->request('lp_standalone_url'), 'url'));
+				$this->post()->put('lp_standalone_url', $this->filterVar($this->request('lp_standalone_url'), 'url'));
 
 			$save_vars = $config_vars;
-			$save_vars[] = ['text', 'lp_frontpage_mode'];
 
 			if ($this->request()->has('lp_frontpage_alias'))
 				$save_vars[] = ['text', 'lp_frontpage_alias'];
 
 			if ($this->request()->isNotEmpty('lp_frontpage_mode') && $this->request()->hasNot('lp_frontpage_alias')) {
-				$save_vars[] = ['text', 'lp_frontpage_title'];
 				$save_vars[] = ['text', 'lp_frontpage_categories'];
 				$save_vars[] = ['text', 'lp_frontpage_boards'];
 				$save_vars[] = ['text', 'lp_frontpage_pages'];
 				$save_vars[] = ['text', 'lp_frontpage_topics'];
-				$save_vars[] = ['check', 'lp_show_images_in_articles'];
-				$save_vars[] = ['text', 'lp_image_placeholder'];
-				$save_vars[] = ['check', 'lp_show_teaser'];
-				$save_vars[] = ['check', 'lp_show_author'];
-				$save_vars[] = ['check', 'lp_show_views_and_comments'];
-				$save_vars[] = ['check', 'lp_frontpage_order_by_replies'];
-				$save_vars[] = ['int', 'lp_frontpage_article_sorting'];
-				$save_vars[] = ['text', 'lp_frontpage_layout'];
-				$save_vars[] = ['check', 'lp_show_layout_switcher'];
-				$save_vars[] = ['int', 'lp_frontpage_num_columns'];
-				$save_vars[] = ['int', 'lp_show_pagination'];
-				$save_vars[] = ['check', 'lp_use_simple_pagination'];
-				$save_vars[] = ['int', 'lp_num_items_per_page'];
 			}
 
-			$save_vars[] = ['check', 'lp_standalone_mode'];
-			$save_vars[] = ['text', 'lp_standalone_url'];
 			$save_vars[] = ['text', 'lp_disabled_actions'];
 
 			$this->saveDBSettings($save_vars);
-
 			$this->session()->put('adm-save', true);
 			$this->cache()->flush();
 

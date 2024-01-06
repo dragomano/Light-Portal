@@ -6,7 +6,7 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2023 Bugo
+ * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 2.4
@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Entities\{Block, Category, FrontPage, Page, Tag};
+use Bugo\LightPortal\Entities\{BoardIndex, Block, Category, FrontPage, Page, Tag};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -27,6 +27,7 @@ final class Integration extends AbstractMain
 	public function hooks(): void
 	{
 		$this->applyHook('pre_load');
+		$this->applyHook('user_info');
 		$this->applyHook('pre_javascript_output');
 		$this->applyHook('pre_css_output');
 		$this->applyHook('load_theme');
@@ -58,13 +59,20 @@ final class Integration extends AbstractMain
 		$this->context['lp_num_queries'] ??= 0;
 
 		defined('LP_NAME') || define('LP_NAME', 'Light Portal');
-		defined('LP_VERSION') || define('LP_VERSION', '2.4.2');
+		defined('LP_VERSION') || define('LP_VERSION', '2.4.3');
 		defined('LP_PLUGIN_LIST') || define('LP_PLUGIN_LIST', 'https://api.jsonserve.com/EuTOcP');
 		defined('LP_ADDON_URL') || define('LP_ADDON_URL', $this->boardurl . '/Sources/LightPortal/Addons');
 		defined('LP_ADDON_DIR') || define('LP_ADDON_DIR', __DIR__ . '/Addons');
 		defined('LP_CACHE_TIME') || define('LP_CACHE_TIME', (int) ($this->modSettings['lp_cache_update_interval'] ?? 72000));
 		defined('LP_ACTION') || define('LP_ACTION', $this->modSettings['lp_portal_action'] ?? 'portal');
 		defined('LP_PAGE_PARAM') || define('LP_PAGE_PARAM', $this->modSettings['lp_page_param'] ?? 'page');
+		defined('LP_ALIAS_PATTERN') || define('LP_ALIAS_PATTERN', '^[a-z][a-z0-9_]+$');
+		defined('LP_AREAS_PATTERN') || define('LP_AREAS_PATTERN', '^[a-z][a-z0-9=|\-,!]+$');
+		defined('LP_ADDON_PATTERN') || define('LP_ADDON_PATTERN', '^[A-Z][a-zA-Z]+$');
+	}
+
+	public function userInfo(): void
+	{
 		defined('LP_BASE_URL') || define('LP_BASE_URL', $this->scripturl . '?action=' . LP_ACTION);
 		defined('LP_PAGE_URL') || define('LP_PAGE_URL', $this->scripturl . '?' . LP_PAGE_PARAM . '=');
 	}
@@ -136,7 +144,7 @@ final class Integration extends AbstractMain
 		if (! empty($this->modSettings['lp_frontpage_mode']))
 			$actions[LP_ACTION] = [false, [new FrontPage, 'show']];
 
-		$actions['forum'] = ['BoardIndex.php', 'BoardIndex'];
+		$actions['forum'] = [false, [new BoardIndex, 'show']];
 
 		if ($this->request()->is(LP_ACTION) && $this->context['current_subaction'] === 'categories')
 			(new Category)->show(new Page);
@@ -160,11 +168,8 @@ final class Integration extends AbstractMain
 		if ($this->request()->isNotEmpty(LP_PAGE_PARAM))
 			return call_user_func([new Page, 'show']);
 
-		if (empty($this->modSettings['lp_frontpage_mode']) || ! (empty($this->modSettings['lp_standalone_mode']) || empty($this->modSettings['lp_standalone_url']))) {
-			$this->require('BoardIndex');
-
-			return call_user_func('BoardIndex');
-		}
+		if (empty($this->modSettings['lp_frontpage_mode']) || ! (empty($this->modSettings['lp_standalone_mode']) || empty($this->modSettings['lp_standalone_url'])))
+			return call_user_func([new BoardIndex, 'show']);
 
 		return call_user_func([new FrontPage, 'show']);
 	}

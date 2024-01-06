@@ -6,11 +6,11 @@
  * @package SimpleFeeder (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2023 Bugo
+ * @copyright 2020-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 01.01.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleFeeder;
@@ -52,9 +52,9 @@ class SimpleFeeder extends Block
 		TextField::make('url', $this->txt['lp_simple_feeder']['url'])
 			->setType('url')
 			->setTab('content')
+			->required()
 			->setAttribute('maxlength', 255)
-			->setAttribute('placeholder', $this->scripturl . '?action=.xml;type=rss2')
-			->setAttribute('required', true)
+			->placeholder($this->scripturl . '?action=.xml;type=rss2')
 			->setAttribute('style', 'width: 100%')
 			->setValue($this->context['lp_block']['options']['parameters']['url']);
 

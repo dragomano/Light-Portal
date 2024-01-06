@@ -6,7 +6,7 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2023 Bugo
+ * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 2.4
@@ -156,25 +156,23 @@ trait Helper
 
 	public function prepareForumLanguages(): void
 	{
-		$this->getLanguages();
-
-		$temp = $this->context['languages'];
+		$temp = $this->getLanguages();
 
 		if (empty($this->modSettings['userLanguage'])) {
-			$this->context['languages'] = [
+			$this->context['lp_languages'] = [
 				$this->language => $temp[$this->language]
 			];
 
 			return;
 		}
 
-		$this->context['languages'] = array_merge(
+		$this->context['lp_languages'] = array_merge(
 			[
-				$this->language => $temp[$this->language],
 				$this->user_info['language'] => $temp[$this->user_info['language']],
+				$this->language => $temp[$this->language],
 				'english' => $temp['english'],
 			],
-			$this->context['languages']
+			$temp
 		);
 	}
 
@@ -265,7 +263,7 @@ trait Helper
 	 *
 	 * Получаем отфильтрованное значение $var
 	 */
-	public function validate(mixed $var, array|string $type = 'string'): mixed
+	public function filterVar(mixed $var, array|string $type = 'string'): mixed
 	{
 		if (is_array($type)) {
 			return filter_var($var, FILTER_VALIDATE_REGEXP, $type);

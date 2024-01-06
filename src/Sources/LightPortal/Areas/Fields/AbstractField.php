@@ -6,7 +6,7 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2023 Bugo
+ * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 2.4
@@ -90,6 +90,16 @@ abstract class AbstractField
 		$this->attributes[$name] = $value;
 
 		return $this;
+	}
+
+	public function required(): self
+	{
+		return $this->setAttribute('required', true);
+	}
+
+	public function placeholder(string $text): self
+	{
+		return $this->setAttribute('placeholder', $text);
 	}
 
 	public function build(): void

@@ -4,7 +4,7 @@
 
 <script>
 export default {
-  name: 'OptionDesc',
+  name: 'DescOption',
 };
 </script>
 

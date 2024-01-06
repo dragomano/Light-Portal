@@ -4,7 +4,7 @@
 
 <script>
 export default {
-  name: 'OptionCallback',
+  name: 'CallbackOption',
 };
 </script>
 

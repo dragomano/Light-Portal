@@ -6,7 +6,7 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2023 Bugo
+ * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 2.4
@@ -157,7 +157,7 @@ final class Block
 			if ($area === LP_ACTION && isset($block['areas']['home']) && empty($this->context['lp_page']) && empty($this->context['current_action']))
 				return true;
 
-			if (isset($this->context['lp_page']) && isset($this->context['lp_page']['alias'])) {
+			if (isset($this->context['lp_page']['alias'])) {
 				if (isset($block['areas']['!' . LP_PAGE_PARAM . '=' . $this->context['lp_page']['alias']]) && $temp_areas[0] === 'pages')
 					return false;
 

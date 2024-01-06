@@ -78,8 +78,8 @@ function template_page_post()
 	$fields = $context['posting_fields'];
 
 	$titles = '';
-	foreach ($context['languages'] as $lang) {
-		$titles .= ', title_' . $lang['filename'] . ': \'' . ($context['lp_page']['title'][$lang['filename']] ?? '') . '\'';
+	foreach ($context['lp_languages'] as $lang) {
+		$titles .= ', title_' . $lang['filename'] . ': `' . ($context['lp_page']['title'][$lang['filename']] ?? '') . '`';
 	}
 
 	echo '

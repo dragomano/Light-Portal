@@ -10,7 +10,7 @@
 
 <script>
 export default {
-  name: 'OptionCheck',
+  name: 'CheckOption',
 };
 </script>
 

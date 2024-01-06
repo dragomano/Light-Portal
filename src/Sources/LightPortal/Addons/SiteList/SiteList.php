@@ -6,11 +6,11 @@
  * @package SiteList (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2021-2023 Bugo
+ * @copyright 2021-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.12.23
+ * @version 02.01.24
  */
 
 namespace Bugo\LightPortal\Addons\SiteList;
@@ -55,7 +55,7 @@ class SiteList extends Plugin
 
 		if ($this->request()->has('url')) {
 			foreach ($this->request('url') as $key => $value) {
-				$sites[$this->validate($value, 'url')] = [$this->validate($this->request('image')[$key], 'url'), $this->request('title')[$key], $this->request('desc')[$key]];
+				$sites[$this->filterVar($value, 'url')] = [$this->filterVar($this->request('image')[$key], 'url'), $this->request('title')[$key], $this->request('desc')[$key]];
 			}
 		}
 

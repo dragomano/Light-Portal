@@ -6,11 +6,11 @@
  * @package DummyArticleCards (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2021-2023 Bugo
+ * @copyright 2021-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 15.12.23
+ * @version 03.01.24
  */
 
 namespace Bugo\LightPortal\Addons\DummyArticleCards;
@@ -29,6 +29,7 @@ class DummyArticleCards extends Plugin
 	public function addSettings(array &$config_vars): void
 	{
 		$config_vars['dummy_article_cards'][] = ['check', 'use_lorem_ipsum'];
+		$config_vars['dummy_article_cards'][] = ['text', 'keywords', 'placeholder' => 'paris,girl'];
 	}
 
 	public function frontModes(array &$modes): void

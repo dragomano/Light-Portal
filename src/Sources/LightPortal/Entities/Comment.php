@@ -6,7 +6,7 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2023 Bugo
+ * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 2.4
@@ -113,9 +113,9 @@ final class Comment
 		if (empty($data['message']))
 			exit(json_encode($result));
 
-		$parent_id = $this->validate($data['parent_id'], 'int');
+		$parent_id = $this->filterVar($data['parent_id'], 'int');
 		$message   = $this->smcFunc['htmlspecialchars']($data['message']);
-		$author    = $this->validate($data['author'], 'int');
+		$author    = $this->filterVar($data['author'], 'int');
 		$page_id   = $this->context['lp_page']['id'];
 		$page_url  = $this->context['canonical_url'];
 

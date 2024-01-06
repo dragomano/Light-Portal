@@ -1,10 +1,11 @@
 <template>
   <div>
     <input
-      type="url"
+      type="text"
       :id="id"
       :name="name"
       :value="value"
+      :pattern="pattern"
       :placeholder="placeholder"
       :required="required"
     />
@@ -13,7 +14,7 @@
 
 <script>
 export default {
-  name: 'OptionUrl',
+  name: 'TextOption',
 };
 </script>
 
@@ -39,6 +40,7 @@ const props = defineProps({
   },
 });
 
+const pattern = computed(() => props.option.pattern);
 const placeholder = computed(() => props.option.placeholder);
 const required = computed(() => props.option.required);
 </script>

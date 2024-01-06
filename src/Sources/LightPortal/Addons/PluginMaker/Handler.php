@@ -6,19 +6,19 @@
  * @package PluginMaker (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2021-2023 Bugo
+ * @copyright 2021-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.12.23
+ * @version 05.01.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
 
 use Bugo\LightPortal\Addons\{Block, Plugin};
 use Bugo\LightPortal\Areas\Area;
-use Bugo\LightPortal\Areas\Fields\{CheckboxField, ColorField, CustomField, NumberField, RadioField, RangeField,
-	SelectField, TextField};
+use Bugo\LightPortal\Areas\Fields\{CheckboxField, ColorField, CustomField, NumberField};
+use Bugo\LightPortal\Areas\Fields\{RadioField, RangeField, SelectField, TextField};
 use Bugo\LightPortal\Areas\Partials\IconSelect;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Nette\PhpGenerator\{PhpFile, PhpNamespace, Printer};
@@ -29,8 +29,6 @@ if (! defined('LP_NAME'))
 class Handler extends Plugin
 {
 	use Area;
-
-	private const ADDON_NAME_PATTERN = '^[A-Z][a-zA-Z]+$';
 
 	public function add(): void
 	{
@@ -58,79 +56,29 @@ class Handler extends Plugin
 
 	public function prepareForumLanguages(): void
 	{
-		$this->getLanguages();
-
-		$temp = $this->context['languages'];
+		$temp = $this->getLanguages();
 
 		if (empty($this->modSettings['userLanguage'])) {
-			$this->context['languages'] = ['english' => $temp['english']];
+			$this->context['lp_languages'] = ['english' => $temp['english']];
 
 			if ($this->language !== 'english')
-				$this->context['languages'][$this->language] = $temp[$this->language];
+				$this->context['lp_languages'][$this->language] = $temp[$this->language];
 		}
 
-		$this->context['languages'] = array_merge(
+		$this->context['lp_languages'] = array_merge(
 			[
 				'english'                    => $temp['english'],
 				$this->user_info['language'] => $temp[$this->user_info['language']],
 				$this->language              => $temp[$this->language]
 			],
-			$this->context['languages']
+			$temp
 		);
 	}
 
 	private function validateData(): void
 	{
-		$post_data = [];
-
-		if ($this->request()->has('save')) {
-			$args = [
-				'name'    => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-				'type'    => FILTER_DEFAULT,
-				'icon'    => FILTER_DEFAULT,
-				'author'  => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-				'email'   => FILTER_SANITIZE_EMAIL,
-				'site'    => FILTER_SANITIZE_URL,
-				'license' => FILTER_DEFAULT,
-				'option_name' => [
-					'name'   => 'option_name',
-					'filter' => FILTER_DEFAULT,
-					'flags'  => FILTER_REQUIRE_ARRAY
-				],
-				'option_type' => [
-					'name'   => 'option_type',
-					'filter' => FILTER_DEFAULT,
-					'flags'  => FILTER_REQUIRE_ARRAY
-				],
-				'option_defaults' => [
-					'name'   => 'option_defaults',
-					'filter' => FILTER_DEFAULT,
-					'flags'  => FILTER_REQUIRE_ARRAY
-				],
-				'option_variants' => [
-					'name'   => 'option_variants',
-					'filter' => FILTER_DEFAULT,
-					'flags'  => FILTER_REQUIRE_ARRAY
-				],
-				'option_translations' => [
-					'name'   => 'option_translations',
-					'filter' => FILTER_DEFAULT,
-					'flags'  => FILTER_REQUIRE_ARRAY
-				],
-				'smf_hooks'  => FILTER_VALIDATE_BOOLEAN,
-				'smf_ssi'    => FILTER_VALIDATE_BOOLEAN,
-				'components' => FILTER_VALIDATE_BOOLEAN
-			];
-
-			foreach ($this->context['languages'] as $lang) {
-				$args['title_' . $lang['filename']]       = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
-				$args['description_' . $lang['filename']] = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
-			}
-
-			$post_data = filter_input_array(INPUT_POST, $args);
-
-			$this->findErrors($post_data);
-		}
+		$validator = new Validator();
+		$post_data = $validator->validate();
 
 		$this->context['lp_plugin'] = [
 			'name'       => $post_data['name'] ?? $this->context['lp_plugin']['name'] = 'MyNewAddon',
@@ -164,7 +112,7 @@ class Handler extends Plugin
 			}
 		}
 
-		foreach ($this->context['languages'] as $lang) {
+		foreach ($this->context['lp_languages'] as $lang) {
 			$this->context['lp_plugin']['title'][$lang['filename']]       = $post_data['title_' . $lang['filename']] ?? $this->context['lp_plugin']['title'][$lang['filename']] ?? '';
 			$this->context['lp_plugin']['description'][$lang['filename']] = $post_data['description_' . $lang['filename']] ?? $this->context['lp_plugin']['description'][$lang['filename']] ?? '';
 
@@ -182,30 +130,6 @@ class Handler extends Plugin
 		$this->cleanBbcode($this->context['lp_plugin']['description']);
 	}
 
-	private function findErrors(array $data): void
-	{
-		$post_errors = [];
-
-		if (empty($data['name']))
-			$post_errors[] = 'no_name';
-
-		if (! empty($data['name']) && empty($this->validate($data['name'], ['options' => ['regexp' => '/' . self::ADDON_NAME_PATTERN . '/']])))
-			$post_errors[] = 'no_valid_name';
-
-		if (! empty($data['name']) && ! $this->isUnique($data['name']))
-			$post_errors[] = 'no_unique_name';
-
-		if (empty($data['description_english']))
-			$post_errors[] = 'no_description';
-
-		if (! empty($post_errors)) {
-			$this->context['post_errors'] = [];
-
-			foreach ($post_errors as $error)
-				$this->context['post_errors'][] = $this->txt['lp_post_error_' . $error] ?? $this->txt['lp_plugin_maker'][$error];
-		}
-	}
-
 	private function prepareFormFields(): void
 	{
 		$this->checkSubmitOnce('register');
@@ -214,9 +138,9 @@ class Handler extends Plugin
 		TextField::make('name', $this->txt['lp_plugin_maker']['name'])
 			->setTab('content')
 			->setAfter($this->txt['lp_plugin_maker']['name_subtext'])
+			->required()
 			->setAttribute('maxlength', 255)
-			->setAttribute('required', true)
-			->setAttribute('pattern', self::ADDON_NAME_PATTERN)
+			->setAttribute('pattern', LP_ADDON_PATTERN)
 			->setAttribute('style', 'width: 100%')
 			->setAttribute('@change', 'plugin.updateState($event.target.value, $refs)')
 			->setValue($this->context['lp_plugin']['name']);
@@ -239,7 +163,7 @@ class Handler extends Plugin
 		TextField::make('author', $this->txt['author'])
 			->setTab('copyrights')
 			->setAttribute('maxlength', 255)
-			->setAttribute('required', true)
+			->required()
 			->setValue($this->context['lp_plugin']['author']);
 
 		TextField::make('email', $this->txt['email'])
@@ -255,7 +179,7 @@ class Handler extends Plugin
 			->setType('url')
 			->setAttribute('maxlength', 255)
 			->setAttribute('style', 'width: 100%')
-			->setAttribute('placeholder', 'https://custom.simplemachines.org/index.php?mod=4244')
+			->placeholder('https://custom.simplemachines.org/index.php?mod=4244')
 			->setValue($this->context['lp_plugin']['site']);
 
 		SelectField::make('license', $this->txt['lp_plugin_maker']['license'])
@@ -288,11 +212,11 @@ class Handler extends Plugin
 		$value = /** @lang text */	'
 			<div>';
 
-		if (count($this->context['languages']) > 1) {
+		if (count($this->context['lp_languages']) > 1) {
 			$value .= '
 			<nav' . ($this->context['right_to_left'] ? '' : ' class="floatleft"') . '>';
 
-			foreach ($this->context['languages'] as $lang) {
+			foreach ($this->context['lp_languages'] as $lang) {
 				$value .= /** @lang text */
 					'
 				<a
@@ -307,7 +231,7 @@ class Handler extends Plugin
 		}
 
 		$i = count($languages) - 1;
-		foreach ($this->context['languages'] as $lang) {
+		foreach ($this->context['lp_languages'] as $lang) {
 			$value .= /** @lang text */
 				'
 				<div x-show="tab === \'' . $lang['filename'] . '\'">
@@ -781,15 +705,5 @@ class Handler extends Plugin
 			'site'    => $this->context['lp_plugin']['site'],
 			'license' => $this->context['lp_plugin']['license'],
 		]);
-	}
-
-	/**
-	 * Check the uniqueness of the plugin
-	 *
-	 * Проверяем уникальность плагина
-	 */
-	private function isUnique(string $name): bool
-	{
-		return ! in_array($name, $this->getEntityList('plugin'));
 	}
 }

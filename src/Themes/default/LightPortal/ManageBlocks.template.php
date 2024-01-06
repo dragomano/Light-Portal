@@ -105,7 +105,7 @@ function show_block_entry(int $id, array $data)
 	<tr
 		class="windowbg"
 		data-id="', $id, '"
-		x-data="{status: ' . (empty($data['status']) ? 'false' : 'true') . ', showContextMenu: false}"
+		x-data="{ status: ' . (empty($data['status']) ? 'false' : 'true') . ', showContextMenu: false }"
 		x-init="$watch(\'status\', value => block.toggleStatus($el))"
 	>
 		<td class="icon hidden-xs hidden-sm">
@@ -250,8 +250,8 @@ function template_block_post()
 	$fields = $context['posting_fields'];
 
 	$titles = '';
-	foreach ($context['languages'] as $lang) {
-		$titles .= ', title_' . $lang['filename'] . ': \'' . ($context['lp_block']['title'][$lang['filename']] ?? '') . '\'';
+	foreach ($context['lp_languages'] as $lang) {
+		$titles .= ', title_' . $lang['filename'] . ': `' . ($context['lp_block']['title'][$lang['filename']] ?? '') . '`';
 	}
 
 	echo '

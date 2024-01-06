@@ -15,7 +15,7 @@
 
 <script>
 export default {
-  name: 'OptionSelect',
+  name: 'SelectOption',
 };
 </script>
 

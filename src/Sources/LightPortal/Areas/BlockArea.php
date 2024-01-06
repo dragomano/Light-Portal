@@ -6,7 +6,7 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2023 Bugo
+ * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 2.4
@@ -15,12 +15,9 @@
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, TextField};
-use Bugo\LightPortal\Areas\Partials\AreaSelect;
-use Bugo\LightPortal\Areas\Partials\ContentClassSelect;
-use Bugo\LightPortal\Areas\Partials\IconSelect;
-use Bugo\LightPortal\Areas\Partials\PermissionSelect;
-use Bugo\LightPortal\Areas\Partials\PlacementSelect;
-use Bugo\LightPortal\Areas\Partials\TitleClassSelect;
+use Bugo\LightPortal\Areas\Partials\{AreaSelect, ContentClassSelect, IconSelect};
+use Bugo\LightPortal\Areas\Partials\{PermissionSelect, PlacementSelect, TitleClassSelect};
+use Bugo\LightPortal\Areas\Validators\BlockValidator;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Repositories\BlockRepository;
 
@@ -32,8 +29,6 @@ final class BlockArea
 	use Area, Helper;
 
 	private BlockRepository $repository;
-
-	private const AREAS_PATTERN = '^[a-z][a-z0-9=|\-,!]+$';
 
 	public function __construct()
 	{
@@ -280,44 +275,8 @@ final class BlockArea
 
 	private function validateData(): void
 	{
-		$post_data = [];
-
-		if ($this->request()->only(['save', 'save_exit', 'preview'])) {
-			$args = [
-				'block_id'      => FILTER_VALIDATE_INT,
-				'icon'          => FILTER_DEFAULT,
-				'type'          => FILTER_DEFAULT,
-				'note'          => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-				'content'       => FILTER_UNSAFE_RAW,
-				'placement'     => FILTER_DEFAULT,
-				'priority'      => FILTER_VALIDATE_INT,
-				'permissions'   => FILTER_VALIDATE_INT,
-				'areas'         => FILTER_DEFAULT,
-				'title_class'   => FILTER_DEFAULT,
-				'content_class' => FILTER_DEFAULT,
-			];
-
-			foreach ($this->context['languages'] as $lang) {
-				$args['title_' . $lang['filename']] = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
-			}
-
-			$post_data = filter_input_array(INPUT_POST, $args);
-
-			$parameters = [];
-
-			$this->hook('validateBlockData', [&$parameters, $this->context['current_block']['type']]);
-
-			$parameters = array_merge(
-				[
-					'hide_header' => FILTER_VALIDATE_BOOLEAN,
-				],
-				$parameters
-			);
-
-			$post_data['parameters'] = filter_var_array($this->request()->only(array_keys($parameters)), $parameters);
-
-			$this->findErrors($post_data);
-		}
+		$validator = new BlockValidator();
+		[$post_data, $parameters] = $validator->validate();
 
 		$options = $this->getOptions();
 
@@ -373,32 +332,11 @@ final class BlockArea
 			}
 		}
 
-		foreach ($this->context['languages'] as $lang) {
+		foreach ($this->context['lp_languages'] as $lang) {
 			$this->context['lp_block']['title'][$lang['filename']] = $post_data['title_' . $lang['filename']] ?? $this->context['lp_block']['title'][$lang['filename']] ?? '';
 		}
 
 		$this->cleanBbcode($this->context['lp_block']['title']);
-	}
-
-	private function findErrors(array $data): void
-	{
-		$post_errors = [];
-
-		if (empty($data['areas']))
-			$post_errors[] = 'no_areas';
-
-		if ($data['areas'] && empty($this->validate($data['areas'], ['options' => ['regexp' => '/' . self::AREAS_PATTERN . '/']])))
-			$post_errors[] = 'no_valid_areas';
-
-		$this->hook('findBlockErrors', [&$post_errors, $data]);
-
-		if ($post_errors) {
-			$this->request()->put('preview', true);
-			$this->context['post_errors'] = [];
-
-			foreach ($post_errors as $error)
-				$this->context['post_errors'][] = $this->txt['lp_post_error_' . $error];
-		}
 	}
 
 	private function prepareFormFields(): void

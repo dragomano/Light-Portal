@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 /**
  * PageArea.php
@@ -8,7 +6,7 @@ declare(strict_types=1);
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2023 Bugo
+ * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 2.4
@@ -17,17 +15,13 @@ declare(strict_types=1);
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, TextField};
-use Bugo\LightPortal\Areas\Partials\{
-	CategorySelect,
-	KeywordSelect,
-	PageAuthorSelect,
-	PageIconSelect,
-	PermissionSelect,
-	StatusSelect,
-};
+use Bugo\LightPortal\Areas\Partials\{CategorySelect, KeywordSelect, PageAuthorSelect};
+use Bugo\LightPortal\Areas\Partials\{PageIconSelect, PermissionSelect, StatusSelect};
+use Bugo\LightPortal\Areas\Validators\PageValidator;
 use Bugo\LightPortal\Entities\Page;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Repositories\PageRepository;
+use IntlException;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -37,8 +31,6 @@ final class PageArea
 	use Area, Helper;
 
 	private PageRepository $repository;
-
-	private const ALIAS_PATTERN = '^[a-z][a-z0-9_]+$';
 
 	public function __construct()
 	{
@@ -194,7 +186,7 @@ final class PageArea
 						'value' => $this->txt['lp_title'],
 					],
 					'data' => [
-						'function' => fn($entry) => '<i class="' . ($this->getDefaultTypes()[$entry['type']]['icon'] ?? 'fas fa-question') . '" title="' . ($this->context['lp_content_types'][$entry['type']] ?? strtoupper($entry['type'])) . '"></i> <a class="bbc_link' . (
+						'function' => fn($entry) => '<i class="' . $this->getPageIcon($entry['type']) . '" title="' . ($this->context['lp_content_types'][$entry['type']] ?? strtoupper($entry['type'])) . '"></i> <a class="bbc_link' . (
 							$entry['is_front']
 								? ' highlight" href="' . $this->scripturl
 								: '" href="' . LP_PAGE_URL . $entry['alias']
@@ -406,6 +398,9 @@ final class PageArea
 		$this->context['sub_template'] = 'page_post';
 	}
 
+	/**
+	 * @throws IntlException
+	 */
 	public function edit(): void
 	{
 		$item = (int) ($this->request('page_id') ?: $this->request('id'));
@@ -604,49 +599,8 @@ final class PageArea
 
 	private function validateData(): void
 	{
-		$post_data = [];
-
-		if ($this->request()->only(['save', 'save_exit', 'preview'])) {
-			$args = [
-				'category'    => FILTER_VALIDATE_INT,
-				'page_author' => FILTER_VALIDATE_INT,
-				'alias'       => FILTER_DEFAULT,
-				'description' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-				'keywords'    => FILTER_DEFAULT,
-				'type'        => FILTER_DEFAULT,
-				'permissions' => FILTER_VALIDATE_INT,
-				'status'      => FILTER_VALIDATE_INT,
-				'date'        => FILTER_DEFAULT,
-				'time'        => FILTER_DEFAULT,
-				'content'     => FILTER_UNSAFE_RAW,
-			];
-
-			foreach ($this->context['languages'] as $lang) {
-				$args['title_' . $lang['filename']] = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
-			}
-
-			$parameters = [];
-
-			$this->hook('validatePageData', [&$parameters]);
-
-			$parameters = array_merge(
-				[
-					'show_title'           => FILTER_VALIDATE_BOOLEAN,
-					'show_in_menu'         => FILTER_VALIDATE_BOOLEAN,
-					'page_icon'            => FILTER_DEFAULT,
-					'show_author_and_date' => FILTER_VALIDATE_BOOLEAN,
-					'show_related_pages'   => FILTER_VALIDATE_BOOLEAN,
-					'allow_comments'       => FILTER_VALIDATE_BOOLEAN,
-				],
-				$parameters
-			);
-
-			$post_data = filter_input_array(INPUT_POST, array_merge($args, $parameters));
-			$post_data['id'] = $this->request('id', 0);
-			$post_data['keywords'] = empty($post_data['keywords']) ? [] : explode(',', $post_data['keywords']);
-
-			$this->findErrors($post_data);
-		}
+		$validator = new PageValidator();
+		[$post_data, $parameters] = $validator->validate();
 
 		$options = $this->getOptions();
 		$page_options = $this->context['lp_current_page']['options'] ?? $options;
@@ -687,41 +641,11 @@ final class PageArea
 			$this->context['lp_page']['options'][$option] = $post_data[$option] ?? $page_options[$option] ?? $value;
 		}
 
-		foreach ($this->context['languages'] as $lang) {
+		foreach ($this->context['lp_languages'] as $lang) {
 			$this->context['lp_page']['title'][$lang['filename']] = $post_data['title_' . $lang['filename']] ?? $this->context['lp_page']['title'][$lang['filename']] ?? '';
 		}
 
 		$this->cleanBbcode($this->context['lp_page']['title']);
-	}
-
-	private function findErrors(array $data): void
-	{
-		$post_errors = [];
-
-		if (($this->modSettings['userLanguage'] && empty($data['title_' . $this->language])) || empty($data['title_' . $this->context['user']['language']]))
-			$post_errors[] = 'no_title';
-
-		if (empty($data['alias']))
-			$post_errors[] = 'no_alias';
-
-		if ($data['alias'] && empty($this->validate($data['alias'], ['options' => ['regexp' => '/' . self::ALIAS_PATTERN . '/']])))
-			$post_errors[] = 'no_valid_alias';
-
-		if ($data['alias'] && ! $this->isUnique($data))
-			$post_errors[] = 'no_unique_alias';
-
-		if (empty($data['content']))
-			$post_errors[] = 'no_content';
-
-		$this->hook('findPageErrors', [&$post_errors, $data]);
-
-		if ($post_errors) {
-			$this->request()->put('preview', true);
-			$this->context['post_errors'] = [];
-
-			foreach ($post_errors as $error)
-				$this->context['post_errors'][] = $this->txt['lp_post_error_' . $error];
-		}
 	}
 
 	private function prepareFormFields(): void
@@ -771,9 +695,9 @@ final class PageArea
 		TextField::make('alias', $this->txt['lp_page_alias'])
 			->setTab('seo')
 			->setAfter($this->txt['lp_page_alias_subtext'])
+			->required()
 			->setAttribute('maxlength', 255)
-			->setAttribute('required', true)
-			->setAttribute('pattern', self::ALIAS_PATTERN)
+			->setAttribute('pattern', LP_ALIAS_PATTERN)
 			->setAttribute('x-slug.lazy.replacement._', empty($this->context['lp_page']['id']) ? 'title_' . $this->user_info['language'] : '{}')
 			->setValue($this->context['lp_page']['alias']);
 
@@ -840,27 +764,6 @@ final class PageArea
 		$this->context['preview_title'] = $this->getPreviewTitle();
 	}
 
-	private function isUnique(array $data): bool
-	{
-		$result = $this->smcFunc['db_query']('', '
-			SELECT COUNT(page_id)
-			FROM {db_prefix}lp_pages
-			WHERE alias = {string:alias}
-				AND page_id != {int:item}',
-			[
-				'alias' => $data['alias'],
-				'item'  => $data['id'],
-			]
-		);
-
-		[$count] = $this->smcFunc['db_fetch_row']($result);
-
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
-
-		return $count == 0;
-	}
-
 	private function checkUser(): void
 	{
 		if ($this->context['allow_light_portal_manage_pages_any'] === false && $this->request()->has('sa') && $this->request('sa') === 'main' && $this->request()->hasNot('u'))
@@ -883,5 +786,10 @@ final class PageArea
 
 		$titles = array_column($this->context['lp_all_pages'], 'title');
 		array_multisort($titles, SORT_ASC, $this->context['lp_all_pages']);
+	}
+
+	private function getPageIcon(string $type): string
+	{
+		return $this->getDefaultTypes()[$type]['icon'] ?? $this->context['lp_loaded_addons'][$type]['icon'] ?? 'fas fa-question';
 	}
 }

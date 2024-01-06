@@ -6,11 +6,11 @@
  * @package Chart (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2023 Bugo
+ * @copyright 2023-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.12.23
+ * @version 01.01.24
  */
 
 namespace Bugo\LightPortal\Addons\Chart;
@@ -88,7 +88,7 @@ class Chart extends Block
 
 		TextField::make('chart_title', $this->txt['lp_chart']['chart_title'])
 			->setTab('content')
-			->setAttribute('placeholder', $this->txt['lp_chart']['chart_title_placeholder'])
+			->placeholder($this->txt['lp_chart']['chart_title_placeholder'])
 			->setValue($this->context['lp_block']['options']['parameters']['chart_title'] ?? $this->params['chart_title']);
 
 		CustomField::make('chart', $this->txt['lp_chart']['datasets'])
@@ -97,8 +97,8 @@ class Chart extends Block
 
 		TextField::make('labels', $this->txt['lp_chart']['labels'])
 			->setTab('content')
-			->setAttribute('placeholder', $this->txt['lp_chart']['labels_placeholder'])
-			->setAttribute('required', true)
+			->placeholder($this->txt['lp_chart']['labels_placeholder'])
+			->required()
 			->setValue($this->context['lp_block']['options']['parameters']['labels'] ?? $this->params['labels']);
 
 		CheckboxField::make('default_palette', $this->txt['lp_chart']['default_palette'])

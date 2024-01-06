@@ -7,7 +7,7 @@
 
 <script>
 export default {
-  name: 'OptionRange',
+  name: 'RangeOption',
 };
 </script>
 

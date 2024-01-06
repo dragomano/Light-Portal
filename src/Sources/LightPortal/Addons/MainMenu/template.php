@@ -15,7 +15,7 @@ function callback_main_menu_table(): void
 			</tr>';
 
 	$i = 0;
-	foreach ($context['languages'] as $lang) {
+	foreach ($context['lp_languages'] as $lang) {
 		echo '
 			<tr class="bg ', $i++ % 2 === 0 ? 'odd' : 'even', '">
 				<td><strong>', $lang['name'], '</strong></td>
@@ -38,7 +38,7 @@ function callback_main_menu_table(): void
 			</tr>';
 
 	$i = 0;
-	foreach ($context['languages'] as $lang) {
+	foreach ($context['lp_languages'] as $lang) {
 		echo '
 			<tr class="bg ', $i++ % 2 === 0 ? 'odd' : 'even', '">
 				<td><strong>', $lang['name'], '</strong></td>

@@ -8,7 +8,7 @@ declare(strict_types=1);
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2023 Bugo
+ * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @version 2.4
@@ -110,13 +110,13 @@ final class PluginArea
 		foreach ($config_vars[$plugin_name] as $var) {
 			if ($this->request()->has($var[1])) {
 				if ($var[0] === 'check') {
-					$plugin_options[$var[1]] = $this->validate($this->request($var[1]), 'bool');
+					$plugin_options[$var[1]] = $this->filterVar($this->request($var[1]), 'bool');
 				} elseif ($var[0] === 'int') {
-					$plugin_options[$var[1]] = $this->validate($this->request($var[1]), 'int');
+					$plugin_options[$var[1]] = $this->filterVar($this->request($var[1]), 'int');
 				} elseif ($var[0] === 'float') {
-					$plugin_options[$var[1]] = $this->validate($this->request($var[1]), 'float');
+					$plugin_options[$var[1]] = $this->filterVar($this->request($var[1]), 'float');
 				} elseif ($var[0] === 'url') {
-					$plugin_options[$var[1]] = $this->validate($this->request($var[1]), 'url');
+					$plugin_options[$var[1]] = $this->filterVar($this->request($var[1]), 'url');
 				} elseif ($var[0] === 'multiselect') {
 					$plugin_options[$var[1]] = ltrim(implode(',', $this->request($var[1])), ',');
 				} else {
