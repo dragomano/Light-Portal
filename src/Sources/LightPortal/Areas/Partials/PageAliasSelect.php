@@ -41,6 +41,7 @@ final class PageAliasSelect extends AbstractPartial
 				textDirection: "rtl",' : '') . '
 				dropboxWrapper: "body",
 				search: true,
+				maxWidth: "100%",
 				placeholder: "' . ($params['hint'] ?? $this->txt['no']) . '",
 				noSearchResultsText: "' . $this->txt['no_matches'] . '",
 				searchPlaceholderText: "' . $this->txt['search'] . '",
