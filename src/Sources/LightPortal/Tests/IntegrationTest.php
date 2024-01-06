@@ -13,6 +13,7 @@ require_once __DIR__ . '/bootstrap.php';
 
 test('hook methods exist', function () {
 	Assert::true(method_exists(Integration::class, 'preLoad'));
+	Assert::true(method_exists(Integration::class, 'userInfo'));
 	Assert::true(method_exists(Integration::class, 'preJavascriptOutput'));
 	Assert::true(method_exists(Integration::class, 'preCssOutput'));
 	Assert::true(method_exists(Integration::class, 'loadTheme'));
@@ -46,6 +47,12 @@ test('preLoad method', function () {
 	Assert::type('int', LP_CACHE_TIME);
 	Assert::same('portal', LP_ACTION);
 	Assert::same('page', LP_PAGE_PARAM);
+});
+
+test('userInfo method', function () {
+	global $scripturl;
+
+	Assert::contains($scripturl, LP_BASE_URL);
 	Assert::contains(LP_ACTION, LP_BASE_URL);
 	Assert::contains('?' . LP_PAGE_PARAM . '=', LP_PAGE_URL);
 });

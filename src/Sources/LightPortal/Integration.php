@@ -27,6 +27,7 @@ final class Integration extends AbstractMain
 	public function hooks(): void
 	{
 		$this->applyHook('pre_load');
+		$this->applyHook('user_info');
 		$this->applyHook('pre_javascript_output');
 		$this->applyHook('pre_css_output');
 		$this->applyHook('load_theme');
@@ -65,11 +66,15 @@ final class Integration extends AbstractMain
 		defined('LP_CACHE_TIME') || define('LP_CACHE_TIME', (int) ($this->modSettings['lp_cache_update_interval'] ?? 72000));
 		defined('LP_ACTION') || define('LP_ACTION', $this->modSettings['lp_portal_action'] ?? 'portal');
 		defined('LP_PAGE_PARAM') || define('LP_PAGE_PARAM', $this->modSettings['lp_page_param'] ?? 'page');
-		defined('LP_BASE_URL') || define('LP_BASE_URL', $this->scripturl . '?action=' . LP_ACTION);
-		defined('LP_PAGE_URL') || define('LP_PAGE_URL', $this->scripturl . '?' . LP_PAGE_PARAM . '=');
 		defined('LP_ALIAS_PATTERN') || define('LP_ALIAS_PATTERN', '^[a-z][a-z0-9_]+$');
 		defined('LP_AREAS_PATTERN') || define('LP_AREAS_PATTERN', '^[a-z][a-z0-9=|\-,!]+$');
 		defined('LP_ADDON_PATTERN') || define('LP_ADDON_PATTERN', '^[A-Z][a-zA-Z]+$');
+	}
+
+	public function userInfo(): void
+	{
+		defined('LP_BASE_URL') || define('LP_BASE_URL', $this->scripturl . '?action=' . LP_ACTION);
+		defined('LP_PAGE_URL') || define('LP_PAGE_URL', $this->scripturl . '?' . LP_PAGE_PARAM . '=');
 	}
 
 	public function preJavascriptOutput(): void
