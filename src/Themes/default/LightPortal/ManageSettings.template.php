@@ -342,68 +342,18 @@ function template_callback_standalone_mode_settings(): void
 		</template>';
 }
 
-function template_callback_comment_settings(): void
+function template_callback_comment_settings_before(): void
 {
-	global $modSettings, $txt;
+	global $modSettings;
 
 	echo '
-	</dl>
-	<dl class="settings" style="margin-top: -1em" x-data="{ comment_block: \'', $modSettings['lp_show_comment_block'] ?? 'none', '\' }">
-		<dt>
-			<a id="setting_lp_show_comment_block"></a> <span><label for="lp_show_comment_block">', $txt['lp_show_comment_block'], '</label></span>
-		</dt>
-		<dd>
-			<select name="lp_show_comment_block" id="lp_show_comment_block" @change="comment_block = $event.target.value">';
+	<div x-data="{ comment_block: \'', $modSettings['lp_show_comment_block'] ?? 'none', '\' }">';
+}
 
-	foreach ($txt['lp_show_comment_block_set'] as $value => $label) {
-		echo '
-				<option value="', $value, '"', ! empty($modSettings['lp_show_comment_block']) && $modSettings['lp_show_comment_block'] === $value ? ' selected' : '', '>', $label, '</option>';
-	}
-
+function template_callback_comment_settings_after(): void
+{
 	echo '
-			</select>
-		</dd>
-
-		<template x-if="comment_block === \'default\'">
-			<dt>
-				<a id="setting_lp_time_to_change_comments"></a> <span><label for="lp_time_to_change_comments">', $txt['lp_time_to_change_comments'], '</label></span>
-			</dt>
-		</template>
-		<template x-if="comment_block === \'default\'">
-			<dd>
-				<input type="number" name="lp_time_to_change_comments" id="lp_time_to_change_comments" value="', $modSettings['lp_time_to_change_comments'] ?? 0, '" size="6" min="0"> ', $txt['manageposts_minutes'], '
-			</dd>
-		</template>
-
-		<template x-if="comment_block === \'default\'">
-			<dt>
-				<a id="setting_lp_num_comments_per_page"></a> <span><label for="lp_num_comments_per_page">', $txt['lp_num_comments_per_page'], '</label></span>
-			</dt>
-		</template>
-		<template x-if="comment_block === \'default\'">
-			<dd>
-				<input type="number" name="lp_num_comments_per_page" id="lp_num_comments_per_page" value="', $modSettings['lp_num_comments_per_pages'] ?? 10, '" size="6" min="1">
-			</dd>
-		</template>
-
-		<template x-if="comment_block === \'default\'">
-			<dt>
-				<a id="setting_lp_comment_sorting"></a> <span><label for="lp_comment_sorting">', $txt['lp_comment_sorting'], '</label></span>
-			</dt>
-		</template>
-		<template x-if="comment_block === \'default\'">
-			<dd>
-				<select id="lp_comment_sorting" name="lp_comment_sorting">';
-
-	foreach ([$txt['lp_sort_by_created'], $txt['lp_sort_by_created_desc']] as $sort_value => $sort_title) {
-		echo '
-					<option value="', $sort_value, '"', ! empty($modSettings['lp_comment_sorting']) && $modSettings['lp_comment_sorting'] == $sort_value ? ' selected' : '', '>', $sort_title, '</option>';
-	}
-
-	echo '
-				</select>
-			</dd>
-		</template>';
+	</div>';
 }
 
 function template_post_tab(array $fields, string $tab = 'content'): bool

@@ -52,7 +52,31 @@ final class ExtraConfig
 			['check', 'lp_show_prev_next_links'],
 			['check', 'lp_show_related_pages'],
 			'',
-			['callback', 'comment_settings'],
+			['callback', 'comment_settings_before'],
+			[
+				'select',
+				'lp_show_comment_block',
+				$this->txt['lp_show_comment_block_set'],
+				'javascript' => '@change="comment_block = $event.target.value"'
+			],
+			[
+				'int',
+				'lp_time_to_change_comments',
+				'postinput' => $this->txt['manageposts_minutes'],
+				'javascript' => ':disabled="comment_block !== \'default\'"'
+			],
+			[
+				'int',
+				'lp_num_comments_per_page',
+				'javascript' => ':disabled="comment_block !== \'default\'"'
+			],
+			[
+				'select',
+				'lp_comment_sorting',
+				[$this->txt['lp_sort_by_created'], $this->txt['lp_sort_by_created_desc']],
+				'javascript' => ':disabled="comment_block !== \'default\'"'
+			],
+			['callback', 'comment_settings_after'],
 			'',
 			['check', 'lp_show_items_as_articles'],
 			['int', 'lp_page_maximum_keywords', 'min' => 1],
@@ -99,13 +123,7 @@ final class ExtraConfig
 				$this->post()->put('lp_fa_kit', $this->filterVar($this->request('lp_fa_kit'), 'url'));
 
 			$save_vars = $config_vars;
-			$save_vars[] = ['text', 'lp_show_comment_block'];
-			$save_vars[] = ['int', 'lp_time_to_change_comments'];
-			$save_vars[] = ['int', 'lp_num_comments_per_page'];
-			$save_vars[] = ['int', 'lp_comment_sorting'];
-
 			$this->saveDBSettings($save_vars);
-
 			$this->session()->put('adm-save', true);
 			$this->cache()->flush();
 
