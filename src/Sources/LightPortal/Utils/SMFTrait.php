@@ -241,7 +241,7 @@ trait SMFTrait
 		addJavaScriptVar($key, $value, $escape);
 	}
 
-	protected function addInlineJavaScript(string $javascript, $defer = false): void
+	protected function addInlineJS(string $javascript, $defer = false): void
 	{
 		addInlineJavaScript($javascript, $defer);
 	}

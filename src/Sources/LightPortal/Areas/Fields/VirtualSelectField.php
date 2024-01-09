@@ -23,7 +23,7 @@ class VirtualSelectField extends SelectField
 	{
 		parent::__construct($name, $label);
 
-		$this->addInlineJavaScript('
+		$this->addInlineJS('
 		VirtualSelect.init({
 			ele: "#' . $name . '",
 			hideClearButton: true,' . ($this->context['right_to_left'] ? '

@@ -54,7 +54,7 @@ class HelloPortal extends Plugin
 
 		$this->loadExtJS('https://cdn.jsdelivr.net/npm/intro.js@4/minified/intro.min.js');
 
-		$this->addInlineJavaScript('
+		$this->addInlineJS('
 		function runTour() {
 			introJs().setOptions({
 				tooltipClass: "lp_addon_hello_portal",

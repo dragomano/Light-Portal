@@ -37,7 +37,7 @@ class SiteList extends Plugin
 
 		$urls = $this->jsonDecode($this->context['lp_site_list_plugin']['urls'] ?? '');
 
-		$this->addInlineJavaScript($this->getFromTemplate('site_list_handle_func', $urls));
+		$this->addInlineJS($this->getFromTemplate('site_list_handle_func', $urls));
 
 		ob_start();
 

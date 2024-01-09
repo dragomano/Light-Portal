@@ -319,7 +319,7 @@ class AdsBlock extends Block
 
 			$after_every_last_post = ob_get_clean();
 
-			$this->addInlineJavaScript('
+			$this->addInlineJS('
 		jQuery(document).ready(function ($) {
 			$(' . $this->jsEscape($after_every_last_post) . ').insertAfter("#quickModForm > div.windowbg:last");
 		});', true);
@@ -337,7 +337,7 @@ class AdsBlock extends Block
 
 			$after_last_post = ob_get_clean();
 
-			$this->addInlineJavaScript('
+			$this->addInlineJS('
 		jQuery(document).ready(function ($) {
 			$("#quickModForm").append(' . $this->jsEscape($after_last_post) . ');
 		});', true);

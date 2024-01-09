@@ -41,7 +41,7 @@ class CustomTranslate extends Plugin
 
 		$forumLang = substr($this->language, 0, 2);
 
-		$this->addInlineJavaScript('new YandexTranslate({baseLang: "' . $forumLang . '"});', true);
+		$this->addInlineJS('new YandexTranslate({baseLang: "' . $forumLang . '"});', true);
 
 		$this->context['ctw_languages'] = array_unique(array_merge([$forumLang], explode(',', $this->context['lp_custom_translate_plugin']['languages'])));
 

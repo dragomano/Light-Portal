@@ -265,7 +265,7 @@ class TinySlider extends Block
 		$this->loadCSSFile('light_portal/tiny_slider/tiny-slider.css');
 		$this->loadJavaScriptFile('light_portal/tiny_slider/tiny-slider.js', ['minimize' => true]);
 
-		$this->addInlineJavaScript('
+		$this->addInlineJS('
 			const slider' . $block_id . ' = tns({
 				container: "#tiny_slider' . $block_id . '",
 				axis: "' . (empty($parameters['axis']) ? $this->params['axis'] : $parameters['axis']) . '",

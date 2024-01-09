@@ -49,7 +49,7 @@ class EasyMarkdownEditor extends Plugin
 
 		$this->loadExtJS('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.js');
 
-		$this->addInlineJavaScript('
+		$this->addInlineJS('
 		let easymde = new EasyMDE({
 			element: document.getElementById("content"),
 			autoDownloadFontAwesome: false,

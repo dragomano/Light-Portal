@@ -48,7 +48,7 @@ class CrowdinContext extends Plugin
 			}
 		});
 
-		$this->addInlineJavaScript('
+		$this->addInlineJS('
 		var _jipt = [];
 		_jipt.push([\'project\', \'light-portal\']);
 		_jipt.push([\'preload_texts\', true]);

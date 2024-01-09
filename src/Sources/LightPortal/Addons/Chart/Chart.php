@@ -141,7 +141,7 @@ class Chart extends Block
 
 		$this->loadJavaScriptFile('light_portal/chart/chart.umd.min.js', ['minimize' => true]);
 
-		$this->addInlineJavaScript('
+		$this->addInlineJS('
 		new Chart("chart' . $block_id . '", {
 			type: "' . $type . '",
 			data: {

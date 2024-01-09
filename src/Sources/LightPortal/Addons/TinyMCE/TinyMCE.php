@@ -44,7 +44,7 @@ class TinyMCE extends Plugin
 
 		$this->loadExtJs('https://cdn.tiny.cloud/1/' . $apiKey . '/tinymce/6/tinymce.min.js', ['attributes' => ['referrerpolicy' => 'origin']]);
 
-		$this->addInlineJavaScript('
+		$this->addInlineJS('
 		const useDarkMode = ' . ($this->isDarkTheme($this->context['lp_tiny_m_c_e_plugin']['dark_themes']) ? 'true' : 'false') . ';
 		tinymce.init({
 			selector: "#content",

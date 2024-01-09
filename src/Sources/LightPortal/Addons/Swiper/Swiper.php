@@ -176,7 +176,7 @@ class Swiper extends Block
 		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css');
 		$this->loadExtJS('https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js');
 
-		$this->addInlineJavaScript('
+		$this->addInlineJS('
 			const swiper' . $block_id . ' = new Swiper("#swiper' . $block_id . '", {
 				direction: "' . ($parameters['direction'] ?? 'horizontal') . '",
 				loop: ' . (empty($parameters['loop']) ? 'false' : 'true') . ',

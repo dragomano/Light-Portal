@@ -95,7 +95,7 @@ class CodeMirror extends Plugin
 			default    => '"text/html"',
 		};
 
-		$this->addInlineJavaScript('
+		$this->addInlineJS('
 		let pageEditor = CodeMirror.fromTextArea(document.getElementById("content"), {
 			lineNumbers: true,
 			mode: '. $mode . ',
