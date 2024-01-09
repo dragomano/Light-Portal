@@ -129,10 +129,8 @@ final class AddonHandler
 		}
 	}
 
-	private function prepareAssets(): void
+	private function prepareAssets(array $assets = []): void
 	{
-		$assets = [];
-
 		$this->run('prepareAssets', [&$assets]);
 
 		foreach (['css', 'scripts', 'images'] as $type) {

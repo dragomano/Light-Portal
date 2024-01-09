@@ -42,7 +42,6 @@ final class PageArea
 		$this->checkUser();
 
 		$this->loadLanguage('Packages');
-		$this->loadTemplate('LightPortal/ManagePages');
 
 		if ($this->request()->has('moderate'))
 			$this->addInlineCss('

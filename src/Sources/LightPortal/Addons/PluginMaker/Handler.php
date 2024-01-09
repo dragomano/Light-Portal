@@ -63,6 +63,8 @@ class Handler extends Plugin
 
 			if ($this->language !== 'english')
 				$this->context['lp_languages'][$this->language] = $temp[$this->language];
+
+			return;
 		}
 
 		$this->context['lp_languages'] = array_merge(
