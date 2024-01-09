@@ -85,7 +85,7 @@ class BoardNews extends Block
 			return;
 		}
 
-		$this->loadJavaScriptFile('topic.js', ['defer' => false, 'minimize' => true], 'smf_topic');
+		$this->loadJSFile('topic.js', ['defer' => false, 'minimize' => true], 'smf_topic');
 
 		foreach ($board_news as $news) {
 			$news['link'] = '<a href="' . $news['href'] . '">' . $this->translate('lp_comments_set', ['comments' => $news['replies']]) . '</a>';

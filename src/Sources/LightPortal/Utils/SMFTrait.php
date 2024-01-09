@@ -221,14 +221,14 @@ trait SMFTrait
 		$this->loadCSSFile($fileName, array_merge($params, ['external' => true]), $id);
 	}
 
-	protected function loadJavaScriptFile(string $fileName, array $params = [], string $id = ''): void
+	protected function loadJSFile(string $fileName, array $params = [], string $id = ''): void
 	{
 		loadJavaScriptFile($fileName, $params, $id);
 	}
 
 	protected function loadExtJS(string $fileName, array $params = [], string $id = ''): void
 	{
-		$this->loadJavaScriptFile($fileName, array_merge($params, ['external' => true]), $id);
+		$this->loadJSFile($fileName, array_merge($params, ['external' => true]), $id);
 	}
 
 	protected function addInlineCss(string $css): void

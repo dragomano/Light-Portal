@@ -40,10 +40,10 @@ final class ConfigArea
 	public function adminAreas(array &$areas): void
 	{
 		$this->loadCSSFile('light_portal/virtual-select.min.css');
-		$this->loadJavaScriptFile('light_portal/virtual-select.min.js');
+		$this->loadJSFile('light_portal/virtual-select.min.js');
 
-		$this->loadJavaScriptFile('light_portal/bundle.min.js', ['defer' => true]);
-		$this->loadJavaScriptFile('light_portal/admin.js', ['minimize' => true]);
+		$this->loadJSFile('light_portal/bundle.min.js', ['defer' => true]);
+		$this->loadJSFile('light_portal/admin.js', ['minimize' => true]);
 
 		$this->loadLanguage('ManageSettings');
 

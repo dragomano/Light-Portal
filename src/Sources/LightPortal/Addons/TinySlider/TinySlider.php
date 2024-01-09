@@ -263,7 +263,7 @@ class TinySlider extends Block
 			return;
 
 		$this->loadCSSFile('light_portal/tiny_slider/tiny-slider.css');
-		$this->loadJavaScriptFile('light_portal/tiny_slider/tiny-slider.js', ['minimize' => true]);
+		$this->loadJSFile('light_portal/tiny_slider/tiny-slider.js', ['minimize' => true]);
 
 		$this->addInlineJS('
 			const slider' . $block_id . ' = tns({

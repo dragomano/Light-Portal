@@ -80,7 +80,7 @@ class Likely extends Block
 			return;
 
 		$this->loadCSSFile('light_portal/likely/likely.min.css');
-		$this->loadJavaScriptFile('light_portal/likely/likely.min.js', ['minimize' => true]);
+		$this->loadJSFile('light_portal/likely/likely.min.js', ['minimize' => true]);
 
 		echo /** @lang text */ '
 			<div class="centertext likely_links">

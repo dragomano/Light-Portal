@@ -80,7 +80,7 @@ abstract class AbstractMain
 		$this->loadCSSFile('light_portal/plugins.css');
 		$this->loadCSSFile('portal_custom.css');
 
-		$this->loadJavaScriptFile('light_portal/plugins.js', ['minimize' => true]);
+		$this->loadJSFile('light_portal/plugins.js', ['minimize' => true]);
 	}
 
 	protected function loadFontAwesome(): void

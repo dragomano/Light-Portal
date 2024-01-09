@@ -37,7 +37,7 @@ class Snowflakes extends Plugin
 	public function init(): void
 	{
 		$this->loadCSSFile('light_portal/snowflakes/snow.min.css');
-		$this->loadJavaScriptFile('light_portal/snowflakes/Snow.min.js', ['minimize' => true]);
+		$this->loadJSFile('light_portal/snowflakes/Snow.min.js', ['minimize' => true]);
 		$this->addInlineJS('
 			new Snow({
 				iconColor: "' . (empty($this->context['lp_snowflakes_plugin']['icon_color']) ? $this->params['icon_color'] : $this->context['lp_snowflakes_plugin']['icon_color']) . '",

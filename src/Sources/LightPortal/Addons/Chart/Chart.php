@@ -139,7 +139,7 @@ class Chart extends Block
 		$labels = $parameters['labels'] ?? $this->params['labels'];
 		$labels = implode(',', array_map(fn($label) => $this->jsEscape(trim($label)), explode(',', $labels)));
 
-		$this->loadJavaScriptFile('light_portal/chart/chart.umd.min.js', ['minimize' => true]);
+		$this->loadJSFile('light_portal/chart/chart.umd.min.js', ['minimize' => true]);
 
 		$this->addInlineJS('
 		new Chart("chart' . $block_id . '", {

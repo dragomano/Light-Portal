@@ -100,7 +100,7 @@ class SimpleChat extends Block
 			return;
 
 		$this->loadCssFile('admin.css');
-		$this->loadJavaScriptFile('light_portal/bundle.min.js', ['defer' => true]);
+		$this->loadJSFile('light_portal/bundle.min.js', ['defer' => true]);
 
 		$parameters['show_avatars'] ??= false;
 

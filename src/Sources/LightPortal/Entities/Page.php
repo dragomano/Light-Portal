@@ -111,7 +111,7 @@ final class Page
 		$this->prepareComments();
 		$this->updateNumViews();
 
-		$this->loadJavaScriptFile('light_portal/bundle.min.js', ['defer' => true]);
+		$this->loadJSFile('light_portal/bundle.min.js', ['defer' => true]);
 	}
 
 	public function getData(array $params): array

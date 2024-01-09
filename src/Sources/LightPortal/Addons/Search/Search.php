@@ -166,7 +166,7 @@ class Search extends Block
 			return;
 
 		$this->loadCSSFile('light_portal/search/auto-complete.css');
-		$this->loadJavaScriptFile('light_portal/search/auto-complete.min.js', ['minimize' => true]);
+		$this->loadJSFile('light_portal/search/auto-complete.min.js', ['minimize' => true]);
 
 		echo '
 		<form class="search_addon centertext" action="', LP_BASE_URL, ';sa=search" method="post" accept-charset="', $this->context['character_set'], '">
