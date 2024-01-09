@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
-use Rector\Core\ValueObject\PhpVersion;
+use Rector\ValueObject\PhpVersion;
 use Rector\Php73\Rector\FuncCall\JsonThrowOnErrorRector;
 use Rector\Set\ValueObject\SetList;
 use Rector\Set\ValueObject\LevelSetList;
@@ -14,7 +14,6 @@ return static function (RectorConfig $rectorConfig): void {
     ]);
 
     $rectorConfig->skip([
-        __DIR__ . '/src/Sources/LightPortal/AddonHandler.php',
         __DIR__ . '/src/database.php',
         __DIR__ . '**/Libs/*',
         __DIR__ . '**/vendor/*',
@@ -22,10 +21,8 @@ return static function (RectorConfig $rectorConfig): void {
         JsonThrowOnErrorRector::class,
     ]);
 
-    $rectorConfig->parallel(seconds: 360);
-
+    $rectorConfig->parallel(360);
     $rectorConfig->indent("\t", 4);
-
     $rectorConfig->importNames();
     $rectorConfig->importShortClasses(false);
 
