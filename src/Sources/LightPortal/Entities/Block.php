@@ -168,7 +168,10 @@ final class Block
 			if (empty($this->context['current_board']))
 				return false;
 
-			if (isset($block['areas']['boards']) || (! empty($this->context['current_topic']) && isset($block['areas']['topics'])))
+			if (isset($block['areas']['boards']) && empty($this->context['current_topic']))
+				return true;
+
+			if (isset($block['areas']['topics']) && ! empty($this->context['current_topic']))
 				return true;
 
 			$boards = $topics = [];
