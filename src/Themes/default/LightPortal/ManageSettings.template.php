@@ -16,68 +16,45 @@ function template_callback_frontpage_mode_settings_middle(): void
 		<table class="lp_table_settings">
 			<tbody>
 				<tr>
-					<template x-if="frontpage_mode === \'chosen_page\'">
-						<td>
-							<a id="setting_lp_frontpage_alias"></a>
-							<span>
-								<label for="lp_frontpage_alias">', $txt['lp_frontpage_alias'], '</label>
-							</span>
-						</td>
-					</template>
-					<template x-if="frontpage_mode === \'chosen_page\'">
-						<td>', $context['lp_frontpage_alias_select'], '</td>
-					</template>
-
-					<template x-if="frontpage_mode === \'all_pages\'">
-						<td>
-							<a id="setting_lp_frontpage_categories"></a>
-							<span>
-								<label for="lp_frontpage_categories">', $txt['lp_frontpage_categories'], '</label>
-							</span>
-						</td>
-					</template>
-					<template x-if="frontpage_mode === \'all_pages\'">
-						<td>', $context['lp_frontpage_categories_select'], '</td>
-					</template>
-
-					<template x-if="[\'all_topics\', \'chosen_boards\'].includes(frontpage_mode)">
-						<td>
-							<a id="setting_lp_frontpage_boards"></a>
-							<span>
-								<label for="lp_frontpage_boards">', $txt['lp_frontpage_boards'], '</label>
-							</span>
-						</td>
-					</template>
-					<template x-if="[\'all_topics\', \'chosen_boards\'].includes(frontpage_mode)">
-						<td>', $context['lp_frontpage_boards_select'], '</td>
-					</template>
-
-					<template x-if="frontpage_mode === \'chosen_pages\'">
-						<td>
-							<a id="setting_lp_frontpage_pages"></a>
-							<span>
-								<label for="lp_frontpage_pages">', $txt['lp_frontpage_pages'], '</label>
-							</span>
-						</td>
-					</template>
-					<template x-if="frontpage_mode === \'chosen_pages\'">
-						<td>', $context['lp_frontpage_pages_select'], '</td>
-					</template>
-
-					<template x-if="frontpage_mode === \'chosen_topics\'">
-						<td>
-							<a id="setting_lp_frontpage_topics"></a>
-							<span>
-								<label for="lp_frontpage_topics">', $txt['lp_frontpage_topics'], '</label>
-							</span>
-						</td>
-					</template>
-					<template x-if="frontpage_mode === \'chosen_topics\'">
-						<td>', $context['lp_frontpage_topics_select'], '</td>
-					</template>
+					<td x-show="frontpage_mode === \'chosen_page\'">
+						<a id="setting_lp_frontpage_alias"></a>
+						<span>
+							<label for="lp_frontpage_alias">', $txt['lp_frontpage_alias'], '</label>
+						</span>
+					</td>
+					<td x-show="frontpage_mode === \'chosen_page\'">', $context['lp_frontpage_alias_select'], '</td>
+					<td x-show="frontpage_mode === \'all_pages\'">
+						<a id="setting_lp_frontpage_categories"></a>
+						<span>
+							<label for="lp_frontpage_categories">', $txt['lp_frontpage_categories'], '</label>
+						</span>
+					</td>
+					<td x-show="frontpage_mode === \'all_pages\'">', $context['lp_frontpage_categories_select'], '</td>
+					<td x-show="[\'all_topics\', \'chosen_boards\'].includes(frontpage_mode)">
+						<a id="setting_lp_frontpage_boards"></a>
+						<span>
+							<label for="lp_frontpage_boards">', $txt['lp_frontpage_boards'], '</label>
+						</span>
+					</td>
+					<td x-show="[\'all_topics\', \'chosen_boards\'].includes(frontpage_mode)">', $context['lp_frontpage_boards_select'], '</td>
+					<td x-show="frontpage_mode === \'chosen_pages\'">
+						<a id="setting_lp_frontpage_pages"></a>
+						<span>
+							<label for="lp_frontpage_pages">', $txt['lp_frontpage_pages'], '</label>
+						</span>
+					</td>
+					<td x-show="frontpage_mode === \'chosen_pages\'">', $context['lp_frontpage_pages_select'], '</td>
+					<td x-show="frontpage_mode === \'chosen_topics\'">
+						<a id="setting_lp_frontpage_topics"></a>
+						<span>
+							<label for="lp_frontpage_topics">', $txt['lp_frontpage_topics'], '</label>
+						</span>
+					</td>
+					<td x-show="frontpage_mode === \'chosen_topics\'">', $context['lp_frontpage_topics_select'], '</td>
 				</tr>
 			</tbody>
-		</table>';
+		</table>
+		<hr>';
 }
 
 function template_callback_frontpage_mode_settings_after(): void
@@ -105,29 +82,28 @@ function template_callback_standalone_mode_settings_after(): void
 	global $scripturl, $txt, $context;
 
 	echo '
-		<table class="lp_table_settings">
+		<table
+			class="lp_table_settings"
+			x-show="standalone_mode && ! [\'0\', \'chosen_page\'].includes(frontpage_mode)"
+		>
 			<tbody>
 				<tr>
-					<template x-if="standalone_mode && ! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
-						<td>
-							<a
-								id="setting_lp_disabled_actions_help"
-								href="', $scripturl, '?action=helpadmin;help=lp_disabled_actions_help"
-								onclick="return reqOverlayDiv(this.href);"
-							>
-								<span class="main_icons help" title="', $txt['help'], '"></span>
-							</a>
-							<a id="setting_lp_disabled_actions"></a>
-							<span>
-								<label for="lp_disabled_actions">', $txt['lp_disabled_actions'], '</label>
-								<br>
-								<span class="smalltext">', $txt['lp_disabled_actions_subtext'], '</span>
-							</span>
-						</td>
-					</template>
-					<template x-if="standalone_mode && ! [\'0\', \'chosen_page\'].includes(frontpage_mode)">
-						<td>', $context['lp_disabled_actions_select'], '</td>
-					</template>
+					<td>
+						<a
+							id="setting_lp_disabled_actions_help"
+							href="', $scripturl, '?action=helpadmin;help=lp_disabled_actions_help"
+							onclick="return reqOverlayDiv(this.href);"
+						>
+							<span class="main_icons help" title="', $txt['help'], '"></span>
+						</a>
+						<a id="setting_lp_disabled_actions"></a>
+						<span>
+							<label for="lp_disabled_actions">', $txt['lp_disabled_actions'], '</label>
+							<br>
+							<span class="smalltext">', $txt['lp_disabled_actions_subtext'], '</span>
+						</span>
+					</td>
+					<td>', $context['lp_disabled_actions_select'], '</td>
 				</tr>
 			</tbody>
 		</table>

@@ -62,19 +62,13 @@ final class BasicConfig
 
 		$this->context['lp_column_set'] = array_map(fn($item) => $this->translate('lp_frontpage_num_columns_set', ['columns' => $item]), [1, 2, 3, 4, 6]);
 
-		$this->context['lp_frontpage_layouts'] = (new FrontPage)->getLayouts();
-
-		$this->context['lp_frontpage_alias_select'] = new PageAliasSelect;
-
+		$this->context['lp_frontpage_layouts']           = (new FrontPage)->getLayouts();
+		$this->context['lp_frontpage_alias_select']      = new PageAliasSelect;
 		$this->context['lp_frontpage_categories_select'] = new CategorySelect;
-
-		$this->context['lp_frontpage_boards_select'] = new BoardSelect;
-
-		$this->context['lp_frontpage_topics_select'] = new TopicSelect;
-
-		$this->context['lp_frontpage_pages_select'] = new PageSelect;
-
-		$this->context['lp_disabled_actions_select'] = new ActionSelect;
+		$this->context['lp_frontpage_boards_select']     = new BoardSelect;
+		$this->context['lp_frontpage_topics_select']     = new TopicSelect;
+		$this->context['lp_frontpage_pages_select']      = new PageSelect;
+		$this->context['lp_disabled_actions_select']     = new ActionSelect;
 
 		$javascript = ':disabled="[\'0\', \'chosen_page\'].includes(frontpage_mode)"';
 
@@ -95,7 +89,6 @@ final class BasicConfig
 				'javascript' => $javascript
 			],
 			['callback', 'frontpage_mode_settings_middle'],
-			'<hr>',
 			[
 				'check',
 				'lp_show_images_in_articles',
@@ -136,7 +129,6 @@ final class BasicConfig
 				'help' => 'lp_frontpage_article_sorting_help',
 				'javascript' => $javascript
 			],
-			'<hr>',
 			[
 				'select',
 				'lp_frontpage_layout',
@@ -154,7 +146,6 @@ final class BasicConfig
 				$this->context['lp_column_set'],
 				'javascript' => $javascript
 			],
-			'<hr>',
 			[
 				'select',
 				'lp_show_pagination',
