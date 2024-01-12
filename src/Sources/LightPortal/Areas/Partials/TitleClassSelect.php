@@ -43,7 +43,6 @@ final class TitleClassSelect extends AbstractPartial
 				showSelectedOptionsFirst: true,
 				optionHeight: "60px",
 				placeholder: "' . $this->txt['no'] . '",
-				maxWidth: "100%",
 				options: ' . json_encode($data) . ',
 				selectedValue: "' . $params['value'] . '",
 				labelRenderer: function (data) {
