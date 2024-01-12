@@ -73,7 +73,7 @@ final class ConfigArea
 						'lp_blocks' => [
 							'label' => $this->txt['lp_blocks'],
 							'function' => [$this, 'blockAreas'],
-							'icon' => 'modifications',
+							'icon' => 'packages',
 							'amt' => $this->context['lp_quantities']['active_blocks'],
 							'permission' => ['admin_forum'],
 							'subsections' => [
@@ -95,7 +95,7 @@ final class ConfigArea
 						'lp_plugins' => [
 							'label' => $this->txt['lp_plugins'],
 							'function' => [$this, 'pluginAreas'],
-							'icon' => 'maintain',
+							'icon' => 'modifications',
 							'amt' => $this->context['lp_enabled_plugins'] ? count($this->context['lp_enabled_plugins']) : 0,
 							'permission' => ['admin_forum'],
 							'subsections' => [
