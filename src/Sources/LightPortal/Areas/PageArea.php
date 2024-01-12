@@ -51,16 +51,21 @@ final class PageArea
 
 		$this->context['page_title'] = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_pages_manage'];
 
-		$this->context[$this->context['admin_menu_name']]['tab_data'] = [
-			'title'       => LP_NAME,
-			'description' => $this->txt['lp_pages_manage_' . ($this->context['allow_light_portal_manage_pages_any'] && $this->request()->hasNot('u') ? 'all' : 'own') . '_pages'] . ' ' . $this->txt['lp_pages_manage_description'],
-		];
+		$menu = $this->context['admin_menu_name'];
+		$tabs = [];
 
-		if ($this->request()->has('moderate'))
-			$this->context[$this->context['admin_menu_name']]['tab_data']['description'] = $this->txt['lp_pages_unapproved_description'];
+		$tabs['title'] = LP_NAME;
+		$tabs['description'] = $this->txt['lp_pages_manage_' . ($this->context['allow_light_portal_manage_pages_any'] && $this->request()->hasNot('u') ? 'all' : 'own') . '_pages'] . ' ' . $this->txt['lp_pages_manage_description'];
 
-		if ($this->request()->has('internal'))
-			$this->context[$this->context['admin_menu_name']]['tab_data']['description'] = $this->txt['lp_pages_internal_description'];
+		if ($this->request()->has('moderate')) {
+			$tabs['description'] = $this->txt['lp_pages_unapproved_description'];
+		}
+
+		if ($this->request()->has('internal')) {
+			$tabs['description'] = $this->txt['lp_pages_internal_description'];
+		}
+
+		$this->context[$menu]['tab_data'] = $tabs;
 
 		$this->doActions();
 		$this->massActions();
