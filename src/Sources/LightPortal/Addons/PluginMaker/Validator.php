@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 05.01.24
+ * @version 15.01.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -85,7 +85,7 @@ class Validator extends AbstractValidator
 		if (empty($data['name']))
 			$post_errors[] = 'no_name';
 
-		if (! empty($data['name']) && empty($this->validateVar($data['name'], ['options' => ['regexp' => '/' . LP_ADDON_PATTERN . '/']])))
+		if (! empty($data['name']) && empty($this->filterVar($data['name'], ['options' => ['regexp' => '/' . LP_ADDON_PATTERN . '/']])))
 			$post_errors[] = 'no_valid_name';
 
 		if (! empty($data['name']) && ! $this->isUnique($data['name']))
