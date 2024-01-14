@@ -55,7 +55,7 @@ function template_manage_export_blocks()
 						', $id, '
 					</td>
 					<td class="type centertext">
-						', $data['note'] ?: ($data['title'][$context['user']['language']] ?? $data['title']['english'] ?? $data['title'][$language] ?? ''), '
+						', $data['note'] ?: ($data['titles'][$context['user']['language']] ?? $data['titles']['english'] ?? $data['titles'][$language] ?? ''), '
 					</td>
 					<td class="type centertext">
 						', $txt['lp_' . $data['type']]['title'] ?? $context['lp_missing_block_types'][$data['type']], '

@@ -298,9 +298,6 @@ final class FrontPage
 
 			$item['msg_link'] ??= $item['link'];
 
-			if (is_array($item['title']) && $article instanceof PageArticle)
-				$item['title'] = $this->getTranslatedTitle($item['title']);
-
 			if (empty($item['image']) && ! empty($this->modSettings['lp_image_placeholder']))
 				$item['image'] = $this->modSettings['lp_image_placeholder'];
 

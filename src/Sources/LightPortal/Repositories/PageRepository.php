@@ -113,7 +113,7 @@ final class PageRepository extends AbstractRepository
 		$this->prepareBbcContent($this->context['lp_page']);
 
 		if (empty($item)) {
-			$this->context['lp_page']['title'] = array_filter($this->context['lp_page']['title']);
+			$this->context['lp_page']['titles'] = array_filter($this->context['lp_page']['titles']);
 			$item = $this->addData();
 		} else {
 			$this->updateData($item);
@@ -146,8 +146,8 @@ final class PageRepository extends AbstractRepository
 				'created_at'  => 'int',
 			], $this->db_type === 'postgresql' ? ['page_id' => 'int'] : []),
 			array_merge([
-				$this->context['lp_page']['category'],
-				$this->context['lp_page']['page_author'],
+				$this->context['lp_page']['category_id'],
+				$this->context['lp_page']['author_id'],
 				$this->context['lp_page']['alias'],
 				$this->context['lp_page']['description'],
 				$this->context['lp_page']['content'],
@@ -179,8 +179,8 @@ final class PageRepository extends AbstractRepository
 		$options = [
 			'item'      => $item,
 			'time'      => $this->getPublishTime(),
-			'author_id' => $this->context['lp_page']['page_author'],
-			'title'     => $this->context['lp_page']['title'][$this->user_info['language']] ?? $this->context['lp_page']['title'][$this->language],
+			'author_id' => $this->context['lp_page']['author_id'],
+			'title'     => $this->context['lp_page']['titles'][$this->user_info['language']] ?? $this->context['lp_page']['titles'][$this->language],
 			'url'       => LP_PAGE_URL . $this->context['lp_page']['alias']
 		];
 
@@ -199,8 +199,8 @@ final class PageRepository extends AbstractRepository
 			SET category_id = {int:category_id}, author_id = {int:author_id}, alias = {string:alias}, description = {string:description}, content = {string:content}, type = {string:type}, permissions = {int:permissions}, status = {int:status}, updated_at = {int:updated_at}
 			WHERE page_id = {int:page_id}',
 			[
-				'category_id' => $this->context['lp_page']['category'],
-				'author_id'   => $this->context['lp_page']['page_author'],
+				'category_id' => $this->context['lp_page']['category_id'],
+				'author_id'   => $this->context['lp_page']['author_id'],
 				'alias'       => $this->context['lp_page']['alias'],
 				'description' => $this->context['lp_page']['description'],
 				'content'     => $this->context['lp_page']['content'],
@@ -220,9 +220,9 @@ final class PageRepository extends AbstractRepository
 		$this->saveTags();
 		$this->saveOptions($item, 'replace');
 
-		if ($this->context['lp_page']['page_author'] !== $this->user_info['id']) {
+		if ($this->context['lp_page']['author_id'] !== $this->user_info['id']) {
 			$this->logAction('update_lp_page', [
-				'page' => '<a href="' . LP_PAGE_URL . $this->context['lp_page']['alias'] . '">' . $this->context['lp_page']['title'][$this->user_info['language']] . '</a>'
+				'page' => '<a href="' . LP_PAGE_URL . $this->context['lp_page']['alias'] . '">' . $this->context['lp_page']['titles'][$this->user_info['language']] . '</a>'
 			]);
 		}
 

@@ -20,6 +20,7 @@ use Bugo\LightPortal\Areas\Partials\{PageIconSelect, PermissionSelect, StatusSel
 use Bugo\LightPortal\Areas\Validators\PageValidator;
 use Bugo\LightPortal\Entities\Page;
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Models\PageModel;
 use Bugo\LightPortal\Repositories\PageRepository;
 use IntlException;
 
@@ -435,7 +436,7 @@ final class PageArea
 		if ($this->request()->has('remove')) {
 			if ($this->context['lp_current_page']['author_id'] !== $this->user_info['id']) {
 				$this->logAction('remove_lp_page', [
-					'page' => $this->context['lp_current_page']['title'][$this->user_info['language']]
+					'page' => $this->context['lp_current_page']['titles'][$this->user_info['language']]
 				]);
 			}
 
@@ -448,7 +449,7 @@ final class PageArea
 
 		$this->validateData();
 
-		$page_title = $this->context['lp_page']['title'][$this->context['user']['language']] ?? '';
+		$page_title = $this->context['lp_page']['titles'][$this->context['user']['language']] ?? '';
 		$this->context['page_area_title'] = $this->txt['lp_pages_edit_title'] . ($page_title ? ' - ' . $page_title : '');
 		$this->context['canonical_url'] = $this->scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $this->context['lp_page']['id'];
 
@@ -603,35 +604,22 @@ final class PageArea
 
 	private function validateData(): void
 	{
-		$validator = new PageValidator();
-		[$post_data, $parameters] = $validator->validate();
+		[$post_data, $parameters] = (new PageValidator())->validate();
 
 		$options = $this->getOptions();
 		$page_options = $this->context['lp_current_page']['options'] ?? $options;
 
+		$page = new PageModel($post_data, $this->context['lp_current_page']);
+		$page->authorId = empty($post_data['author_id']) ? $page->authorId : $post_data['author_id'];
+		$page->titles = $this->context['lp_current_page']['titles'] ?? [];
+		$page->keywords = $post_data['keywords'] ?? $this->context['lp_current_page']['tags'] ?? [];
+		$page->options = $options;
+
 		$dateTime = $this->getDateTime();
+		$page->date = $post_data['date'] ?? $dateTime->format('Y-m-d');
+		$page->time = $post_data['time'] ?? $dateTime->format('H:i');
 
-		$this->context['lp_page'] = [
-			'id'          => (int) ($post_data['id'] ?? $this->context['lp_current_page']['id'] ?? 0),
-			'title'       => $this->context['lp_current_page']['title'] ?? [],
-			'category'    => $post_data['category'] ?? $this->context['lp_current_page']['category_id'] ?? 0,
-			'page_author' => (int) ($this->context['lp_current_page']['author_id'] ?? $this->user_info['id']),
-			'alias'       => $post_data['alias'] ?? $this->context['lp_current_page']['alias'] ?? '',
-			'description' => $post_data['description'] ?? $this->context['lp_current_page']['description'] ?? '',
-			'keywords'    => $post_data['keywords'] ?? $this->context['lp_current_page']['tags'] ?? [],
-			'type'        => $post_data['type'] ?? $this->context['lp_current_page']['type'] ?? 'bbc',
-			'permissions' => $post_data['permissions'] ?? $this->context['lp_current_page']['permissions'] ?? $this->modSettings['lp_permissions_default'] ?? 2,
-			'status'      => $post_data['status'] ?? $this->context['lp_current_page']['status'] ?? (int) ($this->context['allow_light_portal_approve_pages'] || $this->context['allow_light_portal_manage_pages_any']),
-			'created_at'  => $this->context['lp_current_page']['created_at'] ?? time(),
-			'date'        => $post_data['date'] ?? $dateTime->format('Y-m-d'),
-			'time'        => $post_data['time'] ?? $dateTime->format('H:i'),
-			'content'     => $post_data['content'] ?? $this->context['lp_current_page']['content'] ?? '',
-			'options'     => $options,
-		];
-
-		$this->context['lp_page']['page_author'] = empty($post_data['page_author']) ? $this->context['lp_page']['page_author'] : $post_data['page_author'];
-
-		foreach ($this->context['lp_page']['options'] as $option => $value) {
+		foreach ($page->options as $option => $value) {
 			if (isset($parameters[$option]) && isset($post_data) && ! isset($post_data[$option])) {
 				$post_data[$option] = 0;
 
@@ -642,14 +630,16 @@ final class PageArea
 					$post_data[$option] = [];
 			}
 
-			$this->context['lp_page']['options'][$option] = $post_data[$option] ?? $page_options[$option] ?? $value;
+			$page->options[$option] = $post_data[$option] ?? $page_options[$option] ?? $value;
 		}
 
 		foreach ($this->context['lp_languages'] as $lang) {
-			$this->context['lp_page']['title'][$lang['filename']] = $post_data['title_' . $lang['filename']] ?? $this->context['lp_page']['title'][$lang['filename']] ?? '';
+			$page->titles[$lang['filename']] = $post_data['title_' . $lang['filename']] ?? $page->titles[$lang['filename']] ?? '';
 		}
 
-		$this->cleanBbcode($this->context['lp_page']['title']);
+		$this->cleanBbcode($page->titles);
+
+		$this->context['lp_page'] = $page->toArray();
 	}
 
 	private function prepareFormFields(): void
@@ -675,14 +665,14 @@ final class PageArea
 			->setTab('access_placement')
 			->setValue(fn() => new PermissionSelect);
 
-		CustomField::make('category', $this->txt['lp_category'])
+		CustomField::make('category_id', $this->txt['lp_category'])
 			->setTab('access_placement')
 			->setValue(fn() => new CategorySelect, [
-				'id'         => 'category',
+				'id'         => 'category_id',
 				'multiple'   => false,
 				'full_width' => false,
 				'data'       => $this->getEntityList('category'),
-				'value'      => $this->context['lp_page']['category']
+				'value'      => $this->context['lp_page']['category_id']
 			]);
 
 		if ($this->context['user']['is_admin']) {
@@ -690,7 +680,7 @@ final class PageArea
 				->setTab('access_placement')
 				->setValue(fn() => new StatusSelect);
 
-			CustomField::make('page_author', $this->txt['lp_page_author'])
+			CustomField::make('author_id', $this->txt['lp_page_author'])
 				->setTab('access_placement')
 				->setAfter($this->txt['lp_page_author_placeholder'])
 				->setValue(fn() => new PageAuthorSelect);
@@ -754,7 +744,7 @@ final class PageArea
 
 		$this->checkSubmitOnce('free');
 
-		$this->context['preview_title']   = $this->context['lp_page']['title'][$this->context['user']['language']];
+		$this->context['preview_title']   = $this->context['lp_page']['titles'][$this->context['user']['language']];
 		$this->context['preview_content'] = $this->smcFunc['htmlspecialchars']($this->context['lp_page']['content'], ENT_QUOTES);
 
 		$this->cleanBbcode($this->context['preview_title']);

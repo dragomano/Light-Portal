@@ -19,6 +19,7 @@ use Bugo\LightPortal\Areas\Partials\{AreaSelect, ContentClassSelect, IconSelect}
 use Bugo\LightPortal\Areas\Partials\{PermissionSelect, PlacementSelect, TitleClassSelect};
 use Bugo\LightPortal\Areas\Validators\BlockValidator;
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Models\BlockModel;
 use Bugo\LightPortal\Repositories\BlockRepository;
 
 if (! defined('SMF'))
@@ -275,8 +276,7 @@ final class BlockArea
 
 	private function validateData(): void
 	{
-		$validator = new BlockValidator();
-		[$post_data, $parameters] = $validator->validate();
+		[$post_data, $parameters] = (new BlockValidator())->validate();
 
 		$options = $this->getOptions();
 
@@ -289,35 +289,16 @@ final class BlockArea
 			$this->context['current_block']['icon'] = $this->context['lp_loaded_addons'][$this->context['current_block']['type']]['icon'];
 		}
 
-		$this->context['lp_block'] = [
-			'id'            => $post_data['block_id'] ?? $this->context['current_block']['id'] ?? 0,
-			'title'         => $this->context['current_block']['title'] ?? [],
-			'icon'          => empty($post_data['block_id']) ? ($post_data['icon'] ?? $this->context['current_block']['icon'] ?? '') : ($post_data['icon'] ?? ''),
-			'type'          => $post_data['type'] ?? $this->context['current_block']['type'] ?? '',
-			'note'          => $post_data['note'] ?? $this->context['current_block']['note'] ?? '',
-			'content'       => $post_data['content'] ?? $this->context['current_block']['content'] ?? '',
-			'placement'     => $post_data['placement'] ?? $this->context['current_block']['placement'] ?? 'top',
-			'priority'      => $post_data['priority'] ?? $this->context['current_block']['priority'] ?? 0,
-			'permissions'   => $post_data['permissions'] ?? $this->context['current_block']['permissions'] ?? $this->modSettings['lp_permissions_default'] ?? 2,
-			'status'        => $this->context['current_block']['status'] ?? 1,
-			'areas'         => $post_data['areas'] ?? $this->context['current_block']['areas'] ?? 'all',
-			'title_class'   => $post_data['title_class'] ?? $this->context['current_block']['title_class'] ?? array_key_first($this->context['lp_all_title_classes']),
-			'content_class' => $post_data['content_class'] ?? $this->context['current_block']['content_class'] ?? array_key_first($this->context['lp_all_content_classes']),
-			'options'       => $options[$this->context['current_block']['type']],
-		];
+		$block = new BlockModel($post_data, $this->context['current_block']);
+		$block->titles = $this->context['current_block']['titles'] ?? [];
+		$block->options = $options[$block->type];
+		$block->icon = $block->icon === 'undefined' ? '' : $block->icon;
+		$block->priority = empty($block->id) ? $this->getPriority() : $block->priority;
+		$block->permissions = empty($this->context['user']['is_admin']) ? 4 : $block->permissions;
+		$block->contentClass = empty($block->options['no_content_class']) ? $block->contentClass : '';
 
-		if ($this->context['lp_block']['icon'] === 'undefined')
-			$this->context['lp_block']['icon'] = '';
-
-		$this->context['lp_block']['priority'] = empty($this->context['lp_block']['id']) ? $this->getPriority() : $this->context['lp_block']['priority'];
-
-		$this->context['lp_block']['permissions'] = empty($this->context['user']['is_admin']) ? 4 : $this->context['lp_block']['permissions'];
-
-		if (! empty($this->context['lp_block']['options']['no_content_class']))
-			$this->context['lp_block']['content_class'] = '';
-
-		if (isset($this->context['lp_block']['options']['parameters'])) {
-			foreach ($this->context['lp_block']['options']['parameters'] as $option => $value) {
+		if (isset($block->options['parameters'])) {
+			foreach ($block->options['parameters'] as $option => $value) {
 				if (isset($parameters[$option]) && isset($post_data['parameters']) && ! isset($post_data['parameters'][$option])) {
 					$post_data['parameters'][$option] = 0;
 
@@ -328,15 +309,17 @@ final class BlockArea
 						$post_data['parameters'][$option] = [];
 				}
 
-				$this->context['lp_block']['options']['parameters'][$option] = $post_data['parameters'][$option] ?? $block_options['parameters'][$option] ?? $value;
+				$block->options['parameters'][$option] = $post_data['parameters'][$option] ?? $block_options['parameters'][$option] ?? $value;
 			}
 		}
 
 		foreach ($this->context['lp_languages'] as $lang) {
-			$this->context['lp_block']['title'][$lang['filename']] = $post_data['title_' . $lang['filename']] ?? $this->context['lp_block']['title'][$lang['filename']] ?? '';
+			$block->titles[$lang['filename']] = $post_data['title_' . $lang['filename']] ?? $block->titles[$lang['filename']] ?? '';
 		}
 
-		$this->cleanBbcode($this->context['lp_block']['title']);
+		$this->cleanBbcode($block->titles);
+
+		$this->context['lp_block'] = $block->toArray();
 	}
 
 	private function prepareFormFields(): void
@@ -435,7 +418,7 @@ final class BlockArea
 		$this->cache()->flush();
 		$this->checkSubmitOnce('free');
 
-		$this->context['preview_title']   = $this->context['lp_block']['title'][$this->context['user']['language']] ?? '';
+		$this->context['preview_title']   = $this->context['lp_block']['titles'][$this->context['user']['language']] ?? '';
 		$this->context['preview_content'] = $this->smcFunc['htmlspecialchars']($this->context['lp_block']['content'], ENT_QUOTES);
 
 		$this->cleanBbcode($this->context['preview_title']);

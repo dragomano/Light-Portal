@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.09.23
+ * @version 15.01.24
  */
 
 namespace Bugo\LightPortal\Addons\CurrentMonth;
@@ -74,8 +74,8 @@ class CurrentMonth extends Block
 			// Auto title
 			if (isset($this->context['preview_title']) && empty($this->context['preview_title'])) {
 				$this->context['preview_title'] = $title;
-			} elseif ($data->block_id && empty($this->context['lp_active_blocks'][$data->block_id]['title'][$this->user_info['language']])) {
-				$this->context['lp_active_blocks'][$data->block_id]['title'][$this->user_info['language']] = $title;
+			} elseif ($data->block_id && empty($this->context['lp_active_blocks'][$data->block_id]['titles'][$this->user_info['language']])) {
+				$this->context['lp_active_blocks'][$data->block_id]['titles'][$this->user_info['language']] = $title;
 			}
 
 			$this->setTemplate();

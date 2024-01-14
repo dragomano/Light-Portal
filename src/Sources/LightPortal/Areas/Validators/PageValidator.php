@@ -20,8 +20,9 @@ if (! defined('SMF'))
 class PageValidator extends AbstractValidator
 {
 	protected array $args = [
-		'category'    => FILTER_VALIDATE_INT,
-		'page_author' => FILTER_VALIDATE_INT,
+		'page_id'     => FILTER_VALIDATE_INT,
+		'category_id' => FILTER_VALIDATE_INT,
+		'author_id'   => FILTER_VALIDATE_INT,
 		'alias'       => FILTER_DEFAULT,
 		'description' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
 		'keywords'    => FILTER_DEFAULT,
@@ -57,7 +58,6 @@ class PageValidator extends AbstractValidator
 			$parameters = array_merge($this->parameters, $parameters);
 
 			$post_data = filter_input_array(INPUT_POST, array_merge($this->args, $parameters));
-			$post_data['id'] = $this->request('id', 0);
 			$post_data['keywords'] = empty($post_data['keywords']) ? [] : explode(',', $post_data['keywords']);
 
 			$this->findErrors($post_data);
@@ -105,7 +105,7 @@ class PageValidator extends AbstractValidator
 				AND page_id != {int:item}',
 			[
 				'alias' => $data['alias'],
-				'item'  => $data['id'],
+				'item'  => $data['page_id'],
 			]
 		);
 

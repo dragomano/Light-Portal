@@ -19,10 +19,10 @@ final class PageAuthorSelect extends AbstractPartial
 	public function __invoke(): string
 	{
 		return /** @lang text */ '
-		<div id="page_author" name="page_author"></div>
+		<div id="author_id" name="author_id"></div>
 		<script>
 			VirtualSelect.init({
-				ele: "#page_author",' . ($this->context['right_to_left'] ? '
+				ele: "#author_id",' . ($this->context['right_to_left'] ? '
 				textDirection: "rtl",' : '') . '
 				dropboxWrapper: "body",
 				search: true,

@@ -112,7 +112,7 @@ function show_block_entry(int $id, array $data)
 			', $data['icon'], '
 		</td>
 		<td class="title">
-			<div class="hidden-xs hidden-sm hidden-md">', $title = $data['note'] ?: ($data['title'][$context['user']['language']] ?? $data['title']['english'] ?? $data['title'][$language] ?? ''), '</div>
+			<div class="hidden-xs hidden-sm hidden-md">', $title = $data['note'] ?: ($data['titles'][$context['user']['language']] ?? $data['titles']['english'] ?? $data['titles'][$language] ?? ''), '</div>
 			<div class="hidden-lg hidden-xl">
 				<table class="table_grid">
 					<tbody>
@@ -251,7 +251,7 @@ function template_block_post()
 
 	$titles = '';
 	foreach ($context['lp_languages'] as $lang) {
-		$titles .= ', title_' . $lang['filename'] . ': `' . ($context['lp_block']['title'][$lang['filename']] ?? '') . '`';
+		$titles .= ', title_' . $lang['filename'] . ': `' . ($context['lp_block']['titles'][$lang['filename']] ?? '') . '`';
 	}
 
 	echo '

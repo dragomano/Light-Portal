@@ -120,7 +120,7 @@ class PageArticle extends AbstractArticle
 					$pages[$row['page_id']]['date'] = $row['date'];
 			}
 
-			$pages[$row['page_id']]['title'] = $titles[$row['page_id']];
+			$pages[$row['page_id']]['title'] = $this->getTranslatedTitle($titles[$row['page_id']]);
 
 			$this->hook('frontPagesOutput', [&$pages, $row]);
 		}

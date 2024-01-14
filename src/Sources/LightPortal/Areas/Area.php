@@ -85,7 +85,7 @@ trait Area
 						type="text"
 						name="title_' . $lang['filename'] . '"
 						x-model="title_' . $lang['filename'] . '"
-						value="' . ($this->context['lp_' . $entity]['title'][$lang['filename']] ?? '') . '"
+						value="' . ($this->context['lp_' . $entity]['titles'][$lang['filename']] ?? '') . '"
 						' . (in_array($lang['filename'], $languages) && $required ? ' required' : '') . '
 					>
 				</div>';

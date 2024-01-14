@@ -285,7 +285,7 @@ abstract class AbstractMain
 		$page_buttons = [];
 		foreach ($this->context['lp_menu_pages'] as $item) {
 			$page_buttons['portal_page_' . $item['alias']] = [
-				'title' => ($item['icon'] ? '<span class="portal_menu_icons fa-fw ' . $item['icon'] . '"></span>' : '') . $this->getTranslatedTitle($item['title']),
+				'title' => ($item['icon'] ? '<span class="portal_menu_icons fa-fw ' . $item['icon'] . '"></span>' : '') . $this->getTranslatedTitle($item['titles']),
 				'href'  => LP_PAGE_URL . $item['alias'],
 				'icon'  => '" style="display: none"></span><span',
 				'show'  => $this->canViewItem($item['permissions'])
@@ -401,7 +401,7 @@ abstract class AbstractMain
 					'icon'        => $row['icon'],
 				];
 
-				$pages[$row['page_id']]['title'] = $titles[$row['page_id']];
+				$pages[$row['page_id']]['titles'] = $titles[$row['page_id']];
 			}
 
 			$this->smcFunc['db_free_result']($result);

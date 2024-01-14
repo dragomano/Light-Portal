@@ -48,7 +48,7 @@ final class Block
 			$this->context['lp_blocks'][$data['placement']][$item] = $data;
 
 			if (empty($data['parameters']['hide_header'])) {
-				$title = $this->getTranslatedTitle($data['title']);
+				$title = $this->getTranslatedTitle($data['titles']);
 				$icon  = $this->getIcon($this->context['lp_blocks'][$data['placement']][$item]['icon']);
 			} else {
 				$title = $icon = '';
@@ -111,8 +111,8 @@ final class Block
 					'content_class' => $row['content_class'],
 				];
 
-				$active_blocks[$row['block_id']]['title'][$row['lang']] = $row['title'];
-				$active_blocks[$row['block_id']]['title'] = array_filter($active_blocks[$row['block_id']]['title']);
+				$active_blocks[$row['block_id']]['titles'][$row['lang']] = $row['title'];
+				$active_blocks[$row['block_id']]['titles'] = array_filter($active_blocks[$row['block_id']]['titles']);
 
 				$active_blocks[$row['block_id']]['parameters'][$row['name']] = $row['value'];
 			}

@@ -37,11 +37,11 @@ abstract class AbstractRepository
 
 	protected function saveTitles(int $item, string $method = ''): void
 	{
-		if (empty($this->context['lp_' . $this->entity]['title']))
+		if (empty($this->context['lp_' . $this->entity]['titles']))
 			return;
 
 		$titles = [];
-		foreach ($this->context['lp_' . $this->entity]['title'] as $lang => $title) {
+		foreach ($this->context['lp_' . $this->entity]['titles'] as $lang => $title) {
 			$titles[] = [
 				'item_id' => $item,
 				'type'    => $this->entity,

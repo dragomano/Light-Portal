@@ -81,11 +81,11 @@ final class Page
 		$this->context['lp_page']['content'] = parse_content($this->context['lp_page']['content'], $this->context['lp_page']['type']);
 
 		if (empty($alias)) {
-			$this->context['page_title']    = $this->getTranslatedTitle($this->context['lp_page']['title']) ?: $this->txt['lp_portal'];
+			$this->context['page_title']    = $this->getTranslatedTitle($this->context['lp_page']['titles']) ?: $this->txt['lp_portal'];
 			$this->context['canonical_url'] = $this->scripturl;
 			$this->context['linktree'][]    = ['name' => $this->txt['lp_portal']];
 		} else {
-			$this->context['page_title']    = $this->getTranslatedTitle($this->context['lp_page']['title']) ?: $this->txt['lp_post_error_no_title'];
+			$this->context['page_title']    = $this->getTranslatedTitle($this->context['lp_page']['titles']) ?: $this->txt['lp_post_error_no_title'];
 			$this->context['canonical_url'] = LP_PAGE_URL . $alias;
 
 			if (isset($this->context['lp_page']['category'])) {
@@ -169,7 +169,7 @@ final class Page
 				'image'       => $og_image
 			];
 
-			$data['title'][$row['lang']] = $row['title'];
+			$data['titles'][$row['lang']] = $row['title'];
 
 			$data['options'][$row['name']] = $row['value'];
 		}
@@ -460,7 +460,7 @@ final class Page
 		if (empty($item = $this->context['lp_page']) || empty($this->modSettings['lp_show_related_pages']) || empty($this->context['lp_page']['options']['show_related_pages']))
 			return;
 
-		$title_words = explode(' ', $this->getTranslatedTitle($item['title']));
+		$title_words = explode(' ', $this->getTranslatedTitle($item['titles']));
 		$alias_words = explode('_', $item['alias']);
 
 		$search_formula = '';

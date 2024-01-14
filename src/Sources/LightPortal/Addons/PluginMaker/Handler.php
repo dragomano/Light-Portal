@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 05.01.24
+ * @version 15.01.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -79,8 +79,7 @@ class Handler extends Plugin
 
 	private function validateData(): void
 	{
-		$validator = new Validator();
-		$post_data = $validator->validate();
+		$post_data = (new Validator())->validate();
 
 		$this->context['lp_plugin'] = [
 			'name'       => $post_data['name'] ?? $this->context['lp_plugin']['name'] = 'MyNewAddon',
@@ -115,8 +114,8 @@ class Handler extends Plugin
 		}
 
 		foreach ($this->context['lp_languages'] as $lang) {
-			$this->context['lp_plugin']['title'][$lang['filename']]       = $post_data['title_' . $lang['filename']] ?? $this->context['lp_plugin']['title'][$lang['filename']] ?? '';
-			$this->context['lp_plugin']['description'][$lang['filename']] = $post_data['description_' . $lang['filename']] ?? $this->context['lp_plugin']['description'][$lang['filename']] ?? '';
+			$this->context['lp_plugin']['titles'][$lang['filename']]       = $post_data['title_' . $lang['filename']] ?? $this->context['lp_plugin']['titles'][$lang['filename']] ?? '';
+			$this->context['lp_plugin']['descriptions'][$lang['filename']] = $post_data['description_' . $lang['filename']] ?? $this->context['lp_plugin']['descriptions'][$lang['filename']] ?? '';
 
 			if (! empty($post_data['option_translations'][$lang['filename']])) {
 				foreach ($post_data['option_translations'][$lang['filename']] as $id => $translation) {
@@ -126,10 +125,10 @@ class Handler extends Plugin
 			}
 		}
 
-		$this->context['lp_plugin']['title']       = array_filter($this->context['lp_plugin']['title']);
-		$this->context['lp_plugin']['description'] = array_filter($this->context['lp_plugin']['description']);
+		$this->context['lp_plugin']['titles']       = array_filter($this->context['lp_plugin']['titles']);
+		$this->context['lp_plugin']['descriptions'] = array_filter($this->context['lp_plugin']['descriptions']);
 
-		$this->cleanBbcode($this->context['lp_plugin']['description']);
+		$this->cleanBbcode($this->context['lp_plugin']['descriptions']);
 	}
 
 	private function prepareFormFields(): void
@@ -240,13 +239,13 @@ class Handler extends Plugin
 					<input
 						type="text"
 						name="title_' . $lang['filename'] . '"
-						value="' . ($this->context['lp_plugin']['title'][$lang['filename']] ?? '') . '"
+						value="' . ($this->context['lp_plugin']['titles'][$lang['filename']] ?? '') . '"
 						placeholder="' . $this->txt['lp_title'] . '"
 					>
 					<input
 						type="text"
 						name="description_' . $lang['filename'] . '"
-						value="' . ($this->context['lp_plugin']['description'][$lang['filename']] ?? '') . '"
+						value="' . ($this->context['lp_plugin']['descriptions'][$lang['filename']] ?? '') . '"
 						placeholder="' . $this->txt['lp_page_description'] . '"
 						' . (in_array($lang['filename'], $languages) ? 'x-ref="title_' . $i-- . '"' : '') . ($lang['filename'] === 'english' ? ' required' : '') . '
 					>
@@ -615,15 +614,15 @@ class Handler extends Plugin
 		$plugin->create($content);
 
 		// Create plugin languages
-		if (! empty($this->context['lp_plugin']['description'])) {
+		if (! empty($this->context['lp_plugin']['descriptions'])) {
 			$languages = [];
 
-			foreach ($this->context['lp_plugin']['description'] as $lang => $value) {
+			foreach ($this->context['lp_plugin']['descriptions'] as $lang => $value) {
 				$languages[$lang][] = '<?php' . PHP_EOL . PHP_EOL;
 				$languages[$lang][] = 'return [';
 
 				if ($type === 'block') {
-					$title = $this->context['lp_plugin']['title'][$lang] ?? $this->context['lp_plugin']['name'];
+					$title = $this->context['lp_plugin']['titles'][$lang] ?? $this->context['lp_plugin']['name'];
 					$languages[$lang][] = PHP_EOL . "\t'title' => '$title',";
 				}
 
@@ -649,7 +648,7 @@ class Handler extends Plugin
 				}
 			}
 
-			foreach ($this->context['lp_plugin']['description'] as $lang => $dump) {
+			foreach ($this->context['lp_plugin']['descriptions'] as $lang => $dump) {
 				$languages[$lang][] = PHP_EOL . '];' . PHP_EOL;
 			}
 
