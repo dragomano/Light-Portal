@@ -24,8 +24,7 @@ if (! defined('SMF'))
 
 trait Helper
 {
-	use SMFTrait;
-	use IntlTrait;
+	use IntlTrait, SMFTrait;
 
 	/**
 	 * @param mixed|null $default

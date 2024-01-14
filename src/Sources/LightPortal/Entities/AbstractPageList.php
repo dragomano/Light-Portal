@@ -15,6 +15,7 @@
 namespace Bugo\LightPortal\Entities;
 
 use Bugo\LightPortal\Helper;
+use IntlException;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -33,6 +34,9 @@ abstract class AbstractPageList
 
 	abstract public function getAll(int $start, int $items_per_page, string $sort): array;
 
+	/**
+	 * @throws IntlException
+	 */
 	protected function getPreparedResults(array $rows = []): array
 	{
 		if (empty($rows))

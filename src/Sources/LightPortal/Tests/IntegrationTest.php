@@ -13,7 +13,6 @@ require_once __DIR__ . '/bootstrap.php';
 
 test('hook methods exist', function () {
 	Assert::true(method_exists(Integration::class, 'preLoad'));
-	Assert::true(method_exists(Integration::class, 'userInfo'));
 	Assert::true(method_exists(Integration::class, 'preJavascriptOutput'));
 	Assert::true(method_exists(Integration::class, 'preCssOutput'));
 	Assert::true(method_exists(Integration::class, 'loadTheme'));
