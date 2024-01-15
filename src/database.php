@@ -503,6 +503,8 @@ if (! isset($modSettings['lp_frontpage_layout']))
 	$addSettings['lp_frontpage_layout'] = 'default.latte';
 if (! isset($modSettings['lp_show_comment_block']))
 	$addSettings['lp_show_comment_block'] = 'none';
+if (! isset($modSettings['lp_permissions_default']))
+	$addSettings['lp_permissions_default'] = '0';
 if (! isset($modSettings['lp_fa_source']))
 	$addSettings['lp_fa_source'] = 'css_cdn';
 updateSettings($addSettings);
