@@ -3,17 +3,17 @@
 /**
  * BlockImport.php
  *
- * @package TinyPortal (Light Portal)
+ * @package TinyPortalMigration (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2020-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 16.01.24
  */
 
-namespace Bugo\LightPortal\Addons\TinyPortal;
+namespace Bugo\LightPortal\Addons\TinyPortalMigration;
 
 use Bugo\LightPortal\Areas\Import\AbstractOtherBlockImport;
 
@@ -26,13 +26,13 @@ class BlockImport extends AbstractOtherBlockImport
 
 	public function main(): void
 	{
-		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_tiny_portal']['label_name'];
+		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_tiny_portal_migration']['label_name'];
 		$this->context['page_area_title'] = $this->txt['lp_blocks_import'];
 		$this->context['canonical_url']   = $this->scripturl . '?action=admin;area=lp_blocks;sa=import_from_tp';
 
 		$this->context[$this->context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => $this->txt['lp_tiny_portal']['block_import_desc']
+			'description' => $this->txt['lp_tiny_portal_migration']['block_import_desc']
 		];
 
 		$this->run();

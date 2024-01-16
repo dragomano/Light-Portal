@@ -1,19 +1,19 @@
 <?php
 
 /**
- * Import.php
+ * PageImport.php
  *
- * @package EhPortal (Light Portal)
+ * @package EhPortalMigration (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2020-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 16.01.24
  */
 
-namespace Bugo\LightPortal\Addons\EhPortal;
+namespace Bugo\LightPortal\Addons\EhPortalMigration;
 
 use Bugo\LightPortal\Areas\Import\AbstractOtherPageImport;
 use IntlException;
@@ -21,17 +21,17 @@ use IntlException;
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class Import extends AbstractOtherPageImport
+class PageImport extends AbstractOtherPageImport
 {
 	public function main(): void
 	{
-		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_eh_portal']['label_name'];
+		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_eh_portal_migration']['label_name'];
 		$this->context['page_area_title'] = $this->txt['lp_pages_import'];
 		$this->context['canonical_url']   = $this->scripturl . '?action=admin;area=lp_pages;sa=import_from_ep';
 
 		$this->context[$this->context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => $this->txt['lp_eh_portal']['desc']
+			'description' => $this->txt['lp_eh_portal_migration']['desc']
 		];
 
 		$this->run();

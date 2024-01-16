@@ -3,17 +3,17 @@
 /**
  * PageImport.php
  *
- * @package TinyPortal (Light Portal)
+ * @package EzPortalMigration (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2024 Bugo
+ * @copyright 2021-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 16.01.24
  */
 
-namespace Bugo\LightPortal\Addons\TinyPortal;
+namespace Bugo\LightPortal\Addons\EzPortalMigration;
 
 use Bugo\LightPortal\Areas\Import\AbstractOtherPageImport;
 use IntlException;
@@ -25,13 +25,13 @@ class PageImport extends AbstractOtherPageImport
 {
 	public function main(): void
 	{
-		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_tiny_portal']['label_name'];
+		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_ez_portal_migration']['label_name'];
 		$this->context['page_area_title'] = $this->txt['lp_pages_import'];
-		$this->context['canonical_url']   = $this->scripturl . '?action=admin;area=lp_pages;sa=import_from_tp';
+		$this->context['canonical_url']   = $this->scripturl . '?action=admin;area=lp_pages;sa=import_from_ez';
 
 		$this->context[$this->context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => $this->txt['lp_tiny_portal']['page_import_desc']
+			'description' => $this->txt['lp_ez_portal_migration']['desc']
 		];
 
 		$this->run();
@@ -60,8 +60,8 @@ class PageImport extends AbstractOtherPageImport
 						'class' => 'centertext'
 					],
 					'sort' => [
-						'default' => 'id',
-						'reverse' => 'id DESC'
+						'default' => 'id_page',
+						'reverse' => 'id_page DESC'
 					]
 				],
 				'alias' => [
@@ -71,10 +71,6 @@ class PageImport extends AbstractOtherPageImport
 					'data' => [
 						'db'    => 'alias',
 						'class' => 'centertext word_break'
-					],
-					'sort' => [
-						'default' => 'shortname DESC',
-						'reverse' => 'shortname'
 					]
 				],
 				'title' => [
@@ -86,8 +82,8 @@ class PageImport extends AbstractOtherPageImport
 						'class' => 'word_break'
 					],
 					'sort' => [
-						'default' => 'subject DESC',
-						'reverse' => 'subject'
+						'default' => 'title DESC',
+						'reverse' => 'title'
 					]
 				],
 				'actions' => [
@@ -120,16 +116,16 @@ class PageImport extends AbstractOtherPageImport
 	/**
 	 * @throws IntlException
 	 */
-	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id'): array
+	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id_page'): array
 	{
 		$this->dbExtend();
 
-		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'tp_articles')))
+		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'ezp_page')))
 			return [];
 
 		$result = $this->smcFunc['db_query']('', '
-			SELECT id, date, subject, author_id, off, views, shortname, type
-			FROM {db_prefix}tp_articles
+			SELECT id_page, date, title, views
+			FROM {db_prefix}ezp_page
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
 			[
@@ -141,15 +137,15 @@ class PageImport extends AbstractOtherPageImport
 
 		$items = [];
 		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
-			$items[$row['id']] = [
-				'id'         => $row['id'],
-				'alias'      => $row['shortname'],
-				'type'       => $row['type'],
-				'status'     => (int) empty($row['off']),
+			$items[$row['id_page']] = [
+				'id'         => $row['id_page'],
+				'alias'      => $this->smcFunc['strtolower'](explode(' ', $row['title'])[0]) . $row['id_page'],
+				'type'       => 'html',
+				'status'     => 1,
 				'num_views'  => $row['views'],
-				'author_id'  => $row['author_id'],
+				'author_id'  => $this->user_info['id'],
 				'created_at' => $this->getFriendlyTime($row['date']),
-				'title'      => $row['subject']
+				'title'      => $row['title']
 			];
 		}
 
@@ -163,12 +159,12 @@ class PageImport extends AbstractOtherPageImport
 	{
 		$this->dbExtend();
 
-		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'tp_articles')))
+		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'ezp_page')))
 			return 0;
 
 		$result = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT COUNT(*)
-			FROM {db_prefix}tp_articles',
+			FROM {db_prefix}ezp_page',
 			[]
 		);
 
@@ -182,20 +178,18 @@ class PageImport extends AbstractOtherPageImport
 
 	protected function getItems(array $pages): array
 	{
-		$result = $this->smcFunc['db_query']('', '
-			SELECT a.id, a.date, a.body, a.intro, a.subject, a.author_id, a.off, a.options, a.comments, a.views, a.shortname, a.type, a.pub_start, a.pub_end, v.value3
-			FROM {db_prefix}tp_articles AS a
-				LEFT JOIN {db_prefix}tp_variables AS v ON (a.category = v.id AND v.type = {string:type})' . (empty($pages) ? '' : '
-			WHERE a.id IN ({array_int:pages})'),
+		$result = $this->smcFunc['db_query']('', /** @lang text */ '
+			SELECT id_page, date, title, content, views, permissions
+			FROM {db_prefix}ezp_page' . (empty($pages) ? '' : '
+			WHERE id_page IN ({array_int:pages})'),
 			[
-				'type'  => 'category',
 				'pages' => $pages
 			]
 		);
 
 		$items = [];
 		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
-			$permissions = explode(',', $row['value3']);
+			$permissions = explode(',', $row['permissions']);
 
 			$perm = 0;
 			if (count($permissions) == 1 && $permissions[0] == -1) {
@@ -208,21 +202,20 @@ class PageImport extends AbstractOtherPageImport
 				$perm = 3;
 			}
 
-			$items[$row['id']] = [
-				'page_id'      => $row['id'],
-				'author_id'    => $row['author_id'],
-				'alias'        => $row['shortname'] ?: ('page_' . $row['id']),
-				'description'  => strip_tags($this->parseBbc($row['intro'])),
-				'content'      => $row['body'],
-				'type'         => $row['type'],
+			$items[$row['id_page']] = [
+				'page_id'      => $row['id_page'],
+				'author_id'    => $this->user_info['id'],
+				'alias'        => 'page_' . $row['id_page'],
+				'description'  => '',
+				'content'      => $row['content'],
+				'type'         => 'html',
 				'permissions'  => $perm,
-				'status'       => (int) empty($row['off']),
+				'status'       => 1,
 				'num_views'    => $row['views'],
 				'num_comments' => 0,
 				'created_at'   => $row['date'],
 				'updated_at'   => 0,
-				'subject'      => $row['subject'],
-				'options'      => explode(',', $row['options'])
+				'subject'      => $row['title']
 			];
 		}
 

@@ -1,19 +1,19 @@
 <?php
 
 /**
- * Import.php
+ * PageImport.php
  *
- * @package EzPortal (Light Portal)
+ * @package TinyPortalMigration (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2021-2024 Bugo
+ * @copyright 2020-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 16.01.24
  */
 
-namespace Bugo\LightPortal\Addons\EzPortal;
+namespace Bugo\LightPortal\Addons\TinyPortalMigration;
 
 use Bugo\LightPortal\Areas\Import\AbstractOtherPageImport;
 use IntlException;
@@ -21,17 +21,17 @@ use IntlException;
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class Import extends AbstractOtherPageImport
+class PageImport extends AbstractOtherPageImport
 {
 	public function main(): void
 	{
-		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_ez_portal']['label_name'];
+		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_tiny_portal_migration']['label_name'];
 		$this->context['page_area_title'] = $this->txt['lp_pages_import'];
-		$this->context['canonical_url']   = $this->scripturl . '?action=admin;area=lp_pages;sa=import_from_ez';
+		$this->context['canonical_url']   = $this->scripturl . '?action=admin;area=lp_pages;sa=import_from_tp';
 
 		$this->context[$this->context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => $this->txt['lp_ez_portal']['desc']
+			'description' => $this->txt['lp_tiny_portal_migration']['page_import_desc']
 		];
 
 		$this->run();
@@ -60,8 +60,8 @@ class Import extends AbstractOtherPageImport
 						'class' => 'centertext'
 					],
 					'sort' => [
-						'default' => 'id_page',
-						'reverse' => 'id_page DESC'
+						'default' => 'id',
+						'reverse' => 'id DESC'
 					]
 				],
 				'alias' => [
@@ -71,6 +71,10 @@ class Import extends AbstractOtherPageImport
 					'data' => [
 						'db'    => 'alias',
 						'class' => 'centertext word_break'
+					],
+					'sort' => [
+						'default' => 'shortname DESC',
+						'reverse' => 'shortname'
 					]
 				],
 				'title' => [
@@ -82,8 +86,8 @@ class Import extends AbstractOtherPageImport
 						'class' => 'word_break'
 					],
 					'sort' => [
-						'default' => 'title DESC',
-						'reverse' => 'title'
+						'default' => 'subject DESC',
+						'reverse' => 'subject'
 					]
 				],
 				'actions' => [
@@ -116,16 +120,16 @@ class Import extends AbstractOtherPageImport
 	/**
 	 * @throws IntlException
 	 */
-	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id_page'): array
+	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id'): array
 	{
 		$this->dbExtend();
 
-		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'ezp_page')))
+		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'tp_articles')))
 			return [];
 
 		$result = $this->smcFunc['db_query']('', '
-			SELECT id_page, date, title, views
-			FROM {db_prefix}ezp_page
+			SELECT id, date, subject, author_id, off, views, shortname, type
+			FROM {db_prefix}tp_articles
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
 			[
@@ -137,15 +141,15 @@ class Import extends AbstractOtherPageImport
 
 		$items = [];
 		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
-			$items[$row['id_page']] = [
-				'id'         => $row['id_page'],
-				'alias'      => $this->smcFunc['strtolower'](explode(' ', $row['title'])[0]) . $row['id_page'],
-				'type'       => 'html',
-				'status'     => 1,
+			$items[$row['id']] = [
+				'id'         => $row['id'],
+				'alias'      => $row['shortname'],
+				'type'       => $row['type'],
+				'status'     => (int) empty($row['off']),
 				'num_views'  => $row['views'],
-				'author_id'  => $this->user_info['id'],
+				'author_id'  => $row['author_id'],
 				'created_at' => $this->getFriendlyTime($row['date']),
-				'title'      => $row['title']
+				'title'      => $row['subject']
 			];
 		}
 
@@ -159,12 +163,12 @@ class Import extends AbstractOtherPageImport
 	{
 		$this->dbExtend();
 
-		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'ezp_page')))
+		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'tp_articles')))
 			return 0;
 
 		$result = $this->smcFunc['db_query']('', /** @lang text */ '
 			SELECT COUNT(*)
-			FROM {db_prefix}ezp_page',
+			FROM {db_prefix}tp_articles',
 			[]
 		);
 
@@ -178,18 +182,20 @@ class Import extends AbstractOtherPageImport
 
 	protected function getItems(array $pages): array
 	{
-		$result = $this->smcFunc['db_query']('', /** @lang text */ '
-			SELECT id_page, date, title, content, views, permissions
-			FROM {db_prefix}ezp_page' . (empty($pages) ? '' : '
-			WHERE id_page IN ({array_int:pages})'),
+		$result = $this->smcFunc['db_query']('', '
+			SELECT a.id, a.date, a.body, a.intro, a.subject, a.author_id, a.off, a.options, a.comments, a.views, a.shortname, a.type, a.pub_start, a.pub_end, v.value3
+			FROM {db_prefix}tp_articles AS a
+				LEFT JOIN {db_prefix}tp_variables AS v ON (a.category = v.id AND v.type = {string:type})' . (empty($pages) ? '' : '
+			WHERE a.id IN ({array_int:pages})'),
 			[
+				'type'  => 'category',
 				'pages' => $pages
 			]
 		);
 
 		$items = [];
 		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
-			$permissions = explode(',', $row['permissions']);
+			$permissions = explode(',', $row['value3']);
 
 			$perm = 0;
 			if (count($permissions) == 1 && $permissions[0] == -1) {
@@ -202,20 +208,21 @@ class Import extends AbstractOtherPageImport
 				$perm = 3;
 			}
 
-			$items[$row['id_page']] = [
-				'page_id'      => $row['id_page'],
-				'author_id'    => $this->user_info['id'],
-				'alias'        => 'page_' . $row['id_page'],
-				'description'  => '',
-				'content'      => $row['content'],
-				'type'         => 'html',
+			$items[$row['id']] = [
+				'page_id'      => $row['id'],
+				'author_id'    => $row['author_id'],
+				'alias'        => $row['shortname'] ?: ('page_' . $row['id']),
+				'description'  => strip_tags($this->parseBbc($row['intro'])),
+				'content'      => $row['body'],
+				'type'         => $row['type'],
 				'permissions'  => $perm,
-				'status'       => 1,
+				'status'       => (int) empty($row['off']),
 				'num_views'    => $row['views'],
 				'num_comments' => 0,
 				'created_at'   => $row['date'],
 				'updated_at'   => 0,
-				'subject'      => $row['title']
+				'subject'      => $row['subject'],
+				'options'      => explode(',', $row['options'])
 			];
 		}
 

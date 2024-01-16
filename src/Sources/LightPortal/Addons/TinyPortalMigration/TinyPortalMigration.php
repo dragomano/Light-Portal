@@ -1,34 +1,34 @@
 <?php
 
 /**
- * TinyPortal.php
+ * TinyPortalMigration.php
  *
- * @package TinyPortal (Light Portal)
+ * @package TinyPortalMigration (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2020-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.12.23
+ * @version 16.01.24
  */
 
-namespace Bugo\LightPortal\Addons\TinyPortal;
+namespace Bugo\LightPortal\Addons\TinyPortalMigration;
 
 use Bugo\LightPortal\Addons\Plugin;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class TinyPortal extends Plugin
+class TinyPortalMigration extends Plugin
 {
 	public string $type = 'impex';
 
 	public function updateAdminAreas(array &$areas): void
 	{
 		if ($this->user_info['is_admin']) {
-			$areas['lp_blocks']['subsections']['import_from_tp'] = [$this->context['lp_icon_set']['import'] . $this->txt['lp_tiny_portal']['label_name']];
-			$areas['lp_pages']['subsections']['import_from_tp']  = [$this->context['lp_icon_set']['import'] . $this->txt['lp_tiny_portal']['label_name']];
+			$areas['lp_blocks']['subsections']['import_from_tp'] = [$this->context['lp_icon_set']['import'] . $this->txt['lp_tiny_portal_migration']['label_name']];
+			$areas['lp_pages']['subsections']['import_from_tp']  = [$this->context['lp_icon_set']['import'] . $this->txt['lp_tiny_portal_migration']['label_name']];
 		}
 	}
 
