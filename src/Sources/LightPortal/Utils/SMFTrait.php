@@ -325,7 +325,7 @@ trait SMFTrait
 		return parse_bbc($message, $smileys, $cache_id, $parse_tags);
 	}
 
-	protected function sendStatus($code): void
+	protected function sendStatus(int $code): void
 	{
 		send_http_status($code);
 	}
