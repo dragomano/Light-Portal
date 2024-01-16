@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * Category.php
+ * Tag.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -12,42 +12,33 @@
  * @version 2.4
  */
 
-namespace Bugo\LightPortal\Entities;
+namespace Bugo\LightPortal\Actions;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class Category extends AbstractPageList
+final class Tag extends AbstractPageList
 {
 	public function show(Page $page): void
 	{
 		if ($this->request()->hasNot('id'))
 			$this->showAll();
 
-		$this->context['lp_category'] = $this->request('id');
+		$this->context['lp_tag'] = $this->request('id', 0);
 
-		if (array_key_exists($this->context['lp_category'], $this->getEntityList('category')) === false) {
-			$this->context['error_link'] = LP_BASE_URL . ';sa=categories';
-			$this->txt['back'] = $this->txt['lp_all_categories'];
-			$this->fatalLangError('lp_category_not_found', 404);
+		if (array_key_exists($this->context['lp_tag'], $this->getEntityList('tag')) === false) {
+			$this->context['error_link'] = LP_BASE_URL . ';sa=tags';
+			$this->txt['back'] = $this->txt['lp_all_page_tags'];
+			$this->fatalLangError('lp_tag_not_found', 404);
 		}
 
-		$category = [];
-		if (empty($this->context['lp_category'])) {
-			$this->context['page_title'] = $this->txt['lp_all_pages_without_category'];
-		} else {
-			$category = $this->getEntityList('category')[$this->context['lp_category']];
-			$this->context['page_title'] = sprintf($this->txt['lp_all_pages_with_category'], $category['name']);
-		}
-
-		$this->context['description'] = $category['desc'] ?? '';
-
-		$this->context['canonical_url']  = LP_BASE_URL . ';sa=categories;id=' . $this->context['lp_category'];
+		$this->context['page_title']     = sprintf($this->txt['lp_all_tags_by_key'], $this->getEntityList('tag')[$this->context['lp_tag']]);
+		$this->context['canonical_url']  = LP_BASE_URL . ';sa=tags;id=' . $this->context['lp_tag'];
 		$this->context['robot_no_index'] = true;
 
 		$this->context['linktree'][] = [
-			'name' => $this->txt['lp_all_categories'],
-			'url'  => LP_BASE_URL . ';sa=categories'
+			'name' => $this->txt['lp_all_page_tags'],
+			'url'  => LP_BASE_URL . ';sa=tags'
 		];
 
 		$this->context['linktree'][] = [
@@ -58,23 +49,13 @@ final class Category extends AbstractPageList
 			$page->showAsCards($this);
 
 		$listOptions = $page->getList();
-		$listOptions['id'] = 'lp_categories';
+		$listOptions['id'] = 'lp_tags';
 		$listOptions['get_items'] = [
 			'function' => [$this, 'getPages']
 		];
 		$listOptions['get_count'] = [
 			'function' => [$this, 'getTotalCount']
 		];
-
-		if (isset($category['desc'])) {
-			$listOptions['additional_rows'] = [
-				[
-					'position' => 'top_of_list',
-					'value'    => $category['desc'],
-					'class'    => 'information'
-				]
-			];
-		}
 
 		$this->createList($listOptions);
 
@@ -85,12 +66,13 @@ final class Category extends AbstractPageList
 	{
 		$result = $this->smcFunc['db_query']('', '
 			SELECT
-				p.page_id, p.author_id, p.alias, p.content, p.description, p.type, p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
-				COALESCE(mem.real_name, \'\') AS author_name, t.title
+				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content, p.type, p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
+				COALESCE(mem.real_name, \'\') AS author_name, ps.value, t.title
 			FROM {db_prefix}lp_pages AS p
+				INNER JOIN {db_prefix}lp_params AS ps ON (p.page_id = ps.item_id AND ps.type = {literal:page} AND ps.name = {literal:keywords})
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang})
-			WHERE p.category_id = {int:id}
+			WHERE FIND_IN_SET({int:id}, ps.value) > 0
 				AND p.status IN ({array_int:statuses})
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
@@ -98,7 +80,7 @@ final class Category extends AbstractPageList
 			LIMIT {int:start}, {int:limit}',
 			[
 				'lang'         => $this->user_info['language'],
-				'id'           => $this->context['lp_category'],
+				'id'           => $this->context['lp_tag'],
 				'statuses'     => [Page::STATUS_ACTIVE, Page::STATUS_INTERNAL],
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions(),
@@ -119,14 +101,15 @@ final class Category extends AbstractPageList
 	public function getTotalCount(): int
 	{
 		$result = $this->smcFunc['db_query']('', '
-			SELECT COUNT(page_id)
-			FROM {db_prefix}lp_pages
-			WHERE category_id = {string:id}
-				AND status IN ({array_int:statuses})
-				AND created_at <= {int:current_time}
-				AND permissions IN ({array_int:permissions})',
+			SELECT COUNT(p.page_id)
+			FROM {db_prefix}lp_pages AS p
+				INNER JOIN {db_prefix}lp_params AS ps ON (p.page_id = ps.item_id AND ps.type = {literal:page} AND ps.name = {literal:keywords})
+			WHERE FIND_IN_SET({int:id}, ps.value) > 0
+				AND p.status IN ({array_int:statuses})
+				AND p.created_at <= {int:current_time}
+				AND p.permissions IN ({array_int:permissions})',
 			[
-				'id'           => $this->context['lp_category'],
+				'id'           => $this->context['lp_tag'],
 				'statuses'     => [Page::STATUS_ACTIVE, Page::STATUS_INTERNAL],
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions()
@@ -143,8 +126,8 @@ final class Category extends AbstractPageList
 
 	public function showAll(): void
 	{
-		$this->context['page_title']     = $this->txt['lp_all_categories'];
-		$this->context['canonical_url']  = LP_BASE_URL . ';sa=categories';
+		$this->context['page_title']     = $this->txt['lp_all_page_tags'];
+		$this->context['canonical_url']  = LP_BASE_URL . ';sa=tags';
 		$this->context['robot_no_index'] = true;
 
 		$this->context['linktree'][] = [
@@ -152,12 +135,12 @@ final class Category extends AbstractPageList
 		];
 
 		$listOptions = [
-			'id' => 'categories',
+			'id' => 'tags',
 			'items_per_page' => $this->modSettings['defaultMaxListItems'] ?: 50,
 			'title' => $this->context['page_title'],
-			'no_items_label' => $this->txt['lp_no_categories'],
+			'no_items_label' => $this->txt['lp_no_tags'],
 			'base_href' => $this->context['canonical_url'],
-			'default_sort_col' => 'name',
+			'default_sort_col' => 'value',
 			'get_items' => [
 				'function' => [$this, 'getAll']
 			],
@@ -165,30 +148,30 @@ final class Category extends AbstractPageList
 				'function' => fn() => count($this->getAll())
 			],
 			'columns' => [
-				'name' => [
+				'value' => [
 					'header' => [
-						'value' => $this->txt['lp_category']
+						'value' => $this->txt['lp_keyword_column']
 					],
 					'data' => [
-						'function' => fn($entry) => '<a href="' . $entry['link'] . '">' . $entry['name'] . '</a>' .
-							(empty($entry['desc']) ? '' : '<p class="smalltext">' . $entry['desc'] . '</p>')
-					],
-					'sort' => [
-						'default' => 'c.name DESC',
-						'reverse' => 'c.name'
-					]
-				],
-				'num_pages' => [
-					'header' => [
-						'value' => $this->txt['lp_total_pages_column']
-					],
-					'data' => [
-						'db'    => 'num_pages',
+						'function' => fn($entry) => '<a href="' . $entry['link'] . '">' . $entry['value'] . '</a>',
 						'class' => 'centertext'
 					],
 					'sort' => [
-						'default' => 'frequency DESC',
-						'reverse' => 'frequency'
+						'default' => 't.value DESC',
+						'reverse' => 't.value'
+					]
+				],
+				'frequency' => [
+					'header' => [
+						'value' => $this->txt['lp_frequency_column']
+					],
+					'data' => [
+						'db'    => 'frequency',
+						'class' => 'centertext'
+					],
+					'sort' => [
+						'default' => 'num DESC',
+						'reverse' => 'num'
 					]
 				]
 			],
@@ -202,16 +185,17 @@ final class Category extends AbstractPageList
 		$this->obExit();
 	}
 
-	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'c.name'): array
+	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 't.value'): array
 	{
 		$result = $this->smcFunc['db_query']('', '
-			SELECT COALESCE(c.category_id, 0) AS category_id, c.name, c.description, COUNT(p.page_id) AS frequency
+			SELECT t.tag_id, t.value, COUNT(t.tag_id) AS num
 			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}lp_categories AS c ON (p.category_id = c.category_id)
+				INNER JOIN {db_prefix}lp_params AS ps ON (p.page_id = ps.item_id AND ps.type = {literal:page} AND ps.name = {literal:keywords})
+				INNER JOIN {db_prefix}lp_tags AS t ON (FIND_IN_SET(t.tag_id, ps.value) > 0)
 			WHERE p.status IN ({array_int:statuses})
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
-			GROUP BY c.category_id, c.name, c.description
+			GROUP BY t.tag_id, t.value
 			ORDER BY {raw:sort}' . ($items_per_page ? '
 			LIMIT {int:start}, {int:limit}' : ''),
 			[
@@ -226,15 +210,10 @@ final class Category extends AbstractPageList
 
 		$items = [];
 		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
-			if ($row['description'] && str_contains($row['description'], ']')) {
-				$row['description'] = $this->parseBbc($row['description']);
-			}
-
-			$items[$row['category_id']] = [
-				'name'      => $row['name'] ?: $this->txt['lp_no_category'],
-				'desc'      => $row['description'] ?? '',
-				'link'      => LP_BASE_URL . ';sa=categories;id=' . $row['category_id'],
-				'num_pages' => $row['frequency']
+			$items[$row['tag_id']] = [
+				'value'     => $row['value'],
+				'link'      => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id'],
+				'frequency' => $row['num']
 			];
 		}
 

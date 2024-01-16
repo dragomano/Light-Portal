@@ -21,7 +21,7 @@ use Bugo\LightPortal\Areas\Partials\PageAliasSelect;
 use Bugo\LightPortal\Areas\Partials\PageSelect;
 use Bugo\LightPortal\Areas\Partials\TopicSelect;
 use Bugo\LightPortal\Areas\Query;
-use Bugo\LightPortal\Entities\FrontPage;
+use Bugo\LightPortal\Actions\FrontPage;
 use Bugo\LightPortal\Helper;
 use IntlException;
 

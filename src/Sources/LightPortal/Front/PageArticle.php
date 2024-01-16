@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Front;
 
-use Bugo\LightPortal\Entities\Page;
+use Bugo\LightPortal\Actions\Page;
 
 if (! defined('SMF'))
 	die('No direct access...');

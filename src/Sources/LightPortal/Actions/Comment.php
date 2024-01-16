@@ -12,7 +12,7 @@
  * @version 2.4
  */
 
-namespace Bugo\LightPortal\Entities;
+namespace Bugo\LightPortal\Actions;
 
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Repositories\CommentRepository;

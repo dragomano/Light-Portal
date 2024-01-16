@@ -17,7 +17,7 @@ namespace Bugo\LightPortal\Addons\TagList;
 
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\RadioField;
-use Bugo\LightPortal\Entities\Tag;
+use Bugo\LightPortal\Actions\Tag;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

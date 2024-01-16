@@ -16,7 +16,7 @@
 namespace Bugo\LightPortal\Addons\CategoryList;
 
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Entities\Category;
+use Bugo\LightPortal\Actions\Category;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

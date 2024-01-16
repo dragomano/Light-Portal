@@ -18,7 +18,7 @@ use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, Te
 use Bugo\LightPortal\Areas\Partials\{CategorySelect, KeywordSelect, PageAuthorSelect};
 use Bugo\LightPortal\Areas\Partials\{PageIconSelect, PermissionSelect, StatusSelect};
 use Bugo\LightPortal\Areas\Validators\PageValidator;
-use Bugo\LightPortal\Entities\Page;
+use Bugo\LightPortal\Actions\Page;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Models\PageModel;
 use Bugo\LightPortal\Repositories\PageRepository;

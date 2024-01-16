@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Entities\{BoardIndex, Block, Category, FrontPage, Page, Tag};
+use Bugo\LightPortal\Actions\{BoardIndex, Block, Category, FrontPage, Page, Tag};
 
 if (! defined('SMF'))
 	die('No direct access...');

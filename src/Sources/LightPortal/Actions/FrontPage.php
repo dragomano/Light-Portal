@@ -12,7 +12,7 @@
  * @version 2.4
  */
 
-namespace Bugo\LightPortal\Entities;
+namespace Bugo\LightPortal\Actions;
 
 use Bugo\LightPortal\Front\{ArticleInterface, BoardArticle, ChosenPageArticle};
 use Bugo\LightPortal\Front\{ChosenTopicArticle, PageArticle, TopicArticle};
