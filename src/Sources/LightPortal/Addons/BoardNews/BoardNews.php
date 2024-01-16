@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.12.23
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\BoardNews;
@@ -28,45 +28,50 @@ class BoardNews extends Block
 
 	public string $icon = 'fas fa-newspaper';
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['board_news']['parameters'] = [
+		if ($this->context['current_block']['type'] !== 'board_news')
+			return;
+
+		$params = [
 			'board_id'      => 0,
 			'num_posts'     => 5,
 			'teaser_length' => 255,
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type): void
+	public function validateBlockParams(array &$params): void
 	{
-		if ($type !== 'board_news')
+		if ($this->context['current_block']['type'] !== 'board_news')
 			return;
 
-		$parameters['board_id']      = FILTER_VALIDATE_INT;
-		$parameters['num_posts']     = FILTER_VALIDATE_INT;
-		$parameters['teaser_length'] = FILTER_VALIDATE_INT;
+		$params = [
+			'board_id'      => FILTER_VALIDATE_INT,
+			'num_posts'     => FILTER_VALIDATE_INT,
+			'teaser_length' => FILTER_VALIDATE_INT,
+		];
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'board_news')
+		if ($this->context['current_block']['type'] !== 'board_news')
 			return;
 
 		CustomSelectField::make('board_id', $this->txt['lp_board_news']['board_id'])
 			->setTab('content')
 			->setOptions($this->getBoardList([
 				'ignore_boards'  => false,
-				'selected_board' => $this->context['lp_block']['options']['parameters']['board_id'] ?? false
+				'selected_board' => $this->context['lp_block']['options']['board_id'] ?? false
 			]));
 
 		NumberField::make('num_posts', $this->txt['lp_board_news']['num_posts'])
 			->setAttribute('min', 1)
-			->setValue($this->context['lp_block']['options']['parameters']['num_posts']);
+			->setValue($this->context['lp_block']['options']['num_posts']);
 
 		RangeField::make('teaser_length', $this->txt['lp_board_news']['teaser_length'])
 			->setAttribute('max', 1000)
 			->setAttribute('step', 5)
-			->setValue($this->context['lp_block']['options']['parameters']['teaser_length']);
+			->setValue($this->context['lp_block']['options']['teaser_length']);
 	}
 
 	public function prepareContent(object $data, array $parameters): void

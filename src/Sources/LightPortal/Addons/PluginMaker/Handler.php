@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 15.01.24
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -341,37 +341,43 @@ class Handler extends Plugin
 		$blockParams = $this->getSpecialParams();
 
 		if ($type === 'block') {
-			$blockOptions = $class->addMethod('blockOptions')->setReturnType('void');
-			$blockOptions->addParameter('options')
+			$prepareBlockParams = $class->addMethod('prepareBlockParams')->setReturnType('void');
+			$prepareBlockParams->addParameter('params')
 				->setReference()
 				->setType('array');
+			$prepareBlockParams->addBody("if (\$this->context['current_block']['type'] !== '$plugin_name')");
+			$prepareBlockParams->addBody("\treturn;" . PHP_EOL);
 
 			if (! empty($blockParams)) {
-				$blockOptions->addBody("\$options['$plugin_name']['parameters'] = [");
+				$prepareBlockParams->addBody("\$params = [");
 
 				foreach ($blockParams as $param) {
-					$blockOptions->addBody("\t'{$param['name']}' => {$this->getDefaultValue($param)},");
+					$prepareBlockParams->addBody("\t'{$param['name']}' => {$this->getDefaultValue($param)},");
 				}
 
-				$blockOptions->addBody("];");
+				$prepareBlockParams->addBody("];");
 			}
 
-			$validateBlockData = $class->addMethod('validateBlockData')->setReturnType('void');
-			$validateBlockData->addParameter('parameters')
+			$validateBlockParams = $class->addMethod('validateBlockParams')->setReturnType('void');
+			$validateBlockParams->addParameter('params')
 				->setReference()
 				->setType('array');
-			$validateBlockData->addParameter('type')
-				->setType('string');
-			$validateBlockData->addBody("if (\$type !== '$plugin_name')");
-			$validateBlockData->addBody("\treturn;" . PHP_EOL);
+			$validateBlockParams->addBody("if (\$this->context['current_block']['type'] !== '$plugin_name')");
+			$validateBlockParams->addBody("\treturn;" . PHP_EOL);
 
-			foreach ($blockParams as $param) {
-				$validateBlockData->addBody("\$parameters['{$param['name']}'] = {$this->getFilter($param)};");
+			if (! empty($blockParams)) {
+				$validateBlockParams->addBody("\$params = [");
+
+				foreach ($blockParams as $param) {
+					$validateBlockParams->addBody("\t'{$param['name']}' => {$this->getFilter($param)},");
+				}
+
+				$validateBlockParams->addBody("];");
 			}
 
 			$method = $class->addMethod('prepareBlockFields')
 				->setReturnType('void')
-				->addBody("if (\$this->context['lp_block']['type'] !== '$plugin_name')")
+				->addBody("if (\$this->context['current_block']['type'] !== '$plugin_name')")
 				->addBody("\treturn;" . PHP_EOL)
 				->addBody("// Your code" . PHP_EOL);
 
@@ -379,59 +385,59 @@ class Handler extends Plugin
 				if ($param['type'] === 'text') {
 					$namespace->addUse(TextField::class);
 					$method->addBody("TextField::make('{$param['name']}', \$this->txt['lp_$plugin_name']['{$param['name']}'])")
-						->addBody("\t->setValue(\$this->context['lp_block']['options']['parameters']['{$param['name']}']);" . PHP_EOL);
+						->addBody("\t->setValue(\$this->context['lp_block']['options']['{$param['name']}']);" . PHP_EOL);
 				}
 
 				if ($param['type'] === 'url') {
 					$namespace->addUse(TextField::class);
 					$method->addBody("TextField::make('{$param['name']}', \$this->txt['lp_$plugin_name']['{$param['name']}'])")
 						->addBody("\t->setType('url')")
-						->addBody("\t->setValue(\$this->context['lp_block']['options']['parameters']['{$param['name']}']);" . PHP_EOL);
+						->addBody("\t->setValue(\$this->context['lp_block']['options']['{$param['name']}']);" . PHP_EOL);
 				}
 
 				if ($param['type'] === 'check') {
 					$namespace->addUse(CheckboxField::class);
 					$method->addBody("CheckboxField::make('{$param['name']}', \$this->txt['lp_$plugin_name']['{$param['name']}'])")
-						->addBody("\t->setValue(\$this->context['lp_block']['options']['parameters']['{$param['name']}']);" . PHP_EOL);
+						->addBody("\t->setValue(\$this->context['lp_block']['options']['{$param['name']}']);" . PHP_EOL);
 				}
 
 				if ($param['type'] === 'color') {
 					$namespace->addUse(ColorField::class);
 					$method->addBody("ColorField::make('{$param['name']}', \$this->txt['lp_$plugin_name']['{$param['name']}'])")
-						->addBody("\t->setValue(\$this->context['lp_block']['options']['parameters']['{$param['name']}']);" . PHP_EOL);
+						->addBody("\t->setValue(\$this->context['lp_block']['options']['{$param['name']}']);" . PHP_EOL);
 				}
 
 				if ($param['type'] === 'int') {
 					$namespace->addUse(NumberField::class);
 					$method->addBody("NumberField::make('{$param['name']}', \$this->txt['lp_$plugin_name']['{$param['name']}'])")
-						->addBody("\t->setValue(\$this->context['lp_block']['options']['parameters']['{$param['name']}']);" . PHP_EOL);
+						->addBody("\t->setValue(\$this->context['lp_block']['options']['{$param['name']}']);" . PHP_EOL);
 				}
 
 				if ($param['type'] === 'float') {
 					$namespace->addUse(NumberField::class);
 					$method->addBody("NumberField::make('{$param['name']}', \$this->txt['lp_$plugin_name']['{$param['name']}'])")
 						->addBody("\t->setAttribute('step', 0.1)")
-						->addBody("\t->setValue(\$this->context['lp_block']['options']['parameters']['{$param['name']}']);" . PHP_EOL);
+						->addBody("\t->setValue(\$this->context['lp_block']['options']['{$param['name']}']);" . PHP_EOL);
 				}
 
 				if ($param['type'] === 'select') {
 					$namespace->addUse(RadioField::class);
 					$method->addBody("RadioField::make('{$param['name']}', \$this->txt['lp_$plugin_name']['{$param['name']}'])")
 						->addBody("\t->setOptions(\$this->txt['lp_$plugin_name']['{$param['name']}_set'])")
-						->addBody("\t->setValue(\$this->context['lp_block']['options']['parameters']['{$param['name']}']);" . PHP_EOL);
+						->addBody("\t->setValue(\$this->context['lp_block']['options']['{$param['name']}']);" . PHP_EOL);
 				}
 
 				if ($param['type'] === 'multiselect') {
 					$namespace->addUse(SelectField::class);
 					$method->addBody("SelectField::make('{$param['name']}', \$this->txt['lp_$plugin_name']['{$param['name']}'])")
 						->addBody("\t->setOptions(\$this->txt['lp_$plugin_name']['{$param['name']}_set'])")
-						->addBody("\t->setValue(\$this->context['lp_block']['options']['parameters']['{$param['name']}']);" . PHP_EOL);
+						->addBody("\t->setValue(\$this->context['lp_block']['options']['{$param['name']}']);" . PHP_EOL);
 				}
 
 				if ($param['type'] === 'range') {
 					$namespace->addUse(RangeField::class);
 					$method->addBody("RangeField::make('{$param['name']}', \$this->txt['lp_$plugin_name']['{$param['name']}'])")
-						->addBody("\t->setValue(\$this->context['lp_block']['options']['parameters']['{$param['name']}']);" . PHP_EOL);
+						->addBody("\t->setValue(\$this->context['lp_block']['options']['{$param['name']}']);" . PHP_EOL);
 				}
 
 				if (in_array($param['type'], ['title', 'desc', 'callback'])) {
@@ -443,22 +449,22 @@ class Handler extends Plugin
 		}
 
 		if ($type === 'block_options') {
-			$blockOptions = $class->addMethod('blockOptions');
-			$blockOptions->addParameter('options')
+			$prepareBlockParams = $class->addMethod('prepareBlockParams');
+			$prepareBlockParams->addParameter('params')
 				->setReference()
 				->setType('array');
 
 			foreach ($blockParams as $param) {
-				$blockOptions->addBody("\$options[\$this->context['current_block']['type']]['parameters']['{$param['name']}'] = {$this->getDefaultValue($param)};");
+				$prepareBlockParams->addBody("\$params['{$param['name']}'] = {$this->getDefaultValue($param)};");
 			}
 
-			$validateBlockData = $class->addMethod('validateBlockData')->setReturnType('void');
-			$validateBlockData->addParameter('parameters')
+			$validateBlockParams = $class->addMethod('validateBlockParams')->setReturnType('void');
+			$validateBlockParams->addParameter('params')
 				->setReference()
 				->setType('array');
 
 			foreach ($blockParams as $param) {
-				$validateBlockData->addBody("\$parameters['{$param['name']}'] = {$this->getFilter($param)};");
+				$validateBlockParams->addBody("\$params['{$param['name']}'] = {$this->getFilter($param)};");
 			}
 
 			$class->addMethod('prepareBlockFields')
@@ -467,30 +473,30 @@ class Handler extends Plugin
 		}
 
 		if ($type === 'page_options') {
-			$pageOptions = $class->addMethod('pageOptions')->setReturnType('void');
-			$pageOptions->addParameter('options')
+			$preparePageParams = $class->addMethod('preparePageParams')->setReturnType('void');
+			$preparePageParams->addParameter('params')
 				->setReference()
 				->setType('array');
 
 			if (! empty($pageParams = $this->getSpecialParams('page'))) {
 				foreach ($pageParams as $param) {
-					$pageOptions->addBody("\$options['{$param['name']}'] = {$this->getDefaultValue($param)};");
+					$preparePageParams->addBody("\$params['{$param['name']}'] = {$this->getDefaultValue($param)};");
 				}
 			}
 
-			$validatePageData = $class->addMethod('validatePageData')->setReturnType('void');
-			$validatePageData->addParameter('parameters')
+			$validatePageParams = $class->addMethod('validatePageParams')->setReturnType('void');
+			$validatePageParams->addParameter('params')
 				->setReference()
 				->setType('array');
 
 			if (! empty($pageParams)) {
-				$validatePageData->addBody("\$parameters += [");
+				$validatePageParams->addBody("\$params += [");
 
 				foreach ($pageParams as $param) {
-					$validatePageData->addBody("\t'{$param['name']}' => {$this->getFilter($param)},");
+					$validatePageParams->addBody("\t'{$param['name']}' => {$this->getFilter($param)},");
 				}
 
-				$validatePageData->addBody("];");
+				$validatePageParams->addBody("];");
 			}
 
 			$class->addMethod('preparePageFields')

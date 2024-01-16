@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 06.12.23
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleChat;
@@ -59,29 +59,30 @@ class SimpleChat extends Block
 		$this->prepareTable();
 	}
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['simple_chat']['parameters'] = [
-			'show_avatars' => false,
-		];
-	}
-
-	public function validateBlockData(array &$parameters, string $type): void
-	{
-		if ($type !== 'simple_chat')
+		if ($this->context['current_block']['type'] !== 'simple_chat')
 			return;
 
-		$parameters['show_avatars'] = FILTER_VALIDATE_BOOLEAN;
+		$params['show_avatars'] = false;
+	}
+
+	public function validateBlockParams(array &$params): void
+	{
+		if ($this->context['current_block']['type'] !== 'simple_chat')
+			return;
+
+		$params['show_avatars'] = FILTER_VALIDATE_BOOLEAN;
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'simple_chat')
+		if ($this->context['current_block']['type'] !== 'simple_chat')
 			return;
 
 		CheckboxField::make('show_avatars', $this->txt['lp_simple_chat']['show_avatars'])
 			->setTab('appearance')
-			->setValue($this->context['lp_block']['options']['parameters']['show_avatars']);
+			->setValue($this->context['lp_block']['options']['show_avatars']);
 	}
 
 	public function getData(int $block_id, array $parameters): array

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\RecentTopics;
@@ -32,11 +32,13 @@ class RecentTopics extends Block
 
 	public string $icon = 'fas fa-book-open';
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['recent_topics']['no_content_class'] =  true;
+		if ($this->context['current_block']['type'] !== 'recent_topics')
+			return;
 
-		$options['recent_topics']['parameters'] = [
+		$params = [
+			'no_content_class' => true,
 			'exclude_boards'   => '',
 			'include_boards'   => '',
 			'use_simple_style' => false,
@@ -48,24 +50,26 @@ class RecentTopics extends Block
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type): void
+	public function validateBlockParams(array &$params): void
 	{
-		if ($type !== 'recent_topics')
+		if ($this->context['current_block']['type'] !== 'recent_topics')
 			return;
 
-		$parameters['exclude_boards']   = FILTER_DEFAULT;
-		$parameters['include_boards']   = FILTER_DEFAULT;
-		$parameters['use_simple_style'] = FILTER_VALIDATE_BOOLEAN;
-		$parameters['show_avatars']     = FILTER_VALIDATE_BOOLEAN;
-		$parameters['show_icons']       = FILTER_VALIDATE_BOOLEAN;
-		$parameters['num_topics']       = FILTER_VALIDATE_INT;
-		$parameters['link_type']        = FILTER_DEFAULT;
-		$parameters['update_interval']  = FILTER_VALIDATE_INT;
+		$params = [
+			'exclude_boards'   => FILTER_DEFAULT,
+			'include_boards'   => FILTER_DEFAULT,
+			'use_simple_style' => FILTER_VALIDATE_BOOLEAN,
+			'show_avatars'     => FILTER_VALIDATE_BOOLEAN,
+			'show_icons'       => FILTER_VALIDATE_BOOLEAN,
+			'num_topics'       => FILTER_VALIDATE_INT,
+			'link_type'        => FILTER_DEFAULT,
+			'update_interval'  => FILTER_VALIDATE_INT,
+		];
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'recent_topics')
+		if ($this->context['current_block']['type'] !== 'recent_topics')
 			return;
 
 		CustomField::make('exclude_boards', $this->txt['lp_recent_topics']['exclude_boards'])
@@ -73,7 +77,7 @@ class RecentTopics extends Block
 			->setValue(fn() => new BoardSelect, [
 				'id'    => 'exclude_boards',
 				'hint'  => $this->txt['lp_recent_topics']['exclude_boards_select'],
-				'value' => $this->context['lp_block']['options']['parameters']['exclude_boards'] ?? '',
+				'value' => $this->context['lp_block']['options']['exclude_boards'] ?? '',
 			]);
 
 		CustomField::make('include_boards', $this->txt['lp_recent_topics']['include_boards'])
@@ -81,33 +85,33 @@ class RecentTopics extends Block
 			->setValue(fn() => new BoardSelect, [
 				'id'    => 'include_boards',
 				'hint'  => $this->txt['lp_recent_topics']['include_boards_select'],
-				'value' => $this->context['lp_block']['options']['parameters']['include_boards'] ?? '',
+				'value' => $this->context['lp_block']['options']['include_boards'] ?? '',
 			]);
 
 		CheckboxField::make('use_simple_style', $this->txt['lp_recent_topics']['use_simple_style'])
 			->setTab('appearance')
 			->setAfter($this->txt['lp_recent_topics']['use_simple_style_subtext'])
-			->setValue($this->context['lp_block']['options']['parameters']['use_simple_style']);
+			->setValue($this->context['lp_block']['options']['use_simple_style']);
 
 		CheckboxField::make('show_avatars', $this->txt['lp_recent_topics']['show_avatars'])
 			->setTab('appearance')
-			->setValue($this->context['lp_block']['options']['parameters']['show_avatars'] && empty($this->context['lp_block']['options']['parameters']['use_simple_style']));
+			->setValue($this->context['lp_block']['options']['show_avatars'] && empty($this->context['lp_block']['options']['use_simple_style']));
 
 		CheckboxField::make('show_icons', $this->txt['lp_recent_topics']['show_icons'])
 			->setTab('appearance')
-			->setValue($this->context['lp_block']['options']['parameters']['show_icons'] && empty($this->context['lp_block']['options']['parameters']['use_simple_style']));
+			->setValue($this->context['lp_block']['options']['show_icons'] && empty($this->context['lp_block']['options']['use_simple_style']));
 
 		NumberField::make('num_topics', $this->txt['lp_recent_topics']['num_topics'])
 			->setAttribute('min', 1)
-			->setValue($this->context['lp_block']['options']['parameters']['num_topics']);
+			->setValue($this->context['lp_block']['options']['num_topics']);
 
 		RadioField::make('link_type', $this->txt['lp_recent_topics']['type'])
 			->setOptions(array_combine(['link', 'preview'], $this->txt['lp_recent_topics']['type_set']))
-			->setValue($this->context['lp_block']['options']['parameters']['link_type']);
+			->setValue($this->context['lp_block']['options']['link_type']);
 
 		NumberField::make('update_interval', $this->txt['lp_recent_topics']['update_interval'])
 			->setAttribute('min', 0)
-			->setValue($this->context['lp_block']['options']['parameters']['update_interval']);
+			->setValue($this->context['lp_block']['options']['update_interval']);
 	}
 
 	/**

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\PageList;
@@ -29,28 +29,33 @@ class PageList extends Block
 
 	private const SORTING_SET = ['page_id', 'author_name', 'title', 'alias', 'type', 'num_views', 'created_at', 'updated_at'];
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['page_list']['parameters'] = [
+		if ($this->context['current_block']['type'] !== 'page_list')
+			return;
+
+		$params = [
 			'categories' => '',
 			'sort'       => 'page_id',
 			'num_pages'  => 10,
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type): void
+	public function validateBlockParams(array &$params): void
 	{
-		if ($type !== 'page_list')
+		if ($this->context['current_block']['type'] !== 'page_list')
 			return;
 
-		$parameters['categories'] = FILTER_DEFAULT;
-		$parameters['sort']       = FILTER_DEFAULT;
-		$parameters['num_pages']  = FILTER_VALIDATE_INT;
+		$params = [
+			'categories' => FILTER_DEFAULT,
+			'sort'       => FILTER_DEFAULT,
+			'num_pages'  => FILTER_VALIDATE_INT,
+		];
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'page_list')
+		if ($this->context['current_block']['type'] !== 'page_list')
 			return;
 
 		CustomField::make('categories', $this->txt['lp_categories'])
@@ -58,18 +63,18 @@ class PageList extends Block
 			->setValue(fn() => new CategorySelect, [
 				'id'    => 'categories',
 				'hint'  => $this->txt['lp_page_list']['categories_select'],
-				'value' => $this->context['lp_block']['options']['parameters']['categories'] ?? '',
+				'value' => $this->context['lp_block']['options']['categories'] ?? '',
 			]);
 
 		VirtualSelectField::make('sort', $this->txt['lp_page_list']['sort'])
 			->setOptions(array_combine(self::SORTING_SET, $this->txt['lp_page_list']['sort_set']))
-			->setValue($this->context['lp_block']['options']['parameters']['sort']);
+			->setValue($this->context['lp_block']['options']['sort']);
 
 		NumberField::make('num_pages', $this->txt['lp_page_list']['num_pages'])
 			->setAfter($this->txt['lp_page_list']['num_pages_subtext'])
 			->setAttribute('min', 0)
 			->setAttribute('max', 999)
-			->setValue($this->context['lp_block']['options']['parameters']['num_pages']);
+			->setValue($this->context['lp_block']['options']['num_pages']);
 	}
 
 	public function getData(array $parameters): array

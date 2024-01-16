@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 15.01.24
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\CurrentMonth;
@@ -24,9 +24,12 @@ class CurrentMonth extends Block
 {
 	public string $icon = 'fas fa-calendar-check';
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['current_month']['no_content_class'] = true;
+		if ($this->context['current_block']['type'] !== 'current_month')
+			return;
+
+		$params['no_content_class'] = true;
 	}
 
 	public function getData(): array

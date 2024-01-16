@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\ExtendedMetaTags;
@@ -50,15 +50,15 @@ class ExtendedMetaTags extends Plugin
 		}
 	}
 
-	public function pageOptions(array &$options): void
+	public function preparePageParams(array &$params): void
 	{
-		$options['meta_robots'] = '';
-		$options['meta_rating'] = '';
+		$params['meta_robots'] = '';
+		$params['meta_rating'] = '';
 	}
 
-	public function validatePageData(array &$parameters): void
+	public function validatePageParams(array &$params): void
 	{
-		$parameters += [
+		$params += [
 			'meta_robots' => FILTER_DEFAULT,
 			'meta_rating' => FILTER_DEFAULT,
 		];

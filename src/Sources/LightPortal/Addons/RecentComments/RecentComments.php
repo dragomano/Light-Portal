@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.12.23
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\RecentComments;
@@ -30,22 +30,24 @@ class RecentComments extends Block
 {
 	public string $icon = 'fas fa-comments';
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['recent_comments']['no_content_class'] = true;
+		if ($this->context['current_block']['type'] !== 'recent_comments')
+			return;
 
-		$options['recent_comments']['parameters'] = [
-			'num_comments' => 10,
-			'length'       => 80,
+		$params = [
+			'no_content_class' => true,
+			'num_comments'     => 10,
+			'length'           => 80,
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type): void
+	public function validateBlockParams(array &$params): void
 	{
-		if ($type !== 'recent_comments')
+		if ($this->context['current_block']['type'] !== 'recent_comments')
 			return;
 
-		$parameters = [
+		$params = [
 			'num_comments' => FILTER_VALIDATE_INT,
 			'length'       => FILTER_VALIDATE_INT,
 		];
@@ -53,16 +55,16 @@ class RecentComments extends Block
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'recent_comments')
+		if ($this->context['current_block']['type'] !== 'recent_comments')
 			return;
 
 		NumberField::make('num_comments', $this->txt['lp_recent_comments']['num_comments'])
 			->setAttribute('min', 1)
-			->setValue($this->context['lp_block']['options']['parameters']['num_comments']);
+			->setValue($this->context['lp_block']['options']['num_comments']);
 
 		RangeField::make('length', $this->txt['lp_recent_comments']['length'])
 			->setAttribute('min', 10)
-			->setValue($this->context['lp_block']['options']['parameters']['length']);
+			->setValue($this->context['lp_block']['options']['length']);
 	}
 
 	public function getData(int $num_comments, int $length = 80): array

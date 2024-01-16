@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\TagList;
@@ -26,24 +26,27 @@ class TagList extends Block
 {
 	public string $icon = 'fas fa-tags';
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['tag_list']['parameters']['source']  = 'lp_tags';
-		$options['tag_list']['parameters']['sorting'] = 'name';
-	}
-
-	public function validateBlockData(array &$parameters, string $type): void
-	{
-		if ($type !== 'tag_list')
+		if ($this->context['current_block']['type'] !== 'tag_list')
 			return;
 
-		$parameters['source']  = FILTER_DEFAULT;
-		$parameters['sorting'] = FILTER_DEFAULT;
+		$params['source']  = 'lp_tags';
+		$params['sorting'] = 'name';
+	}
+
+	public function validateBlockParams(array &$params): void
+	{
+		if ($this->context['current_block']['type'] !== 'tag_list')
+			return;
+
+		$params['source']  = FILTER_DEFAULT;
+		$params['sorting'] = FILTER_DEFAULT;
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'tag_list')
+		if ($this->context['current_block']['type'] !== 'tag_list')
 			return;
 
 		$sources = array_combine(['lp_tags', 'keywords'], $this->txt['lp_tag_list']['source_set']);
@@ -54,12 +57,12 @@ class TagList extends Block
 		RadioField::make('source', $this->txt['lp_tag_list']['source'])
 			->setTab('content')
 			->setOptions($sources)
-			->setValue($this->context['lp_block']['options']['parameters']['source']);
+			->setValue($this->context['lp_block']['options']['source']);
 
 		RadioField::make('sorting', $this->txt['lp_tag_list']['sorting'])
 			->setTab('content')
 			->setOptions(array_combine(['name', 'frequency'], $this->txt['lp_tag_list']['sorting_set']))
-			->setValue($this->context['lp_block']['options']['parameters']['sorting']);
+			->setValue($this->context['lp_block']['options']['sorting']);
 	}
 
 	public function getAllTopicKeywords(string $sort = 'ok.name'): array

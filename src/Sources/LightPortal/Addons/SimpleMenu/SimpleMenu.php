@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleMenu;
@@ -28,14 +28,17 @@ class SimpleMenu extends Plugin
 {
 	public string $icon = 'far fa-list-alt';
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['simple_menu']['parameters']['items'] = '';
+		if ($this->context['current_block']['type'] !== 'simple_menu')
+			return;
+
+		$params['items'] = '';
 	}
 
-	public function validateBlockData(array &$parameters, string $type): void
+	public function validateBlockParams(array &$params): void
 	{
-		if ($type !== 'simple_menu')
+		if ($this->context['current_block']['type'] !== 'simple_menu')
 			return;
 
 		$data = $this->request()->only(['item_name', 'item_link']);
@@ -55,12 +58,12 @@ class SimpleMenu extends Plugin
 			$this->request()->put('items', json_encode($items, JSON_UNESCAPED_UNICODE));
 		}
 
-		$parameters['items'] = FILTER_DEFAULT;
+		$params['items'] = FILTER_DEFAULT;
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'simple_menu')
+		if ($this->context['current_block']['type'] !== 'simple_menu')
 			return;
 
 		CustomField::make('items', $this->txt['lp_simple_menu']['items'])

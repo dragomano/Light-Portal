@@ -34,7 +34,7 @@ class PageValidator extends AbstractValidator
 		'content'     => FILTER_UNSAFE_RAW,
 	];
 
-	protected array $parameters = [
+	protected array $params = [
 		'show_title'           => FILTER_VALIDATE_BOOLEAN,
 		'show_in_menu'         => FILTER_VALIDATE_BOOLEAN,
 		'page_icon'            => FILTER_DEFAULT,
@@ -45,53 +45,53 @@ class PageValidator extends AbstractValidator
 
 	public function validate(): array
 	{
-		$post_data  = [];
-		$parameters = [];
+		$data = [];
+		$params = [];
 
 		if ($this->request()->only(['save', 'save_exit', 'preview'])) {
 			foreach ($this->context['lp_languages'] as $lang) {
 				$this->args['title_' . $lang['filename']] = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
 			}
 
-			$this->hook('validatePageData', [&$parameters]);
+			$this->hook('validatePageParams', [&$params]);
 
-			$parameters = array_merge($this->parameters, $parameters);
+			$params = array_merge($this->params, $params);
 
-			$post_data = filter_input_array(INPUT_POST, array_merge($this->args, $parameters));
-			$post_data['keywords'] = empty($post_data['keywords']) ? [] : explode(',', $post_data['keywords']);
+			$data = filter_input_array(INPUT_POST, array_merge($this->args, $params));
+			$data['keywords'] = empty($data['keywords']) ? [] : explode(',', $data['keywords']);
 
-			$this->findErrors($post_data);
+			$this->findErrors($data);
 		}
 
-		return [$post_data, $parameters];
+		return [$data, $params];
 	}
 
 	private function findErrors(array $data): void
 	{
-		$post_errors = [];
+		$errors = [];
 
 		if (($this->modSettings['userLanguage'] && empty($data['title_' . $this->language])) || empty($data['title_' . $this->context['user']['language']]))
-			$post_errors[] = 'no_title';
+			$errors[] = 'no_title';
 
 		if (empty($data['alias']))
-			$post_errors[] = 'no_alias';
+			$errors[] = 'no_alias';
 
 		if ($data['alias'] && empty($this->filterVar($data['alias'], ['options' => ['regexp' => '/' . LP_ALIAS_PATTERN . '/']])))
-			$post_errors[] = 'no_valid_alias';
+			$errors[] = 'no_valid_alias';
 
 		if ($data['alias'] && ! $this->isUnique($data))
-			$post_errors[] = 'no_unique_alias';
+			$errors[] = 'no_unique_alias';
 
 		if (empty($data['content']))
-			$post_errors[] = 'no_content';
+			$errors[] = 'no_content';
 
-		$this->hook('findPageErrors', [&$post_errors, $data]);
+		$this->hook('findPageErrors', [&$errors, $data]);
 
-		if ($post_errors) {
+		if ($errors) {
 			$this->request()->put('preview', true);
 			$this->context['post_errors'] = [];
 
-			foreach ($post_errors as $error)
+			foreach ($errors as $error)
 				$this->context['post_errors'][] = $this->txt['lp_post_error_' . $error];
 		}
 	}

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.12.23
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\TinySlider;
@@ -47,14 +47,17 @@ class TinySlider extends Block
 		'images'             => ''
 	];
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['tiny_slider']['parameters'] = $this->params;
+		if ($this->context['current_block']['type'] !== 'tiny_slider')
+			return;
+
+		$params = $this->params;
 	}
 
-	public function validateBlockData(array &$parameters, string $type): void
+	public function validateBlockParams(array &$params): void
 	{
-		if ($type !== 'tiny_slider')
+		if ($this->context['current_block']['type'] !== 'tiny_slider')
 			return;
 
 		$data = $this->request()->only(['image_title', 'image_link']);
@@ -74,30 +77,32 @@ class TinySlider extends Block
 			$this->request()->put('images', json_encode($images, JSON_UNESCAPED_UNICODE));
 		}
 
-		$parameters['axis']               = FILTER_DEFAULT;
-		$parameters['num_items']          = FILTER_VALIDATE_INT;
-		$parameters['gutter']             = FILTER_VALIDATE_INT;
-		$parameters['edge_padding']       = FILTER_VALIDATE_INT;
-		$parameters['controls']           = FILTER_VALIDATE_BOOLEAN;
-		$parameters['nav']                = FILTER_VALIDATE_BOOLEAN;
-		$parameters['nav_as_thumbnails']  = FILTER_VALIDATE_BOOLEAN;
-		$parameters['arrow_keys']         = FILTER_VALIDATE_BOOLEAN;
-		$parameters['fixed_width']        = FILTER_VALIDATE_INT;
-		$parameters['slide_by']           = FILTER_VALIDATE_INT;
-		$parameters['speed']              = FILTER_VALIDATE_INT;
-		$parameters['autoplay']           = FILTER_VALIDATE_BOOLEAN;
-		$parameters['autoplay_timeout']   = FILTER_DEFAULT;
-		$parameters['autoplay_direction'] = FILTER_DEFAULT;
-		$parameters['loop']               = FILTER_VALIDATE_BOOLEAN;
-		$parameters['rewind']             = FILTER_VALIDATE_BOOLEAN;
-		$parameters['lazyload']           = FILTER_VALIDATE_BOOLEAN;
-		$parameters['mouse_drag']         = FILTER_VALIDATE_BOOLEAN;
-		$parameters['images']             = FILTER_DEFAULT;
+		$params = [
+			'axis'               => FILTER_DEFAULT,
+			'num_items'          => FILTER_VALIDATE_INT,
+			'gutter'             => FILTER_VALIDATE_INT,
+			'edge_padding'       => FILTER_VALIDATE_INT,
+			'controls'           => FILTER_VALIDATE_BOOLEAN,
+			'nav'                => FILTER_VALIDATE_BOOLEAN,
+			'nav_as_thumbnails'  => FILTER_VALIDATE_BOOLEAN,
+			'arrow_keys'         => FILTER_VALIDATE_BOOLEAN,
+			'fixed_width'        => FILTER_VALIDATE_INT,
+			'slide_by'           => FILTER_VALIDATE_INT,
+			'speed'              => FILTER_VALIDATE_INT,
+			'autoplay'           => FILTER_VALIDATE_BOOLEAN,
+			'autoplay_timeout'   => FILTER_DEFAULT,
+			'autoplay_direction' => FILTER_DEFAULT,
+			'loop'               => FILTER_VALIDATE_BOOLEAN,
+			'rewind'             => FILTER_VALIDATE_BOOLEAN,
+			'lazyload'           => FILTER_VALIDATE_BOOLEAN,
+			'mouse_drag'         => FILTER_VALIDATE_BOOLEAN,
+			'images'             => FILTER_DEFAULT,
+		];
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'tiny_slider')
+		if ($this->context['current_block']['type'] !== 'tiny_slider')
 			return;
 
 		CustomField::make('images', $this->txt['lp_tiny_slider']['images'])
@@ -106,69 +111,69 @@ class TinySlider extends Block
 
 		RadioField::make('axis', $this->txt['lp_tiny_slider']['axis'])
 			->setOptions(array_combine(['vertical', 'horizontal'], $this->txt['lp_panel_direction_set']))
-			->setValue($this->context['lp_block']['options']['parameters']['axis']);
+			->setValue($this->context['lp_block']['options']['axis']);
 
 		RangeField::make('num_items', $this->txt['lp_tiny_slider']['num_items'])
 			->setAttribute('min', 1)
 			->setAttribute('max', 12)
-			->setValue($this->context['lp_block']['options']['parameters']['num_items']);
+			->setValue($this->context['lp_block']['options']['num_items']);
 
 		NumberField::make('gutter', $this->txt['lp_tiny_slider']['gutter'])
 			->setAttribute('min', 0)
-			->setValue($this->context['lp_block']['options']['parameters']['gutter']);
+			->setValue($this->context['lp_block']['options']['gutter']);
 
 		NumberField::make('edge_padding', $this->txt['lp_tiny_slider']['edge_padding'])
 			->setAttribute('min', 0)
-			->setValue($this->context['lp_block']['options']['parameters']['edge_padding']);
+			->setValue($this->context['lp_block']['options']['edge_padding']);
 
 		CheckboxField::make('controls', $this->txt['lp_tiny_slider']['controls'])
-			->setValue($this->context['lp_block']['options']['parameters']['controls']);
+			->setValue($this->context['lp_block']['options']['controls']);
 
 		CheckboxField::make('nav', $this->txt['lp_tiny_slider']['nav'])
-			->setValue($this->context['lp_block']['options']['parameters']['nav']);
+			->setValue($this->context['lp_block']['options']['nav']);
 
 		CheckboxField::make('nav_as_thumbnails', $this->txt['lp_tiny_slider']['nav_as_thumbnails'])
-			->setValue($this->context['lp_block']['options']['parameters']['nav_as_thumbnails']);
+			->setValue($this->context['lp_block']['options']['nav_as_thumbnails']);
 
 		CheckboxField::make('arrow_keys', $this->txt['lp_tiny_slider']['arrow_keys'])
-			->setValue($this->context['lp_block']['options']['parameters']['arrow_keys']);
+			->setValue($this->context['lp_block']['options']['arrow_keys']);
 
 		NumberField::make('fixed_width', $this->txt['lp_tiny_slider']['fixed_width'])
 			->setAfter($this->txt['zero_for_no_limit'])
 			->setAttribute('min', 0)
-			->setValue($this->context['lp_block']['options']['parameters']['fixed_width']);
+			->setValue($this->context['lp_block']['options']['fixed_width']);
 
 		RangeField::make('slide_by', $this->txt['lp_tiny_slider']['slide_by'])
 			->setAttribute('min', 1)
 			->setAttribute('max', 12)
-			->setValue($this->context['lp_block']['options']['parameters']['slide_by']);
+			->setValue($this->context['lp_block']['options']['slide_by']);
 
 		NumberField::make('speed', $this->txt['lp_tiny_slider']['speed'])
 			->setAttribute('min', 1)
-			->setValue($this->context['lp_block']['options']['parameters']['speed']);
+			->setValue($this->context['lp_block']['options']['speed']);
 
 		CheckboxField::make('autoplay', $this->txt['lp_tiny_slider']['autoplay'])
-			->setValue($this->context['lp_block']['options']['parameters']['autoplay']);
+			->setValue($this->context['lp_block']['options']['autoplay']);
 
 		NumberField::make('autoplay_timeout', $this->txt['lp_tiny_slider']['autoplay_timeout'])
 			->setAttribute('min', 1)
-			->setValue($this->context['lp_block']['options']['parameters']['autoplay_timeout']);
+			->setValue($this->context['lp_block']['options']['autoplay_timeout']);
 
 		RadioField::make('autoplay_direction', $this->txt['lp_tiny_slider']['autoplay_direction'])
 			->setOptions(array_combine(['forward', 'backward'], $this->txt['lp_tiny_slider']['autoplay_direction_set']))
-			->setValue($this->context['lp_block']['options']['parameters']['autoplay_direction']);
+			->setValue($this->context['lp_block']['options']['autoplay_direction']);
 
 		CheckboxField::make('loop', $this->txt['lp_tiny_slider']['loop'])
-			->setValue($this->context['lp_block']['options']['parameters']['loop']);
+			->setValue($this->context['lp_block']['options']['loop']);
 
 		CheckboxField::make('rewind', $this->txt['lp_tiny_slider']['rewind'])
-			->setValue($this->context['lp_block']['options']['parameters']['rewind']);
+			->setValue($this->context['lp_block']['options']['rewind']);
 
 		CheckboxField::make('lazyload', $this->txt['lp_tiny_slider']['lazyload'])
-			->setValue($this->context['lp_block']['options']['parameters']['lazyload']);
+			->setValue($this->context['lp_block']['options']['lazyload']);
 
 		CheckboxField::make('mouse_drag', $this->txt['lp_tiny_slider']['mouse_drag'])
-			->setValue($this->context['lp_block']['options']['parameters']['mouse_drag']);
+			->setValue($this->context['lp_block']['options']['mouse_drag']);
 	}
 
 	public function getData(int|string $block_id, array $parameters): array

@@ -53,7 +53,7 @@ function tiny_slider_images(): string
 
 		function handleImages() {
 			return {
-				images: ' . ($context['lp_block']['options']['parameters']['images'] ?: '[]') . ',
+				images: ' . ($context['lp_block']['options']['images'] ?: '[]') . ',
 				addImage() {
 					this.images.push({
 						link: "",

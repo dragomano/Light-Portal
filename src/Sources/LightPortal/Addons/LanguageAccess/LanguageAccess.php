@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\LanguageAccess;
@@ -38,14 +38,14 @@ class LanguageAccess extends Plugin
 		}
 	}
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options[$this->context['current_block']['type']]['parameters']['allowed_languages'] = [];
+		$params['allowed_languages'] = [];
 	}
 
-	public function validateBlockData(array &$parameters): void
+	public function validateBlockParams(array &$params): void
 	{
-		$parameters['allowed_languages'] = FILTER_DEFAULT;
+		$params['allowed_languages'] = FILTER_DEFAULT;
 	}
 
 	public function prepareBlockFields(): void

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\TopBoards;
@@ -29,40 +29,45 @@ class TopBoards extends Block
 
 	public string $icon = 'fas fa-balance-scale-left';
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['top_boards']['parameters'] = [
+		if ($this->context['current_block']['type'] !== 'top_boards')
+			return;
+
+		$params = [
 			'num_boards'        => 10,
 			'entity_type'       => 'num_topics',
 			'show_numbers_only' => false,
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type): void
+	public function validateBlockParams(array &$params): void
 	{
-		if ($type !== 'top_boards')
+		if ($this->context['current_block']['type'] !== 'top_boards')
 			return;
 
-		$parameters['num_boards']        = FILTER_VALIDATE_INT;
-		$parameters['entity_type']       = FILTER_DEFAULT;
-		$parameters['show_numbers_only'] = FILTER_VALIDATE_BOOLEAN;
+		$params = [
+			'num_boards'        => FILTER_VALIDATE_INT,
+			'entity_type'       => FILTER_DEFAULT,
+			'show_numbers_only' => FILTER_VALIDATE_BOOLEAN,
+		];
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'top_boards')
+		if ($this->context['current_block']['type'] !== 'top_boards')
 			return;
 
 		NumberField::make('num_boards', $this->txt['lp_top_boards']['num_boards'])
 			->setAttribute('min', 1)
-			->setValue($this->context['lp_block']['options']['parameters']['num_boards']);
+			->setValue($this->context['lp_block']['options']['num_boards']);
 
 		RadioField::make('entity_type', $this->txt['lp_top_boards']['entity_type'])
 			->setOptions(array_combine(['num_topics', 'num_posts'], $this->txt['lp_top_boards']['entity_type_set']))
-			->setValue($this->context['lp_block']['options']['parameters']['entity_type']);
+			->setValue($this->context['lp_block']['options']['entity_type']);
 
 		CheckboxField::make('show_numbers_only', $this->txt['lp_top_boards']['show_numbers_only'])
-			->setValue($this->context['lp_block']['options']['parameters']['show_numbers_only']);
+			->setValue($this->context['lp_block']['options']['show_numbers_only']);
 	}
 
 	public function prepareContent(object $data, array $parameters): void

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.12.23
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\RecentPosts;
@@ -29,11 +29,13 @@ class RecentPosts extends Block
 
 	public string $icon = 'far fa-comment-alt';
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['recent_posts']['no_content_class'] = true;
+		if ($this->context['current_block']['type'] !== 'recent_posts')
+			return;
 
-		$options['recent_posts']['parameters'] = [
+		$params = [
+			'no_content_class' => true,
 			'exclude_boards'   => '',
 			'include_boards'   => '',
 			'exclude_topics'   => '',
@@ -48,27 +50,29 @@ class RecentPosts extends Block
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type): void
+	public function validateBlockParams(array &$params): void
 	{
-		if ($type !== 'recent_posts')
+		if ($this->context['current_block']['type'] !== 'recent_posts')
 			return;
 
-		$parameters['exclude_boards']   = FILTER_DEFAULT;
-		$parameters['include_boards']   = FILTER_DEFAULT;
-		$parameters['exclude_topics']   = FILTER_DEFAULT;
-		$parameters['include_topics']   = FILTER_DEFAULT;
-		$parameters['use_simple_style'] = FILTER_VALIDATE_BOOLEAN;
-		$parameters['show_avatars']     = FILTER_VALIDATE_BOOLEAN;
-		$parameters['num_posts']        = FILTER_VALIDATE_INT;
-		$parameters['link_type']        = FILTER_DEFAULT;
-		$parameters['show_body']        = FILTER_VALIDATE_BOOLEAN;
-		$parameters['limit_body']       = FILTER_VALIDATE_BOOLEAN;
-		$parameters['update_interval']  = FILTER_VALIDATE_INT;
+		$params = [
+			'exclude_boards'   => FILTER_DEFAULT,
+			'include_boards'   => FILTER_DEFAULT,
+			'exclude_topics'   => FILTER_DEFAULT,
+			'include_topics'   => FILTER_DEFAULT,
+			'use_simple_style' => FILTER_VALIDATE_BOOLEAN,
+			'show_avatars'     => FILTER_VALIDATE_BOOLEAN,
+			'num_posts'        => FILTER_VALIDATE_INT,
+			'link_type'        => FILTER_DEFAULT,
+			'show_body'        => FILTER_VALIDATE_BOOLEAN,
+			'limit_body'       => FILTER_VALIDATE_BOOLEAN,
+			'update_interval'  => FILTER_VALIDATE_INT,
+		];
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'recent_posts')
+		if ($this->context['current_block']['type'] !== 'recent_posts')
 			return;
 
 		CustomField::make('exclude_boards', $this->txt['lp_recent_posts']['exclude_boards'])
@@ -76,7 +80,7 @@ class RecentPosts extends Block
 			->setValue(fn() => new BoardSelect, [
 				'id'    => 'exclude_boards',
 				'hint'  => $this->txt['lp_recent_posts']['exclude_boards_select'],
-				'value' => $this->context['lp_block']['options']['parameters']['exclude_boards'] ?? '',
+				'value' => $this->context['lp_block']['options']['exclude_boards'] ?? '',
 			]);
 
 		CustomField::make('include_boards', $this->txt['lp_recent_posts']['include_boards'])
@@ -84,7 +88,7 @@ class RecentPosts extends Block
 			->setValue(fn() => new BoardSelect, [
 				'id'    => 'include_boards',
 				'hint'  => $this->txt['lp_recent_posts']['include_boards_select'],
-				'value' => $this->context['lp_block']['options']['parameters']['include_boards'] ?? '',
+				'value' => $this->context['lp_block']['options']['include_boards'] ?? '',
 			]);
 
 		CustomField::make('exclude_topics', $this->txt['lp_recent_posts']['exclude_topics'])
@@ -92,7 +96,7 @@ class RecentPosts extends Block
 			->setValue(fn() => new TopicSelect, [
 				'id'    => 'exclude_topics',
 				'hint'  => $this->txt['lp_recent_posts']['exclude_topics_select'],
-				'value' => $this->context['lp_block']['options']['parameters']['exclude_topics'] ?? '',
+				'value' => $this->context['lp_block']['options']['exclude_topics'] ?? '',
 			]);
 
 		CustomField::make('include_topics', $this->txt['lp_recent_posts']['include_topics'])
@@ -100,35 +104,35 @@ class RecentPosts extends Block
 			->setValue(fn() => new TopicSelect, [
 				'id'    => 'include_topics',
 				'hint'  => $this->txt['lp_recent_posts']['include_topics_select'],
-				'value' => $this->context['lp_block']['options']['parameters']['include_topics'] ?? '',
+				'value' => $this->context['lp_block']['options']['include_topics'] ?? '',
 			]);
 
 		CheckboxField::make('use_simple_style', $this->txt['lp_recent_posts']['use_simple_style'])
 			->setTab('appearance')
 			->setAfter($this->txt['lp_recent_posts']['use_simple_style_subtext'])
-			->setValue($this->context['lp_block']['options']['parameters']['use_simple_style']);
+			->setValue($this->context['lp_block']['options']['use_simple_style']);
 
 		CheckboxField::make('show_avatars', $this->txt['lp_recent_posts']['show_avatars'])
 			->setTab('appearance')
-			->setValue($this->context['lp_block']['options']['parameters']['show_avatars'] && empty($this->context['lp_block']['options']['parameters']['use_simple_style']));
+			->setValue($this->context['lp_block']['options']['show_avatars'] && empty($this->context['lp_block']['options']['use_simple_style']));
 
 		NumberField::make('num_posts', $this->txt['lp_recent_posts']['num_posts'])
 			->setAttribute('min', 1)
-			->setValue($this->context['lp_block']['options']['parameters']['num_posts']);
+			->setValue($this->context['lp_block']['options']['num_posts']);
 
 		RadioField::make('link_type', $this->txt['lp_recent_posts']['type'])
 			->setOptions(array_combine(['link', 'preview'], $this->txt['lp_recent_posts']['type_set']))
-			->setValue($this->context['lp_block']['options']['parameters']['link_type']);
+			->setValue($this->context['lp_block']['options']['link_type']);
 
 		CheckboxField::make('show_body', $this->txt['lp_recent_posts']['show_body'])
-			->setValue($this->context['lp_block']['options']['parameters']['show_body']);
+			->setValue($this->context['lp_block']['options']['show_body']);
 
 		CheckboxField::make('limit_body', $this->txt['lp_recent_posts']['limit_body'])
-			->setValue($this->context['lp_block']['options']['parameters']['limit_body']);
+			->setValue($this->context['lp_block']['options']['limit_body']);
 
 		NumberField::make('update_interval', $this->txt['lp_recent_posts']['update_interval'])
 			->setAttribute('min', 0)
-			->setValue($this->context['lp_block']['options']['parameters']['update_interval']);
+			->setValue($this->context['lp_block']['options']['update_interval']);
 	}
 
 	/**

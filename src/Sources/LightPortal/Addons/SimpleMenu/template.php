@@ -50,7 +50,7 @@ function simple_menu_items(): string
 
 		function handleItems() {
 			return {
-				items: ' . ($context['lp_block']['options']['parameters']['items'] ?: '[]') . ',
+				items: ' . ($context['lp_block']['options']['items'] ?: '[]') . ',
 				addItem() {
 					this.items.push({
 						name: "",

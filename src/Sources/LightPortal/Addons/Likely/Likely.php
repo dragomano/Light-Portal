@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\Likely;
@@ -29,43 +29,50 @@ class Likely extends Block
 
 	private array $buttons = ['facebook', 'linkedin', 'odnoklassniki', 'pinterest', 'reddit', 'telegram', 'twitter', 'viber', 'vkontakte', 'whatsapp'];
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['likely']['parameters']['size']      = 'small';
-		$options['likely']['parameters']['dark_mode'] = false;
-		$options['likely']['parameters']['buttons']   = $this->buttons;
-	}
-
-	public function validateBlockData(array &$parameters, string $type): void
-	{
-		if ($type !== 'likely')
+		if ($this->context['current_block']['type'] !== 'likely')
 			return;
 
-		$parameters['size']      = FILTER_DEFAULT;
-		$parameters['dark_mode'] = FILTER_VALIDATE_BOOLEAN;
-		$parameters['buttons']   = FILTER_DEFAULT;
+		$params = [
+			'size'      => 'small',
+			'dark_mode' => false,
+			'buttons'   => $this->buttons,
+		];
+	}
+
+	public function validateBlockParams(array &$params): void
+	{
+		if ($this->context['current_block']['type'] !== 'likely')
+			return;
+
+		$params = [
+			'size'      => FILTER_DEFAULT,
+			'dark_mode' => FILTER_VALIDATE_BOOLEAN,
+			'buttons'   => FILTER_DEFAULT,
+		];
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'likely')
+		if ($this->context['current_block']['type'] !== 'likely')
 			return;
 
 		CustomField::make('buttons', $this->txt['lp_likely']['buttons'])
 			->setTab('content')
 			->setValue(fn() => new ButtonSelect, [
 				'data'  => $this->buttons,
-				'value' => is_array($this->context['lp_block']['options']['parameters']['buttons'])
-							? $this->context['lp_block']['options']['parameters']['buttons']
-							: explode(',', $this->context['lp_block']['options']['parameters']['buttons'])
+				'value' => is_array($this->context['lp_block']['options']['buttons'])
+							? $this->context['lp_block']['options']['buttons']
+							: explode(',', $this->context['lp_block']['options']['buttons'])
 			]);
 
 		RadioField::make('size', $this->txt['lp_likely']['size'])
 			->setOptions($this->txt['lp_likely']['size_set'])
-			->setValue($this->context['lp_block']['options']['parameters']['size']);
+			->setValue($this->context['lp_block']['options']['size']);
 
 		CheckboxField::make('dark_mode', $this->txt['lp_likely']['dark_mode'])
-			->setValue($this->context['lp_block']['options']['parameters']['dark_mode']);
+			->setValue($this->context['lp_block']['options']['dark_mode']);
 	}
 
 	public function prepareAssets(array &$assets): void

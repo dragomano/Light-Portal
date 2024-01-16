@@ -100,9 +100,11 @@ final class BlockRepository extends AbstractRepository
 				'content_class' => $row['content_class'],
 			];
 
-			$data['titles'][$row['lang']] = $row['title'];
+			if (! empty($row['lang']))
+				$data['titles'][$row['lang']] = $row['title'];
 
-			$data['options']['parameters'][$row['name']] = $row['value'];
+			if (! empty($row['name']))
+				$data['options'][$row['name']] = $row['value'];
 
 			$this->prepareMissingBlockTypes($row['type']);
 		}
@@ -128,8 +130,6 @@ final class BlockRepository extends AbstractRepository
 		$this->checkSubmitOnce('check');
 
 		$this->prepareBbcContent($this->context['lp_block']);
-
-		$this->context['lp_block']['options'] = $this->context['lp_block']['options']['parameters'] ?? [];
 
 		if (empty($item)) {
 			$this->context['lp_block']['titles'] = array_filter($this->context['lp_block']['titles']);

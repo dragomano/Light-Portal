@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\Reactions;
@@ -28,14 +28,14 @@ class Reactions extends Plugin
 {
 	public string $type = 'page_options';
 
-	public function pageOptions(array &$options): void
+	public function preparePageParams(array &$params): void
 	{
-		$options['allow_reactions'] = false;
+		$params['allow_reactions'] = false;
 	}
 
-	public function validatePageData(array &$parameters): void
+	public function validatePageParams(array &$params): void
 	{
-		$parameters['allow_reactions'] = FILTER_VALIDATE_BOOLEAN;
+		$params['allow_reactions'] = FILTER_VALIDATE_BOOLEAN;
 	}
 
 	public function preparePageFields(): void

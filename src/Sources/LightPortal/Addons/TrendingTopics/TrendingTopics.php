@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 22.12.23
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\TrendingTopics;
@@ -33,49 +33,51 @@ class TrendingTopics extends Block
 
 	private array $timePeriod = ['1 day', '1 week', '2 week', '1 month', '2 month', '4 month', '6 month', '8 month', '1 year'];
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['trending_topics']['no_content_class'] = true;
+		if ($this->context['current_block']['type'] !== 'trending_topics')
+			return;
 
-		$options['trending_topics']['parameters'] = [
-			'show_avatars' => true,
-			'time_period'  => '1 week',
-			'min_replies'  => 10,
-			'num_topics'   => 10,
+		$params = [
+			'no_content_class' => true,
+			'show_avatars'     => true,
+			'time_period'      => '1 week',
+			'min_replies'      => 10,
+			'num_topics'       => 10,
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type): void
+	public function validateBlockParams(array &$params): void
 	{
-		if ($type !== 'trending_topics')
+		if ($this->context['current_block']['type'] !== 'trending_topics')
 			return;
 
-		$parameters['show_avatars'] = FILTER_VALIDATE_BOOLEAN;
-		$parameters['time_period']  = FILTER_DEFAULT;
-		$parameters['min_replies']  = FILTER_VALIDATE_INT;
-		$parameters['num_topics']   = FILTER_VALIDATE_INT;
+		$params['show_avatars'] = FILTER_VALIDATE_BOOLEAN;
+		$params['time_period']  = FILTER_DEFAULT;
+		$params['min_replies']  = FILTER_VALIDATE_INT;
+		$params['num_topics']   = FILTER_VALIDATE_INT;
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'trending_topics')
+		if ($this->context['current_block']['type'] !== 'trending_topics')
 			return;
 
 		CheckboxField::make('show_avatars', $this->txt['lp_trending_topics']['show_avatars'])
 			->setTab('appearance')
-			->setValue($this->context['lp_block']['options']['parameters']['show_avatars']);
+			->setValue($this->context['lp_block']['options']['show_avatars']);
 
 		SelectField::make('time_period', $this->txt['lp_trending_topics']['time_period'])
 			->setOptions(array_combine($this->timePeriod, $this->txt['lp_trending_topics']['time_period_set']))
-			->setValue($this->context['lp_block']['options']['parameters']['time_period']);
+			->setValue($this->context['lp_block']['options']['time_period']);
 
 		NumberField::make('min_replies', $this->txt['lp_trending_topics']['min_replies'])
 			->setAttribute('min', 1)
-			->setValue($this->context['lp_block']['options']['parameters']['min_replies']);
+			->setValue($this->context['lp_block']['options']['min_replies']);
 
 		NumberField::make('num_topics', $this->txt['lp_trending_topics']['num_topics'])
 			->setAttribute('min', 1)
-			->setValue($this->context['lp_block']['options']['parameters']['num_topics']);
+			->setValue($this->context['lp_block']['options']['num_topics']);
 	}
 
 	/**

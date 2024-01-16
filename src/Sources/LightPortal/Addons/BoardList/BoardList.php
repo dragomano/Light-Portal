@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.12.23
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\BoardList;
@@ -26,28 +26,32 @@ class BoardList extends Block
 {
 	public string $icon = 'far fa-list-alt';
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['board_list']['no_content_class'] = true;
+		if ($this->context['current_block']['type'] !== 'board_list')
+			return;
 
-		$options['board_list']['parameters'] = [
-			'category_class' => 'title_bar',
-			'board_class'    => 'roundframe',
+		$params = [
+			'no_content_class' => true,
+			'category_class'   => 'title_bar',
+			'board_class'      => 'roundframe',
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type): void
+	public function validateBlockParams(array &$params): void
 	{
-		if ($type !== 'board_list')
+		if ($this->context['current_block']['type'] !== 'board_list')
 			return;
 
-		$parameters['category_class'] = FILTER_DEFAULT;
-		$parameters['board_class']    = FILTER_DEFAULT;
+		$params = [
+			'category_class' => FILTER_DEFAULT,
+			'board_class'    => FILTER_DEFAULT,
+		];
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'board_list')
+		if ($this->context['current_block']['type'] !== 'board_list')
 			return;
 
 		CustomField::make('category_class', $this->txt['lp_board_list']['category_class'])
@@ -55,14 +59,14 @@ class BoardList extends Block
 			->setValue(fn() => new TitleClassSelect, [
 				'id'    => 'category_class',
 				'data'  => $this->getCategoryClasses(),
-				'value' => $this->context['lp_block']['options']['parameters']['category_class']
+				'value' => $this->context['lp_block']['options']['category_class']
 			]);
 
 		CustomField::make('board_class', $this->txt['lp_board_list']['board_class'])
 			->setTab('appearance')
 			->setValue(fn() => new ContentClassSelect, [
 				'id'    => 'board_class',
-				'value' => $this->context['lp_block']['options']['parameters']['board_class'],
+				'value' => $this->context['lp_block']['options']['board_class'],
 			]);
 	}
 

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 09.04.23
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\GalleryBlock;
@@ -48,7 +48,7 @@ final class CategorySelect extends AbstractPartial
 				showValueAsTags: true,
 				maxWidth: "100%",
 				options: ' . json_encode($data) . ',
-				selectedValue: [' . ($this->context['lp_block']['options']['parameters']['categories'] ?? '') . ']
+				selectedValue: [' . ($this->context['lp_block']['options']['categories'] ?? '') . ']
 			});
 		</script>';
 	}

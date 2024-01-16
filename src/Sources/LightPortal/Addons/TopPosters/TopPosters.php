@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.12.23
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\TopPosters;
@@ -26,39 +26,44 @@ class TopPosters extends Block
 {
 	public string $icon = 'fas fa-users';
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['top_posters']['parameters'] = [
+		if ($this->context['current_block']['type'] !== 'top_posters')
+			return;
+
+		$params = [
 			'show_avatars'      => true,
 			'num_posters'       => 10,
 			'show_numbers_only' => false,
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type): void
+	public function validateBlockParams(array &$params): void
 	{
-		if ($type !== 'top_posters')
+		if ($this->context['current_block']['type'] !== 'top_posters')
 			return;
 
-		$parameters['show_avatars']      = FILTER_VALIDATE_BOOLEAN;
-		$parameters['num_posters']       = FILTER_VALIDATE_INT;
-		$parameters['show_numbers_only'] = FILTER_VALIDATE_BOOLEAN;
+		$params = [
+			'show_avatars'      => FILTER_VALIDATE_BOOLEAN,
+			'num_posters'       => FILTER_VALIDATE_INT,
+			'show_numbers_only' => FILTER_VALIDATE_BOOLEAN,
+		];
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'top_posters')
+		if ($this->context['current_block']['type'] !== 'top_posters')
 			return;
 
 		CheckboxField::make('show_avatars', $this->txt['lp_top_posters']['show_avatars'])
-			->setValue($this->context['lp_block']['options']['parameters']['show_avatars']);
+			->setValue($this->context['lp_block']['options']['show_avatars']);
 
 		NumberField::make('num_posters', $this->txt['lp_top_posters']['num_posters'])
 			->setAttribute('min', 1)
-			->setValue($this->context['lp_block']['options']['parameters']['num_posters']);
+			->setValue($this->context['lp_block']['options']['num_posters']);
 
 		CheckboxField::make('show_numbers_only', $this->txt['lp_top_posters']['show_numbers_only'])
-			->setValue($this->context['lp_block']['options']['parameters']['show_numbers_only']);
+			->setValue($this->context['lp_block']['options']['show_numbers_only']);
 	}
 
 	public function getData(array $parameters): array
@@ -129,7 +134,7 @@ class TopPosters extends Block
 			$width = $poster['posts'] * 100 / $max;
 
 			echo '
-			<dt>', $poster['avatar'], ' ', $poster['link'], '</dt>
+			<dt>', empty($parameters['show_avatars']) ? '' : $poster['avatar'], ' ', $poster['link'], '</dt>
 			<dd class="statsbar generic_bar righttext">
 				<div class="bar', (empty($poster['posts']) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
 				<span>', ($parameters['show_numbers_only'] ? $poster['posts'] : $this->translate($this->txt['lp_top_posters']['posts'], ['posts' => $poster['posts']])), '</span>

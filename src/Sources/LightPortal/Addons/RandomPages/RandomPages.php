@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 22.12.23
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\RandomPages;
@@ -28,28 +28,32 @@ class RandomPages extends Block
 {
 	public string $icon = 'fas fa-random';
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['random_pages']['no_content_class'] = true;
+		if ($this->context['current_block']['type'] !== 'random_pages')
+			return;
 
-		$options['random_pages']['parameters'] = [
-			'categories' => '',
-			'num_pages'  => 10,
+		$params = [
+			'no_content_class' => true,
+			'categories'       => '',
+			'num_pages'        => 10,
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type): void
+	public function validateBlockParams(array &$params): void
 	{
-		if ($type !== 'random_pages')
+		if ($this->context['current_block']['type'] !== 'random_pages')
 			return;
 
-		$parameters['categories'] = FILTER_DEFAULT;
-		$parameters['num_pages']  = FILTER_VALIDATE_INT;
+		$params = [
+			'categories' => FILTER_DEFAULT,
+			'num_pages'  => FILTER_VALIDATE_INT,
+		];
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'random_pages')
+		if ($this->context['current_block']['type'] !== 'random_pages')
 			return;
 
 		CustomField::make('categories', $this->txt['lp_categories'])
@@ -57,12 +61,12 @@ class RandomPages extends Block
 			->setValue(fn() => new CategorySelect, [
 				'id'    => 'categories',
 				'hint'  => $this->txt['lp_random_pages']['categories_select'],
-				'value' => $this->context['lp_block']['options']['parameters']['categories'] ?? '',
+				'value' => $this->context['lp_block']['options']['categories'] ?? '',
 			]);
 
 		NumberField::make('num_pages', $this->txt['lp_random_pages']['num_pages'])
 			->setAttribute('min', 1)
-			->setValue($this->context['lp_block']['options']['parameters']['num_pages']);
+			->setValue($this->context['lp_block']['options']['num_pages']);
 	}
 
 	public function getData(array $parameters): array

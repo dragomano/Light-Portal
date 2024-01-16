@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\RecentAttachments;
@@ -28,37 +28,42 @@ class RecentAttachments extends Block
 
 	public string $icon = 'fas fa-paperclip';
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['recent_attachments']['parameters'] = [
+		if ($this->context['current_block']['type'] !== 'recent_attachments')
+			return;
+
+		$params = [
 			'num_attachments' => 5,
 			'extensions'      => 'jpg',
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type): void
+	public function validateBlockParams(array &$params): void
 	{
-		if ($type !== 'recent_attachments')
+		if ($this->context['current_block']['type'] !== 'recent_attachments')
 			return;
 
-		$parameters['num_attachments'] = FILTER_VALIDATE_INT;
-		$parameters['extensions']      = FILTER_DEFAULT;
+		$params = [
+			'num_attachments' => FILTER_VALIDATE_INT,
+			'extensions'      => FILTER_DEFAULT,
+		];
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'recent_attachments')
+		if ($this->context['current_block']['type'] !== 'recent_attachments')
 			return;
 
 		NumberField::make('num_attachments', $this->txt['lp_recent_attachments']['num_attachments'])
 			->setAttribute('min', 1)
-			->setValue($this->context['lp_block']['options']['parameters']['num_attachments']);
+			->setValue($this->context['lp_block']['options']['num_attachments']);
 
 		TextField::make('extensions', $this->txt['lp_recent_attachments']['extensions'])
 			->setAfter($this->txt['lp_recent_attachments']['extensions_subtext'])
 			->setAttribute('maxlength', 30)
 			->setAttribute('style', 'width: 100%')
-			->setValue($this->context['lp_block']['options']['parameters']['extensions']);
+			->setValue($this->context['lp_block']['options']['extensions']);
 	}
 
 	public function getData(array $parameters): array

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\BoardStats;
@@ -28,9 +28,12 @@ class BoardStats extends Block
 
 	public string $icon = 'fas fa-chart-pie';
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['board_stats']['parameters'] = [
+		if ($this->context['current_block']['type'] !== 'board_stats')
+			return;
+
+		$params = [
 			'show_latest_member' => false,
 			'show_basic_info'    => true,
 			'show_whos_online'   => true,
@@ -39,42 +42,44 @@ class BoardStats extends Block
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type): void
+	public function validateBlockParams(array &$params): void
 	{
-		if ($type !== 'board_stats')
+		if ($this->context['current_block']['type'] !== 'board_stats')
 			return;
 
-		$parameters['show_latest_member'] = FILTER_VALIDATE_BOOLEAN;
-		$parameters['show_basic_info']    = FILTER_VALIDATE_BOOLEAN;
-		$parameters['show_whos_online']   = FILTER_VALIDATE_BOOLEAN;
-		$parameters['use_fa_icons']       = FILTER_VALIDATE_BOOLEAN;
-		$parameters['update_interval']    = FILTER_VALIDATE_INT;
+		$params = [
+			'show_latest_member' => FILTER_VALIDATE_BOOLEAN,
+			'show_basic_info'    => FILTER_VALIDATE_BOOLEAN,
+			'show_whos_online'   => FILTER_VALIDATE_BOOLEAN,
+			'use_fa_icons'       => FILTER_VALIDATE_BOOLEAN,
+			'update_interval'    => FILTER_VALIDATE_INT,
+		];
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'board_stats')
+		if ($this->context['current_block']['type'] !== 'board_stats')
 			return;
 
 		CheckboxField::make('show_latest_member', $this->txt['lp_board_stats']['show_latest_member'])
 			->setTab('content')
-			->setValue($this->context['lp_block']['options']['parameters']['show_latest_member']);
+			->setValue($this->context['lp_block']['options']['show_latest_member']);
 
 		CheckboxField::make('show_basic_info', $this->txt['lp_board_stats']['show_basic_info'])
 			->setTab('content')
-			->setValue($this->context['lp_block']['options']['parameters']['show_basic_info']);
+			->setValue($this->context['lp_block']['options']['show_basic_info']);
 
 		CheckboxField::make('show_whos_online', $this->txt['lp_board_stats']['show_whos_online'])
 			->setTab('content')
-			->setValue($this->context['lp_block']['options']['parameters']['show_whos_online']);
+			->setValue($this->context['lp_block']['options']['show_whos_online']);
 
 		CheckboxField::make('use_fa_icons', $this->txt['lp_board_stats']['use_fa_icons'])
 			->setTab('appearance')
-			->setValue($this->context['lp_block']['options']['parameters']['use_fa_icons']);
+			->setValue($this->context['lp_block']['options']['use_fa_icons']);
 
 		NumberField::make('update_interval', $this->txt['lp_board_stats']['update_interval'])
 			->setAttribute('min', 0)
-			->setValue($this->context['lp_block']['options']['parameters']['update_interval']);
+			->setValue($this->context['lp_block']['options']['update_interval']);
 	}
 
 	public function getData(array $parameters): array

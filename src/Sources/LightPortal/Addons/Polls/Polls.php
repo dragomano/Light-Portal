@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\Polls;
@@ -28,22 +28,25 @@ class Polls extends Block
 
 	public string $icon = 'fas fa-poll';
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['polls']['parameters']['selected_item'] = 0;
-	}
-
-	public function validateBlockData(array &$parameters, string $type): void
-	{
-		if ($type !== 'polls')
+		if ($this->context['current_block']['type'] !== 'polls')
 			return;
 
-		$parameters['selected_item'] = FILTER_VALIDATE_INT;
+		$params['selected_item'] = 0;
+	}
+
+	public function validateBlockParams(array &$params): void
+	{
+		if ($this->context['current_block']['type'] !== 'polls')
+			return;
+
+		$params['selected_item'] = FILTER_VALIDATE_INT;
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'polls')
+		if ($this->context['current_block']['type'] !== 'polls')
 			return;
 
 		$polls = $this->getAll();
@@ -58,7 +61,7 @@ class Polls extends Block
 			SelectField::make('selected_item', $this->txt['lp_polls']['selected_item'])
 				->setTab('content')
 				->setOptions($polls)
-				->setValue($this->context['lp_block']['options']['parameters']['selected_item']);
+				->setValue($this->context['lp_block']['options']['selected_item']);
 		}
 	}
 

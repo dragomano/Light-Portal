@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\HidingBlocks;
@@ -45,14 +45,14 @@ class HidingBlocks extends Plugin
 		}
 	}
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options[$this->context['current_block']['type']]['parameters']['hidden_breakpoints'] = [];
+		$params['hidden_breakpoints'] = [];
 	}
 
-	public function validateBlockData(array &$parameters): void
+	public function validateBlockParams(array &$params): void
 	{
-		$parameters['hidden_breakpoints'] = FILTER_DEFAULT;
+		$params['hidden_breakpoints'] = FILTER_DEFAULT;
 	}
 
 	public function prepareBlockFields(): void

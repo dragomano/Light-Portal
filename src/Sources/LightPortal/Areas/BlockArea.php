@@ -147,7 +147,7 @@ final class BlockArea
 		$this->prepareEditor();
 		$this->preparePreview();
 
-		$this->repository->setData((int) $this->context['lp_block']['id']);
+		$this->repository->setData($this->context['lp_block']['id']);
 	}
 
 	private function remove(array $items): void
@@ -257,60 +257,59 @@ final class BlockArea
 		}
 	}
 
-	private function getOptions(): array
+	private function getParams(): array
 	{
-		$options = [];
+		$baseParams = [
+			'hide_header'      => false,
+			'no_content_class' => false,
+		];
 
-		foreach (array_keys($this->context['lp_content_types']) as $type) {
-			$options[$type] = [
-				'content' => true
-			];
+		if (in_array($this->context['current_block']['type'], array_keys($this->context['lp_content_types']))) {
+			$baseParams['content'] = true;
 		}
 
-		$this->hook('blockOptions', [&$options]);
+		$params = [];
 
-		array_walk($options, fn(&$item) => $item['parameters']['hide_header'] = false);
+		$this->hook('prepareBlockParams', [&$params]);
 
-		return $options;
+		return array_merge($baseParams, $params);
 	}
 
 	private function validateData(): void
 	{
 		[$post_data, $parameters] = (new BlockValidator())->validate();
 
-		$options = $this->getOptions();
+		$options = $this->getParams();
 
-		if (empty($options[$this->context['current_block']['type']]))
-			$options[$this->context['current_block']['type']] = [];
+		$block_options = $this->context['current_block']['options'] ?? $options;
 
-		$block_options = $this->context['current_block']['options'] ?? $options[$this->context['current_block']['type']];
-
-		if (empty($this->context['current_block']['id']) && empty($this->context['current_block']['icon']) && ! empty($this->context['current_block']['type'])) {
+		if (empty($this->context['current_block']['id']) && empty($this->context['current_block']['icon'])) {
 			$this->context['current_block']['icon'] = $this->context['lp_loaded_addons'][$this->context['current_block']['type']]['icon'];
 		}
 
 		$block = new BlockModel($post_data, $this->context['current_block']);
 		$block->titles = $this->context['current_block']['titles'] ?? [];
-		$block->options = $options[$block->type];
+		$block->options = $options;
 		$block->icon = $block->icon === 'undefined' ? '' : $block->icon;
 		$block->priority = empty($block->id) ? $this->getPriority() : $block->priority;
 		$block->permissions = empty($this->context['user']['is_admin']) ? 4 : $block->permissions;
 		$block->contentClass = empty($block->options['no_content_class']) ? $block->contentClass : '';
 
-		if (isset($block->options['parameters'])) {
-			foreach ($block->options['parameters'] as $option => $value) {
-				if (isset($parameters[$option]) && isset($post_data['parameters']) && ! isset($post_data['parameters'][$option])) {
-					$post_data['parameters'][$option] = 0;
+		foreach ($block->options as $option => $value) {
+			if (isset($parameters[$option]) && isset($post_data['parameters']) && ! isset($post_data['parameters'][$option])) {
+				$post_data['parameters'][$option] = 0;
 
-					if ($parameters[$option] === FILTER_DEFAULT)
-						$post_data['parameters'][$option] = '';
+				if ($option === 'no_content_class')
+					$post_data['parameters'][$option] = $value;
 
-					if (is_array($parameters[$option]) && $parameters[$option]['flags'] === FILTER_REQUIRE_ARRAY)
-						$post_data['parameters'][$option] = [];
-				}
+				if ($parameters[$option] === FILTER_DEFAULT)
+					$post_data['parameters'][$option] = '';
 
-				$block->options['parameters'][$option] = $post_data['parameters'][$option] ?? $block_options['parameters'][$option] ?? $value;
+				if (is_array($parameters[$option]) && $parameters[$option]['flags'] === FILTER_REQUIRE_ARRAY)
+					$post_data['parameters'][$option] = [];
 			}
+
+			$block->options[$option] = $post_data['parameters'][$option] ?? $block_options[$option] ?? $value;
 		}
 
 		foreach ($this->context['lp_languages'] as $lang) {
@@ -371,7 +370,7 @@ final class BlockArea
 		}
 
 		CheckboxField::make('hide_header', $this->txt['lp_block_hide_header'])
-			->setValue($this->context['lp_block']['options']['parameters']['hide_header']);
+			->setValue($this->context['lp_block']['options']['hide_header']);
 
 		$this->context['lp_block_tab_appearance'] = true;
 
@@ -426,13 +425,13 @@ final class BlockArea
 		$this->censorText($this->context['preview_content']);
 
 		$this->context['preview_content'] = empty($this->context['preview_content'])
-			? prepare_content($this->context['lp_block']['type'], $this->context['lp_block']['id'], 0, $this->context['lp_block']['options']['parameters'] ?? [])
+			? prepare_content($this->context['lp_block']['type'], $this->context['lp_block']['id'], 0, $this->context['lp_block']['options'] ?? [])
 			: parse_content($this->context['preview_content'], $this->context['lp_block']['type']);
 
 		$this->context['page_title']    = $this->txt['preview'] . ($this->context['preview_title'] ? ' - ' . $this->context['preview_title'] : '');
 		$this->context['preview_title'] = $this->getPreviewTitle($this->getIcon($this->context['lp_block']['icon']));
 
-		if (! empty($this->context['lp_block']['options']['parameters']['hide_header'])) {
+		if (! empty($this->context['lp_block']['options']['hide_header'])) {
 			$this->context['preview_title'] = $this->context['lp_block']['title_class'] = '';
 		}
 	}

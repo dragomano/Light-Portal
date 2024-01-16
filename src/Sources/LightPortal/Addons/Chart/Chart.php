@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 01.01.24
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\Chart;
@@ -37,14 +37,17 @@ class Chart extends Block
 
 	private array $chartTypes = ['line', 'bar', 'pie', 'doughnut', 'polarArea', 'radar'];
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['chart']['parameters'] = $this->params;
+		if ($this->context['current_block']['type'] !== 'chart')
+			return;
+
+		$params = $this->params;
 	}
 
-	public function validateBlockData(array &$parameters, string $type): void
+	public function validateBlockParams(array &$params): void
 	{
-		if ($type !== 'chart')
+		if ($this->context['current_block']['type'] !== 'chart')
 			return;
 
 		$post = $this->request()->only([
@@ -70,18 +73,20 @@ class Chart extends Block
 			$this->request()->put('datasets', json_encode($datasets, JSON_UNESCAPED_UNICODE));
 		}
 
-		$parameters['chart_title']     = FILTER_DEFAULT;
-		$parameters['datasets']        = FILTER_DEFAULT;
-		$parameters['labels']          = FILTER_DEFAULT;
-		$parameters['default_palette'] = FILTER_VALIDATE_BOOLEAN;
-		$parameters['chart_type']      = FILTER_DEFAULT;
-		$parameters['stacked']         = FILTER_VALIDATE_BOOLEAN;
-		$parameters['horizontal']      = FILTER_VALIDATE_BOOLEAN;
+		$params = [
+			'chart_title'     => FILTER_DEFAULT,
+			'datasets'        => FILTER_DEFAULT,
+			'labels'          => FILTER_DEFAULT,
+			'default_palette' => FILTER_VALIDATE_BOOLEAN,
+			'chart_type'      => FILTER_DEFAULT,
+			'stacked'         => FILTER_VALIDATE_BOOLEAN,
+			'horizontal'      => FILTER_VALIDATE_BOOLEAN,
+		];
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'chart')
+		if ($this->context['current_block']['type'] !== 'chart')
 			return;
 
 		$this->context['lp_chart_types'] = array_combine($this->chartTypes, $this->txt['lp_chart']['type_set']);
@@ -89,7 +94,7 @@ class Chart extends Block
 		TextField::make('chart_title', $this->txt['lp_chart']['chart_title'])
 			->setTab('content')
 			->placeholder($this->txt['lp_chart']['chart_title_placeholder'])
-			->setValue($this->context['lp_block']['options']['parameters']['chart_title'] ?? $this->params['chart_title']);
+			->setValue($this->context['lp_block']['options']['chart_title'] ?? $this->params['chart_title']);
 
 		CustomField::make('chart', $this->txt['lp_chart']['datasets'])
 			->setTab('content')
@@ -99,18 +104,18 @@ class Chart extends Block
 			->setTab('content')
 			->placeholder($this->txt['lp_chart']['labels_placeholder'])
 			->required()
-			->setValue($this->context['lp_block']['options']['parameters']['labels'] ?? $this->params['labels']);
+			->setValue($this->context['lp_block']['options']['labels'] ?? $this->params['labels']);
 
 		CheckboxField::make('default_palette', $this->txt['lp_chart']['default_palette'])
 			->setTab('appearance')
-			->setValue($this->context['lp_block']['options']['parameters']['default_palette']);
+			->setValue($this->context['lp_block']['options']['default_palette']);
 
 		CheckboxField::make('stacked', $this->txt['lp_chart']['stacked'])
 			->setAfter($this->txt['lp_chart']['stacked_after'])
-			->setValue($this->context['lp_block']['options']['parameters']['stacked']);
+			->setValue($this->context['lp_block']['options']['stacked']);
 
 		CheckboxField::make('horizontal', $this->txt['lp_chart']['horizontal'])
-			->setValue($this->context['lp_block']['options']['parameters']['horizontal']);
+			->setValue($this->context['lp_block']['options']['horizontal']);
 	}
 
 	public function prepareAssets(array &$assets): void

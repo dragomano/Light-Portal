@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 22.12.23
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\RandomTopics;
@@ -28,30 +28,34 @@ class RandomTopics extends Block
 {
 	public string $icon = 'fas fa-random';
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['random_topics']['no_content_class'] = true;
+		if ($this->context['current_block']['type'] !== 'random_topics')
+			return;
 
-		$options['random_topics']['parameters'] = [
-			'exclude_boards' => '',
-			'include_boards' => '',
-			'num_topics'     => 10,
+		$params = [
+			'no_content_class' => true,
+			'exclude_boards'   => '',
+			'include_boards'   => '',
+			'num_topics'       => 10,
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type): void
+	public function validateBlockParams(array &$params): void
 	{
-		if ($type !== 'random_topics')
+		if ($this->context['current_block']['type'] !== 'random_topics')
 			return;
 
-		$parameters['exclude_boards'] = FILTER_DEFAULT;
-		$parameters['include_boards'] = FILTER_DEFAULT;
-		$parameters['num_topics']     = FILTER_VALIDATE_INT;
+		$params = [
+			'exclude_boards' => FILTER_DEFAULT,
+			'include_boards' => FILTER_DEFAULT,
+			'num_topics'     => FILTER_VALIDATE_INT,
+		];
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'random_topics')
+		if ($this->context['current_block']['type'] !== 'random_topics')
 			return;
 
 		CustomField::make('exclude_boards', $this->txt['lp_random_topics']['exclude_boards'])
@@ -59,7 +63,7 @@ class RandomTopics extends Block
 			->setValue(fn() => new BoardSelect, [
 				'id'    => 'exclude_boards',
 				'hint'  => $this->txt['lp_random_topics']['exclude_boards_select'],
-				'value' => $this->context['lp_block']['options']['parameters']['exclude_boards'] ?? '',
+				'value' => $this->context['lp_block']['options']['exclude_boards'] ?? '',
 			]);
 
 		CustomField::make('include_boards', $this->txt['lp_random_topics']['include_boards'])
@@ -67,12 +71,12 @@ class RandomTopics extends Block
 			->setValue(fn() => new BoardSelect, [
 				'id'    => 'include_boards',
 				'hint'  => $this->txt['lp_random_topics']['include_boards_select'],
-				'value' => $this->context['lp_block']['options']['parameters']['include_boards'] ?? '',
+				'value' => $this->context['lp_block']['options']['include_boards'] ?? '',
 			]);
 
 		NumberField::make('num_topics', $this->txt['lp_random_topics']['num_topics'])
 			->setAttribute('min', 1)
-			->setValue($this->context['lp_block']['options']['parameters']['num_topics']);
+			->setValue($this->context['lp_block']['options']['num_topics']);
 	}
 
 	public function getData(array $parameters): array

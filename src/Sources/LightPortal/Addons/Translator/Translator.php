@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.12.23
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\Translator;
@@ -26,45 +26,49 @@ class Translator extends Block
 {
 	public string $icon = 'fas fa-language';
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['translator']['no_content_class'] = true;
+		if ($this->context['current_block']['type'] !== 'translator')
+			return;
 
-		$options['translator']['parameters'] = [
-			'engine'       => 'google',
-			'widget_theme' => 'light',
-			'auto_mode'    => false,
+		$params = [
+			'no_content_class' => true,
+			'engine'           => 'google',
+			'widget_theme'     => 'light',
+			'auto_mode'        => false,
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type): void
+	public function validateBlockParams(array &$params): void
 	{
-		if ($type !== 'translator')
+		if ($this->context['current_block']['type'] !== 'translator')
 			return;
 
-		$parameters['engine']       = FILTER_DEFAULT;
-		$parameters['widget_theme'] = FILTER_DEFAULT;
-		$parameters['auto_mode']    = FILTER_VALIDATE_BOOLEAN;
+		$params = [
+			'engine'       => FILTER_DEFAULT,
+			'widget_theme' => FILTER_DEFAULT,
+			'auto_mode'    => FILTER_VALIDATE_BOOLEAN,
+		];
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'translator')
+		if ($this->context['current_block']['type'] !== 'translator')
 			return;
 
 		RadioField::make('engine', $this->txt['lp_translator']['engine'])
 			->setOptions(array_combine(['google', 'yandex'], $this->txt['lp_translator']['engine_set']))
-			->setValue($this->context['lp_block']['options']['parameters']['engine']);
+			->setValue($this->context['lp_block']['options']['engine']);
 
-		if ($this->context['lp_block']['options']['parameters']['engine'] === 'google')
+		if ($this->context['lp_block']['options']['engine'] === 'google')
 			return;
 
 		RadioField::make('widget_theme', $this->txt['lp_translator']['widget_theme'])
 			->setOptions(array_combine(['light', 'dark'], $this->txt['lp_translator']['widget_theme_set']))
-			->setValue($this->context['lp_block']['options']['parameters']['widget_theme']);
+			->setValue($this->context['lp_block']['options']['widget_theme']);
 
 		CheckboxField::make('auto_mode', $this->txt['lp_translator']['auto_mode'])
-			->setValue($this->context['lp_block']['options']['parameters']['auto_mode']);
+			->setValue($this->context['lp_block']['options']['auto_mode']);
 	}
 
 	public function prepareContent(object $data, array $parameters): void

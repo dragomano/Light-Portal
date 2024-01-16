@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\WhosOnline;
@@ -28,39 +28,44 @@ class WhosOnline extends Block
 
 	public string $icon = 'far fa-eye';
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['whos_online']['parameters'] = [
+		if ($this->context['current_block']['type'] !== 'whos_online')
+			return;
+
+		$params = [
 			'show_group_key'  => false,
 			'show_avatars'    => false,
 			'update_interval' => 600,
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type): void
+	public function validateBlockParams(array &$params): void
 	{
-		if ($type !== 'whos_online')
+		if ($this->context['current_block']['type'] !== 'whos_online')
 			return;
 
-		$parameters['show_group_key']  = FILTER_VALIDATE_BOOLEAN;
-		$parameters['show_avatars']    = FILTER_VALIDATE_BOOLEAN;
-		$parameters['update_interval'] = FILTER_VALIDATE_INT;
+		$params = [
+			'show_group_key'  => FILTER_VALIDATE_BOOLEAN,
+			'show_avatars'    => FILTER_VALIDATE_BOOLEAN,
+			'update_interval' => FILTER_VALIDATE_INT,
+		];
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'whos_online')
+		if ($this->context['current_block']['type'] !== 'whos_online')
 			return;
 
 		CheckboxField::make('show_group_key', $this->txt['lp_whos_online']['show_group_key'])
-			->setValue($this->context['lp_block']['options']['parameters']['show_group_key']);
+			->setValue($this->context['lp_block']['options']['show_group_key']);
 
 		CheckboxField::make('show_avatars', $this->txt['lp_whos_online']['show_avatars'])
-			->setValue($this->context['lp_block']['options']['parameters']['show_avatars']);
+			->setValue($this->context['lp_block']['options']['show_avatars']);
 
 		NumberField::make('update_interval', $this->txt['lp_whos_online']['update_interval'])
 			->setAttribute('min', 0)
-			->setValue($this->context['lp_block']['options']['parameters']['update_interval']);
+			->setValue($this->context['lp_block']['options']['update_interval']);
 	}
 
 	public function prepareContent(object $data, array $parameters): void

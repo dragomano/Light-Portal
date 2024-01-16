@@ -128,10 +128,10 @@ function chart_template(): string
 
 		function handleDataSets() {
 			return {
-				datasets: ' . ($context['lp_block']['options']['parameters']['datasets'] ?: '[]') . ',
+				datasets: ' . ($context['lp_block']['options']['datasets'] ?: '[]') . ',
 				charts: ' . json_encode($context['lp_chart_types']) . ',
-				type: "' . $context['lp_block']['options']['parameters']['chart_type'] . '",
-				usePalette: ' . (empty($context['lp_block']['options']['parameters']['default_palette']) ? 'false' : 'true') . ',
+				type: "' . $context['lp_block']['options']['chart_type'] . '",
+				usePalette: ' . (empty($context['lp_block']['options']['default_palette']) ? 'false' : 'true') . ',
 				addSet() {
 					this.datasets.push(this.usePalette ? {
 						label: "",

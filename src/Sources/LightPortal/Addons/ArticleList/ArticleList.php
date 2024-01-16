@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.12.23
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\ArticleList;
@@ -26,54 +26,58 @@ class ArticleList extends Block
 {
 	public string $icon = 'far fa-file-alt';
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['article_list']['no_content_class'] = true;
+		if ($this->context['current_block']['type'] !== 'article_list')
+			return;
 
-		$options['article_list']['parameters'] = [
-			'body_class'     => 'descbox',
-			'display_type'   => 0,
-			'include_topics' => '',
-			'include_pages'  => '',
-			'seek_images'    => false
+		$params = [
+			'no_content_class' => true,
+			'body_class'       => 'descbox',
+			'display_type'     => 0,
+			'include_topics'   => '',
+			'include_pages'    => '',
+			'seek_images'      => false
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type): void
+	public function validateBlockParams(array &$params): void
 	{
-		if ($type !== 'article_list')
+		if ($this->context['current_block']['type'] !== 'article_list')
 			return;
 
-		$parameters['body_class']     = FILTER_DEFAULT;
-		$parameters['display_type']   = FILTER_VALIDATE_INT;
-		$parameters['include_topics'] = FILTER_DEFAULT;
-		$parameters['include_pages']  = FILTER_DEFAULT;
-		$parameters['seek_images']    = FILTER_VALIDATE_BOOLEAN;
+		$params = [
+			'body_class'     => FILTER_DEFAULT,
+			'display_type'   => FILTER_VALIDATE_INT,
+			'include_topics' => FILTER_DEFAULT,
+			'include_pages'  => FILTER_DEFAULT,
+			'seek_images'    => FILTER_VALIDATE_BOOLEAN,
+		];
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'article_list')
+		if ($this->context['current_block']['type'] !== 'article_list')
 			return;
 
 		CustomField::make('body_class', $this->txt['lp_article_list']['body_class'])
 			->setTab('appearance')
 			->setValue(fn() => new ContentClassSelect, [
 				'id'    => 'body_class',
-				'value' => $this->context['lp_block']['options']['parameters']['body_class'],
+				'value' => $this->context['lp_block']['options']['body_class'],
 			]);
 
 		RadioField::make('display_type', $this->txt['lp_article_list']['display_type'])
 			->setTab('content')
 			->setOptions($this->txt['lp_article_list']['display_type_set'])
-			->setValue($this->context['lp_block']['options']['parameters']['display_type']);
+			->setValue($this->context['lp_block']['options']['display_type']);
 
 		CustomField::make('include_topics', $this->txt['lp_article_list']['include_topics'])
 			->setTab('content')
 			->setValue(fn() => new TopicSelect, [
 				'id'    => 'include_topics',
 				'hint'  => $this->txt['lp_article_list']['include_topics_select'],
-				'value' => $this->context['lp_block']['options']['parameters']['include_topics'] ?? '',
+				'value' => $this->context['lp_block']['options']['include_topics'] ?? '',
 			]);
 
 		CustomField::make('include_pages', $this->txt['lp_article_list']['include_pages'])
@@ -81,11 +85,11 @@ class ArticleList extends Block
 			->setValue(fn() => new PageSelect, [
 			'id'    => 'include_pages',
 			'hint'  => $this->txt['lp_article_list']['include_pages_select'],
-			'value' => $this->context['lp_block']['options']['parameters']['include_pages'] ?? '',
+			'value' => $this->context['lp_block']['options']['include_pages'] ?? '',
 		]);
 
 		CheckboxField::make('seek_images', $this->txt['lp_article_list']['seek_images'])
-			->setValue($this->context['lp_block']['options']['parameters']['seek_images']);
+			->setValue($this->context['lp_block']['options']['seek_images']);
 	}
 
 	public function getTopics(array $parameters): array

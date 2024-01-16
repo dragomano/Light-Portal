@@ -586,9 +586,9 @@ final class PageArea
 		$this->updateSettings(['lp_frontpage_pages' => implode(',', $items)]);
 	}
 
-	private function getOptions(): array
+	private function getParams(): array
 	{
-		$options = [
+		$baseParams = [
 			'show_title'           => true,
 			'show_in_menu'         => false,
 			'page_icon'            => '',
@@ -597,16 +597,18 @@ final class PageArea
 			'allow_comments'       => false,
 		];
 
-		$this->hook('pageOptions', [&$options]);
+		$params = [];
 
-		return $options;
+		$this->hook('preparePageParams', [&$params]);
+
+		return array_merge($baseParams, $params);
 	}
 
 	private function validateData(): void
 	{
 		[$post_data, $parameters] = (new PageValidator())->validate();
 
-		$options = $this->getOptions();
+		$options = $this->getParams();
 		$page_options = $this->context['lp_current_page']['options'] ?? $options;
 
 		$page = new PageModel($post_data, $this->context['lp_current_page']);

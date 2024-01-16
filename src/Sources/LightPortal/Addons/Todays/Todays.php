@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.12.23
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\Todays;
@@ -47,38 +47,43 @@ class Todays extends Block
 		];
 	}
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['todays']['parameters'] = [
+		if ($this->context['current_block']['type'] !== 'todays')
+			return;
+
+		$params = [
 			'widget_type' => 'calendar',
 			'max_items'   => 1,
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type): void
+	public function validateBlockParams(array &$params): void
 	{
-		if ($type !== 'todays')
+		if ($this->context['current_block']['type'] !== 'todays')
 			return;
 
-		$parameters['widget_type'] = FILTER_DEFAULT;
-		$parameters['max_items']   = FILTER_VALIDATE_INT;
+		$params = [
+			'widget_type' => FILTER_DEFAULT,
+			'max_items'   => FILTER_VALIDATE_INT,
+		];
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'todays')
+		if ($this->context['current_block']['type'] !== 'todays')
 			return;
 
 		SelectField::make('widget_type', $this->txt['lp_todays']['type'])
 			->setTab('content')
 			->setOptions(array_combine(['birthdays', 'holidays', 'events', 'calendar'], $this->txt['lp_todays']['type_set']))
-			->setValue($this->context['lp_block']['options']['parameters']['widget_type']);
+			->setValue($this->context['lp_block']['options']['widget_type']);
 
 		RangeField::make('max_items', $this->txt['lp_todays']['max_items'])
 			->setAfter($this->txt['lp_todays']['max_items_subtext'])
 			->setAttribute('min', 1)
 			->setAttribute('max', 100)
-			->setValue($this->context['lp_block']['options']['parameters']['max_items']);
+			->setValue($this->context['lp_block']['options']['max_items']);
 	}
 
 	public function getData(string $type, string $output_method = 'echo')

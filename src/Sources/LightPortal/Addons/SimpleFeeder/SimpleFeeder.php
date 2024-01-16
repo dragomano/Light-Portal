@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 01.01.24
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleFeeder;
@@ -27,26 +27,31 @@ class SimpleFeeder extends Block
 {
 	public string $icon = 'fas fa-rss';
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['simple_feeder']['parameters'] = [
+		if ($this->context['current_block']['type'] !== 'simple_feeder')
+			return;
+
+		$params = [
 			'url'       => '',
 			'show_text' => false,
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type): void
+	public function validateBlockParams(array &$params): void
 	{
-		if ($type !== 'simple_feeder')
+		if ($this->context['current_block']['type'] !== 'simple_feeder')
 			return;
 
-		$parameters['url']       = FILTER_VALIDATE_URL;
-		$parameters['show_text'] = FILTER_VALIDATE_BOOLEAN;
+		$params = [
+			'url'       => FILTER_VALIDATE_URL,
+			'show_text' => FILTER_VALIDATE_BOOLEAN,
+		];
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'simple_feeder')
+		if ($this->context['current_block']['type'] !== 'simple_feeder')
 			return;
 
 		TextField::make('url', $this->txt['lp_simple_feeder']['url'])
@@ -56,11 +61,11 @@ class SimpleFeeder extends Block
 			->setAttribute('maxlength', 255)
 			->placeholder($this->scripturl . '?action=.xml;type=rss2')
 			->setAttribute('style', 'width: 100%')
-			->setValue($this->context['lp_block']['options']['parameters']['url']);
+			->setValue($this->context['lp_block']['options']['url']);
 
 		CheckboxField::make('show_text', $this->txt['lp_simple_feeder']['show_text'])
 			->setTab('content')
-			->setValue($this->context['lp_block']['options']['parameters']['show_text']);
+			->setValue($this->context['lp_block']['options']['show_text']);
 	}
 
 	public function getData(string $url): array

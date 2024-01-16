@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 16.01.24
  */
 
 namespace Bugo\LightPortal\Addons\GalleryBlock;
@@ -26,26 +26,31 @@ class GalleryBlock extends Block
 {
 	public string $icon = 'fas fa-image';
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['gallery_block']['parameters'] = [
+		if ($this->context['current_block']['type'] !== 'gallery_block')
+			return;
+
+		$params = [
 			'categories' => '',
 			'num_images' => 10,
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type): void
+	public function validateBlockParams(array &$params): void
 	{
-		if ($type !== 'gallery_block')
+		if ($this->context['current_block']['type'] !== 'gallery_block')
 			return;
 
-		$parameters['categories'] = FILTER_DEFAULT;
-		$parameters['num_images'] = FILTER_VALIDATE_INT;
+		$params = [
+			'categories' => FILTER_DEFAULT,
+			'num_images' => FILTER_VALIDATE_INT,
+		];
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'gallery_block')
+		if ($this->context['current_block']['type'] !== 'gallery_block')
 			return;
 
 		CustomField::make('categories', $this->txt['lp_gallery_block']['categories'])
@@ -56,7 +61,7 @@ class GalleryBlock extends Block
 			->setAfter($this->txt['lp_gallery_block']['num_images_subtext'])
 			->setAttribute('min', 0)
 			->setAttribute('max', 999)
-			->setValue($this->context['lp_block']['options']['parameters']['num_images']);
+			->setValue($this->context['lp_block']['options']['num_images']);
 	}
 
 	public function getData(array $parameters): array
