@@ -74,6 +74,9 @@ trait SMFTrait
 
 		$file = $file ?: debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]['file'];
 
+		if ($name === 'pre_load_theme')
+			$name = 'user_info';
+
 		add_integration_function('integrate_' . $name, $method . '#', false, $file);
 	}
 

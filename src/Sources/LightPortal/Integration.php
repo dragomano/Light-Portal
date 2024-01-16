@@ -26,7 +26,7 @@ final class Integration extends AbstractMain
 {
 	public function hooks(): void
 	{
-		$this->applyHook('pre_load_theme', 'preLoad');
+		$this->applyHook('pre_load_theme', 'init');
 		$this->applyHook('pre_javascript_output');
 		$this->applyHook('pre_css_output');
 		$this->applyHook('load_theme');
@@ -52,7 +52,7 @@ final class Integration extends AbstractMain
 		$this->applyHook('clean_cache');
 	}
 
-	public function preLoad(): void
+	public function init(): void
 	{
 		$this->context['lp_load_time'] ??= microtime(true);
 		$this->context['lp_num_queries'] ??= 0;
