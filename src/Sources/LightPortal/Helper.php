@@ -16,7 +16,7 @@ namespace Bugo\LightPortal;
 
 use Bugo\LightPortal\Lists\{CategoryList, IconList, PageList, TagList, TitleList};
 use Bugo\LightPortal\Tasks\Notifier;
-use Bugo\LightPortal\Utils\{File, IntlTrait, Post, Request, Session, SMFCache, SMFTrait};
+use Bugo\LightPortal\Utils\{BlockAppearance, File, IntlTrait, Post, Request, Session, SMFCache, SMFTrait};
 use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
 use Exception;
 
@@ -25,7 +25,7 @@ if (! defined('SMF'))
 
 trait Helper
 {
-	use IntlTrait, SMFTrait;
+	use BlockAppearance, IntlTrait, SMFTrait;
 
 	/**
 	 * @param mixed|null $default
