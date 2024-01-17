@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.12.23
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\Search;
 
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Utils\{Config, Lang, Utils};
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -41,10 +42,10 @@ class Search extends Block
 
 	public function actions()
 	{
-		if ($this->request()->is(LP_ACTION) && $this->context['current_subaction'] === 'qsearch')
+		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'qsearch')
 			return call_user_func([$this, 'prepareQuickResults']);
 
-		if ($this->request()->is(LP_ACTION) && $this->context['current_subaction'] === 'search')
+		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'search')
 			return call_user_func([$this, 'showResults']);
 
 		return false;
@@ -55,14 +56,14 @@ class Search extends Block
 	 */
 	public function showResults(): void
 	{
-		$this->context['page_title']     = $this->txt['lp_search']['title'];
-		$this->context['robot_no_index'] = true;
+		Utils::$context['page_title']     = Lang::$txt['lp_search']['title'];
+		Utils::$context['robot_no_index'] = true;
 
-		$this->context['linktree'][] = [
-			'name' => $this->context['page_title']
+		Utils::$context['linktree'][] = [
+			'name' => Utils::$context['page_title']
 		];
 
-		$this->context['search_results'] = $this->getResults();
+		Utils::$context['search_results'] = $this->getResults();
 
 		$this->setTemplate('show_results');
 
@@ -79,7 +80,7 @@ class Search extends Block
 		if (empty($data['phrase']))
 			return;
 
-		$query = $this->smcFunc['htmltrim']($this->smcFunc['htmlspecialchars']($data['phrase']));
+		$query = Utils::$smcFunc['htmltrim'](Utils::$smcFunc['htmlspecialchars']($data['phrase']));
 
 		exit(json_encode($this->query($query)));
 	}
@@ -92,7 +93,7 @@ class Search extends Block
 		if ($this->request()->isNotEmpty('search') === false)
 			return [];
 
-		$query = $this->smcFunc['htmltrim']($this->smcFunc['htmlspecialchars']($this->request('search')));
+		$query = Utils::$smcFunc['htmltrim'](Utils::$smcFunc['htmlspecialchars']($this->request('search')));
 
 		if (empty($query))
 			return [];
@@ -116,7 +117,7 @@ class Search extends Block
 			$search_formula .= ($search_formula ? ' + ' : '') . 'CASE WHEN lower(p.alias) LIKE lower(\'%' . $word . '%\') THEN ' . (count($title_words) - $key) . ' ELSE 0 END';
 		}
 
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT p.alias, p.content, p.type, GREATEST(p.created_at, p.updated_at) AS date, (' . $search_formula . ') AS related, t.title, mem.id_member, mem.real_name
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:current_lang})
@@ -128,7 +129,7 @@ class Search extends Block
 			ORDER BY related DESC
 			LIMIT 10',
 			[
-				'current_lang' => $this->context['user']['language'],
+				'current_lang' => Utils::$context['user']['language'],
 				'status'       => 1,
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions()
@@ -136,20 +137,20 @@ class Search extends Block
 		);
 
 		$items = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($result))	{
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result))	{
 			$row['content'] = parse_content($row['content'], $row['type']);
 
 			$items[] = [
 				'link'    => LP_PAGE_URL . $row['alias'],
 				'title'   => $row['title'],
 				'content' => $this->getTeaser($row['content']),
-				'author'  => empty($row['id_member']) ? $this->txt['guest'] : ('<a href="' . $this->scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>'),
+				'author'  => empty($row['id_member']) ? Lang::$txt['guest'] : ('<a href="' . Config::$scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>'),
 				'date'    => $this->getFriendlyTime($row['date'])
 			];
 		}
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return $items;
 	}
@@ -169,13 +170,13 @@ class Search extends Block
 		$this->loadJSFile('light_portal/search/auto-complete.min.js', ['minimize' => true]);
 
 		echo '
-		<form class="search_addon centertext" action="', LP_BASE_URL, ';sa=search" method="post" accept-charset="', $this->context['character_set'], '">
-			<input type="search" name="search" placeholder="', $this->txt['lp_search']['title'], /** @lang text */ '">
+		<form class="search_addon centertext" action="', LP_BASE_URL, ';sa=search" method="post" accept-charset="', Utils::$context['character_set'], '">
+			<input type="search" name="search" placeholder="', Lang::$txt['lp_search']['title'], /** @lang text */ '">
 		</form>
 		<script>
 			new autoComplete({
-				selector: ".search_addon input",', (empty($this->context['lp_search_plugin']['min_chars']) ? '' : '
-				minChars: ' . $this->context['lp_search_plugin']['min_chars'] . ','), '
+				selector: ".search_addon input",', (empty(Utils::$context['lp_search_plugin']['min_chars']) ? '' : '
+				minChars: ' . Utils::$context['lp_search_plugin']['min_chars'] . ','), '
 				source: async function(term, response) {
 					const results = await fetch("', LP_BASE_URL, /** @lang text */ ';sa=qsearch", {
 						method: "POST",

@@ -3,10 +3,10 @@
 if (function_exists('show_current_month_grid'))
 	return;
 
+use Bugo\LightPortal\Utils\{Config, Lang};
+
 function show_current_month_grid(array $data): void
 {
-	global $txt, $modSettings, $scripturl;
-
 	if (empty($data))
 		return;
 
@@ -22,7 +22,7 @@ function show_current_month_grid(array $data): void
 
 		foreach ($calendar_data['week_days'] as $day)
 			echo '
-					<th scope="col">', $txt['days_short'][$day], '</th>';
+					<th scope="col">', Lang::$txt['days_short'][$day], '</th>';
 
 		echo '
 				</tr>
@@ -50,12 +50,12 @@ function show_current_month_grid(array $data): void
 					<td class="', implode(' ', $classes), '">';
 
 			if ($day['day']) {
-				if (empty($modSettings['cal_enabled'])) {
+				if (empty(Config::$modSettings['cal_enabled'])) {
 					echo '
 						<span class="day_text">', $day['day'], '</span>';
 				} else {
 					echo '
-						<a href="', $scripturl, '?action=calendar;viewlist;year=', $calendar_data['current_year'], ';month=', $calendar_data['current_month'], ';day=', $day['day'], '"><span class="day_text">', $day['day'], '</span></a>';
+						<a href="', Config::$scripturl, '?action=calendar;viewlist;year=', $calendar_data['current_year'], ';month=', $calendar_data['current_month'], ';day=', $day['day'], '"><span class="day_text">', $day['day'], '</span></a>';
 				}
 			}
 

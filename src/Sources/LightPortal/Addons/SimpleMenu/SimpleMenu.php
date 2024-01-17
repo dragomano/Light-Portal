@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.01.24
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleMenu;
 
 use Bugo\LightPortal\Addons\Plugin;
 use Bugo\LightPortal\Areas\Fields\CustomField;
+use Bugo\LightPortal\Utils\{Config, Lang, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -30,7 +31,7 @@ class SimpleMenu extends Plugin
 
 	public function prepareBlockParams(array &$params): void
 	{
-		if ($this->context['current_block']['type'] !== 'simple_menu')
+		if (Utils::$context['current_block']['type'] !== 'simple_menu')
 			return;
 
 		$params['items'] = '';
@@ -38,7 +39,7 @@ class SimpleMenu extends Plugin
 
 	public function validateBlockParams(array &$params): void
 	{
-		if ($this->context['current_block']['type'] !== 'simple_menu')
+		if (Utils::$context['current_block']['type'] !== 'simple_menu')
 			return;
 
 		$data = $this->request()->only(['item_name', 'item_link']);
@@ -63,10 +64,10 @@ class SimpleMenu extends Plugin
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['current_block']['type'] !== 'simple_menu')
+		if (Utils::$context['current_block']['type'] !== 'simple_menu')
 			return;
 
-		CustomField::make('items', $this->txt['lp_simple_menu']['items'])
+		CustomField::make('items', Lang::$txt['lp_simple_menu']['items'])
 			->setTab('content')
 			->setValue($this->getFromTemplate('simple_menu_items'));
 	}
@@ -86,8 +87,8 @@ class SimpleMenu extends Plugin
 
 			$ext = true;
 			if (! str_starts_with($link, 'http')) {
-				$active = $link == $this->context['current_action'];
-				$link   = $this->scripturl . '?action=' . $link;
+				$active = $link == Utils::$context['current_action'];
+				$link   = Config::$scripturl . '?action=' . $link;
 				$ext    = false;
 			}
 

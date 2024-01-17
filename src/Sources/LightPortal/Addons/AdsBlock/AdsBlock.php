@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.01.24
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
@@ -18,6 +18,7 @@ namespace Bugo\LightPortal\Addons\AdsBlock;
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CustomField, TextareaField, TextField};
 use Bugo\LightPortal\Areas\Partials\{PageSelect, BoardSelect, TopicSelect};
+use Bugo\LightPortal\Utils\{Lang, Theme, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -33,7 +34,7 @@ class AdsBlock extends Block
 
 	public function prepareBlockParams(array &$params): void
 	{
-		if ($this->context['current_block']['type'] !== 'ads_block')
+		if (Utils::$context['current_block']['type'] !== 'ads_block')
 			return;
 
 		$params = [
@@ -49,7 +50,7 @@ class AdsBlock extends Block
 
 	public function validateBlockParams(array &$params): void
 	{
-		if ($this->context['current_block']['type'] !== 'ads_block')
+		if (Utils::$context['current_block']['type'] !== 'ads_block')
 			return;
 
 		$params = [
@@ -64,7 +65,7 @@ class AdsBlock extends Block
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['current_block']['type'] !== 'ads_block')
+		if (Utils::$context['current_block']['type'] !== 'ads_block')
 			return;
 
 		$this->addInlineCss('
@@ -72,9 +73,9 @@ class AdsBlock extends Block
 			display: none;
 		}');
 
-		TextareaField::make('loader_code', $this->txt['lp_ads_block']['loader_code'])
+		TextareaField::make('loader_code', Lang::$txt['lp_ads_block']['loader_code'])
 			->setTab('content')
-			->setValue($this->context['lp_block']['options']['loader_code']);
+			->setValue(Utils::$context['lp_block']['options']['loader_code']);
 
 		TextField::make('placement', '')
 			->setTab('content')
@@ -86,40 +87,40 @@ class AdsBlock extends Block
 			->setAttribute('class', 'hidden')
 			->setValue('all');
 
-		CustomField::make('ads_placement', $this->txt['lp_block_placement'])
+		CustomField::make('ads_placement', Lang::$txt['lp_block_placement'])
 			->setTab('access_placement')
 			->setValue(fn() => new PlacementSelect, [
 				'data'  => $this->getPlacements(),
-				'value' => $this->context['lp_block']['options']['ads_placement']
+				'value' => Utils::$context['lp_block']['options']['ads_placement']
 			]);
 
-		CustomField::make('include_boards', $this->txt['lp_ads_block']['include_boards'])
+		CustomField::make('include_boards', Lang::$txt['lp_ads_block']['include_boards'])
 			->setTab('access_placement')
 			->setValue(fn() => new BoardSelect, [
 				'id'    => 'include_boards',
-				'hint'  => $this->txt['lp_ads_block']['include_boards_select'],
-				'value' => $this->context['lp_block']['options']['include_boards'] ?? '',
+				'hint'  => Lang::$txt['lp_ads_block']['include_boards_select'],
+				'value' => Utils::$context['lp_block']['options']['include_boards'] ?? '',
 			]);
 
-		CustomField::make('include_topics', $this->txt['lp_ads_block']['include_topics'])
+		CustomField::make('include_topics', Lang::$txt['lp_ads_block']['include_topics'])
 			->setTab('access_placement')
 			->setValue(fn() => new TopicSelect, [
 				'id'    => 'include_pages',
-				'hint'  => $this->txt['lp_ads_block']['include_pages_select'],
-				'value' => $this->context['lp_block']['options']['include_pages'] ?? '',
+				'hint'  => Lang::$txt['lp_ads_block']['include_pages_select'],
+				'value' => Utils::$context['lp_block']['options']['include_pages'] ?? '',
 			]);
 
-		CustomField::make('include_pages', $this->txt['lp_ads_block']['include_pages'])
+		CustomField::make('include_pages', Lang::$txt['lp_ads_block']['include_pages'])
 			->setTab('access_placement')
 			->setValue(fn() => new PageSelect, [
 				'id'    => 'include_pages',
-				'hint'  => $this->txt['lp_ads_block']['include_pages_select'],
-				'value' => $this->context['lp_block']['options']['include_pages'] ?? '',
+				'hint'  => Lang::$txt['lp_ads_block']['include_pages_select'],
+				'value' => Utils::$context['lp_block']['options']['include_pages'] ?? '',
 			]);
 
-		CustomField::make('end_date', $this->txt['lp_ads_block']['end_date'])
+		CustomField::make('end_date', Lang::$txt['lp_ads_block']['end_date'])
 			->setValue('
-			<input type="date" id="end_date" name="end_date" min="' . date('Y-m-d') . '" value="' . $this->context['lp_block']['options']['end_date'] . '">');
+			<input type="date" id="end_date" name="end_date" min="' . date('Y-m-d') . '" value="' . Utils::$context['lp_block']['options']['end_date'] . '">');
 	}
 
 	public function findBlockErrors(array &$post_errors, array $data): void
@@ -127,7 +128,7 @@ class AdsBlock extends Block
 		if ($data['placement'] !== 'ads')
 			return;
 
-		$this->txt['lp_post_error_no_ads_placement'] = $this->txt['lp_ads_block']['no_ads_placement'];
+		Lang::$txt['lp_post_error_no_ads_placement'] = Lang::$txt['lp_ads_block']['no_ads_placement'];
 
 		if (empty($data['parameters']['ads_placement']))
 			$post_errors[] = 'no_ads_placement';
@@ -160,20 +161,20 @@ class AdsBlock extends Block
 	 */
 	public function menuButtons(): void
 	{
-		$this->context['lp_block_placements']['ads'] = $this->txt['lp_ads_block']['ads_type'];
+		Utils::$context['lp_block_placements']['ads'] = Lang::$txt['lp_ads_block']['ads_type'];
 
-		if ((empty($this->context['current_board']) && empty($this->context['lp_page'])) || $this->request()->is('xml'))
+		if ((empty(Utils::$context['current_board']) && empty(Utils::$context['lp_page'])) || $this->request()->is('xml'))
 			return;
 
-		$this->context['lp_ads_blocks'] = $this->getData();
+		Utils::$context['lp_ads_blocks'] = $this->getData();
 
-		if ($this->context['lp_ads_blocks'])
-			$this->context['lp_blocks'] = array_merge($this->context['lp_blocks'], $this->context['lp_ads_blocks']);
+		if (Utils::$context['lp_ads_blocks'])
+			Utils::$context['lp_blocks'] = array_merge(Utils::$context['lp_blocks'], Utils::$context['lp_ads_blocks']);
 
-		if (! empty($this->context['lp_blocks']['ads'])) {
-			foreach ($this->context['lp_blocks']['ads'] as $block) {
+		if (! empty(Utils::$context['lp_blocks']['ads'])) {
+			foreach (Utils::$context['lp_blocks']['ads'] as $block) {
 				if ($block['parameters'] && ! empty($block['parameters']['loader_code'])) {
-					$this->context['html_headers'] .= "\n\t" . $block['parameters']['loader_code'];
+					Utils::$context['html_headers'] .= "\n\t" . $block['parameters']['loader_code'];
 				}
 
 				if ($block['parameters'] && ! empty($block['parameters']['end_date'])) {
@@ -190,10 +191,10 @@ class AdsBlock extends Block
 		if ($this->request()->has('area') && $this->request('area') === 'lp_blocks')
 			$this->setTemplate()->withLayer('ads_block_form');
 
-		if ($this->request()->has('area') && $this->request('area') === 'lp_settings' && $this->context['current_subaction'] === 'panels') {
-			unset($this->context['lp_block_placements']['ads']);
+		if ($this->request()->has('area') && $this->request('area') === 'lp_settings' && Utils::$context['current_subaction'] === 'panels') {
+			unset(Utils::$context['lp_block_placements']['ads']);
 
-			$this->context['lp_block_placements'] = array_merge($this->context['lp_block_placements'], $this->getPlacements());
+			Utils::$context['lp_block_placements'] = array_merge(Utils::$context['lp_block_placements'], $this->getPlacements());
 		}
 	}
 
@@ -245,21 +246,21 @@ class AdsBlock extends Block
 	 */
 	public function prepareDisplayContext(array $output): void
 	{
-		if (empty($this->context['lp_ads_blocks']) || ($this->isTopicNumRepliesLesserThanMinReplies()))
+		if (empty(Utils::$context['lp_ads_blocks']) || ($this->isTopicNumRepliesLesserThanMinReplies()))
 			return;
 
-		$showOldestFirst = empty($this->options['view_newest_first']);
+		$showOldestFirst = empty(Theme::$current->options['view_newest_first']);
 
 		$counter = $output['counter'] + 1;
 
-		$current_counter = $showOldestFirst ? $this->context['start'] : $this->context['total_visible_posts'] - $this->context['start'];
+		$current_counter = $showOldestFirst ? Utils::$context['start'] : Utils::$context['total_visible_posts'] - Utils::$context['start'];
 
 		/**
 		 * Display ads before the first message
 		 *
 		 * Вывод рекламы перед первым сообщением
 		 */
-		if ($this->context['lp_ads_blocks']['before_first_post'] && $current_counter == $output['counter'] && empty($this->context['start'])) {
+		if (Utils::$context['lp_ads_blocks']['before_first_post'] && $current_counter == $output['counter'] && empty(Utils::$context['start'])) {
 			lp_show_blocks('before_first_post');
 		}
 
@@ -268,7 +269,7 @@ class AdsBlock extends Block
 		 *
 		 * Вывод рекламы перед каждым первым сообщением
 		 */
-		if ($this->context['lp_ads_blocks']['before_every_first_post'] && $current_counter == $output['counter']) {
+		if (Utils::$context['lp_ads_blocks']['before_every_first_post'] && $current_counter == $output['counter']) {
 			lp_show_blocks('before_every_first_post');
 		}
 
@@ -277,7 +278,7 @@ class AdsBlock extends Block
 		 *
 		 * Вывод рекламы после первого сообщения
 		 */
-		if ($this->context['lp_ads_blocks']['after_first_post'] && ($counter == ($showOldestFirst ? 2 : $this->context['total_visible_posts'] - 2))) {
+		if (Utils::$context['lp_ads_blocks']['after_first_post'] && ($counter == ($showOldestFirst ? 2 : Utils::$context['total_visible_posts'] - 2))) {
 			lp_show_blocks('after_first_post');
 		}
 
@@ -286,7 +287,7 @@ class AdsBlock extends Block
 		 *
 		 * Вывод рекламы после каждого первого сообщения
 		 */
-		if ($this->context['lp_ads_blocks']['after_every_first_post'] && ($output['counter'] == ($showOldestFirst ? $this->context['start'] + 1 : $current_counter - 1))) {
+		if (Utils::$context['lp_ads_blocks']['after_every_first_post'] && ($output['counter'] == ($showOldestFirst ? Utils::$context['start'] + 1 : $current_counter - 1))) {
 			lp_show_blocks('after_every_first_post');
 		}
 
@@ -296,9 +297,9 @@ class AdsBlock extends Block
 		 * Вывод рекламы перед каждым последним сообщением
 		 */
 		$before_every_last_post = $showOldestFirst
-			? $counter == $this->context['total_visible_posts'] || $counter % $this->context['messages_per_page'] == 0
-			: ($output['id'] == $this->context['topic_first_message'] || ($this->context['total_visible_posts'] - $counter) % $this->context['messages_per_page'] == 0);
-		if ($this->context['lp_ads_blocks']['before_every_last_post'] && $before_every_last_post) {
+			? $counter == Utils::$context['total_visible_posts'] || $counter % Utils::$context['messages_per_page'] == 0
+			: ($output['id'] == Utils::$context['topic_first_message'] || (Utils::$context['total_visible_posts'] - $counter) % Utils::$context['messages_per_page'] == 0);
+		if (Utils::$context['lp_ads_blocks']['before_every_last_post'] && $before_every_last_post) {
 			lp_show_blocks('before_every_last_post');
 		}
 
@@ -307,7 +308,7 @@ class AdsBlock extends Block
 		 *
 		 * Вывод рекламы перед последним сообщением
 		 */
-		if ($this->context['lp_ads_blocks']['before_last_post'] && $output['id'] == ($showOldestFirst ? $this->context['topic_last_message'] : $this->context['topic_first_message'])) {
+		if (Utils::$context['lp_ads_blocks']['before_last_post'] && $output['id'] == ($showOldestFirst ? Utils::$context['topic_last_message'] : Utils::$context['topic_first_message'])) {
 			lp_show_blocks('before_last_post');
 		}
 
@@ -316,7 +317,7 @@ class AdsBlock extends Block
 		 *
 		 * Вывод рекламы после каждого последнего сообщения
 		 */
-		if ($this->context['lp_ads_blocks']['after_every_last_post'] && ($counter == $this->context['total_visible_posts'] || $counter % $this->context['messages_per_page'] == 0)) {
+		if (Utils::$context['lp_ads_blocks']['after_every_last_post'] && ($counter == Utils::$context['total_visible_posts'] || $counter % Utils::$context['messages_per_page'] == 0)) {
 			ob_start();
 
 			lp_show_blocks('after_every_last_post');
@@ -334,7 +335,7 @@ class AdsBlock extends Block
 		 *
 		 * Вывод рекламы после последнего сообщения
 		 */
-		if ($this->context['lp_ads_blocks']['after_last_post'] && $output['id'] == ($showOldestFirst ? $this->context['topic_last_message'] : $this->context['topic_first_message'])) {
+		if (Utils::$context['lp_ads_blocks']['after_last_post'] && $output['id'] == ($showOldestFirst ? Utils::$context['topic_last_message'] : Utils::$context['topic_first_message'])) {
 			ob_start();
 
 			lp_show_blocks('after_last_post');
@@ -350,7 +351,7 @@ class AdsBlock extends Block
 
 	public function getData(): array
 	{
-		if (empty($this->context['lp_blocks']['ads']))
+		if (empty(Utils::$context['lp_blocks']['ads']))
 			return [];
 
 		$ads_blocks = [];
@@ -368,7 +369,7 @@ class AdsBlock extends Block
 			return [];
 
 		return array_filter(
-			$this->context['lp_blocks']['ads'],
+			Utils::$context['lp_blocks']['ads'],
 			fn($block) => (
 				$this->filterByIncludedTopics($block) &&
 				$this->filterByIncludedBoards($block) &&
@@ -380,10 +381,10 @@ class AdsBlock extends Block
 
 	private function filterByIncludedTopics(array $block): bool
 	{
-		if (! empty($block['parameters']['include_topics']) && ! empty($this->context['current_topic'])) {
+		if (! empty($block['parameters']['include_topics']) && ! empty(Utils::$context['current_topic'])) {
 			$topics = array_flip(explode(',', $block['parameters']['include_topics']));
 
-			if (! array_key_exists($this->context['current_topic'], $topics)) {
+			if (! array_key_exists(Utils::$context['current_topic'], $topics)) {
 				return false;
 			}
 		}
@@ -393,10 +394,10 @@ class AdsBlock extends Block
 
 	private function filterByIncludedBoards(array $block): bool
 	{
-		if (! empty($block['parameters']['include_boards']) && ! empty($this->context['current_board']) && empty($this->context['current_topic'])) {
+		if (! empty($block['parameters']['include_boards']) && ! empty(Utils::$context['current_board']) && empty(Utils::$context['current_topic'])) {
 			$boards = array_flip(explode(',', $block['parameters']['include_boards']));
 
-			if (! array_key_exists($this->context['current_board'], $boards)) {
+			if (! array_key_exists(Utils::$context['current_board'], $boards)) {
 				return false;
 			}
 		}
@@ -406,10 +407,10 @@ class AdsBlock extends Block
 
 	private function filterByIncludedPages(array $block): bool
 	{
-		if (! empty($block['parameters']['include_pages']) && ! empty($this->context['lp_page'])) {
+		if (! empty($block['parameters']['include_pages']) && ! empty(Utils::$context['lp_page'])) {
 			$pages = array_flip(explode(',', $block['parameters']['include_pages']));
 
-			if (! array_key_exists($this->context['lp_page']['id'], $pages)) {
+			if (! array_key_exists(Utils::$context['lp_page']['id'], $pages)) {
 				return false;
 			}
 		}
@@ -449,7 +450,7 @@ class AdsBlock extends Block
 				'page_top',
 				'page_bottom',
 			],
-			$this->txt['lp_ads_block']['placement_set']
+			Lang::$txt['lp_ads_block']['placement_set']
 		);
 	}
 
@@ -465,7 +466,7 @@ class AdsBlock extends Block
 
 	private function disableBlock(int $item): void
 	{
-		$this->smcFunc['db_query']('', '
+		Utils::$smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_blocks
 			SET status = {int:status}
 			WHERE block_id = {int:item}',
@@ -475,12 +476,12 @@ class AdsBlock extends Block
 			]
 		);
 
-		$this->context['lp_num_queries']++;
+		Utils::$context['lp_num_queries']++;
 	}
 
 	private function isTopicNumRepliesLesserThanMinReplies(): bool
 	{
-		return isset($this->context['lp_ads_block_plugin']['min_replies'])
-			&& $this->context['topicinfo']['num_replies'] < (int) $this->context['lp_ads_block_plugin']['min_replies'];
+		return isset(Utils::$context['lp_ads_block_plugin']['min_replies'])
+			&& Utils::$context['topicinfo']['num_replies'] < (int) Utils::$context['lp_ads_block_plugin']['min_replies'];
 	}
 }

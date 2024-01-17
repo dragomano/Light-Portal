@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.01.24
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortalMigration;
 
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -26,21 +27,21 @@ class TinyPortalMigration extends Plugin
 
 	public function updateAdminAreas(array &$areas): void
 	{
-		if ($this->user_info['is_admin']) {
-			$areas['lp_blocks']['subsections']['import_from_tp'] = [$this->context['lp_icon_set']['import'] . $this->txt['lp_tiny_portal_migration']['label_name']];
-			$areas['lp_pages']['subsections']['import_from_tp']  = [$this->context['lp_icon_set']['import'] . $this->txt['lp_tiny_portal_migration']['label_name']];
+		if (User::$info['is_admin']) {
+			$areas['lp_blocks']['subsections']['import_from_tp'] = [Utils::$context['lp_icon_set']['import'] . Lang::$txt['lp_tiny_portal_migration']['label_name']];
+			$areas['lp_pages']['subsections']['import_from_tp']  = [Utils::$context['lp_icon_set']['import'] . Lang::$txt['lp_tiny_portal_migration']['label_name']];
 		}
 	}
 
 	public function updateBlockAreas(array &$areas): void
 	{
-		if ($this->user_info['is_admin'])
+		if (User::$info['is_admin'])
 			$areas['import_from_tp'] = [new BlockImport, 'main'];
 	}
 
 	public function updatePageAreas(array &$areas): void
 	{
-		if ($this->user_info['is_admin'])
+		if (User::$info['is_admin'])
 			$areas['import_from_tp'] = [new PageImport, 'main'];
 	}
 
@@ -57,11 +58,11 @@ class TinyPortalMigration extends Plugin
 			$titles[] = [
 				'item_id' => $page_id,
 				'type'    => 'page',
-				'lang'    => $this->language,
+				'lang'    => Config::$language,
 				'title'   => $item['subject']
 			];
 
-			if ($this->language != 'english' && ! empty($this->modSettings['userLanguage'])) {
+			if (Config::$language != 'english' && ! empty(Config::$modSettings['userLanguage'])) {
 				$titles[] = [
 					'item_id' => $page_id,
 					'type'    => 'page',
@@ -94,7 +95,7 @@ class TinyPortalMigration extends Plugin
 
 	private function getComments(array $pages): array
 	{
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT *
 			FROM {db_prefix}tp_comments AS com
 				INNER JOIN {db_prefix}members AS mem ON (com.member_id = mem.id_member)
@@ -107,7 +108,7 @@ class TinyPortalMigration extends Plugin
 		);
 
 		$comments = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			if ($row['item_id'] < 0 || empty($row['comment']))
 				continue;
 
@@ -121,8 +122,8 @@ class TinyPortalMigration extends Plugin
 			];
 		}
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return $comments;
 	}

@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\TopicRatingBar;
 
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Utils\Utils;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -55,9 +56,9 @@ class TopicRatingBar extends Plugin
 	 */
 	public function frontAssets(): void
 	{
-		foreach ($this->context['lp_frontpage_articles'] as $id => $topic) {
+		foreach (Utils::$context['lp_frontpage_articles'] as $id => $topic) {
 			if (! empty($topic['rating'])) {
-				$this->context['lp_frontpage_articles'][$id]['replies']['after'] .= ' <i class="fas fa-star"></i> ' . $topic['rating'];
+				Utils::$context['lp_frontpage_articles'][$id]['replies']['after'] .= ' <i class="fas fa-star"></i> ' . $topic['rating'];
 			}
 		}
 	}

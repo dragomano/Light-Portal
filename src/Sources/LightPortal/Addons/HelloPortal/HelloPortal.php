@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\HelloPortal;
 
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Utils\{Lang, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -41,15 +42,15 @@ class HelloPortal extends Plugin
 
 		$this->loadLanguage('Post');
 
-		if (! empty($this->context['admin_menu_name']) && ! empty($this->context[$this->context['admin_menu_name']]) && ! empty($this->context[$this->context['admin_menu_name']]['tab_data']['title']))
-			$this->context[$this->context['admin_menu_name']]['tab_data']['title'] .= '<button class="button floatnone lp_hello_portal_button" @click.prevent="runTour()" x-data>' . $this->txt['lp_hello_portal']['tour_button'] . '</button>';
+		if (! empty(Utils::$context['admin_menu_name']) && ! empty(Utils::$context[Utils::$context['admin_menu_name']]) && ! empty(Utils::$context[Utils::$context['admin_menu_name']]['tab_data']['title']))
+			Utils::$context[Utils::$context['admin_menu_name']]['tab_data']['title'] .= '<button class="button floatnone lp_hello_portal_button" @click.prevent="runTour()" x-data>' . Lang::$txt['lp_hello_portal']['tour_button'] . '</button>';
 
 		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs.min.css');
 
-		if (! empty($this->context['lp_hello_portal_plugin']['theme']))
-			$this->loadExtCSS('https://cdn.jsdelivr.net/npm/intro.js@4/themes/introjs-' . $this->context['lp_hello_portal_plugin']['theme'] . '.css');
+		if (! empty(Utils::$context['lp_hello_portal_plugin']['theme']))
+			$this->loadExtCSS('https://cdn.jsdelivr.net/npm/intro.js@4/themes/introjs-' . Utils::$context['lp_hello_portal_plugin']['theme'] . '.css');
 
-		if ($this->context['right_to_left'])
+		if (Utils::$context['right_to_left'])
 			$this->loadExtCSS('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs-rtl.min.css');
 
 		$this->loadExtJS('https://cdn.jsdelivr.net/npm/intro.js@4/minified/intro.min.js');
@@ -58,16 +59,16 @@ class HelloPortal extends Plugin
 		function runTour() {
 			introJs().setOptions({
 				tooltipClass: "lp_addon_hello_portal",
-				nextLabel: ' . $this->jsEscape($this->txt['admin_next']) . ',
-				prevLabel: ' . $this->jsEscape($this->txt['back']) . ',
-				doneLabel: ' . $this->jsEscape($this->txt['attach_dir_ok']) . ',
+				nextLabel: ' . $this->jsEscape(Lang::$txt['admin_next']) . ',
+				prevLabel: ' . $this->jsEscape(Lang::$txt['back']) . ',
+				doneLabel: ' . $this->jsEscape(Lang::$txt['attach_dir_ok']) . ',
 				steps: [' . $steps . '],
-				showProgress: ' . (empty($this->context['lp_hello_portal_plugin']['show_progress']) ? 'false' : 'true') . ',
-				showButtons: ' . (empty($this->context['lp_hello_portal_plugin']['show_buttons']) ? 'false' : 'true') . ',
+				showProgress: ' . (empty(Utils::$context['lp_hello_portal_plugin']['show_progress']) ? 'false' : 'true') . ',
+				showButtons: ' . (empty(Utils::$context['lp_hello_portal_plugin']['show_buttons']) ? 'false' : 'true') . ',
 				showBullets: false,
-				exitOnOverlayClick: ' . (empty($this->context['lp_hello_portal_plugin']['exit_on_overlay_click']) ? 'false' : 'true') . ',
-				keyboardNavigation: ' . (empty($this->context['lp_hello_portal_plugin']['keyboard_navigation']) ? 'false' : 'true') . ',
-				disableInteraction: ' . (empty($this->context['lp_hello_portal_plugin']['disable_interaction']) ? 'false' : 'true') . ',
+				exitOnOverlayClick: ' . (empty(Utils::$context['lp_hello_portal_plugin']['exit_on_overlay_click']) ? 'false' : 'true') . ',
+				keyboardNavigation: ' . (empty(Utils::$context['lp_hello_portal_plugin']['keyboard_navigation']) ? 'false' : 'true') . ',
+				disableInteraction: ' . (empty(Utils::$context['lp_hello_portal_plugin']['disable_interaction']) ? 'false' : 'true') . ',
 				scrollToElement: true,
 				scrollTo: "tooltip"
 			}).start();
@@ -76,7 +77,7 @@ class HelloPortal extends Plugin
 
 	public function addSettings(array &$config_vars): void
 	{
-		$config_vars['hello_portal'][] = ['select', 'theme', array_combine($this->themes, $this->txt['lp_hello_portal']['theme_set'])];
+		$config_vars['hello_portal'][] = ['select', 'theme', array_combine($this->themes, Lang::$txt['lp_hello_portal']['theme_set'])];
 		$config_vars['hello_portal'][] = ['check', 'show_progress'];
 		$config_vars['hello_portal'][] = ['check', 'show_buttons'];
 		$config_vars['hello_portal'][] = ['check', 'exit_on_overlay_click'];
@@ -137,6 +138,6 @@ class HelloPortal extends Plugin
 	private function isCurrentArea(string $area, string $sa = 'main', bool $canBeEmpty = true): bool
 	{
 		return $this->request()->has('area') && $this->request('area') === $area &&
-			($canBeEmpty ? ($this->context['current_subaction'] === $sa || empty($this->context['current_subaction'])) : $this->context['current_subaction'] === $sa);
+			($canBeEmpty ? (Utils::$context['current_subaction'] === $sa || empty(Utils::$context['current_subaction'])) : Utils::$context['current_subaction'] === $sa);
 	}
 }

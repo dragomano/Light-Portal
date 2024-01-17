@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.01.24
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\TopBoards;
@@ -19,6 +19,7 @@ use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\LightPortal\Areas\Fields\NumberField;
 use Bugo\LightPortal\Areas\Fields\RadioField;
+use Bugo\LightPortal\Utils\{Lang, User, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -31,7 +32,7 @@ class TopBoards extends Block
 
 	public function prepareBlockParams(array &$params): void
 	{
-		if ($this->context['current_block']['type'] !== 'top_boards')
+		if (Utils::$context['current_block']['type'] !== 'top_boards')
 			return;
 
 		$params = [
@@ -43,7 +44,7 @@ class TopBoards extends Block
 
 	public function validateBlockParams(array &$params): void
 	{
-		if ($this->context['current_block']['type'] !== 'top_boards')
+		if (Utils::$context['current_block']['type'] !== 'top_boards')
 			return;
 
 		$params = [
@@ -55,19 +56,19 @@ class TopBoards extends Block
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['current_block']['type'] !== 'top_boards')
+		if (Utils::$context['current_block']['type'] !== 'top_boards')
 			return;
 
-		NumberField::make('num_boards', $this->txt['lp_top_boards']['num_boards'])
+		NumberField::make('num_boards', Lang::$txt['lp_top_boards']['num_boards'])
 			->setAttribute('min', 1)
-			->setValue($this->context['lp_block']['options']['num_boards']);
+			->setValue(Utils::$context['lp_block']['options']['num_boards']);
 
-		RadioField::make('entity_type', $this->txt['lp_top_boards']['entity_type'])
-			->setOptions(array_combine(['num_topics', 'num_posts'], $this->txt['lp_top_boards']['entity_type_set']))
-			->setValue($this->context['lp_block']['options']['entity_type']);
+		RadioField::make('entity_type', Lang::$txt['lp_top_boards']['entity_type'])
+			->setOptions(array_combine(['num_topics', 'num_posts'], Lang::$txt['lp_top_boards']['entity_type_set']))
+			->setValue(Utils::$context['lp_block']['options']['entity_type']);
 
-		CheckboxField::make('show_numbers_only', $this->txt['lp_top_boards']['show_numbers_only'])
-			->setValue($this->context['lp_block']['options']['show_numbers_only']);
+		CheckboxField::make('show_numbers_only', Lang::$txt['lp_top_boards']['show_numbers_only'])
+			->setValue(Utils::$context['lp_block']['options']['show_numbers_only']);
 	}
 
 	public function prepareContent(object $data, array $parameters): void
@@ -77,7 +78,7 @@ class TopBoards extends Block
 
 		$parameters['show_numbers_only'] ??= false;
 
-		$top_boards = $this->cache('top_boards_addon_b' . $data->block_id . '_u' . $this->user_info['id'])
+		$top_boards = $this->cache('top_boards_addon_b' . $data->block_id . '_u' . User::$info['id'])
 			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getFromSsi', 'topBoards', (int) $parameters['num_boards'], 'array');
 
@@ -101,7 +102,7 @@ class TopBoards extends Block
 			<dt>', $board['link'], '</dt>
 			<dd class="statsbar generic_bar righttext">
 				<div class="bar', (empty($board['num_' . $type]) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-				<span>', ($parameters['show_numbers_only'] ? $board['num_' . $type] : $this->translate($this->txt['lp_top_boards'][$type], [$type => $board['num_' . $type]])), '</span>
+				<span>', ($parameters['show_numbers_only'] ? $board['num_' . $type] : $this->translate(Lang::$txt['lp_top_boards'][$type], [$type => $board['num_' . $type]])), '</span>
 			</dd>';
 		}
 

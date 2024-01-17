@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.01.24
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\ExtendedMetaTags;
 
 use Bugo\LightPortal\Addons\Plugin;
 use Bugo\LightPortal\Areas\Fields\VirtualSelectField;
+use Bugo\LightPortal\Utils\{Lang, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -38,15 +39,15 @@ class ExtendedMetaTags extends Plugin
 
 	public function themeContext(): void
 	{
-		if ($this->request()->hasNot('page') || empty($this->context['lp_page']['options']))
+		if ($this->request()->hasNot('page') || empty(Utils::$context['lp_page']['options']))
 			return;
 
-		if (! empty($this->context['lp_page']['options']['meta_robots'])) {
-			$this->context['meta_tags'][] = ['name' => 'robots', 'content' => $this->context['lp_page']['options']['meta_robots']];
+		if (! empty(Utils::$context['lp_page']['options']['meta_robots'])) {
+			Utils::$context['meta_tags'][] = ['name' => 'robots', 'content' => Utils::$context['lp_page']['options']['meta_robots']];
 		}
 
-		if (! empty($this->context['lp_page']['options']['meta_rating'])) {
-			$this->context['meta_tags'][] = ['name' => 'rating', 'content' => $this->context['lp_page']['options']['meta_rating']];
+		if (! empty(Utils::$context['lp_page']['options']['meta_rating'])) {
+			Utils::$context['meta_tags'][] = ['name' => 'rating', 'content' => Utils::$context['lp_page']['options']['meta_rating']];
 		}
 	}
 
@@ -58,22 +59,20 @@ class ExtendedMetaTags extends Plugin
 
 	public function validatePageParams(array &$params): void
 	{
-		$params += [
-			'meta_robots' => FILTER_DEFAULT,
-			'meta_rating' => FILTER_DEFAULT,
-		];
+		$params['meta_robots'] = FILTER_DEFAULT;
+		$params['meta_rating'] = FILTER_DEFAULT;
 	}
 
 	public function preparePageFields(): void
 	{
-		VirtualSelectField::make('meta_robots', $this->txt['lp_extended_meta_tags']['meta_robots'])
+		VirtualSelectField::make('meta_robots', Lang::$txt['lp_extended_meta_tags']['meta_robots'])
 			->setTab('seo')
-			->setOptions(array_combine($this->meta_robots, $this->txt['lp_extended_meta_tags']['meta_robots_set']))
-			->setValue($this->context['lp_page']['options']['meta_robots']);
+			->setOptions(array_combine($this->meta_robots, Lang::$txt['lp_extended_meta_tags']['meta_robots_set']))
+			->setValue(Utils::$context['lp_page']['options']['meta_robots']);
 
-		VirtualSelectField::make('meta_rating', $this->txt['lp_extended_meta_tags']['meta_rating'])
+		VirtualSelectField::make('meta_rating', Lang::$txt['lp_extended_meta_tags']['meta_rating'])
 			->setTab('seo')
-			->setOptions(array_combine($this->meta_rating, $this->txt['lp_extended_meta_tags']['meta_rating_set']))
-			->setValue($this->context['lp_page']['options']['meta_rating']);
+			->setOptions(array_combine($this->meta_rating, Lang::$txt['lp_extended_meta_tags']['meta_rating_set']))
+			->setValue(Utils::$context['lp_page']['options']['meta_rating']);
 	}
 }

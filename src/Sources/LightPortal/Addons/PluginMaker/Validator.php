@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.01.24
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
 
 use Bugo\LightPortal\Areas\Validators\AbstractValidator;
+use Bugo\LightPortal\Utils\{Lang, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -65,7 +66,7 @@ class Validator extends AbstractValidator
 		$data = [];
 
 		if ($this->request()->has('save')) {
-			foreach ($this->context['lp_languages'] as $lang) {
+			foreach (Utils::$context['lp_languages'] as $lang) {
 				$this->args['title_' . $lang['filename']]       = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
 				$this->args['description_' . $lang['filename']] = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
 			}
@@ -95,10 +96,10 @@ class Validator extends AbstractValidator
 			$errors[] = 'no_description';
 
 		if (! empty($errors)) {
-			$this->context['post_errors'] = [];
+			Utils::$context['post_errors'] = [];
 
 			foreach ($errors as $error)
-				$this->context['post_errors'][] = $this->txt['lp_post_error_' . $error] ?? $this->txt['lp_plugin_maker'][$error];
+				Utils::$context['post_errors'][] = Lang::$txt['lp_post_error_' . $error] ?? Lang::$txt['lp_plugin_maker'][$error];
 		}
 	}
 

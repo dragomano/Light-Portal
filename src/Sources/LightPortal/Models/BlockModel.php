@@ -14,6 +14,8 @@
 
 namespace Bugo\LightPortal\Models;
 
+use Bugo\LightPortal\Utils\{Config, Utils};
+
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -63,15 +65,15 @@ class BlockModel extends AbstractModel
 
 		$this->priority = $postData['priority'] ?? $currentBlock['priority'] ?? 0;
 
-		$this->permissions = $postData['permissions'] ?? $currentBlock['permissions'] ?? (int) $this->modSettings['lp_permissions_default'] ?? 2;
+		$this->permissions = $postData['permissions'] ?? $currentBlock['permissions'] ?? (int) Config::$modSettings['lp_permissions_default'] ?? 2;
 
 		$this->status = $currentBlock['status'] ?? 1;
 
 		$this->areas = $postData['areas'] ?? $currentBlock['areas'] ?? 'all';
 
-		$this->titleClass = $postData['title_class'] ?? $currentBlock['title_class'] ?? array_key_first($this->context['lp_all_title_classes']);
+		$this->titleClass = $postData['title_class'] ?? $currentBlock['title_class'] ?? array_key_first(Utils::$context['lp_all_title_classes']);
 
-		$this->contentClass = $postData['content_class'] ?? $currentBlock['content_class'] ?? array_key_first($this->context['lp_all_content_classes']);
+		$this->contentClass = $postData['content_class'] ?? $currentBlock['content_class'] ?? array_key_first(Utils::$context['lp_all_content_classes']);
 	}
 
 	protected static function getTableName(): string

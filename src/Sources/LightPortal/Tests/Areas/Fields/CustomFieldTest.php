@@ -7,24 +7,23 @@
 namespace Tests\Areas\Fields;
 
 use Bugo\LightPortal\Areas\Fields\CustomField;
+use Bugo\LightPortal\Utils\Utils;
 use Tester\Assert;
 
 require_once dirname(__DIR__, 2) . '/bootstrap.php';
 require_once __DIR__ . '/template.php';
 
 test('custom field', function () {
-	global $context;
-
 	CustomField::make('foo', 'bar')
 		->setValue([1, 2, 3]);
 
 	Assert::same(
 		'bar',
-		$context['posting_fields']['foo']['label']['html'],
+		Utils::$context['posting_fields']['foo']['label']['html'],
 	);
 
 	Assert::same(
 		[1, 2, 3],
-		$context['posting_fields']['foo']['input']['html']
+		Utils::$context['posting_fields']['foo']['input']['html']
 	);
 });

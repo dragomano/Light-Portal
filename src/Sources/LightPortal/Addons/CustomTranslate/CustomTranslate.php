@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.11.23
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\CustomTranslate;
 
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Utils\{Config, Lang, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -30,29 +31,29 @@ class CustomTranslate extends Plugin
 
 	public function init(): void
 	{
-		if (isset($this->context['uninstalling']) || $this->request()->has('xml') || empty($this->context['lp_custom_translate_plugin']['languages']))
+		if (isset(Utils::$context['uninstalling']) || $this->request()->has('xml') || empty(Utils::$context['lp_custom_translate_plugin']['languages']))
 			return;
 
-		if ($this->context['browser']['is_mobile'] || $this->context['browser']['possibly_robot'] || $this->context['current_action'] === 'helpadmin')
+		if (Utils::$context['browser']['is_mobile'] || Utils::$context['browser']['possibly_robot'] || Utils::$context['current_action'] === 'helpadmin')
 			return;
 
-		if (in_array($this->context['current_action'], ['jsmodify', 'quotefast', 'xmlhttp']) || $this->context['current_subaction'] === 'showoperations')
+		if (in_array(Utils::$context['current_action'], ['jsmodify', 'quotefast', 'xmlhttp']) || Utils::$context['current_subaction'] === 'showoperations')
 			return;
 
-		$forumLang = substr($this->language, 0, 2);
+		$forumLang = substr(Config::$language, 0, 2);
 
 		$this->addInlineJS('new YandexTranslate({baseLang: "' . $forumLang . '"});', true);
 
-		$this->context['ctw_languages'] = array_unique(array_merge([$forumLang], explode(',', $this->context['lp_custom_translate_plugin']['languages'])));
+		Utils::$context['ctw_languages'] = array_unique(array_merge([$forumLang], explode(',', Utils::$context['lp_custom_translate_plugin']['languages'])));
 
-		$this->context['ctw_lang_titles'] = array_combine($this->langCodes, $this->langTitles);
+		Utils::$context['ctw_lang_titles'] = array_combine($this->langCodes, $this->langTitles);
 
 		$this->setTemplate()->withLayer('custom_translate');
 	}
 
 	public function addSettings(array &$config_vars): void
 	{
-		$config_vars['custom_translate'][] = ['multiselect', 'languages', array_combine($this->langCodes, $this->txt['lp_custom_translate']['languages_set'])];
+		$config_vars['custom_translate'][] = ['multiselect', 'languages', array_combine($this->langCodes, Lang::$txt['lp_custom_translate']['languages_set'])];
 	}
 
 	public function credits(array &$links): void

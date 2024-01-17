@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.01.24
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\Chart;
 
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextField};
+use Bugo\LightPortal\Utils\{Lang, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -39,7 +40,7 @@ class Chart extends Block
 
 	public function prepareBlockParams(array &$params): void
 	{
-		if ($this->context['current_block']['type'] !== 'chart')
+		if (Utils::$context['current_block']['type'] !== 'chart')
 			return;
 
 		$params = $this->params;
@@ -47,7 +48,7 @@ class Chart extends Block
 
 	public function validateBlockParams(array &$params): void
 	{
-		if ($this->context['current_block']['type'] !== 'chart')
+		if (Utils::$context['current_block']['type'] !== 'chart')
 			return;
 
 		$post = $this->request()->only([
@@ -86,36 +87,36 @@ class Chart extends Block
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['current_block']['type'] !== 'chart')
+		if (Utils::$context['current_block']['type'] !== 'chart')
 			return;
 
-		$this->context['lp_chart_types'] = array_combine($this->chartTypes, $this->txt['lp_chart']['type_set']);
+		Utils::$context['lp_chart_types'] = array_combine($this->chartTypes, Lang::$txt['lp_chart']['type_set']);
 
-		TextField::make('chart_title', $this->txt['lp_chart']['chart_title'])
+		TextField::make('chart_title', Lang::$txt['lp_chart']['chart_title'])
 			->setTab('content')
-			->placeholder($this->txt['lp_chart']['chart_title_placeholder'])
-			->setValue($this->context['lp_block']['options']['chart_title'] ?? $this->params['chart_title']);
+			->placeholder(Lang::$txt['lp_chart']['chart_title_placeholder'])
+			->setValue(Utils::$context['lp_block']['options']['chart_title'] ?? $this->params['chart_title']);
 
-		CustomField::make('chart', $this->txt['lp_chart']['datasets'])
+		CustomField::make('chart', Lang::$txt['lp_chart']['datasets'])
 			->setTab('content')
 			->setValue($this->getFromTemplate('chart_template'));
 
-		TextField::make('labels', $this->txt['lp_chart']['labels'])
+		TextField::make('labels', Lang::$txt['lp_chart']['labels'])
 			->setTab('content')
-			->placeholder($this->txt['lp_chart']['labels_placeholder'])
+			->placeholder(Lang::$txt['lp_chart']['labels_placeholder'])
 			->required()
-			->setValue($this->context['lp_block']['options']['labels'] ?? $this->params['labels']);
+			->setValue(Utils::$context['lp_block']['options']['labels'] ?? $this->params['labels']);
 
-		CheckboxField::make('default_palette', $this->txt['lp_chart']['default_palette'])
+		CheckboxField::make('default_palette', Lang::$txt['lp_chart']['default_palette'])
 			->setTab('appearance')
-			->setValue($this->context['lp_block']['options']['default_palette']);
+			->setValue(Utils::$context['lp_block']['options']['default_palette']);
 
-		CheckboxField::make('stacked', $this->txt['lp_chart']['stacked'])
-			->setAfter($this->txt['lp_chart']['stacked_after'])
-			->setValue($this->context['lp_block']['options']['stacked']);
+		CheckboxField::make('stacked', Lang::$txt['lp_chart']['stacked'])
+			->setAfter(Lang::$txt['lp_chart']['stacked_after'])
+			->setValue(Utils::$context['lp_block']['options']['stacked']);
 
-		CheckboxField::make('horizontal', $this->txt['lp_chart']['horizontal'])
-			->setValue($this->context['lp_block']['options']['horizontal']);
+		CheckboxField::make('horizontal', Lang::$txt['lp_chart']['horizontal'])
+			->setValue(Utils::$context['lp_block']['options']['horizontal']);
 	}
 
 	public function prepareAssets(array &$assets): void

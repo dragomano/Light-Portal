@@ -14,15 +14,12 @@
 
 namespace Bugo\LightPortal\Areas\Config;
 
-use Bugo\LightPortal\Areas\Partials\CategorySelect;
-use Bugo\LightPortal\Areas\Partials\ActionSelect;
-use Bugo\LightPortal\Areas\Partials\BoardSelect;
-use Bugo\LightPortal\Areas\Partials\PageAliasSelect;
-use Bugo\LightPortal\Areas\Partials\PageSelect;
-use Bugo\LightPortal\Areas\Partials\TopicSelect;
+use Bugo\LightPortal\Areas\Partials\{ActionSelect, BoardSelect, CategorySelect};
+use Bugo\LightPortal\Areas\Partials\{PageAliasSelect, PageSelect, TopicSelect};
 use Bugo\LightPortal\Areas\Query;
 use Bugo\LightPortal\Actions\FrontPage;
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
 use IntlException;
 
 if (! defined('SMF'))
@@ -41,34 +38,34 @@ final class BasicConfig
 	 */
 	public function show(): void
 	{
-		$this->context['page_title']    = $this->context['settings_title'] = $this->txt['lp_base'];
-		$this->context['canonical_url'] = $this->scripturl . '?action=admin;area=lp_settings;sa=basic';
-		$this->context['post_url']      = $this->context['canonical_url'] . ';save';
+		Utils::$context['page_title']    = Utils::$context['settings_title'] = Lang::$txt['lp_base'];
+		Utils::$context['canonical_url'] = Config::$scripturl . '?action=admin;area=lp_settings;sa=basic';
+		Utils::$context['post_url']      = Utils::$context['canonical_url'] . ';save';
 
 		$this->addDefaultValues([
-			'lp_frontpage_title'           => str_replace(["'", "\""], "", $this->context['forum_name']),
+			'lp_frontpage_title'           => str_replace(["'", "\""], "", Utils::$context['forum_name']),
 			'lp_show_views_and_comments'   => 1,
 			'lp_frontpage_article_sorting' => 1,
 			'lp_num_items_per_page'        => 10,
-			'lp_standalone_url'            => $this->boardurl . '/portal.php',
+			'lp_standalone_url'            => Config::$boardurl . '/portal.php',
 		]);
 
-		$this->context['lp_frontpage_modes'] = array_combine(
+		Utils::$context['lp_frontpage_modes'] = array_combine(
 			[0, 'chosen_page', 'all_pages', 'chosen_pages', 'all_topics', 'chosen_topics', 'chosen_boards'],
-			$this->txt['lp_frontpage_mode_set']
+			Lang::$txt['lp_frontpage_mode_set']
 		);
 
 		$this->prepareTopicList();
 
-		$this->context['lp_column_set'] = array_map(fn($item) => $this->translate('lp_frontpage_num_columns_set', ['columns' => $item]), [1, 2, 3, 4, 6]);
+		Utils::$context['lp_column_set'] = array_map(fn($item) => $this->translate('lp_frontpage_num_columns_set', ['columns' => $item]), [1, 2, 3, 4, 6]);
 
-		$this->context['lp_frontpage_layouts']           = (new FrontPage)->getLayouts();
-		$this->context['lp_frontpage_alias_select']      = new PageAliasSelect;
-		$this->context['lp_frontpage_categories_select'] = new CategorySelect;
-		$this->context['lp_frontpage_boards_select']     = new BoardSelect;
-		$this->context['lp_frontpage_topics_select']     = new TopicSelect;
-		$this->context['lp_frontpage_pages_select']      = new PageSelect;
-		$this->context['lp_disabled_actions_select']     = new ActionSelect;
+		Utils::$context['lp_frontpage_layouts']           = (new FrontPage)->getLayouts();
+		Utils::$context['lp_frontpage_alias_select']      = new PageAliasSelect;
+		Utils::$context['lp_frontpage_categories_select'] = new CategorySelect;
+		Utils::$context['lp_frontpage_boards_select']     = new BoardSelect;
+		Utils::$context['lp_frontpage_topics_select']     = new TopicSelect;
+		Utils::$context['lp_frontpage_pages_select']      = new PageSelect;
+		Utils::$context['lp_disabled_actions_select']     = new ActionSelect;
 
 		$javascript = ':disabled="[\'0\', \'chosen_page\'].includes(frontpage_mode)"';
 
@@ -77,7 +74,7 @@ final class BasicConfig
 			[
 				'select',
 				'lp_frontpage_mode',
-				$this->context['lp_frontpage_modes'],
+				Utils::$context['lp_frontpage_modes'],
 				'javascript' => '
 					@change="frontpage_mode = $event.target.value; $dispatch(\'change-mode\', {front: frontpage_mode})"
 				'
@@ -85,7 +82,7 @@ final class BasicConfig
 			[
 				'text',
 				'lp_frontpage_title',
-				'size' => '80" placeholder="' . str_replace(["'", "\""], "", $this->context['forum_name']) . ' - ' . $this->txt['lp_portal'],
+				'size' => '80" placeholder="' . str_replace(["'", "\""], "", Utils::$context['forum_name']) . ' - ' . Lang::$txt['lp_portal'],
 				'javascript' => $javascript
 			],
 			['callback', 'frontpage_mode_settings_middle'],
@@ -98,7 +95,7 @@ final class BasicConfig
 			[
 				'text',
 				'lp_image_placeholder',
-				'size' => '80" placeholder="' . $this->txt['lp_example'] . $this->settings['default_images_url'] . '/smflogo.svg',
+				'size' => '80" placeholder="' . Lang::$txt['lp_example'] . Theme::$current->settings['default_images_url'] . '/smflogo.svg',
 				'javascript' => $javascript
 			],
 			[
@@ -125,14 +122,14 @@ final class BasicConfig
 			[
 				'select',
 				'lp_frontpage_article_sorting',
-				$this->txt['lp_frontpage_article_sorting_set'],
+				Lang::$txt['lp_frontpage_article_sorting_set'],
 				'help' => 'lp_frontpage_article_sorting_help',
 				'javascript' => $javascript
 			],
 			[
 				'select',
 				'lp_frontpage_layout',
-				$this->context['lp_frontpage_layouts'],
+				Utils::$context['lp_frontpage_layouts'],
 				'javascript' => $javascript
 			],
 			[
@@ -143,13 +140,13 @@ final class BasicConfig
 			[
 				'select',
 				'lp_frontpage_num_columns',
-				$this->context['lp_column_set'],
+				Utils::$context['lp_column_set'],
 				'javascript' => $javascript
 			],
 			[
 				'select',
 				'lp_show_pagination',
-				$this->txt['lp_show_pagination_set'],
+				Lang::$txt['lp_show_pagination_set'],
 				'javascript' => $javascript
 			],
 			[
@@ -169,7 +166,7 @@ final class BasicConfig
 			[
 				'check',
 				'lp_standalone_mode',
-				'label' => $this->txt['lp_action_on'],
+				'label' => Lang::$txt['lp_action_on'],
 				'javascript' => '
 					@change="standalone_mode = ! standalone_mode"
 					:disabled="[\'0\', \'chosen_page\'].includes(frontpage_mode)"
@@ -179,7 +176,7 @@ final class BasicConfig
 				'text',
 				'lp_standalone_url',
 				'help' => 'lp_standalone_url_help',
-				'size' => '80" placeholder="' . $this->txt['lp_example'] . $this->boardurl . '/portal.php',
+				'size' => '80" placeholder="' . Lang::$txt['lp_example'] . Config::$boardurl . '/portal.php',
 				'javascript' => ':disabled="! standalone_mode || [\'0\', \'chosen_page\'].includes(frontpage_mode)"'
 			],
 			['callback', 'standalone_mode_settings_after'],

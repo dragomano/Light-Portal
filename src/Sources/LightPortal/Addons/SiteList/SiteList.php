@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 02.01.24
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\SiteList;
 
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Utils\{Config, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -35,7 +36,7 @@ class SiteList extends Plugin
 	{
 		$this->setTemplate();
 
-		$urls = $this->jsonDecode($this->context['lp_site_list_plugin']['urls'] ?? '');
+		$urls = $this->jsonDecode(Utils::$context['lp_site_list_plugin']['urls'] ?? '');
 
 		$this->addInlineJS($this->getFromTemplate('site_list_handle_func', $urls));
 
@@ -66,6 +67,6 @@ class SiteList extends Plugin
 	{
 		$modes[$this->mode] = SiteArticle::class;
 
-		$this->modSettings['lp_frontpage_mode'] = $this->mode;
+		Config::$modSettings['lp_frontpage_mode'] = $this->mode;
 	}
 }

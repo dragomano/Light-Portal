@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.01.24
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\TopTopics;
 
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, NumberField, RadioField};
+use Bugo\LightPortal\Utils\{Lang, User, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -29,7 +30,7 @@ class TopTopics extends Block
 
 	public function prepareBlockParams(array &$params): void
 	{
-		if ($this->context['current_block']['type'] !== 'top_topics')
+		if (Utils::$context['current_block']['type'] !== 'top_topics')
 			return;
 
 		$params = [
@@ -41,7 +42,7 @@ class TopTopics extends Block
 
 	public function validateBlockParams(array &$params): void
 	{
-		if ($this->context['current_block']['type'] !== 'top_topics')
+		if (Utils::$context['current_block']['type'] !== 'top_topics')
 			return;
 
 		$params = [
@@ -53,19 +54,19 @@ class TopTopics extends Block
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['current_block']['type'] !== 'top_topics')
+		if (Utils::$context['current_block']['type'] !== 'top_topics')
 			return;
 
-		RadioField::make('popularity_type', $this->txt['lp_top_topics']['type'])
-			->setOptions(array_combine(['replies', 'views'], $this->txt['lp_top_topics']['type_set']))
-			->setValue($this->context['lp_block']['options']['popularity_type']);
+		RadioField::make('popularity_type', Lang::$txt['lp_top_topics']['type'])
+			->setOptions(array_combine(['replies', 'views'], Lang::$txt['lp_top_topics']['type_set']))
+			->setValue(Utils::$context['lp_block']['options']['popularity_type']);
 
-		NumberField::make('num_topics', $this->txt['lp_top_topics']['num_topics'])
+		NumberField::make('num_topics', Lang::$txt['lp_top_topics']['num_topics'])
 			->setAttribute('min', 1)
-			->setValue($this->context['lp_block']['options']['num_topics']);
+			->setValue(Utils::$context['lp_block']['options']['num_topics']);
 
-		CheckboxField::make('show_numbers_only', $this->txt['lp_top_topics']['show_numbers_only'])
-			->setValue($this->context['lp_block']['options']['show_numbers_only']);
+		CheckboxField::make('show_numbers_only', Lang::$txt['lp_top_topics']['show_numbers_only'])
+			->setValue(Utils::$context['lp_block']['options']['show_numbers_only']);
 	}
 
 	public function prepareContent(object $data, array $parameters): void
@@ -75,7 +76,7 @@ class TopTopics extends Block
 
 		$parameters['show_numbers_only'] ??= false;
 
-		$top_topics = $this->cache('top_topics_addon_b' . $data->block_id . '_u' . $this->user_info['id'])
+		$top_topics = $this->cache('top_topics_addon_b' . $data->block_id . '_u' . User::$info['id'])
 			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getFromSsi', 'topTopics', $parameters['popularity_type'], $parameters['num_topics'], 'array');
 

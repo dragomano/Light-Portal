@@ -21,7 +21,7 @@ final class File extends GlobalArray
 		$this->storage = &$_FILES;
 	}
 
-	public function free(string $key)
+	public function free(string $key): void
 	{
 		unset($this->storage[$key]);
 	}

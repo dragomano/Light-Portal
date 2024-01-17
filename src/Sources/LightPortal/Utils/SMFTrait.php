@@ -20,45 +20,8 @@ use Exception;
 if (! defined('SMF'))
 	die('No direct access...');
 
-/**
- * @property array $context
- * @property array $modSettings
- * @property array $txt
- * @property-read array $smcFunc
- * @property-read array $editortxt
- * @property-read array $user_info
- * @property-read array $user_profile
- * @property-read array $user_settings
- * @property-read array $memberContext
- * @property-read array $settings
- * @property-read array $options
- * @property-read string $db_type
- * @property-read string $db_prefix
- * @property-read string $language
- * @property-read string $scripturl
- * @property-read string $boardurl
- * @property-read string $boarddir
- * @property-read string $sourcedir
- * @property-read string $cachedir
- */
 trait SMFTrait
 {
-	private array $smfGlobals = [
-		'context', 'modSettings', 'txt', 'smcFunc', 'editortxt', 'user_info', 'user_profile', 'user_settings', 'memberContext',
-		'settings', 'options', 'db_type', 'db_prefix', 'language', 'scripturl', 'boardurl', 'boarddir', 'sourcedir', 'cachedir'
-	];
-
-	/**
-	 * @return mixed|void
-	 */
-	public function &__get(string $name)
-	{
-		if (in_array($name, $this->smfGlobals))
-			return $GLOBALS[$name];
-
-		$this->logError('[LP] unsupported property: ' . $name);
-	}
-
 	protected function applyHook(string $name, string|array $method = '', string $file = ''): void
 	{
 		$name = str_replace('integrate_', '', $name);
@@ -74,8 +37,9 @@ trait SMFTrait
 
 		$file = $file ?: debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]['file'];
 
-		if ($name === 'pre_load_theme')
+		if ($name === 'pre_load_theme') {
 			$name = 'user_info';
+		}
 
 		add_integration_function('integrate_' . $name, $method . '#', false, $file);
 	}
@@ -90,9 +54,9 @@ trait SMFTrait
 		isAllowedTo($permission);
 	}
 
-	protected function allowedTo(string $permission): bool|int
+	protected function allowedTo(string $permission): bool
 	{
-		return allowedTo($permission);
+		return (bool) allowedTo($permission);
 	}
 
 	protected function redirect(string $url = ''): void
@@ -105,7 +69,7 @@ trait SMFTrait
 		loadTemplate($template);
 
 		if ($sub_template)
-			$this->context['sub_template'] = $sub_template;
+			Utils::$context['sub_template'] = $sub_template;
 	}
 
 	protected function loadLanguage(string $language, string $lang = ''): void
@@ -153,28 +117,28 @@ trait SMFTrait
 
 	protected function membersAllowedTo(string $permission): array
 	{
-		require_once $this->sourcedir . '/Subs-Members.php';
+		$this->require('Subs-Members');
 
 		return membersAllowedTo($permission);
 	}
 
 	protected function getNotifyPrefs(int|array $members, string|array $prefs = '', bool $process_default = false): array
 	{
-		require_once $this->sourcedir . '/Subs-Notify.php';
+		$this->require('Subs-Notify');
 
 		return getNotifyPrefs($members, $prefs, $process_default);
 	}
 
 	protected function loadEssential(): void
 	{
-		require_once $this->sourcedir . '/ScheduledTasks.php';
+		$this->require('ScheduledTasks');
 
 		loadEssentialThemeData();
 	}
 
 	protected function loadEmailTemplate(string $template, array $replacements = [], string $lang = '', bool $loadLang = true): array
 	{
-		require_once $this->sourcedir . '/Subs-Post.php';
+		$this->require('Subs-Post');
 
 		return loadEmailTemplate($template, $replacements, $lang, $loadLang);
 	}
@@ -184,29 +148,29 @@ trait SMFTrait
 	 */
 	protected function sendmail(array $to, string $subject, string $message, string $from = null, string $message_id = null, bool $send_html = false, int $priority = 3): void
 	{
-		require_once $this->sourcedir . '/Subs-Post.php';
+		$this->require('Subs-Post');
 
 		sendmail($to, $subject, $message, $from, $message_id, $send_html, $priority);
 	}
 
 	protected function createControlRichedit(array $editorOptions): void
 	{
-		require_once $this->sourcedir . '/Subs-Editor.php';
+		$this->require('Subs-Editor');
 
 		create_control_richedit($editorOptions);
 
-		$this->context['post_box_name'] = $editorOptions['id'];
+		Utils::$context['post_box_name'] = $editorOptions['id'];
 
-		$this->addJavaScriptVar('oEditorID', $this->context['post_box_name'], true);
-		$this->addJavaScriptVar('oEditorObject', 'oEditorHandle_' . $this->context['post_box_name'], true);
+		$this->addJavaScriptVar('oEditorID', Utils::$context['post_box_name'], true);
+		$this->addJavaScriptVar('oEditorObject', 'oEditorHandle_' . Utils::$context['post_box_name'], true);
 
 		ob_start();
 
-		template_control_richedit($this->context['post_box_name'], 'smileyBox_message', 'bbcBox_message');
+		template_control_richedit(Utils::$context['post_box_name'], 'smileyBox_message', 'bbcBox_message');
 
-		$this->context['posting_fields']['content']['label']['html'] = '<label>' . $this->txt['lp_content'] . '</label>';
-		$this->context['posting_fields']['content']['input']['html'] = ob_get_clean();
-		$this->context['posting_fields']['content']['input']['tab'] = 'content';
+		Utils::$context['posting_fields']['content']['label']['html'] = '<label>' . Lang::$txt['lp_content'] . '</label>';
+		Utils::$context['posting_fields']['content']['input']['html'] = ob_get_clean();
+		Utils::$context['posting_fields']['content']['input']['tab'] = 'content';
 	}
 
 	protected function updateSettings(array $settings): void
@@ -271,12 +235,12 @@ trait SMFTrait
 
 	protected function createList(array $listOptions): void
 	{
-		require_once $this->sourcedir . '/Subs-List.php';
+		$this->require('Subs-List');
 
 		createList($listOptions);
 
-		$this->context['sub_template'] = 'show_list';
-		$this->context['default_list'] = $listOptions['id'];
+		Utils::$context['sub_template'] = 'show_list';
+		Utils::$context['default_list'] = $listOptions['id'];
 	}
 
 	protected function obExit($header = null): void
@@ -291,14 +255,14 @@ trait SMFTrait
 
 	protected function preparseCode(string &$message): void
 	{
-		require_once $this->sourcedir . '/Subs-Post.php';
+		$this->require('Subs-Post');
 
 		preparsecode($message);
 	}
 
 	protected function unPreparseCode(string $message): array|string|null
 	{
-		require_once $this->sourcedir . '/Subs-Post.php';
+		$this->require('Subs-Post');
 
 		return un_preparsecode($message);
 	}
@@ -335,13 +299,13 @@ trait SMFTrait
 
 	protected function getBoardList(array $options = []): array
 	{
-		require_once $this->sourcedir . '/Subs-MessageIndex.php';
+		$this->require('Subs-MessageIndex');
 
 		$defaultOptions = [
 			'ignore_boards'   => true,
 			'use_permissions' => true,
 			'not_redirection' => true,
-			'excluded_boards' => empty($this->modSettings['recycle_board']) ? null : [(int) $this->modSettings['recycle_board']],
+			'excluded_boards' => empty(Config::$modSettings['recycle_board']) ? null : [(int) Config::$modSettings['recycle_board']],
 		];
 
 		if (isset($options['included_boards']))

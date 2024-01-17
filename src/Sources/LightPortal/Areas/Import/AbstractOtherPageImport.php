@@ -14,6 +14,7 @@
 namespace Bugo\LightPortal\Areas\Import;
 
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Utils\Utils;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -44,7 +45,7 @@ abstract class AbstractOtherPageImport implements ImportInterface, OtherImportIn
 			$count = sizeof($items);
 
 			for ($i = 0; $i < $count; $i++) {
-				$results = $this->smcFunc['db_insert']('replace',
+				$results = Utils::$smcFunc['db_insert']('replace',
 					'{db_prefix}lp_pages',
 					[
 						'page_id'      => 'int',
@@ -65,7 +66,7 @@ abstract class AbstractOtherPageImport implements ImportInterface, OtherImportIn
 					2
 				);
 
-				$this->context['lp_num_queries']++;
+				Utils::$context['lp_num_queries']++;
 			}
 		}
 
@@ -77,7 +78,7 @@ abstract class AbstractOtherPageImport implements ImportInterface, OtherImportIn
 			$count  = sizeof($titles);
 
 			for ($i = 0; $i < $count; $i++) {
-				$this->smcFunc['db_insert']('replace',
+				Utils::$smcFunc['db_insert']('replace',
 					'{db_prefix}lp_titles',
 					[
 						'item_id' => 'int',
@@ -90,7 +91,7 @@ abstract class AbstractOtherPageImport implements ImportInterface, OtherImportIn
 					2
 				);
 
-				$this->context['lp_num_queries']++;
+				Utils::$context['lp_num_queries']++;
 			}
 		}
 
@@ -99,7 +100,7 @@ abstract class AbstractOtherPageImport implements ImportInterface, OtherImportIn
 			$count  = sizeof($params);
 
 			for ($i = 0; $i < $count; $i++) {
-				$this->smcFunc['db_insert']('replace',
+				Utils::$smcFunc['db_insert']('replace',
 					'{db_prefix}lp_params',
 					[
 						'item_id' => 'int',
@@ -112,7 +113,7 @@ abstract class AbstractOtherPageImport implements ImportInterface, OtherImportIn
 					2
 				);
 
-				$this->context['lp_num_queries']++;
+				Utils::$context['lp_num_queries']++;
 			}
 		}
 
@@ -129,7 +130,7 @@ abstract class AbstractOtherPageImport implements ImportInterface, OtherImportIn
 			$count    = sizeof($comments);
 
 			for ($i = 0; $i < $count; $i++) {
-				$this->smcFunc['db_insert']('replace',
+				Utils::$smcFunc['db_insert']('replace',
 					'{db_prefix}lp_comments',
 					[
 						'id'         => 'int',
@@ -144,7 +145,7 @@ abstract class AbstractOtherPageImport implements ImportInterface, OtherImportIn
 					2
 				);
 
-				$this->context['lp_num_queries']++;
+				Utils::$context['lp_num_queries']++;
 			}
 		}
 

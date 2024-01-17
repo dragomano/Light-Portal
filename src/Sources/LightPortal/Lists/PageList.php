@@ -15,6 +15,7 @@
 namespace Bugo\LightPortal\Lists;
 
 use Bugo\LightPortal\Repositories\PageRepository;
+use IntlException;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -28,6 +29,9 @@ final class PageList implements ListInterface
 		$this->repository = new PageRepository();
 	}
 
+	/**
+	 * @throws IntlException
+	 */
 	public function getAll(): array
 	{
 		return $this->repository->getAll(0, $this->repository->getTotalCount(), 'p.page_id DESC', 'AND p.status = 1');

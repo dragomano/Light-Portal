@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  *
  * @category addon
- * @version 02.01.24
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\Markdown;
@@ -19,6 +19,7 @@ use Bugo\LightPortal\Addons\Plugin;
 use Bugo\LightPortal\Addons\Markdown\Smf\{BlockQuoteRenderer, FencedCodeRenderer, HeadingRenderer};
 use Bugo\LightPortal\Addons\Markdown\Smf\{ImageRenderer, LinkRenderer, ListBlockRenderer};
 use Bugo\LightPortal\Addons\Markdown\Smf\{ListItemRenderer, TableRowRenderer, TableRenderer};
+use Bugo\LightPortal\Utils\Utils;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Exception\CommonMarkException;
 use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
@@ -39,7 +40,7 @@ class Markdown extends Plugin
 
 	public function init(): void
 	{
-		$this->context['lp_content_types']['markdown'] = 'Markdown';
+		Utils::$context['lp_content_types']['markdown'] = 'Markdown';
 	}
 
 	/**

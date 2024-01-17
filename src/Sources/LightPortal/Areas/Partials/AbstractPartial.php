@@ -14,8 +14,8 @@
 
 namespace Bugo\LightPortal\Areas\Partials;
 
-use Stringable;
 use Bugo\LightPortal\Helper;
+use Stringable;
 
 if (! defined('SMF'))
 	die('No direct access...');

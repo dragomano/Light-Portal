@@ -14,6 +14,8 @@
 
 namespace Bugo\LightPortal\Front;
 
+use Bugo\LightPortal\Utils\Config;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -27,7 +29,7 @@ final class ChosenPageArticle extends PageArticle
 
 		$this->selected_categories = [];
 
-		$this->selected_pages = empty($this->modSettings['lp_frontpage_pages']) ? [] : explode(',', $this->modSettings['lp_frontpage_pages']);
+		$this->selected_pages = empty(Config::$modSettings['lp_frontpage_pages']) ? [] : explode(',', Config::$modSettings['lp_frontpage_pages']);
 
 		$this->wheres[] = 'AND p.page_id IN ({array_int:selected_pages})';
 

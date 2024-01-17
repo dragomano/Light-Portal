@@ -15,6 +15,7 @@
 namespace Bugo\LightPortal\Actions;
 
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Utils\{Config, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -28,7 +29,7 @@ final class Block
 		if ($this->isHideBlocksInAdmin() || $this->request()->is('devtools') || $this->request()->has('preview'))
 			return;
 
-		if (empty($this->context['allow_light_portal_view']) || empty($this->context['template_layers']) || empty($this->context['lp_active_blocks']))
+		if (empty(Utils::$context['allow_light_portal_view']) || empty(Utils::$context['template_layers']) || empty(Utils::$context['lp_active_blocks']))
 			return;
 
 		if (empty($blocks = $this->getFilteredByAreas()))
@@ -39,38 +40,38 @@ final class Block
 			if ($this->canViewItem($data['permissions']) === false)
 				continue;
 
-			$data['can_edit'] = $this->context['user']['is_admin'];
+			$data['can_edit'] = Utils::$context['user']['is_admin'];
 
 			$data['content'] = empty($data['content'])
-				? prepare_content($data['type'], $data['id'], LP_CACHE_TIME, $this->context['lp_active_blocks'][$data['id']]['parameters'] ?? [])
+				? prepare_content($data['type'], $data['id'], LP_CACHE_TIME, Utils::$context['lp_active_blocks'][$data['id']]['parameters'] ?? [])
 				: parse_content($data['content'], $data['type']);
 
-			$this->context['lp_blocks'][$data['placement']][$item] = $data;
+			Utils::$context['lp_blocks'][$data['placement']][$item] = $data;
 
 			if (empty($data['parameters']['hide_header'])) {
 				$title = $this->getTranslatedTitle($data['titles']);
-				$icon  = $this->getIcon($this->context['lp_blocks'][$data['placement']][$item]['icon']);
+				$icon  = $this->getIcon(Utils::$context['lp_blocks'][$data['placement']][$item]['icon']);
 			} else {
 				$title = $icon = '';
 			}
 
-			$this->context['lp_blocks'][$data['placement']][$item]['title'] = $icon . $title;
+			Utils::$context['lp_blocks'][$data['placement']][$item]['title'] = $icon . $title;
 		}
 
 		$this->loadTemplate('LightPortal/ViewBlocks');
 
 		$counter = 0;
-		foreach ($this->context['template_layers'] as $layer) {
+		foreach (Utils::$context['template_layers'] as $layer) {
 			$counter++;
 
 			if ($layer === 'body')
 				break;
 		}
 
-		$this->context['template_layers'] = array_merge(
-			array_slice($this->context['template_layers'], 0, $counter, true),
+		Utils::$context['template_layers'] = array_merge(
+			array_slice(Utils::$context['template_layers'], 0, $counter, true),
 			['lp_portal'],
-			array_slice($this->context['template_layers'], $counter, null, true)
+			array_slice(Utils::$context['template_layers'], $counter, null, true)
 		);
 	}
 
@@ -80,7 +81,7 @@ final class Block
 			return [];
 
 		if (($active_blocks = $this->cache()->get('active_blocks')) === null) {
-			$result = $this->smcFunc['db_query']('', '
+			$result = Utils::$smcFunc['db_query']('', '
 				SELECT
 					b.block_id, b.icon, b.type, b.content, b.placement, b.priority, b.permissions, b.areas, b.title_class, b.content_class,
 					bt.lang, bt.title, bp.name, bp.value
@@ -95,7 +96,7 @@ final class Block
 			);
 
 			$active_blocks = [];
-			while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
+			while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 				$this->censorText($row['content']);
 
 				$active_blocks[$row['block_id']] ??= [
@@ -117,8 +118,8 @@ final class Block
 				$active_blocks[$row['block_id']]['parameters'][$row['name']] = $row['value'];
 			}
 
-			$this->smcFunc['db_free_result']($result);
-			$this->context['lp_num_queries']++;
+			Utils::$smcFunc['db_free_result']($result);
+			Utils::$context['lp_num_queries']++;
 
 			$this->cache()->put('active_blocks', $active_blocks);
 		}
@@ -128,23 +129,23 @@ final class Block
 
 	private function getFilteredByAreas(): array
 	{
-		$area = $this->context['current_action'] ?: (empty($this->modSettings['lp_frontpage_mode']) ? 'forum' : LP_ACTION);
+		$area = Utils::$context['current_action'] ?: (empty(Config::$modSettings['lp_frontpage_mode']) ? 'forum' : LP_ACTION);
 
-		if (! (empty($this->modSettings['lp_standalone_mode']) || empty($this->modSettings['lp_standalone_url']))) {
-			if ($this->modSettings['lp_standalone_url'] === $this->request()->url()) {
+		if (! (empty(Config::$modSettings['lp_standalone_mode']) || empty(Config::$modSettings['lp_standalone_url']))) {
+			if (Config::$modSettings['lp_standalone_url'] === $this->request()->url()) {
 				$area = LP_ACTION;
-			} elseif (empty($this->context['current_action'])) {
+			} elseif (empty(Utils::$context['current_action'])) {
 				$area = 'forum';
 			}
 		}
 
-		if (isset($this->context['current_board']) || isset($this->context['lp_page']))
+		if (isset(Utils::$context['current_board']) || isset(Utils::$context['lp_page']))
 			$area = '';
 
-		if (! empty($this->context['lp_page']['alias']) && $this->isFrontpage($this->context['lp_page']['alias']))
+		if (! empty(Utils::$context['lp_page']['alias']) && $this->isFrontpage(Utils::$context['lp_page']['alias']))
 			$area = LP_ACTION;
 
-		return array_filter($this->context['lp_active_blocks'], function ($block) use ($area) {
+		return array_filter(Utils::$context['lp_active_blocks'], function ($block) use ($area) {
 			$temp_areas     = $block['areas'];
 			$block['areas'] = array_flip($block['areas']);
 
@@ -154,24 +155,24 @@ final class Block
 			if (isset($block['areas']['all']) || isset($block['areas'][$area]))
 				return true;
 
-			if ($area === LP_ACTION && isset($block['areas']['home']) && empty($this->context['lp_page']) && empty($this->context['current_action']))
+			if ($area === LP_ACTION && isset($block['areas']['home']) && empty(Utils::$context['lp_page']) && empty(Utils::$context['current_action']))
 				return true;
 
-			if (isset($this->context['lp_page']['alias'])) {
-				if (isset($block['areas']['!' . LP_PAGE_PARAM . '=' . $this->context['lp_page']['alias']]) && $temp_areas[0] === 'pages')
+			if (isset(Utils::$context['lp_page']['alias'])) {
+				if (isset($block['areas']['!' . LP_PAGE_PARAM . '=' . Utils::$context['lp_page']['alias']]) && $temp_areas[0] === 'pages')
 					return false;
 
-				if (isset($block['areas']['pages']) || isset($block['areas'][LP_PAGE_PARAM . '=' . $this->context['lp_page']['alias']]))
+				if (isset($block['areas']['pages']) || isset($block['areas'][LP_PAGE_PARAM . '=' . Utils::$context['lp_page']['alias']]))
 					return true;
 			}
 
-			if (empty($this->context['current_board']))
+			if (empty(Utils::$context['current_board']))
 				return false;
 
-			if (isset($block['areas']['boards']) && empty($this->context['current_topic']))
+			if (isset($block['areas']['boards']) && empty(Utils::$context['current_topic']))
 				return true;
 
-			if (isset($block['areas']['topics']) && ! empty($this->context['current_topic']))
+			if (isset($block['areas']['topics']) && ! empty(Utils::$context['current_topic']))
 				return true;
 
 			$boards = $topics = [];
@@ -185,7 +186,7 @@ final class Block
 					$topics = $this->getAllowedIds($entity[1]);
 			}
 
-			return in_array($this->context['current_board'], $boards) || (isset($this->context['current_topic']) && in_array($this->context['current_topic'], $topics));
+			return in_array(Utils::$context['current_board'], $boards) || (isset(Utils::$context['current_topic']) && in_array(Utils::$context['current_topic'], $topics));
 		});
 	}
 
@@ -210,6 +211,6 @@ final class Block
 
 	private function isHideBlocksInAdmin(): bool
 	{
-		return ! empty($this->modSettings['lp_hide_blocks_in_acp']) && $this->request()->is('admin');
+		return ! empty(Config::$modSettings['lp_hide_blocks_in_acp']) && $this->request()->is('admin');
 	}
 }

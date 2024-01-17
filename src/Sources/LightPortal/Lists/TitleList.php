@@ -15,6 +15,7 @@
 namespace Bugo\LightPortal\Lists;
 
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Utils\Utils;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -25,7 +26,7 @@ final class TitleList implements ListInterface
 
 	public function getAll(): array
 	{
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT item_id, lang, title
 			FROM {db_prefix}lp_titles
 			WHERE type = {string:type}
@@ -38,12 +39,12 @@ final class TitleList implements ListInterface
 		);
 
 		$titles = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			$titles[$row['item_id']][$row['lang']] = $row['title'];
 		}
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return $titles;
 	}

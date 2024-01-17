@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.12.23
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\Giscus;
 
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Utils\{Config, Lang, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -45,7 +46,7 @@ class Giscus extends Plugin
 
 	public function init(): void
 	{
-		$this->txt['lp_show_comment_block_set']['giscus'] = 'Giscus';
+		Lang::$txt['lp_show_comment_block_set']['giscus'] = 'Giscus';
 	}
 
 	public function addSettings(array &$config_vars): void
@@ -54,35 +55,35 @@ class Giscus extends Plugin
 			'theme' => 'light'
 		]);
 
-		$config_vars['giscus'][] = ['text', 'repo', 'subtext' => sprintf($this->txt['lp_giscus']['repo_subtext'], $this->url), 'required' => true];
-		$config_vars['giscus'][] = ['text', 'repo_id', 'subtext' => sprintf($this->txt['lp_giscus']['repo_id_subtext'], $this->url), 'required' => true];
-		$config_vars['giscus'][] = ['text', 'category', 'subtext' => sprintf($this->txt['lp_giscus']['category_subtext'], $this->url), 'required' => true];
-		$config_vars['giscus'][] = ['text', 'category_id', 'subtext' => sprintf($this->txt['lp_giscus']['category_id_subtext'], $this->url), 'required' => true];
+		$config_vars['giscus'][] = ['text', 'repo', 'subtext' => sprintf(Lang::$txt['lp_giscus']['repo_subtext'], $this->url), 'required' => true];
+		$config_vars['giscus'][] = ['text', 'repo_id', 'subtext' => sprintf(Lang::$txt['lp_giscus']['repo_id_subtext'], $this->url), 'required' => true];
+		$config_vars['giscus'][] = ['text', 'category', 'subtext' => sprintf(Lang::$txt['lp_giscus']['category_subtext'], $this->url), 'required' => true];
+		$config_vars['giscus'][] = ['text', 'category_id', 'subtext' => sprintf(Lang::$txt['lp_giscus']['category_id_subtext'], $this->url), 'required' => true];
 		$config_vars['giscus'][] = ['select', 'theme', $this->themes];
 	}
 
 	public function comments(): void
 	{
-		if (! empty($this->modSettings['lp_show_comment_block']) && $this->modSettings['lp_show_comment_block'] === 'giscus'
-			&& ! empty($this->context['lp_giscus_plugin']['repo'])
-			&& ! empty($this->context['lp_giscus_plugin']['repo_id'])
-			&& ! empty($this->context['lp_giscus_plugin']['category'])
-			&& ! empty($this->context['lp_giscus_plugin']['category_id'])) {
-			$this->context['lp_giscus_comment_block'] = /** @lang text */
+		if (! empty(Config::$modSettings['lp_show_comment_block']) && Config::$modSettings['lp_show_comment_block'] === 'giscus'
+			&& ! empty(Utils::$context['lp_giscus_plugin']['repo'])
+			&& ! empty(Utils::$context['lp_giscus_plugin']['repo_id'])
+			&& ! empty(Utils::$context['lp_giscus_plugin']['category'])
+			&& ! empty(Utils::$context['lp_giscus_plugin']['category_id'])) {
+			Utils::$context['lp_giscus_comment_block'] = /** @lang text */
 				'
 			<div class="giscus windowbg"></div>
 			<script src="https://giscus.app/client.js"
-				data-repo="' . $this->context['lp_giscus_plugin']['repo'] . '"
-				data-repo-id="' . $this->context['lp_giscusplugin']['repo_id'] . '"
-				data-category="' . $this->context['lp_giscus_plugin']['category'] . '"
-				data-category-id="' . $this->context['lp_giscus_plugin']['category_id'] . '"
+				data-repo="' . Utils::$context['lp_giscus_plugin']['repo'] . '"
+				data-repo-id="' . Utils::$context['lp_giscusplugin']['repo_id'] . '"
+				data-category="' . Utils::$context['lp_giscus_plugin']['category'] . '"
+				data-category-id="' . Utils::$context['lp_giscus_plugin']['category_id'] . '"
 				data-mapping="title"
 				data-strict="1"
 				data-reactions-enabled="1"
 				data-emit-metadata="0"
 				data-input-position="bottom"
-				data-theme="' . $this->context['lp_giscus_plugin']['theme'] . '"
-				data-lang="' . $this->txt['lang_dictionary'] . '"
+				data-theme="' . Utils::$context['lp_giscus_plugin']['theme'] . '"
+				data-lang="' . Lang::$txt['lang_dictionary'] . '"
 				data-loading="lazy"
 				crossorigin="anonymous"
 				async>

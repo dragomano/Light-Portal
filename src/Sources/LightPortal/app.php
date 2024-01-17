@@ -7,11 +7,18 @@ require_once __DIR__ . '/Libs/autoload.php';
 
 use Laminas\Loader\StandardAutoloader;
 use Bugo\LightPortal\{AddonHandler, Integration};
+use Bugo\LightPortal\Utils\{Config, Lang, Theme, User, Utils};
 
 // Register autoloader
 $loader = new StandardAutoloader();
 $loader->registerNamespace('Bugo\LightPortal', __DIR__);
 $loader->register();
+
+new Config();
+new Lang();
+new Theme();
+new User();
+new Utils();
 
 // Define important helper functions
 function call_portal_hook(string $hook, array $params = [], array $plugins = []): void

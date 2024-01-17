@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.01.24
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\EhPortalMigration;
 
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -26,13 +27,13 @@ class EhPortalMigration extends Plugin
 
 	public function updateAdminAreas(array &$areas): void
 	{
-		if ($this->user_info['is_admin'])
-			$areas['lp_pages']['subsections']['import_from_ep'] = [$this->context['lp_icon_set']['import'] . $this->txt['lp_eh_portal_migration']['label_name']];
+		if (User::$info['is_admin'])
+			$areas['lp_pages']['subsections']['import_from_ep'] = [Utils::$context['lp_icon_set']['import'] . Lang::$txt['lp_eh_portal_migration']['label_name']];
 	}
 
 	public function updatePageAreas(array &$areas): void
 	{
-		if ($this->user_info['is_admin'])
+		if (User::$info['is_admin'])
 			$areas['import_from_ep'] = [new PageImport, 'main'];
 	}
 
@@ -45,11 +46,11 @@ class EhPortalMigration extends Plugin
 			$titles[] = [
 				'item_id' => $page_id,
 				'type'    => 'page',
-				'lang'    => $this->language,
+				'lang'    => Config::$language,
 				'title'   => $item['title']
 			];
 
-			if ($this->language !== 'english' && ! empty($this->modSettings['userLanguage'])) {
+			if (Config::$language !== 'english' && ! empty(Config::$modSettings['userLanguage'])) {
 				$titles[] = [
 					'item_id' => $page_id,
 					'type'    => 'page',

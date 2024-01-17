@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.12.23
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\CrowdinContext;
 
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Utils\{Lang, User, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -44,7 +45,7 @@ class CrowdinContext extends Plugin
 		$addons = $this->getEntityList('plugin');
 		array_walk($addons, function ($addon) {
 			if (is_file($file = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $addon . DIRECTORY_SEPARATOR . 'langs' . DIRECTORY_SEPARATOR . 'crowdin.php')) {
-				$this->txt['lp_' . $this->getSnakeName($addon)] = require $file;
+				Lang::$txt['lp_' . $this->getSnakeName($addon)] = require $file;
 			}
 		});
 
@@ -62,10 +63,10 @@ class CrowdinContext extends Plugin
 	public function actions(): void
 	{
 		if ($this->request()->is(LP_ACTION) && $this->request()->has('disable_crowdin')) {
-			if ($key = array_search('CrowdinContext', $this->context['lp_enabled_plugins'])) {
-				unset($this->context['lp_enabled_plugins'][$key]);
+			if ($key = array_search('CrowdinContext', Utils::$context['lp_enabled_plugins'])) {
+				unset(Utils::$context['lp_enabled_plugins'][$key]);
 
-				$this->updateSettings(['lp_enabled_plugins' => implode(',', $this->context['lp_enabled_plugins'])]);
+				$this->updateSettings(['lp_enabled_plugins' => implode(',', Utils::$context['lp_enabled_plugins'])]);
 
 				$this->redirect('action=admin;area=lp_plugins');
 			}
@@ -74,12 +75,12 @@ class CrowdinContext extends Plugin
 
 	private function isCanUse(): bool
 	{
-		return ! empty($this->user_info['is_admin']) && isset($this->context['lp_crowdin_context_plugin']['admins']) && in_array($this->user_info['id'], explode(',', $this->context['lp_crowdin_context_plugin']['admins']));
+		return ! empty(User::$info['is_admin']) && isset(Utils::$context['lp_crowdin_context_plugin']['admins']) && in_array(User::$info['id'], explode(',', Utils::$context['lp_crowdin_context_plugin']['admins']));
 	}
 
 	private function getAdminList(): array
 	{
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT id_member, real_name
 			FROM {db_prefix}members
 			WHERE id_group = {int:id_group}
@@ -90,11 +91,11 @@ class CrowdinContext extends Plugin
 		);
 
 		$users = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($result))
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result))
 			$users[$row['id_member']] = $row['real_name'];
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return $users;
 	}

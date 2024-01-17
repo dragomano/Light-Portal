@@ -14,6 +14,8 @@
 
 namespace Bugo\LightPortal\Areas\Partials;
 
+use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+
 final class CategorySelect extends AbstractPartial
 {
 	public function __invoke(): string
@@ -25,7 +27,7 @@ final class CategorySelect extends AbstractPartial
 		$params['multiple'] ??= true;
 		$params['full_width'] ??= true;
 		$params['data'] ??= $this->getEntityList('category');
-		$params['value'] ??= $this->modSettings['lp_frontpage_categories'] ?? '';
+		$params['value'] ??= Config::$modSettings['lp_frontpage_categories'] ?? '';
 
 		$data = [];
 		foreach ($params['data'] as $id => $cat) {
@@ -39,17 +41,17 @@ final class CategorySelect extends AbstractPartial
 		<div id="' . $params['id'] . '" name="' . $params['id'] . '"></div>
 		<script>
 			VirtualSelect.init({
-				ele: "#' . $params['id'] . '",' . ($this->context['right_to_left'] ? '
+				ele: "#' . $params['id'] . '",' . (Utils::$context['right_to_left'] ? '
 				textDirection: "rtl",' : '') . '
 				dropboxWrapper: "body",
 				multiple: '. ($params['multiple'] ? 'true' : 'false') . ',
 				search: true,' . (count($params['data']) < 2 ? '
 				disabled: true,' : '') . '
 				markSearchResults: true,
-				placeholder: "' . ($params['hint'] ?? $this->txt['lp_frontpage_categories_select']) . '",
-				noSearchResultsText: "' . $this->txt['no_matches'] . '",
-				searchPlaceholderText: "' . $this->txt['search'] . '",
-				allOptionsSelectedText: "' . $this->txt['all'] . '",
+				placeholder: "' . ($params['hint'] ?? Lang::$txt['lp_frontpage_categories_select']) . '",
+				noSearchResultsText: "' . Lang::$txt['no_matches'] . '",
+				searchPlaceholderText: "' . Lang::$txt['search'] . '",
+				allOptionsSelectedText: "' . Lang::$txt['all'] . '",
 				showValueAsTags: true,' . ($params['full_width'] ? '
 				maxWidth: "100%",' : '') . '
 				options: ' . json_encode($data) . ',

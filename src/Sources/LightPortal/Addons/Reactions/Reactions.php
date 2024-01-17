@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.01.24
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\Reactions;
 
 use Bugo\LightPortal\Addons\Plugin;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
+use Bugo\LightPortal\Utils\{Lang, User, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -40,8 +41,8 @@ class Reactions extends Plugin
 
 	public function preparePageFields(): void
 	{
-		CheckboxField::make('allow_reactions', $this->txt['lp_reactions']['allow_reactions'])
-			->setValue($this->context['lp_page']['options']['allow_reactions']);
+		CheckboxField::make('allow_reactions', Lang::$txt['lp_reactions']['allow_reactions'])
+			->setValue(Utils::$context['lp_page']['options']['allow_reactions']);
 	}
 
 	public function preparePageData(array $data, bool $is_author): void
@@ -49,14 +50,37 @@ class Reactions extends Plugin
 		if (empty($data['options']['allow_reactions']))
 			return;
 
-		$this->context['reaction_url'] = LP_PAGE_URL . $data['alias'];
-		$this->context['can_react'] = empty($is_author);
+		Utils::$context['reaction_url'] = LP_PAGE_URL . $data['alias'];
+		Utils::$context['can_react'] = empty($is_author);
+
+		$this->addInlineJS('
+			document.addEventListener("addReaction", (event) => {
+				const isComment = typeof event.detail.comment !== "undefined"
+				axios.post("' . Utils::$context['reaction_url'] . ';add_reaction", event.detail)
+					.then(() => {
+						isComment
+						? axios
+							.post("' . Utils::$context['reaction_url'] . ';get_reactions", {
+								comment: event.detail.comment
+							})
+							.then(response => {
+								window["commentReactions" + event.detail.comment].showButtons = false
+								window["commentReactions" + event.detail.comment].reactions = response.data
+							})
+						: axios
+							.get("' . Utils::$context['reaction_url'] . ';get_reactions")
+							.then(response => {
+								window.pageReactions.showButtons = false
+								window.pageReactions.reactions = response.data
+							})
+					})
+			})', true);
 
 		$reactions = json_decode($data['options']['reactions'] ?? '', true) ?? [];
 
-		$this->context['reaction_buttons'] = $this->getButtons();
-		$this->context['prepared_buttons'] = json_decode($this->context['reaction_buttons'], true);
-		$this->context['prepared_reactions'] = json_decode($this->getReactionsWithCount($reactions), true);
+		Utils::$context['reaction_buttons'] = $this->getButtons();
+		Utils::$context['prepared_buttons'] = json_decode(Utils::$context['reaction_buttons'], true);
+		Utils::$context['prepared_reactions'] = json_decode($this->getReactionsWithCount($reactions), true);
 
 		if ($this->request()->has('get_reactions')) {
 			$json = $this->request()->json();
@@ -75,11 +99,11 @@ class Reactions extends Plugin
 			if (isset($json['reaction'])) {
 				if (isset($json['comment'])) {
 					$comment_reactions = $this->getReactions($json['comment'], 'comment');
-					$comment_reactions[$this->user_info['id']] = $json['reaction'];
+					$comment_reactions[User::$info['id']] = $json['reaction'];
 					$this->addReaction($json['comment'], json_encode($comment_reactions), 'comment');
 					$this->cache()->forget('page_' . $data['alias'] . '_comments');
 				} else {
-					$reactions[$this->user_info['id']] = $json['reaction'];
+					$reactions[User::$info['id']] = $json['reaction'];
 					$this->addReaction($data['id'], json_encode($reactions));
 					$this->cache()->forget('page_' . $data['alias']);
 				}
@@ -91,7 +115,7 @@ class Reactions extends Plugin
 
 	public function afterPageContent(): void
 	{
-		if (empty($this->context['lp_page']['options']['allow_reactions']))
+		if (empty(Utils::$context['lp_page']['options']['allow_reactions']))
 			return;
 
 		show_page_reactions();
@@ -99,10 +123,10 @@ class Reactions extends Plugin
 
 	public function commentButtons(array $comment, array &$buttons): void
 	{
-		if (empty($this->context['lp_page']['options']['allow_reactions']))
+		if (empty(Utils::$context['lp_page']['options']['allow_reactions']))
 			return;
 
-		$comment['can_react'] = $comment['poster']['id'] !== $this->user_info['id'];
+		$comment['can_react'] = $comment['poster']['id'] !== User::$info['id'];
 		$comment['reactions'] = json_decode($comment['params']['reactions'] ?? '', true) ?? [];
 		$comment['prepared_reactions'] = $this->getReactionsWithCount($comment['reactions']);
 		$comment['prepared_buttons'] = json_decode($comment['prepared_reactions'], true);
@@ -124,32 +148,32 @@ class Reactions extends Plugin
 		$buttons = [
 			[
 				'name' => 'like',
-				'title' => $this->txt['lp_reactions']['titles'][0],
+				'title' => Lang::$txt['lp_reactions']['titles'][0],
 				'emoji' => '👍',
 			],
 			[
 				'name' => 'dislike',
-				'title' => $this->txt['lp_reactions']['titles'][1],
+				'title' => Lang::$txt['lp_reactions']['titles'][1],
 				'emoji' => '👎',
 			],
 			[
 				'name' => 'love',
-				'title' => $this->txt['lp_reactions']['titles'][2],
+				'title' => Lang::$txt['lp_reactions']['titles'][2],
 				'emoji' => '❤️',
 			],
 			[
 				'name' => 'laugh',
-				'title' => $this->txt['lp_reactions']['titles'][3],
+				'title' => Lang::$txt['lp_reactions']['titles'][3],
 				'emoji' => '😆',
 			],
 			[
 				'name' => 'sad',
-				'title' => $this->txt['lp_reactions']['titles'][4],
+				'title' => Lang::$txt['lp_reactions']['titles'][4],
 				'emoji' => '😢',
 			],
 			[
 				'name' => 'angry',
-				'title' => $this->txt['lp_reactions']['titles'][5],
+				'title' => Lang::$txt['lp_reactions']['titles'][5],
 				'emoji' => '😡',
 			]
 		];
@@ -159,7 +183,7 @@ class Reactions extends Plugin
 
 	private function getReactions(int $id, string $entity = 'page'): array
 	{
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT value
 			FROM {db_prefix}lp_params
 			WHERE item_id = {int:id}
@@ -172,17 +196,17 @@ class Reactions extends Plugin
 			]
 		);
 
-		[$reactions] = $this->smcFunc['db_fetch_row']($result);
+		[$reactions] = Utils::$smcFunc['db_fetch_row']($result);
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return json_decode($reactions ?? '', true) ?? [];
 	}
 
 	private function addReaction(int $id, string $value, string $entity = 'page'): void
 	{
-		$this->smcFunc['db_insert']('replace',
+		Utils::$smcFunc['db_insert']('replace',
 			'{db_prefix}lp_params',
 			[
 				'item_id' => 'int',
@@ -199,6 +223,6 @@ class Reactions extends Plugin
 			['item_id', 'type', 'name']
 		);
 
-		$this->context['lp_num_queries']++;
+		Utils::$context['lp_num_queries']++;
 	}
 }

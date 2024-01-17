@@ -14,6 +14,8 @@
 
 namespace Bugo\LightPortal\Areas\Fields;
 
+use Bugo\LightPortal\Utils\Utils;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -28,9 +30,9 @@ class CustomField extends AbstractField
 
 	public function build(): void
 	{
-		$this->context['posting_fields'][$this->name]['label']['html']  = $this->label;
-		$this->context['posting_fields'][$this->name]['input']['html']  = $this->attributes['value'];
-		$this->context['posting_fields'][$this->name]['input']['tab']   = $this->tab;
-		$this->context['posting_fields'][$this->name]['input']['after'] = $this->after;
+		Utils::$context['posting_fields'][$this->name]['label']['html']  = $this->label;
+		Utils::$context['posting_fields'][$this->name]['input']['html']  = $this->attributes['value'];
+		Utils::$context['posting_fields'][$this->name]['input']['tab']   = $this->tab;
+		Utils::$context['posting_fields'][$this->name]['input']['after'] = $this->after;
 	}
 }

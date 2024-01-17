@@ -14,6 +14,8 @@
 
 namespace Bugo\LightPortal\Tasks;
 
+use Bugo\LightPortal\Utils\Utils;
+
 final class Maintainer extends BackgroundTask
 {
 	public function execute(): bool
@@ -25,7 +27,7 @@ final class Maintainer extends BackgroundTask
 		$this->updateLastCommentIds();
 		$this->optimizeTables();
 
-		return (bool) $this->smcFunc['db_insert']('insert',
+		return (bool) Utils::$smcFunc['db_insert']('insert',
 			'{db_prefix}background_tasks',
 			[
 				'task_file'    => 'string-255',
@@ -44,9 +46,9 @@ final class Maintainer extends BackgroundTask
 		);
 	}
 
-	private function removeRedundantValues()
+	private function removeRedundantValues(): void
 	{
-		$this->smcFunc['db_query']('', '
+		Utils::$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_params
 			WHERE value = {string:empty_value}',
 			[
@@ -54,9 +56,9 @@ final class Maintainer extends BackgroundTask
 			]
 		);
 
-		$value = $this->smcFunc['db_title'] === POSTGRE_TITLE ? "string_agg(value, ',')" : 'GROUP_CONCAT(value)';
+		$value = Utils::$smcFunc['db_title'] === POSTGRE_TITLE ? "string_agg(value, ',')" : 'GROUP_CONCAT(value)';
 
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT ' . $value . ' AS value
 			FROM {db_prefix}lp_params
 			WHERE type = {literal:page}
@@ -64,11 +66,11 @@ final class Maintainer extends BackgroundTask
 			[]
 		);
 
-		[$usedTags] = $this->smcFunc['db_fetch_row']($result);
-		$this->smcFunc['db_free_result']($result);
+		[$usedTags] = Utils::$smcFunc['db_fetch_row']($result);
+		Utils::$smcFunc['db_free_result']($result);
 
 		if ($usedTags) {
-			$this->smcFunc['db_query']('', '
+			Utils::$smcFunc['db_query']('', '
 				DELETE FROM {db_prefix}lp_tags
 				WHERE tag_id NOT IN ({array_int:tags})',
 				[
@@ -77,7 +79,7 @@ final class Maintainer extends BackgroundTask
 			);
 		}
 
-		$this->smcFunc['db_query']('', '
+		Utils::$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_titles
 			WHERE title = {string:empty_value}',
 			[
@@ -85,7 +87,7 @@ final class Maintainer extends BackgroundTask
 			]
 		);
 
-		$result = $this->smcFunc['db_query']('', /** @lang text */ '
+		$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
 			SELECT id FROM {db_prefix}lp_comments
 			WHERE parent_id <> 0
 				AND parent_id NOT IN (SELECT * FROM (SELECT id FROM {db_prefix}lp_comments) com)',
@@ -93,14 +95,14 @@ final class Maintainer extends BackgroundTask
 		);
 
 		$comments = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			$comments[] = $row['id'];
 		}
 
-		$this->smcFunc['db_free_result']($result);
+		Utils::$smcFunc['db_free_result']($result);
 
 		if ($comments) {
-			$this->smcFunc['db_query']('', '
+			Utils::$smcFunc['db_query']('', '
 				DELETE FROM {db_prefix}lp_comments
 				WHERE id IN ({array_int:items})',
 				[
@@ -108,7 +110,7 @@ final class Maintainer extends BackgroundTask
 				]
 			);
 
-			$this->smcFunc['db_query']('', '
+			Utils::$smcFunc['db_query']('', '
 				DELETE FROM {db_prefix}lp_params
 				WHERE item_id IN ({array_int:items})
 					AND type = {literal:comment}',
@@ -119,9 +121,9 @@ final class Maintainer extends BackgroundTask
 		}
 	}
 
-	private function updateNumComments()
+	private function updateNumComments(): void
 	{
-		$result = $this->smcFunc['db_query']('', /** @lang text */ '
+		$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
 			SELECT p.page_id, COUNT(c.id) AS amount
 			FROM {db_prefix}lp_pages p
 				LEFT JOIN {db_prefix}lp_comments c ON (c.page_id = p.page_id)
@@ -131,10 +133,10 @@ final class Maintainer extends BackgroundTask
 		);
 
 		$pages = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($result))
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result))
 			$pages[$row['page_id']] = $row['amount'];
 
-		$this->smcFunc['db_free_result']($result);
+		Utils::$smcFunc['db_free_result']($result);
 
 		if (empty($pages))
 			return;
@@ -143,7 +145,7 @@ final class Maintainer extends BackgroundTask
 		foreach ($pages as $page_id => $num_comments)
 			$line .= ' WHEN page_id = ' . $page_id . ' THEN ' . $num_comments;
 
-		$this->smcFunc['db_query']('', /** @lang text */ '
+		Utils::$smcFunc['db_query']('', /** @lang text */ '
 			UPDATE {db_prefix}lp_pages
 			SET num_comments = CASE ' . $line . '
 				ELSE num_comments
@@ -155,9 +157,9 @@ final class Maintainer extends BackgroundTask
 		);
 	}
 
-	private function updateLastCommentIds()
+	private function updateLastCommentIds(): void
 	{
-		$result = $this->smcFunc['db_query']('', /** @lang text */ '
+		$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
 			SELECT p.page_id, MAX(c.id) AS last_comment_id
 			FROM {db_prefix}lp_pages p
 				LEFT JOIN {db_prefix}lp_comments c ON (c.page_id = p.page_id)
@@ -167,10 +169,10 @@ final class Maintainer extends BackgroundTask
 		);
 
 		$pages = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($result))
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result))
 			$pages[$row['page_id']] = $row['last_comment_id'] ?? 0;
 
-		$this->smcFunc['db_free_result']($result);
+		Utils::$smcFunc['db_free_result']($result);
 
 		if (empty($pages))
 			return;
@@ -179,7 +181,7 @@ final class Maintainer extends BackgroundTask
 		foreach ($pages as $page_id => $last_comment_id)
 			$line .= ' WHEN page_id = ' . $page_id . ' THEN ' . $last_comment_id;
 
-		$this->smcFunc['db_query']('', /** @lang text */ '
+		Utils::$smcFunc['db_query']('', /** @lang text */ '
 			UPDATE {db_prefix}lp_pages
 			SET last_comment_id = CASE ' . $line . '
 				ELSE last_comment_id
@@ -191,7 +193,7 @@ final class Maintainer extends BackgroundTask
 		);
 	}
 
-	private function optimizeTables()
+	private function optimizeTables(): void
 	{
 		$tables = [
 			'lp_blocks',
@@ -207,6 +209,6 @@ final class Maintainer extends BackgroundTask
 		$this->dbExtend();
 
 		foreach ($tables as $table)
-			$this->smcFunc['db_optimize_table']('{db_prefix}' . $table);
+			Utils::$smcFunc['db_optimize_table']('{db_prefix}' . $table);
 	}
 }

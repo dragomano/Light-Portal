@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.01.24
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\EhPortalMigration;
 
 use Bugo\LightPortal\Areas\Import\AbstractOtherPageImport;
+use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -25,13 +26,13 @@ class PageImport extends AbstractOtherPageImport
 {
 	public function main(): void
 	{
-		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_eh_portal_migration']['label_name'];
-		$this->context['page_area_title'] = $this->txt['lp_pages_import'];
-		$this->context['canonical_url']   = $this->scripturl . '?action=admin;area=lp_pages;sa=import_from_ep';
+		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_eh_portal_migration']['label_name'];
+		Utils::$context['page_area_title'] = Lang::$txt['lp_pages_import'];
+		Utils::$context['canonical_url']   = Config::$scripturl . '?action=admin;area=lp_pages;sa=import_from_ep';
 
-		$this->context[$this->context['admin_menu_name']]['tab_data'] = [
+		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => $this->txt['lp_eh_portal_migration']['desc']
+			'description' => Lang::$txt['lp_eh_portal_migration']['desc']
 		];
 
 		$this->run();
@@ -39,9 +40,9 @@ class PageImport extends AbstractOtherPageImport
 		$listOptions = [
 			'id' => 'lp_pages',
 			'items_per_page' => 50,
-			'title' => $this->txt['lp_pages_import'],
-			'no_items_label' => $this->txt['lp_no_items'],
-			'base_href' => $this->context['canonical_url'],
+			'title' => Lang::$txt['lp_pages_import'],
+			'no_items_label' => Lang::$txt['lp_no_items'],
+			'base_href' => Utils::$context['canonical_url'],
 			'default_sort_col' => 'id',
 			'get_items' => [
 				'function' => [$this, 'getAll']
@@ -66,7 +67,7 @@ class PageImport extends AbstractOtherPageImport
 				],
 				'alias' => [
 					'header' => [
-						'value' => $this->txt['lp_page_alias']
+						'value' => Lang::$txt['lp_page_alias']
 					],
 					'data' => [
 						'db'    => 'alias',
@@ -79,7 +80,7 @@ class PageImport extends AbstractOtherPageImport
 				],
 				'title' => [
 					'header' => [
-						'value' => $this->txt['lp_title']
+						'value' => Lang::$txt['lp_title']
 					],
 					'data' => [
 						'db'    => 'title',
@@ -101,15 +102,15 @@ class PageImport extends AbstractOtherPageImport
 				]
 			],
 			'form' => [
-				'href' => $this->context['canonical_url']
+				'href' => Utils::$context['canonical_url']
 			],
 			'additional_rows' => [
 				[
 					'position' => 'below_table_data',
 					'value' => '
 						<input type="hidden">
-						<input type="submit" name="import_selection" value="' . $this->txt['lp_import_selection'] . '" class="button">
-						<input type="submit" name="import_all" value="' . $this->txt['lp_import_all'] . '" class="button">'
+						<input type="submit" name="import_selection" value="' . Lang::$txt['lp_import_selection'] . '" class="button">
+						<input type="submit" name="import_all" value="' . Lang::$txt['lp_import_all'] . '" class="button">'
 				]
 			]
 		];
@@ -124,10 +125,10 @@ class PageImport extends AbstractOtherPageImport
 	{
 		$this->dbExtend();
 
-		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'sp_pages')))
+		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'sp_pages')))
 			return [];
 
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT id_page, namespace, title, body, type, permission_set, groups_allowed, views, status
 			FROM {db_prefix}sp_pages
 			ORDER BY {raw:sort}
@@ -140,21 +141,21 @@ class PageImport extends AbstractOtherPageImport
 		);
 
 		$items = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			$items[$row['id_page']] = [
 				'id'         => $row['id_page'],
 				'alias'      => $row['namespace'],
 				'type'       => $row['type'],
 				'status'     => $row['status'],
 				'num_views'  => $row['views'],
-				'author_id'  => $this->user_info['id'],
+				'author_id'  => User::$info['id'],
 				'created_at' => $this->getFriendlyTime(time()),
 				'title'      => $row['title']
 			];
 		}
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return $items;
 	}
@@ -163,26 +164,26 @@ class PageImport extends AbstractOtherPageImport
 	{
 		$this->dbExtend();
 
-		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'sp_pages')))
+		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'sp_pages')))
 			return 0;
 
-		$result = $this->smcFunc['db_query']('', /** @lang text */ '
+		$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
 			SELECT COUNT(*)
 			FROM {db_prefix}sp_pages',
 			[]
 		);
 
-		[$num_pages] = $this->smcFunc['db_fetch_row']($result);
+		[$num_pages] = Utils::$smcFunc['db_fetch_row']($result);
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return (int) $num_pages;
 	}
 
 	protected function getItems(array $pages): array
 	{
-		$result = $this->smcFunc['db_query']('', /** @lang text */ '
+		$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
 			SELECT id_page, namespace, title, body, type, permission_set, groups_allowed, views, status
 			FROM {db_prefix}sp_pages' . (empty($pages) ? '' : '
 			WHERE id_page IN ({array_int:pages})'),
@@ -192,7 +193,7 @@ class PageImport extends AbstractOtherPageImport
 		);
 
 		$items = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			$perm = $row['permission_set'];
 
 			if (empty($row['permission_set'])) {
@@ -211,7 +212,7 @@ class PageImport extends AbstractOtherPageImport
 
 			$items[$row['id_page']] = [
 				'page_id'      => $row['id_page'],
-				'author_id'    => $this->user_info['id'],
+				'author_id'    => User::$info['id'],
 				'alias'        => $row['namespace'] ?: ('page_' . $row['id_page']),
 				'description'  => '',
 				'content'      => $row['body'],
@@ -226,8 +227,8 @@ class PageImport extends AbstractOtherPageImport
 			];
 		}
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return $items;
 	}

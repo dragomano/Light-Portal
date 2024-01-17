@@ -14,6 +14,8 @@
 
 namespace Bugo\LightPortal\Areas\Partials;
 
+use Bugo\LightPortal\Utils\{Lang, Utils};
+
 final class AreaSelect extends AbstractPartial
 {
 	public function __invoke(): string
@@ -28,19 +30,19 @@ final class AreaSelect extends AbstractPartial
 			'topics' => 'topics',
 		];
 
-		$this->txt['lp_block_areas_set']['pm'] = $this->txt['personal_messages'];
-		$this->txt['lp_block_areas_set']['mlist'] = $this->txt['members_title'];
-		$this->txt['lp_block_areas_set']['recent'] = $this->txt['recent_posts'];
-		$this->txt['lp_block_areas_set']['unread'] = $this->txt['view_unread_category'];
-		$this->txt['lp_block_areas_set']['unreadreplies'] = $this->txt['unread_replies'];
-		$this->txt['lp_block_areas_set']['stats'] = $this->txt['forum_stats'];
-		$this->txt['lp_block_areas_set']['who'] = $this->txt['who_title'];
-		$this->txt['lp_block_areas_set']['agreement'] = $this->txt['terms_and_rules'];
-		$this->txt['lp_block_areas_set']['warehouse'] = $this->txt['warehouse_title'] ?? 'warehouse';
-		$this->txt['lp_block_areas_set']['media'] = $this->txt['levgal'] ?? $this->txt['mgallery_title'] ?? 'media';
-		$this->txt['lp_block_areas_set']['gallery'] = $this->txt['smfgallery_menu'] ?? 'gallery';
+		Lang::$txt['lp_block_areas_set']['pm'] = Lang::$txt['personal_messages'];
+		Lang::$txt['lp_block_areas_set']['mlist'] = Lang::$txt['members_title'];
+		Lang::$txt['lp_block_areas_set']['recent'] = Lang::$txt['recent_posts'];
+		Lang::$txt['lp_block_areas_set']['unread'] = Lang::$txt['view_unread_category'];
+		Lang::$txt['lp_block_areas_set']['unreadreplies'] = Lang::$txt['unread_replies'];
+		Lang::$txt['lp_block_areas_set']['stats'] = Lang::$txt['forum_stats'];
+		Lang::$txt['lp_block_areas_set']['who'] = Lang::$txt['who_title'];
+		Lang::$txt['lp_block_areas_set']['agreement'] = Lang::$txt['terms_and_rules'];
+		Lang::$txt['lp_block_areas_set']['warehouse'] = Lang::$txt['warehouse_title'] ?? 'warehouse';
+		Lang::$txt['lp_block_areas_set']['media'] = Lang::$txt['levgal'] ?? Lang::$txt['mgallery_title'] ?? 'media';
+		Lang::$txt['lp_block_areas_set']['gallery'] = Lang::$txt['smfgallery_menu'] ?? 'gallery';
 
-		$params['value'] = explode(',', $this->context['lp_block']['areas']);
+		$params['value'] = explode(',', Utils::$context['lp_block']['areas']);
 		$params['data'] = array_merge($params['data'], array_combine($params['value'], $params['value']));
 
 		$data = $values = [];
@@ -51,16 +53,16 @@ final class AreaSelect extends AbstractPartial
 			$text = str_replace('!', '', $text);
 
 			if (str_starts_with($value, 'board='))
-				$text = $this->txt['board'] . str_replace('board=', ' ', $text);
+				$text = Lang::$txt['board'] . str_replace('board=', ' ', $text);
 
 			if (str_starts_with($value, 'topic='))
-				$text = $this->txt['topic'] . str_replace('topic=', ' ', $text);
+				$text = Lang::$txt['topic'] . str_replace('topic=', ' ', $text);
 
 			if (str_starts_with($value, 'page='))
-				$text = $this->txt['page'] . str_replace('page=', ' ', $text);
+				$text = Lang::$txt['page'] . str_replace('page=', ' ', $text);
 
 			$data[] = [
-				'label' => $this->txt['lp_block_areas_set'][$text] ?? $this->txt[$text] ?? $text,
+				'label' => Lang::$txt['lp_block_areas_set'][$text] ?? Lang::$txt[$text] ?? $text,
 				'value' => $value
 			];
 		}
@@ -69,7 +71,7 @@ final class AreaSelect extends AbstractPartial
 		<div id="areas" name="areas"></div>
 		<script>
 			VirtualSelect.init({
-				ele: "#areas",' . ($this->context['right_to_left'] ? '
+				ele: "#areas",' . (Utils::$context['right_to_left'] ? '
 				textDirection: "rtl",' : '') . '
 				dropboxWrapper: "body",
 				maxWidth: "100%",
@@ -79,10 +81,10 @@ final class AreaSelect extends AbstractPartial
 				showValueAsTags: true,
 				allowNewOption: true,
 				showSelectedOptionsFirst: true,
-				placeholder: "' . $this->txt['lp_block_areas_subtext'] . '",
-				noSearchResultsText: "' . $this->txt['no_matches'] . '",
-				searchPlaceholderText: "' . $this->txt['search'] . '",
-				clearButtonText: "' . $this->txt['remove'] . '",
+				placeholder: "' . Lang::$txt['lp_block_areas_subtext'] . '",
+				noSearchResultsText: "' . Lang::$txt['no_matches'] . '",
+				searchPlaceholderText: "' . Lang::$txt['search'] . '",
+				clearButtonText: "' . Lang::$txt['remove'] . '",
 				options: ' . json_encode($data) . ',
 				selectedValue: ' . json_encode($values) . '
 			});

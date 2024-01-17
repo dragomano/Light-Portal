@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\PrettyUrls;
 
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Utils\{Config, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -26,13 +27,13 @@ class PrettyUrls extends Plugin
 
 	public function init(): void
 	{
-		if (! is_file($file = $this->sourcedir . '/Subs-PrettyUrls.php'))
+		if (! is_file($file = Config::$sourcedir . '/Subs-PrettyUrls.php'))
 			return;
 
-		if (! empty($this->context['pretty']['action_array']) && ! in_array(LP_ACTION, array_values($this->context['pretty']['action_array'])))
-			$this->context['pretty']['action_array'][] = LP_ACTION;
+		if (! empty(Utils::$context['pretty']['action_array']) && ! in_array(LP_ACTION, array_values(Utils::$context['pretty']['action_array'])))
+			Utils::$context['pretty']['action_array'][] = LP_ACTION;
 
-		$prettyFilters = unserialize($this->modSettings['pretty_filters']);
+		$prettyFilters = unserialize(Config::$modSettings['pretty_filters']);
 
 		if (isset($prettyFilters['lp-pages']))
 			return;
@@ -61,8 +62,8 @@ class PrettyUrls extends Plugin
 
 	public function filter(array $urls): array
 	{
-		$pattern = '`' . $this->scripturl . '(.*)' . LP_PAGE_PARAM . '=([^;]+)`S';
-		$replacement = $this->boardurl . '/' . LP_PAGE_PARAM . '/$2/$1';
+		$pattern = '`' . Config::$scripturl . '(.*)' . LP_PAGE_PARAM . '=([^;]+)`S';
+		$replacement = Config::$boardurl . '/' . LP_PAGE_PARAM . '/$2/$1';
 
 		foreach ($urls as $url_id => $url) {
 			if (! isset($url['replacement']) && preg_match($pattern, $url['url'])) {

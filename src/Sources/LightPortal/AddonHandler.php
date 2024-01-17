@@ -15,6 +15,7 @@
 namespace Bugo\LightPortal;
 
 use Bugo\LightPortal\Repositories\PluginRepository;
+use Bugo\LightPortal\Utils\{Lang, Theme, User, Utils};
 use MatthiasMullie\Minify\{CSS, JS};
 use SplObjectStorage;
 
@@ -81,9 +82,9 @@ final class AddonHandler
 
 	public function run(string $hook = 'init', array $vars = [], array $plugins = []): void
 	{
-		$addons = $plugins ?: $this->context['lp_enabled_plugins'];
+		$addons = $plugins ?: Utils::$context['lp_enabled_plugins'];
 
-		if (empty($addons) || isset($this->context['uninstalling']))
+		if (empty($addons) || isset(Utils::$context['uninstalling']))
 			return;
 
 		foreach ($addons as $addon) {
@@ -104,26 +105,26 @@ final class AddonHandler
 				$path = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $addon . DIRECTORY_SEPARATOR;
 				$snakeName = $this->getSnakeName($addon);
 
-				$this->context[$this->prefix . $snakeName . '_plugin'] = $this->pluginSettings[$snakeName] ?? [];
-				$this->context['lp_loaded_addons'][$snakeName] = $this->plugins->offsetGet($class);
+				Utils::$context[$this->prefix . $snakeName . '_plugin'] = $this->pluginSettings[$snakeName] ?? [];
+				Utils::$context['lp_loaded_addons'][$snakeName] = $this->plugins->offsetGet($class);
 
 				$this->loadLangs($path, $snakeName);
 
-				if (in_array($addon, $this->context['lp_enabled_plugins']))
+				if (in_array($addon, Utils::$context['lp_enabled_plugins']))
 					$this->loadAssets($path);
 			}
 
 			if (method_exists($class, $hook)) {
-				$hook === 'init' && in_array($addon, $this->context['lp_enabled_plugins']) ? $class->init() : $class->$hook(...$vars);
+				$hook === 'init' && in_array($addon, Utils::$context['lp_enabled_plugins']) ? $class->init() : $class->$hook(...$vars);
 			}
 		}
 
-		$cssFile = $this->settings['default_theme_dir'] . '/css/light_portal/plugins.css';
+		$cssFile = Theme::$current->settings['default_theme_dir'] . '/css/light_portal/plugins.css';
 		if (! is_file($cssFile) || $this->maxCssFilemtime > filemtime($cssFile)) {
 			$this->cssMinifier->minify($cssFile);
 		}
 
-		$jsFile = $this->settings['default_theme_dir'] . '/scripts/light_portal/plugins.js';
+		$jsFile = Theme::$current->settings['default_theme_dir'] . '/scripts/light_portal/plugins.js';
 		if (! is_file($jsFile) || $this->maxJsFilemtime > filemtime($jsFile)) {
 			$this->jsMinifier->minify($jsFile);
 		}
@@ -138,7 +139,7 @@ final class AddonHandler
 				continue;
 
 			foreach ($assets[$type] as $plugin => $links) {
-				$addonAssetDir = $this->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR  . 'light_portal' . DIRECTORY_SEPARATOR . $plugin;
+				$addonAssetDir = Theme::$current->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR  . 'light_portal' . DIRECTORY_SEPARATOR . $plugin;
 
 				if (! is_dir($addonAssetDir)) {
 					@mkdir($addonAssetDir);
@@ -156,10 +157,10 @@ final class AddonHandler
 
 	private function loadLangs(string $path, string $snakeName): void
 	{
-		if (isset($this->txt[$this->prefix . $snakeName]))
+		if (isset(Lang::$txt[$this->prefix . $snakeName]))
 			return;
 
-		$languages = array_unique(['english', $this->user_info['language']]);
+		$languages = array_unique(['english', User::$info['language']]);
 
 		$addonLanguages = [];
 		foreach ($languages as $lang) {
@@ -168,7 +169,7 @@ final class AddonHandler
 		}
 
 		if (is_array($addonLanguages['english']))
-			$this->txt[$this->prefix . $snakeName] = array_merge($addonLanguages['english'], $addonLanguages[$this->user_info['language']]);
+			Lang::$txt[$this->prefix . $snakeName] = array_merge($addonLanguages['english'], $addonLanguages[User::$info['language']]);
 	}
 
 	private function loadAssets(string $path): void

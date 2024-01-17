@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.01.24
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\HidingBlocks;
 
 use Bugo\LightPortal\Addons\Plugin;
 use Bugo\LightPortal\Areas\Fields\CustomField;
+use Bugo\LightPortal\Utils\{Lang, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -29,17 +30,17 @@ class HidingBlocks extends Plugin
 
 	public function init(): void
 	{
-		foreach ($this->context['lp_active_blocks'] as $id => $block) {
+		foreach (Utils::$context['lp_active_blocks'] as $id => $block) {
 			if (empty($block['parameters']) || empty($block['parameters']['hidden_breakpoints']))
 				continue;
 
 			$breakpoints = array_flip(explode(',', $block['parameters']['hidden_breakpoints']));
 			foreach ($this->classes as $class) {
 				if (array_key_exists($class, $breakpoints)) {
-					if (empty($this->context['lp_active_blocks'][$id]['custom_class']))
-						$this->context['lp_active_blocks'][$id]['custom_class'] = '';
+					if (empty(Utils::$context['lp_active_blocks'][$id]['custom_class']))
+						Utils::$context['lp_active_blocks'][$id]['custom_class'] = '';
 
-					$this->context['lp_active_blocks'][$id]['custom_class'] .= ' hidden-' . $class;
+					Utils::$context['lp_active_blocks'][$id]['custom_class'] .= ' hidden-' . $class;
 				}
 			}
 		}
@@ -57,7 +58,7 @@ class HidingBlocks extends Plugin
 
 	public function prepareBlockFields(): void
 	{
-		CustomField::make('hidden_breakpoints', $this->txt['lp_hiding_blocks']['hidden_breakpoints'])
+		CustomField::make('hidden_breakpoints', Lang::$txt['lp_hiding_blocks']['hidden_breakpoints'])
 			->setTab('access_placement')
 			->setValue(fn() => new BreakpointSelect);
 	}

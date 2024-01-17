@@ -14,6 +14,8 @@
 
 namespace Bugo\LightPortal\Models;
 
+use Bugo\LightPortal\Utils\{Config, User, Utils};
+
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -59,20 +61,20 @@ class PageModel extends AbstractModel
 
 		$this->categoryId = $postData['category_id'] ?? $currentPage['category_id'] ?? 0;
 
-		$this->authorId = $currentPage['author_id'] ?? $this->user_info['id'];
+		$this->authorId = $currentPage['author_id'] ?? User::$info['id'];
 
 		$this->alias = $postData['alias'] ?? $currentPage['alias'] ?? '';
 
 		$this->description = $postData['description'] ?? $currentPage['description'] ?? '';
 
 		$this->content = $postData['content'] ?? $currentPage['content'] ?? '';
-		
-		$this->type = $postData['type'] ?? $currentPage['type'] ?? 'bbc';
-		
-		$this->permissions = $postData['permissions'] ?? $currentPage['permissions'] ?? (int) $this->modSettings['lp_permissions_default'] ?? 2;
 
-		$this->status = $postData['status'] ?? $currentPage['status'] ?? (int) ($this->context['allow_light_portal_approve_pages'] || $this->context['allow_light_portal_manage_pages_any']);
-		
+		$this->type = $postData['type'] ?? $currentPage['type'] ?? 'bbc';
+
+		$this->permissions = $postData['permissions'] ?? $currentPage['permissions'] ?? (int) Config::$modSettings['lp_permissions_default'] ?? 2;
+
+		$this->status = $postData['status'] ?? $currentPage['status'] ?? (int) (Utils::$context['allow_light_portal_approve_pages'] || Utils::$context['allow_light_portal_manage_pages_any']);
+
 		$this->createdAt = $currentPage['created_at'] ?? time();
 	}
 

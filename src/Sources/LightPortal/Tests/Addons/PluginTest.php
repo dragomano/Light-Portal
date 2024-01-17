@@ -7,6 +7,7 @@
 namespace Tests\Addons;
 
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Utils\Utils;
 use Tester\Assert;
 
 require_once dirname(__DIR__) . '/bootstrap.php';
@@ -25,13 +26,11 @@ test('getName method', function () {
 });
 
 test('getFromSsi method', function () {
-	global $context;
-
 	$testPlugin = new class extends Plugin {};
 
 	// ssi_unknownFunction does not exist
 	Assert::false($testPlugin->getFromSsi('unknownFunction'));
 
 	// ssi_welcome does exist
-	Assert::same($context['user'], $testPlugin->getFromSsi('welcome', 'array'));
+	Assert::same(Utils::$context['user'], $testPlugin->getFromSsi('welcome', 'array'));
 });

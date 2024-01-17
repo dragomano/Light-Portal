@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.01.24
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\TrendingTopics;
@@ -19,6 +19,7 @@ use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\LightPortal\Areas\Fields\NumberField;
 use Bugo\LightPortal\Areas\Fields\SelectField;
+use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -35,7 +36,7 @@ class TrendingTopics extends Block
 
 	public function prepareBlockParams(array &$params): void
 	{
-		if ($this->context['current_block']['type'] !== 'trending_topics')
+		if (Utils::$context['current_block']['type'] !== 'trending_topics')
 			return;
 
 		$params = [
@@ -49,7 +50,7 @@ class TrendingTopics extends Block
 
 	public function validateBlockParams(array &$params): void
 	{
-		if ($this->context['current_block']['type'] !== 'trending_topics')
+		if (Utils::$context['current_block']['type'] !== 'trending_topics')
 			return;
 
 		$params['show_avatars'] = FILTER_VALIDATE_BOOLEAN;
@@ -60,24 +61,24 @@ class TrendingTopics extends Block
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['current_block']['type'] !== 'trending_topics')
+		if (Utils::$context['current_block']['type'] !== 'trending_topics')
 			return;
 
-		CheckboxField::make('show_avatars', $this->txt['lp_trending_topics']['show_avatars'])
+		CheckboxField::make('show_avatars', Lang::$txt['lp_trending_topics']['show_avatars'])
 			->setTab('appearance')
-			->setValue($this->context['lp_block']['options']['show_avatars']);
+			->setValue(Utils::$context['lp_block']['options']['show_avatars']);
 
-		SelectField::make('time_period', $this->txt['lp_trending_topics']['time_period'])
-			->setOptions(array_combine($this->timePeriod, $this->txt['lp_trending_topics']['time_period_set']))
-			->setValue($this->context['lp_block']['options']['time_period']);
+		SelectField::make('time_period', Lang::$txt['lp_trending_topics']['time_period'])
+			->setOptions(array_combine($this->timePeriod, Lang::$txt['lp_trending_topics']['time_period_set']))
+			->setValue(Utils::$context['lp_block']['options']['time_period']);
 
-		NumberField::make('min_replies', $this->txt['lp_trending_topics']['min_replies'])
+		NumberField::make('min_replies', Lang::$txt['lp_trending_topics']['min_replies'])
 			->setAttribute('min', 1)
-			->setValue($this->context['lp_block']['options']['min_replies']);
+			->setValue(Utils::$context['lp_block']['options']['min_replies']);
 
-		NumberField::make('num_topics', $this->txt['lp_trending_topics']['num_topics'])
+		NumberField::make('num_topics', Lang::$txt['lp_trending_topics']['num_topics'])
 			->setAttribute('min', 1)
-			->setValue($this->context['lp_block']['options']['num_topics']);
+			->setValue(Utils::$context['lp_block']['options']['num_topics']);
 	}
 
 	/**
@@ -91,7 +92,7 @@ class TrendingTopics extends Block
 		if (empty($numTopics))
 			return [];
 
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT DISTINCT t.id_topic, t.id_member_started, t.num_replies,
 				COALESCE(mem.real_name, mf.poster_name) AS poster_name, mf.subject,
 				ml.id_msg, ml.poster_time
@@ -109,7 +110,7 @@ class TrendingTopics extends Block
 		);
 
 		$topics = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			$topics[$row['id_topic']] = [
 				'subject'     => $row['subject'],
 				'id_msg'      => $row['id_msg'],
@@ -122,8 +123,8 @@ class TrendingTopics extends Block
 			];
 		}
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return $parameters['show_avatars'] ? $this->getItemsWithUserAvatars($topics, 'poster') : $topics;
 	}
@@ -133,7 +134,7 @@ class TrendingTopics extends Block
 		if ($data->type !== 'trending_topics')
 			return;
 
-		$topics = $this->cache('trending_topics_addon_b' . $data->block_id . '_u' . $this->user_info['id'])
+		$topics = $this->cache('trending_topics_addon_b' . $data->block_id . '_u' . User::$info['id'])
 			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getData', $parameters);
 
@@ -152,14 +153,14 @@ class TrendingTopics extends Block
 					</span>';
 
 				echo '
-					<a href="', $this->scripturl, '?topic=' . $id . '.msg' . $topic['id_msg'] . ';topicseen#new">', $topic['subject'], '</a> <span>', $topic['poster_time'], ' (', $this->translate('lp_replies_set', ['replies' => $topic['num_replies']]), ')</span>
+					<a href="', Config::$scripturl, '?topic=' . $id . '.msg' . $topic['id_msg'] . ';topicseen#new">', $topic['subject'], '</a> <span>', $topic['poster_time'], ' (', $this->translate('lp_replies_set', ['replies' => $topic['num_replies']]), ')</span>
 				</li>';
 			}
 
 			echo '
 			</ul>';
 		} else {
-			echo '<div class="infobox">', $this->txt['lp_trending_topics']['none'], '</div>';
+			echo '<div class="infobox">', Lang::$txt['lp_trending_topics']['none'], '</div>';
 		}
 	}
 }

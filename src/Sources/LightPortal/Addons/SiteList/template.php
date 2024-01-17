@@ -1,9 +1,9 @@
 <?php
 
+use Bugo\LightPortal\Utils\Lang;
+
 function callback_site_list_table(): void
 {
-	global $txt;
-
 	echo /** @lang text */ '
 	<input type="hidden" name="urls">
 	<table class="table_grid centertext" x-data="handleSites()">
@@ -16,27 +16,27 @@ function callback_site_list_table(): void
 								<tr class="windowbg">
 									<td rowspan="3"><img :src="site.image" :alt="index + 1"></td>
 									<td>
-										<input type="url" x-model="site.url" name="url[]" placeholder="' . $txt['website'] . '" required>
+										<input type="url" x-model="site.url" name="url[]" placeholder="' . Lang::$txt['website'] . '" required>
 									</td>
 									<td style="width: 120px">
 										<button type="button" class="button" @click="remove(index)">
-											<span class="main_icons delete"></span> <span class="hidden-xs">' . $txt['remove'] . '</span>
+											<span class="main_icons delete"></span> <span class="hidden-xs">' . Lang::$txt['remove'] . '</span>
 										</button>
 									</td>
 								</tr>
 								<tr class="windowbg">
 									<td colspan="2">
-										<input type="url" x-model="site.image" name="image[]" placeholder="' . $txt['lp_site_list']['image'] . '">
+										<input type="url" x-model="site.image" name="image[]" placeholder="' . Lang::$txt['lp_site_list']['image'] . '">
 									</td>
 								</tr>
 								<tr class="windowbg">
 									<td colspan="2">
-										<input x-model="site.title" name="title[]" placeholder="' . $txt['title'] . '" style="width: 100%">
+										<input x-model="site.title" name="title[]" placeholder="' . Lang::$txt['title'] . '" style="width: 100%">
 									</td>
 								</tr>
 								<tr class="windowbg">
 									<td colspan="3">
-										<textarea x-model="site.desc" name="desc[]" placeholder="' . $txt['custom_edit_desc'] . '"></textarea>
+										<textarea x-model="site.desc" name="desc[]" placeholder="' . Lang::$txt['custom_edit_desc'] . '"></textarea>
 									</td>
 								</tr>
 							</tbody>
@@ -48,7 +48,7 @@ function callback_site_list_table(): void
 		<tfoot>
 			<tr>
 				<td>
-					<button type="button" class="button" @click="add()" style="width: 100%"><span class="main_icons plus"></span> ' . $txt['lp_site_list']['add'] . '</button>
+					<button type="button" class="button" @click="add()" style="width: 100%"><span class="main_icons plus"></span> ' . Lang::$txt['lp_site_list']['add'] . '</button>
 				</td>
 			</tr>
 		</tfoot>

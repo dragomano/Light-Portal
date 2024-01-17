@@ -7,14 +7,13 @@
 namespace Tests\Areas\Fields;
 
 use Bugo\LightPortal\Areas\Fields\RangeField;
+use Bugo\LightPortal\Utils\Utils;
 use Tester\Assert;
 
 require_once dirname(__DIR__, 2) . '/bootstrap.php';
 require_once __DIR__ . '/template.php';
 
 test('range field', function () {
-	global $context;
-
 	RangeField::make('foo', 'bar')
 		->setAttribute('min', 1)
 		->setAttribute('max', 3)
@@ -23,13 +22,13 @@ test('range field', function () {
 
 	Assert::same(
 		'bar',
-		$context['posting_fields']['foo']['label']['html']
+		Utils::$context['posting_fields']['foo']['label']['html']
 	);
 
 	Assert::same(
 		'other',
-		$context['posting_fields']['foo']['input']['tab']
+		Utils::$context['posting_fields']['foo']['input']['tab']
 	);
 
-	Assert::notNull($context['posting_fields']['foo']['input']['html']);
+	Assert::notNull(Utils::$context['posting_fields']['foo']['input']['html']);
 });

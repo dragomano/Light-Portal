@@ -1,20 +1,20 @@
 <?php
 
-function template_portal_credits()
-{
-	global $context, $txt;
+use Bugo\LightPortal\Utils\{Lang, Utils};
 
+function template_portal_credits(): void
+{
 	echo '
 	<div class="cat_bar">
-		<h3 class="catbg">', $context['lp_icon_set']['users'], $txt['lp_contributors'], '</h3>
+		<h3 class="catbg">', Utils::$context['lp_icon_set']['users'], Lang::$txt['lp_contributors'], '</h3>
 	</div>
 	<div class="windowbg noup">
 		<div class="title_bar">
-			<h4 class="titlebg">', $txt['lp_translators'], '</h4>
+			<h4 class="titlebg">', Lang::$txt['lp_translators'], '</h4>
 		</div>
 		<div class="row">';
 
-		foreach ($context['portal_translations'] as $lang => $translators) {
+		foreach (Utils::$context['portal_translations'] as $lang => $translators) {
 			echo '
 			<div class="col-xs-12 col-sm-6">
 				<div class="sub_bar">
@@ -27,12 +27,12 @@ function template_portal_credits()
 		echo '
 		</div>
 		<div class="title_bar">
-			<h4 class="titlebg">', $txt['lp_testers'], '</h4>
+			<h4 class="titlebg">', Lang::$txt['lp_testers'], '</h4>
 		</div>
 		<div class="roundframe noup">';
 
-	if (! empty($context['testers'])) {
-		foreach ($context['testers'] as $tester) {
+	if (! empty(Utils::$context['testers'])) {
+		foreach (Utils::$context['testers'] as $tester) {
 			echo '
 			<a class="button" href="', $tester['link'], '" target="_blank" rel="nofollow noopener">', $tester['name'], '</a>';
 		}
@@ -41,12 +41,12 @@ function template_portal_credits()
 	echo '
 		</div>
 		<div class="title_bar">
-			<h4 class="titlebg">', $txt['lp_sponsors'], '</h4>
+			<h4 class="titlebg">', Lang::$txt['lp_sponsors'], '</h4>
 		</div>
 		<div class="roundframe noup">';
 
-	if (! empty($context['sponsors'])) {
-		foreach ($context['sponsors'] as $sponsor) {
+	if (! empty(Utils::$context['sponsors'])) {
+		foreach (Utils::$context['sponsors'] as $sponsor) {
 			echo '
 			<a class="button" href="', $sponsor['link'], '" target="_blank" rel="nofollow noopener">', $sponsor['name'], '</a>';
 		}
@@ -55,11 +55,11 @@ function template_portal_credits()
 	echo '
 		</div>
 		<div class="title_bar">
-			<h4 class="titlebg">', $txt['lp_tools'], '</h4>
+			<h4 class="titlebg">', Lang::$txt['lp_tools'], '</h4>
 		</div>
 		<div class="row">';
 
-	foreach ($context['tools'] as $tool) {
+	foreach (Utils::$context['tools'] as $tool) {
 		echo '
 			<div class="col-xs-12 col-sm-6">
 				<div class="windowbg centertext" style="padding: 1px">
@@ -72,16 +72,16 @@ function template_portal_credits()
 		</div>
 	</div>';
 
-	if (empty($context['lp_components']))
+	if (empty(Utils::$context['lp_components']))
 		return;
 
 	echo '
 	<div class="cat_bar">
-		<h3 class="catbg">', $context['lp_icon_set']['copyright'], $txt['lp_used_components'], '</h3>
+		<h3 class="catbg">', Utils::$context['lp_icon_set']['copyright'], Lang::$txt['lp_used_components'], '</h3>
 	</div>
 	<div class="roundframe noup">';
 
-	foreach ($context['lp_components'] as $item) {
+	foreach (Utils::$context['lp_components'] as $item) {
 		echo '
 		<div class="windowbg row center-xs between-md">
 			<div>';

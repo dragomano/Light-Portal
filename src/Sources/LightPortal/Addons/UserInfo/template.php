@@ -1,12 +1,12 @@
 <?php
 
+use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+
 function show_user_info($data): void
 {
-	global $txt, $context, $scripturl;
-
 	echo '
 	<ul class="centertext">
-		<li>', $txt['hello_member'], ' <strong>', $data['name_color'], '</strong></li>';
+		<li>', Lang::$txt['hello_member'], ' <strong>', $data['name_color'], '</strong></li>';
 
 	if ($data['avatar']) {
 		echo '
@@ -17,32 +17,32 @@ function show_user_info($data): void
 		<li>', $data['primary_group'] ?: ($data['post_group'] ?: ''), '</li>
 		<li>', $data['group_icons'], '</li>';
 
-	if ($context['user']['is_admin']) {
+	if (Utils::$context['user']['is_admin']) {
 		echo '
 		<li class="lefttext">
 			<hr>
-			', $context['lp_icon_set']['plus_circle'], ' <a href="', $scripturl, '?action=admin;area=lp_blocks;sa=add;', $context['session_var'], '=', $context['session_id'], '">
-				', $txt['lp_blocks_add'], '
+			', Utils::$context['lp_icon_set']['plus_circle'], ' <a href="', Config::$scripturl, '?action=admin;area=lp_blocks;sa=add;', Utils::$context['session_var'], '=', Utils::$context['session_id'], '">
+				', Lang::$txt['lp_blocks_add'], '
 			</a>
 		</li>';
 	}
 
-	if ($context['allow_light_portal_manage_pages_own']) {
+	if (Utils::$context['allow_light_portal_manage_pages_own']) {
 		echo '
 		<li class="lefttext">
 			<hr>
-			', $context['lp_icon_set']['plus_circle'], ' <a href="', $scripturl, '?action=admin;area=lp_pages;sa=add;', $context['session_var'], '=', $context['session_id'], '">
-				', $txt['lp_pages_add'], '
+			', Utils::$context['lp_icon_set']['plus_circle'], ' <a href="', Config::$scripturl, '?action=admin;area=lp_pages;sa=add;', Utils::$context['session_var'], '=', Utils::$context['session_id'], '">
+				', Lang::$txt['lp_pages_add'], '
 			</a>
 		</li>';
 	}
 
-	if ($context['allow_light_portal_manage_pages_any']) {
+	if (Utils::$context['allow_light_portal_manage_pages_any']) {
 		echo '
 		<li class="lefttext">
 			<hr>
-			', $context['lp_icon_set']['pager'], ' <a href="', $scripturl, '?action=admin;area=lp_pages;sa=main;moderate;', $context['session_var'], '=', $context['session_id'], '">
-				', $txt['lp_page_moderation'], '
+			', Utils::$context['lp_icon_set']['pager'], ' <a href="', Config::$scripturl, '?action=admin;area=lp_pages;sa=main;moderate;', Utils::$context['session_var'], '=', Utils::$context['session_id'], '">
+				', Lang::$txt['lp_page_moderation'], '
 			</a>
 		</li>';
 	}
@@ -51,10 +51,10 @@ function show_user_info($data): void
 		<li>
 			<hr>
 			<span class="floatleft">
-				', $context['lp_icon_set']['user'], ' <a href="', $data['href'], '">', $txt['profile'], '</a>
+				', Utils::$context['lp_icon_set']['user'], ' <a href="', $data['href'], '">', Lang::$txt['profile'], '</a>
 			</span>
 			<span class="floatright">
-				', $context['lp_icon_set']['sign_out_alt'], ' <a href="', $scripturl, '?action=logout;', $context['session_var'], '=', $context['session_id'], '">', $txt['logout'], '</a>
+				', Utils::$context['lp_icon_set']['sign_out_alt'], ' <a href="', Config::$scripturl, '?action=logout;', Utils::$context['session_var'], '=', Utils::$context['session_id'], '">', Lang::$txt['logout'], '</a>
 			</span>
 		</li>
 	</ul>';
@@ -62,24 +62,22 @@ function show_user_info($data): void
 
 function show_user_info_for_guests(): void
 {
-	global $txt, $modSettings, $context, $scripturl;
-
 	echo '
 	<ul class="centertext">
-		<li>', $txt['hello_member'], ' ', $txt['guest'], '</li>
-		<li><img alt="*" src="', $modSettings['avatar_url'], '/default.png" width="100" height="100"></li>
+		<li>', Lang::$txt['hello_member'], ' ', Lang::$txt['guest'], '</li>
+		<li><img alt="*" src="', Config::$modSettings['avatar_url'], '/default.png" width="100" height="100"></li>
 		<li>';
 
-	if ($context['can_register']) {
+	if (Utils::$context['can_register']) {
 		echo '
 			<span class="floatleft">
-				', $context['lp_icon_set']['user_plus'], ' <a href="', $scripturl, '?action=signup">', $txt['register'], '</a>
+				', Utils::$context['lp_icon_set']['user_plus'], ' <a href="', Config::$scripturl, '?action=signup">', Lang::$txt['register'], '</a>
 			</span>';
 	}
 
 	echo '
-			<span', $context['can_register'] ? ' class="floatright"' : '', '>
-				', $context['lp_icon_set']['sign_in_alt'], ' <a href="', $scripturl, '?action=login" onclick="return reqOverlayDiv(this.href, ', JavaScriptEscape($txt['login']), ');">', $txt['login'], '</a>
+			<span', Utils::$context['can_register'] ? ' class="floatright"' : '', '>
+				', Utils::$context['lp_icon_set']['sign_in_alt'], ' <a href="', Config::$scripturl, '?action=login" onclick="return reqOverlayDiv(this.href, ', JavaScriptEscape(Lang::$txt['login']), ');">', Lang::$txt['login'], '</a>
 			</span>
 		</li>
 	</ul>';

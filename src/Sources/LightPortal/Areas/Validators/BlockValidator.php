@@ -14,6 +14,8 @@
 
 namespace Bugo\LightPortal\Areas\Validators;
 
+use Bugo\LightPortal\Utils\{Lang, Utils};
+
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -44,7 +46,7 @@ class BlockValidator extends AbstractValidator
 		$params = [];
 
 		if ($this->request()->only(['save', 'save_exit', 'preview'])) {
-			foreach ($this->context['lp_languages'] as $lang) {
+			foreach (Utils::$context['lp_languages'] as $lang) {
 				$this->args['title_' . $lang['filename']] = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
 			}
 
@@ -76,10 +78,10 @@ class BlockValidator extends AbstractValidator
 
 		if ($errors) {
 			$this->request()->put('preview', true);
-			$this->context['post_errors'] = [];
+			Utils::$context['post_errors'] = [];
 
 			foreach ($errors as $error)
-				$this->context['post_errors'][] = $this->txt['lp_post_error_' . $error];
+				Utils::$context['post_errors'][] = Lang::$txt['lp_post_error_' . $error];
 		}
 	}
 }

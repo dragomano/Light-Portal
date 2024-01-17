@@ -10,15 +10,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.01.24
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\RandomTopics;
 
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\Fields\CustomField;
-use Bugo\LightPortal\Areas\Fields\NumberField;
+use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField};
 use Bugo\LightPortal\Areas\Partials\BoardSelect;
+use Bugo\LightPortal\Utils\{Config, Lang, Theme, User, Utils};
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -30,7 +30,7 @@ class RandomTopics extends Block
 
 	public function prepareBlockParams(array &$params): void
 	{
-		if ($this->context['current_block']['type'] !== 'random_topics')
+		if (Utils::$context['current_block']['type'] !== 'random_topics')
 			return;
 
 		$params = [
@@ -43,7 +43,7 @@ class RandomTopics extends Block
 
 	public function validateBlockParams(array &$params): void
 	{
-		if ($this->context['current_block']['type'] !== 'random_topics')
+		if (Utils::$context['current_block']['type'] !== 'random_topics')
 			return;
 
 		$params = [
@@ -55,28 +55,28 @@ class RandomTopics extends Block
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['current_block']['type'] !== 'random_topics')
+		if (Utils::$context['current_block']['type'] !== 'random_topics')
 			return;
 
-		CustomField::make('exclude_boards', $this->txt['lp_random_topics']['exclude_boards'])
+		CustomField::make('exclude_boards', Lang::$txt['lp_random_topics']['exclude_boards'])
 			->setTab('content')
 			->setValue(fn() => new BoardSelect, [
 				'id'    => 'exclude_boards',
-				'hint'  => $this->txt['lp_random_topics']['exclude_boards_select'],
-				'value' => $this->context['lp_block']['options']['exclude_boards'] ?? '',
+				'hint'  => Lang::$txt['lp_random_topics']['exclude_boards_select'],
+				'value' => Utils::$context['lp_block']['options']['exclude_boards'] ?? '',
 			]);
 
-		CustomField::make('include_boards', $this->txt['lp_random_topics']['include_boards'])
+		CustomField::make('include_boards', Lang::$txt['lp_random_topics']['include_boards'])
 			->setTab('content')
 			->setValue(fn() => new BoardSelect, [
 				'id'    => 'include_boards',
-				'hint'  => $this->txt['lp_random_topics']['include_boards_select'],
-				'value' => $this->context['lp_block']['options']['include_boards'] ?? '',
+				'hint'  => Lang::$txt['lp_random_topics']['include_boards_select'],
+				'value' => Utils::$context['lp_block']['options']['include_boards'] ?? '',
 			]);
 
-		NumberField::make('num_topics', $this->txt['lp_random_topics']['num_topics'])
+		NumberField::make('num_topics', Lang::$txt['lp_random_topics']['num_topics'])
 			->setAttribute('min', 1)
-			->setValue($this->context['lp_block']['options']['num_topics']);
+			->setValue(Utils::$context['lp_block']['options']['num_topics']);
 	}
 
 	public function getData(array $parameters): array
@@ -88,8 +88,8 @@ class RandomTopics extends Block
 		if (empty($num_topics))
 			return [];
 
-		if ($this->db_type === 'postgresql') {
-			$result = $this->smcFunc['db_query']('', '
+		if (Config::$db_type === 'postgresql') {
+			$result = Utils::$smcFunc['db_query']('', '
 				WITH RECURSIVE r AS (
 					WITH b AS (
 						SELECT min(t.id_topic), (
@@ -141,43 +141,43 @@ class RandomTopics extends Block
 			);
 
 			$topic_ids = [];
-			while ($row = $this->smcFunc['db_fetch_assoc']($result))
+			while ($row = Utils::$smcFunc['db_fetch_assoc']($result))
 				$topic_ids[] = $row['id_topic'];
 
-			$this->smcFunc['db_free_result']($result);
-			$this->context['lp_num_queries']++;
+			Utils::$smcFunc['db_free_result']($result);
+			Utils::$context['lp_num_queries']++;
 
 			if (empty($topic_ids))
 				return $this->getData(array_merge($parameters, ['num_topics' => $num_topics - 1]));
 
-			$result = $this->smcFunc['db_query']('', '
+			$result = Utils::$smcFunc['db_query']('', '
 				SELECT
 					mf.poster_time, mf.subject, ml.id_topic, mf.id_member, ml.id_msg,
-					COALESCE(mem.real_name, mf.poster_name) AS poster_name, ' . ($this->user_info['is_guest'] ? '1 AS is_read' : '
+					COALESCE(mem.real_name, mf.poster_name) AS poster_name, ' . (User::$info['is_guest'] ? '1 AS is_read' : '
 					COALESCE(lt.id_msg, lmr.id_msg, 0) >= ml.id_msg_modified AS is_read') . ', mf.icon
 				FROM {db_prefix}topics AS t
 					INNER JOIN {db_prefix}messages AS ml ON (t.id_last_msg = ml.id_msg)
 					INNER JOIN {db_prefix}messages AS mf ON (t.id_first_msg = mf.id_msg)
-					LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . ($this->user_info['is_guest'] ? '' : '
+					LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . (User::$info['is_guest'] ? '' : '
 					LEFT JOIN {db_prefix}log_topics AS lt ON (t.id_topic = lt.id_topic AND lt.id_member = {int:current_member})
 					LEFT JOIN {db_prefix}log_mark_read AS lmr ON (t.id_board = lmr.id_board AND lmr.id_member = {int:current_member})') . '
 				WHERE {query_wanna_see_topic_board}
 					AND t.id_topic IN ({array_int:topic_ids})',
 				[
-					'current_member' => $this->user_info['id'],
+					'current_member' => User::$info['id'],
 					'topic_ids'      => $topic_ids
 				]
 			);
 		} else {
-			$result = $this->smcFunc['db_query']('', '
+			$result = Utils::$smcFunc['db_query']('', '
 				SELECT
 					mf.poster_time, mf.subject, ml.id_topic, mf.id_member, ml.id_msg,
-					COALESCE(mem.real_name, mf.poster_name) AS poster_name, ' . ($this->user_info['is_guest'] ? '1 AS is_read' : '
+					COALESCE(mem.real_name, mf.poster_name) AS poster_name, ' . (User::$info['is_guest'] ? '1 AS is_read' : '
 					COALESCE(lt.id_msg, lmr.id_msg, 0) >= ml.id_msg_modified AS is_read') . ', mf.icon
 				FROM {db_prefix}topics AS t
 					INNER JOIN {db_prefix}messages AS ml ON (t.id_last_msg = ml.id_msg)
 					INNER JOIN {db_prefix}messages AS mf ON (t.id_first_msg = mf.id_msg)
-					LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . ($this->user_info['is_guest'] ? '' : '
+					LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . (User::$info['is_guest'] ? '' : '
 					LEFT JOIN {db_prefix}log_topics AS lt ON (t.id_topic = lt.id_topic AND lt.id_member = {int:current_member})
 					LEFT JOIN {db_prefix}log_mark_read AS lmr ON (t.id_board = lmr.id_board AND lmr.id_member = {int:current_member})') . '
 				WHERE {query_wanna_see_topic_board}
@@ -187,7 +187,7 @@ class RandomTopics extends Block
 				ORDER BY RAND()
 				LIMIT {int:limit}',
 				[
-					'current_member' => $this->user_info['id'],
+					'current_member' => User::$info['id'],
 					'is_approved'    => 1,
 					'exclude_boards' => $exclude_boards,
 					'include_boards' => $include_boards,
@@ -197,28 +197,28 @@ class RandomTopics extends Block
 		}
 
 		$icon_sources = [];
-		foreach ($this->context['stable_icons'] as $icon)
+		foreach (Utils::$context['stable_icons'] as $icon)
 			$icon_sources[$icon] = 'images_url';
 
 		$topics = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
-			if (! empty($this->modSettings['messageIconChecks_enable']) && ! isset($icon_sources[$row['icon']])) {
-				$icon_sources[$row['icon']] = file_exists($this->settings['theme_dir'] . '/images/post/' . $row['icon'] . '.png') ? 'images_url' : 'default_images_url';
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+			if (! empty(Config::$modSettings['messageIconChecks_enable']) && ! isset($icon_sources[$row['icon']])) {
+				$icon_sources[$row['icon']] = file_exists(Theme::$current->settings['theme_dir'] . '/images/post/' . $row['icon'] . '.png') ? 'images_url' : 'default_images_url';
 			} elseif (! isset($icon_sources[$row['icon']])) {
 				$icon_sources[$row['icon']] = 'images_url';
 			}
 
 			$topics[] = [
-				'poster' => empty($row['id_member']) ? $row['poster_name'] : '<a href="' . $this->scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['poster_name'] . '</a>',
+				'poster' => empty($row['id_member']) ? $row['poster_name'] : '<a href="' . Config::$scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['poster_name'] . '</a>',
 				'time'   => $row['poster_time'],
-				'link'   => '<a href="' . $this->scripturl . '?topic=' . $row['id_topic'] . '.msg' . $row['id_msg'] . '#new" rel="nofollow">' . $row['subject'] . '</a>',
+				'link'   => '<a href="' . Config::$scripturl . '?topic=' . $row['id_topic'] . '.msg' . $row['id_msg'] . '#new" rel="nofollow">' . $row['subject'] . '</a>',
 				'is_new' => empty($row['is_read']),
-				'icon'   => '<img class="centericon" src="' . $this->settings[$icon_sources[$row['icon']]] . '/post/' . $row['icon'] . '.png" alt="' . $row['icon'] . '">'
+				'icon'   => '<img class="centericon" src="' . Theme::$current->settings[$icon_sources[$row['icon']]] . '/post/' . $row['icon'] . '.png" alt="' . $row['icon'] . '">'
 			];
 		}
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return $topics;
 	}
@@ -231,7 +231,7 @@ class RandomTopics extends Block
 		if ($data->type !== 'random_topics')
 			return;
 
-		$randomTopics = $this->cache('random_topics_addon_b' . $data->block_id . '_u' . $this->user_info['id'])
+		$randomTopics = $this->cache('random_topics_addon_b' . $data->block_id . '_u' . User::$info['id'])
 			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getData', $parameters);
 
@@ -242,8 +242,8 @@ class RandomTopics extends Block
 			foreach ($randomTopics as $topic) {
 				echo '
 				<li class="windowbg">', ($topic['is_new'] ? '
-					<span class="new_posts">' . $this->txt['new'] . '</span>' : ''), ' ', $topic['icon'], ' ', $topic['link'], '
-					<br><span class="smalltext">', $this->txt['by'], ' ', $topic['poster'], '</span>
+					<span class="new_posts">' . Lang::$txt['new'] . '</span>' : ''), ' ', $topic['icon'], ' ', $topic['link'], '
+					<br><span class="smalltext">', Lang::$txt['by'], ' ', $topic['poster'], '</span>
 					<br><span class="smalltext">', $this->getFriendlyTime($topic['time']), '</span>
 				</li>';
 			}
@@ -251,7 +251,7 @@ class RandomTopics extends Block
 			echo '
 			</ul>';
 		} else {
-			echo '<div class="infobox">', $this->txt['lp_random_topics']['none'], '</div>';
+			echo '<div class="infobox">', Lang::$txt['lp_random_topics']['none'], '</div>';
 		}
 	}
 }

@@ -15,6 +15,7 @@
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -28,14 +29,14 @@ final class CreditArea
 
 	public function show(): void
 	{
-		$this->context['credits_modifications'][] = $this->getLink();
+		Utils::$context['credits_modifications'][] = $this->getLink();
 
-		if ($this->context['current_subaction'] && $this->context['current_subaction'] === 'light_portal') {
+		if (Utils::$context['current_subaction'] && Utils::$context['current_subaction'] === 'light_portal') {
 			$this->prepareComponents();
 
-			$this->context['robot_no_index'] = true;
+			Utils::$context['robot_no_index'] = true;
 
-			$this->context['page_title'] = LP_NAME . ' - ' . $this->txt['lp_used_components'];
+			Utils::$context['page_title'] = LP_NAME . ' - ' . Lang::$txt['lp_used_components'];
 
 			$this->loadTemplate('LightPortal/ViewCredits', 'portal_credits');
 
@@ -45,16 +46,16 @@ final class CreditArea
 
 	public function getLink(): string
 	{
-		$link = $this->user_info['language'] === 'russian' ? 'https://dragomano.ru/mods/light-portal' : 'https://custom.simplemachines.org/mods/index.php?mod=4244';
+		$link = User::$info['language'] === 'russian' ? 'https://dragomano.ru/mods/light-portal' : 'https://custom.simplemachines.org/mods/index.php?mod=4244';
 
-		return '<a href="' . $link . '" target="_blank" rel="noopener" title="' . LP_VERSION . '">' . LP_NAME . '</a> | &copy; <a href="' . $this->scripturl . '?action=credits;sa=light_portal">2019&ndash;' . date('Y') . '</a>, Bugo | ' . $this->txt['credits_license'] . ': <a href="https://github.com/dragomano/Light-Portal/blob/master/LICENSE" target="_blank" rel="noopener">GNU GPLv3</a>';
+		return '<a href="' . $link . '" target="_blank" rel="noopener" title="' . LP_VERSION . '">' . LP_NAME . '</a> | &copy; <a href="' . Config::$scripturl . '?action=credits;sa=light_portal">2019&ndash;' . date('Y') . '</a>, Bugo | ' . Lang::$txt['credits_license'] . ': <a href="https://github.com/dragomano/Light-Portal/blob/master/LICENSE" target="_blank" rel="noopener">GNU GPLv3</a>';
 	}
 
 	public function prepareComponents(): void
 	{
 		$this->middleware('light_portal_view');
 
-		$this->context['portal_translations'] = [
+		Utils::$context['portal_translations'] = [
 			'Polish'     => ['Adrek', 'jsqx'],
 			'Spanish'    => ['Rock Lee', 'Diego Andrés'],
 			'French'     => ['Papoune57'],
@@ -66,7 +67,7 @@ final class CreditArea
 			'Greek'      => ['Panoulis64'],
 		];
 
-		$this->context['testers'] = [
+		Utils::$context['testers'] = [
 			[
 				'name' => 'Wylek',
 				'link' => 'https://www.simplemachines.org/community/index.php?action=profile;u=608635'
@@ -77,14 +78,14 @@ final class CreditArea
 			]
 		];
 
-		$this->context['sponsors'] = [
+		Utils::$context['sponsors'] = [
 			[
 				'name' => 'vbgamer45 <span class="amt">$50</span>',
 				'link' => 'https://www.simplemachines.org/community/index.php?action=profile;u=24876'
 			],
 		];
 
-		$this->context['tools'] = [
+		Utils::$context['tools'] = [
 			[
 				'name' => 'Open Server Panel',
 				'link' => 'https://github.com/OSPanel/OpenServerPanel'
@@ -309,8 +310,8 @@ final class CreditArea
 		// Adding copyrights of used plugins
 		$this->hook('credits', [&$links]);
 
-		$this->context['lp_components'] = $links;
+		Utils::$context['lp_components'] = $links;
 
-		shuffle($this->context['lp_components']);
+		shuffle(Utils::$context['lp_components']);
 	}
 }

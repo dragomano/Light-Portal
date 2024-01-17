@@ -7,14 +7,13 @@
 namespace Tests\Areas\Fields;
 
 use Bugo\LightPortal\Areas\Fields\InputField;
+use Bugo\LightPortal\Utils\Utils;
 use Tester\Assert;
 
 require_once dirname(__DIR__, 2) . '/bootstrap.php';
 require_once __DIR__ . '/template.php';
 
 test('input field', function () {
-	global $context;
-
 	InputField::make('foo', 'bar')
 		->setType('type')
 		->setAfter('after')
@@ -22,26 +21,26 @@ test('input field', function () {
 
 	Assert::same(
 		'bar',
-		$context['posting_fields']['foo']['label']['text'],
+		Utils::$context['posting_fields']['foo']['label']['text'],
 	);
 
 	Assert::same(
 		'type',
-		$context['posting_fields']['foo']['input']['type']
+		Utils::$context['posting_fields']['foo']['input']['type']
 	);
 
 	Assert::same(
 		'tuning',
-		$context['posting_fields']['foo']['input']['tab']
+		Utils::$context['posting_fields']['foo']['input']['tab']
 	);
 
 	Assert::same(
 		'after',
-		$context['posting_fields']['foo']['input']['after']
+		Utils::$context['posting_fields']['foo']['input']['after']
 	);
 
 	Assert::same(
 		'test',
-		$context['posting_fields']['foo']['input']['attributes']['value']
+		Utils::$context['posting_fields']['foo']['input']['attributes']['value']
 	);
 });

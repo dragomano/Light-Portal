@@ -14,6 +14,8 @@
 
 namespace Bugo\LightPortal\Areas\Partials;
 
+use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+
 final class ActionSelect extends AbstractPartial
 {
 	public function __invoke(): string
@@ -22,7 +24,7 @@ final class ActionSelect extends AbstractPartial
 		$params = $params[0] ?? [];
 
 		$params['id'] ??= 'lp_disabled_actions';
-		$params['data'] ??= (empty($this->modSettings['lp_disabled_actions']) ? [] : explode(',', $this->modSettings['lp_disabled_actions']));
+		$params['data'] ??= (empty(Config::$modSettings['lp_disabled_actions']) ? [] : explode(',', Config::$modSettings['lp_disabled_actions']));
 		$params['value'] = [];
 
 		$data = [];
@@ -39,17 +41,17 @@ final class ActionSelect extends AbstractPartial
 		<div id="' . $params['id'] . '" name="' . $params['id'] . '"></div>
 		<script>
 			VirtualSelect.init({
-				ele: "#' . $params['id'] . '",' . ($this->context['right_to_left'] ? '
+				ele: "#' . $params['id'] . '",' . (Utils::$context['right_to_left'] ? '
 				textDirection: "rtl",' : '') . '
 				dropboxWrapper: "body",
 				multiple: true,
 				search: true,
 				markSearchResults: true,
-				placeholder: "' . $this->txt['lp_example'] . 'mlist, calendar",
-				noSearchResultsText: "' . $this->txt['no_matches'] . '",
-				searchPlaceholderText: "' . $this->txt['search'] . '",
-				allOptionsSelectedText: "' . $this->txt['all'] . '",
-				noOptionsText: "' . $this->txt['no'] . '",
+				placeholder: "' . Lang::$txt['lp_example'] . 'mlist, calendar",
+				noSearchResultsText: "' . Lang::$txt['no_matches'] . '",
+				searchPlaceholderText: "' . Lang::$txt['search'] . '",
+				allOptionsSelectedText: "' . Lang::$txt['all'] . '",
+				noOptionsText: "' . Lang::$txt['no'] . '",
 				showValueAsTags: true,
 				allowNewOption: true,
 				maxWidth: "100%",

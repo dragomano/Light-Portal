@@ -14,6 +14,9 @@
 
 namespace Bugo\LightPortal\Actions;
 
+use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
+use IntlException;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -24,37 +27,37 @@ final class Category extends AbstractPageList
 		if ($this->request()->hasNot('id'))
 			$this->showAll();
 
-		$this->context['lp_category'] = $this->request('id');
+		Utils::$context['lp_category'] = $this->request('id');
 
-		if (array_key_exists($this->context['lp_category'], $this->getEntityList('category')) === false) {
-			$this->context['error_link'] = LP_BASE_URL . ';sa=categories';
-			$this->txt['back'] = $this->txt['lp_all_categories'];
+		if (array_key_exists(Utils::$context['lp_category'], $this->getEntityList('category')) === false) {
+			Utils::$context['error_link'] = LP_BASE_URL . ';sa=categories';
+			Lang::$txt['back'] = Lang::$txt['lp_all_categories'];
 			$this->fatalLangError('lp_category_not_found', 404);
 		}
 
 		$category = [];
-		if (empty($this->context['lp_category'])) {
-			$this->context['page_title'] = $this->txt['lp_all_pages_without_category'];
+		if (empty(Utils::$context['lp_category'])) {
+			Utils::$context['page_title'] = Lang::$txt['lp_all_pages_without_category'];
 		} else {
-			$category = $this->getEntityList('category')[$this->context['lp_category']];
-			$this->context['page_title'] = sprintf($this->txt['lp_all_pages_with_category'], $category['name']);
+			$category = $this->getEntityList('category')[Utils::$context['lp_category']];
+			Utils::$context['page_title'] = sprintf(Lang::$txt['lp_all_pages_with_category'], $category['name']);
 		}
 
-		$this->context['description'] = $category['desc'] ?? '';
+		Utils::$context['description'] = $category['desc'] ?? '';
 
-		$this->context['canonical_url']  = LP_BASE_URL . ';sa=categories;id=' . $this->context['lp_category'];
-		$this->context['robot_no_index'] = true;
+		Utils::$context['canonical_url']  = LP_BASE_URL . ';sa=categories;id=' . Utils::$context['lp_category'];
+		Utils::$context['robot_no_index'] = true;
 
-		$this->context['linktree'][] = [
-			'name' => $this->txt['lp_all_categories'],
+		Utils::$context['linktree'][] = [
+			'name' => Lang::$txt['lp_all_categories'],
 			'url'  => LP_BASE_URL . ';sa=categories'
 		];
 
-		$this->context['linktree'][] = [
-			'name' => $this->context['page_title']
+		Utils::$context['linktree'][] = [
+			'name' => Utils::$context['page_title']
 		];
 
-		if (! empty($this->modSettings['lp_show_items_as_articles']))
+		if (! empty(Config::$modSettings['lp_show_items_as_articles']))
 			$page->showAsCards($this);
 
 		$listOptions = $page->getList();
@@ -81,9 +84,12 @@ final class Category extends AbstractPageList
 		$this->obExit();
 	}
 
+	/**
+	 * @throws IntlException
+	 */
 	public function getPages(int $start, int $items_per_page, string $sort): array
 	{
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.author_id, p.alias, p.content, p.description, p.type, p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
 				COALESCE(mem.real_name, \'\') AS author_name, t.title
@@ -97,8 +103,8 @@ final class Category extends AbstractPageList
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
 			[
-				'lang'         => $this->user_info['language'],
-				'id'           => $this->context['lp_category'],
+				'lang'         => User::$info['language'],
+				'id'           => Utils::$context['lp_category'],
 				'statuses'     => [Page::STATUS_ACTIVE, Page::STATUS_INTERNAL],
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions(),
@@ -108,17 +114,17 @@ final class Category extends AbstractPageList
 			]
 		);
 
-		$rows = $this->smcFunc['db_fetch_all']($result);
+		$rows = Utils::$smcFunc['db_fetch_all']($result);
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return $this->getPreparedResults($rows);
 	}
 
 	public function getTotalCount(): int
 	{
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT COUNT(page_id)
 			FROM {db_prefix}lp_pages
 			WHERE category_id = {string:id}
@@ -126,37 +132,37 @@ final class Category extends AbstractPageList
 				AND created_at <= {int:current_time}
 				AND permissions IN ({array_int:permissions})',
 			[
-				'id'           => $this->context['lp_category'],
+				'id'           => Utils::$context['lp_category'],
 				'statuses'     => [Page::STATUS_ACTIVE, Page::STATUS_INTERNAL],
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions()
 			]
 		);
 
-		[$num_items] = $this->smcFunc['db_fetch_row']($result);
+		[$num_items] = Utils::$smcFunc['db_fetch_row']($result);
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return (int) $num_items;
 	}
 
 	public function showAll(): void
 	{
-		$this->context['page_title']     = $this->txt['lp_all_categories'];
-		$this->context['canonical_url']  = LP_BASE_URL . ';sa=categories';
-		$this->context['robot_no_index'] = true;
+		Utils::$context['page_title']     = Lang::$txt['lp_all_categories'];
+		Utils::$context['canonical_url']  = LP_BASE_URL . ';sa=categories';
+		Utils::$context['robot_no_index'] = true;
 
-		$this->context['linktree'][] = [
-			'name' => $this->context['page_title']
+		Utils::$context['linktree'][] = [
+			'name' => Utils::$context['page_title']
 		];
 
 		$listOptions = [
 			'id' => 'categories',
-			'items_per_page' => $this->modSettings['defaultMaxListItems'] ?: 50,
-			'title' => $this->context['page_title'],
-			'no_items_label' => $this->txt['lp_no_categories'],
-			'base_href' => $this->context['canonical_url'],
+			'items_per_page' => Config::$modSettings['defaultMaxListItems'] ?: 50,
+			'title' => Utils::$context['page_title'],
+			'no_items_label' => Lang::$txt['lp_no_categories'],
+			'base_href' => Utils::$context['canonical_url'],
 			'default_sort_col' => 'name',
 			'get_items' => [
 				'function' => [$this, 'getAll']
@@ -167,7 +173,7 @@ final class Category extends AbstractPageList
 			'columns' => [
 				'name' => [
 					'header' => [
-						'value' => $this->txt['lp_category']
+						'value' => Lang::$txt['lp_category']
 					],
 					'data' => [
 						'function' => fn($entry) => '<a href="' . $entry['link'] . '">' . $entry['name'] . '</a>' .
@@ -180,7 +186,7 @@ final class Category extends AbstractPageList
 				],
 				'num_pages' => [
 					'header' => [
-						'value' => $this->txt['lp_total_pages_column']
+						'value' => Lang::$txt['lp_total_pages_column']
 					],
 					'data' => [
 						'db'    => 'num_pages',
@@ -193,7 +199,7 @@ final class Category extends AbstractPageList
 				]
 			],
 			'form' => [
-				'href' => $this->context['canonical_url']
+				'href' => Utils::$context['canonical_url']
 			]
 		];
 
@@ -204,7 +210,7 @@ final class Category extends AbstractPageList
 
 	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'c.name'): array
 	{
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT COALESCE(c.category_id, 0) AS category_id, c.name, c.description, COUNT(p.page_id) AS frequency
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_categories AS c ON (p.category_id = c.category_id)
@@ -225,21 +231,21 @@ final class Category extends AbstractPageList
 		);
 
 		$items = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			if ($row['description'] && str_contains($row['description'], ']')) {
 				$row['description'] = $this->parseBbc($row['description']);
 			}
 
 			$items[$row['category_id']] = [
-				'name'      => $row['name'] ?: $this->txt['lp_no_category'],
+				'name'      => $row['name'] ?: Lang::$txt['lp_no_category'],
 				'desc'      => $row['description'] ?? '',
 				'link'      => LP_BASE_URL . ';sa=categories;id=' . $row['category_id'],
 				'num_pages' => $row['frequency']
 			];
 		}
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return $items;
 	}

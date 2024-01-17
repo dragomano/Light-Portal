@@ -15,9 +15,17 @@
 namespace Bugo\LightPortal\Tasks;
 
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Utils\Utils;
 use SMF_BackgroundTask;
 
 abstract class BackgroundTask extends SMF_BackgroundTask
 {
 	use Helper;
+
+	public function __construct(array $details)
+	{
+		new Utils();
+
+		parent::__construct($details);
+	}
 }

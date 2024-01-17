@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.01.24
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\PageList;
@@ -18,6 +18,7 @@ namespace Bugo\LightPortal\Addons\PageList;
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField, VirtualSelectField};
 use Bugo\LightPortal\Areas\Partials\CategorySelect;
+use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -31,7 +32,7 @@ class PageList extends Block
 
 	public function prepareBlockParams(array &$params): void
 	{
-		if ($this->context['current_block']['type'] !== 'page_list')
+		if (Utils::$context['current_block']['type'] !== 'page_list')
 			return;
 
 		$params = [
@@ -43,7 +44,7 @@ class PageList extends Block
 
 	public function validateBlockParams(array &$params): void
 	{
-		if ($this->context['current_block']['type'] !== 'page_list')
+		if (Utils::$context['current_block']['type'] !== 'page_list')
 			return;
 
 		$params = [
@@ -55,26 +56,26 @@ class PageList extends Block
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['current_block']['type'] !== 'page_list')
+		if (Utils::$context['current_block']['type'] !== 'page_list')
 			return;
 
-		CustomField::make('categories', $this->txt['lp_categories'])
+		CustomField::make('categories', Lang::$txt['lp_categories'])
 			->setTab('content')
 			->setValue(fn() => new CategorySelect, [
 				'id'    => 'categories',
-				'hint'  => $this->txt['lp_page_list']['categories_select'],
-				'value' => $this->context['lp_block']['options']['categories'] ?? '',
+				'hint'  => Lang::$txt['lp_page_list']['categories_select'],
+				'value' => Utils::$context['lp_block']['options']['categories'] ?? '',
 			]);
 
-		VirtualSelectField::make('sort', $this->txt['lp_page_list']['sort'])
-			->setOptions(array_combine(self::SORTING_SET, $this->txt['lp_page_list']['sort_set']))
-			->setValue($this->context['lp_block']['options']['sort']);
+		VirtualSelectField::make('sort', Lang::$txt['lp_page_list']['sort'])
+			->setOptions(array_combine(self::SORTING_SET, Lang::$txt['lp_page_list']['sort_set']))
+			->setValue(Utils::$context['lp_block']['options']['sort']);
 
-		NumberField::make('num_pages', $this->txt['lp_page_list']['num_pages'])
-			->setAfter($this->txt['lp_page_list']['num_pages_subtext'])
+		NumberField::make('num_pages', Lang::$txt['lp_page_list']['num_pages'])
+			->setAfter(Lang::$txt['lp_page_list']['num_pages_subtext'])
 			->setAttribute('min', 0)
 			->setAttribute('max', 999)
-			->setValue($this->context['lp_block']['options']['num_pages']);
+			->setValue(Utils::$context['lp_block']['options']['num_pages']);
 	}
 
 	public function getData(array $parameters): array
@@ -85,7 +86,7 @@ class PageList extends Block
 
 		$categories = empty($parameters['categories']) ? null : explode(',', $parameters['categories']);
 
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.category_id, p.alias, p.type, p.num_views, p.num_comments, p.created_at, p.updated_at,
 				COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
@@ -98,7 +99,7 @@ class PageList extends Block
 			ORDER BY {raw:sort} DESC' . (empty($parameters['num_pages']) ? '' : '
 			LIMIT {int:limit}'),
 			[
-				'guest'        => $this->txt['guest_title'],
+				'guest'        => Lang::$txt['guest_title'],
 				'status'       => 1,
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions(),
@@ -109,7 +110,7 @@ class PageList extends Block
 		);
 
 		$pages = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			if ($this->isFrontpage($row['alias']))
 				continue;
 
@@ -129,8 +130,8 @@ class PageList extends Block
 			];
 		}
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return $pages;
 	}
@@ -143,7 +144,7 @@ class PageList extends Block
 		if ($data->type !== 'page_list')
 			return;
 
-		$page_list = $this->cache('page_list_addon_b' . $data->block_id . '_u' . $this->user_info['id'])
+		$page_list = $this->cache('page_list_addon_b' . $data->block_id . '_u' . User::$info['id'])
 			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getData', $parameters);
 
@@ -157,9 +158,9 @@ class PageList extends Block
 
 				echo /** @lang text */ '
 			<li>
-				<a href="', $this->scripturl, '?', LP_PAGE_PARAM, '=', $page['alias'], '">', $title, '</a> ', $this->txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . $this->scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', $this->getFriendlyTime($page['created_at']), ' (', $this->translate('lp_views_set', ['views' => $page['num_views']]);
+				<a href="', Config::$scripturl, '?', LP_PAGE_PARAM, '=', $page['alias'], '">', $title, '</a> ', Lang::$txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . Config::$scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', $this->getFriendlyTime($page['created_at']), ' (', $this->translate('lp_views_set', ['views' => $page['num_views']]);
 
-				if ($page['num_comments'] && ! empty($this->modSettings['lp_show_comment_block']) && $this->modSettings['lp_show_comment_block'] === 'default')
+				if ($page['num_comments'] && ! empty(Config::$modSettings['lp_show_comment_block']) && Config::$modSettings['lp_show_comment_block'] === 'default')
 					echo ', ' . $this->translate('lp_comments_set', ['comments' => $page['num_comments']]);
 
 				echo /** @lang text */ ')
@@ -169,7 +170,7 @@ class PageList extends Block
 			echo /** @lang text */ '
 		</ul>';
 		} else {
-			echo /** @lang text */ '<div class="errorbox">', $this->txt['lp_page_list']['no_items'], '</div>';
+			echo /** @lang text */ '<div class="errorbox">', Lang::$txt['lp_page_list']['no_items'], '</div>';
 		}
 	}
 }

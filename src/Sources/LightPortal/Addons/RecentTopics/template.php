@@ -1,9 +1,9 @@
 <?php
 
+use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+
 function show_topics(array $recent_topics, array $parameters, bool $full_width): void
 {
-	global $scripturl, $txt, $context;
-
 	if ($full_width) {
 		echo '
 	<div class="recent_topics_list">';
@@ -25,14 +25,14 @@ function show_topics(array $recent_topics, array $parameters, bool $full_width):
 
 			if ($topic['is_new'])
 				echo '
-			<a class="new_posts" href="', $scripturl, '?topic=', $topic['topic'], '.msg', $topic['new_from'], ';topicseen#new">', $txt['new'], '</a> ';
+			<a class="new_posts" href="', Config::$scripturl, '?topic=', $topic['topic'], '.msg', $topic['new_from'], ';topicseen#new">', Lang::$txt['new'], '</a> ';
 
 			echo '
 			<span>', (empty($parameters['show_icons']) ? '' : ($topic['icon'] . ' ')), $topic[$parameters['link_type']];
 
 			if (empty($parameters['show_avatars']))
 				echo '
-				<br><span class="smalltext">', $txt['by'], ' ', $topic['poster']['link'], '</span>';
+				<br><span class="smalltext">', Lang::$txt['by'], ' ', $topic['poster']['link'], '</span>';
 
 			echo '
 				<br><span class="smalltext">', $topic['timestamp'], '</span>
@@ -50,7 +50,7 @@ function show_topics(array $recent_topics, array $parameters, bool $full_width):
 			echo $topic[$parameters['link_type']];
 
 			echo '
-			<div class="smalltext', $context['right_to_left'] ? ' floatright' : '', '">
+			<div class="smalltext', Utils::$context['right_to_left'] ? ' floatright' : '', '">
 				<i class="fas fa-eye"></i> ', $topic['views'], '&nbsp;
 				<i class="fas fa-comment"></i> ', $topic['replies'], '
 			</div>

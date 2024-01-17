@@ -15,6 +15,7 @@
 namespace Bugo\LightPortal\Lists;
 
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Utils\Utils;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -25,7 +26,7 @@ final class TagList implements ListInterface
 
 	public function getAll(): array
 	{
-		$result = $this->smcFunc['db_query']('', /** @lang text */ '
+		$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
 			SELECT tag_id, value
 			FROM {db_prefix}lp_tags
 			ORDER BY value',
@@ -33,12 +34,12 @@ final class TagList implements ListInterface
 		);
 
 		$items = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			$items[$row['tag_id']] = $row['value'];
 		}
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return $items;
 	}

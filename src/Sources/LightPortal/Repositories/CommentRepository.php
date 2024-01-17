@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace Bugo\LightPortal\Repositories;
 
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Utils\{Config, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -32,7 +33,7 @@ final class CommentRepository
 
 	public function getById(int $id): array
 	{
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT *
 			FROM {db_prefix}lp_comments
 			WHERE id = {int:id}',
@@ -41,10 +42,10 @@ final class CommentRepository
 			]
 		);
 
-		$data = $this->smcFunc['db_fetch_assoc']($result);
+		$data = Utils::$smcFunc['db_fetch_assoc']($result);
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return $data ?? [];
 	}
@@ -56,20 +57,20 @@ final class CommentRepository
 			'com.created_at DESC',
 		];
 
-		$result = $this->smcFunc['db_query']('', /** @lang text */ '
+		$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
 			SELECT com.id, com.parent_id, com.page_id, com.author_id, com.message, com.created_at, mem.real_name AS author_name, par.name, par.value
 			FROM {db_prefix}lp_comments AS com
 				INNER JOIN {db_prefix}members AS mem ON (com.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_params AS par ON (com.id = par.item_id AND par.type = {literal:comment})' . ($page_id ? '
 			WHERE com.page_id = {int:id}' : '') . '
-			ORDER BY ' . $sorts[$this->modSettings['lp_comment_sorting'] ?? 0],
+			ORDER BY ' . $sorts[Config::$modSettings['lp_comment_sorting'] ?? 0],
 			[
 				'id' => $page_id
 			]
 		);
 
 		$comments = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			$this->censorText($row['message']);
 
 			$comments[$row['id']] = [
@@ -89,22 +90,15 @@ final class CommentRepository
 				$comments[$row['id']]['params'][$row['name']] = $row['value'];
 		}
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return $this->getItemsWithUserAvatars($comments, 'poster');
 	}
 
-	/**
-	 * @var int $data['parent_id']
-	 * @var int $data['page_id']
-	 * @var int $data['author_id']
-	 * @var string $data['message']
-	 * @var int $data['created_at']
-	 */
 	public function save(array $data): int
 	{
-		$item = $this->smcFunc['db_insert']('',
+		$item = Utils::$smcFunc['db_insert']('',
 			'{db_prefix}lp_comments',
 			[
 				'parent_id'  => 'int',
@@ -118,19 +112,14 @@ final class CommentRepository
 			1
 		);
 
-		$this->context['lp_num_queries']++;
+		Utils::$context['lp_num_queries']++;
 
 		return (int) $item;
 	}
 
-	/**
-	 * @var string $data['message']
-	 * @var int $data['id']
-	 * @var int $data['user']
-	 */
 	public function update(array $data): void
 	{
-		$this->smcFunc['db_query']('', '
+		Utils::$smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_comments
 			SET message = {string:message}
 			WHERE id = {int:id}
@@ -138,12 +127,12 @@ final class CommentRepository
 			$data
 		);
 
-		$this->context['lp_num_queries']++;
+		Utils::$context['lp_num_queries']++;
 	}
 
 	public function remove(array $items, string $page_alias): void
 	{
-		$this->smcFunc['db_query']('', '
+		Utils::$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_comments
 			WHERE id IN ({array_int:items})',
 			[
@@ -151,7 +140,7 @@ final class CommentRepository
 			]
 		);
 
-		$this->smcFunc['db_query']('', '
+		Utils::$smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_pages
 			SET num_comments = num_comments - {int:num_items}
 			WHERE alias = {string:alias}
@@ -162,7 +151,7 @@ final class CommentRepository
 			]
 		);
 
-		$this->smcFunc['db_query']('', '
+		Utils::$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_params
 			WHERE item_id IN ({array_int:items})
 				AND type = {literal:comment}',
@@ -171,7 +160,7 @@ final class CommentRepository
 			]
 		);
 
-		$this->smcFunc['db_query']('', '
+		Utils::$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}user_alerts
 			WHERE content_type = {string:type}
 				AND content_id IN ({array_int:items})',
@@ -181,7 +170,7 @@ final class CommentRepository
 			]
 		);
 
-		$this->smcFunc['db_query']('', '
+		Utils::$smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_pages
 			SET last_comment_id = (
 				SELECT COALESCE(MAX(com.id), 0)
@@ -195,12 +184,12 @@ final class CommentRepository
 			]
 		);
 
-		$this->context['lp_num_queries'] += 5;
+		Utils::$context['lp_num_queries'] += 5;
 	}
 
 	public function updateLastCommentId(int $item, int $page_id): void
 	{
-		$this->smcFunc['db_query']('', '
+		Utils::$smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_pages
 			SET num_comments = num_comments + 1, last_comment_id = {int:item}
 			WHERE page_id = {int:page_id}',
@@ -210,12 +199,12 @@ final class CommentRepository
 			]
 		);
 
-		$this->context['lp_num_queries']++;
+		Utils::$context['lp_num_queries']++;
 	}
 
 	private function isCanEdit(int $date): bool
 	{
-		if (empty($time_to_change = (int) ($this->modSettings['lp_time_to_change_comments'] ?? 0)))
+		if (empty($time_to_change = (int) (Config::$modSettings['lp_time_to_change_comments'] ?? 0)))
 			return false;
 
 		return $time_to_change && time() - $date <= $time_to_change * 60;

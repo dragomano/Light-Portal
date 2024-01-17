@@ -10,12 +10,13 @@
  * @license Individual (for sponsors)
  *
  * @category addon
- * @version 07.12.23
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\SiteList;
 
 use Bugo\LightPortal\Front\AbstractArticle;
+use Bugo\LightPortal\Utils\{Config, User, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -26,7 +27,7 @@ class SiteArticle extends AbstractArticle
 
 	public function init(): void
 	{
-		$this->sites = $this->jsonDecode($this->context['lp_site_list_plugin']['urls'] ?? '');
+		$this->sites = $this->jsonDecode(Utils::$context['lp_site_list_plugin']['urls'] ?? '');
 	}
 
 	public function getData(int $start, int $limit): array
@@ -39,8 +40,8 @@ class SiteArticle extends AbstractArticle
 			$items[] = [
 				'title'     => $data[1] ?: $url,
 				'is_new'    => false,
-				'edit_link' => $this->scripturl . '?action=admin;area=lp_plugins',
-				'can_edit'  => $this->user_info['is_admin'],
+				'edit_link' => Config::$scripturl . '?action=admin;area=lp_plugins',
+				'can_edit'  => User::$info['is_admin'],
 				'link'      => $url,
 				'msg_link'  => $url,
 				'teaser'    => $data[2] ?? '',

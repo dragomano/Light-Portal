@@ -10,14 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.01.24
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleFeeder;
 
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\Fields\CheckboxField;
-use Bugo\LightPortal\Areas\Fields\TextField;
+use Bugo\LightPortal\Areas\Fields\{CheckboxField, TextField};
+use Bugo\LightPortal\Utils\{Config, Lang, Utils};
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -29,7 +29,7 @@ class SimpleFeeder extends Block
 
 	public function prepareBlockParams(array &$params): void
 	{
-		if ($this->context['current_block']['type'] !== 'simple_feeder')
+		if (Utils::$context['current_block']['type'] !== 'simple_feeder')
 			return;
 
 		$params = [
@@ -40,7 +40,7 @@ class SimpleFeeder extends Block
 
 	public function validateBlockParams(array &$params): void
 	{
-		if ($this->context['current_block']['type'] !== 'simple_feeder')
+		if (Utils::$context['current_block']['type'] !== 'simple_feeder')
 			return;
 
 		$params = [
@@ -51,21 +51,21 @@ class SimpleFeeder extends Block
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['current_block']['type'] !== 'simple_feeder')
+		if (Utils::$context['current_block']['type'] !== 'simple_feeder')
 			return;
 
-		TextField::make('url', $this->txt['lp_simple_feeder']['url'])
+		TextField::make('url', Lang::$txt['lp_simple_feeder']['url'])
 			->setType('url')
 			->setTab('content')
 			->required()
 			->setAttribute('maxlength', 255)
-			->placeholder($this->scripturl . '?action=.xml;type=rss2')
+			->placeholder(Config::$scripturl . '?action=.xml;type=rss2')
 			->setAttribute('style', 'width: 100%')
-			->setValue($this->context['lp_block']['options']['url']);
+			->setValue(Utils::$context['lp_block']['options']['url']);
 
-		CheckboxField::make('show_text', $this->txt['lp_simple_feeder']['show_text'])
+		CheckboxField::make('show_text', Lang::$txt['lp_simple_feeder']['show_text'])
 			->setTab('content')
-			->setValue($this->context['lp_block']['options']['show_text']);
+			->setValue(Utils::$context['lp_block']['options']['show_text']);
 	}
 
 	public function getData(string $url): array

@@ -17,6 +17,7 @@ namespace Bugo\LightPortal;
 use Bugo\LightPortal\Lists\{CategoryList, IconList, PageList, TagList, TitleList};
 use Bugo\LightPortal\Tasks\Notifier;
 use Bugo\LightPortal\Utils\{File, IntlTrait, Post, Request, Session, SMFCache, SMFTrait};
+use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
 use Exception;
 
 if (! defined('SMF'))
@@ -89,7 +90,7 @@ trait Helper
 		if (empty($userData))
 			$userData = $this->loadMemberData([$userId]);
 
-		if (! isset($this->memberContext[$userId]) && in_array($userId, $userData)) {
+		if (! isset(User::$memberContext[$userId]) && in_array($userId, $userData)) {
 			try {
 				$this->loadMemberContext($userId, true);
 			} catch (Exception $e) {
@@ -97,10 +98,10 @@ trait Helper
 			}
 		}
 
-		if (empty($this->memberContext[$userId]))
+		if (empty(User::$memberContext[$userId]))
 			return '';
 
-		return $this->memberContext[$userId]['avatar']['image'] ?? '<img class="avatar" width="100" height="100" src="' . $this->modSettings['avatar_url'] . '/default.png" loading="lazy" alt="' . $this->memberContext[$userId]['name'] . '">';
+		return User::$memberContext[$userId]['avatar']['image'] ?? '<img class="avatar" width="100" height="100" src="' . Config::$modSettings['avatar_url'] . '/default.png" loading="lazy" alt="' . User::$memberContext[$userId]['name'] . '">';
 	}
 
 	public function getItemsWithUserAvatars(array $items, string $entity = 'author'): array
@@ -115,9 +116,9 @@ trait Helper
 
 	public function getContentTypes(): array
 	{
-		$types = array_combine(['bbc', 'html', 'php'], [$this->txt['lp_bbc']['title'], $this->txt['lp_html']['title'], $this->txt['lp_php']['title']]);
+		$types = array_combine(['bbc', 'html', 'php'], [Lang::$txt['lp_bbc']['title'], Lang::$txt['lp_html']['title'], Lang::$txt['lp_php']['title']]);
 
-		return $this->user_info['is_admin'] ? $types : array_slice($types, 0, 2);
+		return User::$info['is_admin'] ? $types : array_slice($types, 0, 2);
 	}
 
 	public function getForumThemes(): array
@@ -125,26 +126,26 @@ trait Helper
 		$themes = $this->cache()->get('forum_themes');
 
 		if ($themes === null) {
-			$result = $this->smcFunc['db_query']('', '
+			$result = Utils::$smcFunc['db_query']('', '
 				SELECT id_theme, value
 				FROM {db_prefix}themes
 				WHERE id_theme IN ({array_int:themes})
 					AND variable = {literal:name}',
 				[
-					'themes' => empty($this->modSettings['knownThemes']) ? [] : explode(',', $this->modSettings['knownThemes']),
+					'themes' => empty(Config::$modSettings['knownThemes']) ? [] : explode(',', Config::$modSettings['knownThemes']),
 				]
 			);
 
 			$themes = [];
-			while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
+			while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 				$themes[$row['id_theme']] = [
 					'id'   => (int) $row['id_theme'],
 					'name' => $row['value'],
 				];
 			}
 
-			$this->smcFunc['db_free_result']($result);
-			$this->context['lp_num_queries']++;
+			Utils::$smcFunc['db_free_result']($result);
+			Utils::$context['lp_num_queries']++;
 
 			$themes = array_column($themes, 'name', 'id');
 			$this->cache()->put('forum_themes', $themes);
@@ -157,18 +158,18 @@ trait Helper
 	{
 		$temp = $this->getLanguages();
 
-		if (empty($this->modSettings['userLanguage'])) {
-			$this->context['lp_languages'] = [
-				$this->language => $temp[$this->language]
+		if (empty(Config::$modSettings['userLanguage'])) {
+			Utils::$context['lp_languages'] = [
+				Config::$language => $temp[Config::$language]
 			];
 
 			return;
 		}
 
-		$this->context['lp_languages'] = array_merge(
+		Utils::$context['lp_languages'] = array_merge(
 			[
-				$this->user_info['language'] => $temp[$this->user_info['language']],
-				$this->language => $temp[$this->language],
+				User::$info['language'] => $temp[User::$info['language']],
+				Config::$language => $temp[Config::$language],
 				'english' => $temp['english'],
 			],
 			$temp
@@ -218,10 +219,10 @@ trait Helper
 	public function canViewItem(int $permissions, int $check_id = 0): bool
 	{
 		return match ($permissions) {
-			0 => $this->user_info['is_admin'],
-			1 => $this->user_info['is_guest'],
-			2 => $this->user_info['id'] > 0,
-			4 => $this->user_info['id'] === $check_id,
+			0 => User::$info['is_admin'],
+			1 => User::$info['is_guest'],
+			2 => User::$info['id'] > 0,
+			4 => User::$info['id'] === $check_id,
 			default => true,
 		};
 	}
@@ -233,11 +234,11 @@ trait Helper
 	 */
 	public function getPermissions(): array
 	{
-		if ($this->user_info['is_admin'])
+		if (User::$info['is_admin'])
 			return [0, 1, 2, 3];
-		elseif ($this->user_info['is_guest'])
+		elseif (User::$info['is_guest'])
 			return [1, 3];
-		elseif ($this->user_info['id'])
+		elseif (User::$info['id'])
 			return [2, 3];
 
 		return [3];
@@ -245,16 +246,16 @@ trait Helper
 
 	public function isFrontpage(string $alias): bool
 	{
-		if (empty($alias) || empty($this->modSettings['lp_frontpage_mode']))
+		if (empty($alias) || empty(Config::$modSettings['lp_frontpage_mode']))
 			return false;
 
-		return $this->modSettings['lp_frontpage_mode'] === 'chosen_page'
-			&& $this->modSettings['lp_frontpage_alias'] && $this->modSettings['lp_frontpage_alias'] === $alias;
+		return Config::$modSettings['lp_frontpage_mode'] === 'chosen_page'
+			&& Config::$modSettings['lp_frontpage_alias'] && Config::$modSettings['lp_frontpage_alias'] === $alias;
 	}
 
 	public function getTranslatedTitle(array $titles): string
 	{
-		return $titles[$this->user_info['language']] ?? $titles[$this->language] ?? $titles['english'] ?? '';
+		return $titles[User::$info['language']] ?? $titles[Config::$language] ?? $titles['english'] ?? '';
 	}
 
 	/**
@@ -292,7 +293,7 @@ trait Helper
 		if (empty($options))
 			return;
 
-		$this->smcFunc['db_insert']('',
+		Utils::$smcFunc['db_insert']('',
 			'{db_prefix}background_tasks',
 			[
 				'task_file'  => 'string',
@@ -302,15 +303,15 @@ trait Helper
 			[
 				'task_file'  => '$sourcedir/LightPortal/Tasks/Notifier.php',
 				'task_class' => '\\' . Notifier::class,
-				'task_data'  => $this->smcFunc['json_encode']([
+				'task_data'  => Utils::$smcFunc['json_encode']([
 					'time'              => $options['time'],
-					'sender_id'	        => $this->user_info['id'],
-					'sender_name'       => $this->user_info['name'],
+					'sender_id'	        => User::$info['id'],
+					'sender_name'       => User::$info['name'],
 					'content_author_id' => $options['author_id'],
 					'content_type'      => $type,
 					'content_id'        => $options['item'],
 					'content_action'    => $action,
-					'extra'             => $this->smcFunc['json_encode']([
+					'extra'             => Utils::$smcFunc['json_encode']([
 						'content_subject' => $options['title'],
 						'content_link'    => $options['url'],
 						'sender_gender'   => $this->getUserGender()
@@ -320,15 +321,14 @@ trait Helper
 			['id_task']
 		);
 
-		$this->context['lp_num_queries']++;
+		Utils::$context['lp_num_queries']++;
 	}
 
 	public function getUserGender(): string
 	{
-		return empty($this->user_profile[$this->user_info['id']]) ? 'male' : (
-			isset($this->user_profile[$this->user_info['id']]['options'])
-				&& isset($this->user_profile[$this->user_info['id']]['options']['cust_gender'])
-				&& $this->user_profile[$this->user_info['id']]['options']['cust_gender'] === '{gender_2}' ? 'female' : 'male'
+		return empty(User::$profiles[User::$info['id']]) ? 'male' : (
+			isset(User::$profiles[User::$info['id']]['options']['cust_gender'])
+				&& User::$profiles[User::$info['id']]['options']['cust_gender'] === '{gender_2}' ? 'female' : 'male'
 		);
 	}
 
@@ -339,7 +339,7 @@ trait Helper
 		foreach ($values as $key => $value) {
 			if (empty($value)) continue;
 
-			if (! isset($this->modSettings[$key])) {
+			if (! isset(Config::$modSettings[$key])) {
 				$addSettings[$key] = $value;
 			}
 		}

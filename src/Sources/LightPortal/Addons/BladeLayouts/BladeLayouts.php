@@ -10,12 +10,13 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 29.12.23
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\BladeLayouts;
 
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
 use eftec\bladeone\BladeOne;
 use Exception;
 
@@ -32,10 +33,10 @@ class BladeLayouts extends Plugin
 
 	public function addSettings(array &$config_vars): void
 	{
-		$this->txt['lp_blade_layouts']['note'] = sprintf(
-			$this->txt['lp_blade_layouts']['note'],
+		Lang::$txt['lp_blade_layouts']['note'] = sprintf(
+			Lang::$txt['lp_blade_layouts']['note'],
 			$this->extension,
-			$this->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . 'portal_layouts'
+			Theme::$current->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . 'portal_layouts'
 		);
 
 		$config_vars['blade_layouts'][] = ['desc', 'note'];
@@ -45,32 +46,32 @@ class BladeLayouts extends Plugin
 
 	public function frontLayouts(): void
 	{
-		if (! str_contains($this->modSettings['lp_frontpage_layout'], $this->extension))
+		if (! str_contains(Config::$modSettings['lp_frontpage_layout'], $this->extension))
 			return;
 
 		require_once __DIR__ . '/vendor/autoload.php';
 
 		$params = [
-			'txt'         => $this->txt,
-			'context'     => $this->context,
-			'modSettings' => $this->modSettings,
+			'txt'         => Lang::$txt,
+			'context'     => Utils::$context,
+			'modSettings' => Config::$modSettings,
 		];
 
 		ob_start();
 
 		try {
-			$blade = new BladeOne($this->settings['default_theme_dir'] . '/portal_layouts', $this->cachedir);
+			$blade = new BladeOne(Theme::$current->settings['default_theme_dir'] . '/portal_layouts', Config::$cachedir);
 
-			$layout = strstr($this->modSettings['lp_frontpage_layout'], '.', true) ?: $this->modSettings['lp_frontpage_layout'];
+			$layout = strstr(Config::$modSettings['lp_frontpage_layout'], '.', true) ?: Config::$modSettings['lp_frontpage_layout'];
 
 			echo $blade->run($layout, $params);
 		} catch (Exception $e) {
 			$this->fatalError($e->getMessage());
 		}
 
-		$this->context['lp_layout'] = ob_get_clean();
+		Utils::$context['lp_layout'] = ob_get_clean();
 
-		$this->modSettings['lp_frontpage_layout'] = '';
+		Config::$modSettings['lp_frontpage_layout'] = '';
 	}
 
 	public function customLayoutExtensions(array &$extensions): void

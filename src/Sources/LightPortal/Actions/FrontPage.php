@@ -17,6 +17,7 @@ namespace Bugo\LightPortal\Actions;
 use Bugo\LightPortal\Front\{ArticleInterface, BoardArticle, ChosenPageArticle};
 use Bugo\LightPortal\Front\{ChosenTopicArticle, PageArticle, TopicArticle};
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
 use Exception;
 use IntlException;
 use Latte\Engine;
@@ -45,19 +46,19 @@ final class FrontPage
 
 		$this->hook('frontModes', [&$this->modes]);
 
-		if (array_key_exists($this->modSettings['lp_frontpage_mode'], $this->modes))
-			$this->prepare(new $this->modes[$this->modSettings['lp_frontpage_mode']]);
-		elseif ($this->modSettings['lp_frontpage_mode'] === 'chosen_page')
+		if (array_key_exists(Config::$modSettings['lp_frontpage_mode'], $this->modes))
+			$this->prepare(new $this->modes[Config::$modSettings['lp_frontpage_mode']]);
+		elseif (Config::$modSettings['lp_frontpage_mode'] === 'chosen_page')
 			return call_user_func([new Page, 'show']);
 
-		$this->context['lp_frontpage_num_columns'] = $this->getNumColumns();
+		Utils::$context['lp_frontpage_num_columns'] = $this->getNumColumns();
 
-		$this->context['canonical_url'] = $this->scripturl;
+		Utils::$context['canonical_url'] = Config::$scripturl;
 
-		$this->context['page_title'] = $this->modSettings['lp_frontpage_title'] ?: ($this->context['forum_name'] . ' - ' . $this->txt['lp_portal']);
-		$this->context['linktree'][] = [
-			'name'        => $this->txt['lp_portal'],
-			'extra_after' => '(' . $this->translate('lp_articles_set', ['articles' => $this->context['total_articles']]) . ')'
+		Utils::$context['page_title'] = Config::$modSettings['lp_frontpage_title'] ?: (Utils::$context['forum_name'] . ' - ' . Lang::$txt['lp_portal']);
+		Utils::$context['linktree'][] = [
+			'name'        => Lang::$txt['lp_portal'],
+			'extra_after' => '(' . $this->translate('lp_articles_set', ['articles' => Utils::$context['total_articles']]) . ')'
 		];
 
 		$this->prepareTemplates();
@@ -71,81 +72,81 @@ final class FrontPage
 	public function prepare(ArticleInterface $article): void
 	{
 		$start = (int) $this->request('start');
-		$limit = (int) $this->modSettings['lp_num_items_per_page'] ?? 12;
+		$limit = (int) Config::$modSettings['lp_num_items_per_page'] ?? 12;
 
 		$article->init();
 
-		if (($data = $this->cache()->get('articles_u' . $this->context['user']['id'] . '_' . $start . '_' . $limit)) === null) {
+		if (($data = $this->cache()->get('articles_u' . Utils::$context['user']['id'] . '_' . $start . '_' . $limit)) === null) {
 			$data['total'] = $article->getTotalCount();
 
 			$this->updateStart($data['total'], $start, $limit);
 
 			$data['articles'] = $article->getData($start, $limit);
 
-			$this->cache()->put('articles_u' . $this->context['user']['id'] . '_' . $start . '_' . $limit, $data);
+			$this->cache()->put('articles_u' . Utils::$context['user']['id'] . '_' . $start . '_' . $limit, $data);
 		}
 
 		[$articles, $itemsCount] = [$data['articles'], $data['total']];
 
-		$this->context['total_articles'] = $itemsCount;
+		Utils::$context['total_articles'] = $itemsCount;
 
 		$articles = $this->postProcess($article, $articles);
 
 		$this->preLoadImages($articles);
 
-		$this->context['page_index'] = $this->constructPageIndex(LP_BASE_URL, $this->request()->get('start'), $itemsCount, $limit);
-		$this->context['start'] = $this->request()->get('start');
+		Utils::$context['page_index'] = $this->constructPageIndex(LP_BASE_URL, $this->request()->get('start'), $itemsCount, $limit);
+		Utils::$context['start'] = $this->request()->get('start');
 
-		if (! empty($this->modSettings['lp_use_simple_pagination']))
-			$this->context['page_index'] = $this->simplePaginate(LP_BASE_URL, $itemsCount, $limit);
+		if (! empty(Config::$modSettings['lp_use_simple_pagination']))
+			Utils::$context['page_index'] = $this->simplePaginate(LP_BASE_URL, $itemsCount, $limit);
 
-		$this->context['portal_next_page'] = $this->request('start') + $limit < $itemsCount ? LP_BASE_URL . ';start=' . ($this->request('start') + $limit) : '';
-		$this->context['lp_frontpage_articles'] = $articles;
+		Utils::$context['portal_next_page'] = $this->request('start') + $limit < $itemsCount ? LP_BASE_URL . ';start=' . ($this->request('start') + $limit) : '';
+		Utils::$context['lp_frontpage_articles'] = $articles;
 
 		$this->hook('frontAssets');
 	}
 
 	public function prepareTemplates(): void
 	{
-		if (empty($this->context['lp_frontpage_articles'])) {
-			$this->context['sub_template'] = 'empty';
+		if (empty(Utils::$context['lp_frontpage_articles'])) {
+			Utils::$context['sub_template'] = 'empty';
 		} else {
-			$this->context['sub_template'] = empty($this->modSettings['lp_frontpage_layout']) ? 'wrong_template' : 'layout';
+			Utils::$context['sub_template'] = empty(Config::$modSettings['lp_frontpage_layout']) ? 'wrong_template' : 'layout';
 		}
 
-		$this->context['lp_frontpage_layouts'] = $this->getLayouts();
+		Utils::$context['lp_frontpage_layouts'] = $this->getLayouts();
 
 		$this->prepareLayoutSwitcher();
 
 		// Mod authors can use their own logic here
 		$this->hook('frontLayouts');
 
-		$this->view($this->modSettings['lp_frontpage_layout']);
+		$this->view(Config::$modSettings['lp_frontpage_layout']);
 	}
 
 	public function prepareLayoutSwitcher(): void
 	{
-		if (empty($this->modSettings['lp_show_layout_switcher']))
+		if (empty(Config::$modSettings['lp_show_layout_switcher']))
 			return;
 
-		$this->context['template_layers'][] = 'layout_switcher';
+		Utils::$context['template_layers'][] = 'layout_switcher';
 
 		if ($this->session()->isEmpty('lp_frontpage_layout')) {
-			$this->context['lp_current_layout'] = $this->request('layout', $this->modSettings['lp_frontpage_layout'] ?? 'default.latte');
+			Utils::$context['lp_current_layout'] = $this->request('layout', Config::$modSettings['lp_frontpage_layout'] ?? 'default.latte');
 		} else {
-			$this->context['lp_current_layout'] = $this->request('layout', $this->session()->get('lp_frontpage_layout'));
+			Utils::$context['lp_current_layout'] = $this->request('layout', $this->session()->get('lp_frontpage_layout'));
 		}
 
-		$this->session()->put('lp_frontpage_layout', $this->context['lp_current_layout']);
+		$this->session()->put('lp_frontpage_layout', Utils::$context['lp_current_layout']);
 
-		$this->modSettings['lp_frontpage_layout'] = $this->session()->get('lp_frontpage_layout');
+		Config::$modSettings['lp_frontpage_layout'] = $this->session()->get('lp_frontpage_layout');
 	}
 
 	public function getLayouts(): array
 	{
 		$this->loadTemplate('LightPortal/ViewFrontPage');
 
-		$layouts = glob($this->settings['default_theme_dir'] . '/LightPortal/layouts/*.latte');
+		$layouts = glob(Theme::$current->settings['default_theme_dir'] . '/LightPortal/layouts/*.latte');
 
 		$extensions = ['.latte'];
 
@@ -153,7 +154,7 @@ final class FrontPage
 		$this->hook('customLayoutExtensions', [&$extensions]);
 
 		foreach ($extensions as $extension) {
-			$layouts = array_merge($layouts, glob($this->settings['default_theme_dir'] . '/portal_layouts/*' . $extension));
+			$layouts = array_merge($layouts, glob(Theme::$current->settings['default_theme_dir'] . '/portal_layouts/*' . $extension));
 		}
 
 		$values = $titles = [];
@@ -163,7 +164,7 @@ final class FrontPage
 
 			$shortName = ucfirst(strstr($title, '.', true) ?: $title);
 
-			$titles[] = $title === 'default.latte' ? $this->txt['lp_default'] : str_replace('_', ' ', $shortName);
+			$titles[] = $title === 'default.latte' ? Lang::$txt['lp_default'] : str_replace('_', ' ', $shortName);
 		}
 
 		$layouts = array_combine($values, $titles);
@@ -179,8 +180,8 @@ final class FrontPage
 			return;
 
 		$latte = new Engine;
-		$latte->setTempDirectory(empty($this->modSettings['cache_enable']) ? null : $this->cachedir);
-		$latte->setLoader(new FileLoader($this->settings['default_theme_dir'] . '/LightPortal/layouts/'));
+		$latte->setTempDirectory(empty(Config::$modSettings['cache_enable']) ? null : Config::$cachedir);
+		$latte->setLoader(new FileLoader(Theme::$current->settings['default_theme_dir'] . '/LightPortal/layouts/'));
 		$latte->addExtension(new RawPhpExtension);
 		$latte->addFunction('teaser', function (string $text, int $length = 150) use ($latte): string {
 			$text = $latte->invokeFilter('stripHtml', [$text]);
@@ -188,7 +189,7 @@ final class FrontPage
 			return $latte->invokeFilter('truncate', [$text, $length]);
 		});
 		$latte->addFunction('icon', function (string $name, string $title = '') use ($latte): string {
-			$icon = $this->context['lp_icon_set'][$name];
+			$icon = Utils::$context['lp_icon_set'][$name];
 
 			if (empty($title)) {
 				return $icon;
@@ -198,9 +199,9 @@ final class FrontPage
 		});
 
 		$params = [
-			'txt'         => $this->txt,
-			'context'     => $this->context,
-			'modSettings' => $this->modSettings,
+			'txt'         => Lang::$txt,
+			'context'     => Utils::$context,
+			'modSettings' => Config::$modSettings,
 		];
 
 		ob_start();
@@ -208,8 +209,8 @@ final class FrontPage
 		try {
 			$latte->render($layout, $params);
 		} catch (RuntimeException $e) {
-			if (is_file($this->settings['default_theme_dir'] . '/portal_layouts/' . $layout)) {
-				$latte->setLoader(new FileLoader($this->settings['default_theme_dir'] . '/portal_layouts/'));
+			if (is_file(Theme::$current->settings['default_theme_dir'] . '/portal_layouts/' . $layout)) {
+				$latte->setLoader(new FileLoader(Theme::$current->settings['default_theme_dir'] . '/portal_layouts/'));
 				$latte->render($layout, $params);
 			} else {
 				$this->fatalError($e->getMessage());
@@ -218,7 +219,7 @@ final class FrontPage
 			$this->fatalError($e->getMessage());
 		}
 
-		$this->context['lp_layout'] = ob_get_clean();
+		Utils::$context['lp_layout'] = ob_get_clean();
 	}
 
 	/**
@@ -230,10 +231,10 @@ final class FrontPage
 	{
 		$num_columns = 12;
 
-		if (empty($this->modSettings['lp_frontpage_num_columns']))
+		if (empty(Config::$modSettings['lp_frontpage_num_columns']))
 			return $num_columns;
 
-		return $num_columns / match ($this->modSettings['lp_frontpage_num_columns']) {
+		return $num_columns / match (Config::$modSettings['lp_frontpage_num_columns']) {
 			'1' => 2,
 			'2' => 3,
 			'3' => 4,
@@ -261,9 +262,9 @@ final class FrontPage
 			'num_views'        => 'p.num_views'
 		];
 
-		$this->context['current_sorting'] = $this->request('sort', 'created;desc');
+		Utils::$context['current_sorting'] = $this->request('sort', 'created;desc');
 
-		return $sorting_types[$this->context['current_sorting']];
+		return $sorting_types[Utils::$context['current_sorting']];
 	}
 
 	public function updateStart(int $total, int &$start, int $limit): void
@@ -285,7 +286,7 @@ final class FrontPage
 	private function postProcess(ArticleInterface $article, array $articles): array
 	{
 		return array_map(function ($item) use ($article) {
-			if ($this->context['user']['is_guest']) {
+			if (Utils::$context['user']['is_guest']) {
 				$item['is_new'] = false;
 				$item['views']['num'] = 0;
 			}
@@ -298,8 +299,8 @@ final class FrontPage
 
 			$item['msg_link'] ??= $item['link'];
 
-			if (empty($item['image']) && ! empty($this->modSettings['lp_image_placeholder']))
-				$item['image'] = $this->modSettings['lp_image_placeholder'];
+			if (empty($item['image']) && ! empty(Config::$modSettings['lp_image_placeholder']))
+				$item['image'] = Config::$modSettings['lp_image_placeholder'];
 
 			if (! empty($item['views']['num']))
 				$item['views']['num'] = $this->getFriendlyNumber((int) $item['views']['num']);
@@ -313,7 +314,7 @@ final class FrontPage
 		$images = array_column($articles, 'image');
 
 		foreach ($images as $image) {
-			$this->context['html_headers'] .= "\n\t" . '<link rel="preload" as="image" href="' . $image . '">';
+			Utils::$context['html_headers'] .= "\n\t" . '<link rel="preload" as="image" href="' . $image . '">';
 		}
 	}
 
@@ -343,17 +344,17 @@ final class FrontPage
 	{
 		$max_pages = (($total - 1) / $limit) * $limit;
 
-		$prev = $this->context['start'] - $limit;
+		$prev = Utils::$context['start'] - $limit;
 
-		$next = $this->context['start'] + $limit > $max_pages ? '' : $this->context['start'] + $limit;
+		$next = Utils::$context['start'] + $limit > $max_pages ? '' : Utils::$context['start'] + $limit;
 
 		$paginate = '';
 
 		if ($prev >= 0)
-			$paginate .= "<a class=\"button\" href=\"$url;start=$prev\">{$this->context['lp_icon_set']['arrow_left']} {$this->txt['prev']}</a>";
+			$paginate .= "<a class=\"button\" href=\"$url;start=$prev\">" . Utils::$context['lp_icon_set']['arrow_left'] . ' ' . Lang::$txt['prev'] . "</a>";
 
 		if ($next)
-			$paginate .= "<a class=\"button\" href=\"$url;start=$next\">{$this->txt['next']} {$this->context['lp_icon_set']['arrow_right']}</a>";
+			$paginate .= "<a class=\"button\" href=\"$url;start=$next\">" . Lang::$txt['next'] . ' ' . Utils::$context['lp_icon_set']['arrow_right'] . "</a>";
 
 		return $paginate;
 	}

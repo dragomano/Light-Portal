@@ -14,6 +14,8 @@
 
 namespace Bugo\LightPortal\Areas\Fields;
 
+use Bugo\LightPortal\Utils\Utils;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -42,7 +44,7 @@ class SelectField extends AbstractField
 		parent::build();
 
 		foreach ($this->options as $key => $value) {
-			$this->context['posting_fields'][$this->name]['input']['options'][$value] = [
+			Utils::$context['posting_fields'][$this->name]['input']['options'][$value] = [
 				'value'    => $key,
 				'selected' => $key === $this->attributes['value']
 			];

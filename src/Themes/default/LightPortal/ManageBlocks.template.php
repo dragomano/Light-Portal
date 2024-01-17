@@ -1,21 +1,21 @@
 <?php
 
-function template_manage_blocks()
-{
-	global $context, $scripturl, $txt, $settings;
+use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
 
-	foreach ($context['lp_current_blocks'] as $placement => $blocks) {
+function template_manage_blocks(): void
+{
+	foreach (Utils::$context['lp_current_blocks'] as $placement => $blocks) {
 		$block_group_type = in_array($placement, ['header', 'top', 'left', 'right', 'bottom', 'footer']) ? 'default' : 'additional';
 
 		echo '
 	<div class="cat_bar">
 		<h3 class="catbg">
 			<span class="floatright">
-				<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=add;', $context['session_var'], '=', $context['session_id'], ';placement=', $placement, '" x-data>
-					', str_replace(' class=', ' @mouseover="block.toggleSpin($event.target)" @mouseout="block.toggleSpin($event.target)" title="' . $txt['lp_blocks_add'] . '" class=', $context['lp_icon_set']['plus']), '
+				<a href="', Config::$scripturl, '?action=admin;area=lp_blocks;sa=add;', Utils::$context['session_var'], '=', Utils::$context['session_id'], ';placement=', $placement, '" x-data>
+					', str_replace(' class=', ' @mouseover="block.toggleSpin($event.target)" @mouseout="block.toggleSpin($event.target)" title="' . Lang::$txt['lp_blocks_add'] . '" class=', Utils::$context['lp_icon_set']['plus']), '
 				</a>
 			</span>
-			', $context['lp_block_placements'][$placement] ?? $txt['not_applicable'], is_array($blocks) ? (' (' . count($blocks) . ')') : '', '
+			', Utils::$context['lp_block_placements'][$placement] ?? Lang::$txt['not_applicable'], is_array($blocks) ? (' (' . count($blocks) . ')') : '', '
 		</h3>
 	</div>
 	<table class="lp_', $block_group_type, '_blocks table_grid centertext">';
@@ -25,25 +25,25 @@ function template_manage_blocks()
 		<thead>
 			<tr class="title_bar">
 				<th scope="col" class="icon hidden-xs hidden-sm">
-					', $txt['custom_profile_icon'], '
+					', Lang::$txt['custom_profile_icon'], '
 				</th>
 				<th scope="col" class="title">
-					', $txt['lp_block_note'], ' / ', $txt['lp_title'], '
+					', Lang::$txt['lp_block_note'], ' / ', Lang::$txt['lp_title'], '
 				</th>
 				<th scope="col" class="type hidden-xs hidden-sm hidden-md">
-					', $txt['lp_block_type'], '
+					', Lang::$txt['lp_block_type'], '
 				</th>
 				<th scope="col" class="areas hidden-xs hidden-sm">
-					', $txt['lp_block_areas'], '
+					', Lang::$txt['lp_block_areas'], '
 				</th>
 				<th scope="col" class="priority">
-					', $txt['lp_block_priority'], '
+					', Lang::$txt['lp_block_priority'], '
 				</th>
 				<th scope="col" class="status">
-					', $txt['status'], '
+					', Lang::$txt['status'], '
 				</th>
 				<th scope="col" class="actions">
-					', $txt['lp_actions'], '
+					', Lang::$txt['lp_actions'], '
 				</th>
 			</tr>
 		</thead>
@@ -55,7 +55,7 @@ function template_manage_blocks()
 			echo '
 		<tbody data-placement="', $placement, '">
 			<tr class="windowbg centertext" x-data>
-				<td>', $txt['lp_no_items'], '</td>
+				<td>', Lang::$txt['lp_no_items'], '</td>
 			</tr>';
 		}
 
@@ -65,7 +65,7 @@ function template_manage_blocks()
 	}
 
 	echo '
-	<script src="', $settings['default_theme_url'], '/scripts/light_portal/Sortable.min.js"></script>
+	<script src="', Theme::$current->settings['default_theme_url'], '/scripts/light_portal/Sortable.min.js"></script>
 	<script>
 		const block = new Block(),
 			defaultBlocks = document.querySelectorAll(".lp_default_blocks tbody"),
@@ -94,10 +94,8 @@ function template_manage_blocks()
 	</script>';
 }
 
-function show_block_entry(int $id, array $data)
+function show_block_entry(int $id, array $data): void
 {
-	global $context, $language, $txt, $scripturl;
-
 	if (empty($id) || empty($data))
 		return;
 
@@ -112,7 +110,7 @@ function show_block_entry(int $id, array $data)
 			', $data['icon'], '
 		</td>
 		<td class="title">
-			<div class="hidden-xs hidden-sm hidden-md">', $title = $data['note'] ?: ($data['titles'][$context['user']['language']] ?? $data['titles']['english'] ?? $data['titles'][$language] ?? ''), '</div>
+			<div class="hidden-xs hidden-sm hidden-md">', $title = $data['note'] ?: ($data['titles'][Utils::$context['user']['language']] ?? $data['titles']['english'] ?? $data['titles'][Config::$language] ?? ''), '</div>
 			<div class="hidden-lg hidden-xl">
 				<table class="table_grid">
 					<tbody>
@@ -120,7 +118,7 @@ function show_block_entry(int $id, array $data)
 							<td colspan="2">' . $title . '</td>
 						</tr>' : '', '
 						<tr class="windowbg">
-							<td>', $txt['lp_' . $data['type']]['title'] ?? $context['lp_missing_block_types'][$data['type']], '</td>
+							<td>', Lang::$txt['lp_' . $data['type']]['title'] ?? Utils::$context['lp_missing_block_types'][$data['type']], '</td>
 							<td class="hidden-md">', $data['areas'], '</td>
 						</tr>
 					</tbody>
@@ -128,16 +126,16 @@ function show_block_entry(int $id, array $data)
 			</div>
 		</td>
 		<td class="type hidden-xs hidden-sm hidden-md">
-			', $txt['lp_' . $data['type']]['title'] ?? $context['lp_missing_block_types'][$data['type']], '
+			', Lang::$txt['lp_' . $data['type']]['title'] ?? Utils::$context['lp_missing_block_types'][$data['type']], '
 		</td>
 		<td class="areas hidden-xs hidden-sm">
 			', $data['areas'], '
 		</td>
 		<td class="priority">
-			', $data['priority'], ' ', str_replace(' class="', ' title="' . $txt['lp_action_move'] . '" class="handle ', $context['lp_icon_set']['sort']), '
+			', $data['priority'], ' ', str_replace(' class="', ' title="' . Lang::$txt['lp_action_move'] . '" class="handle ', Utils::$context['lp_icon_set']['sort']), '
 		</td>
 		<td class="status">
-			<span :class="{\'on\': status, \'off\': !status}" :title="status ? \'', $txt['lp_action_off'], '\' : \'', $txt['lp_action_on'], '\'" @click.prevent="status = !status"></span>
+			<span :class="{\'on\': status, \'off\': !status}" :title="status ? \'', Lang::$txt['lp_action_off'], '\' : \'', Lang::$txt['lp_action_on'], '\'" @click.prevent="status = !status"></span>
 		</td>
 		<td class="actions">
 			<div class="context_menu" @click.outside="showContextMenu = false">
@@ -147,19 +145,19 @@ function show_block_entry(int $id, array $data)
 				<div class="roundframe" x-show="showContextMenu">
 					<ul>
 						<li>
-							<a @click.prevent="block.clone($root)" class="button">', $txt['lp_action_clone'], '</a>
+							<a @click.prevent="block.clone($root)" class="button">', Lang::$txt['lp_action_clone'], '</a>
 						</li>';
 
-	if (isset($txt['lp_' . $data['type']]['title'])) {
+	if (isset(Lang::$txt['lp_' . $data['type']]['title'])) {
 		echo '
 						<li>
-							<a href="', $scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $id, '" class="button">', $txt['modify'], '</a>
+							<a href="', Config::$scripturl, '?action=admin;area=lp_blocks;sa=edit;id=', $id, '" class="button">', Lang::$txt['modify'], '</a>
 						</li>';
 	}
 
 	echo '
 						<li>
-							<a @click.prevent="showContextMenu = false; block.remove($root)" class="button error">', $txt['remove'], '</a>
+							<a @click.prevent="showContextMenu = false; block.remove($root)" class="button error">', Lang::$txt['remove'], '</a>
 						</li>
 					</ul>
 				</div>
@@ -168,20 +166,18 @@ function show_block_entry(int $id, array $data)
 	</tr>';
 }
 
-function template_block_add()
+function template_block_add(): void
 {
-	global $txt, $context;
-
 	echo '
 	<div class="cat_bar">
-		<h3 class="catbg">', $txt['lp_blocks'], '</h3>
+		<h3 class="catbg">', Lang::$txt['lp_blocks'], '</h3>
 	</div>
-	<div class="information">', $txt['lp_blocks_add_instruction'], '</div>
+	<div class="information">', Lang::$txt['lp_blocks_add_instruction'], '</div>
 	<div id="lp_blocks">
-		<form name="block_add_form" action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '">
+		<form name="block_add_form" action="', Utils::$context['canonical_url'], '" method="post" accept-charset="', Utils::$context['character_set'], '">
 			<div class="row">';
 
-	foreach ($context['lp_all_blocks'] as $block) {
+	foreach (Utils::$context['lp_all_blocks'] as $block) {
 		echo '
 				<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3" x-data>
 					<div class="item roundframe" data-type="', $block['type'], '" @click="block.add($el)">
@@ -198,7 +194,7 @@ function template_block_add()
 	echo '
 			</div>
 			<input type="hidden" name="add_block">
-			<input type="hidden" name="placement" value="', $context['current_block']['placement'], '">
+			<input type="hidden" name="placement" value="', Utils::$context['current_block']['placement'], '">
 		</form>
 	</div>
 
@@ -207,37 +203,35 @@ function template_block_add()
 	</script>';
 }
 
-function template_block_post()
+function template_block_post(): void
 {
-	global $context, $txt, $language;
-
-	if (isset($context['preview_content']) && empty($context['post_errors'])) {
+	if (isset(Utils::$context['preview_content']) && empty(Utils::$context['post_errors'])) {
 		echo '
 	<div class="preview_frame">';
 
-		echo sprintf($context['lp_all_title_classes'][$context['lp_block']['title_class']], $context['preview_title']);
+		echo sprintf(Utils::$context['lp_all_title_classes'][Utils::$context['lp_block']['title_class']], Utils::$context['preview_title']);
 
 		echo '
-		<div class="preview block_', $context['lp_block']['type'], '">
-			', sprintf($context['lp_all_content_classes'][$context['lp_block']['content_class']], $context['preview_content']), '
+		<div class="preview block_', Utils::$context['lp_block']['type'], '">
+			', sprintf(Utils::$context['lp_all_content_classes'][Utils::$context['lp_block']['content_class']], Utils::$context['preview_content']), '
 		</div>
 	</div>';
 	} else {
 		echo '
 	<div class="cat_bar">
-		<h3 class="catbg">', $txt['lp_' . $context['lp_block']['type']]['title'], '</h3>
+		<h3 class="catbg">', Lang::$txt['lp_' . Utils::$context['lp_block']['type']]['title'], '</h3>
 	</div>
 	<div class="information">
-		', $txt['lp_' . $context['lp_block']['type']]['description'], '
+		', Lang::$txt['lp_' . Utils::$context['lp_block']['type']]['description'], '
 	</div>';
 	}
 
-	if (! empty($context['post_errors'])) {
+	if (! empty(Utils::$context['post_errors'])) {
 		echo '
 	<div class="errorbox">
 		<ul>';
 
-		foreach ($context['post_errors'] as $error) {
+		foreach (Utils::$context['post_errors'] as $error) {
 			echo '
 			<li>', $error, '</li>';
 		}
@@ -247,47 +241,47 @@ function template_block_post()
 	</div>';
 	}
 
-	$fields = $context['posting_fields'];
+	$fields = Utils::$context['posting_fields'];
 
 	$titles = '';
-	foreach ($context['lp_languages'] as $lang) {
-		$titles .= ', title_' . $lang['filename'] . ': `' . ($context['lp_block']['titles'][$lang['filename']] ?? '') . '`';
+	foreach (Utils::$context['lp_languages'] as $lang) {
+		$titles .= ', title_' . $lang['filename'] . ': `' . (Utils::$context['lp_block']['titles'][$lang['filename']] ?? '') . '`';
 	}
 
 	echo '
 	<form
 		id="lp_post"
-		action="', $context['canonical_url'], '"
+		action="', Utils::$context['canonical_url'], '"
 		method="post"
-		accept-charset="', $context['character_set'], '"
+		accept-charset="', Utils::$context['character_set'], '"
 		onsubmit="submitonce(this);"
-		x-data="{ tab: window.location.hash ? window.location.hash.substring(1) : \'', $language, '\'', $titles, ' }"
+		x-data="{ tab: window.location.hash ? window.location.hash.substring(1) : \'', Config::$language, '\'', $titles, ' }"
 	>
 		<div class="windowbg">
 			<div class="lp_tabs">
 				<div data-navigation>
-					<div class="bg odd active_navigation" data-tab="common">', $context['lp_icon_set']['content'], $txt['lp_tab_content'], '</div>
-					<div class="bg odd" data-tab="access">', $context['lp_icon_set']['access'], $txt['lp_tab_access_placement'], '</div>
-					<div class="bg odd" data-tab="appearance" x-show="', (int) $context['lp_block_tab_appearance'], '">', $context['lp_icon_set']['design'], $txt['lp_tab_appearance'], '</div>
-					<div class="bg odd" data-tab="tuning">', $context['lp_icon_set']['tools'], $txt['lp_tab_tuning'], '</div>
+					<div class="bg odd active_navigation" data-tab="common">', Utils::$context['lp_icon_set']['content'], Lang::$txt['lp_tab_content'], '</div>
+					<div class="bg odd" data-tab="access">', Utils::$context['lp_icon_set']['access'], Lang::$txt['lp_tab_access_placement'], '</div>
+					<div class="bg odd" data-tab="appearance" x-show="', (int) Utils::$context['lp_block_tab_appearance'], '">', Utils::$context['lp_icon_set']['design'], Lang::$txt['lp_tab_appearance'], '</div>
+					<div class="bg odd" data-tab="tuning">', Utils::$context['lp_icon_set']['tools'], Lang::$txt['lp_tab_tuning'], '</div>
 				</div>
 				<div data-content>
 					<section class="bg even active_content" data-content="common">', template_post_tab($fields), '</section>
 					<section class="bg even" data-content="access">', template_post_tab($fields, 'access_placement'), '</section>
-					<section class="bg even" data-content="appearance" x-show="', (int) $context['lp_block_tab_appearance'], '">', template_post_tab($fields, 'appearance'), '</section>
+					<section class="bg even" data-content="appearance" x-show="', (int) Utils::$context['lp_block_tab_appearance'], '">', template_post_tab($fields, 'appearance'), '</section>
 					<section class="bg even" data-content="tuning">', template_post_tab($fields, 'tuning'), '</section>
 				</div>
 			</div>
 			<br class="clear">
 			<div class="centertext">
-				<input type="hidden" name="block_id" value="', $context['lp_block']['id'], '">
-				<input type="hidden" name="add_block" value="', $context['lp_block']['type'], '">
-				<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '">
-				<input type="hidden" name="seqnum" value="', $context['form_sequence_number'], '">
-				<button type="submit" class="button active" name="remove" style="float: left" x-show="!', (int) empty($context['lp_block']['id']), '">', $txt['remove'], '</button>
-				<button type="submit" class="button" name="preview" @click="block.post($root)">', $context['lp_icon_set']['preview'], $txt['preview'], '</button>
-				<button type="submit" class="button" name="save" @click="block.post($root)">', $context['lp_icon_set']['save'], $txt['save'], '</button>
-				<button type="submit" class="button" name="save_exit" @click="block.post($root)">', $context['lp_icon_set']['save_exit'], $txt['lp_save_and_exit'], '</button>
+				<input type="hidden" name="block_id" value="', Utils::$context['lp_block']['id'], '">
+				<input type="hidden" name="add_block" value="', Utils::$context['lp_block']['type'], '">
+				<input type="hidden" name="', Utils::$context['session_var'], '" value="', Utils::$context['session_id'], '">
+				<input type="hidden" name="seqnum" value="', Utils::$context['form_sequence_number'], '">
+				<button type="submit" class="button active" name="remove" style="float: left" x-show="!', (int) empty(Utils::$context['lp_block']['id']), '">', Lang::$txt['remove'], '</button>
+				<button type="submit" class="button" name="preview" @click="block.post($root)">', Utils::$context['lp_icon_set']['preview'], Lang::$txt['preview'], '</button>
+				<button type="submit" class="button" name="save" @click="block.post($root)">', Utils::$context['lp_icon_set']['save'], Lang::$txt['save'], '</button>
+				<button type="submit" class="button" name="save_exit" @click="block.post($root)">', Utils::$context['lp_icon_set']['save_exit'], Lang::$txt['lp_save_and_exit'], '</button>
 			</div>
 		</div>
 	</form>
@@ -297,20 +291,18 @@ function template_block_post()
 	</script>';
 }
 
-function template_show_areas_info()
+function template_show_areas_info(): void
 {
-	global $txt, $context;
-
 	echo '
 	<table class="table_grid">
 		<thead>
 			<tr class="title_bar">
-				<th colspan="2">', $txt['lp_block_areas_th'], '</th>
+				<th colspan="2">', Lang::$txt['lp_block_areas_th'], '</th>
 			</tr>
 		</thead>
 		<tbody>';
 
-	foreach ($context['lp_possible_areas'] as $area => $where_to_display) {
+	foreach (Utils::$context['lp_possible_areas'] as $area => $where_to_display) {
 		echo '
 			<tr class="windowbg">
 				<td class="righttext"><strong>', $area, '</strong></td>

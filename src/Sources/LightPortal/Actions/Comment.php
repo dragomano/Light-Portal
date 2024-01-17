@@ -15,6 +15,7 @@
 namespace Bugo\LightPortal\Actions;
 
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Utils\{Config, User, Utils};
 use Bugo\LightPortal\Repositories\CommentRepository;
 use IntlException;
 
@@ -56,12 +57,12 @@ final class Comment
 	private function get(): void
 	{
 		$comments = $this->cache('page_' . $this->alias . '_comments')
-			->setFallback(CommentRepository::class, 'getByPageId', $this->context['lp_page']['id']);
+			->setFallback(CommentRepository::class, 'getByPageId', Utils::$context['lp_page']['id']);
 
 		$comments = array_map(function ($comment) {
 			$comment['human_date']    = $this->getFriendlyTime($comment['created_at']);
 			$comment['published_at']  = date('Y-m-d', $comment['created_at']);
-			$comment['authorial']     = $this->context['lp_page']['author_id'] === $comment['poster']['id'];
+			$comment['authorial']     = Utils::$context['lp_page']['author_id'] === $comment['poster']['id'];
 			$comment['extra_buttons'] = [];
 
 			$this->hook('commentButtons', [$comment, &$comment['extra_buttons']]);
@@ -69,13 +70,13 @@ final class Comment
 			return $comment;
 		}, $comments);
 
-		$limit = (int) ($this->modSettings['lp_num_comments_per_page'] ?? 10);
+		$limit = (int) (Config::$modSettings['lp_num_comments_per_page'] ?? 10);
 
 		$commentTree = $this->getTree($comments);
 
 		$parentsCount = sizeof($commentTree);
 
-		$this->context['page_index'] = $this->constructPageIndex(
+		Utils::$context['page_index'] = $this->constructPageIndex(
 			$this->getPageIndexUrl(),
 			$this->request()->get('start'),
 			$parentsCount,
@@ -105,7 +106,7 @@ final class Comment
 			'id' => null
 		];
 
-		if (empty($this->user_info['id']))
+		if (empty(User::$info['id']))
 			exit(json_encode($result));
 
 		$data = $this->request()->json();
@@ -114,10 +115,10 @@ final class Comment
 			exit(json_encode($result));
 
 		$parent_id = $this->filterVar($data['parent_id'], 'int');
-		$message   = $this->smcFunc['htmlspecialchars']($data['message']);
+		$message   = Utils::$smcFunc['htmlspecialchars']($data['message']);
 		$author    = $this->filterVar($data['author'], 'int');
-		$page_id   = $this->context['lp_page']['id'];
-		$page_url  = $this->context['canonical_url'];
+		$page_id   = Utils::$context['lp_page']['id'];
+		$page_url  = Utils::$context['canonical_url'];
 
 		if (empty($page_id) || empty($message))
 			exit(json_encode($result));
@@ -125,7 +126,7 @@ final class Comment
 		$item = $this->repository->save([
 			'parent_id'  => $parent_id,
 			'page_id'    => $page_id,
-			'author_id'  => $this->user_info['id'],
+			'author_id'  => User::$info['id'],
 			'message'    => $message,
 			'created_at' => $time = time()
 		]);
@@ -142,17 +143,17 @@ final class Comment
 				'human_date'   => $this->getFriendlyTime($time),
 				'can_edit'     => true,
 				'poster'       => [
-					'id'     => $this->user_info['id'],
-					'name'   => $this->user_info['name'],
-					'avatar' => $this->getUserAvatar($this->user_info['id']),
+					'id'     => User::$info['id'],
+					'name'   => User::$info['name'],
+					'avatar' => $this->getUserAvatar(User::$info['id']),
 				],
 			];
 
 			$notifyOptions = [
 				'item'      => $item,
 				'time'      => $time,
-				'author_id' => empty($parent_id) ? $this->context['lp_page']['author_id'] : $author,
-				'title'     => $this->context['page_title'],
+				'author_id' => empty($parent_id) ? Utils::$context['lp_page']['author_id'] : $author,
+				'title'     => Utils::$context['page_title'],
 				'url'       => $page_url . '#comment=' . $item,
 			];
 
@@ -176,11 +177,11 @@ final class Comment
 			'success' => false
 		];
 
-		if (empty($data) || $this->context['user']['is_guest'])
+		if (empty($data) || Utils::$context['user']['is_guest'])
 			exit(json_encode($result));
 
 		$item    = $data['comment_id'];
-		$message = $this->smcFunc['htmlspecialchars']($data['message']);
+		$message = Utils::$smcFunc['htmlspecialchars']($data['message']);
 
 		if (empty($item) || empty($message) || empty(trim($message)))
 			exit(json_encode($result));
@@ -188,7 +189,7 @@ final class Comment
 		$this->repository->update([
 			'message' => $this->getShortenText($message, 65531),
 			'id'      => $item,
-			'user'    => $this->context['user']['id']
+			'user'    => Utils::$context['user']['id']
 		]);
 
 		$result = [
@@ -230,9 +231,9 @@ final class Comment
 
 	private function getPageIndexUrl(): string
 	{
-		if (! (empty($this->modSettings['lp_frontpage_mode']) || $this->modSettings['lp_frontpage_mode'] !== 'chosen_page') && ! empty($this->modSettings['lp_frontpage_alias']))
+		if (! (empty(Config::$modSettings['lp_frontpage_mode']) || Config::$modSettings['lp_frontpage_mode'] !== 'chosen_page') && ! empty(Config::$modSettings['lp_frontpage_alias']))
 			return LP_BASE_URL;
 
-		return $this->context['canonical_url'];
+		return Utils::$context['canonical_url'];
 	}
 }

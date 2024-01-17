@@ -15,6 +15,7 @@
 namespace Bugo\LightPortal\Repositories;
 
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Utils\Utils;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -28,7 +29,7 @@ final class PluginRepository
 		if (empty($settings))
 			return;
 
-		$this->smcFunc['db_insert']('replace',
+		Utils::$smcFunc['db_insert']('replace',
 			'{db_prefix}lp_plugins',
 			[
 				'name'   => 'string',
@@ -39,7 +40,7 @@ final class PluginRepository
 			['name', 'config']
 		);
 
-		$this->context['lp_num_queries']++;
+		Utils::$context['lp_num_queries']++;
 
 		$this->cache()->forget('plugin_settings');
 	}
@@ -47,18 +48,18 @@ final class PluginRepository
 	public function getSettings(): array
 	{
 		if (($settings = $this->cache()->get('plugin_settings', 259200)) === null) {
-			$result = $this->smcFunc['db_query']('', /** @lang text */ '
+			$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
 				SELECT name, config, value
 				FROM {db_prefix}lp_plugins',
 				[]
 			);
 
 			$settings = [];
-			while ($row = $this->smcFunc['db_fetch_assoc']($result))
+			while ($row = Utils::$smcFunc['db_fetch_assoc']($result))
 				$settings[$row['name']][$row['config']] = $row['value'];
 
-			$this->smcFunc['db_free_result']($result);
-			$this->context['lp_num_queries']++;
+			Utils::$smcFunc['db_free_result']($result);
+			Utils::$context['lp_num_queries']++;
 
 			$this->cache()->put('plugin_settings', $settings, 259200);
 		}
@@ -95,7 +96,7 @@ final class PluginRepository
 		if (empty($settings))
 			return;
 
-		$this->smcFunc['db_query']('', '
+		Utils::$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_plugins
 			WHERE name = {string:name}
 				AND config IN ({array_string:settings})',
@@ -105,7 +106,7 @@ final class PluginRepository
 			]
 		);
 
-		$this->context['lp_num_queries']++;
+		Utils::$context['lp_num_queries']++;
 
 		$this->cache()->forget('plugin_settings');
 	}

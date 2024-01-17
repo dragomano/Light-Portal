@@ -14,6 +14,8 @@
 
 namespace Bugo\LightPortal\Front;
 
+use Bugo\LightPortal\Utils\Config;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -27,7 +29,7 @@ final class ChosenTopicArticle extends TopicArticle
 
 		$this->selected_boards = [];
 
-		$this->selected_topics = empty($this->modSettings['lp_frontpage_topics']) ? [] : explode(',', $this->modSettings['lp_frontpage_topics']);
+		$this->selected_topics = empty(Config::$modSettings['lp_frontpage_topics']) ? [] : explode(',', Config::$modSettings['lp_frontpage_topics']);
 
 		$this->wheres[] = 'AND t.id_topic IN ({array_int:selected_topics})';
 

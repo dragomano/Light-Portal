@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.01.24
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\GalleryBlock;
 
 use Bugo\LightPortal\Areas\Partials\AbstractPartial;
+use Bugo\LightPortal\Utils\{Config, Lang, Utils};
 
 final class CategorySelect extends AbstractPartial
 {
@@ -35,20 +36,20 @@ final class CategorySelect extends AbstractPartial
 		<div id="categories" name="categories"></div>
 		<script>
 			VirtualSelect.init({
-				ele: "#categories",' . ($this->context['right_to_left'] ? '
+				ele: "#categories",' . (Utils::$context['right_to_left'] ? '
 				textDirection: "rtl",' : '') . '
 				dropboxWrapper: "body",
 				multiple: true,
 				search: true,
 				markSearchResults: true,
-				placeholder: "' . $this->txt['lp_gallery_block']['categories_select'] . '",
-				noSearchResultsText: "' . $this->txt['no_matches'] . '",
-				searchPlaceholderText: "' . $this->txt['search'] . '",
-				allOptionsSelectedText: "' . $this->txt['all'] . '",
+				placeholder: "' . Lang::$txt['lp_gallery_block']['categories_select'] . '",
+				noSearchResultsText: "' . Lang::$txt['no_matches'] . '",
+				searchPlaceholderText: "' . Lang::$txt['search'] . '",
+				allOptionsSelectedText: "' . Lang::$txt['all'] . '",
 				showValueAsTags: true,
 				maxWidth: "100%",
 				options: ' . json_encode($data) . ',
-				selectedValue: [' . ($this->context['lp_block']['options']['categories'] ?? '') . ']
+				selectedValue: [' . (Utils::$context['lp_block']['options']['categories'] ?? '') . ']
 			});
 		</script>';
 	}
@@ -57,11 +58,11 @@ final class CategorySelect extends AbstractPartial
 	{
 		$this->dbExtend();
 
-		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'gallery_cat')))
+		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'gallery_cat')))
 			return [];
 
 		if (($categories = $this->cache()->get('smf_gallery_categories')) === null) {
-			$result = $this->smcFunc['db_query']('', '
+			$result = Utils::$smcFunc['db_query']('', '
 				SELECT id_cat, title
 				FROM {db_prefix}gallery_cat
 				WHERE redirect = {int:redirect}
@@ -72,11 +73,11 @@ final class CategorySelect extends AbstractPartial
 			);
 
 			$categories = [];
-			while ($row = $this->smcFunc['db_fetch_assoc']($result))
+			while ($row = Utils::$smcFunc['db_fetch_assoc']($result))
 				$categories[$row['id_cat']] = $row['title'];
 
-			$this->smcFunc['db_free_result']($result);
-			$this->context['lp_num_queries']++;
+			Utils::$smcFunc['db_free_result']($result);
+			Utils::$context['lp_num_queries']++;
 
 			$this->cache()->put('smf_gallery_categories', $categories);
 		}

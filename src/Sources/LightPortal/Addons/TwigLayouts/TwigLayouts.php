@@ -10,12 +10,13 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 29.12.23
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\TwigLayouts;
 
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
 use Twig\Extension\DebugExtension;
 use Twig\Loader\FilesystemLoader;
 use Twig\Environment;
@@ -35,10 +36,10 @@ class TwigLayouts extends Plugin
 
 	public function addSettings(array &$config_vars): void
 	{
-		$this->txt['lp_twig_layouts']['note'] = sprintf(
-			$this->txt['lp_twig_layouts']['note'],
+		Lang::$txt['lp_twig_layouts']['note'] = sprintf(
+			Lang::$txt['lp_twig_layouts']['note'],
 			$this->extension,
-			$this->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . 'portal_layouts'
+			Theme::$current->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . 'portal_layouts'
 		);
 
 		$config_vars['twig_layouts'][] = ['desc', 'note'];
@@ -48,24 +49,24 @@ class TwigLayouts extends Plugin
 
 	public function frontLayouts(): void
 	{
-		if (! str_contains($this->modSettings['lp_frontpage_layout'], $this->extension))
+		if (! str_contains(Config::$modSettings['lp_frontpage_layout'], $this->extension))
 			return;
 
 		require_once __DIR__ . '/vendor/autoload.php';
 
 		$params = [
-			'txt'         => $this->txt,
-			'context'     => $this->context,
-			'modSettings' => $this->modSettings,
+			'txt'         => Lang::$txt,
+			'context'     => Utils::$context,
+			'modSettings' => Config::$modSettings,
 		];
 
 		ob_start();
 
 		try {
-			$loader = new FilesystemLoader($this->settings['default_theme_dir'] . '/portal_layouts');
+			$loader = new FilesystemLoader(Theme::$current->settings['default_theme_dir'] . '/portal_layouts');
 
 			$twig = new Environment($loader, [
-				'cache' => empty($this->modSettings['cache_enable']) ? false : $this->cachedir,
+				'cache' => empty(Config::$modSettings['cache_enable']) ? false : Config::$cachedir,
 				'debug' => false
 			]);
 
@@ -81,14 +82,14 @@ class TwigLayouts extends Plugin
 			});
 			$twig->addFunction($debug_function);
 
-			echo $twig->render($this->modSettings['lp_frontpage_layout'], $params);
+			echo $twig->render(Config::$modSettings['lp_frontpage_layout'], $params);
 		} catch (Error $e) {
 			$this->fatalError($e->getMessage());
 		}
 
-		$this->context['lp_layout'] = ob_get_clean();
+		Utils::$context['lp_layout'] = ob_get_clean();
 
-		$this->modSettings['lp_frontpage_layout'] = '';
+		Config::$modSettings['lp_frontpage_layout'] = '';
 	}
 
 	public function customLayoutExtensions(array &$extensions): void

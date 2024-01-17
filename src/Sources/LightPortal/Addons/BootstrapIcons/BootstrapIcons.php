@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\BootstrapIcons;

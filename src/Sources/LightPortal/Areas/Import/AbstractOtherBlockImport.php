@@ -14,6 +14,7 @@
 namespace Bugo\LightPortal\Areas\Import;
 
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Utils\{Config, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -43,7 +44,7 @@ abstract class AbstractOtherBlockImport implements ImportInterface, OtherImportI
 			foreach ($items as $block_id => $item) {
 				$titles[] = [
 					'type'  => 'block',
-					'lang'  => $this->language,
+					'lang'  => Config::$language,
 					'title' => $item['title']
 				];
 
@@ -54,7 +55,7 @@ abstract class AbstractOtherBlockImport implements ImportInterface, OtherImportI
 			$count = sizeof($items);
 
 			for ($i = 0; $i < $count; $i++) {
-				$temp = $this->smcFunc['db_insert']('',
+				$temp = Utils::$smcFunc['db_insert']('',
 					'{db_prefix}lp_blocks',
 					[
 						'type'          => 'string',
@@ -70,7 +71,7 @@ abstract class AbstractOtherBlockImport implements ImportInterface, OtherImportI
 					2
 				);
 
-				$this->context['lp_num_queries']++;
+				Utils::$context['lp_num_queries']++;
 
 				$results = array_merge($results, $temp);
 			}
@@ -85,7 +86,7 @@ abstract class AbstractOtherBlockImport implements ImportInterface, OtherImportI
 			$count  = sizeof($titles);
 
 			for ($i = 0; $i < $count; $i++) {
-				$results = $this->smcFunc['db_insert']('',
+				$results = Utils::$smcFunc['db_insert']('',
 					'{db_prefix}lp_titles',
 					[
 						'type'    => 'string',
@@ -98,7 +99,7 @@ abstract class AbstractOtherBlockImport implements ImportInterface, OtherImportI
 					2
 				);
 
-				$this->context['lp_num_queries']++;
+				Utils::$context['lp_num_queries']++;
 			}
 		}
 

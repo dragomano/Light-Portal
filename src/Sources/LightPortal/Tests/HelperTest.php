@@ -7,20 +7,19 @@
 namespace Tests;
 
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Utils\Utils;
 use Tester\Assert;
 
 require_once __DIR__ . '/bootstrap.php';
 
 test('prepareForumLanguages helper', function () {
-	global $context;
-
 	$class = new class {
 		use Helper;
 	};
 
-	unset($context['languages']);
+	unset(Utils::$context['languages']);
 
 	$class->prepareForumlanguages();
 
-	Assert::hasKey('english', $context['lp_languages']);
+	Assert::hasKey('english', Utils::$context['lp_languages']);
 });

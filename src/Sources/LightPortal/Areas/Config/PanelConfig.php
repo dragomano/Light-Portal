@@ -15,6 +15,7 @@
 namespace Bugo\LightPortal\Areas\Config;
 
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Utils\{Config, Lang, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -32,20 +33,20 @@ final class PanelConfig
 			overflow: hidden;
 		}');
 
-		$this->context['page_title'] = $this->context['settings_title'] = $this->txt['lp_panels'];
-		$this->context['post_url']   = $this->scripturl . '?action=admin;area=lp_settings;sa=panels;save';
+		Utils::$context['page_title'] = Utils::$context['settings_title'] = Lang::$txt['lp_panels'];
+		Utils::$context['post_url']   = Config::$scripturl . '?action=admin;area=lp_settings;sa=panels;save';
 
 		$this->addDefaultValues([
 			'lp_header_panel_width' => 12,
-			'lp_left_panel_width'   => json_encode($this->context['lp_left_panel_width']),
-			'lp_right_panel_width'  => json_encode($this->context['lp_right_panel_width']),
+			'lp_left_panel_width'   => json_encode(Utils::$context['lp_left_panel_width']),
+			'lp_right_panel_width'  => json_encode(Utils::$context['lp_right_panel_width']),
 			'lp_footer_panel_width' => 12,
 			'lp_left_panel_sticky'  => 1,
 			'lp_right_panel_sticky' => 1,
 		]);
 
-		$this->context['lp_left_right_width_values']    = [2, 3, 4];
-		$this->context['lp_header_footer_width_values'] = [6, 8, 10, 12];
+		Utils::$context['lp_left_right_width_values']    = [2, 3, 4];
+		Utils::$context['lp_header_footer_width_values'] = [6, 8, 10, 12];
 
 		$config_vars = [
 			['check', 'lp_swap_header_footer'],
@@ -55,7 +56,7 @@ final class PanelConfig
 			['callback', 'panel_direction']
 		];
 
-		$this->context['sub_template'] = 'show_settings';
+		Utils::$context['sub_template'] = 'show_settings';
 
 		if ($this->request()->has('save')) {
 			$this->checkSession();

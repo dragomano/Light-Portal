@@ -37,9 +37,6 @@ abstract class AbstractModel extends stdClass
 
 		$result = [];
 		foreach ($vars as $key => $value) {
-			if ($key === 'smfGlobals')
-				continue;
-
 			$snakeName = $this->getSnakeName($key);
 			$result[$snakeName] = $value;
 		}

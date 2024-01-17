@@ -14,6 +14,9 @@
 
 namespace Bugo\LightPortal\Actions;
 
+use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
+use IntlException;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -24,28 +27,28 @@ final class Tag extends AbstractPageList
 		if ($this->request()->hasNot('id'))
 			$this->showAll();
 
-		$this->context['lp_tag'] = $this->request('id', 0);
+		Utils::$context['lp_tag'] = $this->request('id', 0);
 
-		if (array_key_exists($this->context['lp_tag'], $this->getEntityList('tag')) === false) {
-			$this->context['error_link'] = LP_BASE_URL . ';sa=tags';
-			$this->txt['back'] = $this->txt['lp_all_page_tags'];
+		if (array_key_exists(Utils::$context['lp_tag'], $this->getEntityList('tag')) === false) {
+			Utils::$context['error_link'] = LP_BASE_URL . ';sa=tags';
+			Lang::$txt['back'] = Lang::$txt['lp_all_page_tags'];
 			$this->fatalLangError('lp_tag_not_found', 404);
 		}
 
-		$this->context['page_title']     = sprintf($this->txt['lp_all_tags_by_key'], $this->getEntityList('tag')[$this->context['lp_tag']]);
-		$this->context['canonical_url']  = LP_BASE_URL . ';sa=tags;id=' . $this->context['lp_tag'];
-		$this->context['robot_no_index'] = true;
+		Utils::$context['page_title']     = sprintf(Lang::$txt['lp_all_tags_by_key'], $this->getEntityList('tag')[Utils::$context['lp_tag']]);
+		Utils::$context['canonical_url']  = LP_BASE_URL . ';sa=tags;id=' . Utils::$context['lp_tag'];
+		Utils::$context['robot_no_index'] = true;
 
-		$this->context['linktree'][] = [
-			'name' => $this->txt['lp_all_page_tags'],
+		Utils::$context['linktree'][] = [
+			'name' => Lang::$txt['lp_all_page_tags'],
 			'url'  => LP_BASE_URL . ';sa=tags'
 		];
 
-		$this->context['linktree'][] = [
-			'name' => $this->context['page_title']
+		Utils::$context['linktree'][] = [
+			'name' => Utils::$context['page_title']
 		];
 
-		if (! empty($this->modSettings['lp_show_items_as_articles']))
+		if (! empty(Config::$modSettings['lp_show_items_as_articles']))
 			$page->showAsCards($this);
 
 		$listOptions = $page->getList();
@@ -62,9 +65,12 @@ final class Tag extends AbstractPageList
 		$this->obExit();
 	}
 
+	/**
+	 * @throws IntlException
+	 */
 	public function getPages(int $start, int $items_per_page, string $sort): array
 	{
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content, p.type, p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
 				COALESCE(mem.real_name, \'\') AS author_name, ps.value, t.title
@@ -79,8 +85,8 @@ final class Tag extends AbstractPageList
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
 			[
-				'lang'         => $this->user_info['language'],
-				'id'           => $this->context['lp_tag'],
+				'lang'         => User::$info['language'],
+				'id'           => Utils::$context['lp_tag'],
 				'statuses'     => [Page::STATUS_ACTIVE, Page::STATUS_INTERNAL],
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions(),
@@ -90,17 +96,17 @@ final class Tag extends AbstractPageList
 			]
 		);
 
-		$rows = $this->smcFunc['db_fetch_all']($result);
+		$rows = Utils::$smcFunc['db_fetch_all']($result);
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return $this->getPreparedResults($rows);
 	}
 
 	public function getTotalCount(): int
 	{
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT COUNT(p.page_id)
 			FROM {db_prefix}lp_pages AS p
 				INNER JOIN {db_prefix}lp_params AS ps ON (p.page_id = ps.item_id AND ps.type = {literal:page} AND ps.name = {literal:keywords})
@@ -109,37 +115,37 @@ final class Tag extends AbstractPageList
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})',
 			[
-				'id'           => $this->context['lp_tag'],
+				'id'           => Utils::$context['lp_tag'],
 				'statuses'     => [Page::STATUS_ACTIVE, Page::STATUS_INTERNAL],
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions()
 			]
 		);
 
-		[$num_items] = $this->smcFunc['db_fetch_row']($result);
+		[$num_items] = Utils::$smcFunc['db_fetch_row']($result);
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return (int) $num_items;
 	}
 
 	public function showAll(): void
 	{
-		$this->context['page_title']     = $this->txt['lp_all_page_tags'];
-		$this->context['canonical_url']  = LP_BASE_URL . ';sa=tags';
-		$this->context['robot_no_index'] = true;
+		Utils::$context['page_title']     = Lang::$txt['lp_all_page_tags'];
+		Utils::$context['canonical_url']  = LP_BASE_URL . ';sa=tags';
+		Utils::$context['robot_no_index'] = true;
 
-		$this->context['linktree'][] = [
-			'name' => $this->context['page_title']
+		Utils::$context['linktree'][] = [
+			'name' => Utils::$context['page_title']
 		];
 
 		$listOptions = [
 			'id' => 'tags',
-			'items_per_page' => $this->modSettings['defaultMaxListItems'] ?: 50,
-			'title' => $this->context['page_title'],
-			'no_items_label' => $this->txt['lp_no_tags'],
-			'base_href' => $this->context['canonical_url'],
+			'items_per_page' => Config::$modSettings['defaultMaxListItems'] ?: 50,
+			'title' => Utils::$context['page_title'],
+			'no_items_label' => Lang::$txt['lp_no_tags'],
+			'base_href' => Utils::$context['canonical_url'],
 			'default_sort_col' => 'value',
 			'get_items' => [
 				'function' => [$this, 'getAll']
@@ -150,7 +156,7 @@ final class Tag extends AbstractPageList
 			'columns' => [
 				'value' => [
 					'header' => [
-						'value' => $this->txt['lp_keyword_column']
+						'value' => Lang::$txt['lp_keyword_column']
 					],
 					'data' => [
 						'function' => fn($entry) => '<a href="' . $entry['link'] . '">' . $entry['value'] . '</a>',
@@ -163,7 +169,7 @@ final class Tag extends AbstractPageList
 				],
 				'frequency' => [
 					'header' => [
-						'value' => $this->txt['lp_frequency_column']
+						'value' => Lang::$txt['lp_frequency_column']
 					],
 					'data' => [
 						'db'    => 'frequency',
@@ -176,7 +182,7 @@ final class Tag extends AbstractPageList
 				]
 			],
 			'form' => [
-				'href' => $this->context['canonical_url']
+				'href' => Utils::$context['canonical_url']
 			]
 		];
 
@@ -187,7 +193,7 @@ final class Tag extends AbstractPageList
 
 	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 't.value'): array
 	{
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT t.tag_id, t.value, COUNT(t.tag_id) AS num
 			FROM {db_prefix}lp_pages AS p
 				INNER JOIN {db_prefix}lp_params AS ps ON (p.page_id = ps.item_id AND ps.type = {literal:page} AND ps.name = {literal:keywords})
@@ -209,7 +215,7 @@ final class Tag extends AbstractPageList
 		);
 
 		$items = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			$items[$row['tag_id']] = [
 				'value'     => $row['value'],
 				'link'      => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id'],
@@ -217,8 +223,8 @@ final class Tag extends AbstractPageList
 			];
 		}
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return $items;
 	}

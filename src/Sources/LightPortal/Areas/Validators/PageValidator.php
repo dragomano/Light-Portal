@@ -14,6 +14,8 @@
 
 namespace Bugo\LightPortal\Areas\Validators;
 
+use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -49,7 +51,7 @@ class PageValidator extends AbstractValidator
 		$params = [];
 
 		if ($this->request()->only(['save', 'save_exit', 'preview'])) {
-			foreach ($this->context['lp_languages'] as $lang) {
+			foreach (Utils::$context['lp_languages'] as $lang) {
 				$this->args['title_' . $lang['filename']] = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
 			}
 
@@ -70,7 +72,7 @@ class PageValidator extends AbstractValidator
 	{
 		$errors = [];
 
-		if (($this->modSettings['userLanguage'] && empty($data['title_' . $this->language])) || empty($data['title_' . $this->context['user']['language']]))
+		if ((Config::$modSettings['userLanguage'] && empty($data['title_' . Config::$language])) || empty($data['title_' . Utils::$context['user']['language']]))
 			$errors[] = 'no_title';
 
 		if (empty($data['alias']))
@@ -89,16 +91,16 @@ class PageValidator extends AbstractValidator
 
 		if ($errors) {
 			$this->request()->put('preview', true);
-			$this->context['post_errors'] = [];
+			Utils::$context['post_errors'] = [];
 
 			foreach ($errors as $error)
-				$this->context['post_errors'][] = $this->txt['lp_post_error_' . $error];
+				Utils::$context['post_errors'][] = Lang::$txt['lp_post_error_' . $error];
 		}
 	}
 
 	private function isUnique(array $data): bool
 	{
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT COUNT(page_id)
 			FROM {db_prefix}lp_pages
 			WHERE alias = {string:alias}
@@ -109,10 +111,10 @@ class PageValidator extends AbstractValidator
 			]
 		);
 
-		[$count] = $this->smcFunc['db_fetch_row']($result);
+		[$count] = Utils::$smcFunc['db_fetch_row']($result);
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return $count == 0;
 	}

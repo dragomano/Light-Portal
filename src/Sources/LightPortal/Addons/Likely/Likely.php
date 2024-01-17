@@ -10,15 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.01.24
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\Likely;
 
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\Fields\CheckboxField;
-use Bugo\LightPortal\Areas\Fields\CustomField;
-use Bugo\LightPortal\Areas\Fields\RadioField;
+use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, RadioField};
+use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -31,7 +30,7 @@ class Likely extends Block
 
 	public function prepareBlockParams(array &$params): void
 	{
-		if ($this->context['current_block']['type'] !== 'likely')
+		if (Utils::$context['current_block']['type'] !== 'likely')
 			return;
 
 		$params = [
@@ -43,7 +42,7 @@ class Likely extends Block
 
 	public function validateBlockParams(array &$params): void
 	{
-		if ($this->context['current_block']['type'] !== 'likely')
+		if (Utils::$context['current_block']['type'] !== 'likely')
 			return;
 
 		$params = [
@@ -55,24 +54,24 @@ class Likely extends Block
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['current_block']['type'] !== 'likely')
+		if (Utils::$context['current_block']['type'] !== 'likely')
 			return;
 
-		CustomField::make('buttons', $this->txt['lp_likely']['buttons'])
+		CustomField::make('buttons', Lang::$txt['lp_likely']['buttons'])
 			->setTab('content')
 			->setValue(fn() => new ButtonSelect, [
 				'data'  => $this->buttons,
-				'value' => is_array($this->context['lp_block']['options']['buttons'])
-							? $this->context['lp_block']['options']['buttons']
-							: explode(',', $this->context['lp_block']['options']['buttons'])
+				'value' => is_array(Utils::$context['lp_block']['options']['buttons'])
+							? Utils::$context['lp_block']['options']['buttons']
+							: explode(',', Utils::$context['lp_block']['options']['buttons'])
 			]);
 
-		RadioField::make('size', $this->txt['lp_likely']['size'])
-			->setOptions($this->txt['lp_likely']['size_set'])
-			->setValue($this->context['lp_block']['options']['size']);
+		RadioField::make('size', Lang::$txt['lp_likely']['size'])
+			->setOptions(Lang::$txt['lp_likely']['size_set'])
+			->setValue(Utils::$context['lp_block']['options']['size']);
 
-		CheckboxField::make('dark_mode', $this->txt['lp_likely']['dark_mode'])
-			->setValue($this->context['lp_block']['options']['dark_mode']);
+		CheckboxField::make('dark_mode', Lang::$txt['lp_likely']['dark_mode'])
+			->setValue(Utils::$context['lp_block']['options']['dark_mode']);
 	}
 
 	public function prepareAssets(array &$assets): void
@@ -96,11 +95,11 @@ class Likely extends Block
 		$buttons = is_array($parameters['buttons']) ? $parameters['buttons'] : explode(',', $parameters['buttons']);
 
 		foreach ($buttons as $service) {
-			if (empty($this->txt['lp_likely']['buttons_set'][$service]))
+			if (empty(Lang::$txt['lp_likely']['buttons_set'][$service]))
 				continue;
 
 			echo '
-					<div class="', $service, '" tabindex="0" role="link" aria-label="', $this->txt['lp_likely']['buttons_set'][$service], '"', (! empty($this->modSettings['optimus_tw_cards']) && $service === 'twitter' ? ' data-via="' . $this->modSettings['optimus_tw_cards'] . '"' : ''), (! empty($this->settings['og_image']) && $service === 'pinterest' ? ' data-media="' . $this->settings['og_image'] . '"' : ''), (! empty($this->settings['og_image']) && $service === 'odnoklassniki' ? ' data-imageurl="' . $this->settings['og_image'] . '"' : ''), '>', $this->txt['lp_likely']['buttons_set'][$service], '</div>';
+					<div class="', $service, '" tabindex="0" role="link" aria-label="', Lang::$txt['lp_likely']['buttons_set'][$service], '"', (! empty(Config::$modSettings['optimus_tw_cards']) && $service === 'twitter' ? ' data-via="' . Config::$modSettings['optimus_tw_cards'] . '"' : ''), (! empty(Theme::$current->settings['og_image']) && $service === 'pinterest' ? ' data-media="' . Theme::$current->settings['og_image'] . '"' : ''), (! empty(Theme::$current->settings['og_image']) && $service === 'odnoklassniki' ? ' data-imageurl="' . Theme::$current->settings['og_image'] . '"' : ''), '>', Lang::$txt['lp_likely']['buttons_set'][$service], '</div>';
 		}
 
 		echo /** @lang text */ '

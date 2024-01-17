@@ -14,6 +14,7 @@
 
 namespace Bugo\LightPortal\Areas\Import;
 
+use Bugo\LightPortal\Utils\{Config,Lang, Utils};
 use Exception;
 use ZipArchive;
 
@@ -26,17 +27,17 @@ final class PluginImport extends AbstractImport
 	{
 		$this->loadTemplate('LightPortal/ManageImpex', 'manage_import');
 
-		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_plugins_import'];
-		$this->context['page_area_title'] = $this->txt['lp_plugins_import'];
-		$this->context['page_area_info']  = $this->txt['lp_plugins_import_info'];
-		$this->context['canonical_url']   = $this->scripturl . '?action=admin;area=lp_plugins;sa=import';
+		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_plugins_import'];
+		Utils::$context['page_area_title'] = Lang::$txt['lp_plugins_import'];
+		Utils::$context['page_area_info']  = Lang::$txt['lp_plugins_import_info'];
+		Utils::$context['canonical_url']   = Config::$scripturl . '?action=admin;area=lp_plugins;sa=import';
 
-		$this->context[$this->context['admin_menu_name']]['tab_data'] = [
+		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => $this->txt['lp_plugins_import_description']
+			'description' => Lang::$txt['lp_plugins_import_description']
 		];
 
-		$this->context['lp_file_type'] = 'application/zip';
+		Utils::$context['lp_file_type'] = 'application/zip';
 
 		$this->run();
 	}
@@ -46,7 +47,7 @@ final class PluginImport extends AbstractImport
 		if (empty($this->extractPackage()))
 			return;
 
-		$this->context['import_successful'] = $this->txt['lp_plugins_import_success'];
+		Utils::$context['import_successful'] = Lang::$txt['lp_plugins_import_success'];
 	}
 
 	protected function extractPackage(): bool

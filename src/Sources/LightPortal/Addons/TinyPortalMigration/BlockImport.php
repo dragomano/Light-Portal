@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 16.01.24
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortalMigration;
 
 use Bugo\LightPortal\Areas\Import\AbstractOtherBlockImport;
+use Bugo\LightPortal\Utils\{Config, Lang, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -26,13 +27,13 @@ class BlockImport extends AbstractOtherBlockImport
 
 	public function main(): void
 	{
-		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_tiny_portal_migration']['label_name'];
-		$this->context['page_area_title'] = $this->txt['lp_blocks_import'];
-		$this->context['canonical_url']   = $this->scripturl . '?action=admin;area=lp_blocks;sa=import_from_tp';
+		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_tiny_portal_migration']['label_name'];
+		Utils::$context['page_area_title'] = Lang::$txt['lp_blocks_import'];
+		Utils::$context['canonical_url']   = Config::$scripturl . '?action=admin;area=lp_blocks;sa=import_from_tp';
 
-		$this->context[$this->context['admin_menu_name']]['tab_data'] = [
+		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => $this->txt['lp_tiny_portal_migration']['block_import_desc']
+			'description' => Lang::$txt['lp_tiny_portal_migration']['block_import_desc']
 		];
 
 		$this->run();
@@ -40,9 +41,9 @@ class BlockImport extends AbstractOtherBlockImport
 		$listOptions = [
 			'id' => 'lp_blocks',
 			'items_per_page' => 50,
-			'title' => $this->txt['lp_blocks_import'],
-			'no_items_label' => $this->txt['lp_no_items'],
-			'base_href' => $this->context['canonical_url'],
+			'title' => Lang::$txt['lp_blocks_import'],
+			'no_items_label' => Lang::$txt['lp_no_items'],
+			'base_href' => Utils::$context['canonical_url'],
 			'default_sort_col' => 'title',
 			'get_items' => [
 				'function' => [$this, 'getAll']
@@ -53,7 +54,7 @@ class BlockImport extends AbstractOtherBlockImport
 			'columns' => [
 				'title' => [
 					'header' => [
-						'value' => $this->txt['lp_title']
+						'value' => Lang::$txt['lp_title']
 					],
 					'data' => [
 						'db'    => 'title',
@@ -66,7 +67,7 @@ class BlockImport extends AbstractOtherBlockImport
 				],
 				'type' => [
 					'header' => [
-						'value' => $this->txt['lp_block_type']
+						'value' => Lang::$txt['lp_block_type']
 					],
 					'data' => [
 						'db'    => 'type',
@@ -79,7 +80,7 @@ class BlockImport extends AbstractOtherBlockImport
 				],
 				'placement' => [
 					'header' => [
-						'value' => $this->txt['lp_block_placement']
+						'value' => Lang::$txt['lp_block_placement']
 					],
 					'data' => [
 						'db'    => 'placement',
@@ -101,15 +102,15 @@ class BlockImport extends AbstractOtherBlockImport
 				]
 			],
 			'form' => [
-				'href' => $this->context['canonical_url']
+				'href' => Utils::$context['canonical_url']
 			],
 			'additional_rows' => [
 				[
 					'position' => 'below_table_data',
 					'value' => '
 						<input type="hidden">
-						<input type="submit" name="import_selection" value="' . $this->txt['lp_import_selection'] . '" class="button">
-						<input type="submit" name="import_all" value="' . $this->txt['lp_import_all'] . '" class="button">'
+						<input type="submit" name="import_selection" value="' . Lang::$txt['lp_import_selection'] . '" class="button">
+						<input type="submit" name="import_all" value="' . Lang::$txt['lp_import_all'] . '" class="button">'
 				]
 			]
 		];
@@ -121,10 +122,10 @@ class BlockImport extends AbstractOtherBlockImport
 	{
 		$this->dbExtend();
 
-		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'tp_blocks')))
+		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'tp_blocks')))
 			return [];
 
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT id, type, title, bar
 			FROM {db_prefix}tp_blocks
 			WHERE type IN ({array_int:types})
@@ -139,17 +140,17 @@ class BlockImport extends AbstractOtherBlockImport
 		);
 
 		$items = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			$items[$row['id']] = [
 				'id'        => $row['id'],
-				'type'      => $this->txt['lp_' . $this->getType($row['type'])]['title'],
+				'type'      => Lang::$txt['lp_' . $this->getType($row['type'])]['title'],
 				'title'     => $row['title'],
-				'placement' => $this->context['lp_block_placements'][$this->getPlacement($row['bar'])]
+				'placement' => Utils::$context['lp_block_placements'][$this->getPlacement($row['bar'])]
 			];
 		}
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return $items;
 	}
@@ -158,10 +159,10 @@ class BlockImport extends AbstractOtherBlockImport
 	{
 		$this->dbExtend();
 
-		if (empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'tp_blocks')))
+		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'tp_blocks')))
 			return 0;
 
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT COUNT(*)
 			FROM {db_prefix}tp_blocks
 			WHERE type IN ({array_int:types})',
@@ -170,17 +171,17 @@ class BlockImport extends AbstractOtherBlockImport
 			]
 		);
 
-		[$num_blocks] = $this->smcFunc['db_fetch_row']($result);
+		[$num_blocks] = Utils::$smcFunc['db_fetch_row']($result);
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return (int) $num_blocks;
 	}
 
 	protected function getItems(array $blocks): array
 	{
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT id, type, title, body, access, bar
 			FROM {db_prefix}tp_blocks
 			WHERE type IN ({array_int:types})' . (empty($blocks) ? '' : '
@@ -192,7 +193,7 @@ class BlockImport extends AbstractOtherBlockImport
 		);
 
 		$items = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			$permissions = explode(',', $row['access']);
 
 			$perm = 0;
@@ -213,13 +214,13 @@ class BlockImport extends AbstractOtherBlockImport
 				'placement'     => $this->getPlacement($row['bar']),
 				'permissions'   => $perm,
 				'status'        => 0,
-				'title_class'   => array_key_first($this->context['lp_all_title_classes']),
-				'content_class' => array_key_first($this->context['lp_all_content_classes'])
+				'title_class'   => array_key_first(Utils::$context['lp_all_title_classes']),
+				'content_class' => array_key_first(Utils::$context['lp_all_content_classes'])
 			];
 		}
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return $items;
 	}
