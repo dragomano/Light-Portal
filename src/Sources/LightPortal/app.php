@@ -14,11 +14,29 @@ $loader = new StandardAutoloader();
 $loader->registerNamespace('Bugo\LightPortal', __DIR__);
 $loader->register();
 
-new Config();
-new Lang();
-new Theme();
-new User();
-new Utils();
+if (str_starts_with(SMF_VERSION, '3.0')) {
+	class_alias('Bugo\\LightPortal\\Utils\\SMFNextTrait', 'Bugo\\LightPortal\\Utils\\SMFTrait');
+	class_alias('Bugo\\LightPortal\\Actions\\BoardIndexNext', 'Bugo\\LightPortal\\Actions\\BoardIndex');
+	class_alias('SMF\\Actions\\Notify', 'Bugo\\LightPortal\\Utils\\Notify');
+	class_alias('SMF\\Tasks\\BackgroundTask', 'SMF_BackgroundTask');
+	class_alias('SMF\\ServerSideIncludes', 'Bugo\\LightPortal\\Utils\\ServerSideIncludes');
+	class_alias('SMF\\IntegrationHook', 'Bugo\\LightPortal\\Utils\\IntegrationHook');
+	class_alias('SMF\\BBCodeParser', 'Bugo\\LightPortal\\Utils\\BBCodeParser');
+	class_alias('SMF\\Cache\\CacheApi', 'Bugo\\LightPortal\\Utils\\CacheApi');
+	class_alias('SMF\\Config', 'Bugo\\LightPortal\\Utils\\Config');
+	class_alias('SMF\\ErrorHandler', 'Bugo\\LightPortal\\Utils\\ErrorHandler');
+	class_alias('SMF\\Lang', 'Bugo\\LightPortal\\Utils\\Lang');
+	class_alias('SMF\\Mail', 'Bugo\\LightPortal\\Utils\\Mail');
+	class_alias('SMF\\Theme', 'Bugo\\LightPortal\\Utils\\SMFTheme');
+	class_alias('SMF\\User', 'Bugo\\LightPortal\\Utils\\User');
+	class_alias('SMF\\Utils', 'Bugo\\LightPortal\\Utils\\Utils');
+} else {
+	new Config();
+	new Lang();
+	new Theme();
+	new User();
+	new Utils();
+}
 
 // Define important helper functions
 function call_portal_hook(string $hook, array $params = [], array $plugins = []): void

@@ -302,11 +302,13 @@ final class Integration extends AbstractMain
 	{
 		Lang::$txt['permissiongroup_light_portal'] = LP_NAME;
 
-		$permissionList['membergroup']['light_portal_view']          = [false, 'light_portal'];
-		$permissionList['membergroup']['light_portal_manage_pages']  = [true, 'light_portal'];
-		$permissionList['membergroup']['light_portal_approve_pages'] = [false, 'light_portal'];
+		$scope = isset($permissionList['global']) ? 'global' : 'membergroup';
 
-		$permissionGroups['membergroup'][] = $leftPermissionGroups[] = 'light_portal';
+		$permissionList[$scope]['light_portal_view']          = [false, 'light_portal'];
+		$permissionList[$scope]['light_portal_manage_pages']  = [true, 'light_portal'];
+		$permissionList[$scope]['light_portal_approve_pages'] = [false, 'light_portal'];
+
+		$permissionGroups[$scope][] = $leftPermissionGroups[] = 'light_portal';
 	}
 
 	public function alertTypes(array &$types): void

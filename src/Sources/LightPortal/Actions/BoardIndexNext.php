@@ -1,0 +1,25 @@
+<?php declare(strict_types=1);
+
+/**
+ * BoardIndexNext.php (special for SMF 3.0)
+ *
+ * @package Light Portal
+ * @link https://dragomano.ru/mods/light-portal
+ * @author Bugo <bugo@dragomano.ru>
+ * @copyright 2019-2024 Bugo
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
+ *
+ * @version 2.4
+ */
+
+namespace Bugo\LightPortal\Actions;
+
+use SMF\Actions\BoardIndex;
+
+final class BoardIndexNext
+{
+	public function show(): void
+	{
+		BoardIndex::call();
+	}
+}
