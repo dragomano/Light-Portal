@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Areas\Fields;
 
-use Bugo\LightPortal\Utils\Utils;
+use Bugo\LightPortal\Utils\{Theme, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -25,7 +25,7 @@ class VirtualSelectField extends SelectField
 	{
 		parent::__construct($name, $label);
 
-		$this->addInlineJS('
+		Theme::addInlineJS('
 		VirtualSelect.init({
 			ele: "#' . $name . '",
 			hideClearButton: true,' . (Utils::$context['right_to_left'] ? '

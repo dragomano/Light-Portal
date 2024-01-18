@@ -27,7 +27,7 @@ class SiteArticle extends AbstractArticle
 
 	public function init(): void
 	{
-		$this->sites = $this->jsonDecode(Utils::$context['lp_site_list_plugin']['urls'] ?? '');
+		$this->sites = Utils::jsonDecode(Utils::$context['lp_site_list_plugin']['urls'] ?? '', true);
 	}
 
 	public function getData(int $start, int $limit): array

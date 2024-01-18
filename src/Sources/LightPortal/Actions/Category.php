@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Actions;
 
-use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
+use Bugo\LightPortal\Utils\{BBCodeParser, Config, ErrorHandler, Lang, User, Utils};
 use IntlException;
 
 if (! defined('SMF'))
@@ -32,7 +32,7 @@ final class Category extends AbstractPageList
 		if (array_key_exists(Utils::$context['lp_category'], $this->getEntityList('category')) === false) {
 			Utils::$context['error_link'] = LP_BASE_URL . ';sa=categories';
 			Lang::$txt['back'] = Lang::$txt['lp_all_categories'];
-			$this->fatalLangError('lp_category_not_found', 404);
+			ErrorHandler::fatalLang('lp_category_not_found', status: 404);
 		}
 
 		$category = [];
@@ -81,7 +81,7 @@ final class Category extends AbstractPageList
 
 		$this->createList($listOptions);
 
-		$this->obExit();
+		Utils::obExit();
 	}
 
 	/**
@@ -205,7 +205,7 @@ final class Category extends AbstractPageList
 
 		$this->createList($listOptions);
 
-		$this->obExit();
+		Utils::obExit();
 	}
 
 	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'c.name'): array
@@ -233,7 +233,7 @@ final class Category extends AbstractPageList
 		$items = [];
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			if ($row['description'] && str_contains($row['description'], ']')) {
-				$row['description'] = $this->parseBbc($row['description']);
+				$row['description'] = BBCodeParser::load()->parse($row['description']);
 			}
 
 			$items[$row['category_id']] = [

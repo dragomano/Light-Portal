@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 18.01.24
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortalMigration;
 
 use Bugo\LightPortal\Areas\Import\AbstractOtherPageImport;
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\{BBCodeParser, Config, Lang, Utils};
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -213,7 +213,7 @@ class PageImport extends AbstractOtherPageImport
 				'page_id'      => $row['id'],
 				'author_id'    => $row['author_id'],
 				'alias'        => $row['shortname'] ?: ('page_' . $row['id']),
-				'description'  => strip_tags($this->parseBbc($row['intro'])),
+				'description'  => strip_tags(BBCodeParser::load()->parse($row['intro'])),
 				'content'      => $row['body'],
 				'type'         => $row['type'],
 				'permissions'  => $perm,

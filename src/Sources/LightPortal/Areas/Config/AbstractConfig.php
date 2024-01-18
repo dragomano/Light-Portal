@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * BackgroundTask.php
+ * AbstractConfig.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -12,12 +12,14 @@
  * @version 2.4
  */
 
-namespace Bugo\LightPortal\Tasks;
+namespace Bugo\LightPortal\Areas\Config;
 
 use Bugo\LightPortal\Helper;
-use SMF_BackgroundTask;
 
-abstract class BackgroundTask extends SMF_BackgroundTask
+if (! defined('SMF'))
+	die('No direct access...');
+
+abstract class AbstractConfig
 {
 	use Helper;
 }

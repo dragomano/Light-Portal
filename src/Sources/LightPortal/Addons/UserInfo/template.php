@@ -77,7 +77,7 @@ function show_user_info_for_guests(): void
 
 	echo '
 			<span', Utils::$context['can_register'] ? ' class="floatright"' : '', '>
-				', Utils::$context['lp_icon_set']['sign_in_alt'], ' <a href="', Config::$scripturl, '?action=login" onclick="return reqOverlayDiv(this.href, ', JavaScriptEscape(Lang::$txt['login']), ');">', Lang::$txt['login'], '</a>
+				', Utils::$context['lp_icon_set']['sign_in_alt'], ' <a href="', Config::$scripturl, '?action=login" onclick="return reqOverlayDiv(this.href, ', Utils::JavaScriptEscape(Lang::$txt['login']), ');">', Lang::$txt['login'], '</a>
 			</span>
 		</li>
 	</ul>';

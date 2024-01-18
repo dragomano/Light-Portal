@@ -14,6 +14,14 @@
 
 namespace Bugo\LightPortal\Utils;
 
+use function censorText;
+use function getLanguages;
+use function loadLanguage;
+use function sentence_list;
+
+if (! defined('SMF'))
+	die('No direct access...');
+
 final class Lang
 {
 	public static array $txt;
@@ -28,5 +36,25 @@ final class Lang
 		self::$txt = &$GLOBALS['txt'];
 
 		self::$editortxt = $GLOBALS['editortxt'] ?? [];
+	}
+
+	public static function censorText(string &$text): void
+	{
+		censorText($text);
+	}
+
+	public static function get(): array
+	{
+		return getLanguages();
+	}
+
+	public static function load(string $language, string $lang = ''): void
+	{
+		loadLanguage($language, $lang);
+	}
+
+	public static function sentenceList(array $list): string
+	{
+		return sentence_list($list);
 	}
 }

@@ -14,7 +14,7 @@
 namespace Bugo\LightPortal\Areas\Import;
 
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Lang, Utils};
+use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Utils};
 use SimpleXMLElement;
 
 if (! defined('SMF'))
@@ -26,7 +26,7 @@ abstract class AbstractImport implements ImportInterface
 
 	public function __construct()
 	{
-		Utils::$context['max_file_size'] = $this->memoryReturnBytes(ini_get('upload_max_filesize'));
+		Utils::$context['max_file_size'] = Config::memoryReturnBytes(ini_get('upload_max_filesize'));
 	}
 
 	protected function getFile(string $name = 'import_file'): SimpleXMLElement|bool
@@ -99,7 +99,7 @@ abstract class AbstractImport implements ImportInterface
 	{
 		if (empty($results)) {
 			Utils::$smcFunc['db_transaction']('rollback');
-			$this->fatalLangError('lp_import_failed');
+			ErrorHandler::fatalLang('lp_import_failed');
 		}
 
 		Utils::$smcFunc['db_transaction']('commit');

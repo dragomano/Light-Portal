@@ -21,7 +21,7 @@ use Bugo\LightPortal\Areas\Validators\PageValidator;
 use Bugo\LightPortal\Actions\Page;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Models\PageModel;
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, User, Utils};
+use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Repositories\PageRepository;
 use IntlException;
 
@@ -43,10 +43,10 @@ final class PageArea
 	{
 		$this->checkUser();
 
-		$this->loadLanguage('Packages');
+		Lang::load('Packages');
 
 		if ($this->request()->has('moderate'))
-			$this->addInlineCss('
+			Theme::addInlineCss('
 		#lp_pages .num_views, #lp_pages .num_comments {
 			display: none;
 		}');
@@ -367,12 +367,13 @@ final class PageArea
 
 		$this->cache()->flush();
 
-		$this->redirect($redirect);
+		Utils::redirectexit($redirect);
 	}
 
 	public function add(): void
 	{
-		$this->loadTemplate('LightPortal/ManagePages', 'page_add');
+		Theme::loadTemplate('LightPortal/ManagePages');
+		Utils::$context['sub_template'] = 'page_add';
 
 		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_pages_add_title'];
 		Utils::$context['page_area_title'] = Lang::$txt['lp_pages_add_title'];
@@ -412,10 +413,11 @@ final class PageArea
 		$item = (int) ($this->request('page_id') ?: $this->request('id'));
 
 		if (empty($item)) {
-			$this->fatalLangError('lp_page_not_found', 404);
+			ErrorHandler::fatalLang('lp_page_not_found', status: 404);
 		}
 
-		$this->loadTemplate('LightPortal/ManagePages', 'page_post');
+		Theme::loadTemplate('LightPortal/ManagePages');
+		Utils::$context['sub_template'] = 'page_post';
 
 		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_pages_edit_title'];
 
@@ -427,10 +429,10 @@ final class PageArea
 		Utils::$context['lp_current_page'] = (new Page)->getDataByItem($item);
 
 		if (empty(Utils::$context['lp_current_page']))
-			$this->fatalLangError('lp_page_not_found', 404);
+			ErrorHandler::fatalLang('lp_page_not_found', status: 404);
 
 		if (Utils::$context['lp_current_page']['can_edit'] === false)
-			$this->fatalLangError('lp_page_not_editable');
+			ErrorHandler::fatalLang('lp_page_not_editable');
 
 		$this->prepareForumLanguages();
 
@@ -445,7 +447,7 @@ final class PageArea
 
 			$this->cache()->forget('page_' . Utils::$context['lp_current_page']['alias']);
 
-			$this->redirect('action=admin;area=lp_pages');
+			Utils::redirectexit('action=admin;area=lp_pages');
 		}
 
 		$this->validateData();
@@ -584,7 +586,7 @@ final class PageArea
 			$items = array_merge(array_diff($items, Utils::$context['lp_frontpage_pages']), Utils::$context['lp_frontpage_pages']);
 		}
 
-		$this->updateSettings(['lp_frontpage_pages' => implode(',', $items)]);
+		Config::updateModSettings(['lp_frontpage_pages' => implode(',', $items)]);
 	}
 
 	private function getParams(): array
@@ -751,8 +753,8 @@ final class PageArea
 		Utils::$context['preview_content'] = Utils::$smcFunc['htmlspecialchars'](Utils::$context['lp_page']['content'], ENT_QUOTES);
 
 		$this->cleanBbcode(Utils::$context['preview_title']);
-		$this->censorText(Utils::$context['preview_title']);
-		$this->censorText(Utils::$context['preview_content']);
+		Lang::censorText(Utils::$context['preview_title']);
+		Lang::censorText(Utils::$context['preview_content']);
 
 		if (Utils::$context['preview_content'])
 			Utils::$context['preview_content'] = parse_content(Utils::$context['preview_content'], Utils::$context['lp_page']['type']);
@@ -764,7 +766,7 @@ final class PageArea
 	private function checkUser(): void
 	{
 		if (Utils::$context['allow_light_portal_manage_pages_any'] === false && $this->request()->has('sa') && $this->request('sa') === 'main' && $this->request()->hasNot('u'))
-			$this->redirect('action=admin;area=lp_pages;u=' . User::$info['id']);
+			Utils::redirectexit('action=admin;area=lp_pages;u=' . User::$info['id']);
 	}
 
 	private function preparePageList(): void

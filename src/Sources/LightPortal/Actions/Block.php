@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal\Actions;
 
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, Utils};
+use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -58,7 +58,7 @@ final class Block
 			Utils::$context['lp_blocks'][$data['placement']][$item]['title'] = $icon . $title;
 		}
 
-		$this->loadTemplate('LightPortal/ViewBlocks');
+		Theme::loadTemplate('LightPortal/ViewBlocks');
 
 		$counter = 0;
 		foreach (Utils::$context['template_layers'] as $layer) {
@@ -97,7 +97,7 @@ final class Block
 
 			$active_blocks = [];
 			while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
-				$this->censorText($row['content']);
+				Lang::censorText($row['content']);
 
 				$active_blocks[$row['block_id']] ??= [
 					'id'            => (int) $row['block_id'],

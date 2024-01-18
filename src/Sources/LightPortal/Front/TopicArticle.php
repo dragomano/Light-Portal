@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Front;
 
-use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
+use Bugo\LightPortal\Utils\{BBCodeParser, Config, Lang, User, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -94,13 +94,13 @@ class TopicArticle extends AbstractArticle
 			if (! isset($topics[$row['id_topic']])) {
 				$this->cleanBbcode($row['subject']);
 
-				$this->censorText($row['subject']);
+				Lang::censorText($row['subject']);
 
 				$body = $last_body = '';
 
 				if (! empty(Config::$modSettings['lp_show_teaser'])) {
-					$this->censorText($row['body']);
-					$this->censorText($row['last_body']);
+					Lang::censorText($row['body']);
+					Lang::censorText($row['last_body']);
 
 					$body = preg_replace('~\[spoiler.*].*?\[/spoiler]~Usi', '', $row['body']);
 					$body = preg_replace('~\[quote.*].*?\[/quote]~Usi', '', $body);
@@ -112,11 +112,11 @@ class TopicArticle extends AbstractArticle
 					$last_body = preg_replace('~\[table.*].*?\[/table]~Usi', '', $last_body);
 					$last_body = preg_replace('~\[code.*].*?\[/code]~Usi', '', $last_body);
 
-					$body      = $this->parseBbc($body, $row['smileys_enabled'], $row['id_first_msg']);
-					$last_body = $this->parseBbc($last_body, $row['smileys_enabled'], $row['id_msg']);
+					$body      = BBCodeParser::load()->parse($body, $row['smileys_enabled'], $row['id_first_msg']);
+					$last_body = BBCodeParser::load()->parse($last_body, $row['smileys_enabled'], $row['id_msg']);
 				}
 
-				$image = empty(Config::$modSettings['lp_show_images_in_articles']) ? '' : $this->getImageFromText($this->parseBbc($row['body'], false));
+				$image = empty(Config::$modSettings['lp_show_images_in_articles']) ? '' : $this->getImageFromText(BBCodeParser::load()->parse($row['body'], false));
 
 				if (! empty($row['id_attach']) && empty($image)) {
 					$image = Config::$scripturl . '?action=dlattach;topic=' . $row['id_topic'] . '.0;attach=' . $row['id_attach'] . ';image';

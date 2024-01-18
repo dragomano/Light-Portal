@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal;
 
 use Bugo\LightPortal\Actions\{Block, Page};
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, User, Utils};
+use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Theme, User, Utils};
 use Exception;
 use Less_Exception_Parser;
 use Less_Parser;
@@ -59,12 +59,12 @@ abstract class AbstractMain
 		Utils::$context['lp_frontpage_topics'] = empty(Config::$modSettings['lp_frontpage_topics']) ? [] : explode(',', Config::$modSettings['lp_frontpage_topics']);
 
 		Utils::$context['lp_header_panel_width'] = empty(Config::$modSettings['lp_header_panel_width']) ? 12 : (int) Config::$modSettings['lp_header_panel_width'];
-		Utils::$context['lp_left_panel_width']   = empty(Config::$modSettings['lp_left_panel_width'])   ? ['lg' => 3, 'xl' => 2] : $this->jsonDecode(Config::$modSettings['lp_left_panel_width'], logIt: false);
-		Utils::$context['lp_right_panel_width']  = empty(Config::$modSettings['lp_right_panel_width'])  ? ['lg' => 3, 'xl' => 2] : $this->jsonDecode(Config::$modSettings['lp_right_panel_width'], logIt: false);
+		Utils::$context['lp_left_panel_width']   = empty(Config::$modSettings['lp_left_panel_width'])   ? ['lg' => 3, 'xl' => 2] : Utils::jsonDecode(Config::$modSettings['lp_left_panel_width'], true);
+		Utils::$context['lp_right_panel_width']  = empty(Config::$modSettings['lp_right_panel_width'])  ? ['lg' => 3, 'xl' => 2] : Utils::jsonDecode(Config::$modSettings['lp_right_panel_width'], true);
 		Utils::$context['lp_footer_panel_width'] = empty(Config::$modSettings['lp_footer_panel_width']) ? 12 : (int) Config::$modSettings['lp_footer_panel_width'];
 
 		Utils::$context['lp_swap_left_right'] = empty(Lang::$txt['lang_rtl']) ? ! empty(Config::$modSettings['lp_swap_left_right']) : empty(Config::$modSettings['lp_swap_left_right']);
-		Utils::$context['lp_panel_direction'] = $this->jsonDecode(Config::$modSettings['lp_panel_direction'] ?? '', logIt: false);
+		Utils::$context['lp_panel_direction'] = Utils::jsonDecode(Config::$modSettings['lp_panel_direction'] ?? '', true);
 
 		Utils::$context['lp_active_blocks'] = (new Block)->getActive();
 
@@ -76,12 +76,12 @@ abstract class AbstractMain
 		$this->loadFontAwesome();
 		$this->compileLess();
 
-		$this->loadCSSFile('light_portal/flexboxgrid.css');
-		$this->loadCSSFile('light_portal/portal.css');
-		$this->loadCSSFile('light_portal/plugins.css');
-		$this->loadCSSFile('portal_custom.css');
+		Theme::loadCSSFile('light_portal/flexboxgrid.css');
+		Theme::loadCSSFile('light_portal/portal.css');
+		Theme::loadCSSFile('light_portal/plugins.css');
+		Theme::loadCSSFile('portal_custom.css');
 
-		$this->loadJSFile('light_portal/plugins.js', ['minimize' => true]);
+		Theme::loadJSFile('light_portal/plugins.js', ['minimize' => true]);
 	}
 
 	protected function loadFontAwesome(): void
@@ -90,15 +90,15 @@ abstract class AbstractMain
 			return;
 
 		if (Config::$modSettings['lp_fa_source'] === 'css_local') {
-			$this->loadCSSFile('all.min.css', [], 'portal_fontawesome');
+			Theme::loadCSSFile('all.min.css', [], 'portal_fontawesome');
 		} elseif (Config::$modSettings['lp_fa_source'] === 'custom' && isset(Config::$modSettings['lp_fa_custom'])) {
-			$this->loadExtCSS(
+			Theme::loadExtCSS(
 				Config::$modSettings['lp_fa_custom'],
 				['seed' => false],
 				'portal_fontawesome'
 			);
 		} elseif (isset(Config::$modSettings['lp_fa_kit'])) {
-			$this->loadExtJS(Config::$modSettings['lp_fa_kit'], ['attributes' => ['crossorigin' => 'anonymous']]);
+			Theme::loadExtJS(Config::$modSettings['lp_fa_kit'], ['attributes' => ['crossorigin' => 'anonymous']]);
 		}
 	}
 
@@ -121,7 +121,7 @@ abstract class AbstractMain
 			$parser->parseFile($lessFile);
 			file_put_contents($cssFile, $parser->getCss());
 		} catch (Less_Exception_Parser | Exception $e) {
-			$this->logError($e->getMessage(), 'critical');
+			ErrorHandler::log($e->getMessage(), 'critical');
 		}
 	}
 
@@ -195,7 +195,7 @@ abstract class AbstractMain
 
 		Utils::$context['lp_load_page_stats'] = sprintf(Lang::$txt['lp_load_page_stats'], round(microtime(true) - Utils::$context['lp_load_time'], 3), Utils::$context['lp_num_queries']);
 
-		$this->loadTemplate('LightPortal/ViewDebug');
+		Theme::loadTemplate('LightPortal/ViewDebug');
 
 		if (empty($key = array_search('lp_portal', Utils::$context['template_layers']))) {
 			Utils::$context['template_layers'][] = 'debug';
@@ -366,9 +366,9 @@ abstract class AbstractMain
 			Utils::$context['lp_frontpage_topics'][] = $topic;
 		}
 
-		$this->updateSettings(['lp_frontpage_topics' => implode(',', Utils::$context['lp_frontpage_topics'])]);
+		Config::updateModSettings(['lp_frontpage_topics' => implode(',', Utils::$context['lp_frontpage_topics'])]);
 
-		$this->redirect('topic=' . $topic);
+		Utils::redirectexit('topic=' . $topic);
 	}
 
 	private function getMenuPages(): array

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 18.01.24
  */
 
 namespace Bugo\LightPortal\Addons\HidingBlocks;
@@ -33,7 +33,7 @@ final class BreakpointSelect extends AbstractPartial
 			$data[] = '{label: "' . $name . '", value: "' . $bp . '"}';
 
 			if (in_array($bp, $current_breakpoints)) {
-				$items[] = $this->jsEscape($bp);
+				$items[] = Utils::JavaScriptEscape($bp);
 			}
 		}
 

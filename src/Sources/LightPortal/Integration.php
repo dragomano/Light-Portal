@@ -114,7 +114,7 @@ final class Integration extends AbstractMain
 		if ($this->isPortalCanBeLoaded() === false)
 			return;
 
-		$this->loadLanguage('LightPortal/LightPortal');
+		Lang::load('LightPortal/LightPortal');
 
 		$this->defineVars();
 		$this->loadAssets();
@@ -154,19 +154,19 @@ final class Integration extends AbstractMain
 			$this->unsetDisabledActions($actions);
 
 			if (! empty(Utils::$context['current_action']) && array_key_exists(Utils::$context['current_action'], Utils::$context['lp_disabled_actions']))
-				$this->redirect();
+				Utils::redirectexit();
 		}
 	}
 
-	public function defaultAction()
+	public function defaultAction(): mixed
 	{
 		if ($this->request()->isNotEmpty(LP_PAGE_PARAM))
-			return call_user_func([new Page, 'show']);
+			return $this->callHelper([new Page, 'show']);
 
 		if (empty(Config::$modSettings['lp_frontpage_mode']) || ! (empty(Config::$modSettings['lp_standalone_mode']) || empty(Config::$modSettings['lp_standalone_url'])))
-			return call_user_func([new BoardIndex, 'show']);
+			return $this->callHelper([new BoardIndex, 'show']);
 
-		return call_user_func([new FrontPage, 'show']);
+		return $this->callHelper([new FrontPage, 'show']);
 	}
 
 	/**

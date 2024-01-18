@@ -14,9 +14,9 @@
 
 namespace Bugo\LightPortal\Utils;
 
+use DateTime;
 use MessageFormatter;
 use IntlException;
-use DateTime;
 use IntlDateFormatter;
 
 if (! defined('SMF'))
@@ -39,7 +39,7 @@ trait IntlTrait
 	public function translate(string $pattern, array $values = []): string
 	{
 		if (! extension_loaded('intl')) {
-			$this->logError('[LP] translate helper: you should enable the intl extension', 'critical');
+			ErrorHandler::log('[LP] translate helper: you should enable the intl extension', 'critical');
 
 			return '';
 		}
@@ -51,7 +51,7 @@ trait IntlTrait
 
 			return $formatter->format($values);
 		} catch (IntlException $e) {
-			$this->logError("[LP] translate helper: {$e->getMessage()} in '\$txt[$pattern]'", 'critical');
+			ErrorHandler::log("[LP] translate helper: {$e->getMessage()} in '\$txt[$pattern]'", 'critical');
 
 			return '';
 		}
@@ -160,7 +160,7 @@ trait IntlTrait
 			return $formatter->format($timestamp);
 		}
 
-		$this->logError('[LP] getLocalDate helper: enable intl extension', 'critical');
+		ErrorHandler::log('[LP] getLocalDate helper: enable intl extension', 'critical');
 
 		return '';
 	}

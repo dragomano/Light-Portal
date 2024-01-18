@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 18.01.24
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
@@ -68,7 +68,7 @@ class AdsBlock extends Block
 		if (Utils::$context['current_block']['type'] !== 'ads_block')
 			return;
 
-		$this->addInlineCss('
+		Theme::addInlineCss('
 		.pf_placement, .pf_areas {
 			display: none;
 		}');
@@ -143,7 +143,7 @@ class AdsBlock extends Block
 	public function init(): void
 	{
 		if (! function_exists('lp_show_blocks'))
-			$this->loadTemplate('LightPortal/ViewBlocks');
+			Theme::loadTemplate('LightPortal/ViewBlocks');
 
 		$this->applyHook('menu_buttons');
 		$this->applyHook('admin_areas');
@@ -324,9 +324,9 @@ class AdsBlock extends Block
 
 			$after_every_last_post = ob_get_clean();
 
-			$this->addInlineJS('
+			Theme::addInlineJS('
 		jQuery(document).ready(function ($) {
-			$(' . $this->jsEscape($after_every_last_post) . ').insertAfter("#quickModForm > div.windowbg:last");
+			$(' . Utils::JavaScriptEscape($after_every_last_post) . ').insertAfter("#quickModForm > div.windowbg:last");
 		});', true);
 		}
 
@@ -342,9 +342,9 @@ class AdsBlock extends Block
 
 			$after_last_post = ob_get_clean();
 
-			$this->addInlineJS('
+			Theme::addInlineJS('
 		jQuery(document).ready(function ($) {
-			$("#quickModForm").append(' . $this->jsEscape($after_last_post) . ');
+			$("#quickModForm").append(' . Utils::JavaScriptEscape($after_last_post) . ');
 		});', true);
 		}
 	}

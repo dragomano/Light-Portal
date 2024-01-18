@@ -17,7 +17,7 @@ namespace Bugo\LightPortal\Actions;
 use Bugo\LightPortal\Front\{ArticleInterface, BoardArticle, ChosenPageArticle};
 use Bugo\LightPortal\Front\{ChosenTopicArticle, PageArticle, TopicArticle};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Theme, Utils};
 use Exception;
 use IntlException;
 use Latte\Engine;
@@ -49,7 +49,7 @@ final class FrontPage
 		if (array_key_exists(Config::$modSettings['lp_frontpage_mode'], $this->modes))
 			$this->prepare(new $this->modes[Config::$modSettings['lp_frontpage_mode']]);
 		elseif (Config::$modSettings['lp_frontpage_mode'] === 'chosen_page')
-			return call_user_func([new Page, 'show']);
+			return $this->callHelper([new Page, 'show']);
 
 		Utils::$context['lp_frontpage_num_columns'] = $this->getNumColumns();
 
@@ -144,7 +144,7 @@ final class FrontPage
 
 	public function getLayouts(): array
 	{
-		$this->loadTemplate('LightPortal/ViewFrontPage');
+		Theme::loadTemplate('LightPortal/ViewFrontPage');
 
 		$layouts = glob(Theme::$current->settings['default_theme_dir'] . '/LightPortal/layouts/*.latte');
 
@@ -213,10 +213,10 @@ final class FrontPage
 				$latte->setLoader(new FileLoader(Theme::$current->settings['default_theme_dir'] . '/portal_layouts/'));
 				$latte->render($layout, $params);
 			} else {
-				$this->fatalError($e->getMessage());
+				ErrorHandler::fatal($e->getMessage());
 			}
 		} catch (Exception $e) {
-			$this->fatalError($e->getMessage());
+			ErrorHandler::fatal($e->getMessage());
 		}
 
 		Utils::$context['lp_layout'] = ob_get_clean();
@@ -270,7 +270,7 @@ final class FrontPage
 	public function updateStart(int $total, int &$start, int $limit): void
 	{
 		if ($start >= $total) {
-			$this->sendStatus(404);
+			Utils::sendHttpStatus(404);
 			$start = (floor(($total - 1) / $limit) + 1) * $limit - $limit;
 		}
 

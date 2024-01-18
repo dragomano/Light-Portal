@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 18.01.24
  */
 
 namespace Bugo\LightPortal\Addons\BootstrapIcons;
 
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Utils\{Theme, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -31,14 +32,14 @@ class BootstrapIcons extends Plugin
 
 	public function init(): void
 	{
-		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/bootstrap-icons@1/font/bootstrap-icons.min.css', ['seed' => false]);
+		Theme::loadExtCSS('https://cdn.jsdelivr.net/npm/bootstrap-icons@1/font/bootstrap-icons.min.css', ['seed' => false]);
 	}
 
 	public function prepareIconList(array &$all_icons): void
 	{
 		if (($icons = $this->cache()->get('all_bi_icons', 30 * 24 * 60 * 60)) === null) {
 			$content = file_get_contents('https://cdn.jsdelivr.net/npm/bootstrap-icons@1/font/bootstrap-icons.json');
-			$json = array_flip($this->jsonDecode($content));
+			$json = array_flip(Utils::jsonDecode($content, true));
 
 			$icons = [];
 			foreach ($json as $icon) {

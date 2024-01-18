@@ -59,11 +59,11 @@ class DummyArticle extends AbstractArticle
 				$teaser  = empty(Config::$modSettings['lp_show_teaser']) ? '' : $article['description'];
 				$tag     = $article['category'];
 			} else {
-				$section = $this->getShortenText(Lorem::ipsum(1), 20);
-				$title   = $this->getShortenText(Lorem::ipsum(1), 40);
+				$section = Utils::shorten(Lorem::ipsum(1), 20);
+				$title   = Utils::shorten(Lorem::ipsum(1), 40);
 				$image   = 'https://loremflickr.com/470/235/' . $keywords . '?random=' . $article['id'];
 				$teaser  = empty(Config::$modSettings['lp_show_teaser']) ? '' : $this->getTeaser(Lorem::ipsum(4));
-				$tag     = $this->getShortenText(Lorem::ipsum(1), 10);
+				$tag     = Utils::shorten(Lorem::ipsum(1), 10);
 			}
 
 			$demo_articles[$article['id']] = [
@@ -122,13 +122,13 @@ class DummyArticle extends AbstractArticle
 	{
 		$data = file_get_contents('https://dummyjson.com/products?limit=' . $this->limit);
 
-		return $this->jsonDecode($data)['products'] ?? [];
+		return Utils::jsonDecode($data, true)['products'] ?? [];
 	}
 
 	public function getUsers(): array
 	{
 		$data = file_get_contents('https://dummyjson.com/users?limit=' . $this->limit);
 
-		return $this->jsonDecode($data)['users'] ?? [];
+		return Utils::jsonDecode($data, true)['users'] ?? [];
 	}
 }

@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Areas\Import;
 
-use Bugo\LightPortal\Utils\{Config,Lang, Utils};
+use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Theme, Utils};
 use Exception;
 use ZipArchive;
 
@@ -25,7 +25,8 @@ final class PluginImport extends AbstractImport
 {
 	public function main(): void
 	{
-		$this->loadTemplate('LightPortal/ManageImpex', 'manage_import');
+		Theme::loadTemplate('LightPortal/ManageImpex');
+		Utils::$context['sub_template'] = 'manage_import';
 
 		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_plugins_import'];
 		Utils::$context['page_area_title'] = Lang::$txt['lp_plugins_import'];
@@ -93,9 +94,9 @@ final class PluginImport extends AbstractImport
 				}
 			}
 
-			$this->fatalLangError('lp_wrong_import_file');
+			ErrorHandler::fatalLang('lp_wrong_import_file');
 		} catch (Exception) {
-			$this->fatalLangError('lp_import_failed');
+			ErrorHandler::fatalLang('lp_import_failed');
 		}
 
 		return false;

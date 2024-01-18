@@ -10,13 +10,13 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 17.01.24
+ * @version 18.01.24
  */
 
 namespace Bugo\LightPortal\Addons\BladeLayouts;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\{BBCodeParser, Config, ErrorHandler, Lang, Theme, Utils};
 use eftec\bladeone\BladeOne;
 use Exception;
 
@@ -66,7 +66,7 @@ class BladeLayouts extends Plugin
 
 			echo $blade->run($layout, $params);
 		} catch (Exception $e) {
-			$this->fatalError($e->getMessage());
+			ErrorHandler::fatal($e->getMessage());
 		}
 
 		Utils::$context['lp_layout'] = ob_get_clean();
@@ -94,6 +94,6 @@ class BladeLayouts extends Plugin
 
 	private function showExample(): string
 	{
-		return '<div class="roundframe">' . $this->parseBbc('[php]' . file_get_contents(__DIR__. '/layouts/example' . $this->extension) . '[/php]') . '</div>';
+		return '<div class="roundframe">' . BBCodeParser::load()->parse('[php]' . file_get_contents(__DIR__. '/layouts/example' . $this->extension) . '[/php]') . '</div>';
 	}
 }

@@ -123,10 +123,10 @@ final class PageRepository extends AbstractRepository
 		$this->cache()->flush();
 
 		if ($this->request()->has('save_exit'))
-			$this->redirect('action=admin;area=lp_pages;sa=main');
+			Utils::redirectexit('action=admin;area=lp_pages;sa=main');
 
 		if ($this->request()->has('save'))
-			$this->redirect('action=admin;area=lp_pages;sa=edit;id=' . $item);
+			Utils::redirectexit('action=admin;area=lp_pages;sa=edit;id=' . $item);
 	}
 
 	private function addData(): int

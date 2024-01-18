@@ -18,16 +18,14 @@ use Bugo\LightPortal\Areas\Partials\{ActionSelect, BoardSelect, CategorySelect};
 use Bugo\LightPortal\Areas\Partials\{PageAliasSelect, PageSelect, TopicSelect};
 use Bugo\LightPortal\Areas\Query;
 use Bugo\LightPortal\Actions\FrontPage;
-use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\{Config, Lang, Theme, User, Utils};
 use IntlException;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class BasicConfig
+final class BasicConfig extends AbstractConfig
 {
-	use Helper;
 	use Query;
 
 	/**
@@ -187,11 +185,11 @@ final class BasicConfig
 			['permissions', 'light_portal_approve_pages', 'help' => 'permissionhelp_light_portal_approve_pages'],
 		];
 
-		$this->loadTemplate('LightPortal/ManageSettings');
+		Theme::loadTemplate('LightPortal/ManageSettings');
 
 		// Save
 		if ($this->request()->has('save')) {
-			$this->checkSession();
+			User::$me->checkSession();
 
 			if ($this->request()->isNotEmpty('lp_image_placeholder'))
 				$this->post()->put('lp_image_placeholder', $this->filterVar($this->request('lp_image_placeholder'), 'url'));
@@ -217,7 +215,7 @@ final class BasicConfig
 			$this->session()->put('adm-save', true);
 			$this->cache()->flush();
 
-			$this->redirect('action=admin;area=lp_settings;sa=basic');
+			Utils::redirectexit('action=admin;area=lp_settings;sa=basic');
 		}
 
 		$this->prepareDBSettingContext($config_vars);

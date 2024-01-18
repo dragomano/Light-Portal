@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal\Front;
 
 use Bugo\LightPortal\Actions\Page;
-use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
+use Bugo\LightPortal\Utils\{BBCodeParser, Config, Lang, User, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -115,7 +115,7 @@ class PageArticle extends AbstractArticle
 				];
 
 				if (! empty(Config::$modSettings['lp_show_teaser']))
-					$pages[$row['page_id']]['teaser'] = $this->getTeaser(empty(Config::$modSettings['lp_frontpage_article_sorting']) && $row['num_comments'] ? $this->parseBbc($row['comment_message']) : ($row['description'] ?: $row['content']));
+					$pages[$row['page_id']]['teaser'] = $this->getTeaser(empty(Config::$modSettings['lp_frontpage_article_sorting']) && $row['num_comments'] ? BBCodeParser::load()->parse($row['comment_message']) : ($row['description'] ?: $row['content']));
 
 				if (! empty(Config::$modSettings['lp_frontpage_article_sorting']) && Config::$modSettings['lp_frontpage_article_sorting'] == 3)
 					$pages[$row['page_id']]['date'] = $row['date'];

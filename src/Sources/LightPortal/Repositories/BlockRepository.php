@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Repositories;
 
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -77,7 +77,7 @@ final class BlockRepository extends AbstractRepository
 		if (empty(Utils::$smcFunc['db_num_rows']($result))) {
 			Utils::$context['error_link'] = Config::$scripturl . '?action=admin;area=lp_blocks';
 
-			$this->fatalLangError('lp_block_not_found', 404);
+			ErrorHandler::fatalLang('lp_block_not_found', status: 404);
 		}
 
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
@@ -85,7 +85,7 @@ final class BlockRepository extends AbstractRepository
 				$row['content'] = $this->unPreparseCode($row['content']);
 			}
 
-			$this->censorText($row['content']);
+			Lang::censorText($row['content']);
 
 			$data ??= [
 				'id'            => (int) $row['block_id'],
@@ -134,7 +134,7 @@ final class BlockRepository extends AbstractRepository
 		$this->prepareBbcContent(Utils::$context['lp_block']);
 
 		if (empty($item)) {
-			Utils::$context['lp_block']['titles'] = array_filter(Utils::$context['lp_block']['titles']);
+			Utils::$context['lp_block']['titles'] = array_filter(Utils::$context['lp_block']['titles'] ?? []);
 			$item = $this->addData();
 		} else {
 			$this->updateData($item);
@@ -146,10 +146,10 @@ final class BlockRepository extends AbstractRepository
 		$this->cache()->flush();
 
 		if ($this->request()->has('save_exit'))
-			$this->redirect('action=admin;area=lp_blocks;sa=main');
+			Utils::redirectexit('action=admin;area=lp_blocks;sa=main');
 
 		if ($this->request()->has('save'))
-			$this->redirect('action=admin;area=lp_blocks;sa=edit;id=' . $item);
+			Utils::redirectexit('action=admin;area=lp_blocks;sa=edit;id=' . $item);
 	}
 
 	private function addData(): int

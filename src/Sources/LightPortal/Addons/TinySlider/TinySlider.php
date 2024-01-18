@@ -10,14 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 18.01.24
  */
 
 namespace Bugo\LightPortal\Addons\TinySlider;
 
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, NumberField, RadioField, RangeField};
-use Bugo\LightPortal\Utils\{Lang, User, Utils};
+use Bugo\LightPortal\Utils\{Lang, Theme, User, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -185,7 +185,7 @@ class TinySlider extends Block
 		$html = '
 		<div id="tiny_slider' . $block_id . '">';
 
-		$images = $this->jsonDecode($parameters['images']);
+		$images = Utils::jsonDecode($parameters['images'], true);
 
 		foreach ($images as $image) {
 			[$link, $title] = [$image['link'], $image['title']];
@@ -268,10 +268,10 @@ class TinySlider extends Block
 		if (empty($tiny_slider_html))
 			return;
 
-		$this->loadCSSFile('light_portal/tiny_slider/tiny-slider.css');
-		$this->loadJSFile('light_portal/tiny_slider/tiny-slider.js', ['minimize' => true]);
+		Theme::loadCSSFile('light_portal/tiny_slider/tiny-slider.css');
+		Theme::loadJSFile('light_portal/tiny_slider/tiny-slider.js', ['minimize' => true]);
 
-		$this->addInlineJS('
+		Theme::addInlineJS('
 			const slider' . $block_id . ' = tns({
 				container: "#tiny_slider' . $block_id . '",
 				axis: "' . (empty($parameters['axis']) ? $this->params['axis'] : $parameters['axis']) . '",

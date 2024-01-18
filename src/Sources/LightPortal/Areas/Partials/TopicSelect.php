@@ -99,7 +99,7 @@ final class TopicSelect extends AbstractPartial
 
 		$topics = [];
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
-			$this->censorText($row['subject']);
+			Lang::censorText($row['subject']);
 
 			$topics[$row['id_topic']] = $row['subject'];
 		}

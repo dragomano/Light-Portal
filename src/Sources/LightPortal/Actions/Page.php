@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal\Actions;
 
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, User, Utils};
+use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Theme, User, Utils};
 use IntlException;
 
 if (! defined('SMF'))
@@ -46,34 +46,34 @@ final class Page
 			if (Config::$modSettings['lp_frontpage_mode'] && Config::$modSettings['lp_frontpage_mode'] === 'chosen_page' && Config::$modSettings['lp_frontpage_alias']) {
 				Utils::$context['lp_page'] = $this->getDataByAlias(Config::$modSettings['lp_frontpage_alias']);
 			} else {
-				$this->updateSettings(['lp_frontpage_mode' => 0]);
+				Config::updateModSettings(['lp_frontpage_mode' => 0]);
 			}
 		} else {
 			$alias = explode(';', $alias)[0];
 
 			if ($this->isFrontpage($alias))
-				$this->redirect('action=' . LP_ACTION);
+				Utils::redirectexit('action=' . LP_ACTION);
 
 			Utils::$context['lp_page'] = $this->getDataByAlias($alias);
 		}
 
 		if (empty(Utils::$context['lp_page'])) {
 			$this->changeErrorPage();
-			$this->fatalLangError('lp_page_not_found', 404);
+			ErrorHandler::fatalLang('lp_page_not_found', status: 404);
 		}
 
 		if (empty(Utils::$context['lp_page']['can_view'])) {
 			$this->changeErrorPage();
-			$this->fatalLangError('cannot_light_portal_view_page');
+			ErrorHandler::fatalLang('cannot_light_portal_view_page');
 		}
 
 		if (empty(Utils::$context['lp_page']['status']) && empty(Utils::$context['lp_page']['can_edit'])) {
 			$this->changeErrorPage();
-			$this->fatalLangError('lp_page_not_activated');
+			ErrorHandler::fatalLang('lp_page_not_activated');
 		}
 
 		if (Utils::$context['lp_page']['created_at'] > time())
-			$this->sendStatus(404);
+			Utils::sendHttpStatus(404);
 
 		Utils::$context['lp_page']['errors'] = [];
 		if (empty(Utils::$context['lp_page']['status']) && Utils::$context['lp_page']['can_edit'])
@@ -103,7 +103,9 @@ final class Page
 
 		Utils::$context['lp_page']['url'] = Utils::$context['canonical_url'] . ($this->request()->has(LP_PAGE_PARAM) ? ';' : '?');
 
-		$this->loadTemplate('LightPortal/ViewPage', 'show_page');
+		Theme::loadTemplate('LightPortal/ViewPage');
+
+		Utils::$context['sub_template'] = 'show_page';
 
 		$this->promote();
 		$this->setMeta();
@@ -112,7 +114,7 @@ final class Page
 		$this->prepareComments();
 		$this->updateNumViews();
 
-		$this->loadJSFile('light_portal/bundle.min.js', ['defer' => true]);
+		Theme::loadJSFile('light_portal/bundle.min.js', ['defer' => true]);
 	}
 
 	public function getData(array $params): array
@@ -138,7 +140,7 @@ final class Page
 		);
 
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
-			$this->censorText($row['content']);
+			Lang::censorText($row['content']);
 
 			$og_image = null;
 			if (! empty(Config::$modSettings['lp_page_og_image'])) {
@@ -234,7 +236,7 @@ final class Page
 
 		$front->prepareTemplates();
 
-		$this->obExit();
+		Utils::obExit();
 	}
 
 	public function getList(): array
@@ -333,9 +335,9 @@ final class Page
 			Utils::$context['lp_frontpage_pages'][] = $page;
 		}
 
-		$this->updateSettings(['lp_frontpage_pages' => implode(',', Utils::$context['lp_frontpage_pages'])]);
+		Config::updateModSettings(['lp_frontpage_pages' => implode(',', Utils::$context['lp_frontpage_pages'])]);
 
-		$this->redirect(Utils::$context['canonical_url']);
+		Utils::redirectexit(Utils::$context['canonical_url']);
 	}
 
 	private function setMeta(): void
@@ -554,7 +556,7 @@ final class Page
 		if (Config::$modSettings['lp_show_comment_block'] === 'none')
 			return;
 
-		$this->loadLanguage('Editor');
+		Lang::load('Editor');
 
 		$this->hook('comments');
 

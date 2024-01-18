@@ -14,17 +14,14 @@
 
 namespace Bugo\LightPortal\Areas\Config;
 
-use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Tasks\Maintainer;
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class MiscConfig
+final class MiscConfig extends AbstractConfig
 {
-	use Helper;
-
 	public function show(): void
 	{
 		Utils::$context['page_title'] = Lang::$txt['lp_misc'];
@@ -50,7 +47,7 @@ final class MiscConfig
 		Utils::$context['sub_template'] = 'show_settings';
 
 		if ($this->request()->has('save')) {
-			$this->checkSession();
+			User::$me->checkSession();
 
 			Utils::$smcFunc['db_query']('', '
 				DELETE FROM {db_prefix}background_tasks
@@ -75,7 +72,7 @@ final class MiscConfig
 
 			$this->session()->put('adm-save', true);
 
-			$this->redirect('action=admin;area=lp_settings;sa=misc');
+			Utils::redirectexit('action=admin;area=lp_settings;sa=misc');
 		}
 
 		$this->prepareDBSettingContext($config_vars);

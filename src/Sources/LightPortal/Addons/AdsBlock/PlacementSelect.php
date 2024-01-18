@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 18.01.24
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
@@ -34,7 +34,7 @@ final class PlacementSelect extends AbstractPartial
 			$data[] = '{label: "' . $title . '", value: "' . $position . '"}';
 
 			if (in_array($position, $params['value'])) {
-				$items[] = JavaScriptEscape($position);
+				$items[] = Utils::JavaScriptEscape($position);
 			}
 		}
 

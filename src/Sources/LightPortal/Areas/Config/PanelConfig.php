@@ -14,21 +14,18 @@
 
 namespace Bugo\LightPortal\Areas\Config;
 
-use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\{Config, Lang, Theme, User, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class PanelConfig
+final class PanelConfig extends AbstractConfig
 {
-	use Helper;
-
 	public function show(): void
 	{
-		$this->loadTemplate('LightPortal/ManagePanels');
+		Theme::loadTemplate('LightPortal/ManagePanels');
 
-		$this->addInlineCss('
+		Theme::addInlineCss('
 		dl.settings {
 			overflow: hidden;
 		}');
@@ -59,7 +56,7 @@ final class PanelConfig
 		Utils::$context['sub_template'] = 'show_settings';
 
 		if ($this->request()->has('save')) {
-			$this->checkSession();
+			User::$me->checkSession();
 
 			$this->post()->put('lp_left_panel_width', json_encode($this->request('lp_left_panel_width')));
 			$this->post()->put('lp_right_panel_width', json_encode($this->request('lp_right_panel_width')));
@@ -79,7 +76,7 @@ final class PanelConfig
 
 			$this->session()->put('adm-save', true);
 
-			$this->redirect('action=admin;area=lp_settings;sa=panels');
+			Utils::redirectexit('action=admin;area=lp_settings;sa=panels');
 		}
 
 		$this->prepareDBSettingContext($config_vars);

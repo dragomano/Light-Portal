@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 18.01.24
  */
 
 namespace Bugo\LightPortal\Addons\UserInfo;
@@ -31,9 +31,9 @@ class UserInfo extends Block
 	 */
 	public function getData(): array
 	{
-		$this->loadMemberData([User::$info['id']]);
+		User::loadMemberData([User::$info['id']]);
 
-		return $this->loadMemberContext(User::$info['id']);
+		return User::loadMemberContext(User::$info['id']);
 	}
 
 	public function prepareContent(object $data): void

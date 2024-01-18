@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Actions;
 
-use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
+use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, User, Utils};
 use IntlException;
 
 if (! defined('SMF'))
@@ -32,7 +32,7 @@ final class Tag extends AbstractPageList
 		if (array_key_exists(Utils::$context['lp_tag'], $this->getEntityList('tag')) === false) {
 			Utils::$context['error_link'] = LP_BASE_URL . ';sa=tags';
 			Lang::$txt['back'] = Lang::$txt['lp_all_page_tags'];
-			$this->fatalLangError('lp_tag_not_found', 404);
+			ErrorHandler::fatalLang('lp_tag_not_found', status: 404);
 		}
 
 		Utils::$context['page_title']     = sprintf(Lang::$txt['lp_all_tags_by_key'], $this->getEntityList('tag')[Utils::$context['lp_tag']]);
@@ -62,7 +62,7 @@ final class Tag extends AbstractPageList
 
 		$this->createList($listOptions);
 
-		$this->obExit();
+		Utils::obExit();
 	}
 
 	/**
@@ -188,7 +188,7 @@ final class Tag extends AbstractPageList
 
 		$this->createList($listOptions);
 
-		$this->obExit();
+		Utils::obExit();
 	}
 
 	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 't.value'): array

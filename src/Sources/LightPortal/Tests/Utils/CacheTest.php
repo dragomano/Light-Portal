@@ -6,19 +6,18 @@
 
 namespace Tests\Utils;
 
-use Bugo\LightPortal\Utils\{Config, SMFCache};
+use Bugo\LightPortal\Utils\{Config, Cache};
 use Tester\Assert;
 
 require_once dirname(__DIR__) . '/bootstrap.php';
 
 setUp(function () {
-	$cache = new SMFCache();
+	$cache = new Cache();
 	$cache->flush();
 });
 
 test('get method', function () {
-	$cache = new SMFCache('test_key');
-	$cache->setLifeTime(3600);
+	$cache = new Cache('test_key', 3600);
 
 	Assert::null($cache->get('test_key'));
 
@@ -28,8 +27,7 @@ test('get method', function () {
 });
 
 test('put method', function () {
-	$cache = new SMFCache('test_key');
-	$cache->setLifeTime(3600);
+	$cache = new Cache('test_key', 3600);
 
 	$cache->put('test_key', ['value' => 'test_value']);
 
@@ -37,8 +35,7 @@ test('put method', function () {
 });
 
 test('forget method', function () {
-	$cache = new SMFCache('test_key');
-	$cache->setLifeTime(3600);
+	$cache = new Cache('test_key', 3600);
 
 	$cache->put('test_key', ['value' => 'test_value']);
 	$cache->put('test_other_key', ['value' => 'test_value']);
@@ -52,8 +49,7 @@ test('forget method', function () {
 });
 
 test('flush method', function () {
-	$cache = new SMFCache('test_key');
-	$cache->setLifeTime(3600);
+	$cache = new Cache('test_key', 3600);
 
 	$cache->put('test_key', ['value' => 'test_value']);
 

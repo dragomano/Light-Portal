@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 18.01.24
  */
 
 namespace Bugo\LightPortal\Addons\EasyMarkdownEditor;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\{Lang, Utils};
+use Bugo\LightPortal\Utils\{Lang, Theme, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -30,11 +30,11 @@ class EasyMarkdownEditor extends Plugin
 		if ($object['type'] !== 'markdown')
 			return;
 
-		$this->loadLanguage('Editor');
+		Lang::load('Editor');
 
-		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.css');
+		Theme::loadExtCSS('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.css');
 
-		$this->addInlineCss('
+		Theme::addInlineCss('
 		.editor-toolbar button {
 			box-shadow: none;
 		}
@@ -48,9 +48,9 @@ class EasyMarkdownEditor extends Plugin
 			max-height: none;
 		}');
 
-		$this->loadExtJS('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.js');
+		Theme::loadExtJS('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.js');
 
-		$this->addInlineJS('
+		Theme::addInlineJS('
 		let easymde = new EasyMDE({
 			element: document.getElementById("content"),
 			autoDownloadFontAwesome: false,

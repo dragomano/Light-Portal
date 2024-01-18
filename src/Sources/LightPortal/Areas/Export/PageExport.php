@@ -16,7 +16,7 @@ namespace Bugo\LightPortal\Areas\Export;
 
 use ArrayIterator;
 use Bugo\LightPortal\Repositories\PageRepository;
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Utils};
 use DomDocument;
 use DOMException;
 
@@ -275,7 +275,7 @@ final class PageExport extends AbstractExport
 			$file = sys_get_temp_dir() . '/lp_pages_backup.xml';
 			$xml->save($file);
 		} catch (DOMException $e) {
-			$this->logError('[LP] ' . Lang::$txt['lp_pages_export'] . ': ' . $e->getMessage());
+			ErrorHandler::log('[LP] ' . Lang::$txt['lp_pages_export'] . ': ' . $e->getMessage());
 		}
 
 		return $file ?? '';

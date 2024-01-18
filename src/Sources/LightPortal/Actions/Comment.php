@@ -187,7 +187,7 @@ final class Comment
 			exit(json_encode($result));
 
 		$this->repository->update([
-			'message' => $this->getShortenText($message, 65531),
+			'message' => Utils::shorten($message, 65531),
 			'id'      => $item,
 			'user'    => Utils::$context['user']['id']
 		]);

@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Areas\Export;
 
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
 use AppendIterator;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
@@ -28,7 +28,8 @@ final class PluginExport extends AbstractExport
 {
 	public function main(): void
 	{
-		$this->loadTemplate('LightPortal/ManageImpex', 'manage_export_plugins');
+		Theme::loadTemplate('LightPortal/ManageImpex');
+		Utils::$context['sub_template'] = 'manage_export_plugins';
 
 		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_plugins_export'];
 		Utils::$context['page_area_title'] = Lang::$txt['lp_plugins_export'];

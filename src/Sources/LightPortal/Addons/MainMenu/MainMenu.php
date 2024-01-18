@@ -97,7 +97,7 @@ class MainMenu extends Plugin
 
 	private function prepareVariables(): void
 	{
-		Utils::$context['lp_main_menu_addon_portal_langs'] = $this->jsonDecode(Utils::$context['lp_main_menu_plugin']['portal_langs'] ?? '');
-		Utils::$context['lp_main_menu_addon_forum_langs']  = $this->jsonDecode(Utils::$context['lp_main_menu_plugin']['forum_langs'] ?? '');
+		Utils::$context['lp_main_menu_addon_portal_langs'] = Utils::jsonDecode(Utils::$context['lp_main_menu_plugin']['portal_langs'] ?? '', true);
+		Utils::$context['lp_main_menu_addon_forum_langs']  = Utils::jsonDecode(Utils::$context['lp_main_menu_plugin']['forum_langs'] ?? '', true);
 	}
 }

@@ -16,7 +16,7 @@ namespace Bugo\LightPortal\Addons;
 
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Repositories\PluginRepository;
-use Bugo\LightPortal\Utils\{Theme, Utils};
+use Bugo\LightPortal\Utils\{ServerSideIncludes, Theme, Utils};
 use ReflectionClass;
 
 if (! defined('SMF'))
@@ -69,12 +69,7 @@ abstract class Plugin
 	{
 		require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'SSI.php';
 
-		$function = 'ssi_' . $function;
-
-		if (function_exists($function))
-			return $function(...$params);
-
-		return false;
+		return ServerSideIncludes::{$function}(...$params);
 	}
 
 	public function addDefaultValues(array $values): void

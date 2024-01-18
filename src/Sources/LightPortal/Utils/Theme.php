@@ -14,24 +14,28 @@
 
 namespace Bugo\LightPortal\Utils;
 
-use stdClass;
+if (! defined('SMF'))
+	die('No direct access...');
 
-final class Theme
+final class Theme extends SMFTheme
 {
-	public static stdClass $current;
-
-	public function __construct()
+	public static function addInlineJS(string $javascript, $defer = false): void
 	{
-		self::$current = new stdClass();
+		self::addInlineJavaScript($javascript, $defer);
+	}
 
-		if (! isset($GLOBALS['settings']))
-			$GLOBALS['settings'] = [];
+	public static function loadExtCSS(string $fileName, array $params = [], string $id = ''): void
+	{
+		self::loadCSSFile($fileName, array_merge($params, ['external' => true]), $id);
+	}
 
-		self::$current->settings = &$GLOBALS['settings'];
+	public static function loadExtJS(string $fileName, array $params = [], string $id = ''): void
+	{
+		self::loadJSFile($fileName, array_merge($params, ['external' => true]), $id);
+	}
 
-		if (! isset($GLOBALS['options']))
-			$GLOBALS['options'] = [];
-
-		self::$current->options  = &$GLOBALS['options'];
+	public static function loadJSFile(string $fileName, array $params = [], string $id = ''): void
+	{
+		self::loadJavaScriptFile($fileName, $params, $id);
 	}
 }

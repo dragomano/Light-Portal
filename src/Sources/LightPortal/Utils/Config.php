@@ -14,9 +14,15 @@
 
 namespace Bugo\LightPortal\Utils;
 
+use function memoryReturnBytes;
+use function updateSettings;
+
+if (! defined('SMF'))
+	die('No direct access...');
+
 final class Config
 {
-	public static array $modSettings;
+	public static ?array $modSettings = null;
 
 	public static string $scripturl;
 
@@ -61,5 +67,15 @@ final class Config
 
 			self::${$key} = &$GLOBALS[$key];
 		}
+	}
+
+	public static function memoryReturnBytes(string $val): int
+	{
+		return memoryReturnBytes($val);
+	}
+
+	public static function updateModSettings(array $settings): void
+	{
+		updateSettings($settings);
 	}
 }

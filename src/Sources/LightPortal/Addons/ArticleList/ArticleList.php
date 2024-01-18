@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 18.01.24
  */
 
 namespace Bugo\LightPortal\Addons\ArticleList;
@@ -18,7 +18,7 @@ namespace Bugo\LightPortal\Addons\ArticleList;
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, RadioField};
 use Bugo\LightPortal\Areas\Partials\{TopicSelect, ContentClassSelect, PageSelect};
-use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
+use Bugo\LightPortal\Utils\{BBCodeParser, Config, Lang, User, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -116,14 +116,14 @@ class ArticleList extends Block
 
 		$topics = [];
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
-			$this->censorText($row['subject']);
-			$this->censorText($row['body']);
+			Lang::censorText($row['subject']);
+			Lang::censorText($row['body']);
 
 			$value = null;
 			$image = empty($parameters['seek_images']) ? '' : preg_match('/\[img.*]([^]\[]+)\[\/img]/U', $row['body'], $value);
 			$image = $value ? array_pop($value) : ($image ?: Config::$modSettings['lp_image_placeholder'] ?? '');
 
-			$body = $this->parseBbc($row['body'], $row['smileys_enabled'], $row['id_msg']);
+			$body = BBCodeParser::load()->parse($row['body'], $row['smileys_enabled'], $row['id_msg']);
 
 			$topics[$row['id_topic']] = [
 				'id'          => $row['id_topic'],

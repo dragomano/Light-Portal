@@ -14,16 +14,13 @@
 
 namespace Bugo\LightPortal\Areas\Config;
 
-use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\{Config, Lang, Theme, User, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class ExtraConfig
+final class ExtraConfig extends AbstractConfig
 {
-	use Helper;
-
 	/**
 	 * Output page and block settings
 	 *
@@ -111,11 +108,11 @@ final class ExtraConfig
 			],
 		];
 
-		$this->loadTemplate('LightPortal/ManageSettings');
+		Theme::loadTemplate('LightPortal/ManageSettings');
 
 		// Save
 		if ($this->request()->has('save')) {
-			$this->checkSession();
+			User::$me->checkSession();
 
 			if ($this->request()->isNotEmpty('lp_fa_custom'))
 				$this->post()->put('lp_fa_custom', $this->filterVar($this->request('lp_fa_custom'), 'url'));
@@ -128,7 +125,7 @@ final class ExtraConfig
 			$this->session()->put('adm-save', true);
 			$this->cache()->flush();
 
-			$this->redirect('action=admin;area=lp_settings;sa=extra');
+			Utils::redirectexit('action=admin;area=lp_settings;sa=extra');
 		}
 
 		$this->prepareDBSettingContext($config_vars);

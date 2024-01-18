@@ -19,7 +19,7 @@ use Bugo\LightPortal\Areas\Config\{FeedbackConfig, MiscConfig, PanelConfig};
 use Bugo\LightPortal\Areas\Export\{BlockExport, PageExport, PluginExport};
 use Bugo\LightPortal\Areas\Import\{BlockImport, PageImport, PluginImport};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
+use Bugo\LightPortal\Utils\{Config, Lang, Theme, User, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -30,13 +30,13 @@ final class ConfigArea
 
 	public function adminAreas(array &$areas): void
 	{
-		$this->loadCSSFile('light_portal/virtual-select.min.css');
-		$this->loadJSFile('light_portal/virtual-select.min.js');
+		Theme::loadCSSFile('light_portal/virtual-select.min.css');
+		Theme::loadJSFile('light_portal/virtual-select.min.js');
 
-		$this->loadJSFile('light_portal/bundle.min.js', ['defer' => true]);
-		$this->loadJSFile('light_portal/admin.js', ['minimize' => true]);
+		Theme::loadJSFile('light_portal/bundle.min.js', ['defer' => true]);
+		Theme::loadJSFile('light_portal/admin.js', ['minimize' => true]);
 
-		$this->loadLanguage('ManageSettings');
+		Lang::load('ManageSettings');
 
 		$counter = array_search('layout', array_keys($areas)) + 1;
 
@@ -257,7 +257,7 @@ final class ConfigArea
 		if (empty($this->request('area'))) return;
 
 		if (! empty(Utils::$context['template_layers']) && str_contains($this->request('area'), 'lp_')) {
-			$this->loadTemplate('LightPortal/ViewDebug');
+			Theme::loadTemplate('LightPortal/ViewDebug');
 
 			Utils::$context['template_layers'][] = 'docs';
 		}

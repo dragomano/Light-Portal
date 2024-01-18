@@ -1,6 +1,6 @@
 <?php
 
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
 
 function template_callback_frontpage_mode_settings_before(): void
 {
@@ -130,7 +130,7 @@ function template_post_tab(array $fields, string $tab = 'content'): bool
 
 	Utils::$context['posting_fields'] = $fields;
 
-	LoadTemplate('Post');
+	Theme::loadTemplate('Post');
 
 	template_post_header();
 

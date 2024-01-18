@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
+use Bugo\LightPortal\Utils\{Config, Lang, Theme, User, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -38,9 +38,11 @@ final class CreditArea
 
 			Utils::$context['page_title'] = LP_NAME . ' - ' . Lang::$txt['lp_used_components'];
 
-			$this->loadTemplate('LightPortal/ViewCredits', 'portal_credits');
+			Theme::loadTemplate('LightPortal/ViewCredits');
 
-			$this->obExit();
+			Utils::$context['sub_template'] = 'portal_credits';
+
+			Utils::obExit();
 		}
 	}
 

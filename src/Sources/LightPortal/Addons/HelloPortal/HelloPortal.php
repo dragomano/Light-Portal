@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 18.01.24
  */
 
 namespace Bugo\LightPortal\Addons\HelloPortal;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\{Lang, Utils};
+use Bugo\LightPortal\Utils\{Lang, Theme, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -40,28 +40,28 @@ class HelloPortal extends Plugin
 		if ($this->request()->isNot('admin') || empty($steps = $this->getStepData()))
 			return;
 
-		$this->loadLanguage('Post');
+		Lang::load('Post');
 
 		if (! empty(Utils::$context['admin_menu_name']) && ! empty(Utils::$context[Utils::$context['admin_menu_name']]) && ! empty(Utils::$context[Utils::$context['admin_menu_name']]['tab_data']['title']))
 			Utils::$context[Utils::$context['admin_menu_name']]['tab_data']['title'] .= '<button class="button floatnone lp_hello_portal_button" @click.prevent="runTour()" x-data>' . Lang::$txt['lp_hello_portal']['tour_button'] . '</button>';
 
-		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs.min.css');
+		Theme::loadExtCSS('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs.min.css');
 
 		if (! empty(Utils::$context['lp_hello_portal_plugin']['theme']))
-			$this->loadExtCSS('https://cdn.jsdelivr.net/npm/intro.js@4/themes/introjs-' . Utils::$context['lp_hello_portal_plugin']['theme'] . '.css');
+			Theme::loadExtCSS('https://cdn.jsdelivr.net/npm/intro.js@4/themes/introjs-' . Utils::$context['lp_hello_portal_plugin']['theme'] . '.css');
 
 		if (Utils::$context['right_to_left'])
-			$this->loadExtCSS('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs-rtl.min.css');
+			Theme::loadExtCSS('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs-rtl.min.css');
 
-		$this->loadExtJS('https://cdn.jsdelivr.net/npm/intro.js@4/minified/intro.min.js');
+		Theme::loadExtJS('https://cdn.jsdelivr.net/npm/intro.js@4/minified/intro.min.js');
 
-		$this->addInlineJS('
+		Theme::addInlineJS('
 		function runTour() {
 			introJs().setOptions({
 				tooltipClass: "lp_addon_hello_portal",
-				nextLabel: ' . $this->jsEscape(Lang::$txt['admin_next']) . ',
-				prevLabel: ' . $this->jsEscape(Lang::$txt['back']) . ',
-				doneLabel: ' . $this->jsEscape(Lang::$txt['attach_dir_ok']) . ',
+				nextLabel: ' . Utils::JavaScriptEscape(Lang::$txt['admin_next']) . ',
+				prevLabel: ' . Utils::JavaScriptEscape(Lang::$txt['back']) . ',
+				doneLabel: ' . Utils::JavaScriptEscape(Lang::$txt['attach_dir_ok']) . ',
 				steps: [' . $steps . '],
 				showProgress: ' . (empty(Utils::$context['lp_hello_portal_plugin']['show_progress']) ? 'false' : 'true') . ',
 				showButtons: ' . (empty(Utils::$context['lp_hello_portal_plugin']['show_buttons']) ? 'false' : 'true') . ',

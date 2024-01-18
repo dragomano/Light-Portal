@@ -14,7 +14,7 @@
 namespace Bugo\LightPortal\Areas\Import;
 
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, Utils};
+use Bugo\LightPortal\Utils\{Config, ErrorHandler, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -104,7 +104,7 @@ abstract class AbstractOtherBlockImport implements ImportInterface, OtherImportI
 		}
 
 		if (empty($results))
-			$this->fatalLangError('lp_import_failed');
+			ErrorHandler::fatalLang('lp_import_failed');
 
 		$this->cache()->flush();
 	}

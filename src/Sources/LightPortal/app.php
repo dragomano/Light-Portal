@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIgnoredClassAliasDeclaration */
 
 if (! defined('SMF'))
 	die('We gotta get out of here!');
@@ -7,7 +7,7 @@ require_once __DIR__ . '/Libs/autoload.php';
 
 use Laminas\Loader\StandardAutoloader;
 use Bugo\LightPortal\{AddonHandler, Integration};
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, User, Utils};
+use Bugo\LightPortal\Utils\{BBCodeParser, Config, IntegrationHook, Lang, Theme, User, Utils};
 
 // Register autoloader
 $loader = new StandardAutoloader();
@@ -44,16 +44,16 @@ function prepare_content(string $type = 'bbc', int $block_id = 0, int $cache_tim
 function parse_content(string $content, string $type = 'bbc'): string
 {
 	if ($type === 'bbc') {
-		$content = parse_bbc($content);
+		$content = BBCodeParser::load()->parse($content);
 
 		// Integrate with the Paragrapher mod
-		call_integration_hook('integrate_paragrapher_string', [&$content]);
+		IntegrationHook::call('integrate_paragrapher_string', [&$content]);
 
 		return $content;
 	} elseif ($type === 'html') {
-		return un_htmlspecialchars($content);
+		return Utils::htmlspecialcharsDecode($content);
 	} elseif ($type === 'php') {
-		$content = trim(un_htmlspecialchars($content));
+		$content = trim(Utils::htmlspecialcharsDecode($content));
 		$content = str_replace('<?php', '', $content);
 		$content = str_replace('?>', '', $content);
 

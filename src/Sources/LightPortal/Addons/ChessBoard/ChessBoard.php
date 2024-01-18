@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 18.01.24
  */
 
 namespace Bugo\LightPortal\Addons\ChessBoard;
 
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Utils\Lang;
+use Bugo\LightPortal\Utils\{Lang, Theme};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -32,9 +32,9 @@ class ChessBoard extends Block
 		if ($data->type !== 'chess_board')
 			return;
 
-		$this->loadExtCSS('https://unpkg.com/@chrisoakman/chessboard2@0/dist/chessboard2.min.css');
-		$this->loadExtJS('https://unpkg.com/@chrisoakman/chessboard2@0/dist/chessboard2.min.js');
-		$this->loadExtJS('https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.12.1/chess.js');
+		Theme::loadExtCSS('https://unpkg.com/@chrisoakman/chessboard2@0/dist/chessboard2.min.css');
+		Theme::loadExtJS('https://unpkg.com/@chrisoakman/chessboard2@0/dist/chessboard2.min.js');
+		Theme::loadExtJS('https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.12.1/chess.js');
 
 		$id = $data->block_id;
 

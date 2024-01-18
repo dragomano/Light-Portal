@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Front;
 
-use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
+use Bugo\LightPortal\Utils\{BBCodeParser, Config, Lang, User, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -74,9 +74,9 @@ class BoardArticle extends AbstractArticle
 
 		$boards = [];
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
-			$board_name  = $this->parseBbc($row['name'], false, '', Utils::$context['description_allowed_tags']);
-			$description = $this->parseBbc($row['description'], false, '', Utils::$context['description_allowed_tags']);
-			$cat_name    = $this->parseBbc($row['cat_name'], false, '', Utils::$context['description_allowed_tags']);
+			$board_name  = BBCodeParser::load()->parse($row['name'], false, '', Utils::$context['description_allowed_tags']);
+			$description = BBCodeParser::load()->parse($row['description'], false, '', Utils::$context['description_allowed_tags']);
+			$cat_name    = BBCodeParser::load()->parse($row['cat_name'], false, '', Utils::$context['description_allowed_tags']);
 
 			if (! empty(Config::$modSettings['lp_show_images_in_articles'])) {
 				$image = $this->getImageFromText($description);

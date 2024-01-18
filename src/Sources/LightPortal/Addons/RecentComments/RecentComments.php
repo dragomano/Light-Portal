@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 18.01.24
  */
 
 namespace Bugo\LightPortal\Addons\RecentComments;
@@ -101,7 +101,7 @@ class RecentComments extends Block
 
 		$comments = [];
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
-			$this->censorText($row['message']);
+			Lang::censorText($row['message']);
 
 			$comments[$row['id']] = [
 				'link'        => LP_PAGE_URL . $row['alias'] . '#comment=' . $row['id'],

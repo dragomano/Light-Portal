@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Areas\Import;
 
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Theme, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -26,7 +26,8 @@ final class PageImport extends AbstractImport
 {
 	public function main(): void
 	{
-		$this->loadTemplate('LightPortal/ManageImpex', 'manage_import');
+		Theme::loadTemplate('LightPortal/ManageImpex');
+		Utils::$context['sub_template'] = 'manage_import';
 
 		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_pages_import'];
 		Utils::$context['page_area_title'] = Lang::$txt['lp_pages_import'];
@@ -49,7 +50,7 @@ final class PageImport extends AbstractImport
 			return;
 
 		if (! isset($xml->pages->item[0]['page_id']))
-			$this->fatalLangError('lp_wrong_import_file');
+			ErrorHandler::fatalLang('lp_wrong_import_file');
 
 		$categories = $tags = $items = $titles = $params = $comments = [];
 

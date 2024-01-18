@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal\Areas\Export;
 
 use Bugo\LightPortal\Repositories\BlockRepository;
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Theme, Utils};
 use DomDocument;
 use DOMException;
 
@@ -33,7 +33,8 @@ final class BlockExport extends AbstractExport
 
 	public function main(): void
 	{
-		$this->loadTemplate('LightPortal/ManageImpex', 'manage_export_blocks');
+		Theme::loadTemplate('LightPortal/ManageImpex');
+		Utils::$context['sub_template'] = 'manage_export_blocks';
 
 		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_blocks_export'];
 		Utils::$context['page_area_title'] = Lang::$txt['lp_blocks_export'];
@@ -132,7 +133,7 @@ final class BlockExport extends AbstractExport
 			$file = sys_get_temp_dir() . '/lp_blocks_backup.xml';
 			$xml->save($file);
 		} catch (DOMException $e) {
-			$this->logError('[LP] ' . Lang::$txt['lp_blocks_export'] . ': ' . $e->getMessage());
+			ErrorHandler::log('[LP] ' . Lang::$txt['lp_blocks_export'] . ': ' . $e->getMessage());
 		}
 
 		return $file ?? '';

@@ -20,7 +20,7 @@ use Bugo\LightPortal\Areas\Partials\{PermissionSelect, PlacementSelect, TitleCla
 use Bugo\LightPortal\Areas\Validators\BlockValidator;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Models\BlockModel;
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Theme, Utils};
 use Bugo\LightPortal\Repositories\BlockRepository;
 
 if (! defined('SMF'))
@@ -39,7 +39,9 @@ final class BlockArea
 
 	public function main(): void
 	{
-		$this->loadTemplate('LightPortal/ManageBlocks', 'manage_blocks');
+		Theme::loadTemplate('LightPortal/ManageBlocks');
+
+		Utils::$context['sub_template'] = 'manage_blocks';
 
 		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_blocks_manage'];
 
@@ -78,7 +80,9 @@ final class BlockArea
 
 	public function add(): void
 	{
-		$this->loadTemplate('LightPortal/ManageBlocks', 'block_add');
+		Theme::loadTemplate('LightPortal/ManageBlocks');
+
+		Utils::$context['sub_template'] = 'block_add';
 
 		Utils::$context['page_title']    = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_blocks_add_title'];
 		Utils::$context['canonical_url'] = Config::$scripturl . '?action=admin;area=lp_blocks;sa=add';
@@ -118,10 +122,12 @@ final class BlockArea
 		$item = (int) ($this->request('block_id') ?: $this->request('id'));
 
 		if (empty($item)) {
-			$this->fatalLangError('lp_block_not_found', 404);
+			ErrorHandler::fatalLang('lp_block_not_found', status: 404);
 		}
 
-		$this->loadTemplate('LightPortal/ManageBlocks', 'block_post');
+		Theme::loadTemplate('LightPortal/ManageBlocks');
+
+		Utils::$context['sub_template'] = 'block_post';
 
 		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_blocks_edit_title'];
 
@@ -137,7 +143,7 @@ final class BlockArea
 		if ($this->request()->has('remove')) {
 			$this->remove([$item]);
 
-			$this->redirect('action=admin;area=lp_blocks;sa=main');
+			Utils::redirectexit('action=admin;area=lp_blocks;sa=main');
 		}
 
 		$this->validateData();
@@ -422,8 +428,8 @@ final class BlockArea
 		Utils::$context['preview_content'] = Utils::$smcFunc['htmlspecialchars'](Utils::$context['lp_block']['content'], ENT_QUOTES);
 
 		$this->cleanBbcode(Utils::$context['preview_title']);
-		$this->censorText(Utils::$context['preview_title']);
-		$this->censorText(Utils::$context['preview_content']);
+		Lang::censorText(Utils::$context['preview_title']);
+		Lang::censorText(Utils::$context['preview_content']);
 
 		Utils::$context['preview_content'] = empty(Utils::$context['preview_content'])
 			? prepare_content(Utils::$context['lp_block']['type'], Utils::$context['lp_block']['id'], 0, Utils::$context['lp_block']['options'] ?? [])

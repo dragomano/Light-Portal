@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 18.01.24
  */
 
 namespace Bugo\LightPortal\Addons\Search;
 
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -67,7 +67,7 @@ class Search extends Block
 
 		$this->setTemplate('show_results');
 
-		$this->obExit();
+		Utils::obExit();
 	}
 
 	/**
@@ -166,8 +166,8 @@ class Search extends Block
 		if ($data->type !== 'search')
 			return;
 
-		$this->loadCSSFile('light_portal/search/auto-complete.css');
-		$this->loadJSFile('light_portal/search/auto-complete.min.js', ['minimize' => true]);
+		Theme::loadCSSFile('light_portal/search/auto-complete.css');
+		Theme::loadJSFile('light_portal/search/auto-complete.min.js', ['minimize' => true]);
 
 		echo '
 		<form class="search_addon centertext" action="', LP_BASE_URL, ';sa=search" method="post" accept-charset="', Utils::$context['character_set'], '">

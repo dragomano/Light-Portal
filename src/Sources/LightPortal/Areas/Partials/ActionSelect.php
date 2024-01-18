@@ -31,10 +31,10 @@ final class ActionSelect extends AbstractPartial
 		foreach ($params['data'] as $value) {
 			$data[] = [
 				'label' => $value,
-				'value' => $this->jsEscape($value)
+				'value' => Utils::JavaScriptEscape($value)
 			];
 
-			$params['value'][] = $this->jsEscape($value);
+			$params['value'][] = Utils::JavaScriptEscape($value);
 		}
 
 		return /** @lang text */ '

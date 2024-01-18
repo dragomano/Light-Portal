@@ -10,14 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 18.01.24
  */
 
 namespace Bugo\LightPortal\Addons\Swiper;
 
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, RadioField, RangeField, SelectField};
-use Bugo\LightPortal\Utils\{Lang, User, Utils};
+use Bugo\LightPortal\Utils\{Lang, Theme, User, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -123,7 +123,7 @@ class Swiper extends Block
 		<div id="swiper' . $block_id . '" class="swiper"' . (Utils::$context['right_to_left'] ? ' dir="rtl"' : '') . '>
 			<div class="swiper-wrapper">';
 
-		$images = $this->jsonDecode($parameters['images']);
+		$images = Utils::jsonDecode($parameters['images'], true);
 
 		foreach ($images as $image) {
 			[$link, $title] = [$image['link'], $image['title']];
@@ -177,10 +177,10 @@ class Swiper extends Block
 		if (empty($swiper_html))
 			return;
 
-		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css');
-		$this->loadExtJS('https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js');
+		Theme::loadExtCSS('https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css');
+		Theme::loadExtJS('https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js');
 
-		$this->addInlineJS('
+		Theme::addInlineJS('
 			const swiper' . $block_id . ' = new Swiper("#swiper' . $block_id . '", {
 				direction: "' . ($parameters['direction'] ?? 'horizontal') . '",
 				loop: ' . (empty($parameters['loop']) ? 'false' : 'true') . ',

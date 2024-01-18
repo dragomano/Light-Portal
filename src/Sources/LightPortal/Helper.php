@@ -16,8 +16,8 @@ namespace Bugo\LightPortal;
 
 use Bugo\LightPortal\Lists\{CategoryList, IconList, PageList, TagList, TitleList};
 use Bugo\LightPortal\Tasks\Notifier;
-use Bugo\LightPortal\Utils\{BlockAppearance, File, IntlTrait, Post, Request, Session, SMFCache, SMFTrait};
-use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
+use Bugo\LightPortal\Utils\{BlockAppearance, Cache, File, IntlTrait, Post, Request, Session, SMFTrait};
+use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, User, Utils};
 use Exception;
 
 if (! defined('SMF'))
@@ -43,9 +43,9 @@ trait Helper
 		return $key ? ((new Post())->get($key) ?? $default) : new Post();
 	}
 
-	public function cache(?string $key = null): SMFCache
+	public function cache(?string $key = null): Cache
 	{
-		return (new SMFCache($key))->setLifeTime(LP_CACHE_TIME);
+		return new Cache($key, LP_CACHE_TIME);
 	}
 
 	public function files(?string $key = null): mixed
@@ -69,6 +69,21 @@ trait Helper
 			require_once $path;
 	}
 
+	public function callHelper(mixed $action): mixed
+	{
+		return call_user_func($action);
+	}
+
+	public function middleware(string|array $permission): void
+	{
+		User::mustHavePermission($permission);
+	}
+
+	public function allowedTo(string $permission): bool
+	{
+		return User::hasPermission($permission);
+	}
+
 	public function getEntityList(string $entity): array
 	{
 		return match ($entity) {
@@ -88,13 +103,13 @@ trait Helper
 			return '';
 
 		if (empty($userData))
-			$userData = $this->loadMemberData([$userId]);
+			$userData = User::loadMemberData([$userId]);
 
 		if (! isset(User::$memberContext[$userId]) && in_array($userId, $userData)) {
 			try {
-				$this->loadMemberContext($userId, true);
+				User::loadMemberContext($userId, true);
 			} catch (Exception $e) {
-				$this->logError('[LP] getUserAvatar helper: ' . $e->getMessage());
+				ErrorHandler::log('[LP] getUserAvatar helper: ' . $e->getMessage());
 			}
 		}
 
@@ -106,7 +121,7 @@ trait Helper
 
 	public function getItemsWithUserAvatars(array $items, string $entity = 'author'): array
 	{
-		$userData = $this->loadMemberData(array_map(fn($item) => $item[$entity]['id'], $items));
+		$userData = User::loadMemberData(array_map(fn($item) => $item[$entity]['id'], $items));
 
 		return array_map(function ($item) use ($userData, $entity) {
 			$item[$entity]['avatar'] = $this->getUserAvatar((int) $item[$entity]['id'], $userData);
@@ -156,7 +171,7 @@ trait Helper
 
 	public function prepareForumLanguages(): void
 	{
-		$temp = $this->getLanguages();
+		$temp = Lang::get();
 
 		if (empty(Config::$modSettings['userLanguage'])) {
 			Utils::$context['lp_languages'] = [
@@ -208,7 +223,7 @@ trait Helper
 		$text = html_entity_decode($text);
 		$text = preg_replace('#(<cite.*?>).*?(</cite>)#', '$1$2', $text);
 
-		return $this->getShortenText(strip_tags($text), $length) ?: '...';
+		return Utils::shorten(strip_tags($text), $length) ?: '...';
 	}
 
 	/**
@@ -344,6 +359,6 @@ trait Helper
 			}
 		}
 
-		$this->updateSettings($addSettings);
+		Config::updateModSettings($addSettings);
 	}
 }

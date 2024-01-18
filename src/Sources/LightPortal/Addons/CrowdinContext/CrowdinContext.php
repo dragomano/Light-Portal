@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 18.01.24
  */
 
 namespace Bugo\LightPortal\Addons\CrowdinContext;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\{Lang, User, Utils};
+use Bugo\LightPortal\Utils\{Config, Lang, Theme, User, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -40,7 +40,7 @@ class CrowdinContext extends Plugin
 
 		$this->applyHook('actions');
 
-		$this->loadLanguage('LightPortal/LightPortal', 'crowdin');
+		Lang::load('LightPortal/LightPortal', 'crowdin');
 
 		$addons = $this->getEntityList('plugin');
 		array_walk($addons, function ($addon) {
@@ -49,7 +49,7 @@ class CrowdinContext extends Plugin
 			}
 		});
 
-		$this->addInlineJS('
+		Theme::addInlineJS('
 		var _jipt = [];
 		_jipt.push([\'project\', \'light-portal\']);
 		_jipt.push([\'preload_texts\', true]);
@@ -57,7 +57,7 @@ class CrowdinContext extends Plugin
 			window.location.href = smf_scripturl + "?action=' . LP_ACTION . ';disable_crowdin";
 		}]);');
 
-		$this->loadExtJS('//cdn.crowdin.com/jipt/jipt.js', ['defer' => true]);
+		Theme::loadExtJS('//cdn.crowdin.com/jipt/jipt.js', ['defer' => true]);
 	}
 
 	public function actions(): void
@@ -66,9 +66,9 @@ class CrowdinContext extends Plugin
 			if ($key = array_search('CrowdinContext', Utils::$context['lp_enabled_plugins'])) {
 				unset(Utils::$context['lp_enabled_plugins'][$key]);
 
-				$this->updateSettings(['lp_enabled_plugins' => implode(',', Utils::$context['lp_enabled_plugins'])]);
+				Config::updateModSettings(['lp_enabled_plugins' => implode(',', Utils::$context['lp_enabled_plugins'])]);
 
-				$this->redirect('action=admin;area=lp_plugins');
+				Utils::redirectexit('action=admin;area=lp_plugins');
 			}
 		}
 	}

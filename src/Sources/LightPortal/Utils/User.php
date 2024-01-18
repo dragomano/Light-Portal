@@ -14,8 +14,23 @@
 
 namespace Bugo\LightPortal\Utils;
 
+use Exception;
+use function allowedTo;
+use function checkSession;
+use function isAllowedTo;
+use function loadMemberContext;
+use function membersAllowedTo;
+use function updateMemberData;
+
+if (! defined('SMF'))
+	die('No direct access...');
+
 final class User
 {
+	public const LOAD_BY_ID = 0;
+
+	public static self $me;
+
 	public static array $info;
 
 	public static array $profiles;
@@ -40,5 +55,47 @@ final class User
 
 			self::${$key} = &$GLOBALS[$value];
 		}
+
+		self::$me = $this;
+	}
+
+	public static function hasPermission(string $permission): bool
+	{
+		return (bool) allowedTo($permission);
+	}
+
+	public static function checkSession(): void
+	{
+		checkSession();
+	}
+
+	public static function mustHavePermission(string|array $permission): void
+	{
+		isAllowedTo($permission);
+	}
+
+	public static function loadMemberData(array $users, int $type = self::LOAD_BY_ID, string $set = 'normal'): array
+	{
+		return loadMemberData($users, (bool) $type, $set);
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	public static function loadMemberContext(int $user, bool $display_custom_fields = false): bool|array
+	{
+		return loadMemberContext($user, $display_custom_fields);
+	}
+
+	public static function membersAllowedTo(string $permission): array
+	{
+		require_once Config::$sourcedir . DIRECTORY_SEPARATOR . 'Subs-Members.php';
+
+		return membersAllowedTo($permission);
+	}
+
+	public static function updateMemberData(array $members, array $data): void
+	{
+		updateMemberData($members, $data);
 	}
 }

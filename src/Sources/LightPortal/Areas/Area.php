@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Areas\Fields\CustomField;
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -128,7 +128,7 @@ trait Area
 				Utils::$context['posting_fields'][$item]['input']['tab'] = 'tuning';
 		}
 
-		$this->loadTemplate('LightPortal/ManageSettings');
+		Theme::loadTemplate('LightPortal/ManageSettings');
 	}
 
 	public function toggleStatus(array $items = [], string $type = 'block'): void

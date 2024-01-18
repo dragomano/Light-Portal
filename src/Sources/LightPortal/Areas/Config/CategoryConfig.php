@@ -14,19 +14,18 @@
 
 namespace Bugo\LightPortal\Areas\Config;
 
-use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Lang, Utils};
+use Bugo\LightPortal\Utils\{Lang, Theme, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class CategoryConfig
+final class CategoryConfig extends AbstractConfig
 {
-	use Helper;
-
 	public function show(): void
 	{
-		$this->loadTemplate('LightPortal/ManageCategories', 'lp_category_settings');
+		Theme::loadTemplate('LightPortal/ManageCategories');
+
+		Utils::$context['sub_template'] = 'lp_category_settings';
 
 		Utils::$context['page_title'] = Lang::$txt['lp_categories'];
 
@@ -61,7 +60,7 @@ final class CategoryConfig
 		if (empty($name))
 			return;
 
-		$this->loadTemplate('LightPortal/ManageSettings');
+		Theme::loadTemplate('LightPortal/ManageSettings');
 
 		$result = [
 			'error' => true

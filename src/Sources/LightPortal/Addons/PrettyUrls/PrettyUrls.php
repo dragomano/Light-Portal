@@ -54,7 +54,7 @@ class PrettyUrls extends Plugin
 			'title' => '<a href="https://custom.simplemachines.org/mods/index.php?mod=4244" target="_blank" rel="noopener">Light Portal</a> pages',
 		];
 
-		$this->updateSettings(['pretty_filters' => serialize($prettyFilters)]);
+		Config::updateModSettings(['pretty_filters' => serialize($prettyFilters)]);
 
 		if (function_exists('pretty_update_filters'))
 			pretty_update_filters();

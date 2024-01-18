@@ -355,6 +355,7 @@ Page: {PAGELINK}
 {REGARDS}';
 
 // Errors
+$txt['lp_standalone_mode_error'] = 'Cannot run the portal - please verify that you put this file in the same place as SMF\'s index.php and SSI.php files.';
 $txt['lp_page_not_found'] = 'Page not found!';
 $txt['lp_page_not_activated'] = 'The requested page is disabled!';
 $txt['lp_page_not_editable'] = 'You are not allowed to edit this page!';

@@ -80,7 +80,7 @@ class SimpleMenu extends Plugin
 		$html = '
 		<ul class="dropmenu">';
 
-		$items = $this->jsonDecode($items, logIt: false);
+		$items = Utils::jsonDecode($items, true);
 
 		foreach ($items as $item) {
 			[$title, $link] = [$item['name'], $item['link']];

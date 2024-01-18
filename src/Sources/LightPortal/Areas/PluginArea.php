@@ -17,7 +17,7 @@ declare(strict_types=1);
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\{Config, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Repositories\PluginRepository;
 use ReflectionClass;
 use ReflectionException;
@@ -38,9 +38,12 @@ final class PluginArea
 
 	public function main(): void
 	{
-		$this->loadLanguage('ManageMaintenance');
-		$this->loadTemplate('LightPortal/ManagePlugins', 'manage_plugins');
-		$this->loadExtCSS('https://cdn.jsdelivr.net/combine/npm/@vueform/multiselect@2/themes/default.min.css,npm/@vueform/toggle@2/themes/default.min.css');
+		Lang::load('ManageMaintenance');
+
+		Theme::loadTemplate('LightPortal/ManagePlugins');
+		Utils::$context['sub_template'] = 'manage_plugins';
+
+		Theme::loadExtCSS('https://cdn.jsdelivr.net/combine/npm/@vueform/multiselect@2/themes/default.min.css,npm/@vueform/toggle@2/themes/default.min.css');
 
 		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_plugins_manage'];
 		Utils::$context['post_url']   = Config::$scripturl . '?action=admin;area=lp_plugins;save';
@@ -89,7 +92,7 @@ final class PluginArea
 
 		sort(Utils::$context['lp_enabled_plugins']);
 
-		$this->updateSettings(['lp_enabled_plugins' => implode(',', array_unique(array_intersect(Utils::$context['lp_enabled_plugins'], Utils::$context['lp_plugins'])))]);
+		Config::updateModSettings(['lp_enabled_plugins' => implode(',', array_unique(array_intersect(Utils::$context['lp_enabled_plugins'], Utils::$context['lp_plugins'])))]);
 
 		$this->updateAssetMtime(Utils::$context['lp_plugins'][$plugin_id]);
 
@@ -103,7 +106,7 @@ final class PluginArea
 		if ($this->request()->hasNot('save'))
 			return;
 
-		$this->checkSession();
+		User::$me->checkSession();
 
 		$plugin_name = $this->request('plugin_name');
 		$plugin_options = [];
@@ -313,7 +316,7 @@ final class PluginArea
 			if (empty($addon_list))
 				return;
 
-			$xml = $this->jsonDecode($addon_list);
+			$xml = Utils::jsonDecode($addon_list, true);
 
 			$this->cache()->put('custom_addon_list', $xml, 259200);
 		}

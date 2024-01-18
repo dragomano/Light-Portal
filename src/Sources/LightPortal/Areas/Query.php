@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Lists\IconList;
-use Bugo\LightPortal\Utils\{Config, Utils};
+use Bugo\LightPortal\Utils\{Config, Lang, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -95,7 +95,7 @@ trait Query
 
 		$topics = [];
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
-			$this->censorText($row['subject']);
+			Lang::censorText($row['subject']);
 
 			$topics[] = [
 				'id'      => $row['id_topic'],

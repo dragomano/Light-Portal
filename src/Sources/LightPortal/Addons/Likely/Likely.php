@@ -85,8 +85,8 @@ class Likely extends Block
 		if ($data->type !== 'likely' || empty($parameters['buttons']))
 			return;
 
-		$this->loadCSSFile('light_portal/likely/likely.min.css');
-		$this->loadJSFile('light_portal/likely/likely.min.js', ['minimize' => true]);
+		Theme::loadCSSFile('light_portal/likely/likely.min.css');
+		Theme::loadJSFile('light_portal/likely/likely.min.js', ['minimize' => true]);
 
 		echo /** @lang text */ '
 			<div class="centertext likely_links">

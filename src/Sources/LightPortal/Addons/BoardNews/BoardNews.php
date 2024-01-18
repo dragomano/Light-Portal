@@ -10,14 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 18.01.24
  */
 
 namespace Bugo\LightPortal\Addons\BoardNews;
 
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{NumberField, RangeField};
-use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
+use Bugo\LightPortal\Utils\{Config, Lang, Theme, User, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -90,7 +90,7 @@ class BoardNews extends Block
 			return;
 		}
 
-		$this->loadJSFile('topic.js', ['defer' => false, 'minimize' => true], 'smf_topic');
+		Theme::loadJSFile('topic.js', ['defer' => false, 'minimize' => true], 'smf_topic');
 
 		foreach ($board_news as $news) {
 			$news['link'] = '<a href="' . $news['href'] . '">' . $this->translate('lp_comments_set', ['comments' => $news['replies']]) . '</a>';

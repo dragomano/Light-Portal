@@ -16,7 +16,7 @@
 namespace Bugo\LightPortal\Addons\PluginMaker;
 
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\Lang;
+use Bugo\LightPortal\Utils\{ErrorHandler, Lang};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -37,7 +37,7 @@ class Builder
 		$dir_ready = mkdir($this->path);
 
 		if (! $dir_ready) {
-			$this->fatalError(Lang::$txt['lp_plugin_maker']['addon_dir_not_created']);
+			ErrorHandler::fatal(Lang::$txt['lp_plugin_maker']['addon_dir_not_created']);
 		}
 
 		copy(LP_ADDON_DIR . DIRECTORY_SEPARATOR . 'index.php', $this->path . DIRECTORY_SEPARATOR . 'index.php');
@@ -54,7 +54,7 @@ class Builder
 		$dir_ready = mkdir($this->path . DIRECTORY_SEPARATOR . 'langs');
 
 		if (! $dir_ready) {
-			$this->fatalError(Lang::$txt['lp_plugin_maker']['lang_dir_not_created']);
+			ErrorHandler::fatal(Lang::$txt['lp_plugin_maker']['lang_dir_not_created']);
 		}
 
 		copy($this->path . DIRECTORY_SEPARATOR . 'index.php', $this->path . DIRECTORY_SEPARATOR . 'langs' . DIRECTORY_SEPARATOR . 'index.php');

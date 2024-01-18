@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 18.01.24
  */
 
 namespace Bugo\LightPortal\Addons\Likely;
@@ -33,7 +33,7 @@ final class ButtonSelect extends AbstractPartial
 			$data[] = '{label: "' . $button . '", value: "' . $button . '"}';
 
 			if (in_array($button, $params['value'])) {
-				$items[] = $this->jsEscape($button);
+				$items[] = Utils::JavaScriptEscape($button);
 			}
 		}
 

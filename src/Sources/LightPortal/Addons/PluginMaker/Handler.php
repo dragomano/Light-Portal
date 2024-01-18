@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 18.01.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -57,7 +57,7 @@ class Handler extends Plugin
 
 	public function prepareForumLanguages(): void
 	{
-		$temp = $this->getLanguages();
+		$temp = Lang::get();
 
 		if (empty(Config::$modSettings['userLanguage'])) {
 			Utils::$context['lp_languages'] = ['english' => $temp['english']];
@@ -668,7 +668,7 @@ class Handler extends Plugin
 
 		$this->saveAuthorData();
 
-		$this->redirect('action=admin;area=lp_plugins;sa=main');
+		Utils::redirectexit('action=admin;area=lp_plugins;sa=main');
 	}
 
 	private function getSpecialParams(string $type = 'block'): array

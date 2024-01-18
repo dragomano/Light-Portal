@@ -31,7 +31,7 @@ function show_chat_block(int $block_id, bool $show_avatars, bool $full_width): v
 		</form>';
 	} else {
 		echo '
-		<a href="', Config::$scripturl, '?action=login" onclick="return reqOverlayDiv(this.href, ', JavaScriptEscape(Lang::$txt['login']), ');">', Lang::$txt['lp_simple_chat']['login'], '</a>';
+		<a href="', Config::$scripturl, '?action=login" onclick="return reqOverlayDiv(this.href, ', Utils::JavaScriptEscape(Lang::$txt['login']), ');">', Lang::$txt['lp_simple_chat']['login'], '</a>';
 	}
 
 	echo '

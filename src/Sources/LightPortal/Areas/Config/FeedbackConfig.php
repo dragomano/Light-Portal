@@ -14,19 +14,16 @@
 
 namespace Bugo\LightPortal\Areas\Config;
 
-use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class FeedbackConfig
+final class FeedbackConfig extends AbstractConfig
 {
-	use Helper;
-
 	public function show(): void
 	{
-		$this->loadTemplate('LightPortal/ManageFeedback');
+		Theme::loadTemplate('LightPortal/ManageFeedback');
 
 		Utils::$context['page_title'] = Lang::$txt['lp_feedback'];
 

@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Tasks;
 
-use Bugo\LightPortal\Utils\{Config, User, Utils};
+use Bugo\LightPortal\Utils\{Config, Lang, Mail, Notify, Theme, User, Utils};
 use ErrorException;
 
 final class Notifier extends BackgroundTask
@@ -25,22 +25,22 @@ final class Notifier extends BackgroundTask
 	public function execute(): bool
 	{
 		$members = match ($this->_details['content_type']) {
-			'new_page' => $this->membersAllowedTo('light_portal_manage_pages_any'),
-			default    => array_intersect($this->membersAllowedTo('light_portal_view'), [$this->_details['content_author_id']])
+			'new_page' => User::membersAllowedTo('light_portal_manage_pages_any'),
+			default    => array_intersect(User::membersAllowedTo('light_portal_view'), [$this->_details['content_author_id']])
 		};
 
 		// Let's not notify ourselves, okay?
 		if ($this->_details['sender_id'])
 			$members = array_diff($members, [$this->_details['sender_id']]);
 
-		$prefs = $this->getNotifyPrefs($members, match ($this->_details['content_type']) {
+		$prefs = Notify::getNotifyPrefs($members, match ($this->_details['content_type']) {
 			'new_comment' => 'page_comment',
 			'new_reply'   => 'page_comment_reply',
 			default       => 'page_unapproved'
 		}, true);
 
 		if ($this->_details['sender_id'] && empty($this->_details['sender_name'])) {
-			$this->loadMemberData([$this->_details['sender_id']]);
+			User::loadMemberData([$this->_details['sender_id']]);
 
 			empty(User::$profiles[$this->_details['sender_id']])
 				? $this->_details['sender_id']   = 0
@@ -97,12 +97,12 @@ final class Notifier extends BackgroundTask
 					['id_alert']
 				);
 
-				$this->updateMemberData($notifies['alert'], ['alerts' => '+']);
+				User::updateMemberData($notifies['alert'], ['alerts' => '+']);
 			}
 		}
 
 		if (! empty($notifies['email'])) {
-			$this->loadEssential();
+			Theme::loadEssential();
 
 			$emails = [];
 			$result = Utils::$smcFunc['db_query']('', '
@@ -127,15 +127,15 @@ final class Notifier extends BackgroundTask
 				$replacements = [
 					'MEMBERNAME'  => $this->_details['sender_name'],
 					'PROFILELINK' => Config::$scripturl . '?action=profile;u=' . $this->_details['sender_id'],
-					'PAGELINK'    => $this->jsonDecode($this->_details['extra'], logIt: false)['content_link'],
+					'PAGELINK'    => Utils::jsonDecode($this->_details['extra'], true)['content_link'],
 				];
 
-				$this->loadLanguage('LightPortal/LightPortal', $this_lang);
+				Lang::load('LightPortal/LightPortal', $this_lang);
 
-				$emaildata = $this->loadEmailTemplate('page_unapproved', $replacements, empty(Config::$modSettings['userLanguage']) ? Config::$language : $this_lang, false);
+				$emaildata = Mail::loadEmailTemplate('page_unapproved', $replacements, empty(Config::$modSettings['userLanguage']) ? Config::$language : $this_lang, false);
 
 				foreach ($recipients as $email_address)
-					$this->sendmail($email_address, $emaildata['subject'], $emaildata['body'], null, 'page#' . $this->_details['content_id'], $emaildata['is_html'], 2);
+					Mail::send($email_address, $emaildata['subject'], $emaildata['body'], null, 'page#' . $this->_details['content_id'], $emaildata['is_html'], 2);
 			}
 		}
 
