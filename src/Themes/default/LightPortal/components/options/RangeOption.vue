@@ -1,7 +1,15 @@
 <template>
   <div>
-    <input type="range" :id="id" :name="name" :value="value" :min="min" :max="max" :step="step" />
-    <span class="range_field" v-text="value"></span>
+    <input
+      type="range"
+      :id="id"
+      :name="name"
+      v-model.number="ranger"
+      :min="min"
+      :max="max"
+      :step="step"
+    />
+    <span class="range_field" v-text="ranger"></span>
   </div>
 </template>
 
@@ -12,7 +20,7 @@ export default {
 </script>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 const props = defineProps({
   id: {
@@ -36,4 +44,6 @@ const props = defineProps({
 const min = computed(() => props.option.min ?? 0);
 const max = computed(() => props.option.max ?? 100);
 const step = computed(() => props.option.step ?? 1);
+
+const ranger = ref(props.value);
 </script>
