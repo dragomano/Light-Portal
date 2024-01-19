@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.01.24
+ * @version 19.01.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -570,12 +570,12 @@ class Handler extends Plugin
 				->setReference()
 				->setType('array');
 			$method->addBody("\$links[] = [")
-				->addBody("\t'title' => '{Lang::\$txt['lp_plugin_maker']['component_name']}',")
-				->addBody("\t'link' => '{Lang::\$txt['lp_plugin_maker']['component_link']}',")
-				->addBody("\t'author' => '{Lang::\$txt['lp_plugin_maker']['component_author']}',")
+				->addBody("\t'title' => '" . Lang::$txt['lp_plugin_maker']['component_name'] . "',")
+				->addBody("\t'link' => '" . Lang::$txt['lp_plugin_maker']['component_link'] . "',")
+				->addBody("\t'author' => '" . Lang::$txt['lp_plugin_maker']['component_author'] . "',")
 				->addBody("\t'license' => [")
-				->addBody("\t\t'name' => '{Lang::\$txt['lp_plugin_maker']['license_name']}',")
-				->addBody("\t\t'link' => '{Lang::\$txt['lp_plugin_maker']['license_link']}'")
+				->addBody("\t\t'name' => '" . Lang::$txt['lp_plugin_maker']['license_name'] . "',")
+				->addBody("\t\t'link' => '" . Lang::$txt['lp_plugin_maker']['license_link'] . "'")
 				->addBody("\t]")
 				->addBody("];");
 		}
@@ -605,10 +605,10 @@ class Handler extends Plugin
 		$file->addNamespace($namespace);
 		$file->addComment(Utils::$context['lp_plugin']['name'] . '.php');
 		$file->addComment('');
-		$file->addComment("@package {Utils::\$context['lp_plugin']['name']} (" . LP_NAME .')');
-		$file->addComment("@link {Utils::\$context['lp_plugin']['site']}");
-		$file->addComment("@author {Utils::\$context['lp_plugin']['author']} <{Utils::\$context['lp_plugin']['email']}>");
-		$file->addComment("@copyright " . date('Y') . " {Utils::\$context['lp_plugin']['author']}");
+		$file->addComment("@package " . Utils::$context['lp_plugin']['name'] . " (" . LP_NAME .')');
+		$file->addComment("@link " . Utils::$context['lp_plugin']['site']);
+		$file->addComment("@author " . Utils::$context['lp_plugin']['author'] . " <" . Utils::$context['lp_plugin']['email'] . ">");
+		$file->addComment("@copyright " . date('Y') . " " . Utils::$context['lp_plugin']['author']);
 		$file->addComment("@license $license_link $license_name");
 		$file->addComment('');
 		$file->addComment("@category addon");

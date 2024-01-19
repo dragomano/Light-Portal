@@ -19,12 +19,12 @@ function simple_menu_items(): string
 											<button type="button" class="button" @click="removeItem(index)">
 												<span class="main_icons delete"></span> ' . Lang::$txt['remove'] . '
 											</button>
-											<input type="text" x-model="item.name" name="item_name[]" maxlength="255" placeholder="' . Lang::$txt['lp_simple_menu']['name_placeholder'] . '">
+											<input type="text" x-model="item.name" name="item_name[]" maxlength="255" placeholder="' . Lang::$txt['lp_simple_menu']['name_placeholder'] . '" required>
 										</td>
 									</tr>
 									<tr class="windowbg">
 										<td colspan="2">
-											<input type="text" x-model="item.link" name="item_link[]" placeholder="' . Lang::$txt['lp_simple_menu']['link_placeholder'] . '">
+											<input type="text" x-model="item.link" name="item_link[]" placeholder="' . Lang::$txt['lp_simple_menu']['link_placeholder'] . '" required>
 										</td>
 									</tr>
 								</tbody>

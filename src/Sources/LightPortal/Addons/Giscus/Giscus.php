@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 19.01.24
  */
 
 namespace Bugo\LightPortal\Addons\Giscus;
@@ -74,7 +74,7 @@ class Giscus extends Plugin
 			<div class="giscus windowbg"></div>
 			<script src="https://giscus.app/client.js"
 				data-repo="' . Utils::$context['lp_giscus_plugin']['repo'] . '"
-				data-repo-id="' . Utils::$context['lp_giscusplugin']['repo_id'] . '"
+				data-repo-id="' . Utils::$context['lp_giscus_plugin']['repo_id'] . '"
 				data-category="' . Utils::$context['lp_giscus_plugin']['category'] . '"
 				data-category-id="' . Utils::$context['lp_giscus_plugin']['category_id'] . '"
 				data-mapping="title"

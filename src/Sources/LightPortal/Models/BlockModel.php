@@ -65,7 +65,7 @@ class BlockModel extends AbstractModel
 
 		$this->priority = $postData['priority'] ?? $currentBlock['priority'] ?? 0;
 
-		$this->permissions = $postData['permissions'] ?? $currentBlock['permissions'] ?? (int) Config::$modSettings['lp_permissions_default'] ?? 2;
+		$this->permissions = $postData['permissions'] ?? $currentBlock['permissions'] ?? (int) (Config::$modSettings['lp_permissions_default'] ?? 2);
 
 		$this->status = $currentBlock['status'] ?? 1;
 

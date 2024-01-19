@@ -45,5 +45,5 @@ const min = computed(() => props.option.min ?? 0);
 const max = computed(() => props.option.max ?? 100);
 const step = computed(() => props.option.step ?? 1);
 
-const ranger = ref(props.value);
+const ranger = ref(props.value === '' ? min.value : props.value);
 </script>

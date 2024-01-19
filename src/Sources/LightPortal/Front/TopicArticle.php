@@ -112,8 +112,8 @@ class TopicArticle extends AbstractArticle
 					$last_body = preg_replace('~\[table.*].*?\[/table]~Usi', '', $last_body);
 					$last_body = preg_replace('~\[code.*].*?\[/code]~Usi', '', $last_body);
 
-					$body      = BBCodeParser::load()->parse($body, $row['smileys_enabled'], $row['id_first_msg']);
-					$last_body = BBCodeParser::load()->parse($last_body, $row['smileys_enabled'], $row['id_msg']);
+					$body      = BBCodeParser::load()->parse($body, (bool) $row['smileys_enabled'], $row['id_first_msg']);
+					$last_body = BBCodeParser::load()->parse($last_body, (bool) $row['smileys_enabled'], $row['id_msg']);
 				}
 
 				$image = empty(Config::$modSettings['lp_show_images_in_articles']) ? '' : $this->getImageFromText(BBCodeParser::load()->parse($row['body'], false));

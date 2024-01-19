@@ -290,9 +290,8 @@ final class BlockArea
 
 		$block_options = Utils::$context['current_block']['options'] ?? $options;
 
-		if (empty(Utils::$context['current_block']['id']) && empty(Utils::$context['current_block']['icon'])) {
-			Utils::$context['current_block']['icon'] = Utils::$context['lp_loaded_addons'][Utils::$context['current_block']['type']]['icon'];
-		}
+		$type = Utils::$context['current_block']['type'];
+		Utils::$context['current_block']['icon'] ??= Utils::$context['lp_loaded_addons'][$type]['icon'] ?? '';
 
 		$block = new BlockModel($post_data, Utils::$context['current_block']);
 		$block->titles = Utils::$context['current_block']['titles'] ?? [];

@@ -123,7 +123,7 @@ class ArticleList extends Block
 			$image = empty($parameters['seek_images']) ? '' : preg_match('/\[img.*]([^]\[]+)\[\/img]/U', $row['body'], $value);
 			$image = $value ? array_pop($value) : ($image ?: Config::$modSettings['lp_image_placeholder'] ?? '');
 
-			$body = BBCodeParser::load()->parse($row['body'], $row['smileys_enabled'], $row['id_msg']);
+			$body = BBCodeParser::load()->parse($row['body'], (bool) $row['smileys_enabled'], $row['id_msg']);
 
 			$topics[$row['id_topic']] = [
 				'id'          => $row['id_topic'],

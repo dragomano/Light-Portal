@@ -35,7 +35,10 @@ final class Lang
 
 		self::$txt = &$GLOBALS['txt'];
 
-		self::$editortxt = $GLOBALS['editortxt'] ?? [];
+		if (! isset($GLOBALS['editortxt']))
+			$GLOBALS['editortxt'] = [];
+
+		self::$editortxt = &$GLOBALS['editortxt'];
 	}
 
 	public static function censorText(string &$text): void

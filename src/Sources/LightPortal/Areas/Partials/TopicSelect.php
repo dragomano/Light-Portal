@@ -69,7 +69,7 @@ final class TopicSelect extends AbstractPartial
 					.then(function (json) {
 						let data = [];
 						for (let i = 0; i < json.length; i++) {
-							data.push({label: json[i].subject, value: json[i].id})
+							data.push({ label: json[i].subject, value: json[i].id })
 						}
 
 						virtualSelect.setServerOptions(data)

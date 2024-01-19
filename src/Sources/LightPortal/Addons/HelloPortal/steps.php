@@ -18,7 +18,7 @@ return [
 			intro: "' . Lang::$txt['lp_hello_portal']['basic_settings_tour'][2] . '"
 		},') : '') . '
 		{
-			element: document.getElementById("setting_lp_standalone_mode").parentNode.parentNode,
+			element: document.getElementById("setting_lp_standalone_mode").parentNode.parentNode.parentNode,
 			intro: "' . Lang::$txt['lp_hello_portal']['basic_settings_tour'][3] . '"
 		},
 		{
@@ -36,7 +36,7 @@ return [
 			position: "right"
 		},' . (! empty(Config::$modSettings['lp_show_comment_block']) && Config::$modSettings['lp_show_comment_block'] === 'default' ? ('
 		{
-			element: document.getElementById("setting_lp_show_comment_block").parentNode.parentNode,
+			element: document.getElementById("setting_lp_show_comment_block").parentNode.parentNode.parentNode,
 			intro: "' . Lang::$txt['lp_hello_portal']['extra_settings_tour'][1] . '"
 		},') : '') . '
 		{
@@ -180,19 +180,19 @@ return [
 			intro: "' . Lang::$txt['lp_hello_portal']['add_plugins_tour'][2] . '"
 		},
 		{
-			element: document.querySelector("input[name=description_' . User::$info['language'] . ']"),
+			element: document.querySelector("input[name^=description_]"),
 			intro: "' . Lang::$txt['lp_hello_portal']['add_plugins_tour'][3] . '"
 		},
 		{
-			element: document.querySelector("label[for=tab2]"),
+			element: document.querySelector("[data-tab=copyright]"),
 			intro: "' . Lang::$txt['lp_hello_portal']['add_plugins_tour'][4] . '"
 		},
 		{
-			element: document.querySelector("label[for=tab3]"),
+			element: document.querySelector("[data-tab=settings]"),
 			intro: "' . Lang::$txt['lp_hello_portal']['add_plugins_tour'][5] . '"
 		},
 		{
-			element: document.querySelector("label[for=tab4]"),
+			element: document.querySelector("[data-tab=tuning"),
 			intro: "' . Lang::$txt['lp_hello_portal']['add_plugins_tour'][6] . '"
 		}'
 ];

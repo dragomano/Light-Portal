@@ -40,6 +40,8 @@ final class Config
 
 	public static string $language;
 
+	public static string $mbname;
+
 	public static int $cache_enable;
 
 	public static bool $db_show_debug;
@@ -54,6 +56,7 @@ final class Config
 		'db_type'       => '',
 		'db_prefix'     => '',
 		'language'      => '',
+		'mbname'        => '',
 		'cache_enable'  => 0,
 		'db_show_debug' => false,
 	];

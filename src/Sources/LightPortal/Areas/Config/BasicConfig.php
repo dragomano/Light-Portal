@@ -199,10 +199,8 @@ final class BasicConfig extends AbstractConfig
 
 			$save_vars = $config_vars;
 
-			if ($this->request()->has('lp_frontpage_alias'))
+			if ($this->request()->isNotEmpty('lp_frontpage_mode')) {
 				$save_vars[] = ['text', 'lp_frontpage_alias'];
-
-			if ($this->request()->isNotEmpty('lp_frontpage_mode') && $this->request()->hasNot('lp_frontpage_alias')) {
 				$save_vars[] = ['text', 'lp_frontpage_categories'];
 				$save_vars[] = ['text', 'lp_frontpage_boards'];
 				$save_vars[] = ['text', 'lp_frontpage_pages'];
