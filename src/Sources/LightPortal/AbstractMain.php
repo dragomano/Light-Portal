@@ -9,12 +9,13 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.4
+ * @version 2.5
  */
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Entities\{Block, Page};
+use Bugo\LightPortal\Actions\{Block, Page};
+use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Theme, User, Utils};
 use Exception;
 use Less_Exception_Parser;
 use Less_Parser;
@@ -30,8 +31,8 @@ abstract class AbstractMain
 
 	protected function isPortalCanBeLoaded(): bool
 	{
-		if (! defined('LP_NAME') || isset($this->context['uninstalling']) || $this->request()->is('printpage')) {
-			$this->modSettings['minimize_files'] = 0;
+		if (! defined('LP_NAME') || isset(Utils::$context['uninstalling']) || $this->request()->is('printpage')) {
+			Config::$modSettings['minimize_files'] = 0;
 			return false;
 		}
 
@@ -40,34 +41,34 @@ abstract class AbstractMain
 
 	protected function defineVars(): void
 	{
-		$this->context['allow_light_portal_view']             = $this->allowedTo('light_portal_view');
-		$this->context['allow_light_portal_manage_pages_own'] = $this->allowedTo('light_portal_manage_pages_own');
-		$this->context['allow_light_portal_manage_pages_any'] = $this->allowedTo('light_portal_manage_pages_any');
-		$this->context['allow_light_portal_approve_pages']    = $this->allowedTo('light_portal_approve_pages');
+		Utils::$context['allow_light_portal_view']             = $this->allowedTo('light_portal_view');
+		Utils::$context['allow_light_portal_manage_pages_own'] = $this->allowedTo('light_portal_manage_pages_own');
+		Utils::$context['allow_light_portal_manage_pages_any'] = $this->allowedTo('light_portal_manage_pages_any');
+		Utils::$context['allow_light_portal_approve_pages']    = $this->allowedTo('light_portal_approve_pages');
 
 		$this->calculateNumberOfEntities();
 
-		$this->context['lp_all_title_classes']   = $this->getTitleClasses();
-		$this->context['lp_all_content_classes'] = $this->getContentClasses();
-		$this->context['lp_block_placements']    = $this->getBlockPlacements();
-		$this->context['lp_plugin_types']        = $this->getPluginTypes();
-		$this->context['lp_content_types']       = $this->getContentTypes();
+		Utils::$context['lp_all_title_classes']   = $this->getTitleClasses();
+		Utils::$context['lp_all_content_classes'] = $this->getContentClasses();
+		Utils::$context['lp_block_placements']    = $this->getBlockPlacements();
+		Utils::$context['lp_plugin_types']        = $this->getPluginTypes();
+		Utils::$context['lp_content_types']       = $this->getContentTypes();
 
-		$this->context['lp_enabled_plugins']  = empty($this->modSettings['lp_enabled_plugins'])  ? [] : explode(',', $this->modSettings['lp_enabled_plugins']);
-		$this->context['lp_frontpage_pages']  = empty($this->modSettings['lp_frontpage_pages'])  ? [] : explode(',', $this->modSettings['lp_frontpage_pages']);
-		$this->context['lp_frontpage_topics'] = empty($this->modSettings['lp_frontpage_topics']) ? [] : explode(',', $this->modSettings['lp_frontpage_topics']);
+		Utils::$context['lp_enabled_plugins']  = empty(Config::$modSettings['lp_enabled_plugins'])  ? [] : explode(',', Config::$modSettings['lp_enabled_plugins']);
+		Utils::$context['lp_frontpage_pages']  = empty(Config::$modSettings['lp_frontpage_pages'])  ? [] : explode(',', Config::$modSettings['lp_frontpage_pages']);
+		Utils::$context['lp_frontpage_topics'] = empty(Config::$modSettings['lp_frontpage_topics']) ? [] : explode(',', Config::$modSettings['lp_frontpage_topics']);
 
-		$this->context['lp_header_panel_width'] = empty($this->modSettings['lp_header_panel_width']) ? 12 : (int) $this->modSettings['lp_header_panel_width'];
-		$this->context['lp_left_panel_width']   = empty($this->modSettings['lp_left_panel_width'])   ? ['lg' => 3, 'xl' => 2] : $this->jsonDecode($this->modSettings['lp_left_panel_width'], logIt: false);
-		$this->context['lp_right_panel_width']  = empty($this->modSettings['lp_right_panel_width'])  ? ['lg' => 3, 'xl' => 2] : $this->jsonDecode($this->modSettings['lp_right_panel_width'], logIt: false);
-		$this->context['lp_footer_panel_width'] = empty($this->modSettings['lp_footer_panel_width']) ? 12 : (int) $this->modSettings['lp_footer_panel_width'];
+		Utils::$context['lp_header_panel_width'] = empty(Config::$modSettings['lp_header_panel_width']) ? 12 : (int) Config::$modSettings['lp_header_panel_width'];
+		Utils::$context['lp_left_panel_width']   = empty(Config::$modSettings['lp_left_panel_width'])   ? ['lg' => 3, 'xl' => 2] : Utils::jsonDecode(Config::$modSettings['lp_left_panel_width'], true);
+		Utils::$context['lp_right_panel_width']  = empty(Config::$modSettings['lp_right_panel_width'])  ? ['lg' => 3, 'xl' => 2] : Utils::jsonDecode(Config::$modSettings['lp_right_panel_width'], true);
+		Utils::$context['lp_footer_panel_width'] = empty(Config::$modSettings['lp_footer_panel_width']) ? 12 : (int) Config::$modSettings['lp_footer_panel_width'];
 
-		$this->context['lp_swap_left_right'] = empty($this->txt['lang_rtl']) ? ! empty($this->modSettings['lp_swap_left_right']) : empty($this->modSettings['lp_swap_left_right']);
-		$this->context['lp_panel_direction'] = $this->jsonDecode($this->modSettings['lp_panel_direction'] ?? '', logIt: false);
+		Utils::$context['lp_swap_left_right'] = empty(Lang::$txt['lang_rtl']) ? ! empty(Config::$modSettings['lp_swap_left_right']) : empty(Config::$modSettings['lp_swap_left_right']);
+		Utils::$context['lp_panel_direction'] = Utils::jsonDecode(Config::$modSettings['lp_panel_direction'] ?? '', true);
 
-		$this->context['lp_active_blocks'] = (new Block)->getActive();
+		Utils::$context['lp_active_blocks'] = (new Block)->getActive();
 
-		$this->context['lp_icon_set'] = $this->getEntityList('icon');
+		Utils::$context['lp_icon_set'] = $this->getEntityList('icon');
 	}
 
 	protected function loadAssets(): void
@@ -75,36 +76,36 @@ abstract class AbstractMain
 		$this->loadFontAwesome();
 		$this->compileLess();
 
-		$this->loadCSSFile('light_portal/flexboxgrid.css');
-		$this->loadCSSFile('light_portal/portal.css');
-		$this->loadCSSFile('light_portal/plugins.css');
-		$this->loadCSSFile('portal_custom.css');
+		Theme::loadCSSFile('light_portal/flexboxgrid.css');
+		Theme::loadCSSFile('light_portal/portal.css');
+		Theme::loadCSSFile('light_portal/plugins.css');
+		Theme::loadCSSFile('portal_custom.css');
 
-		$this->loadJavaScriptFile('light_portal/plugins.js', ['minimize' => true]);
+		Theme::loadJSFile('light_portal/plugins.js', ['minimize' => true]);
 	}
 
 	protected function loadFontAwesome(): void
 	{
-		if (empty($this->modSettings['lp_fa_source']) || $this->modSettings['lp_fa_source'] === 'none')
+		if (empty(Config::$modSettings['lp_fa_source']) || Config::$modSettings['lp_fa_source'] === 'none')
 			return;
 
-		if ($this->modSettings['lp_fa_source'] === 'css_local') {
-			$this->loadCSSFile('all.min.css', [], 'portal_fontawesome');
-		} elseif ($this->modSettings['lp_fa_source'] === 'custom' && isset($this->modSettings['lp_fa_custom'])) {
-			$this->loadExtCSS(
-				$this->modSettings['lp_fa_custom'],
+		if (Config::$modSettings['lp_fa_source'] === 'css_local') {
+			Theme::loadCSSFile('all.min.css', [], 'portal_fontawesome');
+		} elseif (Config::$modSettings['lp_fa_source'] === 'custom' && isset(Config::$modSettings['lp_fa_custom'])) {
+			Theme::loadExtCSS(
+				Config::$modSettings['lp_fa_custom'],
 				['seed' => false],
 				'portal_fontawesome'
 			);
-		} elseif (isset($this->modSettings['lp_fa_kit'])) {
-			$this->loadExtJS($this->modSettings['lp_fa_kit'], ['attributes' => ['crossorigin' => 'anonymous']]);
+		} elseif (isset(Config::$modSettings['lp_fa_kit'])) {
+			Theme::loadExtJS(Config::$modSettings['lp_fa_kit'], ['attributes' => ['crossorigin' => 'anonymous']]);
 		}
 	}
 
 	protected function compileLess(): void
 	{
-		$cssFile  = $this->settings['default_theme_dir'] . '/css/light_portal/portal.css';
-		$lessFile = $this->settings['default_theme_dir'] . '/css/light_portal/less/portal.less';
+		$cssFile  = Theme::$current->settings['default_theme_dir'] . '/css/light_portal/portal.css';
+		$lessFile = Theme::$current->settings['default_theme_dir'] . '/css/light_portal/less/portal.less';
 
 		if (! is_file($lessFile)) return;
 
@@ -112,15 +113,15 @@ abstract class AbstractMain
 			return;
 
 		$parser = new Less_Parser([
-			'compress' => true,
-			'cache_dir' => empty($this->modSettings['cache_enable']) ? null : $this->cachedir,
+			'compress'  => true,
+			'cache_dir' => empty(Config::$modSettings['cache_enable']) ? null : Config::$cachedir,
 		]);
 
 		try {
 			$parser->parseFile($lessFile);
 			file_put_contents($cssFile, $parser->getCss());
 		} catch (Less_Exception_Parser | Exception $e) {
-			$this->logError($e->getMessage(), 'critical');
+			ErrorHandler::log($e->getMessage(), 'critical');
 		}
 	}
 
@@ -131,7 +132,7 @@ abstract class AbstractMain
 	 */
 	protected function unsetDisabledActions(array &$data): void
 	{
-		$disabled_actions = empty($this->modSettings['lp_disabled_actions']) ? [] : explode(',', $this->modSettings['lp_disabled_actions']);
+		$disabled_actions = empty(Config::$modSettings['lp_disabled_actions']) ? [] : explode(',', Config::$modSettings['lp_disabled_actions']);
 		$disabled_actions[] = 'home';
 		$disabled_actions = array_flip($disabled_actions);
 
@@ -141,18 +142,18 @@ abstract class AbstractMain
 		}
 
 		if (array_key_exists('search', $disabled_actions))
-			$this->context['allow_search'] = false;
+			Utils::$context['allow_search'] = false;
 
 		if (array_key_exists('moderate', $disabled_actions))
-			$this->context['allow_moderation_center'] = false;
+			Utils::$context['allow_moderation_center'] = false;
 
 		if (array_key_exists('calendar', $disabled_actions))
-			$this->context['allow_calendar'] = false;
+			Utils::$context['allow_calendar'] = false;
 
 		if (array_key_exists('mlist', $disabled_actions))
-			$this->context['allow_memberlist'] = false;
+			Utils::$context['allow_memberlist'] = false;
 
-		$this->context['lp_disabled_actions'] = $disabled_actions;
+		Utils::$context['lp_disabled_actions'] = $disabled_actions;
 	}
 
 	/**
@@ -163,7 +164,7 @@ abstract class AbstractMain
 	protected function fixCanonicalUrl(): void
 	{
 		if ($this->request()->is('forum'))
-			$this->context['canonical_url'] = $this->scripturl . '?action=forum';
+			Utils::$context['canonical_url'] = Config::$scripturl . '?action=forum';
 	}
 
 	/**
@@ -173,13 +174,13 @@ abstract class AbstractMain
 	 */
 	protected function fixLinktree(): void
 	{
-		if (empty($this->context['current_board']) && $this->request()->hasNot('c') || empty($this->context['linktree'][1]) || empty($this->context['linktree'][1]['url']))
+		if (empty(Utils::$context['current_board']) && $this->request()->hasNot('c') || empty(Utils::$context['linktree'][1]) || empty(Utils::$context['linktree'][1]['url']))
 			return;
 
-		$old_url = explode('#', $this->context['linktree'][1]['url']);
+		$old_url = explode('#', Utils::$context['linktree'][1]['url']);
 
 		if (! empty($old_url[1]))
-			$this->context['linktree'][1]['url'] = $this->scripturl . '?action=forum#' . $old_url[1];
+			Utils::$context['linktree'][1]['url'] = Config::$scripturl . '?action=forum#' . $old_url[1];
 	}
 
 	/**
@@ -189,22 +190,22 @@ abstract class AbstractMain
 	 */
 	protected function showDebugInfo(): void
 	{
-		if (empty($this->modSettings['lp_show_debug_info']) || empty($this->context['user']['is_admin']) || empty($this->context['template_layers']) || $this->request()->is('devtools'))
+		if (empty(Config::$modSettings['lp_show_debug_info']) || empty(Utils::$context['user']['is_admin']) || empty(Utils::$context['template_layers']) || $this->request()->is('devtools'))
 			return;
 
-		$this->context['lp_load_page_stats'] = sprintf($this->txt['lp_load_page_stats'], round(microtime(true) - $this->context['lp_load_time'], 3), $this->context['lp_num_queries']);
+		Utils::$context['lp_load_page_stats'] = sprintf(Lang::$txt['lp_load_page_stats'], round(microtime(true) - Utils::$context['lp_load_time'], 3), Utils::$context['lp_num_queries']);
 
-		$this->loadTemplate('LightPortal/ViewDebug');
+		Theme::loadTemplate('LightPortal/ViewDebug');
 
-		if (empty($key = array_search('lp_portal', $this->context['template_layers']))) {
-			$this->context['template_layers'][] = 'debug';
+		if (empty($key = array_search('lp_portal', Utils::$context['template_layers']))) {
+			Utils::$context['template_layers'][] = 'debug';
 			return;
 		}
 
-		$this->context['template_layers'] = array_merge(
-			array_slice($this->context['template_layers'], 0, $key, true),
+		Utils::$context['template_layers'] = array_merge(
+			array_slice(Utils::$context['template_layers'], 0, $key, true),
 			['debug'],
-			array_slice($this->context['template_layers'], $key, null, true)
+			array_slice(Utils::$context['template_layers'], $key, null, true)
 		);
 	}
 
@@ -215,7 +216,7 @@ abstract class AbstractMain
 	 */
 	protected function prepareAdminButtons(array &$buttons): void
 	{
-		if ($this->context['user']['is_admin'] === false)
+		if (Utils::$context['user']['is_admin'] === false)
 			return;
 
 		$counter = 0;
@@ -230,26 +231,26 @@ abstract class AbstractMain
 			array_slice($buttons['admin']['sub_buttons'], 0, $counter, true),
 			[
 				'portal_settings' => [
-					'title'       => $this->txt['lp_settings'],
-					'href'        => $this->scripturl . '?action=admin;area=lp_settings',
+					'title'       => Lang::$txt['lp_settings'],
+					'href'        => Config::$scripturl . '?action=admin;area=lp_settings',
 					'show'        => true,
 					'sub_buttons' => [
 						'blocks'  => [
-							'title' => $this->txt['lp_blocks'],
-							'href'  => $this->scripturl . '?action=admin;area=lp_blocks',
-							'amt'   => $this->context['lp_quantities']['active_blocks'],
+							'title' => Lang::$txt['lp_blocks'],
+							'href'  => Config::$scripturl . '?action=admin;area=lp_blocks',
+							'amt'   => Utils::$context['lp_quantities']['active_blocks'],
 							'show'  => true,
 						],
 						'pages'   => [
-							'title' => $this->txt['lp_pages'],
-							'href'  => $this->scripturl . '?action=admin;area=lp_pages',
-							'amt'   => $this->context['lp_quantities']['active_pages'],
+							'title' => Lang::$txt['lp_pages'],
+							'href'  => Config::$scripturl . '?action=admin;area=lp_pages',
+							'amt'   => Utils::$context['lp_quantities']['active_pages'],
 							'show'  => true,
 						],
 						'plugins' => [
-							'title'   => $this->txt['lp_plugins'],
-							'href'    => $this->scripturl . '?action=admin;area=lp_plugins',
-							'amt'     => $this->context['lp_enabled_plugins'] ? count($this->context['lp_enabled_plugins']) : 0,
+							'title'   => Lang::$txt['lp_plugins'],
+							'href'    => Config::$scripturl . '?action=admin;area=lp_plugins',
+							'amt'     => Utils::$context['lp_enabled_plugins'] ? count(Utils::$context['lp_enabled_plugins']) : 0,
 							'show'    => true,
 							'is_last' => true,
 						],
@@ -262,16 +263,16 @@ abstract class AbstractMain
 
 	protected function prepareModerationButtons(array &$buttons): void
 	{
-		if ($this->context['allow_light_portal_manage_pages_any'] === false)
+		if (Utils::$context['allow_light_portal_manage_pages_any'] === false)
 			return;
 
 		$buttons['moderate']['show'] = true;
 
 		$buttons['moderate']['sub_buttons'] = [
 			'lp_pages' => [
-				'title' => $this->txt['lp_pages_unapproved'],
-				'href'  => $this->scripturl . '?action=admin;area=lp_pages;sa=main;moderate',
-				'amt'   => $this->context['lp_quantities']['unapproved_pages'],
+				'title' => Lang::$txt['lp_pages_unapproved'],
+				'href'  => Config::$scripturl . '?action=admin;area=lp_pages;sa=main;moderate',
+				'amt'   => Utils::$context['lp_quantities']['unapproved_pages'],
 				'show'  => true,
 			],
 		] + $buttons['moderate']['sub_buttons'];
@@ -279,13 +280,13 @@ abstract class AbstractMain
 
 	protected function preparePageButtons(array &$buttons): void
 	{
-		if (empty($this->context['lp_menu_pages'] = $this->getMenuPages()))
+		if (empty(Utils::$context['lp_menu_pages'] = $this->getMenuPages()))
 			return;
 
 		$page_buttons = [];
-		foreach ($this->context['lp_menu_pages'] as $item) {
+		foreach (Utils::$context['lp_menu_pages'] as $item) {
 			$page_buttons['portal_page_' . $item['alias']] = [
-				'title' => ($item['icon'] ? '<span class="portal_menu_icons fa-fw ' . $item['icon'] . '"></span>' : '') . $this->getTranslatedTitle($item['title']),
+				'title' => ($item['icon'] ? '<span class="portal_menu_icons fa-fw ' . $item['icon'] . '"></span>' : '') . $this->getTranslatedTitle($item['titles']),
 				'href'  => LP_PAGE_URL . $item['alias'],
 				'icon'  => '" style="display: none"></span><span',
 				'show'  => $this->canViewItem($item['permissions'])
@@ -312,35 +313,35 @@ abstract class AbstractMain
 		// Display "Portal" item in Main Menu
 		$buttons = array_merge([
 			LP_ACTION => [
-				'title'       => $this->txt['lp_portal'],
-				'href'        => $this->scripturl,
+				'title'       => Lang::$txt['lp_portal'],
+				'href'        => Config::$scripturl,
 				'icon'        => 'home',
 				'show'        => true,
 				'action_hook' => true,
-				'is_last'     => $this->context['right_to_left']
+				'is_last'     => Utils::$context['right_to_left']
 			],
 		], $buttons);
 
 		// "Forum"
-		$buttons['home']['title'] = $this->txt['lp_forum'];
-		$buttons['home']['href']  = $this->scripturl . '?action=forum';
+		$buttons['home']['title'] = Lang::$txt['lp_forum'];
+		$buttons['home']['href']  = Config::$scripturl . '?action=forum';
 		$buttons['home']['icon']  = 'im_on';
 
 		// Standalone mode
-		if (empty($this->modSettings['lp_standalone_mode']))
+		if (empty(Config::$modSettings['lp_standalone_mode']))
 			return;
 
-		$buttons[LP_ACTION]['title']   = $this->txt['lp_portal'];
-		$buttons[LP_ACTION]['href']    = $this->modSettings['lp_standalone_url'] ?: $this->scripturl;
+		$buttons[LP_ACTION]['title']   = Lang::$txt['lp_portal'];
+		$buttons[LP_ACTION]['href']    = Config::$modSettings['lp_standalone_url'] ?: Config::$scripturl;
 		$buttons[LP_ACTION]['icon']    = 'home';
-		$buttons[LP_ACTION]['is_last'] = $this->context['right_to_left'];
+		$buttons[LP_ACTION]['is_last'] = Utils::$context['right_to_left'];
 
 		$buttons = array_merge(
 			array_slice($buttons, 0, 2, true),
 			[
 				'forum' => [
-					'title'       => $this->txt['lp_forum'],
-					'href'        => $this->modSettings['lp_standalone_url'] ? $this->scripturl : $this->scripturl . '?action=forum',
+					'title'       => Lang::$txt['lp_forum'],
+					'href'        => Config::$modSettings['lp_standalone_url'] ? Config::$scripturl : Config::$scripturl . '?action=forum',
 					'icon'        => 'im_on',
 					'show'        => true,
 					'action_hook' => true
@@ -354,20 +355,20 @@ abstract class AbstractMain
 
 	protected function promoteTopic(): void
 	{
-		if (empty($this->user_info['is_admin']) || $this->request()->hasNot('t'))
+		if (empty(User::$info['is_admin']) || $this->request()->hasNot('t'))
 			return;
 
 		$topic = $this->request('t');
 
-		if (($key = array_search($topic, $this->context['lp_frontpage_topics'])) !== false) {
-			unset($this->context['lp_frontpage_topics'][$key]);
+		if (($key = array_search($topic, Utils::$context['lp_frontpage_topics'])) !== false) {
+			unset(Utils::$context['lp_frontpage_topics'][$key]);
 		} else {
-			$this->context['lp_frontpage_topics'][] = $topic;
+			Utils::$context['lp_frontpage_topics'][] = $topic;
 		}
 
-		$this->updateSettings(['lp_frontpage_topics' => implode(',', $this->context['lp_frontpage_topics'])]);
+		Config::updateModSettings(['lp_frontpage_topics' => implode(',', Utils::$context['lp_frontpage_topics'])]);
 
-		$this->redirect('topic=' . $topic);
+		Utils::redirectexit('topic=' . $topic);
 	}
 
 	private function getMenuPages(): array
@@ -375,7 +376,7 @@ abstract class AbstractMain
 		if (($pages = $this->cache()->get('menu_pages')) === null) {
 			$titles = $this->getEntityList('title');
 
-			$result = $this->smcFunc['db_query']('', '
+			$result = Utils::$smcFunc['db_query']('', '
 				SELECT p.page_id, p.alias, p.permissions, pp2.value AS icon
 				FROM {db_prefix}lp_pages AS p
 					LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {literal:page})
@@ -392,7 +393,7 @@ abstract class AbstractMain
 			);
 
 			$pages = [];
-			while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
+			while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 				$pages[$row['page_id']] = [
 					'id'          => $row['page_id'],
 					'alias'       => $row['alias'],
@@ -401,11 +402,11 @@ abstract class AbstractMain
 					'icon'        => $row['icon'],
 				];
 
-				$pages[$row['page_id']]['title'] = $titles[$row['page_id']];
+				$pages[$row['page_id']]['titles'] = $titles[$row['page_id']];
 			}
 
-			$this->smcFunc['db_free_result']($result);
-			$this->context['lp_num_queries']++;
+			Utils::$smcFunc['db_free_result']($result);
+			Utils::$context['lp_num_queries']++;
 
 			$this->cache()->put('menu_pages', $pages);
 		}
@@ -415,8 +416,8 @@ abstract class AbstractMain
 
 	private function calculateNumberOfEntities(): void
 	{
-		if (($num_entities = $this->cache()->get('num_active_entities_u' . $this->user_info['id'])) === null) {
-			$result = $this->smcFunc['db_query']('', '
+		if (($num_entities = $this->cache()->get('num_active_entities_u' . User::$info['id'])) === null) {
+			$result = Utils::$smcFunc['db_query']('', '
 				SELECT
 					(
 						SELECT COUNT(b.block_id)
@@ -426,7 +427,7 @@ abstract class AbstractMain
 					(
 						SELECT COUNT(p.page_id)
 						FROM {db_prefix}lp_pages p
-						WHERE p.status = {int:active}' . ($this->context['allow_light_portal_manage_pages_any'] ? '' : '
+						WHERE p.status = {int:active}' . (Utils::$context['allow_light_portal_manage_pages_any'] ? '' : '
 							AND p.author_id = {int:user_id}') . '
 					) AS num_pages,
 					(
@@ -448,20 +449,20 @@ abstract class AbstractMain
 					'active'     => Page::STATUS_ACTIVE,
 					'unapproved' => Page::STATUS_UNAPPROVED,
 					'internal'   => Page::STATUS_INTERNAL,
-					'user_id'    => $this->user_info['id']
+					'user_id'    => User::$info['id']
 				]
 			);
 
-			$num_entities = $this->smcFunc['db_fetch_assoc']($result);
+			$num_entities = Utils::$smcFunc['db_fetch_assoc']($result);
 			array_walk($num_entities, fn(&$item) => $item = (int) $item);
 
-			$this->smcFunc['db_free_result']($result);
-			$this->context['lp_num_queries']++;
+			Utils::$smcFunc['db_free_result']($result);
+			Utils::$context['lp_num_queries']++;
 
-			$this->cache()->put('num_active_entities_u' . $this->user_info['id'], $num_entities);
+			$this->cache()->put('num_active_entities_u' . User::$info['id'], $num_entities);
 		}
 
-		$this->context['lp_quantities'] = [
+		Utils::$context['lp_quantities'] = [
 			'active_blocks'    => $num_entities['num_blocks'],
 			'active_pages'     => $num_entities['num_pages'],
 			'my_pages'         => $num_entities['num_my_pages'],
@@ -472,14 +473,14 @@ abstract class AbstractMain
 
 	private function getBlockPlacements(): array
 	{
-		return array_combine(['header', 'top', 'left', 'right', 'bottom', 'footer'], $this->txt['lp_block_placement_set']);
+		return array_combine(['header', 'top', 'left', 'right', 'bottom', 'footer'], Lang::$txt['lp_block_placement_set']);
 	}
 
 	private function getPluginTypes(): array
 	{
 		return array_combine(
 			['block', 'ssi', 'editor', 'comment', 'parser', 'article', 'frontpage', 'impex', 'block_options', 'page_options', 'icons', 'seo', 'other'],
-			$this->txt['lp_plugins_types']
+			Lang::$txt['lp_plugins_types']
 		);
 	}
 }

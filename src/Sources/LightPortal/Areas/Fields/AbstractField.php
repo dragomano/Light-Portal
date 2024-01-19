@@ -9,12 +9,13 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.4
+ * @version 2.5
  */
 
 namespace Bugo\LightPortal\Areas\Fields;
 
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Utils\Utils;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -104,8 +105,8 @@ abstract class AbstractField
 
 	public function build(): void
 	{
-		$this->context['posting_fields'][$this->name]['label']['text'] = $this->label;
-		$this->context['posting_fields'][$this->name]['input'] = [
+		Utils::$context['posting_fields'][$this->name]['label']['text'] = $this->label;
+		Utils::$context['posting_fields'][$this->name]['input'] = [
 			'type'       => $this->type,
 			'after'      => $this->after,
 			'tab'        => $this->tab,

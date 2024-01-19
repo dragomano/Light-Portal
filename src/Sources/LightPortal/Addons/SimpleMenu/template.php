@@ -1,9 +1,9 @@
 <?php
 
+use Bugo\LightPortal\Utils\{Lang, Theme, Utils};
+
 function simple_menu_items(): string
 {
-	global $txt, $settings, $context;
-
 	return /** @lang text */ '
 	<div x-data="handleItems()">
 		<table class="add_option centertext table_grid">
@@ -17,14 +17,14 @@ function simple_menu_items(): string
 										<td x-text="index + 1" rowspan="2"></td>
 										<td style="cursor: move">
 											<button type="button" class="button" @click="removeItem(index)">
-												<span class="main_icons delete"></span> ' . $txt['remove'] . '
+												<span class="main_icons delete"></span> ' . Lang::$txt['remove'] . '
 											</button>
-											<input type="text" x-model="item.name" name="item_name[]" maxlength="255" placeholder="' . $txt['lp_simple_menu']['name_placeholder'] . '">
+											<input type="text" x-model="item.name" name="item_name[]" maxlength="255" placeholder="' . Lang::$txt['lp_simple_menu']['name_placeholder'] . '" required>
 										</td>
 									</tr>
 									<tr class="windowbg">
 										<td colspan="2">
-											<input type="text" x-model="item.link" name="item_link[]" placeholder="' . $txt['lp_simple_menu']['link_placeholder'] . '">
+											<input type="text" x-model="item.link" name="item_link[]" placeholder="' . Lang::$txt['lp_simple_menu']['link_placeholder'] . '" required>
 										</td>
 									</tr>
 								</tbody>
@@ -34,9 +34,9 @@ function simple_menu_items(): string
 				</template>
 			</tbody>
 		</table>
-		<button type="button" class="button floatnone" @click="addItem()"><span class="main_icons plus"></span> ' . $txt['lp_simple_menu']['item_add'] . '</button>
+		<button type="button" class="button floatnone" @click="addItem()"><span class="main_icons plus"></span> ' . Lang::$txt['lp_simple_menu']['item_add'] . '</button>
 	</div>
-	<script src="' . $settings['default_theme_url'] . '/scripts/light_portal/Sortable.min.js"></script>
+	<script src="' . Theme::$current->settings['default_theme_url'] . '/scripts/light_portal/Sortable.min.js"></script>
 	<script>
 		document.addEventListener("alpine:initialized", () => {
 			const menuItems = document.querySelectorAll(".sort_table");
@@ -50,7 +50,7 @@ function simple_menu_items(): string
 
 		function handleItems() {
 			return {
-				items: ' . ($context['lp_block']['options']['parameters']['items'] ?: '[]') . ',
+				items: ' . (Utils::$context['lp_block']['options']['items'] ?: '[]') . ',
 				addItem() {
 					this.items.push({
 						name: "",

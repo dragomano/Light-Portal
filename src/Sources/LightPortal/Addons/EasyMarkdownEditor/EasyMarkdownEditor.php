@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 18.01.24
  */
 
 namespace Bugo\LightPortal\Addons\EasyMarkdownEditor;
 
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Utils\{Lang, Theme, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -29,53 +30,53 @@ class EasyMarkdownEditor extends Plugin
 		if ($object['type'] !== 'markdown')
 			return;
 
-		$this->loadLanguage('Editor');
+		Lang::load('Editor');
 
-		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.css');
+		Theme::loadExtCSS('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.css');
 
-		$this->addInlineCss('
+		Theme::addInlineCss('
 		.editor-toolbar button {
 			box-shadow: none;
 		}
 		.editor-statusbar .lines:before {
-			content: "' . $this->txt['lp_easy_markdown_editor']['lines'] . '"
+			content: "' . Lang::$txt['lp_easy_markdown_editor']['lines'] . '"
 		}
 		.editor-statusbar .words:before {
-			content: "' . $this->txt['lp_easy_markdown_editor']['words'] . '"
+			content: "' . Lang::$txt['lp_easy_markdown_editor']['words'] . '"
 		}
 		.CodeMirror pre {
 			max-height: none;
 		}');
 
-		$this->loadExtJS('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.js');
+		Theme::loadExtJS('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.js');
 
-		$this->addInlineJavaScript('
+		Theme::addInlineJS('
 		let easymde = new EasyMDE({
 			element: document.getElementById("content"),
 			autoDownloadFontAwesome: false,
 			autofocus: true,
 			spellChecker: false,
-			placeholder: "' . $this->txt['lp_post_error_no_content'] . '",
+			placeholder: "' . Lang::$txt['lp_post_error_no_content'] . '",
 			forceSync: true,
-			direction: "' . ($this->context['right_to_left'] ? 'rtl' : 'ltr') . '",
+			direction: "' . (Utils::$context['right_to_left'] ? 'rtl' : 'ltr') . '",
 			toolbar: [
 				{
 					name: "bold",
 					action: EasyMDE.toggleBold,
 					className: "fas fa-bold",
-					title: "' . $this->editortxt['bold'] . '"
+					title: "' . Lang::$editortxt['bold'] . '"
 				},
 				{
 					name: "italic",
 					action: EasyMDE.toggleItalic,
 					className: "fas fa-italic",
-					title: "' . $this->editortxt['italic'] . '"
+					title: "' . Lang::$editortxt['italic'] . '"
 				},
 				{
 					name: "strikethrough",
 					action: EasyMDE.toggleStrikethrough,
 					className: "fas fa-strikethrough",
-					title: "' . $this->editortxt['strikethrough'] . '"
+					title: "' . Lang::$editortxt['strikethrough'] . '"
 				},
 				"|",
 				{
@@ -85,52 +86,52 @@ class EasyMarkdownEditor extends Plugin
 						EasyMDE.toggleHeadingSmaller(editor);
 					},
 					className: "fas fa-header",
-					title: "' . $this->txt['lp_title'] . '"
+					title: "' . Lang::$txt['lp_title'] . '"
 				},
 				"|",
 				{
 					name: "image",
 					action: EasyMDE.drawImage,
 					className: "fas fa-image",
-					title: "' . $this->editortxt['insert_image'] . '"
+					title: "' . Lang::$editortxt['insert_image'] . '"
 				},
 				{
 					name: "link",
 					action: EasyMDE.drawLink,
 					className: "fas fa-link",
-					title: "' . $this->editortxt['insert_link'] . '"
+					title: "' . Lang::$editortxt['insert_link'] . '"
 				},
 				"|",
 				{
 					name: "table",
 					action: EasyMDE.drawTable,
 					className: "fas fa-table",
-					title: "' . $this->editortxt['insert_table'] . '"
+					title: "' . Lang::$editortxt['insert_table'] . '"
 				},
 				{
 					name: "code",
 					action: EasyMDE.toggleCodeBlock,
 					className: "fas fa-code",
-					title: "' . $this->editortxt['code'] . '"
+					title: "' . Lang::$editortxt['code'] . '"
 				},
 				{
 					name: "quote",
 					action: EasyMDE.toggleBlockquote,
 					className: "fas fa-quote-left",
-					title: "' . $this->editortxt['insert_quote'] . '"
+					title: "' . Lang::$editortxt['insert_quote'] . '"
 				},
 				"|",
 				{
 					name: "unordered-list",
 					action: EasyMDE.toggleUnorderedList,
 					className: "fas fa-list-ul",
-					title: "' . $this->editortxt['bullet_list'] . '"
+					title: "' . Lang::$editortxt['bullet_list'] . '"
 				},
 				{
 					name: "ordered-list",
 					action: EasyMDE.toggleOrderedList,
 					className: "fas fa-list-ol",
-					title: "' . $this->editortxt['numbered_list'] . '"
+					title: "' . Lang::$editortxt['numbered_list'] . '"
 				},
 				{
 					name: "task-list",
@@ -139,20 +140,20 @@ class EasyMarkdownEditor extends Plugin
 						editor.codemirror.focus();
 					},
 					className: "fas fa-tasks",
-					title: "' . $this->txt['lp_easy_markdown_editor']['tasks'] . '"
+					title: "' . Lang::$txt['lp_easy_markdown_editor']['tasks'] . '"
 				},
 				{
 					name: "horizontal-rule",
 					action: EasyMDE.drawHorizontalRule,
 					className: "fas fa-minus",
-					title: "' . $this->editortxt['insert_horizontal_rule'] . '"
+					title: "' . Lang::$editortxt['insert_horizontal_rule'] . '"
 				},
 				"|",
 				{
 					name: "guide",
 					action: "https://github.com/dragomano/Light-Portal/wiki/Markdown-addon",
 					className: "fas fa-question-circle",
-					title: "' . $this->txt['lp_easy_markdown_editor']['guide'] . '"
+					title: "' . Lang::$txt['lp_easy_markdown_editor']['guide'] . '"
 				}
 			]
 		});', true);

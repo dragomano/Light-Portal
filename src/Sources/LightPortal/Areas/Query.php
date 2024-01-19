@@ -9,12 +9,13 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.4
+ * @version 2.5
  */
 
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Lists\IconList;
+use Bugo\LightPortal\Utils\{Config, Lang, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -72,7 +73,7 @@ trait Query
 		if (empty($search = $data['search']))
 			return;
 
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT t.id_topic, m.subject
 			FROM {db_prefix}topics AS t
 				INNER JOIN {db_prefix}messages AS m ON (m.id_msg = t.id_first_msg)
@@ -87,14 +88,14 @@ trait Query
 				'id_poll'           => 0,
 				'is_approved'       => 1,
 				'id_redirect_topic' => 0,
-				'recycle_board'     => empty($this->modSettings['recycle_board']) ? $this->modSettings['recycle_board'] : 0,
-				'subject'           => trim($this->smcFunc['strtolower']($search)),
+				'recycle_board'     => empty(Config::$modSettings['recycle_board']) ? Config::$modSettings['recycle_board'] : 0,
+				'subject'           => trim(Utils::$smcFunc['strtolower']($search)),
 			]
 		);
 
 		$topics = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
-			$this->censorText($row['subject']);
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+			Lang::censorText($row['subject']);
 
 			$topics[] = [
 				'id'      => $row['id_topic'],
@@ -102,8 +103,8 @@ trait Query
 			];
 		}
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		exit(json_encode($topics));
 	}
@@ -118,23 +119,23 @@ trait Query
 		if (empty($search = $data['search']))
 			return;
 
-		$search = trim($this->smcFunc['strtolower']($search)) . '*';
+		$search = trim(Utils::$smcFunc['strtolower']($search)) . '*';
 		$search = strtr($search, ['%' => '\%', '_' => '\_', '*' => '%', '?' => '_', '&#038;' => '&amp;']);
 
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT id_member, real_name
 			FROM {db_prefix}members
 			WHERE {raw:real_name} LIKE {string:search}
 				AND is_activated IN (1, 11)
 			LIMIT 1000',
 			[
-				'real_name' => $this->smcFunc['db_case_sensitive'] ? 'LOWER(real_name)' : 'real_name',
+				'real_name' => Utils::$smcFunc['db_case_sensitive'] ? 'LOWER(real_name)' : 'real_name',
 				'search'    => $search,
 			]
 		);
 
 		$members = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			$row['real_name'] = strtr($row['real_name'], ['&amp;' => '&#038;', '&lt;' => '&#060;', '&gt;' => '&#062;', '&quot;' => '&#034;']);
 
 			$members[] = [
@@ -143,8 +144,8 @@ trait Query
 			];
 		}
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		exit(json_encode($members));
 	}

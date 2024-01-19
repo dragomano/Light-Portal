@@ -9,10 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.4
+ * @version 2.5
  */
 
 namespace Bugo\LightPortal\Areas\Fields;
+
+use Bugo\LightPortal\Utils\Utils;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -37,7 +39,7 @@ class RangeField extends CustomField
 			$attrs .= ' step="' . $this->attributes['step'] . '"';
 		}
 
-		$this->context['posting_fields'][$this->name]['input']['html']  = '
+		Utils::$context['posting_fields'][$this->name]['input']['html'] = '
 			<div x-data="{ \'' . $this->name . '\': ' . $this->attributes['value'] . ' }">
 				<input type="range" id="' . $this->name . '" name="' . $this->name . '" x-model="' . $this->name . '"' . $attrs . '>
 				<span class="progress_bar amt" x-text="' . $this->name . '"></span>

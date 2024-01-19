@@ -1,20 +1,20 @@
 <?php
 
+use Bugo\LightPortal\Utils\{Lang, Utils};
+
 function template_show_results(): void
 {
-	global $txt, $context;
-
 	echo '
 	<div class="cat_bar">
-		<h3 class="catbg">', $txt['search_results'], '</h3>
+		<h3 class="catbg">', Lang::$txt['search_results'], '</h3>
 	</div>';
 
-	if (empty($context['search_results'])) {
+	if (empty(Utils::$context['search_results'])) {
 		echo '
-	<div class="information">', $txt['search_no_results'], '</div>';
+	<div class="information">', Lang::$txt['search_no_results'], '</div>';
 	}
 
-	foreach ($context['search_results'] as $i => $result) {
+	foreach (Utils::$context['search_results'] as $i => $result) {
 		echo /** @lang text */ '
 	<div class="windowbg">
 		<div class="block">

@@ -11,12 +11,13 @@ declare(strict_types=1);
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.4
+ * @version 2.5
  */
 
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Utils\{Config, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Repositories\PluginRepository;
 use ReflectionClass;
 use ReflectionException;
@@ -37,30 +38,33 @@ final class PluginArea
 
 	public function main(): void
 	{
-		$this->loadLanguage('ManageMaintenance');
-		$this->loadTemplate('LightPortal/ManagePlugins', 'manage_plugins');
-		$this->loadExtCSS('https://cdn.jsdelivr.net/combine/npm/@vueform/multiselect@2/themes/default.min.css,npm/@vueform/toggle@2/themes/default.min.css');
+		Lang::load('ManageMaintenance');
 
-		$this->context['page_title'] = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_plugins_manage'];
-		$this->context['post_url']   = $this->scripturl . '?action=admin;area=lp_plugins;save';
+		Theme::loadTemplate('LightPortal/ManagePlugins');
+		Utils::$context['sub_template'] = 'manage_plugins';
 
-		$this->context[$this->context['admin_menu_name']]['tab_data'] = [
+		Theme::loadExtCSS('https://cdn.jsdelivr.net/combine/npm/@vueform/multiselect@2/themes/default.min.css,npm/@vueform/toggle@2/themes/default.min.css');
+
+		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_plugins_manage'];
+		Utils::$context['post_url']   = Config::$scripturl . '?action=admin;area=lp_plugins;save';
+
+		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => sprintf($this->txt['lp_plugins_manage_description'], 'https://github.com/dragomano/Light-Portal/wiki/How-to-create-a-plugin'),
+			'description' => sprintf(Lang::$txt['lp_plugins_manage_description'], 'https://github.com/dragomano/Light-Portal/wiki/How-to-create-a-plugin'),
 		];
 
-		$this->context['lp_plugins'] = $this->getEntityList('plugin');
+		Utils::$context['lp_plugins'] = $this->getEntityList('plugin');
 
 		$this->extendPluginList();
 
-		$this->context['lp_plugins_extra'] = $this->txt['lp_plugins'] . ' (' . count($this->context['lp_plugins']) . ')';
+		Utils::$context['lp_plugins_extra'] = Lang::$txt['lp_plugins'] . ' (' . count(Utils::$context['lp_plugins']) . ')';
 
 		$this->handleToggle();
 
 		$config_vars = [];
 
 		// You can add settings for your plugins
-		$this->hook('addSettings', [&$config_vars], $this->context['lp_plugins']);
+		$this->hook('addSettings', [&$config_vars], Utils::$context['lp_plugins']);
 
 		$this->handleSave($config_vars);
 
@@ -81,16 +85,16 @@ final class PluginArea
 		$plugin_id = (int) $data['plugin'];
 
 		if ($data['status'] === 'on') {
-			$this->context['lp_enabled_plugins'] = array_filter($this->context['lp_enabled_plugins'], fn($item) => $item !== $this->context['lp_plugins'][$plugin_id]);
+			Utils::$context['lp_enabled_plugins'] = array_filter(Utils::$context['lp_enabled_plugins'], fn($item) => $item !== Utils::$context['lp_plugins'][$plugin_id]);
 		} else {
-			$this->context['lp_enabled_plugins'][] = $this->context['lp_plugins'][$plugin_id];
+			Utils::$context['lp_enabled_plugins'][] = Utils::$context['lp_plugins'][$plugin_id];
 		}
 
-		sort($this->context['lp_enabled_plugins']);
+		sort(Utils::$context['lp_enabled_plugins']);
 
-		$this->updateSettings(['lp_enabled_plugins' => implode(',', array_unique(array_intersect($this->context['lp_enabled_plugins'], $this->context['lp_plugins'])))]);
+		Config::updateModSettings(['lp_enabled_plugins' => implode(',', array_unique(array_intersect(Utils::$context['lp_enabled_plugins'], Utils::$context['lp_plugins'])))]);
 
-		$this->updateAssetMtime($this->context['lp_plugins'][$plugin_id]);
+		$this->updateAssetMtime(Utils::$context['lp_plugins'][$plugin_id]);
 
 		$this->cache()->flush();
 
@@ -102,7 +106,7 @@ final class PluginArea
 		if ($this->request()->hasNot('save'))
 			return;
 
-		$this->checkSession();
+		User::$me->checkSession();
 
 		$plugin_name = $this->request('plugin_name');
 		$plugin_options = [];
@@ -126,7 +130,7 @@ final class PluginArea
 		}
 
 		// You can do additional actions after settings saving
-		$this->hook('saveSettings', [&$plugin_options], $this->context['lp_plugins']);
+		$this->hook('saveSettings', [&$plugin_options], Utils::$context['lp_plugins']);
 
 		$this->repository->changeSettings($plugin_name, $plugin_options);
 
@@ -135,7 +139,7 @@ final class PluginArea
 
 	private function prepareAddonList(array $config_vars): void
 	{
-		$this->context['all_lp_plugins'] = array_map(function ($item) use ($config_vars) {
+		Utils::$context['all_lp_plugins'] = array_map(function ($item) use ($config_vars) {
 			$composer = false;
 
 			$snake_name = $this->getSnakeName($item);
@@ -155,13 +159,13 @@ final class PluginArea
 
 				$composer = is_file(dirname($addonClass->getFileName()) . DIRECTORY_SEPARATOR . 'composer.json');
 			} catch (ReflectionException) {
-				if (isset($this->context['lp_can_donate'][$item])) {
-					$this->context['lp_loaded_addons'][$snake_name]['type'] = $this->context['lp_can_donate'][$item]['type'] ?? 'other';
+				if (isset(Utils::$context['lp_can_donate'][$item])) {
+					Utils::$context['lp_loaded_addons'][$snake_name]['type'] = Utils::$context['lp_can_donate'][$item]['type'] ?? 'other';
 					$special = 'can_donate';
 				}
 
-				if (isset($this->context['lp_can_download'][$item])) {
-					$this->context['lp_loaded_addons'][$snake_name]['type'] = $this->context['lp_can_download'][$item]['type'] ?? 'other';
+				if (isset(Utils::$context['lp_can_download'][$item])) {
+					Utils::$context['lp_loaded_addons'][$snake_name]['type'] = Utils::$context['lp_can_download'][$item]['type'] ?? 'other';
 					$special = 'can_download';
 				}
 			}
@@ -169,17 +173,17 @@ final class PluginArea
 			return [
 				'name'        => $item,
 				'snake_name'  => $snake_name,
-				'desc'        => $this->txt['lp_' . $snake_name]['description'] ?? '',
+				'desc'        => Lang::$txt['lp_' . $snake_name]['description'] ?? '',
 				'author'      => $author ?? '',
 				'link'        => $link ?? '',
-				'status'      => in_array($item, $this->context['lp_enabled_plugins']) ? 'on' : 'off',
+				'status'      => in_array($item, Utils::$context['lp_enabled_plugins']) ? 'on' : 'off',
 				'types'       => $this->getTypes($snake_name),
 				'special'     => $special ?? '',
 				'settings'    => $config_vars[$snake_name] ?? [],
 				'composer'    => $composer,
 				'saveable'    => $saveable ?? true,
 			];
-		}, $this->context['lp_plugins']);
+		}, Utils::$context['lp_plugins']);
 	}
 
 	private function prepareAddonChart(): void
@@ -188,10 +192,10 @@ final class PluginArea
 			return;
 
 		$typeCount = [];
-		foreach ($this->context['all_lp_plugins'] as $plugin) {
+		foreach (Utils::$context['all_lp_plugins'] as $plugin) {
 			$types = [...array_keys($plugin['types'])];
 			foreach ($types as $type) {
-				$key = array_search($type, $this->txt['lp_plugins_types']);
+				$key = array_search($type, Lang::$txt['lp_plugins_types']);
 
 				if ($key === false)
 					$key = 7;
@@ -204,17 +208,17 @@ final class PluginArea
 		if (empty($typeCount))
 			return;
 
-		$this->context['lp_addon_chart'] = true;
+		Utils::$context['lp_addon_chart'] = true;
 
 		ksort($typeCount);
 
-		$this->context['insert_after_template'] .= '
+		Utils::$context['insert_after_template'] .= '
 		<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.js"></script>
 		<script>
 			new Chart("addon_chart", {
 				type: "pie",
 				data: {
-					labels: ["' . implode('", "', $this->context['lp_plugin_types']) . '"],
+					labels: ["' . implode('", "', Utils::$context['lp_plugin_types']) . '"],
 					datasets: [{
 						data: [' . implode(', ', $typeCount) . '],
 						backgroundColor: ["#667d99", "#5f2c8c", "#48bf83", "#9354ca", "#91ae26", "#ef564f", "#d68b4f", "#2361ad", "#ac7bd6", "#a39d47", "#2a7750", "#c61a12", "#414141"]
@@ -234,56 +238,56 @@ final class PluginArea
 	private function prepareJsonData(): void
 	{
 		$txtData = [
-			'plugins'           => $this->txt['lp_plugins'],
-			'apply_filter'      => $this->txt['apply_filter'],
-			'all'               => $this->txt['all'],
-			'lp_plugins_desc'   => $this->txt['lp_plugins_desc'],
-			'lp_can_donate'     => $this->txt['lp_can_donate'],
-			'lp_can_download'   => $this->txt['lp_can_download'],
-			'lp_caution'        => $this->txt['lp_caution'],
-			'lp_block_note'     => $this->txt['lp_block_note'],
-			'not_applicable'    => $this->txt['not_applicable'],
-			'settings'          => $this->txt['settings'],
-			'settings_saved'    => $this->txt['settings_saved'],
-			'find_close'        => $this->txt['find_close'],
-			'save'              => $this->txt['save'],
-			'no_matches'        => $this->txt['no_matches'],
-			'search'            => $this->txt['search'],
-			'remove'            => $this->txt['remove'],
-			'no'                => $this->txt['no'],
-			'lp_plugins_select' => $this->txt['lp_plugins_select'],
+			'plugins'           => Lang::$txt['lp_plugins'],
+			'apply_filter'      => Lang::$txt['apply_filter'],
+			'all'               => Lang::$txt['all'],
+			'lp_plugins_desc'   => Lang::$txt['lp_plugins_desc'],
+			'lp_can_donate'     => Lang::$txt['lp_can_donate'],
+			'lp_can_download'   => Lang::$txt['lp_can_download'],
+			'lp_caution'        => Lang::$txt['lp_caution'],
+			'lp_block_note'     => Lang::$txt['lp_block_note'],
+			'not_applicable'    => Lang::$txt['not_applicable'],
+			'settings'          => Lang::$txt['settings'],
+			'settings_saved'    => Lang::$txt['settings_saved'],
+			'find_close'        => Lang::$txt['find_close'],
+			'save'              => Lang::$txt['save'],
+			'no_matches'        => Lang::$txt['no_matches'],
+			'search'            => Lang::$txt['search'],
+			'remove'            => Lang::$txt['remove'],
+			'no'                => Lang::$txt['no'],
+			'lp_plugins_select' => Lang::$txt['lp_plugins_select'],
 		];
 
 		$contextData = [
-			'locale'  => $this->txt['lang_dictionary'],
-			'postUrl' => $this->context['post_url'],
-			'charset' => $this->context['character_set'],
-			'user'    => $this->context['user'],
-			'rtl'     => $this->context['right_to_left'],
+			'locale'  => Lang::$txt['lang_dictionary'],
+			'postUrl' => Utils::$context['post_url'],
+			'charset' => Utils::$context['character_set'],
+			'user'    => Utils::$context['user'],
+			'rtl'     => Utils::$context['right_to_left'],
 		];
 
 		$pluginsData = [
-			'list'     => $this->context['all_lp_plugins'],
-			'types'    => $this->context['lp_plugin_types'],
-			'donate'   => $this->context['lp_can_donate'] ?? [],
-			'download' => $this->context['lp_can_download'] ?? [],
+			'list'     => Utils::$context['all_lp_plugins'],
+			'types'    => Utils::$context['lp_plugin_types'],
+			'donate'   => Utils::$context['lp_can_donate'] ?? [],
+			'download' => Utils::$context['lp_can_download'] ?? [],
 		];
 
 		// Add additional data
-		$all_plugins = array_keys($this->context['lp_loaded_addons']);
+		$all_plugins = array_keys(Utils::$context['lp_loaded_addons']);
 
 		foreach ($all_plugins as $plugin) {
-			if (isset($this->txt['lp_' . $plugin]))
-				$txtData['lp_' . $plugin] = $this->txt['lp_' . $plugin];
+			if (isset(Lang::$txt['lp_' . $plugin]))
+				$txtData['lp_' . $plugin] = Lang::$txt['lp_' . $plugin];
 
-			if (! empty($this->context['lp_' . $plugin . '_plugin']))
-				$contextData['lp_' . $plugin] = $this->context['lp_' . $plugin . '_plugin'];
+			if (! empty(Utils::$context['lp_' . $plugin . '_plugin']))
+				$contextData['lp_' . $plugin] = Utils::$context['lp_' . $plugin . '_plugin'];
 		}
 
-		$this->context['lp_json']['txt']      = json_encode($txtData);
-		$this->context['lp_json']['context']  = json_encode($contextData);
-		$this->context['lp_json']['plugins']  = json_encode($pluginsData);
-		$this->context['lp_json']['icons']    = json_encode($this->context['lp_icon_set']);
+		Utils::$context['lp_json']['txt']      = json_encode($txtData);
+		Utils::$context['lp_json']['context']  = json_encode($contextData);
+		Utils::$context['lp_json']['plugins']  = json_encode($pluginsData);
+		Utils::$context['lp_json']['icons']    = json_encode(Utils::$context['lp_icon_set']);
 	}
 
 	private function updateAssetMtime(string $plugin): void
@@ -303,8 +307,8 @@ final class PluginArea
 
 	private function extendPluginList(): void
 	{
-		$this->context['lp_can_donate'] = [];
-		$this->context['lp_can_download'] = [];
+		Utils::$context['lp_can_donate'] = [];
+		Utils::$context['lp_can_download'] = [];
 
 		if (($xml = $this->cache()->get('custom_addon_list', 259200)) === null) {
 			$addon_list = $this->fetchWebData(LP_PLUGIN_LIST);
@@ -312,7 +316,7 @@ final class PluginArea
 			if (empty($addon_list))
 				return;
 
-			$xml = $this->jsonDecode($addon_list);
+			$xml = Utils::jsonDecode($addon_list, true);
 
 			$this->cache()->put('custom_addon_list', $xml, 259200);
 		}
@@ -321,36 +325,36 @@ final class PluginArea
 			return;
 
 		foreach ($xml['donate'] as $addon) {
-			$this->context['lp_plugins'][] = $addon['name'];
-			$this->context['lp_can_donate'][$addon['name']] = $addon;
+			Utils::$context['lp_plugins'][] = $addon['name'];
+			Utils::$context['lp_can_donate'][$addon['name']] = $addon;
 		}
 
 		foreach ($xml['download'] as $addon) {
-			$this->context['lp_plugins'][] = $addon['name'];
-			$this->context['lp_can_download'][$addon['name']] = $addon;
+			Utils::$context['lp_plugins'][] = $addon['name'];
+			Utils::$context['lp_can_download'][$addon['name']] = $addon;
 		}
 
-		$this->context['lp_plugins'] = array_keys(array_flip($this->context['lp_plugins']));
+		Utils::$context['lp_plugins'] = array_keys(array_flip(Utils::$context['lp_plugins']));
 
-		asort($this->context['lp_plugins']);
+		asort(Utils::$context['lp_plugins']);
 	}
 
 	private function getTypes(string $snake_name): array
 	{
-		if (empty($snake_name) || empty($type = $this->context['lp_loaded_addons'][$snake_name]['type'] ?? ''))
-			return [$this->txt['not_applicable'] => ''];
+		if (empty($snake_name) || empty($type = Utils::$context['lp_loaded_addons'][$snake_name]['type'] ?? ''))
+			return [Lang::$txt['not_applicable'] => ''];
 
 		$types = explode(' ', $type);
 		if (isset($types[1])) {
 			$all_types = [];
 			foreach ($types as $t) {
-				$all_types[$this->context['lp_plugin_types'][$t]] = $this->getTypeClass($t);
+				$all_types[Utils::$context['lp_plugin_types'][$t]] = $this->getTypeClass($t);
 			}
 
 			return $all_types;
 		}
 
-		return [$this->context['lp_plugin_types'][$type] => $this->getTypeClass($type)];
+		return [Utils::$context['lp_plugin_types'][$type] => $this->getTypeClass($type)];
 	}
 
 	private function getTypeClass(string $type): string

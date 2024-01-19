@@ -7,15 +7,14 @@
 namespace Tests\Areas\Fields;
 
 use Bugo\LightPortal\Areas\Fields\VirtualSelectField;
+use Bugo\LightPortal\Utils\Utils;
 use Tester\Assert;
 
 require_once dirname(__DIR__, 2) . '/bootstrap.php';
 require_once __DIR__ . '/template.php';
 
 test('virtual select field', function () {
-	global $context;
-
-	$context['javascript_inline']['defer'] = [];
+	Utils::$context['javascript_inline']['defer'] = [];
 
 	VirtualSelectField::make('foo', 'bar')
 		->setOptions([
@@ -25,31 +24,31 @@ test('virtual select field', function () {
 		])
 		->setValue(2);
 
-	Assert::false(empty($context['javascript_inline']['defer']));
+	Assert::false(empty(Utils::$context['javascript_inline']['defer']));
 
 	Assert::same(
 		'bar',
-		$context['posting_fields']['foo']['label']['text'],
+		Utils::$context['posting_fields']['foo']['label']['text'],
 	);
 
 	Assert::same(
 		'foo',
-		$context['posting_fields']['foo']['input']['attributes']['id']
+		Utils::$context['posting_fields']['foo']['input']['attributes']['id']
 	);
 
 	Assert::same(
 		'select',
-		$context['posting_fields']['foo']['input']['type']
+		Utils::$context['posting_fields']['foo']['input']['type']
 	);
 
-	Assert::true(is_array($context['posting_fields']['foo']['input']['options']));
+	Assert::true(is_array(Utils::$context['posting_fields']['foo']['input']['options']));
 
-	Assert::true($context['posting_fields']['foo']['input']['options']['option 2']['selected']);
+	Assert::true(Utils::$context['posting_fields']['foo']['input']['options']['option 2']['selected']);
 
-	Assert::false($context['posting_fields']['foo']['input']['options']['option 1']['selected']);
+	Assert::false(Utils::$context['posting_fields']['foo']['input']['options']['option 1']['selected']);
 
 	Assert::same(
 		2,
-		$context['posting_fields']['foo']['input']['attributes']['value']
+		Utils::$context['posting_fields']['foo']['input']['attributes']['value']
 	);
 });

@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 29.12.23
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
 
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Utils\{Lang, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -26,9 +27,9 @@ class PluginMaker extends Plugin
 
 	public function init(): void
 	{
-		$this->context['lp_plugin_option_types'] = array_combine(
+		Utils::$context['lp_plugin_option_types'] = array_combine(
 			['text', 'url', 'color', 'int', 'float', 'check', 'multiselect', 'select', 'range', 'title', 'desc', 'callback'],
-			$this->txt['lp_plugin_maker']['option_type_set']
+			Lang::$txt['lp_plugin_maker']['option_type_set']
 		);
 	}
 
@@ -36,7 +37,7 @@ class PluginMaker extends Plugin
 	{
 		$areas['lp_plugins']['subsections'] = array_merge(
 			['main' => $areas['lp_plugins']['subsections']['main']],
-			['add'  => [$this->context['lp_icon_set']['plus'] . $this->txt['lp_plugin_maker']['add']]],
+			['add'  => [Utils::$context['lp_icon_set']['plus'] . Lang::$txt['lp_plugin_maker']['add']]],
 			$areas['lp_plugins']['subsections']
 		);
 	}

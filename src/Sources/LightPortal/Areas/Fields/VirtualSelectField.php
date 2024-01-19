@@ -9,10 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.4
+ * @version 2.5
  */
 
 namespace Bugo\LightPortal\Areas\Fields;
+
+use Bugo\LightPortal\Utils\{Theme, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -23,10 +25,10 @@ class VirtualSelectField extends SelectField
 	{
 		parent::__construct($name, $label);
 
-		$this->addInlineJavaScript('
+		Theme::addInlineJS('
 		VirtualSelect.init({
 			ele: "#' . $name . '",
-			hideClearButton: true,' . ($this->context['right_to_left'] ? '
+			hideClearButton: true,' . (Utils::$context['right_to_left'] ? '
 			textDirection: "rtl",' : '') . '
 			dropboxWrapper: "body"
 		});', true);

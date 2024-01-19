@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 03.01.24
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\DummyArticleCards;
 
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Utils\{Config, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -36,12 +37,12 @@ class DummyArticleCards extends Plugin
 	{
 		$modes[$this->mode] = DummyArticle::class;
 
-		$this->modSettings['lp_frontpage_mode'] = $this->mode;
+		Config::$modSettings['lp_frontpage_mode'] = $this->mode;
 	}
 
 	public function credits(array &$links): void
 	{
-		if (empty($this->context['lp_dummy_article_cards_plugin']['use_lorem_ipsum'])) {
+		if (empty(Utils::$context['lp_dummy_article_cards_plugin']['use_lorem_ipsum'])) {
 			$links[] = [
 				'title'   => 'DummyJSON',
 				'link'    => 'https://github.com/Ovi/DummyJSON',

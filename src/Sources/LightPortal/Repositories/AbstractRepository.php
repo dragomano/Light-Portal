@@ -9,12 +9,13 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.4
+ * @version 2.5
  */
 
 namespace Bugo\LightPortal\Repositories;
 
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Utils\Utils;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -30,18 +31,18 @@ abstract class AbstractRepository
 		if ($entity['type'] !== 'bbc')
 			return;
 
-		$entity['content'] = $this->smcFunc['htmlspecialchars']($entity['content'], ENT_QUOTES);
+		$entity['content'] = Utils::$smcFunc['htmlspecialchars']($entity['content'], ENT_QUOTES);
 
 		$this->preparseCode($entity['content']);
 	}
 
 	protected function saveTitles(int $item, string $method = ''): void
 	{
-		if (empty($this->context['lp_' . $this->entity]['title']))
+		if (empty(Utils::$context['lp_' . $this->entity]['titles']))
 			return;
 
 		$titles = [];
-		foreach ($this->context['lp_' . $this->entity]['title'] as $lang => $title) {
+		foreach (Utils::$context['lp_' . $this->entity]['titles'] as $lang => $title) {
 			$titles[] = [
 				'item_id' => $item,
 				'type'    => $this->entity,
@@ -53,7 +54,7 @@ abstract class AbstractRepository
 		if (empty($titles))
 			return;
 
-		$this->smcFunc['db_insert']($method,
+		Utils::$smcFunc['db_insert']($method,
 			'{db_prefix}lp_titles',
 			[
 				'item_id' => 'int',
@@ -65,16 +66,16 @@ abstract class AbstractRepository
 			['item_id', 'type', 'lang']
 		);
 
-		$this->context['lp_num_queries']++;
+		Utils::$context['lp_num_queries']++;
 	}
 
 	protected function saveOptions(int $item, string $method = ''): void
 	{
-		if (empty($this->context['lp_' . $this->entity]['options']))
+		if (empty(Utils::$context['lp_' . $this->entity]['options']))
 			return;
 
 		$params = [];
-		foreach ($this->context['lp_' . $this->entity]['options'] as $param_name => $value) {
+		foreach (Utils::$context['lp_' . $this->entity]['options'] as $param_name => $value) {
 			$value = is_array($value) ? implode(',', $value) : $value;
 
 			$params[] = [
@@ -88,7 +89,7 @@ abstract class AbstractRepository
 		if (empty($params))
 			return;
 
-		$this->smcFunc['db_insert']($method,
+		Utils::$smcFunc['db_insert']($method,
 			'{db_prefix}lp_params',
 			[
 				'item_id' => 'int',
@@ -100,6 +101,6 @@ abstract class AbstractRepository
 			['item_id', 'type', 'name']
 		);
 
-		$this->context['lp_num_queries']++;
+		Utils::$context['lp_num_queries']++;
 	}
 }

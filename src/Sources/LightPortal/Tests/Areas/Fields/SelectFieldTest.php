@@ -7,14 +7,13 @@
 namespace Tests\Areas\Fields;
 
 use Bugo\LightPortal\Areas\Fields\SelectField;
+use Bugo\LightPortal\Utils\Utils;
 use Tester\Assert;
 
 require_once dirname(__DIR__, 2) . '/bootstrap.php';
 require_once __DIR__ . '/template.php';
 
 test('select field', function () {
-	global $context;
-
 	SelectField::make('foo', 'bar')
 		->setOptions([
 			1 => 'option 1',
@@ -25,27 +24,27 @@ test('select field', function () {
 
 	Assert::same(
 		'bar',
-		$context['posting_fields']['foo']['label']['text'],
+		Utils::$context['posting_fields']['foo']['label']['text'],
 	);
 
 	Assert::same(
 		'foo',
-		$context['posting_fields']['foo']['input']['attributes']['id']
+		Utils::$context['posting_fields']['foo']['input']['attributes']['id']
 	);
 
 	Assert::same(
 		'select',
-		$context['posting_fields']['foo']['input']['type']
+		Utils::$context['posting_fields']['foo']['input']['type']
 	);
 
-	Assert::true(is_array($context['posting_fields']['foo']['input']['options']));
+	Assert::true(is_array(Utils::$context['posting_fields']['foo']['input']['options']));
 
-	Assert::true($context['posting_fields']['foo']['input']['options']['option 2']['selected']);
+	Assert::true(Utils::$context['posting_fields']['foo']['input']['options']['option 2']['selected']);
 
-	Assert::false($context['posting_fields']['foo']['input']['options']['option 1']['selected']);
+	Assert::false(Utils::$context['posting_fields']['foo']['input']['options']['option 1']['selected']);
 
 	Assert::same(
 		2,
-		$context['posting_fields']['foo']['input']['attributes']['value']
+		Utils::$context['posting_fields']['foo']['input']['attributes']['value']
 	);
 });

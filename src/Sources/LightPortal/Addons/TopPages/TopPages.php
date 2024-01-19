@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\TopPages;
 
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, NumberField, RadioField};
+use Bugo\LightPortal\Utils\{Lang, User, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -25,47 +26,52 @@ class TopPages extends Block
 {
 	public string $icon = 'fas fa-balance-scale-left';
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['top_pages']['parameters'] = [
+		if (Utils::$context['current_block']['type'] !== 'top_pages')
+			return;
+
+		$params = [
 			'popularity_type'   => 'comments',
 			'num_pages'         => 10,
 			'show_numbers_only' => false,
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type): void
+	public function validateBlockParams(array &$params): void
 	{
-		if ($type !== 'top_pages')
+		if (Utils::$context['current_block']['type'] !== 'top_pages')
 			return;
 
-		$parameters['popularity_type']   = FILTER_DEFAULT;
-		$parameters['num_pages']         = FILTER_VALIDATE_INT;
-		$parameters['show_numbers_only'] = FILTER_VALIDATE_BOOLEAN;
+		$params = [
+			'popularity_type'   => FILTER_DEFAULT,
+			'num_pages'         => FILTER_VALIDATE_INT,
+			'show_numbers_only' => FILTER_VALIDATE_BOOLEAN,
+		];
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'top_pages')
+		if (Utils::$context['current_block']['type'] !== 'top_pages')
 			return;
 
-		RadioField::make('popularity_type', $this->txt['lp_top_pages']['type'])
-			->setOptions(array_combine(['comments', 'views'], $this->txt['lp_top_pages']['type_set']))
-			->setValue($this->context['lp_block']['options']['parameters']['popularity_type']);
+		RadioField::make('popularity_type', Lang::$txt['lp_top_pages']['type'])
+			->setOptions(array_combine(['comments', 'views'], Lang::$txt['lp_top_pages']['type_set']))
+			->setValue(Utils::$context['lp_block']['options']['popularity_type']);
 
-		NumberField::make('num_pages', $this->txt['lp_top_pages']['num_pages'])
+		NumberField::make('num_pages', Lang::$txt['lp_top_pages']['num_pages'])
 			->setAttribute('min', 1)
-			->setValue($this->context['lp_block']['options']['parameters']['num_pages']);
+			->setValue(Utils::$context['lp_block']['options']['num_pages']);
 
-		CheckboxField::make('show_numbers_only', $this->txt['lp_top_pages']['show_numbers_only'])
-			->setValue($this->context['lp_block']['options']['parameters']['show_numbers_only']);
+		CheckboxField::make('show_numbers_only', Lang::$txt['lp_top_pages']['show_numbers_only'])
+			->setValue(Utils::$context['lp_block']['options']['show_numbers_only']);
 	}
 
 	public function getData(array $parameters): array
 	{
 		$titles = $this->getEntityList('title');
 
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT page_id, alias, type, num_views, num_comments
 			FROM {db_prefix}lp_pages
 			WHERE status = {int:status}
@@ -82,7 +88,7 @@ class TopPages extends Block
 		);
 
 		$pages = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			if ($this->isFrontpage($row['alias']))
 				continue;
 
@@ -94,8 +100,8 @@ class TopPages extends Block
 			];
 		}
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return $pages;
 	}
@@ -107,7 +113,7 @@ class TopPages extends Block
 
 		$parameters['show_numbers_only'] ??= false;
 
-		$top_pages = $this->cache('top_pages_addon_b' . $data->block_id . '_u' . $this->user_info['id'])
+		$top_pages = $this->cache('top_pages_addon_b' . $data->block_id . '_u' . User::$info['id'])
 			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getData', $parameters);
 
@@ -115,7 +121,7 @@ class TopPages extends Block
 			$max = $top_pages[array_key_first($top_pages)]['num_' . $parameters['popularity_type']];
 
 			if (empty($max))
-				echo $this->txt['lp_top_pages']['no_items'];
+				echo Lang::$txt['lp_top_pages']['no_items'];
 			else {
 				echo '
 		<dl class="stats">';
@@ -140,7 +146,7 @@ class TopPages extends Block
 		</dl>';
 			}
 		} else {
-			echo $this->txt['lp_top_pages']['no_items'];
+			echo Lang::$txt['lp_top_pages']['no_items'];
 		}
 	}
 }

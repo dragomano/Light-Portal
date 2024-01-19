@@ -10,12 +10,13 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 24.12.23
+ * @version 18.01.24
  */
 
 namespace Bugo\LightPortal\Addons\Snowflakes;
 
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Utils\{Theme, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -36,15 +37,15 @@ class Snowflakes extends Plugin
 
 	public function init(): void
 	{
-		$this->loadCSSFile('light_portal/snowflakes/snow.min.css');
-		$this->loadJavaScriptFile('light_portal/snowflakes/Snow.min.js', ['minimize' => true]);
-		$this->addInlineJavaScript('
+		Theme::loadCSSFile('light_portal/snowflakes/snow.min.css');
+		Theme::loadJSFile('light_portal/snowflakes/Snow.min.js', ['minimize' => true]);
+		Theme::addInlineJS('
 			new Snow({
-				iconColor: "' . (empty($this->context['lp_snowflakes_plugin']['icon_color']) ? $this->params['icon_color'] : $this->context['lp_snowflakes_plugin']['icon_color']) . '",
-				iconSize: ' . (empty($this->context['lp_snowflakes_plugin']['icon_size']) ? $this->params['icon_size'] : $this->context['lp_snowflakes_plugin']['icon_size']) . ',
-				countSnowflake: ' . (empty($this->context['lp_snowflakes_plugin']['snowflakes_count']) ? $this->params['snowflakes_count'] : $this->context['lp_snowflakes_plugin']['snowflakes_count']) . ',
-				showSnowBalls: ' . (empty($this->context['lp_snowflakes_plugin']['enable_snowdrifts']) ? 'false' : 'true') . ',
-				snowBallsLength: ' . (empty($this->context['lp_snowflakes_plugin']['snowdrifts_count']) ? $this->params['snowdrifts_count'] : $this->context['lp_snowflakes_plugin']['snowdrifts_count']) . '
+				iconColor: "' . (empty(Utils::$context['lp_snowflakes_plugin']['icon_color']) ? $this->params['icon_color'] : Utils::$context['lp_snowflakes_plugin']['icon_color']) . '",
+				iconSize: ' . (empty(Utils::$context['lp_snowflakes_plugin']['icon_size']) ? $this->params['icon_size'] : Utils::$context['lp_snowflakes_plugin']['icon_size']) . ',
+				countSnowflake: ' . (empty(Utils::$context['lp_snowflakes_plugin']['snowflakes_count']) ? $this->params['snowflakes_count'] : Utils::$context['lp_snowflakes_plugin']['snowflakes_count']) . ',
+				showSnowBalls: ' . (empty(Utils::$context['lp_snowflakes_plugin']['enable_snowdrifts']) ? 'false' : 'true') . ',
+				snowBallsLength: ' . (empty(Utils::$context['lp_snowflakes_plugin']['snowdrifts_count']) ? $this->params['snowdrifts_count'] : Utils::$context['lp_snowflakes_plugin']['snowdrifts_count']) . '
 			});', true);
 	}
 

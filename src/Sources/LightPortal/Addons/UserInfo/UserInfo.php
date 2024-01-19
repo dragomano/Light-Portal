@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.12.23
+ * @version 18.01.24
  */
 
 namespace Bugo\LightPortal\Addons\UserInfo;
 
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Utils\{User, Utils};
 use Exception;
 
 if (! defined('LP_NAME'))
@@ -30,9 +31,9 @@ class UserInfo extends Block
 	 */
 	public function getData(): array
 	{
-		$this->loadMemberData([$this->user_info['id']]);
+		User::loadMemberData([User::$info['id']]);
 
-		return $this->loadMemberContext($this->user_info['id']);
+		return User::loadMemberContext(User::$info['id']);
 	}
 
 	public function prepareContent(object $data): void
@@ -42,12 +43,12 @@ class UserInfo extends Block
 
 		$this->setTemplate();
 
-		if (! $this->context['user']['is_logged']) {
+		if (! Utils::$context['user']['is_logged']) {
 			show_user_info_for_guests();
 			return;
 		}
 
-		$userData = $this->cache('user_info_addon_u' . $this->context['user']['id'])
+		$userData = $this->cache('user_info_addon_u' . Utils::$context['user']['id'])
 			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getData');
 

@@ -1,9 +1,9 @@
 <?php
 
-function show_posts(array $recent_posts, array $parameters, bool $full_width)
-{
-	global $scripturl, $txt;
+use Bugo\LightPortal\Utils\{Config, Lang};
 
+function show_posts(array $recent_posts, array $parameters, bool $full_width): void
+{
 	if ($full_width) {
 		echo '
 	<div class="recent_posts_list">';
@@ -25,14 +25,14 @@ function show_posts(array $recent_posts, array $parameters, bool $full_width)
 
 			if ($post['is_new'])
 				echo '
-			<a class="new_posts" href="', $scripturl, '?topic=', $post['topic'], '.msg', $post['new_from'], ';topicseen#new">', $txt['new'], '</a> ';
+			<a class="new_posts" href="', Config::$scripturl, '?topic=', $post['topic'], '.msg', $post['new_from'], ';topicseen#new">', Lang::$txt['new'], '</a> ';
 
 			echo '
 			<span>', $post[$parameters['link_type']];
 
 			if (empty($parameters['show_avatars']))
 				echo '
-				<br><span class="smalltext">', $txt['by'], ' ', $post['poster']['link'], '</span>';
+				<br><span class="smalltext">', Lang::$txt['by'], ' ', $post['poster']['link'], '</span>';
 
 			echo '
 				<br><span class="smalltext">', $post['timestamp'], '</span>

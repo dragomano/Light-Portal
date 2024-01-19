@@ -9,10 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.4
+ * @version 2.5
  */
 
 namespace Bugo\LightPortal\Areas\Fields;
+
+use Bugo\LightPortal\Utils\Utils;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -42,7 +44,7 @@ class RadioField extends InputField
 		parent::build();
 
 		foreach ($this->options as $key => $value) {
-			$this->context['posting_fields'][$this->name]['input']['options'][$value] = [
+			Utils::$context['posting_fields'][$this->name]['input']['options'][$value] = [
 				'value'    => $key,
 				'selected' => $key === $this->attributes['value']
 			];

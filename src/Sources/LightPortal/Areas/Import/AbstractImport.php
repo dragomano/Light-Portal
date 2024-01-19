@@ -8,12 +8,13 @@
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
- * @version 2.4
+ * @version 2.5
  */
 
 namespace Bugo\LightPortal\Areas\Import;
 
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Utils};
 use SimpleXMLElement;
 
 if (! defined('SMF'))
@@ -25,7 +26,7 @@ abstract class AbstractImport implements ImportInterface
 
 	public function __construct()
 	{
-		$this->context['max_file_size'] = $this->memoryReturnBytes(ini_get('upload_max_filesize'));
+		Utils::$context['max_file_size'] = Config::memoryReturnBytes(ini_get('upload_max_filesize'));
 	}
 
 	protected function getFile(string $name = 'import_file'): SimpleXMLElement|bool
@@ -51,7 +52,7 @@ abstract class AbstractImport implements ImportInterface
 		$count  = sizeof($titles);
 
 		for ($i = 0; $i < $count; $i++) {
-			$results = $this->smcFunc['db_insert']('replace',
+			$results = Utils::$smcFunc['db_insert']('replace',
 				'{db_prefix}lp_titles',
 				[
 					'item_id' => 'int',
@@ -64,7 +65,7 @@ abstract class AbstractImport implements ImportInterface
 				2
 			);
 
-			$this->context['lp_num_queries']++;
+			Utils::$context['lp_num_queries']++;
 		}
 	}
 
@@ -77,7 +78,7 @@ abstract class AbstractImport implements ImportInterface
 		$count  = sizeof($params);
 
 		for ($i = 0; $i < $count; $i++) {
-			$results = $this->smcFunc['db_insert']('replace',
+			$results = Utils::$smcFunc['db_insert']('replace',
 				'{db_prefix}lp_params',
 				[
 					'item_id' => 'int',
@@ -90,20 +91,20 @@ abstract class AbstractImport implements ImportInterface
 				2
 			);
 
-			$this->context['lp_num_queries']++;
+			Utils::$context['lp_num_queries']++;
 		}
 	}
 
 	protected function finish(array $results, string $type = 'blocks'): void
 	{
 		if (empty($results)) {
-			$this->smcFunc['db_transaction']('rollback');
-			$this->fatalLangError('lp_import_failed');
+			Utils::$smcFunc['db_transaction']('rollback');
+			ErrorHandler::fatalLang('lp_import_failed');
 		}
 
-		$this->smcFunc['db_transaction']('commit');
+		Utils::$smcFunc['db_transaction']('commit');
 
-		$this->context['import_successful'] = sprintf($this->txt['lp_import_success'], $this->translate('lp_' . $type . '_set', [$type => $this->context['import_successful']]));
+		Utils::$context['import_successful'] = sprintf(Lang::$txt['lp_import_success'], $this->translate('lp_' . $type . '_set', [$type => Utils::$context['import_successful']]));
 
 		$this->cache()->flush();
 	}

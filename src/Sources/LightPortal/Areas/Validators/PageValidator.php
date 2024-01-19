@@ -9,10 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.4
+ * @version 2.5
  */
 
 namespace Bugo\LightPortal\Areas\Validators;
+
+use Bugo\LightPortal\Utils\{Config, Lang, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -20,8 +22,9 @@ if (! defined('SMF'))
 class PageValidator extends AbstractValidator
 {
 	protected array $args = [
-		'category'    => FILTER_VALIDATE_INT,
-		'page_author' => FILTER_VALIDATE_INT,
+		'page_id'     => FILTER_VALIDATE_INT,
+		'category_id' => FILTER_VALIDATE_INT,
+		'author_id'   => FILTER_VALIDATE_INT,
 		'alias'       => FILTER_DEFAULT,
 		'description' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
 		'keywords'    => FILTER_DEFAULT,
@@ -33,7 +36,7 @@ class PageValidator extends AbstractValidator
 		'content'     => FILTER_UNSAFE_RAW,
 	];
 
-	protected array $parameters = [
+	protected array $params = [
 		'show_title'           => FILTER_VALIDATE_BOOLEAN,
 		'show_in_menu'         => FILTER_VALIDATE_BOOLEAN,
 		'page_icon'            => FILTER_DEFAULT,
@@ -44,75 +47,74 @@ class PageValidator extends AbstractValidator
 
 	public function validate(): array
 	{
-		$post_data  = [];
-		$parameters = [];
+		$data = [];
+		$params = [];
 
 		if ($this->request()->only(['save', 'save_exit', 'preview'])) {
-			foreach ($this->context['lp_languages'] as $lang) {
+			foreach (Utils::$context['lp_languages'] as $lang) {
 				$this->args['title_' . $lang['filename']] = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
 			}
 
-			$this->hook('validatePageData', [&$parameters]);
+			$this->hook('validatePageParams', [&$params]);
 
-			$parameters = array_merge($this->parameters, $parameters);
+			$params = array_merge($this->params, $params);
 
-			$post_data = filter_input_array(INPUT_POST, array_merge($this->args, $parameters));
-			$post_data['id'] = $this->request('id', 0);
-			$post_data['keywords'] = empty($post_data['keywords']) ? [] : explode(',', $post_data['keywords']);
+			$data = filter_input_array(INPUT_POST, array_merge($this->args, $params));
+			$data['keywords'] = empty($data['keywords']) ? [] : explode(',', $data['keywords']);
 
-			$this->findErrors($post_data);
+			$this->findErrors($data);
 		}
 
-		return [$post_data, $parameters];
+		return [$data, $params];
 	}
 
 	private function findErrors(array $data): void
 	{
-		$post_errors = [];
+		$errors = [];
 
-		if (($this->modSettings['userLanguage'] && empty($data['title_' . $this->language])) || empty($data['title_' . $this->context['user']['language']]))
-			$post_errors[] = 'no_title';
+		if ((Config::$modSettings['userLanguage'] && empty($data['title_' . Config::$language])) || empty($data['title_' . Utils::$context['user']['language']]))
+			$errors[] = 'no_title';
 
 		if (empty($data['alias']))
-			$post_errors[] = 'no_alias';
+			$errors[] = 'no_alias';
 
 		if ($data['alias'] && empty($this->filterVar($data['alias'], ['options' => ['regexp' => '/' . LP_ALIAS_PATTERN . '/']])))
-			$post_errors[] = 'no_valid_alias';
+			$errors[] = 'no_valid_alias';
 
 		if ($data['alias'] && ! $this->isUnique($data))
-			$post_errors[] = 'no_unique_alias';
+			$errors[] = 'no_unique_alias';
 
 		if (empty($data['content']))
-			$post_errors[] = 'no_content';
+			$errors[] = 'no_content';
 
-		$this->hook('findPageErrors', [&$post_errors, $data]);
+		$this->hook('findPageErrors', [&$errors, $data]);
 
-		if ($post_errors) {
+		if ($errors) {
 			$this->request()->put('preview', true);
-			$this->context['post_errors'] = [];
+			Utils::$context['post_errors'] = [];
 
-			foreach ($post_errors as $error)
-				$this->context['post_errors'][] = $this->txt['lp_post_error_' . $error];
+			foreach ($errors as $error)
+				Utils::$context['post_errors'][] = Lang::$txt['lp_post_error_' . $error];
 		}
 	}
 
 	private function isUnique(array $data): bool
 	{
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT COUNT(page_id)
 			FROM {db_prefix}lp_pages
 			WHERE alias = {string:alias}
 				AND page_id != {int:item}',
 			[
 				'alias' => $data['alias'],
-				'item'  => $data['id'],
+				'item'  => $data['page_id'],
 			]
 		);
 
-		[$count] = $this->smcFunc['db_fetch_row']($result);
+		[$count] = Utils::$smcFunc['db_fetch_row']($result);
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return $count == 0;
 	}

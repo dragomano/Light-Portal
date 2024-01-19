@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 18.01.24
  */
 
 namespace Bugo\LightPortal\Addons\Likely;
 
 use Bugo\LightPortal\Areas\Partials\AbstractPartial;
+use Bugo\LightPortal\Utils\{Lang, Utils};
 
 final class ButtonSelect extends AbstractPartial
 {
@@ -32,7 +33,7 @@ final class ButtonSelect extends AbstractPartial
 			$data[] = '{label: "' . $button . '", value: "' . $button . '"}';
 
 			if (in_array($button, $params['value'])) {
-				$items[] = $this->jsEscape($button);
+				$items[] = Utils::JavaScriptEscape($button);
 			}
 		}
 
@@ -40,7 +41,7 @@ final class ButtonSelect extends AbstractPartial
 		<div id="buttons" name="buttons"></div>
 		<script>
 			VirtualSelect.init({
-				ele: "#buttons",' . ($this->context['right_to_left'] ? '
+				ele: "#buttons",' . (Utils::$context['right_to_left'] ? '
 				textDirection: "rtl",' : '') . '
 				dropboxWrapper: "body",
 				maxWidth: "100%",
@@ -49,10 +50,10 @@ final class ButtonSelect extends AbstractPartial
 				markSearchResults: true,
 				showValueAsTags: true,
 				showSelectedOptionsFirst: true,
-				placeholder: "' . $this->txt['lp_likely']['select_buttons'] . '",
-				noSearchResultsText: "' . $this->txt['no_matches'] . '",
-				searchPlaceholderText: "' . $this->txt['search'] . '",
-				clearButtonText: "' . $this->txt['remove'] . '",
+				placeholder: "' . Lang::$txt['lp_likely']['select_buttons'] . '",
+				noSearchResultsText: "' . Lang::$txt['no_matches'] . '",
+				searchPlaceholderText: "' . Lang::$txt['search'] . '",
+				clearButtonText: "' . Lang::$txt['remove'] . '",
 				options: [' . implode(',', $data) . '],
 				selectedValue: [' . implode(',', $items) . ']
 			});

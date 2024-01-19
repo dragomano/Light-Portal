@@ -9,10 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.4
+ * @version 2.5
  */
 
 namespace Bugo\LightPortal\Areas\Validators;
+
+use Bugo\LightPortal\Utils\{Lang, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -33,52 +35,53 @@ class BlockValidator extends AbstractValidator
 		'content_class' => FILTER_DEFAULT,
 	];
 
-	protected array $parameters = [
-		'hide_header' => FILTER_VALIDATE_BOOLEAN,
+	protected array $params = [
+		'hide_header'      => FILTER_VALIDATE_BOOLEAN,
+		'no_content_class' => FILTER_VALIDATE_BOOLEAN,
 	];
 
 	public function validate(): array
 	{
-		$post_data  = [];
-		$parameters = [];
+		$data = [];
+		$params = [];
 
 		if ($this->request()->only(['save', 'save_exit', 'preview'])) {
-			foreach ($this->context['lp_languages'] as $lang) {
+			foreach (Utils::$context['lp_languages'] as $lang) {
 				$this->args['title_' . $lang['filename']] = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
 			}
 
-			$post_data = filter_input_array(INPUT_POST, $this->args);
+			$data = filter_input_array(INPUT_POST, $this->args);
 
-			$this->hook('validateBlockData', [&$parameters, $this->context['current_block']['type']]);
+			$this->hook('validateBlockParams', [&$params]);
 
-			$parameters = array_merge($this->parameters, $parameters);
+			$params = array_merge($this->params, $params);
 
-			$post_data['parameters'] = filter_var_array($this->request()->only(array_keys($parameters)), $parameters);
+			$data['parameters'] = filter_var_array($this->request()->only(array_keys($params)), $params);
 
-			$this->findErrors($post_data);
+			$this->findErrors($data);
 		}
 
-		return [$post_data, $parameters];
+		return [$data, $params];
 	}
 
 	private function findErrors(array $data): void
 	{
-		$post_errors = [];
+		$errors = [];
 
 		if (empty($data['areas']))
-			$post_errors[] = 'no_areas';
+			$errors[] = 'no_areas';
 
 		if ($data['areas'] && empty($this->filterVar($data['areas'], ['options' => ['regexp' => '/' . LP_AREAS_PATTERN . '/']])))
-			$post_errors[] = 'no_valid_areas';
+			$errors[] = 'no_valid_areas';
 
-		$this->hook('findBlockErrors', [&$post_errors, $data]);
+		$this->hook('findBlockErrors', [&$errors, $data]);
 
-		if ($post_errors) {
+		if ($errors) {
 			$this->request()->put('preview', true);
-			$this->context['post_errors'] = [];
+			Utils::$context['post_errors'] = [];
 
-			foreach ($post_errors as $error)
-				$this->context['post_errors'][] = $this->txt['lp_post_error_' . $error];
+			foreach ($errors as $error)
+				Utils::$context['post_errors'][] = Lang::$txt['lp_post_error_' . $error];
 		}
 	}
 }

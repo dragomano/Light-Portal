@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 03.01.24
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\DummyArticleCards;
 
 use Bugo\LightPortal\Front\AbstractArticle;
+use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
 use DateTime;
 use Exception;
 
@@ -28,7 +29,7 @@ class DummyArticle extends AbstractArticle
 
 	public function __construct()
 	{
-		$this->limit = $this->modSettings['lp_num_items_per_page'] ?? '6';
+		$this->limit = Config::$modSettings['lp_num_items_per_page'] ?? '6';
 	}
 
 	public function init(): void {}
@@ -48,53 +49,53 @@ class DummyArticle extends AbstractArticle
 
 		$demo_articles = [];
 
-		$keywords = empty($this->context['lp_dummy_article_cards_plugin']['keywords']) ? '' : ($this->context['lp_dummy_article_cards_plugin']['keywords'] . '/all');
+		$keywords = empty(Utils::$context['lp_dummy_article_cards_plugin']['keywords']) ? '' : (Utils::$context['lp_dummy_article_cards_plugin']['keywords'] . '/all');
 
 		foreach ($products as $id => $article) {
-			if (empty($this->context['lp_dummy_article_cards_plugin']['use_lorem_ipsum'])) {
+			if (empty(Utils::$context['lp_dummy_article_cards_plugin']['use_lorem_ipsum'])) {
 				$section = $article['brand'];
 				$title   = $article['title'];
 				$image   = $article['thumbnail'];
-				$teaser  = empty($this->modSettings['lp_show_teaser']) ? '' : $article['description'];
+				$teaser  = empty(Config::$modSettings['lp_show_teaser']) ? '' : $article['description'];
 				$tag     = $article['category'];
 			} else {
-				$section = $this->getShortenText(Lorem::ipsum(1), 20);
-				$title   = $this->getShortenText(Lorem::ipsum(1), 40);
+				$section = Utils::shorten(Lorem::ipsum(1), 20);
+				$title   = Utils::shorten(Lorem::ipsum(1), 40);
 				$image   = 'https://loremflickr.com/470/235/' . $keywords . '?random=' . $article['id'];
-				$teaser  = empty($this->modSettings['lp_show_teaser']) ? '' : $this->getTeaser(Lorem::ipsum(4));
-				$tag     = $this->getShortenText(Lorem::ipsum(1), 10);
+				$teaser  = empty(Config::$modSettings['lp_show_teaser']) ? '' : $this->getTeaser(Lorem::ipsum(4));
+				$tag     = Utils::shorten(Lorem::ipsum(1), 10);
 			}
 
 			$demo_articles[$article['id']] = [
 				'id'        => $article['id'],
 				'section'   => [
 					'name' => $section,
-					'link' => $this->scripturl . '?board=' . random_int(0, 100) . '.0'
+					'link' => Config::$scripturl . '?board=' . random_int(0, 100) . '.0'
 				],
 				'author'    => [
 					'id'     => $users[$id]['id'],
-					'link'   => $this->scripturl . '?action=profile;u=' . $users[$id]['id'],
+					'link'   => Config::$scripturl . '?action=profile;u=' . $users[$id]['id'],
 					'name'   => $users[$id]['firstName'] . ' ' . $users[$id]['lastName'],
 					'avatar' => '<img class="avatar" src="' . $users[$id]['image'] . '" alt="' . $users[$id]['username'] . '">'
 				],
 				'date'      => random_int((new DateTime('-2 years'))->getTimestamp(), time()),
 				'title'     => $title,
-				'link'      => $link = $this->scripturl . '?topic=' . $article['id'] . '.0',
+				'link'      => $link = Config::$scripturl . '?topic=' . $article['id'] . '.0',
 				'is_new'    => random_int(0, 1),
 				'views'     => [
 					'num'   => random_int(0, 9999),
-					'title' => $this->txt['lp_views']
+					'title' => Lang::$txt['lp_views']
 				],
 				'replies'   => [
 					'num'   => $num_replies = random_int(0, 9999),
-					'title' => $this->txt['lp_replies']
+					'title' => Lang::$txt['lp_replies']
 				],
 				'css_class' => random_int(0, 1) ? ' sticky' : '',
 				'image'     => $image,
-				'can_edit'  => $this->user_info['is_admin'],
-				'edit_link' => $this->scripturl . '?action=post;msg=' . ($msg_id = random_int(0, 9999)) . ';topic=' . $article['id'] . '.0',
+				'can_edit'  => User::$info['is_admin'],
+				'edit_link' => Config::$scripturl . '?action=post;msg=' . ($msg_id = random_int(0, 9999)) . ';topic=' . $article['id'] . '.0',
 				'teaser'    => $teaser,
-				'msg_link'  => $num_replies ? $this->scripturl . '?msg=' . $msg_id : $link,
+				'msg_link'  => $num_replies ? Config::$scripturl . '?msg=' . $msg_id : $link,
 				'rating'    => $article['rating'],
 				'tags'      => [
 					['name' => $tag, 'href' => LP_BASE_URL . ';sa=tags;id=' . random_int(1, 99)]
@@ -121,13 +122,13 @@ class DummyArticle extends AbstractArticle
 	{
 		$data = file_get_contents('https://dummyjson.com/products?limit=' . $this->limit);
 
-		return $this->jsonDecode($data)['products'] ?? [];
+		return Utils::jsonDecode($data, true)['products'] ?? [];
 	}
 
 	public function getUsers(): array
 	{
 		$data = file_get_contents('https://dummyjson.com/users?limit=' . $this->limit);
 
-		return $this->jsonDecode($data)['users'] ?? [];
+		return Utils::jsonDecode($data, true)['users'] ?? [];
 	}
 }

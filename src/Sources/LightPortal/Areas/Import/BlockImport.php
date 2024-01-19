@@ -9,31 +9,37 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.4
+ * @version 2.5
  */
 
 namespace Bugo\LightPortal\Areas\Import;
 
+use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Theme, Utils};
+
 if (! defined('SMF'))
 	die('No direct access...');
 
+/**
+ * @property $item
+ */
 final class BlockImport extends AbstractImport
 {
 	public function main(): void
 	{
-		$this->loadTemplate('LightPortal/ManageImpex', 'manage_import');
+		Theme::loadTemplate('LightPortal/ManageImpex');
+		Utils::$context['sub_template'] = 'manage_import';
 
-		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_blocks_import'];
-		$this->context['page_area_title'] = $this->txt['lp_blocks_import'];
-		$this->context['page_area_info']  = $this->txt['lp_blocks_import_info'];
-		$this->context['canonical_url']   = $this->scripturl . '?action=admin;area=lp_blocks;sa=import';
+		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_blocks_import'];
+		Utils::$context['page_area_title'] = Lang::$txt['lp_blocks_import'];
+		Utils::$context['page_area_info']  = Lang::$txt['lp_blocks_import_info'];
+		Utils::$context['canonical_url']   = Config::$scripturl . '?action=admin;area=lp_blocks;sa=import';
 
-		$this->context[$this->context['admin_menu_name']]['tab_data'] = [
+		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => $this->txt['lp_blocks_import_description']
+			'description' => Lang::$txt['lp_blocks_import_description']
 		];
 
-		$this->context['lp_file_type'] = 'text/xml';
+		Utils::$context['lp_file_type'] = 'text/xml';
 
 		$this->run();
 	}
@@ -44,7 +50,7 @@ final class BlockImport extends AbstractImport
 			return;
 
 		if (! isset($xml->blocks->item[0]['block_id']))
-			$this->fatalLangError('lp_wrong_import_file');
+			ErrorHandler::fatalLang('lp_wrong_import_file');
 
 		$items = $titles = $params = [];
 
@@ -93,18 +99,18 @@ final class BlockImport extends AbstractImport
 			}
 		}
 
-		$this->smcFunc['db_transaction']('begin');
+		Utils::$smcFunc['db_transaction']('begin');
 
 		$results = [];
 
 		if ($items) {
-			$this->context['import_successful'] = count($items);
+			Utils::$context['import_successful'] = count($items);
 
 			$items = array_chunk($items, 100);
 			$count = sizeof($items);
 
 			for ($i = 0; $i < $count; $i++) {
-				$results = $this->smcFunc['db_insert']('replace',
+				$results = Utils::$smcFunc['db_insert']('replace',
 					'{db_prefix}lp_blocks',
 					[
 						'block_id'      => 'int',
@@ -125,7 +131,7 @@ final class BlockImport extends AbstractImport
 					2
 				);
 
-				$this->context['lp_num_queries']++;
+				Utils::$context['lp_num_queries']++;
 			}
 		}
 

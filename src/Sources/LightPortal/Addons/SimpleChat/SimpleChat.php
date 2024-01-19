@@ -10,13 +10,14 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 06.12.23
+ * @version 18.01.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleChat;
 
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
+use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -59,29 +60,30 @@ class SimpleChat extends Block
 		$this->prepareTable();
 	}
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['simple_chat']['parameters'] = [
-			'show_avatars' => false,
-		];
-	}
-
-	public function validateBlockData(array &$parameters, string $type): void
-	{
-		if ($type !== 'simple_chat')
+		if (Utils::$context['current_block']['type'] !== 'simple_chat')
 			return;
 
-		$parameters['show_avatars'] = FILTER_VALIDATE_BOOLEAN;
+		$params['show_avatars'] = false;
+	}
+
+	public function validateBlockParams(array &$params): void
+	{
+		if (Utils::$context['current_block']['type'] !== 'simple_chat')
+			return;
+
+		$params['show_avatars'] = FILTER_VALIDATE_BOOLEAN;
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'simple_chat')
+		if (Utils::$context['current_block']['type'] !== 'simple_chat')
 			return;
 
-		CheckboxField::make('show_avatars', $this->txt['lp_simple_chat']['show_avatars'])
+		CheckboxField::make('show_avatars', Lang::$txt['lp_simple_chat']['show_avatars'])
 			->setTab('appearance')
-			->setValue($this->context['lp_block']['options']['parameters']['show_avatars']);
+			->setValue(Utils::$context['lp_block']['options']['show_avatars']);
 	}
 
 	public function getData(int $block_id, array $parameters): array
@@ -99,8 +101,8 @@ class SimpleChat extends Block
 		if ($data->type !== 'simple_chat')
 			return;
 
-		$this->loadCssFile('admin.css');
-		$this->loadJavaScriptFile('light_portal/bundle.min.js', ['defer' => true]);
+		Theme::loadCSSFile('admin.css');
+		Theme::loadJSFile('light_portal/bundle.min.js', ['defer' => true]);
 
 		$parameters['show_avatars'] ??= false;
 
@@ -108,7 +110,7 @@ class SimpleChat extends Block
 			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getData', $data->block_id, $parameters);
 
-		$this->context['lp_chats'][$data->block_id] = json_encode($messages, JSON_UNESCAPED_UNICODE);
+		Utils::$context['lp_chats'][$data->block_id] = json_encode($messages, JSON_UNESCAPED_UNICODE);
 
 		$this->setTemplate();
 
@@ -117,7 +119,7 @@ class SimpleChat extends Block
 
 	public function onBlockRemoving(array $items): void
 	{
-		$this->smcFunc['db_query']('', '
+		Utils::$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_simple_chat_messages
 			WHERE block_id IN ({array_int:items})',
 			[
@@ -132,7 +134,7 @@ class SimpleChat extends Block
 
 		$this->dbExtend('packages');
 
-		if (! empty($this->smcFunc['db_list_tables'](false, $this->db_prefix . 'lp_simple_chat_messages')))
+		if (! empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'lp_simple_chat_messages')))
 			return;
 
 		$tables[] = [
@@ -180,7 +182,7 @@ class SimpleChat extends Block
 		];
 
 		foreach ($tables as $table) {
-			$this->smcFunc['db_create_table']('{db_prefix}' . $table['name'], $table['columns'], $table['indexes']);
+			Utils::$smcFunc['db_create_table']('{db_prefix}' . $table['name'], $table['columns'], $table['indexes']);
 		}
 	}
 }

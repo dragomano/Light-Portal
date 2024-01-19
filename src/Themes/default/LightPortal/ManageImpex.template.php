@@ -1,26 +1,26 @@
 <?php
 
-function template_manage_export_blocks()
-{
-	global $context, $txt, $language;
+use Bugo\LightPortal\Utils\{Config, Lang, Utils};
 
+function template_manage_export_blocks(): void
+{
 	echo '
-	<form action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '">
+	<form action="', Utils::$context['canonical_url'], '" method="post" accept-charset="', Utils::$context['character_set'], '">
 		<div class="cat_bar">
-			<h3 class="catbg">', $context['page_area_title'], '</h3>
+			<h3 class="catbg">', Utils::$context['page_area_title'], '</h3>
 		</div>
 		<table class="table_grid">
 			<thead>
 				<tr class="title_bar">
 					<th scope="col">#</th>
 					<th scope="col" class="type">
-						', $txt['lp_block_note'], ' / ', $txt['lp_title'], '
+						', Lang::$txt['lp_block_note'], ' / ', Lang::$txt['lp_title'], '
 					</th>
 					<th scope="col" class="type">
-						', $txt['lp_block_type'], '
+						', Lang::$txt['lp_block_type'], '
 					</th>
 					<th scope="col" class="placement">
-						', $txt['lp_block_placement'], '
+						', Lang::$txt['lp_block_placement'], '
 					</th>
 					<th scope="col" class="actions">
 						<input type="checkbox" onclick="invertAll(this, this.form);">
@@ -30,7 +30,7 @@ function template_manage_export_blocks()
 			<tbody>';
 
 		$empty = true;
-		foreach ($context['lp_current_blocks'] as $placement) {
+		foreach (Utils::$context['lp_current_blocks'] as $placement) {
 			if (is_array($placement)) {
 				$empty = false;
 				break;
@@ -38,15 +38,15 @@ function template_manage_export_blocks()
 		}
 
 		if ($empty)
-			$context['lp_current_blocks'] = [];
+			Utils::$context['lp_current_blocks'] = [];
 
-		if (empty($context['lp_current_blocks'])) {
+		if (empty(Utils::$context['lp_current_blocks'])) {
 			echo '
 				<tr class="windowbg">
-					<td colspan="5" class="centertext">', $txt['lp_no_items'], '</td>
+					<td colspan="5" class="centertext">', Lang::$txt['lp_no_items'], '</td>
 				</tr>';
 		} else {
-			foreach ($context['lp_current_blocks'] as $placement => $blocks) {
+			foreach (Utils::$context['lp_current_blocks'] as $placement => $blocks) {
 				if (is_array($blocks)) {
 					foreach ($blocks as $id => $data) {
 						echo '
@@ -55,13 +55,13 @@ function template_manage_export_blocks()
 						', $id, '
 					</td>
 					<td class="type centertext">
-						', $data['note'] ?: ($data['title'][$context['user']['language']] ?? $data['title']['english'] ?? $data['title'][$language] ?? ''), '
+						', $data['note'] ?: ($data['titles'][Utils::$context['user']['language']] ?? $data['titles']['english'] ?? $data['titles'][Config::$language] ?? ''), '
 					</td>
 					<td class="type centertext">
-						', $txt['lp_' . $data['type']]['title'] ?? $context['lp_missing_block_types'][$data['type']], '
+						', Lang::$txt['lp_' . $data['type']]['title'] ?? Utils::$context['lp_missing_block_types'][$data['type']], '
 					</td>
 					<td class="placement centertext">
-						', $context['lp_block_placements'][$placement] ?? ($txt['unknown'] . ' (' . $placement . ')'), '
+						', Utils::$context['lp_block_placements'][$placement] ?? (Lang::$txt['unknown'] . ' (' . $placement . ')'), '
 					</td>
 					<td class="actions centertext">
 						<input type="checkbox" value="' . $id . '" name="blocks[]">
@@ -77,27 +77,25 @@ function template_manage_export_blocks()
 		</table>
 		<div class="additional_row">
 			<input type="hidden">
-			<input type="submit" name="export_selection" value="', $txt['lp_export_selection'], '" class="button">
-			<input type="submit" name="export_all" value="', $txt['lp_export_all'], '" class="button">
+			<input type="submit" name="export_selection" value="', Lang::$txt['lp_export_selection'], '" class="button">
+			<input type="submit" name="export_all" value="', Lang::$txt['lp_export_all'], '" class="button">
 		</div>
 	</form>';
 }
 
-function template_manage_export_plugins()
+function template_manage_export_plugins(): void
 {
-	global $context, $txt;
-
 	echo '
-	<form action="', $context['canonical_url'], '" method="post" accept-charset="', $context['character_set'], '">
+	<form action="', Utils::$context['canonical_url'], '" method="post" accept-charset="', Utils::$context['character_set'], '">
 		<div class="cat_bar">
-			<h3 class="catbg">', $context['page_area_title'], '</h3>
+			<h3 class="catbg">', Utils::$context['page_area_title'], '</h3>
 		</div>
 		<table class="table_grid">
 			<thead>
 				<tr class="title_bar">
 					<th scope="col">#</th>
 					<th scope="col" class="type">
-						', $txt['lp_plugin_name'], '
+						', Lang::$txt['lp_plugin_name'], '
 					</th>
 					<th scope="col" class="actions">
 						<input type="checkbox" onclick="invertAll(this, this.form);">
@@ -106,13 +104,13 @@ function template_manage_export_plugins()
 			</thead>
 			<tbody>';
 
-		if (empty($context['lp_plugins'])) {
+		if (empty(Utils::$context['lp_plugins'])) {
 			echo '
 				<tr class="windowbg">
-					<td colspan="3" class="centertext">', $txt['lp_no_items'], '</td>
+					<td colspan="3" class="centertext">', Lang::$txt['lp_no_items'], '</td>
 				</tr>';
 		} else {
-			foreach ($context['lp_plugins'] as $id => $name) {
+			foreach (Utils::$context['lp_plugins'] as $id => $name) {
 				echo '
 				<tr class="windowbg">
 					<td class="centertext">
@@ -133,31 +131,29 @@ function template_manage_export_plugins()
 		</table>
 		<div class="additional_row">
 			<input type="hidden">
-			<input type="submit" name="export_selection" value="', $txt['lp_export_selection'], '" class="button">
-			<input type="submit" name="export_all" value="', $txt['lp_export_all'], '" class="button">
+			<input type="submit" name="export_selection" value="', Lang::$txt['lp_export_selection'], '" class="button">
+			<input type="submit" name="export_all" value="', Lang::$txt['lp_export_all'], '" class="button">
 		</div>
 	</form>';
 }
 
-function template_manage_import()
+function template_manage_import(): void
 {
-	global $context, $txt;
-
-	if (! empty($context['import_successful']))
+	if (! empty(Utils::$context['import_successful']))
 		echo '
-	<div class="infobox">', $context['import_successful'], '</div>';
+	<div class="infobox">', Utils::$context['import_successful'], '</div>';
 
 	echo '
 	<div class="cat_bar">
-		<h3 class="catbg">', $context['page_area_title'], '</h3>
+		<h3 class="catbg">', Utils::$context['page_area_title'], '</h3>
 	</div>
-	<div class="information">', $context['page_area_info'], '</div>
+	<div class="information">', Utils::$context['page_area_info'], '</div>
 	<div class="descbox">
-		<form action="', $context['canonical_url'], '" method="post" enctype="multipart/form-data">
+		<form action="', Utils::$context['canonical_url'], '" method="post" enctype="multipart/form-data">
 			<div class="centertext">
-				<input type="hidden" name="MAX_FILE_SIZE" value="', $context['max_file_size'], '">
-				<input name="import_file" type="file" accept="', $context['lp_file_type'], '">
-				<button class="button floatnone" type="submit">', $txt['lp_import_run'], '</button>
+				<input type="hidden" name="MAX_FILE_SIZE" value="', Utils::$context['max_file_size'], '">
+				<input name="import_file" type="file" accept="', Utils::$context['lp_file_type'], '">
+				<button class="button floatnone" type="submit">', Lang::$txt['lp_import_run'], '</button>
 			</div>
 		</form>
 	</div>';

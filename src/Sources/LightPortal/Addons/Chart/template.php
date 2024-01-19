@@ -1,9 +1,9 @@
 <?php
 
+use Bugo\LightPortal\Utils\{Lang, Theme, Utils};
+
 function chart_template(): string
 {
-	global $txt, $settings, $context;
-
 	return /** @lang text */ '
 	<div x-data="handleDataSets()">
 		<table class="add_option centertext table_grid">
@@ -20,13 +20,13 @@ function chart_template(): string
 												class="button"
 												@click="removeSet(index)"
 											>
-												<span class="main_icons delete"></span> ' . $txt['remove'] . '
+												<span class="main_icons delete"></span> ' . Lang::$txt['remove'] . '
 											</button>
 											<input
 												x-model="dataset.label"
 												type="text"
 												name="set_label[]"
-												placeholder="' . $txt['lp_chart']['set_label'] . '"
+												placeholder="' . Lang::$txt['lp_chart']['set_label'] . '"
 												required
 											>
 										</td>
@@ -37,14 +37,14 @@ function chart_template(): string
 												x-model="dataset.data"
 												type="text"
 												name="set_data[]"
-												placeholder="' . $txt['lp_chart']['datasets_placeholder'] . '"
+												placeholder="' . Lang::$txt['lp_chart']['datasets_placeholder'] . '"
 												required
 											>
 										</td>
 									</tr>
 									<tr class="windowbg">
 										<td x-id="[\'select\']">
-											<label :for="$id(\'select\')">' . $txt['lp_chart']['type'] . '</label>
+											<label :for="$id(\'select\')">' . Lang::$txt['lp_chart']['type'] . '</label>
 											<select x-model="dataset.type" name="set_type[]" :id="$id(\'select\')">
 												<template x-for="(value, key) in charts" :key="key">
 													<option
@@ -56,7 +56,7 @@ function chart_template(): string
 											</select>
 										</td>
 										<td x-id="[\'input-number\']">
-											<label :for="$id(\'input-number\')">' . $txt['lp_chart']['border_width'] . '</label>
+											<label :for="$id(\'input-number\')">' . Lang::$txt['lp_chart']['border_width'] . '</label>
 											<input
 												type="number"
 												min="0"
@@ -74,7 +74,7 @@ function chart_template(): string
 									<template x-if="!usePalette">
 										<tr class="windowbg">
 											<td x-id="[\'input-color\']">
-												<label :for="$id(\'input-color\')">' . $txt['lp_chart']['background_color'] . '</label>
+												<label :for="$id(\'input-color\')">' . Lang::$txt['lp_chart']['background_color'] . '</label>
 												<input
 													type="color"
 													x-model="dataset.backgroundColor"
@@ -88,7 +88,7 @@ function chart_template(): string
 												>
 											</td>
 											<td x-id="[\'input-color\']">
-												<label :for="$id(\'input-color\')">' . $txt['lp_chart']['border_color'] . '</label>
+												<label :for="$id(\'input-color\')">' . Lang::$txt['lp_chart']['border_color'] . '</label>
 												<input
 													type="color"
 													x-model="dataset.borderColor"
@@ -111,10 +111,10 @@ function chart_template(): string
 			</tbody>
 		</table>
 		<button type="button" class="button floatnone" @click="addSet()">
-			<span class="main_icons plus"></span> ' . $txt['lp_chart']['set_add'] . '
+			<span class="main_icons plus"></span> ' . Lang::$txt['lp_chart']['set_add'] . '
 		</button>
 	</div>
-	<script src="' . $settings['default_theme_url'] . '/scripts/light_portal/Sortable.min.js"></script>
+	<script src="' . Theme::$current->settings['default_theme_url'] . '/scripts/light_portal/Sortable.min.js"></script>
 	<script>
 		document.addEventListener("alpine:initialized", () => {
 			const chartDatasets = document.querySelectorAll(".sort_table");
@@ -128,10 +128,10 @@ function chart_template(): string
 
 		function handleDataSets() {
 			return {
-				datasets: ' . ($context['lp_block']['options']['parameters']['datasets'] ?: '[]') . ',
-				charts: ' . json_encode($context['lp_chart_types']) . ',
-				type: "' . $context['lp_block']['options']['parameters']['chart_type'] . '",
-				usePalette: ' . (empty($context['lp_block']['options']['parameters']['default_palette']) ? 'false' : 'true') . ',
+				datasets: ' . (Utils::$context['lp_block']['options']['datasets'] ?: '[]') . ',
+				charts: ' . json_encode(Utils::$context['lp_chart_types']) . ',
+				type: "' . Utils::$context['lp_block']['options']['chart_type'] . '",
+				usePalette: ' . (empty(Utils::$context['lp_block']['options']['default_palette']) ? 'false' : 'true') . ',
 				addSet() {
 					this.datasets.push(this.usePalette ? {
 						label: "",

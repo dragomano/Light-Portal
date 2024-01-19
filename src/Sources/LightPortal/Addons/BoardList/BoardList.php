@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 07.12.23
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\BoardList;
@@ -18,6 +18,7 @@ namespace Bugo\LightPortal\Addons\BoardList;
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Areas\Partials\{ContentClassSelect, TitleClassSelect};
+use Bugo\LightPortal\Utils\{Config, Lang, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -26,43 +27,47 @@ class BoardList extends Block
 {
 	public string $icon = 'far fa-list-alt';
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['board_list']['no_content_class'] = true;
+		if (Utils::$context['current_block']['type'] !== 'board_list')
+			return;
 
-		$options['board_list']['parameters'] = [
-			'category_class' => 'title_bar',
-			'board_class'    => 'roundframe',
+		$params = [
+			'no_content_class' => true,
+			'category_class'   => 'title_bar',
+			'board_class'      => 'roundframe',
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type): void
+	public function validateBlockParams(array &$params): void
 	{
-		if ($type !== 'board_list')
+		if (Utils::$context['current_block']['type'] !== 'board_list')
 			return;
 
-		$parameters['category_class'] = FILTER_DEFAULT;
-		$parameters['board_class']    = FILTER_DEFAULT;
+		$params = [
+			'category_class' => FILTER_DEFAULT,
+			'board_class'    => FILTER_DEFAULT,
+		];
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'board_list')
+		if (Utils::$context['current_block']['type'] !== 'board_list')
 			return;
 
-		CustomField::make('category_class', $this->txt['lp_board_list']['category_class'])
+		CustomField::make('category_class', Lang::$txt['lp_board_list']['category_class'])
 			->setTab('appearance')
 			->setValue(fn() => new TitleClassSelect, [
 				'id'    => 'category_class',
 				'data'  => $this->getCategoryClasses(),
-				'value' => $this->context['lp_block']['options']['parameters']['category_class']
+				'value' => Utils::$context['lp_block']['options']['category_class']
 			]);
 
-		CustomField::make('board_class', $this->txt['lp_board_list']['board_class'])
+		CustomField::make('board_class', Lang::$txt['lp_board_list']['board_class'])
 			->setTab('appearance')
 			->setValue(fn() => new ContentClassSelect, [
 				'id'    => 'board_class',
-				'value' => $this->context['lp_block']['options']['parameters']['board_class'],
+				'value' => Utils::$context['lp_block']['options']['board_class'],
 			]);
 	}
 
@@ -76,14 +81,14 @@ class BoardList extends Block
 		if ($data->type !== 'board_list')
 			return;
 
-		$board_list = $this->cache('board_list_addon_b' . $data->block_id . '_u' . $this->context['user']['id'])
+		$board_list = $this->cache('board_list_addon_b' . $data->block_id . '_u' . Utils::$context['user']['id'])
 			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getData');
 
 		if (empty($board_list))
 			return;
 
-		$this->context['current_board'] ??= 0;
+		Utils::$context['current_board'] ??= 0;
 
 		foreach ($board_list as $category) {
 			if ($parameters['category_class'])
@@ -93,7 +98,7 @@ class BoardList extends Block
 				<ul class="smalltext">';
 
 			foreach ($category['boards'] as $board) {
-				$board['selected'] = $board['id'] == $this->context['current_board'];
+				$board['selected'] = $board['id'] == Utils::$context['current_board'];
 
 				$content .= '
 						<li>';
@@ -102,12 +107,12 @@ class BoardList extends Block
 					$content .= '
 							<ul>
 								<li style="margin-left: 1em">
-									' . $this->context['lp_icon_set'][$board['selected'] ? 'circle_dot' : 'chevron_right'] . ' <a href="' . $this->scripturl . '?board=' . $board['id'] . '.0">' . $board['name'] . '</a>
+									' . Utils::$context['lp_icon_set'][$board['selected'] ? 'circle_dot' : 'chevron_right'] . ' <a href="' . Config::$scripturl . '?board=' . $board['id'] . '.0">' . $board['name'] . '</a>
 								</li>
 							</ul>';
 				} else {
 					$content .= '
-							' . $this->context['lp_icon_set']['circle' . ($board['selected'] ? '_dot' : '')] . ' <a href="' . $this->scripturl . '?board=' . $board['id'] . '.0">' . $board['name'] . '</a>';
+							' . Utils::$context['lp_icon_set']['circle' . ($board['selected'] ? '_dot' : '')] . ' <a href="' . Config::$scripturl . '?board=' . $board['id'] . '.0">' . $board['name'] . '</a>';
 				}
 
 				$content .= '
@@ -117,7 +122,7 @@ class BoardList extends Block
 			$content .= '
 				</ul>';
 
-			echo sprintf($this->context['lp_all_content_classes'][$parameters['board_class']], $content);
+			echo sprintf(Utils::$context['lp_all_content_classes'][$parameters['board_class']], $content);
 		}
 	}
 

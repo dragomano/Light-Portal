@@ -9,31 +9,37 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.4
+ * @version 2.5
  */
 
 namespace Bugo\LightPortal\Areas\Import;
 
+use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Theme, Utils};
+
 if (! defined('SMF'))
 	die('No direct access...');
 
+/**
+ * @property mixed|void $item
+ */
 final class PageImport extends AbstractImport
 {
 	public function main(): void
 	{
-		$this->loadTemplate('LightPortal/ManageImpex', 'manage_import');
+		Theme::loadTemplate('LightPortal/ManageImpex');
+		Utils::$context['sub_template'] = 'manage_import';
 
-		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_pages_import'];
-		$this->context['page_area_title'] = $this->txt['lp_pages_import'];
-		$this->context['page_area_info']  = $this->txt['lp_pages_import_info'];
-		$this->context['canonical_url']   = $this->scripturl . '?action=admin;area=lp_pages;sa=import';
+		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_pages_import'];
+		Utils::$context['page_area_title'] = Lang::$txt['lp_pages_import'];
+		Utils::$context['page_area_info']  = Lang::$txt['lp_pages_import_info'];
+		Utils::$context['canonical_url']   = Config::$scripturl . '?action=admin;area=lp_pages;sa=import';
 
-		$this->context[$this->context['admin_menu_name']]['tab_data'] = [
+		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => $this->txt['lp_pages_import_description']
+			'description' => Lang::$txt['lp_pages_import_description']
 		];
 
-		$this->context['lp_file_type'] = 'text/xml';
+		Utils::$context['lp_file_type'] = 'text/xml';
 
 		$this->run();
 	}
@@ -44,7 +50,7 @@ final class PageImport extends AbstractImport
 			return;
 
 		if (! isset($xml->pages->item[0]['page_id']))
-			$this->fatalLangError('lp_wrong_import_file');
+			ErrorHandler::fatalLang('lp_wrong_import_file');
 
 		$categories = $tags = $items = $titles = $params = $comments = [];
 
@@ -127,10 +133,10 @@ final class PageImport extends AbstractImport
 			}
 		}
 
-		$this->smcFunc['db_transaction']('begin');
+		Utils::$smcFunc['db_transaction']('begin');
 
 		if ($categories) {
-			$this->smcFunc['db_insert']('replace',
+			Utils::$smcFunc['db_insert']('replace',
 				'{db_prefix}lp_categories',
 				[
 					'category_id' => 'int',
@@ -143,7 +149,7 @@ final class PageImport extends AbstractImport
 				2
 			);
 
-			$this->context['lp_num_queries']++;
+			Utils::$context['lp_num_queries']++;
 		}
 
 		if ($tags) {
@@ -151,7 +157,7 @@ final class PageImport extends AbstractImport
 			$count = sizeof($tags);
 
 			for ($i = 0; $i < $count; $i++) {
-				$this->smcFunc['db_insert']('replace',
+				Utils::$smcFunc['db_insert']('replace',
 					'{db_prefix}lp_tags',
 					[
 						'tag_id' => 'int',
@@ -162,19 +168,19 @@ final class PageImport extends AbstractImport
 					2
 				);
 
-				$this->context['lp_num_queries']++;
+				Utils::$context['lp_num_queries']++;
 			}
 		}
 
 		$results = [];
 
 		if ($items) {
-			$this->context['import_successful'] = count($items);
+			Utils::$context['import_successful'] = count($items);
 			$items = array_chunk($items, 100);
 			$count = sizeof($items);
 
 			for ($i = 0; $i < $count; $i++) {
-				$results = $this->smcFunc['db_insert']('replace',
+				$results = Utils::$smcFunc['db_insert']('replace',
 					'{db_prefix}lp_pages',
 					[
 						'page_id'      => 'int',
@@ -196,7 +202,7 @@ final class PageImport extends AbstractImport
 					2
 				);
 
-				$this->context['lp_num_queries']++;
+				Utils::$context['lp_num_queries']++;
 			}
 		}
 
@@ -207,7 +213,7 @@ final class PageImport extends AbstractImport
 			$count    = sizeof($comments);
 
 			for ($i = 0; $i < $count; $i++) {
-				$results = $this->smcFunc['db_insert']('replace',
+				$results = Utils::$smcFunc['db_insert']('replace',
 					'{db_prefix}lp_comments',
 					[
 						'id'         => 'int',
@@ -222,7 +228,7 @@ final class PageImport extends AbstractImport
 					2
 				);
 
-				$this->context['lp_num_queries']++;
+				Utils::$context['lp_num_queries']++;
 			}
 		}
 

@@ -43,8 +43,8 @@
         <exclude name="Sources/LightPortal/Addons/DiceBear/**" />
         <exclude name="Sources/LightPortal/Addons/Disqus/**" />
         <exclude name="Sources/LightPortal/Addons/EasyMarkdownEditor/**" />
-        <exclude name="Sources/LightPortal/Addons/EhPortal/**" />
-        <exclude name="Sources/LightPortal/Addons/EzPortal/**" />
+        <exclude name="Sources/LightPortal/Addons/EhPortalMigration/**" />
+        <exclude name="Sources/LightPortal/Addons/EzPortalMigration/**" />
         <exclude name="Sources/LightPortal/Addons/FaBoardIcons/**" />
         <exclude name="Sources/LightPortal/Addons/FacebookComments/**" />
         <exclude name="Sources/LightPortal/Addons/Giscus/**" />
@@ -63,7 +63,7 @@
         <exclude name="Sources/LightPortal/Addons/PrettyUrls/**" />
         <exclude name="Sources/LightPortal/Addons/SiteList/**" />
         <exclude name="Sources/LightPortal/Addons/Snowflakes/**" />
-        <exclude name="Sources/LightPortal/Addons/TinyPortal/**" />
+        <exclude name="Sources/LightPortal/Addons/TinyPortalMigration/**" />
         <exclude name="Sources/LightPortal/Addons/TopicRatingBar/**" />
         <exclude name="Sources/LightPortal/Addons/TwigLayouts/**" />
         <exclude name="Sources/LightPortal/Addons/Uicons/**" />

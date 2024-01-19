@@ -9,29 +9,31 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.4
+ * @version 2.5
  */
 
 namespace Bugo\LightPortal\Areas\Partials;
+
+use Bugo\LightPortal\Utils\{Lang, Utils};
 
 final class PageAuthorSelect extends AbstractPartial
 {
 	public function __invoke(): string
 	{
 		return /** @lang text */ '
-		<div id="page_author" name="page_author"></div>
+		<div id="author_id" name="author_id"></div>
 		<script>
 			VirtualSelect.init({
-				ele: "#page_author",' . ($this->context['right_to_left'] ? '
+				ele: "#author_id",' . (Utils::$context['right_to_left'] ? '
 				textDirection: "rtl",' : '') . '
 				dropboxWrapper: "body",
 				search: true,
 				markSearchResults: true,
-				placeholder: "' . $this->txt['search'] . '",
-				noSearchResultsText: "' . $this->txt['lp_no_such_members'] . '",
-				searchPlaceholderText: "' . $this->txt['search'] . '",
+				placeholder: "' . Lang::$txt['search'] . '",
+				noSearchResultsText: "' . Lang::$txt['lp_no_such_members'] . '",
+				searchPlaceholderText: "' . Lang::$txt['search'] . '",
 				onServerSearch: function (search, virtualSelect) {
-					return axios.post("' . $this->context['canonical_url'] . ';members", {
+					return axios.post("' . Utils::$context['canonical_url'] . ';members", {
 						search
 					}).then(response => {
 						const data = response.data

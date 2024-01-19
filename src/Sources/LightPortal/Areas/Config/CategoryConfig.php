@@ -9,29 +9,29 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.4
+ * @version 2.5
  */
 
 namespace Bugo\LightPortal\Areas\Config;
 
-use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Utils\{Lang, Theme, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class CategoryConfig
+final class CategoryConfig extends AbstractConfig
 {
-	use Helper;
-
 	public function show(): void
 	{
-		$this->loadTemplate('LightPortal/ManageCategories', 'lp_category_settings');
+		Theme::loadTemplate('LightPortal/ManageCategories');
 
-		$this->context['page_title'] = $this->txt['lp_categories'];
+		Utils::$context['sub_template'] = 'lp_category_settings';
 
-		$this->context['lp_categories'] = $this->getEntityList('category');
+		Utils::$context['page_title'] = Lang::$txt['lp_categories'];
 
-		unset($this->context['lp_categories'][0]);
+		Utils::$context['lp_categories'] = $this->getEntityList('category');
+
+		unset(Utils::$context['lp_categories'][0]);
 
 		if ($this->request()->has('actions')) {
 			$data = $this->request()->json();
@@ -60,16 +60,16 @@ final class CategoryConfig
 		if (empty($name))
 			return;
 
-		$this->loadTemplate('LightPortal/ManageSettings');
+		Theme::loadTemplate('LightPortal/ManageSettings');
 
 		$result = [
 			'error' => true
 		];
 
-		$name = $this->smcFunc['htmlspecialchars']($name);
-		$desc = $this->smcFunc['htmlspecialchars']($desc);
+		$name = Utils::$smcFunc['htmlspecialchars']($name);
+		$desc = Utils::$smcFunc['htmlspecialchars']($desc);
 
-		$item = (int) $this->smcFunc['db_insert']('',
+		$item = (int) Utils::$smcFunc['db_insert']('',
 			'{db_prefix}lp_categories',
 			[
 				'name'        => 'string',
@@ -85,7 +85,7 @@ final class CategoryConfig
 			1
 		);
 
-		$this->context['lp_num_queries']++;
+		Utils::$context['lp_num_queries']++;
 
 		if ($item) {
 			ob_start();
@@ -119,7 +119,7 @@ final class CategoryConfig
 		if (empty($conditions))
 			return;
 
-		$this->smcFunc['db_query']('', /** @lang text */ '
+		Utils::$smcFunc['db_query']('', /** @lang text */ '
 			UPDATE {db_prefix}lp_categories
 			SET priority = CASE ' . $conditions . ' ELSE priority END
 			WHERE category_id IN ({array_int:categories})',
@@ -128,10 +128,10 @@ final class CategoryConfig
 			]
 		);
 
-		$this->context['lp_num_queries']++;
+		Utils::$context['lp_num_queries']++;
 
 		$result = [
-			'success' => $this->smcFunc['db_affected_rows']()
+			'success' => Utils::$smcFunc['db_affected_rows']()
 		];
 
 		$this->cache()->forget('all_categories');
@@ -144,20 +144,20 @@ final class CategoryConfig
 		if (empty($item))
 			return;
 
-		$this->smcFunc['db_query']('', '
+		Utils::$smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_categories
 			SET name = {string:name}
 			WHERE category_id = {int:item}',
 			[
-				'name' => $this->smcFunc['htmlspecialchars']($value),
+				'name' => Utils::$smcFunc['htmlspecialchars']($value),
 				'item' => $item
 			]
 		);
 
-		$this->context['lp_num_queries']++;
+		Utils::$context['lp_num_queries']++;
 
 		$result = [
-			'success' => $this->smcFunc['db_affected_rows']()
+			'success' => Utils::$smcFunc['db_affected_rows']()
 		];
 
 		exit(json_encode($result));
@@ -168,20 +168,20 @@ final class CategoryConfig
 		if (empty($item))
 			return;
 
-		$this->smcFunc['db_query']('', '
+		Utils::$smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_categories
 			SET description = {string:desc}
 			WHERE category_id = {int:item}',
 			[
-				'desc' => $this->smcFunc['htmlspecialchars']($value),
+				'desc' => Utils::$smcFunc['htmlspecialchars']($value),
 				'item' => $item
 			]
 		);
 
-		$this->context['lp_num_queries']++;
+		Utils::$context['lp_num_queries']++;
 
 		$result = [
-			'success' => $this->smcFunc['db_affected_rows']()
+			'success' => Utils::$smcFunc['db_affected_rows']()
 		];
 
 		exit(json_encode($result));
@@ -192,7 +192,7 @@ final class CategoryConfig
 		if (empty($items))
 			return;
 
-		$this->smcFunc['db_query']('', '
+		Utils::$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_categories
 			WHERE category_id IN ({array_int:items})',
 			[
@@ -201,10 +201,10 @@ final class CategoryConfig
 		);
 
 		$result = [
-			'success' => $this->smcFunc['db_affected_rows']()
+			'success' => Utils::$smcFunc['db_affected_rows']()
 		];
 
-		$this->smcFunc['db_query']('', '
+		Utils::$smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_pages
 			SET category_id = {int:category}
 			WHERE category_id IN ({array_int:items})',
@@ -214,7 +214,7 @@ final class CategoryConfig
 			]
 		);
 
-		$this->context['lp_num_queries'] += 2;
+		Utils::$context['lp_num_queries'] += 2;
 
 		$this->cache()->flush();
 
@@ -223,16 +223,16 @@ final class CategoryConfig
 
 	private function getPriority(): int
 	{
-		$result = $this->smcFunc['db_query']('', /** @lang text */ '
+		$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
 			SELECT MAX(priority) + 1
 			FROM {db_prefix}lp_categories',
 			[]
 		);
 
-		[$priority] = $this->smcFunc['db_fetch_row']($result);
+		[$priority] = Utils::$smcFunc['db_fetch_row']($result);
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return (int) $priority;
 	}

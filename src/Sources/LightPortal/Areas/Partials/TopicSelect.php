@@ -9,10 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.4
+ * @version 2.5
  */
 
 namespace Bugo\LightPortal\Areas\Partials;
+
+use Bugo\LightPortal\Utils\{Config, Lang, Utils};
 
 final class TopicSelect extends AbstractPartial
 {
@@ -22,7 +24,7 @@ final class TopicSelect extends AbstractPartial
 		$params = $params[0] ?? [];
 
 		$params['id'] ??= 'lp_frontpage_topics';
-		$params['value'] ??= $this->modSettings['lp_frontpage_topics'] ?? '';
+		$params['value'] ??= Config::$modSettings['lp_frontpage_topics'] ?? '';
 		$params['data'] ??= $this->getSelectedTopics($params['value']);
 
 		$data = [];
@@ -37,24 +39,24 @@ final class TopicSelect extends AbstractPartial
 		<div id="' . $params['id'] . '" name="' . $params['id'] . '"></div>
 		<script>
 			VirtualSelect.init({
-				ele: "#' . $params['id'] . '",' . ($this->context['right_to_left'] ? '
+				ele: "#' . $params['id'] . '",' . (Utils::$context['right_to_left'] ? '
 				textDirection: "rtl",' : '') . '
 				dropboxWrapper: "body",
 				multiple: true,
 				search: true,
 				markSearchResults: true,
-				placeholder: "' . ($params['hint'] ?? $this->txt['lp_frontpage_topics_select']) . '",
-				noSearchResultsText: "' . $this->txt['no_matches'] . '",
-				searchPlaceholderText: "' . $this->txt['search'] . '",
-				allOptionsSelectedText: "' . $this->txt['all'] . '",
-				noOptionsText: "' . $this->txt['lp_frontpage_topics_no_items'] . '",
-				moreText: "' . $this->txt['post_options'] . '",
+				placeholder: "' . ($params['hint'] ?? Lang::$txt['lp_frontpage_topics_select']) . '",
+				noSearchResultsText: "' . Lang::$txt['no_matches'] . '",
+				searchPlaceholderText: "' . Lang::$txt['search'] . '",
+				allOptionsSelectedText: "' . Lang::$txt['all'] . '",
+				noOptionsText: "' . Lang::$txt['lp_frontpage_topics_no_items'] . '",
+				moreText: "' . Lang::$txt['post_options'] . '",
 				showValueAsTags: true,
 				maxWidth: "100%",
 				options: ' . json_encode($data) . ',
 				selectedValue: [' . $params['value'] . '],
 				onServerSearch: async function (search, virtualSelect) {
-					fetch("' . $this->context['canonical_url'] . ';topic_by_subject", {
+					fetch("' . Utils::$context['canonical_url'] . ';topic_by_subject", {
 						method: "POST",
 						headers: {
 							"Content-Type": "application/json; charset=utf-8"
@@ -67,7 +69,7 @@ final class TopicSelect extends AbstractPartial
 					.then(function (json) {
 						let data = [];
 						for (let i = 0; i < json.length; i++) {
-							data.push({label: json[i].subject, value: json[i].id})
+							data.push({ label: json[i].subject, value: json[i].id })
 						}
 
 						virtualSelect.setServerOptions(data)
@@ -85,7 +87,7 @@ final class TopicSelect extends AbstractPartial
 		if (empty($topics))
 			return [];
 
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT t.id_topic, m.subject
 			FROM {db_prefix}topics AS t
 				INNER JOIN {db_prefix}messages AS m ON (m.id_msg = t.id_first_msg)
@@ -96,14 +98,14 @@ final class TopicSelect extends AbstractPartial
 		);
 
 		$topics = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
-			$this->censorText($row['subject']);
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+			Lang::censorText($row['subject']);
 
 			$topics[$row['id_topic']] = $row['subject'];
 		}
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return $topics;
 	}

@@ -1,6 +1,6 @@
 <?php
 
-global $smcFunc, $db_type, $modSettings;
+global $user_info, $smcFunc, $db_type, $modSettings;
 
 if (file_exists(__DIR__ . '/SSI.php') && ! defined('SMF'))
 	require_once __DIR__ . '/SSI.php';

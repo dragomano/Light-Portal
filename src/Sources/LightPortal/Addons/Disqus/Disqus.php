@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 18.01.24
  */
 
 namespace Bugo\LightPortal\Addons\Disqus;
 
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -26,28 +27,28 @@ class Disqus extends Plugin
 
 	public function init(): void
 	{
-		$this->txt['lp_show_comment_block_set']['disqus'] = 'Disqus';
+		Lang::$txt['lp_show_comment_block_set']['disqus'] = 'Disqus';
 	}
 
 	public function addSettings(array &$config_vars): void
 	{
-		$config_vars['disqus'][] = ['text', 'shortname', 'subtext' => $this->txt['lp_disqus']['shortname_subtext'], 'required' => true];
+		$config_vars['disqus'][] = ['text', 'shortname', 'subtext' => Lang::$txt['lp_disqus']['shortname_subtext'], 'required' => true];
 	}
 
 	public function comments(): void
 	{
-		if (! empty($this->modSettings['lp_show_comment_block']) && $this->modSettings['lp_show_comment_block'] === 'disqus' && ! empty($this->context['lp_disqus_plugin']['shortname'])) {
-			$this->context['lp_disqus_comment_block'] = /** @lang text */
+		if (! empty(Config::$modSettings['lp_show_comment_block']) && Config::$modSettings['lp_show_comment_block'] === 'disqus' && ! empty(Utils::$context['lp_disqus_plugin']['shortname'])) {
+			Utils::$context['lp_disqus_comment_block'] = /** @lang text */
 				'
 				<div id="disqus_thread" class="windowbg"></div>
 				<script>
 					let disqus_config = function () {
-						this.page.url = "' . $this->context['canonical_url'] . '";
-						this.page.identifier = "' . $this->context['lp_page']['id'] . '";
+						this.page.url = "' . Utils::$context['canonical_url'] . '";
+						this.page.identifier = "' . Utils::$context['lp_page']['id'] . '";
 					};
 					(function () {
 						let d = document, s = d.createElement("script");
-						s.src = "https://' . $this->context['lp_disqus_plugin']['shortname'] . '.disqus.com/embed.js";
+						s.src = "https://' . Utils::$context['lp_disqus_plugin']['shortname'] . '.disqus.com/embed.js";
 						s.setAttribute("data-timestamp", +new Date());
 						(d.head || d.body).appendChild(s);
 					})();
@@ -57,14 +58,14 @@ class Disqus extends Plugin
 
 	public function frontAssets(): void
 	{
-		if (empty($this->context['lp_frontpage_articles']))
+		if (empty(Utils::$context['lp_frontpage_articles']))
 			return;
 
-		if (empty($this->modSettings['lp_show_comment_block']) || $this->modSettings['lp_show_comment_block'] !== 'disqus' || empty($this->context['lp_disqus_plugin']['shortname']))
+		if (empty(Config::$modSettings['lp_show_comment_block']) || Config::$modSettings['lp_show_comment_block'] !== 'disqus' || empty(Utils::$context['lp_disqus_plugin']['shortname']))
 			return;
 
-		$this->loadExtJS(
-			'https://' . $this->context['lp_disqus_plugin']['shortname'] . '.disqus.com/count.js',
+		Theme::loadExtJS(
+			'https://' . Utils::$context['lp_disqus_plugin']['shortname'] . '.disqus.com/count.js',
 			[
 				'async' => true,
 				'attributes' => [
@@ -73,8 +74,8 @@ class Disqus extends Plugin
 			]
 		);
 
-		foreach ($this->context['lp_frontpage_articles'] as $id => $page) {
-			$this->context['lp_frontpage_articles'][$id]['replies']['after'] .= ' <i class="fas fa-comment"></i> <span class="disqus-comment-count" data-disqus-identifier="' . $id . '"></span>';
+		foreach (Utils::$context['lp_frontpage_articles'] as $id => $page) {
+			Utils::$context['lp_frontpage_articles'][$id]['replies']['after'] .= ' <i class="fas fa-comment"></i> <span class="disqus-comment-count" data-disqus-identifier="' . $id . '"></span>';
 		}
 	}
 }

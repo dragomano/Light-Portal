@@ -10,14 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 17.01.24
  */
 
 
 namespace Bugo\LightPortal\Addons\BoardNews;
 
-use Bugo\LightPortal\Areas\Fields\AbstractField;
-use Bugo\LightPortal\Areas\Fields\SelectField;
+use Bugo\LightPortal\Areas\Fields\{AbstractField, SelectField};
+use Bugo\LightPortal\Utils\Utils;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -29,10 +29,10 @@ class CustomSelectField extends SelectField
 		AbstractField::build();
 
 		foreach ($this->options as $category) {
-			$this->context['posting_fields'][$this->name]['input']['options'][$category['name']] = ['options' => []];
+			Utils::$context['posting_fields'][$this->name]['input']['options'][$category['name']] = ['options' => []];
 
 			foreach ($category['boards'] as $board) {
-				$this->context['posting_fields']['board_id']['input']['options'][$category['name']]['options'][$board['name']] = [
+				Utils::$context['posting_fields']['board_id']['input']['options'][$category['name']]['options'][$board['name']] = [
 					'value'    => $board['id'],
 					'selected' => (bool) $board['selected'],
 					'label'    => ($board['child_level'] > 0 ? str_repeat('==', $board['child_level'] - 1) . '=&gt;' : '') . ' ' . $board['name']

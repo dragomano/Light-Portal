@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\Optimus;
 
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Utils\{Config, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -32,7 +33,7 @@ class Optimus extends Plugin
 
 	public function frontTopics(array &$custom_columns): void
 	{
-		if (empty($this->context['lp_optimus_plugin']['use_topic_descriptions']) || ! class_exists('\Bugo\Optimus\Integration'))
+		if (empty(Utils::$context['lp_optimus_plugin']['use_topic_descriptions']) || ! class_exists('\Bugo\Optimus\Integration'))
 			return;
 
 		$custom_columns[] = 't.optimus_description';
@@ -43,10 +44,10 @@ class Optimus extends Plugin
 		if (! class_exists('\Bugo\Optimus\Integration'))
 			return;
 
-		if (! empty($this->context['lp_optimus_plugin']['show_topic_keywords']))
+		if (! empty(Utils::$context['lp_optimus_plugin']['show_topic_keywords']))
 			$topics[$row['id_topic']]['tags'] = $this->cache('topic_keywords')->setFallback(self::class, 'getKeywords', (int) $row['id_topic']);
 
-		if (! empty($this->context['lp_optimus_plugin']['use_topic_descriptions']) && ! empty($row['optimus_description']) && ! empty($topics[$row['id_topic']]['teaser']))
+		if (! empty(Utils::$context['lp_optimus_plugin']['use_topic_descriptions']) && ! empty($row['optimus_description']) && ! empty($topics[$row['id_topic']]['teaser']))
 			$topics[$row['id_topic']]['teaser'] = $row['optimus_description'];
 	}
 
@@ -55,7 +56,7 @@ class Optimus extends Plugin
 		if (empty($topic))
 			return [];
 
-		$result = $this->smcFunc['db_query']('', /** @lang text */ '
+		$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
 			SELECT ok.id, ok.name, olk.topic_id
 			FROM {db_prefix}optimus_keywords AS ok
 				INNER JOIN {db_prefix}optimus_log_keywords AS olk ON (ok.id = olk.keyword_id)
@@ -64,15 +65,15 @@ class Optimus extends Plugin
 		);
 
 		$keywords = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			$keywords[$row['topic_id']][] = [
 				'name' => $row['name'],
-				'href' => $this->scripturl . '?action=keywords;id=' . $row['id']
+				'href' => Config::$scripturl . '?action=keywords;id=' . $row['id']
 			];
 		}
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return $keywords[$topic] ?? [];
 	}

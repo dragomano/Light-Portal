@@ -9,11 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.4
+ * @version 2.5
  */
 
 namespace Bugo\LightPortal\Areas\Export;
 
+use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
 use AppendIterator;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
@@ -27,18 +28,19 @@ final class PluginExport extends AbstractExport
 {
 	public function main(): void
 	{
-		$this->loadTemplate('LightPortal/ManageImpex', 'manage_export_plugins');
+		Theme::loadTemplate('LightPortal/ManageImpex');
+		Utils::$context['sub_template'] = 'manage_export_plugins';
 
-		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_plugins_export'];
-		$this->context['page_area_title'] = $this->txt['lp_plugins_export'];
-		$this->context['canonical_url']   = $this->scripturl . '?action=admin;area=lp_plugins;sa=export';
+		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_plugins_export'];
+		Utils::$context['page_area_title'] = Lang::$txt['lp_plugins_export'];
+		Utils::$context['canonical_url']   = Config::$scripturl . '?action=admin;area=lp_plugins;sa=export';
 
-		$this->context[$this->context['admin_menu_name']]['tab_data'] = [
+		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => $this->txt['lp_plugins_export_description']
+			'description' => Lang::$txt['lp_plugins_export_description']
 		];
 
-		$this->context['lp_plugins'] = $this->getEntityList('plugin');
+		Utils::$context['lp_plugins'] = $this->getEntityList('plugin');
 
 		$this->run();
 	}
@@ -48,7 +50,7 @@ final class PluginExport extends AbstractExport
 		if ($this->request()->isEmpty('plugins') && $this->request()->hasNot('export_all'))
 			return [];
 
-		return $this->request()->has('export_all') ? $this->context['lp_plugins'] : $this->request('plugins');
+		return $this->request()->has('export_all') ? Utils::$context['lp_plugins'] : $this->request('plugins');
 	}
 
 	protected function getFile(): string

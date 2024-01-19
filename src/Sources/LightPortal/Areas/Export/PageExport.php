@@ -9,13 +9,14 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.4
+ * @version 2.5
  */
 
 namespace Bugo\LightPortal\Areas\Export;
 
 use ArrayIterator;
 use Bugo\LightPortal\Repositories\PageRepository;
+use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Utils};
 use DomDocument;
 use DOMException;
 
@@ -33,13 +34,13 @@ final class PageExport extends AbstractExport
 
 	public function main(): void
 	{
-		$this->context['page_title']      = $this->txt['lp_portal'] . ' - ' . $this->txt['lp_pages_export'];
-		$this->context['page_area_title'] = $this->txt['lp_pages_export'];
-		$this->context['canonical_url']   = $this->scripturl . '?action=admin;area=lp_pages;sa=export';
+		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_pages_export'];
+		Utils::$context['page_area_title'] = Lang::$txt['lp_pages_export'];
+		Utils::$context['canonical_url']   = Config::$scripturl . '?action=admin;area=lp_pages;sa=export';
 
-		$this->context[$this->context['admin_menu_name']]['tab_data'] = [
+		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => $this->txt['lp_pages_export_description']
+			'description' => Lang::$txt['lp_pages_export_description']
 		];
 
 		$this->run();
@@ -47,9 +48,9 @@ final class PageExport extends AbstractExport
 		$listOptions = [
 			'id' => 'lp_pages',
 			'items_per_page' => 20,
-			'title' => $this->txt['lp_pages_export'],
-			'no_items_label' => $this->txt['lp_no_items'],
-			'base_href' => $this->scripturl . '?action=admin;area=lp_pages;sa=export',
+			'title' => Lang::$txt['lp_pages_export'],
+			'no_items_label' => Lang::$txt['lp_no_items'],
+			'base_href' => Config::$scripturl . '?action=admin;area=lp_pages;sa=export',
 			'default_sort_col' => 'id',
 			'get_items' => [
 				'function' => [$this->repository, 'getAll']
@@ -74,7 +75,7 @@ final class PageExport extends AbstractExport
 				],
 				'alias' => [
 					'header' => [
-						'value' => $this->txt['lp_page_alias']
+						'value' => Lang::$txt['lp_page_alias']
 					],
 					'data' => [
 						'db'    => 'alias',
@@ -87,12 +88,12 @@ final class PageExport extends AbstractExport
 				],
 				'title' => [
 					'header' => [
-						'value' => $this->txt['lp_title']
+						'value' => Lang::$txt['lp_title']
 					],
 					'data' => [
 						'function' => fn($entry) => '<a class="bbc_link' . (
 							$entry['is_front']
-								? ' new_posts" href="' . $this->scripturl
+								? ' new_posts" href="' . Config::$scripturl
 								: '" href="' . LP_PAGE_URL . $entry['alias']
 							) . '">' . $entry['title'] . '</a>',
 						'class' => 'word_break'
@@ -113,15 +114,15 @@ final class PageExport extends AbstractExport
 				]
 			],
 			'form' => [
-				'href' => $this->scripturl . '?action=admin;area=lp_pages;sa=export'
+				'href' => Config::$scripturl . '?action=admin;area=lp_pages;sa=export'
 			],
 			'additional_rows' => [
 				[
 					'position' => 'below_table_data',
 					'value' => '
 						<input type="hidden">
-						<input type="submit" name="export_selection" value="' . $this->txt['lp_export_selection'] . '" class="button">
-						<input type="submit" name="export_all" value="' . $this->txt['lp_export_all'] . '" class="button">'
+						<input type="submit" name="export_selection" value="' . Lang::$txt['lp_export_selection'] . '" class="button">
+						<input type="submit" name="export_all" value="' . Lang::$txt['lp_export_all'] . '" class="button">'
 				]
 			]
 		];
@@ -136,7 +137,7 @@ final class PageExport extends AbstractExport
 
 		$pages = $this->request('pages') && $this->request()->hasNot('export_all') ? $this->request('pages') : null;
 
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions, p.status, p.num_views, p.num_comments, p.created_at, p.updated_at,
 				pt.lang, pt.title, pp.name, pp.value, com.id, com.parent_id, com.author_id AS com_author_id, com.message, com.created_at AS com_created_at
@@ -151,7 +152,7 @@ final class PageExport extends AbstractExport
 		);
 
 		$items = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			$items[$row['page_id']] ??= [
 				'page_id'      => $row['page_id'],
 				'category_id'  => $row['category_id'],
@@ -185,8 +186,8 @@ final class PageExport extends AbstractExport
 			}
 		}
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return $items;
 	}
@@ -274,7 +275,7 @@ final class PageExport extends AbstractExport
 			$file = sys_get_temp_dir() . '/lp_pages_backup.xml';
 			$xml->save($file);
 		} catch (DOMException $e) {
-			$this->logError('[LP] ' . $this->txt['lp_pages_export'] . ': ' . $e->getMessage());
+			ErrorHandler::log('[LP] ' . Lang::$txt['lp_pages_export'] . ': ' . $e->getMessage());
 		}
 
 		return $file ?? '';

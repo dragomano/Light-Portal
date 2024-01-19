@@ -9,12 +9,13 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.4
+ * @version 2.5
  */
 
 namespace Bugo\LightPortal\Front;
 
-use Bugo\LightPortal\Entities\Page;
+use Bugo\LightPortal\Actions\Page;
+use Bugo\LightPortal\Utils\{BBCodeParser, Config, Lang, User, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -25,9 +26,9 @@ class PageArticle extends AbstractArticle
 
 	public function init(): void
 	{
-		$this->selected_categories = empty($this->modSettings['lp_frontpage_categories']) ? [] : explode(',', $this->modSettings['lp_frontpage_categories']);
+		$this->selected_categories = empty(Config::$modSettings['lp_frontpage_categories']) ? [] : explode(',', Config::$modSettings['lp_frontpage_categories']);
 
-		if (empty($this->selected_categories) && $this->modSettings['lp_frontpage_mode'] === 'all_pages')
+		if (empty($this->selected_categories) && Config::$modSettings['lp_frontpage_mode'] === 'all_pages')
 			$this->selected_categories = [0];
 
 		$this->params = [
@@ -56,7 +57,7 @@ class PageArticle extends AbstractArticle
 			'limit' => $limit
 		];
 
-		$result = $this->smcFunc['db_query']('', /** @lang text */ '
+		$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.alias, p.content, p.description, p.type, p.status, p.num_views,
 				CASE WHEN COALESCE(par.value, \'0\') != \'0\' THEN p.num_comments ELSE 0 END AS num_comments, p.created_at,
@@ -74,13 +75,13 @@ class PageArticle extends AbstractArticle
 				AND p.permissions IN ({array_int:permissions})' . (empty($this->selected_categories) ? '' : '
 				AND p.category_id IN ({array_int:selected_categories})') . (empty($this->wheres) ? '' : '
 				' . implode("\n\t\t\t\t\t", $this->wheres)) . '
-			ORDER BY ' . (empty($this->modSettings['lp_frontpage_order_by_replies']) ? '' : 'num_comments DESC, ') . $this->orders[$this->modSettings['lp_frontpage_article_sorting'] ?? 0] . '
+			ORDER BY ' . (empty(Config::$modSettings['lp_frontpage_order_by_replies']) ? '' : 'num_comments DESC, ') . $this->orders[Config::$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
 			LIMIT {int:start}, {int:limit}',
 			$this->params
 		);
 
 		$pages = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			if (! isset($pages[$row['page_id']])) {
 				$row['content'] = parse_content($row['content'], $row['type']);
 
@@ -91,42 +92,42 @@ class PageArticle extends AbstractArticle
 						'link' => empty($row['category_id']) ? '' : (LP_BASE_URL . ';sa=categories;id=' . $row['category_id'])
 					],
 					'author' => [
-						'id' => $author_id = (int) (empty($this->modSettings['lp_frontpage_article_sorting']) && $row['num_comments'] ? $row['comment_author_id'] : $row['author_id']),
-						'link' => $this->scripturl . '?action=profile;u=' . $author_id,
-						'name' => empty($this->modSettings['lp_frontpage_article_sorting']) && $row['num_comments'] ? $row['comment_author_name'] : $row['author_name']
+						'id' => $author_id = (int) (empty(Config::$modSettings['lp_frontpage_article_sorting']) && $row['num_comments'] ? $row['comment_author_id'] : $row['author_id']),
+						'link' => Config::$scripturl . '?action=profile;u=' . $author_id,
+						'name' => empty(Config::$modSettings['lp_frontpage_article_sorting']) && $row['num_comments'] ? $row['comment_author_name'] : $row['author_name']
 					],
-					'date' => empty($this->modSettings['lp_frontpage_article_sorting']) && $row['comment_date'] ? $row['comment_date'] : $row['created_at'],
+					'date' => empty(Config::$modSettings['lp_frontpage_article_sorting']) && $row['comment_date'] ? $row['comment_date'] : $row['created_at'],
 					'link' => LP_PAGE_URL . $row['alias'],
 					'views' => [
 						'num' => $row['num_views'],
-						'title' => $this->txt['lp_views'],
+						'title' => Lang::$txt['lp_views'],
 						'after' => ''
 					],
 					'replies' => [
-						'num' => $this->modSettings['lp_show_comment_block'] && $this->modSettings['lp_show_comment_block'] === 'default' ? $row['num_comments'] : 0,
-						'title' => $this->txt['lp_comments'],
+						'num' => Config::$modSettings['lp_show_comment_block'] && Config::$modSettings['lp_show_comment_block'] === 'default' ? $row['num_comments'] : 0,
+						'title' => Lang::$txt['lp_comments'],
 						'after' => ''
 					],
-					'is_new' => $this->user_info['last_login'] < $row['date'] && $row['author_id'] != $this->user_info['id'],
-					'image' => empty($this->modSettings['lp_show_images_in_articles']) ? '' : $this->getImageFromText($row['content']),
-					'can_edit' => $this->user_info['is_admin'] || $this->context['allow_light_portal_manage_pages_any'] || ($this->context['allow_light_portal_manage_pages_own'] && $row['author_id'] == $this->user_info['id']),
-					'edit_link' => $this->scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $row['page_id']
+					'is_new' => User::$info['last_login'] < $row['date'] && $row['author_id'] != User::$info['id'],
+					'image' => empty(Config::$modSettings['lp_show_images_in_articles']) ? '' : $this->getImageFromText($row['content']),
+					'can_edit' => User::$info['is_admin'] || Utils::$context['allow_light_portal_manage_pages_any'] || (Utils::$context['allow_light_portal_manage_pages_own'] && $row['author_id'] == User::$info['id']),
+					'edit_link' => Config::$scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $row['page_id']
 				];
 
-				if (! empty($this->modSettings['lp_show_teaser']))
-					$pages[$row['page_id']]['teaser'] = $this->getTeaser(empty($this->modSettings['lp_frontpage_article_sorting']) && $row['num_comments'] ? $this->parseBbc($row['comment_message']) : ($row['description'] ?: $row['content']));
+				if (! empty(Config::$modSettings['lp_show_teaser']))
+					$pages[$row['page_id']]['teaser'] = $this->getTeaser(empty(Config::$modSettings['lp_frontpage_article_sorting']) && $row['num_comments'] ? BBCodeParser::load()->parse($row['comment_message']) : ($row['description'] ?: $row['content']));
 
-				if (! empty($this->modSettings['lp_frontpage_article_sorting']) && $this->modSettings['lp_frontpage_article_sorting'] == 3)
+				if (! empty(Config::$modSettings['lp_frontpage_article_sorting']) && Config::$modSettings['lp_frontpage_article_sorting'] == 3)
 					$pages[$row['page_id']]['date'] = $row['date'];
 			}
 
-			$pages[$row['page_id']]['title'] = $titles[$row['page_id']];
+			$pages[$row['page_id']]['title'] = $this->getTranslatedTitle($titles[$row['page_id']]);
 
 			$this->hook('frontPagesOutput', [&$pages, $row]);
 		}
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		$pages = $this->getItemsWithUserAvatars($pages);
 
@@ -137,7 +138,7 @@ class PageArticle extends AbstractArticle
 
 	public function getTotalCount(): int
 	{
-		$result = $this->smcFunc['db_query']('', /** @lang text */ '
+		$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
 			SELECT COUNT(p.page_id)
 			FROM {db_prefix}lp_pages AS p' . (empty($this->tables) ? '' : '
 				' . implode("\n\t\t\t\t\t", $this->tables)) . '
@@ -149,10 +150,10 @@ class PageArticle extends AbstractArticle
 			$this->params
 		);
 
-		[$num_pages] = $this->smcFunc['db_fetch_row']($result);
+		[$num_pages] = Utils::$smcFunc['db_fetch_row']($result);
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return (int) $num_pages;
 	}
@@ -162,7 +163,7 @@ class PageArticle extends AbstractArticle
 		if (empty($pages))
 			return;
 
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT t.tag_id, t.value, p.item_id
 			FROM {db_prefix}lp_tags AS t
 				LEFT JOIN {db_prefix}lp_params AS p ON (p.type = {literal:page} AND p.name = {literal:keywords})
@@ -174,14 +175,14 @@ class PageArticle extends AbstractArticle
 			]
 		);
 
-		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			$pages[$row['item_id']]['tags'][] = [
 				'name' => $row['value'],
 				'href' => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id']
 			];
 		}
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 	}
 }

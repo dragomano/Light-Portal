@@ -190,9 +190,9 @@ $txt['lp_block_areas_set']['all'] = 'Everywhere';
 $txt['lp_block_areas_set']['home'] = 'Main page of the portal';
 $txt['lp_block_areas_set']['portal'] = 'Portal area (action=portal)';
 $txt['lp_block_areas_set']['forum'] = 'Main page of the forum';
-$txt['lp_block_areas_set']['pages'] = 'All portal pages (pages)';
-$txt['lp_block_areas_set']['boards'] = 'All boards and topics of the forum';
-$txt['lp_block_areas_set']['topics'] = 'All topics of the forum';
+$txt['lp_block_areas_set']['pages'] = 'All portal pages';
+$txt['lp_block_areas_set']['boards'] = 'All forum boards';
+$txt['lp_block_areas_set']['topics'] = 'All forum topics';
 
 $txt['lp_block_select_icon'] = 'Select icon';
 $txt['lp_block_title_class'] = 'CSS title class';
@@ -355,6 +355,7 @@ Page: {PAGELINK}
 {REGARDS}';
 
 // Errors
+$txt['lp_standalone_mode_error'] = 'Cannot run the portal - please verify that you put this file in the same place as SMF\'s index.php and SSI.php files.';
 $txt['lp_page_not_found'] = 'Page not found!';
 $txt['lp_page_not_activated'] = 'The requested page is disabled!';
 $txt['lp_page_not_editable'] = 'You are not allowed to edit this page!';

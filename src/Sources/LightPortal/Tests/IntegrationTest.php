@@ -7,13 +7,13 @@
 namespace Tests;
 
 use Bugo\LightPortal\Integration;
+use Bugo\LightPortal\Utils\{Config, Lang, User, Theme, Utils};
 use Tester\Assert;
 
 require_once __DIR__ . '/bootstrap.php';
 
 test('hook methods exist', function () {
-	Assert::true(method_exists(Integration::class, 'preLoad'));
-	Assert::true(method_exists(Integration::class, 'userInfo'));
+	Assert::true(method_exists(Integration::class, 'init'));
 	Assert::true(method_exists(Integration::class, 'preJavascriptOutput'));
 	Assert::true(method_exists(Integration::class, 'preCssOutput'));
 	Assert::true(method_exists(Integration::class, 'loadTheme'));
@@ -34,36 +34,54 @@ test('hook methods exist', function () {
 	Assert::true(method_exists(Integration::class, 'cleanCache'));
 });
 
-test('preLoad method', function () {
-	global $context, $boardurl;
-
-	Assert::type('float', $context['lp_load_time']);
-	Assert::type('int', $context['lp_num_queries']);
+test('init method', function () {
+	Assert::type('float', Utils::$context['lp_load_time']);
+	Assert::type('int', Utils::$context['lp_num_queries']);
 	Assert::same('Light Portal', LP_NAME);
 	Assert::type('string', LP_VERSION);
 	Assert::contains('https', LP_PLUGIN_LIST);
-	Assert::same($boardurl . '/Sources/LightPortal/Addons', LP_ADDON_URL);
+	Assert::same(Config::$boardurl . '/Sources/LightPortal/Addons', LP_ADDON_URL);
 	Assert::same(dirname(__DIR__) . '/Addons', LP_ADDON_DIR);
 	Assert::type('int', LP_CACHE_TIME);
 	Assert::same('portal', LP_ACTION);
 	Assert::same('page', LP_PAGE_PARAM);
-});
-
-test('userInfo method', function () {
-	global $scripturl;
-
-	Assert::contains($scripturl, LP_BASE_URL);
+	Assert::contains(Config::$scripturl, LP_BASE_URL);
 	Assert::contains(LP_ACTION, LP_BASE_URL);
 	Assert::contains('?' . LP_PAGE_PARAM . '=', LP_PAGE_URL);
+	Assert::notNull(LP_ALIAS_PATTERN);
+	Assert::notNull(LP_AREAS_PATTERN);
+	Assert::notNull(LP_ADDON_PATTERN);
 });
 
 test('loadTheme method', function () {
-	global $txt, $context;
+	Assert::hasKey('lp_portal', Lang::$txt);
+	Assert::contains('<div>%1$s</div>', Utils::$context['lp_all_title_classes']);
+	Assert::contains('<div>%1$s</div>', Utils::$context['lp_all_content_classes']);
+});
 
-	Assert::hasKey('lp_portal', $txt);
-
-	Assert::contains('<div>%1$s</div>', $context['lp_all_title_classes']);
-	Assert::contains('<div>%1$s</div>', $context['lp_all_content_classes']);
+test('global wrappers', function () {
+	Assert::type('array', Config::$modSettings);
+	Assert::type('string', Config::$scripturl);
+	Assert::type('string', Config::$boardurl);
+	Assert::type('string', Config::$boarddir);
+	Assert::type('string', Config::$sourcedir);
+	Assert::type('string', Config::$cachedir);
+	Assert::type('string', Config::$db_type);
+	Assert::type('string', Config::$db_prefix);
+	Assert::type('string', Config::$language);
+	Assert::type('int', Config::$cache_enable);
+	Assert::type('bool', Config::$db_show_debug);
+	Assert::type('array', Lang::$txt);
+	Assert::type('array', Lang::$editortxt);
+	Assert::type('object', Theme::$current);
+	Assert::type('array', Theme::$current->settings);
+	Assert::type('array', Theme::$current->options);
+	Assert::type('array', User::$info);
+	Assert::type('array', User::$profiles);
+	Assert::type('array', User::$settings);
+	Assert::type('array', User::$memberContext);
+	Assert::type('array', Utils::$context);
+	Assert::type('array', Utils::$smcFunc);
 });
 
 test('actions method', function () {
@@ -75,17 +93,15 @@ test('actions method', function () {
 });
 
 test('actions method with portal', function () {
-	global $modSettings;
-
 	$actions = [];
 
-	$modSettings['lp_frontpage_mode'] = false;
+	Config::$modSettings['lp_frontpage_mode'] = false;
 
 	(new Integration)->actions($actions);
 
 	Assert::hasNotKey(LP_ACTION, $actions);
 
-	$modSettings['lp_frontpage_mode'] = true;
+	Config::$modSettings['lp_frontpage_mode'] = true;
 
 	(new Integration)->actions($actions);
 

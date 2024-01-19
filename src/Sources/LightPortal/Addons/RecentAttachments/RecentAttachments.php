@@ -10,14 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\RecentAttachments;
 
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\Fields\NumberField;
-use Bugo\LightPortal\Areas\Fields\TextField;
+use Bugo\LightPortal\Areas\Fields\{NumberField, TextField};
+use Bugo\LightPortal\Utils\{Lang, Theme, User, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -28,37 +28,42 @@ class RecentAttachments extends Block
 
 	public string $icon = 'fas fa-paperclip';
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['recent_attachments']['parameters'] = [
+		if (Utils::$context['current_block']['type'] !== 'recent_attachments')
+			return;
+
+		$params = [
 			'num_attachments' => 5,
 			'extensions'      => 'jpg',
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type): void
+	public function validateBlockParams(array &$params): void
 	{
-		if ($type !== 'recent_attachments')
+		if (Utils::$context['current_block']['type'] !== 'recent_attachments')
 			return;
 
-		$parameters['num_attachments'] = FILTER_VALIDATE_INT;
-		$parameters['extensions']      = FILTER_DEFAULT;
+		$params = [
+			'num_attachments' => FILTER_VALIDATE_INT,
+			'extensions'      => FILTER_DEFAULT,
+		];
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'recent_attachments')
+		if (Utils::$context['current_block']['type'] !== 'recent_attachments')
 			return;
 
-		NumberField::make('num_attachments', $this->txt['lp_recent_attachments']['num_attachments'])
+		NumberField::make('num_attachments', Lang::$txt['lp_recent_attachments']['num_attachments'])
 			->setAttribute('min', 1)
-			->setValue($this->context['lp_block']['options']['parameters']['num_attachments']);
+			->setValue(Utils::$context['lp_block']['options']['num_attachments']);
 
-		TextField::make('extensions', $this->txt['lp_recent_attachments']['extensions'])
-			->setAfter($this->txt['lp_recent_attachments']['extensions_subtext'])
+		TextField::make('extensions', Lang::$txt['lp_recent_attachments']['extensions'])
+			->setAfter(Lang::$txt['lp_recent_attachments']['extensions_subtext'])
 			->setAttribute('maxlength', 30)
 			->setAttribute('style', 'width: 100%')
-			->setValue($this->context['lp_block']['options']['parameters']['extensions']);
+			->setValue(Utils::$context['lp_block']['options']['extensions']);
 	}
 
 	public function getData(array $parameters): array
@@ -73,7 +78,7 @@ class RecentAttachments extends Block
 		if ($data->type !== 'recent_attachments')
 			return;
 
-		$attachment_list = $this->cache('recent_attachments_addon_b' . $data->block_id . '_u' . $this->user_info['id'])
+		$attachment_list = $this->cache('recent_attachments_addon_b' . $data->block_id . '_u' . User::$info['id'])
 			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getData', $parameters);
 
@@ -95,7 +100,7 @@ class RecentAttachments extends Block
 				echo '
 			<div class="item">
 				<a href="', $attach['file']['href'], '">
-					<img class="centericon" src="', $this->settings['images_url'], '/icons/clip.png" alt="', $attach['file']['filename'], '"> ', $attach['file']['filename'], '
+					<img class="centericon" src="', Theme::$current->settings['images_url'], '/icons/clip.png" alt="', $attach['file']['filename'], '"> ', $attach['file']['filename'], '
 				</a> (', $attach['file']['filesize'], ')
 			</div>';
 			}

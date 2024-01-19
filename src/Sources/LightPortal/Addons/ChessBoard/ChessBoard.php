@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 18.01.24
  */
 
 namespace Bugo\LightPortal\Addons\ChessBoard;
 
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Utils\{Lang, Theme};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -31,16 +32,16 @@ class ChessBoard extends Block
 		if ($data->type !== 'chess_board')
 			return;
 
-		$this->loadExtCSS('https://unpkg.com/@chrisoakman/chessboard2@0/dist/chessboard2.min.css');
-		$this->loadExtJS('https://unpkg.com/@chrisoakman/chessboard2@0/dist/chessboard2.min.js');
-		$this->loadExtJS('https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.12.1/chess.js');
+		Theme::loadExtCSS('https://unpkg.com/@chrisoakman/chessboard2@0/dist/chessboard2.min.css');
+		Theme::loadExtJS('https://unpkg.com/@chrisoakman/chessboard2@0/dist/chessboard2.min.js');
+		Theme::loadExtJS('https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.12.1/chess.js');
 
 		$id = $data->block_id;
 
 		echo /** @lang text */ '
 		<div id="chessBoard' . $id . '"></div>
 		<div class="floatright" style="margin: 10px">
-			<label for="depth' . $id . '">' . $this->txt['lp_chess_board']['search_depth'] . ':</label>
+			<label for="depth' . $id . '">' . Lang::$txt['lp_chess_board']['search_depth'] . ':</label>
 			<select id="depth' . $id . '">
 				<option value="1">1</option>
 				<option value="2">2</option>
@@ -50,7 +51,7 @@ class ChessBoard extends Block
 			</select>
 		</div>
 		<script>
-			const gameOver = "' . $this->txt['lp_chess_board']['game_over'] . '";
+			const gameOver = "' . Lang::$txt['lp_chess_board']['game_over'] . '";
 			const board' . $id . ' = new ChessboardMaker(' . $id . ');
 		</script>';
 	}

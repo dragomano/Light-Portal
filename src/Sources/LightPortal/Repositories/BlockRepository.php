@@ -9,10 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.4
+ * @version 2.5
  */
 
 namespace Bugo\LightPortal\Repositories;
+
+use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -23,7 +25,7 @@ final class BlockRepository extends AbstractRepository
 
 	public function getAll(): array
 	{
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT b.block_id, b.icon, b.type, b.note, b.placement, b.priority, b.permissions, b.status, b.areas, bt.lang, bt.title
 			FROM {db_prefix}lp_blocks AS b
 				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
@@ -32,7 +34,7 @@ final class BlockRepository extends AbstractRepository
 		);
 
 		$currentBlocks = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			$currentBlocks[$row['placement']][$row['block_id']] ??= [
 				'icon'        => $this->getIcon($row['icon']),
 				'type'        => $row['type'],
@@ -43,15 +45,15 @@ final class BlockRepository extends AbstractRepository
 				'areas'       => str_replace(',', PHP_EOL, $row['areas'])
 			];
 
-			$currentBlocks[$row['placement']][$row['block_id']]['title'][$row['lang']] = $row['title'];
+			$currentBlocks[$row['placement']][$row['block_id']]['titles'][$row['lang']] = $row['title'];
 
 			$this->prepareMissingBlockTypes($row['type']);
 		}
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
-		return array_merge(array_flip(array_keys($this->context['lp_block_placements'])), $currentBlocks);
+		return array_merge(array_flip(array_keys(Utils::$context['lp_block_placements'])), $currentBlocks);
 	}
 
 	public function getData(int $item): array
@@ -59,7 +61,7 @@ final class BlockRepository extends AbstractRepository
 		if (empty($item))
 			return [];
 
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT
 				b.block_id, b.icon, b.type, b.note, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.content_class,
 				bt.lang, bt.title, bp.name, bp.value
@@ -72,18 +74,18 @@ final class BlockRepository extends AbstractRepository
 			]
 		);
 
-		if (empty($this->smcFunc['db_num_rows']($result))) {
-			$this->context['error_link'] = $this->scripturl . '?action=admin;area=lp_blocks';
+		if (empty(Utils::$smcFunc['db_num_rows']($result))) {
+			Utils::$context['error_link'] = Config::$scripturl . '?action=admin;area=lp_blocks';
 
-			$this->fatalLangError('lp_block_not_found', 404);
+			ErrorHandler::fatalLang('lp_block_not_found', status: 404);
 		}
 
-		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			if ($row['type'] === 'bbc') {
 				$row['content'] = $this->unPreparseCode($row['content']);
 			}
 
-			$this->censorText($row['content']);
+			Lang::censorText($row['content']);
 
 			$data ??= [
 				'id'            => (int) $row['block_id'],
@@ -100,15 +102,17 @@ final class BlockRepository extends AbstractRepository
 				'content_class' => $row['content_class'],
 			];
 
-			$data['title'][$row['lang']] = $row['title'];
+			if (! empty($row['lang']))
+				$data['titles'][$row['lang']] = $row['title'];
 
-			$data['options']['parameters'][$row['name']] = $row['value'];
+			if (! empty($row['name']))
+				$data['options'][$row['name']] = $row['value'];
 
 			$this->prepareMissingBlockTypes($row['type']);
 		}
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return $data ?? [];
 	}
@@ -118,7 +122,7 @@ final class BlockRepository extends AbstractRepository
 	 */
 	public function setData(int $item = 0)
 	{
-		if (isset($this->context['post_errors']) || (
+		if (isset(Utils::$context['post_errors']) || (
 			$this->request()->hasNot('save') &&
 			$this->request()->hasNot('save_exit') &&
 			$this->request()->hasNot('clone'))
@@ -127,12 +131,10 @@ final class BlockRepository extends AbstractRepository
 
 		$this->checkSubmitOnce('check');
 
-		$this->prepareBbcContent($this->context['lp_block']);
-
-		$this->context['lp_block']['options'] = $this->context['lp_block']['options']['parameters'] ?? [];
+		$this->prepareBbcContent(Utils::$context['lp_block']);
 
 		if (empty($item)) {
-			$this->context['lp_block']['title'] = array_filter($this->context['lp_block']['title']);
+			Utils::$context['lp_block']['titles'] = array_filter(Utils::$context['lp_block']['titles'] ?? []);
 			$item = $this->addData();
 		} else {
 			$this->updateData($item);
@@ -144,17 +146,17 @@ final class BlockRepository extends AbstractRepository
 		$this->cache()->flush();
 
 		if ($this->request()->has('save_exit'))
-			$this->redirect('action=admin;area=lp_blocks;sa=main');
+			Utils::redirectexit('action=admin;area=lp_blocks;sa=main');
 
 		if ($this->request()->has('save'))
-			$this->redirect('action=admin;area=lp_blocks;sa=edit;id=' . $item);
+			Utils::redirectexit('action=admin;area=lp_blocks;sa=edit;id=' . $item);
 	}
 
 	private function addData(): int
 	{
-		$this->smcFunc['db_transaction']('begin');
+		Utils::$smcFunc['db_transaction']('begin');
 
-		$item = (int) $this->smcFunc['db_insert']('',
+		$item = (int) Utils::$smcFunc['db_insert']('',
 			'{db_prefix}lp_blocks',
 			[
 				'icon'          => 'string',
@@ -170,26 +172,26 @@ final class BlockRepository extends AbstractRepository
 				'content_class' => 'string',
 			],
 			[
-				$this->context['lp_block']['icon'],
-				$this->context['lp_block']['type'],
-				$this->context['lp_block']['note'],
-				$this->context['lp_block']['content'],
-				$this->context['lp_block']['placement'],
-				$this->context['lp_block']['priority'],
-				$this->context['lp_block']['permissions'],
-				$this->context['lp_block']['status'],
-				$this->context['lp_block']['areas'],
-				$this->context['lp_block']['title_class'],
-				$this->context['lp_block']['content_class'],
+				Utils::$context['lp_block']['icon'],
+				Utils::$context['lp_block']['type'],
+				Utils::$context['lp_block']['note'],
+				Utils::$context['lp_block']['content'],
+				Utils::$context['lp_block']['placement'],
+				Utils::$context['lp_block']['priority'],
+				Utils::$context['lp_block']['permissions'],
+				Utils::$context['lp_block']['status'],
+				Utils::$context['lp_block']['areas'],
+				Utils::$context['lp_block']['title_class'],
+				Utils::$context['lp_block']['content_class'],
 			],
 			['block_id'],
 			1
 		);
 
-		$this->context['lp_num_queries']++;
+		Utils::$context['lp_num_queries']++;
 
 		if (empty($item)) {
-			$this->smcFunc['db_transaction']('rollback');
+			Utils::$smcFunc['db_transaction']('rollback');
 			return 0;
 		}
 
@@ -198,45 +200,45 @@ final class BlockRepository extends AbstractRepository
 		$this->saveTitles($item);
 		$this->saveOptions($item);
 
-		$this->smcFunc['db_transaction']('commit');
+		Utils::$smcFunc['db_transaction']('commit');
 
 		return $item;
 	}
 
 	private function updateData(int $item): void
 	{
-		$this->smcFunc['db_transaction']('begin');
+		Utils::$smcFunc['db_transaction']('begin');
 
-		$this->smcFunc['db_query']('', '
+		Utils::$smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_blocks
 			SET icon = {string:icon}, type = {string:type}, note = {string:note}, content = {string:content}, placement = {string:placement}, permissions = {int:permissions}, areas = {string:areas}, title_class = {string:title_class}, content_class = {string:content_class}
 			WHERE block_id = {int:block_id}',
 			[
-				'icon'          => $this->context['lp_block']['icon'],
-				'type'          => $this->context['lp_block']['type'],
-				'note'          => $this->context['lp_block']['note'],
-				'content'       => $this->context['lp_block']['content'],
-				'placement'     => $this->context['lp_block']['placement'],
-				'permissions'   => $this->context['lp_block']['permissions'],
-				'areas'         => $this->context['lp_block']['areas'],
-				'title_class'   => $this->context['lp_block']['title_class'],
-				'content_class' => $this->context['lp_block']['content_class'],
+				'icon'          => Utils::$context['lp_block']['icon'],
+				'type'          => Utils::$context['lp_block']['type'],
+				'note'          => Utils::$context['lp_block']['note'],
+				'content'       => Utils::$context['lp_block']['content'],
+				'placement'     => Utils::$context['lp_block']['placement'],
+				'permissions'   => Utils::$context['lp_block']['permissions'],
+				'areas'         => Utils::$context['lp_block']['areas'],
+				'title_class'   => Utils::$context['lp_block']['title_class'],
+				'content_class' => Utils::$context['lp_block']['content_class'],
 				'block_id'      => $item,
 			]
 		);
 
-		$this->context['lp_num_queries']++;
+		Utils::$context['lp_num_queries']++;
 
 		$this->hook('onBlockSaving', [$item]);
 
 		$this->saveTitles($item, 'replace');
 		$this->saveOptions($item, 'replace');
 
-		$this->smcFunc['db_transaction']('commit');
+		Utils::$smcFunc['db_transaction']('commit');
 
-		$this->cache()->forget($this->context['lp_block']['type'] . '_addon_b' . $item);
-		$this->cache()->forget($this->context['lp_block']['type'] . '_addon_u' . $this->context['user']['id']);
-		$this->cache()->forget($this->context['lp_block']['type'] . '_addon_b' . $item . '_u' . $this->context['user']['id']);
+		$this->cache()->forget(Utils::$context['lp_block']['type'] . '_addon_b' . $item);
+		$this->cache()->forget(Utils::$context['lp_block']['type'] . '_addon_u' . Utils::$context['user']['id']);
+		$this->cache()->forget(Utils::$context['lp_block']['type'] . '_addon_b' . $item . '_u' . Utils::$context['user']['id']);
 	}
 
 	/**
@@ -246,13 +248,13 @@ final class BlockRepository extends AbstractRepository
 	 */
 	private function prepareMissingBlockTypes(string $type): void
 	{
-		if (isset($this->txt['lp_' . $type]['title']))
+		if (isset(Lang::$txt['lp_' . $type]['title']))
 			return;
 
 		$addon = $this->getCamelName($type);
 
-		$message = in_array($addon, $this->getEntityList('plugin')) ? $this->txt['lp_addon_not_activated'] : $this->txt['lp_addon_not_installed'];
+		$message = in_array($addon, $this->getEntityList('plugin')) ? Lang::$txt['lp_addon_not_activated'] : Lang::$txt['lp_addon_not_installed'];
 
-		$this->context['lp_missing_block_types'][$type] = '<span class="error">' . sprintf($message, $addon) . '</span>';
+		Utils::$context['lp_missing_block_types'][$type] = '<span class="error">' . sprintf($message, $addon) . '</span>';
 	}
 }

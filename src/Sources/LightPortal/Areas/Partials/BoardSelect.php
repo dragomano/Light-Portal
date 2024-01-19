@@ -9,10 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.4
+ * @version 2.5
  */
 
 namespace Bugo\LightPortal\Areas\Partials;
+
+use Bugo\LightPortal\Utils\{Config, Lang, Utils};
 
 final class BoardSelect extends AbstractPartial
 {
@@ -22,7 +24,7 @@ final class BoardSelect extends AbstractPartial
 		$params = $params[0] ?? [];
 
 		$params['id'] ??= 'lp_frontpage_boards';
-		$params['value'] ??= $this->modSettings['lp_frontpage_boards'] ?? '';
+		$params['value'] ??= Config::$modSettings['lp_frontpage_boards'] ?? '';
 		$params['data'] ??= $this->getBoardList();
 
 		$data = [];
@@ -45,16 +47,16 @@ final class BoardSelect extends AbstractPartial
 		<div id="' . $params['id'] . '" name="' . $params['id'] . '"></div>
 		<script>
 			VirtualSelect.init({
-				ele: "#' . $params['id'] . '",' . ($this->context['right_to_left'] ? '
+				ele: "#' . $params['id'] . '",' . (Utils::$context['right_to_left'] ? '
 				textDirection: "rtl",' : '') . '
 				dropboxWrapper: "body",
 				multiple: true,
 				search: true,
 				markSearchResults: true,
-				placeholder: "' . ($params['hint'] ?? $this->txt['lp_frontpage_boards_select']) . '",
-				noSearchResultsText: "' . $this->txt['no_matches'] . '",
-				searchPlaceholderText: "' . $this->txt['search'] . '",
-				allOptionsSelectedText: "' . $this->txt['all'] . '",
+				placeholder: "' . ($params['hint'] ?? Lang::$txt['lp_frontpage_boards_select']) . '",
+				noSearchResultsText: "' . Lang::$txt['no_matches'] . '",
+				searchPlaceholderText: "' . Lang::$txt['search'] . '",
+				allOptionsSelectedText: "' . Lang::$txt['all'] . '",
 				showValueAsTags: true,
 				maxWidth: "100%",
 				options: ' . json_encode($data) . ',

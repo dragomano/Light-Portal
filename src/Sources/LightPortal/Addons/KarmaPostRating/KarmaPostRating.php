@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\KarmaPostRating;
 
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Utils\{Config, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -29,7 +30,7 @@ class KarmaPostRating extends Plugin
 		if (! class_exists('\Bugo\KarmaPostRating\Subs'))
 			return;
 
-		$custom_columns[] = 'IF (kpr.rating_plus || kpr.rating_minus, kpr.rating_plus + kpr.rating_minus' . (empty($this->modSettings['kpr_num_topics_factor']) ? '' : ' + t.num_replies') . ', 0) AS rating';
+		$custom_columns[] = 'IF (kpr.rating_plus || kpr.rating_minus, kpr.rating_plus + kpr.rating_minus' . (empty(Config::$modSettings['kpr_num_topics_factor']) ? '' : ' + t.num_replies') . ', 0) AS rating';
 
 		$custom_tables[] = 'LEFT JOIN {db_prefix}kpr_ratings AS kpr ON (t.id_first_msg = kpr.item_id AND kpr.item = {string:kpr_item_type})';
 
@@ -43,9 +44,9 @@ class KarmaPostRating extends Plugin
 
 	public function frontAssets(): void
 	{
-		foreach ($this->context['lp_frontpage_articles'] as $id => $topic) {
+		foreach (Utils::$context['lp_frontpage_articles'] as $id => $topic) {
 			if (! empty($topic['kpr_rating'])) {
-				$this->context['lp_frontpage_articles'][$id]['replies']['after'] .= ' <i class="fas fa-star"></i> ' . $topic['kpr_rating'];
+				Utils::$context['lp_frontpage_articles'][$id]['replies']['after'] .= ' <i class="fas fa-star"></i> ' . $topic['kpr_rating'];
 			}
 		}
 	}

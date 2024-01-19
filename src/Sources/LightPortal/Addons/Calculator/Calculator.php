@@ -10,12 +10,13 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 02.12.23
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\Calculator;
 
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Utils\Utils;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -27,9 +28,12 @@ class Calculator extends Block
 {
 	public string $icon = 'fas fa-calculator';
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['calculator']['no_content_class'] = true;
+		if (Utils::$context['current_block']['type'] !== 'calculator')
+			return;
+
+		$params['no_content_class'] = true;
 	}
 
 	public function prepareContent(object $data): void

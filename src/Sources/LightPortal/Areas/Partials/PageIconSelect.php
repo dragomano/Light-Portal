@@ -9,10 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.4
+ * @version 2.5
  */
 
 namespace Bugo\LightPortal\Areas\Partials;
+
+use Bugo\LightPortal\Utils\{Lang, Utils};
 
 final class PageIconSelect extends AbstractPartial
 {
@@ -23,28 +25,28 @@ final class PageIconSelect extends AbstractPartial
 
 		$id = empty($params['id']) ? 'page_icon' : $params['id'];
 
-		$icon = empty($params['icon']) ? ($this->context['lp_page']['options']['page_icon'] ?? '') : $params['icon'];
+		$icon = empty($params['icon']) ? (Utils::$context['lp_page']['options']['page_icon'] ?? '') : $params['icon'];
 
 		$template = $this->getIcon($icon) . $icon;
 
 		return /** @lang text */ '
 		<div id="' . $id . '" name="' . $id . '"></div>
-		<input type="checkbox" name="show_in_menu" id="show_in_menu"' . ($this->context['lp_page']['options']['show_in_menu'] ? ' checked=""' : '') . ' class="checkbox">
+		<input type="checkbox" name="show_in_menu" id="show_in_menu"' . (Utils::$context['lp_page']['options']['show_in_menu'] ? ' checked=""' : '') . ' class="checkbox">
 		<label class="label" for="show_in_menu" style="margin-left: 1em"></label>
 		<script>
 			VirtualSelect.init({
-				ele: "#' . $id . '",' . ($this->context['right_to_left'] ? '
+				ele: "#' . $id . '",' . (Utils::$context['right_to_left'] ? '
 				textDirection: "rtl",' : '') . '
 				dropboxWrapper: "body",
 				search: true,
 				allowNewOption: true,
-				disabled: ' . ($this->context['lp_page']['options']['show_in_menu'] ? 'false' : 'true') . ',
+				disabled: ' . (Utils::$context['lp_page']['options']['show_in_menu'] ? 'false' : 'true') . ',
 				placeholder: "cheese",
-				noSearchResultsText: "' . $this->txt['no_matches'] . '",
-				searchPlaceholderText: "' . $this->txt['search'] . '",
+				noSearchResultsText: "' . Lang::$txt['no_matches'] . '",
+				searchPlaceholderText: "' . Lang::$txt['search'] . '",
 				options: [
 					{
-						label: ' . $this->jsEscape($template) . ',
+						label: ' . Utils::JavaScriptEscape($template) . ',
 						value: "' . $icon . '"
 					}
 				],
@@ -53,7 +55,7 @@ final class PageIconSelect extends AbstractPartial
 					return `<i class="${data.value} fa-fw"></i> ${data.value}`;
 				},
 				onServerSearch: async function (search, virtualSelect) {
-					await axios.post("' . $this->context['canonical_url'] . ';icons", {
+					await axios.post("' . Utils::$context['canonical_url'] . ';icons", {
 						search
 					})
 						.then(({ data }) => {

@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.12.23
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\ThemeSwitcher;
 
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Utils\Theme;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -51,7 +52,7 @@ class ThemeSwitcher extends Block
 
 		foreach ($themes as $theme_id => $name) {
 			echo '
-					<option value="', $theme_id, '"', $this->settings['theme_id'] == $theme_id ? ' selected="selected"' : '', '>
+					<option value="', $theme_id, '"', Theme::$current->settings['theme_id'] == $theme_id ? ' selected="selected"' : '', '>
 						', $name, '
 					</option>';
 		}

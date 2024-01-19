@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.12.23
+ * @version 18.01.24
  */
 
 namespace Bugo\LightPortal\Addons\Swiper;
 
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, RadioField, RangeField, SelectField};
+use Bugo\LightPortal\Utils\{Lang, Theme, User, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -25,27 +26,28 @@ class Swiper extends Block
 {
 	public string $icon = 'far fa-images';
 
-	private array $params = [
-		'direction'       => 'horizontal',
-		'effect'          => 'coverflow',
-		'slides_per_view' => 3,
-		'loop'            => true,
-		'show_pagination' => true,
-		'show_navigation' => true,
-		'show_scrollbar'  => true,
-		'images'          => '',
-	];
-
 	private array $effects = ['slide', 'fade', 'cube', 'coverflow', 'flip', 'cards', 'creative'];
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['swiper']['parameters'] = $this->params;
+		if (Utils::$context['current_block']['type'] !== 'swiper')
+			return;
+
+		$params = [
+			'direction'       => 'horizontal',
+			'effect'          => 'coverflow',
+			'slides_per_view' => 3,
+			'loop'            => true,
+			'show_pagination' => true,
+			'show_navigation' => true,
+			'show_scrollbar'  => true,
+			'images'          => '',
+		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type): void
+	public function validateBlockParams(array &$params): void
 	{
-		if ($type !== 'swiper')
+		if (Utils::$context['current_block']['type'] !== 'swiper')
 			return;
 
 		$data = $this->request()->only(['image_title', 'image_link']);
@@ -65,49 +67,51 @@ class Swiper extends Block
 			$this->request()->put('images', json_encode($images, JSON_UNESCAPED_UNICODE));
 		}
 
-		$parameters['direction']       = FILTER_DEFAULT;
-		$parameters['effect']          = FILTER_DEFAULT;
-		$parameters['slides_per_view'] = FILTER_VALIDATE_INT;
-		$parameters['loop']            = FILTER_VALIDATE_BOOLEAN;
-		$parameters['show_pagination'] = FILTER_VALIDATE_BOOLEAN;
-		$parameters['show_navigation'] = FILTER_VALIDATE_BOOLEAN;
-		$parameters['show_scrollbar']  = FILTER_VALIDATE_BOOLEAN;
-		$parameters['images']          = FILTER_DEFAULT;
+		$params = [
+			'direction'       => FILTER_DEFAULT,
+			'effect'          => FILTER_DEFAULT,
+			'slides_per_view' => FILTER_VALIDATE_INT,
+			'loop'            => FILTER_VALIDATE_BOOLEAN,
+			'show_pagination' => FILTER_VALIDATE_BOOLEAN,
+			'show_navigation' => FILTER_VALIDATE_BOOLEAN,
+			'show_scrollbar'  => FILTER_VALIDATE_BOOLEAN,
+			'images'          => FILTER_DEFAULT,
+		];
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'swiper')
+		if (Utils::$context['current_block']['type'] !== 'swiper')
 			return;
 
-		CustomField::make('images', $this->txt['lp_swiper']['images'])
+		CustomField::make('images', Lang::$txt['lp_swiper']['images'])
 			->setTab('content')
 			->setValue($this->getFromTemplate('swiper_images'));
 
-		RadioField::make('direction', $this->txt['lp_swiper']['direction'])
-			->setOptions(array_combine(['vertical', 'horizontal'], $this->txt['lp_panel_direction_set']))
-			->setValue($this->context['lp_block']['options']['parameters']['direction']);
+		RadioField::make('direction', Lang::$txt['lp_swiper']['direction'])
+			->setOptions(array_combine(['vertical', 'horizontal'], Lang::$txt['lp_panel_direction_set']))
+			->setValue(Utils::$context['lp_block']['options']['direction']);
 
-		SelectField::make('effect', $this->txt['lp_swiper']['effect'])
+		SelectField::make('effect', Lang::$txt['lp_swiper']['effect'])
 			->setOptions(array_combine($this->effects, $this->effects))
-			->setValue($this->context['lp_block']['options']['parameters']['effect']);
+			->setValue(Utils::$context['lp_block']['options']['effect']);
 
-		RangeField::make('slides_per_view', $this->txt['lp_swiper']['slides_per_view'])
+		RangeField::make('slides_per_view', Lang::$txt['lp_swiper']['slides_per_view'])
 			->setAttribute('min', 1)
 			->setAttribute('max', 12)
-			->setValue($this->context['lp_block']['options']['parameters']['slides_per_view']);
+			->setValue(Utils::$context['lp_block']['options']['slides_per_view']);
 
-		CheckboxField::make('loop', $this->txt['lp_swiper']['loop'])
-			->setValue($this->context['lp_block']['options']['parameters']['loop']);
+		CheckboxField::make('loop', Lang::$txt['lp_swiper']['loop'])
+			->setValue(Utils::$context['lp_block']['options']['loop']);
 
-		CheckboxField::make('show_pagination', $this->txt['lp_swiper']['show_pagination'])
-			->setValue($this->context['lp_block']['options']['parameters']['show_pagination']);
+		CheckboxField::make('show_pagination', Lang::$txt['lp_swiper']['show_pagination'])
+			->setValue(Utils::$context['lp_block']['options']['show_pagination']);
 
-		CheckboxField::make('show_navigation', $this->txt['lp_swiper']['show_navigation'])
-			->setValue($this->context['lp_block']['options']['parameters']['show_navigation']);
+		CheckboxField::make('show_navigation', Lang::$txt['lp_swiper']['show_navigation'])
+			->setValue(Utils::$context['lp_block']['options']['show_navigation']);
 
-		CheckboxField::make('show_scrollbar', $this->txt['lp_swiper']['show_scrollbar'])
-			->setValue($this->context['lp_block']['options']['parameters']['show_scrollbar']);
+		CheckboxField::make('show_scrollbar', Lang::$txt['lp_swiper']['show_scrollbar'])
+			->setValue(Utils::$context['lp_block']['options']['show_scrollbar']);
 	}
 
 	public function getData(int|string $block_id, array $parameters): array
@@ -116,10 +120,10 @@ class Swiper extends Block
 			return [];
 
 		$html = '
-		<div id="swiper' . $block_id . '" class="swiper"' . ($this->context['right_to_left'] ? ' dir="rtl"' : '') . '>
+		<div id="swiper' . $block_id . '" class="swiper"' . (Utils::$context['right_to_left'] ? ' dir="rtl"' : '') . '>
 			<div class="swiper-wrapper">';
 
-		$images = $this->jsonDecode($parameters['images']);
+		$images = Utils::jsonDecode($parameters['images'], true);
 
 		foreach ($images as $image) {
 			[$link, $title] = [$image['link'], $image['title']];
@@ -166,17 +170,17 @@ class Swiper extends Block
 
 		$block_id = $data->block_id;
 
-		$swiper_html = $this->cache('swiper_addon_b' . $block_id . '_' . $this->user_info['language'])
+		$swiper_html = $this->cache('swiper_addon_b' . $block_id . '_' . User::$info['language'])
 			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getData', $block_id, $parameters);
 
 		if (empty($swiper_html))
 			return;
 
-		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css');
-		$this->loadExtJS('https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js');
+		Theme::loadExtCSS('https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css');
+		Theme::loadExtJS('https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js');
 
-		$this->addInlineJavaScript('
+		Theme::addInlineJS('
 			const swiper' . $block_id . ' = new Swiper("#swiper' . $block_id . '", {
 				direction: "' . ($parameters['direction'] ?? 'horizontal') . '",
 				loop: ' . (empty($parameters['loop']) ? 'false' : 'true') . ',

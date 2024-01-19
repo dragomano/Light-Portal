@@ -9,13 +9,14 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.4
+ * @version 2.5
  */
 
 namespace Bugo\LightPortal\Addons;
 
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Repositories\PluginRepository;
+use Bugo\LightPortal\Utils\{ServerSideIncludes, Theme, Utils};
 use ReflectionClass;
 
 if (! defined('SMF'))
@@ -47,14 +48,14 @@ abstract class Plugin
 			require_once $path;
 
 		if ($sub_template)
-			$this->context['sub_template'] = $sub_template;
+			Utils::$context['sub_template'] = $sub_template;
 
 		return $this;
 	}
 
 	public function withLayer(string $layer): void
 	{
-		$this->context['template_layers'][] = $layer;
+		Utils::$context['template_layers'][] = $layer;
 	}
 
 	public function getFromTemplate(string $function, ...$params): string
@@ -68,12 +69,7 @@ abstract class Plugin
 	{
 		require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'SSI.php';
 
-		$function = 'ssi_' . $function;
-
-		if (function_exists($function))
-			return $function(...$params);
-
-		return false;
+		return ServerSideIncludes::{$function}(...$params);
 	}
 
 	public function addDefaultValues(array $values): void
@@ -82,14 +78,14 @@ abstract class Plugin
 
 		$settings = [];
 		foreach ($values as $option_name => $value) {
-			if (! isset($this->context['lp_' . $snake_name . '_plugin'][$option_name])) {
+			if (! isset(Utils::$context['lp_' . $snake_name . '_plugin'][$option_name])) {
 				$settings[] = [
 					'name'   => $snake_name,
 					'option' => $option_name,
 					'value'  => $value,
 				];
 
-				$this->context['lp_' . $snake_name . '_plugin'][$option_name] = $value;
+				Utils::$context['lp_' . $snake_name . '_plugin'][$option_name] = $value;
 			}
 		}
 
@@ -103,6 +99,6 @@ abstract class Plugin
 
 		$dark_themes = array_flip(array_filter(explode(',', $option)));
 
-		return $dark_themes && isset($dark_themes[$this->settings['theme_id']]);
+		return $dark_themes && isset($dark_themes[Theme::$current->settings['theme_id']]);
 	}
 }

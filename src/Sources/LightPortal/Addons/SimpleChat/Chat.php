@@ -10,12 +10,13 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 12.05.23
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleChat;
 
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Utils\{User, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -26,7 +27,7 @@ class Chat
 
 	public function getMessages(int $block_id = 0): array
 	{
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
 			SELECT chat.id, chat.block_id, chat.user_id, chat.message, chat.created_at,
 				mem.real_name
 			FROM {db_prefix}lp_simple_chat_messages AS chat
@@ -39,7 +40,7 @@ class Chat
 		);
 
 		$messages = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			$messages[$row['block_id']][] = [
 				'id'         => $row['id'],
 				'block_id'   => $row['block_id'],
@@ -52,8 +53,8 @@ class Chat
 			];
 		}
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return $messages[$block_id] ?? [];
 	}
@@ -65,7 +66,7 @@ class Chat
 		if (empty($data['message']))
 			return;
 
-		$id = $this->smcFunc['db_insert']('',
+		$id = Utils::$smcFunc['db_insert']('',
 			'{db_prefix}lp_simple_chat_messages',
 			[
 				'block_id'   => 'int',
@@ -75,15 +76,15 @@ class Chat
 			],
 			[
 				'block_id'   => $data['block_id'],
-				'user_id'    => $this->user_info['id'],
-				'message'    => $message = $this->smcFunc['htmlspecialchars']($data['message']),
+				'user_id'    => User::$info['id'],
+				'message'    => $message = Utils::$smcFunc['htmlspecialchars']($data['message']),
 				'created_at' => $time = time()
 			],
 			['id'],
 			1
 		);
 
-		$this->context['lp_num_queries']++;
+		Utils::$context['lp_num_queries']++;
 
 		$this->cache()->forget('simple_chat_addon_b' . $data['block_id']);
 
@@ -92,9 +93,9 @@ class Chat
 			'message'    => parse_bbc($message),
 			'created_at' => timeformat($time),
 			'author'     => [
-				'id'     => $this->user_info['id'],
-				'name'   => $this->user_info['name'],
-				'avatar' => $this->getUserAvatar($this->user_info['id']),
+				'id'     => User::$info['id'],
+				'name'   => User::$info['name'],
+				'avatar' => $this->getUserAvatar(User::$info['id']),
 			],
 		];
 
@@ -108,7 +109,7 @@ class Chat
 		if (empty($data['id']))
 			return;
 
-		$this->smcFunc['db_query']('', '
+		Utils::$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_simple_chat_messages
 			WHERE id = {int:id}',
 			[
@@ -116,7 +117,7 @@ class Chat
 			]
 		);
 
-		$this->context['lp_num_queries']++;
+		Utils::$context['lp_num_queries']++;
 
 		$this->cache()->forget('simple_chat_addon_b' . $data['block_id']);
 

@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 05.01.24
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
 
 use Bugo\LightPortal\Areas\Validators\AbstractValidator;
+use Bugo\LightPortal\Utils\{Lang, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -62,43 +63,43 @@ class Validator extends AbstractValidator
 
 	public function validate(): array
 	{
-		$post_data = [];
+		$data = [];
 
 		if ($this->request()->has('save')) {
-			foreach ($this->context['lp_languages'] as $lang) {
+			foreach (Utils::$context['lp_languages'] as $lang) {
 				$this->args['title_' . $lang['filename']]       = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
 				$this->args['description_' . $lang['filename']] = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
 			}
 
-			$post_data = filter_input_array(INPUT_POST, $this->args);
+			$data = filter_input_array(INPUT_POST, $this->args);
 
-			$this->findErrors($post_data);
+			$this->findErrors($data);
 		}
 
-		return $post_data;
+		return $data;
 	}
 
 	private function findErrors(array $data): void
 	{
-		$post_errors = [];
+		$errors = [];
 
 		if (empty($data['name']))
-			$post_errors[] = 'no_name';
+			$errors[] = 'no_name';
 
-		if (! empty($data['name']) && empty($this->validateVar($data['name'], ['options' => ['regexp' => '/' . LP_ADDON_PATTERN . '/']])))
-			$post_errors[] = 'no_valid_name';
+		if (! empty($data['name']) && empty($this->filterVar($data['name'], ['options' => ['regexp' => '/' . LP_ADDON_PATTERN . '/']])))
+			$errors[] = 'no_valid_name';
 
 		if (! empty($data['name']) && ! $this->isUnique($data['name']))
-			$post_errors[] = 'no_unique_name';
+			$errors[] = 'no_unique_name';
 
 		if (empty($data['description_english']))
-			$post_errors[] = 'no_description';
+			$errors[] = 'no_description';
 
-		if (! empty($post_errors)) {
-			$this->context['post_errors'] = [];
+		if (! empty($errors)) {
+			Utils::$context['post_errors'] = [];
 
-			foreach ($post_errors as $error)
-				$this->context['post_errors'][] = $this->txt['lp_post_error_' . $error] ?? $this->txt['lp_plugin_maker'][$error];
+			foreach ($errors as $error)
+				Utils::$context['post_errors'][] = Lang::$txt['lp_post_error_' . $error] ?? Lang::$txt['lp_plugin_maker'][$error];
 		}
 	}
 

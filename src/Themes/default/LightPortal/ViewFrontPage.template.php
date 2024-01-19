@@ -1,30 +1,26 @@
 <?php
 
-function template_empty()
-{
-	global $txt;
+use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
 
+function template_empty(): void
+{
 	echo '
-	<div class="infobox">', $txt['lp_no_items'], '</div>';
+	<div class="infobox">', Lang::$txt['lp_no_items'], '</div>';
 }
 
-function template_wrong_template()
+function template_wrong_template(): void
 {
-	global $txt;
-
 	echo '
-	<div class="errorbox">', $txt['lp_wrong_template'], '</div>';
+	<div class="errorbox">', Lang::$txt['lp_wrong_template'], '</div>';
 }
 
-function template_layout()
+function template_layout(): void
 {
-	global $context, $settings;
-
-	echo $context['lp_layout'] ?? '';
+	echo Utils::$context['lp_layout'] ?? '';
 
 	echo '
 	<script>window.lazyLoadOptions = {};</script>
-	<script type="module" src="', $settings['default_theme_url'], '/scripts/light_portal/lazyload.esm.min.js" async></script>';
+	<script type="module" src="', Theme::$current->settings['default_theme_url'], '/scripts/light_portal/lazyload.esm.min.js" async></script>';
 }
 
 /**
@@ -34,25 +30,23 @@ function template_layout()
  */
 function template_layout_switcher_above(): void
 {
-	global $modSettings, $context, $txt;
-
-	if (empty($modSettings['lp_show_layout_switcher']))
+	if (empty(Config::$modSettings['lp_show_layout_switcher']))
 		return;
 
-	if (empty($context['lp_frontpage_articles']) || empty($context['lp_frontpage_layouts']))
+	if (empty(Utils::$context['lp_frontpage_articles']) || empty(Utils::$context['lp_frontpage_layouts']))
 		return;
 
 	echo '
 	<div class="windowbg layout_switcher">
-		<div class="floatleft">', $context['lp_icon_set']['views'], '</div>
+		<div class="floatleft">', Utils::$context['lp_icon_set']['views'], '</div>
 		<div class="floatright">
 			<form method="post">
-				<label for="layout">', $txt['lp_template'], '</label>
+				<label for="layout">', Lang::$txt['lp_template'], '</label>
 				<select id="layout" name="layout" onchange="this.form.submit()">';
 
-	foreach ($context['lp_frontpage_layouts'] as $layout => $title) {
+	foreach (Utils::$context['lp_frontpage_layouts'] as $layout => $title) {
 		echo '
-					<option value="', $layout, '"', $context['lp_current_layout'] === $layout ? ' selected' : '', '>
+					<option value="', $layout, '"', Utils::$context['lp_current_layout'] === $layout ? ' selected' : '', '>
 						', $title, '
 					</option>';
 	}
@@ -73,42 +67,40 @@ function template_layout_switcher_below()
  *
  * Template of sort list for category pages and tags
  */
-function template_sorting_above()
+function template_sorting_above(): void
 {
-	global $context, $txt;
-
 	echo '
 	<div class="cat_bar">
-		<h3 class="catbg">', $context['page_title'], '</h3>
+		<h3 class="catbg">', Utils::$context['page_title'], '</h3>
 	</div>';
 
-	if (empty($context['lp_frontpage_articles'])) {
+	if (empty(Utils::$context['lp_frontpage_articles'])) {
 		echo '
-	<div class="information">', $txt['lp_no_items'], '</div>';
+	<div class="information">', Lang::$txt['lp_no_items'], '</div>';
 	} else {
 		echo '
 	<div class="information">';
 
-		if (! empty($context['description'])) {
+		if (! empty(Utils::$context['description'])) {
 			echo '
-		<div class="floatleft">', $context['description'], '</div>';
+		<div class="floatleft">', Utils::$context['description'], '</div>';
 		}
 
 		echo '
 		<div class="floatright">
 			<form method="post">
-				<label for="sort">', $txt['lp_sorting_label'], '</label>
+				<label for="sort">', Lang::$txt['lp_sorting_label'], '</label>
 				<select id="sort" name="sort" onchange="this.form.submit()">
-					<option value="title;desc"', $context['current_sorting'] == 'title;desc' ? ' selected' : '', '>', $txt['lp_sort_by_title_desc'], '</option>
-					<option value="title"', $context['current_sorting'] == 'title' ? ' selected' : '', '>', $txt['lp_sort_by_title'], '</option>
-					<option value="created;desc"', $context['current_sorting'] == 'created;desc' ? ' selected' : '', '>', $txt['lp_sort_by_created_desc'], '</option>
-					<option value="created"', $context['current_sorting'] == 'created' ? ' selected' : '', '>', $txt['lp_sort_by_created'], '</option>
-					<option value="updated;desc"', $context['current_sorting'] == 'updated;desc' ? ' selected' : '', '>', $txt['lp_sort_by_updated_desc'], '</option>
-					<option value="updated"', $context['current_sorting'] == 'updated' ? ' selected' : '', '>', $txt['lp_sort_by_updated'], '</option>
-					<option value="author_name;desc"', $context['current_sorting'] == 'author_name;desc' ? ' selected' : '', '>', $txt['lp_sort_by_author_desc'], '</option>
-					<option value="author_name"', $context['current_sorting'] == 'author_name' ? ' selected' : '', '>', $txt['lp_sort_by_author'], '</option>
-					<option value="num_views;desc"', $context['current_sorting'] == 'num_views;desc' ? ' selected' : '', '>', $txt['lp_sort_by_num_views_desc'], '</option>
-					<option value="num_views"', $context['current_sorting'] == 'num_views' ? ' selected' : '', '>', $txt['lp_sort_by_num_views'], '</option>
+					<option value="title;desc"', Utils::$context['current_sorting'] == 'title;desc' ? ' selected' : '', '>', Lang::$txt['lp_sort_by_title_desc'], '</option>
+					<option value="title"', Utils::$context['current_sorting'] == 'title' ? ' selected' : '', '>', Lang::$txt['lp_sort_by_title'], '</option>
+					<option value="created;desc"', Utils::$context['current_sorting'] == 'created;desc' ? ' selected' : '', '>', Lang::$txt['lp_sort_by_created_desc'], '</option>
+					<option value="created"', Utils::$context['current_sorting'] == 'created' ? ' selected' : '', '>', Lang::$txt['lp_sort_by_created'], '</option>
+					<option value="updated;desc"', Utils::$context['current_sorting'] == 'updated;desc' ? ' selected' : '', '>', Lang::$txt['lp_sort_by_updated_desc'], '</option>
+					<option value="updated"', Utils::$context['current_sorting'] == 'updated' ? ' selected' : '', '>', Lang::$txt['lp_sort_by_updated'], '</option>
+					<option value="author_name;desc"', Utils::$context['current_sorting'] == 'author_name;desc' ? ' selected' : '', '>', Lang::$txt['lp_sort_by_author_desc'], '</option>
+					<option value="author_name"', Utils::$context['current_sorting'] == 'author_name' ? ' selected' : '', '>', Lang::$txt['lp_sort_by_author'], '</option>
+					<option value="num_views;desc"', Utils::$context['current_sorting'] == 'num_views;desc' ? ' selected' : '', '>', Lang::$txt['lp_sort_by_num_views_desc'], '</option>
+					<option value="num_views"', Utils::$context['current_sorting'] == 'num_views' ? ' selected' : '', '>', Lang::$txt['lp_sort_by_num_views'], '</option>
 				</select>
 			</form>
 		</div>
@@ -120,20 +112,18 @@ function template_sorting_below()
 {
 }
 
-function show_pagination(string $position = 'top')
+function show_pagination(string $position = 'top'): void
 {
-	global $context, $modSettings;
-
-	if (empty($context['lp_frontpage_articles']))
+	if (empty(Utils::$context['lp_frontpage_articles']))
 		return;
 
-	$show_on_top = $position === 'top' && ! empty($modSettings['lp_show_pagination']);
+	$show_on_top = $position === 'top' && ! empty(Config::$modSettings['lp_show_pagination']);
 
-	$show_on_bottom = $position === 'bottom' && (empty($modSettings['lp_show_pagination']) || ($modSettings['lp_show_pagination'] == 1));
+	$show_on_bottom = $position === 'bottom' && (empty(Config::$modSettings['lp_show_pagination']) || (Config::$modSettings['lp_show_pagination'] == 1));
 
-	if (! empty($context['page_index']) && ($show_on_top || $show_on_bottom))
+	if (! empty(Utils::$context['page_index']) && ($show_on_top || $show_on_bottom))
 		echo '
 		<div class="col-xs-12 centertext">
-			<div class="pagesection">', $context['page_index'], '</div>
+			<div class="pagesection">', Utils::$context['page_index'], '</div>
 		</div>';
 }

@@ -9,10 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.4
+ * @version 2.5
  */
 
 namespace Bugo\LightPortal\Front;
+
+use Bugo\LightPortal\Utils\{BBCodeParser, Config, Lang, User, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -23,10 +25,10 @@ class TopicArticle extends AbstractArticle
 
 	public function init(): void
 	{
-		$this->selected_boards = empty($this->modSettings['lp_frontpage_boards']) ? [] : explode(',', $this->modSettings['lp_frontpage_boards']);
+		$this->selected_boards = empty(Config::$modSettings['lp_frontpage_boards']) ? [] : explode(',', Config::$modSettings['lp_frontpage_boards']);
 
 		$this->params = [
-			'current_member'    => $this->user_info['id'],
+			'current_member'    => User::$info['id'],
 			'is_approved'       => 1,
 			'id_poll'           => 0,
 			'id_redirect_topic' => 0,
@@ -46,7 +48,7 @@ class TopicArticle extends AbstractArticle
 
 	public function getData(int $start, int $limit): array
 	{
-		if (empty($this->selected_boards) && $this->modSettings['lp_frontpage_mode'] === 'all_topics')
+		if (empty($this->selected_boards) && Config::$modSettings['lp_frontpage_mode'] === 'all_topics')
 			return [];
 
 		$this->params += [
@@ -54,9 +56,9 @@ class TopicArticle extends AbstractArticle
 			'limit' => $limit
 		];
 
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT
-				t.id_topic, t.id_board, t.num_views, t.num_replies, t.is_sticky, t.id_first_msg, t.id_member_started, mf.subject, mf.body AS body, mf.smileys_enabled, COALESCE(mem.real_name, mf.poster_name) AS poster_name, mf.poster_time, mf.id_member, ml.id_msg, ml.id_member AS last_poster_id, ml.poster_name AS last_poster_name, ml.body AS last_body, ml.poster_time AS last_msg_time, GREATEST(mf.poster_time, mf.modified_time) AS date, b.name, ' . (empty($this->modSettings['lp_show_images_in_articles']) ? '' : '(
+				t.id_topic, t.id_board, t.num_views, t.num_replies, t.is_sticky, t.id_first_msg, t.id_member_started, mf.subject, mf.body AS body, mf.smileys_enabled, COALESCE(mem.real_name, mf.poster_name) AS poster_name, mf.poster_time, mf.id_member, ml.id_msg, ml.id_member AS last_poster_id, ml.poster_name AS last_poster_name, ml.body AS last_body, ml.poster_time AS last_msg_time, GREATEST(mf.poster_time, mf.modified_time) AS date, b.name, ' . (empty(Config::$modSettings['lp_show_images_in_articles']) ? '' : '(
 					SELECT id_attach
 					FROM {db_prefix}attachments
 					WHERE id_msg = t.id_first_msg
@@ -66,13 +68,13 @@ class TopicArticle extends AbstractArticle
 						AND attachment_type = {int:attachment_type}
 					ORDER BY id_attach
 					LIMIT 1
-				) AS id_attach, ') . ($this->user_info['is_guest'] ? '0' : 'COALESCE(lt.id_msg, lmr.id_msg, -1) + 1') . ' AS new_from, ml.id_msg_modified' . (empty($this->columns) ? '' : ',
+				) AS id_attach, ') . (User::$info['is_guest'] ? '0' : 'COALESCE(lt.id_msg, lmr.id_msg, -1) + 1') . ' AS new_from, ml.id_msg_modified' . (empty($this->columns) ? '' : ',
 				' . implode(', ', $this->columns)) . '
 			FROM {db_prefix}topics AS t
 				INNER JOIN {db_prefix}messages AS ml ON (t.id_last_msg = ml.id_msg)
 				INNER JOIN {db_prefix}messages AS mf ON (t.id_first_msg = mf.id_msg)
 				INNER JOIN {db_prefix}boards AS b ON (t.id_board = b.id_board)
-				LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . ($this->user_info['is_guest'] ? '' : '
+				LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . (User::$info['is_guest'] ? '' : '
 				LEFT JOIN {db_prefix}log_topics AS lt ON (t.id_topic = lt.id_topic AND lt.id_member = {int:current_member})
 				LEFT JOIN {db_prefix}log_mark_read AS lmr ON (t.id_board = lmr.id_board AND lmr.id_member = {int:current_member})') . (empty($this->tables) ? '' : '
 				' . implode("\n\t\t\t\t\t", $this->tables)) . '
@@ -82,23 +84,23 @@ class TopicArticle extends AbstractArticle
 				AND t.id_board IN ({array_int:selected_boards})') . '
 				AND {query_wanna_see_board}' . (empty($this->wheres) ? '' : '
 				' . implode("\n\t\t\t\t\t", $this->wheres)) . '
-			ORDER BY ' . (empty($this->modSettings['lp_frontpage_order_by_replies']) ? '' : 't.num_replies DESC, ') . $this->orders[$this->modSettings['lp_frontpage_article_sorting'] ?? 0] . '
+			ORDER BY ' . (empty(Config::$modSettings['lp_frontpage_order_by_replies']) ? '' : 't.num_replies DESC, ') . $this->orders[Config::$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
 			LIMIT {int:start}, {int:limit}',
 			$this->params
 		);
 
 		$topics = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			if (! isset($topics[$row['id_topic']])) {
 				$this->cleanBbcode($row['subject']);
 
-				$this->censorText($row['subject']);
+				Lang::censorText($row['subject']);
 
 				$body = $last_body = '';
 
-				if (! empty($this->modSettings['lp_show_teaser'])) {
-					$this->censorText($row['body']);
-					$this->censorText($row['last_body']);
+				if (! empty(Config::$modSettings['lp_show_teaser'])) {
+					Lang::censorText($row['body']);
+					Lang::censorText($row['last_body']);
 
 					$body = preg_replace('~\[spoiler.*].*?\[/spoiler]~Usi', '', $row['body']);
 					$body = preg_replace('~\[quote.*].*?\[/quote]~Usi', '', $body);
@@ -110,77 +112,77 @@ class TopicArticle extends AbstractArticle
 					$last_body = preg_replace('~\[table.*].*?\[/table]~Usi', '', $last_body);
 					$last_body = preg_replace('~\[code.*].*?\[/code]~Usi', '', $last_body);
 
-					$body      = $this->parseBbc($body, $row['smileys_enabled'], $row['id_first_msg']);
-					$last_body = $this->parseBbc($last_body, $row['smileys_enabled'], $row['id_msg']);
+					$body      = BBCodeParser::load()->parse($body, (bool) $row['smileys_enabled'], $row['id_first_msg']);
+					$last_body = BBCodeParser::load()->parse($last_body, (bool) $row['smileys_enabled'], $row['id_msg']);
 				}
 
-				$image = empty($this->modSettings['lp_show_images_in_articles']) ? '' : $this->getImageFromText($this->parseBbc($row['body'], false));
+				$image = empty(Config::$modSettings['lp_show_images_in_articles']) ? '' : $this->getImageFromText(BBCodeParser::load()->parse($row['body'], false));
 
 				if (! empty($row['id_attach']) && empty($image)) {
-					$image = $this->scripturl . '?action=dlattach;topic=' . $row['id_topic'] . '.0;attach=' . $row['id_attach'] . ';image';
+					$image = Config::$scripturl . '?action=dlattach;topic=' . $row['id_topic'] . '.0;attach=' . $row['id_attach'] . ';image';
 				}
 
 				$topics[$row['id_topic']] = [
 					'id' => $row['id_topic'],
 					'section' => [
 						'name' => $row['name'],
-						'link' => $this->scripturl . '?board=' . $row['id_board'] . '.0'
+						'link' => Config::$scripturl . '?board=' . $row['id_board'] . '.0'
 					],
 					'author' => [
-						'id' => $author_id = (int) (empty($this->modSettings['lp_frontpage_article_sorting']) ? $row['last_poster_id'] : $row['id_member']),
-						'link' => $this->scripturl . '?action=profile;u=' . $author_id,
-						'name' => empty($this->modSettings['lp_frontpage_article_sorting']) ? $row['last_poster_name'] : $row['poster_name']
+						'id' => $author_id = (int) (empty(Config::$modSettings['lp_frontpage_article_sorting']) ? $row['last_poster_id'] : $row['id_member']),
+						'link' => Config::$scripturl . '?action=profile;u=' . $author_id,
+						'name' => empty(Config::$modSettings['lp_frontpage_article_sorting']) ? $row['last_poster_name'] : $row['poster_name']
 					],
-					'date' => empty($this->modSettings['lp_frontpage_article_sorting']) && $row['last_msg_time'] ? $row['last_msg_time'] : $row['poster_time'],
+					'date' => empty(Config::$modSettings['lp_frontpage_article_sorting']) && $row['last_msg_time'] ? $row['last_msg_time'] : $row['poster_time'],
 					'title' => $row['subject'],
-					'link' => $this->scripturl . '?topic=' . $row['id_topic'] . '.0',
-					'is_new' => $row['new_from'] <= $row['id_msg_modified'] && $row['last_poster_id'] != $this->user_info['id'],
+					'link' => Config::$scripturl . '?topic=' . $row['id_topic'] . '.0',
+					'is_new' => $row['new_from'] <= $row['id_msg_modified'] && $row['last_poster_id'] != User::$info['id'],
 					'views' => [
 						'num' => $row['num_views'],
-						'title' => $this->txt['lp_views'],
+						'title' => Lang::$txt['lp_views'],
 						'after' => ''
 					],
 					'replies' => [
 						'num' => $row['num_replies'],
-						'title' => $this->txt['lp_replies'],
+						'title' => Lang::$txt['lp_replies'],
 						'after' => ''
 					],
 					'css_class' => $row['is_sticky'] ? ' sticky' : '',
 					'image' => $image,
-					'can_edit' => $this->user_info['is_admin'] || ($this->user_info['id'] && $row['id_member'] == $this->user_info['id']),
-					'edit_link' => $this->scripturl . '?action=post;msg=' . $row['id_first_msg'] . ';topic=' . $row['id_topic'] . '.0'
+					'can_edit' => User::$info['is_admin'] || (User::$info['id'] && $row['id_member'] == User::$info['id']),
+					'edit_link' => Config::$scripturl . '?action=post;msg=' . $row['id_first_msg'] . ';topic=' . $row['id_topic'] . '.0'
 				];
 
-				if (! empty($this->modSettings['lp_show_teaser']))
-					$topics[$row['id_topic']]['teaser'] = $this->getTeaser(empty($this->modSettings['lp_frontpage_article_sorting']) ? $last_body : $body);
+				if (! empty(Config::$modSettings['lp_show_teaser']))
+					$topics[$row['id_topic']]['teaser'] = $this->getTeaser(empty(Config::$modSettings['lp_frontpage_article_sorting']) ? $last_body : $body);
 
 				if ($row['new_from'] && $row['new_from'] <= $row['id_msg_modified'])
-					$topics[$row['id_topic']]['link'] = $this->scripturl . '?topic=' . $row['id_topic'] . '.new;topicseen#new';
+					$topics[$row['id_topic']]['link'] = Config::$scripturl . '?topic=' . $row['id_topic'] . '.new;topicseen#new';
 
 				$topics[$row['id_topic']]['msg_link'] = $topics[$row['id_topic']]['link'];
 
 				if ($row['num_replies'])
-					$topics[$row['id_topic']]['msg_link'] = $this->scripturl . '?msg=' . $row['id_msg'];
+					$topics[$row['id_topic']]['msg_link'] = Config::$scripturl . '?msg=' . $row['id_msg'];
 
-				if (! empty($this->modSettings['lp_frontpage_article_sorting']) && $this->modSettings['lp_frontpage_article_sorting'] == 3)
+				if (! empty(Config::$modSettings['lp_frontpage_article_sorting']) && Config::$modSettings['lp_frontpage_article_sorting'] == 3)
 					$topics[$row['id_topic']]['date'] = $row['date'];
 			}
 
 			$this->hook('frontTopicsOutput', [&$topics, $row]);
 		}
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return $this->getItemsWithUserAvatars($topics);
 	}
 
 	public function getTotalCount(): int
 	{
-		if (empty($this->selected_boards) && $this->modSettings['lp_frontpage_mode'] === 'all_topics')
+		if (empty($this->selected_boards) && Config::$modSettings['lp_frontpage_mode'] === 'all_topics')
 			return 0;
 
-		$result = $this->smcFunc['db_query']('', /** @lang text */ '
+		$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
 			SELECT COUNT(t.id_topic)
 			FROM {db_prefix}topics AS t
 				INNER JOIN {db_prefix}boards AS b ON (t.id_board = b.id_board)' . (empty($this->tables) ? '' : '
@@ -194,10 +196,10 @@ class TopicArticle extends AbstractArticle
 			$this->params
 		);
 
-		[$num_topics] = $this->smcFunc['db_fetch_row']($result);
+		[$num_topics] = Utils::$smcFunc['db_fetch_row']($result);
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return (int) $num_topics;
 	}

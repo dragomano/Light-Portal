@@ -10,21 +10,22 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 01.05.23
+ * @version 18.01.24
  */
 
 namespace Bugo\LightPortal\Addons\HidingBlocks;
 
 use Bugo\LightPortal\Areas\Partials\AbstractPartial;
+use Bugo\LightPortal\Utils\{Lang, Utils};
 
 final class BreakpointSelect extends AbstractPartial
 {
 	public function __invoke(): string
 	{
-		$current_breakpoints = $this->context['lp_block']['options']['parameters']['hidden_breakpoints'] ?? [];
+		$current_breakpoints = Utils::$context['lp_block']['options']['hidden_breakpoints'] ?? [];
 		$current_breakpoints = is_array($current_breakpoints) ? $current_breakpoints : explode(',', $current_breakpoints);
 
-		$breakpoints = array_combine(['xs', 'sm', 'md', 'lg', 'xl'], $this->txt['lp_hiding_blocks']['hidden_breakpoints_set']);
+		$breakpoints = array_combine(['xs', 'sm', 'md', 'lg', 'xl'], Lang::$txt['lp_hiding_blocks']['hidden_breakpoints_set']);
 
 		$data = $items = [];
 
@@ -32,7 +33,7 @@ final class BreakpointSelect extends AbstractPartial
 			$data[] = '{label: "' . $name . '", value: "' . $bp . '"}';
 
 			if (in_array($bp, $current_breakpoints)) {
-				$items[] = $this->jsEscape($bp);
+				$items[] = Utils::JavaScriptEscape($bp);
 			}
 		}
 
@@ -40,14 +41,14 @@ final class BreakpointSelect extends AbstractPartial
 		<div id="hidden_breakpoints" name="hidden_breakpoints"></div>
 		<script>
 			VirtualSelect.init({
-				ele: "#hidden_breakpoints",' . ($this->context['right_to_left'] ? '
+				ele: "#hidden_breakpoints",' . (Utils::$context['right_to_left'] ? '
 				textDirection: "rtl",' : '') . '
 				dropboxWrapper: "body",
 				maxWidth: "100%",
 				showValueAsTags: true,
-				placeholder: "' . $this->txt['lp_hiding_blocks']['hidden_breakpoints_subtext'] . '",
-				clearButtonText: "' . $this->txt['remove'] . '",
-				selectAllText: "' . $this->txt['check_all'] . '",
+				placeholder: "' . Lang::$txt['lp_hiding_blocks']['hidden_breakpoints_subtext'] . '",
+				clearButtonText: "' . Lang::$txt['remove'] . '",
+				selectAllText: "' . Lang::$txt['check_all'] . '",
 				multiple: true,
 				search: false,
 				options: [' . implode(',', $data) . '],

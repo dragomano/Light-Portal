@@ -1,25 +1,25 @@
 <?php
 
+use Bugo\LightPortal\Utils\{Lang, Utils};
+
 function template_plugin_post(): void
 {
-	global $context, $txt;
-
-	if (! empty($context['lp_addon_dir_is_not_writable'])) {
+	if (! empty(Utils::$context['lp_addon_dir_is_not_writable'])) {
 		echo '
-	<div class="errorbox">', $context['lp_addon_dir_is_not_writable'], '</div>';
+	<div class="errorbox">', Utils::$context['lp_addon_dir_is_not_writable'], '</div>';
 	}
 
 	echo '
 	<div class="cat_bar">
-		<h3 class="catbg">', $context['page_area_title'], '</h3>
+		<h3 class="catbg">', Utils::$context['page_area_title'], '</h3>
 	</div>';
 
-	if (! empty($context['post_errors'])) {
+	if (! empty(Utils::$context['post_errors'])) {
 		echo '
 	<div class="errorbox">
 		<ul>';
 
-		foreach ($context['post_errors'] as $error) {
+		foreach (Utils::$context['post_errors'] as $error) {
 			echo '
 			<li>', $error, '</li>';
 		}
@@ -29,24 +29,24 @@ function template_plugin_post(): void
 	</div>';
 	}
 
-	$fields = $context['posting_fields'];
+	$fields = Utils::$context['posting_fields'];
 
 	echo '
 	<form
 		id="lp_post"
-		action="', $context['canonical_url'], '"
+		action="', Utils::$context['canonical_url'], '"
 		method="post"
-		accept-charset="', $context['character_set'], '"
+		accept-charset="', Utils::$context['character_set'], '"
 		onsubmit="submitonce(this);"
 		x-data="{ tab: window.location.hash ? window.location.hash.substring(1) : \'english\' }"
 	>
 		<div class="roundframe noup">
 			<div class="lp_tabs">
 				<div data-navigation>
-					<div class="bg odd active_navigation" data-tab="common">', $context['lp_icon_set']['content'], $txt['lp_plugin_maker']['tab_content'], '</div>
-					<div class="bg odd" data-tab="copyright">', $context['lp_icon_set']['copyright'], $txt['lp_plugin_maker']['tab_copyrights'], '</div>
-					<div class="bg odd" data-tab="settings">', $context['lp_icon_set']['cog_spin'], $txt['settings'], '</div>
-					<div class="bg odd" data-tab="tuning">', $context['lp_icon_set']['tools'], $txt['lp_plugin_maker']['tab_tuning'], '</div>
+					<div class="bg odd active_navigation" data-tab="common">', Utils::$context['lp_icon_set']['content'], Lang::$txt['lp_plugin_maker']['tab_content'], '</div>
+					<div class="bg odd" data-tab="copyright">', Utils::$context['lp_icon_set']['copyright'], Lang::$txt['lp_plugin_maker']['tab_copyrights'], '</div>
+					<div class="bg odd" data-tab="settings">', Utils::$context['lp_icon_set']['cog_spin'], Lang::$txt['settings'], '</div>
+					<div class="bg odd" data-tab="tuning">', Utils::$context['lp_icon_set']['tools'], Lang::$txt['lp_plugin_maker']['tab_tuning'], '</div>
 				</div>
 				<div data-content>
 					<section class="bg even active_content" data-content="common">', template_post_tab($fields), '</section>
@@ -62,9 +62,9 @@ function template_plugin_post(): void
 													<tr class="title_bar">
 														<th style="width: 20%"></th>
 														<th colspan="3">
-															<span>', $txt['lp_plugin_maker']['option'], '</span>
+															<span>', Lang::$txt['lp_plugin_maker']['option'], '</span>
 															<button type="button" class="button" @click="removeOption(index)">
-																<span class="main_icons delete"></span> <span class="remove_label">', $txt['remove'], '</span>
+																<span class="main_icons delete"></span> <span class="remove_label">', Lang::$txt['remove'], '</span>
 															</button>
 														</th>
 													</tr>
@@ -72,13 +72,13 @@ function template_plugin_post(): void
 												<tbody>
 													<tr class="windowbg">
 														<td colspan="4">
-															<div class="infobox">', $txt['lp_plugin_maker']['option_desc'], '</div>
+															<div class="infobox">', Lang::$txt['lp_plugin_maker']['option_desc'], '</div>
 														</td>
 													</tr>
 													<tr class="windowbg" x-data="{ option_name: $id(\'option-name\') }">
 														<td>
 															<label :for="option_name">
-																<strong>', $txt['lp_plugin_maker']['option_name'], '</strong>
+																<strong>', Lang::$txt['lp_plugin_maker']['option_name'], '</strong>
 															</label>
 														</td>
 														<td colspan="3">
@@ -97,7 +97,7 @@ function template_plugin_post(): void
 													<tr class="windowbg" x-data="{ type_id: $id(\'option-type\'), default_id: $id(\'option-default\') }">
 														<td>
 															<label :for="type_id">
-																<strong>', $txt['lp_plugin_maker']['option_type'], '</strong>
+																<strong>', Lang::$txt['lp_plugin_maker']['option_type'], '</strong>
 															</label>
 														</td>
 														<td>
@@ -106,7 +106,7 @@ function template_plugin_post(): void
 																name="option_type[]"
 																:id="type_id">';
 
-	foreach ($context['lp_plugin_option_types'] as $type => $name) {
+	foreach (Utils::$context['lp_plugin_option_types'] as $type => $name) {
 		echo '
 																<option value="', $type, '">', $name, '</option>';
 	}
@@ -116,7 +116,7 @@ function template_plugin_post(): void
 														</td>
 														<td>
 															<label :for="default_id">
-																<strong>', $txt['lp_plugin_maker']['option_default_value'], '</strong>
+																<strong>', Lang::$txt['lp_plugin_maker']['option_default_value'], '</strong>
 															</label>
 														</td>
 														<td>
@@ -142,7 +142,7 @@ function template_plugin_post(): void
 																<input x-model="option.default" :name="`option_defaults[${index}]`" :id="default_id">
 															</template>
 															<template x-if="[\'title\', \'desc\', \'callback\'].includes(option.type)">
-																<span>', $txt['no'], '</span>
+																<span>', Lang::$txt['no'], '</span>
 															</template>
 														</td>
 													</tr>
@@ -155,19 +155,19 @@ function template_plugin_post(): void
 													</template>
 													<template x-if="[\'multiselect\', \'select\'].includes(option.type)">
 														<tr class="windowbg">
-															<td><strong>', $txt['lp_plugin_maker']['option_variants'], '</strong></td>
+															<td><strong>', Lang::$txt['lp_plugin_maker']['option_variants'], '</strong></td>
 															<td colspan="3">
-																<input x-model="option.variants" name="option_variants[]" placeholder="', $txt['lp_plugin_maker']['option_variants_placeholder'], '">
+																<input x-model="option.variants" name="option_variants[]" placeholder="', Lang::$txt['lp_plugin_maker']['option_variants_placeholder'], '">
 															</td>
 														</tr>
 													</template>
 													<tr class="windowbg">
-														<td><strong>', $txt['lp_plugin_maker']['option_translations'], '</strong></td>
+														<td><strong>', Lang::$txt['lp_plugin_maker']['option_translations'], '</strong></td>
 														<td colspan="3">
 															<table class="table_grid">
 																<tbody>';
 
-	foreach ($context['lp_languages'] as $lang) {
+	foreach (Utils::$context['lp_languages'] as $lang) {
 		echo '
 																	<tr class="windowbg">
 																		<td>
@@ -190,7 +190,7 @@ function template_plugin_post(): void
 							<tfoot>
 								<tr>
 									<td colspan="4">
-										<button type="button" class="button" @click="addNewOption()"><span class="main_icons plus"></span> ', $txt['lp_plugin_maker']['option_new'], '</button>
+										<button type="button" class="button" @click="addNewOption()"><span class="main_icons plus"></span> ', Lang::$txt['lp_plugin_maker']['option_new'], '</button>
 									</td>
 								</tr>
 							</tfoot>
@@ -201,10 +201,10 @@ function template_plugin_post(): void
 			</div>
 			<br class="clear">
 			<div class="centertext">
-				<div class="noticebox">', $txt['lp_plugin_maker']['add_info'], '</div>
-				<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '">
-				<input type="hidden" name="seqnum" value="', $context['form_sequence_number'], '">
-				<button type="submit" class="button" name="save" @click="plugin.post($root)">', $txt['save'], '</button>
+				<div class="noticebox">', Lang::$txt['lp_plugin_maker']['add_info'], '</div>
+				<input type="hidden" name="', Utils::$context['session_var'], '" value="', Utils::$context['session_id'], '">
+				<input type="hidden" name="seqnum" value="', Utils::$context['form_sequence_number'], '">
+				<button type="submit" class="button" name="save" @click="plugin.post($root)">', Lang::$txt['save'], '</button>
 			</div>
 		</div>
 	</form>
@@ -216,7 +216,7 @@ function template_plugin_post(): void
 					document.querySelector("dt.pf_icon").style.display = "none";
 					document.querySelector("dd.pf_icon").style.display = "none";';
 
-	foreach ($context['lp_languages'] as $lang) {
+	foreach (Utils::$context['lp_languages'] as $lang) {
 		echo '
 					document.querySelector("input[name=title_', $lang['filename'], ']").style.display = "none";';
 	}
@@ -226,7 +226,7 @@ function template_plugin_post(): void
 					document.querySelector("dt.pf_icon").style.display = "block";
 					document.querySelector("dd.pf_icon").style.display = "block";';
 
-	foreach ($context['lp_languages'] as $lang) {
+	foreach (Utils::$context['lp_languages'] as $lang) {
 		echo '
 					document.querySelector("input[name=title_', $lang['filename'], ']").style.display = "inline-block";';
 	}
@@ -237,7 +237,7 @@ function template_plugin_post(): void
 
 			handleOptions() {
 				return {
-					options: ', json_encode($context['lp_plugin']['options']), ',
+					options: ', json_encode(Utils::$context['lp_plugin']['options']), ',
 					addNewOption() {
 						this.options.push({
 							name: "",

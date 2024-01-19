@@ -10,12 +10,13 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 25.12.23
+ * @version 18.01.24
  */
 
 namespace Bugo\LightPortal\Addons\TinyMCE;
 
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Utils\{Lang, Theme, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -29,7 +30,7 @@ class TinyMCE extends Plugin
 
 	public function addSettings(array &$config_vars): void
 	{
-		$link = '<a href="https://www.tiny.cloud/auth/signup/" class="bbc_link" target="_blank">' . $this->txt['lp_tiny_m_c_e']['api_key_subtext'] . '<a>';
+		$link = '<a href="https://www.tiny.cloud/auth/signup/" class="bbc_link" target="_blank">' . Lang::$txt['lp_tiny_m_c_e']['api_key_subtext'] . '<a>';
 
 		$config_vars['tiny_m_c_e'][] = ['text', 'api_key', 'subtext' => $link];
 		$config_vars['tiny_m_c_e'][] = ['multiselect', 'dark_themes', $this->getForumThemes()];
@@ -40,16 +41,16 @@ class TinyMCE extends Plugin
 		if ($object['type'] !== 'html' && (! isset($object['options']['content']) || $object['options']['content'] !== 'html'))
 			return;
 
-		$apiKey = $this->context['lp_tiny_m_c_e_plugin']['api_key'] ?? 'no-api-key';
+		$apiKey = Utils::$context['lp_tiny_m_c_e_plugin']['api_key'] ?? 'no-api-key';
 
-		$this->loadExtJs('https://cdn.tiny.cloud/1/' . $apiKey . '/tinymce/6/tinymce.min.js', ['attributes' => ['referrerpolicy' => 'origin']]);
+		Theme::loadExtJS('https://cdn.tiny.cloud/1/' . $apiKey . '/tinymce/6/tinymce.min.js', ['attributes' => ['referrerpolicy' => 'origin']]);
 
-		$this->addInlineJavaScript('
-		const useDarkMode = ' . ($this->isDarkTheme($this->context['lp_tiny_m_c_e_plugin']['dark_themes']) ? 'true' : 'false') . ';
+		Theme::addInlineJS('
+		const useDarkMode = ' . ($this->isDarkTheme(Utils::$context['lp_tiny_m_c_e_plugin']['dark_themes']) ? 'true' : 'false') . ';
 		tinymce.init({
 			selector: "#content",
-			language: "' . $this->txt['lang_dictionary'] . '",
-			directionality: "' . ($this->context['right_to_left'] ? 'rtl' : 'ltr') . '",
+			language: "' . Lang::$txt['lang_dictionary'] . '",
+			directionality: "' . (Utils::$context['right_to_left'] ? 'rtl' : 'ltr') . '",
 			plugins: [
 				"advlist", "autolink", "link", "image", "lists", "charmap", "preview", "anchor", "pagebreak",
 				"searchreplace", "wordcount", "visualblocks", "visualchars", "code",
@@ -59,7 +60,7 @@ class TinyMCE extends Plugin
 				"bullist numlist outdent indent | link image | preview media fullscreen | " +
 				"forecolor backcolor emoticons | help",
 			menu: {
-				favs: { title: "' . $this->txt['lp_tiny_m_c_e']['favorites'] . '", items: "code visualaid | searchreplace | emoticons" }
+				favs: { title: "' . Lang::$txt['lp_tiny_m_c_e']['favorites'] . '", items: "code visualaid | searchreplace | emoticons" }
 			},
 			menubar: "favs file edit view insert format tools table help",
 			skin: useDarkMode ? "oxide-dark" : "oxide",

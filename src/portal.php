@@ -1,17 +1,20 @@
 <?php
 
-use Bugo\LightPortal\Entities\FrontPage;
+use Bugo\LightPortal\Actions\FrontPage;
+use Bugo\LightPortal\Utils\{Config, Lang, Utils};
 
 require_once __DIR__ . '/SSI.php';
 
-if (empty($sourcedir))
-	die('<b>Error:</b> Cannot run the portal - please verify that you put this file in the same place as SMF\'s index.php and SSI.php files.');
+if (empty(Config::$sourcedir))
+	die('<strong>' . Lang::$txt['error_occured'] . '</strong> ' . Lang::$txt['lp_standalone_mode_error']);
 
-if (empty($modSettings['lp_standalone_mode']) || empty($modSettings['lp_standalone_url']))
-	redirectexit();
+if (empty(Config::$modSettings['lp_standalone_mode']) || empty(Config::$modSettings['lp_standalone_url']))
+	Utils::redirectexit();
 
-require_once $sourcedir . '/LightPortal/Entities/FrontPage.php';
+require_once Config::$sourcedir . '/LightPortal/Actions/FrontPage.php';
 
-(new FrontPage)->show();
+try {
+	(new FrontPage)->show();
+} catch (Exception) {}
 
-obExit();
+Utils::obExit();

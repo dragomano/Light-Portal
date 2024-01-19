@@ -10,15 +10,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 22.12.23
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\RandomPages;
 
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\Fields\CustomField;
-use Bugo\LightPortal\Areas\Fields\NumberField;
+use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField};
 use Bugo\LightPortal\Areas\Partials\CategorySelect;
+use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -28,41 +28,45 @@ class RandomPages extends Block
 {
 	public string $icon = 'fas fa-random';
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['random_pages']['no_content_class'] = true;
+		if (Utils::$context['current_block']['type'] !== 'random_pages')
+			return;
 
-		$options['random_pages']['parameters'] = [
-			'categories' => '',
-			'num_pages'  => 10,
+		$params = [
+			'no_content_class' => true,
+			'categories'       => '',
+			'num_pages'        => 10,
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type): void
+	public function validateBlockParams(array &$params): void
 	{
-		if ($type !== 'random_pages')
+		if (Utils::$context['current_block']['type'] !== 'random_pages')
 			return;
 
-		$parameters['categories'] = FILTER_DEFAULT;
-		$parameters['num_pages']  = FILTER_VALIDATE_INT;
+		$params = [
+			'categories' => FILTER_DEFAULT,
+			'num_pages'  => FILTER_VALIDATE_INT,
+		];
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'random_pages')
+		if (Utils::$context['current_block']['type'] !== 'random_pages')
 			return;
 
-		CustomField::make('categories', $this->txt['lp_categories'])
+		CustomField::make('categories', Lang::$txt['lp_categories'])
 			->setTab('content')
 			->setValue(fn() => new CategorySelect, [
 				'id'    => 'categories',
-				'hint'  => $this->txt['lp_random_pages']['categories_select'],
-				'value' => $this->context['lp_block']['options']['parameters']['categories'] ?? '',
+				'hint'  => Lang::$txt['lp_random_pages']['categories_select'],
+				'value' => Utils::$context['lp_block']['options']['categories'] ?? '',
 			]);
 
-		NumberField::make('num_pages', $this->txt['lp_random_pages']['num_pages'])
+		NumberField::make('num_pages', Lang::$txt['lp_random_pages']['num_pages'])
 			->setAttribute('min', 1)
-			->setValue($this->context['lp_block']['options']['parameters']['num_pages']);
+			->setValue(Utils::$context['lp_block']['options']['num_pages']);
 	}
 
 	public function getData(array $parameters): array
@@ -75,8 +79,8 @@ class RandomPages extends Block
 
 		$titles = $this->getEntityList('title');
 
-		if ($this->db_type === 'postgresql') {
-			$result = $this->smcFunc['db_query']('', '
+		if (Config::$db_type === 'postgresql') {
+			$result = Utils::$smcFunc['db_query']('', '
 				WITH RECURSIVE r AS (
 					WITH b AS (
 						SELECT min(p.page_id), (
@@ -129,27 +133,27 @@ class RandomPages extends Block
 			);
 
 			$page_ids = [];
-			while ($row = $this->smcFunc['db_fetch_assoc']($result))
+			while ($row = Utils::$smcFunc['db_fetch_assoc']($result))
 				$page_ids[] = $row['page_id'];
 
-			$this->smcFunc['db_free_result']($result);
-			$this->context['lp_num_queries']++;
+			Utils::$smcFunc['db_free_result']($result);
+			Utils::$context['lp_num_queries']++;
 
 			if (empty($page_ids))
 				return $this->getData(array_merge($parameters, ['num_pages' => $num_pages - 1]));
 
-			$result = $this->smcFunc['db_query']('', '
+			$result = Utils::$smcFunc['db_query']('', '
 				SELECT p.page_id, p.alias, p.created_at, p.num_views, COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
 				FROM {db_prefix}lp_pages AS p
 					LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				WHERE p.page_id IN ({array_int:page_ids})',
 				[
-					'guest'    => $this->txt['guest_title'],
+					'guest'    => Lang::$txt['guest_title'],
 					'page_ids' => $page_ids
 				]
 			);
 		} else {
-			$result = $this->smcFunc['db_query']('', '
+			$result = Utils::$smcFunc['db_query']('', '
 				SELECT p.page_id, p.alias, p.created_at, p.num_views, COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
 				FROM {db_prefix}lp_pages AS p
 					LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
@@ -160,7 +164,7 @@ class RandomPages extends Block
 				ORDER BY RAND()
 				LIMIT {int:limit}',
 				[
-					'guest'        => $this->txt['guest_title'],
+					'guest'        => Lang::$txt['guest_title'],
 					'status'       => 1,
 					'current_time' => time(),
 					'permissions'  => $this->getPermissions(),
@@ -171,7 +175,7 @@ class RandomPages extends Block
 		}
 
 		$pages = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			$pages[] = [
 				'page_id'     => $row['page_id'],
 				'alias'       => $row['alias'],
@@ -183,8 +187,8 @@ class RandomPages extends Block
 			];
 		}
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return $pages;
 	}
@@ -197,7 +201,7 @@ class RandomPages extends Block
 		if ($data->type !== 'random_pages')
 			return;
 
-		$randomPages = $this->cache('random_pages_addon_b' . $data->block_id . '_u' . $this->user_info['id'])
+		$randomPages = $this->cache('random_pages_addon_b' . $data->block_id . '_u' . User::$info['id'])
 			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getData', $parameters);
 
@@ -211,7 +215,7 @@ class RandomPages extends Block
 
 				echo '
 				<li class="windowbg">
-					<a href="', $this->scripturl, '?', LP_PAGE_PARAM, '=', $page['alias'], '">', $title, '</a> ', $this->txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . $this->scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', $this->getFriendlyTime($page['created_at']), ' (', $this->translate('lp_views_set', ['views' => $page['num_views']]);
+					<a href="', Config::$scripturl, '?', LP_PAGE_PARAM, '=', $page['alias'], '">', $title, '</a> ', Lang::$txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . Config::$scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', $this->getFriendlyTime($page['created_at']), ' (', $this->translate('lp_views_set', ['views' => $page['num_views']]);
 
 				echo ')
 				</li>';
@@ -220,7 +224,7 @@ class RandomPages extends Block
 			echo '
 			</ul>';
 		} else {
-			echo '<div class="infobox">', $this->txt['lp_random_pages']['none'], '</div>';
+			echo '<div class="infobox">', Lang::$txt['lp_random_pages']['none'], '</div>';
 		}
 	}
 }

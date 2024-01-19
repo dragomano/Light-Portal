@@ -10,14 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.12.23
+ * @version 18.01.24
  */
 
 namespace Bugo\LightPortal\Addons\RecentComments;
 
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\Fields\NumberField;
-use Bugo\LightPortal\Areas\Fields\RangeField;
+use Bugo\LightPortal\Areas\Fields\{NumberField, RangeField};
+use Bugo\LightPortal\Utils\{Lang, User, Utils};
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -30,22 +30,24 @@ class RecentComments extends Block
 {
 	public string $icon = 'fas fa-comments';
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['recent_comments']['no_content_class'] = true;
+		if (Utils::$context['current_block']['type'] !== 'recent_comments')
+			return;
 
-		$options['recent_comments']['parameters'] = [
-			'num_comments' => 10,
-			'length'       => 80,
+		$params = [
+			'no_content_class' => true,
+			'num_comments'     => 10,
+			'length'           => 80,
 		];
 	}
 
-	public function validateBlockData(array &$parameters, string $type): void
+	public function validateBlockParams(array &$params): void
 	{
-		if ($type !== 'recent_comments')
+		if (Utils::$context['current_block']['type'] !== 'recent_comments')
 			return;
 
-		$parameters = [
+		$params = [
 			'num_comments' => FILTER_VALIDATE_INT,
 			'length'       => FILTER_VALIDATE_INT,
 		];
@@ -53,16 +55,16 @@ class RecentComments extends Block
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'recent_comments')
+		if (Utils::$context['current_block']['type'] !== 'recent_comments')
 			return;
 
-		NumberField::make('num_comments', $this->txt['lp_recent_comments']['num_comments'])
+		NumberField::make('num_comments', Lang::$txt['lp_recent_comments']['num_comments'])
 			->setAttribute('min', 1)
-			->setValue($this->context['lp_block']['options']['parameters']['num_comments']);
+			->setValue(Utils::$context['lp_block']['options']['num_comments']);
 
-		RangeField::make('length', $this->txt['lp_recent_comments']['length'])
+		RangeField::make('length', Lang::$txt['lp_recent_comments']['length'])
 			->setAttribute('min', 10)
-			->setValue($this->context['lp_block']['options']['parameters']['length']);
+			->setValue(Utils::$context['lp_block']['options']['length']);
 	}
 
 	public function getData(int $num_comments, int $length = 80): array
@@ -70,7 +72,7 @@ class RecentComments extends Block
 		if (empty($num_comments))
 			return [];
 
-		$result = $this->smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT DISTINCT com.id, com.page_id, com.message, com.created_at, p.alias, COALESCE(mem.real_name, {string:guest}) AS author_name,
 			(SELECT COUNT(*) FROM {db_prefix}lp_comments AS com2 WHERE com2.parent_id = 0 AND com2.page_id = com.page_id) AS num_comments
 			FROM {db_prefix}lp_comments AS com
@@ -89,7 +91,7 @@ class RecentComments extends Block
 			ORDER BY com.created_at DESC
 			LIMIT {int:limit}',
 			[
-				'guest'        => $this->txt['guest_title'],
+				'guest'        => Lang::$txt['guest_title'],
 				'status'       => 1,
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions(),
@@ -98,8 +100,8 @@ class RecentComments extends Block
 		);
 
 		$comments = [];
-		while ($row = $this->smcFunc['db_fetch_assoc']($result)) {
-			$this->censorText($row['message']);
+		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+			Lang::censorText($row['message']);
 
 			$comments[$row['id']] = [
 				'link'        => LP_PAGE_URL . $row['alias'] . '#comment=' . $row['id'],
@@ -109,8 +111,8 @@ class RecentComments extends Block
 			];
 		}
 
-		$this->smcFunc['db_free_result']($result);
-		$this->context['lp_num_queries']++;
+		Utils::$smcFunc['db_free_result']($result);
+		Utils::$context['lp_num_queries']++;
 
 		return $comments;
 	}
@@ -123,7 +125,7 @@ class RecentComments extends Block
 		if ($data->type !== 'recent_comments')
 			return;
 
-		$comments = $this->cache('recent_comments_addon_b' . $data->block_id . '_u' . $this->user_info['id'])
+		$comments = $this->cache('recent_comments_addon_b' . $data->block_id . '_u' . User::$info['id'])
 			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getData', (int) $parameters['num_comments'], (int) $parameters['length']);
 
@@ -137,7 +139,7 @@ class RecentComments extends Block
 			echo '
 			<li class="windowbg">
 				<a href="', $comment['link'], '">', $comment['message'], '</a>
-				<br><span class="smalltext">', $this->txt['by'], ' ', $comment['author_name'], '</span>
+				<br><span class="smalltext">', Lang::$txt['by'], ' ', $comment['author_name'], '</span>
 				<br><span class="smalltext">', $this->getFriendlyTime($comment['created_at']), '</span>
 			</li>';
 		}

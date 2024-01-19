@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.09.23
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\CategoryList;
 
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Entities\Category;
+use Bugo\LightPortal\Actions\Category;
+use Bugo\LightPortal\Utils\{Lang, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -35,20 +36,20 @@ class CategoryList extends Block
 		if ($data->type !== 'category_list')
 			return;
 
-		$categories = $this->cache('category_list_addon_u' . $this->context['user']['id'])
+		$categories = $this->cache('category_list_addon_u' . Utils::$context['user']['id'])
 			->setLifeTime($data->cache_time)
 			->setFallback(self::class, 'getData');
 
 		if (empty($categories)) {
-			echo $this->txt['lp_category_list']['no_items'];
+			echo Lang::$txt['lp_category_list']['no_items'];
 			return;
 		}
 
-		$currentCat = $this->context['current_action'] === 'portal' && $this->request()->has('sa') && $this->request('sa') === 'categories' ? (int) $this->request('id', 0) : false;
+		$currentCat = Utils::$context['current_action'] === 'portal' && $this->request()->has('sa') && $this->request('sa') === 'categories' ? (int) $this->request('id', 0) : false;
 
 		// Are we watching a portal page?
-		if (isset($this->context['lp_page']['category_id']))
-			$currentCat = $this->context['lp_page']['category_id'];
+		if (isset(Utils::$context['lp_page']['category_id']))
+			$currentCat = Utils::$context['lp_page']['category_id'];
 
 		echo '
 			<ul>';

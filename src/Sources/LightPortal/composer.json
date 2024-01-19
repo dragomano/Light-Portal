@@ -1,5 +1,6 @@
 {
   "require": {
+    "php": "~8.0",
     "ext-dom": "*",
     "ext-intl": "*",
     "ext-simplexml": "*",

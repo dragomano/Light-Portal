@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\News;
 
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\SelectField;
+use Bugo\LightPortal\Utils\{Lang, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -27,36 +28,39 @@ class News extends Block
 
 	public string $icon = 'far fa-newspaper';
 
-	public function blockOptions(array &$options): void
+	public function prepareBlockParams(array &$params): void
 	{
-		$options['news']['parameters']['selected_item'] = 0;
-	}
-
-	public function validateBlockData(array &$parameters, string $type): void
-	{
-		if ($type !== 'news')
+		if (Utils::$context['current_block']['type'] !== 'news')
 			return;
 
-		$parameters['selected_item'] = FILTER_VALIDATE_INT;
+		$params['selected_item'] = 0;
+	}
+
+	public function validateBlockParams(array &$params): void
+	{
+		if (Utils::$context['current_block']['type'] !== 'news')
+			return;
+
+		$params['selected_item'] = FILTER_VALIDATE_INT;
 	}
 
 	public function prepareBlockFields(): void
 	{
-		if ($this->context['lp_block']['type'] !== 'news')
+		if (Utils::$context['current_block']['type'] !== 'news')
 			return;
 
 		$this->getData();
 
-		$news = [$this->txt['lp_news']['random_news']];
-		if (isset($this->context['news_lines'])) {
-			array_unshift($this->context['news_lines'], $this->txt['lp_news']['random_news']);
-			$news = $this->context['news_lines'];
+		$news = [Lang::$txt['lp_news']['random_news']];
+		if (isset(Utils::$context['news_lines'])) {
+			array_unshift(Utils::$context['news_lines'], Lang::$txt['lp_news']['random_news']);
+			$news = Utils::$context['news_lines'];
 		}
 
-		SelectField::make('selected_item', $this->txt['lp_news']['selected_item'])
+		SelectField::make('selected_item', Lang::$txt['lp_news']['selected_item'])
 			->setTab('content')
 			->setOptions($news)
-			->setValue($this->context['lp_block']['options']['parameters']['selected_item']);
+			->setValue(Utils::$context['lp_block']['options']['selected_item']);
 	}
 
 	public function getData(int $item = 0): string
@@ -64,7 +68,7 @@ class News extends Block
 		setupThemeContext();
 
 		if ($item > 0)
-			return $this->context['news_lines'][$item - 1];
+			return Utils::$context['news_lines'][$item - 1];
 
 		return $this->getFromSsi('news', 'return');
 	}
@@ -74,6 +78,6 @@ class News extends Block
 		if ($data->type !== 'news')
 			return;
 
-		echo $this->getData($parameters['selected_item']) ?: $this->txt['lp_news']['no_items'];
+		echo $this->getData($parameters['selected_item']) ?: Lang::$txt['lp_news']['no_items'];
 	}
 }

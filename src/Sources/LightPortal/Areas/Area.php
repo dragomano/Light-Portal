@@ -9,12 +9,13 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.4
+ * @version 2.5
  */
 
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Areas\Fields\CustomField;
+use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -40,7 +41,7 @@ trait Area
 	public function prepareContent(array $object): string
 	{
 		if ($object['type'] === 'html') {
-			$object['content'] = $this->smcFunc['htmlspecialchars']($object['content']);
+			$object['content'] = Utils::$smcFunc['htmlspecialchars']($object['content']);
 		}
 
 		return $object['content'];
@@ -56,16 +57,16 @@ trait Area
 
 		$this->prepareMemberList();
 
-		$languages = empty($this->modSettings['userLanguage']) ? [$this->language] : array_unique([$this->context['user']['language'], $this->language]);
+		$languages = empty(Config::$modSettings['userLanguage']) ? [Config::$language] : array_unique([Utils::$context['user']['language'], Config::$language]);
 
 		$value = '
 			<div>';
 
-		if (count($this->context['lp_languages']) > 1) {
+		if (count(Utils::$context['lp_languages']) > 1) {
 			$value .= '
-				<nav' . ($this->context['right_to_left'] ? '' : ' class="floatleft"') . '>';
+				<nav' . (Utils::$context['right_to_left'] ? '' : ' class="floatleft"') . '>';
 
-			foreach ($this->context['lp_languages'] as $lang) {
+			foreach (Utils::$context['lp_languages'] as $lang) {
 				$value .= '
 					<a
 						class="button floatnone"
@@ -78,14 +79,14 @@ trait Area
 				</nav>';
 		}
 
-		foreach ($this->context['lp_languages'] as $lang) {
+		foreach (Utils::$context['lp_languages'] as $lang) {
 			$value .= '
 				<div x-show="tab === \'' . $lang['filename'] . '\'">
 					<input
 						type="text"
 						name="title_' . $lang['filename'] . '"
 						x-model="title_' . $lang['filename'] . '"
-						value="' . ($this->context['lp_' . $entity]['title'][$lang['filename']] ?? '') . '"
+						value="' . (Utils::$context['lp_' . $entity]['titles'][$lang['filename']] ?? '') . '"
 						' . (in_array($lang['filename'], $languages) && $required ? ' required' : '') . '
 					>
 				</div>';
@@ -94,40 +95,40 @@ trait Area
 		$value .= '
 			</div>';
 
-		CustomField::make('title', $this->txt['lp_title'])
+		CustomField::make('title', Lang::$txt['lp_title'])
 			->setTab('content')
 			->setValue($value);
 	}
 
 	public function preparePostFields(): void
 	{
-		foreach ($this->context['posting_fields'] as $item => $data) {
+		foreach (Utils::$context['posting_fields'] as $item => $data) {
 			if (! empty($data['input']['after'])) {
 				$tag = 'div';
 
 				if (isset($data['input']['type']) && in_array($data['input']['type'], ['checkbox', 'number']))
 					$tag = 'span';
 
-				$this->context['posting_fields'][$item]['input']['after'] = "<$tag class=\"descbox alternative2 smalltext\">{$data['input']['after']}</$tag>";
+				Utils::$context['posting_fields'][$item]['input']['after'] = "<$tag class=\"descbox alternative2 smalltext\">{$data['input']['after']}</$tag>";
 			}
 
 			// Add label for html type
 			if (isset($data['label']['html']) && $data['label']['html'] !== ' ') {
-				$this->context['posting_fields'][$item]['label']['html'] = '<label for="' . $item . '">' . $data['label']['html'] . '</label>';
+				Utils::$context['posting_fields'][$item]['label']['html'] = '<label for="' . $item . '">' . $data['label']['html'] . '</label>';
 			}
 
 			// Fancy checkbox
 			if (isset($data['input']['type']) && $data['input']['type'] === 'checkbox') {
 				$data['input']['attributes']['class'] = 'checkbox';
-				$data['input']['after'] = '<label class="label" for="' . $item . '"></label>' . ($this->context['posting_fields'][$item]['input']['after'] ?? '');
-				$this->context['posting_fields'][$item] = $data;
+				$data['input']['after'] = '<label class="label" for="' . $item . '"></label>' . (Utils::$context['posting_fields'][$item]['input']['after'] ?? '');
+				Utils::$context['posting_fields'][$item] = $data;
 			}
 
 			if (empty($data['input']['tab']))
-				$this->context['posting_fields'][$item]['input']['tab'] = 'tuning';
+				Utils::$context['posting_fields'][$item]['input']['tab'] = 'tuning';
 		}
 
-		$this->loadTemplate('LightPortal/ManageSettings');
+		Theme::loadTemplate('LightPortal/ManageSettings');
 	}
 
 	public function toggleStatus(array $items = [], string $type = 'block'): void
@@ -135,7 +136,7 @@ trait Area
 		if (empty($items))
 			return;
 
-		$this->smcFunc['db_query']('', '
+		Utils::$smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_' . ($type === 'block' ? 'blocks' : 'pages') . '
 			SET status = CASE status WHEN 1 THEN 0 WHEN 0 THEN 1 WHEN 2 THEN 1 WHEN 3 THEN 0 END
 			WHERE ' . ($type === 'block' ? 'block' : 'page') . '_id IN ({array_int:items})',
@@ -144,17 +145,17 @@ trait Area
 			]
 		);
 
-		$this->context['lp_num_queries']++;
+		Utils::$context['lp_num_queries']++;
 	}
 
 	public function getPreviewTitle(string $prefix = ''): string
 	{
 		return $this->getFloatSpan(
-			(empty($prefix) ? '' : ($prefix . ' ')) . $this->context['preview_title'],
-			$this->context['right_to_left'] ? 'right' : 'left'
+			(empty($prefix) ? '' : ($prefix . ' ')) . Utils::$context['preview_title'],
+			Utils::$context['right_to_left'] ? 'right' : 'left'
 		) . $this->getFloatSpan(
-			$this->txt['preview'],
-			$this->context['right_to_left'] ? 'left' : 'right'
+			Lang::$txt['preview'],
+			Utils::$context['right_to_left'] ? 'left' : 'right'
 		) . '<br>';
 	}
 

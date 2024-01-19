@@ -10,12 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.12.23
+ * @version 17.01.24
  */
 
 namespace Bugo\LightPortal\Addons\VkComments;
 
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Utils\{Config, Lang, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -26,7 +27,7 @@ class VkComments extends Plugin
 
 	public function init(): void
 	{
-		$this->txt['lp_show_comment_block_set']['vk'] = 'VKontakte';
+		Lang::$txt['lp_show_comment_block_set']['vk'] = 'VKontakte';
 	}
 
 	public function addSettings(array &$config_vars): void
@@ -35,7 +36,7 @@ class VkComments extends Plugin
 			'comments_per_page' => 10,
 		]);
 
-		$config_vars['vk_comments'][] = ['text', 'api_id', 'subtext' => $this->txt['lp_vk_comments']['api_id_subtext'], 'required' => true];
+		$config_vars['vk_comments'][] = ['text', 'api_id', 'subtext' => Lang::$txt['lp_vk_comments']['api_id_subtext'], 'required' => true];
 		$config_vars['vk_comments'][] = ['int', 'comments_per_page'];
 		$config_vars['vk_comments'][] = ['check', 'allow_attachments'];
 		$config_vars['vk_comments'][] = ['check', 'auto_publish'];
@@ -43,17 +44,17 @@ class VkComments extends Plugin
 
 	public function comments(): void
 	{
-		if (! empty($this->modSettings['lp_show_comment_block']) && $this->modSettings['lp_show_comment_block'] === 'vk' && ! empty($this->context['lp_vk_comments_plugin']['api_id'])) {
-			$num_comments      = $this->context['lp_vk_comments_plugin']['comments_per_page'] ?? 10;
-			$allow_attachments = $this->context['lp_vk_comments_plugin']['allow_attachments'] ?? true;
-			$auto_publish      = $this->context['lp_vk_comments_plugin']['auto_publish'] ?? false;
+		if (! empty(Config::$modSettings['lp_show_comment_block']) && Config::$modSettings['lp_show_comment_block'] === 'vk' && ! empty(Utils::$context['lp_vk_comments_plugin']['api_id'])) {
+			$num_comments      = Utils::$context['lp_vk_comments_plugin']['comments_per_page'] ?? 10;
+			$allow_attachments = Utils::$context['lp_vk_comments_plugin']['allow_attachments'] ?? true;
+			$auto_publish      = Utils::$context['lp_vk_comments_plugin']['auto_publish'] ?? false;
 
-			$this->context['lp_vk_comment_block'] = /** @lang text */
+			Utils::$context['lp_vk_comment_block'] = /** @lang text */
 				'
 				<script src="https://vk.com/js/api/openapi.js?167"></script>
 				<script>
 					VK.init({
-						apiId: ' . $this->context['lp_vk_comments_plugin']['api_id'] . ',
+						apiId: ' . Utils::$context['lp_vk_comments_plugin']['api_id'] . ',
 						onlyWidgets: true
 					});
 				</script>
@@ -63,8 +64,8 @@ class VkComments extends Plugin
 						limit: ' . $num_comments . ',
 						attach: ' . (empty($allow_attachments) ? 'false' : '"*"') . ',
 						autoPublish: '. (empty($auto_publish) ? 0 : 1) . ',
-						pageUrl: "' . $this->context['canonical_url'] . '"
-					}, ' . $this->context['lp_page']['id'] . ');
+						pageUrl: "' . Utils::$context['canonical_url'] . '"
+					}, ' . Utils::$context['lp_page']['id'] . ');
 				</script>';
 		}
 	}
