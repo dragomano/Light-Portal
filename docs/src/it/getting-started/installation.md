@@ -9,6 +9,7 @@ Non c'è molto da dire qui. Light Portal puoi installarlo come qualsiasi altra m
 
 ## Requisiti
 
+- [SMF 2.1.x](https://download.simplemachines.org)
 - Browser moderno con JavaScript abilitato
 - Internet (il portale e molti plugin caricano script e stili dalla CDN)
 - PHP 8.0 o superiore

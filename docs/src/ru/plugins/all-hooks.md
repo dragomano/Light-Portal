@@ -55,7 +55,7 @@ public function prepareContent($data): void
 
     $this->setTemplate();
 
-    $userData = $this->cache('user_info_addon_u' . $this->context['user']['id'])
+    $userData = $this->cache('user_info_addon_u' . Utils::$context['user']['id'])
         ->setLifeTime($data->cache_time)
         ->setFallback(self::class, 'getData');
 
@@ -139,24 +139,66 @@ public function preloadStyles(array &$styles): void
 
 ## Работа с блоками
 
-### blockOptions
+### prepareBlockParams
 
-(`&$options`)
+(`&$params`)
 
 > добавление параметров блоков
 
 ```php
-public function blockOptions(array &$options): void
+public function prepareBlockParams(array &$params): void
 {
-    $options['article_list']['no_content_class'] = true;
+    if (Utils::$context['current_block']['type'] !== 'article_list')
+        return;
 
-    $options['article_list']['parameters'] = [
+    $params = [
         'body_class'     => 'descbox',
         'display_type'   => 0,
         'include_topics' => '',
         'include_pages'  => '',
         'seek_images'    => false
     ];
+}
+```
+
+### validateBlockParams
+
+(`&$params`)
+
+> добавление правил валидации при создании/редактировании блоков
+
+```php
+public function validateBlockParams(array &$params): void
+{
+    if (Utils::$context['current_block']['type'] !== 'article_list')
+        return;
+
+    $params = [
+        'body_class'     => FILTER_DEFAULT,
+        'display_type'   => FILTER_VALIDATE_INT,
+        'include_topics' => FILTER_DEFAULT,
+        'include_pages'  => FILTER_DEFAULT,
+        'seek_images'    => FILTER_VALIDATE_BOOLEAN,
+    ];
+}
+```
+
+### findBlockErrors
+
+(`&$errors, $data`)
+
+> добавление пользовательской обработки ошибок при создании/редактировании блоков
+
+```php
+public function findBlockErrors(array &$errors, array $data): void
+{
+    if ($data['placement'] !== 'ads')
+        return;
+
+    Lang::$txt['lp_post_error_no_ads_placement'] = Lang::$txt['lp_ads_block']['no_ads_placement'];
+
+    if (empty($data['parameters']['ads_placement']))
+        $errors[] = 'no_ads_placement';
 }
 ```
 
@@ -167,55 +209,16 @@ public function blockOptions(array &$options): void
 ```php
 public function prepareBlockFields(): void
 {
-    if ($this->context['lp_block']['type'] !== 'article_list')
+    if (Utils::$context['current_block']['type'] !== 'article_list')
         return;
 
-    RadioField::make('display_type', $this->txt['lp_article_list']['display_type'])
+    RadioField::make('display_type', Lang::$txt['lp_article_list']['display_type'])
         ->setTab('content')
-        ->setOptions($this->txt['lp_article_list']['display_type_set'])
-        ->setValue($this->context['lp_block']['options']['parameters']['display_type']);
+        ->setOptions(Lang::$txt['lp_article_list']['display_type_set'])
+        ->setValue(Utils::$context['lp_block']['options']['display_type']);
 
-    CheckboxField::make('seek_images', $this->txt['lp_article_list']['seek_images'])
-        ->setValue($this->context['lp_block']['options']['parameters']['seek_images']);
-}
-```
-
-### validateBlockData
-
-(`&$parameters, $context['current_block']['type']`)
-
-> добавление правил валидации при создании/редактировании блоков
-
-```php
-public function validateBlockData(array &$parameters, string $type): void
-{
-    if ($type !== 'article_list')
-        return;
-
-    $parameters['body_class']     = FILTER_DEFAULT;
-    $parameters['display_type']   = FILTER_VALIDATE_INT;
-    $parameters['include_topics'] = FILTER_DEFAULT;
-    $parameters['include_pages']  = FILTER_DEFAULT;
-    $parameters['seek_images']    = FILTER_VALIDATE_BOOLEAN;
-}
-```
-
-### findBlockErrors
-
-(`&$post_errors, $data`)
-
-> добавление пользовательской обработки ошибок при создании/редактировании блоков
-
-```php
-public function findBlockErrors(array &$post_errors, array $data): void
-{
-    if ($data['placement'] !== 'ads')
-        return;
-
-    $this->txt['lp_post_error_no_ads_placement'] = $this->txt['lp_ads_block']['no_ads_placement'];
-
-    if (empty($data['parameters']['ads_placement']))
-        $post_errors[] = 'no_ads_placement';
+    CheckboxField::make('seek_images', Lang::$txt['lp_article_list']['seek_images'])
+        ->setValue(Utils::$context['lp_block']['options']['seek_images']);
 }
 ```
 
@@ -233,19 +236,39 @@ public function findBlockErrors(array &$post_errors, array $data): void
 
 ## Работа со страницами
 
-### pageOptions
+### preparePageParams
 
-(`&$options`)
+(`&$params`)
 
 > добавление параметров страниц
 
 ```php
-public function pageOptions(array &$options): void
+public function preparePageParams(array &$params): void
 {
-    $options['meta_robots'] = '';
-    $options['meta_rating'] = '';
+    $params['meta_robots'] = '';
+    $params['meta_rating'] = '';
 }
 ```
+
+### validatePageParams
+
+(`&$params`)
+
+> добавление правил валидации при создании/редактировании страниц
+
+```php
+public function validatePageParams(array &$params): void
+{
+    $params['meta_robots'] = FILTER_DEFAULT;
+    $params['meta_rating'] = FILTER_DEFAULT;
+}
+```
+
+### findPageErrors
+
+(`&$errors, $data`)
+
+> добавление пользовательской обработки ошибок при создании/редактировании страниц
 
 ### preparePageFields
 
@@ -254,34 +277,12 @@ public function pageOptions(array &$options): void
 ```php
 public function preparePageFields(): void
 {
-    VirtualSelectField::make('meta_robots', $this->txt['lp_extended_meta_tags']['meta_robots'])
+    VirtualSelectField::make('meta_robots', Lang::$txt['lp_extended_meta_tags']['meta_robots'])
         ->setTab('seo')
-        ->setOptions(array_combine($this->meta_robots, $this->txt['lp_extended_meta_tags']['meta_robots_set']))
-        ->setValue($this->context['lp_page']['options']['meta_robots']);
+        ->setOptions(array_combine($this->meta_robots, Lang::$txt['lp_extended_meta_tags']['meta_robots_set']))
+        ->setValue(Utils::$context['lp_page']['options']['meta_robots']);
 }
 ```
-
-### validatePageData
-
-(`&$parameters`)
-
-> добавление правил валидации при создании/редактировании страниц
-
-```php
-public function validatePageData(array &$parameters): void
-{
-    $parameters += [
-        'meta_robots' => FILTER_DEFAULT,
-        'meta_rating' => FILTER_DEFAULT,
-    ];
-}
-```
-
-### findPageErrors
-
-(`&$post_errors, $data`)
-
-> добавление пользовательской обработки ошибок при создании/редактировании страниц
 
 ### onPageSaving
 
@@ -323,8 +324,8 @@ public function preparePageData(): void
 ```php
 public function comments(): void
 {
-    if (! empty($this->modSettings['lp_show_comment_block']) && $this->modSettings['lp_show_comment_block'] === 'disqus' && ! empty($this->context['lp_disqus_plugin']['shortname'])) {
-        $this->context['lp_disqus_comment_block'] = '
+    if (! empty(Config::$modSettings['lp_show_comment_block']) && Config::$modSettings['lp_show_comment_block'] === 'disqus' && ! empty(Utils::$context['lp_disqus_plugin']['shortname'])) {
+        Utils::$context['lp_disqus_comment_block'] = '
             <div id="disqus_thread" class="windowbg"></div>
             <script>
                 <!-- Your code -->
@@ -342,10 +343,10 @@ public function comments(): void
 ```php
 public function commentButtons(array $comment, array &$buttons): void
 {
-    if (empty($this->context['lp_page']['options']['allow_reactions']))
+    if (empty(Utils::$context['lp_page']['options']['allow_reactions']))
         return;
 
-    $comment['can_react'] = $comment['poster']['id'] !== $this->user_info['id'];
+    $comment['can_react'] = $comment['poster']['id'] !== User::$info['id'];
     $comment['reactions'] = json_decode($comment['params']['reactions'] ?? '', true) ?? [];
     $comment['prepared_reactions'] = $this->getReactionsWithCount($comment['reactions']);
     $comment['prepared_buttons'] = json_decode($comment['prepared_reactions'], true);
@@ -369,7 +370,7 @@ public function commentButtons(array $comment, array &$buttons): void
 ```php
 public function addSettings(array &$config_vars): void
 {
-    $config_vars['disqus'][] = ['text', 'shortname', 'subtext' => $this->txt['lp_disqus']['shortname_subtext'], 'required' => true];
+    $config_vars['disqus'][] = ['text', 'shortname', 'subtext' => Lang::$txt['lp_disqus']['shortname_subtext'], 'required' => true];
 }
 ```
 
@@ -406,7 +407,7 @@ public function frontModes(array &$modes): void
 {
     $modes[$this->mode] = CustomArticle::class;
 
-    $this->modSettings['lp_frontpage_mode'] = $this->mode;
+    Config::$modSettings['lp_frontpage_mode'] = $this->mode;
 }
 ```
 
@@ -434,7 +435,7 @@ public function customLayoutExtensions(array &$extensions): void
 ```php
 public function frontAssets(): void
 {
-    $this->loadExtJS('https://' . $this->context['lp_disqus_plugin']['shortname'] . '.disqus.com/count.js');
+    $this->loadExtJS('https://' . Utils::$context['lp_disqus_plugin']['shortname'] . '.disqus.com/count.js');
 }
 ```
 
@@ -541,8 +542,8 @@ public function prepareIconList(array &$all_icons): void
 ```php
 public function updateAdminAreas(array &$areas): void
 {
-    if ($this->user_info['is_admin'])
-        $areas['lp_pages']['subsections']['import_from_ep'] = [$this->context['lp_icon_set']['import'] . $this->txt['lp_eh_portal']['label_name']];
+    if (User::$info['is_admin'])
+        $areas['lp_pages']['subsections']['import_from_ep'] = [Utils::$context['lp_icon_set']['import'] . Lang::$txt['lp_eh_portal']['label_name']];
 }
 ```
 
@@ -555,7 +556,7 @@ public function updateAdminAreas(array &$areas): void
 ```php
 public function updateBlockAreas(array &$areas): void
 {
-    if ($this->user_info['is_admin'])
+    if (User::$info['is_admin'])
         $areas['import_from_tp'] = [new BlockImport, 'main'];
 }
 ```
@@ -569,7 +570,7 @@ public function updateBlockAreas(array &$areas): void
 ```php
 public function updatePageAreas(array &$areas): void
 {
-    if ($this->user_info['is_admin'])
+    if (User::$info['is_admin'])
         $areas['import_from_ep'] = [new Import, 'main'];
 }
 ```

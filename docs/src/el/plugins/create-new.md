@@ -96,12 +96,13 @@ File `index.php` can be copied from folders of other plugins. Το αρχείο 
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.03.23 (date when the source code of the plugin was created or last updated, in the format dd.mm.yy)
+ * @version 30.01.24 (date when the source code of the plugin was created or last updated, in the format dd.mm.yy)
  */
 
 namespace Bugo\LightPortal\Addons\HelloWorld;
 
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Utils\{Config, Lang, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -109,8 +110,8 @@ if (! defined('LP_NAME'))
 class HelloWorld extends Plugin
 {
     // Used properties and methods
-    // Access to global variables: $this->context['user'], $this->modSettings['variable'], etc.
-    // Access to language variables: $this->txt['lp_hello_world']['variable_name']
+    // Access to global variables: Utils::$context['user'], Config::$modSettings['variable'], etc.
+    // Access to language variables: Lang::$txt['lp_hello_world']['variable_name']
 }
 
 ```
