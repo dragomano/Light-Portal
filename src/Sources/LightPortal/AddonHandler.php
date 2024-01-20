@@ -82,7 +82,7 @@ final class AddonHandler
 
 	public function run(string $hook = 'init', array $vars = [], array $plugins = []): void
 	{
-		$addons = $plugins ?: Utils::$context['lp_enabled_plugins'];
+		$addons = $plugins ?: Utils::$context['lp_enabled_plugins'] ?? [];
 
 		if (empty($addons) || isset(Utils::$context['uninstalling']))
 			return;
