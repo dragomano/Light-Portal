@@ -219,7 +219,7 @@ final class Integration extends AbstractMain
 		if ($this->isPortalCanBeLoaded() === false)
 			return;
 
-		(new Block)->show();
+		$this->callHelper([new Block, 'show']);
 
 		$this->prepareAdminButtons($buttons);
 
