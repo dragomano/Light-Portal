@@ -45,7 +45,7 @@ trait Helper
 
 	public function cache(?string $key = null): Cache
 	{
-		return new Cache($key, LP_CACHE_TIME);
+		return new Cache($key);
 	}
 
 	public function files(?string $key = null): mixed
