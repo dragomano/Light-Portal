@@ -20,9 +20,9 @@ interface CacheInterface
 
 	public function setFallback(string $className, string $methodName, ...$params): mixed;
 
-	public function get(string $key, ?int $time = null): ?array;
+	public function get(string $key, int $time): mixed;
 
-	public function put(string $key, ?array $value, ?int $time = null): void;
+	public function put(string $key, mixed $value, int $time): void;
 
 	public function forget(string $key): void;
 

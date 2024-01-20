@@ -23,7 +23,7 @@ if (! defined('SMF'))
 
 final class CacheApi
 {
-	public static function get(string $key, int $ttl = 120): ?array
+	public static function get(string $key, int $ttl = 120): mixed
 	{
 		return cache_get_data($key, $ttl);
 	}
