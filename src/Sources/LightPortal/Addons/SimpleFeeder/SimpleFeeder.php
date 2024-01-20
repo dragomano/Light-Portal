@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 20.01.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleFeeder;
@@ -103,7 +103,7 @@ class SimpleFeeder extends Block
 			echo /** @lang text */ '
 		<div class="windowbg">
 			<div class="block">
-				<span class="floatleft half_content">
+				<span class="floatleft">
 					<h5><a href="', $item->link, '">', $item->title, '</a></h5>
 					<em>', $this->getFriendlyTime(strtotime($item->pubDate)), '</em>
 				</span>
