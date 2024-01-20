@@ -61,8 +61,8 @@ class BoardArticle extends AbstractArticle
 			FROM {db_prefix}boards AS b
 				INNER JOIN {db_prefix}categories AS c ON (b.id_cat = c.id_cat)
 				LEFT JOIN {db_prefix}messages AS m ON (b.id_last_msg = m.id_msg)' . (User::$info['is_guest'] ? '' : '
-				LEFT JOIN {db_prefix}log_boards AS lb ON (b.id_board = lb.id_board AND lb.id_member = {int:current_member})') . (Config::$modSettings['lp_show_images_in_articles'] ? '
-				LEFT JOIN {db_prefix}attachments AS a ON (b.id_last_msg = a.id_msg AND a.id_thumb <> 0 AND a.width > 0 AND a.height > 0)' : '') . (empty($this->tables) ? '' : '
+				LEFT JOIN {db_prefix}log_boards AS lb ON (b.id_board = lb.id_board AND lb.id_member = {int:current_member})') . (empty(Config::$modSettings['lp_show_images_in_articles']) ? '' : '
+				LEFT JOIN {db_prefix}attachments AS a ON (b.id_last_msg = a.id_msg AND a.id_thumb <> 0 AND a.width > 0 AND a.height > 0)') . (empty($this->tables) ? '' : '
 				' . implode("\n\t\t\t\t\t", $this->tables)) . '
 			WHERE b.id_board IN ({array_int:selected_boards})
 				AND {query_see_board}' . (empty($this->wheres) ? '' : '
