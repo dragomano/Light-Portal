@@ -31,7 +31,7 @@
     "vue-showdown": "^4.2.0"
   },
   "devDependencies": {
-    "vite": "^5.0.11",
+    "vite": "^5.0.12",
     "vite-plugin-static-copy": "^1.0.0"
   }
 }
