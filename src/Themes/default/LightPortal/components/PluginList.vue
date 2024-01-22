@@ -6,6 +6,7 @@
         <label for="filter">{{ $t('apply_filter') }}</label>
         <select id="filter" v-model="filter">
           <option value="all" :selected="filter === 'all'">{{ $t('all') }}</option>
+          <option value="active" :selected="filter === 'active'">{{ $t('lp_active_only') }}</option>
           <option
             v-for="(value, name) in types"
             :key="name"
@@ -38,7 +39,7 @@
   </div>
 
   <ListTransition tag="div" id="addon_list" :class="isCardView ? 'addon_list' : undefined">
-    <PluginItem v-for="(plugin, index) in plugins" :key="index" :item="plugin" />
+    <PluginItem v-for="(plugin, index) in filteredPlugins" :key="index" :item="plugin" />
   </ListTransition>
 </template>
 
@@ -49,7 +50,7 @@ export default {
 </script>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed } from 'vue';
 import { useStorage } from '@vueuse/core';
 import { usePluginStore } from '../../scripts/light_portal/dev/plugin_stores.js';
 import Button from './BaseButton.vue';
@@ -58,23 +59,26 @@ import PluginItem from './PluginItem.vue';
 
 const pluginStore = usePluginStore();
 
-const plugins = ref(pluginStore.list);
 const types = ref(pluginStore.types);
+
 const filter = useStorage('lpPluginsFilter', 'all', localStorage);
 const layout = useStorage('lpPluginsLayout', 'list', localStorage);
 
-const count = computed(() => plugins.value.length);
 const isCardView = computed(() => layout.value === 'card');
 
-const changeType = () => {
-  plugins.value = Object.values(pluginStore.list).filter(
-    (item) =>
-      !Object.keys(types.value).includes(filter.value) ||
-      Object.keys(item.types).includes(types.value[filter.value])
-  );
-};
+const filteredPlugins = computed(() => {
+  if (filter.value === 'active') {
+    return Object.values(pluginStore.list).filter((item) => item.status === 'on');
+  } else if (filter.value === 'all') {
+    return Object.values(pluginStore.list);
+  } else {
+    return Object.values(pluginStore.list).filter(
+      (item) =>
+        !Object.keys(types.value).includes(filter.value) ||
+        Object.keys(item.types).includes(types.value[filter.value])
+    );
+  }
+});
 
-onMounted(() => changeType());
-
-watch(filter, changeType);
+const count = computed(() => filteredPlugins.value.length);
 </script>

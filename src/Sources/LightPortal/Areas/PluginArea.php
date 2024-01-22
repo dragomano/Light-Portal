@@ -241,6 +241,7 @@ final class PluginArea
 			'plugins'           => Lang::$txt['lp_plugins'],
 			'apply_filter'      => Lang::$txt['apply_filter'],
 			'all'               => Lang::$txt['all'],
+			'lp_active_only'    => Lang::$txt['lp_active_only'],
 			'lp_plugins_desc'   => Lang::$txt['lp_plugins_desc'],
 			'lp_can_donate'     => Lang::$txt['lp_can_donate'],
 			'lp_can_download'   => Lang::$txt['lp_can_download'],
