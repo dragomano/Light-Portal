@@ -9,8 +9,8 @@ foreach (new RecursiveIteratorIterator($directories) as $directory) {
 	if ($directory->isDir() && ! file_exists($directory . '/index.php')) {
 		file_put_contents($directory . '/index.php', '<?php
 
-if (file_exists(dirname(__FILE__, 2) . \'/index.php\'))
-	include (dirname(__FILE__, 2) . \'/index.php\');
+if (file_exists(dirname(__DIR__) . \'/index.php\'))
+	include (dirname(__DIR__) . \'/index.php\');
 else
 	exit;
 ');
