@@ -14,16 +14,13 @@
 
 namespace Bugo\LightPortal\Actions;
 
-use Bugo\LightPortal\Front\{ArticleInterface, BoardArticle, ChosenPageArticle};
-use Bugo\LightPortal\Front\{ChosenTopicArticle, PageArticle, TopicArticle};
+use Bugo\LightPortal\Articles\{ArticleInterface, BoardArticle, ChosenPageArticle};
+use Bugo\LightPortal\Articles\{ChosenTopicArticle, PageArticle, TopicArticle};
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Theme, Utils};
 use Exception;
 use IntlException;
-use Latte\Engine;
-use Latte\Essential\RawPhpExtension;
-use Latte\Loaders\FileLoader;
-use Latte\RuntimeException;
+use Latte\{Engine, Essential\RawPhpExtension, Loaders\FileLoader, Runtime\Html, RuntimeException};
 
 final class FrontPage
 {
@@ -180,7 +177,7 @@ final class FrontPage
 			return;
 
 		$latte = new Engine;
-		$latte->setTempDirectory(empty(Config::$modSettings['cache_enable']) ? null : Config::$cachedir);
+		$latte->setTempDirectory(empty(Config::$modSettings['cache_enable']) ? null : sys_get_temp_dir());
 		$latte->setLoader(new FileLoader(Theme::$current->settings['default_theme_dir'] . '/LightPortal/layouts/'));
 		$latte->addExtension(new RawPhpExtension);
 		$latte->addFunction('teaser', function (string $text, int $length = 150) use ($latte): string {
@@ -188,14 +185,14 @@ final class FrontPage
 
 			return $latte->invokeFilter('truncate', [$text, $length]);
 		});
-		$latte->addFunction('icon', function (string $name, string $title = '') use ($latte): string {
+		$latte->addFunction('icon', function (string $name, string $title = '') use ($latte): Html {
 			$icon = Utils::$context['lp_icon_set'][$name];
 
 			if (empty($title)) {
-				return $icon;
+				return new Html($icon);
 			}
 
-			return str_replace(' class=', ' title="' . $title . '" class=', $icon);
+			return new Html(str_replace(' class=', ' title="' . $title . '" class=', $icon));
 		});
 
 		$params = [

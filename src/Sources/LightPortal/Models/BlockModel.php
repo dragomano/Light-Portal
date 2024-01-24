@@ -14,6 +14,7 @@
 
 namespace Bugo\LightPortal\Models;
 
+use Bugo\LightPortal\Actions\BlockInterface;
 use Bugo\LightPortal\Utils\{Config, Utils};
 
 if (! defined('SMF'))
@@ -67,7 +68,7 @@ class BlockModel extends AbstractModel
 
 		$this->permissions = $postData['permissions'] ?? $currentBlock['permissions'] ?? (int) (Config::$modSettings['lp_permissions_default'] ?? 2);
 
-		$this->status = $currentBlock['status'] ?? 1;
+		$this->status = $currentBlock['status'] ?? BlockInterface::STATUS_ACTIVE;
 
 		$this->areas = $postData['areas'] ?? $currentBlock['areas'] ?? 'all';
 

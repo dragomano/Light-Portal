@@ -67,6 +67,7 @@ final class Maintainer extends BackgroundTask
 		);
 
 		[$usedTags] = Utils::$smcFunc['db_fetch_row']($result);
+
 		Utils::$smcFunc['db_free_result']($result);
 
 		if ($usedTags) {
@@ -195,20 +196,20 @@ final class Maintainer extends BackgroundTask
 
 	private function optimizeTables(): void
 	{
-		$tables = [
-			'lp_blocks',
-			'lp_categories',
-			'lp_comments',
-			'lp_pages',
-			'lp_params',
-			'lp_plugins',
-			'lp_tags',
-			'lp_titles'
-		];
-
 		$this->dbExtend();
 
-		foreach ($tables as $table)
-			Utils::$smcFunc['db_optimize_table']('{db_prefix}' . $table);
+		array_map(
+			fn($table) => Utils::$smcFunc['db_optimize_table']('{db_prefix}' . $table),
+			[
+				'lp_blocks',
+				'lp_categories',
+				'lp_comments',
+				'lp_pages',
+				'lp_params',
+				'lp_plugins',
+				'lp_tags',
+				'lp_titles',
+			]
+		);
 	}
 }

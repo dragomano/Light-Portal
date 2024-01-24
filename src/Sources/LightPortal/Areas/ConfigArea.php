@@ -14,10 +14,10 @@
 
 namespace Bugo\LightPortal\Areas;
 
-use Bugo\LightPortal\Areas\Config\{BasicConfig, CategoryConfig, ExtraConfig};
-use Bugo\LightPortal\Areas\Config\{FeedbackConfig, MiscConfig, PanelConfig};
-use Bugo\LightPortal\Areas\Export\{BlockExport, PageExport, PluginExport};
-use Bugo\LightPortal\Areas\Import\{BlockImport, PageImport, PluginImport};
+use Bugo\LightPortal\Areas\Configs\{BasicConfig, CategoryConfig, ExtraConfig};
+use Bugo\LightPortal\Areas\Configs\{FeedbackConfig, MiscConfig, PanelConfig};
+use Bugo\LightPortal\Areas\Exports\{BlockExport, PageExport, PluginExport};
+use Bugo\LightPortal\Areas\Imports\{BlockImport, PageImport, PluginImport};
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Utils\{Config, Lang, Theme, User, Utils};
 

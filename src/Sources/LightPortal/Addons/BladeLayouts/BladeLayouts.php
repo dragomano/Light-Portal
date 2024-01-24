@@ -60,7 +60,7 @@ class BladeLayouts extends Plugin
 		ob_start();
 
 		try {
-			$blade = new BladeOne(Theme::$current->settings['default_theme_dir'] . '/portal_layouts', Config::$cachedir);
+			$blade = new BladeOne(Theme::$current->settings['default_theme_dir'] . '/portal_layouts', sys_get_temp_dir());
 
 			$layout = strstr(Config::$modSettings['lp_frontpage_layout'], '.', true) ?: Config::$modSettings['lp_frontpage_layout'];
 

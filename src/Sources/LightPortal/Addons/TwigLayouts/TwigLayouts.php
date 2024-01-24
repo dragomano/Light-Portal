@@ -66,7 +66,7 @@ class TwigLayouts extends Plugin
 			$loader = new FilesystemLoader(Theme::$current->settings['default_theme_dir'] . '/portal_layouts');
 
 			$twig = new Environment($loader, [
-				'cache' => empty(Config::$modSettings['cache_enable']) ? false : Config::$cachedir,
+				'cache' => empty(Config::$modSettings['cache_enable']) ? false : sys_get_temp_dir(),
 				'debug' => false
 			]);
 

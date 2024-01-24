@@ -15,7 +15,7 @@
 
 namespace Bugo\LightPortal\Addons\SiteList;
 
-use Bugo\LightPortal\Front\AbstractArticle;
+use Bugo\LightPortal\Articles\AbstractArticle;
 use Bugo\LightPortal\Utils\{Config, User, Utils};
 
 if (! defined('SMF'))

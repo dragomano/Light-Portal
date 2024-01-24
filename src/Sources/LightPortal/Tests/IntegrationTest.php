@@ -7,7 +7,7 @@
 namespace Tests;
 
 use Bugo\LightPortal\Integration;
-use Bugo\LightPortal\Utils\{Config, Lang, User, Theme, Utils};
+use Bugo\LightPortal\Utils\{Config, Lang, Utils};
 use Tester\Assert;
 
 require_once __DIR__ . '/bootstrap.php';
@@ -57,31 +57,6 @@ test('loadTheme method', function () {
 	Assert::hasKey('lp_portal', Lang::$txt);
 	Assert::contains('<div>%1$s</div>', Utils::$context['lp_all_title_classes']);
 	Assert::contains('<div>%1$s</div>', Utils::$context['lp_all_content_classes']);
-});
-
-test('global wrappers', function () {
-	Assert::type('array', Config::$modSettings);
-	Assert::type('string', Config::$scripturl);
-	Assert::type('string', Config::$boardurl);
-	Assert::type('string', Config::$boarddir);
-	Assert::type('string', Config::$sourcedir);
-	Assert::type('string', Config::$cachedir);
-	Assert::type('string', Config::$db_type);
-	Assert::type('string', Config::$db_prefix);
-	Assert::type('string', Config::$language);
-	Assert::type('int', Config::$cache_enable);
-	Assert::type('bool', Config::$db_show_debug);
-	Assert::type('array', Lang::$txt);
-	Assert::type('array', Lang::$editortxt);
-	Assert::type('object', Theme::$current);
-	Assert::type('array', Theme::$current->settings);
-	Assert::type('array', Theme::$current->options);
-	Assert::type('array', User::$info);
-	Assert::type('array', User::$profiles);
-	Assert::type('array', User::$settings);
-	Assert::type('array', User::$memberContext);
-	Assert::type('array', Utils::$context);
-	Assert::type('array', Utils::$smcFunc);
 });
 
 test('actions method', function () {

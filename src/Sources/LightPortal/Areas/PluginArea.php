@@ -41,6 +41,7 @@ final class PluginArea
 		Lang::load('ManageMaintenance');
 
 		Theme::loadTemplate('LightPortal/ManagePlugins');
+
 		Utils::$context['sub_template'] = 'manage_plugins';
 
 		Theme::loadExtCSS('https://cdn.jsdelivr.net/combine/npm/@vueform/multiselect@2/themes/default.min.css,npm/@vueform/toggle@2/themes/default.min.css');
@@ -212,7 +213,8 @@ final class PluginArea
 
 		ksort($typeCount);
 
-		Utils::$context['insert_after_template'] .= '
+		Utils::$context['insert_after_template'] .= /** @lang text */
+			'
 		<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.js"></script>
 		<script>
 			new Chart("addon_chart", {

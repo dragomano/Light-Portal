@@ -25,7 +25,7 @@ abstract class AbstractPageList
 {
 	use Helper;
 
-	abstract public function show(Page $page);
+	abstract public function show(PageInterface $page);
 
 	abstract public function getPages(int $start, int $items_per_page, string $sort): array;
 

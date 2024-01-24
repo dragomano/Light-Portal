@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Actions\{Block, Page};
+use Bugo\LightPortal\Actions\{Block, PageInterface};
 use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Theme, User, Utils};
 use Exception;
 use Less_Exception_Parser;
@@ -112,7 +112,7 @@ abstract class AbstractMain
 
 		$parser = new Less_Parser([
 			'compress'  => true,
-			'cache_dir' => empty(Config::$modSettings['cache_enable']) ? null : Config::$cachedir,
+			'cache_dir' => empty(Config::$modSettings['cache_enable']) ? null : sys_get_temp_dir(),
 		]);
 
 		try {
@@ -384,7 +384,7 @@ abstract class AbstractMain
 					AND pp.name = {literal:show_in_menu}
 					AND pp.value = {string:show_in_menu}',
 				[
-					'statuses'     => [Page::STATUS_ACTIVE, Page::STATUS_INTERNAL],
+					'statuses'     => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
 					'current_time' => time(),
 					'show_in_menu' => '1',
 				]
@@ -444,10 +444,10 @@ abstract class AbstractMain
 						WHERE status = {int:internal}
 					) AS num_internal_pages',
 				[
-					'active'     => Page::STATUS_ACTIVE,
-					'unapproved' => Page::STATUS_UNAPPROVED,
-					'internal'   => Page::STATUS_INTERNAL,
-					'user_id'    => User::$info['id']
+					'active'     => PageInterface::STATUS_ACTIVE,
+					'unapproved' => PageInterface::STATUS_UNAPPROVED,
+					'internal'   => PageInterface::STATUS_INTERNAL,
+					'user_id'    => User::$info['id'],
 				]
 			);
 

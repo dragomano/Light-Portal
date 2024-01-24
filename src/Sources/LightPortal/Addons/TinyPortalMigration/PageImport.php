@@ -10,19 +10,19 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.01.24
+ * @version 26.01.24
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortalMigration;
 
-use Bugo\LightPortal\Areas\Import\AbstractOtherPageImport;
+use Bugo\LightPortal\Areas\Imports\AbstractCustomPageImport;
 use Bugo\LightPortal\Utils\{BBCodeParser, Config, Lang, Utils};
 use IntlException;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class PageImport extends AbstractOtherPageImport
+class PageImport extends AbstractCustomPageImport
 {
 	public function main(): void
 	{

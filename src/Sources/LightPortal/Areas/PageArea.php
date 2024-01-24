@@ -14,11 +14,11 @@
 
 namespace Bugo\LightPortal\Areas;
 
+use Bugo\LightPortal\Actions\{PageInterface, Page};
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, TextField};
 use Bugo\LightPortal\Areas\Partials\{CategorySelect, KeywordSelect, PageAuthorSelect};
 use Bugo\LightPortal\Areas\Partials\{PageIconSelect, PermissionSelect, StatusSelect};
 use Bugo\LightPortal\Areas\Validators\PageValidator;
-use Bugo\LightPortal\Actions\Page;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Models\PageModel;
 use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Theme, User, Utils};
@@ -96,15 +96,15 @@ final class PageArea
 			),
 			[
 				'search'            => Utils::$smcFunc['strtolower']($search_params['string']),
-				'unapproved'        => Page::STATUS_UNAPPROVED,
-				'internal'          => Page::STATUS_INTERNAL,
-				'included_statuses' => [Page::STATUS_INACTIVE, Page::STATUS_ACTIVE]
+				'unapproved'        => PageInterface::STATUS_UNAPPROVED,
+				'internal'          => PageInterface::STATUS_INTERNAL,
+				'included_statuses' => [PageInterface::STATUS_INACTIVE, PageInterface::STATUS_ACTIVE]
 			],
 		];
 
 		Utils::$context['browse_type'] = 'all';
 		$type = '';
-		$status = Page::STATUS_ACTIVE;
+		$status = PageInterface::STATUS_ACTIVE;
 
 		if ($this->request()->has('u')) {
 			Utils::$context['browse_type'] = 'own';
@@ -115,7 +115,7 @@ final class PageArea
 		} elseif ($this->request()->has('internal')) {
 			Utils::$context['browse_type'] = 'int';
 			$type = ';internal';
-			$status = Page::STATUS_INTERNAL;
+			$status = PageInterface::STATUS_INTERNAL;
 		}
 
 		$listOptions = [
@@ -373,6 +373,7 @@ final class PageArea
 	public function add(): void
 	{
 		Theme::loadTemplate('LightPortal/ManagePages');
+
 		Utils::$context['sub_template'] = 'page_add';
 
 		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_pages_add_title'];
@@ -417,6 +418,7 @@ final class PageArea
 		}
 
 		Theme::loadTemplate('LightPortal/ManagePages');
+
 		Utils::$context['sub_template'] = 'page_post';
 
 		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_pages_edit_title'];
@@ -469,7 +471,7 @@ final class PageArea
 			'all' => [
 				'',
 				Lang::$txt['all'],
-				$this->repository->getTotalCount(' AND p.status != 2')
+				$this->repository->getTotalCount(' AND p.status != ' . PageInterface::STATUS_UNAPPROVED)
 			],
 			'own' => [
 				';u=' . User::$info['id'],
