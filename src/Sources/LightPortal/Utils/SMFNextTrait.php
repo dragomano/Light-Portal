@@ -36,23 +36,21 @@ if (! defined('SMF'))
  */
 trait SMFNextTrait
 {
-	protected function applyHook(string $name, string|array $method = '', string $file = ''): void
+	protected function applyHook(string $name, string $method = ''): void
 	{
 		$name = str_replace('integrate_', '', $name);
 
-		if (func_num_args() === 1)
+		if (func_num_args() === 1) {
 			$method = lcfirst($this->getCamelName($name));
-
-		if (is_array($method)) {
-			$method = $method[0] . '::' . str_replace('#', '', $method[1] ?? '__invoke');
-		} else {
-			$method = static::class . '::' . str_replace('#', '', $method);
 		}
 
-		$file = $file ?: debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]['file'];
+		$method = static::class . '::' . str_replace('#', '', $method);
 
-		if ($name === 'pre_load_theme')
+		$file = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]['file'];
+
+		if ($name === 'pre_load_theme') {
 			$name = 'pre_load';
+		}
 
 		IntegrationHook::add('integrate_' . $name, $method . '#', false, $file);
 	}

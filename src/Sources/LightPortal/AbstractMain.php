@@ -27,8 +27,6 @@ abstract class AbstractMain
 {
 	use Helper;
 
-	abstract public function hooks();
-
 	protected function isPortalCanBeLoaded(): bool
 	{
 		if (! defined('LP_NAME') || isset(Utils::$context['uninstalling']) || $this->request()->is('printpage')) {

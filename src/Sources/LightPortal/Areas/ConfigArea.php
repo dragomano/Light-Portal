@@ -28,6 +28,12 @@ final class ConfigArea
 {
 	use Helper;
 
+	public function __invoke(): void
+	{
+		$this->applyHook('admin_areas');
+		$this->applyHook('helpadmin');
+	}
+
 	public function adminAreas(array &$areas): void
 	{
 		Theme::loadCSSFile('light_portal/virtual-select.min.css');

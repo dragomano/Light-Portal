@@ -15,6 +15,7 @@
 namespace Bugo\LightPortal;
 
 use Bugo\LightPortal\Actions\{BoardIndex, Block, Category, FrontPage, Page, Tag};
+use Bugo\LightPortal\Areas\{ConfigArea, CreditArea};
 use Bugo\LightPortal\Utils\{Config, Lang, Theme, User, Utils};
 
 if (! defined('SMF'))
@@ -25,7 +26,13 @@ if (! defined('SMF'))
  */
 final class Integration extends AbstractMain
 {
-	public function hooks(): void
+	public function __construct()
+	{
+		(new ConfigArea())();
+		(new CreditArea())();
+	}
+
+	public function __invoke(): void
 	{
 		$this->applyHook('pre_load_theme', 'init');
 		$this->applyHook('pre_javascript_output');
@@ -47,9 +54,6 @@ final class Integration extends AbstractMain
 		$this->applyHook('profile_popup');
 		$this->applyHook('download_request');
 		$this->applyHook('whos_online', 'whoisOnline');
-		$this->applyHook('integrate_credits', [__NAMESPACE__ . '\Areas\CreditArea', 'show'], '$sourcedir/LightPortal/Areas/CreditArea.php');
-		$this->applyHook('admin_areas', [__NAMESPACE__ . '\Areas\ConfigArea', 'adminAreas'], '$sourcedir/LightPortal/Areas/ConfigArea.php');
-		$this->applyHook('helpadmin', [__NAMESPACE__ . '\Areas\ConfigArea', 'helpadmin'], '$sourcedir/LightPortal/Areas/ConfigArea.php');
 		$this->applyHook('clean_cache');
 	}
 

@@ -1,4 +1,7 @@
 <?php /** @noinspection PhpIgnoredClassAliasDeclaration */
+/** @noinspection PhpMultipleClassDeclarationsInspection */
+
+declare(strict_types=1);
 
 if (! defined('SMF'))
 	die('We gotta get out of here!');
@@ -15,27 +18,29 @@ $loader->registerNamespace('Bugo\LightPortal', __DIR__);
 $loader->register();
 
 if (str_starts_with(SMF_VERSION, '3.0')) {
-	class_alias('Bugo\\LightPortal\\Utils\\SMFNextTrait', 'Bugo\\LightPortal\\Utils\\SMFTrait');
 	class_alias('Bugo\\LightPortal\\Actions\\BoardIndexNext', 'Bugo\\LightPortal\\Actions\\BoardIndex');
-	class_alias('SMF\\Actions\\Notify', 'Bugo\\LightPortal\\Utils\\Notify');
-	class_alias('SMF\\Tasks\\BackgroundTask', 'SMF_BackgroundTask');
+	class_alias('Bugo\\LightPortal\\Utils\\SMFNextTrait', 'Bugo\\LightPortal\\Utils\\SMFTrait');
 	class_alias('SMF\\ServerSideIncludes', 'Bugo\\LightPortal\\Utils\\ServerSideIncludes');
 	class_alias('SMF\\IntegrationHook', 'Bugo\\LightPortal\\Utils\\IntegrationHook');
+	class_alias('SMF\\ErrorHandler', 'Bugo\\LightPortal\\Utils\\ErrorHandler');
 	class_alias('SMF\\BBCodeParser', 'Bugo\\LightPortal\\Utils\\BBCodeParser');
 	class_alias('SMF\\Cache\\CacheApi', 'Bugo\\LightPortal\\Utils\\CacheApi');
+	class_alias('SMF\\Actions\\Notify', 'Bugo\\LightPortal\\Utils\\Notify');
+	class_alias('SMF\\Tasks\\BackgroundTask', 'SMF_BackgroundTask');
+	class_alias('SMF\\Theme', 'Bugo\\LightPortal\\Utils\\SMFTheme');
 	class_alias('SMF\\Config', 'Bugo\\LightPortal\\Utils\\Config');
-	class_alias('SMF\\ErrorHandler', 'Bugo\\LightPortal\\Utils\\ErrorHandler');
+	class_alias('SMF\\Utils', 'Bugo\\LightPortal\\Utils\\Utils');
 	class_alias('SMF\\Lang', 'Bugo\\LightPortal\\Utils\\Lang');
 	class_alias('SMF\\Mail', 'Bugo\\LightPortal\\Utils\\Mail');
-	class_alias('SMF\\Theme', 'Bugo\\LightPortal\\Utils\\SMFTheme');
 	class_alias('SMF\\User', 'Bugo\\LightPortal\\Utils\\User');
-	class_alias('SMF\\Utils', 'Bugo\\LightPortal\\Utils\\Utils');
 } else {
-	new Config();
-	new Lang();
-	new Theme();
-	new User();
-	new Utils();
+	array_map(fn($u) => new $u(), [
+		Config::class,
+		Lang::class,
+		Theme::class,
+		User::class,
+		Utils::class,
+	]);
 }
 
 // Define important helper functions
@@ -49,9 +54,11 @@ function prepare_content(string $type = 'bbc', int $block_id = 0, int $cache_tim
 	ob_start();
 
 	$data = new class($type, $block_id, $cache_time) {
-		public function __construct(public string $type = 'bbc', public int $block_id = 0, public int $cache_time = 0)
-		{
-		}
+		public function __construct(
+			public string $type = 'bbc',
+			public int $block_id = 0,
+			public int $cache_time = 0
+		) {}
 	};
 
 	call_portal_hook('prepareContent', [$data, $parameters]);
@@ -64,7 +71,6 @@ function parse_content(string $content, string $type = 'bbc'): string
 	if ($type === 'bbc') {
 		$content = BBCodeParser::load()->parse($content);
 
-		// Integrate with the Paragrapher mod
 		IntegrationHook::call('integrate_paragrapher_string', [&$content]);
 
 		return $content;
@@ -98,4 +104,4 @@ function parse_content(string $content, string $type = 'bbc'): string
 }
 
 // This is the way
-(new Integration)->hooks();
+(new Integration())();
