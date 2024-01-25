@@ -300,7 +300,12 @@ trait Helper
 	{
 		preg_match('/<img(.*)src(.*)=(.*)"(?<src>.*)"/U', $text, $value);
 
-		return $value['src'] ??= '';
+		$result = $value['src'] ??= '';
+
+		if (empty($result) || str_contains($result, Config::$modSettings['smileys_url']))
+			return '';
+
+		return $result;
 	}
 
 	public function makeNotify(string $type, string $action, array $options = []): void
