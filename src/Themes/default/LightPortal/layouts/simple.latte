@@ -1,14 +1,16 @@
 {varType array $txt}
-{varType array $context}
+{var $no_blocks = empty($context['lp_active_blocks'])}
+{var $articles = $context['lp_frontpage_articles']}
+{var $num_columns = $context['lp_frontpage_num_columns']}
 
-{if empty($context[lp_active_blocks])}
+{if $no_blocks}
 <div class="col-xs">
 {/if}
 
 	<div class="lp_frontpage_articles article_simple_view">
 		{do show_pagination()}
 
-		<div n:foreach="$context[lp_frontpage_articles] as $article" class="col-xs-12 col-sm-6 col-md-{$context[lp_frontpage_num_columns]}">
+		<div n:foreach="$articles as $article" class="col-xs-12 col-sm-6 col-md-{$num_columns}">
 			<div n:if="!empty($article[image])" class="article_image lazy" data-bg="{$article[image]}"></div>
 			<div class="mt-6 body">
 				<a class="article_title" href="{$article[link]}">{$article[title]}</a>
@@ -22,6 +24,6 @@
 		{do show_pagination(bottom)}
 	</div>
 
-{if empty($context[lp_active_blocks])}
+{if $no_blocks}
 </div>
 {/if}
