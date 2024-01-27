@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 /**
  * BlockQuoteRenderer.php
@@ -12,7 +10,7 @@ declare(strict_types=1);
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  *
  * @category addon
- * @version 26.10.21
+ * @version 26.01.24
  */
 
 namespace Bugo\LightPortal\Addons\Markdown\Smf;

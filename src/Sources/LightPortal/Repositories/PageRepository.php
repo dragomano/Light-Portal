@@ -197,7 +197,9 @@ final class PageRepository extends AbstractRepository
 
 		Utils::$smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_pages
-			SET category_id = {int:category_id}, author_id = {int:author_id}, alias = {string:alias}, description = {string:description}, content = {string:content}, type = {string:type}, permissions = {int:permissions}, status = {int:status}, updated_at = {int:updated_at}
+			SET category_id = {int:category_id}, author_id = {int:author_id}, alias = {string:alias},
+			    description = {string:description}, content = {string:content}, type = {string:type},
+			    permissions = {int:permissions}, status = {int:status}, updated_at = {int:updated_at}
 			WHERE page_id = {int:page_id}',
 			[
 				'category_id' => Utils::$context['lp_page']['category_id'],
@@ -284,7 +286,10 @@ final class PageRepository extends AbstractRepository
 
 	private function getAutoIncrementValue(): int
 	{
-		$result = Utils::$smcFunc['db_query']('', /** @lang text */ "SELECT setval('{db_prefix}lp_pages_seq', (SELECT MAX(page_id) FROM {db_prefix}lp_pages))");
+		$result = Utils::$smcFunc['db_query']('', /** @lang text */ "
+			SELECT setval('{db_prefix}lp_pages_seq', (SELECT MAX(page_id) FROM {db_prefix}lp_pages))"
+		);
+
 		[$value] = Utils::$smcFunc['db_fetch_row']($result);
 
 		Utils::$smcFunc['db_free_result']($result);

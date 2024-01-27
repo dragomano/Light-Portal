@@ -167,7 +167,10 @@ final class Integration extends AbstractMain
 		if ($this->request()->isNotEmpty(LP_PAGE_PARAM))
 			return $this->callHelper([new Page, 'show']);
 
-		if (empty(Config::$modSettings['lp_frontpage_mode']) || ! (empty(Config::$modSettings['lp_standalone_mode']) || empty(Config::$modSettings['lp_standalone_url'])))
+		if (
+			empty(Config::$modSettings['lp_frontpage_mode'])
+			|| ! (empty(Config::$modSettings['lp_standalone_mode']) || empty(Config::$modSettings['lp_standalone_url']))
+		)
 			return $this->callHelper([new BoardIndex, 'show']);
 
 		return $this->callHelper([new FrontPage, 'show']);

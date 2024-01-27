@@ -1,5 +1,4 @@
 <?php /** @noinspection PhpIgnoredClassAliasDeclaration */
-/** @noinspection PhpMultipleClassDeclarationsInspection */
 
 declare(strict_types=1);
 
@@ -26,7 +25,6 @@ if (str_starts_with(SMF_VERSION, '3.0')) {
 	class_alias('SMF\\BBCodeParser', 'Bugo\\LightPortal\\Utils\\BBCodeParser');
 	class_alias('SMF\\Cache\\CacheApi', 'Bugo\\LightPortal\\Utils\\CacheApi');
 	class_alias('SMF\\Actions\\Notify', 'Bugo\\LightPortal\\Utils\\Notify');
-	class_alias('SMF\\Tasks\\BackgroundTask', 'SMF_BackgroundTask');
 	class_alias('SMF\\Theme', 'Bugo\\LightPortal\\Utils\\SMFTheme');
 	class_alias('SMF\\Config', 'Bugo\\LightPortal\\Utils\\Config');
 	class_alias('SMF\\Utils', 'Bugo\\LightPortal\\Utils\\Utils');
@@ -35,11 +33,11 @@ if (str_starts_with(SMF_VERSION, '3.0')) {
 	class_alias('SMF\\User', 'Bugo\\LightPortal\\Utils\\User');
 } else {
 	array_map(fn($u) => new $u(), [
-		Config::class,
 		Lang::class,
-		Theme::class,
 		User::class,
+		Theme::class,
 		Utils::class,
+		Config::class,
 	]);
 }
 
