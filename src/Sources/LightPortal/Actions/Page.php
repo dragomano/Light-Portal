@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal\Actions;
 
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Theme, User, Utils};
+use Bugo\LightPortal\Utils\{Config, ErrorHandler, Icon, Lang, Theme, User, Utils};
 use IntlException;
 
 if (! defined('SMF'))
@@ -597,7 +597,7 @@ final class Page implements PageInterface
 		Utils::$context['lp_json']['txt']      = json_encode($txtData);
 		Utils::$context['lp_json']['context']  = json_encode($contextData);
 		Utils::$context['lp_json']['settings'] = json_encode($settingsData);
-		Utils::$context['lp_json']['icons']    = json_encode(Utils::$context['lp_icon_set']);
+		Utils::$context['lp_json']['icons']    = json_encode(Icon::all());
 		Utils::$context['lp_json']['user']     = json_encode(Utils::$context['user']);
 	}
 

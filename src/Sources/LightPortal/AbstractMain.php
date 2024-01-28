@@ -65,8 +65,6 @@ abstract class AbstractMain
 		Utils::$context['lp_panel_direction'] = Utils::jsonDecode(Config::$modSettings['lp_panel_direction'] ?? '', true);
 
 		Utils::$context['lp_active_blocks'] = (new Block)->getActive();
-
-		Utils::$context['lp_icon_set'] = $this->getEntityList('icon');
 	}
 
 	protected function loadAssets(): void

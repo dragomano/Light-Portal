@@ -17,7 +17,7 @@ namespace Bugo\LightPortal\Actions;
 use Bugo\LightPortal\Articles\{ArticleInterface, BoardArticle, ChosenPageArticle};
 use Bugo\LightPortal\Articles\{ChosenTopicArticle, PageArticle, TopicArticle};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\{Config, ErrorHandler, Icon, Lang, Theme, Utils};
 use Exception;
 use IntlException;
 use Latte\{Engine, Essential\RawPhpExtension, Loaders\FileLoader, Runtime\Html, RuntimeException};
@@ -191,7 +191,7 @@ final class FrontPage
 		});
 
 		$latte->addFunction('icon', function (string $name, string $title = '') use ($latte): Html {
-			$icon = Utils::$context['lp_icon_set'][$name];
+			$icon = Icon::get($name);
 
 			if (empty($title)) {
 				return new Html($icon);
@@ -355,10 +355,10 @@ final class FrontPage
 		$paginate = '';
 
 		if ($prev >= 0)
-			$paginate .= "<a class=\"button\" href=\"$url;start=$prev\">" . Utils::$context['lp_icon_set']['arrow_left'] . ' ' . Lang::$txt['prev'] . "</a>";
+			$paginate .= "<a class=\"button\" href=\"$url;start=$prev\">" . Icon::get('arrow_left') . ' ' . Lang::$txt['prev'] . "</a>";
 
 		if ($next)
-			$paginate .= "<a class=\"button\" href=\"$url;start=$next\">" . Lang::$txt['next'] . ' ' . Utils::$context['lp_icon_set']['arrow_right'] . "</a>";
+			$paginate .= "<a class=\"button\" href=\"$url;start=$next\">" . Lang::$txt['next'] . ' ' . Icon::get('arrow_right') . "</a>";
 
 		return $paginate;
 	}

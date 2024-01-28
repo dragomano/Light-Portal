@@ -16,7 +16,7 @@
 namespace Bugo\LightPortal\Addons\BladeLayouts;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\{BBCodeParser, Config, ErrorHandler, Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\{BBCodeParser, Config, ErrorHandler, Icon, Lang, Theme, Utils};
 use eftec\bladeone\BladeOne;
 use Exception;
 
@@ -65,9 +65,9 @@ class BladeLayouts extends Plugin
 			);
 
 			$blade->directiveRT('icon', function ($expression) {
-				list ($name, $title) = count($expression) > 1 ? $expression : [$expression[0], false];
+				[$name, $title] = count($expression) > 1 ? $expression : [$expression[0], false];
 
-				$icon = Utils::$context['lp_icon_set'][$name];
+				$icon = Icon::get($name);
 
 				if (empty($title)) {
 					echo $icon;

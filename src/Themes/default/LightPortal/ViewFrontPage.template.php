@@ -1,6 +1,6 @@
 <?php
 
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\{Config, Icon, Lang, Theme, Utils};
 
 function template_empty(): void
 {
@@ -38,7 +38,7 @@ function template_layout_switcher_above(): void
 
 	echo '
 	<div class="windowbg layout_switcher">
-		<div class="floatleft">', Utils::$context['lp_icon_set']['views'], '</div>
+		<div class="floatleft">', Icon::get('views'), '</div>
 		<div class="floatright">
 			<form method="post">
 				<label for="layout">', Lang::$txt['lp_template'], '</label>

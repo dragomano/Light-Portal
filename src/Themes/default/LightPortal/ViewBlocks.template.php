@@ -1,6 +1,6 @@
 <?php
 
-use Bugo\LightPortal\Utils\{Config, Utils};
+use Bugo\LightPortal\Utils\{Config, Icon, Utils};
 
 function template_lp_portal_above(): void
 {
@@ -135,7 +135,7 @@ function lp_show_blocks(string $placement = ''): void
 			<aside id="block_', $block['id'], '" class="', $class, '">';
 
 		if (! empty($block['can_edit']) && ! empty($block['title']))
-			$block['title'] = $block['title'] . '<a class="floatright block_edit" href="' . Config::$scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $block['id'] . '">' . Utils::$context['lp_icon_set']['tools'] . '</a>';
+			$block['title'] = $block['title'] . '<a class="floatright block_edit" href="' . Config::$scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $block['id'] . '">' . Icon::get('tools') . '</a>';
 
 		if (empty($block['title']))
 			$block['title'] = '';

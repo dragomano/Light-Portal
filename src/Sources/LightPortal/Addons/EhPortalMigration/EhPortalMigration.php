@@ -16,7 +16,7 @@
 namespace Bugo\LightPortal\Addons\EhPortalMigration;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
+use Bugo\LightPortal\Utils\{Config, Icon, Lang, User};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -28,7 +28,7 @@ class EhPortalMigration extends Plugin
 	public function updateAdminAreas(array &$areas): void
 	{
 		if (User::$info['is_admin'])
-			$areas['lp_pages']['subsections']['import_from_ep'] = [Utils::$context['lp_icon_set']['import'] . Lang::$txt['lp_eh_portal_migration']['label_name']];
+			$areas['lp_pages']['subsections']['import_from_ep'] = [Icon::get('import') . Lang::$txt['lp_eh_portal_migration']['label_name']];
 	}
 
 	public function updatePageAreas(array &$areas): void

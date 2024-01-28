@@ -17,7 +17,7 @@ declare(strict_types=1);
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, User, Utils};
+use Bugo\LightPortal\Utils\{Config, Icon, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Repositories\PluginRepository;
 use ReflectionClass;
 use ReflectionException;
@@ -290,7 +290,7 @@ final class PluginArea
 		Utils::$context['lp_json']['txt']      = json_encode($txtData);
 		Utils::$context['lp_json']['context']  = json_encode($contextData);
 		Utils::$context['lp_json']['plugins']  = json_encode($pluginsData);
-		Utils::$context['lp_json']['icons']    = json_encode(Utils::$context['lp_icon_set']);
+		Utils::$context['lp_json']['icons']    = json_encode(Icon::all());
 	}
 
 	private function updateAssetMtime(string $plugin): void

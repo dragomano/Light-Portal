@@ -1,6 +1,6 @@
 <?php
 
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\{Config, Icon, Lang, Utils};
 
 function template_page_add(): void
 {
@@ -92,10 +92,10 @@ function template_page_post(): void
 		<div class="roundframe', isset(Utils::$context['preview_content']) ? '' : ' noup', '">
 			<div class="lp_tabs">
 				<div data-navigation>
-					<div class="bg odd active_navigation" data-tab="common">', Utils::$context['lp_icon_set']['content'], Lang::$txt['lp_tab_content'], '</div>
-					<div class="bg odd" data-tab="access">', Utils::$context['lp_icon_set']['access'], Lang::$txt['lp_tab_access_placement'], '</div>
-					<div class="bg odd" data-tab="seo">', Utils::$context['lp_icon_set']['spider'], Lang::$txt['lp_tab_seo'], '</div>
-					<div class="bg odd" data-tab="tuning">', Utils::$context['lp_icon_set']['tools'], Lang::$txt['lp_tab_tuning'], '</div>
+					<div class="bg odd active_navigation" data-tab="common">', Icon::get('content'), Lang::$txt['lp_tab_content'], '</div>
+					<div class="bg odd" data-tab="access">', Icon::get('access'), Lang::$txt['lp_tab_access_placement'], '</div>
+					<div class="bg odd" data-tab="seo">', Icon::get('spider'), Lang::$txt['lp_tab_seo'], '</div>
+					<div class="bg odd" data-tab="tuning">', Icon::get('tools'), Lang::$txt['lp_tab_tuning'], '</div>
 				</div>
 				<div data-content>
 					<section class="bg even active_content" data-content="common">', template_post_tab($fields), '</section>
@@ -111,9 +111,9 @@ function template_page_post(): void
 				<input type="hidden" name="', Utils::$context['session_var'], '" value="', Utils::$context['session_id'], '">
 				<input type="hidden" name="seqnum" value="', Utils::$context['form_sequence_number'], '">
 				<button type="submit" class="button active" name="remove" style="float: left" x-show="!', (int) empty(Utils::$context['lp_page']['id']), '">', Lang::$txt['remove'], '</button>
-				<button type="submit" class="button" name="preview" @click="page.post($root)">', Utils::$context['lp_icon_set']['preview'], Lang::$txt['preview'], '</button>
-				<button type="submit" class="button" name="save" @click="page.post($root)">', Utils::$context['lp_icon_set']['save'], Lang::$txt['save'], '</button>
-				<button type="submit" class="button" name="save_exit" @click="page.post($root)">', Utils::$context['lp_icon_set']['save_exit'], Lang::$txt['lp_save_and_exit'], '</button>
+				<button type="submit" class="button" name="preview" @click="page.post($root)">', Icon::get('preview'), Lang::$txt['preview'], '</button>
+				<button type="submit" class="button" name="save" @click="page.post($root)">', Icon::get('save'), Lang::$txt['save'], '</button>
+				<button type="submit" class="button" name="save_exit" @click="page.post($root)">', Icon::get('save_exit'), Lang::$txt['lp_save_and_exit'], '</button>
 			</div>
 		</div>
 	</form>

@@ -16,7 +16,7 @@
 namespace Bugo\LightPortal\Addons\PlatesLayouts;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\{BBCodeParser, Config, ErrorHandler, Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\{BBCodeParser, Config, ErrorHandler, Icon, Lang, Theme, Utils};
 use League\Plates\Engine;
 use League\Plates\Exception\TemplateNotFound;
 
@@ -69,7 +69,7 @@ class PlatesLayouts extends Plugin
 			);
 
 			$templates->registerFunction('icon', function (string $name, string $title = ''): string {
-				$icon = Utils::$context['lp_icon_set'][$name];
+				$icon = Icon::get($name);
 
 				if (empty($title)) {
 					return $icon;

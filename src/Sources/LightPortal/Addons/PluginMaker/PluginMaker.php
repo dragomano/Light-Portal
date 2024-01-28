@@ -16,7 +16,7 @@
 namespace Bugo\LightPortal\Addons\PluginMaker;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\{Lang, Utils};
+use Bugo\LightPortal\Utils\{Icon, Lang, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -37,7 +37,7 @@ class PluginMaker extends Plugin
 	{
 		$areas['lp_plugins']['subsections'] = array_merge(
 			['main' => $areas['lp_plugins']['subsections']['main']],
-			['add'  => [Utils::$context['lp_icon_set']['plus'] . Lang::$txt['lp_plugin_maker']['add']]],
+			['add'  => [Icon::get('plus') . Lang::$txt['lp_plugin_maker']['add']]],
 			$areas['lp_plugins']['subsections']
 		);
 	}

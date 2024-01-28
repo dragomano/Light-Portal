@@ -21,7 +21,7 @@ use Bugo\LightPortal\Areas\Partials\{PageIconSelect, PermissionSelect, StatusSel
 use Bugo\LightPortal\Areas\Validators\PageValidator;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Models\PageModel;
-use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Theme, User, Utils};
+use Bugo\LightPortal\Utils\{Config, ErrorHandler, Icon, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Repositories\PageRepository;
 use IntlException;
 
@@ -163,7 +163,7 @@ final class PageArea
 				],
 				'num_views' => [
 					'header' => [
-						'value' => str_replace(' class=', ' title="' . Lang::$txt['lp_views'] . '" class=', Utils::$context['lp_icon_set']['views'])
+						'value' => Icon::get('views', Lang::$txt['lp_views'])
 					],
 					'data' => [
 						'db' => 'num_views',
@@ -270,7 +270,7 @@ final class PageArea
 							</div>
 							<div class="col-lg-2">
 								<button type="submit" name="is_search" class="button floatnone" style="width: 100%">
-									' . Utils::$context['lp_icon_set']['search'] . Lang::$txt['search'] . '
+									' . Icon::get('search') . Lang::$txt['search'] . '
 								</button>
 							</div>
 						</div>',
@@ -306,7 +306,7 @@ final class PageArea
 		$listOptions['title'] = '
 			<span class="floatright">
 				<a href="' . Config::$scripturl . '?action=admin;area=lp_pages;sa=add;' . Utils::$context['session_var'] . '=' . Utils::$context['session_id'] . '" x-data>
-					' . (str_replace(' class=', ' @mouseover="page.toggleSpin($event.target)" @mouseout="page.toggleSpin($event.target)" title="' . Lang::$txt['lp_pages_add'] . '" class=', Utils::$context['lp_icon_set']['plus'])) . '
+					' . (str_replace(' class=', ' @mouseover="page.toggleSpin($event.target)" @mouseout="page.toggleSpin($event.target)" class=', Icon::get('plus', Lang::$txt['lp_pages_add']))) . '
 				</a>
 			</span>' . $listOptions['title'];
 

@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Lists\{CategoryList, IconList, PageList, TagList, TitleList};
+use Bugo\LightPortal\Lists\{CategoryList, PageList, TagList, TitleList};
 use Bugo\LightPortal\Tasks\Notifier;
 use Bugo\LightPortal\Utils\{BlockAppearance, Cache, File, IntlTrait, Post, Request, Session, SMFTrait};
 use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, User, Utils};
@@ -91,7 +91,6 @@ trait Helper
 			'page'     => $this->cache('all_pages')->setFallback(PageList::class, 'getAll'),
 			'tag'      => $this->cache('all_tags')->setFallback(TagList::class, 'getAll'),
 			'title'    => $this->cache('all_titles')->setFallback(TitleList::class, 'getAll'),
-			'icon'     => (new IconList)->getAll(),
 			'plugin'   => AddonHandler::getInstance()->getAll(),
 			default    => [],
 		};

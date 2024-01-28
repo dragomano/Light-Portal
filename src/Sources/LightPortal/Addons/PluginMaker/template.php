@@ -1,6 +1,6 @@
 <?php
 
-use Bugo\LightPortal\Utils\{Lang, Utils};
+use Bugo\LightPortal\Utils\{Icon, Lang, Utils};
 
 function template_plugin_post(): void
 {
@@ -43,10 +43,10 @@ function template_plugin_post(): void
 		<div class="roundframe noup">
 			<div class="lp_tabs">
 				<div data-navigation>
-					<div class="bg odd active_navigation" data-tab="common">', Utils::$context['lp_icon_set']['content'], Lang::$txt['lp_plugin_maker']['tab_content'], '</div>
-					<div class="bg odd" data-tab="copyright">', Utils::$context['lp_icon_set']['copyright'], Lang::$txt['lp_plugin_maker']['tab_copyrights'], '</div>
-					<div class="bg odd" data-tab="settings">', Utils::$context['lp_icon_set']['cog_spin'], Lang::$txt['settings'], '</div>
-					<div class="bg odd" data-tab="tuning">', Utils::$context['lp_icon_set']['tools'], Lang::$txt['lp_plugin_maker']['tab_tuning'], '</div>
+					<div class="bg odd active_navigation" data-tab="common">', Icon::get('content'), Lang::$txt['lp_plugin_maker']['tab_content'], '</div>
+					<div class="bg odd" data-tab="copyright">', Icon::get('copyright'), Lang::$txt['lp_plugin_maker']['tab_copyrights'], '</div>
+					<div class="bg odd" data-tab="settings">', Icon::get('cog_spin'), Lang::$txt['settings'], '</div>
+					<div class="bg odd" data-tab="tuning">', Icon::get('tools'), Lang::$txt['lp_plugin_maker']['tab_tuning'], '</div>
 				</div>
 				<div data-content>
 					<section class="bg even active_content" data-content="common">', template_post_tab($fields), '</section>

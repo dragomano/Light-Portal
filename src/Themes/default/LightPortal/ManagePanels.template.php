@@ -1,6 +1,6 @@
 <?php
 
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\{Config, Icon, Lang, Utils};
 
 function template_callback_panel_layout(): void
 {
@@ -91,7 +91,7 @@ function template_callback_panel_layout(): void
 						<div class="row">
 							<div class="col-xs">
 								<div class="descbox alternative">
-									<strong>', Utils::$context['lp_icon_set']['content'], '</strong>
+									<strong>', Icon::get('content'), '</strong>
 									<div>', Lang::$txt['lp_content'], '</div>
 									col-xs (auto)
 								</div>
