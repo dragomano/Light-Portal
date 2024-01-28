@@ -30,7 +30,7 @@ test('hook methods exist', function () {
 	Assert::true(method_exists(Integration::class, 'fetchAlerts'));
 	Assert::true(method_exists(Integration::class, 'profileAreas'));
 	Assert::true(method_exists(Integration::class, 'profilePopup'));
-	Assert::true(method_exists(Integration::class, 'whoisOnline'));
+	Assert::true(method_exists(Integration::class, 'whosOnline'));
 	Assert::true(method_exists(Integration::class, 'cleanCache'));
 });
 

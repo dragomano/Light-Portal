@@ -178,13 +178,18 @@ final class FrontPage
 
 		$latte = new Engine;
 		$latte->setTempDirectory(empty(Config::$modSettings['cache_enable']) ? null : sys_get_temp_dir());
-		$latte->setLoader(new FileLoader(Theme::$current->settings['default_theme_dir'] . '/LightPortal/layouts/'));
+		$latte->setLoader(new FileLoader(
+			Theme::$current->settings['default_theme_dir'] . '/LightPortal/layouts/'
+		));
+
 		$latte->addExtension(new RawPhpExtension);
+
 		$latte->addFunction('teaser', function (string $text, int $length = 150) use ($latte): string {
 			$text = $latte->invokeFilter('stripHtml', [$text]);
 
 			return $latte->invokeFilter('truncate', [$text, $length]);
 		});
+
 		$latte->addFunction('icon', function (string $name, string $title = '') use ($latte): Html {
 			$icon = Utils::$context['lp_icon_set'][$name];
 
@@ -207,7 +212,9 @@ final class FrontPage
 			$latte->render($layout, $params);
 		} catch (RuntimeException $e) {
 			if (is_file(Theme::$current->settings['default_theme_dir'] . '/portal_layouts/' . $layout)) {
-				$latte->setLoader(new FileLoader(Theme::$current->settings['default_theme_dir'] . '/portal_layouts/'));
+				$latte->setLoader(new FileLoader(
+					Theme::$current->settings['default_theme_dir'] . '/portal_layouts/'
+				));
 				$latte->render($layout, $params);
 			} else {
 				ErrorHandler::fatal($e->getMessage());
@@ -339,11 +346,11 @@ final class FrontPage
 
 	private function simplePaginate(string $url, int $total, int $limit): string
 	{
-		$max_pages = (($total - 1) / $limit) * $limit;
+		$maxPages = (($total - 1) / $limit) * $limit;
 
 		$prev = Utils::$context['start'] - $limit;
 
-		$next = Utils::$context['start'] + $limit > $max_pages ? '' : Utils::$context['start'] + $limit;
+		$next = Utils::$context['start'] + $limit > $maxPages ? '' : Utils::$context['start'] + $limit;
 
 		$paginate = '';
 

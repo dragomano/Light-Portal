@@ -9,7 +9,7 @@
 <div class="col-xs">
 {/if}
 	<div class="lp_frontpage_articles article_view">
-		{do show_pagination()}
+		{show_pagination()}
 		<div n:foreach="$articles as $article" class="col-xs-12 col-sm-6 col-md-{$num_columns}">
 			<article class="roundframe{$article[css_class] ?? ''}">
 				{if !empty($article[image])}
@@ -33,7 +33,7 @@
 						<a n:if="!empty($article[section][name])" class="floatleft" href="{$article[section][link]}">
 							{icon('category')}{$article[section][name]}
 						</a>
-						&nbsp;<span n:if="$article[is_new] && empty($article[image])" class="new_posts">
+						<span n:if="$article[is_new] && empty($article[image])" class="new_posts">
 							{$txt['new']}
 						</span>
 						<time n:if="!empty($article[datetime])" class="floatright" datetime="{$article[datetime]}">
@@ -80,7 +80,7 @@
 				</div>
 			</article>
 		</div>
-		{do show_pagination(bottom)}
+		{show_pagination(bottom)}
 	</div>
 {if $no_blocks}
 </div>

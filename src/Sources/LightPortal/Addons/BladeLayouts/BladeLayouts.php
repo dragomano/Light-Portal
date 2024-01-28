@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 18.01.24
+ * @version 29.01.24
  */
 
 namespace Bugo\LightPortal\Addons\BladeLayouts;
@@ -60,9 +60,26 @@ class BladeLayouts extends Plugin
 		ob_start();
 
 		try {
-			$blade = new BladeOne(Theme::$current->settings['default_theme_dir'] . '/portal_layouts', sys_get_temp_dir());
+			$blade = new BladeOne(
+				Theme::$current->settings['default_theme_dir'] . '/portal_layouts', sys_get_temp_dir()
+			);
 
-			$layout = strstr(Config::$modSettings['lp_frontpage_layout'], '.', true) ?: Config::$modSettings['lp_frontpage_layout'];
+			$blade->directiveRT('icon', function ($expression) {
+				list ($name, $title) = count($expression) > 1 ? $expression : [$expression[0], false];
+
+				$icon = Utils::$context['lp_icon_set'][$name];
+
+				if (empty($title)) {
+					echo $icon;
+					return;
+				}
+
+				echo str_replace(' class=', ' title="' . $title . '" class=', $icon);
+			});
+
+			$layout = strstr(
+				Config::$modSettings['lp_frontpage_layout'], '.', true
+			) ?: Config::$modSettings['lp_frontpage_layout'];
 
 			echo $blade->run($layout, $params);
 		} catch (Exception $e) {
@@ -94,6 +111,8 @@ class BladeLayouts extends Plugin
 
 	private function showExample(): string
 	{
-		return '<div class="roundframe">' . BBCodeParser::load()->parse('[php]' . file_get_contents(__DIR__. '/layouts/example' . $this->extension) . '[/php]') . '</div>';
+		return '<div class="roundframe">' . BBCodeParser::load()->parse(
+		'[php]' . file_get_contents(__DIR__. '/layouts/example' . $this->extension) . '[/php]'
+		) . '</div>';
 	}
 }

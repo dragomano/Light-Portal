@@ -130,28 +130,26 @@ abstract class AbstractMain
 	 */
 	protected function unsetDisabledActions(array &$data): void
 	{
-		$disabled_actions = empty(Config::$modSettings['lp_disabled_actions']) ? [] : explode(',', Config::$modSettings['lp_disabled_actions']);
-		$disabled_actions[] = 'home';
-		$disabled_actions = array_flip($disabled_actions);
+		$disabledActions = array_flip($this->getDisabledActions());
 
 		foreach (array_keys($data) as $action) {
-			if (array_key_exists($action, $disabled_actions))
+			if (array_key_exists($action, $disabledActions))
 				unset($data[$action]);
 		}
 
-		if (array_key_exists('search', $disabled_actions))
+		if (array_key_exists('search', $disabledActions))
 			Utils::$context['allow_search'] = false;
 
-		if (array_key_exists('moderate', $disabled_actions))
+		if (array_key_exists('moderate', $disabledActions))
 			Utils::$context['allow_moderation_center'] = false;
 
-		if (array_key_exists('calendar', $disabled_actions))
+		if (array_key_exists('calendar', $disabledActions))
 			Utils::$context['allow_calendar'] = false;
 
-		if (array_key_exists('mlist', $disabled_actions))
+		if (array_key_exists('mlist', $disabledActions))
 			Utils::$context['allow_memberlist'] = false;
 
-		Utils::$context['lp_disabled_actions'] = $disabled_actions;
+		Utils::$context['lp_disabled_actions'] = $disabledActions;
 	}
 
 	/**
@@ -349,6 +347,16 @@ abstract class AbstractMain
 		);
 
 		$this->unsetDisabledActions($buttons);
+	}
+
+	protected function getDisabledActions(): array
+	{
+		$disabledActions = empty(Config::$modSettings['lp_disabled_actions'])
+			? [] : explode(',', Config::$modSettings['lp_disabled_actions']);
+
+		$disabledActions[] = 'home';
+
+		return $disabledActions;
 	}
 
 	protected function promoteTopic(): void
