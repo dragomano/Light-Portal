@@ -10,10 +10,10 @@
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  *
  * @category addon
- * @version 26.01.24
+ * @version 28.01.24
  */
 
-namespace Bugo\LightPortal\Addons\Markdown\Smf;
+namespace Bugo\LightPortal\Addons\Markdown\SMF;
 
 use League\CommonMark\Renderer\NodeRendererInterface;
 use League\CommonMark\Xml\XmlNodeRendererInterface;
