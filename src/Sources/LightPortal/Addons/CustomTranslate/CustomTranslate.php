@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.01.24
+ * @version 29.01.24
  */
 
 namespace Bugo\LightPortal\Addons\CustomTranslate;
@@ -25,26 +25,47 @@ class CustomTranslate extends Plugin
 {
 	public string $type = 'other';
 
-	private array $langCodes = ['ar', 'de', 'el', 'en', 'eo', 'es', 'fr', 'hi', 'it', 'nl', 'pt', 'ru', 'sv', 'tr', 'uk', 'zh'];
+	private array $langCodes = [
+		'ar', 'de', 'el', 'en', 'eo', 'es', 'fr', 'hi', 'it', 'nl', 'pt', 'ru', 'sv', 'tr', 'uk', 'zh'
+	];
 
-	private array $langTitles = ['عربي', 'Deutsch', 'Ελληνικά', 'English', 'Esperanto', 'Español', 'Français', 'हिन्दी', 'Italiano', 'Nederlands', 'Português', 'Русский', 'Svenska', 'Türkçe', 'Українська', '中文 (简体)'];
+	private array $langTitles = [
+		'عربي', 'Deutsch', 'Ελληνικά', 'English', 'Esperanto', 'Español', 'Français', 'हिन्दी', 'Italiano', 'Nederlands',
+		'Português', 'Русский', 'Svenska', 'Türkçe', 'Українська', '中文 (简体)'
+	];
 
 	public function init(): void
 	{
-		if (isset(Utils::$context['uninstalling']) || $this->request()->has('xml') || empty(Utils::$context['lp_custom_translate_plugin']['languages']))
+		$this->applyHook('menu_buttons');
+	}
+
+	public function menuButtons(): void
+	{
+		if (isset(Utils::$context['uninstalling']) || $this->request()->has('xml'))
 			return;
 
-		if (Utils::$context['browser']['is_mobile'] || Utils::$context['browser']['possibly_robot'] || Utils::$context['current_action'] === 'helpadmin')
+		if (empty(Utils::$context['lp_custom_translate_plugin']['languages']))
 			return;
 
-		if (in_array(Utils::$context['current_action'], ['jsmodify', 'quotefast', 'xmlhttp']) || Utils::$context['current_subaction'] === 'showoperations')
+		if (Utils::$context['browser']['is_mobile'] || Utils::$context['browser']['possibly_robot'])
+			return;
+
+		if (Utils::$context['current_action'] === 'helpadmin')
+			return;
+
+		if (in_array(Utils::$context['current_action'], ['jsmodify', 'quotefast', 'xmlhttp']))
+			return;
+
+		if (Utils::$context['current_subaction'] === 'showoperations')
 			return;
 
 		$forumLang = substr(Config::$language, 0, 2);
 
 		Theme::addInlineJS('new YandexTranslate({baseLang: "' . $forumLang . '"});', true);
 
-		Utils::$context['ctw_languages'] = array_unique(array_merge([$forumLang], explode(',', Utils::$context['lp_custom_translate_plugin']['languages'])));
+		Utils::$context['ctw_languages'] = array_unique(
+			array_merge([$forumLang], explode(',', Utils::$context['lp_custom_translate_plugin']['languages']))
+		);
 
 		Utils::$context['ctw_lang_titles'] = array_combine($this->langCodes, $this->langTitles);
 
@@ -53,7 +74,9 @@ class CustomTranslate extends Plugin
 
 	public function addSettings(array &$config_vars): void
 	{
-		$config_vars['custom_translate'][] = ['multiselect', 'languages', array_combine($this->langCodes, Lang::$txt['lp_custom_translate']['languages_set'])];
+		$config_vars['custom_translate'][] = ['multiselect', 'languages', array_combine(
+			$this->langCodes, Lang::$txt['lp_custom_translate']['languages_set']
+		)];
 	}
 
 	public function credits(array &$links): void
