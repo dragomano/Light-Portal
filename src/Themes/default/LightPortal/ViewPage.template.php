@@ -200,7 +200,7 @@ function show_comments(): void
 
 	if (Config::$db_show_debug && is_file(Theme::$current->settings['default_theme_dir'] . '/scripts/light_portal/dev/helpers.js')) {
 		echo '
-	<script src="https://cdn.jsdelivr.net/combine/npm/vue@3/dist/vue.global', (Config::$db_show_debug ? '' : '.prod'), '.min.js,npm/vue3-sfc-loader@0.8.4,npm/vue-demi@0.14.6,npm/pinia@2,npm/showdown@2,npm/vue-showdown@4,npm/vue-i18n@9/dist/vue-i18n.global.prod.min.js,npm/@vueuse/shared@10,npm/@vueuse/core@10"></script>
+	<script src="https://cdn.jsdelivr.net/combine/npm/vue@3/dist/vue.global', (Config::$db_show_debug ? '' : '.prod'), '.min.js,npm/vue3-sfc-loader@0,npm/vue-demi@0,npm/pinia@2,npm/showdown@2,npm/vue-showdown@4,npm/vue-i18n@9/dist/vue-i18n.global.prod.min.js,npm/@vueuse/shared@10,npm/@vueuse/core@10"></script>
 	<script type="module" src="https://cdn.jsdelivr.net/npm/@github/markdown-toolbar-element@2/dist/index.min.js"></script>
 	<script src="', Theme::$current->settings['default_theme_url'], '/scripts/light_portal/dev/helpers.js"></script>
 	<script type="module" src="', Theme::$current->settings['default_theme_url'], '/scripts/light_portal/dev/comment_helpers.js"></script>
