@@ -15,9 +15,9 @@
 
 namespace Bugo\LightPortal\Addons\TagList;
 
+use Bugo\LightPortal\Actions\Tag;
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\RadioField;
-use Bugo\LightPortal\Actions\Tag;
 use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
 
 if (! defined('LP_NAME'))
@@ -52,7 +52,7 @@ class TagList extends Block
 
 		$sources = array_combine(['lp_tags', 'keywords'], Lang::$txt['lp_tag_list']['source_set']);
 
-		if (! class_exists('\Bugo\Optimus\Keywords'))
+		if (! class_exists('\Keywords\KeywordHandler'))
 			unset($sources['keywords']);
 
 		RadioField::make('source', Lang::$txt['lp_tag_list']['source'])
@@ -68,7 +68,7 @@ class TagList extends Block
 
 	public function getAllTopicKeywords(string $sort = 'ok.name'): array
 	{
-		if (!class_exists('\Bugo\Optimus\Keywords'))
+		if (!class_exists('\Keywords\KeywordHandler'))
 			return [];
 
 		$result = Utils::$smcFunc['db_query']('', '

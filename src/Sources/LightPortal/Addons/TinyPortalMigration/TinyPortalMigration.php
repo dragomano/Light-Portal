@@ -16,7 +16,7 @@
 namespace Bugo\LightPortal\Addons\TinyPortalMigration;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
+use Bugo\LightPortal\Utils\{Config, Icon, Lang, User, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -28,8 +28,8 @@ class TinyPortalMigration extends Plugin
 	public function updateAdminAreas(array &$areas): void
 	{
 		if (User::$info['is_admin']) {
-			$areas['lp_blocks']['subsections']['import_from_tp'] = [Utils::$context['lp_icon_set']['import'] . Lang::$txt['lp_tiny_portal_migration']['label_name']];
-			$areas['lp_pages']['subsections']['import_from_tp']  = [Utils::$context['lp_icon_set']['import'] . Lang::$txt['lp_tiny_portal_migration']['label_name']];
+			$areas['lp_blocks']['subsections']['import_from_tp'] = [Icon::get('import') . Lang::$txt['lp_tiny_portal_migration']['label_name']];
+			$areas['lp_pages']['subsections']['import_from_tp']  = [Icon::get('import') . Lang::$txt['lp_tiny_portal_migration']['label_name']];
 		}
 	}
 

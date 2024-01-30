@@ -69,7 +69,7 @@ final class Utils
 		return smf_chmod($file);
 	}
 
-	public static function jsonDecode(string $json, $returnAsArray = true): ?array
+	public static function jsonDecode(string $json, ?bool $returnAsArray = null): ?array
 	{
 		return smf_json_decode($json, $returnAsArray) ?: null;
 	}

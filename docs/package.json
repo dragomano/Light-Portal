@@ -1,7 +1,7 @@
 {
   "devDependencies": {
     "sass": "^1.70.0",
-    "vitepress": "1.0.0-rc.39",
+    "vitepress": "1.0.0-rc.40",
     "vitepress-plugin-codeblocks-fold": "^1.2.28",
     "vitepress-sidebar": "^1.18.6"
   },

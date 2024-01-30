@@ -1,6 +1,6 @@
 <?php
 
-use Bugo\LightPortal\Utils\{Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\{Icon, Lang, Theme, Utils};
 
 function template_lp_category_settings(): void
 {
@@ -71,7 +71,7 @@ function show_single_category(int $id, array $cat): void
 {
 	echo '
 	<tr class="windowbg" data-id="', $id, '" x-data>
-		<td class="centertext handle">', Utils::$context['lp_icon_set']['arrows'], '</td>
+		<td class="centertext handle">', Icon::get('arrows'), '</td>
 		<td>
 			<span class="floatright">
 				<span @click="category.remove($root)" title="', Lang::$txt['remove'], '" class="error">&times;</span>

@@ -1,6 +1,6 @@
 <?php
 
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\{Config, Icon, Lang, Utils};
 
 function show_user_info($data): void
 {
@@ -21,7 +21,7 @@ function show_user_info($data): void
 		echo '
 		<li class="lefttext">
 			<hr>
-			', Utils::$context['lp_icon_set']['plus_circle'], ' <a href="', Config::$scripturl, '?action=admin;area=lp_blocks;sa=add;', Utils::$context['session_var'], '=', Utils::$context['session_id'], '">
+			', Icon::get('plus_circle'), ' <a href="', Config::$scripturl, '?action=admin;area=lp_blocks;sa=add;', Utils::$context['session_var'], '=', Utils::$context['session_id'], '">
 				', Lang::$txt['lp_blocks_add'], '
 			</a>
 		</li>';
@@ -31,7 +31,7 @@ function show_user_info($data): void
 		echo '
 		<li class="lefttext">
 			<hr>
-			', Utils::$context['lp_icon_set']['plus_circle'], ' <a href="', Config::$scripturl, '?action=admin;area=lp_pages;sa=add;', Utils::$context['session_var'], '=', Utils::$context['session_id'], '">
+			', Icon::get('plus_circle'), ' <a href="', Config::$scripturl, '?action=admin;area=lp_pages;sa=add;', Utils::$context['session_var'], '=', Utils::$context['session_id'], '">
 				', Lang::$txt['lp_pages_add'], '
 			</a>
 		</li>';
@@ -41,7 +41,7 @@ function show_user_info($data): void
 		echo '
 		<li class="lefttext">
 			<hr>
-			', Utils::$context['lp_icon_set']['pager'], ' <a href="', Config::$scripturl, '?action=admin;area=lp_pages;sa=main;moderate;', Utils::$context['session_var'], '=', Utils::$context['session_id'], '">
+			', Icon::get('pager'), ' <a href="', Config::$scripturl, '?action=admin;area=lp_pages;sa=main;moderate;', Utils::$context['session_var'], '=', Utils::$context['session_id'], '">
 				', Lang::$txt['lp_page_moderation'], '
 			</a>
 		</li>';
@@ -51,10 +51,10 @@ function show_user_info($data): void
 		<li>
 			<hr>
 			<span class="floatleft">
-				', Utils::$context['lp_icon_set']['user'], ' <a href="', $data['href'], '">', Lang::$txt['profile'], '</a>
+				', Icon::get('user'), ' <a href="', $data['href'], '">', Lang::$txt['profile'], '</a>
 			</span>
 			<span class="floatright">
-				', Utils::$context['lp_icon_set']['sign_out_alt'], ' <a href="', Config::$scripturl, '?action=logout;', Utils::$context['session_var'], '=', Utils::$context['session_id'], '">', Lang::$txt['logout'], '</a>
+				', Icon::get('sign_out_alt'), ' <a href="', Config::$scripturl, '?action=logout;', Utils::$context['session_var'], '=', Utils::$context['session_id'], '">', Lang::$txt['logout'], '</a>
 			</span>
 		</li>
 	</ul>';
@@ -71,13 +71,13 @@ function show_user_info_for_guests(): void
 	if (Utils::$context['can_register']) {
 		echo '
 			<span class="floatleft">
-				', Utils::$context['lp_icon_set']['user_plus'], ' <a href="', Config::$scripturl, '?action=signup">', Lang::$txt['register'], '</a>
+				', Icon::get('user_plus'), ' <a href="', Config::$scripturl, '?action=signup">', Lang::$txt['register'], '</a>
 			</span>';
 	}
 
 	echo '
 			<span', Utils::$context['can_register'] ? ' class="floatright"' : '', '>
-				', Utils::$context['lp_icon_set']['sign_in_alt'], ' <a href="', Config::$scripturl, '?action=login" onclick="return reqOverlayDiv(this.href, ', Utils::JavaScriptEscape(Lang::$txt['login']), ');">', Lang::$txt['login'], '</a>
+				', Icon::get('sign_in_alt'), ' <a href="', Config::$scripturl, '?action=login" onclick="return reqOverlayDiv(this.href, ', Utils::JavaScriptEscape(Lang::$txt['login']), ');">', Lang::$txt['login'], '</a>
 			</span>
 		</li>
 	</ul>';

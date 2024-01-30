@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 /**
  * ImageRenderer.php
@@ -12,10 +10,10 @@ declare(strict_types=1);
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  *
  * @category addon
- * @version 26.10.21
+ * @version 28.01.24
  */
 
-namespace Bugo\LightPortal\Addons\Markdown\Smf;
+namespace Bugo\LightPortal\Addons\Markdown\SMF;
 
 use League\CommonMark\Renderer\NodeRendererInterface;
 use League\CommonMark\Xml\XmlNodeRendererInterface;
@@ -45,7 +43,7 @@ final class ImageRenderer implements NodeRendererInterface, XmlNodeRendererInter
 
         $attrs = $node->data->get('attributes');
 
-        $attrs = array_merge(['class' => 'bbc_img resized', 'loading' => 'lazy'], $attrs);
+        $attrs = array_merge(['class' => 'bbc_img', 'loading' => 'lazy'], $attrs);
 
         $forbidUnsafeLinks = ! $this->config->get('allow_unsafe_links');
         if ($forbidUnsafeLinks && RegexHelper::isLinkPotentiallyUnsafe($node->getUrl())) {
@@ -55,8 +53,8 @@ final class ImageRenderer implements NodeRendererInterface, XmlNodeRendererInter
         }
 
         $alt          = $childRenderer->renderNodes($node->children());
-        $alt          = \preg_replace('/\<[^>]*alt="([^"]*)"[^>]*\>/', '$1', $alt);
-        $attrs['alt'] = \preg_replace('/\<[^>]*\>/', '', $alt ?? '');
+        $alt          = \preg_replace('/<[^>]*alt="([^"]*)"[^>]*>/', '$1', $alt);
+        $attrs['alt'] = \preg_replace('/<[^>]*>/', '', $alt ?? '');
 
         if (($title = $node->getTitle()) !== null) {
             $attrs['title'] = $title;

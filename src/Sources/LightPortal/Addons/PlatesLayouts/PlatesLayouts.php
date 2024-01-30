@@ -10,13 +10,13 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 18.01.24
+ * @version 28.01.24
  */
 
 namespace Bugo\LightPortal\Addons\PlatesLayouts;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\{BBCodeParser, Config, ErrorHandler, Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\{BBCodeParser, Config, ErrorHandler, Icon, Lang, Theme, Utils};
 use League\Plates\Engine;
 use League\Plates\Exception\TemplateNotFound;
 
@@ -60,10 +60,27 @@ class PlatesLayouts extends Plugin
 		ob_start();
 
 		try {
-			$templates = new Engine(Theme::$current->settings['default_theme_dir'] . '/portal_layouts', 'tpl.php');
-			$templates->registerFunction('debug', fn(mixed $data) => parse_bbc('[code]' . print_r($data, true) . '[/code]'));
+			$templates = new Engine(
+				Theme::$current->settings['default_theme_dir'] . '/portal_layouts', 'tpl.php'
+			);
 
-			$layout = strstr(Config::$modSettings['lp_frontpage_layout'], '.', true) ?: Config::$modSettings['lp_frontpage_layout'];
+			$templates->registerFunction(
+				'debug', fn(mixed $data) => parse_bbc('[code]' . print_r($data, true) . '[/code]')
+			);
+
+			$templates->registerFunction('icon', function (string $name, string $title = ''): string {
+				$icon = Icon::get($name);
+
+				if (empty($title)) {
+					return $icon;
+				}
+
+				return str_replace(' class=', ' title="' . $title . '" class=', $icon);
+			});
+
+			$layout = strstr(
+				Config::$modSettings['lp_frontpage_layout'], '.', true
+			) ?: Config::$modSettings['lp_frontpage_layout'];
 
 			echo $templates->render($layout, $params);
 		} catch (TemplateNotFound $e) {
@@ -95,6 +112,8 @@ class PlatesLayouts extends Plugin
 
 	private function showExample(): string
 	{
-		return '<div class="roundframe">' . BBCodeParser::load()->parse('[php]' . file_get_contents(__DIR__. '/layouts/example' . $this->extension) . '[/php]') . '</div>';
+		return '<div class="roundframe">' . BBCodeParser::load()->parse(
+			'[php]' . file_get_contents(__DIR__. '/layouts/example' . $this->extension) . '[/php]'
+		) . '</div>';
 	}
 }

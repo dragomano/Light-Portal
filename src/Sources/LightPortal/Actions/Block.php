@@ -20,7 +20,7 @@ use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class Block
+final class Block implements BlockInterface
 {
 	use Helper;
 
@@ -91,7 +91,7 @@ final class Block
 				WHERE b.status = {int:status}
 				ORDER BY b.placement, b.priority',
 				[
-					'status' => 1
+					'status' => self::STATUS_ACTIVE
 				]
 			);
 

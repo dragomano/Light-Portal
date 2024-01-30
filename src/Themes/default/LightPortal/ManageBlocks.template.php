@@ -1,6 +1,6 @@
 <?php
 
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\{Config, Icon, Lang, Theme, Utils};
 
 function template_manage_blocks(): void
 {
@@ -12,7 +12,7 @@ function template_manage_blocks(): void
 		<h3 class="catbg">
 			<span class="floatright">
 				<a href="', Config::$scripturl, '?action=admin;area=lp_blocks;sa=add;', Utils::$context['session_var'], '=', Utils::$context['session_id'], ';placement=', $placement, '" x-data>
-					', str_replace(' class=', ' @mouseover="block.toggleSpin($event.target)" @mouseout="block.toggleSpin($event.target)" title="' . Lang::$txt['lp_blocks_add'] . '" class=', Utils::$context['lp_icon_set']['plus']), '
+					', str_replace(' class=', ' @mouseover="block.toggleSpin($event.target)" @mouseout="block.toggleSpin($event.target)" class=', Icon::get('plus', Lang::$txt['lp_blocks_add'])), '
 				</a>
 			</span>
 			', Utils::$context['lp_block_placements'][$placement] ?? Lang::$txt['not_applicable'], is_array($blocks) ? (' (' . count($blocks) . ')') : '', '
@@ -132,7 +132,7 @@ function show_block_entry(int $id, array $data): void
 			', $data['areas'], '
 		</td>
 		<td class="priority">
-			', $data['priority'], ' ', str_replace(' class="', ' title="' . Lang::$txt['lp_action_move'] . '" class="handle ', Utils::$context['lp_icon_set']['sort']), '
+			', $data['priority'], ' ', str_replace(' class="', ' title="' . Lang::$txt['lp_action_move'] . '" class="handle ', Icon::get('sort')), '
 		</td>
 		<td class="status">
 			<span :class="{\'on\': status, \'off\': !status}" :title="status ? \'', Lang::$txt['lp_action_off'], '\' : \'', Lang::$txt['lp_action_on'], '\'" @click.prevent="status = !status"></span>
@@ -260,10 +260,10 @@ function template_block_post(): void
 		<div class="windowbg">
 			<div class="lp_tabs">
 				<div data-navigation>
-					<div class="bg odd active_navigation" data-tab="common">', Utils::$context['lp_icon_set']['content'], Lang::$txt['lp_tab_content'], '</div>
-					<div class="bg odd" data-tab="access">', Utils::$context['lp_icon_set']['access'], Lang::$txt['lp_tab_access_placement'], '</div>
-					<div class="bg odd" data-tab="appearance" x-show="', (int) Utils::$context['lp_block_tab_appearance'], '">', Utils::$context['lp_icon_set']['design'], Lang::$txt['lp_tab_appearance'], '</div>
-					<div class="bg odd" data-tab="tuning">', Utils::$context['lp_icon_set']['tools'], Lang::$txt['lp_tab_tuning'], '</div>
+					<div class="bg odd active_navigation" data-tab="common">', Icon::get('content'), Lang::$txt['lp_tab_content'], '</div>
+					<div class="bg odd" data-tab="access">', Icon::get('access'), Lang::$txt['lp_tab_access_placement'], '</div>
+					<div class="bg odd" data-tab="appearance" x-show="', (int) Utils::$context['lp_block_tab_appearance'], '">', Icon::get('design'), Lang::$txt['lp_tab_appearance'], '</div>
+					<div class="bg odd" data-tab="tuning">', Icon::get('tools'), Lang::$txt['lp_tab_tuning'], '</div>
 				</div>
 				<div data-content>
 					<section class="bg even active_content" data-content="common">', template_post_tab($fields), '</section>
@@ -279,9 +279,9 @@ function template_block_post(): void
 				<input type="hidden" name="', Utils::$context['session_var'], '" value="', Utils::$context['session_id'], '">
 				<input type="hidden" name="seqnum" value="', Utils::$context['form_sequence_number'], '">
 				<button type="submit" class="button active" name="remove" style="float: left" x-show="!', (int) empty(Utils::$context['lp_block']['id']), '">', Lang::$txt['remove'], '</button>
-				<button type="submit" class="button" name="preview" @click="block.post($root)">', Utils::$context['lp_icon_set']['preview'], Lang::$txt['preview'], '</button>
-				<button type="submit" class="button" name="save" @click="block.post($root)">', Utils::$context['lp_icon_set']['save'], Lang::$txt['save'], '</button>
-				<button type="submit" class="button" name="save_exit" @click="block.post($root)">', Utils::$context['lp_icon_set']['save_exit'], Lang::$txt['lp_save_and_exit'], '</button>
+				<button type="submit" class="button" name="preview" @click="block.post($root)">', Icon::get('preview'), Lang::$txt['preview'], '</button>
+				<button type="submit" class="button" name="save" @click="block.post($root)">', Icon::get('save'), Lang::$txt['save'], '</button>
+				<button type="submit" class="button" name="save_exit" @click="block.post($root)">', Icon::get('save_exit'), Lang::$txt['lp_save_and_exit'], '</button>
 			</div>
 		</div>
 	</form>

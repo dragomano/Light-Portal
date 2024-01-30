@@ -1,15 +1,16 @@
 {varType array $txt}
-{varType array $context}
-{varType array $modSettings}
+{var $no_blocks = empty($context['lp_active_blocks'])}
+{var $articles = $context['lp_frontpage_articles']}
+{var $num_columns = $context['lp_frontpage_num_columns']}
+{var $show_author = !empty($modSettings['lp_show_author'])}
+{var $show_icons = !empty($modSettings['lp_show_views_and_comments'])}
 
-{if empty($context[lp_active_blocks])}
+{if $no_blocks}
 <div class="col-xs">
 {/if}
-
 	<div class="lp_frontpage_articles article_view">
-		{do show_pagination()}
-
-		<div n:foreach="$context[lp_frontpage_articles] as $article" class="col-xs-12 col-sm-6 col-md-{$context[lp_frontpage_num_columns]}">
+		{show_pagination()}
+		<div n:foreach="$articles as $article" class="col-xs-12 col-sm-6 col-md-{$num_columns}">
 			<article class="roundframe{$article[css_class] ?? ''}">
 				{if !empty($article[image])}
 					<div n:if="$article[is_new]" class="new_hover">
@@ -19,7 +20,7 @@
 					</div>
 					<div n:if="$article[can_edit]" class="info_hover">
 						<div class="edit_icon">
-							<a href="{$article[edit_link]}">{icon('edit', $txt[edit])|noescape}</a>
+							<a href="{$article[edit_link]}">{icon('edit', $txt['edit'])}</a>
 						</div>
 					</div>
 					<div class="card_img"></div>
@@ -29,38 +30,58 @@
 				{/if}
 				<div class="card_info">
 					<span class="card_date smalltext">
-						<a n:if="!empty($article[section][name])" class="floatleft" href="{$article[section][link]}">{icon('category')|noescape}{$article[section][name]}</a>
-						&nbsp;<span n:if="$article[is_new] && empty($article[image])" class="new_posts">{$txt['new']}</span>
-						<time n:if="!empty($article[datetime])" class="floatright" datetime="{$article[datetime]}">{icon('date')|noescape}{$article[date]|noescape}</time>
+						<a n:if="!empty($article[section][name])" class="floatleft" href="{$article[section][link]}">
+							{icon('category')}{$article[section][name]}
+						</a>
+						<span n:if="$article[is_new] && empty($article[image])" class="new_posts">
+							{$txt['new']}
+						</span>
+						<time n:if="!empty($article[datetime])" class="floatright" datetime="{$article[datetime]}">
+							{icon('date')}{$article[date]}
+						</time>
 					</span>
 					<h3>
 						<a href="{$article[msg_link]}">{$article[title]}</a>
 					</h3>
 					<p n:if="!empty($article[teaser])">{teaser($article[teaser])}</p>
 					<div>
-						<span n:if="!empty($article[category])" class="card_author">{icon('category')|noescape}{$article[category]}</span>
-						{if !empty($modSettings[lp_show_author]) && !empty($article[author])}
+						<span n:if="!empty($article[category])" class="card_author">
+							{icon('category')}{$article[category]}
+						</span>
+						{if $show_author && !empty($article[author])}
 							{if !empty($article[author][id]) && !empty($article[author][name])}
-								<a href="{$article[author][link]}" class="card_author">{icon('user')|noescape}{$article[author][name]}</a>
+								<a href="{$article[author][link]}" class="card_author">
+									{icon('user')}{$article[author][name]}
+								</a>
 							{else}
-								<span class="card_author">{$txt[guest_title]}</span>
+								<span class="card_author">{$txt['guest_title']}</span>
 							{/if}
 						{/if}
-						<span n:if="!empty($modSettings[lp_show_views_and_comments])" class="floatright">
-							{if !empty($article[views][num])}{icon('views', $article[views][title])|noescape}{$article[views][num]}{/if}
-							{if !empty($article[views][after])}{$article[views][after]|noescape}{/if}
-							{if !empty($article[is_redirect])}{icon('redirect')|noescape}{/if}
-							{if !empty($article[replies][num])}{icon('replies', $article[replies][title])|noescape}{$article[replies][num]}{/if}
-							{if !empty($article[replies][after])}{$article[replies][after]|noescape}{/if}
+						<span n:if="$show_icons" class="floatright">
+							{if !empty($article[views][num])}
+								{icon('views', $article[views][title])}
+								{$article[views][num]}
+							{/if}
+							{if !empty($article[views][after])}
+								{$article[views][after]|noescape}
+							{/if}
+							{if !empty($article[is_redirect])}
+								{icon('redirect')}
+							{/if}
+							{if !empty($article[replies][num])}
+								{icon('replies', $article[replies][title])}
+								{$article[replies][num]}
+							{/if}
+							{if !empty($article[replies][after])}
+								{$article[replies][after]|noescape}
+							{/if}
 						</span>
 					</div>
 				</div>
 			</article>
 		</div>
-
-		{do show_pagination(bottom)}
+		{show_pagination(bottom)}
 	</div>
-
-{if empty($context[lp_active_blocks])}
+{if $no_blocks}
 </div>
 {/if}

@@ -1,6 +1,6 @@
 <template>
   <div v-if="userStore.id" class="reply_form roundframe descbox">
-    <MarkdownEditor v-model="message" :placeholder="$t('lp_comment_placeholder')" />
+    <MarkdownEditor v-model="message" :placeholder="$t('add_comment')" />
 
     <slot></slot>
 

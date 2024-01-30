@@ -14,6 +14,7 @@
 
 namespace Bugo\LightPortal\Lists;
 
+use Bugo\LightPortal\Actions\PageInterface;
 use Bugo\LightPortal\Repositories\PageRepository;
 use IntlException;
 
@@ -34,6 +35,6 @@ final class PageList implements ListInterface
 	 */
 	public function getAll(): array
 	{
-		return $this->repository->getAll(0, $this->repository->getTotalCount(), 'p.page_id DESC', 'AND p.status = 1');
+		return $this->repository->getAll(0, $this->repository->getTotalCount(), 'p.page_id DESC', 'AND p.status = {int:status}', ['status' => PageInterface::STATUS_ACTIVE]);
 	}
 }

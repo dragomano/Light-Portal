@@ -18,7 +18,7 @@ namespace Bugo\LightPortal\Addons\BoardList;
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Areas\Partials\{ContentClassSelect, TitleClassSelect};
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\{Config, Icon, Lang, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -107,12 +107,12 @@ class BoardList extends Block
 					$content .= '
 							<ul>
 								<li style="margin-left: 1em">
-									' . Utils::$context['lp_icon_set'][$board['selected'] ? 'circle_dot' : 'chevron_right'] . ' <a href="' . Config::$scripturl . '?board=' . $board['id'] . '.0">' . $board['name'] . '</a>
+									' . Icon::get($board['selected'] ? 'circle_dot' : 'chevron_right') . ' <a href="' . Config::$scripturl . '?board=' . $board['id'] . '.0">' . $board['name'] . '</a>
 								</li>
 							</ul>';
 				} else {
 					$content .= '
-							' . Utils::$context['lp_icon_set']['circle' . ($board['selected'] ? '_dot' : '')] . ' <a href="' . Config::$scripturl . '?board=' . $board['id'] . '.0">' . $board['name'] . '</a>';
+							' . Icon::get('circle' . ($board['selected'] ? '_dot' : '')) . ' <a href="' . Config::$scripturl . '?board=' . $board['id'] . '.0">' . $board['name'] . '</a>';
 				}
 
 				$content .= '

@@ -14,12 +14,12 @@
 
 namespace Bugo\LightPortal\Areas;
 
-use Bugo\LightPortal\Areas\Config\{BasicConfig, CategoryConfig, ExtraConfig};
-use Bugo\LightPortal\Areas\Config\{FeedbackConfig, MiscConfig, PanelConfig};
-use Bugo\LightPortal\Areas\Export\{BlockExport, PageExport, PluginExport};
-use Bugo\LightPortal\Areas\Import\{BlockImport, PageImport, PluginImport};
+use Bugo\LightPortal\Areas\Configs\{BasicConfig, CategoryConfig, ExtraConfig};
+use Bugo\LightPortal\Areas\Configs\{FeedbackConfig, MiscConfig, PanelConfig};
+use Bugo\LightPortal\Areas\Exports\{BlockExport, PageExport, PluginExport};
+use Bugo\LightPortal\Areas\Imports\{BlockImport, PageImport, PluginImport};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, User, Utils};
+use Bugo\LightPortal\Utils\{Config, Icon, Lang, Theme, User, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -27,6 +27,12 @@ if (! defined('SMF'))
 final class ConfigArea
 {
 	use Helper;
+
+	public function __invoke(): void
+	{
+		$this->applyHook('admin_areas');
+		$this->applyHook('helpadmin');
+	}
 
 	public function adminAreas(array &$areas): void
 	{
@@ -53,12 +59,12 @@ final class ConfigArea
 							'icon' => 'features',
 							'permission' => ['admin_forum'],
 							'subsections' => [
-								'basic'      => [Utils::$context['lp_icon_set']['cog_spin'] . Lang::$txt['mods_cat_features']],
-								'extra'      => [Utils::$context['lp_icon_set']['pager'] . Lang::$txt['lp_extra']],
-								'categories' => [Utils::$context['lp_icon_set']['sections'] . Lang::$txt['lp_categories']],
-								'panels'     => [Utils::$context['lp_icon_set']['panels'] . Lang::$txt['lp_panels']],
-								'misc'       => [Utils::$context['lp_icon_set']['tools'] . Lang::$txt['lp_misc']],
-								'feedback'   => [Utils::$context['lp_icon_set']['comments'] . Lang::$txt['lp_feedback']]
+								'basic'      => [Icon::get('cog_spin') . Lang::$txt['mods_cat_features']],
+								'extra'      => [Icon::get('pager') . Lang::$txt['lp_extra']],
+								'categories' => [Icon::get('sections') . Lang::$txt['lp_categories']],
+								'panels'     => [Icon::get('panels') . Lang::$txt['lp_panels']],
+								'misc'       => [Icon::get('tools') . Lang::$txt['lp_misc']],
+								'feedback'   => [Icon::get('comments') . Lang::$txt['lp_feedback']]
 							]
 						],
 						'lp_blocks' => [
@@ -68,8 +74,8 @@ final class ConfigArea
 							'amt' => Utils::$context['lp_quantities']['active_blocks'],
 							'permission' => ['admin_forum'],
 							'subsections' => [
-								'main' => [Utils::$context['lp_icon_set']['main'] . Lang::$txt['lp_blocks_manage']],
-								'add'  => [Utils::$context['lp_icon_set']['plus'] . Lang::$txt['lp_blocks_add']]
+								'main' => [Icon::get('main') . Lang::$txt['lp_blocks_manage']],
+								'add'  => [Icon::get('plus') . Lang::$txt['lp_blocks_add']]
 							]
 						],
 						'lp_pages' => [
@@ -79,8 +85,8 @@ final class ConfigArea
 							'amt' => $this->request()->has('u') && ! Utils::$context['allow_light_portal_manage_pages_any'] ? Utils::$context['lp_quantities']['my_pages'] : Utils::$context['lp_quantities']['active_pages'],
 							'permission' => ['admin_forum', 'light_portal_manage_pages_any', 'light_portal_manage_pages_own'],
 							'subsections' => [
-								'main' => [Utils::$context['lp_icon_set']['main'] . Lang::$txt['lp_pages_manage']],
-								'add'  => [Utils::$context['lp_icon_set']['plus'] . Lang::$txt['lp_pages_add']]
+								'main' => [Icon::get('main') . Lang::$txt['lp_pages_manage']],
+								'add'  => [Icon::get('plus') . Lang::$txt['lp_pages_add']]
 							]
 						],
 						'lp_plugins' => [
@@ -90,7 +96,7 @@ final class ConfigArea
 							'amt' => Utils::$context['lp_enabled_plugins'] ? count(Utils::$context['lp_enabled_plugins']) : 0,
 							'permission' => ['admin_forum'],
 							'subsections' => [
-								'main' => [Utils::$context['lp_icon_set']['main'] . Lang::$txt['lp_plugins_manage']]
+								'main' => [Icon::get('main') . Lang::$txt['lp_plugins_manage']]
 							]
 						]
 					]
@@ -101,19 +107,19 @@ final class ConfigArea
 
 		if (Utils::$context['user']['is_admin']) {
 			$areas['lp_portal']['areas']['lp_blocks']['subsections'] += [
-				'export' => [Utils::$context['lp_icon_set']['export'] . Lang::$txt['lp_blocks_export']],
-				'import' => [Utils::$context['lp_icon_set']['import'] . Lang::$txt['lp_blocks_import']]
+				'export' => [Icon::get('export') . Lang::$txt['lp_blocks_export']],
+				'import' => [Icon::get('import') . Lang::$txt['lp_blocks_import']]
 			];
 
 			$areas['lp_portal']['areas']['lp_pages']['subsections'] += [
-				'export' => [Utils::$context['lp_icon_set']['export'] . Lang::$txt['lp_pages_export']],
-				'import' => [Utils::$context['lp_icon_set']['import'] . Lang::$txt['lp_pages_import']]
+				'export' => [Icon::get('export') . Lang::$txt['lp_pages_export']],
+				'import' => [Icon::get('import') . Lang::$txt['lp_pages_import']]
 			];
 
 			if (extension_loaded('zip'))
 				$areas['lp_portal']['areas']['lp_plugins']['subsections'] += [
-					'export' => [Utils::$context['lp_icon_set']['export'] . Lang::$txt['lp_plugins_export']],
-					'import' => [Utils::$context['lp_icon_set']['import'] . Lang::$txt['lp_plugins_import']]
+					'export' => [Icon::get('export') . Lang::$txt['lp_plugins_export']],
+					'import' => [Icon::get('import') . Lang::$txt['lp_plugins_import']]
 				];
 		}
 

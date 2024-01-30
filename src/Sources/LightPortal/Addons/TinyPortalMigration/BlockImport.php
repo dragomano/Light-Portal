@@ -10,20 +10,20 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 26.01.24
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortalMigration;
 
-use Bugo\LightPortal\Areas\Import\AbstractOtherBlockImport;
+use Bugo\LightPortal\Areas\Imports\AbstractCustomBlockImport;
 use Bugo\LightPortal\Utils\{Config, Lang, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class BlockImport extends AbstractOtherBlockImport
+class BlockImport extends AbstractCustomBlockImport
 {
-	private array $supported_types = [5, 10, 11];
+	private array $supportedTypes = [5, 10, 11];
 
 	public function main(): void
 	{
@@ -132,7 +132,7 @@ class BlockImport extends AbstractOtherBlockImport
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
 			[
-				'types' => $this->supported_types,
+				'types' => $this->supportedTypes,
 				'sort'  => $sort,
 				'start' => $start,
 				'limit' => $items_per_page
@@ -167,7 +167,7 @@ class BlockImport extends AbstractOtherBlockImport
 			FROM {db_prefix}tp_blocks
 			WHERE type IN ({array_int:types})',
 			[
-				'types' => $this->supported_types
+				'types' => $this->supportedTypes
 			]
 		);
 
@@ -187,7 +187,7 @@ class BlockImport extends AbstractOtherBlockImport
 			WHERE type IN ({array_int:types})' . (empty($blocks) ? '' : '
 				AND id IN ({array_int:blocks})'),
 			[
-				'types'  => $this->supported_types,
+				'types'  => $this->supportedTypes,
 				'blocks' => $blocks
 			]
 		);

@@ -10,19 +10,19 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 26.01.24
  */
 
 namespace Bugo\LightPortal\Addons\EzPortalMigration;
 
-use Bugo\LightPortal\Areas\Import\AbstractOtherPageImport;
+use Bugo\LightPortal\Areas\Imports\AbstractCustomPageImport;
 use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
 use IntlException;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class PageImport extends AbstractOtherPageImport
+class PageImport extends AbstractCustomPageImport
 {
 	public function main(): void
 	{

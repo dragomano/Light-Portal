@@ -54,10 +54,10 @@ trait Query
 
 	private function getFaIcons(): array
 	{
-		if (($icons = $this->cache()->get('all_icons', 30 * 24 * 60 * 60)) === null) {
-			$icons = (new IconList)->getList();
+		if (($icons = $this->cache()->get('fa_icon_list', 30 * 24 * 60 * 60)) === null) {
+			$icons = (new IconList())->getList();
 
-			$this->cache()->put('all_icons', $icons, 30 * 24 * 60 * 60);
+			$this->cache()->put('fa_icon_list', $icons, 30 * 24 * 60 * 60);
 		}
 
 		return $icons;

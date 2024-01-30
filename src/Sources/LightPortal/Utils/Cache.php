@@ -45,12 +45,12 @@ final class Cache implements CacheInterface
 		return $cachedValue;
 	}
 
-	public function get(string $key, ?int $time = null): ?array
+	public function get(string $key, ?int $time = null): mixed
 	{
 		return CacheApi::get($this->prefix . $key, $time ?? $this->lifeTime);
 	}
 
-	public function put(string $key, ?array $value, ?int $time = null): void
+	public function put(string $key, mixed $value, ?int $time = null): void
 	{
 		CacheApi::put($this->prefix . $key, $value, $time ?? $this->lifeTime);
 	}

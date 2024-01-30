@@ -27,20 +27,6 @@ import UrlOption from './options/UrlOption.vue';
 
 export default {
   name: 'PluginOptionItem',
-  components: {
-    CallbackOption,
-    CheckOption,
-    ColorOption,
-    DescOption,
-    LargeTextOption,
-    MultiSelectOption,
-    NumberOption,
-    RangeOption,
-    SelectOption,
-    TextOption,
-    TitleOption,
-    UrlOption,
-  },
 };
 </script>
 
@@ -74,64 +60,64 @@ const isType = computed(() => (['float', 'int'].includes(type.value) ? 'number' 
 
 const dynamicComponentProps = computed(() => {
   const typeMap = {
-    callback: { is: 'CallbackOption', option: props.option },
+    callback: { is: CallbackOption, option: props.option },
     check: {
-      is: 'CheckOption',
+      is: CheckOption,
       id: id.value,
       name: name.value,
       value: value.value,
     },
     color: {
-      is: 'ColorOption',
+      is: ColorOption,
       id: id.value,
       name: name.value,
       value: value.value,
     },
-    desc: { is: 'DescOption', id: id.value },
+    desc: { is: DescOption, id: id.value },
     large_text: {
-      is: 'LargeTextOption',
+      is: LargeTextOption,
       id: id.value,
       name: name.value,
       value: value.value,
     },
     multiselect: {
-      is: 'MultiSelectOption',
+      is: MultiSelectOption,
       id: id.value,
       name: name.value,
       value: value.value,
       option: props.option,
     },
     number: {
-      is: 'NumberOption',
+      is: NumberOption,
       id: id.value,
       name: name.value,
       value: value.value,
       option: props.option,
     },
     range: {
-      is: 'RangeOption',
+      is: RangeOption,
       id: id.value,
       name: name.value,
       value: value.value,
       option: props.option,
     },
     select: {
-      is: 'SelectOption',
+      is: SelectOption,
       id: id.value,
       name: name.value,
       value: value.value,
       option: props.option,
     },
     text: {
-      is: 'TextOption',
+      is: TextOption,
       id: id.value,
       name: name.value,
       value: value.value,
       option: props.option,
     },
-    title: { is: 'TitleOption', id: id.value },
+    title: { is: TitleOption, id: id.value },
     url: {
-      is: 'UrlOption',
+      is: UrlOption,
       id: id.value,
       name: name.value,
       value: value.value,

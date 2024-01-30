@@ -15,6 +15,7 @@
 namespace Bugo\LightPortal;
 
 use Bugo\LightPortal\Actions\{BoardIndex, Block, Category, FrontPage, Page, Tag};
+use Bugo\LightPortal\Areas\{ConfigArea, CreditArea};
 use Bugo\LightPortal\Utils\{Config, Lang, Theme, User, Utils};
 
 if (! defined('SMF'))
@@ -25,7 +26,13 @@ if (! defined('SMF'))
  */
 final class Integration extends AbstractMain
 {
-	public function hooks(): void
+	public function __construct()
+	{
+		(new ConfigArea())();
+		(new CreditArea())();
+	}
+
+	public function __invoke(): void
 	{
 		$this->applyHook('pre_load_theme', 'init');
 		$this->applyHook('pre_javascript_output');
@@ -46,10 +53,7 @@ final class Integration extends AbstractMain
 		$this->applyHook('profile_areas');
 		$this->applyHook('profile_popup');
 		$this->applyHook('download_request');
-		$this->applyHook('whos_online', 'whoisOnline');
-		$this->applyHook('integrate_credits', [__NAMESPACE__ . '\Areas\CreditArea', 'show'], '$sourcedir/LightPortal/Areas/CreditArea.php');
-		$this->applyHook('admin_areas', [__NAMESPACE__ . '\Areas\ConfigArea', 'adminAreas'], '$sourcedir/LightPortal/Areas/ConfigArea.php');
-		$this->applyHook('helpadmin', [__NAMESPACE__ . '\Areas\ConfigArea', 'helpadmin'], '$sourcedir/LightPortal/Areas/ConfigArea.php');
+		$this->applyHook('whos_online');
 		$this->applyHook('clean_cache');
 	}
 
@@ -59,7 +63,7 @@ final class Integration extends AbstractMain
 		Utils::$context['lp_num_queries'] ??= 0;
 
 		defined('LP_NAME') || define('LP_NAME', 'Light Portal');
-		defined('LP_VERSION') || define('LP_VERSION', '2.5.0');
+		defined('LP_VERSION') || define('LP_VERSION', '2.5.1');
 		defined('LP_PLUGIN_LIST') || define('LP_PLUGIN_LIST', 'https://api.jsonserve.com/RlRQrK');
 		defined('LP_ADDON_URL') || define('LP_ADDON_URL', Config::$boardurl . '/Sources/LightPortal/Addons');
 		defined('LP_ADDON_DIR') || define('LP_ADDON_DIR', __DIR__ . '/Addons');
@@ -127,7 +131,10 @@ final class Integration extends AbstractMain
 	 */
 	public function changeRedirect(string &$setLocation): void
 	{
-		if (empty(Config::$modSettings['lp_frontpage_mode']) || ! (empty(Config::$modSettings['lp_standalone_mode']) || empty(Config::$modSettings['lp_standalone_url'])))
+		if (empty(Config::$modSettings['lp_frontpage_mode']))
+			return;
+
+		if (! (empty(Config::$modSettings['lp_standalone_mode']) || empty(Config::$modSettings['lp_standalone_url'])))
 			return;
 
 		if ($this->request()->is('markasread'))
@@ -153,7 +160,9 @@ final class Integration extends AbstractMain
 		if (! empty(Config::$modSettings['lp_standalone_mode'])) {
 			$this->unsetDisabledActions($actions);
 
-			if (! empty(Utils::$context['current_action']) && array_key_exists(Utils::$context['current_action'], Utils::$context['lp_disabled_actions']))
+			if (! empty(Utils::$context['current_action']) && array_key_exists(
+				Utils::$context['current_action'], Utils::$context['lp_disabled_actions']
+			))
 				Utils::redirectexit();
 		}
 	}
@@ -163,7 +172,10 @@ final class Integration extends AbstractMain
 		if ($this->request()->isNotEmpty(LP_PAGE_PARAM))
 			return $this->callHelper([new Page, 'show']);
 
-		if (empty(Config::$modSettings['lp_frontpage_mode']) || ! (empty(Config::$modSettings['lp_standalone_mode']) || empty(Config::$modSettings['lp_standalone_url'])))
+		if (
+			empty(Config::$modSettings['lp_frontpage_mode'])
+			|| ! (empty(Config::$modSettings['lp_standalone_mode']) || empty(Config::$modSettings['lp_standalone_url']))
+		)
 			return $this->callHelper([new BoardIndex, 'show']);
 
 		return $this->callHelper([new FrontPage, 'show']);
@@ -182,8 +194,9 @@ final class Integration extends AbstractMain
 		if ($this->request()->isEmpty('action')) {
 			$current_action = LP_ACTION;
 
-			if (! (empty(Config::$modSettings['lp_standalone_mode']) || empty(Config::$modSettings['lp_standalone_url'])) &&
-				Config::$modSettings['lp_standalone_url'] !== $this->request()->url()) {
+			if (! (
+					empty(Config::$modSettings['lp_standalone_mode']) || empty(Config::$modSettings['lp_standalone_url'])
+				) && Config::$modSettings['lp_standalone_url'] !== $this->request()->url()) {
 				$current_action = 'forum';
 			}
 
@@ -191,22 +204,24 @@ final class Integration extends AbstractMain
 				$current_action = LP_ACTION;
 			}
 		} else {
-			$current_action = empty(Config::$modSettings['lp_standalone_mode']) && $this->request()->is('forum') ? 'home' : Utils::$context['current_action'];
+			$current_action = empty(Config::$modSettings['lp_standalone_mode']) && $this->request()->is('forum')
+				? 'home' : Utils::$context['current_action'];
 		}
 
-		$disabled_actions = empty(Config::$modSettings['lp_disabled_actions']) ? [] : explode(',', Config::$modSettings['lp_disabled_actions']);
-		$disabled_actions[] = 'home';
-
 		if (isset(Utils::$context['current_board']) || $this->request()->is('keywords'))
-			$current_action = empty(Config::$modSettings['lp_standalone_mode']) ? 'home' : (! in_array('forum', $disabled_actions) ? 'forum' : LP_ACTION);
+			$current_action = empty(Config::$modSettings['lp_standalone_mode'])
+				? 'home' : (! in_array('forum', $this->getDisabledActions()) ? 'forum' : LP_ACTION);
 	}
 
 	/**
-	 * @hook integrate_current_page
+	 * @hook integrate_current_action
 	 */
 	public function currentPage(string &$current_action): void
 	{
-		if (empty(Utils::$context['lp_page']) || empty(Utils::$context['lp_menu_pages']) || empty(Utils::$context['lp_menu_pages'][Utils::$context['lp_page']['id']]))
+		if (empty(Utils::$context['lp_page']) || empty(Utils::$context['lp_menu_pages']))
+			return;
+
+		if (empty(Utils::$context['lp_menu_pages'][Utils::$context['lp_page']['id']]))
 			return;
 
 		if ($this->request()->url() === LP_PAGE_URL . Utils::$context['lp_page']['alias']) {
@@ -219,7 +234,7 @@ final class Integration extends AbstractMain
 		if ($this->isPortalCanBeLoaded() === false)
 			return;
 
-		(new Block)->show();
+		$this->callHelper([new Block, 'show']);
 
 		$this->prepareAdminButtons($buttons);
 
@@ -246,7 +261,10 @@ final class Integration extends AbstractMain
 	 */
 	public function displayButtons(): void
 	{
-		if (empty(User::$info['is_admin']) || empty(Config::$modSettings['lp_frontpage_mode']) || Config::$modSettings['lp_frontpage_mode'] !== 'chosen_topics')
+		if (empty(User::$info['is_admin']))
+			return;
+
+		if (empty(Config::$modSettings['lp_frontpage_mode']) || Config::$modSettings['lp_frontpage_mode'] !== 'chosen_topics')
 			return;
 
 		Utils::$context['normal_buttons']['lp_promote'] = [
@@ -257,7 +275,7 @@ final class Integration extends AbstractMain
 
 	/**
 	 * Remove comments, and alerts on deleting members
-	 * @TODO Remove all portal content from these users?
+	 *
 	 * Удаляем комментарии и оповещения при удалении пользователей
 	 */
 	public function deleteMembers(array $users): void
@@ -302,13 +320,11 @@ final class Integration extends AbstractMain
 	{
 		Lang::$txt['permissiongroup_light_portal'] = LP_NAME;
 
-		$scope = isset($permissionList['global']) ? 'global' : 'membergroup';
+		$permissionList['membergroup']['light_portal_view']          = [false, 'light_portal'];
+		$permissionList['membergroup']['light_portal_manage_pages']  = [true, 'light_portal'];
+		$permissionList['membergroup']['light_portal_approve_pages'] = [false, 'light_portal'];
 
-		$permissionList[$scope]['light_portal_view']          = [false, 'light_portal'];
-		$permissionList[$scope]['light_portal_manage_pages']  = [true, 'light_portal'];
-		$permissionList[$scope]['light_portal_approve_pages'] = [false, 'light_portal'];
-
-		$permissionGroups[$scope][] = $leftPermissionGroups[] = 'light_portal';
+		$permissionGroups['membergroup'][] = $leftPermissionGroups[] = 'light_portal';
 	}
 
 	public function alertTypes(array &$types): void
@@ -349,12 +365,22 @@ final class Integration extends AbstractMain
 	{
 		foreach ($alerts as $id => $alert) {
 			if (in_array($alert['content_action'], ['page_comment', 'page_comment_reply', 'page_unapproved'])) {
+				$icon = $alert['content_action'] === 'page_comment' ? 'im_off' : 'im_on';
+				$icon = $alert['content_action'] === 'page_unapproved' ? 'news' : $icon;
+
 				if ($alert['sender_id'] !== User::$info['id']) {
-					$alerts[$id]['icon'] = '<span class="alert_icon main_icons ' . ($alert['content_action'] === 'page_unapproved' ? 'news' : ($alert['content_action'] === 'page_comment' ? 'im_off' : 'im_on')) . '"></span>';
-					$alerts[$id]['text'] = $this->translate('alert_' . $alert['content_type'] . '_' . $alert['content_action'], ['gender' => $alert['extra']['sender_gender']]);
+					$alerts[$id]['icon'] = '<span class="alert_icon main_icons ' . $icon . '"></span>';
+					$alerts[$id]['text'] = $this->translate(
+						'alert_' . $alert['content_type'] . '_' . $alert['content_action'],
+						['gender' => $alert['extra']['sender_gender']]
+					);
+
+					$link = Config::$scripturl . '?action=profile;u=' . $alert['sender_id'];
 
 					$substitutions = [
-						'{member_link}' => $alert['sender_id'] && $alert['show_links'] ? '<a href="' . Config::$scripturl . '?action=profile;u=' . $alert['sender_id'] . '">' . $alert['sender_name'] . '</a>' : '<strong>' . $alert['sender_name'] . '</strong>',
+						'{member_link}' => $alert['sender_id'] && $alert['show_links']
+							? '<a href="' . $link . '">' . $alert['sender_name'] . '</a>'
+							: '<strong>' . $alert['sender_name'] . '</strong>',
 						'{content_subject}' => '(' . $alert['extra']['content_subject'] . ')'
 					];
 
@@ -416,14 +442,16 @@ final class Integration extends AbstractMain
 		$this->hook('downloadRequest', [&$attachRequest]);
 	}
 
-	public function whoisOnline(array $actions): string
+	public function whosOnline(array $actions): string
 	{
 		$result = '';
 		if (empty($actions['action']) && empty($actions['board'])) {
 			$result = sprintf(Lang::$txt['lp_who_viewing_frontpage'], Config::$scripturl);
 
 			if (! (empty(Config::$modSettings['lp_standalone_mode']) || empty(Config::$modSettings['lp_standalone_url'])))
-				$result = sprintf(Lang::$txt['lp_who_viewing_index'], Config::$modSettings['lp_standalone_url'], Config::$scripturl);
+				$result = sprintf(
+					Lang::$txt['lp_who_viewing_index'], Config::$modSettings['lp_standalone_url'], Config::$scripturl
+				);
 		}
 
 		if (isset($actions[LP_PAGE_PARAM]))

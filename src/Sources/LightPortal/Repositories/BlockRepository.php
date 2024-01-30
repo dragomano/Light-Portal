@@ -63,7 +63,8 @@ final class BlockRepository extends AbstractRepository
 
 		$result = Utils::$smcFunc['db_query']('', '
 			SELECT
-				b.block_id, b.icon, b.type, b.note, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.content_class,
+				b.block_id, b.icon, b.type, b.note, b.content, b.placement, b.priority,
+				b.permissions, b.status, b.areas, b.title_class, b.content_class,
 				bt.lang, bt.title, bp.name, bp.value
 			FROM {db_prefix}lp_blocks AS b
 				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
@@ -211,7 +212,9 @@ final class BlockRepository extends AbstractRepository
 
 		Utils::$smcFunc['db_query']('', '
 			UPDATE {db_prefix}lp_blocks
-			SET icon = {string:icon}, type = {string:type}, note = {string:note}, content = {string:content}, placement = {string:placement}, permissions = {int:permissions}, areas = {string:areas}, title_class = {string:title_class}, content_class = {string:content_class}
+			SET icon = {string:icon}, type = {string:type}, note = {string:note}, content = {string:content},
+				placement = {string:placement}, permissions = {int:permissions}, areas = {string:areas},
+				title_class = {string:title_class}, content_class = {string:content_class}
 			WHERE block_id = {int:block_id}',
 			[
 				'icon'          => Utils::$context['lp_block']['icon'],
@@ -253,7 +256,9 @@ final class BlockRepository extends AbstractRepository
 
 		$addon = $this->getCamelName($type);
 
-		$message = in_array($addon, $this->getEntityList('plugin')) ? Lang::$txt['lp_addon_not_activated'] : Lang::$txt['lp_addon_not_installed'];
+		$message = in_array($addon, $this->getEntityList('plugin'))
+			? Lang::$txt['lp_addon_not_activated']
+			: Lang::$txt['lp_addon_not_installed'];
 
 		Utils::$context['lp_missing_block_types'][$type] = '<span class="error">' . sprintf($message, $addon) . '</span>';
 	}

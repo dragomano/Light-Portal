@@ -27,6 +27,11 @@ final class CreditArea
 {
 	use Helper;
 
+	public function __invoke(): void
+	{
+		$this->applyHook('integrate_credits', 'show');
+	}
+
 	public function show(): void
 	{
 		Utils::$context['credits_modifications'][] = $this->getLink();

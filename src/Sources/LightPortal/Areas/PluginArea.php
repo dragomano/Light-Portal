@@ -17,7 +17,7 @@ declare(strict_types=1);
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, User, Utils};
+use Bugo\LightPortal\Utils\{Config, Icon, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Repositories\PluginRepository;
 use ReflectionClass;
 use ReflectionException;
@@ -41,6 +41,7 @@ final class PluginArea
 		Lang::load('ManageMaintenance');
 
 		Theme::loadTemplate('LightPortal/ManagePlugins');
+
 		Utils::$context['sub_template'] = 'manage_plugins';
 
 		Theme::loadExtCSS('https://cdn.jsdelivr.net/combine/npm/@vueform/multiselect@2/themes/default.min.css,npm/@vueform/toggle@2/themes/default.min.css');
@@ -212,7 +213,8 @@ final class PluginArea
 
 		ksort($typeCount);
 
-		Utils::$context['insert_after_template'] .= '
+		Utils::$context['insert_after_template'] .= /** @lang text */
+			'
 		<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.js"></script>
 		<script>
 			new Chart("addon_chart", {
@@ -241,6 +243,7 @@ final class PluginArea
 			'plugins'           => Lang::$txt['lp_plugins'],
 			'apply_filter'      => Lang::$txt['apply_filter'],
 			'all'               => Lang::$txt['all'],
+			'lp_active_only'    => Lang::$txt['lp_active_only'],
 			'lp_plugins_desc'   => Lang::$txt['lp_plugins_desc'],
 			'lp_can_donate'     => Lang::$txt['lp_can_donate'],
 			'lp_can_download'   => Lang::$txt['lp_can_download'],
@@ -287,7 +290,7 @@ final class PluginArea
 		Utils::$context['lp_json']['txt']      = json_encode($txtData);
 		Utils::$context['lp_json']['context']  = json_encode($contextData);
 		Utils::$context['lp_json']['plugins']  = json_encode($pluginsData);
-		Utils::$context['lp_json']['icons']    = json_encode(Utils::$context['lp_icon_set']);
+		Utils::$context['lp_json']['icons']    = json_encode(Icon::all());
 	}
 
 	private function updateAssetMtime(string $plugin): void

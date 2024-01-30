@@ -17,9 +17,9 @@
     "@vueform/toggle": "^2.1.4",
     "@vueuse/core": "^10.7.2",
     "@vueuse/shared": "^10.7.2",
-    "alpinejs": "^3.13.3",
+    "alpinejs": "^3.13.5",
     "alpinejs-slug": "^1.1.2",
-    "axios": "^1.6.5",
+    "axios": "^1.6.7",
     "less": "^4.2.0",
     "pinia": "^2.1.7",
     "sortablejs": "^1.15.2",
@@ -32,6 +32,6 @@
   },
   "devDependencies": {
     "vite": "^5.0.12",
-    "vite-plugin-static-copy": "^1.0.0"
+    "vite-plugin-static-copy": "^1.0.1"
   }
 }

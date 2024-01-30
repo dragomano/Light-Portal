@@ -1,12 +1,12 @@
 <?php
 
-use Bugo\LightPortal\Utils\{Lang, Utils};
+use Bugo\LightPortal\Utils\{Lang, Icon, Utils};
 
 function template_portal_credits(): void
 {
 	echo '
 	<div class="cat_bar">
-		<h3 class="catbg">', Utils::$context['lp_icon_set']['users'], Lang::$txt['lp_contributors'], '</h3>
+		<h3 class="catbg">', Icon::get('users'), Lang::$txt['lp_contributors'], '</h3>
 	</div>
 	<div class="windowbg noup">
 		<div class="title_bar">
@@ -77,7 +77,7 @@ function template_portal_credits(): void
 
 	echo '
 	<div class="cat_bar">
-		<h3 class="catbg">', Utils::$context['lp_icon_set']['copyright'], Lang::$txt['lp_used_components'], '</h3>
+		<h3 class="catbg">', Icon::get('copyright'), Lang::$txt['lp_used_components'], '</h3>
 	</div>
 	<div class="roundframe noup">';
 

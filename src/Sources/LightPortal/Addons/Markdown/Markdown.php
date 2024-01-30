@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  *
  * @category addon
- * @version 18.01.24
+ * @version 28.01.24
  */
 
 namespace Bugo\LightPortal\Addons\Markdown;
@@ -28,6 +28,7 @@ use League\CommonMark\Extension\CommonMark\Node\Block\{BlockQuote, FencedCode, H
 use League\CommonMark\Extension\CommonMark\Node\Inline\{Image, Link};
 use League\CommonMark\Extension\Table\{Table, TableRow};
 use League\CommonMark\MarkdownConverter;
+use Zoon\CommonMark\Ext\YouTubeIframe\YouTubeIframeExtension;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -85,6 +86,11 @@ class Markdown extends Plugin
 				'use_underscore' => true,
 				'unordered_list_markers' => ['-', '*', '+'],
 			],
+			'youtube_iframe' => [
+				'width' => '600',
+				'height' => '300',
+				'allow_full_screen' => true,
+			],
 			'html_input' => 'escape',
 			'allow_unsafe_links' => false,
 			'max_nesting_level' => PHP_INT_MAX,
@@ -96,6 +102,7 @@ class Markdown extends Plugin
 		$environment = new Environment($config);
 		$environment->addExtension(new CommonMarkCoreExtension());
 		$environment->addExtension(new GithubFlavoredMarkdownExtension());
+		$environment->addExtension(new YouTubeIframeExtension());
 		$environment->addRenderer(BlockQuote::class, new BlockQuoteRenderer());
 		$environment->addRenderer(FencedCode::class, new FencedCodeRenderer());
 		$environment->addRenderer(Heading::class, new HeadingRenderer());

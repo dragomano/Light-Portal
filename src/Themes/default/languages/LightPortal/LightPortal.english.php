@@ -17,6 +17,7 @@ $txt['lp_page_moderation'] = 'Page moderation';
 $txt['lp_views'] = 'Views';
 $txt['lp_replies'] = 'Replies';
 $txt['lp_default'] = 'Default';
+$txt['lp_active_only'] = 'Active only';
 $txt['lp_can_donate'] = 'For sponsors';
 $txt['lp_can_download'] = 'Can download';
 $txt['lp_min_search_length'] = 'Please enter at least %d characters';

@@ -15,23 +15,15 @@
 namespace Bugo\LightPortal\Actions;
 
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Theme, User, Utils};
+use Bugo\LightPortal\Utils\{Config, ErrorHandler, Icon, Lang, Theme, User, Utils};
 use IntlException;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class Page
+final class Page implements PageInterface
 {
 	use Helper;
-
-	public const STATUS_INACTIVE = 0;
-
-	public const STATUS_ACTIVE = 1;
-
-	public const STATUS_UNAPPROVED = 2;
-
-	public const STATUS_INTERNAL = 3;
 
 	/**
 	 * @throws IntlException
@@ -354,26 +346,26 @@ final class Page
 			Config::$modSettings['meta_keywords'] = implode(', ', $keywords);
 		}
 
-		Utils::$context['meta_tags'][] = ['prefix' => 'article: http://ogp.me/ns/article#', 'property' => 'og:type', 'content' => 'article'];
-		Utils::$context['meta_tags'][] = ['prefix' => 'article: http://ogp.me/ns/article#', 'property' => 'article:author', 'content' => Utils::$context['lp_page']['author']];
+		Utils::$context['meta_tags'][] = ['prefix' => 'article: https://ogp.me/ns/article#', 'property' => 'og:type', 'content' => 'article'];
+		Utils::$context['meta_tags'][] = ['prefix' => 'article: https://ogp.me/ns/article#', 'property' => 'article:author', 'content' => Utils::$context['lp_page']['author']];
 		Utils::$context['meta_tags'][] = [
-			'prefix'   => 'article: http://ogp.me/ns/article#',
+			'prefix'   => 'article: https://ogp.me/ns/article#',
 			'property' => 'article:published_time',
 			'content'  => date('Y-m-d\TH:i:s', (int) Utils::$context['lp_page']['created_at'])
 		];
 
 		if (Utils::$context['lp_page']['updated_at'])
 			Utils::$context['meta_tags'][] = [
-				'prefix'   => 'article: http://ogp.me/ns/article#',
+				'prefix'   => 'article: https://ogp.me/ns/article#',
 				'property' => 'article:modified_time',
 				'content'  => date('Y-m-d\TH:i:s', (int) Utils::$context['lp_page']['updated_at'])
 			];
 
 		if (isset(Utils::$context['lp_page']['category']))
-			Utils::$context['meta_tags'][] = ['prefix' => 'article: http://ogp.me/ns/article#', 'property' => 'article:section', 'content' => Utils::$context['lp_page']['category']];
+			Utils::$context['meta_tags'][] = ['prefix' => 'article: https://ogp.me/ns/article#', 'property' => 'article:section', 'content' => Utils::$context['lp_page']['category']];
 
 		foreach ($keywords as $value) {
-			Utils::$context['meta_tags'][] = ['prefix' => 'article: http://ogp.me/ns/article#', 'property' => 'article:tag', 'content' => $value];
+			Utils::$context['meta_tags'][] = ['prefix' => 'article: https://ogp.me/ns/article#', 'property' => 'article:tag', 'content' => $value];
 		}
 
 		if (! (empty(Config::$modSettings['lp_page_og_image']) || empty(Utils::$context['lp_page']['image'])))
@@ -571,23 +563,30 @@ final class Page
 	private function prepareJsonData(): void
 	{
 		$txtData = [
-			'pages'                  => Lang::$txt['pages'],
-			'author'                 => Lang::$txt['author'],
-			'reply'                  => Lang::$txt['reply'],
-			'modify'                 => Lang::$txt['modify'],
-			'modify_cancel'          => Lang::$txt['modify_cancel'],
-			'remove'                 => Lang::$txt['remove'],
-			'lp_comment_placeholder' => Lang::$txt['lp_comment_placeholder'],
-			'post'                   => Lang::$txt['post'],
-			'save'                   => Lang::$txt['save'],
-			'title'                  => Lang::$txt['lp_comments_title'],
-			'prev'                   => Lang::$txt['prev'],
-			'next'                   => Lang::$txt['next'],
+			'pages'         => Lang::$txt['pages'],
+			'author'        => Lang::$txt['author'],
+			'reply'         => Lang::$txt['reply'],
+			'modify'        => Lang::$txt['modify'],
+			'modify_cancel' => Lang::$txt['modify_cancel'],
+			'remove'        => Lang::$txt['remove'],
+			'add_comment'   => Lang::$txt['lp_comment_placeholder'],
+			'post'          => Lang::$txt['post'],
+			'save'          => Lang::$txt['save'],
+			'title'         => Lang::$txt['lp_comments_title'],
+			'prev'          => Lang::$txt['prev'],
+			'next'          => Lang::$txt['next'],
 		];
+
+		$pageUrl = Utils::$context['lp_page']['url'];
+
+		// @TODO Need to improve this case
+		if (class_exists('\SimpleSEF')) {
+			$pageUrl = (new \SimpleSEF)->getSefUrl($pageUrl);
+		}
 
 		$contextData = [
 			'locale'  => Lang::$txt['lang_dictionary'],
-			'pageUrl' => Utils::$context['lp_page']['url'],
+			'pageUrl' => $pageUrl,
 			'charset' => Utils::$context['character_set'],
 		];
 
@@ -598,7 +597,7 @@ final class Page
 		Utils::$context['lp_json']['txt']      = json_encode($txtData);
 		Utils::$context['lp_json']['context']  = json_encode($contextData);
 		Utils::$context['lp_json']['settings'] = json_encode($settingsData);
-		Utils::$context['lp_json']['icons']    = json_encode(Utils::$context['lp_icon_set']);
+		Utils::$context['lp_json']['icons']    = json_encode(Icon::all());
 		Utils::$context['lp_json']['user']     = json_encode(Utils::$context['user']);
 	}
 
@@ -641,7 +640,7 @@ final class Page
 					AND status IN ({array_int:statuses})',
 				[
 					'item'     => Utils::$context['lp_page']['id'],
-					'statuses' => [Page::STATUS_ACTIVE, Page::STATUS_INTERNAL]
+					'statuses' => [self::STATUS_ACTIVE, self::STATUS_INTERNAL]
 				]
 			);
 

@@ -22,7 +22,7 @@ if (! defined('SMF'))
 
 final class Tag extends AbstractPageList
 {
-	public function show(Page $page): void
+	public function show(PageInterface $page): void
 	{
 		if ($this->request()->hasNot('id'))
 			$this->showAll();
@@ -87,7 +87,7 @@ final class Tag extends AbstractPageList
 			[
 				'lang'         => User::$info['language'],
 				'id'           => Utils::$context['lp_tag'],
-				'statuses'     => [Page::STATUS_ACTIVE, Page::STATUS_INTERNAL],
+				'statuses'     => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions(),
 				'sort'         => $sort,
@@ -116,7 +116,7 @@ final class Tag extends AbstractPageList
 				AND p.permissions IN ({array_int:permissions})',
 			[
 				'id'           => Utils::$context['lp_tag'],
-				'statuses'     => [Page::STATUS_ACTIVE, Page::STATUS_INTERNAL],
+				'statuses'     => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions()
 			]
@@ -205,7 +205,7 @@ final class Tag extends AbstractPageList
 			ORDER BY {raw:sort}' . ($items_per_page ? '
 			LIMIT {int:start}, {int:limit}' : ''),
 			[
-				'statuses'     => [Page::STATUS_ACTIVE, Page::STATUS_INTERNAL],
+				'statuses'     => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions(),
 				'sort'         => $sort,

@@ -1,6 +1,6 @@
 <?php
 
-use Bugo\LightPortal\Utils\{Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\{Icon, Lang, Theme, Utils};
 
 function tiny_slider_images(): string
 {
@@ -17,7 +17,7 @@ function tiny_slider_images(): string
 										<td style="width: 90px"><img alt="*" :src="image.link"></td>
 										<td style="display: flex; flex-direction: column; gap: 10px">
 											<div>
-												' . Utils::$context['lp_icon_set']['arrows'] . '
+												' . Icon::get('arrows') . '
 												<button type="button" class="button" @click="removeImage(index)">
 													<span class="main_icons delete"></span> ' . Lang::$txt['remove'] . '
 												</button>

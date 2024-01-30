@@ -14,7 +14,9 @@
 					<div class="card-image lazy" data-bg="{$article[image]}"></div>
 					<div class="card-title">
 						<h3>{$article[title]}</h3>
-						<time n:if="!empty($article[datetime])" datetime="{$article[datetime]}">{$article[date]|noescape}</time>
+						<time n:if="!empty($article[datetime])" datetime="{$article[datetime]}">
+							{$article[date]|noescape}
+						</time>
 					</div>
 					<svg viewBox="0 0 100 100" preserveAspectRatio="none">
 						<polygon points="50,0 100,0 50,100 0,100" />
@@ -22,7 +24,9 @@
 				</div>
 				<div class="card-body">
 					<div class="card-body-inner">
-						<time n:if="!empty($article[datetime])" datetime="{$article[datetime]}">{$article[date]|noescape}</time>
+						<time n:if="!empty($article[datetime])" datetime="{$article[datetime]}">
+							{$article[date]|noescape}
+						</time>
 						<h3>{$article[title]}</h3>
 						<p n:if="!empty($article[teaser])" class="article_teaser">
 							{teaser($article[teaser])}

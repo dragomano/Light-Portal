@@ -10,18 +10,14 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 18.01.24
+ * @version 29.01.24
  */
 
 namespace Bugo\LightPortal\Addons\TwigLayouts;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\{BBCodeParser, Config, ErrorHandler, Lang, Theme, Utils};
-use Twig\Extension\DebugExtension;
-use Twig\Loader\FilesystemLoader;
-use Twig\Environment;
-use Twig\Error\Error;
-use Twig\TwigFunction;
+use Bugo\LightPortal\Utils\{BBCodeParser, Config, ErrorHandler, Icon, Lang, Theme, Utils};
+use Twig\{Loader\FilesystemLoader, Environment, Error\Error, TwigFunction};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -66,21 +62,28 @@ class TwigLayouts extends Plugin
 			$loader = new FilesystemLoader(Theme::$current->settings['default_theme_dir'] . '/portal_layouts');
 
 			$twig = new Environment($loader, [
-				'cache' => empty(Config::$modSettings['cache_enable']) ? false : Config::$cachedir,
+				'cache' => empty(Config::$modSettings['cache_enable']) ? false : Config::getTempDir(),
 				'debug' => false
 			]);
 
-			$twig->addExtension(new DebugExtension());
-
-			$show_pagination_function = new TwigFunction('show_pagination', function (string $position = 'top') {
+			$twig->addFunction(new TwigFunction('show_pagination', function (string $position = 'top') {
 				show_pagination($position);
-			});
-			$twig->addFunction($show_pagination_function);
+			}));
 
-			$debug_function = new TwigFunction('debug', function (mixed $data) {
+			$twig->addFunction(new TwigFunction('icon', function (string $name, string $title = '') {
+				$icon = Icon::get($name);
+
+				if (empty($title)) {
+					echo $icon;
+					return;
+				}
+
+				echo str_replace(' class=', ' title="' . $title . '" class=', $icon);
+			}));
+
+			$twig->addFunction(new TwigFunction('debug', function (mixed $data) {
 				echo parse_bbc('[code]' . print_r($data, true) . '[/code]');
-			});
-			$twig->addFunction($debug_function);
+			}));
 
 			echo $twig->render(Config::$modSettings['lp_frontpage_layout'], $params);
 		} catch (Error $e) {
@@ -112,6 +115,8 @@ class TwigLayouts extends Plugin
 
 	private function showExample(): string
 	{
-		return '<div class="roundframe">' . BBCodeParser::load()->parse('[php]' . file_get_contents(__DIR__. '/layouts/example' . $this->extension) . '[/php]') . '</div>';
+		return '<div class="roundframe">' . BBCodeParser::load()->parse(
+			'[php]' . file_get_contents(__DIR__. '/layouts/example' . $this->extension) . '[/php]'
+		) . '</div>';
 	}
 }

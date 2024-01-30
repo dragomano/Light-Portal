@@ -14,14 +14,14 @@
 
 namespace Bugo\LightPortal\Areas;
 
+use Bugo\LightPortal\Actions\{PageInterface, Page};
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, TextField};
 use Bugo\LightPortal\Areas\Partials\{CategorySelect, KeywordSelect, PageAuthorSelect};
 use Bugo\LightPortal\Areas\Partials\{PageIconSelect, PermissionSelect, StatusSelect};
 use Bugo\LightPortal\Areas\Validators\PageValidator;
-use Bugo\LightPortal\Actions\Page;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Models\PageModel;
-use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Theme, User, Utils};
+use Bugo\LightPortal\Utils\{Config, ErrorHandler, Icon, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Repositories\PageRepository;
 use IntlException;
 
@@ -96,15 +96,15 @@ final class PageArea
 			),
 			[
 				'search'            => Utils::$smcFunc['strtolower']($search_params['string']),
-				'unapproved'        => Page::STATUS_UNAPPROVED,
-				'internal'          => Page::STATUS_INTERNAL,
-				'included_statuses' => [Page::STATUS_INACTIVE, Page::STATUS_ACTIVE]
+				'unapproved'        => PageInterface::STATUS_UNAPPROVED,
+				'internal'          => PageInterface::STATUS_INTERNAL,
+				'included_statuses' => [PageInterface::STATUS_INACTIVE, PageInterface::STATUS_ACTIVE]
 			],
 		];
 
 		Utils::$context['browse_type'] = 'all';
 		$type = '';
-		$status = Page::STATUS_ACTIVE;
+		$status = PageInterface::STATUS_ACTIVE;
 
 		if ($this->request()->has('u')) {
 			Utils::$context['browse_type'] = 'own';
@@ -115,7 +115,7 @@ final class PageArea
 		} elseif ($this->request()->has('internal')) {
 			Utils::$context['browse_type'] = 'int';
 			$type = ';internal';
-			$status = Page::STATUS_INTERNAL;
+			$status = PageInterface::STATUS_INTERNAL;
 		}
 
 		$listOptions = [
@@ -163,7 +163,7 @@ final class PageArea
 				],
 				'num_views' => [
 					'header' => [
-						'value' => str_replace(' class=', ' title="' . Lang::$txt['lp_views'] . '" class=', Utils::$context['lp_icon_set']['views'])
+						'value' => Icon::get('views', Lang::$txt['lp_views'])
 					],
 					'data' => [
 						'db' => 'num_views',
@@ -270,7 +270,7 @@ final class PageArea
 							</div>
 							<div class="col-lg-2">
 								<button type="submit" name="is_search" class="button floatnone" style="width: 100%">
-									' . Utils::$context['lp_icon_set']['search'] . Lang::$txt['search'] . '
+									' . Icon::get('search') . Lang::$txt['search'] . '
 								</button>
 							</div>
 						</div>',
@@ -306,7 +306,7 @@ final class PageArea
 		$listOptions['title'] = '
 			<span class="floatright">
 				<a href="' . Config::$scripturl . '?action=admin;area=lp_pages;sa=add;' . Utils::$context['session_var'] . '=' . Utils::$context['session_id'] . '" x-data>
-					' . (str_replace(' class=', ' @mouseover="page.toggleSpin($event.target)" @mouseout="page.toggleSpin($event.target)" title="' . Lang::$txt['lp_pages_add'] . '" class=', Utils::$context['lp_icon_set']['plus'])) . '
+					' . (str_replace(' class=', ' @mouseover="page.toggleSpin($event.target)" @mouseout="page.toggleSpin($event.target)" class=', Icon::get('plus', Lang::$txt['lp_pages_add']))) . '
 				</a>
 			</span>' . $listOptions['title'];
 
@@ -373,6 +373,7 @@ final class PageArea
 	public function add(): void
 	{
 		Theme::loadTemplate('LightPortal/ManagePages');
+
 		Utils::$context['sub_template'] = 'page_add';
 
 		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_pages_add_title'];
@@ -417,6 +418,7 @@ final class PageArea
 		}
 
 		Theme::loadTemplate('LightPortal/ManagePages');
+
 		Utils::$context['sub_template'] = 'page_post';
 
 		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_pages_edit_title'];
@@ -469,7 +471,7 @@ final class PageArea
 			'all' => [
 				'',
 				Lang::$txt['all'],
-				$this->repository->getTotalCount(' AND p.status != 2')
+				$this->repository->getTotalCount(' AND p.status != ' . PageInterface::STATUS_UNAPPROVED)
 			],
 			'own' => [
 				';u=' . User::$info['id'],
