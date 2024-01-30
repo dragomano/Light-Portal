@@ -272,7 +272,7 @@ final class PageExport extends AbstractExport
 				}
 			}
 
-			$file = sys_get_temp_dir() . '/lp_pages_backup.xml';
+			$file = Config::getTempDir() . '/lp_pages_backup.xml';
 			$xml->save($file);
 		} catch (DOMException $e) {
 			ErrorHandler::log('[LP] ' . Lang::$txt['lp_pages_export'] . ': ' . $e->getMessage());

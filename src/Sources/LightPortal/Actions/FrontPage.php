@@ -177,7 +177,7 @@ final class FrontPage
 			return;
 
 		$latte = new Engine;
-		$latte->setTempDirectory(empty(Config::$modSettings['cache_enable']) ? null : sys_get_temp_dir());
+		$latte->setTempDirectory(empty(Config::$modSettings['cache_enable']) ? null : Config::getTempDir());
 		$latte->setLoader(new FileLoader(
 			Theme::$current->settings['default_theme_dir'] . '/LightPortal/layouts/'
 		));

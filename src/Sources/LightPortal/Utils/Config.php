@@ -16,6 +16,7 @@ namespace Bugo\LightPortal\Utils;
 
 use function memoryReturnBytes;
 use function updateSettings;
+use function sm_temp_dir;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -80,5 +81,12 @@ final class Config
 	public static function updateModSettings(array $settings): void
 	{
 		updateSettings($settings);
+	}
+
+	public static function getTempDir(): string
+	{
+		require_once Config::$sourcedir . DIRECTORY_SEPARATOR . 'Subs-Admin.php';
+
+		return sm_temp_dir();
 	}
 }

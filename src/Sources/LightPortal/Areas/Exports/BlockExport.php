@@ -131,7 +131,7 @@ final class BlockExport extends AbstractExport
 				}
 			}
 
-			$file = sys_get_temp_dir() . '/lp_blocks_backup.xml';
+			$file = Config::getTempDir() . '/lp_blocks_backup.xml';
 			$xml->save($file);
 		} catch (DOMException $e) {
 			ErrorHandler::log('[LP] ' . Lang::$txt['lp_blocks_export'] . ': ' . $e->getMessage());

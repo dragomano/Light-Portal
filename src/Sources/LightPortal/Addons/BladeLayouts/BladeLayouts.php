@@ -61,7 +61,7 @@ class BladeLayouts extends Plugin
 
 		try {
 			$blade = new BladeOne(
-				Theme::$current->settings['default_theme_dir'] . '/portal_layouts', sys_get_temp_dir()
+				Theme::$current->settings['default_theme_dir'] . '/portal_layouts', Config::getTempDir()
 			);
 
 			$blade->directiveRT('icon', function ($expression) {
