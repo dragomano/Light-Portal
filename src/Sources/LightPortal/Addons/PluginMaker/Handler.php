@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.01.24
+ * @version 30.01.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -614,12 +614,11 @@ class Handler extends Plugin
 		$file->addComment("@category addon");
 		$file->addComment("@version " . date('d.m.y'));
 
-		$content = (new class extends Printer {
-			protected $indentation = "\t";
-			protected $linesBetweenProperties = 1;
-			protected $linesBetweenMethods = 1;
-			protected $returnTypeColon = ': ';
-		})->printFile($file);
+		$printer = new class extends Printer {};
+		$printer->linesBetweenProperties = 1;
+		$printer->linesBetweenMethods = 1;
+
+		$content = $printer->printFile($file);
 
 		$plugin = new Builder(Utils::$context['lp_plugin']['name']);
 		$plugin->create($content);
