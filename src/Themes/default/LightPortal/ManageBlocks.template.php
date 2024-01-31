@@ -110,7 +110,7 @@ function show_block_entry(int $id, array $data): void
 			', $data['icon'], '
 		</td>
 		<td class="title">
-			<div class="hidden-xs hidden-sm hidden-md">', $title = $data['note'] ?: ($data['titles'][Utils::$context['user']['language']] ?? $data['titles']['english'] ?? $data['titles'][Config::$language] ?? ''), '</div>
+			<div class="hidden-xs hidden-sm hidden-md">', $title = $data['note'] ?: ($data['titles'][Utils::$context['user']['language']] ?? $data['titles'][Config::$language] ?? ''), '</div>
 			<div class="hidden-lg hidden-xl">
 				<table class="table_grid">
 					<tbody>

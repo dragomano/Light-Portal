@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * Lang.php
+ * LangNext.php (special for SMF 3.0)
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -17,12 +17,12 @@ namespace Bugo\LightPortal\Utils;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class Lang extends SMFLang
+final class LangNext extends SMFLang
 {
-	public const FALLBACK_LANG = 'english';
+	public const FALLBACK_LANG = 'en_US';
 
-	public static function getLanguageNameFromLocale(string $language): string
+	public static function getLanguageNameFromLocale(string $locale): ?string
 	{
-		return $language;
+		return array_flip(self::LANG_TO_LOCALE)[$locale] ?? null;
 	}
 }

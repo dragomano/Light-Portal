@@ -180,14 +180,10 @@ trait Helper
 			return;
 		}
 
-		Utils::$context['lp_languages'] = array_merge(
-			[
-				User::$info['language'] => $temp[User::$info['language']],
-				Config::$language => $temp[Config::$language],
-				'english' => $temp['english'],
-			],
-			$temp
-		);
+		Utils::$context['lp_languages'] = array_merge([
+			User::$info['language'] => $temp[User::$info['language']],
+			Config::$language => $temp[Config::$language],
+		], $temp);
 	}
 
 	public function getIcon(?string $icon = ''): string
@@ -269,7 +265,7 @@ trait Helper
 
 	public function getTranslatedTitle(array $titles): string
 	{
-		return $titles[User::$info['language']] ?? $titles[Config::$language] ?? $titles['english'] ?? '';
+		return $titles[User::$info['language']] ?? $titles[Config::$language] ?? '';
 	}
 
 	/**

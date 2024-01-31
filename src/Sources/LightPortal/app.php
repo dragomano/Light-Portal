@@ -17,8 +17,6 @@ $loader->registerNamespace('Bugo\LightPortal', __DIR__);
 $loader->register();
 
 if (str_starts_with(SMF_VERSION, '3.0')) {
-	class_alias('Bugo\\LightPortal\\Actions\\BoardIndexNext', 'Bugo\\LightPortal\\Actions\\BoardIndex');
-	class_alias('Bugo\\LightPortal\\Utils\\SMFTraitNext', 'Bugo\\LightPortal\\Utils\\SMFTrait');
 	class_alias('SMF\\ServerSideIncludes', 'Bugo\\LightPortal\\Utils\\ServerSideIncludes');
 	class_alias('SMF\\IntegrationHook', 'Bugo\\LightPortal\\Utils\\IntegrationHook');
 	class_alias('SMF\\ErrorHandler', 'Bugo\\LightPortal\\Utils\\ErrorHandler');
@@ -27,10 +25,13 @@ if (str_starts_with(SMF_VERSION, '3.0')) {
 	class_alias('SMF\\Actions\\Notify', 'Bugo\\LightPortal\\Utils\\Notify');
 	class_alias('SMF\\Theme', 'Bugo\\LightPortal\\Utils\\SMFTheme');
 	class_alias('SMF\\Config', 'Bugo\\LightPortal\\Utils\\Config');
+	class_alias('SMF\\Lang', 'Bugo\\LightPortal\\Utils\\SMFLang');
 	class_alias('SMF\\Utils', 'Bugo\\LightPortal\\Utils\\Utils');
-	class_alias('SMF\\Lang', 'Bugo\\LightPortal\\Utils\\Lang');
 	class_alias('SMF\\Mail', 'Bugo\\LightPortal\\Utils\\Mail');
 	class_alias('SMF\\User', 'Bugo\\LightPortal\\Utils\\User');
+	class_alias('Bugo\\LightPortal\\Actions\\BoardIndexNext', 'Bugo\\LightPortal\\Actions\\BoardIndex');
+	class_alias('Bugo\\LightPortal\\Utils\\SMFTraitNext', 'Bugo\\LightPortal\\Utils\\SMFTrait');
+	class_alias('Bugo\\LightPortal\\Utils\\LangNext', 'Bugo\\LightPortal\\Utils\\Lang');
 } else {
 	array_map(fn($u) => new $u(), [
 		Lang::class,

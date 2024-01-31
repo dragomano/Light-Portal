@@ -53,9 +53,14 @@ final class CreditArea
 
 	public function getLink(): string
 	{
-		$link = User::$info['language'] === 'russian' ? 'https://dragomano.ru/mods/light-portal' : 'https://custom.simplemachines.org/mods/index.php?mod=4244';
+		$link = Lang::getLanguageNameFromLocale(User::$info['language']) === 'russian'
+			? 'https://dragomano.ru/mods/light-portal'
+			: 'https://custom.simplemachines.org/mods/index.php?mod=4244';
 
-		return '<a href="' . $link . '" target="_blank" rel="noopener" title="' . LP_VERSION . '">' . LP_NAME . '</a> | &copy; <a href="' . Config::$scripturl . '?action=credits;sa=light_portal">2019&ndash;' . date('Y') . '</a>, Bugo | ' . Lang::$txt['credits_license'] . ': <a href="https://github.com/dragomano/Light-Portal/blob/master/LICENSE" target="_blank" rel="noopener">GNU GPLv3</a>';
+		$license = Lang::$txt['credits_license'] . ': <a href="https://github.com/dragomano/Light-Portal/blob/master/LICENSE" target="_blank" rel="noopener">GNU GPLv3</a>';
+
+		return '<a href="' . $link . '" target="_blank" rel="noopener" title="' . LP_VERSION . '">' . LP_NAME .
+			'</a> | &copy; <a href="' . Config::$scripturl . '?action=credits;sa=light_portal">2019&ndash;' . date('Y') . '</a>, Bugo | ' . $license;
 	}
 
 	public function prepareComponents(): void

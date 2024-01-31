@@ -167,11 +167,11 @@ function template_plugin_post(): void
 															<table class="table_grid">
 																<tbody>';
 
-	foreach (Utils::$context['lp_languages'] as $lang) {
+	foreach (Utils::$context['lp_languages'] as $key => $lang) {
 		echo '
 																	<tr class="windowbg">
 																		<td>
-																			<input type="text" x-model="option.translations[\'', $lang['filename'], '\']" name="option_translations[', $lang['filename'], '][]"', $lang['filename'] === 'english' ? ' required' : '', ' placeholder="', $lang['name'], '">
+																			<input type="text" x-model="option.translations[\'', $key, '\']" name="option_translations[', $key, '][]"', $key === 'english' ? ' required' : '', ' placeholder="', $lang['name'], '">
 																		</td>
 																	</tr>';
 	}
@@ -216,9 +216,9 @@ function template_plugin_post(): void
 					document.querySelector("dt.pf_icon").style.display = "none";
 					document.querySelector("dd.pf_icon").style.display = "none";';
 
-	foreach (Utils::$context['lp_languages'] as $lang) {
+	foreach (array_keys(Utils::$context['lp_languages']) as $lang) {
 		echo '
-					document.querySelector("input[name=title_', $lang['filename'], ']").style.display = "none";';
+					document.querySelector("input[name=title_' . $lang, ']").style.display = "none";';
 	}
 
 	echo '
@@ -226,9 +226,9 @@ function template_plugin_post(): void
 					document.querySelector("dt.pf_icon").style.display = "block";
 					document.querySelector("dd.pf_icon").style.display = "block";';
 
-	foreach (Utils::$context['lp_languages'] as $lang) {
+	foreach (array_keys(Utils::$context['lp_languages']) as $lang) {
 		echo '
-					document.querySelector("input[name=title_', $lang['filename'], ']").style.display = "inline-block";';
+					document.querySelector("input[name=title_' . $lang, ']").style.display = "inline-block";';
 	}
 
 	echo '

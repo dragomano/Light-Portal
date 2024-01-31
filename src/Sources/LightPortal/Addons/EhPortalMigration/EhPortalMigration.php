@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 31.01.24
  */
 
 namespace Bugo\LightPortal\Addons\EhPortalMigration;
@@ -50,11 +50,11 @@ class EhPortalMigration extends Plugin
 				'title'   => $item['title']
 			];
 
-			if (Config::$language !== 'english' && ! empty(Config::$modSettings['userLanguage'])) {
+			if (Config::$language !== Lang::FALLBACK_LANG && ! empty(Config::$modSettings['userLanguage'])) {
 				$titles[] = [
 					'item_id' => $page_id,
 					'type'    => 'page',
-					'lang'    => 'english',
+					'lang'    => Lang::FALLBACK_LANG,
 					'title'   => $item['title']
 				];
 			}

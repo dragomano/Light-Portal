@@ -1,6 +1,6 @@
 <?php
 
-global $user_info, $mbname, $modSettings, $settings, $smcFunc;
+global $user_info, $language, $mbname, $modSettings, $settings, $smcFunc;
 
 if (version_compare(PHP_VERSION, '8.0', '<'))
 	die('This mod needs PHP 8.0 or greater. You will not be able to install/use this mod. Please, contact your host and ask for a php upgrade.');
@@ -473,7 +473,7 @@ $tables[] = [
 			'title'   => 'string-255'
 		],
 		'values' => [
-			[1, 'page', 'english', $mbname]
+			[1, 'page', $language, $mbname]
 		],
 		'keys' => ['item_id', 'type', 'lang']
 	]
