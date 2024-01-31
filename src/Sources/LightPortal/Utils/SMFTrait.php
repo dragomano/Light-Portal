@@ -31,7 +31,7 @@ trait SMFTrait
 
 		$file = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]['file'];
 
-		if ($name === 'pre_load_theme') {
+		if ($name === 'init') {
 			$name = 'user_info';
 		}
 

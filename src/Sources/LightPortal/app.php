@@ -18,7 +18,7 @@ $loader->register();
 
 if (str_starts_with(SMF_VERSION, '3.0')) {
 	class_alias('Bugo\\LightPortal\\Actions\\BoardIndexNext', 'Bugo\\LightPortal\\Actions\\BoardIndex');
-	class_alias('Bugo\\LightPortal\\Utils\\SMFNextTrait', 'Bugo\\LightPortal\\Utils\\SMFTrait');
+	class_alias('Bugo\\LightPortal\\Utils\\SMFTraitNext', 'Bugo\\LightPortal\\Utils\\SMFTrait');
 	class_alias('SMF\\ServerSideIncludes', 'Bugo\\LightPortal\\Utils\\ServerSideIncludes');
 	class_alias('SMF\\IntegrationHook', 'Bugo\\LightPortal\\Utils\\IntegrationHook');
 	class_alias('SMF\\ErrorHandler', 'Bugo\\LightPortal\\Utils\\ErrorHandler');

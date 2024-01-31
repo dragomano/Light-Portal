@@ -34,7 +34,7 @@ final class Integration extends AbstractMain
 
 	public function __invoke(): void
 	{
-		$this->applyHook('pre_load_theme', 'init');
+		$this->applyHook('init');
 		$this->applyHook('pre_javascript_output');
 		$this->applyHook('pre_css_output');
 		$this->applyHook('load_theme');
@@ -448,14 +448,23 @@ final class Integration extends AbstractMain
 		if (empty($actions['action']) && empty($actions['board'])) {
 			$result = sprintf(Lang::$txt['lp_who_viewing_frontpage'], Config::$scripturl);
 
-			if (! (empty(Config::$modSettings['lp_standalone_mode']) || empty(Config::$modSettings['lp_standalone_url'])))
+			if (! (
+				empty(Config::$modSettings['lp_standalone_mode']) || empty(Config::$modSettings['lp_standalone_url'])
+			)) {
 				$result = sprintf(
-					Lang::$txt['lp_who_viewing_index'], Config::$modSettings['lp_standalone_url'], Config::$scripturl
+					Lang::$txt['lp_who_viewing_index'],
+					Config::$modSettings['lp_standalone_url'],
+					Config::$scripturl
 				);
+			}
 		}
 
-		if (isset($actions[LP_PAGE_PARAM]))
-			$result = sprintf(Lang::$txt['lp_who_viewing_page'], LP_PAGE_URL . $actions[LP_PAGE_PARAM]);
+		if (isset($actions[LP_PAGE_PARAM])) {
+			$result = sprintf(
+				Lang::$txt['lp_who_viewing_page'],
+				LP_PAGE_URL . $actions[LP_PAGE_PARAM]
+			);
+		}
 
 		if (empty($actions['action']))
 			return $result;
@@ -467,21 +476,40 @@ final class Integration extends AbstractMain
 				$tags = $this->getEntityList('tag');
 
 				isset($actions['id'])
-					? $result = sprintf(Lang::$txt['lp_who_viewing_the_tag'], LP_BASE_URL . ';sa=tags;id=' . $actions['id'], $tags[$actions['id']])
-					: $result = sprintf(Lang::$txt['lp_who_viewing_tags'], LP_BASE_URL . ';sa=tags');
+					? $result = sprintf(
+						Lang::$txt['lp_who_viewing_the_tag'],
+						LP_BASE_URL . ';sa=tags;id=' . $actions['id'],
+						$tags[$actions['id']]
+					)
+					: $result = sprintf(
+						Lang::$txt['lp_who_viewing_tags'],
+						LP_BASE_URL . ';sa=tags'
+					);
 			}
 
 			if (isset($actions['sa']) && $actions['sa'] === 'categories') {
 				$categories = $this->getEntityList('category');
 
 				isset($actions['id'])
-					? $result = sprintf(Lang::$txt['lp_who_viewing_the_category'], LP_BASE_URL . ';sa=categories;id=' . $actions['id'], $categories[$actions['id']]['name'])
-					: $result = sprintf(Lang::$txt['lp_who_viewing_categories'], LP_BASE_URL . ';sa=categories');
+					? $result = sprintf(
+						Lang::$txt['lp_who_viewing_the_category'],
+						LP_BASE_URL . ';sa=categories;id=' . $actions['id'],
+						$categories[$actions['id']]['name']
+					)
+					: $result = sprintf(
+						Lang::$txt['lp_who_viewing_categories'],
+						LP_BASE_URL . ';sa=categories'
+					);
 			}
 		}
 
-		if ($actions['action'] === 'forum')
-			$result = sprintf(Lang::$txt['who_index'], Config::$scripturl . '?action=forum', Utils::$context['forum_name']);
+		if ($actions['action'] === 'forum') {
+			$result = sprintf(
+				Lang::$txt['who_index'],
+				Config::$scripturl . '?action=forum',
+				Utils::$context['forum_name']
+			);
+		}
 
 		return $result;
 	}
