@@ -1,5 +1,6 @@
 <?php
 
+use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Utils\{Config, Icon, Lang, Theme, Utils};
 
 function template_show_page(): void
@@ -90,7 +91,7 @@ function template_show_page(): void
 			<hr>';
 	}
 
-	call_portal_hook('beforePageContent');
+	AddonHandler::getInstance()->run('beforePageContent');
 
 	if (! empty(Theme::$current->settings['og_image'])) {
 		echo '
@@ -100,7 +101,7 @@ function template_show_page(): void
 	echo '
 			<div class="page_', Utils::$context['lp_page']['type'], '">', Utils::$context['lp_page']['content'], '</div>';
 
-	call_portal_hook('afterPageContent');
+	AddonHandler::getInstance()->run('afterPageContent');
 
 	echo '
 		</article>';

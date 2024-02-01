@@ -43,11 +43,5 @@ if (str_starts_with(SMF_VERSION, '3.0')) {
 	]);
 }
 
-// Define important helper functions
-function call_portal_hook(string $hook, array $params = [], array $plugins = []): void
-{
-	AddonHandler::getInstance()->run($hook, $params, $plugins);
-}
-
 // This is the way
 (new Integration())();

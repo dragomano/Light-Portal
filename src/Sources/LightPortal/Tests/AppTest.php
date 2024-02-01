@@ -21,10 +21,6 @@ function __(string $pattern, array $values = []): string
 	return $class->translate($pattern, $values);
 }
 
-test('call_portal_hook is ready', function () {
-	Assert::true(function_exists('call_portal_hook'));
-});
-
 test('translate helper with empty pattern', function () {
 	Assert::same('', __(''));
 });

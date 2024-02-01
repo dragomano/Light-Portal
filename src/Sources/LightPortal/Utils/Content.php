@@ -14,6 +14,7 @@
 
 namespace Bugo\LightPortal\Utils;
 
+use Bugo\LightPortal\AddonHandler;
 use ParseError;
 
 final class Content
@@ -35,7 +36,7 @@ final class Content
 			) {}
 		};
 
-		call_portal_hook('prepareContent', [$data, $parameters]);
+		AddonHandler::getInstance()->run('prepareContent', [$data, $parameters]);
 
 		return ob_get_clean();
 	}
@@ -74,7 +75,7 @@ final class Content
 			return ob_get_clean();
 		}
 
-		call_portal_hook('parseContent', [&$content, $type]);
+		AddonHandler::getInstance()->run('parseContent', [&$content, $type]);
 
 		return $content;
 	}
