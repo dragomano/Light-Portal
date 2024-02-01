@@ -326,7 +326,7 @@ class AdsBlock extends Block
 
 			Theme::addInlineJS('
 		jQuery(document).ready(function ($) {
-			$(' . Utils::JavaScriptEscape($after_every_last_post) . ').insertAfter("#quickModForm > div.windowbg:last");
+			$(' . Utils::escapeJavaScript($after_every_last_post) . ').insertAfter("#quickModForm > div.windowbg:last");
 		});', true);
 		}
 
@@ -344,7 +344,7 @@ class AdsBlock extends Block
 
 			Theme::addInlineJS('
 		jQuery(document).ready(function ($) {
-			$("#quickModForm").append(' . Utils::JavaScriptEscape($after_last_post) . ');
+			$("#quickModForm").append(' . Utils::escapeJavaScript($after_last_post) . ');
 		});', true);
 		}
 	}

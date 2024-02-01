@@ -31,7 +31,7 @@ final class KeywordSelect extends AbstractPartial
 		}
 
 		foreach (Utils::$context['lp_page']['keywords'] as $tag_id => $tag_data) {
-			$values[] = is_array($tag_data) ? $tag_id : Utils::JavaScriptEscape($tag_data);
+			$values[] = is_array($tag_data) ? $tag_id : Utils::escapeJavaScript($tag_data);
 		}
 
 		return /** @lang text */ '

@@ -31,7 +31,7 @@ final class LanguageSelect extends AbstractPartial
 			$data[] = '{label: "' . $lang['name'] . '", value: "' . $lang['filename'] . '"}';
 
 			if (in_array($lang['filename'], $current_languages)) {
-				$items[] = Utils::JavaScriptEscape($lang['filename']);
+				$items[] = Utils::escapeJavaScript($lang['filename']);
 			}
 		}
 

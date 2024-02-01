@@ -59,9 +59,9 @@ class HelloPortal extends Plugin
 		function runTour() {
 			introJs().setOptions({
 				tooltipClass: "lp_addon_hello_portal",
-				nextLabel: ' . Utils::JavaScriptEscape(Lang::$txt['admin_next']) . ',
-				prevLabel: ' . Utils::JavaScriptEscape(Lang::$txt['back']) . ',
-				doneLabel: ' . Utils::JavaScriptEscape(Lang::$txt['attach_dir_ok']) . ',
+				nextLabel: ' . Utils::escapeJavaScript(Lang::$txt['admin_next']) . ',
+				prevLabel: ' . Utils::escapeJavaScript(Lang::$txt['back']) . ',
+				doneLabel: ' . Utils::escapeJavaScript(Lang::$txt['attach_dir_ok']) . ',
 				steps: [' . $steps . '],
 				showProgress: ' . (empty(Utils::$context['lp_hello_portal_plugin']['show_progress']) ? 'false' : 'true') . ',
 				showButtons: ' . (empty(Utils::$context['lp_hello_portal_plugin']['show_buttons']) ? 'false' : 'true') . ',
