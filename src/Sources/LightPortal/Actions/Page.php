@@ -15,7 +15,8 @@
 namespace Bugo\LightPortal\Actions;
 
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, ErrorHandler, Icon, Lang, Theme, User, Utils};
+use Bugo\LightPortal\Utils\{Config, Content, ErrorHandler};
+use Bugo\LightPortal\Utils\{Icon, Lang, Theme, User, Utils};
 use IntlException;
 
 if (! defined('SMF'))
@@ -71,7 +72,7 @@ final class Page implements PageInterface
 		if (empty(Utils::$context['lp_page']['status']) && Utils::$context['lp_page']['can_edit'])
 			Utils::$context['lp_page']['errors'][] = Lang::$txt['lp_page_visible_but_disabled'];
 
-		Utils::$context['lp_page']['content'] = parse_content(Utils::$context['lp_page']['content'], Utils::$context['lp_page']['type']);
+		Utils::$context['lp_page']['content'] = Content::parse(Utils::$context['lp_page']['content'], Utils::$context['lp_page']['type']);
 
 		if (empty($alias)) {
 			Utils::$context['page_title']    = $this->getTranslatedTitle(Utils::$context['lp_page']['titles']) ?: Lang::$txt['lp_portal'];
@@ -137,7 +138,7 @@ final class Page implements PageInterface
 			$og_image = null;
 			if (! empty(Config::$modSettings['lp_page_og_image'])) {
 				$content = $row['content'];
-				$content = parse_content($content, $row['type']);
+				$content = Content::parse($content, $row['type']);
 				$image_found = preg_match_all('/<img(.*)src(.*)=(.*)"(.*)"/U', $content, $values);
 
 				if ($image_found && is_array($values)) {
@@ -492,7 +493,7 @@ final class Page implements PageInterface
 			if ($this->isFrontpage($row['alias']))
 				continue;
 
-			$row['content'] = parse_content($row['content'], $row['type']);
+			$row['content'] = Content::parse($row['content'], $row['type']);
 
 			$image = $this->getImageFromText($row['content']);
 

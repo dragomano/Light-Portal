@@ -10,15 +10,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.01.24
+ * @version 02.02.24
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
 
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CustomField, TextareaField, TextField};
-use Bugo\LightPortal\Areas\Partials\{PageSelect, BoardSelect, TopicSelect};
-use Bugo\LightPortal\Utils\{Lang, Theme, Utils};
+use Bugo\LightPortal\Areas\Partials\{BoardSelect, PageSelect, TopicSelect};
+use Bugo\LightPortal\Utils\{Content, Lang, Theme, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -137,7 +137,7 @@ class AdsBlock extends Block
 	public function parseContent(string &$content, string $type): void
 	{
 		if ($type === 'ads_block')
-			$content = parse_content($content, 'html');
+			$content = Content::parse($content, 'html');
 	}
 
 	public function init(): void

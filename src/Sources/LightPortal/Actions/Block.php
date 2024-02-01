@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal\Actions;
 
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\{Config, Content, Lang, Theme, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -43,8 +43,8 @@ final class Block implements BlockInterface
 			$data['can_edit'] = Utils::$context['user']['is_admin'];
 
 			$data['content'] = empty($data['content'])
-				? prepare_content($data['type'], $data['id'], LP_CACHE_TIME, Utils::$context['lp_active_blocks'][$data['id']]['parameters'] ?? [])
-				: parse_content($data['content'], $data['type']);
+				? Content::prepare($data['type'], $data['id'], LP_CACHE_TIME, Utils::$context['lp_active_blocks'][$data['id']]['parameters'] ?? [])
+				: Content::parse($data['content'], $data['type']);
 
 			Utils::$context['lp_blocks'][$data['placement']][$item] = $data;
 

@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.01.24
+ * @version 02.02.24
  */
 
 namespace Bugo\LightPortal\Addons\Search;
 
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\{Config, Content, Lang, Theme, Utils};
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -138,7 +138,7 @@ class Search extends Block
 
 		$items = [];
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result))	{
-			$row['content'] = parse_content($row['content'], $row['type']);
+			$row['content'] = Content::parse($row['content'], $row['type']);
 
 			$items[] = [
 				'link'    => LP_PAGE_URL . $row['alias'],

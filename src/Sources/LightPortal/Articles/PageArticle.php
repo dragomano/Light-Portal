@@ -14,8 +14,8 @@
 
 namespace Bugo\LightPortal\Articles;
 
-use Bugo\LightPortal\Utils\{BBCodeParser, Config, Lang, User, Utils};
 use Bugo\LightPortal\Actions\PageInterface;
+use Bugo\LightPortal\Utils\{BBCodeParser, Config, Content, Lang, User, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -83,7 +83,7 @@ class PageArticle extends AbstractArticle
 		$pages = [];
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			if (! isset($pages[$row['page_id']])) {
-				$row['content'] = parse_content($row['content'], $row['type']);
+				$row['content'] = Content::parse($row['content'], $row['type']);
 
 				$pages[$row['page_id']] = [
 					'id' => $row['page_id'],

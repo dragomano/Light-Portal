@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal\Actions;
 
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
+use Bugo\LightPortal\Utils\{Config, Content, Lang, User, Utils};
 use IntlException;
 
 if (! defined('SMF'))
@@ -45,7 +45,7 @@ abstract class AbstractPageList
 
 		$items = [];
 		foreach ($rows as $row) {
-			$row['content'] = parse_content($row['content'], $row['type']);
+			$row['content'] = Content::parse($row['content'], $row['type']);
 
 			$image = null;
 			if (! empty(Config::$modSettings['lp_show_images_in_articles'])) {

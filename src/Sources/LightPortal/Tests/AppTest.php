@@ -21,28 +21,8 @@ function __(string $pattern, array $values = []): string
 	return $class->translate($pattern, $values);
 }
 
-test('core portal helpers exist', function () {
+test('call_portal_hook is ready', function () {
 	Assert::true(function_exists('call_portal_hook'));
-	Assert::true(function_exists('prepare_content'));
-	Assert::true(function_exists('parse_content'));
-});
-
-test('prepare_content helper', function () {
-	Assert::same('', prepare_content());
-});
-
-test('parse_content helper with BBCode', function () {
-	Assert::same('<b>Hello</b>', parse_content('[b]Hello[/b]'));
-});
-
-test('parse_content helper with HTML', function () {
-	$content = '<div class="example">&nbsp;</div>';
-
-	Assert::same(str_replace('&nbsp;',  ' ', $content), parse_content($content, 'html'));
-});
-
-test('parse_content helper with PHP', function () {
-	Assert::same('123', parse_content('echo 123;', 'php'));
 });
 
 test('translate helper with empty pattern', function () {
