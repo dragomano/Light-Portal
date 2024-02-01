@@ -64,7 +64,7 @@ final class Integration extends AbstractMain
 
 		defined('LP_NAME') || define('LP_NAME', 'Light Portal');
 		defined('LP_VERSION') || define('LP_VERSION', '2.5.1');
-		defined('LP_PLUGIN_LIST') || define('LP_PLUGIN_LIST', 'https://api.jsonserve.com/RlRQrK');
+		defined('LP_PLUGIN_LIST') || define('LP_PLUGIN_LIST', 'https://api.jsonserve.com/v2a4nY');
 		defined('LP_ADDON_URL') || define('LP_ADDON_URL', Config::$boardurl . '/Sources/LightPortal/Addons');
 		defined('LP_ADDON_DIR') || define('LP_ADDON_DIR', __DIR__ . '/Addons');
 		defined('LP_CACHE_TIME') || define('LP_CACHE_TIME', (int) (Config::$modSettings['lp_cache_update_interval'] ?? 72000));
