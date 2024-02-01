@@ -26,6 +26,6 @@
   },
   "scripts": {
     "post-update-cmd": "@php create_index.php",
-    "test": "@php Libs/bin/tester Tests -C"
+    "tests": "@php Libs/bin/tester Tests -C"
   }
 }
