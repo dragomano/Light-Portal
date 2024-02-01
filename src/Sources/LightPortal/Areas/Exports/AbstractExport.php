@@ -15,6 +15,7 @@
 namespace Bugo\LightPortal\Areas\Exports;
 
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Utils\Sapi;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -32,7 +33,7 @@ abstract class AbstractExport implements ExportInterface
 		if (empty($file = $this->getFile()))
 			return;
 
-		@set_time_limit(600);
+		Sapi::setTimeLimit();
 
 		if (file_exists($file)) {
 			ob_end_clean();

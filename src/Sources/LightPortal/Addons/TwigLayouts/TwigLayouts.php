@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 29.01.24
+ * @version 01.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TwigLayouts;
@@ -62,7 +62,7 @@ class TwigLayouts extends Plugin
 			$loader = new FilesystemLoader(Theme::$current->settings['default_theme_dir'] . '/portal_layouts');
 
 			$twig = new Environment($loader, [
-				'cache' => empty(Config::$modSettings['cache_enable']) ? false : Config::getTempDir(),
+				'cache' => empty(Config::$modSettings['cache_enable']) ? false : Sapi::getTempDir(),
 				'debug' => false
 			]);
 

@@ -17,7 +17,7 @@ namespace Bugo\LightPortal\Actions;
 use Bugo\LightPortal\Articles\{ArticleInterface, BoardArticle, ChosenPageArticle};
 use Bugo\LightPortal\Articles\{ChosenTopicArticle, PageArticle, TopicArticle};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, ErrorHandler, Icon, Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\{Config, ErrorHandler, Icon, Lang, Sapi, Theme, Utils};
 use Exception;
 use IntlException;
 use Latte\{Engine, Essential\RawPhpExtension, Loaders\FileLoader, Runtime\Html, RuntimeException};
@@ -177,7 +177,7 @@ final class FrontPage
 			return;
 
 		$latte = new Engine;
-		$latte->setTempDirectory(empty(Config::$modSettings['cache_enable']) ? null : Config::getTempDir());
+		$latte->setTempDirectory(empty(Config::$modSettings['cache_enable']) ? null : Sapi::getTempDir());
 		$latte->setLoader(new FileLoader(
 			Theme::$current->settings['default_theme_dir'] . '/LightPortal/layouts/'
 		));

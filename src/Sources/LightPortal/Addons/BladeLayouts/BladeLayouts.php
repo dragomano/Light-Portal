@@ -10,13 +10,13 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 29.01.24
+ * @version 01.02.24
  */
 
 namespace Bugo\LightPortal\Addons\BladeLayouts;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\{BBCodeParser, Config, ErrorHandler, Icon, Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\{BBCodeParser, Config, ErrorHandler, Icon, Lang, Sapi, Theme, Utils};
 use eftec\bladeone\BladeOne;
 use Exception;
 
@@ -61,7 +61,7 @@ class BladeLayouts extends Plugin
 
 		try {
 			$blade = new BladeOne(
-				Theme::$current->settings['default_theme_dir'] . '/portal_layouts', Config::getTempDir()
+				Theme::$current->settings['default_theme_dir'] . '/portal_layouts', Sapi::getTempDir()
 			);
 
 			$blade->directiveRT('icon', function ($expression) {

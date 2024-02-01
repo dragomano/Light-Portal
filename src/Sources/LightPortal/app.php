@@ -9,7 +9,7 @@ require_once __DIR__ . '/Libs/autoload.php';
 
 use Laminas\Loader\StandardAutoloader;
 use Bugo\LightPortal\{AddonHandler, Integration};
-use Bugo\LightPortal\Utils\{BBCodeParser, Config, IntegrationHook, Lang, Theme, User, Utils};
+use Bugo\LightPortal\Utils\{BBCodeParser, Config, IntegrationHook, Lang, Sapi, Theme, User, Utils};
 
 // Register autoloader
 $loader = new StandardAutoloader();
@@ -29,6 +29,7 @@ if (str_starts_with(SMF_VERSION, '3.0')) {
 	class_alias('SMF\\Utils', 'Bugo\\LightPortal\\Utils\\Utils');
 	class_alias('SMF\\Mail', 'Bugo\\LightPortal\\Utils\\Mail');
 	class_alias('SMF\\User', 'Bugo\\LightPortal\\Utils\\User');
+	class_alias('SMF\\Sapi', 'Bugo\\LightPortal\\Utils\\Sapi');
 	class_alias('Bugo\\LightPortal\\Actions\\BoardIndexNext', 'Bugo\\LightPortal\\Actions\\BoardIndex');
 	class_alias('Bugo\\LightPortal\\Utils\\SMFTraitNext', 'Bugo\\LightPortal\\Utils\\SMFTrait');
 	class_alias('Bugo\\LightPortal\\Utils\\LangNext', 'Bugo\\LightPortal\\Utils\\Lang');
@@ -83,7 +84,7 @@ function parse_content(string $content, string $type = 'bbc'): string
 		ob_start();
 
 		try {
-			$tempFile = tempnam(Config::getTempDir(), 'code');
+			$tempFile = tempnam(Sapi::getTempDir(), 'code');
 
 			file_put_contents($tempFile, '<?php ' . html_entity_decode($content, ENT_COMPAT, 'UTF-8'));
 

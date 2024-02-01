@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Areas\Exports;
 
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\{Config, Lang, Sapi, Theme, Utils};
 use AppendIterator;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
@@ -65,7 +65,7 @@ final class PluginExport extends AbstractExport
 	protected function createPackage(array $dirs): string
 	{
 		$archive  = count($dirs) === 1 ? $dirs[0] : 'lp_plugins';
-		$filename = Config::getTempDir() . DIRECTORY_SEPARATOR . $archive . '.zip';
+		$filename = Sapi::getTempDir() . DIRECTORY_SEPARATOR . $archive . '.zip';
 
 		$zip = new ZipArchive();
 		$zip->open($filename, ZipArchive::CREATE | ZipArchive::OVERWRITE);

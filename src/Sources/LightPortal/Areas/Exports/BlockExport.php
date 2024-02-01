@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal\Areas\Exports;
 
 use Bugo\LightPortal\Repositories\BlockRepository;
-use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Sapi, Theme, Utils};
 use DomDocument;
 use DOMException;
 
@@ -131,7 +131,7 @@ final class BlockExport extends AbstractExport
 				}
 			}
 
-			$file = Config::getTempDir() . '/lp_blocks_backup.xml';
+			$file = Sapi::getTempDir() . '/lp_blocks_backup.xml';
 			$xml->save($file);
 		} catch (DOMException $e) {
 			ErrorHandler::log('[LP] ' . Lang::$txt['lp_blocks_export'] . ': ' . $e->getMessage());
