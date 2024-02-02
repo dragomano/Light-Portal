@@ -103,7 +103,7 @@ abstract class AbstractImport implements ImportInterface
 
 		Utils::$smcFunc['db_transaction']('commit');
 
-		Utils::$context['import_successful'] = sprintf(Lang::$txt['lp_import_success'], $this->translate('lp_' . $type . '_set', [$type => Utils::$context['import_successful']]));
+		Utils::$context['import_successful'] = sprintf(Lang::$txt['lp_import_success'], Lang::getTxt('lp_' . $type . '_set', [$type => Utils::$context['import_successful']]));
 
 		$this->cache()->flush();
 	}

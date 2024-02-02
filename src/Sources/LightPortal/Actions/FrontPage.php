@@ -55,7 +55,7 @@ final class FrontPage
 		Utils::$context['page_title'] = Config::$modSettings['lp_frontpage_title'] ?: (Utils::$context['forum_name'] . ' - ' . Lang::$txt['lp_portal']);
 		Utils::$context['linktree'][] = [
 			'name'        => Lang::$txt['lp_portal'],
-			'extra_after' => '(' . $this->translate('lp_articles_set', ['articles' => Utils::$context['total_articles']]) . ')'
+			'extra_after' => '(' . Lang::getTxt('lp_articles_set', ['articles' => Utils::$context['total_articles']]) . ')'
 		];
 
 		$this->prepareTemplates();

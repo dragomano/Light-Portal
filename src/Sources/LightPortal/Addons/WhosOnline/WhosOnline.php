@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.01.24
+ * @version 02.02.24
  */
 
 namespace Bugo\LightPortal\Addons\WhosOnline;
@@ -86,18 +86,18 @@ class WhosOnline extends Block
 		if (empty($whos_online))
 			return;
 
-		echo $this->translate('lp_guests_set', ['guests' => $whos_online['num_guests']]) . ', ' . $this->translate('lp_users_set', ['users' => $whos_online['num_users_online']]);
+		echo Lang::getTxt('lp_guests_set', ['guests' => $whos_online['num_guests']]) . ', ' . Lang::getTxt('lp_users_set', ['users' => $whos_online['num_users_online']]);
 
 		$online_list = [];
 
 		if (User::$info['buddies'] && $whos_online['num_buddies'])
-			$online_list[] = $this->translate('lp_buddies_set', ['buddies' => $whos_online['num_buddies']]);
+			$online_list[] = Lang::getTxt('lp_buddies_set', ['buddies' => $whos_online['num_buddies']]);
 
 		if ($whos_online['num_spiders'])
-			$online_list[] = $this->translate('lp_spiders_set', ['spiders' => $whos_online['num_spiders']]);
+			$online_list[] = Lang::getTxt('lp_spiders_set', ['spiders' => $whos_online['num_spiders']]);
 
 		if ($whos_online['num_users_hidden'])
-			$online_list[] = $this->translate('lp_hidden_set', ['hidden' => $whos_online['num_users_hidden']]);
+			$online_list[] = Lang::getTxt('lp_hidden_set', ['hidden' => $whos_online['num_users_hidden']]);
 
 		if ($online_list)
 			echo ' (' . Lang::sentenceList($online_list) . ')';

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 02.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TrendingTopics;
@@ -153,7 +153,7 @@ class TrendingTopics extends Block
 					</span>';
 
 				echo '
-					<a href="', Config::$scripturl, '?topic=' . $id . '.msg' . $topic['id_msg'] . ';topicseen#new">', $topic['subject'], '</a> <span>', $topic['poster_time'], ' (', $this->translate('lp_replies_set', ['replies' => $topic['num_replies']]), ')</span>
+					<a href="', Config::$scripturl, '?topic=' . $id . '.msg' . $topic['id_msg'] . ';topicseen#new">', $topic['subject'], '</a> <span>', $topic['poster_time'], ' (', Lang::getTxt('lp_replies_set', ['replies' => $topic['num_replies']]), ')</span>
 				</li>';
 			}
 

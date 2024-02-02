@@ -25,4 +25,9 @@ final class LangNext extends SMFLang
 	{
 		return array_flip(self::LANG_TO_LOCALE)[$locale] ?? 'english';
 	}
+
+	public static function getTxt(string|array $txt_key, array $args = [], string $var = 'txt'): string
+	{
+		return self::getTxt($txt_key, $args, $var);
+	}
 }

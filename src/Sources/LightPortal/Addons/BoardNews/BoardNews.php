@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.01.24
+ * @version 02.02.24
  */
 
 namespace Bugo\LightPortal\Addons\BoardNews;
@@ -93,7 +93,7 @@ class BoardNews extends Block
 		Theme::loadJSFile('topic.js', ['defer' => false, 'minimize' => true], 'smf_topic');
 
 		foreach ($board_news as $news) {
-			$news['link'] = '<a href="' . $news['href'] . '">' . $this->translate('lp_comments_set', ['comments' => $news['replies']]) . '</a>';
+			$news['link'] = '<a href="' . $news['href'] . '">' . Lang::getTxt('lp_comments_set', ['comments' => $news['replies']]) . '</a>';
 
 			echo '
 			<div class="news_item">

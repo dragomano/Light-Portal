@@ -370,7 +370,7 @@ final class Integration extends AbstractMain
 
 				if ($alert['sender_id'] !== User::$info['id']) {
 					$alerts[$id]['icon'] = '<span class="alert_icon main_icons ' . $icon . '"></span>';
-					$alerts[$id]['text'] = $this->translate(
+					$alerts[$id]['text'] = Lang::getTxt(
 						'alert_' . $alert['content_type'] . '_' . $alert['content_action'],
 						['gender' => $alert['extra']['sender_gender']]
 					);

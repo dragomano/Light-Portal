@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 02.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TopTopics;
@@ -98,7 +98,7 @@ class TopTopics extends Block
 			<dt>', $topic['link'], '</dt>
 			<dd class="statsbar generic_bar righttext">
 				<div class="bar', (empty($topic['num_' . $parameters['popularity_type']]) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-				<span>', ($parameters['show_numbers_only'] ? $topic['num_' . $parameters['popularity_type']] : $this->translate('lp_' . $parameters['popularity_type'] . '_set', [$parameters['popularity_type'] => $topic['num_' . $parameters['popularity_type']]])), '</span>
+				<span>', ($parameters['show_numbers_only'] ? $topic['num_' . $parameters['popularity_type']] : Lang::getTxt('lp_' . $parameters['popularity_type'] . '_set', [$parameters['popularity_type'] => $topic['num_' . $parameters['popularity_type']]])), '</span>
 			</dd>';
 		}
 

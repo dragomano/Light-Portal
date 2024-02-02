@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 02.02.24
  */
 
 namespace Bugo\LightPortal\Addons\PageList;
@@ -158,10 +158,10 @@ class PageList extends Block
 
 				echo /** @lang text */ '
 			<li>
-				<a href="', Config::$scripturl, '?', LP_PAGE_PARAM, '=', $page['alias'], '">', $title, '</a> ', Lang::$txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . Config::$scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', $this->getFriendlyTime($page['created_at']), ' (', $this->translate('lp_views_set', ['views' => $page['num_views']]);
+				<a href="', Config::$scripturl, '?', LP_PAGE_PARAM, '=', $page['alias'], '">', $title, '</a> ', Lang::$txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . Config::$scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', $this->getFriendlyTime($page['created_at']), ' (', Lang::getTxt('lp_views_set', ['views' => $page['num_views']]);
 
 				if ($page['num_comments'] && ! empty(Config::$modSettings['lp_show_comment_block']) && Config::$modSettings['lp_show_comment_block'] === 'default')
-					echo ', ' . $this->translate('lp_comments_set', ['comments' => $page['num_comments']]);
+					echo ', ' . Lang::getTxt('lp_comments_set', ['comments' => $page['num_comments']]);
 
 				echo /** @lang text */ ')
 			</li>';
