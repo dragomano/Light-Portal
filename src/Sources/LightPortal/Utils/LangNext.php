@@ -21,8 +21,8 @@ final class LangNext extends SMFLang
 {
 	public const FALLBACK_LANG = 'en_US';
 
-	public static function getLanguageNameFromLocale(string $locale): ?string
+	public static function getLanguageNameFromLocale(string $locale): string
 	{
-		return array_flip(self::LANG_TO_LOCALE)[$locale] ?? null;
+		return array_flip(self::LANG_TO_LOCALE)[$locale] ?? 'english';
 	}
 }
