@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 04.02.24
  */
 
 namespace Bugo\LightPortal\Addons\RandomTopics;
@@ -18,7 +18,7 @@ namespace Bugo\LightPortal\Addons\RandomTopics;
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField};
 use Bugo\LightPortal\Areas\Partials\BoardSelect;
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, User, Utils};
+use Bugo\LightPortal\Utils\{Config, DateTime, Lang, Theme, User, Utils};
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -244,7 +244,7 @@ class RandomTopics extends Block
 				<li class="windowbg">', ($topic['is_new'] ? '
 					<span class="new_posts">' . Lang::$txt['new'] . '</span>' : ''), ' ', $topic['icon'], ' ', $topic['link'], '
 					<br><span class="smalltext">', Lang::$txt['by'], ' ', $topic['poster'], '</span>
-					<br><span class="smalltext">', $this->getFriendlyTime($topic['time']), '</span>
+					<br><span class="smalltext">', DateTime::relative($topic['time']), '</span>
 				</li>';
 			}
 

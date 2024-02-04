@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.01.24
+ * @version 04.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortalMigration;
 
 use Bugo\LightPortal\Areas\Imports\AbstractCustomPageImport;
-use Bugo\LightPortal\Utils\{BBCodeParser, Config, Lang, Utils};
+use Bugo\LightPortal\Utils\{BBCodeParser, Config, DateTime, Lang, Utils};
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -149,7 +149,7 @@ class PageImport extends AbstractCustomPageImport
 				'status'     => (int) empty($row['off']),
 				'num_views'  => $row['views'],
 				'author_id'  => $row['author_id'],
-				'created_at' => $this->getFriendlyTime($row['date']),
+				'created_at' => DateTime::relative($row['date']),
 				'title'      => $row['subject']
 			];
 		}

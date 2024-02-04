@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal\Actions;
 
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, Content, Lang, User, Utils};
+use Bugo\LightPortal\Utils\{Config, Content, DateTime, Lang, User, Utils};
 use IntlException;
 
 if (! defined('SMF'))
@@ -64,7 +64,7 @@ abstract class AbstractPageList
 					'link' => empty($row['author_name']) ? '' : Config::$scripturl . '?action=profile;u=' . $author_id,
 					'name' => $row['author_name']
 				],
-				'date'      => $this->getFriendlyTime((int) $row['date']),
+				'date'      => DateTime::relative((int) $row['date']),
 				'datetime'  => date('Y-m-d', (int) $row['date']),
 				'link'      => LP_PAGE_URL . $row['alias'],
 				'views'     => [

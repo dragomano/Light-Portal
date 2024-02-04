@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal\Actions;
 
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, User, Utils};
+use Bugo\LightPortal\Utils\{Config, DateTime, User, Utils};
 use Bugo\LightPortal\Repositories\CommentRepository;
 use IntlException;
 
@@ -60,7 +60,7 @@ final class Comment
 			->setFallback(CommentRepository::class, 'getByPageId', Utils::$context['lp_page']['id']);
 
 		$comments = array_map(function ($comment) {
-			$comment['human_date']    = $this->getFriendlyTime($comment['created_at']);
+			$comment['human_date']    = DateTime::relative($comment['created_at']);
 			$comment['published_at']  = date('Y-m-d', $comment['created_at']);
 			$comment['authorial']     = Utils::$context['lp_page']['author_id'] === $comment['poster']['id'];
 			$comment['extra_buttons'] = [];
@@ -140,7 +140,7 @@ final class Comment
 				'message'      => $message,
 				'created_at'   => $time,
 				'published_at' => date('Y-m-d', $time),
-				'human_date'   => $this->getFriendlyTime($time),
+				'human_date'   => DateTime::relative($time),
 				'can_edit'     => true,
 				'poster'       => [
 					'id'     => User::$info['id'],

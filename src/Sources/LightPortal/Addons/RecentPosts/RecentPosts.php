@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 04.02.24
  */
 
 namespace Bugo\LightPortal\Addons\RecentPosts;
@@ -18,7 +18,7 @@ namespace Bugo\LightPortal\Addons\RecentPosts;
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, NumberField, RadioField};
 use Bugo\LightPortal\Areas\Partials\{TopicSelect, BoardSelect};
-use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
+use Bugo\LightPortal\Utils\{Config, DateTime, Lang, User, Utils};
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -169,7 +169,7 @@ class RecentPosts extends Block
 		if (empty($posts))
 			return [];
 
-		array_walk($posts, fn(&$post) => $post['timestamp'] = $this->getFriendlyTime((int) $post['timestamp']));
+		array_walk($posts, fn(&$post) => $post['timestamp'] = DateTime::relative((int) $post['timestamp']));
 
 		if ($parameters['show_avatars'] && empty($parameters['use_simple_style']))
 			$posts = $this->getItemsWithUserAvatars($posts, 'poster');

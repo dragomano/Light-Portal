@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 02.02.24
+ * @version 04.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TrendingTopics;
@@ -19,7 +19,7 @@ use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\LightPortal\Areas\Fields\NumberField;
 use Bugo\LightPortal\Areas\Fields\SelectField;
-use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
+use Bugo\LightPortal\Utils\{Config, DateTime, Lang, User, Utils};
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -114,7 +114,7 @@ class TrendingTopics extends Block
 			$topics[$row['id_topic']] = [
 				'subject'     => $row['subject'],
 				'id_msg'      => $row['id_msg'],
-				'poster_time' => $this->getFriendlyTime($row['poster_time']),
+				'poster_time' => DateTime::relative($row['poster_time']),
 				'num_replies' => $row['num_replies'],
 				'poster'      => [
 					'id'   => $row['id_member_started'],

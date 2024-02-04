@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal\Actions;
 
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, Content, ErrorHandler};
+use Bugo\LightPortal\Utils\{Config, Content, DateTime, ErrorHandler};
 use Bugo\LightPortal\Utils\{Icon, Lang, Theme, User, Utils};
 use IntlException;
 
@@ -520,8 +520,8 @@ final class Page implements PageInterface
 
 		$is_author = $data['author_id'] && $data['author_id'] == User::$info['id'];
 
-		$data['created']  = $this->getFriendlyTime((int) $data['created_at']);
-		$data['updated']  = $this->getFriendlyTime((int) $data['updated_at']);
+		$data['created']  = DateTime::relative((int) $data['created_at']);
+		$data['updated']  = DateTime::relative((int) $data['updated_at']);
 		$data['can_view'] = $this->canViewItem($data['permissions']) || User::$info['is_admin'] || $is_author;
 		$data['can_edit'] = User::$info['is_admin'] || Utils::$context['allow_light_portal_manage_pages_any'] || (Utils::$context['allow_light_portal_manage_pages_own'] && $is_author);
 
