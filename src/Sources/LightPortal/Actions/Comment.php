@@ -22,7 +22,7 @@ use IntlException;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class Comment
+final class Comment implements ActionInterface
 {
 	use Helper;
 
@@ -36,7 +36,7 @@ final class Comment
 	/**
 	 * @throws IntlException
 	 */
-	public function prepare(): void
+	public function show(): void
 	{
 		if (empty($this->alias) || $this->request()->isEmpty('api'))
 			return;
@@ -72,8 +72,7 @@ final class Comment
 
 		$limit = (int) (Config::$modSettings['lp_num_comments_per_page'] ?? 10);
 
-		$commentTree = $this->getTree($comments);
-
+		$commentTree  = $this->getTree($comments);
 		$parentsCount = sizeof($commentTree);
 
 		Utils::$context['page_index'] = $this->constructPageIndex(
@@ -114,29 +113,29 @@ final class Comment
 		if (empty($data['message']))
 			exit(json_encode($result));
 
-		$parent_id = $this->filterVar($data['parent_id'], 'int');
-		$message   = Utils::$smcFunc['htmlspecialchars']($data['message']);
-		$author    = $this->filterVar($data['author'], 'int');
-		$page_id   = Utils::$context['lp_page']['id'];
-		$page_url  = Utils::$context['canonical_url'];
+		$parentId = $this->filterVar($data['parent_id'], 'int');
+		$message  = Utils::$smcFunc['htmlspecialchars']($data['message']);
+		$author   = $this->filterVar($data['author'], 'int');
+		$pageId   = Utils::$context['lp_page']['id'];
+		$pageUrl  = Utils::$context['canonical_url'];
 
-		if (empty($page_id) || empty($message))
+		if (empty($pageId) || empty($message))
 			exit(json_encode($result));
 
 		$item = $this->repository->save([
-			'parent_id'  => $parent_id,
-			'page_id'    => $page_id,
+			'parent_id'  => $parentId,
+			'page_id'    => $pageId,
 			'author_id'  => User::$info['id'],
 			'message'    => $message,
 			'created_at' => $time = time()
 		]);
 
 		if ($item) {
-			$this->repository->updateLastCommentId($item, $page_id);
+			$this->repository->updateLastCommentId($item, $pageId);
 
 			$result = [
 				'id'           => $item,
-				'parent_id'    => $parent_id,
+				'parent_id'    => $parentId,
 				'message'      => $message,
 				'created_at'   => $time,
 				'published_at' => date('Y-m-d', $time),
@@ -152,12 +151,12 @@ final class Comment
 			$notifyOptions = [
 				'item'      => $item,
 				'time'      => $time,
-				'author_id' => empty($parent_id) ? Utils::$context['lp_page']['author_id'] : $author,
+				'author_id' => empty($parentId) ? Utils::$context['lp_page']['author_id'] : $author,
 				'title'     => Utils::$context['page_title'],
-				'url'       => $page_url . '#comment=' . $item,
+				'url'       => $pageUrl . '#comment=' . $item,
 			];
 
-			empty($parent_id)
+			empty($parentId)
 				? $this->makeNotify('new_comment', 'page_comment', $notifyOptions)
 				: $this->makeNotify('new_reply', 'page_comment_reply', $notifyOptions);
 
@@ -231,7 +230,10 @@ final class Comment
 
 	private function getPageIndexUrl(): string
 	{
-		if (! (empty(Config::$modSettings['lp_frontpage_mode']) || Config::$modSettings['lp_frontpage_mode'] !== 'chosen_page') && ! empty(Config::$modSettings['lp_frontpage_alias']))
+		if (! (
+			empty(Config::$modSettings['lp_frontpage_mode'])
+			|| Config::$modSettings['lp_frontpage_mode'] !== 'chosen_page'
+		) && ! empty(Config::$modSettings['lp_frontpage_alias']))
 			return LP_BASE_URL;
 
 		return Utils::$context['canonical_url'];

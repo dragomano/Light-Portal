@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * BlockInterface.php
+ * PageListInterface.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -14,9 +14,9 @@
 
 namespace Bugo\LightPortal\Actions;
 
-interface BlockInterface extends ActionInterface
+interface PageListInterface
 {
-	public const STATUS_INACTIVE = 0;
+	public function getPages(int $start, int $items_per_page, string $sort): array;
 
-	public const STATUS_ACTIVE = 1;
+	public function getTotalCount(): int;
 }

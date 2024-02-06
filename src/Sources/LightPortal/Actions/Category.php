@@ -91,11 +91,14 @@ final class Category extends AbstractPageList
 	{
 		$result = Utils::$smcFunc['db_query']('', '
 			SELECT
-				p.page_id, p.author_id, p.alias, p.content, p.description, p.type, p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
+				p.page_id, p.author_id, p.alias, p.content, p.description, p.type,
+			    p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
 				COALESCE(mem.real_name, \'\') AS author_name, t.title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
-				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang})
+				LEFT JOIN {db_prefix}lp_titles AS t ON (
+					p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang}
+				)
 			WHERE p.category_id = {int:id}
 				AND p.status IN ({array_int:statuses})
 				AND p.created_at <= {int:current_time}
@@ -139,12 +142,12 @@ final class Category extends AbstractPageList
 			]
 		);
 
-		[$num_items] = Utils::$smcFunc['db_fetch_row']($result);
+		[$count] = Utils::$smcFunc['db_fetch_row']($result);
 
 		Utils::$smcFunc['db_free_result']($result);
 		Utils::$context['lp_num_queries']++;
 
-		return (int) $num_items;
+		return (int) $count;
 	}
 
 	public function showAll(): void

@@ -21,15 +21,11 @@ use IntlException;
 if (! defined('SMF'))
 	die('No direct access...');
 
-abstract class AbstractPageList
+abstract class AbstractPageList implements PageListInterface
 {
 	use Helper;
 
 	abstract public function show(PageInterface $page);
-
-	abstract public function getPages(int $start, int $items_per_page, string $sort): array;
-
-	abstract public function getTotalCount(): int;
 
 	abstract public function showAll();
 
@@ -72,14 +68,16 @@ abstract class AbstractPageList
 					'title' => Lang::$txt['lp_views']
 				],
 				'replies'   => [
-					'num'   => isset(Config::$modSettings['lp_show_comment_block']) && Config::$modSettings['lp_show_comment_block'] === 'default' ? $row['num_comments'] : 0,
+					'num'   => isset(Config::$modSettings['lp_show_comment_block'])
+						&& Config::$modSettings['lp_show_comment_block'] === 'default' ? $row['num_comments'] : 0,
 					'title' => Lang::$txt['lp_comments']
 				],
 				'title'     => $row['title'],
 				'is_new'    => User::$info['last_login'] < $row['date'] && $row['author_id'] != User::$info['id'],
 				'is_front'  => $this->isFrontpage($row['alias']),
 				'image'     => $image,
-				'can_edit'  => User::$info['is_admin'] || (Utils::$context['allow_light_portal_manage_pages_own'] && $row['author_id'] == User::$info['id']),
+				'can_edit'  => User::$info['is_admin']
+					|| (Utils::$context['allow_light_portal_manage_pages_own'] && $row['author_id'] == User::$info['id']),
 				'edit_link' => Config::$scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $row['page_id']
 			];
 

@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * BlockInterface.php
+ * ActionInterface.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -14,9 +14,7 @@
 
 namespace Bugo\LightPortal\Actions;
 
-interface BlockInterface extends ActionInterface
+interface ActionInterface
 {
-	public const STATUS_INACTIVE = 0;
-
-	public const STATUS_ACTIVE = 1;
+	public function show(): void;
 }

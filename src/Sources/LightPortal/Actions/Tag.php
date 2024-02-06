@@ -35,7 +35,10 @@ final class Tag extends AbstractPageList
 			ErrorHandler::fatalLang('lp_tag_not_found', status: 404);
 		}
 
-		Utils::$context['page_title']     = sprintf(Lang::$txt['lp_all_tags_by_key'], $this->getEntityList('tag')[Utils::$context['lp_tag']]);
+		Utils::$context['page_title'] = sprintf(
+			Lang::$txt['lp_all_tags_by_key'], $this->getEntityList('tag')[Utils::$context['lp_tag']]
+		);
+
 		Utils::$context['canonical_url']  = LP_BASE_URL . ';sa=tags;id=' . Utils::$context['lp_tag'];
 		Utils::$context['robot_no_index'] = true;
 
@@ -72,12 +75,17 @@ final class Tag extends AbstractPageList
 	{
 		$result = Utils::$smcFunc['db_query']('', '
 			SELECT
-				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content, p.type, p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
+				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content,
+				p.type, p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
 				COALESCE(mem.real_name, \'\') AS author_name, ps.value, t.title
 			FROM {db_prefix}lp_pages AS p
-				INNER JOIN {db_prefix}lp_params AS ps ON (p.page_id = ps.item_id AND ps.type = {literal:page} AND ps.name = {literal:keywords})
+				INNER JOIN {db_prefix}lp_params AS ps ON (
+					p.page_id = ps.item_id AND ps.type = {literal:page} AND ps.name = {literal:keywords}
+				)
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
-				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang})
+				LEFT JOIN {db_prefix}lp_titles AS t ON (
+					p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang}
+				)
 			WHERE FIND_IN_SET({int:id}, ps.value) > 0
 				AND p.status IN ({array_int:statuses})
 				AND p.created_at <= {int:current_time}
@@ -109,7 +117,9 @@ final class Tag extends AbstractPageList
 		$result = Utils::$smcFunc['db_query']('', '
 			SELECT COUNT(p.page_id)
 			FROM {db_prefix}lp_pages AS p
-				INNER JOIN {db_prefix}lp_params AS ps ON (p.page_id = ps.item_id AND ps.type = {literal:page} AND ps.name = {literal:keywords})
+				INNER JOIN {db_prefix}lp_params AS ps ON (
+					p.page_id = ps.item_id AND ps.type = {literal:page} AND ps.name = {literal:keywords}
+				)
 			WHERE FIND_IN_SET({int:id}, ps.value) > 0
 				AND p.status IN ({array_int:statuses})
 				AND p.created_at <= {int:current_time}
@@ -196,7 +206,9 @@ final class Tag extends AbstractPageList
 		$result = Utils::$smcFunc['db_query']('', '
 			SELECT t.tag_id, t.value, COUNT(t.tag_id) AS num
 			FROM {db_prefix}lp_pages AS p
-				INNER JOIN {db_prefix}lp_params AS ps ON (p.page_id = ps.item_id AND ps.type = {literal:page} AND ps.name = {literal:keywords})
+				INNER JOIN {db_prefix}lp_params AS ps ON (
+					p.page_id = ps.item_id AND ps.type = {literal:page} AND ps.name = {literal:keywords}
+				)
 				INNER JOIN {db_prefix}lp_tags AS t ON (FIND_IN_SET(t.tag_id, ps.value) > 0)
 			WHERE p.status IN ({array_int:statuses})
 				AND p.created_at <= {int:current_time}
