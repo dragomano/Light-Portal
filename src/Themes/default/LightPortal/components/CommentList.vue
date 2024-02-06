@@ -76,6 +76,8 @@ const getComments = async () => {
   parentsCount.value = data.parentsCount;
   total.value = data.total;
   limit.value = data.limit;
+
+  if (start.value > parentsCount.value) start.value = 0;
 };
 
 const addComment = async ({ content }) => {
