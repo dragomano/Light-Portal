@@ -2,6 +2,18 @@
   --vp-layout-max-width: 80%;
 }
 
+html[lang="it"] {
+  --vp-code-copy-copied-text-content: 'Copiato';
+}
+
+html[lang="ru"] {
+  --vp-code-copy-copied-text-content: 'Скопировано';
+}
+
+html[lang="el"] {
+  --vp-code-copy-copied-text-content: 'Αντιγράφηκε';
+}
+
 .content-container {
   max-width: 100% !important;
 }

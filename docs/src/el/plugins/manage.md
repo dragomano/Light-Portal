@@ -5,7 +5,7 @@ order: 1
 
 # Διαχείριση προσθηκών
 
-All installed portal plugins are listed here. Some of them have their own settings.
+Όλα τα εγκατεστημένα πρόσθετα πύλης παρατίθενται εδώ. Some of them have their own settings.
 
 You can switch between displaying plugins in 1 column (default) or 2 columns if you wish.
 
