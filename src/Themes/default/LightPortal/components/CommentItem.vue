@@ -88,12 +88,6 @@
   </li>
 </template>
 
-<script>
-export default {
-  name: 'CommentItem',
-};
-</script>
-
 <script setup>
 import { ref, computed } from 'vue';
 import { useUserStore } from '../../scripts/light_portal/dev/comment_stores.js';
@@ -102,6 +96,10 @@ import EditForm from './EditForm.vue';
 import ReplyForm from './ReplyForm.vue';
 import MarkdownPreview from './MarkdownPreview.vue';
 import Button from './BaseButton.vue';
+
+defineOptions({
+  name: 'CommentItem',
+});
 
 const userStore = useUserStore();
 

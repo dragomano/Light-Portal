@@ -2,12 +2,6 @@
   <span v-html="extra"></span>
 </template>
 
-<script>
-export default {
-  name: 'CallbackOption',
-};
-</script>
-
 <script setup>
 import { computed } from 'vue';
 

@@ -5,12 +5,6 @@
   </component>
 </template>
 
-<script>
-export default {
-  name: 'BaseButton',
-};
-</script>
-
 <script setup>
 import { computed } from 'vue';
 import { useIconStore } from '../../scripts/light_portal/dev/base_stores.js';

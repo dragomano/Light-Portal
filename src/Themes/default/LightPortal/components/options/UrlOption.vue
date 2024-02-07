@@ -11,12 +11,6 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'UrlOption',
-};
-</script>
-
 <script setup>
 import { computed } from 'vue';
 

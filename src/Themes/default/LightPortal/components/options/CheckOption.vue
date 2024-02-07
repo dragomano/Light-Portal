@@ -8,12 +8,6 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'CheckOption',
-};
-</script>
-
 <script setup>
 import { ref } from 'vue';
 import Toggle from '@vueform/toggle';

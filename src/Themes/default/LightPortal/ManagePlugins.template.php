@@ -20,13 +20,22 @@ function template_manage_plugins(): void
 		}
 	</script>';
 
-	if (Config::$db_show_debug && is_file(Theme::$current->settings['default_theme_dir'] . '/scripts/light_portal/dev/helpers.js')) {
+	if (is_file(Theme::$current->settings['default_theme_dir'] . '/scripts/light_portal/dev/helpers.js')) {
 		echo '
-	<script src="https://cdn.jsdelivr.net/combine/npm/vue@3/dist/vue.global', (Config::$db_show_debug ? '' : '.prod'), '.min.js,npm/vue3-sfc-loader@0,npm/vue-demi@0,npm/pinia@2,npm/vue-i18n@9/dist/vue-i18n.global.prod.min.js,npm/@vueform/multiselect@2,npm/@vueform/toggle@2/dist/toggle.global.min.js,npm/@vueuse/shared@10,npm/@vueuse/core@10"></script>
+	<script src="https://cdn.jsdelivr.net/combine/npm/vue@3/dist/vue.global.min.js,npm/vue3-sfc-loader@0,npm/vue-demi@0,npm/pinia@2,npm/vue-i18n@9/dist/vue-i18n.global.prod.min.js,npm/@vueform/multiselect@2,npm/@vueform/toggle@2/dist/toggle.global.min.js,npm/@vueuse/shared@10,npm/@vueuse/core@10"></script>
 	<script src="', Theme::$current->settings['default_theme_url'], '/scripts/light_portal/dev/helpers.js"></script>
 	<script src="', Theme::$current->settings['default_theme_url'], '/scripts/light_portal/dev/vue_plugins.js"></script>';
 	} else {
 		echo '
+	<script type="importmap">
+		{
+			"imports": {
+				"vue": "https://cdn.jsdelivr.net/npm/vue@3/+esm",
+				"vue-i18n": "https://cdn.jsdelivr.net/npm/vue-i18n@9/+esm",
+				"pinia": "https://cdn.jsdelivr.net/npm/pinia@2/+esm"
+			}
+		}
+	</script>
 	<script type="module" src="', Theme::$current->settings['default_theme_url'], '/scripts/light_portal/bundle_plugins.js"></script>';
 	}
 }

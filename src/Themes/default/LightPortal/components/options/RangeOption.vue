@@ -13,12 +13,6 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'RangeOption',
-};
-</script>
-
 <script setup>
 import { computed, ref } from 'vue';
 
