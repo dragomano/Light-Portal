@@ -26,7 +26,8 @@ if (! defined('SMF'))
 
 trait Helper
 {
-	use BlockAppearance, SMFTrait;
+	use BlockAppearance;
+	use SMFTrait;
 
 	/**
 	 * @param mixed|null $default

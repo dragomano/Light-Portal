@@ -55,7 +55,10 @@ final class BasicConfig extends AbstractConfig
 
 		$this->prepareTopicList();
 
-		Utils::$context['lp_column_set'] = array_map(fn($item) => Lang::getTxt('lp_frontpage_num_columns_set', ['columns' => $item]), [1, 2, 3, 4, 6]);
+		Utils::$context['lp_column_set'] = array_map(
+			fn($item) => Lang::getTxt('lp_frontpage_num_columns_set', ['columns' => $item]),
+			[1, 2, 3, 4, 6]
+		);
 
 		Utils::$context['lp_frontpage_layouts']           = (new FrontPage)->getLayouts();
 		Utils::$context['lp_frontpage_alias_select']      = new PageAliasSelect;

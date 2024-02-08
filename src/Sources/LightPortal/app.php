@@ -36,7 +36,7 @@ if (str_starts_with(SMF_VERSION, '3.0')) {
 		'Bugo\\LightPortal\\Utils\\LangNext'         => 'Bugo\\LightPortal\\Utils\\Lang',
 	];
 
-	$applyAlias = fn($class, $alias) => class_alias($class, $alias);
+	$applyAlias = static fn($class, $alias) => class_alias($class, $alias);
 
 	array_map($applyAlias, array_keys($aliases), $aliases);
 } else {
