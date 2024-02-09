@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 04.02.24
+ * @version 09.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortalMigration;
@@ -38,7 +38,7 @@ class PageImport extends AbstractCustomPageImport
 		$this->run();
 
 		$listOptions = [
-			'id' => 'lp_pages',
+			'id' => 'tp_pages',
 			'items_per_page' => 50,
 			'title' => Lang::$txt['lp_pages_import'],
 			'no_items_label' => Lang::$txt['lp_no_items'],

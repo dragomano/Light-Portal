@@ -22,7 +22,7 @@ use Bugo\LightPortal\Areas\Validators\PageValidator;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Models\PageModel;
 use Bugo\LightPortal\Repositories\PageRepository;
-use Bugo\LightPortal\Utils\{Config, Content, ErrorHandler};
+use Bugo\LightPortal\Utils\{Config, Content, ErrorHandler, DateTime};
 use Bugo\LightPortal\Utils\{Icon, Lang, Theme, User, Utils};
 use IntlException;
 
@@ -623,7 +623,7 @@ final class PageArea
 		$page->keywords = $post_data['keywords'] ?? Utils::$context['lp_current_page']['tags'] ?? [];
 		$page->options = $options;
 
-		$dateTime = $this->getDateTime();
+		$dateTime = DateTime::get();
 		$page->date = $post_data['date'] ?? $dateTime->format('Y-m-d');
 		$page->time = $post_data['time'] ?? $dateTime->format('H:i');
 

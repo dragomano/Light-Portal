@@ -1,6 +1,6 @@
 <?php
 
-global $user_info, $language, $mbname, $modSettings, $settings, $smcFunc;
+global $user_info, $language, $mbname, $modSettings, $settings, $smcFunc, $context;
 
 if (version_compare(PHP_VERSION, '8.0', '<'))
 	die('This mod needs PHP 8.0 or greater. You will not be able to install/use this mod. Please, contact your host and ask for a php upgrade.');
@@ -402,6 +402,20 @@ $tables[] = [
 			'type'    => 'primary',
 			'columns' => ['name', 'config']
 		]
+	],
+	'default' => [
+		'columns' => [
+			'name'   => 'string',
+			'config' => 'string',
+			'value'  => 'string'
+		],
+		'values' => [
+			['hello_portal', 'keyboard_navigation', '1'],
+			['hello_portal', 'show_buttons', '1'],
+			['hello_portal', 'show_progress', '1'],
+			['hello_portal', 'theme', 'flattener'],
+		],
+		'keys' => ['name', 'config']
 	]
 ];
 
@@ -517,6 +531,8 @@ if (! @is_writable($css_dir = $settings['default_theme_dir'] . '/css/light_porta
 	smf_chmod($css_dir);
 if (! @is_writable($scripts = $settings['default_theme_dir'] . '/scripts/light_portal'))
 	smf_chmod($scripts);
+
+$context['lp_num_queries'] ??= 0;
 
 if (SMF === 'SSI')
 	echo 'Database changes are complete! Please wait...';

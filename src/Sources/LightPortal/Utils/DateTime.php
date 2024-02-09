@@ -30,7 +30,7 @@ final class DateTime
 	{
 		$now = time();
 
-		$dateTime = self::getDateTime($timestamp);
+		$dateTime = self::get($timestamp);
 
 		$t = $dateTime->format('H:i');
 		$d = $dateTime->format('j');
@@ -124,7 +124,7 @@ final class DateTime
 		return self::getLocalDate($timestamp, timeType: 'none');
 	}
 
-	private static function getDateTime(int $timestamp = 0): BaseDateTime
+	public static function get(int $timestamp = 0): BaseDateTime
 	{
 		$dateTime = new BaseDateTime;
 		$dateTime->setTimestamp($timestamp ?: time());

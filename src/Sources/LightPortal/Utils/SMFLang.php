@@ -24,6 +24,8 @@ if (! defined('SMF'))
 
 class SMFLang
 {
+	public const LANG_TO_LOCALE = [];
+
 	public static array $txt;
 
 	public static array $editortxt;
@@ -59,5 +61,10 @@ class SMFLang
 	public static function sentenceList(array $list): string
 	{
 		return sentence_list($list);
+	}
+
+	public static function getTxt(string|array $txt_key, array $args = [], string $var = 'txt'): string
+	{
+		return str_replace(array_keys($args), $args, Lang::${$var}[$txt_key]);
 	}
 }
