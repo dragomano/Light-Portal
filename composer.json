@@ -9,7 +9,7 @@
     "ext-dom": "*"
   },
   "require-dev": {
-    "rector/rector": "^0.19",
+    "rector/rector": "^1.0",
     "phing/phing": "3.*"
   },
   "minimum-stability": "alpha",
