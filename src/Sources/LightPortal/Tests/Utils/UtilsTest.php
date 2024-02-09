@@ -17,7 +17,7 @@ test('check properties', function () {
 });
 
 test('check methods', function () {
-	Assert::true(method_exists(Utils::class, 'JavaScriptEscape'));
+	Assert::true(method_exists(Utils::class, 'escapeJavaScript'));
 	Assert::true(method_exists(Utils::class, 'obExit'));
 	Assert::true(method_exists(Utils::class, 'redirectexit'));
 	Assert::true(method_exists(Utils::class, 'sendHttpStatus'));

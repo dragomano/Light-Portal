@@ -43,12 +43,6 @@
   </ListTransition>
 </template>
 
-<script>
-export default {
-  name: 'PluginList',
-};
-</script>
-
 <script setup>
 import { ref, computed } from 'vue';
 import { useStorage } from '@vueuse/core';

@@ -61,7 +61,7 @@ final class User
 
 	public static function hasPermission(string $permission): bool
 	{
-		return (bool) allowedTo($permission);
+		return allowedTo($permission);
 	}
 
 	public static function checkSession(): void

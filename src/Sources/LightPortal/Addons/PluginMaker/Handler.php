@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.01.24
+ * @version 31.01.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -59,23 +59,24 @@ class Handler extends Plugin
 	{
 		$temp = Lang::get();
 
-		if (empty(Config::$modSettings['userLanguage'])) {
-			Utils::$context['lp_languages'] = ['english' => $temp['english']];
+		$baseLang = Lang::getLanguageNameFromLocale(Config::$language);
 
-			if (Config::$language !== 'english')
-				Utils::$context['lp_languages'][Config::$language] = $temp[Config::$language];
+		if (empty(Config::$modSettings['userLanguage'])) {
+			Utils::$context['lp_languages'] = ['english' => $temp[Lang::FALLBACK_LANG]];
+
+			if ($baseLang !== 'english')
+				Utils::$context['lp_languages'][$baseLang] = $temp[Config::$language];
 
 			return;
 		}
 
-		Utils::$context['lp_languages'] = array_merge(
-			[
-				'english' => $temp['english'],
-				User::$info['language'] => $temp[User::$info['language']],
-				Config::$language => $temp[Config::$language]
-			],
-			$temp
-		);
+		$userLang = Lang::getLanguageNameFromLocale(User::$info['language']);
+
+		Utils::$context['lp_languages'] = array_merge([
+			'english' => $temp[Lang::FALLBACK_LANG],
+			$userLang => $temp[User::$info['language']],
+			$baseLang => $temp[Config::$language]
+		]);
 	}
 
 	private function validateData(): void
@@ -114,14 +115,14 @@ class Handler extends Plugin
 			}
 		}
 
-		foreach (Utils::$context['lp_languages'] as $lang) {
-			Utils::$context['lp_plugin']['titles'][$lang['filename']]       = $post_data['title_' . $lang['filename']] ?? Utils::$context['lp_plugin']['titles'][$lang['filename']] ?? '';
-			Utils::$context['lp_plugin']['descriptions'][$lang['filename']] = $post_data['description_' . $lang['filename']] ?? Utils::$context['lp_plugin']['descriptions'][$lang['filename']] ?? '';
+		foreach (array_keys(Utils::$context['lp_languages']) as $lang) {
+			Utils::$context['lp_plugin']['titles'][$lang] = $post_data['title_' . $lang] ?? Utils::$context['lp_plugin']['titles'][$lang] ?? '';
+			Utils::$context['lp_plugin']['descriptions'][$lang] = $post_data['description_' . $lang] ?? Utils::$context['lp_plugin']['descriptions'][$lang] ?? '';
 
-			if (! empty($post_data['option_translations'][$lang['filename']])) {
-				foreach ($post_data['option_translations'][$lang['filename']] as $id => $translation) {
+			if (! empty($post_data['option_translations'][$lang])) {
+				foreach ($post_data['option_translations'][$lang] as $id => $translation) {
 					if (! empty($translation))
-						Utils::$context['lp_plugin']['options'][$id]['translations'][$lang['filename']] = $translation;
+						Utils::$context['lp_plugin']['options'][$id]['translations'][$lang] = $translation;
 				}
 			}
 		}
@@ -208,8 +209,14 @@ class Handler extends Plugin
 
 	private function setTitleField(): void
 	{
-		$languages = empty(Config::$modSettings['userLanguage']) ? [Config::$language] : ['english', Config::$language];
-		$languages = array_unique(['english', ...$languages]);
+		$languages = empty(Config::$modSettings['userLanguage'])
+			? [Lang::getLanguageNameFromLocale(Config::$language)]
+			: [
+				Lang::getLanguageNameFromLocale(Lang::FALLBACK_LANG),
+				Lang::getLanguageNameFromLocale(Config::$language)
+			];
+
+		$languages = array_unique([Lang::getLanguageNameFromLocale(Lang::FALLBACK_LANG), ...$languages]);
 
 		$value = /** @lang text */	'
 			<div>';
@@ -218,13 +225,15 @@ class Handler extends Plugin
 			$value .= '
 			<nav' . (Utils::$context['right_to_left'] ? '' : ' class="floatleft"') . '>';
 
-			foreach (Utils::$context['lp_languages'] as $lang) {
+			foreach (Utils::$context['lp_languages'] as $key => $lang) {
 				$value .= /** @lang text */
 					'
 				<a
 					class="button floatnone"
-					:class="{ \'active\': tab === \'' . $lang['filename'] . '\' }"
-					@click.prevent="tab = \'' . $lang['filename'] . '\'; window.location.hash = \'' . $lang['filename'] . '\'; $nextTick(() => { setTimeout(() => { document.querySelector(\'input[name=description_' . $lang['filename'] . ']\').focus() }, 50); });"
+					:class="{ \'active\': tab === \'' . $key . '\' }"
+					@click.prevent="tab = \'' . $key . '\';
+						window.location.hash = \'' . $key . '\';
+						$nextTick(() => { setTimeout(() => { document.querySelector(\'input[name=description_' . $key . ']\').focus() }, 50); });"
 				>' . $lang['name'] . '</a>';
 			}
 
@@ -233,22 +242,22 @@ class Handler extends Plugin
 		}
 
 		$i = count($languages) - 1;
-		foreach (Utils::$context['lp_languages'] as $lang) {
+		foreach (Utils::$context['lp_languages'] as $key => $lang) {
 			$value .= /** @lang text */
 				'
-				<div x-show="tab === \'' . $lang['filename'] . '\'">
+				<div x-show="tab === \'' . $key . '\'">
 					<input
 						type="text"
-						name="title_' . $lang['filename'] . '"
-						value="' . (Utils::$context['lp_plugin']['titles'][$lang['filename']] ?? '') . '"
+						name="title_' . $key . '"
+						value="' . (Utils::$context['lp_plugin']['titles'][$key] ?? '') . '"
 						placeholder="' . Lang::$txt['lp_title'] . '"
 					>
 					<input
 						type="text"
-						name="description_' . $lang['filename'] . '"
-						value="' . (Utils::$context['lp_plugin']['descriptions'][$lang['filename']] ?? '') . '"
+						name="description_' . $key . '"
+						value="' . (Utils::$context['lp_plugin']['descriptions'][$key] ?? '') . '"
 						placeholder="' . Lang::$txt['lp_page_description'] . '"
-						' . (in_array($lang['filename'], $languages) ? 'x-ref="title_' . $i-- . '"' : '') . ($lang['filename'] === 'english' ? ' required' : '') . '
+						' . (in_array($key, $languages) ? 'x-ref="title_' . $i-- . '"' : '') . ($lang['filename'] === Lang::FALLBACK_LANG ? ' required' : '') . '
 					>
 				</div>';
 		}
@@ -614,12 +623,11 @@ class Handler extends Plugin
 		$file->addComment("@category addon");
 		$file->addComment("@version " . date('d.m.y'));
 
-		$content = (new class extends Printer {
-			protected $indentation = "\t";
-			protected $linesBetweenProperties = 1;
-			protected $linesBetweenMethods = 1;
-			protected $returnTypeColon = ': ';
-		})->printFile($file);
+		$printer = new class extends Printer {};
+		$printer->linesBetweenProperties = 1;
+		$printer->linesBetweenMethods = 1;
+
+		$content = $printer->printFile($file);
 
 		$plugin = new Builder(Utils::$context['lp_plugin']['name']);
 		$plugin->create($content);

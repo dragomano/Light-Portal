@@ -39,7 +39,7 @@ final class Utils
 		self::$smcFunc = &$GLOBALS['smcFunc'];
 	}
 
-	public static function JavaScriptEscape(string $string, bool $as_json = false): string
+	public static function escapeJavaScript(string $string, bool $as_json = false): string
 	{
 		return JavaScriptEscape($string, $as_json);
 	}

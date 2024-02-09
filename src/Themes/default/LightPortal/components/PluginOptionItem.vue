@@ -11,7 +11,9 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { computed } from 'vue';
+import { useContextStore } from '../../scripts/light_portal/dev/base_stores.js';
 import CallbackOption from './options/CallbackOption.vue';
 import CheckOption from './options/CheckOption.vue';
 import ColorOption from './options/ColorOption.vue';
@@ -24,15 +26,6 @@ import SelectOption from './options/SelectOption.vue';
 import TextOption from './options/TextOption.vue';
 import TitleOption from './options/TitleOption.vue';
 import UrlOption from './options/UrlOption.vue';
-
-export default {
-  name: 'PluginOptionItem',
-};
-</script>
-
-<script setup>
-import { computed } from 'vue';
-import { useContextStore } from '../../scripts/light_portal/dev/base_stores.js';
 
 const contextStore = useContextStore();
 

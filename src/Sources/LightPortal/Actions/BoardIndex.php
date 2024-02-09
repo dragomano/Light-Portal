@@ -16,7 +16,7 @@ namespace Bugo\LightPortal\Actions;
 
 use Bugo\LightPortal\Helper;
 
-final class BoardIndex
+final class BoardIndex implements ActionInterface
 {
 	use Helper;
 

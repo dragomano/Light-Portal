@@ -10,7 +10,7 @@ outline:
 
 Utilizza l'accesso rapido tramite la voce nel menu principale del forum o la sezione corrispondente nel pannello di amministrazione per aprire le impostazioni del portale.
 
-Non verranno descritte nel dettaglio ciascuna delle impostazioni disponibili, verranno citate solo quelle più importanti. In caso di dubbi su alcuni parametri, contatta lo sviluppatore tramite l'area [Feedback](#feedback).
+Non verranno descritte nel dettaglio ciascuna delle impostazioni disponibili, verranno citate solo quelle più importanti. In caso di dubbi su alcuni parametri, contatta lo sviluppatore tramite l'area [Suggerimenti](#feedback).
 
 ## Impostazioni generali
 

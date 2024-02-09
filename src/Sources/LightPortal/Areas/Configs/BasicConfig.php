@@ -55,7 +55,10 @@ final class BasicConfig extends AbstractConfig
 
 		$this->prepareTopicList();
 
-		Utils::$context['lp_column_set'] = array_map(fn($item) => $this->translate('lp_frontpage_num_columns_set', ['columns' => $item]), [1, 2, 3, 4, 6]);
+		Utils::$context['lp_column_set'] = array_map(
+			fn($item) => Lang::getTxt('lp_frontpage_num_columns_set', ['columns' => $item]),
+			[1, 2, 3, 4, 6]
+		);
 
 		Utils::$context['lp_frontpage_layouts']           = (new FrontPage)->getLayouts();
 		Utils::$context['lp_frontpage_alias_select']      = new PageAliasSelect;
@@ -199,14 +202,11 @@ final class BasicConfig extends AbstractConfig
 
 			$save_vars = $config_vars;
 
-			if ($this->request()->isNotEmpty('lp_frontpage_mode')) {
-				$save_vars[] = ['text', 'lp_frontpage_alias'];
-				$save_vars[] = ['text', 'lp_frontpage_categories'];
-				$save_vars[] = ['text', 'lp_frontpage_boards'];
-				$save_vars[] = ['text', 'lp_frontpage_pages'];
-				$save_vars[] = ['text', 'lp_frontpage_topics'];
-			}
-
+			$save_vars[] = ['text', 'lp_frontpage_alias'];
+			$save_vars[] = ['text', 'lp_frontpage_categories'];
+			$save_vars[] = ['text', 'lp_frontpage_boards'];
+			$save_vars[] = ['text', 'lp_frontpage_pages'];
+			$save_vars[] = ['text', 'lp_frontpage_topics'];
 			$save_vars[] = ['text', 'lp_disabled_actions'];
 
 			$this->saveDBSettings($save_vars);

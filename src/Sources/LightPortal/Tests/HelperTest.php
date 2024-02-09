@@ -7,6 +7,8 @@
 namespace Tests;
 
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Utils\Config;
+use Bugo\LightPortal\Utils\Lang;
 use Bugo\LightPortal\Utils\Utils;
 use Tester\Assert;
 
@@ -21,5 +23,9 @@ test('prepareForumLanguages helper', function () {
 
 	$class->prepareForumlanguages();
 
-	Assert::hasKey('english', Utils::$context['lp_languages']);
+	Assert::hasKey(LANG::FALLBACK_LANG, Utils::$context['lp_languages']);
+
+	Config::$modSettings['userLanguage'] = 0;
+
+	Assert::hasKey(Config::$language, Utils::$context['lp_languages']);
 });

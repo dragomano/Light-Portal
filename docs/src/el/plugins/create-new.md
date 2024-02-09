@@ -1,75 +1,75 @@
 ---
-description: Brief description of the plugin creation interface
+description: Σύντομη περιγραφή της διεπαφής δημιουργίας πρόσθετων
 order: 2
 ---
 
 # Προσθήκη πρόσθετου
 
-Plugins are the extensions that expand the capabilities of the Light Portal. To create your own plugin, just follow the instructions below.
+Τα πρόσθετα είναι οι επεκτάσεις που επεκτείνουν τις δυνατότητες του Light Portal. Για να δημιουργήσετε το δικό σας πρόσθετο, απλώς ακολουθήστε τις παρακάτω οδηγίες.
 
 :::info
 
-You can use the **PluginMaker** as a helper to create your own plugins. Download and enable it on the page _Admin -> Portal settings -> Plugins_.
+Μπορείτε να χρησιμοποιήσετε το **PluginMaker** ως βοηθητικό για να δημιουργήσετε τα δικά σας πρόσθετα. Κάντε λήψη και ενεργοποιήστε το στη σελίδα _Διαχειριστής -> Ρυθμίσεις πύλης -> Προσθήκες_.
 
 ![Create a new plugin with PluginMaker](create_plugin.png)
 
 :::
 
-## Choosing the type of plugin
+## Επιλογή του τύπου προσθήκης
 
-Currently, the following types of plugins are available:
+Επί του παρόντος, είναι διαθέσιμοι οι ακόλουθοι τύποι προσθηκών:
 
 ### `block`
 
-Plugins that add a new type of blocks for the portal.
+Προσθήκες που προσθέτουν έναν νέο τύπο μπλοκ για την πύλη.
 
 ### `ssi`
 
-Plugins (usually blocks) that use SSI functions to retrieve data.
+Προσθήκες (συνήθως μπλοκ) που χρησιμοποιούν συναρτήσεις SSI για την ανάκτηση δεδομένων.
 
 ### `editor`
 
-Plugins that add a third-party editor for different types of content.
+Προσθήκες που προσθέτουν ένα πρόγραμμα επεξεργασίας τρίτου μέρους για διαφορετικούς τύπους περιεχομένου.
 
 ### `comment`
 
-Plugins that add a third-party comment widget instead of the built-in.
+Προσθήκες που προσθέτουν ένα γραφικό στοιχείο σχολίων τρίτου μέρους αντί για το ενσωματωμένο.
 
 ### `parser`
 
-Plugins that implement the parser for the content of pages and blocks.
+Προσθήκες που υλοποιούν τον αναλυτή για το περιεχόμενο σελίδων και μπλοκ.
 
 ### `article`
 
-Plugins for processing the content of article cards on the main page.
+Πρόσθετα για την επεξεργασία του περιεχομένου καρτών άρθρων στην κεντρική σελίδα.
 
 ### `frontpage`
 
-Plugins for changing the main page of the portal.
+Πρόσθετα για την αλλαγή της κύριας σελίδας της πύλης.
 
 ### `impex`
 
-Plugins for importing and exporting various portal elements.
+Πρόσθετα για εισαγωγή και εξαγωγή διαφόρων στοιχείων πύλης.
 
 ### `block_options` | `page_options`
 
-Plugins that add additional parameters for the corresponding entity (block or .page).
+Προσθήκες που προσθέτουν πρόσθετες παραμέτρους για την αντίστοιχη οντότητα (block ή .page).
 
 ### `icons`
 
-Plugins that add new icon libraries to replace interface elements or for use in block headers
+Προσθήκες που προσθέτουν νέες βιβλιοθήκες εικονιδίων για να αντικαταστήσουν στοιχεία διεπαφής ή για χρήση σε κεφαλίδες μπλοκ
 
 ### `seo`
 
-Plugins that somehow affect the visibility of the forum on the network.
+Πρόσθετα που επηρεάζουν κατά κάποιο τρόπο την ορατότητα του φόρουμ στο δίκτυο.
 
 ### `other`
 
-Plugins that are not related to any of the categories above.
+Προσθήκες που δεν σχετίζονται με καμία από τις παραπάνω κατηγορίες.
 
-## Creating a plugin directory
+## Δημιουργία καταλόγου προσθηκών
 
-Create a separate folder for your plugin files, inside `/Sources/LightPortal/Addons`. For example, if your plugin is called `HelloWorld`, the folder structure should look like this:
+Δημιουργήστε έναν ξεχωριστό φάκελο για τα αρχεία των προσθηκών σας, μέσα στο «/Sources/LightPortal/Addons». Για παράδειγμα, εάν η προσθήκη σας ονομάζεται «HelloWorld», η δομή του φακέλου θα πρέπει να μοιάζει με αυτό:
 
 ```
 ...(Addons)
@@ -81,7 +81,7 @@ Create a separate folder for your plugin files, inside `/Sources/LightPortal/Add
     └── HelloWorld.php
 ```
 
-File `index.php` can be copied from folders of other plugins. Το αρχείο `HelloWorld.php` περιέχει τη λογική της προσθήκης:
+Το αρχείο «index.php» μπορεί να αντιγραφεί από φακέλους άλλων προσθηκών. Το αρχείο `HelloWorld.php` περιέχει τη λογική της προσθήκης:
 
 ```php:line-numbers
 <?php

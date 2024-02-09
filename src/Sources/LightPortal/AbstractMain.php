@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal;
 
 use Bugo\LightPortal\Actions\{Block, PageInterface};
-use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Theme, User, Utils};
+use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Sapi, Theme, User, Utils};
 use Exception;
 use Less_Exception_Parser;
 use Less_Parser;
@@ -110,7 +110,7 @@ abstract class AbstractMain
 
 		$parser = new Less_Parser([
 			'compress'  => true,
-			'cache_dir' => empty(Config::$modSettings['cache_enable']) ? null : Config::getTempDir(),
+			'cache_dir' => empty(Config::$modSettings['cache_enable']) ? null : Sapi::getTempDir(),
 		]);
 
 		try {

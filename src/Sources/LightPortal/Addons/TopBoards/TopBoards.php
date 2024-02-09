@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 02.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TopBoards;
@@ -102,7 +102,7 @@ class TopBoards extends Block
 			<dt>', $board['link'], '</dt>
 			<dd class="statsbar generic_bar righttext">
 				<div class="bar', (empty($board['num_' . $type]) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-				<span>', ($parameters['show_numbers_only'] ? $board['num_' . $type] : $this->translate(Lang::$txt['lp_top_boards'][$type], [$type => $board['num_' . $type]])), '</span>
+				<span>', ($parameters['show_numbers_only'] ? $board['num_' . $type] : Lang::getTxt(Lang::$txt['lp_top_boards'][$type], [$type => $board['num_' . $type]])), '</span>
 			</dd>';
 		}
 

@@ -28,12 +28,6 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'PurePagination',
-};
-</script>
-
 <script setup>
 import { computed } from 'vue';
 import Button from './BaseButton.vue';

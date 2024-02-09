@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal\Actions;
 
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\{Config, Content, Lang, Theme, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -29,7 +29,10 @@ final class Block implements BlockInterface
 		if ($this->isHideBlocksInAdmin() || $this->request()->is('devtools') || $this->request()->has('preview'))
 			return;
 
-		if (empty(Utils::$context['allow_light_portal_view']) || empty(Utils::$context['template_layers']) || empty(Utils::$context['lp_active_blocks']))
+		if (empty(Utils::$context['allow_light_portal_view']))
+			return;
+
+		if (empty(Utils::$context['template_layers']) || empty(Utils::$context['lp_active_blocks']))
 			return;
 
 		if (empty($blocks = $this->getFilteredByAreas()))
@@ -43,8 +46,13 @@ final class Block implements BlockInterface
 			$data['can_edit'] = Utils::$context['user']['is_admin'];
 
 			$data['content'] = empty($data['content'])
-				? prepare_content($data['type'], $data['id'], LP_CACHE_TIME, Utils::$context['lp_active_blocks'][$data['id']]['parameters'] ?? [])
-				: parse_content($data['content'], $data['type']);
+				? Content::prepare(
+					$data['type'],
+					$data['id'],
+					LP_CACHE_TIME,
+					Utils::$context['lp_active_blocks'][$data['id']]['parameters'] ?? []
+				)
+				: Content::parse($data['content'], $data['type']);
 
 			Utils::$context['lp_blocks'][$data['placement']][$item] = $data;
 
@@ -80,10 +88,11 @@ final class Block implements BlockInterface
 		if ($this->isHideBlocksInAdmin())
 			return [];
 
-		if (($active_blocks = $this->cache()->get('active_blocks')) === null) {
+		if (($blocks = $this->cache()->get('active_blocks')) === null) {
 			$result = Utils::$smcFunc['db_query']('', '
 				SELECT
-					b.block_id, b.icon, b.type, b.content, b.placement, b.priority, b.permissions, b.areas, b.title_class, b.content_class,
+					b.block_id, b.icon, b.type, b.content, b.placement, b.priority,
+					b.permissions, b.areas, b.title_class, b.content_class,
 					bt.lang, bt.title, bp.name, bp.value
 				FROM {db_prefix}lp_blocks AS b
 					LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
@@ -95,11 +104,11 @@ final class Block implements BlockInterface
 				]
 			);
 
-			$active_blocks = [];
+			$blocks = [];
 			while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 				Lang::censorText($row['content']);
 
-				$active_blocks[$row['block_id']] ??= [
+				$blocks[$row['block_id']] ??= [
 					'id'            => (int) $row['block_id'],
 					'icon'          => $row['icon'],
 					'type'          => $row['type'],
@@ -112,24 +121,26 @@ final class Block implements BlockInterface
 					'content_class' => $row['content_class'],
 				];
 
-				$active_blocks[$row['block_id']]['titles'][$row['lang']] = $row['title'];
-				$active_blocks[$row['block_id']]['titles'] = array_filter($active_blocks[$row['block_id']]['titles']);
+				$blocks[$row['block_id']]['titles'][$row['lang']] = $row['title'];
+				$blocks[$row['block_id']]['titles'] = array_filter($blocks[$row['block_id']]['titles']);
 
-				$active_blocks[$row['block_id']]['parameters'][$row['name']] = $row['value'];
+				$blocks[$row['block_id']]['parameters'][$row['name']] = $row['value'];
 			}
 
 			Utils::$smcFunc['db_free_result']($result);
 			Utils::$context['lp_num_queries']++;
 
-			$this->cache()->put('active_blocks', $active_blocks);
+			$this->cache()->put('active_blocks', $blocks);
 		}
 
-		return $active_blocks;
+		return $blocks;
 	}
 
 	private function getFilteredByAreas(): array
 	{
-		$area = Utils::$context['current_action'] ?: (empty(Config::$modSettings['lp_frontpage_mode']) ? 'forum' : LP_ACTION);
+		$area = Utils::$context['current_action'] ?: (
+			empty(Config::$modSettings['lp_frontpage_mode']) ? 'forum' : LP_ACTION
+		);
 
 		if (! (empty(Config::$modSettings['lp_standalone_mode']) || empty(Config::$modSettings['lp_standalone_url']))) {
 			if (Config::$modSettings['lp_standalone_url'] === $this->request()->url()) {
@@ -146,24 +157,38 @@ final class Block implements BlockInterface
 			$area = LP_ACTION;
 
 		return array_filter(Utils::$context['lp_active_blocks'], function ($block) use ($area) {
-			$temp_areas     = $block['areas'];
+			$tempAreas = $block['areas'];
 			$block['areas'] = array_flip($block['areas']);
 
-			if (isset($block['areas']['!' . $area]) && $temp_areas[0] === 'all')
+			if (isset($block['areas']['!' . $area]) && $tempAreas[0] === 'all')
 				return false;
 
 			if (isset($block['areas']['all']) || isset($block['areas'][$area]))
 				return true;
 
-			if ($area === LP_ACTION && isset($block['areas']['home']) && empty(Utils::$context['lp_page']) && empty(Utils::$context['current_action']))
+			if (
+				$area === LP_ACTION
+				&& isset($block['areas']['home'])
+				&& empty(Utils::$context['lp_page'])
+				&& empty(Utils::$context['current_action'])
+			) {
 				return true;
+			}
 
 			if (isset(Utils::$context['lp_page']['alias'])) {
-				if (isset($block['areas']['!' . LP_PAGE_PARAM . '=' . Utils::$context['lp_page']['alias']]) && $temp_areas[0] === 'pages')
+				if (
+					isset($block['areas']['!' . LP_PAGE_PARAM . '=' . Utils::$context['lp_page']['alias']])
+					&& $tempAreas[0] === 'pages'
+				) {
 					return false;
+				}
 
-				if (isset($block['areas']['pages']) || isset($block['areas'][LP_PAGE_PARAM . '=' . Utils::$context['lp_page']['alias']]))
+				if (
+					isset($block['areas']['pages'])
+					|| isset($block['areas'][LP_PAGE_PARAM . '=' . Utils::$context['lp_page']['alias']])
+				) {
 					return true;
+				}
 			}
 
 			if (empty(Utils::$context['current_board']))
@@ -176,7 +201,7 @@ final class Block implements BlockInterface
 				return true;
 
 			$boards = $topics = [];
-			foreach ($temp_areas as $areas) {
+			foreach ($tempAreas as $areas) {
 				$entity = explode('=', $areas);
 
 				if ($entity[0] === 'board')
@@ -186,7 +211,8 @@ final class Block implements BlockInterface
 					$topics = $this->getAllowedIds($entity[1]);
 			}
 
-			return in_array(Utils::$context['current_board'], $boards) || (isset(Utils::$context['current_topic']) && in_array(Utils::$context['current_topic'], $topics));
+			return in_array(Utils::$context['current_board'], $boards)
+				|| (isset(Utils::$context['current_topic']) && in_array(Utils::$context['current_topic'], $topics));
 		});
 	}
 

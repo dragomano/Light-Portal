@@ -5,9 +5,3 @@
     </transition-group>
   </transition>
 </template>
-
-<script>
-export default {
-  name: 'ListTransition',
-};
-</script>

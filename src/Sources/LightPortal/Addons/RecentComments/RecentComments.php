@@ -10,14 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.01.24
+ * @version 04.02.24
  */
 
 namespace Bugo\LightPortal\Addons\RecentComments;
 
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{NumberField, RangeField};
-use Bugo\LightPortal\Utils\{Lang, User, Utils};
+use Bugo\LightPortal\Utils\{DateTime, Lang, User, Utils};
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -140,7 +140,7 @@ class RecentComments extends Block
 			<li class="windowbg">
 				<a href="', $comment['link'], '">', $comment['message'], '</a>
 				<br><span class="smalltext">', Lang::$txt['by'], ' ', $comment['author_name'], '</span>
-				<br><span class="smalltext">', $this->getFriendlyTime($comment['created_at']), '</span>
+				<br><span class="smalltext">', DateTime::relative($comment['created_at']), '</span>
 			</li>';
 		}
 

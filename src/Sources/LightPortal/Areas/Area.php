@@ -57,7 +57,9 @@ trait Area
 
 		$this->prepareMemberList();
 
-		$languages = empty(Config::$modSettings['userLanguage']) ? [Config::$language] : array_unique([Utils::$context['user']['language'], Config::$language]);
+		$languages = empty(Config::$modSettings['userLanguage'])
+			? [Config::$language]
+			: array_unique([Utils::$context['user']['language'], Config::$language]);
 
 		$value = '
 			<div>';
@@ -66,12 +68,14 @@ trait Area
 			$value .= '
 				<nav' . (Utils::$context['right_to_left'] ? '' : ' class="floatleft"') . '>';
 
-			foreach (Utils::$context['lp_languages'] as $lang) {
+			foreach (Utils::$context['lp_languages'] as $key => $lang) {
 				$value .= '
 					<a
 						class="button floatnone"
-						:class="{ \'active\': tab === \'' . $lang['filename'] . '\' }"
-						@click.prevent="tab = \'' . $lang['filename'] . '\'; window.location.hash = \'' . $lang['filename'] . '\'; $nextTick(() => { setTimeout(() => { document.querySelector(\'input[name=title_' . $lang['filename'] . ']\').focus() }, 50); });"
+						:class="{ \'active\': tab === \'' . $key . '\' }"
+						@click.prevent="tab = \'' . $key . '\';
+							window.location.hash = \'' . $key . '\';
+							$nextTick(() => { setTimeout(() => { document.querySelector(\'input[name=title_' . $key . ']\').focus() }, 50); });"
 					>' . $lang['name'] . '</a>';
 			}
 
@@ -79,15 +83,15 @@ trait Area
 				</nav>';
 		}
 
-		foreach (Utils::$context['lp_languages'] as $lang) {
+		foreach (array_keys(Utils::$context['lp_languages']) as $key) {
 			$value .= '
-				<div x-show="tab === \'' . $lang['filename'] . '\'">
+				<div x-show="tab === \'' . $key . '\'">
 					<input
 						type="text"
-						name="title_' . $lang['filename'] . '"
-						x-model="title_' . $lang['filename'] . '"
-						value="' . (Utils::$context['lp_' . $entity]['titles'][$lang['filename']] ?? '') . '"
-						' . (in_array($lang['filename'], $languages) && $required ? ' required' : '') . '
+						name="title_' . $key . '"
+						x-model="title_' . $key . '"
+						value="' . (Utils::$context['lp_' . $entity]['titles'][$key] ?? '') . '"
+						' . (in_array($key, $languages) && $required ? ' required' : '') . '
 					>
 				</div>';
 		}

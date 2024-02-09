@@ -31,12 +31,6 @@
   </transition>
 </template>
 
-<script>
-export default {
-  name: 'PluginOptionList',
-};
-</script>
-
 <script setup>
 import { ref, computed } from 'vue';
 import { useContextStore } from '../../scripts/light_portal/dev/base_stores.js';

@@ -13,12 +13,6 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'EditForm',
-};
-</script>
-
 <script setup>
 import { ref } from 'vue';
 import MarkdownEditor from './MarkdownEditor.vue';

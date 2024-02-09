@@ -10,15 +10,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.01.24
+ * @version 02.02.24
  */
 
 namespace Bugo\LightPortal\Addons\ArticleList;
 
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, RadioField};
-use Bugo\LightPortal\Areas\Partials\{TopicSelect, ContentClassSelect, PageSelect};
-use Bugo\LightPortal\Utils\{BBCodeParser, Config, Lang, User, Utils};
+use Bugo\LightPortal\Areas\Partials\{ContentClassSelect, PageSelect, TopicSelect};
+use Bugo\LightPortal\Utils\{BBCodeParser, Config, Content, Lang, User, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -167,7 +167,7 @@ class ArticleList extends Block
 			if ($this->isFrontpage($row['alias']))
 				continue;
 
-			$row['content'] = parse_content($row['content'], $row['type']);
+			$row['content'] = Content::parse($row['content'], $row['type']);
 
 			$image = empty($parameters['seek_images']) ? '' : $this->getImageFromText($row['content']);
 

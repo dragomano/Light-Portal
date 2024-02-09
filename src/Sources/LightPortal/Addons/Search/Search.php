@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.01.24
+ * @version 04.02.24
  */
 
 namespace Bugo\LightPortal\Addons\Search;
 
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\{Config, Content, DateTime, Lang, Theme, Utils};
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -138,14 +138,14 @@ class Search extends Block
 
 		$items = [];
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result))	{
-			$row['content'] = parse_content($row['content'], $row['type']);
+			$row['content'] = Content::parse($row['content'], $row['type']);
 
 			$items[] = [
 				'link'    => LP_PAGE_URL . $row['alias'],
 				'title'   => $row['title'],
 				'content' => $this->getTeaser($row['content']),
 				'author'  => empty($row['id_member']) ? Lang::$txt['guest'] : ('<a href="' . Config::$scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>'),
-				'date'    => $this->getFriendlyTime($row['date'])
+				'date'    => DateTime::relative($row['date'])
 			];
 		}
 

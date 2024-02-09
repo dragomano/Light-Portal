@@ -12,12 +12,6 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'TextOption',
-};
-</script>
-
 <script setup>
 import { computed } from 'vue';
 

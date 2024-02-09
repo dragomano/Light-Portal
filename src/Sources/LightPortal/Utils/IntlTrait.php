@@ -15,7 +15,6 @@
 namespace Bugo\LightPortal\Utils;
 
 use DateTime;
-use MessageFormatter;
 use IntlException;
 use IntlDateFormatter;
 
@@ -24,39 +23,6 @@ if (! defined('SMF'))
 
 trait IntlTrait
 {
-	/**
-	 * Translates a message using the given pattern and values.
-	 *
-	 * @see https://github.com/dragomano/Light-Portal/wiki/Info-for-translators
-	 * @see https://symfony.com/doc/6.1/translation/message_format.html
-	 * @see https://intl.rmcreative.ru
-	 *
-	 * @param string $pattern The message pattern to translate.
-	 * @param array  $values  The values to substitute in the message.
-	 *
-	 * @return string The translated message.
-	 */
-	public function translate(string $pattern, array $values = []): string
-	{
-		if (! extension_loaded('intl')) {
-			ErrorHandler::log('[LP] translate helper: you should enable the intl extension', 'critical');
-
-			return '';
-		}
-
-		$message = Lang::$txt[$pattern] ?? $pattern;
-
-		try {
-			$formatter = new MessageFormatter(Lang::$txt['lang_locale'] ?? 'en_US', $message);
-
-			return $formatter->format($values);
-		} catch (IntlException $e) {
-			ErrorHandler::log("[LP] translate helper: {$e->getMessage()} in '\$txt[$pattern]'", 'critical');
-
-			return '';
-		}
-	}
-
 	/**
 	 * Get the time in the format "Yesterday at ...", "Today at ...", "X minutes ago", etc.
 	 *
@@ -77,27 +43,33 @@ trait IntlTrait
 		$timeDifference = $now - $timestamp;
 
 		// Just now?
-		if (empty($timeDifference))
+		if (empty($timeDifference)) {
 			return Lang::$txt['lp_just_now'];
+		}
 
 		// Future time?
 		if ($timeDifference < 0) {
 			// like "Tomorrow at ..."
-			if ($d.$m.$y === date('jmY', strtotime('+1 day')))
+			if ($d.$m.$y === date('jmY', strtotime('+1 day'))) {
 				return Lang::$txt['lp_tomorrow'] . $t;
+			}
 
 			// like "In n days"
 			$days = floor(($timestamp - $now) / 60 / 60 / 24);
 			if ($days > 1) {
-				if ($days < 7)
-					return sprintf(Lang::$txt['lp_time_label_in'], $this->translate('lp_days_set', compact('days')));
+				if ($days < 7) {
+					return sprintf(Lang::$txt['lp_time_label_in'], Lang::getTxt(
+						'lp_days_set', compact('days')
+					));
+				}
 
-				// Future date in current month
-				if ($m === date('m', $now) && $y === date('Y', $now))
+				if ($m === date('m', $now) && $y === date('Y', $now)) {
+					// Future date in current month
 					return $this->getLocalDate($timestamp, 'full');
-				// Future date in current year
-				elseif ($y === date('Y', $now))
+				} elseif ($y === date('Y', $now)) {
+					// Future date in current year
 					return $this->getLocalDate($timestamp, 'medium');
+				}
 
 				// Other future date
 				return $this->getLocalDate($timestamp, timeType: 'none');
@@ -105,16 +77,24 @@ trait IntlTrait
 
 			// like "In n hours"
 			$hours = ($timestamp - $now) / 60 / 60;
-			if ($hours >= 1)
-				return sprintf(Lang::$txt['lp_time_label_in'], $this->translate('lp_hours_set', ['hours' => ceil($hours)]));
+			if ($hours >= 1) {
+				return sprintf(Lang::$txt['lp_time_label_in'], Lang::getTxt(
+					'lp_hours_set', ['hours' => ceil($hours)]
+				));
+			}
 
 			// like "In n minutes"
 			$minutes = ($timestamp - $now) / 60;
-			if ($minutes >= 1)
-				return sprintf(Lang::$txt['lp_time_label_in'], $this->translate('lp_minutes_set', ['minutes' => ceil($minutes)]));
+			if ($minutes >= 1) {
+				return sprintf(Lang::$txt['lp_time_label_in'], Lang::getTxt(
+					'lp_minutes_set', ['minutes' => ceil($minutes)]
+				));
+			}
 
 			// like "In n seconds"
-			return sprintf(Lang::$txt['lp_time_label_in'], $this->translate('lp_seconds_set', ['seconds' => abs($timeDifference)]));
+			return sprintf(Lang::$txt['lp_time_label_in'], Lang::getTxt(
+				'lp_seconds_set', ['seconds' => abs($timeDifference)]
+			));
 		}
 
 		// Less than an hour
@@ -122,10 +102,14 @@ trait IntlTrait
 
 		// like "n seconds ago"
 		if ($timeDifference < 60)
-			return Utils::$smcFunc['ucfirst']($this->translate('lp_seconds_set', ['seconds' => $timeDifference])) . Lang::$txt['lp_time_label_ago'];
+			return Utils::$smcFunc['ucfirst'](Lang::getTxt(
+				'lp_seconds_set', ['seconds' => $timeDifference]
+			)) . Lang::$txt['lp_time_label_ago'];
 		// like "n minutes ago"
 		elseif ($lastMinutes < 60)
-			return Utils::$smcFunc['ucfirst']($this->translate('lp_minutes_set', ['minutes' => (int) $lastMinutes])) . Lang::$txt['lp_time_label_ago'];
+			return Utils::$smcFunc['ucfirst'](Lang::getTxt(
+				'lp_minutes_set', ['minutes' => (int) $lastMinutes]
+			)) . Lang::$txt['lp_time_label_ago'];
 		// like "Today at ..."
 		elseif ($d.$m.$y === date('jmY', $now))
 			return Lang::$txt['today'] . $t;
@@ -147,7 +131,6 @@ trait IntlTrait
 	{
 		$dateTime = new DateTime;
 		$dateTime->setTimestamp($timestamp ?: time());
-		//$dateTime->setTimezone(new DateTimeZone(User::$settings['timezone'] ?? Config::$modSettings['default_timezone']));
 
 		return $dateTime;
 	}
@@ -155,7 +138,11 @@ trait IntlTrait
 	public function getLocalDate(int $timestamp, string $dateType = 'long', string $timeType = 'short'): string
 	{
 		if (extension_loaded('intl')) {
-			$formatter = new IntlDateFormatter(Lang::$txt['lang_locale'], $this->getPredefinedConstant($dateType), $this->getPredefinedConstant($timeType));
+			$formatter = new IntlDateFormatter(
+				Lang::$txt['lang_locale'],
+				$this->getPredefinedConstant($dateType),
+				$this->getPredefinedConstant($timeType)
+			);
 
 			return $formatter->format($timestamp);
 		}

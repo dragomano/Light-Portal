@@ -5,12 +5,6 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'NumberOption',
-};
-</script>
-
 <script setup>
 import { computed } from 'vue';
 

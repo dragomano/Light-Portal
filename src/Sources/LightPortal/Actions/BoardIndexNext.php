@@ -16,7 +16,7 @@ namespace Bugo\LightPortal\Actions;
 
 use SMF\Actions\BoardIndex;
 
-final class BoardIndexNext
+final class BoardIndexNext implements ActionInterface
 {
 	public function show(): void
 	{

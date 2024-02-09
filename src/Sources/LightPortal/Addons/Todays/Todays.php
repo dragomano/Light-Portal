@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 02.02.24
  */
 
 namespace Bugo\LightPortal\Addons\Todays;
@@ -142,7 +142,7 @@ class Todays extends Block
 					echo Lang::$txt['lp_todays']['and_more'], '
 		<details>
 			<summary>
-				<span>', $this->translate(Lang::$txt['lp_todays']['birthdays_set'], ['count' => count($result) - $parameters['max_items']]), '</span>
+				<span>', Lang::getTxt(Lang::$txt['lp_todays']['birthdays_set'], ['count' => count($result) - $parameters['max_items']]), '</span>
 			</summary>
 			<div>', $hiddenContent, '</div>
 		</details>';

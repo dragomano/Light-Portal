@@ -268,7 +268,7 @@ public function validatePageParams(array &$params): void
 
 (`&$errors, $data`)
 
-> adding custom error handling when page adding/editing
+> προσθήκη προσαρμοσμένου χειρισμού σφαλμάτων κατά την προσθήκη/επεξεργασία σελίδας
 
 ### preparePageFields
 
@@ -288,19 +288,19 @@ public function preparePageFields(): void
 
 (`$item`)
 
-> custom actions on saving/edition pages
+> προσαρμοσμένες ενέργειες σε σελίδες αποθήκευσης/έκδοσης
 
 ### onPageRemoving
 
 (`$items`)
 
-> custom actions on removing pages
+> προσαρμοσμένες ενέργειες κατά την κατάργηση σελίδων
 
 ### preparePageData
 
 (`&$data`, `$is_author`)
 
-> additional preparing the portal current page data
+> πρόσθετη προετοιμασία των δεδομένων τρέχουσας σελίδας της πύλης
 
 ```php
 public function preparePageData(): void
@@ -311,15 +311,15 @@ public function preparePageData(): void
 
 ### beforePageContent
 
-> ability to display something before the portal page content
+> δυνατότητα εμφάνισης κάτι πριν από το περιεχόμενο της σελίδας της πύλης
 
 ### afterPageContent
 
-> ability to display something after the portal page content
+> δυνατότητα εμφάνισης κάτι μετά το περιεχόμενο της σελίδας της πύλης
 
 ### comments
 
-> adding custom comment script to the portal current page view
+> προσθήκη προσαρμοσμένου σεναρίου σχολίων στην τρέχουσα προβολή σελίδας της πύλης
 
 ```php
 public function comments(): void
@@ -338,7 +338,7 @@ public function comments(): void
 
 (`$comment`, `&$buttons`)
 
-> adding custom buttons below each comment
+> προσθέτοντας προσαρμοσμένα κουμπιά κάτω από κάθε σχόλιο
 
 ```php
 public function commentButtons(array $comment, array &$buttons): void
@@ -359,13 +359,13 @@ public function commentButtons(array $comment, array &$buttons): void
 }
 ```
 
-## Work with plugins
+## Εργαστείτε με πρόσθετα
 
 ### addSettings
 
 (`&$config_vars`)
 
-> adding custom settings of your plugin
+> προσθήκη προσαρμοσμένων ρυθμίσεων της προσθήκης σας
 
 ```php
 public function addSettings(array &$config_vars): void
@@ -378,7 +378,7 @@ public function addSettings(array &$config_vars): void
 
 (`&$plugin_options`)
 
-> additional actions after plugin settings saving
+> πρόσθετες ενέργειες μετά την αποθήκευση των ρυθμίσεων της προσθήκης
 
 ### prepareAssets
 
@@ -394,13 +394,13 @@ public function prepareAssets(array &$assets): void
 }
 ```
 
-## Work with articles
+## Εργαστείτε με άρθρα
 
 ### frontModes
 
 (`&$modes`)
 
-> adding custom modes for the frontpage
+> προσθέτοντας προσαρμοσμένες λειτουργίες για την πρώτη σελίδα
 
 ```php
 public function frontModes(array &$modes): void
@@ -430,7 +430,7 @@ public function customLayoutExtensions(array &$extensions): void
 
 ### frontAssets
 
-> adding custom scripts and styles on the frontpage
+> προσθέτοντας προσαρμοσμένα σενάρια και στυλ στην πρώτη σελίδα
 
 ```php
 public function frontAssets(): void
@@ -443,7 +443,7 @@ public function frontAssets(): void
 
 (`&$this->columns, &$this->tables, &$this->params, &$this->wheres, &$this->orders`)
 
-> adding custom columns, tables, wheres, params and orders to _init_ function
+> προσθήκη προσαρμοσμένων στηλών, πινάκων, Wheres, παραμέτρων και παραγγελιών στη συνάρτηση __init__function
 
 ```php
 public function frontTopics(array &$custom_columns, array &$custom_tables): void
@@ -460,7 +460,7 @@ public function frontTopics(array &$custom_columns, array &$custom_tables): void
 
 (`&$topics, $row`)
 
-> various manipulations with query results to _getData_ function
+> διάφορους χειρισμούς με αποτελέσματα ερωτημάτων στη συνάρτηση _getData_λειτουργίες
 
 ```php
 public function frontTopicsOutput(array &$topics, array $row): void
@@ -473,33 +473,33 @@ public function frontTopicsOutput(array &$topics, array $row): void
 
 (`&$this->columns, &$this->tables, &$this->params, &$this->wheres, &$this->orders`)
 
-> adding custom columns, tables, wheres, params and orders to _init_ function
+> προσθήκη προσαρμοσμένων στηλών, πινάκων, Wheres, παραμέτρων και παραγγελιών στη συνάρτηση __init__λειτουργίες
 
 ### frontPagesOutput
 
 (`&$pages, $row`)
 
-> various manipulations with query results to _getData_ function
+> διάφορους χειρισμούς με αποτελέσματα ερωτημάτων στη συνάρτηση _getData_λειτουργίες
 
 ### frontBoards
 
 (`&$this->columns, &$this->tables, &$this->params, &$this->wheres, &$this->orders`)
 
-> adding custom columns, tables, wheres, params and orders to _init_ function
+> προσθήκη προσαρμοσμένων στηλών, πινάκων, Wheres, παραμέτρων και παραγγελιών στη συνάρτηση __init__function
 
 ### frontBoardsOutput
 
 (`&$boards, $row`)
 
-> various manipulations with query results to _getData_ function
+> διάφορους χειρισμούς με αποτελέσματα ερωτημάτων στη συνάρτηση _getData_λειτουργίες
 
-## Work with icons
+## Εργαστείτε με εικονίδια
 
 ### prepareIconList
 
 (`&$all_icons, &$template`)
 
-> adding custom list of icons (instead of FontAwesome)
+> προσθήκη προσαρμοσμένης λίστας εικονιδίων (αντί για FontAwesome)
 
 ```php
 public function prepareIconList(array &$all_icons): void
@@ -523,13 +523,13 @@ public function prepareIconList(array &$all_icons): void
 
 (`&$template, $icon`)
 
-> adding custom template for displaying icons
+> προσθήκη προσαρμοσμένου προτύπου για την εμφάνιση εικονιδίων
 
 ### changeIconSet
 
 (`&$set`)
 
-> ability to extend interface icons available via `Utils::$context['lp_icon_set']` array
+> δυνατότητα επέκτασης εικονιδίων διεπαφής που είναι διαθέσιμα μέσω του πίνακα "Utils::$context['lp_icon_set']"
 
 ## Ρυθμίσεις πόρταλ
 
@@ -551,7 +551,7 @@ public function updateAdminAreas(array &$areas): void
 
 (`&$areas`)
 
-> adding custom tabs into Block area settings
+> προσθήκη προσαρμοσμένων καρτελών στις ρυθμίσεις περιοχής αποκλεισμού
 
 ```php
 public function updateBlockAreas(array &$areas): void
@@ -565,7 +565,7 @@ public function updateBlockAreas(array &$areas): void
 
 (`&$areas`)
 
-> adding custom tabs into Page area settings
+> προσθήκη προσαρμοσμένων καρτελών στις ρυθμίσεις της περιοχής σελίδας
 
 ```php
 public function updatePageAreas(array &$areas): void

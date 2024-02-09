@@ -143,7 +143,7 @@ class Chart extends Block
 		$datasets = json_encode($datasets);
 
 		$labels = $parameters['labels'] ?? $this->params['labels'];
-		$labels = implode(',', array_map(fn($label) => Utils::JavaScriptEscape(trim($label)), explode(',', $labels)));
+		$labels = implode(',', array_map(fn($label) => Utils::escapeJavaScript(trim($label)), explode(',', $labels)));
 
 		Theme::loadJSFile('light_portal/chart/chart.umd.min.js', ['minimize' => true]);
 

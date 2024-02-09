@@ -16,7 +16,8 @@ namespace Bugo\LightPortal;
 
 use Bugo\LightPortal\Lists\{CategoryList, PageList, TagList, TitleList};
 use Bugo\LightPortal\Tasks\Notifier;
-use Bugo\LightPortal\Utils\{BlockAppearance, Cache, File, IntlTrait, Post, Request, Session, SMFTrait};
+use Bugo\LightPortal\Utils\{BlockAppearance, Cache, File};
+use Bugo\LightPortal\Utils\{Post, Request, Session, SMFTrait};
 use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, User, Utils};
 use Exception;
 
@@ -25,7 +26,8 @@ if (! defined('SMF'))
 
 trait Helper
 {
-	use BlockAppearance, IntlTrait, SMFTrait;
+	use BlockAppearance;
+	use SMFTrait;
 
 	/**
 	 * @param mixed|null $default
@@ -60,7 +62,7 @@ trait Helper
 
 	public function hook(string $hook, array $vars = [], array $plugins = []): void
 	{
-		call_portal_hook($hook, $vars, $plugins);
+		AddonHandler::getInstance()->run($hook, $vars, $plugins);
 	}
 
 	public function require(string $filename): void
@@ -180,14 +182,10 @@ trait Helper
 			return;
 		}
 
-		Utils::$context['lp_languages'] = array_merge(
-			[
-				User::$info['language'] => $temp[User::$info['language']],
-				Config::$language => $temp[Config::$language],
-				'english' => $temp['english'],
-			],
-			$temp
-		);
+		Utils::$context['lp_languages'] = array_merge([
+			User::$info['language'] => $temp[User::$info['language']],
+			Config::$language => $temp[Config::$language],
+		], $temp);
 	}
 
 	public function getIcon(?string $icon = ''): string
@@ -269,7 +267,7 @@ trait Helper
 
 	public function getTranslatedTitle(array $titles): string
 	{
-		return $titles[User::$info['language']] ?? $titles[Config::$language] ?? $titles['english'] ?? '';
+		return $titles[User::$info['language']] ?? $titles[Config::$language] ?? '';
 	}
 
 	/**

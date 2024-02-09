@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 31.01.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -66,9 +66,9 @@ class Validator extends AbstractValidator
 		$data = [];
 
 		if ($this->request()->has('save')) {
-			foreach (Utils::$context['lp_languages'] as $lang) {
-				$this->args['title_' . $lang['filename']]       = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
-				$this->args['description_' . $lang['filename']] = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
+			foreach (array_keys(Utils::$context['lp_languages']) as $lang) {
+				$this->args['title_' . $lang]       = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
+				$this->args['description_' . $lang] = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
 			}
 
 			$data = filter_input_array(INPUT_POST, $this->args);

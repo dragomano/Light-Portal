@@ -4,12 +4,6 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'LargeTextOption',
-};
-</script>
-
 <script setup>
 defineProps({
   id: {

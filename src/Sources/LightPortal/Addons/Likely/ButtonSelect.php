@@ -33,7 +33,7 @@ final class ButtonSelect extends AbstractPartial
 			$data[] = '{label: "' . $button . '", value: "' . $button . '"}';
 
 			if (in_array($button, $params['value'])) {
-				$items[] = Utils::JavaScriptEscape($button);
+				$items[] = Utils::escapeJavaScript($button);
 			}
 		}
 

@@ -324,6 +324,10 @@ final class PluginArea
 			$this->cache()->put('custom_addon_list', $xml, 259200);
 		}
 
+		if (isset($xml[0])) {
+			$xml = $xml[0];
+		}
+
 		if (empty($xml) || ! is_array($xml))
 			return;
 
@@ -339,7 +343,7 @@ final class PluginArea
 
 		Utils::$context['lp_plugins'] = array_keys(array_flip(Utils::$context['lp_plugins']));
 
-		asort(Utils::$context['lp_plugins']);
+		sort(Utils::$context['lp_plugins']);
 	}
 
 	private function getTypes(string $snake_name): array

@@ -46,7 +46,7 @@ final class PageIconSelect extends AbstractPartial
 				searchPlaceholderText: "' . Lang::$txt['search'] . '",
 				options: [
 					{
-						label: ' . Utils::JavaScriptEscape($template) . ',
+						label: ' . Utils::escapeJavaScript($template) . ',
 						value: "' . $icon . '"
 					}
 				],

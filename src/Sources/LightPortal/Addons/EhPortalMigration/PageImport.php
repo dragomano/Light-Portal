@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.01.24
+ * @version 09.02.24
  */
 
 namespace Bugo\LightPortal\Addons\EhPortalMigration;
 
 use Bugo\LightPortal\Areas\Imports\AbstractCustomPageImport;
-use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
+use Bugo\LightPortal\Utils\{Config, DateTime, Lang, User, Utils};
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -38,7 +38,7 @@ class PageImport extends AbstractCustomPageImport
 		$this->run();
 
 		$listOptions = [
-			'id' => 'lp_pages',
+			'id' => 'eh_pages',
 			'items_per_page' => 50,
 			'title' => Lang::$txt['lp_pages_import'],
 			'no_items_label' => Lang::$txt['lp_no_items'],
@@ -149,7 +149,7 @@ class PageImport extends AbstractCustomPageImport
 				'status'     => $row['status'],
 				'num_views'  => $row['views'],
 				'author_id'  => User::$info['id'],
-				'created_at' => $this->getFriendlyTime(time()),
+				'created_at' => DateTime::relative(time()),
 				'title'      => $row['title']
 			];
 		}

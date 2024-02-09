@@ -33,12 +33,6 @@
   </aside>
 </template>
 
-<script>
-export default {
-  name: 'CommentList',
-};
-</script>
-
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
 import { useStorage, useUrlSearchParams } from '@vueuse/core';
@@ -49,6 +43,10 @@ import ListTransition from './ListTransition.vue';
 import CommentItem from './CommentItem.vue';
 import PurePagination from './PurePagination.vue';
 import ReplyForm from './ReplyForm.vue';
+
+defineOptions({
+  name: 'CommentList',
+});
 
 const contextStore = useContextStore();
 const iconStore = useIconStore();
@@ -76,6 +74,8 @@ const getComments = async () => {
   parentsCount.value = data.parentsCount;
   total.value = data.total;
   limit.value = data.limit;
+
+  if (start.value > parentsCount.value) start.value = 0;
 };
 
 const addComment = async ({ content }) => {

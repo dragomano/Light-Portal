@@ -14,7 +14,7 @@
 namespace Bugo\LightPortal\Areas\Imports;
 
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, ErrorHandler, Utils};
+use Bugo\LightPortal\Utils\{Config, ErrorHandler, Sapi, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -30,8 +30,7 @@ abstract class AbstractCustomBlockImport implements ImportInterface, CustomImpor
 		if ($this->request()->isEmpty('blocks') && $this->request()->hasNot('import_all'))
 			return;
 
-		// Might take some time.
-		@set_time_limit(600);
+		Sapi::setTimeLimit();
 
 		$blocks = $this->request('blocks') && $this->request()->hasNot('import_all') ? $this->request('blocks') : [];
 

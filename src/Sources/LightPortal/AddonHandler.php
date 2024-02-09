@@ -160,7 +160,8 @@ final class AddonHandler
 		if (isset(Lang::$txt[$this->prefix . $snakeName]))
 			return;
 
-		$languages = array_unique(['english', User::$info['language']]);
+		$userLang = Lang::getLanguageNameFromLocale(User::$info['language']);
+		$languages = array_unique(['english', $userLang]);
 
 		$addonLanguages = [];
 		foreach ($languages as $lang) {
@@ -168,8 +169,11 @@ final class AddonHandler
 			$addonLanguages[$lang] = is_file($langFile) ? require_once $langFile : [];
 		}
 
-		if (is_array($addonLanguages['english']))
-			Lang::$txt[$this->prefix . $snakeName] = array_merge($addonLanguages['english'], $addonLanguages[User::$info['language']]);
+		if (is_array($addonLanguages['english'])) {
+			Lang::$txt[$this->prefix . $snakeName] = array_merge(
+				$addonLanguages['english'], $addonLanguages[$userLang]
+			);
+		}
 	}
 
 	private function loadAssets(string $path): void

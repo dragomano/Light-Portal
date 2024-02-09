@@ -34,7 +34,7 @@ final class PlacementSelect extends AbstractPartial
 			$data[] = '{label: "' . $title . '", value: "' . $position . '"}';
 
 			if (in_array($position, $params['value'])) {
-				$items[] = Utils::JavaScriptEscape($position);
+				$items[] = Utils::escapeJavaScript($position);
 			}
 		}
 

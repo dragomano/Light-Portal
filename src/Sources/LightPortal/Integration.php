@@ -34,7 +34,7 @@ final class Integration extends AbstractMain
 
 	public function __invoke(): void
 	{
-		$this->applyHook('pre_load_theme', 'init');
+		$this->applyHook('init');
 		$this->applyHook('pre_javascript_output');
 		$this->applyHook('pre_css_output');
 		$this->applyHook('load_theme');
@@ -63,8 +63,8 @@ final class Integration extends AbstractMain
 		Utils::$context['lp_num_queries'] ??= 0;
 
 		defined('LP_NAME') || define('LP_NAME', 'Light Portal');
-		defined('LP_VERSION') || define('LP_VERSION', '2.5.1');
-		defined('LP_PLUGIN_LIST') || define('LP_PLUGIN_LIST', 'https://api.jsonserve.com/RlRQrK');
+		defined('LP_VERSION') || define('LP_VERSION', '2.5.2');
+		defined('LP_PLUGIN_LIST') || define('LP_PLUGIN_LIST', 'https://d8d75ea98b25aa12.mokky.dev/addons');
 		defined('LP_ADDON_URL') || define('LP_ADDON_URL', Config::$boardurl . '/Sources/LightPortal/Addons');
 		defined('LP_ADDON_DIR') || define('LP_ADDON_DIR', __DIR__ . '/Addons');
 		defined('LP_CACHE_TIME') || define('LP_CACHE_TIME', (int) (Config::$modSettings['lp_cache_update_interval'] ?? 72000));
@@ -101,15 +101,24 @@ final class Integration extends AbstractMain
 		if (! empty(Utils::$context['portal_next_page']))
 			echo "\n\t" . '<link rel="prerender" href="' . Utils::$context['portal_next_page'] . '">';
 
-		if (! isset(Config::$modSettings['lp_fa_source']) || Config::$modSettings['lp_fa_source'] === 'css_cdn')
-			echo "\n\t" . '<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" as="style" onload="this.onload=null;this.rel=\'stylesheet\'">';
+		if (! isset(Config::$modSettings['lp_fa_source']) || Config::$modSettings['lp_fa_source'] === 'css_cdn') {
+			$params = [
+				'rel="preload"',
+				'href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css"',
+				'as="style"',
+				'onload="this.onload=null;this.rel=\'stylesheet\'"'
+			];
+
+			echo "\n\t" . '<link ' . implode(' ', $params) . '>';
+		}
 
 		$styles = [];
 
 		$this->hook('preloadStyles', [&$styles]);
 
 		foreach ($styles as $style) {
-			echo "\n\t" . '<link rel="preload" href="' . $style . '" as="style" onload="this.onload=null;this.rel=\'stylesheet\'">';
+			$onload = ' onload="this.onload=null;this.rel=\'stylesheet\'"';
+			echo "\n\t" . '<link rel="preload" href="' . $style . '" as="style"' . $onload . '>';
 		}
 	}
 
@@ -162,8 +171,9 @@ final class Integration extends AbstractMain
 
 			if (! empty(Utils::$context['current_action']) && array_key_exists(
 				Utils::$context['current_action'], Utils::$context['lp_disabled_actions']
-			))
+			)) {
 				Utils::redirectexit();
+			}
 		}
 	}
 
@@ -174,9 +184,13 @@ final class Integration extends AbstractMain
 
 		if (
 			empty(Config::$modSettings['lp_frontpage_mode'])
-			|| ! (empty(Config::$modSettings['lp_standalone_mode']) || empty(Config::$modSettings['lp_standalone_url']))
-		)
+			|| ! (
+				empty(Config::$modSettings['lp_standalone_mode'])
+				|| empty(Config::$modSettings['lp_standalone_url'])
+			)
+		) {
 			return $this->callHelper([new BoardIndex, 'show']);
+		}
 
 		return $this->callHelper([new FrontPage, 'show']);
 	}
@@ -194,9 +208,11 @@ final class Integration extends AbstractMain
 		if ($this->request()->isEmpty('action')) {
 			$current_action = LP_ACTION;
 
-			if (! (
-					empty(Config::$modSettings['lp_standalone_mode']) || empty(Config::$modSettings['lp_standalone_url'])
-				) && Config::$modSettings['lp_standalone_url'] !== $this->request()->url()) {
+			if (
+				! empty(Config::$modSettings['lp_standalone_mode'])
+				&& ! empty(Config::$modSettings['lp_standalone_url'])
+				&& Config::$modSettings['lp_standalone_url'] !== $this->request()->url()
+			) {
 				$current_action = 'forum';
 			}
 
@@ -205,12 +221,15 @@ final class Integration extends AbstractMain
 			}
 		} else {
 			$current_action = empty(Config::$modSettings['lp_standalone_mode']) && $this->request()->is('forum')
-				? 'home' : Utils::$context['current_action'];
+				? 'home'
+				: Utils::$context['current_action'];
 		}
 
-		if (isset(Utils::$context['current_board']) || $this->request()->is('keywords'))
+		if (isset(Utils::$context['current_board']) || $this->request()->is('keywords')) {
 			$current_action = empty(Config::$modSettings['lp_standalone_mode'])
-				? 'home' : (! in_array('forum', $this->getDisabledActions()) ? 'forum' : LP_ACTION);
+				? 'home'
+				: (in_array('forum', $this->getDisabledActions()) ? LP_ACTION : 'forum');
+		}
 	}
 
 	/**
@@ -264,11 +283,16 @@ final class Integration extends AbstractMain
 		if (empty(User::$info['is_admin']))
 			return;
 
-		if (empty(Config::$modSettings['lp_frontpage_mode']) || Config::$modSettings['lp_frontpage_mode'] !== 'chosen_topics')
+		if (empty(Config::$modSettings['lp_frontpage_mode']))
+			return;
+
+		if (Config::$modSettings['lp_frontpage_mode'] !== 'chosen_topics')
 			return;
 
 		Utils::$context['normal_buttons']['lp_promote'] = [
-			'text' => in_array(Utils::$context['current_topic'], Utils::$context['lp_frontpage_topics']) ? 'lp_remove_from_fp' : 'lp_promote_to_fp',
+			'text' => in_array(Utils::$context['current_topic'], Utils::$context['lp_frontpage_topics'])
+				? 'lp_remove_from_fp'
+				: 'lp_promote_to_fp',
 			'url'  => LP_BASE_URL . ';sa=promote;t=' . Utils::$context['current_topic']
 		];
 	}
@@ -316,7 +340,11 @@ final class Integration extends AbstractMain
 		);
 	}
 
-	public function loadPermissions(array &$permissionGroups, array &$permissionList, array &$leftPermissionGroups): void
+	public function loadPermissions(
+		array &$permissionGroups,
+		array &$permissionList,
+		array &$leftPermissionGroups
+	): void
 	{
 		Lang::$txt['permissiongroup_light_portal'] = LP_NAME;
 
@@ -331,7 +359,10 @@ final class Integration extends AbstractMain
 	{
 		Lang::$txt['alert_group_light_portal'] = Lang::$txt['lp_portal'];
 
-		if (! empty(Config::$modSettings['lp_show_comment_block']) ?? Config::$modSettings['lp_show_comment_block'] === 'default')
+		if (
+			! empty(Config::$modSettings['lp_show_comment_block'])
+			?? Config::$modSettings['lp_show_comment_block'] === 'default'
+		)
 			$types['light_portal'] = [
 				'page_comment' => [
 					'alert' => 'yes',
@@ -370,7 +401,7 @@ final class Integration extends AbstractMain
 
 				if ($alert['sender_id'] !== User::$info['id']) {
 					$alerts[$id]['icon'] = '<span class="alert_icon main_icons ' . $icon . '"></span>';
-					$alerts[$id]['text'] = $this->translate(
+					$alerts[$id]['text'] = Lang::getTxt(
 						'alert_' . $alert['content_type'] . '_' . $alert['content_action'],
 						['gender' => $alert['extra']['sender_gender']]
 					);
@@ -448,14 +479,24 @@ final class Integration extends AbstractMain
 		if (empty($actions['action']) && empty($actions['board'])) {
 			$result = sprintf(Lang::$txt['lp_who_viewing_frontpage'], Config::$scripturl);
 
-			if (! (empty(Config::$modSettings['lp_standalone_mode']) || empty(Config::$modSettings['lp_standalone_url'])))
+			if (
+				! empty(Config::$modSettings['lp_standalone_mode'])
+				&& ! empty(Config::$modSettings['lp_standalone_url'])
+			) {
 				$result = sprintf(
-					Lang::$txt['lp_who_viewing_index'], Config::$modSettings['lp_standalone_url'], Config::$scripturl
+					Lang::$txt['lp_who_viewing_index'],
+					Config::$modSettings['lp_standalone_url'],
+					Config::$scripturl
 				);
+			}
 		}
 
-		if (isset($actions[LP_PAGE_PARAM]))
-			$result = sprintf(Lang::$txt['lp_who_viewing_page'], LP_PAGE_URL . $actions[LP_PAGE_PARAM]);
+		if (isset($actions[LP_PAGE_PARAM])) {
+			$result = sprintf(
+				Lang::$txt['lp_who_viewing_page'],
+				LP_PAGE_URL . $actions[LP_PAGE_PARAM]
+			);
+		}
 
 		if (empty($actions['action']))
 			return $result;
@@ -467,21 +508,40 @@ final class Integration extends AbstractMain
 				$tags = $this->getEntityList('tag');
 
 				isset($actions['id'])
-					? $result = sprintf(Lang::$txt['lp_who_viewing_the_tag'], LP_BASE_URL . ';sa=tags;id=' . $actions['id'], $tags[$actions['id']])
-					: $result = sprintf(Lang::$txt['lp_who_viewing_tags'], LP_BASE_URL . ';sa=tags');
+					? $result = sprintf(
+						Lang::$txt['lp_who_viewing_the_tag'],
+						LP_BASE_URL . ';sa=tags;id=' . $actions['id'],
+						$tags[$actions['id']]
+					)
+					: $result = sprintf(
+						Lang::$txt['lp_who_viewing_tags'],
+						LP_BASE_URL . ';sa=tags'
+					);
 			}
 
 			if (isset($actions['sa']) && $actions['sa'] === 'categories') {
 				$categories = $this->getEntityList('category');
 
 				isset($actions['id'])
-					? $result = sprintf(Lang::$txt['lp_who_viewing_the_category'], LP_BASE_URL . ';sa=categories;id=' . $actions['id'], $categories[$actions['id']]['name'])
-					: $result = sprintf(Lang::$txt['lp_who_viewing_categories'], LP_BASE_URL . ';sa=categories');
+					? $result = sprintf(
+						Lang::$txt['lp_who_viewing_the_category'],
+						LP_BASE_URL . ';sa=categories;id=' . $actions['id'],
+						$categories[$actions['id']]['name']
+					)
+					: $result = sprintf(
+						Lang::$txt['lp_who_viewing_categories'],
+						LP_BASE_URL . ';sa=categories'
+					);
 			}
 		}
 
-		if ($actions['action'] === 'forum')
-			$result = sprintf(Lang::$txt['who_index'], Config::$scripturl . '?action=forum', Utils::$context['forum_name']);
+		if ($actions['action'] === 'forum') {
+			$result = sprintf(
+				Lang::$txt['who_index'],
+				Config::$scripturl . '?action=forum',
+				Utils::$context['forum_name']
+			);
+		}
 
 		return $result;
 	}

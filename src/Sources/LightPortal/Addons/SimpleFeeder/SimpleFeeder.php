@@ -10,14 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 20.01.24
+ * @version 04.02.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleFeeder;
 
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, TextField};
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\{Config, DateTime, Lang, Utils};
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -105,7 +105,7 @@ class SimpleFeeder extends Block
 			<div class="block">
 				<span class="floatleft">
 					<h5><a href="', $item->link, '">', $item->title, '</a></h5>
-					<em>', $this->getFriendlyTime(strtotime($item->pubDate)), '</em>
+					<em>', DateTime::relative(strtotime($item->pubDate)), '</em>
 				</span>
 			</div>';
 

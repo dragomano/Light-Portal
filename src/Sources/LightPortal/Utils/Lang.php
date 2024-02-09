@@ -14,50 +14,58 @@
 
 namespace Bugo\LightPortal\Utils;
 
-use function censorText;
-use function getLanguages;
-use function loadLanguage;
-use function sentence_list;
+use IntlException;
+use MessageFormatter;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class Lang
+final class Lang extends SMFLang
 {
-	public static array $txt;
+	public const FALLBACK_LANG = 'english';
 
-	public static array $editortxt;
-
-	public function __construct()
+	public static function getLanguageNameFromLocale(string $language): string
 	{
-		if (! isset($GLOBALS['txt']))
-			$GLOBALS['txt'] = [];
-
-		self::$txt = &$GLOBALS['txt'];
-
-		if (! isset($GLOBALS['editortxt']))
-			$GLOBALS['editortxt'] = [];
-
-		self::$editortxt = &$GLOBALS['editortxt'];
+		return $language;
 	}
 
-	public static function censorText(string &$text): void
+	/**
+	 * Translates a message using the given pattern and values.
+	 *
+	 * @see https://github.com/dragomano/Light-Portal/wiki/Info-for-translators
+	 * @see https://symfony.com/doc/6.1/translation/message_format.html
+	 * @see https://intl.rmcreative.ru
+	 */
+	public static function getTxt(string|array $txt_key, array $args = [], string $var = 'txt'): string
 	{
-		censorText($text);
+		return self::getFormattedText($txt_key, $args, $var);
 	}
 
-	public static function get(): array
+	/**
+	 * Translates a message using the given pattern and values.
+	 *
+	 * @see https://github.com/dragomano/Light-Portal/wiki/Info-for-translators
+	 * @see https://symfony.com/doc/6.1/translation/message_format.html
+	 * @see https://intl.rmcreative.ru
+	 */
+	private static function getFormattedText(string $key, array $args = [], string $var = 'txt'): string
 	{
-		return getLanguages();
-	}
+		if (! extension_loaded('intl')) {
+			ErrorHandler::log('[LP] getTxt helper: you should enable the intl extension', 'critical');
 
-	public static function load(string $language, string $lang = ''): void
-	{
-		loadLanguage($language, $lang);
-	}
+			return '';
+		}
 
-	public static function sentenceList(array $list): string
-	{
-		return sentence_list($list);
+		$message = Lang::${$var}[$key] ?? $key;
+
+		try {
+			$formatter = new MessageFormatter(Lang::$txt['lang_locale'] ?? 'en_US', $message);
+
+			return $formatter->format($args);
+		} catch (IntlException $e) {
+			ErrorHandler::log("[LP] getTxt helper: {$e->getMessage()} in '\${$var}[$key]'", 'critical');
+
+			return '';
+		}
 	}
 }

@@ -26,6 +26,5 @@ test('check properties', function () {
 });
 
 test('check methods', function () {
-	Assert::true(method_exists(Config::class, 'memoryReturnBytes'));
 	Assert::true(method_exists(Config::class, 'updateModSettings'));
 });

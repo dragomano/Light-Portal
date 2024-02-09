@@ -63,12 +63,6 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'PluginItem',
-};
-</script>
-
 <script setup>
 import { ref, computed } from 'vue';
 import { useContextStore, useIconStore } from '../../scripts/light_portal/dev/base_stores.js';

@@ -14,7 +14,7 @@
 namespace Bugo\LightPortal\Areas\Imports;
 
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{ErrorHandler, Utils};
+use Bugo\LightPortal\Utils\{ErrorHandler, Sapi, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -30,8 +30,7 @@ abstract class AbstractCustomPageImport implements ImportInterface, CustomImport
 		if ($this->request()->isEmpty('pages') && $this->request()->hasNot('import_all'))
 			return;
 
-		// Might take some time.
-		@set_time_limit(600);
+		Sapi::setTimeLimit();
 
 		$pages = $this->request('pages') && $this->request()->hasNot('import_all') ? $this->request('pages') : [];
 

@@ -14,7 +14,7 @@
 namespace Bugo\LightPortal\Areas\Imports;
 
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Utils};
+use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Sapi, Utils};
 use SimpleXMLElement;
 
 if (! defined('SMF'))
@@ -26,7 +26,7 @@ abstract class AbstractImport implements ImportInterface
 
 	public function __construct()
 	{
-		Utils::$context['max_file_size'] = Config::memoryReturnBytes(ini_get('upload_max_filesize'));
+		Utils::$context['max_file_size'] = Sapi::memoryReturnBytes(ini_get('upload_max_filesize'));
 	}
 
 	protected function getFile(string $name = 'import_file'): SimpleXMLElement|bool
@@ -34,8 +34,7 @@ abstract class AbstractImport implements ImportInterface
 		if (empty($file = $this->files($name)))
 			return false;
 
-		// Might take some time.
-		@set_time_limit(600);
+		Sapi::setTimeLimit();
 
 		if ($file['type'] !== 'text/xml')
 			return false;
@@ -104,7 +103,7 @@ abstract class AbstractImport implements ImportInterface
 
 		Utils::$smcFunc['db_transaction']('commit');
 
-		Utils::$context['import_successful'] = sprintf(Lang::$txt['lp_import_success'], $this->translate('lp_' . $type . '_set', [$type => Utils::$context['import_successful']]));
+		Utils::$context['import_successful'] = sprintf(Lang::$txt['lp_import_success'], Lang::getTxt('lp_' . $type . '_set', [$type => Utils::$context['import_successful']]));
 
 		$this->cache()->flush();
 	}

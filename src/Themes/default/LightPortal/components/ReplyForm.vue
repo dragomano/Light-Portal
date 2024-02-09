@@ -10,12 +10,6 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'ReplyForm',
-};
-</script>
-
 <script setup>
 import { ref } from 'vue';
 import { useUserStore } from '../../scripts/light_portal/dev/comment_stores.js';

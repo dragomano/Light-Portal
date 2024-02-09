@@ -20,8 +20,8 @@ use Bugo\LightPortal\Areas\Partials\{PermissionSelect, PlacementSelect, TitleCla
 use Bugo\LightPortal\Areas\Validators\BlockValidator;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Models\BlockModel;
-use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Theme, Utils};
 use Bugo\LightPortal\Repositories\BlockRepository;
+use Bugo\LightPortal\Utils\{Config, Content,  ErrorHandler, Lang, Theme, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -431,8 +431,8 @@ final class BlockArea
 		Lang::censorText(Utils::$context['preview_content']);
 
 		Utils::$context['preview_content'] = empty(Utils::$context['preview_content'])
-			? prepare_content(Utils::$context['lp_block']['type'], Utils::$context['lp_block']['id'], 0, Utils::$context['lp_block']['options'] ?? [])
-			: parse_content(Utils::$context['preview_content'], Utils::$context['lp_block']['type']);
+			? Content::prepare(Utils::$context['lp_block']['type'], Utils::$context['lp_block']['id'], 0, Utils::$context['lp_block']['options'] ?? [])
+			: Content::parse(Utils::$context['preview_content'], Utils::$context['lp_block']['type']);
 
 		Utils::$context['page_title']    = Lang::$txt['preview'] . (Utils::$context['preview_title'] ? ' - ' . Utils::$context['preview_title'] : '');
 		Utils::$context['preview_title'] = $this->getPreviewTitle($this->getIcon(Utils::$context['lp_block']['icon']));

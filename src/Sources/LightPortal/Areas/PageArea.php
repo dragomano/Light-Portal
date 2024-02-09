@@ -14,15 +14,16 @@
 
 namespace Bugo\LightPortal\Areas;
 
-use Bugo\LightPortal\Actions\{PageInterface, Page};
+use Bugo\LightPortal\Actions\{Page, PageInterface};
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, TextField};
 use Bugo\LightPortal\Areas\Partials\{CategorySelect, KeywordSelect, PageAuthorSelect};
 use Bugo\LightPortal\Areas\Partials\{PageIconSelect, PermissionSelect, StatusSelect};
 use Bugo\LightPortal\Areas\Validators\PageValidator;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Models\PageModel;
-use Bugo\LightPortal\Utils\{Config, ErrorHandler, Icon, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Repositories\PageRepository;
+use Bugo\LightPortal\Utils\{Config, Content, ErrorHandler, DateTime};
+use Bugo\LightPortal\Utils\{Icon, Lang, Theme, User, Utils};
 use IntlException;
 
 if (! defined('SMF'))
@@ -622,7 +623,7 @@ final class PageArea
 		$page->keywords = $post_data['keywords'] ?? Utils::$context['lp_current_page']['tags'] ?? [];
 		$page->options = $options;
 
-		$dateTime = $this->getDateTime();
+		$dateTime = DateTime::get();
 		$page->date = $post_data['date'] ?? $dateTime->format('Y-m-d');
 		$page->time = $post_data['time'] ?? $dateTime->format('H:i');
 
@@ -759,7 +760,7 @@ final class PageArea
 		Lang::censorText(Utils::$context['preview_content']);
 
 		if (Utils::$context['preview_content'])
-			Utils::$context['preview_content'] = parse_content(Utils::$context['preview_content'], Utils::$context['lp_page']['type']);
+			Utils::$context['preview_content'] = Content::parse(Utils::$context['preview_content'], Utils::$context['lp_page']['type']);
 
 		Utils::$context['page_title']    = Lang::$txt['preview'] . (Utils::$context['preview_title'] ? ' - ' . Utils::$context['preview_title'] : '');
 		Utils::$context['preview_title'] = $this->getPreviewTitle();

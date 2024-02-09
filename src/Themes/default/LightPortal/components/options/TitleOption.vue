@@ -4,12 +4,6 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'TitleOption',
-};
-</script>
-
 <script setup>
 defineProps({
   id: {

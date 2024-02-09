@@ -33,7 +33,7 @@ final class BreakpointSelect extends AbstractPartial
 			$data[] = '{label: "' . $name . '", value: "' . $bp . '"}';
 
 			if (in_array($bp, $current_breakpoints)) {
-				$items[] = Utils::JavaScriptEscape($bp);
+				$items[] = Utils::escapeJavaScript($bp);
 			}
 		}
 

@@ -16,7 +16,7 @@ declare(strict_types=1);
 
 namespace Bugo\LightPortal\Repositories;
 
-use Bugo\LightPortal\Utils\{Config, User, Utils};
+use Bugo\LightPortal\Utils\{Config, DateTime, User, Utils};
 use IntlException;
 
 if (! defined('SMF'))
@@ -64,7 +64,7 @@ final class PageRepository extends AbstractRepository
 				'num_comments' => (int) $row['num_comments'],
 				'author_id'    => (int) $row['author_id'],
 				'author_name'  => $row['author_name'],
-				'created_at'   => $this->getFriendlyTime((int) $row['date']),
+				'created_at'   => DateTime::relative((int) $row['date']),
 				'is_front'     => $this->isFrontpage($row['alias']),
 				'title'        => ($row['title'] ?: $row['fallback_title']) ?: $row['alias'],
 			];

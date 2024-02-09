@@ -39,7 +39,7 @@ class BlockImport extends AbstractCustomBlockImport
 		$this->run();
 
 		$listOptions = [
-			'id' => 'lp_blocks',
+			'id' => 'tp_blocks',
 			'items_per_page' => 50,
 			'title' => Lang::$txt['lp_blocks_import'],
 			'no_items_label' => Lang::$txt['lp_no_items'],

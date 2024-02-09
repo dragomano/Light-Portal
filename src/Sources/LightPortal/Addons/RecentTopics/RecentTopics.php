@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 04.02.24
  */
 
 namespace Bugo\LightPortal\Addons\RecentTopics;
@@ -21,7 +21,7 @@ use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Areas\Fields\NumberField;
 use Bugo\LightPortal\Areas\Fields\RadioField;
 use Bugo\LightPortal\Areas\Partials\BoardSelect;
-use Bugo\LightPortal\Utils\{Lang, User, Utils};
+use Bugo\LightPortal\Utils\{DateTime, Lang, User, Utils};
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -128,7 +128,7 @@ class RecentTopics extends Block
 		if (empty($topics))
 			return [];
 
-		array_walk($topics, fn(&$topic) => $topic['timestamp'] = $this->getFriendlyTime((int) $topic['timestamp']));
+		array_walk($topics, fn(&$topic) => $topic['timestamp'] = DateTime::relative((int) $topic['timestamp']));
 
 		if ($parameters['show_avatars'] && empty($parameters['use_simple_style']))
 			$topics = $this->getItemsWithUserAvatars($topics, 'poster');

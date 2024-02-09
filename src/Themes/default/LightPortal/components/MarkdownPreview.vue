@@ -4,12 +4,6 @@
   </fieldset>
 </template>
 
-<script>
-export default {
-  name: 'MarkdownPreview',
-};
-</script>
-
 <script setup>
 defineProps({
   content: {

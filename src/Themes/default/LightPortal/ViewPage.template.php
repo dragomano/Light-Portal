@@ -1,5 +1,6 @@
 <?php
 
+use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Utils\{Config, Icon, Lang, Theme, Utils};
 
 function template_show_page(): void
@@ -90,7 +91,7 @@ function template_show_page(): void
 			<hr>';
 	}
 
-	call_portal_hook('beforePageContent');
+	AddonHandler::getInstance()->run('beforePageContent');
 
 	if (! empty(Theme::$current->settings['og_image'])) {
 		echo '
@@ -100,7 +101,7 @@ function template_show_page(): void
 	echo '
 			<div class="page_', Utils::$context['lp_page']['type'], '">', Utils::$context['lp_page']['content'], '</div>';
 
-	call_portal_hook('afterPageContent');
+	AddonHandler::getInstance()->run('afterPageContent');
 
 	echo '
 		</article>';
@@ -198,15 +199,24 @@ function show_comments(): void
 		}
 	</script>';
 
-	if (Config::$db_show_debug && is_file(Theme::$current->settings['default_theme_dir'] . '/scripts/light_portal/dev/helpers.js')) {
+	if (is_file(Theme::$current->settings['default_theme_dir'] . '/scripts/light_portal/dev/helpers.js')) {
 		echo '
-	<script src="https://cdn.jsdelivr.net/combine/npm/vue@3/dist/vue.global', (Config::$db_show_debug ? '' : '.prod'), '.min.js,npm/vue3-sfc-loader@0,npm/vue-demi@0,npm/pinia@2,npm/showdown@2,npm/vue-showdown@4,npm/vue-i18n@9/dist/vue-i18n.global.prod.min.js,npm/@vueuse/shared@10,npm/@vueuse/core@10"></script>
+	<script src="https://cdn.jsdelivr.net/combine/npm/vue@3/dist/vue.global.min.js,npm/vue3-sfc-loader@0,npm/vue-demi@0,npm/pinia@2,npm/showdown@2,npm/vue-showdown@4,npm/vue-i18n@9/dist/vue-i18n.global.prod.min.js,npm/@vueuse/shared@10,npm/@vueuse/core@10"></script>
 	<script type="module" src="https://cdn.jsdelivr.net/npm/@github/markdown-toolbar-element@2/dist/index.min.js"></script>
 	<script src="', Theme::$current->settings['default_theme_url'], '/scripts/light_portal/dev/helpers.js"></script>
 	<script type="module" src="', Theme::$current->settings['default_theme_url'], '/scripts/light_portal/dev/comment_helpers.js"></script>
 	<script type="module" src="', Theme::$current->settings['default_theme_url'], '/scripts/light_portal/dev/vue_comments.js"></script>';
 	} else {
 		echo '
+	<script type="importmap">
+		{
+			"imports": {
+				"vue": "https://cdn.jsdelivr.net/npm/vue@3/+esm",
+				"vue-i18n": "https://cdn.jsdelivr.net/npm/vue-i18n@9/+esm",
+				"pinia": "https://cdn.jsdelivr.net/npm/pinia@2/+esm"
+			}
+		}
+	</script>
 	<script type="module" src="', Theme::$current->settings['default_theme_url'], '/scripts/light_portal/bundle_comments.js"></script>';
 	}
 }

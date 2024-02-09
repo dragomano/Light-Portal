@@ -15,12 +15,6 @@
   <textarea ref="textarea" v-model="message" v-bind="$attrs" :id="uuid"></textarea>
 </template>
 
-<script>
-export default {
-  name: 'MarkdownEditor',
-};
-</script>
-
 <script setup>
 import { getCurrentInstance, ref, computed, onMounted } from 'vue';
 import MarkdownPreview from './MarkdownPreview.vue';

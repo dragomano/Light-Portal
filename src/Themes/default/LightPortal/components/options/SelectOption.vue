@@ -13,12 +13,6 @@
   />
 </template>
 
-<script>
-export default {
-  name: 'SelectOption',
-};
-</script>
-
 <script setup>
 import { computed } from 'vue';
 import Multiselect from '@vueform/multiselect';

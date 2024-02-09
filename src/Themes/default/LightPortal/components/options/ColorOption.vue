@@ -4,12 +4,6 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'ColorOption',
-};
-</script>
-
 <script setup>
 defineProps({
   id: {
