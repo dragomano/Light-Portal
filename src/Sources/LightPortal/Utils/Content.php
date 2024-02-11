@@ -14,6 +14,7 @@
 
 namespace Bugo\LightPortal\Utils;
 
+use Bugo\Compat\{BBCodeParser, IntegrationHook, Sapi, Utils};
 use Bugo\LightPortal\AddonHandler;
 use ParseError;
 

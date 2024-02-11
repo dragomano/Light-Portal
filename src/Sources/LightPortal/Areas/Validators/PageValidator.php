@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Areas\Validators;
 
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\Compat\{Config, Database as Db, Lang, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -100,7 +100,7 @@ class PageValidator extends AbstractValidator
 
 	private function isUnique(array $data): bool
 	{
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT COUNT(page_id)
 			FROM {db_prefix}lp_pages
 			WHERE alias = {string:alias}
@@ -111,9 +111,9 @@ class PageValidator extends AbstractValidator
 			]
 		);
 
-		[$count] = Utils::$smcFunc['db_fetch_row']($result);
+		[$count] = Db::$db->fetch_row($result);
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
 		return $count == 0;

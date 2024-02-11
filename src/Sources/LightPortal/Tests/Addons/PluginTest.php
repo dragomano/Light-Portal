@@ -6,8 +6,8 @@
 
 namespace Tests\Addons;
 
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\Utils;
 use Tester\Assert;
 
 require_once dirname(__DIR__) . '/bootstrap.php';

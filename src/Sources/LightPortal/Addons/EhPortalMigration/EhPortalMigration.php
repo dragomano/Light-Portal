@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.01.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\EhPortalMigration;
 
+use Bugo\Compat\{Config, Lang, User};
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\{Config, Icon, Lang, User};
+use Bugo\LightPortal\Utils\{Icon, Language};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -50,11 +51,11 @@ class EhPortalMigration extends Plugin
 				'title'   => $item['title']
 			];
 
-			if (Config::$language !== Lang::FALLBACK_LANG && ! empty(Config::$modSettings['userLanguage'])) {
+			if (Config::$language !== Language::FALLBACK && ! empty(Config::$modSettings['userLanguage'])) {
 				$titles[] = [
 					'item_id' => $page_id,
 					'type'    => 'page',
-					'lang'    => Lang::FALLBACK_LANG,
+					'lang'    => Language::FALLBACK,
 					'title'   => $item['title']
 				];
 			}

@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * ServerSideIncludes.php
+ * Language.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -17,15 +17,12 @@ namespace Bugo\LightPortal\Utils;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class ServerSideIncludes
+final class Language
 {
-	public static function __callStatic(string $name, array $arguments)
+	public const FALLBACK = 'english';
+
+	public static function getNameFromLocale(string $language): string
 	{
-		$name = 'ssi_' . $name;
-
-		if (function_exists($name))
-			return $name(...$arguments);
-
-		return false;
+		return $language;
 	}
 }

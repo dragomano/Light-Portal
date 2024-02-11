@@ -14,8 +14,10 @@
 
 namespace Bugo\LightPortal\Actions;
 
+use Bugo\Compat\{Config, Database as Db};
+use Bugo\Compat\{Lang, Theme, Utils};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, Content, Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\Content;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -89,7 +91,7 @@ final class Block implements BlockInterface
 			return [];
 
 		if (($blocks = $this->cache()->get('active_blocks')) === null) {
-			$result = Utils::$smcFunc['db_query']('', '
+			$result = Db::$db->query('', '
 				SELECT
 					b.block_id, b.icon, b.type, b.content, b.placement, b.priority,
 					b.permissions, b.areas, b.title_class, b.content_class,
@@ -105,7 +107,7 @@ final class Block implements BlockInterface
 			);
 
 			$blocks = [];
-			while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+			while ($row = Db::$db->fetch_assoc($result)) {
 				Lang::censorText($row['content']);
 
 				$blocks[$row['block_id']] ??= [
@@ -127,7 +129,7 @@ final class Block implements BlockInterface
 				$blocks[$row['block_id']]['parameters'][$row['name']] = $row['value'];
 			}
 
-			Utils::$smcFunc['db_free_result']($result);
+			Db::$db->free_result($result);
 			Utils::$context['lp_num_queries']++;
 
 			$this->cache()->put('active_blocks', $blocks);

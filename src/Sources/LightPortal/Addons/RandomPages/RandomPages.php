@@ -15,10 +15,11 @@
 
 namespace Bugo\LightPortal\Addons\RandomPages;
 
+use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField};
 use Bugo\LightPortal\Areas\Partials\CategorySelect;
-use Bugo\LightPortal\Utils\{Config, DateTime, Lang, User, Utils};
+use Bugo\LightPortal\Utils\DateTime;
 use IntlException;
 
 if (! defined('LP_NAME'))

@@ -14,7 +14,9 @@
 
 namespace Bugo\LightPortal\Actions;
 
-use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, User, Utils};
+use Bugo\Compat\{Config, Database as Db, ErrorHandler};
+use Bugo\Compat\{Lang, User, Utils};
+use Bugo\LightPortal\Utils\ItemList;
 use IntlException;
 
 if (! defined('SMF'))
@@ -63,7 +65,7 @@ final class Tag extends AbstractPageList
 			'function' => [$this, 'getTotalCount']
 		];
 
-		$this->createList($listOptions);
+		new ItemList($listOptions);
 
 		Utils::obExit();
 	}
@@ -73,7 +75,7 @@ final class Tag extends AbstractPageList
 	 */
 	public function getPages(int $start, int $items_per_page, string $sort): array
 	{
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content,
 				p.type, p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
@@ -104,9 +106,9 @@ final class Tag extends AbstractPageList
 			]
 		);
 
-		$rows = Utils::$smcFunc['db_fetch_all']($result);
+		$rows = Db::$db->fetch_all($result);
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
 		return $this->getPreparedResults($rows);
@@ -114,7 +116,7 @@ final class Tag extends AbstractPageList
 
 	public function getTotalCount(): int
 	{
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT COUNT(p.page_id)
 			FROM {db_prefix}lp_pages AS p
 				INNER JOIN {db_prefix}lp_params AS ps ON (
@@ -132,12 +134,12 @@ final class Tag extends AbstractPageList
 			]
 		);
 
-		[$num_items] = Utils::$smcFunc['db_fetch_row']($result);
+		[$count] = Db::$db->fetch_row($result);
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
-		return (int) $num_items;
+		return (int) $count;
 	}
 
 	public function showAll(): void
@@ -196,14 +198,14 @@ final class Tag extends AbstractPageList
 			]
 		];
 
-		$this->createList($listOptions);
+		new ItemList($listOptions);
 
 		Utils::obExit();
 	}
 
 	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 't.value'): array
 	{
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT t.tag_id, t.value, COUNT(t.tag_id) AS num
 			FROM {db_prefix}lp_pages AS p
 				INNER JOIN {db_prefix}lp_params AS ps ON (
@@ -227,7 +229,7 @@ final class Tag extends AbstractPageList
 		);
 
 		$items = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['tag_id']] = [
 				'value'     => $row['value'],
 				'link'      => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id'],
@@ -235,7 +237,7 @@ final class Tag extends AbstractPageList
 			];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
 		return $items;

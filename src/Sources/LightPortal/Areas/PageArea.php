@@ -14,6 +14,8 @@
 
 namespace Bugo\LightPortal\Areas;
 
+use Bugo\Compat\{Config, Database as Db, ErrorHandler, Lang};
+use Bugo\Compat\{Logging, Security, Theme, User, Utils};
 use Bugo\LightPortal\Actions\{Page, PageInterface};
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, TextField};
 use Bugo\LightPortal\Areas\Partials\{CategorySelect, KeywordSelect, PageAuthorSelect};
@@ -22,8 +24,7 @@ use Bugo\LightPortal\Areas\Validators\PageValidator;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Models\PageModel;
 use Bugo\LightPortal\Repositories\PageRepository;
-use Bugo\LightPortal\Utils\{Config, Content, ErrorHandler, DateTime};
-use Bugo\LightPortal\Utils\{Icon, Lang, Theme, User, Utils};
+use Bugo\LightPortal\Utils\{Content, DateTime, Icon, ItemList};
 use IntlException;
 
 if (! defined('SMF'))
@@ -31,7 +32,8 @@ if (! defined('SMF'))
 
 final class PageArea
 {
-	use Area, Helper;
+	use Area;
+	use Helper;
 
 	private PageRepository $repository;
 
@@ -315,7 +317,7 @@ final class PageArea
 			unset($listOptions['columns']['num_comments']);
 		}
 
-		$this->createList($listOptions);
+		new ItemList($listOptions);
 
 		$this->changeTableTitle();
 	}
@@ -441,7 +443,7 @@ final class PageArea
 
 		if ($this->request()->has('remove')) {
 			if (Utils::$context['lp_current_page']['author_id'] !== User::$info['id']) {
-				$this->logAction('remove_lp_page', [
+				Logging::logAction('remove_lp_page', [
 					'page' => Utils::$context['lp_current_page']['titles'][User::$info['language']]
 				]);
 			}
@@ -496,13 +498,13 @@ final class PageArea
 		}
 
 		Utils::$context['lp_pages']['title'] .= ': ';
-		foreach ($titles as $browse_type => $details) {
-			if (Utils::$context['browse_type'] === $browse_type)
+		foreach ($titles as $browseType => $details) {
+			if (Utils::$context['browse_type'] === $browseType)
 				Utils::$context['lp_pages']['title'] .= '<img src="' . Theme::$current->settings['images_url'] . '/selected.png" alt="&gt;"> ';
 
 			Utils::$context['lp_pages']['title'] .= '<a href="' . Config::$scripturl . '?action=admin;area=lp_pages;sa=main' . $details[0] . '">' . $details[1] . ' (' . $details[2] . ')</a>';
 
-			if ($browse_type !== 'int' && count($titles) > 1)
+			if ($browseType !== 'int' && count($titles) > 1)
 				Utils::$context['lp_pages']['title'] .= ' | ';
 		}
 	}
@@ -514,7 +516,7 @@ final class PageArea
 
 		$this->hook('onPageRemoving', [$items]);
 
-		Utils::$smcFunc['db_query']('', '
+		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_pages
 			WHERE page_id IN ({array_int:items})',
 			[
@@ -522,7 +524,7 @@ final class PageArea
 			]
 		);
 
-		Utils::$smcFunc['db_query']('', '
+		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_titles
 			WHERE item_id IN ({array_int:items})
 				AND type = {literal:page}',
@@ -531,7 +533,7 @@ final class PageArea
 			]
 		);
 
-		Utils::$smcFunc['db_query']('', '
+		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_params
 			WHERE item_id IN ({array_int:items})
 				AND type = {literal:page}',
@@ -540,7 +542,7 @@ final class PageArea
 			]
 		);
 
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT id FROM {db_prefix}lp_comments
 			WHERE page_id IN ({array_int:items})',
 			[
@@ -549,15 +551,15 @@ final class PageArea
 		);
 
 		$comments = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			$comments[] = $row['id'];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries'] += 4;
 
 		if ($comments) {
-			Utils::$smcFunc['db_query']('', '
+			Db::$db->query('', '
 				DELETE FROM {db_prefix}lp_comments
 				WHERE id IN ({array_int:items})',
 				[
@@ -565,7 +567,7 @@ final class PageArea
 				]
 			);
 
-			Utils::$smcFunc['db_query']('', '
+			Db::$db->query('', '
 				DELETE FROM {db_prefix}lp_params
 				WHERE item_id IN ({array_int:items})
 					AND type = {literal:comment}',
@@ -612,37 +614,37 @@ final class PageArea
 
 	private function validateData(): void
 	{
-		[$post_data, $parameters] = (new PageValidator())->validate();
+		[$postData, $parameters] = (new PageValidator())->validate();
 
 		$options = $this->getParams();
-		$page_options = Utils::$context['lp_current_page']['options'] ?? $options;
+		$pageOptions = Utils::$context['lp_current_page']['options'] ?? $options;
 
-		$page = new PageModel($post_data, Utils::$context['lp_current_page']);
-		$page->authorId = empty($post_data['author_id']) ? $page->authorId : $post_data['author_id'];
+		$page = new PageModel($postData, Utils::$context['lp_current_page']);
+		$page->authorId = empty($postData['author_id']) ? $page->authorId : $postData['author_id'];
 		$page->titles = Utils::$context['lp_current_page']['titles'] ?? [];
-		$page->keywords = $post_data['keywords'] ?? Utils::$context['lp_current_page']['tags'] ?? [];
+		$page->keywords = $postData['keywords'] ?? Utils::$context['lp_current_page']['tags'] ?? [];
 		$page->options = $options;
 
 		$dateTime = DateTime::get();
-		$page->date = $post_data['date'] ?? $dateTime->format('Y-m-d');
-		$page->time = $post_data['time'] ?? $dateTime->format('H:i');
+		$page->date = $postData['date'] ?? $dateTime->format('Y-m-d');
+		$page->time = $postData['time'] ?? $dateTime->format('H:i');
 
 		foreach ($page->options as $option => $value) {
-			if (isset($parameters[$option]) && isset($post_data) && ! isset($post_data[$option])) {
-				$post_data[$option] = 0;
+			if (isset($parameters[$option]) && isset($postData) && ! isset($postData[$option])) {
+				$postData[$option] = 0;
 
 				if ($parameters[$option] === FILTER_DEFAULT)
-					$post_data[$option] = '';
+					$postData[$option] = '';
 
 				if (is_array($parameters[$option]) && $parameters[$option]['flags'] === FILTER_REQUIRE_ARRAY)
-					$post_data[$option] = [];
+					$postData[$option] = [];
 			}
 
-			$page->options[$option] = $post_data[$option] ?? $page_options[$option] ?? $value;
+			$page->options[$option] = $postData[$option] ?? $pageOptions[$option] ?? $value;
 		}
 
 		foreach (Utils::$context['lp_languages'] as $lang) {
-			$page->titles[$lang['filename']] = $post_data['title_' . $lang['filename']] ?? $page->titles[$lang['filename']] ?? '';
+			$page->titles[$lang['filename']] = $postData['title_' . $lang['filename']] ?? $page->titles[$lang['filename']] ?? '';
 		}
 
 		$this->cleanBbcode($page->titles);
@@ -750,7 +752,7 @@ final class PageArea
 		if ($this->request()->hasNot('preview'))
 			return;
 
-		$this->checkSubmitOnce('free');
+		Security::checkSubmitOnce('free');
 
 		Utils::$context['preview_title']   = Utils::$context['lp_page']['titles'][Utils::$context['user']['language']];
 		Utils::$context['preview_content'] = Utils::$smcFunc['htmlspecialchars'](Utils::$context['lp_page']['content'], ENT_QUOTES);

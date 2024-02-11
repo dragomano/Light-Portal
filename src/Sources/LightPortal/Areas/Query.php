@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Lists\IconList;
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\Compat\{Config, Database as Db, Lang, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -73,7 +73,7 @@ trait Query
 		if (empty($search = $data['search']))
 			return;
 
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT t.id_topic, m.subject
 			FROM {db_prefix}topics AS t
 				INNER JOIN {db_prefix}messages AS m ON (m.id_msg = t.id_first_msg)
@@ -94,7 +94,7 @@ trait Query
 		);
 
 		$topics = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			Lang::censorText($row['subject']);
 
 			$topics[] = [
@@ -103,7 +103,7 @@ trait Query
 			];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
 		exit(json_encode($topics));
@@ -122,7 +122,7 @@ trait Query
 		$search = trim(Utils::$smcFunc['strtolower']($search)) . '*';
 		$search = strtr($search, ['%' => '\%', '_' => '\_', '*' => '%', '?' => '_', '&#038;' => '&amp;']);
 
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT id_member, real_name
 			FROM {db_prefix}members
 			WHERE {raw:real_name} LIKE {string:search}
@@ -135,7 +135,7 @@ trait Query
 		);
 
 		$members = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			$row['real_name'] = strtr($row['real_name'], ['&amp;' => '&#038;', '&lt;' => '&#060;', '&gt;' => '&#062;', '&quot;' => '&#034;']);
 
 			$members[] = [
@@ -144,7 +144,7 @@ trait Query
 			];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
 		exit(json_encode($members));

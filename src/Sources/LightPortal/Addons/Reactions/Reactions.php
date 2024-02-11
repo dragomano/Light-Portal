@@ -10,14 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.01.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\Reactions;
 
+use Bugo\Compat\{Lang, User, Utils};
 use Bugo\LightPortal\Addons\Plugin;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
-use Bugo\LightPortal\Utils\{Lang, Theme, User, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -53,7 +53,7 @@ class Reactions extends Plugin
 		Utils::$context['reaction_url'] = LP_PAGE_URL . $data['alias'];
 		Utils::$context['can_react'] = empty($is_author);
 
-		Theme::addInlineJS('
+		$this->addInlineJS('
 			document.addEventListener("addReaction", (event) => {
 				const isComment = typeof event.detail.comment !== "undefined"
 				axios.post("' . Utils::$context['reaction_url'] . ';add_reaction", event.detail)

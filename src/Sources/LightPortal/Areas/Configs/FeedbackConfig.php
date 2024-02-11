@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Areas\Configs;
 
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
+use Bugo\Compat\{Config, Lang, Theme, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');

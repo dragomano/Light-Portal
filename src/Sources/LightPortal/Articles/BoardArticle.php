@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Articles;
 
-use Bugo\LightPortal\Utils\{BBCodeParser, Config, Lang, User, Utils};
+use Bugo\Compat\{BBCodeParser, Config, Database as Db, Lang, User, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -53,7 +53,7 @@ class BoardArticle extends AbstractArticle
 			'limit' => $limit
 		];
 
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT
 				b.id_board, b.name, b.description, b.redirect, CASE WHEN b.redirect != {string:blank_string} THEN 1 ELSE 0 END AS is_redirect, b.num_posts,
 				m.poster_time, GREATEST(m.poster_time, m.modified_time) AS last_updated, m.id_msg, m.id_topic, c.name AS cat_name,' . (User::$info['is_guest'] ? ' 1 AS is_read, 0 AS new_from' : ' (CASE WHEN COALESCE(lb.id_msg, 0) >= b.id_last_msg THEN 1 ELSE 0 END) AS is_read, COALESCE(lb.id_msg, -1) + 1 AS new_from') . (empty(Config::$modSettings['lp_show_images_in_articles']) ? '' : ', COALESCE(a.id_attach, 0) AS attach_id') . (empty($this->columns) ? '' : ',
@@ -73,7 +73,7 @@ class BoardArticle extends AbstractArticle
 		);
 
 		$boards = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			$board_name  = BBCodeParser::load()->parse($row['name'], false, '', Utils::$context['description_allowed_tags']);
 			$description = BBCodeParser::load()->parse($row['description'], false, '', Utils::$context['description_allowed_tags']);
 			$cat_name    = BBCodeParser::load()->parse($row['cat_name'], false, '', Utils::$context['description_allowed_tags']);
@@ -121,7 +121,7 @@ class BoardArticle extends AbstractArticle
 			$this->hook('frontBoardsOutput', [&$boards, $row]);
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
 		return $boards;
@@ -132,7 +132,7 @@ class BoardArticle extends AbstractArticle
 		if (empty($this->selectedBoards))
 			return 0;
 
-		$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
+		$result = Db::$db->query('', /** @lang text */ '
 			SELECT COUNT(b.id_board)
 			FROM {db_prefix}boards AS b
 				INNER JOIN {db_prefix}categories AS c ON (b.id_cat = c.id_cat)' . (empty($this->tables) ? '' : '
@@ -143,9 +143,9 @@ class BoardArticle extends AbstractArticle
 			$this->params
 		);
 
-		[$num_boards] = Utils::$smcFunc['db_fetch_row']($result);
+		[$num_boards] = Db::$db->fetch_row($result);
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
 		return (int) $num_boards;

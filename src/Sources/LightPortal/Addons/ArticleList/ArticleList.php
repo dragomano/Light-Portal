@@ -10,15 +10,16 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 02.02.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\ArticleList;
 
+use Bugo\Compat\{BBCodeParser, Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, RadioField};
 use Bugo\LightPortal\Areas\Partials\{ContentClassSelect, PageSelect, TopicSelect};
-use Bugo\LightPortal\Utils\{BBCodeParser, Config, Content, Lang, User, Utils};
+use Bugo\LightPortal\Utils\Content;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

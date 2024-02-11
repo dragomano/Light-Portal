@@ -10,18 +10,19 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.01.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
 
+use Bugo\Compat\{Config, Lang, Security, User, Utils};
 use Bugo\LightPortal\Addons\{Block, Plugin};
 use Bugo\LightPortal\Areas\Area;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, ColorField, CustomField, NumberField};
 use Bugo\LightPortal\Areas\Fields\{RadioField, RangeField, SelectField, TextField};
 use Bugo\LightPortal\Areas\Partials\IconSelect;
 use Bugo\LightPortal\Repositories\PluginRepository;
-use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
+use Bugo\LightPortal\Utils\Language;
 use Nette\PhpGenerator\{PhpFile, PhpNamespace, Printer};
 
 if (! defined('LP_NAME'))
@@ -59,10 +60,10 @@ class Handler extends Plugin
 	{
 		$temp = Lang::get();
 
-		$baseLang = Lang::getLanguageNameFromLocale(Config::$language);
+		$baseLang = Language::getNameFromLocale(Config::$language);
 
 		if (empty(Config::$modSettings['userLanguage'])) {
-			Utils::$context['lp_languages'] = ['english' => $temp[Lang::FALLBACK_LANG]];
+			Utils::$context['lp_languages'] = ['english' => $temp[Language::FALLBACK]];
 
 			if ($baseLang !== 'english')
 				Utils::$context['lp_languages'][$baseLang] = $temp[Config::$language];
@@ -70,10 +71,10 @@ class Handler extends Plugin
 			return;
 		}
 
-		$userLang = Lang::getLanguageNameFromLocale(User::$info['language']);
+		$userLang = Language::getNameFromLocale(User::$info['language']);
 
 		Utils::$context['lp_languages'] = array_merge([
-			'english' => $temp[Lang::FALLBACK_LANG],
+			'english' => $temp[Language::FALLBACK],
 			$userLang => $temp[User::$info['language']],
 			$baseLang => $temp[Config::$language]
 		]);
@@ -135,7 +136,8 @@ class Handler extends Plugin
 
 	private function prepareFormFields(): void
 	{
-		$this->checkSubmitOnce('register');
+		Security::checkSubmitOnce('register');
+
 		$this->prepareIconList();
 
 		TextField::make('name', Lang::$txt['lp_plugin_maker']['name'])
@@ -210,13 +212,13 @@ class Handler extends Plugin
 	private function setTitleField(): void
 	{
 		$languages = empty(Config::$modSettings['userLanguage'])
-			? [Lang::getLanguageNameFromLocale(Config::$language)]
+			? [Language::getNameFromLocale(Config::$language)]
 			: [
-				Lang::getLanguageNameFromLocale(Lang::FALLBACK_LANG),
-				Lang::getLanguageNameFromLocale(Config::$language)
+				Language::getNameFromLocale(Language::FALLBACK),
+				Language::getNameFromLocale(Config::$language)
 			];
 
-		$languages = array_unique([Lang::getLanguageNameFromLocale(Lang::FALLBACK_LANG), ...$languages]);
+		$languages = array_unique([Language::getNameFromLocale(Language::FALLBACK), ...$languages]);
 
 		$value = /** @lang text */	'
 			<div>';
@@ -257,7 +259,7 @@ class Handler extends Plugin
 						name="description_' . $key . '"
 						value="' . (Utils::$context['lp_plugin']['descriptions'][$key] ?? '') . '"
 						placeholder="' . Lang::$txt['lp_page_description'] . '"
-						' . (in_array($key, $languages) ? 'x-ref="title_' . $i-- . '"' : '') . ($lang['filename'] === Lang::FALLBACK_LANG ? ' required' : '') . '
+						' . (in_array($key, $languages) ? 'x-ref="title_' . $i-- . '"' : '') . ($lang['filename'] === Language::FALLBACK ? ' required' : '') . '
 					>
 				</div>';
 		}
@@ -275,7 +277,7 @@ class Handler extends Plugin
 		if (! empty(Utils::$context['post_errors']) || empty(Utils::$context['lp_plugin']) || $this->request()->hasNot('save'))
 			return;
 
-		$this->checkSubmitOnce('check');
+		Security::checkSubmitOnce('check');
 
 		require_once __DIR__ . '/vendor/autoload.php';
 

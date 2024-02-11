@@ -14,8 +14,9 @@
 
 namespace Bugo\LightPortal;
 
+use Bugo\Compat\{Config, Database as Db, ErrorHandler, Lang};
+use Bugo\Compat\{Sapi, Theme, User, Utils};
 use Bugo\LightPortal\Actions\{Block, PageInterface};
-use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Sapi, Theme, User, Utils};
 use Exception;
 use Less_Exception_Parser;
 use Less_Parser;
@@ -29,7 +30,11 @@ abstract class AbstractMain
 
 	protected function isPortalCanBeLoaded(): bool
 	{
-		if (! defined('LP_NAME') || isset(Utils::$context['uninstalling']) || $this->request()->is('printpage')) {
+		if (
+			! defined('LP_NAME')
+			|| isset(Utils::$context['uninstalling'])
+			|| $this->request()->is('printpage')
+		) {
 			Config::$modSettings['minimize_files'] = 0;
 			return false;
 		}
@@ -52,17 +57,41 @@ abstract class AbstractMain
 		Utils::$context['lp_plugin_types']        = $this->getPluginTypes();
 		Utils::$context['lp_content_types']       = $this->getContentTypes();
 
-		Utils::$context['lp_enabled_plugins']  = empty(Config::$modSettings['lp_enabled_plugins'])  ? [] : explode(',', Config::$modSettings['lp_enabled_plugins']);
-		Utils::$context['lp_frontpage_pages']  = empty(Config::$modSettings['lp_frontpage_pages'])  ? [] : explode(',', Config::$modSettings['lp_frontpage_pages']);
-		Utils::$context['lp_frontpage_topics'] = empty(Config::$modSettings['lp_frontpage_topics']) ? [] : explode(',', Config::$modSettings['lp_frontpage_topics']);
+		Utils::$context['lp_enabled_plugins'] = empty(Config::$modSettings['lp_enabled_plugins'])
+			? []
+			: explode(',', Config::$modSettings['lp_enabled_plugins']);
+		
+		Utils::$context['lp_frontpage_pages'] = empty(Config::$modSettings['lp_frontpage_pages'])
+			? []
+			: explode(',', Config::$modSettings['lp_frontpage_pages']);
+		
+		Utils::$context['lp_frontpage_topics'] = empty(Config::$modSettings['lp_frontpage_topics'])
+			? []
+			: explode(',', Config::$modSettings['lp_frontpage_topics']);
 
-		Utils::$context['lp_header_panel_width'] = empty(Config::$modSettings['lp_header_panel_width']) ? 12 : (int) Config::$modSettings['lp_header_panel_width'];
-		Utils::$context['lp_left_panel_width']   = empty(Config::$modSettings['lp_left_panel_width'])   ? ['lg' => 3, 'xl' => 2] : Utils::jsonDecode(Config::$modSettings['lp_left_panel_width'], true);
-		Utils::$context['lp_right_panel_width']  = empty(Config::$modSettings['lp_right_panel_width'])  ? ['lg' => 3, 'xl' => 2] : Utils::jsonDecode(Config::$modSettings['lp_right_panel_width'], true);
-		Utils::$context['lp_footer_panel_width'] = empty(Config::$modSettings['lp_footer_panel_width']) ? 12 : (int) Config::$modSettings['lp_footer_panel_width'];
+		Utils::$context['lp_header_panel_width'] = empty(Config::$modSettings['lp_header_panel_width'])
+			? 12
+			: (int) Config::$modSettings['lp_header_panel_width'];
+		
+		Utils::$context['lp_left_panel_width'] = empty(Config::$modSettings['lp_left_panel_width'])
+			? ['lg' => 3, 'xl' => 2]
+			: Utils::jsonDecode(Config::$modSettings['lp_left_panel_width'], true);
+		
+		Utils::$context['lp_right_panel_width'] = empty(Config::$modSettings['lp_right_panel_width'])
+			? ['lg' => 3, 'xl' => 2]
+			: Utils::jsonDecode(Config::$modSettings['lp_right_panel_width'], true);
+		
+		Utils::$context['lp_footer_panel_width'] = empty(Config::$modSettings['lp_footer_panel_width'])
+			? 12
+			: (int) Config::$modSettings['lp_footer_panel_width'];
 
-		Utils::$context['lp_swap_left_right'] = empty(Lang::$txt['lang_rtl']) ? ! empty(Config::$modSettings['lp_swap_left_right']) : empty(Config::$modSettings['lp_swap_left_right']);
-		Utils::$context['lp_panel_direction'] = Utils::jsonDecode(Config::$modSettings['lp_panel_direction'] ?? '', true);
+		Utils::$context['lp_swap_left_right'] = empty(Lang::$txt['lang_rtl'])
+			? ! empty(Config::$modSettings['lp_swap_left_right'])
+			: empty(Config::$modSettings['lp_swap_left_right']);
+		
+		Utils::$context['lp_panel_direction'] = Utils::jsonDecode(
+			Config::$modSettings['lp_panel_direction'] ?? '', true
+		);
 
 		Utils::$context['lp_active_blocks'] = (new Block)->getActive();
 	}
@@ -77,7 +106,7 @@ abstract class AbstractMain
 		Theme::loadCSSFile('light_portal/plugins.css');
 		Theme::loadCSSFile('portal_custom.css');
 
-		Theme::loadJSFile('light_portal/plugins.js', ['minimize' => true]);
+		Theme::loadJavaScriptFile('light_portal/plugins.js', ['minimize' => true]);
 	}
 
 	protected function loadFontAwesome(): void
@@ -88,13 +117,22 @@ abstract class AbstractMain
 		if (Config::$modSettings['lp_fa_source'] === 'css_local') {
 			Theme::loadCSSFile('all.min.css', [], 'portal_fontawesome');
 		} elseif (Config::$modSettings['lp_fa_source'] === 'custom' && isset(Config::$modSettings['lp_fa_custom'])) {
-			Theme::loadExtCSS(
+			Theme::loadCSSFile(
 				Config::$modSettings['lp_fa_custom'],
-				['seed' => false],
+				[
+					'external' => true,
+					'seed'     => false,
+				],
 				'portal_fontawesome'
 			);
 		} elseif (isset(Config::$modSettings['lp_fa_kit'])) {
-			Theme::loadExtJS(Config::$modSettings['lp_fa_kit'], ['attributes' => ['crossorigin' => 'anonymous']]);
+			Theme::loadJavaScriptFile(
+				Config::$modSettings['lp_fa_kit'],
+				[
+					'attributes' => ['crossorigin' => 'anonymous'],
+					'external'   => true,
+				]
+			);
 		}
 	}
 
@@ -168,8 +206,14 @@ abstract class AbstractMain
 	 */
 	protected function fixLinktree(): void
 	{
-		if (empty(Utils::$context['current_board']) && $this->request()->hasNot('c') || empty(Utils::$context['linktree'][1]) || empty(Utils::$context['linktree'][1]['url']))
+		if (
+			empty(Utils::$context['current_board'])
+			&& $this->request()->hasNot('c')
+			|| empty(Utils::$context['linktree'][1])
+			|| empty(Utils::$context['linktree'][1]['url'])
+		) {
 			return;
+		}
 
 		$old_url = explode('#', Utils::$context['linktree'][1]['url']);
 
@@ -184,10 +228,20 @@ abstract class AbstractMain
 	 */
 	protected function showDebugInfo(): void
 	{
-		if (empty(Config::$modSettings['lp_show_debug_info']) || empty(Utils::$context['user']['is_admin']) || empty(Utils::$context['template_layers']) || $this->request()->is('devtools'))
+		if (
+			empty(Config::$modSettings['lp_show_debug_info'])
+			|| empty(Utils::$context['user']['is_admin'])
+			|| empty(Utils::$context['template_layers'])
+			|| $this->request()->is('devtools')
+		) {
 			return;
+		}
 
-		Utils::$context['lp_load_page_stats'] = sprintf(Lang::$txt['lp_load_page_stats'], round(microtime(true) - Utils::$context['lp_load_time'], 3), Utils::$context['lp_num_queries']);
+		Utils::$context['lp_load_page_stats'] = sprintf(
+			Lang::$txt['lp_load_page_stats'],
+			round(microtime(true) - Utils::$context['lp_load_time'], 3),
+			Utils::$context['lp_num_queries']
+		);
 
 		Theme::loadTemplate('LightPortal/ViewDebug');
 
@@ -244,7 +298,8 @@ abstract class AbstractMain
 						'plugins' => [
 							'title'   => Lang::$txt['lp_plugins'],
 							'href'    => Config::$scripturl . '?action=admin;area=lp_plugins',
-							'amt'     => Utils::$context['lp_enabled_plugins'] ? count(Utils::$context['lp_enabled_plugins']) : 0,
+							'amt'     => Utils::$context['lp_enabled_plugins']
+								? count(Utils::$context['lp_enabled_plugins']) : 0,
 							'show'    => true,
 							'is_last' => true,
 						],
@@ -277,10 +332,14 @@ abstract class AbstractMain
 		if (empty(Utils::$context['lp_menu_pages'] = $this->getMenuPages()))
 			return;
 
-		$page_buttons = [];
+		$pageButtons = [];
 		foreach (Utils::$context['lp_menu_pages'] as $item) {
-			$page_buttons['portal_page_' . $item['alias']] = [
-				'title' => ($item['icon'] ? '<span class="portal_menu_icons fa-fw ' . $item['icon'] . '"></span>' : '') . $this->getTranslatedTitle($item['titles']),
+			$pageButtons['portal_page_' . $item['alias']] = [
+				'title' => (
+					$item['icon']
+						? '<span class="portal_menu_icons fa-fw ' . $item['icon'] . '"></span>'
+						: ''
+					) . $this->getTranslatedTitle($item['titles']),
 				'href'  => LP_PAGE_URL . $item['alias'],
 				'icon'  => '" style="display: none"></span><span',
 				'show'  => $this->canViewItem($item['permissions'])
@@ -297,7 +356,7 @@ abstract class AbstractMain
 
 		$buttons = array_merge(
 			array_slice($buttons, 0, $counter, true),
-			$page_buttons,
+			$pageButtons,
 			array_slice($buttons, $counter, null, true)
 		);
 	}
@@ -335,7 +394,8 @@ abstract class AbstractMain
 			[
 				'forum' => [
 					'title'       => Lang::$txt['lp_forum'],
-					'href'        => Config::$modSettings['lp_standalone_url'] ? Config::$scripturl : Config::$scripturl . '?action=forum',
+					'href'        => Config::$modSettings['lp_standalone_url']
+						? Config::$scripturl : Config::$scripturl . '?action=forum',
 					'icon'        => 'im_on',
 					'show'        => true,
 					'action_hook' => true
@@ -370,7 +430,9 @@ abstract class AbstractMain
 			Utils::$context['lp_frontpage_topics'][] = $topic;
 		}
 
-		Config::updateModSettings(['lp_frontpage_topics' => implode(',', Utils::$context['lp_frontpage_topics'])]);
+		Config::updateModSettings(
+			['lp_frontpage_topics' => implode(',', Utils::$context['lp_frontpage_topics'])]
+		);
 
 		Utils::redirectexit('topic=' . $topic);
 	}
@@ -380,11 +442,13 @@ abstract class AbstractMain
 		if (($pages = $this->cache()->get('menu_pages')) === null) {
 			$titles = $this->getEntityList('title');
 
-			$result = Utils::$smcFunc['db_query']('', '
+			$result = Db::$db->query('', '
 				SELECT p.page_id, p.alias, p.permissions, pp2.value AS icon
 				FROM {db_prefix}lp_pages AS p
 					LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {literal:page})
-					LEFT JOIN {db_prefix}lp_params AS pp2 ON (p.page_id = pp2.item_id AND pp2.type = {literal:page} AND pp2.name = {literal:page_icon})
+					LEFT JOIN {db_prefix}lp_params AS pp2 ON (
+						p.page_id = pp2.item_id AND pp2.type = {literal:page} AND pp2.name = {literal:page_icon}
+					)
 				WHERE p.status IN ({array_int:statuses})
 					AND p.created_at <= {int:current_time}
 					AND pp.name = {literal:show_in_menu}
@@ -397,7 +461,7 @@ abstract class AbstractMain
 			);
 
 			$pages = [];
-			while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+			while ($row = Db::$db->fetch_assoc($result)) {
 				$pages[$row['page_id']] = [
 					'id'          => $row['page_id'],
 					'alias'       => $row['alias'],
@@ -409,7 +473,7 @@ abstract class AbstractMain
 				$pages[$row['page_id']]['titles'] = $titles[$row['page_id']];
 			}
 
-			Utils::$smcFunc['db_free_result']($result);
+			Db::$db->free_result($result);
 			Utils::$context['lp_num_queries']++;
 
 			$this->cache()->put('menu_pages', $pages);
@@ -420,8 +484,8 @@ abstract class AbstractMain
 
 	private function calculateNumberOfEntities(): void
 	{
-		if (($num_entities = $this->cache()->get('num_active_entities_u' . User::$info['id'])) === null) {
-			$result = Utils::$smcFunc['db_query']('', '
+		if (($numEntities = $this->cache()->get('num_active_entities_u' . User::$info['id'])) === null) {
+			$result = Db::$db->query('', '
 				SELECT
 					(
 						SELECT COUNT(b.block_id)
@@ -457,33 +521,39 @@ abstract class AbstractMain
 				]
 			);
 
-			$num_entities = Utils::$smcFunc['db_fetch_assoc']($result);
-			array_walk($num_entities, fn(&$item) => $item = (int) $item);
+			$numEntities = Db::$db->fetch_assoc($result);
+			array_walk($numEntities, fn(&$item) => $item = (int) $item);
 
-			Utils::$smcFunc['db_free_result']($result);
+			Db::$db->free_result($result);
 			Utils::$context['lp_num_queries']++;
 
-			$this->cache()->put('num_active_entities_u' . User::$info['id'], $num_entities);
+			$this->cache()->put('num_active_entities_u' . User::$info['id'], $numEntities);
 		}
 
 		Utils::$context['lp_quantities'] = [
-			'active_blocks'    => $num_entities['num_blocks'],
-			'active_pages'     => $num_entities['num_pages'],
-			'my_pages'         => $num_entities['num_my_pages'],
-			'unapproved_pages' => $num_entities['num_unapproved_pages'],
-			'internal_pages'   => $num_entities['num_internal_pages'],
+			'active_blocks'    => $numEntities['num_blocks'],
+			'active_pages'     => $numEntities['num_pages'],
+			'my_pages'         => $numEntities['num_my_pages'],
+			'unapproved_pages' => $numEntities['num_unapproved_pages'],
+			'internal_pages'   => $numEntities['num_internal_pages'],
 		];
 	}
 
 	private function getBlockPlacements(): array
 	{
-		return array_combine(['header', 'top', 'left', 'right', 'bottom', 'footer'], Lang::$txt['lp_block_placement_set']);
+		return array_combine(
+			['header', 'top', 'left', 'right', 'bottom', 'footer'],
+			Lang::$txt['lp_block_placement_set']
+		);
 	}
 
 	private function getPluginTypes(): array
 	{
 		return array_combine(
-			['block', 'ssi', 'editor', 'comment', 'parser', 'article', 'frontpage', 'impex', 'block_options', 'page_options', 'icons', 'seo', 'other'],
+			[
+				'block', 'ssi', 'editor', 'comment', 'parser', 'article', 'frontpage',
+				'impex', 'block_options', 'page_options', 'icons', 'seo', 'other'
+			],
 			Lang::$txt['lp_plugins_types']
 		);
 	}

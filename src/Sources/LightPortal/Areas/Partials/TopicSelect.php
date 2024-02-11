@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Areas\Partials;
 
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\Compat\{Config, Database as Db, Lang, Utils};
 
 final class TopicSelect extends AbstractPartial
 {
@@ -87,7 +87,7 @@ final class TopicSelect extends AbstractPartial
 		if (empty($topics))
 			return [];
 
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT t.id_topic, m.subject
 			FROM {db_prefix}topics AS t
 				INNER JOIN {db_prefix}messages AS m ON (m.id_msg = t.id_first_msg)
@@ -98,13 +98,13 @@ final class TopicSelect extends AbstractPartial
 		);
 
 		$topics = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			Lang::censorText($row['subject']);
 
 			$topics[$row['id_topic']] = $row['subject'];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
 		return $topics;

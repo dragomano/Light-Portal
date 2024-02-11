@@ -1,6 +1,6 @@
 <?php
 
-use Bugo\LightPortal\Utils\Utils;
+use Bugo\Compat\Utils;
 
 function show_page_reactions(): void
 {

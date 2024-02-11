@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\ThemeSwitcher;
 
+use Bugo\Compat\Theme;
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Utils\Theme;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

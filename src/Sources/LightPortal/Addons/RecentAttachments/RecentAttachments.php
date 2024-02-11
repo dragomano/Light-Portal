@@ -10,14 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\RecentAttachments;
 
+use Bugo\Compat\{Lang, Theme, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{NumberField, TextField};
-use Bugo\LightPortal\Utils\{Lang, Theme, User, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\FacebookComments;
 
+use Bugo\Compat\{Config, Lang, Utils};
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

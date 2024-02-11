@@ -10,14 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 10.02.24
  */
 
 
 namespace Bugo\LightPortal\Addons\BoardNews;
 
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Fields\{AbstractField, SelectField};
-use Bugo\LightPortal\Utils\Utils;
 
 if (! defined('SMF'))
 	die('No direct access...');

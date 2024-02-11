@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Areas\Partials;
 
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\Compat\{Config, Lang, Utils};
 
 final class ActionSelect extends AbstractPartial
 {
@@ -24,7 +24,10 @@ final class ActionSelect extends AbstractPartial
 		$params = $params[0] ?? [];
 
 		$params['id'] ??= 'lp_disabled_actions';
-		$params['data'] ??= (empty(Config::$modSettings['lp_disabled_actions']) ? [] : explode(',', Config::$modSettings['lp_disabled_actions']));
+		$params['data'] ??= (empty(Config::$modSettings['lp_disabled_actions'])
+			? []
+			: explode(',', Config::$modSettings['lp_disabled_actions'])
+		);
 		$params['value'] = [];
 
 		$data = [];

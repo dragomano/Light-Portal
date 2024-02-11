@@ -1,6 +1,6 @@
 <?php
 
-use Bugo\LightPortal\Utils\{Config, Theme, Utils};
+use Bugo\Compat\{Config, Theme, Utils};
 
 function template_manage_plugins(): void
 {

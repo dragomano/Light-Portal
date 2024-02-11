@@ -14,8 +14,8 @@
 
 namespace Bugo\LightPortal\Areas\Exports;
 
+use Bugo\Compat\Sapi;
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\Sapi;
 
 if (! defined('SMF'))
 	die('No direct access...');

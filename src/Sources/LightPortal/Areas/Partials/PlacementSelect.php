@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Areas\Partials;
 
-use Bugo\LightPortal\Utils\{Lang, Utils};
+use Bugo\Compat\{Lang, Utils};
 
 final class PlacementSelect extends AbstractPartial
 {

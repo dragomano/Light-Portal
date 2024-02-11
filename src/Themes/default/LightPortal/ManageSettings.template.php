@@ -1,6 +1,6 @@
 <?php
 
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
+use Bugo\Compat\{Config, Lang, Theme, Utils};
 
 function template_callback_frontpage_mode_settings_before(): void
 {

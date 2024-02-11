@@ -14,8 +14,8 @@
 
 namespace Bugo\LightPortal\Lists;
 
+use Bugo\Compat\{Database as Db, Lang, Utils};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Lang, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -26,7 +26,7 @@ final class CategoryList implements ListInterface
 
 	public function getAll(): array
 	{
-		$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
+		$result = Db::$db->query('', /** @lang text */ '
 			SELECT category_id, name, description, priority
 			FROM {db_prefix}lp_categories
 			ORDER BY priority',
@@ -34,7 +34,7 @@ final class CategoryList implements ListInterface
 		);
 
 		$items = [0 => ['name' => Lang::$txt['lp_no_category']]];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['category_id']] = [
 				'id'       => $row['category_id'],
 				'name'     => $row['name'],
@@ -43,7 +43,7 @@ final class CategoryList implements ListInterface
 			];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
 		return $items;

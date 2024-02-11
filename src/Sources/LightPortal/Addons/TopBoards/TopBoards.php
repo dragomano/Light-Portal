@@ -10,16 +10,16 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 02.02.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TopBoards;
 
+use Bugo\Compat\{Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\LightPortal\Areas\Fields\NumberField;
 use Bugo\LightPortal\Areas\Fields\RadioField;
-use Bugo\LightPortal\Utils\{Lang, User, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

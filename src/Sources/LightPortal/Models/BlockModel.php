@@ -14,8 +14,8 @@
 
 namespace Bugo\LightPortal\Models;
 
+use Bugo\Compat\{Config, Utils};
 use Bugo\LightPortal\Actions\BlockInterface;
-use Bugo\LightPortal\Utils\{Config, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');

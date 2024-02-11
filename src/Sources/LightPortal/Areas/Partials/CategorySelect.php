@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Areas\Partials;
 
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\Compat\{Config, Lang, Utils};
 
 final class CategorySelect extends AbstractPartial
 {

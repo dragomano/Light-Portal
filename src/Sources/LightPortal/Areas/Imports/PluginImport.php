@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Areas\Imports;
 
-use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Theme, Utils};
+use Bugo\Compat\{Config, ErrorHandler, Lang, Theme, Utils};
 use Exception;
 use ZipArchive;
 

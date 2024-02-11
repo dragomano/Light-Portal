@@ -22,4 +22,6 @@ if (! defined('SMF'))
 abstract class AbstractConfig
 {
 	use Helper;
+
+	abstract public function show(): void;
 }

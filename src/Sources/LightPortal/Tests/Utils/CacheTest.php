@@ -6,7 +6,8 @@
 
 namespace Tests\Utils;
 
-use Bugo\LightPortal\Utils\{Config, Cache};
+use Bugo\Compat\Config;
+use Bugo\LightPortal\Utils\Cache;
 use Tester\Assert;
 
 require_once dirname(__DIR__) . '/bootstrap.php';

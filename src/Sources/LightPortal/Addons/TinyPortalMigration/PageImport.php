@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 09.02.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortalMigration;
 
+use Bugo\Compat\{BBCodeParser, Config, Database as Db, Lang, Utils};
 use Bugo\LightPortal\Areas\Imports\AbstractCustomPageImport;
-use Bugo\LightPortal\Utils\{BBCodeParser, Config, DateTime, Lang, Utils};
+use Bugo\LightPortal\Utils\{DateTime, ItemList};
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -115,7 +116,7 @@ class PageImport extends AbstractCustomPageImport
 			]
 		];
 
-		$this->createList($listOptions);
+		new ItemList($listOptions);
 	}
 
 	/**
@@ -123,7 +124,7 @@ class PageImport extends AbstractCustomPageImport
 	 */
 	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id'): array
 	{
-		$this->dbExtend();
+		Db::extend();
 
 		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'tp_articles')))
 			return [];
@@ -162,7 +163,7 @@ class PageImport extends AbstractCustomPageImport
 
 	public function getTotalCount(): int
 	{
-		$this->dbExtend();
+		Db::extend();
 
 		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix. 'tp_articles')))
 			return 0;

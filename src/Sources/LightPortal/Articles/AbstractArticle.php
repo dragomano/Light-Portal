@@ -24,9 +24,13 @@ abstract class AbstractArticle implements ArticleInterface
 	use Helper;
 
 	protected array $columns = [];
+
 	protected array $tables  = [];
+
 	protected array $wheres  = [];
+
 	protected array $params  = [];
+
 	protected array $orders  = [];
 
 	abstract public function init(): void;

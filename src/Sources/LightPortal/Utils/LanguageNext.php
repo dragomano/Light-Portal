@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * Notify.php
+ * LanguageNext.php (special for SMF 3.0)
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -14,17 +14,17 @@
 
 namespace Bugo\LightPortal\Utils;
 
-use function getNotifyPrefs;
+use Bugo\Compat\Lang;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class Notify
+final class LanguageNext
 {
-	public static function getNotifyPrefs(int|array $members, string|array $prefs = '', bool $process_default = false): array
-	{
-		require_once Config::$sourcedir . DIRECTORY_SEPARATOR . 'Subs-Notify.php';
+	public const FALLBACK = 'en_US';
 
-		return getNotifyPrefs($members, $prefs, $process_default);
+	public static function getNameFromLocale(string $locale): string
+	{
+		return array_flip(Lang::LANG_TO_LOCALE)[$locale] ?? 'english';
 	}
 }

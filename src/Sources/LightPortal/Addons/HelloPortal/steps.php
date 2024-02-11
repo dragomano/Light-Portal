@@ -1,6 +1,6 @@
 <?php
 
-use Bugo\LightPortal\Utils\{Config, Lang, User};
+use Bugo\Compat\{Config, Lang};
 
 return [
 	'basic_settings' => '

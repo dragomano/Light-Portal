@@ -10,15 +10,16 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 02.02.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
 
+use Bugo\Compat\{Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CustomField, TextareaField, TextField};
 use Bugo\LightPortal\Areas\Partials\{BoardSelect, PageSelect, TopicSelect};
-use Bugo\LightPortal\Utils\{Content, Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\Content;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -324,7 +325,7 @@ class AdsBlock extends Block
 
 			$after_every_last_post = ob_get_clean();
 
-			Theme::addInlineJS('
+			$this->addInlineJS('
 		jQuery(document).ready(function ($) {
 			$(' . Utils::escapeJavaScript($after_every_last_post) . ').insertAfter("#quickModForm > div.windowbg:last");
 		});', true);
@@ -342,7 +343,7 @@ class AdsBlock extends Block
 
 			$after_last_post = ob_get_clean();
 
-			Theme::addInlineJS('
+			$this->addInlineJS('
 		jQuery(document).ready(function ($) {
 			$("#quickModForm").append(' . Utils::escapeJavaScript($after_last_post) . ');
 		});', true);

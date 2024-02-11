@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Areas\Fields;
 
-use Bugo\LightPortal\Utils\Utils;
+use Bugo\Compat\Utils;
 
 if (! defined('SMF'))
 	die('No direct access...');

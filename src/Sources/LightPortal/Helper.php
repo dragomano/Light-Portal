@@ -14,11 +14,11 @@
 
 namespace Bugo\LightPortal;
 
+use Bugo\Compat\{Config, Database as Db, ErrorHandler, Lang, User, Utils};
 use Bugo\LightPortal\Lists\{CategoryList, PageList, TagList, TitleList};
 use Bugo\LightPortal\Tasks\Notifier;
 use Bugo\LightPortal\Utils\{BlockAppearance, Cache, File};
 use Bugo\LightPortal\Utils\{Post, Request, Session, SMFTrait};
-use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, User, Utils};
 use Exception;
 
 if (! defined('SMF'))
@@ -142,7 +142,7 @@ trait Helper
 		$themes = $this->cache()->get('forum_themes');
 
 		if ($themes === null) {
-			$result = Utils::$smcFunc['db_query']('', '
+			$result = Db::$db->query('', '
 				SELECT id_theme, value
 				FROM {db_prefix}themes
 				WHERE id_theme IN ({array_int:themes})
@@ -153,14 +153,14 @@ trait Helper
 			);
 
 			$themes = [];
-			while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+			while ($row = Db::$db->fetch_assoc($result)) {
 				$themes[$row['id_theme']] = [
 					'id'   => (int) $row['id_theme'],
 					'name' => $row['value'],
 				];
 			}
 
-			Utils::$smcFunc['db_free_result']($result);
+			Db::$db->free_result($result);
 			Utils::$context['lp_num_queries']++;
 
 			$themes = array_column($themes, 'name', 'id');
@@ -310,7 +310,7 @@ trait Helper
 		if (empty($options))
 			return;
 
-		Utils::$smcFunc['db_insert']('',
+		Db::$db->insert('',
 			'{db_prefix}background_tasks',
 			[
 				'task_file'  => 'string',

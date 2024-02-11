@@ -13,8 +13,9 @@
 
 namespace Bugo\LightPortal\Areas\Imports;
 
+use Bugo\Compat\{Config, Database as Db};
+use Bugo\Compat\{ErrorHandler, Sapi, Utils};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, ErrorHandler, Sapi, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -54,7 +55,7 @@ abstract class AbstractCustomBlockImport implements ImportInterface, CustomImpor
 			$count = sizeof($items);
 
 			for ($i = 0; $i < $count; $i++) {
-				$temp = Utils::$smcFunc['db_insert']('',
+				$temp = Db::$db->insert('',
 					'{db_prefix}lp_blocks',
 					[
 						'type'          => 'string',
@@ -85,7 +86,7 @@ abstract class AbstractCustomBlockImport implements ImportInterface, CustomImpor
 			$count  = sizeof($titles);
 
 			for ($i = 0; $i < $count; $i++) {
-				$results = Utils::$smcFunc['db_insert']('',
+				$results = Db::$db->insert('',
 					'{db_prefix}lp_titles',
 					[
 						'type'    => 'string',

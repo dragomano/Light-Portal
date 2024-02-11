@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Areas\Imports;
 
-use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Theme, Utils};
+use Bugo\Compat\{Config, Database as Db, ErrorHandler, Lang, Theme, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -58,7 +58,7 @@ final class BlockImport extends AbstractImport
 		foreach ($xml as $element) {
 			foreach ($element->item as $item) {
 				$items[] = [
-					'block_id'      => $block_id = intval($item['block_id']),
+					'block_id'      => $blockId = intval($item['block_id']),
 					'icon'          => $item->icon,
 					'type'          => str_replace('md', 'markdown', (string) $item->type),
 					'note'          => $item->note,
@@ -76,7 +76,7 @@ final class BlockImport extends AbstractImport
 					foreach ($item->titles as $title) {
 						foreach ($title as $k => $v) {
 							$titles[] = [
-								'item_id' => $block_id,
+								'item_id' => $blockId,
 								'type'    => 'block',
 								'lang'    => $k,
 								'title'   => $v
@@ -89,7 +89,7 @@ final class BlockImport extends AbstractImport
 					foreach ($item->params as $param) {
 						foreach ($param as $k => $v) {
 							$params[] = [
-								'item_id' => $block_id,
+								'item_id' => $blockId,
 								'type'    => 'block',
 								'name'    => $k,
 								'value'   => $v
@@ -100,7 +100,7 @@ final class BlockImport extends AbstractImport
 			}
 		}
 
-		Utils::$smcFunc['db_transaction']('begin');
+		Db::$db->transaction('begin');
 
 		$results = [];
 
@@ -111,7 +111,7 @@ final class BlockImport extends AbstractImport
 			$count = sizeof($items);
 
 			for ($i = 0; $i < $count; $i++) {
-				$results = Utils::$smcFunc['db_insert']('replace',
+				$results = Db::$db->insert('replace',
 					'{db_prefix}lp_blocks',
 					[
 						'block_id'      => 'int',

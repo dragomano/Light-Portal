@@ -1,6 +1,6 @@
 <?php
 
-use Bugo\LightPortal\Utils\{Config, Utils};
+use Bugo\Compat\{Config, Utils};
 
 function template_ads_placement_board_above(): void
 {

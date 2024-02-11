@@ -10,13 +10,13 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 17.01.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\Calculator;
 
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Utils\Utils;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

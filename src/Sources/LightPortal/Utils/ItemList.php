@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * IntegrationHook.php
+ * ItemList.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -14,15 +14,15 @@
 
 namespace Bugo\LightPortal\Utils;
 
-use function call_integration_hook;
+use Bugo\Compat\{ItemList as BaseItemList, Utils};
 
-if (! defined('SMF'))
-	die('No direct access...');
-
-final class IntegrationHook
+final class ItemList extends BaseItemList
 {
-	public static function call(string $name, array $parameters = []): array
+	public function __construct(array $listOptions)
 	{
-		return call_integration_hook($name, $parameters);
+		parent::__construct($listOptions);
+
+		Utils::$context['sub_template'] = 'show_list';
+		Utils::$context['default_list'] = $listOptions['id'];
 	}
 }

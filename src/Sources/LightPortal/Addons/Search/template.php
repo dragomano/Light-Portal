@@ -1,6 +1,6 @@
 <?php
 
-use Bugo\LightPortal\Utils\{Lang, Utils};
+use Bugo\Compat\{Lang, Utils};
 
 function template_show_results(): void
 {

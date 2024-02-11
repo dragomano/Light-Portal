@@ -15,7 +15,8 @@
 namespace Bugo\LightPortal\Areas\Configs;
 
 use Bugo\LightPortal\Tasks\Maintainer;
-use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
+use Bugo\Compat\{ACP, Config, Database as Db};
+use Bugo\Compat\{Lang, User, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -38,8 +39,16 @@ final class MiscConfig extends AbstractConfig
 			['check', 'lp_show_debug_info', 'help' => 'lp_show_debug_info_help'],
 			['int', 'lp_cache_update_interval', 'postinput' => Lang::$txt['seconds']],
 			['title', 'lp_compatibility_mode'],
-			['text', 'lp_portal_action', 'subtext' => Config::$scripturl . '?action=<strong>' . LP_ACTION . '</strong>'],
-			['text', 'lp_page_param', 'subtext' => Config::$scripturl . '?<strong>' . LP_PAGE_PARAM . '</strong>=somealias'],
+			[
+				'text',
+				'lp_portal_action',
+				'subtext' => Config::$scripturl . '?action=<strong>' . LP_ACTION . '</strong>'
+			],
+			[
+				'text',
+				'lp_page_param',
+				'subtext' => Config::$scripturl . '?<strong>' . LP_PAGE_PARAM . '</strong>=somealias'
+			],
 			['title', 'admin_maintenance'],
 			['check', 'lp_weekly_cleaning']
 		];
@@ -49,7 +58,7 @@ final class MiscConfig extends AbstractConfig
 		if ($this->request()->has('save')) {
 			User::$me->checkSession();
 
-			Utils::$smcFunc['db_query']('', '
+			Db::$db->query('', '
 				DELETE FROM {db_prefix}background_tasks
 				WHERE task_file LIKE {string:task_file}',
 				[
@@ -58,7 +67,7 @@ final class MiscConfig extends AbstractConfig
 			);
 
 			if ($this->request()->has('lp_weekly_cleaning')) {
-				Utils::$smcFunc['db_insert']('insert',
+				Db::$db->insert('insert',
 					'{db_prefix}background_tasks',
 					['task_file' => 'string-255', 'task_class' => 'string-255', 'task_data' => 'string'],
 					['$sourcedir/LightPortal/Tasks/Maintainer.php', '\\' . Maintainer::class, ''],
@@ -68,13 +77,13 @@ final class MiscConfig extends AbstractConfig
 
 			$save_vars = $config_vars;
 
-			$this->saveDBSettings($save_vars);
+			ACP::saveDBSettings($save_vars);
 
 			$this->session()->put('adm-save', true);
 
 			Utils::redirectexit('action=admin;area=lp_settings;sa=misc');
 		}
 
-		$this->prepareDBSettingContext($config_vars);
+		ACP::prepareDBSettingContext($config_vars);
 	}
 }

@@ -3,7 +3,7 @@
 if (function_exists('show_current_month_grid'))
 	return;
 
-use Bugo\LightPortal\Utils\{Config, Lang};
+use Bugo\Compat\{Config, Lang};
 
 function show_current_month_grid(array $data): void
 {

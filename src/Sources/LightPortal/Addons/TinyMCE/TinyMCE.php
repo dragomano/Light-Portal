@@ -10,13 +10,13 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 18.01.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TinyMCE;
 
+use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\{Lang, Theme, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -43,9 +43,9 @@ class TinyMCE extends Plugin
 
 		$apiKey = Utils::$context['lp_tiny_m_c_e_plugin']['api_key'] ?? 'no-api-key';
 
-		Theme::loadExtJS('https://cdn.tiny.cloud/1/' . $apiKey . '/tinymce/6/tinymce.min.js', ['attributes' => ['referrerpolicy' => 'origin']]);
+		$this->loadExtJS('https://cdn.tiny.cloud/1/' . $apiKey . '/tinymce/6/tinymce.min.js', ['attributes' => ['referrerpolicy' => 'origin']]);
 
-		Theme::addInlineJS('
+		$this->addInlineJS('
 		const useDarkMode = ' . ($this->isDarkTheme(Utils::$context['lp_tiny_m_c_e_plugin']['dark_themes']) ? 'true' : 'false') . ';
 		tinymce.init({
 			selector: "#content",

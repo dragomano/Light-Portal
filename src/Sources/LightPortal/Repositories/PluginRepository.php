@@ -14,8 +14,8 @@
 
 namespace Bugo\LightPortal\Repositories;
 
+use Bugo\Compat\{Database as Db, Utils};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\Utils;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -29,7 +29,7 @@ final class PluginRepository
 		if (empty($settings))
 			return;
 
-		Utils::$smcFunc['db_insert']('replace',
+		Db::$db->insert('replace',
 			'{db_prefix}lp_plugins',
 			[
 				'name'   => 'string',
@@ -48,17 +48,17 @@ final class PluginRepository
 	public function getSettings(): array
 	{
 		if (($settings = $this->cache()->get('plugin_settings', 259200)) === null) {
-			$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
+			$result = Db::$db->query('', /** @lang text */ '
 				SELECT name, config, value
 				FROM {db_prefix}lp_plugins',
 				[]
 			);
 
 			$settings = [];
-			while ($row = Utils::$smcFunc['db_fetch_assoc']($result))
+			while ($row = Db::$db->fetch_assoc($result))
 				$settings[$row['name']][$row['config']] = $row['value'];
 
-			Utils::$smcFunc['db_free_result']($result);
+			Db::$db->free_result($result);
 			Utils::$context['lp_num_queries']++;
 
 			$this->cache()->put('plugin_settings', $settings, 259200);
@@ -67,41 +67,41 @@ final class PluginRepository
 		return $settings;
 	}
 
-	public function changeSettings(string $plugin_name, array $settings = []): void
+	public function changeSettings(string $name, array $settings = []): void
 	{
 		if (empty($settings))
 			return;
 
-		$new_settings = $old_settings = [];
+		$newSettings = $oldSettings = [];
 		foreach ($settings as $config => $value) {
 			if (empty($value))
-				$old_settings[] = $config;
+				$oldSettings[] = $config;
 
 			if ($value) {
-				$new_settings[] = [
-					'name'   => $plugin_name,
+				$newSettings[] = [
+					'name'   => $name,
 					'config' => $config,
 					'value'  => $value,
 				];
 			}
 		}
 
-		$this->removeSettings($plugin_name, $old_settings);
+		$this->removeSettings($name, $oldSettings);
 
-		$this->addSettings($new_settings);
+		$this->addSettings($newSettings);
 	}
 
-	public function removeSettings(string $plugin_name, array $settings = []): void
+	public function removeSettings(string $name, array $settings = []): void
 	{
 		if (empty($settings))
 			return;
 
-		Utils::$smcFunc['db_query']('', '
+		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_plugins
 			WHERE name = {string:name}
 				AND config IN ({array_string:settings})',
 			[
-				'name'     => $plugin_name,
+				'name'     => $name,
 				'settings' => $settings,
 			]
 		);

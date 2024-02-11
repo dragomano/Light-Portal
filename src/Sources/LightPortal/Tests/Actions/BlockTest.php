@@ -2,8 +2,8 @@
 
 namespace Tests\Actions;
 
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Actions\Block;
-use Bugo\LightPortal\Utils\Utils;
 use Tester\Assert;
 
 require_once dirname(__DIR__) . '/bootstrap.php';

@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.01.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortalMigration;
 
+use Bugo\Compat\{Config, Database as Db, Lang, Utils};
 use Bugo\LightPortal\Areas\Imports\AbstractCustomBlockImport;
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\ItemList;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -115,12 +116,12 @@ class BlockImport extends AbstractCustomBlockImport
 			]
 		];
 
-		$this->createList($listOptions);
+		new ItemList($listOptions);
 	}
 
 	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id'): array
 	{
-		$this->dbExtend();
+		Db::extend();
 
 		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'tp_blocks')))
 			return [];
@@ -157,7 +158,7 @@ class BlockImport extends AbstractCustomBlockImport
 
 	public function getTotalCount(): int
 	{
-		$this->dbExtend();
+		Db::extend();
 
 		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'tp_blocks')))
 			return 0;

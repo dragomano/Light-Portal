@@ -10,16 +10,16 @@
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  *
  * @category addon
- * @version 28.01.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\Markdown;
 
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Addons\Markdown\Smf\{BlockQuoteRenderer, FencedCodeRenderer, HeadingRenderer};
-use Bugo\LightPortal\Addons\Markdown\Smf\{ImageRenderer, LinkRenderer, ListBlockRenderer};
-use Bugo\LightPortal\Addons\Markdown\Smf\{ListItemRenderer, TableRowRenderer, TableRenderer};
-use Bugo\LightPortal\Utils\Utils;
+use Bugo\LightPortal\Addons\Markdown\SMF\{BlockQuoteRenderer, FencedCodeRenderer, HeadingRenderer};
+use Bugo\LightPortal\Addons\Markdown\SMF\{ImageRenderer, LinkRenderer, ListBlockRenderer};
+use Bugo\LightPortal\Addons\Markdown\SMF\{ListItemRenderer, TableRowRenderer, TableRenderer};
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Exception\CommonMarkException;
 use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;

@@ -10,15 +10,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TagList;
 
+use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Actions\Tag;
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\RadioField;
-use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

@@ -14,9 +14,10 @@
 
 namespace Bugo\LightPortal\Actions;
 
+use Bugo\Compat\{Config, Database as Db, ErrorHandler, Lang, Msg};
+use Bugo\Compat\{PageIndex, Theme, User, Utils};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, Content, DateTime, ErrorHandler};
-use Bugo\LightPortal\Utils\{Icon, Lang, Theme, User, Utils};
+use Bugo\LightPortal\Utils\{Content, DateTime, Icon};
 use IntlException;
 
 if (! defined('SMF'))
@@ -121,7 +122,7 @@ final class Page implements PageInterface
 		$this->prepareComments();
 		$this->updateNumViews();
 
-		Theme::loadJSFile('light_portal/bundle.min.js', ['defer' => true]);
+		Theme::loadJavaScriptFile('light_portal/bundle.min.js', ['defer' => true]);
 	}
 
 	public function getData(array $params): array
@@ -129,7 +130,7 @@ final class Page implements PageInterface
 		if (empty($params))
 			return [];
 
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions,
 				p.status, p.num_views, p.created_at, p.updated_at,
@@ -147,7 +148,7 @@ final class Page implements PageInterface
 			)
 		);
 
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			Lang::censorText($row['content']);
 
 			$ogImage = null;
@@ -187,7 +188,7 @@ final class Page implements PageInterface
 			$data['options'][$row['name']] = $row['value'];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
 		return $data ?? [];
@@ -237,8 +238,8 @@ final class Page implements PageInterface
 		$sort     = $front->getOrderBy();
 		$articles = $entity->getPages($start, $limit, $sort);
 
-		Utils::$context['page_index'] = $this->constructPageIndex(
-			Utils::$context['canonical_url'], $this->request()->get('start'), $itemsCount, $limit
+		Utils::$context['page_index'] = new PageIndex(
+			Utils::$context['canonical_url'], $start, $itemsCount, $limit
 		);
 
 		Utils::$context['start'] = $this->request()->get('start');
@@ -438,7 +439,7 @@ final class Page implements PageInterface
 			filter_input(INPUT_SERVER, 'HTTP_REFERER') ?? '', 'action=portal;sa=categories;id'
 		);
 
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			(
 				SELECT p.page_id, p.alias, GREATEST(p.created_at, p.updated_at) AS date,
 					CASE WHEN COALESCE(par.value, \'0\') != \'0\' THEN p.num_comments ELSE 0 END AS num_comments,
@@ -492,10 +493,10 @@ final class Page implements PageInterface
 			]
 		);
 
-		[$prevId, $prevAlias] = Utils::$smcFunc['db_fetch_row']($result);
-		[$nextId, $nextAlias] = Utils::$smcFunc['db_fetch_row']($result);
+		[$prevId, $prevAlias] = Db::$db->fetch_row($result);
+		[$nextId, $nextAlias] = Db::$db->fetch_row($result);
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
 		if (! empty($prevAlias)) {
@@ -526,7 +527,7 @@ final class Page implements PageInterface
 
 		$searchFormula = '';
 		foreach ($titleWords as $key => $word) {
-			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE 
+			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE
 			WHEN lower(t.title) LIKE lower(\'%' . $word . '%\')
 		    THEN ' . (count($titleWords) - $key) * 2 . ' ELSE 0 END';
 		}
@@ -537,7 +538,7 @@ final class Page implements PageInterface
 			THEN ' . (count($aliasWords) - $key) . ' ELSE 0 END';
 		}
 
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT p.page_id, p.alias, p.content, p.type, (' . $searchFormula . ') AS related, t.title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.lang = {string:current_lang})
@@ -558,7 +559,7 @@ final class Page implements PageInterface
 		);
 
 		Utils::$context['lp_page']['related_pages'] = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			if ($this->isFrontpage($row['alias']))
 				continue;
 
@@ -575,7 +576,7 @@ final class Page implements PageInterface
 			];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 	}
 
@@ -597,7 +598,7 @@ final class Page implements PageInterface
 			|| (Utils::$context['allow_light_portal_manage_pages_own'] && $isAuthor);
 
 		if ($data['type'] === 'bbc') {
-			$data['content'] = $this->unPreparseCode($data['content']);
+			$data['content'] = Msg::unPreparseCode($data['content']);
 		}
 
 		if (! empty($data['category_id']))
@@ -678,7 +679,7 @@ final class Page implements PageInterface
 
 	private function getTags(string $tags): array
 	{
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT tag_id, value
 			FROM {db_prefix}lp_tags
 			WHERE FIND_IN_SET(tag_id, {string:tags}) > 0
@@ -689,14 +690,14 @@ final class Page implements PageInterface
 		);
 
 		$items = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['tag_id']] = [
 				'name' => $row['value'],
 				'href' => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id']
 			];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
 		return $items;
@@ -711,7 +712,7 @@ final class Page implements PageInterface
 			$this->session()->isEmpty('light_portal_last_page_viewed')
 			|| $this->session()->get('light_portal_last_page_viewed') !== Utils::$context['lp_page']['id']
 		) {
-			Utils::$smcFunc['db_query']('', '
+			Db::$db->query('', '
 				UPDATE {db_prefix}lp_pages
 				SET num_views = num_views + 1
 				WHERE page_id = {int:item}

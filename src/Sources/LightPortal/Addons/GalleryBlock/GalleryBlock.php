@@ -10,14 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\GalleryBlock;
 
+use Bugo\Compat\{Config, Database as Db, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField};
-use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -66,7 +66,7 @@ class GalleryBlock extends Block
 
 	public function getData(array $parameters): array
 	{
-		$this->dbExtend('packages');
+		Db::extend('packages');
 
 		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'gallery_pic')))
 			return [];
