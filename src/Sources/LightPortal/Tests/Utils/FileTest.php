@@ -17,7 +17,7 @@ test('free method', function () {
 		use Helper;
 	};
 
-	$_FILES['temp'] = FileMock::create('');
+	$_FILES['temp'] = FileMock::create();
 
 	Assert::same($class->files('temp'), $_FILES['temp']);
 

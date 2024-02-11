@@ -6,8 +6,8 @@
 
 namespace Tests\Utils;
 
+use Bugo\Compat\Lang;
 use Bugo\LightPortal\Utils\DateTime;
-use Bugo\LightPortal\Utils\Lang;
 use Tester\Assert;
 
 require_once dirname(__DIR__) . '/bootstrap.php';

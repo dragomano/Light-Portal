@@ -6,8 +6,8 @@
 
 namespace Tests\Areas\Fields;
 
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Fields\RangeField;
-use Bugo\LightPortal\Utils\Utils;
 use Tester\Assert;
 
 require_once dirname(__DIR__, 2) . '/bootstrap.php';

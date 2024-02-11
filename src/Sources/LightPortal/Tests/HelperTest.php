@@ -6,10 +6,9 @@
 
 namespace Tests;
 
+use Bugo\Compat\{Config, Utils};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\Config;
-use Bugo\LightPortal\Utils\Lang;
-use Bugo\LightPortal\Utils\Utils;
+use Bugo\LightPortal\Utils\Language;
 use Tester\Assert;
 
 require_once __DIR__ . '/bootstrap.php';
@@ -23,7 +22,7 @@ test('prepareForumLanguages helper', function () {
 
 	$class->prepareForumlanguages();
 
-	Assert::hasKey(LANG::FALLBACK_LANG, Utils::$context['lp_languages']);
+	Assert::hasKey(Language::FALLBACK, Utils::$context['lp_languages']);
 
 	Config::$modSettings['userLanguage'] = 0;
 
