@@ -14,8 +14,8 @@
 
 namespace Bugo\LightPortal\Areas\Configs;
 
-use Bugo\LightPortal\Repositories\CategoryRepository;
 use Bugo\Compat\{Lang, Theme, Utils};
+use Bugo\LightPortal\Repositories\CategoryRepository;
 
 if (! defined('SMF'))
 	die('No direct access...');

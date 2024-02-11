@@ -39,8 +39,16 @@ final class MiscConfig extends AbstractConfig
 			['check', 'lp_show_debug_info', 'help' => 'lp_show_debug_info_help'],
 			['int', 'lp_cache_update_interval', 'postinput' => Lang::$txt['seconds']],
 			['title', 'lp_compatibility_mode'],
-			['text', 'lp_portal_action', 'subtext' => Config::$scripturl . '?action=<strong>' . LP_ACTION . '</strong>'],
-			['text', 'lp_page_param', 'subtext' => Config::$scripturl . '?<strong>' . LP_PAGE_PARAM . '</strong>=somealias'],
+			[
+				'text',
+				'lp_portal_action',
+				'subtext' => Config::$scripturl . '?action=<strong>' . LP_ACTION . '</strong>'
+			],
+			[
+				'text',
+				'lp_page_param',
+				'subtext' => Config::$scripturl . '?<strong>' . LP_PAGE_PARAM . '</strong>=somealias'
+			],
 			['title', 'admin_maintenance'],
 			['check', 'lp_weekly_cleaning']
 		];

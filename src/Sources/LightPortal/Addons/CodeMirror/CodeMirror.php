@@ -10,12 +10,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 11.02.24
  */
 
 namespace Bugo\LightPortal\Addons\CodeMirror;
 
-use Bugo\Compat\{Lang, Theme, Utils};
+use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\Addons\Plugin;
 
 if (! defined('LP_NAME'))

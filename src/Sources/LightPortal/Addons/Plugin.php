@@ -74,18 +74,18 @@ abstract class Plugin
 
 	public function addDefaultValues(array $values): void
 	{
-		$snake_name = $this->getSnakeName($this->getName());
+		$snakeName = $this->getSnakeName($this->getName());
 
 		$settings = [];
-		foreach ($values as $option_name => $value) {
-			if (! isset(Utils::$context['lp_' . $snake_name . '_plugin'][$option_name])) {
+		foreach ($values as $option => $value) {
+			if (! isset(Utils::$context['lp_' . $snakeName . '_plugin'][$option])) {
 				$settings[] = [
-					'name'   => $snake_name,
-					'option' => $option_name,
+					'name'   => $snakeName,
+					'option' => $option,
 					'value'  => $value,
 				];
 
-				Utils::$context['lp_' . $snake_name . '_plugin'][$option_name] = $value;
+				Utils::$context['lp_' . $snakeName . '_plugin'][$option] = $value;
 			}
 		}
 
@@ -97,9 +97,9 @@ abstract class Plugin
 		if (empty($option))
 			return false;
 
-		$dark_themes = array_flip(array_filter(explode(',', $option)));
+		$themes = array_flip(array_filter(explode(',', $option)));
 
-		return $dark_themes && isset($dark_themes[Theme::$current->settings['theme_id']]);
+		return $themes && isset($themes[Theme::$current->settings['theme_id']]);
 	}
 
 	public function addInlineJS(string $javascript, $defer = false): void

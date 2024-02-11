@@ -23,7 +23,10 @@ abstract class Block extends Plugin
 {
 	public function isInPlacements(int $block_id, array $positions): bool
 	{
-		return in_array((Utils::$context['lp_active_blocks'][$block_id] ?? Utils::$context['lp_block'])['placement'], $positions);
+		return in_array(
+			(Utils::$context['lp_active_blocks'][$block_id] ?? Utils::$context['lp_block'])['placement'],
+			$positions
+		);
 	}
 
 	public function isInSidebar(int $block_id): bool
