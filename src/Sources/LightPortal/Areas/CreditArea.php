@@ -193,15 +193,6 @@ final class CreditArea
 				]
 			],
 			[
-				'title' => 'VueDemi',
-				'link' => 'https://github.com/vueuse/vue-demi',
-				'author' => 'Anthony Fu',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/vueuse/vue-demi/blob/main/LICENSE'
-				]
-			],
-			[
 				'title' => 'VueUse',
 				'link' => 'https://github.com/vueuse/vueuse',
 				'author' => 'Anthony Fu',
