@@ -1,6 +1,6 @@
 <?php
 
-use Bugo\LightPortal\Utils\{Config, Lang};
+use Bugo\Compat\{Config, Lang};
 
 function show_posts(array $recent_posts, array $parameters, bool $full_width): void
 {

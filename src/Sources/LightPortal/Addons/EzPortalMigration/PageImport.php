@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 09.02.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\EzPortalMigration;
 
+use Bugo\Compat\{Config, Database as Db, Lang, User, Utils};
 use Bugo\LightPortal\Areas\Imports\AbstractCustomPageImport;
-use Bugo\LightPortal\Utils\{Config, DateTime, Lang, User, Utils};
+use Bugo\LightPortal\Utils\{DateTime, ItemList};
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -111,7 +112,7 @@ class PageImport extends AbstractCustomPageImport
 			]
 		];
 
-		$this->createList($listOptions);
+		new ItemList($listOptions);
 	}
 
 	/**
@@ -119,7 +120,7 @@ class PageImport extends AbstractCustomPageImport
 	 */
 	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id_page'): array
 	{
-		$this->dbExtend();
+		Db::extend();
 
 		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'ezp_page')))
 			return [];
@@ -158,7 +159,7 @@ class PageImport extends AbstractCustomPageImport
 
 	public function getTotalCount(): int
 	{
-		$this->dbExtend();
+		Db::extend();
 
 		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'ezp_page')))
 			return 0;

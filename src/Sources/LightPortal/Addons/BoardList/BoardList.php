@@ -10,15 +10,16 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\BoardList;
 
+use Bugo\Compat\{Config, Lang, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Areas\Partials\{ContentClassSelect, TitleClassSelect};
-use Bugo\LightPortal\Utils\{Config, Icon, Lang, Utils};
+use Bugo\LightPortal\Utils\{Icon, MessageIndex};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -73,7 +74,7 @@ class BoardList extends Block
 
 	public function getData(): array
 	{
-		return $this->getBoardList();
+		return MessageIndex::getBoardList();
 	}
 
 	public function prepareContent(object $data, array $parameters): void

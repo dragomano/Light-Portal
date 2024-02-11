@@ -10,14 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\Likely;
 
+use Bugo\Compat\{Config, Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, RadioField};
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -86,7 +86,7 @@ class Likely extends Block
 			return;
 
 		Theme::loadCSSFile('light_portal/likely/likely.min.css');
-		Theme::loadJSFile('light_portal/likely/likely.min.js', ['minimize' => true]);
+		$this->loadJSFile('light_portal/likely/likely.min.js', ['minimize' => true]);
 
 		echo /** @lang text */ '
 			<div class="centertext likely_links">

@@ -14,8 +14,9 @@
 
 namespace Bugo\LightPortal;
 
+use Bugo\Compat\{Lang, Theme, User, Utils, WebFetchApi};
 use Bugo\LightPortal\Repositories\PluginRepository;
-use Bugo\LightPortal\Utils\{Lang, Theme, User, Utils};
+use Bugo\LightPortal\Utils\Language;
 use MatthiasMullie\Minify\{CSS, JS};
 use SplObjectStorage;
 
@@ -149,7 +150,7 @@ final class AddonHandler
 					if (is_file($filename = $addonAssetDir . DIRECTORY_SEPARATOR . basename($link)))
 						continue;
 
-					file_put_contents($filename, $this->fetchWebData($link), LOCK_EX);
+					file_put_contents($filename, WebFetchApi::fetch($link), LOCK_EX);
 				}
 			}
 		}
@@ -160,7 +161,7 @@ final class AddonHandler
 		if (isset(Lang::$txt[$this->prefix . $snakeName]))
 			return;
 
-		$userLang = Lang::getLanguageNameFromLocale(User::$info['language']);
+		$userLang = Language::getNameFromLocale(User::$info['language']);
 		$languages = array_unique(['english', $userLang]);
 
 		$addonLanguages = [];

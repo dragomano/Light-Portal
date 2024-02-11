@@ -15,8 +15,10 @@
 namespace Bugo\LightPortal\Areas\Exports;
 
 use ArrayIterator;
+use Bugo\Compat\{Config, Database as Db, ErrorHandler};
+use Bugo\Compat\{Lang, Sapi, Utils};
 use Bugo\LightPortal\Repositories\PageRepository;
-use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Sapi, Utils};
+use Bugo\LightPortal\Utils\ItemList;
 use DomDocument;
 use DOMException;
 
@@ -127,7 +129,7 @@ final class PageExport extends AbstractExport
 			]
 		];
 
-		$this->createList($listOptions);
+		new ItemList($listOptions);
 	}
 
 	protected function getData(): array
@@ -137,7 +139,7 @@ final class PageExport extends AbstractExport
 
 		$pages = $this->request('pages') && $this->request()->hasNot('export_all') ? $this->request('pages') : null;
 
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions, p.status, p.num_views, p.num_comments, p.created_at, p.updated_at,
 				pt.lang, pt.title, pp.name, pp.value, com.id, com.parent_id, com.author_id AS com_author_id, com.message, com.created_at AS com_created_at
@@ -152,7 +154,7 @@ final class PageExport extends AbstractExport
 		);
 
 		$items = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['page_id']] ??= [
 				'page_id'      => $row['page_id'],
 				'category_id'  => $row['category_id'],
@@ -186,7 +188,7 @@ final class PageExport extends AbstractExport
 			}
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
 		return $items;

@@ -14,7 +14,10 @@
 
 namespace Bugo\LightPortal\Actions;
 
-use Bugo\LightPortal\Utils\{BBCodeParser, Config, ErrorHandler, Lang, User, Utils};
+use Bugo\Compat\{BBCodeParser, Config};
+use Bugo\Compat\{Database as Db, ErrorHandler};
+use Bugo\Compat\{Lang, User, Utils};
+use Bugo\LightPortal\Utils\ItemList;
 use IntlException;
 
 if (! defined('SMF'))
@@ -79,7 +82,7 @@ final class Category extends AbstractPageList
 			];
 		}
 
-		$this->createList($listOptions);
+		new ItemList($listOptions);
 
 		Utils::obExit();
 	}
@@ -89,7 +92,7 @@ final class Category extends AbstractPageList
 	 */
 	public function getPages(int $start, int $items_per_page, string $sort): array
 	{
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT
 				p.page_id, p.author_id, p.alias, p.content, p.description, p.type,
 			    p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
@@ -117,9 +120,9 @@ final class Category extends AbstractPageList
 			]
 		);
 
-		$rows = Utils::$smcFunc['db_fetch_all']($result);
+		$rows = Db::$db->fetch_all($result);
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
 		return $this->getPreparedResults($rows);
@@ -127,7 +130,7 @@ final class Category extends AbstractPageList
 
 	public function getTotalCount(): int
 	{
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT COUNT(page_id)
 			FROM {db_prefix}lp_pages
 			WHERE category_id = {string:id}
@@ -142,9 +145,9 @@ final class Category extends AbstractPageList
 			]
 		);
 
-		[$count] = Utils::$smcFunc['db_fetch_row']($result);
+		[$count] = Db::$db->fetch_row($result);
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
 		return (int) $count;
@@ -206,14 +209,14 @@ final class Category extends AbstractPageList
 			]
 		];
 
-		$this->createList($listOptions);
+		new ItemList($listOptions);
 
 		Utils::obExit();
 	}
 
 	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'c.name'): array
 	{
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT COALESCE(c.category_id, 0) AS category_id, c.name, c.description, COUNT(p.page_id) AS frequency
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_categories AS c ON (p.category_id = c.category_id)
@@ -234,7 +237,7 @@ final class Category extends AbstractPageList
 		);
 
 		$items = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			if ($row['description'] && str_contains($row['description'], ']')) {
 				$row['description'] = BBCodeParser::load()->parse($row['description']);
 			}
@@ -247,7 +250,7 @@ final class Category extends AbstractPageList
 			];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
 		return $items;

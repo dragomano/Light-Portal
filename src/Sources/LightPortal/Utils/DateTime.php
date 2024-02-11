@@ -14,6 +14,7 @@
 
 namespace Bugo\LightPortal\Utils;
 
+use Bugo\Compat\{ErrorHandler, Lang, Utils};
 use DateTime as BaseDateTime;
 use IntlException;
 use IntlDateFormatter;

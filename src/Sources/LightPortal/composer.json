@@ -5,6 +5,7 @@
     "ext-intl": "*",
     "ext-simplexml": "*",
     "ext-zip": "*",
+    "bugo/smf-compat": "^0.1.4",
     "laminas/laminas-loader": "^2.9",
     "latte/latte": "^3.0",
     "wikimedia/less.php": "^4.1"

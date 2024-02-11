@@ -14,7 +14,8 @@
 
 namespace Bugo\LightPortal\Tasks;
 
-use Bugo\LightPortal\Utils\{Config, Lang, Mail, Notify, Theme, User, Utils};
+use Bugo\Compat\{Config, Database as Db, Lang};
+use Bugo\Compat\{Mail, Notify, Theme, User, Utils};
 use ErrorException;
 
 final class Notifier extends BackgroundTask
@@ -80,7 +81,7 @@ final class Notifier extends BackgroundTask
 			}
 
 			if ($insert_rows) {
-				Utils::$smcFunc['db_insert']('',
+				Db::$db->insert('',
 					'{db_prefix}user_alerts',
 					[
 						'alert_time'        => 'int',
@@ -105,7 +106,7 @@ final class Notifier extends BackgroundTask
 			Theme::loadEssential();
 
 			$emails = [];
-			$result = Utils::$smcFunc['db_query']('', '
+			$result = Db::$db->query('', '
 				SELECT id_member, lngfile, email_address
 				FROM {db_prefix}members
 				WHERE id_member IN ({array_int:members})',
@@ -114,14 +115,14 @@ final class Notifier extends BackgroundTask
 				]
 			);
 
-			while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+			while ($row = Db::$db->fetch_assoc($result)) {
 				if (empty($row['lngfile']))
 					$row['lngfile'] = Config::$language;
 
 				$emails[$row['lngfile']][$row['id_member']] = $row['email_address'];
 			}
 
-			Utils::$smcFunc['db_free_result']($result);
+			Db::$db->free_result($result);
 
 			foreach ($emails as $this_lang => $recipients) {
 				$replacements = [

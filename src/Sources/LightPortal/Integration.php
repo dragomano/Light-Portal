@@ -14,9 +14,10 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Actions\{BoardIndex, Block, Category, FrontPage, Page, Tag};
+use Bugo\Compat\{Config, Database as Db, Lang, Theme, User, Utils};
+use Bugo\LightPortal\Actions\{BoardIndex, Block, Category};
+use Bugo\LightPortal\Actions\{FrontPage, Page, Tag};
 use Bugo\LightPortal\Areas\{ConfigArea, CreditArea};
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, User, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -307,7 +308,7 @@ final class Integration extends AbstractMain
 		if (empty($users))
 			return;
 
-		Utils::$smcFunc['db_query']('', '
+		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_comments
 			WHERE author_id IN ({array_int:users})',
 			[
@@ -315,7 +316,7 @@ final class Integration extends AbstractMain
 			]
 		);
 
-		Utils::$smcFunc['db_query']('', '
+		Db::$db->query('', '
 			DELETE FROM {db_prefix}user_alerts
 			WHERE id_member IN ({array_int:users})
 				OR id_member_started IN ({array_int:users})',

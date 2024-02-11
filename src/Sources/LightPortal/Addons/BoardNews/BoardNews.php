@@ -10,14 +10,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 02.02.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\BoardNews;
 
+use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{NumberField, RangeField};
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, User, Utils};
+use Bugo\LightPortal\Utils\MessageIndex;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -59,7 +60,7 @@ class BoardNews extends Block
 
 		CustomSelectField::make('board_id', Lang::$txt['lp_board_news']['board_id'])
 			->setTab('content')
-			->setOptions($this->getBoardList([
+			->setOptions(MessageIndex::getBoardList([
 				'ignore_boards'  => false,
 				'selected_board' => Utils::$context['lp_block']['options']['board_id'] ?? false
 			]));
@@ -90,7 +91,7 @@ class BoardNews extends Block
 			return;
 		}
 
-		Theme::loadJSFile('topic.js', ['defer' => false, 'minimize' => true], 'smf_topic');
+		$this->loadJSFile('topic.js', ['defer' => false, 'minimize' => true], 'smf_topic');
 
 		foreach ($board_news as $news) {
 			$news['link'] = '<a href="' . $news['href'] . '">' . Lang::getTxt('lp_comments_set', ['comments' => $news['replies']]) . '</a>';

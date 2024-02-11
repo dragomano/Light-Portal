@@ -13,8 +13,9 @@
 
 namespace Bugo\LightPortal\Areas\Imports;
 
+use Bugo\Compat\{Database as Db, ErrorHandler};
+use Bugo\Compat\{Lang, Sapi, Utils};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Sapi, Utils};
 use SimpleXMLElement;
 
 if (! defined('SMF'))
@@ -51,7 +52,7 @@ abstract class AbstractImport implements ImportInterface
 		$count  = sizeof($titles);
 
 		for ($i = 0; $i < $count; $i++) {
-			$results = Utils::$smcFunc['db_insert']('replace',
+			$results = Db::$db->insert('replace',
 				'{db_prefix}lp_titles',
 				[
 					'item_id' => 'int',
@@ -77,7 +78,7 @@ abstract class AbstractImport implements ImportInterface
 		$count  = sizeof($params);
 
 		for ($i = 0; $i < $count; $i++) {
-			$results = Utils::$smcFunc['db_insert']('replace',
+			$results = Db::$db->insert('replace',
 				'{db_prefix}lp_params',
 				[
 					'item_id' => 'int',
@@ -97,13 +98,16 @@ abstract class AbstractImport implements ImportInterface
 	protected function finish(array $results, string $type = 'blocks'): void
 	{
 		if (empty($results)) {
-			Utils::$smcFunc['db_transaction']('rollback');
+			Db::$db->transaction('rollback');
 			ErrorHandler::fatalLang('lp_import_failed');
 		}
 
-		Utils::$smcFunc['db_transaction']('commit');
+		Db::$db->transaction('commit');
 
-		Utils::$context['import_successful'] = sprintf(Lang::$txt['lp_import_success'], Lang::getTxt('lp_' . $type . '_set', [$type => Utils::$context['import_successful']]));
+		Utils::$context['import_successful'] = sprintf(
+			Lang::$txt['lp_import_success'],
+			Lang::getTxt('lp_' . $type . '_set', [$type => Utils::$context['import_successful']])
+		);
 
 		$this->cache()->flush();
 	}

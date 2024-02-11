@@ -14,8 +14,9 @@
 
 namespace Bugo\LightPortal\Actions;
 
+use Bugo\Compat\{Config, PageIndex, User, Utils};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, DateTime, User, Utils};
+use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Repositories\CommentRepository;
 use IntlException;
 
@@ -70,19 +71,17 @@ final class Comment implements ActionInterface
 			return $comment;
 		}, $comments);
 
+		$start = (int) $this->request()->get('start');
 		$limit = (int) (Config::$modSettings['lp_num_comments_per_page'] ?? 10);
 
 		$commentTree  = $this->getTree($comments);
 		$parentsCount = sizeof($commentTree);
 
-		Utils::$context['page_index'] = $this->constructPageIndex(
-			$this->getPageIndexUrl(),
-			$this->request()->get('start'),
-			$parentsCount,
-			$limit
+		Utils::$context['page_index'] = new PageIndex(
+			$this->getPageIndexUrl(), $start, $parentsCount, $limit
 		);
 
-		$start = $this->request('start');
+		$start = (int) $this->request('start');
 
 		http_response_code(200);
 

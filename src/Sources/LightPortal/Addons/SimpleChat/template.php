@@ -1,6 +1,6 @@
 <?php
 
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\Compat\{Config, Lang, Utils};
 
 function show_chat_block(int $block_id, bool $show_avatars, bool $full_width): void
 {

@@ -1,6 +1,7 @@
 <?php
 
-use Bugo\LightPortal\Utils\{Icon, Lang, Utils};
+use Bugo\Compat\{Lang, Utils};
+use Bugo\LightPortal\Utils\Icon;
 
 function template_plugin_post(): void
 {

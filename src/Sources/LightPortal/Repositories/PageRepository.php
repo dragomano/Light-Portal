@@ -16,7 +16,9 @@ declare(strict_types=1);
 
 namespace Bugo\LightPortal\Repositories;
 
-use Bugo\LightPortal\Utils\{Config, DateTime, User, Utils};
+use Bugo\Compat\{Config, Database as Db, Logging};
+use Bugo\Compat\{Security, User, Utils};
+use Bugo\LightPortal\Utils\DateTime;
 use IntlException;
 
 if (! defined('SMF'))
@@ -31,13 +33,18 @@ final class PageRepository extends AbstractRepository
 	 */
 	public function getAll(int $start, int $items_per_page, string $sort, string $query_string = '', array $query_params = []): array
 	{
-		$result = Utils::$smcFunc['db_query']('', '
-			SELECT p.page_id, p.category_id, p.author_id, p.alias, p.type, p.permissions, p.status, p.num_views, p.num_comments,
-				GREATEST(p.created_at, p.updated_at) AS date, mem.real_name AS author_name, t.title, tf.title AS fallback_title
+		$result = Db::$db->query('', '
+			SELECT p.page_id, p.category_id, p.author_id, p.alias, p.type, p.permissions, p.status,
+				p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
+				mem.real_name AS author_name, t.title, tf.title AS fallback_title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
-				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang})
-				LEFT JOIN {db_prefix}lp_titles AS tf ON (p.page_id = tf.item_id AND tf.type = {literal:page} AND tf.lang = {string:fallback_lang})
+				LEFT JOIN {db_prefix}lp_titles AS t ON (
+					p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang}
+				)
+				LEFT JOIN {db_prefix}lp_titles AS tf ON (
+					p.page_id = tf.item_id AND tf.type = {literal:page} AND tf.lang = {string:fallback_lang}
+				)
 			WHERE 1=1' . (empty($query_string) ? '' : '
 				' . $query_string) . '
 			ORDER BY {raw:sort}
@@ -53,7 +60,7 @@ final class PageRepository extends AbstractRepository
 		);
 
 		$items = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['page_id']] = [
 				'id'           => (int) $row['page_id'],
 				'category_id'  => (int) $row['category_id'],
@@ -70,7 +77,7 @@ final class PageRepository extends AbstractRepository
 			];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
 		return $items;
@@ -78,10 +85,12 @@ final class PageRepository extends AbstractRepository
 
 	public function getTotalCount(string $query_string = '', array $query_params = []): int
 	{
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT COUNT(p.page_id)
 			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang})
+				LEFT JOIN {db_prefix}lp_titles AS t ON (
+					p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang}
+				)
 			WHERE 1=1' . (empty($query_string) ? '' : '
 				' . $query_string),
 			array_merge($query_params, [
@@ -90,9 +99,9 @@ final class PageRepository extends AbstractRepository
 			])
 		);
 
-		[$num_entries] = Utils::$smcFunc['db_fetch_row']($result);
+		[$num_entries] = Db::$db->fetch_row($result);
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
 		return (int) $num_entries;
@@ -106,7 +115,7 @@ final class PageRepository extends AbstractRepository
 		)
 			return;
 
-		$this->checkSubmitOnce('check');
+		Security::checkSubmitOnce('check');
 
 		$this->prepareDescription();
 		$this->prepareKeywords();
@@ -131,9 +140,9 @@ final class PageRepository extends AbstractRepository
 
 	private function addData(): int
 	{
-		Utils::$smcFunc['db_transaction']('begin');
+		Db::$db->transaction('begin');
 
-		$item = (int) Utils::$smcFunc['db_insert']('',
+		$item = (int) Db::$db->insert('',
 			'{db_prefix}lp_pages',
 			array_merge([
 				'category_id' => 'int',
@@ -164,7 +173,7 @@ final class PageRepository extends AbstractRepository
 		Utils::$context['lp_num_queries']++;
 
 		if (empty($item)) {
-			Utils::$smcFunc['db_transaction']('rollback');
+			Db::$db->transaction('rollback');
 			return 0;
 		}
 
@@ -174,14 +183,17 @@ final class PageRepository extends AbstractRepository
 		$this->saveTags();
 		$this->saveOptions($item);
 
-		Utils::$smcFunc['db_transaction']('commit');
+		Db::$db->transaction('commit');
 
 		// Notify page moderators about new page
+		$title = Utils::$context['lp_page']['titles'][User::$info['language']]
+			?? Utils::$context['lp_page']['titles'][Config::$language];
+		
 		$options = [
 			'item'      => $item,
 			'time'      => $this->getPublishTime(),
 			'author_id' => Utils::$context['lp_page']['author_id'],
-			'title'     => Utils::$context['lp_page']['titles'][User::$info['language']] ?? Utils::$context['lp_page']['titles'][Config::$language],
+			'title'     => $title,
 			'url'       => LP_PAGE_URL . Utils::$context['lp_page']['alias']
 		];
 
@@ -193,9 +205,9 @@ final class PageRepository extends AbstractRepository
 
 	private function updateData(int $item): void
 	{
-		Utils::$smcFunc['db_transaction']('begin');
+		Db::$db->transaction('begin');
 
-		Utils::$smcFunc['db_query']('', '
+		Db::$db->query('', '
 			UPDATE {db_prefix}lp_pages
 			SET category_id = {int:category_id}, author_id = {int:author_id}, alias = {string:alias},
 			    description = {string:description}, content = {string:content}, type = {string:type},
@@ -224,12 +236,13 @@ final class PageRepository extends AbstractRepository
 		$this->saveOptions($item, 'replace');
 
 		if (Utils::$context['lp_page']['author_id'] !== User::$info['id']) {
-			$this->logAction('update_lp_page', [
-				'page' => '<a href="' . LP_PAGE_URL . Utils::$context['lp_page']['alias'] . '">' . Utils::$context['lp_page']['titles'][User::$info['language']] . '</a>'
+			$title = Utils::$context['lp_page']['titles'][User::$info['language']];
+			Logging::logAction('update_lp_page', [
+				'page' => '<a href="' . LP_PAGE_URL . Utils::$context['lp_page']['alias'] . '">' . $title . '</a>'
 			]);
 		}
 
-		Utils::$smcFunc['db_transaction']('commit');
+		Db::$db->transaction('commit');
 	}
 
 	private function saveTags(): void
@@ -242,7 +255,7 @@ final class PageRepository extends AbstractRepository
 		});
 
 		if ($newTagIds) {
-			$newTagIds = Utils::$smcFunc['db_insert']('',
+			$newTagIds = Db::$db->insert('',
 				'{db_prefix}lp_tags',
 				[
 					'value' => 'string',
@@ -268,31 +281,36 @@ final class PageRepository extends AbstractRepository
 	private function prepareKeywords(): void
 	{
 		// Remove all punctuation symbols
-		Utils::$context['lp_page']['keywords'] = preg_replace("#[[:punct:]]#", "", Utils::$context['lp_page']['keywords']);
+		Utils::$context['lp_page']['keywords'] = preg_replace(
+			"#[[:punct:]]#", "", Utils::$context['lp_page']['keywords']
+		);
 	}
 
 	private function getPublishTime(): int
 	{
-		$publish_time = time();
+		$publishTime = time();
 
 		if (Utils::$context['lp_page']['date'])
-			$publish_time = strtotime(Utils::$context['lp_page']['date']);
+			$publishTime = strtotime(Utils::$context['lp_page']['date']);
 
-		if (Utils::$context['lp_page']['time'])
-			$publish_time = strtotime(date('Y-m-d', $publish_time) . ' ' . Utils::$context['lp_page']['time']);
+		if (Utils::$context['lp_page']['time']) {
+			$publishTime = strtotime(
+				date('Y-m-d', $publishTime) . ' ' . Utils::$context['lp_page']['time']
+			);
+		}
 
-		return $publish_time;
+		return $publishTime;
 	}
 
 	private function getAutoIncrementValue(): int
 	{
-		$result = Utils::$smcFunc['db_query']('', /** @lang text */ "
+		$result = Db::$db->query('', /** @lang text */ "
 			SELECT setval('{db_prefix}lp_pages_seq', (SELECT MAX(page_id) FROM {db_prefix}lp_pages))"
 		);
 
-		[$value] = Utils::$smcFunc['db_fetch_row']($result);
+		[$value] = Db::$db->fetch_row($result);
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
 		return (int) $value + 1;

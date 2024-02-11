@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Areas\Imports;
 
-use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Theme, Utils};
+use Bugo\Compat\{Config, Database as Db, ErrorHandler, Lang, Theme, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -75,7 +75,7 @@ final class PageImport extends AbstractImport
 			} else {
 				foreach ($element->item as $item) {
 					$items[] = [
-						'page_id'      => $page_id = intval($item['page_id']),
+						'page_id'      => $pageId = intval($item['page_id']),
 						'category_id'  => intval($item['category_id']),
 						'author_id'    => intval($item['author_id']),
 						'alias'        => (string) $item->alias,
@@ -94,7 +94,7 @@ final class PageImport extends AbstractImport
 						foreach ($item->titles as $title) {
 							foreach ($title as $k => $v) {
 								$titles[] = [
-									'item_id' => $page_id,
+									'item_id' => $pageId,
 									'type'    => 'page',
 									'lang'    => $k,
 									'title'   => $v
@@ -109,7 +109,7 @@ final class PageImport extends AbstractImport
 								$comments[] = [
 									'id'         => intval($v['id']),
 									'parent_id'  => intval($v['parent_id']),
-									'page_id'    => $page_id,
+									'page_id'    => $pageId,
 									'author_id'  => intval($v['author_id']),
 									'message'    => $v->message,
 									'created_at' => intval($v['created_at'])
@@ -122,7 +122,7 @@ final class PageImport extends AbstractImport
 						foreach ($item->params as $param) {
 							foreach ($param as $k => $v) {
 								$params[] = [
-									'item_id' => $page_id,
+									'item_id' => $pageId,
 									'type'    => 'page',
 									'name'    => $k,
 									'value'   => $v
@@ -134,10 +134,10 @@ final class PageImport extends AbstractImport
 			}
 		}
 
-		Utils::$smcFunc['db_transaction']('begin');
+		Db::$db->transaction('begin');
 
 		if ($categories) {
-			Utils::$smcFunc['db_insert']('replace',
+			Db::$db->insert('replace',
 				'{db_prefix}lp_categories',
 				[
 					'category_id' => 'int',
@@ -158,7 +158,7 @@ final class PageImport extends AbstractImport
 			$count = sizeof($tags);
 
 			for ($i = 0; $i < $count; $i++) {
-				Utils::$smcFunc['db_insert']('replace',
+				Db::$db->insert('replace',
 					'{db_prefix}lp_tags',
 					[
 						'tag_id' => 'int',
@@ -181,7 +181,7 @@ final class PageImport extends AbstractImport
 			$count = sizeof($items);
 
 			for ($i = 0; $i < $count; $i++) {
-				$results = Utils::$smcFunc['db_insert']('replace',
+				$results = Db::$db->insert('replace',
 					'{db_prefix}lp_pages',
 					[
 						'page_id'      => 'int',
@@ -214,7 +214,7 @@ final class PageImport extends AbstractImport
 			$count    = sizeof($comments);
 
 			for ($i = 0; $i < $count; $i++) {
-				$results = Utils::$smcFunc['db_insert']('replace',
+				$results = Db::$db->insert('replace',
 					'{db_prefix}lp_comments',
 					[
 						'id'         => 'int',

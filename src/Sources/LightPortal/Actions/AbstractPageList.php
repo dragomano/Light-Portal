@@ -14,8 +14,9 @@
 
 namespace Bugo\LightPortal\Actions;
 
+use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, Content, DateTime, Lang, User, Utils};
+use Bugo\LightPortal\Utils\{Content, DateTime};
 use IntlException;
 
 if (! defined('SMF'))

@@ -14,12 +14,13 @@
 
 namespace Bugo\LightPortal\Areas;
 
+use Bugo\Compat\{Config, Database as Db, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Areas\Configs\{BasicConfig, CategoryConfig, ExtraConfig};
 use Bugo\LightPortal\Areas\Configs\{FeedbackConfig, MiscConfig, PanelConfig};
 use Bugo\LightPortal\Areas\Exports\{BlockExport, PageExport, PluginExport};
 use Bugo\LightPortal\Areas\Imports\{BlockImport, PageImport, PluginImport};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, Icon, Lang, Theme, User, Utils};
+use Bugo\LightPortal\Utils\Icon;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -37,10 +38,10 @@ final class ConfigArea
 	public function adminAreas(array &$areas): void
 	{
 		Theme::loadCSSFile('light_portal/virtual-select.min.css');
-		Theme::loadJSFile('light_portal/virtual-select.min.js');
+		Theme::loadJavaScriptFile('light_portal/virtual-select.min.js');
 
-		Theme::loadJSFile('light_portal/bundle.min.js', ['defer' => true]);
-		Theme::loadJSFile('light_portal/admin.js', ['minimize' => true]);
+		Theme::loadJavaScriptFile('light_portal/bundle.min.js', ['defer' => true]);
+		Theme::loadJavaScriptFile('light_portal/admin.js', ['minimize' => true]);
 
 		Lang::load('ManageSettings');
 
@@ -152,14 +153,20 @@ final class ConfigArea
 			'feedback'   => [new FeedbackConfig, 'show'],
 		];
 
-		$this->dbExtend();
+		Db::extend();
 
 		// Tabs
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title' => LP_NAME,
 			'tabs' => [
 				'basic' => [
-					'description' => '<img class="floatright" src="https://user-images.githubusercontent.com/229402/143980485-16ba84b8-9d8d-4c06-abeb-af949d594f66.png" alt="Light Portal logo">' . sprintf(Lang::$txt['lp_base_info'], LP_VERSION, phpversion(), Utils::$smcFunc['db_title'], Utils::$smcFunc['db_get_version']())
+					'description' => '<img class="floatright" src="https://user-images.githubusercontent.com/229402/143980485-16ba84b8-9d8d-4c06-abeb-af949d594f66.png" alt="Light Portal logo">' . sprintf(
+						Lang::$txt['lp_base_info'],
+						LP_VERSION,
+						phpversion(),
+						Utils::$smcFunc['db_title'],
+						Db::$db->get_version()
+					)
 				],
 				'extra' => [
 					'description' => Lang::$txt['lp_extra_info']

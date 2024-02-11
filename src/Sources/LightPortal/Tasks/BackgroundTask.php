@@ -14,10 +14,8 @@
 
 namespace Bugo\LightPortal\Tasks;
 
-use Bugo\LightPortal\Helper;
 use SMF_BackgroundTask;
 
 abstract class BackgroundTask extends SMF_BackgroundTask
 {
-	use Helper;
 }

@@ -16,8 +16,8 @@ declare(strict_types=1);
 
 namespace Bugo\LightPortal\Repositories;
 
+use Bugo\Compat\{Config, Database as Db, Lang, Utils};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -33,7 +33,7 @@ final class CommentRepository
 
 	public function getById(int $id): array
 	{
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT *
 			FROM {db_prefix}lp_comments
 			WHERE id = {int:id}',
@@ -42,9 +42,9 @@ final class CommentRepository
 			]
 		);
 
-		$data = Utils::$smcFunc['db_fetch_assoc']($result);
+		$data = Db::$db->fetch_assoc($result);
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
 		return $data ?? [];
@@ -57,11 +57,14 @@ final class CommentRepository
 			'com.created_at DESC',
 		];
 
-		$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
-			SELECT com.id, com.parent_id, com.page_id, com.author_id, com.message, com.created_at, mem.real_name AS author_name, par.name, par.value
+		$result = Db::$db->query('', /** @lang text */ '
+			SELECT com.id, com.parent_id, com.page_id, com.author_id, com.message, com.created_at,
+				mem.real_name AS author_name, par.name, par.value
 			FROM {db_prefix}lp_comments AS com
 				INNER JOIN {db_prefix}members AS mem ON (com.author_id = mem.id_member)
-				LEFT JOIN {db_prefix}lp_params AS par ON (com.id = par.item_id AND par.type = {literal:comment})' . ($page_id ? '
+				LEFT JOIN {db_prefix}lp_params AS par ON (
+					com.id = par.item_id AND par.type = {literal:comment}
+				)' . ($page_id ? '
 			WHERE com.page_id = {int:id}' : '') . '
 			ORDER BY ' . $sorts[Config::$modSettings['lp_comment_sorting'] ?? 0],
 			[
@@ -70,7 +73,7 @@ final class CommentRepository
 		);
 
 		$comments = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			Lang::censorText($row['message']);
 
 			$comments[$row['id']] = [
@@ -90,7 +93,7 @@ final class CommentRepository
 				$comments[$row['id']]['params'][$row['name']] = $row['value'];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
 		return $this->getItemsWithUserAvatars($comments, 'poster');
@@ -98,7 +101,7 @@ final class CommentRepository
 
 	public function save(array $data): int
 	{
-		$item = Utils::$smcFunc['db_insert']('',
+		$item = Db::$db->insert('',
 			'{db_prefix}lp_comments',
 			[
 				'parent_id'  => 'int',
@@ -119,7 +122,7 @@ final class CommentRepository
 
 	public function update(array $data): void
 	{
-		Utils::$smcFunc['db_query']('', '
+		Db::$db->query('', '
 			UPDATE {db_prefix}lp_comments
 			SET message = {string:message}
 			WHERE id = {int:id}
@@ -132,7 +135,7 @@ final class CommentRepository
 
 	public function remove(array $items, string $page_alias): void
 	{
-		Utils::$smcFunc['db_query']('', '
+		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_comments
 			WHERE id IN ({array_int:items})',
 			[
@@ -140,7 +143,7 @@ final class CommentRepository
 			]
 		);
 
-		Utils::$smcFunc['db_query']('', '
+		Db::$db->db_query('', '
 			UPDATE {db_prefix}lp_pages
 			SET num_comments = num_comments - {int:num_items}
 			WHERE alias = {string:alias}
@@ -151,7 +154,7 @@ final class CommentRepository
 			]
 		);
 
-		Utils::$smcFunc['db_query']('', '
+		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_params
 			WHERE item_id IN ({array_int:items})
 				AND type = {literal:comment}',
@@ -160,7 +163,7 @@ final class CommentRepository
 			]
 		);
 
-		Utils::$smcFunc['db_query']('', '
+		Db::$db->query('', '
 			DELETE FROM {db_prefix}user_alerts
 			WHERE content_type = {string:type}
 				AND content_id IN ({array_int:items})',
@@ -170,7 +173,7 @@ final class CommentRepository
 			]
 		);
 
-		Utils::$smcFunc['db_query']('', '
+		Db::$db->query('', '
 			UPDATE {db_prefix}lp_pages
 			SET last_comment_id = (
 				SELECT COALESCE(MAX(com.id), 0)
@@ -189,7 +192,7 @@ final class CommentRepository
 
 	public function updateLastCommentId(int $item, int $page_id): void
 	{
-		Utils::$smcFunc['db_query']('', '
+		Db::$db->query('', '
 			UPDATE {db_prefix}lp_pages
 			SET num_comments = num_comments + 1, last_comment_id = {int:item}
 			WHERE page_id = {int:page_id}',

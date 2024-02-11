@@ -14,8 +14,9 @@
 
 namespace Bugo\LightPortal\Articles;
 
+use Bugo\Compat\{BBCodeParser, Config, Database as Db, Lang, User, Utils};
 use Bugo\LightPortal\Actions\PageInterface;
-use Bugo\LightPortal\Utils\{BBCodeParser, Config, Content, Lang, User, Utils};
+use Bugo\LightPortal\Utils\Content;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -57,7 +58,7 @@ class PageArticle extends AbstractArticle
 			'limit' => $limit
 		];
 
-		$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
+		$result = Db::$db->query('', /** @lang text */ '
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.alias, p.content, p.description, p.type, p.status, p.num_views,
 				CASE WHEN COALESCE(par.value, \'0\') != \'0\' THEN p.num_comments ELSE 0 END AS num_comments, p.created_at,
@@ -81,7 +82,7 @@ class PageArticle extends AbstractArticle
 		);
 
 		$pages = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			if (! isset($pages[$row['page_id']])) {
 				$row['content'] = Content::parse($row['content'], $row['type']);
 
@@ -126,7 +127,7 @@ class PageArticle extends AbstractArticle
 			$this->hook('frontPagesOutput', [&$pages, $row]);
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
 		$pages = $this->getItemsWithUserAvatars($pages);
@@ -138,7 +139,7 @@ class PageArticle extends AbstractArticle
 
 	public function getTotalCount(): int
 	{
-		$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
+		$result = Db::$db->query('', /** @lang text */ '
 			SELECT COUNT(p.page_id)
 			FROM {db_prefix}lp_pages AS p' . (empty($this->tables) ? '' : '
 				' . implode("\n\t\t\t\t\t", $this->tables)) . '
@@ -150,12 +151,12 @@ class PageArticle extends AbstractArticle
 			$this->params
 		);
 
-		[$num_pages] = Utils::$smcFunc['db_fetch_row']($result);
+		[$count] = Db::$db->fetch_row($result);
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
-		return (int) $num_pages;
+		return (int) $count;
 	}
 
 	private function prepareTags(array &$pages): void
@@ -163,7 +164,7 @@ class PageArticle extends AbstractArticle
 		if (empty($pages))
 			return;
 
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT t.tag_id, t.value, p.item_id
 			FROM {db_prefix}lp_tags AS t
 				LEFT JOIN {db_prefix}lp_params AS p ON (p.type = {literal:page} AND p.name = {literal:keywords})
@@ -175,14 +176,14 @@ class PageArticle extends AbstractArticle
 			]
 		);
 
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			$pages[$row['item_id']]['tags'][] = [
 				'name' => $row['value'],
 				'href' => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id']
 			];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 	}
 }

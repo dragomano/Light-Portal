@@ -13,8 +13,8 @@
 
 namespace Bugo\LightPortal\Areas\Imports;
 
+use Bugo\Compat\{Database as Db, ErrorHandler, Sapi, Utils};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{ErrorHandler, Sapi, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -44,7 +44,7 @@ abstract class AbstractCustomPageImport implements ImportInterface, CustomImport
 			$count = sizeof($items);
 
 			for ($i = 0; $i < $count; $i++) {
-				$results = Utils::$smcFunc['db_insert']('replace',
+				$results = Db::$db->insert('replace',
 					'{db_prefix}lp_pages',
 					[
 						'page_id'      => 'int',
@@ -77,7 +77,7 @@ abstract class AbstractCustomPageImport implements ImportInterface, CustomImport
 			$count  = sizeof($titles);
 
 			for ($i = 0; $i < $count; $i++) {
-				Utils::$smcFunc['db_insert']('replace',
+				Db::$db->insert('replace',
 					'{db_prefix}lp_titles',
 					[
 						'item_id' => 'int',
@@ -99,7 +99,7 @@ abstract class AbstractCustomPageImport implements ImportInterface, CustomImport
 			$count  = sizeof($params);
 
 			for ($i = 0; $i < $count; $i++) {
-				Utils::$smcFunc['db_insert']('replace',
+				Db::$db->insert('replace',
 					'{db_prefix}lp_params',
 					[
 						'item_id' => 'int',
@@ -129,7 +129,7 @@ abstract class AbstractCustomPageImport implements ImportInterface, CustomImport
 			$count    = sizeof($comments);
 
 			for ($i = 0; $i < $count; $i++) {
-				Utils::$smcFunc['db_insert']('replace',
+				Db::$db->insert('replace',
 					'{db_prefix}lp_comments',
 					[
 						'id'         => 'int',

@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Areas\Validators;
 
-use Bugo\LightPortal\Utils\{Lang, Utils};
+use Bugo\Compat\{Lang, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');

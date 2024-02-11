@@ -14,7 +14,8 @@
 
 namespace Bugo\LightPortal\Areas\Partials;
 
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\Compat\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\MessageIndex;
 
 final class BoardSelect extends AbstractPartial
 {
@@ -25,7 +26,7 @@ final class BoardSelect extends AbstractPartial
 
 		$params['id'] ??= 'lp_frontpage_boards';
 		$params['value'] ??= Config::$modSettings['lp_frontpage_boards'] ?? '';
-		$params['data'] ??= $this->getBoardList();
+		$params['data'] ??= MessageIndex::getBoardList();
 
 		$data = [];
 		foreach ($params['data'] as $cat) {

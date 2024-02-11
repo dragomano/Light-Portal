@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Addons;
 
-use Bugo\LightPortal\Utils\Utils;
+use Bugo\Compat\Utils;
 
 if (! defined('SMF'))
 	die('No direct access...');

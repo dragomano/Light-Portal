@@ -1,6 +1,7 @@
 <?php
 
-use Bugo\LightPortal\Utils\{Config, Icon, Utils};
+use Bugo\Compat\{Config, Utils};
+use Bugo\LightPortal\Utils\Icon;
 
 function template_lp_portal_above(): void
 {

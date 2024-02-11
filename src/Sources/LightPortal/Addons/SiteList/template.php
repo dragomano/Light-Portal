@@ -1,6 +1,6 @@
 <?php
 
-use Bugo\LightPortal\Utils\Lang;
+use Bugo\Compat\Lang;
 
 function callback_site_list_table(): void
 {

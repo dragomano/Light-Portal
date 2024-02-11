@@ -14,6 +14,8 @@
 
 namespace Bugo\LightPortal\Utils;
 
+use Bugo\Compat\CacheApi;
+
 if (! defined('SMF'))
 	die('No direct access...');
 

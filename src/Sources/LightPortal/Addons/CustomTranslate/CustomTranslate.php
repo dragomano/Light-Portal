@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 29.01.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\CustomTranslate;
 
+use Bugo\Compat\{Config, Lang, Utils};
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -61,7 +61,7 @@ class CustomTranslate extends Plugin
 
 		$forumLang = substr(Config::$language, 0, 2);
 
-		Theme::addInlineJS('new YandexTranslate({baseLang: "' . $forumLang . '"});', true);
+		$this->addInlineJS('new YandexTranslate({baseLang: "' . $forumLang . '"});', true);
 
 		Utils::$context['ctw_languages'] = array_unique(
 			array_merge([$forumLang], explode(',', Utils::$context['lp_custom_translate_plugin']['languages']))

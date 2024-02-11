@@ -14,11 +14,11 @@
 
 namespace Bugo\LightPortal\Areas\Configs;
 
+use Bugo\Compat\{ACP, Config, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Areas\Partials\{ActionSelect, BoardSelect, CategorySelect};
 use Bugo\LightPortal\Areas\Partials\{PageAliasSelect, PageSelect, TopicSelect};
 use Bugo\LightPortal\Areas\Query;
 use Bugo\LightPortal\Actions\FrontPage;
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, User, Utils};
 use IntlException;
 
 if (! defined('SMF'))
@@ -83,7 +83,9 @@ final class BasicConfig extends AbstractConfig
 			[
 				'text',
 				'lp_frontpage_title',
-				'size' => '80" placeholder="' . str_replace(["'", "\""], "", Utils::$context['forum_name']) . ' - ' . Lang::$txt['lp_portal'],
+				'size' => '80" placeholder="' . str_replace(
+					["'", "\""], "", Utils::$context['forum_name']
+				) . ' - ' . Lang::$txt['lp_portal'],
 				'javascript' => $javascript
 			],
 			['callback', 'frontpage_mode_settings_middle'],
@@ -194,11 +196,17 @@ final class BasicConfig extends AbstractConfig
 		if ($this->request()->has('save')) {
 			User::$me->checkSession();
 
-			if ($this->request()->isNotEmpty('lp_image_placeholder'))
-				$this->post()->put('lp_image_placeholder', $this->filterVar($this->request('lp_image_placeholder'), 'url'));
+			if ($this->request()->isNotEmpty('lp_image_placeholder')) {
+				$this->post()->put(
+					'lp_image_placeholder', $this->filterVar($this->request('lp_image_placeholder'), 'url')
+				);
+			}
 
-			if ($this->request()->isNotEmpty('lp_standalone_url'))
-				$this->post()->put('lp_standalone_url', $this->filterVar($this->request('lp_standalone_url'), 'url'));
+			if ($this->request()->isNotEmpty('lp_standalone_url')) {
+				$this->post()->put(
+					'lp_standalone_url', $this->filterVar($this->request('lp_standalone_url'), 'url')
+				);
+			}
 
 			$save_vars = $config_vars;
 
@@ -209,13 +217,13 @@ final class BasicConfig extends AbstractConfig
 			$save_vars[] = ['text', 'lp_frontpage_topics'];
 			$save_vars[] = ['text', 'lp_disabled_actions'];
 
-			$this->saveDBSettings($save_vars);
+			ACP::saveDBSettings($save_vars);
 			$this->session()->put('adm-save', true);
 			$this->cache()->flush();
 
 			Utils::redirectexit('action=admin;area=lp_settings;sa=basic');
 		}
 
-		$this->prepareDBSettingContext($config_vars);
+		ACP::prepareDBSettingContext($config_vars);
 	}
 }

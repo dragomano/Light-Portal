@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Areas\Exports;
 
-use Bugo\LightPortal\Utils\{Config, Lang, Sapi, Theme, Utils};
+use Bugo\Compat\{Config, Lang, Sapi, Theme, Utils};
 use AppendIterator;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;

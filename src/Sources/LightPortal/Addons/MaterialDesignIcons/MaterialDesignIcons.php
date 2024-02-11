@@ -10,13 +10,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.01.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\MaterialDesignIcons;
 
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\Theme;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -32,7 +31,7 @@ class MaterialDesignIcons extends Plugin
 
 	public function init(): void
 	{
-		Theme::loadExtCSS('https://cdn.jsdelivr.net/npm/@mdi/font@7/css/materialdesignicons.min.css', ['seed' => false]);
+		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/@mdi/font@7/css/materialdesignicons.min.css', ['seed' => false]);
 	}
 
 	public function prepareIconList(array &$all_icons): void

@@ -14,7 +14,8 @@
 
 namespace Bugo\LightPortal\Repositories;
 
-use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Utils};
+use Bugo\Compat\{Config, Database as Db, ErrorHandler};
+use Bugo\Compat\{Msg, Lang, Security, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -25,8 +26,9 @@ final class BlockRepository extends AbstractRepository
 
 	public function getAll(): array
 	{
-		$result = Utils::$smcFunc['db_query']('', '
-			SELECT b.block_id, b.icon, b.type, b.note, b.placement, b.priority, b.permissions, b.status, b.areas, bt.lang, bt.title
+		$result = Db::$db->query('', '
+			SELECT b.block_id, b.icon, b.type, b.note, b.placement, b.priority, b.permissions, b.status, b.areas,
+				bt.lang, bt.title
 			FROM {db_prefix}lp_blocks AS b
 				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
 			ORDER BY b.placement DESC, b.priority',
@@ -34,7 +36,7 @@ final class BlockRepository extends AbstractRepository
 		);
 
 		$currentBlocks = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			$currentBlocks[$row['placement']][$row['block_id']] ??= [
 				'icon'        => $this->getIcon($row['icon']),
 				'type'        => $row['type'],
@@ -50,7 +52,7 @@ final class BlockRepository extends AbstractRepository
 			$this->prepareMissingBlockTypes($row['type']);
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
 		return array_merge(array_flip(array_keys(Utils::$context['lp_block_placements'])), $currentBlocks);
@@ -61,7 +63,7 @@ final class BlockRepository extends AbstractRepository
 		if (empty($item))
 			return [];
 
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT
 				b.block_id, b.icon, b.type, b.note, b.content, b.placement, b.priority,
 				b.permissions, b.status, b.areas, b.title_class, b.content_class,
@@ -75,15 +77,15 @@ final class BlockRepository extends AbstractRepository
 			]
 		);
 
-		if (empty(Utils::$smcFunc['db_num_rows']($result))) {
+		if (empty(Db::$db->num_rows($result))) {
 			Utils::$context['error_link'] = Config::$scripturl . '?action=admin;area=lp_blocks';
 
 			ErrorHandler::fatalLang('lp_block_not_found', status: 404);
 		}
 
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			if ($row['type'] === 'bbc') {
-				$row['content'] = $this->unPreparseCode($row['content']);
+				$row['content'] = Msg::unPreparseCode($row['content']);
 			}
 
 			Lang::censorText($row['content']);
@@ -112,7 +114,7 @@ final class BlockRepository extends AbstractRepository
 			$this->prepareMissingBlockTypes($row['type']);
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
 		return $data ?? [];
@@ -130,7 +132,7 @@ final class BlockRepository extends AbstractRepository
 		)
 			return 0;
 
-		$this->checkSubmitOnce('check');
+		Security::checkSubmitOnce('check');
 
 		$this->prepareBbcContent(Utils::$context['lp_block']);
 
@@ -155,9 +157,9 @@ final class BlockRepository extends AbstractRepository
 
 	private function addData(): int
 	{
-		Utils::$smcFunc['db_transaction']('begin');
+		Db::$db->transaction('begin');
 
-		$item = (int) Utils::$smcFunc['db_insert']('',
+		$item = (int) Db::$db->insert('',
 			'{db_prefix}lp_blocks',
 			[
 				'icon'          => 'string',
@@ -192,7 +194,7 @@ final class BlockRepository extends AbstractRepository
 		Utils::$context['lp_num_queries']++;
 
 		if (empty($item)) {
-			Utils::$smcFunc['db_transaction']('rollback');
+			Db::$db->transaction('rollback');
 			return 0;
 		}
 
@@ -201,16 +203,16 @@ final class BlockRepository extends AbstractRepository
 		$this->saveTitles($item);
 		$this->saveOptions($item);
 
-		Utils::$smcFunc['db_transaction']('commit');
+		Db::$db->transaction('commit');
 
 		return $item;
 	}
 
 	private function updateData(int $item): void
 	{
-		Utils::$smcFunc['db_transaction']('begin');
+		Db::$db->transaction('begin');
 
-		Utils::$smcFunc['db_query']('', '
+		Db::$db->query('', '
 			UPDATE {db_prefix}lp_blocks
 			SET icon = {string:icon}, type = {string:type}, note = {string:note}, content = {string:content},
 				placement = {string:placement}, permissions = {int:permissions}, areas = {string:areas},
@@ -237,11 +239,12 @@ final class BlockRepository extends AbstractRepository
 		$this->saveTitles($item, 'replace');
 		$this->saveOptions($item, 'replace');
 
-		Utils::$smcFunc['db_transaction']('commit');
+		Db::$db->transaction('commit');
 
-		$this->cache()->forget(Utils::$context['lp_block']['type'] . '_addon_b' . $item);
-		$this->cache()->forget(Utils::$context['lp_block']['type'] . '_addon_u' . Utils::$context['user']['id']);
-		$this->cache()->forget(Utils::$context['lp_block']['type'] . '_addon_b' . $item . '_u' . Utils::$context['user']['id']);
+		$prefix = Utils::$context['lp_block']['type'] . '_addon_b';
+		$this->cache()->forget($prefix . $item);
+		$this->cache()->forget($prefix . Utils::$context['user']['id']);
+		$this->cache()->forget($prefix . $item . '_u' . Utils::$context['user']['id']);
 	}
 
 	/**

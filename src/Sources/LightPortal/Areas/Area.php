@@ -14,8 +14,10 @@
 
 namespace Bugo\LightPortal\Areas;
 
+use Bugo\Compat\{Config, Database as Db, Lang};
+use Bugo\Compat\{Security, Theme, Utils};
 use Bugo\LightPortal\Areas\Fields\CustomField;
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\Editor;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -26,16 +28,14 @@ trait Area
 
 	public function createBbcEditor(string $content = ''): void
 	{
-		$editorOptions = [
+		new Editor([
 			'id'           => 'content',
 			'value'        => $content,
 			'height'       => '1px',
 			'width'        => '100%',
 			'preview_type' => 2,
 			'required'     => true
-		];
-
-		$this->createControlRichedit($editorOptions);
+		]);
 	}
 
 	public function prepareContent(array $object): string
@@ -49,7 +49,7 @@ trait Area
 
 	public function prepareTitleFields(string $entity = 'page', bool $required = true): void
 	{
-		$this->checkSubmitOnce('register');
+		Security::checkSubmitOnce('register');
 
 		$this->prepareIconList();
 
@@ -140,7 +140,7 @@ trait Area
 		if (empty($items))
 			return;
 
-		Utils::$smcFunc['db_query']('', '
+		Db::$db->query('', '
 			UPDATE {db_prefix}lp_' . ($type === 'block' ? 'blocks' : 'pages') . '
 			SET status = CASE status WHEN 1 THEN 0 WHEN 0 THEN 1 WHEN 2 THEN 1 WHEN 3 THEN 0 END
 			WHERE ' . ($type === 'block' ? 'block' : 'page') . '_id IN ({array_int:items})',

@@ -10,13 +10,13 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 17.01.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleChat;
 
+use Bugo\Compat\{User, Utils};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{User, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

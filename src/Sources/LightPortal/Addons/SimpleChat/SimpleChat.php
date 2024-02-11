@@ -10,14 +10,14 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 18.01.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleChat;
 
+use Bugo\Compat\{Config, Database as Db, Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -102,7 +102,7 @@ class SimpleChat extends Block
 			return;
 
 		Theme::loadCSSFile('admin.css');
-		Theme::loadJSFile('light_portal/bundle.min.js', ['defer' => true]);
+		$this->loadJSFile('light_portal/bundle.min.js', ['defer' => true]);
 
 		$parameters['show_avatars'] ??= false;
 
@@ -132,7 +132,7 @@ class SimpleChat extends Block
 	{
 		$tables = [];
 
-		$this->dbExtend('packages');
+		Db::extend('packages');
 
 		if (! empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'lp_simple_chat_messages')))
 			return;

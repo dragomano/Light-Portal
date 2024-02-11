@@ -1,7 +1,8 @@
 <?php
 
+use Bugo\Compat\{Config, Lang, Theme, Utils};
 use Bugo\LightPortal\AddonHandler;
-use Bugo\LightPortal\Utils\{Config, Icon, Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\Icon;
 
 function template_show_page(): void
 {

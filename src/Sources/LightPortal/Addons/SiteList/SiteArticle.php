@@ -10,13 +10,13 @@
  * @license Individual (for sponsors)
  *
  * @category addon
- * @version 17.01.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\SiteList;
 
+use Bugo\Compat\{Config, User, Utils};
 use Bugo\LightPortal\Articles\AbstractArticle;
-use Bugo\LightPortal\Utils\{Config, User, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');

@@ -14,6 +14,7 @@
 
 namespace Bugo\LightPortal\Areas;
 
+use Bugo\Compat\{Config, Database as Db, ErrorHandler, Lang, Security, Theme, Utils};
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, TextField};
 use Bugo\LightPortal\Areas\Partials\{AreaSelect, ContentClassSelect, IconSelect};
 use Bugo\LightPortal\Areas\Partials\{PermissionSelect, PlacementSelect, TitleClassSelect};
@@ -21,14 +22,15 @@ use Bugo\LightPortal\Areas\Validators\BlockValidator;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Models\BlockModel;
 use Bugo\LightPortal\Repositories\BlockRepository;
-use Bugo\LightPortal\Utils\{Config, Content,  ErrorHandler, Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\Content;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class BlockArea
 {
-	use Area, Helper;
+	use Area;
+	use Helper;
 
 	private BlockRepository $repository;
 
@@ -162,7 +164,7 @@ final class BlockArea
 		if (empty($items))
 			return;
 
-		Utils::$smcFunc['db_query']('', '
+		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_blocks
 			WHERE block_id IN ({array_int:items})',
 			[
@@ -170,7 +172,7 @@ final class BlockArea
 			]
 		);
 
-		Utils::$smcFunc['db_query']('', '
+		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_titles
 			WHERE item_id IN ({array_int:items})
 				AND type = {literal:block}',
@@ -179,7 +181,7 @@ final class BlockArea
 			]
 		);
 
-		Utils::$smcFunc['db_query']('', '
+		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_params
 			WHERE item_id IN ({array_int:items})
 				AND type = {literal:block}',
@@ -237,7 +239,7 @@ final class BlockArea
 			return;
 
 		if (is_array($blocks)) {
-			Utils::$smcFunc['db_query']('', /** @lang text */ '
+			Db::$db->query('', /** @lang text */ '
 				UPDATE {db_prefix}lp_blocks
 				SET priority = CASE ' . $conditions . ' ELSE priority END
 				WHERE block_id IN ({array_int:blocks})',
@@ -249,7 +251,7 @@ final class BlockArea
 			Utils::$context['lp_num_queries']++;
 
 			if ($data['update_placement']) {
-				Utils::$smcFunc['db_query']('', '
+				Db::$db->query('', '
 					UPDATE {db_prefix}lp_blocks
 					SET placement = {string:placement}
 					WHERE block_id IN ({array_int:blocks})',
@@ -284,16 +286,16 @@ final class BlockArea
 
 	private function validateData(): void
 	{
-		[$post_data, $parameters] = (new BlockValidator())->validate();
+		[$postData, $parameters] = (new BlockValidator())->validate();
 
 		$options = $this->getParams();
 
-		$block_options = Utils::$context['current_block']['options'] ?? $options;
+		$blockOptions = Utils::$context['current_block']['options'] ?? $options;
 
 		$type = Utils::$context['current_block']['type'];
 		Utils::$context['current_block']['icon'] ??= Utils::$context['lp_loaded_addons'][$type]['icon'] ?? '';
 
-		$block = new BlockModel($post_data, Utils::$context['current_block']);
+		$block = new BlockModel($postData, Utils::$context['current_block']);
 		$block->titles = Utils::$context['current_block']['titles'] ?? [];
 		$block->options = $options;
 		$block->icon = $block->icon === 'undefined' ? '' : $block->icon;
@@ -302,24 +304,30 @@ final class BlockArea
 		$block->contentClass = empty($block->options['no_content_class']) ? $block->contentClass : '';
 
 		foreach ($block->options as $option => $value) {
-			if (isset($parameters[$option]) && isset($post_data['parameters']) && ! isset($post_data['parameters'][$option])) {
-				$post_data['parameters'][$option] = 0;
+			if (
+				isset($parameters[$option])
+				&& isset($postData['parameters'])
+				&& ! isset($postData['parameters'][$option])
+			) {
+				$postData['parameters'][$option] = 0;
 
 				if ($option === 'no_content_class')
-					$post_data['parameters'][$option] = $value;
+					$postData['parameters'][$option] = $value;
 
 				if ($parameters[$option] === FILTER_DEFAULT)
-					$post_data['parameters'][$option] = '';
+					$postData['parameters'][$option] = '';
 
 				if (is_array($parameters[$option]) && $parameters[$option]['flags'] === FILTER_REQUIRE_ARRAY)
-					$post_data['parameters'][$option] = [];
+					$postData['parameters'][$option] = [];
 			}
 
-			$block->options[$option] = $post_data['parameters'][$option] ?? $block_options[$option] ?? $value;
+			$block->options[$option] = $postData['parameters'][$option] ?? $blockOptions[$option] ?? $value;
 		}
 
 		foreach (Utils::$context['lp_languages'] as $lang) {
-			$block->titles[$lang['filename']] = $post_data['title_' . $lang['filename']] ?? $block->titles[$lang['filename']] ?? '';
+			$block->titles[$lang['filename']] = $postData['title_' . $lang['filename']]
+				?? $block->titles[$lang['filename']]
+				?? '';
 		}
 
 		$this->cleanBbcode($block->titles);
@@ -421,7 +429,8 @@ final class BlockArea
 			return;
 
 		$this->cache()->flush();
-		$this->checkSubmitOnce('free');
+
+		Security::checkSubmitOnce('free');
 
 		Utils::$context['preview_title']   = Utils::$context['lp_block']['titles'][Utils::$context['user']['language']] ?? '';
 		Utils::$context['preview_content'] = Utils::$smcFunc['htmlspecialchars'](Utils::$context['lp_block']['content'], ENT_QUOTES);
@@ -447,7 +456,7 @@ final class BlockArea
 		if (empty(Utils::$context['lp_block']['placement']))
 			return 0;
 
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT MAX(priority) + 1
 			FROM {db_prefix}lp_blocks
 			WHERE placement = {string:placement}',
@@ -456,9 +465,9 @@ final class BlockArea
 			]
 		);
 
-		[$priority] = Utils::$smcFunc['db_fetch_row']($result);
+		[$priority] = Db::$db->fetch_row($result);
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
 		return (int) $priority;

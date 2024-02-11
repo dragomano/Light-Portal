@@ -10,13 +10,15 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 01.02.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TwigLayouts;
 
+use Bugo\Compat\{BBCodeParser, Config, ErrorHandler};
+use Bugo\Compat\{Lang, Theme, Sapi, Utils};
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\{BBCodeParser, Config, ErrorHandler, Icon, Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\Icon;
 use Twig\{Loader\FilesystemLoader, Environment, Error\Error, TwigFunction};
 
 if (! defined('LP_NAME'))

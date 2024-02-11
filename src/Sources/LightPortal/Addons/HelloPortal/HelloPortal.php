@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 09.02.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\HelloPortal;
 
+use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\{Lang, Theme, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -55,19 +55,19 @@ class HelloPortal extends Plugin
 			Utils::$context[$menu]['tab_data'] = $tabs;
 		}
 
-		Theme::loadExtCSS('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs.min.css');
+		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs.min.css');
 
 		if (! empty(Utils::$context['lp_hello_portal_plugin']['theme'])) {
 			$theme = Utils::$context['lp_hello_portal_plugin']['theme'] . '.css';
-			Theme::loadExtCSS('https://cdn.jsdelivr.net/npm/intro.js@4/themes/introjs-' . $theme);
+			$this->loadExtCSS('https://cdn.jsdelivr.net/npm/intro.js@4/themes/introjs-' . $theme);
 		}
 
 		if (Utils::$context['right_to_left'])
-			Theme::loadExtCSS('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs-rtl.min.css');
+			$this->loadExtCSS('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs-rtl.min.css');
 
-		Theme::loadExtJS('https://cdn.jsdelivr.net/npm/intro.js@4/minified/intro.min.js');
+		$this->loadExtJS('https://cdn.jsdelivr.net/npm/intro.js@4/minified/intro.min.js');
 
-		Theme::addInlineJS('
+		$this->addInlineJS('
 		function runTour() {
 			introJs().setOptions({
 				tooltipClass: "lp_addon_hello_portal",

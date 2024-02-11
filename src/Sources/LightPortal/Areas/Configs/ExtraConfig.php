@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Areas\Configs;
 
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, User, Utils};
+use Bugo\Compat\{ACP, Config, Lang, Theme, User, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -121,13 +121,13 @@ final class ExtraConfig extends AbstractConfig
 				$this->post()->put('lp_fa_kit', $this->filterVar($this->request('lp_fa_kit'), 'url'));
 
 			$save_vars = $config_vars;
-			$this->saveDBSettings($save_vars);
+			ACP::saveDBSettings($save_vars);
 			$this->session()->put('adm-save', true);
 			$this->cache()->flush();
 
 			Utils::redirectexit('action=admin;area=lp_settings;sa=extra');
 		}
 
-		$this->prepareDBSettingContext($config_vars);
+		ACP::prepareDBSettingContext($config_vars);
 	}
 }

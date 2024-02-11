@@ -14,8 +14,8 @@
 
 namespace Bugo\LightPortal\Repositories;
 
+use Bugo\Compat\{Database as Db, Msg, Utils};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\Utils;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -33,7 +33,7 @@ abstract class AbstractRepository
 
 		$entity['content'] = Utils::$smcFunc['htmlspecialchars']($entity['content'], ENT_QUOTES);
 
-		$this->preparseCode($entity['content']);
+		Msg::preparseCode($entity['content']);
 	}
 
 	protected function saveTitles(int $item, string $method = ''): void
@@ -54,7 +54,7 @@ abstract class AbstractRepository
 		if (empty($titles))
 			return;
 
-		Utils::$smcFunc['db_insert']($method,
+		Db::$db->insert($method,
 			'{db_prefix}lp_titles',
 			[
 				'item_id' => 'int',
@@ -89,7 +89,7 @@ abstract class AbstractRepository
 		if (empty($params))
 			return;
 
-		Utils::$smcFunc['db_insert']($method,
+		Db::$db->insert($method,
 			'{db_prefix}lp_params',
 			[
 				'item_id' => 'int',

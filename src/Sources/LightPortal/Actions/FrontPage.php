@@ -14,11 +14,11 @@
 
 namespace Bugo\LightPortal\Actions;
 
+use Bugo\Compat\{Config, ErrorHandler, Lang, PageIndex, Sapi, Theme, Utils};
 use Bugo\LightPortal\Articles\{ArticleInterface, BoardArticle, ChosenPageArticle};
 use Bugo\LightPortal\Articles\{ChosenTopicArticle, PageArticle, TopicArticle};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, DateTime, ErrorHandler};
-use Bugo\LightPortal\Utils\{Icon, Lang, Sapi, Theme, Utils};
+use Bugo\LightPortal\Utils\{DateTime, Icon};
 use Exception;
 use IntlException;
 use Latte\Engine;
@@ -103,8 +103,8 @@ final class FrontPage implements ActionInterface
 
 		$this->preLoadImages($articles);
 
-		Utils::$context['page_index'] = $this->constructPageIndex(
-			LP_BASE_URL, $this->request()->get('start'), $itemsCount, $limit
+		Utils::$context['page_index'] = new PageIndex(
+			LP_BASE_URL, $start, $itemsCount, $limit
 		);
 
 		Utils::$context['start'] = $this->request()->get('start');
