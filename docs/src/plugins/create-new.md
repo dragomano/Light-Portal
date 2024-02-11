@@ -96,13 +96,13 @@ File `index.php` can be copied from folders of other plugins. The file `HelloWor
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 30.01.24 (date when the source code of the plugin was created or last updated, in the format dd.mm.yy)
+ * @version 15.02.24 (date when the source code of the plugin was created or last updated, in the format dd.mm.yy)
  */
 
 namespace Bugo\LightPortal\Addons\HelloWorld;
 
+use Bugo\Compat\{Config, Lang, Utils};
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
