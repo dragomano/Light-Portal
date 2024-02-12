@@ -97,6 +97,10 @@
 	}
 
 	form {
+		div[is]:has(input[type='text']:focus) {
+			border: 1px solid var(--toggle-border-on, #10b981);
+		}
+
 		textarea {
 			width: 100%;
 		}
@@ -219,4 +223,8 @@
 			right: 60px;
 		}
 	}
+}
+
+.windowbg:has(.features .floatright span.fa-spin) {
+	border: 2px solid var(--toggle-border-on, #10b981);
 }

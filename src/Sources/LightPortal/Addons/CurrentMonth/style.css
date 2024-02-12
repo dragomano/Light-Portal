@@ -5,13 +5,13 @@
 	background: #f0f4f7;
 	border: 1px solid #ddd;
 	text-align: center;
-}
 
-.block_current_month table .windowbg {
-	box-shadow: none;
-	border-radius: 0;
-	box-sizing: content-box;
-	margin: 0;
+	.windowbg {
+		box-shadow: none;
+		border-radius: 0;
+		box-sizing: content-box;
+		margin: 0;
+	}
 }
 
 .block_current_month th {
@@ -26,49 +26,58 @@
 	vertical-align: top;
 	border-right: 1px solid #ddd;
 	border-bottom: 1px solid #ddd;
-}
 
-.block_current_month td.disabled {
-	background: #eee;
-	border: 1px solid #ddd;
-}
+	&.disabled {
+		background: #eee;
+		border: 1px solid #ddd;
+	}
 
-.block_current_month td.events {
-	background: rgba(30, 245, 20, 0.1);
-}
+	&.events {
+		background: rgba(30, 245, 20, 0.1);
 
-.block_current_month td.holidays {
-	background: rgba(23, 110, 245, 0.1);
-}
+		&:hover {
+			background: rgba(30, 245, 20, 0.2);
+		}
+	}
 
-.block_current_month td.birthdays {
-	background: rgba(102, 0, 255, 0.1);
-}
+	&.holidays {
+		background: rgba(23, 110, 245, 0.1);
 
-.block_current_month td.events:hover,
-.block_current_month td.calendar_today.events {
-	background: rgba(30, 245, 20, 0.2);
-}
+		&:hover {
+			background: rgba(23, 110, 245, 0.2);
+		}
+	}
 
-.block_current_month td.holidays:hover,
-.block_current_month td.calendar_today.holidays {
-	background: rgba(23, 110, 245, 0.2);
-}
+	&.birthdays {
+		background: rgba(102, 0, 255, 0.1);
 
-.block_current_month td.birthdays:hover,
-.block_current_month td.calendar_today.birthdays {
-	background: rgba(153, 51, 255, 0.2);
-}
+		&:hover {
+			background: rgba(153, 51, 255, 0.2);
+		}
+	}
 
-.block_current_month td.calendar_today {
-	font-weight: bold;
-}
+	&.calendar_today {
+		font-weight: bold;
 
-.block_current_month td a {
-	display: block;
-}
+		&.events {
+			background: rgba(30, 245, 20, 0.2);
+		}
 
-.block_current_month td a:hover {
-	text-decoration: none;
-	background: rgba(97, 135, 166, 0.2);
+		&.holidays {
+			background: rgba(23, 110, 245, 0.2);
+		}
+
+		&.birthdays {
+			background: rgba(153, 51, 255, 0.2);
+		}
+	}
+
+	a {
+		display: block;
+
+		&:hover {
+			text-decoration: none;
+			background: rgba(97, 135, 166, 0.2);
+		}
+	}
 }
