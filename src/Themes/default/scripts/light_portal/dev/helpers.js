@@ -41,17 +41,17 @@ class VueAdapter {
 
     app.use(createPinia());
 
-    const rules = import('./plurals.js').then((m) => new m.default().rules());
+    import('./plurals.js').then(function (m) {
+      const i18n = VueI18n.createI18n({
+        locale: vueGlobals.context.locale,
+        pluralizationRules: new m.default().rules(),
+        messages: {
+          [vueGlobals.context.locale]: vueGlobals.txt,
+        },
+      });
 
-    const i18n = VueI18n.createI18n({
-      locale: vueGlobals.context.locale,
-      pluralizationRules: rules,
-      messages: {
-        [vueGlobals.context.locale]: vueGlobals.txt,
-      },
+      app.use(i18n);
     });
-
-    app.use(i18n);
 
     if (window.VueShowdownPlugin) {
       const classMap = {
