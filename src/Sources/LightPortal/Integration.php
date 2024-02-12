@@ -14,10 +14,10 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\Compat\{Config, Database as Db, Lang, Theme, User, Utils};
+use Bugo\LightPortal\Compilers\Zero;
+use Bugo\Compat\{Config, Database as Db, Lang, User, Utils};
 use Bugo\LightPortal\Actions\{BoardIndex, Block, Category};
 use Bugo\LightPortal\Actions\{FrontPage, Page, Tag};
-use Bugo\LightPortal\Areas\{ConfigArea, CreditArea};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -27,12 +27,6 @@ if (! defined('SMF'))
  */
 final class Integration extends AbstractMain
 {
-	public function __construct()
-	{
-		(new ConfigArea())();
-		(new CreditArea())();
-	}
-
 	public function __invoke(): void
 	{
 		$this->applyHook('init');
@@ -55,7 +49,6 @@ final class Integration extends AbstractMain
 		$this->applyHook('profile_popup');
 		$this->applyHook('download_request');
 		$this->applyHook('whos_online');
-		$this->applyHook('clean_cache');
 	}
 
 	public function init(): void
@@ -131,7 +124,8 @@ final class Integration extends AbstractMain
 		Lang::load('LightPortal/LightPortal');
 
 		$this->defineVars();
-		$this->loadAssets();
+
+		$this->loadAssets(new Zero());
 
 		$this->hook('init');
 	}
@@ -545,14 +539,5 @@ final class Integration extends AbstractMain
 		}
 
 		return $result;
-	}
-
-	public function cleanCache(): void
-	{
-		$file = Theme::$current->settings['default_theme_dir'] . '/css/light_portal/less/portal.less';
-
-		if (is_file($file)) {
-			touch($file);
-		}
 	}
 }

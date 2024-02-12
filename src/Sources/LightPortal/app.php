@@ -37,5 +37,10 @@ if (str_starts_with(SMF_VERSION, '3.0')) {
 	array_map($applyAlias, array_keys($aliases), $aliases);
 }
 
+// Development mode
+if (is_file(__DIR__ . '/Libs/scssphp/scssphp/src/Compiler.php'))
+	/** @noinspection PhpIgnoredClassAliasDeclaration */
+	class_alias('Bugo\\LightPortal\\Compilers\\Sass', 'Bugo\\LightPortal\\Compilers\\Zero');
+
 // This is the way
 (new Integration())();

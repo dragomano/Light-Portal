@@ -14,12 +14,12 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\Compat\{Config, Database as Db, ErrorHandler, Lang};
-use Bugo\Compat\{Sapi, Theme, User, Utils};
+use Bugo\LightPortal\Areas\ConfigArea;
+use Bugo\LightPortal\Areas\CreditArea;
+use Bugo\LightPortal\Compilers\CompilerInterface;
+use Bugo\Compat\{Config, Database as Db, Lang};
+use Bugo\Compat\{Theme, User, Utils};
 use Bugo\LightPortal\Actions\{Block, PageInterface};
-use Exception;
-use Less_Exception_Parser;
-use Less_Parser;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -27,6 +27,12 @@ if (! defined('SMF'))
 abstract class AbstractMain
 {
 	use Helper;
+
+	public function __construct()
+	{
+		(new ConfigArea())();
+		(new CreditArea())();
+	}
 
 	protected function isPortalCanBeLoaded(): bool
 	{
@@ -60,11 +66,11 @@ abstract class AbstractMain
 		Utils::$context['lp_enabled_plugins'] = empty(Config::$modSettings['lp_enabled_plugins'])
 			? []
 			: explode(',', Config::$modSettings['lp_enabled_plugins']);
-		
+
 		Utils::$context['lp_frontpage_pages'] = empty(Config::$modSettings['lp_frontpage_pages'])
 			? []
 			: explode(',', Config::$modSettings['lp_frontpage_pages']);
-		
+
 		Utils::$context['lp_frontpage_topics'] = empty(Config::$modSettings['lp_frontpage_topics'])
 			? []
 			: explode(',', Config::$modSettings['lp_frontpage_topics']);
@@ -72,15 +78,15 @@ abstract class AbstractMain
 		Utils::$context['lp_header_panel_width'] = empty(Config::$modSettings['lp_header_panel_width'])
 			? 12
 			: (int) Config::$modSettings['lp_header_panel_width'];
-		
+
 		Utils::$context['lp_left_panel_width'] = empty(Config::$modSettings['lp_left_panel_width'])
 			? ['lg' => 3, 'xl' => 2]
 			: Utils::jsonDecode(Config::$modSettings['lp_left_panel_width'], true);
-		
+
 		Utils::$context['lp_right_panel_width'] = empty(Config::$modSettings['lp_right_panel_width'])
 			? ['lg' => 3, 'xl' => 2]
 			: Utils::jsonDecode(Config::$modSettings['lp_right_panel_width'], true);
-		
+
 		Utils::$context['lp_footer_panel_width'] = empty(Config::$modSettings['lp_footer_panel_width'])
 			? 12
 			: (int) Config::$modSettings['lp_footer_panel_width'];
@@ -88,7 +94,7 @@ abstract class AbstractMain
 		Utils::$context['lp_swap_left_right'] = empty(Lang::$txt['lang_rtl'])
 			? ! empty(Config::$modSettings['lp_swap_left_right'])
 			: empty(Config::$modSettings['lp_swap_left_right']);
-		
+
 		Utils::$context['lp_panel_direction'] = Utils::jsonDecode(
 			Config::$modSettings['lp_panel_direction'] ?? '', true
 		);
@@ -96,10 +102,11 @@ abstract class AbstractMain
 		Utils::$context['lp_active_blocks'] = (new Block)->getActive();
 	}
 
-	protected function loadAssets(): void
+	protected function loadAssets(CompilerInterface $compiler): void
 	{
 		$this->loadFontAwesome();
-		$this->compileLess();
+
+		$compiler->compile();
 
 		Theme::loadCSSFile('light_portal/flexboxgrid.css');
 		Theme::loadCSSFile('light_portal/portal.css');
@@ -133,29 +140,6 @@ abstract class AbstractMain
 					'external'   => true,
 				]
 			);
-		}
-	}
-
-	protected function compileLess(): void
-	{
-		$cssFile  = Theme::$current->settings['default_theme_dir'] . '/css/light_portal/portal.css';
-		$lessFile = Theme::$current->settings['default_theme_dir'] . '/css/light_portal/less/portal.less';
-
-		if (! is_file($lessFile)) return;
-
-		if (is_file($cssFile) && filemtime($lessFile) < filemtime($cssFile))
-			return;
-
-		$parser = new Less_Parser([
-			'compress'  => true,
-			'cache_dir' => empty(Config::$modSettings['cache_enable']) ? null : Sapi::getTempDir(),
-		]);
-
-		try {
-			$parser->parseFile($lessFile);
-			file_put_contents($cssFile, $parser->getCss());
-		} catch (Less_Exception_Parser | Exception $e) {
-			ErrorHandler::log($e->getMessage(), 'critical');
 		}
 	}
 
