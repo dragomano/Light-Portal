@@ -1,32 +1,32 @@
 .recent_topics {
 	list-style: none;
 	padding-left: 0;
-}
 
-.recent_topics div {
-	margin: 4px 0 0 0;
-}
+	div {
+		margin: 4px 0 0 0;
+	}
 
-.recent_topics .poster_avatar {
-	float: left;
-	padding: 3px 11px 0 0;
-}
+	.poster_avatar {
+		float: left;
+		padding: 3px 11px 0 0;
+	}
 
-.recent_topics .avatar {
-	width: 40px;
-	height: 40px;
+	.avatar {
+		width: 40px;
+		height: 40px;
+	}
 }
 
 .recent_topics_list {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 	grid-gap: 4px;
-}
 
-.recent_topics_list > div {
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-	text-align: center;
-	margin: 0 !important;
+	> div {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		text-align: center;
+		margin: 0 !important;
+	}
 }
