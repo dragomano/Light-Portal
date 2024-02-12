@@ -7,6 +7,7 @@
     "build:comments": "vite build --config=configs/vite.comments.js",
     "build:plugins": "vite build --config=configs/vite.plugins.js",
     "build:less": "vite build --config=configs/vite.less.js",
+    "build:sass": "vite build --config=configs/vite.sass.js",
     "preview": "vite preview",
     "preinstall": "npx only-allow pnpm"
   },
@@ -22,6 +23,7 @@
     "axios": "^1.6.7",
     "less": "^4.2.0",
     "pinia": "^2.1.7",
+    "sass": "^1.70.0",
     "sortablejs": "^1.15.2",
     "vanilla-lazyload": "^17.8.5",
     "virtual-select-plugin": "^1.0.41",

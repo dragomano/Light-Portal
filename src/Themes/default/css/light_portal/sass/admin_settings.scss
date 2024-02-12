@@ -1,0 +1,28 @@
+
+dl.settings {
+	div {
+		dt, dd {
+			width: 50%;
+
+			@media (max-width: 600px) {
+				width: 100%;
+			}
+		}
+	}
+}
+
+.lp_table_settings {
+	width: 100%;
+
+	td {
+		width: 50%;
+	}
+
+	@media (max-width: 600px) {
+		td {
+			display: block;
+			padding: 5px 0;
+			width: 100%;
+		}
+	}
+}
