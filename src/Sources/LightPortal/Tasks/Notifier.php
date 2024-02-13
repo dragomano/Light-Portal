@@ -142,47 +142,4 @@ final class Notifier extends BackgroundTask
 
 		return true;
 	}
-
-	public static function send(string $type, string $action, array $options = []): void
-	{
-		if (empty($options))
-			return;
-
-		Db::$db->insert('',
-			'{db_prefix}background_tasks',
-			[
-				'task_file'  => 'string',
-				'task_class' => 'string',
-				'task_data'  => 'string'
-			],
-			[
-				'task_file'  => '$sourcedir/LightPortal/Tasks/Notifier.php',
-				'task_class' => '\\' . self::class,
-				'task_data'  => Utils::$smcFunc['json_encode']([
-					'time'              => $options['time'],
-					'sender_id'	        => User::$info['id'],
-					'sender_name'       => User::$info['name'],
-					'content_author_id' => $options['author_id'],
-					'content_type'      => $type,
-					'content_id'        => $options['item'],
-					'content_action'    => $action,
-					'extra'             => Utils::$smcFunc['json_encode']([
-						'content_subject' => $options['title'],
-						'content_link'    => $options['url'],
-						'sender_gender'   => self::getUserGender()
-					], JSON_UNESCAPED_SLASHES)
-				]),
-			],
-			['id_task']
-		);
-	}
-
-	protected static function getUserGender(): string
-	{
-		return empty(User::$profiles[User::$info['id']]) ? 'male' : (
-			isset(User::$profiles[User::$info['id']]['options']['cust_gender'])
-				&& User::$profiles[User::$info['id']]['options']['cust_gender'] === '{gender_2}'
-					? 'female' : 'male'
-		);
-	}
 }

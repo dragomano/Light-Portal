@@ -14,10 +14,9 @@
 
 namespace Bugo\LightPortal\Actions;
 
-use Bugo\LightPortal\Tasks\Notifier;
 use Bugo\Compat\{Config, PageIndex, User, Utils};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\DateTime;
+use Bugo\LightPortal\Utils\{DateTime, Notify};
 use Bugo\LightPortal\Repositories\CommentRepository;
 use IntlException;
 
@@ -157,8 +156,8 @@ final class Comment implements ActionInterface
 			];
 
 			empty($parentId)
-				? Notifier::send('new_comment', 'page_comment', $options)
-				: Notifier::send('new_reply', 'page_comment_reply', $options);
+				? Notify::send('new_comment', 'page_comment', $options)
+				: Notify::send('new_reply', 'page_comment_reply', $options);
 
 			$this->cache()->forget('page_' . $this->alias . '_comments');
 		}

@@ -16,10 +16,9 @@ declare(strict_types=1);
 
 namespace Bugo\LightPortal\Repositories;
 
-use Bugo\LightPortal\Tasks\Notifier;
 use Bugo\Compat\{Config, Database as Db, Logging};
 use Bugo\Compat\{Security, User, Utils};
-use Bugo\LightPortal\Utils\DateTime;
+use Bugo\LightPortal\Utils\{DateTime, Notify};
 use IntlException;
 
 if (! defined('SMF'))
@@ -189,7 +188,7 @@ final class PageRepository extends AbstractRepository
 		// Notify page moderators about new page
 		$title = Utils::$context['lp_page']['titles'][User::$info['language']]
 			?? Utils::$context['lp_page']['titles'][Config::$language];
-		
+
 		$options = [
 			'item'      => $item,
 			'time'      => $this->getPublishTime(),
@@ -199,7 +198,7 @@ final class PageRepository extends AbstractRepository
 		];
 
 		if (empty(Utils::$context['allow_light_portal_manage_pages_any']))
-			Notifier::send('new_page', 'page_unapproved', $options);
+			Notify::send('new_page', 'page_unapproved', $options);
 
 		return $item;
 	}
@@ -211,8 +210,8 @@ final class PageRepository extends AbstractRepository
 		Db::$db->query('', '
 			UPDATE {db_prefix}lp_pages
 			SET category_id = {int:category_id}, author_id = {int:author_id}, alias = {string:alias},
-			    description = {string:description}, content = {string:content}, type = {string:type},
-			    permissions = {int:permissions}, status = {int:status}, updated_at = {int:updated_at}
+				description = {string:description}, content = {string:content}, type = {string:type},
+				permissions = {int:permissions}, status = {int:status}, updated_at = {int:updated_at}
 			WHERE page_id = {int:page_id}',
 			[
 				'category_id' => Utils::$context['lp_page']['category_id'],
