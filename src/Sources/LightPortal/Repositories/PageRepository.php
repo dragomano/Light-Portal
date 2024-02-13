@@ -16,6 +16,7 @@ declare(strict_types=1);
 
 namespace Bugo\LightPortal\Repositories;
 
+use Bugo\LightPortal\Tasks\Notifier;
 use Bugo\Compat\{Config, Database as Db, Logging};
 use Bugo\Compat\{Security, User, Utils};
 use Bugo\LightPortal\Utils\DateTime;
@@ -198,7 +199,7 @@ final class PageRepository extends AbstractRepository
 		];
 
 		if (empty(Utils::$context['allow_light_portal_manage_pages_any']))
-			$this->makeNotify('new_page', 'page_unapproved', $options);
+			Notifier::send('new_page', 'page_unapproved', $options);
 
 		return $item;
 	}

@@ -113,18 +113,21 @@ trait Area
 				if (isset($data['input']['type']) && in_array($data['input']['type'], ['checkbox', 'number']))
 					$tag = 'span';
 
-				Utils::$context['posting_fields'][$item]['input']['after'] = "<$tag class=\"descbox alternative2 smalltext\">{$data['input']['after']}</$tag>";
+				Utils::$context['posting_fields'][$item]['input']['after']
+					= "<$tag class=\"descbox alternative2 smalltext\">{$data['input']['after']}</$tag>";
 			}
 
 			// Add label for html type
 			if (isset($data['label']['html']) && $data['label']['html'] !== ' ') {
-				Utils::$context['posting_fields'][$item]['label']['html'] = '<label for="' . $item . '">' . $data['label']['html'] . '</label>';
+				Utils::$context['posting_fields'][$item]['label']['html'] = '<label for="' . $item . '">'
+					. $data['label']['html'] . '</label>';
 			}
 
 			// Fancy checkbox
 			if (isset($data['input']['type']) && $data['input']['type'] === 'checkbox') {
 				$data['input']['attributes']['class'] = 'checkbox';
-				$data['input']['after'] = '<label class="label" for="' . $item . '"></label>' . (Utils::$context['posting_fields'][$item]['input']['after'] ?? '');
+				$data['input']['after'] = '<label class="label" for="' . $item . '"></label>'
+					. (Utils::$context['posting_fields'][$item]['input']['after'] ?? '');
 				Utils::$context['posting_fields'][$item] = $data;
 			}
 

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 13.02.24
  */
 
 namespace Bugo\LightPortal\Addons\MaterialDesignIcons;
@@ -34,21 +34,21 @@ class MaterialDesignIcons extends Plugin
 		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/@mdi/font@7/css/materialdesignicons.min.css', ['seed' => false]);
 	}
 
-	public function prepareIconList(array &$all_icons): void
+	public function prepareIconList(array &$icons): void
 	{
-		if (($icons = $this->cache()->get('all_mi_icons', 30 * 24 * 60 * 60)) === null) {
+		if (($mdIcons = $this->cache()->get('all_md_icons', 30 * 24 * 60 * 60)) === null) {
 			$content = file_get_contents('https://raw.githubusercontent.com/Templarian/MaterialDesign/master/meta.json');
 			$json = json_decode($content);
 
-			$icons = [];
+			$mdIcons = [];
 			foreach ($json as $icon) {
-				$icons[] = $this->prefix . $icon->name;
+				$mdIcons[] = $this->prefix . $icon->name;
 			}
 
-			$this->cache()->put('all_mdi_icons', $icons, 30 * 24 * 60 * 60);
+			$this->cache()->put('all_md_icons', $mdIcons, 30 * 24 * 60 * 60);
 		}
 
-		$all_icons = array_merge($all_icons, $icons);
+		$icons = array_merge($icons, $mdIcons);
 	}
 
 	public function credits(array &$links): void

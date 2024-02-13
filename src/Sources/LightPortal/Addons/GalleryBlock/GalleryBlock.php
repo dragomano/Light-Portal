@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 13.02.24
  */
 
 namespace Bugo\LightPortal\Addons\GalleryBlock;
@@ -108,7 +108,7 @@ class GalleryBlock extends Block
 				'title'  => $row['title'],
 				'link'   => Config::$scripturl . '?action=gallery;sa=view;pic=' . $row['id_picture'],
 				'image'     => (Config::$modSettings['gallery_url'] ?? (Config::$boardurl . '/gallery/')) . $row['filename'],
-				'can_edit'  => $this->allowedTo('smfgallery_manage') || ($this->allowedTo('smfgallery_edit') && $row['id_member'] == User::$info['id']),
+				'can_edit'  => User::hasPermission('smfgallery_manage') || (User::hasPermission('smfgallery_edit') && $row['id_member'] == User::$info['id']),
 				'edit_link' => Config::$scripturl . '?action=gallery;sa=edit;pic=' . $row['id_picture'],
 			];
 
@@ -127,7 +127,7 @@ class GalleryBlock extends Block
 		if ($data->type !== 'gallery_block')
 			return;
 
-		$this->middleware('smfgallery_view');
+		User::mustHavePermission('smfgallery_view');
 
 		$images = $this->cache('gallery_block_addon_b' . $data->block_id . '_u' . Utils::$context['user']['id'])
 			->setLifeTime($data->cache_time)

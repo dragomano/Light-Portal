@@ -497,25 +497,25 @@ public function frontTopicsOutput(array &$topics, array $row): void
 
 ### prepareIconList
 
-(`&$all_icons, &$template`)
+(`&$icons, &$template`)
 
 > adding custom list of icons (instead of FontAwesome)
 
 ```php
-public function prepareIconList(array &$all_icons): void
+public function prepareIconList(array &$icons): void
 {
-    if (($icons = $this->cache()->get('all_main_icons', 30 * 24 * 60 * 60)) === null) {
+    if (($mainIcons = $this->cache()->get('all_main_icons', 30 * 24 * 60 * 60)) === null) {
         $set = $this->getIconSet();
 
-        $icons = [];
+        $mainIcons = [];
         foreach ($set as $icon) {
-            $icons[] = $this->prefix . $icon;
+            $mainIcons[] = $this->prefix . $icon;
         }
 
-        $this->cache()->put('all_main_icons', $icons, 30 * 24 * 60 * 60);
+        $this->cache()->put('all_main_icons', $mainIcons, 30 * 24 * 60 * 60);
     }
 
-    $all_icons = array_merge($all_icons, $icons);
+    $icons = array_merge($icons, $mainIcons);
 }
 ```
 

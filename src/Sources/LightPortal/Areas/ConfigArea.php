@@ -142,7 +142,7 @@ final class ConfigArea
 	 */
 	public function settingAreas(): void
 	{
-		$this->middleware('admin_forum');
+		User::mustHavePermission('admin_forum');
 
 		$areas = [
 			'basic'      => [new BasicConfig, 'show'],
@@ -191,7 +191,7 @@ final class ConfigArea
 
 	public function blockAreas(): void
 	{
-		$this->middleware('admin_forum');
+		User::mustHavePermission('admin_forum');
 
 		$areas = [
 			'main' => [new BlockArea, 'main'],
@@ -211,7 +211,7 @@ final class ConfigArea
 
 	public function pageAreas(): void
 	{
-		$this->middleware(['light_portal_manage_pages_own', 'light_portal_manage_pages_any']);
+		User::mustHavePermission(['light_portal_manage_pages_own', 'light_portal_manage_pages_any']);
 
 		$areas = [
 			'main' => [new PageArea, 'main'],
@@ -231,7 +231,7 @@ final class ConfigArea
 
 	public function pluginAreas(): void
 	{
-		$this->middleware('admin_forum');
+		User::mustHavePermission('admin_forum');
 
 		$areas = [
 			'main' => [new PluginArea, 'main']

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 13.02.24
  */
 
 namespace Bugo\LightPortal\Addons\BoardStats;
@@ -133,7 +133,7 @@ class BoardStats extends Block
 		}
 
 		if ($parameters['show_basic_info'] && $board_stats['basic_info']) {
-			$stats_title = $this->allowedTo('view_stats') ? '<a href="' . Config::$scripturl . '?action=stats">' . Lang::$txt['forum_stats'] . '</a>' : Lang::$txt['forum_stats'];
+			$stats_title = User::hasPermission('view_stats') ? '<a href="' . Config::$scripturl . '?action=stats">' . Lang::$txt['forum_stats'] . '</a>' : Lang::$txt['forum_stats'];
 
 			echo '
 				<div>
@@ -144,7 +144,7 @@ class BoardStats extends Block
 			echo '
 					<ul class="bbc_list">';
 
-			if ($this->allowedTo('view_stats')) {
+			if (User::hasPermission('view_stats')) {
 				echo '
 						<li>', Lang::$txt['members'], ': ', $board_stats['basic_info']['members'], '</li>
 						<li>', Lang::$txt['posts'], ': ', $board_stats['basic_info']['posts'], '</li>
@@ -159,7 +159,7 @@ class BoardStats extends Block
 		}
 
 		if ($parameters['show_whos_online'] && $board_stats['whos_online']) {
-			$online_title = $this->allowedTo('who_view') ? '<a href="' . Config::$scripturl . '?action=who">' . Lang::$txt['online_users'] . '</a>' : Lang::$txt['online_users'];
+			$online_title = User::hasPermission('who_view') ? '<a href="' . Config::$scripturl . '?action=who">' . Lang::$txt['online_users'] . '</a>' : Lang::$txt['online_users'];
 
 			echo '
 				<div>

@@ -32,7 +32,9 @@ abstract class AbstractCustomPageImport implements ImportInterface, CustomImport
 
 		Sapi::setTimeLimit();
 
-		$pages = $this->request('pages') && $this->request()->hasNot('import_all') ? $this->request('pages') : [];
+		$pages = $this->request('pages') && $this->request()->hasNot('import_all')
+			? $this->request('pages')
+			: [];
 
 		$results = $titles = $params = $comments = [];
 		$items = $this->getItems($pages);

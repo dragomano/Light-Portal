@@ -66,7 +66,7 @@ final class CreditArea
 
 	public function prepareComponents(): void
 	{
-		$this->middleware('light_portal_view');
+		User::mustHavePermission('light_portal_view');
 
 		Utils::$context['portal_translations'] = [
 			'Polish'     => ['Adrek', 'jsqx'],

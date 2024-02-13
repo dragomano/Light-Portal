@@ -98,7 +98,7 @@ class BoardArticle extends AbstractArticle
 				'is_new'      => empty($row['is_read']),
 				'replies'     => ['num' => $row['num_posts'], 'title' => Lang::$txt['lp_replies'], 'after' => ''],
 				'image'       => $image ?? '',
-				'can_edit'    => User::$info['is_admin'] || $this->allowedTo('manage_boards'),
+				'can_edit'    => User::$info['is_admin'] || User::hasPermission('manage_boards'),
 				'edit_link'   => Config::$scripturl . '?action=admin;area=manageboards;sa=board;boardid=' . $row['id_board'],
 				'category'    => $cat_name,
 				'is_redirect' => $row['is_redirect']

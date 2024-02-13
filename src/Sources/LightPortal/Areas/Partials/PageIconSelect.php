@@ -31,7 +31,12 @@ final class PageIconSelect extends AbstractPartial
 
 		return /** @lang text */ '
 		<div id="' . $id . '" name="' . $id . '"></div>
-		<input type="checkbox" name="show_in_menu" id="show_in_menu"' . (Utils::$context['lp_page']['options']['show_in_menu'] ? ' checked=""' : '') . ' class="checkbox">
+		<input
+			type="checkbox"
+			name="show_in_menu"
+			id="show_in_menu"' . (Utils::$context['lp_page']['options']['show_in_menu'] ? ' checked=""' : '') . '
+			class="checkbox"
+		>
 		<label class="label" for="show_in_menu" style="margin-left: 1em"></label>
 		<script>
 			VirtualSelect.init({

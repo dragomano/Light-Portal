@@ -33,7 +33,9 @@ abstract class AbstractCustomBlockImport implements ImportInterface, CustomImpor
 
 		Sapi::setTimeLimit();
 
-		$blocks = $this->request('blocks') && $this->request()->hasNot('import_all') ? $this->request('blocks') : [];
+		$blocks = $this->request('blocks') && $this->request()->hasNot('import_all')
+			? $this->request('blocks')
+			: [];
 
 		$results = $titles = [];
 		$items = $this->getItems($blocks);

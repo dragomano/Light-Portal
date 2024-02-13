@@ -16,7 +16,6 @@ namespace Bugo\LightPortal;
 
 use Bugo\Compat\{Config, Database as Db, ErrorHandler, Lang, User, Utils};
 use Bugo\LightPortal\Lists\{CategoryList, PageList, TagList, TitleList};
-use Bugo\LightPortal\Tasks\Notifier;
 use Bugo\LightPortal\Utils\{BlockAppearance, Cache, File};
 use Bugo\LightPortal\Utils\{Post, Request, Session, SMFTrait};
 use Exception;
@@ -65,25 +64,15 @@ trait Helper
 		AddonHandler::getInstance()->run($hook, $vars, $plugins);
 	}
 
-	public function require(string $filename): void
+	public function require(string $filename, string $extension = '.php'): void
 	{
-		if (is_file($path = dirname(__DIR__) . DIRECTORY_SEPARATOR . $filename . '.php'))
+		if (is_file($path = dirname(__DIR__) . DIRECTORY_SEPARATOR . $filename . $extension))
 			require_once $path;
 	}
 
 	public function callHelper(mixed $action): mixed
 	{
 		return call_user_func($action);
-	}
-
-	public function middleware(string|array $permission): void
-	{
-		User::mustHavePermission($permission);
-	}
-
-	public function allowedTo(string $permission): bool
-	{
-		return User::hasPermission($permission);
 	}
 
 	public function getEntityList(string $entity): array
@@ -262,7 +251,8 @@ trait Helper
 			return false;
 
 		return Config::$modSettings['lp_frontpage_mode'] === 'chosen_page'
-			&& Config::$modSettings['lp_frontpage_alias'] && Config::$modSettings['lp_frontpage_alias'] === $alias;
+			&& Config::$modSettings['lp_frontpage_alias']
+			&& Config::$modSettings['lp_frontpage_alias'] === $alias;
 	}
 
 	public function getTranslatedTitle(array $titles): string
@@ -303,64 +293,5 @@ trait Helper
 			return '';
 
 		return $result;
-	}
-
-	public function makeNotify(string $type, string $action, array $options = []): void
-	{
-		if (empty($options))
-			return;
-
-		Db::$db->insert('',
-			'{db_prefix}background_tasks',
-			[
-				'task_file'  => 'string',
-				'task_class' => 'string',
-				'task_data'  => 'string'
-			],
-			[
-				'task_file'  => '$sourcedir/LightPortal/Tasks/Notifier.php',
-				'task_class' => '\\' . Notifier::class,
-				'task_data'  => Utils::$smcFunc['json_encode']([
-					'time'              => $options['time'],
-					'sender_id'	        => User::$info['id'],
-					'sender_name'       => User::$info['name'],
-					'content_author_id' => $options['author_id'],
-					'content_type'      => $type,
-					'content_id'        => $options['item'],
-					'content_action'    => $action,
-					'extra'             => Utils::$smcFunc['json_encode']([
-						'content_subject' => $options['title'],
-						'content_link'    => $options['url'],
-						'sender_gender'   => $this->getUserGender()
-					], JSON_UNESCAPED_SLASHES)
-				]),
-			],
-			['id_task']
-		);
-
-		Utils::$context['lp_num_queries']++;
-	}
-
-	public function getUserGender(): string
-	{
-		return empty(User::$profiles[User::$info['id']]) ? 'male' : (
-			isset(User::$profiles[User::$info['id']]['options']['cust_gender'])
-				&& User::$profiles[User::$info['id']]['options']['cust_gender'] === '{gender_2}' ? 'female' : 'male'
-		);
-	}
-
-	public function addDefaultValues(array $values): void
-	{
-		$addSettings = [];
-
-		foreach ($values as $key => $value) {
-			if (empty($value)) continue;
-
-			if (! isset(Config::$modSettings[$key])) {
-				$addSettings[$key] = $value;
-			}
-		}
-
-		Config::updateModSettings($addSettings);
 	}
 }

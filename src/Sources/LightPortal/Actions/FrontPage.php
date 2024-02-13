@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Actions;
 
-use Bugo\Compat\{Config, ErrorHandler, Lang, PageIndex, Sapi, Theme, Utils};
+use Bugo\Compat\{Config, ErrorHandler, Lang, PageIndex, Sapi, Theme, User, Utils};
 use Bugo\LightPortal\Articles\{ArticleInterface, BoardArticle, ChosenPageArticle};
 use Bugo\LightPortal\Articles\{ChosenTopicArticle, PageArticle, TopicArticle};
 use Bugo\LightPortal\Helper;
@@ -44,7 +44,7 @@ final class FrontPage implements ActionInterface
 	 */
 	public function show(): void
 	{
-		$this->middleware('light_portal_view');
+		User::mustHavePermission('light_portal_view');
 
 		$this->hook('frontModes', [&$this->modes]);
 

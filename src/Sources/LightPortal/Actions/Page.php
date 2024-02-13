@@ -32,7 +32,7 @@ final class Page implements PageInterface
 	 */
 	public function show(): void
 	{
-		$this->middleware('light_portal_view');
+		User::mustHavePermission('light_portal_view');
 
 		$alias = $this->request(LP_PAGE_PARAM);
 
