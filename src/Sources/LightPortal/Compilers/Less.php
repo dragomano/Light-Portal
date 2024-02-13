@@ -14,46 +14,31 @@
 
 namespace Bugo\LightPortal\Compilers;
 
-use Bugo\Compat\Config;
 use Bugo\Compat\ErrorHandler;
-use Bugo\Compat\Sapi;
 use Exception;
 use Less_Exception_Parser;
 use Less_Parser;
 
-class Less extends AbstractCompiler
+final class Less extends AbstractCompiler
 {
+	public const SOURCE_FILE = '/less/portal.less';
+
 	public function compile(): void
 	{
-		$cssFile  = $this->getCssDirPath() . '/portal.css';
-		$lessFile = $this->getCssDirPath() . '/less/portal.less';
-
-		if (! is_file($lessFile))
-			return;
-
-		if (is_file($cssFile) && filemtime($lessFile) < filemtime($cssFile))
+		if (! $this->isCompilationRequired())
 			return;
 
 		try {
 			$parser = new Less_Parser([
 				'compress'  => true,
-				'cache_dir' => empty(Config::$modSettings['cache_enable']) ? null : Sapi::getTempDir(),
+				'cache_dir' => $this->getTempDir(),
 			]);
 
-			$parser->parseFile($lessFile);
+			$parser->parseFile($this->sourceFile);
 
-			file_put_contents($cssFile, $parser->getCss());
+			file_put_contents($this->targetFile, $parser->getCss());
 		} catch (Less_Exception_Parser | Exception $e) {
 			ErrorHandler::log($e->getMessage(), 'critical');
-		}
-	}
-
-	public function cleanCache(): void
-	{
-		$file = $this->getCssDirPath() . '/less/portal.less';
-
-		if (is_file($file)) {
-			touch($file);
 		}
 	}
 }

@@ -34,15 +34,15 @@ trait Query
 
 		$search = trim(strtolower($search));
 
-		$all_icons = $this->getFaIcons();
+		$icons = $this->getFaIcons();
 		$template = '<i class="%1$s fa-fw" aria-hidden="true"></i>&nbsp;%1$s';
 
-		$this->hook('prepareIconList', [&$all_icons, &$template]);
+		$this->hook('prepareIconList', [&$icons, &$template]);
 
-		$all_icons = array_filter($all_icons, fn($item) => str_contains($item, $search));
+		$icons = array_filter($icons, fn($item) => str_contains($item, $search));
 
 		$results = [];
-		foreach ($all_icons as $icon) {
+		foreach ($icons as $icon) {
 			$results[] = [
 				'innerHTML' => sprintf($template, $icon),
 				'value'     => $icon

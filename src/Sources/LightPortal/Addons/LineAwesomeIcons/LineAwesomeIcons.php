@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 09.12.23
+ * @version 13.02.24
  */
 
 namespace Bugo\LightPortal\Addons\LineAwesomeIcons;
@@ -32,15 +32,15 @@ class LineAwesomeIcons extends Plugin
 		$styles[] = 'https://cdn.jsdelivr.net/npm/line-awesome@1/dist/line-awesome/css/line-awesome.min.css';
 	}
 
-	public function prepareIconList(array &$all_icons): void
+	public function prepareIconList(array &$icons): void
 	{
-		if (($icons = $this->cache()->get('all_la_icons', 30 * 24 * 60 * 60)) === null) {
-			$icons = $this->getIconList();
+		if (($LaIcons = $this->cache()->get('all_la_icons', 30 * 24 * 60 * 60)) === null) {
+			$LaIcons = $this->getIconList();
 
-			$this->cache()->put('all_la_icons', $icons, 30 * 24 * 60 * 60);
+			$this->cache()->put('all_la_icons', $LaIcons, 30 * 24 * 60 * 60);
 		}
 
-		$all_icons = array_merge($all_icons, $icons);
+		$icons = array_merge($icons, $LaIcons);
 	}
 
 	public function credits(array &$links): void

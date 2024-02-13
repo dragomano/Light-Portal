@@ -91,7 +91,8 @@ final class ExtraConfig extends AbstractConfig
 					'custom'    => Lang::$txt['lp_fa_custom'],
 					'kit'       => Lang::$txt['lp_fa_kit']
 				],
-				'onchange' => 'document.getElementById(\'lp_fa_custom\').disabled = this.value !== \'custom\';document.getElementById(\'lp_fa_kit\').disabled = this.value !== \'kit\';'
+				'onchange' => 'document.getElementById(\'lp_fa_custom\').disabled = this.value !== \'custom\';
+					document.getElementById(\'lp_fa_kit\').disabled = this.value !== \'kit\';'
 			],
 			[
 				'text',

@@ -71,8 +71,14 @@ class BlockValidator extends AbstractValidator
 		if (empty($data['areas']))
 			$errors[] = 'no_areas';
 
-		if ($data['areas'] && empty($this->filterVar($data['areas'], ['options' => ['regexp' => '/' . LP_AREAS_PATTERN . '/']])))
+		if (
+			$data['areas']
+			&& empty($this->filterVar($data['areas'], [
+				'options' => ['regexp' => '/' . LP_AREAS_PATTERN . '/']
+			]))
+		) {
 			$errors[] = 'no_valid_areas';
+		}
 
 		$this->hook('findBlockErrors', [&$errors, $data]);
 

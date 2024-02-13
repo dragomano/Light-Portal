@@ -72,14 +72,24 @@ class PageValidator extends AbstractValidator
 	{
 		$errors = [];
 
-		if ((Config::$modSettings['userLanguage'] && empty($data['title_' . Config::$language])) || empty($data['title_' . Utils::$context['user']['language']]))
+		if (
+			(Config::$modSettings['userLanguage'] && empty($data['title_' . Config::$language]))
+			|| empty($data['title_' . Utils::$context['user']['language']])
+		) {
 			$errors[] = 'no_title';
+		}
 
 		if (empty($data['alias']))
 			$errors[] = 'no_alias';
 
-		if ($data['alias'] && empty($this->filterVar($data['alias'], ['options' => ['regexp' => '/' . LP_ALIAS_PATTERN . '/']])))
+		if (
+			$data['alias']
+			&& empty($this->filterVar($data['alias'], [
+				'options' => ['regexp' => '/' . LP_ALIAS_PATTERN . '/']
+			]))
+		) {
 			$errors[] = 'no_valid_alias';
+		}
 
 		if ($data['alias'] && ! $this->isUnique($data))
 			$errors[] = 'no_unique_alias';

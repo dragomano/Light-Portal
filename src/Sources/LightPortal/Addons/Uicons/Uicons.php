@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 13.02.24
  */
 
 namespace Bugo\LightPortal\Addons\Uicons;
@@ -46,23 +46,23 @@ class Uicons extends Plugin
 		$config_vars['uicons'][] = ['select', 'corner', array_combine(['r', 's'], Lang::$txt['lp_uicons']['corner_set'])];
 	}
 
-	public function prepareIconList(array &$all_icons): void
+	public function prepareIconList(array &$icons): void
 	{
-		if (($icons = $this->cache()->get('all_uicons', 30 * 24 * 60 * 60)) === null) {
+		if (($uIcons = $this->cache()->get('all_uicons', 30 * 24 * 60 * 60)) === null) {
 			$weight = empty(Utils::$context['lp_uicons_plugin']['weight']) ? 'r' : Utils::$context['lp_uicons_plugin']['weight'];
 			$corner = empty(Utils::$context['lp_uicons_plugin']['corner']) ? 'r' : Utils::$context['lp_uicons_plugin']['corner'];
 
 			$list = $this->getIconList();
 
-			$icons = [];
+			$uIcons = [];
 			foreach ($list as $icon) {
-				$icons[] = $this->prefix . $weight . $corner . '-' . $icon;
+				$uIcons[] = $this->prefix . $weight . $corner . '-' . $icon;
 			}
 
-			$this->cache()->put('all_uicons', $icons, 30 * 24 * 60 * 60);
+			$this->cache()->put('all_uicons', $uIcons, 30 * 24 * 60 * 60);
 		}
 
-		$all_icons = array_merge($all_icons, $icons);
+		$icons = array_merge($icons, $uIcons);
 	}
 
 	public function credits(array &$links): void

@@ -14,48 +14,33 @@
 
 namespace Bugo\LightPortal\Compilers;
 
-use Bugo\Compat\Config;
 use Bugo\Compat\ErrorHandler;
-use Bugo\Compat\Sapi;
 use Exception;
 use ScssPhp\ScssPhp\Compiler;
 use ScssPhp\ScssPhp\Exception\SassException;
 use ScssPhp\ScssPhp\OutputStyle;
 
-class Sass extends AbstractCompiler
+final class Sass extends AbstractCompiler
 {
+	public const SOURCE_FILE = '/sass/portal.scss';
+
 	public function compile(): void
 	{
-		$cssFile  = $this->getCssDirPath() . '/portal.css';
-		$scssFile = $this->getCssDirPath() . '/sass/portal.scss';
-
-		if (! is_file($scssFile))
-			return;
-
-		if (is_file($cssFile) && filemtime($scssFile) < filemtime($cssFile))
+		if (! $this->isCompilationRequired())
 			return;
 
 		try {
 			$compiler = new Compiler([
-				'cacheDir' => empty(Config::$modSettings['cache_enable']) ? null : Sapi::getTempDir(),
+				'cacheDir' => $this->getTempDir(),
 			]);
 
 			$compiler->setOutputStyle(OutputStyle::COMPRESSED);
 
-			$result = $compiler->compileFile($scssFile);
+			$result = $compiler->compileFile($this->sourceFile);
 
-			file_put_contents($cssFile, $result->getCss());
+			file_put_contents($this->targetFile, $result->getCss());
 		} catch (SassException | Exception $e) {
 			ErrorHandler::log($e->getMessage(), 'critical');
-		}
-	}
-
-	public function cleanCache(): void
-	{
-		$file = $this->getCssDirPath() . '/sass/portal.scss';
-
-		if (is_file($file)) {
-			touch($file);
 		}
 	}
 }

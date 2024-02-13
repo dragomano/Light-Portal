@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 13.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TopPosters;
@@ -92,7 +92,7 @@ class TopPosters extends Block
 					'id'     => $row['id_member'],
 					'name'   => $row['real_name'],
 					'posts'  => $row['posts'],
-					'link'   => $this->allowedTo('profile_view')
+					'link'   => User::hasPermission('profile_view')
 						? '<a href="' . Config::$scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>'
 						: $row['real_name'],
 				]

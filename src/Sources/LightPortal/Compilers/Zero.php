@@ -14,13 +14,9 @@
 
 namespace Bugo\LightPortal\Compilers;
 
-class Zero extends AbstractCompiler
+final class Zero extends AbstractCompiler
 {
 	public function compile(): void
-	{
-	}
-
-	public function cleanCache(): void
 	{
 	}
 }

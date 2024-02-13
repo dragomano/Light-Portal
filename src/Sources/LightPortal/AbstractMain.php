@@ -50,10 +50,10 @@ abstract class AbstractMain
 
 	protected function defineVars(): void
 	{
-		Utils::$context['allow_light_portal_view']             = $this->allowedTo('light_portal_view');
-		Utils::$context['allow_light_portal_manage_pages_own'] = $this->allowedTo('light_portal_manage_pages_own');
-		Utils::$context['allow_light_portal_manage_pages_any'] = $this->allowedTo('light_portal_manage_pages_any');
-		Utils::$context['allow_light_portal_approve_pages']    = $this->allowedTo('light_portal_approve_pages');
+		Utils::$context['allow_light_portal_view']             = User::hasPermission('light_portal_view');
+		Utils::$context['allow_light_portal_manage_pages_own'] = User::hasPermission('light_portal_manage_pages_own');
+		Utils::$context['allow_light_portal_manage_pages_any'] = User::hasPermission('light_portal_manage_pages_any');
+		Utils::$context['allow_light_portal_approve_pages']    = User::hasPermission('light_portal_approve_pages');
 
 		$this->calculateNumberOfEntities();
 

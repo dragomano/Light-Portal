@@ -14,6 +14,7 @@
 
 namespace Bugo\LightPortal\Areas\Configs;
 
+use Bugo\Compat\Config;
 use Bugo\LightPortal\Helper;
 
 if (! defined('SMF'))
@@ -24,4 +25,19 @@ abstract class AbstractConfig
 	use Helper;
 
 	abstract public function show(): void;
+
+	protected function addDefaultValues(array $values): void
+	{
+		$addSettings = [];
+
+		foreach ($values as $key => $value) {
+			if (empty($value)) continue;
+
+			if (! isset(Config::$modSettings[$key])) {
+				$addSettings[$key] = $value;
+			}
+		}
+
+		Config::updateModSettings($addSettings);
+	}
 }
