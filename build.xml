@@ -31,6 +31,7 @@
         <include name="Themes/**" />
         <exclude name="Themes/default/LightPortal/components/**" />
         <exclude name="Themes/default/css/light_portal/less/**" />
+        <exclude name="Themes/default/css/light_portal/sass/**" />
         <exclude name="Themes/default/css/light_portal/plugins.css" />
         <exclude name="Themes/default/scripts/light_portal/dev/**" />
         <exclude name="Themes/default/scripts/light_portal/app*" />

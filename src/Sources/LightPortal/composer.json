@@ -7,12 +7,13 @@
     "ext-zip": "*",
     "bugo/smf-compat": "^0.1.4",
     "laminas/laminas-loader": "^2.9",
-    "latte/latte": "^3.0",
-    "wikimedia/less.php": "^4.1"
+    "latte/latte": "^3.0"
   },
   "require-dev": {
     "mockery/mockery": "^1.5",
-    "nette/tester": "^2.5"
+    "nette/tester": "^2.5",
+    "scssphp/scssphp": "^1.12",
+    "wikimedia/less.php": "^4.1"
   },
   "autoload-dev": {
     "psr-4": {

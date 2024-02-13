@@ -1,0 +1,25 @@
+.lp_categories {
+	input {
+		width: 100%;
+	}
+	textarea {
+		width: 100%;
+		resize: none;
+		margin-top: 1px;
+	}
+	dt {
+		td.handle {
+			font-size: 1.2rem;
+		}
+		span.floatright {
+			@include pointer;
+			font-size: 1.4rem;
+			font-weight: bold;
+		}
+	}
+	dd {
+		.roundframe {
+			margin-top: 0;
+		}
+	}
+}
