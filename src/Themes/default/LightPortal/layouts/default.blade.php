@@ -36,7 +36,7 @@
 					<span class="card_date smalltext">
 						@if (!empty($article['section']['name']))
 							<a class="floatleft" href="{{ $article['section']['link'] }}">
-								@icon(['category']){{ $article['section']['name'] }}
+								@icon('category'){{ $article['section']['name'] }}
 							</a>
 						@endif
 
@@ -48,7 +48,7 @@
 
 						@if (!empty($article['datetime']))
 							<time class="floatright" datetime="{{ $article['datetime'] }}">
-								@icon(['date']){{ $article['date'] }}
+								@icon('date'){{ $article['date'] }}
 							</time>
 						@endif
 					</span>
@@ -64,14 +64,14 @@
 					<div>
 						@if (!empty($article['category']))
 							<span class="card_author">
-								@icon(['category']){{ $article['category'] }}
+								@icon('category'){{ $article['category'] }}
 							</span>
 						@endif
 
 						@if (!empty($modSettings['lp_show_author']) && !empty($article['author']))
 							@if (!empty($article['author']['id']) && !empty($article['author']['name']))
 								<a href="{{ $article['author']['link'] }}" class="card_author">
-									@icon(['user']){{ $article['author']['name'] }}
+									@icon('user'){{ $article['author']['name'] }}
 								</a>
 							@else
 								<span class="card_author">{{ $txt['guest_title'] }}</span>
@@ -90,7 +90,7 @@
 								@endif
 
 								@if (!empty($article['is_redirect']))
-									@icon(['redirect'])
+									@icon('redirect')
 								@endif
 
 								@if (!empty($article['replies']['num']))

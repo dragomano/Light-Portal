@@ -222,8 +222,12 @@ final class FrontPage implements ActionInterface
 				empty(Config::$modSettings['cache_enable']) ? null : Sapi::getTempDir()
 			);
 
-			$blade->directiveRT('icon', function ($expression) {
-				[$name, $title] = count($expression) > 1 ? $expression : [$expression[0], false];
+			$blade->directiveRT('icon', function (array|string $expression) {
+				if (is_array($expression)) {
+					[$name, $title] = count($expression) > 1 ? $expression : [$expression[0], false];
+				} else {
+					$name = $expression;
+				}
 
 				$icon = Icon::get($name);
 

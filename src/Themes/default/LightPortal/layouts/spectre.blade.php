@@ -29,7 +29,7 @@
 						@endif
 
 						@if (!empty($article['is_redirect']))
-							@icon(['redirect'])
+							@icon('redirect')
 						@endif
 
 						@if (!empty($article['replies']['num']))

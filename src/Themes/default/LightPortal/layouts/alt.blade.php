@@ -43,7 +43,7 @@
 
 						@if (!empty($article['section']['name']))
 						<a class="floatright" href="{{ $article['section']['link'] }}">
-							@icon(['category']) {{ $article['section']['name'] }}
+							@icon('category') {{ $article['section']['name'] }}
 						</a>
 						@endif
 					</div>
@@ -71,13 +71,13 @@
 
 						@if (!empty($article['datetime']))
 						<time datetime="{$article['datetime']}">
-							@icon(['date']) {!! $article['date'] !!}
+							@icon('date') {!! $article['date'] !!}
 						</time>
 						@endif
 
 						@if (!empty($modSettings['lp_show_author']) && !empty($article['author']))
 							@if (!empty($article['author']['id']) && !empty($article['author']['name']))
-								| @icon(['user'])
+								| @icon('user')
 								<a href="{{ $article['author']['link'] }}" class="card_author">
 									{{ $article['author']['name'] }}
 								</a>

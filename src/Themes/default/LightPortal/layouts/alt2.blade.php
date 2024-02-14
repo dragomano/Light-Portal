@@ -20,7 +20,7 @@
 
 						@if (!empty($article['datetime']))
 						<time datetime="{$article['datetime']}">
-							@icon(['date']) {!! $article['date'] !!}
+							@icon('date') {!! $article['date'] !!}
 						</time>
 						@endif
 

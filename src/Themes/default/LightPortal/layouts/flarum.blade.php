@@ -16,7 +16,7 @@
 					<div class="row">
 						<div class="header_img col-xs-2">
 							@empty ($article['image'])
-							<span>@icon(['big_image'])</span>
+							<span>@icon('big_image')</span>
 							@endempty
 
 							@if (!empty($article['image']))
@@ -57,7 +57,7 @@
 
 							<div class="smalltext">
 								@if (!empty($article['replies']['num']))
-								<span>@icon(['reply'])</span>
+								<span>@icon('reply')</span>
 								@endif
 
 								@if (!empty($modSettings['lp_show_author']) && !empty($article['author']))
