@@ -247,12 +247,12 @@ final class CreditArea
 				]
 			],
 			[
-				'title' => 'Latte',
-				'link' => 'https://latte.nette.org',
-				'author' => 'David Grudl',
+				'title' => 'BladeOne Blade Template Engine',
+				'link' => 'https://github.com/EFTEC/BladeOne',
+				'author' => 'Jorge Patricio Castro Castillo',
 				'license' => [
-					'name' => 'the New BSD License',
-					'link' => 'https://github.com/nette/latte/blob/master/license.md'
+					'name' => 'The MIT License',
+					'link' => 'https://github.com/EFTEC/BladeOne/blob/master/LICENSE'
 				]
 			],
 			[

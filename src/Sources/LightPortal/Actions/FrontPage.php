@@ -19,17 +19,15 @@ use Bugo\LightPortal\Articles\{ArticleInterface, BoardArticle, ChosenPageArticle
 use Bugo\LightPortal\Articles\{ChosenTopicArticle, PageArticle, TopicArticle};
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Utils\{DateTime, Icon};
+use eftec\bladeone\BladeOne;
 use Exception;
 use IntlException;
-use Latte\Engine;
-use Latte\Essential\RawPhpExtension;
-use Latte\Loaders\FileLoader;
-use Latte\Runtime\Html;
-use Latte\RuntimeException;
 
 final class FrontPage implements ActionInterface
 {
 	use Helper;
+	
+	public const DEFAULT_TEMPLATE = 'default.blade.php';
 
 	private array $modes = [
 		'all_pages'     => PageArticle::class,
@@ -150,7 +148,7 @@ final class FrontPage implements ActionInterface
 
 		if ($this->session()->isEmpty('lp_frontpage_layout')) {
 			Utils::$context['lp_current_layout'] = $this->request(
-				'layout', Config::$modSettings['lp_frontpage_layout'] ?? 'default.latte'
+				'layout', Config::$modSettings['lp_frontpage_layout'] ?? self::DEFAULT_TEMPLATE
 			);
 		} else {
 			Utils::$context['lp_current_layout'] = $this->request(
@@ -167,9 +165,9 @@ final class FrontPage implements ActionInterface
 	{
 		Theme::loadTemplate('LightPortal/ViewFrontPage');
 
-		$layouts = glob(Theme::$current->settings['default_theme_dir'] . '/LightPortal/layouts/*.latte');
+		$layouts = glob(Theme::$current->settings['default_theme_dir'] . '/LightPortal/layouts/*.blade.php');
 
-		$extensions = ['.latte'];
+		$extensions = ['.blade.php'];
 
 		// Mod authors can add custom extensions for layouts
 		$this->hook('customLayoutExtensions', [&$extensions]);
@@ -188,16 +186,16 @@ final class FrontPage implements ActionInterface
 
 			$shortName = ucfirst(strstr($title, '.', true) ?: $title);
 
-			$titles[] = $title === 'default.latte'
+			$titles[] = $title === self::DEFAULT_TEMPLATE
 				? Lang::$txt['lp_default']
 				: str_replace('_', ' ', $shortName);
 		}
 
 		$layouts = array_combine($values, $titles);
-		$default = $layouts['default.latte'];
-		unset($layouts['default.latte']);
+		$default = $layouts[self::DEFAULT_TEMPLATE];
+		unset($layouts[self::DEFAULT_TEMPLATE]);
 
-		return array_merge(['default.latte' => $default], $layouts);
+		return array_merge([self::DEFAULT_TEMPLATE => $default], $layouts);
 	}
 
 	public function view(string $layout): void
@@ -205,49 +203,43 @@ final class FrontPage implements ActionInterface
 		if (empty($layout))
 			return;
 
-		$latte = new Engine;
-		$latte->setTempDirectory(empty(Config::$modSettings['cache_enable']) ? null : Sapi::getTempDir());
-		$latte->setLoader(new FileLoader(
-			Theme::$current->settings['default_theme_dir'] . '/LightPortal/layouts/'
-		));
-
-		$latte->addExtension(new RawPhpExtension);
-
-		$latte->addFunction('teaser', function (string $text, int $length = 150) use ($latte): string {
-			$text = $latte->invokeFilter('stripHtml', [$text]);
-
-			return $latte->invokeFilter('truncate', [$text, $length]);
-		});
-
-		$latte->addFunction('icon', function (string $name, string $title = '') use ($latte): Html {
-			$icon = Icon::get($name);
-
-			if (empty($title)) {
-				return new Html($icon);
-			}
-
-			return new Html(str_replace(' class=', ' title="' . $title . '" class=', $icon));
-		});
-
 		$params = [
 			'txt'         => Lang::$txt,
 			'context'     => Utils::$context,
 			'modSettings' => Config::$modSettings,
 		];
 
+		$templates = [
+			Theme::$current->settings['default_theme_dir'] . '/LightPortal/layouts',
+			Theme::$current->settings['default_theme_dir'] . '/portal_layouts'
+		];
+
 		ob_start();
 
 		try {
-			$latte->render($layout, $params);
-		} catch (RuntimeException $e) {
-			if (is_file(Theme::$current->settings['default_theme_dir'] . '/portal_layouts/' . $layout)) {
-				$latte->setLoader(new FileLoader(
-					Theme::$current->settings['default_theme_dir'] . '/portal_layouts/'
-				));
-				$latte->render($layout, $params);
-			} else {
-				ErrorHandler::fatal($e->getMessage());
-			}
+			$blade = new BladeOne(
+				$templates,
+				empty(Config::$modSettings['cache_enable']) ? null : Sapi::getTempDir()
+			);
+
+			$blade->directiveRT('icon', function ($expression) {
+				[$name, $title] = count($expression) > 1 ? $expression : [$expression[0], false];
+
+				$icon = Icon::get($name);
+
+				if (empty($title)) {
+					echo $icon;
+					return;
+				}
+
+				echo str_replace(' class=', ' title="' . $title . '" class=', $icon);
+			});
+
+			$layout = strstr(
+				Config::$modSettings['lp_frontpage_layout'], '.', true
+			) ?: Config::$modSettings['lp_frontpage_layout'];
+
+			echo $blade->run($layout, $params);
 		} catch (Exception $e) {
 			ErrorHandler::fatal($e->getMessage());
 		}

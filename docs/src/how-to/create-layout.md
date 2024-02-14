@@ -6,54 +6,48 @@ description: Instructions for creating your own portal layouts
 
 :::info
 
-Since version 2.2.0 we use [Latte](https://latte.nette.org/syntax) to render frontpage layouts.
+Since version 2.6 we use [BladeOne](https://github.com/EFTEC/BladeOne) to render frontpage layouts.
 
 :::
 
 In addition to existing layouts, you can always add your own.
 
-To do this, create a file `custom.latte` in the `/Themes/default/portal_layouts` directory:
+To do this, create a file `custom.blade.php` in the `/Themes/default/portal_layouts` directory:
 
 ```php:line-numbers {9}
-{varType array $txt}
-{varType array $context}
-{varType array $modSettings}
-
-{if empty($context[lp_active_blocks])}
+@empty ($context['lp_active_blocks'])
 <div class="col-xs">
-{/if}
+@endempty
+	<!-- <div> @dump($context['user']) </div> -->
 
-    <div class="lp_frontpage_articles article_custom">
-        {do show_pagination()}
+	<div class="lp_frontpage_articles article_custom">
+		{{ show_pagination() }}
 
-            <div
-                n:foreach="$context[lp_frontpage_articles] as $article"
-                class="col-xs-12 col-sm-6 col-md-4 col-lg-{$context[lp_frontpage_num_columns]}"
-            >
-                <div n:if="!empty($article[image])">
-                    <img src="{$article[image]}" alt="{$article[title]}">
-                </div>
-                <h3>
-                    <a href="{$article[msg_link]}">{$article[title]}</a>
-                </h3>
-                <p n:if="!empty($article[teaser])">
-                    {teaser($article[teaser])}
-                </p>
-            </div>
+		@foreach ($context['lp_frontpage_articles'] as $article)
+		<div class="
+			col-xs-12 col-sm-6 col-md-4
+			col-lg-{{ $context['lp_frontpage_num_columns'] }}
+			col-xl-{{ $context['lp_frontpage_num_columns'] }}
+		">
+			<figure class="noticebox">
+				{!! parse_bbc('[code]' . print_r($article, true) . '[/code]') !!}
+			</figure>
+		</div>
+		@endforeach
 
-        {do show_pagination(bottom)}
-    </div>
+		{{ show_pagination('bottom') }}
+	</div>
 
-{if empty($context[lp_active_blocks])}
+@empty ($context['lp_active_blocks'])
 </div>
-{/if}
+@endempty
 ```
 
 After that you will see a new frontpage layout - `Custom` - on the portal settings:
 
 ![Select custom template](set_custom_template.png)
 
-You can create as many such layouts as you want. Use `debug.latte` and other layouts in `/Themes/default/LightPortal/layouts` directory as examples.
+You can create as many such layouts as you want. Use `debug.blade.php` and other layouts in `/Themes/default/LightPortal/layouts` directory as examples.
 
 To customize stylesheets, create a file `portal_custom.css` in the `/Themes/default/css` directory:
 
