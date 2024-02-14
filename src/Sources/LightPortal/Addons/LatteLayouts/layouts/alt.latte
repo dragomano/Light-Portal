@@ -41,7 +41,7 @@
 							{icon('category')}{$article[section][name]}
 						</a>
 					</div>
-					<img n:if="!empty($article[image])" class="lazy" data-src="{$article[image]}" width="443" height="221" alt="{$article[title]}">
+					<img n:if="!empty($article[image])" class="lazy" data-src="{$article[image]}" alt="{$article[title]}">
 				</header>
 				<div n:if="!empty($article[teaser])" class="article_body">
 					<p>{teaser($article[teaser])}</p>

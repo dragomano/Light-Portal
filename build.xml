@@ -38,7 +38,6 @@
         <exclude name="Themes/default/scripts/light_portal/plugins.js" />
         <include name="Sources/**" />
         <exclude name="Sources/LightPortal/Addons/ApexCharts/**" />
-        <exclude name="Sources/LightPortal/Addons/BladeLayouts/**" />
         <exclude name="Sources/LightPortal/Addons/BootstrapIcons/**" />
         <exclude name="Sources/LightPortal/Addons/DiceBear/**" />
         <exclude name="Sources/LightPortal/Addons/Disqus/**" />
@@ -51,6 +50,7 @@
         <exclude name="Sources/LightPortal/Addons/ImageUpload/**" />
         <exclude name="Sources/LightPortal/Addons/IndexNow/**" />
         <exclude name="Sources/LightPortal/Addons/Jodit/**" />
+        <exclude name="Sources/LightPortal/Addons/LatteLayouts/**" />
         <exclude name="Sources/LightPortal/Addons/LineAwesomeIcons/**" />
         <exclude name="Sources/LightPortal/Addons/Markdown/**" />
         <exclude name="Sources/LightPortal/Addons/MaterialDesignIcons/**" />

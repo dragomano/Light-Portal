@@ -1,6 +1,6 @@
-@if (empty($context['lp_active_blocks']))
+@empty ($context['lp_active_blocks'])
 <div class="col-xs">
-@endif
+@endempty
 
 	<div class="lp_frontpage_articles article_view">
 		{{ show_pagination() }}
@@ -8,6 +8,7 @@
 		@foreach ($context['lp_frontpage_articles'] as $article)
 		<div class="col-xs-12 col-sm-6 col-md-{{ $context['lp_frontpage_num_columns'] }}">
 			<article class="roundframe{{ $article['css_class'] ?? '' }}">
+
 				@if (!empty($article['image']))
 					@if ($article['is_new'])
 						<div class="new_hover">
@@ -16,6 +17,7 @@
 							</div>
 						</div>
 					@endif
+
 					@if ($article['can_edit'])
 						<div class="info_hover">
 							<div class="edit_icon">
@@ -23,67 +25,79 @@
 							</div>
 						</div>
 					@endif
+
 					<div class="card_img"></div>
 					<a href="{{ $article['link'] }}">
 						<div class="card_img_hover lazy" data-bg="{{ $article['image'] }}"></div>
 					</a>
 				@endif
+
 				<div class="card_info">
 					<span class="card_date smalltext">
 						@if (!empty($article['section']['name']))
 							<a class="floatleft" href="{{ $article['section']['link'] }}">
-								@icon(['category']){{ $article['section']['name'] }}
+								@icon('category'){{ $article['section']['name'] }}
 							</a>
 						@endif
-						&nbsp;
+
 						@if ($article['is_new'] && empty($article['image']))
 							<span class="new_posts">
 								{{ $txt['new'] }}
 							</span>
 						@endif
+
 						@if (!empty($article['datetime']))
 							<time class="floatright" datetime="{{ $article['datetime'] }}">
-								@icon(['date']){{ $article['date'] }}
+								@icon('date'){{ $article['date'] }}
 							</time>
 						@endif
 					</span>
+
 					<h3>
 						<a href="{{ $article['msg_link'] }}">{{ $article['title'] }}</a>
 					</h3>
+
 					@if (!empty($article['teaser']))
 						<p>{{ $article['teaser'] }}</p>
 					@endif
+
 					<div>
 						@if (!empty($article['category']))
 							<span class="card_author">
-								@icon(['category']){{ $article['category'] }}
+								@icon('category'){{ $article['category'] }}
 							</span>
 						@endif
+
 						@if (!empty($modSettings['lp_show_author']) && !empty($article['author']))
 							@if (!empty($article['author']['id']) && !empty($article['author']['name']))
 								<a href="{{ $article['author']['link'] }}" class="card_author">
-									@icon(['user']){{ $article['author']['name'] }}
+									@icon('user'){{ $article['author']['name'] }}
 								</a>
 							@else
 								<span class="card_author">{{ $txt['guest_title'] }}</span>
 							@endif
 						@endif
+
 						@if (!empty($modSettings['lp_show_views_and_comments']))
 							<span class="floatright">
 								@if (!empty($article['views']['num']))
 									@icon(['views', $article['views']['title']])
 									{{ $article['views']['num'] }}
 								@endif
+
 								@if (!empty($article['views']['after']))
 									{!! $article['views']['after'] !!}
 								@endif
+
 								@if (!empty($article['is_redirect']))
-									@icon(['redirect'])
+									@icon('redirect')
 								@endif
+
 								@if (!empty($article['replies']['num']))
 									@icon(['replies', $article['replies']['title']])
 									{{ $article['replies']['num'] }}
 								@endif
+
 								@if (!empty($article['replies']['after']))
 									{!! $article['replies']['after'] !!}
 								@endif
@@ -98,6 +112,6 @@
 		{{ show_pagination('bottom') }}
 	</div>
 
-@if (empty($context['lp_active_blocks']))
+@empty ($context['lp_active_blocks'])
 </div>
-@endif
+@endempty

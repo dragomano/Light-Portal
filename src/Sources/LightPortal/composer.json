@@ -6,8 +6,8 @@
     "ext-simplexml": "*",
     "ext-zip": "*",
     "bugo/smf-compat": "^0.1.4",
-    "laminas/laminas-loader": "^2.9",
-    "latte/latte": "^3.0"
+    "eftec/bladeone": "^4.11",
+    "laminas/laminas-loader": "^2.9"
   },
   "require-dev": {
     "mockery/mockery": "^1.5",
