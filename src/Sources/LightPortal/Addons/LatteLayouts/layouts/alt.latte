@@ -1,0 +1,77 @@
+{varType array $txt}
+{var $no_blocks = empty($context['lp_active_blocks'])}
+{var $articles = $context['lp_frontpage_articles']}
+{var $num_columns = $context['lp_frontpage_num_columns']}
+{var $show_author = !empty($modSettings['lp_show_author'])}
+{var $show_icons = !empty($modSettings['lp_show_views_and_comments'])}
+
+{if $no_blocks}
+<div class="col-xs">
+{/if}
+
+	<div class="lp_frontpage_articles article_alt_view">
+		{do show_pagination()}
+
+		<div n:foreach="$articles as $article" class="col-xs-12 col-sm-6 col-md-{$num_columns}">
+			<article class="roundframe">
+				<header>
+					<div class="title_bar">
+						<h3>
+							<a href="{$article[msg_link]}">{$article[title]}</a>
+							<span n:if="$article[is_new]" class="new_posts">{$txt['new']}</span>
+						</h3>
+					</div>
+					<div>
+						<span n:if="$show_icons" class="floatleft">
+							{if !empty($article[views][num])}
+								{icon('views', $article['views']['title'])}{$article[views][num]}
+							{/if}
+							{if !empty($article[views][after])}
+								{$article[views][after]|noescape}
+							{/if}
+							{if !empty($article[replies][num])}
+								{icon('replies', $article['replies']['title'])}
+								{$article[replies][num]}
+							{/if}
+							{if !empty($article[replies][after])}
+								{$article[replies][after]|noescape}
+							{/if}
+						</span>
+						<a n:if="!empty($article[section][name])" class="floatright" href="{$article[section][link]}">
+							{icon('category')}{$article[section][name]}
+						</a>
+					</div>
+					<img n:if="!empty($article[image])" class="lazy" data-src="{$article[image]}" alt="{$article[title]}">
+				</header>
+				<div n:if="!empty($article[teaser])" class="article_body">
+					<p>{teaser($article[teaser])}</p>
+				</div>
+				<div class="article_footer">
+					<div class="centertext">
+						<a class="bbc_link" href="{$article[link]}">{$txt[lp_read_more]}</a>
+					</div>
+					<div class="centertext">
+						<time n:if="!empty($article[datetime])" datetime="{$article[datetime]}">
+							{icon('date')}{$article[date]|noescape}
+						</time>
+						{if $show_author && !empty($article[author])}
+							{if !empty($article[author][id]) && !empty($article[author][name])}
+								| {icon('user')}
+								<a href="{$article[author][link]}" class="card_author">
+									{$article[author][name]}
+								</a>
+							{else}
+								| <span class="card_author">{$txt[guest_title]}</span>
+							{/if}
+						{/if}
+					</div>
+				</div>
+			</article>
+		</div>
+
+		{do show_pagination(bottom)}
+	</div>
+
+{if $no_blocks}
+</div>
+{/if}
