@@ -6,7 +6,6 @@
     "build": "vite build --config=configs/vite.config.js",
     "build:comments": "vite build --config=configs/vite.comments.js",
     "build:plugins": "vite build --config=configs/vite.plugins.js",
-    "build:less": "vite build --config=configs/vite.less.js",
     "build:sass": "vite build --config=configs/vite.sass.js",
     "preview": "vite preview",
     "preinstall": "npx only-allow pnpm"
@@ -21,7 +20,6 @@
     "alpinejs": "^3.13.5",
     "alpinejs-slug": "^1.1.2",
     "axios": "^1.6.7",
-    "less": "^4.2.0",
     "pinia": "^2.1.7",
     "sass": "^1.70.0",
     "sortablejs": "^1.15.2",
