@@ -125,31 +125,31 @@ final class PluginArea
 
 		User::$me->checkSession();
 
-		$plugin_name = $this->request('plugin_name');
-		$plugin_options = [];
+		$name = $this->request('plugin_name');
+		$settings = [];
 
-		foreach ($config_vars[$plugin_name] as $var) {
+		foreach ($config_vars[$name] as $var) {
 			if ($this->request()->has($var[1])) {
 				if ($var[0] === 'check') {
-					$plugin_options[$var[1]] = $this->filterVar($this->request($var[1]), 'bool');
+					$settings[$var[1]] = $this->filterVar($this->request($var[1]), 'bool');
 				} elseif ($var[0] === 'int') {
-					$plugin_options[$var[1]] = $this->filterVar($this->request($var[1]), 'int');
+					$settings[$var[1]] = $this->filterVar($this->request($var[1]), 'int');
 				} elseif ($var[0] === 'float') {
-					$plugin_options[$var[1]] = $this->filterVar($this->request($var[1]), 'float');
+					$settings[$var[1]] = $this->filterVar($this->request($var[1]), 'float');
 				} elseif ($var[0] === 'url') {
-					$plugin_options[$var[1]] = $this->filterVar($this->request($var[1]), 'url');
+					$settings[$var[1]] = $this->filterVar($this->request($var[1]), 'url');
 				} elseif ($var[0] === 'multiselect') {
-					$plugin_options[$var[1]] = ltrim(implode(',', $this->request($var[1])), ',');
+					$settings[$var[1]] = ltrim(implode(',', $this->request($var[1])), ',');
 				} else {
-					$plugin_options[$var[1]] = $this->request($var[1]);
+					$settings[$var[1]] = $this->request($var[1]);
 				}
 			}
 		}
 
 		// You can do additional actions after settings saving
-		$this->hook('saveSettings', [&$plugin_options], Utils::$context['lp_plugins']);
+		$this->hook('saveSettings', [&$settings], Utils::$context['lp_plugins']);
 
-		$this->repository->changeSettings($plugin_name, $plugin_options);
+		$this->repository->changeSettings($name, $settings);
 
 		exit(json_encode(['success' => true]));
 	}

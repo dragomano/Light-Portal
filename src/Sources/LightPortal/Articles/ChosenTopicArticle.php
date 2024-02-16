@@ -29,7 +29,8 @@ final class ChosenTopicArticle extends TopicArticle
 
 		$this->selectedBoards = [];
 
-		$this->selectedTopics = empty(Config::$modSettings['lp_frontpage_topics']) ? [] : explode(',', Config::$modSettings['lp_frontpage_topics']);
+		$this->selectedTopics = empty(Config::$modSettings['lp_frontpage_topics'])
+			? [] : explode(',', Config::$modSettings['lp_frontpage_topics']);
 
 		$this->wheres[] = 'AND t.id_topic IN ({array_int:selected_topics})';
 

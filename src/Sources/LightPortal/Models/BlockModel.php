@@ -54,7 +54,9 @@ class BlockModel extends AbstractModel
 	{
 		$this->id = $postData['block_id'] ?? $currentBlock['id'] ?? 0;
 
-		$this->icon = empty($postData['block_id']) ? ($postData['icon'] ?? $currentBlock['icon'] ?? '') : ($postData['icon'] ?? '');
+		$this->icon = empty($postData['block_id'])
+			? ($postData['icon'] ?? $currentBlock['icon'] ?? '')
+			: ($postData['icon'] ?? '');
 
 		$this->type = $postData['type'] ?? $currentBlock['type'] ?? '';
 
@@ -66,15 +68,19 @@ class BlockModel extends AbstractModel
 
 		$this->priority = $postData['priority'] ?? $currentBlock['priority'] ?? 0;
 
-		$this->permissions = $postData['permissions'] ?? $currentBlock['permissions'] ?? (int) (Config::$modSettings['lp_permissions_default'] ?? 2);
+		$this->permissions = $postData['permissions']
+			?? $currentBlock['permissions']
+			?? (int) (Config::$modSettings['lp_permissions_default'] ?? 2);
 
 		$this->status = $currentBlock['status'] ?? BlockInterface::STATUS_ACTIVE;
 
 		$this->areas = $postData['areas'] ?? $currentBlock['areas'] ?? 'all';
 
-		$this->titleClass = $postData['title_class'] ?? $currentBlock['title_class'] ?? array_key_first(Utils::$context['lp_all_title_classes']);
+		$this->titleClass = $postData['title_class'] ?? $currentBlock['title_class']
+			?? array_key_first(Utils::$context['lp_all_title_classes']);
 
-		$this->contentClass = $postData['content_class'] ?? $currentBlock['content_class'] ?? array_key_first(Utils::$context['lp_all_content_classes']);
+		$this->contentClass = $postData['content_class'] ?? $currentBlock['content_class']
+			?? array_key_first(Utils::$context['lp_all_content_classes']);
 	}
 
 	protected static function getTableName(): string

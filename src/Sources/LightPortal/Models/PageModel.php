@@ -71,9 +71,14 @@ class PageModel extends AbstractModel
 
 		$this->type = $postData['type'] ?? $currentPage['type'] ?? 'bbc';
 
-		$this->permissions = $postData['permissions'] ?? $currentPage['permissions'] ?? (int) (Config::$modSettings['lp_permissions_default'] ?? 2);
+		$this->permissions = $postData['permissions'] ?? $currentPage['permissions']
+			?? (int) (Config::$modSettings['lp_permissions_default'] ?? 2);
 
-		$this->status = $postData['status'] ?? $currentPage['status'] ?? (int) (Utils::$context['allow_light_portal_approve_pages'] || Utils::$context['allow_light_portal_manage_pages_any']);
+		$this->status = $postData['status'] ?? $currentPage['status']
+			?? (int) (
+				Utils::$context['allow_light_portal_approve_pages']
+				|| Utils::$context['allow_light_portal_manage_pages_any']
+			);
 
 		$this->createdAt = $currentPage['created_at'] ?? time();
 	}

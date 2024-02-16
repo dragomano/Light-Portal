@@ -211,7 +211,7 @@ final class FrontPage implements ActionInterface
 
 		$templates = [
 			Theme::$current->settings['default_theme_dir'] . '/LightPortal/layouts',
-			Theme::$current->settings['default_theme_dir'] . '/portal_layouts'
+			Theme::$current->settings['default_theme_dir'] . '/portal_layouts',
 		];
 
 		ob_start();
@@ -288,7 +288,7 @@ final class FrontPage implements ActionInterface
 			'author_name;desc' => 'author_name DESC',
 			'author_name'      => 'author_name',
 			'num_views;desc'   => 'p.num_views DESC',
-			'num_views'        => 'p.num_views'
+			'num_views'        => 'p.num_views',
 		];
 
 		Utils::$context['current_sorting'] = $this->request('sort', 'created;desc');

@@ -143,7 +143,7 @@ final class Page implements PageInterface
 			array_merge(
 				$params,
 				[
-					'guest' => Lang::$txt['guest_title']
+					'guest' => Lang::$txt['guest_title'],
 				]
 			)
 		);
@@ -180,7 +180,7 @@ final class Page implements PageInterface
 				'num_views'   => (int) $row['num_views'],
 				'created_at'  => (int) $row['created_at'],
 				'updated_at'  => (int) $row['updated_at'],
-				'image'       => $ogImage
+				'image'       => $ogImage,
 			];
 
 			$data['titles'][$row['lang']] = $row['title'];
@@ -432,7 +432,7 @@ final class Page implements PageInterface
 			'CASE WHEN com.created_at > 0 THEN 0 ELSE 1 END, comment_date DESC',
 			'p.created_at DESC',
 			'p.created_at',
-			'date DESC'
+			'date DESC',
 		];
 
 		$withinCategory = str_contains(
@@ -489,7 +489,7 @@ final class Page implements PageInterface
 				'created_at'   => Utils::$context['lp_page']['created_at'],
 				'current_time' => time(),
 				'status'       => Utils::$context['lp_page']['status'],
-				'permissions'  => $this->getPermissions()
+				'permissions'  => $this->getPermissions(),
 			]
 		);
 
@@ -572,7 +572,7 @@ final class Page implements PageInterface
 				'title' => $row['title'],
 				'alias' => $row['alias'],
 				'link'  => LP_PAGE_URL . $row['alias'],
-				'image' => $image ?: (Config::$modSettings['lp_image_placeholder'] ?? '')
+				'image' => $image ?: (Config::$modSettings['lp_image_placeholder'] ?? ''),
 			];
 		}
 
@@ -719,7 +719,7 @@ final class Page implements PageInterface
 					AND status IN ({array_int:statuses})',
 				[
 					'item'     => Utils::$context['lp_page']['id'],
-					'statuses' => [self::STATUS_ACTIVE, self::STATUS_INTERNAL]
+					'statuses' => [self::STATUS_ACTIVE, self::STATUS_INTERNAL],
 				]
 			);
 

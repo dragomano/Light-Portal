@@ -102,7 +102,7 @@ final class Tag extends AbstractPageList
 				'permissions'  => $this->getPermissions(),
 				'sort'         => $sort,
 				'start'        => $start,
-				'limit'        => $items_per_page
+				'limit'        => $items_per_page,
 			]
 		);
 
@@ -130,7 +130,7 @@ final class Tag extends AbstractPageList
 				'id'           => Utils::$context['lp_tag'],
 				'statuses'     => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
 				'current_time' => time(),
-				'permissions'  => $this->getPermissions()
+				'permissions'  => $this->getPermissions(),
 			]
 		);
 
@@ -224,7 +224,7 @@ final class Tag extends AbstractPageList
 				'permissions'  => $this->getPermissions(),
 				'sort'         => $sort,
 				'start'        => $start,
-				'limit'        => $items_per_page
+				'limit'        => $items_per_page,
 			]
 		);
 

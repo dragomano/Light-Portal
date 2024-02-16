@@ -31,7 +31,13 @@ final class PageRepository extends AbstractRepository
 	/**
 	 * @throws IntlException
 	 */
-	public function getAll(int $start, int $items_per_page, string $sort, string $query_string = '', array $query_params = []): array
+	public function getAll(
+		int $start,
+		int $items_per_page,
+		string $sort,
+		string $query_string = '',
+		array $query_params = []
+	): array
 	{
 		$result = Db::$db->query('', '
 			SELECT p.page_id, p.category_id, p.author_id, p.alias, p.type, p.permissions, p.status,

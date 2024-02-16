@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Utils;
 
-use Bugo\Compat\Lang;
+use SMF\Lang;
 
 if (! defined('SMF'))
 	die('No direct access...');

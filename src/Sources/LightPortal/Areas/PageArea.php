@@ -313,7 +313,7 @@ final class PageArea
 				</a>
 			</span>' . $listOptions['title'];
 
-		if (! (empty(Config::$modSettings['lp_show_comment_block']) || Config::$modSettings['lp_show_comment_block'] === 'default')) {
+		if (! (empty(Config::$modSettings['lp_show_comment_block']) || Utils::$context['lp_show_default_comments'])) {
 			unset($listOptions['columns']['num_comments']);
 		}
 
@@ -350,7 +350,14 @@ final class PageArea
 		if ($this->request()->hasNot('mass_actions') || $this->request()->isEmpty('items'))
 			return;
 
-		$redirect = filter_input(INPUT_SERVER, 'HTTP_REFERER', FILTER_DEFAULT, ['options' => ['default' => 'action=admin;area=lp_pages']]);
+		$redirect = filter_input(
+			INPUT_SERVER,
+			'HTTP_REFERER',
+			FILTER_DEFAULT,
+			[
+				'options' => ['default' => 'action=admin;area=lp_pages']
+			]
+		);
 
 		$items = $this->request('items');
 		switch (filter_input(INPUT_POST, 'page_actions')) {
@@ -450,7 +457,7 @@ final class PageArea
 
 			$this->remove([$item]);
 
-			$this->cache()->forget('page_' . Utils::$context['lp_current_page']['alias']);
+			$this->cache()->flush();
 
 			Utils::redirectexit('action=admin;area=lp_pages');
 		}

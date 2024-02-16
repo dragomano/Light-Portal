@@ -161,7 +161,7 @@ class PageList extends Block
 			<li>
 				<a href="', Config::$scripturl, '?', LP_PAGE_PARAM, '=', $page['alias'], '">', $title, '</a> ', Lang::$txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . Config::$scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', DateTime::relative($page['created_at']), ' (', Lang::getTxt('lp_views_set', ['views' => $page['num_views']]);
 
-				if ($page['num_comments'] && ! empty(Config::$modSettings['lp_show_comment_block']) && Config::$modSettings['lp_show_comment_block'] === 'default')
+				if ($page['num_comments'] && Utils::$context['lp_show_default_comments'])
 					echo ', ' . Lang::getTxt('lp_comments_set', ['comments' => $page['num_comments']]);
 
 				echo /** @lang text */ ')
