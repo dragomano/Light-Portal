@@ -39,7 +39,7 @@
 
 	#filter {
 		margin-left: 4px;
-		cursor: pointer;
+		@include pointer;
 	}
 
 	@media screen and (max-width: 468px) {
@@ -160,7 +160,7 @@
 			position: absolute;
 			text-align: left;
 			left: 60px;
-			cursor: pointer;
+			@include pointer;
 			color: initial;
 			font-size: 1.2em;
 			width: #{"max(8vw, 200px)"};

@@ -6,7 +6,7 @@
 
 .portal_menu_icons {
 	font-size: .875rem;
-	vertical-align: middle;
+	@include valign;
 
 	&.fas,
 	&.far {
