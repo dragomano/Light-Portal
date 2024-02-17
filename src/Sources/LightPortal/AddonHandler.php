@@ -116,7 +116,9 @@ final class AddonHandler
 			}
 
 			if (method_exists($class, $hook)) {
-				$hook === 'init' && in_array($addon, Utils::$context['lp_enabled_plugins']) ? $class->init() : $class->$hook(...$vars);
+				$hook === 'init' && in_array($addon, Utils::$context['lp_enabled_plugins'])
+					? $class->init()
+					: $class->$hook(...$vars);
 			}
 		}
 
@@ -140,7 +142,8 @@ final class AddonHandler
 				continue;
 
 			foreach ($assets[$type] as $plugin => $links) {
-				$addonAssetDir = Theme::$current->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR  . 'light_portal' . DIRECTORY_SEPARATOR . $plugin;
+				$addonAssetDir = Theme::$current->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . $type
+					. DIRECTORY_SEPARATOR  . 'light_portal' . DIRECTORY_SEPARATOR . $plugin;
 
 				if (! is_dir($addonAssetDir)) {
 					@mkdir($addonAssetDir);

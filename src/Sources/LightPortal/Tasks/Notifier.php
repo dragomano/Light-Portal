@@ -27,7 +27,9 @@ final class Notifier extends BackgroundTask
 	{
 		$members = match ($this->_details['content_type']) {
 			'new_page' => User::membersAllowedTo('light_portal_manage_pages_any'),
-			default    => array_intersect(User::membersAllowedTo('light_portal_view'), [$this->_details['content_author_id']])
+			default    => array_intersect(
+				User::membersAllowedTo('light_portal_view'), [$this->_details['content_author_id']]
+			)
 		};
 
 		// Let's not notify ourselves, okay?
@@ -48,16 +50,16 @@ final class Notifier extends BackgroundTask
 				: $this->_details['sender_name'] = User::$profiles[$this->_details['sender_id']]['real_name'];
 		}
 
-		$alert_bits = [
+		$alertBits = [
 			'alert' => self::RECEIVE_NOTIFY_ALERT,
 			'email' => self::RECEIVE_NOTIFY_EMAIL,
 		];
 
 		$notifies = [];
-		foreach ($prefs as $member => $pref_option) {
-			foreach ($alert_bits as $type => $bitvalue) {
+		foreach ($prefs as $member => $prefOption) {
+			foreach ($alertBits as $type => $bitvalue) {
 				foreach (['page_comment', 'page_comment_reply', 'page_unapproved'] as $option) {
-					if (isset($pref_option[$option]) && ($pref_option[$option] & $bitvalue)) {
+					if (isset($prefOption[$option]) && ($prefOption[$option] & $bitvalue)) {
 						$notifies[$type][] = $member;
 					}
 				}
@@ -65,9 +67,9 @@ final class Notifier extends BackgroundTask
 		}
 
 		if (! empty($notifies['alert'])) {
-			$insert_rows = [];
+			$insertRows = [];
 			foreach ($notifies['alert'] as $member) {
-				$insert_rows[] = [
+				$insertRows[] = [
 					'alert_time'        => $this->_details['time'],
 					'id_member'         => $member,
 					'id_member_started' => $this->_details['sender_id'],
@@ -80,7 +82,7 @@ final class Notifier extends BackgroundTask
 				];
 			}
 
-			if ($insert_rows) {
+			if ($insertRows) {
 				Db::$db->insert('',
 					'{db_prefix}user_alerts',
 					[
@@ -94,7 +96,7 @@ final class Notifier extends BackgroundTask
 						'is_read'           => 'int',
 						'extra'             => 'string'
 					],
-					$insert_rows,
+					$insertRows,
 					['id_alert']
 				);
 
@@ -124,19 +126,33 @@ final class Notifier extends BackgroundTask
 
 			Db::$db->free_result($result);
 
-			foreach ($emails as $this_lang => $recipients) {
+			foreach ($emails as $lang => $recipients) {
 				$replacements = [
 					'MEMBERNAME'  => $this->_details['sender_name'],
 					'PROFILELINK' => Config::$scripturl . '?action=profile;u=' . $this->_details['sender_id'],
 					'PAGELINK'    => Utils::jsonDecode($this->_details['extra'], true)['content_link'],
 				];
 
-				Lang::load('LightPortal/LightPortal', $this_lang);
+				Lang::load('LightPortal/LightPortal', $lang);
 
-				$emaildata = Mail::loadEmailTemplate('page_unapproved', $replacements, empty(Config::$modSettings['userLanguage']) ? Config::$language : $this_lang, false);
+				$emaildata = Mail::loadEmailTemplate(
+					'page_unapproved',
+					$replacements,
+					empty(Config::$modSettings['userLanguage']) ? Config::$language : $lang,
+					false
+				);
 
-				foreach ($recipients as $email_address)
-					Mail::send($email_address, $emaildata['subject'], $emaildata['body'], null, 'page#' . $this->_details['content_id'], $emaildata['is_html'], 2);
+				foreach ($recipients as $email) {
+					Mail::send(
+						$email,
+						$emaildata['subject'],
+						$emaildata['body'],
+						null,
+						'page#' . $this->_details['content_id'],
+						$emaildata['is_html'],
+						2
+					);
+				}
 			}
 		}
 

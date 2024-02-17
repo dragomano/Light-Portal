@@ -75,13 +75,13 @@ abstract class AbstractRepository
 			return;
 
 		$params = [];
-		foreach (Utils::$context['lp_' . $this->entity]['options'] as $param_name => $value) {
+		foreach (Utils::$context['lp_' . $this->entity]['options'] as $name => $value) {
 			$value = is_array($value) ? implode(',', $value) : $value;
 
 			$params[] = [
 				'item_id' => $item,
 				'type'    => $this->entity,
-				'name'    => $param_name,
+				'name'    => $name,
 				'value'   => $value,
 			];
 		}

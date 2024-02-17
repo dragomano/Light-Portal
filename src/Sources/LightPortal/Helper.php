@@ -78,10 +78,14 @@ trait Helper
 	public function getEntityList(string $entity): array
 	{
 		return match ($entity) {
-			'category' => $this->cache('all_categories')->setFallback(CategoryList::class, 'getAll'),
-			'page'     => $this->cache('all_pages')->setFallback(PageList::class, 'getAll'),
-			'tag'      => $this->cache('all_tags')->setFallback(TagList::class, 'getAll'),
-			'title'    => $this->cache('all_titles')->setFallback(TitleList::class, 'getAll'),
+			'category' => $this->cache('all_categories')
+				->setFallback(CategoryList::class, 'getAll'),
+			'page'     => $this->cache('all_pages')
+				->setFallback(PageList::class, 'getAll'),
+			'tag'      => $this->cache('all_tags')
+				->setFallback(TagList::class, 'getAll'),
+			'title'    => $this->cache('all_titles')
+				->setFallback(TitleList::class, 'getAll'),
 			'plugin'   => AddonHandler::getInstance()->getAll(),
 			default    => [],
 		};
@@ -106,7 +110,15 @@ trait Helper
 		if (empty(User::$memberContext[$userId]))
 			return '';
 
-		return User::$memberContext[$userId]['avatar']['image'] ?? '<img class="avatar" width="100" height="100" src="' . Config::$modSettings['avatar_url'] . '/default.png" loading="lazy" alt="' . User::$memberContext[$userId]['name'] . '">';
+		return User::$memberContext[$userId]['avatar']['image']
+			?? '<img
+			        class="avatar"
+			        width="100"
+			        height="100"
+			        src="' . Config::$modSettings['avatar_url'] . '/default.png"
+			        loading="lazy"
+			        alt="' . User::$memberContext[$userId]['name'] . '"
+			    >';
 	}
 
 	public function getItemsWithUserAvatars(array $items, string $entity = 'author'): array
@@ -121,7 +133,14 @@ trait Helper
 
 	public function getContentTypes(): array
 	{
-		$types = array_combine(['bbc', 'html', 'php'], [Lang::$txt['lp_bbc']['title'], Lang::$txt['lp_html']['title'], Lang::$txt['lp_php']['title']]);
+		$types = array_combine(
+			['bbc', 'html', 'php'],
+			[
+				Lang::$txt['lp_bbc']['title'],
+				Lang::$txt['lp_html']['title'],
+				Lang::$txt['lp_php']['title'],
+			],
+		);
 
 		return User::$info['is_admin'] ? $types : array_slice($types, 0, 2);
 	}
@@ -137,7 +156,9 @@ trait Helper
 				WHERE id_theme IN ({array_int:themes})
 					AND variable = {literal:name}',
 				[
-					'themes' => empty(Config::$modSettings['knownThemes']) ? [] : explode(',', Config::$modSettings['knownThemes']),
+					'themes' => empty(Config::$modSettings['knownThemes'])
+						? []
+						: explode(',', Config::$modSettings['knownThemes']),
 				]
 			);
 

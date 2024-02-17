@@ -61,7 +61,9 @@ final class Integration extends AbstractMain
 		defined('LP_PLUGIN_LIST') || define('LP_PLUGIN_LIST', 'https://d8d75ea98b25aa12.mokky.dev/addons');
 		defined('LP_ADDON_URL') || define('LP_ADDON_URL', Config::$boardurl . '/Sources/LightPortal/Addons');
 		defined('LP_ADDON_DIR') || define('LP_ADDON_DIR', __DIR__ . '/Addons');
-		defined('LP_CACHE_TIME') || define('LP_CACHE_TIME', (int) (Config::$modSettings['lp_cache_update_interval'] ?? 72000));
+		defined('LP_CACHE_TIME') || define('LP_CACHE_TIME', (int) (
+			Config::$modSettings['lp_cache_update_interval'] ?? 72000)
+		);
 		defined('LP_ACTION') || define('LP_ACTION', Config::$modSettings['lp_portal_action'] ?? 'portal');
 		defined('LP_PAGE_PARAM') || define('LP_PAGE_PARAM', Config::$modSettings['lp_page_param'] ?? 'page');
 		defined('LP_BASE_URL') || define('LP_BASE_URL', Config::$scripturl . '?action=' . LP_ACTION);
@@ -354,10 +356,7 @@ final class Integration extends AbstractMain
 	{
 		Lang::$txt['alert_group_light_portal'] = Lang::$txt['lp_portal'];
 
-		if (
-			! empty(Config::$modSettings['lp_show_comment_block'])
-			?? Config::$modSettings['lp_show_comment_block'] === 'default'
-		)
+		if (Utils::$context['lp_show_default_comments'])
 			$types['light_portal'] = [
 				'page_comment' => [
 					'alert' => 'yes',

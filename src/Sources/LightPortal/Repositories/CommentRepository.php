@@ -50,7 +50,7 @@ final class CommentRepository
 		return $data ?? [];
 	}
 
-	public function getByPageId(int $page_id = 0): array
+	public function getByPageId(int $id = 0): array
 	{
 		$sorts = [
 			'com.created_at',
@@ -64,11 +64,11 @@ final class CommentRepository
 				INNER JOIN {db_prefix}members AS mem ON (com.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_params AS par ON (
 					com.id = par.item_id AND par.type = {literal:comment}
-				)' . ($page_id ? '
+				)' . ($id ? '
 			WHERE com.page_id = {int:id}' : '') . '
 			ORDER BY ' . $sorts[Config::$modSettings['lp_comment_sorting'] ?? 0],
 			[
-				'id' => $page_id
+				'id' => $id
 			]
 		);
 
@@ -190,7 +190,7 @@ final class CommentRepository
 		Utils::$context['lp_num_queries'] += 5;
 	}
 
-	public function updateLastCommentId(int $item, int $page_id): void
+	public function updateLastCommentId(int $item, int $id): void
 	{
 		Db::$db->query('', '
 			UPDATE {db_prefix}lp_pages
@@ -198,7 +198,7 @@ final class CommentRepository
 			WHERE page_id = {int:page_id}',
 			[
 				'item'    => $item,
-				'page_id' => $page_id
+				'page_id' => $id
 			]
 		);
 

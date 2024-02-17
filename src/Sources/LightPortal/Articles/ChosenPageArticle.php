@@ -29,7 +29,8 @@ final class ChosenPageArticle extends PageArticle
 
 		$this->selectedCategories = [];
 
-		$this->selectedPages = empty(Config::$modSettings['lp_frontpage_pages']) ? [] : explode(',', Config::$modSettings['lp_frontpage_pages']);
+		$this->selectedPages = empty(Config::$modSettings['lp_frontpage_pages'])
+			? [] : explode(',', Config::$modSettings['lp_frontpage_pages']);
 
 		$this->wheres[] = 'AND p.page_id IN ({array_int:selected_pages})';
 

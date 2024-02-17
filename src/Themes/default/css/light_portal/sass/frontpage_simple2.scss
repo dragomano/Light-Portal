@@ -148,11 +148,11 @@
 				h3 {
 					font-weight: 700;
 					font-size: 1.2rem;
-					line-height: 1.2rem;
+					line-height: 1.4;
 				}
 
 				time {
-					line-height: 1.75rem;
+					line-height: 1.5;
 					color: rgba(156, 163, 175, 1);
 				}
 
@@ -161,7 +161,6 @@
 					display: -webkit-box;
 					-webkit-line-clamp: 3;
 					-webkit-box-orient: vertical;
-					line-height: 1.4em;
 					text-align: justify;
 				}
 

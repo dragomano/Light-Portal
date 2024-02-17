@@ -89,7 +89,7 @@ final class Comment implements ActionInterface
 			'comments'     => array_slice($commentTree, $start, $limit),
 			'parentsCount' => $parentsCount,
 			'total'        => sizeof($comments),
-			'limit'        => $limit
+			'limit'        => $limit,
 		];
 
 		exit(json_encode($result));
@@ -101,7 +101,7 @@ final class Comment implements ActionInterface
 	private function add(): void
 	{
 		$result = [
-			'id' => null
+			'id' => null,
 		];
 
 		if (empty(User::$info['id']))
@@ -126,7 +126,7 @@ final class Comment implements ActionInterface
 			'page_id'    => $pageId,
 			'author_id'  => User::$info['id'],
 			'message'    => $message,
-			'created_at' => $time = time()
+			'created_at' => $time = time(),
 		]);
 
 		if ($item) {
@@ -172,7 +172,7 @@ final class Comment implements ActionInterface
 		$data = $this->request()->json();
 
 		$result = [
-			'success' => false
+			'success' => false,
 		];
 
 		if (empty($data) || Utils::$context['user']['is_guest'])
@@ -187,12 +187,12 @@ final class Comment implements ActionInterface
 		$this->repository->update([
 			'message' => Utils::shorten($message, 65531),
 			'id'      => $item,
-			'user'    => Utils::$context['user']['id']
+			'user'    => Utils::$context['user']['id'],
 		]);
 
 		$result = [
 			'success' => true,
-			'message' => $message
+			'message' => $message,
 		];
 
 		$this->cache()->forget('page_' . $this->alias . '_comments');
@@ -204,8 +204,9 @@ final class Comment implements ActionInterface
 	{
 		$items = $this->request()->json('items');
 
-		if (empty($items))
+		if (empty($items)) {
 			exit(json_encode(['success' => false]));
+		}
 
 		$this->repository->remove($items, $this->alias);
 

@@ -11,15 +11,19 @@
 		border-radius: $topleft;
 		$topleft: null;
 	}
+
 	@if $topleft != null and $topleft >= 0 {
 		border-top-left-radius: $topleft;
 	}
+
 	@if $topright != null and $topright >= 0 {
 		border-top-right-radius: $topright;
 	}
+
 	@if $bottomleft != null and $bottomleft >= 0 {
 		border-bottom-left-radius: $bottomleft;
 	}
+
 	@if $bottomright != null and $bottomright >= 0 {
 		border-bottom-right-radius: $bottomright;
 	}

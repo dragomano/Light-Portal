@@ -99,6 +99,9 @@ abstract class AbstractMain
 			Config::$modSettings['lp_panel_direction'] ?? '', true
 		);
 
+		Utils::$context['lp_show_default_comments'] = isset(Config::$modSettings['lp_show_comment_block'])
+			&& Config::$modSettings['lp_show_comment_block'] === 'default';
+
 		Utils::$context['lp_active_blocks'] = (new Block)->getActive();
 	}
 
