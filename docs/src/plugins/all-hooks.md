@@ -376,7 +376,7 @@ public function addSettings(array &$config_vars): void
 
 ### saveSettings
 
-(`&$plugin_options`)
+(`&$settings`)
 
 > additional actions after plugin settings saving
 
@@ -446,13 +446,13 @@ public function frontAssets(): void
 > adding custom columns, tables, wheres, params and orders to _init_ function
 
 ```php
-public function frontTopics(array &$custom_columns, array &$custom_tables): void
+public function frontTopics(array &$columns, array &$tables): void
 {
     if (! class_exists('TopicRatingBar'))
         return;
 
-    $custom_columns[] = 'tr.total_votes, tr.total_value';
-    $custom_tables[]  = 'LEFT JOIN {db_prefix}topic_ratings AS tr ON (t.id_topic = tr.id)';
+    $columns[] = 'tr.total_votes, tr.total_value';
+    $tables[]  = 'LEFT JOIN {db_prefix}topic_ratings AS tr ON (t.id_topic = tr.id)';
 }
 ```
 
