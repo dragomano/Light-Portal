@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 10.02.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleChat;
@@ -78,7 +78,7 @@ class Chat
 				'block_id'   => $data['block_id'],
 				'user_id'    => User::$info['id'],
 				'message'    => $message = Utils::$smcFunc['htmlspecialchars']($data['message']),
-				'created_at' => $time = time()
+				'created_at' => $time = time(),
 			],
 			['id'],
 			1

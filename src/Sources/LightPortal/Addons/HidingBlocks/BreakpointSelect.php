@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.02.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\HidingBlocks;
@@ -22,17 +22,21 @@ final class BreakpointSelect extends AbstractPartial
 {
 	public function __invoke(): string
 	{
-		$current_breakpoints = Utils::$context['lp_block']['options']['hidden_breakpoints'] ?? [];
-		$current_breakpoints = is_array($current_breakpoints) ? $current_breakpoints : explode(',', $current_breakpoints);
+		$currentBreakpoints = Utils::$context['lp_block']['options']['hidden_breakpoints'] ?? [];
+		$currentBreakpoints = is_array($currentBreakpoints)
+			? $currentBreakpoints
+			: explode(',', $currentBreakpoints);
 
-		$breakpoints = array_combine(['xs', 'sm', 'md', 'lg', 'xl'], Lang::$txt['lp_hiding_blocks']['hidden_breakpoints_set']);
+		$breakpoints = array_combine(
+			['xs', 'sm', 'md', 'lg', 'xl'], Lang::$txt['lp_hiding_blocks']['hidden_breakpoints_set']
+		);
 
 		$data = $items = [];
 
 		foreach ($breakpoints as $bp => $name) {
 			$data[] = '{label: "' . $name . '", value: "' . $bp . '"}';
 
-			if (in_array($bp, $current_breakpoints)) {
+			if (in_array($bp, $currentBreakpoints)) {
 				$items[] = Utils::escapeJavaScript($bp);
 			}
 		}

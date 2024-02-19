@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 17.02.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -110,6 +110,6 @@ class Validator extends AbstractValidator
 	 */
 	private function isUnique(string $name): bool
 	{
-		return ! in_array($name, $this->getEntityList('plugin'));
+		return ! in_array($name, $this->getEntityData('plugin'));
 	}
 }

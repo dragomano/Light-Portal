@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 04.02.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\RandomPages;
@@ -73,12 +73,12 @@ class RandomPages extends Block
 	public function getData(array $parameters): array
 	{
 		$categories = empty($parameters['categories']) ? null : explode(',', $parameters['categories']);
-		$num_pages  = empty($parameters['num_pages']) ? 0 : (int) $parameters['num_pages'];
+		$pagesCount = empty($parameters['num_pages']) ? 0 : (int) $parameters['num_pages'];
 
-		if (empty($num_pages))
+		if (empty($pagesCount))
 			return [];
 
-		$titles = $this->getEntityList('title');
+		$titles = $this->getEntityData('title');
 
 		if (Config::$db_type === 'postgresql') {
 			$result = Utils::$smcFunc['db_query']('', '
@@ -129,19 +129,19 @@ class RandomPages extends Block
 					'current_time' => time(),
 					'permissions'  => $this->getPermissions(),
 					'categories'   => $categories,
-					'limit'        => $num_pages
+					'limit'        => $pagesCount,
 				]
 			);
 
-			$page_ids = [];
+			$pageIds = [];
 			while ($row = Utils::$smcFunc['db_fetch_assoc']($result))
-				$page_ids[] = $row['page_id'];
+				$pageIds[] = $row['page_id'];
 
 			Utils::$smcFunc['db_free_result']($result);
 			Utils::$context['lp_num_queries']++;
 
-			if (empty($page_ids))
-				return $this->getData(array_merge($parameters, ['num_pages' => $num_pages - 1]));
+			if (empty($pageIds))
+				return $this->getData(array_merge($parameters, ['num_pages' => $pagesCount - 1]));
 
 			$result = Utils::$smcFunc['db_query']('', '
 				SELECT p.page_id, p.alias, p.created_at, p.num_views, COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
@@ -150,7 +150,7 @@ class RandomPages extends Block
 				WHERE p.page_id IN ({array_int:page_ids})',
 				[
 					'guest'    => Lang::$txt['guest_title'],
-					'page_ids' => $page_ids
+					'page_ids' => $pageIds,
 				]
 			);
 		} else {
@@ -170,7 +170,7 @@ class RandomPages extends Block
 					'current_time' => time(),
 					'permissions'  => $this->getPermissions(),
 					'categories'   => $categories,
-					'limit'        => $num_pages
+					'limit'        => $pagesCount,
 				]
 			);
 		}
@@ -202,8 +202,8 @@ class RandomPages extends Block
 		if ($data->type !== 'random_pages')
 			return;
 
-		$randomPages = $this->cache('random_pages_addon_b' . $data->block_id . '_u' . User::$info['id'])
-			->setLifeTime($data->cache_time)
+		$randomPages = $this->cache('random_pages_addon_b' . $data->id . '_u' . User::$info['id'])
+			->setLifeTime($data->cacheTime)
 			->setFallback(self::class, 'getData', $parameters);
 
 		if ($randomPages) {

@@ -61,9 +61,7 @@ final class Integration extends AbstractMain
 		defined('LP_PLUGIN_LIST') || define('LP_PLUGIN_LIST', 'https://d8d75ea98b25aa12.mokky.dev/addons');
 		defined('LP_ADDON_URL') || define('LP_ADDON_URL', Config::$boardurl . '/Sources/LightPortal/Addons');
 		defined('LP_ADDON_DIR') || define('LP_ADDON_DIR', __DIR__ . '/Addons');
-		defined('LP_CACHE_TIME') || define('LP_CACHE_TIME', (int) (
-			Config::$modSettings['lp_cache_update_interval'] ?? 72000)
-		);
+		defined('LP_CACHE_TIME') || define('LP_CACHE_TIME', (int) (Config::$modSettings['lp_cache_update_interval'] ?? 72000));
 		defined('LP_ACTION') || define('LP_ACTION', Config::$modSettings['lp_portal_action'] ?? 'portal');
 		defined('LP_PAGE_PARAM') || define('LP_PAGE_PARAM', Config::$modSettings['lp_page_param'] ?? 'page');
 		defined('LP_BASE_URL') || define('LP_BASE_URL', Config::$scripturl . '?action=' . LP_ACTION);
@@ -499,7 +497,7 @@ final class Integration extends AbstractMain
 			$result = sprintf(Lang::$txt['lp_who_viewing_frontpage'], LP_BASE_URL);
 
 			if (isset($actions['sa']) && $actions['sa'] === 'tags') {
-				$tags = $this->getEntityList('tag');
+				$tags = $this->getEntityData('tag');
 
 				isset($actions['id'])
 					? $result = sprintf(
@@ -514,7 +512,7 @@ final class Integration extends AbstractMain
 			}
 
 			if (isset($actions['sa']) && $actions['sa'] === 'categories') {
-				$categories = $this->getEntityList('category');
+				$categories = $this->getEntityData('category');
 
 				isset($actions['id'])
 					? $result = sprintf(

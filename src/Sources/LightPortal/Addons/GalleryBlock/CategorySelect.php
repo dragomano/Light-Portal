@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\GalleryBlock;
@@ -28,7 +28,7 @@ final class CategorySelect extends AbstractPartial
 		foreach ($categories as $id => $title) {
 			$data[] = [
 				'label' => $title,
-				'value' => $id
+				'value' => $id,
 			];
 		}
 

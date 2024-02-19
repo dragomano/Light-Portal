@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\EhPortalMigration;
@@ -28,8 +28,11 @@ class EhPortalMigration extends Plugin
 
 	public function updateAdminAreas(array &$areas): void
 	{
-		if (User::$info['is_admin'])
-			$areas['lp_pages']['subsections']['import_from_ep'] = [Icon::get('import') . Lang::$txt['lp_eh_portal_migration']['label_name']];
+		if (User::$info['is_admin']) {
+			$areas['lp_pages']['subsections']['import_from_ep'] = [
+				Icon::get('import') . Lang::$txt['lp_eh_portal_migration']['label_name']
+			];
+		}
 	}
 
 	public function updatePageAreas(array &$areas): void
@@ -43,9 +46,9 @@ class EhPortalMigration extends Plugin
 		if ($this->request('sa') !== 'import_from_ep')
 			return;
 
-		foreach ($items as $page_id => $item) {
+		foreach ($items as $pageId => $item) {
 			$titles[] = [
-				'item_id' => $page_id,
+				'item_id' => $pageId,
 				'type'    => 'page',
 				'lang'    => Config::$language,
 				'title'   => $item['title']
@@ -53,14 +56,14 @@ class EhPortalMigration extends Plugin
 
 			if (Config::$language !== Language::FALLBACK && ! empty(Config::$modSettings['userLanguage'])) {
 				$titles[] = [
-					'item_id' => $page_id,
+					'item_id' => $pageId,
 					'type'    => 'page',
 					'lang'    => Language::FALLBACK,
 					'title'   => $item['title']
 				];
 			}
 
-			unset($items[$page_id]['title']);
+			unset($items[$pageId]['title']);
 		}
 	}
 }

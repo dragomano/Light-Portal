@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\RecentAttachments;
@@ -78,23 +78,23 @@ class RecentAttachments extends Block
 		if ($data->type !== 'recent_attachments')
 			return;
 
-		$attachment_list = $this->cache('recent_attachments_addon_b' . $data->block_id . '_u' . User::$info['id'])
-			->setLifeTime($data->cache_time)
+		$attachmentList = $this->cache('recent_attachments_addon_b' . $data->id . '_u' . User::$info['id'])
+			->setLifeTime($data->cacheTime)
 			->setFallback(self::class, 'getData', $parameters);
 
-		if (empty($attachment_list))
+		if (empty($attachmentList))
 			return;
 
 		$fancybox = class_exists('FancyBox');
 
 		echo '
-		<div class="recent_attachments' . ($this->isInSidebar($data->block_id) ? ' column_direction' : '') . '">';
+		<div class="recent_attachments' . ($this->isInSidebar($data->id) ? ' column_direction' : '') . '">';
 
-		foreach ($attachment_list as $attach) {
+		foreach ($attachmentList as $attach) {
 			if ($attach['file']['image']) {
 				echo '
 			<div class="item">
-				<a', ($fancybox ? ' class="fancybox" data-fancybox="recent_attachments_' . $data->block_id . '"' : ''), ' href="', $attach['file']['href'], ';image">', $attach['file']['image']['thumb'], '</a>
+				<a', ($fancybox ? ' class="fancybox" data-fancybox="recent_attachments_' . $data->id . '"' : ''), ' href="', $attach['file']['href'], ';image">', $attach['file']['image']['thumb'], '</a>
 			</div>';
 			} else {
 				echo '

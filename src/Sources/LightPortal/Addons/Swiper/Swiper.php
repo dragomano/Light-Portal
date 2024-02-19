@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\Swiper;
@@ -60,7 +60,7 @@ class Swiper extends Block
 
 				$images[] = [
 					'title' => $item,
-					'link'  => $link
+					'link'  => $link,
 				];
 			}
 
@@ -114,13 +114,13 @@ class Swiper extends Block
 			->setValue(Utils::$context['lp_block']['options']['show_scrollbar']);
 	}
 
-	public function getData(int|string $block_id, array $parameters): array
+	public function getData(int|string $id, array $parameters): array
 	{
 		if (empty($parameters['images']))
 			return [];
 
 		$html = '
-		<div id="swiper' . $block_id . '" class="swiper"' . (Utils::$context['right_to_left'] ? ' dir="rtl"' : '') . '>
+		<div id="swiper' . $id . '" class="swiper"' . (Utils::$context['right_to_left'] ? ' dir="rtl"' : '') . '>
 			<div class="swiper-wrapper">';
 
 		$images = Utils::jsonDecode($parameters['images'], true);
@@ -146,16 +146,16 @@ class Swiper extends Block
 
 		if (! empty($parameters['show_pagination']))
 			$html .= '
-			<div id="swiper-pagination' . $block_id . '" class="swiper-pagination"></div>';
+			<div id="swiper-pagination' . $id . '" class="swiper-pagination"></div>';
 
 		if (! empty($parameters['show_navigation']))
 			$html .= '
-			<div id="swiper-button-prev' . $block_id . '" class="swiper-button-prev"></div>
-			<div id="swiper-button-next' . $block_id . '" class="swiper-button-next"></div>';
+			<div id="swiper-button-prev' . $id . '" class="swiper-button-prev"></div>
+			<div id="swiper-button-next' . $id . '" class="swiper-button-next"></div>';
 
 		if (! empty($parameters['show_scrollbar']))
 			$html .= '
-			<div id="swiper-scrollbar' . $block_id . '" class="swiper-scrollbar"></div>';
+			<div id="swiper-scrollbar' . $id . '" class="swiper-scrollbar"></div>';
 
 		$html .= '
 		</div>';
@@ -168,20 +168,20 @@ class Swiper extends Block
 		if ($data->type !== 'swiper')
 			return;
 
-		$block_id = $data->block_id;
+		$id = $data->id;
 
-		$swiper_html = $this->cache('swiper_addon_b' . $block_id . '_' . User::$info['language'])
-			->setLifeTime($data->cache_time)
-			->setFallback(self::class, 'getData', $block_id, $parameters);
+		$swiperHtml = $this->cache('swiper_addon_b' . $id . '_' . User::$info['language'])
+			->setLifeTime($data->cacheTime)
+			->setFallback(self::class, 'getData', $id, $parameters);
 
-		if (empty($swiper_html))
+		if (empty($swiperHtml))
 			return;
 
 		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css');
 		$this->loadExtJS('https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js');
 
 		$this->addInlineJS('
-			const swiper' . $block_id . ' = new Swiper("#swiper' . $block_id . '", {
+			const swiper' . $id . ' = new Swiper("#swiper' . $id . '", {
 				direction: "' . ($parameters['direction'] ?? 'horizontal') . '",
 				loop: ' . (empty($parameters['loop']) ? 'false' : 'true') . ',
 				effect: "' . ($parameters['effect'] ?? 'coverflow') . '",
@@ -214,20 +214,20 @@ class Swiper extends Block
 				},
 				spaceBetween: 10,' . (empty($parameters['show_pagination']) ? '' : '
 				pagination: {
-					el: "#swiper-pagination' . $block_id . '",
+					el: "#swiper-pagination' . $id . '",
 					dynamicBullets: true,
 					clickable: true,
 				},') . (empty($parameters['show_navigation']) ? '' : '
 				navigation: {
-					nextEl: "#swiper-button-next' . $block_id . '",
-					prevEl: "#swiper-button-prev' . $block_id . '",
+					nextEl: "#swiper-button-next' . $id . '",
+					prevEl: "#swiper-button-prev' . $id . '",
 				},') . (empty($parameters['show_scrollbar']) ? '' : '
 				scrollbar: {
-					el: "#swiper-scrollbar' . $block_id . '",
+					el: "#swiper-scrollbar' . $id . '",
 				},') . '
 			});', true);
 
-		echo $swiper_html['content'] ?? '';
+		echo $swiperHtml['content'] ?? '';
 	}
 
 	public function credits(array &$links): void

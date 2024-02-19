@@ -15,8 +15,6 @@
 namespace Bugo\LightPortal\Areas\Configs;
 
 use Bugo\Compat\{ACP, Config, Lang, Theme, User, Utils};
-use Bugo\LightPortal\Areas\Partials\{ActionSelect, BoardSelect, CategorySelect};
-use Bugo\LightPortal\Areas\Partials\{PageAliasSelect, PageSelect, TopicSelect};
 use Bugo\LightPortal\Areas\Query;
 use Bugo\LightPortal\Actions\FrontPage;
 use IntlException;
@@ -59,14 +57,6 @@ final class BasicConfig extends AbstractConfig
 			fn($item) => Lang::getTxt('lp_frontpage_num_columns_set', ['columns' => $item]),
 			[1, 2, 3, 4, 6]
 		);
-
-		Utils::$context['lp_frontpage_layouts']           = (new FrontPage)->getLayouts();
-		Utils::$context['lp_frontpage_alias_select']      = new PageAliasSelect;
-		Utils::$context['lp_frontpage_categories_select'] = new CategorySelect;
-		Utils::$context['lp_frontpage_boards_select']     = new BoardSelect;
-		Utils::$context['lp_frontpage_topics_select']     = new TopicSelect;
-		Utils::$context['lp_frontpage_pages_select']      = new PageSelect;
-		Utils::$context['lp_disabled_actions_select']     = new ActionSelect;
 
 		$javascript = ':disabled="[\'0\', \'chosen_page\'].includes(frontpage_mode)"';
 
@@ -132,7 +122,7 @@ final class BasicConfig extends AbstractConfig
 			[
 				'select',
 				'lp_frontpage_layout',
-				Utils::$context['lp_frontpage_layouts'],
+				(new FrontPage())->getLayouts(),
 				'javascript' => $javascript
 			],
 			[
@@ -218,6 +208,7 @@ final class BasicConfig extends AbstractConfig
 			$save_vars[] = ['text', 'lp_disabled_actions'];
 
 			ACP::saveDBSettings($save_vars);
+
 			$this->session()->put('adm-save', true);
 			$this->cache()->flush();
 

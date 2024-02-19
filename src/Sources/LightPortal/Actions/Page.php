@@ -426,7 +426,7 @@ final class Page implements PageInterface
 		if (empty(Utils::$context['lp_page']) || empty(Config::$modSettings['lp_show_prev_next_links']))
 			return;
 
-		$titles = $this->getEntityList('title');
+		$titles = $this->getEntityData('title');
 
 		$orders = [
 			'CASE WHEN com.created_at > 0 THEN 0 ELSE 1 END, comment_date DESC',
@@ -602,7 +602,7 @@ final class Page implements PageInterface
 		}
 
 		if (! empty($data['category_id']))
-			$data['category'] = $this->getEntityList('category')[$data['category_id']]['name'];
+			$data['category'] = $this->getEntityData('category')[$data['category_id']]['name'];
 
 		if (! empty($data['options']['keywords']))
 			$data['tags'] = $this->getTags($data['options']['keywords']);

@@ -106,15 +106,15 @@ class SimpleChat extends Block
 
 		$parameters['show_avatars'] ??= false;
 
-		$messages = $this->cache('simple_chat_addon_b' . $data->block_id)
-			->setLifeTime($data->cache_time)
-			->setFallback(self::class, 'getData', $data->block_id, $parameters);
+		$messages = $this->cache('simple_chat_addon_b' . $data->id)
+			->setLifeTime($data->cacheTime)
+			->setFallback(self::class, 'getData', $data->id, $parameters);
 
-		Utils::$context['lp_chats'][$data->block_id] = json_encode($messages, JSON_UNESCAPED_UNICODE);
+		Utils::$context['lp_chats'][$data->id] = json_encode($messages, JSON_UNESCAPED_UNICODE);
 
 		$this->setTemplate();
 
-		show_chat_block($data->block_id, (bool) $parameters['show_avatars'], $this->isInSidebar($data->block_id));
+		show_chat_block($data->id, (bool) $parameters['show_avatars'], $this->isInSidebar($data->id));
 	}
 
 	public function onBlockRemoving(array $items): void

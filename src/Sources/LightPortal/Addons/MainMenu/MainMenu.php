@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\MainMenu;
@@ -58,9 +58,7 @@ class MainMenu extends Plugin
 	public function showList(): bool|string
 	{
 		$this->prepareForumLanguages();
-
 		$this->prepareVariables();
-
 		$this->setTemplate();
 
 		ob_start();
@@ -70,29 +68,29 @@ class MainMenu extends Plugin
 		return ob_get_clean();
 	}
 
-	public function saveSettings(array &$plugin_options): void
+	public function saveSettings(array &$settings): void
 	{
-		if (! isset($plugin_options['items']))
+		if (! isset($settings['items']))
 			return;
 
-		$portal_langs = $forum_langs = [];
+		$portalLangs = $forumLangs = [];
 
 		if ($this->request()->has('portal_item_langs')) {
 			foreach ($this->request('portal_item_langs') as $lang => $val) {
 				if (! empty($val))
-					$portal_langs[$lang] = $val;
+					$portalLangs[$lang] = $val;
 			}
 		}
 
 		if ($this->request()->has('forum_item_langs')) {
 			foreach ($this->request('forum_item_langs') as $lang => $val) {
 				if (! empty($val))
-					$forum_langs[$lang] = $val;
+					$forumLangs[$lang] = $val;
 			}
 		}
 
-		$plugin_options['portal_langs'] = json_encode($portal_langs, JSON_UNESCAPED_UNICODE);
-		$plugin_options['forum_langs']  = json_encode($forum_langs, JSON_UNESCAPED_UNICODE);
+		$settings['portal_langs'] = json_encode($portalLangs, JSON_UNESCAPED_UNICODE);
+		$settings['forum_langs']  = json_encode($forumLangs, JSON_UNESCAPED_UNICODE);
 	}
 
 	private function prepareVariables(): void

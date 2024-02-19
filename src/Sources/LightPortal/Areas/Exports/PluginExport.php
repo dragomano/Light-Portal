@@ -41,7 +41,7 @@ final class PluginExport extends AbstractExport
 			'description' => Lang::$txt['lp_plugins_export_description']
 		];
 
-		Utils::$context['lp_plugins'] = $this->getEntityList('plugin');
+		Utils::$context['lp_plugins'] = $this->getEntityData('plugin');
 
 		$this->run();
 	}

@@ -90,8 +90,8 @@ class SimpleFeeder extends Block
 
 		$parameters['show_text'] ??= false;
 
-		$feed = $this->cache('simple_feeder_addon_b' . $data->block_id)
-			->setLifeTime($data->cache_time)
+		$feed = $this->cache('simple_feeder_addon_b' . $data->id)
+			->setLifeTime($data->cacheTime)
 			->setFallback(self::class, 'getData', $parameters['url']);
 
 		if (empty($feed))
@@ -101,7 +101,7 @@ class SimpleFeeder extends Block
 			$feed = $feed['data'];
 
 		foreach ($feed as $item) {
-			echo /** @lang text */ '
+			echo '
 		<div class="windowbg">
 			<div class="block">
 				<span class="floatleft">

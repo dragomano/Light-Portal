@@ -32,7 +32,8 @@ final class Category extends AbstractPageList
 
 		Utils::$context['lp_category'] = $this->request('id');
 
-		if (array_key_exists(Utils::$context['lp_category'], $this->getEntityList('category')) === false) {
+		$categories = $this->getEntityData('category');
+		if (array_key_exists(Utils::$context['lp_category'], $categories) === false) {
 			Utils::$context['error_link'] = LP_BASE_URL . ';sa=categories';
 			Lang::$txt['back'] = Lang::$txt['lp_all_categories'];
 			ErrorHandler::fatalLang('lp_category_not_found', status: 404);
@@ -42,7 +43,7 @@ final class Category extends AbstractPageList
 		if (empty(Utils::$context['lp_category'])) {
 			Utils::$context['page_title'] = Lang::$txt['lp_all_pages_without_category'];
 		} else {
-			$category = $this->getEntityList('category')[Utils::$context['lp_category']];
+			$category = $categories[Utils::$context['lp_category']];
 			Utils::$context['page_title'] = sprintf(Lang::$txt['lp_all_pages_with_category'], $category['name']);
 		}
 

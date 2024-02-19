@@ -259,7 +259,7 @@ final class BlockRepository extends AbstractRepository
 
 		$addon = $this->getCamelName($type);
 
-		$message = in_array($addon, $this->getEntityList('plugin'))
+		$message = in_array($addon, $this->getEntityData('plugin'))
 			? Lang::$txt['lp_addon_not_activated']
 			: Lang::$txt['lp_addon_not_installed'];
 

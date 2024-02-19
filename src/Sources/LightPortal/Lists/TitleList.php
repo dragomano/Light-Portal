@@ -15,14 +15,16 @@
 namespace Bugo\LightPortal\Lists;
 
 use Bugo\Compat\{Database as Db, Utils};
-use Bugo\LightPortal\Helper;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class TitleList implements ListInterface
 {
-	use Helper;
+	public function __invoke(): array
+	{
+		return $this->getAll();
+	}
 
 	public function getAll(): array
 	{

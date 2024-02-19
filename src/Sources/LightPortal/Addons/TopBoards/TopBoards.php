@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TopBoards;
@@ -78,11 +78,11 @@ class TopBoards extends Block
 
 		$parameters['show_numbers_only'] ??= false;
 
-		$top_boards = $this->cache('top_boards_addon_b' . $data->block_id . '_u' . User::$info['id'])
-			->setLifeTime($data->cache_time)
+		$topBoards = $this->cache('top_boards_addon_b' . $data->id . '_u' . User::$info['id'])
+			->setLifeTime($data->cacheTime)
 			->setFallback(self::class, 'getFromSsi', 'topBoards', (int) $parameters['num_boards'], 'array');
 
-		if (empty($top_boards))
+		if (empty($topBoards))
 			return;
 
 		echo '
@@ -90,9 +90,9 @@ class TopBoards extends Block
 
 		$type = $parameters['entity_type'] === 'num_posts' ? 'posts' : 'topics';
 
-		$max = $top_boards[0]['num_' . $type];
+		$max = $topBoards[0]['num_' . $type];
 
-		foreach ($top_boards as $board) {
+		foreach ($topBoards as $board) {
 			if ($board['num_' . $type] < 1)
 				continue;
 

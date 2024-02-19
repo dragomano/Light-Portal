@@ -76,9 +76,12 @@ abstract class AbstractPageList implements PageListInterface
 
 	private function getSectionData(array $row): array
 	{
+		if (empty($categories = $this->getEntityData('category')))
+			return [];
+
 		if (isset($row['category_id'])) {
 			return [
-				'name' => $this->getEntityList('category')[$row['category_id']]['name'],
+				'name' => $categories[$row['category_id']]['name'],
 				'link' => LP_BASE_URL . ';sa=categories;id=' . $row['category_id'],
 			];
 		}

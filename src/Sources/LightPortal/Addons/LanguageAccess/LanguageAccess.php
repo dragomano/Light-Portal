@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\LanguageAccess;
@@ -32,8 +32,8 @@ class LanguageAccess extends Plugin
 			if (empty($block['parameters']) || empty($block['parameters']['allowed_languages']))
 				continue;
 
-			$allowed_languages = array_flip(explode(',', $block['parameters']['allowed_languages']));
-			if (! array_key_exists(Utils::$context['user']['language'], $allowed_languages)) {
+			$allowedLanguages = array_flip(explode(',', $block['parameters']['allowed_languages']));
+			if (! array_key_exists(Utils::$context['user']['language'], $allowedLanguages)) {
 				unset(Utils::$context['lp_active_blocks'][$id]);
 			}
 		}

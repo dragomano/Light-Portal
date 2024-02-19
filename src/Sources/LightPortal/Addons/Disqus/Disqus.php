@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 18.02.24
  */
 
 namespace Bugo\LightPortal\Addons\Disqus;
@@ -37,7 +37,11 @@ class Disqus extends Plugin
 
 	public function comments(): void
 	{
-		if (! empty(Config::$modSettings['lp_show_comment_block']) && Config::$modSettings['lp_show_comment_block'] === 'disqus' && ! empty(Utils::$context['lp_disqus_plugin']['shortname'])) {
+		if (
+			! empty(Config::$modSettings['lp_show_comment_block'])
+			&& Config::$modSettings['lp_show_comment_block'] === 'disqus'
+			&& ! empty(Utils::$context['lp_disqus_plugin']['shortname'])
+		) {
 			Utils::$context['lp_disqus_comment_block'] = /** @lang text */
 				'
 				<div id="disqus_thread" class="windowbg"></div>
@@ -58,10 +62,10 @@ class Disqus extends Plugin
 
 	public function frontAssets(): void
 	{
-		if (empty(Utils::$context['lp_frontpage_articles']))
+		if (empty(Utils::$context['lp_frontpage_articles']) || empty(Config::$modSettings['lp_show_comment_block']))
 			return;
 
-		if (empty(Config::$modSettings['lp_show_comment_block']) || Config::$modSettings['lp_show_comment_block'] !== 'disqus' || empty(Utils::$context['lp_disqus_plugin']['shortname']))
+		if (Config::$modSettings['lp_show_comment_block'] !== 'disqus' || empty(Utils::$context['lp_disqus_plugin']['shortname']))
 			return;
 
 		$this->loadExtJS(

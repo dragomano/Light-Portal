@@ -196,7 +196,7 @@ final class PageExport extends AbstractExport
 
 	protected function getCategories(): array
 	{
-		$categories = $this->getEntityList('category');
+		$categories = $this->getEntityData('category');
 
 		unset($categories[0]);
 		ksort($categories);
@@ -228,7 +228,7 @@ final class PageExport extends AbstractExport
 				}
 			}
 
-			if ($tags = $this->getEntityList('tag')) {
+			if ($tags = $this->getEntityData('tag')) {
 				$xmlElements = $root->appendChild($xml->createElement('tags'));
 
 				$tags = fn() => new ArrayIterator($tags);

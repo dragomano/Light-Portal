@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 13.02.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TopPosters;
@@ -76,7 +76,7 @@ class TopPosters extends Block
 			LIMIT {int:num_posters}',
 			[
 				'num_posts'   => 0,
-				'num_posters' => $parameters['num_posters']
+				'num_posters' => $parameters['num_posters'],
 			]
 		);
 
@@ -116,11 +116,11 @@ class TopPosters extends Block
 		$parameters['show_numbers_only'] ??= false;
 		$parameters['num_posters'] ??= 10;
 
-		$top_posters = $this->cache('top_posters_addon_b' . $data->block_id . '_u' . User::$info['id'])
-			->setLifeTime($data->cache_time)
+		$topPosters = $this->cache('top_posters_addon_b' . $data->id . '_u' . User::$info['id'])
+			->setLifeTime($data->cacheTime)
 			->setFallback(self::class, 'getData', $parameters);
 
-		if (empty($top_posters)) {
+		if (empty($topPosters)) {
 			echo Lang::$txt['lp_top_posters']['none'];
 			return;
 		}
@@ -128,9 +128,9 @@ class TopPosters extends Block
 		echo '
 		<dl class="top_posters stats">';
 
-		$max = $top_posters[0]['posts'];
+		$max = $topPosters[0]['posts'];
 
-		foreach ($top_posters as $poster) {
+		foreach ($topPosters as $poster) {
 			$width = $poster['posts'] * 100 / $max;
 
 			echo '

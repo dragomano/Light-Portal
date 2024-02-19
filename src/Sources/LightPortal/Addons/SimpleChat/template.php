@@ -2,14 +2,14 @@
 
 use Bugo\Compat\{Config, Lang, Utils};
 
-function show_chat_block(int $block_id, bool $show_avatars, bool $full_width): void
+function show_chat_block(int $id, bool $show_avatars, bool $full_width): void
 {
 	echo /** @lang text */ '
 	<script>
-		const chat', $block_id, ' = new SimpleChat("', LP_ACTION, '", ', (Utils::$context['lp_chats'][$block_id] ?: '[]'), ');
+		const chat', $id, ' = new SimpleChat("', LP_ACTION, '", ', (Utils::$context['lp_chats'][$id] ?: '[]'), ');
 	</script>
 
-	<div x-data="chat', $block_id, /** @lang text */ '.handleComments()">
+	<div x-data="chat', $id, '.handleComments()">
 		<ul class="moderation_notes">
 			<template x-for="(comment, index) in comments" :key="index">
 				<li class="smalltext">
@@ -27,7 +27,7 @@ function show_chat_block(int $block_id, bool $show_avatars, bool $full_width): v
 			<div class="', $full_width ? 'full_width' : 'floatleft', ' post_note">
 				<input type="text" required x-ref="message" autofocus @keyup="$refs.submit.disabled = !$event.target.value">
 			</div>
-			<button class="button ', $full_width ? 'full_width' : 'floatright', '" disabled x-ref="submit" data-block="', $block_id, '">', Lang::$txt['post'], '</button>
+			<button class="button ', $full_width ? 'full_width' : 'floatright', '" disabled x-ref="submit" data-block="', $id, '">', Lang::$txt['post'], '</button>
 		</form>';
 	} else {
 		echo '

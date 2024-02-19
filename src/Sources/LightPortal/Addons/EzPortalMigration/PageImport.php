@@ -33,7 +33,7 @@ class PageImport extends AbstractCustomPageImport
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_ez_portal_migration']['desc']
+			'description' => Lang::$txt['lp_ez_portal_migration']['desc'],
 		];
 
 		$this->run();
@@ -133,7 +133,7 @@ class PageImport extends AbstractCustomPageImport
 			[
 				'sort'  => $sort,
 				'start' => $start,
-				'limit' => $items_per_page
+				'limit' => $items_per_page,
 			]
 		);
 
@@ -147,7 +147,7 @@ class PageImport extends AbstractCustomPageImport
 				'num_views'  => $row['views'],
 				'author_id'  => User::$info['id'],
 				'created_at' => DateTime::relative($row['date']),
-				'title'      => $row['title']
+				'title'      => $row['title'],
 			];
 		}
 
@@ -170,12 +170,12 @@ class PageImport extends AbstractCustomPageImport
 			[]
 		);
 
-		[$num_pages] = Utils::$smcFunc['db_fetch_row']($result);
+		[$count] = Utils::$smcFunc['db_fetch_row']($result);
 
 		Utils::$smcFunc['db_free_result']($result);
 		Utils::$context['lp_num_queries']++;
 
-		return (int) $num_pages;
+		return (int) $count;
 	}
 
 	protected function getItems(array $pages): array

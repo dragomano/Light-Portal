@@ -123,6 +123,7 @@ final class ExtraConfig extends AbstractConfig
 
 			$save_vars = $config_vars;
 			ACP::saveDBSettings($save_vars);
+
 			$this->session()->put('adm-save', true);
 			$this->cache()->flush();
 

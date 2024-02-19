@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortalMigration;
@@ -136,7 +136,7 @@ class BlockImport extends AbstractCustomBlockImport
 				'types' => $this->supportedTypes,
 				'sort'  => $sort,
 				'start' => $start,
-				'limit' => $items_per_page
+				'limit' => $items_per_page,
 			]
 		);
 
@@ -168,16 +168,16 @@ class BlockImport extends AbstractCustomBlockImport
 			FROM {db_prefix}tp_blocks
 			WHERE type IN ({array_int:types})',
 			[
-				'types' => $this->supportedTypes
+				'types' => $this->supportedTypes,
 			]
 		);
 
-		[$num_blocks] = Utils::$smcFunc['db_fetch_row']($result);
+		[$count] = Utils::$smcFunc['db_fetch_row']($result);
 
 		Utils::$smcFunc['db_free_result']($result);
 		Utils::$context['lp_num_queries']++;
 
-		return (int) $num_blocks;
+		return (int) $count;
 	}
 
 	protected function getItems(array $blocks): array
@@ -189,7 +189,7 @@ class BlockImport extends AbstractCustomBlockImport
 				AND id IN ({array_int:blocks})'),
 			[
 				'types'  => $this->supportedTypes,
-				'blocks' => $blocks
+				'blocks' => $blocks,
 			]
 		);
 

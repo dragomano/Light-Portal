@@ -78,7 +78,7 @@ class TagList extends Block
 			GROUP BY ok.id, ok.name
 			ORDER BY {raw:sort}',
 			[
-				'sort' => $sort
+				'sort' => $sort,
 			]
 		);
 
@@ -103,17 +103,17 @@ class TagList extends Block
 			return;
 
 		if ($parameters['source'] == 'lp_tags') {
-			$tag_list = $this->cache('tag_list_addon_b' . $data->block_id . '_u' . User::$info['id'])
-				->setLifeTime($data->cache_time)
+			$tagList = $this->cache('tag_list_addon_b' . $data->id . '_u' . User::$info['id'])
+				->setLifeTime($data->cacheTime)
 				->setFallback(Tag::class, 'getAll', 0, 0, $parameters['sorting'] === 'name' ? 'value' : 'num DESC');
 		} else {
-			$tag_list = $this->cache('tag_list_addon_b' . $data->block_id . '_u' . User::$info['id'])
-				->setLifeTime($data->cache_time)
+			$tagList = $this->cache('tag_list_addon_b' . $data->id . '_u' . User::$info['id'])
+				->setLifeTime($data->cacheTime)
 				->setFallback(self::class, 'getAllTopicKeywords', $parameters['sorting'] === 'name' ? 'ok.name' : 'frequency DESC');
 		}
 
-		if ($tag_list) {
-			foreach ($tag_list as $tag) {
+		if ($tagList) {
+			foreach ($tagList as $tag) {
 				echo '
 			<a class="button" href="', $tag['link'], '">', $tag['value'], ' <span class="amt">', $tag['frequency'], '</span></a>';
 			}
