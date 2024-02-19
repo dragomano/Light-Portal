@@ -32,8 +32,8 @@ final class Content
 		$data = new class($type, $block_id, $cache_time) {
 			public function __construct(
 				public string $type = 'bbc',
-				public int $block_id = 0,
-				public int $cache_time = 0
+				public int $id = 0,
+				public int $cacheTime = 0
 			) {}
 		};
 

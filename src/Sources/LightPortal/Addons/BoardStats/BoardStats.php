@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 13.02.24
+ * @version 18.02.24
  */
 
 namespace Bugo\LightPortal\Addons\BoardStats;
@@ -88,14 +88,14 @@ class BoardStats extends Block
 			return [];
 
 		if ($parameters['show_basic_info']) {
-			$basic_info = $this->getFromSsi('boardStats', 'array');
-			$basic_info['max_online_today'] = comma_format(Config::$modSettings['mostOnlineToday']);
-			$basic_info['max_online']       = comma_format(Config::$modSettings['mostOnline']);
+			$info = $this->getFromSsi('boardStats', 'array');
+			$info['max_online_today'] = comma_format(Config::$modSettings['mostOnlineToday']);
+			$info['max_online'] = comma_format(Config::$modSettings['mostOnline']);
 		}
 
 		return [
 			'latest_member' => Config::$modSettings['latestRealName'] ?? '',
-			'basic_info'    => $basic_info ?? [],
+			'basic_info'    => $info ?? [],
 			'whos_online'   => empty($parameters['show_whos_online']) ? [] : $this->getFromSsi('whosOnline', 'array')
 		];
 	}
@@ -110,35 +110,37 @@ class BoardStats extends Block
 
 		$parameters['show_latest_member'] ??= false;
 
-		$board_stats = $this->cache('board_stats_addon_b' . $data->block_id . '_u' . User::$info['id'])
-			->setLifeTime($parameters['update_interval'] ?? $data->cache_time)
+		$boardStats = $this->cache('board_stats_addon_b' . $data->id . '_u' . User::$info['id'])
+			->setLifeTime($parameters['update_interval'] ?? $data->cacheTime)
 			->setFallback(self::class, 'getData', $parameters);
 
-		if (empty($board_stats))
+		if (empty($boardStats))
 			return;
 
 		echo '
 			<div class="board_stats_areas">';
 
-		if ($parameters['show_latest_member'] && $board_stats['latest_member']) {
+		if ($parameters['show_latest_member'] && $boardStats['latest_member']) {
 			echo '
 				<div>
 					<h4>
 						', $parameters['use_fa_icons'] ? '<i class="fas fa-user"></i> ' : '<span class="main_icons members"></span> ', Lang::$txt['lp_board_stats']['newbie'], '
 					</h4>
 					<ul class="bbc_list">
-						<li>', $board_stats['latest_member'], '</li>
+						<li>', $boardStats['latest_member'], '</li>
 					</ul>
 				</div>';
 		}
 
-		if ($parameters['show_basic_info'] && $board_stats['basic_info']) {
-			$stats_title = User::hasPermission('view_stats') ? '<a href="' . Config::$scripturl . '?action=stats">' . Lang::$txt['forum_stats'] . '</a>' : Lang::$txt['forum_stats'];
+		if ($parameters['show_basic_info'] && $boardStats['basic_info']) {
+			$statsTitle = User::hasPermission('view_stats')
+				? '<a href="' . Config::$scripturl . '?action=stats">' . Lang::$txt['forum_stats'] . '</a>'
+				: Lang::$txt['forum_stats'];
 
 			echo '
 				<div>
 					<h4>
-						', $parameters['use_fa_icons'] ? '<i class="fas fa-chart-pie"></i> ' : '<span class="main_icons stats"></span> ', $stats_title, '
+						', $parameters['use_fa_icons'] ? '<i class="fas fa-chart-pie"></i> ' : '<span class="main_icons stats"></span> ', $statsTitle, '
 					</h4>';
 
 			echo '
@@ -146,31 +148,33 @@ class BoardStats extends Block
 
 			if (User::hasPermission('view_stats')) {
 				echo '
-						<li>', Lang::$txt['members'], ': ', $board_stats['basic_info']['members'], '</li>
-						<li>', Lang::$txt['posts'], ': ', $board_stats['basic_info']['posts'], '</li>
-						<li>', Lang::$txt['topics'], ': ', $board_stats['basic_info']['topics'], '</li>';
+						<li>', Lang::$txt['members'], ': ', $boardStats['basic_info']['members'], '</li>
+						<li>', Lang::$txt['posts'], ': ', $boardStats['basic_info']['posts'], '</li>
+						<li>', Lang::$txt['topics'], ': ', $boardStats['basic_info']['topics'], '</li>';
 			}
 
 			echo '
-						<li>', Lang::$txt['lp_board_stats']['online_today'] , ': ', $board_stats['basic_info']['max_online_today'], '</li>
-						<li>', Lang::$txt['lp_board_stats']['max_online'], ': ', $board_stats['basic_info']['max_online'], '</li>
+						<li>', Lang::$txt['lp_board_stats']['online_today'] , ': ', $boardStats['basic_info']['max_online_today'], '</li>
+						<li>', Lang::$txt['lp_board_stats']['max_online'], ': ', $boardStats['basic_info']['max_online'], '</li>
 					</ul>
 				</div>';
 		}
 
-		if ($parameters['show_whos_online'] && $board_stats['whos_online']) {
-			$online_title = User::hasPermission('who_view') ? '<a href="' . Config::$scripturl . '?action=who">' . Lang::$txt['online_users'] . '</a>' : Lang::$txt['online_users'];
+		if ($parameters['show_whos_online'] && $boardStats['whos_online']) {
+			$onlineTitle = User::hasPermission('who_view')
+				? '<a href="' . Config::$scripturl . '?action=who">' . Lang::$txt['online_users'] . '</a>'
+				: Lang::$txt['online_users'];
 
 			echo '
 				<div>
 					<h4>
-						', $parameters['use_fa_icons'] ? '<i class="fas fa-users"></i> ' : '<span class="main_icons people"></span> ', $online_title, '
+						', $parameters['use_fa_icons'] ? '<i class="fas fa-users"></i> ' : '<span class="main_icons people"></span> ', $onlineTitle, '
 					</h4>
 					<ul class="bbc_list">
-						<li>', Lang::$txt['members'], ': ', comma_format($board_stats['whos_online']['num_users_online']), '</li>
-						<li>', Lang::$txt['lp_board_stats']['guests'], ': ', comma_format($board_stats['whos_online']['num_guests']), '</li>
-						<li>', Lang::$txt['lp_board_stats']['spiders'], ': ', comma_format($board_stats['whos_online']['num_spiders']), '</li>
-						<li>', Lang::$txt['total'], ': ', comma_format($board_stats['whos_online']['total_users']), '</li>
+						<li>', Lang::$txt['members'], ': ', comma_format($boardStats['whos_online']['num_users_online']), '</li>
+						<li>', Lang::$txt['lp_board_stats']['guests'], ': ', comma_format($boardStats['whos_online']['num_guests']), '</li>
+						<li>', Lang::$txt['lp_board_stats']['spiders'], ': ', comma_format($boardStats['whos_online']['num_spiders']), '</li>
+						<li>', Lang::$txt['total'], ': ', comma_format($boardStats['whos_online']['total_users']), '</li>
 					</ul>
 				</div>';
 		}

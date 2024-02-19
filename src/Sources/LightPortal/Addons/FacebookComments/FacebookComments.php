@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\FacebookComments;
@@ -25,7 +25,7 @@ class FacebookComments extends Plugin
 {
 	public string $type = 'comment';
 
-	private array $sort_order = ['reverse-time', 'time'];
+	private array $sortOrder = ['reverse-time', 'time'];
 
 	public function init(): void
 	{
@@ -40,9 +40,17 @@ class FacebookComments extends Plugin
 			'comment_order_by'  => 'reverse-time',
 		]);
 
-		$config_vars['facebook_comments'][] = ['text', 'app_id', 'subtext' => Lang::$txt['lp_facebook_comments']['app_id_subtext']];
+		$config_vars['facebook_comments'][] = [
+			'text',
+			'app_id',
+			'subtext' => Lang::$txt['lp_facebook_comments']['app_id_subtext']
+		];
 		$config_vars['facebook_comments'][] = ['int', 'comments_per_page'];
-		$config_vars['facebook_comments'][] = ['select', 'comment_order_by', array_combine($this->sort_order, Lang::$txt['lp_facebook_comments']['comment_order_by_set'])];
+		$config_vars['facebook_comments'][] = [
+			'select',
+			'comment_order_by',
+			array_combine($this->sortOrder, Lang::$txt['lp_facebook_comments']['comment_order_by_set'])
+		];
 		$config_vars['facebook_comments'][] = ['multiselect', 'dark_themes', $this->getForumThemes()];
 	}
 
@@ -61,7 +69,15 @@ class FacebookComments extends Plugin
 					};
 				</script>
 				<script async defer crossorigin="anonymous" src="https://connect.facebook.net/' . Lang::$txt['lang_locale'] . '/sdk.js"></script>
-				<div class="fb-comments" data-href="' . Utils::$context['canonical_url'] . '" data-numposts="' . (Utils::$context['lp_facebook_comments_plugin']['comments_per_page'] ?? 10) . '" data-width="100%" data-colorscheme="' . ($this->isDarkTheme(Utils::$context['lp_facebook_comments_plugin']['dark_themes']) ? 'dark' : 'light') . '"' . (empty(Utils::$context['lp_facebook_comments_plugin']['comment_order_by']) ? '' : (' data-order-by="' . Utils::$context['lp_facebook_comments_plugin']['comment_order_by'] . '"')) . ' data-lazy="true"></div>';
+				<div
+					class="fb-comments"
+					data-href="' . Utils::$context['canonical_url'] . '"
+					data-numposts="' . (Utils::$context['lp_facebook_comments_plugin']['comments_per_page'] ?? 10) . '"
+					data-width="100%"
+					data-colorscheme="' . ($this->isDarkTheme(Utils::$context['lp_facebook_comments_plugin']['dark_themes']) ? 'dark' : 'light') . '"' . (empty(Utils::$context['lp_facebook_comments_plugin']['comment_order_by']) ? '' : ('
+					data-order-by="' . Utils::$context['lp_facebook_comments_plugin']['comment_order_by'] . '"')) . '
+					data-lazy="true"
+				></div>';
 		}
 	}
 

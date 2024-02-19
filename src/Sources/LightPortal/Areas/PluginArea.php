@@ -62,7 +62,7 @@ final class PluginArea
 			),
 		];
 
-		Utils::$context['lp_plugins'] = $this->getEntityList('plugin');
+		Utils::$context['lp_plugins'] = $this->getEntityData('plugin');
 
 		$this->extendPluginList();
 

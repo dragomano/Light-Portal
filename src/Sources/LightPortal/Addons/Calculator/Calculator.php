@@ -41,6 +41,6 @@ class Calculator extends Block
 		if ($data->type !== 'calculator')
 			return;
 
-		echo $this->getFromTemplate('show_calculator_block', $data->block_id);
+		echo $this->getFromTemplate('show_calculator_block', $data->id);
 	}
 }

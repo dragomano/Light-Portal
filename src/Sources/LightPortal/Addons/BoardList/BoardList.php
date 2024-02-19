@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 18.02.24
  */
 
 namespace Bugo\LightPortal\Addons\BoardList;
@@ -82,16 +82,16 @@ class BoardList extends Block
 		if ($data->type !== 'board_list')
 			return;
 
-		$board_list = $this->cache('board_list_addon_b' . $data->block_id . '_u' . Utils::$context['user']['id'])
-			->setLifeTime($data->cache_time)
+		$boardList = $this->cache('board_list_addon_b' . $data->id . '_u' . Utils::$context['user']['id'])
+			->setLifeTime($data->cacheTime)
 			->setFallback(self::class, 'getData');
 
-		if (empty($board_list))
+		if (empty($boardList))
 			return;
 
 		Utils::$context['current_board'] ??= 0;
 
-		foreach ($board_list as $category) {
+		foreach ($boardList as $category) {
 			if ($parameters['category_class'])
 				echo sprintf($this->getCategoryClasses()[$parameters['category_class']], $category['name']);
 

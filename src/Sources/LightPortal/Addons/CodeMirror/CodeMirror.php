@@ -43,7 +43,10 @@ class CodeMirror extends Plugin
 
 		$types = array_keys($this->modes);
 		foreach ($types as $type) {
-			if (($object['type'] === $type || (isset($object['options']['content']) && $object['options']['content'] === $type)) && in_array($type, $modes)) {
+			if (
+				($object['type'] === $type || (isset($object['options']['content']) && $object['options']['content'] === $type))
+				&& in_array($type, $modes)
+			) {
 				$currentMode = $type;
 				break;
 			}

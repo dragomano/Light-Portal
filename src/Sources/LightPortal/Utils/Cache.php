@@ -34,10 +34,11 @@ final class Cache implements CacheInterface
 		return $this;
 	}
 
-	public function setFallback(string $className, string $methodName, ...$params): mixed
+	public function setFallback(string $className, string $methodName = '__invoke', ...$params): mixed
 	{
-		if (empty($methodName) || empty($className) || $this->lifeTime === 0)
+		if (empty($methodName) || empty($className) || $this->lifeTime === 0) {
 			$this->forget($this->key);
+		}
 
 		if (($cachedValue = $this->get($this->key, $this->lifeTime)) === null) {
 			$cachedValue = $this->callMethod($className, $methodName, ...$params);

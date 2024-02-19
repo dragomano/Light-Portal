@@ -31,14 +31,14 @@ final class Tag extends AbstractPageList
 
 		Utils::$context['lp_tag'] = $this->request('id', 0);
 
-		if (array_key_exists(Utils::$context['lp_tag'], $this->getEntityList('tag')) === false) {
+		if (array_key_exists(Utils::$context['lp_tag'], $this->getEntityData('tag')) === false) {
 			Utils::$context['error_link'] = LP_BASE_URL . ';sa=tags';
 			Lang::$txt['back'] = Lang::$txt['lp_all_page_tags'];
 			ErrorHandler::fatalLang('lp_tag_not_found', status: 404);
 		}
 
 		Utils::$context['page_title'] = sprintf(
-			Lang::$txt['lp_all_tags_by_key'], $this->getEntityList('tag')[Utils::$context['lp_tag']]
+			Lang::$txt['lp_all_tags_by_key'], $this->getEntityData('tag')[Utils::$context['lp_tag']]
 		);
 
 		Utils::$context['canonical_url']  = LP_BASE_URL . ';sa=tags;id=' . Utils::$context['lp_tag'];

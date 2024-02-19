@@ -427,7 +427,7 @@ abstract class AbstractMain
 	private function getMenuPages(): array
 	{
 		if (($pages = $this->cache()->get('menu_pages')) === null) {
-			$titles = $this->getEntityList('title');
+			$titles = $this->getEntityData('title');
 
 			$result = Db::$db->query('', '
 				SELECT p.page_id, p.alias, p.permissions, pp2.value AS icon

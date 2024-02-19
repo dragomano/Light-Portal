@@ -36,7 +36,7 @@ class ChessBoard extends Block
 		$this->loadExtJS('https://unpkg.com/@chrisoakman/chessboard2@0/dist/chessboard2.min.js');
 		$this->loadExtJS('https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.12.1/chess.js');
 
-		$id = $data->block_id;
+		$id = $data->id;
 
 		echo /** @lang text */ '
 		<div id="chessBoard' . $id . '"></div>

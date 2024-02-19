@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\EhPortalMigration;
@@ -33,7 +33,7 @@ class PageImport extends AbstractCustomPageImport
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_eh_portal_migration']['desc']
+			'description' => Lang::$txt['lp_eh_portal_migration']['desc'],
 		];
 
 		$this->run();
@@ -137,7 +137,7 @@ class PageImport extends AbstractCustomPageImport
 			[
 				'sort'  => $sort,
 				'start' => $start,
-				'limit' => $items_per_page
+				'limit' => $items_per_page,
 			]
 		);
 
@@ -151,7 +151,7 @@ class PageImport extends AbstractCustomPageImport
 				'num_views'  => $row['views'],
 				'author_id'  => User::$info['id'],
 				'created_at' => DateTime::relative(time()),
-				'title'      => $row['title']
+				'title'      => $row['title'],
 			];
 		}
 
@@ -174,12 +174,12 @@ class PageImport extends AbstractCustomPageImport
 			[]
 		);
 
-		[$num_pages] = Utils::$smcFunc['db_fetch_row']($result);
+		[$count] = Utils::$smcFunc['db_fetch_row']($result);
 
 		Utils::$smcFunc['db_free_result']($result);
 		Utils::$context['lp_num_queries']++;
 
-		return (int) $num_pages;
+		return (int) $count;
 	}
 
 	protected function getItems(array $pages): array
@@ -189,7 +189,7 @@ class PageImport extends AbstractCustomPageImport
 			FROM {db_prefix}sp_pages' . (empty($pages) ? '' : '
 			WHERE id_page IN ({array_int:pages})'),
 			[
-				'pages' => $pages
+				'pages' => $pages,
 			]
 		);
 

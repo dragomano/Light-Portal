@@ -45,13 +45,13 @@ class Reactions extends Plugin
 			->setValue(Utils::$context['lp_page']['options']['allow_reactions']);
 	}
 
-	public function preparePageData(array $data, bool $is_author): void
+	public function preparePageData(array $data, bool $isAuthor): void
 	{
 		if (empty($data['options']['allow_reactions']))
 			return;
 
 		Utils::$context['reaction_url'] = LP_PAGE_URL . $data['alias'];
-		Utils::$context['can_react'] = empty($is_author);
+		Utils::$context['can_react'] = empty($isAuthor);
 
 		$this->addInlineJS('
 			document.addEventListener("addReaction", (event) => {
@@ -86,8 +86,8 @@ class Reactions extends Plugin
 			$json = $this->request()->json();
 
 			if (isset($json['comment'])) {
-				$comment_reactions = $this->getReactions($json['comment'], 'comment');
-				exit($this->getReactionsWithCount($comment_reactions));
+				$commentReactions = $this->getReactions($json['comment'], 'comment');
+				exit($this->getReactionsWithCount($commentReactions));
 			}
 
 			exit($this->getReactionsWithCount($reactions));
@@ -98,9 +98,9 @@ class Reactions extends Plugin
 
 			if (isset($json['reaction'])) {
 				if (isset($json['comment'])) {
-					$comment_reactions = $this->getReactions($json['comment'], 'comment');
-					$comment_reactions[User::$info['id']] = $json['reaction'];
-					$this->addReaction($json['comment'], json_encode($comment_reactions), 'comment');
+					$commentReactions = $this->getReactions($json['comment'], 'comment');
+					$commentReactions[User::$info['id']] = $json['reaction'];
+					$this->addReaction($json['comment'], json_encode($commentReactions), 'comment');
 					$this->cache()->forget('page_' . $data['alias'] . '_comments');
 				} else {
 					$reactions[User::$info['id']] = $json['reaction'];
@@ -192,7 +192,7 @@ class Reactions extends Plugin
 			LIMIT 1',
 			[
 				'id'     => $id,
-				'entity' => $entity
+				'entity' => $entity,
 			]
 		);
 

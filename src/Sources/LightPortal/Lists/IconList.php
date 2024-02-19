@@ -25,6 +25,11 @@ final class IconList implements ListInterface
 
 	private string $prefix = 'fa-solid fa-';
 
+	public function __invoke(): array
+	{
+		return $this->getAll();
+	}
+
 	public function getAll(): array
 	{
 		$set = [

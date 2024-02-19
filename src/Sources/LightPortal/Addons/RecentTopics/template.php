@@ -2,7 +2,7 @@
 
 use Bugo\Compat\{Config, Lang, Utils};
 
-function show_topics(array $recent_topics, array $parameters, bool $full_width): void
+function show_topics(array $topics, array $parameters, bool $full_width): void
 {
 	if ($full_width) {
 		echo '
@@ -13,7 +13,7 @@ function show_topics(array $recent_topics, array $parameters, bool $full_width):
 	}
 
 	if (empty($parameters['use_simple_style'])) {
-		foreach ($recent_topics as $topic) {
+		foreach ($topics as $topic) {
 			$topic['preview'] = '<a href="' . $topic['href'] . '">' . $topic['preview'] . '</a>';
 
 			echo '
@@ -40,7 +40,7 @@ function show_topics(array $recent_topics, array $parameters, bool $full_width):
 		</div>';
 		}
 	} else {
-		foreach ($recent_topics as $topic) {
+		foreach ($topics as $topic) {
 			$topic['preview'] = '<a href="' . $topic['href'] . '">' . $topic['preview'] . '</a>';
 
 			echo '

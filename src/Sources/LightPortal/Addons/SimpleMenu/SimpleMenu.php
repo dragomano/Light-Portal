@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.02.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleMenu;
@@ -52,7 +52,7 @@ class SimpleMenu extends Block
 
 				$items[] = [
 					'name' => $item,
-					'link' => $link
+					'link' => $link,
 				];
 			}
 
@@ -111,8 +111,8 @@ class SimpleMenu extends Block
 		if ($data->type !== 'simple_menu' || empty($parameters['items']))
 			return;
 
-		$html = $this->cache('simple_menu_addon_b' . $data->block_id)
-			->setLifeTime($data->cache_time)
+		$html = $this->cache('simple_menu_addon_b' . $data->id)
+			->setLifeTime($data->cacheTime)
 			->setFallback(self::class, 'getData', $parameters['items']);
 
 		if (empty($html))

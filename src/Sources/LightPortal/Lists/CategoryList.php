@@ -15,14 +15,16 @@
 namespace Bugo\LightPortal\Lists;
 
 use Bugo\Compat\{Database as Db, Lang, Utils};
-use Bugo\LightPortal\Helper;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class CategoryList implements ListInterface
 {
-	use Helper;
+	public function __invoke(): array
+	{
+		return $this->getAll();
+	}
 
 	public function getAll(): array
 	{

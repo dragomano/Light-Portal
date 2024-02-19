@@ -20,7 +20,7 @@ final class KeywordSelect extends AbstractPartial
 {
 	public function __invoke(): string
 	{
-		Utils::$context['lp_tags'] = $this->getEntityList('tag');
+		Utils::$context['lp_tags'] = $this->getEntityData('tag');
 
 		$data = $values = [];
 		foreach (Utils::$context['lp_tags'] as $value => $label) {

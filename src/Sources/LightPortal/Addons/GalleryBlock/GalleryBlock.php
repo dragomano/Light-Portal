@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 13.02.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\GalleryBlock;
@@ -73,10 +73,10 @@ class GalleryBlock extends Block
 
 		$categories = empty($parameters['categories']) ? [] : explode(',', $parameters['categories']);
 
-		$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
+		$result = Utils::$smcFunc['db_query']('', '
 			SELECT
-				p.id_picture, p.width, p.height, p.allowcomments, p.id_cat, p.keywords, p.commenttotal AS num_comments, p.filename, p.approved,
-				p.views, p.title, p.id_member, m.real_name, p.date, p.description, c.title AS cat_name
+				p.id_picture, p.width, p.height, p.allowcomments, p.id_cat, p.keywords, p.commenttotal AS num_comments,
+				p.filename, p.approved, p.views, p.title, p.id_member, m.real_name, p.date, p.description, c.title AS cat_name
 			FROM {db_prefix}gallery_pic AS p
 				LEFT JOIN {db_prefix}gallery_cat AS c ON (c.id_cat = p.id_cat)
 				LEFT JOIN {db_prefix}members AS m ON (m.id_member = p.id_member)
@@ -87,7 +87,7 @@ class GalleryBlock extends Block
 			[
 				'approved'   => 1,
 				'categories' => $categories,
-				'limit'      => $parameters['num_images']
+				'limit'      => $parameters['num_images'],
 			]
 		);
 
@@ -97,12 +97,12 @@ class GalleryBlock extends Block
 				'id' => $row['id_picture'],
 				'section' => [
 					'name' => $row['cat_name'],
-					'link' => Config::$scripturl . '?action=gallery;cat=' . $row['id_cat']
+					'link' => Config::$scripturl . '?action=gallery;cat=' . $row['id_cat'],
 				],
 				'author' => [
 					'id'   => $row['id_member'],
 					'link' => Config::$scripturl . '?action=profile;u=' . $row['id_member'],
-					'name' => $row['real_name']
+					'name' => $row['real_name'],
 				],
 				'date'   => $row['date'],
 				'title'  => $row['title'],
@@ -129,8 +129,8 @@ class GalleryBlock extends Block
 
 		User::mustHavePermission('smfgallery_view');
 
-		$images = $this->cache('gallery_block_addon_b' . $data->block_id . '_u' . Utils::$context['user']['id'])
-			->setLifeTime($data->cache_time)
+		$images = $this->cache('gallery_block_addon_b' . $data->id . '_u' . Utils::$context['user']['id'])
+			->setLifeTime($data->cacheTime)
 			->setFallback(self::class, 'getData', $parameters);
 
 		if (empty($images)) {
@@ -139,11 +139,15 @@ class GalleryBlock extends Block
 		}
 
 		echo '
-		<div class="gallery_block"' . ($this->isInSidebar($data->block_id) ? ' style="grid-auto-flow: row"' : '') . '>';
+		<div class="gallery_block"' . ($this->isInSidebar($data->id) ? ' style="grid-auto-flow: row"' : '') . '>';
 
 		foreach ($images as $image) {
 			echo '
-			<div class="item"><a href="', $image['link'], '"><img src="', $image['image'], '" title="', $image['title'], '" alt="', $image['title'], '"></a></div>';
+			<div class="item">
+				<a href="', $image['link'], '">
+					<img src="', $image['image'], '" title="', $image['title'], '" alt="', $image['title'], '">
+				</a>
+			</div>';
 		}
 
 		echo '

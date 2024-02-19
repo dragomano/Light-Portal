@@ -25,7 +25,7 @@ final class PageAliasSelect extends AbstractPartial
 
 		$params['id'] ??= 'lp_frontpage_alias';
 		$params['value'] ??= Config::$modSettings['lp_frontpage_alias'] ?? '';
-		$params['data'] ??= $this->getEntityList('page');
+		$params['data'] ??= $this->getEntityData('page');
 
 		$data = [];
 		foreach ($params['data'] as $page) {

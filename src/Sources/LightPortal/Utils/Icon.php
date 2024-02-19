@@ -14,8 +14,6 @@
 
 namespace Bugo\LightPortal\Utils;
 
-use Bugo\LightPortal\Lists\IconList;
-
 final class Icon
 {
 	public static function get(string $name, string $title = ''): string
@@ -31,7 +29,6 @@ final class Icon
 
 	public static function all(): array
 	{
-		return (new Cache('all_icons'))
-			->setFallback(IconList::class, 'getAll');
+		return (new EntityManager())('icon');
 	}
 }

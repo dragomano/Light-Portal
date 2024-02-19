@@ -37,7 +37,7 @@ final class CategoryConfig extends AbstractConfig
 
 		Utils::$context['page_title'] = Lang::$txt['lp_categories'];
 
-		Utils::$context['lp_categories'] = $this->getEntityList('category');
+		Utils::$context['lp_categories'] = $this->getEntityData('category');
 
 		unset(Utils::$context['lp_categories'][0]);
 

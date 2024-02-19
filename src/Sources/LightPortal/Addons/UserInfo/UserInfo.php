@@ -49,7 +49,7 @@ class UserInfo extends Block
 		}
 
 		$userData = $this->cache('user_info_addon_u' . Utils::$context['user']['id'])
-			->setLifeTime($data->cache_time)
+			->setLifeTime($data->cacheTime)
 			->setFallback(self::class, 'getData');
 
 		show_user_info($userData);

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 18.02.24
  */
 
 namespace Bugo\LightPortal\Addons\CategoryList;
@@ -37,7 +37,7 @@ class CategoryList extends Block
 			return;
 
 		$categories = $this->cache('category_list_addon_u' . Utils::$context['user']['id'])
-			->setLifeTime($data->cache_time)
+			->setLifeTime($data->cacheTime)
 			->setFallback(self::class, 'getData');
 
 		if (empty($categories)) {
@@ -45,7 +45,10 @@ class CategoryList extends Block
 			return;
 		}
 
-		$currentCat = Utils::$context['current_action'] === 'portal' && $this->request()->has('sa') && $this->request('sa') === 'categories' ? (int) $this->request('id', 0) : false;
+		$currentCat = Utils::$context['current_action'] === 'portal'
+			&& $this->request()->has('sa')
+			&& $this->request('sa') === 'categories'
+				? (int) $this->request('id', 0) : false;
 
 		// Are we watching a portal page?
 		if (isset(Utils::$context['lp_page']['category_id']))

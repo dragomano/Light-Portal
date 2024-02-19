@@ -688,7 +688,7 @@ final class PageArea
 				'id'         => 'category_id',
 				'multiple'   => false,
 				'full_width' => false,
-				'data'       => $this->getEntityList('category'),
+				'data'       => $this->getEntityData('category'),
 				'value'      => Utils::$context['lp_page']['category_id']
 			]);
 

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 18.02.24
  */
 
 namespace Bugo\LightPortal\Addons\DummyArticleCards;
@@ -47,9 +47,10 @@ class DummyArticle extends AbstractArticle
 			->setLifeTime(21600)
 			->setFallback(self::class, 'getUsers');
 
-		$demo_articles = [];
+		$demoArticles = [];
 
-		$keywords = empty(Utils::$context['lp_dummy_article_cards_plugin']['keywords']) ? '' : (Utils::$context['lp_dummy_article_cards_plugin']['keywords'] . '/all');
+		$keywords = empty(Utils::$context['lp_dummy_article_cards_plugin']['keywords'])
+			? '' : (Utils::$context['lp_dummy_article_cards_plugin']['keywords'] . '/all');
 
 		foreach ($products as $id => $article) {
 			if (empty(Utils::$context['lp_dummy_article_cards_plugin']['use_lorem_ipsum'])) {
@@ -66,7 +67,7 @@ class DummyArticle extends AbstractArticle
 				$tag     = Utils::shorten(Lorem::ipsum(1), 10);
 			}
 
-			$demo_articles[$article['id']] = [
+			$demoArticles[$article['id']] = [
 				'id'        => $article['id'],
 				'section'   => [
 					'name' => $section,
@@ -87,15 +88,15 @@ class DummyArticle extends AbstractArticle
 					'title' => Lang::$txt['lp_views']
 				],
 				'replies'   => [
-					'num'   => $num_replies = random_int(0, 9999),
+					'num'   => $numReplies = random_int(0, 9999),
 					'title' => Lang::$txt['lp_replies']
 				],
 				'css_class' => random_int(0, 1) ? ' sticky' : '',
 				'image'     => $image,
 				'can_edit'  => User::$info['is_admin'],
-				'edit_link' => Config::$scripturl . '?action=post;msg=' . ($msg_id = random_int(0, 9999)) . ';topic=' . $article['id'] . '.0',
+				'edit_link' => Config::$scripturl . '?action=post;msg=' . ($msgId = random_int(0, 9999)) . ';topic=' . $article['id'] . '.0',
 				'teaser'    => $teaser,
-				'msg_link'  => $num_replies ? Config::$scripturl . '?msg=' . $msg_id : $link,
+				'msg_link'  => $numReplies ? Config::$scripturl . '?msg=' . $msgId : $link,
 				'rating'    => $article['rating'],
 				'tags'      => [
 					['name' => $tag, 'href' => LP_BASE_URL . ';sa=tags;id=' . random_int(1, 99)]
@@ -103,10 +104,10 @@ class DummyArticle extends AbstractArticle
 			];
 		}
 
-		$dates = array_column($demo_articles, 'date');
-		array_multisort($dates, SORT_DESC, $demo_articles);
+		$dates = array_column($demoArticles, 'date');
+		array_multisort($dates, SORT_DESC, $demoArticles);
 
-		return $demo_articles;
+		return $demoArticles;
 	}
 
 	public function getTotalCount(): int

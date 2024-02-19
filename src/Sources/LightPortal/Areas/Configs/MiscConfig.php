@@ -76,7 +76,6 @@ final class MiscConfig extends AbstractConfig
 			}
 
 			$save_vars = $config_vars;
-
 			ACP::saveDBSettings($save_vars);
 
 			$this->session()->put('adm-save', true);

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TopPages;
@@ -69,7 +69,7 @@ class TopPages extends Block
 
 	public function getData(array $parameters): array
 	{
-		$titles = $this->getEntityList('title');
+		$titles = $this->getEntityData('title');
 
 		$result = Utils::$smcFunc['db_query']('', '
 			SELECT page_id, alias, type, num_views, num_comments
@@ -83,7 +83,7 @@ class TopPages extends Block
 				'status'       => 1,
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions(),
-				'limit'        => $parameters['num_pages']
+				'limit'        => $parameters['num_pages'],
 			]
 		);
 
@@ -113,12 +113,12 @@ class TopPages extends Block
 
 		$parameters['show_numbers_only'] ??= false;
 
-		$top_pages = $this->cache('top_pages_addon_b' . $data->block_id . '_u' . User::$info['id'])
-			->setLifeTime($data->cache_time)
+		$topPages = $this->cache('top_pages_addon_b' . $data->id . '_u' . User::$info['id'])
+			->setLifeTime($data->cacheTime)
 			->setFallback(self::class, 'getData', $parameters);
 
-		if ($top_pages) {
-			$max = $top_pages[array_key_first($top_pages)]['num_' . $parameters['popularity_type']];
+		if ($topPages) {
+			$max = $topPages[array_key_first($topPages)]['num_' . $parameters['popularity_type']];
 
 			if (empty($max))
 				echo Lang::$txt['lp_top_pages']['no_items'];
@@ -126,7 +126,7 @@ class TopPages extends Block
 				echo '
 		<dl class="stats">';
 
-				foreach ($top_pages as $page) {
+				foreach ($topPages as $page) {
 					if ($page['num_' . $parameters['popularity_type']] < 1 || empty($title = $this->getTranslatedTitle($page['title'])))
 						continue;
 

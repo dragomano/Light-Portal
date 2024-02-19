@@ -26,7 +26,7 @@ final class CategorySelect extends AbstractPartial
 		$params['id'] ??= 'lp_frontpage_categories';
 		$params['multiple'] ??= true;
 		$params['full_width'] ??= true;
-		$params['data'] ??= $this->getEntityList('category');
+		$params['data'] ??= $this->getEntityData('category');
 		$params['value'] ??= Config::$modSettings['lp_frontpage_categories'] ?? '';
 
 		$data = [];

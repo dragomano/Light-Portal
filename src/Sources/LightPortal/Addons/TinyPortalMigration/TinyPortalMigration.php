@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortalMigration;
@@ -29,8 +29,12 @@ class TinyPortalMigration extends Plugin
 	public function updateAdminAreas(array &$areas): void
 	{
 		if (User::$info['is_admin']) {
-			$areas['lp_blocks']['subsections']['import_from_tp'] = [Icon::get('import') . Lang::$txt['lp_tiny_portal_migration']['label_name']];
-			$areas['lp_pages']['subsections']['import_from_tp']  = [Icon::get('import') . Lang::$txt['lp_tiny_portal_migration']['label_name']];
+			$areas['lp_blocks']['subsections']['import_from_tp'] = [
+				Icon::get('import') . Lang::$txt['lp_tiny_portal_migration']['label_name']
+			];
+			$areas['lp_pages']['subsections']['import_from_tp'] = [
+				Icon::get('import') . Lang::$txt['lp_tiny_portal_migration']['label_name']
+			];
 		}
 	}
 
@@ -53,11 +57,11 @@ class TinyPortalMigration extends Plugin
 
 		$comments = $this->getComments(array_keys($items));
 
-		foreach ($items as $page_id => $item) {
-			$items[$page_id]['num_comments'] = empty($comments[$page_id]) ? 0 : sizeof($comments[$page_id]);
+		foreach ($items as $pageId => $item) {
+			$items[$pageId]['num_comments'] = empty($comments[$pageId]) ? 0 : sizeof($comments[$pageId]);
 
 			$titles[] = [
-				'item_id' => $page_id,
+				'item_id' => $pageId,
 				'type'    => 'page',
 				'lang'    => Config::$language,
 				'title'   => $item['subject']
@@ -65,32 +69,32 @@ class TinyPortalMigration extends Plugin
 
 			if (Config::$language !== Language::FALLBACK && ! empty(Config::$modSettings['userLanguage'])) {
 				$titles[] = [
-					'item_id' => $page_id,
+					'item_id' => $pageId,
 					'type'    => 'page',
 					'lang'    => Language::FALLBACK,
 					'title'   => $item['subject']
 				];
 			}
 
-			unset($items[$page_id]['subject']);
+			unset($items[$pageId]['subject']);
 
-			if (in_array('author', $items[$page_id]['options']) || in_array('date', $items[$page_id]['options']))
+			if (in_array('author', $items[$pageId]['options']) || in_array('date', $items[$pageId]['options']))
 				$params[] = [
-					'item_id' => $page_id,
+					'item_id' => $pageId,
 					'type'    => 'page',
 					'name'    => 'show_author_and_date',
 					'value'   => 1
 				];
 
-			if (in_array('commentallow', $items[$page_id]['options']))
+			if (in_array('commentallow', $items[$pageId]['options']))
 				$params[] = [
-					'item_id' => $page_id,
+					'item_id' => $pageId,
 					'type'    => 'page',
 					'name'    => 'allow_comments',
 					'value'   => 1
 				];
 
-			unset($items[$page_id]['options']);
+			unset($items[$pageId]['options']);
 		}
 	}
 
@@ -104,7 +108,7 @@ class TinyPortalMigration extends Plugin
 				AND com.item_id IN ({array_int:pages})'),
 			[
 				'type'  => 'article_comment',
-				'pages' => $pages
+				'pages' => $pages,
 			]
 		);
 
@@ -119,7 +123,7 @@ class TinyPortalMigration extends Plugin
 				'page_id'    => $row['item_id'],
 				'author_id'  => $row['member_id'],
 				'message'    => $row['comment'],
-				'created_at' => $row['datetime']
+				'created_at' => $row['datetime'],
 			];
 		}
 

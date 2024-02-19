@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 18.02.24
  */
 
 namespace Bugo\LightPortal\Addons\Chart;
@@ -129,11 +129,11 @@ class Chart extends Block
 		if ($data->type !== 'chart')
 			return;
 
-		$block_id = $data->block_id;
+		$id = $data->id;
 
-		echo /** @lang text */ '
+		echo '
 		<div>
-			<canvas id="chart' . $block_id . '" aria-label="' . (empty($parameters['chart_title']) ? 'Simple chart' : $parameters['chart_title']) . '" role="img"></canvas>
+			<canvas id="chart' . $id . '" aria-label="' . (empty($parameters['chart_title']) ? 'Simple chart' : $parameters['chart_title']) . '" role="img"></canvas>
 		</div>';
 
 		$type = $parameters['chart_type'] ?? $this->params['chart_type'];
@@ -143,12 +143,14 @@ class Chart extends Block
 		$datasets = json_encode($datasets);
 
 		$labels = $parameters['labels'] ?? $this->params['labels'];
-		$labels = implode(',', array_map(fn($label) => Utils::escapeJavaScript(trim($label)), explode(',', $labels)));
+		$labels = implode(',', array_map(
+			fn($label) => Utils::escapeJavaScript(trim($label)), explode(',', $labels))
+		);
 
 		$this->loadJSFile('light_portal/chart/chart.umd.min.js', ['minimize' => true]);
 
 		$this->addInlineJS('
-		new Chart("chart' . $block_id . '", {
+		new Chart("chart' . $id . '", {
 			type: "' . $type . '",
 			data: {
 				labels: [' . $labels . '],

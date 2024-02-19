@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\SiteList;
@@ -47,20 +47,24 @@ class SiteList extends Plugin
 		return ob_get_clean();
 	}
 
-	public function saveSettings(array &$plugin_options): void
+	public function saveSettings(array &$settings): void
 	{
-		if (! isset($plugin_options['urls']))
+		if (! isset($settings['urls']))
 			return;
 
 		$sites = [];
 
 		if ($this->request()->has('url')) {
 			foreach ($this->request('url') as $key => $value) {
-				$sites[$this->filterVar($value, 'url')] = [$this->filterVar($this->request('image')[$key], 'url'), $this->request('title')[$key], $this->request('desc')[$key]];
+				$sites[$this->filterVar($value, 'url')] = [
+					$this->filterVar($this->request('image')[$key], 'url'),
+					$this->request('title')[$key],
+					$this->request('desc')[$key],
+				];
 			}
 		}
 
-		$plugin_options['urls'] = json_encode($sites, JSON_UNESCAPED_UNICODE);
+		$settings['urls'] = json_encode($sites, JSON_UNESCAPED_UNICODE);
 	}
 
 	public function frontModes(array &$modes): void

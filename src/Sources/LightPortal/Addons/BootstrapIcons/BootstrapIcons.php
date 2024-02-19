@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 13.02.24
+ * @version 18.02.24
  */
 
 namespace Bugo\LightPortal\Addons\BootstrapIcons;
@@ -32,7 +32,10 @@ class BootstrapIcons extends Plugin
 
 	public function init(): void
 	{
-		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/bootstrap-icons@1/font/bootstrap-icons.min.css', ['seed' => false]);
+		$this->loadExtCSS(
+			'https://cdn.jsdelivr.net/npm/bootstrap-icons@1/font/bootstrap-icons.min.css',
+			['seed' => false]
+		);
 	}
 
 	public function prepareIconList(array &$icons): void

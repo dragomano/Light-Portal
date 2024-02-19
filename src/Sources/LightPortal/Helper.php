@@ -15,9 +15,8 @@
 namespace Bugo\LightPortal;
 
 use Bugo\Compat\{Config, Database as Db, ErrorHandler, Lang, User, Utils};
-use Bugo\LightPortal\Lists\{CategoryList, PageList, TagList, TitleList};
 use Bugo\LightPortal\Utils\{BlockAppearance, Cache, File};
-use Bugo\LightPortal\Utils\{Post, Request, Session, SMFTrait};
+use Bugo\LightPortal\Utils\{EntityManager, Post, Request, Session, SMFTrait};
 use Exception;
 
 if (! defined('SMF'))
@@ -64,6 +63,11 @@ trait Helper
 		AddonHandler::getInstance()->run($hook, $vars, $plugins);
 	}
 
+	public function getEntityData(string $entity): array
+	{
+		return (new EntityManager())($entity);
+	}
+
 	public function require(string $filename, string $extension = '.php'): void
 	{
 		if (is_file($path = dirname(__DIR__) . DIRECTORY_SEPARATOR . $filename . $extension))
@@ -73,22 +77,6 @@ trait Helper
 	public function callHelper(mixed $action): mixed
 	{
 		return call_user_func($action);
-	}
-
-	public function getEntityList(string $entity): array
-	{
-		return match ($entity) {
-			'category' => $this->cache('all_categories')
-				->setFallback(CategoryList::class, 'getAll'),
-			'page'     => $this->cache('all_pages')
-				->setFallback(PageList::class, 'getAll'),
-			'tag'      => $this->cache('all_tags')
-				->setFallback(TagList::class, 'getAll'),
-			'title'    => $this->cache('all_titles')
-				->setFallback(TitleList::class, 'getAll'),
-			'plugin'   => AddonHandler::getInstance()->getAll(),
-			default    => [],
-		};
 	}
 
 	public function getUserAvatar(int $userId, array $userData = []): string
