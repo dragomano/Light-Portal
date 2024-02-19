@@ -117,7 +117,7 @@ class Todays extends Block
 			foreach ($result as $event) {
 				echo '
 			<li>', $event['start_date_local'], ' - ', $event['link'], (
-				$event['can_edit'] ? ' <a href="' . $event['modify_href'] . '" style="color: #ff0000;">*</a>' : ''
+				$event['can_edit'] ? ' <a class="error" href="' . $event['modify_href'] . '">*</a>' : ''
 			), '</li>';
 			}
 

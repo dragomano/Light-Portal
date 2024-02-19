@@ -224,11 +224,14 @@ abstract class AbstractMain
 			return;
 		}
 
-		Utils::$context['lp_load_page_stats'] = sprintf(
-			Lang::$txt['lp_load_page_stats'],
-			round(microtime(true) - Utils::$context['lp_load_time'], 3),
-			Utils::$context['lp_num_queries']
-		);
+		Utils::$context['lp_load_page_stats'] = Lang::getTxt('lp_load_page_stats', [
+			Lang::getTxt('lp_seconds_set', [
+				'seconds' => round(microtime(true) - Utils::$context['lp_load_time'], 3)
+			]),
+			Lang::getTxt('lp_queries_set', [
+				'queries' => Utils::$context['lp_num_queries']
+			]),
+		]);
 
 		Theme::loadTemplate('LightPortal/ViewDebug');
 

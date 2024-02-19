@@ -59,7 +59,10 @@ $txt['lp_frontpage_article_sorting_help'] = 'When you select the first option, t
 $txt['lp_frontpage_layout'] = 'Template layout for article cards';
 $txt['lp_show_layout_switcher'] = 'Show layout switcher';
 $txt['lp_frontpage_num_columns'] = 'Number of columns for displaying articles';
-$txt['lp_frontpage_num_columns_set'] = '{columns, plural, one {# column} other {# columns}}';
+$txt['lp_frontpage_num_columns_set'] = '{columns, plural,
+	one   {# column}
+	other {# columns}
+}';
 $txt['lp_show_pagination'] = 'Show the pagination';
 $txt['lp_show_pagination_set'] = ['Bottom only', 'Top and bottom', 'Top only'];
 $txt['lp_use_simple_pagination'] = 'Use simple pagination';
@@ -402,30 +405,82 @@ $txt['cannot_light_portal_approve_pages'] = 'You aren\'t allowed to post pages w
 $txt['cannot_light_portal_view_page'] = 'You aren\'t allowed to view this page!';
 
 // Time units
-$txt['lp_months_set'] = '{months, plural, one {a month} other {# months}}';
-$txt['lp_days_set'] = '{days, plural, one {a day} other {# days}}';
-$txt['lp_hours_set'] = '{hours, plural, one {an hour} other {# hours}}';
-$txt['lp_minutes_set'] = '{minutes, plural, one {a minute} other {# minutes}}';
-$txt['lp_seconds_set'] = '{seconds, plural, one {a second} other {# seconds}}';
+$txt['lp_months_set'] = '{months, plural,
+	one   {a month}
+	other {# months}
+}';
+$txt['lp_days_set'] = '{days, plural,
+	one   {a day}
+	other {# days}
+}';
+$txt['lp_hours_set'] = '{hours, plural,
+	one   {an hour}
+	other {# hours}
+}';
+$txt['lp_minutes_set'] = '{minutes, plural,
+	one   {a minute}
+	other {# minutes}
+}';
+$txt['lp_seconds_set'] = '{seconds, plural,
+	one   {a second}
+	other {# seconds}
+}';
 $txt['lp_tomorrow'] = '<strong>Tomorrow</strong> at ';
 $txt['lp_just_now'] = 'Just now';
 $txt['lp_time_label_in'] = 'In %1$s';
 $txt['lp_time_label_ago'] = ' ago';
 
 // Social units
-$txt['lp_replies_set'] = '{replies, plural, one {# reply} other {# replies}}';
-$txt['lp_views_set'] = '{views, plural, one {# view} other {# views}}';
-$txt['lp_comments_set'] = '{comments, plural, one {# comment} other {# comments}}';
-$txt['lp_articles_set'] = '{articles, plural, one {# article} other {# articles}}';
+$txt['lp_replies_set'] = '{replies, plural,
+	one   {# reply}
+	other {# replies}
+}';
+$txt['lp_views_set'] = '{views, plural,
+	one   {# view}
+	other {# views}
+}';
+$txt['lp_comments_set'] = '{comments, plural,
+	one   {# comment}
+	other {# comments}
+}';
+$txt['lp_articles_set'] = '{articles, plural,
+	one   {# article}
+	other {# articles}
+}';
 
 // Other units
-$txt['lp_pages_set'] = '{pages, plural, one {# page} other {# pages}}';
-$txt['lp_blocks_set'] = '{blocks, plural, one {# block} other {# blocks}}';
-$txt['lp_users_set'] = '{users, plural, one {# user} other {# users}}';
-$txt['lp_guests_set'] = '{guests, plural, one {# guest} other {# guests}}';
-$txt['lp_spiders_set'] = '{spiders, plural, one {# spider} other {# spiders}}';
-$txt['lp_hidden_set'] = '{hidden, plural, one {# hidden} other {# hidden}}';
-$txt['lp_buddies_set'] = '{buddies, plural, one {# buddy} other {# buddies}}';
+$txt['lp_pages_set'] = '{pages, plural,
+	one   {# page}
+	other {# pages}
+}';
+$txt['lp_blocks_set'] = '{blocks, plural,
+	one   {# block}
+	other {# blocks}
+}';
+$txt['lp_users_set'] = '{users, plural,
+	one   {# user}
+	other {# users}
+}';
+$txt['lp_guests_set'] = '{guests, plural,
+	one   {# guest}
+	other {# guests}
+}';
+$txt['lp_spiders_set'] = '{spiders, plural,
+	one   {# spider}
+	other {# spiders}
+}';
+$txt['lp_hidden_set'] = '{hidden, plural,
+	one   {# hidden}
+	other {# hidden}
+}';
+$txt['lp_buddies_set'] = '{buddies, plural,
+	one   {# buddy}
+	other {# buddies}
+}';
+$txt['lp_queries_set'] = '{queries, plural,
+	one   {# query}
+	other {# queries}
+}';
 
 // Credits
 $txt['lp_contributors'] = 'Contribution to the development of the portal';
@@ -436,4 +491,4 @@ $txt['lp_tools'] = 'Tools';
 $txt['lp_used_components'] = 'The portal components';
 
 // Debug info
-$txt['lp_load_page_stats'] = 'The portal is loaded in %1$.3f seconds, with %2$d queries.';
+$txt['lp_load_page_stats'] = 'The portal is loaded in {0}, with {1}.';
