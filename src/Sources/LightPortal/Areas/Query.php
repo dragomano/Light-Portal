@@ -39,13 +39,13 @@ trait Query
 
 		$this->hook('prepareIconList', [&$icons, &$template]);
 
-		$icons = array_filter($icons, fn($item) => str_contains($item, $search));
+		$icons = array_filter($icons, static fn($item) => str_contains($item, $search));
 
 		$results = [];
 		foreach ($icons as $icon) {
 			$results[] = [
 				'innerHTML' => sprintf($template, $icon),
-				'value'     => $icon
+				'value'     => $icon,
 			];
 		}
 

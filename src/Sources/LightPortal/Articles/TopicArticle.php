@@ -55,7 +55,7 @@ class TopicArticle extends AbstractArticle
 
 	public function getData(int $start, int $limit): array
 	{
-		if (empty($this->selectedBoards) && Config::$modSettings['lp_frontpage_mode'] === 'all_topics')
+		if (empty($this->selectedBoards) && $this->isFrontpageMode('all_topics'))
 			return [];
 
 		$this->params += [
@@ -144,7 +144,7 @@ class TopicArticle extends AbstractArticle
 
 	public function getTotalCount(): int
 	{
-		if (empty($this->selectedBoards) && Config::$modSettings['lp_frontpage_mode'] === 'all_topics')
+		if (empty($this->selectedBoards) && $this->isFrontpageMode('all_topics'))
 			return 0;
 
 		$result = Db::$db->query('', /** @lang text */ '

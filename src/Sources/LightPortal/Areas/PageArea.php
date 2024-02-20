@@ -57,7 +57,7 @@ final class PageArea
 		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_pages_manage'];
 
 		$menu = Utils::$context['admin_menu_name'];
-		
+
 		$key = Utils::$context['allow_light_portal_manage_pages_any'] && $this->request()->hasNot('u') ? 'all' : 'own';
 
 		$tabs = [
@@ -221,10 +221,10 @@ final class PageArea
 						'value' => Lang::$txt['status'],
 					],
 					'data' => [
-						'function' => fn($entry) => Utils::$context['allow_light_portal_approve_pages'] || Utils::$context['allow_light_portal_manage_pages_any'] ? /** @lang text */ '<div data-id="' . $entry['id'] . '" x-data="{status: ' . ($entry['status'] === $status ? 'true' : 'false') . '}" x-init="$watch(\'status\', value => page.toggleStatus($el))">
-								<span :class="{\'on\': status, \'off\': !status}" :title="status ? \'' . Lang::$txt['lp_action_off'] . '\' : \'' . Lang::$txt['lp_action_on'] . '\'" @click.prevent="status = !status"></span>
-							</div>' : /** @lang text */ '<div x-data="{status: ' . ($entry['status'] === $status ? 'true' : 'false') . '}">
-								<span :class="{\'on\': status, \'off\': !status}" style="cursor: inherit">
+						'function' => static fn($entry) => Utils::$context['allow_light_portal_approve_pages'] || Utils::$context['allow_light_portal_manage_pages_any'] ? /** @lang text */ '<div data-id="' . $entry['id'] . '" x-data="{ status: ' . ($entry['status'] === $status ? 'true' : 'false') . ' }" x-init="$watch(\'status\', value => page.toggleStatus($el))">
+								<span :class="{ \'on\': status, \'off\': !status }" :title="status ? \'' . Lang::$txt['lp_action_off'] . '\' : \'' . Lang::$txt['lp_action_on'] . '\'" @click.prevent="status = !status"></span>
+							</div>' : /** @lang text */ '<div x-data="{ status: ' . ($entry['status'] === $status ? 'true' : 'false') . ' }">
+								<span :class="{ \'on\': status, \'off\': !status }" style="cursor: inherit">
 							</div>',
 						'class' => 'centertext',
 					],
@@ -239,11 +239,13 @@ final class PageArea
 						'style' => 'width: 8%',
 					],
 					'data' => [
-						'function' => fn($entry) => /** @lang text */ '
-						<div data-id="' . $entry['id'] . '" x-data="{showContextMenu: false}">
+						'function' => static fn($entry) => /** @lang text */ '
+						<div data-id="' . $entry['id'] . '" x-data="{ showContextMenu: false }">
 							<div class="context_menu" @click.outside="showContextMenu = false">
 								<button class="button floatnone" @click.prevent="showContextMenu = true">
-									<svg aria-hidden="true" width="10" height="10" focusable="false" data-prefix="fas" data-icon="ellipsis-h" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M328 256c0 39.8-32.2 72-72 72s-72-32.2-72-72 32.2-72 72-72 72 32.2 72 72zm104-72c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72zm-352 0c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72z"></path></svg>
+									<svg aria-hidden="true" width="10" height="10" focusable="false" data-prefix="fas" data-icon="ellipsis-h" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+										<path fill="currentColor" d="M328 256c0 39.8-32.2 72-72 72s-72-32.2-72-72 32.2-72 72-72 72 32.2 72 72zm104-72c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72zm-352 0c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72z"></path>
+									</svg>
 								</button>
 								<div class="roundframe" x-show="showContextMenu">
 									<ul>
@@ -296,7 +298,7 @@ final class PageArea
 					'value' => '<input type="checkbox" onclick="invertAll(this, this.form);">',
 				],
 				'data' => [
-					'function' => fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="items[]">',
+					'function' => static fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="items[]">',
 					'class' => 'centertext',
 				],
 			];
@@ -306,7 +308,7 @@ final class PageArea
 				'value' => '
 					<select name="page_actions">
 						<option value="delete">' . Lang::$txt['remove'] . '</option>' . (Utils::$context['allow_light_portal_approve_pages'] || Utils::$context['allow_light_portal_manage_pages_any'] ? '
-						<option value="toggle">' . Lang::$txt['lp_action_toggle'] . '</option>' : '') . (! empty(Config::$modSettings['lp_frontpage_mode']) && Config::$modSettings['lp_frontpage_mode'] === 'chosen_pages' ? '
+						<option value="toggle">' . Lang::$txt['lp_action_toggle'] . '</option>' : '') . ($this->isFrontpageMode('chosen_pages') ? '
 						<option value="promote_up">' . Lang::$txt['lp_promote_to_fp'] . '</option>
 						<option value="promote_down">' . Lang::$txt['lp_remove_from_fp'] . '</option>' : '') . '
 					</select>
@@ -322,7 +324,7 @@ final class PageArea
 				</a>
 			</span>' . $listOptions['title'];
 
-		if (! (empty(Config::$modSettings['lp_show_comment_block']) || Utils::$context['lp_show_default_comments'])) {
+		if ($this->getCommentBlockType() === 'default') {
 			unset($listOptions['columns']['num_comments']);
 		}
 
@@ -432,7 +434,7 @@ final class PageArea
 	{
 		$item = (int) ($this->request('page_id') ?: $this->request('id'));
 
-		if (empty($item)) {
+		if ($item === 0) {
 			ErrorHandler::fatalLang('lp_page_not_found', status: 404);
 		}
 
@@ -473,8 +475,8 @@ final class PageArea
 
 		$this->validateData();
 
-		$page_title = Utils::$context['lp_page']['titles'][Utils::$context['user']['language']] ?? '';
-		Utils::$context['page_area_title'] = Lang::$txt['lp_pages_edit_title'] . ($page_title ? ' - ' . $page_title : '');
+		$pageTitle = Utils::$context['lp_page']['titles'][Utils::$context['user']['language']] ?? '';
+		Utils::$context['page_area_title'] = Lang::$txt['lp_pages_edit_title'] . ($pageTitle ? ' - ' . $pageTitle : '');
 		Utils::$context['canonical_url'] = Config::$scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . Utils::$context['lp_page']['id'];
 
 		$this->prepareFormFields();
@@ -527,7 +529,7 @@ final class PageArea
 
 	private function remove(array $items): void
 	{
-		if (empty($items))
+		if ($items === [])
 			return;
 
 		$this->hook('onPageRemoving', [$items]);
@@ -598,7 +600,7 @@ final class PageArea
 
 	private function promote(array $items, string $type = 'up'): void
 	{
-		if (empty($items))
+		if ($items === [])
 			return;
 
 		if ($type === 'down') {
@@ -684,16 +686,16 @@ final class PageArea
 		if (Utils::$context['user']['is_admin']) {
 			CustomField::make('show_in_menu', Lang::$txt['lp_page_show_in_menu'])
 				->setTab('access_placement')
-				->setValue(fn() => new PageIconSelect);
+				->setValue(static fn() => new PageIconSelect);
 		}
 
 		CustomField::make('permissions', Lang::$txt['edit_permissions'])
 			->setTab('access_placement')
-			->setValue(fn() => new PermissionSelect);
+			->setValue(static fn() => new PermissionSelect);
 
 		CustomField::make('category_id', Lang::$txt['lp_category'])
 			->setTab('access_placement')
-			->setValue(fn() => new CategorySelect, [
+			->setValue(static fn() => new CategorySelect, [
 				'id'         => 'category_id',
 				'multiple'   => false,
 				'full_width' => false,
@@ -704,12 +706,12 @@ final class PageArea
 		if (Utils::$context['user']['is_admin']) {
 			CustomField::make('status', Lang::$txt['status'])
 				->setTab('access_placement')
-				->setValue(fn() => new StatusSelect);
+				->setValue(static fn() => new StatusSelect);
 
 			CustomField::make('author_id', Lang::$txt['lp_page_author'])
 				->setTab('access_placement')
 				->setAfter(Lang::$txt['lp_page_author_placeholder'])
-				->setValue(fn() => new PageAuthorSelect);
+				->setValue(static fn() => new PageAuthorSelect);
 		}
 
 		TextField::make('alias', Lang::$txt['lp_page_alias'])
@@ -728,7 +730,7 @@ final class PageArea
 
 		CustomField::make('keywords', Lang::$txt['lp_page_keywords'])
 			->setTab('seo')
-			->setValue(fn() => new KeywordSelect);
+			->setValue(static fn() => new KeywordSelect);
 
 		if (Utils::$context['lp_page']['created_at'] >= time()) {
 			CustomField::make('datetime', Lang::$txt['lp_page_publish_datetime'])
@@ -748,7 +750,7 @@ final class PageArea
 				->setValue(Utils::$context['lp_page']['options']['show_related_pages']);
 		}
 
-		if (! (empty(Config::$modSettings['lp_show_comment_block']) || Config::$modSettings['lp_show_comment_block'] === 'none')) {
+		if ($this->getCommentBlockType() !== '' && $this->getCommentBlockType() !== 'none') {
 			CheckboxField::make('allow_comments', Lang::$txt['lp_page_allow_comments'])
 				->setValue(Utils::$context['lp_page']['options']['allow_comments']);
 		}

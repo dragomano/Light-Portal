@@ -171,7 +171,7 @@ final class Tag extends AbstractPageList
 						'value' => Lang::$txt['lp_keyword_column']
 					],
 					'data' => [
-						'function' => fn($entry) => '<a href="' . $entry['link'] . '">' . $entry['value'] . '</a>',
+						'function' => static fn($entry) => '<a href="' . $entry['link'] . '">' . $entry['value'] . '</a>',
 						'class' => 'centertext'
 					],
 					'sort' => [

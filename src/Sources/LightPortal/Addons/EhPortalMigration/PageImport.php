@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.24
+ * @version 20.02.24
  */
 
 namespace Bugo\LightPortal\Addons\EhPortalMigration;
@@ -97,7 +97,7 @@ class PageImport extends AbstractCustomPageImport
 						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);" checked>'
 					],
 					'data' => [
-						'function' => fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="pages[]" checked>',
+						'function' => static fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="pages[]" checked>',
 						'class' => 'centertext'
 					]
 				]

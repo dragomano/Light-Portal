@@ -258,13 +258,7 @@ final class Integration extends AbstractMain
 	 */
 	public function displayButtons(): void
 	{
-		if (empty(User::$info['is_admin']))
-			return;
-
-		if (empty(Config::$modSettings['lp_frontpage_mode']))
-			return;
-
-		if (Config::$modSettings['lp_frontpage_mode'] !== 'chosen_topics')
+		if (empty(User::$info['is_admin']) || $this->isFrontpageMode('chosen_topics') === false)
 			return;
 
 		Utils::$context['normal_buttons']['lp_promote'] = [
@@ -337,14 +331,14 @@ final class Integration extends AbstractMain
 	{
 		Lang::$txt['alert_group_light_portal'] = Lang::$txt['lp_portal'];
 
-		if (Utils::$context['lp_show_default_comments'])
+		if ($this->getCommentBlockType() === 'default') {
 			$types['light_portal'] = [
 				'page_comment' => [
 					'alert' => 'yes',
 					'email' => 'never',
 					'permission' => [
 						'name'     => 'light_portal_manage_pages_own',
-						'is_board' => false
+						'is_board' => false,
 					]
 				],
 				'page_comment_reply' => [
@@ -352,17 +346,18 @@ final class Integration extends AbstractMain
 					'email' => 'never',
 					'permission' => [
 						'name'     => 'light_portal_view',
-						'is_board' => false
+						'is_board' => false,
 					]
 				]
 			];
+		}
 
 		$types['light_portal']['page_unapproved'] = [
 			'alert' => 'yes',
 			'email' => 'yes',
 			'permission' => [
 				'name'     => 'light_portal_manage_pages_any',
-				'is_board' => false
+				'is_board' => false,
 			]
 		];
 	}
@@ -479,13 +474,13 @@ final class Integration extends AbstractMain
 			if (isset($actions['sa']) && $actions['sa'] === 'tags') {
 				$tags = $this->getEntityData('tag');
 
-				isset($actions['id'])
-					? $result = sprintf(
+				$result = isset($actions['id'])
+					? sprintf(
 						Lang::$txt['lp_who_viewing_the_tag'],
 						LP_BASE_URL . ';sa=tags;id=' . $actions['id'],
 						$tags[$actions['id']]
 					)
-					: $result = sprintf(
+					: sprintf(
 						Lang::$txt['lp_who_viewing_tags'],
 						LP_BASE_URL . ';sa=tags'
 					);
@@ -494,13 +489,13 @@ final class Integration extends AbstractMain
 			if (isset($actions['sa']) && $actions['sa'] === 'categories') {
 				$categories = $this->getEntityData('category');
 
-				isset($actions['id'])
-					? $result = sprintf(
+				$result = isset($actions['id'])
+					? sprintf(
 						Lang::$txt['lp_who_viewing_the_category'],
 						LP_BASE_URL . ';sa=categories;id=' . $actions['id'],
 						$categories[$actions['id']]['name']
 					)
-					: $result = sprintf(
+					: sprintf(
 						Lang::$txt['lp_who_viewing_categories'],
 						LP_BASE_URL . ';sa=categories'
 					);

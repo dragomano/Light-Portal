@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 20.02.24
  */
 
 namespace Bugo\LightPortal\Addons\RecentPosts;
@@ -79,7 +79,7 @@ class RecentPosts extends Block
 
 		CustomField::make('exclude_boards', Lang::$txt['lp_recent_posts']['exclude_boards'])
 			->setTab('content')
-			->setValue(fn() => new BoardSelect, [
+			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'exclude_boards',
 				'hint'  => Lang::$txt['lp_recent_posts']['exclude_boards_select'],
 				'value' => Utils::$context['lp_block']['options']['exclude_boards'] ?? '',
@@ -87,7 +87,7 @@ class RecentPosts extends Block
 
 		CustomField::make('include_boards', Lang::$txt['lp_recent_posts']['include_boards'])
 			->setTab('content')
-			->setValue(fn() => new BoardSelect, [
+			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'include_boards',
 				'hint'  => Lang::$txt['lp_recent_posts']['include_boards_select'],
 				'value' => Utils::$context['lp_block']['options']['include_boards'] ?? '',
@@ -95,7 +95,7 @@ class RecentPosts extends Block
 
 		CustomField::make('exclude_topics', Lang::$txt['lp_recent_posts']['exclude_topics'])
 			->setTab('content')
-			->setValue(fn() => new TopicSelect, [
+			->setValue(static fn() => new TopicSelect(), [
 				'id'    => 'exclude_topics',
 				'hint'  => Lang::$txt['lp_recent_posts']['exclude_topics_select'],
 				'value' => Utils::$context['lp_block']['options']['exclude_topics'] ?? '',
@@ -103,7 +103,7 @@ class RecentPosts extends Block
 
 		CustomField::make('include_topics', Lang::$txt['lp_recent_posts']['include_topics'])
 			->setTab('content')
-			->setValue(fn() => new TopicSelect, [
+			->setValue(static fn() => new TopicSelect(), [
 				'id'    => 'include_topics',
 				'hint'  => Lang::$txt['lp_recent_posts']['include_topics_select'],
 				'value' => Utils::$context['lp_block']['options']['include_topics'] ?? '',
@@ -185,7 +185,9 @@ class RecentPosts extends Block
 		if (empty($posts))
 			return [];
 
-		array_walk($posts, fn(&$post) => $post['timestamp'] = DateTime::relative((int) $post['timestamp']));
+		array_walk($posts,
+			static fn(&$post) => $post['timestamp'] = DateTime::relative((int) $post['timestamp'])
+		);
 
 		if ($parameters['show_avatars'] && empty($parameters['use_simple_style']))
 			$posts = $this->getItemsWithUserAvatars($posts, 'poster');

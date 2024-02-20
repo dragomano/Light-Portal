@@ -46,7 +46,7 @@ final class PluginImport extends AbstractImport
 
 	protected function run(): void
 	{
-		if (empty($this->extractPackage()))
+		if ($this->extractPackage() === false)
 			return;
 
 		Utils::$context['import_successful'] = Lang::$txt['lp_plugins_import_success'];

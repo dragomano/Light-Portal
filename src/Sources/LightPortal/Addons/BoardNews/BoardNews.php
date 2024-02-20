@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.02.24
+ * @version 20.02.24
  */
 
 namespace Bugo\LightPortal\Addons\BoardNews;
@@ -135,12 +135,15 @@ class BoardNews extends Block
 
 				if ($news['likes']['count'] > 0) {
 					Utils::$context['some_likes'] = true;
+
 					$count = $news['likes']['count'];
+
 					$base = 'likes_';
 					if ($news['likes']['you']) {
 						$base = 'you_' . $base;
 						$count--;
 					}
+
 					$base .= (isset(Lang::$txt[$base . $count])) ? $count : 'n';
 
 					echo '

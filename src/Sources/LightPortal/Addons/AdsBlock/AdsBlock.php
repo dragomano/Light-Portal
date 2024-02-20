@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.02.24
+ * @version 20.02.24
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
@@ -90,14 +90,14 @@ class AdsBlock extends Block
 
 		CustomField::make('ads_placement', Lang::$txt['lp_block_placement'])
 			->setTab('access_placement')
-			->setValue(fn() => new PlacementSelect, [
+			->setValue(static fn() => new PlacementSelect(), [
 				'data'  => $this->getPlacements(),
-				'value' => Utils::$context['lp_block']['options']['ads_placement']
+				'value' => Utils::$context['lp_block']['options']['ads_placement'],
 			]);
 
 		CustomField::make('include_boards', Lang::$txt['lp_ads_block']['include_boards'])
 			->setTab('access_placement')
-			->setValue(fn() => new BoardSelect, [
+			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'include_boards',
 				'hint'  => Lang::$txt['lp_ads_block']['include_boards_select'],
 				'value' => Utils::$context['lp_block']['options']['include_boards'] ?? '',
@@ -105,7 +105,7 @@ class AdsBlock extends Block
 
 		CustomField::make('include_topics', Lang::$txt['lp_ads_block']['include_topics'])
 			->setTab('access_placement')
-			->setValue(fn() => new TopicSelect, [
+			->setValue(static fn() => new TopicSelect(), [
 				'id'    => 'include_pages',
 				'hint'  => Lang::$txt['lp_ads_block']['include_pages_select'],
 				'value' => Utils::$context['lp_block']['options']['include_pages'] ?? '',
@@ -113,7 +113,7 @@ class AdsBlock extends Block
 
 		CustomField::make('include_pages', Lang::$txt['lp_ads_block']['include_pages'])
 			->setTab('access_placement')
-			->setValue(fn() => new PageSelect, [
+			->setValue(static fn() => new PageSelect(), [
 				'id'    => 'include_pages',
 				'hint'  => Lang::$txt['lp_ads_block']['include_pages_select'],
 				'value' => Utils::$context['lp_block']['options']['include_pages'] ?? '',
@@ -130,7 +130,7 @@ class AdsBlock extends Block
 			>');
 	}
 
-	public function findBlockErrors(array &$post_errors, array $data): void
+	public function findBlockErrors(array &$errors, array $data): void
 	{
 		if ($data['placement'] !== 'ads')
 			return;
@@ -138,7 +138,7 @@ class AdsBlock extends Block
 		Lang::$txt['lp_post_error_no_ads_placement'] = Lang::$txt['lp_ads_block']['no_ads_placement'];
 
 		if (empty($data['parameters']['ads_placement']))
-			$post_errors[] = 'no_ads_placement';
+			$errors[] = 'no_ads_placement';
 	}
 
 	public function parseContent(string &$content, string $type): void
@@ -180,14 +180,15 @@ class AdsBlock extends Block
 
 		if (! empty(Utils::$context['lp_blocks']['ads'])) {
 			foreach (Utils::$context['lp_blocks']['ads'] as $block) {
-				if ($block['parameters'] && ! empty($block['parameters']['loader_code'])) {
+				if (empty($block['parameters']))
+					continue;
+
+				if (! empty($block['parameters']['loader_code'])) {
 					Utils::$context['html_headers'] .= "\n\t" . $block['parameters']['loader_code'];
 				}
 
-				if ($block['parameters'] && ! empty($block['parameters']['end_date'])) {
-					if ($this->getEndTime($block['parameters']) <= time()) {
-						$this->disableBlock($block['id']);
-					}
+				if (! empty($block['parameters']['end_date']) && $this->getEndTime($block['parameters']) <= time()) {
+					$this->disableBlock($block['id']);
 				}
 			}
 		}

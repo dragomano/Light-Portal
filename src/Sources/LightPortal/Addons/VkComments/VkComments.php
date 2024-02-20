@@ -10,12 +10,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 20.02.24
+ * @version 21.02.24
  */
 
 namespace Bugo\LightPortal\Addons\VkComments;
 
-use Bugo\Compat\{Config, Lang, Utils};
+use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\Addons\Plugin;
 
 if (! defined('LP_NAME'))
@@ -36,7 +36,12 @@ class VkComments extends Plugin
 			'comments_per_page' => 10,
 		]);
 
-		$settings['vk_comments'][] = ['text', 'api_id', 'subtext' => Lang::$txt['lp_vk_comments']['api_id_subtext'], 'required' => true];
+		$settings['vk_comments'][] = [
+			'text',
+			'api_id',
+			'subtext' => Lang::$txt['lp_vk_comments']['api_id_subtext'],
+			'required' => true
+		];
 		$settings['vk_comments'][] = ['int', 'comments_per_page'];
 		$settings['vk_comments'][] = ['check', 'allow_attachments'];
 		$settings['vk_comments'][] = ['check', 'auto_publish'];
@@ -44,10 +49,7 @@ class VkComments extends Plugin
 
 	public function comments(): void
 	{
-		if (empty(Config::$modSettings['lp_show_comment_block']))
-			return;
-
-		if (Config::$modSettings['lp_show_comment_block'] !== 'vk')
+		if ($this->getCommentBlockType() !== 'vk')
 			return;
 
 		if (empty(Utils::$context['lp_vk_comments_plugin']['api_id']))

@@ -200,7 +200,7 @@ final class Maintainer extends BackgroundTask
 		Db::extend();
 
 		array_map(
-			fn($table) => Db::$db->optimize_table('{db_prefix}' . $table),
+			static fn($table) => Db::$db->optimize_table('{db_prefix}' . $table),
 			[
 				'lp_blocks',
 				'lp_categories',

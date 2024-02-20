@@ -37,11 +37,7 @@ final class Page implements PageInterface
 		$alias = $this->request(LP_PAGE_PARAM);
 
 		if (empty($alias)) {
-			if (
-				Config::$modSettings['lp_frontpage_mode']
-				&& Config::$modSettings['lp_frontpage_mode'] === 'chosen_page'
-				&& Config::$modSettings['lp_frontpage_alias']
-			) {
+			if ($this->isFrontpageMode('chosen_page') && Config::$modSettings['lp_frontpage_alias']) {
 				Utils::$context['lp_page'] = $this->getDataByAlias(Config::$modSettings['lp_frontpage_alias']);
 			} else {
 				Config::updateModSettings(['lp_frontpage_mode' => 0]);
@@ -127,7 +123,7 @@ final class Page implements PageInterface
 
 	public function getData(array $params): array
 	{
-		if (empty($params))
+		if ($params === [])
 			return [];
 
 		$result = Db::$db->query('', '
@@ -215,7 +211,7 @@ final class Page implements PageInterface
 	 */
 	public function getDataByItem(int $item): array
 	{
-		if (empty($item))
+		if ($item === 0)
 			return [];
 
 		$data = $this->getData(['item' => $item]);
@@ -281,7 +277,7 @@ final class Page implements PageInterface
 						'value' => Lang::$txt['lp_title']
 					],
 					'data' => [
-						'function' => fn($entry) => '<a class="bbc_link' . (
+						'function' => static fn($entry) => '<a class="bbc_link' . (
 							$entry['is_front']
 								? ' new_posts" href="' . Config::$scripturl
 								: '" href="' . LP_PAGE_URL . $entry['alias']
@@ -298,7 +294,7 @@ final class Page implements PageInterface
 						'value' => Lang::$txt['author']
 					],
 					'data' => [
-						'function' => fn($entry) => empty($entry['author']['name'])
+						'function' => static fn($entry) => empty($entry['author']['name'])
 							? Lang::$txt['guest_title']
 							: '<a href="' . $entry['author']['link'] . '">' . $entry['author']['name'] . '</a>',
 						'class' => 'centertext'
@@ -313,7 +309,7 @@ final class Page implements PageInterface
 						'value' => Lang::$txt['views']
 					],
 					'data' => [
-						'function' => fn($entry) => $entry['views']['num'],
+						'function' => static fn($entry) => $entry['views']['num'],
 						'class' => 'centertext'
 					],
 					'sort' => [
@@ -350,7 +346,7 @@ final class Page implements PageInterface
 
 		$page = Utils::$context['lp_page']['id'];
 
-		if (($key = array_search($page, Utils::$context['lp_frontpage_pages'])) !== false) {
+		if (($key = array_search($page, Utils::$context['lp_frontpage_pages'], true)) !== false) {
 			unset(Utils::$context['lp_frontpage_pages'][$key]);
 		} else {
 			Utils::$context['lp_frontpage_pages'][] = $page;
@@ -615,13 +611,10 @@ final class Page implements PageInterface
 	 */
 	private function prepareComments(): void
 	{
-		if (empty(Config::$modSettings['lp_show_comment_block']))
+		if ($this->getCommentBlockType() === '' || $this->getCommentBlockType() === 'none')
 			return;
 
 		if (empty(Utils::$context['lp_page']['options']['allow_comments']))
-			return;
-
-		if (Config::$modSettings['lp_show_comment_block'] === 'none')
 			return;
 
 		Lang::load('Editor');

@@ -13,11 +13,6 @@
     "scssphp/scssphp": "^1.12",
     "wikimedia/less.php": "^4.1"
   },
-  "autoload-dev": {
-    "psr-4": {
-      "Tests\\": "Tests/"
-    }
-  },
   "config": {
     "vendor-dir": "Libs",
     "optimize-autoloader": true,

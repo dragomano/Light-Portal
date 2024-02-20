@@ -10,12 +10,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 20.02.24
+ * @version 21.02.24
  */
 
 namespace Bugo\LightPortal\Addons\Giscus;
 
-use Bugo\Compat\{Config, Lang, Utils};
+use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\Addons\Plugin;
 
 if (! defined('LP_NAME'))
@@ -84,10 +84,7 @@ class Giscus extends Plugin
 
 	public function comments(): void
 	{
-		if (empty(Config::$modSettings['lp_show_comment_block']))
-			return;
-
-		if (Config::$modSettings['lp_show_comment_block'] !== 'giscus')
+		if ($this->getCommentBlockType() !== 'giscus')
 			return;
 
 		if (empty(Utils::$context['lp_giscus_plugin']['repo']) || empty(Utils::$context['lp_giscus_plugin']['repo_id']))

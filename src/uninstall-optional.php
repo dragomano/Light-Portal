@@ -2,10 +2,11 @@
 
 global $user_info, $smcFunc, $db_type, $modSettings;
 
-if (file_exists(__DIR__ . '/SSI.php') && ! defined('SMF'))
+if (file_exists(__DIR__ . '/SSI.php') && ! defined('SMF')) {
 	require_once __DIR__ . '/SSI.php';
-elseif(! defined('SMF'))
+} elseif (! defined('SMF')) {
 	die('<b>Error:</b> Cannot install - please verify that you put this file in the same place as SMF\'s index.php and SSI.php files.');
+}
 
 if ((SMF === 'SSI') && ! $user_info['is_admin'])
 	die('Admin privileges required.');
@@ -23,7 +24,7 @@ while ($row = $smcFunc['db_fetch_assoc']($request)) {
 
 $smcFunc['db_free_result']($request);
 
-if (! empty($settingsToRemove)) {
+if ($settingsToRemove !== []) {
 	foreach ($settingsToRemove as $setting) {
 		if (isset($modSettings[$setting]))
 			unset($modSettings[$setting]);
@@ -48,5 +49,6 @@ $smcFunc['db_query']('', '
 	]
 );
 
-if (SMF === 'SSI')
+if (SMF === 'SSI') {
 	echo 'Database changes are complete! Please wait...';
+}

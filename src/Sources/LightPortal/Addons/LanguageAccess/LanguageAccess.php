@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.24
+ * @version 20.02.24
  */
 
 namespace Bugo\LightPortal\Addons\LanguageAccess;
@@ -53,6 +53,6 @@ class LanguageAccess extends Plugin
 	{
 		CustomField::make('allowed_languages', Lang::$txt['lp_language_access']['allowed_languages'])
 			->setTab('access_placement')
-			->setValue(fn() => new LanguageSelect);
+			->setValue(static fn() => new LanguageSelect());
 	}
 }

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.24
+ * @version 20.02.24
  */
 
 namespace Bugo\LightPortal\Addons\Likely;
@@ -62,7 +62,7 @@ class Likely extends Block
 
 		CustomField::make('buttons', Lang::$txt['lp_likely']['buttons'])
 			->setTab('content')
-			->setValue(fn() => new ButtonSelect, [
+			->setValue(static fn() => new ButtonSelect(), [
 				'data'  => $this->buttons,
 				'value' => is_array(Utils::$context['lp_block']['options']['buttons'])
 					? Utils::$context['lp_block']['options']['buttons']

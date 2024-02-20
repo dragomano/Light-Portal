@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.02.24
+ * @version 20.02.24
  */
 
 namespace Bugo\LightPortal\Addons\BoardList;
@@ -58,7 +58,7 @@ class BoardList extends Block
 
 		CustomField::make('category_class', Lang::$txt['lp_board_list']['category_class'])
 			->setTab('appearance')
-			->setValue(fn() => new TitleClassSelect, [
+			->setValue(static fn() => new TitleClassSelect(), [
 				'id'    => 'category_class',
 				'data'  => $this->getCategoryClasses(),
 				'value' => Utils::$context['lp_block']['options']['category_class']
@@ -66,7 +66,7 @@ class BoardList extends Block
 
 		CustomField::make('board_class', Lang::$txt['lp_board_list']['board_class'])
 			->setTab('appearance')
-			->setValue(fn() => new ContentClassSelect, [
+			->setValue(static fn() => new ContentClassSelect(), [
 				'id'    => 'board_class',
 				'value' => Utils::$context['lp_block']['options']['board_class'],
 			]);

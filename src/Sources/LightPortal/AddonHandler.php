@@ -57,9 +57,9 @@ final class AddonHandler
 
 		$this->plugins = new PluginStorage();
 
-		$this->cssMinifier = new CSS;
+		$this->cssMinifier = new CSS();
 
-		$this->jsMinifier = new JS;
+		$this->jsMinifier = new JS();
 
 		$this->prepareAssets();
 	}
@@ -78,7 +78,7 @@ final class AddonHandler
 		if (empty($dirs = glob(LP_ADDON_DIR . '/*', GLOB_ONLYDIR)))
 			return [];
 
-		return array_map(fn($item): string => basename($item), $dirs);
+		return array_map(static fn($item): string => basename($item), $dirs);
 	}
 
 	public function run(string $hook = 'init', array $vars = [], array $plugins = []): void
@@ -94,7 +94,7 @@ final class AddonHandler
 			if (! class_exists($className))
 				continue;
 
-			$class = new $className;
+			$class = new $className();
 
 			if (! $this->plugins->contains($class)) {
 				$this->plugins->attach($class, [

@@ -557,7 +557,7 @@ public function updateAdminAreas(array &$areas): void
 public function updateBlockAreas(array &$areas): void
 {
     if (User::$info['is_admin'])
-        $areas['import_from_tp'] = [new BlockImport, 'main'];
+        $areas['import_from_tp'] = [new BlockImport(), 'main'];
 }
 ```
 
@@ -571,7 +571,7 @@ public function updateBlockAreas(array &$areas): void
 public function updatePageAreas(array &$areas): void
 {
     if (User::$info['is_admin'])
-        $areas['import_from_ep'] = [new Import, 'main'];
+        $areas['import_from_ep'] = [new Import(), 'main'];
 }
 ```
 
@@ -584,7 +584,7 @@ public function updatePageAreas(array &$areas): void
 ```php
 public function updatePluginAreas(array &$areas): void
 {
-    $areas['add'] = [new Handler, 'add'];
+    $areas['add'] = [new Handler(), 'add'];
 }
 ```
 

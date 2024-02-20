@@ -34,7 +34,7 @@ return [
 			element: document.getElementById("setting_lp_show_tags_on_page").parentNode.parentNode,
 			intro: "' . Lang::$txt['lp_hello_portal']['extra_settings_tour'][0] . '",
 			position: "right"
-		},' . (Utils::$context['lp_show_default_comments'] ? ('
+		},' . (! empty(Config::$modSettings['lp_show_comment_block']) && Config::$modSettings['lp_show_comment_block'] === 'default' ? ('
 		{
 			element: document.getElementById("setting_lp_show_comment_block").parentNode.parentNode.parentNode,
 			intro: "' . Lang::$txt['lp_hello_portal']['extra_settings_tour'][1] . '"

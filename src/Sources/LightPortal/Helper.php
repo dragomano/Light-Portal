@@ -105,7 +105,7 @@ trait Helper
 
 	public function getItemsWithUserAvatars(array $items, string $entity = 'author'): array
 	{
-		$userData = User::loadMemberData(array_map(fn($item) => $item[$entity]['id'], $items));
+		$userData = User::loadMemberData(array_map(static fn($item) => $item[$entity]['id'], $items));
 
 		return array_map(function ($item) use ($userData, $entity) {
 			$item[$entity]['avatar'] = $this->getUserAvatar((int) $item[$entity]['id'], $userData);
@@ -248,16 +248,6 @@ trait Helper
 		return [3];
 	}
 
-	public function isFrontpage(string $alias): bool
-	{
-		if (empty($alias) || empty(Config::$modSettings['lp_frontpage_mode']))
-			return false;
-
-		return Config::$modSettings['lp_frontpage_mode'] === 'chosen_page'
-			&& Config::$modSettings['lp_frontpage_alias']
-			&& Config::$modSettings['lp_frontpage_alias'] === $alias;
-	}
-
 	public function getTranslatedTitle(array $titles): string
 	{
 		return $titles[User::$info['language']] ?? $titles[Config::$language] ?? '';
@@ -298,8 +288,32 @@ trait Helper
 		return $result;
 	}
 
+	public function isFrontpage(string $alias): bool
+	{
+		if ($alias === '' || empty(Config::$modSettings['lp_frontpage_alias']))
+			return false;
+
+		return $this->isFrontpageMode('chosen_page') && Config::$modSettings['lp_frontpage_alias'] === $alias;
+	}
+
+	public function isFrontpageMode(string $mode): bool
+	{
+		if (empty(Config::$modSettings['lp_frontpage_mode']))
+			return false;
+
+		return Config::$modSettings['lp_frontpage_mode'] === $mode;
+	}
+
 	public function isStandaloneMode(): bool
 	{
-		return ! (empty(Config::$modSettings['lp_standalone_mode']) || empty(Config::$modSettings['lp_standalone_url']));
+		if (empty(Config::$modSettings['lp_standalone_mode']))
+			return false;
+
+		return ! empty(Config::$modSettings['lp_standalone_url']);
+	}
+
+	public function getCommentBlockType(): string
+	{
+		return Config::$modSettings['lp_show_comment_block'] ?? '';
 	}
 }

@@ -75,7 +75,7 @@ final class Comment implements ActionInterface
 		$limit = (int) (Config::$modSettings['lp_num_comments_per_page'] ?? 10);
 
 		$commentTree  = $this->getTree($comments);
-		$parentsCount = sizeof($commentTree);
+		$parentsCount = count($commentTree);
 
 		Utils::$context['page_index'] = new PageIndex(
 			$this->getPageIndexUrl(), $start, $parentsCount, $limit
@@ -88,7 +88,7 @@ final class Comment implements ActionInterface
 		$result = [
 			'comments'     => array_slice($commentTree, $start, $limit),
 			'parentsCount' => $parentsCount,
-			'total'        => sizeof($comments),
+			'total'        => count($comments),
 			'limit'        => $limit,
 		];
 
@@ -230,12 +230,6 @@ final class Comment implements ActionInterface
 
 	private function getPageIndexUrl(): string
 	{
-		if (! (
-			empty(Config::$modSettings['lp_frontpage_mode'])
-			|| Config::$modSettings['lp_frontpage_mode'] !== 'chosen_page'
-		) && ! empty(Config::$modSettings['lp_frontpage_alias']))
-			return LP_BASE_URL;
-
-		return Utils::$context['canonical_url'];
+		return $this->isFrontpage($this->alias) ? LP_BASE_URL : Utils::$context['canonical_url'];
 	}
 }

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 20.02.24
+ * @version 21.02.24
  */
 
 namespace Bugo\LightPortal\Addons\FacebookComments;
@@ -56,10 +56,7 @@ class FacebookComments extends Plugin
 
 	public function comments(): void
 	{
-		if (empty(Config::$modSettings['lp_show_comment_block']))
-			return;
-
-		if (Config::$modSettings['lp_show_comment_block'] !== 'facebook')
+		if ($this->getCommentBlockType() !== 'facebook')
 			return;
 
 		Utils::$context['lp_facebook_comment_block'] = /** @lang text */ '
@@ -87,10 +84,7 @@ class FacebookComments extends Plugin
 
 	public function frontAssets(): void
 	{
-		if (empty(Utils::$context['lp_frontpage_articles']) || empty(Config::$modSettings['lp_show_comment_block']))
-			return;
-
-		if (Config::$modSettings['lp_show_comment_block'] !== 'facebook')
+		if ($this->getCommentBlockType() !== 'facebook' || empty(Utils::$context['lp_frontpage_articles']))
 			return;
 
 		foreach (Utils::$context['lp_frontpage_articles'] as $id => $page) {

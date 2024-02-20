@@ -256,7 +256,7 @@ final class PageRepository extends AbstractRepository
 		$newTagIds = array_diff(Utils::$context['lp_page']['keywords'], array_keys(Utils::$context['lp_tags']));
 		$oldTagIds = array_intersect(Utils::$context['lp_page']['keywords'], array_keys(Utils::$context['lp_tags']));
 
-		array_walk($newTagIds, function (&$item) {
+		array_walk($newTagIds, static function (&$item) {
 			$item = ['value' => $item];
 		});
 

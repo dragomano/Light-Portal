@@ -93,7 +93,7 @@ class PageImport extends AbstractCustomPageImport
 						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);" checked>'
 					],
 					'data' => [
-						'function' => fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="pages[]" checked>',
+						'function' => static fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="pages[]" checked>',
 						'class' => 'centertext'
 					]
 				]

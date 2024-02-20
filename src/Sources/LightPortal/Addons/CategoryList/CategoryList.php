@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.02.24
+ * @version 21.02.24
  */
 
 namespace Bugo\LightPortal\Addons\CategoryList;
@@ -28,7 +28,7 @@ class CategoryList extends Block
 
 	public function getData(): array
 	{
-		return (new Category)->getAll(0, 0, 'c.priority');
+		return (new Category())->getAll(0, 0, 'c.priority');
 	}
 
 	public function prepareContent(object $data): void

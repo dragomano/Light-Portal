@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 10.02.24
+ * @version 20.02.24
  */
 
 namespace Bugo\LightPortal\Addons\PlatesLayouts;
@@ -67,10 +67,10 @@ class PlatesLayouts extends Plugin
 			);
 
 			$templates->registerFunction(
-				'debug', fn(mixed $data) => parse_bbc('[code]' . print_r($data, true) . '[/code]')
+				'debug', static fn(mixed $data) => parse_bbc('[code]' . print_r($data, true) . '[/code]')
 			);
 
-			$templates->registerFunction('icon', function (string $name, string $title = ''): string {
+			$templates->registerFunction('icon', static function (string $name, string $title = ''): string {
 				$icon = Icon::get($name);
 
 				if (empty($title)) {

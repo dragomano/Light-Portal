@@ -38,7 +38,7 @@ final class PluginExport extends AbstractExport
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_plugins_export_description']
+			'description' => Lang::$txt['lp_plugins_export_description'],
 		];
 
 		Utils::$context['lp_plugins'] = $this->getEntityData('plugin');

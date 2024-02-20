@@ -127,7 +127,7 @@ final class DateTime
 
 	public static function get(int $timestamp = 0): BaseDateTime
 	{
-		$dateTime = new BaseDateTime;
+		$dateTime = new BaseDateTime();
 		$dateTime->setTimestamp($timestamp ?: time());
 
 		return $dateTime;

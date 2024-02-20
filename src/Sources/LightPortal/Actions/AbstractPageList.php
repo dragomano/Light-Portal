@@ -37,7 +37,7 @@ abstract class AbstractPageList implements PageListInterface
 	 */
 	protected function getPreparedResults(array $rows = []): array
 	{
-		if (empty($rows))
+		if ($rows === [])
 			return [];
 
 		$items = [];
@@ -114,7 +114,7 @@ abstract class AbstractPageList implements PageListInterface
 	private function getRepliesData(array $row): array
 	{
 		return [
-			'num'   => Utils::$context['lp_show_default_comments'] ? (int) $row['num_comments'] : 0,
+			'num'   => $this->getCommentBlockType() === 'default' ? (int) $row['num_comments'] : 0,
 			'title' => Lang::$txt['lp_comments'],
 		];
 	}

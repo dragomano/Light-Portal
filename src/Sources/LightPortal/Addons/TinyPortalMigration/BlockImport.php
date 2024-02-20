@@ -97,7 +97,7 @@ class BlockImport extends AbstractCustomBlockImport
 						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);" checked>'
 					],
 					'data' => [
-						'function' => fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="blocks[]" checked>',
+						'function' => static fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="blocks[]" checked>',
 						'class' => 'centertext'
 					]
 				]

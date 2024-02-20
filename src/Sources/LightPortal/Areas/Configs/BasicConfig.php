@@ -54,7 +54,7 @@ final class BasicConfig extends AbstractConfig
 		$this->prepareTopicList();
 
 		Utils::$context['lp_column_set'] = array_map(
-			fn($item) => Lang::getTxt('lp_frontpage_num_columns_set', ['columns' => $item]),
+			static fn($item) => Lang::getTxt('lp_frontpage_num_columns_set', ['columns' => $item]),
 			[1, 2, 3, 4, 6],
 		);
 

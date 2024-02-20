@@ -99,7 +99,7 @@ final class BlockExport extends AbstractExport
 		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
-		return array_map(fn($item) => array_filter($item), $items);
+		return array_map(static fn($item) => array_filter($item), $items);
 	}
 
 	protected function getFile(): string

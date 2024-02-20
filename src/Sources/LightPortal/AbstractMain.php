@@ -94,9 +94,6 @@ abstract class AbstractMain
 			Config::$modSettings['lp_panel_direction'] ?? '', true
 		);
 
-		Utils::$context['lp_show_default_comments'] = isset(Config::$modSettings['lp_show_comment_block'])
-			&& Config::$modSettings['lp_show_comment_block'] === 'default';
-
 		Utils::$context['lp_active_blocks'] = (new Block())->getActive();
 	}
 
@@ -242,7 +239,7 @@ abstract class AbstractMain
 
 		Theme::loadTemplate('LightPortal/ViewDebug');
 
-		if (empty($key = array_search('lp_portal', Utils::$context['template_layers']))) {
+		if (empty($key = array_search('lp_portal', Utils::$context['template_layers'], true))) {
 			Utils::$context['template_layers'][] = 'debug';
 			return;
 		}
@@ -421,7 +418,7 @@ abstract class AbstractMain
 
 		$topic = $this->request('t');
 
-		if (($key = array_search($topic, Utils::$context['lp_frontpage_topics'])) !== false) {
+		if (($key = array_search($topic, Utils::$context['lp_frontpage_topics'], true)) !== false) {
 			unset(Utils::$context['lp_frontpage_topics'][$key]);
 		} else {
 			Utils::$context['lp_frontpage_topics'][] = $topic;
@@ -519,7 +516,7 @@ abstract class AbstractMain
 			);
 
 			$numEntities = Db::$db->fetch_assoc($result);
-			array_walk($numEntities, fn(&$item) => $item = (int) $item);
+			array_walk($numEntities, static fn(&$item) => $item = (int) $item);
 
 			Db::$db->free_result($result);
 			Utils::$context['lp_num_queries']++;

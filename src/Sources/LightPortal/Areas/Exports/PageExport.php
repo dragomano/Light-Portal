@@ -93,7 +93,7 @@ final class PageExport extends AbstractExport
 						'value' => Lang::$txt['lp_title']
 					],
 					'data' => [
-						'function' => fn($entry) => '<a class="bbc_link' . (
+						'function' => static fn($entry) => '<a class="bbc_link' . (
 							$entry['is_front']
 								? ' new_posts" href="' . Config::$scripturl
 								: '" href="' . LP_PAGE_URL . $entry['alias']
@@ -110,7 +110,7 @@ final class PageExport extends AbstractExport
 						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);">'
 					],
 					'data' => [
-						'function' => fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="pages[]">',
+						'function' => static fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="pages[]">',
 						'class' => 'centertext'
 					]
 				]
@@ -218,7 +218,7 @@ final class PageExport extends AbstractExport
 			if ($categories = $this->getCategories()) {
 				$xmlElements = $root->appendChild($xml->createElement('categories'));
 
-				$categories = fn() => new ArrayIterator($categories);
+				$categories = static fn() => new ArrayIterator($categories);
 				foreach ($categories() as $category) {
 					$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
 					foreach ($category as $key => $val) {
@@ -231,7 +231,7 @@ final class PageExport extends AbstractExport
 			if ($tags = $this->getEntityData('tag')) {
 				$xmlElements = $root->appendChild($xml->createElement('tags'));
 
-				$tags = fn() => new ArrayIterator($tags);
+				$tags = static fn() => new ArrayIterator($tags);
 				foreach ($tags() as $key => $val) {
 					$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
 					$xmlName = $xmlElement->appendChild($xml->createAttribute('id'));
@@ -242,7 +242,7 @@ final class PageExport extends AbstractExport
 			}
 
 			$xmlElements = $root->appendChild($xml->createElement('pages'));
-			$items = fn() => new ArrayIterator($items);
+			$items = static fn() => new ArrayIterator($items);
 
 			foreach ($items() as $item) {
 				$xmlElement = $xmlElements->appendChild($xml->createElement('item'));

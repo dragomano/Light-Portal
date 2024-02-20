@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 13.02.24
+ * @version 21.02.24
  */
 
 namespace Bugo\LightPortal\Addons\LatteLayouts;
@@ -68,15 +68,15 @@ class LatteLayouts extends Plugin
 		$latte = new Engine;
 		$latte->setTempDirectory(empty(Config::$modSettings['cache_enable']) ? null : Sapi::getTempDir());
 		$latte->setLoader(new FileLoader(Theme::$current->settings['default_theme_dir'] . '/portal_layouts/'));
-		$latte->addExtension(new RawPhpExtension);
+		$latte->addExtension(new RawPhpExtension());
 
-		$latte->addFunction('teaser', function (string $text, int $length = 150) use ($latte): string {
+		$latte->addFunction('teaser', static function (string $text, int $length = 150) use ($latte): string {
 			$text = $latte->invokeFilter('stripHtml', [$text]);
 
 			return $latte->invokeFilter('truncate', [$text, $length]);
 		});
 
-		$latte->addFunction('icon', function (string $name, string $title = ''): Html {
+		$latte->addFunction('icon', static function (string $name, string $title = ''): Html {
 			$icon = Icon::get($name);
 
 			if (empty($title)) {

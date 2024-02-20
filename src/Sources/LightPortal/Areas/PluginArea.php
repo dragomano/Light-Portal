@@ -95,7 +95,8 @@ final class PluginArea
 
 		if ($data['status'] === 'on') {
 			Utils::$context['lp_enabled_plugins'] = array_filter(
-				Utils::$context['lp_enabled_plugins'], fn($item) => $item !== Utils::$context['lp_plugins'][$pluginId]
+				Utils::$context['lp_enabled_plugins'],
+				static fn($item) => $item !== Utils::$context['lp_plugins'][$pluginId]
 			);
 		} else {
 			Utils::$context['lp_enabled_plugins'][] = Utils::$context['lp_plugins'][$pluginId];
@@ -212,7 +213,7 @@ final class PluginArea
 		foreach (Utils::$context['all_lp_plugins'] as $plugin) {
 			$types = [...array_keys($plugin['types'])];
 			foreach ($types as $type) {
-				$key = array_search($type, Lang::$txt['lp_plugins_types']);
+				$key = array_search($type, Lang::$txt['lp_plugins_types'], true);
 
 				if ($key === false)
 					$key = 7;

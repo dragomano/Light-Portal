@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.24
+ * @version 20.02.24
  */
 
 namespace Bugo\LightPortal\Addons\RecentTopics;
@@ -76,7 +76,7 @@ class RecentTopics extends Block
 
 		CustomField::make('exclude_boards', Lang::$txt['lp_recent_topics']['exclude_boards'])
 			->setTab('content')
-			->setValue(fn() => new BoardSelect, [
+			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'exclude_boards',
 				'hint'  => Lang::$txt['lp_recent_topics']['exclude_boards_select'],
 				'value' => Utils::$context['lp_block']['options']['exclude_boards'] ?? '',
@@ -84,7 +84,7 @@ class RecentTopics extends Block
 
 		CustomField::make('include_boards', Lang::$txt['lp_recent_topics']['include_boards'])
 			->setTab('content')
-			->setValue(fn() => new BoardSelect, [
+			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'include_boards',
 				'hint'  => Lang::$txt['lp_recent_topics']['include_boards_select'],
 				'value' => Utils::$context['lp_block']['options']['include_boards'] ?? '',
@@ -135,7 +135,9 @@ class RecentTopics extends Block
 		if (empty($topics))
 			return [];
 
-		array_walk($topics, fn(&$topic) => $topic['timestamp'] = DateTime::relative((int) $topic['timestamp']));
+		array_walk($topics,
+			static fn(&$topic) => $topic['timestamp'] = DateTime::relative((int) $topic['timestamp'])
+		);
 
 		if ($parameters['show_avatars'] && empty($parameters['use_simple_style']))
 			$topics = $this->getItemsWithUserAvatars($topics, 'poster');
