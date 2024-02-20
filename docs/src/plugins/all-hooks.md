@@ -363,14 +363,14 @@ public function commentButtons(array $comment, array &$buttons): void
 
 ### addSettings
 
-(`&$config_vars`)
+(`&$settings`)
 
 > adding custom settings of your plugin
 
 ```php
-public function addSettings(array &$config_vars): void
+public function addSettings(array &$settings): void
 {
-    $config_vars['disqus'][] = ['text', 'shortname', 'subtext' => Lang::$txt['lp_disqus']['shortname_subtext'], 'required' => true];
+    $settings['disqus'][] = ['text', 'shortname', 'subtext' => Lang::$txt['lp_disqus']['shortname_subtext'], 'required' => true];
 }
 ```
 
