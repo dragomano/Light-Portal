@@ -30,7 +30,7 @@ abstract class AbstractPageList implements PageListInterface
 
 	abstract public function showAll();
 
-	abstract public function getAll(int $start, int $items_per_page, string $sort): array;
+	abstract public function getAll(int $start, int $limit, string $sort): array;
 
 	/**
 	 * @throws IntlException

@@ -122,7 +122,7 @@ class PageImport extends AbstractCustomPageImport
 	/**
 	 * @throws IntlException
 	 */
-	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id_page'): array
+	public function getAll(int $start = 0, int $limit = 0, string $sort = 'id_page'): array
 	{
 		Db::extend();
 
@@ -137,7 +137,7 @@ class PageImport extends AbstractCustomPageImport
 			[
 				'sort'  => $sort,
 				'start' => $start,
-				'limit' => $items_per_page,
+				'limit' => $limit,
 			]
 		);
 
@@ -224,7 +224,7 @@ class PageImport extends AbstractCustomPageImport
 				'num_comments' => 0,
 				'created_at'   => time(),
 				'updated_at'   => 0,
-				'title'        => $row['title']
+				'title'        => $row['title'],
 			];
 		}
 

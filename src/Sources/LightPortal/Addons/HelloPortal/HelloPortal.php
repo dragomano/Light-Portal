@@ -97,16 +97,16 @@ class HelloPortal extends Plugin
 		}');
 	}
 
-	public function addSettings(array &$config_vars): void
+	public function addSettings(array &$settings): void
 	{
-		$config_vars['hello_portal'][] = [
+		$settings['hello_portal'][] = [
 			'select', 'theme', array_combine($this->themes, Lang::$txt['lp_hello_portal']['theme_set'])
 		];
-		$config_vars['hello_portal'][] = ['check', 'show_progress'];
-		$config_vars['hello_portal'][] = ['check', 'show_buttons'];
-		$config_vars['hello_portal'][] = ['check', 'exit_on_overlay_click'];
-		$config_vars['hello_portal'][] = ['check', 'keyboard_navigation'];
-		$config_vars['hello_portal'][] = ['check', 'disable_interaction'];
+		$settings['hello_portal'][] = ['check', 'show_progress'];
+		$settings['hello_portal'][] = ['check', 'show_buttons'];
+		$settings['hello_portal'][] = ['check', 'exit_on_overlay_click'];
+		$settings['hello_portal'][] = ['check', 'keyboard_navigation'];
+		$settings['hello_portal'][] = ['check', 'disable_interaction'];
 	}
 
 	public function credits(array &$links): void

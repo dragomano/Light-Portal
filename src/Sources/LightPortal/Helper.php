@@ -27,17 +27,11 @@ trait Helper
 	use BlockAppearance;
 	use SMFTrait;
 
-	/**
-	 * @param mixed|null $default
-	 */
 	public function request(?string $key = null, mixed $default = null): mixed
 	{
 		return $key ? ((new Request())->get($key) ?? $default) : new Request();
 	}
 
-	/**
-	 * @param mixed|null $default
-	 */
 	public function post(?string $key = null, mixed $default = null): mixed
 	{
 		return $key ? ((new Post())->get($key) ?? $default) : new Post();
@@ -100,13 +94,13 @@ trait Helper
 
 		return User::$memberContext[$userId]['avatar']['image']
 			?? '<img
-			        class="avatar"
-			        width="100"
-			        height="100"
-			        src="' . Config::$modSettings['avatar_url'] . '/default.png"
-			        loading="lazy"
-			        alt="' . User::$memberContext[$userId]['name'] . '"
-			    >';
+					class="avatar"
+					width="100"
+					height="100"
+					src="' . Config::$modSettings['avatar_url'] . '/default.png"
+					loading="lazy"
+					alt="' . User::$memberContext[$userId]['name'] . '"
+				>';
 	}
 
 	public function getItemsWithUserAvatars(array $items, string $entity = 'author'): array
@@ -226,13 +220,13 @@ trait Helper
 	 *
 	 * Проверяем, может ли текущий пользователь просматривать элемент портала, согласно его правам доступа
 	 */
-	public function canViewItem(int $permissions, int $check_id = 0): bool
+	public function canViewItem(int $permissions, int $userId = 0): bool
 	{
 		return match ($permissions) {
 			0 => User::$info['is_admin'],
 			1 => User::$info['is_guest'],
 			2 => User::$info['id'] > 0,
-			4 => User::$info['id'] === $check_id,
+			4 => User::$info['id'] === $userId,
 			default => true,
 		};
 	}
@@ -302,5 +296,10 @@ trait Helper
 			return '';
 
 		return $result;
+	}
+
+	public function isStandaloneMode(): bool
+	{
+		return ! (empty(Config::$modSettings['lp_standalone_mode']) || empty(Config::$modSettings['lp_standalone_url']));
 	}
 }

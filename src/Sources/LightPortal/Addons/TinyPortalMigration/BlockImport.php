@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.24
+ * @version 20.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortalMigration;
@@ -119,7 +119,7 @@ class BlockImport extends AbstractCustomBlockImport
 		new ItemList($listOptions);
 	}
 
-	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id'): array
+	public function getAll(int $start = 0, int $limit = 0, string $sort = 'id'): array
 	{
 		Db::extend();
 
@@ -136,7 +136,7 @@ class BlockImport extends AbstractCustomBlockImport
 				'types' => $this->supportedTypes,
 				'sort'  => $sort,
 				'start' => $start,
-				'limit' => $items_per_page,
+				'limit' => $limit,
 			]
 		);
 
@@ -146,7 +146,7 @@ class BlockImport extends AbstractCustomBlockImport
 				'id'        => $row['id'],
 				'type'      => Lang::$txt['lp_' . $this->getType($row['type'])]['title'],
 				'title'     => $row['title'],
-				'placement' => Utils::$context['lp_block_placements'][$this->getPlacement($row['bar'])]
+				'placement' => Utils::$context['lp_block_placements'][$this->getPlacement($row['bar'])],
 			];
 		}
 
@@ -216,7 +216,7 @@ class BlockImport extends AbstractCustomBlockImport
 				'permissions'   => $perm,
 				'status'        => 0,
 				'title_class'   => array_key_first(Utils::$context['lp_all_title_classes']),
-				'content_class' => array_key_first(Utils::$context['lp_all_content_classes'])
+				'content_class' => array_key_first(Utils::$context['lp_all_content_classes']),
 			];
 		}
 

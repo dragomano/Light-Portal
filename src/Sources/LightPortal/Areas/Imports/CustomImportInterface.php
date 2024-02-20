@@ -19,7 +19,7 @@ if (! defined('SMF'))
 
 interface CustomImportInterface
 {
-	public function getAll(int $start, int $items_per_page, string $sort): array;
+	public function getAll(int $start, int $limit, string $sort): array;
 
 	public function getTotalCount(): int;
 }

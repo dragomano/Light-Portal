@@ -149,7 +149,7 @@ final class PageExport extends AbstractExport
 				LEFT JOIN {db_prefix}lp_comments AS com ON (p.page_id = com.page_id)' . (empty($pages) ? '' : '
 			WHERE p.page_id IN ({array_int:pages})'),
 			[
-				'pages' => $pages
+				'pages' => $pages,
 			]
 		);
 

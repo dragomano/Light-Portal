@@ -25,10 +25,10 @@ class Optimus extends Plugin
 {
 	public string $type = 'article';
 
-	public function addSettings(array &$config_vars): void
+	public function addSettings(array &$settings): void
 	{
-		$config_vars['optimus'][] = ['check', 'use_topic_descriptions'];
-		$config_vars['optimus'][] = ['check', 'show_topic_keywords'];
+		$settings['optimus'][] = ['check', 'use_topic_descriptions'];
+		$settings['optimus'][] = ['check', 'show_topic_keywords'];
 	}
 
 	public function frontTopics(array &$columns): void

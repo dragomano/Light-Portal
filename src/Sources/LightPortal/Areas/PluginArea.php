@@ -70,14 +70,14 @@ final class PluginArea
 
 		$this->handleToggle();
 
-		$config_vars = [];
+		$settings = [];
 
 		// You can add settings for your plugins
-		$this->hook('addSettings', [&$config_vars], Utils::$context['lp_plugins']);
+		$this->hook('addSettings', [&$settings], Utils::$context['lp_plugins']);
 
-		$this->handleSave($config_vars);
+		$this->handleSave($settings);
 
-		$this->prepareAddonList($config_vars);
+		$this->prepareAddonList($settings);
 
 		$this->prepareAddonChart();
 
@@ -118,7 +118,7 @@ final class PluginArea
 		exit(json_encode(['success' => true]));
 	}
 
-	private function handleSave(array $config_vars): void
+	private function handleSave(array $configVars): void
 	{
 		if ($this->request()->hasNot('save'))
 			return;
@@ -128,7 +128,7 @@ final class PluginArea
 		$name = $this->request('plugin_name');
 		$settings = [];
 
-		foreach ($config_vars[$name] as $var) {
+		foreach ($configVars[$name] as $var) {
 			if ($this->request()->has($var[1])) {
 				if ($var[0] === 'check') {
 					$settings[$var[1]] = $this->filterVar($this->request($var[1]), 'bool');
@@ -154,9 +154,9 @@ final class PluginArea
 		exit(json_encode(['success' => true]));
 	}
 
-	private function prepareAddonList(array $config_vars): void
+	private function prepareAddonList(array $configVars): void
 	{
-		Utils::$context['all_lp_plugins'] = array_map(function ($item) use ($config_vars) {
+		Utils::$context['all_lp_plugins'] = array_map(function ($item) use ($configVars) {
 			$composer = false;
 
 			$snakeName = $this->getSnakeName($item);
@@ -196,7 +196,7 @@ final class PluginArea
 				'status'      => in_array($item, Utils::$context['lp_enabled_plugins']) ? 'on' : 'off',
 				'types'       => $this->getTypes($snakeName),
 				'special'     => $special ?? '',
-				'settings'    => $config_vars[$snakeName] ?? [],
+				'settings'    => $configVars[$snakeName] ?? [],
 				'composer'    => $composer,
 				'saveable'    => $saveable ?? true,
 			];

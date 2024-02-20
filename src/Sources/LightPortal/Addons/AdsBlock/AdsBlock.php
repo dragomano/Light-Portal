@@ -28,9 +28,9 @@ class AdsBlock extends Block
 {
 	public string $icon = 'fas fa-ad';
 
-	public function addSettings(array &$config_vars): void
+	public function addSettings(array &$settings): void
 	{
-		$config_vars['ads_block'][] = ['range', 'min_replies'];
+		$settings['ads_block'][] = ['range', 'min_replies'];
 	}
 
 	public function prepareBlockParams(array &$params): void

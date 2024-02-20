@@ -68,7 +68,7 @@ final class CommentRepository
 			WHERE com.page_id = {int:id}' : '') . '
 			ORDER BY ' . $sorts[Config::$modSettings['lp_comment_sorting'] ?? 0],
 			[
-				'id' => $id
+				'id' => $id,
 			]
 		);
 
@@ -108,7 +108,7 @@ final class CommentRepository
 				'page_id'    => 'int',
 				'author_id'  => 'int',
 				'message'    => 'string-65534',
-				'created_at' => 'int'
+				'created_at' => 'int',
 			],
 			$data,
 			['id', 'page_id'],
@@ -133,13 +133,13 @@ final class CommentRepository
 		Utils::$context['lp_num_queries']++;
 	}
 
-	public function remove(array $items, string $page_alias): void
+	public function remove(array $items, string $pageAlias): void
 	{
 		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_comments
 			WHERE id IN ({array_int:items})',
 			[
-				'items' => $items
+				'items' => $items,
 			]
 		);
 
@@ -150,7 +150,7 @@ final class CommentRepository
 				AND num_comments - {int:num_items} >= 0',
 			[
 				'num_items' => count($items),
-				'alias'     => $page_alias
+				'alias'     => $pageAlias,
 			]
 		);
 
@@ -169,7 +169,7 @@ final class CommentRepository
 				AND content_id IN ({array_int:items})',
 			[
 				'type'  => 'new_comment',
-				'items' => $items
+				'items' => $items,
 			]
 		);
 
@@ -183,14 +183,14 @@ final class CommentRepository
 			)
 			WHERE alias = {string:alias}',
 			[
-				'alias' => $page_alias
+				'alias' => $pageAlias,
 			]
 		);
 
 		Utils::$context['lp_num_queries'] += 5;
 	}
 
-	public function updateLastCommentId(int $item, int $id): void
+	public function updateLastCommentId(int $item, int $pageId): void
 	{
 		Db::$db->query('', '
 			UPDATE {db_prefix}lp_pages
@@ -198,7 +198,7 @@ final class CommentRepository
 			WHERE page_id = {int:page_id}',
 			[
 				'item'    => $item,
-				'page_id' => $id
+				'page_id' => $pageId,
 			]
 		);
 
@@ -207,9 +207,9 @@ final class CommentRepository
 
 	private function isCanEdit(int $date): bool
 	{
-		if (empty($time_to_change = (int) (Config::$modSettings['lp_time_to_change_comments'] ?? 0)))
+		if (empty($timeToChange = (int) (Config::$modSettings['lp_time_to_change_comments'] ?? 0)))
 			return false;
 
-		return $time_to_change && time() - $date <= $time_to_change * 60;
+		return $timeToChange && time() - $date <= $timeToChange * 60;
 	}
 }

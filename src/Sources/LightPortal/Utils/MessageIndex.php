@@ -25,8 +25,7 @@ final class MessageIndex extends BaseMessageIndex
 			'use_permissions' => true,
 			'not_redirection' => true,
 			'excluded_boards' => empty(Config::$modSettings['recycle_board'])
-				? null
-				: [(int) Config::$modSettings['recycle_board']],
+				? null : [(int) Config::$modSettings['recycle_board']],
 		];
 
 		if (isset($boardListOptions['included_boards']))

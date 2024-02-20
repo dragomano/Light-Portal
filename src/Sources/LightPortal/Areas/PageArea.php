@@ -57,10 +57,13 @@ final class PageArea
 		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_pages_manage'];
 
 		$menu = Utils::$context['admin_menu_name'];
-		$tabs = [];
+		
+		$key = Utils::$context['allow_light_portal_manage_pages_any'] && $this->request()->hasNot('u') ? 'all' : 'own';
 
-		$tabs['title'] = LP_NAME;
-		$tabs['description'] = Lang::$txt['lp_pages_manage_' . (Utils::$context['allow_light_portal_manage_pages_any'] && $this->request()->hasNot('u') ? 'all' : 'own') . '_pages'] . ' ' . Lang::$txt['lp_pages_manage_description'];
+		$tabs = [
+			'title'       => LP_NAME,
+			'description' => Lang::$txt['lp_pages_manage_' . $key . '_pages'] . ' ' . Lang::$txt['lp_pages_manage_description'],
+		];
 
 		if ($this->request()->has('moderate')) {
 			$tabs['description'] = Lang::$txt['lp_pages_unapproved_description'];
@@ -75,19 +78,23 @@ final class PageArea
 		$this->doActions();
 		$this->massActions();
 
-		$search_params_string = trim($this->request('search', ''));
-		$search_params = [
-			'string' => Utils::$smcFunc['htmlspecialchars']($search_params_string),
+		$searchParamString = trim($this->request('search', ''));
+		$searchParams = [
+			'string' => Utils::$smcFunc['htmlspecialchars']($searchParamString),
 		];
 
-		Utils::$context['search_params'] = empty($search_params_string) ? '' : base64_encode(Utils::$smcFunc['json_encode']($search_params));
+		Utils::$context['search_params'] = empty($searchParamString)
+			? '' : base64_encode(Utils::$smcFunc['json_encode']($searchParams));
+
 		Utils::$context['search'] = [
-			'string' => $search_params['string'],
+			'string' => $searchParams['string'],
 		];
 
 		$params = [
 			(
-				empty($search_params['string']) ? '' : ' AND (INSTR(LOWER(p.alias), {string:search}) > 0 OR INSTR(LOWER(t.title), {string:search}) > 0)'
+				empty($searchParams['string'])
+					? ''
+					: ' AND (INSTR(LOWER(p.alias), {string:search}) > 0 OR INSTR(LOWER(t.title), {string:search}) > 0)'
 			) . (
 				$this->request()->has('u') ? ' AND p.author_id = {int:user_id}' : ''
 			) . (
@@ -95,13 +102,15 @@ final class PageArea
 			) . (
 				$this->request()->has('internal') ? ' AND p.status = {int:internal}' : ''
 			) . (
-				$this->request()->hasNot('u') && $this->request()->hasNot('moderate') && $this->request()->hasNot('internal') ? ' AND p.status IN ({array_int:included_statuses})' : ''
+				$this->request()->hasNot('u')
+				&& $this->request()->hasNot('moderate')
+				&& $this->request()->hasNot('internal') ? ' AND p.status IN ({array_int:included_statuses})' : ''
 			),
 			[
-				'search'            => Utils::$smcFunc['strtolower']($search_params['string']),
+				'search'            => Utils::$smcFunc['strtolower']($searchParams['string']),
 				'unapproved'        => PageInterface::STATUS_UNAPPROVED,
 				'internal'          => PageInterface::STATUS_INTERNAL,
-				'included_statuses' => [PageInterface::STATUS_INACTIVE, PageInterface::STATUS_ACTIVE]
+				'included_statuses' => [PageInterface::STATUS_INACTIVE, PageInterface::STATUS_ACTIVE],
 			],
 		];
 

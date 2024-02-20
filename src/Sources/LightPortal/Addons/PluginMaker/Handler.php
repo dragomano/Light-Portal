@@ -529,7 +529,7 @@ class Handler extends Plugin
 		if (! empty(Utils::$context['lp_plugin']['options'])) {
 			$method = $class->addMethod('addSettings')
 				->setReturnType('void');
-			$method->addParameter('config_vars')
+			$method->addParameter('settings')
 				->setReference()
 				->setType('array');
 
@@ -550,9 +550,9 @@ class Handler extends Plugin
 
 			foreach (Utils::$context['lp_plugin']['options'] as $option) {
 				if (in_array($option['type'], ['multiselect', 'select'])) {
-					$method->addBody("\$config_vars['$pluginName'][] = ['{$option['type']}', '{$option['name']}', Lang::\$txt['lp_$pluginName']['{$option['name']}_set']];");
+					$method->addBody("\$settings['$pluginName'][] = ['{$option['type']}', '{$option['name']}', Lang::\$txt['lp_$pluginName']['{$option['name']}_set']];");
 				} else {
-					$method->addBody("\$config_vars['$pluginName'][] = ['{$option['type']}', '{$option['name']}'];");
+					$method->addBody("\$settings['$pluginName'][] = ['{$option['type']}', '{$option['name']}'];");
 				}
 			}
 		}

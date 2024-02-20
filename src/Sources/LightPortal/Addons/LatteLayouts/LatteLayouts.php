@@ -37,7 +37,7 @@ class LatteLayouts extends Plugin
 
 	private string $extension = '.latte';
 
-	public function addSettings(array &$config_vars): void
+	public function addSettings(array &$settings): void
 	{
 		Lang::$txt['lp_latte_layouts']['note'] = sprintf(
 			Lang::$txt['lp_latte_layouts']['note'],
@@ -45,9 +45,9 @@ class LatteLayouts extends Plugin
 			Theme::$current->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . 'portal_layouts'
 		);
 
-		$config_vars['latte_layouts'][] = ['desc', 'note'];
-		$config_vars['latte_layouts'][] = ['title', 'example'];
-		$config_vars['latte_layouts'][] = ['callback', '_', $this->showExample()];
+		$settings['latte_layouts'][] = ['desc', 'note'];
+		$settings['latte_layouts'][] = ['title', 'example'];
+		$settings['latte_layouts'][] = ['callback', '_', $this->showExample()];
 	}
 
 	public function frontLayouts(): void

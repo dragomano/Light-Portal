@@ -32,7 +32,7 @@ class TwigLayouts extends Plugin
 
 	private string $extension = '.twig';
 
-	public function addSettings(array &$config_vars): void
+	public function addSettings(array &$settings): void
 	{
 		Lang::$txt['lp_twig_layouts']['note'] = sprintf(
 			Lang::$txt['lp_twig_layouts']['note'],
@@ -40,9 +40,9 @@ class TwigLayouts extends Plugin
 			Theme::$current->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . 'portal_layouts'
 		);
 
-		$config_vars['twig_layouts'][] = ['desc', 'note'];
-		$config_vars['twig_layouts'][] = ['title', 'example'];
-		$config_vars['twig_layouts'][] = ['callback', '_', $this->showExample()];
+		$settings['twig_layouts'][] = ['desc', 'note'];
+		$settings['twig_layouts'][] = ['title', 'example'];
+		$settings['twig_layouts'][] = ['callback', '_', $this->showExample()];
 	}
 
 	public function frontLayouts(): void

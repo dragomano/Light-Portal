@@ -27,9 +27,9 @@ class SiteList extends Plugin
 
 	private string $mode = 'site_list_addon_mode';
 
-	public function addSettings(array &$config_vars): void
+	public function addSettings(array &$settings): void
 	{
-		$config_vars['site_list'][] = ['callback', 'urls', $this->showList()];
+		$settings['site_list'][] = ['callback', 'urls', $this->showList()];
 	}
 
 	public function showList(): bool|string

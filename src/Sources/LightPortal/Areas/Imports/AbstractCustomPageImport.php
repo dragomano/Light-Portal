@@ -60,7 +60,7 @@ abstract class AbstractCustomPageImport implements ImportInterface, CustomImport
 						'num_views'    => 'int',
 						'num_comments' => 'int',
 						'created_at'   => 'int',
-						'updated_at'   => 'int'
+						'updated_at'   => 'int',
 					],
 					$items[$i],
 					['page_id'],
@@ -85,7 +85,7 @@ abstract class AbstractCustomPageImport implements ImportInterface, CustomImport
 						'item_id' => 'int',
 						'type'    => 'string',
 						'lang'    => 'string',
-						'title'   => 'string'
+						'title'   => 'string',
 					],
 					$titles[$i],
 					['item_id', 'type', 'lang'],
@@ -107,7 +107,7 @@ abstract class AbstractCustomPageImport implements ImportInterface, CustomImport
 						'item_id' => 'int',
 						'type'    => 'string',
 						'name'    => 'string',
-						'value'   => 'string'
+						'value'   => 'string',
 					],
 					$params[$i],
 					['item_id', 'type', 'name'],
@@ -139,7 +139,7 @@ abstract class AbstractCustomPageImport implements ImportInterface, CustomImport
 						'page_id'    => 'int',
 						'author_id'  => 'int',
 						'message'    => 'string',
-						'created_at' => 'int'
+						'created_at' => 'int',
 					],
 					$comments[$i],
 					['id', 'page_id'],

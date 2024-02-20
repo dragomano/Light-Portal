@@ -79,7 +79,7 @@ final class BlockImport extends AbstractImport
 								'item_id' => $blockId,
 								'type'    => 'block',
 								'lang'    => $k,
-								'title'   => $v
+								'title'   => $v,
 							];
 						}
 					}
@@ -92,7 +92,7 @@ final class BlockImport extends AbstractImport
 								'item_id' => $blockId,
 								'type'    => 'block',
 								'name'    => $k,
-								'value'   => $v
+								'value'   => $v,
 							];
 						}
 					}

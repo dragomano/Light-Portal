@@ -45,7 +45,7 @@ final class PanelConfig extends AbstractConfig
 		Utils::$context['lp_left_right_width_values']    = [2, 3, 4];
 		Utils::$context['lp_header_footer_width_values'] = [6, 8, 10, 12];
 
-		$config_vars = [
+		$configVars = [
 			['check', 'lp_swap_header_footer'],
 			['check', 'lp_swap_left_right'],
 			['check', 'lp_swap_top_bottom'],
@@ -62,23 +62,23 @@ final class PanelConfig extends AbstractConfig
 			$this->post()->put('lp_right_panel_width', json_encode($this->request('lp_right_panel_width')));
 			$this->post()->put('lp_panel_direction', json_encode($this->request('lp_panel_direction')));
 
-			$save_vars = $config_vars;
+			$saveVars = $configVars;
 
-			$save_vars[] = ['int', 'lp_header_panel_width'];
-			$save_vars[] = ['text', 'lp_left_panel_width'];
-			$save_vars[] = ['text', 'lp_right_panel_width'];
-			$save_vars[] = ['int', 'lp_footer_panel_width'];
-			$save_vars[] = ['check', 'lp_left_panel_sticky'];
-			$save_vars[] = ['check', 'lp_right_panel_sticky'];
-			$save_vars[] = ['text', 'lp_panel_direction'];
+			$saveVars[] = ['int', 'lp_header_panel_width'];
+			$saveVars[] = ['text', 'lp_left_panel_width'];
+			$saveVars[] = ['text', 'lp_right_panel_width'];
+			$saveVars[] = ['int', 'lp_footer_panel_width'];
+			$saveVars[] = ['check', 'lp_left_panel_sticky'];
+			$saveVars[] = ['check', 'lp_right_panel_sticky'];
+			$saveVars[] = ['text', 'lp_panel_direction'];
 
-			ACP::saveDBSettings($save_vars);
+			ACP::saveDBSettings($saveVars);
 
 			$this->session()->put('adm-save', true);
 
 			Utils::redirectexit('action=admin;area=lp_settings;sa=panels');
 		}
 
-		ACP::prepareDBSettingContext($config_vars);
+		ACP::prepareDBSettingContext($configVars);
 	}
 }

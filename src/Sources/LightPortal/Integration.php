@@ -135,10 +135,7 @@ final class Integration extends AbstractMain
 	 */
 	public function changeRedirect(string &$setLocation): void
 	{
-		if (empty(Config::$modSettings['lp_frontpage_mode']))
-			return;
-
-		if (! (empty(Config::$modSettings['lp_standalone_mode']) || empty(Config::$modSettings['lp_standalone_url'])))
+		if (empty(Config::$modSettings['lp_frontpage_mode']) || $this->isStandaloneMode())
 			return;
 
 		if ($this->request()->is('markasread'))
@@ -148,46 +145,36 @@ final class Integration extends AbstractMain
 	public function actions(array &$actions): void
 	{
 		if (! empty(Config::$modSettings['lp_frontpage_mode']))
-			$actions[LP_ACTION] = [false, [new FrontPage, 'show']];
+			$actions[LP_ACTION] = [false, [new FrontPage(), 'show']];
 
-		$actions['forum'] = [false, [new BoardIndex, 'show']];
+		$actions['forum'] = [false, [new BoardIndex(), 'show']];
 
 		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'categories')
-			(new Category)->show(new Page);
+			(new Category())->show(new Page());
 
 		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'tags')
-			(new Tag)->show(new Page);
+			(new Tag())->show(new Page());
 
 		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'promote')
 			$this->promoteTopic();
 
-		if (! empty(Config::$modSettings['lp_standalone_mode'])) {
-			$this->unsetDisabledActions($actions);
+		if (empty(Config::$modSettings['lp_standalone_mode']))
+			return;
 
-			if (! empty(Utils::$context['current_action']) && array_key_exists(
-				Utils::$context['current_action'], Utils::$context['lp_disabled_actions']
-			)) {
-				Utils::redirectexit();
-			}
-		}
+		$this->unsetDisabledActions($actions);
+
+		$this->redirectFromDisabledActions();
 	}
 
 	public function defaultAction(): mixed
 	{
 		if ($this->request()->isNotEmpty(LP_PAGE_PARAM))
-			return $this->callHelper([new Page, 'show']);
+			return $this->callHelper([new Page(), 'show']);
 
-		if (
-			empty(Config::$modSettings['lp_frontpage_mode'])
-			|| ! (
-				empty(Config::$modSettings['lp_standalone_mode'])
-				|| empty(Config::$modSettings['lp_standalone_url'])
-			)
-		) {
-			return $this->callHelper([new BoardIndex, 'show']);
-		}
+		if (empty(Config::$modSettings['lp_frontpage_mode']) || $this->isStandaloneMode())
+			return $this->callHelper([new BoardIndex(), 'show']);
 
-		return $this->callHelper([new FrontPage, 'show']);
+		return $this->callHelper([new FrontPage(), 'show']);
 	}
 
 	/**
@@ -195,33 +182,29 @@ final class Integration extends AbstractMain
 	 *
 	 * Добавляем выделение для некоторых пунктов меню при переходе в указанные области
 	 */
-	public function currentAction(string &$current_action): void
+	public function currentAction(string &$action): void
 	{
 		if (empty(Config::$modSettings['lp_frontpage_mode']))
 			return;
 
 		if ($this->request()->isEmpty('action')) {
-			$current_action = LP_ACTION;
+			$action = LP_ACTION;
 
-			if (
-				! empty(Config::$modSettings['lp_standalone_mode'])
-				&& ! empty(Config::$modSettings['lp_standalone_url'])
-				&& Config::$modSettings['lp_standalone_url'] !== $this->request()->url()
-			) {
-				$current_action = 'forum';
+			if ($this->isStandaloneMode() && Config::$modSettings['lp_standalone_url'] !== $this->request()->url()) {
+				$action = 'forum';
 			}
 
 			if ($this->request()->isNotEmpty(LP_PAGE_PARAM)) {
-				$current_action = LP_ACTION;
+				$action = LP_ACTION;
 			}
 		} else {
-			$current_action = empty(Config::$modSettings['lp_standalone_mode']) && $this->request()->is('forum')
+			$action = empty(Config::$modSettings['lp_standalone_mode']) && $this->request()->is('forum')
 				? 'home'
 				: Utils::$context['current_action'];
 		}
 
 		if (isset(Utils::$context['current_board']) || $this->request()->is('keywords')) {
-			$current_action = empty(Config::$modSettings['lp_standalone_mode'])
+			$action = empty(Config::$modSettings['lp_standalone_mode'])
 				? 'home'
 				: (in_array('forum', $this->getDisabledActions()) ? LP_ACTION : 'forum');
 		}
@@ -230,7 +213,7 @@ final class Integration extends AbstractMain
 	/**
 	 * @hook integrate_current_action
 	 */
-	public function currentPage(string &$current_action): void
+	public function currentPage(string &$action): void
 	{
 		if (empty(Utils::$context['lp_page']) || empty(Utils::$context['lp_menu_pages']))
 			return;
@@ -239,7 +222,7 @@ final class Integration extends AbstractMain
 			return;
 
 		if ($this->request()->url() === LP_PAGE_URL . Utils::$context['lp_page']['alias']) {
-			$current_action = 'portal_page_' . $this->request(LP_PAGE_PARAM);
+			$action = 'portal_page_' . $this->request(LP_PAGE_PARAM);
 		}
 	}
 
@@ -248,7 +231,7 @@ final class Integration extends AbstractMain
 		if ($this->isPortalCanBeLoaded() === false)
 			return;
 
-		$this->callHelper([new Block, 'show']);
+		$this->callHelper([new Block(), 'show']);
 
 		$this->prepareAdminButtons($buttons);
 
@@ -416,12 +399,12 @@ final class Integration extends AbstractMain
 		}
 	}
 
-	public function profileAreas(array &$profile_areas): void
+	public function profileAreas(array &$areas): void
 	{
 		if (Utils::$context['user']['is_admin'])
 			return;
 
-		$profile_areas['info']['areas']['lp_my_pages'] = [
+		$areas['info']['areas']['lp_my_pages'] = [
 			'label'      => Lang::$txt['lp_my_pages'],
 			'custom_url' => Config::$scripturl . '?action=admin;area=lp_pages',
 			'icon'       => 'reports',
@@ -430,28 +413,28 @@ final class Integration extends AbstractMain
 		];
 	}
 
-	public function profilePopup(array &$profile_items): void
+	public function profilePopup(array &$items): void
 	{
 		if (Utils::$context['user']['is_admin'] || empty(Utils::$context['allow_light_portal_manage_pages_own']))
 			return;
 
 		$counter = 0;
-		foreach ($profile_items as $item) {
+		foreach ($items as $item) {
 			$counter++;
 
 			if ($item['area'] === 'showdrafts')
 				break;
 		}
 
-		$profile_items = array_merge(
-			array_slice($profile_items, 0, $counter, true),
+		$items = array_merge(
+			array_slice($items, 0, $counter, true),
 			[
 				[
 					'menu' => 'info',
 					'area' => 'lp_my_pages'
 				]
 			],
-			array_slice($profile_items, $counter, null, true)
+			array_slice($items, $counter, null, true)
 		);
 	}
 
@@ -471,10 +454,7 @@ final class Integration extends AbstractMain
 		if (empty($actions['action']) && empty($actions['board'])) {
 			$result = sprintf(Lang::$txt['lp_who_viewing_frontpage'], Config::$scripturl);
 
-			if (
-				! empty(Config::$modSettings['lp_standalone_mode'])
-				&& ! empty(Config::$modSettings['lp_standalone_url'])
-			) {
+			if ($this->isStandaloneMode()) {
 				$result = sprintf(
 					Lang::$txt['lp_who_viewing_index'],
 					Config::$modSettings['lp_standalone_url'],

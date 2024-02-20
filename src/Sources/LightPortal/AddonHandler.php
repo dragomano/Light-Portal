@@ -142,8 +142,8 @@ final class AddonHandler
 				continue;
 
 			foreach ($assets[$type] as $plugin => $links) {
-				$addonAssetDir = Theme::$current->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . $type
-					. DIRECTORY_SEPARATOR  . 'light_portal' . DIRECTORY_SEPARATOR . $plugin;
+				$customName = $type . '/light_portal/' . $plugin;
+				$addonAssetDir = Theme::$current->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . $customName;
 
 				if (! is_dir($addonAssetDir)) {
 					@mkdir($addonAssetDir);

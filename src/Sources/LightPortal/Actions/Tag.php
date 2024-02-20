@@ -73,7 +73,7 @@ final class Tag extends AbstractPageList
 	/**
 	 * @throws IntlException
 	 */
-	public function getPages(int $start, int $items_per_page, string $sort): array
+	public function getPages(int $start, int $limit, string $sort): array
 	{
 		$result = Db::$db->query('', '
 			SELECT
@@ -102,7 +102,7 @@ final class Tag extends AbstractPageList
 				'permissions'  => $this->getPermissions(),
 				'sort'         => $sort,
 				'start'        => $start,
-				'limit'        => $items_per_page,
+				'limit'        => $limit,
 			]
 		);
 
@@ -203,7 +203,7 @@ final class Tag extends AbstractPageList
 		Utils::obExit();
 	}
 
-	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 't.value'): array
+	public function getAll(int $start = 0, int $limit = 0, string $sort = 't.value'): array
 	{
 		$result = Db::$db->query('', '
 			SELECT t.tag_id, t.value, COUNT(t.tag_id) AS num
@@ -216,7 +216,7 @@ final class Tag extends AbstractPageList
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
 			GROUP BY t.tag_id, t.value
-			ORDER BY {raw:sort}' . ($items_per_page ? '
+			ORDER BY {raw:sort}' . ($limit ? '
 			LIMIT {int:start}, {int:limit}' : ''),
 			[
 				'statuses'     => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
@@ -224,7 +224,7 @@ final class Tag extends AbstractPageList
 				'permissions'  => $this->getPermissions(),
 				'sort'         => $sort,
 				'start'        => $start,
-				'limit'        => $items_per_page,
+				'limit'        => $limit,
 			]
 		);
 
