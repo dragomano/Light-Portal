@@ -68,7 +68,6 @@
         <exclude name="Sources/LightPortal/Addons/Uicons/**" />
         <exclude name="Sources/LightPortal/Addons/VkComments/**" />
         <exclude name="Sources/LightPortal/Addons/YandexTurbo/**" />
-        <exclude name="Sources/LightPortal/Tests/**" />
         <exclude name="Sources/LightPortal/composer.json" />
         <exclude name="Sources/LightPortal/composer.lock" />
         <exclude name="Sources/LightPortal/create_index.php" />

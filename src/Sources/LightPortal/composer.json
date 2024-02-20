@@ -10,8 +10,6 @@
     "laminas/laminas-loader": "^2.9"
   },
   "require-dev": {
-    "mockery/mockery": "^1.5",
-    "nette/tester": "^2.5",
     "scssphp/scssphp": "^1.12",
     "wikimedia/less.php": "^4.1"
   },
@@ -27,7 +25,6 @@
     "sort-packages": true
   },
   "scripts": {
-    "post-update-cmd": "@php create_index.php",
-    "tests": "@php Libs/bin/tester --colors 1 Tests -C"
+    "post-update-cmd": "@php create_index.php"
   }
 }
