@@ -28,16 +28,13 @@ final class Block implements BlockInterface
 
 	public function show(): void
 	{
-		if ($this->isHideBlocksInAdmin() || $this->request()->is('devtools') || $this->request()->has('preview'))
-			return;
-
-		if (empty(Utils::$context['allow_light_portal_view']))
+		if ($this->hideBlocksInACP() || $this->request()->is('devtools') || $this->request()->has('preview'))
 			return;
 
 		if (empty(Utils::$context['template_layers']) || empty(Utils::$context['lp_active_blocks']))
 			return;
 
-		if (empty($blocks = $this->getFilteredByAreas()))
+		if (empty(Utils::$context['allow_light_portal_view']) || empty($blocks = $this->getFilteredByAreas()))
 			return;
 
 		// Block placement
@@ -87,7 +84,7 @@ final class Block implements BlockInterface
 
 	public function getActive(): array
 	{
-		if ($this->isHideBlocksInAdmin())
+		if ($this->hideBlocksInACP())
 			return [];
 
 		if (($blocks = $this->cache()->get('active_blocks')) === null) {
@@ -102,7 +99,7 @@ final class Block implements BlockInterface
 				WHERE b.status = {int:status}
 				ORDER BY b.placement, b.priority',
 				[
-					'status' => self::STATUS_ACTIVE
+					'status' => self::STATUS_ACTIVE,
 				]
 			);
 
@@ -144,7 +141,7 @@ final class Block implements BlockInterface
 			empty(Config::$modSettings['lp_frontpage_mode']) ? 'forum' : LP_ACTION
 		);
 
-		if (! (empty(Config::$modSettings['lp_standalone_mode']) || empty(Config::$modSettings['lp_standalone_url']))) {
+		if ($this->isStandaloneMode()) {
 			if (Config::$modSettings['lp_standalone_url'] === $this->request()->url()) {
 				$area = LP_ACTION;
 			} elseif (empty(Utils::$context['current_action'])) {
@@ -237,7 +234,7 @@ final class Block implements BlockInterface
 		return $ids;
 	}
 
-	private function isHideBlocksInAdmin(): bool
+	private function hideBlocksInACP(): bool
 	{
 		return ! empty(Config::$modSettings['lp_hide_blocks_in_acp']) && $this->request()->is('admin');
 	}

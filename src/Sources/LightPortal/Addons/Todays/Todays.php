@@ -39,9 +39,9 @@ class Todays extends Block
 			&& empty(Utils::$context['lp_todays_plugin']['hide_calendar_in_menu']);
 	}
 
-	public function addSettings(array &$config_vars): void
+	public function addSettings(array &$settings): void
 	{
-		$config_vars['todays'][] = [
+		$settings['todays'][] = [
 			'check',
 			'hide_calendar_in_menu',
 			'subtext' => sprintf(

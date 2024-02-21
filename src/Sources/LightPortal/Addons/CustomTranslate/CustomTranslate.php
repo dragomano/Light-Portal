@@ -72,9 +72,9 @@ class CustomTranslate extends Plugin
 		$this->setTemplate()->withLayer('custom_translate');
 	}
 
-	public function addSettings(array &$config_vars): void
+	public function addSettings(array &$settings): void
 	{
-		$config_vars['custom_translate'][] = ['multiselect', 'languages', array_combine(
+		$settings['custom_translate'][] = ['multiselect', 'languages', array_combine(
 			$this->langCodes, Lang::$txt['lp_custom_translate']['languages_set']
 		)];
 	}

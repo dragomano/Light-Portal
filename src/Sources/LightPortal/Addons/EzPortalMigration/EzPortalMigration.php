@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.24
+ * @version 21.02.24
  */
 
 namespace Bugo\LightPortal\Addons\EzPortalMigration;
@@ -38,7 +38,7 @@ class EzPortalMigration extends Plugin
 	public function updatePageAreas(array &$areas): void
 	{
 		if (User::$info['is_admin'])
-			$areas['import_from_ez'] = [new PageImport, 'main'];
+			$areas['import_from_ez'] = [new PageImport(), 'main'];
 	}
 
 	public function importPages(array &$items, array &$titles): void

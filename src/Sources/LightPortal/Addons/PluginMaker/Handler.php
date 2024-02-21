@@ -160,12 +160,12 @@ class Handler extends Plugin
 		SelectField::make('type', Lang::$txt['lp_plugin_maker']['type'])
 			->setTab('content')
 			->setAttribute('@change', 'plugin.change($event.target.value)')
-			->setOptions(array_filter(Utils::$context['lp_plugin_types'], fn($type) => $type !== 'ssi'))
+			->setOptions(array_filter(Utils::$context['lp_plugin_types'], static fn($type) => $type !== 'ssi'))
 			->setValue(Utils::$context['lp_plugin']['type']);
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
 			->setTab('content')
-			->setValue(fn() => new IconSelect, [
+			->setValue(static fn() => new IconSelect(), [
 				'icon' => Utils::$context['lp_plugin']['icon'],
 				'type' => Utils::$context['lp_plugin']['type'],
 			]);
@@ -466,7 +466,7 @@ class Handler extends Plugin
 				if (in_array($param['type'], ['title', 'desc', 'callback'])) {
 					$namespace->addUse(CustomField::class);
 					$method->addBody("CustomField::make('{$param['name']}', Lang::\$txt['lp_$pluginName']['{$param['name']}'])")
-						->addBody("\t->setValue(fn() => '', []);" . PHP_EOL);
+						->addBody("\t->setValue(static fn() => '', []);" . PHP_EOL);
 				}
 			}
 		}
@@ -529,13 +529,13 @@ class Handler extends Plugin
 		if (! empty(Utils::$context['lp_plugin']['options'])) {
 			$method = $class->addMethod('addSettings')
 				->setReturnType('void');
-			$method->addParameter('config_vars')
+			$method->addParameter('settings')
 				->setReference()
 				->setType('array');
 
 			$defaultOptions = array_filter(
 				Utils::$context['lp_plugin']['options'],
-				fn($optionArray) => array_key_exists('default', $optionArray)
+				static fn($optionArray) => array_key_exists('default', $optionArray)
 			);
 
 			if (! empty($defaultOptions)) {
@@ -550,9 +550,9 @@ class Handler extends Plugin
 
 			foreach (Utils::$context['lp_plugin']['options'] as $option) {
 				if (in_array($option['type'], ['multiselect', 'select'])) {
-					$method->addBody("\$config_vars['$pluginName'][] = ['{$option['type']}', '{$option['name']}', Lang::\$txt['lp_$pluginName']['{$option['name']}_set']];");
+					$method->addBody("\$settings['$pluginName'][] = ['{$option['type']}', '{$option['name']}', Lang::\$txt['lp_$pluginName']['{$option['name']}_set']];");
 				} else {
-					$method->addBody("\$config_vars['$pluginName'][] = ['{$option['type']}', '{$option['name']}'];");
+					$method->addBody("\$settings['$pluginName'][] = ['{$option['type']}', '{$option['name']}'];");
 				}
 			}
 		}
@@ -630,7 +630,7 @@ class Handler extends Plugin
 		$file->addComment("@link " . Utils::$context['lp_plugin']['site']);
 		$file->addComment("@author " . Utils::$context['lp_plugin']['author'] . " <" . Utils::$context['lp_plugin']['email'] . ">");
 		$file->addComment("@copyright " . date('Y') . " " . Utils::$context['lp_plugin']['author']);
-		$file->addComment("@license $licenseLink $licenseName");
+		$file->addComment(sprintf('@license %s %s', $licenseLink, $licenseName));
 		$file->addComment('');
 		$file->addComment("@category addon");
 		$file->addComment("@version " . date('d.m.y'));

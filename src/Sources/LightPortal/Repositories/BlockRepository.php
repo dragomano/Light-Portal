@@ -257,12 +257,12 @@ final class BlockRepository extends AbstractRepository
 		if (isset(Lang::$txt['lp_' . $type]['title']))
 			return;
 
-		$addon = $this->getCamelName($type);
+		$plugin = $this->getCamelName($type);
 
-		$message = in_array($addon, $this->getEntityData('plugin'))
+		$message = in_array($plugin, $this->getEntityData('plugin'))
 			? Lang::$txt['lp_addon_not_activated']
 			: Lang::$txt['lp_addon_not_installed'];
 
-		Utils::$context['lp_missing_block_types'][$type] = '<span class="error">' . sprintf($message, $addon) . '</span>';
+		Utils::$context['lp_missing_block_types'][$type] = '<span class="error">' . sprintf($message, $plugin) . '</span>';
 	}
 }

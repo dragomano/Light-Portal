@@ -27,17 +27,11 @@ trait Helper
 	use BlockAppearance;
 	use SMFTrait;
 
-	/**
-	 * @param mixed|null $default
-	 */
 	public function request(?string $key = null, mixed $default = null): mixed
 	{
 		return $key ? ((new Request())->get($key) ?? $default) : new Request();
 	}
 
-	/**
-	 * @param mixed|null $default
-	 */
 	public function post(?string $key = null, mixed $default = null): mixed
 	{
 		return $key ? ((new Post())->get($key) ?? $default) : new Post();
@@ -100,18 +94,18 @@ trait Helper
 
 		return User::$memberContext[$userId]['avatar']['image']
 			?? '<img
-			        class="avatar"
-			        width="100"
-			        height="100"
-			        src="' . Config::$modSettings['avatar_url'] . '/default.png"
-			        loading="lazy"
-			        alt="' . User::$memberContext[$userId]['name'] . '"
-			    >';
+					class="avatar"
+					width="100"
+					height="100"
+					src="' . Config::$modSettings['avatar_url'] . '/default.png"
+					loading="lazy"
+					alt="' . User::$memberContext[$userId]['name'] . '"
+				>';
 	}
 
 	public function getItemsWithUserAvatars(array $items, string $entity = 'author'): array
 	{
-		$userData = User::loadMemberData(array_map(fn($item) => $item[$entity]['id'], $items));
+		$userData = User::loadMemberData(array_map(static fn($item) => $item[$entity]['id'], $items));
 
 		return array_map(function ($item) use ($userData, $entity) {
 			$item[$entity]['avatar'] = $this->getUserAvatar((int) $item[$entity]['id'], $userData);
@@ -226,13 +220,13 @@ trait Helper
 	 *
 	 * Проверяем, может ли текущий пользователь просматривать элемент портала, согласно его правам доступа
 	 */
-	public function canViewItem(int $permissions, int $check_id = 0): bool
+	public function canViewItem(int $permissions, int $userId = 0): bool
 	{
 		return match ($permissions) {
 			0 => User::$info['is_admin'],
 			1 => User::$info['is_guest'],
 			2 => User::$info['id'] > 0,
-			4 => User::$info['id'] === $check_id,
+			4 => User::$info['id'] === $userId,
 			default => true,
 		};
 	}
@@ -252,16 +246,6 @@ trait Helper
 			return [2, 3];
 
 		return [3];
-	}
-
-	public function isFrontpage(string $alias): bool
-	{
-		if (empty($alias) || empty(Config::$modSettings['lp_frontpage_mode']))
-			return false;
-
-		return Config::$modSettings['lp_frontpage_mode'] === 'chosen_page'
-			&& Config::$modSettings['lp_frontpage_alias']
-			&& Config::$modSettings['lp_frontpage_alias'] === $alias;
 	}
 
 	public function getTranslatedTitle(array $titles): string
@@ -302,5 +286,34 @@ trait Helper
 			return '';
 
 		return $result;
+	}
+
+	public function isFrontpage(string $alias): bool
+	{
+		if ($alias === '' || empty(Config::$modSettings['lp_frontpage_alias']))
+			return false;
+
+		return $this->isFrontpageMode('chosen_page') && Config::$modSettings['lp_frontpage_alias'] === $alias;
+	}
+
+	public function isFrontpageMode(string $mode): bool
+	{
+		if (empty(Config::$modSettings['lp_frontpage_mode']))
+			return false;
+
+		return Config::$modSettings['lp_frontpage_mode'] === $mode;
+	}
+
+	public function isStandaloneMode(): bool
+	{
+		if (empty(Config::$modSettings['lp_standalone_mode']))
+			return false;
+
+		return ! empty(Config::$modSettings['lp_standalone_url']);
+	}
+
+	public function getCommentBlockType(): string
+	{
+		return Config::$modSettings['lp_show_comment_block'] ?? '';
 	}
 }

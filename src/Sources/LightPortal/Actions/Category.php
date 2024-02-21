@@ -54,11 +54,11 @@ final class Category extends AbstractPageList
 
 		Utils::$context['linktree'][] = [
 			'name' => Lang::$txt['lp_all_categories'],
-			'url'  => LP_BASE_URL . ';sa=categories'
+			'url'  => LP_BASE_URL . ';sa=categories',
 		];
 
 		Utils::$context['linktree'][] = [
-			'name' => Utils::$context['page_title']
+			'name' => Utils::$context['page_title'],
 		];
 
 		if (! empty(Config::$modSettings['lp_show_items_as_articles']))
@@ -78,7 +78,7 @@ final class Category extends AbstractPageList
 				[
 					'position' => 'top_of_list',
 					'value'    => $category['desc'],
-					'class'    => 'information'
+					'class'    => 'information',
 				]
 			];
 		}
@@ -91,7 +91,7 @@ final class Category extends AbstractPageList
 	/**
 	 * @throws IntlException
 	 */
-	public function getPages(int $start, int $items_per_page, string $sort): array
+	public function getPages(int $start, int $limit, string $sort): array
 	{
 		$result = Db::$db->query('', '
 			SELECT
@@ -117,7 +117,7 @@ final class Category extends AbstractPageList
 				'permissions'  => $this->getPermissions(),
 				'sort'         => $sort,
 				'start'        => $start,
-				'limit'        => $items_per_page
+				'limit'        => $limit
 			]
 		);
 
@@ -183,7 +183,7 @@ final class Category extends AbstractPageList
 						'value' => Lang::$txt['lp_category']
 					],
 					'data' => [
-						'function' => fn($entry) => '<a href="' . $entry['link'] . '">' . $entry['name'] . '</a>' .
+						'function' => static fn($entry) => '<a href="' . $entry['link'] . '">' . $entry['name'] . '</a>' .
 							(empty($entry['desc']) ? '' : '<p class="smalltext">' . $entry['desc'] . '</p>')
 					],
 					'sort' => [
@@ -215,7 +215,7 @@ final class Category extends AbstractPageList
 		Utils::obExit();
 	}
 
-	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'c.name'): array
+	public function getAll(int $start = 0, int $limit = 0, string $sort = 'c.name'): array
 	{
 		$result = Db::$db->query('', '
 			SELECT COALESCE(c.category_id, 0) AS category_id, c.name, c.description, COUNT(p.page_id) AS frequency
@@ -225,7 +225,7 @@ final class Category extends AbstractPageList
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
 			GROUP BY c.category_id, c.name, c.description
-			ORDER BY {raw:sort}' . ($items_per_page ? '
+			ORDER BY {raw:sort}' . ($limit ? '
 			LIMIT {int:start}, {int:limit}' : ''),
 			[
 				'statuses'     => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
@@ -233,7 +233,7 @@ final class Category extends AbstractPageList
 				'permissions'  => $this->getPermissions(),
 				'sort'         => $sort,
 				'start'        => $start,
-				'limit'        => $items_per_page
+				'limit'        => $limit,
 			]
 		);
 
@@ -247,7 +247,7 @@ final class Category extends AbstractPageList
 				'name'      => $row['name'] ?: Lang::$txt['lp_no_category'],
 				'desc'      => $row['description'] ?? '',
 				'link'      => LP_BASE_URL . ';sa=categories;id=' . $row['category_id'],
-				'num_pages' => $row['frequency']
+				'num_pages' => $row['frequency'],
 			];
 		}
 

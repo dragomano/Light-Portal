@@ -68,7 +68,7 @@ final class BlockExport extends AbstractExport
 				LEFT JOIN {db_prefix}lp_params AS pp ON (b.block_id = pp.item_id AND pp.type = {literal:block})' . (empty($blocks) ? '' : '
 			WHERE b.block_id IN ({array_int:blocks})'),
 			[
-				'blocks' => $blocks
+				'blocks' => $blocks,
 			]
 		);
 
@@ -99,7 +99,7 @@ final class BlockExport extends AbstractExport
 		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
-		return array_map(fn($item) => array_filter($item), $items);
+		return array_map(static fn($item) => array_filter($item), $items);
 	}
 
 	protected function getFile(): string

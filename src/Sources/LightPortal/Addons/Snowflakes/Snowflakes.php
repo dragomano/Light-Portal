@@ -49,15 +49,15 @@ class Snowflakes extends Plugin
 			});', true);
 	}
 
-	public function addSettings(array &$config_vars): void
+	public function addSettings(array &$settings): void
 	{
 		$this->addDefaultValues($this->params);
 
-		$config_vars['snowflakes'][] = ['color', 'icon_color'];
-		$config_vars['snowflakes'][] = ['int', 'icon_size', 'min' => 1];
-		$config_vars['snowflakes'][] = ['range', 'snowflakes_count'];
-		$config_vars['snowflakes'][] = ['check', 'enable_snowdrifts'];
-		$config_vars['snowflakes'][] = ['range', 'snowdrifts_count', 'max' => 10];
+		$settings['snowflakes'][] = ['color', 'icon_color'];
+		$settings['snowflakes'][] = ['int', 'icon_size', 'min' => 1];
+		$settings['snowflakes'][] = ['range', 'snowflakes_count'];
+		$settings['snowflakes'][] = ['check', 'enable_snowdrifts'];
+		$settings['snowflakes'][] = ['range', 'snowdrifts_count', 'max' => 10];
 	}
 
 	public function prepareAssets(array &$assets): void

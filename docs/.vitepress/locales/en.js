@@ -1,7 +1,6 @@
 export default {
-  // replace with your native language name
   label: 'English',
-  // replace with your native language code (https://gist.github.com/Josantonius/b455e315bc7f790d14b136d61d9ae469)
+  // https://gist.github.com/Josantonius/b455e315bc7f790d14b136d61d9ae469
   lang: 'en',
   title: 'Light Portal Docs',
   description: 'Light Portal Online Documentation',
@@ -12,6 +11,7 @@ export default {
       { text: 'Team', link: '/team' },
       { text: 'Examples', link: '/examples' },
       { text: 'Demo', link: 'https://demo.dragomano.ru/' },
+      { text: 'Changelog', link: '/changelog' },
     ],
     outline: {
       label: 'On this page',

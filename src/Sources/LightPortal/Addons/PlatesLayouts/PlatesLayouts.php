@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 10.02.24
+ * @version 20.02.24
  */
 
 namespace Bugo\LightPortal\Addons\PlatesLayouts;
@@ -33,7 +33,7 @@ class PlatesLayouts extends Plugin
 
 	private string $extension = '.tpl.php';
 
-	public function addSettings(array &$config_vars): void
+	public function addSettings(array &$settings): void
 	{
 		Lang::$txt['lp_plates_layouts']['note'] = sprintf(
 			Lang::$txt['lp_plates_layouts']['note'],
@@ -41,9 +41,9 @@ class PlatesLayouts extends Plugin
 			Theme::$current->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . 'portal_layouts'
 		);
 
-		$config_vars['plates_layouts'][] = ['desc', 'note'];
-		$config_vars['plates_layouts'][] = ['title', 'example'];
-		$config_vars['plates_layouts'][] = ['callback', '_', $this->showExample()];
+		$settings['plates_layouts'][] = ['desc', 'note'];
+		$settings['plates_layouts'][] = ['title', 'example'];
+		$settings['plates_layouts'][] = ['callback', '_', $this->showExample()];
 	}
 
 	public function frontLayouts(): void
@@ -67,10 +67,10 @@ class PlatesLayouts extends Plugin
 			);
 
 			$templates->registerFunction(
-				'debug', fn(mixed $data) => parse_bbc('[code]' . print_r($data, true) . '[/code]')
+				'debug', static fn(mixed $data) => parse_bbc('[code]' . print_r($data, true) . '[/code]')
 			);
 
-			$templates->registerFunction('icon', function (string $name, string $title = ''): string {
+			$templates->registerFunction('icon', static function (string $name, string $title = ''): string {
 				$icon = Icon::get($name);
 
 				if (empty($title)) {

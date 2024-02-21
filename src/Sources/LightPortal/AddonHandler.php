@@ -57,9 +57,9 @@ final class AddonHandler
 
 		$this->plugins = new PluginStorage();
 
-		$this->cssMinifier = new CSS;
+		$this->cssMinifier = new CSS();
 
-		$this->jsMinifier = new JS;
+		$this->jsMinifier = new JS();
 
 		$this->prepareAssets();
 	}
@@ -78,7 +78,7 @@ final class AddonHandler
 		if (empty($dirs = glob(LP_ADDON_DIR . '/*', GLOB_ONLYDIR)))
 			return [];
 
-		return array_map(fn($item): string => basename($item), $dirs);
+		return array_map(static fn($item): string => basename($item), $dirs);
 	}
 
 	public function run(string $hook = 'init', array $vars = [], array $plugins = []): void
@@ -94,7 +94,7 @@ final class AddonHandler
 			if (! class_exists($className))
 				continue;
 
-			$class = new $className;
+			$class = new $className();
 
 			if (! $this->plugins->contains($class)) {
 				$this->plugins->attach($class, [
@@ -142,8 +142,8 @@ final class AddonHandler
 				continue;
 
 			foreach ($assets[$type] as $plugin => $links) {
-				$addonAssetDir = Theme::$current->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . $type
-					. DIRECTORY_SEPARATOR  . 'light_portal' . DIRECTORY_SEPARATOR . $plugin;
+				$customName = $type . '/light_portal/' . $plugin;
+				$addonAssetDir = Theme::$current->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . $customName;
 
 				if (! is_dir($addonAssetDir)) {
 					@mkdir($addonAssetDir);

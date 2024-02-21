@@ -35,15 +35,15 @@ class Uicons extends Plugin
 		$styles[] = 'https://cdn.jsdelivr.net/npm/@flaticon/flaticon-uicons@1/css/all/all.css';
 	}
 
-	public function addSettings(array &$config_vars): void
+	public function addSettings(array &$settings): void
 	{
 		$this->addDefaultValues([
 			'weight' => 'r',
 			'corner' => 'r',
 		]);
 
-		$config_vars['uicons'][] = ['select', 'weight', array_combine(['r', 'b', 's'], Lang::$txt['lp_uicons']['weight_set'])];
-		$config_vars['uicons'][] = ['select', 'corner', array_combine(['r', 's'], Lang::$txt['lp_uicons']['corner_set'])];
+		$settings['uicons'][] = ['select', 'weight', array_combine(['r', 'b', 's'], Lang::$txt['lp_uicons']['weight_set'])];
+		$settings['uicons'][] = ['select', 'corner', array_combine(['r', 's'], Lang::$txt['lp_uicons']['corner_set'])];
 	}
 
 	public function prepareIconList(array &$icons): void

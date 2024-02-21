@@ -28,12 +28,12 @@ class TinyMCE extends Plugin
 {
 	public string $type = 'editor';
 
-	public function addSettings(array &$config_vars): void
+	public function addSettings(array &$settings): void
 	{
 		$link = '<a href="https://www.tiny.cloud/auth/signup/" class="bbc_link" target="_blank">' . Lang::$txt['lp_tiny_m_c_e']['api_key_subtext'] . '<a>';
 
-		$config_vars['tiny_m_c_e'][] = ['text', 'api_key', 'subtext' => $link];
-		$config_vars['tiny_m_c_e'][] = ['multiselect', 'dark_themes', $this->getForumThemes()];
+		$settings['tiny_m_c_e'][] = ['text', 'api_key', 'subtext' => $link];
+		$settings['tiny_m_c_e'][] = ['multiselect', 'dark_themes', $this->getForumThemes()];
 	}
 
 	public function prepareEditor(array $object): void

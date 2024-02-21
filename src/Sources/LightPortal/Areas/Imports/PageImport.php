@@ -62,14 +62,14 @@ final class PageImport extends AbstractImport
 						'category_id' => intval($item['id']),
 						'name'        => (string) $item['name'],
 						'description' => (string) $item['desc'],
-						'priority'    => intval($item['priority'])
+						'priority'    => intval($item['priority']),
 					];
 				}
 			} elseif ($entity === 'tags') {
 				foreach ($element->item as $item) {
 					$tags[] = [
 						'tag_id' => intval($item['id']),
-						'value'  => (string) $item['value']
+						'value'  => (string) $item['value'],
 					];
 				}
 			} else {
@@ -87,7 +87,7 @@ final class PageImport extends AbstractImport
 						'num_views'    => intval($item['num_views']),
 						'num_comments' => intval($item['num_comments']),
 						'created_at'   => intval($item['created_at']),
-						'updated_at'   => intval($item['updated_at'])
+						'updated_at'   => intval($item['updated_at']),
 					];
 
 					if ($item->titles) {
@@ -97,7 +97,7 @@ final class PageImport extends AbstractImport
 									'item_id' => $pageId,
 									'type'    => 'page',
 									'lang'    => $k,
-									'title'   => $v
+									'title'   => $v,
 								];
 							}
 						}
@@ -112,7 +112,7 @@ final class PageImport extends AbstractImport
 									'page_id'    => $pageId,
 									'author_id'  => intval($v['author_id']),
 									'message'    => $v->message,
-									'created_at' => intval($v['created_at'])
+									'created_at' => intval($v['created_at']),
 								];
 							}
 						}
@@ -125,7 +125,7 @@ final class PageImport extends AbstractImport
 									'item_id' => $pageId,
 									'type'    => 'page',
 									'name'    => $k,
-									'value'   => $v
+									'value'   => $v,
 								];
 							}
 						}
@@ -143,7 +143,7 @@ final class PageImport extends AbstractImport
 					'category_id' => 'int',
 					'name'        => 'string',
 					'description' => 'string',
-					'priority'    => 'int'
+					'priority'    => 'int',
 				],
 				$categories,
 				['category_id'],
@@ -162,7 +162,7 @@ final class PageImport extends AbstractImport
 					'{db_prefix}lp_tags',
 					[
 						'tag_id' => 'int',
-						'value'  => 'string'
+						'value'  => 'string',
 					],
 					$tags[$i],
 					['tag_id'],
@@ -196,7 +196,7 @@ final class PageImport extends AbstractImport
 						'num_views'    => 'int',
 						'num_comments' => 'int',
 						'created_at'   => 'int',
-						'updated_at'   => 'int'
+						'updated_at'   => 'int',
 					],
 					$items[$i],
 					['page_id'],
@@ -222,7 +222,7 @@ final class PageImport extends AbstractImport
 						'page_id'    => 'int',
 						'author_id'  => 'int',
 						'message'    => 'string-65534',
-						'created_at' => 'int'
+						'created_at' => 'int',
 					],
 					$comments[$i],
 					['id', 'page_id'],

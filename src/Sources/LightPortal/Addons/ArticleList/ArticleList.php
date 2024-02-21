@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.02.24
+ * @version 20.02.24
  */
 
 namespace Bugo\LightPortal\Addons\ArticleList;
@@ -64,7 +64,7 @@ class ArticleList extends Block
 
 		CustomField::make('body_class', Lang::$txt['lp_article_list']['body_class'])
 			->setTab('appearance')
-			->setValue(fn() => new ContentClassSelect, [
+			->setValue(static fn() => new ContentClassSelect(), [
 				'id'    => 'body_class',
 				'value' => Utils::$context['lp_block']['options']['body_class'],
 			]);
@@ -76,7 +76,7 @@ class ArticleList extends Block
 
 		CustomField::make('include_topics', Lang::$txt['lp_article_list']['include_topics'])
 			->setTab('content')
-			->setValue(fn() => new TopicSelect, [
+			->setValue(static fn() => new TopicSelect(), [
 				'id'    => 'include_topics',
 				'hint'  => Lang::$txt['lp_article_list']['include_topics_select'],
 				'value' => Utils::$context['lp_block']['options']['include_topics'] ?? '',
@@ -84,7 +84,7 @@ class ArticleList extends Block
 
 		CustomField::make('include_pages', Lang::$txt['lp_article_list']['include_pages'])
 			->setTab('content')
-			->setValue(fn() => new PageSelect, [
+			->setValue(static fn() => new PageSelect(), [
 				'id'    => 'include_pages',
 				'hint'  => Lang::$txt['lp_article_list']['include_pages_select'],
 				'value' => Utils::$context['lp_block']['options']['include_pages'] ?? '',

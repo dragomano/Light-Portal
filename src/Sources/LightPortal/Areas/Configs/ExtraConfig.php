@@ -44,7 +44,7 @@ final class ExtraConfig extends AbstractConfig
 			'lp_page_maximum_keywords' => 10,
 		]);
 
-		$config_vars = [
+		$configVars = [
 			['check', 'lp_show_tags_on_page'],
 			['select', 'lp_page_og_image', Lang::$txt['lp_page_og_image_set']],
 			['check', 'lp_show_prev_next_links'],
@@ -121,8 +121,8 @@ final class ExtraConfig extends AbstractConfig
 			if ($this->request()->isNotEmpty('lp_fa_kit'))
 				$this->post()->put('lp_fa_kit', $this->filterVar($this->request('lp_fa_kit'), 'url'));
 
-			$save_vars = $config_vars;
-			ACP::saveDBSettings($save_vars);
+			$saveVars = $configVars;
+			ACP::saveDBSettings($saveVars);
 
 			$this->session()->put('adm-save', true);
 			$this->cache()->flush();
@@ -130,6 +130,6 @@ final class ExtraConfig extends AbstractConfig
 			Utils::redirectexit('action=admin;area=lp_settings;sa=extra');
 		}
 
-		ACP::prepareDBSettingContext($config_vars);
+		ACP::prepareDBSettingContext($configVars);
 	}
 }

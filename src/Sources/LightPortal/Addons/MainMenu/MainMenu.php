@@ -50,9 +50,9 @@ class MainMenu extends Plugin
 			Utils::$context['linktree'][1]['name'] = Utils::$context['lp_main_menu_addon_portal_langs'][User::$info['language']];
 	}
 
-	public function addSettings(array &$config_vars): void
+	public function addSettings(array &$settings): void
 	{
-		$config_vars['main_menu'][] = ['callback', 'items', $this->showList()];
+		$settings['main_menu'][] = ['callback', 'items', $this->showList()];
 	}
 
 	public function showList(): bool|string

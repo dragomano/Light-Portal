@@ -123,7 +123,7 @@ final class BlockArea
 	{
 		$item = (int) ($this->request('block_id') ?: $this->request('id'));
 
-		if (empty($item)) {
+		if ($item === 0) {
 			ErrorHandler::fatalLang('lp_block_not_found', status: 404);
 		}
 
@@ -161,7 +161,7 @@ final class BlockArea
 
 	private function remove(array $items): void
 	{
-		if (empty($items))
+		if ($items === [])
 			return;
 
 		Db::$db->query('', '
@@ -197,13 +197,13 @@ final class BlockArea
 
 	private function makeCopy(int $item): void
 	{
-		if (empty($item))
+		if ($item === 0)
 			return;
 
 		$this->request()->put('clone', true);
 
 		$result = [
-			'success' => false
+			'success' => false,
 		];
 
 		Utils::$context['lp_block']       = $this->repository->getData($item);
@@ -212,7 +212,7 @@ final class BlockArea
 		if (Utils::$context['lp_block']['id']) {
 			$result = [
 				'id'      => Utils::$context['lp_block']['id'],
-				'success' => true
+				'success' => true,
 			];
 		}
 
@@ -235,7 +235,7 @@ final class BlockArea
 			$conditions .= ' WHEN block_id = ' . $item . ' THEN ' . $priority;
 		}
 
-		if (empty($conditions))
+		if ($conditions === '')
 			return;
 
 		if (is_array($blocks)) {
@@ -299,7 +299,7 @@ final class BlockArea
 		$block->titles = Utils::$context['current_block']['titles'] ?? [];
 		$block->options = $options;
 		$block->icon = $block->icon === 'undefined' ? '' : $block->icon;
-		$block->priority = empty($block->id) ? $this->getPriority() : $block->priority;
+		$block->priority = $block->id === 0 ? $this->getPriority() : $block->priority;
 		$block->permissions = empty(Utils::$context['user']['is_admin']) ? 4 : $block->permissions;
 		$block->contentClass = empty($block->options['no_content_class']) ? $block->contentClass : '';
 
@@ -356,31 +356,31 @@ final class BlockArea
 
 		CustomField::make('placement', Lang::$txt['lp_block_placement'])
 			->setTab('access_placement')
-			->setValue(fn() => new PlacementSelect);
+			->setValue(static fn() => new PlacementSelect());
 
 		CustomField::make('permissions', Lang::$txt['edit_permissions'])
 			->setTab('access_placement')
-			->setValue(fn() => new PermissionSelect, [
+			->setValue(static fn() => new PermissionSelect(), [
 				'type' => 'block'
 			]);
 
 		CustomField::make('areas', Lang::$txt['lp_block_areas'])
 			->setTab('access_placement')
 			->setAfter($this->getAreasInfo())
-			->setValue(fn() => new AreaSelect);
+			->setValue(static fn() => new AreaSelect());
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
 			->setTab('appearance')
-			->setValue(fn() => new IconSelect);
+			->setValue(static fn() => new IconSelect());
 
 		CustomField::make('title_class', Lang::$txt['lp_block_title_class'])
 			->setTab('appearance')
-			->setValue(fn() => new TitleClassSelect);
+			->setValue(static fn() => new TitleClassSelect());
 
 		if (empty(Utils::$context['lp_block']['options']['no_content_class'])) {
 			CustomField::make('content_class', Lang::$txt['lp_block_content_class'])
 				->setTab('appearance')
-				->setValue(fn() => new ContentClassSelect);
+				->setValue(static fn() => new ContentClassSelect());
 		}
 
 		CheckboxField::make('hide_header', Lang::$txt['lp_block_hide_header'])

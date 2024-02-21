@@ -45,7 +45,7 @@ abstract class AbstractImport implements ImportInterface
 
 	protected function replaceTitles(array $titles, array &$results): void
 	{
-		if (empty($titles) && empty($results))
+		if ($titles === [] && $results === [])
 			return;
 
 		$titles = array_chunk($titles, 100);
@@ -58,7 +58,7 @@ abstract class AbstractImport implements ImportInterface
 					'item_id' => 'int',
 					'type'    => 'string',
 					'lang'    => 'string',
-					'title'   => 'string'
+					'title'   => 'string',
 				],
 				$titles[$i],
 				['item_id', 'type', 'lang'],
@@ -71,7 +71,7 @@ abstract class AbstractImport implements ImportInterface
 
 	protected function replaceParams(array $params, array &$results): void
 	{
-		if (empty($params) && empty($results))
+		if ($params === [] && $results === [])
 			return;
 
 		$params = array_chunk($params, 100);
@@ -84,7 +84,7 @@ abstract class AbstractImport implements ImportInterface
 					'item_id' => 'int',
 					'type'    => 'string',
 					'name'    => 'string',
-					'value'   => 'string'
+					'value'   => 'string',
 				],
 				$params[$i],
 				['item_id', 'type', 'name'],
@@ -97,7 +97,7 @@ abstract class AbstractImport implements ImportInterface
 
 	protected function finish(array $results, string $type = 'blocks'): void
 	{
-		if (empty($results)) {
+		if ($results === []) {
 			Db::$db->transaction('rollback');
 			ErrorHandler::fatalLang('lp_import_failed');
 		}

@@ -32,8 +32,9 @@ class PageArticle extends AbstractArticle
 		$this->selectedCategories = empty(Config::$modSettings['lp_frontpage_categories'])
 			? [] : explode(',', Config::$modSettings['lp_frontpage_categories']);
 
-		if (empty($this->selectedCategories) && Config::$modSettings['lp_frontpage_mode'] === 'all_pages')
+		if (empty($this->selectedCategories) && $this->isFrontpageMode('all_pages')) {
 			$this->selectedCategories = [0];
+		}
 
 		$this->sorting = (int) (Config::$modSettings['lp_frontpage_article_sorting'] ?? 0);
 
@@ -203,7 +204,7 @@ class PageArticle extends AbstractArticle
 	private function getRepliesData(array $row): array
 	{
 		return [
-			'num'   => Utils::$context['lp_show_default_comments'] ? (int) $row['num_comments'] : 0,
+			'num'   => $this->getCommentBlockType() === 'default' ? (int) $row['num_comments'] : 0,
 			'title' => Lang::$txt['lp_comments'],
 			'after' => '',
 		];

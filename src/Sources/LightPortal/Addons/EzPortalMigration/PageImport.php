@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 20.02.24
  */
 
 namespace Bugo\LightPortal\Addons\EzPortalMigration;
@@ -93,7 +93,7 @@ class PageImport extends AbstractCustomPageImport
 						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);" checked>'
 					],
 					'data' => [
-						'function' => fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="pages[]" checked>',
+						'function' => static fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="pages[]" checked>',
 						'class' => 'centertext'
 					]
 				]
@@ -118,7 +118,7 @@ class PageImport extends AbstractCustomPageImport
 	/**
 	 * @throws IntlException
 	 */
-	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id_page'): array
+	public function getAll(int $start = 0, int $limit = 0, string $sort = 'id_page'): array
 	{
 		Db::extend();
 
@@ -133,7 +133,7 @@ class PageImport extends AbstractCustomPageImport
 			[
 				'sort'  => $sort,
 				'start' => $start,
-				'limit' => $items_per_page,
+				'limit' => $limit,
 			]
 		);
 
@@ -185,7 +185,7 @@ class PageImport extends AbstractCustomPageImport
 			FROM {db_prefix}ezp_page' . (empty($pages) ? '' : '
 			WHERE id_page IN ({array_int:pages})'),
 			[
-				'pages' => $pages
+				'pages' => $pages,
 			]
 		);
 
@@ -217,7 +217,7 @@ class PageImport extends AbstractCustomPageImport
 				'num_comments' => 0,
 				'created_at'   => $row['date'],
 				'updated_at'   => 0,
-				'subject'      => $row['title']
+				'subject'      => $row['title'],
 			];
 		}
 

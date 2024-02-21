@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.24
+ * @version 21.02.24
  */
 
 namespace Bugo\LightPortal\Addons\PageList;
@@ -64,7 +64,7 @@ class PageList extends Block
 
 		CustomField::make('categories', Lang::$txt['lp_categories'])
 			->setTab('content')
-			->setValue(fn() => new CategorySelect, [
+			->setValue(static fn() => new CategorySelect(), [
 				'id'    => 'categories',
 				'hint'  => Lang::$txt['lp_page_list']['categories_select'],
 				'value' => Utils::$context['lp_block']['options']['categories'] ?? '',
@@ -163,8 +163,9 @@ class PageList extends Block
 			<li>
 				<a href="', Config::$scripturl, '?', LP_PAGE_PARAM, '=', $page['alias'], '">', $title, '</a> ', Lang::$txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . Config::$scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', DateTime::relative($page['created_at']), ' (', Lang::getTxt('lp_views_set', ['views' => $page['num_views']]);
 
-				if ($page['num_comments'] && Utils::$context['lp_show_default_comments'])
+				if ($page['num_comments'] && $this->getCommentBlockType() === 'default') {
 					echo ', ' . Lang::getTxt('lp_comments_set', ['comments' => $page['num_comments']]);
+				}
 
 				echo ')
 			</li>';

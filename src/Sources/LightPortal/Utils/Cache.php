@@ -71,7 +71,7 @@ final class Cache implements CacheInterface
 	protected function callMethod(string $className, string $methodName, ...$params): mixed
 	{
 		if (method_exists($className, $methodName)) {
-			return (new $className)->{$methodName}(...$params);
+			return (new $className())->{$methodName}(...$params);
 		}
 
 		return null;

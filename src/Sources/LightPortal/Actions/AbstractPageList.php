@@ -30,14 +30,14 @@ abstract class AbstractPageList implements PageListInterface
 
 	abstract public function showAll();
 
-	abstract public function getAll(int $start, int $items_per_page, string $sort): array;
+	abstract public function getAll(int $start, int $limit, string $sort): array;
 
 	/**
 	 * @throws IntlException
 	 */
 	protected function getPreparedResults(array $rows = []): array
 	{
-		if (empty($rows))
+		if ($rows === [])
 			return [];
 
 		$items = [];
@@ -114,7 +114,7 @@ abstract class AbstractPageList implements PageListInterface
 	private function getRepliesData(array $row): array
 	{
 		return [
-			'num'   => Utils::$context['lp_show_default_comments'] ? (int) $row['num_comments'] : 0,
+			'num'   => $this->getCommentBlockType() === 'default' ? (int) $row['num_comments'] : 0,
 			'title' => Lang::$txt['lp_comments'],
 		];
 	}

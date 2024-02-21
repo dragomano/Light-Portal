@@ -64,20 +64,16 @@ abstract class AbstractMain
 		Utils::$context['lp_content_types']       = $this->getContentTypes();
 
 		Utils::$context['lp_enabled_plugins'] = empty(Config::$modSettings['lp_enabled_plugins'])
-			? []
-			: explode(',', Config::$modSettings['lp_enabled_plugins']);
+			? [] : explode(',', Config::$modSettings['lp_enabled_plugins']);
 
 		Utils::$context['lp_frontpage_pages'] = empty(Config::$modSettings['lp_frontpage_pages'])
-			? []
-			: explode(',', Config::$modSettings['lp_frontpage_pages']);
+			? [] : explode(',', Config::$modSettings['lp_frontpage_pages']);
 
 		Utils::$context['lp_frontpage_topics'] = empty(Config::$modSettings['lp_frontpage_topics'])
-			? []
-			: explode(',', Config::$modSettings['lp_frontpage_topics']);
+			? [] : explode(',', Config::$modSettings['lp_frontpage_topics']);
 
 		Utils::$context['lp_header_panel_width'] = empty(Config::$modSettings['lp_header_panel_width'])
-			? 12
-			: (int) Config::$modSettings['lp_header_panel_width'];
+			? 12 : (int) Config::$modSettings['lp_header_panel_width'];
 
 		Utils::$context['lp_left_panel_width'] = empty(Config::$modSettings['lp_left_panel_width'])
 			? ['lg' => 3, 'xl' => 2]
@@ -88,8 +84,7 @@ abstract class AbstractMain
 			: Utils::jsonDecode(Config::$modSettings['lp_right_panel_width'], true);
 
 		Utils::$context['lp_footer_panel_width'] = empty(Config::$modSettings['lp_footer_panel_width'])
-			? 12
-			: (int) Config::$modSettings['lp_footer_panel_width'];
+			? 12 : (int) Config::$modSettings['lp_footer_panel_width'];
 
 		Utils::$context['lp_swap_left_right'] = empty(Lang::$txt['lang_rtl'])
 			? ! empty(Config::$modSettings['lp_swap_left_right'])
@@ -99,10 +94,7 @@ abstract class AbstractMain
 			Config::$modSettings['lp_panel_direction'] ?? '', true
 		);
 
-		Utils::$context['lp_show_default_comments'] = isset(Config::$modSettings['lp_show_comment_block'])
-			&& Config::$modSettings['lp_show_comment_block'] === 'default';
-
-		Utils::$context['lp_active_blocks'] = (new Block)->getActive();
+		Utils::$context['lp_active_blocks'] = (new Block())->getActive();
 	}
 
 	protected function loadAssets(CompilerInterface $compiler): void
@@ -175,6 +167,16 @@ abstract class AbstractMain
 		Utils::$context['lp_disabled_actions'] = $disabledActions;
 	}
 
+	protected function redirectFromDisabledActions(): void
+	{
+		if (empty(Utils::$context['current_action']))
+			return;
+
+		if (array_key_exists(Utils::$context['current_action'], Utils::$context['lp_disabled_actions'])) {
+			Utils::redirectexit();
+		}
+	}
+
 	/**
 	 * Fix canonical url for forum action
 	 *
@@ -202,10 +204,12 @@ abstract class AbstractMain
 			return;
 		}
 
-		$old_url = explode('#', Utils::$context['linktree'][1]['url']);
+		$oldUrl = explode('#', Utils::$context['linktree'][1]['url']);
 
-		if (! empty($old_url[1]))
-			Utils::$context['linktree'][1]['url'] = Config::$scripturl . '?action=forum#' . $old_url[1];
+		if (empty($oldUrl[1]))
+			return;
+
+		Utils::$context['linktree'][1]['url'] = Config::$scripturl . '?action=forum#' . $oldUrl[1];
 	}
 
 	/**
@@ -235,7 +239,7 @@ abstract class AbstractMain
 
 		Theme::loadTemplate('LightPortal/ViewDebug');
 
-		if (empty($key = array_search('lp_portal', Utils::$context['template_layers']))) {
+		if (empty($key = array_search('lp_portal', Utils::$context['template_layers'], true))) {
 			Utils::$context['template_layers'][] = 'debug';
 			return;
 		}
@@ -388,7 +392,7 @@ abstract class AbstractMain
 						? Config::$scripturl : Config::$scripturl . '?action=forum',
 					'icon'        => 'im_on',
 					'show'        => true,
-					'action_hook' => true
+					'action_hook' => true,
 				],
 			],
 			array_slice($buttons, 2, null, true)
@@ -414,7 +418,7 @@ abstract class AbstractMain
 
 		$topic = $this->request('t');
 
-		if (($key = array_search($topic, Utils::$context['lp_frontpage_topics'])) !== false) {
+		if (($key = array_search($topic, Utils::$context['lp_frontpage_topics'], true)) !== false) {
 			unset(Utils::$context['lp_frontpage_topics'][$key]);
 		} else {
 			Utils::$context['lp_frontpage_topics'][] = $topic;
@@ -512,7 +516,7 @@ abstract class AbstractMain
 			);
 
 			$numEntities = Db::$db->fetch_assoc($result);
-			array_walk($numEntities, fn(&$item) => $item = (int) $item);
+			array_walk($numEntities, static fn(&$item) => $item = (int) $item);
 
 			Db::$db->free_result($result);
 			Utils::$context['lp_num_queries']++;

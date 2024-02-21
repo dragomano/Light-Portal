@@ -26,7 +26,7 @@ use IntlException;
 final class FrontPage implements ActionInterface
 {
 	use Helper;
-	
+
 	public const DEFAULT_TEMPLATE = 'default.blade.php';
 
 	private array $modes = [
@@ -48,8 +48,8 @@ final class FrontPage implements ActionInterface
 
 		if (array_key_exists(Config::$modSettings['lp_frontpage_mode'], $this->modes)) {
 			$this->prepare(new $this->modes[Config::$modSettings['lp_frontpage_mode']]);
-		} elseif (Config::$modSettings['lp_frontpage_mode'] === 'chosen_page') {
-			$this->callHelper([new Page, 'show']);
+		} elseif ($this->isFrontpageMode('chosen_page')) {
+			$this->callHelper([new Page(), 'show']);
 			return;
 		}
 
@@ -222,7 +222,7 @@ final class FrontPage implements ActionInterface
 				empty(Config::$modSettings['cache_enable']) ? null : Sapi::getTempDir()
 			);
 
-			$blade->directiveRT('icon', function (array|string $expression) {
+			$blade->directiveRT('icon', static function (array|string $expression) {
 				if (is_array($expression)) {
 					[$name, $title] = count($expression) > 1 ? $expression : [$expression[0], false];
 				} else {
@@ -361,10 +361,11 @@ final class FrontPage implements ActionInterface
 		$mil = 10 ** 6;
 		$bil = 10 ** 9;
 
-		if ($value >= $bil)
+		if ($value >= $bil) {
 			return number_format($value / $bil, 1) . 'B';
-		else if ($value >= $mil)
+		} elseif ($value >= $mil) {
 			return number_format($value / $mil, 1) . 'M';
+		}
 
 		return number_format($value / $k, 1) . 'K';
 	}
@@ -381,12 +382,12 @@ final class FrontPage implements ActionInterface
 
 		if ($prev >= 0) {
 			$title = Icon::get('arrow_left') . ' ' . Lang::$txt['prev'];
-			$paginate .= "<a class=\"button\" href=\"$url;start=$prev\">" . $title . "</a>";
+			$paginate .= sprintf('<a class="button" href="%s;start=%s">', $url, $prev) . $title . "</a>";
 		}
 
 		if ($next) {
 			$title = Lang::$txt['next'] . ' ' . Icon::get('arrow_right');
-			$paginate .= "<a class=\"button\" href=\"$url;start=$next\">" . $title . "</a>";
+			$paginate .= sprintf('<a class="button" href="%s;start=%s">', $url, $next) . $title . "</a>";
 		}
 
 		return $paginate;

@@ -27,10 +27,10 @@ class DummyArticleCards extends Plugin
 
 	private string $mode = 'dummy_articles_cards';
 
-	public function addSettings(array &$config_vars): void
+	public function addSettings(array &$settings): void
 	{
-		$config_vars['dummy_article_cards'][] = ['check', 'use_lorem_ipsum'];
-		$config_vars['dummy_article_cards'][] = ['text', 'keywords', 'placeholder' => 'paris,girl'];
+		$settings['dummy_article_cards'][] = ['check', 'use_lorem_ipsum'];
+		$settings['dummy_article_cards'][] = ['text', 'keywords', 'placeholder' => 'paris,girl'];
 	}
 
 	public function frontModes(array &$modes): void

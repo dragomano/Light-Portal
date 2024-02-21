@@ -34,12 +34,12 @@ final class CategoryRepository
 			[
 				'name'        => 'string',
 				'description' => 'string',
-				'priority'    => 'int'
+				'priority'    => 'int',
 			],
 			[
 				$name,
 				$desc,
-				$this->getPriority()
+				$this->getPriority(),
 			],
 			['category_id'],
 			1
@@ -68,14 +68,14 @@ final class CategoryRepository
 			SET priority = CASE ' . $conditions . ' ELSE priority END
 			WHERE category_id IN ({array_int:categories})',
 			[
-				'categories' => $categories
+				'categories' => $categories,
 			]
 		);
 
 		Utils::$context['lp_num_queries']++;
 
 		$result = [
-			'success' => Db::$db->affected_rows()
+			'success' => Db::$db->affected_rows(),
 		];
 
 		$this->cache()->forget('all_categories');
@@ -94,14 +94,14 @@ final class CategoryRepository
 			WHERE category_id = {int:item}',
 			[
 				'name' => Utils::$smcFunc['htmlspecialchars']($value),
-				'item' => $item
+				'item' => $item,
 			]
 		);
 
 		Utils::$context['lp_num_queries']++;
 
 		$result = [
-			'success' => Db::$db->affected_rows()
+			'success' => Db::$db->affected_rows(),
 		];
 
 		exit(json_encode($result));
@@ -118,14 +118,14 @@ final class CategoryRepository
 			WHERE category_id = {int:item}',
 			[
 				'desc' => Utils::$smcFunc['htmlspecialchars']($value),
-				'item' => $item
+				'item' => $item,
 			]
 		);
 
 		Utils::$context['lp_num_queries']++;
 
 		$result = [
-			'success' => Db::$db->affected_rows()
+			'success' => Db::$db->affected_rows(),
 		];
 
 		exit(json_encode($result));
@@ -140,12 +140,12 @@ final class CategoryRepository
 			DELETE FROM {db_prefix}lp_categories
 			WHERE category_id IN ({array_int:items})',
 			[
-				'items' => $items
+				'items' => $items,
 			]
 		);
 
 		$result = [
-			'success' => Db::$db->affected_rows()
+			'success' => Db::$db->affected_rows(),
 		];
 
 		Db::$db->query('', '
@@ -154,7 +154,7 @@ final class CategoryRepository
 			WHERE category_id IN ({array_int:items})',
 			[
 				'category' => 0,
-				'items'    => $items
+				'items'    => $items,
 			]
 		);
 

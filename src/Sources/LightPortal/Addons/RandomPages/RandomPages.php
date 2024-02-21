@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.24
+ * @version 20.02.24
  */
 
 namespace Bugo\LightPortal\Addons\RandomPages;
@@ -59,7 +59,7 @@ class RandomPages extends Block
 
 		CustomField::make('categories', Lang::$txt['lp_categories'])
 			->setTab('content')
-			->setValue(fn() => new CategorySelect, [
+			->setValue(static fn() => new CategorySelect(), [
 				'id'    => 'categories',
 				'hint'  => Lang::$txt['lp_random_pages']['categories_select'],
 				'value' => Utils::$context['lp_block']['options']['categories'] ?? '',

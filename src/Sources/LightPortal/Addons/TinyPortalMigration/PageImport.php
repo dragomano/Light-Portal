@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.24
+ * @version 20.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortalMigration;
@@ -97,7 +97,7 @@ class PageImport extends AbstractCustomPageImport
 						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);" checked>'
 					],
 					'data' => [
-						'function' => fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="pages[]" checked>',
+						'function' => static fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="pages[]" checked>',
 						'class' => 'centertext'
 					]
 				]
@@ -122,7 +122,7 @@ class PageImport extends AbstractCustomPageImport
 	/**
 	 * @throws IntlException
 	 */
-	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id'): array
+	public function getAll(int $start = 0, int $limit = 0, string $sort = 'id'): array
 	{
 		Db::extend();
 
@@ -137,7 +137,7 @@ class PageImport extends AbstractCustomPageImport
 			[
 				'sort'  => $sort,
 				'start' => $start,
-				'limit' => $items_per_page,
+				'limit' => $limit,
 			]
 		);
 
@@ -151,7 +151,7 @@ class PageImport extends AbstractCustomPageImport
 				'num_views'  => $row['views'],
 				'author_id'  => $row['author_id'],
 				'created_at' => DateTime::relative($row['date']),
-				'title'      => $row['subject']
+				'title'      => $row['subject'],
 			];
 		}
 
@@ -224,7 +224,7 @@ class PageImport extends AbstractCustomPageImport
 				'created_at'   => $row['date'],
 				'updated_at'   => 0,
 				'subject'      => $row['subject'],
-				'options'      => explode(',', $row['options'])
+				'options'      => explode(',', $row['options']),
 			];
 		}
 

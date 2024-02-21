@@ -27,10 +27,10 @@ class CodeMirror extends Plugin
 
 	private array $modes = ['html' => 'HTML', 'php' => 'PHP', 'markdown' => 'Markdown', 'pug' => 'Pug', 'twig' => 'Twig'];
 
-	public function addSettings(array &$config_vars): void
+	public function addSettings(array &$settings): void
 	{
-		$config_vars['code_mirror'][] = ['multiselect', 'modes', $this->modes];
-		$config_vars['code_mirror'][] = ['desc', 'small_hint'];
+		$settings['code_mirror'][] = ['multiselect', 'modes', $this->modes];
+		$settings['code_mirror'][] = ['desc', 'small_hint'];
 	}
 
 	public function prepareEditor(array $object): void

@@ -2,19 +2,23 @@
 
 global $user_info, $language, $mbname, $modSettings, $settings, $smcFunc, $context;
 
-if (version_compare(PHP_VERSION, '8.0', '<'))
+if (version_compare(PHP_VERSION, '8.0', '<')) {
 	die('This mod needs PHP 8.0 or greater. You will not be able to install/use this mod. Please, contact your host and ask for a php upgrade.');
+}
 
-if (! extension_loaded('intl'))
+if (! extension_loaded('intl')) {
 	die('This mod needs intl extension to properly work with plurals, locale-aware numbers, and much more. Contact your host or install this extension by manual.');
+}
 
-if (file_exists(__DIR__ . '/SSI.php') && ! defined('SMF'))
+if (file_exists(__DIR__ . '/SSI.php') && ! defined('SMF')) {
 	require_once __DIR__ . '/SSI.php';
-elseif (! defined('SMF'))
+} elseif (! defined('SMF')) {
 	die('<b>Error:</b> Cannot install - please verify that you put this file in the same place as SMF\'s index.php and SSI.php files.');
+}
 
-if ((SMF === 'SSI') && ! $user_info['is_admin'])
+if ((SMF === 'SSI') && ! $user_info['is_admin']) {
 	die('Admin privileges required.');
+}
 
 $tables[] = [
 	'name' => 'lp_blocks',
@@ -534,5 +538,6 @@ if (! @is_writable($scripts = $settings['default_theme_dir'] . '/scripts/light_p
 
 $context['lp_num_queries'] ??= 0;
 
-if (SMF === 'SSI')
+if (SMF === 'SSI') {
 	echo 'Database changes are complete! Please wait...';
+}

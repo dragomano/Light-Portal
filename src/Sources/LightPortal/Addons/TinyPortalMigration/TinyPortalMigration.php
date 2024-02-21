@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.24
+ * @version 20.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortalMigration;
@@ -64,7 +64,7 @@ class TinyPortalMigration extends Plugin
 				'item_id' => $pageId,
 				'type'    => 'page',
 				'lang'    => Config::$language,
-				'title'   => $item['subject']
+				'title'   => $item['subject'],
 			];
 
 			if (Config::$language !== Language::FALLBACK && ! empty(Config::$modSettings['userLanguage'])) {
@@ -72,7 +72,7 @@ class TinyPortalMigration extends Plugin
 					'item_id' => $pageId,
 					'type'    => 'page',
 					'lang'    => Language::FALLBACK,
-					'title'   => $item['subject']
+					'title'   => $item['subject'],
 				];
 			}
 
@@ -83,7 +83,7 @@ class TinyPortalMigration extends Plugin
 					'item_id' => $pageId,
 					'type'    => 'page',
 					'name'    => 'show_author_and_date',
-					'value'   => 1
+					'value'   => 1,
 				];
 
 			if (in_array('commentallow', $items[$pageId]['options']))
@@ -91,7 +91,7 @@ class TinyPortalMigration extends Plugin
 					'item_id' => $pageId,
 					'type'    => 'page',
 					'name'    => 'allow_comments',
-					'value'   => 1
+					'value'   => 1,
 				];
 
 			unset($items[$pageId]['options']);

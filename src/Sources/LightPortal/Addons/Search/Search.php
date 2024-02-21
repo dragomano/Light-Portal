@@ -32,13 +32,13 @@ class Search extends Block
 		$this->applyHook('actions');
 	}
 
-	public function addSettings(array &$config_vars): void
+	public function addSettings(array &$settings): void
 	{
 		$this->addDefaultValues([
 			'min_chars' => 3,
 		]);
 
-		$config_vars['search'][] = ['range', 'min_chars', 'min' => 1, 'max' => 10];
+		$settings['search'][] = ['range', 'min_chars', 'min' => 1, 'max' => 10];
 	}
 
 	public function actions()

@@ -48,19 +48,19 @@ final class BasicConfig extends AbstractConfig
 
 		Utils::$context['lp_frontpage_modes'] = array_combine(
 			[0, 'chosen_page', 'all_pages', 'chosen_pages', 'all_topics', 'chosen_topics', 'chosen_boards'],
-			Lang::$txt['lp_frontpage_mode_set']
+			Lang::$txt['lp_frontpage_mode_set'],
 		);
 
 		$this->prepareTopicList();
 
 		Utils::$context['lp_column_set'] = array_map(
-			fn($item) => Lang::getTxt('lp_frontpage_num_columns_set', ['columns' => $item]),
-			[1, 2, 3, 4, 6]
+			static fn($item) => Lang::getTxt('lp_frontpage_num_columns_set', ['columns' => $item]),
+			[1, 2, 3, 4, 6],
 		);
 
 		$javascript = ':disabled="[\'0\', \'chosen_page\'].includes(frontpage_mode)"';
 
-		$config_vars = [
+		$configVars = [
 			['callback', 'frontpage_mode_settings_before'],
 			[
 				'select',
@@ -198,16 +198,16 @@ final class BasicConfig extends AbstractConfig
 				);
 			}
 
-			$save_vars = $config_vars;
+			$saveVars = $configVars;
 
-			$save_vars[] = ['text', 'lp_frontpage_alias'];
-			$save_vars[] = ['text', 'lp_frontpage_categories'];
-			$save_vars[] = ['text', 'lp_frontpage_boards'];
-			$save_vars[] = ['text', 'lp_frontpage_pages'];
-			$save_vars[] = ['text', 'lp_frontpage_topics'];
-			$save_vars[] = ['text', 'lp_disabled_actions'];
+			$saveVars[] = ['text', 'lp_frontpage_alias'];
+			$saveVars[] = ['text', 'lp_frontpage_categories'];
+			$saveVars[] = ['text', 'lp_frontpage_boards'];
+			$saveVars[] = ['text', 'lp_frontpage_pages'];
+			$saveVars[] = ['text', 'lp_frontpage_topics'];
+			$saveVars[] = ['text', 'lp_disabled_actions'];
 
-			ACP::saveDBSettings($save_vars);
+			ACP::saveDBSettings($saveVars);
 
 			$this->session()->put('adm-save', true);
 			$this->cache()->flush();
@@ -215,6 +215,6 @@ final class BasicConfig extends AbstractConfig
 			Utils::redirectexit('action=admin;area=lp_settings;sa=basic');
 		}
 
-		ACP::prepareDBSettingContext($config_vars);
+		ACP::prepareDBSettingContext($configVars);
 	}
 }

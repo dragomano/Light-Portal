@@ -14,7 +14,9 @@ if (empty(Config::$modSettings['lp_standalone_mode']) || empty(Config::$modSetti
 require_once Config::$sourcedir . '/LightPortal/Actions/FrontPage.php';
 
 try {
-	(new FrontPage)->show();
-} catch (Exception) {}
+	(new FrontPage())->show();
+} catch (Exception $e) {
+	die($e->getMessage());
+}
 
 Utils::obExit();

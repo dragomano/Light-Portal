@@ -66,7 +66,7 @@ abstract class AbstractCustomBlockImport implements ImportInterface, CustomImpor
 						'permissions'   => 'int',
 						'status'        => 'int',
 						'title_class'   => 'string',
-						'content_class' => 'string'
+						'content_class' => 'string',
 					],
 					$items[$i],
 					['block_id'],
@@ -94,7 +94,7 @@ abstract class AbstractCustomBlockImport implements ImportInterface, CustomImpor
 						'type'    => 'string',
 						'lang'    => 'string',
 						'title'   => 'string',
-						'item_id' => 'int'
+						'item_id' => 'int',
 					],
 					$titles[$i],
 					['item_id', 'type', 'lang'],

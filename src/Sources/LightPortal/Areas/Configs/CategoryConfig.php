@@ -86,7 +86,7 @@ final class CategoryConfig extends AbstractConfig
 			$result = [
 				'success' => true,
 				'section' => $newCategory,
-				'item'    => $item
+				'item'    => $item,
 			];
 		}
 

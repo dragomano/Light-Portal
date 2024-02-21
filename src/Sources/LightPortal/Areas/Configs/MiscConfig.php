@@ -34,7 +34,7 @@ final class MiscConfig extends AbstractConfig
 			'lp_page_param'            => LP_PAGE_PARAM,
 		]);
 
-		$config_vars = [
+		$configVars = [
 			['title', 'lp_debug_and_caching'],
 			['check', 'lp_show_debug_info', 'help' => 'lp_show_debug_info_help'],
 			['int', 'lp_cache_update_interval', 'postinput' => Lang::$txt['seconds']],
@@ -75,14 +75,14 @@ final class MiscConfig extends AbstractConfig
 				);
 			}
 
-			$save_vars = $config_vars;
-			ACP::saveDBSettings($save_vars);
+			$saveVars = $configVars;
+			ACP::saveDBSettings($saveVars);
 
 			$this->session()->put('adm-save', true);
 
 			Utils::redirectexit('action=admin;area=lp_settings;sa=misc');
 		}
 
-		ACP::prepareDBSettingContext($config_vars);
+		ACP::prepareDBSettingContext($configVars);
 	}
 }

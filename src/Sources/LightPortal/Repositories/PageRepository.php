@@ -33,10 +33,10 @@ final class PageRepository extends AbstractRepository
 	 */
 	public function getAll(
 		int $start,
-		int $items_per_page,
+		int $limit,
 		string $sort,
-		string $query_string = '',
-		array $query_params = []
+		string $queryString = '',
+		array $queryParams = []
 	): array
 	{
 		$result = Db::$db->query('', '
@@ -51,17 +51,17 @@ final class PageRepository extends AbstractRepository
 				LEFT JOIN {db_prefix}lp_titles AS tf ON (
 					p.page_id = tf.item_id AND tf.type = {literal:page} AND tf.lang = {string:fallback_lang}
 				)
-			WHERE 1=1' . (empty($query_string) ? '' : '
-				' . $query_string) . '
+			WHERE 1=1' . (empty($queryString) ? '' : '
+				' . $queryString) . '
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
-			array_merge($query_params, [
+			array_merge($queryParams, [
 				'lang'          => User::$info['language'],
 				'fallback_lang' => Config::$language,
 				'user_id'       => User::$info['id'],
 				'sort'          => $sort,
 				'start'         => $start,
-				'limit'         => $items_per_page,
+				'limit'         => $limit,
 			])
 		);
 
@@ -89,7 +89,7 @@ final class PageRepository extends AbstractRepository
 		return $items;
 	}
 
-	public function getTotalCount(string $query_string = '', array $query_params = []): int
+	public function getTotalCount(string $queryString = '', array $queryParams = []): int
 	{
 		$result = Db::$db->query('', '
 			SELECT COUNT(p.page_id)
@@ -97,20 +97,20 @@ final class PageRepository extends AbstractRepository
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
 					p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang}
 				)
-			WHERE 1=1' . (empty($query_string) ? '' : '
-				' . $query_string),
-			array_merge($query_params, [
+			WHERE 1=1' . (empty($queryString) ? '' : '
+				' . $queryString),
+			array_merge($queryParams, [
 				'lang'    => User::$info['language'],
 				'user_id' => User::$info['id'],
 			])
 		);
 
-		[$num_entries] = Db::$db->fetch_row($result);
+		[$count] = Db::$db->fetch_row($result);
 
 		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
-		return (int) $num_entries;
+		return (int) $count;
 	}
 
 	public function setData(int $item = 0): void
@@ -256,7 +256,7 @@ final class PageRepository extends AbstractRepository
 		$newTagIds = array_diff(Utils::$context['lp_page']['keywords'], array_keys(Utils::$context['lp_tags']));
 		$oldTagIds = array_intersect(Utils::$context['lp_page']['keywords'], array_keys(Utils::$context['lp_tags']));
 
-		array_walk($newTagIds, function (&$item) {
+		array_walk($newTagIds, static function (&$item) {
 			$item = ['value' => $item];
 		});
 

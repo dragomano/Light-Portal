@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.24
+ * @version 21.02.24
  */
 
 namespace Bugo\LightPortal\Addons\EhPortalMigration;
@@ -38,7 +38,7 @@ class EhPortalMigration extends Plugin
 	public function updatePageAreas(array &$areas): void
 	{
 		if (User::$info['is_admin'])
-			$areas['import_from_ep'] = [new PageImport, 'main'];
+			$areas['import_from_ep'] = [new PageImport(), 'main'];
 	}
 
 	public function importPages(array &$items, array &$titles): void
@@ -51,7 +51,7 @@ class EhPortalMigration extends Plugin
 				'item_id' => $pageId,
 				'type'    => 'page',
 				'lang'    => Config::$language,
-				'title'   => $item['title']
+				'title'   => $item['title'],
 			];
 
 			if (Config::$language !== Language::FALLBACK && ! empty(Config::$modSettings['userLanguage'])) {
@@ -59,7 +59,7 @@ class EhPortalMigration extends Plugin
 					'item_id' => $pageId,
 					'type'    => 'page',
 					'lang'    => Language::FALLBACK,
-					'title'   => $item['title']
+					'title'   => $item['title'],
 				];
 			}
 
