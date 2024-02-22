@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, Database as Db, Lang, Theme, User, Utils};
-use Bugo\LightPortal\Areas\Configs\{BasicConfig, CategoryConfig, ExtraConfig};
+use Bugo\LightPortal\Areas\Configs\{BasicConfig, ExtraConfig};
 use Bugo\LightPortal\Areas\Configs\{FeedbackConfig, MiscConfig, PanelConfig};
 use Bugo\LightPortal\Areas\Exports\{BlockExport, PageExport, PluginExport};
 use Bugo\LightPortal\Areas\Imports\{BlockImport, PageImport, PluginImport};
@@ -66,12 +66,11 @@ final class ConfigArea
 								'admin_forum',
 							],
 							'subsections' => [
-								'basic'      => [Icon::get('cog_spin') . Lang::$txt['mods_cat_features']],
-								'extra'      => [Icon::get('pager') . Lang::$txt['lp_extra']],
-								'categories' => [Icon::get('sections') . Lang::$txt['lp_categories']],
-								'panels'     => [Icon::get('panels') . Lang::$txt['lp_panels']],
-								'misc'       => [Icon::get('tools') . Lang::$txt['lp_misc']],
-								'feedback'   => [Icon::get('comments') . Lang::$txt['lp_feedback']],
+								'basic'    => [Icon::get('cog_spin') . Lang::$txt['mods_cat_features']],
+								'extra'    => [Icon::get('pager') . Lang::$txt['lp_extra']],
+								'panels'   => [Icon::get('panels') . Lang::$txt['lp_panels']],
+								'misc'     => [Icon::get('tools') . Lang::$txt['lp_misc']],
+								'feedback' => [Icon::get('comments') . Lang::$txt['lp_feedback']],
 							]
 						],
 						'lp_blocks' => [
@@ -178,12 +177,11 @@ final class ConfigArea
 		User::mustHavePermission('admin_forum');
 
 		$areas = [
-			'basic'      => [new BasicConfig(), 'show'],
-			'extra'      => [new ExtraConfig(), 'show'],
-			'categories' => [new CategoryConfig(), 'show'],
-			'panels'     => [new PanelConfig(), 'show'],
-			'misc'       => [new MiscConfig(), 'show'],
-			'feedback'   => [new FeedbackConfig(), 'show'],
+			'basic'    => [new BasicConfig(), 'show'],
+			'extra'    => [new ExtraConfig(), 'show'],
+			'panels'   => [new PanelConfig(), 'show'],
+			'misc'     => [new MiscConfig(), 'show'],
+			'feedback' => [new FeedbackConfig(), 'show'],
 		];
 
 		Db::extend();
@@ -207,9 +205,6 @@ final class ConfigArea
 				],
 				'extra' => [
 					'description' => Lang::$txt['lp_extra_info']
-				],
-				'categories' => [
-					'description' => Lang::$txt['lp_categories_info']
 				],
 				'panels' => [
 					'description' => sprintf(
