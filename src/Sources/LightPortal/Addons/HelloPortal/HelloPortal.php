@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 22.02.24
  */
 
 namespace Bugo\LightPortal\Addons\HelloPortal;
@@ -135,9 +135,6 @@ class HelloPortal extends Plugin
 		if ($this->isCurrentArea('lp_settings', 'extra', false))
 			return $steps['extra_settings'];
 
-		if ($this->isCurrentArea('lp_settings', 'categories', false))
-			return $steps['categories'];
-
 		if ($this->isCurrentArea('lp_settings', 'panels', false))
 			return $steps['panels'];
 
@@ -149,6 +146,9 @@ class HelloPortal extends Plugin
 
 		if ($this->isCurrentArea('lp_pages'))
 			return $steps['pages'];
+
+		if ($this->isCurrentArea('lp_categories'))
+			return $steps['categories'];
 
 		if ($this->isCurrentArea('lp_plugins'))
 			return $steps['plugins'];
