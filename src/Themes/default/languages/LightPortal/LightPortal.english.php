@@ -262,16 +262,21 @@ $txt['lp_tab_appearance'] = 'Appearance';
 $txt['lp_tab_tuning'] = 'Tuning';
 
 // Import and Export
-$txt['lp_pages_export'] = 'Page export';
-$txt['lp_pages_import'] = 'Page import';
-$txt['lp_pages_export_description'] = 'Here you can export the selected pages to create a backup or transfer them to another forum.';
-$txt['lp_pages_import_description'] = 'Here you can import previously saved portal pages from a backup.';
-$txt['lp_pages_import_info'] = 'Existing pages with the same identifiers will be overwritten by the pages from the imported file.';
 $txt['lp_blocks_export'] = 'Block export';
 $txt['lp_blocks_import'] = 'Block import';
 $txt['lp_blocks_export_description'] = 'Here you can export the selected blocks to create a backup or transfer them to another forum.';
 $txt['lp_blocks_import_description'] = 'Here you can import previously saved portal blocks from a backup.';
 $txt['lp_blocks_import_info'] = 'Existing blocks with the same identifiers will be overwritten with the blocks from the imported file.';
+$txt['lp_pages_export'] = 'Page export';
+$txt['lp_pages_import'] = 'Page import';
+$txt['lp_pages_export_description'] = 'Here you can export the selected pages to create a backup or transfer them to another forum.';
+$txt['lp_pages_import_description'] = 'Here you can import previously saved portal pages from a backup.';
+$txt['lp_pages_import_info'] = 'Existing pages with the same identifiers will be overwritten by the pages from the imported file.';
+$txt['lp_categories_export'] = 'Category export';
+$txt['lp_categories_import'] = 'Category import';
+$txt['lp_categories_export_description'] = 'Here you can export the selected categories to create a backup or transfer them to another forum.';
+$txt['lp_categories_import_description'] = 'Here you can import previously saved portal categories from a backup.';
+$txt['lp_categories_import_info'] = 'Existing categories with the same identifiers will be overwritten by the categories from the imported file.';
 $txt['lp_plugins_export'] = 'Plugin export';
 $txt['lp_plugins_import'] = 'Plugin import';
 $txt['lp_plugins_export_description'] = 'Here you can export the selected plugins to create a backup or transfer them to another forum.';
