@@ -132,6 +132,31 @@ class Page extends PortalEntity {
   }
 }
 
+class Cat extends PortalEntity {
+  constructor() {
+    super();
+    this.workUrl = smf_scripturl + '?action=admin;area=lp_categories;actions';
+  }
+
+  async updatePriority(e) {
+    const items = e.to.children;
+
+    let priority = [];
+
+    for (let i = 0; i < items.length; i++) {
+      const id = items[i].querySelector('.handle')
+        ? parseInt(items[i].querySelector('.handle').closest('div').dataset.id, 10)
+        : null;
+
+      if (id !== null) priority.push(id);
+    }
+
+    await axios.post(this.workUrl, {
+      update_priority: priority,
+    });
+  }
+}
+
 class Category extends PortalEntity {
   constructor() {
     super();

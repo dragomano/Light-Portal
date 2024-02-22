@@ -215,7 +215,7 @@ final class PageExport extends AbstractExport
 
 			$xml->formatOutput = true;
 
-			if ($categories = $this->getCategories()) {
+			/*if ($categories = $this->getCategories()) {
 				$xmlElements = $root->appendChild($xml->createElement('categories'));
 
 				$categories = static fn() => new ArrayIterator($categories);
@@ -226,7 +226,7 @@ final class PageExport extends AbstractExport
 						$xmlName->appendChild($xml->createTextNode($val));
 					}
 				}
-			}
+			}*/
 
 			if ($tags = $this->getEntityData('tag')) {
 				$xmlElements = $root->appendChild($xml->createElement('tags'));

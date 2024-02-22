@@ -102,6 +102,19 @@ final class ConfigArea
 								'add'  => [Icon::get('plus') . Lang::$txt['lp_pages_add']],
 							]
 						],
+						'lp_categories' => [
+							'label' => Lang::$txt['lp_categories'],
+							'function' => [$this, 'categoryAreas'],
+							'icon' => 'boards',
+							'amt' => Utils::$context['lp_quantities']['active_categories'],
+							'permission' => [
+								'admin_forum',
+							],
+							'subsections' => [
+								'main' => [Icon::get('main') . Lang::$txt['lp_categories_manage']],
+								'add'  => [Icon::get('plus') . Lang::$txt['lp_categories_add']],
+							]
+						],
 						'lp_plugins' => [
 							'label' => Lang::$txt['lp_plugins'],
 							'function' => [$this, 'pluginAreas'],
@@ -253,6 +266,21 @@ final class ConfigArea
 		}
 
 		$this->hook('updatePageAreas', [&$areas]);
+
+		$this->callActionFromAreas($areas);
+	}
+
+	public function categoryAreas(): void
+	{
+		User::mustHavePermission('admin_forum');
+
+		$areas = [
+			'main' => [new CategoryArea(), 'main'],
+			'add'  => [new CategoryArea(), 'add'],
+			'edit' => [new CategoryArea(), 'edit'],
+		];
+
+		$this->hook('updateCategoryAreas', [&$areas]);
 
 		$this->callActionFromAreas($areas);
 	}

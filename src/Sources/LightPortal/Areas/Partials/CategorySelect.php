@@ -32,7 +32,7 @@ final class CategorySelect extends AbstractPartial
 		$data = [];
 		foreach ($params['data'] as $id => $cat) {
 			$data[] = [
-				'label' => $cat['name'],
+				'label' => $cat['title'],
 				'value' => $id
 			];
 		}

@@ -14,8 +14,7 @@
 
 namespace Bugo\LightPortal\Actions;
 
-use Bugo\Compat\{BBCodeParser, Config};
-use Bugo\Compat\{Database as Db, ErrorHandler};
+use Bugo\Compat\{Config, Database as Db, ErrorHandler};
 use Bugo\Compat\{Lang, User, Utils};
 use Bugo\LightPortal\Utils\ItemList;
 use IntlException;
@@ -25,6 +24,10 @@ if (! defined('SMF'))
 
 final class Category extends AbstractPageList
 {
+	public const STATUS_INACTIVE = 0;
+
+	public const STATUS_ACTIVE = 1;
+
 	public function show(PageInterface $page): void
 	{
 		if ($this->request()->hasNot('id'))
@@ -44,10 +47,10 @@ final class Category extends AbstractPageList
 			Utils::$context['page_title'] = Lang::$txt['lp_all_pages_without_category'];
 		} else {
 			$category = $categories[Utils::$context['lp_category']];
-			Utils::$context['page_title'] = sprintf(Lang::$txt['lp_all_pages_with_category'], $category['name']);
+			Utils::$context['page_title'] = sprintf(Lang::$txt['lp_all_pages_with_category'], $category['title']);
 		}
 
-		Utils::$context['description'] = $category['desc'] ?? '';
+		Utils::$context['description'] = $category['description'] ?? '';
 
 		Utils::$context['canonical_url']  = LP_BASE_URL . ';sa=categories;id=' . Utils::$context['lp_category'];
 		Utils::$context['robot_no_index'] = true;
@@ -73,11 +76,11 @@ final class Category extends AbstractPageList
 			'function' => [$this, 'getTotalCount']
 		];
 
-		if (isset($category['desc'])) {
+		if (isset($category['description'])) {
 			$listOptions['additional_rows'] = [
 				[
 					'position' => 'top_of_list',
-					'value'    => $category['desc'],
+					'value'    => $category['description'],
 					'class'    => 'information',
 				]
 			];
@@ -117,7 +120,7 @@ final class Category extends AbstractPageList
 				'permissions'  => $this->getPermissions(),
 				'sort'         => $sort,
 				'start'        => $start,
-				'limit'        => $limit
+				'limit'        => $limit,
 			]
 		);
 
@@ -142,7 +145,7 @@ final class Category extends AbstractPageList
 				'id'           => Utils::$context['lp_category'],
 				'statuses'     => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
 				'current_time' => time(),
-				'permissions'  => $this->getPermissions()
+				'permissions'  => $this->getPermissions(),
 			]
 		);
 
@@ -161,7 +164,7 @@ final class Category extends AbstractPageList
 		Utils::$context['robot_no_index'] = true;
 
 		Utils::$context['linktree'][] = [
-			'name' => Utils::$context['page_title']
+			'name' => Utils::$context['page_title'],
 		];
 
 		$listOptions = [
@@ -170,7 +173,7 @@ final class Category extends AbstractPageList
 			'title' => Utils::$context['page_title'],
 			'no_items_label' => Lang::$txt['lp_no_categories'],
 			'base_href' => Utils::$context['canonical_url'],
-			'default_sort_col' => 'name',
+			'default_sort_col' => 'priority',
 			'get_items' => [
 				'function' => [$this, 'getAll']
 			],
@@ -178,17 +181,30 @@ final class Category extends AbstractPageList
 				'function' => fn() => count($this->getAll())
 			],
 			'columns' => [
-				'name' => [
+				'title' => [
 					'header' => [
 						'value' => Lang::$txt['lp_category']
 					],
 					'data' => [
-						'function' => static fn($entry) => '<a href="' . $entry['link'] . '">' . $entry['name'] . '</a>' .
-							(empty($entry['desc']) ? '' : '<p class="smalltext">' . $entry['desc'] . '</p>')
+						'function' => static fn($entry) => '<a href="' . $entry['link'] . '">' . $entry['title'] . '</a>' .
+							(empty($entry['description']) ? '' : '<p class="smalltext">' . $entry['description'] . '</p>')
 					],
 					'sort' => [
-						'default' => 'c.name DESC',
-						'reverse' => 'c.name'
+						'default' => 't.title DESC',
+						'reverse' => 't.title'
+					]
+				],
+				'priority' => [
+					'header' => [
+						'value' => Lang::$txt['lp_block_priority']
+					],
+					'data' => [
+						'db'    => 'priority',
+						'class' => 'centertext'
+					],
+					'sort' => [
+						'default' => 'c.priority',
+						'reverse' => 'c.priority DESC'
 					]
 				],
 				'num_pages' => [
@@ -215,39 +231,53 @@ final class Category extends AbstractPageList
 		Utils::obExit();
 	}
 
-	public function getAll(int $start = 0, int $limit = 0, string $sort = 'c.name'): array
+	public function getAll(int $start = 0, int $limit = 0, string $sort = 't.title'): array
 	{
+		$activeCategories = empty(Config::$modSettings['lp_frontpage_categories'])
+			? [] : explode(',', Config::$modSettings['lp_frontpage_categories']);
+
 		$result = Db::$db->query('', '
-			SELECT COALESCE(c.category_id, 0) AS category_id, c.name, c.description, COUNT(p.page_id) AS frequency
+			SELECT
+				COALESCE(c.category_id, 0) AS category_id, c.description, c.priority, COUNT(p.page_id) AS frequency,
+				t.title, tf.title AS fallback_title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_categories AS c ON (p.category_id = c.category_id)
-			WHERE p.status IN ({array_int:statuses})
+				LEFT JOIN {db_prefix}lp_titles AS t ON (
+					c.category_id = t.item_id AND t.type = {literal:category} AND t.lang = {string:lang}
+				)
+				LEFT JOIN {db_prefix}lp_titles AS tf ON (
+					c.category_id = tf.item_id AND tf.type = {literal:category} AND tf.lang = {string:fallback_lang}
+				)
+			WHERE (c.status = {int:status} OR p.category_id = 0)
+				AND p.category_id IN ({array_int:categories})
+				AND p.status IN ({array_int:statuses})
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
-			GROUP BY c.category_id, c.name, c.description
+			GROUP BY c.category_id, c.description, c.priority, t.title, tf.title
 			ORDER BY {raw:sort}' . ($limit ? '
 			LIMIT {int:start}, {int:limit}' : ''),
 			[
-				'statuses'     => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
-				'current_time' => time(),
-				'permissions'  => $this->getPermissions(),
-				'sort'         => $sort,
-				'start'        => $start,
-				'limit'        => $limit,
+				'lang'          => User::$info['language'],
+				'fallback_lang' => Config::$language,
+				'status'        => self::STATUS_ACTIVE,
+				'categories'    => $activeCategories,
+				'statuses'      => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
+				'current_time'  => time(),
+				'permissions'   => $this->getPermissions(),
+				'sort'          => $sort,
+				'start'         => $start,
+				'limit'         => $limit,
 			]
 		);
 
 		$items = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
-			if ($row['description'] && str_contains($row['description'], ']')) {
-				$row['description'] = BBCodeParser::load()->parse($row['description']);
-			}
-
 			$items[$row['category_id']] = [
-				'name'      => $row['name'] ?: Lang::$txt['lp_no_category'],
-				'desc'      => $row['description'] ?? '',
-				'link'      => LP_BASE_URL . ';sa=categories;id=' . $row['category_id'],
-				'num_pages' => $row['frequency'],
+				'title'       => $row['title'] ?: Lang::$txt['lp_no_category'],
+				'description' => $row['description'] ?? '',
+				'link'        => LP_BASE_URL . ';sa=categories;id=' . $row['category_id'],
+				'priority'    => (int) $row['priority'],
+				'num_pages'   => (int) $row['frequency'],
 			];
 		}
 

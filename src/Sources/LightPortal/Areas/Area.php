@@ -143,12 +143,27 @@ trait Area
 		if (empty($items))
 			return;
 
+		switch ($type) {
+			case 'block':
+				$table = 'blocks';
+				break;
+			case 'page':
+				$table = 'pages';
+				break;
+			case 'category':
+				$table = 'categories';
+				break;
+		}
+
+		if (empty($table))
+			return;
+
 		Db::$db->query('', '
-			UPDATE {db_prefix}lp_' . ($type === 'block' ? 'blocks' : 'pages') . '
+			UPDATE {db_prefix}lp_' . $table . '
 			SET status = CASE status WHEN 1 THEN 0 WHEN 0 THEN 1 WHEN 2 THEN 1 WHEN 3 THEN 0 END
-			WHERE ' . ($type === 'block' ? 'block' : 'page') . '_id IN ({array_int:items})',
+			WHERE ' . $type . '_id IN ({array_int:items})',
 			[
-				'items' => $items
+				'items' => $items,
 			]
 		);
 

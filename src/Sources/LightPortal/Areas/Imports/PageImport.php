@@ -57,14 +57,14 @@ final class PageImport extends AbstractImport
 
 		foreach ($xml as $entity => $element) {
 			if ($entity === 'categories') {
-				foreach ($element->item as $item) {
+				/*foreach ($element->item as $item) {
 					$categories[] = [
 						'category_id' => intval($item['id']),
 						'name'        => (string) $item['name'],
 						'description' => (string) $item['desc'],
 						'priority'    => intval($item['priority']),
 					];
-				}
+				}*/
 			} elseif ($entity === 'tags') {
 				foreach ($element->item as $item) {
 					$tags[] = [
@@ -136,7 +136,7 @@ final class PageImport extends AbstractImport
 
 		Db::$db->transaction('begin');
 
-		if ($categories) {
+		/*if ($categories) {
 			Db::$db->insert('replace',
 				'{db_prefix}lp_categories',
 				[
@@ -151,7 +151,7 @@ final class PageImport extends AbstractImport
 			);
 
 			Utils::$context['lp_num_queries']++;
-		}
+		}*/
 
 		if ($tags) {
 			$tags  = array_chunk($tags, 100);

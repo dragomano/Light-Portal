@@ -119,12 +119,6 @@ $tables[] = [
 			'auto'     => true
 		],
 		[
-			'name' => 'name',
-			'type' => 'varchar',
-			'size' => 255,
-			'null' => false
-		],
-		[
 			'name' => 'description',
 			'type' => 'varchar',
 			'size' => 255,
@@ -136,7 +130,14 @@ $tables[] = [
 			'size'     => 1,
 			'unsigned' => true,
 			'default'  => 0
-		]
+		],
+		[
+			'name'     => 'status',
+			'type'     => 'tinyint',
+			'size'     => 1,
+			'unsigned' => true,
+			'default'  => 1
+		],
 	],
 	'indexes' => [
 		[
@@ -500,7 +501,7 @@ $tables[] = [
 db_extend('packages');
 
 foreach ($tables as $table) {
-	$smcFunc['db_create_table']('{db_prefix}' . $table['name'], $table['columns'], $table['indexes']);
+	$smcFunc['db_create_table']('{db_prefix}' . $table['name'], $table['columns'], $table['indexes'], [], 'update');
 
 	if (isset($table['default']))
 		$smcFunc['db_insert']('ignore', '{db_prefix}' . $table['name'], $table['default']['columns'], $table['default']['values'], $table['default']['keys']);
