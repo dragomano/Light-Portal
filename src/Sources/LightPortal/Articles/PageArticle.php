@@ -39,6 +39,8 @@ class PageArticle extends AbstractArticle
 		$this->sorting = (int) (Config::$modSettings['lp_frontpage_article_sorting'] ?? 0);
 
 		$this->params = [
+			'lang'                => User::$info['language'],
+			'fallback_lang'       => Config::$language,
 			'status'              => PageInterface::STATUS_ACTIVE,
 			'current_time'        => time(),
 			'permissions'         => $this->getPermissions(),
@@ -70,7 +72,7 @@ class PageArticle extends AbstractArticle
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.alias, p.content, p.description, p.type, p.status, p.num_views,
 				CASE WHEN COALESCE(par.value, \'0\') != \'0\' THEN p.num_comments ELSE 0 END AS num_comments, p.created_at,
-				GREATEST(p.created_at, p.updated_at) AS date, cat.name AS category_name, mem.real_name AS author_name,
+				GREATEST(p.created_at, p.updated_at) AS date, t.title, tf.title AS fallback_title, mem.real_name AS author_name,
 				com.created_at AS comment_date, com.author_id AS comment_author_id, mem2.real_name AS comment_author_name,
 				com.message AS comment_message' . (empty($this->columns) ? '' : ', ' . implode(', ', $this->columns)) . '
 			FROM {db_prefix}lp_pages AS p
@@ -78,6 +80,12 @@ class PageArticle extends AbstractArticle
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_comments AS com ON (p.last_comment_id = com.id)
 				LEFT JOIN {db_prefix}members AS mem2 ON (com.author_id = mem2.id_member)
+				LEFT JOIN {db_prefix}lp_titles AS t ON (
+					cat.category_id = t.item_id AND t.type = {literal:category} AND t.lang = {string:lang}
+				)
+				LEFT JOIN {db_prefix}lp_titles AS tf ON (
+					cat.category_id = tf.item_id AND tf.type = {literal:category} AND tf.lang = {string:fallback_lang}
+				)
 				LEFT JOIN {db_prefix}lp_params AS par ON (
 					par.item_id = com.page_id AND par.type = {literal:page} AND par.name = {literal:allow_comments}
 				)' . (empty($this->tables) ? '' : '
@@ -152,7 +160,7 @@ class PageArticle extends AbstractArticle
 	private function getSectionData(array $row): array
 	{
 		return [
-			'name' => empty($row['category_id']) ? '' : $row['category_name'],
+			'name' => empty($row['category_id']) ? '' : (($row['title'] ?: $row['fallback_title']) ?: ''),
 			'link' => empty($row['category_id']) ? '' : (LP_BASE_URL . ';sa=categories;id=' . $row['category_id']),
 		];
 	}

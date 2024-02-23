@@ -289,6 +289,12 @@ abstract class AbstractMain
 							'amt'   => Utils::$context['lp_quantities']['active_pages'],
 							'show'  => true,
 						],
+						'categories'   => [
+							'title' => Lang::$txt['lp_categories'],
+							'href'  => Config::$scripturl . '?action=admin;area=lp_categories',
+							'amt'   => Utils::$context['lp_quantities']['active_categories'],
+							'show'  => true,
+						],
 						'plugins' => [
 							'title'   => Lang::$txt['lp_plugins'],
 							'href'    => Config::$scripturl . '?action=admin;area=lp_plugins',
@@ -506,7 +512,12 @@ abstract class AbstractMain
 						SELECT COUNT(page_id)
 						FROM {db_prefix}lp_pages
 						WHERE status = {int:internal}
-					) AS num_internal_pages',
+					) AS num_internal_pages,
+					(
+						SELECT COUNT(category_id)
+						FROM {db_prefix}lp_categories
+						WHERE status = {int:active}
+					) AS num_categories',
 				[
 					'active'     => PageInterface::STATUS_ACTIVE,
 					'unapproved' => PageInterface::STATUS_UNAPPROVED,
@@ -525,11 +536,12 @@ abstract class AbstractMain
 		}
 
 		Utils::$context['lp_quantities'] = [
-			'active_blocks'    => $numEntities['num_blocks'],
-			'active_pages'     => $numEntities['num_pages'],
-			'my_pages'         => $numEntities['num_my_pages'],
-			'unapproved_pages' => $numEntities['num_unapproved_pages'],
-			'internal_pages'   => $numEntities['num_internal_pages'],
+			'active_blocks'     => $numEntities['num_blocks'] ?? 0,
+			'active_pages'      => $numEntities['num_pages'] ?? 0,
+			'my_pages'          => $numEntities['num_my_pages'] ?? 0,
+			'unapproved_pages'  => $numEntities['num_unapproved_pages'] ?? 0,
+			'internal_pages'    => $numEntities['num_internal_pages'] ?? 0,
+			'active_categories' => $numEntities['num_categories'] ?? 0,
 		];
 	}
 

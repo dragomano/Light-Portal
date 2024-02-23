@@ -106,21 +106,6 @@ $txt['lp_fa_custom'] = 'Custom url to the FontAwesome library';
 $txt['lp_fa_kit'] = 'Font Awesome Kit';
 $txt['lp_permissions'] = ['Show to admins', 'Show to guests', 'Show to members', 'Show to everybody'];
 
-// Categories
-$txt['lp_categories'] = 'Categories';
-$txt['lp_categories_info'] = 'Here you can create and edit the portal categories for categorizing pages.<br>Simply drag a category to a new position to change the order.';
-$txt['lp_categories_manage'] = 'Manage categories';
-$txt['lp_categories_add'] = 'Add category';
-$txt['lp_categories_desc'] = 'Description';
-$txt['lp_category'] = 'Category';
-$txt['lp_no_category'] = 'Uncategorized';
-$txt['lp_all_categories'] = 'All categories of the portal';
-$txt['lp_all_pages_with_category'] = 'All pages in category "%1$s"';
-$txt['lp_all_pages_without_category'] = 'All pages without category';
-$txt['lp_category_not_found'] = 'The specified category was not found.';
-$txt['lp_no_categories'] = 'There are no categories yet.';
-$txt['lp_total_pages_column'] = 'Total pages';
-
 // Panels
 $txt['lp_panels'] = 'Panels';
 $txt['lp_panels_info'] = 'Here you can customize the width of some panels, as well as the direction of blocks.<br><strong>%1$s</strong> uses <a class="bbc_link" href="%2$s" target="_blank" rel="noopener">12 column grid system</a> to display blocks in 6 panels.';
@@ -246,6 +231,25 @@ $txt['lp_page_allow_comments'] = 'Allow comments';
 $txt['lp_page_show_in_menu'] = 'Show in the Main menu';
 $txt['lp_page_status_set'] = ['Inactive', 'Active', 'Unapproved', 'Internal'];
 
+// Categories
+$txt['lp_categories'] = 'Categories';
+$txt['lp_categories_manage'] = 'Manage categories';
+$txt['lp_categories_manage_description'] = 'Here you can create and edit the portal categories for categorizing pages.<br>Simply drag a category to a new position to change the order.';
+$txt['lp_categories_add'] = 'Add category';
+$txt['lp_categories_add_title'] = 'Adding a category';
+$txt['lp_categories_add_description'] = 'Обычно достаточно тегов, но некоторые любят категоризацию всего и вся.';
+$txt['lp_categories_edit_title'] = 'Editing category';
+$txt['lp_categories_edit_description'] = 'Make the necessary changes.';
+$txt['lp_category_description'] = 'Description';
+$txt['lp_category'] = 'Category';
+$txt['lp_no_category'] = 'Uncategorized';
+$txt['lp_all_categories'] = 'All categories of the portal';
+$txt['lp_all_pages_with_category'] = 'All pages in category "%1$s"';
+$txt['lp_all_pages_without_category'] = 'All pages without category';
+$txt['lp_category_not_found'] = 'The specified category was not found.';
+$txt['lp_no_categories'] = 'There are no categories yet.';
+$txt['lp_total_pages_column'] = 'Total pages';
+
 // Modlog
 $txt['modlog_ac_update_lp_page'] = 'Updated page "{page}"';
 $txt['modlog_ac_remove_lp_page'] = 'Removed page "{page}"';
@@ -258,16 +262,21 @@ $txt['lp_tab_appearance'] = 'Appearance';
 $txt['lp_tab_tuning'] = 'Tuning';
 
 // Import and Export
-$txt['lp_pages_export'] = 'Page export';
-$txt['lp_pages_import'] = 'Page import';
-$txt['lp_pages_export_description'] = 'Here you can export the selected pages to create a backup or transfer them to another forum.';
-$txt['lp_pages_import_description'] = 'Here you can import previously saved portal pages from a backup.';
-$txt['lp_pages_import_info'] = 'Existing pages with the same identifiers will be overwritten by the pages from the imported file.';
 $txt['lp_blocks_export'] = 'Block export';
 $txt['lp_blocks_import'] = 'Block import';
 $txt['lp_blocks_export_description'] = 'Here you can export the selected blocks to create a backup or transfer them to another forum.';
 $txt['lp_blocks_import_description'] = 'Here you can import previously saved portal blocks from a backup.';
 $txt['lp_blocks_import_info'] = 'Existing blocks with the same identifiers will be overwritten with the blocks from the imported file.';
+$txt['lp_pages_export'] = 'Page export';
+$txt['lp_pages_import'] = 'Page import';
+$txt['lp_pages_export_description'] = 'Here you can export the selected pages to create a backup or transfer them to another forum.';
+$txt['lp_pages_import_description'] = 'Here you can import previously saved portal pages from a backup.';
+$txt['lp_pages_import_info'] = 'Existing pages with the same identifiers will be overwritten by the pages from the imported file.';
+$txt['lp_categories_export'] = 'Category export';
+$txt['lp_categories_import'] = 'Category import';
+$txt['lp_categories_export_description'] = 'Here you can export the selected categories to create a backup or transfer them to another forum.';
+$txt['lp_categories_import_description'] = 'Here you can import previously saved portal categories from a backup.';
+$txt['lp_categories_import_info'] = 'Existing categories with the same identifiers will be overwritten by the categories from the imported file.';
 $txt['lp_plugins_export'] = 'Plugin export';
 $txt['lp_plugins_import'] = 'Plugin import';
 $txt['lp_plugins_export_description'] = 'Here you can export the selected plugins to create a backup or transfer them to another forum.';

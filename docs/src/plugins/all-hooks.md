@@ -5,7 +5,7 @@ order: 4
 
 # Portal hooks
 
-Light Portal is wonderfully extensible thanks to plugins. And hooks help plugins to interact with various components of the portal.
+Light Portal is wonderfully extensible thanks to plugins. Hooks allow plugins to interact with various components of the portal.
 
 ## Basic hooks
 
@@ -226,7 +226,7 @@ public function prepareBlockFields(): void
 
 (`$item`)
 
-> custom actions on saving/edition blocks
+> custom actions on saving/editing blocks
 
 ### onBlockRemoving
 
@@ -288,7 +288,7 @@ public function preparePageFields(): void
 
 (`$item`)
 
-> custom actions on saving/edition pages
+> custom actions on saving/editing pages
 
 ### onPageRemoving
 
@@ -358,6 +358,42 @@ public function commentButtons(array $comment, array &$buttons): void
     $buttons[] = ob_get_clean();
 }
 ```
+
+## Work with categories
+
+### prepareCategoryParams
+
+(`&$params`)
+
+> adding your category parameters
+
+### validateCategoryParams
+
+(`&$params`)
+
+> adding custom validating rules when category adding/editing
+
+### findCategoryErrors
+
+(`&$errors, $data`)
+
+> adding custom error handling when category adding/editing
+
+### prepareCategoryFields
+
+> adding custom fields to the category post area
+
+### onCategorySaving
+
+(`$item`)
+
+> custom actions on saving/editing categories
+
+### onCategoryRemoving
+
+(`$items`)
+
+> custom actions on removing categories
 
 ## Work with plugins
 
@@ -542,8 +578,11 @@ public function prepareIconList(array &$icons): void
 ```php
 public function updateAdminAreas(array &$areas): void
 {
-    if (User::$info['is_admin'])
-        $areas['lp_pages']['subsections']['import_from_ep'] = [Utils::$context['lp_icon_set']['import'] . Lang::$txt['lp_eh_portal']['label_name']];
+    if (User::$info['is_admin']) {
+        $areas['lp_pages']['subsections']['import_from_ep'] = [
+            Utils::$context['lp_icon_set']['import'] . Lang::$txt['lp_eh_portal']['label_name']
+        ];
+    }
 }
 ```
 
@@ -556,8 +595,7 @@ public function updateAdminAreas(array &$areas): void
 ```php
 public function updateBlockAreas(array &$areas): void
 {
-    if (User::$info['is_admin'])
-        $areas['import_from_tp'] = [new BlockImport(), 'main'];
+    $areas['import_from_tp'] = [new BlockImport(), 'main'];
 }
 ```
 
@@ -570,8 +608,20 @@ public function updateBlockAreas(array &$areas): void
 ```php
 public function updatePageAreas(array &$areas): void
 {
-    if (User::$info['is_admin'])
-        $areas['import_from_ep'] = [new Import(), 'main'];
+    $areas['import_from_ep'] = [new Import(), 'main'];
+}
+```
+
+### updateCategoryAreas
+
+(`&$areas`)
+
+> adding custom tabs into Category area settings
+
+```php
+public function updateCategoryAreas(array &$areas): void
+{
+    $areas['import_from_tp'] = [new Import(), 'main'];
 }
 ```
 

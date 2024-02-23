@@ -15,10 +15,10 @@
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, Database as Db, Lang, Theme, User, Utils};
-use Bugo\LightPortal\Areas\Configs\{BasicConfig, CategoryConfig, ExtraConfig};
+use Bugo\LightPortal\Areas\Configs\{BasicConfig, ExtraConfig};
 use Bugo\LightPortal\Areas\Configs\{FeedbackConfig, MiscConfig, PanelConfig};
-use Bugo\LightPortal\Areas\Exports\{BlockExport, PageExport, PluginExport};
-use Bugo\LightPortal\Areas\Imports\{BlockImport, PageImport, PluginImport};
+use Bugo\LightPortal\Areas\Exports\{BlockExport, CategoryExport, PageExport, PluginExport};
+use Bugo\LightPortal\Areas\Imports\{BlockImport, CategoryImport, PageImport, PluginImport};
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Utils\Icon;
 
@@ -66,12 +66,11 @@ final class ConfigArea
 								'admin_forum',
 							],
 							'subsections' => [
-								'basic'      => [Icon::get('cog_spin') . Lang::$txt['mods_cat_features']],
-								'extra'      => [Icon::get('pager') . Lang::$txt['lp_extra']],
-								'categories' => [Icon::get('sections') . Lang::$txt['lp_categories']],
-								'panels'     => [Icon::get('panels') . Lang::$txt['lp_panels']],
-								'misc'       => [Icon::get('tools') . Lang::$txt['lp_misc']],
-								'feedback'   => [Icon::get('comments') . Lang::$txt['lp_feedback']],
+								'basic'    => [Icon::get('cog_spin') . Lang::$txt['mods_cat_features']],
+								'extra'    => [Icon::get('pager') . Lang::$txt['lp_extra']],
+								'panels'   => [Icon::get('panels') . Lang::$txt['lp_panels']],
+								'misc'     => [Icon::get('tools') . Lang::$txt['lp_misc']],
+								'feedback' => [Icon::get('comments') . Lang::$txt['lp_feedback']],
 							]
 						],
 						'lp_blocks' => [
@@ -102,6 +101,19 @@ final class ConfigArea
 								'add'  => [Icon::get('plus') . Lang::$txt['lp_pages_add']],
 							]
 						],
+						'lp_categories' => [
+							'label' => Lang::$txt['lp_categories'],
+							'function' => [$this, 'categoryAreas'],
+							'icon' => 'boards',
+							'amt' => Utils::$context['lp_quantities']['active_categories'],
+							'permission' => [
+								'admin_forum',
+							],
+							'subsections' => [
+								'main' => [Icon::get('main') . Lang::$txt['lp_categories_manage']],
+								'add'  => [Icon::get('plus') . Lang::$txt['lp_categories_add']],
+							]
+						],
 						'lp_plugins' => [
 							'label' => Lang::$txt['lp_plugins'],
 							'function' => [$this, 'pluginAreas'],
@@ -130,6 +142,11 @@ final class ConfigArea
 			$areas['lp_portal']['areas']['lp_pages']['subsections'] += [
 				'export' => [Icon::get('export') . Lang::$txt['lp_pages_export']],
 				'import' => [Icon::get('import') . Lang::$txt['lp_pages_import']],
+			];
+
+			$areas['lp_portal']['areas']['lp_categories']['subsections'] += [
+				'export' => [Icon::get('export') . Lang::$txt['lp_categories_export']],
+				'import' => [Icon::get('import') . Lang::$txt['lp_categories_import']],
 			];
 
 			if (extension_loaded('zip')) {
@@ -165,12 +182,11 @@ final class ConfigArea
 		User::mustHavePermission('admin_forum');
 
 		$areas = [
-			'basic'      => [new BasicConfig(), 'show'],
-			'extra'      => [new ExtraConfig(), 'show'],
-			'categories' => [new CategoryConfig(), 'show'],
-			'panels'     => [new PanelConfig(), 'show'],
-			'misc'       => [new MiscConfig(), 'show'],
-			'feedback'   => [new FeedbackConfig(), 'show'],
+			'basic'    => [new BasicConfig(), 'show'],
+			'extra'    => [new ExtraConfig(), 'show'],
+			'panels'   => [new PanelConfig(), 'show'],
+			'misc'     => [new MiscConfig(), 'show'],
+			'feedback' => [new FeedbackConfig(), 'show'],
 		];
 
 		Db::extend();
@@ -194,9 +210,6 @@ final class ConfigArea
 				],
 				'extra' => [
 					'description' => Lang::$txt['lp_extra_info']
-				],
-				'categories' => [
-					'description' => Lang::$txt['lp_categories_info']
 				],
 				'panels' => [
 					'description' => sprintf(
@@ -222,15 +235,12 @@ final class ConfigArea
 		User::mustHavePermission('admin_forum');
 
 		$areas = [
-			'main' => [new BlockArea(), 'main'],
-			'add'  => [new BlockArea(), 'add'],
-			'edit' => [new BlockArea(), 'edit'],
+			'main'   => [new BlockArea(), 'main'],
+			'add'    => [new BlockArea(), 'add'],
+			'edit'   => [new BlockArea(), 'edit'],
+			'export' => [new BlockExport(), 'main'],
+			'import' => [new BlockImport(), 'main'],
 		];
-
-		if (User::$info['is_admin']) {
-			$areas['export'] = [new BlockExport(), 'main'];
-			$areas['import'] = [new BlockImport(), 'main'];
-		}
 
 		$this->hook('updateBlockAreas', [&$areas]);
 
@@ -257,6 +267,23 @@ final class ConfigArea
 		$this->callActionFromAreas($areas);
 	}
 
+	public function categoryAreas(): void
+	{
+		User::mustHavePermission('admin_forum');
+
+		$areas = [
+			'main'   => [new CategoryArea(), 'main'],
+			'add'    => [new CategoryArea(), 'add'],
+			'edit'   => [new CategoryArea(), 'edit'],
+			'export' => [new CategoryExport(), 'main'],
+			'import' => [new CategoryImport(), 'main'],
+		];
+
+		$this->hook('updateCategoryAreas', [&$areas]);
+
+		$this->callActionFromAreas($areas);
+	}
+
 	public function pluginAreas(): void
 	{
 		User::mustHavePermission('admin_forum');
@@ -265,7 +292,7 @@ final class ConfigArea
 			'main' => [new PluginArea(), 'main'],
 		];
 
-		if (User::$info['is_admin'] && extension_loaded('zip')) {
+		if (extension_loaded('zip')) {
 			$areas['export'] = [new PluginExport(), 'main'];
 			$areas['import'] = [new PluginImport(), 'main'];
 		}

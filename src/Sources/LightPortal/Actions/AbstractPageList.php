@@ -81,7 +81,7 @@ abstract class AbstractPageList implements PageListInterface
 
 		if (isset($row['category_id'])) {
 			return [
-				'name' => $categories[$row['category_id']]['name'],
+				'name' => $categories[$row['category_id']]['title'],
 				'link' => LP_BASE_URL . ';sa=categories;id=' . $row['category_id'],
 			];
 		}
