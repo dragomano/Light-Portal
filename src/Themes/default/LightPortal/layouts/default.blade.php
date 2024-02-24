@@ -36,7 +36,13 @@
 					<span class="card_date smalltext">
 						@if (!empty($article['section']['name']))
 							<a class="floatleft" href="{{ $article['section']['link'] }}">
-								@icon('category'){{ $article['section']['name'] }}
+								@empty ($article['section']['icon'])
+									@icon('category')
+								@else
+									{!! $article['section']['icon'] !!}
+								@endempty
+
+								{{ $article['section']['name'] }}
 							</a>
 						@endif
 

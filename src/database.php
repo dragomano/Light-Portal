@@ -119,6 +119,12 @@ $tables[] = [
 			'auto'     => true
 		],
 		[
+			'name' => 'icon',
+			'type' => 'varchar',
+			'size' => 255,
+			'null' => true
+		],
+		[
 			'name' => 'description',
 			'type' => 'varchar',
 			'size' => 255,

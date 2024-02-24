@@ -27,7 +27,7 @@ final class CategoryRepository extends AbstractRepository
 	public function getAll(int $start, int $limit, string $sort): array
 	{
 		$result = Db::$db->query('', /** @lang text */ '
-			SELECT c.category_id, c.description, c.priority, c.status, t.title, tf.title AS fallback_title
+			SELECT c.category_id, c.icon, c.description, c.priority, c.status, t.title, tf.title AS fallback_title
 			FROM {db_prefix}lp_categories AS c
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
 					c.category_id = t.item_id AND t.type = {literal:category} AND t.lang = {string:lang}
@@ -50,6 +50,7 @@ final class CategoryRepository extends AbstractRepository
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['category_id']] = [
 				'id'       => (int) $row['category_id'],
+				'icon'     => $this->getIcon($row['icon']),
 				'desc'     => $row['description'],
 				'priority' => (int) $row['priority'],
 				'status'   => (int) $row['status'],
@@ -85,7 +86,7 @@ final class CategoryRepository extends AbstractRepository
 			return [];
 
 		$result = Db::$db->query('', '
-			SELECT c.category_id, c.description, c.priority, c.status, bt.lang, bt.title, bp.name, bp.value
+			SELECT c.category_id, c.icon, c.description, c.priority, c.status, bt.lang, bt.title, bp.name, bp.value
 			FROM {db_prefix}lp_categories AS c
 				LEFT JOIN {db_prefix}lp_titles AS bt ON (c.category_id = bt.item_id AND bt.type = {literal:category})
 				LEFT JOIN {db_prefix}lp_params AS bp ON (c.category_id = bp.item_id AND bp.type = {literal:category})
@@ -106,6 +107,7 @@ final class CategoryRepository extends AbstractRepository
 
 			$data ??= [
 				'id'          => (int) $row['category_id'],
+				'icon'        => $row['icon'],
 				'description' => $row['description'],
 				'priority'    => (int) $row['priority'],
 				'status'      => (int) $row['status'],
@@ -158,11 +160,13 @@ final class CategoryRepository extends AbstractRepository
 		$item = (int) Db::$db->insert('',
 			'{db_prefix}lp_categories',
 			[
+				'icon'        => 'string-60',
 				'description' => 'string-255',
 				'priority'    => 'int',
 				'status'      => 'int',
 			],
 			[
+				Utils::$context['lp_category']['icon'],
 				Utils::$context['lp_category']['description'],
 				$this->getPriority(),
 				Utils::$context['lp_category']['status'],
@@ -194,9 +198,10 @@ final class CategoryRepository extends AbstractRepository
 
 		Db::$db->query('', '
 			UPDATE {db_prefix}lp_categories
-			SET description = {string:description}, priority = {int:priority}, status = {int:status}
+			SET icon = {string:icon}, description = {string:description}, priority = {int:priority}, status = {int:status}
 			WHERE category_id = {int:category_id}',
 			[
+				'icon'        => Utils::$context['lp_category']['icon'],
 				'description' => Utils::$context['lp_category']['description'],
 				'priority'    => Utils::$context['lp_category']['priority'],
 				'status'      => Utils::$context['lp_category']['status'],

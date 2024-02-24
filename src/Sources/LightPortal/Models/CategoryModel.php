@@ -23,6 +23,8 @@ class CategoryModel extends AbstractModel
 {
 	public int $id;
 
+	public string $icon;
+
 	public string $description;
 
 	public int $priority;
@@ -36,6 +38,10 @@ class CategoryModel extends AbstractModel
 	public function __construct(array $postData, array $currentCategory)
 	{
 		$this->id = $postData['category_id'] ?? $currentCategory['id'] ?? 0;
+
+		$this->icon = empty($postData['block_id'])
+			? ($postData['icon'] ?? $currentCategory['icon'] ?? '')
+			: ($postData['icon'] ?? '');
 
 		$this->description = $postData['description'] ?? $currentCategory['description'] ?? '';
 

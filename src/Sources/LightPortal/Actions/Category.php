@@ -189,7 +189,7 @@ final class Category extends AbstractPageList
 						'value' => Lang::$txt['lp_category']
 					],
 					'data' => [
-						'function' => static fn($entry) => '<a href="' . $entry['link'] . '">' . $entry['title'] . '</a>' .
+						'function' => static fn($entry) => '<a href="' . $entry['link'] . '">' . $entry['icon'] . ' ' . $entry['title'] . '</a>' .
 							(empty($entry['description']) ? '' : '<p class="smalltext">' . $entry['description'] . '</p>')
 					],
 					'sort' => [
@@ -241,8 +241,8 @@ final class Category extends AbstractPageList
 
 		$result = Db::$db->query('', '
 			SELECT
-				COALESCE(c.category_id, 0) AS category_id, c.description, c.priority, COUNT(p.page_id) AS frequency,
-				t.title, tf.title AS fallback_title
+				COALESCE(c.category_id, 0) AS category_id, c.icon, c.description, c.priority,
+				COUNT(p.page_id) AS frequency, t.title, tf.title AS fallback_title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_categories AS c ON (p.category_id = c.category_id)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
@@ -256,7 +256,7 @@ final class Category extends AbstractPageList
 				AND p.status IN ({array_int:statuses})
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
-			GROUP BY c.category_id, c.description, c.priority, t.title, tf.title
+			GROUP BY c.category_id, c.icon, c.description, c.priority, t.title, tf.title
 			ORDER BY {raw:sort}' . ($limit ? '
 			LIMIT {int:start}, {int:limit}' : ''),
 			[
@@ -276,6 +276,7 @@ final class Category extends AbstractPageList
 		$items = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['category_id']] = [
+				'icon'        => $this->getIcon($row['icon']),
 				'title'       => $row['title'] ?: Lang::$txt['lp_no_category'],
 				'description' => $row['description'] ?? '',
 				'link'        => LP_BASE_URL . ';sa=categories;id=' . $row['category_id'],

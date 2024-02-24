@@ -43,7 +43,13 @@
 
 						@if (!empty($article['section']['name']))
 						<a class="floatright" href="{{ $article['section']['link'] }}">
-							@icon('category') {{ $article['section']['name'] }}
+							@empty ($article['section']['icon'])
+								@icon('category')
+							@else
+								{!! $article['section']['icon'] !!}
+							@endempty
+
+							{{ $article['section']['name'] }}
 						</a>
 						@endif
 					</div>

@@ -23,6 +23,7 @@ class CategoryValidator extends AbstractValidator
 {
 	protected array $args = [
 		'category_id' => FILTER_VALIDATE_INT,
+		'icon'        => FILTER_DEFAULT,
 		'description' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
 		'priority'    => FILTER_VALIDATE_INT,
 		'status'      => FILTER_VALIDATE_INT,
