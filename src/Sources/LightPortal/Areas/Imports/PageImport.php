@@ -14,7 +14,8 @@
 
 namespace Bugo\LightPortal\Areas\Imports;
 
-use Bugo\Compat\{Config, Database as Db, ErrorHandler, Lang, Theme, Utils};
+use Bugo\Compat\{Config, Database as Db};
+use Bugo\Compat\{ErrorHandler, Lang, Theme, User, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -26,6 +27,8 @@ final class PageImport extends AbstractImport
 {
 	public function main(): void
 	{
+		User::mustHavePermission('admin_forum');
+
 		Theme::loadTemplate('LightPortal/ManageImpex');
 
 		Utils::$context['sub_template'] = 'manage_import';
@@ -33,11 +36,11 @@ final class PageImport extends AbstractImport
 		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_pages_import'];
 		Utils::$context['page_area_title'] = Lang::$txt['lp_pages_import'];
 		Utils::$context['page_area_info']  = Lang::$txt['lp_pages_import_info'];
-		Utils::$context['canonical_url']   = Config::$scripturl . '?action=admin;area=lp_pages;sa=import';
+		Utils::$context['form_action']     = Config::$scripturl . '?action=admin;area=lp_pages;sa=import';
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_pages_import_description']
+			'description' => Lang::$txt['lp_pages_import_description'],
 		];
 
 		Utils::$context['lp_file_type'] = 'text/xml';
@@ -53,19 +56,10 @@ final class PageImport extends AbstractImport
 		if (! isset($xml->pages->item[0]['page_id']))
 			ErrorHandler::fatalLang('lp_wrong_import_file');
 
-		$categories = $tags = $items = $titles = $params = $comments = [];
+		$tags = $items = $titles = $params = $comments = [];
 
 		foreach ($xml as $entity => $element) {
-			if ($entity === 'categories') {
-				/*foreach ($element->item as $item) {
-					$categories[] = [
-						'category_id' => intval($item['id']),
-						'name'        => (string) $item['name'],
-						'description' => (string) $item['desc'],
-						'priority'    => intval($item['priority']),
-					];
-				}*/
-			} elseif ($entity === 'tags') {
+			if ($entity === 'tags') {
 				foreach ($element->item as $item) {
 					$tags[] = [
 						'tag_id' => intval($item['id']),
@@ -135,23 +129,6 @@ final class PageImport extends AbstractImport
 		}
 
 		Db::$db->transaction('begin');
-
-		/*if ($categories) {
-			Db::$db->insert('replace',
-				'{db_prefix}lp_categories',
-				[
-					'category_id' => 'int',
-					'name'        => 'string',
-					'description' => 'string',
-					'priority'    => 'int',
-				],
-				$categories,
-				['category_id'],
-				2
-			);
-
-			Utils::$context['lp_num_queries']++;
-		}*/
 
 		if ($tags) {
 			$tags  = array_chunk($tags, 100);

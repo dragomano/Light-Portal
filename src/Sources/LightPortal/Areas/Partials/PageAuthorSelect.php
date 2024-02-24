@@ -33,7 +33,7 @@ final class PageAuthorSelect extends AbstractPartial
 				noSearchResultsText: "' . Lang::$txt['lp_no_such_members'] . '",
 				searchPlaceholderText: "' . Lang::$txt['search'] . '",
 				onServerSearch: function (search, virtualSelect) {
-					return axios.post("' . Utils::$context['canonical_url'] . ';members", {
+					return axios.post("' . Utils::$context['form_action'] . ';members", {
 						search
 					}).then(response => {
 						const data = response.data

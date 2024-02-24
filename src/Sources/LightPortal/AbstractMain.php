@@ -371,7 +371,7 @@ abstract class AbstractMain
 				'icon'        => 'home',
 				'show'        => true,
 				'action_hook' => true,
-				'is_last'     => Utils::$context['right_to_left']
+				'is_last'     => Utils::$context['right_to_left'],
 			],
 		], $buttons);
 
@@ -558,7 +558,7 @@ abstract class AbstractMain
 		return array_combine(
 			[
 				'block', 'ssi', 'editor', 'comment', 'parser', 'article', 'frontpage',
-				'impex', 'block_options', 'page_options', 'icons', 'seo', 'other'
+				'impex', 'block_options', 'page_options', 'icons', 'seo', 'other',
 			],
 			Lang::$txt['lp_plugins_types']
 		);

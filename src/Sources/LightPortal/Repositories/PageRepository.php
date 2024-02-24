@@ -17,8 +17,8 @@ declare(strict_types=1);
 namespace Bugo\LightPortal\Repositories;
 
 use Bugo\Compat\{Config, Database as Db, Logging};
-use Bugo\Compat\{Security, User, Utils};
-use Bugo\LightPortal\Utils\{DateTime, Notify};
+use Bugo\Compat\{Lang, Msg, Security, User, Utils};
+use Bugo\LightPortal\Utils\{Content, DateTime, Notify};
 use IntlException;
 
 if (! defined('SMF'))
@@ -113,17 +113,89 @@ final class PageRepository extends AbstractRepository
 		return (int) $count;
 	}
 
+	/**
+	 * @throws IntlException
+	 */
+	public function getData(int|string $item): array
+	{
+		if ($item === 0 || $item === '')
+			return [];
+
+		$result = Db::$db->query('', '
+			SELECT
+				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions,
+				p.status, p.num_views, p.created_at, p.updated_at,
+				COALESCE(mem.real_name, {string:guest}) AS author_name, pt.lang, pt.title, pp.name, pp.value
+			FROM {db_prefix}lp_pages AS p
+				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
+				LEFT JOIN {db_prefix}lp_titles AS pt ON (p.page_id = pt.item_id AND pt.type = {literal:page})
+				LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {literal:page})
+			WHERE p.' . (is_int($item) ? 'page_id = {int:item}' : 'alias = {string:item}'),
+			[
+				'guest' => Lang::$txt['guest_title'],
+				'item'  => $item,
+			]
+		);
+
+		while ($row = Db::$db->fetch_assoc($result)) {
+			Lang::censorText($row['content']);
+
+			$ogImage = null;
+			if (! empty(Config::$modSettings['lp_page_og_image'])) {
+				$content = $row['content'];
+				$content = Content::parse($content, $row['type']);
+				$imageIsFound = preg_match_all('/<img(.*)src(.*)=(.*)"(.*)"/U', $content, $values);
+
+				if ($imageIsFound && is_array($values)) {
+					$allImages = array_pop($values);
+					$image = Config::$modSettings['lp_page_og_image'] == 1
+						? array_shift($allImages)
+						: array_pop($allImages);
+					$ogImage = Utils::$smcFunc['htmlspecialchars']($image);
+				}
+			}
+
+			$data ??= [
+				'id'          => (int) $row['page_id'],
+				'category_id' => (int) $row['category_id'],
+				'author_id'   => (int) $row['author_id'],
+				'author'      => $row['author_name'],
+				'alias'       => $row['alias'],
+				'description' => $row['description'],
+				'content'     => $row['content'],
+				'type'        => $row['type'],
+				'permissions' => (int) $row['permissions'],
+				'status'      => (int) $row['status'],
+				'num_views'   => (int) $row['num_views'],
+				'created_at'  => (int) $row['created_at'],
+				'updated_at'  => (int) $row['updated_at'],
+				'image'       => $ogImage,
+			];
+
+			$data['titles'][$row['lang']] = $row['title'];
+
+			$data['options'][$row['name']] = $row['value'];
+		}
+
+		Db::$db->free_result($result);
+		Utils::$context['lp_num_queries']++;
+
+		$this->prepareData($data);
+
+		return $data ?? [];
+	}
+
 	public function setData(int $item = 0): void
 	{
 		if (isset(Utils::$context['post_errors']) || (
 			$this->request()->hasNot('save') &&
 			$this->request()->hasNot('save_exit'))
-		)
+		) {
 			return;
+		}
 
 		Security::checkSubmitOnce('check');
 
-		$this->prepareDescription();
 		$this->prepareKeywords();
 
 		$this->prepareBbcContent(Utils::$context['lp_page']);
@@ -277,11 +349,30 @@ final class PageRepository extends AbstractRepository
 		Utils::$context['lp_page']['options']['keywords'] = array_merge($oldTagIds, $newTagIds);
 	}
 
-	private function prepareDescription(): void
+	private function getTags(string $tags): array
 	{
-		$this->cleanBbcode(Utils::$context['lp_page']['description']);
+		$result = Db::$db->query('', '
+			SELECT tag_id, value
+			FROM {db_prefix}lp_tags
+			WHERE FIND_IN_SET(tag_id, {string:tags}) > 0
+			ORDER BY value',
+			[
+				'tags' => $tags,
+			]
+		);
 
-		Utils::$context['lp_page']['description'] = strip_tags(Utils::$context['lp_page']['description']);
+		$items = [];
+		while ($row = Db::$db->fetch_assoc($result)) {
+			$items[$row['tag_id']] = [
+				'name' => $row['value'],
+				'href' => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id'],
+			];
+		}
+
+		Db::$db->free_result($result);
+		Utils::$context['lp_num_queries']++;
+
+		return $items;
 	}
 
 	private function prepareKeywords(): void
@@ -290,6 +381,38 @@ final class PageRepository extends AbstractRepository
 		Utils::$context['lp_page']['keywords'] = preg_replace(
 			"#[[:punct:]]#", "", Utils::$context['lp_page']['keywords']
 		);
+	}
+
+	/**
+	 * @throws IntlException
+	 */
+	private function prepareData(?array &$data): void
+	{
+		if (empty($data))
+			return;
+
+		$isAuthor = $data['author_id'] && $data['author_id'] == User::$info['id'];
+
+		$data['created']  = DateTime::relative((int) $data['created_at']);
+		$data['updated']  = DateTime::relative((int) $data['updated_at']);
+		$data['can_view'] = $this->canViewItem($data['permissions']) || User::$info['is_admin'] || $isAuthor;
+		$data['can_edit'] = User::$info['is_admin']
+			|| Utils::$context['allow_light_portal_manage_pages_any']
+			|| (Utils::$context['allow_light_portal_manage_pages_own'] && $isAuthor);
+
+		if ($data['type'] === 'bbc') {
+			$data['content'] = Msg::unPreparseCode($data['content']);
+		}
+
+		if (! empty($data['category_id'])) {
+			$data['category'] = $this->getEntityData('category')[$data['category_id']]['title'];
+		}
+
+		if (! empty($data['options']['keywords'])) {
+			$data['tags'] = $this->getTags($data['options']['keywords']);
+		}
+
+		$this->hook('preparePageData', [&$data, $isAuthor]);
 	}
 
 	private function getPublishTime(): int

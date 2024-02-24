@@ -252,15 +252,12 @@ final class ConfigArea
 		User::mustHavePermission(['light_portal_manage_pages_own', 'light_portal_manage_pages_any']);
 
 		$areas = [
-			'main' => [new PageArea(), 'main'],
-			'add'  => [new PageArea(), 'add'],
-			'edit' => [new PageArea(), 'edit'],
+			'main'   => [new PageArea(), 'main'],
+			'add'    => [new PageArea(), 'add'],
+			'edit'   => [new PageArea(), 'edit'],
+			'export' => [new PageExport(), 'main'],
+			'import' => [new PageImport(), 'main'],
 		];
-
-		if (User::$info['is_admin']) {
-			$areas['export'] = [new PageExport(), 'main'];
-			$areas['import'] = [new PageImport(), 'main'];
-		}
 
 		$this->hook('updatePageAreas', [&$areas]);
 

@@ -32,11 +32,11 @@ final class PluginImport extends AbstractImport
 		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_plugins_import'];
 		Utils::$context['page_area_title'] = Lang::$txt['lp_plugins_import'];
 		Utils::$context['page_area_info']  = Lang::$txt['lp_plugins_import_info'];
-		Utils::$context['canonical_url']   = Config::$scripturl . '?action=admin;area=lp_plugins;sa=import';
+		Utils::$context['form_action']     = Config::$scripturl . '?action=admin;area=lp_plugins;sa=import';
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_plugins_import_description']
+			'description' => Lang::$txt['lp_plugins_import_description'],
 		];
 
 		Utils::$context['lp_file_type'] = 'application/zip';

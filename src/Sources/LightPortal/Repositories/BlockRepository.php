@@ -60,7 +60,7 @@ final class BlockRepository extends AbstractRepository
 
 	public function getData(int $item): array
 	{
-		if (empty($item))
+		if ($item === 0)
 			return [];
 
 		$result = Db::$db->query('', '
@@ -73,7 +73,7 @@ final class BlockRepository extends AbstractRepository
 				LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {literal:block})
 			WHERE b.block_id = {int:item}',
 			[
-				'item' => $item
+				'item' => $item,
 			]
 		);
 
@@ -129,8 +129,9 @@ final class BlockRepository extends AbstractRepository
 			$this->request()->hasNot('save') &&
 			$this->request()->hasNot('save_exit') &&
 			$this->request()->hasNot('clone'))
-		)
+		) {
 			return 0;
+		}
 
 		Security::checkSubmitOnce('check');
 

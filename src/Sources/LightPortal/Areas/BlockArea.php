@@ -57,37 +57,14 @@ final class BlockArea
 		Utils::$context['lp_current_blocks'] = $this->repository->getAll();
 	}
 
-	public function doActions(): void
-	{
-		if ($this->request()->hasNot('actions'))
-			return;
-
-		$data = $this->request()->json();
-
-		if (isset($data['del_item']))
-			$this->remove([(int) $data['del_item']]);
-
-		if (isset($data['clone_block']))
-			$this->makeCopy((int) $data['clone_block']);
-
-		if (isset($data['toggle_item']))
-			$this->toggleStatus([(int) $data['toggle_item']]);
-
-		$this->updatePriority();
-
-		$this->cache()->flush();
-
-		exit;
-	}
-
 	public function add(): void
 	{
 		Theme::loadTemplate('LightPortal/ManageBlocks');
 
 		Utils::$context['sub_template'] = 'block_add';
 
-		Utils::$context['page_title']    = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_blocks_add_title'];
-		Utils::$context['canonical_url'] = Config::$scripturl . '?action=admin;area=lp_blocks;sa=add';
+		Utils::$context['page_title']  = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_blocks_add_title'];
+		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_blocks;sa=add';
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
@@ -123,10 +100,6 @@ final class BlockArea
 	{
 		$item = (int) ($this->request('block_id') ?: $this->request('id'));
 
-		if ($item === 0) {
-			ErrorHandler::fatalLang('lp_block_not_found', status: 404);
-		}
-
 		Theme::loadTemplate('LightPortal/ManageBlocks');
 
 		Utils::$context['sub_template'] = 'block_post';
@@ -142,6 +115,10 @@ final class BlockArea
 
 		Utils::$context['current_block'] = $this->repository->getData($item);
 
+		if (empty(Utils::$context['current_block'])) {
+			ErrorHandler::fatalLang('lp_block_not_found', status: 404);
+		}
+
 		if ($this->request()->has('remove')) {
 			$this->remove([$item]);
 
@@ -150,13 +127,36 @@ final class BlockArea
 
 		$this->validateData();
 
-		Utils::$context['canonical_url'] = Config::$scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . Utils::$context['lp_block']['id'];
+		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . Utils::$context['lp_block']['id'];
 
 		$this->prepareFormFields();
 		$this->prepareEditor();
 		$this->preparePreview();
 
 		$this->repository->setData(Utils::$context['lp_block']['id']);
+	}
+
+	private function doActions(): void
+	{
+		if ($this->request()->hasNot('actions'))
+			return;
+
+		$data = $this->request()->json();
+
+		if (isset($data['del_item']))
+			$this->remove([(int) $data['del_item']]);
+
+		if (isset($data['clone_block']))
+			$this->makeCopy((int) $data['clone_block']);
+
+		if (isset($data['toggle_item']))
+			$this->toggleStatus([(int) $data['toggle_item']]);
+
+		$this->updatePriority();
+
+		$this->cache()->flush();
+
+		exit;
 	}
 
 	private function remove(array $items): void
@@ -303,6 +303,14 @@ final class BlockArea
 		$block->permissions = empty(Utils::$context['user']['is_admin']) ? 4 : $block->permissions;
 		$block->contentClass = empty($block->options['no_content_class']) ? $block->contentClass : '';
 
+		foreach (Utils::$context['lp_languages'] as $lang) {
+			$block->titles[$lang['filename']] = $postData['title_' . $lang['filename']]
+				?? $block->titles[$lang['filename']]
+				?? '';
+		}
+
+		$this->cleanBbcode($block->titles);
+
 		foreach ($block->options as $option => $value) {
 			if (
 				isset($parameters[$option])
@@ -323,14 +331,6 @@ final class BlockArea
 
 			$block->options[$option] = $postData['parameters'][$option] ?? $blockOptions[$option] ?? $value;
 		}
-
-		foreach (Utils::$context['lp_languages'] as $lang) {
-			$block->titles[$lang['filename']] = $postData['title_' . $lang['filename']]
-				?? $block->titles[$lang['filename']]
-				?? '';
-		}
-
-		$this->cleanBbcode($block->titles);
 
 		Utils::$context['lp_block'] = $block->toArray();
 	}

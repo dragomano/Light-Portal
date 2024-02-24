@@ -34,7 +34,7 @@ final class PluginExport extends AbstractExport
 
 		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_plugins_export'];
 		Utils::$context['page_area_title'] = Lang::$txt['lp_plugins_export'];
-		Utils::$context['canonical_url']   = Config::$scripturl . '?action=admin;area=lp_plugins;sa=export';
+		Utils::$context['form_action']     = Config::$scripturl . '?action=admin;area=lp_plugins;sa=export';
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,

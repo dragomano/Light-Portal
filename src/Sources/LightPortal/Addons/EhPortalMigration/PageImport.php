@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 20.02.24
+ * @version 23.02.24
  */
 
 namespace Bugo\LightPortal\Addons\EhPortalMigration;
@@ -27,9 +27,11 @@ class PageImport extends AbstractCustomPageImport
 {
 	public function main(): void
 	{
+		User::mustHavePermission('admin_forum');
+
 		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_eh_portal_migration']['label_name'];
 		Utils::$context['page_area_title'] = Lang::$txt['lp_pages_import'];
-		Utils::$context['canonical_url']   = Config::$scripturl . '?action=admin;area=lp_pages;sa=import_from_ep';
+		Utils::$context['form_action']     = Config::$scripturl . '?action=admin;area=lp_pages;sa=import_from_ep';
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
@@ -43,7 +45,7 @@ class PageImport extends AbstractCustomPageImport
 			'items_per_page' => 50,
 			'title' => Lang::$txt['lp_pages_import'],
 			'no_items_label' => Lang::$txt['lp_no_items'],
-			'base_href' => Utils::$context['canonical_url'],
+			'base_href' => Utils::$context['form_action'],
 			'default_sort_col' => 'id',
 			'get_items' => [
 				'function' => [$this, 'getAll']
@@ -103,7 +105,7 @@ class PageImport extends AbstractCustomPageImport
 				]
 			],
 			'form' => [
-				'href' => Utils::$context['canonical_url']
+				'href' => Utils::$context['form_action']
 			],
 			'additional_rows' => [
 				[

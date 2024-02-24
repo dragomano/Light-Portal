@@ -95,18 +95,11 @@ final class Integration extends AbstractMain
 		if (! empty(Utils::$context['portal_next_page']))
 			echo "\n\t" . '<link rel="prerender" href="' . Utils::$context['portal_next_page'] . '">';
 
-		if (! isset(Config::$modSettings['lp_fa_source']) || Config::$modSettings['lp_fa_source'] === 'css_cdn') {
-			$params = [
-				'rel="preload"',
-				'href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css"',
-				'as="style"',
-				'onload="this.onload=null;this.rel=\'stylesheet\'"'
-			];
-
-			echo "\n\t" . '<link ' . implode(' ', $params) . '>';
-		}
-
 		$styles = [];
+
+		if (! isset(Config::$modSettings['lp_fa_source']) || Config::$modSettings['lp_fa_source'] === 'css_cdn') {
+			$styles[] = 'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css';
+		}
 
 		$this->hook('preloadStyles', [&$styles]);
 

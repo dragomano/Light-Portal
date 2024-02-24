@@ -16,7 +16,7 @@ namespace Bugo\LightPortal\Areas\Exports;
 
 use ArrayIterator;
 use Bugo\Compat\{Config, Database as Db, ErrorHandler};
-use Bugo\Compat\{Lang, Sapi, Utils};
+use Bugo\Compat\{Lang, Sapi, User, Utils};
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Utils\ItemList;
 use DomDocument;
@@ -36,13 +36,15 @@ final class PageExport extends AbstractExport
 
 	public function main(): void
 	{
+		User::mustHavePermission('admin_forum');
+
 		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_pages_export'];
 		Utils::$context['page_area_title'] = Lang::$txt['lp_pages_export'];
-		Utils::$context['canonical_url']   = Config::$scripturl . '?action=admin;area=lp_pages;sa=export';
+		Utils::$context['form_action']     = Config::$scripturl . '?action=admin;area=lp_pages;sa=export';
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_pages_export_description']
+			'description' => Lang::$txt['lp_pages_export_description'],
 		];
 
 		$this->run();
@@ -52,7 +54,7 @@ final class PageExport extends AbstractExport
 			'items_per_page' => 20,
 			'title' => Lang::$txt['lp_pages_export'],
 			'no_items_label' => Lang::$txt['lp_no_items'],
-			'base_href' => Config::$scripturl . '?action=admin;area=lp_pages;sa=export',
+			'base_href' => Utils::$context['form_action'],
 			'default_sort_col' => 'id',
 			'get_items' => [
 				'function' => [$this->repository, 'getAll']
@@ -116,7 +118,7 @@ final class PageExport extends AbstractExport
 				]
 			],
 			'form' => [
-				'href' => Config::$scripturl . '?action=admin;area=lp_pages;sa=export'
+				'href' => Utils::$context['form_action']
 			],
 			'additional_rows' => [
 				[
@@ -168,7 +170,7 @@ final class PageExport extends AbstractExport
 				'num_views'    => $row['num_views'],
 				'num_comments' => $row['num_comments'],
 				'created_at'   => $row['created_at'],
-				'updated_at'   => $row['updated_at']
+				'updated_at'   => $row['updated_at'],
 			];
 
 			if ($row['lang'] && $row['title'])
@@ -183,7 +185,7 @@ final class PageExport extends AbstractExport
 					'parent_id'  => $row['parent_id'],
 					'author_id'  => $row['com_author_id'],
 					'message'    => trim($row['message']),
-					'created_at' => $row['com_created_at']
+					'created_at' => $row['com_created_at'],
 				];
 			}
 		}
@@ -192,16 +194,6 @@ final class PageExport extends AbstractExport
 		Utils::$context['lp_num_queries']++;
 
 		return $items;
-	}
-
-	protected function getCategories(): array
-	{
-		$categories = $this->getEntityData('category');
-
-		unset($categories[0]);
-		ksort($categories);
-
-		return $categories;
 	}
 
 	protected function getFile(): string
@@ -214,19 +206,6 @@ final class PageExport extends AbstractExport
 			$root = $xml->appendChild($xml->createElement('light_portal'));
 
 			$xml->formatOutput = true;
-
-			/*if ($categories = $this->getCategories()) {
-				$xmlElements = $root->appendChild($xml->createElement('categories'));
-
-				$categories = static fn() => new ArrayIterator($categories);
-				foreach ($categories() as $category) {
-					$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
-					foreach ($category as $key => $val) {
-						$xmlName = $xmlElement->appendChild($xml->createAttribute($key));
-						$xmlName->appendChild($xml->createTextNode($val));
-					}
-				}
-			}*/
 
 			if ($tags = $this->getEntityData('tag')) {
 				$xmlElements = $root->appendChild($xml->createElement('tags'));

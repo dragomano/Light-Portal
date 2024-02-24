@@ -11,7 +11,7 @@ function template_page_add(): void
 	</div>
 	<div class="information">', Lang::$txt['lp_pages_add_instruction'], '</div>
 	<div id="lp_blocks">
-		<form name="page_add_form" action="', Utils::$context['canonical_url'], '" method="post" accept-charset="', Utils::$context['character_set'], '">
+		<form name="page_add_form" action="', Utils::$context['form_action'], '" method="post" accept-charset="', Utils::$context['character_set'], '">
 			<div class="row">';
 
 	foreach (Utils::$context['lp_all_pages'] as $page) {
@@ -84,7 +84,7 @@ function template_page_post(): void
 	echo '
 	<form
 		id="lp_post"
-		action="', Utils::$context['canonical_url'], '"
+		action="', Utils::$context['form_action'], '"
 		method="post"
 		accept-charset="', Utils::$context['character_set'], '"
 		onsubmit="submitonce(this);"

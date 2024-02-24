@@ -53,7 +53,7 @@ final class IconSelect extends AbstractPartial
 					return `<i class="${data.value} fa-fw"></i> ${data.value}`;
 				},
 				onServerSearch: async function (search, virtualSelect) {
-					await axios.post("' . Utils::$context['canonical_url'] . ';icons", {
+					await axios.post("' . Utils::$context['form_action'] . ';icons", {
 						search,
 						add_block: "' . $type . '"
 					})
