@@ -136,7 +136,7 @@ function show_block_entry(int $id, array $data): void
 			', $data['priority'], ' ', str_replace(' class="', ' title="' . Lang::$txt['lp_action_move'] . '" class="handle ', Icon::get('sort')), '
 		</td>
 		<td class="status">
-			<span :class="{\'on\': status, \'off\': !status}" :title="status ? \'', Lang::$txt['lp_action_off'], '\' : \'', Lang::$txt['lp_action_on'], '\'" @click.prevent="status = !status"></span>
+			<span :class="{ \'on\': status, \'off\': !status }" :title="status ? \'', Lang::$txt['lp_action_off'], '\' : \'', Lang::$txt['lp_action_on'], '\'" @click.prevent="status = !status"></span>
 		</td>
 		<td class="actions">
 			<div class="context_menu" @click.outside="showContextMenu = false">
@@ -175,7 +175,7 @@ function template_block_add(): void
 	</div>
 	<div class="information">', Lang::$txt['lp_blocks_add_instruction'], '</div>
 	<div id="lp_blocks">
-		<form name="block_add_form" action="', Utils::$context['canonical_url'], '" method="post" accept-charset="', Utils::$context['character_set'], '">
+		<form name="block_add_form" action="', Utils::$context['form_action'], '" method="post" accept-charset="', Utils::$context['character_set'], '">
 			<div class="row">';
 
 	foreach (Utils::$context['lp_all_blocks'] as $block) {
@@ -252,7 +252,7 @@ function template_block_post(): void
 	echo '
 	<form
 		id="lp_post"
-		action="', Utils::$context['canonical_url'], '"
+		action="', Utils::$context['form_action'], '"
 		method="post"
 		accept-charset="', Utils::$context['character_set'], '"
 		onsubmit="submitonce(this);"

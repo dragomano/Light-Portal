@@ -34,9 +34,9 @@ final class BasicConfig extends AbstractConfig
 	 */
 	public function show(): void
 	{
-		Utils::$context['page_title']    = Utils::$context['settings_title'] = Lang::$txt['lp_base'];
-		Utils::$context['canonical_url'] = Config::$scripturl . '?action=admin;area=lp_settings;sa=basic';
-		Utils::$context['post_url']      = Utils::$context['canonical_url'] . ';save';
+		Utils::$context['page_title']  = Utils::$context['settings_title'] = Lang::$txt['lp_base'];
+		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_settings;sa=basic';
+		Utils::$context['post_url']    = Utils::$context['form_action'] . ';save';
 
 		$this->addDefaultValues([
 			'lp_frontpage_title'           => str_replace(["'", "\""], "", Utils::$context['forum_name']),

@@ -88,7 +88,9 @@ final class CategoryArea
 						'value' => Lang::$txt['lp_title'],
 					],
 					'data' => [
-						'function' => static fn($entry) => '<a class="bbc_link" href="' . LP_BASE_URL . ';sa=categories;id=' . $entry['id'] . '">' . $entry['title'] . '</a>',
+						'function' => static fn($entry) => $entry['status']
+							? '<a class="bbc_link" href="' . LP_BASE_URL . ';sa=categories;id=' . $entry['id'] . '">' . $entry['title'] . '</a>'
+							: $entry['title'],
 						'class' => 'word_break',
 					],
 					'sort' => [

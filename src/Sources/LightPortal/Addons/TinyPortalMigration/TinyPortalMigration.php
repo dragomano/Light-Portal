@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 20.02.24
+ * @version 23.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortalMigration;
@@ -40,14 +40,12 @@ class TinyPortalMigration extends Plugin
 
 	public function updateBlockAreas(array &$areas): void
 	{
-		if (User::$info['is_admin'])
-			$areas['import_from_tp'] = [new BlockImport, 'main'];
+		$areas['import_from_tp'] = [new BlockImport, 'main'];
 	}
 
 	public function updatePageAreas(array &$areas): void
 	{
-		if (User::$info['is_admin'])
-			$areas['import_from_tp'] = [new PageImport, 'main'];
+		$areas['import_from_tp'] = [new PageImport, 'main'];
 	}
 
 	public function importPages(array &$items, array &$titles, array &$params, array &$comments): void

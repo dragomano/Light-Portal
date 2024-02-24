@@ -56,7 +56,7 @@ final class TopicSelect extends AbstractPartial
 				options: ' . json_encode($data) . ',
 				selectedValue: [' . $params['value'] . '],
 				onServerSearch: async function (search, virtualSelect) {
-					fetch("' . Utils::$context['canonical_url'] . ';topic_by_subject", {
+					fetch("' . Utils::$context['form_action'] . ';topic_by_subject", {
 						method: "POST",
 						headers: {
 							"Content-Type": "application/json; charset=utf-8"

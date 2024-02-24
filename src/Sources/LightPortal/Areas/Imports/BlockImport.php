@@ -14,7 +14,8 @@
 
 namespace Bugo\LightPortal\Areas\Imports;
 
-use Bugo\Compat\{Config, Database as Db, ErrorHandler, Lang, Theme, Utils};
+use Bugo\Compat\{Config, Database as Db};
+use Bugo\Compat\{ErrorHandler, Lang, Theme, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -33,11 +34,11 @@ final class BlockImport extends AbstractImport
 		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_blocks_import'];
 		Utils::$context['page_area_title'] = Lang::$txt['lp_blocks_import'];
 		Utils::$context['page_area_info']  = Lang::$txt['lp_blocks_import_info'];
-		Utils::$context['canonical_url']   = Config::$scripturl . '?action=admin;area=lp_blocks;sa=import';
+		Utils::$context['form_action']     = Config::$scripturl . '?action=admin;area=lp_blocks;sa=import';
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_blocks_import_description']
+			'description' => Lang::$txt['lp_blocks_import_description'],
 		];
 
 		Utils::$context['lp_file_type'] = 'text/xml';

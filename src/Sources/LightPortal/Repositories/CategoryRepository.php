@@ -214,30 +214,34 @@ final class CategoryRepository extends AbstractRepository
 		Db::$db->transaction('commit');
 	}
 
-	public function add(string $name, string $desc): int
+	public function remove(array $items): void
 	{
-		$name = Utils::$smcFunc['htmlspecialchars']($name);
-		$desc = Utils::$smcFunc['htmlspecialchars']($desc);
+		if ($items === [])
+			return;
 
-		$item = (int) Db::$db->insert('',
-			'{db_prefix}lp_categories',
+		$this->hook('onCategoryRemoving', [$items]);
+
+		Db::$db->query('', '
+			DELETE FROM {db_prefix}lp_categories
+			WHERE category_id IN ({array_int:items})',
 			[
-				'name'        => 'string',
-				'description' => 'string',
-				'priority'    => 'int',
-			],
-			[
-				$name,
-				$desc,
-				$this->getPriority(),
-			],
-			['category_id'],
-			1
+				'items' => $items,
+			]
 		);
 
-		Utils::$context['lp_num_queries']++;
+		Db::$db->query('', '
+			UPDATE {db_prefix}lp_pages
+			SET category_id = {int:category}
+			WHERE category_id IN ({array_int:items})',
+			[
+				'category' => 0,
+				'items'    => $items,
+			]
+		);
 
-		return $item;
+		Utils::$context['lp_num_queries'] += 2;
+
+		$this->cache()->flush();
 	}
 
 	public function updatePriority(array $categories): void
@@ -271,84 +275,6 @@ final class CategoryRepository extends AbstractRepository
 		$this->cache()->forget('all_categories');
 
 		exit(json_encode($result));
-	}
-
-	public function updateName(int $item, string $value): void
-	{
-		if (empty($item))
-			return;
-
-		Db::$db->query('', '
-			UPDATE {db_prefix}lp_categories
-			SET name = {string:name}
-			WHERE category_id = {int:item}',
-			[
-				'name' => Utils::$smcFunc['htmlspecialchars']($value),
-				'item' => $item,
-			]
-		);
-
-		Utils::$context['lp_num_queries']++;
-
-		$result = [
-			'success' => Db::$db->affected_rows(),
-		];
-
-		exit(json_encode($result));
-	}
-
-	public function updateDescription(int $item, string $value): void
-	{
-		if (empty($item))
-			return;
-
-		Db::$db->query('', '
-			UPDATE {db_prefix}lp_categories
-			SET description = {string:desc}
-			WHERE category_id = {int:item}',
-			[
-				'desc' => Utils::$smcFunc['htmlspecialchars']($value),
-				'item' => $item,
-			]
-		);
-
-		Utils::$context['lp_num_queries']++;
-
-		$result = [
-			'success' => Db::$db->affected_rows(),
-		];
-
-		exit(json_encode($result));
-	}
-
-	public function remove(array $items): void
-	{
-		if ($items === [])
-			return;
-
-		$this->hook('onCategoryRemoving', [$items]);
-
-		Db::$db->query('', '
-			DELETE FROM {db_prefix}lp_categories
-			WHERE category_id IN ({array_int:items})',
-			[
-				'items' => $items,
-			]
-		);
-
-		Db::$db->query('', '
-			UPDATE {db_prefix}lp_pages
-			SET category_id = {int:category}
-			WHERE category_id IN ({array_int:items})',
-			[
-				'category' => 0,
-				'items'    => $items,
-			]
-		);
-
-		Utils::$context['lp_num_queries'] += 2;
-
-		$this->cache()->flush();
 	}
 
 	private function getPriority(): int

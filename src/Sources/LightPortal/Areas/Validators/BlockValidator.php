@@ -42,8 +42,7 @@ class BlockValidator extends AbstractValidator
 
 	public function validate(): array
 	{
-		$data = [];
-		$params = [];
+		$data = $params = [];
 
 		if ($this->request()->only(['save', 'save_exit', 'preview'])) {
 			foreach (Utils::$context['lp_languages'] as $lang) {
@@ -86,8 +85,9 @@ class BlockValidator extends AbstractValidator
 			$this->request()->put('preview', true);
 			Utils::$context['post_errors'] = [];
 
-			foreach ($errors as $error)
+			foreach ($errors as $error) {
 				Utils::$context['post_errors'][] = Lang::$txt['lp_post_error_' . $error];
+			}
 		}
 	}
 }

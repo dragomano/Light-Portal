@@ -33,26 +33,29 @@ final class Category extends AbstractPageList
 		if ($this->request()->hasNot('id'))
 			$this->showAll();
 
-		Utils::$context['lp_category'] = $this->request('id');
+		$category = [];
+
+		$category['id'] = (int) $this->request('id', 0);
 
 		$categories = $this->getEntityData('category');
-		if (array_key_exists(Utils::$context['lp_category'], $categories) === false) {
+		if (array_key_exists($category['id'], $categories) === false) {
 			Utils::$context['error_link'] = LP_BASE_URL . ';sa=categories';
 			Lang::$txt['back'] = Lang::$txt['lp_all_categories'];
 			ErrorHandler::fatalLang('lp_category_not_found', status: 404);
 		}
 
-		$category = [];
-		if (empty(Utils::$context['lp_category'])) {
+		if ($category['id'] === 0) {
 			Utils::$context['page_title'] = Lang::$txt['lp_all_pages_without_category'];
 		} else {
-			$category = $categories[Utils::$context['lp_category']];
+			$category = $categories[$category['id']];
 			Utils::$context['page_title'] = sprintf(Lang::$txt['lp_all_pages_with_category'], $category['title']);
 		}
 
+		Utils::$context['current_category'] = $category['id'];
+
 		Utils::$context['description'] = $category['description'] ?? '';
 
-		Utils::$context['canonical_url']  = LP_BASE_URL . ';sa=categories;id=' . Utils::$context['lp_category'];
+		Utils::$context['canonical_url']  = LP_BASE_URL . ';sa=categories;id=' . $category['id'];
 		Utils::$context['robot_no_index'] = true;
 
 		Utils::$context['linktree'][] = [
@@ -114,7 +117,7 @@ final class Category extends AbstractPageList
 			LIMIT {int:start}, {int:limit}',
 			[
 				'lang'         => User::$info['language'],
-				'id'           => Utils::$context['lp_category'],
+				'id'           => Utils::$context['current_category'],
 				'statuses'     => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions(),
@@ -142,7 +145,7 @@ final class Category extends AbstractPageList
 				AND created_at <= {int:current_time}
 				AND permissions IN ({array_int:permissions})',
 			[
-				'id'           => Utils::$context['lp_category'],
+				'id'           => Utils::$context['current_category'],
 				'statuses'     => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions(),

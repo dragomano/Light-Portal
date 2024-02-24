@@ -16,7 +16,7 @@ namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, Database as Db, ErrorHandler, Lang};
 use Bugo\Compat\{Logging, Security, Theme, User, Utils};
-use Bugo\LightPortal\Actions\{Page, PageInterface};
+use Bugo\LightPortal\Actions\PageInterface;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, TextField};
 use Bugo\LightPortal\Areas\Partials\{CategorySelect, KeywordSelect, PageAuthorSelect};
 use Bugo\LightPortal\Areas\Partials\{PageIconSelect, PermissionSelect, StatusSelect};
@@ -333,64 +333,6 @@ final class PageArea
 		$this->changeTableTitle();
 	}
 
-	/**
-	 * Possible actions with pages
-	 *
-	 * Возможные действия со страницами
-	 */
-	public function doActions(): void
-	{
-		if ($this->request()->hasNot('actions'))
-			return;
-
-		$data = $this->request()->json();
-
-		if (isset($data['del_item']))
-			$this->remove([(int) $data['del_item']]);
-
-		if (isset($data['toggle_item']))
-			$this->toggleStatus([(int) $data['toggle_item']], 'page');
-
-		$this->cache()->flush();
-
-		exit;
-	}
-
-	public function massActions(): void
-	{
-		if ($this->request()->hasNot('mass_actions') || $this->request()->isEmpty('items'))
-			return;
-
-		$redirect = filter_input(
-			INPUT_SERVER,
-			'HTTP_REFERER',
-			FILTER_DEFAULT,
-			[
-				'options' => ['default' => 'action=admin;area=lp_pages']
-			]
-		);
-
-		$items = $this->request('items');
-		switch (filter_input(INPUT_POST, 'page_actions')) {
-			case 'delete':
-				$this->remove($items);
-				break;
-			case 'toggle':
-				$this->toggleStatus($items, 'page');
-				break;
-			case 'promote_up':
-				$this->promote($items);
-				break;
-			case 'promote_down':
-				$this->promote($items, 'down');
-				break;
-		}
-
-		$this->cache()->flush();
-
-		Utils::redirectexit($redirect);
-	}
-
 	public function add(): void
 	{
 		Theme::loadTemplate('LightPortal/ManagePages');
@@ -399,7 +341,7 @@ final class PageArea
 
 		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_pages_add_title'];
 		Utils::$context['page_area_title'] = Lang::$txt['lp_pages_add_title'];
-		Utils::$context['canonical_url']   = Config::$scripturl . '?action=admin;area=lp_pages;sa=add';
+		Utils::$context['form_action']     = Config::$scripturl . '?action=admin;area=lp_pages;sa=add';
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
@@ -434,10 +376,6 @@ final class PageArea
 	{
 		$item = (int) ($this->request('page_id') ?: $this->request('id'));
 
-		if ($item === 0) {
-			ErrorHandler::fatalLang('lp_page_not_found', status: 404);
-		}
-
 		Theme::loadTemplate('LightPortal/ManagePages');
 
 		Utils::$context['sub_template'] = 'page_post';
@@ -449,13 +387,15 @@ final class PageArea
 			'description' => Lang::$txt['lp_pages_edit_description'],
 		];
 
-		Utils::$context['lp_current_page'] = (new Page)->getDataByItem($item);
+		Utils::$context['lp_current_page'] = $this->repository->getData($item);
 
-		if (empty(Utils::$context['lp_current_page']))
+		if (empty(Utils::$context['lp_current_page'])) {
 			ErrorHandler::fatalLang('lp_page_not_found', status: 404);
+		}
 
-		if (Utils::$context['lp_current_page']['can_edit'] === false)
+		if (Utils::$context['lp_current_page']['can_edit'] === false) {
 			ErrorHandler::fatalLang('lp_page_not_editable');
+		}
 
 		$this->prepareForumLanguages();
 
@@ -477,13 +417,71 @@ final class PageArea
 
 		$pageTitle = Utils::$context['lp_page']['titles'][Utils::$context['user']['language']] ?? '';
 		Utils::$context['page_area_title'] = Lang::$txt['lp_pages_edit_title'] . ($pageTitle ? ' - ' . $pageTitle : '');
-		Utils::$context['canonical_url'] = Config::$scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . Utils::$context['lp_page']['id'];
+		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . Utils::$context['lp_page']['id'];
 
 		$this->prepareFormFields();
 		$this->prepareEditor();
 		$this->preparePreview();
 
 		$this->repository->setData(Utils::$context['lp_page']['id']);
+	}
+
+	/**
+	 * Possible actions with pages
+	 *
+	 * Возможные действия со страницами
+	 */
+	private function doActions(): void
+	{
+		if ($this->request()->hasNot('actions'))
+			return;
+
+		$data = $this->request()->json();
+
+		if (isset($data['del_item']))
+			$this->remove([(int) $data['del_item']]);
+
+		if (isset($data['toggle_item']))
+			$this->toggleStatus([(int) $data['toggle_item']], 'page');
+
+		$this->cache()->flush();
+
+		exit;
+	}
+
+	private function massActions(): void
+	{
+		if ($this->request()->hasNot('mass_actions') || $this->request()->isEmpty('items'))
+			return;
+
+		$redirect = filter_input(
+			INPUT_SERVER,
+			'HTTP_REFERER',
+			FILTER_DEFAULT,
+			[
+				'options' => ['default' => 'action=admin;area=lp_pages']
+			]
+		);
+
+		$items = $this->request('items');
+		switch (filter_input(INPUT_POST, 'page_actions')) {
+			case 'delete':
+				$this->remove($items);
+				break;
+			case 'toggle':
+				$this->toggleStatus($items, 'page');
+				break;
+			case 'promote_up':
+				$this->promote($items);
+				break;
+			case 'promote_down':
+				$this->promote($items, 'down');
+				break;
+		}
+
+		$this->cache()->flush();
+
+		Utils::redirectexit($redirect);
 	}
 
 	private function changeTableTitle(): void
@@ -647,6 +645,13 @@ final class PageArea
 		$page->date = $postData['date'] ?? $dateTime->format('Y-m-d');
 		$page->time = $postData['time'] ?? $dateTime->format('H:i');
 
+		foreach (Utils::$context['lp_languages'] as $lang) {
+			$page->titles[$lang['filename']] = $postData['title_' . $lang['filename']] ?? $page->titles[$lang['filename']] ?? '';
+		}
+
+		$this->cleanBbcode($page->titles);
+		$this->cleanBbcode($page->description);
+
 		foreach ($page->options as $option => $value) {
 			if (isset($parameters[$option]) && isset($postData) && ! isset($postData[$option])) {
 				$postData[$option] = 0;
@@ -660,12 +665,6 @@ final class PageArea
 
 			$page->options[$option] = $postData[$option] ?? $pageOptions[$option] ?? $value;
 		}
-
-		foreach (Utils::$context['lp_languages'] as $lang) {
-			$page->titles[$lang['filename']] = $postData['title_' . $lang['filename']] ?? $page->titles[$lang['filename']] ?? '';
-		}
-
-		$this->cleanBbcode($page->titles);
 
 		Utils::$context['lp_page'] = $page->toArray();
 	}
@@ -686,16 +685,16 @@ final class PageArea
 		if (Utils::$context['user']['is_admin']) {
 			CustomField::make('show_in_menu', Lang::$txt['lp_page_show_in_menu'])
 				->setTab('access_placement')
-				->setValue(static fn() => new PageIconSelect);
+				->setValue(static fn() => new PageIconSelect());
 		}
 
 		CustomField::make('permissions', Lang::$txt['edit_permissions'])
 			->setTab('access_placement')
-			->setValue(static fn() => new PermissionSelect);
+			->setValue(static fn() => new PermissionSelect());
 
 		CustomField::make('category_id', Lang::$txt['lp_category'])
 			->setTab('access_placement')
-			->setValue(static fn() => new CategorySelect, [
+			->setValue(static fn() => new CategorySelect(), [
 				'id'         => 'category_id',
 				'multiple'   => false,
 				'full_width' => false,
@@ -706,12 +705,12 @@ final class PageArea
 		if (Utils::$context['user']['is_admin']) {
 			CustomField::make('status', Lang::$txt['status'])
 				->setTab('access_placement')
-				->setValue(static fn() => new StatusSelect);
+				->setValue(static fn() => new StatusSelect());
 
 			CustomField::make('author_id', Lang::$txt['lp_page_author'])
 				->setTab('access_placement')
 				->setAfter(Lang::$txt['lp_page_author_placeholder'])
-				->setValue(static fn() => new PageAuthorSelect);
+				->setValue(static fn() => new PageAuthorSelect());
 		}
 
 		TextField::make('alias', Lang::$txt['lp_page_alias'])
@@ -730,7 +729,7 @@ final class PageArea
 
 		CustomField::make('keywords', Lang::$txt['lp_page_keywords'])
 			->setTab('seo')
-			->setValue(static fn() => new KeywordSelect);
+			->setValue(static fn() => new KeywordSelect());
 
 		if (Utils::$context['lp_page']['created_at'] >= time()) {
 			CustomField::make('datetime', Lang::$txt['lp_page_publish_datetime'])
