@@ -52,6 +52,16 @@ if ($categories !== []) {
 	}
 }
 
+// Add an icon column
+$column = [
+	'name' => 'icon',
+	'type' => 'varchar',
+	'size' => 255,
+	'null' => true
+];
+
+$smcFunc['db_add_column']('{db_prefix}lp_categories', $column, [], 'ignore');
+
 // Add a status column
 $column = [
 	'name'     => 'status',

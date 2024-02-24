@@ -75,6 +75,19 @@ final class CategoryExport extends AbstractExport
 						'reverse' => 'category_id DESC'
 					]
 				],
+				'icon' => [
+					'header' => [
+						'value' => Lang::$txt['custom_profile_icon']
+					],
+					'data' => [
+						'db'    => 'icon',
+						'class' => 'centertext'
+					],
+					'sort' => [
+						'default' => 'icon',
+						'reverse' => 'icon DESC'
+					]
+				],
 				'title' => [
 					'header' => [
 						'value' => Lang::$txt['lp_title'],
@@ -125,7 +138,7 @@ final class CategoryExport extends AbstractExport
 		$categories = $this->request('categories') && $this->request()->hasNot('export_all') ? $this->request('categories') : null;
 
 		$result = Db::$db->query('', '
-			SELECT c.category_id, c.description, c.priority, c.status,	pt.lang, pt.title, pp.name, pp.value
+			SELECT c.category_id, c.icon, c.description, c.priority, c.status,	pt.lang, pt.title, pp.name, pp.value
 			FROM {db_prefix}lp_categories AS c
 				LEFT JOIN {db_prefix}lp_titles AS pt ON (c.category_id = pt.item_id AND pt.type = {literal:category})
 				LEFT JOIN {db_prefix}lp_params AS pp ON (c.category_id = pp.item_id AND pp.type = {literal:category})' . (empty($categories) ? '' : '
@@ -139,6 +152,7 @@ final class CategoryExport extends AbstractExport
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['category_id']] ??= [
 				'category_id' => $row['category_id'],
+				'icon'        => trim($row['icon'] ?? ''),
 				'description' => trim($row['description'] ?? ''),
 				'priority'    => $row['priority'],
 				'status'      => $row['status'],

@@ -60,6 +60,7 @@ final class CategoryImport extends AbstractImport
 			foreach ($element->item as $item) {
 				$items[] = [
 					'category_id' => $categoryId = intval($item['category_id']),
+					'icon'        => $item->icon,
 					'description' => $item->description,
 					'priority'    => intval($item['priority']),
 					'status'      => intval($item['status']),
@@ -107,6 +108,7 @@ final class CategoryImport extends AbstractImport
 					'{db_prefix}lp_categories',
 					[
 						'category_id' => 'int',
+						'icon'        => 'string',
 						'description' => 'string',
 						'priority'    => 'int',
 						'status'      => 'int',

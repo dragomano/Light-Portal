@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.02.24
+ * @version 24.02.24
  */
 
 namespace Bugo\LightPortal\Addons\CategoryList;
@@ -61,7 +61,7 @@ class CategoryList extends Block
 			echo '
 				<li class="sub_bar">
 					<div class="subbg"', $currentCat >= 0 && $currentCat === $id ? ' style="background: gainsboro"' : '', '>
-						<a href="', $category['link'], '">', $category['title'], '</a> <span class="floatright amt">', $category['num_pages'], '</span>
+						<a href="', $category['link'], '">', $category['icon'], ' ', $category['title'], '</a> <span class="floatright amt">', $category['num_pages'], '</span>
 					</div>
 				</li>';
 		}

@@ -14,6 +14,8 @@
 
 namespace Bugo\LightPortal\Areas;
 
+use Bugo\LightPortal\Areas\Fields\CustomField;
+use Bugo\LightPortal\Areas\Partials\IconSelect;
 use Bugo\Compat\{Config, ErrorHandler, Lang, Security, Theme, Utils};
 use Bugo\LightPortal\Actions\Category;
 use Bugo\LightPortal\Areas\Fields\TextareaField;
@@ -81,6 +83,19 @@ final class CategoryArea
 					'sort' => [
 						'default' => 'category_id',
 						'reverse' => 'category_id DESC'
+					]
+				],
+				'icon' => [
+					'header' => [
+						'value' => Lang::$txt['custom_profile_icon']
+					],
+					'data' => [
+						'db'    => 'icon',
+						'class' => 'centertext'
+					],
+					'sort' => [
+						'default' => 'icon',
+						'reverse' => 'icon DESC'
 					]
 				],
 				'title' => [
@@ -294,6 +309,7 @@ final class CategoryArea
 		$categoryOptions = Utils::$context['lp_current_category']['options'] ?? $options;
 
 		$category = new CategoryModel($postData, Utils::$context['lp_current_category']);
+		$category->icon = $category->icon === 'undefined' ? '' : $category->icon;
 		$category->titles = Utils::$context['lp_current_category']['titles'] ?? [];
 		$category->options = $options;
 
@@ -325,6 +341,12 @@ final class CategoryArea
 	{
 		$this->prepareTitleFields();
 
+		CustomField::make('icon', Lang::$txt['current_icon'])
+			->setTab('content')
+			->setValue(static fn() => new IconSelect(), [
+				'icon' => Utils::$context['lp_category']['icon'],
+			]);
+
 		TextareaField::make('description', Lang::$txt['lp_category_description'])
 			->setTab('content')
 			->setAttribute('maxlength', 255)
@@ -350,6 +372,6 @@ final class CategoryArea
 		Lang::censorText(Utils::$context['preview_content']);
 
 		Utils::$context['page_title']    = Lang::$txt['preview'] . (Utils::$context['preview_title'] ? ' - ' . Utils::$context['preview_title'] : '');
-		Utils::$context['preview_title'] = $this->getPreviewTitle();
+		Utils::$context['preview_title'] = $this->getPreviewTitle($this->getIcon(Utils::$context['lp_category']['icon']));
 	}
 }
