@@ -26,6 +26,38 @@ abstract class AbstractRepository
 
 	protected string $entity;
 
+	public function toggleStatus(array $items = [], string $type = 'block'): void
+	{
+		if (empty($items))
+			return;
+
+		switch ($type) {
+			case 'block':
+				$table = 'blocks';
+				break;
+			case 'page':
+				$table = 'pages';
+				break;
+			case 'category':
+				$table = 'categories';
+				break;
+		}
+
+		if (empty($table))
+			return;
+
+		Db::$db->query('', '
+			UPDATE {db_prefix}lp_' . $table . '
+			SET status = CASE status WHEN 1 THEN 0 WHEN 0 THEN 1 WHEN 2 THEN 1 WHEN 3 THEN 0 END
+			WHERE ' . $type . '_id IN ({array_int:items})',
+			[
+				'items' => $items,
+			]
+		);
+
+		Utils::$context['lp_num_queries']++;
+	}
+
 	protected function prepareBbcContent(array &$entity): void
 	{
 		if ($entity['type'] !== 'bbc')

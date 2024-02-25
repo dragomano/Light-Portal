@@ -54,7 +54,7 @@ final class CategoryImport extends AbstractImport
 		if (! isset($xml->categories->item[0]['category_id']))
 			ErrorHandler::fatalLang('lp_wrong_import_file');
 
-		$items = $titles = $params = [];
+		$items = $titles = [];
 
 		foreach ($xml as $element) {
 			foreach ($element->item as $item) {
@@ -74,19 +74,6 @@ final class CategoryImport extends AbstractImport
 								'type'    => 'category',
 								'lang'    => $k,
 								'title'   => $v,
-							];
-						}
-					}
-				}
-
-				if ($item->params) {
-					foreach ($item->params as $param) {
-						foreach ($param as $k => $v) {
-							$params[] = [
-								'item_id' => $categoryId,
-								'type'    => 'category',
-								'name'    => $k,
-								'value'   => $v,
 							];
 						}
 					}
@@ -123,8 +110,6 @@ final class CategoryImport extends AbstractImport
 		}
 
 		$this->replaceTitles($titles, $results);
-
-		$this->replaceParams($params, $results);
 
 		$this->finish($results, 'categories');
 	}

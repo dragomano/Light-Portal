@@ -29,7 +29,7 @@ final class BlockExport extends AbstractExport
 
 	public function __construct()
 	{
-		$this->repository = new BlockRepository;
+		$this->repository = new BlockRepository();
 	}
 
 	public function main(): void
@@ -117,7 +117,11 @@ final class BlockExport extends AbstractExport
 			foreach ($items as $item) {
 				$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
 				foreach ($item as $key => $val) {
-					$xmlName = $xmlElement->appendChild(in_array($key, ['block_id', 'priority', 'permissions', 'status']) ? $xml->createAttribute($key) : $xml->createElement($key));
+					$xmlName = $xmlElement->appendChild(
+						in_array($key, ['block_id', 'priority', 'permissions', 'status'])
+							? $xml->createAttribute($key)
+							: $xml->createElement($key)
+					);
 
 					if (in_array($key, ['titles', 'params'])) {
 						foreach ($val as $k => $v) {

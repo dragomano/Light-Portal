@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Areas;
 
-use Bugo\Compat\{Config, Database as Db, ErrorHandler, Lang};
+use Bugo\Compat\{Config, ErrorHandler, Lang};
 use Bugo\Compat\{Logging, Security, Theme, User, Utils};
 use Bugo\LightPortal\Actions\PageInterface;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, TextField};
@@ -35,6 +35,14 @@ final class PageArea
 	use Area;
 	use Helper;
 
+	private array $params = [];
+
+	private string $browseType;
+
+	private string $type;
+
+	private int $status;
+
 	private PageRepository $repository;
 
 	public function __construct()
@@ -54,12 +62,11 @@ final class PageArea
 			display: none;
 		}');
 
-		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_pages_manage'];
+		Utils::$context['page_title']  = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_pages_manage'];
+		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_pages;sa=main';
 
 		$menu = Utils::$context['admin_menu_name'];
-
-		$key = Utils::$context['allow_light_portal_manage_pages_any'] && $this->request()->hasNot('u') ? 'all' : 'own';
-
+		$key  = Utils::$context['allow_light_portal_manage_pages_any'] && $this->request()->hasNot('u') ? 'all' : 'own';
 		$tabs = [
 			'title'       => LP_NAME,
 			'description' => Lang::$txt['lp_pages_manage_' . $key . '_pages'] . ' ' . Lang::$txt['lp_pages_manage_description'],
@@ -77,73 +84,25 @@ final class PageArea
 
 		$this->doActions();
 		$this->massActions();
-
-		$searchParamString = trim($this->request('search', ''));
-		$searchParams = [
-			'string' => Utils::$smcFunc['htmlspecialchars']($searchParamString),
-		];
-
-		Utils::$context['search_params'] = empty($searchParamString)
-			? '' : base64_encode(Utils::$smcFunc['json_encode']($searchParams));
-
-		Utils::$context['search'] = [
-			'string' => $searchParams['string'],
-		];
-
-		$params = [
-			(
-				empty($searchParams['string'])
-					? ''
-					: ' AND (INSTR(LOWER(p.alias), {string:search}) > 0 OR INSTR(LOWER(t.title), {string:search}) > 0)'
-			) . (
-				$this->request()->has('u') ? ' AND p.author_id = {int:user_id}' : ''
-			) . (
-				$this->request()->has('moderate') ? ' AND p.status = {int:unapproved}' : ''
-			) . (
-				$this->request()->has('internal') ? ' AND p.status = {int:internal}' : ''
-			) . (
-				$this->request()->hasNot('u')
-				&& $this->request()->hasNot('moderate')
-				&& $this->request()->hasNot('internal') ? ' AND p.status IN ({array_int:included_statuses})' : ''
-			),
-			[
-				'search'            => Utils::$smcFunc['strtolower']($searchParams['string']),
-				'unapproved'        => PageInterface::STATUS_UNAPPROVED,
-				'internal'          => PageInterface::STATUS_INTERNAL,
-				'included_statuses' => [PageInterface::STATUS_INACTIVE, PageInterface::STATUS_ACTIVE],
-			],
-		];
-
-		Utils::$context['browse_type'] = 'all';
-		$type = '';
-		$status = PageInterface::STATUS_ACTIVE;
-
-		if ($this->request()->has('u')) {
-			Utils::$context['browse_type'] = 'own';
-			$type = ';u=' . User::$info['id'];
-		} elseif ($this->request()->has('moderate')) {
-			Utils::$context['browse_type'] = 'mod';
-			$type = ';moderate';
-		} elseif ($this->request()->has('internal')) {
-			Utils::$context['browse_type'] = 'int';
-			$type = ';internal';
-			$status = PageInterface::STATUS_INTERNAL;
-		}
+		$this->calculateParams();
+		$this->calculateTypes();
 
 		$listOptions = [
 			'id' => 'lp_pages',
 			'items_per_page' => 20,
 			'title' => Lang::$txt['lp_pages_extra'],
 			'no_items_label' => Lang::$txt['lp_no_items'],
-			'base_href' => Config::$scripturl . '?action=admin;area=lp_pages;sa=main' . $type . (empty(Utils::$context['search_params']) ? '' : ';params=' . Utils::$context['search_params']),
+			'base_href' => Utils::$context['form_action'] . $this->type . (
+				empty(Utils::$context['search_params']) ? '' : ';params=' . Utils::$context['search_params']
+			),
 			'default_sort_col' => 'date',
 			'get_items' => [
 				'function' => [$this->repository, 'getAll'],
-				'params'   => $params,
+				'params'   => $this->params,
 			],
 			'get_count' => [
 				'function' => [$this->repository, 'getTotalCount'],
-				'params'   => $params,
+				'params'   => $this->params,
 			],
 			'columns' => [
 				'id' => [
@@ -204,7 +163,9 @@ final class PageArea
 						'value' => Lang::$txt['lp_title'],
 					],
 					'data' => [
-						'function' => fn($entry) => '<i class="' . $this->getPageIcon($entry['type']) . '" title="' . (Utils::$context['lp_content_types'][$entry['type']] ?? strtoupper($entry['type'])) . '"></i> <a class="bbc_link' . (
+						'function' => fn($entry) => '<i class="' . $this->getPageIcon($entry['type']) . '" title="' . (
+								Utils::$context['lp_content_types'][$entry['type']] ?? strtoupper($entry['type'])
+							) . '"></i> <a class="bbc_link' . (
 							$entry['is_front']
 								? ' highlight" href="' . Config::$scripturl
 								: '" href="' . LP_PAGE_URL . $entry['alias']
@@ -221,9 +182,11 @@ final class PageArea
 						'value' => Lang::$txt['status'],
 					],
 					'data' => [
-						'function' => static fn($entry) => Utils::$context['allow_light_portal_approve_pages'] || Utils::$context['allow_light_portal_manage_pages_any'] ? /** @lang text */ '<div data-id="' . $entry['id'] . '" x-data="{ status: ' . ($entry['status'] === $status ? 'true' : 'false') . ' }" x-init="$watch(\'status\', value => page.toggleStatus($el))">
+						'function' => fn($entry) => Utils::$context['allow_light_portal_approve_pages'] || Utils::$context['allow_light_portal_manage_pages_any']
+							? /** @lang text */ '<div data-id="' . $entry['id'] . '" x-data="{ status: ' . ($entry['status'] === $this->status ? 'true' : 'false') . ' }" x-init="$watch(\'status\', value => page.toggleStatus($el))">
 								<span :class="{ \'on\': status, \'off\': !status }" :title="status ? \'' . Lang::$txt['lp_action_off'] . '\' : \'' . Lang::$txt['lp_action_on'] . '\'" @click.prevent="status = !status"></span>
-							</div>' : /** @lang text */ '<div x-data="{ status: ' . ($entry['status'] === $status ? 'true' : 'false') . ' }">
+							</div>'
+							: /** @lang text */ '<div x-data="{ status: ' . ($entry['status'] === $this->status ? 'true' : 'false') . ' }">
 								<span :class="{ \'on\': status, \'off\': !status }" style="cursor: inherit">
 							</div>',
 						'class' => 'centertext',
@@ -243,9 +206,7 @@ final class PageArea
 						<div data-id="' . $entry['id'] . '" x-data="{ showContextMenu: false }">
 							<div class="context_menu" @click.outside="showContextMenu = false">
 								<button class="button floatnone" @click.prevent="showContextMenu = true">
-									<svg aria-hidden="true" width="10" height="10" focusable="false" data-prefix="fas" data-icon="ellipsis-h" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-										<path fill="currentColor" d="M328 256c0 39.8-32.2 72-72 72s-72-32.2-72-72 32.2-72 72-72 72 32.2 72 72zm104-72c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72zm-352 0c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72z"></path>
-									</svg>
+									' . Icon::get('ellipsis') . '
 								</button>
 								<div class="roundframe" x-show="showContextMenu">
 									<ul>
@@ -265,7 +226,7 @@ final class PageArea
 			],
 			'form' => [
 				'name' => 'manage_pages',
-				'href' => Config::$scripturl . '?action=admin;area=lp_pages;sa=main' . $type,
+				'href' => Utils::$context['form_action'] . $this->type,
 				'include_sort' => true,
 				'include_start' => true,
 				'hidden_fields' => [
@@ -406,7 +367,7 @@ final class PageArea
 				]);
 			}
 
-			$this->remove([$item]);
+			$this->repository->remove([$item]);
 
 			$this->cache()->flush();
 
@@ -439,10 +400,10 @@ final class PageArea
 		$data = $this->request()->json();
 
 		if (isset($data['del_item']))
-			$this->remove([(int) $data['del_item']]);
+			$this->repository->remove([(int) $data['del_item']]);
 
 		if (isset($data['toggle_item']))
-			$this->toggleStatus([(int) $data['toggle_item']], 'page');
+			$this->repository->toggleStatus([(int) $data['toggle_item']], 'page');
 
 		$this->cache()->flush();
 
@@ -454,22 +415,17 @@ final class PageArea
 		if ($this->request()->hasNot('mass_actions') || $this->request()->isEmpty('items'))
 			return;
 
-		$redirect = filter_input(
-			INPUT_SERVER,
-			'HTTP_REFERER',
-			FILTER_DEFAULT,
-			[
-				'options' => ['default' => 'action=admin;area=lp_pages']
-			]
-		);
+		$redirect = filter_input(INPUT_SERVER, 'HTTP_REFERER', FILTER_DEFAULT, [
+			'options' => ['default' => 'action=admin;area=lp_pages']
+		]);
 
 		$items = $this->request('items');
 		switch (filter_input(INPUT_POST, 'page_actions')) {
 			case 'delete':
-				$this->remove($items);
+				$this->repository->remove($items);
 				break;
 			case 'toggle':
-				$this->toggleStatus($items, 'page');
+				$this->repository->toggleStatus($items, 'page');
 				break;
 			case 'promote_up':
 				$this->promote($items);
@@ -482,6 +438,64 @@ final class PageArea
 		$this->cache()->flush();
 
 		Utils::redirectexit($redirect);
+	}
+
+	private function calculateParams(): void
+	{
+		$searchParamString = trim($this->request('search', ''));
+		$searchParams = [
+			'string' => Utils::$smcFunc['htmlspecialchars']($searchParamString),
+		];
+
+		Utils::$context['search_params'] = empty($searchParamString)
+			? '' : base64_encode(Utils::$smcFunc['json_encode']($searchParams));
+
+		Utils::$context['search'] = [
+			'string' => $searchParams['string'],
+		];
+
+		$this->params = [
+			(
+			empty($searchParams['string'])
+				? ''
+				: ' AND (INSTR(LOWER(p.alias), {string:search}) > 0 OR INSTR(LOWER(t.title), {string:search}) > 0)'
+			) . (
+			$this->request()->has('u') ? ' AND p.author_id = {int:user_id}' : ''
+			) . (
+			$this->request()->has('moderate') ? ' AND p.status = {int:unapproved}' : ''
+			) . (
+			$this->request()->has('internal') ? ' AND p.status = {int:internal}' : ''
+			) . (
+			$this->request()->hasNot('u')
+			&& $this->request()->hasNot('moderate')
+			&& $this->request()->hasNot('internal') ? ' AND p.status IN ({array_int:included_statuses})' : ''
+			),
+			[
+				'search'            => Utils::$smcFunc['strtolower']($searchParams['string']),
+				'unapproved'        => PageInterface::STATUS_UNAPPROVED,
+				'internal'          => PageInterface::STATUS_INTERNAL,
+				'included_statuses' => [PageInterface::STATUS_INACTIVE, PageInterface::STATUS_ACTIVE],
+			],
+		];
+	}
+
+	private function calculateTypes(): void
+	{
+		$this->browseType = 'all';
+		$this->type = '';
+		$this->status = PageInterface::STATUS_ACTIVE;
+
+		if ($this->request()->has('u')) {
+			$this->browseType = 'own';
+			$this->type = ';u=' . User::$info['id'];
+		} elseif ($this->request()->has('moderate')) {
+			$this->browseType = 'mod';
+			$this->type = ';moderate';
+		} elseif ($this->request()->has('internal')) {
+			$this->browseType = 'int';
+			$this->type = ';internal';
+			$this->status = PageInterface::STATUS_INTERNAL;
+		}
 	}
 
 	private function changeTableTitle(): void
@@ -515,84 +529,15 @@ final class PageArea
 
 		Utils::$context['lp_pages']['title'] .= ': ';
 		foreach ($titles as $browseType => $details) {
-			if (Utils::$context['browse_type'] === $browseType)
-				Utils::$context['lp_pages']['title'] .= '<img src="' . Theme::$current->settings['images_url'] . '/selected.png" alt="&gt;"> ';
+			if ($this->browseType === $browseType)
+				Utils::$context['lp_pages']['title'] .= '<img src="' . Theme::$current->settings['images_url']
+					. '/selected.png" alt="&gt;"> ';
 
-			Utils::$context['lp_pages']['title'] .= '<a href="' . Config::$scripturl . '?action=admin;area=lp_pages;sa=main' . $details[0] . '">' . $details[1] . ' (' . $details[2] . ')</a>';
+			Utils::$context['lp_pages']['title'] .= '<a href="' . Utils::$context['form_action'] . $details[0] . '">'
+				. $details[1] . ' (' . $details[2] . ')</a>';
 
 			if ($browseType !== 'int' && count($titles) > 1)
 				Utils::$context['lp_pages']['title'] .= ' | ';
-		}
-	}
-
-	private function remove(array $items): void
-	{
-		if ($items === [])
-			return;
-
-		$this->hook('onPageRemoving', [$items]);
-
-		Db::$db->query('', '
-			DELETE FROM {db_prefix}lp_pages
-			WHERE page_id IN ({array_int:items})',
-			[
-				'items' => $items,
-			]
-		);
-
-		Db::$db->query('', '
-			DELETE FROM {db_prefix}lp_titles
-			WHERE item_id IN ({array_int:items})
-				AND type = {literal:page}',
-			[
-				'items' => $items,
-			]
-		);
-
-		Db::$db->query('', '
-			DELETE FROM {db_prefix}lp_params
-			WHERE item_id IN ({array_int:items})
-				AND type = {literal:page}',
-			[
-				'items' => $items,
-			]
-		);
-
-		$result = Db::$db->query('', '
-			SELECT id FROM {db_prefix}lp_comments
-			WHERE page_id IN ({array_int:items})',
-			[
-				'items' => $items,
-			]
-		);
-
-		$comments = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
-			$comments[] = $row['id'];
-		}
-
-		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries'] += 4;
-
-		if ($comments) {
-			Db::$db->query('', '
-				DELETE FROM {db_prefix}lp_comments
-				WHERE id IN ({array_int:items})',
-				[
-					'items' => $comments,
-				]
-			);
-
-			Db::$db->query('', '
-				DELETE FROM {db_prefix}lp_params
-				WHERE item_id IN ({array_int:items})
-					AND type = {literal:comment}',
-				[
-					'items' => $comments,
-				]
-			);
-
-			Utils::$context['lp_num_queries'] += 2;
 		}
 	}
 
@@ -719,7 +664,10 @@ final class PageArea
 			->required()
 			->setAttribute('maxlength', 255)
 			->setAttribute('pattern', LP_ALIAS_PATTERN)
-			->setAttribute('x-slug.lazy.replacement._', empty(Utils::$context['lp_page']['id']) ? 'title_' . User::$info['language'] : '{}')
+			->setAttribute(
+				'x-slug.lazy.replacement._',
+				empty(Utils::$context['lp_page']['id']) ? 'title_' . User::$info['language'] : '{}'
+			)
 			->setValue(Utils::$context['lp_page']['alias']);
 
 		TextareaField::make('description', Lang::$txt['lp_page_description'])
@@ -772,16 +720,24 @@ final class PageArea
 		Security::checkSubmitOnce('free');
 
 		Utils::$context['preview_title']   = Utils::$context['lp_page']['titles'][Utils::$context['user']['language']];
-		Utils::$context['preview_content'] = Utils::$smcFunc['htmlspecialchars'](Utils::$context['lp_page']['content'], ENT_QUOTES);
+		Utils::$context['preview_content'] = Utils::$smcFunc['htmlspecialchars'](
+			Utils::$context['lp_page']['content'], ENT_QUOTES
+		);
 
 		$this->cleanBbcode(Utils::$context['preview_title']);
 		Lang::censorText(Utils::$context['preview_title']);
 		Lang::censorText(Utils::$context['preview_content']);
 
-		if (Utils::$context['preview_content'])
-			Utils::$context['preview_content'] = Content::parse(Utils::$context['preview_content'], Utils::$context['lp_page']['type']);
+		if (Utils::$context['preview_content']) {
+			Utils::$context['preview_content'] = Content::parse(
+				Utils::$context['preview_content'], Utils::$context['lp_page']['type']
+			);
+		}
 
-		Utils::$context['page_title']    = Lang::$txt['preview'] . (Utils::$context['preview_title'] ? ' - ' . Utils::$context['preview_title'] : '');
+		Utils::$context['page_title']    = Lang::$txt['preview'] . (
+			Utils::$context['preview_title'] ? ' - ' . Utils::$context['preview_title'] : ''
+		);
+
 		Utils::$context['preview_title'] = $this->getPreviewTitle();
 	}
 

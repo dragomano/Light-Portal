@@ -46,17 +46,15 @@ class BlockModel extends AbstractModel
 
 	public string $contentClass;
 
-	public array $options = [];
-
 	public array $titles = [];
+
+	public array $options = [];
 
 	public function __construct(array $postData, array $currentBlock)
 	{
 		$this->id = $postData['block_id'] ?? $currentBlock['id'] ?? 0;
 
-		$this->icon = empty($postData['block_id'])
-			? ($postData['icon'] ?? $currentBlock['icon'] ?? '')
-			: ($postData['icon'] ?? '');
+		$this->icon = $postData['icon'] ?? $currentBlock['icon'] ?? '';
 
 		$this->type = $postData['type'] ?? $currentBlock['type'] ?? '';
 

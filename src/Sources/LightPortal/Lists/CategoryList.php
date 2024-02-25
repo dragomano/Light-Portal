@@ -14,8 +14,8 @@
 
 namespace Bugo\LightPortal\Lists;
 
-use Bugo\LightPortal\Actions\Category;
 use Bugo\Compat\{Config, Database as Db, Lang, User, Utils};
+use Bugo\LightPortal\Actions\PageListInterface;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -37,13 +37,13 @@ final class CategoryList implements ListInterface
 				)
 				LEFT JOIN {db_prefix}lp_titles AS tf ON (
 					c.category_id = tf.item_id AND tf.type = {literal:category} AND tf.lang = {string:fallback_lang}
-				)				
+				)
 			WHERE c.status = {int:status}
 			ORDER BY c.priority',
 			[
 				'lang'          => User::$info['language'],
 				'fallback_lang' => Config::$language,
-				'status'        => Category::STATUS_ACTIVE,
+				'status'        => PageListInterface::STATUS_ACTIVE,
 			]
 		);
 

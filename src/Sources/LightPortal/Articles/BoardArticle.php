@@ -42,7 +42,7 @@ class BoardArticle extends AbstractArticle
 			'b.id_last_msg DESC',
 			'm.poster_time DESC',
 			'm.poster_time',
-			'last_updated DESC'
+			'last_updated DESC',
 		];
 
 		$this->hook('frontBoards', [

@@ -86,10 +86,9 @@ final class CategoryRepository extends AbstractRepository
 			return [];
 
 		$result = Db::$db->query('', '
-			SELECT c.category_id, c.icon, c.description, c.priority, c.status, bt.lang, bt.title, bp.name, bp.value
+			SELECT c.category_id, c.icon, c.description, c.priority, c.status, t.lang, t.title
 			FROM {db_prefix}lp_categories AS c
-				LEFT JOIN {db_prefix}lp_titles AS bt ON (c.category_id = bt.item_id AND bt.type = {literal:category})
-				LEFT JOIN {db_prefix}lp_params AS bp ON (c.category_id = bp.item_id AND bp.type = {literal:category})
+				LEFT JOIN {db_prefix}lp_titles AS t ON (c.category_id = t.item_id AND t.type = {literal:category})
 			WHERE c.category_id = {int:item}',
 			[
 				'item' => $item,
@@ -115,9 +114,6 @@ final class CategoryRepository extends AbstractRepository
 
 			if (! empty($row['lang']))
 				$data['titles'][$row['lang']] = $row['title'];
-
-			if (! empty($row['name']))
-				$data['options'][$row['name']] = $row['value'];
 		}
 
 		Db::$db->free_result($result);
@@ -182,10 +178,7 @@ final class CategoryRepository extends AbstractRepository
 			return 0;
 		}
 
-		$this->hook('onCategorySaving', [$item]);
-
 		$this->saveTitles($item);
-		$this->saveOptions($item);
 
 		Db::$db->transaction('commit');
 
@@ -211,10 +204,7 @@ final class CategoryRepository extends AbstractRepository
 
 		Utils::$context['lp_num_queries']++;
 
-		$this->hook('onCategorySaving', [$item]);
-
 		$this->saveTitles($item, 'replace');
-		$this->saveOptions($item, 'replace');
 
 		Db::$db->transaction('commit');
 	}
@@ -223,8 +213,6 @@ final class CategoryRepository extends AbstractRepository
 	{
 		if ($items === [])
 			return;
-
-		$this->hook('onCategoryRemoving', [$items]);
 
 		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_categories
@@ -273,13 +261,7 @@ final class CategoryRepository extends AbstractRepository
 
 		Utils::$context['lp_num_queries']++;
 
-		$result = [
-			'success' => Db::$db->affected_rows(),
-		];
-
 		$this->cache()->forget('all_categories');
-
-		exit(json_encode($result));
 	}
 
 	private function getPriority(): int

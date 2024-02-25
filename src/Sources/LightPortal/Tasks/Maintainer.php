@@ -14,8 +14,8 @@
 
 namespace Bugo\LightPortal\Tasks;
 
+use Bugo\Compat\Config;
 use Bugo\Compat\Database as Db;
-use Bugo\Compat\Utils;
 
 final class Maintainer extends BackgroundTask
 {
@@ -34,7 +34,7 @@ final class Maintainer extends BackgroundTask
 				'task_file'    => 'string-255',
 				'task_class'   => 'string-255',
 				'task_data'    => 'string',
-				'claimed_time' => 'int'
+				'claimed_time' => 'int',
 			],
 			[
 				'$sourcedir/LightPortal/Tasks/Maintainer.php',
@@ -53,11 +53,11 @@ final class Maintainer extends BackgroundTask
 			DELETE FROM {db_prefix}lp_params
 			WHERE value = {string:empty_value}',
 			[
-				'empty_value' => ''
+				'empty_value' => '',
 			]
 		);
 
-		$value = Utils::$smcFunc['db_title'] === POSTGRE_TITLE ? "string_agg(value, ',')" : 'GROUP_CONCAT(value)';
+		$value = Config::$db_type === 'postgresql' ? "string_agg(value, ',')" : 'GROUP_CONCAT(value)';
 
 		$result = Db::$db->query('', '
 			SELECT ' . $value . ' AS value
@@ -76,7 +76,7 @@ final class Maintainer extends BackgroundTask
 				DELETE FROM {db_prefix}lp_tags
 				WHERE tag_id NOT IN ({array_int:tags})',
 				[
-					'tags' => explode(',', $usedTags)
+					'tags' => explode(',', $usedTags),
 				]
 			);
 		}
@@ -85,7 +85,7 @@ final class Maintainer extends BackgroundTask
 			DELETE FROM {db_prefix}lp_titles
 			WHERE title = {string:empty_value}',
 			[
-				'empty_value' => ''
+				'empty_value' => '',
 			]
 		);
 
@@ -154,7 +154,7 @@ final class Maintainer extends BackgroundTask
 				END
 			WHERE page_id IN ({array_int:pages})',
 			[
-				'pages' => array_keys($pages)
+				'pages' => array_keys($pages),
 			]
 		);
 	}
@@ -190,7 +190,7 @@ final class Maintainer extends BackgroundTask
 				END
 			WHERE page_id IN ({array_int:pages})',
 			[
-				'pages' => array_keys($pages)
+				'pages' => array_keys($pages),
 			]
 		);
 	}

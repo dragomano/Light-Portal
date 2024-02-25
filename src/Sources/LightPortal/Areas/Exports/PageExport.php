@@ -31,7 +31,7 @@ final class PageExport extends AbstractExport
 
 	public function __construct()
 	{
-		$this->repository = new PageRepository;
+		$this->repository = new PageRepository();
 	}
 
 	public function main(): void

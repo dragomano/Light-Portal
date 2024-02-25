@@ -158,7 +158,7 @@ class TopicArticle extends AbstractArticle
 				AND t.id_board IN ({array_int:selected_boards})') . '
 				AND {query_wanna_see_board}' . (empty($this->wheres) ? '' : '
 				' . implode("\n\t\t\t\t\t", $this->wheres)),
-			$this->params
+			$this->params,
 		);
 
 		[$count] = Db::$db->fetch_row($result);

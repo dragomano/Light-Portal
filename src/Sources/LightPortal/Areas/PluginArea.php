@@ -189,17 +189,17 @@ final class PluginArea
 			}
 
 			return [
-				'name'        => $item,
-				'snake_name'  => $snakeName,
-				'desc'        => Lang::$txt['lp_' . $snakeName]['description'] ?? '',
-				'author'      => $author ?? '',
-				'link'        => $link ?? '',
-				'status'      => in_array($item, Utils::$context['lp_enabled_plugins']) ? 'on' : 'off',
-				'types'       => $this->getTypes($snakeName),
-				'special'     => $special ?? '',
-				'settings'    => $configVars[$snakeName] ?? [],
-				'composer'    => $composer,
-				'saveable'    => $saveable ?? true,
+				'name'       => $item,
+				'snake_name' => $snakeName,
+				'desc'       => Lang::$txt['lp_' . $snakeName]['description'] ?? '',
+				'author'     => $author ?? '',
+				'link'       => $link ?? '',
+				'status'     => in_array($item, Utils::$context['lp_enabled_plugins']) ? 'on' : 'off',
+				'types'      => $this->getTypes($snakeName),
+				'special'    => $special ?? '',
+				'settings'   => $configVars[$snakeName] ?? [],
+				'composer'   => $composer,
+				'saveable'   => $saveable ?? true,
 			];
 		}, Utils::$context['lp_plugins']);
 	}
@@ -323,8 +323,9 @@ final class PluginArea
 		];
 
 		foreach ($assets as $asset) {
-			if (is_file($asset))
+			if (is_file($asset)) {
 				touch($asset);
+			}
 		}
 	}
 
@@ -334,12 +335,12 @@ final class PluginArea
 		Utils::$context['lp_can_download'] = [];
 
 		if (($xml = $this->cache()->get('custom_addon_list', 259200)) === null) {
-			$addon_list = WebFetchApi::fetch(LP_PLUGIN_LIST);
+			$addonList = WebFetchApi::fetch(LP_PLUGIN_LIST);
 
-			if (empty($addon_list))
+			if (empty($addonList))
 				return;
 
-			$xml = Utils::jsonDecode($addon_list, true);
+			$xml = Utils::jsonDecode($addonList, true);
 
 			$this->cache()->put('custom_addon_list', $xml, 259200);
 		}

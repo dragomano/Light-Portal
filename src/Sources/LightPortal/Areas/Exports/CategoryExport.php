@@ -31,7 +31,7 @@ final class CategoryExport extends AbstractExport
 
 	public function __construct()
 	{
-		$this->repository = new CategoryRepository;
+		$this->repository = new CategoryRepository();
 	}
 
 	public function main(): void
@@ -138,10 +138,9 @@ final class CategoryExport extends AbstractExport
 		$categories = $this->request('categories') && $this->request()->hasNot('export_all') ? $this->request('categories') : null;
 
 		$result = Db::$db->query('', '
-			SELECT c.category_id, c.icon, c.description, c.priority, c.status,	pt.lang, pt.title, pp.name, pp.value
+			SELECT c.category_id, c.icon, c.description, c.priority, c.status,	pt.lang, pt.title
 			FROM {db_prefix}lp_categories AS c
-				LEFT JOIN {db_prefix}lp_titles AS pt ON (c.category_id = pt.item_id AND pt.type = {literal:category})
-				LEFT JOIN {db_prefix}lp_params AS pp ON (c.category_id = pp.item_id AND pp.type = {literal:category})' . (empty($categories) ? '' : '
+				LEFT JOIN {db_prefix}lp_titles AS pt ON (c.category_id = pt.item_id AND pt.type = {literal:category})' . (empty($categories) ? '' : '
 			WHERE c.category_id IN ({array_int:categories})'),
 			[
 				'categories' => $categories,
@@ -160,9 +159,6 @@ final class CategoryExport extends AbstractExport
 
 			if ($row['lang'] && $row['title'])
 				$items[$row['category_id']]['titles'][$row['lang']] = $row['title'];
-
-			if ($row['name'] && $row['value'])
-				$items[$row['category_id']]['params'][$row['name']] = $row['value'];
 		}
 
 		Db::$db->free_result($result);
@@ -194,7 +190,7 @@ final class CategoryExport extends AbstractExport
 							: $xml->createElement($key)
 					);
 
-					if (in_array($key, ['titles', 'params'])) {
+					if ($key === 'titles') {
 						foreach ($val as $k => $v) {
 							$xmlTitle = $xmlName->appendChild($xml->createElement($k));
 							$xmlTitle->appendChild($xml->createTextNode($v));

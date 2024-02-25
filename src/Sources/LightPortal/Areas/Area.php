@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Areas;
 
-use Bugo\Compat\{Config, Database as Db, Lang};
+use Bugo\Compat\{Config, Lang};
 use Bugo\Compat\{Security, Theme, Utils};
 use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Utils\Editor;
@@ -34,7 +34,7 @@ trait Area
 			'height'       => '1px',
 			'width'        => '100%',
 			'preview_type' => 2,
-			'required'     => true
+			'required'     => true,
 		]);
 	}
 
@@ -138,38 +138,6 @@ trait Area
 		Theme::loadTemplate('LightPortal/ManageSettings');
 	}
 
-	public function toggleStatus(array $items = [], string $type = 'block'): void
-	{
-		if (empty($items))
-			return;
-
-		switch ($type) {
-			case 'block':
-				$table = 'blocks';
-				break;
-			case 'page':
-				$table = 'pages';
-				break;
-			case 'category':
-				$table = 'categories';
-				break;
-		}
-
-		if (empty($table))
-			return;
-
-		Db::$db->query('', '
-			UPDATE {db_prefix}lp_' . $table . '
-			SET status = CASE status WHEN 1 THEN 0 WHEN 0 THEN 1 WHEN 2 THEN 1 WHEN 3 THEN 0 END
-			WHERE ' . $type . '_id IN ({array_int:items})',
-			[
-				'items' => $items,
-			]
-		);
-
-		Utils::$context['lp_num_queries']++;
-	}
-
 	public function getPreviewTitle(string $prefix = ''): string
 	{
 		return $this->getFloatSpan(
@@ -197,7 +165,7 @@ trait Area
 			],
 			'php' => [
 				'icon' => 'fab fa-php'
-			]
+			],
 		];
 	}
 }
