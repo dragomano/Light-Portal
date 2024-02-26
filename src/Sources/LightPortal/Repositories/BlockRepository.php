@@ -181,7 +181,7 @@ final class BlockRepository extends AbstractRepository
 				Utils::$context['lp_block']['note'],
 				Utils::$context['lp_block']['content'],
 				Utils::$context['lp_block']['placement'],
-				Utils::$context['lp_block']['priority'],
+				$this->getPriority(),
 				Utils::$context['lp_block']['permissions'],
 				Utils::$context['lp_block']['status'],
 				Utils::$context['lp_block']['areas'],
@@ -248,6 +248,87 @@ final class BlockRepository extends AbstractRepository
 		$this->cache()->forget($prefix . $item . '_u' . Utils::$context['user']['id']);
 	}
 
+	public function remove(array $items): void
+	{
+		if ($items === [])
+			return;
+
+		$this->hook('onBlockRemoving', [$items]);
+
+		Db::$db->query('', '
+			DELETE FROM {db_prefix}lp_blocks
+			WHERE block_id IN ({array_int:items})',
+			[
+				'items' => $items,
+			]
+		);
+
+		Db::$db->query('', '
+			DELETE FROM {db_prefix}lp_titles
+			WHERE item_id IN ({array_int:items})
+				AND type = {literal:block}',
+			[
+				'items' => $items,
+			]
+		);
+
+		Db::$db->query('', '
+			DELETE FROM {db_prefix}lp_params
+			WHERE item_id IN ({array_int:items})
+				AND type = {literal:block}',
+			[
+				'items' => $items,
+			]
+		);
+
+		Utils::$context['lp_num_queries'] += 3;
+	}
+
+	public function updatePriority(): void
+	{
+		$data = $this->request()->json();
+
+		if (empty($data['update_priority']))
+			return;
+
+		$blocks = $data['update_priority'];
+
+		$conditions = '';
+		foreach ($blocks as $priority => $item) {
+			$conditions .= ' WHEN block_id = ' . $item . ' THEN ' . $priority;
+		}
+
+		if ($conditions === '')
+			return;
+
+		if (is_array($blocks)) {
+			Db::$db->query('', /** @lang text */ '
+				UPDATE {db_prefix}lp_blocks
+				SET priority = CASE ' . $conditions . ' ELSE priority END
+				WHERE block_id IN ({array_int:blocks})',
+				[
+					'blocks' => $blocks,
+				]
+			);
+
+			Utils::$context['lp_num_queries']++;
+
+			if ($data['update_placement']) {
+				Db::$db->query('', '
+					UPDATE {db_prefix}lp_blocks
+					SET placement = {string:placement}
+					WHERE block_id IN ({array_int:blocks})',
+					[
+						'placement' => $data['update_placement'],
+						'blocks'    => $blocks,
+					]
+				);
+
+				Utils::$context['lp_num_queries']++;
+			}
+		}
+	}
+
 	/**
 	 * Prepare plugins list that not installed
 	 *
@@ -265,5 +346,27 @@ final class BlockRepository extends AbstractRepository
 			: Lang::$txt['lp_addon_not_installed'];
 
 		Utils::$context['lp_missing_block_types'][$type] = '<span class="error">' . sprintf($message, $plugin) . '</span>';
+	}
+
+	private function getPriority(): int
+	{
+		if (empty(Utils::$context['lp_block']['placement']))
+			return 0;
+
+		$result = Db::$db->query('', '
+			SELECT MAX(priority) + 1
+			FROM {db_prefix}lp_blocks
+			WHERE placement = {string:placement}',
+			[
+				'placement' => Utils::$context['lp_block']['placement'],
+			]
+		);
+
+		[$priority] = Db::$db->fetch_row($result);
+
+		Db::$db->free_result($result);
+		Utils::$context['lp_num_queries']++;
+
+		return (int) $priority;
 	}
 }

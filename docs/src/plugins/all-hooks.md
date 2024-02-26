@@ -86,31 +86,6 @@ public function prepareEditor(array $object): void
 }
 ```
 
-### preloadScripts
-
-(`&$scripts`)
-
-> helps with preloading the scripts you need
-
-::: code-group
-
-```php [PHP]
-public function preloadScripts(array &$scripts): void
-{
-    $scripts[] = 'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/js/all.min.js';
-}
-```
-
-```html [HTML]
-<link
-  rel="preload"
-  href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/js/all.min.js"
-  as="script"
-/>
-```
-
-:::
-
 ### preloadStyles
 
 (`&$styles`)
@@ -358,42 +333,6 @@ public function commentButtons(array $comment, array &$buttons): void
     $buttons[] = ob_get_clean();
 }
 ```
-
-## Work with categories
-
-### prepareCategoryParams
-
-(`&$params`)
-
-> adding your category parameters
-
-### validateCategoryParams
-
-(`&$params`)
-
-> adding custom validating rules when category adding/editing
-
-### findCategoryErrors
-
-(`&$errors, $data`)
-
-> adding custom error handling when category adding/editing
-
-### prepareCategoryFields
-
-> adding custom fields to the category post area
-
-### onCategorySaving
-
-(`$item`)
-
-> custom actions on saving/editing categories
-
-### onCategoryRemoving
-
-(`$items`)
-
-> custom actions on removing categories
 
 ## Work with plugins
 

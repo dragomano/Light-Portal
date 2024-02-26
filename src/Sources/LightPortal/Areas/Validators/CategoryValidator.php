@@ -29,11 +29,9 @@ class CategoryValidator extends AbstractValidator
 		'status'      => FILTER_VALIDATE_INT,
 	];
 
-	protected array $params = [];
-
 	public function validate(): array
 	{
-		$data = $params = [];
+		$data = [];
 
 		if ($this->request()->only(['save', 'save_exit', 'preview'])) {
 			foreach (Utils::$context['lp_languages'] as $lang) {
@@ -42,16 +40,10 @@ class CategoryValidator extends AbstractValidator
 
 			$data = filter_input_array(INPUT_POST, $this->args);
 
-			$this->hook('validateCategoryParams', [&$params]);
-
-			$params = array_merge($this->params, $params);
-
-			$data['parameters'] = filter_var_array($this->request()->only(array_keys($params)), $params);
-
 			$this->findErrors($data);
 		}
 
-		return [$data, $params];
+		return $data;
 	}
 
 	private function findErrors(array $data): void
@@ -64,8 +56,6 @@ class CategoryValidator extends AbstractValidator
 		) {
 			$errors[] = 'no_title';
 		}
-
-		$this->hook('findCategoryErrors', [&$errors, $data]);
 
 		if ($errors) {
 			$this->request()->put('preview', true);

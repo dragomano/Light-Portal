@@ -55,6 +55,7 @@ final class IconList implements ListInterface
 			'donate'        => 'circle-dollar-to-slot fa-3x',
 			'download'      => 'download fa-3x',
 			'edit'          => 'pen-to-square',
+			'ellipsis'      => 'ellipsis',
 			'export'        => 'file-export',
 			'gear'          => '2x fa-gear',
 			'home'          => 'house',

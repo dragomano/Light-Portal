@@ -16,6 +16,10 @@ namespace Bugo\LightPortal\Actions;
 
 interface PageListInterface
 {
+	public const STATUS_INACTIVE = 0;
+
+	public const STATUS_ACTIVE = 1;
+
 	public function getPages(int $start, int $limit, string $sort): array;
 
 	public function getTotalCount(): int;

@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Models;
 
-use Bugo\LightPortal\Actions\Category;
+use Bugo\LightPortal\Actions\PageListInterface;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -33,21 +33,17 @@ class CategoryModel extends AbstractModel
 
 	public array $titles = [];
 
-	public array $options = [];
-
 	public function __construct(array $postData, array $currentCategory)
 	{
 		$this->id = $postData['category_id'] ?? $currentCategory['id'] ?? 0;
 
-		$this->icon = empty($postData['block_id'])
-			? ($postData['icon'] ?? $currentCategory['icon'] ?? '')
-			: ($postData['icon'] ?? '');
+		$this->icon = $postData['icon'] ?? $currentCategory['icon'] ?? '';
 
 		$this->description = $postData['description'] ?? $currentCategory['description'] ?? '';
 
 		$this->priority = $currentCategory['priority'] ?? 0;
 
-		$this->status = $currentCategory['status'] ?? Category::STATUS_ACTIVE;
+		$this->status = $currentCategory['status'] ?? PageListInterface::STATUS_ACTIVE;
 	}
 
 	protected static function getTableName(): string

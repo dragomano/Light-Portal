@@ -24,10 +24,6 @@ if (! defined('SMF'))
 
 final class Category extends AbstractPageList
 {
-	public const STATUS_INACTIVE = 0;
-
-	public const STATUS_ACTIVE = 1;
-
 	public function show(PageInterface $page): void
 	{
 		if ($this->request()->hasNot('id'))
@@ -102,7 +98,7 @@ final class Category extends AbstractPageList
 		$result = Db::$db->query('', '
 			SELECT
 				p.page_id, p.author_id, p.alias, p.content, p.description, p.type,
-			    p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
+				p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
 				COALESCE(mem.real_name, \'\') AS author_name, t.title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)

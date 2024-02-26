@@ -14,11 +14,11 @@
 
 namespace Bugo\LightPortal\Areas;
 
-use Bugo\LightPortal\Areas\Fields\CustomField;
-use Bugo\LightPortal\Areas\Partials\IconSelect;
 use Bugo\Compat\{Config, ErrorHandler, Lang, Security, Theme, Utils};
-use Bugo\LightPortal\Actions\Category;
+use Bugo\LightPortal\Actions\PageListInterface;
+use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Areas\Fields\TextareaField;
+use Bugo\LightPortal\Areas\Partials\IconSelect;
 use Bugo\LightPortal\Areas\Validators\CategoryValidator;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Models\CategoryModel;
@@ -46,8 +46,7 @@ final class CategoryArea
 
 		Utils::$context['template_layers'][] = 'manage_categories';
 
-		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_categories_manage'];
-
+		Utils::$context['page_title']  = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_categories_manage'];
 		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_categories';
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
@@ -138,7 +137,7 @@ final class CategoryArea
 						'function' => static fn($entry) => /** @lang text */ '
 							<div
 								data-id="' . $entry['id'] . '"
-								x-data="{ status: ' . ($entry['status'] === Category::STATUS_ACTIVE ? 'true' : 'false') . ' }"
+								x-data="{ status: ' . ($entry['status'] === PageListInterface::STATUS_ACTIVE ? 'true' : 'false') . ' }"
 								x-init="$watch(\'status\', value => category.toggleStatus($el))"
 							>
 								<span
@@ -164,9 +163,7 @@ final class CategoryArea
 						<div data-id="' . $entry['id'] . '" x-data="{ showContextMenu: false }">
 							<div class="context_menu" @click.outside="showContextMenu = false">
 								<button class="button floatnone" @click.prevent="showContextMenu = true">
-									<svg aria-hidden="true" width="10" height="10" focusable="false" data-prefix="fas" data-icon="ellipsis-h" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-										<path fill="currentColor" d="M328 256c0 39.8-32.2 72-72 72s-72-32.2-72-72 32.2-72 72-72 72 32.2 72 72zm104-72c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72zm-352 0c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72z"></path>
-									</svg>
+									' . Icon::get('ellipsis') . '
 								</button>
 								<div class="roundframe" x-show="showContextMenu">
 									<ul>
@@ -282,7 +279,7 @@ final class CategoryArea
 			$this->repository->remove([(int) $data['del_item']]);
 
 		if (isset($data['toggle_item']))
-			$this->toggleStatus([(int) $data['toggle_item']], 'category');
+			$this->repository->toggleStatus([(int) $data['toggle_item']], 'category');
 
 		if (isset($data['update_priority']))
 			$this->repository->updatePriority($data['update_priority']);
@@ -292,26 +289,13 @@ final class CategoryArea
 		exit;
 	}
 
-	private function getParams(): array
-	{
-		$params = [];
-
-		$this->hook('prepareCategoryParams', [&$params]);
-
-		return $params;
-	}
-
 	private function validateData(): void
 	{
-		[$postData, $parameters] = (new CategoryValidator())->validate();
-
-		$options = $this->getParams();
-		$categoryOptions = Utils::$context['lp_current_category']['options'] ?? $options;
+		$postData = (new CategoryValidator())->validate();
 
 		$category = new CategoryModel($postData, Utils::$context['lp_current_category']);
 		$category->icon = $category->icon === 'undefined' ? '' : $category->icon;
 		$category->titles = Utils::$context['lp_current_category']['titles'] ?? [];
-		$category->options = $options;
 
 		foreach (Utils::$context['lp_languages'] as $lang) {
 			$category->titles[$lang['filename']] = $postData['title_' . $lang['filename']] ?? $category->titles[$lang['filename']] ?? '';
@@ -319,20 +303,6 @@ final class CategoryArea
 
 		$this->cleanBbcode($category->titles);
 		$this->cleanBbcode($category->description);
-
-		foreach ($category->options as $option => $value) {
-			if (isset($parameters[$option]) && isset($postData) && ! isset($postData[$option])) {
-				$postData[$option] = 0;
-
-				if ($parameters[$option] === FILTER_DEFAULT)
-					$postData[$option] = '';
-
-				if (is_array($parameters[$option]) && $parameters[$option]['flags'] === FILTER_REQUIRE_ARRAY)
-					$postData[$option] = [];
-			}
-
-			$category->options[$option] = $postData[$option] ?? $categoryOptions[$option] ?? $value;
-		}
 
 		Utils::$context['lp_category'] = $category->toArray();
 	}
@@ -351,8 +321,6 @@ final class CategoryArea
 			->setTab('content')
 			->setAttribute('maxlength', 255)
 			->setValue(Utils::$context['lp_category']['description']);
-
-		$this->hook('prepareCategoryFields');
 
 		$this->preparePostFields();
 	}

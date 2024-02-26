@@ -323,6 +323,77 @@ final class PageRepository extends AbstractRepository
 		Db::$db->transaction('commit');
 	}
 
+	public function remove(array $items): void
+	{
+		if ($items === [])
+			return;
+
+		$this->hook('onPageRemoving', [$items]);
+
+		Db::$db->query('', '
+			DELETE FROM {db_prefix}lp_pages
+			WHERE page_id IN ({array_int:items})',
+			[
+				'items' => $items,
+			]
+		);
+
+		Db::$db->query('', '
+			DELETE FROM {db_prefix}lp_titles
+			WHERE item_id IN ({array_int:items})
+				AND type = {literal:page}',
+			[
+				'items' => $items,
+			]
+		);
+
+		Db::$db->query('', '
+			DELETE FROM {db_prefix}lp_params
+			WHERE item_id IN ({array_int:items})
+				AND type = {literal:page}',
+			[
+				'items' => $items,
+			]
+		);
+
+		$result = Db::$db->query('', '
+			SELECT id FROM {db_prefix}lp_comments
+			WHERE page_id IN ({array_int:items})',
+			[
+				'items' => $items,
+			]
+		);
+
+		$comments = [];
+		while ($row = Db::$db->fetch_assoc($result)) {
+			$comments[] = $row['id'];
+		}
+
+		Db::$db->free_result($result);
+		Utils::$context['lp_num_queries'] += 4;
+
+		if ($comments) {
+			Db::$db->query('', '
+				DELETE FROM {db_prefix}lp_comments
+				WHERE id IN ({array_int:items})',
+				[
+					'items' => $comments,
+				]
+			);
+
+			Db::$db->query('', '
+				DELETE FROM {db_prefix}lp_params
+				WHERE item_id IN ({array_int:items})
+					AND type = {literal:comment}',
+				[
+					'items' => $comments,
+				]
+			);
+
+			Utils::$context['lp_num_queries'] += 2;
+		}
+	}
+
 	private function saveTags(): void
 	{
 		$newTagIds = array_diff(Utils::$context['lp_page']['keywords'], array_keys(Utils::$context['lp_tags']));

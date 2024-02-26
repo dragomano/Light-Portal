@@ -16,7 +16,6 @@ namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\Language;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -54,7 +53,7 @@ final class CreditArea
 
 	public function getLink(): string
 	{
-		$link = Language::getNameFromLocale(User::$info['language']) === 'russian'
+		$link = Lang::$txt['lang_dictionary'] === 'ru'
 			? 'https://dragomano.ru/mods/light-portal'
 			: 'https://custom.simplemachines.org/mods/index.php?mod=4244';
 

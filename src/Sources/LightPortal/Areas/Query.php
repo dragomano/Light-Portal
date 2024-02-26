@@ -88,7 +88,8 @@ trait Query
 				'id_poll'           => 0,
 				'is_approved'       => 1,
 				'id_redirect_topic' => 0,
-				'recycle_board'     => empty(Config::$modSettings['recycle_board']) ? Config::$modSettings['recycle_board'] : 0,
+				'recycle_board'     => empty(Config::$modSettings['recycle_board'])
+					? Config::$modSettings['recycle_board'] : 0,
 				'subject'           => trim(Utils::$smcFunc['strtolower']($search)),
 			]
 		);
@@ -136,7 +137,9 @@ trait Query
 
 		$members = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
-			$row['real_name'] = strtr($row['real_name'], ['&amp;' => '&#038;', '&lt;' => '&#060;', '&gt;' => '&#062;', '&quot;' => '&#034;']);
+			$row['real_name'] = strtr(
+				$row['real_name'], ['&amp;' => '&#038;', '&lt;' => '&#060;', '&gt;' => '&#062;', '&quot;' => '&#034;']
+			);
 
 			$members[] = [
 				'text'  => $row['real_name'],

@@ -164,7 +164,7 @@ final class AddonHandler
 		if (isset(Lang::$txt[$this->prefix . $snakeName]))
 			return;
 
-		$userLang = Language::getNameFromLocale(User::$info['language']);
+		$userLang  = Language::getNameFromLocale(User::$info['language']);
 		$languages = array_unique(['english', $userLang]);
 
 		$addonLanguages = [];

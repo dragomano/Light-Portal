@@ -30,7 +30,6 @@ final class Integration extends AbstractMain
 	public function __invoke(): void
 	{
 		$this->applyHook('init');
-		$this->applyHook('pre_javascript_output');
 		$this->applyHook('pre_css_output');
 		$this->applyHook('load_theme');
 		$this->applyHook('redirect', 'changeRedirect');
@@ -69,20 +68,6 @@ final class Integration extends AbstractMain
 		defined('LP_ALIAS_PATTERN') || define('LP_ALIAS_PATTERN', '^[a-z][a-z0-9_]+$');
 		defined('LP_AREAS_PATTERN') || define('LP_AREAS_PATTERN', '^[a-z][a-z0-9=|\-,!]+$');
 		defined('LP_ADDON_PATTERN') || define('LP_ADDON_PATTERN', '^[A-Z][a-zA-Z]+$');
-	}
-
-	public function preJavascriptOutput(): void
-	{
-		if (SMF === 'BACKGROUND')
-			return;
-
-		$scripts = [];
-
-		$this->hook('preloadScripts', [&$scripts]);
-
-		foreach ($scripts as $script) {
-			echo "\n\t" . '<link rel="preload" href="' . $script . '" as="script">';
-		}
 	}
 
 	public function preCssOutput(): void

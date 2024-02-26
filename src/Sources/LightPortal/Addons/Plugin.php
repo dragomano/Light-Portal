@@ -40,7 +40,7 @@ abstract class Plugin
 		return $this->getCalledClass()->getShortName();
 	}
 
-	public function setTemplate(string $sub_template = ''): Plugin
+	public function setTemplate(string $sub_template = ''): self
 	{
 		$path = dirname($this->getCalledClass()->getFileName()) . DIRECTORY_SEPARATOR . 'template.php';
 
@@ -89,7 +89,7 @@ abstract class Plugin
 			}
 		}
 
-		(new PluginRepository)->addSettings($settings);
+		(new PluginRepository())->addSettings($settings);
 	}
 
 	public function isDarkTheme(?string $option): bool
