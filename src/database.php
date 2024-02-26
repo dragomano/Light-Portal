@@ -204,6 +204,30 @@ $tables[] = [
 ];
 
 $tables[] = [
+	'name'    => 'lp_page_tags',
+	'columns' => [
+		[
+			'name'     => 'page_id',
+			'type'     => 'int',
+			'size'     => 10,
+			'unsigned' => true
+		],
+		[
+			'name'     => 'tag_id',
+			'type'     => 'int',
+			'size'     => 10,
+			'unsigned' => true
+		]
+	],
+	'indexes' => [
+		[
+			'type'    => 'primary',
+			'columns' => ['page_id', 'tag_id']
+		]
+	]
+];
+
+$tables[] = [
 	'name' => 'lp_pages',
 	'columns' => [
 		[
