@@ -5,6 +5,7 @@
 **/output/
 node_modules/
 src/Sources/LightPortal/Libs/*
+src/Sources/index.php
 !/composer.lock
 
 src/Themes/default/languages/LightPortal/*
