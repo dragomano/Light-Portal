@@ -430,7 +430,7 @@ abstract class AbstractMain
 
 		$topic = $this->request('t');
 
-		if (($key = array_search($topic, Utils::$context['lp_frontpage_topics'], true)) !== false) {
+		if (($key = array_search($topic, Utils::$context['lp_frontpage_topics'])) !== false) {
 			unset(Utils::$context['lp_frontpage_topics'][$key]);
 		} else {
 			Utils::$context['lp_frontpage_topics'][] = $topic;

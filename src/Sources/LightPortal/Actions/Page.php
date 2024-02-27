@@ -258,7 +258,7 @@ final class Page implements PageInterface
 
 		$page = Utils::$context['lp_page']['id'];
 
-		if (($key = array_search($page, Utils::$context['lp_frontpage_pages'], true)) !== false) {
+		if (($key = array_search($page, Utils::$context['lp_frontpage_pages'])) !== false) {
 			unset(Utils::$context['lp_frontpage_pages'][$key]);
 		} else {
 			Utils::$context['lp_frontpage_pages'][] = $page;
