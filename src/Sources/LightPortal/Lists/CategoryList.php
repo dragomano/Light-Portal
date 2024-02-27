@@ -30,7 +30,7 @@ final class CategoryList implements ListInterface
 	public function getAll(): array
 	{
 		$result = Db::$db->query('', /** @lang text */ '
-			SELECT c.category_id, c.icon, c.description, c.priority, t.title, tf.title AS fallback_title
+			SELECT c.category_id, c.icon, c.description, c.priority, COALESCE(t.title, tf.title) AS cat_title
 			FROM {db_prefix}lp_categories AS c
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
 					c.category_id = t.item_id AND t.type = {literal:category} AND t.lang = {string:lang}
@@ -47,13 +47,18 @@ final class CategoryList implements ListInterface
 			]
 		);
 
-		$items = [0 => ['title' => Lang::$txt['lp_no_category']]];
+		$items = [
+			0 => [
+				'icon'  => '',
+				'title' => Lang::$txt['lp_no_category'],
+			]
+		];
 
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['category_id']] = [
 				'id'          => (int) $row['category_id'],
 				'icon'        => $row['icon'],
-				'title'       => ($row['title'] ?: $row['fallback_title']) ?: '',
+				'title'       => $row['cat_title'],
 				'description' => $row['description'],
 				'priority'    => (int) $row['priority'],
 			];
