@@ -232,9 +232,6 @@ final class Category extends AbstractPageList
 
 	public function getAll(int $start = 0, int $limit = 0, string $sort = 't.title'): array
 	{
-		$activeCategories = empty(Config::$modSettings['lp_frontpage_categories'])
-			? [] : explode(',', Config::$modSettings['lp_frontpage_categories']);
-
 		$result = Db::$db->query('', '
 			SELECT
 				COALESCE(c.category_id, 0) AS category_id, c.icon, c.description, c.priority,
@@ -248,7 +245,6 @@ final class Category extends AbstractPageList
 					c.category_id = tf.item_id AND tf.type = {literal:category} AND tf.lang = {string:fallback_lang}
 				)
 			WHERE (c.status = {int:status} OR p.category_id = 0)
-				AND p.category_id IN ({array_int:categories})
 				AND p.status IN ({array_int:statuses})
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
@@ -259,7 +255,6 @@ final class Category extends AbstractPageList
 				'lang'          => User::$info['language'],
 				'fallback_lang' => Config::$language,
 				'status'        => self::STATUS_ACTIVE,
-				'categories'    => $activeCategories,
 				'statuses'      => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
 				'current_time'  => time(),
 				'permissions'   => $this->getPermissions(),
