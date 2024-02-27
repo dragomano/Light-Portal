@@ -217,10 +217,7 @@ final class FrontPage implements ActionInterface
 		ob_start();
 
 		try {
-			$blade = new BladeOne(
-				$templates,
-				empty(Config::$modSettings['cache_enable']) ? null : Sapi::getTempDir()
-			);
+			$blade = new BladeOne($templates, Sapi::getTempDir());
 
 			$blade->directiveRT('icon', static function (array|string $expression) {
 				if (is_array($expression)) {
