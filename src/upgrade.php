@@ -56,7 +56,7 @@ if ($categories !== []) {
 $column = [
 	'name' => 'icon',
 	'type' => 'varchar',
-	'size' => 255,
+	'size' => 60,
 	'null' => true
 ];
 
@@ -103,7 +103,7 @@ $table = [
 
 db_extend('packages');
 
-$smcFunc['db_create_table']('{db_prefix}' . $table['name'], $table['columns'], $table['indexes'], [], 'update');
+$smcFunc['db_create_table']('{db_prefix}' . $table['name'], $table['columns'], $table['indexes']);
 
 // Fetch tags
 $result = $smcFunc['db_query']('', '
@@ -151,7 +151,7 @@ if ($tags !== []) {
 $column = [
 	'name' => 'icon',
 	'type' => 'varchar',
-	'size' => 255,
+	'size' => 60,
 	'null' => true
 ];
 
@@ -219,6 +219,8 @@ $smcFunc['db_query']('', '
 	WHERE type = {literal:page} AND name = {literal:keywords}',
 	[]
 );
+
+clean_cache();
 
 if (SMF === 'SSI') {
 	echo 'Database changes are complete! Please wait...';
