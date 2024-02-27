@@ -24,7 +24,7 @@
     "sass": "^1.70.0",
     "sortablejs": "^1.15.2",
     "vanilla-lazyload": "^17.8.5",
-    "virtual-select-plugin": "^1.0.41",
+    "virtual-select-plugin": "1.0.40",
     "vite-plugin-minify": "^1.5.2",
     "vue": "^3.4.16",
     "vue-i18n": "^9.9.1",
