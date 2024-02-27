@@ -54,7 +54,7 @@
 
 						@if (!empty($article['datetime']))
 							<time class="floatright" datetime="{{ $article['datetime'] }}">
-								@icon('date'){{ $article['date'] }}
+								@icon('date') {!! $article['date'] !!}
 							</time>
 						@endif
 					</span>
