@@ -89,8 +89,6 @@ final class IconList implements ListInterface
 			'tags'          => 'tags fa-fw',
 			'task'          => 'list-check',
 			'tile'          => 'border-all fa-2x',
-			'toggle-on'     => '3x fa-toggle-on',
-			'toggle-off'    => '3x fa-toggle-off',
 			'tools'         => 'sliders',
 			'undo'          => 'rotate-left',
 			'unlike'        => 'heart-crack',

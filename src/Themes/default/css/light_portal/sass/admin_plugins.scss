@@ -88,12 +88,6 @@
 		align-items: center;
 		gap: 6px;
 		@include pointer;
-
-		span {
-			&[data-toggle="on"] {
-				color: $color-checked;
-			}
-		}
 	}
 
 	form {
