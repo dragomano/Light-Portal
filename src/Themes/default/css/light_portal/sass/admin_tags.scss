@@ -1,0 +1,10 @@
+#lp_tags {
+	th,
+	td {
+		@media (max-width: 480px) {
+			&.icon {
+				display: none;
+			}
+		}
+	}
+}

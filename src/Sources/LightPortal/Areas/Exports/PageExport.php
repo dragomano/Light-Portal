@@ -143,8 +143,9 @@ final class PageExport extends AbstractExport
 
 		$result = Db::$db->query('', '
 			SELECT
-				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions, p.status, p.num_views, p.num_comments, p.created_at, p.updated_at,
-				pt.lang, pt.title, pp.name, pp.value, com.id, com.parent_id, com.author_id AS com_author_id, com.message, com.created_at AS com_created_at
+				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions,
+				p.status, p.num_views, p.num_comments, p.created_at, p.updated_at, pt.lang, pt.title, pp.name, pp.value,
+				com.id, com.parent_id, com.author_id AS com_author_id, com.message, com.created_at AS com_created_at
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS pt ON (p.page_id = pt.item_id AND pt.type = {literal:page})
 				LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {literal:page})
@@ -173,11 +174,13 @@ final class PageExport extends AbstractExport
 				'updated_at'   => $row['updated_at'],
 			];
 
-			if ($row['lang'] && $row['title'])
+			if ($row['lang'] && $row['title']) {
 				$items[$row['page_id']]['titles'][$row['lang']] = $row['title'];
+			}
 
-			if ($row['name'] && $row['value'])
+			if ($row['name'] && $row['value']) {
 				$items[$row['page_id']]['params'][$row['name']] = $row['value'];
+			}
 
 			if ($row['message'] && trim($row['message'])) {
 				$items[$row['page_id']]['comments'][$row['id']] = [
@@ -206,19 +209,6 @@ final class PageExport extends AbstractExport
 			$root = $xml->appendChild($xml->createElement('light_portal'));
 
 			$xml->formatOutput = true;
-
-			if ($tags = $this->getEntityData('tag')) {
-				$xmlElements = $root->appendChild($xml->createElement('tags'));
-
-				$tags = static fn() => new ArrayIterator($tags);
-				foreach ($tags() as $key => $val) {
-					$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
-					$xmlName = $xmlElement->appendChild($xml->createAttribute('id'));
-					$xmlName->appendChild($xml->createTextNode((string) $key));
-					$xmlName = $xmlElement->appendChild($xml->createAttribute('value'));
-					$xmlName->appendChild($xml->createTextNode($val));
-				}
-			}
 
 			$xmlElements = $root->appendChild($xml->createElement('pages'));
 			$items = static fn() => new ArrayIterator($items);

@@ -27,7 +27,7 @@ class PageValidator extends AbstractValidator
 		'author_id'   => FILTER_VALIDATE_INT,
 		'alias'       => FILTER_DEFAULT,
 		'description' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-		'keywords'    => FILTER_DEFAULT,
+		'tags'        => FILTER_DEFAULT,
 		'type'        => FILTER_DEFAULT,
 		'permissions' => FILTER_VALIDATE_INT,
 		'status'      => FILTER_VALIDATE_INT,
@@ -59,7 +59,7 @@ class PageValidator extends AbstractValidator
 			$params = array_merge($this->params, $params);
 
 			$data = filter_input_array(INPUT_POST, array_merge($this->args, $params));
-			$data['keywords'] = empty($data['keywords']) ? [] : explode(',', $data['keywords']);
+			$data['tags'] = empty($data['tags']) ? [] : explode(',', $data['tags']);
 
 			$this->findErrors($data);
 		}

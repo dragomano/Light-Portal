@@ -51,7 +51,7 @@ class PageModel extends AbstractModel
 
 	public array $titles = [];
 
-	public array $keywords = [];
+	public array $tags = [];
 
 	public array $options = [];
 
@@ -81,6 +81,8 @@ class PageModel extends AbstractModel
 			);
 
 		$this->createdAt = $currentPage['created_at'] ?? time();
+
+		$this->tags = $postData['tags'] ?? $currentPage['tags'] ?? [];
 	}
 
 	protected static function getTableName(): string

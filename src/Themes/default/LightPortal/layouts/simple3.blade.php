@@ -21,9 +21,9 @@
 
 			@if (!empty($article['tags']))
 			<details class="tags">
-				<summary>{{ $txt['lp_page_keywords'] }}</summary>
-				@foreach ($article['tags'] as $key)
-				<a href="{{ $key['href'] }}">#{{ $key['name'] }}</a>
+				<summary>{{ $txt['lp_tags'] }}</summary>
+				@foreach ($article['tags'] as $tag)
+				<a href="{{ $tag['href'] }}">#{{ $tag['title'] }}</a>
 				@endforeach
 			</details>
 			@endif

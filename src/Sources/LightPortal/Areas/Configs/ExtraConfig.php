@@ -41,7 +41,7 @@ final class ExtraConfig extends AbstractConfig
 
 		$this->addDefaultValues([
 			'lp_num_comments_per_page' => 10,
-			'lp_page_maximum_keywords' => 10,
+			'lp_page_maximum_tags'     => 10,
 		]);
 
 		$configVars = [
@@ -77,7 +77,7 @@ final class ExtraConfig extends AbstractConfig
 			['callback', 'comment_settings_after'],
 			'',
 			['check', 'lp_show_items_as_articles'],
-			['int', 'lp_page_maximum_keywords', 'min' => 1],
+			['int', 'lp_page_maximum_tags', 'min' => 1],
 			['select', 'lp_permissions_default', Lang::$txt['lp_permissions']],
 			['check', 'lp_hide_blocks_in_acp'],
 			['title', 'lp_fa_source_title'],

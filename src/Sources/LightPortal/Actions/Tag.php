@@ -29,28 +29,32 @@ final class Tag extends AbstractPageList
 		if ($this->request()->hasNot('id'))
 			$this->showAll();
 
-		Utils::$context['lp_tag'] = $this->request('id', 0);
+		$tag = [];
 
-		if (array_key_exists(Utils::$context['lp_tag'], $this->getEntityData('tag')) === false) {
+		$tag['id'] = $this->request('id', 0);
+
+		$tags = $this->getEntityData('tag');
+		if (array_key_exists($tag['id'], $tags) === false) {
 			Utils::$context['error_link'] = LP_BASE_URL . ';sa=tags';
 			Lang::$txt['back'] = Lang::$txt['lp_all_page_tags'];
 			ErrorHandler::fatalLang('lp_tag_not_found', status: 404);
 		}
 
-		Utils::$context['page_title'] = sprintf(
-			Lang::$txt['lp_all_tags_by_key'], $this->getEntityData('tag')[Utils::$context['lp_tag']]
-		);
+		$tag = $tags[$tag['id']];
+		Utils::$context['page_title'] = sprintf(Lang::$txt['lp_all_tags_by_key'], $tag['title']);
 
-		Utils::$context['canonical_url']  = LP_BASE_URL . ';sa=tags;id=' . Utils::$context['lp_tag'];
+		Utils::$context['current_tag'] = $tag['id'];
+
+		Utils::$context['canonical_url']  = LP_BASE_URL . ';sa=tags;id=' . $tag['id'];
 		Utils::$context['robot_no_index'] = true;
 
 		Utils::$context['linktree'][] = [
 			'name' => Lang::$txt['lp_all_page_tags'],
-			'url'  => LP_BASE_URL . ';sa=tags'
+			'url'  => LP_BASE_URL . ';sa=tags',
 		];
 
 		Utils::$context['linktree'][] = [
-			'name' => Utils::$context['page_title']
+			'name' => Utils::$context['page_title'],
 		];
 
 		if (! empty(Config::$modSettings['lp_show_items_as_articles']))
@@ -79,30 +83,38 @@ final class Tag extends AbstractPageList
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content,
 				p.type, p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
-				COALESCE(mem.real_name, \'\') AS author_name, ps.value, t.title
+				COALESCE(mem.real_name, \'\') AS author_name, t.title, COALESCE(tt.title, ttf.title) AS tag_title
 			FROM {db_prefix}lp_pages AS p
-				INNER JOIN {db_prefix}lp_params AS ps ON (
-					p.page_id = ps.item_id AND ps.type = {literal:page} AND ps.name = {literal:keywords}
-				)
+				INNER JOIN {db_prefix}lp_page_tags AS pt ON (p.page_id = pt.page_id)
+				INNER JOIN {db_prefix}lp_tags AS tag ON (pt.tag_id = tag.tag_id)
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
 					p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang}
 				)
-			WHERE FIND_IN_SET({int:id}, ps.value) > 0
+				LEFT JOIN {db_prefix}lp_titles AS tt ON (
+					pt.tag_id = tt.item_id AND tt.type = {literal:tag} AND tt.lang = {string:lang}
+				)
+				LEFT JOIN {db_prefix}lp_titles AS ttf ON (
+					pt.tag_id = ttf.item_id AND ttf.type = {literal:tag} AND ttf.lang = {string:fallback_lang}
+				)
+			WHERE pt.tag_id = {int:id}
+				AND tag.status = {int:status}
 				AND p.status IN ({array_int:statuses})
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
 			[
-				'lang'         => User::$info['language'],
-				'id'           => Utils::$context['lp_tag'],
-				'statuses'     => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
-				'current_time' => time(),
-				'permissions'  => $this->getPermissions(),
-				'sort'         => $sort,
-				'start'        => $start,
-				'limit'        => $limit,
+				'lang'          => User::$info['language'],
+				'fallback_lang' => Config::$language,
+				'id'            => Utils::$context['current_tag'],
+				'status'        => PageListInterface::STATUS_ACTIVE,
+				'statuses'      => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
+				'current_time'  => time(),
+				'permissions'   => $this->getPermissions(),
+				'sort'          => $sort,
+				'start'         => $start,
+				'limit'         => $limit,
 			]
 		);
 
@@ -119,15 +131,16 @@ final class Tag extends AbstractPageList
 		$result = Db::$db->query('', '
 			SELECT COUNT(p.page_id)
 			FROM {db_prefix}lp_pages AS p
-				INNER JOIN {db_prefix}lp_params AS ps ON (
-					p.page_id = ps.item_id AND ps.type = {literal:page} AND ps.name = {literal:keywords}
-				)
-			WHERE FIND_IN_SET({int:id}, ps.value) > 0
+				INNER JOIN {db_prefix}lp_page_tags AS pt ON (p.page_id = pt.page_id)
+				INNER JOIN {db_prefix}lp_tags AS tag ON (pt.tag_id = tag.tag_id)
+			WHERE pt.tag_id = {int:id}
+				AND tag.status = {int:status}
 				AND p.status IN ({array_int:statuses})
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})',
 			[
-				'id'           => Utils::$context['lp_tag'],
+				'id'           => Utils::$context['current_tag'],
+				'status'       => PageListInterface::STATUS_ACTIVE,
 				'statuses'     => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions(),
@@ -149,7 +162,7 @@ final class Tag extends AbstractPageList
 		Utils::$context['robot_no_index'] = true;
 
 		Utils::$context['linktree'][] = [
-			'name' => Utils::$context['page_title']
+			'name' => Utils::$context['page_title'],
 		];
 
 		$listOptions = [
@@ -168,15 +181,15 @@ final class Tag extends AbstractPageList
 			'columns' => [
 				'value' => [
 					'header' => [
-						'value' => Lang::$txt['lp_keyword_column']
+						'value' => Lang::$txt['lp_tag_column']
 					],
 					'data' => [
-						'function' => static fn($entry) => '<a href="' . $entry['link'] . '">' . $entry['value'] . '</a>',
+						'function' => static fn($entry) => $entry['icon'] . ' ' . '<a href="' . $entry['link'] . '">' . $entry['title'] . '</a>',
 						'class' => 'centertext'
 					],
 					'sort' => [
-						'default' => 't.value DESC',
-						'reverse' => 't.value'
+						'default' => 'tag_title DESC',
+						'reverse' => 'tag_title'
 					]
 				],
 				'frequency' => [
@@ -188,8 +201,8 @@ final class Tag extends AbstractPageList
 						'class' => 'centertext'
 					],
 					'sort' => [
-						'default' => 'num DESC',
-						'reverse' => 'num'
+						'default' => 'frequency DESC',
+						'reverse' => 'frequency'
 					]
 				]
 			],
@@ -203,37 +216,46 @@ final class Tag extends AbstractPageList
 		Utils::obExit();
 	}
 
-	public function getAll(int $start = 0, int $limit = 0, string $sort = 't.value'): array
+	public function getAll(int $start = 0, int $limit = 0, string $sort = 'tag_title'): array
 	{
 		$result = Db::$db->query('', '
-			SELECT t.tag_id, t.value, COUNT(t.tag_id) AS num
+			SELECT tag.tag_id, tag.icon, COALESCE(tt.title, tf.title) AS tag_title, COUNT(tag.tag_id) AS frequency
 			FROM {db_prefix}lp_pages AS p
-				INNER JOIN {db_prefix}lp_params AS ps ON (
-					p.page_id = ps.item_id AND ps.type = {literal:page} AND ps.name = {literal:keywords}
+				INNER JOIN {db_prefix}lp_page_tags AS pt ON (p.page_id = pt.page_id)
+				INNER JOIN {db_prefix}lp_tags AS tag ON (pt.tag_id = tag.tag_id)
+				LEFT JOIN {db_prefix}lp_titles AS tt ON (
+					pt.tag_id = tt.item_id AND tt.type = {literal:tag} AND tt.lang = {string:lang}
 				)
-				INNER JOIN {db_prefix}lp_tags AS t ON (FIND_IN_SET(t.tag_id, ps.value) > 0)
+				LEFT JOIN {db_prefix}lp_titles AS tf ON (
+					pt.tag_id = tf.item_id AND tf.type = {literal:tag} AND tf.lang = {string:fallback_lang}
+				)
 			WHERE p.status IN ({array_int:statuses})
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
-			GROUP BY t.tag_id, t.value
+				AND tag.status = {int:status}
+			GROUP BY tag.tag_id, tag.icon, tt.title, tf.title
 			ORDER BY {raw:sort}' . ($limit ? '
 			LIMIT {int:start}, {int:limit}' : ''),
 			[
-				'statuses'     => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
-				'current_time' => time(),
-				'permissions'  => $this->getPermissions(),
-				'sort'         => $sort,
-				'start'        => $start,
-				'limit'        => $limit,
+				'lang'          => User::$info['language'],
+				'fallback_lang' => Config::$language,
+				'statuses'      => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
+				'current_time'  => time(),
+				'permissions'   => $this->getPermissions(),
+				'status'        => PageListInterface::STATUS_ACTIVE,
+				'sort'          => $sort,
+				'start'         => $start,
+				'limit'         => $limit,
 			]
 		);
 
 		$items = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['tag_id']] = [
-				'value'     => $row['value'],
+				'icon'      => $this->getIcon($row['icon']),
+				'title'     => $row['tag_title'],
 				'link'      => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id'],
-				'frequency' => $row['num']
+				'frequency' => (int) $row['frequency'],
 			];
 		}
 

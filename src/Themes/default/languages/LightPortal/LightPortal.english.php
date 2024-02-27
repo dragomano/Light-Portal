@@ -84,7 +84,7 @@ $txt['groups_light_portal_approve_pages'] = 'Who can post the portal pages witho
 $txt['lp_extra'] = 'Pages and blocks';
 $txt['lp_extra_info'] = 'Here you can find general settings for pages and blocks.';
 
-$txt['lp_show_tags_on_page'] = 'Show keywords at the top of the page';
+$txt['lp_show_tags_on_page'] = 'Show tags at the top of the page';
 $txt['lp_page_og_image'] = 'Use an image from the page content';
 $txt['lp_page_og_image_set'] = ['None', 'First found', 'Last found'];
 $txt['lp_show_prev_next_links'] = 'Show links to the previous and next pages';
@@ -95,7 +95,7 @@ $txt['lp_time_to_change_comments'] = 'Maximum time after commenting to allow edi
 $txt['lp_num_comments_per_page'] = 'Number of parent comments per page';
 $txt['lp_comment_sorting'] = 'Sort comments by default';
 $txt['lp_show_items_as_articles'] = 'Show items on tag/category pages as cards';
-$txt['lp_page_maximum_keywords'] = 'The maximum number of keywords that can be added to a page';
+$txt['lp_page_maximum_tags'] = 'The maximum number of tags that can be added to a page';
 $txt['lp_permissions_default'] = 'Default permissions for pages and blocks';
 $txt['lp_hide_blocks_in_acp'] = 'Hide active blocks in the admin area';
 $txt['lp_fa_source_title'] = 'Using the FontAwesome icons';
@@ -218,9 +218,8 @@ $txt['lp_page_alias'] = 'Alias';
 $txt['lp_page_alias_subtext'] = 'The page alias must begin with a Latin letter and consist of lowercase Latin letters, numbers, and underscores.';
 $txt['lp_page_type'] = 'Page type';
 $txt['lp_page_description'] = 'Description';
-$txt['lp_page_keywords'] = 'Keywords';
-$txt['lp_page_keywords_placeholder'] = 'Select tags or add new';
-$txt['lp_page_keywords_empty'] = 'No tags yet';
+$txt['lp_page_tags_placeholder'] = 'Select tags or add new';
+$txt['lp_page_tags_empty'] = 'No tags yet';
 $txt['lp_page_publish_datetime'] = 'Date and time of publication';
 $txt['lp_page_author'] = 'Transfer of authorship';
 $txt['lp_page_author_placeholder'] = 'Specify a username to transfer rights to the page';
@@ -250,6 +249,35 @@ $txt['lp_category_not_found'] = 'The specified category was not found.';
 $txt['lp_no_categories'] = 'There are no categories yet.';
 $txt['lp_total_pages_column'] = 'Total pages';
 
+// Tags
+$txt['lp_tags'] = 'Tags';
+$txt['lp_tags_manage'] = 'Manage tags';
+$txt['lp_tags_manage_description'] = 'Here you can create and edit portal tags, for fine categorization of pages.';
+$txt['lp_tags_add'] = 'Add tag';
+$txt['lp_tags_add_title'] = 'Adding a tag';
+$txt['lp_tags_add_description'] = 'Tags are useful for grouping content into different topics.';
+$txt['lp_tags_edit_title'] = 'Editing tag';
+$txt['lp_tags_edit_description'] = 'Make the necessary changes.';
+$txt['lp_all_page_tags'] = 'All portal page tags';
+$txt['lp_all_tags_by_key'] = 'All pages with the "%1$s" tag';
+$txt['lp_tag_not_found'] = 'The specified tag was not found.';
+$txt['lp_no_tags'] = 'There are no tags yet.';
+$txt['lp_tag_column'] = 'Keyword';
+$txt['lp_frequency_column'] = 'Frequency';
+
+// Sorting
+$txt['lp_sorting_label'] = 'Sort by';
+$txt['lp_sort_by_title_desc'] = 'Title (desc)';
+$txt['lp_sort_by_title'] = 'Title (asc)';
+$txt['lp_sort_by_created_desc'] = 'Posting date (new first)';
+$txt['lp_sort_by_created'] = 'Posting date (old first)';
+$txt['lp_sort_by_updated_desc'] = 'Update date (new first)';
+$txt['lp_sort_by_updated'] = 'Update date (old first)';
+$txt['lp_sort_by_author_desc'] = 'Author name (desc)';
+$txt['lp_sort_by_author'] = 'Author name (asc)';
+$txt['lp_sort_by_num_views_desc'] = 'Number of views (desc)';
+$txt['lp_sort_by_num_views'] = 'Number of views (asc)';
+
 // Modlog
 $txt['modlog_ac_update_lp_page'] = 'Updated page "{page}"';
 $txt['modlog_ac_remove_lp_page'] = 'Removed page "{page}"';
@@ -277,6 +305,11 @@ $txt['lp_categories_import'] = 'Category import';
 $txt['lp_categories_export_description'] = 'Here you can export the selected categories to create a backup or transfer them to another forum.';
 $txt['lp_categories_import_description'] = 'Here you can import previously saved portal categories from a backup.';
 $txt['lp_categories_import_info'] = 'Existing categories with the same identifiers will be overwritten by the categories from the imported file.';
+$txt['lp_tags_export'] = 'Tag export';
+$txt['lp_tags_import'] = 'Tag import';
+$txt['lp_tags_export_description'] = 'Here you can export the selected tags to create a backup or transfer them to another forum.';
+$txt['lp_tags_import_description'] = 'Here you can import previously saved page tags from a backup.';
+$txt['lp_tags_import_info'] = 'Existing tags with the same identifiers will be overwritten by the tags from the imported file.';
 $txt['lp_plugins_export'] = 'Plugin export';
 $txt['lp_plugins_import'] = 'Plugin import';
 $txt['lp_plugins_export_description'] = 'Here you can export the selected plugins to create a backup or transfer them to another forum.';
@@ -310,25 +343,6 @@ $txt['lp_plugins_types'][10] = 'Icons';
 $txt['lp_plugins_types'][11] = 'SEO';
 $txt['lp_plugins_types'][12] = 'Other';
 $txt['lp_plugins_select'] = 'Make a choice';
-
-// Tags
-$txt['lp_all_page_tags'] = 'All portal page tags';
-$txt['lp_all_tags_by_key'] = 'All pages with the "%1$s" tag';
-$txt['lp_tag_not_found'] = 'The specified tag was not found.';
-$txt['lp_no_tags'] = 'There are no tags yet.';
-$txt['lp_keyword_column'] = 'Keyword';
-$txt['lp_frequency_column'] = 'Frequency';
-$txt['lp_sorting_label'] = 'Sort by';
-$txt['lp_sort_by_title_desc'] = 'Title (desc)';
-$txt['lp_sort_by_title'] = 'Title (asc)';
-$txt['lp_sort_by_created_desc'] = 'Posting date (new first)';
-$txt['lp_sort_by_created'] = 'Posting date (old first)';
-$txt['lp_sort_by_updated_desc'] = 'Update date (new first)';
-$txt['lp_sort_by_updated'] = 'Update date (old first)';
-$txt['lp_sort_by_author_desc'] = 'Author name (desc)';
-$txt['lp_sort_by_author'] = 'Author name (asc)';
-$txt['lp_sort_by_num_views_desc'] = 'Number of views (desc)';
-$txt['lp_sort_by_num_views'] = 'Number of views (asc)';
 
 // Related pages
 $txt['lp_related_pages'] = 'Related pages';

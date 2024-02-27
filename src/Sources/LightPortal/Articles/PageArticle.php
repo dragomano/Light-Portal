@@ -16,6 +16,7 @@ namespace Bugo\LightPortal\Articles;
 
 use Bugo\Compat\{BBCodeParser, Config, Database as Db, Lang, User, Utils};
 use Bugo\LightPortal\Actions\PageInterface;
+use Bugo\LightPortal\Actions\PageListInterface;
 use Bugo\LightPortal\Utils\Content;
 
 if (! defined('SMF'))
@@ -72,7 +73,7 @@ class PageArticle extends AbstractArticle
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.alias, p.content, p.description, p.type, p.status, p.num_views,
 				CASE WHEN COALESCE(par.value, \'0\') != \'0\' THEN p.num_comments ELSE 0 END AS num_comments, p.created_at,
-				GREATEST(p.created_at, p.updated_at) AS date, t.title, tf.title AS fallback_title, mem.real_name AS author_name,
+				GREATEST(p.created_at, p.updated_at) AS date, COALESCE(t.title, tf.title) AS cat_title, mem.real_name AS author_name,
 				cat.icon as cat_icon, com.created_at AS comment_date, com.author_id AS comment_author_id, mem2.real_name AS comment_author_name,
 				com.message AS comment_message' . (empty($this->columns) ? '' : ', ' . implode(', ', $this->columns)) . '
 			FROM {db_prefix}lp_pages AS p
@@ -161,7 +162,7 @@ class PageArticle extends AbstractArticle
 	{
 		return [
 			'icon' => $this->getIcon($row['cat_icon']),
-			'name' => empty($row['category_id']) ? '' : (($row['title'] ?: $row['fallback_title']) ?: ''),
+			'name' => empty($row['category_id']) ? '' : $row['cat_title'],
 			'link' => empty($row['category_id']) ? '' : (LP_BASE_URL . ';sa=categories;id=' . $row['category_id']),
 		];
 	}
@@ -258,25 +259,35 @@ class PageArticle extends AbstractArticle
 
 	private function prepareTags(array &$pages): void
 	{
-		if (empty($pages))
+		if ($pages === [])
 			return;
 
 		$result = Db::$db->query('', '
-			SELECT t.tag_id, t.value, p.item_id
+			SELECT t.tag_id, t.icon, pt.page_id, COALESCE(tt.title, tf.title) AS tag_title
 			FROM {db_prefix}lp_tags AS t
-				LEFT JOIN {db_prefix}lp_params AS p ON (p.type = {literal:page} AND p.name = {literal:keywords})
-			WHERE p.item_id IN ({array_int:pages})
-				AND FIND_IN_SET(t.tag_id, p.value) > 0
-			ORDER BY t.value',
+				LEFT JOIN {db_prefix}lp_page_tags AS pt ON (t.tag_id = pt.tag_id)
+				LEFT JOIN {db_prefix}lp_titles AS tt ON (
+					pt.tag_id = tt.item_id AND tt.type = {literal:tag} AND tt.lang = {string:lang}
+				)
+				LEFT JOIN {db_prefix}lp_titles AS tf ON (
+					pt.tag_id = tf.item_id AND tf.type = {literal:tag} AND tf.lang = {string:fallback_lang}
+				)
+			WHERE pt.page_id IN ({array_int:pages})
+				AND t.status = {int:status}
+			ORDER BY tag_title',
 			[
-				'pages' => array_keys($pages),
+				'lang'          => User::$info['language'],
+				'fallback_lang' => Config::$language,
+				'pages'         => array_keys($pages),
+				'status'        => PageListInterface::STATUS_ACTIVE,
 			]
 		);
 
 		while ($row = Db::$db->fetch_assoc($result)) {
-			$pages[$row['item_id']]['tags'][] = [
-				'name' => $row['value'],
-				'href' => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id'],
+			$pages[$row['page_id']]['tags'][] = [
+				'icon'  => $this->getIcon($row['icon']),
+				'title' => $row['tag_title'],
+				'href'  => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id'],
 			];
 		}
 

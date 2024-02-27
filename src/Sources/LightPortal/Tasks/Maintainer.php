@@ -14,7 +14,6 @@
 
 namespace Bugo\LightPortal\Tasks;
 
-use Bugo\Compat\Config;
 use Bugo\Compat\Database as Db;
 
 final class Maintainer extends BackgroundTask
@@ -56,30 +55,6 @@ final class Maintainer extends BackgroundTask
 				'empty_value' => '',
 			]
 		);
-
-		$value = Config::$db_type === 'postgresql' ? "string_agg(value, ',')" : 'GROUP_CONCAT(value)';
-
-		$result = Db::$db->query('', '
-			SELECT ' . $value . ' AS value
-			FROM {db_prefix}lp_params
-			WHERE type = {literal:page}
-				AND name = {literal:keywords}',
-			[]
-		);
-
-		[$usedTags] = Db::$db->fetch_row($result);
-
-		Db::$db->free_result($result);
-
-		if ($usedTags) {
-			Db::$db->query('', '
-				DELETE FROM {db_prefix}lp_tags
-				WHERE tag_id NOT IN ({array_int:tags})',
-				[
-					'tags' => explode(',', $usedTags),
-				]
-			);
-		}
 
 		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_titles
@@ -144,8 +119,8 @@ final class Maintainer extends BackgroundTask
 			return;
 
 		$line = '';
-		foreach ($pages as $page_id => $num_comments)
-			$line .= ' WHEN page_id = ' . $page_id . ' THEN ' . $num_comments;
+		foreach ($pages as $pageId => $commentsCount)
+			$line .= ' WHEN page_id = ' . $pageId . ' THEN ' . $commentsCount;
 
 		Db::$db->query('', /** @lang text */ '
 			UPDATE {db_prefix}lp_pages
@@ -180,8 +155,8 @@ final class Maintainer extends BackgroundTask
 			return;
 
 		$line = '';
-		foreach ($pages as $page_id => $last_comment_id)
-			$line .= ' WHEN page_id = ' . $page_id . ' THEN ' . $last_comment_id;
+		foreach ($pages as $pageId => $lastCommentId)
+			$line .= ' WHEN page_id = ' . $pageId . ' THEN ' . $lastCommentId;
 
 		Db::$db->query('', /** @lang text */ '
 			UPDATE {db_prefix}lp_pages
@@ -205,6 +180,7 @@ final class Maintainer extends BackgroundTask
 				'lp_blocks',
 				'lp_categories',
 				'lp_comments',
+				'lp_page_tags',
 				'lp_pages',
 				'lp_params',
 				'lp_plugins',

@@ -157,6 +157,13 @@ class Category extends PortalEntity {
   }
 }
 
+class Tag extends PortalEntity {
+  constructor() {
+    super();
+    this.workUrl = smf_scripturl + '?action=admin;area=lp_tags;actions';
+  }
+}
+
 class Tabs {
   #refs = null;
 
