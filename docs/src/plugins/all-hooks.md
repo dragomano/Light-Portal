@@ -564,6 +564,12 @@ public function updateCategoryAreas(array &$areas): void
 }
 ```
 
+### updateTagAreas
+
+(`&$areas`)
+
+> adding custom tabs into Tag area settings
+
 ### updatePluginAreas
 
 (`&$areas`)

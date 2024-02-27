@@ -16,6 +16,7 @@ declare(strict_types=1);
 
 namespace Bugo\LightPortal\Repositories;
 
+use Bugo\LightPortal\Actions\PageListInterface;
 use Bugo\Compat\{Config, Database as Db, Logging};
 use Bugo\Compat\{Lang, Msg, Security, User, Utils};
 use Bugo\LightPortal\Utils\{Content, DateTime, Notify};
@@ -42,7 +43,7 @@ final class PageRepository extends AbstractRepository
 		$result = Db::$db->query('', '
 			SELECT p.page_id, p.category_id, p.author_id, p.alias, p.type, p.permissions, p.status,
 				p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
-				mem.real_name AS author_name, t.title, tf.title AS fallback_title
+				mem.real_name AS author_name, COALESCE(t.title, tf.title, p.alias) AS page_title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
@@ -79,7 +80,7 @@ final class PageRepository extends AbstractRepository
 				'author_name'  => $row['author_name'],
 				'created_at'   => DateTime::relative((int) $row['date']),
 				'is_front'     => $this->isFrontpage($row['alias']),
-				'title'        => ($row['title'] ?: $row['fallback_title']) ?: $row['alias'],
+				'title'        => $row['page_title'],
 			];
 		}
 
@@ -196,8 +197,6 @@ final class PageRepository extends AbstractRepository
 
 		Security::checkSubmitOnce('check');
 
-		$this->prepareKeywords();
-
 		$this->prepareBbcContent(Utils::$context['lp_page']);
 
 		if (empty($item)) {
@@ -214,6 +213,85 @@ final class PageRepository extends AbstractRepository
 
 		if ($this->request()->has('save'))
 			Utils::redirectexit('action=admin;area=lp_pages;sa=edit;id=' . $item);
+	}
+
+	public function remove(array $items): void
+	{
+		if ($items === [])
+			return;
+
+		$this->hook('onPageRemoving', [$items]);
+
+		Db::$db->query('', '
+			DELETE FROM {db_prefix}lp_pages
+			WHERE page_id IN ({array_int:items})',
+			[
+				'items' => $items,
+			]
+		);
+
+		Db::$db->query('', '
+			DELETE FROM {db_prefix}lp_titles
+			WHERE item_id IN ({array_int:items})
+				AND type = {literal:page}',
+			[
+				'items' => $items,
+			]
+		);
+
+		Db::$db->query('', '
+			DELETE FROM {db_prefix}lp_params
+			WHERE item_id IN ({array_int:items})
+				AND type = {literal:page}',
+			[
+				'items' => $items,
+			]
+		);
+
+		Db::$db->query('', '
+			DELETE FROM {db_prefix}lp_page_tags
+			WHERE page_id IN ({array_int:items})',
+			[
+				'items' => $items,
+			]
+		);
+
+		$result = Db::$db->query('', '
+			SELECT id FROM {db_prefix}lp_comments
+			WHERE page_id IN ({array_int:items})',
+			[
+				'items' => $items,
+			]
+		);
+
+		$comments = [];
+		while ($row = Db::$db->fetch_assoc($result)) {
+			$comments[] = $row['id'];
+		}
+
+		Db::$db->free_result($result);
+		Utils::$context['lp_num_queries'] += 4;
+
+		if ($comments) {
+			Db::$db->query('', '
+				DELETE FROM {db_prefix}lp_comments
+				WHERE id IN ({array_int:items})',
+				[
+					'items' => $comments,
+				]
+			);
+
+			Db::$db->query('', '
+				DELETE FROM {db_prefix}lp_params
+				WHERE item_id IN ({array_int:items})
+					AND type = {literal:comment}',
+				[
+					'items' => $comments,
+				]
+			);
+
+			Utils::$context['lp_num_queries'] += 2;
+		}
 	}
 
 	private function addData(): int
@@ -258,7 +336,7 @@ final class PageRepository extends AbstractRepository
 		$this->hook('onPageSaving', [$item]);
 
 		$this->saveTitles($item);
-		$this->saveTags();
+		$this->saveTags($item);
 		$this->saveOptions($item);
 
 		Db::$db->transaction('commit');
@@ -310,7 +388,7 @@ final class PageRepository extends AbstractRepository
 		$this->hook('onPageSaving', [$item]);
 
 		$this->saveTitles($item, 'replace');
-		$this->saveTags();
+		$this->saveTags($item, 'replace');
 		$this->saveOptions($item, 'replace');
 
 		if (Utils::$context['lp_page']['author_id'] !== User::$info['id']) {
@@ -323,120 +401,69 @@ final class PageRepository extends AbstractRepository
 		Db::$db->transaction('commit');
 	}
 
-	public function remove(array $items): void
+	private function saveTags(int $item, string $method = ''): void
 	{
-		if ($items === [])
+		Db::$db->query('', '
+			DELETE FROM {db_prefix}lp_page_tags
+			WHERE page_id = {int:item}',
+			[
+				'item' => $item,
+			]
+		);
+
+		$relations = [];
+		foreach (Utils::$context['lp_' . $this->entity]['tags'] as $tag) {
+			$relations[] = [
+				'page_id' => $item,
+				'tag_id'  => $tag,
+			];
+		}
+
+		if (empty($relations))
 			return;
 
-		$this->hook('onPageRemoving', [$items]);
-
-		Db::$db->query('', '
-			DELETE FROM {db_prefix}lp_pages
-			WHERE page_id IN ({array_int:items})',
+		Db::$db->insert($method,
+			'{db_prefix}lp_page_tags',
 			[
-				'items' => $items,
-			]
+				'page_id' => 'int',
+				'tag_id'  => 'int',
+			],
+			$relations,
+			['page_id', 'tag_id'],
 		);
 
-		Db::$db->query('', '
-			DELETE FROM {db_prefix}lp_titles
-			WHERE item_id IN ({array_int:items})
-				AND type = {literal:page}',
-			[
-				'items' => $items,
-			]
-		);
-
-		Db::$db->query('', '
-			DELETE FROM {db_prefix}lp_params
-			WHERE item_id IN ({array_int:items})
-				AND type = {literal:page}',
-			[
-				'items' => $items,
-			]
-		);
-
-		$result = Db::$db->query('', '
-			SELECT id FROM {db_prefix}lp_comments
-			WHERE page_id IN ({array_int:items})',
-			[
-				'items' => $items,
-			]
-		);
-
-		$comments = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
-			$comments[] = $row['id'];
-		}
-
-		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries'] += 4;
-
-		if ($comments) {
-			Db::$db->query('', '
-				DELETE FROM {db_prefix}lp_comments
-				WHERE id IN ({array_int:items})',
-				[
-					'items' => $comments,
-				]
-			);
-
-			Db::$db->query('', '
-				DELETE FROM {db_prefix}lp_params
-				WHERE item_id IN ({array_int:items})
-					AND type = {literal:comment}',
-				[
-					'items' => $comments,
-				]
-			);
-
-			Utils::$context['lp_num_queries'] += 2;
-		}
+		Utils::$context['lp_num_queries']++;
 	}
 
-	private function saveTags(): void
-	{
-		$newTagIds = array_diff(Utils::$context['lp_page']['keywords'], array_keys(Utils::$context['lp_tags']));
-		$oldTagIds = array_intersect(Utils::$context['lp_page']['keywords'], array_keys(Utils::$context['lp_tags']));
-
-		array_walk($newTagIds, static function (&$item) {
-			$item = ['value' => $item];
-		});
-
-		if ($newTagIds) {
-			$newTagIds = Db::$db->insert('',
-				'{db_prefix}lp_tags',
-				[
-					'value' => 'string',
-				],
-				$newTagIds,
-				['tag_id'],
-				2
-			);
-
-			Utils::$context['lp_num_queries']++;
-		}
-
-		Utils::$context['lp_page']['options']['keywords'] = array_merge($oldTagIds, $newTagIds);
-	}
-
-	private function getTags(string $tags): array
+	private function getTags(int $item): array
 	{
 		$result = Db::$db->query('', '
-			SELECT tag_id, value
-			FROM {db_prefix}lp_tags
-			WHERE FIND_IN_SET(tag_id, {string:tags}) > 0
-			ORDER BY value',
+			SELECT tag.tag_id, tag.icon, COALESCE(t.title, tf.title) AS tag_title
+			FROM {db_prefix}lp_tags AS tag
+				INNER JOIN {db_prefix}lp_page_tags AS pt ON (tag.tag_id = pt.tag_id)
+				LEFT JOIN {db_prefix}lp_titles AS t ON (
+					tag.tag_id = t.item_id AND t.type = {literal:tag} AND t.lang = {string:lang}
+				)
+				LEFT JOIN {db_prefix}lp_titles AS tf ON (
+					tag.tag_id = tf.item_id AND tf.type = {literal:tag} AND tf.lang = {string:fallback_lang}
+				)
+			WHERE tag.status = {int:status}
+				AND pt.page_id = {int:page_id}
+			ORDER BY tag_title',
 			[
-				'tags' => $tags,
+				'lang'          => User::$info['language'],
+				'fallback_lang' => Config::$language,
+				'status'        => PageListInterface::STATUS_ACTIVE,
+				'page_id'       => $item,
 			]
 		);
 
 		$items = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['tag_id']] = [
-				'name' => $row['value'],
-				'href' => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id'],
+				'icon'  => $this->getIcon($row['icon'] ?: 'fas fa-tag'),
+				'title' => $row['tag_title'],
+				'href'  => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id'],
 			];
 		}
 
@@ -444,14 +471,6 @@ final class PageRepository extends AbstractRepository
 		Utils::$context['lp_num_queries']++;
 
 		return $items;
-	}
-
-	private function prepareKeywords(): void
-	{
-		// Remove all punctuation symbols
-		Utils::$context['lp_page']['keywords'] = preg_replace(
-			"#[[:punct:]]#", "", Utils::$context['lp_page']['keywords']
-		);
 	}
 
 	/**
@@ -479,9 +498,7 @@ final class PageRepository extends AbstractRepository
 			$data['category'] = $this->getEntityData('category')[$data['category_id']]['title'];
 		}
 
-		if (! empty($data['options']['keywords'])) {
-			$data['tags'] = $this->getTags($data['options']['keywords']);
-		}
+		$data['tags'] = $this->getTags($data['id']);
 
 		$this->hook('preparePageData', [&$data, $isAuthor]);
 	}

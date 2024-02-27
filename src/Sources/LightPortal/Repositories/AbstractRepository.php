@@ -41,6 +41,9 @@ abstract class AbstractRepository
 			case 'category':
 				$table = 'categories';
 				break;
+			case 'tag':
+				$table = 'tags';
+				break;
 		}
 
 		if (empty($table))
@@ -130,7 +133,7 @@ abstract class AbstractRepository
 				'value'   => 'string',
 			],
 			$params,
-			['item_id', 'type', 'name']
+			['item_id', 'type', 'name'],
 		);
 
 		Utils::$context['lp_num_queries']++;

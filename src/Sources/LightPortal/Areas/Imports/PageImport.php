@@ -56,72 +56,63 @@ final class PageImport extends AbstractImport
 		if (! isset($xml->pages->item[0]['page_id']))
 			ErrorHandler::fatalLang('lp_wrong_import_file');
 
-		$tags = $items = $titles = $params = $comments = [];
+		$items = $titles = $params = $comments = [];
 
-		foreach ($xml as $entity => $element) {
-			if ($entity === 'tags') {
-				foreach ($element->item as $item) {
-					$tags[] = [
-						'tag_id' => intval($item['id']),
-						'value'  => (string) $item['value'],
-					];
+		foreach ($xml as $element) {
+			foreach ($element->item as $item) {
+				$items[] = [
+					'page_id'      => $pageId = intval($item['page_id']),
+					'category_id'  => intval($item['category_id']),
+					'author_id'    => intval($item['author_id']),
+					'alias'        => (string) $item->alias,
+					'description'  => $item->description,
+					'content'      => $item->content,
+					'type'         => str_replace('md', 'markdown', (string) $item->type),
+					'permissions'  => intval($item['permissions']),
+					'status'       => intval($item['status']),
+					'num_views'    => intval($item['num_views']),
+					'num_comments' => intval($item['num_comments']),
+					'created_at'   => intval($item['created_at']),
+					'updated_at'   => intval($item['updated_at']),
+				];
+
+				if ($item->titles) {
+					foreach ($item->titles as $title) {
+						foreach ($title as $k => $v) {
+							$titles[] = [
+								'item_id' => $pageId,
+								'type'    => 'page',
+								'lang'    => $k,
+								'title'   => $v,
+							];
+						}
+					}
 				}
-			} else {
-				foreach ($element->item as $item) {
-					$items[] = [
-						'page_id'      => $pageId = intval($item['page_id']),
-						'category_id'  => intval($item['category_id']),
-						'author_id'    => intval($item['author_id']),
-						'alias'        => (string) $item->alias,
-						'description'  => $item->description,
-						'content'      => $item->content,
-						'type'         => str_replace('md', 'markdown', (string) $item->type),
-						'permissions'  => intval($item['permissions']),
-						'status'       => intval($item['status']),
-						'num_views'    => intval($item['num_views']),
-						'num_comments' => intval($item['num_comments']),
-						'created_at'   => intval($item['created_at']),
-						'updated_at'   => intval($item['updated_at']),
-					];
 
-					if ($item->titles) {
-						foreach ($item->titles as $title) {
-							foreach ($title as $k => $v) {
-								$titles[] = [
-									'item_id' => $pageId,
-									'type'    => 'page',
-									'lang'    => $k,
-									'title'   => $v,
-								];
-							}
+				if ($item->comments) {
+					foreach ($item->comments as $comment) {
+						foreach ($comment as $v) {
+							$comments[] = [
+								'id'         => intval($v['id']),
+								'parent_id'  => intval($v['parent_id']),
+								'page_id'    => $pageId,
+								'author_id'  => intval($v['author_id']),
+								'message'    => $v->message,
+								'created_at' => intval($v['created_at']),
+							];
 						}
 					}
+				}
 
-					if ($item->comments) {
-						foreach ($item->comments as $comment) {
-							foreach ($comment as $v) {
-								$comments[] = [
-									'id'         => intval($v['id']),
-									'parent_id'  => intval($v['parent_id']),
-									'page_id'    => $pageId,
-									'author_id'  => intval($v['author_id']),
-									'message'    => $v->message,
-									'created_at' => intval($v['created_at']),
-								];
-							}
-						}
-					}
-
-					if ($item->params) {
-						foreach ($item->params as $param) {
-							foreach ($param as $k => $v) {
-								$params[] = [
-									'item_id' => $pageId,
-									'type'    => 'page',
-									'name'    => $k,
-									'value'   => $v,
-								];
-							}
+				if ($item->params) {
+					foreach ($item->params as $param) {
+						foreach ($param as $k => $v) {
+							$params[] = [
+								'item_id' => $pageId,
+								'type'    => 'page',
+								'name'    => $k,
+								'value'   => $v,
+							];
 						}
 					}
 				}
@@ -129,26 +120,6 @@ final class PageImport extends AbstractImport
 		}
 
 		Db::$db->transaction('begin');
-
-		if ($tags) {
-			$tags  = array_chunk($tags, 100);
-			$count = sizeof($tags);
-
-			for ($i = 0; $i < $count; $i++) {
-				Db::$db->insert('replace',
-					'{db_prefix}lp_tags',
-					[
-						'tag_id' => 'int',
-						'value'  => 'string',
-					],
-					$tags[$i],
-					['tag_id'],
-					2
-				);
-
-				Utils::$context['lp_num_queries']++;
-			}
-		}
 
 		$results = [];
 

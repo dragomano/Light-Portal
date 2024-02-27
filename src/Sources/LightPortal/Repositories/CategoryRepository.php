@@ -27,7 +27,7 @@ final class CategoryRepository extends AbstractRepository
 	public function getAll(int $start, int $limit, string $sort): array
 	{
 		$result = Db::$db->query('', /** @lang text */ '
-			SELECT c.category_id, c.icon, c.description, c.priority, c.status, t.title, tf.title AS fallback_title
+			SELECT c.category_id, c.icon, c.description, c.priority, c.status, COALESCE(t.title, tf.title) AS cat_title
 			FROM {db_prefix}lp_categories AS c
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
 					c.category_id = t.item_id AND t.type = {literal:category} AND t.lang = {string:lang}
@@ -54,7 +54,7 @@ final class CategoryRepository extends AbstractRepository
 				'desc'     => $row['description'],
 				'priority' => (int) $row['priority'],
 				'status'   => (int) $row['status'],
-				'title'    => ($row['title'] ?: $row['fallback_title']) ?: '',
+				'title'    => $row['cat_title'],
 			];
 		}
 
@@ -149,66 +149,6 @@ final class CategoryRepository extends AbstractRepository
 			Utils::redirectexit('action=admin;area=lp_categories;sa=edit;id=' . $item);
 	}
 
-	private function addData(): int
-	{
-		Db::$db->transaction('begin');
-
-		$item = (int) Db::$db->insert('',
-			'{db_prefix}lp_categories',
-			[
-				'icon'        => 'string-60',
-				'description' => 'string-255',
-				'priority'    => 'int',
-				'status'      => 'int',
-			],
-			[
-				Utils::$context['lp_category']['icon'],
-				Utils::$context['lp_category']['description'],
-				$this->getPriority(),
-				Utils::$context['lp_category']['status'],
-			],
-			['category_id'],
-			1
-		);
-
-		Utils::$context['lp_num_queries']++;
-
-		if (empty($item)) {
-			Db::$db->transaction('rollback');
-			return 0;
-		}
-
-		$this->saveTitles($item);
-
-		Db::$db->transaction('commit');
-
-		return $item;
-	}
-
-	private function updateData(int $item): void
-	{
-		Db::$db->transaction('begin');
-
-		Db::$db->query('', '
-			UPDATE {db_prefix}lp_categories
-			SET icon = {string:icon}, description = {string:description}, priority = {int:priority}, status = {int:status}
-			WHERE category_id = {int:category_id}',
-			[
-				'icon'        => Utils::$context['lp_category']['icon'],
-				'description' => Utils::$context['lp_category']['description'],
-				'priority'    => Utils::$context['lp_category']['priority'],
-				'status'      => Utils::$context['lp_category']['status'],
-				'category_id' => $item,
-			]
-		);
-
-		Utils::$context['lp_num_queries']++;
-
-		$this->saveTitles($item, 'replace');
-
-		Db::$db->transaction('commit');
-	}
-
 	public function remove(array $items): void
 	{
 		if ($items === [])
@@ -278,5 +218,65 @@ final class CategoryRepository extends AbstractRepository
 		Utils::$context['lp_num_queries']++;
 
 		return (int) $priority;
+	}
+
+	private function addData(): int
+	{
+		Db::$db->transaction('begin');
+
+		$item = (int) Db::$db->insert('',
+			'{db_prefix}lp_categories',
+			[
+				'icon'        => 'string-60',
+				'description' => 'string-255',
+				'priority'    => 'int',
+				'status'      => 'int',
+			],
+			[
+				Utils::$context['lp_category']['icon'],
+				Utils::$context['lp_category']['description'],
+				$this->getPriority(),
+				Utils::$context['lp_category']['status'],
+			],
+			['category_id'],
+			1
+		);
+
+		Utils::$context['lp_num_queries']++;
+
+		if (empty($item)) {
+			Db::$db->transaction('rollback');
+			return 0;
+		}
+
+		$this->saveTitles($item);
+
+		Db::$db->transaction('commit');
+
+		return $item;
+	}
+
+	private function updateData(int $item): void
+	{
+		Db::$db->transaction('begin');
+
+		Db::$db->query('', '
+			UPDATE {db_prefix}lp_categories
+			SET icon = {string:icon}, description = {string:description}, priority = {int:priority}, status = {int:status}
+			WHERE category_id = {int:category_id}',
+			[
+				'icon'        => Utils::$context['lp_category']['icon'],
+				'description' => Utils::$context['lp_category']['description'],
+				'priority'    => Utils::$context['lp_category']['priority'],
+				'status'      => Utils::$context['lp_category']['status'],
+				'category_id' => $item,
+			]
+		);
+
+		Utils::$context['lp_num_queries']++;
+
+		$this->saveTitles($item, 'replace');
+
+		Db::$db->transaction('commit');
 	}
 }

@@ -18,8 +18,8 @@ use Bugo\Compat\{Config, ErrorHandler, Lang};
 use Bugo\Compat\{Logging, Security, Theme, User, Utils};
 use Bugo\LightPortal\Actions\PageInterface;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, TextField};
-use Bugo\LightPortal\Areas\Partials\{CategorySelect, KeywordSelect, PageAuthorSelect};
-use Bugo\LightPortal\Areas\Partials\{PageIconSelect, PermissionSelect, StatusSelect};
+use Bugo\LightPortal\Areas\Partials\{CategorySelect, PageAuthorSelect, PageIconSelect};
+use Bugo\LightPortal\Areas\Partials\{PermissionSelect, StatusSelect, TagSelect};
 use Bugo\LightPortal\Areas\Validators\PageValidator;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Models\PageModel;
@@ -549,7 +549,9 @@ final class PageArea
 		if ($type === 'down') {
 			$items = array_diff(Utils::$context['lp_frontpage_pages'], $items);
 		} else {
-			$items = array_merge(array_diff($items, Utils::$context['lp_frontpage_pages']), Utils::$context['lp_frontpage_pages']);
+			$items = array_merge(
+				array_diff($items, Utils::$context['lp_frontpage_pages']), Utils::$context['lp_frontpage_pages']
+			);
 		}
 
 		Config::updateModSettings(['lp_frontpage_pages' => implode(',', $items)]);
@@ -583,7 +585,6 @@ final class PageArea
 		$page = new PageModel($postData, Utils::$context['lp_current_page']);
 		$page->authorId = empty($postData['author_id']) ? $page->authorId : $postData['author_id'];
 		$page->titles = Utils::$context['lp_current_page']['titles'] ?? [];
-		$page->keywords = $postData['keywords'] ?? Utils::$context['lp_current_page']['tags'] ?? [];
 		$page->options = $options;
 
 		$dateTime = DateTime::get();
@@ -644,7 +645,7 @@ final class PageArea
 				'multiple'   => false,
 				'full_width' => false,
 				'data'       => $this->getEntityData('category'),
-				'value'      => Utils::$context['lp_page']['category_id']
+				'value'      => Utils::$context['lp_page']['category_id'],
 			]);
 
 		if (Utils::$context['user']['is_admin']) {
@@ -675,9 +676,9 @@ final class PageArea
 			->setAttribute('maxlength', 255)
 			->setValue(Utils::$context['lp_page']['description']);
 
-		CustomField::make('keywords', Lang::$txt['lp_page_keywords'])
+		CustomField::make('tags', Lang::$txt['lp_tags'])
 			->setTab('seo')
-			->setValue(static fn() => new KeywordSelect());
+			->setValue(static fn() => new TagSelect());
 
 		if (Utils::$context['lp_page']['created_at'] >= time()) {
 			CustomField::make('datetime', Lang::$txt['lp_page_publish_datetime'])

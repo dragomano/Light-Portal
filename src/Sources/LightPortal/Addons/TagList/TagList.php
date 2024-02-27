@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 26.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TagList;
@@ -52,7 +52,7 @@ class TagList extends Block
 
 		$sources = array_combine(['lp_tags', 'keywords'], Lang::$txt['lp_tag_list']['source_set']);
 
-		if (! class_exists('\Keywords\KeywordHandler'))
+		if (! class_exists('\Bugo\Optimus\Handlers\TagHandler'))
 			unset($sources['keywords']);
 
 		RadioField::make('source', Lang::$txt['lp_tag_list']['source'])
@@ -68,7 +68,7 @@ class TagList extends Block
 
 	public function getAllTopicKeywords(string $sort = 'ok.name'): array
 	{
-		if (!class_exists('\Keywords\KeywordHandler'))
+		if (! class_exists('\Bugo\Optimus\Handlers\TagHandler'))
 			return [];
 
 		$result = Utils::$smcFunc['db_query']('', '
@@ -85,9 +85,9 @@ class TagList extends Block
 		$keywords = [];
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			$keywords[] = [
-				'value'     => $row['name'],
+				'title'     => $row['name'],
 				'link'      => Config::$scripturl . '?action=keywords;id=' . $row['id'],
-				'frequency' => $row['frequency']
+				'frequency' => $row['frequency'],
 			];
 		}
 
@@ -105,7 +105,7 @@ class TagList extends Block
 		if ($parameters['source'] == 'lp_tags') {
 			$tagList = $this->cache('tag_list_addon_b' . $data->id . '_u' . User::$info['id'])
 				->setLifeTime($data->cacheTime)
-				->setFallback(Tag::class, 'getAll', 0, 0, $parameters['sorting'] === 'name' ? 'value' : 'num DESC');
+				->setFallback(Tag::class, 'getAll', 0, 0, $parameters['sorting'] === 'name' ? 'tag_title' : 'frequency DESC');
 		} else {
 			$tagList = $this->cache('tag_list_addon_b' . $data->id . '_u' . User::$info['id'])
 				->setLifeTime($data->cacheTime)
@@ -115,7 +115,7 @@ class TagList extends Block
 		if ($tagList) {
 			foreach ($tagList as $tag) {
 				echo '
-			<a class="button" href="', $tag['link'], '">', $tag['value'], ' <span class="amt">', $tag['frequency'], '</span></a>';
+			<a class="button" href="', $tag['link'], '">', $tag['icon'] ?? '', $tag['title'], ' <span class="amt">', $tag['frequency'], '</span></a>';
 			}
 		} else {
 			echo Lang::$txt['lp_no_tags'];

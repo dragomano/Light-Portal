@@ -295,6 +295,12 @@ abstract class AbstractMain
 							'amt'   => Utils::$context['lp_quantities']['active_categories'],
 							'show'  => true,
 						],
+						'tags'   => [
+							'title' => Lang::$txt['lp_tags'],
+							'href'  => Config::$scripturl . '?action=admin;area=lp_tags',
+							'amt'   => Utils::$context['lp_quantities']['active_tags'],
+							'show'  => true,
+						],
 						'plugins' => [
 							'title'   => Lang::$txt['lp_plugins'],
 							'href'    => Config::$scripturl . '?action=admin;area=lp_plugins',
@@ -517,7 +523,12 @@ abstract class AbstractMain
 						SELECT COUNT(category_id)
 						FROM {db_prefix}lp_categories
 						WHERE status = {int:active}
-					) AS num_categories',
+					) AS num_categories,
+					(
+						SELECT COUNT(tag_id)
+						FROM {db_prefix}lp_tags
+						WHERE status = {int:active}
+					) AS num_tags',
 				[
 					'active'     => PageInterface::STATUS_ACTIVE,
 					'unapproved' => PageInterface::STATUS_UNAPPROVED,
@@ -542,6 +553,7 @@ abstract class AbstractMain
 			'unapproved_pages'  => $numEntities['num_unapproved_pages'] ?? 0,
 			'internal_pages'    => $numEntities['num_internal_pages'] ?? 0,
 			'active_categories' => $numEntities['num_categories'] ?? 0,
+			'active_tags'       => $numEntities['num_tags'] ?? 0,
 		];
 	}
 

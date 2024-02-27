@@ -280,7 +280,7 @@ final class Page implements PageInterface
 
 		$keywords = [];
 		if (isset(Utils::$context['lp_page']['tags'])) {
-			$keywords = array_column(Utils::$context['lp_page']['tags'], 'name');
+			$keywords = array_column(Utils::$context['lp_page']['tags'], 'title');
 
 			Config::$modSettings['meta_keywords'] = implode(', ', $keywords);
 		}

@@ -33,13 +33,13 @@ $tables[] = [
 		[
 			'name' => 'icon',
 			'type' => 'varchar',
-			'size' => 255,
+			'size' => 60,
 			'null' => true
 		],
 		[
 			'name' => 'type',
 			'type' => 'varchar',
-			'size' => 255,
+			'size' => 30,
 			'null' => false
 		],
 		[
@@ -121,7 +121,7 @@ $tables[] = [
 		[
 			'name' => 'icon',
 			'type' => 'varchar',
-			'size' => 255,
+			'size' => 60,
 			'null' => true
 		],
 		[
@@ -199,6 +199,30 @@ $tables[] = [
 		[
 			'type'    => 'primary',
 			'columns' => ['id']
+		]
+	]
+];
+
+$tables[] = [
+	'name'    => 'lp_page_tags',
+	'columns' => [
+		[
+			'name'     => 'page_id',
+			'type'     => 'int',
+			'size'     => 10,
+			'unsigned' => true
+		],
+		[
+			'name'     => 'tag_id',
+			'type'     => 'int',
+			'size'     => 10,
+			'unsigned' => true
+		]
+	],
+	'indexes' => [
+		[
+			'type'    => 'primary',
+			'columns' => ['page_id', 'tag_id']
 		]
 	]
 ];
@@ -441,11 +465,18 @@ $tables[] = [
 			'auto'     => true
 		],
 		[
-			'name' => 'value',
+			'name' => 'icon',
 			'type' => 'varchar',
-			'size' => 255,
-			'null' => false
-		]
+			'size' => 60,
+			'null' => true
+		],
+		[
+			'name'     => 'status',
+			'type'     => 'tinyint',
+			'size'     => 1,
+			'unsigned' => true,
+			'default'  => 1
+		],
 	],
 	'indexes' => [
 		[

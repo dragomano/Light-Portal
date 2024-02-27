@@ -32,7 +32,7 @@ final class CategorySelect extends AbstractPartial
 		$data = [];
 		foreach ($params['data'] as $id => $cat) {
 			$data[] = [
-				'label' => $cat['title'],
+				'label' => $this->getIcon($cat['icon']) . $cat['title'],
 				'value' => $id,
 			];
 		}
@@ -51,8 +51,8 @@ final class CategorySelect extends AbstractPartial
 				placeholder: "' . ($params['hint'] ?? Lang::$txt['lp_frontpage_categories_select']) . '",
 				noSearchResultsText: "' . Lang::$txt['no_matches'] . '",
 				searchPlaceholderText: "' . Lang::$txt['search'] . '",
-				allOptionsSelectedText: "' . Lang::$txt['all'] . '",
-				showValueAsTags: true,' . ($params['full_width'] ? '
+				allOptionsSelectedText: "' . Lang::$txt['all'] . '",' . ($params['multiple'] ? '
+				showValueAsTags: true,' : '') . ($params['full_width'] ? '
 				maxWidth: "100%",' : '') . '
 				options: ' . json_encode($data) . ',
 				selectedValue: [' . $params['value'] . ']

@@ -17,8 +17,8 @@ namespace Bugo\LightPortal\Areas;
 use Bugo\Compat\{Config, Database as Db, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Areas\Configs\{BasicConfig, ExtraConfig};
 use Bugo\LightPortal\Areas\Configs\{FeedbackConfig, MiscConfig, PanelConfig};
-use Bugo\LightPortal\Areas\Exports\{BlockExport, CategoryExport, PageExport, PluginExport};
-use Bugo\LightPortal\Areas\Imports\{BlockImport, CategoryImport, PageImport, PluginImport};
+use Bugo\LightPortal\Areas\Exports\{BlockExport, CategoryExport, PageExport, PluginExport, TagExport};
+use Bugo\LightPortal\Areas\Imports\{BlockImport, CategoryImport, PageImport, PluginImport, TagImport};
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Utils\Icon;
 
@@ -114,6 +114,19 @@ final class ConfigArea
 								'add'  => [Icon::get('plus') . Lang::$txt['lp_categories_add']],
 							]
 						],
+						'lp_tags' => [
+							'label' => Lang::$txt['lp_tags'],
+							'function' => [$this, 'tagAreas'],
+							'icon' => 'attachment',
+							'amt' => Utils::$context['lp_quantities']['active_tags'],
+							'permission' => [
+								'admin_forum',
+							],
+							'subsections' => [
+								'main' => [Icon::get('main') . Lang::$txt['lp_tags_manage']],
+								'add'  => [Icon::get('plus') . Lang::$txt['lp_tags_add']],
+							]
+						],
 						'lp_plugins' => [
 							'label' => Lang::$txt['lp_plugins'],
 							'function' => [$this, 'pluginAreas'],
@@ -147,6 +160,11 @@ final class ConfigArea
 			$areas['lp_portal']['areas']['lp_categories']['subsections'] += [
 				'export' => [Icon::get('export') . Lang::$txt['lp_categories_export']],
 				'import' => [Icon::get('import') . Lang::$txt['lp_categories_import']],
+			];
+
+			$areas['lp_portal']['areas']['lp_tags']['subsections'] += [
+				'export' => [Icon::get('export') . Lang::$txt['lp_tags_export']],
+				'import' => [Icon::get('import') . Lang::$txt['lp_tags_import']],
 			];
 
 			if (extension_loaded('zip')) {
@@ -277,6 +295,23 @@ final class ConfigArea
 		];
 
 		$this->hook('updateCategoryAreas', [&$areas]);
+
+		$this->callActionFromAreas($areas);
+	}
+
+	public function tagAreas(): void
+	{
+		User::mustHavePermission('admin_forum');
+
+		$areas = [
+			'main'   => [new TagArea(), 'main'],
+			'add'    => [new TagArea(), 'add'],
+			'edit'   => [new TagArea(), 'edit'],
+			'export' => [new TagExport(), 'main'],
+			'import' => [new TagImport(), 'main'],
+		];
+
+		$this->hook('updateTagsAreas', [&$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
