@@ -16,7 +16,7 @@ function template_manage_export_blocks(): void
 					<th scope="col" class="type">
 						', Lang::$txt['lp_block_note'], ' / ', Lang::$txt['lp_title'], '
 					</th>
-					<th scope="col" class="type">
+					<th scope="col" class="type hidden-xs">
 						', Lang::$txt['lp_block_type'], '
 					</th>
 					<th scope="col" class="placement">
@@ -57,7 +57,7 @@ function template_manage_export_blocks(): void
 					<td class="type centertext">
 						', $data['note'] ?: ($data['titles'][Utils::$context['user']['language']] ?? $data['titles'][Config::$language] ?? ''), '
 					</td>
-					<td class="type centertext">
+					<td class="type hidden-xs centertext">
 						', Lang::$txt['lp_' . $data['type']]['title'] ?? Utils::$context['lp_missing_block_types'][$data['type']], '
 					</td>
 					<td class="placement centertext">
