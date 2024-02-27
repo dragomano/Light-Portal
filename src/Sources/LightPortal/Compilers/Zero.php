@@ -16,6 +16,8 @@ namespace Bugo\LightPortal\Compilers;
 
 final class Zero extends AbstractCompiler
 {
+	public const SOURCE_FILE = '';
+
 	public function compile(): void
 	{
 	}
