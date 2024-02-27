@@ -33,13 +33,13 @@ $tables[] = [
 		[
 			'name' => 'icon',
 			'type' => 'varchar',
-			'size' => 255,
+			'size' => 60,
 			'null' => true
 		],
 		[
 			'name' => 'type',
 			'type' => 'varchar',
-			'size' => 255,
+			'size' => 30,
 			'null' => false
 		],
 		[
@@ -121,7 +121,7 @@ $tables[] = [
 		[
 			'name' => 'icon',
 			'type' => 'varchar',
-			'size' => 255,
+			'size' => 60,
 			'null' => true
 		],
 		[
@@ -465,11 +465,18 @@ $tables[] = [
 			'auto'     => true
 		],
 		[
-			'name' => 'value',
+			'name' => 'icon',
 			'type' => 'varchar',
-			'size' => 255,
-			'null' => false
-		]
+			'size' => 60,
+			'null' => true
+		],
+		[
+			'name'     => 'status',
+			'type'     => 'tinyint',
+			'size'     => 1,
+			'unsigned' => true,
+			'default'  => 1
+		],
 	],
 	'indexes' => [
 		[
