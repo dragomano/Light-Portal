@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.02.24
+ * @version 26.02.24
  */
 
 namespace Bugo\LightPortal\Addons\DummyArticleCards;
@@ -99,7 +99,7 @@ class DummyArticle extends AbstractArticle
 				'msg_link'  => $numReplies ? Config::$scripturl . '?msg=' . $msgId : $link,
 				'rating'    => $article['rating'],
 				'tags'      => [
-					['name' => $tag, 'href' => LP_BASE_URL . ';sa=tags;id=' . random_int(1, 99)]
+					['title' => $tag, 'href' => LP_BASE_URL . ';sa=tags;id=' . random_int(1, 99)]
 				],
 			];
 		}
