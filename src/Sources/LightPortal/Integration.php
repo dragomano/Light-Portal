@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal;
 
 use Bugo\LightPortal\Compilers\Zero;
-use Bugo\Compat\{Config, Database as Db, Lang, User, Utils};
+use Bugo\Compat\{Config, Db, Lang, User, Utils};
 use Bugo\LightPortal\Actions\{BoardIndex, Block, Category};
 use Bugo\LightPortal\Actions\{FrontPage, Page, Tag};
 

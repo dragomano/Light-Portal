@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Tasks;
 
-use Bugo\Compat\Database as Db;
+use Bugo\Compat\Db;
 
 final class Maintainer extends BackgroundTask
 {

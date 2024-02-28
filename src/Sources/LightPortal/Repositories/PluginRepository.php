@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Repositories;
 
-use Bugo\Compat\{Database as Db, Utils};
+use Bugo\Compat\{Db, Utils};
 use Bugo\LightPortal\Helper;
 
 if (! defined('SMF'))

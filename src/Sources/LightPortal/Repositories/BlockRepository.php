@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Repositories;
 
-use Bugo\Compat\{Config, Database as Db, ErrorHandler};
+use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Msg, Lang, Security, Utils};
 
 if (! defined('SMF'))
@@ -149,11 +149,96 @@ final class BlockRepository extends AbstractRepository
 
 		$this->cache()->flush();
 
+		$this->session('lp')->free('active_blocks');
+
 		if ($this->request()->has('save_exit'))
 			Utils::redirectexit('action=admin;area=lp_blocks;sa=main');
 
 		if ($this->request()->has('save'))
 			Utils::redirectexit('action=admin;area=lp_blocks;sa=edit;id=' . $item);
+	}
+
+	public function remove(array $items): void
+	{
+		if ($items === [])
+			return;
+
+		$this->hook('onBlockRemoving', [$items]);
+
+		Db::$db->query('', '
+			DELETE FROM {db_prefix}lp_blocks
+			WHERE block_id IN ({array_int:items})',
+			[
+				'items' => $items,
+			]
+		);
+
+		Db::$db->query('', '
+			DELETE FROM {db_prefix}lp_titles
+			WHERE item_id IN ({array_int:items})
+				AND type = {literal:block}',
+			[
+				'items' => $items,
+			]
+		);
+
+		Db::$db->query('', '
+			DELETE FROM {db_prefix}lp_params
+			WHERE item_id IN ({array_int:items})
+				AND type = {literal:block}',
+			[
+				'items' => $items,
+			]
+		);
+
+		Utils::$context['lp_num_queries'] += 3;
+
+		$this->session('lp')->free('active_blocks');
+	}
+
+	public function updatePriority(): void
+	{
+		$data = $this->request()->json();
+
+		if (empty($data['update_priority']))
+			return;
+
+		$blocks = $data['update_priority'];
+
+		$conditions = '';
+		foreach ($blocks as $priority => $item) {
+			$conditions .= ' WHEN block_id = ' . $item . ' THEN ' . $priority;
+		}
+
+		if ($conditions === '')
+			return;
+
+		if (is_array($blocks)) {
+			Db::$db->query('', /** @lang text */ '
+				UPDATE {db_prefix}lp_blocks
+				SET priority = CASE ' . $conditions . ' ELSE priority END
+				WHERE block_id IN ({array_int:blocks})',
+				[
+					'blocks' => $blocks,
+				]
+			);
+
+			Utils::$context['lp_num_queries']++;
+
+			if ($data['update_placement']) {
+				Db::$db->query('', '
+					UPDATE {db_prefix}lp_blocks
+					SET placement = {string:placement}
+					WHERE block_id IN ({array_int:blocks})',
+					[
+						'placement' => $data['update_placement'],
+						'blocks'    => $blocks,
+					]
+				);
+
+				Utils::$context['lp_num_queries']++;
+			}
+		}
 	}
 
 	private function addData(): int
@@ -246,87 +331,6 @@ final class BlockRepository extends AbstractRepository
 		$this->cache()->forget($prefix . $item);
 		$this->cache()->forget($prefix . Utils::$context['user']['id']);
 		$this->cache()->forget($prefix . $item . '_u' . Utils::$context['user']['id']);
-	}
-
-	public function remove(array $items): void
-	{
-		if ($items === [])
-			return;
-
-		$this->hook('onBlockRemoving', [$items]);
-
-		Db::$db->query('', '
-			DELETE FROM {db_prefix}lp_blocks
-			WHERE block_id IN ({array_int:items})',
-			[
-				'items' => $items,
-			]
-		);
-
-		Db::$db->query('', '
-			DELETE FROM {db_prefix}lp_titles
-			WHERE item_id IN ({array_int:items})
-				AND type = {literal:block}',
-			[
-				'items' => $items,
-			]
-		);
-
-		Db::$db->query('', '
-			DELETE FROM {db_prefix}lp_params
-			WHERE item_id IN ({array_int:items})
-				AND type = {literal:block}',
-			[
-				'items' => $items,
-			]
-		);
-
-		Utils::$context['lp_num_queries'] += 3;
-	}
-
-	public function updatePriority(): void
-	{
-		$data = $this->request()->json();
-
-		if (empty($data['update_priority']))
-			return;
-
-		$blocks = $data['update_priority'];
-
-		$conditions = '';
-		foreach ($blocks as $priority => $item) {
-			$conditions .= ' WHEN block_id = ' . $item . ' THEN ' . $priority;
-		}
-
-		if ($conditions === '')
-			return;
-
-		if (is_array($blocks)) {
-			Db::$db->query('', /** @lang text */ '
-				UPDATE {db_prefix}lp_blocks
-				SET priority = CASE ' . $conditions . ' ELSE priority END
-				WHERE block_id IN ({array_int:blocks})',
-				[
-					'blocks' => $blocks,
-				]
-			);
-
-			Utils::$context['lp_num_queries']++;
-
-			if ($data['update_placement']) {
-				Db::$db->query('', '
-					UPDATE {db_prefix}lp_blocks
-					SET placement = {string:placement}
-					WHERE block_id IN ({array_int:blocks})',
-					[
-						'placement' => $data['update_placement'],
-						'blocks'    => $blocks,
-					]
-				);
-
-				Utils::$context['lp_num_queries']++;
-			}
-		}
 	}
 
 	/**

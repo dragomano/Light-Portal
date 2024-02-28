@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Repositories;
 
-use Bugo\Compat\{Config, Database as Db, ErrorHandler};
+use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Security, User, Utils};
 
 if (! defined('SMF'))
@@ -138,6 +138,8 @@ final class TagRepository extends AbstractRepository
 
 		$this->cache()->flush();
 
+		$this->session('lp')->free('active_tags');
+
 		if ($this->request()->has('save_exit'))
 			Utils::redirectexit('action=admin;area=lp_tags;sa=main');
 
@@ -169,6 +171,8 @@ final class TagRepository extends AbstractRepository
 		Utils::$context['lp_num_queries'] += 2;
 
 		$this->cache()->flush();
+
+		$this->session('lp')->free('active_tags');
 	}
 
 	private function addData(): int

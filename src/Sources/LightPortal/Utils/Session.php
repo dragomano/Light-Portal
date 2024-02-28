@@ -16,8 +16,17 @@ namespace Bugo\LightPortal\Utils;
 
 final class Session extends GlobalArray
 {
-	public function __construct()
+	public function __construct(?string $key = null)
 	{
+		if ($key) {
+			if (! isset($_SESSION[$key])) {
+				$_SESSION[$key] = [];
+			}
+
+			$this->storage = &$_SESSION[$key];
+			return;
+		}
+
 		$this->storage = &$_SESSION;
 	}
 

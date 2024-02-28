@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Actions;
 
-use Bugo\Compat\{Config, Database as Db};
+use Bugo\Compat\{Config, Db};
 use Bugo\Compat\{Lang, Theme, Utils};
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Utils\Content;

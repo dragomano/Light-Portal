@@ -23,10 +23,10 @@ final class TagSelect extends AbstractPartial
 		Utils::$context['lp_tags'] = $this->getEntityData('tag');
 
 		$data = $values = [];
-		foreach (Utils::$context['lp_tags'] as $value => $label) {
+		foreach (Utils::$context['lp_tags'] as $id => $tag) {
 			$data[] = [
-				'label' => $this->getIcon($label['icon']) . $label['title'],
-				'value' => $value,
+				'label' => $this->getIcon($tag['icon']) . $tag['title'],
+				'value' => $id,
 			];
 		}
 

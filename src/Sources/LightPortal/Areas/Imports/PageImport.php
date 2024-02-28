@@ -14,8 +14,8 @@
 
 namespace Bugo\LightPortal\Areas\Imports;
 
-use Bugo\Compat\{Config, Database as Db};
-use Bugo\Compat\{ErrorHandler, Lang, Theme, User, Utils};
+use Bugo\Compat\{Config, Db, ErrorHandler};
+use Bugo\Compat\{Lang, Theme, User, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');

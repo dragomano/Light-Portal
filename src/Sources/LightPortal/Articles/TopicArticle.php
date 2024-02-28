@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Articles;
 
-use Bugo\Compat\{BBCodeParser, Config, Database as Db, Lang, User, Utils};
+use Bugo\Compat\{BBCodeParser, Config, Db, Lang, User, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');

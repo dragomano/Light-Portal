@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\Compat\{Config, Database as Db, ErrorHandler, Lang, User, Utils};
+use Bugo\Compat\{Config, Db, ErrorHandler, Lang, User, Utils};
 use Bugo\LightPortal\Utils\{BlockAppearance, Cache, File};
 use Bugo\LightPortal\Utils\{EntityManager, Post, Request, Session, SMFTrait};
 use Exception;
@@ -47,9 +47,9 @@ trait Helper
 		return $key ? (new File())->get($key) : new File();
 	}
 
-	public function session(): Session
+	public function session(?string $key = null): Session
 	{
-		return new Session();
+		return new Session($key);
 	}
 
 	public function hook(string $hook, array $vars = [], array $plugins = []): void

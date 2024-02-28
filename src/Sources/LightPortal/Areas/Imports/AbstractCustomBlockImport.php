@@ -13,7 +13,7 @@
 
 namespace Bugo\LightPortal\Areas\Imports;
 
-use Bugo\Compat\{Config, Database as Db};
+use Bugo\Compat\{Config, Db};
 use Bugo\Compat\{ErrorHandler, Sapi, Utils};
 use Bugo\LightPortal\Helper;
 

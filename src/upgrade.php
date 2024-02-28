@@ -37,19 +37,17 @@ if ($categories !== []) {
 		];
 	}
 
-	if ($titles !== []) {
-		$smcFunc['db_insert']('',
-			'{db_prefix}lp_titles',
-			[
-				'item_id' => 'int',
-				'type'    => 'string',
-				'lang'    => 'string',
-				'title'   => 'string',
-			],
-			$titles,
-			['item_id', 'type', 'lang']
-		);
-	}
+	$smcFunc['db_insert']('',
+		'{db_prefix}lp_titles',
+		[
+			'item_id' => 'int',
+			'type'    => 'string',
+			'lang'    => 'string',
+			'title'   => 'string',
+		],
+		$titles,
+		['item_id', 'type', 'lang']
+	);
 }
 
 // Add an icon column
@@ -132,19 +130,17 @@ if ($tags !== []) {
 		];
 	}
 
-	if ($titles !== []) {
-		$smcFunc['db_insert']('',
-			'{db_prefix}lp_titles',
-			[
-				'item_id' => 'int',
-				'type'    => 'string',
-				'lang'    => 'string',
-				'title'   => 'string',
-			],
-			$titles,
-			['item_id', 'type', 'lang']
-		);
-	}
+	$smcFunc['db_insert']('',
+		'{db_prefix}lp_titles',
+		[
+			'item_id' => 'int',
+			'type'    => 'string',
+			'lang'    => 'string',
+			'title'   => 'string',
+		],
+		$titles,
+		['item_id', 'type', 'lang']
+	);
 }
 
 // Add an icon column
@@ -200,17 +196,15 @@ if ($keywords) {
 		}
 	}
 
-	if ($values !== []) {
-		$smcFunc['db_insert']('',
-			'{db_prefix}lp_page_tags',
-			[
-				'page_id' => 'int',
-				'tag_id'  => 'int',
-			],
-			$values,
-			['page_id', 'tag_id']
-		);
-	}
+	$smcFunc['db_insert']('',
+		'{db_prefix}lp_page_tags',
+		[
+			'page_id' => 'int',
+			'tag_id'  => 'int',
+		],
+		$values,
+		['page_id', 'tag_id']
+	);
 }
 
 // Delete deprecated values from lp_params table

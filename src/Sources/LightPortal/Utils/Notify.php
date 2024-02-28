@@ -14,8 +14,7 @@
 
 namespace Bugo\LightPortal\Utils;
 
-use Bugo\Compat\Database as Db;
-use Bugo\Compat\{User, Utils};
+use Bugo\Compat\{Db, User, Utils};
 use Bugo\LightPortal\Tasks\Notifier;
 
 class Notify

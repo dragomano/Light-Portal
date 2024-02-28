@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal\Areas\Exports;
 
 use ArrayIterator;
-use Bugo\Compat\{Config, Database as Db, ErrorHandler};
+use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, Sapi, Utils};
 use Bugo\LightPortal\Repositories\CategoryRepository;
 use Bugo\LightPortal\Utils\ItemList;

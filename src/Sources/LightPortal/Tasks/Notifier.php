@@ -14,8 +14,8 @@
 
 namespace Bugo\LightPortal\Tasks;
 
-use Bugo\Compat\{Config, Database as Db, Lang};
-use Bugo\Compat\{Mail, Notify, Theme, User, Utils};
+use Bugo\Compat\{Config, Db, Lang, Mail};
+use Bugo\Compat\{Notify, Theme, User, Utils};
 use ErrorException;
 
 final class Notifier extends BackgroundTask

@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Lists\IconList;
-use Bugo\Compat\{Config, Database as Db, Lang, Utils};
+use Bugo\Compat\{Config, Db, Lang, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');

@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Repositories;
 
-use Bugo\Compat\{Config, Database as Db, ErrorHandler};
+use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, Security, User, Utils};
 
 if (! defined('SMF'))
@@ -142,6 +142,8 @@ final class CategoryRepository extends AbstractRepository
 
 		$this->cache()->flush();
 
+		$this->session('lp')->free('active_categories');
+
 		if ($this->request()->has('save_exit'))
 			Utils::redirectexit('action=admin;area=lp_categories;sa=main');
 
@@ -175,6 +177,8 @@ final class CategoryRepository extends AbstractRepository
 		Utils::$context['lp_num_queries'] += 2;
 
 		$this->cache()->flush();
+
+		$this->session('lp')->free('active_categories');
 	}
 
 	public function updatePriority(array $categories): void

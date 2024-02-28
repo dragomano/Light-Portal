@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Lists;
 
-use Bugo\Compat\{Config, Database as Db, User, Utils};
+use Bugo\Compat\{Config, Db, User, Utils};
 use Bugo\LightPortal\Actions\PageListInterface;
 
 if (! defined('SMF'))

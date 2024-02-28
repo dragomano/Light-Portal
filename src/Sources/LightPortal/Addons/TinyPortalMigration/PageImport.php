@@ -15,7 +15,7 @@
 
 namespace Bugo\LightPortal\Addons\TinyPortalMigration;
 
-use Bugo\Compat\{BBCodeParser, Config, Database as Db, Lang, User, Utils};
+use Bugo\Compat\{BBCodeParser, Config, Db, Lang, User, Utils};
 use Bugo\LightPortal\Areas\Imports\AbstractCustomPageImport;
 use Bugo\LightPortal\Utils\{DateTime, ItemList};
 use IntlException;

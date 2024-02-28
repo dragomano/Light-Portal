@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Areas\Exports;
 
-use Bugo\Compat\{Config, Database as Db, ErrorHandler};
+use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, Sapi, Theme, Utils};
 use Bugo\LightPortal\Repositories\BlockRepository;
 use DomDocument;

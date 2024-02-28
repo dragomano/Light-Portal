@@ -14,12 +14,12 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Areas\ConfigArea;
-use Bugo\LightPortal\Areas\CreditArea;
+use Bugo\LightPortal\Utils\SessionManager;
+use Bugo\Compat\{Config, Lang, Theme, User, Utils};
+use Bugo\LightPortal\Actions\Block;
+use Bugo\LightPortal\Areas\{ConfigArea, CreditArea};
 use Bugo\LightPortal\Compilers\CompilerInterface;
-use Bugo\Compat\{Config, Database as Db, Lang};
-use Bugo\Compat\{Theme, User, Utils};
-use Bugo\LightPortal\Actions\{Block, PageInterface};
+use Bugo\LightPortal\Repositories\PageRepository;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -196,8 +196,8 @@ abstract class AbstractMain
 	protected function fixLinktree(): void
 	{
 		if (
-			empty(Utils::$context['current_board'])
-			&& $this->request()->hasNot('c')
+			$this->request()->hasNot('c')
+			&& empty(Utils::$context['current_board'])
 			|| empty(Utils::$context['linktree'][1])
 			|| empty(Utils::$context['linktree'][1]['url'])
 		) {
@@ -335,7 +335,7 @@ abstract class AbstractMain
 
 	protected function preparePageButtons(array &$buttons): void
 	{
-		if (empty(Utils::$context['lp_menu_pages'] = $this->getMenuPages()))
+		if (empty(Utils::$context['lp_menu_pages'] = (new PageRepository())->getMenuItems()))
 			return;
 
 		$pageButtons = [];
@@ -348,7 +348,7 @@ abstract class AbstractMain
 					) . $this->getTranslatedTitle($item['titles']),
 				'href'  => LP_PAGE_URL . $item['alias'],
 				'icon'  => '" style="display: none"></span><span',
-				'show'  => $this->canViewItem($item['permissions'])
+				'show'  => $this->canViewItem($item['permissions']),
 			];
 		}
 
@@ -443,118 +443,18 @@ abstract class AbstractMain
 		Utils::redirectexit('topic=' . $topic);
 	}
 
-	private function getMenuPages(): array
-	{
-		if (($pages = $this->cache()->get('menu_pages')) === null) {
-			$titles = $this->getEntityData('title');
-
-			$result = Db::$db->query('', '
-				SELECT p.page_id, p.alias, p.permissions, pp2.value AS icon
-				FROM {db_prefix}lp_pages AS p
-					LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {literal:page})
-					LEFT JOIN {db_prefix}lp_params AS pp2 ON (
-						p.page_id = pp2.item_id AND pp2.type = {literal:page} AND pp2.name = {literal:page_icon}
-					)
-				WHERE p.status IN ({array_int:statuses})
-					AND p.created_at <= {int:current_time}
-					AND pp.name = {literal:show_in_menu}
-					AND pp.value = {string:show_in_menu}',
-				[
-					'statuses'     => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
-					'current_time' => time(),
-					'show_in_menu' => '1',
-				]
-			);
-
-			$pages = [];
-			while ($row = Db::$db->fetch_assoc($result)) {
-				$pages[$row['page_id']] = [
-					'id'          => $row['page_id'],
-					'alias'       => $row['alias'],
-					'permissions' => (int) $row['permissions'],
-					'title'       => [],
-					'icon'        => $row['icon'],
-				];
-
-				$pages[$row['page_id']]['titles'] = $titles[$row['page_id']];
-			}
-
-			Db::$db->free_result($result);
-			Utils::$context['lp_num_queries']++;
-
-			$this->cache()->put('menu_pages', $pages);
-		}
-
-		return $pages;
-	}
-
 	private function calculateNumberOfEntities(): void
 	{
-		if (($numEntities = $this->cache()->get('num_active_entities_u' . User::$info['id'])) === null) {
-			$result = Db::$db->query('', '
-				SELECT
-					(
-						SELECT COUNT(b.block_id)
-						FROM {db_prefix}lp_blocks b
-						WHERE b.status = {int:active}
-					) AS num_blocks,
-					(
-						SELECT COUNT(p.page_id)
-						FROM {db_prefix}lp_pages p
-						WHERE p.status = {int:active}' . (Utils::$context['allow_light_portal_manage_pages_any'] ? '' : '
-							AND p.author_id = {int:user_id}') . '
-					) AS num_pages,
-					(
-						SELECT COUNT(page_id)
-						FROM {db_prefix}lp_pages
-						WHERE author_id = {int:user_id}
-					) AS num_my_pages,
-					(
-						SELECT COUNT(page_id)
-						FROM {db_prefix}lp_pages
-						WHERE status = {int:unapproved}
-					) AS num_unapproved_pages,
-					(
-						SELECT COUNT(page_id)
-						FROM {db_prefix}lp_pages
-						WHERE status = {int:internal}
-					) AS num_internal_pages,
-					(
-						SELECT COUNT(category_id)
-						FROM {db_prefix}lp_categories
-						WHERE status = {int:active}
-					) AS num_categories,
-					(
-						SELECT COUNT(tag_id)
-						FROM {db_prefix}lp_tags
-						WHERE status = {int:active}
-					) AS num_tags',
-				[
-					'active'     => PageInterface::STATUS_ACTIVE,
-					'unapproved' => PageInterface::STATUS_UNAPPROVED,
-					'internal'   => PageInterface::STATUS_INTERNAL,
-					'user_id'    => User::$info['id'],
-				]
-			);
+		$sessionManager = new SessionManager();
 
-			$numEntities = Db::$db->fetch_assoc($result);
-			array_walk($numEntities, static fn(&$item) => $item = (int) $item);
-
-			Db::$db->free_result($result);
-			Utils::$context['lp_num_queries']++;
-
-			$this->cache()->put('num_active_entities_u' . User::$info['id'], $numEntities);
-		}
-
-		Utils::$context['lp_quantities'] = [
-			'active_blocks'     => $numEntities['num_blocks'] ?? 0,
-			'active_pages'      => $numEntities['num_pages'] ?? 0,
-			'my_pages'          => $numEntities['num_my_pages'] ?? 0,
-			'unapproved_pages'  => $numEntities['num_unapproved_pages'] ?? 0,
-			'internal_pages'    => $numEntities['num_internal_pages'] ?? 0,
-			'active_categories' => $numEntities['num_categories'] ?? 0,
-			'active_tags'       => $numEntities['num_tags'] ?? 0,
+		$entities = [
+			'active_blocks', 'active_pages', 'my_pages', 'unapproved_pages',
+			'internal_pages', 'active_categories', 'active_tags',
 		];
+
+		Utils::$context['lp_quantities'] = array_map(
+			fn($key) => $sessionManager($key), array_combine($entities, $entities)
+		);
 	}
 
 	private function getBlockPlacements(): array

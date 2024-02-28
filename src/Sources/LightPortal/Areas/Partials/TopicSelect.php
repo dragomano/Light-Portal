@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Areas\Partials;
 
-use Bugo\Compat\{Config, Database as Db, Lang, Utils};
+use Bugo\Compat\{Config, Db, Lang, Utils};
 
 final class TopicSelect extends AbstractPartial
 {

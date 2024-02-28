@@ -13,7 +13,7 @@
 
 namespace Bugo\LightPortal\Areas\Imports;
 
-use Bugo\Compat\{Database as Db, ErrorHandler, Sapi, Utils};
+use Bugo\Compat\{Db, ErrorHandler, Sapi, Utils};
 use Bugo\LightPortal\Helper;
 
 if (! defined('SMF'))

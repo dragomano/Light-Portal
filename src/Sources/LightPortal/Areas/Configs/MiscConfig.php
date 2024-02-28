@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal\Areas\Configs;
 
 use Bugo\LightPortal\Tasks\Maintainer;
-use Bugo\Compat\{ACP, Config, Database as Db};
+use Bugo\Compat\{ACP, Config, Db};
 use Bugo\Compat\{Lang, User, Utils};
 
 if (! defined('SMF'))

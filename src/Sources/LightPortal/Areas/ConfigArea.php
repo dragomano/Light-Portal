@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Areas;
 
-use Bugo\Compat\{Config, Database as Db, Lang, Theme, User, Utils};
+use Bugo\Compat\{Config, Db, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Areas\Configs\{BasicConfig, ExtraConfig};
 use Bugo\LightPortal\Areas\Configs\{FeedbackConfig, MiscConfig, PanelConfig};
 use Bugo\LightPortal\Areas\Exports\{BlockExport, CategoryExport, PageExport, PluginExport, TagExport};
