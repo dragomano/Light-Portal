@@ -9,12 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Actions;
 
-use Bugo\Compat\{Config, Database as Db};
+use Bugo\Compat\{Config, Db};
 use Bugo\Compat\{Lang, Theme, Utils};
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Utils\Content;

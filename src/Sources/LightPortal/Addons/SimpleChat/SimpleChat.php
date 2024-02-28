@@ -15,7 +15,7 @@
 
 namespace Bugo\LightPortal\Addons\SimpleChat;
 
-use Bugo\Compat\{Config, Database as Db, Lang, Theme, Utils};
+use Bugo\Compat\{Config, Db, Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
 

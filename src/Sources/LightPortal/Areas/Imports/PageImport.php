@@ -9,13 +9,13 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Areas\Imports;
 
-use Bugo\Compat\{Config, Database as Db};
-use Bugo\Compat\{ErrorHandler, Lang, Theme, User, Utils};
+use Bugo\Compat\{Config, Db, ErrorHandler};
+use Bugo\Compat\{Lang, Theme, User, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');

@@ -9,7 +9,7 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Actions;
@@ -146,19 +146,19 @@ final class FrontPage implements ActionInterface
 
 		Utils::$context['template_layers'][] = 'layout_switcher';
 
-		if ($this->session()->isEmpty('lp_frontpage_layout')) {
+		if ($this->session('lp')->isEmpty('frontpage_layout')) {
 			Utils::$context['lp_current_layout'] = $this->request(
 				'layout', Config::$modSettings['lp_frontpage_layout'] ?? self::DEFAULT_TEMPLATE
 			);
 		} else {
 			Utils::$context['lp_current_layout'] = $this->request(
-				'layout', $this->session()->get('lp_frontpage_layout')
+				'layout', $this->session('lp')->get('frontpage_layout')
 			);
 		}
 
-		$this->session()->put('lp_frontpage_layout', Utils::$context['lp_current_layout']);
+		$this->session('lp')->put('frontpage_layout', Utils::$context['lp_current_layout']);
 
-		Config::$modSettings['lp_frontpage_layout'] = $this->session()->get('lp_frontpage_layout');
+		Config::$modSettings['lp_frontpage_layout'] = $this->session('lp')->get('frontpage_layout');
 	}
 
 	public function getLayouts(): array
@@ -217,10 +217,7 @@ final class FrontPage implements ActionInterface
 		ob_start();
 
 		try {
-			$blade = new BladeOne(
-				$templates,
-				empty(Config::$modSettings['cache_enable']) ? null : Sapi::getTempDir()
-			);
+			$blade = new BladeOne($templates, Sapi::getTempDir());
 
 			$blade->directiveRT('icon', static function (array|string $expression) {
 				if (is_array($expression)) {
@@ -321,9 +318,9 @@ final class FrontPage implements ActionInterface
 			}
 
 			if (isset($item['date'])) {
-				$item['datetime'] = date('Y-m-d', (int) $item['date']);
+				$item['datetime'] = date('Y-m-d', $item['date']);
 				$item['raw_date'] = $item['date'];
-				$item['date']     = DateTime::relative((int) $item['date']);
+				$item['date']     = DateTime::relative($item['date']);
 			}
 
 			$item['msg_link'] ??= $item['link'];
@@ -332,7 +329,7 @@ final class FrontPage implements ActionInterface
 				$item['image'] = Config::$modSettings['lp_image_placeholder'];
 
 			if (! empty($item['views']['num']))
-				$item['views']['num'] = $this->getFriendlyNumber((int) $item['views']['num']);
+				$item['views']['num'] = $this->getFriendlyNumber($item['views']['num']);
 
 			return $item;
 		}, $articles);

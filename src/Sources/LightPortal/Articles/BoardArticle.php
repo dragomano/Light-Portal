@@ -9,12 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Articles;
 
-use Bugo\Compat\{BBCodeParser, Config, Database as Db, Lang, User, Utils};
+use Bugo\Compat\{BBCodeParser, Config, Db, Lang, User, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -62,7 +62,7 @@ class BoardArticle extends AbstractArticle
 
 		$result = Db::$db->query('', '
 			SELECT
-				b.id_board, b.name, b.description, b.redirect, 
+				b.id_board, b.name, b.description, b.redirect,
 				CASE WHEN b.redirect != {string:blank_string} THEN 1 ELSE 0 END AS is_redirect, b.num_posts,
 				m.poster_time, GREATEST(m.poster_time, m.modified_time) AS last_updated, m.id_msg, m.id_topic,
 				c.name AS cat_name,' . (

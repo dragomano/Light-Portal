@@ -9,13 +9,13 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal;
 
 use Bugo\LightPortal\Compilers\Zero;
-use Bugo\Compat\{Config, Database as Db, Lang, User, Utils};
+use Bugo\Compat\{Config, Db, Lang, User, Utils};
 use Bugo\LightPortal\Actions\{BoardIndex, Block, Category};
 use Bugo\LightPortal\Actions\{FrontPage, Page, Tag};
 
@@ -56,7 +56,7 @@ final class Integration extends AbstractMain
 		Utils::$context['lp_num_queries'] ??= 0;
 
 		defined('LP_NAME') || define('LP_NAME', 'Light Portal');
-		defined('LP_VERSION') || define('LP_VERSION', '2.5.2');
+		defined('LP_VERSION') || define('LP_VERSION', '2.6.0');
 		defined('LP_PLUGIN_LIST') || define('LP_PLUGIN_LIST', 'https://d8d75ea98b25aa12.mokky.dev/addons');
 		defined('LP_ADDON_URL') || define('LP_ADDON_URL', Config::$boardurl . '/Sources/LightPortal/Addons');
 		defined('LP_ADDON_DIR') || define('LP_ADDON_DIR', __DIR__ . '/Addons');

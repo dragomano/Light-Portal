@@ -9,12 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Areas;
 
-use Bugo\Compat\{Config, Database as Db, Lang, Theme, User, Utils};
+use Bugo\Compat\{Config, Db, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Areas\Configs\{BasicConfig, ExtraConfig};
 use Bugo\LightPortal\Areas\Configs\{FeedbackConfig, MiscConfig, PanelConfig};
 use Bugo\LightPortal\Areas\Exports\{BlockExport, CategoryExport, PageExport, PluginExport, TagExport};

@@ -35,7 +35,7 @@ function template_plugin_post(): void
 	echo '
 	<form
 		id="lp_post"
-		action="', Utils::$context['canonical_url'], '"
+		action="', Utils::$context['form_action'], '"
 		method="post"
 		accept-charset="', Utils::$context['character_set'], '"
 		onsubmit="submitonce(this);"

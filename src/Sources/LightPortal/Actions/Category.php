@@ -9,12 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Actions;
 
-use Bugo\Compat\{Config, Database as Db, ErrorHandler};
+use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, User, Utils};
 use Bugo\LightPortal\Utils\ItemList;
 use IntlException;
@@ -29,9 +29,9 @@ final class Category extends AbstractPageList
 		if ($this->request()->hasNot('id'))
 			$this->showAll();
 
-		$category = [];
-
-		$category['id'] = (int) $this->request('id', 0);
+		$category = [
+			'id' => (int) $this->request('id', 0)
+		];
 
 		$categories = $this->getEntityData('category');
 		if (array_key_exists($category['id'], $categories) === false) {
@@ -60,11 +60,10 @@ final class Category extends AbstractPageList
 		];
 
 		Utils::$context['linktree'][] = [
-			'name' => Utils::$context['page_title'],
+			'name' => $category['title'],
 		];
 
-		if (! empty(Config::$modSettings['lp_show_items_as_articles']))
-			$page->showAsCards($this);
+		$page->showAsCards($this);
 
 		$listOptions = $page->getList();
 		$listOptions['id'] = 'lp_categories';
@@ -99,11 +98,14 @@ final class Category extends AbstractPageList
 			SELECT
 				p.page_id, p.author_id, p.alias, p.content, p.description, p.type,
 				p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
-				COALESCE(mem.real_name, \'\') AS author_name, t.title
+				COALESCE(mem.real_name, \'\') AS author_name, COALESCE(t.title, tf.title) AS title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
 					p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang}
+				)
+				LEFT JOIN {db_prefix}lp_titles AS tf ON (
+					p.page_id = tf.item_id AND tf.type = {literal:page} AND tf.lang = {string:fallback_lang}
 				)
 			WHERE p.category_id = {int:id}
 				AND p.status IN ({array_int:statuses})
@@ -112,14 +114,15 @@ final class Category extends AbstractPageList
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
 			[
-				'lang'         => User::$info['language'],
-				'id'           => Utils::$context['current_category'],
-				'statuses'     => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
-				'current_time' => time(),
-				'permissions'  => $this->getPermissions(),
-				'sort'         => $sort,
-				'start'        => $start,
-				'limit'        => $limit,
+				'lang'          => User::$info['language'],
+				'fallback_lang' => Config::$language,
+				'id'            => Utils::$context['current_category'],
+				'statuses'      => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
+				'current_time'  => time(),
+				'permissions'   => $this->getPermissions(),
+				'sort'          => $sort,
+				'start'         => $start,
+				'limit'         => $limit,
 			]
 		);
 
@@ -232,9 +235,6 @@ final class Category extends AbstractPageList
 
 	public function getAll(int $start = 0, int $limit = 0, string $sort = 't.title'): array
 	{
-		$activeCategories = empty(Config::$modSettings['lp_frontpage_categories'])
-			? [] : explode(',', Config::$modSettings['lp_frontpage_categories']);
-
 		$result = Db::$db->query('', '
 			SELECT
 				COALESCE(c.category_id, 0) AS category_id, c.icon, c.description, c.priority,
@@ -248,7 +248,6 @@ final class Category extends AbstractPageList
 					c.category_id = tf.item_id AND tf.type = {literal:category} AND tf.lang = {string:fallback_lang}
 				)
 			WHERE (c.status = {int:status} OR p.category_id = 0)
-				AND p.category_id IN ({array_int:categories})
 				AND p.status IN ({array_int:statuses})
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
@@ -259,7 +258,6 @@ final class Category extends AbstractPageList
 				'lang'          => User::$info['language'],
 				'fallback_lang' => Config::$language,
 				'status'        => self::STATUS_ACTIVE,
-				'categories'    => $activeCategories,
 				'statuses'      => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
 				'current_time'  => time(),
 				'permissions'   => $this->getPermissions(),

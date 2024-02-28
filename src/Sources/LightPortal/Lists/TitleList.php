@@ -9,12 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Lists;
 
-use Bugo\Compat\{Database as Db, Utils};
+use Bugo\Compat\{Db, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');

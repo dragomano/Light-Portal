@@ -9,12 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Articles;
 
-use Bugo\Compat\{BBCodeParser, Config, Database as Db, Lang, User, Utils};
+use Bugo\Compat\{BBCodeParser, Config, Db, Lang, User, Utils};
 use Bugo\LightPortal\Actions\PageInterface;
 use Bugo\LightPortal\Actions\PageListInterface;
 use Bugo\LightPortal\Utils\Content;
@@ -147,7 +147,7 @@ class PageArticle extends AbstractArticle
 				AND p.permissions IN ({array_int:permissions})' . (empty($this->selectedCategories) ? '' : '
 				AND p.category_id IN ({array_int:selected_categories})') . (empty($this->wheres) ? '' : '
 				' . implode("\n\t\t\t\t\t", $this->wheres)),
-			$this->params
+			$this->params,
 		);
 
 		[$count] = Db::$db->fetch_row($result);

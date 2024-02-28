@@ -37,7 +37,7 @@
 							{$txt['new']}
 						</span>
 						<time n:if="!empty($article[datetime])" class="floatright" datetime="{$article[datetime]}">
-							{icon('date')}{$article[date]}
+							{icon('date')}{$article[date]|noescape}
 						</time>
 					</span>
 					<h3>

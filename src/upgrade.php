@@ -37,26 +37,24 @@ if ($categories !== []) {
 		];
 	}
 
-	if ($titles !== []) {
-		$smcFunc['db_insert']('',
-			'{db_prefix}lp_titles',
-			[
-				'item_id' => 'int',
-				'type'    => 'string',
-				'lang'    => 'string',
-				'title'   => 'string',
-			],
-			$titles,
-			['item_id', 'type', 'lang']
-		);
-	}
+	$smcFunc['db_insert']('',
+		'{db_prefix}lp_titles',
+		[
+			'item_id' => 'int',
+			'type'    => 'string',
+			'lang'    => 'string',
+			'title'   => 'string',
+		],
+		$titles,
+		['item_id', 'type', 'lang']
+	);
 }
 
 // Add an icon column
 $column = [
 	'name' => 'icon',
 	'type' => 'varchar',
-	'size' => 255,
+	'size' => 60,
 	'null' => true
 ];
 
@@ -103,7 +101,7 @@ $table = [
 
 db_extend('packages');
 
-$smcFunc['db_create_table']('{db_prefix}' . $table['name'], $table['columns'], $table['indexes'], [], 'update');
+$smcFunc['db_create_table']('{db_prefix}' . $table['name'], $table['columns'], $table['indexes']);
 
 // Fetch tags
 $result = $smcFunc['db_query']('', '
@@ -132,26 +130,24 @@ if ($tags !== []) {
 		];
 	}
 
-	if ($titles !== []) {
-		$smcFunc['db_insert']('',
-			'{db_prefix}lp_titles',
-			[
-				'item_id' => 'int',
-				'type'    => 'string',
-				'lang'    => 'string',
-				'title'   => 'string',
-			],
-			$titles,
-			['item_id', 'type', 'lang']
-		);
-	}
+	$smcFunc['db_insert']('',
+		'{db_prefix}lp_titles',
+		[
+			'item_id' => 'int',
+			'type'    => 'string',
+			'lang'    => 'string',
+			'title'   => 'string',
+		],
+		$titles,
+		['item_id', 'type', 'lang']
+	);
 }
 
 // Add an icon column
 $column = [
 	'name' => 'icon',
 	'type' => 'varchar',
-	'size' => 255,
+	'size' => 60,
 	'null' => true
 ];
 
@@ -200,17 +196,15 @@ if ($keywords) {
 		}
 	}
 
-	if ($values !== []) {
-		$smcFunc['db_insert']('',
-			'{db_prefix}lp_page_tags',
-			[
-				'page_id' => 'int',
-				'tag_id'  => 'int',
-			],
-			$values,
-			['page_id', 'tag_id']
-		);
-	}
+	$smcFunc['db_insert']('',
+		'{db_prefix}lp_page_tags',
+		[
+			'page_id' => 'int',
+			'tag_id'  => 'int',
+		],
+		$values,
+		['page_id', 'tag_id']
+	);
 }
 
 // Delete deprecated values from lp_params table
@@ -219,6 +213,8 @@ $smcFunc['db_query']('', '
 	WHERE type = {literal:page} AND name = {literal:keywords}',
 	[]
 );
+
+clean_cache();
 
 if (SMF === 'SSI') {
 	echo 'Database changes are complete! Please wait...';

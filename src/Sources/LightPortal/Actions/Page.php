@@ -9,12 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Actions;
 
-use Bugo\Compat\{Config, Database as Db, ErrorHandler, Lang};
+use Bugo\Compat\{Config, ErrorHandler, Lang};
 use Bugo\Compat\{PageIndex, Theme, User, Utils};
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Repositories\PageRepository;
@@ -27,6 +27,13 @@ if (! defined('SMF'))
 final class Page implements PageInterface
 {
 	use Helper;
+
+	private PageRepository $repository;
+
+	public function __construct()
+	{
+		$this->repository = new PageRepository();
+	}
 
 	/**
 	 * @throws IntlException
@@ -135,6 +142,9 @@ final class Page implements PageInterface
 
 	public function showAsCards(PageListInterface $entity): void
 	{
+		if (empty(Config::$modSettings['lp_show_items_as_articles']))
+			return;
+
 		$start = (int) $this->request('start');
 		$limit = (int) Config::$modSettings['lp_num_items_per_page'] ?? 12;
 
@@ -258,7 +268,7 @@ final class Page implements PageInterface
 
 		$page = Utils::$context['lp_page']['id'];
 
-		if (($key = array_search($page, Utils::$context['lp_frontpage_pages'], true)) !== false) {
+		if (($key = array_search($page, Utils::$context['lp_frontpage_pages'])) !== false) {
 			unset(Utils::$context['lp_frontpage_pages'][$key]);
 		} else {
 			Utils::$context['lp_frontpage_pages'][] = $page;
@@ -333,81 +343,12 @@ final class Page implements PageInterface
 
 	private function preparePrevNextLinks(): void
 	{
-		if (empty(Utils::$context['lp_page']) || empty(Config::$modSettings['lp_show_prev_next_links']))
+		if (empty($page = Utils::$context['lp_page']) || empty(Config::$modSettings['lp_show_prev_next_links']))
 			return;
 
 		$titles = $this->getEntityData('title');
 
-		$orders = [
-			'CASE WHEN com.created_at > 0 THEN 0 ELSE 1 END, comment_date DESC',
-			'p.created_at DESC',
-			'p.created_at',
-			'date DESC',
-		];
-
-		$withinCategory = str_contains(
-			filter_input(INPUT_SERVER, 'HTTP_REFERER') ?? '', 'action=portal;sa=categories;id'
-		);
-
-		$result = Db::$db->query('', '
-			(
-				SELECT p.page_id, p.alias, GREATEST(p.created_at, p.updated_at) AS date,
-					CASE WHEN COALESCE(par.value, \'0\') != \'0\' THEN p.num_comments ELSE 0 END AS num_comments,
-					com.created_at AS comment_date
-				FROM {db_prefix}lp_pages AS p
-					LEFT JOIN {db_prefix}lp_comments AS com ON (p.last_comment_id = com.id)
-					LEFT JOIN {db_prefix}lp_params AS par ON (
-						par.item_id = com.page_id
-						AND par.type = {literal:page}
-						AND par.name = {literal:allow_comments}
-					)
-				WHERE p.page_id != {int:page_id}' . ($withinCategory ? '
-					AND p.category_id = {int:category_id}' : '') . '
-					AND p.created_at <= {int:created_at}
-					AND p.created_at <= {int:current_time}
-					AND p.status = {int:status}
-					AND p.permissions IN ({array_int:permissions})
-					ORDER BY ' . (empty(Config::$modSettings['lp_frontpage_order_by_replies'])
-						? '' : 'num_comments DESC, ') . $orders[Config::$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
-				LIMIT 1
-			)
-			UNION ALL
-			(
-				SELECT p.page_id, p.alias, GREATEST(p.created_at, p.updated_at) AS date,
-					CASE WHEN COALESCE(par.value, \'0\') != \'0\' THEN p.num_comments ELSE 0 END AS num_comments,
-					com.created_at AS comment_date
-				FROM {db_prefix}lp_pages AS p
-					LEFT JOIN {db_prefix}lp_comments AS com ON (p.last_comment_id = com.id)
-					LEFT JOIN {db_prefix}lp_params AS par ON (
-						par.item_id = com.page_id
-						AND par.type = {literal:page}
-						AND par.name = {literal:allow_comments}
-					)
-				WHERE p.page_id != {int:page_id}' . ($withinCategory ? '
-					AND p.category_id = {int:category_id}' : '') . '
-					AND p.created_at >= {int:created_at}
-					AND p.created_at <= {int:current_time}
-					AND p.status = {int:status}
-					AND p.permissions IN ({array_int:permissions})
-				ORDER BY ' . (empty(Config::$modSettings['lp_frontpage_order_by_replies'])
-					? '' : 'num_comments DESC, ') . $orders[Config::$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
-				LIMIT 1
-			)',
-			[
-				'page_id'      => Utils::$context['lp_page']['id'],
-				'category_id'  => Utils::$context['lp_page']['category_id'],
-				'created_at'   => Utils::$context['lp_page']['created_at'],
-				'current_time' => time(),
-				'status'       => Utils::$context['lp_page']['status'],
-				'permissions'  => $this->getPermissions(),
-			]
-		);
-
-		[$prevId, $prevAlias] = Db::$db->fetch_row($result);
-		[$nextId, $nextAlias] = Db::$db->fetch_row($result);
-
-		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
+		[$prevId, $prevAlias, $nextId, $nextAlias] = $this->repository->getPrevNextLinks($page);
 
 		if (! empty($prevAlias)) {
 			Utils::$context['lp_page']['prev'] = [
@@ -426,68 +367,13 @@ final class Page implements PageInterface
 
 	private function prepareRelatedPages(): void
 	{
-		if (empty($item = Utils::$context['lp_page']) || empty(Config::$modSettings['lp_show_related_pages']))
+		if (empty($page = Utils::$context['lp_page']) || empty(Config::$modSettings['lp_show_related_pages']))
 			return;
 
 		if (empty(Utils::$context['lp_page']['options']['show_related_pages']))
 			return;
 
-		$titleWords = explode(' ', $this->getTranslatedTitle($item['titles']));
-		$aliasWords = explode('_', $item['alias']);
-
-		$searchFormula = '';
-		foreach ($titleWords as $key => $word) {
-			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE
-			WHEN lower(t.title) LIKE lower(\'%' . $word . '%\')
-		    THEN ' . (count($titleWords) - $key) * 2 . ' ELSE 0 END';
-		}
-
-		foreach ($aliasWords as $key => $word) {
-			$searchFormula .= ' + CASE
-			WHEN lower(p.alias) LIKE lower(\'%' . $word . '%\')
-			THEN ' . (count($aliasWords) - $key) . ' ELSE 0 END';
-		}
-
-		$result = Db::$db->query('', '
-			SELECT p.page_id, p.alias, p.content, p.type, (' . $searchFormula . ') AS related, t.title
-			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.lang = {string:current_lang})
-			WHERE (' . $searchFormula . ') > 0
-				AND p.status = {int:status}
-				AND p.created_at <= {int:current_time}
-				AND p.permissions IN ({array_int:permissions})
-				AND p.page_id != {int:current_page}
-			ORDER BY related DESC
-			LIMIT 4',
-			[
-				'current_lang' => Utils::$context['user']['language'],
-				'status'       => Utils::$context['lp_page']['status'],
-				'current_time' => time(),
-				'permissions'  => $this->getPermissions(),
-				'current_page' => $item['id']
-			]
-		);
-
-		Utils::$context['lp_page']['related_pages'] = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
-			if ($this->isFrontpage($row['alias']))
-				continue;
-
-			$row['content'] = Content::parse($row['content'], $row['type']);
-
-			$image = $this->getImageFromText($row['content']);
-
-			Utils::$context['lp_page']['related_pages'][$row['page_id']] = [
-				'id'    => $row['page_id'],
-				'title' => $row['title'],
-				'alias' => $row['alias'],
-				'link'  => LP_PAGE_URL . $row['alias'],
-				'image' => $image ?: (Config::$modSettings['lp_image_placeholder'] ?? ''),
-			];
-		}
-
-		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
+		Utils::$context['lp_page']['related_pages'] = $this->repository->getRelatedPages($page);
 	}
 
 	/**
@@ -560,23 +446,12 @@ final class Page implements PageInterface
 			return;
 
 		if (
-			$this->session()->isEmpty('light_portal_last_page_viewed')
-			|| $this->session()->get('light_portal_last_page_viewed') !== Utils::$context['lp_page']['id']
+			$this->session('lp')->isEmpty('last_page_viewed')
+			|| $this->session('lp')->get('last_page_viewed') !== Utils::$context['lp_page']['id']
 		) {
-			Db::$db->query('', '
-				UPDATE {db_prefix}lp_pages
-				SET num_views = num_views + 1
-				WHERE page_id = {int:item}
-					AND status IN ({array_int:statuses})',
-				[
-					'item'     => Utils::$context['lp_page']['id'],
-					'statuses' => [self::STATUS_ACTIVE, self::STATUS_INTERNAL],
-				]
-			);
+			$this->repository->updateNumViews(Utils::$context['lp_page']['id']);
 
-			Utils::$context['lp_num_queries']++;
-
-			$this->session()->put('light_portal_last_page_viewed', Utils::$context['lp_page']['id']);
+			$this->session('lp')->put('last_page_viewed', Utils::$context['lp_page']['id']);
 		}
 	}
 }

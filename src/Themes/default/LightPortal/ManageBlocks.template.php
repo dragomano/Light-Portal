@@ -37,7 +37,7 @@ function template_manage_blocks(): void
 				<th scope="col" class="areas hidden-xs hidden-sm">
 					', Lang::$txt['lp_block_areas'], '
 				</th>
-				<th scope="col" class="priority">
+				<th scope="col" class="priority hidden-xs">
 					', Lang::$txt['lp_block_priority'], '
 				</th>
 				<th scope="col" class="status">
@@ -132,7 +132,7 @@ function show_block_entry(int $id, array $data): void
 		<td class="areas hidden-xs hidden-sm">
 			', $data['areas'], '
 		</td>
-		<td class="priority">
+		<td class="priority hidden-xs">
 			', $data['priority'], ' ', str_replace(' class="', ' title="' . Lang::$txt['lp_action_move'] . '" class="handle ', Icon::get('sort')), '
 		</td>
 		<td class="status">
@@ -209,7 +209,6 @@ function template_block_post(): void
 	if (isset(Utils::$context['preview_content']) && empty(Utils::$context['post_errors'])) {
 		echo '
 	<div class="preview_frame">';
-
 		echo sprintf(Utils::$context['lp_all_title_classes'][Utils::$context['lp_block']['title_class']], Utils::$context['preview_title']);
 
 		echo '

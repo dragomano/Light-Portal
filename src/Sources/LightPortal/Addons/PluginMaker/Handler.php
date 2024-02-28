@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.24
+ * @version 27.02.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -36,7 +36,7 @@ class Handler extends Plugin
 	{
 		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_plugin_maker']['add_title'];
 		Utils::$context['page_area_title'] = Lang::$txt['lp_plugin_maker']['add_title'];
-		Utils::$context['canonical_url']   = Config::$scripturl . '?action=admin;area=lp_plugins;sa=add';
+		Utils::$context['form_action']     = Config::$scripturl . '?action=admin;area=lp_plugins;sa=add';
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,

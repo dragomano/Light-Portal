@@ -17,7 +17,7 @@ function template_feedback(): void
 	<form action="https://api.web3forms.com/submit" method="POST">
 		<input type="hidden" name="access_key" value="6fcc4df7-ec6a-4dbb-a278-a5c71af46631">
 		<input type="hidden" name="from_name" value="', Utils::$context['forum_name'], '">
-		<input type="hidden" name="subject" value="New feedback">
+		<input type="hidden" name="subject" value="', Utils::$context['forum_name'], '">
 		<input type="hidden" name="redirect" value="', Utils::$context['success_url'], '">
 		<input type="hidden" name="portal_version" value="', LP_VERSION, '">
 		<input type="hidden" name="smf_version" value="', SMF_VERSION, '">

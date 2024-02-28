@@ -9,13 +9,13 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Lists\IconList;
-use Bugo\Compat\{Config, Database as Db, Lang, Utils};
+use Bugo\Compat\{Config, Db, Lang, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');

@@ -15,7 +15,7 @@
 
 namespace Bugo\LightPortal\Addons\TinyPortalMigration;
 
-use Bugo\Compat\{Config, Database as Db, Lang, Utils};
+use Bugo\Compat\{Config, Db, Lang, Utils};
 use Bugo\LightPortal\Areas\Imports\AbstractCustomBlockImport;
 use Bugo\LightPortal\Utils\ItemList;
 

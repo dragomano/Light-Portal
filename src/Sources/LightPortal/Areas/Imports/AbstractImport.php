@@ -8,12 +8,12 @@
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Areas\Imports;
 
-use Bugo\Compat\{Database as Db, ErrorHandler};
+use Bugo\Compat\{Db, ErrorHandler};
 use Bugo\Compat\{Lang, Sapi, Utils};
 use Bugo\LightPortal\Helper;
 use SimpleXMLElement;

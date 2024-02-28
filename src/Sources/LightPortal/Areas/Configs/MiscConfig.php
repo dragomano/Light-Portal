@@ -9,13 +9,13 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Areas\Configs;
 
 use Bugo\LightPortal\Tasks\Maintainer;
-use Bugo\Compat\{ACP, Config, Database as Db};
+use Bugo\Compat\{ACP, Config, Db};
 use Bugo\Compat\{Lang, User, Utils};
 
 if (! defined('SMF'))

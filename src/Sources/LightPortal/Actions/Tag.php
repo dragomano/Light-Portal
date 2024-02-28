@@ -9,12 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Actions;
 
-use Bugo\Compat\{Config, Database as Db, ErrorHandler};
+use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, User, Utils};
 use Bugo\LightPortal\Utils\ItemList;
 use IntlException;
@@ -29,9 +29,9 @@ final class Tag extends AbstractPageList
 		if ($this->request()->hasNot('id'))
 			$this->showAll();
 
-		$tag = [];
-
-		$tag['id'] = $this->request('id', 0);
+		$tag = [
+			'id' => (int) $this->request('id', 0)
+		];
 
 		$tags = $this->getEntityData('tag');
 		if (array_key_exists($tag['id'], $tags) === false) {
@@ -54,11 +54,10 @@ final class Tag extends AbstractPageList
 		];
 
 		Utils::$context['linktree'][] = [
-			'name' => Utils::$context['page_title'],
+			'name' => $tag['title'],
 		];
 
-		if (! empty(Config::$modSettings['lp_show_items_as_articles']))
-			$page->showAsCards($this);
+		$page->showAsCards($this);
 
 		$listOptions = $page->getList();
 		$listOptions['id'] = 'lp_tags';
@@ -83,13 +82,17 @@ final class Tag extends AbstractPageList
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content,
 				p.type, p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
-				COALESCE(mem.real_name, \'\') AS author_name, t.title, COALESCE(tt.title, ttf.title) AS tag_title
+				COALESCE(mem.real_name, \'\') AS author_name, COALESCE(t.title, tf.title) AS title,
+				COALESCE(tt.title, ttf.title) AS tag_title
 			FROM {db_prefix}lp_pages AS p
 				INNER JOIN {db_prefix}lp_page_tags AS pt ON (p.page_id = pt.page_id)
 				INNER JOIN {db_prefix}lp_tags AS tag ON (pt.tag_id = tag.tag_id)
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
 					p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang}
+				)
+				LEFT JOIN {db_prefix}lp_titles AS tf ON (
+					p.page_id = tf.item_id AND tf.type = {literal:page} AND tf.lang = {string:fallback_lang}
 				)
 				LEFT JOIN {db_prefix}lp_titles AS tt ON (
 					pt.tag_id = tt.item_id AND tt.type = {literal:tag} AND tt.lang = {string:lang}

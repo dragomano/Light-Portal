@@ -9,12 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Repositories;
 
-use Bugo\Compat\{Database as Db, Msg, Utils};
+use Bugo\Compat\{Db, Msg, Utils};
 use Bugo\LightPortal\Helper;
 
 if (! defined('SMF'))
@@ -59,6 +59,8 @@ abstract class AbstractRepository
 		);
 
 		Utils::$context['lp_num_queries']++;
+
+		$this->session('lp')->free('active_' . $table);
 	}
 
 	protected function prepareBbcContent(array &$entity): void

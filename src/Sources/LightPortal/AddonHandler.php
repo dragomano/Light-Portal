@@ -9,7 +9,7 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal;
@@ -23,25 +23,17 @@ use SplObjectStorage;
 if (! defined('SMF'))
 	die('No direct access...');
 
-class PluginStorage extends SplObjectStorage
-{
-	public function getHash($object): string
-	{
-		return $object::class;
-	}
-}
-
 final class AddonHandler
 {
 	use Helper;
 
-	private array $pluginSettings;
+	private array $settings;
 
-	private PluginStorage $plugins;
+	private SplObjectStorage $storage;
 
-	private CSS $cssMinifier;
+	private CSS $css;
 
-	private JS $jsMinifier;
+	private JS $js;
 
 	private int $maxCssFilemtime = 0;
 
@@ -50,19 +42,6 @@ final class AddonHandler
 	private static self $instance;
 
 	private string $prefix = 'lp_';
-
-	private function __construct()
-	{
-		$this->pluginSettings = (new PluginRepository())->getSettings();
-
-		$this->plugins = new PluginStorage();
-
-		$this->cssMinifier = new CSS();
-
-		$this->jsMinifier = new JS();
-
-		$this->prepareAssets();
-	}
 
 	public static function getInstance(): self
 	{
@@ -96,8 +75,8 @@ final class AddonHandler
 
 			$class = new $className();
 
-			if (! $this->plugins->contains($class)) {
-				$this->plugins->attach($class, [
+			if (! $this->storage->contains($class)) {
+				$this->storage->attach($class, [
 					'name' => $addon,
 					'icon' => $class->icon,
 					'type' => $class->type,
@@ -106,13 +85,12 @@ final class AddonHandler
 				$path = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $addon . DIRECTORY_SEPARATOR;
 				$snakeName = $this->getSnakeName($addon);
 
-				Utils::$context[$this->prefix . $snakeName . '_plugin'] = $this->pluginSettings[$snakeName] ?? [];
-				Utils::$context['lp_loaded_addons'][$snakeName] = $this->plugins->offsetGet($class);
+				Utils::$context[$this->prefix . $snakeName . '_plugin'] = $this->settings[$snakeName] ?? [];
+				Utils::$context['lp_loaded_addons'][$snakeName] = $this->storage->offsetGet($class);
 
 				$this->loadLangs($path, $snakeName);
 
-				if (in_array($addon, Utils::$context['lp_enabled_plugins']))
-					$this->loadAssets($path);
+				$this->loadAssets($path, $addon);
 			}
 
 			if (method_exists($class, $hook)) {
@@ -122,15 +100,7 @@ final class AddonHandler
 			}
 		}
 
-		$cssFile = Theme::$current->settings['default_theme_dir'] . '/css/light_portal/plugins.css';
-		if (! is_file($cssFile) || $this->maxCssFilemtime > filemtime($cssFile)) {
-			$this->cssMinifier->minify($cssFile);
-		}
-
-		$jsFile = Theme::$current->settings['default_theme_dir'] . '/scripts/light_portal/plugins.js';
-		if (! is_file($jsFile) || $this->maxJsFilemtime > filemtime($jsFile)) {
-			$this->jsMinifier->minify($jsFile);
-		}
+		$this->minify();
 	}
 
 	private function prepareAssets(array $assets = []): void
@@ -180,7 +150,7 @@ final class AddonHandler
 		}
 	}
 
-	private function loadAssets(string $path): void
+	private function loadAssets(string $path, string $addon): void
 	{
 		$assets = [
 			'css' => $path . 'style.css',
@@ -188,14 +158,53 @@ final class AddonHandler
 		];
 
 		foreach ($assets as $type => $file) {
-			if (! is_file($file)) {
+			if (! is_file($file))
 				continue;
+
+			if (in_array($addon, Utils::$context['lp_enabled_plugins'])) {
+				$this->{$type}->add($file);
 			}
 
-			$this->{$type . 'Minifier'}->add($file);
-
-			if (($maxFilemtime = filemtime($file)) > $this->{'max' . ucfirst($type) . 'Filemtime'})
+			if (($maxFilemtime = filemtime($file)) > $this->{'max' . ucfirst($type) . 'Filemtime'}) {
 				$this->{'max' . ucfirst($type) . 'Filemtime'} = $maxFilemtime;
+			}
 		}
+	}
+
+	private function minify(): void
+	{
+		$cssFile = Theme::$current->settings['default_theme_dir'] . '/css/light_portal/plugins.css';
+		if (! is_file($cssFile) || $this->maxCssFilemtime > filemtime($cssFile)) {
+			$this->css->minify($cssFile);
+		}
+
+		$jsFile = Theme::$current->settings['default_theme_dir'] . '/scripts/light_portal/plugins.js';
+		if (! is_file($jsFile) || $this->maxJsFilemtime > filemtime($jsFile)) {
+			$this->js->minify($jsFile);
+		}
+	}
+
+	private function getStorage(): SplObjectStorage
+	{
+		return new class extends SplObjectStorage
+		{
+			public function getHash($object): string
+			{
+				return $object::class;
+			}
+		};
+	}
+
+	private function __construct()
+	{
+		$this->settings = (new PluginRepository())->getSettings();
+
+		$this->storage = $this->getStorage();
+
+		$this->css = new CSS();
+
+		$this->js = new JS();
+
+		$this->prepareAssets();
 	}
 }

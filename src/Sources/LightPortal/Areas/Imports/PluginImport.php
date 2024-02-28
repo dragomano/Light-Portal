@@ -9,7 +9,7 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Areas\Imports;
@@ -26,7 +26,7 @@ final class PluginImport extends AbstractImport
 	public function main(): void
 	{
 		Theme::loadTemplate('LightPortal/ManageImpex');
-		
+
 		Utils::$context['sub_template'] = 'manage_import';
 
 		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_plugins_import'];

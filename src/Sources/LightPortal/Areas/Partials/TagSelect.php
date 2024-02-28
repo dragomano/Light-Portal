@@ -9,7 +9,7 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Areas\Partials;
@@ -23,10 +23,10 @@ final class TagSelect extends AbstractPartial
 		Utils::$context['lp_tags'] = $this->getEntityData('tag');
 
 		$data = $values = [];
-		foreach (Utils::$context['lp_tags'] as $value => $label) {
+		foreach (Utils::$context['lp_tags'] as $id => $tag) {
 			$data[] = [
-				'label' => $this->getIcon($label['icon']) . $label['title'],
-				'value' => $value,
+				'label' => $this->getIcon($tag['icon']) . $tag['title'],
+				'value' => $id,
 			];
 		}
 

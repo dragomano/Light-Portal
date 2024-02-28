@@ -15,7 +15,7 @@
 
 namespace Bugo\LightPortal\Addons\GalleryBlock;
 
-use Bugo\Compat\{Config, Database as Db, Lang, User, Utils};
+use Bugo\Compat\{Config, Db, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField};
 
