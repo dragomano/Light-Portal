@@ -9,12 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Areas\Validators;
 
-use Bugo\LightPortal\Utils\{Lang, Utils};
+use Bugo\Compat\{Lang, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -42,8 +42,7 @@ class BlockValidator extends AbstractValidator
 
 	public function validate(): array
 	{
-		$data = [];
-		$params = [];
+		$data = $params = [];
 
 		if ($this->request()->only(['save', 'save_exit', 'preview'])) {
 			foreach (Utils::$context['lp_languages'] as $lang) {
@@ -71,8 +70,14 @@ class BlockValidator extends AbstractValidator
 		if (empty($data['areas']))
 			$errors[] = 'no_areas';
 
-		if ($data['areas'] && empty($this->filterVar($data['areas'], ['options' => ['regexp' => '/' . LP_AREAS_PATTERN . '/']])))
+		if (
+			$data['areas']
+			&& empty($this->filterVar($data['areas'], [
+				'options' => ['regexp' => '/' . LP_AREAS_PATTERN . '/']
+			]))
+		) {
 			$errors[] = 'no_valid_areas';
+		}
 
 		$this->hook('findBlockErrors', [&$errors, $data]);
 
@@ -80,8 +85,9 @@ class BlockValidator extends AbstractValidator
 			$this->request()->put('preview', true);
 			Utils::$context['post_errors'] = [];
 
-			foreach ($errors as $error)
+			foreach ($errors as $error) {
 				Utils::$context['post_errors'][] = Lang::$txt['lp_post_error_' . $error];
+			}
 		}
 	}
 }

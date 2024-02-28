@@ -5,7 +5,7 @@ order: 4
 
 # Portal hooks
 
-Light Portal is wonderfully extensible thanks to plugins. And hooks help plugins to interact with various components of the portal.
+Light Portal is wonderfully extensible thanks to plugins. Hooks allow plugins to interact with various components of the portal.
 
 ## Basic hooks
 
@@ -85,31 +85,6 @@ public function prepareEditor(array $object): void
     }');
 }
 ```
-
-### preloadScripts
-
-(`&$scripts`)
-
-> helps with preloading the scripts you need
-
-::: code-group
-
-```php [PHP]
-public function preloadScripts(array &$scripts): void
-{
-    $scripts[] = 'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/js/all.min.js';
-}
-```
-
-```html [HTML]
-<link
-  rel="preload"
-  href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/js/all.min.js"
-  as="script"
-/>
-```
-
-:::
 
 ### preloadStyles
 
@@ -226,7 +201,7 @@ public function prepareBlockFields(): void
 
 (`$item`)
 
-> custom actions on saving/edition blocks
+> custom actions on saving/editing blocks
 
 ### onBlockRemoving
 
@@ -288,7 +263,7 @@ public function preparePageFields(): void
 
 (`$item`)
 
-> custom actions on saving/edition pages
+> custom actions on saving/editing pages
 
 ### onPageRemoving
 
@@ -363,20 +338,20 @@ public function commentButtons(array $comment, array &$buttons): void
 
 ### addSettings
 
-(`&$config_vars`)
+(`&$settings`)
 
 > adding custom settings of your plugin
 
 ```php
-public function addSettings(array &$config_vars): void
+public function addSettings(array &$settings): void
 {
-    $config_vars['disqus'][] = ['text', 'shortname', 'subtext' => Lang::$txt['lp_disqus']['shortname_subtext'], 'required' => true];
+    $settings['disqus'][] = ['text', 'shortname', 'subtext' => Lang::$txt['lp_disqus']['shortname_subtext'], 'required' => true];
 }
 ```
 
 ### saveSettings
 
-(`&$plugin_options`)
+(`&$settings`)
 
 > additional actions after plugin settings saving
 
@@ -446,13 +421,13 @@ public function frontAssets(): void
 > adding custom columns, tables, wheres, params and orders to _init_ function
 
 ```php
-public function frontTopics(array &$custom_columns, array &$custom_tables): void
+public function frontTopics(array &$columns, array &$tables): void
 {
     if (! class_exists('TopicRatingBar'))
         return;
 
-    $custom_columns[] = 'tr.total_votes, tr.total_value';
-    $custom_tables[]  = 'LEFT JOIN {db_prefix}topic_ratings AS tr ON (t.id_topic = tr.id)';
+    $columns[] = 'tr.total_votes, tr.total_value';
+    $tables[]  = 'LEFT JOIN {db_prefix}topic_ratings AS tr ON (t.id_topic = tr.id)';
 }
 ```
 
@@ -497,25 +472,25 @@ public function frontTopicsOutput(array &$topics, array $row): void
 
 ### prepareIconList
 
-(`&$all_icons, &$template`)
+(`&$icons, &$template`)
 
 > adding custom list of icons (instead of FontAwesome)
 
 ```php
-public function prepareIconList(array &$all_icons): void
+public function prepareIconList(array &$icons): void
 {
-    if (($icons = $this->cache()->get('all_main_icons', 30 * 24 * 60 * 60)) === null) {
+    if (($mainIcons = $this->cache()->get('all_main_icons', 30 * 24 * 60 * 60)) === null) {
         $set = $this->getIconSet();
 
-        $icons = [];
+        $mainIcons = [];
         foreach ($set as $icon) {
-            $icons[] = $this->prefix . $icon;
+            $mainIcons[] = $this->prefix . $icon;
         }
 
-        $this->cache()->put('all_main_icons', $icons, 30 * 24 * 60 * 60);
+        $this->cache()->put('all_main_icons', $mainIcons, 30 * 24 * 60 * 60);
     }
 
-    $all_icons = array_merge($all_icons, $icons);
+    $icons = array_merge($icons, $mainIcons);
 }
 ```
 
@@ -542,8 +517,11 @@ public function prepareIconList(array &$all_icons): void
 ```php
 public function updateAdminAreas(array &$areas): void
 {
-    if (User::$info['is_admin'])
-        $areas['lp_pages']['subsections']['import_from_ep'] = [Utils::$context['lp_icon_set']['import'] . Lang::$txt['lp_eh_portal']['label_name']];
+    if (User::$info['is_admin']) {
+        $areas['lp_pages']['subsections']['import_from_ep'] = [
+            Utils::$context['lp_icon_set']['import'] . Lang::$txt['lp_eh_portal']['label_name']
+        ];
+    }
 }
 ```
 
@@ -556,8 +534,7 @@ public function updateAdminAreas(array &$areas): void
 ```php
 public function updateBlockAreas(array &$areas): void
 {
-    if (User::$info['is_admin'])
-        $areas['import_from_tp'] = [new BlockImport, 'main'];
+    $areas['import_from_tp'] = [new BlockImport(), 'main'];
 }
 ```
 
@@ -570,10 +547,28 @@ public function updateBlockAreas(array &$areas): void
 ```php
 public function updatePageAreas(array &$areas): void
 {
-    if (User::$info['is_admin'])
-        $areas['import_from_ep'] = [new Import, 'main'];
+    $areas['import_from_ep'] = [new Import(), 'main'];
 }
 ```
+
+### updateCategoryAreas
+
+(`&$areas`)
+
+> adding custom tabs into Category area settings
+
+```php
+public function updateCategoryAreas(array &$areas): void
+{
+    $areas['import_from_tp'] = [new Import(), 'main'];
+}
+```
+
+### updateTagAreas
+
+(`&$areas`)
+
+> adding custom tabs into Tag area settings
 
 ### updatePluginAreas
 
@@ -584,7 +579,7 @@ public function updatePageAreas(array &$areas): void
 ```php
 public function updatePluginAreas(array &$areas): void
 {
-    $areas['add'] = [new Handler, 'add'];
+    $areas['add'] = [new Handler(), 'add'];
 }
 ```
 

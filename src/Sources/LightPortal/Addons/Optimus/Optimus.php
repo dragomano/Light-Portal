@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 25.01.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\Optimus;
 
+use Bugo\Compat\{Config, Utils};
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\{Config, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -25,21 +25,22 @@ class Optimus extends Plugin
 {
 	public string $type = 'article';
 
-	public function addSettings(array &$config_vars): void
+	public function addSettings(array &$settings): void
 	{
-		$config_vars['optimus'][] = ['check', 'use_topic_descriptions'];
-		$config_vars['optimus'][] = ['check', 'show_topic_keywords'];
+		$settings['optimus'][] = ['check', 'use_topic_descriptions'];
+		$settings['optimus'][] = ['check', 'show_topic_keywords'];
 	}
 
-	public function frontTopics(array &$custom_columns): void
+	public function frontTopics(array &$columns): void
 	{
 		if (
 			empty(Utils::$context['lp_optimus_plugin']['use_topic_descriptions'])
 			|| ! class_exists('\Bugo\Optimus\Integration')
-		)
+		) {
 			return;
+		}
 
-		$custom_columns[] = 't.optimus_description';
+		$columns[] = 't.optimus_description';
 	}
 
 	public function frontTopicsOutput(array &$topics, array $row): void
@@ -55,8 +56,9 @@ class Optimus extends Plugin
 			! empty(Utils::$context['lp_optimus_plugin']['use_topic_descriptions'])
 			&& ! empty($row['optimus_description'])
 			&& ! empty($topics[$row['id_topic']]['teaser'])
-		)
+		) {
 			$topics[$row['id_topic']]['teaser'] = $row['optimus_description'];
+		}
 	}
 
 	public function getKeywords(int $topic): array
@@ -76,7 +78,7 @@ class Optimus extends Plugin
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			$keywords[$row['topic_id']][] = [
 				'name' => $row['name'],
-				'href' => Config::$scripturl . '?action=keywords;id=' . $row['id']
+				'href' => Config::$scripturl . '?action=keywords;id=' . $row['id'],
 			];
 		}
 

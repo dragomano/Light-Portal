@@ -1,6 +1,6 @@
 <?php
 
-use Bugo\LightPortal\Utils\{Config, Lang, User};
+use Bugo\Compat\{Config, Lang};
 
 return [
 	'basic_settings' => '
@@ -42,15 +42,6 @@ return [
 		{
 			element: document.getElementById("setting_lp_fa_source").parentNode.parentNode,
 			intro: "' . Lang::$txt['lp_hello_portal']['extra_settings_tour'][2] . '"
-		},',
-	'categories' => '
-		{
-			element: document.querySelector(".lp_categories dd"),
-			intro: "' . Lang::$txt['lp_hello_portal']['categories_tour'][0] . '"
-		},
-		{
-			element: document.querySelector(".lp_categories dt"),
-			intro: "' . Lang::$txt['lp_hello_portal']['categories_tour'][1] . '"
 		},',
 	'panels' => '
 		{
@@ -142,6 +133,27 @@ return [
 			element: document.querySelector(".additional_row input[type=search]"),
 			intro: "' . Lang::$txt['lp_hello_portal']['pages_tour'][7] . '"
 		}',
+	'categories' => '
+		{
+			element: document.getElementById("admin_content"),
+			intro: "' . Lang::$txt['lp_hello_portal']['categories_tour'][0] . '"
+		},
+		{
+			element: document.querySelector("tbody tr"),
+			intro: "' . Lang::$txt['lp_hello_portal']['categories_tour'][1] . '"
+		},
+		{
+			element: document.querySelector("td.priority"),
+			intro: "' . Lang::$txt['lp_hello_portal']['categories_tour'][2] . '"
+		},
+		{
+			element: document.querySelector("td.status"),
+			intro: "' . Lang::$txt['lp_hello_portal']['categories_tour'][3] . '"
+		},
+		{
+			element: document.querySelector("td.actions"),
+			intro: "' . Lang::$txt['lp_hello_portal']['categories_tour'][4] . '"
+		},',
 	'plugins' => '
 		{
 			element: document.getElementById("admin_content"),

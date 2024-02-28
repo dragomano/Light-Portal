@@ -9,11 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Areas;
 
+use Bugo\Compat\{Config, ErrorHandler, Lang, Security, Theme, Utils};
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, TextField};
 use Bugo\LightPortal\Areas\Partials\{AreaSelect, ContentClassSelect, IconSelect};
 use Bugo\LightPortal\Areas\Partials\{PermissionSelect, PlacementSelect, TitleClassSelect};
@@ -21,14 +22,15 @@ use Bugo\LightPortal\Areas\Validators\BlockValidator;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Models\BlockModel;
 use Bugo\LightPortal\Repositories\BlockRepository;
-use Bugo\LightPortal\Utils\{Config, Content,  ErrorHandler, Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\Content;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class BlockArea
 {
-	use Area, Helper;
+	use Area;
+	use Helper;
 
 	private BlockRepository $repository;
 
@@ -55,44 +57,23 @@ final class BlockArea
 		Utils::$context['lp_current_blocks'] = $this->repository->getAll();
 	}
 
-	public function doActions(): void
-	{
-		if ($this->request()->hasNot('actions'))
-			return;
-
-		$data = $this->request()->json();
-
-		if (isset($data['del_item']))
-			$this->remove([(int) $data['del_item']]);
-
-		if (isset($data['clone_block']))
-			$this->makeCopy((int) $data['clone_block']);
-
-		if (isset($data['toggle_item']))
-			$this->toggleStatus([(int) $data['toggle_item']]);
-
-		$this->updatePriority();
-
-		$this->cache()->flush();
-
-		exit;
-	}
-
 	public function add(): void
 	{
 		Theme::loadTemplate('LightPortal/ManageBlocks');
 
 		Utils::$context['sub_template'] = 'block_add';
 
-		Utils::$context['page_title']    = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_blocks_add_title'];
-		Utils::$context['canonical_url'] = Config::$scripturl . '?action=admin;area=lp_blocks;sa=add';
+		Utils::$context['page_title']  = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_blocks_add_title'];
+		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_blocks;sa=add';
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_blocks_add_description']
+			'description' => Lang::$txt['lp_blocks_add_description'],
 		];
 
-		Lang::$txt['lp_blocks_add_instruction'] = sprintf(Lang::$txt['lp_blocks_add_instruction'], Config::$scripturl . '?action=admin;area=lp_plugins');
+		Lang::$txt['lp_blocks_add_instruction'] = sprintf(
+			Lang::$txt['lp_blocks_add_instruction'], Config::$scripturl . '?action=admin;area=lp_plugins'
+		);
 
 		Utils::$context['current_block']['placement'] = $this->request('placement', 'top');
 
@@ -121,10 +102,6 @@ final class BlockArea
 	{
 		$item = (int) ($this->request('block_id') ?: $this->request('id'));
 
-		if (empty($item)) {
-			ErrorHandler::fatalLang('lp_block_not_found', status: 404);
-		}
-
 		Theme::loadTemplate('LightPortal/ManageBlocks');
 
 		Utils::$context['sub_template'] = 'block_post';
@@ -140,15 +117,19 @@ final class BlockArea
 
 		Utils::$context['current_block'] = $this->repository->getData($item);
 
+		if (empty(Utils::$context['current_block'])) {
+			ErrorHandler::fatalLang('lp_block_not_found', status: 404);
+		}
+
 		if ($this->request()->has('remove')) {
-			$this->remove([$item]);
+			$this->repository->remove([$item]);
 
 			Utils::redirectexit('action=admin;area=lp_blocks;sa=main');
 		}
 
 		$this->validateData();
 
-		Utils::$context['canonical_url'] = Config::$scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . Utils::$context['lp_block']['id'];
+		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . Utils::$context['lp_block']['id'];
 
 		$this->prepareFormFields();
 		$this->prepareEditor();
@@ -157,51 +138,38 @@ final class BlockArea
 		$this->repository->setData(Utils::$context['lp_block']['id']);
 	}
 
-	private function remove(array $items): void
+	private function doActions(): void
 	{
-		if (empty($items))
+		if ($this->request()->hasNot('actions'))
 			return;
 
-		Utils::$smcFunc['db_query']('', '
-			DELETE FROM {db_prefix}lp_blocks
-			WHERE block_id IN ({array_int:items})',
-			[
-				'items' => $items,
-			]
-		);
+		$data = $this->request()->json();
 
-		Utils::$smcFunc['db_query']('', '
-			DELETE FROM {db_prefix}lp_titles
-			WHERE item_id IN ({array_int:items})
-				AND type = {literal:block}',
-			[
-				'items' => $items,
-			]
-		);
+		if (isset($data['del_item']))
+			$this->repository->remove([(int) $data['del_item']]);
 
-		Utils::$smcFunc['db_query']('', '
-			DELETE FROM {db_prefix}lp_params
-			WHERE item_id IN ({array_int:items})
-				AND type = {literal:block}',
-			[
-				'items' => $items,
-			]
-		);
+		if (isset($data['clone_block']))
+			$this->makeCopy((int) $data['clone_block']);
 
-		Utils::$context['lp_num_queries'] += 3;
+		if (isset($data['toggle_item']))
+			$this->repository->toggleStatus([(int) $data['toggle_item']]);
 
-		$this->hook('onBlockRemoving', [$items]);
+		$this->repository->updatePriority();
+
+		$this->cache()->flush();
+
+		exit;
 	}
 
 	private function makeCopy(int $item): void
 	{
-		if (empty($item))
+		if ($item === 0)
 			return;
 
 		$this->request()->put('clone', true);
 
 		$result = [
-			'success' => false
+			'success' => false,
 		];
 
 		Utils::$context['lp_block']       = $this->repository->getData($item);
@@ -210,58 +178,13 @@ final class BlockArea
 		if (Utils::$context['lp_block']['id']) {
 			$result = [
 				'id'      => Utils::$context['lp_block']['id'],
-				'success' => true
+				'success' => true,
 			];
 		}
 
 		$this->cache()->forget('active_blocks');
 
 		exit(json_encode($result));
-	}
-
-	private function updatePriority(): void
-	{
-		$data = $this->request()->json();
-
-		if (empty($data['update_priority']))
-			return;
-
-		$blocks = $data['update_priority'];
-
-		$conditions = '';
-		foreach ($blocks as $priority => $item) {
-			$conditions .= ' WHEN block_id = ' . $item . ' THEN ' . $priority;
-		}
-
-		if (empty($conditions))
-			return;
-
-		if (is_array($blocks)) {
-			Utils::$smcFunc['db_query']('', /** @lang text */ '
-				UPDATE {db_prefix}lp_blocks
-				SET priority = CASE ' . $conditions . ' ELSE priority END
-				WHERE block_id IN ({array_int:blocks})',
-				[
-					'blocks' => $blocks,
-				]
-			);
-
-			Utils::$context['lp_num_queries']++;
-
-			if ($data['update_placement']) {
-				Utils::$smcFunc['db_query']('', '
-					UPDATE {db_prefix}lp_blocks
-					SET placement = {string:placement}
-					WHERE block_id IN ({array_int:blocks})',
-					[
-						'placement' => $data['update_placement'],
-						'blocks'    => $blocks,
-					]
-				);
-
-				Utils::$context['lp_num_queries']++;
-			}
-		}
 	}
 
 	private function getParams(): array
@@ -284,45 +207,50 @@ final class BlockArea
 
 	private function validateData(): void
 	{
-		[$post_data, $parameters] = (new BlockValidator())->validate();
+		[$postData, $parameters] = (new BlockValidator())->validate();
 
 		$options = $this->getParams();
 
-		$block_options = Utils::$context['current_block']['options'] ?? $options;
+		$blockOptions = Utils::$context['current_block']['options'] ?? $options;
 
 		$type = Utils::$context['current_block']['type'];
 		Utils::$context['current_block']['icon'] ??= Utils::$context['lp_loaded_addons'][$type]['icon'] ?? '';
 
-		$block = new BlockModel($post_data, Utils::$context['current_block']);
-		$block->titles = Utils::$context['current_block']['titles'] ?? [];
-		$block->options = $options;
+		$block = new BlockModel($postData, Utils::$context['current_block']);
 		$block->icon = $block->icon === 'undefined' ? '' : $block->icon;
-		$block->priority = empty($block->id) ? $this->getPriority() : $block->priority;
 		$block->permissions = empty(Utils::$context['user']['is_admin']) ? 4 : $block->permissions;
 		$block->contentClass = empty($block->options['no_content_class']) ? $block->contentClass : '';
-
-		foreach ($block->options as $option => $value) {
-			if (isset($parameters[$option]) && isset($post_data['parameters']) && ! isset($post_data['parameters'][$option])) {
-				$post_data['parameters'][$option] = 0;
-
-				if ($option === 'no_content_class')
-					$post_data['parameters'][$option] = $value;
-
-				if ($parameters[$option] === FILTER_DEFAULT)
-					$post_data['parameters'][$option] = '';
-
-				if (is_array($parameters[$option]) && $parameters[$option]['flags'] === FILTER_REQUIRE_ARRAY)
-					$post_data['parameters'][$option] = [];
-			}
-
-			$block->options[$option] = $post_data['parameters'][$option] ?? $block_options[$option] ?? $value;
-		}
+		$block->titles = Utils::$context['current_block']['titles'] ?? [];
+		$block->options = $options;
 
 		foreach (Utils::$context['lp_languages'] as $lang) {
-			$block->titles[$lang['filename']] = $post_data['title_' . $lang['filename']] ?? $block->titles[$lang['filename']] ?? '';
+			$block->titles[$lang['filename']] = $postData['title_' . $lang['filename']]
+				?? $block->titles[$lang['filename']]
+				?? '';
 		}
 
 		$this->cleanBbcode($block->titles);
+
+		foreach ($block->options as $option => $value) {
+			if (
+				isset($parameters[$option])
+				&& isset($postData['parameters'])
+				&& ! isset($postData['parameters'][$option])
+			) {
+				$postData['parameters'][$option] = 0;
+
+				if ($option === 'no_content_class')
+					$postData['parameters'][$option] = $value;
+
+				if ($parameters[$option] === FILTER_DEFAULT)
+					$postData['parameters'][$option] = '';
+
+				if (is_array($parameters[$option]) && $parameters[$option]['flags'] === FILTER_REQUIRE_ARRAY)
+					$postData['parameters'][$option] = [];
+			}
+
+			$block->options[$option] = $postData['parameters'][$option] ?? $blockOptions[$option] ?? $value;
+		}
 
 		Utils::$context['lp_block'] = $block->toArray();
 	}
@@ -348,31 +276,31 @@ final class BlockArea
 
 		CustomField::make('placement', Lang::$txt['lp_block_placement'])
 			->setTab('access_placement')
-			->setValue(fn() => new PlacementSelect);
+			->setValue(static fn() => new PlacementSelect());
 
 		CustomField::make('permissions', Lang::$txt['edit_permissions'])
 			->setTab('access_placement')
-			->setValue(fn() => new PermissionSelect, [
+			->setValue(static fn() => new PermissionSelect(), [
 				'type' => 'block'
 			]);
 
 		CustomField::make('areas', Lang::$txt['lp_block_areas'])
 			->setTab('access_placement')
 			->setAfter($this->getAreasInfo())
-			->setValue(fn() => new AreaSelect);
+			->setValue(static fn() => new AreaSelect());
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
 			->setTab('appearance')
-			->setValue(fn() => new IconSelect);
+			->setValue(static fn() => new IconSelect());
 
 		CustomField::make('title_class', Lang::$txt['lp_block_title_class'])
 			->setTab('appearance')
-			->setValue(fn() => new TitleClassSelect);
+			->setValue(static fn() => new TitleClassSelect());
 
 		if (empty(Utils::$context['lp_block']['options']['no_content_class'])) {
 			CustomField::make('content_class', Lang::$txt['lp_block_content_class'])
 				->setTab('appearance')
-				->setValue(fn() => new ContentClassSelect);
+				->setValue(static fn() => new ContentClassSelect());
 		}
 
 		CheckboxField::make('hide_header', Lang::$txt['lp_block_hide_header'])
@@ -421,7 +349,8 @@ final class BlockArea
 			return;
 
 		$this->cache()->flush();
-		$this->checkSubmitOnce('free');
+
+		Security::checkSubmitOnce('free');
 
 		Utils::$context['preview_title']   = Utils::$context['lp_block']['titles'][Utils::$context['user']['language']] ?? '';
 		Utils::$context['preview_content'] = Utils::$smcFunc['htmlspecialchars'](Utils::$context['lp_block']['content'], ENT_QUOTES);
@@ -440,28 +369,6 @@ final class BlockArea
 		if (! empty(Utils::$context['lp_block']['options']['hide_header'])) {
 			Utils::$context['preview_title'] = Utils::$context['lp_block']['title_class'] = '';
 		}
-	}
-
-	private function getPriority(): int
-	{
-		if (empty(Utils::$context['lp_block']['placement']))
-			return 0;
-
-		$result = Utils::$smcFunc['db_query']('', '
-			SELECT MAX(priority) + 1
-			FROM {db_prefix}lp_blocks
-			WHERE placement = {string:placement}',
-			[
-				'placement' => Utils::$context['lp_block']['placement'],
-			]
-		);
-
-		[$priority] = Utils::$smcFunc['db_fetch_row']($result);
-
-		Utils::$smcFunc['db_free_result']($result);
-		Utils::$context['lp_num_queries']++;
-
-		return (int) $priority;
 	}
 
 	private function prepareBlockList(): void

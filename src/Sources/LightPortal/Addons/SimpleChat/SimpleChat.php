@@ -10,14 +10,14 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 18.01.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleChat;
 
+use Bugo\Compat\{Config, Db, Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -102,19 +102,19 @@ class SimpleChat extends Block
 			return;
 
 		Theme::loadCSSFile('admin.css');
-		Theme::loadJSFile('light_portal/bundle.min.js', ['defer' => true]);
+		$this->loadJSFile('light_portal/bundle.min.js', ['defer' => true]);
 
 		$parameters['show_avatars'] ??= false;
 
-		$messages = $this->cache('simple_chat_addon_b' . $data->block_id)
-			->setLifeTime($data->cache_time)
-			->setFallback(self::class, 'getData', $data->block_id, $parameters);
+		$messages = $this->cache('simple_chat_addon_b' . $data->id)
+			->setLifeTime($data->cacheTime)
+			->setFallback(self::class, 'getData', $data->id, $parameters);
 
-		Utils::$context['lp_chats'][$data->block_id] = json_encode($messages, JSON_UNESCAPED_UNICODE);
+		Utils::$context['lp_chats'][$data->id] = json_encode($messages, JSON_UNESCAPED_UNICODE);
 
 		$this->setTemplate();
 
-		show_chat_block($data->block_id, (bool) $parameters['show_avatars'], $this->isInSidebar($data->block_id));
+		show_chat_block($data->id, (bool) $parameters['show_avatars'], $this->isInSidebar($data->id));
 	}
 
 	public function onBlockRemoving(array $items): void
@@ -132,7 +132,7 @@ class SimpleChat extends Block
 	{
 		$tables = [];
 
-		$this->dbExtend('packages');
+		Db::extend('packages');
 
 		if (! empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'lp_simple_chat_messages')))
 			return;

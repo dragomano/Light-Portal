@@ -10,16 +10,17 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 04.02.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TrendingTopics;
 
+use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\LightPortal\Areas\Fields\NumberField;
 use Bugo\LightPortal\Areas\Fields\SelectField;
-use Bugo\LightPortal\Utils\{Config, DateTime, Lang, User, Utils};
+use Bugo\LightPortal\Utils\DateTime;
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -32,7 +33,9 @@ class TrendingTopics extends Block
 {
 	public string $icon = 'fas fa-arrow-trend-up';
 
-	private array $timePeriod = ['1 day', '1 week', '2 week', '1 month', '2 month', '4 month', '6 month', '8 month', '1 year'];
+	private array $timePeriod = [
+		'1 day', '1 week', '2 week', '1 month', '2 month', '4 month', '6 month', '8 month', '1 year'
+	];
 
 	public function prepareBlockParams(array &$params): void
 	{
@@ -86,10 +89,10 @@ class TrendingTopics extends Block
 	 */
 	public function getData(array $parameters): array
 	{
-		$timePeriod = $parameters['time_period'] ?? $this->timePeriod[1];
-		$numTopics  = empty($parameters['num_topics']) ? 0 : (int) $parameters['num_topics'];
+		$timePeriod  = $parameters['time_period'] ?? $this->timePeriod[1];
+		$topicsCount = empty($parameters['num_topics']) ? 0 : (int) $parameters['num_topics'];
 
-		if (empty($numTopics))
+		if (empty($topicsCount))
 			return [];
 
 		$result = Utils::$smcFunc['db_query']('', '
@@ -105,7 +108,7 @@ class TrendingTopics extends Block
 			LIMIT {int:limit}',
 			[
 				'period' => strtoupper($timePeriod),
-				'limit'  => $numTopics,
+				'limit'  => $topicsCount,
 			]
 		);
 
@@ -134,8 +137,8 @@ class TrendingTopics extends Block
 		if ($data->type !== 'trending_topics')
 			return;
 
-		$topics = $this->cache('trending_topics_addon_b' . $data->block_id . '_u' . User::$info['id'])
-			->setLifeTime($data->cache_time)
+		$topics = $this->cache('trending_topics_addon_b' . $data->id . '_u' . User::$info['id'])
+			->setLifeTime($data->cacheTime)
 			->setFallback(self::class, 'getData', $parameters);
 
 		if ($topics) {

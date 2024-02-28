@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\DummyArticleCards;
 
+use Bugo\Compat\{Config, Utils};
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\{Config, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -27,10 +27,10 @@ class DummyArticleCards extends Plugin
 
 	private string $mode = 'dummy_articles_cards';
 
-	public function addSettings(array &$config_vars): void
+	public function addSettings(array &$settings): void
 	{
-		$config_vars['dummy_article_cards'][] = ['check', 'use_lorem_ipsum'];
-		$config_vars['dummy_article_cards'][] = ['text', 'keywords', 'placeholder' => 'paris,girl'];
+		$settings['dummy_article_cards'][] = ['check', 'use_lorem_ipsum'];
+		$settings['dummy_article_cards'][] = ['text', 'keywords', 'placeholder' => 'paris,girl'];
 	}
 
 	public function frontModes(array &$modes): void

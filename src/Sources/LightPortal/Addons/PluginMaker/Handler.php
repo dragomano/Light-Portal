@@ -10,18 +10,19 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.01.24
+ * @version 27.02.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
 
+use Bugo\Compat\{Config, Lang, Security, User, Utils};
 use Bugo\LightPortal\Addons\{Block, Plugin};
 use Bugo\LightPortal\Areas\Area;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, ColorField, CustomField, NumberField};
 use Bugo\LightPortal\Areas\Fields\{RadioField, RangeField, SelectField, TextField};
 use Bugo\LightPortal\Areas\Partials\IconSelect;
 use Bugo\LightPortal\Repositories\PluginRepository;
-use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
+use Bugo\LightPortal\Utils\Language;
 use Nette\PhpGenerator\{PhpFile, PhpNamespace, Printer};
 
 if (! defined('LP_NAME'))
@@ -35,18 +36,23 @@ class Handler extends Plugin
 	{
 		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_plugin_maker']['add_title'];
 		Utils::$context['page_area_title'] = Lang::$txt['lp_plugin_maker']['add_title'];
-		Utils::$context['canonical_url']   = Config::$scripturl . '?action=admin;area=lp_plugins;sa=add';
+		Utils::$context['form_action']     = Config::$scripturl . '?action=admin;area=lp_plugins;sa=add';
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
 			'description' => Lang::$txt['lp_plugin_maker']['add_desc']
 		];
 
-		$addonDir = sprintf('<strong style="color: initial">%1$s/<span x-ref="plugin_name">MyNewAddon</span></strong>', LP_ADDON_DIR);
-		Lang::$txt['lp_plugin_maker']['add_info'] = sprintf(Lang::$txt['lp_plugin_maker']['add_info'], $addonDir);
+		Lang::$txt['lp_plugin_maker']['add_info'] = sprintf(Lang::$txt['lp_plugin_maker']['add_info'], sprintf(
+			'<strong style="color: initial">%1$s/<span x-ref="plugin_name">MyNewAddon</span></strong>',
+			LP_ADDON_DIR
+		));
 
-		if (! is_writable(LP_ADDON_DIR))
-			Utils::$context['lp_addon_dir_is_not_writable'] = sprintf(Lang::$txt['lp_plugin_maker']['addon_dir_not_writable'], LP_ADDON_DIR);
+		if (! is_writable(LP_ADDON_DIR)) {
+			Utils::$context['lp_addon_dir_is_not_writable'] = sprintf(
+				Lang::$txt['lp_plugin_maker']['addon_dir_not_writable'], LP_ADDON_DIR
+			);
+		}
 
 		$this->prepareForumLanguages();
 		$this->validateData();
@@ -59,10 +65,10 @@ class Handler extends Plugin
 	{
 		$temp = Lang::get();
 
-		$baseLang = Lang::getLanguageNameFromLocale(Config::$language);
+		$baseLang = Language::getNameFromLocale(Config::$language);
 
 		if (empty(Config::$modSettings['userLanguage'])) {
-			Utils::$context['lp_languages'] = ['english' => $temp[Lang::FALLBACK_LANG]];
+			Utils::$context['lp_languages'] = ['english' => $temp[Language::FALLBACK]];
 
 			if ($baseLang !== 'english')
 				Utils::$context['lp_languages'][$baseLang] = $temp[Config::$language];
@@ -70,57 +76,59 @@ class Handler extends Plugin
 			return;
 		}
 
-		$userLang = Lang::getLanguageNameFromLocale(User::$info['language']);
+		$userLang = Language::getNameFromLocale(User::$info['language']);
 
 		Utils::$context['lp_languages'] = array_merge([
-			'english' => $temp[Lang::FALLBACK_LANG],
+			'english' => $temp[Language::FALLBACK],
 			$userLang => $temp[User::$info['language']],
-			$baseLang => $temp[Config::$language]
+			$baseLang => $temp[Config::$language],
 		]);
 	}
 
 	private function validateData(): void
 	{
-		$post_data = (new Validator())->validate();
+		$postData = (new Validator())->validate();
 
 		Utils::$context['lp_plugin'] = [
-			'name'       => $post_data['name'] ?? Utils::$context['lp_plugin']['name'] = 'MyNewAddon',
-			'type'       => $post_data['type'] ?? Utils::$context['lp_plugin']['type'] ?? 'block',
-			'icon'       => $post_data['icon'] ?? Utils::$context['lp_plugin']['icon'] ?? '',
-			'author'     => $post_data['author'] ?? Utils::$context['lp_plugin']['author'] ?? Utils::$context['lp_plugin_maker_plugin']['author'] ?? User::$info['name'],
-			'email'      => $post_data['email'] ?? Utils::$context['lp_plugin']['email'] ?? Utils::$context['lp_plugin_maker_plugin']['email'] ?? User::$info['email'],
-			'site'       => $post_data['site'] ?? Utils::$context['lp_plugin']['site'] ?? Utils::$context['lp_plugin_maker_plugin']['site'] ?? '',
-			'license'    => $post_data['license'] ?? Utils::$context['lp_plugin']['license'] ?? Utils::$context['lp_plugin_maker_plugin']['license'] ?? 'gpl',
-			'smf_hooks'  => $post_data['smf_hooks'] ?? Utils::$context['lp_plugin']['smf_hooks'] ?? false,
-			'smf_ssi'    => $post_data['smf_ssi'] ?? Utils::$context['lp_plugin']['smf_ssi'] ?? false,
-			'components' => $post_data['components'] ?? Utils::$context['lp_plugin']['components'] ?? false,
+			'name'       => $postData['name'] ?? Utils::$context['lp_plugin']['name'] = 'MyNewAddon',
+			'type'       => $postData['type'] ?? Utils::$context['lp_plugin']['type'] ?? 'block',
+			'icon'       => $postData['icon'] ?? Utils::$context['lp_plugin']['icon'] ?? '',
+			'author'     => $postData['author'] ?? Utils::$context['lp_plugin']['author'] ?? Utils::$context['lp_plugin_maker_plugin']['author'] ?? User::$info['name'],
+			'email'      => $postData['email'] ?? Utils::$context['lp_plugin']['email'] ?? Utils::$context['lp_plugin_maker_plugin']['email'] ?? User::$info['email'],
+			'site'       => $postData['site'] ?? Utils::$context['lp_plugin']['site'] ?? Utils::$context['lp_plugin_maker_plugin']['site'] ?? '',
+			'license'    => $postData['license'] ?? Utils::$context['lp_plugin']['license'] ?? Utils::$context['lp_plugin_maker_plugin']['license'] ?? 'gpl',
+			'smf_hooks'  => $postData['smf_hooks'] ?? Utils::$context['lp_plugin']['smf_hooks'] ?? false,
+			'smf_ssi'    => $postData['smf_ssi'] ?? Utils::$context['lp_plugin']['smf_ssi'] ?? false,
+			'components' => $postData['components'] ?? Utils::$context['lp_plugin']['components'] ?? false,
 			'options'    => Utils::$context['lp_plugin']['options'] ?? []
 		];
 
 		if (Utils::$context['lp_plugin']['type'] !== 'block' || Utils::$context['lp_plugin']['icon'] === 'undefined')
 			Utils::$context['lp_plugin']['icon'] = '';
 
-		if (! empty($post_data['option_name'])) {
-			foreach ($post_data['option_name'] as $id => $option) {
+		if (! empty($postData['option_name'])) {
+			foreach ($postData['option_name'] as $id => $option) {
 				if (empty($option))
 					continue;
 
 				Utils::$context['lp_plugin']['options'][$id] = [
 					'name'         => $option,
-					'type'         => $post_data['option_type'][$id],
-					'default'      => $post_data['option_type'][$id] === 'check' ? isset($post_data['option_defaults'][$id]) : ($post_data['option_defaults'][$id] ?? ''),
-					'variants'     => $post_data['option_variants'][$id] ?? '',
-					'translations' => []
+					'type'         => $postData['option_type'][$id],
+					'default'      => $postData['option_type'][$id] === 'check'
+						? isset($postData['option_defaults'][$id])
+						: ($postData['option_defaults'][$id] ?? ''),
+					'variants'     => $postData['option_variants'][$id] ?? '',
+					'translations' => [],
 				];
 			}
 		}
 
 		foreach (array_keys(Utils::$context['lp_languages']) as $lang) {
-			Utils::$context['lp_plugin']['titles'][$lang] = $post_data['title_' . $lang] ?? Utils::$context['lp_plugin']['titles'][$lang] ?? '';
-			Utils::$context['lp_plugin']['descriptions'][$lang] = $post_data['description_' . $lang] ?? Utils::$context['lp_plugin']['descriptions'][$lang] ?? '';
+			Utils::$context['lp_plugin']['titles'][$lang] = $postData['title_' . $lang] ?? Utils::$context['lp_plugin']['titles'][$lang] ?? '';
+			Utils::$context['lp_plugin']['descriptions'][$lang] = $postData['description_' . $lang] ?? Utils::$context['lp_plugin']['descriptions'][$lang] ?? '';
 
-			if (! empty($post_data['option_translations'][$lang])) {
-				foreach ($post_data['option_translations'][$lang] as $id => $translation) {
+			if (! empty($postData['option_translations'][$lang])) {
+				foreach ($postData['option_translations'][$lang] as $id => $translation) {
 					if (! empty($translation))
 						Utils::$context['lp_plugin']['options'][$id]['translations'][$lang] = $translation;
 				}
@@ -135,7 +143,8 @@ class Handler extends Plugin
 
 	private function prepareFormFields(): void
 	{
-		$this->checkSubmitOnce('register');
+		Security::checkSubmitOnce('register');
+
 		$this->prepareIconList();
 
 		TextField::make('name', Lang::$txt['lp_plugin_maker']['name'])
@@ -151,12 +160,12 @@ class Handler extends Plugin
 		SelectField::make('type', Lang::$txt['lp_plugin_maker']['type'])
 			->setTab('content')
 			->setAttribute('@change', 'plugin.change($event.target.value)')
-			->setOptions(array_filter(Utils::$context['lp_plugin_types'], fn($type) => $type !== 'ssi'))
+			->setOptions(array_filter(Utils::$context['lp_plugin_types'], static fn($type) => $type !== 'ssi'))
 			->setValue(Utils::$context['lp_plugin']['type']);
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
 			->setTab('content')
-			->setValue(fn() => new IconSelect, [
+			->setValue(static fn() => new IconSelect(), [
 				'icon' => Utils::$context['lp_plugin']['icon'],
 				'type' => Utils::$context['lp_plugin']['type'],
 			]);
@@ -210,13 +219,13 @@ class Handler extends Plugin
 	private function setTitleField(): void
 	{
 		$languages = empty(Config::$modSettings['userLanguage'])
-			? [Lang::getLanguageNameFromLocale(Config::$language)]
+			? [Language::getNameFromLocale(Config::$language)]
 			: [
-				Lang::getLanguageNameFromLocale(Lang::FALLBACK_LANG),
-				Lang::getLanguageNameFromLocale(Config::$language)
+				Language::getNameFromLocale(Language::FALLBACK),
+				Language::getNameFromLocale(Config::$language)
 			];
 
-		$languages = array_unique([Lang::getLanguageNameFromLocale(Lang::FALLBACK_LANG), ...$languages]);
+		$languages = array_unique([Language::getNameFromLocale(Language::FALLBACK), ...$languages]);
 
 		$value = /** @lang text */	'
 			<div>';
@@ -257,7 +266,7 @@ class Handler extends Plugin
 						name="description_' . $key . '"
 						value="' . (Utils::$context['lp_plugin']['descriptions'][$key] ?? '') . '"
 						placeholder="' . Lang::$txt['lp_page_description'] . '"
-						' . (in_array($key, $languages) ? 'x-ref="title_' . $i-- . '"' : '') . ($lang['filename'] === Lang::FALLBACK_LANG ? ' required' : '') . '
+						' . (in_array($key, $languages) ? 'x-ref="title_' . $i-- . '"' : '') . ($lang['filename'] === Language::FALLBACK ? ' required' : '') . '
 					>
 				</div>';
 		}
@@ -275,7 +284,7 @@ class Handler extends Plugin
 		if (! empty(Utils::$context['post_errors']) || empty(Utils::$context['lp_plugin']) || $this->request()->hasNot('save'))
 			return;
 
-		$this->checkSubmitOnce('check');
+		Security::checkSubmitOnce('check');
 
 		require_once __DIR__ . '/vendor/autoload.php';
 
@@ -339,14 +348,14 @@ class Handler extends Plugin
 				->setType('array');
 		}
 
-		$plugin_name = $this->getSnakeName(Utils::$context['lp_plugin']['name']);
+		$pluginName = $this->getSnakeName(Utils::$context['lp_plugin']['name']);
 
 		if ($type === 'parser') {
 			$class->addMethod('init')->setReturnType('void')
-				->setBody("Utils::\$context['lp_content_types']['$plugin_name'] = '{Utils::\$context['lp_plugin']['name']}';");
+				->setBody("Utils::\$context['lp_content_types']['$pluginName'] = '{Utils::\$context['lp_plugin']['name']}';");
 		} else if ($type === 'comment') {
 			$class->addMethod('init')->setReturnType('void')
-				->setBody("Lang::\$txt['lp_show_comment_block_set']['$plugin_name'] = '{Utils::\$context['lp_plugin']['name']}';");
+				->setBody("Lang::\$txt['lp_show_comment_block_set']['$pluginName'] = '{Utils::\$context['lp_plugin']['name']}';");
 		} else if (! empty(Utils::$context['lp_plugin']['smf_hooks'])) {
 			$class->addMethod('init')->setReturnType('void')
 				->setBody("// \$this->applyHook('hook_name');");
@@ -359,7 +368,7 @@ class Handler extends Plugin
 			$prepareBlockParams->addParameter('params')
 				->setReference()
 				->setType('array');
-			$prepareBlockParams->addBody("if (Utils::\$context['current_block']['type'] !== '$plugin_name')");
+			$prepareBlockParams->addBody("if (Utils::\$context['current_block']['type'] !== '$pluginName')");
 			$prepareBlockParams->addBody("\treturn;" . PHP_EOL);
 
 			if (! empty($blockParams)) {
@@ -376,7 +385,7 @@ class Handler extends Plugin
 			$validateBlockParams->addParameter('params')
 				->setReference()
 				->setType('array');
-			$validateBlockParams->addBody("if (Utils::\$context['current_block']['type'] !== '$plugin_name')");
+			$validateBlockParams->addBody("if (Utils::\$context['current_block']['type'] !== '$pluginName')");
 			$validateBlockParams->addBody("\treturn;" . PHP_EOL);
 
 			if (! empty($blockParams)) {
@@ -391,73 +400,73 @@ class Handler extends Plugin
 
 			$method = $class->addMethod('prepareBlockFields')
 				->setReturnType('void')
-				->addBody("if (Utils::\$context['current_block']['type'] !== '$plugin_name')")
+				->addBody("if (Utils::\$context['current_block']['type'] !== '$pluginName')")
 				->addBody("\treturn;" . PHP_EOL)
 				->addBody("// Your code" . PHP_EOL);
 
 			foreach ($blockParams as $param) {
 				if ($param['type'] === 'text') {
 					$namespace->addUse(TextField::class);
-					$method->addBody("TextField::make('{$param['name']}', Lang::\$txt['lp_$plugin_name']['{$param['name']}'])")
+					$method->addBody("TextField::make('{$param['name']}', Lang::\$txt['lp_$pluginName']['{$param['name']}'])")
 						->addBody("\t->setValue(Utils::\$context['lp_block']['options']['{$param['name']}']);" . PHP_EOL);
 				}
 
 				if ($param['type'] === 'url') {
 					$namespace->addUse(TextField::class);
-					$method->addBody("TextField::make('{$param['name']}', Lang::\$txt['lp_$plugin_name']['{$param['name']}'])")
+					$method->addBody("TextField::make('{$param['name']}', Lang::\$txt['lp_$pluginName']['{$param['name']}'])")
 						->addBody("\t->setType('url')")
 						->addBody("\t->setValue(Utils::\$context['lp_block']['options']['{$param['name']}']);" . PHP_EOL);
 				}
 
 				if ($param['type'] === 'check') {
 					$namespace->addUse(CheckboxField::class);
-					$method->addBody("CheckboxField::make('{$param['name']}', Lang::\$txt['lp_$plugin_name']['{$param['name']}'])")
+					$method->addBody("CheckboxField::make('{$param['name']}', Lang::\$txt['lp_$pluginName']['{$param['name']}'])")
 						->addBody("\t->setValue(Utils::\$context['lp_block']['options']['{$param['name']}']);" . PHP_EOL);
 				}
 
 				if ($param['type'] === 'color') {
 					$namespace->addUse(ColorField::class);
-					$method->addBody("ColorField::make('{$param['name']}', Lang::\$txt['lp_$plugin_name']['{$param['name']}'])")
+					$method->addBody("ColorField::make('{$param['name']}', Lang::\$txt['lp_$pluginName']['{$param['name']}'])")
 						->addBody("\t->setValue(Utils::\$context['lp_block']['options']['{$param['name']}']);" . PHP_EOL);
 				}
 
 				if ($param['type'] === 'int') {
 					$namespace->addUse(NumberField::class);
-					$method->addBody("NumberField::make('{$param['name']}', Lang::\$txt['lp_$plugin_name']['{$param['name']}'])")
+					$method->addBody("NumberField::make('{$param['name']}', Lang::\$txt['lp_$pluginName']['{$param['name']}'])")
 						->addBody("\t->setValue(Utils::\$context['lp_block']['options']['{$param['name']}']);" . PHP_EOL);
 				}
 
 				if ($param['type'] === 'float') {
 					$namespace->addUse(NumberField::class);
-					$method->addBody("NumberField::make('{$param['name']}', Lang::\$txt['lp_$plugin_name']['{$param['name']}'])")
+					$method->addBody("NumberField::make('{$param['name']}', Lang::\$txt['lp_$pluginName']['{$param['name']}'])")
 						->addBody("\t->setAttribute('step', 0.1)")
 						->addBody("\t->setValue(Utils::\$context['lp_block']['options']['{$param['name']}']);" . PHP_EOL);
 				}
 
 				if ($param['type'] === 'select') {
 					$namespace->addUse(RadioField::class);
-					$method->addBody("RadioField::make('{$param['name']}', Lang::\$txt['lp_$plugin_name']['{$param['name']}'])")
-						->addBody("\t->setOptions(Lang::\$txt['lp_$plugin_name']['{$param['name']}_set'])")
+					$method->addBody("RadioField::make('{$param['name']}', Lang::\$txt['lp_$pluginName']['{$param['name']}'])")
+						->addBody("\t->setOptions(Lang::\$txt['lp_$pluginName']['{$param['name']}_set'])")
 						->addBody("\t->setValue(Utils::\$context['lp_block']['options']['{$param['name']}']);" . PHP_EOL);
 				}
 
 				if ($param['type'] === 'multiselect') {
 					$namespace->addUse(SelectField::class);
-					$method->addBody("SelectField::make('{$param['name']}', Lang::\$txt['lp_$plugin_name']['{$param['name']}'])")
-						->addBody("\t->setOptions(Lang::\$txt['lp_$plugin_name']['{$param['name']}_set'])")
+					$method->addBody("SelectField::make('{$param['name']}', Lang::\$txt['lp_$pluginName']['{$param['name']}'])")
+						->addBody("\t->setOptions(Lang::\$txt['lp_$pluginName']['{$param['name']}_set'])")
 						->addBody("\t->setValue(Utils::\$context['lp_block']['options']['{$param['name']}']);" . PHP_EOL);
 				}
 
 				if ($param['type'] === 'range') {
 					$namespace->addUse(RangeField::class);
-					$method->addBody("RangeField::make('{$param['name']}', Lang::\$txt['lp_$plugin_name']['{$param['name']}'])")
+					$method->addBody("RangeField::make('{$param['name']}', Lang::\$txt['lp_$pluginName']['{$param['name']}'])")
 						->addBody("\t->setValue(Utils::\$context['lp_block']['options']['{$param['name']}']);" . PHP_EOL);
 				}
 
 				if (in_array($param['type'], ['title', 'desc', 'callback'])) {
 					$namespace->addUse(CustomField::class);
-					$method->addBody("CustomField::make('{$param['name']}', Lang::\$txt['lp_$plugin_name']['{$param['name']}'])")
-						->addBody("\t->setValue(fn() => '', []);" . PHP_EOL);
+					$method->addBody("CustomField::make('{$param['name']}', Lang::\$txt['lp_$pluginName']['{$param['name']}'])")
+						->addBody("\t->setValue(static fn() => '', []);" . PHP_EOL);
 				}
 			}
 		}
@@ -520,16 +529,19 @@ class Handler extends Plugin
 		if (! empty(Utils::$context['lp_plugin']['options'])) {
 			$method = $class->addMethod('addSettings')
 				->setReturnType('void');
-			$method->addParameter('config_vars')
+			$method->addParameter('settings')
 				->setReference()
 				->setType('array');
 
-			$arrayWithDefaultOptions = array_filter(Utils::$context['lp_plugin']['options'], fn($optionArray) => array_key_exists('default', $optionArray));
+			$defaultOptions = array_filter(
+				Utils::$context['lp_plugin']['options'],
+				static fn($optionArray) => array_key_exists('default', $optionArray)
+			);
 
-			if (! empty($arrayWithDefaultOptions)) {
+			if (! empty($defaultOptions)) {
 				$method->addBody("\$this->addDefaultValues([");
 
-				foreach ($arrayWithDefaultOptions as $option) {
+				foreach ($defaultOptions as $option) {
 					$method->addBody("\t'{$option['name']}' => {$this->getDefaultValue($option)},");
 				}
 
@@ -538,9 +550,9 @@ class Handler extends Plugin
 
 			foreach (Utils::$context['lp_plugin']['options'] as $option) {
 				if (in_array($option['type'], ['multiselect', 'select'])) {
-					$method->addBody("\$config_vars['$plugin_name'][] = ['{$option['type']}', '{$option['name']}', Lang::\$txt['lp_$plugin_name']['{$option['name']}_set']];");
+					$method->addBody("\$settings['$pluginName'][] = ['{$option['type']}', '{$option['name']}', Lang::\$txt['lp_$pluginName']['{$option['name']}_set']];");
 				} else {
-					$method->addBody("\$config_vars['$plugin_name'][] = ['{$option['type']}', '{$option['name']}'];");
+					$method->addBody("\$settings['$pluginName'][] = ['{$option['type']}', '{$option['name']}'];");
 				}
 			}
 		}
@@ -552,7 +564,7 @@ class Handler extends Plugin
 				->setType('object');
 			$method->addParameter('parameters')
 				->setType('array');
-			$method->addBody("if (\$data->type !== '$plugin_name')")
+			$method->addBody("if (\$data->type !== '$pluginName')")
 				->addBody("\treturn;" . PHP_EOL)
 				->addBody("echo 'Your html code';");
 		}
@@ -567,7 +579,7 @@ class Handler extends Plugin
 		if ($type === 'comment') {
 			$method = $class->addMethod('comments')
 				->setReturnType('void');
-			$method->addBody("if (! empty(Config::\$modSettings['lp_show_comment_block']) && Config::\$modSettings['lp_show_comment_block'] === '$plugin_name') {");
+			$method->addBody("if (! empty(Config::\$modSettings['lp_show_comment_block']) && Config::\$modSettings['lp_show_comment_block'] === '$pluginName') {");
 			$method->addBody("\t// Your code");
 			$method->addBody("}");
 		}
@@ -591,23 +603,23 @@ class Handler extends Plugin
 
 		switch (Utils::$context['lp_plugin']['license']) {
 			case 'mit':
-				$license_name = 'MIT';
-				$license_link = 'https://opensource.org/licenses/MIT';
+				$licenseName = 'MIT';
+				$licenseLink = 'https://opensource.org/licenses/MIT';
 			break;
 
 			case 'bsd':
-				$license_name = 'BSD-3-Clause';
-				$license_link = 'https://opensource.org/licenses/BSD-3-Clause';
+				$licenseName = 'BSD-3-Clause';
+				$licenseLink = 'https://opensource.org/licenses/BSD-3-Clause';
 			break;
 
 			case 'gpl':
-				$license_name = 'GPL-3.0-or-later';
-				$license_link = 'https://spdx.org/licenses/GPL-3.0-or-later.html';
+				$licenseName = 'GPL-3.0-or-later';
+				$licenseLink = 'https://spdx.org/licenses/GPL-3.0-or-later.html';
 			break;
 
 			default:
-				$license_name = Lang::$txt['lp_plugin_maker']['license_name'];
-				$license_link = Lang::$txt['lp_plugin_maker']['license_link'];
+				$licenseName = Lang::$txt['lp_plugin_maker']['license_name'];
+				$licenseLink = Lang::$txt['lp_plugin_maker']['license_link'];
 		}
 
 		$file = new PhpFile;
@@ -618,7 +630,7 @@ class Handler extends Plugin
 		$file->addComment("@link " . Utils::$context['lp_plugin']['site']);
 		$file->addComment("@author " . Utils::$context['lp_plugin']['author'] . " <" . Utils::$context['lp_plugin']['email'] . ">");
 		$file->addComment("@copyright " . date('Y') . " " . Utils::$context['lp_plugin']['author']);
-		$file->addComment("@license $license_link $license_name");
+		$file->addComment(sprintf('@license %s %s', $licenseLink, $licenseName));
 		$file->addComment('');
 		$file->addComment("@category addon");
 		$file->addComment("@version " . date('d.m.y'));
@@ -648,7 +660,10 @@ class Handler extends Plugin
 				$languages[$lang][] = PHP_EOL . "\t'description' => '$value',";
 			}
 
-			Utils::$context['lp_plugin']['options'] = array_merge(Utils::$context['lp_plugin']['options'], Utils::$context['lp_plugin']['block_options']);
+			Utils::$context['lp_plugin']['options'] = array_merge(
+				Utils::$context['lp_plugin']['options'],
+				Utils::$context['lp_plugin']['block_options']
+			);
 
 			foreach (Utils::$context['lp_plugin']['options'] as $option) {
 				foreach ($option['translations'] as $lang => $value) {

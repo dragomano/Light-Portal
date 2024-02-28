@@ -10,18 +10,19 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 04.02.24
+ * @version 20.02.24
  */
 
 namespace Bugo\LightPortal\Addons\RecentTopics;
 
+use Bugo\Compat\{Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Areas\Fields\NumberField;
 use Bugo\LightPortal\Areas\Fields\RadioField;
 use Bugo\LightPortal\Areas\Partials\BoardSelect;
-use Bugo\LightPortal\Utils\{DateTime, Lang, User, Utils};
+use Bugo\LightPortal\Utils\DateTime;
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -75,7 +76,7 @@ class RecentTopics extends Block
 
 		CustomField::make('exclude_boards', Lang::$txt['lp_recent_topics']['exclude_boards'])
 			->setTab('content')
-			->setValue(fn() => new BoardSelect, [
+			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'exclude_boards',
 				'hint'  => Lang::$txt['lp_recent_topics']['exclude_boards_select'],
 				'value' => Utils::$context['lp_block']['options']['exclude_boards'] ?? '',
@@ -83,7 +84,7 @@ class RecentTopics extends Block
 
 		CustomField::make('include_boards', Lang::$txt['lp_recent_topics']['include_boards'])
 			->setTab('content')
-			->setValue(fn() => new BoardSelect, [
+			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'include_boards',
 				'hint'  => Lang::$txt['lp_recent_topics']['include_boards_select'],
 				'value' => Utils::$context['lp_block']['options']['include_boards'] ?? '',
@@ -96,11 +97,17 @@ class RecentTopics extends Block
 
 		CheckboxField::make('show_avatars', Lang::$txt['lp_recent_topics']['show_avatars'])
 			->setTab('appearance')
-			->setValue(Utils::$context['lp_block']['options']['show_avatars'] && empty(Utils::$context['lp_block']['options']['use_simple_style']));
+			->setValue(
+				Utils::$context['lp_block']['options']['show_avatars']
+				&& empty(Utils::$context['lp_block']['options']['use_simple_style'])
+			);
 
 		CheckboxField::make('show_icons', Lang::$txt['lp_recent_topics']['show_icons'])
 			->setTab('appearance')
-			->setValue(Utils::$context['lp_block']['options']['show_icons'] && empty(Utils::$context['lp_block']['options']['use_simple_style']));
+			->setValue(
+				Utils::$context['lp_block']['options']['show_icons']
+				&& empty(Utils::$context['lp_block']['options']['use_simple_style'])
+			);
 
 		NumberField::make('num_topics', Lang::$txt['lp_recent_topics']['num_topics'])
 			->setAttribute('min', 1)
@@ -120,15 +127,17 @@ class RecentTopics extends Block
 	 */
 	public function getData(array $parameters): array
 	{
-		$exclude_boards = empty($parameters['exclude_boards']) ? null : explode(',', $parameters['exclude_boards']);
-		$include_boards = empty($parameters['include_boards']) ? null : explode(',', $parameters['include_boards']);
+		$excludeBoards = empty($parameters['exclude_boards']) ? null : explode(',', $parameters['exclude_boards']);
+		$includeBoards = empty($parameters['include_boards']) ? null : explode(',', $parameters['include_boards']);
 
-		$topics = $this->getFromSsi('recentTopics', (int) $parameters['num_topics'], $exclude_boards, $include_boards, 'array');
+		$topics = $this->getFromSsi('recentTopics', (int) $parameters['num_topics'], $excludeBoards, $includeBoards, 'array');
 
 		if (empty($topics))
 			return [];
 
-		array_walk($topics, fn(&$topic) => $topic['timestamp'] = DateTime::relative((int) $topic['timestamp']));
+		array_walk($topics,
+			static fn(&$topic) => $topic['timestamp'] = DateTime::relative((int) $topic['timestamp'])
+		);
 
 		if ($parameters['show_avatars'] && empty($parameters['use_simple_style']))
 			$topics = $this->getItemsWithUserAvatars($topics, 'poster');
@@ -146,15 +155,15 @@ class RecentTopics extends Block
 
 		$parameters['show_avatars'] ??= false;
 
-		$recent_topics = $this->cache('recent_topics_addon_b' . $data->block_id . '_u' . User::$info['id'])
-			->setLifeTime($parameters['update_interval'] ?? $data->cache_time)
+		$recentTopics = $this->cache('recent_topics_addon_b' . $data->id . '_u' . User::$info['id'])
+			->setLifeTime($parameters['update_interval'] ?? $data->cacheTime)
 			->setFallback(self::class, 'getData', $parameters);
 
-		if (empty($recent_topics))
+		if (empty($recentTopics))
 			return;
 
 		$this->setTemplate();
 
-		show_topics($recent_topics, $parameters, $this->isInSidebar($data->block_id) === false);
+		show_topics($recentTopics, $parameters, $this->isInSidebar($data->id) === false);
 	}
 }

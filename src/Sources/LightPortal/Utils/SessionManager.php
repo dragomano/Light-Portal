@@ -1,0 +1,202 @@
+<?php declare(strict_types=1);
+
+/**
+ * SessionManager.php
+ *
+ * @package Light Portal
+ * @link https://dragomano.ru/mods/light-portal
+ * @author Bugo <bugo@dragomano.ru>
+ * @copyright 2019-2024 Bugo
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
+ *
+ * @version 2.6
+ */
+
+namespace Bugo\LightPortal\Utils;
+
+use Bugo\Compat\{Db, User, Utils};
+use Bugo\LightPortal\Actions\PageInterface;
+use Bugo\LightPortal\Actions\PageListInterface;
+use Bugo\LightPortal\Helper;
+
+final class SessionManager
+{
+	use Helper;
+
+	public function __invoke(string $key): int
+	{
+		return match ($key) {
+			'active_blocks'     => $this->getActiveBlocksCount(),
+			'active_pages'      => $this->getActivePagesCount(),
+			'my_pages'          => $this->getMyPagesCount(),
+			'unapproved_pages'  => $this->getUnapprovedPagesCount(),
+			'internal_pages'    => $this->getInternalPagesCount(),
+			'active_categories' => $this->getActiveCategoriesCount(),
+			'active_tags'       => $this->getActiveTagsCount(),
+			default             => 0,
+		};
+	}
+
+	public function getActiveBlocksCount(): int
+	{
+		if ($this->session('lp')->isEmpty('active_blocks')) {
+			$result = Db::$db->query('', '
+				SELECT COUNT(block_id)
+				FROM {db_prefix}lp_blocks
+				WHERE status = {int:status}',
+				[
+					'status' => PageInterface::STATUS_ACTIVE,
+				]
+			);
+
+			[$count] = Db::$db->fetch_row($result);
+
+			Db::$db->free_result($result);
+			Utils::$context['lp_num_queries']++;
+
+			$this->session('lp')->put('active_blocks', (int) $count);
+		}
+
+		return $this->session('lp')->get('active_blocks') ?? 0;
+	}
+
+	public function getActivePagesCount(): int
+	{
+		if ($this->session('lp')->isEmpty('active_pages')) {
+			$result = Db::$db->query('', '
+				SELECT COUNT(page_id)
+				FROM {db_prefix}lp_pages
+				WHERE status = {int:status}' . (Utils::$context['allow_light_portal_manage_pages_any'] ? '' : '
+					AND author_id = {int:author}'),
+				[
+					'status' => PageInterface::STATUS_ACTIVE,
+					'author' => User::$info['id'],
+				]
+			);
+
+			[$count] = Db::$db->fetch_row($result);
+
+			Db::$db->free_result($result);
+			Utils::$context['lp_num_queries']++;
+
+			$this->session('lp')->put('active_pages', (int) $count);
+		}
+
+		return $this->session('lp')->get('active_pages') ?? 0;
+	}
+
+	public function getMyPagesCount(): int
+	{
+		if ($this->session('lp')->isEmpty('my_pages')) {
+			$result = Db::$db->query('', '
+				SELECT COUNT(page_id)
+				FROM {db_prefix}lp_pages
+				WHERE author_id = {int:author}',
+				[
+					'author' => User::$info['id'],
+				]
+			);
+
+			[$count] = Db::$db->fetch_row($result);
+
+			Db::$db->free_result($result);
+			Utils::$context['lp_num_queries']++;
+
+			$this->session('lp')->put('my_pages', (int) $count);
+		}
+
+		return $this->session('lp')->get('my_pages') ?? 0;
+	}
+
+	public function getUnapprovedPagesCount(): int
+	{
+		if ($this->session('lp')->isEmpty('unapproved_pages')) {
+			$result = Db::$db->query('', '
+				SELECT COUNT(page_id)
+				FROM {db_prefix}lp_pages
+				WHERE status = {int:status}',
+				[
+					'status' => PageInterface::STATUS_UNAPPROVED,
+				]
+			);
+
+			[$count] = Db::$db->fetch_row($result);
+
+			Db::$db->free_result($result);
+			Utils::$context['lp_num_queries']++;
+
+			$this->session('lp')->put('unapproved_pages', (int) $count);
+		}
+
+		return $this->session('lp')->get('unapproved_pages') ?? 0;
+	}
+
+	public function getInternalPagesCount(): int
+	{
+		if ($this->session('lp')->isEmpty('internal_pages')) {
+			$result = Db::$db->query('', '
+				SELECT COUNT(page_id)
+				FROM {db_prefix}lp_pages
+				WHERE status = {int:status}',
+				[
+					'status' => PageInterface::STATUS_INTERNAL,
+				]
+			);
+
+			[$count] = Db::$db->fetch_row($result);
+
+			Db::$db->free_result($result);
+			Utils::$context['lp_num_queries']++;
+
+			$this->session('lp')->put('internal_pages', (int) $count);
+		}
+
+		return $this->session('lp')->get('internal_pages') ?? 0;
+	}
+
+	public function getActiveCategoriesCount(): int
+	{
+		if ($this->session('lp')->isEmpty('active_categories')) {
+			$result = Db::$db->query('', '
+				SELECT COUNT(category_id)
+				FROM {db_prefix}lp_categories
+				WHERE status = {int:status}',
+				[
+					'status' => PageListInterface::STATUS_ACTIVE,
+				]
+			);
+
+			[$count] = Db::$db->fetch_row($result);
+
+			Db::$db->free_result($result);
+			Utils::$context['lp_num_queries']++;
+
+			$this->session('lp')->put('active_categories', (int) $count);
+		}
+
+		return $this->session('lp')->get('active_categories') ?? 0;
+	}
+
+	public function getActiveTagsCount(): int
+	{
+		if ($this->session('lp')->isEmpty('active_tags')) {
+			$result = Db::$db->query('', '
+				SELECT COUNT(tag_id)
+				FROM {db_prefix}lp_tags
+				WHERE status = {int:status}',
+				[
+					'status' => PageListInterface::STATUS_ACTIVE,
+				]
+			);
+
+			[$count] = Db::$db->fetch_row($result);
+
+			Db::$db->free_result($result);
+			Utils::$context['lp_num_queries']++;
+
+			$this->session('lp')->put('active_tags', (int) $count);
+		}
+
+		return $this->session('lp')->get('active_tags') ?? 0;
+	}
+}

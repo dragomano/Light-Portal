@@ -1,0 +1,8 @@
+{
+  "require": {
+    "latte/latte": "^3.0"
+  },
+  "config": {
+    "optimize-autoloader": true
+  }
+}

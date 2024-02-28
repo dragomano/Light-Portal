@@ -9,7 +9,7 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Lists;
@@ -33,8 +33,22 @@ final class PageList implements ListInterface
 	/**
 	 * @throws IntlException
 	 */
+	public function __invoke(): array
+	{
+		return $this->getAll();
+	}
+
+	/**
+	 * @throws IntlException
+	 */
 	public function getAll(): array
 	{
-		return $this->repository->getAll(0, $this->repository->getTotalCount(), 'p.page_id DESC', 'AND p.status = {int:status}', ['status' => PageInterface::STATUS_ACTIVE]);
+		return $this->repository->getAll(
+			0,
+			$this->repository->getTotalCount(),
+			'p.page_id DESC',
+			'AND p.status = {int:status}',
+			['status' => PageInterface::STATUS_ACTIVE]
+		);
 	}
 }

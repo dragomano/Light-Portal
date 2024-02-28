@@ -1,0 +1,178 @@
+.block_bbc,
+.block_html,
+.block_markdown {
+	.videocontainer {
+		margin: 0 auto;
+	}
+}
+
+.preview .button {
+	float: none !important;
+}
+
+#info_center {
+	margin-bottom: 5px;
+}
+
+#admin_form_wrapper {
+	p {
+		&.errorbox {
+			margin: 0;
+		}
+	}
+}
+
+.descbox {
+	details {
+		code {
+			white-space: break-spaces !important;
+		}
+	}
+}
+
+.errorbox {
+	color: initial !important;
+}
+
+.action_admin {
+	&.sceditor-maximize {
+		#main_menu,
+		#genericmenu {
+			display: none;
+		}
+	}
+}
+
+#lp_post {
+	.centertext {
+		.button {
+			margin-left: 4px;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.button {
+			float: none !important;
+			width: 100%;
+			margin-left: 0 !important;
+		}
+	}
+}
+
+.col-xs-12 {
+	.pagesection {
+		.button {
+			margin: 2px;
+		}
+	}
+}
+
+.sceditor-container {
+	position: relative;
+	min-height: 300px !important;
+}
+
+.priority,
+.status,
+.actions {
+	span {
+		@include pointer;
+	}
+}
+
+.lp_default_blocks,
+.lp_additional_blocks {
+	margin-bottom: 10px !important;
+
+	th {
+		&.icon,
+		&.actions {
+			width: 8%;
+		}
+	}
+}
+
+.handle {
+	cursor: grab;
+}
+
+.additional_row {
+	.button {
+		margin-left: 2px;
+	}
+}
+
+@media (max-width: 887px) {
+	.information {
+		.righttext {
+			text-align: center;
+		}
+	}
+	.descbox {
+		&.alternative2 {
+			display: block;
+		}
+	}
+}
+
+/* Animations */
+@-webkit-keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+/* Virtual Select */
+.vscomp-value-tag {
+	background: $tag-bg-color;
+	border: 0 solid $tag-border-color;
+	color: $tag-color;
+	margin: 0 3px 3px 0;
+	padding: 2px 6px;
+	@include pointer;
+	@include bradius(0);
+
+	&[data-value^="!"] {
+		background: $ignore-action;
+	}
+}
+.vscomp-value {
+	height: auto !important;
+	width: 98%;
+
+	div {
+		margin: 0 !important;
+	}
+
+	i {
+		margin-right: .5em;
+	}
+}
+.vscomp-option-text {
+	div {
+		margin: 0 !important;
+	}
+}
+
+/* RTL */
+[dir=rtl] {
+	.gear {
+		right: -5px !important;
+	}
+
+	i[class] {
+		transform: scaleX(-1);
+	}
+}

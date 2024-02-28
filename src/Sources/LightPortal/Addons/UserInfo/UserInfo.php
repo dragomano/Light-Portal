@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.01.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\UserInfo;
 
+use Bugo\Compat\{User, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Utils\{User, Utils};
 use Exception;
 
 if (! defined('LP_NAME'))
@@ -49,7 +49,7 @@ class UserInfo extends Block
 		}
 
 		$userData = $this->cache('user_info_addon_u' . Utils::$context['user']['id'])
-			->setLifeTime($data->cache_time)
+			->setLifeTime($data->cacheTime)
 			->setFallback(self::class, 'getData');
 
 		show_user_info($userData);

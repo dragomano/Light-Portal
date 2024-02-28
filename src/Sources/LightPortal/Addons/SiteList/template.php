@@ -1,6 +1,6 @@
 <?php
 
-use Bugo\LightPortal\Utils\Lang;
+use Bugo\Compat\Lang;
 
 function callback_site_list_table(): void
 {
@@ -72,7 +72,7 @@ function site_list_handle_func(array $urls): string
 				},';
 	}
 
-	return $js . /** @lang text */ '
+	return $js . '
 			],
 			add() {
 				this.sites.push({

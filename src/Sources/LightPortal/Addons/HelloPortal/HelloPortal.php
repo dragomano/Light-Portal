@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 09.02.24
+ * @version 22.02.24
  */
 
 namespace Bugo\LightPortal\Addons\HelloPortal;
 
+use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\{Lang, Theme, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -55,19 +55,19 @@ class HelloPortal extends Plugin
 			Utils::$context[$menu]['tab_data'] = $tabs;
 		}
 
-		Theme::loadExtCSS('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs.min.css');
+		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs.min.css');
 
 		if (! empty(Utils::$context['lp_hello_portal_plugin']['theme'])) {
 			$theme = Utils::$context['lp_hello_portal_plugin']['theme'] . '.css';
-			Theme::loadExtCSS('https://cdn.jsdelivr.net/npm/intro.js@4/themes/introjs-' . $theme);
+			$this->loadExtCSS('https://cdn.jsdelivr.net/npm/intro.js@4/themes/introjs-' . $theme);
 		}
 
 		if (Utils::$context['right_to_left'])
-			Theme::loadExtCSS('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs-rtl.min.css');
+			$this->loadExtCSS('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs-rtl.min.css');
 
-		Theme::loadExtJS('https://cdn.jsdelivr.net/npm/intro.js@4/minified/intro.min.js');
+		$this->loadExtJS('https://cdn.jsdelivr.net/npm/intro.js@4/minified/intro.min.js');
 
-		Theme::addInlineJS('
+		$this->addInlineJS('
 		function runTour() {
 			introJs().setOptions({
 				tooltipClass: "lp_addon_hello_portal",
@@ -97,16 +97,16 @@ class HelloPortal extends Plugin
 		}');
 	}
 
-	public function addSettings(array &$config_vars): void
+	public function addSettings(array &$settings): void
 	{
-		$config_vars['hello_portal'][] = [
+		$settings['hello_portal'][] = [
 			'select', 'theme', array_combine($this->themes, Lang::$txt['lp_hello_portal']['theme_set'])
 		];
-		$config_vars['hello_portal'][] = ['check', 'show_progress'];
-		$config_vars['hello_portal'][] = ['check', 'show_buttons'];
-		$config_vars['hello_portal'][] = ['check', 'exit_on_overlay_click'];
-		$config_vars['hello_portal'][] = ['check', 'keyboard_navigation'];
-		$config_vars['hello_portal'][] = ['check', 'disable_interaction'];
+		$settings['hello_portal'][] = ['check', 'show_progress'];
+		$settings['hello_portal'][] = ['check', 'show_buttons'];
+		$settings['hello_portal'][] = ['check', 'exit_on_overlay_click'];
+		$settings['hello_portal'][] = ['check', 'keyboard_navigation'];
+		$settings['hello_portal'][] = ['check', 'disable_interaction'];
 	}
 
 	public function credits(array &$links): void
@@ -135,9 +135,6 @@ class HelloPortal extends Plugin
 		if ($this->isCurrentArea('lp_settings', 'extra', false))
 			return $steps['extra_settings'];
 
-		if ($this->isCurrentArea('lp_settings', 'categories', false))
-			return $steps['categories'];
-
 		if ($this->isCurrentArea('lp_settings', 'panels', false))
 			return $steps['panels'];
 
@@ -149,6 +146,9 @@ class HelloPortal extends Plugin
 
 		if ($this->isCurrentArea('lp_pages'))
 			return $steps['pages'];
+
+		if ($this->isCurrentArea('lp_categories'))
+			return $steps['categories'];
 
 		if ($this->isCurrentArea('lp_plugins'))
 			return $steps['plugins'];

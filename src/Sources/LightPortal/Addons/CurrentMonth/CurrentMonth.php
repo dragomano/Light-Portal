@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 17.02.24
  */
 
 namespace Bugo\LightPortal\Addons\CurrentMonth;
 
+use Bugo\Compat\{Config, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, User, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -42,11 +42,11 @@ class CurrentMonth extends Block
 		$month = $today['month'];
 		$day   = $today['day'];
 
-		$start_object = checkdate($month, $day, $year) === true
+		$startObject = checkdate($month, $day, $year) === true
 			? date_create(implode('-', [$year, $month, $day]))
 			: date_create(implode('-', [$today['year'], $today['month'], $today['day']]));
 
-		$calendarOptions = [
+		$options = [
 			'start_day'          => (int) (Theme::$current->options['calendar_start_day'] ?? 0),
 			'show_birthdays'     => in_array(Config::$modSettings['cal_showbdays'], [1, 2]),
 			'show_events'        => in_array(Config::$modSettings['cal_showevents'], [1, 2]),
@@ -58,7 +58,7 @@ class CurrentMonth extends Block
 			'show_week_links'    => (int) (Config::$modSettings['cal_week_links'] ?? 0)
 		];
 
-		return getCalendarGrid(date_format($start_object, 'Y-m-d'), $calendarOptions);
+		return getCalendarGrid(date_format($startObject, 'Y-m-d'), $options, has_picker: false);
 	}
 
 	public function prepareContent(object $data): void
@@ -66,25 +66,28 @@ class CurrentMonth extends Block
 		if ($data->type !== 'current_month')
 			return;
 
-		$calendar_data = $this->cache('current_month_addon_u' . User::$info['id'])
-			->setLifeTime($data->cache_time)
+		$calendarData = $this->cache('current_month_addon_u' . User::$info['id'])
+			->setLifeTime($data->cacheTime)
 			->setFallback(self::class, 'getData');
 
-		if ($calendar_data) {
-			$calendar_data['block_id'] = $data->block_id;
+		if ($calendarData) {
+			$calendarData['block_id'] = $data->id;
 
-			$title = Lang::$txt['months_titles'][$calendar_data['current_month']] . ' ' . $calendar_data['current_year'];
+			$title = Lang::$txt['months_titles'][$calendarData['current_month']] . ' ' . $calendarData['current_year'];
 
 			// Auto title
 			if (isset(Utils::$context['preview_title']) && empty(Utils::$context['preview_title'])) {
 				Utils::$context['preview_title'] = $title;
-			} elseif ($data->block_id && empty(Utils::$context['lp_active_blocks'][$data->block_id]['titles'][User::$info['language']])) {
-				Utils::$context['lp_active_blocks'][$data->block_id]['titles'][User::$info['language']] = $title;
+			} elseif (
+				$data->id
+				&& empty(Utils::$context['lp_active_blocks'][$data->id]['titles'][User::$info['language']])
+			) {
+				Utils::$context['lp_active_blocks'][$data->id]['titles'][User::$info['language']] = $title;
 			}
 
 			$this->setTemplate();
 
-			show_current_month_grid($calendar_data);
+			show_current_month_grid($calendarData);
 		}
 	}
 }

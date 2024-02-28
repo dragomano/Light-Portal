@@ -8,13 +8,14 @@
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Areas\Imports;
 
+use Bugo\Compat\{Config, Db};
+use Bugo\Compat\{ErrorHandler, Sapi, Utils};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, ErrorHandler, Sapi, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -32,7 +33,9 @@ abstract class AbstractCustomBlockImport implements ImportInterface, CustomImpor
 
 		Sapi::setTimeLimit();
 
-		$blocks = $this->request('blocks') && $this->request()->hasNot('import_all') ? $this->request('blocks') : [];
+		$blocks = $this->request('blocks') && $this->request()->hasNot('import_all')
+			? $this->request('blocks')
+			: [];
 
 		$results = $titles = [];
 		$items = $this->getItems($blocks);
@@ -54,7 +57,7 @@ abstract class AbstractCustomBlockImport implements ImportInterface, CustomImpor
 			$count = sizeof($items);
 
 			for ($i = 0; $i < $count; $i++) {
-				$temp = Utils::$smcFunc['db_insert']('',
+				$temp = Db::$db->insert('',
 					'{db_prefix}lp_blocks',
 					[
 						'type'          => 'string',
@@ -63,7 +66,7 @@ abstract class AbstractCustomBlockImport implements ImportInterface, CustomImpor
 						'permissions'   => 'int',
 						'status'        => 'int',
 						'title_class'   => 'string',
-						'content_class' => 'string'
+						'content_class' => 'string',
 					],
 					$items[$i],
 					['block_id'],
@@ -85,13 +88,13 @@ abstract class AbstractCustomBlockImport implements ImportInterface, CustomImpor
 			$count  = sizeof($titles);
 
 			for ($i = 0; $i < $count; $i++) {
-				$results = Utils::$smcFunc['db_insert']('',
+				$results = Db::$db->insert('',
 					'{db_prefix}lp_titles',
 					[
 						'type'    => 'string',
 						'lang'    => 'string',
 						'title'   => 'string',
-						'item_id' => 'int'
+						'item_id' => 'int',
 					],
 					$titles[$i],
 					['item_id', 'type', 'lang'],

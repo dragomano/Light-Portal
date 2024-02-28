@@ -9,12 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Areas\Partials;
 
-use Bugo\LightPortal\Utils\{Lang, Utils};
+use Bugo\Compat\{Lang, Utils};
 
 final class PageAuthorSelect extends AbstractPartial
 {
@@ -33,7 +33,7 @@ final class PageAuthorSelect extends AbstractPartial
 				noSearchResultsText: "' . Lang::$txt['lp_no_such_members'] . '",
 				searchPlaceholderText: "' . Lang::$txt['search'] . '",
 				onServerSearch: function (search, virtualSelect) {
-					return axios.post("' . Utils::$context['canonical_url'] . ';members", {
+					return axios.post("' . Utils::$context['form_action'] . ';members", {
 						search
 					}).then(response => {
 						const data = response.data

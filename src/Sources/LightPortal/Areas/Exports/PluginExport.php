@@ -9,12 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Areas\Exports;
 
-use Bugo\LightPortal\Utils\{Config, Lang, Sapi, Theme, Utils};
+use Bugo\Compat\{Config, Lang, Sapi, Theme, Utils};
 use AppendIterator;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
@@ -34,14 +34,14 @@ final class PluginExport extends AbstractExport
 
 		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_plugins_export'];
 		Utils::$context['page_area_title'] = Lang::$txt['lp_plugins_export'];
-		Utils::$context['canonical_url']   = Config::$scripturl . '?action=admin;area=lp_plugins;sa=export';
+		Utils::$context['form_action']     = Config::$scripturl . '?action=admin;area=lp_plugins;sa=export';
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_plugins_export_description']
+			'description' => Lang::$txt['lp_plugins_export_description'],
 		];
 
-		Utils::$context['lp_plugins'] = $this->getEntityList('plugin');
+		Utils::$context['lp_plugins'] = $this->getEntityData('plugin');
 
 		$this->run();
 	}

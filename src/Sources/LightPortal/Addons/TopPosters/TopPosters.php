@@ -10,14 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 02.02.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TopPosters;
 
+use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, NumberField};
-use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -76,7 +76,7 @@ class TopPosters extends Block
 			LIMIT {int:num_posters}',
 			[
 				'num_posts'   => 0,
-				'num_posters' => $parameters['num_posters']
+				'num_posters' => $parameters['num_posters'],
 			]
 		);
 
@@ -92,7 +92,7 @@ class TopPosters extends Block
 					'id'     => $row['id_member'],
 					'name'   => $row['real_name'],
 					'posts'  => $row['posts'],
-					'link'   => $this->allowedTo('profile_view')
+					'link'   => User::hasPermission('profile_view')
 						? '<a href="' . Config::$scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>'
 						: $row['real_name'],
 				]
@@ -116,11 +116,11 @@ class TopPosters extends Block
 		$parameters['show_numbers_only'] ??= false;
 		$parameters['num_posters'] ??= 10;
 
-		$top_posters = $this->cache('top_posters_addon_b' . $data->block_id . '_u' . User::$info['id'])
-			->setLifeTime($data->cache_time)
+		$topPosters = $this->cache('top_posters_addon_b' . $data->id . '_u' . User::$info['id'])
+			->setLifeTime($data->cacheTime)
 			->setFallback(self::class, 'getData', $parameters);
 
-		if (empty($top_posters)) {
+		if (empty($topPosters)) {
 			echo Lang::$txt['lp_top_posters']['none'];
 			return;
 		}
@@ -128,9 +128,9 @@ class TopPosters extends Block
 		echo '
 		<dl class="top_posters stats">';
 
-		$max = $top_posters[0]['posts'];
+		$max = $topPosters[0]['posts'];
 
-		foreach ($top_posters as $poster) {
+		foreach ($topPosters as $poster) {
 			$width = $poster['posts'] * 100 / $max;
 
 			echo '

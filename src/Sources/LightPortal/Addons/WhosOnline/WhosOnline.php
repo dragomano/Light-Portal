@@ -10,14 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 02.02.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\WhosOnline;
 
+use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, NumberField};
-use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -79,50 +79,50 @@ class WhosOnline extends Block
 		$parameters['show_group_key'] ??= false;
 		$parameters['show_avatars'] ??= false;
 
-		$whos_online = $this->cache('whos_online_addon_b' . $data->block_id . '_u' . User::$info['id'])
-			->setLifeTime($parameters['update_interval'] ?? $data->cache_time)
+		$whoIsOnline = $this->cache('whos_online_addon_b' . $data->id . '_u' . User::$info['id'])
+			->setLifeTime($parameters['update_interval'] ?? $data->cacheTime)
 			->setFallback(self::class, 'getFromSsi', 'whosOnline', 'array');
 
-		if (empty($whos_online))
+		if (empty($whoIsOnline))
 			return;
 
-		echo Lang::getTxt('lp_guests_set', ['guests' => $whos_online['num_guests']]) . ', ' . Lang::getTxt('lp_users_set', ['users' => $whos_online['num_users_online']]);
+		echo Lang::getTxt('lp_guests_set', ['guests' => $whoIsOnline['num_guests']]) . ', ' . Lang::getTxt('lp_users_set', ['users' => $whoIsOnline['num_users_online']]);
 
-		$online_list = [];
+		$onlineList = [];
 
-		if (User::$info['buddies'] && $whos_online['num_buddies'])
-			$online_list[] = Lang::getTxt('lp_buddies_set', ['buddies' => $whos_online['num_buddies']]);
+		if (User::$info['buddies'] && $whoIsOnline['num_buddies'])
+			$onlineList[] = Lang::getTxt('lp_buddies_set', ['buddies' => $whoIsOnline['num_buddies']]);
 
-		if ($whos_online['num_spiders'])
-			$online_list[] = Lang::getTxt('lp_spiders_set', ['spiders' => $whos_online['num_spiders']]);
+		if ($whoIsOnline['num_spiders'])
+			$onlineList[] = Lang::getTxt('lp_spiders_set', ['spiders' => $whoIsOnline['num_spiders']]);
 
-		if ($whos_online['num_users_hidden'])
-			$online_list[] = Lang::getTxt('lp_hidden_set', ['hidden' => $whos_online['num_users_hidden']]);
+		if ($whoIsOnline['num_users_hidden'])
+			$onlineList[] = Lang::getTxt('lp_hidden_set', ['hidden' => $whoIsOnline['num_users_hidden']]);
 
-		if ($online_list)
-			echo ' (' . Lang::sentenceList($online_list) . ')';
+		if ($onlineList)
+			echo ' (' . Lang::sentenceList($onlineList) . ')';
 
 		// With avatars
 		if ($parameters['show_avatars']) {
-			$users = array_map(fn($item) => $this->getUserAvatar($item['id']), $whos_online['users_online']);
+			$users = array_map(fn($item) => $this->getUserAvatar($item['id']), $whoIsOnline['users_online']);
 
-			$whos_online['list_users_online'] = [];
-			foreach ($whos_online['users_online'] as $key => $user) {
-				$whos_online['list_users_online'][] = '<a href="' . Config::$scripturl . '?action=profile;u=' . $user['id'] . '" title="' . $user['name'] . '">' . $users[$key] . '</a>';
+			$whoIsOnline['list_users_online'] = [];
+			foreach ($whoIsOnline['users_online'] as $key => $user) {
+				$whoIsOnline['list_users_online'][] = '<a href="' . Config::$scripturl . '?action=profile;u=' . $user['id'] . '" title="' . $user['name'] . '">' . $users[$key] . '</a>';
 			}
 		}
 
 		echo '
-			<br>' . implode(', ', $whos_online['list_users_online']);
+			<br>' . implode(', ', $whoIsOnline['list_users_online']);
 
-		if ($parameters['show_group_key'] && $whos_online['online_groups']) {
+		if ($parameters['show_group_key'] && $whoIsOnline['online_groups']) {
 			$groups = [];
 
-			foreach ($whos_online['online_groups'] as $group) {
+			foreach ($whoIsOnline['online_groups'] as $group) {
 				if ($group['hidden'] != 0 || $group['id'] == 3)
 					continue;
 
-				if ($this->allowedTo('view_mlist')) {
+				if (User::hasPermission('view_mlist')) {
 					$groups[] = '<a href="' . Config::$scripturl . '?action=groups;sa=members;group=' . $group['id'] . '"' . (empty($group['color']) ? '' : ' style="color: ' . $group['color'] . '"') . '>' . $group['name'] . '</a>';
 				} else {
 					$groups[] = '<span' . (empty($group['color']) ? '' : ' style="color: ' . $group['color'] . '"') . '>' . $group['name'] . '</span>';

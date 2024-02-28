@@ -8,13 +8,13 @@
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Areas\Imports;
 
+use Bugo\Compat\{Db, ErrorHandler, Sapi, Utils};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{ErrorHandler, Sapi, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -32,7 +32,9 @@ abstract class AbstractCustomPageImport implements ImportInterface, CustomImport
 
 		Sapi::setTimeLimit();
 
-		$pages = $this->request('pages') && $this->request()->hasNot('import_all') ? $this->request('pages') : [];
+		$pages = $this->request('pages') && $this->request()->hasNot('import_all')
+			? $this->request('pages')
+			: [];
 
 		$results = $titles = $params = $comments = [];
 		$items = $this->getItems($pages);
@@ -44,7 +46,7 @@ abstract class AbstractCustomPageImport implements ImportInterface, CustomImport
 			$count = sizeof($items);
 
 			for ($i = 0; $i < $count; $i++) {
-				$results = Utils::$smcFunc['db_insert']('replace',
+				$results = Db::$db->insert('replace',
 					'{db_prefix}lp_pages',
 					[
 						'page_id'      => 'int',
@@ -58,7 +60,7 @@ abstract class AbstractCustomPageImport implements ImportInterface, CustomImport
 						'num_views'    => 'int',
 						'num_comments' => 'int',
 						'created_at'   => 'int',
-						'updated_at'   => 'int'
+						'updated_at'   => 'int',
 					],
 					$items[$i],
 					['page_id'],
@@ -77,13 +79,13 @@ abstract class AbstractCustomPageImport implements ImportInterface, CustomImport
 			$count  = sizeof($titles);
 
 			for ($i = 0; $i < $count; $i++) {
-				Utils::$smcFunc['db_insert']('replace',
+				Db::$db->insert('replace',
 					'{db_prefix}lp_titles',
 					[
 						'item_id' => 'int',
 						'type'    => 'string',
 						'lang'    => 'string',
-						'title'   => 'string'
+						'title'   => 'string',
 					],
 					$titles[$i],
 					['item_id', 'type', 'lang'],
@@ -99,13 +101,13 @@ abstract class AbstractCustomPageImport implements ImportInterface, CustomImport
 			$count  = sizeof($params);
 
 			for ($i = 0; $i < $count; $i++) {
-				Utils::$smcFunc['db_insert']('replace',
+				Db::$db->insert('replace',
 					'{db_prefix}lp_params',
 					[
 						'item_id' => 'int',
 						'type'    => 'string',
 						'name'    => 'string',
-						'value'   => 'string'
+						'value'   => 'string',
 					],
 					$params[$i],
 					['item_id', 'type', 'name'],
@@ -129,7 +131,7 @@ abstract class AbstractCustomPageImport implements ImportInterface, CustomImport
 			$count    = sizeof($comments);
 
 			for ($i = 0; $i < $count; $i++) {
-				Utils::$smcFunc['db_insert']('replace',
+				Db::$db->insert('replace',
 					'{db_prefix}lp_comments',
 					[
 						'id'         => 'int',
@@ -137,7 +139,7 @@ abstract class AbstractCustomPageImport implements ImportInterface, CustomImport
 						'page_id'    => 'int',
 						'author_id'  => 'int',
 						'message'    => 'string',
-						'created_at' => 'int'
+						'created_at' => 'int',
 					],
 					$comments[$i],
 					['id', 'page_id'],

@@ -9,12 +9,13 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Areas\Imports;
 
-use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Theme, Utils};
+use Bugo\Compat\{Config, Db, ErrorHandler};
+use Bugo\Compat\{Lang, Theme, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -33,11 +34,11 @@ final class BlockImport extends AbstractImport
 		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_blocks_import'];
 		Utils::$context['page_area_title'] = Lang::$txt['lp_blocks_import'];
 		Utils::$context['page_area_info']  = Lang::$txt['lp_blocks_import_info'];
-		Utils::$context['canonical_url']   = Config::$scripturl . '?action=admin;area=lp_blocks;sa=import';
+		Utils::$context['form_action']     = Config::$scripturl . '?action=admin;area=lp_blocks;sa=import';
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_blocks_import_description']
+			'description' => Lang::$txt['lp_blocks_import_description'],
 		];
 
 		Utils::$context['lp_file_type'] = 'text/xml';
@@ -58,7 +59,7 @@ final class BlockImport extends AbstractImport
 		foreach ($xml as $element) {
 			foreach ($element->item as $item) {
 				$items[] = [
-					'block_id'      => $block_id = intval($item['block_id']),
+					'block_id'      => $blockId = intval($item['block_id']),
 					'icon'          => $item->icon,
 					'type'          => str_replace('md', 'markdown', (string) $item->type),
 					'note'          => $item->note,
@@ -76,10 +77,10 @@ final class BlockImport extends AbstractImport
 					foreach ($item->titles as $title) {
 						foreach ($title as $k => $v) {
 							$titles[] = [
-								'item_id' => $block_id,
+								'item_id' => $blockId,
 								'type'    => 'block',
 								'lang'    => $k,
-								'title'   => $v
+								'title'   => $v,
 							];
 						}
 					}
@@ -89,10 +90,10 @@ final class BlockImport extends AbstractImport
 					foreach ($item->params as $param) {
 						foreach ($param as $k => $v) {
 							$params[] = [
-								'item_id' => $block_id,
+								'item_id' => $blockId,
 								'type'    => 'block',
 								'name'    => $k,
-								'value'   => $v
+								'value'   => $v,
 							];
 						}
 					}
@@ -100,7 +101,7 @@ final class BlockImport extends AbstractImport
 			}
 		}
 
-		Utils::$smcFunc['db_transaction']('begin');
+		Db::$db->transaction('begin');
 
 		$results = [];
 
@@ -111,7 +112,7 @@ final class BlockImport extends AbstractImport
 			$count = sizeof($items);
 
 			for ($i = 0; $i < $count; $i++) {
-				$results = Utils::$smcFunc['db_insert']('replace',
+				$results = Db::$db->insert('replace',
 					'{db_prefix}lp_blocks',
 					[
 						'block_id'      => 'int',

@@ -1,11 +1,11 @@
 <?php
 
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\Compat\{Config, Lang, Utils};
 
 function template_manage_export_blocks(): void
 {
 	echo '
-	<form action="', Utils::$context['canonical_url'], '" method="post" accept-charset="', Utils::$context['character_set'], '">
+	<form action="', Utils::$context['form_action'], '" method="post" accept-charset="', Utils::$context['character_set'], '">
 		<div class="cat_bar">
 			<h3 class="catbg">', Utils::$context['page_area_title'], '</h3>
 		</div>
@@ -16,7 +16,7 @@ function template_manage_export_blocks(): void
 					<th scope="col" class="type">
 						', Lang::$txt['lp_block_note'], ' / ', Lang::$txt['lp_title'], '
 					</th>
-					<th scope="col" class="type">
+					<th scope="col" class="type hidden-xs">
 						', Lang::$txt['lp_block_type'], '
 					</th>
 					<th scope="col" class="placement">
@@ -57,7 +57,7 @@ function template_manage_export_blocks(): void
 					<td class="type centertext">
 						', $data['note'] ?: ($data['titles'][Utils::$context['user']['language']] ?? $data['titles'][Config::$language] ?? ''), '
 					</td>
-					<td class="type centertext">
+					<td class="type hidden-xs centertext">
 						', Lang::$txt['lp_' . $data['type']]['title'] ?? Utils::$context['lp_missing_block_types'][$data['type']], '
 					</td>
 					<td class="placement centertext">
@@ -86,7 +86,7 @@ function template_manage_export_blocks(): void
 function template_manage_export_plugins(): void
 {
 	echo '
-	<form action="', Utils::$context['canonical_url'], '" method="post" accept-charset="', Utils::$context['character_set'], '">
+	<form action="', Utils::$context['form_action'], '" method="post" accept-charset="', Utils::$context['character_set'], '">
 		<div class="cat_bar">
 			<h3 class="catbg">', Utils::$context['page_area_title'], '</h3>
 		</div>
@@ -149,7 +149,7 @@ function template_manage_import(): void
 	</div>
 	<div class="information">', Utils::$context['page_area_info'], '</div>
 	<div class="descbox">
-		<form action="', Utils::$context['canonical_url'], '" method="post" enctype="multipart/form-data">
+		<form action="', Utils::$context['form_action'], '" method="post" enctype="multipart/form-data">
 			<div class="centertext">
 				<input type="hidden" name="MAX_FILE_SIZE" value="', Utils::$context['max_file_size'], '">
 				<input name="import_file" type="file" accept="', Utils::$context['lp_file_type'], '">

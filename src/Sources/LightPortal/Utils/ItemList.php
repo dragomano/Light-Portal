@@ -1,0 +1,28 @@
+<?php declare(strict_types=1);
+
+/**
+ * ItemList.php
+ *
+ * @package Light Portal
+ * @link https://dragomano.ru/mods/light-portal
+ * @author Bugo <bugo@dragomano.ru>
+ * @copyright 2019-2024 Bugo
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
+ *
+ * @version 2.6
+ */
+
+namespace Bugo\LightPortal\Utils;
+
+use Bugo\Compat\{ItemList as BaseItemList, Utils};
+
+final class ItemList extends BaseItemList
+{
+	public function __construct(array $listOptions)
+	{
+		parent::__construct($listOptions);
+
+		Utils::$context['sub_template'] = 'show_list';
+		Utils::$context['default_list'] = $listOptions['id'];
+	}
+}

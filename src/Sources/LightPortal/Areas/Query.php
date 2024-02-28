@@ -9,13 +9,13 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\LightPortal\Lists\IconList;
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\Compat\{Config, Db, Lang, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -34,18 +34,18 @@ trait Query
 
 		$search = trim(strtolower($search));
 
-		$all_icons = $this->getFaIcons();
+		$icons = $this->getFaIcons();
 		$template = '<i class="%1$s fa-fw" aria-hidden="true"></i>&nbsp;%1$s';
 
-		$this->hook('prepareIconList', [&$all_icons, &$template]);
+		$this->hook('prepareIconList', [&$icons, &$template]);
 
-		$all_icons = array_filter($all_icons, fn($item) => str_contains($item, $search));
+		$icons = array_filter($icons, static fn($item) => str_contains($item, $search));
 
 		$results = [];
-		foreach ($all_icons as $icon) {
+		foreach ($icons as $icon) {
 			$results[] = [
 				'innerHTML' => sprintf($template, $icon),
-				'value'     => $icon
+				'value'     => $icon,
 			];
 		}
 
@@ -73,7 +73,7 @@ trait Query
 		if (empty($search = $data['search']))
 			return;
 
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT t.id_topic, m.subject
 			FROM {db_prefix}topics AS t
 				INNER JOIN {db_prefix}messages AS m ON (m.id_msg = t.id_first_msg)
@@ -88,13 +88,14 @@ trait Query
 				'id_poll'           => 0,
 				'is_approved'       => 1,
 				'id_redirect_topic' => 0,
-				'recycle_board'     => empty(Config::$modSettings['recycle_board']) ? Config::$modSettings['recycle_board'] : 0,
+				'recycle_board'     => empty(Config::$modSettings['recycle_board'])
+					? Config::$modSettings['recycle_board'] : 0,
 				'subject'           => trim(Utils::$smcFunc['strtolower']($search)),
 			]
 		);
 
 		$topics = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			Lang::censorText($row['subject']);
 
 			$topics[] = [
@@ -103,7 +104,7 @@ trait Query
 			];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
 		exit(json_encode($topics));
@@ -122,7 +123,7 @@ trait Query
 		$search = trim(Utils::$smcFunc['strtolower']($search)) . '*';
 		$search = strtr($search, ['%' => '\%', '_' => '\_', '*' => '%', '?' => '_', '&#038;' => '&amp;']);
 
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT id_member, real_name
 			FROM {db_prefix}members
 			WHERE {raw:real_name} LIKE {string:search}
@@ -135,8 +136,10 @@ trait Query
 		);
 
 		$members = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
-			$row['real_name'] = strtr($row['real_name'], ['&amp;' => '&#038;', '&lt;' => '&#060;', '&gt;' => '&#062;', '&quot;' => '&#034;']);
+		while ($row = Db::$db->fetch_assoc($result)) {
+			$row['real_name'] = strtr(
+				$row['real_name'], ['&amp;' => '&#038;', '&lt;' => '&#060;', '&gt;' => '&#062;', '&quot;' => '&#034;']
+			);
 
 			$members[] = [
 				'text'  => $row['real_name'],
@@ -144,7 +147,7 @@ trait Query
 			];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
 		exit(json_encode($members));

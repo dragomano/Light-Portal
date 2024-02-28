@@ -9,12 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Areas\Fields;
 
-use Bugo\LightPortal\Utils\{Theme, Utils};
+use Bugo\Compat\{Theme, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -25,7 +25,7 @@ class VirtualSelectField extends SelectField
 	{
 		parent::__construct($name, $label);
 
-		Theme::addInlineJS('
+		Theme::addInlineJavaScript('
 		VirtualSelect.init({
 			ele: "#' . $name . '",
 			hideClearButton: true,' . (Utils::$context['right_to_left'] ? '

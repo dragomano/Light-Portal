@@ -10,15 +10,16 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 02.02.24
+ * @version 20.02.24
  */
 
 namespace Bugo\LightPortal\Addons\ArticleList;
 
+use Bugo\Compat\{BBCodeParser, Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, RadioField};
 use Bugo\LightPortal\Areas\Partials\{ContentClassSelect, PageSelect, TopicSelect};
-use Bugo\LightPortal\Utils\{BBCodeParser, Config, Content, Lang, User, Utils};
+use Bugo\LightPortal\Utils\Content;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -38,7 +39,7 @@ class ArticleList extends Block
 			'display_type'     => 0,
 			'include_topics'   => '',
 			'include_pages'    => '',
-			'seek_images'      => false
+			'seek_images'      => false,
 		];
 	}
 
@@ -63,7 +64,7 @@ class ArticleList extends Block
 
 		CustomField::make('body_class', Lang::$txt['lp_article_list']['body_class'])
 			->setTab('appearance')
-			->setValue(fn() => new ContentClassSelect, [
+			->setValue(static fn() => new ContentClassSelect(), [
 				'id'    => 'body_class',
 				'value' => Utils::$context['lp_block']['options']['body_class'],
 			]);
@@ -75,7 +76,7 @@ class ArticleList extends Block
 
 		CustomField::make('include_topics', Lang::$txt['lp_article_list']['include_topics'])
 			->setTab('content')
-			->setValue(fn() => new TopicSelect, [
+			->setValue(static fn() => new TopicSelect(), [
 				'id'    => 'include_topics',
 				'hint'  => Lang::$txt['lp_article_list']['include_topics_select'],
 				'value' => Utils::$context['lp_block']['options']['include_topics'] ?? '',
@@ -83,11 +84,11 @@ class ArticleList extends Block
 
 		CustomField::make('include_pages', Lang::$txt['lp_article_list']['include_pages'])
 			->setTab('content')
-			->setValue(fn() => new PageSelect, [
-			'id'    => 'include_pages',
-			'hint'  => Lang::$txt['lp_article_list']['include_pages_select'],
-			'value' => Utils::$context['lp_block']['options']['include_pages'] ?? '',
-		]);
+			->setValue(static fn() => new PageSelect(), [
+				'id'    => 'include_pages',
+				'hint'  => Lang::$txt['lp_article_list']['include_pages_select'],
+				'value' => Utils::$context['lp_block']['options']['include_pages'] ?? '',
+			]);
 
 		CheckboxField::make('seek_images', Lang::$txt['lp_article_list']['seek_images'])
 			->setValue(Utils::$context['lp_block']['options']['seek_images']);
@@ -110,7 +111,7 @@ class ArticleList extends Block
 			ORDER BY t.id_last_msg DESC',
 			[
 				'topics'      => explode(',', $parameters['include_topics']),
-				'is_approved' => 1
+				'is_approved' => 1,
 			]
 		);
 
@@ -120,7 +121,9 @@ class ArticleList extends Block
 			Lang::censorText($row['body']);
 
 			$value = null;
-			$image = empty($parameters['seek_images']) ? '' : preg_match('/\[img.*]([^]\[]+)\[\/img]/U', $row['body'], $value);
+			$image = empty($parameters['seek_images'])
+				? ''
+				: preg_match('/\[img.*]([^]\[]+)\[\/img]/U', $row['body'], $value);
 			$image = $value ? array_pop($value) : ($image ?: Config::$modSettings['lp_image_placeholder'] ?? '');
 
 			$body = BBCodeParser::load()->parse($row['body'], (bool) $row['smileys_enabled'], $row['id_msg']);
@@ -129,7 +132,7 @@ class ArticleList extends Block
 				'id'          => $row['id_topic'],
 				'title'       => $row['subject'],
 				'description' => $this->getTeaser($body),
-				'image'       => $image
+				'image'       => $image,
 			];
 		}
 
@@ -144,7 +147,7 @@ class ArticleList extends Block
 		if (empty($parameters['include_pages']))
 			return [];
 
-		$titles = $this->getEntityList('title');
+		$titles = $this->getEntityData('title');
 
 		$result = Utils::$smcFunc['db_query']('', '
 			SELECT page_id, alias, content, description, type
@@ -158,7 +161,7 @@ class ArticleList extends Block
 				'status'       => 1,
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions(),
-				'pages'        => explode(',', $parameters['include_pages'])
+				'pages'        => explode(',', $parameters['include_pages']),
 			]
 		);
 
@@ -176,7 +179,7 @@ class ArticleList extends Block
 				'title'       => $titles[$row['page_id']] ?? [],
 				'alias'       => $row['alias'],
 				'description' => $this->getTeaser($row['description'] ?: strip_tags($row['content'])),
-				'image'       => $image ?: (Config::$modSettings['lp_image_placeholder'] ?? '')
+				'image'       => $image ?: (Config::$modSettings['lp_image_placeholder'] ?? ''),
 			];
 		}
 
@@ -191,9 +194,13 @@ class ArticleList extends Block
 		if ($data->type !== 'article_list')
 			return;
 
-		$article_list = $this->cache('article_list_addon_b' . $data->block_id . '_u' . User::$info['id'])
-			->setLifeTime($data->cache_time)
-			->setFallback(self::class, empty($parameters['display_type']) ? 'getTopics' : 'getPages', $parameters);
+		$article_list = $this->cache('article_list_addon_b' . $data->id . '_u' . User::$info['id'])
+			->setLifeTime($data->cacheTime)
+			->setFallback(
+				self::class,
+				empty($parameters['display_type']) ? 'getTopics' : 'getPages',
+				$parameters
+			);
 
 		if ($article_list) {
 			echo '

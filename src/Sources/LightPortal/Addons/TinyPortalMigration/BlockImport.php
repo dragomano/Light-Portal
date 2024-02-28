@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.01.24
+ * @version 23.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortalMigration;
 
+use Bugo\Compat\{Config, Db, Lang, Utils};
 use Bugo\LightPortal\Areas\Imports\AbstractCustomBlockImport;
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\ItemList;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -29,11 +30,11 @@ class BlockImport extends AbstractCustomBlockImport
 	{
 		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_tiny_portal_migration']['label_name'];
 		Utils::$context['page_area_title'] = Lang::$txt['lp_blocks_import'];
-		Utils::$context['canonical_url']   = Config::$scripturl . '?action=admin;area=lp_blocks;sa=import_from_tp';
+		Utils::$context['form_action']     = Config::$scripturl . '?action=admin;area=lp_blocks;sa=import_from_tp';
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_tiny_portal_migration']['block_import_desc']
+			'description' => Lang::$txt['lp_tiny_portal_migration']['block_import_desc'],
 		];
 
 		$this->run();
@@ -43,7 +44,7 @@ class BlockImport extends AbstractCustomBlockImport
 			'items_per_page' => 50,
 			'title' => Lang::$txt['lp_blocks_import'],
 			'no_items_label' => Lang::$txt['lp_no_items'],
-			'base_href' => Utils::$context['canonical_url'],
+			'base_href' => Utils::$context['form_action'],
 			'default_sort_col' => 'title',
 			'get_items' => [
 				'function' => [$this, 'getAll']
@@ -96,13 +97,13 @@ class BlockImport extends AbstractCustomBlockImport
 						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);" checked>'
 					],
 					'data' => [
-						'function' => fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="blocks[]" checked>',
+						'function' => static fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="blocks[]" checked>',
 						'class' => 'centertext'
 					]
 				]
 			],
 			'form' => [
-				'href' => Utils::$context['canonical_url']
+				'href' => Utils::$context['form_action']
 			],
 			'additional_rows' => [
 				[
@@ -115,12 +116,12 @@ class BlockImport extends AbstractCustomBlockImport
 			]
 		];
 
-		$this->createList($listOptions);
+		new ItemList($listOptions);
 	}
 
-	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id'): array
+	public function getAll(int $start = 0, int $limit = 0, string $sort = 'id'): array
 	{
-		$this->dbExtend();
+		Db::extend();
 
 		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'tp_blocks')))
 			return [];
@@ -135,7 +136,7 @@ class BlockImport extends AbstractCustomBlockImport
 				'types' => $this->supportedTypes,
 				'sort'  => $sort,
 				'start' => $start,
-				'limit' => $items_per_page
+				'limit' => $limit,
 			]
 		);
 
@@ -145,7 +146,7 @@ class BlockImport extends AbstractCustomBlockImport
 				'id'        => $row['id'],
 				'type'      => Lang::$txt['lp_' . $this->getType($row['type'])]['title'],
 				'title'     => $row['title'],
-				'placement' => Utils::$context['lp_block_placements'][$this->getPlacement($row['bar'])]
+				'placement' => Utils::$context['lp_block_placements'][$this->getPlacement($row['bar'])],
 			];
 		}
 
@@ -157,7 +158,7 @@ class BlockImport extends AbstractCustomBlockImport
 
 	public function getTotalCount(): int
 	{
-		$this->dbExtend();
+		Db::extend();
 
 		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'tp_blocks')))
 			return 0;
@@ -167,16 +168,16 @@ class BlockImport extends AbstractCustomBlockImport
 			FROM {db_prefix}tp_blocks
 			WHERE type IN ({array_int:types})',
 			[
-				'types' => $this->supportedTypes
+				'types' => $this->supportedTypes,
 			]
 		);
 
-		[$num_blocks] = Utils::$smcFunc['db_fetch_row']($result);
+		[$count] = Utils::$smcFunc['db_fetch_row']($result);
 
 		Utils::$smcFunc['db_free_result']($result);
 		Utils::$context['lp_num_queries']++;
 
-		return (int) $num_blocks;
+		return (int) $count;
 	}
 
 	protected function getItems(array $blocks): array
@@ -188,7 +189,7 @@ class BlockImport extends AbstractCustomBlockImport
 				AND id IN ({array_int:blocks})'),
 			[
 				'types'  => $this->supportedTypes,
-				'blocks' => $blocks
+				'blocks' => $blocks,
 			]
 		);
 
@@ -215,7 +216,7 @@ class BlockImport extends AbstractCustomBlockImport
 				'permissions'   => $perm,
 				'status'        => 0,
 				'title_class'   => array_key_first(Utils::$context['lp_all_title_classes']),
-				'content_class' => array_key_first(Utils::$context['lp_all_content_classes'])
+				'content_class' => array_key_first(Utils::$context['lp_all_content_classes']),
 			];
 		}
 

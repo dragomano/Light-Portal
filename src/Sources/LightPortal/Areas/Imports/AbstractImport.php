@@ -8,13 +8,14 @@
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Areas\Imports;
 
+use Bugo\Compat\{Db, ErrorHandler};
+use Bugo\Compat\{Lang, Sapi, Utils};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Sapi, Utils};
 use SimpleXMLElement;
 
 if (! defined('SMF'))
@@ -44,20 +45,20 @@ abstract class AbstractImport implements ImportInterface
 
 	protected function replaceTitles(array $titles, array &$results): void
 	{
-		if (empty($titles) && empty($results))
+		if ($titles === [] && $results === [])
 			return;
 
 		$titles = array_chunk($titles, 100);
 		$count  = sizeof($titles);
 
 		for ($i = 0; $i < $count; $i++) {
-			$results = Utils::$smcFunc['db_insert']('replace',
+			$results = Db::$db->insert('replace',
 				'{db_prefix}lp_titles',
 				[
 					'item_id' => 'int',
 					'type'    => 'string',
 					'lang'    => 'string',
-					'title'   => 'string'
+					'title'   => 'string',
 				],
 				$titles[$i],
 				['item_id', 'type', 'lang'],
@@ -70,20 +71,20 @@ abstract class AbstractImport implements ImportInterface
 
 	protected function replaceParams(array $params, array &$results): void
 	{
-		if (empty($params) && empty($results))
+		if ($params === [] && $results === [])
 			return;
 
 		$params = array_chunk($params, 100);
 		$count  = sizeof($params);
 
 		for ($i = 0; $i < $count; $i++) {
-			$results = Utils::$smcFunc['db_insert']('replace',
+			$results = Db::$db->insert('replace',
 				'{db_prefix}lp_params',
 				[
 					'item_id' => 'int',
 					'type'    => 'string',
 					'name'    => 'string',
-					'value'   => 'string'
+					'value'   => 'string',
 				],
 				$params[$i],
 				['item_id', 'type', 'name'],
@@ -96,14 +97,17 @@ abstract class AbstractImport implements ImportInterface
 
 	protected function finish(array $results, string $type = 'blocks'): void
 	{
-		if (empty($results)) {
-			Utils::$smcFunc['db_transaction']('rollback');
+		if ($results === []) {
+			Db::$db->transaction('rollback');
 			ErrorHandler::fatalLang('lp_import_failed');
 		}
 
-		Utils::$smcFunc['db_transaction']('commit');
+		Db::$db->transaction('commit');
 
-		Utils::$context['import_successful'] = sprintf(Lang::$txt['lp_import_success'], Lang::getTxt('lp_' . $type . '_set', [$type => Utils::$context['import_successful']]));
+		Utils::$context['import_successful'] = sprintf(
+			Lang::$txt['lp_import_success'],
+			Lang::getTxt('lp_' . $type . '_set', [$type => Utils::$context['import_successful']])
+		);
 
 		$this->cache()->flush();
 	}

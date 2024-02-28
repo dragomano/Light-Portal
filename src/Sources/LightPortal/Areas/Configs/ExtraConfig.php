@@ -9,12 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Areas\Configs;
 
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, User, Utils};
+use Bugo\Compat\{ACP, Config, Lang, Theme, User, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -41,10 +41,10 @@ final class ExtraConfig extends AbstractConfig
 
 		$this->addDefaultValues([
 			'lp_num_comments_per_page' => 10,
-			'lp_page_maximum_keywords' => 10,
+			'lp_page_maximum_tags'     => 10,
 		]);
 
-		$config_vars = [
+		$configVars = [
 			['check', 'lp_show_tags_on_page'],
 			['select', 'lp_page_og_image', Lang::$txt['lp_page_og_image_set']],
 			['check', 'lp_show_prev_next_links'],
@@ -77,7 +77,7 @@ final class ExtraConfig extends AbstractConfig
 			['callback', 'comment_settings_after'],
 			'',
 			['check', 'lp_show_items_as_articles'],
-			['int', 'lp_page_maximum_keywords', 'min' => 1],
+			['int', 'lp_page_maximum_tags', 'min' => 1],
 			['select', 'lp_permissions_default', Lang::$txt['lp_permissions']],
 			['check', 'lp_hide_blocks_in_acp'],
 			['title', 'lp_fa_source_title'],
@@ -89,9 +89,10 @@ final class ExtraConfig extends AbstractConfig
 					'css_cdn'   => Lang::$txt['lp_fa_source_css_cdn'],
 					'css_local' => Lang::$txt['lp_fa_source_css_local'],
 					'custom'    => Lang::$txt['lp_fa_custom'],
-					'kit'       => Lang::$txt['lp_fa_kit']
+					'kit'       => Lang::$txt['lp_fa_kit'],
 				],
-				'onchange' => 'document.getElementById(\'lp_fa_custom\').disabled = this.value !== \'custom\';document.getElementById(\'lp_fa_kit\').disabled = this.value !== \'kit\';'
+				'onchange' => 'document.getElementById(\'lp_fa_custom\').disabled = this.value !== \'custom\';
+					document.getElementById(\'lp_fa_kit\').disabled = this.value !== \'kit\';'
 			],
 			[
 				'text',
@@ -120,14 +121,15 @@ final class ExtraConfig extends AbstractConfig
 			if ($this->request()->isNotEmpty('lp_fa_kit'))
 				$this->post()->put('lp_fa_kit', $this->filterVar($this->request('lp_fa_kit'), 'url'));
 
-			$save_vars = $config_vars;
-			$this->saveDBSettings($save_vars);
+			$saveVars = $configVars;
+			ACP::saveDBSettings($saveVars);
+
 			$this->session()->put('adm-save', true);
 			$this->cache()->flush();
 
 			Utils::redirectexit('action=admin;area=lp_settings;sa=extra');
 		}
 
-		$this->prepareDBSettingContext($config_vars);
+		ACP::prepareDBSettingContext($configVars);
 	}
 }

@@ -23,7 +23,7 @@ return [
 	'chart_title' => 'Title of chart',
 	'chart_title_placeholder' => 'Text to display as a title of chart',
 	'stacked' => 'Enable stacked bar charts',
-	'stacked_after' => ' Stacked bar charts can be used to show how one data series is made up of a number of smaller pieces.',
+	'stacked_after' => 'Stacked bar charts can be used to show how one data series is made up of a number of smaller pieces.',
 	'full_stacked' => '100% stacked bar charts',
 	'full_stacked_after' => 'The bars are stacked on top of each other based on their percentage or weightage among the groups.',
 	'legend' => 'Show legend',

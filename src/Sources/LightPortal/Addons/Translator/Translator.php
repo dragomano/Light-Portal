@@ -10,14 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\Translator;
 
+use Bugo\Compat\{Config, Lang, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, RadioField};
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -80,19 +80,19 @@ class Translator extends Block
 
 		if ($parameters['engine'] === 'yandex') {
 			echo '
-		<div id="ytWidget', $data->block_id, /** @lang text */ '" class="centertext noup"></div>
-		<script src="https://translate.yandex.net/website-widget/v1/widget.js?widgetId=ytWidget', $data->block_id, '&amp;pageLang=', substr(Config::$language, 0, 2), '&amp;widgetTheme=', $parameters['widget_theme'], '&amp;autoMode=', (bool) $parameters['auto_mode'], '"></script>';
+		<div id="ytWidget', $data->id, '" class="centertext noup"></div>
+		<script src="https://translate.yandex.net/website-widget/v1/widget.js?widgetId=ytWidget', $data->id, '&amp;pageLang=', substr(Config::$language, 0, 2), '&amp;widgetTheme=', $parameters['widget_theme'], '&amp;autoMode=', (bool) $parameters['auto_mode'], '"></script>';
 		}
 
 		if ($parameters['engine'] === 'google') {
-			echo /** @lang text */ '
-		<div id="google_translate_element', $data->block_id, /** @lang text */ '" class="centertext noup"></div>
+			echo '
+		<div id="google_translate_element', $data->id, /** @lang text */ '" class="centertext noup"></div>
 		<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 		<script>
 			function googleTranslateElementInit() {
 				new google.translate.TranslateElement({
 					pageLanguage: "', substr(Config::$language, 0, 2), '"
-				}, "google_translate_element', $data->block_id, /** @lang text */ '");
+				}, "google_translate_element', $data->id, '");
 			}
 		</script>';
 		}

@@ -9,12 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Areas\Partials;
 
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\Compat\{Config, Lang, Utils};
 
 final class CategorySelect extends AbstractPartial
 {
@@ -26,14 +26,14 @@ final class CategorySelect extends AbstractPartial
 		$params['id'] ??= 'lp_frontpage_categories';
 		$params['multiple'] ??= true;
 		$params['full_width'] ??= true;
-		$params['data'] ??= $this->getEntityList('category');
+		$params['data'] ??= $this->getEntityData('category');
 		$params['value'] ??= Config::$modSettings['lp_frontpage_categories'] ?? '';
 
 		$data = [];
 		foreach ($params['data'] as $id => $cat) {
 			$data[] = [
-				'label' => $cat['name'],
-				'value' => $id
+				'label' => $this->getIcon($cat['icon']) . $cat['title'],
+				'value' => $id,
 			];
 		}
 
@@ -51,8 +51,8 @@ final class CategorySelect extends AbstractPartial
 				placeholder: "' . ($params['hint'] ?? Lang::$txt['lp_frontpage_categories_select']) . '",
 				noSearchResultsText: "' . Lang::$txt['no_matches'] . '",
 				searchPlaceholderText: "' . Lang::$txt['search'] . '",
-				allOptionsSelectedText: "' . Lang::$txt['all'] . '",
-				showValueAsTags: true,' . ($params['full_width'] ? '
+				allOptionsSelectedText: "' . Lang::$txt['all'] . '",' . ($params['multiple'] ? '
+				showValueAsTags: true,' : '') . ($params['full_width'] ? '
 				maxWidth: "100%",' : '') . '
 				options: ' . json_encode($data) . ',
 				selectedValue: [' . $params['value'] . ']

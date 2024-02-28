@@ -1,10 +1,12 @@
-.block_tag_list .button {
-	margin: 4px;
-	float: left;
-	transition: all 0.2s 0.01s ease-in;
-}
+.block_tag_list {
+	.button {
+		margin: 4px;
+		float: left;
+		transition: all 0.2s 0.01s ease-in;
 
-.block_tag_list .button:hover {
-	background-color: #ff6766;
-	transform: rotate(1deg);
+		&:hover {
+			background-color: #ff6766;
+			transform: rotate(1deg);
+		}
+	}
 }

@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
 
+use Bugo\Compat\{ErrorHandler, Lang};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{ErrorHandler, Lang};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -34,9 +34,9 @@ class Builder
 
 	public function create(string $content): Builder
 	{
-		$dir_ready = mkdir($this->path);
+		$isDirReady = mkdir($this->path);
 
-		if (! $dir_ready) {
+		if (! $isDirReady) {
 			ErrorHandler::fatal(Lang::$txt['lp_plugin_maker']['addon_dir_not_created']);
 		}
 
@@ -51,9 +51,9 @@ class Builder
 
 	public function createLangs(array $languages = []): Builder
 	{
-		$dir_ready = mkdir($this->path . DIRECTORY_SEPARATOR . 'langs');
+		$isDirReady = mkdir($this->path . DIRECTORY_SEPARATOR . 'langs');
 
-		if (! $dir_ready) {
+		if (! $isDirReady) {
 			ErrorHandler::fatal(Lang::$txt['lp_plugin_maker']['lang_dir_not_created']);
 		}
 

@@ -1,6 +1,6 @@
 <?php
 
-use Bugo\LightPortal\Utils\{Lang, Utils};
+use Bugo\Compat\{Lang, Utils};
 
 function callback_main_menu_table(): void
 {
@@ -20,7 +20,12 @@ function callback_main_menu_table(): void
 			<tr class="bg ', $i++ % 2 === 0 ? 'odd' : 'even', '">
 				<td><strong>', $lang['name'], '</strong></td>
 				<td>
-					<input type="text" name="portal_item_langs[', $lang['filename'], ']" placeholder="', $lang['filename'], '" value="', Utils::$context['lp_main_menu_addon_portal_langs'][$lang['filename']] ?? '', '">
+					<input
+						type="text"
+						name="portal_item_langs[', $lang['filename'], ']"
+						placeholder="', $lang['filename'], '"
+						value="', Utils::$context['lp_main_menu_addon_portal_langs'][$lang['filename']] ?? '', '"
+					>
 				</td>
 			</tr>';
 	}
@@ -43,7 +48,12 @@ function callback_main_menu_table(): void
 			<tr class="bg ', $i++ % 2 === 0 ? 'odd' : 'even', '">
 				<td><strong>', $lang['name'], '</strong></td>
 				<td>
-					<input type="text" name="forum_item_langs[', $lang['filename'], ']" placeholder="', $lang['filename'], '" value="', Utils::$context['lp_main_menu_addon_forum_langs'][$lang['filename']] ?? '', '">
+					<input
+						type="text"
+						name="forum_item_langs[', $lang['filename'], ']"
+						placeholder="', $lang['filename'], '"
+						value="', Utils::$context['lp_main_menu_addon_forum_langs'][$lang['filename']] ?? '', '"
+					>
 				</td>
 			</tr>';
 	}

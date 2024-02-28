@@ -23,10 +23,6 @@ return [
 		'If you need comments, configure them too.',
 		'And here you can choose how to connect the FontAwesome icon library.',
 	],
-	'categories_tour' => [
-		'If you cannot live without categories, add them here.',
-		'Added categories are displayed here. They can be edited and dragged, changing the order.',
-	],
 	'panels_tour' => [
 		'A mini version of the portal layout.',
 		'Each panel can be customized by specifying the desired width for different screen resolutions.',
@@ -52,9 +48,16 @@ return [
 		'Date - generalized field for the date of page creation and the date of page updating.',
 		'You want to know how many times this or that page has been viewed, don\'t you?',
 		'Page alias is the part of the address after %s',
-		'Status is status! Turn pages on or off with a single tap.',
+		'Enable or disable pages with a single click.',
 		'In the additional actions, editing and deleting pages are hidden.',
 		'When it gets to be a lot of pages, a search will come in handy!',
+	],
+	'categories_tour' => [
+		'If you cannot live without categories, add them here.',
+		'Each line in this table represents a corresponding category.',
+		'The lower this value, the higher the priority of the category in the general list.',
+		'Enable or disable categories with a single click.',
+		'In the additional actions, editing and deleting categories are hidden.',
 	],
 	'plugins_tour' => [
 		'This page lists all installed portal addons in alphabetical order.',

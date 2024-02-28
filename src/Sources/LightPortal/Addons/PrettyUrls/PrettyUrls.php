@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\PrettyUrls;
 
+use Bugo\Compat\{Config, Utils};
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\{Config, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -30,8 +30,12 @@ class PrettyUrls extends Plugin
 		if (! is_file($file = Config::$sourcedir . '/Subs-PrettyUrls.php'))
 			return;
 
-		if (! empty(Utils::$context['pretty']['action_array']) && ! in_array(LP_ACTION, array_values(Utils::$context['pretty']['action_array'])))
+		if (
+			! empty(Utils::$context['pretty']['action_array'])
+			&& ! in_array(LP_ACTION, array_values(Utils::$context['pretty']['action_array']))
+		) {
 			Utils::$context['pretty']['action_array'][] = LP_ACTION;
+		}
 
 		$prettyFilters = unserialize(Config::$modSettings['pretty_filters']);
 
@@ -57,7 +61,7 @@ class PrettyUrls extends Plugin
 		Config::updateModSettings(['pretty_filters' => serialize($prettyFilters)]);
 
 		if (function_exists('pretty_update_filters'))
-			pretty_update_filters();
+			\pretty_update_filters();
 	}
 
 	public function filter(array $urls): array

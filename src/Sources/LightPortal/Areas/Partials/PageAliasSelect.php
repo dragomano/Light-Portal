@@ -9,12 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Areas\Partials;
 
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\Compat\{Config, Lang, Utils};
 
 final class PageAliasSelect extends AbstractPartial
 {
@@ -25,7 +25,7 @@ final class PageAliasSelect extends AbstractPartial
 
 		$params['id'] ??= 'lp_frontpage_alias';
 		$params['value'] ??= Config::$modSettings['lp_frontpage_alias'] ?? '';
-		$params['data'] ??= $this->getEntityList('page');
+		$params['data'] ??= $this->getEntityData('page');
 
 		$data = [];
 		foreach ($params['data'] as $page) {

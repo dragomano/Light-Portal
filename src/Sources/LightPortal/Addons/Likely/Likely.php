@@ -10,14 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 20.02.24
  */
 
 namespace Bugo\LightPortal\Addons\Likely;
 
+use Bugo\Compat\{Config, Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, RadioField};
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -26,7 +26,10 @@ class Likely extends Block
 {
 	public string $icon = 'far fa-share-square';
 
-	private array $buttons = ['facebook', 'linkedin', 'odnoklassniki', 'pinterest', 'reddit', 'telegram', 'twitter', 'viber', 'vkontakte', 'whatsapp'];
+	private array $buttons = [
+		'facebook', 'linkedin', 'odnoklassniki', 'pinterest', 'reddit',
+		'telegram', 'twitter', 'viber', 'vkontakte', 'whatsapp',
+	];
 
 	public function prepareBlockParams(array &$params): void
 	{
@@ -59,11 +62,11 @@ class Likely extends Block
 
 		CustomField::make('buttons', Lang::$txt['lp_likely']['buttons'])
 			->setTab('content')
-			->setValue(fn() => new ButtonSelect, [
+			->setValue(static fn() => new ButtonSelect(), [
 				'data'  => $this->buttons,
 				'value' => is_array(Utils::$context['lp_block']['options']['buttons'])
-							? Utils::$context['lp_block']['options']['buttons']
-							: explode(',', Utils::$context['lp_block']['options']['buttons'])
+					? Utils::$context['lp_block']['options']['buttons']
+					: explode(',', Utils::$context['lp_block']['options']['buttons'])
 			]);
 
 		RadioField::make('size', Lang::$txt['lp_likely']['size'])
@@ -86,9 +89,9 @@ class Likely extends Block
 			return;
 
 		Theme::loadCSSFile('light_portal/likely/likely.min.css');
-		Theme::loadJSFile('light_portal/likely/likely.min.js', ['minimize' => true]);
+		$this->loadJSFile('light_portal/likely/likely.min.js', ['minimize' => true]);
 
-		echo /** @lang text */ '
+		echo '
 			<div class="centertext likely_links">
 				<div class="likely likely-', $parameters['size'], (empty($parameters['dark_mode']) ? '' : ' likely-dark-theme'), '">';
 
@@ -99,10 +102,18 @@ class Likely extends Block
 				continue;
 
 			echo '
-					<div class="', $service, '" tabindex="0" role="link" aria-label="', Lang::$txt['lp_likely']['buttons_set'][$service], '"', (! empty(Config::$modSettings['optimus_tw_cards']) && $service === 'twitter' ? ' data-via="' . Config::$modSettings['optimus_tw_cards'] . '"' : ''), (! empty(Theme::$current->settings['og_image']) && $service === 'pinterest' ? ' data-media="' . Theme::$current->settings['og_image'] . '"' : ''), (! empty(Theme::$current->settings['og_image']) && $service === 'odnoklassniki' ? ' data-imageurl="' . Theme::$current->settings['og_image'] . '"' : ''), '>', Lang::$txt['lp_likely']['buttons_set'][$service], '</div>';
+					<div
+						class="', $service, '"
+						tabindex="0"
+						role="link"
+						aria-label="', Lang::$txt['lp_likely']['buttons_set'][$service], '"', (! empty(Config::$modSettings['optimus_tw_cards']) && $service === 'twitter' ? '
+						data-via="' . Config::$modSettings['optimus_tw_cards'] . '"' : ''), (! empty(Theme::$current->settings['og_image']) && $service === 'pinterest' ? '
+						data-media="' . Theme::$current->settings['og_image'] . '"' : ''), (! empty(Theme::$current->settings['og_image']) && $service === 'odnoklassniki' ? '
+						data-imageurl="' . Theme::$current->settings['og_image'] . '"' : ''), '
+					>', Lang::$txt['lp_likely']['buttons_set'][$service], '</div>';
 		}
 
-		echo /** @lang text */ '
+		echo '
 				</div>
 			</div>';
 	}

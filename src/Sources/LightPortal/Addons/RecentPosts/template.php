@@ -1,8 +1,8 @@
 <?php
 
-use Bugo\LightPortal\Utils\{Config, Lang};
+use Bugo\Compat\{Config, Lang};
 
-function show_posts(array $recent_posts, array $parameters, bool $full_width): void
+function show_posts(array $posts, array $parameters, bool $full_width): void
 {
 	if ($full_width) {
 		echo '
@@ -13,7 +13,7 @@ function show_posts(array $recent_posts, array $parameters, bool $full_width): v
 	}
 
 	if (empty($parameters['use_simple_style'])) {
-		foreach ($recent_posts as $post) {
+		foreach ($posts as $post) {
 			$post['preview'] = '<a href="' . $post['href'] . '">' . $post['preview'] . '</a>';
 
 			echo '
@@ -46,7 +46,7 @@ function show_posts(array $recent_posts, array $parameters, bool $full_width): v
 		</div>';
 		}
 	} else {
-		foreach ($recent_posts as $post) {
+		foreach ($posts as $post) {
 			$post['preview'] = '<a href="' . $post['href'] . '">' . $post['preview'] . '</a>';
 
 			echo '

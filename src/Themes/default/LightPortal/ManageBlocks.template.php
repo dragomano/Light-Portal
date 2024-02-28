@@ -1,6 +1,7 @@
 <?php
 
-use Bugo\LightPortal\Utils\{Config, Icon, Lang, Theme, Utils};
+use Bugo\Compat\{Config, Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\Icon;
 
 function template_manage_blocks(): void
 {
@@ -36,7 +37,7 @@ function template_manage_blocks(): void
 				<th scope="col" class="areas hidden-xs hidden-sm">
 					', Lang::$txt['lp_block_areas'], '
 				</th>
-				<th scope="col" class="priority">
+				<th scope="col" class="priority hidden-xs">
 					', Lang::$txt['lp_block_priority'], '
 				</th>
 				<th scope="col" class="status">
@@ -131,16 +132,16 @@ function show_block_entry(int $id, array $data): void
 		<td class="areas hidden-xs hidden-sm">
 			', $data['areas'], '
 		</td>
-		<td class="priority">
+		<td class="priority hidden-xs">
 			', $data['priority'], ' ', str_replace(' class="', ' title="' . Lang::$txt['lp_action_move'] . '" class="handle ', Icon::get('sort')), '
 		</td>
 		<td class="status">
-			<span :class="{\'on\': status, \'off\': !status}" :title="status ? \'', Lang::$txt['lp_action_off'], '\' : \'', Lang::$txt['lp_action_on'], '\'" @click.prevent="status = !status"></span>
+			<span :class="{ \'on\': status, \'off\': !status }" :title="status ? \'', Lang::$txt['lp_action_off'], '\' : \'', Lang::$txt['lp_action_on'], '\'" @click.prevent="status = !status"></span>
 		</td>
 		<td class="actions">
 			<div class="context_menu" @click.outside="showContextMenu = false">
 				<button class="button floatnone" @click.prevent="showContextMenu = true">
-					<svg aria-hidden="true" width="10" height="10" focusable="false" data-prefix="fas" data-icon="ellipsis-h" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M328 256c0 39.8-32.2 72-72 72s-72-32.2-72-72 32.2-72 72-72 72 32.2 72 72zm104-72c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72zm-352 0c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72z"></path></svg>
+					', Icon::get('ellipsis'), '
 				</button>
 				<div class="roundframe" x-show="showContextMenu">
 					<ul>
@@ -174,7 +175,7 @@ function template_block_add(): void
 	</div>
 	<div class="information">', Lang::$txt['lp_blocks_add_instruction'], '</div>
 	<div id="lp_blocks">
-		<form name="block_add_form" action="', Utils::$context['canonical_url'], '" method="post" accept-charset="', Utils::$context['character_set'], '">
+		<form name="block_add_form" action="', Utils::$context['form_action'], '" method="post" accept-charset="', Utils::$context['character_set'], '">
 			<div class="row">';
 
 	foreach (Utils::$context['lp_all_blocks'] as $block) {
@@ -208,7 +209,6 @@ function template_block_post(): void
 	if (isset(Utils::$context['preview_content']) && empty(Utils::$context['post_errors'])) {
 		echo '
 	<div class="preview_frame">';
-
 		echo sprintf(Utils::$context['lp_all_title_classes'][Utils::$context['lp_block']['title_class']], Utils::$context['preview_title']);
 
 		echo '
@@ -251,7 +251,7 @@ function template_block_post(): void
 	echo '
 	<form
 		id="lp_post"
-		action="', Utils::$context['canonical_url'], '"
+		action="', Utils::$context['form_action'], '"
 		method="post"
 		accept-charset="', Utils::$context['character_set'], '"
 		onsubmit="submitonce(this);"

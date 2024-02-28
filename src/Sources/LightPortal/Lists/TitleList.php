@@ -9,24 +9,26 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Lists;
 
-use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\Utils;
+use Bugo\Compat\{Db, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class TitleList implements ListInterface
 {
-	use Helper;
+	public function __invoke(): array
+	{
+		return $this->getAll();
+	}
 
 	public function getAll(): array
 	{
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT item_id, lang, title
 			FROM {db_prefix}lp_titles
 			WHERE type = {string:type}
@@ -39,11 +41,11 @@ final class TitleList implements ListInterface
 		);
 
 		$titles = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			$titles[$row['item_id']][$row['lang']] = $row['title'];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
 		return $titles;

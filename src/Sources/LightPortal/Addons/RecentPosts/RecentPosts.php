@@ -10,15 +10,16 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 04.02.24
+ * @version 20.02.24
  */
 
 namespace Bugo\LightPortal\Addons\RecentPosts;
 
+use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, NumberField, RadioField};
 use Bugo\LightPortal\Areas\Partials\{TopicSelect, BoardSelect};
-use Bugo\LightPortal\Utils\{Config, DateTime, Lang, User, Utils};
+use Bugo\LightPortal\Utils\DateTime;
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -78,7 +79,7 @@ class RecentPosts extends Block
 
 		CustomField::make('exclude_boards', Lang::$txt['lp_recent_posts']['exclude_boards'])
 			->setTab('content')
-			->setValue(fn() => new BoardSelect, [
+			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'exclude_boards',
 				'hint'  => Lang::$txt['lp_recent_posts']['exclude_boards_select'],
 				'value' => Utils::$context['lp_block']['options']['exclude_boards'] ?? '',
@@ -86,7 +87,7 @@ class RecentPosts extends Block
 
 		CustomField::make('include_boards', Lang::$txt['lp_recent_posts']['include_boards'])
 			->setTab('content')
-			->setValue(fn() => new BoardSelect, [
+			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'include_boards',
 				'hint'  => Lang::$txt['lp_recent_posts']['include_boards_select'],
 				'value' => Utils::$context['lp_block']['options']['include_boards'] ?? '',
@@ -94,7 +95,7 @@ class RecentPosts extends Block
 
 		CustomField::make('exclude_topics', Lang::$txt['lp_recent_posts']['exclude_topics'])
 			->setTab('content')
-			->setValue(fn() => new TopicSelect, [
+			->setValue(static fn() => new TopicSelect(), [
 				'id'    => 'exclude_topics',
 				'hint'  => Lang::$txt['lp_recent_posts']['exclude_topics_select'],
 				'value' => Utils::$context['lp_block']['options']['exclude_topics'] ?? '',
@@ -102,7 +103,7 @@ class RecentPosts extends Block
 
 		CustomField::make('include_topics', Lang::$txt['lp_recent_posts']['include_topics'])
 			->setTab('content')
-			->setValue(fn() => new TopicSelect, [
+			->setValue(static fn() => new TopicSelect(), [
 				'id'    => 'include_topics',
 				'hint'  => Lang::$txt['lp_recent_posts']['include_topics_select'],
 				'value' => Utils::$context['lp_block']['options']['include_topics'] ?? '',
@@ -115,7 +116,10 @@ class RecentPosts extends Block
 
 		CheckboxField::make('show_avatars', Lang::$txt['lp_recent_posts']['show_avatars'])
 			->setTab('appearance')
-			->setValue(Utils::$context['lp_block']['options']['show_avatars'] && empty(Utils::$context['lp_block']['options']['use_simple_style']));
+			->setValue(
+				Utils::$context['lp_block']['options']['show_avatars']
+				&& empty(Utils::$context['lp_block']['options']['use_simple_style'])
+			);
 
 		NumberField::make('num_posts', Lang::$txt['lp_recent_posts']['num_posts'])
 			->setAttribute('min', 1)
@@ -141,35 +145,49 @@ class RecentPosts extends Block
 	 */
 	public function getData(array $parameters): array
 	{
-		$exclude_boards = empty($parameters['exclude_boards']) ? [] : explode(',', $parameters['exclude_boards']);
-		$include_boards = empty($parameters['include_boards']) ? [] : explode(',', $parameters['include_boards']);
-		$exclude_topics = empty($parameters['exclude_topics']) ? [] : explode(',', $parameters['exclude_topics']);
-		$include_topics = empty($parameters['include_topics']) ? [] : explode(',', $parameters['include_topics']);
+		$excludeBoards = empty($parameters['exclude_boards']) ? [] : explode(',', $parameters['exclude_boards']);
+		$includeBoards = empty($parameters['include_boards']) ? [] : explode(',', $parameters['include_boards']);
+		$excludeTopics = empty($parameters['exclude_topics']) ? [] : explode(',', $parameters['exclude_topics']);
+		$includeTopics = empty($parameters['include_topics']) ? [] : explode(',', $parameters['include_topics']);
 
-		$query_where = '
-			m.id_msg >= {int:min_message_id}' . (empty($exclude_boards) ? '' : '
-			AND b.id_board NOT IN ({array_int:exclude_boards})') . (empty($include_boards) ? '' : '
-			AND b.id_board IN ({array_int:include_boards})') . (empty($exclude_topics) ? '' : '
-			AND m.id_topic NOT IN ({array_int:exclude_topics})') . (empty($include_topics) ? '' : '
+		$minMessageId = Config::$modSettings['maxMsgID'] - (
+			empty(Utils::$context['min_message_posts']) ? 25 : Utils::$context['min_message_posts']
+		) * min((int) $parameters['num_posts'], 5);
+
+		$whereQuery = '
+			m.id_msg >= {int:min_message_id}' . (empty($excludeBoards) ? '' : '
+			AND b.id_board NOT IN ({array_int:exclude_boards})') . (empty($includeBoards) ? '' : '
+			AND b.id_board IN ({array_int:include_boards})') . (empty($excludeTopics) ? '' : '
+			AND m.id_topic NOT IN ({array_int:exclude_topics})') . (empty($includeTopics) ? '' : '
 			AND m.id_topic IN ({array_int:include_topics})') . '
 			AND {query_wanna_see_board}' . (Config::$modSettings['postmod_active'] ? '
 			AND m.approved = {int:is_approved}' : '');
 
-		$query_where_params = [
+		$whereQueryParams = [
 			'is_approved'    => 1,
-			'include_boards' => $include_boards,
-			'exclude_boards' => $exclude_boards,
-			'include_topics' => $include_topics,
-			'exclude_topics' => $exclude_topics,
-			'min_message_id' => Config::$modSettings['maxMsgID'] - (empty(Utils::$context['min_message_posts']) ? 25 : Utils::$context['min_message_posts']) * min((int) $parameters['num_posts'], 5),
+			'include_boards' => $includeBoards,
+			'exclude_boards' => $excludeBoards,
+			'include_topics' => $includeTopics,
+			'exclude_topics' => $excludeTopics,
+			'min_message_id' => $minMessageId,
 		];
 
-		$posts = $this->getFromSsi('queryPosts', $query_where, $query_where_params, (int) $parameters['num_posts'], 'm.id_msg DESC', 'array', (bool) $parameters['limit_body']);
+		$posts = $this->getFromSsi(
+			'queryPosts',
+			$whereQuery,
+			$whereQueryParams,
+			(int) $parameters['num_posts'],
+			'm.id_msg DESC',
+			'array',
+			(bool) $parameters['limit_body']
+		);
 
 		if (empty($posts))
 			return [];
 
-		array_walk($posts, fn(&$post) => $post['timestamp'] = DateTime::relative((int) $post['timestamp']));
+		array_walk($posts,
+			static fn(&$post) => $post['timestamp'] = DateTime::relative((int) $post['timestamp'])
+		);
 
 		if ($parameters['show_avatars'] && empty($parameters['use_simple_style']))
 			$posts = $this->getItemsWithUserAvatars($posts, 'poster');
@@ -188,15 +206,15 @@ class RecentPosts extends Block
 		$parameters['show_avatars'] ??= false;
 		$parameters['limit_body'] ??= false;
 
-		$recent_posts = $this->cache('recent_posts_addon_b' . $data->block_id . '_u' . User::$info['id'])
-			->setLifeTime($parameters['update_interval'] ?? $data->cache_time)
+		$recentPosts = $this->cache('recent_posts_addon_b' . $data->id . '_u' . User::$info['id'])
+			->setLifeTime($parameters['update_interval'] ?? $data->cacheTime)
 			->setFallback(self::class, 'getData', $parameters);
 
-		if (empty($recent_posts))
+		if (empty($recentPosts))
 			return;
 
 		$this->setTemplate();
 
-		show_posts($recent_posts, $parameters, $this->isInSidebar($data->block_id) === false);
+		show_posts($recentPosts, $parameters, $this->isInSidebar($data->id) === false);
 	}
 }

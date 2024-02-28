@@ -10,14 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 02.02.24
+ * @version 17.02.24
  */
 
 namespace Bugo\LightPortal\Addons\Todays;
 
+use Bugo\Compat\{Config, Lang, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{RangeField, SelectField};
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -35,15 +35,19 @@ class Todays extends Block
 
 	public function menuButtons(array &$buttons): void
 	{
-		$buttons['calendar']['show'] = Utils::$context['allow_calendar'] && empty(Utils::$context['lp_todays_plugin']['hide_calendar_in_menu']);
+		$buttons['calendar']['show'] = Utils::$context['allow_calendar']
+			&& empty(Utils::$context['lp_todays_plugin']['hide_calendar_in_menu']);
 	}
 
-	public function addSettings(array &$config_vars): void
+	public function addSettings(array &$settings): void
 	{
-		$config_vars['todays'][] = [
+		$settings['todays'][] = [
 			'check',
 			'hide_calendar_in_menu',
-			'subtext' => sprintf(Lang::$txt['lp_todays']['hide_calendar_in_menu_subtext'], Config::$scripturl . '?action=admin;area=managecalendar;sa=settings')
+			'subtext' => sprintf(
+				Lang::$txt['lp_todays']['hide_calendar_in_menu_subtext'],
+				Config::$scripturl . '?action=admin;area=managecalendar;sa=settings'
+			)
 		];
 	}
 
@@ -76,7 +80,10 @@ class Todays extends Block
 
 		SelectField::make('widget_type', Lang::$txt['lp_todays']['type'])
 			->setTab('content')
-			->setOptions(array_combine(['birthdays', 'holidays', 'events', 'calendar'], Lang::$txt['lp_todays']['type_set']))
+			->setOptions(array_combine(
+				['birthdays', 'holidays', 'events', 'calendar'],
+				Lang::$txt['lp_todays']['type_set']
+			))
 			->setValue(Utils::$context['lp_block']['options']['widget_type']);
 
 		RangeField::make('max_items', Lang::$txt['lp_todays']['max_items'])
@@ -109,7 +116,9 @@ class Todays extends Block
 
 			foreach ($result as $event) {
 				echo '
-			<li>', $event['start_date_local'], ' - ', $event['link'], ($event['can_edit'] ? ' <a href="' . $event['modify_href'] . '" style="color: #ff0000;">*</a>' : ''), '</li>';
+			<li>', $event['start_date_local'], ' - ', $event['link'], (
+				$event['can_edit'] ? ' <a class="error" href="' . $event['modify_href'] . '">*</a>' : ''
+			), '</li>';
 			}
 
 			echo '
@@ -125,7 +134,8 @@ class Todays extends Block
 				foreach ($visibleItems as $member) {
 					echo '
 		<a href="', Config::$scripturl, '?action=profile;u=', $member['id'], '">
-			<span class="fix_rtl_names">' . $member['name'] . '</span>' . (isset($member['age']) ? ' (' . $member['age'] . ')' : '') . '
+			<span class="fix_rtl_names">' . $member['name'] . '</span>'
+				. (isset($member['age']) ? ' (' . $member['age'] . ')' : '') . '
 		</a>' . ($member['is_last'] ? '' : ', ');
 				}
 
@@ -134,7 +144,8 @@ class Todays extends Block
 					if ($member['is_today'])
 						$hiddenContent .= '
 		<a href="' . Config::$scripturl . '?action=profile;u=' . $member['id'] . '">
-			<span class="fix_rtl_names">' . $member['name'] . '</span>' . (isset($member['age']) ? ' (' . $member['age'] . ')' : '') . '
+			<span class="fix_rtl_names">' . $member['name'] . '</span>'
+				. (isset($member['age']) ? ' (' . $member['age'] . ')' : '') . '
 		</a>' . ($member['is_last'] ? '' : ', ');
 				}
 
@@ -142,7 +153,10 @@ class Todays extends Block
 					echo Lang::$txt['lp_todays']['and_more'], '
 		<details>
 			<summary>
-				<span>', Lang::getTxt(Lang::$txt['lp_todays']['birthdays_set'], ['count' => count($result) - $parameters['max_items']]), '</span>
+				<span>', Lang::getTxt(
+					Lang::$txt['lp_todays']['birthdays_set'],
+					['count' => count($result) - $parameters['max_items']]
+				), '</span>
 			</summary>
 			<div>', $hiddenContent, '</div>
 		</details>';

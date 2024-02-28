@@ -135,7 +135,7 @@ class Page extends PortalEntity {
 class Category extends PortalEntity {
   constructor() {
     super();
-    this.workUrl = smf_scripturl + '?action=admin;area=lp_settings;sa=categories;actions';
+    this.workUrl = smf_scripturl + '?action=admin;area=lp_categories;actions';
   }
 
   async updatePriority(e) {
@@ -145,7 +145,7 @@ class Category extends PortalEntity {
 
     for (let i = 0; i < items.length; i++) {
       const id = items[i].querySelector('.handle')
-        ? parseInt(items[i].querySelector('.handle').closest('tr').dataset.id, 10)
+        ? parseInt(items[i].querySelector('.handle').closest('div').dataset.id, 10)
         : null;
 
       if (id !== null) priority.push(id);
@@ -155,50 +155,12 @@ class Category extends PortalEntity {
       update_priority: priority,
     });
   }
+}
 
-  async add(refs) {
-    if (!refs['cat_name']) return false;
-
-    const response = await axios.post(this.workUrl, {
-      new_name: refs['cat_name'].value,
-      new_desc: refs['cat_desc'].value,
-    });
-
-    const { success, section, item } = response.data;
-
-    if (success) {
-      refs['category_list'].insertAdjacentHTML('beforeend', section);
-      refs['cat_name'].value = '';
-      refs['cat_desc'].value = '';
-
-      document.getElementById('category_desc' + item).focus();
-    }
-  }
-
-  async updateName(target, event) {
-    const item = target.dataset.id;
-
-    if (item && event.value) {
-      await axios.post(this.workUrl, {
-        item,
-        name: event.value,
-      });
-    }
-
-    if (!event.value) {
-      event.value = event.defaultValue;
-    }
-  }
-
-  async updateDescription(target, value) {
-    const item = target.dataset.id;
-
-    if (!item) return false;
-
-    await axios.post(this.workUrl, {
-      item,
-      desc: value,
-    });
+class Tag extends PortalEntity {
+  constructor() {
+    super();
+    this.workUrl = smf_scripturl + '?action=admin;area=lp_tags;actions';
   }
 }
 

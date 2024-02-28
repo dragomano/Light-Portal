@@ -9,10 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Utils;
+
+use Bugo\Compat\CacheApi;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -32,10 +34,11 @@ final class Cache implements CacheInterface
 		return $this;
 	}
 
-	public function setFallback(string $className, string $methodName, ...$params): mixed
+	public function setFallback(string $className, string $methodName = '__invoke', ...$params): mixed
 	{
-		if (empty($methodName) || empty($className) || $this->lifeTime === 0)
+		if (empty($methodName) || empty($className) || $this->lifeTime === 0) {
 			$this->forget($this->key);
+		}
 
 		if (($cachedValue = $this->get($this->key, $this->lifeTime)) === null) {
 			$cachedValue = $this->callMethod($className, $methodName, ...$params);
@@ -68,7 +71,7 @@ final class Cache implements CacheInterface
 	protected function callMethod(string $className, string $methodName, ...$params): mixed
 	{
 		if (method_exists($className, $methodName)) {
-			return (new $className)->{$methodName}(...$params);
+			return (new $className())->{$methodName}(...$params);
 		}
 
 		return null;

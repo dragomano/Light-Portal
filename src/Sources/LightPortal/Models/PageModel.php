@@ -9,12 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Models;
 
-use Bugo\LightPortal\Utils\{Config, User, Utils};
+use Bugo\Compat\{Config, User, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -51,7 +51,7 @@ class PageModel extends AbstractModel
 
 	public array $titles = [];
 
-	public array $keywords = [];
+	public array $tags = [];
 
 	public array $options = [];
 
@@ -71,11 +71,18 @@ class PageModel extends AbstractModel
 
 		$this->type = $postData['type'] ?? $currentPage['type'] ?? 'bbc';
 
-		$this->permissions = $postData['permissions'] ?? $currentPage['permissions'] ?? (int) (Config::$modSettings['lp_permissions_default'] ?? 2);
+		$this->permissions = $postData['permissions'] ?? $currentPage['permissions']
+			?? (int) (Config::$modSettings['lp_permissions_default'] ?? 2);
 
-		$this->status = $postData['status'] ?? $currentPage['status'] ?? (int) (Utils::$context['allow_light_portal_approve_pages'] || Utils::$context['allow_light_portal_manage_pages_any']);
+		$this->status = $postData['status'] ?? $currentPage['status']
+			?? (int) (
+				Utils::$context['allow_light_portal_approve_pages']
+				|| Utils::$context['allow_light_portal_manage_pages_any']
+			);
 
 		$this->createdAt = $currentPage['created_at'] ?? time();
+
+		$this->tags = $postData['tags'] ?? $currentPage['tags'] ?? [];
 	}
 
 	protected static function getTableName(): string

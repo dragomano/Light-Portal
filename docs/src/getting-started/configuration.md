@@ -38,10 +38,6 @@ Here you simply note WHO can and WHAT can do with the various elements (blocks a
 
 In this section, you can change the general settings of pages and blocks used both when creating them and when displaying them.
 
-## Categories
-
-In this section, you can manage categories for categorizing portal pages. If you need it, of course.
-
 ## Panels
 
 In this section, you can change some of the settings for existing portal panels and customize the direction of blocks in these panels.

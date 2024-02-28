@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\GalleryBlock;
 
+use Bugo\Compat\{Config, Db, Lang, Utils};
 use Bugo\LightPortal\Areas\Partials\AbstractPartial;
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
 
 final class CategorySelect extends AbstractPartial
 {
@@ -28,7 +28,7 @@ final class CategorySelect extends AbstractPartial
 		foreach ($categories as $id => $title) {
 			$data[] = [
 				'label' => $title,
-				'value' => $id
+				'value' => $id,
 			];
 		}
 
@@ -56,7 +56,7 @@ final class CategorySelect extends AbstractPartial
 
 	private function getGalleryCategories(): array
 	{
-		$this->dbExtend();
+		Db::extend();
 
 		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'gallery_cat')))
 			return [];

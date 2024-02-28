@@ -10,14 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 20.02.24
  */
 
 namespace Bugo\LightPortal\Addons\HidingBlocks;
 
+use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\Addons\Plugin;
 use Bugo\LightPortal\Areas\Fields\CustomField;
-use Bugo\LightPortal\Utils\{Lang, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -60,6 +60,6 @@ class HidingBlocks extends Plugin
 	{
 		CustomField::make('hidden_breakpoints', Lang::$txt['lp_hiding_blocks']['hidden_breakpoints'])
 			->setTab('access_placement')
-			->setValue(fn() => new BreakpointSelect);
+			->setValue(static fn() => new BreakpointSelect());
 	}
 }

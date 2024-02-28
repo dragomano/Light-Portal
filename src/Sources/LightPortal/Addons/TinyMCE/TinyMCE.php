@@ -10,13 +10,13 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 18.01.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TinyMCE;
 
+use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\{Lang, Theme, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -28,12 +28,12 @@ class TinyMCE extends Plugin
 {
 	public string $type = 'editor';
 
-	public function addSettings(array &$config_vars): void
+	public function addSettings(array &$settings): void
 	{
 		$link = '<a href="https://www.tiny.cloud/auth/signup/" class="bbc_link" target="_blank">' . Lang::$txt['lp_tiny_m_c_e']['api_key_subtext'] . '<a>';
 
-		$config_vars['tiny_m_c_e'][] = ['text', 'api_key', 'subtext' => $link];
-		$config_vars['tiny_m_c_e'][] = ['multiselect', 'dark_themes', $this->getForumThemes()];
+		$settings['tiny_m_c_e'][] = ['text', 'api_key', 'subtext' => $link];
+		$settings['tiny_m_c_e'][] = ['multiselect', 'dark_themes', $this->getForumThemes()];
 	}
 
 	public function prepareEditor(array $object): void
@@ -43,9 +43,9 @@ class TinyMCE extends Plugin
 
 		$apiKey = Utils::$context['lp_tiny_m_c_e_plugin']['api_key'] ?? 'no-api-key';
 
-		Theme::loadExtJS('https://cdn.tiny.cloud/1/' . $apiKey . '/tinymce/6/tinymce.min.js', ['attributes' => ['referrerpolicy' => 'origin']]);
+		$this->loadExtJS('https://cdn.tiny.cloud/1/' . $apiKey . '/tinymce/6/tinymce.min.js', ['attributes' => ['referrerpolicy' => 'origin']]);
 
-		Theme::addInlineJS('
+		$this->addInlineJS('
 		const useDarkMode = ' . ($this->isDarkTheme(Utils::$context['lp_tiny_m_c_e_plugin']['dark_themes']) ? 'true' : 'false') . ';
 		tinymce.init({
 			selector: "#content",

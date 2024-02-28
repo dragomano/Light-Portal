@@ -10,14 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.01.24
+ * @version 20.02.24
  */
 
 namespace Bugo\LightPortal\Addons\Chart;
 
+use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextField};
-use Bugo\LightPortal\Utils\{Lang, Theme, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -129,26 +129,28 @@ class Chart extends Block
 		if ($data->type !== 'chart')
 			return;
 
-		$block_id = $data->block_id;
+		$id = $data->id;
 
-		echo /** @lang text */ '
+		echo '
 		<div>
-			<canvas id="chart' . $block_id . '" aria-label="' . (empty($parameters['chart_title']) ? 'Simple chart' : $parameters['chart_title']) . '" role="img"></canvas>
+			<canvas id="chart' . $id . '" aria-label="' . (empty($parameters['chart_title']) ? 'Simple chart' : $parameters['chart_title']) . '" role="img"></canvas>
 		</div>';
 
 		$type = $parameters['chart_type'] ?? $this->params['chart_type'];
 
 		$datasets = Utils::jsonDecode($parameters['datasets'] ?? $this->params['datasets'], true);
-		array_walk($datasets, fn(&$val) => $val['data'] = explode(', ', $val['data']));
+		array_walk($datasets, static fn(&$val) => $val['data'] = explode(', ', $val['data']));
 		$datasets = json_encode($datasets);
 
 		$labels = $parameters['labels'] ?? $this->params['labels'];
-		$labels = implode(',', array_map(fn($label) => Utils::escapeJavaScript(trim($label)), explode(',', $labels)));
+		$labels = implode(',', array_map(
+			static fn($label) => Utils::escapeJavaScript(trim($label)), explode(',', $labels))
+		);
 
-		Theme::loadJSFile('light_portal/chart/chart.umd.min.js', ['minimize' => true]);
+		$this->loadJSFile('light_portal/chart/chart.umd.min.js', ['minimize' => true]);
 
-		Theme::addInlineJS('
-		new Chart("chart' . $block_id . '", {
+		$this->addInlineJS('
+		new Chart("chart' . $id . '", {
 			type: "' . $type . '",
 			data: {
 				labels: [' . $labels . '],

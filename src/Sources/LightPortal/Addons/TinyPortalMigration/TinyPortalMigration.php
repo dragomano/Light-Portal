@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.01.24
+ * @version 23.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortalMigration;
 
+use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\{Config, Icon, Lang, User, Utils};
+use Bugo\LightPortal\Utils\{Icon, Language};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -28,21 +29,23 @@ class TinyPortalMigration extends Plugin
 	public function updateAdminAreas(array &$areas): void
 	{
 		if (User::$info['is_admin']) {
-			$areas['lp_blocks']['subsections']['import_from_tp'] = [Icon::get('import') . Lang::$txt['lp_tiny_portal_migration']['label_name']];
-			$areas['lp_pages']['subsections']['import_from_tp']  = [Icon::get('import') . Lang::$txt['lp_tiny_portal_migration']['label_name']];
+			$areas['lp_blocks']['subsections']['import_from_tp'] = [
+				Icon::get('import') . Lang::$txt['lp_tiny_portal_migration']['label_name']
+			];
+			$areas['lp_pages']['subsections']['import_from_tp'] = [
+				Icon::get('import') . Lang::$txt['lp_tiny_portal_migration']['label_name']
+			];
 		}
 	}
 
 	public function updateBlockAreas(array &$areas): void
 	{
-		if (User::$info['is_admin'])
-			$areas['import_from_tp'] = [new BlockImport, 'main'];
+		$areas['import_from_tp'] = [new BlockImport, 'main'];
 	}
 
 	public function updatePageAreas(array &$areas): void
 	{
-		if (User::$info['is_admin'])
-			$areas['import_from_tp'] = [new PageImport, 'main'];
+		$areas['import_from_tp'] = [new PageImport, 'main'];
 	}
 
 	public function importPages(array &$items, array &$titles, array &$params, array &$comments): void
@@ -52,44 +55,44 @@ class TinyPortalMigration extends Plugin
 
 		$comments = $this->getComments(array_keys($items));
 
-		foreach ($items as $page_id => $item) {
-			$items[$page_id]['num_comments'] = empty($comments[$page_id]) ? 0 : sizeof($comments[$page_id]);
+		foreach ($items as $pageId => $item) {
+			$items[$pageId]['num_comments'] = empty($comments[$pageId]) ? 0 : sizeof($comments[$pageId]);
 
 			$titles[] = [
-				'item_id' => $page_id,
+				'item_id' => $pageId,
 				'type'    => 'page',
 				'lang'    => Config::$language,
-				'title'   => $item['subject']
+				'title'   => $item['subject'],
 			];
 
-			if (Config::$language !== Lang::FALLBACK_LANG && ! empty(Config::$modSettings['userLanguage'])) {
+			if (Config::$language !== Language::FALLBACK && ! empty(Config::$modSettings['userLanguage'])) {
 				$titles[] = [
-					'item_id' => $page_id,
+					'item_id' => $pageId,
 					'type'    => 'page',
-					'lang'    => Lang::FALLBACK_LANG,
-					'title'   => $item['subject']
+					'lang'    => Language::FALLBACK,
+					'title'   => $item['subject'],
 				];
 			}
 
-			unset($items[$page_id]['subject']);
+			unset($items[$pageId]['subject']);
 
-			if (in_array('author', $items[$page_id]['options']) || in_array('date', $items[$page_id]['options']))
+			if (in_array('author', $items[$pageId]['options']) || in_array('date', $items[$pageId]['options']))
 				$params[] = [
-					'item_id' => $page_id,
+					'item_id' => $pageId,
 					'type'    => 'page',
 					'name'    => 'show_author_and_date',
-					'value'   => 1
+					'value'   => 1,
 				];
 
-			if (in_array('commentallow', $items[$page_id]['options']))
+			if (in_array('commentallow', $items[$pageId]['options']))
 				$params[] = [
-					'item_id' => $page_id,
+					'item_id' => $pageId,
 					'type'    => 'page',
 					'name'    => 'allow_comments',
-					'value'   => 1
+					'value'   => 1,
 				];
 
-			unset($items[$page_id]['options']);
+			unset($items[$pageId]['options']);
 		}
 	}
 
@@ -103,7 +106,7 @@ class TinyPortalMigration extends Plugin
 				AND com.item_id IN ({array_int:pages})'),
 			[
 				'type'  => 'article_comment',
-				'pages' => $pages
+				'pages' => $pages,
 			]
 		);
 
@@ -118,7 +121,7 @@ class TinyPortalMigration extends Plugin
 				'page_id'    => $row['item_id'],
 				'author_id'  => $row['member_id'],
 				'message'    => $row['comment'],
-				'created_at' => $row['datetime']
+				'created_at' => $row['datetime'],
 			];
 		}
 

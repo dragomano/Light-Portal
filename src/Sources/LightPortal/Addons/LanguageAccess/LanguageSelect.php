@@ -10,27 +10,27 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.01.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\LanguageAccess;
 
+use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\Areas\Partials\AbstractPartial;
-use Bugo\LightPortal\Utils\{Lang, Utils};
 
 final class LanguageSelect extends AbstractPartial
 {
 	public function __invoke(): string
 	{
-		$current_languages = Utils::$context['lp_block']['options']['allowed_languages'] ?? [];
-		$current_languages = is_array($current_languages) ? $current_languages : explode(',', $current_languages);
+		$currentLanguages = Utils::$context['lp_block']['options']['allowed_languages'] ?? [];
+		$currentLanguages = is_array($currentLanguages) ? $currentLanguages : explode(',', $currentLanguages);
 
 		$data = $items = [];
 
 		foreach (Utils::$context['lp_languages'] as $lang) {
 			$data[] = '{label: "' . $lang['name'] . '", value: "' . $lang['filename'] . '"}';
 
-			if (in_array($lang['filename'], $current_languages)) {
+			if (in_array($lang['filename'], $currentLanguages)) {
 				$items[] = Utils::escapeJavaScript($lang['filename']);
 			}
 		}

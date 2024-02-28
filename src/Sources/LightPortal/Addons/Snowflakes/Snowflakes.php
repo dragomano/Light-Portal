@@ -10,13 +10,13 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 18.01.24
+ * @version 10.02.24
  */
 
 namespace Bugo\LightPortal\Addons\Snowflakes;
 
+use Bugo\Compat\{Theme, Utils};
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\{Theme, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -38,8 +38,8 @@ class Snowflakes extends Plugin
 	public function init(): void
 	{
 		Theme::loadCSSFile('light_portal/snowflakes/snow.min.css');
-		Theme::loadJSFile('light_portal/snowflakes/Snow.min.js', ['minimize' => true]);
-		Theme::addInlineJS('
+		$this->loadJSFile('light_portal/snowflakes/Snow.min.js', ['minimize' => true]);
+		$this->addInlineJS('
 			new Snow({
 				iconColor: "' . (empty(Utils::$context['lp_snowflakes_plugin']['icon_color']) ? $this->params['icon_color'] : Utils::$context['lp_snowflakes_plugin']['icon_color']) . '",
 				iconSize: ' . (empty(Utils::$context['lp_snowflakes_plugin']['icon_size']) ? $this->params['icon_size'] : Utils::$context['lp_snowflakes_plugin']['icon_size']) . ',
@@ -49,15 +49,15 @@ class Snowflakes extends Plugin
 			});', true);
 	}
 
-	public function addSettings(array &$config_vars): void
+	public function addSettings(array &$settings): void
 	{
 		$this->addDefaultValues($this->params);
 
-		$config_vars['snowflakes'][] = ['color', 'icon_color'];
-		$config_vars['snowflakes'][] = ['int', 'icon_size', 'min' => 1];
-		$config_vars['snowflakes'][] = ['range', 'snowflakes_count'];
-		$config_vars['snowflakes'][] = ['check', 'enable_snowdrifts'];
-		$config_vars['snowflakes'][] = ['range', 'snowdrifts_count', 'max' => 10];
+		$settings['snowflakes'][] = ['color', 'icon_color'];
+		$settings['snowflakes'][] = ['int', 'icon_size', 'min' => 1];
+		$settings['snowflakes'][] = ['range', 'snowflakes_count'];
+		$settings['snowflakes'][] = ['check', 'enable_snowdrifts'];
+		$settings['snowflakes'][] = ['range', 'snowdrifts_count', 'max' => 10];
 	}
 
 	public function prepareAssets(array &$assets): void

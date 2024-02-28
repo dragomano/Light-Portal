@@ -1,6 +1,6 @@
 <?php
 
-use Bugo\LightPortal\Utils\{Lang, Theme, Utils};
+use Bugo\Compat\{Lang, Theme, Utils};
 
 function simple_menu_items(): string
 {

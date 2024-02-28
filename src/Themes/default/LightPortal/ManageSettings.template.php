@@ -1,6 +1,8 @@
 <?php
 
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
+use Bugo\Compat\{Config, Lang, Theme, Utils};
+use Bugo\LightPortal\Areas\Partials\{ActionSelect, BoardSelect, CategorySelect};
+use Bugo\LightPortal\Areas\Partials\{PageAliasSelect, PageSelect, TopicSelect};
 
 function template_callback_frontpage_mode_settings_before(): void
 {
@@ -20,35 +22,35 @@ function template_callback_frontpage_mode_settings_middle(): void
 							<label for="lp_frontpage_alias">', Lang::$txt['lp_frontpage_alias'], '</label>
 						</span>
 					</td>
-					<td x-show="frontpage_mode === \'chosen_page\'">', Utils::$context['lp_frontpage_alias_select'], '</td>
+					<td x-show="frontpage_mode === \'chosen_page\'">', new PageAliasSelect(), '</td>
 					<td x-show="frontpage_mode === \'all_pages\'">
 						<a id="setting_lp_frontpage_categories"></a>
 						<span>
 							<label for="lp_frontpage_categories">', Lang::$txt['lp_frontpage_categories'], '</label>
 						</span>
 					</td>
-					<td x-show="frontpage_mode === \'all_pages\'">', Utils::$context['lp_frontpage_categories_select'], '</td>
+					<td x-show="frontpage_mode === \'all_pages\'">', new CategorySelect(), '</td>
 					<td x-show="[\'all_topics\', \'chosen_boards\'].includes(frontpage_mode)">
 						<a id="setting_lp_frontpage_boards"></a>
 						<span>
 							<label for="lp_frontpage_boards">', Lang::$txt['lp_frontpage_boards'], '</label>
 						</span>
 					</td>
-					<td x-show="[\'all_topics\', \'chosen_boards\'].includes(frontpage_mode)">', Utils::$context['lp_frontpage_boards_select'], '</td>
+					<td x-show="[\'all_topics\', \'chosen_boards\'].includes(frontpage_mode)">', new BoardSelect(), '</td>
 					<td x-show="frontpage_mode === \'chosen_pages\'">
 						<a id="setting_lp_frontpage_pages"></a>
 						<span>
 							<label for="lp_frontpage_pages">', Lang::$txt['lp_frontpage_pages'], '</label>
 						</span>
 					</td>
-					<td x-show="frontpage_mode === \'chosen_pages\'">', Utils::$context['lp_frontpage_pages_select'], '</td>
+					<td x-show="frontpage_mode === \'chosen_pages\'">', new PageSelect(), '</td>
 					<td x-show="frontpage_mode === \'chosen_topics\'">
 						<a id="setting_lp_frontpage_topics"></a>
 						<span>
 							<label for="lp_frontpage_topics">', Lang::$txt['lp_frontpage_topics'], '</label>
 						</span>
 					</td>
-					<td x-show="frontpage_mode === \'chosen_topics\'">', Utils::$context['lp_frontpage_topics_select'], '</td>
+					<td x-show="frontpage_mode === \'chosen_topics\'">', new TopicSelect(), '</td>
 				</tr>
 			</tbody>
 		</table>
@@ -97,7 +99,7 @@ function template_callback_standalone_mode_settings_after(): void
 							<span class="smalltext">', Lang::$txt['lp_disabled_actions_subtext'], '</span>
 						</span>
 					</td>
-					<td>', Utils::$context['lp_disabled_actions_select'], '</td>
+					<td>', new ActionSelect(), '</td>
 				</tr>
 			</tbody>
 		</table>

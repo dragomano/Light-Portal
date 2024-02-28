@@ -9,16 +9,14 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Lists\{CategoryList, PageList, TagList, TitleList};
-use Bugo\LightPortal\Tasks\Notifier;
+use Bugo\Compat\{Config, Db, ErrorHandler, Lang, User, Utils};
 use Bugo\LightPortal\Utils\{BlockAppearance, Cache, File};
-use Bugo\LightPortal\Utils\{Post, Request, Session, SMFTrait};
-use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, User, Utils};
+use Bugo\LightPortal\Utils\{EntityManager, Post, Request, Session, SMFTrait};
 use Exception;
 
 if (! defined('SMF'))
@@ -29,17 +27,11 @@ trait Helper
 	use BlockAppearance;
 	use SMFTrait;
 
-	/**
-	 * @param mixed|null $default
-	 */
 	public function request(?string $key = null, mixed $default = null): mixed
 	{
 		return $key ? ((new Request())->get($key) ?? $default) : new Request();
 	}
 
-	/**
-	 * @param mixed|null $default
-	 */
 	public function post(?string $key = null, mixed $default = null): mixed
 	{
 		return $key ? ((new Post())->get($key) ?? $default) : new Post();
@@ -55,9 +47,9 @@ trait Helper
 		return $key ? (new File())->get($key) : new File();
 	}
 
-	public function session(): Session
+	public function session(?string $key = null): Session
 	{
-		return new Session();
+		return new Session($key);
 	}
 
 	public function hook(string $hook, array $vars = [], array $plugins = []): void
@@ -65,37 +57,20 @@ trait Helper
 		AddonHandler::getInstance()->run($hook, $vars, $plugins);
 	}
 
-	public function require(string $filename): void
+	public function getEntityData(string $entity): array
 	{
-		if (is_file($path = dirname(__DIR__) . DIRECTORY_SEPARATOR . $filename . '.php'))
+		return (new EntityManager())($entity);
+	}
+
+	public function require(string $filename, string $extension = '.php'): void
+	{
+		if (is_file($path = dirname(__DIR__) . DIRECTORY_SEPARATOR . $filename . $extension))
 			require_once $path;
 	}
 
 	public function callHelper(mixed $action): mixed
 	{
 		return call_user_func($action);
-	}
-
-	public function middleware(string|array $permission): void
-	{
-		User::mustHavePermission($permission);
-	}
-
-	public function allowedTo(string $permission): bool
-	{
-		return User::hasPermission($permission);
-	}
-
-	public function getEntityList(string $entity): array
-	{
-		return match ($entity) {
-			'category' => $this->cache('all_categories')->setFallback(CategoryList::class, 'getAll'),
-			'page'     => $this->cache('all_pages')->setFallback(PageList::class, 'getAll'),
-			'tag'      => $this->cache('all_tags')->setFallback(TagList::class, 'getAll'),
-			'title'    => $this->cache('all_titles')->setFallback(TitleList::class, 'getAll'),
-			'plugin'   => AddonHandler::getInstance()->getAll(),
-			default    => [],
-		};
 	}
 
 	public function getUserAvatar(int $userId, array $userData = []): string
@@ -117,12 +92,20 @@ trait Helper
 		if (empty(User::$memberContext[$userId]))
 			return '';
 
-		return User::$memberContext[$userId]['avatar']['image'] ?? '<img class="avatar" width="100" height="100" src="' . Config::$modSettings['avatar_url'] . '/default.png" loading="lazy" alt="' . User::$memberContext[$userId]['name'] . '">';
+		return User::$memberContext[$userId]['avatar']['image']
+			?? '<img
+					class="avatar"
+					width="100"
+					height="100"
+					src="' . Config::$modSettings['avatar_url'] . '/default.png"
+					loading="lazy"
+					alt="' . User::$memberContext[$userId]['name'] . '"
+				>';
 	}
 
 	public function getItemsWithUserAvatars(array $items, string $entity = 'author'): array
 	{
-		$userData = User::loadMemberData(array_map(fn($item) => $item[$entity]['id'], $items));
+		$userData = User::loadMemberData(array_map(static fn($item) => $item[$entity]['id'], $items));
 
 		return array_map(function ($item) use ($userData, $entity) {
 			$item[$entity]['avatar'] = $this->getUserAvatar((int) $item[$entity]['id'], $userData);
@@ -132,7 +115,14 @@ trait Helper
 
 	public function getContentTypes(): array
 	{
-		$types = array_combine(['bbc', 'html', 'php'], [Lang::$txt['lp_bbc']['title'], Lang::$txt['lp_html']['title'], Lang::$txt['lp_php']['title']]);
+		$types = array_combine(
+			['bbc', 'html', 'php'],
+			[
+				Lang::$txt['lp_bbc']['title'],
+				Lang::$txt['lp_html']['title'],
+				Lang::$txt['lp_php']['title'],
+			],
+		);
 
 		return User::$info['is_admin'] ? $types : array_slice($types, 0, 2);
 	}
@@ -142,25 +132,27 @@ trait Helper
 		$themes = $this->cache()->get('forum_themes');
 
 		if ($themes === null) {
-			$result = Utils::$smcFunc['db_query']('', '
+			$result = Db::$db->query('', '
 				SELECT id_theme, value
 				FROM {db_prefix}themes
 				WHERE id_theme IN ({array_int:themes})
 					AND variable = {literal:name}',
 				[
-					'themes' => empty(Config::$modSettings['knownThemes']) ? [] : explode(',', Config::$modSettings['knownThemes']),
+					'themes' => empty(Config::$modSettings['knownThemes'])
+						? []
+						: explode(',', Config::$modSettings['knownThemes']),
 				]
 			);
 
 			$themes = [];
-			while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+			while ($row = Db::$db->fetch_assoc($result)) {
 				$themes[$row['id_theme']] = [
 					'id'   => (int) $row['id_theme'],
 					'name' => $row['value'],
 				];
 			}
 
-			Utils::$smcFunc['db_free_result']($result);
+			Db::$db->free_result($result);
 			Utils::$context['lp_num_queries']++;
 
 			$themes = array_column($themes, 'name', 'id');
@@ -228,13 +220,13 @@ trait Helper
 	 *
 	 * Проверяем, может ли текущий пользователь просматривать элемент портала, согласно его правам доступа
 	 */
-	public function canViewItem(int $permissions, int $check_id = 0): bool
+	public function canViewItem(int $permissions, int $userId = 0): bool
 	{
 		return match ($permissions) {
 			0 => User::$info['is_admin'],
 			1 => User::$info['is_guest'],
 			2 => User::$info['id'] > 0,
-			4 => User::$info['id'] === $check_id,
+			4 => User::$info['id'] === $userId,
 			default => true,
 		};
 	}
@@ -254,15 +246,6 @@ trait Helper
 			return [2, 3];
 
 		return [3];
-	}
-
-	public function isFrontpage(string $alias): bool
-	{
-		if (empty($alias) || empty(Config::$modSettings['lp_frontpage_mode']))
-			return false;
-
-		return Config::$modSettings['lp_frontpage_mode'] === 'chosen_page'
-			&& Config::$modSettings['lp_frontpage_alias'] && Config::$modSettings['lp_frontpage_alias'] === $alias;
 	}
 
 	public function getTranslatedTitle(array $titles): string
@@ -305,62 +288,32 @@ trait Helper
 		return $result;
 	}
 
-	public function makeNotify(string $type, string $action, array $options = []): void
+	public function isFrontpage(string $alias): bool
 	{
-		if (empty($options))
-			return;
+		if ($alias === '' || empty(Config::$modSettings['lp_frontpage_alias']))
+			return false;
 
-		Utils::$smcFunc['db_insert']('',
-			'{db_prefix}background_tasks',
-			[
-				'task_file'  => 'string',
-				'task_class' => 'string',
-				'task_data'  => 'string'
-			],
-			[
-				'task_file'  => '$sourcedir/LightPortal/Tasks/Notifier.php',
-				'task_class' => '\\' . Notifier::class,
-				'task_data'  => Utils::$smcFunc['json_encode']([
-					'time'              => $options['time'],
-					'sender_id'	        => User::$info['id'],
-					'sender_name'       => User::$info['name'],
-					'content_author_id' => $options['author_id'],
-					'content_type'      => $type,
-					'content_id'        => $options['item'],
-					'content_action'    => $action,
-					'extra'             => Utils::$smcFunc['json_encode']([
-						'content_subject' => $options['title'],
-						'content_link'    => $options['url'],
-						'sender_gender'   => $this->getUserGender()
-					], JSON_UNESCAPED_SLASHES)
-				]),
-			],
-			['id_task']
-		);
-
-		Utils::$context['lp_num_queries']++;
+		return $this->isFrontpageMode('chosen_page') && Config::$modSettings['lp_frontpage_alias'] === $alias;
 	}
 
-	public function getUserGender(): string
+	public function isFrontpageMode(string $mode): bool
 	{
-		return empty(User::$profiles[User::$info['id']]) ? 'male' : (
-			isset(User::$profiles[User::$info['id']]['options']['cust_gender'])
-				&& User::$profiles[User::$info['id']]['options']['cust_gender'] === '{gender_2}' ? 'female' : 'male'
-		);
+		if (empty(Config::$modSettings['lp_frontpage_mode']))
+			return false;
+
+		return Config::$modSettings['lp_frontpage_mode'] === $mode;
 	}
 
-	public function addDefaultValues(array $values): void
+	public function isStandaloneMode(): bool
 	{
-		$addSettings = [];
+		if (empty(Config::$modSettings['lp_standalone_mode']))
+			return false;
 
-		foreach ($values as $key => $value) {
-			if (empty($value)) continue;
+		return ! empty(Config::$modSettings['lp_standalone_url']);
+	}
 
-			if (! isset(Config::$modSettings[$key])) {
-				$addSettings[$key] = $value;
-			}
-		}
-
-		Config::updateModSettings($addSettings);
+	public function getCommentBlockType(): string
+	{
+		return Config::$modSettings['lp_show_comment_block'] ?? '';
 	}
 }

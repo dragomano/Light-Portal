@@ -1,6 +1,6 @@
 <?php
 
-use Bugo\LightPortal\Utils\{Config, Theme, Utils};
+use Bugo\Compat\{Config, Theme, Utils};
 
 function template_manage_plugins(): void
 {
@@ -27,15 +27,6 @@ function template_manage_plugins(): void
 	<script src="', Theme::$current->settings['default_theme_url'], '/scripts/light_portal/dev/vue_plugins.js"></script>';
 	} else {
 		echo '
-	<script type="importmap">
-		{
-			"imports": {
-				"vue": "https://cdn.jsdelivr.net/npm/vue@3/+esm",
-				"vue-i18n": "https://cdn.jsdelivr.net/npm/vue-i18n@9/+esm",
-				"pinia": "https://cdn.jsdelivr.net/npm/pinia@2/+esm"
-			}
-		}
-	</script>
 	<script type="module" src="', Theme::$current->settings['default_theme_url'], '/scripts/light_portal/bundle_plugins.js"></script>';
 	}
 }

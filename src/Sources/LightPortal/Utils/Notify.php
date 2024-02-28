@@ -9,22 +9,56 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Utils;
 
-use function getNotifyPrefs;
+use Bugo\Compat\{Db, User, Utils};
+use Bugo\LightPortal\Tasks\Notifier;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
-final class Notify
+class Notify
 {
-	public static function getNotifyPrefs(int|array $members, string|array $prefs = '', bool $process_default = false): array
+	public static function send(string $type, string $action, array $options = []): void
 	{
-		require_once Config::$sourcedir . DIRECTORY_SEPARATOR . 'Subs-Notify.php';
+		if (empty($options))
+			return;
 
-		return getNotifyPrefs($members, $prefs, $process_default);
+		Db::$db->insert('',
+			'{db_prefix}background_tasks',
+			[
+				'task_file'  => 'string',
+				'task_class' => 'string',
+				'task_data'  => 'string'
+			],
+			[
+				'task_file'  => '$sourcedir/LightPortal/Tasks/Notifier.php',
+				'task_class' => '\\' . Notifier::class,
+				'task_data'  => Utils::$smcFunc['json_encode']([
+					'time'              => $options['time'],
+					'sender_id'	        => User::$info['id'],
+					'sender_name'       => User::$info['name'],
+					'content_author_id' => $options['author_id'],
+					'content_type'      => $type,
+					'content_id'        => $options['item'],
+					'content_action'    => $action,
+					'extra'             => Utils::$smcFunc['json_encode']([
+						'content_subject' => $options['title'],
+						'content_link'    => $options['url'],
+						'sender_gender'   => self::getUserGender()
+					], JSON_UNESCAPED_SLASHES)
+				]),
+			],
+			['id_task']
+		);
+	}
+
+	protected static function getUserGender(): string
+	{
+		return empty(User::$profiles[User::$info['id']]) ? 'male' : (
+		isset(User::$profiles[User::$info['id']]['options']['cust_gender'])
+		&& User::$profiles[User::$info['id']]['options']['cust_gender'] === '{gender_2}'
+			? 'female' : 'male'
+		);
 	}
 }

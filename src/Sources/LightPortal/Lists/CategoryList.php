@@ -9,41 +9,62 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Lists;
 
-use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Lang, Utils};
+use Bugo\Compat\{Config, Db, Lang, User, Utils};
+use Bugo\LightPortal\Actions\PageListInterface;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class CategoryList implements ListInterface
 {
-	use Helper;
+	public function __invoke(): array
+	{
+		return $this->getAll();
+	}
 
 	public function getAll(): array
 	{
-		$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
-			SELECT category_id, name, description, priority
-			FROM {db_prefix}lp_categories
-			ORDER BY priority',
-			[]
+		$result = Db::$db->query('', /** @lang text */ '
+			SELECT c.category_id, c.icon, c.description, c.priority, COALESCE(t.title, tf.title) AS cat_title
+			FROM {db_prefix}lp_categories AS c
+				LEFT JOIN {db_prefix}lp_titles AS t ON (
+					c.category_id = t.item_id AND t.type = {literal:category} AND t.lang = {string:lang}
+				)
+				LEFT JOIN {db_prefix}lp_titles AS tf ON (
+					c.category_id = tf.item_id AND tf.type = {literal:category} AND tf.lang = {string:fallback_lang}
+				)
+			WHERE c.status = {int:status}
+			ORDER BY c.priority',
+			[
+				'lang'          => User::$info['language'],
+				'fallback_lang' => Config::$language,
+				'status'        => PageListInterface::STATUS_ACTIVE,
+			]
 		);
 
-		$items = [0 => ['name' => Lang::$txt['lp_no_category']]];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		$items = [
+			0 => [
+				'icon'  => '',
+				'title' => Lang::$txt['lp_no_category'],
+			]
+		];
+
+		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['category_id']] = [
-				'id'       => $row['category_id'],
-				'name'     => $row['name'],
-				'desc'     => $row['description'],
-				'priority' => $row['priority']
+				'id'          => (int) $row['category_id'],
+				'icon'        => $row['icon'],
+				'title'       => $row['cat_title'],
+				'description' => $row['description'],
+				'priority'    => (int) $row['priority'],
 			];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
 		return $items;

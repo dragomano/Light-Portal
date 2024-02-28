@@ -20,12 +20,24 @@
       "pnpm run build",
       "pnpm run build:comments",
       "pnpm run build:plugins",
-      "pnpm run build:less"
+      "pnpm run build:sass"
     ],
     "up": [
       "cd src/Sources/LightPortal && composer update --no-dev -o",
       "composer update"
     ],
-    "build": "vendor/bin/phing"
+    "build": [
+      "composer run up",
+      "vendor/bin/phing"
+    ],
+    "build:dev": [
+      "cd src/Sources/LightPortal && composer update",
+      "composer update",
+      "vendor/bin/phing dev_edition"
+    ],
+    "build:geek": [
+      "composer run up",
+      "vendor/bin/phing geek_edition"
+    ]
   }
 }

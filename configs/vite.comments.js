@@ -10,12 +10,17 @@ export default defineConfig({
     outDir: dist,
     emptyOutDir: false,
     rollupOptions: {
-      external: ['vue', 'vue-i18n', 'pinia'],
+      external: ['vue', 'vue-i18n', 'pinia', 'vue-showdown'],
       input: 'src/Themes/default/scripts/light_portal/app_comments.js',
       output: {
         entryFileNames: 'bundle_comments.js',
         format: 'esm',
-        globals: { vue: 'Vue', 'vue-i18n': 'VueI18n', pinia: 'Pinia' },
+        globals: {
+          vue: 'Vue',
+          'vue-i18n': 'VueI18n',
+          pinia: 'Pinia',
+          'vue-showdown': 'VueShowdown',
+        },
       },
     },
   },

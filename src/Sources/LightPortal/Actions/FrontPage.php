@@ -9,27 +9,25 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Actions;
 
+use Bugo\Compat\{Config, ErrorHandler, Lang, PageIndex, Sapi, Theme, User, Utils};
 use Bugo\LightPortal\Articles\{ArticleInterface, BoardArticle, ChosenPageArticle};
 use Bugo\LightPortal\Articles\{ChosenTopicArticle, PageArticle, TopicArticle};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, DateTime, ErrorHandler};
-use Bugo\LightPortal\Utils\{Icon, Lang, Sapi, Theme, Utils};
+use Bugo\LightPortal\Utils\{DateTime, Icon};
+use eftec\bladeone\BladeOne;
 use Exception;
 use IntlException;
-use Latte\Engine;
-use Latte\Essential\RawPhpExtension;
-use Latte\Loaders\FileLoader;
-use Latte\Runtime\Html;
-use Latte\RuntimeException;
 
 final class FrontPage implements ActionInterface
 {
 	use Helper;
+
+	public const DEFAULT_TEMPLATE = 'default.blade.php';
 
 	private array $modes = [
 		'all_pages'     => PageArticle::class,
@@ -44,14 +42,14 @@ final class FrontPage implements ActionInterface
 	 */
 	public function show(): void
 	{
-		$this->middleware('light_portal_view');
+		User::mustHavePermission('light_portal_view');
 
 		$this->hook('frontModes', [&$this->modes]);
 
 		if (array_key_exists(Config::$modSettings['lp_frontpage_mode'], $this->modes)) {
 			$this->prepare(new $this->modes[Config::$modSettings['lp_frontpage_mode']]);
-		} elseif (Config::$modSettings['lp_frontpage_mode'] === 'chosen_page') {
-			$this->callHelper([new Page, 'show']);
+		} elseif ($this->isFrontpageMode('chosen_page')) {
+			$this->callHelper([new Page(), 'show']);
 			return;
 		}
 
@@ -103,8 +101,8 @@ final class FrontPage implements ActionInterface
 
 		$this->preLoadImages($articles);
 
-		Utils::$context['page_index'] = $this->constructPageIndex(
-			LP_BASE_URL, $this->request()->get('start'), $itemsCount, $limit
+		Utils::$context['page_index'] = new PageIndex(
+			LP_BASE_URL, $start, $itemsCount, $limit
 		);
 
 		Utils::$context['start'] = $this->request()->get('start');
@@ -148,28 +146,28 @@ final class FrontPage implements ActionInterface
 
 		Utils::$context['template_layers'][] = 'layout_switcher';
 
-		if ($this->session()->isEmpty('lp_frontpage_layout')) {
+		if ($this->session('lp')->isEmpty('frontpage_layout')) {
 			Utils::$context['lp_current_layout'] = $this->request(
-				'layout', Config::$modSettings['lp_frontpage_layout'] ?? 'default.latte'
+				'layout', Config::$modSettings['lp_frontpage_layout'] ?? self::DEFAULT_TEMPLATE
 			);
 		} else {
 			Utils::$context['lp_current_layout'] = $this->request(
-				'layout', $this->session()->get('lp_frontpage_layout')
+				'layout', $this->session('lp')->get('frontpage_layout')
 			);
 		}
 
-		$this->session()->put('lp_frontpage_layout', Utils::$context['lp_current_layout']);
+		$this->session('lp')->put('frontpage_layout', Utils::$context['lp_current_layout']);
 
-		Config::$modSettings['lp_frontpage_layout'] = $this->session()->get('lp_frontpage_layout');
+		Config::$modSettings['lp_frontpage_layout'] = $this->session('lp')->get('frontpage_layout');
 	}
 
 	public function getLayouts(): array
 	{
 		Theme::loadTemplate('LightPortal/ViewFrontPage');
 
-		$layouts = glob(Theme::$current->settings['default_theme_dir'] . '/LightPortal/layouts/*.latte');
+		$layouts = glob(Theme::$current->settings['default_theme_dir'] . '/LightPortal/layouts/*.blade.php');
 
-		$extensions = ['.latte'];
+		$extensions = ['.blade.php'];
 
 		// Mod authors can add custom extensions for layouts
 		$this->hook('customLayoutExtensions', [&$extensions]);
@@ -188,16 +186,16 @@ final class FrontPage implements ActionInterface
 
 			$shortName = ucfirst(strstr($title, '.', true) ?: $title);
 
-			$titles[] = $title === 'default.latte'
+			$titles[] = $title === self::DEFAULT_TEMPLATE
 				? Lang::$txt['lp_default']
 				: str_replace('_', ' ', $shortName);
 		}
 
 		$layouts = array_combine($values, $titles);
-		$default = $layouts['default.latte'];
-		unset($layouts['default.latte']);
+		$default = $layouts[self::DEFAULT_TEMPLATE];
+		unset($layouts[self::DEFAULT_TEMPLATE]);
 
-		return array_merge(['default.latte' => $default], $layouts);
+		return array_merge([self::DEFAULT_TEMPLATE => $default], $layouts);
 	}
 
 	public function view(string $layout): void
@@ -205,49 +203,44 @@ final class FrontPage implements ActionInterface
 		if (empty($layout))
 			return;
 
-		$latte = new Engine;
-		$latte->setTempDirectory(empty(Config::$modSettings['cache_enable']) ? null : Sapi::getTempDir());
-		$latte->setLoader(new FileLoader(
-			Theme::$current->settings['default_theme_dir'] . '/LightPortal/layouts/'
-		));
-
-		$latte->addExtension(new RawPhpExtension);
-
-		$latte->addFunction('teaser', function (string $text, int $length = 150) use ($latte): string {
-			$text = $latte->invokeFilter('stripHtml', [$text]);
-
-			return $latte->invokeFilter('truncate', [$text, $length]);
-		});
-
-		$latte->addFunction('icon', function (string $name, string $title = '') use ($latte): Html {
-			$icon = Icon::get($name);
-
-			if (empty($title)) {
-				return new Html($icon);
-			}
-
-			return new Html(str_replace(' class=', ' title="' . $title . '" class=', $icon));
-		});
-
 		$params = [
 			'txt'         => Lang::$txt,
 			'context'     => Utils::$context,
 			'modSettings' => Config::$modSettings,
 		];
 
+		$templates = [
+			Theme::$current->settings['default_theme_dir'] . '/LightPortal/layouts',
+			Theme::$current->settings['default_theme_dir'] . '/portal_layouts',
+		];
+
 		ob_start();
 
 		try {
-			$latte->render($layout, $params);
-		} catch (RuntimeException $e) {
-			if (is_file(Theme::$current->settings['default_theme_dir'] . '/portal_layouts/' . $layout)) {
-				$latte->setLoader(new FileLoader(
-					Theme::$current->settings['default_theme_dir'] . '/portal_layouts/'
-				));
-				$latte->render($layout, $params);
-			} else {
-				ErrorHandler::fatal($e->getMessage());
-			}
+			$blade = new BladeOne($templates, Sapi::getTempDir());
+
+			$blade->directiveRT('icon', static function (array|string $expression) {
+				if (is_array($expression)) {
+					[$name, $title] = count($expression) > 1 ? $expression : [$expression[0], false];
+				} else {
+					$name = $expression;
+				}
+
+				$icon = Icon::get($name);
+
+				if (empty($title)) {
+					echo $icon;
+					return;
+				}
+
+				echo str_replace(' class=', ' title="' . $title . '" class=', $icon);
+			});
+
+			$layout = strstr(
+				Config::$modSettings['lp_frontpage_layout'], '.', true
+			) ?: Config::$modSettings['lp_frontpage_layout'];
+
+			echo $blade->run($layout, $params);
 		} catch (Exception $e) {
 			ErrorHandler::fatal($e->getMessage());
 		}
@@ -292,7 +285,7 @@ final class FrontPage implements ActionInterface
 			'author_name;desc' => 'author_name DESC',
 			'author_name'      => 'author_name',
 			'num_views;desc'   => 'p.num_views DESC',
-			'num_views'        => 'p.num_views'
+			'num_views'        => 'p.num_views',
 		];
 
 		Utils::$context['current_sorting'] = $this->request('sort', 'created;desc');
@@ -325,9 +318,9 @@ final class FrontPage implements ActionInterface
 			}
 
 			if (isset($item['date'])) {
-				$item['datetime'] = date('Y-m-d', (int) $item['date']);
+				$item['datetime'] = date('Y-m-d', $item['date']);
 				$item['raw_date'] = $item['date'];
-				$item['date']     = DateTime::relative((int) $item['date']);
+				$item['date']     = DateTime::relative($item['date']);
 			}
 
 			$item['msg_link'] ??= $item['link'];
@@ -336,7 +329,7 @@ final class FrontPage implements ActionInterface
 				$item['image'] = Config::$modSettings['lp_image_placeholder'];
 
 			if (! empty($item['views']['num']))
-				$item['views']['num'] = $this->getFriendlyNumber((int) $item['views']['num']);
+				$item['views']['num'] = $this->getFriendlyNumber($item['views']['num']);
 
 			return $item;
 		}, $articles);
@@ -365,10 +358,11 @@ final class FrontPage implements ActionInterface
 		$mil = 10 ** 6;
 		$bil = 10 ** 9;
 
-		if ($value >= $bil)
+		if ($value >= $bil) {
 			return number_format($value / $bil, 1) . 'B';
-		else if ($value >= $mil)
+		} elseif ($value >= $mil) {
 			return number_format($value / $mil, 1) . 'M';
+		}
 
 		return number_format($value / $k, 1) . 'K';
 	}
@@ -385,12 +379,12 @@ final class FrontPage implements ActionInterface
 
 		if ($prev >= 0) {
 			$title = Icon::get('arrow_left') . ' ' . Lang::$txt['prev'];
-			$paginate .= "<a class=\"button\" href=\"$url;start=$prev\">" . $title . "</a>";
+			$paginate .= sprintf('<a class="button" href="%s;start=%s">', $url, $prev) . $title . "</a>";
 		}
 
 		if ($next) {
 			$title = Lang::$txt['next'] . ' ' . Icon::get('arrow_right');
-			$paginate .= "<a class=\"button\" href=\"$url;start=$next\">" . $title . "</a>";
+			$paginate .= sprintf('<a class="button" href="%s;start=%s">', $url, $next) . $title . "</a>";
 		}
 
 		return $paginate;

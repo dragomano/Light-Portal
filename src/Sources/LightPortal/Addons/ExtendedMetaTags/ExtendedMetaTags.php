@@ -10,14 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 20.02.24
  */
 
 namespace Bugo\LightPortal\Addons\ExtendedMetaTags;
 
+use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\Addons\Plugin;
 use Bugo\LightPortal\Areas\Fields\VirtualSelectField;
-use Bugo\LightPortal\Utils\{Lang, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -30,6 +30,7 @@ class ExtendedMetaTags extends Plugin
 	public string $type = 'page_options seo';
 
 	private array $meta_robots = ['', 'index, follow', 'index, nofollow', 'noindex, follow', 'noindex, nofollow'];
+
 	private array $meta_rating = ['', '14 years', 'adult', 'general', 'mature', 'restricted', 'save for kids'];
 
 	public function init(): void
@@ -43,11 +44,15 @@ class ExtendedMetaTags extends Plugin
 			return;
 
 		if (! empty(Utils::$context['lp_page']['options']['meta_robots'])) {
-			Utils::$context['meta_tags'][] = ['name' => 'robots', 'content' => Utils::$context['lp_page']['options']['meta_robots']];
+			Utils::$context['meta_tags'][] = [
+				'name' => 'robots', 'content' => Utils::$context['lp_page']['options']['meta_robots']
+			];
 		}
 
 		if (! empty(Utils::$context['lp_page']['options']['meta_rating'])) {
-			Utils::$context['meta_tags'][] = ['name' => 'rating', 'content' => Utils::$context['lp_page']['options']['meta_rating']];
+			Utils::$context['meta_tags'][] = [
+				'name' => 'rating', 'content' => Utils::$context['lp_page']['options']['meta_rating']
+			];
 		}
 	}
 

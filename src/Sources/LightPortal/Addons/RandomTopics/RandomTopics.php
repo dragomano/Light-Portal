@@ -10,15 +10,16 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 04.02.24
+ * @version 20.02.24
  */
 
 namespace Bugo\LightPortal\Addons\RandomTopics;
 
+use Bugo\Compat\{Config, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField};
 use Bugo\LightPortal\Areas\Partials\BoardSelect;
-use Bugo\LightPortal\Utils\{Config, DateTime, Lang, Theme, User, Utils};
+use Bugo\LightPortal\Utils\DateTime;
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -60,7 +61,7 @@ class RandomTopics extends Block
 
 		CustomField::make('exclude_boards', Lang::$txt['lp_random_topics']['exclude_boards'])
 			->setTab('content')
-			->setValue(fn() => new BoardSelect, [
+			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'exclude_boards',
 				'hint'  => Lang::$txt['lp_random_topics']['exclude_boards_select'],
 				'value' => Utils::$context['lp_block']['options']['exclude_boards'] ?? '',
@@ -68,7 +69,7 @@ class RandomTopics extends Block
 
 		CustomField::make('include_boards', Lang::$txt['lp_random_topics']['include_boards'])
 			->setTab('content')
-			->setValue(fn() => new BoardSelect, [
+			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'include_boards',
 				'hint'  => Lang::$txt['lp_random_topics']['include_boards_select'],
 				'value' => Utils::$context['lp_block']['options']['include_boards'] ?? '',
@@ -81,11 +82,11 @@ class RandomTopics extends Block
 
 	public function getData(array $parameters): array
 	{
-		$exclude_boards = empty($parameters['exclude_boards']) ? null : explode(',', $parameters['exclude_boards']);
-		$include_boards = empty($parameters['include_boards']) ? null : explode(',', $parameters['include_boards']);
-		$num_topics     = empty($parameters['num_topics']) ? 0 : (int) $parameters['num_topics'];
+		$excludeBoards = empty($parameters['exclude_boards']) ? null : explode(',', $parameters['exclude_boards']);
+		$includeBoards = empty($parameters['include_boards']) ? null : explode(',', $parameters['include_boards']);
+		$topicsCount   = empty($parameters['num_topics']) ? 0 : (int) $parameters['num_topics'];
 
-		if (empty($num_topics))
+		if (empty($topicsCount))
 			return [];
 
 		if (Config::$db_type === 'postgresql') {
@@ -95,16 +96,16 @@ class RandomTopics extends Block
 						SELECT min(t.id_topic), (
 							SELECT t.id_topic FROM {db_prefix}topics AS t
 							WHERE {query_wanna_see_topic_board}
-								AND t.approved = {int:is_approved}' . ($exclude_boards ? '
-								AND t.id_board NOT IN ({array_int:exclude_boards})' : '') . ($include_boards ? '
+								AND t.approved = {int:is_approved}' . ($excludeBoards ? '
+								AND t.id_board NOT IN ({array_int:exclude_boards})' : '') . ($includeBoards ? '
 								AND t.id_board IN ({array_int:include_boards})' : '') . '
 							ORDER BY t.id_topic DESC
 							LIMIT 1 OFFSET {int:limit} - 1
 						) max
 						FROM {db_prefix}topics AS t
 						WHERE {query_wanna_see_topic_board}
-							AND t.approved = {int:is_approved}' . ($exclude_boards ? '
-							AND t.id_board NOT IN ({array_int:exclude_boards})' : '') . ($include_boards ? '
+							AND t.approved = {int:is_approved}' . ($excludeBoards ? '
+							AND t.id_board NOT IN ({array_int:exclude_boards})' : '') . ($includeBoards ? '
 							AND t.id_board IN ({array_int:include_boards})' : '') . '
 					)
 					(
@@ -112,8 +113,8 @@ class RandomTopics extends Block
 						FROM {db_prefix}topics AS t, b
 						WHERE {query_wanna_see_topic_board}
 							AND t.id_topic >= min + ((max - min) * random())::int
-							AND	t.approved = {int:is_approved}' . ($exclude_boards ? '
-							AND t.id_board NOT IN ({array_int:exclude_boards})' : '') . ($include_boards ? '
+							AND	t.approved = {int:is_approved}' . ($excludeBoards ? '
+							AND t.id_board NOT IN ({array_int:exclude_boards})' : '') . ($includeBoards ? '
 							AND t.id_board IN ({array_int:include_boards})' : '') . '
 						LIMIT 1
 					) UNION ALL (
@@ -123,8 +124,8 @@ class RandomTopics extends Block
 							AND t.id_topic >= min + ((max - min) * random())::int
 							AND t.id_topic <> all(a)
 							AND r.n + 1 < {int:limit}
-							AND t.approved = {int:is_approved}' . ($exclude_boards ? '
-							AND t.id_board NOT IN ({array_int:exclude_boards})' : '') . ($include_boards ? '
+							AND t.approved = {int:is_approved}' . ($excludeBoards ? '
+							AND t.id_board NOT IN ({array_int:exclude_boards})' : '') . ($includeBoards ? '
 							AND t.id_board IN ({array_int:include_boards})' : '') . '
 						LIMIT 1
 					)
@@ -134,21 +135,21 @@ class RandomTopics extends Block
 				WHERE r.id_topic = t.id_topic',
 				[
 					'is_approved'    => 1,
-					'exclude_boards' => $exclude_boards,
-					'include_boards' => $include_boards,
-					'limit'          => $num_topics
+					'exclude_boards' => $excludeBoards,
+					'include_boards' => $includeBoards,
+					'limit'          => $topicsCount,
 				]
 			);
 
-			$topic_ids = [];
+			$topicIds = [];
 			while ($row = Utils::$smcFunc['db_fetch_assoc']($result))
-				$topic_ids[] = $row['id_topic'];
+				$topicIds[] = $row['id_topic'];
 
 			Utils::$smcFunc['db_free_result']($result);
 			Utils::$context['lp_num_queries']++;
 
-			if (empty($topic_ids))
-				return $this->getData(array_merge($parameters, ['num_topics' => $num_topics - 1]));
+			if (empty($topicIds))
+				return $this->getData(array_merge($parameters, ['num_topics' => $topicsCount - 1]));
 
 			$result = Utils::$smcFunc['db_query']('', '
 				SELECT
@@ -165,7 +166,7 @@ class RandomTopics extends Block
 					AND t.id_topic IN ({array_int:topic_ids})',
 				[
 					'current_member' => User::$info['id'],
-					'topic_ids'      => $topic_ids
+					'topic_ids'      => $topicIds,
 				]
 			);
 		} else {
@@ -181,31 +182,31 @@ class RandomTopics extends Block
 					LEFT JOIN {db_prefix}log_topics AS lt ON (t.id_topic = lt.id_topic AND lt.id_member = {int:current_member})
 					LEFT JOIN {db_prefix}log_mark_read AS lmr ON (t.id_board = lmr.id_board AND lmr.id_member = {int:current_member})') . '
 				WHERE {query_wanna_see_topic_board}
-					AND t.approved = {int:is_approved}' . ($exclude_boards ? '
-					AND t.id_board NOT IN ({array_int:exclude_boards})' : '') . ($include_boards ? '
+					AND t.approved = {int:is_approved}' . ($excludeBoards ? '
+					AND t.id_board NOT IN ({array_int:exclude_boards})' : '') . ($includeBoards ? '
 					AND t.id_board IN ({array_int:include_boards})' : '') . '
 				ORDER BY RAND()
 				LIMIT {int:limit}',
 				[
 					'current_member' => User::$info['id'],
 					'is_approved'    => 1,
-					'exclude_boards' => $exclude_boards,
-					'include_boards' => $include_boards,
-					'limit'          => $num_topics
+					'exclude_boards' => $excludeBoards,
+					'include_boards' => $includeBoards,
+					'limit'          => $topicsCount,
 				]
 			);
 		}
 
-		$icon_sources = [];
+		$iconSources = [];
 		foreach (Utils::$context['stable_icons'] as $icon)
-			$icon_sources[$icon] = 'images_url';
+			$iconSources[$icon] = 'images_url';
 
 		$topics = [];
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
-			if (! empty(Config::$modSettings['messageIconChecks_enable']) && ! isset($icon_sources[$row['icon']])) {
-				$icon_sources[$row['icon']] = file_exists(Theme::$current->settings['theme_dir'] . '/images/post/' . $row['icon'] . '.png') ? 'images_url' : 'default_images_url';
-			} elseif (! isset($icon_sources[$row['icon']])) {
-				$icon_sources[$row['icon']] = 'images_url';
+			if (! empty(Config::$modSettings['messageIconChecks_enable']) && ! isset($iconSources[$row['icon']])) {
+				$iconSources[$row['icon']] = file_exists(Theme::$current->settings['theme_dir'] . '/images/post/' . $row['icon'] . '.png') ? 'images_url' : 'default_images_url';
+			} elseif (! isset($iconSources[$row['icon']])) {
+				$iconSources[$row['icon']] = 'images_url';
 			}
 
 			$topics[] = [
@@ -213,7 +214,7 @@ class RandomTopics extends Block
 				'time'   => $row['poster_time'],
 				'link'   => '<a href="' . Config::$scripturl . '?topic=' . $row['id_topic'] . '.msg' . $row['id_msg'] . '#new" rel="nofollow">' . $row['subject'] . '</a>',
 				'is_new' => empty($row['is_read']),
-				'icon'   => '<img class="centericon" src="' . Theme::$current->settings[$icon_sources[$row['icon']]] . '/post/' . $row['icon'] . '.png" alt="' . $row['icon'] . '">'
+				'icon'   => '<img class="centericon" src="' . Theme::$current->settings[$iconSources[$row['icon']]] . '/post/' . $row['icon'] . '.png" alt="' . $row['icon'] . '">'
 			];
 		}
 
@@ -231,8 +232,8 @@ class RandomTopics extends Block
 		if ($data->type !== 'random_topics')
 			return;
 
-		$randomTopics = $this->cache('random_topics_addon_b' . $data->block_id . '_u' . User::$info['id'])
-			->setLifeTime($data->cache_time)
+		$randomTopics = $this->cache('random_topics_addon_b' . $data->id . '_u' . User::$info['id'])
+			->setLifeTime($data->cacheTime)
 			->setFallback(self::class, 'getData', $parameters);
 
 		if ($randomTopics) {

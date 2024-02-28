@@ -10,14 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 02.02.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TopTopics;
 
+use Bugo\Compat\{Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, NumberField, RadioField};
-use Bugo\LightPortal\Utils\{Lang, User, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -76,19 +76,26 @@ class TopTopics extends Block
 
 		$parameters['show_numbers_only'] ??= false;
 
-		$top_topics = $this->cache('top_topics_addon_b' . $data->block_id . '_u' . User::$info['id'])
-			->setLifeTime($data->cache_time)
-			->setFallback(self::class, 'getFromSsi', 'topTopics', $parameters['popularity_type'], $parameters['num_topics'], 'array');
+		$topTopics = $this->cache('top_topics_addon_b' . $data->id . '_u' . User::$info['id'])
+			->setLifeTime($data->cacheTime)
+			->setFallback(
+				self::class,
+				'getFromSsi',
+				'topTopics',
+				$parameters['popularity_type'],
+				$parameters['num_topics'],
+				'array'
+			);
 
-		if (empty($top_topics))
+		if (empty($topTopics))
 			return;
 
 		echo '
 		<dl class="stats">';
 
-		$max = $top_topics[0]['num_' . $parameters['popularity_type']];
+		$max = $topTopics[0]['num_' . $parameters['popularity_type']];
 
-		foreach ($top_topics as $topic) {
+		foreach ($topTopics as $topic) {
 			if ($topic['num_' . $parameters['popularity_type']] < 1)
 				continue;
 

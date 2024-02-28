@@ -9,13 +9,15 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Areas;
 
+use Bugo\Compat\{Config, Lang};
+use Bugo\Compat\{Security, Theme, Utils};
 use Bugo\LightPortal\Areas\Fields\CustomField;
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\Editor;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -26,16 +28,14 @@ trait Area
 
 	public function createBbcEditor(string $content = ''): void
 	{
-		$editorOptions = [
+		new Editor([
 			'id'           => 'content',
 			'value'        => $content,
 			'height'       => '1px',
 			'width'        => '100%',
 			'preview_type' => 2,
-			'required'     => true
-		];
-
-		$this->createControlRichedit($editorOptions);
+			'required'     => true,
+		]);
 	}
 
 	public function prepareContent(array $object): string
@@ -49,7 +49,7 @@ trait Area
 
 	public function prepareTitleFields(string $entity = 'page', bool $required = true): void
 	{
-		$this->checkSubmitOnce('register');
+		Security::checkSubmitOnce('register');
 
 		$this->prepareIconList();
 
@@ -113,18 +113,21 @@ trait Area
 				if (isset($data['input']['type']) && in_array($data['input']['type'], ['checkbox', 'number']))
 					$tag = 'span';
 
-				Utils::$context['posting_fields'][$item]['input']['after'] = "<$tag class=\"descbox alternative2 smalltext\">{$data['input']['after']}</$tag>";
+				Utils::$context['posting_fields'][$item]['input']['after']
+					= "<$tag class=\"descbox alternative2 smalltext\">{$data['input']['after']}</$tag>";
 			}
 
 			// Add label for html type
 			if (isset($data['label']['html']) && $data['label']['html'] !== ' ') {
-				Utils::$context['posting_fields'][$item]['label']['html'] = '<label for="' . $item . '">' . $data['label']['html'] . '</label>';
+				Utils::$context['posting_fields'][$item]['label']['html'] = '<label for="' . $item . '">'
+					. $data['label']['html'] . '</label>';
 			}
 
 			// Fancy checkbox
 			if (isset($data['input']['type']) && $data['input']['type'] === 'checkbox') {
 				$data['input']['attributes']['class'] = 'checkbox';
-				$data['input']['after'] = '<label class="label" for="' . $item . '"></label>' . (Utils::$context['posting_fields'][$item]['input']['after'] ?? '');
+				$data['input']['after'] = '<label class="label" for="' . $item . '"></label>'
+					. (Utils::$context['posting_fields'][$item]['input']['after'] ?? '');
 				Utils::$context['posting_fields'][$item] = $data;
 			}
 
@@ -133,23 +136,6 @@ trait Area
 		}
 
 		Theme::loadTemplate('LightPortal/ManageSettings');
-	}
-
-	public function toggleStatus(array $items = [], string $type = 'block'): void
-	{
-		if (empty($items))
-			return;
-
-		Utils::$smcFunc['db_query']('', '
-			UPDATE {db_prefix}lp_' . ($type === 'block' ? 'blocks' : 'pages') . '
-			SET status = CASE status WHEN 1 THEN 0 WHEN 0 THEN 1 WHEN 2 THEN 1 WHEN 3 THEN 0 END
-			WHERE ' . ($type === 'block' ? 'block' : 'page') . '_id IN ({array_int:items})',
-			[
-				'items' => $items
-			]
-		);
-
-		Utils::$context['lp_num_queries']++;
 	}
 
 	public function getPreviewTitle(string $prefix = ''): string
@@ -179,7 +165,7 @@ trait Area
 			],
 			'php' => [
 				'icon' => 'fab fa-php'
-			]
+			],
 		];
 	}
 }

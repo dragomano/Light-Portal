@@ -10,13 +10,13 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 17.01.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleChat;
 
+use Bugo\Compat\{User, Utils};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{User, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -78,7 +78,7 @@ class Chat
 				'block_id'   => $data['block_id'],
 				'user_id'    => User::$info['id'],
 				'message'    => $message = Utils::$smcFunc['htmlspecialchars']($data['message']),
-				'created_at' => $time = time()
+				'created_at' => $time = time(),
 			],
 			['id'],
 			1

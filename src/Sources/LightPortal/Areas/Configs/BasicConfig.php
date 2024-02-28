@@ -9,16 +9,14 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Areas\Configs;
 
-use Bugo\LightPortal\Areas\Partials\{ActionSelect, BoardSelect, CategorySelect};
-use Bugo\LightPortal\Areas\Partials\{PageAliasSelect, PageSelect, TopicSelect};
+use Bugo\Compat\{ACP, Config, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Areas\Query;
 use Bugo\LightPortal\Actions\FrontPage;
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, User, Utils};
 use IntlException;
 
 if (! defined('SMF'))
@@ -36,9 +34,9 @@ final class BasicConfig extends AbstractConfig
 	 */
 	public function show(): void
 	{
-		Utils::$context['page_title']    = Utils::$context['settings_title'] = Lang::$txt['lp_base'];
-		Utils::$context['canonical_url'] = Config::$scripturl . '?action=admin;area=lp_settings;sa=basic';
-		Utils::$context['post_url']      = Utils::$context['canonical_url'] . ';save';
+		Utils::$context['page_title']  = Utils::$context['settings_title'] = Lang::$txt['lp_base'];
+		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_settings;sa=basic';
+		Utils::$context['post_url']    = Utils::$context['form_action'] . ';save';
 
 		$this->addDefaultValues([
 			'lp_frontpage_title'           => str_replace(["'", "\""], "", Utils::$context['forum_name']),
@@ -50,27 +48,19 @@ final class BasicConfig extends AbstractConfig
 
 		Utils::$context['lp_frontpage_modes'] = array_combine(
 			[0, 'chosen_page', 'all_pages', 'chosen_pages', 'all_topics', 'chosen_topics', 'chosen_boards'],
-			Lang::$txt['lp_frontpage_mode_set']
+			Lang::$txt['lp_frontpage_mode_set'],
 		);
 
 		$this->prepareTopicList();
 
 		Utils::$context['lp_column_set'] = array_map(
-			fn($item) => Lang::getTxt('lp_frontpage_num_columns_set', ['columns' => $item]),
-			[1, 2, 3, 4, 6]
+			static fn($item) => Lang::getTxt('lp_frontpage_num_columns_set', ['columns' => $item]),
+			[1, 2, 3, 4, 6],
 		);
-
-		Utils::$context['lp_frontpage_layouts']           = (new FrontPage)->getLayouts();
-		Utils::$context['lp_frontpage_alias_select']      = new PageAliasSelect;
-		Utils::$context['lp_frontpage_categories_select'] = new CategorySelect;
-		Utils::$context['lp_frontpage_boards_select']     = new BoardSelect;
-		Utils::$context['lp_frontpage_topics_select']     = new TopicSelect;
-		Utils::$context['lp_frontpage_pages_select']      = new PageSelect;
-		Utils::$context['lp_disabled_actions_select']     = new ActionSelect;
 
 		$javascript = ':disabled="[\'0\', \'chosen_page\'].includes(frontpage_mode)"';
 
-		$config_vars = [
+		$configVars = [
 			['callback', 'frontpage_mode_settings_before'],
 			[
 				'select',
@@ -83,7 +73,9 @@ final class BasicConfig extends AbstractConfig
 			[
 				'text',
 				'lp_frontpage_title',
-				'size' => '80" placeholder="' . str_replace(["'", "\""], "", Utils::$context['forum_name']) . ' - ' . Lang::$txt['lp_portal'],
+				'size' => '80" placeholder="' . str_replace(
+					["'", "\""], "", Utils::$context['forum_name']
+				) . ' - ' . Lang::$txt['lp_portal'],
 				'javascript' => $javascript
 			],
 			['callback', 'frontpage_mode_settings_middle'],
@@ -130,7 +122,7 @@ final class BasicConfig extends AbstractConfig
 			[
 				'select',
 				'lp_frontpage_layout',
-				Utils::$context['lp_frontpage_layouts'],
+				(new FrontPage())->getLayouts(),
 				'javascript' => $javascript
 			],
 			[
@@ -194,28 +186,35 @@ final class BasicConfig extends AbstractConfig
 		if ($this->request()->has('save')) {
 			User::$me->checkSession();
 
-			if ($this->request()->isNotEmpty('lp_image_placeholder'))
-				$this->post()->put('lp_image_placeholder', $this->filterVar($this->request('lp_image_placeholder'), 'url'));
+			if ($this->request()->isNotEmpty('lp_image_placeholder')) {
+				$this->post()->put(
+					'lp_image_placeholder', $this->filterVar($this->request('lp_image_placeholder'), 'url')
+				);
+			}
 
-			if ($this->request()->isNotEmpty('lp_standalone_url'))
-				$this->post()->put('lp_standalone_url', $this->filterVar($this->request('lp_standalone_url'), 'url'));
+			if ($this->request()->isNotEmpty('lp_standalone_url')) {
+				$this->post()->put(
+					'lp_standalone_url', $this->filterVar($this->request('lp_standalone_url'), 'url')
+				);
+			}
 
-			$save_vars = $config_vars;
+			$saveVars = $configVars;
 
-			$save_vars[] = ['text', 'lp_frontpage_alias'];
-			$save_vars[] = ['text', 'lp_frontpage_categories'];
-			$save_vars[] = ['text', 'lp_frontpage_boards'];
-			$save_vars[] = ['text', 'lp_frontpage_pages'];
-			$save_vars[] = ['text', 'lp_frontpage_topics'];
-			$save_vars[] = ['text', 'lp_disabled_actions'];
+			$saveVars[] = ['text', 'lp_frontpage_alias'];
+			$saveVars[] = ['text', 'lp_frontpage_categories'];
+			$saveVars[] = ['text', 'lp_frontpage_boards'];
+			$saveVars[] = ['text', 'lp_frontpage_pages'];
+			$saveVars[] = ['text', 'lp_frontpage_topics'];
+			$saveVars[] = ['text', 'lp_disabled_actions'];
 
-			$this->saveDBSettings($save_vars);
+			ACP::saveDBSettings($saveVars);
+
 			$this->session()->put('adm-save', true);
 			$this->cache()->flush();
 
 			Utils::redirectexit('action=admin;area=lp_settings;sa=basic');
 		}
 
-		$this->prepareDBSettingContext($config_vars);
+		ACP::prepareDBSettingContext($configVars);
 	}
 }

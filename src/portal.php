@@ -1,7 +1,19 @@
-<?php
+<?php declare(strict_types=1);
 
+/**
+ * portal.php
+ *
+ * @package Light Portal
+ * @link https://dragomano.ru/mods/light-portal
+ * @author Bugo <bugo@dragomano.ru>
+ * @copyright 2019-2024 Bugo
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
+ *
+ * @version 2.6
+ */
+
+use Bugo\Compat\{Config, Lang, Utils};
 use Bugo\LightPortal\Actions\FrontPage;
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
 
 require_once __DIR__ . '/SSI.php';
 
@@ -14,7 +26,9 @@ if (empty(Config::$modSettings['lp_standalone_mode']) || empty(Config::$modSetti
 require_once Config::$sourcedir . '/LightPortal/Actions/FrontPage.php';
 
 try {
-	(new FrontPage)->show();
-} catch (Exception) {}
+	(new FrontPage())->show();
+} catch (Exception $e) {
+	die($e->getMessage());
+}
 
 Utils::obExit();

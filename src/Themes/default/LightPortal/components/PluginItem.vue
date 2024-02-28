@@ -44,11 +44,11 @@
             v-html="iconStore.download"
           ></a>
         </template>
-        <Button
+        <Toggle
           v-if="!item.special && Object.keys(item.types)[0] !== $t('not_applicable')"
-          view="span"
-          :icon="`toggle-${item.status}`"
-          :data-toggle="item.status"
+          v-model="item.status"
+          true-value="on"
+          false-value="off"
           @click="toggle"
         />
       </div>
@@ -65,6 +65,7 @@
 
 <script setup>
 import { ref, computed } from 'vue';
+import Toggle from '@vueform/toggle';
 import { useContextStore, useIconStore } from '../../scripts/light_portal/dev/base_stores.js';
 import { useAppStore, usePluginStore } from '../../scripts/light_portal/dev/plugin_stores.js';
 import Button from './BaseButton.vue';
@@ -83,6 +84,7 @@ const props = defineProps({
 });
 
 const show = ref(false);
+const status = ref(props.item.status);
 
 const specialDesc = computed(
   () =>
@@ -103,11 +105,11 @@ const link = computed(() =>
 );
 
 const toggle = async () => {
-  const { data } = await axios.post(appStore.baseUrl + '?action=admin;area=lp_plugins;toggle', {
+  const data = await axios.post(appStore.baseUrl + '?action=admin;area=lp_plugins;toggle', {
     plugin: index.value,
-    status: props.item.status,
+    status: status.value,
   });
 
-  if (data.success) props.item.status = props.item.status === 'on' ? 'off' : 'on';
+  if (data.success) props.item.status = status.value === 'on' ? 'off' : 'on';
 };
 </script>

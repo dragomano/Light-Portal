@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.01.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\SiteList;
 
+use Bugo\Compat\{Config, Utils};
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\{Config, Theme, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -27,9 +27,9 @@ class SiteList extends Plugin
 
 	private string $mode = 'site_list_addon_mode';
 
-	public function addSettings(array &$config_vars): void
+	public function addSettings(array &$settings): void
 	{
-		$config_vars['site_list'][] = ['callback', 'urls', $this->showList()];
+		$settings['site_list'][] = ['callback', 'urls', $this->showList()];
 	}
 
 	public function showList(): bool|string
@@ -38,7 +38,7 @@ class SiteList extends Plugin
 
 		$urls = Utils::jsonDecode(Utils::$context['lp_site_list_plugin']['urls'] ?? '', true);
 
-		Theme::addInlineJS($this->getFromTemplate('site_list_handle_func', $urls ?? []));
+		$this->addInlineJS($this->getFromTemplate('site_list_handle_func', $urls ?? []));
 
 		ob_start();
 
@@ -47,20 +47,24 @@ class SiteList extends Plugin
 		return ob_get_clean();
 	}
 
-	public function saveSettings(array &$plugin_options): void
+	public function saveSettings(array &$settings): void
 	{
-		if (! isset($plugin_options['urls']))
+		if (! isset($settings['urls']))
 			return;
 
 		$sites = [];
 
 		if ($this->request()->has('url')) {
 			foreach ($this->request('url') as $key => $value) {
-				$sites[$this->filterVar($value, 'url')] = [$this->filterVar($this->request('image')[$key], 'url'), $this->request('title')[$key], $this->request('desc')[$key]];
+				$sites[$this->filterVar($value, 'url')] = [
+					$this->filterVar($this->request('image')[$key], 'url'),
+					$this->request('title')[$key],
+					$this->request('desc')[$key],
+				];
 			}
 		}
 
-		$plugin_options['urls'] = json_encode($sites, JSON_UNESCAPED_UNICODE);
+		$settings['urls'] = json_encode($sites, JSON_UNESCAPED_UNICODE);
 	}
 
 	public function frontModes(array &$modes): void

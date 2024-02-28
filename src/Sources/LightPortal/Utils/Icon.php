@@ -9,12 +9,10 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Utils;
-
-use Bugo\LightPortal\Lists\IconList;
 
 final class Icon
 {
@@ -31,7 +29,6 @@ final class Icon
 
 	public static function all(): array
 	{
-		return (new Cache('all_icons'))
-			->setFallback(IconList::class, 'getAll');
+		return (new EntityManager())('icon');
 	}
 }

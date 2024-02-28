@@ -9,12 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Articles;
 
-use Bugo\LightPortal\Utils\Config;
+use Bugo\Compat\Config;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -29,7 +29,8 @@ final class ChosenTopicArticle extends TopicArticle
 
 		$this->selectedBoards = [];
 
-		$this->selectedTopics = empty(Config::$modSettings['lp_frontpage_topics']) ? [] : explode(',', Config::$modSettings['lp_frontpage_topics']);
+		$this->selectedTopics = empty(Config::$modSettings['lp_frontpage_topics'])
+			? [] : explode(',', Config::$modSettings['lp_frontpage_topics']);
 
 		$this->wheres[] = 'AND t.id_topic IN ({array_int:selected_topics})';
 

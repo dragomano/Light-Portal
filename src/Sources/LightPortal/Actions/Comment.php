@@ -9,13 +9,14 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Actions;
 
+use Bugo\Compat\{Config, PageIndex, User, Utils};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, DateTime, User, Utils};
+use Bugo\LightPortal\Utils\{DateTime, Notify};
 use Bugo\LightPortal\Repositories\CommentRepository;
 use IntlException;
 
@@ -70,27 +71,25 @@ final class Comment implements ActionInterface
 			return $comment;
 		}, $comments);
 
+		$start = (int) $this->request()->get('start');
 		$limit = (int) (Config::$modSettings['lp_num_comments_per_page'] ?? 10);
 
 		$commentTree  = $this->getTree($comments);
-		$parentsCount = sizeof($commentTree);
+		$parentsCount = count($commentTree);
 
-		Utils::$context['page_index'] = $this->constructPageIndex(
-			$this->getPageIndexUrl(),
-			$this->request()->get('start'),
-			$parentsCount,
-			$limit
+		Utils::$context['page_index'] = new PageIndex(
+			$this->getPageIndexUrl(), $start, $parentsCount, $limit
 		);
 
-		$start = $this->request('start');
+		$start = (int) $this->request('start');
 
 		http_response_code(200);
 
 		$result = [
 			'comments'     => array_slice($commentTree, $start, $limit),
 			'parentsCount' => $parentsCount,
-			'total'        => sizeof($comments),
-			'limit'        => $limit
+			'total'        => count($comments),
+			'limit'        => $limit,
 		];
 
 		exit(json_encode($result));
@@ -102,7 +101,7 @@ final class Comment implements ActionInterface
 	private function add(): void
 	{
 		$result = [
-			'id' => null
+			'id' => null,
 		];
 
 		if (empty(User::$info['id']))
@@ -127,7 +126,7 @@ final class Comment implements ActionInterface
 			'page_id'    => $pageId,
 			'author_id'  => User::$info['id'],
 			'message'    => $message,
-			'created_at' => $time = time()
+			'created_at' => $time = time(),
 		]);
 
 		if ($item) {
@@ -148,7 +147,7 @@ final class Comment implements ActionInterface
 				],
 			];
 
-			$notifyOptions = [
+			$options = [
 				'item'      => $item,
 				'time'      => $time,
 				'author_id' => empty($parentId) ? Utils::$context['lp_page']['author_id'] : $author,
@@ -157,8 +156,8 @@ final class Comment implements ActionInterface
 			];
 
 			empty($parentId)
-				? $this->makeNotify('new_comment', 'page_comment', $notifyOptions)
-				: $this->makeNotify('new_reply', 'page_comment_reply', $notifyOptions);
+				? Notify::send('new_comment', 'page_comment', $options)
+				: Notify::send('new_reply', 'page_comment_reply', $options);
 
 			$this->cache()->forget('page_' . $this->alias . '_comments');
 		}
@@ -173,7 +172,7 @@ final class Comment implements ActionInterface
 		$data = $this->request()->json();
 
 		$result = [
-			'success' => false
+			'success' => false,
 		];
 
 		if (empty($data) || Utils::$context['user']['is_guest'])
@@ -188,12 +187,12 @@ final class Comment implements ActionInterface
 		$this->repository->update([
 			'message' => Utils::shorten($message, 65531),
 			'id'      => $item,
-			'user'    => Utils::$context['user']['id']
+			'user'    => Utils::$context['user']['id'],
 		]);
 
 		$result = [
 			'success' => true,
-			'message' => $message
+			'message' => $message,
 		];
 
 		$this->cache()->forget('page_' . $this->alias . '_comments');
@@ -205,8 +204,9 @@ final class Comment implements ActionInterface
 	{
 		$items = $this->request()->json('items');
 
-		if (empty($items))
+		if (empty($items)) {
 			exit(json_encode(['success' => false]));
+		}
 
 		$this->repository->remove($items, $this->alias);
 
@@ -230,12 +230,6 @@ final class Comment implements ActionInterface
 
 	private function getPageIndexUrl(): string
 	{
-		if (! (
-			empty(Config::$modSettings['lp_frontpage_mode'])
-			|| Config::$modSettings['lp_frontpage_mode'] !== 'chosen_page'
-		) && ! empty(Config::$modSettings['lp_frontpage_alias']))
-			return LP_BASE_URL;
-
-		return Utils::$context['canonical_url'];
+		return $this->isFrontpage($this->alias) ? LP_BASE_URL : Utils::$context['canonical_url'];
 	}
 }

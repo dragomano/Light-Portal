@@ -9,7 +9,7 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Lists;
@@ -24,6 +24,11 @@ final class IconList implements ListInterface
 	use Helper;
 
 	private string $prefix = 'fa-solid fa-';
+
+	public function __invoke(): array
+	{
+		return $this->getAll();
+	}
 
 	public function getAll(): array
 	{
@@ -50,6 +55,7 @@ final class IconList implements ListInterface
 			'donate'        => 'circle-dollar-to-slot fa-3x',
 			'download'      => 'download fa-3x',
 			'edit'          => 'pen-to-square',
+			'ellipsis'      => 'ellipsis',
 			'export'        => 'file-export',
 			'gear'          => '2x fa-gear',
 			'home'          => 'house',
@@ -83,8 +89,6 @@ final class IconList implements ListInterface
 			'tags'          => 'tags fa-fw',
 			'task'          => 'list-check',
 			'tile'          => 'border-all fa-2x',
-			'toggle-on'     => '3x fa-toggle-on',
-			'toggle-off'    => '3x fa-toggle-off',
 			'tools'         => 'sliders',
 			'undo'          => 'rotate-left',
 			'unlike'        => 'heart-crack',

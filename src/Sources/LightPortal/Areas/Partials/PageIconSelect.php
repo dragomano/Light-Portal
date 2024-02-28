@@ -9,12 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Areas\Partials;
 
-use Bugo\LightPortal\Utils\{Lang, Utils};
+use Bugo\Compat\{Lang, Utils};
 
 final class PageIconSelect extends AbstractPartial
 {
@@ -31,7 +31,12 @@ final class PageIconSelect extends AbstractPartial
 
 		return /** @lang text */ '
 		<div id="' . $id . '" name="' . $id . '"></div>
-		<input type="checkbox" name="show_in_menu" id="show_in_menu"' . (Utils::$context['lp_page']['options']['show_in_menu'] ? ' checked=""' : '') . ' class="checkbox">
+		<input
+			type="checkbox"
+			name="show_in_menu"
+			id="show_in_menu"' . (Utils::$context['lp_page']['options']['show_in_menu'] ? ' checked=""' : '') . '
+			class="checkbox"
+		>
 		<label class="label" for="show_in_menu" style="margin-left: 1em"></label>
 		<script>
 			VirtualSelect.init({
@@ -55,7 +60,7 @@ final class PageIconSelect extends AbstractPartial
 					return `<i class="${data.value} fa-fw"></i> ${data.value}`;
 				},
 				onServerSearch: async function (search, virtualSelect) {
-					await axios.post("' . Utils::$context['canonical_url'] . ';icons", {
+					await axios.post("' . Utils::$context['form_action'] . ';icons", {
 						search
 					})
 						.then(({ data }) => {

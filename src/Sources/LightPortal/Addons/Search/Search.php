@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 04.02.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\Search;
 
+use Bugo\Compat\{Config, Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Utils\{Config, Content, DateTime, Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\{Content, DateTime};
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -31,13 +32,13 @@ class Search extends Block
 		$this->applyHook('actions');
 	}
 
-	public function addSettings(array &$config_vars): void
+	public function addSettings(array &$settings): void
 	{
 		$this->addDefaultValues([
 			'min_chars' => 3,
 		]);
 
-		$config_vars['search'][] = ['range', 'min_chars', 'min' => 1, 'max' => 10];
+		$settings['search'][] = ['range', 'min_chars', 'min' => 1, 'max' => 10];
 	}
 
 	public function actions()
@@ -106,23 +107,23 @@ class Search extends Block
 	 */
 	private function query(string $query): array
 	{
-		$title_words = explode(' ', $query);
+		$titleWords = explode(' ', $query);
 
-		$search_formula = '';
-		foreach ($title_words as $key => $word) {
-			$search_formula .= ($search_formula ? ' + ' : '') . 'CASE WHEN lower(t.title) = lower(\'' . $word . '\') THEN ' . (count($title_words) - $key) * 5 . ' ELSE 0 END';
-			$search_formula .= ($search_formula ? ' + ' : '') . 'CASE WHEN lower(t.title) LIKE lower(\'%' . $word . '%\') THEN ' . (count($title_words) - $key) * 4 . ' ELSE 0 END';
-			$search_formula .= ($search_formula ? ' + ' : '') . 'CASE WHEN lower(p.content) LIKE lower(\'%' . $word . '%\') THEN ' . (count($title_words) - $key) * 3 . ' ELSE 0 END';
-			$search_formula .= ($search_formula ? ' + ' : '') . 'CASE WHEN lower(p.alias) = lower(\'' . $word . '\') THEN ' . (count($title_words) - $key) * 2 . ' ELSE 0 END';
-			$search_formula .= ($search_formula ? ' + ' : '') . 'CASE WHEN lower(p.alias) LIKE lower(\'%' . $word . '%\') THEN ' . (count($title_words) - $key) . ' ELSE 0 END';
+		$searchFormula = '';
+		foreach ($titleWords as $key => $word) {
+			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE WHEN lower(t.title) = lower(\'' . $word . '\') THEN ' . (count($titleWords) - $key) * 5 . ' ELSE 0 END';
+			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE WHEN lower(t.title) LIKE lower(\'%' . $word . '%\') THEN ' . (count($titleWords) - $key) * 4 . ' ELSE 0 END';
+			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE WHEN lower(p.content) LIKE lower(\'%' . $word . '%\') THEN ' . (count($titleWords) - $key) * 3 . ' ELSE 0 END';
+			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE WHEN lower(p.alias) = lower(\'' . $word . '\') THEN ' . (count($titleWords) - $key) * 2 . ' ELSE 0 END';
+			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE WHEN lower(p.alias) LIKE lower(\'%' . $word . '%\') THEN ' . (count($titleWords) - $key) . ' ELSE 0 END';
 		}
 
 		$result = Utils::$smcFunc['db_query']('', '
-			SELECT p.alias, p.content, p.type, GREATEST(p.created_at, p.updated_at) AS date, (' . $search_formula . ') AS related, t.title, mem.id_member, mem.real_name
+			SELECT p.alias, p.content, p.type, GREATEST(p.created_at, p.updated_at) AS date, (' . $searchFormula . ') AS related, t.title, mem.id_member, mem.real_name
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:current_lang})
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
-			WHERE (' . $search_formula . ') > 0
+			WHERE (' . $searchFormula . ') > 0
 				AND p.status = {int:status}
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
@@ -132,7 +133,7 @@ class Search extends Block
 				'current_lang' => Utils::$context['user']['language'],
 				'status'       => 1,
 				'current_time' => time(),
-				'permissions'  => $this->getPermissions()
+				'permissions'  => $this->getPermissions(),
 			]
 		);
 
@@ -144,8 +145,10 @@ class Search extends Block
 				'link'    => LP_PAGE_URL . $row['alias'],
 				'title'   => $row['title'],
 				'content' => $this->getTeaser($row['content']),
-				'author'  => empty($row['id_member']) ? Lang::$txt['guest'] : ('<a href="' . Config::$scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>'),
-				'date'    => DateTime::relative($row['date'])
+				'author'  => empty($row['id_member'])
+					? Lang::$txt['guest']
+					: ('<a href="' . Config::$scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>'),
+				'date'    => DateTime::relative($row['date']),
 			];
 		}
 
@@ -167,7 +170,7 @@ class Search extends Block
 			return;
 
 		Theme::loadCSSFile('light_portal/search/auto-complete.css');
-		Theme::loadJSFile('light_portal/search/auto-complete.min.js', ['minimize' => true]);
+		$this->loadJSFile('light_portal/search/auto-complete.min.js', ['minimize' => true]);
 
 		echo '
 		<form class="search_addon centertext" action="', LP_BASE_URL, ';sa=search" method="post" accept-charset="', Utils::$context['character_set'], '">

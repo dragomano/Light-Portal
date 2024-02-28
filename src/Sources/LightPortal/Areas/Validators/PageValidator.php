@@ -9,12 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Areas\Validators;
 
-use Bugo\LightPortal\Utils\{Config, Lang, Utils};
+use Bugo\Compat\{Config, Db, Lang, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -27,7 +27,7 @@ class PageValidator extends AbstractValidator
 		'author_id'   => FILTER_VALIDATE_INT,
 		'alias'       => FILTER_DEFAULT,
 		'description' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-		'keywords'    => FILTER_DEFAULT,
+		'tags'        => FILTER_DEFAULT,
 		'type'        => FILTER_DEFAULT,
 		'permissions' => FILTER_VALIDATE_INT,
 		'status'      => FILTER_VALIDATE_INT,
@@ -47,8 +47,7 @@ class PageValidator extends AbstractValidator
 
 	public function validate(): array
 	{
-		$data = [];
-		$params = [];
+		$data = $params = [];
 
 		if ($this->request()->only(['save', 'save_exit', 'preview'])) {
 			foreach (Utils::$context['lp_languages'] as $lang) {
@@ -60,7 +59,7 @@ class PageValidator extends AbstractValidator
 			$params = array_merge($this->params, $params);
 
 			$data = filter_input_array(INPUT_POST, array_merge($this->args, $params));
-			$data['keywords'] = empty($data['keywords']) ? [] : explode(',', $data['keywords']);
+			$data['tags'] = empty($data['tags']) ? [] : explode(',', $data['tags']);
 
 			$this->findErrors($data);
 		}
@@ -72,14 +71,24 @@ class PageValidator extends AbstractValidator
 	{
 		$errors = [];
 
-		if ((Config::$modSettings['userLanguage'] && empty($data['title_' . Config::$language])) || empty($data['title_' . Utils::$context['user']['language']]))
+		if (
+			(Config::$modSettings['userLanguage'] && empty($data['title_' . Config::$language]))
+			|| empty($data['title_' . Utils::$context['user']['language']])
+		) {
 			$errors[] = 'no_title';
+		}
 
 		if (empty($data['alias']))
 			$errors[] = 'no_alias';
 
-		if ($data['alias'] && empty($this->filterVar($data['alias'], ['options' => ['regexp' => '/' . LP_ALIAS_PATTERN . '/']])))
+		if (
+			$data['alias']
+			&& empty($this->filterVar($data['alias'], [
+				'options' => ['regexp' => '/' . LP_ALIAS_PATTERN . '/']
+			]))
+		) {
 			$errors[] = 'no_valid_alias';
+		}
 
 		if ($data['alias'] && ! $this->isUnique($data))
 			$errors[] = 'no_unique_alias';
@@ -93,14 +102,15 @@ class PageValidator extends AbstractValidator
 			$this->request()->put('preview', true);
 			Utils::$context['post_errors'] = [];
 
-			foreach ($errors as $error)
+			foreach ($errors as $error) {
 				Utils::$context['post_errors'][] = Lang::$txt['lp_post_error_' . $error];
+			}
 		}
 	}
 
 	private function isUnique(array $data): bool
 	{
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT COUNT(page_id)
 			FROM {db_prefix}lp_pages
 			WHERE alias = {string:alias}
@@ -111,9 +121,9 @@ class PageValidator extends AbstractValidator
 			]
 		);
 
-		[$count] = Utils::$smcFunc['db_fetch_row']($result);
+		[$count] = Db::$db->fetch_row($result);
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
 		return $count == 0;

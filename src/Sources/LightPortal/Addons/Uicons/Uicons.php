@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 13.02.24
  */
 
 namespace Bugo\LightPortal\Addons\Uicons;
 
+use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\{Lang, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -35,34 +35,34 @@ class Uicons extends Plugin
 		$styles[] = 'https://cdn.jsdelivr.net/npm/@flaticon/flaticon-uicons@1/css/all/all.css';
 	}
 
-	public function addSettings(array &$config_vars): void
+	public function addSettings(array &$settings): void
 	{
 		$this->addDefaultValues([
 			'weight' => 'r',
 			'corner' => 'r',
 		]);
 
-		$config_vars['uicons'][] = ['select', 'weight', array_combine(['r', 'b', 's'], Lang::$txt['lp_uicons']['weight_set'])];
-		$config_vars['uicons'][] = ['select', 'corner', array_combine(['r', 's'], Lang::$txt['lp_uicons']['corner_set'])];
+		$settings['uicons'][] = ['select', 'weight', array_combine(['r', 'b', 's'], Lang::$txt['lp_uicons']['weight_set'])];
+		$settings['uicons'][] = ['select', 'corner', array_combine(['r', 's'], Lang::$txt['lp_uicons']['corner_set'])];
 	}
 
-	public function prepareIconList(array &$all_icons): void
+	public function prepareIconList(array &$icons): void
 	{
-		if (($icons = $this->cache()->get('all_uicons', 30 * 24 * 60 * 60)) === null) {
+		if (($uIcons = $this->cache()->get('all_uicons', 30 * 24 * 60 * 60)) === null) {
 			$weight = empty(Utils::$context['lp_uicons_plugin']['weight']) ? 'r' : Utils::$context['lp_uicons_plugin']['weight'];
 			$corner = empty(Utils::$context['lp_uicons_plugin']['corner']) ? 'r' : Utils::$context['lp_uicons_plugin']['corner'];
 
 			$list = $this->getIconList();
 
-			$icons = [];
+			$uIcons = [];
 			foreach ($list as $icon) {
-				$icons[] = $this->prefix . $weight . $corner . '-' . $icon;
+				$uIcons[] = $this->prefix . $weight . $corner . '-' . $icon;
 			}
 
-			$this->cache()->put('all_uicons', $icons, 30 * 24 * 60 * 60);
+			$this->cache()->put('all_uicons', $uIcons, 30 * 24 * 60 * 60);
 		}
 
-		$all_icons = array_merge($all_icons, $icons);
+		$icons = array_merge($icons, $uIcons);
 	}
 
 	public function credits(array &$links): void

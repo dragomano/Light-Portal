@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 31.01.24
+ * @version 17.02.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
 
+use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\Areas\Validators\AbstractValidator;
-use Bugo\LightPortal\Utils\{Lang, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -110,6 +110,6 @@ class Validator extends AbstractValidator
 	 */
 	private function isUnique(string $name): bool
 	{
-		return ! in_array($name, $this->getEntityList('plugin'));
+		return ! in_array($name, $this->getEntityData('plugin'));
 	}
 }

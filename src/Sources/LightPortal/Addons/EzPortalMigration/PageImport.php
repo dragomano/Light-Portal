@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 09.02.24
+ * @version 23.02.24
  */
 
 namespace Bugo\LightPortal\Addons\EzPortalMigration;
 
+use Bugo\Compat\{Config, Db, Lang, User, Utils};
 use Bugo\LightPortal\Areas\Imports\AbstractCustomPageImport;
-use Bugo\LightPortal\Utils\{Config, DateTime, Lang, User, Utils};
+use Bugo\LightPortal\Utils\{DateTime, ItemList};
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -26,13 +27,15 @@ class PageImport extends AbstractCustomPageImport
 {
 	public function main(): void
 	{
+		User::mustHavePermission('admin_forum');
+
 		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_ez_portal_migration']['label_name'];
 		Utils::$context['page_area_title'] = Lang::$txt['lp_pages_import'];
-		Utils::$context['canonical_url']   = Config::$scripturl . '?action=admin;area=lp_pages;sa=import_from_ez';
+		Utils::$context['form_action']     = Config::$scripturl . '?action=admin;area=lp_pages;sa=import_from_ez';
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_ez_portal_migration']['desc']
+			'description' => Lang::$txt['lp_ez_portal_migration']['desc'],
 		];
 
 		$this->run();
@@ -42,7 +45,7 @@ class PageImport extends AbstractCustomPageImport
 			'items_per_page' => 50,
 			'title' => Lang::$txt['lp_pages_import'],
 			'no_items_label' => Lang::$txt['lp_no_items'],
-			'base_href' => Utils::$context['canonical_url'],
+			'base_href' => Utils::$context['form_action'],
 			'default_sort_col' => 'id',
 			'get_items' => [
 				'function' => [$this, 'getAll']
@@ -92,13 +95,13 @@ class PageImport extends AbstractCustomPageImport
 						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);" checked>'
 					],
 					'data' => [
-						'function' => fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="pages[]" checked>',
+						'function' => static fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="pages[]" checked>',
 						'class' => 'centertext'
 					]
 				]
 			],
 			'form' => [
-				'href' => Utils::$context['canonical_url']
+				'href' => Utils::$context['form_action']
 			],
 			'additional_rows' => [
 				[
@@ -111,15 +114,15 @@ class PageImport extends AbstractCustomPageImport
 			]
 		];
 
-		$this->createList($listOptions);
+		new ItemList($listOptions);
 	}
 
 	/**
 	 * @throws IntlException
 	 */
-	public function getAll(int $start = 0, int $items_per_page = 0, string $sort = 'id_page'): array
+	public function getAll(int $start = 0, int $limit = 0, string $sort = 'id_page'): array
 	{
-		$this->dbExtend();
+		Db::extend();
 
 		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'ezp_page')))
 			return [];
@@ -132,7 +135,7 @@ class PageImport extends AbstractCustomPageImport
 			[
 				'sort'  => $sort,
 				'start' => $start,
-				'limit' => $items_per_page
+				'limit' => $limit,
 			]
 		);
 
@@ -146,7 +149,7 @@ class PageImport extends AbstractCustomPageImport
 				'num_views'  => $row['views'],
 				'author_id'  => User::$info['id'],
 				'created_at' => DateTime::relative($row['date']),
-				'title'      => $row['title']
+				'title'      => $row['title'],
 			];
 		}
 
@@ -158,7 +161,7 @@ class PageImport extends AbstractCustomPageImport
 
 	public function getTotalCount(): int
 	{
-		$this->dbExtend();
+		Db::extend();
 
 		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'ezp_page')))
 			return 0;
@@ -169,12 +172,12 @@ class PageImport extends AbstractCustomPageImport
 			[]
 		);
 
-		[$num_pages] = Utils::$smcFunc['db_fetch_row']($result);
+		[$count] = Utils::$smcFunc['db_fetch_row']($result);
 
 		Utils::$smcFunc['db_free_result']($result);
 		Utils::$context['lp_num_queries']++;
 
-		return (int) $num_pages;
+		return (int) $count;
 	}
 
 	protected function getItems(array $pages): array
@@ -184,7 +187,7 @@ class PageImport extends AbstractCustomPageImport
 			FROM {db_prefix}ezp_page' . (empty($pages) ? '' : '
 			WHERE id_page IN ({array_int:pages})'),
 			[
-				'pages' => $pages
+				'pages' => $pages,
 			]
 		);
 
@@ -216,7 +219,7 @@ class PageImport extends AbstractCustomPageImport
 				'num_comments' => 0,
 				'created_at'   => $row['date'],
 				'updated_at'   => 0,
-				'subject'      => $row['title']
+				'subject'      => $row['title'],
 			];
 		}
 

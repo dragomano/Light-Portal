@@ -9,14 +9,16 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Areas\Exports;
 
 use ArrayIterator;
+use Bugo\Compat\{Config, Db, ErrorHandler};
+use Bugo\Compat\{Lang, Sapi, User, Utils};
 use Bugo\LightPortal\Repositories\PageRepository;
-use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Sapi, Utils};
+use Bugo\LightPortal\Utils\ItemList;
 use DomDocument;
 use DOMException;
 
@@ -29,18 +31,20 @@ final class PageExport extends AbstractExport
 
 	public function __construct()
 	{
-		$this->repository = new PageRepository;
+		$this->repository = new PageRepository();
 	}
 
 	public function main(): void
 	{
+		User::mustHavePermission('admin_forum');
+
 		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_pages_export'];
 		Utils::$context['page_area_title'] = Lang::$txt['lp_pages_export'];
-		Utils::$context['canonical_url']   = Config::$scripturl . '?action=admin;area=lp_pages;sa=export';
+		Utils::$context['form_action']     = Config::$scripturl . '?action=admin;area=lp_pages;sa=export';
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_pages_export_description']
+			'description' => Lang::$txt['lp_pages_export_description'],
 		];
 
 		$this->run();
@@ -50,7 +54,7 @@ final class PageExport extends AbstractExport
 			'items_per_page' => 20,
 			'title' => Lang::$txt['lp_pages_export'],
 			'no_items_label' => Lang::$txt['lp_no_items'],
-			'base_href' => Config::$scripturl . '?action=admin;area=lp_pages;sa=export',
+			'base_href' => Utils::$context['form_action'],
 			'default_sort_col' => 'id',
 			'get_items' => [
 				'function' => [$this->repository, 'getAll']
@@ -91,7 +95,7 @@ final class PageExport extends AbstractExport
 						'value' => Lang::$txt['lp_title']
 					],
 					'data' => [
-						'function' => fn($entry) => '<a class="bbc_link' . (
+						'function' => static fn($entry) => '<a class="bbc_link' . (
 							$entry['is_front']
 								? ' new_posts" href="' . Config::$scripturl
 								: '" href="' . LP_PAGE_URL . $entry['alias']
@@ -108,13 +112,13 @@ final class PageExport extends AbstractExport
 						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);">'
 					],
 					'data' => [
-						'function' => fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="pages[]">',
+						'function' => static fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="pages[]">',
 						'class' => 'centertext'
 					]
 				]
 			],
 			'form' => [
-				'href' => Config::$scripturl . '?action=admin;area=lp_pages;sa=export'
+				'href' => Utils::$context['form_action']
 			],
 			'additional_rows' => [
 				[
@@ -127,7 +131,7 @@ final class PageExport extends AbstractExport
 			]
 		];
 
-		$this->createList($listOptions);
+		new ItemList($listOptions);
 	}
 
 	protected function getData(): array
@@ -137,22 +141,23 @@ final class PageExport extends AbstractExport
 
 		$pages = $this->request('pages') && $this->request()->hasNot('export_all') ? $this->request('pages') : null;
 
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT
-				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions, p.status, p.num_views, p.num_comments, p.created_at, p.updated_at,
-				pt.lang, pt.title, pp.name, pp.value, com.id, com.parent_id, com.author_id AS com_author_id, com.message, com.created_at AS com_created_at
+				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions,
+				p.status, p.num_views, p.num_comments, p.created_at, p.updated_at, pt.lang, pt.title, pp.name, pp.value,
+				com.id, com.parent_id, com.author_id AS com_author_id, com.message, com.created_at AS com_created_at
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS pt ON (p.page_id = pt.item_id AND pt.type = {literal:page})
 				LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {literal:page})
 				LEFT JOIN {db_prefix}lp_comments AS com ON (p.page_id = com.page_id)' . (empty($pages) ? '' : '
 			WHERE p.page_id IN ({array_int:pages})'),
 			[
-				'pages' => $pages
+				'pages' => $pages,
 			]
 		);
 
 		$items = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['page_id']] ??= [
 				'page_id'      => $row['page_id'],
 				'category_id'  => $row['category_id'],
@@ -166,14 +171,16 @@ final class PageExport extends AbstractExport
 				'num_views'    => $row['num_views'],
 				'num_comments' => $row['num_comments'],
 				'created_at'   => $row['created_at'],
-				'updated_at'   => $row['updated_at']
+				'updated_at'   => $row['updated_at'],
 			];
 
-			if ($row['lang'] && $row['title'])
+			if ($row['lang'] && $row['title']) {
 				$items[$row['page_id']]['titles'][$row['lang']] = $row['title'];
+			}
 
-			if ($row['name'] && $row['value'])
+			if ($row['name'] && $row['value']) {
 				$items[$row['page_id']]['params'][$row['name']] = $row['value'];
+			}
 
 			if ($row['message'] && trim($row['message'])) {
 				$items[$row['page_id']]['comments'][$row['id']] = [
@@ -181,25 +188,15 @@ final class PageExport extends AbstractExport
 					'parent_id'  => $row['parent_id'],
 					'author_id'  => $row['com_author_id'],
 					'message'    => trim($row['message']),
-					'created_at' => $row['com_created_at']
+					'created_at' => $row['com_created_at'],
 				];
 			}
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
 		return $items;
-	}
-
-	protected function getCategories(): array
-	{
-		$categories = $this->getEntityList('category');
-
-		unset($categories[0]);
-		ksort($categories);
-
-		return $categories;
 	}
 
 	protected function getFile(): string
@@ -213,34 +210,8 @@ final class PageExport extends AbstractExport
 
 			$xml->formatOutput = true;
 
-			if ($categories = $this->getCategories()) {
-				$xmlElements = $root->appendChild($xml->createElement('categories'));
-
-				$categories = fn() => new ArrayIterator($categories);
-				foreach ($categories() as $category) {
-					$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
-					foreach ($category as $key => $val) {
-						$xmlName = $xmlElement->appendChild($xml->createAttribute($key));
-						$xmlName->appendChild($xml->createTextNode($val));
-					}
-				}
-			}
-
-			if ($tags = $this->getEntityList('tag')) {
-				$xmlElements = $root->appendChild($xml->createElement('tags'));
-
-				$tags = fn() => new ArrayIterator($tags);
-				foreach ($tags() as $key => $val) {
-					$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
-					$xmlName = $xmlElement->appendChild($xml->createAttribute('id'));
-					$xmlName->appendChild($xml->createTextNode((string) $key));
-					$xmlName = $xmlElement->appendChild($xml->createAttribute('value'));
-					$xmlName->appendChild($xml->createTextNode($val));
-				}
-			}
-
 			$xmlElements = $root->appendChild($xml->createElement('pages'));
-			$items = fn() => new ArrayIterator($items);
+			$items = static fn() => new ArrayIterator($items);
 
 			foreach ($items() as $item) {
 				$xmlElement = $xmlElements->appendChild($xml->createElement('item'));

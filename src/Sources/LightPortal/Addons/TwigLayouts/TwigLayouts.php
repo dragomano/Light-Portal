@@ -10,13 +10,15 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 01.02.24
+ * @version 20.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TwigLayouts;
 
+use Bugo\Compat\{BBCodeParser, Config, ErrorHandler};
+use Bugo\Compat\{Lang, Theme, Sapi, Utils};
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\{BBCodeParser, Config, ErrorHandler, Icon, Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\Icon;
 use Twig\{Loader\FilesystemLoader, Environment, Error\Error, TwigFunction};
 
 if (! defined('LP_NAME'))
@@ -30,7 +32,7 @@ class TwigLayouts extends Plugin
 
 	private string $extension = '.twig';
 
-	public function addSettings(array &$config_vars): void
+	public function addSettings(array &$settings): void
 	{
 		Lang::$txt['lp_twig_layouts']['note'] = sprintf(
 			Lang::$txt['lp_twig_layouts']['note'],
@@ -38,9 +40,9 @@ class TwigLayouts extends Plugin
 			Theme::$current->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . 'portal_layouts'
 		);
 
-		$config_vars['twig_layouts'][] = ['desc', 'note'];
-		$config_vars['twig_layouts'][] = ['title', 'example'];
-		$config_vars['twig_layouts'][] = ['callback', '_', $this->showExample()];
+		$settings['twig_layouts'][] = ['desc', 'note'];
+		$settings['twig_layouts'][] = ['title', 'example'];
+		$settings['twig_layouts'][] = ['callback', '_', $this->showExample()];
 	}
 
 	public function frontLayouts(): void
@@ -66,11 +68,11 @@ class TwigLayouts extends Plugin
 				'debug' => false
 			]);
 
-			$twig->addFunction(new TwigFunction('show_pagination', function (string $position = 'top') {
+			$twig->addFunction(new TwigFunction('show_pagination', static function (string $position = 'top') {
 				show_pagination($position);
 			}));
 
-			$twig->addFunction(new TwigFunction('icon', function (string $name, string $title = '') {
+			$twig->addFunction(new TwigFunction('icon', static function (string $name, string $title = '') {
 				$icon = Icon::get($name);
 
 				if (empty($title)) {
@@ -81,7 +83,7 @@ class TwigLayouts extends Plugin
 				echo str_replace(' class=', ' title="' . $title . '" class=', $icon);
 			}));
 
-			$twig->addFunction(new TwigFunction('debug', function (mixed $data) {
+			$twig->addFunction(new TwigFunction('debug', static function (mixed $data) {
 				echo parse_bbc('[code]' . print_r($data, true) . '[/code]');
 			}));
 

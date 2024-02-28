@@ -1,6 +1,6 @@
 <?php
 
-use Bugo\LightPortal\Utils\{Lang, Utils};
+use Bugo\Compat\{Lang, Utils};
 
 function template_show_results(): void
 {
@@ -15,15 +15,15 @@ function template_show_results(): void
 	}
 
 	foreach (Utils::$context['search_results'] as $i => $result) {
-		echo /** @lang text */ '
+		echo '
 	<div class="windowbg">
 		<div class="block">
 			<span class="floatleft half_content">
-				<div class="counter">', ++$i, /** @lang text */ '</div>
+				<div class="counter">', ++$i, '</div>
 				<h5>
-					<a href="', $result['link'], '"><span class="highlight">', $result['title'], /** @lang text */ '</span></a>
+					<a href="', $result['link'], '"><span class="highlight">', $result['title'], '</span></a>
 				</h5>
-				<span class="smalltext">«&nbsp;от&nbsp;<strong>', $result['author'], '</strong>&nbsp;&nbsp;<em>', $result['date'], /** @lang text */ '</em>&nbsp;»</span>
+				<span class="smalltext">&nbsp;', Lang::$txt['by'], '&nbsp;<strong>', $result['author'], '</strong>&nbsp;&nbsp;<em>', $result['date'], '</em>&nbsp;</span>
 			</span>
 		</div>
 		<div class="list_posts double_height word_break">', $result['content'], '</div>

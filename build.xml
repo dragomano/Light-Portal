@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<project name="Light Portal" default="build">
+<project name="Light Portal" default="standard_edition">
   <target name="update_version">
     <property file="build.properties" />
     <xmlproperty file="${source_file}" keepRoot="false" />
@@ -21,7 +21,7 @@
       </else>
     </if>
   </target>
-  <target name="build" depends="update_version">
+  <target name="standard_edition" depends="update_version">
     <delete file="light_portal_${release.version}.zip" quiet="true" />
     <zip destfile="light_portal_${release.version}.zip">
       <fileset dir=".">
@@ -30,14 +30,14 @@
       <fileset dir="./src">
         <include name="Themes/**" />
         <exclude name="Themes/default/LightPortal/components/**" />
-        <exclude name="Themes/default/css/light_portal/less/**" />
+        <exclude name="Themes/default/css/light_portal/sass/**" />
         <exclude name="Themes/default/css/light_portal/plugins.css" />
         <exclude name="Themes/default/scripts/light_portal/dev/**" />
         <exclude name="Themes/default/scripts/light_portal/app*" />
         <exclude name="Themes/default/scripts/light_portal/plugins.js" />
         <include name="Sources/**" />
+        <exclude name="Sources/index.php" />
         <exclude name="Sources/LightPortal/Addons/ApexCharts/**" />
-        <exclude name="Sources/LightPortal/Addons/BladeLayouts/**" />
         <exclude name="Sources/LightPortal/Addons/BootstrapIcons/**" />
         <exclude name="Sources/LightPortal/Addons/DiceBear/**" />
         <exclude name="Sources/LightPortal/Addons/Disqus/**" />
@@ -50,6 +50,7 @@
         <exclude name="Sources/LightPortal/Addons/ImageUpload/**" />
         <exclude name="Sources/LightPortal/Addons/IndexNow/**" />
         <exclude name="Sources/LightPortal/Addons/Jodit/**" />
+        <exclude name="Sources/LightPortal/Addons/LatteLayouts/**" />
         <exclude name="Sources/LightPortal/Addons/LineAwesomeIcons/**" />
         <exclude name="Sources/LightPortal/Addons/Markdown/**" />
         <exclude name="Sources/LightPortal/Addons/MaterialDesignIcons/**" />
@@ -67,15 +68,73 @@
         <exclude name="Sources/LightPortal/Addons/Uicons/**" />
         <exclude name="Sources/LightPortal/Addons/VkComments/**" />
         <exclude name="Sources/LightPortal/Addons/YandexTurbo/**" />
-        <exclude name="Sources/LightPortal/Tests/**" />
         <exclude name="Sources/LightPortal/composer.json" />
         <exclude name="Sources/LightPortal/composer.lock" />
         <exclude name="Sources/LightPortal/create_index.php" />
-        <include name="database.php" />
         <include name="package-info.xml" />
-        <include name="portal.php" />
-        <include name="uninstall.php" />
-        <include name="uninstall-optional.php" />
+        <include name="*.php" />
+      </fileset>
+    </zip>
+  </target>
+  <target name="dev_edition" depends="update_version">
+    <delete file="light_portal_${release.version}_dev_edition.zip" quiet="true" />
+    <zip destfile="light_portal_${release.version}_dev_edition.zip">
+      <fileset dir=".">
+        <include name="LICENSE" />
+      </fileset>
+      <fileset dir="./src">
+        <include name="Themes/**" />
+        <exclude name="Themes/default/css/light_portal/plugins.css" />
+        <exclude name="Themes/default/scripts/light_portal/app*" />
+        <exclude name="Themes/default/scripts/light_portal/plugins.js" />
+        <include name="Sources/**" />
+        <exclude name="Sources/index.php" />
+        <exclude name="Sources/LightPortal/Addons/ApexCharts/**" />
+        <exclude name="Sources/LightPortal/Addons/DiceBear/**" />
+        <exclude name="Sources/LightPortal/Addons/ImageUpload/**" />
+        <exclude name="Sources/LightPortal/Addons/IndexNow/**" />
+        <exclude name="Sources/LightPortal/Addons/Jodit/**" />
+        <exclude name="Sources/LightPortal/Addons/MediaBlock/**" />
+        <exclude name="Sources/LightPortal/Addons/PageScroll/**" />
+        <exclude name="Sources/LightPortal/Addons/YandexTurbo/**" />
+        <include name="package-info.xml" />
+        <include name="*.php" />
+      </fileset>
+    </zip>
+  </target>
+  <target name="geek_edition" depends="update_version">
+    <delete file="light_portal_${release.version}_geek_edition.zip" quiet="true" />
+    <zip destfile="light_portal_${release.version}_geek_edition.zip">
+      <fileset dir=".">
+        <include name="LICENSE" />
+      </fileset>
+      <fileset dir="./src">
+        <include name="Themes/**" />
+        <exclude name="Themes/default/languages/**" />
+        <exclude name="Themes/default/LightPortal/components/**" />
+        <exclude name="Themes/default/css/light_portal/sass/**" />
+        <exclude name="Themes/default/css/light_portal/plugins.css" />
+        <exclude name="Themes/default/scripts/light_portal/dev/**" />
+        <exclude name="Themes/default/scripts/light_portal/app*" />
+        <exclude name="Themes/default/scripts/light_portal/plugins.js" />
+        <include name="Sources/**" />
+        <exclude name="Sources/index.php" />
+        <exclude name="Sources/LightPortal/Addons/**" />
+        <exclude name="Sources/LightPortal/composer.json" />
+        <exclude name="Sources/LightPortal/composer.lock" />
+        <exclude name="Sources/LightPortal/create_index.php" />
+        <include name="package-info.xml" />
+        <include name="*.php" />
+      </fileset>
+      <fileset dir="./src">
+        <include name="Themes/default/languages/LightPortal/index.php" />
+        <include name="Themes/default/languages/LightPortal/LightPortal.english.php" />
+        <include name="Themes/default/languages/LightPortal/LightPortal.greek.php" />
+        <include name="Themes/default/languages/LightPortal/LightPortal.italian.php" />
+        <include name="Themes/default/languages/LightPortal/LightPortal.russian.php" />
+      </fileset>
+      <fileset dir="./src">
+        <include name="Sources/LightPortal/Addons/*.php" />
       </fileset>
     </zip>
   </target>

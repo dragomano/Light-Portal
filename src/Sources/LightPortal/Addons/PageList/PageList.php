@@ -10,15 +10,16 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 04.02.24
+ * @version 23.02.24
  */
 
 namespace Bugo\LightPortal\Addons\PageList;
 
+use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField, VirtualSelectField};
 use Bugo\LightPortal\Areas\Partials\CategorySelect;
-use Bugo\LightPortal\Utils\{Config, DateTime, Lang, User, Utils};
+use Bugo\LightPortal\Utils\DateTime;
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -28,7 +29,9 @@ class PageList extends Block
 {
 	public string $icon = 'far fa-file-alt';
 
-	private const SORTING_SET = ['page_id', 'author_name', 'title', 'alias', 'type', 'num_views', 'created_at', 'updated_at'];
+	private const SORTING_SET = [
+		'page_id', 'author_name', 'title', 'alias', 'type', 'num_views', 'created_at', 'updated_at'
+	];
 
 	public function prepareBlockParams(array &$params): void
 	{
@@ -61,7 +64,7 @@ class PageList extends Block
 
 		CustomField::make('categories', Lang::$txt['lp_categories'])
 			->setTab('content')
-			->setValue(fn() => new CategorySelect, [
+			->setValue(static fn() => new CategorySelect(), [
 				'id'    => 'categories',
 				'hint'  => Lang::$txt['lp_page_list']['categories_select'],
 				'value' => Utils::$context['lp_block']['options']['categories'] ?? '',
@@ -80,9 +83,9 @@ class PageList extends Block
 
 	public function getData(array $parameters): array
 	{
-		$titles = $this->getEntityList('title');
+		$titles = $this->getEntityData('title');
 
-		$all_categories = $this->getEntityList('category');
+		$allCategories = $this->getEntityData('category');
 
 		$categories = empty($parameters['categories']) ? null : explode(',', $parameters['categories']);
 
@@ -105,7 +108,7 @@ class PageList extends Block
 				'permissions'  => $this->getPermissions(),
 				'categories'   => $categories,
 				'sort'         => $parameters['sort'],
-				'limit'        => $parameters['num_pages']
+				'limit'        => $parameters['num_pages'],
 			]
 		);
 
@@ -117,7 +120,7 @@ class PageList extends Block
 			$pages[$row['page_id']] = [
 				'id'            => $row['page_id'],
 				'category_id'   => $row['category_id'],
-				'category_name' => $all_categories[$row['category_id']]['name'],
+				'category_name' => $allCategories[$row['category_id']]['title'],
 				'category_link' => LP_BASE_URL . ';sa=categories;id=' . $row['category_id'],
 				'title'         => $titles[$row['page_id']] ?? [],
 				'author_id'     => $row['author_id'],
@@ -144,33 +147,34 @@ class PageList extends Block
 		if ($data->type !== 'page_list')
 			return;
 
-		$page_list = $this->cache('page_list_addon_b' . $data->block_id . '_u' . User::$info['id'])
-			->setLifeTime($data->cache_time)
+		$pageList = $this->cache('page_list_addon_b' . $data->id . '_u' . User::$info['id'])
+			->setLifeTime($data->cacheTime)
 			->setFallback(self::class, 'getData', $parameters);
 
-		if ($page_list) {
-			echo /** @lang text */ '
+		if ($pageList) {
+			echo '
 		<ul class="normallist page_list">';
 
-			foreach ($page_list as $page) {
+			foreach ($pageList as $page) {
 				if (empty($title = $this->getTranslatedTitle($page['title'])))
 					continue;
 
-				echo /** @lang text */ '
+				echo '
 			<li>
 				<a href="', Config::$scripturl, '?', LP_PAGE_PARAM, '=', $page['alias'], '">', $title, '</a> ', Lang::$txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . Config::$scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', DateTime::relative($page['created_at']), ' (', Lang::getTxt('lp_views_set', ['views' => $page['num_views']]);
 
-				if ($page['num_comments'] && ! empty(Config::$modSettings['lp_show_comment_block']) && Config::$modSettings['lp_show_comment_block'] === 'default')
+				if ($page['num_comments'] && $this->getCommentBlockType() === 'default') {
 					echo ', ' . Lang::getTxt('lp_comments_set', ['comments' => $page['num_comments']]);
+				}
 
-				echo /** @lang text */ ')
+				echo ')
 			</li>';
 			}
 
-			echo /** @lang text */ '
+			echo '
 		</ul>';
 		} else {
-			echo /** @lang text */ '<div class="errorbox">', Lang::$txt['lp_page_list']['no_items'], '</div>';
+			echo '<div class="errorbox">', Lang::$txt['lp_page_list']['no_items'], '</div>';
 		}
 	}
 }

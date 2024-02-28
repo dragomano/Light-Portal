@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TopicRatingBar;
 
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\Utils;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -30,13 +30,13 @@ class TopicRatingBar extends Plugin
 	 *
 	 * Выбираем столбцы total_votes и total_value из таблицы topic_ratings при выборке тем-статей
 	 */
-	public function frontTopics(array &$custom_columns, array &$custom_tables): void
+	public function frontTopics(array &$columns, array &$tables): void
 	{
 		if (! class_exists('TopicRatingBar'))
 			return;
 
-		$custom_columns[] = 'tr.total_votes, tr.total_value';
-		$custom_tables[]  = 'LEFT JOIN {db_prefix}topic_ratings AS tr ON (t.id_topic = tr.id)';
+		$columns[] = 'tr.total_votes, tr.total_value';
+		$tables[]  = 'LEFT JOIN {db_prefix}topic_ratings AS tr ON (t.id_topic = tr.id)';
 	}
 
 	/**

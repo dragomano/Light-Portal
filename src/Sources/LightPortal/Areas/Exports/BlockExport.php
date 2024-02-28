@@ -9,13 +9,14 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Areas\Exports;
 
+use Bugo\Compat\{Config, Db, ErrorHandler};
+use Bugo\Compat\{Lang, Sapi, Theme, Utils};
 use Bugo\LightPortal\Repositories\BlockRepository;
-use Bugo\LightPortal\Utils\{Config, ErrorHandler, Lang, Sapi, Theme, Utils};
 use DomDocument;
 use DOMException;
 
@@ -28,7 +29,7 @@ final class BlockExport extends AbstractExport
 
 	public function __construct()
 	{
-		$this->repository = new BlockRepository;
+		$this->repository = new BlockRepository();
 	}
 
 	public function main(): void
@@ -39,11 +40,11 @@ final class BlockExport extends AbstractExport
 
 		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_blocks_export'];
 		Utils::$context['page_area_title'] = Lang::$txt['lp_blocks_export'];
-		Utils::$context['canonical_url']   = Config::$scripturl . '?action=admin;area=lp_blocks;sa=export';
+		Utils::$context['form_action']     = Config::$scripturl . '?action=admin;area=lp_blocks;sa=export';
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_blocks_export_description']
+			'description' => Lang::$txt['lp_blocks_export_description'],
 		];
 
 		$this->run();
@@ -58,7 +59,7 @@ final class BlockExport extends AbstractExport
 
 		$blocks = $this->request('blocks') && $this->request()->hasNot('export_all') ? $this->request('blocks') : null;
 
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT
 				b.block_id, b.icon, b.type, b.note, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.content_class,
 				pt.lang, pt.title, pp.name, pp.value
@@ -67,12 +68,12 @@ final class BlockExport extends AbstractExport
 				LEFT JOIN {db_prefix}lp_params AS pp ON (b.block_id = pp.item_id AND pp.type = {literal:block})' . (empty($blocks) ? '' : '
 			WHERE b.block_id IN ({array_int:blocks})'),
 			[
-				'blocks' => $blocks
+				'blocks' => $blocks,
 			]
 		);
 
 		$items = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['block_id']] ??= [
 				'block_id'      => $row['block_id'],
 				'icon'          => $row['icon'],
@@ -95,10 +96,10 @@ final class BlockExport extends AbstractExport
 				$items[$row['block_id']]['params'][$row['name']] = $row['value'];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
-		return array_map(fn($item) => array_filter($item), $items);
+		return array_map(static fn($item) => array_filter($item), $items);
 	}
 
 	protected function getFile(): string
@@ -116,7 +117,11 @@ final class BlockExport extends AbstractExport
 			foreach ($items as $item) {
 				$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
 				foreach ($item as $key => $val) {
-					$xmlName = $xmlElement->appendChild(in_array($key, ['block_id', 'priority', 'permissions', 'status']) ? $xml->createAttribute($key) : $xml->createElement($key));
+					$xmlName = $xmlElement->appendChild(
+						in_array($key, ['block_id', 'priority', 'permissions', 'status'])
+							? $xml->createAttribute($key)
+							: $xml->createElement($key)
+					);
 
 					if (in_array($key, ['titles', 'params'])) {
 						foreach ($val as $k => $v) {

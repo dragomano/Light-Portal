@@ -1,14 +1,14 @@
 .gallery_block {
 	display: grid;
 	grid-auto-flow: column;
-}
 
-.gallery_block .item {
-	margin: 5px;
-}
+	.item {
+		margin: 5px;
 
-.gallery_block .item img {
-	object-fit: cover;
-	width: 100%;
-	height: 100%;
+		img {
+			object-fit: cover;
+			width: 100%;
+			height: 100%;
+		}
+	}
 }

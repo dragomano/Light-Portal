@@ -2,19 +2,23 @@
 
 global $user_info, $language, $mbname, $modSettings, $settings, $smcFunc, $context;
 
-if (version_compare(PHP_VERSION, '8.0', '<'))
+if (version_compare(PHP_VERSION, '8.0', '<')) {
 	die('This mod needs PHP 8.0 or greater. You will not be able to install/use this mod. Please, contact your host and ask for a php upgrade.');
+}
 
-if (! extension_loaded('intl'))
+if (! extension_loaded('intl')) {
 	die('This mod needs intl extension to properly work with plurals, locale-aware numbers, and much more. Contact your host or install this extension by manual.');
+}
 
-if (file_exists(__DIR__ . '/SSI.php') && ! defined('SMF'))
+if (file_exists(__DIR__ . '/SSI.php') && ! defined('SMF')) {
 	require_once __DIR__ . '/SSI.php';
-elseif (! defined('SMF'))
+} elseif (! defined('SMF')) {
 	die('<b>Error:</b> Cannot install - please verify that you put this file in the same place as SMF\'s index.php and SSI.php files.');
+}
 
-if ((SMF === 'SSI') && ! $user_info['is_admin'])
+if ((SMF === 'SSI') && ! $user_info['is_admin']) {
 	die('Admin privileges required.');
+}
 
 $tables[] = [
 	'name' => 'lp_blocks',
@@ -29,13 +33,13 @@ $tables[] = [
 		[
 			'name' => 'icon',
 			'type' => 'varchar',
-			'size' => 255,
+			'size' => 60,
 			'null' => true
 		],
 		[
 			'name' => 'type',
 			'type' => 'varchar',
-			'size' => 255,
+			'size' => 30,
 			'null' => false
 		],
 		[
@@ -115,10 +119,10 @@ $tables[] = [
 			'auto'     => true
 		],
 		[
-			'name' => 'name',
+			'name' => 'icon',
 			'type' => 'varchar',
-			'size' => 255,
-			'null' => false
+			'size' => 60,
+			'null' => true
 		],
 		[
 			'name' => 'description',
@@ -132,7 +136,14 @@ $tables[] = [
 			'size'     => 1,
 			'unsigned' => true,
 			'default'  => 0
-		]
+		],
+		[
+			'name'     => 'status',
+			'type'     => 'tinyint',
+			'size'     => 1,
+			'unsigned' => true,
+			'default'  => 1
+		],
 	],
 	'indexes' => [
 		[
@@ -188,6 +199,30 @@ $tables[] = [
 		[
 			'type'    => 'primary',
 			'columns' => ['id']
+		]
+	]
+];
+
+$tables[] = [
+	'name'    => 'lp_page_tags',
+	'columns' => [
+		[
+			'name'     => 'page_id',
+			'type'     => 'int',
+			'size'     => 10,
+			'unsigned' => true
+		],
+		[
+			'name'     => 'tag_id',
+			'type'     => 'int',
+			'size'     => 10,
+			'unsigned' => true
+		]
+	],
+	'indexes' => [
+		[
+			'type'    => 'primary',
+			'columns' => ['page_id', 'tag_id']
 		]
 	]
 ];
@@ -430,11 +465,18 @@ $tables[] = [
 			'auto'     => true
 		],
 		[
-			'name' => 'value',
+			'name' => 'icon',
 			'type' => 'varchar',
-			'size' => 255,
-			'null' => false
-		]
+			'size' => 60,
+			'null' => true
+		],
+		[
+			'name'     => 'status',
+			'type'     => 'tinyint',
+			'size'     => 1,
+			'unsigned' => true,
+			'default'  => 1
+		],
 	],
 	'indexes' => [
 		[
@@ -514,7 +556,7 @@ $addSettings = ['lp_weekly_cleaning' => '0'];
 if (! isset($modSettings['lp_enabled_plugins']))
 	$addSettings['lp_enabled_plugins'] = 'CodeMirror,HelloPortal,ThemeSwitcher,UserInfo';
 if (! isset($modSettings['lp_frontpage_layout']))
-	$addSettings['lp_frontpage_layout'] = 'default.latte';
+	$addSettings['lp_frontpage_layout'] = 'default.blade.php';
 if (! isset($modSettings['lp_show_comment_block']))
 	$addSettings['lp_show_comment_block'] = 'none';
 if (! isset($modSettings['lp_permissions_default']))
@@ -534,5 +576,6 @@ if (! @is_writable($scripts = $settings['default_theme_dir'] . '/scripts/light_p
 
 $context['lp_num_queries'] ??= 0;
 
-if (SMF === 'SSI')
+if (SMF === 'SSI') {
 	echo 'Database changes are complete! Please wait...';
+}

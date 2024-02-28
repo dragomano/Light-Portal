@@ -9,14 +9,16 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Actions;
 
+use Bugo\Compat\{Config, ErrorHandler, Lang};
+use Bugo\Compat\{PageIndex, Theme, User, Utils};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, Content, DateTime, ErrorHandler};
-use Bugo\LightPortal\Utils\{Icon, Lang, Theme, User, Utils};
+use Bugo\LightPortal\Repositories\PageRepository;
+use Bugo\LightPortal\Utils\{Content, Icon};
 use IntlException;
 
 if (! defined('SMF'))
@@ -26,21 +28,24 @@ final class Page implements PageInterface
 {
 	use Helper;
 
+	private PageRepository $repository;
+
+	public function __construct()
+	{
+		$this->repository = new PageRepository();
+	}
+
 	/**
 	 * @throws IntlException
 	 */
 	public function show(): void
 	{
-		$this->middleware('light_portal_view');
+		User::mustHavePermission('light_portal_view');
 
 		$alias = $this->request(LP_PAGE_PARAM);
 
 		if (empty($alias)) {
-			if (
-				Config::$modSettings['lp_frontpage_mode']
-				&& Config::$modSettings['lp_frontpage_mode'] === 'chosen_page'
-				&& Config::$modSettings['lp_frontpage_alias']
-			) {
+			if ($this->isFrontpageMode('chosen_page') && Config::$modSettings['lp_frontpage_alias']) {
 				Utils::$context['lp_page'] = $this->getDataByAlias(Config::$modSettings['lp_frontpage_alias']);
 			} else {
 				Config::updateModSettings(['lp_frontpage_mode' => 0]);
@@ -86,7 +91,9 @@ final class Page implements PageInterface
 			) ?: Lang::$txt['lp_portal'];
 
 			Utils::$context['canonical_url'] = Config::$scripturl;
-			Utils::$context['linktree'][] = ['name' => Lang::$txt['lp_portal']];
+			Utils::$context['linktree'][] = [
+				'name' => Lang::$txt['lp_portal'],
+			];
 		} else {
 			Utils::$context['page_title'] = $this->getTranslatedTitle(
 				Utils::$context['lp_page']['titles']
@@ -97,12 +104,12 @@ final class Page implements PageInterface
 			if (isset(Utils::$context['lp_page']['category'])) {
 				Utils::$context['linktree'][] = [
 					'name' => Utils::$context['lp_page']['category'],
-					'url'  => LP_BASE_URL . ';sa=categories;id=' . Utils::$context['lp_page']['category_id']
+					'url'  => LP_BASE_URL . ';sa=categories;id=' . Utils::$context['lp_page']['category_id'],
 				];
 			}
 
 			Utils::$context['linktree'][] = [
-				'name' => Utils::$context['page_title']
+				'name' => Utils::$context['page_title'],
 			];
 		}
 
@@ -121,111 +128,23 @@ final class Page implements PageInterface
 		$this->prepareComments();
 		$this->updateNumViews();
 
-		Theme::loadJSFile('light_portal/bundle.min.js', ['defer' => true]);
+		Theme::loadJavaScriptFile('light_portal/bundle.min.js', ['defer' => true]);
 	}
 
-	public function getData(array $params): array
-	{
-		if (empty($params))
-			return [];
-
-		$result = Utils::$smcFunc['db_query']('', '
-			SELECT
-				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions,
-				p.status, p.num_views, p.created_at, p.updated_at,
-				COALESCE(mem.real_name, {string:guest}) AS author_name, pt.lang, pt.title, pp.name, pp.value
-			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
-				LEFT JOIN {db_prefix}lp_titles AS pt ON (p.page_id = pt.item_id AND pt.type = {literal:page})
-				LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {literal:page})
-			WHERE p.' . (empty($params['alias']) ? 'page_id = {int:item}' : 'alias = {string:alias}'),
-			array_merge(
-				$params,
-				[
-					'guest' => Lang::$txt['guest_title']
-				]
-			)
-		);
-
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
-			Lang::censorText($row['content']);
-
-			$ogImage = null;
-			if (! empty(Config::$modSettings['lp_page_og_image'])) {
-				$content = $row['content'];
-				$content = Content::parse($content, $row['type']);
-				$imageIsFound = preg_match_all('/<img(.*)src(.*)=(.*)"(.*)"/U', $content, $values);
-
-				if ($imageIsFound && is_array($values)) {
-					$allImages = array_pop($values);
-					$image = Config::$modSettings['lp_page_og_image'] == 1
-						? array_shift($allImages)
-						: array_pop($allImages);
-					$ogImage = Utils::$smcFunc['htmlspecialchars']($image);
-				}
-			}
-
-			$data ??= [
-				'id'          => (int) $row['page_id'],
-				'category_id' => (int) $row['category_id'],
-				'author_id'   => (int) $row['author_id'],
-				'author'      => $row['author_name'],
-				'alias'       => $row['alias'],
-				'description' => $row['description'],
-				'content'     => $row['content'],
-				'type'        => $row['type'],
-				'permissions' => (int) $row['permissions'],
-				'status'      => (int) $row['status'],
-				'num_views'   => (int) $row['num_views'],
-				'created_at'  => (int) $row['created_at'],
-				'updated_at'  => (int) $row['updated_at'],
-				'image'       => $ogImage
-			];
-
-			$data['titles'][$row['lang']] = $row['title'];
-
-			$data['options'][$row['name']] = $row['value'];
-		}
-
-		Utils::$smcFunc['db_free_result']($result);
-		Utils::$context['lp_num_queries']++;
-
-		return $data ?? [];
-	}
-
-	/**
-	 * @throws IntlException
-	 */
 	public function getDataByAlias(string $alias): array
 	{
 		if (empty($alias))
 			return [];
 
-		$data = $this->cache('page_' . $alias)
-			->setFallback(self::class, 'getData', ['alias' => $alias]);
-
-		$this->prepareData($data);
-
-		return $data;
-	}
-
-	/**
-	 * @throws IntlException
-	 */
-	public function getDataByItem(int $item): array
-	{
-		if (empty($item))
-			return [];
-
-		$data = $this->getData(['item' => $item]);
-
-		$this->prepareData($data);
-
-		return $data;
+		return $this->cache('page_' . $alias)
+			->setFallback(PageRepository::class, 'getData', $alias);
 	}
 
 	public function showAsCards(PageListInterface $entity): void
 	{
+		if (empty(Config::$modSettings['lp_show_items_as_articles']))
+			return;
+
 		$start = (int) $this->request('start');
 		$limit = (int) Config::$modSettings['lp_num_items_per_page'] ?? 12;
 
@@ -237,8 +156,8 @@ final class Page implements PageInterface
 		$sort     = $front->getOrderBy();
 		$articles = $entity->getPages($start, $limit, $sort);
 
-		Utils::$context['page_index'] = $this->constructPageIndex(
-			Utils::$context['canonical_url'], $this->request()->get('start'), $itemsCount, $limit
+		Utils::$context['page_index'] = new PageIndex(
+			Utils::$context['canonical_url'], $start, $itemsCount, $limit
 		);
 
 		Utils::$context['start'] = $this->request()->get('start');
@@ -280,7 +199,7 @@ final class Page implements PageInterface
 						'value' => Lang::$txt['lp_title']
 					],
 					'data' => [
-						'function' => fn($entry) => '<a class="bbc_link' . (
+						'function' => static fn($entry) => '<a class="bbc_link' . (
 							$entry['is_front']
 								? ' new_posts" href="' . Config::$scripturl
 								: '" href="' . LP_PAGE_URL . $entry['alias']
@@ -297,7 +216,7 @@ final class Page implements PageInterface
 						'value' => Lang::$txt['author']
 					],
 					'data' => [
-						'function' => fn($entry) => empty($entry['author']['name'])
+						'function' => static fn($entry) => empty($entry['author']['name'])
 							? Lang::$txt['guest_title']
 							: '<a href="' . $entry['author']['link'] . '">' . $entry['author']['name'] . '</a>',
 						'class' => 'centertext'
@@ -312,7 +231,7 @@ final class Page implements PageInterface
 						'value' => Lang::$txt['views']
 					],
 					'data' => [
-						'function' => fn($entry) => $entry['views']['num'],
+						'function' => static fn($entry) => $entry['views']['num'],
 						'class' => 'centertext'
 					],
 					'sort' => [
@@ -371,7 +290,7 @@ final class Page implements PageInterface
 
 		$keywords = [];
 		if (isset(Utils::$context['lp_page']['tags'])) {
-			$keywords = array_column(Utils::$context['lp_page']['tags'], 'name');
+			$keywords = array_column(Utils::$context['lp_page']['tags'], 'title');
 
 			Config::$modSettings['meta_keywords'] = implode(', ', $keywords);
 		}
@@ -394,19 +313,21 @@ final class Page implements PageInterface
 			'content'  => date('Y-m-d\TH:i:s', (int) Utils::$context['lp_page']['created_at']),
 		];
 
-		if (Utils::$context['lp_page']['updated_at'])
+		if (Utils::$context['lp_page']['updated_at']) {
 			Utils::$context['meta_tags'][] = [
 				'prefix'   => 'article: https://ogp.me/ns/article#',
 				'property' => 'article:modified_time',
 				'content'  => date('Y-m-d\TH:i:s', (int) Utils::$context['lp_page']['updated_at']),
 			];
+		}
 
-		if (isset(Utils::$context['lp_page']['category']))
+		if (isset(Utils::$context['lp_page']['category'])) {
 			Utils::$context['meta_tags'][] = [
 				'prefix'   => 'article: https://ogp.me/ns/article#',
 				'property' => 'article:section',
 				'content'  => Utils::$context['lp_page']['category'],
 			];
+		}
 
 		foreach ($keywords as $value) {
 			Utils::$context['meta_tags'][] = [
@@ -422,81 +343,12 @@ final class Page implements PageInterface
 
 	private function preparePrevNextLinks(): void
 	{
-		if (empty(Utils::$context['lp_page']) || empty(Config::$modSettings['lp_show_prev_next_links']))
+		if (empty($page = Utils::$context['lp_page']) || empty(Config::$modSettings['lp_show_prev_next_links']))
 			return;
 
-		$titles = $this->getEntityList('title');
+		$titles = $this->getEntityData('title');
 
-		$orders = [
-			'CASE WHEN com.created_at > 0 THEN 0 ELSE 1 END, comment_date DESC',
-			'p.created_at DESC',
-			'p.created_at',
-			'date DESC'
-		];
-
-		$withinCategory = str_contains(
-			filter_input(INPUT_SERVER, 'HTTP_REFERER') ?? '', 'action=portal;sa=categories;id'
-		);
-
-		$result = Utils::$smcFunc['db_query']('', '
-			(
-				SELECT p.page_id, p.alias, GREATEST(p.created_at, p.updated_at) AS date,
-					CASE WHEN COALESCE(par.value, \'0\') != \'0\' THEN p.num_comments ELSE 0 END AS num_comments,
-					com.created_at AS comment_date
-				FROM {db_prefix}lp_pages AS p
-					LEFT JOIN {db_prefix}lp_comments AS com ON (p.last_comment_id = com.id)
-					LEFT JOIN {db_prefix}lp_params AS par ON (
-						par.item_id = com.page_id
-						AND par.type = {literal:page}
-						AND par.name = {literal:allow_comments}
-					)
-				WHERE p.page_id != {int:page_id}' . ($withinCategory ? '
-					AND p.category_id = {int:category_id}' : '') . '
-					AND p.created_at <= {int:created_at}
-					AND p.created_at <= {int:current_time}
-					AND p.status = {int:status}
-					AND p.permissions IN ({array_int:permissions})
-					ORDER BY ' . (empty(Config::$modSettings['lp_frontpage_order_by_replies'])
-						? '' : 'num_comments DESC, ') . $orders[Config::$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
-				LIMIT 1
-			)
-			UNION ALL
-			(
-				SELECT p.page_id, p.alias, GREATEST(p.created_at, p.updated_at) AS date,
-					CASE WHEN COALESCE(par.value, \'0\') != \'0\' THEN p.num_comments ELSE 0 END AS num_comments,
-					com.created_at AS comment_date
-				FROM {db_prefix}lp_pages AS p
-					LEFT JOIN {db_prefix}lp_comments AS com ON (p.last_comment_id = com.id)
-					LEFT JOIN {db_prefix}lp_params AS par ON (
-						par.item_id = com.page_id
-						AND par.type = {literal:page}
-						AND par.name = {literal:allow_comments}
-					)
-				WHERE p.page_id != {int:page_id}' . ($withinCategory ? '
-					AND p.category_id = {int:category_id}' : '') . '
-					AND p.created_at >= {int:created_at}
-					AND p.created_at <= {int:current_time}
-					AND p.status = {int:status}
-					AND p.permissions IN ({array_int:permissions})
-				ORDER BY ' . (empty(Config::$modSettings['lp_frontpage_order_by_replies'])
-					? '' : 'num_comments DESC, ') . $orders[Config::$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
-				LIMIT 1
-			)',
-			[
-				'page_id'      => Utils::$context['lp_page']['id'],
-				'category_id'  => Utils::$context['lp_page']['category_id'],
-				'created_at'   => Utils::$context['lp_page']['created_at'],
-				'current_time' => time(),
-				'status'       => Utils::$context['lp_page']['status'],
-				'permissions'  => $this->getPermissions()
-			]
-		);
-
-		[$prevId, $prevAlias] = Utils::$smcFunc['db_fetch_row']($result);
-		[$nextId, $nextAlias] = Utils::$smcFunc['db_fetch_row']($result);
-
-		Utils::$smcFunc['db_free_result']($result);
-		Utils::$context['lp_num_queries']++;
+		[$prevId, $prevAlias, $nextId, $nextAlias] = $this->repository->getPrevNextLinks($page);
 
 		if (! empty($prevAlias)) {
 			Utils::$context['lp_page']['prev'] = [
@@ -515,98 +367,13 @@ final class Page implements PageInterface
 
 	private function prepareRelatedPages(): void
 	{
-		if (empty($item = Utils::$context['lp_page']) || empty(Config::$modSettings['lp_show_related_pages']))
+		if (empty($page = Utils::$context['lp_page']) || empty(Config::$modSettings['lp_show_related_pages']))
 			return;
 
 		if (empty(Utils::$context['lp_page']['options']['show_related_pages']))
 			return;
 
-		$titleWords = explode(' ', $this->getTranslatedTitle($item['titles']));
-		$aliasWords = explode('_', $item['alias']);
-
-		$searchFormula = '';
-		foreach ($titleWords as $key => $word) {
-			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE 
-			WHEN lower(t.title) LIKE lower(\'%' . $word . '%\')
-		    THEN ' . (count($titleWords) - $key) * 2 . ' ELSE 0 END';
-		}
-
-		foreach ($aliasWords as $key => $word) {
-			$searchFormula .= ' + CASE
-			WHEN lower(p.alias) LIKE lower(\'%' . $word . '%\')
-			THEN ' . (count($aliasWords) - $key) . ' ELSE 0 END';
-		}
-
-		$result = Utils::$smcFunc['db_query']('', '
-			SELECT p.page_id, p.alias, p.content, p.type, (' . $searchFormula . ') AS related, t.title
-			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.lang = {string:current_lang})
-			WHERE (' . $searchFormula . ') > 0
-				AND p.status = {int:status}
-				AND p.created_at <= {int:current_time}
-				AND p.permissions IN ({array_int:permissions})
-				AND p.page_id != {int:current_page}
-			ORDER BY related DESC
-			LIMIT 4',
-			[
-				'current_lang' => Utils::$context['user']['language'],
-				'status'       => Utils::$context['lp_page']['status'],
-				'current_time' => time(),
-				'permissions'  => $this->getPermissions(),
-				'current_page' => $item['id']
-			]
-		);
-
-		Utils::$context['lp_page']['related_pages'] = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
-			if ($this->isFrontpage($row['alias']))
-				continue;
-
-			$row['content'] = Content::parse($row['content'], $row['type']);
-
-			$image = $this->getImageFromText($row['content']);
-
-			Utils::$context['lp_page']['related_pages'][$row['page_id']] = [
-				'id'    => $row['page_id'],
-				'title' => $row['title'],
-				'alias' => $row['alias'],
-				'link'  => LP_PAGE_URL . $row['alias'],
-				'image' => $image ?: (Config::$modSettings['lp_image_placeholder'] ?? '')
-			];
-		}
-
-		Utils::$smcFunc['db_free_result']($result);
-		Utils::$context['lp_num_queries']++;
-	}
-
-	/**
-	 * @throws IntlException
-	 */
-	private function prepareData(?array &$data): void
-	{
-		if (empty($data))
-			return;
-
-		$isAuthor = $data['author_id'] && $data['author_id'] == User::$info['id'];
-
-		$data['created']  = DateTime::relative((int) $data['created_at']);
-		$data['updated']  = DateTime::relative((int) $data['updated_at']);
-		$data['can_view'] = $this->canViewItem($data['permissions']) || User::$info['is_admin'] || $isAuthor;
-		$data['can_edit'] = User::$info['is_admin']
-			|| Utils::$context['allow_light_portal_manage_pages_any']
-			|| (Utils::$context['allow_light_portal_manage_pages_own'] && $isAuthor);
-
-		if ($data['type'] === 'bbc') {
-			$data['content'] = $this->unPreparseCode($data['content']);
-		}
-
-		if (! empty($data['category_id']))
-			$data['category'] = $this->getEntityList('category')[$data['category_id']]['name'];
-
-		if (! empty($data['options']['keywords']))
-			$data['tags'] = $this->getTags($data['options']['keywords']);
-
-		$this->hook('preparePageData', [&$data, $isAuthor]);
+		Utils::$context['lp_page']['related_pages'] = $this->repository->getRelatedPages($page);
 	}
 
 	/**
@@ -614,13 +381,10 @@ final class Page implements PageInterface
 	 */
 	private function prepareComments(): void
 	{
-		if (empty(Config::$modSettings['lp_show_comment_block']))
+		if ($this->getCommentBlockType() === '' || $this->getCommentBlockType() === 'none')
 			return;
 
 		if (empty(Utils::$context['lp_page']['options']['allow_comments']))
-			return;
-
-		if (Config::$modSettings['lp_show_comment_block'] === 'none')
 			return;
 
 		Lang::load('Editor');
@@ -676,55 +440,18 @@ final class Page implements PageInterface
 		Utils::$context['lp_json']['user']     = json_encode(Utils::$context['user']);
 	}
 
-	private function getTags(string $tags): array
-	{
-		$result = Utils::$smcFunc['db_query']('', '
-			SELECT tag_id, value
-			FROM {db_prefix}lp_tags
-			WHERE FIND_IN_SET(tag_id, {string:tags}) > 0
-			ORDER BY value',
-			[
-				'tags' => $tags
-			]
-		);
-
-		$items = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
-			$items[$row['tag_id']] = [
-				'name' => $row['value'],
-				'href' => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id']
-			];
-		}
-
-		Utils::$smcFunc['db_free_result']($result);
-		Utils::$context['lp_num_queries']++;
-
-		return $items;
-	}
-
 	private function updateNumViews(): void
 	{
 		if (empty(Utils::$context['lp_page']['id']) || User::$info['possibly_robot'])
 			return;
 
 		if (
-			$this->session()->isEmpty('light_portal_last_page_viewed')
-			|| $this->session()->get('light_portal_last_page_viewed') !== Utils::$context['lp_page']['id']
+			$this->session('lp')->isEmpty('last_page_viewed')
+			|| $this->session('lp')->get('last_page_viewed') !== Utils::$context['lp_page']['id']
 		) {
-			Utils::$smcFunc['db_query']('', '
-				UPDATE {db_prefix}lp_pages
-				SET num_views = num_views + 1
-				WHERE page_id = {int:item}
-					AND status IN ({array_int:statuses})',
-				[
-					'item'     => Utils::$context['lp_page']['id'],
-					'statuses' => [self::STATUS_ACTIVE, self::STATUS_INTERNAL]
-				]
-			);
+			$this->repository->updateNumViews(Utils::$context['lp_page']['id']);
 
-			Utils::$context['lp_num_queries']++;
-
-			$this->session()->put('light_portal_last_page_viewed', Utils::$context['lp_page']['id']);
+			$this->session('lp')->put('last_page_viewed', Utils::$context['lp_page']['id']);
 		}
 	}
 }

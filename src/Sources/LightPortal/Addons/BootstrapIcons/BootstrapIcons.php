@@ -10,13 +10,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.01.24
+ * @version 18.02.24
  */
 
 namespace Bugo\LightPortal\Addons\BootstrapIcons;
 
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Utils\{Theme, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -32,24 +32,27 @@ class BootstrapIcons extends Plugin
 
 	public function init(): void
 	{
-		Theme::loadExtCSS('https://cdn.jsdelivr.net/npm/bootstrap-icons@1/font/bootstrap-icons.min.css', ['seed' => false]);
+		$this->loadExtCSS(
+			'https://cdn.jsdelivr.net/npm/bootstrap-icons@1/font/bootstrap-icons.min.css',
+			['seed' => false]
+		);
 	}
 
-	public function prepareIconList(array &$all_icons): void
+	public function prepareIconList(array &$icons): void
 	{
-		if (($icons = $this->cache()->get('all_bi_icons', 30 * 24 * 60 * 60)) === null) {
+		if (($biIcons = $this->cache()->get('all_bi_icons', 30 * 24 * 60 * 60)) === null) {
 			$content = file_get_contents('https://cdn.jsdelivr.net/npm/bootstrap-icons@1/font/bootstrap-icons.json');
 			$json = array_flip(Utils::jsonDecode($content, true));
 
-			$icons = [];
+			$biIcons = [];
 			foreach ($json as $icon) {
-				$icons[] = $this->prefix . $icon;
+				$biIcons[] = $this->prefix . $icon;
 			}
 
-			$this->cache()->put('all_bi_icons', $icons, 30 * 24 * 60 * 60);
+			$this->cache()->put('all_bi_icons', $biIcons, 30 * 24 * 60 * 60);
 		}
 
-		$all_icons = array_merge($all_icons, $icons);
+		$icons = array_merge($icons, $biIcons);
 	}
 
 	public function credits(array &$links): void

@@ -9,13 +9,13 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.5
+ * @version 2.6
  */
 
 namespace Bugo\LightPortal\Areas;
 
+use Bugo\Compat\{Config, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Config, Lang, Theme, User, Utils};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -53,7 +53,7 @@ final class CreditArea
 
 	public function getLink(): string
 	{
-		$link = Lang::getLanguageNameFromLocale(User::$info['language']) === 'russian'
+		$link = Lang::$txt['lang_dictionary'] === 'ru'
 			? 'https://dragomano.ru/mods/light-portal'
 			: 'https://custom.simplemachines.org/mods/index.php?mod=4244';
 
@@ -65,7 +65,7 @@ final class CreditArea
 
 	public function prepareComponents(): void
 	{
-		$this->middleware('light_portal_view');
+		User::mustHavePermission('light_portal_view');
 
 		Utils::$context['portal_translations'] = [
 			'Polish'     => ['Adrek', 'jsqx'],
@@ -192,15 +192,6 @@ final class CreditArea
 				]
 			],
 			[
-				'title' => 'VueDemi',
-				'link' => 'https://github.com/vueuse/vue-demi',
-				'author' => 'Anthony Fu',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/vueuse/vue-demi/blob/main/LICENSE'
-				]
-			],
-			[
 				'title' => 'VueUse',
 				'link' => 'https://github.com/vueuse/vueuse',
 				'author' => 'Anthony Fu',
@@ -255,21 +246,12 @@ final class CreditArea
 				]
 			],
 			[
-				'title' => 'Latte',
-				'link' => 'https://latte.nette.org',
-				'author' => 'David Grudl',
+				'title' => 'BladeOne Blade Template Engine',
+				'link' => 'https://github.com/EFTEC/BladeOne',
+				'author' => 'Jorge Patricio Castro Castillo',
 				'license' => [
-					'name' => 'the New BSD License',
-					'link' => 'https://github.com/nette/latte/blob/master/license.md'
-				]
-			],
-			[
-				'title' => 'Less.php',
-				'link' => 'https://github.com/wikimedia/less.php',
-				'author' => 'Wikimedia Foundation',
-				'license' => [
-					'name' => 'the Apache License 2.0',
-					'link' => 'https://github.com/wikimedia/less.php/blob/master/LICENSE'
+					'name' => 'The MIT License',
+					'link' => 'https://github.com/EFTEC/BladeOne/blob/master/LICENSE'
 				]
 			],
 			[

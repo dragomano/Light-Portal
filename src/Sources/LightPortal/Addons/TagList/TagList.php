@@ -10,15 +10,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.01.24
+ * @version 26.02.24
  */
 
 namespace Bugo\LightPortal\Addons\TagList;
 
+use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Actions\Tag;
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\RadioField;
-use Bugo\LightPortal\Utils\{Config, Lang, User, Utils};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -52,7 +52,7 @@ class TagList extends Block
 
 		$sources = array_combine(['lp_tags', 'keywords'], Lang::$txt['lp_tag_list']['source_set']);
 
-		if (! class_exists('\Keywords\KeywordHandler'))
+		if (! class_exists('\Bugo\Optimus\Handlers\TagHandler'))
 			unset($sources['keywords']);
 
 		RadioField::make('source', Lang::$txt['lp_tag_list']['source'])
@@ -68,7 +68,7 @@ class TagList extends Block
 
 	public function getAllTopicKeywords(string $sort = 'ok.name'): array
 	{
-		if (!class_exists('\Keywords\KeywordHandler'))
+		if (! class_exists('\Bugo\Optimus\Handlers\TagHandler'))
 			return [];
 
 		$result = Utils::$smcFunc['db_query']('', '
@@ -78,16 +78,16 @@ class TagList extends Block
 			GROUP BY ok.id, ok.name
 			ORDER BY {raw:sort}',
 			[
-				'sort' => $sort
+				'sort' => $sort,
 			]
 		);
 
 		$keywords = [];
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			$keywords[] = [
-				'value'     => $row['name'],
+				'title'     => $row['name'],
 				'link'      => Config::$scripturl . '?action=keywords;id=' . $row['id'],
-				'frequency' => $row['frequency']
+				'frequency' => $row['frequency'],
 			];
 		}
 
@@ -103,19 +103,19 @@ class TagList extends Block
 			return;
 
 		if ($parameters['source'] == 'lp_tags') {
-			$tag_list = $this->cache('tag_list_addon_b' . $data->block_id . '_u' . User::$info['id'])
-				->setLifeTime($data->cache_time)
-				->setFallback(Tag::class, 'getAll', 0, 0, $parameters['sorting'] === 'name' ? 'value' : 'num DESC');
+			$tagList = $this->cache('tag_list_addon_b' . $data->id . '_u' . User::$info['id'])
+				->setLifeTime($data->cacheTime)
+				->setFallback(Tag::class, 'getAll', 0, 0, $parameters['sorting'] === 'name' ? 'tag_title' : 'frequency DESC');
 		} else {
-			$tag_list = $this->cache('tag_list_addon_b' . $data->block_id . '_u' . User::$info['id'])
-				->setLifeTime($data->cache_time)
+			$tagList = $this->cache('tag_list_addon_b' . $data->id . '_u' . User::$info['id'])
+				->setLifeTime($data->cacheTime)
 				->setFallback(self::class, 'getAllTopicKeywords', $parameters['sorting'] === 'name' ? 'ok.name' : 'frequency DESC');
 		}
 
-		if ($tag_list) {
-			foreach ($tag_list as $tag) {
+		if ($tagList) {
+			foreach ($tagList as $tag) {
 				echo '
-			<a class="button" href="', $tag['link'], '">', $tag['value'], ' <span class="amt">', $tag['frequency'], '</span></a>';
+			<a class="button" href="', $tag['link'], '">', $tag['icon'] ?? '', $tag['title'], ' <span class="amt">', $tag['frequency'], '</span></a>';
 			}
 		} else {
 			echo Lang::$txt['lp_no_tags'];

@@ -10,14 +10,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 04.02.24
+ * @version 19.02.24
  */
 
 namespace Bugo\LightPortal\Addons\RecentComments;
 
+use Bugo\Compat\{Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{NumberField, RangeField};
-use Bugo\LightPortal\Utils\{DateTime, Lang, User, Utils};
+use Bugo\LightPortal\Utils\DateTime;
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -67,23 +68,31 @@ class RecentComments extends Block
 			->setValue(Utils::$context['lp_block']['options']['length']);
 	}
 
-	public function getData(int $num_comments, int $length = 80): array
+	public function getData(int $commentsCount, int $length = 80): array
 	{
-		if (empty($num_comments))
+		if (empty($commentsCount))
 			return [];
 
 		$result = Utils::$smcFunc['db_query']('', '
-			SELECT DISTINCT com.id, com.page_id, com.message, com.created_at, p.alias, COALESCE(mem.real_name, {string:guest}) AS author_name,
-			(SELECT COUNT(*) FROM {db_prefix}lp_comments AS com2 WHERE com2.parent_id = 0 AND com2.page_id = com.page_id) AS num_comments
+			SELECT DISTINCT com.id, com.page_id, com.message, com.created_at, p.alias,
+				COALESCE(mem.real_name, {string:guest}) AS author_name,
+				(
+					SELECT COUNT(*) FROM {db_prefix}lp_comments AS com2
+					WHERE com2.parent_id = 0 AND com2.page_id = com.page_id
+				) AS num_comments
 			FROM {db_prefix}lp_comments AS com
 				INNER JOIN (
 					SELECT lt.page_id AS page_id, MAX(lt.created_at) AS created_at
 					FROM {db_prefix}lp_comments AS lt
 					GROUP BY lt.page_id
-				) AS latest_comments ON (com.page_id = latest_comments.page_id AND com.created_at = latest_comments.created_at)
+				) AS latest_comments ON (
+					com.page_id = latest_comments.page_id AND com.created_at = latest_comments.created_at
+				)
 				LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = com.page_id)
 				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = com.author_id)
-				LEFT JOIN {db_prefix}lp_params AS par ON (par.item_id = com.page_id AND par.type = {literal:page} AND par.name = {literal:allow_comments})
+				LEFT JOIN {db_prefix}lp_params AS par ON (
+					par.item_id = com.page_id AND par.type = {literal:page} AND par.name = {literal:allow_comments}
+				)
 			WHERE p.status = {int:status}
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
@@ -95,7 +104,7 @@ class RecentComments extends Block
 				'status'       => 1,
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions(),
-				'limit'        => $num_comments
+				'limit'        => $commentsCount
 			]
 		);
 
@@ -125,8 +134,8 @@ class RecentComments extends Block
 		if ($data->type !== 'recent_comments')
 			return;
 
-		$comments = $this->cache('recent_comments_addon_b' . $data->block_id . '_u' . User::$info['id'])
-			->setLifeTime($data->cache_time)
+		$comments = $this->cache('recent_comments_addon_b' . $data->id . '_u' . User::$info['id'])
+			->setLifeTime($data->cacheTime)
 			->setFallback(self::class, 'getData', (int) $parameters['num_comments'], (int) $parameters['length']);
 
 		if (empty($comments))
