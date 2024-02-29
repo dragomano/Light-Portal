@@ -10,7 +10,5 @@ Benvenuti nella documentazione italiana di Light Portal!
 
 ***
 
-Voglio essere sicuro che tu stia ottendendo il massimo da LP e che nessuna domanda rimanga senza risposta.
-
 Per qualsiasi dubbio o domanda, scrivi [nella discussione di supporto di SMF](https://www.simplemachines.org/community/index.php?topic=572393.0) o [nell'area discussioni di GitHub](https://github.com/dragomano/Light-Portal/discussions), e riceverai una risposta il prima possibile.
 Puoi anche chiedere supporto su [Italian SMF](https://www.italiansmf.net), se hai problemi con la lingua inglese.
