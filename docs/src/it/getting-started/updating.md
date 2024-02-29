@@ -9,7 +9,7 @@ Se non ci sono note nel changelog dell'ultima versione, è sufficiente estrarre 
 
 :::info
 
-Dalla versione 2.2.1 è possibile aggiornare senza disinstallare la versione precedente. Basta scaricare il nuovo archivio, andare su Gestione pacchetti e fare clic sul pulsante "Aggiorna" accanto al pacchetto caricato.
+Dalla versione 2.4 è possibile aggiornare senza disinstallare la versione precedente. Basta scaricare il nuovo archivio, andare su Gestione pacchetti e fare clic sul pulsante "Aggiorna" accanto al pacchetto caricato.
 
 ![Updating](upgrade.png)
 

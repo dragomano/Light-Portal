@@ -40,10 +40,6 @@ Qui riporti semplicemente CHI può e COSA può fare con i vari elementi (blocchi
 
 In questa sezione puoi modificare le impostazioni generali delle pagine e dei blocchi utilizzati, sia in fase di creazione che in fase di visualizzazione.
 
-## Categorie
-
-In questa sezione è possibile gestire le categorie per classificare le pagine del portale. Se ne hai bisogno, ovviamente.
-
 ## Pannelli
 
 In questa sezione puoi modificare alcune impostazioni per i pannelli del portale e personalizzare la direzione dei blocchi.

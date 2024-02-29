@@ -7,7 +7,7 @@ order: 2
 
 Плагины — дополнения, расширяющие возможности портала. Чтобы создать собственный плагин для Light Portal, достаточно следовать инструкциям ниже.
 
-:::info
+:::info Информация
 
 Вы можете использовать **PluginMaker** в качестве помощника при создании своих плагинов. Скачайте и подключите его на странице _Админка -> Настройки портала -> Плагины_.
 
@@ -96,21 +96,22 @@ order: 2
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.03.23 (дата создания, а в дальнейшем — обновления кода плагина, в формате дд.мм.гг)
+ * @version 15.02.24 (дата создания, а в дальнейшем — обновления кода плагина, в формате дд.мм.гг)
  */
 
 namespace Bugo\LightPortal\Addons\HelloWorld;
 
+use Bugo\Compat\{Config, Lang, Utils};
 use Bugo\LightPortal\Addons\Plugin;
 
 if (! defined('LP_NAME'))
-    die('No direct access...');
+	die('No direct access...');
 
 class HelloWorld extends Plugin
 {
     // Используемые свойства и методы
-    // Обращение к глобальным переменным: $this->context['user'], $this->modSettings['variable'] и т. д.
-    // Обращение к языковым переменным: $this->txt['lp_hello_world']['variable_name']
+    // Доступ к глобальным переменным: Utils::$context['user'], Config::$modSettings['variable'], etc.
+    // Доступ к языковым переменным: Lang::$txt['lp_hello_world']['variable_name']
 }
 
 ```

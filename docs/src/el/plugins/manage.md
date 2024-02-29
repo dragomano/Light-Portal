@@ -5,17 +5,17 @@ order: 1
 
 # Διαχείριση προσθηκών
 
-Όλα τα εγκατεστημένα πρόσθετα πύλης παρατίθενται εδώ. Some of them have their own settings.
+Όλα τα εγκατεστημένα πρόσθετα πύλης παρατίθενται εδώ. Μερικά από αυτά έχουν τις δικές τους ρυθμίσεις.
 
-You can switch between displaying plugins in 1 column (default) or 2 columns if you wish.
+Μπορείτε να κάνετε εναλλαγή μεταξύ εμφάνισης προσθηκών σε 1 στήλη (προεπιλογή) ή 2 στήλες, αν θέλετε.
 
-If you want to change the plugin settings, click on the gear next to the plugin toggle button.
+Εάν θέλετε να αλλάξετε τις ρυθμίσεις της προσθήκης, κάντε κλικ στο γρανάζι δίπλα στο κουμπί εναλλαγής της προσθήκης.
 
 ![Manage plugins](manage_plugins.png)
 
-## Installing additional plugins
+## Εγκατάσταση πρόσθετων προσθηκών
 
-Some plugins are not included with the portal, they need to be installed separately. Such plugins are divided into downloadable and bonus ones available to project sponsors.
+Ορισμένα πρόσθετα δεν περιλαμβάνονται στην πύλη, πρέπει να εγκατασταθούν ξεχωριστά. Τέτοια πρόσθετα χωρίζονται ως, με δυνατότητα λήψης και σε μπόνους που είναι διαθέσιμα στους χορηγούς έργων.
 
 :::info
 Τα πρόσθετα μπόνους είναι επίσης διαθέσιμα σε μεταφραστές (εάν τουλάχιστον το `LightPortal.{your_language}.php` έχει μεταφραστεί με ποιότητα 100%), καθώς και σε όλους τους [ενεργούς συμμετέχοντες] (../how-to/help-to-project) του σχεδίου.
@@ -23,4 +23,4 @@ Some plugins are not included with the portal, they need to be installed separat
 
 ![Download additional plugins](download_plugins.png)
 
-The separate plugin package can be installed on the [Plugin import](./impex) page. But you can also just extract the plugin folder from the downloaded archive and move it to the directory `Sources/LightPortal/Addons`.
+Το ξεχωριστό πακέτο προσθηκών μπορεί να εγκατασταθεί στη σελίδα [Εισαγωγή προσθηκών](./impex). Αλλά μπορείτε επίσης απλώς να εξαγάγετε το φάκελο της προσθήκης από το αρχείο που έχετε λάβει και να το μετακινήσετε στον κατάλογο Sources/LightPortal/Addons\`.

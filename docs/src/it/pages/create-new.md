@@ -33,7 +33,7 @@ Qui puoi configurare:
 
 - alias — la pagina sarà disponibile in `?page=alias`
 - descrizione — Il meta description
-- keywords — il meta keywords
+- tags — verranno visualizzati come tag di pagina e meta keywords
 
 ![SEO tab](seo_tab.png)
 

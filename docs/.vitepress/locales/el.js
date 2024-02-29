@@ -1,7 +1,6 @@
 export default {
-  // replace with your native language name
   label: 'Αγγλικά',
-  // replace with your native language code (https://gist.github.com/Josantonius/b455e315bc7f790d14b136d61d9ae469)
+  // https://gist.github.com/Josantonius/b455e315bc7f790d14b136d61d9ae469
   lang: 'el',
   title: 'Έγγραφα Light Portal',
   description: 'Light Portal Online Τεκμηρίωση',
@@ -26,6 +25,10 @@ export default {
       {
         text: 'Παρουσίαση',
         link: 'https://demo.dragomano.ru/'
+      },
+      {
+        text: 'Καταγραφή αλλαγών',
+        link: '/changelog'
       }
     ],
     outline: { label: 'Σε αυτήν την σελίδα' },
