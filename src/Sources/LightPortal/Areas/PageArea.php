@@ -676,9 +676,15 @@ final class PageArea
 			->setAttribute('maxlength', 255)
 			->setValue(Utils::$context['lp_page']['description']);
 
-		CustomField::make('tags', Lang::$txt['lp_tags'])
-			->setTab('seo')
-			->setValue(static fn() => new TagSelect());
+		if (empty(Utils::$context['lp_quantities']['active_tags'])) {
+			TextField::make('tags', '')
+				->setAttribute('hidden', true)
+				->setValue('');
+		} else {
+			CustomField::make('tags', Lang::$txt['lp_tags'])
+				->setTab('seo')
+				->setValue(static fn() => new TagSelect());
+		}
 
 		if (Utils::$context['lp_page']['created_at'] >= time()) {
 			CustomField::make('datetime', Lang::$txt['lp_page_publish_datetime'])
