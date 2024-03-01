@@ -428,11 +428,10 @@ final class Integration extends AbstractMain
 			$result = sprintf(Lang::$txt['lp_who_viewing_frontpage'], Config::$scripturl);
 
 			if ($this->isStandaloneMode()) {
-				$result = sprintf(
-					Lang::$txt['lp_who_viewing_index'],
+				$result = Lang::getTxt('lp_who_viewing_index', [
 					Config::$modSettings['lp_standalone_url'],
 					Config::$scripturl
-				);
+				]);
 			}
 		}
 
@@ -453,11 +452,10 @@ final class Integration extends AbstractMain
 				$tags = $this->getEntityData('tag');
 
 				$result = isset($actions['id'])
-					? sprintf(
-						Lang::$txt['lp_who_viewing_the_tag'],
+					? Lang::getTxt('lp_who_viewing_the_tag', [
 						LP_BASE_URL . ';sa=tags;id=' . $actions['id'],
 						$tags[$actions['id']]
-					)
+					])
 					: sprintf(
 						Lang::$txt['lp_who_viewing_tags'],
 						LP_BASE_URL . ';sa=tags'
@@ -468,11 +466,10 @@ final class Integration extends AbstractMain
 				$categories = $this->getEntityData('category');
 
 				$result = isset($actions['id'])
-					? sprintf(
-						Lang::$txt['lp_who_viewing_the_category'],
+					? Lang::getTxt('lp_who_viewing_the_category', [
 						LP_BASE_URL . ';sa=categories;id=' . $actions['id'],
 						$categories[$actions['id']]['name']
-					)
+					])
 					: sprintf(
 						Lang::$txt['lp_who_viewing_categories'],
 						LP_BASE_URL . ';sa=categories'
@@ -481,11 +478,10 @@ final class Integration extends AbstractMain
 		}
 
 		if ($actions['action'] === 'forum') {
-			$result = sprintf(
-				Lang::$txt['who_index'],
+			$result = Lang::getTxt('who_index', [
 				Config::$scripturl . '?action=forum',
 				Utils::$context['forum_name']
-			);
+			]);
 		}
 
 		return $result;

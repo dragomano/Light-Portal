@@ -28,7 +28,7 @@ $txt['lp_remove_from_fp'] = 'Remove from frontpage';
 // Settings
 $txt['lp_settings'] = 'Portal settings';
 $txt['lp_base'] = 'Settings for the frontpage and articles';
-$txt['lp_base_info'] = 'The mod version: <strong>%1$s</strong>, PHP version: <strong>%2$s</strong>, %3$s version: <strong>%4$s</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.org</a>.<br>The portal always needs new testers, translators, and front-page template makers.';
+$txt['lp_base_info'] = 'The mod version: <strong>{0}</strong>, PHP version: <strong>{1}</strong>, {2} version: <strong>{3}</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.org</a>.<br>The portal always needs new testers, translators, and front-page template makers.';
 
 $txt['lp_frontpage_title'] = 'The frontpage title';
 $txt['lp_frontpage_mode'] = 'The portal frontpage';
@@ -60,7 +60,7 @@ $txt['lp_frontpage_layout'] = 'Template layout for article cards';
 $txt['lp_show_layout_switcher'] = 'Show layout switcher';
 $txt['lp_frontpage_num_columns'] = 'Number of columns for displaying articles';
 $txt['lp_frontpage_num_columns_set'] = '{columns, plural,
-	one   {# column}
+	one {# column}
 	other {# columns}
 }';
 $txt['lp_show_pagination'] = 'Show the pagination';
@@ -70,7 +70,7 @@ $txt['lp_num_items_per_page'] = 'Number of items per page (for pagination)';
 
 $txt['lp_standalone_mode_title'] = 'Standalone mode';
 $txt['lp_standalone_url'] = 'The frontpage URL in the standalone mode';
-$txt['lp_standalone_url_help'] = 'You can specify your own URL to display as the portal frontpage (for instance, <strong>%1$s</strong>).<br>In this case, the forum frontpage will remain available at <strong>%2$s</strong>.<br><br>As an example, the <em>portal.php</em> file is included with the portal — you can use it.<br><br>Disable the "<strong>Enable local storage of cookies</strong>" option if you want to place <em>portal.php</em> outside the forum directory (Maintenance => Server Settings => Cookies and Sessions).';
+$txt['lp_standalone_url_help'] = 'You can specify your own URL to display as the portal frontpage (for instance, <strong>{0}</strong>).<br>In this case, the forum frontpage will remain available at <strong>{1}</strong>.<br><br>As an example, the <em>portal.php</em> file is included with the portal — you can use it.<br><br>Disable the "<strong>Enable local storage of cookies</strong>" option if you want to place <em>portal.php</em> outside the forum directory (Maintenance => Server Settings => Cookies and Sessions).';
 $txt['lp_disabled_actions'] = 'Disabled actions';
 $txt['lp_disabled_actions_subtext'] = 'Specify the areas that should be DISABLED in the standalone mode.';
 $txt['lp_disabled_actions_help'] = 'For example, if you need to disable the Search area (index.php?action=<strong>search</strong>), add <strong>search</strong> into the text field.';
@@ -108,7 +108,7 @@ $txt['lp_permissions'] = ['Show to admins', 'Show to guests', 'Show to members',
 
 // Panels
 $txt['lp_panels'] = 'Panels';
-$txt['lp_panels_info'] = 'Here you can customize the width of some panels, as well as the direction of blocks.<br><strong>%1$s</strong> uses <a class="bbc_link" href="%2$s" target="_blank" rel="noopener">12 column grid system</a> to display blocks in 6 panels.';
+$txt['lp_panels_info'] = 'Here you can customize the width of some panels, as well as the direction of blocks.<br><strong>{0}</strong> uses <a class="bbc_link" href="{1}" target="_blank" rel="noopener">12 column grid system</a> to display blocks in 6 panels.';
 $txt['lp_swap_header_footer'] = 'Swap the header and the footer';
 $txt['lp_swap_left_right'] = 'Swap the left panel and the right panel';
 $txt['lp_swap_top_bottom'] = 'Swap the center (top) and the center (bottom)';
@@ -153,7 +153,7 @@ $txt['lp_blocks_manage_description'] = 'All created portal blocks are listed her
 $txt['lp_blocks_add'] = 'Add block';
 $txt['lp_blocks_add_title'] = 'Adding a block';
 $txt['lp_blocks_add_description'] = 'Blocks can contain any content, depending on their type.';
-$txt['lp_blocks_add_instruction'] = 'Select the desired block by clicking on it. If the block you need is not on the list, check if the <a class="bbc_link" href="%1$s">corresponding plugin</a> is enabled.';
+$txt['lp_blocks_add_instruction'] = 'Select the desired block by clicking on it. If the block you need is not on the list, check if the <a class="bbc_link" href="%s">corresponding plugin</a> is enabled.';
 $txt['lp_blocks_edit_title'] = 'Editing block';
 $txt['lp_blocks_edit_description'] = $txt['lp_blocks_add_description'];
 $txt['lp_block_type'] = 'Block type';
@@ -166,7 +166,7 @@ $txt['lp_block_placement_set'] = ['Header', 'Center (top)', 'Left side', 'Right 
 $txt['lp_block_areas'] = 'Display areas';
 $txt['lp_block_areas_subtext'] = 'Specify one or more areas (separate by comma) to display the block in';
 $txt['lp_block_areas_th'] = 'Custom areas';
-$txt['lp_block_areas_values'][0] = 'on area <em>index.php?action</em>=<strong>custom_action</strong> (for example: <em>%1$s</em>)';
+$txt['lp_block_areas_values'][0] = 'on area <em>index.php?action</em>=<strong>custom_action</strong> (for example: <em>%s</em>)';
 $txt['lp_block_areas_values'][1] = 'everywhere, except <strong>custom_action</strong> (used as an exception, in addition to the preset areas)';
 $txt['lp_block_areas_values'][2] = 'on page <em>index.php?page</em>=<strong>alias</strong>';
 $txt['lp_block_areas_values'][3] = 'only inside the board with identifier <strong>id</strong> (including all topics inside the board)';
@@ -243,7 +243,7 @@ $txt['lp_category_description'] = 'Description';
 $txt['lp_category'] = 'Category';
 $txt['lp_no_category'] = 'Uncategorized';
 $txt['lp_all_categories'] = 'All categories of the portal';
-$txt['lp_all_pages_with_category'] = 'All pages in category "%1$s"';
+$txt['lp_all_pages_with_category'] = 'All pages in category "%s"';
 $txt['lp_all_pages_without_category'] = 'All pages without category';
 $txt['lp_category_not_found'] = 'The specified category was not found.';
 $txt['lp_no_categories'] = 'There are no categories yet.';
@@ -259,7 +259,7 @@ $txt['lp_tags_add_description'] = 'Tags are useful for grouping content into dif
 $txt['lp_tags_edit_title'] = 'Editing tag';
 $txt['lp_tags_edit_description'] = 'Make the necessary changes.';
 $txt['lp_all_page_tags'] = 'All portal page tags';
-$txt['lp_all_tags_by_key'] = 'All pages with the "%1$s" tag';
+$txt['lp_all_tags_by_key'] = 'All pages with the "%s" tag';
 $txt['lp_tag_not_found'] = 'The specified tag was not found.';
 $txt['lp_no_tags'] = 'There are no tags yet.';
 $txt['lp_tag_column'] = 'Keyword';
@@ -322,12 +322,12 @@ $txt['lp_import_selection'] = 'Import selection';
 $txt['lp_import_run'] = 'Run import';
 $txt['lp_export_all'] = 'Export all';
 $txt['lp_import_all'] = 'Import all';
-$txt['lp_import_success'] = 'Imported: %1$s';
+$txt['lp_import_success'] = 'Imported: %s';
 
 // Plugins
 $txt['lp_plugins'] = 'Plugins';
 $txt['lp_plugins_manage'] = 'Manage plugins';
-$txt['lp_plugins_manage_description'] = 'The installed portal plugins are listed here. You can always create a new one using <a class="bbc_link" href="%1$s" target="_blank" rel="noopener">the instructions</a>.';
+$txt['lp_plugins_manage_description'] = 'The installed portal plugins are listed here. You can always create a new one using <a class="bbc_link" href="%s" target="_blank" rel="noopener">the instructions</a>.';
 $txt['lp_plugins_desc'] = 'Plugins extend the capabilities of the portal and its components, providing additional features that are not available in the core.';
 $txt['lp_plugins_types'][0] = 'Block';
 $txt['lp_plugins_types'][1] = 'SSI';
@@ -356,20 +356,20 @@ $txt['lp_comment_placeholder'] = 'Leave a comment...';
 $txt['alert_page_comment'] = 'When my page gets a comment';
 $txt['alert_new_comment_page_comment'] = '{gender, select,
 	female {{member_link} left a comment {content_subject}}
-	male   {{member_link} left a comment {content_subject}}
-	other  {{member_link} left a comment {content_subject}}
+	male {{member_link} left a comment {content_subject}}
+	other {{member_link} left a comment {content_subject}}
 }';
 $txt['alert_page_comment_reply'] = 'When my comment gets a reply';
 $txt['alert_new_reply_page_comment_reply'] = '{gender, select,
 	female {{member_link} left a reply to your comment {content_subject}}
-	male   {{member_link} left a reply to your comment {content_subject}}
-	other  {{member_link} left a reply to your comment {content_subject}}
+	male {{member_link} left a reply to your comment {content_subject}}
+	other {{member_link} left a reply to your comment {content_subject}}
 }';
 $txt['alert_page_unapproved'] = 'When a new unapproved page appears';
 $txt['alert_new_page_page_unapproved'] = '{gender, select,
 	female {{member_link} created a page {content_subject}}
-	male   {{member_link} created a page {content_subject}}
-	other  {{member_link} created a page {content_subject}}
+	male {{member_link} created a page {content_subject}}
+	other {{member_link} created a page {content_subject}}
 }';
 
 // Emails
@@ -399,17 +399,17 @@ $txt['lp_post_error_no_name'] = 'The <strong>name</strong> field was not filled 
 $txt['lp_wrong_import_file'] = 'Wrong file to import...';
 $txt['lp_import_failed'] = 'Failed to import...';
 $txt['lp_wrong_template'] = 'Wrong template. Choose a template that matches the content.';
-$txt['lp_addon_not_installed'] = 'Plugin %1$s is not installed';
-$txt['lp_addon_not_activated'] = 'Plugin %1$s is not activated';
+$txt['lp_addon_not_installed'] = 'Plugin %s is not installed';
+$txt['lp_addon_not_activated'] = 'Plugin %s is not activated';
 
 // Who
-$txt['lp_who_viewing_frontpage'] = 'Viewing <a href="%1$s">the portal frontpage</a>.';
-$txt['lp_who_viewing_index'] = 'Viewing <a href="%1$s">the portal frontpage</a> or <a href="%2$s">the forum index</a>.';
-$txt['lp_who_viewing_page'] = 'Viewing <a href="%1$s">the portal page</a>.';
-$txt['lp_who_viewing_tags'] = 'Viewing <a href="%1$s">the portal page tags</a>.';
-$txt['lp_who_viewing_the_tag'] = 'Viewing the page list with <a href="%1$s" class="bbc_link">%2$s</a> tag.';
-$txt['lp_who_viewing_categories'] = 'Viewing <a href="%1$s">the portal page categories</a>.';
-$txt['lp_who_viewing_the_category'] = 'Viewing the page list within <a href="%1$s" class="bbc_link">%2$s</a> category.';
+$txt['lp_who_viewing_frontpage'] = 'Viewing <a href="%s">the portal frontpage</a>.';
+$txt['lp_who_viewing_index'] = 'Viewing <a href="{0}">the portal frontpage</a> or <a href="{1}">the forum index</a>.';
+$txt['lp_who_viewing_page'] = 'Viewing <a href="%s">the portal page</a>.';
+$txt['lp_who_viewing_tags'] = 'Viewing <a href="%s">the portal page tags</a>.';
+$txt['lp_who_viewing_the_tag'] = 'Viewing the page list with <a href="{0}" class="bbc_link">{1}</a> tag.';
+$txt['lp_who_viewing_categories'] = 'Viewing <a href="%s">the portal page categories</a>.';
+$txt['lp_who_viewing_the_category'] = 'Viewing the page list within <a href="{0}" class="bbc_link">{1}</a> category.';
 
 // Permissions
 $txt['permissionname_light_portal_view'] = $txt['group_perms_name_light_portal_view'] = 'View the portal elements';
@@ -429,79 +429,79 @@ $txt['cannot_light_portal_view_page'] = 'You aren\'t allowed to view this page!'
 
 // Time units
 $txt['lp_months_set'] = '{months, plural,
-	one   {a month}
+	=1 {a month}
 	other {# months}
 }';
 $txt['lp_days_set'] = '{days, plural,
-	one   {a day}
+	=1 {a day}
 	other {# days}
 }';
 $txt['lp_hours_set'] = '{hours, plural,
-	one   {an hour}
+	=1 {an hour}
 	other {# hours}
 }';
 $txt['lp_minutes_set'] = '{minutes, plural,
-	one   {a minute}
+	=1 {a minute}
 	other {# minutes}
 }';
 $txt['lp_seconds_set'] = '{seconds, plural,
-	one   {a second}
+	=1 {a second}
 	other {# seconds}
 }';
 $txt['lp_tomorrow'] = '<strong>Tomorrow</strong> at ';
 $txt['lp_just_now'] = 'Just now';
-$txt['lp_time_label_in'] = 'In %1$s';
+$txt['lp_time_label_in'] = 'In %s';
 $txt['lp_time_label_ago'] = ' ago';
 
 // Social units
 $txt['lp_replies_set'] = '{replies, plural,
-	one   {# reply}
+	one {# reply}
 	other {# replies}
 }';
 $txt['lp_views_set'] = '{views, plural,
-	one   {# view}
+	one {# view}
 	other {# views}
 }';
 $txt['lp_comments_set'] = '{comments, plural,
-	one   {# comment}
+	one {# comment}
 	other {# comments}
 }';
 $txt['lp_articles_set'] = '{articles, plural,
-	one   {# article}
+	one {# article}
 	other {# articles}
 }';
 
 // Other units
 $txt['lp_pages_set'] = '{pages, plural,
-	one   {# page}
+	one {# page}
 	other {# pages}
 }';
 $txt['lp_blocks_set'] = '{blocks, plural,
-	one   {# block}
+	one {# block}
 	other {# blocks}
 }';
 $txt['lp_users_set'] = '{users, plural,
-	one   {# user}
+	one {# user}
 	other {# users}
 }';
 $txt['lp_guests_set'] = '{guests, plural,
-	one   {# guest}
+	one {# guest}
 	other {# guests}
 }';
 $txt['lp_spiders_set'] = '{spiders, plural,
-	one   {# spider}
+	one {# spider}
 	other {# spiders}
 }';
 $txt['lp_hidden_set'] = '{hidden, plural,
-	one   {# hidden}
+	one {# hidden}
 	other {# hidden}
 }';
 $txt['lp_buddies_set'] = '{buddies, plural,
-	one   {# buddy}
+	one {# buddy}
 	other {# buddies}
 }';
 $txt['lp_queries_set'] = '{queries, plural,
-	one   {# query}
+	one {# query}
 	other {# queries}
 }';
 
