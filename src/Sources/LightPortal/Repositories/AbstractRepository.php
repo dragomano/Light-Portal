@@ -84,7 +84,7 @@ abstract class AbstractRepository
 				'item_id' => $item,
 				'type'    => $this->entity,
 				'lang'    => $lang,
-				'title'   => $title,
+				'title'   => Utils::$smcFunc['htmltrim']($title),
 			];
 		}
 
