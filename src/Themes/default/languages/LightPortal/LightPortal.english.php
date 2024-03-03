@@ -262,7 +262,7 @@ $txt['lp_all_page_tags'] = 'All portal page tags';
 $txt['lp_all_tags_by_key'] = 'All pages with the "%s" tag';
 $txt['lp_tag_not_found'] = 'The specified tag was not found.';
 $txt['lp_no_tags'] = 'There are no tags yet.';
-$txt['lp_tag_column'] = 'Keyword';
+$txt['lp_tag_column'] = 'Tag';
 $txt['lp_frequency_column'] = 'Frequency';
 
 // Sorting
