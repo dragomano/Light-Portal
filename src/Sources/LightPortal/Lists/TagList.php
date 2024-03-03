@@ -30,7 +30,7 @@ final class TagList implements ListInterface
 	public function getAll(): array
 	{
 		$result = Db::$db->query('', /** @lang text */ '
-			SELECT tag.tag_id, tag.icon, COALESCE(t.title, tf.title) AS tag_title
+			SELECT tag.tag_id, tag.icon, COALESCE(t.title, tf.title) AS title
 			FROM {db_prefix}lp_tags AS tag
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
 					tag.tag_id = t.item_id AND t.type = {literal:tag} AND t.lang = {string:lang}
@@ -39,7 +39,7 @@ final class TagList implements ListInterface
 					tag.tag_id = tf.item_id AND tf.type = {literal:tag} AND tf.lang = {string:fallback_lang}
 				)
 			WHERE tag.status = {int:status}
-			ORDER BY t.title',
+			ORDER BY title',
 			[
 				'lang'          => User::$info['language'],
 				'fallback_lang' => Config::$language,
@@ -52,7 +52,7 @@ final class TagList implements ListInterface
 			$items[$row['tag_id']] = [
 				'id'    => (int) $row['tag_id'],
 				'icon'  => $row['icon'],
-				'title' => $row['tag_title'],
+				'title' => $row['title'],
 			];
 		}
 

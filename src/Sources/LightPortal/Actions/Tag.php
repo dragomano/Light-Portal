@@ -191,8 +191,8 @@ final class Tag extends AbstractPageList
 						'class' => 'centertext'
 					],
 					'sort' => [
-						'default' => 'tag_title DESC',
-						'reverse' => 'tag_title'
+						'default' => 'title DESC',
+						'reverse' => 'title'
 					]
 				],
 				'frequency' => [
@@ -219,10 +219,10 @@ final class Tag extends AbstractPageList
 		Utils::obExit();
 	}
 
-	public function getAll(int $start = 0, int $limit = 0, string $sort = 'tag_title'): array
+	public function getAll(int $start = 0, int $limit = 0, string $sort = 'title'): array
 	{
 		$result = Db::$db->query('', '
-			SELECT tag.tag_id, tag.icon, COALESCE(tt.title, tf.title) AS tag_title, COUNT(tag.tag_id) AS frequency
+			SELECT tag.tag_id, tag.icon, COALESCE(tt.title, tf.title) AS title, COUNT(tag.tag_id) AS frequency
 			FROM {db_prefix}lp_pages AS p
 				INNER JOIN {db_prefix}lp_page_tags AS pt ON (p.page_id = pt.page_id)
 				INNER JOIN {db_prefix}lp_tags AS tag ON (pt.tag_id = tag.tag_id)
@@ -256,7 +256,7 @@ final class Tag extends AbstractPageList
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['tag_id']] = [
 				'icon'      => $this->getIcon($row['icon']),
-				'title'     => $row['tag_title'],
+				'title'     => $row['title'],
 				'link'      => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id'],
 				'frequency' => (int) $row['frequency'],
 			];

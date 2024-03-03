@@ -108,8 +108,8 @@ final class CategoryArea
 						'class' => 'word_break',
 					],
 					'sort' => [
-						'default' => 't.title DESC',
-						'reverse' => 't.title',
+						'default' => 'title DESC',
+						'reverse' => 'title',
 					],
 				],
 				'priority' => [

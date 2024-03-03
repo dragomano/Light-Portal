@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.02.24
+ * @version 03.03.24
  */
 
 namespace Bugo\LightPortal\Addons\TagList;
@@ -105,7 +105,7 @@ class TagList extends Block
 		if ($parameters['source'] == 'lp_tags') {
 			$tagList = $this->cache('tag_list_addon_b' . $data->id . '_u' . User::$info['id'])
 				->setLifeTime($data->cacheTime)
-				->setFallback(Tag::class, 'getAll', 0, 0, $parameters['sorting'] === 'name' ? 'tag_title' : 'frequency DESC');
+				->setFallback(Tag::class, 'getAll', 0, 0, $parameters['sorting'] === 'name' ? 'title' : 'frequency DESC');
 		} else {
 			$tagList = $this->cache('tag_list_addon_b' . $data->id . '_u' . User::$info['id'])
 				->setLifeTime($data->cacheTime)

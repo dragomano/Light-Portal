@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 20.02.24
+ * @version 01.03.24
  */
 
 namespace Bugo\LightPortal\Addons\ArticleList;
@@ -194,7 +194,7 @@ class ArticleList extends Block
 		if ($data->type !== 'article_list')
 			return;
 
-		$article_list = $this->cache('article_list_addon_b' . $data->id . '_u' . User::$info['id'])
+		$articles = $this->cache('article_list_addon_b' . $data->id . '_u' . User::$info['id'])
 			->setLifeTime($data->cacheTime)
 			->setFallback(
 				self::class,
@@ -202,12 +202,12 @@ class ArticleList extends Block
 				$parameters
 			);
 
-		if ($article_list) {
+		if ($articles) {
 			echo '
 		<div class="article_list">';
 
 			if (empty($parameters['display_type'])) {
-				foreach ($article_list as $topic) {
+				foreach ($articles as $topic) {
 					$content = '';
 					if ($topic['image']) {
 						$content .= '
@@ -221,7 +221,7 @@ class ArticleList extends Block
 					echo sprintf(Utils::$context['lp_all_content_classes'][$parameters['body_class']], $content);
 				}
 			} else {
-				foreach ($article_list as $page) {
+				foreach ($articles as $page) {
 					if (empty($title = $this->getTranslatedTitle($page['title'])))
 						continue;
 

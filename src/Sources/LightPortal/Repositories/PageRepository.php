@@ -394,9 +394,12 @@ final class PageRepository extends AbstractRepository
 		}
 
 		$result = Db::$db->query('', '
-			SELECT p.page_id, p.alias, p.content, p.type, (' . $searchFormula . ') AS related, t.title
+			SELECT
+				p.page_id, p.alias, p.content, p.type, (' . $searchFormula . ') AS related,
+				COALESCE(t.title, tf.title) AS title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.lang = {string:current_lang})
+				LEFT JOIN {db_prefix}lp_titles AS tf ON (p.page_id = tf.item_id AND tf.lang = {string:fallback_lang})
 			WHERE (' . $searchFormula . ') > 0
 				AND p.status = {int:status}
 				AND p.created_at <= {int:current_time}
@@ -405,11 +408,12 @@ final class PageRepository extends AbstractRepository
 			ORDER BY related DESC
 			LIMIT 4',
 			[
-				'current_lang' => Utils::$context['user']['language'],
-				'status'       => $page['status'],
-				'current_time' => time(),
-				'permissions'  => $this->getPermissions(),
-				'current_page' => $page['id'],
+				'current_lang'  => Utils::$context['user']['language'],
+				'fallback_lang' => Config::$language,
+				'status'        => $page['status'],
+				'current_time'  => time(),
+				'permissions'   => $this->getPermissions(),
+				'current_page'  => $page['id'],
 			]
 		);
 
@@ -641,7 +645,7 @@ final class PageRepository extends AbstractRepository
 	private function getTags(int $item): array
 	{
 		$result = Db::$db->query('', '
-			SELECT tag.tag_id, tag.icon, COALESCE(t.title, tf.title) AS tag_title
+			SELECT tag.tag_id, tag.icon, COALESCE(t.title, tf.title) AS title
 			FROM {db_prefix}lp_tags AS tag
 				INNER JOIN {db_prefix}lp_page_tags AS pt ON (tag.tag_id = pt.tag_id)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
@@ -652,7 +656,7 @@ final class PageRepository extends AbstractRepository
 				)
 			WHERE tag.status = {int:status}
 				AND pt.page_id = {int:page_id}
-			ORDER BY tag_title',
+			ORDER BY title',
 			[
 				'lang'          => User::$info['language'],
 				'fallback_lang' => Config::$language,
@@ -665,7 +669,7 @@ final class PageRepository extends AbstractRepository
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['tag_id']] = [
 				'icon'  => $this->getIcon($row['icon'] ?: 'fas fa-tag'),
-				'title' => $row['tag_title'],
+				'title' => $row['title'],
 				'href'  => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id'],
 			];
 		}

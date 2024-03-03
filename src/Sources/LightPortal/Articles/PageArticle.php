@@ -263,7 +263,7 @@ class PageArticle extends AbstractArticle
 			return;
 
 		$result = Db::$db->query('', '
-			SELECT t.tag_id, t.icon, pt.page_id, COALESCE(tt.title, tf.title) AS tag_title
+			SELECT t.tag_id, t.icon, pt.page_id, COALESCE(tt.title, tf.title) AS title
 			FROM {db_prefix}lp_tags AS t
 				LEFT JOIN {db_prefix}lp_page_tags AS pt ON (t.tag_id = pt.tag_id)
 				LEFT JOIN {db_prefix}lp_titles AS tt ON (
@@ -274,7 +274,7 @@ class PageArticle extends AbstractArticle
 				)
 			WHERE pt.page_id IN ({array_int:pages})
 				AND t.status = {int:status}
-			ORDER BY tag_title',
+			ORDER BY title',
 			[
 				'lang'          => User::$info['language'],
 				'fallback_lang' => Config::$language,
@@ -286,7 +286,7 @@ class PageArticle extends AbstractArticle
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$pages[$row['page_id']]['tags'][] = [
 				'icon'  => $this->getIcon($row['icon']),
-				'title' => $row['tag_title'],
+				'title' => $row['title'],
 				'href'  => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id'],
 			];
 		}

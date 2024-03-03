@@ -80,11 +80,16 @@ abstract class AbstractRepository
 
 		$titles = [];
 		foreach (Utils::$context['lp_' . $this->entity]['titles'] as $lang => $title) {
+			$title = Utils::$smcFunc['htmltrim']($title);
+
+			if ($method === '' && $title === '')
+				continue;
+
 			$titles[] = [
 				'item_id' => $item,
 				'type'    => $this->entity,
 				'lang'    => $lang,
-				'title'   => Utils::$smcFunc['htmltrim']($title),
+				'title'   => $title,
 			];
 		}
 
