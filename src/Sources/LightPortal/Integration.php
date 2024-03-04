@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal;
 
 use Bugo\LightPortal\Compilers\Zero;
-use Bugo\Compat\{Config, Db, Lang, User, Utils};
+use Bugo\Compat\{Config, Db, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Actions\{BoardIndex, Block, Category};
 use Bugo\LightPortal\Actions\{FrontPage, Page, Tag};
 
@@ -126,6 +126,8 @@ final class Integration extends AbstractMain
 			$actions[LP_ACTION] = [false, [new FrontPage(), 'show']];
 
 		$actions['forum'] = [false, [new BoardIndex(), 'show']];
+
+		Theme::load();
 
 		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'categories')
 			(new Category())->show(new Page());
