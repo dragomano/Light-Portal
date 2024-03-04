@@ -444,7 +444,7 @@ final class PageArea
 	{
 		$searchParamString = trim($this->request('search', ''));
 		$searchParams = [
-			'string' => Utils::$smcFunc['htmlspecialchars']($searchParamString),
+			'string' => Utils::htmlspecialchars($searchParamString),
 		];
 
 		Utils::$context['search_params'] = empty($searchParamString)
@@ -727,7 +727,7 @@ final class PageArea
 		Security::checkSubmitOnce('free');
 
 		Utils::$context['preview_title']   = Utils::$context['lp_page']['titles'][Utils::$context['user']['language']];
-		Utils::$context['preview_content'] = Utils::$smcFunc['htmlspecialchars'](
+		Utils::$context['preview_content'] = Utils::htmlspecialchars(
 			Utils::$context['lp_page']['content'], ENT_QUOTES
 		);
 

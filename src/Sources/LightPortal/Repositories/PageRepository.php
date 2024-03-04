@@ -153,7 +153,7 @@ final class PageRepository extends AbstractRepository
 					$image = Config::$modSettings['lp_page_og_image'] == 1
 						? array_shift($allImages)
 						: array_pop($allImages);
-					$ogImage = Utils::$smcFunc['htmlspecialchars']($image);
+					$ogImage = Utils::htmlspecialchars($image);
 				}
 			}
 

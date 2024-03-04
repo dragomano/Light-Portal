@@ -68,7 +68,7 @@ abstract class AbstractRepository
 		if ($entity['type'] !== 'bbc')
 			return;
 
-		$entity['content'] = Utils::$smcFunc['htmlspecialchars']($entity['content'], ENT_QUOTES);
+		$entity['content'] = Utils::htmlspecialchars($entity['content'], ENT_QUOTES);
 
 		Msg::preparseCode($entity['content']);
 	}

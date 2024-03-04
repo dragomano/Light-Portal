@@ -113,7 +113,7 @@ final class Comment implements ActionInterface
 			exit(json_encode($result));
 
 		$parentId = $this->filterVar($data['parent_id'], 'int');
-		$message  = Utils::$smcFunc['htmlspecialchars']($data['message']);
+		$message  = Utils::htmlspecialchars($data['message']);
 		$author   = $this->filterVar($data['author'], 'int');
 		$pageId   = Utils::$context['lp_page']['id'];
 		$pageUrl  = Utils::$context['canonical_url'];
@@ -179,7 +179,7 @@ final class Comment implements ActionInterface
 			exit(json_encode($result));
 
 		$item    = $data['comment_id'];
-		$message = Utils::$smcFunc['htmlspecialchars']($data['message']);
+		$message = Utils::htmlspecialchars($data['message']);
 
 		if (empty($item) || empty($message) || empty(trim($message)))
 			exit(json_encode($result));

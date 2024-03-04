@@ -333,7 +333,7 @@ final class CategoryArea
 		Security::checkSubmitOnce('free');
 
 		Utils::$context['preview_title']   = Utils::$context['lp_category']['titles'][Utils::$context['user']['language']];
-		Utils::$context['preview_content'] = Utils::$smcFunc['htmlspecialchars'](Utils::$context['lp_category']['description'], ENT_QUOTES);
+		Utils::$context['preview_content'] = Utils::htmlspecialchars(Utils::$context['lp_category']['description'], ENT_QUOTES);
 
 		$this->cleanBbcode(Utils::$context['preview_title']);
 		Lang::censorText(Utils::$context['preview_title']);

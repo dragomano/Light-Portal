@@ -41,7 +41,7 @@ trait Area
 	public function prepareContent(array $object): string
 	{
 		if ($object['type'] === 'html') {
-			$object['content'] = Utils::$smcFunc['htmlspecialchars']($object['content']);
+			$object['content'] = Utils::htmlspecialchars($object['content']);
 		}
 
 		return $object['content'];

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.24
+ * @version 04.03.24
  */
 
 namespace Bugo\LightPortal\Addons\Search;
@@ -81,7 +81,7 @@ class Search extends Block
 		if (empty($data['phrase']))
 			return;
 
-		$query = Utils::$smcFunc['htmltrim'](Utils::$smcFunc['htmlspecialchars']($data['phrase']));
+		$query = Utils::$smcFunc['htmltrim'](Utils::htmlspecialchars($data['phrase']));
 
 		exit(json_encode($this->query($query)));
 	}
@@ -94,7 +94,7 @@ class Search extends Block
 		if ($this->request()->isNotEmpty('search') === false)
 			return [];
 
-		$query = Utils::$smcFunc['htmltrim'](Utils::$smcFunc['htmlspecialchars']($this->request('search')));
+		$query = Utils::$smcFunc['htmltrim'](Utils::htmlspecialchars($this->request('search')));
 
 		if (empty($query))
 			return [];
