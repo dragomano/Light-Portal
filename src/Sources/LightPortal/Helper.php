@@ -39,7 +39,7 @@ trait Helper
 
 	public function cache(?string $key = null): Cache
 	{
-		return new Cache($key);
+		return (new Cache($key))->setLifeTime(LP_CACHE_TIME);
 	}
 
 	public function files(?string $key = null): mixed
