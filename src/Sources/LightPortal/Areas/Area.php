@@ -73,6 +73,7 @@ trait Area
 					<a
 						class="button floatnone"
 						:class="{ \'active\': tab === \'' . $key . '\' }"
+						data-name="title_' . $key . '"
 						@click.prevent="tab = \'' . $key . '\';
 							window.location.hash = \'' . $key . '\';
 							$nextTick(() => { setTimeout(() => { document.querySelector(\'input[name=title_' . $key . ']\').focus() }, 50); });"
