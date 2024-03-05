@@ -26,8 +26,9 @@ final class Category extends AbstractPageList
 {
 	public function show(PageInterface $page): void
 	{
-		if ($this->request()->hasNot('id'))
+		if ($this->request()->hasNot('id')) {
 			$this->showAll();
+		}
 
 		$category = [
 			'id' => (int) $this->request('id', 0)
@@ -69,9 +70,6 @@ final class Category extends AbstractPageList
 		$listOptions['id'] = 'lp_categories';
 		$listOptions['get_items'] = [
 			'function' => [$this, 'getPages']
-		];
-		$listOptions['get_count'] = [
-			'function' => [$this, 'getTotalCount']
 		];
 
 		if (isset($category['description'])) {

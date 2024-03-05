@@ -26,8 +26,9 @@ final class Tag extends AbstractPageList
 {
 	public function show(PageInterface $page): void
 	{
-		if ($this->request()->hasNot('id'))
+		if ($this->request()->hasNot('id')) {
 			$this->showAll();
+		}
 
 		$tag = [
 			'id' => (int) $this->request('id', 0)
@@ -63,9 +64,6 @@ final class Tag extends AbstractPageList
 		$listOptions['id'] = 'lp_tags';
 		$listOptions['get_items'] = [
 			'function' => [$this, 'getPages']
-		];
-		$listOptions['get_count'] = [
-			'function' => [$this, 'getTotalCount']
 		];
 
 		new ItemList($listOptions);

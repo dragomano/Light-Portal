@@ -70,7 +70,7 @@ final class IconList implements ListInterface
 			'pager'         => 'pager',
 			'panels'        => 'table-columns',
 			'plus_circle'   => 'circle-plus',
-			'plus'          => 'plus',
+			'plus'          => 'plus fa-beat',
 			'preview'       => 'check-double',
 			'quote'         => 'quote-right',
 			'redirect'      => 'diamond-turn-right',
