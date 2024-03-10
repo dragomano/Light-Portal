@@ -67,7 +67,7 @@ function show_user_info_for_guests(): void
 	<ul class="centertext">
 		<li>', Lang::$txt['hello_member'], ' ', Lang::$txt['guest'], '</li>
 		<li><img alt="*" src="', Config::$modSettings['avatar_url'], '/default.png" width="100" height="100"></li>
-		<li>';
+		<li style="display: flex">';
 
 	if (Utils::$context['can_register']) {
 		echo '
