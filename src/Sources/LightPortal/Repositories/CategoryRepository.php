@@ -27,7 +27,7 @@ final class CategoryRepository extends AbstractRepository
 	public function getAll(int $start, int $limit, string $sort): array
 	{
 		$result = Db::$db->query('', /** @lang text */ '
-			SELECT c.category_id, c.icon, c.description, c.priority, c.status, COALESCE(t.title, tf.title) AS cat_title
+			SELECT c.category_id, c.icon, c.description, c.priority, c.status, COALESCE(t.title, tf.title) AS title
 			FROM {db_prefix}lp_categories AS c
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
 					c.category_id = t.item_id AND t.type = {literal:category} AND t.lang = {string:lang}
@@ -54,7 +54,7 @@ final class CategoryRepository extends AbstractRepository
 				'desc'     => $row['description'],
 				'priority' => (int) $row['priority'],
 				'status'   => (int) $row['status'],
-				'title'    => $row['cat_title'],
+				'title'    => $row['title'],
 			];
 		}
 

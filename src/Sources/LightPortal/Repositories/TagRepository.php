@@ -27,7 +27,7 @@ final class TagRepository extends AbstractRepository
 	public function getAll(int $start, int $limit, string $sort): array
 	{
 		$result = Db::$db->query('', /** @lang text */ '
-			SELECT tag.tag_id, tag.icon, tag.status, COALESCE(t.title, tf.title) AS tag_title
+			SELECT tag.tag_id, tag.icon, tag.status, COALESCE(t.title, tf.title) AS title
 			FROM {db_prefix}lp_tags AS tag
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
 					tag.tag_id = t.item_id AND t.type = {literal:tag} AND t.lang = {string:lang}
@@ -52,7 +52,7 @@ final class TagRepository extends AbstractRepository
 				'id'     => (int) $row['tag_id'],
 				'icon'   => $this->getIcon($row['icon']),
 				'status' => (int) $row['status'],
-				'title'  => $row['tag_title'],
+				'title'  => $row['title'],
 			];
 		}
 

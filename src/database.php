@@ -33,7 +33,7 @@ $tables[] = [
 		[
 			'name' => 'icon',
 			'type' => 'varchar',
-			'size' => 60,
+			'size' => 255,
 			'null' => true
 		],
 		[
@@ -121,7 +121,7 @@ $tables[] = [
 		[
 			'name' => 'icon',
 			'type' => 'varchar',
-			'size' => 60,
+			'size' => 255,
 			'null' => true
 		],
 		[
@@ -355,8 +355,8 @@ $tables[] = [
 		'values' => [
 			[
 				1, $user_info['id'], 'home', '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc porttitor posuere accumsan. Aliquam erat volutpat. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Phasellus vel blandit dui. Aliquam nunc est, vehicula sit amet eleifend in, scelerisque quis sem. In aliquam nec lorem nec volutpat. Sed eu blandit erat. Suspendisse elementum lectus a ligula commodo, at lobortis justo accumsan. Aliquam mollis lectus ultricies, semper urna eu, fermentum eros. Sed a interdum odio. Quisque sit amet feugiat enim. Curabitur aliquam lectus at metus tristique tempus. Sed vitae nisi ultricies, tincidunt lacus non, ultrices ante.</p><p><br></p>
-			<p>Duis ac ex sed dolor suscipit vulputate at eu ligula. Aliquam efficitur ac ante convallis ultricies. Nullam pretium vitae purus dapibus tempor. Aenean vel fringilla eros. Proin lectus velit, tristique ut condimentum eu, semper sed ipsum. Duis venenatis dolor lectus, et ullamcorper tortor varius eu. Vestibulum quis nisi ut nunc mollis fringilla. Sed consectetur semper magna, eget blandit nulla commodo sed. Aenean sem ipsum, auctor eget enim id, scelerisque malesuada nibh. Nulla ornare pharetra laoreet. Phasellus dignissim nisl nec arcu cursus luctus.</p><p><br></p>
-			<p>Aliquam in quam ut diam consectetur semper. Aliquam commodo mi purus, bibendum laoreet massa tristique eget. Suspendisse ut purus nisi. Mauris euismod dolor nec scelerisque ullamcorper. Praesent imperdiet semper neque, ac luctus nunc ultricies eget. Praesent sodales ante sed dignissim vulputate. Ut vel ligula id sem feugiat sollicitudin non at metus. Aliquam vel est non sapien sodales semper. Suspendisse potenti. Sed convallis quis turpis eu pulvinar. Vivamus nulla elit, condimentum vitae commodo eu, pellentesque ullamcorper enim. Maecenas faucibus dolor nec enim interdum, quis iaculis lacus suscipit. Pellentesque aliquam, lectus id volutpat euismod, ante tellus mollis dui, sed placerat erat arcu sit amet purus.</p>', 'html', 3, time()
+				<p>Duis ac ex sed dolor suscipit vulputate at eu ligula. Aliquam efficitur ac ante convallis ultricies. Nullam pretium vitae purus dapibus tempor. Aenean vel fringilla eros. Proin lectus velit, tristique ut condimentum eu, semper sed ipsum. Duis venenatis dolor lectus, et ullamcorper tortor varius eu. Vestibulum quis nisi ut nunc mollis fringilla. Sed consectetur semper magna, eget blandit nulla commodo sed. Aenean sem ipsum, auctor eget enim id, scelerisque malesuada nibh. Nulla ornare pharetra laoreet. Phasellus dignissim nisl nec arcu cursus luctus.</p><p><br></p>
+				<p>Aliquam in quam ut diam consectetur semper. Aliquam commodo mi purus, bibendum laoreet massa tristique eget. Suspendisse ut purus nisi. Mauris euismod dolor nec scelerisque ullamcorper. Praesent imperdiet semper neque, ac luctus nunc ultricies eget. Praesent sodales ante sed dignissim vulputate. Ut vel ligula id sem feugiat sollicitudin non at metus. Aliquam vel est non sapien sodales semper. Suspendisse potenti. Sed convallis quis turpis eu pulvinar. Vivamus nulla elit, condimentum vitae commodo eu, pellentesque ullamcorper enim. Maecenas faucibus dolor nec enim interdum, quis iaculis lacus suscipit. Pellentesque aliquam, lectus id volutpat euismod, ante tellus mollis dui, sed placerat erat arcu sit amet purus.</p>', 'html', 3, time()
 			]
 		],
 		'keys' => ['page_id']
@@ -467,7 +467,7 @@ $tables[] = [
 		[
 			'name' => 'icon',
 			'type' => 'varchar',
-			'size' => 60,
+			'size' => 255,
 			'null' => true
 		],
 		[
@@ -505,7 +505,7 @@ $tables[] = [
 		[
 			'name' => 'lang',
 			'type' => 'varchar',
-			'size' => 60,
+			'size' => 20,
 			'null' => false
 		],
 		[
@@ -525,11 +525,14 @@ $tables[] = [
 		'columns' => [
 			'item_id' => 'int',
 			'type'    => 'string-10',
-			'lang'    => 'string-60',
+			'lang'    => 'string-20',
 			'title'   => 'string-255'
 		],
-		'values' => [
-			[1, 'page', $language, $mbname]
+		'values' => empty($modSettings['userLanguage']) ? [
+			[1, 'page', $language, $mbname],
+		] : [
+			[1, 'page', $language, $mbname],
+			[1, 'page', $user_info['language'], $mbname],
 		],
 		'keys' => ['item_id', 'type', 'lang']
 	]

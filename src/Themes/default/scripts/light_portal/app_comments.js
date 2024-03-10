@@ -1,6 +1,6 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
-import { VueShowdown, showdown } from 'vue-showdown';
+import { VueShowdownPlugin, showdown } from 'vue-showdown';
 import '@github/markdown-toolbar-element';
 import CommentList from '../../LightPortal/components/CommentList.vue';
 import i18n from './dev/i18n';
@@ -32,7 +32,7 @@ const bindings = Object.keys(classMap).map((key) => ({
 
 showdown.extension('bindings', bindings);
 
-app.use(VueShowdown, {
+app.use(VueShowdownPlugin, {
   flavor: 'github',
   options: {
     emoji: true,

@@ -15,8 +15,7 @@
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, Db, Lang, Theme, User, Utils};
-use Bugo\LightPortal\Areas\Configs\{BasicConfig, ExtraConfig};
-use Bugo\LightPortal\Areas\Configs\{FeedbackConfig, MiscConfig, PanelConfig};
+use Bugo\LightPortal\Areas\Configs\{BasicConfig, ExtraConfig, FeedbackConfig, MiscConfig, PanelConfig};
 use Bugo\LightPortal\Areas\Exports\{BlockExport, CategoryExport, PageExport, PluginExport, TagExport};
 use Bugo\LightPortal\Areas\Imports\{BlockImport, CategoryImport, PageImport, PluginImport, TagImport};
 use Bugo\LightPortal\Helper;
@@ -183,11 +182,10 @@ final class ConfigArea
 	 */
 	public function helpadmin(): void
 	{
-		Lang::$txt['lp_standalone_url_help'] = sprintf(
-			Lang::$txt['lp_standalone_url_help'],
+		Lang::$txt['lp_standalone_url_help'] = Lang::getTxt('lp_standalone_url_help', [
 			Config::$boardurl . '/portal.php',
 			Config::$scripturl
-		);
+		]);
 	}
 
 	/**
@@ -218,23 +216,21 @@ final class ConfigArea
 						class="floatright"
 						src="https://user-images.githubusercontent.com/229402/143980485-16ba84b8-9d8d-4c06-abeb-af949d594f66.png"
 						alt="' . LP_NAME . ' logo"
-					>' . sprintf(
-						Lang::$txt['lp_base_info'],
+					>' . Lang::getTxt('lp_base_info', [
 						LP_VERSION,
 						phpversion(),
 						Utils::$smcFunc['db_title'],
-						Db::$db->get_version()
-					)
+						Db::$db->get_version(),
+					])
 				],
 				'extra' => [
 					'description' => Lang::$txt['lp_extra_info']
 				],
 				'panels' => [
-					'description' => sprintf(
-						Lang::$txt['lp_panels_info'],
+					'description' => Lang::getTxt('lp_panels_info', [
 						LP_NAME,
-						'https://evgenyrodionov.github.io/flexboxgrid2/'
-					)
+						'https://evgenyrodionov.github.io/flexboxgrid2/',
+					])
 				],
 				'misc' => [
 					'description' => Lang::$txt['lp_misc_info']

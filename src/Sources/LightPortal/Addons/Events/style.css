@@ -1,0 +1,25 @@
+.block_events {
+    > div:last-child {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        grid-gap: 0 10px;
+
+        @media screen and (max-width: 768px) {
+            & {
+                display: block;
+            }
+        }
+    }
+
+    .fa-calendar {
+        color: forestgreen;
+    }
+
+    .fa-cake-candles {
+        color: salmon;
+    }
+
+    .fa-calendar-days {
+        color: rgb(59, 91, 152);
+    }
+}

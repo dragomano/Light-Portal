@@ -26,8 +26,9 @@ final class Category extends AbstractPageList
 {
 	public function show(PageInterface $page): void
 	{
-		if ($this->request()->hasNot('id'))
+		if ($this->request()->hasNot('id')) {
 			$this->showAll();
+		}
 
 		$category = [
 			'id' => (int) $this->request('id', 0)
@@ -69,9 +70,6 @@ final class Category extends AbstractPageList
 		$listOptions['id'] = 'lp_categories';
 		$listOptions['get_items'] = [
 			'function' => [$this, 'getPages']
-		];
-		$listOptions['get_count'] = [
-			'function' => [$this, 'getTotalCount']
 		];
 
 		if (isset($category['description'])) {
@@ -183,19 +181,6 @@ final class Category extends AbstractPageList
 				'function' => fn() => count($this->getAll())
 			],
 			'columns' => [
-				'title' => [
-					'header' => [
-						'value' => Lang::$txt['lp_category']
-					],
-					'data' => [
-						'function' => static fn($entry) => $entry['icon'] . ' ' . '<a href="' . $entry['link'] . '">' . $entry['title'] . '</a>' .
-							(empty($entry['description']) ? '' : '<p class="smalltext">' . $entry['description'] . '</p>')
-					],
-					'sort' => [
-						'default' => 't.title DESC',
-						'reverse' => 't.title'
-					]
-				],
 				'priority' => [
 					'header' => [
 						'value' => Lang::$txt['lp_block_priority']
@@ -207,6 +192,19 @@ final class Category extends AbstractPageList
 					'sort' => [
 						'default' => 'c.priority',
 						'reverse' => 'c.priority DESC'
+					]
+				],
+				'title' => [
+					'header' => [
+						'value' => Lang::$txt['lp_category']
+					],
+					'data' => [
+						'function' => static fn($entry) => $entry['icon'] . ' ' . '<a href="' . $entry['link'] . '">' . $entry['title'] . '</a>' .
+							(empty($entry['description']) ? '' : '<p class="smalltext">' . $entry['description'] . '</p>')
+					],
+					'sort' => [
+						'default' => 'title DESC',
+						'reverse' => 'title'
 					]
 				],
 				'num_pages' => [
@@ -233,12 +231,12 @@ final class Category extends AbstractPageList
 		Utils::obExit();
 	}
 
-	public function getAll(int $start = 0, int $limit = 0, string $sort = 't.title'): array
+	public function getAll(int $start = 0, int $limit = 0, string $sort = 'title'): array
 	{
 		$result = Db::$db->query('', '
 			SELECT
 				COALESCE(c.category_id, 0) AS category_id, c.icon, c.description, c.priority,
-				COUNT(p.page_id) AS frequency, COALESCE(t.title, tf.title) AS cat_title
+				COUNT(p.page_id) AS frequency, COALESCE(t.title, tf.title) AS title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_categories AS c ON (p.category_id = c.category_id)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
@@ -271,7 +269,7 @@ final class Category extends AbstractPageList
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['category_id']] = [
 				'icon'        => $this->getIcon($row['icon']),
-				'title'       => $row['cat_title'] ?: Lang::$txt['lp_no_category'],
+				'title'       => $row['title'] ?: Lang::$txt['lp_no_category'],
 				'description' => $row['description'] ?? '',
 				'link'        => LP_BASE_URL . ';sa=categories;id=' . $row['category_id'],
 				'priority'    => (int) $row['priority'],

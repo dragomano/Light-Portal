@@ -45,6 +45,10 @@ class PortalEntity {
         localStorage.removeItem('tab');
 
         nav.click();
+
+        if (formElements[i].name.startsWith('title_')) {
+          document.querySelector(`[data-name=${formElements[i].name}]`).click();
+        }
       }
     }
   }

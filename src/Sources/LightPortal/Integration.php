@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal;
 
 use Bugo\LightPortal\Compilers\Zero;
-use Bugo\Compat\{Config, Db, Lang, User, Utils};
+use Bugo\Compat\{Config, Db, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Actions\{BoardIndex, Block, Category};
 use Bugo\LightPortal\Actions\{FrontPage, Page, Tag};
 
@@ -56,7 +56,7 @@ final class Integration extends AbstractMain
 		Utils::$context['lp_num_queries'] ??= 0;
 
 		defined('LP_NAME') || define('LP_NAME', 'Light Portal');
-		defined('LP_VERSION') || define('LP_VERSION', '2.6.0');
+		defined('LP_VERSION') || define('LP_VERSION', '2.6.1');
 		defined('LP_PLUGIN_LIST') || define('LP_PLUGIN_LIST', 'https://d8d75ea98b25aa12.mokky.dev/addons');
 		defined('LP_ADDON_URL') || define('LP_ADDON_URL', Config::$boardurl . '/Sources/LightPortal/Addons');
 		defined('LP_ADDON_DIR') || define('LP_ADDON_DIR', __DIR__ . '/Addons');
@@ -126,6 +126,8 @@ final class Integration extends AbstractMain
 			$actions[LP_ACTION] = [false, [new FrontPage(), 'show']];
 
 		$actions['forum'] = [false, [new BoardIndex(), 'show']];
+
+		Theme::load();
 
 		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'categories')
 			(new Category())->show(new Page());
@@ -428,11 +430,10 @@ final class Integration extends AbstractMain
 			$result = sprintf(Lang::$txt['lp_who_viewing_frontpage'], Config::$scripturl);
 
 			if ($this->isStandaloneMode()) {
-				$result = sprintf(
-					Lang::$txt['lp_who_viewing_index'],
+				$result = Lang::getTxt('lp_who_viewing_index', [
 					Config::$modSettings['lp_standalone_url'],
 					Config::$scripturl
-				);
+				]);
 			}
 		}
 
@@ -453,11 +454,10 @@ final class Integration extends AbstractMain
 				$tags = $this->getEntityData('tag');
 
 				$result = isset($actions['id'])
-					? sprintf(
-						Lang::$txt['lp_who_viewing_the_tag'],
+					? Lang::getTxt('lp_who_viewing_the_tag', [
 						LP_BASE_URL . ';sa=tags;id=' . $actions['id'],
 						$tags[$actions['id']]
-					)
+					])
 					: sprintf(
 						Lang::$txt['lp_who_viewing_tags'],
 						LP_BASE_URL . ';sa=tags'
@@ -468,11 +468,10 @@ final class Integration extends AbstractMain
 				$categories = $this->getEntityData('category');
 
 				$result = isset($actions['id'])
-					? sprintf(
-						Lang::$txt['lp_who_viewing_the_category'],
+					? Lang::getTxt('lp_who_viewing_the_category', [
 						LP_BASE_URL . ';sa=categories;id=' . $actions['id'],
 						$categories[$actions['id']]['name']
-					)
+					])
 					: sprintf(
 						Lang::$txt['lp_who_viewing_categories'],
 						LP_BASE_URL . ';sa=categories'
@@ -481,11 +480,10 @@ final class Integration extends AbstractMain
 		}
 
 		if ($actions['action'] === 'forum') {
-			$result = sprintf(
-				Lang::$txt['who_index'],
+			$result = Lang::getTxt('who_index', [
 				Config::$scripturl . '?action=forum',
 				Utils::$context['forum_name']
-			);
+			]);
 		}
 
 		return $result;

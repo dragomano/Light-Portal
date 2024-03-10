@@ -10,12 +10,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.02.24
+ * @version 01.03.24
  */
 
 namespace Bugo\LightPortal\Addons\CurrentMonth;
 
-use Bugo\Compat\{Config, Lang, Theme, User, Utils};
+use Bugo\Compat\{Calendar, Config, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 
 if (! defined('LP_NAME'))
@@ -35,9 +35,7 @@ class CurrentMonth extends Block
 
 	public function getData(): array
 	{
-		$this->require('Subs-Calendar');
-
-		$today = getTodayInfo();
+		$today = Calendar::getTodayInfo();
 		$year  = $today['year'];
 		$month = $today['month'];
 		$day   = $today['day'];
@@ -58,7 +56,7 @@ class CurrentMonth extends Block
 			'show_week_links'    => (int) (Config::$modSettings['cal_week_links'] ?? 0)
 		];
 
-		return getCalendarGrid(date_format($startObject, 'Y-m-d'), $options, has_picker: false);
+		return Calendar::getCalendarGrid(date_format($startObject, 'Y-m-d'), $options, has_picker: false);
 	}
 
 	public function prepareContent(object $data): void

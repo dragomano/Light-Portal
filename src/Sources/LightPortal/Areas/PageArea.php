@@ -444,7 +444,7 @@ final class PageArea
 	{
 		$searchParamString = trim($this->request('search', ''));
 		$searchParams = [
-			'string' => Utils::$smcFunc['htmlspecialchars']($searchParamString),
+			'string' => Utils::htmlspecialchars($searchParamString),
 		];
 
 		Utils::$context['search_params'] = empty($searchParamString)
@@ -676,9 +676,15 @@ final class PageArea
 			->setAttribute('maxlength', 255)
 			->setValue(Utils::$context['lp_page']['description']);
 
-		CustomField::make('tags', Lang::$txt['lp_tags'])
-			->setTab('seo')
-			->setValue(static fn() => new TagSelect());
+		if (empty(Utils::$context['lp_quantities']['active_tags'])) {
+			TextField::make('tags', '')
+				->setAttribute('hidden', true)
+				->setValue('');
+		} else {
+			CustomField::make('tags', Lang::$txt['lp_tags'])
+				->setTab('seo')
+				->setValue(static fn() => new TagSelect());
+		}
 
 		if (Utils::$context['lp_page']['created_at'] >= time()) {
 			CustomField::make('datetime', Lang::$txt['lp_page_publish_datetime'])
@@ -721,7 +727,7 @@ final class PageArea
 		Security::checkSubmitOnce('free');
 
 		Utils::$context['preview_title']   = Utils::$context['lp_page']['titles'][Utils::$context['user']['language']];
-		Utils::$context['preview_content'] = Utils::$smcFunc['htmlspecialchars'](
+		Utils::$context['preview_content'] = Utils::htmlspecialchars(
 			Utils::$context['lp_page']['content'], ENT_QUOTES
 		);
 

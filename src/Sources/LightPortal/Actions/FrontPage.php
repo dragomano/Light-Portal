@@ -81,7 +81,7 @@ final class FrontPage implements ActionInterface
 
 		$article->init();
 
-		$key = 'articles_u' . Utils::$context['user']['id'] . '_' . $start . '_' . $limit;
+		$key = 'articles_u' . User::$info['id'] . '_' . User::$info['language'] . '_' . $start . '_' . $limit;
 
 		if (($data = $this->cache()->get($key)) === null) {
 			$data['total'] = $article->getTotalCount();

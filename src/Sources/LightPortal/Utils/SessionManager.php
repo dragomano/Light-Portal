@@ -39,7 +39,7 @@ final class SessionManager
 
 	public function getActiveBlocksCount(): int
 	{
-		if ($this->session('lp')->isEmpty('active_blocks')) {
+		if ($this->session('lp')->get('active_blocks') === null) {
 			$result = Db::$db->query('', '
 				SELECT COUNT(block_id)
 				FROM {db_prefix}lp_blocks
@@ -62,7 +62,7 @@ final class SessionManager
 
 	public function getActivePagesCount(): int
 	{
-		if ($this->session('lp')->isEmpty('active_pages')) {
+		if ($this->session('lp')->get('active_pages') === null) {
 			$result = Db::$db->query('', '
 				SELECT COUNT(page_id)
 				FROM {db_prefix}lp_pages
@@ -87,7 +87,7 @@ final class SessionManager
 
 	public function getMyPagesCount(): int
 	{
-		if ($this->session('lp')->isEmpty('my_pages')) {
+		if ($this->session('lp')->get('my_pages') === null) {
 			$result = Db::$db->query('', '
 				SELECT COUNT(page_id)
 				FROM {db_prefix}lp_pages
@@ -110,7 +110,7 @@ final class SessionManager
 
 	public function getUnapprovedPagesCount(): int
 	{
-		if ($this->session('lp')->isEmpty('unapproved_pages')) {
+		if ($this->session('lp')->get('unapproved_pages') === null) {
 			$result = Db::$db->query('', '
 				SELECT COUNT(page_id)
 				FROM {db_prefix}lp_pages
@@ -133,7 +133,7 @@ final class SessionManager
 
 	public function getInternalPagesCount(): int
 	{
-		if ($this->session('lp')->isEmpty('internal_pages')) {
+		if ($this->session('lp')->get('internal_pages') === null) {
 			$result = Db::$db->query('', '
 				SELECT COUNT(page_id)
 				FROM {db_prefix}lp_pages
@@ -156,7 +156,7 @@ final class SessionManager
 
 	public function getActiveCategoriesCount(): int
 	{
-		if ($this->session('lp')->isEmpty('active_categories')) {
+		if ($this->session('lp')->get('active_categories') === null) {
 			$result = Db::$db->query('', '
 				SELECT COUNT(category_id)
 				FROM {db_prefix}lp_categories
@@ -179,7 +179,7 @@ final class SessionManager
 
 	public function getActiveTagsCount(): int
 	{
-		if ($this->session('lp')->isEmpty('active_tags')) {
+		if ($this->session('lp')->get('active_tags') === null) {
 			$result = Db::$db->query('', '
 				SELECT COUNT(tag_id)
 				FROM {db_prefix}lp_tags

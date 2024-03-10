@@ -68,7 +68,7 @@ abstract class AbstractRepository
 		if ($entity['type'] !== 'bbc')
 			return;
 
-		$entity['content'] = Utils::$smcFunc['htmlspecialchars']($entity['content'], ENT_QUOTES);
+		$entity['content'] = Utils::htmlspecialchars($entity['content'], ENT_QUOTES);
 
 		Msg::preparseCode($entity['content']);
 	}
@@ -80,6 +80,11 @@ abstract class AbstractRepository
 
 		$titles = [];
 		foreach (Utils::$context['lp_' . $this->entity]['titles'] as $lang => $title) {
+			$title = Utils::$smcFunc['htmltrim']($title);
+
+			if ($method === '' && $title === '')
+				continue;
+
 			$titles[] = [
 				'item_id' => $item,
 				'type'    => $this->entity,
