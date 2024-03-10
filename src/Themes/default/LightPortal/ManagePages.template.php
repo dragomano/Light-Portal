@@ -55,7 +55,7 @@ function template_page_post(): void
 		<h3 class="catbg">', Utils::$context['page_area_title'], '</h3>
 	</div>
 	<div class="information">
-		', Lang::$txt['lp_' . Utils::$context['lp_page']['type']]['description'], '
+		', Lang::$txt['lp_' . Utils::$context['lp_page']['type']]['description'] ?? Utils::$context['lp_page']['type'], '
 	</div>';
 	}
 
