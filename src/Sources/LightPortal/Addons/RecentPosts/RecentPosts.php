@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 20.02.24
+ * @version 17.03.24
  */
 
 namespace Bugo\LightPortal\Addons\RecentPosts;
@@ -38,6 +38,7 @@ class RecentPosts extends Block
 
 		$params = [
 			'no_content_class' => true,
+			'link_in_title'    => Config::$scripturl . '?action=recent',
 			'exclude_boards'   => '',
 			'include_boards'   => '',
 			'exclude_topics'   => '',

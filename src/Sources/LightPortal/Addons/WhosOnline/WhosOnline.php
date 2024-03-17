@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.24
+ * @version 17.03.24
  */
 
 namespace Bugo\LightPortal\Addons\WhosOnline;
@@ -34,6 +34,7 @@ class WhosOnline extends Block
 			return;
 
 		$params = [
+			'link_in_title'   => Config::$scripturl . '?action=who',
 			'show_group_key'  => false,
 			'show_avatars'    => false,
 			'update_interval' => 600,

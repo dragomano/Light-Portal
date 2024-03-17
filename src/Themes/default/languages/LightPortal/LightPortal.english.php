@@ -187,6 +187,7 @@ $txt['lp_block_select_icon'] = 'Select icon';
 $txt['lp_block_title_class'] = 'CSS title class';
 $txt['lp_block_content_class'] = 'CSS content class';
 $txt['lp_block_hide_header'] = 'Hide header';
+$txt['lp_block_link_in_title'] = 'Link in the block header';
 
 // Default types
 $txt['lp_bbc']['title'] = 'Custom BBCode';

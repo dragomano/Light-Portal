@@ -58,6 +58,10 @@ final class Block implements BlockInterface
 			if (empty($data['parameters']['hide_header'])) {
 				$title = $this->getTranslatedTitle($data['titles']);
 				$icon  = $this->getIcon(Utils::$context['lp_blocks'][$data['placement']][$item]['icon']);
+
+				if (! empty($data['parameters']['link_in_title'])) {
+					$title = "<a href=\"{$data['parameters']['link_in_title']}\">$title</a>";
+				}
 			} else {
 				$title = $icon = '';
 			}

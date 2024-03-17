@@ -10,12 +10,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 20.02.24
+ * @version 17.03.24
  */
 
 namespace Bugo\LightPortal\Addons\RecentTopics;
 
-use Bugo\Compat\{Lang, User, Utils};
+use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\LightPortal\Areas\Fields\CustomField;
@@ -41,6 +41,7 @@ class RecentTopics extends Block
 
 		$params = [
 			'no_content_class' => true,
+			'link_in_title'    => Config::$scripturl . '?action=unread',
 			'exclude_boards'   => '',
 			'include_boards'   => '',
 			'use_simple_style' => false,
