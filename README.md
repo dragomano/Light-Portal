@@ -4,7 +4,6 @@
 [![SMF 3.0 Alpha](https://img.shields.io/badge/SMF-3.0_Alpha-ed2533.svg?style=flat)](https://github.com/SimpleMachines/SMF/tree/release-3.0)
 ![License](https://img.shields.io/github/license/dragomano/light-portal)
 ![Hooks only: Yes](https://img.shields.io/badge/Hooks%20only-YES-blue)
-[![Total Downloads](https://img.shields.io/github/downloads/dragomano/Light-Portal/total.svg)](https://github.com/dragomano/Light-Portal/releases)
 ![PHP](https://img.shields.io/badge/PHP-^8.0-blue.svg?style=flat)
 [![Crowdin](https://badges.crowdin.net/light-portal/localized.svg)](https://crowdin.com/project/light-portal)
 [![](https://img.shields.io/badge/Demo-Forum-brightgreen.svg)](https://demo.dragomano.ru)
