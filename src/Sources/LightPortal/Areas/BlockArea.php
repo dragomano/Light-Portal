@@ -192,7 +192,6 @@ final class BlockArea
 		$baseParams = [
 			'hide_header'      => false,
 			'no_content_class' => false,
-			'link_in_title'    => '',
 		];
 
 		if (in_array(Utils::$context['current_block']['type'], array_keys(Utils::$context['lp_content_types']))) {
@@ -307,9 +306,11 @@ final class BlockArea
 		CheckboxField::make('hide_header', Lang::$txt['lp_block_hide_header'])
 			->setValue(Utils::$context['lp_block']['options']['hide_header']);
 
-		TextField::make('link_in_title', Lang::$txt['lp_block_link_in_title'])
-			->setType('url')
-			->setValue(Utils::$context['lp_block']['options']['link_in_title']);
+		if (isset(Utils::$context['lp_block']['options']['link_in_title'])) {
+			TextField::make('link_in_title', Lang::$txt['lp_block_link_in_title'])
+				->setType('url')
+				->setValue(Utils::$context['lp_block']['options']['link_in_title']);
+		}
 
 		Utils::$context['lp_block_tab_appearance'] = true;
 
