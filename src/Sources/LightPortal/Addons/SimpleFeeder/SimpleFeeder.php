@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 18.03.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleFeeder;
@@ -59,9 +59,7 @@ class SimpleFeeder extends Block
 			->setType('url')
 			->setTab('content')
 			->required()
-			->setAttribute('maxlength', 255)
 			->placeholder(Config::$scripturl . '?action=.xml;type=rss2')
-			->setAttribute('style', 'width: 100%')
 			->setValue(Utils::$context['lp_block']['options']['url']);
 
 		CheckboxField::make('show_text', Lang::$txt['lp_simple_feeder']['show_text'])
