@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.24
+ * @version 21.03.24
  */
 
 namespace Bugo\LightPortal\Addons\TinySlider;
@@ -270,9 +270,10 @@ class TinySlider extends Block
 			return;
 
 		Theme::loadCSSFile('light_portal/tiny_slider/tiny-slider.css');
-		$this->loadJSFile('light_portal/tiny_slider/tiny-slider.js', ['minimize' => true]);
 
-		$this->addInlineJS('
+		Theme::loadJavaScriptFile('light_portal/tiny_slider/tiny-slider.js', ['minimize' => true]);
+
+		Theme::addInlineJavaScript('
 			const slider' . $id . ' = tns({
 				container: "#tiny_slider' . $id . '",
 				axis: "' . (empty($parameters['axis']) ? $this->params['axis'] : $parameters['axis']) . '",

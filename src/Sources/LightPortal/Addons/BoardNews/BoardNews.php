@@ -10,12 +10,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 20.02.24
+ * @version 21.03.24
  */
 
 namespace Bugo\LightPortal\Addons\BoardNews;
 
-use Bugo\Compat\{Config, Lang, User, Utils};
+use Bugo\Compat\{Config, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{NumberField, RangeField};
 use Bugo\LightPortal\Utils\MessageIndex;
@@ -100,7 +100,7 @@ class BoardNews extends Block
 			return;
 		}
 
-		$this->loadJSFile('topic.js', ['defer' => false, 'minimize' => true], 'smf_topic');
+		Theme::loadJavaScriptFile('topic.js', ['defer' => false, 'minimize' => true], 'smf_topic');
 
 		foreach ($boardNews as $news) {
 			$news['link'] = '<a href="' . $news['href'] . '">

@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 10.02.24
+ * @version 21.03.24
  */
 
 namespace Bugo\LightPortal\Addons\Snowflakes;
@@ -38,8 +38,10 @@ class Snowflakes extends Plugin
 	public function init(): void
 	{
 		Theme::loadCSSFile('light_portal/snowflakes/snow.min.css');
-		$this->loadJSFile('light_portal/snowflakes/Snow.min.js', ['minimize' => true]);
-		$this->addInlineJS('
+
+		Theme::loadJavaScriptFile('light_portal/snowflakes/Snow.min.js', ['minimize' => true]);
+
+		Theme::addInlineJavaScript('
 			new Snow({
 				iconColor: "' . (empty(Utils::$context['lp_snowflakes_plugin']['icon_color']) ? $this->params['icon_color'] : Utils::$context['lp_snowflakes_plugin']['icon_color']) . '",
 				iconSize: ' . (empty(Utils::$context['lp_snowflakes_plugin']['icon_size']) ? $this->params['icon_size'] : Utils::$context['lp_snowflakes_plugin']['icon_size']) . ',

@@ -55,10 +55,11 @@ class Notify
 
 	protected static function getUserGender(): string
 	{
-		return empty(User::$profiles[User::$info['id']]) ? 'male' : (
-		isset(User::$profiles[User::$info['id']]['options']['cust_gender'])
-		&& User::$profiles[User::$info['id']]['options']['cust_gender'] === '{gender_2}'
-			? 'female' : 'male'
-		);
+		if (empty(User::$profiles[User::$info['id']]))
+			return 'male';
+
+		return isset(User::$profiles[User::$info['id']]['options']['cust_gender'])
+			&& User::$profiles[User::$info['id']]['options']['cust_gender'] === '{gender_2}'
+				? 'female' : 'male';
 	}
 }

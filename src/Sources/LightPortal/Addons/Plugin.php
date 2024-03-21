@@ -101,29 +101,4 @@ abstract class Plugin
 
 		return $themes && isset($themes[Theme::$current->settings['theme_id']]);
 	}
-
-	public function addInlineJS(string $javascript, $defer = false): void
-	{
-		Theme::addInlineJavaScript($javascript, $defer);
-	}
-
-	public function addInlineCSS(string $css): void
-	{
-		Theme::addInlineCss($css);
-	}
-
-	public function loadJSFile(string $fileName, array $params = [], string $id = ''): void
-	{
-		Theme::loadJavaScriptFile($fileName, $params, $id);
-	}
-
-	public function loadExtCSS(string $fileName, array $params = [], string $id = ''): void
-	{
-		Theme::loadCSSFile($fileName, array_merge($params, ['external' => true]), $id);
-	}
-
-	public function loadExtJS(string $fileName, array $params = [], string $id = ''): void
-	{
-		$this->loadJSFile($fileName, array_merge($params, ['external' => true]), $id);
-	}
 }
