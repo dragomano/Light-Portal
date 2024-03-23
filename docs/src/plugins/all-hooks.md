@@ -75,11 +75,11 @@ public function prepareEditor(array $object): void
     if ($object['type'] !== 'markdown')
         return;
 
-    $this->loadLanguage('Editor');
+    Lang::load('Editor');
 
-    $this->loadExtCSS('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.css');
+    Theme::loadCSSFile('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.css', ['external' => true]);
 
-    $this->addInlineCss('
+    Theme::addInlineCss('
     .editor-toolbar button {
         box-shadow: none;
     }');
@@ -345,7 +345,12 @@ public function commentButtons(array $comment, array &$buttons): void
 ```php
 public function addSettings(array &$settings): void
 {
-    $settings['disqus'][] = ['text', 'shortname', 'subtext' => Lang::$txt['lp_disqus']['shortname_subtext'], 'required' => true];
+    $settings['disqus'][] = [
+        'text',
+        'shortname',
+        'subtext' => Lang::$txt['lp_disqus']['shortname_subtext'],
+        'required' => true,
+    ];
 }
 ```
 
@@ -410,7 +415,10 @@ public function customLayoutExtensions(array &$extensions): void
 ```php
 public function frontAssets(): void
 {
-    $this->loadExtJS('https://' . Utils::$context['lp_disqus_plugin']['shortname'] . '.disqus.com/count.js');
+    Theme::loadJavaScriptFile(
+        'https://' . Utils::$context['lp_disqus_plugin']['shortname'] . '.disqus.com/count.js',
+        ['external' => true],
+    );
 }
 ```
 
@@ -440,7 +448,8 @@ public function frontTopics(array &$columns, array &$tables): void
 ```php
 public function frontTopicsOutput(array &$topics, array $row): void
 {
-    $topics[$row['id_topic']]['rating'] = empty($row['total_votes']) ? 0 : (number_format($row['total_value'] / $row['total_votes']));
+    $topics[$row['id_topic']]['rating'] = empty($row['total_votes'])
+        ? 0 : (number_format($row['total_value'] / $row['total_votes']));
 }
 ```
 
