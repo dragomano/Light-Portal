@@ -136,8 +136,12 @@ final class Page implements PageInterface
 		if (empty($alias))
 			return [];
 
-		return $this->cache('page_' . $alias)
+		$data = $this->cache('page_' . $alias)
 			->setFallback(PageRepository::class, 'getData', $alias);
+
+		$this->repository->prepareData($data);
+
+		return $data;
 	}
 
 	public function showAsCards(PageListInterface $entity): void

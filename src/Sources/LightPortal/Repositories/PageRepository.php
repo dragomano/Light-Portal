@@ -182,8 +182,6 @@ final class PageRepository extends AbstractRepository
 		Db::$db->free_result($result);
 		Utils::$context['lp_num_queries']++;
 
-		$this->prepareData($data);
-
 		return $data ?? [];
 	}
 
@@ -384,7 +382,7 @@ final class PageRepository extends AbstractRepository
 		foreach ($titleWords as $key => $word) {
 			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE
 			WHEN lower(t.title) LIKE lower(\'%' . $word . '%\')
-		    THEN ' . (count($titleWords) - $key) * 2 . ' ELSE 0 END';
+			THEN ' . (count($titleWords) - $key) * 2 . ' ELSE 0 END';
 		}
 
 		foreach ($aliasWords as $key => $word) {
@@ -501,6 +499,36 @@ final class PageRepository extends AbstractRepository
 		return $pages;
 	}
 
+	/**
+	 * @throws IntlException
+	 */
+	public function prepareData(?array &$data): void
+	{
+		if (empty($data))
+			return;
+
+		$isAuthor = $data['author_id'] && $data['author_id'] == User::$info['id'];
+
+		$data['created']  = DateTime::relative((int) $data['created_at']);
+		$data['updated']  = DateTime::relative((int) $data['updated_at']);
+		$data['can_view'] = $this->canViewItem($data['permissions']) || User::$info['is_admin'] || $isAuthor;
+		$data['can_edit'] = User::$info['is_admin']
+			|| Utils::$context['allow_light_portal_manage_pages_any']
+			|| (Utils::$context['allow_light_portal_manage_pages_own'] && $isAuthor);
+
+		if ($data['type'] === 'bbc') {
+			$data['content'] = Msg::unPreparseCode($data['content']);
+		}
+
+		if (! empty($data['category_id'])) {
+			$data['category'] = $this->getEntityData('category')[$data['category_id']]['title'];
+		}
+
+		$data['tags'] = $this->getTags($data['id']);
+
+		$this->hook('preparePageData', [&$data, $isAuthor]);
+	}
+
 	private function addData(): int
 	{
 		Db::$db->transaction('begin');
@@ -608,40 +636,6 @@ final class PageRepository extends AbstractRepository
 		Db::$db->transaction('commit');
 	}
 
-	private function saveTags(int $item, string $method = ''): void
-	{
-		Db::$db->query('', '
-			DELETE FROM {db_prefix}lp_page_tags
-			WHERE page_id = {int:item}',
-			[
-				'item' => $item,
-			]
-		);
-
-		$relations = [];
-		foreach (Utils::$context['lp_' . $this->entity]['tags'] as $tag) {
-			$relations[] = [
-				'page_id' => $item,
-				'tag_id'  => $tag,
-			];
-		}
-
-		if (empty($relations))
-			return;
-
-		Db::$db->insert($method,
-			'{db_prefix}lp_page_tags',
-			[
-				'page_id' => 'int',
-				'tag_id'  => 'int',
-			],
-			$relations,
-			['page_id', 'tag_id'],
-		);
-
-		Utils::$context['lp_num_queries']++;
-	}
-
 	private function getTags(int $item): array
 	{
 		$result = Db::$db->query('', '
@@ -680,34 +674,38 @@ final class PageRepository extends AbstractRepository
 		return $items;
 	}
 
-	/**
-	 * @throws IntlException
-	 */
-	private function prepareData(?array &$data): void
+	private function saveTags(int $item, string $method = ''): void
 	{
-		if (empty($data))
+		Db::$db->query('', '
+			DELETE FROM {db_prefix}lp_page_tags
+			WHERE page_id = {int:item}',
+			[
+				'item' => $item,
+			]
+		);
+
+		$relations = [];
+		foreach (Utils::$context['lp_' . $this->entity]['tags'] as $tag) {
+			$relations[] = [
+				'page_id' => $item,
+				'tag_id'  => $tag,
+			];
+		}
+
+		if (empty($relations))
 			return;
 
-		$isAuthor = $data['author_id'] && $data['author_id'] == User::$info['id'];
+		Db::$db->insert($method,
+			'{db_prefix}lp_page_tags',
+			[
+				'page_id' => 'int',
+				'tag_id'  => 'int',
+			],
+			$relations,
+			['page_id', 'tag_id'],
+		);
 
-		$data['created']  = DateTime::relative((int) $data['created_at']);
-		$data['updated']  = DateTime::relative((int) $data['updated_at']);
-		$data['can_view'] = $this->canViewItem($data['permissions']) || User::$info['is_admin'] || $isAuthor;
-		$data['can_edit'] = User::$info['is_admin']
-			|| Utils::$context['allow_light_portal_manage_pages_any']
-			|| (Utils::$context['allow_light_portal_manage_pages_own'] && $isAuthor);
-
-		if ($data['type'] === 'bbc') {
-			$data['content'] = Msg::unPreparseCode($data['content']);
-		}
-
-		if (! empty($data['category_id'])) {
-			$data['category'] = $this->getEntityData('category')[$data['category_id']]['title'];
-		}
-
-		$data['tags'] = $this->getTags($data['id']);
-
-		$this->hook('preparePageData', [&$data, $isAuthor]);
+		Utils::$context['lp_num_queries']++;
 	}
 
 	private function getPublishTime(): int
