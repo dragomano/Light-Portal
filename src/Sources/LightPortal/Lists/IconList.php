@@ -74,7 +74,7 @@ final class IconList implements ListInterface
 			'panels'        => 'table-columns',
 			'plus_circle'   => 'circle-plus',
 			'plus'          => 'plus fa-beat',
-			'preview'       => 'check-double',
+			'preview'       => 'eye',
 			'quote'         => 'quote-right',
 			'redirect'      => 'diamond-turn-right',
 			'remove'        => 'trash',
@@ -104,8 +104,8 @@ final class IconList implements ListInterface
 		$set = array_map(fn($icon): string => $this->prefix . $icon, $set);
 
 		$set['youtube']   = 'fa-brands fa-youtube';
-		$set['save_exit'] = 'fa-regular fa-square-check';
-		$set['save']      = 'fa-regular fa-circle-check';
+		$set['save_exit'] = 'fa-solid fa-envelope-open-text';
+		$set['save']      = 'fa-regular fa-floppy-disk';
 		$set['big_image'] = 'fa-regular fa-image fa-5x';
 
 		// Plugin authors can extend the icon set
