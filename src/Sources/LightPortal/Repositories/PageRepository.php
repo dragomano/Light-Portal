@@ -208,6 +208,9 @@ final class PageRepository extends AbstractRepository
 		$this->cache()->flush();
 
 		$this->session('lp')->free('active_pages');
+		$this->session('lp')->free('my_pages');
+		$this->session('lp')->free('unapproved_pages');
+		$this->session('lp')->free('internal_pages');
 
 		if ($this->request()->has('save_exit'))
 			Utils::redirectexit('action=admin;area=lp_pages;sa=main');
@@ -295,6 +298,9 @@ final class PageRepository extends AbstractRepository
 		}
 
 		$this->session('lp')->free('active_pages');
+		$this->session('lp')->free('my_pages');
+		$this->session('lp')->free('unapproved_pages');
+		$this->session('lp')->free('internal_pages');
 	}
 
 	public function getPrevNextLinks(array $page): array
