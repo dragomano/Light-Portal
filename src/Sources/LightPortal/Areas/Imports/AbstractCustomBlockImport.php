@@ -14,7 +14,7 @@
 namespace Bugo\LightPortal\Areas\Imports;
 
 use Bugo\Compat\{Config, Db};
-use Bugo\Compat\{ErrorHandler, Sapi, Utils};
+use Bugo\Compat\{ErrorHandler, Sapi};
 use Bugo\LightPortal\Helper;
 
 if (! defined('SMF'))
@@ -73,8 +73,6 @@ abstract class AbstractCustomBlockImport implements ImportInterface, CustomImpor
 					2
 				);
 
-				Utils::$context['lp_num_queries']++;
-
 				$results = array_merge($results, $temp);
 			}
 		}
@@ -100,8 +98,6 @@ abstract class AbstractCustomBlockImport implements ImportInterface, CustomImpor
 					['item_id', 'type', 'lang'],
 					2
 				);
-
-				Utils::$context['lp_num_queries']++;
 			}
 		}
 

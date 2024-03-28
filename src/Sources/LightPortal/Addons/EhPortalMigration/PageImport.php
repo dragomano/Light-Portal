@@ -158,7 +158,6 @@ class PageImport extends AbstractCustomPageImport
 		}
 
 		Utils::$smcFunc['db_free_result']($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $items;
 	}
@@ -179,7 +178,6 @@ class PageImport extends AbstractCustomPageImport
 		[$count] = Utils::$smcFunc['db_fetch_row']($result);
 
 		Utils::$smcFunc['db_free_result']($result);
-		Utils::$context['lp_num_queries']++;
 
 		return (int) $count;
 	}
@@ -215,7 +213,6 @@ class PageImport extends AbstractCustomPageImport
 		}
 
 		Utils::$smcFunc['db_free_result']($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $items;
 	}

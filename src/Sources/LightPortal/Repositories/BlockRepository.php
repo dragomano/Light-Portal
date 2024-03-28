@@ -44,7 +44,7 @@ final class BlockRepository extends AbstractRepository
 				'priority'    => $row['priority'],
 				'permissions' => $row['permissions'],
 				'status'      => $row['status'],
-				'areas'       => str_replace(',', PHP_EOL, $row['areas'])
+				'areas'       => str_replace(',', PHP_EOL, $row['areas']),
 			];
 
 			$currentBlocks[$row['placement']][$row['block_id']]['titles'][$row['lang']] = $row['title'];
@@ -53,7 +53,6 @@ final class BlockRepository extends AbstractRepository
 		}
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return array_merge(array_flip(array_keys(Utils::$context['lp_block_placements'])), $currentBlocks);
 	}
@@ -115,7 +114,6 @@ final class BlockRepository extends AbstractRepository
 		}
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $data ?? [];
 	}
@@ -191,8 +189,6 @@ final class BlockRepository extends AbstractRepository
 			]
 		);
 
-		Utils::$context['lp_num_queries'] += 3;
-
 		$this->session('lp')->free('active_blocks');
 	}
 
@@ -223,8 +219,6 @@ final class BlockRepository extends AbstractRepository
 				]
 			);
 
-			Utils::$context['lp_num_queries']++;
-
 			if ($data['update_placement']) {
 				Db::$db->query('', '
 					UPDATE {db_prefix}lp_blocks
@@ -235,8 +229,6 @@ final class BlockRepository extends AbstractRepository
 						'blocks'    => $blocks,
 					]
 				);
-
-				Utils::$context['lp_num_queries']++;
 			}
 		}
 	}
@@ -277,8 +269,6 @@ final class BlockRepository extends AbstractRepository
 			1
 		);
 
-		Utils::$context['lp_num_queries']++;
-
 		if (empty($item)) {
 			Db::$db->transaction('rollback');
 			return 0;
@@ -317,8 +307,6 @@ final class BlockRepository extends AbstractRepository
 				'block_id'      => $item,
 			]
 		);
-
-		Utils::$context['lp_num_queries']++;
 
 		$this->hook('onBlockSaving', [$item]);
 
@@ -369,7 +357,6 @@ final class BlockRepository extends AbstractRepository
 		[$priority] = Db::$db->fetch_row($result);
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return (int) $priority;
 	}

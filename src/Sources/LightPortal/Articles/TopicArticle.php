@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Articles;
 
-use Bugo\Compat\{BBCodeParser, Config, Db, Lang, User, Utils};
+use Bugo\Compat\{BBCodeParser, Config, Db, Lang, User};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -137,7 +137,6 @@ class TopicArticle extends AbstractArticle
 		}
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $this->getItemsWithUserAvatars($topics);
 	}
@@ -164,7 +163,6 @@ class TopicArticle extends AbstractArticle
 		[$count] = Db::$db->fetch_row($result);
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return (int) $count;
 	}

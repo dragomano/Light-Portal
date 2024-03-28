@@ -146,7 +146,6 @@ class RandomTopics extends Block
 				$topicIds[] = $row['id_topic'];
 
 			Utils::$smcFunc['db_free_result']($result);
-			Utils::$context['lp_num_queries']++;
 
 			if (empty($topicIds))
 				return $this->getData(array_merge($parameters, ['num_topics' => $topicsCount - 1]));
@@ -219,7 +218,6 @@ class RandomTopics extends Block
 		}
 
 		Utils::$smcFunc['db_free_result']($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $topics;
 	}

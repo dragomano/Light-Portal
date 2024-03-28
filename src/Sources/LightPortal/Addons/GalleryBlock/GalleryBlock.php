@@ -118,7 +118,6 @@ class GalleryBlock extends Block
 		}
 
 		Utils::$smcFunc['db_free_result']($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $images;
 	}

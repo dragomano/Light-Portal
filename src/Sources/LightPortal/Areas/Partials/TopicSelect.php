@@ -105,7 +105,6 @@ final class TopicSelect extends AbstractPartial
 		}
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $topics;
 	}

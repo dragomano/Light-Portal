@@ -129,7 +129,6 @@ class PageArticle extends AbstractArticle
 		}
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		$this->prepareTags($pages);
 
@@ -153,7 +152,6 @@ class PageArticle extends AbstractArticle
 		[$count] = Db::$db->fetch_row($result);
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return (int) $count;
 	}
@@ -292,6 +290,5 @@ class PageArticle extends AbstractArticle
 		}
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 	}
 }

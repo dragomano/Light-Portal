@@ -126,7 +126,6 @@ class TinyPortalMigration extends Plugin
 		}
 
 		Utils::$smcFunc['db_free_result']($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $comments;
 	}

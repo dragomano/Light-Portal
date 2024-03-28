@@ -111,8 +111,6 @@ final class TagImport extends AbstractImport
 					['tag_id'],
 					2
 				);
-
-				Utils::$context['lp_num_queries']++;
 			}
 		}
 
@@ -133,8 +131,6 @@ final class TagImport extends AbstractImport
 					['page_id', 'tag_id'],
 					2
 				);
-
-				Utils::$context['lp_num_queries']++;
 			}
 		}
 

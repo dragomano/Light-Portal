@@ -86,7 +86,6 @@ final class PageRepository extends AbstractRepository
 		}
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $items;
 	}
@@ -110,7 +109,6 @@ final class PageRepository extends AbstractRepository
 		[$count] = Db::$db->fetch_row($result);
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return (int) $count;
 	}
@@ -180,7 +178,6 @@ final class PageRepository extends AbstractRepository
 		}
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $data ?? [];
 	}
@@ -274,7 +271,6 @@ final class PageRepository extends AbstractRepository
 		}
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries'] += 4;
 
 		if ($comments) {
 			Db::$db->query('', '
@@ -293,8 +289,6 @@ final class PageRepository extends AbstractRepository
 					'items' => $comments,
 				]
 			);
-
-			Utils::$context['lp_num_queries'] += 2;
 		}
 
 		$this->session('lp')->free('active_pages');
@@ -374,7 +368,6 @@ final class PageRepository extends AbstractRepository
 		[$nextId, $nextAlias] = Db::$db->fetch_row($result);
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return [$prevId, $prevAlias, $nextId, $nextAlias];
 	}
@@ -440,7 +433,6 @@ final class PageRepository extends AbstractRepository
 		}
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $items;
 	}
@@ -457,8 +449,6 @@ final class PageRepository extends AbstractRepository
 				'statuses' => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
 			]
 		);
-
-		Utils::$context['lp_num_queries']++;
 	}
 
 	public function getMenuItems(): array
@@ -497,7 +487,6 @@ final class PageRepository extends AbstractRepository
 			}
 
 			Db::$db->free_result($result);
-			Utils::$context['lp_num_queries']++;
 
 			$this->cache()->put('menu_pages', $pages);
 		}
@@ -567,8 +556,6 @@ final class PageRepository extends AbstractRepository
 			1
 		);
 
-		Utils::$context['lp_num_queries']++;
-
 		if (empty($item)) {
 			Db::$db->transaction('rollback');
 			return 0;
@@ -624,8 +611,6 @@ final class PageRepository extends AbstractRepository
 			]
 		);
 
-		Utils::$context['lp_num_queries']++;
-
 		$this->hook('onPageSaving', [$item]);
 
 		$this->saveTitles($item, 'replace');
@@ -675,7 +660,6 @@ final class PageRepository extends AbstractRepository
 		}
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $items;
 	}
@@ -698,7 +682,7 @@ final class PageRepository extends AbstractRepository
 			];
 		}
 
-		if (empty($relations))
+		if ($relations === [])
 			return;
 
 		Db::$db->insert($method,
@@ -710,8 +694,6 @@ final class PageRepository extends AbstractRepository
 			$relations,
 			['page_id', 'tag_id'],
 		);
-
-		Utils::$context['lp_num_queries']++;
 	}
 
 	private function getPublishTime(): int
@@ -739,7 +721,6 @@ final class PageRepository extends AbstractRepository
 		[$value] = Db::$db->fetch_row($result);
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return (int) $value + 1;
 	}

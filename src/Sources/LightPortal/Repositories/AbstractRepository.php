@@ -28,7 +28,7 @@ abstract class AbstractRepository
 
 	public function toggleStatus(array $items = [], string $type = 'block'): void
 	{
-		if (empty($items))
+		if ($items === [])
 			return;
 
 		switch ($type) {
@@ -57,8 +57,6 @@ abstract class AbstractRepository
 				'items' => $items,
 			]
 		);
-
-		Utils::$context['lp_num_queries']++;
 
 		$this->session('lp')->free('active_' . $table);
 	}
@@ -93,7 +91,7 @@ abstract class AbstractRepository
 			];
 		}
 
-		if (empty($titles))
+		if ($titles === [])
 			return;
 
 		Db::$db->insert($method,
@@ -107,8 +105,6 @@ abstract class AbstractRepository
 			$titles,
 			['item_id', 'type', 'lang']
 		);
-
-		Utils::$context['lp_num_queries']++;
 	}
 
 	protected function saveOptions(int $item, string $method = ''): void
@@ -128,7 +124,7 @@ abstract class AbstractRepository
 			];
 		}
 
-		if (empty($params))
+		if ($params === [])
 			return;
 
 		Db::$db->insert($method,
@@ -142,7 +138,5 @@ abstract class AbstractRepository
 			$params,
 			['item_id', 'type', 'name'],
 		);
-
-		Utils::$context['lp_num_queries']++;
 	}
 }

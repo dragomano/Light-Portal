@@ -14,12 +14,12 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Utils\SessionManager;
 use Bugo\Compat\{Config, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Actions\Block;
 use Bugo\LightPortal\Areas\{ConfigArea, CreditArea};
 use Bugo\LightPortal\Compilers\CompilerInterface;
 use Bugo\LightPortal\Repositories\PageRepository;
+use Bugo\LightPortal\Utils\SessionManager;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -231,9 +231,6 @@ abstract class AbstractMain
 		Utils::$context['lp_load_page_stats'] = Lang::getTxt('lp_load_page_stats', [
 			Lang::getTxt('lp_seconds_set', [
 				'seconds' => round(microtime(true) - Utils::$context['lp_load_time'], 3)
-			]),
-			Lang::getTxt('lp_queries_set', [
-				'queries' => Utils::$context['lp_num_queries']
 			]),
 		]);
 
@@ -453,7 +450,7 @@ abstract class AbstractMain
 		];
 
 		Utils::$context['lp_quantities'] = array_map(
-			fn($key) => $sessionManager($key), array_combine($entities, $entities)
+			static fn($key) => $sessionManager($key), array_combine($entities, $entities)
 		);
 	}
 

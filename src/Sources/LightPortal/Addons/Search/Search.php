@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 21.03.24
+ * @version 26.03.24
  */
 
 namespace Bugo\LightPortal\Addons\Search;
@@ -66,7 +66,7 @@ class Search extends Block
 
 		Utils::$context['search_results'] = $this->getResults();
 
-		$this->setTemplate('show_results');
+		$this->setTemplate()->withSubTemplate('show_results');
 
 		Utils::obExit();
 	}
@@ -153,7 +153,6 @@ class Search extends Block
 		}
 
 		Utils::$smcFunc['db_free_result']($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $items;
 	}

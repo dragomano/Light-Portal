@@ -151,7 +151,6 @@ class BlockImport extends AbstractCustomBlockImport
 		}
 
 		Utils::$smcFunc['db_free_result']($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $items;
 	}
@@ -175,7 +174,6 @@ class BlockImport extends AbstractCustomBlockImport
 		[$count] = Utils::$smcFunc['db_fetch_row']($result);
 
 		Utils::$smcFunc['db_free_result']($result);
-		Utils::$context['lp_num_queries']++;
 
 		return (int) $count;
 	}
@@ -221,7 +219,6 @@ class BlockImport extends AbstractCustomBlockImport
 		}
 
 		Utils::$smcFunc['db_free_result']($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $items;
 	}

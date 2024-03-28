@@ -127,7 +127,6 @@ final class Category extends AbstractPageList
 		$rows = Db::$db->fetch_all($result);
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $this->getPreparedResults($rows);
 	}
@@ -152,7 +151,6 @@ final class Category extends AbstractPageList
 		[$count] = Db::$db->fetch_row($result);
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return (int) $count;
 	}
@@ -278,7 +276,6 @@ final class Category extends AbstractPageList
 		}
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $items;
 	}

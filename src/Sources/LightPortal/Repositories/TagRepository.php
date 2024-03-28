@@ -57,7 +57,6 @@ final class TagRepository extends AbstractRepository
 		}
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $items;
 	}
@@ -73,7 +72,6 @@ final class TagRepository extends AbstractRepository
 		[$count] = Db::$db->fetch_row($result);
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return (int) $count;
 	}
@@ -111,7 +109,6 @@ final class TagRepository extends AbstractRepository
 		}
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $data ?? [];
 	}
@@ -168,8 +165,6 @@ final class TagRepository extends AbstractRepository
 			]
 		);
 
-		Utils::$context['lp_num_queries'] += 2;
-
 		$this->cache()->flush();
 
 		$this->session('lp')->free('active_tags');
@@ -192,8 +187,6 @@ final class TagRepository extends AbstractRepository
 			['tag_id'],
 			1
 		);
-
-		Utils::$context['lp_num_queries']++;
 
 		if (empty($item)) {
 			Db::$db->transaction('rollback');
@@ -221,8 +214,6 @@ final class TagRepository extends AbstractRepository
 				'tag_id' => $item,
 			]
 		);
-
-		Utils::$context['lp_num_queries']++;
 
 		$this->saveTitles($item, 'replace');
 

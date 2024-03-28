@@ -104,8 +104,6 @@ final class CategoryImport extends AbstractImport
 					['category_id'],
 					2
 				);
-
-				Utils::$context['lp_num_queries']++;
 			}
 		}
 

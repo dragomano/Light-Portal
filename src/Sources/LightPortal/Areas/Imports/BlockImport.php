@@ -132,8 +132,6 @@ final class BlockImport extends AbstractImport
 					['block_id'],
 					2
 				);
-
-				Utils::$context['lp_num_queries']++;
 			}
 		}
 

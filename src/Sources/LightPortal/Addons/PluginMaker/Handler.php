@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.03.24
+ * @version 26.03.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -58,7 +58,7 @@ class Handler extends Plugin
 		$this->validateData();
 		$this->prepareFormFields();
 		$this->setData();
-		$this->setTemplate('plugin_post');
+		$this->setTemplate()->withSubTemplate('plugin_post');
 	}
 
 	public function prepareForumLanguages(): void

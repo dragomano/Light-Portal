@@ -131,7 +131,6 @@ final class Block implements BlockInterface
 			}
 
 			Db::$db->free_result($result);
-			Utils::$context['lp_num_queries']++;
 
 			$this->cache()->put('active_blocks', $blocks);
 		}

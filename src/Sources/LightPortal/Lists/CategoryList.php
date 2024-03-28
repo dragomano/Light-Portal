@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Lists;
 
-use Bugo\Compat\{Config, Db, Lang, User, Utils};
+use Bugo\Compat\{Config, Db, Lang, User};
 use Bugo\LightPortal\Actions\PageListInterface;
 
 if (! defined('SMF'))
@@ -65,7 +65,6 @@ final class CategoryList implements ListInterface
 		}
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $items;
 	}

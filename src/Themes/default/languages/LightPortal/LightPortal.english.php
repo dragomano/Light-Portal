@@ -122,7 +122,7 @@ $txt['lp_panel_direction_set'] = ['Vertical', 'Horizontal'];
 $txt['lp_misc'] = 'Miscellaneous';
 $txt['lp_misc_info'] = 'There are additional portal settings that will be useful for template and plugin developers here.';
 $txt['lp_debug_and_caching'] = 'Debugging and caching';
-$txt['lp_show_debug_info'] = 'Show the loading time and number of the portal queries';
+$txt['lp_show_debug_info'] = 'Show the portal\'s loading time';
 $txt['lp_show_debug_info_help'] = 'This information will be available to administrators only!';
 $txt['lp_cache_update_interval'] = 'The cache update interval';
 $txt['lp_compatibility_mode'] = 'Compatibility mode';
@@ -501,10 +501,6 @@ $txt['lp_buddies_set'] = '{buddies, plural,
 	one {# buddy}
 	other {# buddies}
 }';
-$txt['lp_queries_set'] = '{queries, plural,
-	one {# query}
-	other {# queries}
-}';
 
 // Credits
 $txt['lp_contributors'] = 'Contribution to the development of the portal';
@@ -515,4 +511,4 @@ $txt['lp_tools'] = 'Tools';
 $txt['lp_used_components'] = 'The portal components';
 
 // Debug info
-$txt['lp_load_page_stats'] = 'The portal is loaded in {0}, with {1}.';
+$txt['lp_load_page_stats'] = 'The portal is loaded in {0}.';

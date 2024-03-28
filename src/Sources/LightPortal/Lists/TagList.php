@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Lists;
 
-use Bugo\Compat\{Config, Db, User, Utils};
+use Bugo\Compat\{Config, Db, User};
 use Bugo\LightPortal\Actions\PageListInterface;
 
 if (! defined('SMF'))
@@ -57,7 +57,6 @@ final class TagList implements ListInterface
 		}
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $items;
 	}

@@ -54,7 +54,6 @@ class Chat
 		}
 
 		Utils::$smcFunc['db_free_result']($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $messages[$block_id] ?? [];
 	}
@@ -83,8 +82,6 @@ class Chat
 			['id'],
 			1
 		);
-
-		Utils::$context['lp_num_queries']++;
 
 		$this->cache()->forget('simple_chat_addon_b' . $data['block_id']);
 
@@ -116,8 +113,6 @@ class Chat
 				'id' => $data['id'],
 			]
 		);
-
-		Utils::$context['lp_num_queries']++;
 
 		$this->cache()->forget('simple_chat_addon_b' . $data['block_id']);
 

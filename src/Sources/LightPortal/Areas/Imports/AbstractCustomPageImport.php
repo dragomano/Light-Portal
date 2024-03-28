@@ -13,7 +13,7 @@
 
 namespace Bugo\LightPortal\Areas\Imports;
 
-use Bugo\Compat\{Db, ErrorHandler, Sapi, Utils};
+use Bugo\Compat\{Db, ErrorHandler, Sapi};
 use Bugo\LightPortal\Helper;
 
 if (! defined('SMF'))
@@ -66,8 +66,6 @@ abstract class AbstractCustomPageImport implements ImportInterface, CustomImport
 					['page_id'],
 					2
 				);
-
-				Utils::$context['lp_num_queries']++;
 			}
 		}
 
@@ -91,8 +89,6 @@ abstract class AbstractCustomPageImport implements ImportInterface, CustomImport
 					['item_id', 'type', 'lang'],
 					2
 				);
-
-				Utils::$context['lp_num_queries']++;
 			}
 		}
 
@@ -113,8 +109,6 @@ abstract class AbstractCustomPageImport implements ImportInterface, CustomImport
 					['item_id', 'type', 'name'],
 					2
 				);
-
-				Utils::$context['lp_num_queries']++;
 			}
 		}
 
@@ -145,8 +139,6 @@ abstract class AbstractCustomPageImport implements ImportInterface, CustomImport
 					['id', 'page_id'],
 					2
 				);
-
-				Utils::$context['lp_num_queries']++;
 			}
 		}
 

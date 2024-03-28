@@ -517,8 +517,6 @@ class AdsBlock extends Block
 				'item'   => $item,
 			]
 		);
-
-		Utils::$context['lp_num_queries']++;
 	}
 
 	private function isTopicNumRepliesLesserThanMinReplies(): bool

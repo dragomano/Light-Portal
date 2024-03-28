@@ -138,7 +138,6 @@ class RandomPages extends Block
 				$pageIds[] = $row['page_id'];
 
 			Utils::$smcFunc['db_free_result']($result);
-			Utils::$context['lp_num_queries']++;
 
 			if (empty($pageIds))
 				return $this->getData(array_merge($parameters, ['num_pages' => $pagesCount - 1]));
@@ -189,7 +188,6 @@ class RandomPages extends Block
 		}
 
 		Utils::$smcFunc['db_free_result']($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $pages;
 	}

@@ -100,7 +100,6 @@ class TopPosters extends Block
 		}
 
 		Utils::$smcFunc['db_free_result']($result);
-		Utils::$context['lp_num_queries']++;
 
 		if ($parameters['show_avatars'] && empty($parameters['use_simple_style']))
 			$posters = $this->getItemsWithUserAvatars($posters, 'poster');

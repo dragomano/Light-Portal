@@ -141,7 +141,6 @@ class Polls extends Block
 			$polls[$row['id_topic']] = $row['question'];
 
 		Utils::$smcFunc['db_free_result']($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $polls;
 	}

@@ -199,7 +199,6 @@ class Reactions extends Plugin
 		[$reactions] = Utils::$smcFunc['db_fetch_row']($result);
 
 		Utils::$smcFunc['db_free_result']($result);
-		Utils::$context['lp_num_queries']++;
 
 		return json_decode($reactions ?? '', true) ?? [];
 	}
@@ -222,7 +221,5 @@ class Reactions extends Plugin
 			],
 			['item_id', 'type', 'name']
 		);
-
-		Utils::$context['lp_num_queries']++;
 	}
 }

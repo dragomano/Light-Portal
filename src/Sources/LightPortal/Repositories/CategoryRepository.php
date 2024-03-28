@@ -59,7 +59,6 @@ final class CategoryRepository extends AbstractRepository
 		}
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $items;
 	}
@@ -75,7 +74,6 @@ final class CategoryRepository extends AbstractRepository
 		[$count] = Db::$db->fetch_row($result);
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return (int) $count;
 	}
@@ -117,7 +115,6 @@ final class CategoryRepository extends AbstractRepository
 		}
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $data ?? [];
 	}
@@ -174,16 +171,14 @@ final class CategoryRepository extends AbstractRepository
 			]
 		);
 
-		Utils::$context['lp_num_queries'] += 2;
-
 		$this->cache()->flush();
 
 		$this->session('lp')->free('active_categories');
 	}
 
-	public function updatePriority(array $categories): void
+	public function updatePriority(array $categories = []): void
 	{
-		if (empty($categories))
+		if ($categories === [])
 			return;
 
 		$conditions = '';
@@ -191,7 +186,7 @@ final class CategoryRepository extends AbstractRepository
 			$conditions .= ' WHEN category_id = ' . $item . ' THEN ' . $priority;
 		}
 
-		if (empty($conditions))
+		if ($conditions === '')
 			return;
 
 		Db::$db->query('', /** @lang text */ '
@@ -202,8 +197,6 @@ final class CategoryRepository extends AbstractRepository
 				'categories' => $categories,
 			]
 		);
-
-		Utils::$context['lp_num_queries']++;
 
 		$this->cache()->forget('all_categories');
 	}
@@ -219,7 +212,6 @@ final class CategoryRepository extends AbstractRepository
 		[$priority] = Db::$db->fetch_row($result);
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return (int) $priority;
 	}
@@ -245,8 +237,6 @@ final class CategoryRepository extends AbstractRepository
 			['category_id'],
 			1
 		);
-
-		Utils::$context['lp_num_queries']++;
 
 		if (empty($item)) {
 			Db::$db->transaction('rollback');
@@ -276,8 +266,6 @@ final class CategoryRepository extends AbstractRepository
 				'category_id' => $item,
 			]
 		);
-
-		Utils::$context['lp_num_queries']++;
 
 		$this->saveTitles($item, 'replace');
 

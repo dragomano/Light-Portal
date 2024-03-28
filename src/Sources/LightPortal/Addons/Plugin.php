@@ -40,22 +40,28 @@ abstract class Plugin
 		return $this->getCalledClass()->getShortName();
 	}
 
-	public function setTemplate(string $sub_template = ''): self
+	public function setTemplate(string $name = 'template'): self
 	{
-		$path = dirname($this->getCalledClass()->getFileName()) . DIRECTORY_SEPARATOR . 'template.php';
+		$path = dirname($this->getCalledClass()->getFileName()) . DIRECTORY_SEPARATOR . $name . '.php';
 
 		if (is_file($path))
 			require_once $path;
 
-		if ($sub_template)
-			Utils::$context['sub_template'] = $sub_template;
+		return $this;
+	}
+
+	public function withSubTemplate(string $template): self
+	{
+		Utils::$context['sub_template'] = $template;
 
 		return $this;
 	}
 
-	public function withLayer(string $layer): void
+	public function withLayer(string $layer): self
 	{
 		Utils::$context['template_layers'][] = $layer;
+
+		return $this;
 	}
 
 	public function getFromTemplate(string $function, ...$params): string
