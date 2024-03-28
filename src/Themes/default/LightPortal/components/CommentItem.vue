@@ -56,7 +56,7 @@
               :class="isHover ? 'error' : undefined"
               @mouseover="isHover = true"
               @mouseleave="isHover = false"
-              @click="remove"
+              @click.prevent="remove($el.dataset.id)"
               view="span"
               icon="remove"
             >
@@ -150,14 +150,7 @@ const update = (comment) => {
   editMode.value = false;
 };
 
-const remove = () => {
-  const items = [props.comment.id];
-  const replies = parent.value.querySelectorAll(`li[data-id="${props.comment.id}"] li`);
-
-  replies.forEach((el) => {
-    if (el.dataset.id) items.push(+el.dataset.id);
-  });
-
-  emit('remove-comment', items);
+const remove = (comment) => {
+  emit('remove-comment', comment);
 };
 </script>

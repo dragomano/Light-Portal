@@ -133,8 +133,29 @@ final class CommentRepository
 		Utils::$context['lp_num_queries']++;
 	}
 
-	public function remove(array $items, string $pageAlias): void
+	public function remove(int $item, string $pageAlias): array
 	{
+		$result = Db::$db->query('', '
+			SELECT id
+			FROM {db_prefix}lp_comments
+			WHERE id = {int:item}
+				OR parent_id = {int:item}',
+			[
+				'item' => $item,
+			]
+		);
+
+		$items = [];
+		while ($row = Db::$db->fetch_assoc($result)) {
+			$items[] = (int) $row['id'];
+		}
+
+		Db::$db->free_result($result);
+
+		if ($items === []) {
+			return [];
+		}
+
 		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_comments
 			WHERE id IN ({array_int:items})',
@@ -187,7 +208,9 @@ final class CommentRepository
 			]
 		);
 
-		Utils::$context['lp_num_queries'] += 5;
+		Utils::$context['lp_num_queries'] += 6;
+
+		return $items;
 	}
 
 	public function updateLastCommentId(int $item, int $pageId): void
