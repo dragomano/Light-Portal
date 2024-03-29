@@ -127,7 +127,6 @@ class TrendingTopics extends Block
 		}
 
 		Utils::$smcFunc['db_free_result']($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $parameters['show_avatars'] ? $this->getItemsWithUserAvatars($topics, 'poster') : $topics;
 	}

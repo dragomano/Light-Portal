@@ -17,8 +17,8 @@ if (! defined('SMF'))
 
 require_once __DIR__ . '/Libs/autoload.php';
 
-use Laminas\Loader\StandardAutoloader;
 use Bugo\LightPortal\Integration;
+use Laminas\Loader\StandardAutoloader;
 
 // Register autoloader
 $loader = new StandardAutoloader();
@@ -38,9 +38,10 @@ if (str_starts_with(SMF_VERSION, '3.0')) {
 }
 
 // Development mode
-if (is_file(__DIR__ . '/Libs/scssphp/scssphp/src/Compiler.php'))
+if (is_file(__DIR__ . '/Libs/scssphp/scssphp/src/Compiler.php')) {
 	/** @noinspection PhpIgnoredClassAliasDeclaration */
 	class_alias('Bugo\\LightPortal\\Compilers\\Sass', 'Bugo\\LightPortal\\Compilers\\Zero');
+}
 
 // This is the way
 (new Integration())();

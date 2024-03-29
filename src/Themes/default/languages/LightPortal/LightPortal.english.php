@@ -24,7 +24,6 @@ $txt['lp_min_search_length'] = 'Please enter at least %d characters';
 $txt['lp_no_such_members'] = 'Nobody here by that name';
 $txt['lp_promote_to_fp'] = 'Promote to frontpage';
 $txt['lp_remove_from_fp'] = 'Remove from frontpage';
-$txt['lp_feedback_question'] = 'Do you like appearance of this page?';
 
 // Settings
 $txt['lp_settings'] = 'Portal settings';
@@ -123,7 +122,7 @@ $txt['lp_panel_direction_set'] = ['Vertical', 'Horizontal'];
 $txt['lp_misc'] = 'Miscellaneous';
 $txt['lp_misc_info'] = 'There are additional portal settings that will be useful for template and plugin developers here.';
 $txt['lp_debug_and_caching'] = 'Debugging and caching';
-$txt['lp_show_debug_info'] = 'Show the loading time and number of the portal queries';
+$txt['lp_show_debug_info'] = 'Show the portal\'s loading time';
 $txt['lp_show_debug_info_help'] = 'This information will be available to administrators only!';
 $txt['lp_cache_update_interval'] = 'The cache update interval';
 $txt['lp_compatibility_mode'] = 'Compatibility mode';
@@ -188,6 +187,7 @@ $txt['lp_block_select_icon'] = 'Select icon';
 $txt['lp_block_title_class'] = 'CSS title class';
 $txt['lp_block_content_class'] = 'CSS content class';
 $txt['lp_block_hide_header'] = 'Hide header';
+$txt['lp_block_link_in_title'] = 'Link in the block header';
 
 // Default types
 $txt['lp_bbc']['title'] = 'Custom BBCode';
@@ -501,10 +501,6 @@ $txt['lp_buddies_set'] = '{buddies, plural,
 	one {# buddy}
 	other {# buddies}
 }';
-$txt['lp_queries_set'] = '{queries, plural,
-	one {# query}
-	other {# queries}
-}';
 
 // Credits
 $txt['lp_contributors'] = 'Contribution to the development of the portal';
@@ -515,4 +511,4 @@ $txt['lp_tools'] = 'Tools';
 $txt['lp_used_components'] = 'The portal components';
 
 // Debug info
-$txt['lp_load_page_stats'] = 'The portal is loaded in {0}, with {1}.';
+$txt['lp_load_page_stats'] = 'The portal is loaded in {0}.';

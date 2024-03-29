@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Repositories;
 
-use Bugo\Compat\{Db, Utils};
+use Bugo\Compat\Db;
 use Bugo\LightPortal\Helper;
 
 if (! defined('SMF'))
@@ -26,7 +26,7 @@ final class PluginRepository
 
 	public function addSettings(array $settings = []): void
 	{
-		if (empty($settings))
+		if ($settings === [])
 			return;
 
 		Db::$db->insert('replace',
@@ -39,8 +39,6 @@ final class PluginRepository
 			$settings,
 			['name', 'config']
 		);
-
-		Utils::$context['lp_num_queries']++;
 
 		$this->cache()->forget('plugin_settings');
 	}
@@ -59,7 +57,6 @@ final class PluginRepository
 				$settings[$row['name']][$row['config']] = $row['value'];
 
 			Db::$db->free_result($result);
-			Utils::$context['lp_num_queries']++;
 
 			$this->cache()->put('plugin_settings', $settings, 259200);
 		}
@@ -69,7 +66,7 @@ final class PluginRepository
 
 	public function changeSettings(string $name, array $settings = []): void
 	{
-		if (empty($settings))
+		if ($settings === [])
 			return;
 
 		$newSettings = $oldSettings = [];
@@ -93,7 +90,7 @@ final class PluginRepository
 
 	public function removeSettings(string $name, array $settings = []): void
 	{
-		if (empty($settings))
+		if ($settings === [])
 			return;
 
 		Db::$db->query('', '
@@ -105,8 +102,6 @@ final class PluginRepository
 				'settings' => $settings,
 			]
 		);
-
-		Utils::$context['lp_num_queries']++;
 
 		$this->cache()->forget('plugin_settings');
 	}

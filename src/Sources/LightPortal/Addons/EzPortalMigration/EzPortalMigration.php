@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.02.24
+ * @version 27.03.24
  */
 
 namespace Bugo\LightPortal\Addons\EzPortalMigration;
@@ -29,10 +29,18 @@ class EzPortalMigration extends Plugin
 	public function updateAdminAreas(array &$areas): void
 	{
 		if (User::$info['is_admin']) {
+			$areas['lp_blocks']['subsections']['import_from_ez'] = [
+				Icon::get('import') . Lang::$txt['lp_ez_portal_migration']['label_name']
+			];
 			$areas['lp_pages']['subsections']['import_from_ez'] = [
 				Icon::get('import') . Lang::$txt['lp_ez_portal_migration']['label_name']
 			];
 		}
+	}
+
+	public function updateBlockAreas(array &$areas): void
+	{
+		$areas['import_from_ez'] = [new BlockImport, 'main'];
 	}
 
 	public function updatePageAreas(array &$areas): void

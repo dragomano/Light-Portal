@@ -348,7 +348,11 @@ final class PageArea
 			'description' => Lang::$txt['lp_pages_edit_description'],
 		];
 
-		Utils::$context['lp_current_page'] = $this->repository->getData($item);
+		$data = $this->repository->getData($item);
+
+		$this->repository->prepareData($data);
+
+		Utils::$context['lp_current_page'] = $data;
 
 		if (empty(Utils::$context['lp_current_page'])) {
 			ErrorHandler::fatalLang('lp_page_not_found', status: 404);
@@ -456,19 +460,19 @@ final class PageArea
 
 		$this->params = [
 			(
-			empty($searchParams['string'])
-				? ''
-				: ' AND (INSTR(LOWER(p.alias), {string:search}) > 0 OR INSTR(LOWER(t.title), {string:search}) > 0)'
+				empty($searchParams['string'])
+					? ''
+					: ' AND (INSTR(LOWER(p.alias), {string:search}) > 0 OR INSTR(LOWER(t.title), {string:search}) > 0)'
 			) . (
-			$this->request()->has('u') ? ' AND p.author_id = {int:user_id}' : ''
+				$this->request()->has('u') ? ' AND p.author_id = {int:user_id}' : ''
 			) . (
-			$this->request()->has('moderate') ? ' AND p.status = {int:unapproved}' : ''
+				$this->request()->has('moderate') ? ' AND p.status = {int:unapproved}' : ''
 			) . (
-			$this->request()->has('internal') ? ' AND p.status = {int:internal}' : ''
+				$this->request()->has('internal') ? ' AND p.status = {int:internal}' : ''
 			) . (
-			$this->request()->hasNot('u')
-			&& $this->request()->hasNot('moderate')
-			&& $this->request()->hasNot('internal') ? ' AND p.status IN ({array_int:included_statuses})' : ''
+				$this->request()->hasNot('u')
+					&& $this->request()->hasNot('moderate')
+					&& $this->request()->hasNot('internal') ? ' AND p.status IN ({array_int:included_statuses})' : ''
 			),
 			[
 				'search'            => Utils::$smcFunc['strtolower']($searchParams['string']),
@@ -504,7 +508,7 @@ final class PageArea
 			'all' => [
 				'',
 				Lang::$txt['all'],
-				$this->repository->getTotalCount(' AND p.status != ' . PageInterface::STATUS_UNAPPROVED)
+				Utils::$context['lp_quantities']['active_pages']
 			],
 			'own' => [
 				';u=' . User::$info['id'],

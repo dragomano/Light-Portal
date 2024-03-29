@@ -52,7 +52,6 @@ final class SessionManager
 			[$count] = Db::$db->fetch_row($result);
 
 			Db::$db->free_result($result);
-			Utils::$context['lp_num_queries']++;
 
 			$this->session('lp')->put('active_blocks', (int) $count);
 		}
@@ -77,7 +76,6 @@ final class SessionManager
 			[$count] = Db::$db->fetch_row($result);
 
 			Db::$db->free_result($result);
-			Utils::$context['lp_num_queries']++;
 
 			$this->session('lp')->put('active_pages', (int) $count);
 		}
@@ -100,7 +98,6 @@ final class SessionManager
 			[$count] = Db::$db->fetch_row($result);
 
 			Db::$db->free_result($result);
-			Utils::$context['lp_num_queries']++;
 
 			$this->session('lp')->put('my_pages', (int) $count);
 		}
@@ -123,7 +120,6 @@ final class SessionManager
 			[$count] = Db::$db->fetch_row($result);
 
 			Db::$db->free_result($result);
-			Utils::$context['lp_num_queries']++;
 
 			$this->session('lp')->put('unapproved_pages', (int) $count);
 		}
@@ -146,7 +142,6 @@ final class SessionManager
 			[$count] = Db::$db->fetch_row($result);
 
 			Db::$db->free_result($result);
-			Utils::$context['lp_num_queries']++;
 
 			$this->session('lp')->put('internal_pages', (int) $count);
 		}
@@ -169,7 +164,6 @@ final class SessionManager
 			[$count] = Db::$db->fetch_row($result);
 
 			Db::$db->free_result($result);
-			Utils::$context['lp_num_queries']++;
 
 			$this->session('lp')->put('active_categories', (int) $count);
 		}
@@ -192,7 +186,6 @@ final class SessionManager
 			[$count] = Db::$db->fetch_row($result);
 
 			Db::$db->free_result($result);
-			Utils::$context['lp_num_queries']++;
 
 			$this->session('lp')->put('active_tags', (int) $count);
 		}

@@ -202,17 +202,17 @@ final class Comment implements ActionInterface
 
 	private function remove(): void
 	{
-		$items = $this->request()->json('items');
+		$item = (int) $this->request()->json('comment_id');
 
-		if (empty($items)) {
+		if (empty($item)) {
 			exit(json_encode(['success' => false]));
 		}
 
-		$this->repository->remove($items, $this->alias);
+		$items = $this->repository->remove($item, $this->alias);
 
 		$this->cache()->forget('page_' . $this->alias . '_comments');
 
-		exit(json_encode(['success' => true]));
+		exit(json_encode(['success' => true, 'items' => $items]));
 	}
 
 	private function getTree(array $data): array

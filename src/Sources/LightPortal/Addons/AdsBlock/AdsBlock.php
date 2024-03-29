@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 20.02.24
+ * @version 21.03.24
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
@@ -360,7 +360,7 @@ class AdsBlock extends Block
 
 			$afterEveryLastPost = ob_get_clean();
 
-			$this->addInlineJS('
+			Theme::addInlineJavaScript('
 		jQuery(document).ready(function ($) {
 			$(' . Utils::escapeJavaScript($afterEveryLastPost) . ').insertAfter("#quickModForm > div.windowbg:last");
 		});', true);
@@ -381,7 +381,7 @@ class AdsBlock extends Block
 
 			$afterLastPost = ob_get_clean();
 
-			$this->addInlineJS('
+			Theme::addInlineJavaScript('
 		jQuery(document).ready(function ($) {
 			$("#quickModForm").append(' . Utils::escapeJavaScript($afterLastPost) . ');
 		});', true);
@@ -517,8 +517,6 @@ class AdsBlock extends Block
 				'item'   => $item,
 			]
 		);
-
-		Utils::$context['lp_num_queries']++;
 	}
 
 	private function isTopicNumRepliesLesserThanMinReplies(): bool

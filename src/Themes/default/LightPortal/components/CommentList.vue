@@ -110,8 +110,8 @@ const addReply = async ({ parent, content }) => {
 
 const updateComment = async ({ id, content }) => await api.update(id, content);
 
-const removeComment = async (items) => {
-  const { success } = await api.remove(items);
+const removeComment = async (id) => {
+  const { success, items } = await api.remove(id);
 
   if (!success) return;
 

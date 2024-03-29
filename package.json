@@ -11,27 +11,27 @@
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
-    "@github/markdown-toolbar-element": "^2.2.1",
+    "@github/markdown-toolbar-element": "^2.2.3",
     "@vitejs/plugin-vue": "^5.0.4",
-    "@vueform/multiselect": "^2.6.6",
+    "@vueform/multiselect": "^2.6.7",
     "@vueform/toggle": "^2.1.4",
     "@vueuse/core": "^10.9.0",
     "@vueuse/shared": "^10.9.0",
-    "alpinejs": "^3.13.5",
+    "alpinejs": "^3.13.7",
     "alpinejs-slug": "^1.1.2",
-    "axios": "^1.6.7",
+    "axios": "^1.6.8",
     "pinia": "^2.1.7",
-    "sass": "^1.71.1",
+    "sass": "^1.72.0",
     "sortablejs": "^1.15.2",
-    "vanilla-lazyload": "^17.8.8",
-    "virtual-select-plugin": "1.0.40",
+    "vanilla-lazyload": "^19.0.0",
+    "virtual-select-plugin": "1.0.42",
     "vite-plugin-minify": "^1.5.2",
-    "vue": "^3.4.20",
-    "vue-i18n": "^9.9.1",
+    "vue": "^3.4.21",
+    "vue-i18n": "^9.10.2",
     "vue-showdown": "^4.2.0"
   },
   "devDependencies": {
-    "vite": "^5.1.4",
-    "vite-plugin-static-copy": "^1.0.1"
+    "vite": "^5.2.7",
+    "vite-plugin-static-copy": "^1.0.2"
   }
 }

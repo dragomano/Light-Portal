@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Lists;
 
-use Bugo\Compat\{Db, Utils};
+use Bugo\Compat\Db;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -46,7 +46,6 @@ final class TitleList implements ListInterface
 		}
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $titles;
 	}

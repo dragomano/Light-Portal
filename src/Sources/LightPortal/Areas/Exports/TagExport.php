@@ -170,7 +170,6 @@ final class TagExport extends AbstractExport
 		}
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $items;
 	}

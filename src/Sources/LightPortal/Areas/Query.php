@@ -105,7 +105,6 @@ trait Query
 		}
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		exit(json_encode($topics));
 	}
@@ -148,7 +147,6 @@ trait Query
 		}
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		exit(json_encode($members));
 	}

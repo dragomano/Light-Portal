@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 03.03.24
+ * @version 17.03.24
  */
 
 namespace Bugo\LightPortal\Addons\TagList;
@@ -32,8 +32,11 @@ class TagList extends Block
 		if (Utils::$context['current_block']['type'] !== 'tag_list')
 			return;
 
-		$params['source']  = 'lp_tags';
-		$params['sorting'] = 'name';
+		$params = [
+			'link_in_title' => Config::$scripturl . '?action=portal;sa=tags',
+			'source'        => 'lp_tags',
+			'sorting'       => 'name',
+		];
 	}
 
 	public function validateBlockParams(array &$params): void
@@ -41,8 +44,10 @@ class TagList extends Block
 		if (Utils::$context['current_block']['type'] !== 'tag_list')
 			return;
 
-		$params['source']  = FILTER_DEFAULT;
-		$params['sorting'] = FILTER_DEFAULT;
+		$params = [
+			'source'  => FILTER_DEFAULT,
+			'sorting' => FILTER_DEFAULT,
+		];
 	}
 
 	public function prepareBlockFields(): void
@@ -92,7 +97,6 @@ class TagList extends Block
 		}
 
 		Utils::$smcFunc['db_free_result']($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $keywords;
 	}

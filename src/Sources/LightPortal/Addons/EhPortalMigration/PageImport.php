@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.02.24
+ * @version 27.03.24
  */
 
 namespace Bugo\LightPortal\Addons\EhPortalMigration;
@@ -35,7 +35,7 @@ class PageImport extends AbstractCustomPageImport
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_eh_portal_migration']['desc'],
+			'description' => Lang::$txt['lp_eh_portal_migration']['page_import_desc'],
 		];
 
 		$this->run();
@@ -158,7 +158,6 @@ class PageImport extends AbstractCustomPageImport
 		}
 
 		Utils::$smcFunc['db_free_result']($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $items;
 	}
@@ -179,7 +178,6 @@ class PageImport extends AbstractCustomPageImport
 		[$count] = Utils::$smcFunc['db_fetch_row']($result);
 
 		Utils::$smcFunc['db_free_result']($result);
-		Utils::$context['lp_num_queries']++;
 
 		return (int) $count;
 	}
@@ -197,22 +195,6 @@ class PageImport extends AbstractCustomPageImport
 
 		$items = [];
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
-			$perm = $row['permission_set'];
-
-			if (empty($row['permission_set'])) {
-				$groups = $row['groups_allowed'];
-
-				if ($groups == -1) {
-					$perm = 1;
-				} elseif ($groups == 0) {
-					$perm = 2;
-				} elseif ($groups == 1) {
-					$perm = 0;
-				} else {
-					$perm = 3;
-				}
-			}
-
 			$items[$row['id_page']] = [
 				'page_id'      => $row['id_page'],
 				'author_id'    => User::$info['id'],
@@ -220,7 +202,7 @@ class PageImport extends AbstractCustomPageImport
 				'description'  => '',
 				'content'      => $row['body'],
 				'type'         => $row['type'],
-				'permissions'  => $perm,
+				'permissions'  => $this->getPagePermission($row),
 				'status'       => $row['status'],
 				'num_views'    => $row['views'],
 				'num_comments' => 0,
@@ -231,8 +213,28 @@ class PageImport extends AbstractCustomPageImport
 		}
 
 		Utils::$smcFunc['db_free_result']($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $items;
+	}
+
+	private function getPagePermission(array $row): int
+	{
+		$perm = $row['permission_set'];
+
+		if (empty($row['permission_set'])) {
+			$groups = $row['groups_allowed'];
+
+			if ($groups == -1) {
+				$perm = 1;
+			} elseif ($groups == 0) {
+				$perm = 2;
+			} elseif ($groups == 1) {
+				$perm = 0;
+			} else {
+				$perm = 3;
+			}
+		}
+
+		return $perm;
 	}
 }

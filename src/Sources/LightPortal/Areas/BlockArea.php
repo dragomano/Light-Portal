@@ -306,6 +306,12 @@ final class BlockArea
 		CheckboxField::make('hide_header', Lang::$txt['lp_block_hide_header'])
 			->setValue(Utils::$context['lp_block']['options']['hide_header']);
 
+		if (isset(Utils::$context['lp_block']['options']['link_in_title'])) {
+			TextField::make('link_in_title', Lang::$txt['lp_block_link_in_title'])
+				->setType('url')
+				->setValue(Utils::$context['lp_block']['options']['link_in_title']);
+		}
+
 		Utils::$context['lp_block_tab_appearance'] = true;
 
 		$this->hook('prepareBlockFields');

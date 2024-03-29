@@ -64,8 +64,6 @@ abstract class AbstractImport implements ImportInterface
 				['item_id', 'type', 'lang'],
 				2
 			);
-
-			Utils::$context['lp_num_queries']++;
 		}
 	}
 
@@ -90,8 +88,6 @@ abstract class AbstractImport implements ImportInterface
 				['item_id', 'type', 'name'],
 				2
 			);
-
-			Utils::$context['lp_num_queries']++;
 		}
 	}
 

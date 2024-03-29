@@ -44,10 +44,10 @@ class CommentManager {
     }
   }
 
-  async remove(items) {
+  async remove(comment_id) {
     try {
       const response = await axios.post(`${this.workUrl}api=remove_comment`, {
-        items,
+        comment_id,
       });
 
       return response.data;

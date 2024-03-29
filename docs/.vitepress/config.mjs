@@ -9,7 +9,7 @@ const sidebar = {
   useTitleFromFrontmatter: true,
   useFolderTitleFromIndexFile: true,
   sortMenusByFrontmatterOrder: true,
-  excludeFiles: ['changelog.md', 'examples.md', 'team.md'],
+  excludeFiles: ['changelog.md', 'examples.md'],
   manualSortFileNameByPriority: [
     'intro.md',
     'getting-started',

@@ -124,7 +124,6 @@ class PageValidator extends AbstractValidator
 		[$count] = Db::$db->fetch_row($result);
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $count == 0;
 	}

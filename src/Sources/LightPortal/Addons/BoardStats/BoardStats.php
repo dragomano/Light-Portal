@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.02.24
+ * @version 17.03.24
  */
 
 namespace Bugo\LightPortal\Addons\BoardStats;
@@ -34,6 +34,7 @@ class BoardStats extends Block
 			return;
 
 		$params = [
+			'link_in_title'      => Config::$scripturl . '?action=stats',
 			'show_latest_member' => false,
 			'show_basic_info'    => true,
 			'show_whos_online'   => true,

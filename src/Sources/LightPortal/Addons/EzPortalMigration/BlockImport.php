@@ -3,17 +3,17 @@
 /**
  * BlockImport.php
  *
- * @package TinyPortalMigration (Light Portal)
+ * @package EzPortalMigration (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2020-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.02.24
+ * @version 27.03.24
  */
 
-namespace Bugo\LightPortal\Addons\TinyPortalMigration;
+namespace Bugo\LightPortal\Addons\EzPortalMigration;
 
 use Bugo\Compat\{Config, Db, Lang, Utils};
 use Bugo\LightPortal\Areas\Imports\AbstractCustomBlockImport;
@@ -24,17 +24,17 @@ if (! defined('LP_NAME'))
 
 class BlockImport extends AbstractCustomBlockImport
 {
-	private array $supportedTypes = [5, 10, 11];
+	private array $supportedTypes = ['HTML', 'PHP'];
 
 	public function main(): void
 	{
-		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_tiny_portal_migration']['label_name'];
+		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_ez_portal_migration']['label_name'];
 		Utils::$context['page_area_title'] = Lang::$txt['lp_blocks_import'];
-		Utils::$context['form_action']     = Config::$scripturl . '?action=admin;area=lp_blocks;sa=import_from_tp';
+		Utils::$context['form_action']     = Config::$scripturl . '?action=admin;area=lp_blocks;sa=import_from_ez';
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_tiny_portal_migration']['block_import_desc'],
+			'description' => Lang::$txt['lp_ez_portal_migration']['block_import_desc'],
 		];
 
 		$this->run();
@@ -62,8 +62,8 @@ class BlockImport extends AbstractCustomBlockImport
 						'class' => 'word_break'
 					],
 					'sort' => [
-						'default' => 'title DESC',
-						'reverse' => 'title'
+						'default' => 'blocktitle DESC',
+						'reverse' => 'blocktitle'
 					]
 				],
 				'type' => [
@@ -75,8 +75,8 @@ class BlockImport extends AbstractCustomBlockImport
 						'class' => 'centertext'
 					],
 					'sort' => [
-						'default' => 'type DESC',
-						'reverse' => 'type'
+						'default' => 'blocktype DESC',
+						'reverse' => 'blocktype'
 					]
 				],
 				'placement' => [
@@ -88,8 +88,8 @@ class BlockImport extends AbstractCustomBlockImport
 						'class' => 'centertext'
 					],
 					'sort' => [
-						'default' => 'bar DESC',
-						'reverse' => 'bar'
+						'default' => 'col DESC',
+						'reverse' => 'col'
 					]
 				],
 				'actions' => [
@@ -119,17 +119,18 @@ class BlockImport extends AbstractCustomBlockImport
 		new ItemList($listOptions);
 	}
 
-	public function getAll(int $start = 0, int $limit = 0, string $sort = 'id'): array
+	public function getAll(int $start = 0, int $limit = 0, string $sort = 'id_block'): array
 	{
 		Db::extend();
 
-		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'tp_blocks')))
+		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'ezp_blocks')))
 			return [];
 
 		$result = Utils::$smcFunc['db_query']('', '
-			SELECT id, type, title, bar
-			FROM {db_prefix}tp_blocks
-			WHERE type IN ({array_int:types})
+			SELECT b.id_block, b.blocktype AS type, bl.customtitle AS title, bl.id_column AS col
+			FROM {db_prefix}ezp_blocks AS b
+				INNER JOIN {db_prefix}ezp_block_layout AS bl ON (b.id_block = bl.id_block)
+			WHERE b.blocktype IN ({array_string:types})
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
 			[
@@ -142,11 +143,11 @@ class BlockImport extends AbstractCustomBlockImport
 
 		$items = [];
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
-			$items[$row['id']] = [
-				'id'        => $row['id'],
+			$items[$row['id_block']] = [
+				'id'        => $row['id_block'],
 				'type'      => Lang::$txt['lp_' . $this->getType($row['type'])]['title'],
 				'title'     => $row['title'],
-				'placement' => Utils::$context['lp_block_placements'][$this->getPlacement($row['bar'])],
+				'placement' => Utils::$context['lp_block_placements'][$this->getPlacement($row['col'])],
 			];
 		}
 
@@ -159,13 +160,13 @@ class BlockImport extends AbstractCustomBlockImport
 	{
 		Db::extend();
 
-		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'tp_blocks')))
+		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'ezp_blocks')))
 			return 0;
 
 		$result = Utils::$smcFunc['db_query']('', '
 			SELECT COUNT(*)
-			FROM {db_prefix}tp_blocks
-			WHERE type IN ({array_int:types})',
+			FROM {db_prefix}ezp_blocks
+			WHERE blocktype IN ({array_string:types})',
 			[
 				'types' => $this->supportedTypes,
 			]
@@ -181,10 +182,13 @@ class BlockImport extends AbstractCustomBlockImport
 	protected function getItems(array $blocks): array
 	{
 		$result = Utils::$smcFunc['db_query']('', '
-			SELECT id, type, title, body, access, bar
-			FROM {db_prefix}tp_blocks
-			WHERE type IN ({array_int:types})' . (empty($blocks) ? '' : '
-				AND id IN ({array_int:blocks})'),
+			SELECT
+				b.id_block, b.blocktype AS type, b.blocktitle,
+				bl.customtitle AS title, bl.id_column AS col, bl.permissions, bl.active AS status, bl.blockdata AS content
+			FROM {db_prefix}ezp_blocks AS b
+				INNER JOIN {db_prefix}ezp_block_layout AS bl ON (b.id_block = bl.id_block)
+			WHERE b.blocktype IN ({array_string:types})' . (empty($blocks) ? '' : '
+				AND b.id_block IN ({array_int:blocks})'),
 			[
 				'types'  => $this->supportedTypes,
 				'blocks' => $blocks,
@@ -193,26 +197,13 @@ class BlockImport extends AbstractCustomBlockImport
 
 		$items = [];
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
-			$permissions = explode(',', $row['access']);
-
-			$perm = 0;
-			if (count($permissions) == 1 && $permissions[0] == -1) {
-				$perm = 1;
-			} elseif (count($permissions) == 1 && $permissions[0] == 0) {
-				$perm = 2;
-			} elseif (in_array(-1, $permissions)) {
-				$perm = 3;
-			} elseif (in_array(0, $permissions)) {
-				$perm = 3;
-			}
-
-			$items[$row['id']] = [
+			$items[$row['id_block']] = [
 				'type'          => $this->getType($row['type']),
 				'title'         => $row['title'],
-				'content'       => $row['body'],
-				'placement'     => $this->getPlacement($row['bar']),
-				'permissions'   => $perm,
-				'status'        => 0,
+				'content'       => $row['content'],
+				'placement'     => $this->getPlacement($row['col']),
+				'permissions'   => $this->getBlockPermission($row),
+				'status'        => (int) $row['status'],
 				'title_class'   => array_key_first(Utils::$context['lp_all_title_classes']),
 				'content_class' => array_key_first(Utils::$context['lp_all_content_classes']),
 			];
@@ -223,24 +214,37 @@ class BlockImport extends AbstractCustomBlockImport
 		return $items;
 	}
 
-	private function getType(int $type): string
+	private function getType(string $type): string
 	{
-		return match ($type) {
-			5  => 'bbc',
-			10 => 'php',
-			default => 'html',
+		return strtolower($type);
+	}
+
+	private function getPlacement(int $col): string
+	{
+		return match ($col) {
+			1 => 'left',
+			2 => 'top',
+			3 => 'right',
+			5 => 'bottom',
+			default => 'header',
 		};
 	}
 
-	private function getPlacement(int $bar): string
+	private function getBlockPermission(array $row): int
 	{
-		return match ($bar) {
-			1 => 'left',
-			2 => 'right',
-			5 => 'footer',
-			6 => 'header',
-			7 => 'bottom',
-			default => 'top',
-		};
+		$permissions = explode(',', $row['permissions']);
+
+		$perm = 0;
+		if (count($permissions) == 1 && $permissions[0] == -1) {
+			$perm = 1;
+		} elseif (count($permissions) == 1 && $permissions[0] == 0) {
+			$perm = 2;
+		} elseif (in_array(-1, $permissions)) {
+			$perm = 3;
+		} elseif (in_array(0, $permissions)) {
+			$perm = 3;
+		}
+
+		return $perm;
 	}
 }

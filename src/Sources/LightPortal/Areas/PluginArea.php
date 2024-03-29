@@ -93,21 +93,23 @@ final class PluginArea
 
 		$pluginId = (int) $data['plugin'];
 
+		$enabledPlugins = Utils::$context['lp_enabled_plugins'];
+
 		if ($data['status'] === 'on') {
-			Utils::$context['lp_enabled_plugins'] = array_filter(
-				Utils::$context['lp_enabled_plugins'],
+			$enabledPlugins = array_filter(
+				$enabledPlugins,
 				static fn($item) => $item !== Utils::$context['lp_plugins'][$pluginId]
 			);
 		} else {
-			Utils::$context['lp_enabled_plugins'][] = Utils::$context['lp_plugins'][$pluginId];
+			$enabledPlugins[] = Utils::$context['lp_plugins'][$pluginId];
 		}
 
-		sort(Utils::$context['lp_enabled_plugins']);
+		sort($enabledPlugins);
 
 		Config::updateModSettings([
 			'lp_enabled_plugins' => implode(
 				',', array_unique(
-					array_intersect(Utils::$context['lp_enabled_plugins'], Utils::$context['lp_plugins'])
+					array_intersect($enabledPlugins, Utils::$context['lp_plugins'])
 				)
 			)
 		]);

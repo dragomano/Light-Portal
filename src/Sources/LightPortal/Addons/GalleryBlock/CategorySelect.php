@@ -77,7 +77,6 @@ final class CategorySelect extends AbstractPartial
 				$categories[$row['id_cat']] = $row['title'];
 
 			Utils::$smcFunc['db_free_result']($result);
-			Utils::$context['lp_num_queries']++;
 
 			$this->cache()->put('smf_gallery_categories', $categories);
 		}

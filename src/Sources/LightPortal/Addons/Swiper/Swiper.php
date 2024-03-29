@@ -10,14 +10,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.24
+ * @version 21.03.24
  */
 
 namespace Bugo\LightPortal\Addons\Swiper;
 
-use Bugo\Compat\{Lang, User, Utils};
+use Bugo\Compat\{Lang, Theme, User, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, RadioField, RangeField, SelectField};
+use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField};
+use Bugo\LightPortal\Areas\Fields\{RadioField, RangeField, SelectField};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -177,10 +178,10 @@ class Swiper extends Block
 		if (empty($swiperHtml))
 			return;
 
-		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css');
-		$this->loadExtJS('https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js');
+		Theme::loadCSSFile('https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css', ['external' => true]);
+		Theme::loadJavaScriptFile('https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js', ['external' => true]);
 
-		$this->addInlineJS('
+		Theme::addInlineJavaScript('
 			const swiper' . $id . ' = new Swiper("#swiper' . $id . '", {
 				direction: "' . ($parameters['direction'] ?? 'horizontal') . '",
 				loop: ' . (empty($parameters['loop']) ? 'false' : 'true') . ',

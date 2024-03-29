@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 21.03.24
  */
 
 namespace Bugo\LightPortal\Addons\EasyMarkdownEditor;
@@ -32,7 +32,7 @@ class EasyMarkdownEditor extends Plugin
 
 		Lang::load('Editor');
 
-		$this->loadExtCSS('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.css');
+		Theme::loadCSSFile('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.css', ['external' => true]);
 
 		Theme::addInlineCss('
 		.editor-toolbar button {
@@ -48,9 +48,9 @@ class EasyMarkdownEditor extends Plugin
 			max-height: none;
 		}');
 
-		$this->loadExtJS('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.js');
+		Theme::loadJavaScriptFile('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.js', ['external' => true]);
 
-		$this->addInlineJS('
+		Theme::addInlineJavaScript('
 		let easymde = new EasyMDE({
 			element: document.getElementById("content"),
 			autoDownloadFontAwesome: false,

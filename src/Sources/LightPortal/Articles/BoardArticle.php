@@ -122,7 +122,6 @@ class BoardArticle extends AbstractArticle
 		}
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $boards;
 	}
@@ -146,7 +145,6 @@ class BoardArticle extends AbstractArticle
 		[$count] = Db::$db->fetch_row($result);
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return (int) $count;
 	}

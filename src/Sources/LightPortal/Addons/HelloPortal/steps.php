@@ -96,7 +96,7 @@ return [
 			intro: "' . Lang::$txt['lp_hello_portal']['blocks_tour'][4] . '"
 		},
 		{
-			element: document.querySelector("td[class=priority]"),
+			element: document.querySelector("td[class^=priority]"),
 			intro: "' . Lang::$txt['lp_hello_portal']['blocks_tour'][5] . '"
 		}',
 	'pages' => '
@@ -174,7 +174,7 @@ return [
 			intro: "' . Lang::$txt['lp_hello_portal']['plugins_tour'][3] . '"
 		},
 		{
-			element: document.querySelector(".features span[data-toggle]"),
+			element: document.querySelector(".toggle-container"),
 			intro: "' . Lang::$txt['lp_hello_portal']['plugins_tour'][4] . '"
 		}',
 	'add_plugins' => '

@@ -8,33 +8,29 @@ export default {
     nav: [
       {
         text: 'Αρχική',
-        link: '/'
+        link: '/',
       },
       {
         text: 'Εισαγωγή',
-        link: '/intro'
-      },
-      {
-        text: 'Ομάδα',
-        link: '/team'
+        link: '/intro',
       },
       {
         text: 'Παραδείγματα',
-        link: '/examples'
+        link: '/examples',
       },
       {
         text: 'Παρουσίαση',
-        link: 'https://demo.dragomano.ru/'
+        link: 'https://demo.dragomano.ru/',
       },
       {
         text: 'Καταγραφή αλλαγών',
-        link: '/changelog'
-      }
+        link: '/changelog',
+      },
     ],
     outline: { label: 'Σε αυτήν την σελίδα' },
     docFooter: {
       prev: 'Προηγούμενη σελίδα',
-      next: 'Επόμενη σελίδα'
+      next: 'Επόμενη σελίδα',
     },
     darkModeSwitchLabel: 'Εμφάνιση',
     lightModeSwitchTitle: 'Εναλλαγή σε φωτεινό θέμα',
@@ -44,16 +40,17 @@ export default {
     langMenuLabel: 'Αλλαγή γλώσσας',
     notFound: {
       title: 'Η ΣΕΛΙΔΑ ΔΕΝ ΒΡΕΘΗΚΕ',
-      quote: 'Αλλά αν δεν αλλάξετε κατεύθυνση και αν συνεχίσετε να ψάχνετε, μπορεί να καταλήξετε εκεί που πηγαίνετε.',
+      quote:
+        'Αλλά αν δεν αλλάξετε κατεύθυνση και αν συνεχίσετε να ψάχνετε, μπορεί να καταλήξετε εκεί που πηγαίνετε.',
       linkLabel: 'πήγαινε στην αρχική',
-      linkText: 'Πήγαινε με στην αρχική'
+      linkText: 'Πήγαινε με στην αρχική',
     },
     search: {
       options: {
         translations: {
           button: {
             buttonText: 'Αναζήτηση',
-            buttonAriaLabel: 'Αναζήτηση'
+            buttonAriaLabel: 'Αναζήτηση',
           },
           modal: {
             displayDetails: 'Εμφάνιση λεπτομερούς λίστας',
@@ -63,11 +60,11 @@ export default {
             footer: {
               selectText: 'επέλεξε',
               navigateText: 'να πλοηγηθείς',
-              closeText: 'να κλείσεις'
-            }
-          }
-        }
-      }
-    }
-  }
+              closeText: 'να κλείσεις',
+            },
+          },
+        },
+      },
+    },
+  },
 };

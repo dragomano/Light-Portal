@@ -16,7 +16,7 @@ declare(strict_types=1);
 
 namespace Bugo\LightPortal\Repositories;
 
-use Bugo\Compat\{Config, Db, Lang, Utils};
+use Bugo\Compat\{Config, Db, Lang};
 use Bugo\LightPortal\Helper;
 
 if (! defined('SMF'))
@@ -45,7 +45,6 @@ final class CommentRepository
 		$data = Db::$db->fetch_assoc($result);
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $data ?? [];
 	}
@@ -94,7 +93,6 @@ final class CommentRepository
 		}
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $this->getItemsWithUserAvatars($comments, 'poster');
 	}
@@ -115,8 +113,6 @@ final class CommentRepository
 			1
 		);
 
-		Utils::$context['lp_num_queries']++;
-
 		return (int) $item;
 	}
 
@@ -129,12 +125,31 @@ final class CommentRepository
 				AND author_id = {int:user}',
 			$data
 		);
-
-		Utils::$context['lp_num_queries']++;
 	}
 
-	public function remove(array $items, string $pageAlias): void
+	public function remove(int $item, string $pageAlias): array
 	{
+		$result = Db::$db->query('', '
+			SELECT id
+			FROM {db_prefix}lp_comments
+			WHERE id = {int:item}
+				OR parent_id = {int:item}',
+			[
+				'item' => $item,
+			]
+		);
+
+		$items = [];
+		while ($row = Db::$db->fetch_assoc($result)) {
+			$items[] = (int) $row['id'];
+		}
+
+		Db::$db->free_result($result);
+
+		if ($items === []) {
+			return [];
+		}
+
 		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_comments
 			WHERE id IN ({array_int:items})',
@@ -187,7 +202,7 @@ final class CommentRepository
 			]
 		);
 
-		Utils::$context['lp_num_queries'] += 5;
+		return $items;
 	}
 
 	public function updateLastCommentId(int $item, int $pageId): void
@@ -201,8 +216,6 @@ final class CommentRepository
 				'page_id' => $pageId,
 			]
 		);
-
-		Utils::$context['lp_num_queries']++;
 	}
 
 	private function isCanEdit(int $date): bool

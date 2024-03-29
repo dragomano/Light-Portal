@@ -10,12 +10,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 23.03.24
  */
 
 namespace Bugo\LightPortal\Addons\Reactions;
 
-use Bugo\Compat\{Lang, User, Utils};
+use Bugo\Compat\{Lang, Theme, User, Utils};
 use Bugo\LightPortal\Addons\Plugin;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
 
@@ -53,7 +53,7 @@ class Reactions extends Plugin
 		Utils::$context['reaction_url'] = LP_PAGE_URL . $data['alias'];
 		Utils::$context['can_react'] = empty($isAuthor);
 
-		$this->addInlineJS('
+		Theme::addInlineJavaScript('
 			document.addEventListener("addReaction", (event) => {
 				const isComment = typeof event.detail.comment !== "undefined"
 				axios.post("' . Utils::$context['reaction_url'] . ';add_reaction", event.detail)
@@ -199,7 +199,6 @@ class Reactions extends Plugin
 		[$reactions] = Utils::$smcFunc['db_fetch_row']($result);
 
 		Utils::$smcFunc['db_free_result']($result);
-		Utils::$context['lp_num_queries']++;
 
 		return json_decode($reactions ?? '', true) ?? [];
 	}
@@ -222,7 +221,5 @@ class Reactions extends Plugin
 			],
 			['item_id', 'type', 'name']
 		);
-
-		Utils::$context['lp_num_queries']++;
 	}
 }

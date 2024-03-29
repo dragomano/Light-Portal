@@ -153,7 +153,6 @@ trait Helper
 			}
 
 			Db::$db->free_result($result);
-			Utils::$context['lp_num_queries']++;
 
 			$themes = array_column($themes, 'name', 'id');
 			$this->cache()->put('forum_themes', $themes);

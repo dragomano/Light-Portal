@@ -12,4 +12,4 @@ There are many options:
 - Documentation - can you explain a boring thing in an engaging way? Then try it!
 - Translations - translations constantly need [revision, proofreading and improvement](https://crowdin.com/project/light-portal).
 - Articles and reviews - do you like writing? There will always be readers!
-- Sponsorship - [donations](https://www.buymeacoffee.com/bugo) are always welcome.
+- Sponsorship - [donations](https://ko-fi.com/dragomano/) are always welcome.

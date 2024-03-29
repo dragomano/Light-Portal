@@ -86,7 +86,6 @@ final class PageRepository extends AbstractRepository
 		}
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $items;
 	}
@@ -110,7 +109,6 @@ final class PageRepository extends AbstractRepository
 		[$count] = Db::$db->fetch_row($result);
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return (int) $count;
 	}
@@ -180,9 +178,6 @@ final class PageRepository extends AbstractRepository
 		}
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
-
-		$this->prepareData($data);
 
 		return $data ?? [];
 	}
@@ -210,6 +205,9 @@ final class PageRepository extends AbstractRepository
 		$this->cache()->flush();
 
 		$this->session('lp')->free('active_pages');
+		$this->session('lp')->free('my_pages');
+		$this->session('lp')->free('unapproved_pages');
+		$this->session('lp')->free('internal_pages');
 
 		if ($this->request()->has('save_exit'))
 			Utils::redirectexit('action=admin;area=lp_pages;sa=main');
@@ -273,7 +271,6 @@ final class PageRepository extends AbstractRepository
 		}
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries'] += 4;
 
 		if ($comments) {
 			Db::$db->query('', '
@@ -292,11 +289,12 @@ final class PageRepository extends AbstractRepository
 					'items' => $comments,
 				]
 			);
-
-			Utils::$context['lp_num_queries'] += 2;
 		}
 
 		$this->session('lp')->free('active_pages');
+		$this->session('lp')->free('my_pages');
+		$this->session('lp')->free('unapproved_pages');
+		$this->session('lp')->free('internal_pages');
 	}
 
 	public function getPrevNextLinks(array $page): array
@@ -370,7 +368,6 @@ final class PageRepository extends AbstractRepository
 		[$nextId, $nextAlias] = Db::$db->fetch_row($result);
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return [$prevId, $prevAlias, $nextId, $nextAlias];
 	}
@@ -384,7 +381,7 @@ final class PageRepository extends AbstractRepository
 		foreach ($titleWords as $key => $word) {
 			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE
 			WHEN lower(t.title) LIKE lower(\'%' . $word . '%\')
-		    THEN ' . (count($titleWords) - $key) * 2 . ' ELSE 0 END';
+			THEN ' . (count($titleWords) - $key) * 2 . ' ELSE 0 END';
 		}
 
 		foreach ($aliasWords as $key => $word) {
@@ -436,7 +433,6 @@ final class PageRepository extends AbstractRepository
 		}
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $items;
 	}
@@ -453,8 +449,6 @@ final class PageRepository extends AbstractRepository
 				'statuses' => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
 			]
 		);
-
-		Utils::$context['lp_num_queries']++;
 	}
 
 	public function getMenuItems(): array
@@ -493,12 +487,41 @@ final class PageRepository extends AbstractRepository
 			}
 
 			Db::$db->free_result($result);
-			Utils::$context['lp_num_queries']++;
 
 			$this->cache()->put('menu_pages', $pages);
 		}
 
 		return $pages;
+	}
+
+	/**
+	 * @throws IntlException
+	 */
+	public function prepareData(?array &$data): void
+	{
+		if (empty($data))
+			return;
+
+		$isAuthor = $data['author_id'] && $data['author_id'] == User::$info['id'];
+
+		$data['created']  = DateTime::relative((int) $data['created_at']);
+		$data['updated']  = DateTime::relative((int) $data['updated_at']);
+		$data['can_view'] = $this->canViewItem($data['permissions']) || User::$info['is_admin'] || $isAuthor;
+		$data['can_edit'] = User::$info['is_admin']
+			|| Utils::$context['allow_light_portal_manage_pages_any']
+			|| (Utils::$context['allow_light_portal_manage_pages_own'] && $isAuthor);
+
+		if ($data['type'] === 'bbc') {
+			$data['content'] = Msg::unPreparseCode($data['content']);
+		}
+
+		if (! empty($data['category_id'])) {
+			$data['category'] = $this->getEntityData('category')[$data['category_id']]['title'];
+		}
+
+		$data['tags'] = $this->getTags($data['id']);
+
+		$this->hook('preparePageData', [&$data, $isAuthor]);
 	}
 
 	private function addData(): int
@@ -532,8 +555,6 @@ final class PageRepository extends AbstractRepository
 			['page_id'],
 			1
 		);
-
-		Utils::$context['lp_num_queries']++;
 
 		if (empty($item)) {
 			Db::$db->transaction('rollback');
@@ -590,8 +611,6 @@ final class PageRepository extends AbstractRepository
 			]
 		);
 
-		Utils::$context['lp_num_queries']++;
-
 		$this->hook('onPageSaving', [$item]);
 
 		$this->saveTitles($item, 'replace');
@@ -606,40 +625,6 @@ final class PageRepository extends AbstractRepository
 		}
 
 		Db::$db->transaction('commit');
-	}
-
-	private function saveTags(int $item, string $method = ''): void
-	{
-		Db::$db->query('', '
-			DELETE FROM {db_prefix}lp_page_tags
-			WHERE page_id = {int:item}',
-			[
-				'item' => $item,
-			]
-		);
-
-		$relations = [];
-		foreach (Utils::$context['lp_' . $this->entity]['tags'] as $tag) {
-			$relations[] = [
-				'page_id' => $item,
-				'tag_id'  => $tag,
-			];
-		}
-
-		if (empty($relations))
-			return;
-
-		Db::$db->insert($method,
-			'{db_prefix}lp_page_tags',
-			[
-				'page_id' => 'int',
-				'tag_id'  => 'int',
-			],
-			$relations,
-			['page_id', 'tag_id'],
-		);
-
-		Utils::$context['lp_num_queries']++;
 	}
 
 	private function getTags(int $item): array
@@ -675,39 +660,40 @@ final class PageRepository extends AbstractRepository
 		}
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return $items;
 	}
 
-	/**
-	 * @throws IntlException
-	 */
-	private function prepareData(?array &$data): void
+	private function saveTags(int $item, string $method = ''): void
 	{
-		if (empty($data))
+		Db::$db->query('', '
+			DELETE FROM {db_prefix}lp_page_tags
+			WHERE page_id = {int:item}',
+			[
+				'item' => $item,
+			]
+		);
+
+		$relations = [];
+		foreach (Utils::$context['lp_' . $this->entity]['tags'] as $tag) {
+			$relations[] = [
+				'page_id' => $item,
+				'tag_id'  => $tag,
+			];
+		}
+
+		if ($relations === [])
 			return;
 
-		$isAuthor = $data['author_id'] && $data['author_id'] == User::$info['id'];
-
-		$data['created']  = DateTime::relative((int) $data['created_at']);
-		$data['updated']  = DateTime::relative((int) $data['updated_at']);
-		$data['can_view'] = $this->canViewItem($data['permissions']) || User::$info['is_admin'] || $isAuthor;
-		$data['can_edit'] = User::$info['is_admin']
-			|| Utils::$context['allow_light_portal_manage_pages_any']
-			|| (Utils::$context['allow_light_portal_manage_pages_own'] && $isAuthor);
-
-		if ($data['type'] === 'bbc') {
-			$data['content'] = Msg::unPreparseCode($data['content']);
-		}
-
-		if (! empty($data['category_id'])) {
-			$data['category'] = $this->getEntityData('category')[$data['category_id']]['title'];
-		}
-
-		$data['tags'] = $this->getTags($data['id']);
-
-		$this->hook('preparePageData', [&$data, $isAuthor]);
+		Db::$db->insert($method,
+			'{db_prefix}lp_page_tags',
+			[
+				'page_id' => 'int',
+				'tag_id'  => 'int',
+			],
+			$relations,
+			['page_id', 'tag_id'],
+		);
 	}
 
 	private function getPublishTime(): int
@@ -735,7 +721,6 @@ final class PageRepository extends AbstractRepository
 		[$value] = Db::$db->fetch_row($result);
 
 		Db::$db->free_result($result);
-		Utils::$context['lp_num_queries']++;
 
 		return (int) $value + 1;
 	}

@@ -10,12 +10,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 20.02.24
+ * @version 21.03.24
  */
 
 namespace Bugo\LightPortal\Addons\Chart;
 
-use Bugo\Compat\{Lang, Utils};
+use Bugo\Compat\{Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextField};
 
@@ -147,9 +147,9 @@ class Chart extends Block
 			static fn($label) => Utils::escapeJavaScript(trim($label)), explode(',', $labels))
 		);
 
-		$this->loadJSFile('light_portal/chart/chart.umd.min.js', ['minimize' => true]);
+		Theme::loadJavaScriptFile('light_portal/chart/chart.umd.min.js', ['minimize' => true]);
 
-		$this->addInlineJS('
+		Theme::addInlineJavaScript('
 		new Chart("chart' . $id . '", {
 			type: "' . $type . '",
 			data: {

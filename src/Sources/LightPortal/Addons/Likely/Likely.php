@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 20.02.24
+ * @version 21.03.24
  */
 
 namespace Bugo\LightPortal\Addons\Likely;
@@ -89,7 +89,7 @@ class Likely extends Block
 			return;
 
 		Theme::loadCSSFile('light_portal/likely/likely.min.css');
-		$this->loadJSFile('light_portal/likely/likely.min.js', ['minimize' => true]);
+		Theme::loadJavaScriptFile('light_portal/likely/likely.min.js', ['minimize' => true]);
 
 		echo '
 			<div class="centertext likely_links">

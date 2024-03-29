@@ -122,7 +122,8 @@
 				float: none !important;
 				flex: 2 50%;
 
-				input[type="text"] {
+				input[type="text"],
+				input[type="url"] {
 					width: 100%;
 					margin-top: 4px;
 					padding: 20px 10px;

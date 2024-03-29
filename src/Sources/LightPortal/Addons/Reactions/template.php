@@ -7,7 +7,7 @@ function show_page_reactions(): void
 	// Use valid markup for guests and simple viewers
 	if (empty(Utils::$context['can_react']) || empty(Utils::$context['user']['is_logged'])) {
 		echo '
-	<hr>
+	<hr', Utils::$context['can_react'] ? '' : ' class="hidden"', '>
 	<div class="reactions">';
 
 		foreach (Utils::$context['prepared_buttons'] as $button) {

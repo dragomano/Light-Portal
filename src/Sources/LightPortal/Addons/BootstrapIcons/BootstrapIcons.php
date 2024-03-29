@@ -10,12 +10,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.02.24
+ * @version 21.03.24
  */
 
 namespace Bugo\LightPortal\Addons\BootstrapIcons;
 
-use Bugo\Compat\Utils;
+use Bugo\Compat\{Theme, Utils};
 use Bugo\LightPortal\Addons\Plugin;
 
 if (! defined('LP_NAME'))
@@ -32,9 +32,12 @@ class BootstrapIcons extends Plugin
 
 	public function init(): void
 	{
-		$this->loadExtCSS(
+		Theme::loadCSSFile(
 			'https://cdn.jsdelivr.net/npm/bootstrap-icons@1/font/bootstrap-icons.min.css',
-			['seed' => false]
+			[
+				'external' => true,
+				'seed'     => false,
+			]
 		);
 	}
 

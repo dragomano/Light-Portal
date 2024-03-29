@@ -150,8 +150,6 @@ final class PageImport extends AbstractImport
 					['page_id'],
 					2
 				);
-
-				Utils::$context['lp_num_queries']++;
 			}
 		}
 
@@ -176,8 +174,6 @@ final class PageImport extends AbstractImport
 					['id', 'page_id'],
 					2
 				);
-
-				Utils::$context['lp_num_queries']++;
 			}
 		}
 

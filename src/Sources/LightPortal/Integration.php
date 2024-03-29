@@ -14,10 +14,10 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Compilers\Zero;
 use Bugo\Compat\{Config, Db, Lang, Theme, User, Utils};
-use Bugo\LightPortal\Actions\{BoardIndex, Block, Category};
+use Bugo\LightPortal\Actions\{Block, BoardIndex, Category};
 use Bugo\LightPortal\Actions\{FrontPage, Page, Tag};
+use Bugo\LightPortal\Compilers\Zero;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -53,10 +53,9 @@ final class Integration extends AbstractMain
 	public function init(): void
 	{
 		Utils::$context['lp_load_time'] ??= microtime(true);
-		Utils::$context['lp_num_queries'] ??= 0;
 
 		defined('LP_NAME') || define('LP_NAME', 'Light Portal');
-		defined('LP_VERSION') || define('LP_VERSION', '2.6.1');
+		defined('LP_VERSION') || define('LP_VERSION', '2.6.2');
 		defined('LP_PLUGIN_LIST') || define('LP_PLUGIN_LIST', 'https://d8d75ea98b25aa12.mokky.dev/addons');
 		defined('LP_ADDON_URL') || define('LP_ADDON_URL', Config::$boardurl . '/Sources/LightPortal/Addons');
 		defined('LP_ADDON_DIR') || define('LP_ADDON_DIR', __DIR__ . '/Addons');

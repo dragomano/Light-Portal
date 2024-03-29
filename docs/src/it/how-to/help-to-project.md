@@ -12,4 +12,4 @@ Ci sono molte opzioni:
 - Documentazione - puoi spiegare una cosa noiosa in modo coinvolgente? Allora provalo!
 - Traduzioni - le traduzioni necessitano costantemente di [revisione, correzione di bozze e miglioramento](https://crowdin.com/project/light-portal).
 - Articoli e recensioni - ti piace scrivere? I lettori ci saranno sempre!
-- Sponsorizzazione - le [donazioni](https://www.buymeacoffee.com/bugo) sono sempre benvenute.
+- Sponsorizzazione - le [donazioni](https://ko-fi.com/dragomano) sono sempre benvenute.

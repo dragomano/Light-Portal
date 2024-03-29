@@ -38,6 +38,7 @@ class BlockValidator extends AbstractValidator
 	protected array $params = [
 		'hide_header'      => FILTER_VALIDATE_BOOLEAN,
 		'no_content_class' => FILTER_VALIDATE_BOOLEAN,
+		'link_in_title'    => FILTER_VALIDATE_URL,
 	];
 
 	public function validate(): array
