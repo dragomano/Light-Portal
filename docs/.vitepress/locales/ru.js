@@ -8,29 +8,29 @@ export default {
     nav: [
       {
         text: 'Главная',
-        link: '/',
+        link: '/'
       },
       {
         text: 'Введение',
-        link: '/intro',
+        link: '/intro'
       },
       {
         text: 'Примеры',
-        link: '/examples',
+        link: '/examples'
       },
       {
-        text: 'Демка',
-        link: 'https://demo.dragomano.ru/',
+        text: 'Демонстрация',
+        link: 'https://demo.dragomano.ru/'
       },
       {
         text: 'Обновления',
-        link: '/changelog',
-      },
+        link: '/changelog'
+      }
     ],
     outline: { label: 'Содержание этой страницы' },
     docFooter: {
       prev: 'Предыдущая страница',
-      next: 'Следующая страница',
+      next: 'Следующая страница'
     },
     darkModeSwitchLabel: 'Оформление',
     lightModeSwitchTitle: 'Переключить на светлую тему',
@@ -42,14 +42,14 @@ export default {
       title: 'СТРАНИЦА НЕ НАЙДЕНА',
       quote: 'Но если не менять направление и продолжать искать, то можно оказаться там, где надо.',
       linkLabel: 'перейти на главную',
-      linkText: 'Вернуться на главную',
+      linkText: 'Вернуться на главную'
     },
     search: {
       options: {
         translations: {
           button: {
             buttonText: 'Поиск',
-            buttonAriaLabel: 'Поиск',
+            buttonAriaLabel: 'Поиск'
           },
           modal: {
             displayDetails: 'Отобразить подробный список',
@@ -59,11 +59,11 @@ export default {
             footer: {
               selectText: 'выбрать',
               navigateText: 'перейти',
-              closeText: 'закрыть',
-            },
-          },
-        },
-      },
-    },
-  },
+              closeText: 'закрыть'
+            }
+          }
+        }
+      }
+    }
+  }
 };
