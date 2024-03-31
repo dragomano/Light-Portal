@@ -10,17 +10,17 @@
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  *
  * @category addon
- * @version 28.01.24
+ * @version 31.03.24
  */
 
 namespace Bugo\LightPortal\Addons\Markdown\SMF;
 
-use League\CommonMark\Renderer\NodeRendererInterface;
-use League\CommonMark\Xml\XmlNodeRendererInterface;
 use League\CommonMark\Extension\Table\Table;
 use League\CommonMark\Node\Node;
 use League\CommonMark\Renderer\ChildNodeRendererInterface;
+use League\CommonMark\Renderer\NodeRendererInterface;
 use League\CommonMark\Util\HtmlElement;
+use League\CommonMark\Xml\XmlNodeRendererInterface;
 
 final class TableRenderer implements NodeRendererInterface, XmlNodeRendererInterface
 {
