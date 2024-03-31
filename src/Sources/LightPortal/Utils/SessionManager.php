@@ -61,7 +61,9 @@ final class SessionManager
 
 	public function getActivePagesCount(): int
 	{
-		if ($this->session('lp')->get('active_pages') === null) {
+		$key = Utils::$context['allow_light_portal_manage_pages_any'] ? '' : ('_u' . User::$info['id']);
+
+		if ($this->session('lp')->get('active_pages' . $key) === null) {
 			$result = Db::$db->query('', '
 				SELECT COUNT(page_id)
 				FROM {db_prefix}lp_pages
@@ -77,15 +79,17 @@ final class SessionManager
 
 			Db::$db->free_result($result);
 
-			$this->session('lp')->put('active_pages', (int) $count);
+			$this->session('lp')->put('active_pages' . $key, (int) $count);
 		}
 
-		return $this->session('lp')->get('active_pages') ?? 0;
+		return $this->session('lp')->get('active_pages' . $key) ?? 0;
 	}
 
 	public function getMyPagesCount(): int
 	{
-		if ($this->session('lp')->get('my_pages') === null) {
+		$key = Utils::$context['allow_light_portal_manage_pages_any'] ? '' : ('_u' . User::$info['id']);
+
+		if ($this->session('lp')->get('my_pages' . $key) === null) {
 			$result = Db::$db->query('', '
 				SELECT COUNT(page_id)
 				FROM {db_prefix}lp_pages
@@ -99,10 +103,10 @@ final class SessionManager
 
 			Db::$db->free_result($result);
 
-			$this->session('lp')->put('my_pages', (int) $count);
+			$this->session('lp')->put('my_pages' . $key, (int) $count);
 		}
 
-		return $this->session('lp')->get('my_pages') ?? 0;
+		return $this->session('lp')->get('my_pages' . $key) ?? 0;
 	}
 
 	public function getUnapprovedPagesCount(): int
