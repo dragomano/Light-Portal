@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 21.02.24
+ * @version 04.04.24
  */
 
 namespace Bugo\LightPortal\Addons\Giscus;
@@ -31,17 +31,22 @@ class Giscus extends Plugin
 	private string $url = 'https://giscus.app';
 
 	private array $themes = [
-		'light'               => 'GitHub Light',
-		'light_high_contrast' => 'GitHub Light High Contrast',
-		'light_protanopia'    => 'GitHub Light Protanopia & Deuteranopia',
-		'light_tritanopia'    => 'GitHub Light Tritanopia',
-		'dark'                => 'GitHub Dark',
-		'dark_high_contrast'  => 'GitHub Dark High Contrast',
-		'dark_protanopia'     => 'GitHub Dark Protanopia & Deuteranopia',
-		'dark_tritanopia'     => 'GitHub Dark Tritanopia',
-		'dark_dimmed'         => 'GitHub Dark Dimmed',
-		'transparent_dark'    => 'Transparent Dark',
-		'cobalt'              => 'RStudio Cobalt',
+		'light'                  => 'GitHub Light',
+		'light_high_contrast'    => 'GitHub Light High Contrast',
+		'light_protanopia'       => 'GitHub Light Protanopia & Deuteranopia',
+		'light_tritanopia'       => 'GitHub Light Tritanopia',
+		'dark'                   => 'GitHub Dark',
+		'dark_high_contrast'     => 'GitHub Dark High Contrast',
+		'dark_protanopia'        => 'GitHub Dark Protanopia & Deuteranopia',
+		'dark_tritanopia'        => 'GitHub Dark Tritanopia',
+		'dark_dimmed'            => 'GitHub Dark Dimmed',
+		'preferred_color_scheme' => 'System (auto)',
+		'transparent_dark'       => 'Transparent Dark',
+		'noborder_light'         => 'NoBorder Light',
+		'noborder_dark'          => 'NoBorder Dark',
+		'noborder_gray'          => 'NoBorder Gray',
+		'cobalt'                 => 'RStudio Cobalt',
+		'purple_dark'            => 'Purple Dark',
 	];
 
 	public function init(): void
@@ -52,7 +57,7 @@ class Giscus extends Plugin
 	public function addSettings(array &$settings): void
 	{
 		$this->addDefaultValues([
-			'theme' => 'light',
+			'theme' => 'preferred_color_scheme',
 		]);
 
 		$settings['giscus'][] = [
