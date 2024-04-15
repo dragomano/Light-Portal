@@ -10,14 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.03.24
+ * @version 15.04.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleFeeder;
 
 use Bugo\Compat\{Config, Lang, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\Fields\{CheckboxField, TextField};
+use Bugo\LightPortal\Areas\Fields\{CheckboxField, UrlField};
 use Bugo\LightPortal\Utils\DateTime;
 use IntlException;
 
@@ -55,8 +55,7 @@ class SimpleFeeder extends Block
 		if (Utils::$context['current_block']['type'] !== 'simple_feeder')
 			return;
 
-		TextField::make('url', Lang::$txt['lp_simple_feeder']['url'])
-			->setType('url')
+		UrlField::make('url', Lang::$txt['lp_simple_feeder']['url'])
 			->setTab('content')
 			->required()
 			->placeholder(Config::$scripturl . '?action=.xml;type=rss2')

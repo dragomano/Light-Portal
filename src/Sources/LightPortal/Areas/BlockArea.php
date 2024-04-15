@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, ErrorHandler, Lang, Security, Theme, Utils};
-use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, TextField};
+use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, TextField, UrlField};
 use Bugo\LightPortal\Areas\Partials\{AreaSelect, ContentClassSelect, IconSelect};
 use Bugo\LightPortal\Areas\Partials\{PermissionSelect, PlacementSelect, TitleClassSelect};
 use Bugo\LightPortal\Areas\Validators\BlockValidator;
@@ -307,8 +307,7 @@ final class BlockArea
 			->setValue(Utils::$context['lp_block']['options']['hide_header']);
 
 		if (isset(Utils::$context['lp_block']['options']['link_in_title'])) {
-			TextField::make('link_in_title', Lang::$txt['lp_block_link_in_title'])
-				->setType('url')
+			UrlField::make('link_in_title', Lang::$txt['lp_block_link_in_title'])
 				->setValue(Utils::$context['lp_block']['options']['link_in_title']);
 		}
 

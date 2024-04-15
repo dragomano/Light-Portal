@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.03.24
+ * @version 15.04.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -19,7 +19,7 @@ use Bugo\Compat\{Config, Lang, Security, User, Utils};
 use Bugo\LightPortal\Addons\{Block, Plugin};
 use Bugo\LightPortal\Areas\Area;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, ColorField, CustomField, NumberField};
-use Bugo\LightPortal\Areas\Fields\{RadioField, RangeField, SelectField, TextField};
+use Bugo\LightPortal\Areas\Fields\{RadioField, RangeField, SelectField, TextField, UrlField};
 use Bugo\LightPortal\Areas\Partials\IconSelect;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\Language;
@@ -185,10 +185,9 @@ class Handler extends Plugin
 			->setType('email')
 			->setValue(Utils::$context['lp_plugin']['email']);
 
-		TextField::make('site', Lang::$txt['website'])
+		UrlField::make('site', Lang::$txt['website'])
 			->setTab('copyrights')
 			->setAfter(Lang::$txt['lp_plugin_maker']['site_subtext'])
-			->setType('url')
 			->placeholder('https://custom.simplemachines.org/index.php?mod=4244')
 			->setValue(Utils::$context['lp_plugin']['site']);
 
