@@ -113,7 +113,10 @@ final class BlockExport extends AbstractExport
 			$xml->formatOutput = true;
 
 			$xmlElements = $root->appendChild($xml->createElement('blocks'));
-			foreach ($items as $item) {
+
+			$items = $this->getGeneratorFrom($items);
+
+			foreach ($items() as $item) {
 				$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
 				foreach ($item as $key => $val) {
 					$xmlName = $xmlElement->appendChild(

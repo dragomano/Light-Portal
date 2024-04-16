@@ -60,4 +60,9 @@ abstract class AbstractExport implements ExportInterface
 
 		exit;
 	}
+
+	protected function getGeneratorFrom(array $items): \Closure
+	{
+		return static fn() => yield from $items;
+	}
 }
