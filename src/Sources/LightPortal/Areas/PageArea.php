@@ -745,7 +745,7 @@ final class PageArea
 			);
 		}
 
-		Utils::$context['page_title']    = Lang::$txt['preview'] . (
+		Utils::$context['page_title'] = Lang::$txt['preview'] . (
 			Utils::$context['preview_title'] ? ' - ' . Utils::$context['preview_title'] : ''
 		);
 
@@ -754,7 +754,7 @@ final class PageArea
 
 	private function checkUser(): void
 	{
-		if (Utils::$context['allow_light_portal_manage_pages_any'] === false && $this->request()->has('sa') && $this->request('sa') === 'main' && $this->request()->hasNot('u'))
+		if (Utils::$context['allow_light_portal_manage_pages_any'] === false && $this->request()->hasNot('u'))
 			Utils::redirectexit('action=admin;area=lp_pages;u=' . User::$info['id']);
 	}
 
