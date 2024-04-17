@@ -383,7 +383,9 @@ final class Integration extends AbstractMain
 			'custom_url' => Config::$scripturl . '?action=admin;area=lp_pages',
 			'icon'       => 'reports',
 			'enabled'    => $this->request('area') === 'popup',
-			'permission' => 'light_portal_manage_pages_own',
+			'permission' => [
+				'own' => 'light_portal_manage_pages_own',
+			],
 		];
 	}
 
@@ -404,8 +406,9 @@ final class Integration extends AbstractMain
 			array_slice($items, 0, $counter, true),
 			[
 				[
-					'menu' => 'info',
-					'area' => 'lp_my_pages'
+					'menu'  => 'info',
+					'area'  => 'lp_my_pages',
+					'title' => Lang::$txt['lp_my_pages']
 				]
 			],
 			array_slice($items, $counter, null, true)
