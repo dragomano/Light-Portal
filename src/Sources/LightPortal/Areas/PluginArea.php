@@ -309,10 +309,12 @@ final class PluginArea
 				$contextData['lp_' . $plugin] = Utils::$context['lp_' . $plugin . '_plugin'];
 		}
 
-		Utils::$context['lp_json']['txt']     = json_encode($txtData);
-		Utils::$context['lp_json']['context'] = json_encode($contextData);
-		Utils::$context['lp_json']['plugins'] = json_encode($pluginsData);
-		Utils::$context['lp_json']['icons']   = json_encode(Icon::all());
+		Utils::$context['lp_json'] = json_encode([
+			'txt'     => $txtData,
+			'context' => $contextData,
+			'plugins' => $pluginsData,
+			'icons'   => Icon::all(),
+		]);
 	}
 
 	private function updateAssetMtime(string $plugin): void

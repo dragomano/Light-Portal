@@ -437,11 +437,13 @@ final class Page implements PageInterface
 			'lp_comment_sorting' => Config::$modSettings['lp_comment_sorting'] ?? '0',
 		];
 
-		Utils::$context['lp_json']['txt']      = json_encode($txtData);
-		Utils::$context['lp_json']['context']  = json_encode($contextData);
-		Utils::$context['lp_json']['settings'] = json_encode($settingsData);
-		Utils::$context['lp_json']['icons']    = json_encode(Icon::all());
-		Utils::$context['lp_json']['user']     = json_encode(Utils::$context['user']);
+		Utils::$context['lp_json'] = json_encode([
+			'txt'      => $txtData,
+			'context'  => $contextData,
+			'settings' => $settingsData,
+			'icons'    => Icon::all(),
+			'user'     => Utils::$context['user'],
+		]);
 	}
 
 	private function updateNumViews(): void
