@@ -29,7 +29,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { defineEmits, computed } from 'vue';
 import Button from './BaseButton.vue';
 
 const props = defineProps({

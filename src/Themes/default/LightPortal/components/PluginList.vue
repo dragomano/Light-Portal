@@ -24,13 +24,13 @@
     {{ $t('lp_plugins_desc') }}
     <div class="hidden-xs floatright">
       <Button
-        view="span"
+        tag="span"
         icon="simple"
         :style="{ opacity: isCardView ? '.5' : '1' }"
         @click="layout = 'list'"
       />
       <Button
-        view="span"
+        tag="span"
         icon="tile"
         :style="{ opacity: isCardView ? '1' : '.5' }"
         @click="layout = 'card'"
@@ -46,7 +46,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useStorage } from '@vueuse/core';
-import { usePluginStore } from '../../scripts/light_portal/dev/plugin_stores.js';
+import { usePluginStore } from '@scripts/plugin_stores.js';
 import Button from './BaseButton.vue';
 import ListTransition from './ListTransition.vue';
 import PluginItem from './PluginItem.vue';

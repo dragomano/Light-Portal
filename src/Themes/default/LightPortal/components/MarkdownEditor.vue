@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-import { getCurrentInstance, ref, computed, onMounted } from 'vue';
+import { defineEmits, getCurrentInstance, ref, computed, onMounted } from 'vue';
 import MarkdownPreview from './MarkdownPreview.vue';
 import Button from './BaseButton.vue';
 

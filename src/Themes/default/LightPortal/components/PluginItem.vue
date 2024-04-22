@@ -22,7 +22,7 @@
       <div class="floatright">
         <Button
           v-if="item.settings.length"
-          view="span"
+          tag="span"
           icon="gear"
           :class="show ? 'fa-spin' : undefined"
           :data-id="settingsId"
@@ -34,14 +34,14 @@
             :href="pluginStore.donate[item.name].link"
             rel="noopener"
             target="_blank"
-            v-html="iconStore.donate"
+            v-html="donateIcon"
           ></a>
           <a
             v-else
             :href="pluginStore.download[item.name].link"
             rel="noopener"
             target="_blank"
-            v-html="iconStore.download"
+            v-html="downloadIcon"
           ></a>
         </template>
         <Toggle
@@ -66,19 +66,26 @@
 <script setup>
 import { ref, computed } from 'vue';
 import Toggle from '@vueform/toggle';
-import { useContextStore, useIconStore } from '../../scripts/light_portal/dev/base_stores.js';
-import { useAppStore, usePluginStore } from '../../scripts/light_portal/dev/plugin_stores.js';
+import { useContextStore, useIconStore } from '@scripts/base_stores.js';
+import { useAppStore, usePluginStore } from '@scripts/plugin_stores.js';
 import Button from './BaseButton.vue';
 import PluginOptionList from './PluginOptionList.vue';
 
 const appStore = useAppStore();
 const pluginStore = usePluginStore();
 const contextStore = useContextStore();
-const iconStore = useIconStore();
+const { donate: donateIcon, download: downloadIcon } = useIconStore();
 
 const props = defineProps({
   item: {
-    type: Object,
+    type: {
+      name: String,
+      settings: Array,
+      snake_name: String,
+      special: String,
+      status: String,
+      types: Object,
+    },
     required: true,
   },
 });

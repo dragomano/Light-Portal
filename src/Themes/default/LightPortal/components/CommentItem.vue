@@ -41,14 +41,14 @@
             :style="{ border: 'none' }"
             itemprop="text"
           />
-          <div v-if="userStore.id" class="comment_buttons">
-            <Button v-if="showReplyButton" @click="replyMode = !replyMode" view="span" icon="reply">
+          <div v-if="userId" class="comment_buttons">
+            <Button v-if="showReplyButton" @click="replyMode = !replyMode" tag="span" icon="reply">
               {{ $t('reply') }}
             </Button>
-            <Button v-if="canEdit" @click="editMode = true" view="span" icon="edit">
+            <Button v-if="canEdit" @click="editMode = true" tag="span" icon="edit">
               {{ $t('modify') }}
             </Button>
-            <template v-for="(button, i) in comment.extra_buttons" :key="i">
+            <template v-for="button in comment.extra_buttons">
               <span v-html="button"></span>
             </template>
             <Button
@@ -57,7 +57,7 @@
               @mouseover="isHover = true"
               @mouseleave="isHover = false"
               @click.prevent="remove($el.dataset.id)"
-              view="span"
+              tag="span"
               icon="remove"
             >
               {{ $t('remove') }}
@@ -89,8 +89,8 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import { useUserStore } from '../../scripts/light_portal/dev/comment_stores.js';
+import { defineOptions, defineEmits, ref, computed } from 'vue';
+import { useUserStore } from '@scripts/comment_stores.js';
 import ListTransition from './ListTransition.vue';
 import EditForm from './EditForm.vue';
 import ReplyForm from './ReplyForm.vue';
@@ -101,11 +101,24 @@ defineOptions({
   name: 'CommentItem',
 });
 
-const userStore = useUserStore();
+const { id: userId, is_admin: isAdmin } = useUserStore();
 
 const props = defineProps({
   comment: {
-    type: Object,
+    type: {
+      id: Number,
+      published_at: Number,
+      human_date: String,
+      can_edit: Boolean,
+      authorial: Boolean,
+      poster: {
+        id: Number,
+        name: String,
+        avatar: String,
+      },
+      extra_buttons: Array,
+      replies: Array,
+    },
     required: true,
   },
   index: {
@@ -126,17 +139,17 @@ const replyMode = ref(false);
 const editMode = ref(false);
 const parent = ref();
 
-const showReplyButton = computed(() => props.level < 5 && userStore.id !== props.comment.poster.id);
+const showReplyButton = computed(() => props.level < 5 && userId !== props.comment.poster.id);
 
 const showRemoveButton = computed(
-  () => props.comment.poster.id === userStore.id || userStore.is_admin
+  () => props.comment.poster.id === userId || isAdmin
 );
 
 const canEdit = computed(
   () =>
     props.comment.can_edit &&
     (!props.comment.replies || !props.comment.replies.length) &&
-    props.comment.poster.id === userStore.id
+    props.comment.poster.id === userId
 );
 
 const add = (comment) => {
@@ -150,7 +163,7 @@ const update = (comment) => {
   editMode.value = false;
 };
 
-const remove = (comment) => {
-  emit('remove-comment', comment);
+const remove = (id) => {
+  emit('remove-comment', id);
 };
 </script>

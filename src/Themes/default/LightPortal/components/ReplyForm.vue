@@ -11,8 +11,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useUserStore } from '../../scripts/light_portal/dev/comment_stores.js';
+import { defineEmits, ref } from 'vue';
+import { useUserStore } from '@scripts/comment_stores.js';
 import MarkdownEditor from './MarkdownEditor.vue';
 import Button from './BaseButton.vue';
 

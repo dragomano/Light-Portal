@@ -23,11 +23,11 @@ const useIconStore = defineStore('icons', {
 const modules = {
   '@vueform/multiselect': window.VueformMultiselect,
   '@vueform/toggle': window.VueformToggle,
-  '../../scripts/light_portal/dev/base_stores.js': {
+  '@scripts/base_stores.js': {
     useContextStore,
     useIconStore,
   },
-  '../../scripts/light_portal/dev/plugin_stores.js': {
+  '@scripts/plugin_stores.js': {
     useAppStore,
     usePluginStore,
   },

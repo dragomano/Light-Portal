@@ -1,5 +1,5 @@
 <template>
-  <component :is="button.view" :class="button.class" :role="button.role">
+  <component :is="button.tag" :class="button.class" :role="button.role">
     <span v-html="preparedIcon"></span>
     <slot></slot>
   </component>
@@ -7,12 +7,12 @@
 
 <script setup>
 import { computed } from 'vue';
-import { useIconStore } from '../../scripts/light_portal/dev/base_stores.js';
+import { useIconStore } from '@scripts/base_stores.js';
 
 const iconStore = useIconStore();
 
 const props = defineProps({
-  view: {
+  tag: {
     type: String,
     default: 'button',
   },
@@ -23,14 +23,14 @@ const props = defineProps({
 });
 
 const button = computed(() =>
-  props.view === 'button'
+  props.tag === 'button'
     ? {
-        view: 'button',
+        tag: 'button',
         class: 'button',
         role: undefined,
       }
     : {
-        view: 'span',
+        tag: 'span',
         class: undefined,
         role: 'button',
       }

@@ -3,7 +3,7 @@
     <div class="cat_bar">
       <h3 class="catbg">
         <span>{{ $tc('title', total) }}</span>
-        <span class="floatright" v-html="iconStore.comments"></span>
+        <span class="floatright" v-html="commentsIcon"></span>
       </h3>
     </div>
     <div>
@@ -34,11 +34,11 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
+import { defineOptions, ref, computed, onMounted, watch } from 'vue';
 import { useStorage, useUrlSearchParams } from '@vueuse/core';
-import { useContextStore, useIconStore } from '../../scripts/light_portal/dev/base_stores.js';
-import { useSettingStore } from '../../scripts/light_portal/dev/comment_stores.js';
-import { CommentManager, ObjectHelper } from '../../scripts/light_portal/dev/comment_helpers.js';
+import { useContextStore, useIconStore } from '@scripts/base_stores.js';
+import { useSettingStore } from '@scripts/comment_stores.js';
+import { CommentManager, ObjectHelper } from '@scripts/comment_helpers.js';
 import ListTransition from './ListTransition.vue';
 import CommentItem from './CommentItem.vue';
 import PurePagination from './PurePagination.vue';
@@ -48,11 +48,11 @@ defineOptions({
   name: 'CommentList',
 });
 
-const contextStore = useContextStore();
-const iconStore = useIconStore();
-const settingStore = useSettingStore();
+const { pageUrl } = useContextStore();
+const { comments: commentsIcon } = useIconStore();
+const { lp_comment_sorting } = useSettingStore();
 
-const api = new CommentManager(contextStore.pageUrl);
+const api = new CommentManager(pageUrl);
 const helper = new ObjectHelper();
 
 const comments = ref([]);
@@ -63,7 +63,7 @@ const start = useStorage('lpCommentsStart', 0, localStorage);
 
 const totalOnPage = computed(() => comments.value.length);
 const showBottomPagination = computed(() => totalOnPage.value > 5);
-const showReplyFormOnTop = settingStore.lp_comment_sorting === '1';
+const showReplyFormOnTop = lp_comment_sorting === '1';
 
 const getComments = async () => {
   const data = await api.get(start.value);
@@ -102,7 +102,6 @@ const addReply = async ({ parent, content }) => {
   const allComments = helper.getData(comments.value);
 
   comments.value = helper.getSortedTree([...allComments, response], showReplyFormOnTop);
-
   total.value++;
 
   setCommentHash(response.id);
