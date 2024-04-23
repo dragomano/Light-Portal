@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.24
+ * @version 23.04.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleMenu;
 
 use Bugo\Compat\{Config, Lang, Utils};
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\CustomField;
 
 if (! defined('LP_NAME'))
@@ -68,7 +69,7 @@ class SimpleMenu extends Block
 			return;
 
 		CustomField::make('items', Lang::$txt['lp_simple_menu']['items'])
-			->setTab('content')
+			->setTab(BlockArea::TAB_CONTENT)
 			->setValue($this->getFromTemplate('simple_menu_items'));
 	}
 

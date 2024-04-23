@@ -32,6 +32,8 @@ final class TagArea
 	use Area;
 	use Helper;
 
+	public const TAB_CONTENT = 'content';
+
 	private TagRepository $repository;
 
 	public function __construct()
@@ -287,7 +289,7 @@ final class TagArea
 		$this->prepareTitleFields();
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
-			->setTab('content')
+			->setTab(self::TAB_CONTENT)
 			->setValue(static fn() => new IconSelect(), [
 				'icon' => Utils::$context['lp_tag']['icon'],
 			]);

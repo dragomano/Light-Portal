@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 21.03.24
+ * @version 23.04.24
  */
 
 namespace Bugo\LightPortal\Addons\BoardNews;
 
 use Bugo\Compat\{Config, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\{NumberField, RangeField};
 use Bugo\LightPortal\Utils\MessageIndex;
 
@@ -59,7 +60,7 @@ class BoardNews extends Block
 			return;
 
 		CustomSelectField::make('board_id', Lang::$txt['lp_board_news']['board_id'])
-			->setTab('content')
+			->setTab(BlockArea::TAB_CONTENT)
 			->setOptions(MessageIndex::getBoardList([
 				'ignore_boards'  => false,
 				'selected_board' => Utils::$context['lp_block']['options']['board_id'] ?? false

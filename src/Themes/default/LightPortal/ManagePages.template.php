@@ -1,6 +1,7 @@
 <?php
 
 use Bugo\Compat\{Config, Lang, Utils};
+use Bugo\LightPortal\Areas\PageArea;
 use Bugo\LightPortal\Utils\Icon;
 
 function template_page_add(): void
@@ -100,9 +101,9 @@ function template_page_post(): void
 				</div>
 				<div data-content>
 					<section class="bg even active_content" data-content="common">', template_post_tab($fields), '</section>
-					<section class="bg even" data-content="access">', template_post_tab($fields, 'access_placement'), '</section>
-					<section class="bg even" data-content="seo">', template_post_tab($fields, 'seo'), '</section>
-					<section class="bg even" data-content="tuning">', template_post_tab($fields, 'tuning'), '</section>
+					<section class="bg even" data-content="access">', template_post_tab($fields, PageArea::TAB_ACCESS), '</section>
+					<section class="bg even" data-content="seo">', template_post_tab($fields, PageArea::TAB_SEO), '</section>
+					<section class="bg even" data-content="tuning">', template_post_tab($fields, PageArea::TAB_TUNING), '</section>
 				</div>
 			</div>
 			<br class="clear">

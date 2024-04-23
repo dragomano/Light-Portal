@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.24
+ * @version 23.04.24
  */
 
 namespace Bugo\LightPortal\Addons\TrendingTopics;
 
 use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\LightPortal\Areas\Fields\NumberField;
 use Bugo\LightPortal\Areas\Fields\SelectField;
@@ -68,7 +69,7 @@ class TrendingTopics extends Block
 			return;
 
 		CheckboxField::make('show_avatars', Lang::$txt['lp_trending_topics']['show_avatars'])
-			->setTab('appearance')
+			->setTab(BlockArea::TAB_APPEARANCE)
 			->setValue(Utils::$context['lp_block']['options']['show_avatars']);
 
 		SelectField::make('time_period', Lang::$txt['lp_trending_topics']['time_period'])

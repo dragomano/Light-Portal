@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 21.03.24
+ * @version 23.04.24
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
 
 use Bugo\Compat\{Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\{CustomField, TextareaField, TextField};
 use Bugo\LightPortal\Areas\Partials\{BoardSelect, PageSelect, TopicSelect};
 use Bugo\LightPortal\Utils\Content;
@@ -75,28 +76,28 @@ class AdsBlock extends Block
 		}');
 
 		TextareaField::make('loader_code', Lang::$txt['lp_ads_block']['loader_code'])
-			->setTab('content')
+			->setTab(BlockArea::TAB_CONTENT)
 			->setValue(Utils::$context['lp_block']['options']['loader_code']);
 
 		TextField::make('placement', '')
-			->setTab('content')
+			->setTab(BlockArea::TAB_CONTENT)
 			->setAttribute('class', 'hidden')
 			->setValue('ads');
 
 		TextField::make('areas', '')
-			->setTab('content')
+			->setTab(BlockArea::TAB_CONTENT)
 			->setAttribute('class', 'hidden')
 			->setValue('all');
 
 		CustomField::make('ads_placement', Lang::$txt['lp_block_placement'])
-			->setTab('access_placement')
+			->setTab(BlockArea::TAB_ACCESS)
 			->setValue(static fn() => new PlacementSelect(), [
 				'data'  => $this->getPlacements(),
 				'value' => Utils::$context['lp_block']['options']['ads_placement'],
 			]);
 
 		CustomField::make('include_boards', Lang::$txt['lp_ads_block']['include_boards'])
-			->setTab('access_placement')
+			->setTab(BlockArea::TAB_ACCESS)
 			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'include_boards',
 				'hint'  => Lang::$txt['lp_ads_block']['include_boards_select'],
@@ -104,7 +105,7 @@ class AdsBlock extends Block
 			]);
 
 		CustomField::make('include_topics', Lang::$txt['lp_ads_block']['include_topics'])
-			->setTab('access_placement')
+			->setTab(BlockArea::TAB_ACCESS)
 			->setValue(static fn() => new TopicSelect(), [
 				'id'    => 'include_pages',
 				'hint'  => Lang::$txt['lp_ads_block']['include_pages_select'],
@@ -112,7 +113,7 @@ class AdsBlock extends Block
 			]);
 
 		CustomField::make('include_pages', Lang::$txt['lp_ads_block']['include_pages'])
-			->setTab('access_placement')
+			->setTab(BlockArea::TAB_ACCESS)
 			->setValue(static fn() => new PageSelect(), [
 				'id'    => 'include_pages',
 				'hint'  => Lang::$txt['lp_ads_block']['include_pages_select'],

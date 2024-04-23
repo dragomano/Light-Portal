@@ -35,6 +35,14 @@ final class PageArea
 	use Area;
 	use Helper;
 
+	public const TAB_CONTENT = 'content';
+
+	public const TAB_ACCESS = 'access_placement';
+
+	public const TAB_SEO = 'seo';
+
+	public const TAB_TUNING = 'tuning';
+
 	private array $params = [];
 
 	private string $browseType;
@@ -625,7 +633,7 @@ final class PageArea
 
 		if (Utils::$context['lp_page']['type'] !== 'bbc') {
 			TextareaField::make('content', Lang::$txt['lp_content'])
-				->setTab('content')
+				->setTab(self::TAB_CONTENT)
 				->setAttribute('style', 'height: 300px')
 				->setValue($this->prepareContent(Utils::$context['lp_page']));
 		} else {
@@ -634,16 +642,16 @@ final class PageArea
 
 		if (Utils::$context['user']['is_admin']) {
 			CustomField::make('show_in_menu', Lang::$txt['lp_page_show_in_menu'])
-				->setTab('access_placement')
+				->setTab(self::TAB_ACCESS)
 				->setValue(static fn() => new PageIconSelect());
 		}
 
 		CustomField::make('permissions', Lang::$txt['edit_permissions'])
-			->setTab('access_placement')
+			->setTab(self::TAB_ACCESS)
 			->setValue(static fn() => new PermissionSelect());
 
 		CustomField::make('category_id', Lang::$txt['lp_category'])
-			->setTab('access_placement')
+			->setTab(self::TAB_ACCESS)
 			->setValue(static fn() => new CategorySelect(), [
 				'id'         => 'category_id',
 				'multiple'   => false,
@@ -654,17 +662,17 @@ final class PageArea
 
 		if (Utils::$context['user']['is_admin']) {
 			CustomField::make('status', Lang::$txt['status'])
-				->setTab('access_placement')
+				->setTab(self::TAB_ACCESS)
 				->setValue(static fn() => new StatusSelect());
 
 			CustomField::make('author_id', Lang::$txt['lp_page_author'])
-				->setTab('access_placement')
+				->setTab(self::TAB_ACCESS)
 				->setAfter(Lang::$txt['lp_page_author_placeholder'])
 				->setValue(static fn() => new PageAuthorSelect());
 		}
 
 		TextField::make('alias', Lang::$txt['lp_page_alias'])
-			->setTab('seo')
+			->setTab(self::TAB_SEO)
 			->setAfter(Lang::$txt['lp_page_alias_subtext'])
 			->required()
 			->setAttribute('maxlength', 255)
@@ -676,7 +684,7 @@ final class PageArea
 			->setValue(Utils::$context['lp_page']['alias']);
 
 		TextareaField::make('description', Lang::$txt['lp_page_description'])
-			->setTab('seo')
+			->setTab(self::TAB_SEO)
 			->setAttribute('maxlength', 255)
 			->setValue(Utils::$context['lp_page']['description']);
 
@@ -686,7 +694,7 @@ final class PageArea
 				->setValue('');
 		} else {
 			CustomField::make('tags', Lang::$txt['lp_tags'])
-				->setTab('seo')
+				->setTab(self::TAB_SEO)
 				->setValue(static fn() => new TagSelect());
 		}
 

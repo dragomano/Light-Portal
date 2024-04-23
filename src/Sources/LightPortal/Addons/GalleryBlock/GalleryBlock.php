@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.03.24
+ * @version 23.04.24
  */
 
 namespace Bugo\LightPortal\Addons\GalleryBlock;
 
 use Bugo\Compat\{Config, Db, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField};
 
 if (! defined('LP_NAME'))
@@ -55,7 +56,7 @@ class GalleryBlock extends Block
 			return;
 
 		CustomField::make('categories', Lang::$txt['lp_gallery_block']['categories'])
-			->setTab('content')
+			->setTab(BlockArea::TAB_CONTENT)
 			->setValue(static fn() => new CategorySelect());
 
 		NumberField::make('num_images', Lang::$txt['lp_gallery_block']['num_images'])

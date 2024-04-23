@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 23.04.24
  */
 
 namespace Bugo\LightPortal\Addons\Polls;
 
 use Bugo\Compat\{Config, Lang, Utils};
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\{InputField, SelectField};
 
 if (! defined('LP_NAME'))
@@ -54,12 +55,12 @@ class Polls extends Block
 		if (empty($polls)) {
 			InputField::make('selected_item', Lang::$txt['lp_polls']['selected_item'])
 				->setType('input')
-				->setTab('content')
+				->setTab(BlockArea::TAB_CONTENT)
 				->setAfter(Lang::$txt['lp_polls']['no_items'])
 				->setAttribute('disabled', true);
 		} else {
 			SelectField::make('selected_item', Lang::$txt['lp_polls']['selected_item'])
-				->setTab('content')
+				->setTab(BlockArea::TAB_CONTENT)
 				->setOptions($polls)
 				->setValue(Utils::$context['lp_block']['options']['selected_item']);
 		}

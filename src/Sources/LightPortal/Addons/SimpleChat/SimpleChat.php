@@ -10,13 +10,14 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 21.03.24
+ * @version 23.04.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleChat;
 
 use Bugo\Compat\{Config, Db, Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
 
 if (! defined('LP_NAME'))
@@ -82,7 +83,7 @@ class SimpleChat extends Block
 			return;
 
 		CheckboxField::make('show_avatars', Lang::$txt['lp_simple_chat']['show_avatars'])
-			->setTab('appearance')
+			->setTab(BlockArea::TAB_APPEARANCE)
 			->setValue(Utils::$context['lp_block']['options']['show_avatars']);
 	}
 

@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.03.24
+ * @version 23.04.24
  */
 
 namespace Bugo\LightPortal\Addons\RecentPosts;
 
 use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, NumberField, RadioField};
 use Bugo\LightPortal\Areas\Partials\{TopicSelect, BoardSelect};
 use Bugo\LightPortal\Utils\DateTime;
@@ -79,7 +80,7 @@ class RecentPosts extends Block
 			return;
 
 		CustomField::make('exclude_boards', Lang::$txt['lp_recent_posts']['exclude_boards'])
-			->setTab('content')
+			->setTab(BlockArea::TAB_CONTENT)
 			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'exclude_boards',
 				'hint'  => Lang::$txt['lp_recent_posts']['exclude_boards_select'],
@@ -87,7 +88,7 @@ class RecentPosts extends Block
 			]);
 
 		CustomField::make('include_boards', Lang::$txt['lp_recent_posts']['include_boards'])
-			->setTab('content')
+			->setTab(BlockArea::TAB_CONTENT)
 			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'include_boards',
 				'hint'  => Lang::$txt['lp_recent_posts']['include_boards_select'],
@@ -95,7 +96,7 @@ class RecentPosts extends Block
 			]);
 
 		CustomField::make('exclude_topics', Lang::$txt['lp_recent_posts']['exclude_topics'])
-			->setTab('content')
+			->setTab(BlockArea::TAB_CONTENT)
 			->setValue(static fn() => new TopicSelect(), [
 				'id'    => 'exclude_topics',
 				'hint'  => Lang::$txt['lp_recent_posts']['exclude_topics_select'],
@@ -103,7 +104,7 @@ class RecentPosts extends Block
 			]);
 
 		CustomField::make('include_topics', Lang::$txt['lp_recent_posts']['include_topics'])
-			->setTab('content')
+			->setTab(BlockArea::TAB_CONTENT)
 			->setValue(static fn() => new TopicSelect(), [
 				'id'    => 'include_topics',
 				'hint'  => Lang::$txt['lp_recent_posts']['include_topics_select'],
@@ -111,12 +112,12 @@ class RecentPosts extends Block
 			]);
 
 		CheckboxField::make('use_simple_style', Lang::$txt['lp_recent_posts']['use_simple_style'])
-			->setTab('appearance')
+			->setTab(BlockArea::TAB_APPEARANCE)
 			->setAfter(Lang::$txt['lp_recent_posts']['use_simple_style_subtext'])
 			->setValue(Utils::$context['lp_block']['options']['use_simple_style']);
 
 		CheckboxField::make('show_avatars', Lang::$txt['lp_recent_posts']['show_avatars'])
-			->setTab('appearance')
+			->setTab(BlockArea::TAB_APPEARANCE)
 			->setValue(
 				Utils::$context['lp_block']['options']['show_avatars']
 				&& empty(Utils::$context['lp_block']['options']['use_simple_style'])

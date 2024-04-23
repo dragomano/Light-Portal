@@ -32,6 +32,14 @@ final class BlockArea
 	use Area;
 	use Helper;
 
+	public const TAB_CONTENT = 'content';
+
+	public const TAB_ACCESS = 'access_placement';
+	
+	public const TAB_APPEARANCE = 'appearance';
+
+	public const TAB_TUNING = 'tuning';
+
 	private BlockRepository $repository;
 
 	public function __construct()
@@ -260,14 +268,14 @@ final class BlockArea
 		$this->prepareTitleFields('block', false);
 
 		TextField::make('note', Lang::$txt['lp_block_note'])
-			->setTab('content')
+			->setTab(self::TAB_CONTENT)
 			->setAttribute('maxlength', 255)
 			->setValue(Utils::$context['lp_block']['note']);
 
 		if (isset(Utils::$context['lp_block']['options']['content'])) {
 			if (Utils::$context['lp_block']['type'] !== 'bbc') {
 				TextareaField::make('content', Lang::$txt['lp_content'])
-					->setTab('content')
+					->setTab(self::TAB_CONTENT)
 					->setValue($this->prepareContent(Utils::$context['lp_block']));
 			} else {
 				$this->createBbcEditor(Utils::$context['lp_block']['content']);
@@ -275,31 +283,31 @@ final class BlockArea
 		}
 
 		CustomField::make('placement', Lang::$txt['lp_block_placement'])
-			->setTab('access_placement')
+			->setTab(self::TAB_ACCESS)
 			->setValue(static fn() => new PlacementSelect());
 
 		CustomField::make('permissions', Lang::$txt['edit_permissions'])
-			->setTab('access_placement')
+			->setTab(self::TAB_ACCESS)
 			->setValue(static fn() => new PermissionSelect(), [
 				'type' => 'block'
 			]);
 
 		CustomField::make('areas', Lang::$txt['lp_block_areas'])
-			->setTab('access_placement')
+			->setTab(self::TAB_ACCESS)
 			->setAfter($this->getAreasInfo())
 			->setValue(static fn() => new AreaSelect());
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
-			->setTab('appearance')
+			->setTab(self::TAB_APPEARANCE)
 			->setValue(static fn() => new IconSelect());
 
 		CustomField::make('title_class', Lang::$txt['lp_block_title_class'])
-			->setTab('appearance')
+			->setTab(self::TAB_APPEARANCE)
 			->setValue(static fn() => new TitleClassSelect());
 
 		if (empty(Utils::$context['lp_block']['options']['no_content_class'])) {
 			CustomField::make('content_class', Lang::$txt['lp_block_content_class'])
-				->setTab('appearance')
+				->setTab(self::TAB_APPEARANCE)
 				->setValue(static fn() => new ContentClassSelect());
 		}
 

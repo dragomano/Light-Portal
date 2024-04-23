@@ -33,6 +33,8 @@ final class CategoryArea
 	use Area;
 	use Helper;
 
+	public const TAB_CONTENT = 'content';
+
 	private CategoryRepository $repository;
 
 	public function __construct()
@@ -312,13 +314,13 @@ final class CategoryArea
 		$this->prepareTitleFields();
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
-			->setTab('content')
+			->setTab(self::TAB_CONTENT)
 			->setValue(static fn() => new IconSelect(), [
 				'icon' => Utils::$context['lp_category']['icon'],
 			]);
 
 		TextareaField::make('description', Lang::$txt['lp_category_description'])
-			->setTab('content')
+			->setTab(self::TAB_CONTENT)
 			->setAttribute('maxlength', 255)
 			->setValue(Utils::$context['lp_category']['description']);
 

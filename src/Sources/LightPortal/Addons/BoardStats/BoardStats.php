@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.03.24
+ * @version 23.04.24
  */
 
 namespace Bugo\LightPortal\Addons\BoardStats;
 
 use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, NumberField};
 
 if (! defined('LP_NAME'))
@@ -63,19 +64,19 @@ class BoardStats extends Block
 			return;
 
 		CheckboxField::make('show_latest_member', Lang::$txt['lp_board_stats']['show_latest_member'])
-			->setTab('content')
+			->setTab(BlockArea::TAB_CONTENT)
 			->setValue(Utils::$context['lp_block']['options']['show_latest_member']);
 
 		CheckboxField::make('show_basic_info', Lang::$txt['lp_board_stats']['show_basic_info'])
-			->setTab('content')
+			->setTab(BlockArea::TAB_CONTENT)
 			->setValue(Utils::$context['lp_block']['options']['show_basic_info']);
 
 		CheckboxField::make('show_whos_online', Lang::$txt['lp_board_stats']['show_whos_online'])
-			->setTab('content')
+			->setTab(BlockArea::TAB_CONTENT)
 			->setValue(Utils::$context['lp_block']['options']['show_whos_online']);
 
 		CheckboxField::make('use_fa_icons', Lang::$txt['lp_board_stats']['use_fa_icons'])
-			->setTab('appearance')
+			->setTab(BlockArea::TAB_APPEARANCE)
 			->setValue(Utils::$context['lp_block']['options']['use_fa_icons']);
 
 		NumberField::make('update_interval', Lang::$txt['lp_board_stats']['update_interval'])

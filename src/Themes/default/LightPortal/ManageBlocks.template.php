@@ -1,6 +1,7 @@
 <?php
 
 use Bugo\Compat\{Config, Lang, Theme, Utils};
+use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Utils\Icon;
 
 function template_manage_blocks(): void
@@ -267,9 +268,9 @@ function template_block_post(): void
 				</div>
 				<div data-content>
 					<section class="bg even active_content" data-content="common">', template_post_tab($fields), '</section>
-					<section class="bg even" data-content="access">', template_post_tab($fields, 'access_placement'), '</section>
-					<section class="bg even" data-content="appearance" x-show="', (int) Utils::$context['lp_block_tab_appearance'], '">', template_post_tab($fields, 'appearance'), '</section>
-					<section class="bg even" data-content="tuning">', template_post_tab($fields, 'tuning'), '</section>
+					<section class="bg even" data-content="access">', template_post_tab($fields, BlockArea::TAB_ACCESS), '</section>
+					<section class="bg even" data-content="appearance" x-show="', (int) Utils::$context['lp_block_tab_appearance'], '">', template_post_tab($fields, BlockArea::TAB_APPEARANCE), '</section>
+					<section class="bg even" data-content="tuning">', template_post_tab($fields, BlockArea::TAB_TUNING), '</section>
 				</div>
 			</div>
 			<br class="clear">

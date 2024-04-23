@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 15.04.24
+ * @version 23.04.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -31,6 +31,12 @@ if (! defined('LP_NAME'))
 class Handler extends Plugin
 {
 	use Area;
+
+	public const TAB_CONTENT = 'content';
+
+	public const TAB_COPYRIGHT = 'copyright';
+
+	public const TAB_TUNING = 'tuning';
 
 	public function add(): void
 	{
@@ -148,7 +154,7 @@ class Handler extends Plugin
 		$this->prepareIconList();
 
 		TextField::make('name', Lang::$txt['lp_plugin_maker']['name'])
-			->setTab('content')
+			->setTab(self::TAB_CONTENT)
 			->setAfter(Lang::$txt['lp_plugin_maker']['name_subtext'])
 			->required()
 			->setAttribute('maxlength', 255)
@@ -158,13 +164,13 @@ class Handler extends Plugin
 			->setValue(Utils::$context['lp_plugin']['name']);
 
 		SelectField::make('type', Lang::$txt['lp_plugin_maker']['type'])
-			->setTab('content')
+			->setTab(self::TAB_CONTENT)
 			->setAttribute('@change', 'plugin.change($event.target.value)')
 			->setOptions(array_filter(Utils::$context['lp_plugin_types'], static fn($type) => $type !== 'ssi'))
 			->setValue(Utils::$context['lp_plugin']['type']);
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
-			->setTab('content')
+			->setTab(self::TAB_CONTENT)
 			->setValue(static fn() => new IconSelect(), [
 				'icon' => Utils::$context['lp_plugin']['icon'],
 				'type' => Utils::$context['lp_plugin']['type'],
@@ -173,26 +179,26 @@ class Handler extends Plugin
 		$this->setTitleField();
 
 		TextField::make('author', Lang::$txt['author'])
-			->setTab('copyrights')
+			->setTab(self::TAB_COPYRIGHT)
 			->setAttribute('maxlength', 255)
 			->required()
 			->setValue(Utils::$context['lp_plugin']['author']);
 
 		TextField::make('email', Lang::$txt['email'])
-			->setTab('copyrights')
+			->setTab(self::TAB_COPYRIGHT)
 			->setAttribute('maxlength', 255)
 			->setAttribute('style', 'width: 100%')
 			->setType('email')
 			->setValue(Utils::$context['lp_plugin']['email']);
 
 		UrlField::make('site', Lang::$txt['website'])
-			->setTab('copyrights')
+			->setTab(self::TAB_COPYRIGHT)
 			->setAfter(Lang::$txt['lp_plugin_maker']['site_subtext'])
 			->placeholder('https://custom.simplemachines.org/index.php?mod=4244')
 			->setValue(Utils::$context['lp_plugin']['site']);
 
 		SelectField::make('license', Lang::$txt['lp_plugin_maker']['license'])
-			->setTab('copyrights')
+			->setTab(self::TAB_COPYRIGHT)
 			->setOptions([
 				'gpl' => 'GPL 3.0+',
 				'mit' => 'MIT',
@@ -272,7 +278,7 @@ class Handler extends Plugin
 			</div>';
 
 		CustomField::make('title', Lang::$txt['lp_title'] . ' | ' . Lang::$txt['lp_page_description'])
-			->setTab('content')
+			->setTab(self::TAB_CONTENT)
 			->setValue($value);
 	}
 

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.03.24
+ * @version 23.04.24
  */
 
 namespace Bugo\LightPortal\Addons\TagList;
@@ -18,6 +18,7 @@ namespace Bugo\LightPortal\Addons\TagList;
 use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Actions\Tag;
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\RadioField;
 
 if (! defined('LP_NAME'))
@@ -61,12 +62,12 @@ class TagList extends Block
 			unset($sources['keywords']);
 
 		RadioField::make('source', Lang::$txt['lp_tag_list']['source'])
-			->setTab('content')
+			->setTab(BlockArea::TAB_CONTENT)
 			->setOptions($sources)
 			->setValue(Utils::$context['lp_block']['options']['source']);
 
 		RadioField::make('sorting', Lang::$txt['lp_tag_list']['sorting'])
-			->setTab('content')
+			->setTab(BlockArea::TAB_CONTENT)
 			->setOptions(array_combine(['name', 'frequency'], Lang::$txt['lp_tag_list']['sorting_set']))
 			->setValue(Utils::$context['lp_block']['options']['sorting']);
 	}
