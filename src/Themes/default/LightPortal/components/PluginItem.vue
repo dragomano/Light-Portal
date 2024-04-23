@@ -96,7 +96,7 @@ const status = ref(props.item.status);
 const specialDesc = computed(
   () =>
     pluginStore[props.item.special === 'can_donate' ? 'donate' : 'download'][props.item.name]
-      ?.languages[contextStore.user.language ?? 'english']
+      ?.languages[contextStore.lang ?? 'english']
 );
 
 const settingsId = computed(() => props.item.snake_name + '_' + appStore.sessionId);

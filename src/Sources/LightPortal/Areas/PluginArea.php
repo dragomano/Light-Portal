@@ -19,7 +19,7 @@ namespace Bugo\LightPortal\Areas;
 use Bugo\Compat\{Config, Lang, Theme};
 use Bugo\Compat\{User, Utils, WebFetchApi};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\Utils\{Icon, Language};
 use Bugo\LightPortal\Repositories\PluginRepository;
 use ReflectionClass;
 use ReflectionException;
@@ -289,6 +289,7 @@ final class PluginArea
 			'charset' => Utils::$context['character_set'],
 			'user'    => Utils::$context['user'],
 			'rtl'     => Utils::$context['right_to_left'],
+			'lang'    => Language::getNameFromLocale(User::$info['language']),
 		];
 
 		$pluginsData = [
