@@ -38,6 +38,12 @@
     "build:geek": [
       "composer run up",
       "vendor/bin/phing geek_edition"
+    ],
+    "build:all": [
+      "composer run assets",
+      "composer run build",
+      "vendor/bin/phing geek_edition",
+      "composer run build:dev"
     ]
   }
 }
