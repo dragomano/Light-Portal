@@ -24,6 +24,7 @@ $txt['lp_min_search_length'] = 'Please enter at least %d characters';
 $txt['lp_no_such_members'] = 'Nobody here by that name';
 $txt['lp_promote_to_fp'] = 'Promote to frontpage';
 $txt['lp_remove_from_fp'] = 'Remove from frontpage';
+$txt['lp_task_list'] = 'Task list';
 
 // Settings
 $txt['lp_settings'] = 'Portal settings';

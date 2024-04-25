@@ -418,6 +418,14 @@ final class Page implements PageInterface
 			'title'         => Lang::$txt['lp_comments_title'],
 			'prev'          => Lang::$txt['prev'],
 			'next'          => Lang::$txt['next'],
+			'bold'          => Lang::$editortxt['bold'],
+			'italic'        => Lang::$editortxt['italic'],
+			'quote'         => Lang::$editortxt['insert_quote'],
+			'code'          => Lang::$editortxt['code'],
+			'link'          => Lang::$editortxt['insert_link'],
+			'image'         => Lang::$editortxt['insert_image'],
+			'list'          => Lang::$editortxt['bullet_list'],
+			'task_list'     => Lang::$txt['lp_task_list'],
 		];
 
 		$pageUrl = Utils::$context['lp_page']['url'];
