@@ -13,7 +13,7 @@
 
 <script setup>
 import { computed } from 'vue';
-import { useContextStore } from '../../scripts/light_portal/dev/base_stores.js';
+import { useContextStore } from '@scripts/base_stores.js';
 import CallbackOption from './options/CallbackOption.vue';
 import CheckOption from './options/CheckOption.vue';
 import ColorOption from './options/ColorOption.vue';

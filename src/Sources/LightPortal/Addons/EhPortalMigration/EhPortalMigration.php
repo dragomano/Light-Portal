@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.03.24
+ * @version 06.04.24
  */
 
 namespace Bugo\LightPortal\Addons\EhPortalMigration;
@@ -32,7 +32,12 @@ class EhPortalMigration extends Plugin
 			$areas['lp_blocks']['subsections']['import_from_ep'] = [
 				Icon::get('import') . Lang::$txt['lp_eh_portal_migration']['label_name']
 			];
+
 			$areas['lp_pages']['subsections']['import_from_ep'] = [
+				Icon::get('import') . Lang::$txt['lp_eh_portal_migration']['label_name']
+			];
+
+			$areas['lp_categories']['subsections']['import_from_ep'] = [
 				Icon::get('import') . Lang::$txt['lp_eh_portal_migration']['label_name']
 			];
 		}
@@ -46,6 +51,11 @@ class EhPortalMigration extends Plugin
 	public function updatePageAreas(array &$areas): void
 	{
 		$areas['import_from_ep'] = [new PageImport(), 'main'];
+	}
+
+	public function updateCategoryAreas(array &$areas): void
+	{
+		$areas['import_from_ep'] = [new CategoryImport(), 'main'];
 	}
 
 	public function importPages(array &$items, array &$titles): void

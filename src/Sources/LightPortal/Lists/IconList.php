@@ -14,9 +14,7 @@
 
 namespace Bugo\LightPortal\Lists;
 
-use Bugo\FontAwesomeHelper\BrandIcon;
-use Bugo\FontAwesomeHelper\RegularIcon;
-use Bugo\FontAwesomeHelper\SolidIcon;
+use Bugo\FontAwesomeHelper\Collection;
 use Bugo\LightPortal\Helper;
 
 if (! defined('SMF'))
@@ -116,14 +114,6 @@ final class IconList implements ListInterface
 
 	public function getList(): array
 	{
-		$solidIcons   = new SolidIcon();
-		$regularIcons = new RegularIcon();
-		$brandIcons   = new BrandIcon();
-
-		return array_merge(
-			array_map(static fn($icon): string => 'fas fa-' . $icon, $solidIcons->getAll()),
-			array_map(static fn($icon): string => 'far fa-' . $icon, $regularIcons->getAll()),
-			array_map(static fn($icon): string => 'fab fa-' . $icon, $brandIcons->getAll()),
-		);
+		return (new Collection(['deprecated_class' => true]))->getAll();
 	}
 }

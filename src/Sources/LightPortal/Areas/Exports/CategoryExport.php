@@ -14,7 +14,6 @@
 
 namespace Bugo\LightPortal\Areas\Exports;
 
-use ArrayIterator;
 use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, Sapi, Utils};
 use Bugo\LightPortal\Repositories\CategoryRepository;
@@ -178,7 +177,8 @@ final class CategoryExport extends AbstractExport
 			$xml->formatOutput = true;
 
 			$xmlElements = $root->appendChild($xml->createElement('categories'));
-			$items = static fn() => new ArrayIterator($items);
+
+			$items = $this->getGeneratorFrom($items);
 
 			foreach ($items() as $item) {
 				$xmlElement = $xmlElements->appendChild($xml->createElement('item'));

@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 20.02.24
+ * @version 23.04.24
  */
 
 namespace Bugo\LightPortal\Addons\RandomPages;
 
 use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField};
 use Bugo\LightPortal\Areas\Partials\CategorySelect;
 use Bugo\LightPortal\Utils\DateTime;
@@ -58,7 +59,7 @@ class RandomPages extends Block
 			return;
 
 		CustomField::make('categories', Lang::$txt['lp_categories'])
-			->setTab('content')
+			->setTab(BlockArea::TAB_CONTENT)
 			->setValue(static fn() => new CategorySelect(), [
 				'id'    => 'categories',
 				'hint'  => Lang::$txt['lp_random_pages']['categories_select'],

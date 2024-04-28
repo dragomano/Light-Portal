@@ -8,12 +8,12 @@
       <div class="noticebox">
         <form ref="form" class="form_settings" :id="formId" @submit.prevent="saveSettings">
           <input type="hidden" name="plugin_name" :value="item.snake_name" />
-          <input type="hidden" :name="appStore.sessionVar" :value="appStore.sessionId" />
+          <input type="hidden" :name="sessionVar" :value="sessionId" />
 
           <PluginOptionItem
             v-for="(option, index) in item.settings"
             :option="option"
-            :plugin="item.snake_name"
+            :plugin="String(item.snake_name)"
             :key="index"
           />
         </form>
@@ -32,18 +32,22 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import { useContextStore } from '../../scripts/light_portal/dev/base_stores.js';
-import { useAppStore } from '../../scripts/light_portal/dev/plugin_stores.js';
+import { defineEmits, ref, computed } from 'vue';
+import { useContextStore } from '@scripts/base_stores.js';
+import { useAppStore } from '@scripts/plugin_stores.js';
 import Button from './BaseButton.vue';
 import PluginOptionItem from './PluginOptionItem.vue';
 
-const appStore = useAppStore();
-const contextStore = useContextStore();
+const { sessionVar, sessionId } = useAppStore();
+const { postUrl } = useContextStore();
 
 const props = defineProps({
   item: {
-    type: Object,
+    type: {
+      snake_name: String,
+      settings: Array,
+      saveable: Boolean,
+    },
     required: true,
   },
   show: {
@@ -57,8 +61,8 @@ const emit = defineEmits(['hide']);
 const success = ref(false);
 const form = ref();
 
-const blockId = computed(() => props.item.snake_name + '_' + appStore.sessionId + '_settings');
-const formId = computed(() => props.item.snake_name + '_form_' + appStore.sessionId);
+const blockId = computed(() => props.item.snake_name + '_' + sessionId + '_settings');
+const formId = computed(() => props.item.snake_name + '_form_' + sessionId);
 
 const saveSettings = async () => {
   let formData = new FormData(form.value),
@@ -68,7 +72,7 @@ const saveSettings = async () => {
     formData.append(val.getAttribute('name'), val.matches(':checked'));
   });
 
-  const { data } = await axios.post(contextStore.postUrl, formData, {
+  const { data } = await axios.post(postUrl, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },

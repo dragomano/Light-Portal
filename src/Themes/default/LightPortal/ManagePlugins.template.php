@@ -12,12 +12,7 @@ function template_manage_plugins(): void
 	echo '
 	<div id="vue_plugins"></div>
 	<script>
-		const vueGlobals = {
-			plugins: ', Utils::$context['lp_json']['plugins'], ',
-			context: ', Utils::$context['lp_json']['context'], ',
-			icons: ', Utils::$context['lp_json']['icons'], ',
-			txt: ', Utils::$context['lp_json']['txt'], ',
-		}
+		const vueGlobals = ', Utils::$context['lp_json'], ';
 	</script>';
 
 	if (is_file(Theme::$current->settings['default_theme_dir'] . '/scripts/light_portal/dev/helpers.js')) {

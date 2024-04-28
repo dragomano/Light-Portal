@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 21.03.24
+ * @version 23.04.24
  */
 
 namespace Bugo\LightPortal\Addons\Chart;
 
 use Bugo\Compat\{Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextField};
 
 if (! defined('LP_NAME'))
@@ -93,22 +94,22 @@ class Chart extends Block
 		Utils::$context['lp_chart_types'] = array_combine($this->chartTypes, Lang::$txt['lp_chart']['type_set']);
 
 		TextField::make('chart_title', Lang::$txt['lp_chart']['chart_title'])
-			->setTab('content')
+			->setTab(BlockArea::TAB_CONTENT)
 			->placeholder(Lang::$txt['lp_chart']['chart_title_placeholder'])
 			->setValue(Utils::$context['lp_block']['options']['chart_title'] ?? $this->params['chart_title']);
 
 		CustomField::make('chart', Lang::$txt['lp_chart']['datasets'])
-			->setTab('content')
+			->setTab(BlockArea::TAB_CONTENT)
 			->setValue($this->getFromTemplate('chart_template'));
 
 		TextField::make('labels', Lang::$txt['lp_chart']['labels'])
-			->setTab('content')
+			->setTab(BlockArea::TAB_CONTENT)
 			->placeholder(Lang::$txt['lp_chart']['labels_placeholder'])
 			->required()
 			->setValue(Utils::$context['lp_block']['options']['labels'] ?? $this->params['labels']);
 
 		CheckboxField::make('default_palette', Lang::$txt['lp_chart']['default_palette'])
-			->setTab('appearance')
+			->setTab(BlockArea::TAB_APPEARANCE)
 			->setValue(Utils::$context['lp_block']['options']['default_palette']);
 
 		CheckboxField::make('stacked', Lang::$txt['lp_chart']['stacked'])

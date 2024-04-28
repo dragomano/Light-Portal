@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.03.24
+ * @version 28.04.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -19,7 +19,7 @@ use Bugo\Compat\{Config, Lang, Security, User, Utils};
 use Bugo\LightPortal\Addons\{Block, Plugin};
 use Bugo\LightPortal\Areas\Area;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, ColorField, CustomField, NumberField};
-use Bugo\LightPortal\Areas\Fields\{RadioField, RangeField, SelectField, TextField};
+use Bugo\LightPortal\Areas\Fields\{RadioField, RangeField, SelectField, TextField, UrlField};
 use Bugo\LightPortal\Areas\Partials\IconSelect;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\Language;
@@ -31,6 +31,14 @@ if (! defined('LP_NAME'))
 class Handler extends Plugin
 {
 	use Area;
+
+	public const TAB_CONTENT = 'content';
+
+	public const TAB_COPYRIGHT = 'copyright';
+
+	public const TAB_TUNING = 'tuning';
+
+	private const PLUGIN_NAME = 'MyNewAddon';
 
 	public function add(): void
 	{
@@ -44,8 +52,9 @@ class Handler extends Plugin
 		];
 
 		Lang::$txt['lp_plugin_maker']['add_info'] = sprintf(Lang::$txt['lp_plugin_maker']['add_info'], sprintf(
-			'<strong style="color: initial">%1$s/<span x-ref="plugin_name">MyNewAddon</span></strong>',
-			LP_ADDON_DIR
+			'<strong style="color: initial">%s/<span x-ref="plugin_name">%s</span></strong>',
+			LP_ADDON_DIR,
+			self::PLUGIN_NAME,
 		));
 
 		if (! is_writable(LP_ADDON_DIR)) {
@@ -90,7 +99,7 @@ class Handler extends Plugin
 		$postData = (new Validator())->validate();
 
 		Utils::$context['lp_plugin'] = [
-			'name'       => $postData['name'] ?? Utils::$context['lp_plugin']['name'] = 'MyNewAddon',
+			'name'       => $postData['name'] ?? Utils::$context['lp_plugin']['name'] = self::PLUGIN_NAME,
 			'type'       => $postData['type'] ?? Utils::$context['lp_plugin']['type'] ?? 'block',
 			'icon'       => $postData['icon'] ?? Utils::$context['lp_plugin']['icon'] ?? '',
 			'author'     => $postData['author'] ?? Utils::$context['lp_plugin']['author'] ?? Utils::$context['lp_plugin_maker_plugin']['author'] ?? User::$info['name'],
@@ -148,7 +157,7 @@ class Handler extends Plugin
 		$this->prepareIconList();
 
 		TextField::make('name', Lang::$txt['lp_plugin_maker']['name'])
-			->setTab('content')
+			->setTab(self::TAB_CONTENT)
 			->setAfter(Lang::$txt['lp_plugin_maker']['name_subtext'])
 			->required()
 			->setAttribute('maxlength', 255)
@@ -158,13 +167,13 @@ class Handler extends Plugin
 			->setValue(Utils::$context['lp_plugin']['name']);
 
 		SelectField::make('type', Lang::$txt['lp_plugin_maker']['type'])
-			->setTab('content')
+			->setTab(self::TAB_CONTENT)
 			->setAttribute('@change', 'plugin.change($event.target.value)')
 			->setOptions(array_filter(Utils::$context['lp_plugin_types'], static fn($type) => $type !== 'ssi'))
 			->setValue(Utils::$context['lp_plugin']['type']);
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
-			->setTab('content')
+			->setTab(self::TAB_CONTENT)
 			->setValue(static fn() => new IconSelect(), [
 				'icon' => Utils::$context['lp_plugin']['icon'],
 				'type' => Utils::$context['lp_plugin']['type'],
@@ -173,27 +182,26 @@ class Handler extends Plugin
 		$this->setTitleField();
 
 		TextField::make('author', Lang::$txt['author'])
-			->setTab('copyrights')
+			->setTab(self::TAB_COPYRIGHT)
 			->setAttribute('maxlength', 255)
 			->required()
 			->setValue(Utils::$context['lp_plugin']['author']);
 
 		TextField::make('email', Lang::$txt['email'])
-			->setTab('copyrights')
+			->setTab(self::TAB_COPYRIGHT)
 			->setAttribute('maxlength', 255)
 			->setAttribute('style', 'width: 100%')
 			->setType('email')
 			->setValue(Utils::$context['lp_plugin']['email']);
 
-		TextField::make('site', Lang::$txt['website'])
-			->setTab('copyrights')
+		UrlField::make('site', Lang::$txt['website'])
+			->setTab(self::TAB_COPYRIGHT)
 			->setAfter(Lang::$txt['lp_plugin_maker']['site_subtext'])
-			->setType('url')
 			->placeholder('https://custom.simplemachines.org/index.php?mod=4244')
 			->setValue(Utils::$context['lp_plugin']['site']);
 
 		SelectField::make('license', Lang::$txt['lp_plugin_maker']['license'])
-			->setTab('copyrights')
+			->setTab(self::TAB_COPYRIGHT)
 			->setOptions([
 				'gpl' => 'GPL 3.0+',
 				'mit' => 'MIT',
@@ -273,7 +281,7 @@ class Handler extends Plugin
 			</div>';
 
 		CustomField::make('title', Lang::$txt['lp_title'] . ' | ' . Lang::$txt['lp_page_description'])
-			->setTab('content')
+			->setTab(self::TAB_CONTENT)
 			->setValue($value);
 	}
 

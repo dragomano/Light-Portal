@@ -6,7 +6,7 @@
 node_modules/
 src/Sources/LightPortal/Libs/*
 src/Sources/index.php
-!/composer.lock
+composer.lock
 
 src/Themes/default/languages/LightPortal/*
 !src/Themes/default/languages/LightPortal/index.php

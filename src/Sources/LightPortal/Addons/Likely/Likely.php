@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 21.03.24
+ * @version 23.04.24
  */
 
 namespace Bugo\LightPortal\Addons\Likely;
 
 use Bugo\Compat\{Config, Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, RadioField};
 
 if (! defined('LP_NAME'))
@@ -61,7 +62,7 @@ class Likely extends Block
 			return;
 
 		CustomField::make('buttons', Lang::$txt['lp_likely']['buttons'])
-			->setTab('content')
+			->setTab(BlockArea::TAB_CONTENT)
 			->setValue(static fn() => new ButtonSelect(), [
 				'data'  => $this->buttons,
 				'value' => is_array(Utils::$context['lp_block']['options']['buttons'])

@@ -55,7 +55,7 @@ final class Integration extends AbstractMain
 		Utils::$context['lp_load_time'] ??= microtime(true);
 
 		defined('LP_NAME') || define('LP_NAME', 'Light Portal');
-		defined('LP_VERSION') || define('LP_VERSION', '2.6.2');
+		defined('LP_VERSION') || define('LP_VERSION', '2.6.3');
 		defined('LP_PLUGIN_LIST') || define('LP_PLUGIN_LIST', 'https://d8d75ea98b25aa12.mokky.dev/addons');
 		defined('LP_ADDON_URL') || define('LP_ADDON_URL', Config::$boardurl . '/Sources/LightPortal/Addons');
 		defined('LP_ADDON_DIR') || define('LP_ADDON_DIR', __DIR__ . '/Addons');
@@ -64,7 +64,7 @@ final class Integration extends AbstractMain
 		defined('LP_PAGE_PARAM') || define('LP_PAGE_PARAM', Config::$modSettings['lp_page_param'] ?? 'page');
 		defined('LP_BASE_URL') || define('LP_BASE_URL', Config::$scripturl . '?action=' . LP_ACTION);
 		defined('LP_PAGE_URL') || define('LP_PAGE_URL', Config::$scripturl . '?' . LP_PAGE_PARAM . '=');
-		defined('LP_ALIAS_PATTERN') || define('LP_ALIAS_PATTERN', '^[a-z][a-z0-9_]+$');
+		defined('LP_ALIAS_PATTERN') || define('LP_ALIAS_PATTERN', '^[a-z][a-z0-9-_]+$');
 		defined('LP_AREAS_PATTERN') || define('LP_AREAS_PATTERN', '^[a-z][a-z0-9=|\-,!]+$');
 		defined('LP_ADDON_PATTERN') || define('LP_ADDON_PATTERN', '^[A-Z][a-zA-Z]+$');
 	}
@@ -383,7 +383,9 @@ final class Integration extends AbstractMain
 			'custom_url' => Config::$scripturl . '?action=admin;area=lp_pages',
 			'icon'       => 'reports',
 			'enabled'    => $this->request('area') === 'popup',
-			'permission' => 'light_portal_manage_pages_own',
+			'permission' => [
+				'own' => 'light_portal_manage_pages_own',
+			],
 		];
 	}
 
@@ -404,8 +406,9 @@ final class Integration extends AbstractMain
 			array_slice($items, 0, $counter, true),
 			[
 				[
-					'menu' => 'info',
-					'area' => 'lp_my_pages'
+					'menu'  => 'info',
+					'area'  => 'lp_my_pages',
+					'title' => Lang::$txt['lp_my_pages']
 				]
 			],
 			array_slice($items, $counter, null, true)

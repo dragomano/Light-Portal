@@ -1,6 +1,7 @@
 <?php
 
 use Bugo\Compat\{Lang, Utils};
+use Bugo\LightPortal\Addons\PluginMaker\Handler;
 use Bugo\LightPortal\Utils\Icon;
 
 function template_plugin_post(): void
@@ -51,7 +52,7 @@ function template_plugin_post(): void
 				</div>
 				<div data-content>
 					<section class="bg even active_content" data-content="common">', template_post_tab($fields), '</section>
-					<section class="bg even" data-content="copyright">', template_post_tab($fields, 'copyrights'), '</section>
+					<section class="bg even" data-content="copyright">', template_post_tab($fields, Handler::TAB_COPYRIGHT), '</section>
 					<section class="bg even" data-content="settings">
 						<table class="add_option centertext" x-data="plugin.handleOptions()">
 							<tbody>
@@ -197,7 +198,7 @@ function template_plugin_post(): void
 							</tfoot>
 						</table>
 					</section>
-					<section class="bg even" data-content="tuning">', template_post_tab($fields, 'tuning'), '</section>
+					<section class="bg even" data-content="tuning">', template_post_tab($fields, Handler::TAB_TUNING), '</section>
 				</div>
 			</div>
 			<br class="clear">

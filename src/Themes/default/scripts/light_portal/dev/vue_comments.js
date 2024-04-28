@@ -26,16 +26,16 @@ const useIconStore = defineStore('icons', {
 });
 
 const modules = {
-  '../../scripts/light_portal/dev/base_stores.js': {
+  '@scripts/base_stores.js': {
     useContextStore,
     useIconStore,
   },
-  '../../scripts/light_portal/dev/comment_stores.js': {
+  '@scripts/comment_stores.js': {
     useAppStore,
     useUserStore,
     useSettingStore,
   },
-  '../../scripts/light_portal/dev/comment_helpers.js': {
+  '@scripts/comment_helpers.js': {
     CommentManager,
     ObjectHelper,
   },

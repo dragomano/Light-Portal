@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 20.02.24
+ * @version 23.04.24
  */
 
 namespace Bugo\LightPortal\Addons\RandomTopics;
 
 use Bugo\Compat\{Config, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField};
 use Bugo\LightPortal\Areas\Partials\BoardSelect;
 use Bugo\LightPortal\Utils\DateTime;
@@ -60,7 +61,7 @@ class RandomTopics extends Block
 			return;
 
 		CustomField::make('exclude_boards', Lang::$txt['lp_random_topics']['exclude_boards'])
-			->setTab('content')
+			->setTab(BlockArea::TAB_CONTENT)
 			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'exclude_boards',
 				'hint'  => Lang::$txt['lp_random_topics']['exclude_boards_select'],
@@ -68,7 +69,7 @@ class RandomTopics extends Block
 			]);
 
 		CustomField::make('include_boards', Lang::$txt['lp_random_topics']['include_boards'])
-			->setTab('content')
+			->setTab(BlockArea::TAB_CONTENT)
 			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'include_boards',
 				'hint'  => Lang::$txt['lp_random_topics']['include_boards_select'],

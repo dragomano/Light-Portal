@@ -19,7 +19,7 @@ namespace Bugo\LightPortal\Areas;
 use Bugo\Compat\{Config, Lang, Theme};
 use Bugo\Compat\{User, Utils, WebFetchApi};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\Utils\{Icon, Language};
 use Bugo\LightPortal\Repositories\PluginRepository;
 use ReflectionClass;
 use ReflectionException;
@@ -289,6 +289,7 @@ final class PluginArea
 			'charset' => Utils::$context['character_set'],
 			'user'    => Utils::$context['user'],
 			'rtl'     => Utils::$context['right_to_left'],
+			'lang'    => Language::getNameFromLocale(User::$info['language']),
 		];
 
 		$pluginsData = [
@@ -309,10 +310,12 @@ final class PluginArea
 				$contextData['lp_' . $plugin] = Utils::$context['lp_' . $plugin . '_plugin'];
 		}
 
-		Utils::$context['lp_json']['txt']     = json_encode($txtData);
-		Utils::$context['lp_json']['context'] = json_encode($contextData);
-		Utils::$context['lp_json']['plugins'] = json_encode($pluginsData);
-		Utils::$context['lp_json']['icons']   = json_encode(Icon::all());
+		Utils::$context['lp_json'] = json_encode([
+			'txt'     => $txtData,
+			'context' => $contextData,
+			'plugins' => $pluginsData,
+			'icons'   => Icon::all(),
+		]);
 	}
 
 	private function updateAssetMtime(string $plugin): void

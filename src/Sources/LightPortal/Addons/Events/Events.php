@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 03.03.24
+ * @version 23.04.24
  */
 
 namespace Bugo\LightPortal\Addons\Events;
 
 use Bugo\Compat\{Calendar, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\LightPortal\Areas\Fields\NumberField;
 use Bugo\LightPortal\Areas\Fields\RangeField;
@@ -67,15 +68,15 @@ class Events extends Block
 		Lang::load('ManageCalendar');
 
 		CheckboxField::make('show_birthdays', Lang::$txt['setting_cal_showbdays'])
-			->setTab('content')
+			->setTab(BlockArea::TAB_CONTENT)
 			->setValue(Utils::$context['lp_block']['options']['show_birthdays']);
 
 		CheckboxField::make('show_holidays', Lang::$txt['setting_cal_showholidays'])
-			->setTab('content')
+			->setTab(BlockArea::TAB_CONTENT)
 			->setValue(Utils::$context['lp_block']['options']['show_holidays']);
 
 		CheckboxField::make('show_events', Lang::$txt['setting_cal_showevents'])
-			->setTab('content')
+			->setTab(BlockArea::TAB_CONTENT)
 			->setValue(Utils::$context['lp_block']['options']['show_events']);
 
 		RangeField::make('days_in_future', Lang::$txt['lp_events']['days_in_future'])

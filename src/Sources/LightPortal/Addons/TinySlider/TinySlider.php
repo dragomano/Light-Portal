@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 21.03.24
+ * @version 23.04.24
  */
 
 namespace Bugo\LightPortal\Addons\TinySlider;
 
 use Bugo\Compat\{Lang, Theme, User, Utils};
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField};
 use Bugo\LightPortal\Areas\Fields\{NumberField, RadioField, RangeField};
 
@@ -108,7 +109,7 @@ class TinySlider extends Block
 			return;
 
 		CustomField::make('images', Lang::$txt['lp_tiny_slider']['images'])
-			->setTab('content')
+			->setTab(BlockArea::TAB_CONTENT)
 			->setValue($this->getFromTemplate('tiny_slider_images'));
 
 		RadioField::make('axis', Lang::$txt['lp_tiny_slider']['axis'])

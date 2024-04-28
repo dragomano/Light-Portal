@@ -26,4 +26,9 @@ export default defineConfig({
       },
     }),
   ],
+  resolve: {
+    alias: {
+      '@scripts': resolve('./src/Themes/default/scripts/light_portal/dev'),
+    },
+  },
 });

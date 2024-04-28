@@ -1,9 +1,8 @@
 ---
-# https://vitepress.dev/reference/default-theme-home-page
 layout: home
 
 hero:
-  name: 'Light Portal'
+  name: Light Portal
   tagline: Fast, nice, modern
   image:
     src: /logo.png
@@ -25,14 +24,14 @@ hero:
 features:
   - icon: 🧊
     title: Blocks
-    details: A piece of the portal that displays arbitrary content within the aside element. Placed on one of the six panels.
+    details: Decorate the forum with a limitless number of blocks containing any content – let your imagination run wild!
     link: ./blocks/manage
   - icon: 📰
     title: Pages
-    details: A piece of the portal containing arbitrary content. Displayed as a separate part of the forum, with an individual URL.
+    details: Fill the forum with amazing articles. Allow users to comment and to leave reactions. Assign appropriate tags.
     link: ./pages/manage
   - icon: 🧩
     title: Plugins
-    details: It is an independent portal element that adds or modifies some functionality.
+    details: Enhance the functionality of the portal by integrating additional features provided by plugins.
     link: ./plugins/manage
 ---

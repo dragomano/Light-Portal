@@ -24,6 +24,7 @@ $txt['lp_min_search_length'] = 'Please enter at least %d characters';
 $txt['lp_no_such_members'] = 'Nobody here by that name';
 $txt['lp_promote_to_fp'] = 'Promote to frontpage';
 $txt['lp_remove_from_fp'] = 'Remove from frontpage';
+$txt['lp_task_list'] = 'Task list';
 
 // Settings
 $txt['lp_settings'] = 'Portal settings';
@@ -216,7 +217,7 @@ $txt['lp_pages_edit_description'] = 'Make the necessary changes.';
 $txt['lp_pages_extra'] = 'Portal pages';
 $txt['lp_pages_search'] = 'Alias or title';
 $txt['lp_page_alias'] = 'Alias';
-$txt['lp_page_alias_subtext'] = 'The page alias must begin with a Latin letter and consist of lowercase Latin letters, numbers, and underscores.';
+$txt['lp_page_alias_subtext'] = 'The page alias must begin with a Latin letter and consist of lowercase Latin letters, numbers, dashes or underscores.';
 $txt['lp_page_type'] = 'Page type';
 $txt['lp_page_description'] = 'Description';
 $txt['lp_page_tags_placeholder'] = 'Select tags';

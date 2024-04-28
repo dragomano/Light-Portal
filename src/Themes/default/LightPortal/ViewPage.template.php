@@ -191,13 +191,7 @@ function show_comments(): void
 	echo '
 	<div id="vue_comments"></div>
 	<script>
-		const vueGlobals = {
-			user: ', Utils::$context['lp_json']['user'], ',
-			context: ', Utils::$context['lp_json']['context'], ',
-			settings: ', Utils::$context['lp_json']['settings'], ',
-			icons: ', Utils::$context['lp_json']['icons'], ',
-			txt: ', Utils::$context['lp_json']['txt'], ',
-		}
+		const vueGlobals = ', Utils::$context['lp_json'], ';
 	</script>';
 
 	if (is_file(Theme::$current->settings['default_theme_dir'] . '/scripts/light_portal/dev/helpers.js')) {

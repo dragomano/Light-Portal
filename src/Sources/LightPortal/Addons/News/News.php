@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 23.04.24
  */
 
 namespace Bugo\LightPortal\Addons\News;
 
 use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\SelectField;
 
 if (! defined('LP_NAME'))
@@ -58,7 +59,7 @@ class News extends Block
 		}
 
 		SelectField::make('selected_item', Lang::$txt['lp_news']['selected_item'])
-			->setTab('content')
+			->setTab(BlockArea::TAB_CONTENT)
 			->setOptions($news)
 			->setValue(Utils::$context['lp_block']['options']['selected_item']);
 	}

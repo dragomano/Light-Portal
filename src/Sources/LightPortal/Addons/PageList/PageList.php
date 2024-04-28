@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.02.24
+ * @version 23.04.24
  */
 
 namespace Bugo\LightPortal\Addons\PageList;
 
 use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField, VirtualSelectField};
 use Bugo\LightPortal\Areas\Partials\CategorySelect;
 use Bugo\LightPortal\Utils\DateTime;
@@ -63,7 +64,7 @@ class PageList extends Block
 			return;
 
 		CustomField::make('categories', Lang::$txt['lp_categories'])
-			->setTab('content')
+			->setTab(BlockArea::TAB_CONTENT)
 			->setValue(static fn() => new CategorySelect(), [
 				'id'    => 'categories',
 				'hint'  => Lang::$txt['lp_page_list']['categories_select'],

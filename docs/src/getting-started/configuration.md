@@ -8,7 +8,7 @@ outline: [2, 3]
 
 Use the quick access through the item in the main forum menu or the corresponding section in the admin panel to open the portal settings.
 
-We will not describe in detail each of the available settings, we will only mention the most important ones. If you don't understand any parameter, contact the developer via [Feedback](#feedback) area.
+We will not describe in detail each of the available settings, we will only mention the most important ones.
 
 ## General settings
 
@@ -56,9 +56,3 @@ In this section, you can change various auxiliary settings of the portal, which 
 ### Maintenance
 
 - Weekly optimization of portal tables - enable this option so that once a week the rows with empty values in the portal tables in the database will be deleted and the tables will be optimized.
-
-## Feedback
-
-<a id="feedback"></a>
-
-Here is the form for contacting the portal developer. You can submit your question directly without registering on the forums or Github. Be sure to include a real valid email if you want to get a response.

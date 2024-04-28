@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 01.03.24
+ * @version 23.04.24
  */
 
 namespace Bugo\LightPortal\Addons\ArticleList;
 
 use Bugo\Compat\{BBCodeParser, Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, RadioField};
 use Bugo\LightPortal\Areas\Partials\{ContentClassSelect, PageSelect, TopicSelect};
 use Bugo\LightPortal\Utils\Content;
@@ -63,19 +64,19 @@ class ArticleList extends Block
 			return;
 
 		CustomField::make('body_class', Lang::$txt['lp_article_list']['body_class'])
-			->setTab('appearance')
+			->setTab(BlockArea::TAB_APPEARANCE)
 			->setValue(static fn() => new ContentClassSelect(), [
 				'id'    => 'body_class',
 				'value' => Utils::$context['lp_block']['options']['body_class'],
 			]);
 
 		RadioField::make('display_type', Lang::$txt['lp_article_list']['display_type'])
-			->setTab('content')
+			->setTab(BlockArea::TAB_CONTENT)
 			->setOptions(Lang::$txt['lp_article_list']['display_type_set'])
 			->setValue(Utils::$context['lp_block']['options']['display_type']);
 
 		CustomField::make('include_topics', Lang::$txt['lp_article_list']['include_topics'])
-			->setTab('content')
+			->setTab(BlockArea::TAB_CONTENT)
 			->setValue(static fn() => new TopicSelect(), [
 				'id'    => 'include_topics',
 				'hint'  => Lang::$txt['lp_article_list']['include_topics_select'],
@@ -83,7 +84,7 @@ class ArticleList extends Block
 			]);
 
 		CustomField::make('include_pages', Lang::$txt['lp_article_list']['include_pages'])
-			->setTab('content')
+			->setTab(BlockArea::TAB_CONTENT)
 			->setValue(static fn() => new PageSelect(), [
 				'id'    => 'include_pages',
 				'hint'  => Lang::$txt['lp_article_list']['include_pages_select'],

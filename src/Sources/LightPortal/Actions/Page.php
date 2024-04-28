@@ -418,6 +418,14 @@ final class Page implements PageInterface
 			'title'         => Lang::$txt['lp_comments_title'],
 			'prev'          => Lang::$txt['prev'],
 			'next'          => Lang::$txt['next'],
+			'bold'          => Lang::$editortxt['bold'],
+			'italic'        => Lang::$editortxt['italic'],
+			'quote'         => Lang::$editortxt['insert_quote'],
+			'code'          => Lang::$editortxt['code'],
+			'link'          => Lang::$editortxt['insert_link'],
+			'image'         => Lang::$editortxt['insert_image'],
+			'list'          => Lang::$editortxt['bullet_list'],
+			'task_list'     => Lang::$txt['lp_task_list'],
 		];
 
 		$pageUrl = Utils::$context['lp_page']['url'];
@@ -437,11 +445,13 @@ final class Page implements PageInterface
 			'lp_comment_sorting' => Config::$modSettings['lp_comment_sorting'] ?? '0',
 		];
 
-		Utils::$context['lp_json']['txt']      = json_encode($txtData);
-		Utils::$context['lp_json']['context']  = json_encode($contextData);
-		Utils::$context['lp_json']['settings'] = json_encode($settingsData);
-		Utils::$context['lp_json']['icons']    = json_encode(Icon::all());
-		Utils::$context['lp_json']['user']     = json_encode(Utils::$context['user']);
+		Utils::$context['lp_json'] = json_encode([
+			'txt'      => $txtData,
+			'context'  => $contextData,
+			'settings' => $settingsData,
+			'icons'    => Icon::all(),
+			'user'     => Utils::$context['user'],
+		]);
 	}
 
 	private function updateNumViews(): void
