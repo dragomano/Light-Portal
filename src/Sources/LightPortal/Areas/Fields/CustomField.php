@@ -28,7 +28,7 @@ class CustomField extends AbstractField
 			->setLabel($label);
 	}
 
-	public function build(): void
+	protected function build(): void
 	{
 		Utils::$context['posting_fields'][$this->name]['label']['html']  = $this->label;
 		Utils::$context['posting_fields'][$this->name]['input']['html']  = $this->attributes['value'];

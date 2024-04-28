@@ -24,7 +24,7 @@ if (! defined('SMF'))
 
 class CustomSelectField extends SelectField
 {
-	public function build(): void
+	protected function build(): void
 	{
 		AbstractField::build();
 

@@ -36,6 +36,11 @@ abstract class AbstractField
 
 	protected array $attributes = [];
 
+	public function __destruct()
+	{
+		$this->build();
+	}
+
 	public static function make(string $name, string $label): static
 	{
 		return new static($name, $label);
@@ -78,10 +83,11 @@ abstract class AbstractField
 
 	public function setValue(mixed $value, ...$params): self
 	{
-		if (is_callable($value) && is_object($value))
+		if (is_callable($value) && is_object($value)) {
 			$this->setAttribute('value', $value()(...$params));
-		else
+		} else {
 			$this->setAttribute('value', $value);
+		}
 
 		return $this;
 	}
@@ -103,7 +109,7 @@ abstract class AbstractField
 		return $this->setAttribute('placeholder', $text);
 	}
 
-	public function build(): void
+	protected function build(): void
 	{
 		Utils::$context['posting_fields'][$this->name]['label']['text'] = $this->label;
 		Utils::$context['posting_fields'][$this->name]['input'] = [
@@ -112,10 +118,5 @@ abstract class AbstractField
 			'tab'        => $this->tab,
 			'attributes' => $this->attributes,
 		];
-	}
-
-	public function __destruct()
-	{
-		$this->build();
 	}
 }

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.04.24
+ * @version 28.04.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -38,6 +38,8 @@ class Handler extends Plugin
 
 	public const TAB_TUNING = 'tuning';
 
+	private const PLUGIN_NAME = 'MyNewAddon';
+
 	public function add(): void
 	{
 		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_plugin_maker']['add_title'];
@@ -50,8 +52,9 @@ class Handler extends Plugin
 		];
 
 		Lang::$txt['lp_plugin_maker']['add_info'] = sprintf(Lang::$txt['lp_plugin_maker']['add_info'], sprintf(
-			'<strong style="color: initial">%1$s/<span x-ref="plugin_name">MyNewAddon</span></strong>',
-			LP_ADDON_DIR
+			'<strong style="color: initial">%s/<span x-ref="plugin_name">%s</span></strong>',
+			LP_ADDON_DIR,
+			self::PLUGIN_NAME,
 		));
 
 		if (! is_writable(LP_ADDON_DIR)) {
@@ -96,7 +99,7 @@ class Handler extends Plugin
 		$postData = (new Validator())->validate();
 
 		Utils::$context['lp_plugin'] = [
-			'name'       => $postData['name'] ?? Utils::$context['lp_plugin']['name'] = 'MyNewAddon',
+			'name'       => $postData['name'] ?? Utils::$context['lp_plugin']['name'] = self::PLUGIN_NAME,
 			'type'       => $postData['type'] ?? Utils::$context['lp_plugin']['type'] ?? 'block',
 			'icon'       => $postData['icon'] ?? Utils::$context['lp_plugin']['icon'] ?? '',
 			'author'     => $postData['author'] ?? Utils::$context['lp_plugin']['author'] ?? Utils::$context['lp_plugin_maker_plugin']['author'] ?? User::$info['name'],

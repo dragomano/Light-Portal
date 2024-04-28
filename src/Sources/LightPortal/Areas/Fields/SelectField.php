@@ -39,7 +39,7 @@ class SelectField extends AbstractField
 		return $this;
 	}
 
-	public function build(): void
+	protected function build(): void
 	{
 		parent::build();
 

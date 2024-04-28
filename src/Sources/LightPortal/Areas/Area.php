@@ -111,8 +111,9 @@ trait Area
 			if (! empty($data['input']['after'])) {
 				$tag = 'div';
 
-				if (isset($data['input']['type']) && in_array($data['input']['type'], ['checkbox', 'number']))
+				if (isset($data['input']['type']) && in_array($data['input']['type'], ['checkbox', 'number'])) {
 					$tag = 'span';
+				}
 
 				Utils::$context['posting_fields'][$item]['input']['after']
 					= "<$tag class=\"descbox alternative2 smalltext\">{$data['input']['after']}</$tag>";
@@ -132,8 +133,9 @@ trait Area
 				Utils::$context['posting_fields'][$item] = $data;
 			}
 
-			if (empty($data['input']['tab']))
+			if (empty($data['input']['tab'])) {
 				Utils::$context['posting_fields'][$item]['input']['tab'] = 'tuning';
+			}
 		}
 
 		Theme::loadTemplate('LightPortal/ManageSettings');

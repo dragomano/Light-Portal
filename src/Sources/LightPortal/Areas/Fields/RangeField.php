@@ -21,7 +21,7 @@ if (! defined('SMF'))
 
 class RangeField extends CustomField
 {
-	public function build(): void
+	protected function build(): void
 	{
 		parent::build();
 

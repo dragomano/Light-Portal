@@ -16,7 +16,7 @@ namespace Bugo\LightPortal\Utils;
 
 final class Icon
 {
-	public static function get(string $name, string $title = ''): string
+	public static function get(string $name, string $title = '', string $prefix = ''): string
 	{
 		$icon = self::all()[$name];
 
@@ -24,7 +24,7 @@ final class Icon
 			return $icon;
 		}
 
-		return str_replace(' class=', ' title="' . $title . '" class=', $icon);
+		return str_replace(' class="', ' title="' . $title . '" class="' . $prefix, $icon);
 	}
 
 	public static function all(): array

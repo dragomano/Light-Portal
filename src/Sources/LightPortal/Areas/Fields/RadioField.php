@@ -39,7 +39,7 @@ class RadioField extends InputField
 		return $this;
 	}
 
-	public function build(): void
+	protected function build(): void
 	{
 		parent::build();
 

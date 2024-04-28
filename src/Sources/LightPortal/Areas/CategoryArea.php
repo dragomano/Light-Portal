@@ -119,11 +119,10 @@ final class CategoryArea
 						'value' => Lang::$txt['lp_block_priority']
 					],
 					'data' => [
-						'function' => static fn($entry) => '<div data-id="' . $entry['id'] . '">' . $entry['priority'] . ' ' . str_replace(
-							' class="',
-							' title="' . Lang::$txt['lp_action_move'] . '" class="handle ',
-							Icon::get('sort')
-						) . '</div>',
+						'function' => static fn($entry) => '<div data-id="' . $entry['id'] . '">
+								' . $entry['priority'] . ' ' .
+								Icon::get('sort', Lang::$txt['lp_action_move'], 'handle ') .
+							'</div>',
 						'class' => 'centertext'
 					],
 					'sort' => [
