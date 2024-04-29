@@ -10,7 +10,7 @@ outline:
 
 Utilizza l'accesso rapido tramite la voce nel menu principale del forum o la sezione corrispondente nel pannello di amministrazione per aprire le impostazioni del portale.
 
-Non verranno descritte nel dettaglio ciascuna delle impostazioni disponibili, verranno citate solo quelle più importanti. In caso di dubbi su alcuni parametri, contatta lo sviluppatore tramite l'area [Suggerimenti](#feedback).
+Non verranno descritte nel dettaglio ciascuna delle impostazioni disponibili, verranno citate solo quelle più importanti.
 
 ## Impostazioni generali
 
@@ -59,9 +59,3 @@ In questa sezione puoi modificare varie impostazioni ausiliarie del portale, che
 ### Manutenzione
 
 - Ottimizzazione settimanale delle tabelle del portale - abilita questa opzione in modo che una volta alla settimana le righe con valori vuoti nelle tabelle del portale nel database vengano eliminate e le tabelle vengano ottimizzate.
-
-## Suggerimenti
-
-<a id="feedback"></a>
-
-Qui puoi contattare lo sviluppatore del portale. Puoi inviare la tua domanda direttamente senza registrarti sui forum o su Github. Assicurati di includere una mail valida se desideri ricevere una risposta.

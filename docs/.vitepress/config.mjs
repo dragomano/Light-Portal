@@ -79,6 +79,20 @@ export default defineConfig({
     hostname: 'https://dragomano.github.io/Light-Portal/',
   },
   vite: {
+    optimizeDeps: {
+      include: [
+        // @rive-app/canvas is a CJS/UMD module, so it needs to be included here
+        // for Vite to properly bundle it.
+        '@nolebase/vitepress-plugin-enhanced-readabilities > @nolebase/ui > @rive-app/canvas',
+      ],
+      exclude: ['@nolebase/vitepress-plugin-enhanced-readabilities/client'],
+    },
+    ssr: {
+      noExternal: [
+        // If there are other packages that need to be processed by Vite, you can add them here.
+        '@nolebase/vitepress-plugin-enhanced-readabilities',
+      ],
+    },
     resolve: {
       alias: [
         {

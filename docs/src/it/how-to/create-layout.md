@@ -60,6 +60,6 @@ Per personalizzare i fogli di stile, crea un file `portal_custom.css` nella cart
 
 :::tip
 
-Se hai creato il tuo modello del frontpage e desideri condividerlo con lo sviluppatore ed altri utenti, utilizza https\://codepen.io/pen/ o altre risorse simili.
+Se hai creato il tuo modello del frontpage e desideri condividerlo con lo sviluppatore ed altri utenti, utilizza https://codepen.io/pen/ o altre risorse simili.
 
 :::

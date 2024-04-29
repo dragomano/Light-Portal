@@ -22,14 +22,14 @@ hero:
 features:
   - icon: 🧊
     title: Blocchi
-    details: Una parte del portale che visualizza contenuti selezionati all'interno della struttura. Posizionati su uno dei sei pannelli.
+    details: Decora il forum con un numero illimitato di blocchi contenenti qualsiasi contenuto – lascia correre la tua fantasia!
     link: ./blocks/manage
   - icon: 📰
     title: Pagine
-    details: Una parte del portale con proprio contenuto. Visualizzato come una parte separata del forum, con un proprio URL.
+    details: Riempi il forum con articoli fantastici. Consenti agli utenti di commentare e lasciare reazioni. Assegna i tag appropriati.
     link: ./pages/manage
   - icon: 🧩
     title: Plugins
-    details: È un elemento del portale indipendente che aggiunge o modifica alcune funzionalità.
+    details: Migliora la funzionalità del portale integrando funzionalità aggiuntive fornite dai plugin.
     link: ./plugins/manage
 ---
