@@ -188,7 +188,7 @@ public function prepareBlockFields(): void
         return;
 
     RadioField::make('display_type', Lang::$txt['lp_article_list']['display_type'])
-        ->setTab('content')
+        ->setTab(BlockArea::TAB_CONTENT)
         ->setOptions(Lang::$txt['lp_article_list']['display_type_set'])
         ->setValue(Utils::$context['lp_block']['options']['display_type']);
 
@@ -253,7 +253,7 @@ public function validatePageParams(array &$params): void
 public function preparePageFields(): void
 {
     VirtualSelectField::make('meta_robots', Lang::$txt['lp_extended_meta_tags']['meta_robots'])
-        ->setTab('seo')
+        ->setTab(PageArea::TAB_SEO)
         ->setOptions(array_combine($this->meta_robots, Lang::$txt['lp_extended_meta_tags']['meta_robots_set']))
         ->setValue(Utils::$context['lp_page']['options']['meta_robots']);
 }
