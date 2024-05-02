@@ -121,10 +121,7 @@ final class CategoryRepository extends AbstractRepository
 
 	public function setData(int $item = 0): void
 	{
-		if (isset(Utils::$context['post_errors']) || (
-			$this->request()->hasNot('save') &&
-			$this->request()->hasNot('save_exit'))
-		) {
+		if (isset(Utils::$context['post_errors']) || $this->request()->hasNot(['save', 'save_exit'])) {
 			return;
 		}
 

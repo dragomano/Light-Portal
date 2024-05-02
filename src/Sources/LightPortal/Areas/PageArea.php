@@ -478,9 +478,7 @@ final class PageArea
 			) . (
 				$this->request()->has('internal') ? ' AND p.status = {int:internal}' : ''
 			) . (
-				$this->request()->hasNot('u')
-					&& $this->request()->hasNot('moderate')
-					&& $this->request()->hasNot('internal') ? ' AND p.status IN ({array_int:included_statuses})' : ''
+				$this->request()->hasNot(['u', 'moderate', 'internal']) ? ' AND p.status IN ({array_int:included_statuses})' : ''
 			),
 			[
 				'search'            => Utils::$smcFunc['strtolower']($searchParams['string']),
