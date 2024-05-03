@@ -252,7 +252,7 @@ $tables[] = [
 			'default'  => 0
 		],
 		[
-			'name' => 'alias',
+			'name' => 'slug',
 			'type' => 'varchar',
 			'size' => 255,
 			'null' => false
@@ -339,14 +339,14 @@ $tables[] = [
 		],
 		[
 			'type'    => 'unique',
-			'columns' => ['alias']
+			'columns' => ['slug']
 		]
 	],
 	'default' => [
 		'columns' => [
 			'page_id'     => 'int',
 			'author_id'   => 'int',
-			'alias'       => 'string-255',
+			'slug'        => 'string-255',
 			'content'     => 'string',
 			'type'        => 'string',
 			'permissions' => 'int',
