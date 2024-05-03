@@ -47,7 +47,7 @@ abstract class AbstractPageList implements PageListInterface
 			$items[$row['page_id']] = [
 				'id'        => (int) $row['page_id'],
 				'section'   => $this->getSectionData($row),
-				'alias'     => $row['alias'],
+				'slug'      => $row['slug'],
 				'author'    => $this->getAuthorData($row),
 				'date'      => DateTime::relative((int) $row['date']),
 				'datetime'  => date('Y-m-d', (int) $row['date']),
@@ -57,7 +57,7 @@ abstract class AbstractPageList implements PageListInterface
 				'replies'   => $this->getRepliesData($row),
 				'title'     => $row['title'],
 				'is_new'    => $this->isNew($row),
-				'is_front'  => $this->isFrontpage($row['alias']),
+				'is_front'  => $this->isFrontpage($row['slug']),
 				'image'     => $this->getImage($row),
 				'can_edit'  => $this->canEdit($row),
 				'edit_link' => $this->getEditLink($row),
@@ -100,7 +100,7 @@ abstract class AbstractPageList implements PageListInterface
 
 	private function getLink(array $row): string
 	{
-		return LP_PAGE_URL . $row['alias'];
+		return LP_PAGE_URL . $row['slug'];
 	}
 
 	private function getViewsData(array $row): array

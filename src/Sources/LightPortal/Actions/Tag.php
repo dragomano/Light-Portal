@@ -78,7 +78,7 @@ final class Tag extends AbstractPageList
 	{
 		$result = Db::$db->query('', '
 			SELECT
-				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content,
+				p.page_id, p.category_id, p.author_id, p.slug, p.description, p.content,
 				p.type, p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
 				COALESCE(mem.real_name, \'\') AS author_name, COALESCE(t.title, tf.title) AS title,
 				COALESCE(tt.title, ttf.title) AS tag_title

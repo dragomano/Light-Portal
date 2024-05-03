@@ -50,7 +50,7 @@ class Reactions extends Plugin
 		if (empty($data['options']['allow_reactions']))
 			return;
 
-		Utils::$context['reaction_url'] = LP_PAGE_URL . $data['alias'];
+		Utils::$context['reaction_url'] = LP_PAGE_URL . $data['slug'];
 		Utils::$context['can_react'] = empty($isAuthor);
 
 		Theme::addInlineJavaScript('
@@ -101,11 +101,11 @@ class Reactions extends Plugin
 					$commentReactions = $this->getReactions($json['comment'], 'comment');
 					$commentReactions[User::$info['id']] = $json['reaction'];
 					$this->addReaction($json['comment'], json_encode($commentReactions), 'comment');
-					$this->cache()->forget('page_' . $data['alias'] . '_comments');
+					$this->cache()->forget('page_' . $data['slug'] . '_comments');
 				} else {
 					$reactions[User::$info['id']] = $json['reaction'];
 					$this->addReaction($data['id'], json_encode($reactions));
-					$this->cache()->forget('page_' . $data['alias']);
+					$this->cache()->forget('page_' . $data['slug']);
 				}
 			}
 		}

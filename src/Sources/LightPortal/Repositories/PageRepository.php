@@ -42,9 +42,9 @@ final class PageRepository extends AbstractRepository
 	): array
 	{
 		$result = Db::$db->query('', '
-			SELECT p.page_id, p.category_id, p.author_id, p.alias, p.type, p.permissions, p.status,
+			SELECT p.page_id, p.category_id, p.author_id, p.slug, p.type, p.permissions, p.status,
 				p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
-				mem.real_name AS author_name, COALESCE(t.title, tf.title, p.alias) AS page_title
+				mem.real_name AS author_name, COALESCE(t.title, tf.title, p.slug) AS page_title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
@@ -72,7 +72,7 @@ final class PageRepository extends AbstractRepository
 			$items[$row['page_id']] = [
 				'id'           => (int) $row['page_id'],
 				'category_id'  => (int) $row['category_id'],
-				'alias'        => $row['alias'],
+				'slug'         => $row['slug'],
 				'type'         => $row['type'],
 				'status'       => (int) $row['status'],
 				'num_views'    => (int) $row['num_views'],
@@ -80,7 +80,7 @@ final class PageRepository extends AbstractRepository
 				'author_id'    => (int) $row['author_id'],
 				'author_name'  => $row['author_name'],
 				'created_at'   => DateTime::relative((int) $row['date']),
-				'is_front'     => $this->isFrontpage($row['alias']),
+				'is_front'     => $this->isFrontpage($row['slug']),
 				'title'        => $row['page_title'],
 			];
 		}
@@ -123,14 +123,14 @@ final class PageRepository extends AbstractRepository
 
 		$result = Db::$db->query('', '
 			SELECT
-				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions,
+				p.page_id, p.category_id, p.author_id, p.slug, p.description, p.content, p.type, p.permissions,
 				p.status, p.num_views, p.created_at, p.updated_at,
 				COALESCE(mem.real_name, {string:guest}) AS author_name, pt.lang, pt.title, pp.name, pp.value
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_titles AS pt ON (p.page_id = pt.item_id AND pt.type = {literal:page})
 				LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {literal:page})
-			WHERE p.' . (is_int($item) ? 'page_id = {int:item}' : 'alias = {string:item}'),
+			WHERE p.' . (is_int($item) ? 'page_id = {int:item}' : 'slug = {string:item}'),
 			[
 				'guest' => Lang::$txt['guest_title'],
 				'item'  => $item,
@@ -160,7 +160,7 @@ final class PageRepository extends AbstractRepository
 				'category_id' => (int) $row['category_id'],
 				'author_id'   => (int) $row['author_id'],
 				'author'      => $row['author_name'],
-				'alias'       => $row['alias'],
+				'slug'        => $row['slug'],
 				'description' => $row['description'],
 				'content'     => $row['content'],
 				'type'        => $row['type'],
@@ -184,10 +184,7 @@ final class PageRepository extends AbstractRepository
 
 	public function setData(int $item = 0): void
 	{
-		if (isset(Utils::$context['post_errors']) || (
-			$this->request()->hasNot('save') &&
-			$this->request()->hasNot('save_exit'))
-		) {
+		if (isset(Utils::$context['post_errors']) || $this->request()->hasNot(['save', 'save_exit'])) {
 			return;
 		}
 
@@ -312,7 +309,7 @@ final class PageRepository extends AbstractRepository
 
 		$result = Db::$db->query('', '
 			(
-				SELECT p.page_id, p.alias, GREATEST(p.created_at, p.updated_at) AS date,
+				SELECT p.page_id, p.slug, GREATEST(p.created_at, p.updated_at) AS date,
 					CASE WHEN COALESCE(par.value, \'0\') != \'0\' THEN p.num_comments ELSE 0 END AS num_comments,
 					com.created_at AS comment_date
 				FROM {db_prefix}lp_pages AS p
@@ -334,7 +331,7 @@ final class PageRepository extends AbstractRepository
 			)
 			UNION ALL
 			(
-				SELECT p.page_id, p.alias, GREATEST(p.created_at, p.updated_at) AS date,
+				SELECT p.page_id, p.slug, GREATEST(p.created_at, p.updated_at) AS date,
 					CASE WHEN COALESCE(par.value, \'0\') != \'0\' THEN p.num_comments ELSE 0 END AS num_comments,
 					com.created_at AS comment_date
 				FROM {db_prefix}lp_pages AS p
@@ -364,18 +361,18 @@ final class PageRepository extends AbstractRepository
 			]
 		);
 
-		[$prevId, $prevAlias] = Db::$db->fetch_row($result);
-		[$nextId, $nextAlias] = Db::$db->fetch_row($result);
+		[$prevId, $prevSlug] = Db::$db->fetch_row($result);
+		[$nextId, $nextSlug] = Db::$db->fetch_row($result);
 
 		Db::$db->free_result($result);
 
-		return [$prevId, $prevAlias, $nextId, $nextAlias];
+		return [$prevId, $prevSlug, $nextId, $nextSlug];
 	}
 
 	public function getRelatedPages(array $page): array
 	{
 		$titleWords = explode(' ', $this->getTranslatedTitle($page['titles']));
-		$aliasWords = explode('_', $page['alias']);
+		$slugWords  = explode('_', $page['slug']);
 
 		$searchFormula = '';
 		foreach ($titleWords as $key => $word) {
@@ -384,15 +381,15 @@ final class PageRepository extends AbstractRepository
 			THEN ' . (count($titleWords) - $key) * 2 . ' ELSE 0 END';
 		}
 
-		foreach ($aliasWords as $key => $word) {
+		foreach ($slugWords as $key => $word) {
 			$searchFormula .= ' + CASE
-			WHEN lower(p.alias) LIKE lower(\'%' . $word . '%\')
-			THEN ' . (count($aliasWords) - $key) . ' ELSE 0 END';
+			WHEN lower(p.slug) LIKE lower(\'%' . $word . '%\')
+			THEN ' . (count($slugWords) - $key) . ' ELSE 0 END';
 		}
 
 		$result = Db::$db->query('', '
 			SELECT
-				p.page_id, p.alias, p.content, p.type, (' . $searchFormula . ') AS related,
+				p.page_id, p.slug, p.content, p.type, (' . $searchFormula . ') AS related,
 				COALESCE(t.title, tf.title) AS title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.lang = {string:current_lang})
@@ -416,7 +413,7 @@ final class PageRepository extends AbstractRepository
 
 		$items = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
-			if ($this->isFrontpage($row['alias']))
+			if ($this->isFrontpage($row['slug']))
 				continue;
 
 			$row['content'] = Content::parse($row['content'], $row['type']);
@@ -426,8 +423,8 @@ final class PageRepository extends AbstractRepository
 			$items[$row['page_id']] = [
 				'id'    => $row['page_id'],
 				'title' => $row['title'],
-				'alias' => $row['alias'],
-				'link'  => LP_PAGE_URL . $row['alias'],
+				'slug'  => $row['slug'],
+				'link'  => LP_PAGE_URL . $row['slug'],
 				'image' => $image ?: (Config::$modSettings['lp_image_placeholder'] ?? ''),
 			];
 		}
@@ -457,7 +454,7 @@ final class PageRepository extends AbstractRepository
 			$titles = $this->getEntityData('title');
 
 			$result = Db::$db->query('', '
-				SELECT p.page_id, p.alias, p.permissions, pp2.value AS icon
+				SELECT p.page_id, p.slug, p.permissions, pp2.value AS icon
 				FROM {db_prefix}lp_pages AS p
 					LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {literal:page})
 					LEFT JOIN {db_prefix}lp_params AS pp2 ON (
@@ -478,7 +475,7 @@ final class PageRepository extends AbstractRepository
 			while ($row = Db::$db->fetch_assoc($result)) {
 				$pages[$row['page_id']] = [
 					'id'          => (int) $row['page_id'],
-					'alias'       => $row['alias'],
+					'slug'        => $row['slug'],
 					'permissions' => (int) $row['permissions'],
 					'icon'        => $row['icon'],
 				];
@@ -533,7 +530,7 @@ final class PageRepository extends AbstractRepository
 			array_merge([
 				'category_id' => 'int',
 				'author_id'   => 'int',
-				'alias'       => 'string-255',
+				'slug'        => 'string-255',
 				'description' => 'string-255',
 				'content'     => 'string',
 				'type'        => 'string',
@@ -544,7 +541,7 @@ final class PageRepository extends AbstractRepository
 			array_merge([
 				Utils::$context['lp_page']['category_id'],
 				Utils::$context['lp_page']['author_id'],
-				Utils::$context['lp_page']['alias'],
+				Utils::$context['lp_page']['slug'],
 				Utils::$context['lp_page']['description'],
 				Utils::$context['lp_page']['content'],
 				Utils::$context['lp_page']['type'],
@@ -578,7 +575,7 @@ final class PageRepository extends AbstractRepository
 			'time'      => $this->getPublishTime(),
 			'author_id' => Utils::$context['lp_page']['author_id'],
 			'title'     => $title,
-			'url'       => LP_PAGE_URL . Utils::$context['lp_page']['alias']
+			'url'       => LP_PAGE_URL . Utils::$context['lp_page']['slug']
 		];
 
 		if (empty(Utils::$context['allow_light_portal_manage_pages_any']))
@@ -593,14 +590,14 @@ final class PageRepository extends AbstractRepository
 
 		Db::$db->query('', '
 			UPDATE {db_prefix}lp_pages
-			SET category_id = {int:category_id}, author_id = {int:author_id}, alias = {string:alias},
+			SET category_id = {int:category_id}, author_id = {int:author_id}, slug = {string:slug},
 				description = {string:description}, content = {string:content}, type = {string:type},
 				permissions = {int:permissions}, status = {int:status}, updated_at = {int:updated_at}
 			WHERE page_id = {int:page_id}',
 			[
 				'category_id' => Utils::$context['lp_page']['category_id'],
 				'author_id'   => Utils::$context['lp_page']['author_id'],
-				'alias'       => Utils::$context['lp_page']['alias'],
+				'slug'        => Utils::$context['lp_page']['slug'],
 				'description' => Utils::$context['lp_page']['description'],
 				'content'     => Utils::$context['lp_page']['content'],
 				'type'        => Utils::$context['lp_page']['type'],
@@ -620,7 +617,7 @@ final class PageRepository extends AbstractRepository
 		if (Utils::$context['lp_page']['author_id'] !== User::$info['id']) {
 			$title = Utils::$context['lp_page']['titles'][User::$info['language']];
 			Logging::logAction('update_lp_page', [
-				'page' => '<a href="' . LP_PAGE_URL . Utils::$context['lp_page']['alias'] . '">' . $title . '</a>'
+				'page' => '<a href="' . LP_PAGE_URL . Utils::$context['lp_page']['slug'] . '">' . $title . '</a>'
 			]);
 		}
 

@@ -76,17 +76,17 @@ final class PageExport extends AbstractExport
 						'reverse' => 'p.page_id DESC'
 					]
 				],
-				'alias' => [
+				'slug' => [
 					'header' => [
-						'value' => Lang::$txt['lp_page_alias']
+						'value' => Lang::$txt['lp_page_slug']
 					],
 					'data' => [
-						'db'    => 'alias',
+						'db'    => 'slug',
 						'class' => 'centertext word_break'
 					],
 					'sort' => [
-						'default' => 'p.alias DESC',
-						'reverse' => 'p.alias'
+						'default' => 'p.slug DESC',
+						'reverse' => 'p.slug'
 					]
 				],
 				'title' => [
@@ -97,7 +97,7 @@ final class PageExport extends AbstractExport
 						'function' => static fn($entry) => '<a class="bbc_link' . (
 							$entry['is_front']
 								? ' new_posts" href="' . Config::$scripturl
-								: '" href="' . LP_PAGE_URL . $entry['alias']
+								: '" href="' . LP_PAGE_URL . $entry['slug']
 							) . '">' . $entry['title'] . '</a>',
 						'class' => 'word_break'
 					],
@@ -142,7 +142,7 @@ final class PageExport extends AbstractExport
 
 		$result = Db::$db->query('', '
 			SELECT
-				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions,
+				p.page_id, p.category_id, p.author_id, p.slug, p.description, p.content, p.type, p.permissions,
 				p.status, p.num_views, p.num_comments, p.created_at, p.updated_at, pt.lang, pt.title, pp.name, pp.value,
 				com.id, com.parent_id, com.author_id AS com_author_id, com.message, com.created_at AS com_created_at
 			FROM {db_prefix}lp_pages AS p
@@ -161,7 +161,7 @@ final class PageExport extends AbstractExport
 				'page_id'      => $row['page_id'],
 				'category_id'  => $row['category_id'],
 				'author_id'    => $row['author_id'],
-				'alias'        => $row['alias'],
+				'slug'         => $row['slug'],
 				'description'  => trim($row['description'] ?? ''),
 				'content'      => $row['content'],
 				'type'         => $row['type'],

@@ -71,7 +71,7 @@ class PageArticle extends AbstractArticle
 
 		$result = Db::$db->query('', /** @lang text */ '
 			SELECT
-				p.page_id, p.category_id, p.author_id, p.alias, p.content, p.description, p.type, p.status, p.num_views,
+				p.page_id, p.category_id, p.author_id, p.slug, p.content, p.description, p.type, p.status, p.num_views,
 				CASE WHEN COALESCE(par.value, \'0\') != \'0\' THEN p.num_comments ELSE 0 END AS num_comments, p.created_at,
 				GREATEST(p.created_at, p.updated_at) AS date, COALESCE(t.title, tf.title) AS cat_title, mem.real_name AS author_name,
 				cat.icon as cat_icon, com.created_at AS comment_date, com.author_id AS comment_author_id, mem2.real_name AS comment_author_name,
@@ -113,7 +113,7 @@ class PageArticle extends AbstractArticle
 					'author'    => $this->getAuthorData($row),
 					'date'      => $this->getDate($row),
 					'title'     => $this->getTitle($titles, $row),
-					'link'      => LP_PAGE_URL . $row['alias'],
+					'link'      => LP_PAGE_URL . $row['slug'],
 					'views'     => $this->getViewsData($row),
 					'replies'   => $this->getRepliesData($row),
 					'is_new'    => $this->isNew($row),

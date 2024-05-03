@@ -337,13 +337,13 @@ abstract class AbstractMain
 
 		$pageButtons = [];
 		foreach (Utils::$context['lp_menu_pages'] as $item) {
-			$pageButtons['portal_page_' . $item['alias']] = [
+			$pageButtons['portal_page_' . $item['slug']] = [
 				'title' => (
 					$item['icon']
 						? '<span class="portal_menu_icons fa-fw ' . $item['icon'] . '"></span>'
 						: ''
 					) . $this->getTranslatedTitle($item['titles']),
-				'href'  => LP_PAGE_URL . $item['alias'],
+				'href'  => LP_PAGE_URL . $item['slug'],
 				'icon'  => '" style="display: none"></span><span',
 				'show'  => $this->canViewItem($item['permissions']),
 			];

@@ -127,7 +127,7 @@ final class CommentRepository
 		);
 	}
 
-	public function remove(int $item, string $pageAlias): array
+	public function remove(int $item, string $pageSlug): array
 	{
 		$result = Db::$db->query('', '
 			SELECT id
@@ -161,11 +161,11 @@ final class CommentRepository
 		Db::$db->db_query('', '
 			UPDATE {db_prefix}lp_pages
 			SET num_comments = num_comments - {int:num_items}
-			WHERE alias = {string:alias}
+			WHERE slug = {string:slug}
 				AND num_comments - {int:num_items} >= 0',
 			[
 				'num_items' => count($items),
-				'alias'     => $pageAlias,
+				'slug'      => $pageSlug,
 			]
 		);
 
@@ -194,11 +194,11 @@ final class CommentRepository
 				SELECT COALESCE(MAX(com.id), 0)
 				FROM {db_prefix}lp_comments AS com
 					LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = com.page_id)
-				WHERE p.alias = {string:alias}
+				WHERE p.slug = {string:slug}
 			)
-			WHERE alias = {string:alias}',
+			WHERE slug = {string:slug}',
 			[
-				'alias' => $pageAlias,
+				'slug' => $pageSlug,
 			]
 		);
 

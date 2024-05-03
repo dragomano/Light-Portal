@@ -68,12 +68,12 @@ class PageImport extends AbstractCustomPageImport
 						'reverse' => 'id DESC'
 					]
 				],
-				'alias' => [
+				'slug' => [
 					'header' => [
-						'value' => Lang::$txt['lp_page_alias']
+						'value' => Lang::$txt['lp_page_slug']
 					],
 					'data' => [
-						'db'    => 'alias',
+						'db'    => 'slug',
 						'class' => 'centertext word_break'
 					],
 					'sort' => [
@@ -147,7 +147,7 @@ class PageImport extends AbstractCustomPageImport
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			$items[$row['id']] = [
 				'id'         => $row['id'],
-				'alias'      => $row['shortname'],
+				'slug'       => $row['shortname'],
 				'type'       => $row['type'],
 				'status'     => (int) empty($row['off']),
 				'num_views'  => $row['views'],
@@ -213,7 +213,7 @@ class PageImport extends AbstractCustomPageImport
 			$items[$row['id']] = [
 				'page_id'      => $row['id'],
 				'author_id'    => $row['author_id'],
-				'alias'        => $row['shortname'] ?: ('page_' . $row['id']),
+				'slug'         => $row['shortname'] ?: ('page_' . $row['id']),
 				'description'  => strip_tags(BBCodeParser::load()->parse($row['intro'])),
 				'content'      => $row['body'],
 				'type'         => $row['type'],

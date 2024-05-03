@@ -27,7 +27,7 @@ class PageModel extends AbstractModel
 
 	public int $authorId;
 
-	public string $alias;
+	public string $slug;
 
 	public string $description;
 
@@ -63,7 +63,7 @@ class PageModel extends AbstractModel
 
 		$this->authorId = $currentPage['author_id'] ?? User::$info['id'];
 
-		$this->alias = $postData['alias'] ?? $currentPage['alias'] ?? '';
+		$this->slug = $postData['slug'] ?? $currentPage['slug'] ?? '';
 
 		$this->description = $postData['description'] ?? $currentPage['description'] ?? '';
 

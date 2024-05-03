@@ -200,7 +200,7 @@ final class Integration extends AbstractMain
 		if (empty(Utils::$context['lp_menu_pages'][Utils::$context['lp_page']['id']]))
 			return;
 
-		if ($this->request()->url() === LP_PAGE_URL . Utils::$context['lp_page']['alias']) {
+		if ($this->request()->url() === LP_PAGE_URL . Utils::$context['lp_page']['slug']) {
 			$action = 'portal_page_' . $this->request(LP_PAGE_PARAM);
 		}
 	}
