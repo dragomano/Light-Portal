@@ -200,7 +200,7 @@ final class BasicConfig extends AbstractConfig
 
 			$saveVars = $configVars;
 
-			$saveVars[] = ['text', 'lp_frontpage_alias'];
+			$saveVars[] = ['text', 'lp_frontpage_chosen_slug'];
 			$saveVars[] = ['text', 'lp_frontpage_categories'];
 			$saveVars[] = ['text', 'lp_frontpage_boards'];
 			$saveVars[] = ['text', 'lp_frontpage_pages'];

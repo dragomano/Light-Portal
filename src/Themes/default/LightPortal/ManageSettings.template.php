@@ -17,9 +17,9 @@ function template_callback_frontpage_mode_settings_middle(): void
 			<tbody>
 				<tr>
 					<td x-show="frontpage_mode === \'chosen_page\'">
-						<a id="setting_lp_frontpage_alias"></a>
+						<a id="setting_lp_frontpage_chosen_slug"></a>
 						<span>
-							<label for="lp_frontpage_alias">', Lang::$txt['lp_frontpage_alias'], '</label>
+							<label for="lp_frontpage_chosen_slug">', Lang::$txt['lp_frontpage_chosen_slug'], '</label>
 						</span>
 					</td>
 					<td x-show="frontpage_mode === \'chosen_page\'">', new PageAliasSelect(), '</td>

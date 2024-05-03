@@ -45,8 +45,8 @@ final class Page implements PageInterface
 		$alias = $this->request(LP_PAGE_PARAM);
 
 		if (empty($alias)) {
-			if ($this->isFrontpageMode('chosen_page') && Config::$modSettings['lp_frontpage_alias']) {
-				Utils::$context['lp_page'] = $this->getDataByAlias(Config::$modSettings['lp_frontpage_alias']);
+			if ($this->isFrontpageMode('chosen_page') && Config::$modSettings['lp_frontpage_chosen_slug']) {
+				Utils::$context['lp_page'] = $this->getDataByAlias(Config::$modSettings['lp_frontpage_chosen_slug']);
 			} else {
 				Config::updateModSettings(['lp_frontpage_mode' => 0]);
 			}
