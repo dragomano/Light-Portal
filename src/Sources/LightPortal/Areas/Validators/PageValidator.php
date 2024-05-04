@@ -25,7 +25,7 @@ class PageValidator extends AbstractValidator
 		'page_id'     => FILTER_VALIDATE_INT,
 		'category_id' => FILTER_VALIDATE_INT,
 		'author_id'   => FILTER_VALIDATE_INT,
-		'alias'       => FILTER_DEFAULT,
+		'slug'        => FILTER_DEFAULT,
 		'description' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
 		'tags'        => FILTER_DEFAULT,
 		'type'        => FILTER_DEFAULT,
@@ -78,20 +78,20 @@ class PageValidator extends AbstractValidator
 			$errors[] = 'no_title';
 		}
 
-		if (empty($data['alias']))
-			$errors[] = 'no_alias';
+		if (empty($data['slug']))
+			$errors[] = 'no_slug';
 
 		if (
-			$data['alias']
-			&& empty($this->filterVar($data['alias'], [
+			$data['slug']
+			&& empty($this->filterVar($data['slug'], [
 				'options' => ['regexp' => '/' . LP_ALIAS_PATTERN . '/']
 			]))
 		) {
-			$errors[] = 'no_valid_alias';
+			$errors[] = 'no_valid_slug';
 		}
 
-		if ($data['alias'] && ! $this->isUnique($data))
-			$errors[] = 'no_unique_alias';
+		if ($data['slug'] && ! $this->isUnique($data))
+			$errors[] = 'no_unique_slug';
 
 		if (empty($data['content']))
 			$errors[] = 'no_content';
@@ -113,11 +113,11 @@ class PageValidator extends AbstractValidator
 		$result = Db::$db->query('', '
 			SELECT COUNT(page_id)
 			FROM {db_prefix}lp_pages
-			WHERE alias = {string:alias}
+			WHERE slug = {string:slug}
 				AND page_id != {int:item}',
 			[
-				'alias' => $data['alias'],
-				'item'  => $data['page_id'],
+				'slug' => $data['slug'],
+				'item' => $data['page_id'],
 			]
 		);
 

@@ -144,7 +144,7 @@ class RandomPages extends Block
 				return $this->getData(array_merge($parameters, ['num_pages' => $pagesCount - 1]));
 
 			$result = Utils::$smcFunc['db_query']('', '
-				SELECT p.page_id, p.alias, p.created_at, p.num_views, COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
+				SELECT p.page_id, p.slug, p.created_at, p.num_views, COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
 				FROM {db_prefix}lp_pages AS p
 					LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				WHERE p.page_id IN ({array_int:page_ids})',
@@ -155,7 +155,7 @@ class RandomPages extends Block
 			);
 		} else {
 			$result = Utils::$smcFunc['db_query']('', '
-				SELECT p.page_id, p.alias, p.created_at, p.num_views, COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
+				SELECT p.page_id, p.slug, p.created_at, p.num_views, COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
 				FROM {db_prefix}lp_pages AS p
 					LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				WHERE p.status = {int:status}
@@ -179,7 +179,7 @@ class RandomPages extends Block
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			$pages[] = [
 				'page_id'     => $row['page_id'],
-				'alias'       => $row['alias'],
+				'slug'        => $row['slug'],
 				'created_at'  => $row['created_at'],
 				'num_views'   => $row['num_views'],
 				'title'       => $titles[$row['page_id']] ?? [],
@@ -215,7 +215,7 @@ class RandomPages extends Block
 
 				echo '
 				<li class="windowbg">
-					<a href="', Config::$scripturl, '?', LP_PAGE_PARAM, '=', $page['alias'], '">', $title, '</a> ', Lang::$txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . Config::$scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', DateTime::relative($page['created_at']), ' (', Lang::getTxt('lp_views_set', ['views' => $page['num_views']]);
+					<a href="', Config::$scripturl, '?', LP_PAGE_PARAM, '=', $page['slug'], '">', $title, '</a> ', Lang::$txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . Config::$scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', DateTime::relative($page['created_at']), ' (', Lang::getTxt('lp_views_set', ['views' => $page['num_views']]);
 
 				echo ')
 				</li>';

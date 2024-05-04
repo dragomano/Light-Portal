@@ -42,21 +42,21 @@ final class Page implements PageInterface
 	{
 		User::mustHavePermission('light_portal_view');
 
-		$alias = $this->request(LP_PAGE_PARAM);
+		$slug = $this->request(LP_PAGE_PARAM);
 
-		if (empty($alias)) {
+		if (empty($slug)) {
 			if ($this->isFrontpageMode('chosen_page') && Config::$modSettings['lp_frontpage_alias']) {
-				Utils::$context['lp_page'] = $this->getDataByAlias(Config::$modSettings['lp_frontpage_alias']);
+				Utils::$context['lp_page'] = $this->getDataBySlug(Config::$modSettings['lp_frontpage_alias']);
 			} else {
 				Config::updateModSettings(['lp_frontpage_mode' => 0]);
 			}
 		} else {
-			$alias = explode(';', $alias)[0];
+			$slug = explode(';', $slug)[0];
 
-			if ($this->isFrontpage($alias))
+			if ($this->isFrontpage($slug))
 				Utils::redirectexit('action=' . LP_ACTION);
 
-			Utils::$context['lp_page'] = $this->getDataByAlias($alias);
+			Utils::$context['lp_page'] = $this->getDataBySlug($slug);
 		}
 
 		if (empty(Utils::$context['lp_page'])) {
@@ -85,7 +85,7 @@ final class Page implements PageInterface
 			Utils::$context['lp_page']['content'], Utils::$context['lp_page']['type']
 		);
 
-		if (empty($alias)) {
+		if (empty($slug)) {
 			Utils::$context['page_title'] = $this->getTranslatedTitle(
 				Utils::$context['lp_page']['titles']
 			) ?: Lang::$txt['lp_portal'];
@@ -99,7 +99,7 @@ final class Page implements PageInterface
 				Utils::$context['lp_page']['titles']
 			) ?: Lang::$txt['lp_post_error_no_title'];
 
-			Utils::$context['canonical_url'] = LP_PAGE_URL . $alias;
+			Utils::$context['canonical_url'] = LP_PAGE_URL . $slug;
 
 			if (isset(Utils::$context['lp_page']['category'])) {
 				Utils::$context['linktree'][] = [
@@ -131,13 +131,16 @@ final class Page implements PageInterface
 		Theme::loadJavaScriptFile('light_portal/bundle.min.js', ['defer' => true]);
 	}
 
-	public function getDataByAlias(string $alias): array
+	/**
+	 * @throws IntlException
+	 */
+	public function getDataBySlug(string $slug): array
 	{
-		if (empty($alias))
+		if (empty($slug))
 			return [];
 
-		$data = $this->cache('page_' . $alias)
-			->setFallback(PageRepository::class, 'getData', $alias);
+		$data = $this->cache('page_' . $slug)
+			->setFallback(PageRepository::class, 'getData', $slug);
 
 		$this->repository->prepareData($data);
 
@@ -206,7 +209,7 @@ final class Page implements PageInterface
 						'function' => static fn($entry) => '<a class="bbc_link' . (
 							$entry['is_front']
 								? ' new_posts" href="' . Config::$scripturl
-								: '" href="' . LP_PAGE_URL . $entry['alias']
+								: '" href="' . LP_PAGE_URL . $entry['slug']
 						) . '">' . $entry['title'] . '</a>',
 						'class' => 'word_break'
 					],
@@ -352,18 +355,18 @@ final class Page implements PageInterface
 
 		$titles = $this->getEntityData('title');
 
-		[$prevId, $prevAlias, $nextId, $nextAlias] = $this->repository->getPrevNextLinks($page);
+		[$prevId, $prevSlug, $nextId, $nextSlug] = $this->repository->getPrevNextLinks($page);
 
-		if (! empty($prevAlias)) {
+		if (! empty($prevSlug)) {
 			Utils::$context['lp_page']['prev'] = [
-				'link'  => LP_PAGE_URL . $prevAlias,
+				'link'  => LP_PAGE_URL . $prevSlug,
 				'title' => $this->getTranslatedTitle($titles[$prevId])
 			];
 		}
 
-		if (! empty($nextAlias)) {
+		if (! empty($nextSlug)) {
 			Utils::$context['lp_page']['next'] = [
-				'link'  => LP_PAGE_URL . $nextAlias,
+				'link'  => LP_PAGE_URL . $nextSlug,
 				'title' => $this->getTranslatedTitle($titles[$nextId])
 			];
 		}
@@ -400,7 +403,7 @@ final class Page implements PageInterface
 
 		$this->prepareJsonData();
 
-		(new Comment(Utils::$context['lp_page']['alias']))->show();
+		(new Comment(Utils::$context['lp_page']['slug']))->show();
 	}
 
 	private function prepareJsonData(): void

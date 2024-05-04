@@ -94,7 +94,7 @@ final class Category extends AbstractPageList
 	{
 		$result = Db::$db->query('', '
 			SELECT
-				p.page_id, p.author_id, p.alias, p.content, p.description, p.type,
+				p.page_id, p.author_id, p.slug, p.content, p.description, p.type,
 				p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
 				COALESCE(mem.real_name, \'\') AS author_name, COALESCE(t.title, tf.title) AS title
 			FROM {db_prefix}lp_pages AS p

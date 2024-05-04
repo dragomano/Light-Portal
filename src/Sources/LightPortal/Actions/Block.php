@@ -155,7 +155,7 @@ final class Block implements BlockInterface
 		if (isset(Utils::$context['current_board']) || isset(Utils::$context['lp_page']))
 			$area = '';
 
-		if (! empty(Utils::$context['lp_page']['alias']) && $this->isFrontpage(Utils::$context['lp_page']['alias']))
+		if (! empty(Utils::$context['lp_page']['slug']) && $this->isFrontpage(Utils::$context['lp_page']['slug']))
 			$area = LP_ACTION;
 
 		return array_filter(Utils::$context['lp_active_blocks'], function ($block) use ($area) {
@@ -177,9 +177,9 @@ final class Block implements BlockInterface
 				return true;
 			}
 
-			if (isset(Utils::$context['lp_page']['alias'])) {
+			if (isset(Utils::$context['lp_page']['slug'])) {
 				if (
-					isset($block['areas']['!' . LP_PAGE_PARAM . '=' . Utils::$context['lp_page']['alias']])
+					isset($block['areas']['!' . LP_PAGE_PARAM . '=' . Utils::$context['lp_page']['slug']])
 					&& $tempAreas[0] === 'pages'
 				) {
 					return false;
@@ -187,7 +187,7 @@ final class Block implements BlockInterface
 
 				if (
 					isset($block['areas']['pages'])
-					|| isset($block['areas'][LP_PAGE_PARAM . '=' . Utils::$context['lp_page']['alias']])
+					|| isset($block['areas'][LP_PAGE_PARAM . '=' . Utils::$context['lp_page']['slug']])
 				) {
 					return true;
 				}

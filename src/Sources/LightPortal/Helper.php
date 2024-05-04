@@ -287,12 +287,12 @@ trait Helper
 		return $result;
 	}
 
-	public function isFrontpage(string $alias): bool
+	public function isFrontpage(string $slug): bool
 	{
-		if ($alias === '' || empty(Config::$modSettings['lp_frontpage_alias']))
+		if ($slug === '' || empty(Config::$modSettings['lp_frontpage_alias']))
 			return false;
 
-		return $this->isFrontpageMode('chosen_page') && Config::$modSettings['lp_frontpage_alias'] === $alias;
+		return $this->isFrontpageMode('chosen_page') && Config::$modSettings['lp_frontpage_alias'] === $slug;
 	}
 
 	public function isFrontpageMode(string $mode): bool

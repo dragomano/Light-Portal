@@ -74,7 +74,7 @@ class RecentComments extends Block
 			return [];
 
 		$result = Utils::$smcFunc['db_query']('', '
-			SELECT DISTINCT com.id, com.page_id, com.message, com.created_at, p.alias,
+			SELECT DISTINCT com.id, com.page_id, com.message, com.created_at, p.slug,
 				COALESCE(mem.real_name, {string:guest}) AS author_name,
 				(
 					SELECT COUNT(*) FROM {db_prefix}lp_comments AS com2
@@ -113,7 +113,7 @@ class RecentComments extends Block
 			Lang::censorText($row['message']);
 
 			$comments[$row['id']] = [
-				'link'        => LP_PAGE_URL . $row['alias'] . '#comment=' . $row['id'],
+				'link'        => LP_PAGE_URL . $row['slug'] . '#comment=' . $row['id'],
 				'message'     => $this->getTeaser($row['message'], $length),
 				'created_at'  => (int) $row['created_at'],
 				'author_name' => $row['author_name'],

@@ -153,17 +153,17 @@ final class PageArea
 						'reverse' => 'p.num_views',
 					],
 				],
-				'alias' => [
+				'slug' => [
 					'header' => [
-						'value' => Lang::$txt['lp_page_alias'],
+						'value' => Lang::$txt['lp_page_slug'],
 					],
 					'data' => [
-						'db' => 'alias',
+						'db' => 'slug',
 						'class' => 'centertext word_break',
 					],
 					'sort' => [
-						'default' => 'p.alias DESC',
-						'reverse' => 'p.alias',
+						'default' => 'p.slug DESC',
+						'reverse' => 'p.slug',
 					],
 				],
 				'title' => [
@@ -176,7 +176,7 @@ final class PageArea
 							) . '"></i> <a class="bbc_link' . (
 							$entry['is_front']
 								? ' highlight" href="' . Config::$scripturl
-								: '" href="' . LP_PAGE_URL . $entry['alias']
+								: '" href="' . LP_PAGE_URL . $entry['slug']
 							) . '">' . $entry['title'] . '</a>',
 						'class' => 'word_break',
 					],
@@ -470,7 +470,7 @@ final class PageArea
 			(
 				empty($searchParams['string'])
 					? ''
-					: ' AND (INSTR(LOWER(p.alias), {string:search}) > 0 OR INSTR(LOWER(t.title), {string:search}) > 0)'
+					: ' AND (INSTR(LOWER(p.slug), {string:search}) > 0 OR INSTR(LOWER(t.title), {string:search}) > 0)'
 			) . (
 				$this->request()->has('u') ? ' AND p.author_id = {int:user_id}' : ''
 			) . (
@@ -669,9 +669,9 @@ final class PageArea
 				->setValue(static fn() => new PageAuthorSelect());
 		}
 
-		TextField::make('alias', Lang::$txt['lp_page_alias'])
+		TextField::make('slug', Lang::$txt['lp_page_slug'])
 			->setTab(self::TAB_SEO)
-			->setAfter(Lang::$txt['lp_page_alias_subtext'])
+			->setAfter(Lang::$txt['lp_page_slug_subtext'])
 			->required()
 			->setAttribute('maxlength', 255)
 			->setAttribute('pattern', LP_ALIAS_PATTERN)
@@ -679,7 +679,7 @@ final class PageArea
 				'x-slug.lazy.replacement._',
 				empty(Utils::$context['lp_page']['id']) ? 'title_' . User::$info['language'] : '{}'
 			)
-			->setValue(Utils::$context['lp_page']['alias']);
+			->setValue(Utils::$context['lp_page']['slug']);
 
 		TextareaField::make('description', Lang::$txt['lp_page_description'])
 			->setTab(self::TAB_SEO)

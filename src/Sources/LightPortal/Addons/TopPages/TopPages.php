@@ -72,7 +72,7 @@ class TopPages extends Block
 		$titles = $this->getEntityData('title');
 
 		$result = Utils::$smcFunc['db_query']('', '
-			SELECT page_id, alias, type, num_views, num_comments
+			SELECT page_id, slug, type, num_views, num_comments
 			FROM {db_prefix}lp_pages
 			WHERE status = {int:status}
 				AND created_at <= {int:current_time}
@@ -89,14 +89,14 @@ class TopPages extends Block
 
 		$pages = [];
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
-			if ($this->isFrontpage($row['alias']))
+			if ($this->isFrontpage($row['slug']))
 				continue;
 
 			$pages[$row['page_id']] = [
 				'title'        => $titles[$row['page_id']] ?? [],
 				'num_comments' => $row['num_comments'],
 				'num_views'    => $row['num_views'],
-				'href'         => LP_PAGE_URL . $row['alias']
+				'href'         => LP_PAGE_URL . $row['slug']
 			];
 		}
 

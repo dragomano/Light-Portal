@@ -2,7 +2,7 @@
 
 use Bugo\Compat\{Config, Lang, Theme, Utils};
 use Bugo\LightPortal\Areas\Partials\{ActionSelect, BoardSelect, CategorySelect};
-use Bugo\LightPortal\Areas\Partials\{PageAliasSelect, PageSelect, TopicSelect};
+use Bugo\LightPortal\Areas\Partials\{PageSlugSelect, PageSelect, TopicSelect};
 
 function template_callback_frontpage_mode_settings_before(): void
 {
@@ -22,7 +22,7 @@ function template_callback_frontpage_mode_settings_middle(): void
 							<label for="lp_frontpage_alias">', Lang::$txt['lp_frontpage_alias'], '</label>
 						</span>
 					</td>
-					<td x-show="frontpage_mode === \'chosen_page\'">', new PageAliasSelect(), '</td>
+					<td x-show="frontpage_mode === \'chosen_page\'">', new PageSlugSelect(), '</td>
 					<td x-show="frontpage_mode === \'all_pages\'">
 						<a id="setting_lp_frontpage_categories"></a>
 						<span>

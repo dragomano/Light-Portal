@@ -118,7 +118,7 @@ return [
 			intro: "' . Lang::$txt['lp_hello_portal']['pages_tour'][3] . '"
 		},
 		{
-			element: document.querySelector("td.alias"),
+			element: document.querySelector("td.slug"),
 			intro: "' . sprintf(Lang::$txt['lp_hello_portal']['pages_tour'][4], '<strong>?' . LP_PAGE_PARAM . '=</strong>') . '"
 		},
 		{

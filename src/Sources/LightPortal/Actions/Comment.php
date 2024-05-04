@@ -29,7 +29,7 @@ final class Comment implements ActionInterface
 
 	private CommentRepository $repository;
 
-	public function __construct(private string $alias = '')
+	public function __construct(private string $pageSlug = '')
 	{
 		$this->repository = new CommentRepository();
 	}
@@ -39,7 +39,7 @@ final class Comment implements ActionInterface
 	 */
 	public function show(): void
 	{
-		if (empty($this->alias) || $this->request()->isEmpty('api'))
+		if (empty($this->pageSlug) || $this->request()->isEmpty('api'))
 			return;
 
 		header('Content-Type: application/json; charset=utf-8');
@@ -57,7 +57,7 @@ final class Comment implements ActionInterface
 	 */
 	private function get(): void
 	{
-		$comments = $this->cache('page_' . $this->alias . '_comments')
+		$comments = $this->cache('page_' . $this->pageSlug . '_comments')
 			->setFallback(CommentRepository::class, 'getByPageId', Utils::$context['lp_page']['id']);
 
 		$comments = array_map(function ($comment) {
@@ -159,7 +159,7 @@ final class Comment implements ActionInterface
 				? Notify::send('new_comment', 'page_comment', $options)
 				: Notify::send('new_reply', 'page_comment_reply', $options);
 
-			$this->cache()->forget('page_' . $this->alias . '_comments');
+			$this->cache()->forget('page_' . $this->pageSlug . '_comments');
 		}
 
 		http_response_code(201);
@@ -195,7 +195,7 @@ final class Comment implements ActionInterface
 			'message' => $message,
 		];
 
-		$this->cache()->forget('page_' . $this->alias . '_comments');
+		$this->cache()->forget('page_' . $this->pageSlug . '_comments');
 
 		exit(json_encode($result));
 	}
@@ -208,9 +208,9 @@ final class Comment implements ActionInterface
 			exit(json_encode(['success' => false]));
 		}
 
-		$items = $this->repository->remove($item, $this->alias);
+		$items = $this->repository->remove($item, $this->pageSlug);
 
-		$this->cache()->forget('page_' . $this->alias . '_comments');
+		$this->cache()->forget('page_' . $this->pageSlug . '_comments');
 
 		exit(json_encode(['success' => true, 'items' => $items]));
 	}
@@ -230,6 +230,6 @@ final class Comment implements ActionInterface
 
 	private function getPageIndexUrl(): string
 	{
-		return $this->isFrontpage($this->alias) ? LP_BASE_URL : Utils::$context['canonical_url'];
+		return $this->isFrontpage($this->pageSlug) ? LP_BASE_URL : Utils::$context['canonical_url'];
 	}
 }

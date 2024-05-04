@@ -150,7 +150,7 @@ class ArticleList extends Block
 		$titles = $this->getEntityData('title');
 
 		$result = Utils::$smcFunc['db_query']('', '
-			SELECT page_id, alias, content, description, type
+			SELECT page_id, slug, content, description, type
 			FROM {db_prefix}lp_pages
 			WHERE status = {int:status}
 				AND created_at <= {int:current_time}
@@ -167,7 +167,7 @@ class ArticleList extends Block
 
 		$pages = [];
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
-			if ($this->isFrontpage($row['alias']))
+			if ($this->isFrontpage($row['slug']))
 				continue;
 
 			$row['content'] = Content::parse($row['content'], $row['type']);
@@ -177,7 +177,7 @@ class ArticleList extends Block
 			$pages[$row['page_id']] = [
 				'id'          => $row['page_id'],
 				'title'       => $titles[$row['page_id']] ?? [],
-				'alias'       => $row['alias'],
+				'slug'        => $row['slug'],
 				'description' => $this->getTeaser($row['description'] ?: strip_tags($row['content'])),
 				'image'       => $image ?: (Config::$modSettings['lp_image_placeholder'] ?? ''),
 			];
@@ -232,7 +232,7 @@ class ArticleList extends Block
 				</div>';
 					}
 
-					$content .= '<a href="' . LP_PAGE_URL . $page['alias'] . '">' . $title . '</a>';
+					$content .= '<a href="' . LP_PAGE_URL . $page['slug'] . '">' . $title . '</a>';
 
 					echo sprintf(Utils::$context['lp_all_content_classes'][$parameters['body_class']], $content);
 				}

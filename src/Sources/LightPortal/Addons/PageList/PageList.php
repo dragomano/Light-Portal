@@ -31,7 +31,7 @@ class PageList extends Block
 	public string $icon = 'far fa-file-alt';
 
 	private const SORTING_SET = [
-		'page_id', 'author_name', 'title', 'alias', 'type', 'num_views', 'created_at', 'updated_at'
+		'page_id', 'author_name', 'title', 'slug', 'type', 'num_views', 'created_at', 'updated_at'
 	];
 
 	public function prepareBlockParams(array &$params): void
@@ -92,7 +92,7 @@ class PageList extends Block
 
 		$result = Utils::$smcFunc['db_query']('', '
 			SELECT
-				p.page_id, p.category_id, p.alias, p.type, p.num_views, p.num_comments, p.created_at, p.updated_at,
+				p.page_id, p.category_id, p.slug, p.type, p.num_views, p.num_comments, p.created_at, p.updated_at,
 				COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
@@ -115,7 +115,7 @@ class PageList extends Block
 
 		$pages = [];
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
-			if ($this->isFrontpage($row['alias']))
+			if ($this->isFrontpage($row['slug']))
 				continue;
 
 			$pages[$row['page_id']] = [
@@ -126,7 +126,7 @@ class PageList extends Block
 				'title'         => $titles[$row['page_id']] ?? [],
 				'author_id'     => $row['author_id'],
 				'author_name'   => $row['author_name'],
-				'alias'         => $row['alias'],
+				'slug'          => $row['slug'],
 				'num_views'     => $row['num_views'],
 				'num_comments'  => $row['num_comments'],
 				'created_at'    => $row['created_at'],
@@ -161,7 +161,7 @@ class PageList extends Block
 
 				echo '
 			<li>
-				<a href="', Config::$scripturl, '?', LP_PAGE_PARAM, '=', $page['alias'], '">', $title, '</a> ', Lang::$txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . Config::$scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', DateTime::relative($page['created_at']), ' (', Lang::getTxt('lp_views_set', ['views' => $page['num_views']]);
+				<a href="', Config::$scripturl, '?', LP_PAGE_PARAM, '=', $page['slug'], '">', $title, '</a> ', Lang::$txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . Config::$scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', DateTime::relative($page['created_at']), ' (', Lang::getTxt('lp_views_set', ['views' => $page['num_views']]);
 
 				if ($page['num_comments'] && $this->getCommentBlockType() === 'default') {
 					echo ', ' . Lang::getTxt('lp_comments_set', ['comments' => $page['num_comments']]);

@@ -12,7 +12,7 @@ Blocks are `aside` elements that have custom or other predefined content inside 
 
 ## page
 
-Pages are user-generated content available at `https://{your_forum}?page={page_alias}`. Any user with the appropriate permissions can create pages.
+Pages are user-generated content available at `https://{your_domain}?page={slug}`. Any user with the appropriate permissions can create pages.
 
 ## plugin
 

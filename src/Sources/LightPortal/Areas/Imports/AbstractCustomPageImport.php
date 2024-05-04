@@ -51,7 +51,7 @@ abstract class AbstractCustomPageImport implements ImportInterface, CustomImport
 					[
 						'page_id'      => 'int',
 						'author_id'    => 'int',
-						'alias'        => 'string-255',
+						'slug'         => 'string-255',
 						'description'  => 'string-255',
 						'content'      => 'string',
 						'type'         => 'string',

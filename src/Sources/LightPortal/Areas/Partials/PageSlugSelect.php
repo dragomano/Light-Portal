@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * PageAliasSelect.php
+ * PageSlugSelect.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -16,7 +16,7 @@ namespace Bugo\LightPortal\Areas\Partials;
 
 use Bugo\Compat\{Config, Lang, Utils};
 
-final class PageAliasSelect extends AbstractPartial
+final class PageSlugSelect extends AbstractPartial
 {
 	public function __invoke(): string
 	{
@@ -31,7 +31,7 @@ final class PageAliasSelect extends AbstractPartial
 		foreach ($params['data'] as $page) {
 			$data[] = [
 				'label' => $page['title'],
-				'value' => $page['alias']
+				'value' => $page['slug']
 			];
 		}
 
