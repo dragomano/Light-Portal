@@ -339,6 +339,8 @@ final class ConfigArea
 	{
 		$this->showDocsLink();
 
+		$this->cache()->flush();
+
 		$this->require('ManageServer');
 
 		Utils::$context['sub_template'] = 'show_settings';
