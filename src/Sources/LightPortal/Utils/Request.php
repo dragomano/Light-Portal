@@ -21,16 +21,14 @@ final class Request extends GlobalArray
 		$this->storage = &$_REQUEST;
 	}
 
-	public function is(string|array ...$patterns): bool
+	public function is(string $action): bool
 	{
-		$patterns = is_array($patterns[0]) ? $patterns[0] : $patterns;
-
-		return $this->has('action') && in_array($this->storage['action'], $patterns, true);
+		return $this->has('action') && $this->storage['action'] === $action;
 	}
 
-	public function isNot(string|array ...$patterns): bool
+	public function isNot(string $action): bool
 	{
-		return empty($this->is($patterns));
+		return empty($this->is($action));
 	}
 
 	public function json(?string $key = null, mixed $default = null): mixed
