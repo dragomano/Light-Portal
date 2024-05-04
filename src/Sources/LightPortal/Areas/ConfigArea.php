@@ -186,6 +186,11 @@ final class ConfigArea
 			Config::$boardurl . '/portal.php',
 			Config::$scripturl
 		]);
+
+		Lang::$txt['lp_menu_separate_subsection_title_help'] = Lang::getTxt('lp_menu_separate_subsection_title_help', [
+			'<var>{lp_pages}</var>',
+			'<var>$txt[`lp_pages`]</var>',
+		]);
 	}
 
 	/**

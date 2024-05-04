@@ -118,6 +118,18 @@ function template_callback_comment_settings_after(): void
 	</div>';
 }
 
+function template_callback_menu_settings_before(): void
+{
+	echo '
+	<div x-data="{ separate_subsection: ', empty(Config::$modSettings['lp_menu_separate_subsection']) ? 'false' : 'true', ' }">';
+}
+
+function template_callback_menu_settings_after(): void
+{
+	echo '
+	</div>';
+}
+
 function template_post_tab(array $fields, string $tab = 'content'): bool
 {
 	$fields['subject'] = ['no'];

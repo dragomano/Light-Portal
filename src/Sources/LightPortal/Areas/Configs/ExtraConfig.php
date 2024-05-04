@@ -80,6 +80,28 @@ final class ExtraConfig extends AbstractConfig
 			['int', 'lp_page_maximum_tags', 'min' => 1],
 			['select', 'lp_permissions_default', Lang::$txt['lp_permissions']],
 			['check', 'lp_hide_blocks_in_acp'],
+			['title', 'mobile_user_menu'],
+			['callback', 'menu_settings_before'],
+			[
+				'check',
+				'lp_menu_separate_subsection',
+				'help' => 'lp_menu_separate_subsection_help',
+				'javascript' => '@change="separate_subsection = ! separate_subsection"'
+			],
+			[
+				'text',
+				'lp_menu_separate_subsection_title',
+				'help' => 'lp_menu_separate_subsection_title_help',
+				'javascript' => ':disabled="separate_subsection === false"',
+				'size' => '75" placeholder="{lp_pages}',
+			],
+			[
+				'text',
+				'lp_menu_separate_subsection_href',
+				'javascript' => ':disabled="separate_subsection === false"',
+				'size' => '75" placeholder="' . Config::$scripturl,
+			],
+			['callback', 'menu_settings_after'],
 			['title', 'lp_fa_source_title'],
 			[
 				'select',
@@ -104,8 +126,7 @@ final class ExtraConfig extends AbstractConfig
 				'text',
 				'lp_fa_kit',
 				'disabled' => isset(Config::$modSettings['lp_fa_kit']) && Config::$modSettings['lp_fa_source'] !== 'kit',
-				'placeholder' => 'https://kit.fontawesome.com/xxx.js',
-				'size' => 75
+				'size' => '75" placeholder="https://kit.fontawesome.com/xxx.js'
 			],
 		];
 
@@ -114,6 +135,12 @@ final class ExtraConfig extends AbstractConfig
 		// Save
 		if ($this->request()->has('save')) {
 			User::$me->checkSession();
+
+			if ($this->request()->isNotEmpty('lp_menu_separate_subsection_href')) {
+				$this->post()->put(
+					'lp_menu_separate_subsection_href', $this->filterVar($this->request('lp_menu_separate_subsection_href'), 'url')
+				);
+			}
 
 			if ($this->request()->isNotEmpty('lp_fa_custom'))
 				$this->post()->put('lp_fa_custom', $this->filterVar($this->request('lp_fa_custom'), 'url'));
