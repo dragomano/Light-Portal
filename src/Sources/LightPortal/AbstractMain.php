@@ -359,7 +359,15 @@ abstract class AbstractMain
 
 		$buttons = array_merge(
 			array_slice($buttons, 0, $counter, true),
-			$pageButtons,
+			empty(Config::$modSettings['lp_menu_separate_subsection']) ? $pageButtons : [
+				'lp_pages' => [
+					'title' => $this->getPageSubsectionTitle(),
+					'href'  => Config::$modSettings['lp_menu_separate_subsection_href'] ?? Config::$scripturl,
+					'icon'  => 'topics_replies',
+					'show'  => Utils::$context['allow_light_portal_view'],
+					'sub_buttons' => $pageButtons,
+				]
+			],
 			array_slice($buttons, $counter, null, true)
 		);
 	}
@@ -471,5 +479,13 @@ abstract class AbstractMain
 			],
 			Lang::$txt['lp_plugins_types']
 		);
+	}
+
+	private function getPageSubsectionTitle(): string
+	{
+		if (empty($title = Config::$modSettings['lp_menu_separate_subsection_title'] ?? ''))
+			return Lang::tokenTxtReplace('{lp_pages}');
+
+		return Lang::tokenTxtReplace($title);
 	}
 }
