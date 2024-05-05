@@ -18,7 +18,10 @@
     "vendor-dir": "Libs",
     "optimize-autoloader": true,
     "preferred-install": "dist",
-    "sort-packages": true
+    "sort-packages": true,
+    "platform": {
+      "php": "8.0"
+    }
   },
   "scripts": {
     "post-update-cmd": [

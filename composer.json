@@ -13,6 +13,11 @@
     "phing/phing": "3.*"
   },
   "minimum-stability": "alpha",
+  "config": {
+    "platform": {
+      "php": "8.0"
+    }
+  },
   "scripts": {
     "check": "vendor/bin/rector process --dry-run --clear-cache",
     "assets": [
