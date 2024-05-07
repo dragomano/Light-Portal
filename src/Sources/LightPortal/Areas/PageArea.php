@@ -181,8 +181,8 @@ final class PageArea
 						'class' => 'word_break',
 					],
 					'sort' => [
-						'default' => 't.title DESC',
-						'reverse' => 't.title',
+						'default' => 't.value DESC',
+						'reverse' => 't.value',
 					],
 				],
 				'status' => [
@@ -470,7 +470,7 @@ final class PageArea
 			(
 				empty($searchParams['string'])
 					? ''
-					: ' AND (INSTR(LOWER(p.slug), {string:search}) > 0 OR INSTR(LOWER(t.title), {string:search}) > 0)'
+					: ' AND (INSTR(LOWER(p.slug), {string:search}) > 0 OR INSTR(LOWER(t.value), {string:search}) > 0)'
 			) . (
 				$this->request()->has('u') ? ' AND p.author_id = {int:user_id}' : ''
 			) . (

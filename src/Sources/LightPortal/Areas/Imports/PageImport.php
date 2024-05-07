@@ -83,7 +83,7 @@ final class PageImport extends AbstractImport
 								'item_id' => $pageId,
 								'type'    => 'page',
 								'lang'    => $k,
-								'title'   => $v,
+								'value'   => $v,
 							];
 						}
 					}

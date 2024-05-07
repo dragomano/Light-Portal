@@ -27,7 +27,7 @@ final class TagRepository extends AbstractRepository
 	public function getAll(int $start, int $limit, string $sort): array
 	{
 		$result = Db::$db->query('', /** @lang text */ '
-			SELECT tag.tag_id, tag.icon, tag.status, COALESCE(t.title, tf.title) AS title
+			SELECT tag.tag_id, tag.icon, tag.status, COALESCE(t.value, tf.value) AS title
 			FROM {db_prefix}lp_tags AS tag
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
 					tag.tag_id = t.item_id AND t.type = {literal:tag} AND t.lang = {string:lang}
@@ -82,7 +82,7 @@ final class TagRepository extends AbstractRepository
 			return [];
 
 		$result = Db::$db->query('', '
-			SELECT tag.tag_id, tag.icon, tag.status, t.lang, t.title
+			SELECT tag.tag_id, tag.icon, tag.status, t.lang, t.value AS title
 			FROM {db_prefix}lp_tags AS tag
 				LEFT JOIN {db_prefix}lp_titles AS t ON (tag.tag_id = t.item_id AND t.type = {literal:tag})
 			WHERE tag.tag_id = {int:item}',
@@ -155,7 +155,7 @@ final class TagRepository extends AbstractRepository
 		);
 
 		Db::$db->query('', '
-			DELETE FROM {db_prefix}lp_page_tags
+			DELETE FROM {db_prefix}lp_page_tag
 			WHERE tag_id IN ({array_int:items})',
 			[
 				'items' => $items,

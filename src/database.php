@@ -25,8 +25,8 @@ $tables[] = [
 	'columns' => [
 		[
 			'name'     => 'block_id',
-			'type'     => 'tinyint',
-			'size'     => 3,
+			'type'     => 'smallint',
+			'size'     => 5,
 			'unsigned' => true,
 			'auto'     => true
 		],
@@ -113,8 +113,8 @@ $tables[] = [
 	'columns' => [
 		[
 			'name'     => 'category_id',
-			'type'     => 'tinyint',
-			'size'     => 3,
+			'type'     => 'smallint',
+			'size'     => 5,
 			'unsigned' => true,
 			'auto'     => true
 		],
@@ -204,7 +204,7 @@ $tables[] = [
 ];
 
 $tables[] = [
-	'name'    => 'lp_page_tags',
+	'name'    => 'lp_page_tag',
 	'columns' => [
 		[
 			'name'     => 'page_id',
@@ -232,8 +232,8 @@ $tables[] = [
 	'columns' => [
 		[
 			'name'     => 'page_id',
-			'type'     => 'smallint',
-			'size'     => 5,
+			'type'     => 'int',
+			'size'     => 10,
 			'unsigned' => true,
 			'auto'     => true
 		],
@@ -367,15 +367,22 @@ $tables[] = [
 	'name' => 'lp_params',
 	'columns' => [
 		[
+			'name'     => 'id',
+			'type'     => 'int',
+			'size'     => 10,
+			'unsigned' => true,
+			'auto'     => true
+		],
+		[
 			'name'     => 'item_id',
-			'type'     => 'smallint',
-			'size'     => 5,
+			'type'     => 'int',
+			'size'     => 10,
 			'unsigned' => true
 		],
 		[
 			'name'    => 'type',
 			'type'    => 'varchar',
-			'size'    => 10,
+			'size'    => 30,
 			'default' => 'block',
 			'null'    => false
 		],
@@ -394,7 +401,11 @@ $tables[] = [
 	'indexes' => [
 		[
 			'type'    => 'primary',
-			'columns' => ['item_id', 'type', 'name']
+			'columns' => ['id']
+		],
+		[
+			'type'    => 'index',
+			'columns' => ['item_id', 'type']
 		]
 	],
 	'default' => [
@@ -407,13 +418,20 @@ $tables[] = [
 		'values' => [
 			[1, 'page', 'show_author_and_date', 0]
 		],
-		'keys' => ['item_id', 'type', 'name']
+		'keys' => ['item_id', 'type']
 	]
 ];
 
 $tables[] = [
 	'name' => 'lp_plugins',
 	'columns' => [
+		[
+			'name'     => 'id',
+			'type'     => 'int',
+			'size'     => 10,
+			'unsigned' => true,
+			'auto'     => true
+		],
 		[
 			'name' => 'name',
 			'type' => 'varchar',
@@ -435,6 +453,10 @@ $tables[] = [
 	'indexes' => [
 		[
 			'type'    => 'primary',
+			'columns' => ['id']
+		],
+		[
+			'type'    => 'unique',
 			'columns' => ['name', 'config']
 		]
 	],
@@ -459,8 +481,8 @@ $tables[] = [
 	'columns' => [
 		[
 			'name'     => 'tag_id',
-			'type'     => 'smallint',
-			'size'     => 5,
+			'type'     => 'int',
+			'size'     => 10,
 			'unsigned' => true,
 			'auto'     => true
 		],
@@ -490,15 +512,22 @@ $tables[] = [
 	'name' => 'lp_titles',
 	'columns' => [
 		[
+			'name'     => 'id',
+			'type'     => 'int',
+			'size'     => 10,
+			'unsigned' => true,
+			'auto'     => true
+		],
+		[
 			'name'     => 'item_id',
-			'type'     => 'smallint',
-			'size'     => 5,
+			'type'     => 'int',
+			'size'     => 10,
 			'unsigned' => true
 		],
 		[
 			'name'    => 'type',
 			'type'    => 'varchar',
-			'size'    => 10,
+			'size'    => 30,
 			'default' => 'block',
 			'null'    => false
 		],
@@ -509,7 +538,7 @@ $tables[] = [
 			'null' => false
 		],
 		[
-			'name' => 'title',
+			'name' => 'value',
 			'type' => 'varchar',
 			'size' => 255,
 			'null' => false
@@ -518,7 +547,11 @@ $tables[] = [
 	'indexes' => [
 		[
 			'type'    => 'primary',
-			'columns' => ['item_id', 'type', 'lang']
+			'columns' => ['id']
+		],
+		[
+			'type'    => 'index',
+			'columns' => ['item_id', 'type']
 		]
 	],
 	'default' => [
@@ -526,7 +559,7 @@ $tables[] = [
 			'item_id' => 'int',
 			'type'    => 'string-10',
 			'lang'    => 'string-20',
-			'title'   => 'string-255'
+			'value'   => 'string-255'
 		],
 		'values' => empty($modSettings['userLanguage']) ? [
 			[1, 'page', $language, $mbname],
@@ -534,7 +567,7 @@ $tables[] = [
 			[1, 'page', $language, $mbname],
 			[1, 'page', $user_info['language'], $mbname],
 		],
-		'keys' => ['item_id', 'type', 'lang']
+		'keys' => ['item_id', 'type']
 	]
 ];
 

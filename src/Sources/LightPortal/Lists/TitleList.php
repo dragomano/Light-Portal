@@ -29,11 +29,11 @@ final class TitleList implements ListInterface
 	public function getAll(): array
 	{
 		$result = Db::$db->query('', '
-			SELECT item_id, lang, title
+			SELECT item_id, lang, value
 			FROM {db_prefix}lp_titles
 			WHERE type = {string:type}
-				AND title <> {string:blank_string}
-			ORDER BY lang, title',
+				AND value <> {string:blank_string}
+			ORDER BY lang, value',
 			[
 				'type'         => 'page',
 				'blank_string' => '',
@@ -42,7 +42,7 @@ final class TitleList implements ListInterface
 
 		$titles = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
-			$titles[$row['item_id']][$row['lang']] = $row['title'];
+			$titles[$row['item_id']][$row['lang']] = $row['value'];
 		}
 
 		Db::$db->free_result($result);

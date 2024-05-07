@@ -111,15 +111,15 @@ class Search extends Block
 
 		$searchFormula = '';
 		foreach ($titleWords as $key => $word) {
-			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE WHEN lower(t.title) = lower(\'' . $word . '\') THEN ' . (count($titleWords) - $key) * 5 . ' ELSE 0 END';
-			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE WHEN lower(t.title) LIKE lower(\'%' . $word . '%\') THEN ' . (count($titleWords) - $key) * 4 . ' ELSE 0 END';
+			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE WHEN lower(t.value) = lower(\'' . $word . '\') THEN ' . (count($titleWords) - $key) * 5 . ' ELSE 0 END';
+			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE WHEN lower(t.value) LIKE lower(\'%' . $word . '%\') THEN ' . (count($titleWords) - $key) * 4 . ' ELSE 0 END';
 			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE WHEN lower(p.content) LIKE lower(\'%' . $word . '%\') THEN ' . (count($titleWords) - $key) * 3 . ' ELSE 0 END';
 			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE WHEN lower(p.slug) = lower(\'' . $word . '\') THEN ' . (count($titleWords) - $key) * 2 . ' ELSE 0 END';
 			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE WHEN lower(p.slug) LIKE lower(\'%' . $word . '%\') THEN ' . (count($titleWords) - $key) . ' ELSE 0 END';
 		}
 
 		$result = Utils::$smcFunc['db_query']('', '
-			SELECT p.slug, p.content, p.type, GREATEST(p.created_at, p.updated_at) AS date, (' . $searchFormula . ') AS related, t.title, mem.id_member, mem.real_name
+			SELECT p.slug, p.content, p.type, GREATEST(p.created_at, p.updated_at) AS date, (' . $searchFormula . ') AS related, t.value, mem.id_member, mem.real_name
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:current_lang})
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
@@ -143,7 +143,7 @@ class Search extends Block
 
 			$items[] = [
 				'link'    => LP_PAGE_URL . $row['slug'],
-				'title'   => $row['title'],
+				'title'   => $row['value'],
 				'content' => $this->getTeaser($row['content']),
 				'author'  => empty($row['id_member'])
 					? Lang::$txt['guest']

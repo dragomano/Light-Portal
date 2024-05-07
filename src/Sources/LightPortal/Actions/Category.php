@@ -96,7 +96,7 @@ final class Category extends AbstractPageList
 			SELECT
 				p.page_id, p.author_id, p.slug, p.content, p.description, p.type,
 				p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
-				COALESCE(mem.real_name, \'\') AS author_name, COALESCE(t.title, tf.title) AS title
+				COALESCE(mem.real_name, \'\') AS author_name, COALESCE(t.value, tf.value) AS title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
@@ -234,7 +234,7 @@ final class Category extends AbstractPageList
 		$result = Db::$db->query('', '
 			SELECT
 				COALESCE(c.category_id, 0) AS category_id, c.icon, c.description, c.priority,
-				COUNT(p.page_id) AS frequency, COALESCE(t.title, tf.title) AS title
+				COUNT(p.page_id) AS frequency, COALESCE(t.value, tf.value) AS title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_categories AS c ON (p.category_id = c.category_id)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
@@ -247,7 +247,7 @@ final class Category extends AbstractPageList
 				AND p.status IN ({array_int:statuses})
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
-			GROUP BY c.category_id, c.icon, c.description, c.priority, t.title, tf.title
+			GROUP BY c.category_id, c.icon, c.description, c.priority, t.value, tf.value
 			ORDER BY {raw:sort}' . ($limit ? '
 			LIMIT {int:start}, {int:limit}' : ''),
 			[

@@ -28,7 +28,7 @@ final class BlockRepository extends AbstractRepository
 	{
 		$result = Db::$db->query('', '
 			SELECT b.block_id, b.icon, b.type, b.note, b.placement, b.priority, b.permissions, b.status, b.areas,
-				bt.lang, bt.title
+				bt.lang, bt.value AS title
 			FROM {db_prefix}lp_blocks AS b
 				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
 			ORDER BY b.placement DESC, b.priority',
@@ -66,7 +66,7 @@ final class BlockRepository extends AbstractRepository
 			SELECT
 				b.block_id, b.icon, b.type, b.note, b.content, b.placement, b.priority,
 				b.permissions, b.status, b.areas, b.title_class, b.content_class,
-				bt.lang, bt.title, bp.name, bp.value
+				bt.lang, bt.value AS title, bp.name, bp.value
 			FROM {db_prefix}lp_blocks AS b
 				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
 				LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {literal:block})

@@ -44,7 +44,7 @@ final class PageRepository extends AbstractRepository
 		$result = Db::$db->query('', '
 			SELECT p.page_id, p.category_id, p.author_id, p.slug, p.type, p.permissions, p.status,
 				p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
-				mem.real_name AS author_name, COALESCE(t.title, tf.title, p.slug) AS page_title
+				mem.real_name AS author_name, COALESCE(t.value, tf.value, p.slug) AS page_title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
@@ -125,7 +125,7 @@ final class PageRepository extends AbstractRepository
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.slug, p.description, p.content, p.type, p.permissions,
 				p.status, p.num_views, p.created_at, p.updated_at,
-				COALESCE(mem.real_name, {string:guest}) AS author_name, pt.lang, pt.title, pp.name, pp.value
+				COALESCE(mem.real_name, {string:guest}) AS author_name, pt.lang, pt.value AS title, pp.name, pp.value
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_titles AS pt ON (p.page_id = pt.item_id AND pt.type = {literal:page})
@@ -247,7 +247,7 @@ final class PageRepository extends AbstractRepository
 		);
 
 		Db::$db->query('', '
-			DELETE FROM {db_prefix}lp_page_tags
+			DELETE FROM {db_prefix}lp_page_tag
 			WHERE page_id IN ({array_int:items})',
 			[
 				'items' => $items,
@@ -377,7 +377,7 @@ final class PageRepository extends AbstractRepository
 		$searchFormula = '';
 		foreach ($titleWords as $key => $word) {
 			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE
-			WHEN lower(t.title) LIKE lower(\'%' . $word . '%\')
+			WHEN lower(t.value) LIKE lower(\'%' . $word . '%\')
 			THEN ' . (count($titleWords) - $key) * 2 . ' ELSE 0 END';
 		}
 
@@ -390,7 +390,7 @@ final class PageRepository extends AbstractRepository
 		$result = Db::$db->query('', '
 			SELECT
 				p.page_id, p.slug, p.content, p.type, (' . $searchFormula . ') AS related,
-				COALESCE(t.title, tf.title) AS title
+				COALESCE(t.value, tf.value) AS title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.lang = {string:current_lang})
 				LEFT JOIN {db_prefix}lp_titles AS tf ON (p.page_id = tf.item_id AND tf.lang = {string:fallback_lang})
@@ -627,9 +627,9 @@ final class PageRepository extends AbstractRepository
 	private function getTags(int $item): array
 	{
 		$result = Db::$db->query('', '
-			SELECT tag.tag_id, tag.icon, COALESCE(t.title, tf.title) AS title
+			SELECT tag.tag_id, tag.icon, COALESCE(t.value, tf.value) AS title
 			FROM {db_prefix}lp_tags AS tag
-				INNER JOIN {db_prefix}lp_page_tags AS pt ON (tag.tag_id = pt.tag_id)
+				INNER JOIN {db_prefix}lp_page_tag AS pt ON (tag.tag_id = pt.tag_id)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
 					tag.tag_id = t.item_id AND t.type = {literal:tag} AND t.lang = {string:lang}
 				)
@@ -664,7 +664,7 @@ final class PageRepository extends AbstractRepository
 	private function saveTags(int $item, string $method = ''): void
 	{
 		Db::$db->query('', '
-			DELETE FROM {db_prefix}lp_page_tags
+			DELETE FROM {db_prefix}lp_page_tag
 			WHERE page_id = {int:item}',
 			[
 				'item' => $item,
@@ -683,7 +683,7 @@ final class PageRepository extends AbstractRepository
 			return;
 
 		Db::$db->insert($method,
-			'{db_prefix}lp_page_tags',
+			'{db_prefix}lp_page_tag',
 			[
 				'page_id' => 'int',
 				'tag_id'  => 'int',

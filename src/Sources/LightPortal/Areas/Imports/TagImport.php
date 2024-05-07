@@ -71,7 +71,7 @@ final class TagImport extends AbstractImport
 								'item_id' => $tagId,
 								'type'    => 'tag',
 								'lang'    => $k,
-								'title'   => $v,
+								'value'   => $v,
 							];
 						}
 					}
@@ -122,7 +122,7 @@ final class TagImport extends AbstractImport
 
 			for ($i = 0; $i < $count; $i++) {
 				$results = Db::$db->insert('replace',
-					'{db_prefix}lp_page_tags',
+					'{db_prefix}lp_page_tag',
 					[
 						'page_id' => 'int',
 						'tag_id'  => 'int',

@@ -30,7 +30,7 @@ final class TagList implements ListInterface
 	public function getAll(): array
 	{
 		$result = Db::$db->query('', /** @lang text */ '
-			SELECT tag.tag_id, tag.icon, COALESCE(t.title, tf.title) AS title
+			SELECT tag.tag_id, tag.icon, COALESCE(t.value, tf.value) AS title
 			FROM {db_prefix}lp_tags AS tag
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
 					tag.tag_id = t.item_id AND t.type = {literal:tag} AND t.lang = {string:lang}

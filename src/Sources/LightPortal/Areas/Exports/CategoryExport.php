@@ -98,8 +98,8 @@ final class CategoryExport extends AbstractExport
 						'class' => 'word_break',
 					],
 					'sort' => [
-						'default' => 't.title DESC',
-						'reverse' => 't.title',
+						'default' => 't.value DESC',
+						'reverse' => 't.value',
 					],
 				],
 				'actions' => [
@@ -137,7 +137,7 @@ final class CategoryExport extends AbstractExport
 		$categories = $this->request('categories') && $this->request()->hasNot('export_all') ? $this->request('categories') : null;
 
 		$result = Db::$db->query('', '
-			SELECT c.category_id, c.icon, c.description, c.priority, c.status,	pt.lang, pt.title
+			SELECT c.category_id, c.icon, c.description, c.priority, c.status,	pt.lang, pt.value AS title
 			FROM {db_prefix}lp_categories AS c
 				LEFT JOIN {db_prefix}lp_titles AS pt ON (c.category_id = pt.item_id AND pt.type = {literal:category})' . (empty($categories) ? '' : '
 			WHERE c.category_id IN ({array_int:categories})'),
