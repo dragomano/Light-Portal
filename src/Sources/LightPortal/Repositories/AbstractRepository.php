@@ -103,7 +103,7 @@ abstract class AbstractRepository
 				'value'   => 'string',
 			],
 			$titles,
-			['item_id', 'type']
+			['item_id', 'type', 'lang']
 		);
 	}
 
@@ -136,7 +136,7 @@ abstract class AbstractRepository
 				'value'   => 'string',
 			],
 			$params,
-			['item_id', 'type'],
+			['item_id', 'type', 'name'],
 		);
 	}
 }

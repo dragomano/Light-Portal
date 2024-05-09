@@ -219,7 +219,7 @@ class Reactions extends Plugin
 				'name'    => 'reactions',
 				'value'   => $value
 			],
-			['item_id', 'type']
+			['item_id', 'type', 'name']
 		);
 	}
 }
