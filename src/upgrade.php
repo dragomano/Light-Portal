@@ -58,9 +58,9 @@ $smcFunc['db_add_column'](
 );
 
 $smcFunc['db_add_index']('{db_prefix}lp_params', [
-	'type' => 'index',
+	'type' => 'unique',
 	'columns' => [
-		'item_id', 'type',
+		'item_id', 'type', 'name',
 	]
 ]);
 
@@ -102,9 +102,9 @@ $smcFunc['db_add_column'](
 );
 
 $smcFunc['db_add_index']('{db_prefix}lp_titles', [
-	'type' => 'index',
+	'type' => 'unique',
 	'columns' => [
-		'item_id', 'type',
+		'item_id', 'type', 'lang',
 	]
 ]);
 

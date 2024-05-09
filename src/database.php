@@ -406,8 +406,8 @@ $tables[] = [
 			'columns' => ['id']
 		],
 		[
-			'type'    => 'index',
-			'columns' => ['item_id', 'type']
+			'type'    => 'unique',
+			'columns' => ['item_id', 'type', 'name']
 		]
 	],
 	'default' => [
@@ -420,7 +420,7 @@ $tables[] = [
 		'values' => [
 			[1, 'page', 'show_author_and_date', 0]
 		],
-		'keys' => ['item_id', 'type']
+		'keys' => ['item_id', 'type', 'name']
 	]
 ];
 
@@ -552,8 +552,8 @@ $tables[] = [
 			'columns' => ['id']
 		],
 		[
-			'type'    => 'index',
-			'columns' => ['item_id', 'type']
+			'type'    => 'unique',
+			'columns' => ['item_id', 'type', 'lang']
 		]
 	],
 	'default' => [
@@ -569,7 +569,7 @@ $tables[] = [
 			[1, 'page', $language, $mbname],
 			[1, 'page', $user_info['language'], $mbname],
 		],
-		'keys' => ['item_id', 'type']
+		'keys' => ['item_id', 'type', 'lang']
 	]
 ];
 

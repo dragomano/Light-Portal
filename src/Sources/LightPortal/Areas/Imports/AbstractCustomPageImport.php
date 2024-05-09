@@ -86,7 +86,7 @@ abstract class AbstractCustomPageImport implements ImportInterface, CustomImport
 						'value'   => 'string',
 					],
 					$titles[$i],
-					['item_id', 'type'],
+					['item_id', 'type', 'lang'],
 					2
 				);
 			}
@@ -106,7 +106,7 @@ abstract class AbstractCustomPageImport implements ImportInterface, CustomImport
 						'value'   => 'string',
 					],
 					$params[$i],
-					['item_id', 'type'],
+					['item_id', 'type', 'name'],
 					2
 				);
 			}
