@@ -37,14 +37,14 @@ trait Helper
 		return $key ? ((new Post())->get($key) ?? $default) : new Post();
 	}
 
-	public function cache(?string $key = null): Cache
-	{
-		return (new Cache($key))->setLifeTime(LP_CACHE_TIME);
-	}
-
 	public function files(?string $key = null): mixed
 	{
 		return $key ? (new File())->get($key) : new File();
+	}
+
+	public function cache(?string $key = null): Cache
+	{
+		return new Cache($key, LP_CACHE_TIME);
 	}
 
 	public function session(?string $key = null): Session
