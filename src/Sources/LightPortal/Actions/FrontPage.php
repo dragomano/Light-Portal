@@ -276,8 +276,8 @@ final class FrontPage implements ActionInterface
 	public function getOrderBy(): string
 	{
 		$sortingTypes = [
-			'title;desc'       => 't.title DESC',
-			'title'            => 't.title',
+			'title;desc'       => 't.value DESC',
+			'title'            => 't.value',
 			'created;desc'     => 'p.created_at DESC',
 			'created'          => 'p.created_at',
 			'updated;desc'     => 'p.updated_at DESC',

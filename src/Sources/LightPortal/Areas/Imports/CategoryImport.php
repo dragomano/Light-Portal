@@ -73,7 +73,7 @@ final class CategoryImport extends AbstractImport
 								'item_id' => $categoryId,
 								'type'    => 'category',
 								'lang'    => $k,
-								'title'   => $v,
+								'value'   => $v,
 							];
 						}
 					}

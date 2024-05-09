@@ -47,7 +47,7 @@ abstract class AbstractCustomBlockImport implements ImportInterface, CustomImpor
 				$titles[] = [
 					'type'  => 'block',
 					'lang'  => Config::$language,
-					'title' => $item['title']
+					'value' => $item['title']
 				];
 
 				unset($items[$block_id]['title']);
@@ -91,11 +91,11 @@ abstract class AbstractCustomBlockImport implements ImportInterface, CustomImpor
 					[
 						'type'    => 'string',
 						'lang'    => 'string',
-						'title'   => 'string',
+						'value'   => 'string',
 						'item_id' => 'int',
 					],
 					$titles[$i],
-					['item_id', 'type', 'lang'],
+					['id'],
 					2
 				);
 			}

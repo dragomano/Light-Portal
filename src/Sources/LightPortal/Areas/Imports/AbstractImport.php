@@ -58,10 +58,10 @@ abstract class AbstractImport implements ImportInterface
 					'item_id' => 'int',
 					'type'    => 'string',
 					'lang'    => 'string',
-					'title'   => 'string',
+					'value'   => 'string',
 				],
 				$titles[$i],
-				['item_id', 'type', 'lang'],
+				['item_id', 'type'],
 				2
 			);
 		}
@@ -85,7 +85,7 @@ abstract class AbstractImport implements ImportInterface
 					'value'   => 'string',
 				],
 				$params[$i],
-				['item_id', 'type', 'name'],
+				['item_id', 'type'],
 				2
 			);
 		}

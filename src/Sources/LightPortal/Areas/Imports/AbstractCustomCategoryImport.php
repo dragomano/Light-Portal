@@ -47,7 +47,7 @@ abstract class AbstractCustomCategoryImport implements ImportInterface, CustomIm
 				$titles[] = [
 					'type'  => 'category',
 					'lang'  => Config::$language,
-					'title' => $item['title']
+					'value' => $item['title']
 				];
 
 				unset($items[$category_id]['title']);
@@ -88,11 +88,11 @@ abstract class AbstractCustomCategoryImport implements ImportInterface, CustomIm
 					[
 						'type'    => 'string',
 						'lang'    => 'string',
-						'title'   => 'string',
+						'value'   => 'string',
 						'item_id' => 'int',
 					],
 					$titles[$i],
-					['item_id', 'type', 'lang'],
+					['id'],
 					2
 				);
 			}

@@ -214,8 +214,8 @@ final class Page implements PageInterface
 						'class' => 'word_break'
 					],
 					'sort' => [
-						'default' => 't.title DESC',
-						'reverse' => 't.title'
+						'default' => 't.value DESC',
+						'reverse' => 't.value'
 					]
 				],
 				'author' => [

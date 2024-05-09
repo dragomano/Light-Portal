@@ -14,7 +14,98 @@ db_extend('packages');
 
 // Rename `alias` to `slug`
 $smcFunc['db_change_column']('{db_prefix}lp_pages', 'alias', [
-	'name' => 'slug'
+	'name' => 'slug',
+]);
+
+// Rename `title` to `value`
+$smcFunc['db_change_column']('{db_prefix}lp_titles', 'title', [
+	'name' => 'value',
+]);
+
+// Change sizes of fields
+$smcFunc['db_change_column']('{db_prefix}lp_params', 'type', [
+	'size' => 30,
+]);
+
+$smcFunc['db_change_column']('{db_prefix}lp_titles', 'type', [
+	'size' => 30,
+]);
+
+// Rename `lp_page_tags` table to `lp_page_tag`
+$smcFunc['db_query']('', '
+	ALTER TABLE IF EXISTS {raw:old_table_name}
+	RENAME TO {raw:new_table_name}',
+	[
+		'old_table_name' => str_replace('{db_prefix}', $db_prefix, '{db_prefix}lp_page_tags'),
+		'new_table_name' => str_replace('{db_prefix}', $db_prefix, '{db_prefix}lp_page_tag'),
+	]
+);
+
+// Replace indexes
+$smcFunc['db_remove_index']('{db_prefix}lp_params', 'primary');
+
+$smcFunc['db_add_column'](
+	'{db_prefix}lp_params',
+	[
+		'name'     => 'id',
+		'type'     => 'int',
+		'size'     => 10,
+		'unsigned' => true,
+		'auto'     => true
+	],
+	[],
+	'do_nothing'
+);
+
+$smcFunc['db_add_index']('{db_prefix}lp_params', [
+	'type' => 'index',
+	'columns' => [
+		'item_id', 'type',
+	]
+]);
+
+$smcFunc['db_remove_index']('{db_prefix}lp_plugins', 'primary');
+
+$smcFunc['db_add_column'](
+	'{db_prefix}lp_plugins',
+	[
+		'name'     => 'id',
+		'type'     => 'int',
+		'size'     => 10,
+		'unsigned' => true,
+		'auto'     => true
+	],
+	[],
+	'do_nothing'
+);
+
+$smcFunc['db_add_index']('{db_prefix}lp_plugins', [
+	'type' => 'unique',
+	'columns' => [
+		'name', 'config',
+	]
+]);
+
+$smcFunc['db_remove_index']('{db_prefix}lp_titles', 'primary');
+
+$smcFunc['db_add_column'](
+	'{db_prefix}lp_titles',
+	[
+		'name'     => 'id',
+		'type'     => 'int',
+		'size'     => 10,
+		'unsigned' => true,
+		'auto'     => true
+	],
+	[],
+	'do_nothing'
+);
+
+$smcFunc['db_add_index']('{db_prefix}lp_titles', [
+	'type' => 'index',
+	'columns' => [
+		'item_id', 'type',
+	]
 ]);
 
 clean_cache();

@@ -30,7 +30,7 @@ final class CategoryList implements ListInterface
 	public function getAll(): array
 	{
 		$result = Db::$db->query('', /** @lang text */ '
-			SELECT c.category_id, c.icon, c.description, c.priority, COALESCE(t.title, tf.title) AS title
+			SELECT c.category_id, c.icon, c.description, c.priority, COALESCE(t.value, tf.value) AS title
 			FROM {db_prefix}lp_categories AS c
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
 					c.category_id = t.item_id AND t.type = {literal:category} AND t.lang = {string:lang}

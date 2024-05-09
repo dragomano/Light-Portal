@@ -80,10 +80,10 @@ final class Tag extends AbstractPageList
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.slug, p.description, p.content,
 				p.type, p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
-				COALESCE(mem.real_name, \'\') AS author_name, COALESCE(t.title, tf.title) AS title,
-				COALESCE(tt.title, ttf.title) AS tag_title
+				COALESCE(mem.real_name, \'\') AS author_name, COALESCE(t.value, tf.value) AS title,
+				COALESCE(tt.value, ttf.value) AS tag_title
 			FROM {db_prefix}lp_pages AS p
-				INNER JOIN {db_prefix}lp_page_tags AS pt ON (p.page_id = pt.page_id)
+				INNER JOIN {db_prefix}lp_page_tag AS pt ON (p.page_id = pt.page_id)
 				INNER JOIN {db_prefix}lp_tags AS tag ON (pt.tag_id = tag.tag_id)
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
@@ -131,7 +131,7 @@ final class Tag extends AbstractPageList
 		$result = Db::$db->query('', '
 			SELECT COUNT(p.page_id)
 			FROM {db_prefix}lp_pages AS p
-				INNER JOIN {db_prefix}lp_page_tags AS pt ON (p.page_id = pt.page_id)
+				INNER JOIN {db_prefix}lp_page_tag AS pt ON (p.page_id = pt.page_id)
 				INNER JOIN {db_prefix}lp_tags AS tag ON (pt.tag_id = tag.tag_id)
 			WHERE pt.tag_id = {int:id}
 				AND tag.status = {int:status}
@@ -218,9 +218,9 @@ final class Tag extends AbstractPageList
 	public function getAll(int $start = 0, int $limit = 0, string $sort = 'title'): array
 	{
 		$result = Db::$db->query('', '
-			SELECT tag.tag_id, tag.icon, COALESCE(tt.title, tf.title) AS title, COUNT(tag.tag_id) AS frequency
+			SELECT tag.tag_id, tag.icon, COALESCE(tt.value, tf.value) AS title, COUNT(tag.tag_id) AS frequency
 			FROM {db_prefix}lp_pages AS p
-				INNER JOIN {db_prefix}lp_page_tags AS pt ON (p.page_id = pt.page_id)
+				INNER JOIN {db_prefix}lp_page_tag AS pt ON (p.page_id = pt.page_id)
 				INNER JOIN {db_prefix}lp_tags AS tag ON (pt.tag_id = tag.tag_id)
 				LEFT JOIN {db_prefix}lp_titles AS tt ON (
 					pt.tag_id = tt.item_id AND tt.type = {literal:tag} AND tt.lang = {string:lang}
@@ -232,7 +232,7 @@ final class Tag extends AbstractPageList
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
 				AND tag.status = {int:status}
-			GROUP BY tag.tag_id, tag.icon, tt.title, tf.title
+			GROUP BY tag.tag_id, tag.icon, tt.value, tf.value
 			ORDER BY {raw:sort}' . ($limit ? '
 			LIMIT {int:start}, {int:limit}' : ''),
 			[

@@ -98,8 +98,8 @@ final class TagExport extends AbstractExport
 						'class' => 'word_break',
 					],
 					'sort' => [
-						'default' => 't.title DESC',
-						'reverse' => 't.title',
+						'default' => 't.value DESC',
+						'reverse' => 't.value',
 					],
 				],
 				'actions' => [
@@ -137,9 +137,9 @@ final class TagExport extends AbstractExport
 		$tags = $this->request('tags') && $this->request()->hasNot('export_all') ? $this->request('tags') : null;
 
 		$result = Db::$db->query('', '
-			SELECT c.tag_id, c.icon, c.status, pt.page_id, t.lang, t.title
+			SELECT c.tag_id, c.icon, c.status, pt.page_id, t.lang, t.value AS title
 			FROM {db_prefix}lp_tags AS c
-				LEFT JOIN {db_prefix}lp_page_tags AS pt ON (c.tag_id = pt.tag_id)
+				LEFT JOIN {db_prefix}lp_page_tag AS pt ON (c.tag_id = pt.tag_id)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
 					c.tag_id = t.item_id AND t.type = {literal:tag}
 				)' . (empty($tags) ? '' : '

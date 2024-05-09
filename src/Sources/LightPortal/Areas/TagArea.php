@@ -105,8 +105,8 @@ final class TagArea
 						'class' => 'word_break',
 					],
 					'sort' => [
-						'default' => 't.title DESC',
-						'reverse' => 't.title',
+						'default' => 't.value DESC',
+						'reverse' => 't.value',
 					],
 				],
 				'status' => [

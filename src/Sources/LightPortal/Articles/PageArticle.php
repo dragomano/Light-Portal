@@ -73,7 +73,7 @@ class PageArticle extends AbstractArticle
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.slug, p.content, p.description, p.type, p.status, p.num_views,
 				CASE WHEN COALESCE(par.value, \'0\') != \'0\' THEN p.num_comments ELSE 0 END AS num_comments, p.created_at,
-				GREATEST(p.created_at, p.updated_at) AS date, COALESCE(t.title, tf.title) AS cat_title, mem.real_name AS author_name,
+				GREATEST(p.created_at, p.updated_at) AS date, COALESCE(t.value, tf.value) AS cat_title, mem.real_name AS author_name,
 				cat.icon as cat_icon, com.created_at AS comment_date, com.author_id AS comment_author_id, mem2.real_name AS comment_author_name,
 				com.message AS comment_message' . (empty($this->columns) ? '' : ', ' . implode(', ', $this->columns)) . '
 			FROM {db_prefix}lp_pages AS p
@@ -261,9 +261,9 @@ class PageArticle extends AbstractArticle
 			return;
 
 		$result = Db::$db->query('', '
-			SELECT t.tag_id, t.icon, pt.page_id, COALESCE(tt.title, tf.title) AS title
+			SELECT t.tag_id, t.icon, pt.page_id, COALESCE(tt.value, tf.value) AS title
 			FROM {db_prefix}lp_tags AS t
-				LEFT JOIN {db_prefix}lp_page_tags AS pt ON (t.tag_id = pt.tag_id)
+				LEFT JOIN {db_prefix}lp_page_tag AS pt ON (t.tag_id = pt.tag_id)
 				LEFT JOIN {db_prefix}lp_titles AS tt ON (
 					pt.tag_id = tt.item_id AND tt.type = {literal:tag} AND tt.lang = {string:lang}
 				)
