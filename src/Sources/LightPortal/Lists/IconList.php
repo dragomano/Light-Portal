@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Lists;
 
-use Bugo\FontAwesomeHelper\Collection;
+use Bugo\FontAwesomeHelper\Enums\Icon;
 use Bugo\LightPortal\Helper;
 
 if (! defined('SMF'))
@@ -114,6 +114,6 @@ final class IconList implements ListInterface
 
 	public function getList(): array
 	{
-		return (new Collection(['deprecated_class' => true]))->getAll();
+		return Icon::V5->collection();
 	}
 }

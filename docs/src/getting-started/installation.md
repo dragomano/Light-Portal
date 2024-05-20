@@ -12,7 +12,7 @@ There are no subtleties here. Light Portal can be installed like any other modif
 - [SMF 2.1.x](https://download.simplemachines.org)
 - Modern browser with JavaScript enabled
 - Internet (the portal and many plugins load scripts and styles from CDN)
-- PHP 8.0 or higher
+- PHP 8.1 or higher
 - PHP extension `intl` to localize some language strings properly
 - PHP extensions `dom` and `simplexml` to export/import pages and blocks
 - PHP extension `zip` to export/import plugins

@@ -26,7 +26,7 @@ In any case, the title of each of your commits should continue such a phrase —
 
 ### PHP Styleguide
 
-- Use [PHP 8.0+](https://smknstd.github.io/modern-php-cheatsheet/) with tabs instead of spaces
+- Use [PHP 8.1+](https://smknstd.github.io/modern-php-cheatsheet/) with tabs instead of spaces
 
 ```php
 /**

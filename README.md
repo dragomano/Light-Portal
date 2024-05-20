@@ -4,12 +4,12 @@
 [![SMF 3.0 Alpha](https://img.shields.io/badge/SMF-3.0_Alpha-ed2533.svg?style=flat)](https://github.com/SimpleMachines/SMF/tree/release-3.0)
 ![License](https://img.shields.io/github/license/dragomano/light-portal)
 ![Hooks only: Yes](https://img.shields.io/badge/Hooks%20only-YES-blue)
-![PHP](https://img.shields.io/badge/PHP-^8.0-blue.svg?style=flat)
+![PHP](https://img.shields.io/badge/PHP-^8.1-blue.svg?style=flat)
 [![Crowdin](https://badges.crowdin.net/light-portal/localized.svg)](https://crowdin.com/project/light-portal)
 [![](https://img.shields.io/badge/Demo-Forum-brightgreen.svg)](https://demo.dragomano.ru)
 [![](https://img.shields.io/badge/Docs-Site-orange.svg)](https://dragomano.github.io/Light-Portal/)
 
-- **Tested on:** PHP 8.0.30, 8.1.27, 8.2.16, 8.3.3 / MariaDB 10.11.6
+- **Tested on:** 8.2.18 / MariaDB 11.2.2
 - **Languages:** Russian, English, Polish, Spanish, French, Turkish, Ukrainian, German, Italian, Portuguese, Greek, Czech, Danish, Dutch, Norwegian, Swedish, Arabic
 
 ## Description ([обзор на русском](https://dragomano.ru/mods/light-portal))
