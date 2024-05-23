@@ -15,6 +15,7 @@
 namespace Bugo\LightPortal;
 
 use Bugo\LightPortal\Enums\Placement;
+use Bugo\LightPortal\Enums\PluginType;
 use Bugo\Compat\{Config, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Actions\Block;
 use Bugo\LightPortal\Areas\{ConfigArea, CreditArea};
@@ -470,13 +471,7 @@ abstract class AbstractMain
 
 	private function getPluginTypes(): array
 	{
-		return array_combine(
-			[
-				'block', 'ssi', 'editor', 'comment', 'parser', 'article', 'frontpage',
-				'impex', 'block_options', 'page_options', 'icons', 'seo', 'other',
-			],
-			Lang::$txt['lp_plugins_types']
-		);
+		return array_combine(PluginType::names(), Lang::$txt['lp_plugins_types']);
 	}
 
 	private function getPageSubsectionTitle(): string

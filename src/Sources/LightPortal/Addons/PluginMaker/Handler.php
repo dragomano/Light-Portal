@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 28.04.24
+ * @version 23.05.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -21,6 +21,7 @@ use Bugo\LightPortal\Areas\Area;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, ColorField, CustomField, NumberField};
 use Bugo\LightPortal\Areas\Fields\{RadioField, RangeField, SelectField, TextField, UrlField};
 use Bugo\LightPortal\Areas\Partials\IconSelect;
+use Bugo\LightPortal\Enums\PluginType;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\Language;
 use Nette\PhpGenerator\{PhpFile, PhpNamespace, Printer};
@@ -169,7 +170,7 @@ class Handler extends Plugin
 		SelectField::make('type', Lang::$txt['lp_plugin_maker']['type'])
 			->setTab(self::TAB_CONTENT)
 			->setAttribute('@change', 'plugin.change($event.target.value)')
-			->setOptions(array_filter(Utils::$context['lp_plugin_types'], static fn($type) => $type !== 'ssi'))
+			->setOptions(array_filter(Utils::$context['lp_plugin_types'], static fn($type) => $type !== PluginType::SSI->name()))
 			->setValue(Utils::$context['lp_plugin']['type']);
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
