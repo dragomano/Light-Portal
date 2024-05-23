@@ -14,9 +14,13 @@
 
 namespace Bugo\LightPortal\Enums;
 
-enum ContentType: string
+use Bugo\LightPortal\Enums\Traits\HasNames;
+
+enum ContentType
 {
-	case BBC = 'bbc';
-	case HTML = 'html';
-	case PHP = 'php';
+	use HasNames;
+
+	case BBC;
+	case HTML;
+	case PHP;
 }

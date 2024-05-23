@@ -117,9 +117,9 @@ trait Helper
 	public function getContentTypes(): array
 	{
 		$types = [
-			ContentType::BBC->value  => Lang::$txt['lp_bbc']['title'],
-			ContentType::HTML->value => Lang::$txt['lp_html']['title'],
-			ContentType::PHP->value  => Lang::$txt['lp_php']['title'],
+			ContentType::BBC->name()  => Lang::$txt['lp_bbc']['title'],
+			ContentType::HTML->name() => Lang::$txt['lp_html']['title'],
+			ContentType::PHP->name()  => Lang::$txt['lp_php']['title'],
 		];
 
 		return User::$info['is_admin'] ? $types : array_slice($types, 0, 2);
@@ -217,11 +217,11 @@ trait Helper
 	 *
 	 * Проверяем, может ли текущий пользователь просматривать элемент портала, согласно его правам доступа
 	 */
-	public function canViewItem(Permission|int $permissions, int $userId = 0): bool
+	public function canViewItem(Permission|int $permission, int $userId = 0): bool
 	{
-		$permissions = is_int($permissions) ? Permission::tryFrom($permissions) : $permissions;
+		$permission = is_int($permission) ? Permission::tryFrom($permission) : $permission;
 
-		return match ($permissions) {
+		return match ($permission) {
 			Permission::ADMIN  => User::$info['is_admin'],
 			Permission::GUEST  => User::$info['is_guest'],
 			Permission::MEMBER => User::$info['id'] > 0,

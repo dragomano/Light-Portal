@@ -41,7 +41,7 @@ trait Area
 
 	public function prepareContent(array $object): string
 	{
-		if ($object['type'] === ContentType::HTML->value) {
+		if ($object['type'] === ContentType::HTML->name()) {
 			$object['content'] = Utils::htmlspecialchars($object['content']);
 		}
 
@@ -161,13 +161,13 @@ trait Area
 	public function getDefaultTypes(): array
 	{
 		return [
-			ContentType::BBC->value => [
+			ContentType::BBC->name() => [
 				'icon' => 'fab fa-bimobject'
 			],
-			ContentType::HTML->value => [
+			ContentType::HTML->name() => [
 				'icon' => 'fab fa-html5'
 			],
-			ContentType::PHP->value => [
+			ContentType::PHP->name() => [
 				'icon' => 'fab fa-php'
 			],
 		];

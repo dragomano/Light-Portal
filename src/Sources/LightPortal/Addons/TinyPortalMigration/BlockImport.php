@@ -228,9 +228,9 @@ class BlockImport extends AbstractCustomBlockImport
 	private function getType(int $type): string
 	{
 		return match ($type) {
-			5  => ContentType::BBC->value,
-			10 => ContentType::PHP->value,
-			default => ContentType::HTML->value,
+			5  => ContentType::BBC->name(),
+			10 => ContentType::PHP->name(),
+			default => ContentType::HTML->name(),
 		};
 	}
 

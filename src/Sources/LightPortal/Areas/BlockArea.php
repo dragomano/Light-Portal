@@ -35,7 +35,7 @@ final class BlockArea
 	public const TAB_CONTENT = 'content';
 
 	public const TAB_ACCESS = 'access_placement';
-	
+
 	public const TAB_APPEARANCE = 'appearance';
 
 	public const TAB_TUNING = 'tuning';

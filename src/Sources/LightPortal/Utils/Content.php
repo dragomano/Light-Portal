@@ -45,15 +45,15 @@ final class Content
 
 	public static function parse(string $content, string $type = 'bbc'): string
 	{
-		if ($type === ContentType::BBC->value) {
+		if ($type === ContentType::BBC->name()) {
 			$content = BBCodeParser::load()->parse($content);
 
 			IntegrationHook::call('integrate_paragrapher_string', [&$content]);
 
 			return $content;
-		} elseif ($type === ContentType::HTML->value) {
+		} elseif ($type === ContentType::HTML->name()) {
 			return Utils::htmlspecialcharsDecode($content);
-		} elseif ($type === ContentType::PHP->value) {
+		} elseif ($type === ContentType::PHP->name()) {
 			$content = trim(Utils::htmlspecialcharsDecode($content));
 			$content = str_replace('<?php', '', $content);
 			$content = str_replace('?>', '', $content);
