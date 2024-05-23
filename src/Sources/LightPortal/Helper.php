@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal;
 
 use Bugo\Compat\{Config, Db, ErrorHandler, Lang, User, Utils};
-use Bugo\LightPortal\Enums\{ContentType, Permissions};
+use Bugo\LightPortal\Enums\{ContentType, Permission};
 use Bugo\LightPortal\Utils\{BlockAppearance, Cache, File};
 use Bugo\LightPortal\Utils\{EntityManager, Post, Request, Session, SMFTrait};
 use Exception;
@@ -217,16 +217,16 @@ trait Helper
 	 *
 	 * Проверяем, может ли текущий пользователь просматривать элемент портала, согласно его правам доступа
 	 */
-	public function canViewItem(Permissions|int $permissions, int $userId = 0): bool
+	public function canViewItem(Permission|int $permissions, int $userId = 0): bool
 	{
-		$permissions = is_int($permissions) ? Permissions::tryFrom($permissions) : $permissions;
+		$permissions = is_int($permissions) ? Permission::tryFrom($permissions) : $permissions;
 
 		return match ($permissions) {
-			Permissions::ADMIN  => User::$info['is_admin'],
-			Permissions::GUEST  => User::$info['is_guest'],
-			Permissions::MEMBER => User::$info['id'] > 0,
-			Permissions::ALL    => true,
-			Permissions::OWNER  => User::$info['id'] === $userId,
+			Permission::ADMIN  => User::$info['is_admin'],
+			Permission::GUEST  => User::$info['is_guest'],
+			Permission::MEMBER => User::$info['id'] > 0,
+			Permission::ALL    => true,
+			Permission::OWNER  => User::$info['id'] === $userId,
 			default             => false,
 		};
 	}
@@ -238,13 +238,11 @@ trait Helper
 	 */
 	public function getPermissions(): array
 	{
-		$allPermissions = array_map(fn($permission) => $permission->value, Permissions::cases());
-
 		return match (true) {
-			User::$info['is_admin'] => array_filter($allPermissions, fn($value) => $value !== Permissions::OWNER->value),
-			User::$info['is_guest'] => [Permissions::GUEST->value, Permissions::ALL->value],
-			User::$info['id'] > 0   => [Permissions::MEMBER->value, Permissions::ALL->value],
-			default                 => [Permissions::ALL->value],
+			User::$info['is_admin'] => array_filter(Permission::values(), fn($value) => $value !== Permission::OWNER->value),
+			User::$info['is_guest'] => [Permission::GUEST->value, Permission::ALL->value],
+			User::$info['id'] > 0   => [Permission::MEMBER->value, Permission::ALL->value],
+			default                 => [Permission::ALL->value],
 		};
 	}
 

@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * Permissions.php
+ * HasValues.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -12,13 +12,12 @@
  * @version 2.6
  */
 
-namespace Bugo\LightPortal\Enums;
+namespace Bugo\LightPortal\Enums\Traits;
 
-enum Permissions: int
+trait HasValues
 {
-	case ADMIN = 0;
-	case GUEST = 1;
-	case MEMBER = 2;
-	case ALL = 3;
-	case OWNER = 4;
+	public static function values(): array
+	{
+		return array_map(fn($item) => $item->value, self::cases());
+	}
 }

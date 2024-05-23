@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Lists;
 
-use Bugo\FontAwesomeHelper\Enums\Icon;
+use Bugo\FontAwesome\Enums\Icon;
 use Bugo\LightPortal\Helper;
 
 if (! defined('SMF'))
