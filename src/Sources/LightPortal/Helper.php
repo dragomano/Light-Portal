@@ -15,6 +15,7 @@
 namespace Bugo\LightPortal;
 
 use Bugo\Compat\{Config, Db, ErrorHandler, Lang, User, Utils};
+use Bugo\LightPortal\Enums\Permissions;
 use Bugo\LightPortal\Utils\{BlockAppearance, Cache, File};
 use Bugo\LightPortal\Utils\{EntityManager, Post, Request, Session, SMFTrait};
 use Exception;
@@ -219,14 +220,17 @@ trait Helper
 	 *
 	 * Проверяем, может ли текущий пользователь просматривать элемент портала, согласно его правам доступа
 	 */
-	public function canViewItem(int $permissions, int $userId = 0): bool
+	public function canViewItem(Permissions|int $permissions, int $userId = 0): bool
 	{
+		$permissions = is_int($permissions) ? Permissions::tryFrom($permissions) : $permissions;
+
 		return match ($permissions) {
-			0 => User::$info['is_admin'],
-			1 => User::$info['is_guest'],
-			2 => User::$info['id'] > 0,
-			4 => User::$info['id'] === $userId,
-			default => true,
+			Permissions::ADMIN  => User::$info['is_admin'],
+			Permissions::GUEST  => User::$info['is_guest'],
+			Permissions::MEMBER => User::$info['id'] > 0,
+			Permissions::ALL    => true,
+			Permissions::OWNER  => User::$info['id'] === $userId,
+			default             => false,
 		};
 	}
 
@@ -237,14 +241,14 @@ trait Helper
 	 */
 	public function getPermissions(): array
 	{
-		if (User::$info['is_admin'])
-			return [0, 1, 2, 3];
-		elseif (User::$info['is_guest'])
-			return [1, 3];
-		elseif (User::$info['id'])
-			return [2, 3];
+		$allPermissions = array_map(fn($permission) => $permission->value, Permissions::cases());
 
-		return [3];
+		return match (true) {
+			User::$info['is_admin'] => array_filter($allPermissions, fn($value) => $value !== Permissions::OWNER->value),
+			User::$info['is_guest'] => [Permissions::GUEST->value, Permissions::ALL->value],
+			User::$info['id'] > 0   => [Permissions::MEMBER->value, Permissions::ALL->value],
+			default                 => [Permissions::ALL->value],
+		};
 	}
 
 	public function getTranslatedTitle(array $titles): string
