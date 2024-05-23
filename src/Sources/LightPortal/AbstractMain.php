@@ -14,6 +14,7 @@
 
 namespace Bugo\LightPortal;
 
+use Bugo\LightPortal\Enums\Placement;
 use Bugo\Compat\{Config, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Actions\Block;
 use Bugo\LightPortal\Areas\{ConfigArea, CreditArea};
@@ -464,10 +465,7 @@ abstract class AbstractMain
 
 	private function getBlockPlacements(): array
 	{
-		return array_combine(
-			['header', 'top', 'left', 'right', 'bottom', 'footer'],
-			Lang::$txt['lp_block_placement_set']
-		);
+		return array_combine(Placement::names(), Lang::$txt['lp_block_placement_set']);
 	}
 
 	private function getPluginTypes(): array

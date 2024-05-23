@@ -18,6 +18,7 @@ namespace Bugo\LightPortal\Addons\TinyPortalMigration;
 use Bugo\Compat\{Config, Db, Lang, Utils};
 use Bugo\LightPortal\Areas\Imports\AbstractCustomBlockImport;
 use Bugo\LightPortal\Enums\ContentType;
+use Bugo\LightPortal\Enums\Placement;
 use Bugo\LightPortal\Utils\ItemList;
 
 if (! defined('LP_NAME'))
@@ -236,12 +237,12 @@ class BlockImport extends AbstractCustomBlockImport
 	private function getPlacement(int $bar): string
 	{
 		return match ($bar) {
-			1 => 'left',
-			2 => 'right',
-			5 => 'footer',
-			6 => 'header',
-			7 => 'bottom',
-			default => 'top',
+			1 => Placement::LEFT->name(),
+			2 => Placement::RIGHT->name(),
+			5 => Placement::FOOTER->name(),
+			6 => Placement::HEADER->name(),
+			7 => Placement::BOTTOM->name(),
+			default => Placement::TOP->name(),
 		};
 	}
 }
