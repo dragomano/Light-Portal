@@ -14,8 +14,8 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Enums\Placement;
-use Bugo\LightPortal\Enums\PluginType;
+use Bugo\LightPortal\Enums\{ContentClass, Placement};
+use Bugo\LightPortal\Enums\{PluginType, TitleClass};
 use Bugo\Compat\{Config, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Actions\Block;
 use Bugo\LightPortal\Areas\{ConfigArea, CreditArea};
@@ -59,8 +59,8 @@ abstract class AbstractMain
 
 		$this->calculateNumberOfEntities();
 
-		Utils::$context['lp_all_title_classes']   = $this->getTitleClasses();
-		Utils::$context['lp_all_content_classes'] = $this->getContentClasses();
+		Utils::$context['lp_all_title_classes']   = TitleClass::values();
+		Utils::$context['lp_all_content_classes'] = ContentClass::values();
 		Utils::$context['lp_block_placements']    = $this->getBlockPlacements();
 		Utils::$context['lp_plugin_types']        = $this->getPluginTypes();
 		Utils::$context['lp_content_types']       = $this->getContentTypes();
