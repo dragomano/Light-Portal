@@ -16,6 +16,7 @@ namespace Bugo\LightPortal\Utils;
 
 use Bugo\Compat\{BBCodeParser, IntegrationHook, Sapi, Utils};
 use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Enums\ContentType;
 use ParseError;
 
 final class Content
@@ -44,15 +45,15 @@ final class Content
 
 	public static function parse(string $content, string $type = 'bbc'): string
 	{
-		if ($type === 'bbc') {
+		if ($type === ContentType::BBC->value) {
 			$content = BBCodeParser::load()->parse($content);
 
 			IntegrationHook::call('integrate_paragrapher_string', [&$content]);
 
 			return $content;
-		} elseif ($type === 'html') {
+		} elseif ($type === ContentType::HTML->value) {
 			return Utils::htmlspecialcharsDecode($content);
-		} elseif ($type === 'php') {
+		} elseif ($type === ContentType::PHP->value) {
 			$content = trim(Utils::htmlspecialcharsDecode($content));
 			$content = str_replace('<?php', '', $content);
 			$content = str_replace('?>', '', $content);

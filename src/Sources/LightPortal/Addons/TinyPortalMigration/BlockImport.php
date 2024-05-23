@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.02.24
+ * @version 23.05.24
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortalMigration;
 
 use Bugo\Compat\{Config, Db, Lang, Utils};
 use Bugo\LightPortal\Areas\Imports\AbstractCustomBlockImport;
+use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Utils\ItemList;
 
 if (! defined('LP_NAME'))
@@ -226,9 +227,9 @@ class BlockImport extends AbstractCustomBlockImport
 	private function getType(int $type): string
 	{
 		return match ($type) {
-			5  => 'bbc',
-			10 => 'php',
-			default => 'html',
+			5  => ContentType::BBC->value,
+			10 => ContentType::PHP->value,
+			default => ContentType::HTML->value,
 		};
 	}
 

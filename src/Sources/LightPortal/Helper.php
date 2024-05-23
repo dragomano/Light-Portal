@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal;
 
 use Bugo\Compat\{Config, Db, ErrorHandler, Lang, User, Utils};
-use Bugo\LightPortal\Enums\Permissions;
+use Bugo\LightPortal\Enums\{ContentType, Permissions};
 use Bugo\LightPortal\Utils\{BlockAppearance, Cache, File};
 use Bugo\LightPortal\Utils\{EntityManager, Post, Request, Session, SMFTrait};
 use Exception;
@@ -116,14 +116,11 @@ trait Helper
 
 	public function getContentTypes(): array
 	{
-		$types = array_combine(
-			['bbc', 'html', 'php'],
-			[
-				Lang::$txt['lp_bbc']['title'],
-				Lang::$txt['lp_html']['title'],
-				Lang::$txt['lp_php']['title'],
-			],
-		);
+		$types = [
+			ContentType::BBC->value  => Lang::$txt['lp_bbc']['title'],
+			ContentType::HTML->value => Lang::$txt['lp_html']['title'],
+			ContentType::PHP->value  => Lang::$txt['lp_php']['title'],
+		];
 
 		return User::$info['is_admin'] ? $types : array_slice($types, 0, 2);
 	}
