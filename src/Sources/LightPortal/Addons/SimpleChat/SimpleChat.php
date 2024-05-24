@@ -17,8 +17,8 @@ namespace Bugo\LightPortal\Addons\SimpleChat;
 
 use Bugo\Compat\{Config, Db, Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
+use Bugo\LightPortal\Enums\Tab;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -83,7 +83,7 @@ class SimpleChat extends Block
 			return;
 
 		CheckboxField::make('show_avatars', Lang::$txt['lp_simple_chat']['show_avatars'])
-			->setTab(BlockArea::TAB_APPEARANCE)
+			->setTab(Tab::APPEARANCE)
 			->setValue(Utils::$context['lp_block']['options']['show_avatars']);
 	}
 

@@ -17,9 +17,9 @@ namespace Bugo\LightPortal\Addons\PageList;
 
 use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField, VirtualSelectField};
 use Bugo\LightPortal\Areas\Partials\CategorySelect;
+use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Utils\DateTime;
 use IntlException;
 
@@ -64,7 +64,7 @@ class PageList extends Block
 			return;
 
 		CustomField::make('categories', Lang::$txt['lp_categories'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new CategorySelect(), [
 				'id'    => 'categories',
 				'hint'  => Lang::$txt['lp_page_list']['categories_select'],

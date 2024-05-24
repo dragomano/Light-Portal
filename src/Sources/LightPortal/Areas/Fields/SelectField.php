@@ -25,9 +25,9 @@ class SelectField extends AbstractField
 
 	public function __construct(string $name, string $label)
 	{
+		parent::__construct($name, $label);
+
 		$this
-			->setName($name)
-			->setLabel($label)
 			->setType('select')
 			->setAttribute('id', $name);
 	}

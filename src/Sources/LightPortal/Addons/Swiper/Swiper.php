@@ -10,16 +10,16 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.04.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\Swiper;
 
 use Bugo\Compat\{Lang, Theme, User, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField};
 use Bugo\LightPortal\Areas\Fields\{RadioField, RangeField, SelectField};
+use Bugo\LightPortal\Enums\Tab;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -87,7 +87,7 @@ class Swiper extends Block
 			return;
 
 		CustomField::make('images', Lang::$txt['lp_swiper']['images'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue($this->getFromTemplate('swiper_images'));
 
 		RadioField::make('direction', Lang::$txt['lp_swiper']['direction'])

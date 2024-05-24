@@ -17,8 +17,8 @@ namespace Bugo\LightPortal\Addons\LanguageAccess;
 
 use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\CustomField;
+use Bugo\LightPortal\Enums\Tab;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -53,7 +53,7 @@ class LanguageAccess extends Plugin
 	public function prepareBlockFields(): void
 	{
 		CustomField::make('allowed_languages', Lang::$txt['lp_language_access']['allowed_languages'])
-			->setTab(BlockArea::TAB_ACCESS)
+			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(static fn() => new LanguageSelect());
 	}
 }

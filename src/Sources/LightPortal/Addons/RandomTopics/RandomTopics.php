@@ -17,9 +17,9 @@ namespace Bugo\LightPortal\Addons\RandomTopics;
 
 use Bugo\Compat\{Config, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField};
 use Bugo\LightPortal\Areas\Partials\BoardSelect;
+use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Utils\DateTime;
 use IntlException;
 
@@ -61,7 +61,7 @@ class RandomTopics extends Block
 			return;
 
 		CustomField::make('exclude_boards', Lang::$txt['lp_random_topics']['exclude_boards'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'exclude_boards',
 				'hint'  => Lang::$txt['lp_random_topics']['exclude_boards_select'],
@@ -69,7 +69,7 @@ class RandomTopics extends Block
 			]);
 
 		CustomField::make('include_boards', Lang::$txt['lp_random_topics']['include_boards'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'include_boards',
 				'hint'  => Lang::$txt['lp_random_topics']['include_boards_select'],

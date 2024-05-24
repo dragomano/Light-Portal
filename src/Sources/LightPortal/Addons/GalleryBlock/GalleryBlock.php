@@ -17,8 +17,8 @@ namespace Bugo\LightPortal\Addons\GalleryBlock;
 
 use Bugo\Compat\{Config, Db, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField};
+use Bugo\LightPortal\Enums\Tab;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -56,7 +56,7 @@ class GalleryBlock extends Block
 			return;
 
 		CustomField::make('categories', Lang::$txt['lp_gallery_block']['categories'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new CategorySelect());
 
 		NumberField::make('num_images', Lang::$txt['lp_gallery_block']['num_images'])

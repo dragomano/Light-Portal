@@ -16,12 +16,12 @@ namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, ErrorHandler, Lang};
 use Bugo\Compat\{Logging, Security, Theme, User, Utils};
-use Bugo\LightPortal\Actions\PageInterface;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, TextField};
 use Bugo\LightPortal\Areas\Partials\{CategorySelect, PageAuthorSelect, PageIconSelect};
 use Bugo\LightPortal\Areas\Partials\{PermissionSelect, StatusSelect, TagSelect};
 use Bugo\LightPortal\Areas\Validators\PageValidator;
 use Bugo\LightPortal\Enums\Status;
+use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Models\PageModel;
 use Bugo\LightPortal\Repositories\PageRepository;
@@ -35,14 +35,6 @@ final class PageArea
 {
 	use Area;
 	use Helper;
-
-	public const TAB_CONTENT = 'content';
-
-	public const TAB_ACCESS = 'access_placement';
-
-	public const TAB_SEO = 'seo';
-
-	public const TAB_TUNING = 'tuning';
 
 	private array $params = [];
 
@@ -632,7 +624,7 @@ final class PageArea
 
 		if (Utils::$context['lp_page']['type'] !== 'bbc') {
 			TextareaField::make('content', Lang::$txt['lp_content'])
-				->setTab(self::TAB_CONTENT)
+				->setTab(Tab::CONTENT)
 				->setAttribute('style', 'height: 300px')
 				->setValue($this->prepareContent(Utils::$context['lp_page']));
 		} else {
@@ -641,16 +633,16 @@ final class PageArea
 
 		if (Utils::$context['user']['is_admin']) {
 			CustomField::make('show_in_menu', Lang::$txt['lp_page_show_in_menu'])
-				->setTab(self::TAB_ACCESS)
+				->setTab(Tab::ACCESS_PLACEMENT)
 				->setValue(static fn() => new PageIconSelect());
 		}
 
 		CustomField::make('permissions', Lang::$txt['edit_permissions'])
-			->setTab(self::TAB_ACCESS)
+			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(static fn() => new PermissionSelect());
 
 		CustomField::make('category_id', Lang::$txt['lp_category'])
-			->setTab(self::TAB_ACCESS)
+			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(static fn() => new CategorySelect(), [
 				'id'         => 'category_id',
 				'multiple'   => false,
@@ -661,17 +653,17 @@ final class PageArea
 
 		if (Utils::$context['user']['is_admin']) {
 			CustomField::make('status', Lang::$txt['status'])
-				->setTab(self::TAB_ACCESS)
+				->setTab(Tab::ACCESS_PLACEMENT)
 				->setValue(static fn() => new StatusSelect());
 
 			CustomField::make('author_id', Lang::$txt['lp_page_author'])
-				->setTab(self::TAB_ACCESS)
+				->setTab(Tab::ACCESS_PLACEMENT)
 				->setAfter(Lang::$txt['lp_page_author_placeholder'])
 				->setValue(static fn() => new PageAuthorSelect());
 		}
 
 		TextField::make('slug', Lang::$txt['lp_page_slug'])
-			->setTab(self::TAB_SEO)
+			->setTab(Tab::SEO)
 			->setAfter(Lang::$txt['lp_page_slug_subtext'])
 			->required()
 			->setAttribute('maxlength', 255)
@@ -683,7 +675,7 @@ final class PageArea
 			->setValue(Utils::$context['lp_page']['slug']);
 
 		TextareaField::make('description', Lang::$txt['lp_page_description'])
-			->setTab(self::TAB_SEO)
+			->setTab(Tab::SEO)
 			->setAttribute('maxlength', 255)
 			->setValue(Utils::$context['lp_page']['description']);
 
@@ -693,7 +685,7 @@ final class PageArea
 				->setValue('');
 		} else {
 			CustomField::make('tags', Lang::$txt['lp_tags'])
-				->setTab(self::TAB_SEO)
+				->setTab(Tab::SEO)
 				->setValue(static fn() => new TagSelect());
 		}
 

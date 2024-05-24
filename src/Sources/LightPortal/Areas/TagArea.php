@@ -19,6 +19,7 @@ use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Areas\Partials\IconSelect;
 use Bugo\LightPortal\Areas\Validators\TagValidator;
 use Bugo\LightPortal\Enums\Status;
+use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Models\TagModel;
 use Bugo\LightPortal\Repositories\TagRepository;
@@ -31,8 +32,6 @@ final class TagArea
 {
 	use Area;
 	use Helper;
-
-	public const TAB_CONTENT = 'content';
 
 	private TagRepository $repository;
 
@@ -289,7 +288,7 @@ final class TagArea
 		$this->prepareTitleFields();
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
-			->setTab(self::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new IconSelect(), [
 				'icon' => Utils::$context['lp_tag']['icon'],
 			]);

@@ -10,16 +10,16 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.04.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\BoardList;
 
 use Bugo\Compat\{Config, Lang, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Areas\Partials\{ContentClassSelect, TitleClassSelect};
+use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Utils\{Icon, MessageIndex};
 
 if (! defined('LP_NAME'))
@@ -58,7 +58,7 @@ class BoardList extends Block
 			return;
 
 		CustomField::make('category_class', Lang::$txt['lp_board_list']['category_class'])
-			->setTab(BlockArea::TAB_APPEARANCE)
+			->setTab(Tab::APPEARANCE)
 			->setValue(static fn() => new TitleClassSelect(), [
 				'id'    => 'category_class',
 				'data'  => $this->getCategoryClasses(),
@@ -66,7 +66,7 @@ class BoardList extends Block
 			]);
 
 		CustomField::make('board_class', Lang::$txt['lp_board_list']['board_class'])
-			->setTab(BlockArea::TAB_APPEARANCE)
+			->setTab(Tab::APPEARANCE)
 			->setValue(static fn() => new ContentClassSelect(), [
 				'id'    => 'board_class',
 				'value' => Utils::$context['lp_block']['options']['board_class'],

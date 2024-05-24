@@ -19,6 +19,7 @@ use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, Te
 use Bugo\LightPortal\Areas\Partials\{AreaSelect, ContentClassSelect, IconSelect};
 use Bugo\LightPortal\Areas\Partials\{PermissionSelect, PlacementSelect, TitleClassSelect};
 use Bugo\LightPortal\Areas\Validators\BlockValidator;
+use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Models\BlockModel;
 use Bugo\LightPortal\Repositories\BlockRepository;
@@ -31,14 +32,6 @@ final class BlockArea
 {
 	use Area;
 	use Helper;
-
-	public const TAB_CONTENT = 'content';
-
-	public const TAB_ACCESS = 'access_placement';
-
-	public const TAB_APPEARANCE = 'appearance';
-
-	public const TAB_TUNING = 'tuning';
 
 	private BlockRepository $repository;
 
@@ -268,14 +261,14 @@ final class BlockArea
 		$this->prepareTitleFields('block', false);
 
 		TextField::make('note', Lang::$txt['lp_block_note'])
-			->setTab(self::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setAttribute('maxlength', 255)
 			->setValue(Utils::$context['lp_block']['note']);
 
 		if (isset(Utils::$context['lp_block']['options']['content'])) {
 			if (Utils::$context['lp_block']['type'] !== 'bbc') {
 				TextareaField::make('content', Lang::$txt['lp_content'])
-					->setTab(self::TAB_CONTENT)
+					->setTab(Tab::CONTENT)
 					->setValue($this->prepareContent(Utils::$context['lp_block']));
 			} else {
 				$this->createBbcEditor(Utils::$context['lp_block']['content']);
@@ -283,31 +276,31 @@ final class BlockArea
 		}
 
 		CustomField::make('placement', Lang::$txt['lp_block_placement'])
-			->setTab(self::TAB_ACCESS)
+			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(static fn() => new PlacementSelect());
 
 		CustomField::make('permissions', Lang::$txt['edit_permissions'])
-			->setTab(self::TAB_ACCESS)
+			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(static fn() => new PermissionSelect(), [
 				'type' => 'block'
 			]);
 
 		CustomField::make('areas', Lang::$txt['lp_block_areas'])
-			->setTab(self::TAB_ACCESS)
+			->setTab(Tab::ACCESS_PLACEMENT)
 			->setAfter($this->getAreasInfo())
 			->setValue(static fn() => new AreaSelect());
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
-			->setTab(self::TAB_APPEARANCE)
+			->setTab(Tab::APPEARANCE)
 			->setValue(static fn() => new IconSelect());
 
 		CustomField::make('title_class', Lang::$txt['lp_block_title_class'])
-			->setTab(self::TAB_APPEARANCE)
+			->setTab(Tab::APPEARANCE)
 			->setValue(static fn() => new TitleClassSelect());
 
 		if (empty(Utils::$context['lp_block']['options']['no_content_class'])) {
 			CustomField::make('content_class', Lang::$txt['lp_block_content_class'])
-				->setTab(self::TAB_APPEARANCE)
+				->setTab(Tab::APPEARANCE)
 				->setValue(static fn() => new ContentClassSelect());
 		}
 

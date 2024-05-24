@@ -17,8 +17,8 @@ namespace Bugo\LightPortal\Addons\SimpleMenu;
 
 use Bugo\Compat\{Config, Lang, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\CustomField;
+use Bugo\LightPortal\Enums\Tab;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -69,7 +69,7 @@ class SimpleMenu extends Block
 			return;
 
 		CustomField::make('items', Lang::$txt['lp_simple_menu']['items'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue($this->getFromTemplate('simple_menu_items'));
 	}
 

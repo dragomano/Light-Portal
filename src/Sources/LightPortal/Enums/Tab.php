@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * InputField.php
+ * Tab.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -12,15 +12,17 @@
  * @version 2.6
  */
 
-namespace Bugo\LightPortal\Areas\Fields;
+namespace Bugo\LightPortal\Enums;
 
-if (! defined('SMF'))
-	die('No direct access...');
+use Bugo\LightPortal\Enums\Traits\HasNames;
 
-class InputField extends AbstractField
+enum Tab
 {
-	public function __construct(string $name, string $label)
-	{
-		parent::__construct($name, $label);
-	}
+	use HasNames;
+
+	case CONTENT;
+	case ACCESS_PLACEMENT;
+	case APPEARANCE;
+	case SEO;
+	case TUNING;
 }

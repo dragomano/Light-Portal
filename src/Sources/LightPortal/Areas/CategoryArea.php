@@ -20,6 +20,7 @@ use Bugo\LightPortal\Areas\Fields\TextareaField;
 use Bugo\LightPortal\Areas\Partials\IconSelect;
 use Bugo\LightPortal\Areas\Validators\CategoryValidator;
 use Bugo\LightPortal\Enums\Status;
+use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Models\CategoryModel;
 use Bugo\LightPortal\Repositories\CategoryRepository;
@@ -32,8 +33,6 @@ final class CategoryArea
 {
 	use Area;
 	use Helper;
-
-	public const TAB_CONTENT = 'content';
 
 	private CategoryRepository $repository;
 
@@ -313,13 +312,13 @@ final class CategoryArea
 		$this->prepareTitleFields();
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
-			->setTab(self::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new IconSelect(), [
 				'icon' => Utils::$context['lp_category']['icon'],
 			]);
 
 		TextareaField::make('description', Lang::$txt['lp_category_description'])
-			->setTab(self::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setAttribute('maxlength', 255)
 			->setValue(Utils::$context['lp_category']['description']);
 

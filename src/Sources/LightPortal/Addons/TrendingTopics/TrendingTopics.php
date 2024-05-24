@@ -17,10 +17,10 @@ namespace Bugo\LightPortal\Addons\TrendingTopics;
 
 use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\LightPortal\Areas\Fields\NumberField;
 use Bugo\LightPortal\Areas\Fields\SelectField;
+use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Utils\DateTime;
 use IntlException;
 
@@ -69,7 +69,7 @@ class TrendingTopics extends Block
 			return;
 
 		CheckboxField::make('show_avatars', Lang::$txt['lp_trending_topics']['show_avatars'])
-			->setTab(BlockArea::TAB_APPEARANCE)
+			->setTab(Tab::APPEARANCE)
 			->setValue(Utils::$context['lp_block']['options']['show_avatars']);
 
 		SelectField::make('time_period', Lang::$txt['lp_trending_topics']['time_period'])

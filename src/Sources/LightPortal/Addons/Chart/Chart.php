@@ -17,8 +17,8 @@ namespace Bugo\LightPortal\Addons\Chart;
 
 use Bugo\Compat\{Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextField};
+use Bugo\LightPortal\Enums\Tab;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -94,22 +94,22 @@ class Chart extends Block
 		Utils::$context['lp_chart_types'] = array_combine($this->chartTypes, Lang::$txt['lp_chart']['type_set']);
 
 		TextField::make('chart_title', Lang::$txt['lp_chart']['chart_title'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->placeholder(Lang::$txt['lp_chart']['chart_title_placeholder'])
 			->setValue(Utils::$context['lp_block']['options']['chart_title'] ?? $this->params['chart_title']);
 
 		CustomField::make('chart', Lang::$txt['lp_chart']['datasets'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue($this->getFromTemplate('chart_template'));
 
 		TextField::make('labels', Lang::$txt['lp_chart']['labels'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->placeholder(Lang::$txt['lp_chart']['labels_placeholder'])
 			->required()
 			->setValue(Utils::$context['lp_block']['options']['labels'] ?? $this->params['labels']);
 
 		CheckboxField::make('default_palette', Lang::$txt['lp_chart']['default_palette'])
-			->setTab(BlockArea::TAB_APPEARANCE)
+			->setTab(Tab::APPEARANCE)
 			->setValue(Utils::$context['lp_block']['options']['default_palette']);
 
 		CheckboxField::make('stacked', Lang::$txt['lp_chart']['stacked'])

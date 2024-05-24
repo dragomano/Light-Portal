@@ -17,8 +17,8 @@ namespace Bugo\LightPortal\Addons\HidingBlocks;
 
 use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\CustomField;
+use Bugo\LightPortal\Enums\Tab;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -60,7 +60,7 @@ class HidingBlocks extends Plugin
 	public function prepareBlockFields(): void
 	{
 		CustomField::make('hidden_breakpoints', Lang::$txt['lp_hiding_blocks']['hidden_breakpoints'])
-			->setTab(BlockArea::TAB_ACCESS)
+			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(static fn() => new BreakpointSelect());
 	}
 }

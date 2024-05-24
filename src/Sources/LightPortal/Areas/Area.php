@@ -133,10 +133,6 @@ trait Area
 					. (Utils::$context['posting_fields'][$item]['input']['after'] ?? '');
 				Utils::$context['posting_fields'][$item] = $data;
 			}
-
-			if (empty($data['input']['tab'])) {
-				Utils::$context['posting_fields'][$item]['input']['tab'] = 'tuning';
-			}
 		}
 
 		Theme::loadTemplate('LightPortal/ManageSettings');

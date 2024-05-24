@@ -15,6 +15,7 @@
 
 namespace Bugo\LightPortal\Addons\News;
 
+use Bugo\LightPortal\Enums\Tab;
 use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\BlockArea;
@@ -59,7 +60,7 @@ class News extends Block
 		}
 
 		SelectField::make('selected_item', Lang::$txt['lp_news']['selected_item'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setOptions($news)
 			->setValue(Utils::$context['lp_block']['options']['selected_item']);
 	}

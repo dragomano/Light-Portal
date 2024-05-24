@@ -17,12 +17,12 @@ namespace Bugo\LightPortal\Addons\RecentTopics;
 
 use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Areas\Fields\NumberField;
 use Bugo\LightPortal\Areas\Fields\RadioField;
 use Bugo\LightPortal\Areas\Partials\BoardSelect;
+use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Utils\DateTime;
 use IntlException;
 
@@ -77,7 +77,7 @@ class RecentTopics extends Block
 			return;
 
 		CustomField::make('exclude_boards', Lang::$txt['lp_recent_topics']['exclude_boards'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'exclude_boards',
 				'hint'  => Lang::$txt['lp_recent_topics']['exclude_boards_select'],
@@ -85,7 +85,7 @@ class RecentTopics extends Block
 			]);
 
 		CustomField::make('include_boards', Lang::$txt['lp_recent_topics']['include_boards'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'include_boards',
 				'hint'  => Lang::$txt['lp_recent_topics']['include_boards_select'],
@@ -93,19 +93,19 @@ class RecentTopics extends Block
 			]);
 
 		CheckboxField::make('use_simple_style', Lang::$txt['lp_recent_topics']['use_simple_style'])
-			->setTab(BlockArea::TAB_APPEARANCE)
+			->setTab(Tab::APPEARANCE)
 			->setAfter(Lang::$txt['lp_recent_topics']['use_simple_style_subtext'])
 			->setValue(Utils::$context['lp_block']['options']['use_simple_style']);
 
 		CheckboxField::make('show_avatars', Lang::$txt['lp_recent_topics']['show_avatars'])
-			->setTab(BlockArea::TAB_APPEARANCE)
+			->setTab(Tab::APPEARANCE)
 			->setValue(
 				Utils::$context['lp_block']['options']['show_avatars']
 				&& empty(Utils::$context['lp_block']['options']['use_simple_style'])
 			);
 
 		CheckboxField::make('show_icons', Lang::$txt['lp_recent_topics']['show_icons'])
-			->setTab(BlockArea::TAB_APPEARANCE)
+			->setTab(Tab::APPEARANCE)
 			->setValue(
 				Utils::$context['lp_block']['options']['show_icons']
 				&& empty(Utils::$context['lp_block']['options']['use_simple_style'])

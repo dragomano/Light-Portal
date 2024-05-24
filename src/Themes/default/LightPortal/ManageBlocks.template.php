@@ -1,7 +1,7 @@
 <?php
 
 use Bugo\Compat\{Config, Lang, Theme, Utils};
-use Bugo\LightPortal\Areas\BlockArea;
+use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Utils\Icon;
 
 function template_manage_blocks(): void
@@ -267,10 +267,10 @@ function template_block_post(): void
 					<div class="bg odd" data-tab="tuning">', Icon::get('tools'), Lang::$txt['lp_tab_tuning'], '</div>
 				</div>
 				<div data-content>
-					<section class="bg even active_content" data-content="common">', template_post_tab($fields), '</section>
-					<section class="bg even" data-content="access">', template_post_tab($fields, BlockArea::TAB_ACCESS), '</section>
-					<section class="bg even" data-content="appearance" x-show="', (int) Utils::$context['lp_block_tab_appearance'], '">', template_post_tab($fields, BlockArea::TAB_APPEARANCE), '</section>
-					<section class="bg even" data-content="tuning">', template_post_tab($fields, BlockArea::TAB_TUNING), '</section>
+					<section class="bg even active_content" data-content="common">', template_portal_tab($fields), '</section>
+					<section class="bg even" data-content="access">', template_portal_tab($fields, Tab::ACCESS_PLACEMENT), '</section>
+					<section class="bg even" data-content="appearance" x-show="', (int) Utils::$context['lp_block_tab_appearance'], '">', template_portal_tab($fields, Tab::APPEARANCE), '</section>
+					<section class="bg even" data-content="tuning">', template_portal_tab($fields, Tab::TUNING), '</section>
 				</div>
 			</div>
 			<br class="clear">

@@ -17,8 +17,8 @@ namespace Bugo\LightPortal\Addons\Likely;
 
 use Bugo\Compat\{Config, Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, RadioField};
+use Bugo\LightPortal\Enums\Tab;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -62,7 +62,7 @@ class Likely extends Block
 			return;
 
 		CustomField::make('buttons', Lang::$txt['lp_likely']['buttons'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new ButtonSelect(), [
 				'data'  => $this->buttons,
 				'value' => is_array(Utils::$context['lp_block']['options']['buttons'])
