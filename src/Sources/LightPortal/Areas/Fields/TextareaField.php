@@ -21,9 +21,8 @@ class TextareaField extends AbstractField
 {
 	public function __construct(string $name, string $label)
 	{
-		$this
-			->setName($name)
-			->setLabel($label)
-			->setType('textarea');
+		parent::__construct($name, $label);
+
+		$this->setType('textarea');
 	}
 }

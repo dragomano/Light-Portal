@@ -16,7 +16,4 @@ namespace Bugo\LightPortal\Actions;
 
 interface BlockInterface extends ActionInterface
 {
-	public const STATUS_INACTIVE = 0;
-
-	public const STATUS_ACTIVE = 1;
 }

@@ -221,7 +221,7 @@ final class TagRepository extends AbstractRepository
 	{
 		// Remove all punctuation symbols
 		Utils::$context['lp_tag']['titles'] = preg_replace(
-			"#[[:punct:]]#", "", Utils::$context['lp_tag']['titles']
+			"#[[:punct:]]#", "", (array) Utils::$context['lp_tag']['titles']
 		);
 	}
 }

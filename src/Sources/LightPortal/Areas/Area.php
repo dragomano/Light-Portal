@@ -17,6 +17,7 @@ namespace Bugo\LightPortal\Areas;
 use Bugo\Compat\{Config, Lang};
 use Bugo\Compat\{Security, Theme, Utils};
 use Bugo\LightPortal\Areas\Fields\CustomField;
+use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Utils\Editor;
 
 if (! defined('SMF'))
@@ -40,7 +41,7 @@ trait Area
 
 	public function prepareContent(array $object): string
 	{
-		if ($object['type'] === 'html') {
+		if ($object['type'] === ContentType::HTML->name()) {
 			$object['content'] = Utils::htmlspecialchars($object['content']);
 		}
 
@@ -132,10 +133,6 @@ trait Area
 					. (Utils::$context['posting_fields'][$item]['input']['after'] ?? '');
 				Utils::$context['posting_fields'][$item] = $data;
 			}
-
-			if (empty($data['input']['tab'])) {
-				Utils::$context['posting_fields'][$item]['input']['tab'] = 'tuning';
-			}
 		}
 
 		Theme::loadTemplate('LightPortal/ManageSettings');
@@ -160,13 +157,13 @@ trait Area
 	public function getDefaultTypes(): array
 	{
 		return [
-			'bbc' => [
+			ContentType::BBC->name() => [
 				'icon' => 'fab fa-bimobject'
 			],
-			'html' => [
+			ContentType::HTML->name() => [
 				'icon' => 'fab fa-html5'
 			],
-			'php' => [
+			ContentType::PHP->name() => [
 				'icon' => 'fab fa-php'
 			],
 		];

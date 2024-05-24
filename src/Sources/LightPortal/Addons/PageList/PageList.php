@@ -10,16 +10,16 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.04.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\PageList;
 
 use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField, VirtualSelectField};
 use Bugo\LightPortal\Areas\Partials\CategorySelect;
+use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Utils\DateTime;
 use IntlException;
 
@@ -64,7 +64,7 @@ class PageList extends Block
 			return;
 
 		CustomField::make('categories', Lang::$txt['lp_categories'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new CategorySelect(), [
 				'id'    => 'categories',
 				'hint'  => Lang::$txt['lp_page_list']['categories_select'],
@@ -88,7 +88,7 @@ class PageList extends Block
 
 		$allCategories = $this->getEntityData('category');
 
-		$categories = empty($parameters['categories']) ? null : explode(',', $parameters['categories']);
+		$categories = empty($parameters['categories']) ? null : explode(',', (string) $parameters['categories']);
 
 		$result = Utils::$smcFunc['db_query']('', '
 			SELECT

@@ -59,7 +59,7 @@ class PageValidator extends AbstractValidator
 			$params = array_merge($this->params, $params);
 
 			$data = filter_input_array(INPUT_POST, array_merge($this->args, $params));
-			$data['tags'] = empty($data['tags']) ? [] : explode(',', $data['tags']);
+			$data['tags'] = empty($data['tags']) ? [] : explode(',', (string) $data['tags']);
 
 			$this->findErrors($data);
 		}

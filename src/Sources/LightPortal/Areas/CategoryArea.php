@@ -15,11 +15,12 @@
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, ErrorHandler, Lang, Security, Theme, Utils};
-use Bugo\LightPortal\Actions\PageListInterface;
 use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Areas\Fields\TextareaField;
 use Bugo\LightPortal\Areas\Partials\IconSelect;
 use Bugo\LightPortal\Areas\Validators\CategoryValidator;
+use Bugo\LightPortal\Enums\Status;
+use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Models\CategoryModel;
 use Bugo\LightPortal\Repositories\CategoryRepository;
@@ -32,8 +33,6 @@ final class CategoryArea
 {
 	use Area;
 	use Helper;
-
-	public const TAB_CONTENT = 'content';
 
 	private CategoryRepository $repository;
 
@@ -66,10 +65,10 @@ final class CategoryArea
 			'base_href' => Utils::$context['form_action'],
 			'default_sort_col' => 'priority',
 			'get_items' => [
-				'function' => [$this->repository, 'getAll']
+				'function' => $this->repository->getAll(...)
 			],
 			'get_count' => [
-				'function' => [$this->repository, 'getTotalCount']
+				'function' => $this->repository->getTotalCount(...)
 			],
 			'columns' => [
 				'id' => [
@@ -138,7 +137,7 @@ final class CategoryArea
 						'function' => static fn($entry) => /** @lang text */ '
 							<div
 								data-id="' . $entry['id'] . '"
-								x-data="{ status: ' . ($entry['status'] === PageListInterface::STATUS_ACTIVE ? 'true' : 'false') . ' }"
+								x-data="{ status: ' . ($entry['status'] === Status::ACTIVE->value ? 'true' : 'false') . ' }"
 								x-init="$watch(\'status\', value => category.toggleStatus($el))"
 							>
 								<span
@@ -313,13 +312,13 @@ final class CategoryArea
 		$this->prepareTitleFields();
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
-			->setTab(self::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new IconSelect(), [
 				'icon' => Utils::$context['lp_category']['icon'],
 			]);
 
 		TextareaField::make('description', Lang::$txt['lp_category_description'])
-			->setTab(self::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setAttribute('maxlength', 255)
 			->setValue(Utils::$context['lp_category']['description']);
 

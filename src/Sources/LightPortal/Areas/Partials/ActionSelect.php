@@ -26,7 +26,7 @@ final class ActionSelect extends AbstractPartial
 		$params['id'] ??= 'lp_disabled_actions';
 		$params['data'] ??= (empty(Config::$modSettings['lp_disabled_actions'])
 			? []
-			: explode(',', Config::$modSettings['lp_disabled_actions'])
+			: explode(',', (string) Config::$modSettings['lp_disabled_actions'])
 		);
 		$params['value'] = [];
 

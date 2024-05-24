@@ -84,7 +84,7 @@ final class TopicSelect extends AbstractPartial
 
 	private function getSelectedTopics(string $topics): array
 	{
-		if (empty($topics))
+		if ($topics === '')
 			return [];
 
 		$result = Db::$db->query('', '

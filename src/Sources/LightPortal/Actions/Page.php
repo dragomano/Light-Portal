@@ -51,10 +51,11 @@ final class Page implements PageInterface
 				Config::updateModSettings(['lp_frontpage_mode' => 0]);
 			}
 		} else {
-			$slug = explode(';', $slug)[0];
+			$slug = explode(';', (string) $slug)[0];
 
-			if ($this->isFrontpage($slug))
+			if ($this->isFrontpage($slug)) {
 				Utils::redirectexit('action=' . LP_ACTION);
+			}
 
 			Utils::$context['lp_page'] = $this->getDataBySlug($slug);
 		}

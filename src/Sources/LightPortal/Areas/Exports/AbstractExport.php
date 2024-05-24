@@ -30,7 +30,7 @@ abstract class AbstractExport implements ExportInterface
 
 	protected function run(): void
 	{
-		if (empty($file = $this->getFile()))
+		if (empty($file = (string) $this->getFile()))
 			return;
 
 		Sapi::setTimeLimit();

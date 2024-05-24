@@ -79,7 +79,7 @@ final class PluginExport extends AbstractExport
 		}
 
 		foreach ($iterator as $file) {
-			$localname = substr($file->getPathname(), strlen(LP_ADDON_DIR) + 1);
+			$localname = substr((string) $file->getPathname(), strlen(LP_ADDON_DIR) + 1);
 			$zip->addFile($file->getPathname(), $localname);
 		}
 

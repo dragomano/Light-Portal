@@ -14,6 +14,7 @@
 
 namespace Bugo\LightPortal;
 
+use Bugo\LightPortal\Enums\Status;
 use Bugo\Compat\{Config, Db, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Actions\{Block, BoardIndex, Category};
 use Bugo\LightPortal\Actions\{FrontPage, Page, Tag};

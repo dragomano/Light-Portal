@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 27.03.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\EhPortalMigration;
 
 use Bugo\Compat\{Config, Db, Lang, Utils};
 use Bugo\LightPortal\Areas\Imports\AbstractCustomBlockImport;
+use Bugo\LightPortal\Enums\Placement;
 use Bugo\LightPortal\Utils\ItemList;
 
 if (! defined('LP_NAME'))
@@ -47,10 +48,10 @@ class BlockImport extends AbstractCustomBlockImport
 			'base_href' => Utils::$context['form_action'],
 			'default_sort_col' => 'title',
 			'get_items' => [
-				'function' => [$this, 'getAll']
+				'function' => $this->getAll(...)
 			],
 			'get_count' => [
-				'function' => [$this, 'getTotalCount']
+				'function' => $this->getTotalCount(...)
 			],
 			'columns' => [
 				'title' => [
@@ -221,12 +222,12 @@ class BlockImport extends AbstractCustomBlockImport
 	private function getPlacement(int $col): string
 	{
 		return match ($col) {
-			1 => 'left',
-			3 => 'bottom',
-			4 => 'right',
-			5 => 'header',
-			6 => 'footer',
-			default => 'top',
+			1 => Placement::LEFT->name(),
+			3 => Placement::BOTTOM->name(),
+			4 => Placement::RIGHT->name(),
+			5 => Placement::HEADER->name(),
+			6 => Placement::FOOTER->name(),
+			default => Placement::TOP->name(),
 		};
 	}
 

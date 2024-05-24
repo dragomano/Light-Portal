@@ -16,11 +16,12 @@ namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, ErrorHandler, Lang};
 use Bugo\Compat\{Logging, Security, Theme, User, Utils};
-use Bugo\LightPortal\Actions\PageInterface;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, TextField};
 use Bugo\LightPortal\Areas\Partials\{CategorySelect, PageAuthorSelect, PageIconSelect};
 use Bugo\LightPortal\Areas\Partials\{PermissionSelect, StatusSelect, TagSelect};
 use Bugo\LightPortal\Areas\Validators\PageValidator;
+use Bugo\LightPortal\Enums\Status;
+use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Models\PageModel;
 use Bugo\LightPortal\Repositories\PageRepository;
@@ -34,14 +35,6 @@ final class PageArea
 {
 	use Area;
 	use Helper;
-
-	public const TAB_CONTENT = 'content';
-
-	public const TAB_ACCESS = 'access_placement';
-
-	public const TAB_SEO = 'seo';
-
-	public const TAB_TUNING = 'tuning';
 
 	private array $params = [];
 
@@ -105,11 +98,11 @@ final class PageArea
 			),
 			'default_sort_col' => 'date',
 			'get_items' => [
-				'function' => [$this->repository, 'getAll'],
+				'function' => $this->repository->getAll(...),
 				'params'   => $this->params,
 			],
 			'get_count' => [
-				'function' => [$this->repository, 'getTotalCount'],
+				'function' => $this->repository->getTotalCount(...),
 				'params'   => $this->params,
 			],
 			'columns' => [
@@ -172,7 +165,7 @@ final class PageArea
 					],
 					'data' => [
 						'function' => fn($entry) => '<i class="' . $this->getPageIcon($entry['type']) . '" title="' . (
-								Utils::$context['lp_content_types'][$entry['type']] ?? strtoupper($entry['type'])
+								Utils::$context['lp_content_types'][$entry['type']] ?? strtoupper((string) $entry['type'])
 							) . '"></i> <a class="bbc_link' . (
 							$entry['is_front']
 								? ' highlight" href="' . Config::$scripturl
@@ -454,13 +447,13 @@ final class PageArea
 
 	private function calculateParams(): void
 	{
-		$searchParamString = trim($this->request('search', ''));
+		$searchParamString = trim((string) $this->request('search', ''));
 		$searchParams = [
 			'string' => Utils::htmlspecialchars($searchParamString),
 		];
 
 		Utils::$context['search_params'] = empty($searchParamString)
-			? '' : base64_encode(Utils::$smcFunc['json_encode']($searchParams));
+			? '' : base64_encode((string) Utils::$smcFunc['json_encode']($searchParams));
 
 		Utils::$context['search'] = [
 			'string' => $searchParams['string'],
@@ -482,9 +475,9 @@ final class PageArea
 			),
 			[
 				'search'            => Utils::$smcFunc['strtolower']($searchParams['string']),
-				'unapproved'        => PageInterface::STATUS_UNAPPROVED,
-				'internal'          => PageInterface::STATUS_INTERNAL,
-				'included_statuses' => [PageInterface::STATUS_INACTIVE, PageInterface::STATUS_ACTIVE],
+				'unapproved'        => Status::UNAPPROVED->value,
+				'internal'          => Status::INTERNAL->value,
+				'included_statuses' => [Status::INACTIVE->value, Status::ACTIVE->value],
 			],
 		];
 	}
@@ -493,7 +486,7 @@ final class PageArea
 	{
 		$this->browseType = 'all';
 		$this->type = '';
-		$this->status = PageInterface::STATUS_ACTIVE;
+		$this->status = Status::ACTIVE->value;
 
 		if ($this->request()->has('u')) {
 			$this->browseType = 'own';
@@ -504,7 +497,7 @@ final class PageArea
 		} elseif ($this->request()->has('internal')) {
 			$this->browseType = 'int';
 			$this->type = ';internal';
-			$this->status = PageInterface::STATUS_INTERNAL;
+			$this->status = Status::INTERNAL->value;
 		}
 	}
 
@@ -631,7 +624,7 @@ final class PageArea
 
 		if (Utils::$context['lp_page']['type'] !== 'bbc') {
 			TextareaField::make('content', Lang::$txt['lp_content'])
-				->setTab(self::TAB_CONTENT)
+				->setTab(Tab::CONTENT)
 				->setAttribute('style', 'height: 300px')
 				->setValue($this->prepareContent(Utils::$context['lp_page']));
 		} else {
@@ -640,16 +633,16 @@ final class PageArea
 
 		if (Utils::$context['user']['is_admin']) {
 			CustomField::make('show_in_menu', Lang::$txt['lp_page_show_in_menu'])
-				->setTab(self::TAB_ACCESS)
+				->setTab(Tab::ACCESS_PLACEMENT)
 				->setValue(static fn() => new PageIconSelect());
 		}
 
 		CustomField::make('permissions', Lang::$txt['edit_permissions'])
-			->setTab(self::TAB_ACCESS)
+			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(static fn() => new PermissionSelect());
 
 		CustomField::make('category_id', Lang::$txt['lp_category'])
-			->setTab(self::TAB_ACCESS)
+			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(static fn() => new CategorySelect(), [
 				'id'         => 'category_id',
 				'multiple'   => false,
@@ -660,17 +653,17 @@ final class PageArea
 
 		if (Utils::$context['user']['is_admin']) {
 			CustomField::make('status', Lang::$txt['status'])
-				->setTab(self::TAB_ACCESS)
+				->setTab(Tab::ACCESS_PLACEMENT)
 				->setValue(static fn() => new StatusSelect());
 
 			CustomField::make('author_id', Lang::$txt['lp_page_author'])
-				->setTab(self::TAB_ACCESS)
+				->setTab(Tab::ACCESS_PLACEMENT)
 				->setAfter(Lang::$txt['lp_page_author_placeholder'])
 				->setValue(static fn() => new PageAuthorSelect());
 		}
 
 		TextField::make('slug', Lang::$txt['lp_page_slug'])
-			->setTab(self::TAB_SEO)
+			->setTab(Tab::SEO)
 			->setAfter(Lang::$txt['lp_page_slug_subtext'])
 			->required()
 			->setAttribute('maxlength', 255)
@@ -682,7 +675,7 @@ final class PageArea
 			->setValue(Utils::$context['lp_page']['slug']);
 
 		TextareaField::make('description', Lang::$txt['lp_page_description'])
-			->setTab(self::TAB_SEO)
+			->setTab(Tab::SEO)
 			->setAttribute('maxlength', 255)
 			->setValue(Utils::$context['lp_page']['description']);
 
@@ -692,7 +685,7 @@ final class PageArea
 				->setValue('');
 		} else {
 			CustomField::make('tags', Lang::$txt['lp_tags'])
-				->setTab(self::TAB_SEO)
+				->setTab(Tab::SEO)
 				->setValue(static fn() => new TagSelect());
 		}
 

@@ -15,8 +15,8 @@
 namespace Bugo\LightPortal\Articles;
 
 use Bugo\Compat\{BBCodeParser, Config, Db, Lang, User, Utils};
-use Bugo\LightPortal\Actions\PageInterface;
 use Bugo\LightPortal\Actions\PageListInterface;
+use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Utils\Content;
 
 if (! defined('SMF'))
@@ -31,7 +31,7 @@ class PageArticle extends AbstractArticle
 	public function init(): void
 	{
 		$this->selectedCategories = empty(Config::$modSettings['lp_frontpage_categories'])
-			? [] : explode(',', Config::$modSettings['lp_frontpage_categories']);
+			? [] : explode(',', (string) Config::$modSettings['lp_frontpage_categories']);
 
 		if (empty($this->selectedCategories) && $this->isFrontpageMode('all_pages')) {
 			$this->selectedCategories = [0];
@@ -42,7 +42,7 @@ class PageArticle extends AbstractArticle
 		$this->params = [
 			'lang'                => User::$info['language'],
 			'fallback_lang'       => Config::$language,
-			'status'              => PageInterface::STATUS_ACTIVE,
+			'status'              => Status::ACTIVE->value,
 			'current_time'        => time(),
 			'permissions'         => $this->getPermissions(),
 			'selected_categories' => $this->selectedCategories,
@@ -197,7 +197,7 @@ class PageArticle extends AbstractArticle
 
 	private function getTitle(array $titles, array $row): string
 	{
-		return $this->getTranslatedTitle($titles[$row['page_id']]);
+		return $this->getTranslatedTitle($titles[$row['page_id']] ?? []);
 	}
 
 	private function getViewsData(array $row): array
@@ -277,7 +277,7 @@ class PageArticle extends AbstractArticle
 				'lang'          => User::$info['language'],
 				'fallback_lang' => Config::$language,
 				'pages'         => array_keys($pages),
-				'status'        => PageListInterface::STATUS_ACTIVE,
+				'status'        => Status::ACTIVE->value,
 			]
 		);
 

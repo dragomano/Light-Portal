@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 20.02.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\TwigLayouts;
@@ -47,7 +47,7 @@ class TwigLayouts extends Plugin
 
 	public function frontLayouts(): void
 	{
-		if (! str_contains(Config::$modSettings['lp_frontpage_layout'], $this->extension))
+		if (! str_contains((string) Config::$modSettings['lp_frontpage_layout'], $this->extension))
 			return;
 
 		require_once __DIR__ . '/vendor/autoload.php';

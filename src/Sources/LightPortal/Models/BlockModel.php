@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal\Models;
 
 use Bugo\Compat\{Config, Utils};
-use Bugo\LightPortal\Actions\BlockInterface;
+use Bugo\LightPortal\Enums\Status;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -70,7 +70,7 @@ class BlockModel extends AbstractModel
 			?? $currentBlock['permissions']
 			?? (int) (Config::$modSettings['lp_permissions_default'] ?? 2);
 
-		$this->status = $currentBlock['status'] ?? BlockInterface::STATUS_ACTIVE;
+		$this->status = $currentBlock['status'] ?? Status::ACTIVE->value;
 
 		$this->areas = $postData['areas'] ?? $currentBlock['areas'] ?? 'all';
 

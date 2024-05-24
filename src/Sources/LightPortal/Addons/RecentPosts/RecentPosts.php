@@ -10,16 +10,16 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.04.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\RecentPosts;
 
 use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, NumberField, RadioField};
-use Bugo\LightPortal\Areas\Partials\{TopicSelect, BoardSelect};
+use Bugo\LightPortal\Areas\Partials\{BoardSelect, TopicSelect};
+use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Utils\DateTime;
 use IntlException;
 
@@ -80,7 +80,7 @@ class RecentPosts extends Block
 			return;
 
 		CustomField::make('exclude_boards', Lang::$txt['lp_recent_posts']['exclude_boards'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'exclude_boards',
 				'hint'  => Lang::$txt['lp_recent_posts']['exclude_boards_select'],
@@ -88,7 +88,7 @@ class RecentPosts extends Block
 			]);
 
 		CustomField::make('include_boards', Lang::$txt['lp_recent_posts']['include_boards'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'include_boards',
 				'hint'  => Lang::$txt['lp_recent_posts']['include_boards_select'],
@@ -96,7 +96,7 @@ class RecentPosts extends Block
 			]);
 
 		CustomField::make('exclude_topics', Lang::$txt['lp_recent_posts']['exclude_topics'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new TopicSelect(), [
 				'id'    => 'exclude_topics',
 				'hint'  => Lang::$txt['lp_recent_posts']['exclude_topics_select'],
@@ -104,7 +104,7 @@ class RecentPosts extends Block
 			]);
 
 		CustomField::make('include_topics', Lang::$txt['lp_recent_posts']['include_topics'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new TopicSelect(), [
 				'id'    => 'include_topics',
 				'hint'  => Lang::$txt['lp_recent_posts']['include_topics_select'],
@@ -112,12 +112,12 @@ class RecentPosts extends Block
 			]);
 
 		CheckboxField::make('use_simple_style', Lang::$txt['lp_recent_posts']['use_simple_style'])
-			->setTab(BlockArea::TAB_APPEARANCE)
+			->setTab(Tab::APPEARANCE)
 			->setAfter(Lang::$txt['lp_recent_posts']['use_simple_style_subtext'])
 			->setValue(Utils::$context['lp_block']['options']['use_simple_style']);
 
 		CheckboxField::make('show_avatars', Lang::$txt['lp_recent_posts']['show_avatars'])
-			->setTab(BlockArea::TAB_APPEARANCE)
+			->setTab(Tab::APPEARANCE)
 			->setValue(
 				Utils::$context['lp_block']['options']['show_avatars']
 				&& empty(Utils::$context['lp_block']['options']['use_simple_style'])
@@ -147,10 +147,10 @@ class RecentPosts extends Block
 	 */
 	public function getData(array $parameters): array
 	{
-		$excludeBoards = empty($parameters['exclude_boards']) ? [] : explode(',', $parameters['exclude_boards']);
-		$includeBoards = empty($parameters['include_boards']) ? [] : explode(',', $parameters['include_boards']);
-		$excludeTopics = empty($parameters['exclude_topics']) ? [] : explode(',', $parameters['exclude_topics']);
-		$includeTopics = empty($parameters['include_topics']) ? [] : explode(',', $parameters['include_topics']);
+		$excludeBoards = empty($parameters['exclude_boards']) ? [] : explode(',', (string) $parameters['exclude_boards']);
+		$includeBoards = empty($parameters['include_boards']) ? [] : explode(',', (string) $parameters['include_boards']);
+		$excludeTopics = empty($parameters['exclude_topics']) ? [] : explode(',', (string) $parameters['exclude_topics']);
+		$includeTopics = empty($parameters['include_topics']) ? [] : explode(',', (string) $parameters['include_topics']);
 
 		$minMessageId = Config::$modSettings['maxMsgID'] - (
 			empty(Utils::$context['min_message_posts']) ? 25 : Utils::$context['min_message_posts']

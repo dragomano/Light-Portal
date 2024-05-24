@@ -15,7 +15,7 @@
 namespace Bugo\LightPortal\Lists;
 
 use Bugo\Compat\{Config, Db, Lang, User};
-use Bugo\LightPortal\Actions\PageListInterface;
+use Bugo\LightPortal\Enums\Status;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -43,7 +43,7 @@ final class CategoryList implements ListInterface
 			[
 				'lang'          => User::$info['language'],
 				'fallback_lang' => Config::$language,
-				'status'        => PageListInterface::STATUS_ACTIVE,
+				'status'        => Status::ACTIVE->value,
 			]
 		);
 

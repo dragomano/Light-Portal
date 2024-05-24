@@ -15,10 +15,11 @@
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, ErrorHandler, Lang, Security, Theme, Utils};
-use Bugo\LightPortal\Actions\PageListInterface;
 use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Areas\Partials\IconSelect;
 use Bugo\LightPortal\Areas\Validators\TagValidator;
+use Bugo\LightPortal\Enums\Status;
+use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Models\TagModel;
 use Bugo\LightPortal\Repositories\TagRepository;
@@ -31,8 +32,6 @@ final class TagArea
 {
 	use Area;
 	use Helper;
-
-	public const TAB_CONTENT = 'content';
 
 	private TagRepository $repository;
 
@@ -61,10 +60,10 @@ final class TagArea
 			'base_href' => Utils::$context['form_action'],
 			'default_sort_col' => 'title',
 			'get_items' => [
-				'function' => [$this->repository, 'getAll']
+				'function' => $this->repository->getAll(...)
 			],
 			'get_count' => [
-				'function' => [$this->repository, 'getTotalCount']
+				'function' => $this->repository->getTotalCount(...)
 			],
 			'columns' => [
 				'id' => [
@@ -117,7 +116,7 @@ final class TagArea
 						'function' => static fn($entry) => /** @lang text */ '
 							<div
 								data-id="' . $entry['id'] . '"
-								x-data="{ status: ' . ($entry['status'] === PageListInterface::STATUS_ACTIVE ? 'true' : 'false') . ' }"
+								x-data="{ status: ' . ($entry['status'] === Status::ACTIVE->value ? 'true' : 'false') . ' }"
 								x-init="$watch(\'status\', value => tag.toggleStatus($el))"
 							>
 								<span
@@ -289,7 +288,7 @@ final class TagArea
 		$this->prepareTitleFields();
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
-			->setTab(self::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new IconSelect(), [
 				'icon' => Utils::$context['lp_tag']['icon'],
 			]);

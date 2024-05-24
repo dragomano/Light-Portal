@@ -16,6 +16,7 @@ declare(strict_types=1);
 
 namespace Bugo\LightPortal\Repositories;
 
+use Bugo\LightPortal\Enums\Status;
 use Bugo\Compat\{Config, Db, Logging, Lang};
 use Bugo\Compat\{Msg, Security, User, Utils};
 use Bugo\LightPortal\Actions\PageInterface;
@@ -372,7 +373,7 @@ final class PageRepository extends AbstractRepository
 	public function getRelatedPages(array $page): array
 	{
 		$titleWords = explode(' ', $this->getTranslatedTitle($page['titles']));
-		$slugWords  = explode('_', $page['slug']);
+		$slugWords  = explode('_', (string) $page['slug']);
 
 		$searchFormula = '';
 		foreach ($titleWords as $key => $word) {
@@ -443,7 +444,7 @@ final class PageRepository extends AbstractRepository
 					AND status IN ({array_int:statuses})',
 			[
 				'item'     => $item,
-				'statuses' => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
+				'statuses' => [Status::ACTIVE->value, Status::INTERNAL->value],
 			]
 		);
 	}
@@ -465,7 +466,7 @@ final class PageRepository extends AbstractRepository
 					AND pp.name = {literal:show_in_menu}
 					AND pp.value = {string:show_in_menu}',
 				[
-					'statuses'     => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
+					'statuses'     => [Status::ACTIVE->value, Status::INTERNAL->value],
 					'current_time' => time(),
 					'show_in_menu' => '1',
 				]
@@ -642,7 +643,7 @@ final class PageRepository extends AbstractRepository
 			[
 				'lang'          => User::$info['language'],
 				'fallback_lang' => Config::$language,
-				'status'        => PageListInterface::STATUS_ACTIVE,
+				'status'        => Status::ACTIVE->value,
 				'page_id'       => $item,
 			]
 		);
@@ -698,7 +699,7 @@ final class PageRepository extends AbstractRepository
 		$publishTime = time();
 
 		if (Utils::$context['lp_page']['date'])
-			$publishTime = strtotime(Utils::$context['lp_page']['date']);
+			$publishTime = strtotime((string) Utils::$context['lp_page']['date']);
 
 		if (Utils::$context['lp_page']['time']) {
 			$publishTime = strtotime(

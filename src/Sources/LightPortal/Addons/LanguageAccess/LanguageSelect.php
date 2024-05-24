@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\LanguageAccess;
@@ -23,7 +23,7 @@ final class LanguageSelect extends AbstractPartial
 	public function __invoke(): string
 	{
 		$currentLanguages = Utils::$context['lp_block']['options']['allowed_languages'] ?? [];
-		$currentLanguages = is_array($currentLanguages) ? $currentLanguages : explode(',', $currentLanguages);
+		$currentLanguages = is_array($currentLanguages) ? $currentLanguages : explode(',', (string) $currentLanguages);
 
 		$data = $items = [];
 

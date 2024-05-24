@@ -16,6 +16,7 @@ namespace Bugo\LightPortal\Actions;
 
 use Bugo\Compat\{Config, Db};
 use Bugo\Compat\{Lang, Theme, Utils};
+use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Utils\Content;
 
@@ -103,7 +104,7 @@ final class Block implements BlockInterface
 				WHERE b.status = {int:status}
 				ORDER BY b.placement, b.priority',
 				[
-					'status' => self::STATUS_ACTIVE,
+					'status' => Status::ACTIVE->value,
 				]
 			);
 
@@ -119,7 +120,7 @@ final class Block implements BlockInterface
 					'placement'     => $row['placement'],
 					'priority'      => (int) $row['priority'],
 					'permissions'   => (int) $row['permissions'],
-					'areas'         => explode(',', $row['areas']),
+					'areas'         => explode(',', (string) $row['areas']),
 					'title_class'   => $row['title_class'],
 					'content_class' => $row['content_class'],
 				];
@@ -204,7 +205,7 @@ final class Block implements BlockInterface
 
 			$boards = $topics = [];
 			foreach ($tempAreas as $areas) {
-				$entity = explode('=', $areas);
+				$entity = explode('=', (string) $areas);
 
 				if ($entity[0] === 'board')
 					$boards = $this->getAllowedIds($entity[1]);

@@ -15,8 +15,9 @@
 namespace Bugo\LightPortal;
 
 use Bugo\Compat\{Config, Db, ErrorHandler, Lang, User, Utils};
-use Bugo\LightPortal\Utils\{BlockAppearance, Cache, File};
-use Bugo\LightPortal\Utils\{EntityManager, Post, Request, Session, SMFTrait};
+use Bugo\LightPortal\Enums\{ContentType, Permission};
+use Bugo\LightPortal\Utils\{Cache, File, EntityManager, Post};
+use Bugo\LightPortal\Utils\{Request, Session, SMFTrait};
 use Exception;
 
 if (! defined('SMF'))
@@ -24,7 +25,6 @@ if (! defined('SMF'))
 
 trait Helper
 {
-	use BlockAppearance;
 	use SMFTrait;
 
 	public function request(?string $key = null, mixed $default = null): mixed
@@ -115,14 +115,11 @@ trait Helper
 
 	public function getContentTypes(): array
 	{
-		$types = array_combine(
-			['bbc', 'html', 'php'],
-			[
-				Lang::$txt['lp_bbc']['title'],
-				Lang::$txt['lp_html']['title'],
-				Lang::$txt['lp_php']['title'],
-			],
-		);
+		$types = [
+			ContentType::BBC->name()  => Lang::$txt['lp_bbc']['title'],
+			ContentType::HTML->name() => Lang::$txt['lp_html']['title'],
+			ContentType::PHP->name()  => Lang::$txt['lp_php']['title'],
+		];
 
 		return User::$info['is_admin'] ? $types : array_slice($types, 0, 2);
 	}
@@ -140,7 +137,7 @@ trait Helper
 				[
 					'themes' => empty(Config::$modSettings['knownThemes'])
 						? []
-						: explode(',', Config::$modSettings['knownThemes']),
+						: explode(',', (string) Config::$modSettings['knownThemes']),
 				]
 			);
 
@@ -198,7 +195,7 @@ trait Helper
 
 	public function getSnakeName(string $value): string
 	{
-		return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $value));
+		return strtolower((string) preg_replace('/(?<!^)[A-Z]/', '_$0', $value));
 	}
 
 	public function getCamelName(string $value): string
@@ -211,7 +208,7 @@ trait Helper
 		$text = html_entity_decode($text);
 		$text = preg_replace('#(<cite.*?>).*?(</cite>)#', '$1$2', $text);
 
-		return Utils::shorten(strip_tags($text), $length) ?: '...';
+		return Utils::shorten(strip_tags((string) $text), $length) ?: '...';
 	}
 
 	/**
@@ -219,14 +216,17 @@ trait Helper
 	 *
 	 * Проверяем, может ли текущий пользователь просматривать элемент портала, согласно его правам доступа
 	 */
-	public function canViewItem(int $permissions, int $userId = 0): bool
+	public function canViewItem(Permission|int $permission, int $userId = 0): bool
 	{
-		return match ($permissions) {
-			0 => User::$info['is_admin'],
-			1 => User::$info['is_guest'],
-			2 => User::$info['id'] > 0,
-			4 => User::$info['id'] === $userId,
-			default => true,
+		$permission = is_int($permission) ? Permission::tryFrom($permission) : $permission;
+
+		return match ($permission) {
+			Permission::ADMIN  => User::$info['is_admin'],
+			Permission::GUEST  => User::$info['is_guest'],
+			Permission::MEMBER => User::$info['id'] > 0,
+			Permission::ALL    => true,
+			Permission::OWNER  => User::$info['id'] === $userId,
+			default             => false,
 		};
 	}
 
@@ -237,14 +237,12 @@ trait Helper
 	 */
 	public function getPermissions(): array
 	{
-		if (User::$info['is_admin'])
-			return [0, 1, 2, 3];
-		elseif (User::$info['is_guest'])
-			return [1, 3];
-		elseif (User::$info['id'])
-			return [2, 3];
-
-		return [3];
+		return match (true) {
+			User::$info['is_admin'] => array_filter(Permission::values(), fn($value) => $value !== Permission::OWNER->value),
+			User::$info['is_guest'] => [Permission::GUEST->value, Permission::ALL->value],
+			User::$info['id'] > 0   => [Permission::MEMBER->value, Permission::ALL->value],
+			default                 => [Permission::ALL->value],
+		};
 	}
 
 	public function getTranslatedTitle(array $titles): string
@@ -281,7 +279,7 @@ trait Helper
 
 		$result = $value['src'] ??= '';
 
-		if (empty($result) || str_contains($result, Config::$modSettings['smileys_url']))
+		if (empty($result) || str_contains($result, (string) Config::$modSettings['smileys_url']))
 			return '';
 
 		return $result;

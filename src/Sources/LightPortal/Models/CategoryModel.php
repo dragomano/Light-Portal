@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Models;
 
-use Bugo\LightPortal\Actions\PageListInterface;
+use Bugo\LightPortal\Enums\Status;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -43,7 +43,7 @@ class CategoryModel extends AbstractModel
 
 		$this->priority = $currentCategory['priority'] ?? 0;
 
-		$this->status = $currentCategory['status'] ?? PageListInterface::STATUS_ACTIVE;
+		$this->status = $currentCategory['status'] ?? Status::ACTIVE->value;
 	}
 
 	protected static function getTableName(): string

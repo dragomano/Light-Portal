@@ -25,7 +25,7 @@ if (! defined('SMF'))
 
 final class BlockExport extends AbstractExport
 {
-	private BlockRepository $repository;
+	private readonly BlockRepository $repository;
 
 	public function __construct()
 	{

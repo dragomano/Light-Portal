@@ -10,15 +10,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.04.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\HidingBlocks;
 
 use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\CustomField;
+use Bugo\LightPortal\Enums\Tab;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -35,7 +35,7 @@ class HidingBlocks extends Plugin
 			if (empty($block['parameters']) || empty($block['parameters']['hidden_breakpoints']))
 				continue;
 
-			$breakpoints = array_flip(explode(',', $block['parameters']['hidden_breakpoints']));
+			$breakpoints = array_flip(explode(',', (string) $block['parameters']['hidden_breakpoints']));
 			foreach ($this->classes as $class) {
 				if (array_key_exists($class, $breakpoints)) {
 					if (empty(Utils::$context['lp_active_blocks'][$id]['custom_class']))
@@ -60,7 +60,7 @@ class HidingBlocks extends Plugin
 	public function prepareBlockFields(): void
 	{
 		CustomField::make('hidden_breakpoints', Lang::$txt['lp_hiding_blocks']['hidden_breakpoints'])
-			->setTab(BlockArea::TAB_ACCESS)
+			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(static fn() => new BreakpointSelect());
 	}
 }

@@ -16,6 +16,7 @@ namespace Bugo\LightPortal\Actions;
 
 use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, User, Utils};
+use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Utils\ItemList;
 use IntlException;
 
@@ -69,7 +70,7 @@ final class Category extends AbstractPageList
 		$listOptions = $page->getList();
 		$listOptions['id'] = 'lp_categories';
 		$listOptions['get_items'] = [
-			'function' => [$this, 'getPages']
+			'function' => $this->getPages(...)
 		];
 
 		if (isset($category['description'])) {
@@ -115,7 +116,7 @@ final class Category extends AbstractPageList
 				'lang'          => User::$info['language'],
 				'fallback_lang' => Config::$language,
 				'id'            => Utils::$context['current_category'],
-				'statuses'      => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
+				'statuses'      => [Status::ACTIVE->value, Status::INTERNAL->value],
 				'current_time'  => time(),
 				'permissions'   => $this->getPermissions(),
 				'sort'          => $sort,
@@ -142,7 +143,7 @@ final class Category extends AbstractPageList
 				AND permissions IN ({array_int:permissions})',
 			[
 				'id'           => Utils::$context['current_category'],
-				'statuses'     => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
+				'statuses'     => [Status::ACTIVE->value, Status::INTERNAL->value],
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions(),
 			]
@@ -173,7 +174,7 @@ final class Category extends AbstractPageList
 			'base_href' => Utils::$context['canonical_url'],
 			'default_sort_col' => 'priority',
 			'get_items' => [
-				'function' => [$this, 'getAll']
+				'function' => $this->getAll(...)
 			],
 			'get_count' => [
 				'function' => fn() => count($this->getAll())
@@ -253,8 +254,8 @@ final class Category extends AbstractPageList
 			[
 				'lang'          => User::$info['language'],
 				'fallback_lang' => Config::$language,
-				'status'        => self::STATUS_ACTIVE,
-				'statuses'      => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
+				'status'        => Status::ACTIVE->value,
+				'statuses'      => [Status::ACTIVE->value, Status::INTERNAL->value],
 				'current_time'  => time(),
 				'permissions'   => $this->getPermissions(),
 				'sort'          => $sort,

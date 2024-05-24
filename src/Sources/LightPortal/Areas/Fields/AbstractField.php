@@ -15,6 +15,7 @@
 namespace Bugo\LightPortal\Areas\Fields;
 
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Helper;
 
 if (! defined('SMF'))
@@ -24,7 +25,7 @@ abstract class AbstractField
 {
 	use Helper;
 
-	protected string $tab = 'tuning';
+	protected string $tab;
 
 	protected string $name;
 
@@ -36,6 +37,14 @@ abstract class AbstractField
 
 	protected array $attributes = [];
 
+	public function __construct(string $name, string $label)
+	{
+		$this->name = $name;
+		$this->label = $label;
+
+		$this->setTab(Tab::TUNING);
+	}
+
 	public function __destruct()
 	{
 		$this->build();
@@ -46,23 +55,9 @@ abstract class AbstractField
 		return new static($name, $label);
 	}
 
-	public function setTab(string $tab): self
+	public function setTab(Tab|string $tab): self
 	{
-		$this->tab = $tab;
-
-		return $this;
-	}
-
-	public function setName(string $name): self
-	{
-		$this->name = $name;
-
-		return $this;
-	}
-
-	public function setLabel(string $label): self
-	{
-		$this->label = $label;
+		$this->tab = is_string($tab) ? $tab : $tab->name();
 
 		return $this;
 	}

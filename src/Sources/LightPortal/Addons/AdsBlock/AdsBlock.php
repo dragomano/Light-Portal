@@ -10,16 +10,16 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.04.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
 
 use Bugo\Compat\{Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\{CustomField, TextareaField, TextField};
 use Bugo\LightPortal\Areas\Partials\{BoardSelect, PageSelect, TopicSelect};
+use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Utils\Content;
 
 if (! defined('LP_NAME'))
@@ -76,28 +76,28 @@ class AdsBlock extends Block
 		}');
 
 		TextareaField::make('loader_code', Lang::$txt['lp_ads_block']['loader_code'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue(Utils::$context['lp_block']['options']['loader_code']);
 
 		TextField::make('placement', '')
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setAttribute('class', 'hidden')
 			->setValue('ads');
 
 		TextField::make('areas', '')
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setAttribute('class', 'hidden')
 			->setValue('all');
 
 		CustomField::make('ads_placement', Lang::$txt['lp_block_placement'])
-			->setTab(BlockArea::TAB_ACCESS)
+			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(static fn() => new PlacementSelect(), [
 				'data'  => $this->getPlacements(),
 				'value' => Utils::$context['lp_block']['options']['ads_placement'],
 			]);
 
 		CustomField::make('include_boards', Lang::$txt['lp_ads_block']['include_boards'])
-			->setTab(BlockArea::TAB_ACCESS)
+			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'include_boards',
 				'hint'  => Lang::$txt['lp_ads_block']['include_boards_select'],
@@ -105,7 +105,7 @@ class AdsBlock extends Block
 			]);
 
 		CustomField::make('include_topics', Lang::$txt['lp_ads_block']['include_topics'])
-			->setTab(BlockArea::TAB_ACCESS)
+			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(static fn() => new TopicSelect(), [
 				'id'    => 'include_pages',
 				'hint'  => Lang::$txt['lp_ads_block']['include_pages_select'],
@@ -113,7 +113,7 @@ class AdsBlock extends Block
 			]);
 
 		CustomField::make('include_pages', Lang::$txt['lp_ads_block']['include_pages'])
-			->setTab(BlockArea::TAB_ACCESS)
+			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(static fn() => new PageSelect(), [
 				'id'    => 'include_pages',
 				'hint'  => Lang::$txt['lp_ads_block']['include_pages_select'],
@@ -421,7 +421,7 @@ class AdsBlock extends Block
 	private function filterByIncludedTopics(array $block): bool
 	{
 		if (! empty($block['parameters']['include_topics']) && ! empty(Utils::$context['current_topic'])) {
-			$topics = array_flip(explode(',', $block['parameters']['include_topics']));
+			$topics = array_flip(explode(',', (string) $block['parameters']['include_topics']));
 
 			if (! array_key_exists(Utils::$context['current_topic'], $topics)) {
 				return false;
@@ -438,7 +438,7 @@ class AdsBlock extends Block
 			&& ! empty(Utils::$context['current_board'])
 			&& empty(Utils::$context['current_topic'])
 		) {
-			$boards = array_flip(explode(',', $block['parameters']['include_boards']));
+			$boards = array_flip(explode(',', (string) $block['parameters']['include_boards']));
 
 			if (! array_key_exists(Utils::$context['current_board'], $boards)) {
 				return false;
@@ -451,7 +451,7 @@ class AdsBlock extends Block
 	private function filterByIncludedPages(array $block): bool
 	{
 		if (! empty($block['parameters']['include_pages']) && ! empty(Utils::$context['lp_page'])) {
-			$pages = array_flip(explode(',', $block['parameters']['include_pages']));
+			$pages = array_flip(explode(',', (string) $block['parameters']['include_pages']));
 
 			if (! array_key_exists(Utils::$context['lp_page']['id'], $pages)) {
 				return false;
@@ -464,7 +464,7 @@ class AdsBlock extends Block
 	private function filterByAdsPlacement(string $position, array $block): bool
 	{
 		if ($block['parameters']['ads_placement']) {
-			$placements = array_flip(explode(',', $block['parameters']['ads_placement']));
+			$placements = array_flip(explode(',', (string) $block['parameters']['ads_placement']));
 
 			if (! array_key_exists($position, $placements)) {
 				return false;
@@ -499,12 +499,7 @@ class AdsBlock extends Block
 
 	private function getEndTime(array $params): int
 	{
-		$endTime = time();
-
-		if ($params['end_date'])
-			$endTime = strtotime($params['end_date']);
-
-		return $endTime;
+		return $params['end_date'] ? strtotime((string) $params['end_date']) : time();
 	}
 
 	private function disableBlock(int $item): void

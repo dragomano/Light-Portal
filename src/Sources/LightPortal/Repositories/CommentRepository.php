@@ -79,7 +79,7 @@ final class CommentRepository
 				'id'          => (int) $row['id'],
 				'page_id'     => (int) $row['page_id'],
 				'parent_id'   => (int) $row['parent_id'],
-				'message'     => htmlspecialchars_decode($row['message']),
+				'message'     => htmlspecialchars_decode((string) $row['message']),
 				'created_at'  => (int) $row['created_at'],
 				'can_edit'    => $this->isCanEdit((int) $row['created_at']),
 				'poster'      => [

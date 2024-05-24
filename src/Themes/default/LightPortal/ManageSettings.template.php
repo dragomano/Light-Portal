@@ -2,7 +2,8 @@
 
 use Bugo\Compat\{Config, Lang, Theme, Utils};
 use Bugo\LightPortal\Areas\Partials\{ActionSelect, BoardSelect, CategorySelect};
-use Bugo\LightPortal\Areas\Partials\{PageSlugSelect, PageSelect, TopicSelect};
+use Bugo\LightPortal\Areas\Partials\{PageSelect, PageSlugSelect, TopicSelect};
+use Bugo\LightPortal\Enums\Tab;
 
 function template_callback_frontpage_mode_settings_before(): void
 {
@@ -130,13 +131,15 @@ function template_callback_menu_settings_after(): void
 	</div>';
 }
 
-function template_post_tab(array $fields, string $tab = 'content'): bool
+function template_portal_tab(array $fields, Tab|string $tab = 'content'): bool
 {
 	$fields['subject'] = ['no'];
 
+	$tab = is_string($tab) ? $tab : $tab->name();
+
 	foreach ($fields as $pfid => $pf) {
 		if (empty($pf['input']['tab']))
-			$pf['input']['tab'] = 'tuning';
+			$pf['input']['tab'] = Tab::TUNING->name();
 
 		if ($pf['input']['tab'] != $tab)
 			$fields[$pfid] = ['no'];

@@ -14,6 +14,8 @@
 
 namespace Bugo\LightPortal;
 
+use Bugo\LightPortal\Enums\{ContentClass, Placement};
+use Bugo\LightPortal\Enums\{PluginType, TitleClass};
 use Bugo\Compat\{Config, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Actions\Block;
 use Bugo\LightPortal\Areas\{ConfigArea, CreditArea};
@@ -57,20 +59,20 @@ abstract class AbstractMain
 
 		$this->calculateNumberOfEntities();
 
-		Utils::$context['lp_all_title_classes']   = $this->getTitleClasses();
-		Utils::$context['lp_all_content_classes'] = $this->getContentClasses();
+		Utils::$context['lp_all_title_classes']   = TitleClass::values();
+		Utils::$context['lp_all_content_classes'] = ContentClass::values();
 		Utils::$context['lp_block_placements']    = $this->getBlockPlacements();
 		Utils::$context['lp_plugin_types']        = $this->getPluginTypes();
 		Utils::$context['lp_content_types']       = $this->getContentTypes();
 
 		Utils::$context['lp_enabled_plugins'] = empty(Config::$modSettings['lp_enabled_plugins'])
-			? [] : explode(',', Config::$modSettings['lp_enabled_plugins']);
+			? [] : explode(',', (string) Config::$modSettings['lp_enabled_plugins']);
 
 		Utils::$context['lp_frontpage_pages'] = empty(Config::$modSettings['lp_frontpage_pages'])
-			? [] : explode(',', Config::$modSettings['lp_frontpage_pages']);
+			? [] : explode(',', (string) Config::$modSettings['lp_frontpage_pages']);
 
 		Utils::$context['lp_frontpage_topics'] = empty(Config::$modSettings['lp_frontpage_topics'])
-			? [] : explode(',', Config::$modSettings['lp_frontpage_topics']);
+			? [] : explode(',', (string) Config::$modSettings['lp_frontpage_topics']);
 
 		Utils::$context['lp_header_panel_width'] = empty(Config::$modSettings['lp_header_panel_width'])
 			? 12 : (int) Config::$modSettings['lp_header_panel_width'];
@@ -204,7 +206,7 @@ abstract class AbstractMain
 			return;
 		}
 
-		$oldUrl = explode('#', Utils::$context['linktree'][1]['url']);
+		$oldUrl = explode('#', (string) Utils::$context['linktree'][1]['url']);
 
 		if (empty($oldUrl[1]))
 			return;
@@ -421,7 +423,7 @@ abstract class AbstractMain
 	protected function getDisabledActions(): array
 	{
 		$disabledActions = empty(Config::$modSettings['lp_disabled_actions'])
-			? [] : explode(',', Config::$modSettings['lp_disabled_actions']);
+			? [] : explode(',', (string) Config::$modSettings['lp_disabled_actions']);
 
 		$disabledActions[] = 'home';
 
@@ -464,21 +466,12 @@ abstract class AbstractMain
 
 	private function getBlockPlacements(): array
 	{
-		return array_combine(
-			['header', 'top', 'left', 'right', 'bottom', 'footer'],
-			Lang::$txt['lp_block_placement_set']
-		);
+		return array_combine(Placement::names(), Lang::$txt['lp_block_placement_set']);
 	}
 
 	private function getPluginTypes(): array
 	{
-		return array_combine(
-			[
-				'block', 'ssi', 'editor', 'comment', 'parser', 'article', 'frontpage',
-				'impex', 'block_options', 'page_options', 'icons', 'seo', 'other',
-			],
-			Lang::$txt['lp_plugins_types']
-		);
+		return array_combine(PluginType::names(), Lang::$txt['lp_plugins_types']);
 	}
 
 	private function getPageSubsectionTitle(): string

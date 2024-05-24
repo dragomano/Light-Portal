@@ -10,13 +10,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.02.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortalMigration;
 
 use Bugo\Compat\{Config, Db, Lang, Utils};
 use Bugo\LightPortal\Areas\Imports\AbstractCustomBlockImport;
+use Bugo\LightPortal\Enums\ContentType;
+use Bugo\LightPortal\Enums\Placement;
 use Bugo\LightPortal\Utils\ItemList;
 
 if (! defined('LP_NAME'))
@@ -47,10 +49,10 @@ class BlockImport extends AbstractCustomBlockImport
 			'base_href' => Utils::$context['form_action'],
 			'default_sort_col' => 'title',
 			'get_items' => [
-				'function' => [$this, 'getAll']
+				'function' => $this->getAll(...)
 			],
 			'get_count' => [
-				'function' => [$this, 'getTotalCount']
+				'function' => $this->getTotalCount(...)
 			],
 			'columns' => [
 				'title' => [
@@ -193,7 +195,7 @@ class BlockImport extends AbstractCustomBlockImport
 
 		$items = [];
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
-			$permissions = explode(',', $row['access']);
+			$permissions = explode(',', (string) $row['access']);
 
 			$perm = 0;
 			if (count($permissions) == 1 && $permissions[0] == -1) {
@@ -226,21 +228,21 @@ class BlockImport extends AbstractCustomBlockImport
 	private function getType(int $type): string
 	{
 		return match ($type) {
-			5  => 'bbc',
-			10 => 'php',
-			default => 'html',
+			5  => ContentType::BBC->name(),
+			10 => ContentType::PHP->name(),
+			default => ContentType::HTML->name(),
 		};
 	}
 
 	private function getPlacement(int $bar): string
 	{
 		return match ($bar) {
-			1 => 'left',
-			2 => 'right',
-			5 => 'footer',
-			6 => 'header',
-			7 => 'bottom',
-			default => 'top',
+			1 => Placement::LEFT->name(),
+			2 => Placement::RIGHT->name(),
+			5 => Placement::FOOTER->name(),
+			6 => Placement::HEADER->name(),
+			7 => Placement::BOTTOM->name(),
+			default => Placement::TOP->name(),
 		};
 	}
 }

@@ -59,7 +59,7 @@ final class ConfigArea
 					'areas' => [
 						'lp_settings' => [
 							'label' => Lang::$txt['settings'],
-							'function' => [$this, 'settingAreas'],
+							'function' => $this->settingAreas(...),
 							'icon' => 'features',
 							'permission' => [
 								'admin_forum',
@@ -74,7 +74,7 @@ final class ConfigArea
 						],
 						'lp_blocks' => [
 							'label' => Lang::$txt['lp_blocks'],
-							'function' => [$this, 'blockAreas'],
+							'function' => $this->blockAreas(...),
 							'icon' => 'packages',
 							'amt' => Utils::$context['lp_quantities']['active_blocks'],
 							'permission' => [
@@ -87,7 +87,7 @@ final class ConfigArea
 						],
 						'lp_pages' => [
 							'label' => Lang::$txt['lp_pages'],
-							'function' => [$this, 'pageAreas'],
+							'function' => $this->pageAreas(...),
 							'icon' => 'reports',
 							'amt' => $this->getPagesCount(),
 							'permission' => [
@@ -102,7 +102,7 @@ final class ConfigArea
 						],
 						'lp_categories' => [
 							'label' => Lang::$txt['lp_categories'],
-							'function' => [$this, 'categoryAreas'],
+							'function' => $this->categoryAreas(...),
 							'icon' => 'boards',
 							'amt' => Utils::$context['lp_quantities']['active_categories'],
 							'permission' => [
@@ -115,7 +115,7 @@ final class ConfigArea
 						],
 						'lp_tags' => [
 							'label' => Lang::$txt['lp_tags'],
-							'function' => [$this, 'tagAreas'],
+							'function' => $this->tagAreas(...),
 							'icon' => 'attachment',
 							'amt' => Utils::$context['lp_quantities']['active_tags'],
 							'permission' => [
@@ -128,7 +128,7 @@ final class ConfigArea
 						],
 						'lp_plugins' => [
 							'label' => Lang::$txt['lp_plugins'],
-							'function' => [$this, 'pluginAreas'],
+							'function' => $this->pluginAreas(...),
 							'icon' => 'modifications',
 							'amt' => Utils::$context['lp_enabled_plugins']
 								? count(Utils::$context['lp_enabled_plugins']) : 0,
@@ -361,7 +361,7 @@ final class ConfigArea
 		if (empty($this->request('area')) || empty(Utils::$context['template_layers']))
 			return;
 
-		if (str_contains($this->request('area'), 'lp_')) {
+		if (str_contains((string) $this->request('area'), 'lp_')) {
 			Theme::loadTemplate('LightPortal/ViewDebug');
 
 			Utils::$context['template_layers'][] = 'docs';

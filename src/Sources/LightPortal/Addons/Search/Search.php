@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.03.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\Search;
@@ -44,10 +44,10 @@ class Search extends Block
 	public function actions()
 	{
 		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'qsearch')
-			return call_user_func([$this, 'prepareQuickResults']);
+			return call_user_func($this->prepareQuickResults(...));
 
 		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'search')
-			return call_user_func([$this, 'showResults']);
+			return call_user_func($this->showResults(...));
 
 		return false;
 	}

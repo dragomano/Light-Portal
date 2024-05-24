@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 28.04.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -21,6 +21,8 @@ use Bugo\LightPortal\Areas\Area;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, ColorField, CustomField, NumberField};
 use Bugo\LightPortal\Areas\Fields\{RadioField, RangeField, SelectField, TextField, UrlField};
 use Bugo\LightPortal\Areas\Partials\IconSelect;
+use Bugo\LightPortal\Enums\PluginType;
+use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\Language;
 use Nette\PhpGenerator\{PhpFile, PhpNamespace, Printer};
@@ -31,12 +33,6 @@ if (! defined('LP_NAME'))
 class Handler extends Plugin
 {
 	use Area;
-
-	public const TAB_CONTENT = 'content';
-
-	public const TAB_COPYRIGHT = 'copyright';
-
-	public const TAB_TUNING = 'tuning';
 
 	private const PLUGIN_NAME = 'MyNewAddon';
 
@@ -157,7 +153,7 @@ class Handler extends Plugin
 		$this->prepareIconList();
 
 		TextField::make('name', Lang::$txt['lp_plugin_maker']['name'])
-			->setTab(self::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setAfter(Lang::$txt['lp_plugin_maker']['name_subtext'])
 			->required()
 			->setAttribute('maxlength', 255)
@@ -167,13 +163,13 @@ class Handler extends Plugin
 			->setValue(Utils::$context['lp_plugin']['name']);
 
 		SelectField::make('type', Lang::$txt['lp_plugin_maker']['type'])
-			->setTab(self::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setAttribute('@change', 'plugin.change($event.target.value)')
-			->setOptions(array_filter(Utils::$context['lp_plugin_types'], static fn($type) => $type !== 'ssi'))
+			->setOptions(array_filter(Utils::$context['lp_plugin_types'], static fn($type) => $type !== PluginType::SSI->name()))
 			->setValue(Utils::$context['lp_plugin']['type']);
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
-			->setTab(self::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new IconSelect(), [
 				'icon' => Utils::$context['lp_plugin']['icon'],
 				'type' => Utils::$context['lp_plugin']['type'],
@@ -182,26 +178,26 @@ class Handler extends Plugin
 		$this->setTitleField();
 
 		TextField::make('author', Lang::$txt['author'])
-			->setTab(self::TAB_COPYRIGHT)
+			->setTab('copyright')
 			->setAttribute('maxlength', 255)
 			->required()
 			->setValue(Utils::$context['lp_plugin']['author']);
 
 		TextField::make('email', Lang::$txt['email'])
-			->setTab(self::TAB_COPYRIGHT)
+			->setTab('copyright')
 			->setAttribute('maxlength', 255)
 			->setAttribute('style', 'width: 100%')
 			->setType('email')
 			->setValue(Utils::$context['lp_plugin']['email']);
 
 		UrlField::make('site', Lang::$txt['website'])
-			->setTab(self::TAB_COPYRIGHT)
+			->setTab('copyright')
 			->setAfter(Lang::$txt['lp_plugin_maker']['site_subtext'])
 			->placeholder('https://custom.simplemachines.org/index.php?mod=4244')
 			->setValue(Utils::$context['lp_plugin']['site']);
 
 		SelectField::make('license', Lang::$txt['lp_plugin_maker']['license'])
-			->setTab(self::TAB_COPYRIGHT)
+			->setTab('copyright')
 			->setOptions([
 				'gpl' => 'GPL 3.0+',
 				'mit' => 'MIT',
@@ -281,7 +277,7 @@ class Handler extends Plugin
 			</div>';
 
 		CustomField::make('title', Lang::$txt['lp_title'] . ' | ' . Lang::$txt['lp_page_description'])
-			->setTab(self::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue($value);
 	}
 
@@ -679,7 +675,7 @@ class Handler extends Plugin
 
 					if (in_array($option['type'], ['multiselect', 'select'])) {
 						if (! empty($option['variants'])) {
-							$variants  = explode('|', $option['variants']);
+							$variants  = explode('|', (string) $option['variants']);
 							$variants = "'" . implode("','", $variants) . "'";
 
 							$languages[$lang][] = PHP_EOL . "\t'{$option['name']}_set' => [$variants],";
@@ -705,8 +701,8 @@ class Handler extends Plugin
 		$params = [];
 		Utils::$context['lp_plugin']['block_options'] = [];
 		foreach (Utils::$context['lp_plugin']['options'] as $id => $option) {
-			if (str_contains($option['name'], $type . '_')) {
-				$option['name'] = str_replace($type . '_', '', $option['name']);
+			if (str_contains((string) $option['name'], $type . '_')) {
+				$option['name'] = str_replace($type . '_', '', (string) $option['name']);
 				$params[] = $option;
 				Utils::$context['lp_plugin']['block_options'][$id] = $option;
 				unset(Utils::$context['lp_plugin']['options'][$id]);

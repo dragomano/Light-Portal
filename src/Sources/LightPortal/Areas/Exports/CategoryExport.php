@@ -26,7 +26,7 @@ if (! defined('SMF'))
 
 final class CategoryExport extends AbstractExport
 {
-	private CategoryRepository $repository;
+	private readonly CategoryRepository $repository;
 
 	public function __construct()
 	{
@@ -54,10 +54,10 @@ final class CategoryExport extends AbstractExport
 			'base_href' => Utils::$context['form_action'],
 			'default_sort_col' => 'id',
 			'get_items' => [
-				'function' => [$this->repository, 'getAll']
+				'function' => $this->repository->getAll(...)
 			],
 			'get_count' => [
-				'function' => [$this->repository, 'getTotalCount']
+				'function' => $this->repository->getTotalCount(...)
 			],
 			'columns' => [
 				'id' => [

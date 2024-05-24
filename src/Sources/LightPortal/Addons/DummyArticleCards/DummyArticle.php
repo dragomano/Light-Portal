@@ -25,7 +25,7 @@ if (! defined('SMF'))
 
 class DummyArticle extends AbstractArticle
 {
-	private string $limit;
+	private readonly string $limit;
 
 	public function __construct()
 	{

@@ -39,7 +39,7 @@ final class BasicConfig extends AbstractConfig
 		Utils::$context['post_url']    = Utils::$context['form_action'] . ';save';
 
 		$this->addDefaultValues([
-			'lp_frontpage_title'           => str_replace(["'", "\""], "", Utils::$context['forum_name']),
+			'lp_frontpage_title'           => str_replace(["'", "\""], "", (string) Utils::$context['forum_name']),
 			'lp_show_views_and_comments'   => 1,
 			'lp_frontpage_article_sorting' => 1,
 			'lp_num_items_per_page'        => 10,
@@ -74,7 +74,7 @@ final class BasicConfig extends AbstractConfig
 				'text',
 				'lp_frontpage_title',
 				'size' => '80" placeholder="' . str_replace(
-					["'", "\""], "", Utils::$context['forum_name']
+					["'", "\""], "", (string) Utils::$context['forum_name']
 				) . ' - ' . Lang::$txt['lp_portal'],
 				'javascript' => $javascript
 			],

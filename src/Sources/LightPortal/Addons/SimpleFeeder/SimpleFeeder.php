@@ -10,15 +10,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.04.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleFeeder;
 
 use Bugo\Compat\{Config, Lang, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, UrlField};
+use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Utils\DateTime;
 use IntlException;
 
@@ -57,13 +57,13 @@ class SimpleFeeder extends Block
 			return;
 
 		UrlField::make('url', Lang::$txt['lp_simple_feeder']['url'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->required()
 			->placeholder(Config::$scripturl . '?action=.xml;type=rss2')
 			->setValue(Utils::$context['lp_block']['options']['url']);
 
 		CheckboxField::make('show_text', Lang::$txt['lp_simple_feeder']['show_text'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue(Utils::$context['lp_block']['options']['show_text']);
 	}
 
@@ -104,7 +104,7 @@ class SimpleFeeder extends Block
 			<div class="block">
 				<span class="floatleft">
 					<h5><a href="', $item->link, '">', $item->title, '</a></h5>
-					<em>', DateTime::relative(strtotime($item->pubDate)), '</em>
+					<em>', DateTime::relative(strtotime((string) $item->pubDate)), '</em>
 				</span>
 			</div>';
 

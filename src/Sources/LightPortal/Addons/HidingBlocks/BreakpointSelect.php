@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\HidingBlocks;
@@ -25,7 +25,7 @@ final class BreakpointSelect extends AbstractPartial
 		$currentBreakpoints = Utils::$context['lp_block']['options']['hidden_breakpoints'] ?? [];
 		$currentBreakpoints = is_array($currentBreakpoints)
 			? $currentBreakpoints
-			: explode(',', $currentBreakpoints);
+			: explode(',', (string) $currentBreakpoints);
 
 		$breakpoints = array_combine(
 			['xs', 'sm', 'md', 'lg', 'xl'], Lang::$txt['lp_hiding_blocks']['hidden_breakpoints_set']

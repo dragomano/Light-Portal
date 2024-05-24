@@ -16,14 +16,6 @@ namespace Bugo\LightPortal\Actions;
 
 interface PageInterface extends ActionInterface
 {
-	public const STATUS_INACTIVE = 0;
-
-	public const STATUS_ACTIVE = 1;
-
-	public const STATUS_UNAPPROVED = 2;
-
-	public const STATUS_INTERNAL = 3;
-
 	public function showAsCards(PageListInterface $entity): void;
 
 	public function getList(): array;

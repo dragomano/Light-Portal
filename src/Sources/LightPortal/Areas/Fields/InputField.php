@@ -21,8 +21,6 @@ class InputField extends AbstractField
 {
 	public function __construct(string $name, string $label)
 	{
-		$this
-			->setName($name)
-			->setLabel($label);
+		parent::__construct($name, $label);
 	}
 }
