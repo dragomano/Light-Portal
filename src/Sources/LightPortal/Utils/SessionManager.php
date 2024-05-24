@@ -17,6 +17,7 @@ namespace Bugo\LightPortal\Utils;
 use Bugo\Compat\{Db, User, Utils};
 use Bugo\LightPortal\Actions\PageInterface;
 use Bugo\LightPortal\Actions\PageListInterface;
+use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Helper;
 
 final class SessionManager
@@ -45,7 +46,7 @@ final class SessionManager
 				FROM {db_prefix}lp_blocks
 				WHERE status = {int:status}',
 				[
-					'status' => PageInterface::STATUS_ACTIVE,
+					'status' => Status::ACTIVE->value,
 				]
 			);
 
@@ -70,7 +71,7 @@ final class SessionManager
 				WHERE status = {int:status}' . (Utils::$context['allow_light_portal_manage_pages_any'] ? '' : '
 					AND author_id = {int:author}'),
 				[
-					'status' => PageInterface::STATUS_ACTIVE,
+					'status' => Status::ACTIVE->value,
 					'author' => User::$info['id'],
 				]
 			);
@@ -117,7 +118,7 @@ final class SessionManager
 				FROM {db_prefix}lp_pages
 				WHERE status = {int:status}',
 				[
-					'status' => PageInterface::STATUS_UNAPPROVED,
+					'status' => Status::UNAPPROVED->value,
 				]
 			);
 
@@ -139,7 +140,7 @@ final class SessionManager
 				FROM {db_prefix}lp_pages
 				WHERE status = {int:status}',
 				[
-					'status' => PageInterface::STATUS_INTERNAL,
+					'status' => Status::INTERNAL->value,
 				]
 			);
 
@@ -161,7 +162,7 @@ final class SessionManager
 				FROM {db_prefix}lp_categories
 				WHERE status = {int:status}',
 				[
-					'status' => PageListInterface::STATUS_ACTIVE,
+					'status' => Status::ACTIVE->value,
 				]
 			);
 
@@ -183,7 +184,7 @@ final class SessionManager
 				FROM {db_prefix}lp_tags
 				WHERE status = {int:status}',
 				[
-					'status' => PageListInterface::STATUS_ACTIVE,
+					'status' => Status::ACTIVE->value,
 				]
 			);
 

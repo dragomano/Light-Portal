@@ -21,6 +21,7 @@ use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, Te
 use Bugo\LightPortal\Areas\Partials\{CategorySelect, PageAuthorSelect, PageIconSelect};
 use Bugo\LightPortal\Areas\Partials\{PermissionSelect, StatusSelect, TagSelect};
 use Bugo\LightPortal\Areas\Validators\PageValidator;
+use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Models\PageModel;
 use Bugo\LightPortal\Repositories\PageRepository;
@@ -482,9 +483,9 @@ final class PageArea
 			),
 			[
 				'search'            => Utils::$smcFunc['strtolower']($searchParams['string']),
-				'unapproved'        => PageInterface::STATUS_UNAPPROVED,
-				'internal'          => PageInterface::STATUS_INTERNAL,
-				'included_statuses' => [PageInterface::STATUS_INACTIVE, PageInterface::STATUS_ACTIVE],
+				'unapproved'        => Status::UNAPPROVED->value,
+				'internal'          => Status::INTERNAL->value,
+				'included_statuses' => [Status::INACTIVE->value, Status::ACTIVE->value],
 			],
 		];
 	}
@@ -493,7 +494,7 @@ final class PageArea
 	{
 		$this->browseType = 'all';
 		$this->type = '';
-		$this->status = PageInterface::STATUS_ACTIVE;
+		$this->status = Status::ACTIVE->value;
 
 		if ($this->request()->has('u')) {
 			$this->browseType = 'own';
@@ -504,7 +505,7 @@ final class PageArea
 		} elseif ($this->request()->has('internal')) {
 			$this->browseType = 'int';
 			$this->type = ';internal';
-			$this->status = PageInterface::STATUS_INTERNAL;
+			$this->status = Status::INTERNAL->value;
 		}
 	}
 

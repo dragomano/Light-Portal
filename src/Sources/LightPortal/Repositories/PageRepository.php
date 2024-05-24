@@ -16,6 +16,7 @@ declare(strict_types=1);
 
 namespace Bugo\LightPortal\Repositories;
 
+use Bugo\LightPortal\Enums\Status;
 use Bugo\Compat\{Config, Db, Logging, Lang};
 use Bugo\Compat\{Msg, Security, User, Utils};
 use Bugo\LightPortal\Actions\PageInterface;
@@ -443,7 +444,7 @@ final class PageRepository extends AbstractRepository
 					AND status IN ({array_int:statuses})',
 			[
 				'item'     => $item,
-				'statuses' => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
+				'statuses' => [Status::ACTIVE->value, Status::INTERNAL->value],
 			]
 		);
 	}
@@ -465,7 +466,7 @@ final class PageRepository extends AbstractRepository
 					AND pp.name = {literal:show_in_menu}
 					AND pp.value = {string:show_in_menu}',
 				[
-					'statuses'     => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
+					'statuses'     => [Status::ACTIVE->value, Status::INTERNAL->value],
 					'current_time' => time(),
 					'show_in_menu' => '1',
 				]
@@ -642,7 +643,7 @@ final class PageRepository extends AbstractRepository
 			[
 				'lang'          => User::$info['language'],
 				'fallback_lang' => Config::$language,
-				'status'        => PageListInterface::STATUS_ACTIVE,
+				'status'        => Status::ACTIVE->value,
 				'page_id'       => $item,
 			]
 		);

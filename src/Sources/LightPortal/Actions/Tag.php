@@ -16,6 +16,7 @@ namespace Bugo\LightPortal\Actions;
 
 use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, User, Utils};
+use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Utils\ItemList;
 use IntlException;
 
@@ -109,8 +110,8 @@ final class Tag extends AbstractPageList
 				'lang'          => User::$info['language'],
 				'fallback_lang' => Config::$language,
 				'id'            => Utils::$context['current_tag'],
-				'status'        => PageListInterface::STATUS_ACTIVE,
-				'statuses'      => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
+				'status'        => Status::ACTIVE->value,
+				'statuses'      => [Status::ACTIVE->value, Status::INTERNAL->value],
 				'current_time'  => time(),
 				'permissions'   => $this->getPermissions(),
 				'sort'          => $sort,
@@ -140,8 +141,8 @@ final class Tag extends AbstractPageList
 				AND p.permissions IN ({array_int:permissions})',
 			[
 				'id'           => Utils::$context['current_tag'],
-				'status'       => PageListInterface::STATUS_ACTIVE,
-				'statuses'     => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
+				'status'       => Status::ACTIVE->value,
+				'statuses'     => [Status::ACTIVE->value, Status::INTERNAL->value],
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions(),
 			]
@@ -238,10 +239,10 @@ final class Tag extends AbstractPageList
 			[
 				'lang'          => User::$info['language'],
 				'fallback_lang' => Config::$language,
-				'statuses'      => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
+				'statuses'      => [Status::ACTIVE->value, Status::INTERNAL->value],
 				'current_time'  => time(),
 				'permissions'   => $this->getPermissions(),
-				'status'        => PageListInterface::STATUS_ACTIVE,
+				'status'        => Status::ACTIVE->value,
 				'sort'          => $sort,
 				'start'         => $start,
 				'limit'         => $limit,

@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * PageInterface.php
+ * Status.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -12,11 +12,16 @@
  * @version 2.6
  */
 
-namespace Bugo\LightPortal\Actions;
+namespace Bugo\LightPortal\Enums;
 
-interface PageInterface extends ActionInterface
+use Bugo\LightPortal\Enums\Traits\HasValues;
+
+enum Status: int
 {
-	public function showAsCards(PageListInterface $entity): void;
+	use HasValues;
 
-	public function getList(): array;
+	case INACTIVE = 0;
+	case ACTIVE = 1;
+	case UNAPPROVED = 2;
+	case INTERNAL = 3;
 }

@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Lists;
 
-use Bugo\LightPortal\Actions\PageInterface;
+use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Repositories\PageRepository;
 use IntlException;
 
@@ -48,7 +48,7 @@ final class PageList implements ListInterface
 			$this->repository->getTotalCount(),
 			'p.page_id DESC',
 			'AND p.status = {int:status}',
-			['status' => PageInterface::STATUS_ACTIVE]
+			['status' => Status::ACTIVE->value]
 		);
 	}
 }

@@ -16,6 +16,7 @@ namespace Bugo\LightPortal\Actions;
 
 use Bugo\Compat\{Config, Db};
 use Bugo\Compat\{Lang, Theme, Utils};
+use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Utils\Content;
 
@@ -103,7 +104,7 @@ final class Block implements BlockInterface
 				WHERE b.status = {int:status}
 				ORDER BY b.placement, b.priority',
 				[
-					'status' => self::STATUS_ACTIVE,
+					'status' => Status::ACTIVE->value,
 				]
 			);
 

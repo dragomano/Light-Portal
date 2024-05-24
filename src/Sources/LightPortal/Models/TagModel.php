@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Models;
 
-use Bugo\LightPortal\Actions\PageListInterface;
+use Bugo\LightPortal\Enums\Status;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -35,7 +35,7 @@ class TagModel extends AbstractModel
 
 		$this->icon = $postData['icon'] ?? $currentTag['icon'] ?? '';
 
-		$this->status = $currentTag['status'] ?? PageListInterface::STATUS_ACTIVE;
+		$this->status = $currentTag['status'] ?? Status::ACTIVE->value;
 	}
 
 	protected static function getTableName(): string

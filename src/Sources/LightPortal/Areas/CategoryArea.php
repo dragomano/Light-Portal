@@ -15,11 +15,11 @@
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, ErrorHandler, Lang, Security, Theme, Utils};
-use Bugo\LightPortal\Actions\PageListInterface;
 use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Areas\Fields\TextareaField;
 use Bugo\LightPortal\Areas\Partials\IconSelect;
 use Bugo\LightPortal\Areas\Validators\CategoryValidator;
+use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Models\CategoryModel;
 use Bugo\LightPortal\Repositories\CategoryRepository;
@@ -138,7 +138,7 @@ final class CategoryArea
 						'function' => static fn($entry) => /** @lang text */ '
 							<div
 								data-id="' . $entry['id'] . '"
-								x-data="{ status: ' . ($entry['status'] === PageListInterface::STATUS_ACTIVE ? 'true' : 'false') . ' }"
+								x-data="{ status: ' . ($entry['status'] === Status::ACTIVE->value ? 'true' : 'false') . ' }"
 								x-init="$watch(\'status\', value => category.toggleStatus($el))"
 							>
 								<span

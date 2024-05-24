@@ -15,8 +15,8 @@
 namespace Bugo\LightPortal\Articles;
 
 use Bugo\Compat\{BBCodeParser, Config, Db, Lang, User, Utils};
-use Bugo\LightPortal\Actions\PageInterface;
 use Bugo\LightPortal\Actions\PageListInterface;
+use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Utils\Content;
 
 if (! defined('SMF'))
@@ -42,7 +42,7 @@ class PageArticle extends AbstractArticle
 		$this->params = [
 			'lang'                => User::$info['language'],
 			'fallback_lang'       => Config::$language,
-			'status'              => PageInterface::STATUS_ACTIVE,
+			'status'              => Status::ACTIVE->value,
 			'current_time'        => time(),
 			'permissions'         => $this->getPermissions(),
 			'selected_categories' => $this->selectedCategories,
@@ -277,7 +277,7 @@ class PageArticle extends AbstractArticle
 				'lang'          => User::$info['language'],
 				'fallback_lang' => Config::$language,
 				'pages'         => array_keys($pages),
-				'status'        => PageListInterface::STATUS_ACTIVE,
+				'status'        => Status::ACTIVE->value,
 			]
 		);
 
