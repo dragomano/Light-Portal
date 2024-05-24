@@ -29,7 +29,7 @@ final class Comment implements ActionInterface
 
 	private CommentRepository $repository;
 
-	public function __construct(private string $pageSlug = '')
+	public function __construct(private readonly string $pageSlug = '')
 	{
 		$this->repository = new CommentRepository();
 	}
@@ -55,7 +55,7 @@ final class Comment implements ActionInterface
 	/**
 	 * @throws IntlException
 	 */
-	private function get(): void
+	private function get(): never
 	{
 		$comments = $this->cache('page_' . $this->pageSlug . '_comments')
 			->setFallback(CommentRepository::class, 'getByPageId', Utils::$context['lp_page']['id']);
@@ -98,7 +98,7 @@ final class Comment implements ActionInterface
 	/**
 	 * @throws IntlException
 	 */
-	private function add(): void
+	private function add(): never
 	{
 		$result = [
 			'id' => null,
@@ -167,7 +167,7 @@ final class Comment implements ActionInterface
 		exit(json_encode($result));
 	}
 
-	private function update(): void
+	private function update(): never
 	{
 		$data = $this->request()->json();
 
@@ -179,9 +179,10 @@ final class Comment implements ActionInterface
 			exit(json_encode($result));
 
 		$item    = $data['comment_id'];
-		$message = Utils::htmlspecialchars($data['message']);
+		$message = trim((string) $data['message']);
+		$message = Utils::htmlspecialchars($message);
 
-		if (empty($item) || empty($message) || empty(trim($message)))
+		if (empty($item) || $message === '')
 			exit(json_encode($result));
 
 		$this->repository->update([
@@ -200,7 +201,7 @@ final class Comment implements ActionInterface
 		exit(json_encode($result));
 	}
 
-	private function remove(): void
+	private function remove(): never
 	{
 		$item = (int) $this->request()->json('comment_id');
 

@@ -16,6 +16,9 @@ namespace Bugo\LightPortal\Actions;
 
 use SMF\Actions\BoardIndex;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 final class BoardIndexNext implements ActionInterface
 {
 	public function show(): void

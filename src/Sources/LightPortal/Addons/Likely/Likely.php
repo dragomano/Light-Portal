@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.04.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\Likely;
@@ -67,7 +67,7 @@ class Likely extends Block
 				'data'  => $this->buttons,
 				'value' => is_array(Utils::$context['lp_block']['options']['buttons'])
 					? Utils::$context['lp_block']['options']['buttons']
-					: explode(',', Utils::$context['lp_block']['options']['buttons'])
+					: explode(',', (string) Utils::$context['lp_block']['options']['buttons'])
 			]);
 
 		RadioField::make('size', Lang::$txt['lp_likely']['size'])
@@ -96,7 +96,7 @@ class Likely extends Block
 			<div class="centertext likely_links">
 				<div class="likely likely-', $parameters['size'], (empty($parameters['dark_mode']) ? '' : ' likely-dark-theme'), '">';
 
-		$buttons = is_array($parameters['buttons']) ? $parameters['buttons'] : explode(',', $parameters['buttons']);
+		$buttons = is_array($parameters['buttons']) ? $parameters['buttons'] : explode(',', (string) $parameters['buttons']);
 
 		foreach ($buttons as $service) {
 			if (empty(Lang::$txt['lp_likely']['buttons_set'][$service]))

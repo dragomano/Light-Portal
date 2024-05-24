@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.04.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\Chart;
@@ -140,12 +140,12 @@ class Chart extends Block
 		$type = $parameters['chart_type'] ?? $this->params['chart_type'];
 
 		$datasets = Utils::jsonDecode($parameters['datasets'] ?? $this->params['datasets'], true);
-		array_walk($datasets, static fn(&$val) => $val['data'] = explode(', ', $val['data']));
+		array_walk($datasets, static fn(&$val) => $val['data'] = explode(', ', (string) $val['data']));
 		$datasets = json_encode($datasets);
 
 		$labels = $parameters['labels'] ?? $this->params['labels'];
 		$labels = implode(',', array_map(
-			static fn($label) => Utils::escapeJavaScript(trim($label)), explode(',', $labels))
+			static fn($label) => Utils::escapeJavaScript(trim($label)), explode(',', (string) $labels))
 		);
 
 		Theme::loadJavaScriptFile('light_portal/chart/chart.umd.min.js', ['minimize' => true]);

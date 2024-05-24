@@ -377,7 +377,7 @@ final class PluginArea
 		if (empty($snakeName) || empty($type = Utils::$context['lp_loaded_addons'][$snakeName]['type'] ?? ''))
 			return [Lang::$txt['not_applicable'] => ''];
 
-		$types = explode(' ', $type);
+		$types = explode(' ', (string) $type);
 		if (isset($types[1])) {
 			$allTypes = [];
 			foreach ($types as $t) {

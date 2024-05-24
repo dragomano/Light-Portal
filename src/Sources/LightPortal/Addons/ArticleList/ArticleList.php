@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.04.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\ArticleList;
@@ -111,7 +111,7 @@ class ArticleList extends Block
 				AND m.approved = {int:is_approved}
 			ORDER BY t.id_last_msg DESC',
 			[
-				'topics'      => explode(',', $parameters['include_topics']),
+				'topics'      => explode(',', (string) $parameters['include_topics']),
 				'is_approved' => 1,
 			]
 		);
@@ -124,7 +124,7 @@ class ArticleList extends Block
 			$value = null;
 			$image = empty($parameters['seek_images'])
 				? ''
-				: preg_match('/\[img.*]([^]\[]+)\[\/img]/U', $row['body'], $value);
+				: preg_match('/\[img.*]([^]\[]+)\[\/img]/U', (string) $row['body'], $value);
 			$image = $value ? array_pop($value) : ($image ?: Config::$modSettings['lp_image_placeholder'] ?? '');
 
 			$body = BBCodeParser::load()->parse($row['body'], (bool) $row['smileys_enabled'], $row['id_msg']);
@@ -161,7 +161,7 @@ class ArticleList extends Block
 				'status'       => 1,
 				'current_time' => time(),
 				'permissions'  => $this->getPermissions(),
-				'pages'        => explode(',', $parameters['include_pages']),
+				'pages'        => explode(',', (string) $parameters['include_pages']),
 			]
 		);
 

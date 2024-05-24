@@ -31,7 +31,7 @@ class PageArticle extends AbstractArticle
 	public function init(): void
 	{
 		$this->selectedCategories = empty(Config::$modSettings['lp_frontpage_categories'])
-			? [] : explode(',', Config::$modSettings['lp_frontpage_categories']);
+			? [] : explode(',', (string) Config::$modSettings['lp_frontpage_categories']);
 
 		if (empty($this->selectedCategories) && $this->isFrontpageMode('all_pages')) {
 			$this->selectedCategories = [0];
@@ -197,7 +197,7 @@ class PageArticle extends AbstractArticle
 
 	private function getTitle(array $titles, array $row): string
 	{
-		return $this->getTranslatedTitle($titles[$row['page_id']]);
+		return $this->getTranslatedTitle($titles[$row['page_id']] ?? []);
 	}
 
 	private function getViewsData(array $row): array

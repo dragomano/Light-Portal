@@ -66,10 +66,10 @@ final class CategoryArea
 			'base_href' => Utils::$context['form_action'],
 			'default_sort_col' => 'priority',
 			'get_items' => [
-				'function' => [$this->repository, 'getAll']
+				'function' => $this->repository->getAll(...)
 			],
 			'get_count' => [
-				'function' => [$this->repository, 'getTotalCount']
+				'function' => $this->repository->getTotalCount(...)
 			],
 			'columns' => [
 				'id' => [

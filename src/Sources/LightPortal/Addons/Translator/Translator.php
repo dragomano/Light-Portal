@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\Translator;
@@ -81,7 +81,7 @@ class Translator extends Block
 		if ($parameters['engine'] === 'yandex') {
 			echo '
 		<div id="ytWidget', $data->id, '" class="centertext noup"></div>
-		<script src="https://translate.yandex.net/website-widget/v1/widget.js?widgetId=ytWidget', $data->id, '&amp;pageLang=', substr(Config::$language, 0, 2), '&amp;widgetTheme=', $parameters['widget_theme'], '&amp;autoMode=', (bool) $parameters['auto_mode'], '"></script>';
+		<script src="https://translate.yandex.net/website-widget/v1/widget.js?widgetId=ytWidget', $data->id, '&amp;pageLang=', substr(Config::$language ?? '', 0, 2), '&amp;widgetTheme=', $parameters['widget_theme'], '&amp;autoMode=', (bool) $parameters['auto_mode'], '"></script>';
 		}
 
 		if ($parameters['engine'] === 'google') {
@@ -91,7 +91,7 @@ class Translator extends Block
 		<script>
 			function googleTranslateElementInit() {
 				new google.translate.TranslateElement({
-					pageLanguage: "', substr(Config::$language, 0, 2), '"
+					pageLanguage: "', substr(Config::$language ?? '', 0, 2), '"
 				}, "google_translate_element', $data->id, '");
 			}
 		</script>';

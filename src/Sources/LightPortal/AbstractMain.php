@@ -66,13 +66,13 @@ abstract class AbstractMain
 		Utils::$context['lp_content_types']       = $this->getContentTypes();
 
 		Utils::$context['lp_enabled_plugins'] = empty(Config::$modSettings['lp_enabled_plugins'])
-			? [] : explode(',', Config::$modSettings['lp_enabled_plugins']);
+			? [] : explode(',', (string) Config::$modSettings['lp_enabled_plugins']);
 
 		Utils::$context['lp_frontpage_pages'] = empty(Config::$modSettings['lp_frontpage_pages'])
-			? [] : explode(',', Config::$modSettings['lp_frontpage_pages']);
+			? [] : explode(',', (string) Config::$modSettings['lp_frontpage_pages']);
 
 		Utils::$context['lp_frontpage_topics'] = empty(Config::$modSettings['lp_frontpage_topics'])
-			? [] : explode(',', Config::$modSettings['lp_frontpage_topics']);
+			? [] : explode(',', (string) Config::$modSettings['lp_frontpage_topics']);
 
 		Utils::$context['lp_header_panel_width'] = empty(Config::$modSettings['lp_header_panel_width'])
 			? 12 : (int) Config::$modSettings['lp_header_panel_width'];
@@ -206,7 +206,7 @@ abstract class AbstractMain
 			return;
 		}
 
-		$oldUrl = explode('#', Utils::$context['linktree'][1]['url']);
+		$oldUrl = explode('#', (string) Utils::$context['linktree'][1]['url']);
 
 		if (empty($oldUrl[1]))
 			return;
@@ -423,7 +423,7 @@ abstract class AbstractMain
 	protected function getDisabledActions(): array
 	{
 		$disabledActions = empty(Config::$modSettings['lp_disabled_actions'])
-			? [] : explode(',', Config::$modSettings['lp_disabled_actions']);
+			? [] : explode(',', (string) Config::$modSettings['lp_disabled_actions']);
 
 		$disabledActions[] = 'home';
 

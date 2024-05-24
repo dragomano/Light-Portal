@@ -26,7 +26,7 @@ if (! defined('SMF'))
 
 final class PageExport extends AbstractExport
 {
-	private PageRepository $repository;
+	private readonly PageRepository $repository;
 
 	public function __construct()
 	{
@@ -56,10 +56,10 @@ final class PageExport extends AbstractExport
 			'base_href' => Utils::$context['form_action'],
 			'default_sort_col' => 'id',
 			'get_items' => [
-				'function' => [$this->repository, 'getAll']
+				'function' => $this->repository->getAll(...)
 			],
 			'get_count' => [
-				'function' => [$this->repository, 'getTotalCount']
+				'function' => $this->repository->getTotalCount(...)
 			],
 			'columns' => [
 				'id' => [
@@ -181,12 +181,12 @@ final class PageExport extends AbstractExport
 				$items[$row['page_id']]['params'][$row['name']] = $row['value'];
 			}
 
-			if ($row['message'] && trim($row['message'])) {
+			if ($row['message'] && trim((string) $row['message'])) {
 				$items[$row['page_id']]['comments'][$row['id']] = [
 					'id'         => $row['id'],
 					'parent_id'  => $row['parent_id'],
 					'author_id'  => $row['com_author_id'],
-					'message'    => trim($row['message']),
+					'message'    => trim((string) $row['message']),
 					'created_at' => $row['com_created_at'],
 				];
 			}

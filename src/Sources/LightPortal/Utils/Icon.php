@@ -18,9 +18,9 @@ final class Icon
 {
 	public static function get(string $name, string $title = '', string $prefix = ''): string
 	{
-		$icon = self::all()[$name];
+		$icon = (string) self::all()[$name];
 
-		if (empty($title)) {
+		if ($title === '') {
 			return $icon;
 		}
 

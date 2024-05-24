@@ -137,7 +137,7 @@ trait Helper
 				[
 					'themes' => empty(Config::$modSettings['knownThemes'])
 						? []
-						: explode(',', Config::$modSettings['knownThemes']),
+						: explode(',', (string) Config::$modSettings['knownThemes']),
 				]
 			);
 
@@ -195,7 +195,7 @@ trait Helper
 
 	public function getSnakeName(string $value): string
 	{
-		return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $value));
+		return strtolower((string) preg_replace('/(?<!^)[A-Z]/', '_$0', $value));
 	}
 
 	public function getCamelName(string $value): string
@@ -208,7 +208,7 @@ trait Helper
 		$text = html_entity_decode($text);
 		$text = preg_replace('#(<cite.*?>).*?(</cite>)#', '$1$2', $text);
 
-		return Utils::shorten(strip_tags($text), $length) ?: '...';
+		return Utils::shorten(strip_tags((string) $text), $length) ?: '...';
 	}
 
 	/**
@@ -279,7 +279,7 @@ trait Helper
 
 		$result = $value['src'] ??= '';
 
-		if (empty($result) || str_contains($result, Config::$modSettings['smileys_url']))
+		if (empty($result) || str_contains($result, (string) Config::$modSettings['smileys_url']))
 			return '';
 
 		return $result;

@@ -44,7 +44,7 @@ final class BlockRepository extends AbstractRepository
 				'priority'    => $row['priority'],
 				'permissions' => $row['permissions'],
 				'status'      => $row['status'],
-				'areas'       => str_replace(',', PHP_EOL, $row['areas']),
+				'areas'       => str_replace(',', PHP_EOL, (string) $row['areas']),
 			];
 
 			$currentBlocks[$row['placement']][$row['block_id']]['titles'][$row['lang']] = $row['title'];

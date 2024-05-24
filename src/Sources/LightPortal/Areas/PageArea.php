@@ -105,11 +105,11 @@ final class PageArea
 			),
 			'default_sort_col' => 'date',
 			'get_items' => [
-				'function' => [$this->repository, 'getAll'],
+				'function' => $this->repository->getAll(...),
 				'params'   => $this->params,
 			],
 			'get_count' => [
-				'function' => [$this->repository, 'getTotalCount'],
+				'function' => $this->repository->getTotalCount(...),
 				'params'   => $this->params,
 			],
 			'columns' => [
@@ -172,7 +172,7 @@ final class PageArea
 					],
 					'data' => [
 						'function' => fn($entry) => '<i class="' . $this->getPageIcon($entry['type']) . '" title="' . (
-								Utils::$context['lp_content_types'][$entry['type']] ?? strtoupper($entry['type'])
+								Utils::$context['lp_content_types'][$entry['type']] ?? strtoupper((string) $entry['type'])
 							) . '"></i> <a class="bbc_link' . (
 							$entry['is_front']
 								? ' highlight" href="' . Config::$scripturl
@@ -454,13 +454,13 @@ final class PageArea
 
 	private function calculateParams(): void
 	{
-		$searchParamString = trim($this->request('search', ''));
+		$searchParamString = trim((string) $this->request('search', ''));
 		$searchParams = [
 			'string' => Utils::htmlspecialchars($searchParamString),
 		];
 
 		Utils::$context['search_params'] = empty($searchParamString)
-			? '' : base64_encode(Utils::$smcFunc['json_encode']($searchParams));
+			? '' : base64_encode((string) Utils::$smcFunc['json_encode']($searchParams));
 
 		Utils::$context['search'] = [
 			'string' => $searchParams['string'],

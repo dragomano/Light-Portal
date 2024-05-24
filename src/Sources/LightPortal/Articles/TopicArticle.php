@@ -28,7 +28,7 @@ class TopicArticle extends AbstractArticle
 	public function init(): void
 	{
 		$this->selectedBoards = empty(Config::$modSettings['lp_frontpage_boards'])
-			? [] : explode(',', Config::$modSettings['lp_frontpage_boards']);
+			? [] : explode(',', (string) Config::$modSettings['lp_frontpage_boards']);
 
 		$this->sorting = (int) (Config::$modSettings['lp_frontpage_article_sorting'] ?? 0);
 
@@ -274,7 +274,7 @@ class TopicArticle extends AbstractArticle
 		if (empty(Config::$modSettings['lp_show_teaser']))
 			return;
 
-		$body = $this->sorting === 0 ? $row['last_body'] : $row['body'];
+		$body = (string) ($this->sorting === 0 ? $row['last_body'] : $row['body']);
 
 		Lang::censorText($body);
 

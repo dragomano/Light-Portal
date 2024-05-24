@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.04.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\PageList;
@@ -88,7 +88,7 @@ class PageList extends Block
 
 		$allCategories = $this->getEntityData('category');
 
-		$categories = empty($parameters['categories']) ? null : explode(',', $parameters['categories']);
+		$categories = empty($parameters['categories']) ? null : explode(',', (string) $parameters['categories']);
 
 		$result = Utils::$smcFunc['db_query']('', '
 			SELECT

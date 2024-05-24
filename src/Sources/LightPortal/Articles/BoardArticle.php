@@ -28,7 +28,7 @@ class BoardArticle extends AbstractArticle
 	public function init(): void
 	{
 		$this->selectedBoards = empty(Config::$modSettings['lp_frontpage_boards'])
-			? [] : explode(',', Config::$modSettings['lp_frontpage_boards']);
+			? [] : explode(',', (string) Config::$modSettings['lp_frontpage_boards']);
 
 		$this->sorting = (int) (Config::$modSettings['lp_frontpage_article_sorting'] ?? 0);
 
@@ -193,7 +193,7 @@ class BoardArticle extends AbstractArticle
 		}
 
 		if ($row['is_redirect'] && empty($image)) {
-			$image = 'https://mini.s-shot.ru/300x200/JPEG/300/Z100/?' . urlencode(trim($row['redirect']));
+			$image = 'https://mini.s-shot.ru/300x200/JPEG/300/Z100/?' . urlencode(trim((string) $row['redirect']));
 		}
 
 		return $image;

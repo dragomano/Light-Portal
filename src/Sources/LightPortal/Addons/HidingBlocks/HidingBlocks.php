@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.04.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\HidingBlocks;
@@ -35,7 +35,7 @@ class HidingBlocks extends Plugin
 			if (empty($block['parameters']) || empty($block['parameters']['hidden_breakpoints']))
 				continue;
 
-			$breakpoints = array_flip(explode(',', $block['parameters']['hidden_breakpoints']));
+			$breakpoints = array_flip(explode(',', (string) $block['parameters']['hidden_breakpoints']));
 			foreach ($this->classes as $class) {
 				if (array_key_exists($class, $breakpoints)) {
 					if (empty(Utils::$context['lp_active_blocks'][$id]['custom_class']))

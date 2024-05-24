@@ -54,7 +54,7 @@ final class Content
 		} elseif ($type === ContentType::HTML->name()) {
 			return Utils::htmlspecialcharsDecode($content);
 		} elseif ($type === ContentType::PHP->name()) {
-			$content = trim(Utils::htmlspecialcharsDecode($content));
+			$content = trim(Utils::htmlspecialcharsDecode($content) ?? '');
 			$content = str_replace('<?php', '', $content);
 			$content = str_replace('?>', '', $content);
 

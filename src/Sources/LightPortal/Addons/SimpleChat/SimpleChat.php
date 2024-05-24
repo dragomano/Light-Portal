@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 23.04.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleChat;
@@ -30,7 +30,7 @@ class SimpleChat extends Block
 {
 	public string $icon = 'fas fa-message';
 
-	private Chat $chat;
+	private readonly Chat $chat;
 
 	public function __construct()
 	{

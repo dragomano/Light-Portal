@@ -23,7 +23,7 @@ if (! defined('SMF'))
 
 final class PageList implements ListInterface
 {
-	private PageRepository $repository;
+	private readonly PageRepository $repository;
 
 	public function __construct()
 	{

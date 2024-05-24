@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.04.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\RandomTopics;
@@ -83,8 +83,8 @@ class RandomTopics extends Block
 
 	public function getData(array $parameters): array
 	{
-		$excludeBoards = empty($parameters['exclude_boards']) ? null : explode(',', $parameters['exclude_boards']);
-		$includeBoards = empty($parameters['include_boards']) ? null : explode(',', $parameters['include_boards']);
+		$excludeBoards = empty($parameters['exclude_boards']) ? null : explode(',', (string) $parameters['exclude_boards']);
+		$includeBoards = empty($parameters['include_boards']) ? null : explode(',', (string) $parameters['include_boards']);
 		$topicsCount   = empty($parameters['num_topics']) ? 0 : (int) $parameters['num_topics'];
 
 		if (empty($topicsCount))

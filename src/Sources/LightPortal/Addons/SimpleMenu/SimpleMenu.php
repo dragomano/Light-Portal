@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.04.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleMenu;
@@ -87,7 +87,7 @@ class SimpleMenu extends Block
 			[$title, $link] = [$item['name'], $item['link']];
 
 			$ext = true;
-			if (! str_starts_with($link, 'http')) {
+			if (! str_starts_with((string) $link, 'http')) {
 				$active = $link == Utils::$context['current_action'];
 				$link   = Config::$scripturl . '?action=' . $link;
 				$ext    = false;

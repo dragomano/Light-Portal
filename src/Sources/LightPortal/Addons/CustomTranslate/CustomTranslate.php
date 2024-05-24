@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 21.03.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\CustomTranslate;
@@ -59,12 +59,12 @@ class CustomTranslate extends Plugin
 		if (Utils::$context['current_subaction'] === 'showoperations')
 			return;
 
-		$forumLang = substr(Config::$language, 0, 2);
+		$forumLang = substr(Config::$language ?? '', 0, 2);
 
 		Theme::addInlineJavaScript('new YandexTranslate({baseLang: "' . $forumLang . '"});', true);
 
 		Utils::$context['ctw_languages'] = array_unique(
-			array_merge([$forumLang], explode(',', Utils::$context['lp_custom_translate_plugin']['languages']))
+			array_merge([$forumLang], explode(',', (string) Utils::$context['lp_custom_translate_plugin']['languages']))
 		);
 
 		Utils::$context['ctw_lang_titles'] = array_combine($this->langCodes, $this->langTitles);

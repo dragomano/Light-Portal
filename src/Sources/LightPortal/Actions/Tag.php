@@ -63,7 +63,7 @@ final class Tag extends AbstractPageList
 		$listOptions = $page->getList();
 		$listOptions['id'] = 'lp_tags';
 		$listOptions['get_items'] = [
-			'function' => [$this, 'getPages']
+			'function' => $this->getPages(...)
 		];
 
 		new ItemList($listOptions);
@@ -172,7 +172,7 @@ final class Tag extends AbstractPageList
 			'base_href' => Utils::$context['canonical_url'],
 			'default_sort_col' => 'value',
 			'get_items' => [
-				'function' => [$this, 'getAll']
+				'function' => $this->getAll(...)
 			],
 			'get_count' => [
 				'function' => fn() => count($this->getAll())

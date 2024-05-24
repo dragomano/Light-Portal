@@ -69,7 +69,7 @@ final class Category extends AbstractPageList
 		$listOptions = $page->getList();
 		$listOptions['id'] = 'lp_categories';
 		$listOptions['get_items'] = [
-			'function' => [$this, 'getPages']
+			'function' => $this->getPages(...)
 		];
 
 		if (isset($category['description'])) {
@@ -173,7 +173,7 @@ final class Category extends AbstractPageList
 			'base_href' => Utils::$context['canonical_url'],
 			'default_sort_col' => 'priority',
 			'get_items' => [
-				'function' => [$this, 'getAll']
+				'function' => $this->getAll(...)
 			],
 			'get_count' => [
 				'function' => fn() => count($this->getAll())

@@ -16,6 +16,9 @@ namespace Bugo\LightPortal\Actions;
 
 use Bugo\LightPortal\Helper;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 final class BoardIndex implements ActionInterface
 {
 	use Helper;

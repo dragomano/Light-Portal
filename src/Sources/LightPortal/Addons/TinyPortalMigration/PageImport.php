@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.02.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortalMigration;
@@ -48,10 +48,10 @@ class PageImport extends AbstractCustomPageImport
 			'base_href' => Utils::$context['form_action'],
 			'default_sort_col' => 'id',
 			'get_items' => [
-				'function' => [$this, 'getAll']
+				'function' => $this->getAll(...)
 			],
 			'get_count' => [
-				'function' => [$this, 'getTotalCount']
+				'function' => $this->getTotalCount(...)
 			],
 			'columns' => [
 				'id' => [
@@ -197,7 +197,7 @@ class PageImport extends AbstractCustomPageImport
 
 		$items = [];
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
-			$permissions = explode(',', $row['value3']);
+			$permissions = explode(',', (string) $row['value3']);
 
 			$perm = 0;
 			if (count($permissions) == 1 && $permissions[0] == -1) {
@@ -214,7 +214,7 @@ class PageImport extends AbstractCustomPageImport
 				'page_id'      => $row['id'],
 				'author_id'    => $row['author_id'],
 				'slug'         => $row['shortname'] ?: ('page_' . $row['id']),
-				'description'  => strip_tags(BBCodeParser::load()->parse($row['intro'])),
+				'description'  => strip_tags((string) BBCodeParser::load()->parse($row['intro'])),
 				'content'      => $row['body'],
 				'type'         => $row['type'],
 				'permissions'  => $perm,
@@ -224,7 +224,7 @@ class PageImport extends AbstractCustomPageImport
 				'created_at'   => $row['date'],
 				'updated_at'   => 0,
 				'subject'      => $row['subject'],
-				'options'      => explode(',', $row['options']),
+				'options'      => explode(',', (string) $row['options']),
 			];
 		}
 

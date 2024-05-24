@@ -42,8 +42,8 @@ final class AreaSelect extends AbstractPartial
 		Lang::$txt['lp_block_areas_set']['media'] = Lang::$txt['levgal'] ?? Lang::$txt['mgallery_title'] ?? 'media';
 		Lang::$txt['lp_block_areas_set']['gallery'] = Lang::$txt['smfgallery_menu'] ?? 'gallery';
 
-		$params['value'] = explode(',', Utils::$context['lp_block']['areas']);
-		$params['data'] = array_merge($params['data'], array_combine($params['value'], $params['value']));
+		$params['value'] = explode(',', (string) Utils::$context['lp_block']['areas']);
+		$params['data']  = array_merge($params['data'], array_combine($params['value'], $params['value']));
 
 		$data = $values = [];
 		foreach ($params['data'] as $value => $text) {

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 27.03.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\EzPortalMigration;
@@ -48,10 +48,10 @@ class PageImport extends AbstractCustomPageImport
 			'base_href' => Utils::$context['form_action'],
 			'default_sort_col' => 'id',
 			'get_items' => [
-				'function' => [$this, 'getAll']
+				'function' => $this->getAll(...)
 			],
 			'get_count' => [
-				'function' => [$this, 'getTotalCount']
+				'function' => $this->getTotalCount(...)
 			],
 			'columns' => [
 				'id' => [
@@ -143,7 +143,7 @@ class PageImport extends AbstractCustomPageImport
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			$items[$row['id_page']] = [
 				'id'         => $row['id_page'],
-				'slug'       => Utils::$smcFunc['strtolower'](explode(' ', $row['title'])[0]) . $row['id_page'],
+				'slug'       => Utils::$smcFunc['strtolower'](explode(' ', (string) $row['title'])[0]) . $row['id_page'],
 				'type'       => 'html',
 				'status'     => 1,
 				'num_views'  => $row['views'],
@@ -215,7 +215,7 @@ class PageImport extends AbstractCustomPageImport
 
 	private function getPagePermission(array $row): int
 	{
-		$permissions = explode(',', $row['permissions']);
+		$permissions = explode(',', (string) $row['permissions']);
 
 		$perm = 0;
 		if (count($permissions) == 1 && $permissions[0] == -1) {

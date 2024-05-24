@@ -129,7 +129,7 @@ abstract class AbstractPageList implements PageListInterface
 		$image = '';
 
 		if (! empty(Config::$modSettings['lp_show_images_in_articles'])) {
-			$firstPostImage = preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', $row['content'], $value);
+			$firstPostImage = preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', (string) $row['content'], $value);
 			$image = $firstPostImage ? array_pop($value) : null;
 		}
 

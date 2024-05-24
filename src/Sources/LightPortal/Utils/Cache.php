@@ -23,7 +23,7 @@ final class Cache implements CacheInterface
 {
 	private string $prefix = 'lp_';
 
-	public function __construct(private ?string $key = null, private int $lifeTime = 0)
+	public function __construct(private readonly ?string $key = null, private int $lifeTime = 0)
 	{
 	}
 

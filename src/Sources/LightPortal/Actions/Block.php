@@ -119,7 +119,7 @@ final class Block implements BlockInterface
 					'placement'     => $row['placement'],
 					'priority'      => (int) $row['priority'],
 					'permissions'   => (int) $row['permissions'],
-					'areas'         => explode(',', $row['areas']),
+					'areas'         => explode(',', (string) $row['areas']),
 					'title_class'   => $row['title_class'],
 					'content_class' => $row['content_class'],
 				];
@@ -204,7 +204,7 @@ final class Block implements BlockInterface
 
 			$boards = $topics = [];
 			foreach ($tempAreas as $areas) {
-				$entity = explode('=', $areas);
+				$entity = explode('=', (string) $areas);
 
 				if ($entity[0] === 'board')
 					$boards = $this->getAllowedIds($entity[1]);

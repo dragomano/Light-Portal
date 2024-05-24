@@ -182,7 +182,7 @@ final class FrontPage implements ActionInterface
 		$values = $titles = [];
 
 		foreach ($layouts as $layout) {
-			$values[] = $title = basename($layout);
+			$values[] = $title = basename((string) $layout);
 
 			$shortName = ucfirst(strstr($title, '.', true) ?: $title);
 
@@ -237,7 +237,7 @@ final class FrontPage implements ActionInterface
 			});
 
 			$layout = strstr(
-				Config::$modSettings['lp_frontpage_layout'], '.', true
+				(string) Config::$modSettings['lp_frontpage_layout'], '.', true
 			) ?: Config::$modSettings['lp_frontpage_layout'];
 
 			echo $blade->run($layout, $params);

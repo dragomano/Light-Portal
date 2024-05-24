@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.04.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\EhPortalMigration;
@@ -45,10 +45,10 @@ class CategoryImport extends AbstractCustomCategoryImport
 			'base_href' => Utils::$context['form_action'],
 			'default_sort_col' => 'title',
 			'get_items' => [
-				'function' => [$this, 'getAll']
+				'function' => $this->getAll(...)
 			],
 			'get_count' => [
-				'function' => [$this, 'getTotalCount']
+				'function' => $this->getTotalCount(...)
 			],
 			'columns' => [
 				'title' => [
@@ -144,7 +144,7 @@ class CategoryImport extends AbstractCustomCategoryImport
 		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'sp_categories')))
 			return 0;
 
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
 			SELECT COUNT(*)
 			FROM {db_prefix}sp_categories',
 			[]
@@ -159,7 +159,7 @@ class CategoryImport extends AbstractCustomCategoryImport
 
 	protected function getItems(array $categories): array
 	{
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
 			SELECT id_category, name AS title, publish AS status
 			FROM {db_prefix}sp_categories' . (empty($categories) ? '' : '
 			WHERE id_category IN ({array_int:categories})'),

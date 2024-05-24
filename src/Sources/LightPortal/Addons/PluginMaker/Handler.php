@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.05.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -680,7 +680,7 @@ class Handler extends Plugin
 
 					if (in_array($option['type'], ['multiselect', 'select'])) {
 						if (! empty($option['variants'])) {
-							$variants  = explode('|', $option['variants']);
+							$variants  = explode('|', (string) $option['variants']);
 							$variants = "'" . implode("','", $variants) . "'";
 
 							$languages[$lang][] = PHP_EOL . "\t'{$option['name']}_set' => [$variants],";
@@ -706,8 +706,8 @@ class Handler extends Plugin
 		$params = [];
 		Utils::$context['lp_plugin']['block_options'] = [];
 		foreach (Utils::$context['lp_plugin']['options'] as $id => $option) {
-			if (str_contains($option['name'], $type . '_')) {
-				$option['name'] = str_replace($type . '_', '', $option['name']);
+			if (str_contains((string) $option['name'], $type . '_')) {
+				$option['name'] = str_replace($type . '_', '', (string) $option['name']);
 				$params[] = $option;
 				Utils::$context['lp_plugin']['block_options'][$id] = $option;
 				unset(Utils::$context['lp_plugin']['options'][$id]);

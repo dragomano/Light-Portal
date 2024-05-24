@@ -72,7 +72,7 @@ final class PluginImport extends AbstractImport
 			$zip->open($file['tmp_name']);
 			$zip->deleteName('package-info.xml');
 
-			$plugin = pathinfo($file['name'], PATHINFO_FILENAME);
+			$plugin = pathinfo((string) $file['name'], PATHINFO_FILENAME);
 			$pluginPhp = $plugin . '/' . $plugin . '.php';
 			$addonDir = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $plugin;
 

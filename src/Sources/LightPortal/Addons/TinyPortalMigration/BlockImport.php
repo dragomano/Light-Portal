@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.05.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortalMigration;
@@ -49,10 +49,10 @@ class BlockImport extends AbstractCustomBlockImport
 			'base_href' => Utils::$context['form_action'],
 			'default_sort_col' => 'title',
 			'get_items' => [
-				'function' => [$this, 'getAll']
+				'function' => $this->getAll(...)
 			],
 			'get_count' => [
-				'function' => [$this, 'getTotalCount']
+				'function' => $this->getTotalCount(...)
 			],
 			'columns' => [
 				'title' => [
@@ -195,7 +195,7 @@ class BlockImport extends AbstractCustomBlockImport
 
 		$items = [];
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
-			$permissions = explode(',', $row['access']);
+			$permissions = explode(',', (string) $row['access']);
 
 			$perm = 0;
 			if (count($permissions) == 1 && $permissions[0] == -1) {

@@ -29,17 +29,15 @@ trait Query
 
 		$data = $this->request()->json();
 
-		if (empty($search = $data['search']))
+		if (empty($search = trim(strtolower((string) $data['search']))))
 			return;
-
-		$search = trim(strtolower($search));
 
 		$icons = $this->getFaIcons();
 		$template = '<i class="%1$s fa-fw" aria-hidden="true"></i>&nbsp;%1$s';
 
 		$this->hook('prepareIconList', [&$icons, &$template]);
 
-		$icons = array_filter($icons, static fn($item) => str_contains($item, $search));
+		$icons = array_filter($icons, static fn($item) => str_contains((string) $item, $search));
 
 		$results = [];
 		foreach ($icons as $icon) {
@@ -90,7 +88,7 @@ trait Query
 				'id_redirect_topic' => 0,
 				'recycle_board'     => empty(Config::$modSettings['recycle_board'])
 					? Config::$modSettings['recycle_board'] : 0,
-				'subject'           => trim(Utils::$smcFunc['strtolower']($search)),
+				'subject'           => trim((string) Utils::$smcFunc['strtolower']($search)),
 			]
 		);
 
@@ -119,7 +117,7 @@ trait Query
 		if (empty($search = $data['search']))
 			return;
 
-		$search = trim(Utils::$smcFunc['strtolower']($search)) . '*';
+		$search = trim((string) Utils::$smcFunc['strtolower']($search)) . '*';
 		$search = strtr($search, ['%' => '\%', '_' => '\_', '*' => '%', '?' => '_', '&#038;' => '&amp;']);
 
 		$result = Db::$db->query('', '

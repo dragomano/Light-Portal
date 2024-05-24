@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.04.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\RecentPosts;
@@ -147,10 +147,10 @@ class RecentPosts extends Block
 	 */
 	public function getData(array $parameters): array
 	{
-		$excludeBoards = empty($parameters['exclude_boards']) ? [] : explode(',', $parameters['exclude_boards']);
-		$includeBoards = empty($parameters['include_boards']) ? [] : explode(',', $parameters['include_boards']);
-		$excludeTopics = empty($parameters['exclude_topics']) ? [] : explode(',', $parameters['exclude_topics']);
-		$includeTopics = empty($parameters['include_topics']) ? [] : explode(',', $parameters['include_topics']);
+		$excludeBoards = empty($parameters['exclude_boards']) ? [] : explode(',', (string) $parameters['exclude_boards']);
+		$includeBoards = empty($parameters['include_boards']) ? [] : explode(',', (string) $parameters['include_boards']);
+		$excludeTopics = empty($parameters['exclude_topics']) ? [] : explode(',', (string) $parameters['exclude_topics']);
+		$includeTopics = empty($parameters['include_topics']) ? [] : explode(',', (string) $parameters['include_topics']);
 
 		$minMessageId = Config::$modSettings['maxMsgID'] - (
 			empty(Utils::$context['min_message_posts']) ? 25 : Utils::$context['min_message_posts']

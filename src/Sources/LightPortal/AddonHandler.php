@@ -120,7 +120,7 @@ final class AddonHandler
 				}
 
 				foreach ($links as $link) {
-					if (is_file($filename = $addonAssetDir . DIRECTORY_SEPARATOR . basename($link)))
+					if (is_file($filename = $addonAssetDir . DIRECTORY_SEPARATOR . basename((string) $link)))
 						continue;
 
 					file_put_contents($filename, WebFetchApi::fetch($link), LOCK_EX);

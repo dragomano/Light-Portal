@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.04.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleFeeder;
@@ -104,7 +104,7 @@ class SimpleFeeder extends Block
 			<div class="block">
 				<span class="floatleft">
 					<h5><a href="', $item->link, '">', $item->title, '</a></h5>
-					<em>', DateTime::relative(strtotime($item->pubDate)), '</em>
+					<em>', DateTime::relative(strtotime((string) $item->pubDate)), '</em>
 				</span>
 			</div>';
 

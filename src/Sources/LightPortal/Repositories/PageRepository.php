@@ -372,7 +372,7 @@ final class PageRepository extends AbstractRepository
 	public function getRelatedPages(array $page): array
 	{
 		$titleWords = explode(' ', $this->getTranslatedTitle($page['titles']));
-		$slugWords  = explode('_', $page['slug']);
+		$slugWords  = explode('_', (string) $page['slug']);
 
 		$searchFormula = '';
 		foreach ($titleWords as $key => $word) {
@@ -698,7 +698,7 @@ final class PageRepository extends AbstractRepository
 		$publishTime = time();
 
 		if (Utils::$context['lp_page']['date'])
-			$publishTime = strtotime(Utils::$context['lp_page']['date']);
+			$publishTime = strtotime((string) Utils::$context['lp_page']['date']);
 
 		if (Utils::$context['lp_page']['time']) {
 			$publishTime = strtotime(
