@@ -19,6 +19,7 @@ use Bugo\Compat\{Lang, User, Utils};
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Utils\ItemList;
 use IntlException;
+use Nette\Utils\Html;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -184,7 +185,10 @@ final class Tag extends AbstractPageList
 						'value' => Lang::$txt['lp_tag_column']
 					],
 					'data' => [
-						'function' => static fn($entry) => $entry['icon'] . ' ' . '<a href="' . $entry['link'] . '">' . $entry['title'] . '</a>',
+						'function' => static fn($entry) => $entry['icon'] . ' ' . Html::el('a')
+							->href($entry['link'])
+							->setText($entry['title'])
+							->toHtml(),
 						'class' => 'centertext'
 					],
 					'sort' => [

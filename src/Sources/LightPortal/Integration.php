@@ -14,11 +14,11 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Enums\Status;
 use Bugo\Compat\{Config, Db, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Actions\{Block, BoardIndex, Category};
 use Bugo\LightPortal\Actions\{FrontPage, Page, Tag};
 use Bugo\LightPortal\Compilers\Zero;
+use Nette\Utils\Html;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -75,22 +75,33 @@ final class Integration extends AbstractMain
 		if (SMF === 'BACKGROUND')
 			return;
 
-		echo "\n\t" . '<link rel="preconnect" href="//cdn.jsdelivr.net">';
+		echo "\n\t" . Html::el('link', [
+			'rel'  => 'preconnect',
+			'href' => '//cdn.jsdelivr.net',
+		])->toHtml();
 
-		if (! empty(Utils::$context['portal_next_page']))
-			echo "\n\t" . '<link rel="prerender" href="' . Utils::$context['portal_next_page'] . '">';
+		if (! empty(Utils::$context['portal_next_page'])) {
+			echo "\n\t" . Html::el('link', [
+				'rel'  => 'prerender',
+				'href' => Utils::$context['portal_next_page'],
+			])->toHtml();
+		}
 
 		$styles = [];
 
-		if (! isset(Config::$modSettings['lp_fa_source']) || Config::$modSettings['lp_fa_source'] === 'css_cdn') {
+		if (empty(Config::$modSettings['lp_fa_source']) || Config::$modSettings['lp_fa_source'] === 'css_cdn') {
 			$styles[] = 'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css';
 		}
 
 		$this->hook('preloadStyles', [&$styles]);
 
 		foreach ($styles as $style) {
-			$onload = ' onload="this.onload=null;this.rel=\'stylesheet\'"';
-			echo "\n\t" . '<link rel="preload" href="' . $style . '" as="style"' . $onload . '>';
+			echo "\n\t" . Html::el('link', [
+				'rel'    => 'preload',
+				'href'   => $style,
+				'as'     => 'style',
+				'onload' => "this.onload=null;this.rel='stylesheet'",
+			])->toHtml();
 		}
 	}
 

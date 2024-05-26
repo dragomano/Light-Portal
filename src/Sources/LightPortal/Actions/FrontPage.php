@@ -22,6 +22,7 @@ use Bugo\LightPortal\Utils\{DateTime, Icon};
 use eftec\bladeone\BladeOne;
 use Exception;
 use IntlException;
+use Nette\Utils\Html;
 
 final class FrontPage implements ActionInterface
 {
@@ -340,14 +341,18 @@ final class FrontPage implements ActionInterface
 		$images = array_column($articles, 'image');
 
 		foreach ($images as $image) {
-			Utils::$context['html_headers'] .= "\n\t" . '<link rel="preload" as="image" href="' . $image . '">';
+			Utils::$context['html_headers'] .= "\n\t" . Html::el('link', [
+				'rel'  => 'preload',
+				'as'   => 'image',
+				'href' => $image,
+			])->toHtml();
 		}
 	}
 
 	/**
-	 * Get a number in friendly format ("1K" instead "1000", etc)
+	 * Get a number in friendly format ("10K" instead "10000", etc)
 	 *
-	 * Получаем число в приятном глазу формате (для чисел более 10к)
+	 * Получаем число в приятном глазу формате («10K» вместо «10000»)
 	 */
 	private function getFriendlyNumber(int $value = 0): string
 	{
@@ -377,14 +382,19 @@ final class FrontPage implements ActionInterface
 
 		$paginate = '';
 
+		$button = Html::el('a', [
+			'class' => 'button',
+			'href'  => '%s;start=%s',
+		]);
+
 		if ($prev >= 0) {
 			$title = Icon::get('arrow_left') . ' ' . Lang::$txt['prev'];
-			$paginate .= sprintf('<a class="button" href="%s;start=%s">', $url, $prev) . $title . "</a>";
+			$paginate .= sprintf($button->startTag(), $url, $prev) . $title . $button->endTag();
 		}
 
 		if ($next) {
 			$title = Lang::$txt['next'] . ' ' . Icon::get('arrow_right');
-			$paginate .= sprintf('<a class="button" href="%s;start=%s">', $url, $next) . $title . "</a>";
+			$paginate .= sprintf($button->startTag(), $url, $next) . $title . $button->endTag();
 		}
 
 		return $paginate;

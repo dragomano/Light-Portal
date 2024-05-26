@@ -16,6 +16,7 @@ namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Helper;
+use Nette\Utils\Html;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -57,10 +58,20 @@ final class CreditArea
 			? 'https://dragomano.ru/mods/light-portal'
 			: 'https://custom.simplemachines.org/mods/index.php?mod=4244';
 
-		$license = Lang::$txt['credits_license'] . ': <a href="https://github.com/dragomano/Light-Portal/blob/master/LICENSE" target="_blank" rel="noopener">GNU GPLv3</a>';
+		$license = Lang::$txt['credits_license'] . ': ' . Html::el('a', [
+			'href'   => 'https://github.com/dragomano/Light-Portal/blob/master/LICENSE',
+			'target' => '_blank',
+			'rel'    => 'noopener',
+		])->setText('GNU GPLv3')->toHtml();
 
-		return '<a href="' . $link . '" target="_blank" rel="noopener" title="' . LP_VERSION . '">' . LP_NAME .
-			'</a> | &copy; <a href="' . Config::$scripturl . '?action=credits;sa=light_portal">2019&ndash;' . date('Y') . '</a>, Bugo | ' . $license;
+		return Html::el('a', [
+			'href'   => $link,
+			'target' => '_blank',
+			'rel'    => 'noopener',
+			'title'  => LP_VERSION,
+		])->setText(LP_NAME)->toHtml() . ' | &copy; ' . Html::el('a', [
+			'href' => Config::$scripturl . '?action=credits;sa=light_portal',
+		])->setHtml('2019&ndash;' . date('Y'))->toHtml() . ', Bugo | ' . $license;
 	}
 
 	public function prepareComponents(): void

@@ -4,21 +4,21 @@
 	<!-- <div> @dump($context['user']) </div> -->
 
 	<div class="lp_frontpage_articles article_custom">
-		{{ show_pagination() }}
+		@include('partials.pagination')
 
 		@foreach ($context['lp_frontpage_articles'] as $article)
-		<div class="
-			col-xs-12 col-sm-6 col-md-4
-			col-lg-{{ $context['lp_frontpage_num_columns'] }}
-			col-xl-{{ $context['lp_frontpage_num_columns'] }}
-		">
-			<figure class="noticebox">
-				{!! parse_bbc('[code]' . print_r($article, true) . '[/code]') !!}
-			</figure>
-		</div>
+			<div class="
+				col-xs-12 col-sm-6 col-md-4
+				col-lg-{{ $context['lp_frontpage_num_columns'] }}
+				col-xl-{{ $context['lp_frontpage_num_columns'] }}
+			">
+				<figure class="noticebox">
+					{!! parse_bbc('[code]' . print_r($article, true) . '[/code]') !!}
+				</figure>
+			</div>
 		@endforeach
 
-		{{ show_pagination('bottom') }}
+		@include('partials.pagination', ['position' => 'bottom'])
 	</div>
 
 @empty ($context['lp_active_blocks'])

@@ -20,6 +20,7 @@ use Bugo\LightPortal\Repositories\CategoryRepository;
 use Bugo\LightPortal\Utils\ItemList;
 use DomDocument;
 use DOMException;
+use Nette\Utils\Html;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -93,7 +94,10 @@ final class CategoryExport extends AbstractExport
 					],
 					'data' => [
 						'function' => static fn($entry) => $entry['status']
-							? '<a class="bbc_link" href="' . LP_BASE_URL . ';sa=categories;id=' . $entry['id'] . '">' . $entry['title'] . '</a>'
+							? Html::el('a', ['class' => 'bbc_link'])
+								->href(LP_BASE_URL . ';sa=categories;id=' . $entry['id'])
+								->setText($entry['title'])
+								->toHtml()
 							: $entry['title'],
 						'class' => 'word_break',
 					],
