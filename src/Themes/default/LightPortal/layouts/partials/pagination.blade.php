@@ -1,0 +1,1 @@
+{{ show_pagination($position ??= 'top') }}

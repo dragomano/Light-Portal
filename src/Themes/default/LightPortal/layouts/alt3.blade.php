@@ -5,32 +5,32 @@
 
 	@set($i = 0)
 	<div class="lp_frontpage_articles article_alt3_view">
-		{{ show_pagination() }}
+		@include('partials.pagination')
 
 		@foreach ($context['lp_frontpage_articles'] as $article)
 			@empty ($i)
 			<div class="roundframe article">
 				<div class="card">
-					@if (!empty($article['image']))
-					<img
-						class="lazy"
-						data-src="{{ $article['image'] }}"
-						alt="{{ $article['title'] }}"
-					>
-					@endif
+					@unless (empty($article['image']))
+						<img
+							class="lazy"
+							data-src="{{ $article['image'] }}"
+							alt="{{ $article['title'] }}"
+						>
+					@endunless
 
 					<div class="info">
-						@if (!empty($article['datetime']))
-						<time datetime="{{ $article['datetime'] }}">
-							{!! $article['date'] !!}
-						</time>
-						@endif
+						@unless (empty($article['datetime']))
+							<time datetime="{{ $article['datetime'] }}">
+								{!! $article['date'] !!}
+							</time>
+						@endunless
 
 						<h3><a href="{{ $article['msg_link'] }}">{{ $article['title'] }}</a></h3>
 
-						@if (!empty($article['teaser']))
-						<p>{{ $article['teaser'] }}</p>
-						@endif
+						@unless (empty($article['teaser']))
+							<p>{{ $article['teaser'] }}</p>
+						@endunless
 					</div>
 				</div>
 			</div>
@@ -50,26 +50,26 @@
 			<div class="col-xs-12 col-sm-6 col-md-{{ $i > $numItems - 2 ? $context['lp_frontpage_num_columns'] + 2 : $context['lp_frontpage_num_columns'] }}">
 				<div class="roundframe article">
 					<div class="card">
-						@if (!empty($article['image']))
-						<img
-							class="lazy"
-							data-src="{{ $article['image'] }}"
-							alt="{{ $article['title'] }}"
-						>
-						@endif
+						@unless (empty($article['image']))
+							<img
+								class="lazy"
+								data-src="{{ $article['image'] }}"
+								alt="{{ $article['title'] }}"
+							>
+						@endunless
 
 						<div class="info">
-							@if (!empty($article['datetime']))
-							<time datetime="{{ $article['datetime'] }}">
-								{!! $article['date'] !!}
-							</time>
-							@endif
+							@unless (empty($article['datetime']))
+								<time datetime="{{ $article['datetime'] }}">
+									{!! $article['date'] !!}
+								</time>
+							@endunless
 
 							<h3><a href="{{ $article['msg_link'] }}">{{ $article['title'] }}</a></h3>
 
-							@if (!empty($article['teaser']))
-							<p>{{ $article['teaser'] }}</p>
-							@endif
+							@unless (empty($article['teaser']))
+								<p>{{ $article['teaser'] }}</p>
+							@endunless
 						</div>
 					</div>
 				</div>
@@ -77,7 +77,7 @@
 			@endif
 		@endforeach
 
-		{{ show_pagination('bottom') }}
+		@include('partials.pagination', ['position' => 'bottom'])
 	</div>
 
 @empty ($context['lp_active_blocks'])
