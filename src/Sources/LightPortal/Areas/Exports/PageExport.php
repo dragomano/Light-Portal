@@ -20,6 +20,7 @@ use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Utils\ItemList;
 use DomDocument;
 use DOMException;
+use Nette\Utils\Html;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -94,11 +95,10 @@ final class PageExport extends AbstractExport
 						'value' => Lang::$txt['lp_title']
 					],
 					'data' => [
-						'function' => static fn($entry) => '<a class="bbc_link' . (
-							$entry['is_front']
-								? ' new_posts" href="' . Config::$scripturl
-								: '" href="' . LP_PAGE_URL . $entry['slug']
-							) . '">' . $entry['title'] . '</a>',
+						'function' => static fn($entry) => Html::el('a', [
+								'class' => 'bbc_link' . ($entry['is_front'] ? ' new_posts' : ''),
+								'href'  => $entry['is_front'] ? Config::$scripturl : (LP_PAGE_URL . $entry['slug']),
+							])->setText($entry['title'])->toHtml(),
 						'class' => 'word_break'
 					],
 					'sort' => [

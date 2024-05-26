@@ -27,6 +27,7 @@ use Bugo\LightPortal\Models\PageModel;
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Utils\{Content, DateTime, Icon, ItemList};
 use IntlException;
+use Nette\Utils\Html;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -164,13 +165,13 @@ final class PageArea
 						'value' => Lang::$txt['lp_title'],
 					],
 					'data' => [
-						'function' => fn($entry) => '<i class="' . $this->getPageIcon($entry['type']) . '" title="' . (
-								Utils::$context['lp_content_types'][$entry['type']] ?? strtoupper((string) $entry['type'])
-							) . '"></i> <a class="bbc_link' . (
-							$entry['is_front']
-								? ' highlight" href="' . Config::$scripturl
-								: '" href="' . LP_PAGE_URL . $entry['slug']
-							) . '">' . $entry['title'] . '</a>',
+						'function' => fn($entry) => Html::el('i', [
+								'class' => $this->getPageIcon($entry['type']),
+								'title' => Utils::$context['lp_content_types'][$entry['type']] ?? strtoupper((string) $entry['type']),
+							])->toHtml() . ' ' . Html::el('a', [
+								'class' => 'bbc_link' . ($entry['is_front'] ? ' _highlight' : ''),
+								'href'  => $entry['is_front'] ? Config::$scripturl : (LP_PAGE_URL . $entry['slug']),
+							])->setText($entry['title'])->toHtml(),
 						'class' => 'word_break',
 					],
 					'sort' => [
@@ -279,12 +280,20 @@ final class PageArea
 			];
 		}
 
-		$listOptions['title'] = '
-			<span class="floatright">
-				<a href="' . Config::$scripturl . '?action=admin;area=lp_pages;sa=add;' . Utils::$context['session_var'] . '=' . Utils::$context['session_id'] . '" x-data>
-					' . (str_replace(' class=', ' @mouseover="page.toggleSpin($event.target)" @mouseout="page.toggleSpin($event.target)" class=', Icon::get('plus', Lang::$txt['lp_pages_add']))) . '
-				</a>
-			</span>' . $listOptions['title'];
+		$listOptions['title'] = Html::el('span', ['class' => 'floatright'])
+			->addHtml(
+				Html::el('a', [
+					'href' => Config::$scripturl . '?action=admin;area=lp_pages;sa=add;' . Utils::$context['session_var'] . '=' . Utils::$context['session_id'],
+					'x-data' => '',
+				])
+				->setHtml(str_replace(
+					' class=',
+					' @mouseover="page.toggleSpin($event.target)" @mouseout="page.toggleSpin($event.target)" class=',
+					Icon::get('plus', Lang::$txt['lp_pages_add'])
+				))
+				->toHtml()
+			)
+			->toHtml() . $listOptions['title'];
 
 		if ($this->getCommentBlockType() === 'default') {
 			unset($listOptions['columns']['num_comments']);
@@ -532,15 +541,21 @@ final class PageArea
 
 		Utils::$context['lp_pages']['title'] .= ': ';
 		foreach ($titles as $browseType => $details) {
-			if ($this->browseType === $browseType)
-				Utils::$context['lp_pages']['title'] .= '<img src="' . Theme::$current->settings['images_url']
-					. '/selected.png" alt="&gt;"> ';
+			if ($this->browseType === $browseType) {
+				Utils::$context['lp_pages']['title'] .= Html::el('img')
+					->src(Theme::$current->settings['images_url'] . '/selected.png')
+					->alt('&gt;')
+					->toHtml();
+			}
 
-			Utils::$context['lp_pages']['title'] .= '<a href="' . Utils::$context['form_action'] . $details[0] . '">'
-				. $details[1] . ' (' . $details[2] . ')</a>';
+			Utils::$context['lp_pages']['title'] .= Html::el('a')
+				->href(Utils::$context['form_action'] . $details[0])
+				->setText($details[1] . ' (' . $details[2] . ')')
+				->toHtml();
 
-			if ($browseType !== 'int' && count($titles) > 1)
+			if ($browseType !== 'int' && count($titles) > 1) {
 				Utils::$context['lp_pages']['title'] .= ' | ';
+			}
 		}
 	}
 

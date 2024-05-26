@@ -19,6 +19,7 @@ use Bugo\Compat\{Lang, Theme, Utils};
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Utils\Content;
+use Nette\Utils\Html;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -61,7 +62,7 @@ final class Block implements BlockInterface
 				$icon  = $this->getIcon(Utils::$context['lp_blocks'][$data['placement']][$item]['icon']);
 
 				if (! empty($data['parameters']['link_in_title'])) {
-					$title = "<a href=\"{$data['parameters']['link_in_title']}\">$title</a>";
+					$title = Html::el('a')->href($data['parameters']['link_in_title'])->setText($title)->toHtml();
 				}
 			} else {
 				$title = $icon = '';

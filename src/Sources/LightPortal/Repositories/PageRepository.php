@@ -23,6 +23,7 @@ use Bugo\LightPortal\Actions\PageInterface;
 use Bugo\LightPortal\Actions\PageListInterface;
 use Bugo\LightPortal\Utils\{Content, DateTime, Notify};
 use IntlException;
+use Nette\Utils\Html;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -618,7 +619,10 @@ final class PageRepository extends AbstractRepository
 		if (Utils::$context['lp_page']['author_id'] !== User::$info['id']) {
 			$title = Utils::$context['lp_page']['titles'][User::$info['language']];
 			Logging::logAction('update_lp_page', [
-				'page' => '<a href="' . LP_PAGE_URL . Utils::$context['lp_page']['slug'] . '">' . $title . '</a>'
+				'page' => Html::el('a')
+					->href(LP_PAGE_URL . Utils::$context['lp_page']['slug'])
+					->setText($title)
+					->toHtml()
 			]);
 		}
 

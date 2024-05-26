@@ -24,6 +24,7 @@ use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Models\TagModel;
 use Bugo\LightPortal\Repositories\TagRepository;
 use Bugo\LightPortal\Utils\{Icon, ItemList};
+use Nette\Utils\Html;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -99,7 +100,10 @@ final class TagArea
 					],
 					'data' => [
 						'function' => static fn($entry) => $entry['status']
-							? '<a class="bbc_link" href="' . LP_BASE_URL . ';sa=tags;id=' . $entry['id'] . '">' . $entry['title'] . '</a>'
+							? Html::el('a', ['class' => 'bbc_link'])
+								->href(LP_BASE_URL . ';sa=tags;id=' . $entry['id'])
+								->setText($entry['title'])
+								->toHtml()
 							: $entry['title'],
 						'class' => 'word_break',
 					],
@@ -166,12 +170,20 @@ final class TagArea
 			'javascript' => 'const tag = new Tag();',
 		];
 
-		$listOptions['title'] = '
-			<span class="floatright">
-				<a href="' . Config::$scripturl . '?action=admin;area=lp_tags;sa=add;' . Utils::$context['session_var'] . '=' . Utils::$context['session_id'] . '" x-data>
-					' . (str_replace(' class=', ' @mouseover="tag.toggleSpin($event.target)" @mouseout="tag.toggleSpin($event.target)" class=', Icon::get('plus', Lang::$txt['lp_tags_add']))) . '
-				</a>
-			</span>' . $listOptions['title'];
+		$listOptions['title'] = Html::el('span', ['class' => 'floatright'])
+			->addHtml(
+				Html::el('a', [
+					'href' => Config::$scripturl . '?action=admin;area=lp_tags;sa=add;' . Utils::$context['session_var'] . '=' . Utils::$context['session_id'],
+					'x-data' => '',
+				])
+				->setHtml(str_replace(
+					' class=',
+					' @mouseover="tag.toggleSpin($event.target)" @mouseout="tag.toggleSpin($event.target)" class=',
+					Icon::get('plus', Lang::$txt['lp_tags_add'])
+				))
+				->toHtml()
+			)
+			->toHtml() . $listOptions['title'];
 
 		new ItemList($listOptions);
 	}

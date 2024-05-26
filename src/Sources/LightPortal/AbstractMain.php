@@ -14,14 +14,15 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Enums\{ContentClass, Placement};
-use Bugo\LightPortal\Enums\{PluginType, TitleClass};
 use Bugo\Compat\{Config, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Actions\Block;
 use Bugo\LightPortal\Areas\{ConfigArea, CreditArea};
 use Bugo\LightPortal\Compilers\CompilerInterface;
+use Bugo\LightPortal\Enums\{ContentClass, Placement};
+use Bugo\LightPortal\Enums\{PluginType, TitleClass};
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Utils\SessionManager;
+use Nette\Utils\Html;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -342,7 +343,7 @@ abstract class AbstractMain
 			$pageButtons['portal_page_' . $item['slug']] = [
 				'title' => (
 					$item['icon']
-						? '<span class="portal_menu_icons fa-fw ' . $item['icon'] . '"></span>'
+						? Html::el('span', ['class' => 'portal_menu_icons fa-fw ' . $item['icon']])->toHtml()
 						: ''
 					) . $this->getTranslatedTitle($item['titles']),
 				'href'  => LP_PAGE_URL . $item['slug'],

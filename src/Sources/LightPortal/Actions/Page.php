@@ -20,6 +20,7 @@ use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Utils\{Content, Icon};
 use IntlException;
+use Nette\Utils\Html;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -207,11 +208,10 @@ final class Page implements PageInterface
 						'value' => Lang::$txt['lp_title']
 					],
 					'data' => [
-						'function' => static fn($entry) => '<a class="bbc_link' . (
-							$entry['is_front']
-								? ' new_posts" href="' . Config::$scripturl
-								: '" href="' . LP_PAGE_URL . $entry['slug']
-						) . '">' . $entry['title'] . '</a>',
+						'function' => static fn($entry) => Html::el('a', [
+								'class' => 'bbc_link' . ($entry['is_front'] ? ' new_posts' : ''),
+								'href'  => $entry['is_front'] ? Config::$scripturl : (LP_PAGE_URL . $entry['slug']),
+							])->setText($entry['title'])->toHtml(),
 						'class' => 'word_break'
 					],
 					'sort' => [
@@ -226,7 +226,10 @@ final class Page implements PageInterface
 					'data' => [
 						'function' => static fn($entry) => empty($entry['author']['name'])
 							? Lang::$txt['guest_title']
-							: '<a href="' . $entry['author']['link'] . '">' . $entry['author']['name'] . '</a>',
+							: Html::el('a')
+								->href($entry['author']['link'])
+								->setText($entry['author']['name'])
+								->toHtml(),
 						'class' => 'centertext'
 					],
 					'sort' => [

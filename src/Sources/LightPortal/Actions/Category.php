@@ -19,6 +19,7 @@ use Bugo\Compat\{Lang, User, Utils};
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Utils\ItemList;
 use IntlException;
+use Nette\Utils\Html;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -198,8 +199,11 @@ final class Category extends AbstractPageList
 						'value' => Lang::$txt['lp_category']
 					],
 					'data' => [
-						'function' => static fn($entry) => $entry['icon'] . ' ' . '<a href="' . $entry['link'] . '">' . $entry['title'] . '</a>' .
-							(empty($entry['description']) ? '' : '<p class="smalltext">' . $entry['description'] . '</p>')
+						'function' => static fn($entry) => $entry['icon'] . ' ' . Html::el('a')
+							->href($entry['link'])
+							->setText($entry['title'])
+							->toHtml() . (empty($entry['description']) ? '' : Html::el('p', ['class' => 'smalltext'])
+							->setText($entry['description'])->toHtml())
 					],
 					'sort' => [
 						'default' => 'title DESC',

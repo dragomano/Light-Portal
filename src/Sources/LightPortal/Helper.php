@@ -15,10 +15,12 @@
 namespace Bugo\LightPortal;
 
 use Bugo\Compat\{Config, Db, ErrorHandler, Lang, User, Utils};
+use Bugo\FontAwesome\IconBuilder;
 use Bugo\LightPortal\Enums\{ContentType, Permission};
-use Bugo\LightPortal\Utils\{Cache, File, EntityManager, Post};
+use Bugo\LightPortal\Utils\{Cache, EntityManager, File, Post};
 use Bugo\LightPortal\Utils\{Request, Session, SMFTrait};
 use Exception;
+use Nette\Utils\Html;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -68,9 +70,9 @@ trait Helper
 			require_once $path;
 	}
 
-	public function callHelper(mixed $action): mixed
+	public function callHelper(callable $callback): mixed
 	{
-		return call_user_func($action);
+		return call_user_func($callback);
 	}
 
 	public function getUserAvatar(int $userId, array $userData = []): string
@@ -93,14 +95,14 @@ trait Helper
 			return '';
 
 		return User::$memberContext[$userId]['avatar']['image']
-			?? '<img
-					class="avatar"
-					width="100"
-					height="100"
-					src="' . Config::$modSettings['avatar_url'] . '/default.png"
-					loading="lazy"
-					alt="' . User::$memberContext[$userId]['name'] . '"
-				>';
+			?? Html::el('img', [
+				'class' => 'avatar',
+				'width' => 100,
+				'height' => 100,
+				'src' => Config::$modSettings['avatar_url'] . '/default.png',
+				'loading' => 'lazy',
+				'alt' => User::$memberContext[$userId]['name'],
+			])->toHtml();
 	}
 
 	public function getItemsWithUserAvatars(array $items, string $entity = 'author'): array
@@ -181,7 +183,7 @@ trait Helper
 		if (empty($icon))
 			return '';
 
-		$template = '<i class="' . $icon . '" aria-hidden="true"></i> ';
+		$template = (new IconBuilder($icon, ['aria-hidden' => true]))->html() . ' ';
 
 		$this->hook('prepareIconTemplate', [&$template, $icon]);
 
