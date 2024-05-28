@@ -56,7 +56,8 @@ trait Helper
 
 	public function hook(string $hook, array $vars = [], array $plugins = []): void
 	{
-		AddonHandler::getInstance()->run($hook, $vars, $plugins);
+		//AddonHandler::getInstance()->run($hook, $vars, $plugins);
+		$this->addonHandler->run($hook, $vars, $plugins);
 	}
 
 	public function getEntityData(string $entity): array

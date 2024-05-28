@@ -17,6 +17,8 @@ if (! defined('SMF'))
 
 require_once __DIR__ . '/Libs/autoload.php';
 
+use Bugo\LightPortal\Actions;
+use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Integration;
 use Laminas\Loader\StandardAutoloader;
 
@@ -25,6 +27,7 @@ $loader = new StandardAutoloader();
 $loader->registerNamespace('Bugo\LightPortal', __DIR__);
 $loader->register();
 
+// This will not be needed either, it will happen in the factories based on interface, maybe
 if (str_starts_with(SMF_VERSION, '3.0')) {
 	$aliases = [
 		'Bugo\\LightPortal\\Actions\\BoardIndexNext' => 'Bugo\\LightPortal\\Actions\\BoardIndex',
@@ -37,11 +40,29 @@ if (str_starts_with(SMF_VERSION, '3.0')) {
 	array_map($applyAlias, array_keys($aliases), $aliases);
 }
 
-// Development mode
+/**
+ * @bugo
+ * This will no longer be needed for development mode ;)
+ */
 if (is_file(__DIR__ . '/Libs/scssphp/scssphp/src/Compiler.php')) {
 	/** @noinspection PhpIgnoredClassAliasDeclaration */
 	class_alias('Bugo\\LightPortal\\Compilers\\Sass', 'Bugo\\LightPortal\\Compilers\\Zero');
 }
 
+// psr container
+$container = require 'config/container.php';
+
 // This is the way
-(new Integration())();
+$int = new Integration(
+	//$container->get(AddonHandler::class),
+	$container->get(Actions\Block::class),
+	$container->get(Actions\BoardIndex::class),
+	$container->get(Actions\Category::class),
+	$container->get(Actions\FrontPage::class),
+	$container->get(Actions\Page::class),
+	$container->get(Actions\Tag::class)
+);
+//$int->init();
+$int();
+
+

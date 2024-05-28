@@ -15,7 +15,9 @@
 namespace Bugo\LightPortal;
 
 use Bugo\Compat\{Lang, Theme, User, Utils, WebFetchApi};
-use Bugo\LightPortal\Repositories\PluginRepository;
+use Bugo\LightPortal\Addons\AddonManagerAwareInterface;
+use Bugo\LightPortal\Addons\AddonManagerAwareTrait;
+
 use Bugo\LightPortal\Utils\Language;
 use MatthiasMullie\Minify\{CSS, JS};
 use SplObjectStorage;
@@ -23,17 +25,12 @@ use SplObjectStorage;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class AddonHandler
+final class AddonHandler implements AddonManagerAwareInterface
 {
+	use AddonManagerAwareTrait;
 	use Helper;
 
-	private array $settings;
-
 	private SplObjectStorage $storage;
-
-	private CSS $css;
-
-	private JS $js;
 
 	private int $maxCssFilemtime = 0;
 
@@ -43,14 +40,27 @@ final class AddonHandler
 
 	private string $prefix = 'lp_';
 
-	public static function getInstance(): self
-	{
-		if (empty(self::$instance)) {
-			self::$instance = new self();
-		}
+	public function __construct(
+		private array $settings,
+		private CSS $css = new CSS,
+		private JS $js   = new JS,
+	) {
+		//$this->settings = (new PluginRepository())->getSettings(); // move to factory
 
-		return self::$instance;
+		$this->storage = $this->getStorage();
+
+		$this->prepareAssets();
 	}
+
+	// public static function getInstance(): self
+	// {
+	// 	return $this;
+	// 	// if (empty(self::$instance)) {
+	// 	// 	self::$instance = new self();
+	// 	// }
+
+	// 	// return self::$instance;
+	// }
 
 	public function getAll(): array
 	{
@@ -60,6 +70,14 @@ final class AddonHandler
 		return array_map(static fn($item): string => basename($item), $dirs);
 	}
 
+	/**
+	 * This entire method will be refactored so that it can call Addons directly from the container
+	 * The implication here is that if they are present then they are enabled.
+	 * @param string $hook
+	 * @param array $vars
+	 * @param array $plugins
+	 * @return void
+	 */
 	public function run(string $hook = 'init', array $vars = [], array $plugins = []): void
 	{
 		$addons = $plugins ?: Utils::$context['lp_enabled_plugins'] ?? [];
@@ -75,6 +93,12 @@ final class AddonHandler
 
 			$class = new $className();
 
+			/**
+			 * object storage will be absolete, since this the job of AddonManager
+			 * Im not exactly sure how you are using this currently, but I would think that
+			 * AbstractAddon would have properties for icon and type.... I have seen type used,
+			 * but not sure if that represents an Addons "type"
+			 */
 			if (! $this->storage->contains($class)) {
 				$this->storage->attach($class, [
 					'name' => $addon,
@@ -82,24 +106,37 @@ final class AddonHandler
 					'type' => $class->type,
 				]);
 
+				// we no longer need their paths since we already have them in the AddonManager
 				$path = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $addon . DIRECTORY_SEPARATOR;
 				$snakeName = $this->getSnakeName($addon);
 
+				// If an  addons ConfigProvider is found, then it will be loaded, hence if they are present..
 				Utils::$context[$this->prefix . $snakeName . '_plugin'] = $this->settings[$snakeName] ?? [];
 				Utils::$context['lp_loaded_addons'][$snakeName] = $this->storage->offsetGet($class);
 
+				// loadLangs possibly needs to become a published event... Not sure bout that.
 				$this->loadLangs($path, $snakeName);
-
+				// I can definitely see this being a published event
 				$this->loadAssets($path, $addon);
 			}
 
+			/**
+			 * @bugo
+			 * this will work through __call so that you just call it on the $this->addonHandler->addonAlias();
+			 * The AddonManager will handle calling the init method via an inititalizer or delegator
+			 * based on an InitializableInterface which will expose a single method init() though I am not sure
+			 * what implications that has for the overall application. I will need to dive deeper into
+			 * this part of the workflow.
+			 *
+			 * Honestly, this $class->$hook stuff is really on my nerve :P
+			 */
 			if (method_exists($class, $hook)) {
 				$hook === 'init' && in_array($addon, Utils::$context['lp_enabled_plugins'])
 					? $class->init()
 					: $class->$hook(...$vars);
 			}
 		}
-
+		// no idea why we have a random call to $this->minify() here, I mean really....
 		$this->minify();
 	}
 
@@ -193,18 +230,5 @@ final class AddonHandler
 				return $object::class;
 			}
 		};
-	}
-
-	private function __construct()
-	{
-		$this->settings = (new PluginRepository())->getSettings();
-
-		$this->storage = $this->getStorage();
-
-		$this->css = new CSS();
-
-		$this->js = new JS();
-
-		$this->prepareAssets();
 	}
 }

@@ -25,7 +25,7 @@ use Nette\Utils\Html;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class Page implements PageInterface
+class Page implements PageInterface
 {
 	use Helper;
 

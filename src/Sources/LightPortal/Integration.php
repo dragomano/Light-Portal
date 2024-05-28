@@ -15,8 +15,12 @@
 namespace Bugo\LightPortal;
 
 use Bugo\Compat\{Config, Db, Lang, Theme, User, Utils};
-use Bugo\LightPortal\Actions\{Block, BoardIndex, Category};
-use Bugo\LightPortal\Actions\{FrontPage, Page, Tag};
+use Bugo\LightPortal\Actions;
+use Bugo\LightPortal\Actions\Block;
+use Bugo\LightPortal\Actions\BoardIndex;
+use Bugo\LightPortal\Actions\Category;
+use Bugo\LightPortal\Actions\FrontPage;
+use Bugo\LightPortal\Actions\Page;
 use Bugo\LightPortal\Compilers\Zero;
 use Nette\Utils\Html;
 
@@ -28,6 +32,28 @@ if (! defined('SMF'))
  */
 final class Integration extends AbstractMain
 {
+	/**
+	 * Needs refactored. Should not need to set a default of a new instance here.
+	 * @param Block $block
+	 * @param BoardIndex $bIndex
+	 * @param Category $cat
+	 * @param FrontPage $fPage
+	 * @param Page $page
+	 * @param Bugo\LightPortal\Actions\Tag $tag
+	 * @return void
+	 */
+	public function __construct(
+		//protected AddonHandler $addonHandler,
+		private Actions\Block $block       = new Actions\Block,
+		private Actions\BoardIndex $bIndex = new Actions\BoardIndex,
+		private Actions\Category $cat      = new Actions\Category,
+		private Actions\FrontPage $fPage   = new Actions\FrontPage,
+		private Actions\Page $page         = new Actions\Page,
+		private Actions\Tag $tag           = new Actions\Tag
+	) {
+		parent::__construct();
+	}
+
 	public function __invoke(): void
 	{
 		$this->applyHook('init');
@@ -134,17 +160,17 @@ final class Integration extends AbstractMain
 	public function actions(array &$actions): void
 	{
 		if (! empty(Config::$modSettings['lp_frontpage_mode']))
-			$actions[LP_ACTION] = [false, [new FrontPage(), 'show']];
+			$actions[LP_ACTION] = [false, [$this->fPage, 'show']];
 
-		$actions['forum'] = [false, [new BoardIndex(), 'show']];
+		$actions['forum'] = [false, [$this->bIndex, 'show']];
 
 		Theme::load();
 
 		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'categories')
-			(new Category())->show(new Page());
+			$this->cat->show($this->page);
 
 		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'tags')
-			(new Tag())->show(new Page());
+			($this->tag)->show($this->page);
 
 		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'promote')
 			$this->promoteTopic();
@@ -160,12 +186,12 @@ final class Integration extends AbstractMain
 	public function defaultAction(): mixed
 	{
 		if ($this->request()->isNotEmpty(LP_PAGE_PARAM))
-			return $this->callHelper([new Page(), 'show']);
+			return $this->callHelper([$this->page, 'show']);
 
 		if (empty(Config::$modSettings['lp_frontpage_mode']) || $this->isStandaloneMode())
-			return $this->callHelper([new BoardIndex(), 'show']);
+			return $this->callHelper([$this->bIndex, 'show']);
 
-		return $this->callHelper([new FrontPage(), 'show']);
+		return $this->callHelper([$this->fPage, 'show']);
 	}
 
 	/**
@@ -222,7 +248,7 @@ final class Integration extends AbstractMain
 		if ($this->isPortalCanBeLoaded() === false)
 			return;
 
-		$this->callHelper([new Block(), 'show']);
+		$this->callHelper([$this->block, 'show']);
 
 		$this->prepareAdminButtons($buttons);
 
