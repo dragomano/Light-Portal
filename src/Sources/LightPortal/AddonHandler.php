@@ -71,6 +71,26 @@ final class AddonHandler implements AddonManagerAwareInterface
 	}
 
 	/**
+	 * run replacement
+	 * @internal
+	 */
+	private function addon(string $name, ?array $options = null)
+	{
+		return $this->addonManager->get($name, $options);
+	}
+
+	public function __call($method, $argv)
+	{
+		$addon = $this->addon($method);
+		if (is_callable($addon)) {
+			// hint, addons should implement __invoke()
+			return $addon($argv);
+		}
+		// if its not callable just return the instance
+		return $addon;
+	}
+
+	/**
 	 * This entire method will be refactored so that it can call Addons directly from the container
 	 * The implication here is that if they are present then they are enabled.
 	 * @param string $hook
