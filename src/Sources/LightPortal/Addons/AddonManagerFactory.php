@@ -17,7 +17,7 @@ final class AddonManagerFactory implements FactoryInterface
         }
 
         $config = $container->get('config');
-        if (empty($config['addons'])) {
+        if (empty($config['lp_addons'])) {
             throw new Exception\ServiceNotCreatedException('AddonManager could not be created due to missing addon configuration');
         }
         return new AddonManager($container, $config['lp_addons']);

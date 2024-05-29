@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Bugo\LightPortal\Service;
 
 use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Addons\AddonManager;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Psr\Container\ContainerInterface;
@@ -18,6 +19,8 @@ final class AddonHandlerFactory
         if (empty($settings)) {
             throw new ServiceNotCreatedException('Plugin Settings could not be found.');
         }
-        return new AddonHandler($settings);
+        $handler = new AddonHandler($settings);
+		$handler->setAddonManager($container->get(AddonManager::class));
+		return $handler;
     }
 }
