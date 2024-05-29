@@ -9,6 +9,6 @@ tab_width = 4
 trim_trailing_whitespace = true
 charset = utf-8
 
-[*.json]
+[*.{js,css,json}]
 indent_style = space
 indent_size = 2
