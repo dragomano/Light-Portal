@@ -25,13 +25,7 @@
   },
   "scripts": {
     "post-update-cmd": [
-      "cd Addons/ImageUpload && composer update --no-dev -o",
-      "cd Addons/LatteLayouts && composer update --no-dev -o",
-      "cd Addons/Markdown && composer update --no-dev -o",
-      "cd Addons/MediaBlock && composer update --no-dev -o",
-      "cd Addons/PlatesLayouts && composer update --no-dev -o",
-      "cd Addons/PluginMaker && composer update --no-dev -o",
-      "cd Addons/TwigLayouts && composer update --no-dev -o",
+      "@php update_plugins.php",
       "@php create_index.php"
     ]
   }
