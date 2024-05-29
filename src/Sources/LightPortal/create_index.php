@@ -6,6 +6,7 @@ if (! getenv('COMPOSER_BINARY')) {
 
 $directory = new RecursiveDirectoryIterator(__DIR__);
 $iterator = new RecursiveIteratorIterator($directory);
+
 foreach ($iterator as $directory) {
 	if (str_contains((string) $directory->getPathname(), 'Libs'))
 		continue;
