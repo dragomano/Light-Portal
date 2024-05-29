@@ -6,6 +6,7 @@ namespace Bugo\LightPortal\Addons;
 
 use Laminas\ServiceManager\Exception;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerInterface;
 
 final class AddonManagerFactory implements FactoryInterface
 {
@@ -19,6 +20,6 @@ final class AddonManagerFactory implements FactoryInterface
         if (empty($config['addons'])) {
             throw new Exception\ServiceNotCreatedException('AddonManager could not be created due to missing addon configuration');
         }
-        return new AddonManager($container, $config['addons']);
+        return new AddonManager($container, $config['lp_addons']);
     }
 }

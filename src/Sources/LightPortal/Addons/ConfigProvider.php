@@ -6,6 +6,7 @@ namespace Bugo\LightPortal\Addons;
 
 use Bugo\LightPortal\Addons\AddonManager;
 use Bugo\LightPortal\Addons\AddonManagerFactory;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 final class ConfigProvider
 {
@@ -13,7 +14,7 @@ final class ConfigProvider
     {
         return [
             'dependencies' => $this->getDependencies(),
-            'addons'       => $this->getAddonsConfig(),
+            'lp_addons'    => $this->getAddonsConfig(),
         ];
     }
 
@@ -40,8 +41,12 @@ final class ConfigProvider
     {
         return [
             'initializers' => [],
-            'aliases'      => [],
-            'factories'    => [],
+            'aliases'      => [
+				'userInfo' => Addons\UserInfo\UserInfo::class,
+			],
+            'factories'    => [
+				Addons\UserInfo\UserInfo::class => InvokableFactory::class
+			],
         ];
     }
 }

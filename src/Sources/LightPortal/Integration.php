@@ -15,12 +15,7 @@
 namespace Bugo\LightPortal;
 
 use Bugo\Compat\{Config, Db, Lang, Theme, User, Utils};
-use Bugo\LightPortal\Actions;
-use Bugo\LightPortal\Actions\Block;
-use Bugo\LightPortal\Actions\BoardIndex;
-use Bugo\LightPortal\Actions\Category;
-use Bugo\LightPortal\Actions\FrontPage;
-use Bugo\LightPortal\Actions\Page;
+use Bugo\LightPortal\Actions\{Block, BoardIndex, Category, FrontPage, Page};
 use Bugo\LightPortal\Compilers\Zero;
 use Nette\Utils\Html;
 
@@ -30,31 +25,21 @@ if (! defined('SMF'))
 /**
  * This class contains only hook methods
  */
-final class Integration extends AbstractMain
+final class Integration extends AbstractMain implements AddonHandlerAwareInterface
 {
-	/**
-	 * Needs refactored. Should not need to set a default of a new instance here.
-	 * @param Block $block
-	 * @param BoardIndex $bIndex
-	 * @param Category $cat
-	 * @param FrontPage $fPage
-	 * @param Page $page
-	 * @param Bugo\LightPortal\Actions\Tag $tag
-	 * @return void
-	 */
-	public function __construct(
-		//protected AddonHandler $addonHandler,
-		private Actions\Block $block       = new Actions\Block,
-		private Actions\BoardIndex $bIndex = new Actions\BoardIndex,
-		private Actions\Category $cat      = new Actions\Category,
-		private Actions\FrontPage $fPage   = new Actions\FrontPage,
-		private Actions\Page $page         = new Actions\Page,
-		private Actions\Tag $tag           = new Actions\Tag
-	) {
-		parent::__construct();
-	}
+	use AddonHandlerAwareTrait;
+
+	private Block $block;
+	private BoardIndex $bIndex;
+	private Category $cat;
+	private FrontPage $fPage;
+	private Page $page;
+	private Tag $tag;
 
 	public function __invoke(): void
+	{}
+
+	public function init(): void
 	{
 		$this->applyHook('init');
 		$this->applyHook('pre_css_output');
@@ -75,25 +60,6 @@ final class Integration extends AbstractMain
 		$this->applyHook('profile_popup');
 		$this->applyHook('download_request');
 		$this->applyHook('whos_online');
-	}
-
-	public function init(): void
-	{
-		Utils::$context['lp_load_time'] ??= microtime(true);
-
-		defined('LP_NAME') || define('LP_NAME', 'Light Portal');
-		defined('LP_VERSION') || define('LP_VERSION', '2.6.3');
-		defined('LP_PLUGIN_LIST') || define('LP_PLUGIN_LIST', 'https://d8d75ea98b25aa12.mokky.dev/addons');
-		defined('LP_ADDON_URL') || define('LP_ADDON_URL', Config::$boardurl . '/Sources/LightPortal/Addons');
-		defined('LP_ADDON_DIR') || define('LP_ADDON_DIR', __DIR__ . '/Addons');
-		defined('LP_CACHE_TIME') || define('LP_CACHE_TIME', (int) (Config::$modSettings['lp_cache_update_interval'] ?? 72000));
-		defined('LP_ACTION') || define('LP_ACTION', Config::$modSettings['lp_portal_action'] ?? 'portal');
-		defined('LP_PAGE_PARAM') || define('LP_PAGE_PARAM', Config::$modSettings['lp_page_param'] ?? 'page');
-		defined('LP_BASE_URL') || define('LP_BASE_URL', Config::$scripturl . '?action=' . LP_ACTION);
-		defined('LP_PAGE_URL') || define('LP_PAGE_URL', Config::$scripturl . '?' . LP_PAGE_PARAM . '=');
-		defined('LP_ALIAS_PATTERN') || define('LP_ALIAS_PATTERN', '^[a-z][a-z0-9-_]+$');
-		defined('LP_AREAS_PATTERN') || define('LP_AREAS_PATTERN', '^[a-z][a-z0-9=|\-,!]+$');
-		defined('LP_ADDON_PATTERN') || define('LP_ADDON_PATTERN', '^[A-Z][a-zA-Z]+$');
 	}
 
 	public function preCssOutput(): void
@@ -160,17 +126,17 @@ final class Integration extends AbstractMain
 	public function actions(array &$actions): void
 	{
 		if (! empty(Config::$modSettings['lp_frontpage_mode']))
-			$actions[LP_ACTION] = [false, [$this->fPage, 'show']];
+			$actions[LP_ACTION] = [false, [new FrontPage(), 'show']];
 
-		$actions['forum'] = [false, [$this->bIndex, 'show']];
+		$actions['forum'] = [false, [new BoardIndex(), 'show']];
 
 		Theme::load();
 
 		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'categories')
-			$this->cat->show($this->page);
+			$this->cat->show(new Page());
 
 		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'tags')
-			($this->tag)->show($this->page);
+			($this->tag)->show(new Page());
 
 		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'promote')
 			$this->promoteTopic();
@@ -186,12 +152,12 @@ final class Integration extends AbstractMain
 	public function defaultAction(): mixed
 	{
 		if ($this->request()->isNotEmpty(LP_PAGE_PARAM))
-			return $this->callHelper([$this->page, 'show']);
+			return $this->callHelper([new Page(), 'show']);
 
 		if (empty(Config::$modSettings['lp_frontpage_mode']) || $this->isStandaloneMode())
-			return $this->callHelper([$this->bIndex, 'show']);
+			return $this->callHelper([new BoardIndex(), 'show']);
 
-		return $this->callHelper([$this->fPage, 'show']);
+		return $this->callHelper([new FrontPage(), 'show']);
 	}
 
 	/**
@@ -248,7 +214,7 @@ final class Integration extends AbstractMain
 		if ($this->isPortalCanBeLoaded() === false)
 			return;
 
-		$this->callHelper([$this->block, 'show']);
+		$this->callHelper([new Block(), 'show']);
 
 		$this->prepareAdminButtons($buttons);
 

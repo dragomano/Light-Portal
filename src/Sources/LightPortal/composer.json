@@ -17,6 +17,11 @@
     "scssphp/scssphp": "^1.12",
     "wikimedia/less.php": "^4.3"
   },
+  "autoload": {
+    "psr-4": {
+      "Bugo\\LightPortal\\": "./"
+    }
+  },
   "config": {
     "vendor-dir": "Libs",
     "optimize-autoloader": true,

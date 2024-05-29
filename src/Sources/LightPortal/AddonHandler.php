@@ -22,6 +22,8 @@ use Bugo\LightPortal\Utils\Language;
 use MatthiasMullie\Minify\{CSS, JS};
 use SplObjectStorage;
 
+use function is_callable;
+
 if (! defined('SMF'))
 	die('No direct access...');
 

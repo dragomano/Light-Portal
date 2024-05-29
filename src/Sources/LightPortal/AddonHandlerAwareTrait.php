@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace Bugo\LightPortal;
+
 use Bugo\LightPortal\AddonHandler;
 
 /**
@@ -9,15 +11,15 @@ use Bugo\LightPortal\AddonHandler;
  */
 trait AddonHandlerAwareTrait
 {
-    protected AddonHandler $addonHandler;
+    protected static AddonHandler $addonHandler;
 
     public function setAddonHandler(AddonHandler $addonHandler): void
     {
-        $this->addonHandler = $addonHandler;
+        static::$addonHandler = $addonHandler;
     }
 
     public function getAddonHandler(): ?AddonHandler
     {
-        return $this->addonHandler;
+        return static::$addonHandler;
     }
 }
