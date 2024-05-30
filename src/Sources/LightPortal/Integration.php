@@ -97,6 +97,20 @@ final class Integration extends AbstractMain implements AddonHandlerAwareInterfa
 		}
 	}
 
+	// public function loadTheme(): void
+	// {
+	// 	if ($this->isPortalCanBeLoaded() === false)
+	// 		return;
+
+	// 	Lang::load('LightPortal/LightPortal');
+
+	// 	$this->defineVars();
+
+	// 	$this->loadAssets(new Zero());
+
+	// 	$this->hook('init');
+	// }
+
 	public function loadTheme(): void
 	{
 		if ($this->isPortalCanBeLoaded() === false)
@@ -108,7 +122,29 @@ final class Integration extends AbstractMain implements AddonHandlerAwareInterfa
 
 		$this->loadAssets(new Zero());
 
+		// Add some demo plugins for testing
+		Config::updateModSettings(['lp_enabled_plugins' => 'UserInfo,Example']);
+
+		// Check init method for all plugins
 		$this->hook('init');
+		// We have to get hello message from UserInfo plugin when it enabled
+
+		// Check example method with params
+		$params = [];
+		$this->hook('exampleMethod', [&$params]);
+		var_dump($params);
+		// We have to get [1] from Example plugin when it enabled
+
+		// Change enabled plugins
+		Config::updateModSettings(['lp_enabled_plugins' => 'UserInfo']);
+
+		$this->hook('init');
+		// We have to get hello message from UserInfo plugin when it enabled
+
+		$params = [];
+		$this->hook('exampleMethod', [&$params]);
+		var_dump($params);
+		// We have to get [] because there is no active plugins with exampleMethod method
 	}
 
 	/**

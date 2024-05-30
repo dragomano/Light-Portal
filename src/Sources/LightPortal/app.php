@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Bugo\LightPortal;
 
+use Bugo\LightPortal\Events\Event as EventType;
 use Bugo\LightPortal\Integration;
-use Laminas\EventManager\EventManager;
+use Laminas\EventManager\Event;
+use Laminas\EventManager\EventManagerAwareInterface;
+use Laminas\EventManager\EventManagerAwareTrait;
 
 /**
  * app.php
@@ -22,10 +25,11 @@ use Laminas\EventManager\EventManager;
 if (! defined('SMF'))
 	die('We gotta get out of here!');
 
-final class App
+final class App implements EventManagerAwareInterface
 {
+	use EventManagerAwareTrait;
+
 	public function __construct(
-		private EventManager $eventManager,
 		private AddonHandler $addonHandler,
 		private Integration $integration
 	) {
@@ -34,6 +38,7 @@ final class App
 	public function run()
 	{
 		$this->integration->setAddonHandler($this->addonHandler);
-		$this->integration->init();
+		$event = new Event(EventType::HitchSMF->value, $this->integration, ['param_one' => 'value_one']);
+		$this->getEventManager()->triggerEvent($event);
 	}
 }

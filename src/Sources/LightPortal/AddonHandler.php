@@ -14,6 +14,7 @@
 
 namespace Bugo\LightPortal;
 
+use Bugo\LightPortal\Addons\AddonManager;
 use Bugo\Compat\{Lang, Theme, User, Utils, WebFetchApi};
 use Bugo\LightPortal\Addons\AddonManagerAwareInterface;
 use Bugo\LightPortal\Addons\AddonManagerAwareTrait;

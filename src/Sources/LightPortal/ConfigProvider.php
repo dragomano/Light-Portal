@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Bugo\LightPortal;
 
 use Laminas\EventManager\EventManager;
+use Laminas\EventManager\EventManagerInterface;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 
 final class ConfigProvider
@@ -21,6 +22,7 @@ final class ConfigProvider
 		return [
 			'aliases'   => [
 				'EventManager' => EventManager::class,
+				EventManagerInterface::class => EventManager::class,
 			],
 			'factories' => [
 				AddonHandler::class           => Service\AddonHandlerFactory::class,
@@ -33,8 +35,9 @@ final class ConfigProvider
 				Actions\Page::class           => InvokableFactory::class,
 				Actions\Tag::class            => InvokableFactory::class,
 				EventManager::class           => Service\EventManagerFactory::class,
-				Integration::class            => Service\IntegrationFactory::class,
-				Repositories\PluginRepository::class => InvokableFactory::class,
+				Events\Listeners\HitchSmfListener::class => InvokableFactory::class,
+				Integration::class                       => Service\IntegrationFactory::class,
+				Repositories\PluginRepository::class     => InvokableFactory::class,
 			],
 		];
 	}
