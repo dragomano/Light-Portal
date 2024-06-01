@@ -511,6 +511,7 @@ $txt['lp_buddies_set'] = '{buddies, plural,
 // Credits
 $txt['lp_contributors'] = 'Contribution to the development of the portal';
 $txt['lp_translators'] = 'Translators';
+$txt['lp_consultants'] = 'Consultants';
 $txt['lp_testers'] = 'Testers';
 $txt['lp_sponsors'] = 'Sponsors';
 $txt['lp_tools'] = 'Tools';
