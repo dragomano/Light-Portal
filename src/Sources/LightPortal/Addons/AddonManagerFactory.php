@@ -10,7 +10,7 @@ use Psr\Container\ContainerInterface;
 
 final class AddonManagerFactory implements FactoryInterface
 {
-    public function __invoke(ContainerInterface $container, string $requestedName, ?array $options = null): AddonManager
+    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): AddonManager
     {
         if (! $container->has('config')) {
             throw new Exception\ServiceNotFoundException('AddonManager requires a Config service.');

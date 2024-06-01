@@ -13,7 +13,8 @@ final class ConfigProvider
 	public function __invoke(): array
 	{
 		return [
-			'dependencies' => $this->getDependencies()
+			'dependencies' => $this->getDependencies(),
+			'filters'      => $this->getFilterConfig(),
 		];
 	}
 
@@ -35,9 +36,21 @@ final class ConfigProvider
 				Actions\Page::class           => InvokableFactory::class,
 				Actions\Tag::class            => InvokableFactory::class,
 				EventManager::class           => Service\EventManagerFactory::class,
-				Events\Listeners\HitchSmfListener::class => InvokableFactory::class,
+				Events\Listeners\SmfHookListener::class => Events\Listeners\SmfHookListenerFactory::class,
 				Integration::class                       => Service\IntegrationFactory::class,
 				Repositories\PluginRepository::class     => InvokableFactory::class,
+			],
+		];
+	}
+
+	public function getFilterConfig(): array
+	{
+		return [
+			'aliases'   => [
+				'snakeName' => Filters\SnakeNameFilter::class,
+			],
+			'factories' => [
+				Filters\SnakeNameFilter::class => Filters\SnakeNameFilterFactory::class,
 			],
 		];
 	}

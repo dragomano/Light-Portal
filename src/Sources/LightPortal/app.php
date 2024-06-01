@@ -38,7 +38,7 @@ final class App implements EventManagerAwareInterface
 	public function run()
 	{
 		$this->integration->setAddonHandler($this->addonHandler);
-		$event = new Event(EventType::HitchSMF->value, $this->integration, ['param_one' => 'value_one']);
+		$event = new Event(EventType::SmfHook->value, $this->integration, ['param_one' => 'value_one']);
 		$this->getEventManager()->triggerEvent($event);
 	}
 }

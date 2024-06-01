@@ -14,7 +14,7 @@ $cacheConfig = [
 
 $aggregator = new ConfigAggregator([
 	// Laminas component providers
-
+	\Laminas\Filter\ConfigProvider::class,
 	// Application Level providers
 	ConfigProvider::class,
 	Addons\ConfigProvider::class,
