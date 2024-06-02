@@ -90,6 +90,13 @@ final class CreditArea
 			'Greek'      => ['Panoulis64'],
 		];
 
+		Utils::$context['consultants'] = [
+			[
+				'name' => 'Tyrsson',
+				'link' => 'https://www.simplemachines.org/community/index.php?action=profile;u=155269',
+			]
+		];
+
 		Utils::$context['testers'] = [
 			[
 				'name' => 'Wylek',
