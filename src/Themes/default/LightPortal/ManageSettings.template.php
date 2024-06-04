@@ -110,7 +110,7 @@ function template_callback_standalone_mode_settings_after(): void
 function template_callback_comment_settings_before(): void
 {
 	echo '
-	<div x-data="{ comment_block: \'', Config::$modSettings['lp_show_comment_block'] ?? 'none', '\' }">';
+	<div x-data="{ comment_block: \'', Config::$modSettings['lp_comment_block'] ?? 'none', '\' }">';
 }
 
 function template_callback_comment_settings_after(): void

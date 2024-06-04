@@ -18,11 +18,25 @@ use Bugo\Compat\{Config, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Actions\Block;
 use Bugo\LightPortal\Areas\{ConfigArea, CreditArea};
 use Bugo\LightPortal\Compilers\CompilerInterface;
-use Bugo\LightPortal\Enums\{ContentClass, Placement};
-use Bugo\LightPortal\Enums\{PluginType, TitleClass};
+use Bugo\LightPortal\Enums\{ContentClass, ContentType, Permission};
+use Bugo\LightPortal\Enums\{Placement, PluginType, TitleClass};
 use Bugo\LightPortal\Repositories\PageRepository;
-use Bugo\LightPortal\Utils\SessionManager;
+use Bugo\LightPortal\Utils\{SessionManager, Str};
 use Nette\Utils\Html;
+
+use function array_combine;
+use function array_flip;
+use function array_key_exists;
+use function array_keys;
+use function array_merge;
+use function array_search;
+use function array_slice;
+use function count;
+use function defined;
+use function explode;
+use function implode;
+use function microtime;
+use function round;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -62,9 +76,9 @@ abstract class AbstractMain
 
 		Utils::$context['lp_all_title_classes']   = TitleClass::values();
 		Utils::$context['lp_all_content_classes'] = ContentClass::values();
-		Utils::$context['lp_block_placements']    = $this->getBlockPlacements();
-		Utils::$context['lp_plugin_types']        = $this->getPluginTypes();
-		Utils::$context['lp_content_types']       = $this->getContentTypes();
+		Utils::$context['lp_block_placements']    = Placement::all();
+		Utils::$context['lp_plugin_types']        = PluginType::all();
+		Utils::$context['lp_content_types']       = ContentType::all();
 
 		Utils::$context['lp_enabled_plugins'] = empty(Config::$modSettings['lp_enabled_plugins'])
 			? [] : explode(',', (string) Config::$modSettings['lp_enabled_plugins']);
@@ -187,8 +201,9 @@ abstract class AbstractMain
 	 */
 	protected function fixCanonicalUrl(): void
 	{
-		if ($this->request()->is('forum'))
+		if ($this->request()->is('forum')) {
 			Utils::$context['canonical_url'] = Config::$scripturl . '?action=forum';
+		}
 	}
 
 	/**
@@ -345,10 +360,10 @@ abstract class AbstractMain
 					$item['icon']
 						? Html::el('span', ['class' => 'portal_menu_icons fa-fw ' . $item['icon']])->toHtml()
 						: ''
-					) . $this->getTranslatedTitle($item['titles']),
+					) . Str::getTranslatedTitle($item['titles']),
 				'href'  => LP_PAGE_URL . $item['slug'],
 				'icon'  => '" style="display: none"></span><span',
-				'show'  => $this->canViewItem($item['permissions']),
+				'show'  => Permission::canViewItem($item['permissions']),
 			];
 		}
 
@@ -465,20 +480,11 @@ abstract class AbstractMain
 		);
 	}
 
-	private function getBlockPlacements(): array
-	{
-		return array_combine(Placement::names(), Lang::$txt['lp_block_placement_set']);
-	}
-
-	private function getPluginTypes(): array
-	{
-		return array_combine(PluginType::names(), Lang::$txt['lp_plugins_types']);
-	}
-
 	private function getPageSubsectionTitle(): string
 	{
-		if (empty($title = Config::$modSettings['lp_menu_separate_subsection_title'] ?? ''))
+		if (empty($title = Config::$modSettings['lp_menu_separate_subsection_title'] ?? '')) {
 			return Lang::tokenTxtReplace('{lp_pages}');
+		}
 
 		return Lang::tokenTxtReplace($title);
 	}

@@ -18,7 +18,19 @@ use Bugo\Compat\{Config, Db, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Actions\{Block, BoardIndex, Category};
 use Bugo\LightPortal\Actions\{FrontPage, Page, Tag};
 use Bugo\LightPortal\Compilers\Zero;
+use Bugo\LightPortal\Utils\Setting;
 use Nette\Utils\Html;
+
+use function array_merge;
+use function array_slice;
+use function call_user_func;
+use function define;
+use function defined;
+use function in_array;
+use function sprintf;
+use function strtr;
+
+use const SMF;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -30,6 +42,9 @@ final class Integration extends AbstractMain
 {
 	public function __invoke(): void
 	{
+		if (SMF === 'BACKGROUND')
+			return;
+
 		$this->applyHook('init');
 		$this->applyHook('pre_css_output');
 		$this->applyHook('load_theme');
@@ -60,7 +75,7 @@ final class Integration extends AbstractMain
 		defined('LP_PLUGIN_LIST') || define('LP_PLUGIN_LIST', 'https://d8d75ea98b25aa12.mokky.dev/addons');
 		defined('LP_ADDON_URL') || define('LP_ADDON_URL', Config::$boardurl . '/Sources/LightPortal/Addons');
 		defined('LP_ADDON_DIR') || define('LP_ADDON_DIR', __DIR__ . '/Addons');
-		defined('LP_CACHE_TIME') || define('LP_CACHE_TIME', (int) (Config::$modSettings['lp_cache_update_interval'] ?? 72000));
+		defined('LP_CACHE_TIME') || define('LP_CACHE_TIME', (int) (Config::$modSettings['lp_cache_interval'] ?? 72000));
 		defined('LP_ACTION') || define('LP_ACTION', Config::$modSettings['lp_portal_action'] ?? 'portal');
 		defined('LP_PAGE_PARAM') || define('LP_PAGE_PARAM', Config::$modSettings['lp_page_param'] ?? 'page');
 		defined('LP_BASE_URL') || define('LP_BASE_URL', Config::$scripturl . '?action=' . LP_ACTION);
@@ -93,7 +108,7 @@ final class Integration extends AbstractMain
 			$styles[] = 'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css';
 		}
 
-		$this->hook('preloadStyles', [&$styles]);
+		AddonHandler::getInstance()->run('preloadStyles', [&$styles]);
 
 		foreach ($styles as $style) {
 			echo "\n\t" . Html::el('link', [
@@ -116,7 +131,8 @@ final class Integration extends AbstractMain
 
 		$this->loadAssets(new Zero());
 
-		$this->hook('init');
+		// Run all init methods for plugins
+		AddonHandler::getInstance()->run();
 	}
 
 	/**
@@ -124,30 +140,35 @@ final class Integration extends AbstractMain
 	 */
 	public function changeRedirect(string &$setLocation): void
 	{
-		if (empty(Config::$modSettings['lp_frontpage_mode']) || $this->isStandaloneMode())
+		if (empty(Config::$modSettings['lp_frontpage_mode']) || Setting::isStandaloneMode())
 			return;
 
-		if ($this->request()->is('markasread'))
+		if ($this->request()->is('markasread')) {
 			$setLocation = Config::$scripturl . '?action=forum';
+		}
 	}
 
 	public function actions(array &$actions): void
 	{
-		if (! empty(Config::$modSettings['lp_frontpage_mode']))
+		if (! empty(Config::$modSettings['lp_frontpage_mode'])) {
 			$actions[LP_ACTION] = [false, [new FrontPage(), 'show']];
+		}
 
 		$actions['forum'] = [false, [new BoardIndex(), 'show']];
 
 		Theme::load();
 
-		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'categories')
+		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'categories') {
 			(new Category())->show(new Page());
+		}
 
-		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'tags')
+		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'tags') {
 			(new Tag())->show(new Page());
+		}
 
-		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'promote')
+		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'promote') {
 			$this->promoteTopic();
+		}
 
 		if (empty(Config::$modSettings['lp_standalone_mode']))
 			return;
@@ -160,12 +181,12 @@ final class Integration extends AbstractMain
 	public function defaultAction(): mixed
 	{
 		if ($this->request()->isNotEmpty(LP_PAGE_PARAM))
-			return $this->callHelper([new Page(), 'show']);
+			return call_user_func([new Page(), 'show']);
 
-		if (empty(Config::$modSettings['lp_frontpage_mode']) || $this->isStandaloneMode())
-			return $this->callHelper([new BoardIndex(), 'show']);
+		if (empty(Config::$modSettings['lp_frontpage_mode']) || Setting::isStandaloneMode())
+			return call_user_func([new BoardIndex(), 'show']);
 
-		return $this->callHelper([new FrontPage(), 'show']);
+		return call_user_func([new FrontPage(), 'show']);
 	}
 
 	/**
@@ -181,7 +202,7 @@ final class Integration extends AbstractMain
 		if ($this->request()->isEmpty('action')) {
 			$action = LP_ACTION;
 
-			if ($this->isStandaloneMode() && Config::$modSettings['lp_standalone_url'] !== $this->request()->url()) {
+			if (Setting::isStandaloneMode() && Config::$modSettings['lp_standalone_url'] !== $this->request()->url()) {
 				$action = 'forum';
 			}
 
@@ -222,7 +243,7 @@ final class Integration extends AbstractMain
 		if ($this->isPortalCanBeLoaded() === false)
 			return;
 
-		$this->callHelper([new Block(), 'show']);
+		call_user_func([new Block(), 'show']);
 
 		$this->prepareAdminButtons($buttons);
 
@@ -249,7 +270,7 @@ final class Integration extends AbstractMain
 	 */
 	public function displayButtons(): void
 	{
-		if (empty(User::$info['is_admin']) || $this->isFrontpageMode('chosen_topics') === false)
+		if (empty(User::$info['is_admin']) || Setting::isFrontpageMode('chosen_topics') === false)
 			return;
 
 		Utils::$context['normal_buttons']['lp_promote'] = [
@@ -322,7 +343,7 @@ final class Integration extends AbstractMain
 	{
 		Lang::$txt['alert_group_light_portal'] = Lang::$txt['lp_portal'];
 
-		if ($this->getCommentBlockType() === 'default') {
+		if (Setting::getCommentBlock() === 'default') {
 			$types['light_portal'] = [
 				'page_comment' => [
 					'alert' => 'yes',
@@ -434,7 +455,7 @@ final class Integration extends AbstractMain
 	{
 		$this->loadTheme();
 
-		$this->hook('downloadRequest', [&$attachRequest]);
+		AddonHandler::getInstance()->run('downloadRequest', [&$attachRequest]);
 	}
 
 	public function whosOnline(array $actions): string
@@ -443,7 +464,7 @@ final class Integration extends AbstractMain
 		if (empty($actions['action']) && empty($actions['board'])) {
 			$result = sprintf(Lang::$txt['lp_who_viewing_frontpage'], Config::$scripturl);
 
-			if ($this->isStandaloneMode()) {
+			if (Setting::isStandaloneMode()) {
 				$result = Lang::getTxt('lp_who_viewing_index', [
 					Config::$modSettings['lp_standalone_url'],
 					Config::$scripturl

@@ -16,8 +16,8 @@ namespace Bugo\LightPortal\Actions;
 
 use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, User, Utils};
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Utils\ItemList;
+use Bugo\LightPortal\Enums\{Permission, Status};
+use Bugo\LightPortal\Utils\{Icon, ItemList};
 use IntlException;
 use Nette\Utils\Html;
 
@@ -119,7 +119,7 @@ final class Category extends AbstractPageList
 				'id'            => Utils::$context['current_category'],
 				'statuses'      => [Status::ACTIVE->value, Status::INTERNAL->value],
 				'current_time'  => time(),
-				'permissions'   => $this->getPermissions(),
+				'permissions'   => Permission::all(),
 				'sort'          => $sort,
 				'start'         => $start,
 				'limit'         => $limit,
@@ -146,7 +146,7 @@ final class Category extends AbstractPageList
 				'id'           => Utils::$context['current_category'],
 				'statuses'     => [Status::ACTIVE->value, Status::INTERNAL->value],
 				'current_time' => time(),
-				'permissions'  => $this->getPermissions(),
+				'permissions'  => Permission::all(),
 			]
 		);
 
@@ -173,7 +173,7 @@ final class Category extends AbstractPageList
 			'title' => Utils::$context['page_title'],
 			'no_items_label' => Lang::$txt['lp_no_categories'],
 			'base_href' => Utils::$context['canonical_url'],
-			'default_sort_col' => 'priority',
+			'default_sort_col' => 'title',
 			'get_items' => [
 				'function' => $this->getAll(...)
 			],
@@ -181,19 +181,6 @@ final class Category extends AbstractPageList
 				'function' => fn() => count($this->getAll())
 			],
 			'columns' => [
-				'priority' => [
-					'header' => [
-						'value' => Lang::$txt['lp_block_priority']
-					],
-					'data' => [
-						'db'    => 'priority',
-						'class' => 'centertext'
-					],
-					'sort' => [
-						'default' => 'c.priority',
-						'reverse' => 'c.priority DESC'
-					]
-				],
 				'title' => [
 					'header' => [
 						'value' => Lang::$txt['lp_category']
@@ -261,7 +248,7 @@ final class Category extends AbstractPageList
 				'status'        => Status::ACTIVE->value,
 				'statuses'      => [Status::ACTIVE->value, Status::INTERNAL->value],
 				'current_time'  => time(),
-				'permissions'   => $this->getPermissions(),
+				'permissions'   => Permission::all(),
 				'sort'          => $sort,
 				'start'         => $start,
 				'limit'         => $limit,
@@ -271,7 +258,7 @@ final class Category extends AbstractPageList
 		$items = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['category_id']] = [
-				'icon'        => $this->getIcon($row['icon']),
+				'icon'        => Icon::parse($row['icon']),
 				'title'       => $row['title'] ?: Lang::$txt['lp_no_category'],
 				'description' => $row['description'] ?? '',
 				'link'        => LP_BASE_URL . ';sa=categories;id=' . $row['category_id'],

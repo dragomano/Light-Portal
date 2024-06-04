@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Areas\Imports;
 
-use Bugo\Compat\{Config, Db, ErrorHandler};
+use Bugo\Compat\{Config, ErrorHandler};
 use Bugo\Compat\{Lang, Theme, Utils};
 
 if (! defined('SMF'))
@@ -51,8 +51,9 @@ final class BlockImport extends AbstractImport
 		if (empty($xml = $this->getFile()))
 			return;
 
-		if (! isset($xml->blocks->item[0]['block_id']))
+		if (! isset($xml->blocks->item[0]['block_id'])) {
 			ErrorHandler::fatalLang('lp_wrong_import_file');
+		}
 
 		$items = $titles = $params = [];
 
@@ -101,44 +102,31 @@ final class BlockImport extends AbstractImport
 			}
 		}
 
-		Db::$db->transaction('begin');
+		$this->startTransaction($items);
 
-		$results = [];
-
-		if ($items) {
-			Utils::$context['import_successful'] = count($items);
-
-			$items = array_chunk($items, 100);
-			$count = sizeof($items);
-
-			for ($i = 0; $i < $count; $i++) {
-				$results = Db::$db->insert('replace',
-					'{db_prefix}lp_blocks',
-					[
-						'block_id'      => 'int',
-						'icon'          => 'string',
-						'type'          => 'string',
-						'note'          => 'string',
-						'content'       => 'string-65534',
-						'placement'     => 'string-10',
-						'priority'      => 'int',
-						'permissions'   => 'int',
-						'status'        => 'int',
-						'areas'         => 'string',
-						'title_class'   => 'string',
-						'content_class' => 'string',
-					],
-					$items[$i],
-					['block_id'],
-					2
-				);
-			}
-		}
+		$results = $this->insertData(
+			'lp_blocks',
+			'replace',
+			$items,
+			[
+				'block_id'      => 'int',
+				'icon'          => 'string',
+				'type'          => 'string',
+				'note'          => 'string',
+				'content'       => 'string-65534',
+				'placement'     => 'string-10',
+				'priority'      => 'int',
+				'permissions'   => 'int',
+				'status'        => 'int',
+				'areas'         => 'string',
+				'title_class'   => 'string',
+				'content_class' => 'string',
+			],
+			['block_id'],
+		);
 
 		$this->replaceTitles($titles, $results);
-
 		$this->replaceParams($params, $results);
-
-		$this->finish($results);
+		$this->finishTransaction($results);
 	}
 }

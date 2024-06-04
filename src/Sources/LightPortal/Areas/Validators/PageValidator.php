@@ -15,6 +15,8 @@
 namespace Bugo\LightPortal\Areas\Validators;
 
 use Bugo\Compat\{Config, Db, Lang, Utils};
+use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Enums\VarType;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -54,7 +56,7 @@ class PageValidator extends AbstractValidator
 				$this->args['title_' . $lang['filename']] = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
 			}
 
-			$this->hook('validatePageParams', [&$params]);
+			AddonHandler::getInstance()->run('validatePageParams', [&$params]);
 
 			$params = array_merge($this->params, $params);
 
@@ -83,7 +85,7 @@ class PageValidator extends AbstractValidator
 
 		if (
 			$data['slug']
-			&& empty($this->filterVar($data['slug'], [
+			&& empty(VarType::ARRAY->filter($data['slug'], [
 				'options' => ['regexp' => '/' . LP_ALIAS_PATTERN . '/']
 			]))
 		) {
@@ -96,7 +98,7 @@ class PageValidator extends AbstractValidator
 		if (empty($data['content']))
 			$errors[] = 'no_content';
 
-		$this->hook('findPageErrors', [&$errors, $data]);
+		AddonHandler::getInstance()->run('findPageErrors', [&$errors, $data]);
 
 		if ($errors) {
 			$this->request()->put('preview', true);

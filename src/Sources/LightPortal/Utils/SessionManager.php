@@ -15,10 +15,11 @@
 namespace Bugo\LightPortal\Utils;
 
 use Bugo\Compat\{Db, User, Utils};
-use Bugo\LightPortal\Actions\PageInterface;
-use Bugo\LightPortal\Actions\PageListInterface;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Helper;
+
+if (! defined('SMF'))
+	die('No direct access...');
 
 final class SessionManager
 {

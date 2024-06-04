@@ -17,6 +17,10 @@ namespace Bugo\LightPortal\Repositories;
 use Bugo\Compat\{Db, Msg, Utils};
 use Bugo\LightPortal\Helper;
 
+use function implode;
+use function is_array;
+use function preg_replace;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -26,33 +30,26 @@ abstract class AbstractRepository
 
 	protected string $entity;
 
-	public function toggleStatus(array $items = [], string $type = 'block'): void
+	abstract public function getData(int $item): array;
+
+	abstract public function setData(int $item = 0);
+
+	abstract public function remove(array $items): void;
+
+	public function toggleStatus(array $items = []): void
 	{
 		if ($items === [])
 			return;
 
-		switch ($type) {
-			case 'block':
-				$table = 'blocks';
-				break;
-			case 'page':
-				$table = 'pages';
-				break;
-			case 'category':
-				$table = 'categories';
-				break;
-			case 'tag':
-				$table = 'tags';
-				break;
-		}
-
-		if (empty($table))
-			return;
+		$table = match ($this->entity) {
+			'category' => 'categories',
+			default    => $this->entity . 's',
+		};
 
 		Db::$db->query('', '
 			UPDATE {db_prefix}lp_' . $table . '
 			SET status = CASE status WHEN 1 THEN 0 WHEN 0 THEN 1 WHEN 2 THEN 1 WHEN 3 THEN 0 END
-			WHERE ' . $type . '_id IN ({array_int:items})',
+			WHERE ' . $this->entity . '_id IN ({array_int:items})',
 			[
 				'items' => $items,
 			]
@@ -137,6 +134,14 @@ abstract class AbstractRepository
 			],
 			$params,
 			['item_id', 'type', 'name'],
+		);
+	}
+
+	protected function prepareTitles(): void
+	{
+		// Remove all punctuation symbols
+		Utils::$context['lp_' . $this->entity]['titles'] = preg_replace(
+			"#[[:punct:]]#", "", (array) Utils::$context['lp_' . $this->entity]['titles']
 		);
 	}
 }

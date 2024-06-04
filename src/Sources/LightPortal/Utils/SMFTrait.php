@@ -16,6 +16,11 @@ namespace Bugo\LightPortal\Utils;
 
 use Bugo\Compat\IntegrationHook;
 
+use function debug_backtrace;
+use function func_num_args;
+use function lcfirst;
+use function str_replace;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -26,7 +31,7 @@ trait SMFTrait
 		$name = str_replace('integrate_', '', $name);
 
 		if (func_num_args() === 1) {
-			$method = lcfirst($this->getCamelName($name));
+			$method = lcfirst(Str::getCamelName($name));
 		}
 
 		$method = static::class . '::' . str_replace('#', '', $method);

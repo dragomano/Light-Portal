@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 04.04.24
+ * @version 02.06.24
  */
 
 namespace Bugo\LightPortal\Addons\Giscus;
 
 use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Utils\Setting;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -51,7 +52,7 @@ class Giscus extends Plugin
 
 	public function init(): void
 	{
-		Lang::$txt['lp_show_comment_block_set']['giscus'] = 'Giscus';
+		Lang::$txt['lp_comment_block_set']['giscus'] = 'Giscus';
 	}
 
 	public function addSettings(array &$settings): void
@@ -89,7 +90,7 @@ class Giscus extends Plugin
 
 	public function comments(): void
 	{
-		if ($this->getCommentBlockType() !== 'giscus')
+		if (Setting::getCommentBlock() !== 'giscus')
 			return;
 
 		if (empty(Utils::$context['lp_giscus_plugin']['repo']) || empty(Utils::$context['lp_giscus_plugin']['repo_id']))

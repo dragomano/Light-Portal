@@ -16,9 +16,9 @@ namespace Bugo\LightPortal\Actions;
 
 use Bugo\Compat\{Config, Db};
 use Bugo\Compat\{Lang, Theme, Utils};
-use Bugo\LightPortal\Enums\Status;
+use Bugo\LightPortal\Enums\{Permission, Status};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\Content;
+use Bugo\LightPortal\Utils\{Content, Icon, Setting, Str};
 use Nette\Utils\Html;
 
 if (! defined('SMF'))
@@ -41,7 +41,7 @@ final class Block implements BlockInterface
 
 		// Block placement
 		foreach ($blocks as $item => $data) {
-			if ($this->canViewItem($data['permissions']) === false)
+			if (Permission::canViewItem($data['permissions']) === false)
 				continue;
 
 			$data['can_edit'] = Utils::$context['user']['is_admin'];
@@ -58,8 +58,8 @@ final class Block implements BlockInterface
 			Utils::$context['lp_blocks'][$data['placement']][$item] = $data;
 
 			if (empty($data['parameters']['hide_header'])) {
-				$title = $this->getTranslatedTitle($data['titles']);
-				$icon  = $this->getIcon(Utils::$context['lp_blocks'][$data['placement']][$item]['icon']);
+				$title = Str::getTranslatedTitle($data['titles']);
+				$icon  = Icon::parse(Utils::$context['lp_blocks'][$data['placement']][$item]['icon']);
 
 				if (! empty($data['parameters']['link_in_title'])) {
 					$title = Html::el('a')->href($data['parameters']['link_in_title'])->setText($title)->toHtml();
@@ -146,7 +146,7 @@ final class Block implements BlockInterface
 			empty(Config::$modSettings['lp_frontpage_mode']) ? 'forum' : LP_ACTION
 		);
 
-		if ($this->isStandaloneMode()) {
+		if (Setting::isStandaloneMode()) {
 			if (Config::$modSettings['lp_standalone_url'] === $this->request()->url()) {
 				$area = LP_ACTION;
 			} elseif (empty(Utils::$context['current_action'])) {
@@ -157,7 +157,7 @@ final class Block implements BlockInterface
 		if (isset(Utils::$context['current_board']) || isset(Utils::$context['lp_page']))
 			$area = '';
 
-		if (! empty(Utils::$context['lp_page']['slug']) && $this->isFrontpage(Utils::$context['lp_page']['slug']))
+		if (! empty(Utils::$context['lp_page']['slug']) && Setting::isFrontpage(Utils::$context['lp_page']['slug']))
 			$area = LP_ACTION;
 
 		return array_filter(Utils::$context['lp_active_blocks'], function ($block) use ($area) {

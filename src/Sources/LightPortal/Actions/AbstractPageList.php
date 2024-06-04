@@ -16,7 +16,7 @@ namespace Bugo\LightPortal\Actions;
 
 use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Content, DateTime};
+use Bugo\LightPortal\Utils\{Avatar, Content, DateTime, Setting, Str};
 use IntlException;
 
 if (! defined('SMF'))
@@ -57,7 +57,7 @@ abstract class AbstractPageList implements PageListInterface
 				'replies'   => $this->getRepliesData($row),
 				'title'     => $row['title'],
 				'is_new'    => $this->isNew($row),
-				'is_front'  => $this->isFrontpage($row['slug']),
+				'is_front'  => Setting::isFrontpage($row['slug']),
 				'image'     => $this->getImage($row),
 				'can_edit'  => $this->canEdit($row),
 				'edit_link' => $this->getEditLink($row),
@@ -71,7 +71,7 @@ abstract class AbstractPageList implements PageListInterface
 			}
 		}
 
-		return $this->getItemsWithUserAvatars($items);
+		return Avatar::getWithItems($items);
 	}
 
 	private function getSectionData(array $row): array
@@ -114,7 +114,7 @@ abstract class AbstractPageList implements PageListInterface
 	private function getRepliesData(array $row): array
 	{
 		return [
-			'num'   => $this->getCommentBlockType() === 'default' ? (int) $row['num_comments'] : 0,
+			'num'   => Setting::getCommentBlock() === 'default' ? (int) $row['num_comments'] : 0,
 			'title' => Lang::$txt['lp_comments'],
 		];
 	}
@@ -159,6 +159,6 @@ abstract class AbstractPageList implements PageListInterface
 		if (empty(Config::$modSettings['lp_show_teaser']))
 			return;
 
-		$items[$row['page_id']]['teaser'] = $this->getTeaser($row['description'] ?: $row['content']);
+		$items[$row['page_id']]['teaser'] = Str::getTeaser($row['description'] ?: $row['content']);
 	}
 }

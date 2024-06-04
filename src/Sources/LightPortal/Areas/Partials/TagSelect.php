@@ -15,6 +15,7 @@
 namespace Bugo\LightPortal\Areas\Partials;
 
 use Bugo\Compat\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\Icon;
 
 final class TagSelect extends AbstractPartial
 {
@@ -25,7 +26,7 @@ final class TagSelect extends AbstractPartial
 		$data = $values = [];
 		foreach (Utils::$context['lp_tags'] as $id => $tag) {
 			$data[] = [
-				'label' => $this->getIcon($tag['icon']) . $tag['title'],
+				'label' => Icon::parse($tag['icon']) . $tag['title'],
 				'value' => $id,
 			];
 		}

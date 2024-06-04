@@ -16,6 +16,11 @@ namespace Bugo\LightPortal\Utils;
 
 use Bugo\Compat\{Config, MessageIndex as BaseMessageIndex};
 
+use function array_merge;
+
+if (! defined('SMF'))
+	die('No direct access...');
+
 final class MessageIndex extends BaseMessageIndex
 {
 	public static function getBoardList(array $boardListOptions = []): array

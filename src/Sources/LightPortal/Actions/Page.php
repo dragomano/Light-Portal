@@ -16,9 +16,10 @@ namespace Bugo\LightPortal\Actions;
 
 use Bugo\Compat\{Config, ErrorHandler, Lang};
 use Bugo\Compat\{PageIndex, Theme, User, Utils};
+use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Repositories\PageRepository;
-use Bugo\LightPortal\Utils\{Content, Icon};
+use Bugo\LightPortal\Utils\{Content, Icon, Setting, Str};
 use IntlException;
 use Nette\Utils\Html;
 
@@ -46,7 +47,7 @@ final class Page implements PageInterface
 		$slug = $this->request(LP_PAGE_PARAM);
 
 		if (empty($slug)) {
-			if ($this->isFrontpageMode('chosen_page') && Config::$modSettings['lp_frontpage_chosen_page']) {
+			if (Setting::isFrontpageMode('chosen_page') && Config::$modSettings['lp_frontpage_chosen_page']) {
 				Utils::$context['lp_page'] = $this->getDataBySlug(Config::$modSettings['lp_frontpage_chosen_page']);
 			} else {
 				Config::updateModSettings(['lp_frontpage_mode' => 0]);
@@ -54,7 +55,7 @@ final class Page implements PageInterface
 		} else {
 			$slug = explode(';', (string) $slug)[0];
 
-			if ($this->isFrontpage($slug)) {
+			if (Setting::isFrontpage($slug)) {
 				Utils::redirectexit('action=' . LP_ACTION);
 			}
 
@@ -88,7 +89,7 @@ final class Page implements PageInterface
 		);
 
 		if (empty($slug)) {
-			Utils::$context['page_title'] = $this->getTranslatedTitle(
+			Utils::$context['page_title'] = Str::getTranslatedTitle(
 				Utils::$context['lp_page']['titles']
 			) ?: Lang::$txt['lp_portal'];
 
@@ -97,7 +98,7 @@ final class Page implements PageInterface
 				'name' => Lang::$txt['lp_portal'],
 			];
 		} else {
-			Utils::$context['page_title'] = $this->getTranslatedTitle(
+			Utils::$context['page_title'] = Str::getTranslatedTitle(
 				Utils::$context['lp_page']['titles']
 			) ?: Lang::$txt['lp_post_error_no_title'];
 
@@ -364,14 +365,14 @@ final class Page implements PageInterface
 		if (! empty($prevSlug)) {
 			Utils::$context['lp_page']['prev'] = [
 				'link'  => LP_PAGE_URL . $prevSlug,
-				'title' => $this->getTranslatedTitle($titles[$prevId])
+				'title' => Str::getTranslatedTitle($titles[$prevId])
 			];
 		}
 
 		if (! empty($nextSlug)) {
 			Utils::$context['lp_page']['next'] = [
 				'link'  => LP_PAGE_URL . $nextSlug,
-				'title' => $this->getTranslatedTitle($titles[$nextId])
+				'title' => Str::getTranslatedTitle($titles[$nextId])
 			];
 		}
 	}
@@ -392,7 +393,7 @@ final class Page implements PageInterface
 	 */
 	private function prepareComments(): void
 	{
-		if ($this->getCommentBlockType() === '' || $this->getCommentBlockType() === 'none')
+		if (Setting::getCommentBlock() === '' || Setting::getCommentBlock() === 'none')
 			return;
 
 		if (empty(Utils::$context['lp_page']['options']['allow_comments']))
@@ -400,9 +401,9 @@ final class Page implements PageInterface
 
 		Lang::load('Editor');
 
-		$this->hook('comments');
+		AddonHandler::getInstance()->run('comments');
 
-		if (isset(Utils::$context['lp_' . Config::$modSettings['lp_show_comment_block'] . '_comment_block']))
+		if (isset(Utils::$context['lp_' . Config::$modSettings['lp_comment_block'] . '_comment_block']))
 			return;
 
 		$this->prepareJsonData();

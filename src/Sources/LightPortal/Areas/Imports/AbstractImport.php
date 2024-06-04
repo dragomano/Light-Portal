@@ -13,8 +13,11 @@
 
 namespace Bugo\LightPortal\Areas\Imports;
 
-use Bugo\Compat\{Db, ErrorHandler};
-use Bugo\Compat\{Lang, Sapi, Utils};
+use Bugo\Compat\{Sapi, Utils};
+use Bugo\LightPortal\Areas\Imports\Traits\CanInsertData;
+use Bugo\LightPortal\Areas\Imports\Traits\WithParams;
+use Bugo\LightPortal\Areas\Imports\Traits\WithTitles;
+use Bugo\LightPortal\Areas\Imports\Traits\UseTransactions;
 use Bugo\LightPortal\Helper;
 use SimpleXMLElement;
 
@@ -24,6 +27,10 @@ if (! defined('SMF'))
 abstract class AbstractImport implements ImportInterface
 {
 	use Helper;
+	use CanInsertData;
+	use WithParams;
+	use WithTitles;
+	use UseTransactions;
 
 	public function __construct()
 	{
@@ -41,71 +48,6 @@ abstract class AbstractImport implements ImportInterface
 			return false;
 
 		return simplexml_load_file($file['tmp_name']);
-	}
-
-	protected function replaceTitles(array $titles, array &$results): void
-	{
-		if ($titles === [] && $results === [])
-			return;
-
-		$titles = array_chunk($titles, 100);
-		$count  = sizeof($titles);
-
-		for ($i = 0; $i < $count; $i++) {
-			$results = Db::$db->insert('replace',
-				'{db_prefix}lp_titles',
-				[
-					'item_id' => 'int',
-					'type'    => 'string',
-					'lang'    => 'string',
-					'value'   => 'string',
-				],
-				$titles[$i],
-				['item_id', 'type', 'lang'],
-				2
-			);
-		}
-	}
-
-	protected function replaceParams(array $params, array &$results): void
-	{
-		if ($params === [] && $results === [])
-			return;
-
-		$params = array_chunk($params, 100);
-		$count  = sizeof($params);
-
-		for ($i = 0; $i < $count; $i++) {
-			$results = Db::$db->insert('replace',
-				'{db_prefix}lp_params',
-				[
-					'item_id' => 'int',
-					'type'    => 'string',
-					'name'    => 'string',
-					'value'   => 'string',
-				],
-				$params[$i],
-				['item_id', 'type', 'name'],
-				2
-			);
-		}
-	}
-
-	protected function finish(array $results, string $type = 'blocks'): void
-	{
-		if ($results === []) {
-			Db::$db->transaction('rollback');
-			ErrorHandler::fatalLang('lp_import_failed');
-		}
-
-		Db::$db->transaction('commit');
-
-		Utils::$context['import_successful'] = sprintf(
-			Lang::$txt['lp_import_success'],
-			Lang::getTxt('lp_' . $type . '_set', [$type => Utils::$context['import_successful']])
-		);
-
-		$this->cache()->flush();
 	}
 
 	abstract protected function run();

@@ -16,6 +16,9 @@ namespace Bugo\LightPortal\Repositories;
 
 use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, Security, User, Utils};
+use Bugo\LightPortal\Utils\Icon;
+
+use function array_filter;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -50,7 +53,7 @@ final class CategoryRepository extends AbstractRepository
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['category_id']] = [
 				'id'       => (int) $row['category_id'],
-				'icon'     => $this->getIcon($row['icon']),
+				'icon'     => Icon::parse($row['icon']),
 				'desc'     => $row['description'],
 				'priority' => (int) $row['priority'],
 				'status'   => (int) $row['status'],
@@ -127,6 +130,8 @@ final class CategoryRepository extends AbstractRepository
 
 		Security::checkSubmitOnce('check');
 
+		$this->prepareTitles();
+
 		if (empty($item)) {
 			Utils::$context['lp_category']['titles'] = array_filter(Utils::$context['lp_category']['titles']);
 			$item = $this->addData();
@@ -138,11 +143,13 @@ final class CategoryRepository extends AbstractRepository
 
 		$this->session('lp')->free('active_categories');
 
-		if ($this->request()->has('save_exit'))
+		if ($this->request()->has('save_exit')) {
 			Utils::redirectexit('action=admin;area=lp_categories;sa=main');
+		}
 
-		if ($this->request()->has('save'))
+		if ($this->request()->has('save')) {
 			Utils::redirectexit('action=admin;area=lp_categories;sa=edit;id=' . $item);
+		}
 	}
 
 	public function remove(array $items): void

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.05.24
+ * @version 30.05.24
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortalMigration;
@@ -180,16 +180,16 @@ class BlockImport extends AbstractCustomBlockImport
 		return (int) $count;
 	}
 
-	protected function getItems(array $blocks): array
+	protected function getItems(array $ids): array
 	{
 		$result = Utils::$smcFunc['db_query']('', '
 			SELECT id, type, title, body, access, bar
 			FROM {db_prefix}tp_blocks
-			WHERE type IN ({array_int:types})' . (empty($blocks) ? '' : '
+			WHERE type IN ({array_int:types})' . (empty($ids) ? '' : '
 				AND id IN ({array_int:blocks})'),
 			[
 				'types'  => $this->supportedTypes,
-				'blocks' => $blocks,
+				'blocks' => $ids,
 			]
 		);
 

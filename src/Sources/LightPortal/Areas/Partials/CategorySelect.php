@@ -15,6 +15,7 @@
 namespace Bugo\LightPortal\Areas\Partials;
 
 use Bugo\Compat\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\Icon;
 
 final class CategorySelect extends AbstractPartial
 {
@@ -32,7 +33,7 @@ final class CategorySelect extends AbstractPartial
 		$data = [];
 		foreach ($params['data'] as $id => $cat) {
 			$data[] = [
-				'label' => $this->getIcon($cat['icon']) . $cat['title'],
+				'label' => Icon::parse($cat['icon']) . $cat['title'],
 				'value' => $id,
 			];
 		}

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.03.24
+ * @version 02.06.24
  */
 
 namespace Bugo\LightPortal\Addons\WhosOnline;
@@ -18,6 +18,7 @@ namespace Bugo\LightPortal\Addons\WhosOnline;
 use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, NumberField};
+use Bugo\LightPortal\Utils\Avatar;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -105,7 +106,7 @@ class WhosOnline extends Block
 
 		// With avatars
 		if ($parameters['show_avatars']) {
-			$users = array_map(fn($item) => $this->getUserAvatar($item['id']), $whoIsOnline['users_online']);
+			$users = array_map(fn($item) => Avatar::get($item['id']), $whoIsOnline['users_online']);
 
 			$whoIsOnline['list_users_online'] = [];
 			foreach ($whoIsOnline['users_online'] as $key => $user) {

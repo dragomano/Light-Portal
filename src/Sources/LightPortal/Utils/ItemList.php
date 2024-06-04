@@ -16,6 +16,9 @@ namespace Bugo\LightPortal\Utils;
 
 use Bugo\Compat\{ItemList as BaseItemList, Utils};
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 final class ItemList extends BaseItemList
 {
 	public function __construct(array $listOptions)

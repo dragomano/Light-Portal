@@ -24,7 +24,7 @@ use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Models\CategoryModel;
 use Bugo\LightPortal\Repositories\CategoryRepository;
-use Bugo\LightPortal\Utils\{Icon, ItemList};
+use Bugo\LightPortal\Utils\{Icon, ItemList, Str};
 use Nette\Utils\Html;
 
 if (! defined('SMF'))
@@ -290,7 +290,7 @@ final class CategoryArea
 			$this->repository->remove([(int) $data['del_item']]);
 
 		if (isset($data['toggle_item']))
-			$this->repository->toggleStatus([(int) $data['toggle_item']], 'category');
+			$this->repository->toggleStatus([(int) $data['toggle_item']]);
 
 		if (isset($data['update_priority']))
 			$this->repository->updatePriority($data['update_priority']);
@@ -312,8 +312,8 @@ final class CategoryArea
 			$category->titles[$lang['filename']] = $postData['title_' . $lang['filename']] ?? $category->titles[$lang['filename']] ?? '';
 		}
 
-		$this->cleanBbcode($category->titles);
-		$this->cleanBbcode($category->description);
+		Str::cleanBbcode($category->titles);
+		Str::cleanBbcode($category->description);
 
 		Utils::$context['lp_category'] = $category->toArray();
 	}
@@ -346,11 +346,11 @@ final class CategoryArea
 		Utils::$context['preview_title']   = Utils::$context['lp_category']['titles'][Utils::$context['user']['language']];
 		Utils::$context['preview_content'] = Utils::htmlspecialchars(Utils::$context['lp_category']['description'], ENT_QUOTES);
 
-		$this->cleanBbcode(Utils::$context['preview_title']);
+		Str::cleanBbcode(Utils::$context['preview_title']);
 		Lang::censorText(Utils::$context['preview_title']);
 		Lang::censorText(Utils::$context['preview_content']);
 
 		Utils::$context['page_title']    = Lang::$txt['preview'] . (Utils::$context['preview_title'] ? ' - ' . Utils::$context['preview_title'] : '');
-		Utils::$context['preview_title'] = $this->getPreviewTitle($this->getIcon(Utils::$context['lp_category']['icon']));
+		Utils::$context['preview_title'] = $this->getPreviewTitle(Icon::parse(Utils::$context['lp_category']['icon']));
 	}
 }

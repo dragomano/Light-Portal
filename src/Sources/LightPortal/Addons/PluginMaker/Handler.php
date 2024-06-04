@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.05.24
+ * @version 02.06.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -24,7 +24,7 @@ use Bugo\LightPortal\Areas\Partials\IconSelect;
 use Bugo\LightPortal\Enums\PluginType;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Repositories\PluginRepository;
-use Bugo\LightPortal\Utils\Language;
+use Bugo\LightPortal\Utils\{Language, Str};
 use Nette\PhpGenerator\{PhpFile, PhpNamespace, Printer};
 
 if (! defined('LP_NAME'))
@@ -143,7 +143,7 @@ class Handler extends Plugin
 		Utils::$context['lp_plugin']['titles']       = array_filter(Utils::$context['lp_plugin']['titles']);
 		Utils::$context['lp_plugin']['descriptions'] = array_filter(Utils::$context['lp_plugin']['descriptions']);
 
-		$this->cleanBbcode(Utils::$context['lp_plugin']['descriptions']);
+		Str::cleanBbcode(Utils::$context['lp_plugin']['descriptions']);
 	}
 
 	private function prepareFormFields(): void
@@ -350,14 +350,14 @@ class Handler extends Plugin
 				->setType('array');
 		}
 
-		$pluginName = $this->getSnakeName(Utils::$context['lp_plugin']['name']);
+		$pluginName = Str::getSnakeName(Utils::$context['lp_plugin']['name']);
 
 		if ($type === 'parser') {
 			$class->addMethod('init')->setReturnType('void')
 				->setBody("Utils::\$context['lp_content_types']['$pluginName'] = '{Utils::\$context['lp_plugin']['name']}';");
 		} else if ($type === 'comment') {
 			$class->addMethod('init')->setReturnType('void')
-				->setBody("Lang::\$txt['lp_show_comment_block_set']['$pluginName'] = '{Utils::\$context['lp_plugin']['name']}';");
+				->setBody("Lang::\$txt['lp_comment_block_set']['$pluginName'] = '{Utils::\$context['lp_plugin']['name']}';");
 		} else if (! empty(Utils::$context['lp_plugin']['smf_hooks'])) {
 			$class->addMethod('init')->setReturnType('void')
 				->setBody("// \$this->applyHook('hook_name');");
@@ -581,7 +581,7 @@ class Handler extends Plugin
 		if ($type === 'comment') {
 			$method = $class->addMethod('comments')
 				->setReturnType('void');
-			$method->addBody("if (! empty(Config::\$modSettings['lp_show_comment_block']) && Config::\$modSettings['lp_show_comment_block'] === '$pluginName') {");
+			$method->addBody("if (! empty(Config::\$modSettings['lp_comment_block']) && Config::\$modSettings['lp_comment_block'] === '$pluginName') {");
 			$method->addBody("\t// Your code");
 			$method->addBody("}");
 		}

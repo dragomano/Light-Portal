@@ -17,6 +17,7 @@ namespace Bugo\LightPortal\Addons\PluginMaker;
 
 use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\Areas\Validators\AbstractValidator;
+use Bugo\LightPortal\Enums\VarType;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -86,8 +87,14 @@ class Validator extends AbstractValidator
 		if (empty($data['name']))
 			$errors[] = 'no_name';
 
-		if (! empty($data['name']) && empty($this->filterVar($data['name'], ['options' => ['regexp' => '/' . LP_ADDON_PATTERN . '/']])))
+		if (
+			! empty($data['name'])
+			&& empty(VarType::ARRAY->filter($data['name'], [
+				'options' => ['regexp' => '/' . LP_ADDON_PATTERN . '/']
+			]))
+		) {
 			$errors[] = 'no_valid_name';
+		}
 
 		if (! empty($data['name']) && ! $this->isUnique($data['name']))
 			$errors[] = 'no_unique_name';

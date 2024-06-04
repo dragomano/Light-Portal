@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.05.24
+ * @version 02.06.24
  */
 
 namespace Bugo\LightPortal\Addons\RecentPosts;
@@ -20,7 +20,7 @@ use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, NumberField, RadioField};
 use Bugo\LightPortal\Areas\Partials\{BoardSelect, TopicSelect};
 use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Utils\DateTime;
+use Bugo\LightPortal\Utils\{Avatar, DateTime};
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -192,7 +192,7 @@ class RecentPosts extends Block
 		);
 
 		if ($parameters['show_avatars'] && empty($parameters['use_simple_style']))
-			$posts = $this->getItemsWithUserAvatars($posts, 'poster');
+			$posts = Avatar::getWithItems($posts, 'poster');
 
 		return $posts;
 	}

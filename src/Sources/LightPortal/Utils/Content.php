@@ -19,6 +19,18 @@ use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Enums\ContentType;
 use ParseError;
 
+use function file_put_contents;
+use function html_entity_decode;
+use function ob_get_clean;
+use function ob_start;
+use function str_replace;
+use function tempnam;
+use function trim;
+use function unlink;
+
+if (! defined('SMF'))
+	die('No direct access...');
+
 final class Content
 {
 	public static function prepare(

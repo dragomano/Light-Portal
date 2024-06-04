@@ -14,8 +14,9 @@
 
 namespace Bugo\LightPortal\Areas\Imports;
 
-use Bugo\Compat\{Config, Db, ErrorHandler};
+use Bugo\Compat\{Config, ErrorHandler};
 use Bugo\Compat\{Lang, Theme, User, Utils};
+use Bugo\LightPortal\Areas\Imports\Traits\WithComments;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -25,6 +26,8 @@ if (! defined('SMF'))
  */
 final class PageImport extends AbstractImport
 {
+	use WithComments;
+
 	public function main(): void
 	{
 		User::mustHavePermission('admin_forum');
@@ -53,8 +56,9 @@ final class PageImport extends AbstractImport
 		if (empty($xml = $this->getFile()))
 			return;
 
-		if (! isset($xml->pages->item[0]['page_id']))
+		if (! isset($xml->pages->item[0]['page_id'])) {
 			ErrorHandler::fatalLang('lp_wrong_import_file');
+		}
 
 		$items = $titles = $params = $comments = [];
 
@@ -119,66 +123,33 @@ final class PageImport extends AbstractImport
 			}
 		}
 
-		Db::$db->transaction('begin');
+		$this->startTransaction($items);
 
-		$results = [];
-
-		if ($items) {
-			Utils::$context['import_successful'] = count($items);
-			$items = array_chunk($items, 100);
-			$count = sizeof($items);
-
-			for ($i = 0; $i < $count; $i++) {
-				$results = Db::$db->insert('replace',
-					'{db_prefix}lp_pages',
-					[
-						'page_id'      => 'int',
-						'category_id'  => 'int',
-						'author_id'    => 'int',
-						'slug'         => 'string-255',
-						'description'  => 'string-255',
-						'content'      => 'string',
-						'type'         => 'string',
-						'permissions'  => 'int',
-						'status'       => 'int',
-						'num_views'    => 'int',
-						'num_comments' => 'int',
-						'created_at'   => 'int',
-						'updated_at'   => 'int',
-					],
-					$items[$i],
-					['page_id'],
-					2
-				);
-			}
-		}
+		$results = $this->insertData(
+			'lp_pages',
+			'replace',
+			$items,
+			[
+				'page_id'      => 'int',
+				'category_id'  => 'int',
+				'author_id'    => 'int',
+				'slug'         => 'string-255',
+				'description'  => 'string-255',
+				'content'      => 'string',
+				'type'         => 'string',
+				'permissions'  => 'int',
+				'status'       => 'int',
+				'num_views'    => 'int',
+				'num_comments' => 'int',
+				'created_at'   => 'int',
+				'updated_at'   => 'int',
+			],
+			['page_id'],
+		);
 
 		$this->replaceTitles($titles, $results);
-
-		if ($comments && $results) {
-			$comments = array_chunk($comments, 100);
-			$count    = sizeof($comments);
-
-			for ($i = 0; $i < $count; $i++) {
-				$results = Db::$db->insert('replace',
-					'{db_prefix}lp_comments',
-					[
-						'id'         => 'int',
-						'parent_id'  => 'int',
-						'page_id'    => 'int',
-						'author_id'  => 'int',
-						'message'    => 'string-65534',
-						'created_at' => 'int',
-					],
-					$comments[$i],
-					['id', 'page_id'],
-					2
-				);
-			}
-		}
-
 		$this->replaceParams($params, $results);
-
-		$this->finish($results, 'pages');
+		$this->replaceComments($comments, $results);
+		$this->finishTransaction($results, 'pages');
 	}
 }

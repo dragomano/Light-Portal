@@ -174,18 +174,18 @@ function show_related_pages(): void
 
 function show_comments(): void
 {
-	if (empty(Config::$modSettings['lp_show_comment_block']) || empty(Utils::$context['lp_page']['options']['allow_comments']))
+	if (empty(Config::$modSettings['lp_comment_block']) || empty(Utils::$context['lp_page']['options']['allow_comments']))
 		return;
 
-	if (Config::$modSettings['lp_show_comment_block'] === 'none')
+	if (Config::$modSettings['lp_comment_block'] === 'none')
 		return;
 
-	if (! empty(Utils::$context['lp_' . Config::$modSettings['lp_show_comment_block'] . '_comment_block'])) {
-		echo Utils::$context['lp_' . Config::$modSettings['lp_show_comment_block'] . '_comment_block'];
+	if (! empty(Utils::$context['lp_' . Config::$modSettings['lp_comment_block'] . '_comment_block'])) {
+		echo Utils::$context['lp_' . Config::$modSettings['lp_comment_block'] . '_comment_block'];
 		return;
 	}
 
-	if (Config::$modSettings['lp_show_comment_block'] !== 'default')
+	if (Config::$modSettings['lp_comment_block'] !== 'default')
 		return;
 
 	echo '

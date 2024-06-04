@@ -18,9 +18,11 @@ namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, Lang, Theme};
 use Bugo\Compat\{User, Utils, WebFetchApi};
+use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Enums\VarType;
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Icon, Language};
 use Bugo\LightPortal\Repositories\PluginRepository;
+use Bugo\LightPortal\Utils\{Icon, Language, Str};
 use ReflectionClass;
 use ReflectionException;
 
@@ -73,7 +75,7 @@ final class PluginArea
 		$settings = [];
 
 		// You can add settings for your plugins
-		$this->hook('addSettings', [&$settings], Utils::$context['lp_plugins']);
+		AddonHandler::getInstance()->run('addSettings', [&$settings], Utils::$context['lp_plugins']);
 
 		$this->handleSave($settings);
 
@@ -134,13 +136,13 @@ final class PluginArea
 		foreach ($configVars[$name] as $var) {
 			if ($this->request()->has($var[1])) {
 				if ($var[0] === 'check') {
-					$settings[$var[1]] = $this->filterVar($this->request($var[1]), 'bool');
+					$settings[$var[1]] = VarType::BOOLEAN->filter($this->request($var[1]));
 				} elseif ($var[0] === 'int') {
-					$settings[$var[1]] = $this->filterVar($this->request($var[1]), 'int');
+					$settings[$var[1]] = VarType::INTEGER->filter($this->request($var[1]));
 				} elseif ($var[0] === 'float') {
-					$settings[$var[1]] = $this->filterVar($this->request($var[1]), 'float');
+					$settings[$var[1]] = VarType::FLOAT->filter($this->request($var[1]));
 				} elseif ($var[0] === 'url') {
-					$settings[$var[1]] = $this->filterVar($this->request($var[1]), 'url');
+					$settings[$var[1]] = VarType::URL->filter($this->request($var[1]));
 				} elseif ($var[0] === 'multiselect') {
 					$settings[$var[1]] = ltrim(implode(',', $this->request($var[1])), ',');
 				} else {
@@ -150,7 +152,7 @@ final class PluginArea
 		}
 
 		// You can do additional actions after settings saving
-		$this->hook('saveSettings', [&$settings], Utils::$context['lp_plugins']);
+		AddonHandler::getInstance()->run('saveSettings', [&$settings], Utils::$context['lp_plugins']);
 
 		$this->repository->changeSettings($name, $settings);
 
@@ -162,7 +164,7 @@ final class PluginArea
 		Utils::$context['all_lp_plugins'] = array_map(function ($item) use ($configVars) {
 			$composer = false;
 
-			$snakeName = $this->getSnakeName($item);
+			$snakeName = Str::getSnakeName($item);
 
 			try {
 				$className = '\Bugo\LightPortal\Addons\\' . $item . '\\' . $item;

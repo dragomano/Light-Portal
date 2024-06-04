@@ -18,7 +18,6 @@ namespace Bugo\LightPortal\Addons\News;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\SelectField;
 
 if (! defined('LP_NAME'))

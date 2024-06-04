@@ -38,7 +38,7 @@ final class PlacementSelect extends AbstractPartial
 			}
 		}
 
-		return '
+		return /** @lang text */ '
 		<div id="ads_placement" name="ads_placement"></div>
 		<script>
 			VirtualSelect.init({

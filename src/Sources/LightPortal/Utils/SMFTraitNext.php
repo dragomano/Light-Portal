@@ -18,6 +18,11 @@ use SMF\Actions\Admin\Permissions;
 use SMF\IntegrationHook;
 use SMF\Lang;
 
+use function debug_backtrace;
+use function func_num_args;
+use function lcfirst;
+use function str_replace;
+
 if (! defined('SMF'))
 	die('No direct access...');
 

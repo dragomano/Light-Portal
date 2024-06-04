@@ -15,6 +15,7 @@
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, Db, Lang, Theme, User, Utils};
+use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Areas\Configs\{BasicConfig, ExtraConfig, FeedbackConfig, MiscConfig, PanelConfig};
 use Bugo\LightPortal\Areas\Exports\{BlockExport, CategoryExport, PageExport, PluginExport, TagExport};
 use Bugo\LightPortal\Areas\Imports\{BlockImport, CategoryImport, PageImport, PluginImport, TagImport};
@@ -174,7 +175,7 @@ final class ConfigArea
 			}
 		}
 
-		$this->hook('updateAdminAreas', [&$areas['lp_portal']['areas']]);
+		AddonHandler::getInstance()->run('updateAdminAreas', [&$areas['lp_portal']['areas']]);
 	}
 
 	/**
@@ -261,7 +262,7 @@ final class ConfigArea
 			'import' => [new BlockImport(), 'main'],
 		];
 
-		$this->hook('updateBlockAreas', [&$areas]);
+		AddonHandler::getInstance()->run('updateBlockAreas', [&$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -278,7 +279,7 @@ final class ConfigArea
 			'import' => [new PageImport(), 'main'],
 		];
 
-		$this->hook('updatePageAreas', [&$areas]);
+		AddonHandler::getInstance()->run('updatePageAreas', [&$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -295,7 +296,7 @@ final class ConfigArea
 			'import' => [new CategoryImport(), 'main'],
 		];
 
-		$this->hook('updateCategoryAreas', [&$areas]);
+		AddonHandler::getInstance()->run('updateCategoryAreas', [&$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -312,7 +313,7 @@ final class ConfigArea
 			'import' => [new TagImport(), 'main'],
 		];
 
-		$this->hook('updateTagsAreas', [&$areas]);
+		AddonHandler::getInstance()->run('updateTagsAreas', [&$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -330,13 +331,13 @@ final class ConfigArea
 			$areas['import'] = [new PluginImport(), 'main'];
 		}
 
-		$this->hook('updatePluginAreas', [&$areas]);
+		AddonHandler::getInstance()->run('updatePluginAreas', [&$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
 
 	/**
-	 * Calls the requested subaction if it does exist; otherwise, calls the default action
+	 * Calls the requested sub_action if it does exist; otherwise, calls the default action
 	 *
 	 * Вызывает метод, если он существует; в противном случае вызывается метод по умолчанию
 	 */
@@ -353,7 +354,7 @@ final class ConfigArea
 		Utils::$context['sub_action'] = $this->request()->has('sa') && isset($areas[$this->request('sa')])
 			? $this->request('sa') : $defaultAction;
 
-		$this->callHelper($areas[Utils::$context['sub_action']]);
+		call_user_func($areas[Utils::$context['sub_action']]);
 	}
 
 	private function showDocsLink(): void

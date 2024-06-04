@@ -84,7 +84,6 @@ final class PluginRepository
 		}
 
 		$this->removeSettings($name, $oldSettings);
-
 		$this->addSettings($newSettings);
 	}
 

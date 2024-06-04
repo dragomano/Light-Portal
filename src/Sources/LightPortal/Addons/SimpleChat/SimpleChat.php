@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 24.05.24
+ * @version 02.06.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleChat;
@@ -19,6 +19,7 @@ use Bugo\Compat\{Config, Db, Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Utils\Avatar;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -91,8 +92,9 @@ class SimpleChat extends Block
 	{
 		$messages = $this->chat->getMessages($block_id);
 
-		if ($parameters['show_avatars'])
-			$messages = $this->getItemsWithUserAvatars($messages);
+		if ($parameters['show_avatars']) {
+			$messages = Avatar::getWithItems($messages);
+		}
 
 		return $messages;
 	}

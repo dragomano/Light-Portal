@@ -14,6 +14,13 @@
 
 namespace Bugo\LightPortal\Utils;
 
+use function array_flip;
+use function array_intersect_key;
+use function array_reduce;
+
+if (! defined('SMF'))
+	die('No direct access...');
+
 abstract class GlobalArray
 {
 	protected array $storage = [];

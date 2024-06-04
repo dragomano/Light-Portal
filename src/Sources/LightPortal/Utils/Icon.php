@@ -14,6 +14,14 @@
 
 namespace Bugo\LightPortal\Utils;
 
+use Bugo\FontAwesome\IconBuilder;
+use Bugo\LightPortal\AddonHandler;
+
+use function str_replace;
+
+if (! defined('SMF'))
+	die('No direct access...');
+
 final class Icon
 {
 	public static function get(string $name, string $title = '', string $prefix = ''): string
@@ -25,6 +33,18 @@ final class Icon
 		}
 
 		return str_replace(' class="', ' title="' . $title . '" class="' . $prefix, $icon);
+	}
+
+	public static function parse(?string $icon = ''): string
+	{
+		if (empty($icon))
+			return '';
+
+		$template = (new IconBuilder($icon, ['aria-hidden' => true]))->html() . ' ';
+
+		AddonHandler::getInstance()->run('prepareIconTemplate', [&$template, $icon]);
+
+		return $template;
 	}
 
 	public static function all(): array

@@ -25,6 +25,7 @@ if (! defined('SMF'))
 
 trait Area
 {
+	use PrepareLanguages;
 	use Query;
 
 	public function createBbcEditor(string $content = ''): void
@@ -53,9 +54,7 @@ trait Area
 		Security::checkSubmitOnce('register');
 
 		$this->prepareIconList();
-
 		$this->prepareTopicList();
-
 		$this->prepareMemberList();
 
 		$languages = empty(Config::$modSettings['userLanguage'])

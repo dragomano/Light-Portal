@@ -15,9 +15,9 @@
 namespace Bugo\LightPortal\Articles;
 
 use Bugo\Compat\{BBCodeParser, Config, Db, Lang, User, Utils};
-use Bugo\LightPortal\Actions\PageListInterface;
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Utils\Content;
+use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Enums\{Permission, Status};
+use Bugo\LightPortal\Utils\{Avatar, Content, Icon, Setting, Str};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -33,7 +33,7 @@ class PageArticle extends AbstractArticle
 		$this->selectedCategories = empty(Config::$modSettings['lp_frontpage_categories'])
 			? [] : explode(',', (string) Config::$modSettings['lp_frontpage_categories']);
 
-		if (empty($this->selectedCategories) && $this->isFrontpageMode('all_pages')) {
+		if (empty($this->selectedCategories) && Setting::isFrontpageMode('all_pages')) {
 			$this->selectedCategories = [0];
 		}
 
@@ -44,7 +44,7 @@ class PageArticle extends AbstractArticle
 			'fallback_lang'       => Config::$language,
 			'status'              => Status::ACTIVE->value,
 			'current_time'        => time(),
-			'permissions'         => $this->getPermissions(),
+			'permissions'         => Permission::all(),
 			'selected_categories' => $this->selectedCategories,
 		];
 
@@ -55,7 +55,7 @@ class PageArticle extends AbstractArticle
 			'date DESC',
 		];
 
-		$this->hook('frontPages', [
+		AddonHandler::getInstance()->run('frontPages', [
 			&$this->columns, &$this->tables, &$this->params, &$this->wheres, &$this->orders
 		]);
 	}
@@ -125,14 +125,14 @@ class PageArticle extends AbstractArticle
 
 			$this->prepareTeaser($pages, $row);
 
-			$this->hook('frontPagesOutput', [&$pages, $row]);
+			AddonHandler::getInstance()->run('frontPagesOutput', [&$pages, $row]);
 		}
 
 		Db::$db->free_result($result);
 
 		$this->prepareTags($pages);
 
-		return $this->getItemsWithUserAvatars($pages);
+		return Avatar::getWithItems($pages);
 	}
 
 	public function getTotalCount(): int
@@ -159,7 +159,7 @@ class PageArticle extends AbstractArticle
 	private function getSectionData(array $row): array
 	{
 		return [
-			'icon' => $this->getIcon($row['cat_icon']),
+			'icon' => Icon::parse($row['cat_icon']),
 			'name' => empty($row['category_id']) ? '' : $row['cat_title'],
 			'link' => empty($row['category_id']) ? '' : (LP_BASE_URL . ';sa=categories;id=' . $row['category_id']),
 		];
@@ -197,7 +197,7 @@ class PageArticle extends AbstractArticle
 
 	private function getTitle(array $titles, array $row): string
 	{
-		return $this->getTranslatedTitle($titles[$row['page_id']] ?? []);
+		return Str::getTranslatedTitle($titles[$row['page_id']] ?? []);
 	}
 
 	private function getViewsData(array $row): array
@@ -212,7 +212,7 @@ class PageArticle extends AbstractArticle
 	private function getRepliesData(array $row): array
 	{
 		return [
-			'num'   => $this->getCommentBlockType() === 'default' ? (int) $row['num_comments'] : 0,
+			'num'   => Setting::getCommentBlock() === 'default' ? (int) $row['num_comments'] : 0,
 			'title' => Lang::$txt['lp_comments'],
 			'after' => '',
 		];
@@ -228,7 +228,7 @@ class PageArticle extends AbstractArticle
 		if (empty(Config::$modSettings['lp_show_images_in_articles']))
 			return '';
 
-		return $this->getImageFromText($row['content']);
+		return Str::getImageFromText($row['content']);
 	}
 
 	private function canEdit(array $row): bool
@@ -248,7 +248,7 @@ class PageArticle extends AbstractArticle
 		if (empty(Config::$modSettings['lp_show_teaser']))
 			return;
 
-		$pages[$row['page_id']]['teaser'] = $this->getTeaser(
+		$pages[$row['page_id']]['teaser'] = Str::getTeaser(
 			$this->sorting === 0 && $row['num_comments']
 				? BBCodeParser::load()->parse($row['comment_message'])
 				: ($row['description'] ?: $row['content'])
@@ -283,7 +283,7 @@ class PageArticle extends AbstractArticle
 
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$pages[$row['page_id']]['tags'][] = [
-				'icon'  => $this->getIcon($row['icon']),
+				'icon'  => Icon::parse($row['icon']),
 				'title' => $row['title'],
 				'href'  => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id'],
 			];

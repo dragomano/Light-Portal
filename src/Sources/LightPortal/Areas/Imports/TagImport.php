@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Areas\Imports;
 
-use Bugo\Compat\{Config, Db, ErrorHandler};
+use Bugo\Compat\{Config, ErrorHandler};
 use Bugo\Compat\{Lang, Theme, Utils};
 
 if (! defined('SMF'))
@@ -51,8 +51,9 @@ final class TagImport extends AbstractImport
 		if (empty($xml = $this->getFile()))
 			return;
 
-		if (! isset($xml->tags->item[0]['tag_id']))
+		if (! isset($xml->tags->item[0]['tag_id'])) {
 			ErrorHandler::fatalLang('lp_wrong_import_file');
+		}
 
 		$items = $titles = $pages = [];
 
@@ -90,50 +91,35 @@ final class TagImport extends AbstractImport
 			}
 		}
 
-		Db::$db->transaction('begin');
+		$this->startTransaction($items);
 
-		$results = [];
-
-		if ($items) {
-			Utils::$context['import_successful'] = count($items);
-			$items = array_chunk($items, 100);
-			$count = sizeof($items);
-
-			for ($i = 0; $i < $count; $i++) {
-				$results = Db::$db->insert('replace',
-					'{db_prefix}lp_tags',
-					[
-						'tag_id' => 'int',
-						'icon'   => 'string',
-						'status' => 'int',
-					],
-					$items[$i],
-					['tag_id'],
-					2
-				);
-			}
-		}
+		$results = $this->insertData(
+			'lp_tags',
+			'replace',
+			$items,
+			[
+				'tag_id' => 'int',
+				'icon'   => 'string',
+				'status' => 'int',
+			],
+			['tag_id'],
+		);
 
 		$this->replaceTitles($titles, $results);
 
-		if ($pages && $results) {
-			$pages = array_chunk($pages, 100);
-			$count = sizeof($pages);
-
-			for ($i = 0; $i < $count; $i++) {
-				$results = Db::$db->insert('replace',
-					'{db_prefix}lp_page_tag',
-					[
-						'page_id' => 'int',
-						'tag_id'  => 'int',
-					],
-					$pages[$i],
-					['page_id', 'tag_id'],
-					2
-				);
-			}
+		if ($results) {
+			$results = $this->insertData(
+				'lp_page_tag',
+				'replace',
+				$pages,
+				[
+					'page_id' => 'int',
+					'tag_id'  => 'int',
+				],
+				['page_id', 'tag_id'],
+			);
 		}
 
-		$this->finish($results, 'tags');
+		$this->finishTransaction($results, 'tags');
 	}
 }

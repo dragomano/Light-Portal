@@ -29,15 +29,15 @@ final class MiscConfig extends AbstractConfig
 		Utils::$context['post_url']   = Config::$scripturl . '?action=admin;area=lp_settings;sa=misc;save';
 
 		$this->addDefaultValues([
-			'lp_cache_update_interval' => LP_CACHE_TIME,
-			'lp_portal_action'         => LP_ACTION,
-			'lp_page_param'            => LP_PAGE_PARAM,
+			'lp_cache_interval' => LP_CACHE_TIME,
+			'lp_portal_action'  => LP_ACTION,
+			'lp_page_param'     => LP_PAGE_PARAM,
 		]);
 
 		$configVars = [
 			['title', 'lp_debug_and_caching'],
 			['check', 'lp_show_debug_info', 'help' => 'lp_show_debug_info_help'],
-			['int', 'lp_cache_update_interval', 'postinput' => Lang::$txt['seconds']],
+			['int', 'lp_cache_interval', 'postinput' => Lang::$txt['seconds']],
 			['title', 'lp_compatibility_mode'],
 			[
 				'text',

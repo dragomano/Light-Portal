@@ -15,6 +15,7 @@
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, Lang, Theme, User, Utils};
+use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Helper;
 use Nette\Utils\Html;
 
@@ -320,7 +321,7 @@ final class CreditArea
 		];
 
 		// Adding copyrights of used plugins
-		$this->hook('credits', [&$links]);
+		AddonHandler::getInstance()->run('credits', [&$links]);
 
 		Utils::$context['lp_components'] = $links;
 

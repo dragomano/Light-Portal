@@ -15,10 +15,11 @@
 namespace Bugo\LightPortal\Actions;
 
 use Bugo\Compat\{Config, ErrorHandler, Lang, PageIndex, Sapi, Theme, User, Utils};
+use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Articles\{ArticleInterface, BoardArticle, ChosenPageArticle};
 use Bugo\LightPortal\Articles\{ChosenTopicArticle, PageArticle, TopicArticle};
 use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{DateTime, Icon};
+use Bugo\LightPortal\Utils\{DateTime, Icon, Setting};
 use eftec\bladeone\BladeOne;
 use Exception;
 use IntlException;
@@ -45,12 +46,12 @@ final class FrontPage implements ActionInterface
 	{
 		User::mustHavePermission('light_portal_view');
 
-		$this->hook('frontModes', [&$this->modes]);
+		AddonHandler::getInstance()->run('frontModes', [&$this->modes]);
 
 		if (array_key_exists(Config::$modSettings['lp_frontpage_mode'], $this->modes)) {
 			$this->prepare(new $this->modes[Config::$modSettings['lp_frontpage_mode']]);
-		} elseif ($this->isFrontpageMode('chosen_page')) {
-			$this->callHelper([new Page(), 'show']);
+		} elseif (Setting::isFrontpageMode('chosen_page')) {
+			call_user_func([new Page(), 'show']);
 			return;
 		}
 
@@ -117,7 +118,7 @@ final class FrontPage implements ActionInterface
 
 		Utils::$context['lp_frontpage_articles'] = $articles;
 
-		$this->hook('frontAssets');
+		AddonHandler::getInstance()->run('frontAssets');
 	}
 
 	public function prepareTemplates(): void
@@ -135,7 +136,7 @@ final class FrontPage implements ActionInterface
 		$this->prepareLayoutSwitcher();
 
 		// Mod authors can use their own logic here
-		$this->hook('frontLayouts');
+		AddonHandler::getInstance()->run('frontLayouts');
 
 		$this->view(Config::$modSettings['lp_frontpage_layout']);
 	}
@@ -171,7 +172,7 @@ final class FrontPage implements ActionInterface
 		$extensions = ['.blade.php'];
 
 		// Mod authors can add custom extensions for layouts
-		$this->hook('customLayoutExtensions', [&$extensions]);
+		AddonHandler::getInstance()->run('customLayoutExtensions', [&$extensions]);
 
 		foreach ($extensions as $extension) {
 			$layouts = array_merge(

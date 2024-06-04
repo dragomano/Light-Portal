@@ -16,8 +16,8 @@ namespace Bugo\LightPortal\Actions;
 
 use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, User, Utils};
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Utils\ItemList;
+use Bugo\LightPortal\Enums\{Permission, Status};
+use Bugo\LightPortal\Utils\{Icon, ItemList};
 use IntlException;
 use Nette\Utils\Html;
 
@@ -114,7 +114,7 @@ final class Tag extends AbstractPageList
 				'status'        => Status::ACTIVE->value,
 				'statuses'      => [Status::ACTIVE->value, Status::INTERNAL->value],
 				'current_time'  => time(),
-				'permissions'   => $this->getPermissions(),
+				'permissions'   => Permission::all(),
 				'sort'          => $sort,
 				'start'         => $start,
 				'limit'         => $limit,
@@ -145,7 +145,7 @@ final class Tag extends AbstractPageList
 				'status'       => Status::ACTIVE->value,
 				'statuses'     => [Status::ACTIVE->value, Status::INTERNAL->value],
 				'current_time' => time(),
-				'permissions'  => $this->getPermissions(),
+				'permissions'  => Permission::all(),
 			]
 		);
 
@@ -189,7 +189,6 @@ final class Tag extends AbstractPageList
 							->href($entry['link'])
 							->setText($entry['title'])
 							->toHtml(),
-						'class' => 'centertext'
 					],
 					'sort' => [
 						'default' => 'title DESC',
@@ -245,7 +244,7 @@ final class Tag extends AbstractPageList
 				'fallback_lang' => Config::$language,
 				'statuses'      => [Status::ACTIVE->value, Status::INTERNAL->value],
 				'current_time'  => time(),
-				'permissions'   => $this->getPermissions(),
+				'permissions'   => Permission::all(),
 				'status'        => Status::ACTIVE->value,
 				'sort'          => $sort,
 				'start'         => $start,
@@ -256,7 +255,7 @@ final class Tag extends AbstractPageList
 		$items = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['tag_id']] = [
-				'icon'      => $this->getIcon($row['icon']),
+				'icon'      => Icon::parse($row['icon']),
 				'title'     => $row['title'],
 				'link'      => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id'],
 				'frequency' => (int) $row['frequency'],

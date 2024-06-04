@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.05.24
+ * @version 30.05.24
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortalMigration;
@@ -182,16 +182,20 @@ class PageImport extends AbstractCustomPageImport
 		return (int) $count;
 	}
 
-	protected function getItems(array $pages): array
+	protected function getItems(array $ids): array
 	{
 		$result = Utils::$smcFunc['db_query']('', '
-			SELECT a.id, a.date, a.body, a.intro, a.subject, a.author_id, a.off, a.options, a.comments, a.views, a.shortname, a.type, a.pub_start, a.pub_end, v.value3
+			SELECT
+				a.id, a.date, a.body, a.intro, a.subject, a.author_id, a.off, a.options, a.comments, a.views,
+				a.shortname, a.type, a.pub_start, a.pub_end, v.value3
 			FROM {db_prefix}tp_articles AS a
-				LEFT JOIN {db_prefix}tp_variables AS v ON (a.category = v.id AND v.type = {string:type})' . (empty($pages) ? '' : '
+				LEFT JOIN {db_prefix}tp_variables AS v ON (
+					a.category = v.id AND v.type = {string:type}
+				)' . (empty($ids) ? '' : '
 			WHERE a.id IN ({array_int:pages})'),
 			[
 				'type'  => 'category',
-				'pages' => $pages,
+				'pages' => $ids,
 			]
 		);
 

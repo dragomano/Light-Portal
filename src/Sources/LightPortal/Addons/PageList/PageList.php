@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.05.24
+ * @version 02.06.24
  */
 
 namespace Bugo\LightPortal\Addons\PageList;
@@ -19,8 +19,8 @@ use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField, VirtualSelectField};
 use Bugo\LightPortal\Areas\Partials\CategorySelect;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Utils\DateTime;
+use Bugo\LightPortal\Enums\{Permission, Tab};
+use Bugo\LightPortal\Utils\{DateTime, Setting, Str};
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -106,7 +106,7 @@ class PageList extends Block
 				'guest'        => Lang::$txt['guest_title'],
 				'status'       => 1,
 				'current_time' => time(),
-				'permissions'  => $this->getPermissions(),
+				'permissions'  => Permission::all(),
 				'categories'   => $categories,
 				'sort'         => $parameters['sort'],
 				'limit'        => $parameters['num_pages'],
@@ -115,7 +115,7 @@ class PageList extends Block
 
 		$pages = [];
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
-			if ($this->isFrontpage($row['slug']))
+			if (Setting::isFrontpage($row['slug']))
 				continue;
 
 			$pages[$row['page_id']] = [
@@ -156,14 +156,14 @@ class PageList extends Block
 		<ul class="normallist page_list">';
 
 			foreach ($pageList as $page) {
-				if (empty($title = $this->getTranslatedTitle($page['title'])))
+				if (empty($title = Str::getTranslatedTitle($page['title'])))
 					continue;
 
 				echo '
 			<li>
 				<a href="', Config::$scripturl, '?', LP_PAGE_PARAM, '=', $page['slug'], '">', $title, '</a> ', Lang::$txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . Config::$scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', DateTime::relative($page['created_at']), ' (', Lang::getTxt('lp_views_set', ['views' => $page['num_views']]);
 
-				if ($page['num_comments'] && $this->getCommentBlockType() === 'default') {
+				if ($page['num_comments'] && Setting::getCommentBlock() === 'default') {
 					echo ', ' . Lang::getTxt('lp_comments_set', ['comments' => $page['num_comments']]);
 				}
 

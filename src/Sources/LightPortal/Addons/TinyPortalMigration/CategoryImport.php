@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.05.24
+ * @version 30.05.24
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortalMigration;
@@ -145,15 +145,15 @@ class CategoryImport extends AbstractCustomCategoryImport
 		return (int) $count;
 	}
 
-	protected function getItems(array $categories): array
+	protected function getItems(array $ids): array
 	{
 		$result = Utils::$smcFunc['db_query']('', '
 			SELECT id, value1 AS title
 			FROM {db_prefix}tp_variables
-			WHERE type = {literal:category}' . (empty($categories) ? '' : '
+			WHERE type = {literal:category}' . (empty($ids) ? '' : '
 				AND id IN ({array_int:categories})'),
 			[
-				'categories' => $categories,
+				'categories' => $ids,
 			]
 		);
 

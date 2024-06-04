@@ -17,6 +17,9 @@ namespace Bugo\LightPortal\Utils;
 use Bugo\Compat\{Db, User, Utils};
 use Bugo\LightPortal\Tasks\Notifier;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 class Notify
 {
 	public static function send(string $type, string $action, array $options = []): void

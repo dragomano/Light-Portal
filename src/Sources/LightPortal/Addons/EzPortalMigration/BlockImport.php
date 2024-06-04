@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.05.24
+ * @version 30.05.24
  */
 
 namespace Bugo\LightPortal\Addons\EzPortalMigration;
@@ -180,7 +180,7 @@ class BlockImport extends AbstractCustomBlockImport
 		return (int) $count;
 	}
 
-	protected function getItems(array $blocks): array
+	protected function getItems(array $ids): array
 	{
 		$result = Utils::$smcFunc['db_query']('', '
 			SELECT
@@ -188,11 +188,11 @@ class BlockImport extends AbstractCustomBlockImport
 				bl.customtitle AS title, bl.id_column AS col, bl.permissions, bl.active AS status, bl.blockdata AS content
 			FROM {db_prefix}ezp_blocks AS b
 				INNER JOIN {db_prefix}ezp_block_layout AS bl ON (b.id_block = bl.id_block)
-			WHERE b.blocktype IN ({array_string:types})' . (empty($blocks) ? '' : '
+			WHERE b.blocktype IN ({array_string:types})' . (empty($ids) ? '' : '
 				AND b.id_block IN ({array_int:blocks})'),
 			[
 				'types'  => $this->supportedTypes,
-				'blocks' => $blocks,
+				'blocks' => $ids,
 			]
 		);
 

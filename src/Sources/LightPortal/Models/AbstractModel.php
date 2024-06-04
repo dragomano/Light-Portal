@@ -14,8 +14,9 @@
 
 namespace Bugo\LightPortal\Models;
 
-use stdClass;
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Utils\Str;
+use stdClass;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -37,7 +38,7 @@ abstract class AbstractModel extends stdClass
 
 		$result = [];
 		foreach ($vars as $key => $value) {
-			$snakeName = $this->getSnakeName($key);
+			$snakeName = Str::getSnakeName($key);
 			$result[$snakeName] = $value;
 		}
 

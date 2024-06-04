@@ -18,12 +18,11 @@ use Bugo\Compat\{Config, ErrorHandler, Lang, Security, Theme, Utils};
 use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Areas\Partials\IconSelect;
 use Bugo\LightPortal\Areas\Validators\TagValidator;
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Enums\{Status, Tab};
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Models\TagModel;
 use Bugo\LightPortal\Repositories\TagRepository;
-use Bugo\LightPortal\Utils\{Icon, ItemList};
+use Bugo\LightPortal\Utils\{Icon, ItemList, Str};
 use Nette\Utils\Html;
 
 if (! defined('SMF'))
@@ -271,7 +270,7 @@ final class TagArea
 			$this->repository->remove([(int) $data['del_item']]);
 
 		if (isset($data['toggle_item']))
-			$this->repository->toggleStatus([(int) $data['toggle_item']], 'tag');
+			$this->repository->toggleStatus([(int) $data['toggle_item']]);
 
 		$this->cache()->flush();
 
@@ -290,7 +289,7 @@ final class TagArea
 			$tag->titles[$lang['filename']] = $postData['title_' . $lang['filename']] ?? $tag->titles[$lang['filename']] ?? '';
 		}
 
-		$this->cleanBbcode($tag->titles);
+		Str::cleanBbcode($tag->titles);
 
 		Utils::$context['lp_tag'] = $tag->toArray();
 	}
@@ -317,13 +316,14 @@ final class TagArea
 
 		Utils::$context['preview_title'] = Utils::$context['lp_tag']['titles'][Utils::$context['user']['language']];
 
-		$this->cleanBbcode(Utils::$context['preview_title']);
+		Str::cleanBbcode(Utils::$context['preview_title']);
+
 		Lang::censorText(Utils::$context['preview_title']);
 
 		Utils::$context['page_title']    = Lang::$txt['preview'] . (
 			Utils::$context['preview_title'] ? ' - ' . Utils::$context['preview_title'] : ''
 		);
 
-		Utils::$context['preview_title'] = $this->getIcon(Utils::$context['lp_tag']['icon']) . Utils::$context['preview_title'];
+		Utils::$context['preview_title'] = Icon::parse(Utils::$context['lp_tag']['icon']) . Utils::$context['preview_title'];
 	}
 }

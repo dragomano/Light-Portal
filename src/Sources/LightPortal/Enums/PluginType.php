@@ -14,6 +14,7 @@
 
 namespace Bugo\LightPortal\Enums;
 
+use Bugo\Compat\Lang;
 use Bugo\LightPortal\Enums\Traits\HasNames;
 
 enum PluginType
@@ -33,4 +34,9 @@ enum PluginType
 	case ICONS;
 	case SEO;
 	case OTHER;
+
+	public static function all(): array
+	{
+		return array_combine(self::names(), Lang::$txt['lp_plugins_types']);
+	}
 }

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 27.03.24
+ * @version 30.05.24
  */
 
 namespace Bugo\LightPortal\Addons\EhPortalMigration;
@@ -182,14 +182,14 @@ class PageImport extends AbstractCustomPageImport
 		return (int) $count;
 	}
 
-	protected function getItems(array $pages): array
+	protected function getItems(array $ids): array
 	{
 		$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
 			SELECT id_page, namespace, title, body, type, permission_set, groups_allowed, views, status
-			FROM {db_prefix}sp_pages' . (empty($pages) ? '' : '
+			FROM {db_prefix}sp_pages' . (empty($ids) ? '' : '
 			WHERE id_page IN ({array_int:pages})'),
 			[
-				'pages' => $pages,
+				'pages' => $ids,
 			]
 		);
 

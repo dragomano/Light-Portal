@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.24
+ * @version 02.06.24
  */
 
 namespace Bugo\LightPortal\Addons\TopPages;
@@ -18,6 +18,8 @@ namespace Bugo\LightPortal\Addons\TopPages;
 use Bugo\Compat\{Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, NumberField, RadioField};
+use Bugo\LightPortal\Enums\Permission;
+use Bugo\LightPortal\Utils\{Setting, Str};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -82,14 +84,14 @@ class TopPages extends Block
 			[
 				'status'       => 1,
 				'current_time' => time(),
-				'permissions'  => $this->getPermissions(),
+				'permissions'  => Permission::all(),
 				'limit'        => $parameters['num_pages'],
 			]
 		);
 
 		$pages = [];
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
-			if ($this->isFrontpage($row['slug']))
+			if (Setting::isFrontpage($row['slug']))
 				continue;
 
 			$pages[$row['page_id']] = [
@@ -126,7 +128,7 @@ class TopPages extends Block
 		<dl class="stats">';
 
 				foreach ($topPages as $page) {
-					if ($page['num_' . $parameters['popularity_type']] < 1 || empty($title = $this->getTranslatedTitle($page['title'])))
+					if ($page['num_' . $parameters['popularity_type']] < 1 || empty($title = Str::getTranslatedTitle($page['title'])))
 						continue;
 
 					$width = $page['num_' . $parameters['popularity_type']] * 100 / $max;

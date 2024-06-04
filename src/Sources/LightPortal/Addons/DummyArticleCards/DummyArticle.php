@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.02.24
+ * @version 02.06.24
  */
 
 namespace Bugo\LightPortal\Addons\DummyArticleCards;
 
 use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Articles\AbstractArticle;
+use Bugo\LightPortal\Utils\Str;
 use DateTime;
 use Exception;
 
@@ -63,7 +64,7 @@ class DummyArticle extends AbstractArticle
 				$section = Utils::shorten(Lorem::ipsum(1), 20);
 				$title   = Utils::shorten(Lorem::ipsum(1), 40);
 				$image   = 'https://loremflickr.com/470/235/' . $keywords . '?random=' . $article['id'];
-				$teaser  = empty(Config::$modSettings['lp_show_teaser']) ? '' : $this->getTeaser(Lorem::ipsum(4));
+				$teaser  = empty(Config::$modSettings['lp_show_teaser']) ? '' : Str::getTeaser(Lorem::ipsum(4));
 				$tag     = Utils::shorten(Lorem::ipsum(1), 10);
 			}
 

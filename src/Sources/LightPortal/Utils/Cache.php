@@ -16,6 +16,8 @@ namespace Bugo\LightPortal\Utils;
 
 use Bugo\Compat\CacheApi;
 
+use function method_exists;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -23,7 +25,7 @@ final class Cache implements CacheInterface
 {
 	private string $prefix = 'lp_';
 
-	public function __construct(private readonly ?string $key = null, private int $lifeTime = 0)
+	public function __construct(private readonly ?string $key = null, private int $lifeTime = LP_CACHE_TIME ?? 0)
 	{
 	}
 

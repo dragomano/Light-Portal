@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Areas\Imports;
 
-use Bugo\Compat\{Config, Db, ErrorHandler};
+use Bugo\Compat\{Config, ErrorHandler};
 use Bugo\Compat\{Lang, Theme, Utils};
 
 if (! defined('SMF'))
@@ -51,8 +51,9 @@ final class CategoryImport extends AbstractImport
 		if (empty($xml = $this->getFile()))
 			return;
 
-		if (! isset($xml->categories->item[0]['category_id']))
+		if (! isset($xml->categories->item[0]['category_id'])) {
 			ErrorHandler::fatalLang('lp_wrong_import_file');
+		}
 
 		$items = $titles = [];
 
@@ -81,34 +82,23 @@ final class CategoryImport extends AbstractImport
 			}
 		}
 
-		Db::$db->transaction('begin');
+		$this->startTransaction($items);
 
-		$results = [];
-
-		if ($items) {
-			Utils::$context['import_successful'] = count($items);
-			$items = array_chunk($items, 100);
-			$count = sizeof($items);
-
-			for ($i = 0; $i < $count; $i++) {
-				$results = Db::$db->insert('replace',
-					'{db_prefix}lp_categories',
-					[
-						'category_id' => 'int',
-						'icon'        => 'string',
-						'description' => 'string',
-						'priority'    => 'int',
-						'status'      => 'int',
-					],
-					$items[$i],
-					['category_id'],
-					2
-				);
-			}
-		}
+		$results = $this->insertData(
+			'lp_categories',
+			'replace',
+			$items,
+			[
+				'category_id' => 'int',
+				'icon'        => 'string',
+				'description' => 'string',
+				'priority'    => 'int',
+				'status'      => 'int',
+			],
+			['category_id'],
+		);
 
 		$this->replaceTitles($titles, $results);
-
-		$this->finish($results, 'categories');
+		$this->finishTransaction($results, 'categories');
 	}
 }

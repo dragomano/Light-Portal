@@ -22,6 +22,9 @@ use Bugo\LightPortal\Lists\PluginList;
 use Bugo\LightPortal\Lists\TagList;
 use Bugo\LightPortal\Lists\TitleList;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 final class EntityManager
 {
 	use Helper;

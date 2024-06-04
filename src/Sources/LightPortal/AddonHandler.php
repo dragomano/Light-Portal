@@ -16,9 +16,25 @@ namespace Bugo\LightPortal;
 
 use Bugo\Compat\{Lang, Theme, User, Utils, WebFetchApi};
 use Bugo\LightPortal\Repositories\PluginRepository;
-use Bugo\LightPortal\Utils\Language;
+use Bugo\LightPortal\Utils\{Language, Str};
 use MatthiasMullie\Minify\{CSS, JS};
 use SplObjectStorage;
+
+use function array_map;
+use function array_merge;
+use function array_unique;
+use function basename;
+use function class_exists;
+use function file_put_contents;
+use function filemtime;
+use function glob;
+use function in_array;
+use function is_array;
+use function is_dir;
+use function is_file;
+use function method_exists;
+use function mkdir;
+use function ucfirst;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -83,13 +99,12 @@ final class AddonHandler
 				]);
 
 				$path = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $addon . DIRECTORY_SEPARATOR;
-				$snakeName = $this->getSnakeName($addon);
+				$snakeName = Str::getSnakeName($addon);
 
 				Utils::$context[$this->prefix . $snakeName . '_plugin'] = $this->settings[$snakeName] ?? [];
 				Utils::$context['lp_loaded_addons'][$snakeName] = $this->storage->offsetGet($class);
 
 				$this->loadLangs($path, $snakeName);
-
 				$this->loadAssets($path, $addon);
 			}
 

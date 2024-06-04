@@ -14,6 +14,7 @@
 
 namespace Bugo\LightPortal\Enums;
 
+use Bugo\Compat\Lang;
 use Bugo\LightPortal\Enums\Traits\HasNames;
 
 enum Placement
@@ -26,4 +27,9 @@ enum Placement
 	case RIGHT;
 	case BOTTOM;
 	case FOOTER;
+
+	public static function all(): array
+	{
+		return array_combine(self::names(), Lang::$txt['lp_block_placement_set']);
+	}
 }

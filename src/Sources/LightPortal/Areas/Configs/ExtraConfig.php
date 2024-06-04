@@ -15,6 +15,7 @@
 namespace Bugo\LightPortal\Areas\Configs;
 
 use Bugo\Compat\{ACP, Config, Lang, Theme, User, Utils};
+use Bugo\LightPortal\Enums\VarType;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -31,11 +32,11 @@ final class ExtraConfig extends AbstractConfig
 		Utils::$context['page_title'] = Utils::$context['settings_title'] = Lang::$txt['lp_extra'];
 		Utils::$context['post_url']   = Config::$scripturl . '?action=admin;area=lp_settings;sa=extra;save';
 
-		Lang::$txt['lp_show_comment_block_set']['none']    = Lang::$txt['lp_show_comment_block_set'][0];
-		Lang::$txt['lp_show_comment_block_set']['default'] = Lang::$txt['lp_show_comment_block_set'][1];
+		Lang::$txt['lp_comment_block_set']['none']    = Lang::$txt['lp_comment_block_set'][0];
+		Lang::$txt['lp_comment_block_set']['default'] = Lang::$txt['lp_comment_block_set'][1];
 
-		unset(Lang::$txt['lp_show_comment_block_set'][0], Lang::$txt['lp_show_comment_block_set'][1]);
-		asort(Lang::$txt['lp_show_comment_block_set']);
+		unset(Lang::$txt['lp_comment_block_set'][0], Lang::$txt['lp_comment_block_set'][1]);
+		asort(Lang::$txt['lp_comment_block_set']);
 
 		Lang::$txt['lp_fa_source_title'] .= ' <img class="floatright" src="https://data.jsdelivr.com/v1/package/npm/@fortawesome/fontawesome-free/badge?style=rounded" alt="">';
 
@@ -53,8 +54,8 @@ final class ExtraConfig extends AbstractConfig
 			['callback', 'comment_settings_before'],
 			[
 				'select',
-				'lp_show_comment_block',
-				Lang::$txt['lp_show_comment_block_set'],
+				'lp_comment_block',
+				Lang::$txt['lp_comment_block_set'],
 				'javascript' => '@change="comment_block = $event.target.value"'
 			],
 			[
@@ -138,15 +139,15 @@ final class ExtraConfig extends AbstractConfig
 
 			if ($this->request()->isNotEmpty('lp_menu_separate_subsection_href')) {
 				$this->post()->put(
-					'lp_menu_separate_subsection_href', $this->filterVar($this->request('lp_menu_separate_subsection_href'), 'url')
+					'lp_menu_separate_subsection_href', VarType::URL->filter($this->request('lp_menu_separate_subsection_href'))
 				);
 			}
 
 			if ($this->request()->isNotEmpty('lp_fa_custom'))
-				$this->post()->put('lp_fa_custom', $this->filterVar($this->request('lp_fa_custom'), 'url'));
+				$this->post()->put('lp_fa_custom', VarType::URL->filter($this->request('lp_fa_custom')));
 
 			if ($this->request()->isNotEmpty('lp_fa_kit'))
-				$this->post()->put('lp_fa_kit', $this->filterVar($this->request('lp_fa_kit'), 'url'));
+				$this->post()->put('lp_fa_kit', VarType::URL->filter($this->request('lp_fa_kit')));
 
 			$saveVars = $configVars;
 			ACP::saveDBSettings($saveVars);

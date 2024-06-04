@@ -16,16 +16,16 @@ namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, ErrorHandler, Lang};
 use Bugo\Compat\{Logging, Security, Theme, User, Utils};
+use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, TextField};
 use Bugo\LightPortal\Areas\Partials\{CategorySelect, PageAuthorSelect, PageIconSelect};
 use Bugo\LightPortal\Areas\Partials\{PermissionSelect, StatusSelect, TagSelect};
 use Bugo\LightPortal\Areas\Validators\PageValidator;
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Enums\{Status, Tab};
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Models\PageModel;
 use Bugo\LightPortal\Repositories\PageRepository;
-use Bugo\LightPortal\Utils\{Content, DateTime, Icon, ItemList};
+use Bugo\LightPortal\Utils\{Content, DateTime, Icon, ItemList, Setting, Str};
 use IntlException;
 use Nette\Utils\Html;
 
@@ -271,7 +271,7 @@ final class PageArea
 				'value' => '
 					<select name="page_actions">
 						<option value="delete">' . Lang::$txt['remove'] . '</option>' . (Utils::$context['allow_light_portal_approve_pages'] || Utils::$context['allow_light_portal_manage_pages_any'] ? '
-						<option value="toggle">' . Lang::$txt['lp_action_toggle'] . '</option>' : '') . ($this->isFrontpageMode('chosen_pages') ? '
+						<option value="toggle">' . Lang::$txt['lp_action_toggle'] . '</option>' : '') . (Setting::isFrontpageMode('chosen_pages') ? '
 						<option value="promote_up">' . Lang::$txt['lp_promote_to_fp'] . '</option>
 						<option value="promote_down">' . Lang::$txt['lp_remove_from_fp'] . '</option>' : '') . '
 					</select>
@@ -295,7 +295,7 @@ final class PageArea
 			)
 			->toHtml() . $listOptions['title'];
 
-		if ($this->getCommentBlockType() === 'default') {
+		if (Setting::getCommentBlock() === 'default') {
 			unset($listOptions['columns']['num_comments']);
 		}
 
@@ -417,7 +417,7 @@ final class PageArea
 			$this->repository->remove([(int) $data['del_item']]);
 
 		if (isset($data['toggle_item']))
-			$this->repository->toggleStatus([(int) $data['toggle_item']], 'page');
+			$this->repository->toggleStatus([(int) $data['toggle_item']]);
 
 		$this->cache()->flush();
 
@@ -439,7 +439,7 @@ final class PageArea
 				$this->repository->remove($items);
 				break;
 			case 'toggle':
-				$this->repository->toggleStatus($items, 'page');
+				$this->repository->toggleStatus($items);
 				break;
 			case 'promote_up':
 				$this->promote($items);
@@ -588,7 +588,7 @@ final class PageArea
 
 		$params = [];
 
-		$this->hook('preparePageParams', [&$params]);
+		AddonHandler::getInstance()->run('preparePageParams', [&$params]);
 
 		return array_merge($baseParams, $params);
 	}
@@ -613,8 +613,8 @@ final class PageArea
 			$page->titles[$lang['filename']] = $postData['title_' . $lang['filename']] ?? $page->titles[$lang['filename']] ?? '';
 		}
 
-		$this->cleanBbcode($page->titles);
-		$this->cleanBbcode($page->description);
+		Str::cleanBbcode($page->titles);
+		Str::cleanBbcode($page->description);
 
 		foreach ($page->options as $option => $value) {
 			if (isset($parameters[$option]) && isset($postData) && ! isset($postData[$option])) {
@@ -722,19 +722,19 @@ final class PageArea
 				->setValue(Utils::$context['lp_page']['options']['show_related_pages']);
 		}
 
-		if ($this->getCommentBlockType() !== '' && $this->getCommentBlockType() !== 'none') {
+		if (Setting::getCommentBlock() !== '' && Setting::getCommentBlock() !== 'none') {
 			CheckboxField::make('allow_comments', Lang::$txt['lp_page_allow_comments'])
 				->setValue(Utils::$context['lp_page']['options']['allow_comments']);
 		}
 
-		$this->hook('preparePageFields');
+		AddonHandler::getInstance()->run('preparePageFields');
 
 		$this->preparePostFields();
 	}
 
 	private function prepareEditor(): void
 	{
-		$this->hook('prepareEditor', [Utils::$context['lp_page']]);
+		AddonHandler::getInstance()->run('prepareEditor', [Utils::$context['lp_page']]);
 	}
 
 	private function preparePreview(): void
@@ -749,7 +749,8 @@ final class PageArea
 			Utils::$context['lp_page']['content'], ENT_QUOTES
 		);
 
-		$this->cleanBbcode(Utils::$context['preview_title']);
+		Str::cleanBbcode(Utils::$context['preview_title']);
+
 		Lang::censorText(Utils::$context['preview_title']);
 		Lang::censorText(Utils::$context['preview_content']);
 

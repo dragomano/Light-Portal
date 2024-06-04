@@ -16,14 +16,28 @@ declare(strict_types=1);
 
 namespace Bugo\LightPortal\Repositories;
 
-use Bugo\LightPortal\Enums\Status;
-use Bugo\Compat\{Config, Db, Logging, Lang};
+use Bugo\Compat\{Config, Db, Lang, Logging};
 use Bugo\Compat\{Msg, Security, User, Utils};
-use Bugo\LightPortal\Actions\PageInterface;
-use Bugo\LightPortal\Actions\PageListInterface;
-use Bugo\LightPortal\Utils\{Content, DateTime, Notify};
+use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Enums\{Permission, Status};
+use Bugo\LightPortal\Utils\{Content, DateTime, Icon, Notify, Setting, Str};
 use IntlException;
 use Nette\Utils\Html;
+
+use function array_filter;
+use function array_merge;
+use function array_pop;
+use function array_shift;
+use function count;
+use function date;
+use function explode;
+use function filter_input;
+use function is_array;
+use function is_int;
+use function preg_match_all;
+use function str_contains;
+use function strtotime;
+use function time;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -82,7 +96,7 @@ final class PageRepository extends AbstractRepository
 				'author_id'    => (int) $row['author_id'],
 				'author_name'  => $row['author_name'],
 				'created_at'   => DateTime::relative((int) $row['date']),
-				'is_front'     => $this->isFrontpage($row['slug']),
+				'is_front'     => Setting::isFrontpage($row['slug']),
 				'title'        => $row['page_title'],
 			];
 		}
@@ -193,6 +207,7 @@ final class PageRepository extends AbstractRepository
 		Security::checkSubmitOnce('check');
 
 		$this->prepareBbcContent(Utils::$context['lp_page']);
+		$this->prepareTitles();
 
 		if (empty($item)) {
 			Utils::$context['lp_page']['titles'] = array_filter(Utils::$context['lp_page']['titles']);
@@ -208,11 +223,13 @@ final class PageRepository extends AbstractRepository
 		$this->session('lp')->free('unapproved_pages');
 		$this->session('lp')->free('internal_pages');
 
-		if ($this->request()->has('save_exit'))
+		if ($this->request()->has('save_exit')) {
 			Utils::redirectexit('action=admin;area=lp_pages;sa=main');
+		}
 
-		if ($this->request()->has('save'))
+		if ($this->request()->has('save')) {
 			Utils::redirectexit('action=admin;area=lp_pages;sa=edit;id=' . $item);
+		}
 	}
 
 	public function remove(array $items): void
@@ -220,7 +237,7 @@ final class PageRepository extends AbstractRepository
 		if ($items === [])
 			return;
 
-		$this->hook('onPageRemoving', [$items]);
+		AddonHandler::getInstance()->run('onPageRemoving', [$items]);
 
 		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_pages
@@ -359,7 +376,7 @@ final class PageRepository extends AbstractRepository
 				'created_at'   => $page['created_at'],
 				'current_time' => time(),
 				'status'       => $page['status'],
-				'permissions'  => $this->getPermissions(),
+				'permissions'  => Permission::all(),
 			]
 		);
 
@@ -373,7 +390,7 @@ final class PageRepository extends AbstractRepository
 
 	public function getRelatedPages(array $page): array
 	{
-		$titleWords = explode(' ', $this->getTranslatedTitle($page['titles']));
+		$titleWords = explode(' ', Str::getTranslatedTitle($page['titles']));
 		$slugWords  = explode('_', (string) $page['slug']);
 
 		$searchFormula = '';
@@ -408,19 +425,19 @@ final class PageRepository extends AbstractRepository
 				'fallback_lang' => Config::$language,
 				'status'        => $page['status'],
 				'current_time'  => time(),
-				'permissions'   => $this->getPermissions(),
+				'permissions'   => Permission::all(),
 				'current_page'  => $page['id'],
 			]
 		);
 
 		$items = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
-			if ($this->isFrontpage($row['slug']))
+			if (Setting::isFrontpage($row['slug']))
 				continue;
 
 			$row['content'] = Content::parse($row['content'], $row['type']);
 
-			$image = $this->getImageFromText($row['content']);
+			$image = Str::getImageFromText($row['content']);
 
 			$items[$row['page_id']] = [
 				'id'    => $row['page_id'],
@@ -505,7 +522,7 @@ final class PageRepository extends AbstractRepository
 
 		$data['created']  = DateTime::relative((int) $data['created_at']);
 		$data['updated']  = DateTime::relative((int) $data['updated_at']);
-		$data['can_view'] = $this->canViewItem($data['permissions']) || User::$info['is_admin'] || $isAuthor;
+		$data['can_view'] = Permission::canViewItem($data['permissions']) || User::$info['is_admin'] || $isAuthor;
 		$data['can_edit'] = User::$info['is_admin']
 			|| Utils::$context['allow_light_portal_manage_pages_any']
 			|| (Utils::$context['allow_light_portal_manage_pages_own'] && $isAuthor);
@@ -520,7 +537,7 @@ final class PageRepository extends AbstractRepository
 
 		$data['tags'] = $this->getTags($data['id']);
 
-		$this->hook('preparePageData', [&$data, $isAuthor]);
+		AddonHandler::getInstance()->run('preparePageData', [&$data, $isAuthor]);
 	}
 
 	private function addData(): int
@@ -560,7 +577,7 @@ final class PageRepository extends AbstractRepository
 			return 0;
 		}
 
-		$this->hook('onPageSaving', [$item]);
+		AddonHandler::getInstance()->run('onPageSaving', [$item]);
 
 		$this->saveTitles($item);
 		$this->saveTags($item);
@@ -580,8 +597,9 @@ final class PageRepository extends AbstractRepository
 			'url'       => LP_PAGE_URL . Utils::$context['lp_page']['slug']
 		];
 
-		if (empty(Utils::$context['allow_light_portal_manage_pages_any']))
+		if (empty(Utils::$context['allow_light_portal_manage_pages_any'])) {
 			Notify::send('new_page', 'page_unapproved', $options);
+		}
 
 		return $item;
 	}
@@ -610,7 +628,7 @@ final class PageRepository extends AbstractRepository
 			]
 		);
 
-		$this->hook('onPageSaving', [$item]);
+		AddonHandler::getInstance()->run('onPageSaving', [$item]);
 
 		$this->saveTitles($item, 'replace');
 		$this->saveTags($item, 'replace');
@@ -655,7 +673,7 @@ final class PageRepository extends AbstractRepository
 		$items = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['tag_id']] = [
-				'icon'  => $this->getIcon($row['icon'] ?: 'fas fa-tag'),
+				'icon'  => Icon::parse($row['icon'] ?: 'fas fa-tag'),
 				'title' => $row['title'],
 				'href'  => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id'],
 			];
@@ -702,8 +720,9 @@ final class PageRepository extends AbstractRepository
 	{
 		$publishTime = time();
 
-		if (Utils::$context['lp_page']['date'])
+		if (Utils::$context['lp_page']['date']) {
 			$publishTime = strtotime((string) Utils::$context['lp_page']['date']);
+		}
 
 		if (Utils::$context['lp_page']['time']) {
 			$publishTime = strtotime(

@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.05.24
+ * @version 02.06.24
  */
 
 namespace Bugo\LightPortal\Addons\GalleryBlock;
@@ -19,6 +19,7 @@ use Bugo\Compat\{Config, Db, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField};
 use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -114,8 +115,9 @@ class GalleryBlock extends Block
 				'edit_link' => Config::$scripturl . '?action=gallery;sa=edit;pic=' . $row['id_picture'],
 			];
 
-			if (! empty(Config::$modSettings['lp_show_teaser']))
-				$images[$row['id_picture']]['teaser'] = $this->getTeaser($row['description']);
+			if (! empty(Config::$modSettings['lp_show_teaser'])) {
+				$images[$row['id_picture']]['teaser'] = Str::getTeaser($row['description']);
+			}
 		}
 
 		Utils::$smcFunc['db_free_result']($result);

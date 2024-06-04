@@ -15,15 +15,13 @@
 namespace Bugo\LightPortal\Lists;
 
 use Bugo\FontAwesome\Enums\Icon;
-use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\AddonHandler;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class IconList implements ListInterface
 {
-	use Helper;
-
 	private string $prefix = 'fa-solid fa-';
 
 	public function __invoke(): array
@@ -107,9 +105,9 @@ final class IconList implements ListInterface
 		$set['big_image'] = 'fa-regular fa-image fa-5x';
 
 		// Plugin authors can extend the icon set
-		$this->hook('changeIconSet', [&$set]);
+		AddonHandler::getInstance()->run('changeIconSet', [&$set]);
 
-		return array_map(fn($icon): string => $this->getIcon($icon), $set);
+		return array_map(fn($icon): string => \Bugo\LightPortal\Utils\Icon::parse($icon), $set);
 	}
 
 	public function getList(): array

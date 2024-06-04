@@ -16,6 +16,8 @@ namespace Bugo\LightPortal\Utils;
 
 use SMF\Lang;
 
+use function array_flip;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
