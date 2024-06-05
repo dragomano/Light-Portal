@@ -10,29 +10,48 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 02.06.24
+ * @version 05.06.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
 
 use Bugo\Compat\{Config, Lang, Security, User, Utils};
 use Bugo\LightPortal\Addons\{Block, Plugin};
-use Bugo\LightPortal\Areas\Area;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, ColorField, CustomField, NumberField};
 use Bugo\LightPortal\Areas\Fields\{RadioField, RangeField, SelectField, TextField, UrlField};
 use Bugo\LightPortal\Areas\Partials\IconSelect;
+use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Enums\PluginType;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\{Language, Str};
 use Nette\PhpGenerator\{PhpFile, PhpNamespace, Printer};
+use Nette\Utils\Html;
+
+use function array_filter;
+use function array_key_exists;
+use function array_keys;
+use function array_merge;
+use function array_unique;
+use function count;
+use function date;
+use function explode;
+use function implode;
+use function in_array;
+use function is_writable;
+use function sprintf;
+use function str_contains;
+use function str_replace;
+use function var_export;
+
+use const LP_NAME;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
 class Handler extends Plugin
 {
-	use Area;
+	use AreaTrait;
 
 	private const PLUGIN_NAME = 'MyNewAddon';
 
@@ -48,7 +67,10 @@ class Handler extends Plugin
 		];
 
 		Lang::$txt['lp_plugin_maker']['add_info'] = sprintf(Lang::$txt['lp_plugin_maker']['add_info'], sprintf(
-			'<strong style="color: initial">%s/<span x-ref="plugin_name">%s</span></strong>',
+			Html::el('strong')
+				->style('color', 'initial')
+				->setHtml('%s/' . Html::el('span', ['x-ref' => 'plugin_name'])->setText('%s'))
+				->toHtml(),
 			LP_ADDON_DIR,
 			self::PLUGIN_NAME,
 		));
@@ -73,7 +95,7 @@ class Handler extends Plugin
 		$baseLang = Language::getNameFromLocale(Config::$language);
 
 		if (empty(Config::$modSettings['userLanguage'])) {
-			Utils::$context['lp_languages'] = ['english' => $temp[Language::FALLBACK]];
+			Utils::$context['lp_languages'] = ['english' => $temp[Language::getFallbackValue()]];
 
 			if ($baseLang !== 'english')
 				Utils::$context['lp_languages'][$baseLang] = $temp[Config::$language];
@@ -84,7 +106,7 @@ class Handler extends Plugin
 		$userLang = Language::getNameFromLocale(User::$info['language']);
 
 		Utils::$context['lp_languages'] = array_merge([
-			'english' => $temp[Language::FALLBACK],
+			'english' => $temp[Language::getFallbackValue()],
 			$userLang => $temp[User::$info['language']],
 			$baseLang => $temp[Config::$language],
 		]);
@@ -165,7 +187,9 @@ class Handler extends Plugin
 		SelectField::make('type', Lang::$txt['lp_plugin_maker']['type'])
 			->setTab(Tab::CONTENT)
 			->setAttribute('@change', 'plugin.change($event.target.value)')
-			->setOptions(array_filter(Utils::$context['lp_plugin_types'], static fn($type) => $type !== PluginType::SSI->name()))
+			->setOptions(array_filter(
+				Utils::$context['lp_plugin_types'], static fn($type) => $type !== PluginType::SSI->name()
+			))
 			->setValue(Utils::$context['lp_plugin']['type']);
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
@@ -223,11 +247,11 @@ class Handler extends Plugin
 		$languages = empty(Config::$modSettings['userLanguage'])
 			? [Language::getNameFromLocale(Config::$language)]
 			: [
-				Language::getNameFromLocale(Language::FALLBACK),
+				Language::getNameFromLocale(Language::getFallbackValue()),
 				Language::getNameFromLocale(Config::$language)
 			];
 
-		$languages = array_unique([Language::getNameFromLocale(Language::FALLBACK), ...$languages]);
+		$languages = array_unique([Language::getNameFromLocale(Language::getFallbackValue()), ...$languages]);
 
 		$value = /** @lang text */	'
 			<div>';
@@ -268,7 +292,7 @@ class Handler extends Plugin
 						name="description_' . $key . '"
 						value="' . (Utils::$context['lp_plugin']['descriptions'][$key] ?? '') . '"
 						placeholder="' . Lang::$txt['lp_page_description'] . '"
-						' . (in_array($key, $languages) ? 'x-ref="title_' . $i-- . '"' : '') . ($lang['filename'] === Language::FALLBACK ? ' required' : '') . '
+						' . (in_array($key, $languages) ? 'x-ref="title_' . $i-- . '"' : '') . ($lang['filename'] === Language::getFallbackValue() ? ' required' : '') . '
 					>
 				</div>';
 		}

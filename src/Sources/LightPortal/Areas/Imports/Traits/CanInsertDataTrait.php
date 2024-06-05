@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * CanInsertData.php
+ * CanInsertDataTrait.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -16,7 +16,7 @@ namespace Bugo\LightPortal\Areas\Imports\Traits;
 
 use Bugo\Compat\Db;
 
-trait CanInsertData
+trait CanInsertDataTrait
 {
 	protected function insertData(
 		string $table,

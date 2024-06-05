@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * UseTransactions.php
+ * UseTransactionsTrait.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -18,9 +18,12 @@ use Bugo\Compat\Db;
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Utils\CacheTrait;
 
-trait UseTransactions
+trait UseTransactionsTrait
 {
+	use CacheTrait;
+
 	protected function startTransaction(array $items): void
 	{
 		Db::$db->transaction('begin');

@@ -17,13 +17,16 @@ namespace Bugo\LightPortal\Articles;
 use Bugo\Compat\{BBCodeParser, Config, Db, Lang, User, Utils};
 use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Enums\{Permission, PortalHook, Status};
-use Bugo\LightPortal\Utils\{Avatar, Content, Icon, Setting, Str};
+use Bugo\LightPortal\Utils\{Avatar, Content, EntityDataTrait};
+use Bugo\LightPortal\Utils\{Icon, Setting, Str};
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 class PageArticle extends AbstractArticle
 {
+	use EntityDataTrait;
+
 	protected array $selectedCategories = [];
 
 	protected int $sorting = 0;

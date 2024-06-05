@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.02.24
+ * @version 05.06.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -18,12 +18,17 @@ namespace Bugo\LightPortal\Addons\PluginMaker;
 use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\Areas\Validators\AbstractValidator;
 use Bugo\LightPortal\Enums\VarType;
+use Bugo\LightPortal\Utils\EntityDataTrait;
+use Bugo\LightPortal\Utils\RequestTrait;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 class Validator extends AbstractValidator
 {
+	use EntityDataTrait;
+	use RequestTrait;
+
 	protected array $args = [
 		'name'    => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
 		'type'    => FILTER_DEFAULT,

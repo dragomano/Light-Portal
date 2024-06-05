@@ -15,10 +15,13 @@
 namespace Bugo\LightPortal\Areas\Partials;
 
 use Bugo\Compat\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\EntityDataTrait;
 use Bugo\LightPortal\Utils\Icon;
 
 final class CategorySelect extends AbstractPartial
 {
+	use EntityDataTrait;
+
 	public function __invoke(): string
 	{
 		$params = func_get_args();

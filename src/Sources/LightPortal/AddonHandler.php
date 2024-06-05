@@ -42,8 +42,6 @@ if (! defined('SMF'))
 
 final class AddonHandler
 {
-	use Helper;
-
 	private array $settings;
 
 	private SplObjectStorage $storage;
@@ -77,9 +75,9 @@ final class AddonHandler
 		return array_map(static fn($item): string => basename($item), $dirs);
 	}
 
-	public function run(PortalHook|string $hook = 'init', array $vars = [], array $plugins = []): void
+	public function run(PortalHook $hook = PortalHook::init, array $vars = [], array $plugins = []): void
 	{
-		$hook = is_string($hook) ? $hook : $hook->name;
+		$hook = $hook->name;
 
 		$addons = $plugins ?: Utils::$context['lp_enabled_plugins'] ?? [];
 
@@ -112,7 +110,7 @@ final class AddonHandler
 			}
 
 			if (method_exists($class, $hook)) {
-				$hook === 'init' && in_array($addon, Utils::$context['lp_enabled_plugins'])
+				$hook === PortalHook::init && in_array($addon, Utils::$context['lp_enabled_plugins'])
 					? $class->init()
 					: $class->$hook(...$vars);
 			}

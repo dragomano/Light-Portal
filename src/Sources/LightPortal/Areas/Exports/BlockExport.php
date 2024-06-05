@@ -14,17 +14,22 @@
 
 namespace Bugo\LightPortal\Areas\Exports;
 
+use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, Sapi, Theme, Utils};
 use Bugo\LightPortal\Repositories\BlockRepository;
 use DomDocument;
 use DOMException;
 
+use const LP_NAME;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class BlockExport extends AbstractExport
 {
+	use RequestTrait;
+
 	private readonly BlockRepository $repository;
 
 	public function __construct()

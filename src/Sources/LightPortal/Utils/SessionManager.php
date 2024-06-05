@@ -16,14 +16,13 @@ namespace Bugo\LightPortal\Utils;
 
 use Bugo\Compat\{Db, User, Utils};
 use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Helper;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class SessionManager
 {
-	use Helper;
+	use SessionTrait;
 
 	public function __invoke(string $key): int
 	{

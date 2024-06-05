@@ -20,6 +20,8 @@ use Bugo\LightPortal\Areas\Imports\AbstractCustomPageImport;
 use Bugo\LightPortal\Utils\{DateTime, ItemList};
 use IntlException;
 
+use const LP_NAME;
+
 if (! defined('LP_NAME'))
 	die('No direct access...');
 

@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 02.06.24
+ * @version 05.06.24
  */
 
 namespace Bugo\LightPortal\Addons\DummyArticleCards;
 
 use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Articles\AbstractArticle;
+use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Str;
 use DateTime;
 use Exception;
@@ -26,6 +27,8 @@ if (! defined('SMF'))
 
 class DummyArticle extends AbstractArticle
 {
+	use CacheTrait;
+
 	private readonly string $limit;
 
 	public function __construct()

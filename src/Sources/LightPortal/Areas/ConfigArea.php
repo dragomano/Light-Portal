@@ -20,15 +20,20 @@ use Bugo\LightPortal\Areas\Configs\{BasicConfig, ExtraConfig, FeedbackConfig, Mi
 use Bugo\LightPortal\Areas\Exports\{BlockExport, CategoryExport, PageExport, PluginExport, TagExport};
 use Bugo\LightPortal\Areas\Imports\{BlockImport, CategoryImport, PageImport, PluginImport, TagImport};
 use Bugo\LightPortal\Enums\{Hook, PortalHook};
-use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\Utils\{CacheTrait, Icon, RequestTrait, SafeRequireTrait, SMFHookTrait};
+
+use const LP_NAME;
+use const LP_VERSION;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class ConfigArea
 {
-	use Helper;
+	use CacheTrait;
+	use RequestTrait;
+	use SMFHookTrait;
+	use SafeRequireTrait;
 
 	public function __invoke(): void
 	{

@@ -17,9 +17,8 @@ namespace Bugo\LightPortal\Actions;
 use Bugo\Compat\{Config, PageIndex, User, Utils};
 use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Enums\{PortalHook, VarType};
-use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Repositories\CommentRepository;
-use Bugo\LightPortal\Utils\{Avatar, DateTime, Notify, Setting};
+use Bugo\LightPortal\Utils\{Avatar, CacheTrait, DateTime, Notify, RequestTrait, Setting};
 use IntlException;
 
 if (! defined('SMF'))
@@ -27,7 +26,8 @@ if (! defined('SMF'))
 
 final class Comment implements ActionInterface
 {
-	use Helper;
+	use CacheTrait;
+	use RequestTrait;
 
 	private CommentRepository $repository;
 

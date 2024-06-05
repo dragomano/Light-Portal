@@ -22,7 +22,6 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Actions\Block;
 use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Compilers\CompilerInterface;
-use Bugo\LightPortal\Compilers\Zero;
 use Bugo\LightPortal\Enums\ContentClass;
 use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Enums\Placement;
@@ -32,6 +31,7 @@ use Bugo\LightPortal\Utils\SessionManager;
 
 use function array_combine;
 use function array_map;
+use function dirname;
 use function explode;
 
 if (! defined('SMF'))
@@ -40,6 +40,13 @@ if (! defined('SMF'))
 class LoadTheme
 {
 	use CommonChecks;
+
+	private array $config;
+
+	public function __construct()
+	{
+		$this->config = require_once dirname(__DIR__) . '/config/config.php';
+	}
 
 	public function __invoke(): void
 	{
@@ -50,7 +57,7 @@ class LoadTheme
 
 		$this->defineVars();
 
-		$this->loadAssets(new Zero());
+		$this->loadAssets(new $this->config['compiler']);
 
 		// Run all init methods for plugins
 		AddonHandler::getInstance()->run();

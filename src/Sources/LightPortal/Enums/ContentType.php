@@ -15,11 +15,11 @@
 namespace Bugo\LightPortal\Enums;
 
 use Bugo\Compat\{Lang, User};
-use Bugo\LightPortal\Enums\Traits\HasNames;
+use Bugo\LightPortal\Enums\Traits\HasNamesTrait;
 
 enum ContentType
 {
-	use HasNames;
+	use HasNamesTrait;
 
 	case BBC;
 	case HTML;

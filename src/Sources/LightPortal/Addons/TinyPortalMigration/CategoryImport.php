@@ -19,6 +19,8 @@ use Bugo\Compat\{Config, Db, Lang, Utils};
 use Bugo\LightPortal\Areas\Imports\AbstractCustomCategoryImport;
 use Bugo\LightPortal\Utils\ItemList;
 
+use const LP_NAME;
+
 if (! defined('LP_NAME'))
 	die('No direct access...');
 

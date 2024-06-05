@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * HasNames.php
+ * HasValuesTrait.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -14,15 +14,10 @@
 
 namespace Bugo\LightPortal\Enums\Traits;
 
-trait HasNames
+trait HasValuesTrait
 {
-	public function name(): string
+	public static function values(): array
 	{
-		return strtolower($this->name);
-	}
-
-	public static function names(): array
-	{
-		return array_map(fn($item) => $item->name(), self::cases());
+		return array_map(fn($item) => $item->value, self::cases());
 	}
 }

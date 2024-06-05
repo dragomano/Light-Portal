@@ -14,15 +14,11 @@
 
 namespace Bugo\LightPortal\Articles;
 
-use Bugo\LightPortal\Helper;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
 abstract class AbstractArticle implements ArticleInterface
 {
-	use Helper;
-
 	protected array $columns = [];
 
 	protected array $tables  = [];

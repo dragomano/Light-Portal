@@ -17,8 +17,10 @@ namespace Bugo\LightPortal\Areas;
 use Bugo\Compat\{Config, Lang, Theme, User, Utils};
 use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Enums\{Hook, PortalHook};
-use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Utils\SMFHookTrait;
 use Nette\Utils\Html;
+
+use const LP_NAME;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -28,7 +30,7 @@ if (! defined('SMF'))
  */
 final class CreditArea
 {
-	use Helper;
+	use SMFHookTrait;
 
 	public function __invoke(): void
 	{

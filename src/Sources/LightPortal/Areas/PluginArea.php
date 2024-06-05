@@ -20,18 +20,22 @@ use Bugo\Compat\{Config, Lang, Theme};
 use Bugo\Compat\{User, Utils, WebFetchApi};
 use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Enums\{PortalHook, VarType};
-use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Repositories\PluginRepository;
-use Bugo\LightPortal\Utils\{Icon, Language, Str};
+use Bugo\LightPortal\Utils\{CacheTrait, EntityDataTrait, Icon};
+use Bugo\LightPortal\Utils\{Language, RequestTrait, Str};
 use ReflectionClass;
 use ReflectionException;
+
+use const LP_NAME;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class PluginArea
 {
-	use Helper;
+	use CacheTrait;
+	use EntityDataTrait;
+	use RequestTrait;
 
 	private PluginRepository $repository;
 

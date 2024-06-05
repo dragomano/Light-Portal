@@ -15,14 +15,14 @@
 namespace Bugo\LightPortal\Repositories;
 
 use Bugo\Compat\Db;
-use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Utils\CacheTrait;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class PluginRepository
 {
-	use Helper;
+	use CacheTrait;
 
 	public function addSettings(array $settings = []): void
 	{

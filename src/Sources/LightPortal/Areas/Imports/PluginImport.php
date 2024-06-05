@@ -18,6 +18,8 @@ use Bugo\Compat\{Config, ErrorHandler, Lang, Theme, Utils};
 use Exception;
 use ZipArchive;
 
+use const LP_NAME;
+
 if (! defined('SMF'))
 	die('No direct access...');
 

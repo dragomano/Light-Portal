@@ -15,12 +15,17 @@
 namespace Bugo\LightPortal\Areas\Configs;
 
 use Bugo\Compat\{ACP, Config, Lang, Theme, User, Utils};
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\SessionTrait;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class PanelConfig extends AbstractConfig
 {
+	use RequestTrait;
+	use SessionTrait;
+
 	public function show(): void
 	{
 		Theme::loadTemplate('LightPortal/ManagePanels');

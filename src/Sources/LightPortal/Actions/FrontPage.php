@@ -14,13 +14,14 @@
 
 namespace Bugo\LightPortal\Actions;
 
-use Bugo\Compat\{Config, ErrorHandler, Lang, PageIndex, Sapi, Theme, User, Utils};
+use Bugo\Compat\{Config, ErrorHandler, Lang, PageIndex};
+use Bugo\Compat\{Sapi, Theme, User, Utils};
 use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Articles\{ArticleInterface, BoardArticle, ChosenPageArticle};
 use Bugo\LightPortal\Articles\{ChosenTopicArticle, PageArticle, TopicArticle};
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{DateTime, Icon, Setting};
+use Bugo\LightPortal\Utils\{CacheTrait, DateTime, Icon};
+use Bugo\LightPortal\Utils\{RequestTrait, SessionTrait, Setting};
 use eftec\bladeone\BladeOne;
 use Exception;
 use IntlException;
@@ -28,7 +29,9 @@ use Nette\Utils\Html;
 
 final class FrontPage implements ActionInterface
 {
-	use Helper;
+	use CacheTrait;
+	use RequestTrait;
+	use SessionTrait;
 
 	public const DEFAULT_TEMPLATE = 'default.blade.php';
 

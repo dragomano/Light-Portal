@@ -14,7 +14,6 @@
 
 namespace Bugo\LightPortal\Areas\Partials;
 
-use Bugo\LightPortal\Helper;
 use Stringable;
 
 if (! defined('SMF'))
@@ -22,8 +21,6 @@ if (! defined('SMF'))
 
 abstract class AbstractPartial implements Stringable
 {
-	use Helper;
-
 	abstract public function __invoke(): string;
 
 	public function __toString(): string

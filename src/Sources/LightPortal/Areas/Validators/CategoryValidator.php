@@ -15,12 +15,15 @@
 namespace Bugo\LightPortal\Areas\Validators;
 
 use Bugo\Compat\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\RequestTrait;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 class CategoryValidator extends AbstractValidator
 {
+	use RequestTrait;
+
 	protected array $args = [
 		'category_id' => FILTER_VALIDATE_INT,
 		'icon'        => FILTER_DEFAULT,

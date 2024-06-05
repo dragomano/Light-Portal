@@ -20,22 +20,27 @@ use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, TextField};
 use Bugo\LightPortal\Areas\Partials\{CategorySelect, PageAuthorSelect, PageIconSelect};
 use Bugo\LightPortal\Areas\Partials\{PermissionSelect, StatusSelect, TagSelect};
+use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Areas\Validators\PageValidator;
 use Bugo\LightPortal\Enums\{PortalHook, Status, Tab};
-use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Models\PageModel;
 use Bugo\LightPortal\Repositories\PageRepository;
-use Bugo\LightPortal\Utils\{Content, DateTime, Icon, ItemList, Setting, Str};
+use Bugo\LightPortal\Utils\{CacheTrait, Content, DateTime, EntityDataTrait};
+use Bugo\LightPortal\Utils\{Icon, ItemList, RequestTrait, Setting, Str};
 use IntlException;
 use Nette\Utils\Html;
+
+use const LP_NAME;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class PageArea
 {
-	use Area;
-	use Helper;
+	use AreaTrait;
+	use CacheTrait;
+	use EntityDataTrait;
+	use RequestTrait;
 
 	private array $params = [];
 

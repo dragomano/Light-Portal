@@ -17,6 +17,8 @@ namespace Bugo\LightPortal\Areas\Imports;
 use Bugo\Compat\{Config, ErrorHandler};
 use Bugo\Compat\{Lang, Theme, Utils};
 
+use const LP_NAME;
+
 if (! defined('SMF'))
 	die('No direct access...');
 

@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * CanReplaceComments.php
+ * WithParamsTrait.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -14,26 +14,24 @@
 
 namespace Bugo\LightPortal\Areas\Imports\Traits;
 
-trait WithComments
+trait WithParamsTrait
 {
-	protected function replaceComments(array $comments, array &$results): void
+	protected function replaceParams(array $params, array &$results): void
 	{
-		if ($comments === [] || $results === [])
+		if ($params === [] || $results === [])
 			return;
 
 		$results = $this->insertData(
-			'lp_comments',
+			'lp_params',
 			'replace',
-			$comments,
+			$params,
 			[
-				'id'         => 'int',
-				'parent_id'  => 'int',
-				'page_id'    => 'int',
-				'author_id'  => 'int',
-				'message'    => 'string',
-				'created_at' => 'int',
+				'item_id' => 'int',
+				'type'    => 'string',
+				'name'    => 'string',
+				'value'   => 'string',
 			],
-			['id', 'page_id'],
+			['item_id', 'type', 'name'],
 		);
 	}
 }

@@ -16,7 +16,9 @@ namespace Bugo\LightPortal\Areas\Imports;
 
 use Bugo\Compat\{Config, ErrorHandler};
 use Bugo\Compat\{Lang, Theme, User, Utils};
-use Bugo\LightPortal\Areas\Imports\Traits\WithComments;
+use Bugo\LightPortal\Areas\Imports\Traits\WithCommentsTrait;
+
+use const LP_NAME;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -26,7 +28,7 @@ if (! defined('SMF'))
  */
 final class PageImport extends AbstractImport
 {
-	use WithComments;
+	use WithCommentsTrait;
 
 	public function main(): void
 	{

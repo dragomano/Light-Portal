@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * Query.php
+ * QueryTrait.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -12,7 +12,7 @@
  * @version 2.6
  */
 
-namespace Bugo\LightPortal\Areas;
+namespace Bugo\LightPortal\Areas\Traits;
 
 use Bugo\Compat\{Config, Db, Lang, Utils};
 use Bugo\LightPortal\AddonHandler;
@@ -31,7 +31,7 @@ use function trim;
 if (! defined('SMF'))
 	die('No direct access...');
 
-trait Query
+trait QueryTrait
 {
 	private function prepareIconList(): void
 	{

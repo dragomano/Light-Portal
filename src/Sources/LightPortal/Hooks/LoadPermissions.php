@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * Permissions.php
+ * LoadPermissions.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal

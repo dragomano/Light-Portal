@@ -14,11 +14,11 @@
 
 namespace Bugo\LightPortal\Enums;
 
-use Bugo\LightPortal\Enums\Traits\HasHtml;
+use Bugo\LightPortal\Enums\Traits\HasHtmlTrait;
 
 enum ContentClass: string
 {
-	use HasHtml;
+	use HasHtmlTrait;
 
 	case ROUNDFRAME = 'roundframe';
 	case ROUNDFRAME2 = 'roundframe2';

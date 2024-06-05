@@ -16,15 +16,12 @@ namespace Bugo\LightPortal\Areas\Fields;
 
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Helper;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 abstract class AbstractField
 {
-	use Helper;
-
 	protected string $tab;
 
 	protected string $name;

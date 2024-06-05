@@ -15,11 +15,11 @@
 namespace Bugo\LightPortal\Enums;
 
 use Bugo\Compat\User;
-use Bugo\LightPortal\Enums\Traits\HasValues;
+use Bugo\LightPortal\Enums\Traits\HasValuesTrait;
 
 enum Permission: int
 {
-	use HasValues;
+	use HasValuesTrait;
 
 	case ADMIN = 0;
 	case GUEST = 1;

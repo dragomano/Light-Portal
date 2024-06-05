@@ -17,8 +17,7 @@ namespace Bugo\LightPortal\Actions;
 use Bugo\Compat\{Config, Db};
 use Bugo\Compat\{Lang, Theme, Utils};
 use Bugo\LightPortal\Enums\{Permission, Status};
-use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Content, Icon, Setting, Str};
+use Bugo\LightPortal\Utils\{CacheTrait, Content, Icon, RequestTrait, Setting, Str};
 use Nette\Utils\Html;
 
 if (! defined('SMF'))
@@ -26,7 +25,8 @@ if (! defined('SMF'))
 
 final class Block implements BlockInterface
 {
-	use Helper;
+	use CacheTrait;
+	use RequestTrait;
 
 	public function show(): void
 	{

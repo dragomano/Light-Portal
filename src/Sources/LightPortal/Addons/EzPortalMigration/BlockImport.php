@@ -20,6 +20,8 @@ use Bugo\LightPortal\Areas\Imports\AbstractCustomBlockImport;
 use Bugo\LightPortal\Enums\Placement;
 use Bugo\LightPortal\Utils\ItemList;
 
+use const LP_NAME;
+
 if (! defined('LP_NAME'))
 	die('No direct access...');
 

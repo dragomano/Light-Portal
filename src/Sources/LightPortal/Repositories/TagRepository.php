@@ -16,13 +16,18 @@ namespace Bugo\LightPortal\Repositories;
 
 use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Security, User, Utils};
+use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\Utils\RequestTrait;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class TagRepository extends AbstractRepository
 {
+	use CacheTrait;
+	use RequestTrait;
+
 	protected string $entity = 'tag';
 
 	public function getAll(int $start, int $limit, string $sort): array

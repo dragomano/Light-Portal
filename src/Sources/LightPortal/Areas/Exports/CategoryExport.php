@@ -18,15 +18,20 @@ use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, Sapi, Utils};
 use Bugo\LightPortal\Repositories\CategoryRepository;
 use Bugo\LightPortal\Utils\ItemList;
+use Bugo\LightPortal\Utils\RequestTrait;
 use DomDocument;
 use DOMException;
 use Nette\Utils\Html;
+
+use const LP_NAME;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class CategoryExport extends AbstractExport
 {
+	use RequestTrait;
+
 	private readonly CategoryRepository $repository;
 
 	public function __construct()

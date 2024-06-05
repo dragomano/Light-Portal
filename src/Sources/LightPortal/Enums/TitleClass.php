@@ -14,11 +14,11 @@
 
 namespace Bugo\LightPortal\Enums;
 
-use Bugo\LightPortal\Enums\Traits\HasHtml;
+use Bugo\LightPortal\Enums\Traits\HasHtmlTrait;
 
 enum TitleClass: string
 {
-	use HasHtml;
+	use HasHtmlTrait;
 
 	case CAT_BAR = 'cat_bar';
 	case TITLE_BAR = 'title_bar';

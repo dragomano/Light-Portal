@@ -14,15 +14,13 @@
 
 namespace Bugo\LightPortal\Compilers;
 
-use Bugo\Compat\Config;
-use Bugo\Compat\Sapi;
-use Bugo\Compat\Theme;
+use Bugo\Compat\{Config, Sapi, Theme};
 use Bugo\LightPortal\Enums\Hook;
-use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Utils\SMFHookTrait;
 
 abstract class AbstractCompiler implements CompilerInterface
 {
-	use Helper;
+	use SMFHookTrait;
 
 	public const TARGET_FILE = '/portal.css';
 

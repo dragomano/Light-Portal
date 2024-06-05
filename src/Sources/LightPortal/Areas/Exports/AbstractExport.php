@@ -15,15 +15,13 @@
 namespace Bugo\LightPortal\Areas\Exports;
 
 use Bugo\Compat\Sapi;
-use Bugo\LightPortal\Helper;
+use Closure;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 abstract class AbstractExport implements ExportInterface
 {
-	use Helper;
-
 	abstract protected function getData();
 
 	abstract protected function getFile();
@@ -61,7 +59,7 @@ abstract class AbstractExport implements ExportInterface
 		exit;
 	}
 
-	protected function getGeneratorFrom(array $items): \Closure
+	protected function getGeneratorFrom(array $items): Closure
 	{
 		return static fn() => yield from $items;
 	}

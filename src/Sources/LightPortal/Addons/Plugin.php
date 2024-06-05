@@ -15,17 +15,32 @@
 namespace Bugo\LightPortal\Addons;
 
 use Bugo\Compat\{Config, Db, ServerSideIncludes, Theme, Utils};
-use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Repositories\PluginRepository;
+use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\EntityDataTrait;
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\SessionTrait;
+use Bugo\LightPortal\Utils\SMFHookTrait;
 use Bugo\LightPortal\Utils\Str;
 use ReflectionClass;
+
+use function array_column;
+use function array_filter;
+use function array_flip;
+use function dirname;
+use function explode;
+use function is_file;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 abstract class Plugin
 {
-	use Helper;
+	use CacheTrait;
+	use EntityDataTrait;
+	use RequestTrait;
+	use SMFHookTrait;
+	use SessionTrait;
 
 	public string $type = 'block';
 
@@ -45,8 +60,9 @@ abstract class Plugin
 	{
 		$path = dirname($this->getCalledClass()->getFileName()) . DIRECTORY_SEPARATOR . $name . '.php';
 
-		if (is_file($path))
+		if (is_file($path)) {
 			require_once $path;
+		}
 
 		return $this;
 	}

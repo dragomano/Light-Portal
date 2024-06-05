@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * HasValues.php
+ * EntityDataTrait.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -12,12 +12,15 @@
  * @version 2.6
  */
 
-namespace Bugo\LightPortal\Enums\Traits;
+namespace Bugo\LightPortal\Utils;
 
-trait HasValues
+if (! defined('SMF'))
+	die('No direct access...');
+
+trait EntityDataTrait
 {
-	public static function values(): array
+	public function getEntityData(string $entity): array
 	{
-		return array_map(fn($item) => $item->value, self::cases());
+		return (new EntityManager())($entity);
 	}
 }

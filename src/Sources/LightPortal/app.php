@@ -27,23 +27,7 @@ $loader = new StandardAutoloader();
 $loader->registerNamespace('Bugo\LightPortal', __DIR__);
 $loader->register();
 
-if (str_starts_with(SMF_VERSION, '3.0')) {
-	$aliases = [
-		'Bugo\\LightPortal\\Actions\\BoardIndexNext' => 'Bugo\\LightPortal\\Actions\\BoardIndex',
-		'Bugo\\LightPortal\\Utils\\LanguageNext'     => 'Bugo\\LightPortal\\Utils\\Language',
-	];
-
-	$applyAlias = static fn($class, $alias) => class_alias($class, $alias);
-
-	array_map($applyAlias, array_keys($aliases), $aliases);
-}
-
-// Development mode
-if (is_file(__DIR__ . '/Libs/scssphp/scssphp/src/Compiler.php')) {
-	/** @noinspection PhpIgnoredClassAliasDeclaration */
-	class_alias('Bugo\\LightPortal\\Compilers\\Sass', 'Bugo\\LightPortal\\Compilers\\Zero');
-}
-
+// This is the way
 $app = new class {
 	public function __construct()
 	{
@@ -56,5 +40,4 @@ $app = new class {
 	}
 };
 
-// This is the way
 new $app;

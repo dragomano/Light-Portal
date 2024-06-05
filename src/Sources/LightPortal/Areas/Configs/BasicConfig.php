@@ -15,9 +15,12 @@
 namespace Bugo\LightPortal\Areas\Configs;
 
 use Bugo\Compat\{ACP, Config, Lang, Theme, User, Utils};
-use Bugo\LightPortal\Areas\Query;
 use Bugo\LightPortal\Actions\FrontPage;
+use Bugo\LightPortal\Areas\Traits\QueryTrait;
 use Bugo\LightPortal\Enums\VarType;
+use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\SessionTrait;
 use IntlException;
 
 if (! defined('SMF'))
@@ -25,7 +28,10 @@ if (! defined('SMF'))
 
 final class BasicConfig extends AbstractConfig
 {
-	use Query;
+	use CacheTrait;
+	use QueryTrait;
+	use RequestTrait;
+	use SessionTrait;
 
 	/**
 	 * Output general settings

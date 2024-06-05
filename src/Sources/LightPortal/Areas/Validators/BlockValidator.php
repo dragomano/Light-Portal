@@ -18,12 +18,15 @@ use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
+use Bugo\LightPortal\Utils\RequestTrait;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 class BlockValidator extends AbstractValidator
 {
+	use RequestTrait;
+
 	protected array $args = [
 		'block_id'      => FILTER_VALIDATE_INT,
 		'icon'          => FILTER_DEFAULT,

@@ -14,7 +14,6 @@
 
 namespace Bugo\LightPortal\Models;
 
-use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Utils\Str;
 use stdClass;
 
@@ -23,8 +22,6 @@ if (! defined('SMF'))
 
 abstract class AbstractModel extends stdClass
 {
-	use Helper;
-
 	public function __set(string $name, mixed $value)
 	{
 		$camelCaseName = $this->underscoreToCamelCase($name);
@@ -44,6 +41,8 @@ abstract class AbstractModel extends stdClass
 
 		return $result;
 	}
+
+	abstract protected static function getTableName(): string;
 
 	private function underscoreToCamelCase(string $source): string
 	{

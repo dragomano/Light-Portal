@@ -14,7 +14,7 @@
 namespace Bugo\LightPortal\Areas\Imports;
 
 use Bugo\LightPortal\AddonHandler;
-use Bugo\LightPortal\Areas\Imports\Traits\WithComments;
+use Bugo\LightPortal\Areas\Imports\Traits\WithCommentsTrait;
 use Bugo\LightPortal\Enums\PortalHook;
 
 if (! defined('SMF'))
@@ -22,7 +22,7 @@ if (! defined('SMF'))
 
 abstract class AbstractCustomPageImport extends AbstractCustomImport
 {
-	use WithComments {
+	use WithCommentsTrait {
 		replaceComments as replaceCommentsTrait;
 	}
 

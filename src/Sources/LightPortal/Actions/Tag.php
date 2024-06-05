@@ -17,7 +17,7 @@ namespace Bugo\LightPortal\Actions;
 use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, User, Utils};
 use Bugo\LightPortal\Enums\{Permission, Status};
-use Bugo\LightPortal\Utils\{Icon, ItemList};
+use Bugo\LightPortal\Utils\{Icon, ItemList, RequestTrait};
 use IntlException;
 use Nette\Utils\Html;
 
@@ -26,6 +26,8 @@ if (! defined('SMF'))
 
 final class Tag extends AbstractPageList
 {
+	use RequestTrait;
+
 	public function show(PageInterface $page): void
 	{
 		if ($this->request()->hasNot('id')) {

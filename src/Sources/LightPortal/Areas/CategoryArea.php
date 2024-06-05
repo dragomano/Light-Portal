@@ -18,22 +18,24 @@ use Bugo\Compat\{Config, ErrorHandler, Lang, Security, Theme, Utils};
 use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Areas\Fields\TextareaField;
 use Bugo\LightPortal\Areas\Partials\IconSelect;
+use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Areas\Validators\CategoryValidator;
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Enums\{Status, Tab};
 use Bugo\LightPortal\Models\CategoryModel;
 use Bugo\LightPortal\Repositories\CategoryRepository;
-use Bugo\LightPortal\Utils\{Icon, ItemList, Str};
+use Bugo\LightPortal\Utils\{CacheTrait, Icon, ItemList, RequestTrait, Str};
 use Nette\Utils\Html;
+
+use const LP_NAME;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class CategoryArea
 {
-	use Area;
-	use Helper;
+	use AreaTrait;
+	use CacheTrait;
+	use RequestTrait;
 
 	private CategoryRepository $repository;
 

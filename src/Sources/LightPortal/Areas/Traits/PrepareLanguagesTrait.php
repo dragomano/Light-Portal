@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * PrepareLanguages.php
+ * PrepareLanguagesTrait.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -12,7 +12,7 @@
  * @version 2.6
  */
 
-namespace Bugo\LightPortal\Areas;
+namespace Bugo\LightPortal\Areas\Traits;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
@@ -21,7 +21,7 @@ use Bugo\Compat\Utils;
 
 use function array_merge;
 
-trait PrepareLanguages
+trait PrepareLanguagesTrait
 {
 	public function prepareForumLanguages(): void
 	{

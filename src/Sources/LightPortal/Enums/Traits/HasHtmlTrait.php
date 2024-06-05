@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * HasHtml.php
+ * HasHtmlTrait.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -14,7 +14,7 @@
 
 namespace Bugo\LightPortal\Enums\Traits;
 
-trait HasHtml
+trait HasHtmlTrait
 {
 	public static function values(): array
 	{

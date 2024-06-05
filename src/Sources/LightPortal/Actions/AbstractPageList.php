@@ -15,8 +15,8 @@
 namespace Bugo\LightPortal\Actions;
 
 use Bugo\Compat\{Config, Lang, User, Utils};
-use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Avatar, Content, DateTime, Setting, Str};
+use Bugo\LightPortal\Utils\{Avatar, Content, DateTime};
+use Bugo\LightPortal\Utils\{EntityDataTrait, Setting, Str};
 use IntlException;
 
 if (! defined('SMF'))
@@ -24,7 +24,7 @@ if (! defined('SMF'))
 
 abstract class AbstractPageList implements PageListInterface
 {
-	use Helper;
+	use EntityDataTrait;
 
 	abstract public function show(PageInterface $page);
 

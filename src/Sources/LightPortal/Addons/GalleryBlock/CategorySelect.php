@@ -10,16 +10,19 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.24
+ * @version 05.06.24
  */
 
 namespace Bugo\LightPortal\Addons\GalleryBlock;
 
 use Bugo\Compat\{Config, Db, Lang, Utils};
 use Bugo\LightPortal\Areas\Partials\AbstractPartial;
+use Bugo\LightPortal\Utils\CacheTrait;
 
 final class CategorySelect extends AbstractPartial
 {
+	use CacheTrait;
+
 	public function __invoke(): string
 	{
 		$categories = $this->getGalleryCategories();

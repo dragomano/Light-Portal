@@ -16,7 +16,9 @@ namespace Bugo\LightPortal\Repositories;
 
 use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, Security, User, Utils};
+use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\Utils\RequestTrait;
 
 use function array_filter;
 
@@ -25,6 +27,9 @@ if (! defined('SMF'))
 
 final class CategoryRepository extends AbstractRepository
 {
+	use CacheTrait;
+	use RequestTrait;
+
 	protected string $entity = 'category';
 
 	public function getAll(int $start, int $limit, string $sort): array

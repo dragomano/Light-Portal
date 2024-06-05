@@ -18,9 +18,9 @@ use Bugo\Compat\{Config, ErrorHandler, Lang};
 use Bugo\Compat\{PageIndex, Theme, User, Utils};
 use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Repositories\PageRepository;
-use Bugo\LightPortal\Utils\{Content, Icon, Setting, Str};
+use Bugo\LightPortal\Utils\{CacheTrait, Content, EntityDataTrait};
+use Bugo\LightPortal\Utils\{Icon, RequestTrait, SessionTrait, Setting, Str};
 use IntlException;
 use Nette\Utils\Html;
 
@@ -29,7 +29,10 @@ if (! defined('SMF'))
 
 final class Page implements PageInterface
 {
-	use Helper;
+	use CacheTrait;
+	use EntityDataTrait;
+	use RequestTrait;
+	use SessionTrait;
 
 	private PageRepository $repository;
 

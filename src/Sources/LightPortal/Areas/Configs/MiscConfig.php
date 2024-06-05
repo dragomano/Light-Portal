@@ -14,15 +14,20 @@
 
 namespace Bugo\LightPortal\Areas\Configs;
 
-use Bugo\LightPortal\Tasks\Maintainer;
 use Bugo\Compat\{ACP, Config, Db};
 use Bugo\Compat\{Lang, User, Utils};
+use Bugo\LightPortal\Tasks\Maintainer;
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\SessionTrait;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class MiscConfig extends AbstractConfig
 {
+	use RequestTrait;
+	use SessionTrait;
+
 	public function show(): void
 	{
 		Utils::$context['page_title'] = Lang::$txt['lp_misc'];

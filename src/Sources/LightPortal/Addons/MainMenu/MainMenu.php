@@ -17,8 +17,10 @@ namespace Bugo\LightPortal\Addons\MainMenu;
 
 use Bugo\Compat\{Config, User, Utils};
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Areas\PrepareLanguages;
+use Bugo\LightPortal\Areas\Traits\PrepareLanguagesTrait;
 use Bugo\LightPortal\Enums\Hook;
+
+use const LP_ACTION;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -28,7 +30,7 @@ if (! defined('LP_NAME'))
  */
 class MainMenu extends Plugin
 {
-	use PrepareLanguages;
+	use PrepareLanguagesTrait;
 
 	public string $type = 'other';
 

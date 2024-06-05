@@ -21,6 +21,8 @@ use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Enums\Placement;
 use Bugo\LightPortal\Utils\ItemList;
 
+use const LP_NAME;
+
 if (! defined('LP_NAME'))
 	die('No direct access...');
 

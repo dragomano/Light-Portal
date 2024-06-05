@@ -14,11 +14,7 @@
 
 namespace Bugo\LightPortal\Areas\Validators;
 
-use Bugo\LightPortal\Helper;
-
 abstract class AbstractValidator
 {
-	use Helper;
-
 	abstract public function validate(): array;
 }

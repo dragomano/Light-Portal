@@ -20,7 +20,8 @@ use Bugo\Compat\{Config, Db, Lang, Logging};
 use Bugo\Compat\{Msg, Security, User, Utils};
 use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Enums\{Permission, PortalHook, Status};
-use Bugo\LightPortal\Utils\{Content, DateTime, Icon, Notify, Setting, Str};
+use Bugo\LightPortal\Utils\{CacheTrait, Content, DateTime};
+use Bugo\LightPortal\Utils\{EntityDataTrait, Icon, Notify, Setting, Str};
 use IntlException;
 use Nette\Utils\Html;
 
@@ -44,6 +45,9 @@ if (! defined('SMF'))
 
 final class PageRepository extends AbstractRepository
 {
+	use CacheTrait;
+	use EntityDataTrait;
+
 	protected string $entity = 'page';
 
 	/**

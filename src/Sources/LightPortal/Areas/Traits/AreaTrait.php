@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * Area.php
+ * AreaTrait.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -12,21 +12,27 @@
  * @version 2.6
  */
 
-namespace Bugo\LightPortal\Areas;
+namespace Bugo\LightPortal\Areas\Traits;
 
 use Bugo\Compat\{Config, Lang};
+use Nette\Utils\Html;
 use Bugo\Compat\{Security, Theme, Utils};
 use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Utils\Editor;
 
+use function array_keys;
+use function array_unique;
+use function count;
+use function in_array;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
-trait Area
+trait AreaTrait
 {
-	use PrepareLanguages;
-	use Query;
+	use PrepareLanguagesTrait;
+	use QueryTrait;
 
 	public function createBbcEditor(string $content = ''): void
 	{
@@ -150,7 +156,7 @@ trait Area
 
 	public function getFloatSpan(string $text, string $direction = 'left'): string
 	{
-		return '<span class="float' . $direction . '">' . $text . '</span>';
+		return Html::el('span', ['class' => "float$direction"])->setText($text)->toHtml();
 	}
 
 	public function getDefaultTypes(): array

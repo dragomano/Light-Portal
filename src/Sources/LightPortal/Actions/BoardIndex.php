@@ -14,19 +14,15 @@
 
 namespace Bugo\LightPortal\Actions;
 
-use Bugo\LightPortal\Helper;
+use Bugo\Compat\BoardIndex as Index;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class BoardIndex implements ActionInterface
 {
-	use Helper;
-
 	public function show(): void
 	{
-		$this->require('BoardIndex');
-
-		BoardIndex();
+		Index::call();
 	}
 }

@@ -16,12 +16,19 @@ namespace Bugo\LightPortal\Areas\Configs;
 
 use Bugo\Compat\{ACP, Config, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Enums\VarType;
+use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\SessionTrait;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class ExtraConfig extends AbstractConfig
 {
+	use CacheTrait;
+	use RequestTrait;
+	use SessionTrait;
+
 	/**
 	 * Output page and block settings
 	 *

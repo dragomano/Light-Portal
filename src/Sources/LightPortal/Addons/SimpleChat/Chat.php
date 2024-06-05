@@ -15,6 +15,8 @@
 
 namespace Bugo\LightPortal\Addons\SimpleChat;
 
+use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\Compat\{User, Utils};
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Utils\Avatar;
@@ -24,7 +26,8 @@ if (! defined('LP_NAME'))
 
 class Chat
 {
-	use Helper;
+	use CacheTrait;
+	use RequestTrait;
 
 	public function getMessages(int $block_id = 0): array
 	{

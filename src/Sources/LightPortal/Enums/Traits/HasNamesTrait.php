@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * BoardIndexNext.php (special for SMF 3.0)
+ * HasNamesTrait.php
  *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
@@ -12,17 +12,17 @@
  * @version 2.6
  */
 
-namespace Bugo\LightPortal\Actions;
+namespace Bugo\LightPortal\Enums\Traits;
 
-use SMF\Actions\BoardIndex;
-
-if (! defined('SMF'))
-	die('No direct access...');
-
-final class BoardIndexNext implements ActionInterface
+trait HasNamesTrait
 {
-	public function show(): void
+	public function name(): string
 	{
-		BoardIndex::call();
+		return strtolower($this->name);
+	}
+
+	public static function names(): array
+	{
+		return array_map(fn($item) => $item->name(), self::cases());
 	}
 }

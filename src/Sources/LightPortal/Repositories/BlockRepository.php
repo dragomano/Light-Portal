@@ -18,7 +18,8 @@ use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, Msg, Security, Utils};
 use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Utils\{Icon, Str};
+use Bugo\LightPortal\Utils\{CacheTrait, EntityDataTrait};
+use Bugo\LightPortal\Utils\{Icon, RequestTrait, Str};
 
 use function array_filter;
 use function array_flip;
@@ -32,6 +33,10 @@ if (! defined('SMF'))
 
 final class BlockRepository extends AbstractRepository
 {
+	use CacheTrait;
+	use EntityDataTrait;
+	use RequestTrait;
+
 	protected string $entity = 'block';
 
 	public function getAll(): array

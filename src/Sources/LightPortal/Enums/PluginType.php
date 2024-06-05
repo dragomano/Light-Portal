@@ -15,11 +15,11 @@
 namespace Bugo\LightPortal\Enums;
 
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Enums\Traits\HasNames;
+use Bugo\LightPortal\Enums\Traits\HasNamesTrait;
 
 enum PluginType
 {
-	use HasNames;
+	use HasNamesTrait;
 
 	case BLOCK;
 	case SSI;

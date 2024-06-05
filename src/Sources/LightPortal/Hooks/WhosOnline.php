@@ -14,10 +14,8 @@
 
 namespace Bugo\LightPortal\Hooks;
 
-use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
-use Bugo\Compat\Utils;
-use Bugo\LightPortal\Helper;
+use Bugo\Compat\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\EntityDataTrait;
 use Bugo\LightPortal\Utils\Setting;
 
 use function sprintf;
@@ -27,7 +25,7 @@ if (! defined('SMF'))
 
 class WhosOnline
 {
-	use Helper;
+	use EntityDataTrait;
 
 	public function __invoke(array $actions): string
 	{

@@ -10,21 +10,23 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.24
+ * @version 05.06.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
 
 use Bugo\Compat\{ErrorHandler, Lang};
-use Bugo\LightPortal\Helper;
+
+use function copy;
+use function file_put_contents;
+use function mkdir;
+use function str_replace;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
 class Builder
 {
-	use Helper;
-
 	protected string $path;
 
 	public function __construct(protected string $name)

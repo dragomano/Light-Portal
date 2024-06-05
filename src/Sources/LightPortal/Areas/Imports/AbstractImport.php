@@ -14,11 +14,11 @@
 namespace Bugo\LightPortal\Areas\Imports;
 
 use Bugo\Compat\{Sapi, Utils};
-use Bugo\LightPortal\Areas\Imports\Traits\CanInsertData;
-use Bugo\LightPortal\Areas\Imports\Traits\WithParams;
-use Bugo\LightPortal\Areas\Imports\Traits\WithTitles;
-use Bugo\LightPortal\Areas\Imports\Traits\UseTransactions;
-use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Areas\Imports\Traits\CanInsertDataTrait;
+use Bugo\LightPortal\Areas\Imports\Traits\UseTransactionsTrait;
+use Bugo\LightPortal\Areas\Imports\Traits\WithParamsTrait;
+use Bugo\LightPortal\Areas\Imports\Traits\WithTitlesTrait;
+use Bugo\LightPortal\Utils\RequestTrait;
 use SimpleXMLElement;
 
 if (! defined('SMF'))
@@ -26,11 +26,11 @@ if (! defined('SMF'))
 
 abstract class AbstractImport implements ImportInterface
 {
-	use Helper;
-	use CanInsertData;
-	use WithParams;
-	use WithTitles;
-	use UseTransactions;
+	use CanInsertDataTrait;
+	use RequestTrait;
+	use UseTransactionsTrait;
+	use WithParamsTrait;
+	use WithTitlesTrait;
 
 	public function __construct()
 	{
