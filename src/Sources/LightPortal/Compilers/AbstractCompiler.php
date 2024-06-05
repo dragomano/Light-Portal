@@ -17,6 +17,7 @@ namespace Bugo\LightPortal\Compilers;
 use Bugo\Compat\Config;
 use Bugo\Compat\Sapi;
 use Bugo\Compat\Theme;
+use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Helper;
 
 abstract class AbstractCompiler implements CompilerInterface
@@ -34,7 +35,7 @@ abstract class AbstractCompiler implements CompilerInterface
 		$this->sourceFile = $this->getCssDirPath() . static::SOURCE_FILE;
 		$this->targetFile = $this->getCssDirPath() . static::TARGET_FILE;
 
-		$this->applyHook('clean_cache');
+		$this->applyHook(Hook::cleanCache);
 	}
 
 	public function cleanCache(): void

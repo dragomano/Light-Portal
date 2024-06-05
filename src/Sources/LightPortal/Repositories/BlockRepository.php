@@ -17,6 +17,7 @@ namespace Bugo\LightPortal\Repositories;
 use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, Msg, Security, Utils};
 use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Utils\{Icon, Str};
 
 use function array_filter;
@@ -171,7 +172,7 @@ final class BlockRepository extends AbstractRepository
 		if ($items === [])
 			return;
 
-		AddonHandler::getInstance()->run('onBlockRemoving', [$items]);
+		AddonHandler::getInstance()->run(PortalHook::onBlockRemoving, [$items]);
 
 		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_blocks
@@ -278,7 +279,7 @@ final class BlockRepository extends AbstractRepository
 			return 0;
 		}
 
-		AddonHandler::getInstance()->run('onBlockSaving', [$item]);
+		AddonHandler::getInstance()->run(PortalHook::onBlockSaving, [$item]);
 
 		$this->saveTitles($item);
 		$this->saveOptions($item);
@@ -312,7 +313,7 @@ final class BlockRepository extends AbstractRepository
 			]
 		);
 
-		AddonHandler::getInstance()->run('onBlockSaving', [$item]);
+		AddonHandler::getInstance()->run(PortalHook::onBlockSaving, [$item]);
 
 		$this->saveTitles($item, 'replace');
 		$this->saveOptions($item, 'replace');

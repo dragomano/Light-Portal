@@ -10,7 +10,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.05.24
+ * @version 05.06.24
  */
 
 namespace Bugo\LightPortal\Addons\ExtendedMetaTags;
@@ -18,7 +18,7 @@ namespace Bugo\LightPortal\Addons\ExtendedMetaTags;
 use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\Addons\Plugin;
 use Bugo\LightPortal\Areas\Fields\VirtualSelectField;
-use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Enums\{Hook, Tab};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -36,7 +36,7 @@ class ExtendedMetaTags extends Plugin
 
 	public function init(): void
 	{
-		$this->applyHook('theme_context');
+		$this->applyHook(Hook::themeContext);
 	}
 
 	public function themeContext(): void

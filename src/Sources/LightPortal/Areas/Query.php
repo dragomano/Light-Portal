@@ -16,6 +16,7 @@ namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, Db, Lang, Utils};
 use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Lists\IconList;
 use Nette\Utils\Html;
 
@@ -46,7 +47,7 @@ trait Query
 		$template = Html::el('i', ['class' => '%1$s fa-fw'])
 			->setAttribute('aria-hidden', 'true') . '&nbsp;%1$s';
 
-		AddonHandler::getInstance()->run('prepareIconList', [&$icons, &$template]);
+		AddonHandler::getInstance()->run(PortalHook::prepareIconList, [&$icons, &$template]);
 
 		$icons = array_filter($icons, static fn($item) => str_contains((string) $item, $search));
 

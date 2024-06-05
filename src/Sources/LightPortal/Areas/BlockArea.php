@@ -20,7 +20,7 @@ use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, Te
 use Bugo\LightPortal\Areas\Partials\{AreaSelect, ContentClassSelect, IconSelect};
 use Bugo\LightPortal\Areas\Partials\{PermissionSelect, PlacementSelect, TitleClassSelect};
 use Bugo\LightPortal\Areas\Validators\BlockValidator;
-use Bugo\LightPortal\Enums\{ContentType, Tab};
+use Bugo\LightPortal\Enums\{ContentType, PortalHook, Tab};
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Models\BlockModel;
 use Bugo\LightPortal\Repositories\BlockRepository;
@@ -203,7 +203,7 @@ final class BlockArea
 
 		$params = [];
 
-		AddonHandler::getInstance()->run('prepareBlockParams', [&$params]);
+		AddonHandler::getInstance()->run(PortalHook::prepareBlockParams, [&$params]);
 
 		return array_merge($baseParams, $params);
 	}
@@ -316,7 +316,7 @@ final class BlockArea
 
 		Utils::$context['lp_block_tab_appearance'] = true;
 
-		AddonHandler::getInstance()->run('prepareBlockFields');
+		AddonHandler::getInstance()->run(PortalHook::prepareBlockFields);
 
 		$this->preparePostFields();
 	}
@@ -348,7 +348,7 @@ final class BlockArea
 
 	private function prepareEditor(): void
 	{
-		AddonHandler::getInstance()->run('prepareEditor', [Utils::$context['lp_block']]);
+		AddonHandler::getInstance()->run(PortalHook::prepareEditor, [Utils::$context['lp_block']]);
 	}
 
 	private function preparePreview(): void

@@ -10,13 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 21.03.24
+ * @version 05.06.24
  */
 
 namespace Bugo\LightPortal\Addons\HelloPortal;
 
 use Bugo\Compat\{Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Enums\Hook;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -32,7 +33,7 @@ class HelloPortal extends Plugin
 
 	public function init(): void
 	{
-		$this->applyHook('menu_buttons');
+		$this->applyHook(Hook::menuButtons);
 	}
 
 	public function menuButtons(): void

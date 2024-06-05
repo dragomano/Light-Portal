@@ -10,14 +10,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 02.06.24
+ * @version 05.06.24
  */
 
 namespace Bugo\LightPortal\Addons\Search;
 
 use Bugo\Compat\{Config, Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Enums\Permission;
+use Bugo\LightPortal\Enums\{Hook, Permission};
 use Bugo\LightPortal\Utils\{Content, DateTime, Str};
 use IntlException;
 
@@ -30,7 +30,7 @@ class Search extends Block
 
 	public function init(): void
 	{
-		$this->applyHook('actions');
+		$this->applyHook(Hook::actions);
 	}
 
 	public function addSettings(array &$settings): void

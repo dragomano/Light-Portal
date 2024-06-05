@@ -16,6 +16,7 @@ namespace Bugo\LightPortal\Utils;
 
 use Bugo\FontAwesome\IconBuilder;
 use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Enums\PortalHook;
 
 use function str_replace;
 
@@ -42,7 +43,7 @@ final class Icon
 
 		$template = (new IconBuilder($icon, ['aria-hidden' => true]))->html() . ' ';
 
-		AddonHandler::getInstance()->run('prepareIconTemplate', [&$template, $icon]);
+		AddonHandler::getInstance()->run(PortalHook::prepareIconTemplate, [&$template, $icon]);
 
 		return $template;
 	}

@@ -16,6 +16,7 @@ namespace Bugo\LightPortal\Articles;
 
 use Bugo\Compat\{BBCodeParser, Config, Db, Lang, User, Utils};
 use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Utils\Str;
 
 if (! defined('SMF'))
@@ -47,7 +48,7 @@ class BoardArticle extends AbstractArticle
 			'last_updated DESC',
 		];
 
-		AddonHandler::getInstance()->run('frontBoards', [
+		AddonHandler::getInstance()->run(PortalHook::frontBoards, [
 			&$this->columns, &$this->tables, &$this->params, &$this->wheres, &$this->orders
 		]);
 	}
@@ -120,7 +121,7 @@ class BoardArticle extends AbstractArticle
 
 			$this->prepareTeaser($boards, $row);
 
-			AddonHandler::getInstance()->run('frontBoardsOutput', [&$boards, $row]);
+			AddonHandler::getInstance()->run(PortalHook::frontBoardsOutput, [&$boards, $row]);
 		}
 
 		Db::$db->free_result($result);

@@ -16,7 +16,7 @@ namespace Bugo\LightPortal\Utils;
 
 use Bugo\Compat\{BBCodeParser, IntegrationHook, Sapi, Utils};
 use Bugo\LightPortal\AddonHandler;
-use Bugo\LightPortal\Enums\ContentType;
+use Bugo\LightPortal\Enums\{ContentType, PortalHook};
 use ParseError;
 
 use function file_put_contents;
@@ -50,7 +50,7 @@ final class Content
 			) {}
 		};
 
-		AddonHandler::getInstance()->run('prepareContent', [$data, $parameters]);
+		AddonHandler::getInstance()->run(PortalHook::prepareContent, [$data, $parameters]);
 
 		return ob_get_clean();
 	}
@@ -89,7 +89,7 @@ final class Content
 			return ob_get_clean();
 		}
 
-		AddonHandler::getInstance()->run('parseContent', [&$content, $type]);
+		AddonHandler::getInstance()->run(PortalHook::parseContent, [&$content, $type]);
 
 		return $content;
 	}

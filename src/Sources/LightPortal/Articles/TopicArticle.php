@@ -17,6 +17,7 @@ namespace Bugo\LightPortal\Articles;
 use Bugo\Compat\{BBCodeParser, Config, Db, Lang, User};
 use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Utils\{Avatar, Setting, Str};
+use Bugo\LightPortal\Enums\PortalHook;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -50,7 +51,7 @@ class TopicArticle extends AbstractArticle
 			'date DESC',
 		];
 
-		AddonHandler::getInstance()->run('frontTopics', [
+		AddonHandler::getInstance()->run(PortalHook::frontTopics, [
 			&$this->columns, &$this->tables, &$this->params, &$this->wheres, &$this->orders
 		]);
 	}
@@ -135,7 +136,7 @@ class TopicArticle extends AbstractArticle
 
 			$this->prepareTeaser($topics, $row);
 
-			AddonHandler::getInstance()->run('frontTopicsOutput', [&$topics, $row]);
+			AddonHandler::getInstance()->run(PortalHook::frontTopicsOutput, [&$topics, $row]);
 		}
 
 		Db::$db->free_result($result);

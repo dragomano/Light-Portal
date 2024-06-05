@@ -18,6 +18,7 @@ use Bugo\Compat\{Config, ErrorHandler, Lang, PageIndex, Sapi, Theme, User, Utils
 use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Articles\{ArticleInterface, BoardArticle, ChosenPageArticle};
 use Bugo\LightPortal\Articles\{ChosenTopicArticle, PageArticle, TopicArticle};
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Utils\{DateTime, Icon, Setting};
 use eftec\bladeone\BladeOne;
@@ -46,7 +47,7 @@ final class FrontPage implements ActionInterface
 	{
 		User::mustHavePermission('light_portal_view');
 
-		AddonHandler::getInstance()->run('frontModes', [&$this->modes]);
+		AddonHandler::getInstance()->run(PortalHook::frontModes, [&$this->modes]);
 
 		if (array_key_exists(Config::$modSettings['lp_frontpage_mode'], $this->modes)) {
 			$this->prepare(new $this->modes[Config::$modSettings['lp_frontpage_mode']]);
@@ -118,7 +119,7 @@ final class FrontPage implements ActionInterface
 
 		Utils::$context['lp_frontpage_articles'] = $articles;
 
-		AddonHandler::getInstance()->run('frontAssets');
+		AddonHandler::getInstance()->run(PortalHook::frontAssets);
 	}
 
 	public function prepareTemplates(): void
@@ -136,7 +137,7 @@ final class FrontPage implements ActionInterface
 		$this->prepareLayoutSwitcher();
 
 		// Mod authors can use their own logic here
-		AddonHandler::getInstance()->run('frontLayouts');
+		AddonHandler::getInstance()->run(PortalHook::frontLayouts);
 
 		$this->view(Config::$modSettings['lp_frontpage_layout']);
 	}
@@ -172,7 +173,7 @@ final class FrontPage implements ActionInterface
 		$extensions = ['.blade.php'];
 
 		// Mod authors can add custom extensions for layouts
-		AddonHandler::getInstance()->run('customLayoutExtensions', [&$extensions]);
+		AddonHandler::getInstance()->run(PortalHook::customLayoutExtensions, [&$extensions]);
 
 		foreach ($extensions as $extension) {
 			$layouts = array_merge(

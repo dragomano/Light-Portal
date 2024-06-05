@@ -18,7 +18,7 @@ use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\EntityManager;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionTrait;
-use Bugo\LightPortal\Utils\SMFTrait;
+use Bugo\LightPortal\Utils\SMFHookTrait;
 
 use function dirname;
 use function is_file;
@@ -31,7 +31,7 @@ trait Helper
 	use CacheTrait;
 	use RequestTrait;
 	use SessionTrait;
-	use SMFTrait;
+	use SMFHookTrait;
 
 	public function getEntityData(string $entity): array
 	{

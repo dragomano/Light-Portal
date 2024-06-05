@@ -19,7 +19,7 @@ namespace Bugo\LightPortal\Repositories;
 use Bugo\Compat\{Config, Db, Lang, Logging};
 use Bugo\Compat\{Msg, Security, User, Utils};
 use Bugo\LightPortal\AddonHandler;
-use Bugo\LightPortal\Enums\{Permission, Status};
+use Bugo\LightPortal\Enums\{Permission, PortalHook, Status};
 use Bugo\LightPortal\Utils\{Content, DateTime, Icon, Notify, Setting, Str};
 use IntlException;
 use Nette\Utils\Html;
@@ -237,7 +237,7 @@ final class PageRepository extends AbstractRepository
 		if ($items === [])
 			return;
 
-		AddonHandler::getInstance()->run('onPageRemoving', [$items]);
+		AddonHandler::getInstance()->run(PortalHook::onPageRemoving, [$items]);
 
 		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_pages
@@ -537,7 +537,7 @@ final class PageRepository extends AbstractRepository
 
 		$data['tags'] = $this->getTags($data['id']);
 
-		AddonHandler::getInstance()->run('preparePageData', [&$data, $isAuthor]);
+		AddonHandler::getInstance()->run(PortalHook::preparePageData, [&$data, $isAuthor]);
 	}
 
 	private function addData(): int
@@ -577,7 +577,7 @@ final class PageRepository extends AbstractRepository
 			return 0;
 		}
 
-		AddonHandler::getInstance()->run('onPageSaving', [$item]);
+		AddonHandler::getInstance()->run(PortalHook::onPageSaving, [$item]);
 
 		$this->saveTitles($item);
 		$this->saveTags($item);
@@ -628,7 +628,7 @@ final class PageRepository extends AbstractRepository
 			]
 		);
 
-		AddonHandler::getInstance()->run('onPageSaving', [$item]);
+		AddonHandler::getInstance()->run(PortalHook::onPageSaving, [$item]);
 
 		$this->saveTitles($item, 'replace');
 		$this->saveTags($item, 'replace');

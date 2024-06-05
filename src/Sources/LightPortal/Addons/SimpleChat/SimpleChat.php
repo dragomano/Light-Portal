@@ -10,7 +10,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 02.06.24
+ * @version 05.06.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleChat;
@@ -18,7 +18,7 @@ namespace Bugo\LightPortal\Addons\SimpleChat;
 use Bugo\Compat\{Config, Db, Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
-use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Enums\{Hook, Tab};
 use Bugo\LightPortal\Utils\Avatar;
 
 if (! defined('LP_NAME'))
@@ -40,7 +40,7 @@ class SimpleChat extends Block
 
 	public function init(): void
 	{
-		$this->applyHook('actions');
+		$this->applyHook(Hook::actions);
 	}
 
 	public function actions(): void

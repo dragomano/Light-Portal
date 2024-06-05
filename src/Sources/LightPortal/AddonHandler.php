@@ -15,6 +15,7 @@
 namespace Bugo\LightPortal;
 
 use Bugo\Compat\{Lang, Theme, User, Utils, WebFetchApi};
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\{Language, Str};
 use MatthiasMullie\Minify\{CSS, JS};
@@ -76,8 +77,10 @@ final class AddonHandler
 		return array_map(static fn($item): string => basename($item), $dirs);
 	}
 
-	public function run(string $hook = 'init', array $vars = [], array $plugins = []): void
+	public function run(PortalHook|string $hook = 'init', array $vars = [], array $plugins = []): void
 	{
+		$hook = is_string($hook) ? $hook : $hook->name;
+
 		$addons = $plugins ?: Utils::$context['lp_enabled_plugins'] ?? [];
 
 		if (empty($addons) || isset(Utils::$context['uninstalling']))
@@ -120,7 +123,7 @@ final class AddonHandler
 
 	private function prepareAssets(array $assets = []): void
 	{
-		$this->run('prepareAssets', [&$assets]);
+		$this->run(PortalHook::prepareAssets, [&$assets]);
 
 		foreach (['css', 'scripts', 'images'] as $type) {
 			if (! isset($assets[$type]))

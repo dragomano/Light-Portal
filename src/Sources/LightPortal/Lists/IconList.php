@@ -16,6 +16,7 @@ namespace Bugo\LightPortal\Lists;
 
 use Bugo\FontAwesome\Enums\Icon;
 use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Enums\PortalHook;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -105,7 +106,7 @@ final class IconList implements ListInterface
 		$set['big_image'] = 'fa-regular fa-image fa-5x';
 
 		// Plugin authors can extend the icon set
-		AddonHandler::getInstance()->run('changeIconSet', [&$set]);
+		AddonHandler::getInstance()->run(PortalHook::changeIconSet, [&$set]);
 
 		return array_map(fn($icon): string => \Bugo\LightPortal\Utils\Icon::parse($icon), $set);
 	}

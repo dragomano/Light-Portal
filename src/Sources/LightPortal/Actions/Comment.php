@@ -16,7 +16,7 @@ namespace Bugo\LightPortal\Actions;
 
 use Bugo\Compat\{Config, PageIndex, User, Utils};
 use Bugo\LightPortal\AddonHandler;
-use Bugo\LightPortal\Enums\VarType;
+use Bugo\LightPortal\Enums\{PortalHook, VarType};
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Repositories\CommentRepository;
 use Bugo\LightPortal\Utils\{Avatar, DateTime, Notify, Setting};
@@ -68,7 +68,7 @@ final class Comment implements ActionInterface
 			$comment['authorial']     = Utils::$context['lp_page']['author_id'] === $comment['poster']['id'];
 			$comment['extra_buttons'] = [];
 
-			AddonHandler::getInstance()->run('commentButtons', [$comment, &$comment['extra_buttons']]);
+			AddonHandler::getInstance()->run(PortalHook::commentButtons, [$comment, &$comment['extra_buttons']]);
 
 			return $comment;
 		}, $comments);

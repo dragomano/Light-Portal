@@ -19,6 +19,7 @@ use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Areas\Configs\{BasicConfig, ExtraConfig, FeedbackConfig, MiscConfig, PanelConfig};
 use Bugo\LightPortal\Areas\Exports\{BlockExport, CategoryExport, PageExport, PluginExport, TagExport};
 use Bugo\LightPortal\Areas\Imports\{BlockImport, CategoryImport, PageImport, PluginImport, TagImport};
+use Bugo\LightPortal\Enums\{Hook, PortalHook};
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Utils\Icon;
 
@@ -31,8 +32,8 @@ final class ConfigArea
 
 	public function __invoke(): void
 	{
-		$this->applyHook('admin_areas');
-		$this->applyHook('helpadmin');
+		$this->applyHook(Hook::adminAreas);
+		$this->applyHook(Hook::helpadmin);
 	}
 
 	public function adminAreas(array &$areas): void
@@ -175,7 +176,7 @@ final class ConfigArea
 			}
 		}
 
-		AddonHandler::getInstance()->run('updateAdminAreas', [&$areas['lp_portal']['areas']]);
+		AddonHandler::getInstance()->run(PortalHook::updateAdminAreas, [&$areas['lp_portal']['areas']]);
 	}
 
 	/**
@@ -262,7 +263,7 @@ final class ConfigArea
 			'import' => [new BlockImport(), 'main'],
 		];
 
-		AddonHandler::getInstance()->run('updateBlockAreas', [&$areas]);
+		AddonHandler::getInstance()->run(PortalHook::updateBlockAreas, [&$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -279,7 +280,7 @@ final class ConfigArea
 			'import' => [new PageImport(), 'main'],
 		];
 
-		AddonHandler::getInstance()->run('updatePageAreas', [&$areas]);
+		AddonHandler::getInstance()->run(PortalHook::updatePageAreas, [&$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -296,7 +297,7 @@ final class ConfigArea
 			'import' => [new CategoryImport(), 'main'],
 		];
 
-		AddonHandler::getInstance()->run('updateCategoryAreas', [&$areas]);
+		AddonHandler::getInstance()->run(PortalHook::updateCategoryAreas, [&$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -313,7 +314,7 @@ final class ConfigArea
 			'import' => [new TagImport(), 'main'],
 		];
 
-		AddonHandler::getInstance()->run('updateTagsAreas', [&$areas]);
+		AddonHandler::getInstance()->run(PortalHook::updateTagAreas, [&$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -331,7 +332,7 @@ final class ConfigArea
 			$areas['import'] = [new PluginImport(), 'main'];
 		}
 
-		AddonHandler::getInstance()->run('updatePluginAreas', [&$areas]);
+		AddonHandler::getInstance()->run(PortalHook::updatePluginAreas, [&$areas]);
 
 		$this->callActionFromAreas($areas);
 	}

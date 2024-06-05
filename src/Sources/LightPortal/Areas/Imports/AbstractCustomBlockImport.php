@@ -15,6 +15,7 @@ namespace Bugo\LightPortal\Areas\Imports;
 
 use Bugo\Compat\Config;
 use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Enums\PortalHook;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -25,7 +26,7 @@ abstract class AbstractCustomBlockImport extends AbstractCustomImport
 
 	protected function importItems(array &$items, array &$titles): array
 	{
-		AddonHandler::getInstance()->run('importBlocks', [&$items, &$titles]);
+		AddonHandler::getInstance()->run(PortalHook::importBlocks, [&$items, &$titles]);
 
 		foreach ($items as $id => $item) {
 			$titles[] = [

@@ -16,6 +16,7 @@ namespace Bugo\LightPortal\Areas\Validators;
 
 use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
 
 if (! defined('SMF'))
@@ -54,7 +55,7 @@ class BlockValidator extends AbstractValidator
 
 			$data = filter_input_array(INPUT_POST, $this->args);
 
-			AddonHandler::getInstance()->run('validateBlockParams', [&$params]);
+			AddonHandler::getInstance()->run(PortalHook::validateBlockParams, [&$params]);
 
 			$params = array_merge($this->params, $params);
 
@@ -82,7 +83,7 @@ class BlockValidator extends AbstractValidator
 			$errors[] = 'no_valid_areas';
 		}
 
-		AddonHandler::getInstance()->run('findBlockErrors', [&$errors, $data]);
+		AddonHandler::getInstance()->run(PortalHook::findBlockErrors, [&$errors, $data]);
 
 		if ($errors) {
 			$this->request()->put('preview', true);

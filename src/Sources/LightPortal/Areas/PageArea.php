@@ -21,7 +21,7 @@ use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, Te
 use Bugo\LightPortal\Areas\Partials\{CategorySelect, PageAuthorSelect, PageIconSelect};
 use Bugo\LightPortal\Areas\Partials\{PermissionSelect, StatusSelect, TagSelect};
 use Bugo\LightPortal\Areas\Validators\PageValidator;
-use Bugo\LightPortal\Enums\{Status, Tab};
+use Bugo\LightPortal\Enums\{PortalHook, Status, Tab};
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Models\PageModel;
 use Bugo\LightPortal\Repositories\PageRepository;
@@ -588,7 +588,7 @@ final class PageArea
 
 		$params = [];
 
-		AddonHandler::getInstance()->run('preparePageParams', [&$params]);
+		AddonHandler::getInstance()->run(PortalHook::preparePageParams, [&$params]);
 
 		return array_merge($baseParams, $params);
 	}
@@ -727,14 +727,14 @@ final class PageArea
 				->setValue(Utils::$context['lp_page']['options']['allow_comments']);
 		}
 
-		AddonHandler::getInstance()->run('preparePageFields');
+		AddonHandler::getInstance()->run(PortalHook::preparePageFields);
 
 		$this->preparePostFields();
 	}
 
 	private function prepareEditor(): void
 	{
-		AddonHandler::getInstance()->run('prepareEditor', [Utils::$context['lp_page']]);
+		AddonHandler::getInstance()->run(PortalHook::prepareEditor, [Utils::$context['lp_page']]);
 	}
 
 	private function preparePreview(): void

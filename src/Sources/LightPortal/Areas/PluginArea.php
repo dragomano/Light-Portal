@@ -19,7 +19,7 @@ namespace Bugo\LightPortal\Areas;
 use Bugo\Compat\{Config, Lang, Theme};
 use Bugo\Compat\{User, Utils, WebFetchApi};
 use Bugo\LightPortal\AddonHandler;
-use Bugo\LightPortal\Enums\VarType;
+use Bugo\LightPortal\Enums\{PortalHook, VarType};
 use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\{Icon, Language, Str};
@@ -75,7 +75,7 @@ final class PluginArea
 		$settings = [];
 
 		// You can add settings for your plugins
-		AddonHandler::getInstance()->run('addSettings', [&$settings], Utils::$context['lp_plugins']);
+		AddonHandler::getInstance()->run(PortalHook::addSettings, [&$settings], Utils::$context['lp_plugins']);
 
 		$this->handleSave($settings);
 
@@ -152,7 +152,7 @@ final class PluginArea
 		}
 
 		// You can do additional actions after settings saving
-		AddonHandler::getInstance()->run('saveSettings', [&$settings], Utils::$context['lp_plugins']);
+		AddonHandler::getInstance()->run(PortalHook::saveSettings, [&$settings], Utils::$context['lp_plugins']);
 
 		$this->repository->changeSettings($name, $settings);
 

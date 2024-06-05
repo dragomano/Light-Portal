@@ -16,7 +16,7 @@ namespace Bugo\LightPortal\Articles;
 
 use Bugo\Compat\{BBCodeParser, Config, Db, Lang, User, Utils};
 use Bugo\LightPortal\AddonHandler;
-use Bugo\LightPortal\Enums\{Permission, Status};
+use Bugo\LightPortal\Enums\{Permission, PortalHook, Status};
 use Bugo\LightPortal\Utils\{Avatar, Content, Icon, Setting, Str};
 
 if (! defined('SMF'))
@@ -55,7 +55,7 @@ class PageArticle extends AbstractArticle
 			'date DESC',
 		];
 
-		AddonHandler::getInstance()->run('frontPages', [
+		AddonHandler::getInstance()->run(PortalHook::frontPages, [
 			&$this->columns, &$this->tables, &$this->params, &$this->wheres, &$this->orders
 		]);
 	}
@@ -125,7 +125,7 @@ class PageArticle extends AbstractArticle
 
 			$this->prepareTeaser($pages, $row);
 
-			AddonHandler::getInstance()->run('frontPagesOutput', [&$pages, $row]);
+			AddonHandler::getInstance()->run(PortalHook::frontPagesOutput, [&$pages, $row]);
 		}
 
 		Db::$db->free_result($result);
