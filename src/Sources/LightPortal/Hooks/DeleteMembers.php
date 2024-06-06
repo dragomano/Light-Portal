@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * DeleteMembers.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>

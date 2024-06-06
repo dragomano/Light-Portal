@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * IconList.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -26,11 +24,6 @@ final class IconList implements ListInterface
 	private string $prefix = 'fa-solid fa-';
 
 	public function __invoke(): array
-	{
-		return $this->getAll();
-	}
-
-	public function getAll(): array
 	{
 		$set = [
 			'access'        => 'universal-access',

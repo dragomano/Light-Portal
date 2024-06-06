@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * ListInterface.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -16,5 +14,5 @@ namespace Bugo\LightPortal\Lists;
 
 interface ListInterface
 {
-	public function getAll(): array;
+	public function __invoke(): array;
 }

@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * AddonHandler.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -36,6 +34,9 @@ use function is_file;
 use function method_exists;
 use function mkdir;
 use function ucfirst;
+
+use const GLOB_ONLYDIR;
+use const LP_ADDON_DIR;
 
 if (! defined('SMF'))
 	die('No direct access...');

@@ -3,8 +3,6 @@
 declare(strict_types=1);
 
 /**
- * PluginList.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -24,11 +22,6 @@ if (! defined('SMF'))
 final class PluginList implements ListInterface
 {
 	public function __invoke(): array
-	{
-		return $this->getAll();
-	}
-
-	public function getAll(): array
 	{
 		return AddonHandler::getInstance()->getAll();
 	}

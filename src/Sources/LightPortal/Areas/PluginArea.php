@@ -3,8 +3,6 @@
 declare(strict_types=1);
 
 /**
- * PluginArea.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>

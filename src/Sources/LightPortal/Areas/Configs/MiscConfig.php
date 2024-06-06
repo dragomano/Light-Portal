@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * MiscConfigArea
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -14,7 +12,7 @@
 
 namespace Bugo\LightPortal\Areas\Configs;
 
-use Bugo\Compat\{ACP, Config, Db};
+use Bugo\Compat\{Actions\ACP, Config, Db};
 use Bugo\Compat\{Lang, User, Utils};
 use Bugo\LightPortal\Tasks\Maintainer;
 use Bugo\LightPortal\Utils\RequestTrait;

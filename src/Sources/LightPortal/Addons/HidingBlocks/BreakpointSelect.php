@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * BreakpointSelect.php
- *
  * @package HidingBlocks (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>

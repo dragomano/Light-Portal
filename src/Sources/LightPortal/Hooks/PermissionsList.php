@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * PermissionsList.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -14,7 +12,7 @@
 
 namespace Bugo\LightPortal\Hooks;
 
-use Bugo\Compat\Permissions;
+use Bugo\Compat\Actions\Permissions;
 use Bugo\Compat\Lang;
 
 use const LP_NAME;

@@ -1,10 +1,6 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 /**
- * PageRepository.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -21,7 +17,8 @@ use Bugo\Compat\{Msg, Security, User, Utils};
 use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Enums\{Permission, PortalHook, Status};
 use Bugo\LightPortal\Utils\{CacheTrait, Content, DateTime};
-use Bugo\LightPortal\Utils\{EntityDataTrait, Icon, Notify, Setting, Str};
+use Bugo\LightPortal\Utils\{EntityDataTrait, Icon, Notify};
+use Bugo\LightPortal\Utils\{RequestTrait, Setting, Str};
 use IntlException;
 use Nette\Utils\Html;
 
@@ -40,6 +37,9 @@ use function str_contains;
 use function strtotime;
 use function time;
 
+use const LP_BASE_URL;
+use const LP_PAGE_URL;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -47,6 +47,7 @@ final class PageRepository extends AbstractRepository
 {
 	use CacheTrait;
 	use EntityDataTrait;
+	use RequestTrait;
 
 	protected string $entity = 'page';
 

@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * TitleList.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -22,11 +20,6 @@ if (! defined('SMF'))
 final class TitleList implements ListInterface
 {
 	public function __invoke(): array
-	{
-		return $this->getAll();
-	}
-
-	public function getAll(): array
 	{
 		$result = Db::$db->query('', '
 			SELECT item_id, lang, value

@@ -1,10 +1,11 @@
 <?php
 
+use Bugo\LightPortal\Compilers\CompilerInterface;
 use Bugo\LightPortal\Compilers\Zero;
 use Laminas\ConfigAggregator\ConfigAggregator;
 
 return [
 	'debug' => false,
-	'compiler' => Zero::class,
+	CompilerInterface::class => Zero::class,
 	ConfigAggregator::ENABLE_CACHE => true,
 ];

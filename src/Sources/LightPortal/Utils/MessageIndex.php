@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * MessageIndex.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -14,7 +12,7 @@
 
 namespace Bugo\LightPortal\Utils;
 
-use Bugo\Compat\{Config, MessageIndex as BaseMessageIndex};
+use Bugo\Compat\{Config, Actions\MessageIndex as BaseMessageIndex};
 
 use function array_merge;
 

@@ -288,7 +288,7 @@ function template_block_post(): void
 	</form>
 	<script>
 		const block = new Block();
-		const tabs = new Tabs(".lp_tabs");
+		const tabs = new PortalTabs();
 	</script>';
 }
 

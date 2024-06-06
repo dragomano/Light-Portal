@@ -1,6 +1,6 @@
 <?php
 
-use Bugo\Compat\{Config, Theme, Utils};
+use Bugo\Compat\{Theme, Utils};
 
 function template_manage_plugins(): void
 {
@@ -9,7 +9,7 @@ function template_manage_plugins(): void
 	<canvas id="addon_chart"></canvas>';
 	}
 
-	echo '
+	echo /** @lang text */ '
 	<div id="vue_plugins"></div>
 	<script>
 		const vueGlobals = ', Utils::$context['lp_json'], ';

@@ -24,11 +24,6 @@ final class TagList implements ListInterface
 {
 	public function __invoke(): array
 	{
-		return $this->getAll();
-	}
-
-	public function getAll(): array
-	{
 		$result = Db::$db->query('', /** @lang text */ '
 			SELECT tag.tag_id, tag.icon, COALESCE(t.value, tf.value) AS title
 			FROM {db_prefix}lp_tags AS tag

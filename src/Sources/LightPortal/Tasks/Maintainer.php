@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * Maintainer.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -14,7 +12,12 @@
 
 namespace Bugo\LightPortal\Tasks;
 
-use Bugo\Compat\Db;
+use Bugo\Compat\{Tasks\BackgroundTask, Db};
+
+use function array_keys;
+use function array_map;
+use function ini_set;
+use function time;
 
 final class Maintainer extends BackgroundTask
 {

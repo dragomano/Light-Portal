@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * LoadTheme.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -57,7 +55,7 @@ class LoadTheme
 
 		$this->defineVars();
 
-		$this->loadAssets(new $this->config['compiler']);
+		$this->loadAssets(new $this->config[CompilerInterface::class]);
 
 		// Run all init methods for plugins
 		AddonHandler::getInstance()->run();

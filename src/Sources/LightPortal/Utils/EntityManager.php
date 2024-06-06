@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * EntityManager.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -31,7 +29,7 @@ final class EntityManager
 			'tag'      => $this->cache('all_tags')->setFallback(Lists\TagList::class),
 			'title'    => $this->cache('all_titles')->setFallback(Lists\TitleList::class),
 			'icon'     => $this->cache('all_icons')->setFallback(Lists\IconList::class),
-			'plugin'   => (new Lists\PluginList())->getAll(),
+			'plugin'   => (new Lists\PluginList())(),
 			default    => [],
 		};
 	}

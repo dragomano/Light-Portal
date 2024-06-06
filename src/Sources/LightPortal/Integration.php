@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * Integration.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -18,6 +16,8 @@ use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Utils\SMFHookTrait;
 
 use function str_starts_with;
+
+use const SMF_VERSION;
 
 if (! defined('SMF'))
 	die('No direct access...');

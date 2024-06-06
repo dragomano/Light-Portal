@@ -1,8 +1,6 @@
 <?php
 
 /**
- * TopPages.php
- *
  * @package TopPages (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 02.06.24
+ * @version 06.06.24
  */
 
 namespace Bugo\LightPortal\Addons\TopPages;
@@ -20,6 +18,10 @@ use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, NumberField, RadioField};
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Utils\{Setting, Str};
+
+use function array_combine;
+use function array_key_first;
+use function time;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

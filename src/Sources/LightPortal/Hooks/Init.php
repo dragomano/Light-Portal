@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * Init.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -33,7 +31,6 @@ class Init
 		define('LP_NAME', 'Light Portal');
 		define('LP_VERSION', '2.7 dev');
 		define('LP_PLUGIN_LIST', 'https://d8d75ea98b25aa12.mokky.dev/addons');
-		define('LP_ADDON_URL', Config::$boardurl . '/Sources/LightPortal/Addons');
 		define('LP_ADDON_DIR', dirname(__DIR__) . '/Addons');
 		define('LP_CACHE_TIME', (int) (Config::$modSettings['lp_cache_interval'] ?? 72000));
 		define('LP_ACTION', Config::$modSettings['lp_portal_action'] ?? 'portal');

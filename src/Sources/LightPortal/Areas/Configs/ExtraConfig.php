@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * ExtraConfig.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -14,7 +12,7 @@
 
 namespace Bugo\LightPortal\Areas\Configs;
 
-use Bugo\Compat\{ACP, Config, Lang, Theme, User, Utils};
+use Bugo\Compat\{Actions\ACP, Config, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Enums\VarType;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\RequestTrait;

@@ -1,8 +1,6 @@
 <?php
 
 /**
- * Handler.php
- *
  * @package PluginMaker (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -21,8 +19,7 @@ use Bugo\LightPortal\Areas\Fields\{CheckboxField, ColorField, CustomField, Numbe
 use Bugo\LightPortal\Areas\Fields\{RadioField, RangeField, SelectField, TextField, UrlField};
 use Bugo\LightPortal\Areas\Partials\IconSelect;
 use Bugo\LightPortal\Areas\Traits\AreaTrait;
-use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Enums\{PluginType, Tab};
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\{Language, Str};
 use Nette\PhpGenerator\{PhpFile, PhpNamespace, Printer};
