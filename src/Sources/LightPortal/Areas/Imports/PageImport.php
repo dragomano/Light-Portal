@@ -16,6 +16,9 @@ use Bugo\Compat\{Config, ErrorHandler};
 use Bugo\Compat\{Lang, Theme, User, Utils};
 use Bugo\LightPortal\Areas\Imports\Traits\WithCommentsTrait;
 
+use function intval;
+use function str_replace;
+
 use const LP_NAME;
 
 if (! defined('SMF'))

@@ -15,6 +15,17 @@ namespace Bugo\LightPortal\Areas\Exports;
 use Bugo\Compat\Sapi;
 use Closure;
 
+use function basename;
+use function fclose;
+use function feof;
+use function filesize;
+use function fopen;
+use function fread;
+use function header;
+use function header_remove;
+use function ob_end_clean;
+use function unlink;
+
 if (! defined('SMF'))
 	die('No direct access...');
 

@@ -18,6 +18,9 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Utils\CacheTrait;
 
+use function count;
+use function sprintf;
+
 trait UseTransactionsTrait
 {
 	use CacheTrait;

@@ -14,6 +14,8 @@ namespace Bugo\LightPortal\Articles;
 
 use Bugo\Compat\Config;
 
+use function explode;
+
 if (! defined('SMF'))
 	die('No direct access...');
 

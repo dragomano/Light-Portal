@@ -18,6 +18,10 @@ use Bugo\LightPortal\Tasks\Maintainer;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionTrait;
 
+use const LP_ACTION;
+use const LP_CACHE_TIME;
+use const LP_PAGE_PARAM;
+
 if (! defined('SMF'))
 	die('No direct access...');
 

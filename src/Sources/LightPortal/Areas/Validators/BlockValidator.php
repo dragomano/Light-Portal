@@ -18,6 +18,11 @@ use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
 use Bugo\LightPortal\Utils\RequestTrait;
 
+use function array_keys;
+use function array_merge;
+use function filter_input_array;
+use function filter_var_array;
+
 if (! defined('SMF'))
 	die('No direct access...');
 

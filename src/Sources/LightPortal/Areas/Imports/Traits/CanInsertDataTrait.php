@@ -14,6 +14,10 @@ namespace Bugo\LightPortal\Areas\Imports\Traits;
 
 use Bugo\Compat\Db;
 
+use function array_chunk;
+use function array_merge;
+use function sizeof;
+
 trait CanInsertDataTrait
 {
 	protected function insertData(

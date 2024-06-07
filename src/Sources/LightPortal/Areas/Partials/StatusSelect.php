@@ -14,6 +14,8 @@ namespace Bugo\LightPortal\Areas\Partials;
 
 use Bugo\Compat\{Lang, Utils};
 
+use function json_encode;
+
 final class StatusSelect extends AbstractPartial
 {
 	public function __invoke(): string

@@ -17,6 +17,10 @@ use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Utils\{Avatar, Setting, Str};
 use Bugo\LightPortal\Enums\PortalHook;
 
+use function explode;
+use function implode;
+use function preg_replace;
+
 if (! defined('SMF'))
 	die('No direct access...');
 

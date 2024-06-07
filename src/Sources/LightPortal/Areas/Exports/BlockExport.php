@@ -19,6 +19,10 @@ use Bugo\LightPortal\Repositories\BlockRepository;
 use DomDocument;
 use DOMException;
 
+use function array_filter;
+use function array_map;
+use function in_array;
+
 use const LP_NAME;
 
 if (! defined('SMF'))
@@ -92,11 +96,13 @@ final class BlockExport extends AbstractExport
 				'content_class' => $row['content_class'],
 			];
 
-			if ($row['lang'] && $row['title'])
+			if ($row['lang'] && $row['title']) {
 				$items[$row['block_id']]['titles'][$row['lang']] = $row['title'];
+			}
 
-			if ($row['name'] && $row['value'])
+			if ($row['name'] && $row['value']) {
 				$items[$row['block_id']]['params'][$row['name']] = $row['value'];
+			}
 		}
 
 		Db::$db->free_result($result);

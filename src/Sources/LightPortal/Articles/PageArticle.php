@@ -18,6 +18,14 @@ use Bugo\LightPortal\Enums\{Permission, PortalHook, Status};
 use Bugo\LightPortal\Utils\{Avatar, Content, EntityDataTrait};
 use Bugo\LightPortal\Utils\{Icon, Setting, Str};
 
+use function array_keys;
+use function explode;
+use function implode;
+use function time;
+
+use const LP_BASE_URL;
+use const LP_PAGE_URL;
+
 if (! defined('SMF'))
 	die('No direct access...');
 

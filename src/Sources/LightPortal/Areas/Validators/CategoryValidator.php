@@ -15,6 +15,8 @@ namespace Bugo\LightPortal\Areas\Validators;
 use Bugo\Compat\{Config, Lang, Utils};
 use Bugo\LightPortal\Utils\RequestTrait;
 
+use function filter_input_array;
+
 if (! defined('SMF'))
 	die('No direct access...');
 

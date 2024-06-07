@@ -15,6 +15,8 @@ namespace Bugo\LightPortal\Enums;
 use Bugo\Compat\Lang;
 use Bugo\LightPortal\Enums\Traits\HasNamesTrait;
 
+use function array_combine;
+
 enum Placement
 {
 	use HasNamesTrait;

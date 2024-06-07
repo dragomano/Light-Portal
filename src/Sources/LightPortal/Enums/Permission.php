@@ -15,6 +15,9 @@ namespace Bugo\LightPortal\Enums;
 use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\Traits\HasValuesTrait;
 
+use function array_filter;
+use function is_int;
+
 enum Permission: int
 {
 	use HasValuesTrait;

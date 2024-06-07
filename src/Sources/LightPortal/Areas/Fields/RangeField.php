@@ -13,6 +13,7 @@
 namespace Bugo\LightPortal\Areas\Fields;
 
 use Bugo\Compat\Utils;
+use Nette\Utils\Html;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -23,24 +24,28 @@ class RangeField extends CustomField
 	{
 		parent::build();
 
-		$attrs = '';
-
-		if (isset($this->attributes['min'])) {
-			$attrs .= ' min="' . $this->attributes['min'] . '"';
-		}
-
-		if (isset($this->attributes['max'])) {
-			$attrs .= ' max="' . $this->attributes['max'] . '"';
-		}
-
-		if (isset($this->attributes['step'])) {
-			$attrs .= ' step="' . $this->attributes['step'] . '"';
-		}
-
-		Utils::$context['posting_fields'][$this->name]['input']['html'] = '
-			<div x-data="{ \'' . $this->name . '\': ' . $this->attributes['value'] . ' }">
-				<input type="range" id="' . $this->name . '" name="' . $this->name . '" x-model="' . $this->name . '"' . $attrs . '>
-				<span class="progress_bar amt" x-text="' . $this->name . '"></span>
-			</div>';
+		Utils::$context['posting_fields'][$this->name]['input']['html'] = Html::el('div', [
+			'x-data' => "{ '$this->name' : {$this->attributes['value']} }",
+		])
+			->addHtml(
+				Html::el('input', [
+					'type'    => 'range',
+					'id'      => $this->name,
+					'name'    => $this->name,
+					'x-model' => $this->name,
+				])
+					->setAttribute('min', $this->attributes['min'] ?? null)
+					->setAttribute('max', $this->attributes['max'] ?? null)
+					->setAttribute('step', $this->attributes['step'] ?? null)
+					->toHtml()
+			)
+			->addHtml(
+				Html::el('span', [
+					'class'  => 'progress_bar amt',
+					'x-text' => $this->name,
+				])
+					->toHtml()
+			)
+			->toHtml();
 	}
 }

@@ -15,6 +15,9 @@ namespace Bugo\LightPortal\Areas\Partials;
 use Bugo\Compat\{Config, Lang, Utils};
 use Bugo\LightPortal\Utils\MessageIndex;
 
+use function func_get_args;
+use function json_encode;
+
 final class BoardSelect extends AbstractPartial
 {
 	public function __invoke(): string

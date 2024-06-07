@@ -18,6 +18,8 @@ use ScssPhp\ScssPhp\Compiler;
 use ScssPhp\ScssPhp\Exception\SassException;
 use ScssPhp\ScssPhp\OutputStyle;
 
+use function file_put_contents;
+
 final class Sass extends AbstractCompiler
 {
 	public const SOURCE_FILE = '/sass/portal.scss';

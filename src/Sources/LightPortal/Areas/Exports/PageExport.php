@@ -21,6 +21,9 @@ use DomDocument;
 use DOMException;
 use Nette\Utils\Html;
 
+use function in_array;
+use function trim;
+
 use const LP_NAME;
 
 if (! defined('SMF'))

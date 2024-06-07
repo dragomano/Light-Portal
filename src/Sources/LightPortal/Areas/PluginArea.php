@@ -24,6 +24,25 @@ use Bugo\LightPortal\Utils\{Language, RequestTrait, Str};
 use ReflectionClass;
 use ReflectionException;
 
+use function array_filter;
+use function array_flip;
+use function array_intersect;
+use function array_keys;
+use function array_map;
+use function array_search;
+use function array_unique;
+use function dirname;
+use function explode;
+use function implode;
+use function in_array;
+use function is_file;
+use function json_encode;
+use function ksort;
+use function ltrim;
+use function sort;
+use function sprintf;
+use function touch;
+
 use const LP_NAME;
 
 if (! defined('SMF'))
@@ -80,11 +99,8 @@ final class PluginArea
 		AddonHandler::getInstance()->run(PortalHook::addSettings, [&$settings], Utils::$context['lp_plugins']);
 
 		$this->handleSave($settings);
-
 		$this->prepareAddonList($settings);
-
 		$this->prepareAddonChart();
-
 		$this->prepareJsonData();
 	}
 

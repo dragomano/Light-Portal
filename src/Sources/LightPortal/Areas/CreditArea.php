@@ -18,7 +18,11 @@ use Bugo\LightPortal\Enums\{Hook, PortalHook};
 use Bugo\LightPortal\Utils\SMFHookTrait;
 use Nette\Utils\Html;
 
+use function date;
+use function shuffle;
+
 use const LP_NAME;
+use const LP_VERSION;
 
 if (! defined('SMF'))
 	die('No direct access...');

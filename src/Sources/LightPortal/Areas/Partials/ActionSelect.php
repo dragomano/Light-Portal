@@ -14,6 +14,11 @@ namespace Bugo\LightPortal\Areas\Partials;
 
 use Bugo\Compat\{Config, Lang, Utils};
 
+use function explode;
+use function func_get_args;
+use function implode;
+use function json_encode;
+
 final class ActionSelect extends AbstractPartial
 {
 	public function __invoke(): string

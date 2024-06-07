@@ -15,6 +15,9 @@ namespace Bugo\LightPortal\Areas\Partials;
 use Bugo\Compat\{Config, Lang, Utils};
 use Bugo\LightPortal\Utils\EntityDataTrait;
 
+use function func_get_args;
+use function json_encode;
+
 final class PageSlugSelect extends AbstractPartial
 {
 	use EntityDataTrait;

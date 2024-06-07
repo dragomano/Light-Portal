@@ -15,6 +15,10 @@ namespace Bugo\LightPortal\Areas\Fields;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Tab;
 
+use function is_callable;
+use function is_object;
+use function is_string;
+
 if (! defined('SMF'))
 	die('No direct access...');
 

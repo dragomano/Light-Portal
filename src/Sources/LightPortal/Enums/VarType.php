@@ -12,6 +12,8 @@
 
 namespace Bugo\LightPortal\Enums;
 
+use function filter_var;
+
 enum VarType
 {
 	case STRING;

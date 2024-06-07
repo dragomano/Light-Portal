@@ -12,6 +12,10 @@
 
 namespace Bugo\LightPortal\Enums\Traits;
 
+use function array_combine;
+use function array_map;
+use function sprintf;
+
 trait HasHtmlTrait
 {
 	public static function values(): array

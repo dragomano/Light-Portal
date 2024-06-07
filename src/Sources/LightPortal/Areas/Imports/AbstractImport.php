@@ -19,6 +19,9 @@ use Bugo\LightPortal\Areas\Imports\Traits\WithTitlesTrait;
 use Bugo\LightPortal\Utils\RequestTrait;
 use SimpleXMLElement;
 
+use function ini_get;
+use function simplexml_load_file;
+
 if (! defined('SMF'))
 	die('No direct access...');
 

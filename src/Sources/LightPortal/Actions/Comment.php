@@ -19,6 +19,16 @@ use Bugo\LightPortal\Repositories\CommentRepository;
 use Bugo\LightPortal\Utils\{Avatar, CacheTrait, DateTime, Notify, RequestTrait, Setting};
 use IntlException;
 
+use function array_map;
+use function array_slice;
+use function count;
+use function date;
+use function http_response_code;
+use function json_encode;
+use function trim;
+
+use const LP_BASE_URL;
+
 if (! defined('SMF'))
 	die('No direct access...');
 

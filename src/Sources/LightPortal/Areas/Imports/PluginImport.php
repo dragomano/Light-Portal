@@ -16,6 +16,10 @@ use Bugo\Compat\{Config, ErrorHandler, Lang, Theme, Utils};
 use Exception;
 use ZipArchive;
 
+use function explode;
+use function pathinfo;
+use function str_contains;
+
 use const LP_NAME;
 
 if (! defined('SMF'))

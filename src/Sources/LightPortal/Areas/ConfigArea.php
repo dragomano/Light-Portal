@@ -20,6 +20,16 @@ use Bugo\LightPortal\Areas\Imports\{BlockImport, CategoryImport, PageImport, Plu
 use Bugo\LightPortal\Enums\{Hook, PortalHook};
 use Bugo\LightPortal\Utils\{CacheTrait, Icon, RequestTrait, SafeRequireTrait, SMFHookTrait};
 
+use function array_keys;
+use function array_merge;
+use function array_search;
+use function array_slice;
+use function call_user_func;
+use function count;
+use function extension_loaded;
+use function phpversion;
+use function str_contains;
+
 use const LP_NAME;
 use const LP_VERSION;
 

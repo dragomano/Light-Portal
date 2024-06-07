@@ -16,6 +16,8 @@ use Bugo\Compat\{Actions\ACP, Config, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionTrait;
 
+use function json_encode;
+
 if (! defined('SMF'))
 	die('No direct access...');
 

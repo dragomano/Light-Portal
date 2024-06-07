@@ -17,6 +17,11 @@ use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Utils\Str;
 
+use function explode;
+use function implode;
+use function trim;
+use function urlencode;
+
 if (! defined('SMF'))
 	die('No direct access...');
 

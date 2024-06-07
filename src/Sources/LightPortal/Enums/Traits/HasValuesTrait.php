@@ -12,6 +12,8 @@
 
 namespace Bugo\LightPortal\Enums\Traits;
 
+use function array_map;
+
 trait HasValuesTrait
 {
 	public static function values(): array

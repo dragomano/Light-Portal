@@ -21,6 +21,9 @@ use DomDocument;
 use DOMException;
 use Nette\Utils\Html;
 
+use function in_array;
+use function trim;
+
 use const LP_NAME;
 
 if (! defined('SMF'))
@@ -163,8 +166,9 @@ final class CategoryExport extends AbstractExport
 				'status'      => $row['status'],
 			];
 
-			if ($row['lang'] && $row['title'])
+			if ($row['lang'] && $row['title']) {
 				$items[$row['category_id']]['titles'][$row['lang']] = $row['title'];
+			}
 		}
 
 		Db::$db->free_result($result);

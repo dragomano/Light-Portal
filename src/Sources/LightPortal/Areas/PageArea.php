@@ -28,6 +28,19 @@ use Bugo\LightPortal\Utils\{Icon, ItemList, RequestTrait, Setting, Str};
 use IntlException;
 use Nette\Utils\Html;
 
+use function array_column;
+use function array_diff;
+use function array_merge;
+use function array_multisort;
+use function base64_encode;
+use function count;
+use function filter_input;
+use function implode;
+use function is_array;
+use function str_replace;
+use function time;
+use function trim;
+
 use const LP_NAME;
 
 if (! defined('SMF'))
@@ -404,11 +417,6 @@ final class PageArea
 		$this->repository->setData(Utils::$context['lp_page']['id']);
 	}
 
-	/**
-	 * Possible actions with pages
-	 *
-	 * Возможные действия со страницами
-	 */
 	private function doActions(): void
 	{
 		if ($this->request()->hasNot('actions'))
@@ -416,11 +424,10 @@ final class PageArea
 
 		$data = $this->request()->json();
 
-		if (isset($data['del_item']))
-			$this->repository->remove([(int) $data['del_item']]);
-
-		if (isset($data['toggle_item']))
-			$this->repository->toggleStatus([(int) $data['toggle_item']]);
+		match (true) {
+			isset($data['delete_item']) => $this->repository->remove([(int) $data['delete_item']]),
+			isset($data['toggle_item']) => $this->repository->toggleStatus([(int) $data['toggle_item']]),
+		};
 
 		$this->cache()->flush();
 

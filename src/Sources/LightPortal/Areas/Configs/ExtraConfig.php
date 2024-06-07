@@ -18,6 +18,8 @@ use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionTrait;
 
+use function asort;
+
 if (! defined('SMF'))
 	die('No direct access...');
 

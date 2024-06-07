@@ -16,6 +16,8 @@ use Bugo\FontAwesome\Enums\Icon;
 use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Enums\PortalHook;
 
+use function array_map;
+
 if (! defined('SMF'))
 	die('No direct access...');
 

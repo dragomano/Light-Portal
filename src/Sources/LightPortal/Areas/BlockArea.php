@@ -24,7 +24,21 @@ use Bugo\LightPortal\Models\BlockModel;
 use Bugo\LightPortal\Repositories\BlockRepository;
 use Bugo\LightPortal\Utils\{CacheTrait, Content, Icon, RequestTrait, Str};
 
+use function array_column;
+use function array_combine;
+use function array_keys;
+use function array_merge;
+use function array_multisort;
+use function in_array;
+use function is_array;
+use function json_encode;
+use function ob_get_clean;
+use function ob_start;
+use function sprintf;
+use function template_show_areas_info;
+
 use const LP_NAME;
+use const LP_PAGE_PARAM;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -148,17 +162,12 @@ final class BlockArea
 
 		$data = $this->request()->json();
 
-		if (isset($data['del_item']))
-			$this->repository->remove([(int) $data['del_item']]);
-
-		if (isset($data['clone_block']))
-			$this->makeCopy((int) $data['clone_block']);
-
-		if (isset($data['toggle_item']))
-			$this->repository->toggleStatus([(int) $data['toggle_item']]);
-
-		if (isset($data['update_priority']))
-			$this->repository->updatePriority($data['update_priority'], $data['update_placement']);
+		match (true) {
+			isset($data['clone_block']) => $this->makeCopy((int) $data['clone_block']),
+			isset($data['delete_item']) => $this->repository->remove([(int) $data['delete_item']]),
+			isset($data['toggle_item']) => $this->repository->toggleStatus([(int) $data['toggle_item']]),
+			isset($data['update_priority']) => $this->repository->updatePriority($data['update_priority'], $data['update_placement']),
+		};
 
 		$this->cache()->flush();
 
@@ -365,6 +374,7 @@ final class BlockArea
 		Utils::$context['preview_content'] = Utils::htmlspecialchars(Utils::$context['lp_block']['content'], ENT_QUOTES);
 
 		Str::cleanBbcode(Utils::$context['preview_title']);
+
 		Lang::censorText(Utils::$context['preview_title']);
 		Lang::censorText(Utils::$context['preview_content']);
 

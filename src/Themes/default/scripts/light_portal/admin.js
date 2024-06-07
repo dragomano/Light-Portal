@@ -25,7 +25,7 @@ class PortalEntity {
     if (!item) return false;
 
     await axios.post(this.workUrl, {
-      del_item: item,
+      delete_item: item,
     });
 
     target.closest('tr').remove();

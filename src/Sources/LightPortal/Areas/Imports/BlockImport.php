@@ -15,6 +15,10 @@ namespace Bugo\LightPortal\Areas\Imports;
 use Bugo\Compat\{Config, ErrorHandler};
 use Bugo\Compat\{Lang, Theme, Utils};
 
+use function intval;
+use function str_contains;
+use function str_replace;
+
 use const LP_NAME;
 
 if (! defined('SMF'))

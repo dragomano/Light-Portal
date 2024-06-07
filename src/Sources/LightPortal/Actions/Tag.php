@@ -19,6 +19,13 @@ use Bugo\LightPortal\Utils\{Icon, ItemList, RequestTrait};
 use IntlException;
 use Nette\Utils\Html;
 
+use function array_key_exists;
+use function count;
+use function sprintf;
+use function time;
+
+use const LP_BASE_URL;
+
 if (! defined('SMF'))
 	die('No direct access...');
 

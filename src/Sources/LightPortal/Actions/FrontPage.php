@@ -25,6 +25,29 @@ use Exception;
 use IntlException;
 use Nette\Utils\Html;
 
+use function abs;
+use function array_column;
+use function array_combine;
+use function array_key_exists;
+use function array_map;
+use function array_merge;
+use function basename;
+use function call_user_func;
+use function count;
+use function date;
+use function floor;
+use function glob;
+use function is_array;
+use function number_format;
+use function ob_get_clean;
+use function ob_start;
+use function sprintf;
+use function str_replace;
+use function strstr;
+use function ucfirst;
+
+use const LP_BASE_URL;
+
 final class FrontPage implements ActionInterface
 {
 	use CacheTrait;

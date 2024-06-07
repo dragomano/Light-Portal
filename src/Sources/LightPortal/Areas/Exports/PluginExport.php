@@ -21,6 +21,10 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use ZipArchive;
 
+use function count;
+use function substr;
+use function strlen;
+
 use const LP_NAME;
 
 if (! defined('SMF'))

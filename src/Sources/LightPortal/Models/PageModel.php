@@ -14,6 +14,8 @@ namespace Bugo\LightPortal\Models;
 
 use Bugo\Compat\{Config, User, Utils};
 
+use function time;
+
 if (! defined('SMF'))
 	die('No direct access...');
 

@@ -267,11 +267,10 @@ final class TagArea
 
 		$data = $this->request()->json();
 
-		if (isset($data['del_item']))
-			$this->repository->remove([(int) $data['del_item']]);
-
-		if (isset($data['toggle_item']))
-			$this->repository->toggleStatus([(int) $data['toggle_item']]);
+		match (true) {
+			isset($data['delete_item']) => $this->repository->remove([(int) $data['delete_item']]),
+			isset($data['toggle_item']) => $this->repository->toggleStatus([(int) $data['toggle_item']]),
+		};
 
 		$this->cache()->flush();
 

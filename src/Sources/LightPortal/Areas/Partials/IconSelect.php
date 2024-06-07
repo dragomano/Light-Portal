@@ -15,6 +15,8 @@ namespace Bugo\LightPortal\Areas\Partials;
 use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\Utils\Icon;
 
+use function func_get_args;
+
 final class IconSelect extends AbstractPartial
 {
 	public function __invoke(): string

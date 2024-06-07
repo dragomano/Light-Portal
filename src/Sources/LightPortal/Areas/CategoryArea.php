@@ -24,6 +24,8 @@ use Bugo\LightPortal\Repositories\CategoryRepository;
 use Bugo\LightPortal\Utils\{CacheTrait, Icon, ItemList, RequestTrait, Str};
 use Nette\Utils\Html;
 
+use function str_replace;
+
 use const LP_NAME;
 
 if (! defined('SMF'))
@@ -286,14 +288,11 @@ final class CategoryArea
 
 		$data = $this->request()->json();
 
-		if (isset($data['del_item']))
-			$this->repository->remove([(int) $data['del_item']]);
-
-		if (isset($data['toggle_item']))
-			$this->repository->toggleStatus([(int) $data['toggle_item']]);
-
-		if (isset($data['update_priority']))
-			$this->repository->updatePriority($data['update_priority']);
+		match (true) {
+			isset($data['delete_item']) => $this->repository->remove([(int) $data['delete_item']]),
+			isset($data['toggle_item']) => $this->repository->toggleStatus([(int) $data['toggle_item']]),
+			isset($data['update_priority']) => $this->repository->updatePriority($data['update_priority']),
+		};
 
 		$this->cache()->flush();
 
@@ -347,6 +346,7 @@ final class CategoryArea
 		Utils::$context['preview_content'] = Utils::htmlspecialchars(Utils::$context['lp_category']['description'], ENT_QUOTES);
 
 		Str::cleanBbcode(Utils::$context['preview_title']);
+
 		Lang::censorText(Utils::$context['preview_title']);
 		Lang::censorText(Utils::$context['preview_content']);
 

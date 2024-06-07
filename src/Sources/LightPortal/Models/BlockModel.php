@@ -15,6 +15,8 @@ namespace Bugo\LightPortal\Models;
 use Bugo\Compat\{Config, Utils};
 use Bugo\LightPortal\Enums\Status;
 
+use function array_key_first;
+
 if (! defined('SMF'))
 	die('No direct access...');
 

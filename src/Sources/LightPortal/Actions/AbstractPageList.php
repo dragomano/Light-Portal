@@ -17,6 +17,13 @@ use Bugo\LightPortal\Utils\{Avatar, Content, DateTime};
 use Bugo\LightPortal\Utils\{EntityDataTrait, Setting, Str};
 use IntlException;
 
+use function array_pop;
+use function date;
+use function preg_match;
+
+use const LP_BASE_URL;
+use const LP_PAGE_URL;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -140,11 +147,10 @@ abstract class AbstractPageList implements PageListInterface
 
 	private function canEdit(array $row): bool
 	{
-		return User::$info['is_admin']
-			|| (
-				Utils::$context['allow_light_portal_manage_pages_own']
-				&& (int) $row['author_id'] === User::$info['id']
-			);
+		if (User::$info['is_admin'])
+			return true;
+
+		return Utils::$context['allow_light_portal_manage_pages_own'] && (int) $row['author_id'] === User::$info['id'];
 	}
 
 	private function getEditLink(array $row): string

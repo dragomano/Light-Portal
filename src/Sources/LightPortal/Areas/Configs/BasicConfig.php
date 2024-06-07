@@ -21,6 +21,10 @@ use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionTrait;
 use IntlException;
 
+use function array_combine;
+use function array_map;
+use function str_replace;
+
 if (! defined('SMF'))
 	die('No direct access...');
 

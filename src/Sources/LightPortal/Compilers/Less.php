@@ -17,6 +17,8 @@ use Exception;
 use Less_Exception_Parser;
 use Less_Parser;
 
+use function file_put_contents;
+
 final class Less extends AbstractCompiler
 {
 	public const SOURCE_FILE = '/less/portal.less';
