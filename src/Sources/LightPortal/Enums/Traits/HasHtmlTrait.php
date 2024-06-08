@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * HasHtml.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -14,7 +12,11 @@
 
 namespace Bugo\LightPortal\Enums\Traits;
 
-trait HasHtml
+use function array_combine;
+use function array_map;
+use function sprintf;
+
+trait HasHtmlTrait
 {
 	public static function values(): array
 	{

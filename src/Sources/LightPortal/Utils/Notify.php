@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * Notify.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -16,6 +14,9 @@ namespace Bugo\LightPortal\Utils;
 
 use Bugo\Compat\{Db, User, Utils};
 use Bugo\LightPortal\Tasks\Notifier;
+
+if (! defined('SMF'))
+	die('No direct access...');
 
 class Notify
 {

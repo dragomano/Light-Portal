@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * AbstractCompiler.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -14,14 +12,17 @@
 
 namespace Bugo\LightPortal\Compilers;
 
-use Bugo\Compat\Config;
-use Bugo\Compat\Sapi;
-use Bugo\Compat\Theme;
-use Bugo\LightPortal\Helper;
+use Bugo\Compat\{Config, Sapi, Theme};
+use Bugo\LightPortal\Enums\Hook;
+use Bugo\LightPortal\Utils\SMFHookTrait;
+
+use function filemtime;
+use function is_file;
+use function touch;
 
 abstract class AbstractCompiler implements CompilerInterface
 {
-	use Helper;
+	use SMFHookTrait;
 
 	public const TARGET_FILE = '/portal.css';
 
@@ -34,7 +35,7 @@ abstract class AbstractCompiler implements CompilerInterface
 		$this->sourceFile = $this->getCssDirPath() . static::SOURCE_FILE;
 		$this->targetFile = $this->getCssDirPath() . static::TARGET_FILE;
 
-		$this->applyHook('clean_cache');
+		$this->applyHook(Hook::cleanCache);
 	}
 
 	public function cleanCache(): void

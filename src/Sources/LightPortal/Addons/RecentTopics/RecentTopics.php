@@ -1,8 +1,6 @@
 <?php
 
 /**
- * RecentTopics.php
- *
  * @package RecentTopics (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.05.24
+ * @version 02.06.24
  */
 
 namespace Bugo\LightPortal\Addons\RecentTopics;
@@ -23,6 +21,7 @@ use Bugo\LightPortal\Areas\Fields\NumberField;
 use Bugo\LightPortal\Areas\Fields\RadioField;
 use Bugo\LightPortal\Areas\Partials\BoardSelect;
 use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\DateTime;
 use IntlException;
 
@@ -141,8 +140,9 @@ class RecentTopics extends Block
 			static fn(&$topic) => $topic['timestamp'] = DateTime::relative((int) $topic['timestamp'])
 		);
 
-		if ($parameters['show_avatars'] && empty($parameters['use_simple_style']))
-			$topics = $this->getItemsWithUserAvatars($topics, 'poster');
+		if ($parameters['show_avatars'] && empty($parameters['use_simple_style'])) {
+			$topics = Avatar::getWithItems($topics, 'poster');
+		}
 
 		return $topics;
 	}
@@ -152,8 +152,9 @@ class RecentTopics extends Block
 		if ($data->type !== 'recent_topics')
 			return;
 
-		if ($this->request()->has('preview'))
+		if ($this->request()->has('preview')) {
 			$parameters['update_interval'] = 0;
+		}
 
 		$parameters['show_avatars'] ??= false;
 

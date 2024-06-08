@@ -1,8 +1,6 @@
 <?php
 
 /**
- * RecentComments.php
- *
  * @package RecentComments (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.24
+ * @version 02.06.24
  */
 
 namespace Bugo\LightPortal\Addons\RecentComments;
@@ -18,7 +16,8 @@ namespace Bugo\LightPortal\Addons\RecentComments;
 use Bugo\Compat\{Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{NumberField, RangeField};
-use Bugo\LightPortal\Utils\DateTime;
+use Bugo\LightPortal\Enums\Permission;
+use Bugo\LightPortal\Utils\{DateTime, Str};
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -103,7 +102,7 @@ class RecentComments extends Block
 				'guest'        => Lang::$txt['guest_title'],
 				'status'       => 1,
 				'current_time' => time(),
-				'permissions'  => $this->getPermissions(),
+				'permissions'  => Permission::all(),
 				'limit'        => $commentsCount
 			]
 		);
@@ -114,7 +113,7 @@ class RecentComments extends Block
 
 			$comments[$row['id']] = [
 				'link'        => LP_PAGE_URL . $row['slug'] . '#comment=' . $row['id'],
-				'message'     => $this->getTeaser($row['message'], $length),
+				'message'     => Str::getTeaser($row['message'], $length),
 				'created_at'  => (int) $row['created_at'],
 				'author_name' => $row['author_name'],
 			];

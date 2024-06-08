@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * PanelConfig.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -14,13 +12,20 @@
 
 namespace Bugo\LightPortal\Areas\Configs;
 
-use Bugo\Compat\{ACP, Config, Lang, Theme, User, Utils};
+use Bugo\Compat\{Actions\ACP, Config, Lang, Theme, User, Utils};
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\SessionTrait;
+
+use function json_encode;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class PanelConfig extends AbstractConfig
 {
+	use RequestTrait;
+	use SessionTrait;
+
 	public function show(): void
 	{
 		Theme::loadTemplate('LightPortal/ManagePanels');

@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * TagArea.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -17,22 +15,24 @@ namespace Bugo\LightPortal\Areas;
 use Bugo\Compat\{Config, ErrorHandler, Lang, Security, Theme, Utils};
 use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Areas\Partials\IconSelect;
+use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Areas\Validators\TagValidator;
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Enums\{Status, Tab};
 use Bugo\LightPortal\Models\TagModel;
 use Bugo\LightPortal\Repositories\TagRepository;
-use Bugo\LightPortal\Utils\{Icon, ItemList};
+use Bugo\LightPortal\Utils\{CacheTrait, Icon, ItemList, RequestTrait, Str};
 use Nette\Utils\Html;
+
+use const LP_NAME;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class TagArea
 {
-	use Area;
-	use Helper;
+	use AreaTrait;
+	use CacheTrait;
+	use RequestTrait;
 
 	private TagRepository $repository;
 
@@ -267,11 +267,10 @@ final class TagArea
 
 		$data = $this->request()->json();
 
-		if (isset($data['del_item']))
-			$this->repository->remove([(int) $data['del_item']]);
-
-		if (isset($data['toggle_item']))
-			$this->repository->toggleStatus([(int) $data['toggle_item']], 'tag');
+		match (true) {
+			isset($data['delete_item']) => $this->repository->remove([(int) $data['delete_item']]),
+			isset($data['toggle_item']) => $this->repository->toggleStatus([(int) $data['toggle_item']]),
+		};
 
 		$this->cache()->flush();
 
@@ -290,7 +289,7 @@ final class TagArea
 			$tag->titles[$lang['filename']] = $postData['title_' . $lang['filename']] ?? $tag->titles[$lang['filename']] ?? '';
 		}
 
-		$this->cleanBbcode($tag->titles);
+		Str::cleanBbcode($tag->titles);
 
 		Utils::$context['lp_tag'] = $tag->toArray();
 	}
@@ -317,13 +316,14 @@ final class TagArea
 
 		Utils::$context['preview_title'] = Utils::$context['lp_tag']['titles'][Utils::$context['user']['language']];
 
-		$this->cleanBbcode(Utils::$context['preview_title']);
+		Str::cleanBbcode(Utils::$context['preview_title']);
+
 		Lang::censorText(Utils::$context['preview_title']);
 
 		Utils::$context['page_title']    = Lang::$txt['preview'] . (
 			Utils::$context['preview_title'] ? ' - ' . Utils::$context['preview_title'] : ''
 		);
 
-		Utils::$context['preview_title'] = $this->getIcon(Utils::$context['lp_tag']['icon']) . Utils::$context['preview_title'];
+		Utils::$context['preview_title'] = Icon::parse(Utils::$context['lp_tag']['icon']) . Utils::$context['preview_title'];
 	}
 }

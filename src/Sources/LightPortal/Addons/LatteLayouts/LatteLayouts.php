@@ -1,8 +1,6 @@
 <?php
 
 /**
- * LatteLayouts.php
- *
  * @package LatteLayouts (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>

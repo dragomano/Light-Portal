@@ -1,8 +1,6 @@
 <?php
 
 /**
- * AdsBlock.php
- *
  * @package AdsBlock (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.05.24
+ * @version 05.06.24
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
@@ -19,7 +17,7 @@ use Bugo\Compat\{Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CustomField, TextareaField, TextField};
 use Bugo\LightPortal\Areas\Partials\{BoardSelect, PageSelect, TopicSelect};
-use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Enums\{Hook, Tab};
 use Bugo\LightPortal\Utils\Content;
 
 if (! defined('LP_NAME'))
@@ -138,26 +136,29 @@ class AdsBlock extends Block
 
 		Lang::$txt['lp_post_error_no_ads_placement'] = Lang::$txt['lp_ads_block']['no_ads_placement'];
 
-		if (empty($data['parameters']['ads_placement']))
+		if (empty($data['parameters']['ads_placement'])) {
 			$errors[] = 'no_ads_placement';
+		}
 	}
 
 	public function parseContent(string &$content, string $type): void
 	{
-		if ($type === 'ads_block')
+		if ($type === 'ads_block') {
 			$content = Content::parse($content, 'html');
+		}
 	}
 
 	public function init(): void
 	{
-		if (! function_exists('lp_show_blocks'))
+		if (! function_exists('lp_show_blocks')) {
 			Theme::loadTemplate('LightPortal/ViewBlocks');
+		}
 
-		$this->applyHook('menu_buttons');
-		$this->applyHook('admin_areas');
-		$this->applyHook('messageindex_buttons');
-		$this->applyHook('display_buttons');
-		$this->applyHook('prepare_display_context');
+		$this->applyHook(Hook::menuButtons);
+		$this->applyHook(Hook::adminAreas);
+		$this->applyHook(Hook::messageindexButtons);
+		$this->applyHook(Hook::displayButtons);
+		$this->applyHook(Hook::prepareDisplayContext);
 	}
 
 	/**

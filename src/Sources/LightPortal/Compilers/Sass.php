@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * Sass.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -19,6 +17,8 @@ use Exception;
 use ScssPhp\ScssPhp\Compiler;
 use ScssPhp\ScssPhp\Exception\SassException;
 use ScssPhp\ScssPhp\OutputStyle;
+
+use function file_put_contents;
 
 final class Sass extends AbstractCompiler
 {

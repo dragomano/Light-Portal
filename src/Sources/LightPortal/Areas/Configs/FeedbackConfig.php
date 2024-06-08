@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * FeedbackConfig.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -15,12 +13,15 @@
 namespace Bugo\LightPortal\Areas\Configs;
 
 use Bugo\Compat\{Config, Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\RequestTrait;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class FeedbackConfig extends AbstractConfig
 {
+	use RequestTrait;
+
 	public function show(): void
 	{
 		Theme::loadTemplate('LightPortal/ManageFeedback');

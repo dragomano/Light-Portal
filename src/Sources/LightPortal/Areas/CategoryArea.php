@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * CategoryArea.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -18,22 +16,26 @@ use Bugo\Compat\{Config, ErrorHandler, Lang, Security, Theme, Utils};
 use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Areas\Fields\TextareaField;
 use Bugo\LightPortal\Areas\Partials\IconSelect;
+use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Areas\Validators\CategoryValidator;
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Enums\{Status, Tab};
 use Bugo\LightPortal\Models\CategoryModel;
 use Bugo\LightPortal\Repositories\CategoryRepository;
-use Bugo\LightPortal\Utils\{Icon, ItemList};
+use Bugo\LightPortal\Utils\{CacheTrait, Icon, ItemList, RequestTrait, Str};
 use Nette\Utils\Html;
+
+use function str_replace;
+
+use const LP_NAME;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class CategoryArea
 {
-	use Area;
-	use Helper;
+	use AreaTrait;
+	use CacheTrait;
+	use RequestTrait;
 
 	private CategoryRepository $repository;
 
@@ -286,14 +288,11 @@ final class CategoryArea
 
 		$data = $this->request()->json();
 
-		if (isset($data['del_item']))
-			$this->repository->remove([(int) $data['del_item']]);
-
-		if (isset($data['toggle_item']))
-			$this->repository->toggleStatus([(int) $data['toggle_item']], 'category');
-
-		if (isset($data['update_priority']))
-			$this->repository->updatePriority($data['update_priority']);
+		match (true) {
+			isset($data['delete_item']) => $this->repository->remove([(int) $data['delete_item']]),
+			isset($data['toggle_item']) => $this->repository->toggleStatus([(int) $data['toggle_item']]),
+			isset($data['update_priority']) => $this->repository->updatePriority($data['update_priority']),
+		};
 
 		$this->cache()->flush();
 
@@ -312,8 +311,8 @@ final class CategoryArea
 			$category->titles[$lang['filename']] = $postData['title_' . $lang['filename']] ?? $category->titles[$lang['filename']] ?? '';
 		}
 
-		$this->cleanBbcode($category->titles);
-		$this->cleanBbcode($category->description);
+		Str::cleanBbcode($category->titles);
+		Str::cleanBbcode($category->description);
 
 		Utils::$context['lp_category'] = $category->toArray();
 	}
@@ -346,11 +345,12 @@ final class CategoryArea
 		Utils::$context['preview_title']   = Utils::$context['lp_category']['titles'][Utils::$context['user']['language']];
 		Utils::$context['preview_content'] = Utils::htmlspecialchars(Utils::$context['lp_category']['description'], ENT_QUOTES);
 
-		$this->cleanBbcode(Utils::$context['preview_title']);
+		Str::cleanBbcode(Utils::$context['preview_title']);
+
 		Lang::censorText(Utils::$context['preview_title']);
 		Lang::censorText(Utils::$context['preview_content']);
 
 		Utils::$context['page_title']    = Lang::$txt['preview'] . (Utils::$context['preview_title'] ? ' - ' . Utils::$context['preview_title'] : '');
-		Utils::$context['preview_title'] = $this->getPreviewTitle($this->getIcon(Utils::$context['lp_category']['icon']));
+		Utils::$context['preview_title'] = $this->getPreviewTitle(Icon::parse(Utils::$context['lp_category']['icon']));
 	}
 }

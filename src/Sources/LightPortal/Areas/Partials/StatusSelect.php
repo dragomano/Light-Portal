@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * StatusSelect.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -15,6 +13,8 @@
 namespace Bugo\LightPortal\Areas\Partials;
 
 use Bugo\Compat\{Lang, Utils};
+
+use function json_encode;
 
 final class StatusSelect extends AbstractPartial
 {

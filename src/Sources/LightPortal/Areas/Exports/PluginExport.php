@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * PluginExport.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -14,18 +12,29 @@
 
 namespace Bugo\LightPortal\Areas\Exports;
 
-use Bugo\Compat\{Config, Lang, Sapi, Theme, Utils};
 use AppendIterator;
+use Bugo\Compat\{Config, Lang, Sapi, Theme, Utils};
+use Bugo\LightPortal\Utils\EntityDataTrait;
+use Bugo\LightPortal\Utils\RequestTrait;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use ZipArchive;
+
+use function count;
+use function substr;
+use function strlen;
+
+use const LP_NAME;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class PluginExport extends AbstractExport
 {
+	use EntityDataTrait;
+	use RequestTrait;
+
 	public function main(): void
 	{
 		Theme::loadTemplate('LightPortal/ManageImpex');

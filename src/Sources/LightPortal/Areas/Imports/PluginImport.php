@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * PluginImport.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -18,11 +16,19 @@ use Bugo\Compat\{Config, ErrorHandler, Lang, Theme, Utils};
 use Exception;
 use ZipArchive;
 
+use function explode;
+use function pathinfo;
+use function str_contains;
+
+use const LP_NAME;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class PluginImport extends AbstractImport
 {
+	protected string $entity = 'plugins';
+
 	public function main(): void
 	{
 		Theme::loadTemplate('LightPortal/ManageImpex');
@@ -55,6 +61,7 @@ final class PluginImport extends AbstractImport
 	protected function extractPackage(): bool
 	{
 		$file = $this->files('import_file');
+
 		if (empty($file) || $file['error'] !== UPLOAD_ERR_OK)
 			return false;
 

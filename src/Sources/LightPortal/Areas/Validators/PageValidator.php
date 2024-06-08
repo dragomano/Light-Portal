@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * PageValidator.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -15,12 +13,22 @@
 namespace Bugo\LightPortal\Areas\Validators;
 
 use Bugo\Compat\{Config, Db, Lang, Utils};
+use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Enums\VarType;
+use Bugo\LightPortal\Utils\RequestTrait;
+
+use function array_merge;
+use function explode;
+use function filter_input_array;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 class PageValidator extends AbstractValidator
 {
+	use RequestTrait;
+
 	protected array $args = [
 		'page_id'     => FILTER_VALIDATE_INT,
 		'category_id' => FILTER_VALIDATE_INT,
@@ -54,7 +62,7 @@ class PageValidator extends AbstractValidator
 				$this->args['title_' . $lang['filename']] = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
 			}
 
-			$this->hook('validatePageParams', [&$params]);
+			AddonHandler::getInstance()->run(PortalHook::validatePageParams, [&$params]);
 
 			$params = array_merge($this->params, $params);
 
@@ -83,7 +91,7 @@ class PageValidator extends AbstractValidator
 
 		if (
 			$data['slug']
-			&& empty($this->filterVar($data['slug'], [
+			&& empty(VarType::ARRAY->filter($data['slug'], [
 				'options' => ['regexp' => '/' . LP_ALIAS_PATTERN . '/']
 			]))
 		) {
@@ -96,7 +104,7 @@ class PageValidator extends AbstractValidator
 		if (empty($data['content']))
 			$errors[] = 'no_content';
 
-		$this->hook('findPageErrors', [&$errors, $data]);
+		AddonHandler::getInstance()->run(PortalHook::findPageErrors, [&$errors, $data]);
 
 		if ($errors) {
 			$this->request()->put('preview', true);

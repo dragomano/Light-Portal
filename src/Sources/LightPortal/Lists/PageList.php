@@ -35,14 +35,6 @@ final class PageList implements ListInterface
 	 */
 	public function __invoke(): array
 	{
-		return $this->getAll();
-	}
-
-	/**
-	 * @throws IntlException
-	 */
-	public function getAll(): array
-	{
 		return $this->repository->getAll(
 			0,
 			$this->repository->getTotalCount(),

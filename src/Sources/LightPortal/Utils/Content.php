@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * Content.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -16,8 +14,20 @@ namespace Bugo\LightPortal\Utils;
 
 use Bugo\Compat\{BBCodeParser, IntegrationHook, Sapi, Utils};
 use Bugo\LightPortal\AddonHandler;
-use Bugo\LightPortal\Enums\ContentType;
+use Bugo\LightPortal\Enums\{ContentType, PortalHook};
 use ParseError;
+
+use function file_put_contents;
+use function html_entity_decode;
+use function ob_get_clean;
+use function ob_start;
+use function str_replace;
+use function tempnam;
+use function trim;
+use function unlink;
+
+if (! defined('SMF'))
+	die('No direct access...');
 
 final class Content
 {
@@ -38,7 +48,7 @@ final class Content
 			) {}
 		};
 
-		AddonHandler::getInstance()->run('prepareContent', [$data, $parameters]);
+		AddonHandler::getInstance()->run(PortalHook::prepareContent, [$data, $parameters]);
 
 		return ob_get_clean();
 	}
@@ -77,7 +87,7 @@ final class Content
 			return ob_get_clean();
 		}
 
-		AddonHandler::getInstance()->run('parseContent', [&$content, $type]);
+		AddonHandler::getInstance()->run(PortalHook::parseContent, [&$content, $type]);
 
 		return $content;
 	}

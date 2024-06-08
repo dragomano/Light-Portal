@@ -1,8 +1,6 @@
 <?php
 
 /**
- * News.php
- *
  * @package News (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -18,7 +16,6 @@ namespace Bugo\LightPortal\Addons\News;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\SelectField;
 
 if (! defined('LP_NAME'))

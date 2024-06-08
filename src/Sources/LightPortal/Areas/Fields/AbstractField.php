@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * AbstractField.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -16,15 +14,16 @@ namespace Bugo\LightPortal\Areas\Fields;
 
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Helper;
+
+use function is_callable;
+use function is_object;
+use function is_string;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 abstract class AbstractField
 {
-	use Helper;
-
 	protected string $tab;
 
 	protected string $name;

@@ -1,8 +1,6 @@
 <?php
 
 /**
- * TopPosters.php
- *
  * @package TopPosters (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.24
+ * @version 02.06.24
  */
 
 namespace Bugo\LightPortal\Addons\TopPosters;
@@ -18,6 +16,7 @@ namespace Bugo\LightPortal\Addons\TopPosters;
 use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, NumberField};
+use Bugo\LightPortal\Utils\Avatar;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -101,8 +100,9 @@ class TopPosters extends Block
 
 		Utils::$smcFunc['db_free_result']($result);
 
-		if ($parameters['show_avatars'] && empty($parameters['use_simple_style']))
-			$posters = $this->getItemsWithUserAvatars($posters, 'poster');
+		if ($parameters['show_avatars'] && empty($parameters['use_simple_style'])) {
+			$posters = Avatar::getWithItems($posters, 'poster');
+		}
 
 		return array_column($posters, 'poster');
 	}

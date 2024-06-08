@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * Post.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -13,6 +11,9 @@
  */
 
 namespace Bugo\LightPortal\Utils;
+
+if (! defined('SMF'))
+	die('No direct access...');
 
 final class Post extends GlobalArray
 {

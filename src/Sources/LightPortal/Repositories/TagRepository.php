@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * TagRepository.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -16,12 +14,18 @@ namespace Bugo\LightPortal\Repositories;
 
 use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Security, User, Utils};
+use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\Utils\RequestTrait;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class TagRepository extends AbstractRepository
 {
+	use CacheTrait;
+	use RequestTrait;
+
 	protected string $entity = 'tag';
 
 	public function getAll(int $start, int $limit, string $sort): array
@@ -50,7 +54,7 @@ final class TagRepository extends AbstractRepository
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['tag_id']] = [
 				'id'     => (int) $row['tag_id'],
-				'icon'   => $this->getIcon($row['icon']),
+				'icon'   => Icon::parse($row['icon']),
 				'status' => (int) $row['status'],
 				'title'  => $row['title'],
 			];
@@ -134,11 +138,13 @@ final class TagRepository extends AbstractRepository
 
 		$this->session('lp')->free('active_tags');
 
-		if ($this->request()->has('save_exit'))
+		if ($this->request()->has('save_exit')) {
 			Utils::redirectexit('action=admin;area=lp_tags;sa=main');
+		}
 
-		if ($this->request()->has('save'))
+		if ($this->request()->has('save')) {
 			Utils::redirectexit('action=admin;area=lp_tags;sa=edit;id=' . $item);
+		}
 	}
 
 	public function remove(array $items): void
@@ -215,13 +221,5 @@ final class TagRepository extends AbstractRepository
 		$this->saveTitles($item, 'replace');
 
 		Db::$db->transaction('commit');
-	}
-
-	private function prepareTitles(): void
-	{
-		// Remove all punctuation symbols
-		Utils::$context['lp_tag']['titles'] = preg_replace(
-			"#[[:punct:]]#", "", (array) Utils::$context['lp_tag']['titles']
-		);
 	}
 }

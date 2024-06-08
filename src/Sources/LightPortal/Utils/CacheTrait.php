@@ -1,8 +1,6 @@
-<?php declare(strict_types=1);
+<?php declare(strict_types = 1);
 
 /**
- * BackgroundTask.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -12,10 +10,12 @@
  * @version 2.6
  */
 
-namespace Bugo\LightPortal\Tasks;
+namespace Bugo\LightPortal\Utils;
 
-use SMF_BackgroundTask;
-
-abstract class BackgroundTask extends SMF_BackgroundTask
+trait CacheTrait
 {
+	public function cache(?string $key = null): Cache
+	{
+		return new Cache($key);
+	}
 }

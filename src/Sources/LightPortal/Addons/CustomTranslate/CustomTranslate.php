@@ -1,8 +1,6 @@
 <?php
 
 /**
- * CustomTranslate.php
- *
  * @package CustomTranslate (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,13 +8,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.05.24
+ * @version 05.06.24
  */
 
 namespace Bugo\LightPortal\Addons\CustomTranslate;
 
 use Bugo\Compat\{Config, Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Enums\Hook;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -36,7 +35,7 @@ class CustomTranslate extends Plugin
 
 	public function init(): void
 	{
-		$this->applyHook('menu_buttons');
+		$this->applyHook(Hook::menuButtons);
 	}
 
 	public function menuButtons(): void

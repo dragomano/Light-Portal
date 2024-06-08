@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * Tab.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -14,11 +12,11 @@
 
 namespace Bugo\LightPortal\Enums;
 
-use Bugo\LightPortal\Enums\Traits\HasNames;
+use Bugo\LightPortal\Enums\Traits\HasNamesTrait;
 
 enum Tab
 {
-	use HasNames;
+	use HasNamesTrait;
 
 	case CONTENT;
 	case ACCESS_PLACEMENT;

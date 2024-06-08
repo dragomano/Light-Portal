@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * Status.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -14,11 +12,11 @@
 
 namespace Bugo\LightPortal\Enums;
 
-use Bugo\LightPortal\Enums\Traits\HasValues;
+use Bugo\LightPortal\Enums\Traits\HasValuesTrait;
 
 enum Status: int
 {
-	use HasValues;
+	use HasValuesTrait;
 
 	case INACTIVE = 0;
 	case ACTIVE = 1;

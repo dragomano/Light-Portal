@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * MiscConfigArea
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -14,30 +12,39 @@
 
 namespace Bugo\LightPortal\Areas\Configs;
 
-use Bugo\LightPortal\Tasks\Maintainer;
-use Bugo\Compat\{ACP, Config, Db};
+use Bugo\Compat\{Actions\ACP, Config, Db};
 use Bugo\Compat\{Lang, User, Utils};
+use Bugo\LightPortal\Tasks\Maintainer;
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\SessionTrait;
+
+use const LP_ACTION;
+use const LP_CACHE_TIME;
+use const LP_PAGE_PARAM;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class MiscConfig extends AbstractConfig
 {
+	use RequestTrait;
+	use SessionTrait;
+
 	public function show(): void
 	{
 		Utils::$context['page_title'] = Lang::$txt['lp_misc'];
 		Utils::$context['post_url']   = Config::$scripturl . '?action=admin;area=lp_settings;sa=misc;save';
 
 		$this->addDefaultValues([
-			'lp_cache_update_interval' => LP_CACHE_TIME,
-			'lp_portal_action'         => LP_ACTION,
-			'lp_page_param'            => LP_PAGE_PARAM,
+			'lp_cache_interval' => LP_CACHE_TIME,
+			'lp_portal_action'  => LP_ACTION,
+			'lp_page_param'     => LP_PAGE_PARAM,
 		]);
 
 		$configVars = [
 			['title', 'lp_debug_and_caching'],
 			['check', 'lp_show_debug_info', 'help' => 'lp_show_debug_info_help'],
-			['int', 'lp_cache_update_interval', 'postinput' => Lang::$txt['seconds']],
+			['int', 'lp_cache_interval', 'postinput' => Lang::$txt['seconds']],
 			['title', 'lp_compatibility_mode'],
 			[
 				'text',
@@ -47,7 +54,7 @@ final class MiscConfig extends AbstractConfig
 			[
 				'text',
 				'lp_page_param',
-				'subtext' => Config::$scripturl . '?<strong>' . LP_PAGE_PARAM . '</strong>=somealias'
+				'subtext' => Config::$scripturl . '?<strong>' . LP_PAGE_PARAM . '</strong>=page_slug'
 			],
 			['title', 'admin_maintenance'],
 			['check', 'lp_weekly_cleaning']

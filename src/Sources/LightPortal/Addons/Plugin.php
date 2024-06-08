@@ -14,17 +14,33 @@
 
 namespace Bugo\LightPortal\Addons;
 
-use Bugo\Compat\{ServerSideIncludes, Theme, Utils};
-use Bugo\LightPortal\Helper;
+use Bugo\Compat\{Config, Db, ServerSideIncludes, Theme, Utils};
 use Bugo\LightPortal\Repositories\PluginRepository;
+use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\EntityDataTrait;
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\SessionTrait;
+use Bugo\LightPortal\Utils\SMFHookTrait;
+use Bugo\LightPortal\Utils\Str;
 use ReflectionClass;
+
+use function array_column;
+use function array_filter;
+use function array_flip;
+use function dirname;
+use function explode;
+use function is_file;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 abstract class Plugin
 {
-	use Helper;
+	use CacheTrait;
+	use EntityDataTrait;
+	use RequestTrait;
+	use SMFHookTrait;
+	use SessionTrait;
 
 	public string $type = 'block';
 
@@ -44,8 +60,9 @@ abstract class Plugin
 	{
 		$path = dirname($this->getCalledClass()->getFileName()) . DIRECTORY_SEPARATOR . $name . '.php';
 
-		if (is_file($path))
+		if (is_file($path)) {
 			require_once $path;
+		}
 
 		return $this;
 	}
@@ -80,7 +97,7 @@ abstract class Plugin
 
 	public function addDefaultValues(array $values): void
 	{
-		$snakeName = $this->getSnakeName($this->getName());
+		$snakeName = Str::getSnakeName($this->getName());
 
 		$settings = [];
 		foreach ($values as $option => $value) {
@@ -106,5 +123,39 @@ abstract class Plugin
 		$themes = array_flip(array_filter(explode(',', $option)));
 
 		return $themes && isset($themes[Theme::$current->settings['theme_id']]);
+	}
+
+	public function getForumThemes(): array
+	{
+		$themes = $this->cache()->get('forum_themes');
+
+		if ($themes === null) {
+			$result = Db::$db->query('', '
+				SELECT id_theme, value
+				FROM {db_prefix}themes
+				WHERE id_theme IN ({array_int:themes})
+					AND variable = {literal:name}',
+				[
+					'themes' => empty(Config::$modSettings['knownThemes'])
+						? []
+						: explode(',', (string) Config::$modSettings['knownThemes']),
+				]
+			);
+
+			$themes = [];
+			while ($row = Db::$db->fetch_assoc($result)) {
+				$themes[$row['id_theme']] = [
+					'id'   => (int) $row['id_theme'],
+					'name' => $row['value'],
+				];
+			}
+
+			Db::$db->free_result($result);
+
+			$themes = array_column($themes, 'name', 'id');
+			$this->cache()->put('forum_themes', $themes);
+		}
+
+		return $themes;
 	}
 }

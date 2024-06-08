@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * AreaSelect.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -15,6 +13,13 @@
 namespace Bugo\LightPortal\Areas\Partials;
 
 use Bugo\Compat\{Lang, Utils};
+
+use function array_combine;
+use function array_merge;
+use function explode;
+use function json_encode;
+use function str_starts_with;
+use function str_replace;
 
 final class AreaSelect extends AbstractPartial
 {

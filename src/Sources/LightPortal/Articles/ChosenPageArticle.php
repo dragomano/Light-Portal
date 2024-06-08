@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * ChosenPageArticle.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -15,6 +13,8 @@
 namespace Bugo\LightPortal\Articles;
 
 use Bugo\Compat\Config;
+
+use function explode;
 
 if (! defined('SMF'))
 	die('No direct access...');

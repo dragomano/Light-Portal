@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * AbstractModel.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -14,16 +12,19 @@
 
 namespace Bugo\LightPortal\Models;
 
+use Bugo\LightPortal\Utils\Str;
 use stdClass;
-use Bugo\LightPortal\Helper;
+
+use function get_object_vars;
+use function lcfirst;
+use function str_replace;
+use function ucwords;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 abstract class AbstractModel extends stdClass
 {
-	use Helper;
-
 	public function __set(string $name, mixed $value)
 	{
 		$camelCaseName = $this->underscoreToCamelCase($name);
@@ -37,12 +38,14 @@ abstract class AbstractModel extends stdClass
 
 		$result = [];
 		foreach ($vars as $key => $value) {
-			$snakeName = $this->getSnakeName($key);
+			$snakeName = Str::getSnakeName($key);
 			$result[$snakeName] = $value;
 		}
 
 		return $result;
 	}
+
+	abstract protected static function getTableName(): string;
 
 	private function underscoreToCamelCase(string $source): string
 	{

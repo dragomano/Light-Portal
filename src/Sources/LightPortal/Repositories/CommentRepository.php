@@ -1,10 +1,6 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 /**
- * CommentRepository.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -17,36 +13,20 @@ declare(strict_types=1);
 namespace Bugo\LightPortal\Repositories;
 
 use Bugo\Compat\{Config, Db, Lang};
-use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Utils\Avatar;
+
+use function count;
+use function htmlspecialchars_decode;
+use function time;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class CommentRepository
 {
-	use Helper;
-
 	public function getAll(): array
 	{
 		return $this->getByPageId();
-	}
-
-	public function getById(int $id): array
-	{
-		$result = Db::$db->query('', '
-			SELECT *
-			FROM {db_prefix}lp_comments
-			WHERE id = {int:id}',
-			[
-				'id' => $id,
-			]
-		);
-
-		$data = Db::$db->fetch_assoc($result);
-
-		Db::$db->free_result($result);
-
-		return $data ?? [];
 	}
 
 	public function getByPageId(int $id = 0): array
@@ -88,13 +68,14 @@ final class CommentRepository
 				],
 			];
 
-			if (isset($row['name']))
+			if (isset($row['name'])) {
 				$comments[$row['id']]['params'][$row['name']] = $row['value'];
+			}
 		}
 
 		Db::$db->free_result($result);
 
-		return $this->getItemsWithUserAvatars($comments, 'poster');
+		return Avatar::getWithItems($comments, 'poster');
 	}
 
 	public function save(array $data): int

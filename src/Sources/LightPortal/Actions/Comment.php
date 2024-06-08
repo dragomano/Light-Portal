@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * Comment.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -15,17 +13,29 @@
 namespace Bugo\LightPortal\Actions;
 
 use Bugo\Compat\{Config, PageIndex, User, Utils};
-use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{DateTime, Notify};
+use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Enums\{PortalHook, VarType};
 use Bugo\LightPortal\Repositories\CommentRepository;
+use Bugo\LightPortal\Utils\{Avatar, CacheTrait, DateTime, Notify, RequestTrait, Setting};
 use IntlException;
+
+use function array_map;
+use function array_slice;
+use function count;
+use function date;
+use function http_response_code;
+use function json_encode;
+use function trim;
+
+use const LP_BASE_URL;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class Comment implements ActionInterface
 {
-	use Helper;
+	use CacheTrait;
+	use RequestTrait;
 
 	private CommentRepository $repository;
 
@@ -66,7 +76,7 @@ final class Comment implements ActionInterface
 			$comment['authorial']     = Utils::$context['lp_page']['author_id'] === $comment['poster']['id'];
 			$comment['extra_buttons'] = [];
 
-			$this->hook('commentButtons', [$comment, &$comment['extra_buttons']]);
+			AddonHandler::getInstance()->run(PortalHook::commentButtons, [$comment, &$comment['extra_buttons']]);
 
 			return $comment;
 		}, $comments);
@@ -112,9 +122,9 @@ final class Comment implements ActionInterface
 		if (empty($data['message']))
 			exit(json_encode($result));
 
-		$parentId = $this->filterVar($data['parent_id'], 'int');
+		$parentId = VarType::INTEGER->filter($data['parent_id']);
 		$message  = Utils::htmlspecialchars($data['message']);
-		$author   = $this->filterVar($data['author'], 'int');
+		$author   = VarType::INTEGER->filter($data['author']);
 		$pageId   = Utils::$context['lp_page']['id'];
 		$pageUrl  = Utils::$context['canonical_url'];
 
@@ -143,7 +153,7 @@ final class Comment implements ActionInterface
 				'poster'       => [
 					'id'     => User::$info['id'],
 					'name'   => User::$info['name'],
-					'avatar' => $this->getUserAvatar(User::$info['id']),
+					'avatar' => Avatar::get(User::$info['id']),
 				],
 			];
 
@@ -231,6 +241,6 @@ final class Comment implements ActionInterface
 
 	private function getPageIndexUrl(): string
 	{
-		return $this->isFrontpage($this->pageSlug) ? LP_BASE_URL : Utils::$context['canonical_url'];
+		return Setting::isFrontpage($this->pageSlug) ? LP_BASE_URL : Utils::$context['canonical_url'];
 	}
 }

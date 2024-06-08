@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * BasicConfig.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -14,17 +12,28 @@
 
 namespace Bugo\LightPortal\Areas\Configs;
 
-use Bugo\Compat\{ACP, Config, Lang, Theme, User, Utils};
-use Bugo\LightPortal\Areas\Query;
+use Bugo\Compat\{Actions\ACP, Config, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Actions\FrontPage;
+use Bugo\LightPortal\Areas\Traits\QueryTrait;
+use Bugo\LightPortal\Enums\VarType;
+use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\SessionTrait;
 use IntlException;
+
+use function array_combine;
+use function array_map;
+use function str_replace;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class BasicConfig extends AbstractConfig
 {
-	use Query;
+	use CacheTrait;
+	use QueryTrait;
+	use RequestTrait;
+	use SessionTrait;
 
 	/**
 	 * Output general settings
@@ -188,13 +197,13 @@ final class BasicConfig extends AbstractConfig
 
 			if ($this->request()->isNotEmpty('lp_image_placeholder')) {
 				$this->post()->put(
-					'lp_image_placeholder', $this->filterVar($this->request('lp_image_placeholder'), 'url')
+					'lp_image_placeholder', VarType::URL->filter($this->request('lp_image_placeholder'))
 				);
 			}
 
 			if ($this->request()->isNotEmpty('lp_standalone_url')) {
 				$this->post()->put(
-					'lp_standalone_url', $this->filterVar($this->request('lp_standalone_url'), 'url')
+					'lp_standalone_url', VarType::URL->filter($this->request('lp_standalone_url'))
 				);
 			}
 

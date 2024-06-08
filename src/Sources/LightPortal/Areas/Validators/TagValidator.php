@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * TagValidator.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -15,12 +13,17 @@
 namespace Bugo\LightPortal\Areas\Validators;
 
 use Bugo\Compat\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\RequestTrait;
+
+use function filter_input_array;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 class TagValidator extends AbstractValidator
 {
+	use RequestTrait;
+
 	protected array $args = [
 		'tag_id' => FILTER_VALIDATE_INT,
 		'icon'   => FILTER_DEFAULT,

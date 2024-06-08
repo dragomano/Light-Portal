@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * CreditArea.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -15,8 +13,16 @@
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, Lang, Theme, User, Utils};
-use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Enums\{Hook, PortalHook};
+use Bugo\LightPortal\Utils\SMFHookTrait;
 use Nette\Utils\Html;
+
+use function date;
+use function shuffle;
+
+use const LP_NAME;
+use const LP_VERSION;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -26,14 +32,14 @@ if (! defined('SMF'))
  */
 final class CreditArea
 {
-	use Helper;
+	use SMFHookTrait;
 
 	public function __invoke(): void
 	{
-		$this->applyHook('integrate_credits', 'show');
+		$this->applyHook(Hook::credits);
 	}
 
-	public function show(): void
+	public function credits(): void
 	{
 		Utils::$context['credits_modifications'][] = $this->getLink();
 
@@ -52,7 +58,7 @@ final class CreditArea
 		}
 	}
 
-	public function getLink(): string
+	private function getLink(): string
 	{
 		$link = Lang::$txt['lang_dictionary'] === 'ru'
 			? 'https://dragomano.ru/mods/light-portal'
@@ -74,7 +80,7 @@ final class CreditArea
 		])->setHtml('2019&ndash;' . date('Y'))->toHtml() . ', Bugo | ' . $license;
 	}
 
-	public function prepareComponents(): void
+	private function prepareComponents(): void
 	{
 		User::mustHavePermission('light_portal_view');
 
@@ -320,7 +326,7 @@ final class CreditArea
 		];
 
 		// Adding copyrights of used plugins
-		$this->hook('credits', [&$links]);
+		AddonHandler::getInstance()->run(PortalHook::credits, [&$links]);
 
 		Utils::$context['lp_components'] = $links;
 

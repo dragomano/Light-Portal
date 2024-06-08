@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * PluginType.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -14,11 +12,14 @@
 
 namespace Bugo\LightPortal\Enums;
 
-use Bugo\LightPortal\Enums\Traits\HasNames;
+use Bugo\Compat\Lang;
+use Bugo\LightPortal\Enums\Traits\HasNamesTrait;
+
+use function array_combine;
 
 enum PluginType
 {
-	use HasNames;
+	use HasNamesTrait;
 
 	case BLOCK;
 	case SSI;
@@ -33,4 +34,9 @@ enum PluginType
 	case ICONS;
 	case SEO;
 	case OTHER;
+
+	public static function all(): array
+	{
+		return array_combine(self::names(), Lang::$txt['lp_plugins_types']);
+	}
 }

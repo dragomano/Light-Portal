@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * AbstractPartial.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -14,7 +12,6 @@
 
 namespace Bugo\LightPortal\Areas\Partials;
 
-use Bugo\LightPortal\Helper;
 use Stringable;
 
 if (! defined('SMF'))
@@ -22,8 +19,6 @@ if (! defined('SMF'))
 
 abstract class AbstractPartial implements Stringable
 {
-	use Helper;
-
 	abstract public function __invoke(): string;
 
 	public function __toString(): string

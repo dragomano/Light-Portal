@@ -1,8 +1,6 @@
 <?php
 
 /**
- * Search.php
- *
  * @package Search (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,14 +8,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.05.24
+ * @version 05.06.24
  */
 
 namespace Bugo\LightPortal\Addons\Search;
 
 use Bugo\Compat\{Config, Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Utils\{Content, DateTime};
+use Bugo\LightPortal\Enums\{Hook, Permission};
+use Bugo\LightPortal\Utils\{Content, DateTime, Str};
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -29,7 +28,7 @@ class Search extends Block
 
 	public function init(): void
 	{
-		$this->applyHook('actions');
+		$this->applyHook(Hook::actions);
 	}
 
 	public function addSettings(array &$settings): void
@@ -133,7 +132,7 @@ class Search extends Block
 				'current_lang' => Utils::$context['user']['language'],
 				'status'       => 1,
 				'current_time' => time(),
-				'permissions'  => $this->getPermissions(),
+				'permissions'  => Permission::all(),
 			]
 		);
 
@@ -144,7 +143,7 @@ class Search extends Block
 			$items[] = [
 				'link'    => LP_PAGE_URL . $row['slug'],
 				'title'   => $row['value'],
-				'content' => $this->getTeaser($row['content']),
+				'content' => Str::getTeaser($row['content']),
 				'author'  => empty($row['id_member'])
 					? Lang::$txt['guest']
 					: ('<a href="' . Config::$scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>'),

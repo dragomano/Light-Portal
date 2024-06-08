@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * DateTime.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -16,8 +14,18 @@ namespace Bugo\LightPortal\Utils;
 
 use Bugo\Compat\{ErrorHandler, Lang, Utils};
 use DateTime as BaseDateTime;
-use IntlException;
 use IntlDateFormatter;
+use IntlException;
+
+use function ceil;
+use function compact;
+use function date;
+use function extension_loaded;
+use function floor;
+use function round;
+use function sprintf;
+use function strtotime;
+use function time;
 
 if (! defined('SMF'))
 	die('No direct access...');

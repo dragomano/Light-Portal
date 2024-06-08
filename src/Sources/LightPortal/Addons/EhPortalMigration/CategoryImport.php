@@ -1,8 +1,6 @@
 <?php
 
 /**
- * CategoryImport.php
- *
  * @package EhPortalMigration (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.05.24
+ * @version 30.05.24
  */
 
 namespace Bugo\LightPortal\Addons\EhPortalMigration;
@@ -18,6 +16,8 @@ namespace Bugo\LightPortal\Addons\EhPortalMigration;
 use Bugo\Compat\{Config, Db, Lang, Utils};
 use Bugo\LightPortal\Areas\Imports\AbstractCustomCategoryImport;
 use Bugo\LightPortal\Utils\ItemList;
+
+use const LP_NAME;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -157,14 +157,14 @@ class CategoryImport extends AbstractCustomCategoryImport
 		return (int) $count;
 	}
 
-	protected function getItems(array $categories): array
+	protected function getItems(array $ids): array
 	{
 		$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
 			SELECT id_category, name AS title, publish AS status
-			FROM {db_prefix}sp_categories' . (empty($categories) ? '' : '
+			FROM {db_prefix}sp_categories' . (empty($ids) ? '' : '
 			WHERE id_category IN ({array_int:categories})'),
 			[
-				'categories' => $categories,
+				'categories' => $ids,
 			]
 		);
 

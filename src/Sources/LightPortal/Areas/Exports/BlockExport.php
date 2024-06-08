@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * BlockExport.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -14,17 +12,26 @@
 
 namespace Bugo\LightPortal\Areas\Exports;
 
+use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, Sapi, Theme, Utils};
 use Bugo\LightPortal\Repositories\BlockRepository;
 use DomDocument;
 use DOMException;
 
+use function array_filter;
+use function array_map;
+use function in_array;
+
+use const LP_NAME;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class BlockExport extends AbstractExport
 {
+	use RequestTrait;
+
 	private readonly BlockRepository $repository;
 
 	public function __construct()
@@ -89,11 +96,13 @@ final class BlockExport extends AbstractExport
 				'content_class' => $row['content_class'],
 			];
 
-			if ($row['lang'] && $row['title'])
+			if ($row['lang'] && $row['title']) {
 				$items[$row['block_id']]['titles'][$row['lang']] = $row['title'];
+			}
 
-			if ($row['name'] && $row['value'])
+			if ($row['name'] && $row['value']) {
 				$items[$row['block_id']]['params'][$row['name']] = $row['value'];
+			}
 		}
 
 		Db::$db->free_result($result);

@@ -1,8 +1,6 @@
 <?php
 
 /**
- * RandomPages.php
- *
  * @package RandomPages (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.05.24
+ * @version 02.06.24
  */
 
 namespace Bugo\LightPortal\Addons\RandomPages;
@@ -19,8 +17,8 @@ use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField};
 use Bugo\LightPortal\Areas\Partials\CategorySelect;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Utils\DateTime;
+use Bugo\LightPortal\Enums\{Permission, Tab};
+use Bugo\LightPortal\Utils\{DateTime, Str};
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -128,7 +126,7 @@ class RandomPages extends Block
 				[
 					'status'       => 1,
 					'current_time' => time(),
-					'permissions'  => $this->getPermissions(),
+					'permissions'  => Permission::all(),
 					'categories'   => $categories,
 					'limit'        => $pagesCount,
 				]
@@ -168,7 +166,7 @@ class RandomPages extends Block
 					'guest'        => Lang::$txt['guest_title'],
 					'status'       => 1,
 					'current_time' => time(),
-					'permissions'  => $this->getPermissions(),
+					'permissions'  => Permission::all(),
 					'categories'   => $categories,
 					'limit'        => $pagesCount,
 				]
@@ -210,7 +208,7 @@ class RandomPages extends Block
 			<ul class="random_pages noup">';
 
 			foreach ($randomPages as $page) {
-				if (empty($title = $this->getTranslatedTitle($page['title'])))
+				if (empty($title = Str::getTranslatedTitle($page['title'])))
 					continue;
 
 				echo '

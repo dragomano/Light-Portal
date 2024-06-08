@@ -1,8 +1,6 @@
 <?php
 
 /**
- * TrendingTopics.php
- *
  * @package TrendingTopics (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.05.24
+ * @version 02.06.24
  */
 
 namespace Bugo\LightPortal\Addons\TrendingTopics;
@@ -21,6 +19,7 @@ use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\LightPortal\Areas\Fields\NumberField;
 use Bugo\LightPortal\Areas\Fields\SelectField;
 use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\DateTime;
 use IntlException;
 
@@ -129,7 +128,7 @@ class TrendingTopics extends Block
 
 		Utils::$smcFunc['db_free_result']($result);
 
-		return $parameters['show_avatars'] ? $this->getItemsWithUserAvatars($topics, 'poster') : $topics;
+		return $parameters['show_avatars'] ? Avatar::getWithItems($topics, 'poster') : $topics;
 	}
 
 	public function prepareContent(object $data, array $parameters): void

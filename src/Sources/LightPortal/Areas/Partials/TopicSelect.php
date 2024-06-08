@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * TopicSelect.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -15,6 +13,10 @@
 namespace Bugo\LightPortal\Areas\Partials;
 
 use Bugo\Compat\{Config, Db, Lang, Utils};
+
+use function explode;
+use function func_get_args;
+use function json_encode;
 
 final class TopicSelect extends AbstractPartial
 {

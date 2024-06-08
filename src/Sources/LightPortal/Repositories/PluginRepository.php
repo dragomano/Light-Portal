@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * PluginRepository.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -15,14 +13,14 @@
 namespace Bugo\LightPortal\Repositories;
 
 use Bugo\Compat\Db;
-use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Utils\CacheTrait;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class PluginRepository
 {
-	use Helper;
+	use CacheTrait;
 
 	public function addSettings(array $settings = []): void
 	{
@@ -84,7 +82,6 @@ final class PluginRepository
 		}
 
 		$this->removeSettings($name, $oldSettings);
-
 		$this->addSettings($newSettings);
 	}
 

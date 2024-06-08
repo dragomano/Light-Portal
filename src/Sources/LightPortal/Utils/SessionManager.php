@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * SessionManager.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -15,14 +13,14 @@
 namespace Bugo\LightPortal\Utils;
 
 use Bugo\Compat\{Db, User, Utils};
-use Bugo\LightPortal\Actions\PageInterface;
-use Bugo\LightPortal\Actions\PageListInterface;
 use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Helper;
+
+if (! defined('SMF'))
+	die('No direct access...');
 
 final class SessionManager
 {
-	use Helper;
+	use SessionTrait;
 
 	public function __invoke(string $key): int
 	{

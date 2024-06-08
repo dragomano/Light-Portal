@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * CategoryList.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -23,11 +21,6 @@ if (! defined('SMF'))
 final class CategoryList implements ListInterface
 {
 	public function __invoke(): array
-	{
-		return $this->getAll();
-	}
-
-	public function getAll(): array
 	{
 		$result = Db::$db->query('', /** @lang text */ '
 			SELECT c.category_id, c.icon, c.description, c.priority, COALESCE(t.value, tf.value) AS title

@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * BlockValidator.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -15,12 +13,23 @@
 namespace Bugo\LightPortal\Areas\Validators;
 
 use Bugo\Compat\{Lang, Utils};
+use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Enums\VarType;
+use Bugo\LightPortal\Utils\RequestTrait;
+
+use function array_keys;
+use function array_merge;
+use function filter_input_array;
+use function filter_var_array;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 class BlockValidator extends AbstractValidator
 {
+	use RequestTrait;
+
 	protected array $args = [
 		'block_id'      => FILTER_VALIDATE_INT,
 		'icon'          => FILTER_DEFAULT,
@@ -52,7 +61,7 @@ class BlockValidator extends AbstractValidator
 
 			$data = filter_input_array(INPUT_POST, $this->args);
 
-			$this->hook('validateBlockParams', [&$params]);
+			AddonHandler::getInstance()->run(PortalHook::validateBlockParams, [&$params]);
 
 			$params = array_merge($this->params, $params);
 
@@ -73,14 +82,14 @@ class BlockValidator extends AbstractValidator
 
 		if (
 			$data['areas']
-			&& empty($this->filterVar($data['areas'], [
+			&& empty(VarType::ARRAY->filter($data['areas'], [
 				'options' => ['regexp' => '/' . LP_AREAS_PATTERN . '/']
 			]))
 		) {
 			$errors[] = 'no_valid_areas';
 		}
 
-		$this->hook('findBlockErrors', [&$errors, $data]);
+		AddonHandler::getInstance()->run(PortalHook::findBlockErrors, [&$errors, $data]);
 
 		if ($errors) {
 			$this->request()->put('preview', true);

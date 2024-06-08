@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * AbstractValidator.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -14,11 +12,7 @@
 
 namespace Bugo\LightPortal\Areas\Validators;
 
-use Bugo\LightPortal\Helper;
-
 abstract class AbstractValidator
 {
-	use Helper;
-
 	abstract public function validate(): array;
 }

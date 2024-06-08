@@ -1,8 +1,6 @@
 <?php
 
 /**
- * ThemeSwitcher.php
- *
  * @package ThemeSwitcher (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,13 +8,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.24
+ * @version 05.06.24
  */
 
 namespace Bugo\LightPortal\Addons\ThemeSwitcher;
 
 use Bugo\Compat\Theme;
 use Bugo\LightPortal\Addons\Block;
+use Bugo\LightPortal\Enums\Hook;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -27,7 +26,7 @@ class ThemeSwitcher extends Block
 
 	public function init(): void
 	{
-		$this->applyHook('manage_themes');
+		$this->applyHook(Hook::manageThemes);
 	}
 
 	public function manageThemes(): void

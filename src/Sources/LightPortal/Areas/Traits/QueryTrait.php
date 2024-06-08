@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * Query.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -12,15 +10,26 @@
  * @version 2.6
  */
 
-namespace Bugo\LightPortal\Areas;
+namespace Bugo\LightPortal\Areas\Traits;
 
-use Bugo\LightPortal\Lists\IconList;
 use Bugo\Compat\{Config, Db, Lang, Utils};
+use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Lists\IconList;
+use Nette\Utils\Html;
+
+use function array_filter;
+use function json_encode;
+use function sprintf;
+use function str_contains;
+use function strtolower;
+use function strtr;
+use function trim;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-trait Query
+trait QueryTrait
 {
 	private function prepareIconList(): void
 	{
@@ -33,9 +42,10 @@ trait Query
 			return;
 
 		$icons = $this->getFaIcons();
-		$template = '<i class="%1$s fa-fw" aria-hidden="true"></i>&nbsp;%1$s';
+		$template = Html::el('i', ['class' => '%1$s fa-fw'])
+			->setAttribute('aria-hidden', 'true') . '&nbsp;%1$s';
 
-		$this->hook('prepareIconList', [&$icons, &$template]);
+		AddonHandler::getInstance()->run(PortalHook::prepareIconList, [&$icons, &$template]);
 
 		$icons = array_filter($icons, static fn($item) => str_contains((string) $item, $search));
 

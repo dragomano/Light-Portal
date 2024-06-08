@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * TitleClassSelect.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -15,6 +13,10 @@
 namespace Bugo\LightPortal\Areas\Partials;
 
 use Bugo\Compat\{Lang, Utils};
+
+use function func_get_args;
+use function json_encode;
+use function sprintf;
 
 final class TitleClassSelect extends AbstractPartial
 {

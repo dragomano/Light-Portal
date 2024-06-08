@@ -121,6 +121,6 @@ function template_page_post(): void
 	</form>
 	<script>
 		const page = new Page();
-		const tabs = new Tabs(".lp_tabs");
+		const tabs = new PortalTabs();
 	</script>';
 }

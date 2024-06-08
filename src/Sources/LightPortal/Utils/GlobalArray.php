@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * GlobalArray.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -13,6 +11,13 @@
  */
 
 namespace Bugo\LightPortal\Utils;
+
+use function array_flip;
+use function array_intersect_key;
+use function array_reduce;
+
+if (! defined('SMF'))
+	die('No direct access...');
 
 abstract class GlobalArray
 {

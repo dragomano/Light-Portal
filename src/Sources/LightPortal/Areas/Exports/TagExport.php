@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * TagExport.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -18,15 +16,23 @@ use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, Sapi, Utils};
 use Bugo\LightPortal\Repositories\TagRepository;
 use Bugo\LightPortal\Utils\ItemList;
+use Bugo\LightPortal\Utils\RequestTrait;
 use DomDocument;
 use DOMException;
 use Nette\Utils\Html;
+
+use function in_array;
+use function trim;
+
+use const LP_NAME;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class TagExport extends AbstractExport
 {
+	use RequestTrait;
+
 	private readonly TagRepository $repository;
 
 	public function __construct()

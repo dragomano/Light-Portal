@@ -595,8 +595,8 @@ if (! isset($modSettings['lp_enabled_plugins']))
 	$addSettings['lp_enabled_plugins'] = 'CodeMirror,HelloPortal,ThemeSwitcher,UserInfo';
 if (! isset($modSettings['lp_frontpage_layout']))
 	$addSettings['lp_frontpage_layout'] = 'default.blade.php';
-if (! isset($modSettings['lp_show_comment_block']))
-	$addSettings['lp_show_comment_block'] = 'none';
+if (! isset($modSettings['lp_comment_block']))
+	$addSettings['lp_comment_block'] = 'none';
 if (! isset($modSettings['lp_permissions_default']))
 	$addSettings['lp_permissions_default'] = '0';
 if (! isset($modSettings['lp_fa_source']))

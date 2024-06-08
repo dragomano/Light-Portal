@@ -1,8 +1,6 @@
 <?php
 
 /**
- * Handler.php
- *
  * @package PluginMaker (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,29 +8,47 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.05.24
+ * @version 08.06.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
 
 use Bugo\Compat\{Config, Lang, Security, User, Utils};
 use Bugo\LightPortal\Addons\{Block, Plugin};
-use Bugo\LightPortal\Areas\Area;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, ColorField, CustomField, NumberField};
 use Bugo\LightPortal\Areas\Fields\{RadioField, RangeField, SelectField, TextField, UrlField};
 use Bugo\LightPortal\Areas\Partials\IconSelect;
-use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Areas\Traits\AreaTrait;
+use Bugo\LightPortal\Enums\{PluginType, Tab};
 use Bugo\LightPortal\Repositories\PluginRepository;
-use Bugo\LightPortal\Utils\Language;
+use Bugo\LightPortal\Utils\{Language, Str};
 use Nette\PhpGenerator\{PhpFile, PhpNamespace, Printer};
+use Nette\Utils\Html;
+
+use function array_filter;
+use function array_key_exists;
+use function array_keys;
+use function array_merge;
+use function array_unique;
+use function count;
+use function date;
+use function explode;
+use function implode;
+use function in_array;
+use function is_writable;
+use function sprintf;
+use function str_contains;
+use function str_replace;
+use function var_export;
+
+use const LP_NAME;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
 class Handler extends Plugin
 {
-	use Area;
+	use AreaTrait;
 
 	private const PLUGIN_NAME = 'MyNewAddon';
 
@@ -48,7 +64,10 @@ class Handler extends Plugin
 		];
 
 		Lang::$txt['lp_plugin_maker']['add_info'] = sprintf(Lang::$txt['lp_plugin_maker']['add_info'], sprintf(
-			'<strong style="color: initial">%s/<span x-ref="plugin_name">%s</span></strong>',
+			Html::el('strong')
+				->style('color', 'initial')
+				->setHtml('%s/' . Html::el('span', ['x-ref' => 'plugin_name'])->setText('%s'))
+				->toHtml(),
 			LP_ADDON_DIR,
 			self::PLUGIN_NAME,
 		));
@@ -73,7 +92,7 @@ class Handler extends Plugin
 		$baseLang = Language::getNameFromLocale(Config::$language);
 
 		if (empty(Config::$modSettings['userLanguage'])) {
-			Utils::$context['lp_languages'] = ['english' => $temp[Language::FALLBACK]];
+			Utils::$context['lp_languages'] = ['english' => $temp[Language::getFallbackValue()]];
 
 			if ($baseLang !== 'english')
 				Utils::$context['lp_languages'][$baseLang] = $temp[Config::$language];
@@ -84,7 +103,7 @@ class Handler extends Plugin
 		$userLang = Language::getNameFromLocale(User::$info['language']);
 
 		Utils::$context['lp_languages'] = array_merge([
-			'english' => $temp[Language::FALLBACK],
+			'english' => $temp[Language::getFallbackValue()],
 			$userLang => $temp[User::$info['language']],
 			$baseLang => $temp[Config::$language],
 		]);
@@ -143,7 +162,7 @@ class Handler extends Plugin
 		Utils::$context['lp_plugin']['titles']       = array_filter(Utils::$context['lp_plugin']['titles']);
 		Utils::$context['lp_plugin']['descriptions'] = array_filter(Utils::$context['lp_plugin']['descriptions']);
 
-		$this->cleanBbcode(Utils::$context['lp_plugin']['descriptions']);
+		Str::cleanBbcode(Utils::$context['lp_plugin']['descriptions']);
 	}
 
 	private function prepareFormFields(): void
@@ -165,7 +184,9 @@ class Handler extends Plugin
 		SelectField::make('type', Lang::$txt['lp_plugin_maker']['type'])
 			->setTab(Tab::CONTENT)
 			->setAttribute('@change', 'plugin.change($event.target.value)')
-			->setOptions(array_filter(Utils::$context['lp_plugin_types'], static fn($type) => $type !== PluginType::SSI->name()))
+			->setOptions(array_filter(
+				Utils::$context['lp_plugin_types'], static fn($type) => $type !== PluginType::SSI->name()
+			))
 			->setValue(Utils::$context['lp_plugin']['type']);
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
@@ -223,11 +244,11 @@ class Handler extends Plugin
 		$languages = empty(Config::$modSettings['userLanguage'])
 			? [Language::getNameFromLocale(Config::$language)]
 			: [
-				Language::getNameFromLocale(Language::FALLBACK),
+				Language::getNameFromLocale(Language::getFallbackValue()),
 				Language::getNameFromLocale(Config::$language)
 			];
 
-		$languages = array_unique([Language::getNameFromLocale(Language::FALLBACK), ...$languages]);
+		$languages = array_unique([Language::getNameFromLocale(Language::getFallbackValue()), ...$languages]);
 
 		$value = /** @lang text */	'
 			<div>';
@@ -268,7 +289,7 @@ class Handler extends Plugin
 						name="description_' . $key . '"
 						value="' . (Utils::$context['lp_plugin']['descriptions'][$key] ?? '') . '"
 						placeholder="' . Lang::$txt['lp_page_description'] . '"
-						' . (in_array($key, $languages) ? 'x-ref="title_' . $i-- . '"' : '') . ($lang['filename'] === Language::FALLBACK ? ' required' : '') . '
+						' . (in_array($key, $languages) ? 'x-ref="title_' . $i-- . '"' : '') . ($lang['filename'] === Language::getFallbackValue() ? ' required' : '') . '
 					>
 				</div>';
 		}
@@ -350,14 +371,14 @@ class Handler extends Plugin
 				->setType('array');
 		}
 
-		$pluginName = $this->getSnakeName(Utils::$context['lp_plugin']['name']);
+		$pluginName = Str::getSnakeName(Utils::$context['lp_plugin']['name']);
 
 		if ($type === 'parser') {
 			$class->addMethod('init')->setReturnType('void')
 				->setBody("Utils::\$context['lp_content_types']['$pluginName'] = '{Utils::\$context['lp_plugin']['name']}';");
 		} else if ($type === 'comment') {
 			$class->addMethod('init')->setReturnType('void')
-				->setBody("Lang::\$txt['lp_show_comment_block_set']['$pluginName'] = '{Utils::\$context['lp_plugin']['name']}';");
+				->setBody("Lang::\$txt['lp_comment_block_set']['$pluginName'] = '{Utils::\$context['lp_plugin']['name']}';");
 		} else if (! empty(Utils::$context['lp_plugin']['smf_hooks'])) {
 			$class->addMethod('init')->setReturnType('void')
 				->setBody("// \$this->applyHook('hook_name');");
@@ -581,7 +602,7 @@ class Handler extends Plugin
 		if ($type === 'comment') {
 			$method = $class->addMethod('comments')
 				->setReturnType('void');
-			$method->addBody("if (! empty(Config::\$modSettings['lp_show_comment_block']) && Config::\$modSettings['lp_show_comment_block'] === '$pluginName') {");
+			$method->addBody("if (! empty(Config::\$modSettings['lp_comment_block']) && Config::\$modSettings['lp_comment_block'] === '$pluginName') {");
 			$method->addBody("\t// Your code");
 			$method->addBody("}");
 		}
@@ -626,8 +647,6 @@ class Handler extends Plugin
 
 		$file = new PhpFile;
 		$file->addNamespace($namespace);
-		$file->addComment(Utils::$context['lp_plugin']['name'] . '.php');
-		$file->addComment('');
 		$file->addComment("@package " . Utils::$context['lp_plugin']['name'] . " (" . LP_NAME .')');
 		$file->addComment("@link " . Utils::$context['lp_plugin']['site']);
 		$file->addComment("@author " . Utils::$context['lp_plugin']['author'] . " <" . Utils::$context['lp_plugin']['email'] . ">");

@@ -263,6 +263,6 @@ function template_plugin_post(): void
 		}
 
 		const plugin = new PluginMaker();
-		const tabs = new Tabs(".lp_tabs");
+		const tabs = new PortalTabs();
 	</script>';
 }

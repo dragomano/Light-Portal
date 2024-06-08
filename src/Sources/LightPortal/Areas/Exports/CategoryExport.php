@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * CategoryExport.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -18,15 +16,23 @@ use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, Sapi, Utils};
 use Bugo\LightPortal\Repositories\CategoryRepository;
 use Bugo\LightPortal\Utils\ItemList;
+use Bugo\LightPortal\Utils\RequestTrait;
 use DomDocument;
 use DOMException;
 use Nette\Utils\Html;
+
+use function in_array;
+use function trim;
+
+use const LP_NAME;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class CategoryExport extends AbstractExport
 {
+	use RequestTrait;
+
 	private readonly CategoryRepository $repository;
 
 	public function __construct()
@@ -160,8 +166,9 @@ final class CategoryExport extends AbstractExport
 				'status'      => $row['status'],
 			];
 
-			if ($row['lang'] && $row['title'])
+			if ($row['lang'] && $row['title']) {
 				$items[$row['category_id']]['titles'][$row['lang']] = $row['title'];
+			}
 		}
 
 		Db::$db->free_result($result);

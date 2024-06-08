@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * IconSelect.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -15,6 +13,9 @@
 namespace Bugo\LightPortal\Areas\Partials;
 
 use Bugo\Compat\{Lang, Utils};
+use Bugo\LightPortal\Utils\Icon;
+
+use function func_get_args;
 
 final class IconSelect extends AbstractPartial
 {
@@ -28,7 +29,7 @@ final class IconSelect extends AbstractPartial
 		$icon = empty($params['icon']) ? (Utils::$context['lp_block']['icon'] ?? '') : $params['icon'];
 		$type = empty($params['type']) ? (Utils::$context['lp_block']['type'] ?? '') : $params['type'];
 
-		$template = $this->getIcon($icon) . $icon;
+		$template = Icon::parse($icon) . $icon;
 
 		return /** @lang text */ '
 		<div id="' . $id . '" name="' . $id . '"></div>

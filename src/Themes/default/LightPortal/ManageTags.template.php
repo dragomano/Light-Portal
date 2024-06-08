@@ -1,6 +1,6 @@
 <?php
 
-use Bugo\Compat\{Config, Lang, Theme, Utils};
+use Bugo\Compat\{Config, Lang, Utils};
 use Bugo\LightPortal\Utils\Icon;
 
 function template_tag_post(): void

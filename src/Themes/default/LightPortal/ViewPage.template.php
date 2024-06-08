@@ -2,6 +2,7 @@
 
 use Bugo\Compat\{Config, Lang, Theme, Utils};
 use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Utils\Icon;
 
 function template_show_page(): void
@@ -92,7 +93,7 @@ function template_show_page(): void
 			<hr>';
 	}
 
-	AddonHandler::getInstance()->run('beforePageContent');
+	AddonHandler::getInstance()->run(PortalHook::beforePageContent);
 
 	if (! empty(Theme::$current->settings['og_image'])) {
 		echo '
@@ -102,7 +103,7 @@ function template_show_page(): void
 	echo '
 			<div class="page_', Utils::$context['lp_page']['type'], '">', Utils::$context['lp_page']['content'], '</div>';
 
-	AddonHandler::getInstance()->run('afterPageContent');
+	AddonHandler::getInstance()->run(PortalHook::afterPageContent);
 
 	echo '
 		</article>';
@@ -174,28 +175,28 @@ function show_related_pages(): void
 
 function show_comments(): void
 {
-	if (empty(Config::$modSettings['lp_show_comment_block']) || empty(Utils::$context['lp_page']['options']['allow_comments']))
+	if (empty(Config::$modSettings['lp_comment_block']) || empty(Utils::$context['lp_page']['options']['allow_comments']))
 		return;
 
-	if (Config::$modSettings['lp_show_comment_block'] === 'none')
+	if (Config::$modSettings['lp_comment_block'] === 'none')
 		return;
 
-	if (! empty(Utils::$context['lp_' . Config::$modSettings['lp_show_comment_block'] . '_comment_block'])) {
-		echo Utils::$context['lp_' . Config::$modSettings['lp_show_comment_block'] . '_comment_block'];
+	if (! empty(Utils::$context['lp_' . Config::$modSettings['lp_comment_block'] . '_comment_block'])) {
+		echo Utils::$context['lp_' . Config::$modSettings['lp_comment_block'] . '_comment_block'];
 		return;
 	}
 
-	if (Config::$modSettings['lp_show_comment_block'] !== 'default')
+	if (Config::$modSettings['lp_comment_block'] !== 'default')
 		return;
 
-	echo '
+	echo /** @lang text */ '
 	<div id="vue_comments"></div>
 	<script>
 		const vueGlobals = ', Utils::$context['lp_json'], ';
 	</script>';
 
 	if (is_file(Theme::$current->settings['default_theme_dir'] . '/scripts/light_portal/dev/helpers.js')) {
-		echo '
+		echo /** @lang text */ '
 	<script src="https://cdn.jsdelivr.net/combine/npm/vue@3/dist/vue.global.min.js,npm/vue3-sfc-loader@0,npm/vue-demi@0,npm/pinia@2,npm/showdown@2,npm/vue-showdown@4,npm/vue-i18n@9/dist/vue-i18n.global.prod.min.js,npm/@vueuse/shared@10,npm/@vueuse/core@10"></script>
 	<script type="module" src="https://cdn.jsdelivr.net/npm/@github/markdown-toolbar-element@2/dist/index.min.js"></script>
 	<script src="', Theme::$current->settings['default_theme_url'], '/scripts/light_portal/dev/helpers.js"></script>

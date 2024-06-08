@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * TopicArticle.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -15,6 +13,13 @@
 namespace Bugo\LightPortal\Articles;
 
 use Bugo\Compat\{BBCodeParser, Config, Db, Lang, User};
+use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Utils\{Avatar, Setting, Str};
+use Bugo\LightPortal\Enums\PortalHook;
+
+use function explode;
+use function implode;
+use function preg_replace;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -48,14 +53,14 @@ class TopicArticle extends AbstractArticle
 			'date DESC',
 		];
 
-		$this->hook('frontTopics', [
+		AddonHandler::getInstance()->run(PortalHook::frontTopics, [
 			&$this->columns, &$this->tables, &$this->params, &$this->wheres, &$this->orders
 		]);
 	}
 
 	public function getData(int $start, int $limit): array
 	{
-		if (empty($this->selectedBoards) && $this->isFrontpageMode('all_topics'))
+		if (empty($this->selectedBoards) && Setting::isFrontpageMode('all_topics'))
 			return [];
 
 		$this->params += [
@@ -133,17 +138,17 @@ class TopicArticle extends AbstractArticle
 
 			$this->prepareTeaser($topics, $row);
 
-			$this->hook('frontTopicsOutput', [&$topics, $row]);
+			AddonHandler::getInstance()->run(PortalHook::frontTopicsOutput, [&$topics, $row]);
 		}
 
 		Db::$db->free_result($result);
 
-		return $this->getItemsWithUserAvatars($topics);
+		return Avatar::getWithItems($topics);
 	}
 
 	public function getTotalCount(): int
 	{
-		if (empty($this->selectedBoards) && $this->isFrontpageMode('all_topics'))
+		if (empty($this->selectedBoards) && Setting::isFrontpageMode('all_topics'))
 			return 0;
 
 		$result = Db::$db->query('', /** @lang text */ '
@@ -199,7 +204,7 @@ class TopicArticle extends AbstractArticle
 
 	private function getTitle(array $row): string
 	{
-		$this->cleanBbcode($row['subject']);
+		Str::cleanBbcode($row['subject']);
 
 		Lang::censorText($row['subject']);
 
@@ -250,7 +255,7 @@ class TopicArticle extends AbstractArticle
 	private function getImage(array $row): string
 	{
 		$image = empty(Config::$modSettings['lp_show_images_in_articles'])
-			? '' : $this->getImageFromText(BBCodeParser::load()->parse($row['body'], false));
+			? '' : Str::getImageFromText(BBCodeParser::load()->parse($row['body'], false));
 
 		if (! empty($row['id_attach']) && empty($image)) {
 			$image = $this->getLink($row) . ';attach=' . $row['id_attach'] . ';image';
@@ -284,6 +289,6 @@ class TopicArticle extends AbstractArticle
 		$body = preg_replace('~\[code.*].*?\[/code]~Usi', '', $body);
 		$body = BBCodeParser::load()->parse($body, (bool) $row['smileys_enabled'], (int) $row['id_first_msg']);
 
-		$topics[$row['id_topic']]['teaser'] = $this->getTeaser($body);
+		$topics[$row['id_topic']]['teaser'] = Str::getTeaser($body);
 	}
 }

@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * BoardIndexNext.php (special for SMF 3.0)
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -12,17 +10,22 @@
  * @version 2.6
  */
 
-namespace Bugo\LightPortal\Actions;
+namespace Bugo\LightPortal\Utils;
 
-use SMF\Actions\BoardIndex;
+use function dirname;
+use function is_file;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class BoardIndexNext implements ActionInterface
+trait SafeRequireTrait
 {
-	public function show(): void
+	public function require(string $filename, string $extension = '.php'): void
 	{
-		BoardIndex::call();
+		$path = dirname(__DIR__) . DIRECTORY_SEPARATOR . $filename . $extension;
+
+		if (is_file($path)) {
+			require_once $path;
+		}
 	}
 }

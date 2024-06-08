@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * BoardIndex.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -14,19 +12,15 @@
 
 namespace Bugo\LightPortal\Actions;
 
-use Bugo\LightPortal\Helper;
+use Bugo\Compat\Actions\BoardIndex as Index;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class BoardIndex implements ActionInterface
 {
-	use Helper;
-
 	public function show(): void
 	{
-		$this->require('BoardIndex');
-
-		BoardIndex();
+		Index::call();
 	}
 }

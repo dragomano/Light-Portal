@@ -1,8 +1,6 @@
 <?php
 
 /**
- * ArticleList.php
- *
  * @package ArticleList (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.05.24
+ * @version 02.06.24
  */
 
 namespace Bugo\LightPortal\Addons\ArticleList;
@@ -19,8 +17,8 @@ use Bugo\Compat\{BBCodeParser, Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, RadioField};
 use Bugo\LightPortal\Areas\Partials\{ContentClassSelect, PageSelect, TopicSelect};
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Utils\Content;
+use Bugo\LightPortal\Enums\{Permission, Tab};
+use Bugo\LightPortal\Utils\{Content, Setting, Str};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -132,7 +130,7 @@ class ArticleList extends Block
 			$topics[$row['id_topic']] = [
 				'id'          => $row['id_topic'],
 				'title'       => $row['subject'],
-				'description' => $this->getTeaser($body),
+				'description' => Str::getTeaser($body),
 				'image'       => $image,
 			];
 		}
@@ -160,25 +158,25 @@ class ArticleList extends Block
 			[
 				'status'       => 1,
 				'current_time' => time(),
-				'permissions'  => $this->getPermissions(),
+				'permissions'  => Permission::all(),
 				'pages'        => explode(',', (string) $parameters['include_pages']),
 			]
 		);
 
 		$pages = [];
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
-			if ($this->isFrontpage($row['slug']))
+			if (Setting::isFrontpage($row['slug']))
 				continue;
 
 			$row['content'] = Content::parse($row['content'], $row['type']);
 
-			$image = empty($parameters['seek_images']) ? '' : $this->getImageFromText($row['content']);
+			$image = empty($parameters['seek_images']) ? '' : Str::getImageFromText($row['content']);
 
 			$pages[$row['page_id']] = [
 				'id'          => $row['page_id'],
 				'title'       => $titles[$row['page_id']] ?? [],
 				'slug'        => $row['slug'],
-				'description' => $this->getTeaser($row['description'] ?: strip_tags($row['content'])),
+				'description' => Str::getTeaser($row['description'] ?: strip_tags($row['content'])),
 				'image'       => $image ?: (Config::$modSettings['lp_image_placeholder'] ?? ''),
 			];
 		}
@@ -221,7 +219,7 @@ class ArticleList extends Block
 				}
 			} else {
 				foreach ($articles as $page) {
-					if (empty($title = $this->getTranslatedTitle($page['title'])))
+					if (empty($title = Str::getTranslatedTitle($page['title'])))
 						continue;
 
 					$content = '';

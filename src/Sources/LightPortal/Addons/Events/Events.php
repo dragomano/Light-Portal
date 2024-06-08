@@ -1,8 +1,6 @@
 <?php
 
 /**
- * Events.php
- *
  * @package Events (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,12 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 25.05.24
+ * @version 06.06.24
  */
 
 namespace Bugo\LightPortal\Addons\Events;
 
-use Bugo\Compat\{Calendar, Lang, User, Utils};
+use Bugo\Compat\{Actions\Calendar, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\LightPortal\Areas\Fields\NumberField;

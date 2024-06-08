@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * CategorySelect.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -15,9 +13,17 @@
 namespace Bugo\LightPortal\Areas\Partials;
 
 use Bugo\Compat\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\EntityDataTrait;
+use Bugo\LightPortal\Utils\Icon;
+
+use function count;
+use function func_get_args;
+use function json_encode;
 
 final class CategorySelect extends AbstractPartial
 {
+	use EntityDataTrait;
+
 	public function __invoke(): string
 	{
 		$params = func_get_args();
@@ -32,7 +38,7 @@ final class CategorySelect extends AbstractPartial
 		$data = [];
 		foreach ($params['data'] as $id => $cat) {
 			$data[] = [
-				'label' => $this->getIcon($cat['icon']) . $cat['title'],
+				'label' => Icon::parse($cat['icon']) . $cat['title'],
 				'value' => $id,
 			];
 		}

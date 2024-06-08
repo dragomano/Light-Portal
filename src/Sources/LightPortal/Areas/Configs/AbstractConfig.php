@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * AbstractConfig.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -15,15 +13,12 @@
 namespace Bugo\LightPortal\Areas\Configs;
 
 use Bugo\Compat\Config;
-use Bugo\LightPortal\Helper;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 abstract class AbstractConfig
 {
-	use Helper;
-
 	abstract public function show(): void;
 
 	protected function addDefaultValues(array $values): void

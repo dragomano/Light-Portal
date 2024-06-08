@@ -1,8 +1,6 @@
 <?php
 
 /**
- * Chat.php
- *
  * @package SimpleChat (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,20 +8,24 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 04.03.24
+ * @version 02.06.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleChat;
 
+use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\Compat\{User, Utils};
 use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Utils\Avatar;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
 class Chat
 {
-	use Helper;
+	use CacheTrait;
+	use RequestTrait;
 
 	public function getMessages(int $block_id = 0): array
 	{
@@ -92,7 +94,7 @@ class Chat
 			'author'     => [
 				'id'     => User::$info['id'],
 				'name'   => User::$info['name'],
-				'avatar' => $this->getUserAvatar(User::$info['id']),
+				'avatar' => Avatar::get(User::$info['id']),
 			],
 		];
 

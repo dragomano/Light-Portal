@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * PageSlugSelect.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -15,9 +13,15 @@
 namespace Bugo\LightPortal\Areas\Partials;
 
 use Bugo\Compat\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\EntityDataTrait;
+
+use function func_get_args;
+use function json_encode;
 
 final class PageSlugSelect extends AbstractPartial
 {
+	use EntityDataTrait;
+
 	public function __invoke(): string
 	{
 		$params = func_get_args();

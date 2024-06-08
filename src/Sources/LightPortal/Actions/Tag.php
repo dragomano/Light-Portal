@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * Tag.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -16,16 +14,25 @@ namespace Bugo\LightPortal\Actions;
 
 use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, User, Utils};
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Utils\ItemList;
+use Bugo\LightPortal\Enums\{Permission, Status};
+use Bugo\LightPortal\Utils\{Icon, ItemList, RequestTrait};
 use IntlException;
 use Nette\Utils\Html;
+
+use function array_key_exists;
+use function count;
+use function sprintf;
+use function time;
+
+use const LP_BASE_URL;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class Tag extends AbstractPageList
 {
+	use RequestTrait;
+
 	public function show(PageInterface $page): void
 	{
 		if ($this->request()->hasNot('id')) {
@@ -114,7 +121,7 @@ final class Tag extends AbstractPageList
 				'status'        => Status::ACTIVE->value,
 				'statuses'      => [Status::ACTIVE->value, Status::INTERNAL->value],
 				'current_time'  => time(),
-				'permissions'   => $this->getPermissions(),
+				'permissions'   => Permission::all(),
 				'sort'          => $sort,
 				'start'         => $start,
 				'limit'         => $limit,
@@ -145,7 +152,7 @@ final class Tag extends AbstractPageList
 				'status'       => Status::ACTIVE->value,
 				'statuses'     => [Status::ACTIVE->value, Status::INTERNAL->value],
 				'current_time' => time(),
-				'permissions'  => $this->getPermissions(),
+				'permissions'  => Permission::all(),
 			]
 		);
 
@@ -189,7 +196,6 @@ final class Tag extends AbstractPageList
 							->href($entry['link'])
 							->setText($entry['title'])
 							->toHtml(),
-						'class' => 'centertext'
 					],
 					'sort' => [
 						'default' => 'title DESC',
@@ -245,7 +251,7 @@ final class Tag extends AbstractPageList
 				'fallback_lang' => Config::$language,
 				'statuses'      => [Status::ACTIVE->value, Status::INTERNAL->value],
 				'current_time'  => time(),
-				'permissions'   => $this->getPermissions(),
+				'permissions'   => Permission::all(),
 				'status'        => Status::ACTIVE->value,
 				'sort'          => $sort,
 				'start'         => $start,
@@ -256,7 +262,7 @@ final class Tag extends AbstractPageList
 		$items = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['tag_id']] = [
-				'icon'      => $this->getIcon($row['icon']),
+				'icon'      => Icon::parse($row['icon']),
 				'title'     => $row['title'],
 				'link'      => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id'],
 				'frequency' => (int) $row['frequency'],

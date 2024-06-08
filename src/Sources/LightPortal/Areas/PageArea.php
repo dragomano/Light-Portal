@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * PageArea.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -16,26 +14,44 @@ namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, ErrorHandler, Lang};
 use Bugo\Compat\{Logging, Security, Theme, User, Utils};
+use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, TextField};
 use Bugo\LightPortal\Areas\Partials\{CategorySelect, PageAuthorSelect, PageIconSelect};
 use Bugo\LightPortal\Areas\Partials\{PermissionSelect, StatusSelect, TagSelect};
+use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Areas\Validators\PageValidator;
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Enums\{PortalHook, Status, Tab};
 use Bugo\LightPortal\Models\PageModel;
 use Bugo\LightPortal\Repositories\PageRepository;
-use Bugo\LightPortal\Utils\{Content, DateTime, Icon, ItemList};
+use Bugo\LightPortal\Utils\{CacheTrait, Content, DateTime, EntityDataTrait};
+use Bugo\LightPortal\Utils\{Icon, ItemList, RequestTrait, Setting, Str};
 use IntlException;
 use Nette\Utils\Html;
+
+use function array_column;
+use function array_diff;
+use function array_merge;
+use function array_multisort;
+use function base64_encode;
+use function count;
+use function filter_input;
+use function implode;
+use function is_array;
+use function str_replace;
+use function time;
+use function trim;
+
+use const LP_NAME;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class PageArea
 {
-	use Area;
-	use Helper;
+	use AreaTrait;
+	use CacheTrait;
+	use EntityDataTrait;
+	use RequestTrait;
 
 	private array $params = [];
 
@@ -271,7 +287,7 @@ final class PageArea
 				'value' => '
 					<select name="page_actions">
 						<option value="delete">' . Lang::$txt['remove'] . '</option>' . (Utils::$context['allow_light_portal_approve_pages'] || Utils::$context['allow_light_portal_manage_pages_any'] ? '
-						<option value="toggle">' . Lang::$txt['lp_action_toggle'] . '</option>' : '') . ($this->isFrontpageMode('chosen_pages') ? '
+						<option value="toggle">' . Lang::$txt['lp_action_toggle'] . '</option>' : '') . (Setting::isFrontpageMode('chosen_pages') ? '
 						<option value="promote_up">' . Lang::$txt['lp_promote_to_fp'] . '</option>
 						<option value="promote_down">' . Lang::$txt['lp_remove_from_fp'] . '</option>' : '') . '
 					</select>
@@ -295,7 +311,7 @@ final class PageArea
 			)
 			->toHtml() . $listOptions['title'];
 
-		if ($this->getCommentBlockType() === 'default') {
+		if (Setting::getCommentBlock() === 'default') {
 			unset($listOptions['columns']['num_comments']);
 		}
 
@@ -401,11 +417,6 @@ final class PageArea
 		$this->repository->setData(Utils::$context['lp_page']['id']);
 	}
 
-	/**
-	 * Possible actions with pages
-	 *
-	 * Возможные действия со страницами
-	 */
 	private function doActions(): void
 	{
 		if ($this->request()->hasNot('actions'))
@@ -413,11 +424,10 @@ final class PageArea
 
 		$data = $this->request()->json();
 
-		if (isset($data['del_item']))
-			$this->repository->remove([(int) $data['del_item']]);
-
-		if (isset($data['toggle_item']))
-			$this->repository->toggleStatus([(int) $data['toggle_item']], 'page');
+		match (true) {
+			isset($data['delete_item']) => $this->repository->remove([(int) $data['delete_item']]),
+			isset($data['toggle_item']) => $this->repository->toggleStatus([(int) $data['toggle_item']]),
+		};
 
 		$this->cache()->flush();
 
@@ -439,7 +449,7 @@ final class PageArea
 				$this->repository->remove($items);
 				break;
 			case 'toggle':
-				$this->repository->toggleStatus($items, 'page');
+				$this->repository->toggleStatus($items);
 				break;
 			case 'promote_up':
 				$this->promote($items);
@@ -588,7 +598,7 @@ final class PageArea
 
 		$params = [];
 
-		$this->hook('preparePageParams', [&$params]);
+		AddonHandler::getInstance()->run(PortalHook::preparePageParams, [&$params]);
 
 		return array_merge($baseParams, $params);
 	}
@@ -613,8 +623,8 @@ final class PageArea
 			$page->titles[$lang['filename']] = $postData['title_' . $lang['filename']] ?? $page->titles[$lang['filename']] ?? '';
 		}
 
-		$this->cleanBbcode($page->titles);
-		$this->cleanBbcode($page->description);
+		Str::cleanBbcode($page->titles);
+		Str::cleanBbcode($page->description);
 
 		foreach ($page->options as $option => $value) {
 			if (isset($parameters[$option]) && isset($postData) && ! isset($postData[$option])) {
@@ -722,19 +732,19 @@ final class PageArea
 				->setValue(Utils::$context['lp_page']['options']['show_related_pages']);
 		}
 
-		if ($this->getCommentBlockType() !== '' && $this->getCommentBlockType() !== 'none') {
+		if (Setting::getCommentBlock() !== '' && Setting::getCommentBlock() !== 'none') {
 			CheckboxField::make('allow_comments', Lang::$txt['lp_page_allow_comments'])
 				->setValue(Utils::$context['lp_page']['options']['allow_comments']);
 		}
 
-		$this->hook('preparePageFields');
+		AddonHandler::getInstance()->run(PortalHook::preparePageFields);
 
 		$this->preparePostFields();
 	}
 
 	private function prepareEditor(): void
 	{
-		$this->hook('prepareEditor', [Utils::$context['lp_page']]);
+		AddonHandler::getInstance()->run(PortalHook::prepareEditor, [Utils::$context['lp_page']]);
 	}
 
 	private function preparePreview(): void
@@ -749,7 +759,8 @@ final class PageArea
 			Utils::$context['lp_page']['content'], ENT_QUOTES
 		);
 
-		$this->cleanBbcode(Utils::$context['preview_title']);
+		Str::cleanBbcode(Utils::$context['preview_title']);
+
 		Lang::censorText(Utils::$context['preview_title']);
 		Lang::censorText(Utils::$context['preview_content']);
 

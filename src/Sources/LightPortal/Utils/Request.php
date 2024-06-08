@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * Request.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -13,6 +11,12 @@
  */
 
 namespace Bugo\LightPortal\Utils;
+
+use function file_get_contents;
+use function json_decode;
+
+if (! defined('SMF'))
+	die('No direct access...');
 
 final class Request extends GlobalArray
 {

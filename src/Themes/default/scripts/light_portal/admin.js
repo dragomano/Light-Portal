@@ -25,7 +25,7 @@ class PortalEntity {
     if (!item) return false;
 
     await axios.post(this.workUrl, {
-      del_item: item,
+      delete_item: item,
     });
 
     target.closest('tr').remove();
@@ -168,10 +168,10 @@ class Tag extends PortalEntity {
   }
 }
 
-class Tabs {
+class PortalTabs {
   #refs = null;
 
-  constructor(selector) {
+  constructor(selector = '.lp_tabs') {
     this.#refs = {
       navigation: document.querySelector(`${selector} [data-navigation]`),
       content: document.querySelector(`${selector} [data-content]`),
@@ -191,7 +191,7 @@ class Tabs {
   }
 
   #onChangeNavigation({ target }) {
-    if (!['DIV', 'I'].includes(target.nodeName)) return;
+    if (!['DIV', 'I'].includes(target.nodeName) || target.hasAttribute('data-navigation')) return;
 
     const currentButton = target.nodeName === 'I' ? target.parentNode : target;
 

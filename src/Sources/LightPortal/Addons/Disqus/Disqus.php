@@ -1,8 +1,6 @@
 <?php
 
 /**
- * Disqus.php
- *
  * @package Disqus (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,13 +8,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 21.03.24
+ * @version 02.06.24
  */
 
 namespace Bugo\LightPortal\Addons\Disqus;
 
 use Bugo\Compat\{Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Utils\Setting;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -27,7 +26,7 @@ class Disqus extends Plugin
 
 	public function init(): void
 	{
-		Lang::$txt['lp_show_comment_block_set']['disqus'] = 'Disqus';
+		Lang::$txt['lp_comment_block_set']['disqus'] = 'Disqus';
 	}
 
 	public function addSettings(array &$settings): void
@@ -37,7 +36,7 @@ class Disqus extends Plugin
 
 	public function comments(): void
 	{
-		if ($this->getCommentBlockType() !== 'disqus' || empty(Utils::$context['lp_disqus_plugin']['shortname']))
+		if (Setting::getCommentBlock() !== 'disqus' || empty(Utils::$context['lp_disqus_plugin']['shortname']))
 			return;
 
 		Utils::$context['lp_disqus_comment_block'] = /** @lang text */ '
@@ -58,7 +57,7 @@ class Disqus extends Plugin
 
 	public function frontAssets(): void
 	{
-		if ($this->getCommentBlockType() !== 'disqus' || empty(Utils::$context['lp_frontpage_articles']))
+		if (Setting::getCommentBlock() !== 'disqus' || empty(Utils::$context['lp_frontpage_articles']))
 			return;
 
 		if (empty(Utils::$context['lp_disqus_plugin']['shortname']))

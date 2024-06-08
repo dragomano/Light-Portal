@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * LanguageNext.php (special for SMF 3.0)
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -12,19 +10,20 @@
  * @version 2.6
  */
 
-namespace Bugo\LightPortal\Utils;
+namespace Bugo\LightPortal\Hooks;
 
-use SMF\Lang;
+use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Enums\PortalHook;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class LanguageNext
+class DownloadRequest
 {
-	public const FALLBACK = 'en_US';
-
-	public static function getNameFromLocale(string $locale): string
+	public function __invoke(&$attachRequest): void
 	{
-		return array_flip(Lang::LANG_TO_LOCALE)[$locale] ?? 'english';
+		(new LoadTheme())();
+
+		AddonHandler::getInstance()->run(PortalHook::downloadRequest, [&$attachRequest]);
 	}
 }

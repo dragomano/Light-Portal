@@ -1,8 +1,6 @@
 <?php
 
 /**
- * SiteList.php
- *
  * @package SiteList (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,13 +8,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 21.03.24
+ * @version 02.06.24
  */
 
 namespace Bugo\LightPortal\Addons\SiteList;
 
 use Bugo\Compat\{Config, Theme, Utils};
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Enums\VarType;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -56,8 +55,8 @@ class SiteList extends Plugin
 
 		if ($this->request()->has('url')) {
 			foreach ($this->request('url') as $key => $value) {
-				$sites[$this->filterVar($value, 'url')] = [
-					$this->filterVar($this->request('image')[$key], 'url'),
+				$sites[VarType::URL->filter($value)] = [
+					VarType::URL->filter($this->request('image')[$key]),
 					$this->request('title')[$key],
 					$this->request('desc')[$key],
 				];

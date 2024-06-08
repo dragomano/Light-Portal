@@ -1,8 +1,6 @@
 <?php
 
 /**
- * PluginMaker.php
- *
  * @package PluginMaker (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 05.06.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -18,6 +16,9 @@ namespace Bugo\LightPortal\Addons\PluginMaker;
 use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\Addons\Plugin;
 use Bugo\LightPortal\Utils\Icon;
+
+use function array_combine;
+use function array_merge;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -29,7 +30,10 @@ class PluginMaker extends Plugin
 	public function init(): void
 	{
 		Utils::$context['lp_plugin_option_types'] = array_combine(
-			['text', 'url', 'color', 'int', 'float', 'check', 'multiselect', 'select', 'range', 'title', 'desc', 'callback'],
+			[
+				'text', 'url', 'color', 'int', 'float', 'check',
+				'multiselect', 'select', 'range', 'title', 'desc', 'callback'
+			],
 			Lang::$txt['lp_plugin_maker']['option_type_set']
 		);
 	}

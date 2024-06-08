@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * BlockModel.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -16,6 +14,8 @@ namespace Bugo\LightPortal\Models;
 
 use Bugo\Compat\{Config, Utils};
 use Bugo\LightPortal\Enums\Status;
+
+use function array_key_first;
 
 if (! defined('SMF'))
 	die('No direct access...');

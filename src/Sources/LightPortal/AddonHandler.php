@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * AddonHandler.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -14,19 +12,43 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\Compat\{Lang, Theme, User, Utils, WebFetchApi};
+use Bugo\Compat\Lang;
+use Bugo\Compat\Theme;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
+use Bugo\Compat\WebFetchApi;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\Language;
-use MatthiasMullie\Minify\{CSS, JS};
+use Bugo\LightPortal\Utils\Str;
+use MatthiasMullie\Minify\CSS;
+use MatthiasMullie\Minify\JS;
 use SplObjectStorage;
+
+use function array_map;
+use function array_merge;
+use function array_unique;
+use function basename;
+use function class_exists;
+use function file_put_contents;
+use function filemtime;
+use function glob;
+use function in_array;
+use function is_array;
+use function is_dir;
+use function is_file;
+use function method_exists;
+use function mkdir;
+use function ucfirst;
+
+use const GLOB_ONLYDIR;
+use const LP_ADDON_DIR;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class AddonHandler
 {
-	use Helper;
-
 	private array $settings;
 
 	private SplObjectStorage $storage;
@@ -60,8 +82,10 @@ final class AddonHandler
 		return array_map(static fn($item): string => basename($item), $dirs);
 	}
 
-	public function run(string $hook = 'init', array $vars = [], array $plugins = []): void
+	public function run(PortalHook $hook = PortalHook::init, array $vars = [], array $plugins = []): void
 	{
+		$hook = $hook->name;
+
 		$addons = $plugins ?: Utils::$context['lp_enabled_plugins'] ?? [];
 
 		if (empty($addons) || isset(Utils::$context['uninstalling']))
@@ -83,29 +107,26 @@ final class AddonHandler
 				]);
 
 				$path = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $addon . DIRECTORY_SEPARATOR;
-				$snakeName = $this->getSnakeName($addon);
+				$snakeName = Str::getSnakeName($addon);
 
 				Utils::$context[$this->prefix . $snakeName . '_plugin'] = $this->settings[$snakeName] ?? [];
 				Utils::$context['lp_loaded_addons'][$snakeName] = $this->storage->offsetGet($class);
 
 				$this->loadLangs($path, $snakeName);
-
 				$this->loadAssets($path, $addon);
 			}
 
 			if (method_exists($class, $hook)) {
-				$hook === 'init' && in_array($addon, Utils::$context['lp_enabled_plugins'])
+				$hook === PortalHook::init && in_array($addon, Utils::$context['lp_enabled_plugins'])
 					? $class->init()
 					: $class->$hook(...$vars);
 			}
 		}
-
-		$this->minify();
 	}
 
 	private function prepareAssets(array $assets = []): void
 	{
-		$this->run('prepareAssets', [&$assets]);
+		$this->run(PortalHook::prepareAssets, [&$assets]);
 
 		foreach (['css', 'scripts', 'images'] as $type) {
 			if (! isset($assets[$type]))
@@ -206,5 +227,7 @@ final class AddonHandler
 		$this->js = new JS();
 
 		$this->prepareAssets();
+
+		$this->minify();
 	}
 }

@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * PlacementSelect.php
- *
  * @package AdsBlock (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -38,7 +36,7 @@ final class PlacementSelect extends AbstractPartial
 			}
 		}
 
-		return '
+		return /** @lang text */ '
 		<div id="ads_placement" name="ads_placement"></div>
 		<script>
 			VirtualSelect.init({
