@@ -12,11 +12,17 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\Compat\{Lang, Theme, User, Utils, WebFetchApi};
+use Bugo\Compat\Lang;
+use Bugo\Compat\Theme;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
+use Bugo\Compat\WebFetchApi;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Repositories\PluginRepository;
-use Bugo\LightPortal\Utils\{Language, Str};
-use MatthiasMullie\Minify\{CSS, JS};
+use Bugo\LightPortal\Utils\Language;
+use Bugo\LightPortal\Utils\Str;
+use MatthiasMullie\Minify\CSS;
+use MatthiasMullie\Minify\JS;
 use SplObjectStorage;
 
 use function array_map;
@@ -116,8 +122,6 @@ final class AddonHandler
 					: $class->$hook(...$vars);
 			}
 		}
-
-		$this->minify();
 	}
 
 	private function prepareAssets(array $assets = []): void
@@ -223,5 +227,7 @@ final class AddonHandler
 		$this->js = new JS();
 
 		$this->prepareAssets();
+
+		$this->minify();
 	}
 }

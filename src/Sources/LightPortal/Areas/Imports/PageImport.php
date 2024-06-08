@@ -31,6 +31,8 @@ final class PageImport extends AbstractImport
 {
 	use WithCommentsTrait;
 
+	protected string $entity = 'pages';
+
 	public function main(): void
 	{
 		User::mustHavePermission('admin_forum');
@@ -153,6 +155,6 @@ final class PageImport extends AbstractImport
 		$this->replaceTitles($titles, $results);
 		$this->replaceParams($params, $results);
 		$this->replaceComments($comments, $results);
-		$this->finishTransaction($results, 'pages');
+		$this->finishTransaction($results);
 	}
 }

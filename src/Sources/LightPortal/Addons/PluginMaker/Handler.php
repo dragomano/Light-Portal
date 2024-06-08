@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 05.06.24
+ * @version 08.06.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
@@ -647,8 +647,6 @@ class Handler extends Plugin
 
 		$file = new PhpFile;
 		$file->addNamespace($namespace);
-		$file->addComment(Utils::$context['lp_plugin']['name'] . '.php');
-		$file->addComment('');
 		$file->addComment("@package " . Utils::$context['lp_plugin']['name'] . " (" . LP_NAME .')');
 		$file->addComment("@link " . Utils::$context['lp_plugin']['site']);
 		$file->addComment("@author " . Utils::$context['lp_plugin']['author'] . " <" . Utils::$context['lp_plugin']['email'] . ">");

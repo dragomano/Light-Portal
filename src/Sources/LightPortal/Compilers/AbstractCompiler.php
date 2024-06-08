@@ -16,6 +16,10 @@ use Bugo\Compat\{Config, Sapi, Theme};
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Utils\SMFHookTrait;
 
+use function filemtime;
+use function is_file;
+use function touch;
+
 abstract class AbstractCompiler implements CompilerInterface
 {
 	use SMFHookTrait;

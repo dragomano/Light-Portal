@@ -15,6 +15,8 @@ namespace Bugo\LightPortal\Enums;
 use Bugo\Compat\{Lang, User};
 use Bugo\LightPortal\Enums\Traits\HasNamesTrait;
 
+use function array_slice;
+
 enum ContentType
 {
 	use HasNamesTrait;

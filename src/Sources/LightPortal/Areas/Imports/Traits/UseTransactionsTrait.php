@@ -32,7 +32,7 @@ trait UseTransactionsTrait
 		Utils::$context['import_successful'] = count($items);
 	}
 
-	protected function finishTransaction(array $results, string $type = 'blocks'): void
+	protected function finishTransaction(array $results): void
 	{
 		if ($results === []) {
 			Db::$db->transaction('rollback');
@@ -44,7 +44,7 @@ trait UseTransactionsTrait
 
 		Utils::$context['import_successful'] = sprintf(
 			Lang::$txt['lp_import_success'],
-			Lang::getTxt('lp_' . $type . '_set', [$type => Utils::$context['import_successful']])
+			Lang::getTxt('lp_' . $this->entity . '_set', [$this->entity => Utils::$context['import_successful']])
 		);
 
 		$this->cache()->flush();

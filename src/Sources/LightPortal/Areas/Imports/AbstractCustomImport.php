@@ -52,6 +52,6 @@ abstract class AbstractCustomImport implements ImportInterface, CustomImportInte
 
 		$results = $this->importItems($items, $titles);
 
-		$this->finishTransaction($results, $this->entity);
+		$this->finishTransaction($results);
 	}
 }

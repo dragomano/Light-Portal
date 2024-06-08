@@ -29,6 +29,8 @@ if (! defined('SMF'))
  */
 final class BlockImport extends AbstractImport
 {
+	protected string $entity = 'blocks';
+
 	public function main(): void
 	{
 		Theme::loadTemplate('LightPortal/ManageImpex');

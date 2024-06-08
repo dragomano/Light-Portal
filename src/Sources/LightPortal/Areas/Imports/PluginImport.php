@@ -27,6 +27,8 @@ if (! defined('SMF'))
 
 final class PluginImport extends AbstractImport
 {
+	protected string $entity = 'plugins';
+
 	public function main(): void
 	{
 		Theme::loadTemplate('LightPortal/ManageImpex');

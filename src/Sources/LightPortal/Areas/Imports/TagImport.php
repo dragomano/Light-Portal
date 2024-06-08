@@ -27,6 +27,8 @@ if (! defined('SMF'))
  */
 final class TagImport extends AbstractImport
 {
+	protected string $entity = 'tags';
+
 	public function main(): void
 	{
 		Theme::loadTemplate('LightPortal/ManageImpex');
@@ -122,6 +124,6 @@ final class TagImport extends AbstractImport
 			);
 		}
 
-		$this->finishTransaction($results, 'tags');
+		$this->finishTransaction($results);
 	}
 }

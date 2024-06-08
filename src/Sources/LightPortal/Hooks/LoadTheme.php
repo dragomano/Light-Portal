@@ -43,7 +43,7 @@ class LoadTheme
 
 	public function __construct()
 	{
-		$this->config = require_once dirname(__DIR__) . '/config/config.php';
+		$this->config = require_once dirname(__DIR__) . '/Settings/config.php';
 	}
 
 	public function __invoke(): void

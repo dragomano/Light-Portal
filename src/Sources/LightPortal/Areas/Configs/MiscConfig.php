@@ -54,7 +54,7 @@ final class MiscConfig extends AbstractConfig
 			[
 				'text',
 				'lp_page_param',
-				'subtext' => Config::$scripturl . '?<strong>' . LP_PAGE_PARAM . '</strong>=somealias'
+				'subtext' => Config::$scripturl . '?<strong>' . LP_PAGE_PARAM . '</strong>=page_slug'
 			],
 			['title', 'admin_maintenance'],
 			['check', 'lp_weekly_cleaning']

@@ -18,6 +18,7 @@ use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionTrait;
 
+use Nette\Utils\Html;
 use function asort;
 
 if (! defined('SMF'))
@@ -45,7 +46,11 @@ final class ExtraConfig extends AbstractConfig
 		unset(Lang::$txt['lp_comment_block_set'][0], Lang::$txt['lp_comment_block_set'][1]);
 		asort(Lang::$txt['lp_comment_block_set']);
 
-		Lang::$txt['lp_fa_source_title'] .= ' <img class="floatright" src="https://data.jsdelivr.com/v1/package/npm/@fortawesome/fontawesome-free/badge?style=rounded" alt="">';
+		Lang::$txt['lp_fa_source_title'] .= ' ' . Html::el('img', [
+			'class' => 'floatright',
+			'src'   => 'https://data.jsdelivr.com/v1/package/npm/@fortawesome/fontawesome-free/badge?style=rounded',
+			'alt'   => '',
+		]);
 
 		$this->addDefaultValues([
 			'lp_num_comments_per_page' => 10,
@@ -146,15 +151,18 @@ final class ExtraConfig extends AbstractConfig
 
 			if ($this->request()->isNotEmpty('lp_menu_separate_subsection_href')) {
 				$this->post()->put(
-					'lp_menu_separate_subsection_href', VarType::URL->filter($this->request('lp_menu_separate_subsection_href'))
+					'lp_menu_separate_subsection_href',
+					VarType::URL->filter($this->request('lp_menu_separate_subsection_href'))
 				);
 			}
 
-			if ($this->request()->isNotEmpty('lp_fa_custom'))
+			if ($this->request()->isNotEmpty('lp_fa_custom')) {
 				$this->post()->put('lp_fa_custom', VarType::URL->filter($this->request('lp_fa_custom')));
+			}
 
-			if ($this->request()->isNotEmpty('lp_fa_kit'))
+			if ($this->request()->isNotEmpty('lp_fa_kit')) {
 				$this->post()->put('lp_fa_kit', VarType::URL->filter($this->request('lp_fa_kit')));
+			}
 
 			$saveVars = $configVars;
 			ACP::saveDBSettings($saveVars);

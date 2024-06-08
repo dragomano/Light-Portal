@@ -23,6 +23,7 @@ use function array_filter;
 use function array_flip;
 use function array_keys;
 use function array_merge;
+use function in_array;
 use function sprintf;
 use function str_replace;
 

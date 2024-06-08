@@ -27,6 +27,8 @@ if (! defined('SMF'))
  */
 final class CategoryImport extends AbstractImport
 {
+	protected string $entity = 'categories';
+
 	public function main(): void
 	{
 		Theme::loadTemplate('LightPortal/ManageImpex');
@@ -101,6 +103,6 @@ final class CategoryImport extends AbstractImport
 		);
 
 		$this->replaceTitles($titles, $results);
-		$this->finishTransaction($results, 'categories');
+		$this->finishTransaction($results);
 	}
 }
