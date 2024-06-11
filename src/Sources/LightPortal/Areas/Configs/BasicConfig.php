@@ -20,6 +20,7 @@ use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionTrait;
 use IntlException;
+use Nette\Utils\Html;
 
 use function array_combine;
 use function array_map;
@@ -68,6 +69,14 @@ final class BasicConfig extends AbstractConfig
 		);
 
 		$javascript = ':disabled="[\'0\', \'chosen_page\'].includes(frontpage_mode)"';
+
+		$templateEditLink = sprintf('&nbsp;' . Html::el('a', [
+				'href' => '%s?action=admin;area=theme;th=1;%s=%s;sa=edit;directory=LightPortal/layouts',
+			])->setText(Lang::$txt['lp_template_edit_link'])->toHtml(),
+			Config::$scripturl,
+			Utils::$context['session_var'],
+			Utils::$context['session_id'],
+		);
 
 		$configVars = [
 			['callback', 'frontpage_mode_settings_before'],
@@ -132,7 +141,8 @@ final class BasicConfig extends AbstractConfig
 				'select',
 				'lp_frontpage_layout',
 				(new FrontPage())->getLayouts(),
-				'javascript' => $javascript
+				'javascript' => $javascript,
+				'postinput' => $templateEditLink
 			],
 			[
 				'check',
