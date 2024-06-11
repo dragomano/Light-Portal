@@ -58,6 +58,7 @@ $txt['lp_frontpage_article_sorting'] = 'Sort articles';
 $txt['lp_frontpage_article_sorting_set'] = ['By last comment', 'By posting date (new first)', 'By posting date (old first)', 'By last update (fresh first)'];
 $txt['lp_frontpage_article_sorting_help'] = 'When you select the first option, the article cards display the dates and the latest commentators (if they are available).';
 $txt['lp_frontpage_layout'] = 'Template layout for article cards';
+$txt['lp_template_edit_link'] = 'Edit template layouts';
 $txt['lp_show_layout_switcher'] = 'Show layout switcher';
 $txt['lp_frontpage_num_columns'] = 'Number of columns for displaying articles';
 $txt['lp_frontpage_num_columns_set'] = '{columns, plural,
