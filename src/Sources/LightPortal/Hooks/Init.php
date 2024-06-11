@@ -37,7 +37,7 @@ class Init
 		define('LP_PAGE_PARAM', Config::$modSettings['lp_page_param'] ?? 'page');
 		define('LP_BASE_URL', Config::$scripturl . '?action=' . LP_ACTION);
 		define('LP_PAGE_URL', Config::$scripturl . '?' . LP_PAGE_PARAM . '=');
-		define('LP_ALIAS_PATTERN', '^[a-z][a-z0-9-_]+$');
+		define('LP_ALIAS_PATTERN', '^[a-z][a-z0-9\-]+$');
 		define('LP_AREAS_PATTERN', '^[a-z][a-z0-9=|\-,!]+$');
 		define('LP_ADDON_PATTERN', '^[A-Z][a-zA-Z]+$');
 	}
