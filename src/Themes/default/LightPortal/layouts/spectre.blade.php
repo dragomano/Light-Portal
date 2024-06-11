@@ -22,7 +22,7 @@
 								@unless (empty($article['views']['num']))
 									@icon(['views', $article['views']['title']])
 									{{ $article['views']['num'] }}
-								@enunlessf
+								@endunless
 
 								@unless (empty($article['views']['after']))
 									{!! $article['views']['after'] !!}
