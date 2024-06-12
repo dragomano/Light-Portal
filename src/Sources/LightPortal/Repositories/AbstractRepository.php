@@ -46,7 +46,7 @@ abstract class AbstractRepository
 
 		Db::$db->query('', '
 			UPDATE {db_prefix}lp_' . $table . '
-			SET status = CASE status WHEN 1 THEN 0 WHEN 0 THEN 1 WHEN 2 THEN 1 WHEN 3 THEN 0 END
+			SET status = CASE status WHEN 1 THEN 0 WHEN 0 THEN 1 WHEN 2 THEN 1 WHEN 3 THEN 0 ELSE status END
 			WHERE ' . $this->entity . '_id IN ({array_int:items})',
 			[
 				'items' => $items,

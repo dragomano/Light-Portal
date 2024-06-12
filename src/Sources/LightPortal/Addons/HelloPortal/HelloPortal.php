@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 05.06.24
+ * @version 11.06.24
  */
 
 namespace Bugo\LightPortal\Addons\HelloPortal;
@@ -16,6 +16,7 @@ namespace Bugo\LightPortal\Addons\HelloPortal;
 use Bugo\Compat\{Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Plugin;
 use Bugo\LightPortal\Enums\Hook;
+use Nette\Utils\Html;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -48,9 +49,13 @@ class HelloPortal extends Plugin
 		) {
 			$menu = Utils::$context['admin_menu_name'];
 			$tabs = Utils::$context[$menu]['tab_data'];
-			$button = '<button class="button floatnone lp_hello_portal_button" @click.prevent="runTour()" x-data>'
-				. Lang::$txt['lp_hello_portal']['tour_button'] . '</button>';
-			$tabs['title'] .= $button;
+			$tabs['title'] .= Html::el('button', [
+					'class' => 'button floatnone lp_hello_portal_button',
+					'x-on:click.prevent' => 'runTour()',
+					'x-data' => '',
+				])
+				->setText(Lang::$txt['lp_hello_portal']['tour_button'])
+				->toHtml();
 			Utils::$context[$menu]['tab_data'] = $tabs;
 		}
 

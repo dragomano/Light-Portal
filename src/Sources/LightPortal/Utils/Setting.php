@@ -47,4 +47,9 @@ class Setting
 	{
 		return Config::$modSettings['lp_comment_block'] ?? '';
 	}
+
+	public static function showRelatedPages(): bool
+	{
+		return empty(Config::$modSettings['lp_show_related_pages']);
+	}
 }
