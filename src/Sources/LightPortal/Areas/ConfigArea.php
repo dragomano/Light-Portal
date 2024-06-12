@@ -257,7 +257,7 @@ final class ConfigArea
 				],
 				'feedback' => [
 					'description' => Lang::$txt['lp_feedback_info']
-				]
+				],
 			]
 		];
 

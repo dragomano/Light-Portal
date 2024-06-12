@@ -200,13 +200,31 @@ final class PageArea
 						'value' => Lang::$txt['status'],
 					],
 					'data' => [
-						'function' => fn($entry) => Utils::$context['allow_light_portal_approve_pages'] || Utils::$context['allow_light_portal_manage_pages_any']
-							? /** @lang text */ '<div data-id="' . $entry['id'] . '" x-data="{ status: ' . ($entry['status'] === $this->status ? 'true' : 'false') . ' }" x-init="$watch(\'status\', value => page.toggleStatus($el))">
-								<span :class="{ \'on\': status, \'off\': !status }" :title="status ? \'' . Lang::$txt['lp_action_off'] . '\' : \'' . Lang::$txt['lp_action_on'] . '\'" @click.prevent="status = !status"></span>
-							</div>'
-							: /** @lang text */ '<div x-data="{ status: ' . ($entry['status'] === $this->status ? 'true' : 'false') . ' }">
-								<span :class="{ \'on\': status, \'off\': !status }" style="cursor: inherit">
-							</div>',
+						'function' => fn($entry) => $entry['status'] >= count(Status::cases()) - 1
+							? Lang::$txt['lp_page_status_set'][$entry['status']] ?? Lang::$txt['no']
+							: (Utils::$context['allow_light_portal_approve_pages'] || Utils::$context['allow_light_portal_manage_pages_any']
+								? Html::el('div', [
+										'data-id' => $entry['id'],
+										'x-data'  => '{ status: ' . ($entry['status'] === $this->status ? 'true' : 'false') . ' }',
+										'x-init'  => '$watch(\'status\', value => page.toggleStatus($el))',
+									])->setHtml(
+										Html::el('span', [
+											':class' => '{ \'on\': status, \'off\': !status }',
+											':title' => 'status ? \'' . Lang::$txt['lp_action_off'] . '\' : \'' . Lang::$txt['lp_action_on'] . '\'',
+											'x-on:click.prevent' => 'status = !status',
+										]
+									)
+								)->toHtml()
+								: Html::el('div', [
+										'x-data' => '{ status: ' . ($entry['status'] === $this->status ? 'true' : 'false') . ' }',
+									])->setHtml(
+										Html::el('span', [
+											':class' => '{ \'on\': status, \'off\': !status }',
+											'style'  => 'cursor: inherit;',
+										]
+									)
+								)->toHtml()
+							),
 						'class' => 'centertext',
 					],
 					'sort' => [
@@ -256,17 +274,30 @@ final class PageArea
 			'additional_rows' => [
 				[
 					'position' => 'after_title',
-					'value' => '
-						<div class="row">
-							<div class="col-lg-10">
-								<input type="search" name="search" value="' . Utils::$context['search']['string'] . '" placeholder="' . Lang::$txt['lp_pages_search'] . '" style="width: 100%">
-							</div>
-							<div class="col-lg-2">
-								<button type="submit" name="is_search" class="button floatnone" style="width: 100%">
-									' . Icon::get('search') . Lang::$txt['search'] . '
-								</button>
-							</div>
-						</div>',
+					'value' =>
+						Html::el('div', ['class' => 'row'])
+							->addHtml(
+								Html::el('div', ['class' => 'col-lg-10'])->setHtml(
+									Html::el('input', [
+										'type' => 'search',
+										'name' => 'search',
+										'value' => Utils::$context['search']['string'],
+										'placeholder' => Lang::$txt['lp_pages_search'],
+										'style' => 'width: 100%',
+									])
+								)
+							)
+							->addHtml(
+								Html::el('div', ['class' => 'col-lg-2'])->setHtml(
+									Html::el('button', [
+										'type' => 'submit',
+										'name' => 'is_search',
+										'class' => 'button floatnone',
+										'style' => 'width: 100%',
+									])->setHtml(Icon::get('search') . Lang::$txt['search'])
+								)
+							)
+							->toHtml(),
 				],
 			],
 		];
@@ -274,24 +305,55 @@ final class PageArea
 		if (Utils::$context['user']['is_admin']) {
 			$listOptions['columns']['mass'] = [
 				'header' => [
-					'value' => '<input type="checkbox" onclick="invertAll(this, this.form);">',
+					'value' => Html::el('input', [
+						'type'    => 'checkbox',
+						'onclick' => 'invertAll(this, this.form)',
+					])->toHtml()
 				],
 				'data' => [
-					'function' => static fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="items[]">',
+					'function' => static fn($entry) => Html::el('input', [
+						'type'  => 'checkbox',
+						'value' => $entry['id'],
+						'name'  => 'items[]',
+					])->toHtml(),
 					'class' => 'centertext',
 				],
 			];
 
 			$listOptions['additional_rows'][] = [
 				'position' => 'below_table_data',
-				'value' => '
-					<select name="page_actions">
-						<option value="delete">' . Lang::$txt['remove'] . '</option>' . (Utils::$context['allow_light_portal_approve_pages'] || Utils::$context['allow_light_portal_manage_pages_any'] ? '
-						<option value="toggle">' . Lang::$txt['lp_action_toggle'] . '</option>' : '') . (Setting::isFrontpageMode('chosen_pages') ? '
-						<option value="promote_up">' . Lang::$txt['lp_promote_to_fp'] . '</option>
-						<option value="promote_down">' . Lang::$txt['lp_remove_from_fp'] . '</option>' : '') . '
-					</select>
-					<input type="submit" name="mass_actions" value="' . Lang::$txt['quick_mod_go'] . '" class="button" onclick="return document.forms[\'manage_pages\'][\'page_actions\'].value && confirm(\'' . Lang::$txt['quickmod_confirm'] . '\');">',
+				'value' =>
+					Html::el('select', ['name' => 'page_actions'])
+						->addHtml(
+							Html::el('option', ['value' => 'delete'])->setText(Lang::$txt['remove'])
+						)
+						->addHtml(
+							Utils::$context['allow_light_portal_approve_pages']
+									|| Utils::$context['allow_light_portal_manage_pages_any']
+								? Html::el('option', ['value' => 'toggle'])
+									->setText(Lang::$txt['lp_action_toggle'])
+								: ''
+						)
+						->addHtml(
+							Setting::isFrontpageMode('chosen_pages')
+								? Html::el('option', ['value' => 'promote_up'])
+									->setText(Lang::$txt['lp_promote_to_fp'])
+								: ''
+						)
+						->addHtml(
+							Setting::isFrontpageMode('chosen_pages')
+								? Html::el('option', ['value' => 'promote_down'])
+									->setText(Lang::$txt['lp_remove_from_fp'])
+								: ''
+						)
+						->toHtml() . ' ' .
+					Html::el('input', [
+						'type'    => 'submit',
+						'name'    => 'mass_actions',
+						'value'   => Lang::$txt['quick_mod_go'],
+						'class'   => 'button',
+						'onclick' => 'return document.forms[\'manage_pages\'][\'page_actions\'].value && confirm(\'' . Lang::$txt['quickmod_confirm'] . '\');',
+					])->toHtml(),
 				'class' => 'floatright',
 			];
 		}
@@ -716,9 +778,17 @@ final class PageArea
 
 		if (Utils::$context['lp_page']['created_at'] >= time()) {
 			CustomField::make('datetime', Lang::$txt['lp_page_publish_datetime'])
-				->setValue('
-			<input type="date" id="datetime" name="date" min="' . date('Y-m-d') . '" value="' . Utils::$context['lp_page']['date'] . '">
-			<input type="time" name="time" value="' . Utils::$context['lp_page']['time'] . '">');
+				->setValue(Html::el('input', [
+					'type'  => 'date',
+					'id'    => 'datetime',
+					'name'  => 'date',
+					'min'   => date('Y-m-d'),
+					'value' => Utils::$context['lp_page']['date'],
+				])->toHtml() . ' ' . Html::el('input', [
+					'type'  => 'time',
+					'name'  => 'time',
+					'value' => Utils::$context['lp_page']['time'],
+				])->toHtml());
 		}
 
 		CheckboxField::make('show_title', Lang::$txt['lp_page_show_title'])
@@ -727,7 +797,7 @@ final class PageArea
 		CheckboxField::make('show_author_and_date', Lang::$txt['lp_page_show_author_and_date'])
 			->setValue(Utils::$context['lp_page']['options']['show_author_and_date']);
 
-		if (! empty(Config::$modSettings['lp_show_related_pages'])) {
+		if (! Setting::showRelatedPages()) {
 			CheckboxField::make('show_related_pages', Lang::$txt['lp_page_show_related_pages'])
 				->setValue(Utils::$context['lp_page']['options']['show_related_pages']);
 		}
@@ -779,8 +849,9 @@ final class PageArea
 
 	private function checkUser(): void
 	{
-		if (Utils::$context['allow_light_portal_manage_pages_any'] === false && $this->request()->hasNot('u'))
+		if (Utils::$context['allow_light_portal_manage_pages_any'] === false && $this->request()->hasNot('u')) {
 			Utils::redirectexit('action=admin;area=lp_pages;u=' . User::$info['id']);
+		}
 	}
 
 	private function preparePageList(): void

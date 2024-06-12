@@ -92,12 +92,14 @@ final class Page implements PageInterface
 			ErrorHandler::fatalLang('lp_page_not_activated');
 		}
 
-		if (Utils::$context['lp_page']['created_at'] > time())
+		if (Utils::$context['lp_page']['created_at'] > time()) {
 			Utils::sendHttpStatus(404);
+		}
 
 		Utils::$context['lp_page']['errors'] = [];
-		if (empty(Utils::$context['lp_page']['status']) && Utils::$context['lp_page']['can_edit'])
+		if (empty(Utils::$context['lp_page']['status']) && Utils::$context['lp_page']['can_edit']) {
 			Utils::$context['lp_page']['errors'][] = Lang::$txt['lp_page_visible_but_disabled'];
+		}
 
 		Utils::$context['lp_page']['content'] = Content::parse(
 			Utils::$context['lp_page']['content'], Utils::$context['lp_page']['type']
@@ -394,7 +396,7 @@ final class Page implements PageInterface
 
 	private function prepareRelatedPages(): void
 	{
-		if (empty($page = Utils::$context['lp_page']) || empty(Config::$modSettings['lp_show_related_pages']))
+		if (empty($page = Utils::$context['lp_page']) || Setting::showRelatedPages())
 			return;
 
 		if (empty(Utils::$context['lp_page']['options']['show_related_pages']))
