@@ -7,7 +7,7 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Hooks;
@@ -29,7 +29,7 @@ class Init
 		Utils::$context['lp_load_time'] ??= microtime(true);
 
 		define('LP_NAME', 'Light Portal');
-		define('LP_VERSION', '2.7 dev');
+		define('LP_VERSION', '2.7');
 		define('LP_PLUGIN_LIST', 'https://d8d75ea98b25aa12.mokky.dev/addons');
 		define('LP_ADDON_DIR', dirname(__DIR__) . '/Addons');
 		define('LP_CACHE_TIME', (int) (Config::$modSettings['lp_cache_interval'] ?? 72000));
