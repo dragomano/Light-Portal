@@ -1,8 +1,6 @@
 <?php
 
 /**
- * TinySlider.php
- *
  * @package TinySlider (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,16 +8,16 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.04.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\TinySlider;
 
 use Bugo\Compat\{Lang, Theme, User, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField};
 use Bugo\LightPortal\Areas\Fields\{NumberField, RadioField, RangeField};
+use Bugo\LightPortal\Enums\Tab;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -109,7 +107,7 @@ class TinySlider extends Block
 			return;
 
 		CustomField::make('images', Lang::$txt['lp_tiny_slider']['images'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue($this->getFromTemplate('tiny_slider_images'));
 
 		RadioField::make('axis', Lang::$txt['lp_tiny_slider']['axis'])

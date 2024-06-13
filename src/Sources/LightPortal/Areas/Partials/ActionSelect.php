@@ -1,20 +1,23 @@
 <?php declare(strict_types=1);
 
 /**
- * ActionSelect.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Areas\Partials;
 
 use Bugo\Compat\{Config, Lang, Utils};
+
+use function explode;
+use function func_get_args;
+use function implode;
+use function json_encode;
 
 final class ActionSelect extends AbstractPartial
 {
@@ -26,7 +29,7 @@ final class ActionSelect extends AbstractPartial
 		$params['id'] ??= 'lp_disabled_actions';
 		$params['data'] ??= (empty(Config::$modSettings['lp_disabled_actions'])
 			? []
-			: explode(',', Config::$modSettings['lp_disabled_actions'])
+			: explode(',', (string) Config::$modSettings['lp_disabled_actions'])
 		);
 		$params['value'] = [];
 

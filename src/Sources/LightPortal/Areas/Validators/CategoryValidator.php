@@ -1,26 +1,29 @@
 <?php declare(strict_types=1);
 
 /**
- * CategoryValidator.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Areas\Validators;
 
 use Bugo\Compat\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\RequestTrait;
+
+use function filter_input_array;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 class CategoryValidator extends AbstractValidator
 {
+	use RequestTrait;
+
 	protected array $args = [
 		'category_id' => FILTER_VALIDATE_INT,
 		'icon'        => FILTER_DEFAULT,

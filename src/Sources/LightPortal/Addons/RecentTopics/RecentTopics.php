@@ -1,8 +1,6 @@
 <?php
 
 /**
- * RecentTopics.php
- *
  * @package RecentTopics (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,19 +8,20 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.04.24
+ * @version 02.06.24
  */
 
 namespace Bugo\LightPortal\Addons\RecentTopics;
 
 use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Areas\Fields\NumberField;
 use Bugo\LightPortal\Areas\Fields\RadioField;
 use Bugo\LightPortal\Areas\Partials\BoardSelect;
+use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\DateTime;
 use IntlException;
 
@@ -77,7 +76,7 @@ class RecentTopics extends Block
 			return;
 
 		CustomField::make('exclude_boards', Lang::$txt['lp_recent_topics']['exclude_boards'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'exclude_boards',
 				'hint'  => Lang::$txt['lp_recent_topics']['exclude_boards_select'],
@@ -85,7 +84,7 @@ class RecentTopics extends Block
 			]);
 
 		CustomField::make('include_boards', Lang::$txt['lp_recent_topics']['include_boards'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'include_boards',
 				'hint'  => Lang::$txt['lp_recent_topics']['include_boards_select'],
@@ -93,19 +92,19 @@ class RecentTopics extends Block
 			]);
 
 		CheckboxField::make('use_simple_style', Lang::$txt['lp_recent_topics']['use_simple_style'])
-			->setTab(BlockArea::TAB_APPEARANCE)
+			->setTab(Tab::APPEARANCE)
 			->setAfter(Lang::$txt['lp_recent_topics']['use_simple_style_subtext'])
 			->setValue(Utils::$context['lp_block']['options']['use_simple_style']);
 
 		CheckboxField::make('show_avatars', Lang::$txt['lp_recent_topics']['show_avatars'])
-			->setTab(BlockArea::TAB_APPEARANCE)
+			->setTab(Tab::APPEARANCE)
 			->setValue(
 				Utils::$context['lp_block']['options']['show_avatars']
 				&& empty(Utils::$context['lp_block']['options']['use_simple_style'])
 			);
 
 		CheckboxField::make('show_icons', Lang::$txt['lp_recent_topics']['show_icons'])
-			->setTab(BlockArea::TAB_APPEARANCE)
+			->setTab(Tab::APPEARANCE)
 			->setValue(
 				Utils::$context['lp_block']['options']['show_icons']
 				&& empty(Utils::$context['lp_block']['options']['use_simple_style'])
@@ -129,8 +128,8 @@ class RecentTopics extends Block
 	 */
 	public function getData(array $parameters): array
 	{
-		$excludeBoards = empty($parameters['exclude_boards']) ? null : explode(',', $parameters['exclude_boards']);
-		$includeBoards = empty($parameters['include_boards']) ? null : explode(',', $parameters['include_boards']);
+		$excludeBoards = empty($parameters['exclude_boards']) ? null : explode(',', (string) $parameters['exclude_boards']);
+		$includeBoards = empty($parameters['include_boards']) ? null : explode(',', (string) $parameters['include_boards']);
 
 		$topics = $this->getFromSsi('recentTopics', (int) $parameters['num_topics'], $excludeBoards, $includeBoards, 'array');
 
@@ -141,8 +140,9 @@ class RecentTopics extends Block
 			static fn(&$topic) => $topic['timestamp'] = DateTime::relative((int) $topic['timestamp'])
 		);
 
-		if ($parameters['show_avatars'] && empty($parameters['use_simple_style']))
-			$topics = $this->getItemsWithUserAvatars($topics, 'poster');
+		if ($parameters['show_avatars'] && empty($parameters['use_simple_style'])) {
+			$topics = Avatar::getWithItems($topics, 'poster');
+		}
 
 		return $topics;
 	}
@@ -152,8 +152,9 @@ class RecentTopics extends Block
 		if ($data->type !== 'recent_topics')
 			return;
 
-		if ($this->request()->has('preview'))
+		if ($this->request()->has('preview')) {
 			$parameters['update_interval'] = 0;
+		}
 
 		$parameters['show_avatars'] ??= false;
 

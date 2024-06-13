@@ -1,52 +1,32 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 /**
- * CommentRepository.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Repositories;
 
 use Bugo\Compat\{Config, Db, Lang};
-use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Utils\Avatar;
+
+use function count;
+use function htmlspecialchars_decode;
+use function time;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class CommentRepository
 {
-	use Helper;
-
 	public function getAll(): array
 	{
 		return $this->getByPageId();
-	}
-
-	public function getById(int $id): array
-	{
-		$result = Db::$db->query('', '
-			SELECT *
-			FROM {db_prefix}lp_comments
-			WHERE id = {int:id}',
-			[
-				'id' => $id,
-			]
-		);
-
-		$data = Db::$db->fetch_assoc($result);
-
-		Db::$db->free_result($result);
-
-		return $data ?? [];
 	}
 
 	public function getByPageId(int $id = 0): array
@@ -79,7 +59,7 @@ final class CommentRepository
 				'id'          => (int) $row['id'],
 				'page_id'     => (int) $row['page_id'],
 				'parent_id'   => (int) $row['parent_id'],
-				'message'     => htmlspecialchars_decode($row['message']),
+				'message'     => htmlspecialchars_decode((string) $row['message']),
 				'created_at'  => (int) $row['created_at'],
 				'can_edit'    => $this->isCanEdit((int) $row['created_at']),
 				'poster'      => [
@@ -88,13 +68,14 @@ final class CommentRepository
 				],
 			];
 
-			if (isset($row['name']))
+			if (isset($row['name'])) {
 				$comments[$row['id']]['params'][$row['name']] = $row['value'];
+			}
 		}
 
 		Db::$db->free_result($result);
 
-		return $this->getItemsWithUserAvatars($comments, 'poster');
+		return Avatar::getWithItems($comments, 'poster');
 	}
 
 	public function save(array $data): int
@@ -127,7 +108,7 @@ final class CommentRepository
 		);
 	}
 
-	public function remove(int $item, string $pageAlias): array
+	public function remove(int $item, string $pageSlug): array
 	{
 		$result = Db::$db->query('', '
 			SELECT id
@@ -161,11 +142,11 @@ final class CommentRepository
 		Db::$db->db_query('', '
 			UPDATE {db_prefix}lp_pages
 			SET num_comments = num_comments - {int:num_items}
-			WHERE alias = {string:alias}
+			WHERE slug = {string:slug}
 				AND num_comments - {int:num_items} >= 0',
 			[
 				'num_items' => count($items),
-				'alias'     => $pageAlias,
+				'slug'      => $pageSlug,
 			]
 		);
 
@@ -194,11 +175,11 @@ final class CommentRepository
 				SELECT COALESCE(MAX(com.id), 0)
 				FROM {db_prefix}lp_comments AS com
 					LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = com.page_id)
-				WHERE p.alias = {string:alias}
+				WHERE p.slug = {string:slug}
 			)
-			WHERE alias = {string:alias}',
+			WHERE slug = {string:slug}',
 			[
-				'alias' => $pageAlias,
+				'slug' => $pageSlug,
 			]
 		);
 

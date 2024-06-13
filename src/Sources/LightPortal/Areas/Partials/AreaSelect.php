@@ -1,20 +1,25 @@
 <?php declare(strict_types=1);
 
 /**
- * AreaSelect.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Areas\Partials;
 
 use Bugo\Compat\{Lang, Utils};
+
+use function array_combine;
+use function array_merge;
+use function explode;
+use function json_encode;
+use function str_starts_with;
+use function str_replace;
 
 final class AreaSelect extends AbstractPartial
 {
@@ -42,8 +47,8 @@ final class AreaSelect extends AbstractPartial
 		Lang::$txt['lp_block_areas_set']['media'] = Lang::$txt['levgal'] ?? Lang::$txt['mgallery_title'] ?? 'media';
 		Lang::$txt['lp_block_areas_set']['gallery'] = Lang::$txt['smfgallery_menu'] ?? 'gallery';
 
-		$params['value'] = explode(',', Utils::$context['lp_block']['areas']);
-		$params['data'] = array_merge($params['data'], array_combine($params['value'], $params['value']));
+		$params['value'] = explode(',', (string) Utils::$context['lp_block']['areas']);
+		$params['data']  = array_merge($params['data'], array_combine($params['value'], $params['value']));
 
 		$data = $values = [];
 		foreach ($params['data'] as $value => $text) {

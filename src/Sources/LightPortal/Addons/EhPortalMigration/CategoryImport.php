@@ -1,8 +1,6 @@
 <?php
 
 /**
- * CategoryImport.php
- *
  * @package EhPortalMigration (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.04.24
+ * @version 30.05.24
  */
 
 namespace Bugo\LightPortal\Addons\EhPortalMigration;
@@ -18,6 +16,8 @@ namespace Bugo\LightPortal\Addons\EhPortalMigration;
 use Bugo\Compat\{Config, Db, Lang, Utils};
 use Bugo\LightPortal\Areas\Imports\AbstractCustomCategoryImport;
 use Bugo\LightPortal\Utils\ItemList;
+
+use const LP_NAME;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -45,10 +45,10 @@ class CategoryImport extends AbstractCustomCategoryImport
 			'base_href' => Utils::$context['form_action'],
 			'default_sort_col' => 'title',
 			'get_items' => [
-				'function' => [$this, 'getAll']
+				'function' => $this->getAll(...)
 			],
 			'get_count' => [
-				'function' => [$this, 'getTotalCount']
+				'function' => $this->getTotalCount(...)
 			],
 			'columns' => [
 				'title' => [
@@ -144,7 +144,7 @@ class CategoryImport extends AbstractCustomCategoryImport
 		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'sp_categories')))
 			return 0;
 
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
 			SELECT COUNT(*)
 			FROM {db_prefix}sp_categories',
 			[]
@@ -157,14 +157,14 @@ class CategoryImport extends AbstractCustomCategoryImport
 		return (int) $count;
 	}
 
-	protected function getItems(array $categories): array
+	protected function getItems(array $ids): array
 	{
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
 			SELECT id_category, name AS title, publish AS status
-			FROM {db_prefix}sp_categories' . (empty($categories) ? '' : '
+			FROM {db_prefix}sp_categories' . (empty($ids) ? '' : '
 			WHERE id_category IN ({array_int:categories})'),
 			[
-				'categories' => $categories,
+				'categories' => $ids,
 			]
 		);
 

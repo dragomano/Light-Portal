@@ -1,8 +1,6 @@
 <?php
 
 /**
- * TopPages.php
- *
  * @package TopPages (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.24
+ * @version 06.06.24
  */
 
 namespace Bugo\LightPortal\Addons\TopPages;
@@ -18,6 +16,12 @@ namespace Bugo\LightPortal\Addons\TopPages;
 use Bugo\Compat\{Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, NumberField, RadioField};
+use Bugo\LightPortal\Enums\Permission;
+use Bugo\LightPortal\Utils\{Setting, Str};
+
+use function array_combine;
+use function array_key_first;
+use function time;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -72,7 +76,7 @@ class TopPages extends Block
 		$titles = $this->getEntityData('title');
 
 		$result = Utils::$smcFunc['db_query']('', '
-			SELECT page_id, alias, type, num_views, num_comments
+			SELECT page_id, slug, type, num_views, num_comments
 			FROM {db_prefix}lp_pages
 			WHERE status = {int:status}
 				AND created_at <= {int:current_time}
@@ -82,21 +86,21 @@ class TopPages extends Block
 			[
 				'status'       => 1,
 				'current_time' => time(),
-				'permissions'  => $this->getPermissions(),
+				'permissions'  => Permission::all(),
 				'limit'        => $parameters['num_pages'],
 			]
 		);
 
 		$pages = [];
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
-			if ($this->isFrontpage($row['alias']))
+			if (Setting::isFrontpage($row['slug']))
 				continue;
 
 			$pages[$row['page_id']] = [
 				'title'        => $titles[$row['page_id']] ?? [],
 				'num_comments' => $row['num_comments'],
 				'num_views'    => $row['num_views'],
-				'href'         => LP_PAGE_URL . $row['alias']
+				'href'         => LP_PAGE_URL . $row['slug']
 			];
 		}
 
@@ -126,7 +130,7 @@ class TopPages extends Block
 		<dl class="stats">';
 
 				foreach ($topPages as $page) {
-					if ($page['num_' . $parameters['popularity_type']] < 1 || empty($title = $this->getTranslatedTitle($page['title'])))
+					if ($page['num_' . $parameters['popularity_type']] < 1 || empty($title = Str::getTranslatedTitle($page['title'])))
 						continue;
 
 					$width = $page['num_' . $parameters['popularity_type']] * 100 / $max;

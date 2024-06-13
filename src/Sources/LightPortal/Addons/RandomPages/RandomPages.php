@@ -1,8 +1,6 @@
 <?php
 
 /**
- * RandomPages.php
- *
  * @package RandomPages (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,17 +8,17 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.04.24
+ * @version 02.06.24
  */
 
 namespace Bugo\LightPortal\Addons\RandomPages;
 
 use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField};
 use Bugo\LightPortal\Areas\Partials\CategorySelect;
-use Bugo\LightPortal\Utils\DateTime;
+use Bugo\LightPortal\Enums\{Permission, Tab};
+use Bugo\LightPortal\Utils\{DateTime, Str};
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -59,7 +57,7 @@ class RandomPages extends Block
 			return;
 
 		CustomField::make('categories', Lang::$txt['lp_categories'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new CategorySelect(), [
 				'id'    => 'categories',
 				'hint'  => Lang::$txt['lp_random_pages']['categories_select'],
@@ -73,7 +71,7 @@ class RandomPages extends Block
 
 	public function getData(array $parameters): array
 	{
-		$categories = empty($parameters['categories']) ? null : explode(',', $parameters['categories']);
+		$categories = empty($parameters['categories']) ? null : explode(',', (string) $parameters['categories']);
 		$pagesCount = empty($parameters['num_pages']) ? 0 : (int) $parameters['num_pages'];
 
 		if (empty($pagesCount))
@@ -128,7 +126,7 @@ class RandomPages extends Block
 				[
 					'status'       => 1,
 					'current_time' => time(),
-					'permissions'  => $this->getPermissions(),
+					'permissions'  => Permission::all(),
 					'categories'   => $categories,
 					'limit'        => $pagesCount,
 				]
@@ -144,7 +142,7 @@ class RandomPages extends Block
 				return $this->getData(array_merge($parameters, ['num_pages' => $pagesCount - 1]));
 
 			$result = Utils::$smcFunc['db_query']('', '
-				SELECT p.page_id, p.alias, p.created_at, p.num_views, COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
+				SELECT p.page_id, p.slug, p.created_at, p.num_views, COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
 				FROM {db_prefix}lp_pages AS p
 					LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				WHERE p.page_id IN ({array_int:page_ids})',
@@ -155,7 +153,7 @@ class RandomPages extends Block
 			);
 		} else {
 			$result = Utils::$smcFunc['db_query']('', '
-				SELECT p.page_id, p.alias, p.created_at, p.num_views, COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
+				SELECT p.page_id, p.slug, p.created_at, p.num_views, COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
 				FROM {db_prefix}lp_pages AS p
 					LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				WHERE p.status = {int:status}
@@ -168,7 +166,7 @@ class RandomPages extends Block
 					'guest'        => Lang::$txt['guest_title'],
 					'status'       => 1,
 					'current_time' => time(),
-					'permissions'  => $this->getPermissions(),
+					'permissions'  => Permission::all(),
 					'categories'   => $categories,
 					'limit'        => $pagesCount,
 				]
@@ -179,7 +177,7 @@ class RandomPages extends Block
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			$pages[] = [
 				'page_id'     => $row['page_id'],
-				'alias'       => $row['alias'],
+				'slug'        => $row['slug'],
 				'created_at'  => $row['created_at'],
 				'num_views'   => $row['num_views'],
 				'title'       => $titles[$row['page_id']] ?? [],
@@ -210,12 +208,12 @@ class RandomPages extends Block
 			<ul class="random_pages noup">';
 
 			foreach ($randomPages as $page) {
-				if (empty($title = $this->getTranslatedTitle($page['title'])))
+				if (empty($title = Str::getTranslatedTitle($page['title'])))
 					continue;
 
 				echo '
 				<li class="windowbg">
-					<a href="', Config::$scripturl, '?', LP_PAGE_PARAM, '=', $page['alias'], '">', $title, '</a> ', Lang::$txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . Config::$scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', DateTime::relative($page['created_at']), ' (', Lang::getTxt('lp_views_set', ['views' => $page['num_views']]);
+					<a href="', Config::$scripturl, '?', LP_PAGE_PARAM, '=', $page['slug'], '">', $title, '</a> ', Lang::$txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . Config::$scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', DateTime::relative($page['created_at']), ' (', Lang::getTxt('lp_views_set', ['views' => $page['num_views']]);
 
 				echo ')
 				</li>';

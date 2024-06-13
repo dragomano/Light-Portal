@@ -1,21 +1,25 @@
 <?php declare(strict_types=1);
 
 /**
- * BlockImport.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Areas\Imports;
 
-use Bugo\Compat\{Config, Db, ErrorHandler};
+use Bugo\Compat\{Config, ErrorHandler};
 use Bugo\Compat\{Lang, Theme, Utils};
+
+use function intval;
+use function str_contains;
+use function str_replace;
+
+use const LP_NAME;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -25,6 +29,8 @@ if (! defined('SMF'))
  */
 final class BlockImport extends AbstractImport
 {
+	protected string $entity = 'blocks';
+
 	public function main(): void
 	{
 		Theme::loadTemplate('LightPortal/ManageImpex');
@@ -51,8 +57,9 @@ final class BlockImport extends AbstractImport
 		if (empty($xml = $this->getFile()))
 			return;
 
-		if (! isset($xml->blocks->item[0]['block_id']))
+		if (! isset($xml->blocks->item[0]['block_id'])) {
 			ErrorHandler::fatalLang('lp_wrong_import_file');
+		}
 
 		$items = $titles = $params = [];
 
@@ -80,7 +87,7 @@ final class BlockImport extends AbstractImport
 								'item_id' => $blockId,
 								'type'    => 'block',
 								'lang'    => $k,
-								'title'   => $v,
+								'value'   => $v,
 							];
 						}
 					}
@@ -101,44 +108,31 @@ final class BlockImport extends AbstractImport
 			}
 		}
 
-		Db::$db->transaction('begin');
+		$this->startTransaction($items);
 
-		$results = [];
-
-		if ($items) {
-			Utils::$context['import_successful'] = count($items);
-
-			$items = array_chunk($items, 100);
-			$count = sizeof($items);
-
-			for ($i = 0; $i < $count; $i++) {
-				$results = Db::$db->insert('replace',
-					'{db_prefix}lp_blocks',
-					[
-						'block_id'      => 'int',
-						'icon'          => 'string',
-						'type'          => 'string',
-						'note'          => 'string',
-						'content'       => 'string-65534',
-						'placement'     => 'string-10',
-						'priority'      => 'int',
-						'permissions'   => 'int',
-						'status'        => 'int',
-						'areas'         => 'string',
-						'title_class'   => 'string',
-						'content_class' => 'string',
-					],
-					$items[$i],
-					['block_id'],
-					2
-				);
-			}
-		}
+		$results = $this->insertData(
+			'lp_blocks',
+			'replace',
+			$items,
+			[
+				'block_id'      => 'int',
+				'icon'          => 'string',
+				'type'          => 'string',
+				'note'          => 'string',
+				'content'       => 'string-65534',
+				'placement'     => 'string-10',
+				'priority'      => 'int',
+				'permissions'   => 'int',
+				'status'        => 'int',
+				'areas'         => 'string',
+				'title_class'   => 'string',
+				'content_class' => 'string',
+			],
+			['block_id'],
+		);
 
 		$this->replaceTitles($titles, $results);
-
 		$this->replaceParams($params, $results);
-
-		$this->finish($results);
+		$this->finishTransaction($results);
 	}
 }

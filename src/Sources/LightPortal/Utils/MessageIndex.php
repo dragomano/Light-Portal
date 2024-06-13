@@ -1,20 +1,23 @@
 <?php declare(strict_types=1);
 
 /**
- * MessageIndex.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Utils;
 
-use Bugo\Compat\{Config, MessageIndex as BaseMessageIndex};
+use Bugo\Compat\{Config, Actions\MessageIndex as BaseMessageIndex};
+
+use function array_merge;
+
+if (! defined('SMF'))
+	die('No direct access...');
 
 final class MessageIndex extends BaseMessageIndex
 {

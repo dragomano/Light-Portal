@@ -1,37 +1,52 @@
 <?php declare(strict_types=1);
 
 /**
- * ConfigArea.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, Db, Lang, Theme, User, Utils};
+use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Areas\Configs\{BasicConfig, ExtraConfig, FeedbackConfig, MiscConfig, PanelConfig};
 use Bugo\LightPortal\Areas\Exports\{BlockExport, CategoryExport, PageExport, PluginExport, TagExport};
 use Bugo\LightPortal\Areas\Imports\{BlockImport, CategoryImport, PageImport, PluginImport, TagImport};
-use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\Enums\{Hook, PortalHook};
+use Bugo\LightPortal\Utils\{CacheTrait, Icon, RequestTrait, SafeRequireTrait, SMFHookTrait};
+
+use function array_keys;
+use function array_merge;
+use function array_search;
+use function array_slice;
+use function call_user_func;
+use function count;
+use function extension_loaded;
+use function phpversion;
+use function str_contains;
+
+use const LP_NAME;
+use const LP_VERSION;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class ConfigArea
 {
-	use Helper;
+	use CacheTrait;
+	use RequestTrait;
+	use SMFHookTrait;
+	use SafeRequireTrait;
 
 	public function __invoke(): void
 	{
-		$this->applyHook('admin_areas');
-		$this->applyHook('helpadmin');
+		$this->applyHook(Hook::adminAreas);
+		$this->applyHook(Hook::helpadmin);
 	}
 
 	public function adminAreas(array &$areas): void
@@ -59,7 +74,7 @@ final class ConfigArea
 					'areas' => [
 						'lp_settings' => [
 							'label' => Lang::$txt['settings'],
-							'function' => [$this, 'settingAreas'],
+							'function' => $this->settingAreas(...),
 							'icon' => 'features',
 							'permission' => [
 								'admin_forum',
@@ -74,7 +89,7 @@ final class ConfigArea
 						],
 						'lp_blocks' => [
 							'label' => Lang::$txt['lp_blocks'],
-							'function' => [$this, 'blockAreas'],
+							'function' => $this->blockAreas(...),
 							'icon' => 'packages',
 							'amt' => Utils::$context['lp_quantities']['active_blocks'],
 							'permission' => [
@@ -87,7 +102,7 @@ final class ConfigArea
 						],
 						'lp_pages' => [
 							'label' => Lang::$txt['lp_pages'],
-							'function' => [$this, 'pageAreas'],
+							'function' => $this->pageAreas(...),
 							'icon' => 'reports',
 							'amt' => $this->getPagesCount(),
 							'permission' => [
@@ -102,7 +117,7 @@ final class ConfigArea
 						],
 						'lp_categories' => [
 							'label' => Lang::$txt['lp_categories'],
-							'function' => [$this, 'categoryAreas'],
+							'function' => $this->categoryAreas(...),
 							'icon' => 'boards',
 							'amt' => Utils::$context['lp_quantities']['active_categories'],
 							'permission' => [
@@ -115,7 +130,7 @@ final class ConfigArea
 						],
 						'lp_tags' => [
 							'label' => Lang::$txt['lp_tags'],
-							'function' => [$this, 'tagAreas'],
+							'function' => $this->tagAreas(...),
 							'icon' => 'attachment',
 							'amt' => Utils::$context['lp_quantities']['active_tags'],
 							'permission' => [
@@ -128,7 +143,7 @@ final class ConfigArea
 						],
 						'lp_plugins' => [
 							'label' => Lang::$txt['lp_plugins'],
-							'function' => [$this, 'pluginAreas'],
+							'function' => $this->pluginAreas(...),
 							'icon' => 'modifications',
 							'amt' => Utils::$context['lp_enabled_plugins']
 								? count(Utils::$context['lp_enabled_plugins']) : 0,
@@ -174,7 +189,7 @@ final class ConfigArea
 			}
 		}
 
-		$this->hook('updateAdminAreas', [&$areas['lp_portal']['areas']]);
+		AddonHandler::getInstance()->run(PortalHook::updateAdminAreas, [&$areas['lp_portal']['areas']]);
 	}
 
 	/**
@@ -185,6 +200,11 @@ final class ConfigArea
 		Lang::$txt['lp_standalone_url_help'] = Lang::getTxt('lp_standalone_url_help', [
 			Config::$boardurl . '/portal.php',
 			Config::$scripturl
+		]);
+
+		Lang::$txt['lp_menu_separate_subsection_title_help'] = Lang::getTxt('lp_menu_separate_subsection_title_help', [
+			'<var>{lp_pages}</var>',
+			'<var>$txt[`lp_pages`]</var>',
 		]);
 	}
 
@@ -237,7 +257,7 @@ final class ConfigArea
 				],
 				'feedback' => [
 					'description' => Lang::$txt['lp_feedback_info']
-				]
+				],
 			]
 		];
 
@@ -256,7 +276,7 @@ final class ConfigArea
 			'import' => [new BlockImport(), 'main'],
 		];
 
-		$this->hook('updateBlockAreas', [&$areas]);
+		AddonHandler::getInstance()->run(PortalHook::updateBlockAreas, [&$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -273,7 +293,7 @@ final class ConfigArea
 			'import' => [new PageImport(), 'main'],
 		];
 
-		$this->hook('updatePageAreas', [&$areas]);
+		AddonHandler::getInstance()->run(PortalHook::updatePageAreas, [&$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -290,7 +310,7 @@ final class ConfigArea
 			'import' => [new CategoryImport(), 'main'],
 		];
 
-		$this->hook('updateCategoryAreas', [&$areas]);
+		AddonHandler::getInstance()->run(PortalHook::updateCategoryAreas, [&$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -307,7 +327,7 @@ final class ConfigArea
 			'import' => [new TagImport(), 'main'],
 		];
 
-		$this->hook('updateTagsAreas', [&$areas]);
+		AddonHandler::getInstance()->run(PortalHook::updateTagAreas, [&$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -325,19 +345,21 @@ final class ConfigArea
 			$areas['import'] = [new PluginImport(), 'main'];
 		}
 
-		$this->hook('updatePluginAreas', [&$areas]);
+		AddonHandler::getInstance()->run(PortalHook::updatePluginAreas, [&$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
 
 	/**
-	 * Calls the requested subaction if it does exist; otherwise, calls the default action
+	 * Calls the requested sub_action if it does exist; otherwise, calls the default action
 	 *
 	 * Вызывает метод, если он существует; в противном случае вызывается метод по умолчанию
 	 */
 	private function callActionFromAreas(array $areas = [], string $defaultAction = 'main'): void
 	{
 		$this->showDocsLink();
+
+		$this->cache()->flush();
 
 		$this->require('ManageServer');
 
@@ -346,7 +368,7 @@ final class ConfigArea
 		Utils::$context['sub_action'] = $this->request()->has('sa') && isset($areas[$this->request('sa')])
 			? $this->request('sa') : $defaultAction;
 
-		$this->callHelper($areas[Utils::$context['sub_action']]);
+		call_user_func($areas[Utils::$context['sub_action']]);
 	}
 
 	private function showDocsLink(): void
@@ -354,7 +376,7 @@ final class ConfigArea
 		if (empty($this->request('area')) || empty(Utils::$context['template_layers']))
 			return;
 
-		if (str_contains($this->request('area'), 'lp_')) {
+		if (str_contains((string) $this->request('area'), 'lp_')) {
 			Theme::loadTemplate('LightPortal/ViewDebug');
 
 			Utils::$context['template_layers'][] = 'docs';

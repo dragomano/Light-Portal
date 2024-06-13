@@ -1,8 +1,6 @@
 <?php
 
 /**
- * RecentAttachments.php
- *
  * @package RecentAttachments (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\RecentAttachments;
@@ -68,7 +66,7 @@ class RecentAttachments extends Block
 
 	public function getData(array $parameters): array
 	{
-		$extensions = empty($parameters['extensions']) ? [] : explode(',', $parameters['extensions']);
+		$extensions = empty($parameters['extensions']) ? [] : explode(',', (string) $parameters['extensions']);
 
 		return $this->getFromSsi('recentAttachments', $parameters['num_attachments'], $extensions, 'array');
 	}

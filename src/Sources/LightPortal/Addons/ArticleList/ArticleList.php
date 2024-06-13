@@ -1,8 +1,6 @@
 <?php
 
 /**
- * ArticleList.php
- *
  * @package ArticleList (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,17 +8,17 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.04.24
+ * @version 02.06.24
  */
 
 namespace Bugo\LightPortal\Addons\ArticleList;
 
 use Bugo\Compat\{BBCodeParser, Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, RadioField};
 use Bugo\LightPortal\Areas\Partials\{ContentClassSelect, PageSelect, TopicSelect};
-use Bugo\LightPortal\Utils\Content;
+use Bugo\LightPortal\Enums\{Permission, Tab};
+use Bugo\LightPortal\Utils\{Content, Setting, Str};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -64,19 +62,19 @@ class ArticleList extends Block
 			return;
 
 		CustomField::make('body_class', Lang::$txt['lp_article_list']['body_class'])
-			->setTab(BlockArea::TAB_APPEARANCE)
+			->setTab(Tab::APPEARANCE)
 			->setValue(static fn() => new ContentClassSelect(), [
 				'id'    => 'body_class',
 				'value' => Utils::$context['lp_block']['options']['body_class'],
 			]);
 
 		RadioField::make('display_type', Lang::$txt['lp_article_list']['display_type'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setOptions(Lang::$txt['lp_article_list']['display_type_set'])
 			->setValue(Utils::$context['lp_block']['options']['display_type']);
 
 		CustomField::make('include_topics', Lang::$txt['lp_article_list']['include_topics'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new TopicSelect(), [
 				'id'    => 'include_topics',
 				'hint'  => Lang::$txt['lp_article_list']['include_topics_select'],
@@ -84,7 +82,7 @@ class ArticleList extends Block
 			]);
 
 		CustomField::make('include_pages', Lang::$txt['lp_article_list']['include_pages'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new PageSelect(), [
 				'id'    => 'include_pages',
 				'hint'  => Lang::$txt['lp_article_list']['include_pages_select'],
@@ -111,7 +109,7 @@ class ArticleList extends Block
 				AND m.approved = {int:is_approved}
 			ORDER BY t.id_last_msg DESC',
 			[
-				'topics'      => explode(',', $parameters['include_topics']),
+				'topics'      => explode(',', (string) $parameters['include_topics']),
 				'is_approved' => 1,
 			]
 		);
@@ -124,7 +122,7 @@ class ArticleList extends Block
 			$value = null;
 			$image = empty($parameters['seek_images'])
 				? ''
-				: preg_match('/\[img.*]([^]\[]+)\[\/img]/U', $row['body'], $value);
+				: preg_match('/\[img.*]([^]\[]+)\[\/img]/U', (string) $row['body'], $value);
 			$image = $value ? array_pop($value) : ($image ?: Config::$modSettings['lp_image_placeholder'] ?? '');
 
 			$body = BBCodeParser::load()->parse($row['body'], (bool) $row['smileys_enabled'], $row['id_msg']);
@@ -132,7 +130,7 @@ class ArticleList extends Block
 			$topics[$row['id_topic']] = [
 				'id'          => $row['id_topic'],
 				'title'       => $row['subject'],
-				'description' => $this->getTeaser($body),
+				'description' => Str::getTeaser($body),
 				'image'       => $image,
 			];
 		}
@@ -150,7 +148,7 @@ class ArticleList extends Block
 		$titles = $this->getEntityData('title');
 
 		$result = Utils::$smcFunc['db_query']('', '
-			SELECT page_id, alias, content, description, type
+			SELECT page_id, slug, content, description, type
 			FROM {db_prefix}lp_pages
 			WHERE status = {int:status}
 				AND created_at <= {int:current_time}
@@ -160,25 +158,25 @@ class ArticleList extends Block
 			[
 				'status'       => 1,
 				'current_time' => time(),
-				'permissions'  => $this->getPermissions(),
-				'pages'        => explode(',', $parameters['include_pages']),
+				'permissions'  => Permission::all(),
+				'pages'        => explode(',', (string) $parameters['include_pages']),
 			]
 		);
 
 		$pages = [];
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
-			if ($this->isFrontpage($row['alias']))
+			if (Setting::isFrontpage($row['slug']))
 				continue;
 
 			$row['content'] = Content::parse($row['content'], $row['type']);
 
-			$image = empty($parameters['seek_images']) ? '' : $this->getImageFromText($row['content']);
+			$image = empty($parameters['seek_images']) ? '' : Str::getImageFromText($row['content']);
 
 			$pages[$row['page_id']] = [
 				'id'          => $row['page_id'],
 				'title'       => $titles[$row['page_id']] ?? [],
-				'alias'       => $row['alias'],
-				'description' => $this->getTeaser($row['description'] ?: strip_tags($row['content'])),
+				'slug'        => $row['slug'],
+				'description' => Str::getTeaser($row['description'] ?: strip_tags($row['content'])),
 				'image'       => $image ?: (Config::$modSettings['lp_image_placeholder'] ?? ''),
 			];
 		}
@@ -221,7 +219,7 @@ class ArticleList extends Block
 				}
 			} else {
 				foreach ($articles as $page) {
-					if (empty($title = $this->getTranslatedTitle($page['title'])))
+					if (empty($title = Str::getTranslatedTitle($page['title'])))
 						continue;
 
 					$content = '';
@@ -232,7 +230,7 @@ class ArticleList extends Block
 				</div>';
 					}
 
-					$content .= '<a href="' . LP_PAGE_URL . $page['alias'] . '">' . $title . '</a>';
+					$content .= '<a href="' . LP_PAGE_URL . $page['slug'] . '">' . $title . '</a>';
 
 					echo sprintf(Utils::$context['lp_all_content_classes'][$parameters['body_class']], $content);
 				}

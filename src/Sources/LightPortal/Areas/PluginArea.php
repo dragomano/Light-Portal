@@ -3,33 +3,56 @@
 declare(strict_types=1);
 
 /**
- * PluginArea.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, Lang, Theme};
 use Bugo\Compat\{User, Utils, WebFetchApi};
-use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Icon, Language};
+use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Enums\{PortalHook, VarType};
 use Bugo\LightPortal\Repositories\PluginRepository;
+use Bugo\LightPortal\Utils\{CacheTrait, EntityDataTrait, Icon};
+use Bugo\LightPortal\Utils\{Language, RequestTrait, Str};
 use ReflectionClass;
 use ReflectionException;
+
+use function array_filter;
+use function array_flip;
+use function array_intersect;
+use function array_keys;
+use function array_map;
+use function array_search;
+use function array_unique;
+use function dirname;
+use function explode;
+use function implode;
+use function in_array;
+use function is_file;
+use function json_encode;
+use function ksort;
+use function ltrim;
+use function sort;
+use function sprintf;
+use function touch;
+
+use const LP_NAME;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class PluginArea
 {
-	use Helper;
+	use CacheTrait;
+	use EntityDataTrait;
+	use RequestTrait;
 
 	private PluginRepository $repository;
 
@@ -73,14 +96,11 @@ final class PluginArea
 		$settings = [];
 
 		// You can add settings for your plugins
-		$this->hook('addSettings', [&$settings], Utils::$context['lp_plugins']);
+		AddonHandler::getInstance()->run(PortalHook::addSettings, [&$settings], Utils::$context['lp_plugins']);
 
 		$this->handleSave($settings);
-
 		$this->prepareAddonList($settings);
-
 		$this->prepareAddonChart();
-
 		$this->prepareJsonData();
 	}
 
@@ -134,13 +154,13 @@ final class PluginArea
 		foreach ($configVars[$name] as $var) {
 			if ($this->request()->has($var[1])) {
 				if ($var[0] === 'check') {
-					$settings[$var[1]] = $this->filterVar($this->request($var[1]), 'bool');
+					$settings[$var[1]] = VarType::BOOLEAN->filter($this->request($var[1]));
 				} elseif ($var[0] === 'int') {
-					$settings[$var[1]] = $this->filterVar($this->request($var[1]), 'int');
+					$settings[$var[1]] = VarType::INTEGER->filter($this->request($var[1]));
 				} elseif ($var[0] === 'float') {
-					$settings[$var[1]] = $this->filterVar($this->request($var[1]), 'float');
+					$settings[$var[1]] = VarType::FLOAT->filter($this->request($var[1]));
 				} elseif ($var[0] === 'url') {
-					$settings[$var[1]] = $this->filterVar($this->request($var[1]), 'url');
+					$settings[$var[1]] = VarType::URL->filter($this->request($var[1]));
 				} elseif ($var[0] === 'multiselect') {
 					$settings[$var[1]] = ltrim(implode(',', $this->request($var[1])), ',');
 				} else {
@@ -150,7 +170,7 @@ final class PluginArea
 		}
 
 		// You can do additional actions after settings saving
-		$this->hook('saveSettings', [&$settings], Utils::$context['lp_plugins']);
+		AddonHandler::getInstance()->run(PortalHook::saveSettings, [&$settings], Utils::$context['lp_plugins']);
 
 		$this->repository->changeSettings($name, $settings);
 
@@ -162,7 +182,7 @@ final class PluginArea
 		Utils::$context['all_lp_plugins'] = array_map(function ($item) use ($configVars) {
 			$composer = false;
 
-			$snakeName = $this->getSnakeName($item);
+			$snakeName = Str::getSnakeName($item);
 
 			try {
 				$className = '\Bugo\LightPortal\Addons\\' . $item . '\\' . $item;
@@ -377,7 +397,7 @@ final class PluginArea
 		if (empty($snakeName) || empty($type = Utils::$context['lp_loaded_addons'][$snakeName]['type'] ?? ''))
 			return [Lang::$txt['not_applicable'] => ''];
 
-		$types = explode(' ', $type);
+		$types = explode(' ', (string) $type);
 		if (isset($types[1])) {
 			$allTypes = [];
 			foreach ($types as $t) {

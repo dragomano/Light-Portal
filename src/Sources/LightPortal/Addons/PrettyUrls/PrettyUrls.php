@@ -1,8 +1,6 @@
 <?php
 
 /**
- * PrettyUrls.php
- *
  * @package PrettyUrls (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -49,7 +47,7 @@ class PrettyUrls extends Plugin
 			'enabled' => 0,
 			'filter' => [
 				'priority' => 30,
-				'callback' => [$this, 'filter'],
+				'callback' => $this->filter(...),
 			],
 			'rewrite' => [
 				'priority' => 30,
@@ -70,8 +68,8 @@ class PrettyUrls extends Plugin
 		$replacement = Config::$boardurl . '/' . LP_PAGE_PARAM . '/$2/$1';
 
 		foreach ($urls as $url_id => $url) {
-			if (! isset($url['replacement']) && preg_match($pattern, $url['url'])) {
-				$urls[$url_id]['replacement'] = preg_replace($pattern, $replacement, $url['url']);
+			if (! isset($url['replacement']) && preg_match($pattern, (string) $url['url'])) {
+				$urls[$url_id]['replacement'] = preg_replace($pattern, $replacement, (string) $url['url']);
 			}
 		}
 

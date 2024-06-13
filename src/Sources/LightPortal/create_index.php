@@ -4,8 +4,13 @@ if (! getenv('COMPOSER_BINARY')) {
 	die('This script can only be called through Composer!');
 }
 
-$directories = new RecursiveDirectoryIterator('.');
-foreach (new RecursiveIteratorIterator($directories) as $directory) {
+$directory = new RecursiveDirectoryIterator(__DIR__);
+$iterator = new RecursiveIteratorIterator($directory);
+
+foreach ($iterator as $directory) {
+	if (str_contains((string) $directory->getPathname(), 'Libs'))
+		continue;
+
 	if ($directory->isDir() && ! file_exists($directory . '/index.php')) {
 		file_put_contents($directory . '/index.php', '<?php
 

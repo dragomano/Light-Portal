@@ -1,30 +1,40 @@
 <?php declare(strict_types=1);
 
 /**
- * BasicConfig.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Areas\Configs;
 
-use Bugo\Compat\{ACP, Config, Lang, Theme, User, Utils};
-use Bugo\LightPortal\Areas\Query;
+use Bugo\Compat\{Actions\ACP, Config, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Actions\FrontPage;
+use Bugo\LightPortal\Areas\Traits\QueryTrait;
+use Bugo\LightPortal\Enums\VarType;
+use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\SessionTrait;
 use IntlException;
+use Nette\Utils\Html;
+
+use function array_combine;
+use function array_map;
+use function str_replace;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class BasicConfig extends AbstractConfig
 {
-	use Query;
+	use CacheTrait;
+	use QueryTrait;
+	use RequestTrait;
+	use SessionTrait;
 
 	/**
 	 * Output general settings
@@ -39,7 +49,7 @@ final class BasicConfig extends AbstractConfig
 		Utils::$context['post_url']    = Utils::$context['form_action'] . ';save';
 
 		$this->addDefaultValues([
-			'lp_frontpage_title'           => str_replace(["'", "\""], "", Utils::$context['forum_name']),
+			'lp_frontpage_title'           => str_replace(["'", "\""], "", (string) Utils::$context['forum_name']),
 			'lp_show_views_and_comments'   => 1,
 			'lp_frontpage_article_sorting' => 1,
 			'lp_num_items_per_page'        => 10,
@@ -60,6 +70,14 @@ final class BasicConfig extends AbstractConfig
 
 		$javascript = ':disabled="[\'0\', \'chosen_page\'].includes(frontpage_mode)"';
 
+		$templateEditLink = sprintf('&nbsp;' . Html::el('a', [
+				'href' => '%s?action=admin;area=theme;th=1;%s=%s;sa=edit;directory=LightPortal/layouts',
+			])->setText(Lang::$txt['lp_template_edit_link'])->toHtml(),
+			Config::$scripturl,
+			Utils::$context['session_var'],
+			Utils::$context['session_id'],
+		);
+
 		$configVars = [
 			['callback', 'frontpage_mode_settings_before'],
 			[
@@ -74,7 +92,7 @@ final class BasicConfig extends AbstractConfig
 				'text',
 				'lp_frontpage_title',
 				'size' => '80" placeholder="' . str_replace(
-					["'", "\""], "", Utils::$context['forum_name']
+					["'", "\""], "", (string) Utils::$context['forum_name']
 				) . ' - ' . Lang::$txt['lp_portal'],
 				'javascript' => $javascript
 			],
@@ -123,7 +141,8 @@ final class BasicConfig extends AbstractConfig
 				'select',
 				'lp_frontpage_layout',
 				(new FrontPage())->getLayouts(),
-				'javascript' => $javascript
+				'javascript' => $javascript,
+				'postinput' => $templateEditLink
 			],
 			[
 				'check',
@@ -188,19 +207,19 @@ final class BasicConfig extends AbstractConfig
 
 			if ($this->request()->isNotEmpty('lp_image_placeholder')) {
 				$this->post()->put(
-					'lp_image_placeholder', $this->filterVar($this->request('lp_image_placeholder'), 'url')
+					'lp_image_placeholder', VarType::URL->filter($this->request('lp_image_placeholder'))
 				);
 			}
 
 			if ($this->request()->isNotEmpty('lp_standalone_url')) {
 				$this->post()->put(
-					'lp_standalone_url', $this->filterVar($this->request('lp_standalone_url'), 'url')
+					'lp_standalone_url', VarType::URL->filter($this->request('lp_standalone_url'))
 				);
 			}
 
 			$saveVars = $configVars;
 
-			$saveVars[] = ['text', 'lp_frontpage_alias'];
+			$saveVars[] = ['text', 'lp_frontpage_chosen_page'];
 			$saveVars[] = ['text', 'lp_frontpage_categories'];
 			$saveVars[] = ['text', 'lp_frontpage_boards'];
 			$saveVars[] = ['text', 'lp_frontpage_pages'];

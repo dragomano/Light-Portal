@@ -1,20 +1,20 @@
 <?php declare(strict_types=1);
 
 /**
- * PageModel.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Models;
 
 use Bugo\Compat\{Config, User, Utils};
+
+use function time;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -27,7 +27,7 @@ class PageModel extends AbstractModel
 
 	public int $authorId;
 
-	public string $alias;
+	public string $slug;
 
 	public string $description;
 
@@ -63,7 +63,7 @@ class PageModel extends AbstractModel
 
 		$this->authorId = $currentPage['author_id'] ?? User::$info['id'];
 
-		$this->alias = $postData['alias'] ?? $currentPage['alias'] ?? '';
+		$this->slug = $postData['slug'] ?? $currentPage['slug'] ?? '';
 
 		$this->description = $postData['description'] ?? $currentPage['description'] ?? '';
 

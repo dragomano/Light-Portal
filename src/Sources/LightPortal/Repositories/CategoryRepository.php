@@ -1,33 +1,39 @@
 <?php declare(strict_types=1);
 
 /**
- * CategoryRepository.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Repositories;
 
 use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, Security, User, Utils};
+use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\Utils\RequestTrait;
+
+use function array_filter;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class CategoryRepository extends AbstractRepository
 {
+	use CacheTrait;
+	use RequestTrait;
+
 	protected string $entity = 'category';
 
 	public function getAll(int $start, int $limit, string $sort): array
 	{
 		$result = Db::$db->query('', /** @lang text */ '
-			SELECT c.category_id, c.icon, c.description, c.priority, c.status, COALESCE(t.title, tf.title) AS title
+			SELECT c.category_id, c.icon, c.description, c.priority, c.status, COALESCE(t.value, tf.value) AS title
 			FROM {db_prefix}lp_categories AS c
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
 					c.category_id = t.item_id AND t.type = {literal:category} AND t.lang = {string:lang}
@@ -50,7 +56,7 @@ final class CategoryRepository extends AbstractRepository
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['category_id']] = [
 				'id'       => (int) $row['category_id'],
-				'icon'     => $this->getIcon($row['icon']),
+				'icon'     => Icon::parse($row['icon']),
 				'desc'     => $row['description'],
 				'priority' => (int) $row['priority'],
 				'status'   => (int) $row['status'],
@@ -84,7 +90,7 @@ final class CategoryRepository extends AbstractRepository
 			return [];
 
 		$result = Db::$db->query('', '
-			SELECT c.category_id, c.icon, c.description, c.priority, c.status, t.lang, t.title
+			SELECT c.category_id, c.icon, c.description, c.priority, c.status, t.lang, t.value AS title
 			FROM {db_prefix}lp_categories AS c
 				LEFT JOIN {db_prefix}lp_titles AS t ON (c.category_id = t.item_id AND t.type = {literal:category})
 			WHERE c.category_id = {int:item}',
@@ -121,14 +127,13 @@ final class CategoryRepository extends AbstractRepository
 
 	public function setData(int $item = 0): void
 	{
-		if (isset(Utils::$context['post_errors']) || (
-			$this->request()->hasNot('save') &&
-			$this->request()->hasNot('save_exit'))
-		) {
+		if (isset(Utils::$context['post_errors']) || $this->request()->hasNot(['save', 'save_exit'])) {
 			return;
 		}
 
 		Security::checkSubmitOnce('check');
+
+		$this->prepareTitles();
 
 		if (empty($item)) {
 			Utils::$context['lp_category']['titles'] = array_filter(Utils::$context['lp_category']['titles']);
@@ -141,11 +146,13 @@ final class CategoryRepository extends AbstractRepository
 
 		$this->session('lp')->free('active_categories');
 
-		if ($this->request()->has('save_exit'))
+		if ($this->request()->has('save_exit')) {
 			Utils::redirectexit('action=admin;area=lp_categories;sa=main');
+		}
 
-		if ($this->request()->has('save'))
+		if ($this->request()->has('save')) {
 			Utils::redirectexit('action=admin;area=lp_categories;sa=edit;id=' . $item);
+		}
 	}
 
 	public function remove(array $items): void

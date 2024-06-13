@@ -1,8 +1,6 @@
 <?php
 
 /**
- * PageImport.php
- *
  * @package TinyPortalMigration (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.02.24
+ * @version 30.05.24
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortalMigration;
@@ -19,6 +17,8 @@ use Bugo\Compat\{BBCodeParser, Config, Db, Lang, User, Utils};
 use Bugo\LightPortal\Areas\Imports\AbstractCustomPageImport;
 use Bugo\LightPortal\Utils\{DateTime, ItemList};
 use IntlException;
+
+use const LP_NAME;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -48,10 +48,10 @@ class PageImport extends AbstractCustomPageImport
 			'base_href' => Utils::$context['form_action'],
 			'default_sort_col' => 'id',
 			'get_items' => [
-				'function' => [$this, 'getAll']
+				'function' => $this->getAll(...)
 			],
 			'get_count' => [
-				'function' => [$this, 'getTotalCount']
+				'function' => $this->getTotalCount(...)
 			],
 			'columns' => [
 				'id' => [
@@ -68,12 +68,12 @@ class PageImport extends AbstractCustomPageImport
 						'reverse' => 'id DESC'
 					]
 				],
-				'alias' => [
+				'slug' => [
 					'header' => [
-						'value' => Lang::$txt['lp_page_alias']
+						'value' => Lang::$txt['lp_page_slug']
 					],
 					'data' => [
-						'db'    => 'alias',
+						'db'    => 'slug',
 						'class' => 'centertext word_break'
 					],
 					'sort' => [
@@ -147,7 +147,7 @@ class PageImport extends AbstractCustomPageImport
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			$items[$row['id']] = [
 				'id'         => $row['id'],
-				'alias'      => $row['shortname'],
+				'slug'       => $row['shortname'],
 				'type'       => $row['type'],
 				'status'     => (int) empty($row['off']),
 				'num_views'  => $row['views'],
@@ -182,22 +182,26 @@ class PageImport extends AbstractCustomPageImport
 		return (int) $count;
 	}
 
-	protected function getItems(array $pages): array
+	protected function getItems(array $ids): array
 	{
 		$result = Utils::$smcFunc['db_query']('', '
-			SELECT a.id, a.date, a.body, a.intro, a.subject, a.author_id, a.off, a.options, a.comments, a.views, a.shortname, a.type, a.pub_start, a.pub_end, v.value3
+			SELECT
+				a.id, a.date, a.body, a.intro, a.subject, a.author_id, a.off, a.options, a.comments, a.views,
+				a.shortname, a.type, a.pub_start, a.pub_end, v.value3
 			FROM {db_prefix}tp_articles AS a
-				LEFT JOIN {db_prefix}tp_variables AS v ON (a.category = v.id AND v.type = {string:type})' . (empty($pages) ? '' : '
+				LEFT JOIN {db_prefix}tp_variables AS v ON (
+					a.category = v.id AND v.type = {string:type}
+				)' . (empty($ids) ? '' : '
 			WHERE a.id IN ({array_int:pages})'),
 			[
 				'type'  => 'category',
-				'pages' => $pages,
+				'pages' => $ids,
 			]
 		);
 
 		$items = [];
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
-			$permissions = explode(',', $row['value3']);
+			$permissions = explode(',', (string) $row['value3']);
 
 			$perm = 0;
 			if (count($permissions) == 1 && $permissions[0] == -1) {
@@ -213,8 +217,8 @@ class PageImport extends AbstractCustomPageImport
 			$items[$row['id']] = [
 				'page_id'      => $row['id'],
 				'author_id'    => $row['author_id'],
-				'alias'        => $row['shortname'] ?: ('page_' . $row['id']),
-				'description'  => strip_tags(BBCodeParser::load()->parse($row['intro'])),
+				'slug'         => $row['shortname'] ?: ('page_' . $row['id']),
+				'description'  => strip_tags((string) BBCodeParser::load()->parse($row['intro'])),
 				'content'      => $row['body'],
 				'type'         => $row['type'],
 				'permissions'  => $perm,
@@ -224,7 +228,7 @@ class PageImport extends AbstractCustomPageImport
 				'created_at'   => $row['date'],
 				'updated_at'   => 0,
 				'subject'      => $row['subject'],
-				'options'      => explode(',', $row['options']),
+				'options'      => explode(',', (string) $row['options']),
 			];
 		}
 

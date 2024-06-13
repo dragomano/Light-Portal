@@ -1,8 +1,6 @@
 <?php
 
 /**
- * LanguageAccess.php
- *
  * @package LanguageAccess (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,15 +8,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.04.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\LanguageAccess;
 
 use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\Addons\Plugin;
-use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\CustomField;
+use Bugo\LightPortal\Enums\Tab;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -33,7 +31,7 @@ class LanguageAccess extends Plugin
 			if (empty($block['parameters']) || empty($block['parameters']['allowed_languages']))
 				continue;
 
-			$allowedLanguages = array_flip(explode(',', $block['parameters']['allowed_languages']));
+			$allowedLanguages = array_flip(explode(',', (string) $block['parameters']['allowed_languages']));
 			if (! array_key_exists(Utils::$context['user']['language'], $allowedLanguages)) {
 				unset(Utils::$context['lp_active_blocks'][$id]);
 			}
@@ -53,7 +51,7 @@ class LanguageAccess extends Plugin
 	public function prepareBlockFields(): void
 	{
 		CustomField::make('allowed_languages', Lang::$txt['lp_language_access']['allowed_languages'])
-			->setTab(BlockArea::TAB_ACCESS)
+			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(static fn() => new LanguageSelect());
 	}
 }

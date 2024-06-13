@@ -1,20 +1,18 @@
 <?php declare(strict_types=1);
 
 /**
- * CategoryModel.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Models;
 
-use Bugo\LightPortal\Actions\PageListInterface;
+use Bugo\LightPortal\Enums\Status;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -43,7 +41,7 @@ class CategoryModel extends AbstractModel
 
 		$this->priority = $currentCategory['priority'] ?? 0;
 
-		$this->status = $currentCategory['status'] ?? PageListInterface::STATUS_ACTIVE;
+		$this->status = $currentCategory['status'] ?? Status::ACTIVE->value;
 	}
 
 	protected static function getTableName(): string

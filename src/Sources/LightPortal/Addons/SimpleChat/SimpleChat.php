@@ -1,8 +1,6 @@
 <?php
 
 /**
- * SimpleChat.php
- *
  * @package SimpleChat (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,15 +8,16 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 23.04.24
+ * @version 05.06.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleChat;
 
 use Bugo\Compat\{Config, Db, Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
+use Bugo\LightPortal\Enums\{Hook, Tab};
+use Bugo\LightPortal\Utils\Avatar;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -30,7 +29,7 @@ class SimpleChat extends Block
 {
 	public string $icon = 'fas fa-message';
 
-	private Chat $chat;
+	private readonly Chat $chat;
 
 	public function __construct()
 	{
@@ -39,7 +38,7 @@ class SimpleChat extends Block
 
 	public function init(): void
 	{
-		$this->applyHook('actions');
+		$this->applyHook(Hook::actions);
 	}
 
 	public function actions(): void
@@ -83,7 +82,7 @@ class SimpleChat extends Block
 			return;
 
 		CheckboxField::make('show_avatars', Lang::$txt['lp_simple_chat']['show_avatars'])
-			->setTab(BlockArea::TAB_APPEARANCE)
+			->setTab(Tab::APPEARANCE)
 			->setValue(Utils::$context['lp_block']['options']['show_avatars']);
 	}
 
@@ -91,8 +90,9 @@ class SimpleChat extends Block
 	{
 		$messages = $this->chat->getMessages($block_id);
 
-		if ($parameters['show_avatars'])
-			$messages = $this->getItemsWithUserAvatars($messages);
+		if ($parameters['show_avatars']) {
+			$messages = Avatar::getWithItems($messages);
+		}
 
 		return $messages;
 	}

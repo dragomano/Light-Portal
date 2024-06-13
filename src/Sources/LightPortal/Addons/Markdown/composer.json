@@ -5,7 +5,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Bugo\\LightPortal\\Addons\\Markdown\\SMF\\": "smf/"
+            "Bugo\\LightPortal\\Addons\\Markdown\\SMF\\": "SMF/"
         }
     },
     "config": {

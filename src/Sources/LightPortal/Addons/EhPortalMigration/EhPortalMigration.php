@@ -1,8 +1,6 @@
 <?php
 
 /**
- * EhPortalMigration.php
- *
  * @package EhPortalMigration (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -71,11 +69,11 @@ class EhPortalMigration extends Plugin
 				'title'   => $item['title'],
 			];
 
-			if (Config::$language !== Language::FALLBACK && ! empty(Config::$modSettings['userLanguage'])) {
+			if (Config::$language !== Language::getFallbackValue() && ! empty(Config::$modSettings['userLanguage'])) {
 				$titles[] = [
 					'item_id' => $pageId,
 					'type'    => 'page',
-					'lang'    => Language::FALLBACK,
+					'lang'    => Language::getFallbackValue(),
 					'title'   => $item['title'],
 				];
 			}

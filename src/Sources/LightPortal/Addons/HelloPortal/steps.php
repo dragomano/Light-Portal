@@ -34,9 +34,9 @@ return [
 			element: document.getElementById("setting_lp_show_tags_on_page").parentNode.parentNode,
 			intro: "' . Lang::$txt['lp_hello_portal']['extra_settings_tour'][0] . '",
 			position: "right"
-		},' . (! empty(Config::$modSettings['lp_show_comment_block']) && Config::$modSettings['lp_show_comment_block'] === 'default' ? ('
+		},' . (! empty(Config::$modSettings['lp_comment_block']) && Config::$modSettings['lp_comment_block'] === 'default' ? ('
 		{
-			element: document.getElementById("setting_lp_show_comment_block").parentNode.parentNode.parentNode,
+			element: document.getElementById("setting_lp_comment_block").parentNode.parentNode.parentNode,
 			intro: "' . Lang::$txt['lp_hello_portal']['extra_settings_tour'][1] . '"
 		},') : '') . '
 		{
@@ -118,7 +118,7 @@ return [
 			intro: "' . Lang::$txt['lp_hello_portal']['pages_tour'][3] . '"
 		},
 		{
-			element: document.querySelector("td.alias"),
+			element: document.querySelector("td.slug"),
 			intro: "' . sprintf(Lang::$txt['lp_hello_portal']['pages_tour'][4], '<strong>?' . LP_PAGE_PARAM . '=</strong>') . '"
 		},
 		{

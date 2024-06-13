@@ -1,30 +1,30 @@
 <?php declare(strict_types=1);
 
 /**
- * AbstractField.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Areas\Fields;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Enums\Tab;
+
+use function is_callable;
+use function is_object;
+use function is_string;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 abstract class AbstractField
 {
-	use Helper;
-
-	protected string $tab = 'tuning';
+	protected string $tab;
 
 	protected string $name;
 
@@ -36,6 +36,14 @@ abstract class AbstractField
 
 	protected array $attributes = [];
 
+	public function __construct(string $name, string $label)
+	{
+		$this->name = $name;
+		$this->label = $label;
+
+		$this->setTab(Tab::TUNING);
+	}
+
 	public function __destruct()
 	{
 		$this->build();
@@ -46,23 +54,9 @@ abstract class AbstractField
 		return new static($name, $label);
 	}
 
-	public function setTab(string $tab): self
+	public function setTab(Tab|string $tab): self
 	{
-		$this->tab = $tab;
-
-		return $this;
-	}
-
-	public function setName(string $name): self
-	{
-		$this->name = $name;
-
-		return $this;
-	}
-
-	public function setLabel(string $label): self
-	{
-		$this->label = $label;
+		$this->tab = is_string($tab) ? $tab : $tab->name();
 
 		return $this;
 	}

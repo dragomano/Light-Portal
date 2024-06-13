@@ -1,26 +1,35 @@
 <?php declare(strict_types=1);
 
 /**
- * ExtraConfig.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Areas\Configs;
 
-use Bugo\Compat\{ACP, Config, Lang, Theme, User, Utils};
+use Bugo\Compat\{Actions\ACP, Config, Lang, Theme, User, Utils};
+use Bugo\LightPortal\Enums\VarType;
+use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\SessionTrait;
+
+use Nette\Utils\Html;
+use function asort;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class ExtraConfig extends AbstractConfig
 {
+	use CacheTrait;
+	use RequestTrait;
+	use SessionTrait;
+
 	/**
 	 * Output page and block settings
 	 *
@@ -31,13 +40,17 @@ final class ExtraConfig extends AbstractConfig
 		Utils::$context['page_title'] = Utils::$context['settings_title'] = Lang::$txt['lp_extra'];
 		Utils::$context['post_url']   = Config::$scripturl . '?action=admin;area=lp_settings;sa=extra;save';
 
-		Lang::$txt['lp_show_comment_block_set']['none']    = Lang::$txt['lp_show_comment_block_set'][0];
-		Lang::$txt['lp_show_comment_block_set']['default'] = Lang::$txt['lp_show_comment_block_set'][1];
+		Lang::$txt['lp_comment_block_set']['none']    = Lang::$txt['lp_comment_block_set'][0];
+		Lang::$txt['lp_comment_block_set']['default'] = Lang::$txt['lp_comment_block_set'][1];
 
-		unset(Lang::$txt['lp_show_comment_block_set'][0], Lang::$txt['lp_show_comment_block_set'][1]);
-		asort(Lang::$txt['lp_show_comment_block_set']);
+		unset(Lang::$txt['lp_comment_block_set'][0], Lang::$txt['lp_comment_block_set'][1]);
+		asort(Lang::$txt['lp_comment_block_set']);
 
-		Lang::$txt['lp_fa_source_title'] .= ' <img class="floatright" src="https://data.jsdelivr.com/v1/package/npm/@fortawesome/fontawesome-free/badge?style=rounded" alt="">';
+		Lang::$txt['lp_fa_source_title'] .= ' ' . Html::el('img', [
+			'class' => 'floatright',
+			'src'   => 'https://data.jsdelivr.com/v1/package/npm/@fortawesome/fontawesome-free/badge?style=rounded',
+			'alt'   => '',
+		]);
 
 		$this->addDefaultValues([
 			'lp_num_comments_per_page' => 10,
@@ -53,8 +66,8 @@ final class ExtraConfig extends AbstractConfig
 			['callback', 'comment_settings_before'],
 			[
 				'select',
-				'lp_show_comment_block',
-				Lang::$txt['lp_show_comment_block_set'],
+				'lp_comment_block',
+				Lang::$txt['lp_comment_block_set'],
 				'javascript' => '@change="comment_block = $event.target.value"'
 			],
 			[
@@ -80,6 +93,28 @@ final class ExtraConfig extends AbstractConfig
 			['int', 'lp_page_maximum_tags', 'min' => 1],
 			['select', 'lp_permissions_default', Lang::$txt['lp_permissions']],
 			['check', 'lp_hide_blocks_in_acp'],
+			['title', 'mobile_user_menu'],
+			['callback', 'menu_settings_before'],
+			[
+				'check',
+				'lp_menu_separate_subsection',
+				'help' => 'lp_menu_separate_subsection_help',
+				'javascript' => '@change="separate_subsection = ! separate_subsection"'
+			],
+			[
+				'text',
+				'lp_menu_separate_subsection_title',
+				'help' => 'lp_menu_separate_subsection_title_help',
+				'javascript' => ':disabled="separate_subsection === false"',
+				'size' => '75" placeholder="{lp_pages}',
+			],
+			[
+				'text',
+				'lp_menu_separate_subsection_href',
+				'javascript' => ':disabled="separate_subsection === false"',
+				'size' => '75" placeholder="' . Config::$scripturl,
+			],
+			['callback', 'menu_settings_after'],
 			['title', 'lp_fa_source_title'],
 			[
 				'select',
@@ -104,8 +139,7 @@ final class ExtraConfig extends AbstractConfig
 				'text',
 				'lp_fa_kit',
 				'disabled' => isset(Config::$modSettings['lp_fa_kit']) && Config::$modSettings['lp_fa_source'] !== 'kit',
-				'placeholder' => 'https://kit.fontawesome.com/xxx.js',
-				'size' => 75
+				'size' => '75" placeholder="https://kit.fontawesome.com/xxx.js'
 			],
 		];
 
@@ -115,11 +149,20 @@ final class ExtraConfig extends AbstractConfig
 		if ($this->request()->has('save')) {
 			User::$me->checkSession();
 
-			if ($this->request()->isNotEmpty('lp_fa_custom'))
-				$this->post()->put('lp_fa_custom', $this->filterVar($this->request('lp_fa_custom'), 'url'));
+			if ($this->request()->isNotEmpty('lp_menu_separate_subsection_href')) {
+				$this->post()->put(
+					'lp_menu_separate_subsection_href',
+					VarType::URL->filter($this->request('lp_menu_separate_subsection_href'))
+				);
+			}
 
-			if ($this->request()->isNotEmpty('lp_fa_kit'))
-				$this->post()->put('lp_fa_kit', $this->filterVar($this->request('lp_fa_kit'), 'url'));
+			if ($this->request()->isNotEmpty('lp_fa_custom')) {
+				$this->post()->put('lp_fa_custom', VarType::URL->filter($this->request('lp_fa_custom')));
+			}
+
+			if ($this->request()->isNotEmpty('lp_fa_kit')) {
+				$this->post()->put('lp_fa_kit', VarType::URL->filter($this->request('lp_fa_kit')));
+			}
 
 			$saveVars = $configVars;
 			ACP::saveDBSettings($saveVars);

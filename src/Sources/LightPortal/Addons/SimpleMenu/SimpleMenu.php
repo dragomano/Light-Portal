@@ -1,8 +1,6 @@
 <?php
 
 /**
- * SimpleMenu.php
- *
  * @package SimpleMenu (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,15 +8,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.04.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleMenu;
 
 use Bugo\Compat\{Config, Lang, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\CustomField;
+use Bugo\LightPortal\Enums\Tab;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -69,7 +67,7 @@ class SimpleMenu extends Block
 			return;
 
 		CustomField::make('items', Lang::$txt['lp_simple_menu']['items'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue($this->getFromTemplate('simple_menu_items'));
 	}
 
@@ -87,7 +85,7 @@ class SimpleMenu extends Block
 			[$title, $link] = [$item['name'], $item['link']];
 
 			$ext = true;
-			if (! str_starts_with($link, 'http')) {
+			if (! str_starts_with((string) $link, 'http')) {
 				$active = $link == Utils::$context['current_action'];
 				$link   = Config::$scripturl . '?action=' . $link;
 				$ext    = false;

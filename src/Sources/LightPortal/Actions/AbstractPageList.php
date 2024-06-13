@@ -1,30 +1,35 @@
 <?php declare(strict_types=1);
 
 /**
- * AbstractPageList.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Actions;
 
 use Bugo\Compat\{Config, Lang, User, Utils};
-use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{Content, DateTime};
+use Bugo\LightPortal\Utils\{Avatar, Content, DateTime};
+use Bugo\LightPortal\Utils\{EntityDataTrait, Setting, Str};
 use IntlException;
+
+use function array_pop;
+use function date;
+use function preg_match;
+
+use const LP_BASE_URL;
+use const LP_PAGE_URL;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 abstract class AbstractPageList implements PageListInterface
 {
-	use Helper;
+	use EntityDataTrait;
 
 	abstract public function show(PageInterface $page);
 
@@ -47,7 +52,7 @@ abstract class AbstractPageList implements PageListInterface
 			$items[$row['page_id']] = [
 				'id'        => (int) $row['page_id'],
 				'section'   => $this->getSectionData($row),
-				'alias'     => $row['alias'],
+				'slug'      => $row['slug'],
 				'author'    => $this->getAuthorData($row),
 				'date'      => DateTime::relative((int) $row['date']),
 				'datetime'  => date('Y-m-d', (int) $row['date']),
@@ -57,7 +62,7 @@ abstract class AbstractPageList implements PageListInterface
 				'replies'   => $this->getRepliesData($row),
 				'title'     => $row['title'],
 				'is_new'    => $this->isNew($row),
-				'is_front'  => $this->isFrontpage($row['alias']),
+				'is_front'  => Setting::isFrontpage($row['slug']),
 				'image'     => $this->getImage($row),
 				'can_edit'  => $this->canEdit($row),
 				'edit_link' => $this->getEditLink($row),
@@ -71,7 +76,7 @@ abstract class AbstractPageList implements PageListInterface
 			}
 		}
 
-		return $this->getItemsWithUserAvatars($items);
+		return Avatar::getWithItems($items);
 	}
 
 	private function getSectionData(array $row): array
@@ -100,7 +105,7 @@ abstract class AbstractPageList implements PageListInterface
 
 	private function getLink(array $row): string
 	{
-		return LP_PAGE_URL . $row['alias'];
+		return LP_PAGE_URL . $row['slug'];
 	}
 
 	private function getViewsData(array $row): array
@@ -114,7 +119,7 @@ abstract class AbstractPageList implements PageListInterface
 	private function getRepliesData(array $row): array
 	{
 		return [
-			'num'   => $this->getCommentBlockType() === 'default' ? (int) $row['num_comments'] : 0,
+			'num'   => Setting::getCommentBlock() === 'default' ? (int) $row['num_comments'] : 0,
 			'title' => Lang::$txt['lp_comments'],
 		];
 	}
@@ -129,7 +134,7 @@ abstract class AbstractPageList implements PageListInterface
 		$image = '';
 
 		if (! empty(Config::$modSettings['lp_show_images_in_articles'])) {
-			$firstPostImage = preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', $row['content'], $value);
+			$firstPostImage = preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', (string) $row['content'], $value);
 			$image = $firstPostImage ? array_pop($value) : null;
 		}
 
@@ -142,11 +147,10 @@ abstract class AbstractPageList implements PageListInterface
 
 	private function canEdit(array $row): bool
 	{
-		return User::$info['is_admin']
-			|| (
-				Utils::$context['allow_light_portal_manage_pages_own']
-				&& (int) $row['author_id'] === User::$info['id']
-			);
+		if (User::$info['is_admin'])
+			return true;
+
+		return Utils::$context['allow_light_portal_manage_pages_own'] && (int) $row['author_id'] === User::$info['id'];
 	}
 
 	private function getEditLink(array $row): string
@@ -159,6 +163,6 @@ abstract class AbstractPageList implements PageListInterface
 		if (empty(Config::$modSettings['lp_show_teaser']))
 			return;
 
-		$items[$row['page_id']]['teaser'] = $this->getTeaser($row['description'] ?: $row['content']);
+		$items[$row['page_id']]['teaser'] = Str::getTeaser($row['description'] ?: $row['content']);
 	}
 }

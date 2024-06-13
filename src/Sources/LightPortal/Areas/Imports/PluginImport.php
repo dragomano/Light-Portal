@@ -1,15 +1,13 @@
 <?php declare(strict_types=1);
 
 /**
- * PluginImport.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Areas\Imports;
@@ -18,11 +16,19 @@ use Bugo\Compat\{Config, ErrorHandler, Lang, Theme, Utils};
 use Exception;
 use ZipArchive;
 
+use function explode;
+use function pathinfo;
+use function str_contains;
+
+use const LP_NAME;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class PluginImport extends AbstractImport
 {
+	protected string $entity = 'plugins';
+
 	public function main(): void
 	{
 		Theme::loadTemplate('LightPortal/ManageImpex');
@@ -55,6 +61,7 @@ final class PluginImport extends AbstractImport
 	protected function extractPackage(): bool
 	{
 		$file = $this->files('import_file');
+
 		if (empty($file) || $file['error'] !== UPLOAD_ERR_OK)
 			return false;
 
@@ -72,7 +79,7 @@ final class PluginImport extends AbstractImport
 			$zip->open($file['tmp_name']);
 			$zip->deleteName('package-info.xml');
 
-			$plugin = pathinfo($file['name'], PATHINFO_FILENAME);
+			$plugin = pathinfo((string) $file['name'], PATHINFO_FILENAME);
 			$pluginPhp = $plugin . '/' . $plugin . '.php';
 			$addonDir = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $plugin;
 

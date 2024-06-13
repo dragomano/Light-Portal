@@ -1,20 +1,20 @@
 <?php declare(strict_types=1);
 
 /**
- * ChosenTopicArticle.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Articles;
 
 use Bugo\Compat\Config;
+
+use function explode;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -30,7 +30,7 @@ final class ChosenTopicArticle extends TopicArticle
 		$this->selectedBoards = [];
 
 		$this->selectedTopics = empty(Config::$modSettings['lp_frontpage_topics'])
-			? [] : explode(',', Config::$modSettings['lp_frontpage_topics']);
+			? [] : explode(',', (string) Config::$modSettings['lp_frontpage_topics']);
 
 		$this->wheres[] = 'AND t.id_topic IN ({array_int:selected_topics})';
 

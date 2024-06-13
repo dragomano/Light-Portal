@@ -1,8 +1,6 @@
 <?php
 
 /**
- * PageImport.php
- *
  * @package EzPortalMigration (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 27.03.24
+ * @version 30.05.24
  */
 
 namespace Bugo\LightPortal\Addons\EzPortalMigration;
@@ -19,6 +17,8 @@ use Bugo\Compat\{Config, Db, Lang, User, Utils};
 use Bugo\LightPortal\Areas\Imports\AbstractCustomPageImport;
 use Bugo\LightPortal\Utils\{DateTime, ItemList};
 use IntlException;
+
+use const LP_NAME;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -48,10 +48,10 @@ class PageImport extends AbstractCustomPageImport
 			'base_href' => Utils::$context['form_action'],
 			'default_sort_col' => 'id',
 			'get_items' => [
-				'function' => [$this, 'getAll']
+				'function' => $this->getAll(...)
 			],
 			'get_count' => [
-				'function' => [$this, 'getTotalCount']
+				'function' => $this->getTotalCount(...)
 			],
 			'columns' => [
 				'id' => [
@@ -68,12 +68,12 @@ class PageImport extends AbstractCustomPageImport
 						'reverse' => 'id_page DESC'
 					]
 				],
-				'alias' => [
+				'slug' => [
 					'header' => [
-						'value' => Lang::$txt['lp_page_alias']
+						'value' => Lang::$txt['lp_page_slug']
 					],
 					'data' => [
-						'db'    => 'alias',
+						'db'    => 'slug',
 						'class' => 'centertext word_break'
 					]
 				],
@@ -143,7 +143,7 @@ class PageImport extends AbstractCustomPageImport
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
 			$items[$row['id_page']] = [
 				'id'         => $row['id_page'],
-				'alias'      => Utils::$smcFunc['strtolower'](explode(' ', $row['title'])[0]) . $row['id_page'],
+				'slug'       => Utils::$smcFunc['strtolower'](explode(' ', (string) $row['title'])[0]) . $row['id_page'],
 				'type'       => 'html',
 				'status'     => 1,
 				'num_views'  => $row['views'],
@@ -178,14 +178,14 @@ class PageImport extends AbstractCustomPageImport
 		return (int) $count;
 	}
 
-	protected function getItems(array $pages): array
+	protected function getItems(array $ids): array
 	{
 		$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
 			SELECT id_page, date, title, content, views, permissions
-			FROM {db_prefix}ezp_page' . (empty($pages) ? '' : '
+			FROM {db_prefix}ezp_page' . (empty($ids) ? '' : '
 			WHERE id_page IN ({array_int:pages})'),
 			[
-				'pages' => $pages,
+				'pages' => $ids,
 			]
 		);
 
@@ -194,7 +194,7 @@ class PageImport extends AbstractCustomPageImport
 			$items[$row['id_page']] = [
 				'page_id'      => $row['id_page'],
 				'author_id'    => User::$info['id'],
-				'alias'        => 'page_' . $row['id_page'],
+				'slug'         => 'page_' . $row['id_page'],
 				'description'  => '',
 				'content'      => $row['content'],
 				'type'         => 'html',
@@ -215,7 +215,7 @@ class PageImport extends AbstractCustomPageImport
 
 	private function getPagePermission(array $row): int
 	{
-		$permissions = explode(',', $row['permissions']);
+		$permissions = explode(',', (string) $row['permissions']);
 
 		$perm = 0;
 		if (count($permissions) == 1 && $permissions[0] == -1) {

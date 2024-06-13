@@ -1,29 +1,38 @@
 <?php declare(strict_types=1);
 
 /**
- * Tag.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Actions;
 
 use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, User, Utils};
-use Bugo\LightPortal\Utils\ItemList;
+use Bugo\LightPortal\Enums\{Permission, Status};
+use Bugo\LightPortal\Utils\{Icon, ItemList, RequestTrait};
 use IntlException;
+use Nette\Utils\Html;
+
+use function array_key_exists;
+use function count;
+use function sprintf;
+use function time;
+
+use const LP_BASE_URL;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class Tag extends AbstractPageList
 {
+	use RequestTrait;
+
 	public function show(PageInterface $page): void
 	{
 		if ($this->request()->hasNot('id')) {
@@ -63,7 +72,7 @@ final class Tag extends AbstractPageList
 		$listOptions = $page->getList();
 		$listOptions['id'] = 'lp_tags';
 		$listOptions['get_items'] = [
-			'function' => [$this, 'getPages']
+			'function' => $this->getPages(...)
 		];
 
 		new ItemList($listOptions);
@@ -78,12 +87,12 @@ final class Tag extends AbstractPageList
 	{
 		$result = Db::$db->query('', '
 			SELECT
-				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content,
+				p.page_id, p.category_id, p.author_id, p.slug, p.description, p.content,
 				p.type, p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
-				COALESCE(mem.real_name, \'\') AS author_name, COALESCE(t.title, tf.title) AS title,
-				COALESCE(tt.title, ttf.title) AS tag_title
+				COALESCE(mem.real_name, \'\') AS author_name, COALESCE(t.value, tf.value) AS title,
+				COALESCE(tt.value, ttf.value) AS tag_title
 			FROM {db_prefix}lp_pages AS p
-				INNER JOIN {db_prefix}lp_page_tags AS pt ON (p.page_id = pt.page_id)
+				INNER JOIN {db_prefix}lp_page_tag AS pt ON (p.page_id = pt.page_id)
 				INNER JOIN {db_prefix}lp_tags AS tag ON (pt.tag_id = tag.tag_id)
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
@@ -109,10 +118,10 @@ final class Tag extends AbstractPageList
 				'lang'          => User::$info['language'],
 				'fallback_lang' => Config::$language,
 				'id'            => Utils::$context['current_tag'],
-				'status'        => PageListInterface::STATUS_ACTIVE,
-				'statuses'      => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
+				'status'        => Status::ACTIVE->value,
+				'statuses'      => [Status::ACTIVE->value, Status::INTERNAL->value],
 				'current_time'  => time(),
-				'permissions'   => $this->getPermissions(),
+				'permissions'   => Permission::all(),
 				'sort'          => $sort,
 				'start'         => $start,
 				'limit'         => $limit,
@@ -131,7 +140,7 @@ final class Tag extends AbstractPageList
 		$result = Db::$db->query('', '
 			SELECT COUNT(p.page_id)
 			FROM {db_prefix}lp_pages AS p
-				INNER JOIN {db_prefix}lp_page_tags AS pt ON (p.page_id = pt.page_id)
+				INNER JOIN {db_prefix}lp_page_tag AS pt ON (p.page_id = pt.page_id)
 				INNER JOIN {db_prefix}lp_tags AS tag ON (pt.tag_id = tag.tag_id)
 			WHERE pt.tag_id = {int:id}
 				AND tag.status = {int:status}
@@ -140,10 +149,10 @@ final class Tag extends AbstractPageList
 				AND p.permissions IN ({array_int:permissions})',
 			[
 				'id'           => Utils::$context['current_tag'],
-				'status'       => PageListInterface::STATUS_ACTIVE,
-				'statuses'     => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
+				'status'       => Status::ACTIVE->value,
+				'statuses'     => [Status::ACTIVE->value, Status::INTERNAL->value],
 				'current_time' => time(),
-				'permissions'  => $this->getPermissions(),
+				'permissions'  => Permission::all(),
 			]
 		);
 
@@ -172,7 +181,7 @@ final class Tag extends AbstractPageList
 			'base_href' => Utils::$context['canonical_url'],
 			'default_sort_col' => 'value',
 			'get_items' => [
-				'function' => [$this, 'getAll']
+				'function' => $this->getAll(...)
 			],
 			'get_count' => [
 				'function' => fn() => count($this->getAll())
@@ -183,8 +192,10 @@ final class Tag extends AbstractPageList
 						'value' => Lang::$txt['lp_tag_column']
 					],
 					'data' => [
-						'function' => static fn($entry) => $entry['icon'] . ' ' . '<a href="' . $entry['link'] . '">' . $entry['title'] . '</a>',
-						'class' => 'centertext'
+						'function' => static fn($entry) => $entry['icon'] . ' ' . Html::el('a')
+							->href($entry['link'])
+							->setText($entry['title'])
+							->toHtml(),
 					],
 					'sort' => [
 						'default' => 'title DESC',
@@ -218,9 +229,9 @@ final class Tag extends AbstractPageList
 	public function getAll(int $start = 0, int $limit = 0, string $sort = 'title'): array
 	{
 		$result = Db::$db->query('', '
-			SELECT tag.tag_id, tag.icon, COALESCE(tt.title, tf.title) AS title, COUNT(tag.tag_id) AS frequency
+			SELECT tag.tag_id, tag.icon, COALESCE(tt.value, tf.value) AS title, COUNT(tag.tag_id) AS frequency
 			FROM {db_prefix}lp_pages AS p
-				INNER JOIN {db_prefix}lp_page_tags AS pt ON (p.page_id = pt.page_id)
+				INNER JOIN {db_prefix}lp_page_tag AS pt ON (p.page_id = pt.page_id)
 				INNER JOIN {db_prefix}lp_tags AS tag ON (pt.tag_id = tag.tag_id)
 				LEFT JOIN {db_prefix}lp_titles AS tt ON (
 					pt.tag_id = tt.item_id AND tt.type = {literal:tag} AND tt.lang = {string:lang}
@@ -232,16 +243,16 @@ final class Tag extends AbstractPageList
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
 				AND tag.status = {int:status}
-			GROUP BY tag.tag_id, tag.icon, tt.title, tf.title
+			GROUP BY tag.tag_id, tag.icon, tt.value, tf.value
 			ORDER BY {raw:sort}' . ($limit ? '
 			LIMIT {int:start}, {int:limit}' : ''),
 			[
 				'lang'          => User::$info['language'],
 				'fallback_lang' => Config::$language,
-				'statuses'      => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
+				'statuses'      => [Status::ACTIVE->value, Status::INTERNAL->value],
 				'current_time'  => time(),
-				'permissions'   => $this->getPermissions(),
-				'status'        => PageListInterface::STATUS_ACTIVE,
+				'permissions'   => Permission::all(),
+				'status'        => Status::ACTIVE->value,
 				'sort'          => $sort,
 				'start'         => $start,
 				'limit'         => $limit,
@@ -251,7 +262,7 @@ final class Tag extends AbstractPageList
 		$items = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['tag_id']] = [
-				'icon'      => $this->getIcon($row['icon']),
+				'icon'      => Icon::parse($row['icon']),
 				'title'     => $row['title'],
 				'link'      => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id'],
 				'frequency' => (int) $row['frequency'],

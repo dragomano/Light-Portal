@@ -1,20 +1,23 @@
 <?php declare(strict_types=1);
 
 /**
- * Maintainer.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Tasks;
 
-use Bugo\Compat\Db;
+use Bugo\Compat\{Tasks\BackgroundTask, Db};
+
+use function array_keys;
+use function array_map;
+use function ini_set;
+use function time;
 
 final class Maintainer extends BackgroundTask
 {
@@ -58,7 +61,7 @@ final class Maintainer extends BackgroundTask
 
 		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_titles
-			WHERE title = {string:empty_value}',
+			WHERE value = {string:empty_value}',
 			[
 				'empty_value' => '',
 			]
@@ -180,7 +183,7 @@ final class Maintainer extends BackgroundTask
 				'lp_blocks',
 				'lp_categories',
 				'lp_comments',
-				'lp_page_tags',
+				'lp_page_tag',
 				'lp_pages',
 				'lp_params',
 				'lp_plugins',

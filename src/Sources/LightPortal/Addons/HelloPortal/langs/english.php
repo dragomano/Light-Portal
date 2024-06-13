@@ -47,7 +47,7 @@ return [
 		'Each line in this table represents a corresponding page.',
 		'Date - generalized field for the date of page creation and the date of page updating.',
 		'You want to know how many times this or that page has been viewed, don\'t you?',
-		'Page alias is the part of the address after %s',
+		'Page slug is the part of the URL after %s',
 		'Enable or disable pages with a single click.',
 		'In the additional actions, editing and deleting pages are hidden.',
 		'When it gets to be a lot of pages, a search will come in handy!',

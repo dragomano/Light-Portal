@@ -1,29 +1,38 @@
 <?php declare(strict_types=1);
 
 /**
- * PageArticle.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Articles;
 
 use Bugo\Compat\{BBCodeParser, Config, Db, Lang, User, Utils};
-use Bugo\LightPortal\Actions\PageInterface;
-use Bugo\LightPortal\Actions\PageListInterface;
-use Bugo\LightPortal\Utils\Content;
+use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Enums\{Permission, PortalHook, Status};
+use Bugo\LightPortal\Utils\{Avatar, Content, EntityDataTrait};
+use Bugo\LightPortal\Utils\{Icon, Setting, Str};
+
+use function array_keys;
+use function explode;
+use function implode;
+use function time;
+
+use const LP_BASE_URL;
+use const LP_PAGE_URL;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 class PageArticle extends AbstractArticle
 {
+	use EntityDataTrait;
+
 	protected array $selectedCategories = [];
 
 	protected int $sorting = 0;
@@ -31,9 +40,9 @@ class PageArticle extends AbstractArticle
 	public function init(): void
 	{
 		$this->selectedCategories = empty(Config::$modSettings['lp_frontpage_categories'])
-			? [] : explode(',', Config::$modSettings['lp_frontpage_categories']);
+			? [] : explode(',', (string) Config::$modSettings['lp_frontpage_categories']);
 
-		if (empty($this->selectedCategories) && $this->isFrontpageMode('all_pages')) {
+		if (empty($this->selectedCategories) && Setting::isFrontpageMode('all_pages')) {
 			$this->selectedCategories = [0];
 		}
 
@@ -42,9 +51,9 @@ class PageArticle extends AbstractArticle
 		$this->params = [
 			'lang'                => User::$info['language'],
 			'fallback_lang'       => Config::$language,
-			'status'              => PageInterface::STATUS_ACTIVE,
+			'status'              => Status::ACTIVE->value,
 			'current_time'        => time(),
-			'permissions'         => $this->getPermissions(),
+			'permissions'         => Permission::all(),
 			'selected_categories' => $this->selectedCategories,
 		];
 
@@ -55,7 +64,7 @@ class PageArticle extends AbstractArticle
 			'date DESC',
 		];
 
-		$this->hook('frontPages', [
+		AddonHandler::getInstance()->run(PortalHook::frontPages, [
 			&$this->columns, &$this->tables, &$this->params, &$this->wheres, &$this->orders
 		]);
 	}
@@ -71,9 +80,9 @@ class PageArticle extends AbstractArticle
 
 		$result = Db::$db->query('', /** @lang text */ '
 			SELECT
-				p.page_id, p.category_id, p.author_id, p.alias, p.content, p.description, p.type, p.status, p.num_views,
+				p.page_id, p.category_id, p.author_id, p.slug, p.content, p.description, p.type, p.status, p.num_views,
 				CASE WHEN COALESCE(par.value, \'0\') != \'0\' THEN p.num_comments ELSE 0 END AS num_comments, p.created_at,
-				GREATEST(p.created_at, p.updated_at) AS date, COALESCE(t.title, tf.title) AS cat_title, mem.real_name AS author_name,
+				GREATEST(p.created_at, p.updated_at) AS date, COALESCE(t.value, tf.value) AS cat_title, mem.real_name AS author_name,
 				cat.icon as cat_icon, com.created_at AS comment_date, com.author_id AS comment_author_id, mem2.real_name AS comment_author_name,
 				com.message AS comment_message' . (empty($this->columns) ? '' : ', ' . implode(', ', $this->columns)) . '
 			FROM {db_prefix}lp_pages AS p
@@ -113,7 +122,7 @@ class PageArticle extends AbstractArticle
 					'author'    => $this->getAuthorData($row),
 					'date'      => $this->getDate($row),
 					'title'     => $this->getTitle($titles, $row),
-					'link'      => LP_PAGE_URL . $row['alias'],
+					'link'      => LP_PAGE_URL . $row['slug'],
 					'views'     => $this->getViewsData($row),
 					'replies'   => $this->getRepliesData($row),
 					'is_new'    => $this->isNew($row),
@@ -125,14 +134,14 @@ class PageArticle extends AbstractArticle
 
 			$this->prepareTeaser($pages, $row);
 
-			$this->hook('frontPagesOutput', [&$pages, $row]);
+			AddonHandler::getInstance()->run(PortalHook::frontPagesOutput, [&$pages, $row]);
 		}
 
 		Db::$db->free_result($result);
 
 		$this->prepareTags($pages);
 
-		return $this->getItemsWithUserAvatars($pages);
+		return Avatar::getWithItems($pages);
 	}
 
 	public function getTotalCount(): int
@@ -159,7 +168,7 @@ class PageArticle extends AbstractArticle
 	private function getSectionData(array $row): array
 	{
 		return [
-			'icon' => $this->getIcon($row['cat_icon']),
+			'icon' => Icon::parse($row['cat_icon']),
 			'name' => empty($row['category_id']) ? '' : $row['cat_title'],
 			'link' => empty($row['category_id']) ? '' : (LP_BASE_URL . ';sa=categories;id=' . $row['category_id']),
 		];
@@ -197,7 +206,7 @@ class PageArticle extends AbstractArticle
 
 	private function getTitle(array $titles, array $row): string
 	{
-		return $this->getTranslatedTitle($titles[$row['page_id']]);
+		return Str::getTranslatedTitle($titles[$row['page_id']] ?? []);
 	}
 
 	private function getViewsData(array $row): array
@@ -212,7 +221,7 @@ class PageArticle extends AbstractArticle
 	private function getRepliesData(array $row): array
 	{
 		return [
-			'num'   => $this->getCommentBlockType() === 'default' ? (int) $row['num_comments'] : 0,
+			'num'   => Setting::getCommentBlock() === 'default' ? (int) $row['num_comments'] : 0,
 			'title' => Lang::$txt['lp_comments'],
 			'after' => '',
 		];
@@ -228,7 +237,7 @@ class PageArticle extends AbstractArticle
 		if (empty(Config::$modSettings['lp_show_images_in_articles']))
 			return '';
 
-		return $this->getImageFromText($row['content']);
+		return Str::getImageFromText($row['content']);
 	}
 
 	private function canEdit(array $row): bool
@@ -248,7 +257,7 @@ class PageArticle extends AbstractArticle
 		if (empty(Config::$modSettings['lp_show_teaser']))
 			return;
 
-		$pages[$row['page_id']]['teaser'] = $this->getTeaser(
+		$pages[$row['page_id']]['teaser'] = Str::getTeaser(
 			$this->sorting === 0 && $row['num_comments']
 				? BBCodeParser::load()->parse($row['comment_message'])
 				: ($row['description'] ?: $row['content'])
@@ -261,9 +270,9 @@ class PageArticle extends AbstractArticle
 			return;
 
 		$result = Db::$db->query('', '
-			SELECT t.tag_id, t.icon, pt.page_id, COALESCE(tt.title, tf.title) AS title
+			SELECT t.tag_id, t.icon, pt.page_id, COALESCE(tt.value, tf.value) AS title
 			FROM {db_prefix}lp_tags AS t
-				LEFT JOIN {db_prefix}lp_page_tags AS pt ON (t.tag_id = pt.tag_id)
+				LEFT JOIN {db_prefix}lp_page_tag AS pt ON (t.tag_id = pt.tag_id)
 				LEFT JOIN {db_prefix}lp_titles AS tt ON (
 					pt.tag_id = tt.item_id AND tt.type = {literal:tag} AND tt.lang = {string:lang}
 				)
@@ -277,13 +286,13 @@ class PageArticle extends AbstractArticle
 				'lang'          => User::$info['language'],
 				'fallback_lang' => Config::$language,
 				'pages'         => array_keys($pages),
-				'status'        => PageListInterface::STATUS_ACTIVE,
+				'status'        => Status::ACTIVE->value,
 			]
 		);
 
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$pages[$row['page_id']]['tags'][] = [
-				'icon'  => $this->getIcon($row['icon']),
+				'icon'  => Icon::parse($row['icon']),
 				'title' => $row['title'],
 				'href'  => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id'],
 			];

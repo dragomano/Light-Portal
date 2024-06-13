@@ -1,33 +1,54 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 /**
- * PageRepository.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Repositories;
 
-use Bugo\Compat\{Config, Db, Logging, Lang};
+use Bugo\Compat\{Config, Db, Lang, Logging};
 use Bugo\Compat\{Msg, Security, User, Utils};
-use Bugo\LightPortal\Actions\PageInterface;
-use Bugo\LightPortal\Actions\PageListInterface;
-use Bugo\LightPortal\Utils\{Content, DateTime, Notify};
+use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Enums\{Permission, PortalHook, Status};
+use Bugo\LightPortal\Utils\{CacheTrait, Content, DateTime};
+use Bugo\LightPortal\Utils\{EntityDataTrait, Icon, Notify};
+use Bugo\LightPortal\Utils\{RequestTrait, Setting, Str};
 use IntlException;
+use Nette\Utils\Html;
+
+use function array_filter;
+use function array_merge;
+use function array_pop;
+use function array_shift;
+use function count;
+use function date;
+use function explode;
+use function filter_input;
+use function is_array;
+use function is_int;
+use function preg_match_all;
+use function str_contains;
+use function strtotime;
+use function time;
+
+use const LP_BASE_URL;
+use const LP_PAGE_URL;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class PageRepository extends AbstractRepository
 {
+	use CacheTrait;
+	use EntityDataTrait;
+	use RequestTrait;
+
 	protected string $entity = 'page';
 
 	/**
@@ -42,9 +63,9 @@ final class PageRepository extends AbstractRepository
 	): array
 	{
 		$result = Db::$db->query('', '
-			SELECT p.page_id, p.category_id, p.author_id, p.alias, p.type, p.permissions, p.status,
+			SELECT p.page_id, p.category_id, p.author_id, p.slug, p.type, p.permissions, p.status,
 				p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
-				mem.real_name AS author_name, COALESCE(t.title, tf.title, p.alias) AS page_title
+				mem.real_name AS author_name, COALESCE(t.value, tf.value, p.slug) AS page_title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
@@ -72,7 +93,7 @@ final class PageRepository extends AbstractRepository
 			$items[$row['page_id']] = [
 				'id'           => (int) $row['page_id'],
 				'category_id'  => (int) $row['category_id'],
-				'alias'        => $row['alias'],
+				'slug'         => $row['slug'],
 				'type'         => $row['type'],
 				'status'       => (int) $row['status'],
 				'num_views'    => (int) $row['num_views'],
@@ -80,7 +101,7 @@ final class PageRepository extends AbstractRepository
 				'author_id'    => (int) $row['author_id'],
 				'author_name'  => $row['author_name'],
 				'created_at'   => DateTime::relative((int) $row['date']),
-				'is_front'     => $this->isFrontpage($row['alias']),
+				'is_front'     => Setting::isFrontpage($row['slug']),
 				'title'        => $row['page_title'],
 			];
 		}
@@ -123,14 +144,14 @@ final class PageRepository extends AbstractRepository
 
 		$result = Db::$db->query('', '
 			SELECT
-				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions,
+				p.page_id, p.category_id, p.author_id, p.slug, p.description, p.content, p.type, p.permissions,
 				p.status, p.num_views, p.created_at, p.updated_at,
-				COALESCE(mem.real_name, {string:guest}) AS author_name, pt.lang, pt.title, pp.name, pp.value
+				COALESCE(mem.real_name, {string:guest}) AS author_name, pt.lang, pt.value AS title, pp.name, pp.value
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_titles AS pt ON (p.page_id = pt.item_id AND pt.type = {literal:page})
 				LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {literal:page})
-			WHERE p.' . (is_int($item) ? 'page_id = {int:item}' : 'alias = {string:item}'),
+			WHERE p.' . (is_int($item) ? 'page_id = {int:item}' : 'slug = {string:item}'),
 			[
 				'guest' => Lang::$txt['guest_title'],
 				'item'  => $item,
@@ -160,7 +181,7 @@ final class PageRepository extends AbstractRepository
 				'category_id' => (int) $row['category_id'],
 				'author_id'   => (int) $row['author_id'],
 				'author'      => $row['author_name'],
-				'alias'       => $row['alias'],
+				'slug'        => $row['slug'],
 				'description' => $row['description'],
 				'content'     => $row['content'],
 				'type'        => $row['type'],
@@ -184,16 +205,14 @@ final class PageRepository extends AbstractRepository
 
 	public function setData(int $item = 0): void
 	{
-		if (isset(Utils::$context['post_errors']) || (
-			$this->request()->hasNot('save') &&
-			$this->request()->hasNot('save_exit'))
-		) {
+		if (isset(Utils::$context['post_errors']) || $this->request()->hasNot(['save', 'save_exit'])) {
 			return;
 		}
 
 		Security::checkSubmitOnce('check');
 
 		$this->prepareBbcContent(Utils::$context['lp_page']);
+		$this->prepareTitles();
 
 		if (empty($item)) {
 			Utils::$context['lp_page']['titles'] = array_filter(Utils::$context['lp_page']['titles']);
@@ -209,11 +228,13 @@ final class PageRepository extends AbstractRepository
 		$this->session('lp')->free('unapproved_pages');
 		$this->session('lp')->free('internal_pages');
 
-		if ($this->request()->has('save_exit'))
+		if ($this->request()->has('save_exit')) {
 			Utils::redirectexit('action=admin;area=lp_pages;sa=main');
+		}
 
-		if ($this->request()->has('save'))
+		if ($this->request()->has('save')) {
 			Utils::redirectexit('action=admin;area=lp_pages;sa=edit;id=' . $item);
+		}
 	}
 
 	public function remove(array $items): void
@@ -221,7 +242,7 @@ final class PageRepository extends AbstractRepository
 		if ($items === [])
 			return;
 
-		$this->hook('onPageRemoving', [$items]);
+		AddonHandler::getInstance()->run(PortalHook::onPageRemoving, [$items]);
 
 		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_pages
@@ -250,7 +271,7 @@ final class PageRepository extends AbstractRepository
 		);
 
 		Db::$db->query('', '
-			DELETE FROM {db_prefix}lp_page_tags
+			DELETE FROM {db_prefix}lp_page_tag
 			WHERE page_id IN ({array_int:items})',
 			[
 				'items' => $items,
@@ -312,7 +333,7 @@ final class PageRepository extends AbstractRepository
 
 		$result = Db::$db->query('', '
 			(
-				SELECT p.page_id, p.alias, GREATEST(p.created_at, p.updated_at) AS date,
+				SELECT p.page_id, p.slug, GREATEST(p.created_at, p.updated_at) AS date,
 					CASE WHEN COALESCE(par.value, \'0\') != \'0\' THEN p.num_comments ELSE 0 END AS num_comments,
 					com.created_at AS comment_date
 				FROM {db_prefix}lp_pages AS p
@@ -334,7 +355,7 @@ final class PageRepository extends AbstractRepository
 			)
 			UNION ALL
 			(
-				SELECT p.page_id, p.alias, GREATEST(p.created_at, p.updated_at) AS date,
+				SELECT p.page_id, p.slug, GREATEST(p.created_at, p.updated_at) AS date,
 					CASE WHEN COALESCE(par.value, \'0\') != \'0\' THEN p.num_comments ELSE 0 END AS num_comments,
 					com.created_at AS comment_date
 				FROM {db_prefix}lp_pages AS p
@@ -360,40 +381,40 @@ final class PageRepository extends AbstractRepository
 				'created_at'   => $page['created_at'],
 				'current_time' => time(),
 				'status'       => $page['status'],
-				'permissions'  => $this->getPermissions(),
+				'permissions'  => Permission::all(),
 			]
 		);
 
-		[$prevId, $prevAlias] = Db::$db->fetch_row($result);
-		[$nextId, $nextAlias] = Db::$db->fetch_row($result);
+		[$prevId, $prevSlug] = Db::$db->fetch_row($result);
+		[$nextId, $nextSlug] = Db::$db->fetch_row($result);
 
 		Db::$db->free_result($result);
 
-		return [$prevId, $prevAlias, $nextId, $nextAlias];
+		return [$prevId, $prevSlug, $nextId, $nextSlug];
 	}
 
 	public function getRelatedPages(array $page): array
 	{
-		$titleWords = explode(' ', $this->getTranslatedTitle($page['titles']));
-		$aliasWords = explode('_', $page['alias']);
+		$titleWords = explode(' ', Str::getTranslatedTitle($page['titles']));
+		$slugWords  = explode('_', (string) $page['slug']);
 
 		$searchFormula = '';
 		foreach ($titleWords as $key => $word) {
 			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE
-			WHEN lower(t.title) LIKE lower(\'%' . $word . '%\')
+			WHEN lower(t.value) LIKE lower(\'%' . $word . '%\')
 			THEN ' . (count($titleWords) - $key) * 2 . ' ELSE 0 END';
 		}
 
-		foreach ($aliasWords as $key => $word) {
+		foreach ($slugWords as $key => $word) {
 			$searchFormula .= ' + CASE
-			WHEN lower(p.alias) LIKE lower(\'%' . $word . '%\')
-			THEN ' . (count($aliasWords) - $key) . ' ELSE 0 END';
+			WHEN lower(p.slug) LIKE lower(\'%' . $word . '%\')
+			THEN ' . (count($slugWords) - $key) . ' ELSE 0 END';
 		}
 
 		$result = Db::$db->query('', '
 			SELECT
-				p.page_id, p.alias, p.content, p.type, (' . $searchFormula . ') AS related,
-				COALESCE(t.title, tf.title) AS title
+				p.page_id, p.slug, p.content, p.type, (' . $searchFormula . ') AS related,
+				COALESCE(t.value, tf.value) AS title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.lang = {string:current_lang})
 				LEFT JOIN {db_prefix}lp_titles AS tf ON (p.page_id = tf.item_id AND tf.lang = {string:fallback_lang})
@@ -409,25 +430,25 @@ final class PageRepository extends AbstractRepository
 				'fallback_lang' => Config::$language,
 				'status'        => $page['status'],
 				'current_time'  => time(),
-				'permissions'   => $this->getPermissions(),
+				'permissions'   => Permission::all(),
 				'current_page'  => $page['id'],
 			]
 		);
 
 		$items = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
-			if ($this->isFrontpage($row['alias']))
+			if (Setting::isFrontpage($row['slug']))
 				continue;
 
 			$row['content'] = Content::parse($row['content'], $row['type']);
 
-			$image = $this->getImageFromText($row['content']);
+			$image = Str::getImageFromText($row['content']);
 
 			$items[$row['page_id']] = [
 				'id'    => $row['page_id'],
 				'title' => $row['title'],
-				'alias' => $row['alias'],
-				'link'  => LP_PAGE_URL . $row['alias'],
+				'slug'  => $row['slug'],
+				'link'  => LP_PAGE_URL . $row['slug'],
 				'image' => $image ?: (Config::$modSettings['lp_image_placeholder'] ?? ''),
 			];
 		}
@@ -446,7 +467,7 @@ final class PageRepository extends AbstractRepository
 					AND status IN ({array_int:statuses})',
 			[
 				'item'     => $item,
-				'statuses' => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
+				'statuses' => [Status::ACTIVE->value, Status::INTERNAL->value],
 			]
 		);
 	}
@@ -457,7 +478,7 @@ final class PageRepository extends AbstractRepository
 			$titles = $this->getEntityData('title');
 
 			$result = Db::$db->query('', '
-				SELECT p.page_id, p.alias, p.permissions, pp2.value AS icon
+				SELECT p.page_id, p.slug, p.permissions, pp2.value AS icon
 				FROM {db_prefix}lp_pages AS p
 					LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {literal:page})
 					LEFT JOIN {db_prefix}lp_params AS pp2 ON (
@@ -468,7 +489,7 @@ final class PageRepository extends AbstractRepository
 					AND pp.name = {literal:show_in_menu}
 					AND pp.value = {string:show_in_menu}',
 				[
-					'statuses'     => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
+					'statuses'     => [Status::ACTIVE->value, Status::INTERNAL->value],
 					'current_time' => time(),
 					'show_in_menu' => '1',
 				]
@@ -478,7 +499,7 @@ final class PageRepository extends AbstractRepository
 			while ($row = Db::$db->fetch_assoc($result)) {
 				$pages[$row['page_id']] = [
 					'id'          => (int) $row['page_id'],
-					'alias'       => $row['alias'],
+					'slug'        => $row['slug'],
 					'permissions' => (int) $row['permissions'],
 					'icon'        => $row['icon'],
 				];
@@ -506,7 +527,7 @@ final class PageRepository extends AbstractRepository
 
 		$data['created']  = DateTime::relative((int) $data['created_at']);
 		$data['updated']  = DateTime::relative((int) $data['updated_at']);
-		$data['can_view'] = $this->canViewItem($data['permissions']) || User::$info['is_admin'] || $isAuthor;
+		$data['can_view'] = Permission::canViewItem($data['permissions']) || User::$info['is_admin'] || $isAuthor;
 		$data['can_edit'] = User::$info['is_admin']
 			|| Utils::$context['allow_light_portal_manage_pages_any']
 			|| (Utils::$context['allow_light_portal_manage_pages_own'] && $isAuthor);
@@ -521,7 +542,7 @@ final class PageRepository extends AbstractRepository
 
 		$data['tags'] = $this->getTags($data['id']);
 
-		$this->hook('preparePageData', [&$data, $isAuthor]);
+		AddonHandler::getInstance()->run(PortalHook::preparePageData, [&$data, $isAuthor]);
 	}
 
 	private function addData(): int
@@ -533,7 +554,7 @@ final class PageRepository extends AbstractRepository
 			array_merge([
 				'category_id' => 'int',
 				'author_id'   => 'int',
-				'alias'       => 'string-255',
+				'slug'        => 'string-255',
 				'description' => 'string-255',
 				'content'     => 'string',
 				'type'        => 'string',
@@ -544,7 +565,7 @@ final class PageRepository extends AbstractRepository
 			array_merge([
 				Utils::$context['lp_page']['category_id'],
 				Utils::$context['lp_page']['author_id'],
-				Utils::$context['lp_page']['alias'],
+				Utils::$context['lp_page']['slug'],
 				Utils::$context['lp_page']['description'],
 				Utils::$context['lp_page']['content'],
 				Utils::$context['lp_page']['type'],
@@ -561,7 +582,7 @@ final class PageRepository extends AbstractRepository
 			return 0;
 		}
 
-		$this->hook('onPageSaving', [$item]);
+		AddonHandler::getInstance()->run(PortalHook::onPageSaving, [$item]);
 
 		$this->saveTitles($item);
 		$this->saveTags($item);
@@ -578,11 +599,12 @@ final class PageRepository extends AbstractRepository
 			'time'      => $this->getPublishTime(),
 			'author_id' => Utils::$context['lp_page']['author_id'],
 			'title'     => $title,
-			'url'       => LP_PAGE_URL . Utils::$context['lp_page']['alias']
+			'url'       => LP_PAGE_URL . Utils::$context['lp_page']['slug']
 		];
 
-		if (empty(Utils::$context['allow_light_portal_manage_pages_any']))
+		if (empty(Utils::$context['allow_light_portal_manage_pages_any'])) {
 			Notify::send('new_page', 'page_unapproved', $options);
+		}
 
 		return $item;
 	}
@@ -593,14 +615,14 @@ final class PageRepository extends AbstractRepository
 
 		Db::$db->query('', '
 			UPDATE {db_prefix}lp_pages
-			SET category_id = {int:category_id}, author_id = {int:author_id}, alias = {string:alias},
+			SET category_id = {int:category_id}, author_id = {int:author_id}, slug = {string:slug},
 				description = {string:description}, content = {string:content}, type = {string:type},
 				permissions = {int:permissions}, status = {int:status}, updated_at = {int:updated_at}
 			WHERE page_id = {int:page_id}',
 			[
 				'category_id' => Utils::$context['lp_page']['category_id'],
 				'author_id'   => Utils::$context['lp_page']['author_id'],
-				'alias'       => Utils::$context['lp_page']['alias'],
+				'slug'        => Utils::$context['lp_page']['slug'],
 				'description' => Utils::$context['lp_page']['description'],
 				'content'     => Utils::$context['lp_page']['content'],
 				'type'        => Utils::$context['lp_page']['type'],
@@ -611,7 +633,7 @@ final class PageRepository extends AbstractRepository
 			]
 		);
 
-		$this->hook('onPageSaving', [$item]);
+		AddonHandler::getInstance()->run(PortalHook::onPageSaving, [$item]);
 
 		$this->saveTitles($item, 'replace');
 		$this->saveTags($item, 'replace');
@@ -620,7 +642,10 @@ final class PageRepository extends AbstractRepository
 		if (Utils::$context['lp_page']['author_id'] !== User::$info['id']) {
 			$title = Utils::$context['lp_page']['titles'][User::$info['language']];
 			Logging::logAction('update_lp_page', [
-				'page' => '<a href="' . LP_PAGE_URL . Utils::$context['lp_page']['alias'] . '">' . $title . '</a>'
+				'page' => Html::el('a')
+					->href(LP_PAGE_URL . Utils::$context['lp_page']['slug'])
+					->setText($title)
+					->toHtml()
 			]);
 		}
 
@@ -630,9 +655,9 @@ final class PageRepository extends AbstractRepository
 	private function getTags(int $item): array
 	{
 		$result = Db::$db->query('', '
-			SELECT tag.tag_id, tag.icon, COALESCE(t.title, tf.title) AS title
+			SELECT tag.tag_id, tag.icon, COALESCE(t.value, tf.value) AS title
 			FROM {db_prefix}lp_tags AS tag
-				INNER JOIN {db_prefix}lp_page_tags AS pt ON (tag.tag_id = pt.tag_id)
+				INNER JOIN {db_prefix}lp_page_tag AS pt ON (tag.tag_id = pt.tag_id)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
 					tag.tag_id = t.item_id AND t.type = {literal:tag} AND t.lang = {string:lang}
 				)
@@ -645,7 +670,7 @@ final class PageRepository extends AbstractRepository
 			[
 				'lang'          => User::$info['language'],
 				'fallback_lang' => Config::$language,
-				'status'        => PageListInterface::STATUS_ACTIVE,
+				'status'        => Status::ACTIVE->value,
 				'page_id'       => $item,
 			]
 		);
@@ -653,7 +678,7 @@ final class PageRepository extends AbstractRepository
 		$items = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['tag_id']] = [
-				'icon'  => $this->getIcon($row['icon'] ?: 'fas fa-tag'),
+				'icon'  => Icon::parse($row['icon'] ?: 'fas fa-tag'),
 				'title' => $row['title'],
 				'href'  => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id'],
 			];
@@ -667,7 +692,7 @@ final class PageRepository extends AbstractRepository
 	private function saveTags(int $item, string $method = ''): void
 	{
 		Db::$db->query('', '
-			DELETE FROM {db_prefix}lp_page_tags
+			DELETE FROM {db_prefix}lp_page_tag
 			WHERE page_id = {int:item}',
 			[
 				'item' => $item,
@@ -686,7 +711,7 @@ final class PageRepository extends AbstractRepository
 			return;
 
 		Db::$db->insert($method,
-			'{db_prefix}lp_page_tags',
+			'{db_prefix}lp_page_tag',
 			[
 				'page_id' => 'int',
 				'tag_id'  => 'int',
@@ -700,8 +725,9 @@ final class PageRepository extends AbstractRepository
 	{
 		$publishTime = time();
 
-		if (Utils::$context['lp_page']['date'])
-			$publishTime = strtotime(Utils::$context['lp_page']['date']);
+		if (Utils::$context['lp_page']['date']) {
+			$publishTime = strtotime((string) Utils::$context['lp_page']['date']);
+		}
 
 		if (Utils::$context['lp_page']['time']) {
 			$publishTime = strtotime(

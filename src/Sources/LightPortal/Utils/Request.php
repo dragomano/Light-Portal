@@ -1,18 +1,22 @@
 <?php declare(strict_types=1);
 
 /**
- * Request.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Utils;
+
+use function file_get_contents;
+use function json_decode;
+
+if (! defined('SMF'))
+	die('No direct access...');
 
 final class Request extends GlobalArray
 {
@@ -21,16 +25,14 @@ final class Request extends GlobalArray
 		$this->storage = &$_REQUEST;
 	}
 
-	public function is(string|array ...$patterns): bool
+	public function is(string $action, string $type = 'action'): bool
 	{
-		$patterns = is_array($patterns[0]) ? $patterns[0] : $patterns;
-
-		return $this->has('action') && in_array($this->storage['action'], $patterns, true);
+		return $this->has($type) && $this->storage[$type] === $action;
 	}
 
-	public function isNot(string|array ...$patterns): bool
+	public function isNot(string $action, string $type = 'action'): bool
 	{
-		return empty($this->is($patterns));
+		return empty($this->is($action, $type));
 	}
 
 	public function json(?string $key = null, mixed $default = null): mixed

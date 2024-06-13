@@ -125,14 +125,15 @@ function show_events(array $data): void
 	foreach ($data['events'] as $events) {
 		foreach ($events as $event) {
 			if (empty($event['allday'])) {
-				$date = trim($event['start_date_local']) . ', ' . trim($event['start_time_local']) . ' &ndash; ';
+				$date = trim((string) $event['start_date_local']) . ', ' . trim((string) $event['start_time_local']) . ' &ndash; ';
 
-				if ($event['start_date_local'] !== $event['end_date_local'])
-					$date .= trim($event['end_date_local']) . ', ';
+				if ($event['start_date_local'] !== $event['end_date_local']) {
+					$date .= trim((string) $event['end_date_local']) . ', ';
+				}
 
-				$date .= trim($event['end_time_local']);
+				$date .= trim((string) $event['end_time_local']);
 			} else {
-				$date = trim($event['start_date_local']) . ($event['start_date'] !== $event['end_date'] ? ' &ndash; ' . trim($event['end_date_local']) : '');
+				$date = trim((string) $event['start_date_local']) . ($event['start_date'] !== $event['end_date'] ? ' &ndash; ' . trim((string) $event['end_date_local']) : '');
 			}
 
 			echo '

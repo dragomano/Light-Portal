@@ -1,29 +1,38 @@
 <?php declare(strict_types=1);
 
 /**
- * Category.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Actions;
 
 use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, User, Utils};
-use Bugo\LightPortal\Utils\ItemList;
+use Bugo\LightPortal\Enums\{Permission, Status};
+use Bugo\LightPortal\Utils\{Icon, ItemList, RequestTrait};
 use IntlException;
+use Nette\Utils\Html;
+
+use function array_key_exists;
+use function count;
+use function sprintf;
+use function time;
+
+use const LP_BASE_URL;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class Category extends AbstractPageList
 {
+	use RequestTrait;
+
 	public function show(PageInterface $page): void
 	{
 		if ($this->request()->hasNot('id')) {
@@ -69,7 +78,7 @@ final class Category extends AbstractPageList
 		$listOptions = $page->getList();
 		$listOptions['id'] = 'lp_categories';
 		$listOptions['get_items'] = [
-			'function' => [$this, 'getPages']
+			'function' => $this->getPages(...)
 		];
 
 		if (isset($category['description'])) {
@@ -94,9 +103,9 @@ final class Category extends AbstractPageList
 	{
 		$result = Db::$db->query('', '
 			SELECT
-				p.page_id, p.author_id, p.alias, p.content, p.description, p.type,
+				p.page_id, p.author_id, p.slug, p.content, p.description, p.type,
 				p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
-				COALESCE(mem.real_name, \'\') AS author_name, COALESCE(t.title, tf.title) AS title
+				COALESCE(mem.real_name, \'\') AS author_name, COALESCE(t.value, tf.value) AS title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
@@ -115,9 +124,9 @@ final class Category extends AbstractPageList
 				'lang'          => User::$info['language'],
 				'fallback_lang' => Config::$language,
 				'id'            => Utils::$context['current_category'],
-				'statuses'      => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
+				'statuses'      => [Status::ACTIVE->value, Status::INTERNAL->value],
 				'current_time'  => time(),
-				'permissions'   => $this->getPermissions(),
+				'permissions'   => Permission::all(),
 				'sort'          => $sort,
 				'start'         => $start,
 				'limit'         => $limit,
@@ -142,9 +151,9 @@ final class Category extends AbstractPageList
 				AND permissions IN ({array_int:permissions})',
 			[
 				'id'           => Utils::$context['current_category'],
-				'statuses'     => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
+				'statuses'     => [Status::ACTIVE->value, Status::INTERNAL->value],
 				'current_time' => time(),
-				'permissions'  => $this->getPermissions(),
+				'permissions'  => Permission::all(),
 			]
 		);
 
@@ -171,34 +180,24 @@ final class Category extends AbstractPageList
 			'title' => Utils::$context['page_title'],
 			'no_items_label' => Lang::$txt['lp_no_categories'],
 			'base_href' => Utils::$context['canonical_url'],
-			'default_sort_col' => 'priority',
+			'default_sort_col' => 'title',
 			'get_items' => [
-				'function' => [$this, 'getAll']
+				'function' => $this->getAll(...)
 			],
 			'get_count' => [
 				'function' => fn() => count($this->getAll())
 			],
 			'columns' => [
-				'priority' => [
-					'header' => [
-						'value' => Lang::$txt['lp_block_priority']
-					],
-					'data' => [
-						'db'    => 'priority',
-						'class' => 'centertext'
-					],
-					'sort' => [
-						'default' => 'c.priority',
-						'reverse' => 'c.priority DESC'
-					]
-				],
 				'title' => [
 					'header' => [
 						'value' => Lang::$txt['lp_category']
 					],
 					'data' => [
-						'function' => static fn($entry) => $entry['icon'] . ' ' . '<a href="' . $entry['link'] . '">' . $entry['title'] . '</a>' .
-							(empty($entry['description']) ? '' : '<p class="smalltext">' . $entry['description'] . '</p>')
+						'function' => static fn($entry) => $entry['icon'] . ' ' . Html::el('a')
+							->href($entry['link'])
+							->setText($entry['title'])
+							->toHtml() . (empty($entry['description']) ? '' : Html::el('p', ['class' => 'smalltext'])
+							->setText($entry['description'])->toHtml())
 					],
 					'sort' => [
 						'default' => 'title DESC',
@@ -234,7 +233,7 @@ final class Category extends AbstractPageList
 		$result = Db::$db->query('', '
 			SELECT
 				COALESCE(c.category_id, 0) AS category_id, c.icon, c.description, c.priority,
-				COUNT(p.page_id) AS frequency, COALESCE(t.title, tf.title) AS title
+				COUNT(p.page_id) AS frequency, COALESCE(t.value, tf.value) AS title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_categories AS c ON (p.category_id = c.category_id)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
@@ -247,16 +246,16 @@ final class Category extends AbstractPageList
 				AND p.status IN ({array_int:statuses})
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
-			GROUP BY c.category_id, c.icon, c.description, c.priority, t.title, tf.title
+			GROUP BY c.category_id, c.icon, c.description, c.priority, t.value, tf.value
 			ORDER BY {raw:sort}' . ($limit ? '
 			LIMIT {int:start}, {int:limit}' : ''),
 			[
 				'lang'          => User::$info['language'],
 				'fallback_lang' => Config::$language,
-				'status'        => self::STATUS_ACTIVE,
-				'statuses'      => [PageInterface::STATUS_ACTIVE, PageInterface::STATUS_INTERNAL],
+				'status'        => Status::ACTIVE->value,
+				'statuses'      => [Status::ACTIVE->value, Status::INTERNAL->value],
 				'current_time'  => time(),
-				'permissions'   => $this->getPermissions(),
+				'permissions'   => Permission::all(),
 				'sort'          => $sort,
 				'start'         => $start,
 				'limit'         => $limit,
@@ -266,7 +265,7 @@ final class Category extends AbstractPageList
 		$items = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['category_id']] = [
-				'icon'        => $this->getIcon($row['icon']),
+				'icon'        => Icon::parse($row['icon']),
 				'title'       => $row['title'] ?: Lang::$txt['lp_no_category'],
 				'description' => $row['description'] ?? '',
 				'link'        => LP_BASE_URL . ';sa=categories;id=' . $row['category_id'],

@@ -1,8 +1,6 @@
 <?php
 
 /**
- * TinyPortalMigration.php
- *
  * @package TinyPortalMigration (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -75,11 +73,11 @@ class TinyPortalMigration extends Plugin
 				'title'   => $item['subject'],
 			];
 
-			if (Config::$language !== Language::FALLBACK && ! empty(Config::$modSettings['userLanguage'])) {
+			if (Config::$language !== Language::getFallbackValue() && ! empty(Config::$modSettings['userLanguage'])) {
 				$titles[] = [
 					'item_id' => $pageId,
 					'type'    => 'page',
-					'lang'    => Language::FALLBACK,
+					'lang'    => Language::getFallbackValue(),
 					'title'   => $item['subject'],
 				];
 			}

@@ -1,33 +1,37 @@
 <?php declare(strict_types=1);
 
 /**
- * TagRepository.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Repositories;
 
 use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Security, User, Utils};
+use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\Utils\RequestTrait;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class TagRepository extends AbstractRepository
 {
+	use CacheTrait;
+	use RequestTrait;
+
 	protected string $entity = 'tag';
 
 	public function getAll(int $start, int $limit, string $sort): array
 	{
 		$result = Db::$db->query('', /** @lang text */ '
-			SELECT tag.tag_id, tag.icon, tag.status, COALESCE(t.title, tf.title) AS title
+			SELECT tag.tag_id, tag.icon, tag.status, COALESCE(t.value, tf.value) AS title
 			FROM {db_prefix}lp_tags AS tag
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
 					tag.tag_id = t.item_id AND t.type = {literal:tag} AND t.lang = {string:lang}
@@ -50,7 +54,7 @@ final class TagRepository extends AbstractRepository
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['tag_id']] = [
 				'id'     => (int) $row['tag_id'],
-				'icon'   => $this->getIcon($row['icon']),
+				'icon'   => Icon::parse($row['icon']),
 				'status' => (int) $row['status'],
 				'title'  => $row['title'],
 			];
@@ -82,7 +86,7 @@ final class TagRepository extends AbstractRepository
 			return [];
 
 		$result = Db::$db->query('', '
-			SELECT tag.tag_id, tag.icon, tag.status, t.lang, t.title
+			SELECT tag.tag_id, tag.icon, tag.status, t.lang, t.value AS title
 			FROM {db_prefix}lp_tags AS tag
 				LEFT JOIN {db_prefix}lp_titles AS t ON (tag.tag_id = t.item_id AND t.type = {literal:tag})
 			WHERE tag.tag_id = {int:item}',
@@ -115,10 +119,7 @@ final class TagRepository extends AbstractRepository
 
 	public function setData(int $item = 0): void
 	{
-		if (isset(Utils::$context['post_errors']) || (
-			$this->request()->hasNot('save') &&
-			$this->request()->hasNot('save_exit'))
-		) {
+		if (isset(Utils::$context['post_errors']) || $this->request()->hasNot(['save', 'save_exit'])) {
 			return;
 		}
 
@@ -137,11 +138,13 @@ final class TagRepository extends AbstractRepository
 
 		$this->session('lp')->free('active_tags');
 
-		if ($this->request()->has('save_exit'))
+		if ($this->request()->has('save_exit')) {
 			Utils::redirectexit('action=admin;area=lp_tags;sa=main');
+		}
 
-		if ($this->request()->has('save'))
+		if ($this->request()->has('save')) {
 			Utils::redirectexit('action=admin;area=lp_tags;sa=edit;id=' . $item);
+		}
 	}
 
 	public function remove(array $items): void
@@ -158,7 +161,7 @@ final class TagRepository extends AbstractRepository
 		);
 
 		Db::$db->query('', '
-			DELETE FROM {db_prefix}lp_page_tags
+			DELETE FROM {db_prefix}lp_page_tag
 			WHERE tag_id IN ({array_int:items})',
 			[
 				'items' => $items,
@@ -218,13 +221,5 @@ final class TagRepository extends AbstractRepository
 		$this->saveTitles($item, 'replace');
 
 		Db::$db->transaction('commit');
-	}
-
-	private function prepareTitles(): void
-	{
-		// Remove all punctuation symbols
-		Utils::$context['lp_tag']['titles'] = preg_replace(
-			"#[[:punct:]]#", "", Utils::$context['lp_tag']['titles']
-		);
 	}
 }

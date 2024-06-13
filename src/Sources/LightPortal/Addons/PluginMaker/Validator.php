@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * Validator.php
- *
  * @package PluginMaker (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,19 +8,25 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 17.02.24
+ * @version 05.06.24
  */
 
 namespace Bugo\LightPortal\Addons\PluginMaker;
 
 use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\Areas\Validators\AbstractValidator;
+use Bugo\LightPortal\Enums\VarType;
+use Bugo\LightPortal\Utils\EntityDataTrait;
+use Bugo\LightPortal\Utils\RequestTrait;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 class Validator extends AbstractValidator
 {
+	use EntityDataTrait;
+	use RequestTrait;
+
 	protected array $args = [
 		'name'    => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
 		'type'    => FILTER_DEFAULT,
@@ -86,8 +90,14 @@ class Validator extends AbstractValidator
 		if (empty($data['name']))
 			$errors[] = 'no_name';
 
-		if (! empty($data['name']) && empty($this->filterVar($data['name'], ['options' => ['regexp' => '/' . LP_ADDON_PATTERN . '/']])))
+		if (
+			! empty($data['name'])
+			&& empty(VarType::ARRAY->filter($data['name'], [
+				'options' => ['regexp' => '/' . LP_ADDON_PATTERN . '/']
+			]))
+		) {
 			$errors[] = 'no_valid_name';
+		}
 
 		if (! empty($data['name']) && ! $this->isUnique($data['name']))
 			$errors[] = 'no_unique_name';

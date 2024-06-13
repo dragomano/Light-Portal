@@ -1,31 +1,58 @@
 <?php declare(strict_types=1);
 
 /**
- * FrontPage.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Actions;
 
-use Bugo\Compat\{Config, ErrorHandler, Lang, PageIndex, Sapi, Theme, User, Utils};
+use Bugo\Compat\{Config, ErrorHandler, Lang, PageIndex};
+use Bugo\Compat\{Sapi, Theme, User, Utils};
+use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Articles\{ArticleInterface, BoardArticle, ChosenPageArticle};
 use Bugo\LightPortal\Articles\{ChosenTopicArticle, PageArticle, TopicArticle};
-use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{DateTime, Icon};
+use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Utils\{CacheTrait, DateTime, Icon};
+use Bugo\LightPortal\Utils\{RequestTrait, SessionTrait, Setting};
 use eftec\bladeone\BladeOne;
 use Exception;
 use IntlException;
+use Nette\Utils\Html;
+
+use function abs;
+use function array_column;
+use function array_combine;
+use function array_key_exists;
+use function array_map;
+use function array_merge;
+use function basename;
+use function call_user_func;
+use function count;
+use function date;
+use function floor;
+use function glob;
+use function is_array;
+use function number_format;
+use function ob_get_clean;
+use function ob_start;
+use function sprintf;
+use function str_replace;
+use function strstr;
+use function ucfirst;
+
+use const LP_BASE_URL;
 
 final class FrontPage implements ActionInterface
 {
-	use Helper;
+	use CacheTrait;
+	use RequestTrait;
+	use SessionTrait;
 
 	public const DEFAULT_TEMPLATE = 'default.blade.php';
 
@@ -44,12 +71,12 @@ final class FrontPage implements ActionInterface
 	{
 		User::mustHavePermission('light_portal_view');
 
-		$this->hook('frontModes', [&$this->modes]);
+		AddonHandler::getInstance()->run(PortalHook::frontModes, [&$this->modes]);
 
 		if (array_key_exists(Config::$modSettings['lp_frontpage_mode'], $this->modes)) {
 			$this->prepare(new $this->modes[Config::$modSettings['lp_frontpage_mode']]);
-		} elseif ($this->isFrontpageMode('chosen_page')) {
-			$this->callHelper([new Page(), 'show']);
+		} elseif (Setting::isFrontpageMode('chosen_page')) {
+			call_user_func([new Page(), 'show']);
 			return;
 		}
 
@@ -116,7 +143,7 @@ final class FrontPage implements ActionInterface
 
 		Utils::$context['lp_frontpage_articles'] = $articles;
 
-		$this->hook('frontAssets');
+		AddonHandler::getInstance()->run(PortalHook::frontAssets);
 	}
 
 	public function prepareTemplates(): void
@@ -134,7 +161,7 @@ final class FrontPage implements ActionInterface
 		$this->prepareLayoutSwitcher();
 
 		// Mod authors can use their own logic here
-		$this->hook('frontLayouts');
+		AddonHandler::getInstance()->run(PortalHook::frontLayouts);
 
 		$this->view(Config::$modSettings['lp_frontpage_layout']);
 	}
@@ -170,7 +197,7 @@ final class FrontPage implements ActionInterface
 		$extensions = ['.blade.php'];
 
 		// Mod authors can add custom extensions for layouts
-		$this->hook('customLayoutExtensions', [&$extensions]);
+		AddonHandler::getInstance()->run(PortalHook::customLayoutExtensions, [&$extensions]);
 
 		foreach ($extensions as $extension) {
 			$layouts = array_merge(
@@ -182,7 +209,7 @@ final class FrontPage implements ActionInterface
 		$values = $titles = [];
 
 		foreach ($layouts as $layout) {
-			$values[] = $title = basename($layout);
+			$values[] = $title = basename((string) $layout);
 
 			$shortName = ucfirst(strstr($title, '.', true) ?: $title);
 
@@ -237,7 +264,7 @@ final class FrontPage implements ActionInterface
 			});
 
 			$layout = strstr(
-				Config::$modSettings['lp_frontpage_layout'], '.', true
+				(string) Config::$modSettings['lp_frontpage_layout'], '.', true
 			) ?: Config::$modSettings['lp_frontpage_layout'];
 
 			echo $blade->run($layout, $params);
@@ -276,8 +303,8 @@ final class FrontPage implements ActionInterface
 	public function getOrderBy(): string
 	{
 		$sortingTypes = [
-			'title;desc'       => 't.title DESC',
-			'title'            => 't.title',
+			'title;desc'       => 't.value DESC',
+			'title'            => 't.value',
 			'created;desc'     => 'p.created_at DESC',
 			'created'          => 'p.created_at',
 			'updated;desc'     => 'p.updated_at DESC',
@@ -340,14 +367,18 @@ final class FrontPage implements ActionInterface
 		$images = array_column($articles, 'image');
 
 		foreach ($images as $image) {
-			Utils::$context['html_headers'] .= "\n\t" . '<link rel="preload" as="image" href="' . $image . '">';
+			Utils::$context['html_headers'] .= "\n\t" . Html::el('link', [
+				'rel'  => 'preload',
+				'as'   => 'image',
+				'href' => $image,
+			])->toHtml();
 		}
 	}
 
 	/**
-	 * Get a number in friendly format ("1K" instead "1000", etc)
+	 * Get a number in friendly format ("10K" instead "10000", etc)
 	 *
-	 * Получаем число в приятном глазу формате (для чисел более 10к)
+	 * Получаем число в приятном глазу формате («10K» вместо «10000»)
 	 */
 	private function getFriendlyNumber(int $value = 0): string
 	{
@@ -377,14 +408,19 @@ final class FrontPage implements ActionInterface
 
 		$paginate = '';
 
+		$button = Html::el('a', [
+			'class' => 'button',
+			'href'  => '%s;start=%s',
+		]);
+
 		if ($prev >= 0) {
 			$title = Icon::get('arrow_left') . ' ' . Lang::$txt['prev'];
-			$paginate .= sprintf('<a class="button" href="%s;start=%s">', $url, $prev) . $title . "</a>";
+			$paginate .= sprintf($button->startTag(), $url, $prev) . $title . $button->endTag();
 		}
 
 		if ($next) {
 			$title = Lang::$txt['next'] . ' ' . Icon::get('arrow_right');
-			$paginate .= sprintf('<a class="button" href="%s;start=%s">', $url, $next) . $title . "</a>";
+			$paginate .= sprintf($button->startTag(), $url, $next) . $title . $button->endTag();
 		}
 
 		return $paginate;

@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * PlacementSelect.php
- *
  * @package AdsBlock (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
@@ -26,7 +24,7 @@ final class PlacementSelect extends AbstractPartial
 		$params = $params[0] ?? [];
 
 		if (! is_array($params['value'])) {
-			$params['value'] = explode(',', $params['value']);
+			$params['value'] = explode(',', (string) $params['value']);
 		}
 
 		$data = $items = [];
@@ -38,7 +36,7 @@ final class PlacementSelect extends AbstractPartial
 			}
 		}
 
-		return '
+		return /** @lang text */ '
 		<div id="ads_placement" name="ads_placement"></div>
 		<script>
 			VirtualSelect.init({

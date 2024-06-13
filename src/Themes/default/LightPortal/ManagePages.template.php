@@ -1,7 +1,7 @@
 <?php
 
 use Bugo\Compat\{Config, Lang, Utils};
-use Bugo\LightPortal\Areas\PageArea;
+use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Utils\Icon;
 
 function template_page_add(): void
@@ -100,10 +100,10 @@ function template_page_post(): void
 					<div class="bg odd" data-tab="tuning">', Icon::get('tools'), Lang::$txt['lp_tab_tuning'], '</div>
 				</div>
 				<div data-content>
-					<section class="bg even active_content" data-content="common">', template_post_tab($fields), '</section>
-					<section class="bg even" data-content="access">', template_post_tab($fields, PageArea::TAB_ACCESS), '</section>
-					<section class="bg even" data-content="seo">', template_post_tab($fields, PageArea::TAB_SEO), '</section>
-					<section class="bg even" data-content="tuning">', template_post_tab($fields, PageArea::TAB_TUNING), '</section>
+					<section class="bg even active_content" data-content="common">', template_portal_tab($fields), '</section>
+					<section class="bg even" data-content="access">', template_portal_tab($fields, Tab::ACCESS_PLACEMENT), '</section>
+					<section class="bg even" data-content="seo">', template_portal_tab($fields, Tab::SEO), '</section>
+					<section class="bg even" data-content="tuning">', template_portal_tab($fields, Tab::TUNING), '</section>
 				</div>
 			</div>
 			<br class="clear">
@@ -121,6 +121,6 @@ function template_page_post(): void
 	</form>
 	<script>
 		const page = new Page();
-		const tabs = new Tabs(".lp_tabs");
+		const tabs = new PortalTabs();
 	</script>';
 }

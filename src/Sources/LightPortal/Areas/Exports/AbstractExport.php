@@ -1,36 +1,43 @@
 <?php declare(strict_types=1);
 
 /**
- * AbstractExport.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Areas\Exports;
 
 use Bugo\Compat\Sapi;
-use Bugo\LightPortal\Helper;
+use Closure;
+
+use function basename;
+use function fclose;
+use function feof;
+use function filesize;
+use function fopen;
+use function fread;
+use function header;
+use function header_remove;
+use function ob_end_clean;
+use function unlink;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 abstract class AbstractExport implements ExportInterface
 {
-	use Helper;
-
 	abstract protected function getData();
 
 	abstract protected function getFile();
 
 	protected function run(): void
 	{
-		if (empty($file = $this->getFile()))
+		if (empty($file = (string) $this->getFile()))
 			return;
 
 		Sapi::setTimeLimit();
@@ -61,7 +68,7 @@ abstract class AbstractExport implements ExportInterface
 		exit;
 	}
 
-	protected function getGeneratorFrom(array $items): \Closure
+	protected function getGeneratorFrom(array $items): Closure
 	{
 		return static fn() => yield from $items;
 	}

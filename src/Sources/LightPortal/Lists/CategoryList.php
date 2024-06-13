@@ -1,21 +1,19 @@
 <?php declare(strict_types=1);
 
 /**
- * CategoryList.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Lists;
 
 use Bugo\Compat\{Config, Db, Lang, User};
-use Bugo\LightPortal\Actions\PageListInterface;
+use Bugo\LightPortal\Enums\Status;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -24,13 +22,8 @@ final class CategoryList implements ListInterface
 {
 	public function __invoke(): array
 	{
-		return $this->getAll();
-	}
-
-	public function getAll(): array
-	{
 		$result = Db::$db->query('', /** @lang text */ '
-			SELECT c.category_id, c.icon, c.description, c.priority, COALESCE(t.title, tf.title) AS title
+			SELECT c.category_id, c.icon, c.description, c.priority, COALESCE(t.value, tf.value) AS title
 			FROM {db_prefix}lp_categories AS c
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
 					c.category_id = t.item_id AND t.type = {literal:category} AND t.lang = {string:lang}
@@ -43,7 +36,7 @@ final class CategoryList implements ListInterface
 			[
 				'lang'          => User::$info['language'],
 				'fallback_lang' => Config::$language,
-				'status'        => PageListInterface::STATUS_ACTIVE,
+				'status'        => Status::ACTIVE->value,
 			]
 		);
 

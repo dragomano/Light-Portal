@@ -2,7 +2,8 @@
 
 use Bugo\Compat\{Config, Lang, Theme, Utils};
 use Bugo\LightPortal\Areas\Partials\{ActionSelect, BoardSelect, CategorySelect};
-use Bugo\LightPortal\Areas\Partials\{PageAliasSelect, PageSelect, TopicSelect};
+use Bugo\LightPortal\Areas\Partials\{PageSelect, PageSlugSelect, TopicSelect};
+use Bugo\LightPortal\Enums\Tab;
 
 function template_callback_frontpage_mode_settings_before(): void
 {
@@ -17,12 +18,12 @@ function template_callback_frontpage_mode_settings_middle(): void
 			<tbody>
 				<tr>
 					<td x-show="frontpage_mode === \'chosen_page\'">
-						<a id="setting_lp_frontpage_alias"></a>
+						<a id="setting_lp_frontpage_chosen_page"></a>
 						<span>
-							<label for="lp_frontpage_alias">', Lang::$txt['lp_frontpage_alias'], '</label>
+							<label for="lp_frontpage_chosen_page">', Lang::$txt['lp_frontpage_chosen_page'], '</label>
 						</span>
 					</td>
-					<td x-show="frontpage_mode === \'chosen_page\'">', new PageAliasSelect(), '</td>
+					<td x-show="frontpage_mode === \'chosen_page\'">', new PageSlugSelect(), '</td>
 					<td x-show="frontpage_mode === \'all_pages\'">
 						<a id="setting_lp_frontpage_categories"></a>
 						<span>
@@ -109,7 +110,7 @@ function template_callback_standalone_mode_settings_after(): void
 function template_callback_comment_settings_before(): void
 {
 	echo '
-	<div x-data="{ comment_block: \'', Config::$modSettings['lp_show_comment_block'] ?? 'none', '\' }">';
+	<div x-data="{ comment_block: \'', Config::$modSettings['lp_comment_block'] ?? 'none', '\' }">';
 }
 
 function template_callback_comment_settings_after(): void
@@ -118,13 +119,27 @@ function template_callback_comment_settings_after(): void
 	</div>';
 }
 
-function template_post_tab(array $fields, string $tab = 'content'): bool
+function template_callback_menu_settings_before(): void
+{
+	echo '
+	<div x-data="{ separate_subsection: ', empty(Config::$modSettings['lp_menu_separate_subsection']) ? 'false' : 'true', ' }">';
+}
+
+function template_callback_menu_settings_after(): void
+{
+	echo '
+	</div>';
+}
+
+function template_portal_tab(array $fields, Tab|string $tab = 'content'): bool
 {
 	$fields['subject'] = ['no'];
 
+	$tab = is_string($tab) ? $tab : $tab->name();
+
 	foreach ($fields as $pfid => $pf) {
 		if (empty($pf['input']['tab']))
-			$pf['input']['tab'] = 'tuning';
+			$pf['input']['tab'] = Tab::TUNING->name();
 
 		if ($pf['input']['tab'] != $tab)
 			$fields[$pfid] = ['no'];

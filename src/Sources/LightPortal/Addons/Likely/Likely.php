@@ -1,8 +1,6 @@
 <?php
 
 /**
- * Likely.php
- *
  * @package Likely (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,15 +8,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.04.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\Likely;
 
 use Bugo\Compat\{Config, Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, RadioField};
+use Bugo\LightPortal\Enums\Tab;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -62,12 +60,12 @@ class Likely extends Block
 			return;
 
 		CustomField::make('buttons', Lang::$txt['lp_likely']['buttons'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new ButtonSelect(), [
 				'data'  => $this->buttons,
 				'value' => is_array(Utils::$context['lp_block']['options']['buttons'])
 					? Utils::$context['lp_block']['options']['buttons']
-					: explode(',', Utils::$context['lp_block']['options']['buttons'])
+					: explode(',', (string) Utils::$context['lp_block']['options']['buttons'])
 			]);
 
 		RadioField::make('size', Lang::$txt['lp_likely']['size'])
@@ -96,7 +94,7 @@ class Likely extends Block
 			<div class="centertext likely_links">
 				<div class="likely likely-', $parameters['size'], (empty($parameters['dark_mode']) ? '' : ' likely-dark-theme'), '">';
 
-		$buttons = is_array($parameters['buttons']) ? $parameters['buttons'] : explode(',', $parameters['buttons']);
+		$buttons = is_array($parameters['buttons']) ? $parameters['buttons'] : explode(',', (string) $parameters['buttons']);
 
 		foreach ($buttons as $service) {
 			if (empty(Lang::$txt['lp_likely']['buttons_set'][$service]))

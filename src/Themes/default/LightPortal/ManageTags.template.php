@@ -1,6 +1,6 @@
 <?php
 
-use Bugo\Compat\{Config, Lang, Theme, Utils};
+use Bugo\Compat\{Config, Lang, Utils};
 use Bugo\LightPortal\Utils\Icon;
 
 function template_tag_post(): void
@@ -57,7 +57,7 @@ function template_tag_post(): void
 					<div class="bg odd active_navigation" data-tab="common">', Icon::get('content'), Lang::$txt['lp_tab_content'], '</div>
 				</div>
 				<div data-content>
-					<section class="bg even active_content" data-content="common">', template_post_tab($fields), '</section>
+					<section class="bg even active_content" data-content="common">', template_portal_tab($fields), '</section>
 				</div>
 			</div>
 			<br class="clear">

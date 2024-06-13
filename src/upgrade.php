@@ -10,209 +10,103 @@ if ((SMF === 'SSI') && ! $user_info['is_admin']) {
 	die('Admin privileges required.');
 }
 
-// Fetch category names
-$result = $smcFunc['db_query']('', '
-	SELECT category_id, name
-	FROM {db_prefix}lp_categories',
-	[]
-);
-
-$categories = [];
-while ($row = $smcFunc['db_fetch_assoc']($result)) {
-	$categories[$row['category_id']] = $row['name'];
-}
-
-$smcFunc['db_free_result']($result);
-
-// Insert category names to lp_titles table
-if ($categories !== []) {
-	$titles = [];
-
-	foreach ($categories as $id => $name) {
-		$titles[] = [
-			'item_id' => $id,
-			'type'    => 'category',
-			'lang'    => $user_info['language'],
-			'title'   => $name,
-		];
-	}
-
-	$smcFunc['db_insert']('',
-		'{db_prefix}lp_titles',
-		[
-			'item_id' => 'int',
-			'type'    => 'string',
-			'lang'    => 'string',
-			'title'   => 'string',
-		],
-		$titles,
-		['item_id', 'type', 'lang']
-	);
-}
-
-// Add an icon column
-$column = [
-	'name' => 'icon',
-	'type' => 'varchar',
-	'size' => 60,
-	'null' => true
-];
-
-$smcFunc['db_add_column']('{db_prefix}lp_categories', $column, [], 'ignore');
-
-// Add a status column
-$column = [
-	'name'     => 'status',
-	'type'     => 'tinyint',
-	'size'     => 1,
-	'unsigned' => true,
-	'default'  => 1
-];
-
-$smcFunc['db_add_column']('{db_prefix}lp_categories', $column, [], 'ignore');
-
-// Drop a name column
-$smcFunc['db_remove_column']('{db_prefix}lp_categories', 'name');
-
-// Create lp_page_tags table
-$table = [
-	'name'    => 'lp_page_tags',
-	'columns' => [
-		[
-			'name'     => 'page_id',
-			'type'     => 'int',
-			'size'     => 10,
-			'unsigned' => true
-		],
-		[
-			'name'     => 'tag_id',
-			'type'     => 'int',
-			'size'     => 10,
-			'unsigned' => true
-		]
-	],
-	'indexes' => [
-		[
-			'type'    => 'primary',
-			'columns' => ['page_id', 'tag_id']
-		]
-	]
-];
-
 db_extend('packages');
 
-$smcFunc['db_create_table']('{db_prefix}' . $table['name'], $table['columns'], $table['indexes']);
+// Rename `alias` to `slug`
+$smcFunc['db_change_column']('{db_prefix}lp_pages', 'alias', [
+	'name' => 'slug',
+]);
 
-// Fetch tags
-$result = $smcFunc['db_query']('', '
-	SELECT tag_id, value
-	FROM {db_prefix}lp_tags',
-	[]
-);
+// Rename `title` to `value`
+$smcFunc['db_change_column']('{db_prefix}lp_titles', 'title', [
+	'name' => 'value',
+]);
 
-$tags = [];
-while ($row = $smcFunc['db_fetch_assoc']($result)) {
-	$tags[$row['tag_id']] = $row['value'];
-}
+// Change sizes of fields
+$smcFunc['db_change_column']('{db_prefix}lp_params', 'type', [
+	'size' => 30,
+]);
 
-$smcFunc['db_free_result']($result);
+$smcFunc['db_change_column']('{db_prefix}lp_titles', 'type', [
+	'size' => 30,
+]);
 
-// Insert tag titles to lp_titles table
-if ($tags !== []) {
-	$titles = [];
-
-	foreach ($tags as $id => $name) {
-		$titles[] = [
-			'item_id' => $id,
-			'type'    => 'tag',
-			'lang'    => $user_info['language'],
-			'title'   => $name,
-		];
-	}
-
-	$smcFunc['db_insert']('',
-		'{db_prefix}lp_titles',
-		[
-			'item_id' => 'int',
-			'type'    => 'string',
-			'lang'    => 'string',
-			'title'   => 'string',
-		],
-		$titles,
-		['item_id', 'type', 'lang']
-	);
-}
-
-// Add an icon column
-$column = [
-	'name' => 'icon',
-	'type' => 'varchar',
-	'size' => 60,
-	'null' => true
-];
-
-$smcFunc['db_add_column']('{db_prefix}lp_tags', $column, [], 'ignore');
-
-// Add a status column
-$column = [
-	'name'     => 'status',
-	'type'     => 'tinyint',
-	'size'     => 1,
-	'unsigned' => true,
-	'default'  => 1
-];
-
-$smcFunc['db_add_column']('{db_prefix}lp_tags', $column, [], 'ignore');
-
-// Drop a value column
-$smcFunc['db_remove_column']('{db_prefix}lp_tags', 'value');
-
-// Migrate keywords from lp_params to lp_page_tags table
-$result = $smcFunc['db_query']('', '
-	SELECT item_id, value
-	FROM {db_prefix}lp_params
-	WHERE type = {literal:page} AND name = {literal:keywords}',
-	[]
-);
-
-$keywords = [];
-while ($row = $smcFunc['db_fetch_assoc']($result)) {
-	$keywords[$row['item_id']] = $row['value'];
-}
-
-$smcFunc['db_free_result']($result);
-
-if ($keywords) {
-	$values = [];
-
-	foreach ($keywords as $pageId => $value) {
-		$tags = explode(',', $value);
-
-		foreach ($tags as $tagId) {
-			$values[] = [
-				'page_id' => $pageId,
-				'tag_id'  => $tagId,
-			];
-		}
-	}
-
-	$smcFunc['db_insert']('',
-		'{db_prefix}lp_page_tags',
-		[
-			'page_id' => 'int',
-			'tag_id'  => 'int',
-		],
-		$values,
-		['page_id', 'tag_id']
-	);
-}
-
-// Delete deprecated values from lp_params table
+// Rename `lp_page_tags` table to `lp_page_tag`
 $smcFunc['db_query']('', '
-	DELETE FROM {db_prefix}lp_params
-	WHERE type = {literal:page} AND name = {literal:keywords}',
-	[]
+	ALTER TABLE IF EXISTS {raw:old_table_name}
+	RENAME TO {raw:new_table_name}',
+	[
+		'old_table_name' => str_replace('{db_prefix}', $db_prefix, '{db_prefix}lp_page_tags'),
+		'new_table_name' => str_replace('{db_prefix}', $db_prefix, '{db_prefix}lp_page_tag'),
+	]
 );
+
+// Replace indexes
+$smcFunc['db_remove_index']('{db_prefix}lp_params', 'primary');
+
+$smcFunc['db_add_column'](
+	'{db_prefix}lp_params',
+	[
+		'name'     => 'id',
+		'type'     => 'int',
+		'size'     => 10,
+		'unsigned' => true,
+		'auto'     => true
+	],
+	[],
+	'do_nothing'
+);
+
+$smcFunc['db_add_index']('{db_prefix}lp_params', [
+	'type' => 'unique',
+	'columns' => [
+		'item_id', 'type', 'name',
+	]
+]);
+
+$smcFunc['db_remove_index']('{db_prefix}lp_plugins', 'primary');
+
+$smcFunc['db_add_column'](
+	'{db_prefix}lp_plugins',
+	[
+		'name'     => 'id',
+		'type'     => 'int',
+		'size'     => 10,
+		'unsigned' => true,
+		'auto'     => true
+	],
+	[],
+	'do_nothing'
+);
+
+$smcFunc['db_add_index']('{db_prefix}lp_plugins', [
+	'type' => 'unique',
+	'columns' => [
+		'name', 'config',
+	]
+]);
+
+$smcFunc['db_remove_index']('{db_prefix}lp_titles', 'primary');
+
+$smcFunc['db_add_column'](
+	'{db_prefix}lp_titles',
+	[
+		'name'     => 'id',
+		'type'     => 'int',
+		'size'     => 10,
+		'unsigned' => true,
+		'auto'     => true
+	],
+	[],
+	'do_nothing'
+);
+
+$smcFunc['db_add_index']('{db_prefix}lp_titles', [
+	'type' => 'unique',
+	'columns' => [
+		'item_id', 'type', 'lang',
+	]
+]);
 
 clean_cache();
 

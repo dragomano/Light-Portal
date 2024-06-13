@@ -1,18 +1,23 @@
 <?php declare(strict_types=1);
 
 /**
- * GlobalArray.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Utils;
+
+use function array_flip;
+use function array_intersect_key;
+use function array_reduce;
+
+if (! defined('SMF'))
+	die('No direct access...');
 
 abstract class GlobalArray
 {
@@ -45,7 +50,7 @@ abstract class GlobalArray
 
 	public function hasNot(array|string $keys): bool
 	{
-		return empty($this->has($keys));
+		return array_reduce((array) $keys, fn($carry, $key) => $carry && !isset($this->storage[$key]), true);
 	}
 
 	public function isEmpty(string $key): bool

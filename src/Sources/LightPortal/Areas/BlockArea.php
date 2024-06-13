@@ -1,44 +1,53 @@
 <?php declare(strict_types=1);
 
 /**
- * BlockArea.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, ErrorHandler, Lang, Security, Theme, Utils};
+use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, TextField, UrlField};
 use Bugo\LightPortal\Areas\Partials\{AreaSelect, ContentClassSelect, IconSelect};
 use Bugo\LightPortal\Areas\Partials\{PermissionSelect, PlacementSelect, TitleClassSelect};
+use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Areas\Validators\BlockValidator;
-use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Enums\{ContentType, PortalHook, Tab};
 use Bugo\LightPortal\Models\BlockModel;
 use Bugo\LightPortal\Repositories\BlockRepository;
-use Bugo\LightPortal\Utils\Content;
+use Bugo\LightPortal\Utils\{CacheTrait, Content, Icon, RequestTrait, Str};
+
+use function array_column;
+use function array_combine;
+use function array_keys;
+use function array_merge;
+use function array_multisort;
+use function in_array;
+use function is_array;
+use function json_encode;
+use function ob_get_clean;
+use function ob_start;
+use function sprintf;
+use function template_show_areas_info;
+
+use const LP_NAME;
+use const LP_PAGE_PARAM;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class BlockArea
 {
-	use Area;
-	use Helper;
-
-	public const TAB_CONTENT = 'content';
-
-	public const TAB_ACCESS = 'access_placement';
-	
-	public const TAB_APPEARANCE = 'appearance';
-
-	public const TAB_TUNING = 'tuning';
+	use AreaTrait;
+	use CacheTrait;
+	use RequestTrait;
 
 	private BlockRepository $repository;
 
@@ -153,16 +162,12 @@ final class BlockArea
 
 		$data = $this->request()->json();
 
-		if (isset($data['del_item']))
-			$this->repository->remove([(int) $data['del_item']]);
-
-		if (isset($data['clone_block']))
-			$this->makeCopy((int) $data['clone_block']);
-
-		if (isset($data['toggle_item']))
-			$this->repository->toggleStatus([(int) $data['toggle_item']]);
-
-		$this->repository->updatePriority();
+		match (true) {
+			isset($data['clone_block']) => $this->makeCopy((int) $data['clone_block']),
+			isset($data['delete_item']) => $this->repository->remove([(int) $data['delete_item']]),
+			isset($data['toggle_item']) => $this->repository->toggleStatus([(int) $data['toggle_item']]),
+			isset($data['update_priority']) => $this->repository->updatePriority($data['update_priority'], $data['update_placement']),
+		};
 
 		$this->cache()->flush();
 
@@ -208,7 +213,7 @@ final class BlockArea
 
 		$params = [];
 
-		$this->hook('prepareBlockParams', [&$params]);
+		AddonHandler::getInstance()->run(PortalHook::prepareBlockParams, [&$params]);
 
 		return array_merge($baseParams, $params);
 	}
@@ -237,7 +242,7 @@ final class BlockArea
 				?? '';
 		}
 
-		$this->cleanBbcode($block->titles);
+		Str::cleanBbcode($block->titles);
 
 		foreach ($block->options as $option => $value) {
 			if (
@@ -268,14 +273,14 @@ final class BlockArea
 		$this->prepareTitleFields('block', false);
 
 		TextField::make('note', Lang::$txt['lp_block_note'])
-			->setTab(self::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setAttribute('maxlength', 255)
 			->setValue(Utils::$context['lp_block']['note']);
 
 		if (isset(Utils::$context['lp_block']['options']['content'])) {
 			if (Utils::$context['lp_block']['type'] !== 'bbc') {
 				TextareaField::make('content', Lang::$txt['lp_content'])
-					->setTab(self::TAB_CONTENT)
+					->setTab(Tab::CONTENT)
 					->setValue($this->prepareContent(Utils::$context['lp_block']));
 			} else {
 				$this->createBbcEditor(Utils::$context['lp_block']['content']);
@@ -283,31 +288,31 @@ final class BlockArea
 		}
 
 		CustomField::make('placement', Lang::$txt['lp_block_placement'])
-			->setTab(self::TAB_ACCESS)
+			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(static fn() => new PlacementSelect());
 
 		CustomField::make('permissions', Lang::$txt['edit_permissions'])
-			->setTab(self::TAB_ACCESS)
+			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(static fn() => new PermissionSelect(), [
 				'type' => 'block'
 			]);
 
 		CustomField::make('areas', Lang::$txt['lp_block_areas'])
-			->setTab(self::TAB_ACCESS)
+			->setTab(Tab::ACCESS_PLACEMENT)
 			->setAfter($this->getAreasInfo())
 			->setValue(static fn() => new AreaSelect());
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
-			->setTab(self::TAB_APPEARANCE)
+			->setTab(Tab::APPEARANCE)
 			->setValue(static fn() => new IconSelect());
 
 		CustomField::make('title_class', Lang::$txt['lp_block_title_class'])
-			->setTab(self::TAB_APPEARANCE)
+			->setTab(Tab::APPEARANCE)
 			->setValue(static fn() => new TitleClassSelect());
 
 		if (empty(Utils::$context['lp_block']['options']['no_content_class'])) {
 			CustomField::make('content_class', Lang::$txt['lp_block_content_class'])
-				->setTab(self::TAB_APPEARANCE)
+				->setTab(Tab::APPEARANCE)
 				->setValue(static fn() => new ContentClassSelect());
 		}
 
@@ -321,7 +326,7 @@ final class BlockArea
 
 		Utils::$context['lp_block_tab_appearance'] = true;
 
-		$this->hook('prepareBlockFields');
+		AddonHandler::getInstance()->run(PortalHook::prepareBlockFields);
 
 		$this->preparePostFields();
 	}
@@ -353,7 +358,7 @@ final class BlockArea
 
 	private function prepareEditor(): void
 	{
-		$this->hook('prepareEditor', [Utils::$context['lp_block']]);
+		AddonHandler::getInstance()->run(PortalHook::prepareEditor, [Utils::$context['lp_block']]);
 	}
 
 	private function preparePreview(): void
@@ -368,16 +373,25 @@ final class BlockArea
 		Utils::$context['preview_title']   = Utils::$context['lp_block']['titles'][Utils::$context['user']['language']] ?? '';
 		Utils::$context['preview_content'] = Utils::htmlspecialchars(Utils::$context['lp_block']['content'], ENT_QUOTES);
 
-		$this->cleanBbcode(Utils::$context['preview_title']);
+		Str::cleanBbcode(Utils::$context['preview_title']);
+
 		Lang::censorText(Utils::$context['preview_title']);
 		Lang::censorText(Utils::$context['preview_content']);
 
 		Utils::$context['preview_content'] = empty(Utils::$context['preview_content'])
-			? Content::prepare(Utils::$context['lp_block']['type'], Utils::$context['lp_block']['id'], 0, Utils::$context['lp_block']['options'] ?? [])
+			? Content::prepare(
+				Utils::$context['lp_block']['type'],
+				Utils::$context['lp_block']['id'],
+				0,
+				Utils::$context['lp_block']['options'] ?? []
+			)
 			: Content::parse(Utils::$context['preview_content'], Utils::$context['lp_block']['type']);
 
-		Utils::$context['page_title']    = Lang::$txt['preview'] . (Utils::$context['preview_title'] ? ' - ' . Utils::$context['preview_title'] : '');
-		Utils::$context['preview_title'] = $this->getPreviewTitle($this->getIcon(Utils::$context['lp_block']['icon']));
+		Utils::$context['page_title'] = Lang::$txt['preview'] . (
+			Utils::$context['preview_title'] ? ' - ' . Utils::$context['preview_title'] : ''
+		);
+
+		Utils::$context['preview_title'] = $this->getPreviewTitle(Icon::parse(Utils::$context['lp_block']['icon']));
 
 		if (! empty(Utils::$context['lp_block']['options']['hide_header'])) {
 			Utils::$context['preview_title'] = Utils::$context['lp_block']['title_class'] = '';
@@ -386,13 +400,15 @@ final class BlockArea
 
 	private function prepareBlockList(): void
 	{
-		$plugins = array_merge(Utils::$context['lp_enabled_plugins'], array_keys($this->getContentTypes()));
+		$plugins = array_merge(Utils::$context['lp_enabled_plugins'], array_keys(ContentType::all()));
 
-		Utils::$context['lp_loaded_addons'] = array_merge(Utils::$context['lp_loaded_addons'] ?? [], $this->getDefaultTypes());
+		Utils::$context['lp_loaded_addons'] = array_merge(
+			Utils::$context['lp_loaded_addons'] ?? [], $this->getDefaultTypes()
+		);
 
 		Utils::$context['lp_all_blocks'] = [];
 		foreach ($plugins as $addon) {
-			$addon = $this->getSnakeName($addon);
+			$addon = Str::getSnakeName($addon);
 
 			// We need blocks only
 			if (! isset(Lang::$txt['lp_' . $addon]['title']) || isset(Utils::$context['lp_all_blocks'][$addon]))

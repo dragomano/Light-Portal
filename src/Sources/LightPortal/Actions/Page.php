@@ -1,32 +1,49 @@
 <?php declare(strict_types=1);
 
 /**
- * Page.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Actions;
 
 use Bugo\Compat\{Config, ErrorHandler, Lang};
 use Bugo\Compat\{PageIndex, Theme, User, Utils};
-use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Repositories\PageRepository;
-use Bugo\LightPortal\Utils\{Content, Icon};
+use Bugo\LightPortal\Utils\{CacheTrait, Content, EntityDataTrait};
+use Bugo\LightPortal\Utils\{Icon, RequestTrait, SessionTrait, Setting, Str};
 use IntlException;
+use Nette\Utils\Html;
+
+use function array_column;
+use function array_search;
+use function class_exists;
+use function date;
+use function explode;
+use function implode;
+use function json_encode;
+use function time;
+
+use const LP_BASE_URL;
+use const LP_PAGE_PARAM;
+use const LP_PAGE_URL;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class Page implements PageInterface
 {
-	use Helper;
+	use CacheTrait;
+	use EntityDataTrait;
+	use RequestTrait;
+	use SessionTrait;
 
 	private PageRepository $repository;
 
@@ -42,21 +59,22 @@ final class Page implements PageInterface
 	{
 		User::mustHavePermission('light_portal_view');
 
-		$alias = $this->request(LP_PAGE_PARAM);
+		$slug = $this->request(LP_PAGE_PARAM);
 
-		if (empty($alias)) {
-			if ($this->isFrontpageMode('chosen_page') && Config::$modSettings['lp_frontpage_alias']) {
-				Utils::$context['lp_page'] = $this->getDataByAlias(Config::$modSettings['lp_frontpage_alias']);
+		if (empty($slug)) {
+			if (Setting::isFrontpageMode('chosen_page') && Config::$modSettings['lp_frontpage_chosen_page']) {
+				Utils::$context['lp_page'] = $this->getDataBySlug(Config::$modSettings['lp_frontpage_chosen_page']);
 			} else {
 				Config::updateModSettings(['lp_frontpage_mode' => 0]);
 			}
 		} else {
-			$alias = explode(';', $alias)[0];
+			$slug = explode(';', (string) $slug)[0];
 
-			if ($this->isFrontpage($alias))
+			if (Setting::isFrontpage($slug)) {
 				Utils::redirectexit('action=' . LP_ACTION);
+			}
 
-			Utils::$context['lp_page'] = $this->getDataByAlias($alias);
+			Utils::$context['lp_page'] = $this->getDataBySlug($slug);
 		}
 
 		if (empty(Utils::$context['lp_page'])) {
@@ -74,19 +92,21 @@ final class Page implements PageInterface
 			ErrorHandler::fatalLang('lp_page_not_activated');
 		}
 
-		if (Utils::$context['lp_page']['created_at'] > time())
+		if (Utils::$context['lp_page']['created_at'] > time()) {
 			Utils::sendHttpStatus(404);
+		}
 
 		Utils::$context['lp_page']['errors'] = [];
-		if (empty(Utils::$context['lp_page']['status']) && Utils::$context['lp_page']['can_edit'])
+		if (empty(Utils::$context['lp_page']['status']) && Utils::$context['lp_page']['can_edit']) {
 			Utils::$context['lp_page']['errors'][] = Lang::$txt['lp_page_visible_but_disabled'];
+		}
 
 		Utils::$context['lp_page']['content'] = Content::parse(
 			Utils::$context['lp_page']['content'], Utils::$context['lp_page']['type']
 		);
 
-		if (empty($alias)) {
-			Utils::$context['page_title'] = $this->getTranslatedTitle(
+		if (empty($slug)) {
+			Utils::$context['page_title'] = Str::getTranslatedTitle(
 				Utils::$context['lp_page']['titles']
 			) ?: Lang::$txt['lp_portal'];
 
@@ -95,11 +115,11 @@ final class Page implements PageInterface
 				'name' => Lang::$txt['lp_portal'],
 			];
 		} else {
-			Utils::$context['page_title'] = $this->getTranslatedTitle(
+			Utils::$context['page_title'] = Str::getTranslatedTitle(
 				Utils::$context['lp_page']['titles']
 			) ?: Lang::$txt['lp_post_error_no_title'];
 
-			Utils::$context['canonical_url'] = LP_PAGE_URL . $alias;
+			Utils::$context['canonical_url'] = LP_PAGE_URL . $slug;
 
 			if (isset(Utils::$context['lp_page']['category'])) {
 				Utils::$context['linktree'][] = [
@@ -131,13 +151,16 @@ final class Page implements PageInterface
 		Theme::loadJavaScriptFile('light_portal/bundle.min.js', ['defer' => true]);
 	}
 
-	public function getDataByAlias(string $alias): array
+	/**
+	 * @throws IntlException
+	 */
+	public function getDataBySlug(string $slug): array
 	{
-		if (empty($alias))
+		if (empty($slug))
 			return [];
 
-		$data = $this->cache('page_' . $alias)
-			->setFallback(PageRepository::class, 'getData', $alias);
+		$data = $this->cache('page_' . $slug)
+			->setFallback(PageRepository::class, 'getData', $slug);
 
 		$this->repository->prepareData($data);
 
@@ -203,16 +226,15 @@ final class Page implements PageInterface
 						'value' => Lang::$txt['lp_title']
 					],
 					'data' => [
-						'function' => static fn($entry) => '<a class="bbc_link' . (
-							$entry['is_front']
-								? ' new_posts" href="' . Config::$scripturl
-								: '" href="' . LP_PAGE_URL . $entry['alias']
-						) . '">' . $entry['title'] . '</a>',
+						'function' => static fn($entry) => Html::el('a', [
+								'class' => 'bbc_link' . ($entry['is_front'] ? ' new_posts' : ''),
+								'href'  => $entry['is_front'] ? Config::$scripturl : (LP_PAGE_URL . $entry['slug']),
+							])->setText($entry['title'])->toHtml(),
 						'class' => 'word_break'
 					],
 					'sort' => [
-						'default' => 't.title DESC',
-						'reverse' => 't.title'
+						'default' => 't.value DESC',
+						'reverse' => 't.value'
 					]
 				],
 				'author' => [
@@ -222,7 +244,10 @@ final class Page implements PageInterface
 					'data' => [
 						'function' => static fn($entry) => empty($entry['author']['name'])
 							? Lang::$txt['guest_title']
-							: '<a href="' . $entry['author']['link'] . '">' . $entry['author']['name'] . '</a>',
+							: Html::el('a')
+								->href($entry['author']['link'])
+								->setText($entry['author']['name'])
+								->toHtml(),
 						'class' => 'centertext'
 					],
 					'sort' => [
@@ -352,26 +377,26 @@ final class Page implements PageInterface
 
 		$titles = $this->getEntityData('title');
 
-		[$prevId, $prevAlias, $nextId, $nextAlias] = $this->repository->getPrevNextLinks($page);
+		[$prevId, $prevSlug, $nextId, $nextSlug] = $this->repository->getPrevNextLinks($page);
 
-		if (! empty($prevAlias)) {
+		if (! empty($prevSlug)) {
 			Utils::$context['lp_page']['prev'] = [
-				'link'  => LP_PAGE_URL . $prevAlias,
-				'title' => $this->getTranslatedTitle($titles[$prevId])
+				'link'  => LP_PAGE_URL . $prevSlug,
+				'title' => Str::getTranslatedTitle($titles[$prevId])
 			];
 		}
 
-		if (! empty($nextAlias)) {
+		if (! empty($nextSlug)) {
 			Utils::$context['lp_page']['next'] = [
-				'link'  => LP_PAGE_URL . $nextAlias,
-				'title' => $this->getTranslatedTitle($titles[$nextId])
+				'link'  => LP_PAGE_URL . $nextSlug,
+				'title' => Str::getTranslatedTitle($titles[$nextId])
 			];
 		}
 	}
 
 	private function prepareRelatedPages(): void
 	{
-		if (empty($page = Utils::$context['lp_page']) || empty(Config::$modSettings['lp_show_related_pages']))
+		if (empty($page = Utils::$context['lp_page']) || Setting::showRelatedPages())
 			return;
 
 		if (empty(Utils::$context['lp_page']['options']['show_related_pages']))
@@ -385,7 +410,7 @@ final class Page implements PageInterface
 	 */
 	private function prepareComments(): void
 	{
-		if ($this->getCommentBlockType() === '' || $this->getCommentBlockType() === 'none')
+		if (Setting::getCommentBlock() === '' || Setting::getCommentBlock() === 'none')
 			return;
 
 		if (empty(Utils::$context['lp_page']['options']['allow_comments']))
@@ -393,14 +418,14 @@ final class Page implements PageInterface
 
 		Lang::load('Editor');
 
-		$this->hook('comments');
+		AddonHandler::getInstance()->run(PortalHook::comments);
 
-		if (isset(Utils::$context['lp_' . Config::$modSettings['lp_show_comment_block'] . '_comment_block']))
+		if (isset(Utils::$context['lp_' . Config::$modSettings['lp_comment_block'] . '_comment_block']))
 			return;
 
 		$this->prepareJsonData();
 
-		(new Comment(Utils::$context['lp_page']['alias']))->show();
+		(new Comment(Utils::$context['lp_page']['slug']))->show();
 	}
 
 	private function prepareJsonData(): void

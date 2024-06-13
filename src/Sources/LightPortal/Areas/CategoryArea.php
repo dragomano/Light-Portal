@@ -1,39 +1,41 @@
 <?php declare(strict_types=1);
 
 /**
- * CategoryArea.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, ErrorHandler, Lang, Security, Theme, Utils};
-use Bugo\LightPortal\Actions\PageListInterface;
 use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Areas\Fields\TextareaField;
 use Bugo\LightPortal\Areas\Partials\IconSelect;
+use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Areas\Validators\CategoryValidator;
-use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Enums\{Status, Tab};
 use Bugo\LightPortal\Models\CategoryModel;
 use Bugo\LightPortal\Repositories\CategoryRepository;
-use Bugo\LightPortal\Utils\{Icon, ItemList};
+use Bugo\LightPortal\Utils\{CacheTrait, Icon, ItemList, RequestTrait, Str};
+use Nette\Utils\Html;
+
+use function str_replace;
+
+use const LP_NAME;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class CategoryArea
 {
-	use Area;
-	use Helper;
-
-	public const TAB_CONTENT = 'content';
+	use AreaTrait;
+	use CacheTrait;
+	use RequestTrait;
 
 	private CategoryRepository $repository;
 
@@ -66,10 +68,10 @@ final class CategoryArea
 			'base_href' => Utils::$context['form_action'],
 			'default_sort_col' => 'priority',
 			'get_items' => [
-				'function' => [$this->repository, 'getAll']
+				'function' => $this->repository->getAll(...)
 			],
 			'get_count' => [
-				'function' => [$this->repository, 'getTotalCount']
+				'function' => $this->repository->getTotalCount(...)
 			],
 			'columns' => [
 				'id' => [
@@ -105,7 +107,10 @@ final class CategoryArea
 					],
 					'data' => [
 						'function' => static fn($entry) => $entry['status']
-							? '<a class="bbc_link" href="' . LP_BASE_URL . ';sa=categories;id=' . $entry['id'] . '">' . $entry['title'] . '</a>'
+							? Html::el('a', ['class' => 'bbc_link'])
+								->href(LP_BASE_URL . ';sa=categories;id=' . $entry['id'])
+								->setText($entry['title'])
+								->toHtml()
 							: $entry['title'],
 						'class' => 'word_break',
 					],
@@ -119,10 +124,9 @@ final class CategoryArea
 						'value' => Lang::$txt['lp_block_priority']
 					],
 					'data' => [
-						'function' => static fn($entry) => '<div data-id="' . $entry['id'] . '">
-								' . $entry['priority'] . ' ' .
-								Icon::get('sort', Lang::$txt['lp_action_move'], 'handle ') .
-							'</div>',
+						'function' => static fn($entry) => Html::el('div')->data('id', $entry['id'])
+							->setHtml($entry['priority'] . ' ' . Icon::get('sort', Lang::$txt['lp_action_move'], 'handle '))
+							->toHtml(),
 						'class' => 'centertext'
 					],
 					'sort' => [
@@ -138,7 +142,7 @@ final class CategoryArea
 						'function' => static fn($entry) => /** @lang text */ '
 							<div
 								data-id="' . $entry['id'] . '"
-								x-data="{ status: ' . ($entry['status'] === PageListInterface::STATUS_ACTIVE ? 'true' : 'false') . ' }"
+								x-data="{ status: ' . ($entry['status'] === Status::ACTIVE->value ? 'true' : 'false') . ' }"
 								x-init="$watch(\'status\', value => category.toggleStatus($el))"
 							>
 								<span
@@ -187,12 +191,20 @@ final class CategoryArea
 			],
 		];
 
-		$listOptions['title'] = '
-			<span class="floatright">
-				<a href="' . Config::$scripturl . '?action=admin;area=lp_categories;sa=add;' . Utils::$context['session_var'] . '=' . Utils::$context['session_id'] . '" x-data>
-					' . (str_replace(' class=', ' @mouseover="category.toggleSpin($event.target)" @mouseout="category.toggleSpin($event.target)" class=', Icon::get('plus', Lang::$txt['lp_categories_add']))) . '
-				</a>
-			</span>' . $listOptions['title'];
+		$listOptions['title'] = Html::el('span', ['class' => 'floatright'])
+			->addHtml(
+				Html::el('a', [
+					'href' => Config::$scripturl . '?action=admin;area=lp_categories;sa=add;' . Utils::$context['session_var'] . '=' . Utils::$context['session_id'],
+					'x-data' => '',
+				])
+				->setHtml(str_replace(
+					' class=',
+					' @mouseover="category.toggleSpin($event.target)" @mouseout="category.toggleSpin($event.target)" class=',
+					Icon::get('plus', Lang::$txt['lp_categories_add'])
+				))
+				->toHtml()
+			)
+			->toHtml() . $listOptions['title'];
 
 		new ItemList($listOptions);
 	}
@@ -276,14 +288,11 @@ final class CategoryArea
 
 		$data = $this->request()->json();
 
-		if (isset($data['del_item']))
-			$this->repository->remove([(int) $data['del_item']]);
-
-		if (isset($data['toggle_item']))
-			$this->repository->toggleStatus([(int) $data['toggle_item']], 'category');
-
-		if (isset($data['update_priority']))
-			$this->repository->updatePriority($data['update_priority']);
+		match (true) {
+			isset($data['delete_item']) => $this->repository->remove([(int) $data['delete_item']]),
+			isset($data['toggle_item']) => $this->repository->toggleStatus([(int) $data['toggle_item']]),
+			isset($data['update_priority']) => $this->repository->updatePriority($data['update_priority']),
+		};
 
 		$this->cache()->flush();
 
@@ -302,8 +311,8 @@ final class CategoryArea
 			$category->titles[$lang['filename']] = $postData['title_' . $lang['filename']] ?? $category->titles[$lang['filename']] ?? '';
 		}
 
-		$this->cleanBbcode($category->titles);
-		$this->cleanBbcode($category->description);
+		Str::cleanBbcode($category->titles);
+		Str::cleanBbcode($category->description);
 
 		Utils::$context['lp_category'] = $category->toArray();
 	}
@@ -313,13 +322,13 @@ final class CategoryArea
 		$this->prepareTitleFields();
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
-			->setTab(self::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new IconSelect(), [
 				'icon' => Utils::$context['lp_category']['icon'],
 			]);
 
 		TextareaField::make('description', Lang::$txt['lp_category_description'])
-			->setTab(self::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setAttribute('maxlength', 255)
 			->setValue(Utils::$context['lp_category']['description']);
 
@@ -336,11 +345,12 @@ final class CategoryArea
 		Utils::$context['preview_title']   = Utils::$context['lp_category']['titles'][Utils::$context['user']['language']];
 		Utils::$context['preview_content'] = Utils::htmlspecialchars(Utils::$context['lp_category']['description'], ENT_QUOTES);
 
-		$this->cleanBbcode(Utils::$context['preview_title']);
+		Str::cleanBbcode(Utils::$context['preview_title']);
+
 		Lang::censorText(Utils::$context['preview_title']);
 		Lang::censorText(Utils::$context['preview_content']);
 
 		Utils::$context['page_title']    = Lang::$txt['preview'] . (Utils::$context['preview_title'] ? ' - ' . Utils::$context['preview_title'] : '');
-		Utils::$context['preview_title'] = $this->getPreviewTitle($this->getIcon(Utils::$context['lp_category']['icon']));
+		Utils::$context['preview_title'] = $this->getPreviewTitle(Icon::parse(Utils::$context['lp_category']['icon']));
 	}
 }

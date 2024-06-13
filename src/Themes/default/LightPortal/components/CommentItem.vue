@@ -141,9 +141,7 @@ const parent = ref();
 
 const showReplyButton = computed(() => props.level < 5 && userId !== props.comment.poster.id);
 
-const showRemoveButton = computed(
-  () => props.comment.poster.id === userId || isAdmin
-);
+const showRemoveButton = computed(() => props.comment.poster.id === userId || isAdmin);
 
 const canEdit = computed(
   () =>

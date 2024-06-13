@@ -1,37 +1,31 @@
 <?php declare(strict_types=1);
 
 /**
- * IconList.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Lists;
 
-use Bugo\FontAwesomeHelper\Collection;
-use Bugo\LightPortal\Helper;
+use Bugo\FontAwesome\Enums\Icon;
+use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Enums\PortalHook;
+
+use function array_map;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class IconList implements ListInterface
 {
-	use Helper;
-
 	private string $prefix = 'fa-solid fa-';
 
 	public function __invoke(): array
-	{
-		return $this->getAll();
-	}
-
-	public function getAll(): array
 	{
 		$set = [
 			'access'        => 'universal-access',
@@ -107,13 +101,13 @@ final class IconList implements ListInterface
 		$set['big_image'] = 'fa-regular fa-image fa-5x';
 
 		// Plugin authors can extend the icon set
-		$this->hook('changeIconSet', [&$set]);
+		AddonHandler::getInstance()->run(PortalHook::changeIconSet, [&$set]);
 
-		return array_map(fn($icon): string => $this->getIcon($icon), $set);
+		return array_map(fn($icon): string => \Bugo\LightPortal\Utils\Icon::parse($icon), $set);
 	}
 
 	public function getList(): array
 	{
-		return (new Collection(['deprecated_class' => true]))->getAll();
+		return Icon::V5->collection();
 	}
 }

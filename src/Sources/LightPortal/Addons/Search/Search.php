@@ -1,8 +1,6 @@
 <?php
 
 /**
- * Search.php
- *
  * @package Search (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,14 +8,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 26.03.24
+ * @version 05.06.24
  */
 
 namespace Bugo\LightPortal\Addons\Search;
 
 use Bugo\Compat\{Config, Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Utils\{Content, DateTime};
+use Bugo\LightPortal\Enums\{Hook, Permission};
+use Bugo\LightPortal\Utils\{Content, DateTime, Str};
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -29,7 +28,7 @@ class Search extends Block
 
 	public function init(): void
 	{
-		$this->applyHook('actions');
+		$this->applyHook(Hook::actions);
 	}
 
 	public function addSettings(array &$settings): void
@@ -44,10 +43,10 @@ class Search extends Block
 	public function actions()
 	{
 		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'qsearch')
-			return call_user_func([$this, 'prepareQuickResults']);
+			return call_user_func($this->prepareQuickResults(...));
 
 		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'search')
-			return call_user_func([$this, 'showResults']);
+			return call_user_func($this->showResults(...));
 
 		return false;
 	}
@@ -111,15 +110,15 @@ class Search extends Block
 
 		$searchFormula = '';
 		foreach ($titleWords as $key => $word) {
-			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE WHEN lower(t.title) = lower(\'' . $word . '\') THEN ' . (count($titleWords) - $key) * 5 . ' ELSE 0 END';
-			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE WHEN lower(t.title) LIKE lower(\'%' . $word . '%\') THEN ' . (count($titleWords) - $key) * 4 . ' ELSE 0 END';
+			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE WHEN lower(t.value) = lower(\'' . $word . '\') THEN ' . (count($titleWords) - $key) * 5 . ' ELSE 0 END';
+			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE WHEN lower(t.value) LIKE lower(\'%' . $word . '%\') THEN ' . (count($titleWords) - $key) * 4 . ' ELSE 0 END';
 			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE WHEN lower(p.content) LIKE lower(\'%' . $word . '%\') THEN ' . (count($titleWords) - $key) * 3 . ' ELSE 0 END';
-			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE WHEN lower(p.alias) = lower(\'' . $word . '\') THEN ' . (count($titleWords) - $key) * 2 . ' ELSE 0 END';
-			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE WHEN lower(p.alias) LIKE lower(\'%' . $word . '%\') THEN ' . (count($titleWords) - $key) . ' ELSE 0 END';
+			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE WHEN lower(p.slug) = lower(\'' . $word . '\') THEN ' . (count($titleWords) - $key) * 2 . ' ELSE 0 END';
+			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE WHEN lower(p.slug) LIKE lower(\'%' . $word . '%\') THEN ' . (count($titleWords) - $key) . ' ELSE 0 END';
 		}
 
 		$result = Utils::$smcFunc['db_query']('', '
-			SELECT p.alias, p.content, p.type, GREATEST(p.created_at, p.updated_at) AS date, (' . $searchFormula . ') AS related, t.title, mem.id_member, mem.real_name
+			SELECT p.slug, p.content, p.type, GREATEST(p.created_at, p.updated_at) AS date, (' . $searchFormula . ') AS related, t.value, mem.id_member, mem.real_name
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:current_lang})
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
@@ -133,7 +132,7 @@ class Search extends Block
 				'current_lang' => Utils::$context['user']['language'],
 				'status'       => 1,
 				'current_time' => time(),
-				'permissions'  => $this->getPermissions(),
+				'permissions'  => Permission::all(),
 			]
 		);
 
@@ -142,9 +141,9 @@ class Search extends Block
 			$row['content'] = Content::parse($row['content'], $row['type']);
 
 			$items[] = [
-				'link'    => LP_PAGE_URL . $row['alias'],
-				'title'   => $row['title'],
-				'content' => $this->getTeaser($row['content']),
+				'link'    => LP_PAGE_URL . $row['slug'],
+				'title'   => $row['value'],
+				'content' => Str::getTeaser($row['content']),
 				'author'  => empty($row['id_member'])
 					? Lang::$txt['guest']
 					: ('<a href="' . Config::$scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>'),

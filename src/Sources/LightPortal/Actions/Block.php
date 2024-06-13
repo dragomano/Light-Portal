@@ -1,30 +1,42 @@
 <?php declare(strict_types=1);
 
 /**
- * Block.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Actions;
 
 use Bugo\Compat\{Config, Db};
 use Bugo\Compat\{Lang, Theme, Utils};
-use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\Content;
+use Bugo\LightPortal\Enums\{Permission, Status};
+use Bugo\LightPortal\Utils\{CacheTrait, Content, Icon, RequestTrait, Setting, Str};
+use Nette\Utils\Html;
+
+use function array_filter;
+use function array_flip;
+use function array_merge;
+use function array_slice;
+use function explode;
+use function in_array;
+use function str_contains;
+
+use const LP_ACTION;
+use const LP_CACHE_TIME;
+use const LP_PAGE_PARAM;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class Block implements BlockInterface
 {
-	use Helper;
+	use CacheTrait;
+	use RequestTrait;
 
 	public function show(): void
 	{
@@ -39,7 +51,7 @@ final class Block implements BlockInterface
 
 		// Block placement
 		foreach ($blocks as $item => $data) {
-			if ($this->canViewItem($data['permissions']) === false)
+			if (Permission::canViewItem($data['permissions']) === false)
 				continue;
 
 			$data['can_edit'] = Utils::$context['user']['is_admin'];
@@ -56,11 +68,11 @@ final class Block implements BlockInterface
 			Utils::$context['lp_blocks'][$data['placement']][$item] = $data;
 
 			if (empty($data['parameters']['hide_header'])) {
-				$title = $this->getTranslatedTitle($data['titles']);
-				$icon  = $this->getIcon(Utils::$context['lp_blocks'][$data['placement']][$item]['icon']);
+				$title = Str::getTranslatedTitle($data['titles']);
+				$icon  = Icon::parse(Utils::$context['lp_blocks'][$data['placement']][$item]['icon']);
 
 				if (! empty($data['parameters']['link_in_title'])) {
-					$title = "<a href=\"{$data['parameters']['link_in_title']}\">$title</a>";
+					$title = Html::el('a')->href($data['parameters']['link_in_title'])->setText($title)->toHtml();
 				}
 			} else {
 				$title = $icon = '';
@@ -96,14 +108,14 @@ final class Block implements BlockInterface
 				SELECT
 					b.block_id, b.icon, b.type, b.content, b.placement, b.priority,
 					b.permissions, b.areas, b.title_class, b.content_class,
-					bt.lang, bt.title, bp.name, bp.value
+					bt.lang, bt.value AS title, bp.name, bp.value
 				FROM {db_prefix}lp_blocks AS b
 					LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
 					LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {literal:block})
 				WHERE b.status = {int:status}
 				ORDER BY b.placement, b.priority',
 				[
-					'status' => self::STATUS_ACTIVE,
+					'status' => Status::ACTIVE->value,
 				]
 			);
 
@@ -119,7 +131,7 @@ final class Block implements BlockInterface
 					'placement'     => $row['placement'],
 					'priority'      => (int) $row['priority'],
 					'permissions'   => (int) $row['permissions'],
-					'areas'         => explode(',', $row['areas']),
+					'areas'         => explode(',', (string) $row['areas']),
 					'title_class'   => $row['title_class'],
 					'content_class' => $row['content_class'],
 				];
@@ -144,7 +156,7 @@ final class Block implements BlockInterface
 			empty(Config::$modSettings['lp_frontpage_mode']) ? 'forum' : LP_ACTION
 		);
 
-		if ($this->isStandaloneMode()) {
+		if (Setting::isStandaloneMode()) {
 			if (Config::$modSettings['lp_standalone_url'] === $this->request()->url()) {
 				$area = LP_ACTION;
 			} elseif (empty(Utils::$context['current_action'])) {
@@ -155,7 +167,7 @@ final class Block implements BlockInterface
 		if (isset(Utils::$context['current_board']) || isset(Utils::$context['lp_page']))
 			$area = '';
 
-		if (! empty(Utils::$context['lp_page']['alias']) && $this->isFrontpage(Utils::$context['lp_page']['alias']))
+		if (! empty(Utils::$context['lp_page']['slug']) && Setting::isFrontpage(Utils::$context['lp_page']['slug']))
 			$area = LP_ACTION;
 
 		return array_filter(Utils::$context['lp_active_blocks'], function ($block) use ($area) {
@@ -177,9 +189,9 @@ final class Block implements BlockInterface
 				return true;
 			}
 
-			if (isset(Utils::$context['lp_page']['alias'])) {
+			if (isset(Utils::$context['lp_page']['slug'])) {
 				if (
-					isset($block['areas']['!' . LP_PAGE_PARAM . '=' . Utils::$context['lp_page']['alias']])
+					isset($block['areas']['!' . LP_PAGE_PARAM . '=' . Utils::$context['lp_page']['slug']])
 					&& $tempAreas[0] === 'pages'
 				) {
 					return false;
@@ -187,7 +199,7 @@ final class Block implements BlockInterface
 
 				if (
 					isset($block['areas']['pages'])
-					|| isset($block['areas'][LP_PAGE_PARAM . '=' . Utils::$context['lp_page']['alias']])
+					|| isset($block['areas'][LP_PAGE_PARAM . '=' . Utils::$context['lp_page']['slug']])
 				) {
 					return true;
 				}
@@ -204,7 +216,7 @@ final class Block implements BlockInterface
 
 			$boards = $topics = [];
 			foreach ($tempAreas as $areas) {
-				$entity = explode('=', $areas);
+				$entity = explode('=', (string) $areas);
 
 				if ($entity[0] === 'board')
 					$boards = $this->getAllowedIds($entity[1]);

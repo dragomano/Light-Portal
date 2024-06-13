@@ -9,12 +9,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Lists;
 
-use Bugo\LightPortal\Actions\PageInterface;
+use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Repositories\PageRepository;
 use IntlException;
 
@@ -23,7 +23,7 @@ if (! defined('SMF'))
 
 final class PageList implements ListInterface
 {
-	private PageRepository $repository;
+	private readonly PageRepository $repository;
 
 	public function __construct()
 	{
@@ -35,20 +35,12 @@ final class PageList implements ListInterface
 	 */
 	public function __invoke(): array
 	{
-		return $this->getAll();
-	}
-
-	/**
-	 * @throws IntlException
-	 */
-	public function getAll(): array
-	{
 		return $this->repository->getAll(
 			0,
 			$this->repository->getTotalCount(),
 			'p.page_id DESC',
 			'AND p.status = {int:status}',
-			['status' => PageInterface::STATUS_ACTIVE]
+			['status' => Status::ACTIVE->value]
 		);
 	}
 }

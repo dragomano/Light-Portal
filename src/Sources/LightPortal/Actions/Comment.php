@@ -1,35 +1,45 @@
 <?php declare(strict_types=1);
 
 /**
- * Comment.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Actions;
 
 use Bugo\Compat\{Config, PageIndex, User, Utils};
-use Bugo\LightPortal\Helper;
-use Bugo\LightPortal\Utils\{DateTime, Notify};
+use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Enums\{PortalHook, VarType};
 use Bugo\LightPortal\Repositories\CommentRepository;
+use Bugo\LightPortal\Utils\{Avatar, CacheTrait, DateTime, Notify, RequestTrait, Setting};
 use IntlException;
+
+use function array_map;
+use function array_slice;
+use function count;
+use function date;
+use function http_response_code;
+use function json_encode;
+use function trim;
+
+use const LP_BASE_URL;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class Comment implements ActionInterface
 {
-	use Helper;
+	use CacheTrait;
+	use RequestTrait;
 
 	private CommentRepository $repository;
 
-	public function __construct(private string $alias = '')
+	public function __construct(private readonly string $pageSlug = '')
 	{
 		$this->repository = new CommentRepository();
 	}
@@ -39,7 +49,7 @@ final class Comment implements ActionInterface
 	 */
 	public function show(): void
 	{
-		if (empty($this->alias) || $this->request()->isEmpty('api'))
+		if (empty($this->pageSlug) || $this->request()->isEmpty('api'))
 			return;
 
 		header('Content-Type: application/json; charset=utf-8');
@@ -55,9 +65,9 @@ final class Comment implements ActionInterface
 	/**
 	 * @throws IntlException
 	 */
-	private function get(): void
+	private function get(): never
 	{
-		$comments = $this->cache('page_' . $this->alias . '_comments')
+		$comments = $this->cache('page_' . $this->pageSlug . '_comments')
 			->setFallback(CommentRepository::class, 'getByPageId', Utils::$context['lp_page']['id']);
 
 		$comments = array_map(function ($comment) {
@@ -66,7 +76,7 @@ final class Comment implements ActionInterface
 			$comment['authorial']     = Utils::$context['lp_page']['author_id'] === $comment['poster']['id'];
 			$comment['extra_buttons'] = [];
 
-			$this->hook('commentButtons', [$comment, &$comment['extra_buttons']]);
+			AddonHandler::getInstance()->run(PortalHook::commentButtons, [$comment, &$comment['extra_buttons']]);
 
 			return $comment;
 		}, $comments);
@@ -98,7 +108,7 @@ final class Comment implements ActionInterface
 	/**
 	 * @throws IntlException
 	 */
-	private function add(): void
+	private function add(): never
 	{
 		$result = [
 			'id' => null,
@@ -112,9 +122,9 @@ final class Comment implements ActionInterface
 		if (empty($data['message']))
 			exit(json_encode($result));
 
-		$parentId = $this->filterVar($data['parent_id'], 'int');
+		$parentId = VarType::INTEGER->filter($data['parent_id']);
 		$message  = Utils::htmlspecialchars($data['message']);
-		$author   = $this->filterVar($data['author'], 'int');
+		$author   = VarType::INTEGER->filter($data['author']);
 		$pageId   = Utils::$context['lp_page']['id'];
 		$pageUrl  = Utils::$context['canonical_url'];
 
@@ -143,7 +153,7 @@ final class Comment implements ActionInterface
 				'poster'       => [
 					'id'     => User::$info['id'],
 					'name'   => User::$info['name'],
-					'avatar' => $this->getUserAvatar(User::$info['id']),
+					'avatar' => Avatar::get(User::$info['id']),
 				],
 			];
 
@@ -159,7 +169,7 @@ final class Comment implements ActionInterface
 				? Notify::send('new_comment', 'page_comment', $options)
 				: Notify::send('new_reply', 'page_comment_reply', $options);
 
-			$this->cache()->forget('page_' . $this->alias . '_comments');
+			$this->cache()->forget('page_' . $this->pageSlug . '_comments');
 		}
 
 		http_response_code(201);
@@ -167,7 +177,7 @@ final class Comment implements ActionInterface
 		exit(json_encode($result));
 	}
 
-	private function update(): void
+	private function update(): never
 	{
 		$data = $this->request()->json();
 
@@ -179,9 +189,10 @@ final class Comment implements ActionInterface
 			exit(json_encode($result));
 
 		$item    = $data['comment_id'];
-		$message = Utils::htmlspecialchars($data['message']);
+		$message = trim((string) $data['message']);
+		$message = Utils::htmlspecialchars($message);
 
-		if (empty($item) || empty($message) || empty(trim($message)))
+		if (empty($item) || $message === '')
 			exit(json_encode($result));
 
 		$this->repository->update([
@@ -195,12 +206,12 @@ final class Comment implements ActionInterface
 			'message' => $message,
 		];
 
-		$this->cache()->forget('page_' . $this->alias . '_comments');
+		$this->cache()->forget('page_' . $this->pageSlug . '_comments');
 
 		exit(json_encode($result));
 	}
 
-	private function remove(): void
+	private function remove(): never
 	{
 		$item = (int) $this->request()->json('comment_id');
 
@@ -208,9 +219,9 @@ final class Comment implements ActionInterface
 			exit(json_encode(['success' => false]));
 		}
 
-		$items = $this->repository->remove($item, $this->alias);
+		$items = $this->repository->remove($item, $this->pageSlug);
 
-		$this->cache()->forget('page_' . $this->alias . '_comments');
+		$this->cache()->forget('page_' . $this->pageSlug . '_comments');
 
 		exit(json_encode(['success' => true, 'items' => $items]));
 	}
@@ -230,6 +241,6 @@ final class Comment implements ActionInterface
 
 	private function getPageIndexUrl(): string
 	{
-		return $this->isFrontpage($this->alias) ? LP_BASE_URL : Utils::$context['canonical_url'];
+		return Setting::isFrontpage($this->pageSlug) ? LP_BASE_URL : Utils::$context['canonical_url'];
 	}
 }

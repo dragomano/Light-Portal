@@ -1,21 +1,23 @@
 <?php declare(strict_types=1);
 
 /**
- * CategoryImport.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Areas\Imports;
 
-use Bugo\Compat\{Config, Db, ErrorHandler};
+use Bugo\Compat\{Config, ErrorHandler};
 use Bugo\Compat\{Lang, Theme, Utils};
+
+use function intval;
+
+use const LP_NAME;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -25,6 +27,8 @@ if (! defined('SMF'))
  */
 final class CategoryImport extends AbstractImport
 {
+	protected string $entity = 'categories';
+
 	public function main(): void
 	{
 		Theme::loadTemplate('LightPortal/ManageImpex');
@@ -51,8 +55,9 @@ final class CategoryImport extends AbstractImport
 		if (empty($xml = $this->getFile()))
 			return;
 
-		if (! isset($xml->categories->item[0]['category_id']))
+		if (! isset($xml->categories->item[0]['category_id'])) {
 			ErrorHandler::fatalLang('lp_wrong_import_file');
+		}
 
 		$items = $titles = [];
 
@@ -73,7 +78,7 @@ final class CategoryImport extends AbstractImport
 								'item_id' => $categoryId,
 								'type'    => 'category',
 								'lang'    => $k,
-								'title'   => $v,
+								'value'   => $v,
 							];
 						}
 					}
@@ -81,34 +86,23 @@ final class CategoryImport extends AbstractImport
 			}
 		}
 
-		Db::$db->transaction('begin');
+		$this->startTransaction($items);
 
-		$results = [];
-
-		if ($items) {
-			Utils::$context['import_successful'] = count($items);
-			$items = array_chunk($items, 100);
-			$count = sizeof($items);
-
-			for ($i = 0; $i < $count; $i++) {
-				$results = Db::$db->insert('replace',
-					'{db_prefix}lp_categories',
-					[
-						'category_id' => 'int',
-						'icon'        => 'string',
-						'description' => 'string',
-						'priority'    => 'int',
-						'status'      => 'int',
-					],
-					$items[$i],
-					['category_id'],
-					2
-				);
-			}
-		}
+		$results = $this->insertData(
+			'lp_categories',
+			'replace',
+			$items,
+			[
+				'category_id' => 'int',
+				'icon'        => 'string',
+				'description' => 'string',
+				'priority'    => 'int',
+				'status'      => 'int',
+			],
+			['category_id'],
+		);
 
 		$this->replaceTitles($titles, $results);
-
-		$this->finish($results, 'categories');
+		$this->finishTransaction($results);
 	}
 }

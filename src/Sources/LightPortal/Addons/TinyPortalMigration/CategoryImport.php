@@ -1,8 +1,6 @@
 <?php
 
 /**
- * CategoryImport.php
- *
  * @package TinyPortalMigration (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 06.04.24
+ * @version 30.05.24
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortalMigration;
@@ -18,6 +16,8 @@ namespace Bugo\LightPortal\Addons\TinyPortalMigration;
 use Bugo\Compat\{Config, Db, Lang, Utils};
 use Bugo\LightPortal\Areas\Imports\AbstractCustomCategoryImport;
 use Bugo\LightPortal\Utils\ItemList;
+
+use const LP_NAME;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -45,10 +45,10 @@ class CategoryImport extends AbstractCustomCategoryImport
 			'base_href' => Utils::$context['form_action'],
 			'default_sort_col' => 'title',
 			'get_items' => [
-				'function' => [$this, 'getAll']
+				'function' => $this->getAll(...)
 			],
 			'get_count' => [
-				'function' => [$this, 'getTotalCount']
+				'function' => $this->getTotalCount(...)
 			],
 			'columns' => [
 				'title' => [
@@ -145,15 +145,15 @@ class CategoryImport extends AbstractCustomCategoryImport
 		return (int) $count;
 	}
 
-	protected function getItems(array $categories): array
+	protected function getItems(array $ids): array
 	{
 		$result = Utils::$smcFunc['db_query']('', '
 			SELECT id, value1 AS title
 			FROM {db_prefix}tp_variables
-			WHERE type = {literal:category}' . (empty($categories) ? '' : '
+			WHERE type = {literal:category}' . (empty($ids) ? '' : '
 				AND id IN ({array_int:categories})'),
 			[
-				'categories' => $categories,
+				'categories' => $ids,
 			]
 		);
 

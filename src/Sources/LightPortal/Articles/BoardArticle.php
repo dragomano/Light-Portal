@@ -1,20 +1,26 @@
 <?php declare(strict_types=1);
 
 /**
- * BoardArticle.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Articles;
 
 use Bugo\Compat\{BBCodeParser, Config, Db, Lang, User, Utils};
+use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Utils\Str;
+
+use function explode;
+use function implode;
+use function trim;
+use function urlencode;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -28,7 +34,7 @@ class BoardArticle extends AbstractArticle
 	public function init(): void
 	{
 		$this->selectedBoards = empty(Config::$modSettings['lp_frontpage_boards'])
-			? [] : explode(',', Config::$modSettings['lp_frontpage_boards']);
+			? [] : explode(',', (string) Config::$modSettings['lp_frontpage_boards']);
 
 		$this->sorting = (int) (Config::$modSettings['lp_frontpage_article_sorting'] ?? 0);
 
@@ -45,7 +51,7 @@ class BoardArticle extends AbstractArticle
 			'last_updated DESC',
 		];
 
-		$this->hook('frontBoards', [
+		AddonHandler::getInstance()->run(PortalHook::frontBoards, [
 			&$this->columns, &$this->tables, &$this->params, &$this->wheres, &$this->orders
 		]);
 	}
@@ -118,7 +124,7 @@ class BoardArticle extends AbstractArticle
 
 			$this->prepareTeaser($boards, $row);
 
-			$this->hook('frontBoardsOutput', [&$boards, $row]);
+			AddonHandler::getInstance()->run(PortalHook::frontBoardsOutput, [&$boards, $row]);
 		}
 
 		Db::$db->free_result($result);
@@ -185,7 +191,7 @@ class BoardArticle extends AbstractArticle
 		if (empty(Config::$modSettings['lp_show_images_in_articles']))
 			return '';
 
-		$image = $this->getImageFromText($row['description']);
+		$image = Str::getImageFromText($row['description']);
 
 		if ($row['attach_id'] && empty($image)) {
 			$image = Config::$scripturl . '?action=dlattach;topic=' . $row['id_topic'] . ';attach='
@@ -193,7 +199,7 @@ class BoardArticle extends AbstractArticle
 		}
 
 		if ($row['is_redirect'] && empty($image)) {
-			$image = 'https://mini.s-shot.ru/300x200/JPEG/300/Z100/?' . urlencode(trim($row['redirect']));
+			$image = 'https://mini.s-shot.ru/300x200/JPEG/300/Z100/?' . urlencode(trim((string) $row['redirect']));
 		}
 
 		return $image;
@@ -219,6 +225,6 @@ class BoardArticle extends AbstractArticle
 		if (empty(Config::$modSettings['lp_show_teaser']))
 			return;
 
-		$boards[$row['id_board']]['teaser'] = $this->getTeaser($row['description']);
+		$boards[$row['id_board']]['teaser'] = Str::getTeaser($row['description']);
 	}
 }

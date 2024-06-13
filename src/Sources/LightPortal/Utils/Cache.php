@@ -1,20 +1,20 @@
 <?php declare(strict_types=1);
 
 /**
- * Cache.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Utils;
 
 use Bugo\Compat\CacheApi;
+
+use function method_exists;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -23,7 +23,7 @@ final class Cache implements CacheInterface
 {
 	private string $prefix = 'lp_';
 
-	public function __construct(private ?string $key = null, private int $lifeTime = 0)
+	public function __construct(private readonly ?string $key = null, private int $lifeTime = LP_CACHE_TIME ?? 0)
 	{
 	}
 

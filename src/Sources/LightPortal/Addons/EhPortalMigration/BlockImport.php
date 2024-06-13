@@ -1,8 +1,6 @@
 <?php
 
 /**
- * BlockImport.php
- *
  * @package EhPortalMigration (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,14 +8,17 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 27.03.24
+ * @version 30.05.24
  */
 
 namespace Bugo\LightPortal\Addons\EhPortalMigration;
 
 use Bugo\Compat\{Config, Db, Lang, Utils};
 use Bugo\LightPortal\Areas\Imports\AbstractCustomBlockImport;
+use Bugo\LightPortal\Enums\Placement;
 use Bugo\LightPortal\Utils\ItemList;
+
+use const LP_NAME;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -47,10 +48,10 @@ class BlockImport extends AbstractCustomBlockImport
 			'base_href' => Utils::$context['form_action'],
 			'default_sort_col' => 'title',
 			'get_items' => [
-				'function' => [$this, 'getAll']
+				'function' => $this->getAll(...)
 			],
 			'get_count' => [
-				'function' => [$this, 'getTotalCount']
+				'function' => $this->getTotalCount(...)
 			],
 			'columns' => [
 				'title' => [
@@ -178,7 +179,7 @@ class BlockImport extends AbstractCustomBlockImport
 		return (int) $count;
 	}
 
-	protected function getItems(array $blocks): array
+	protected function getItems(array $ids): array
 	{
 		$result = Utils::$smcFunc['db_query']('', '
 			SELECT
@@ -186,11 +187,11 @@ class BlockImport extends AbstractCustomBlockImport
 				p.value AS content
 			FROM {db_prefix}sp_blocks AS b
 				INNER JOIN {db_prefix}sp_parameters AS p ON (b.id_block = p.id_block AND p.variable = {literal:content})
-			WHERE b.type IN ({array_string:types})' . (empty($blocks) ? '' : '
+			WHERE b.type IN ({array_string:types})' . (empty($ids) ? '' : '
 				AND b.id_block IN ({array_int:blocks})'),
 			[
 				'types'  => $this->supportedTypes,
-				'blocks' => $blocks,
+				'blocks' => $ids,
 			]
 		);
 
@@ -221,12 +222,12 @@ class BlockImport extends AbstractCustomBlockImport
 	private function getPlacement(int $col): string
 	{
 		return match ($col) {
-			1 => 'left',
-			3 => 'bottom',
-			4 => 'right',
-			5 => 'header',
-			6 => 'footer',
-			default => 'top',
+			1 => Placement::LEFT->name(),
+			3 => Placement::BOTTOM->name(),
+			4 => Placement::RIGHT->name(),
+			5 => Placement::HEADER->name(),
+			6 => Placement::FOOTER->name(),
+			default => Placement::TOP->name(),
 		};
 	}
 

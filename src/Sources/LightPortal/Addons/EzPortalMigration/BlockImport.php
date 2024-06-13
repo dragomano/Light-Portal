@@ -1,8 +1,6 @@
 <?php
 
 /**
- * BlockImport.php
- *
  * @package EzPortalMigration (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,14 +8,17 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 27.03.24
+ * @version 30.05.24
  */
 
 namespace Bugo\LightPortal\Addons\EzPortalMigration;
 
 use Bugo\Compat\{Config, Db, Lang, Utils};
 use Bugo\LightPortal\Areas\Imports\AbstractCustomBlockImport;
+use Bugo\LightPortal\Enums\Placement;
 use Bugo\LightPortal\Utils\ItemList;
+
+use const LP_NAME;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -47,10 +48,10 @@ class BlockImport extends AbstractCustomBlockImport
 			'base_href' => Utils::$context['form_action'],
 			'default_sort_col' => 'title',
 			'get_items' => [
-				'function' => [$this, 'getAll']
+				'function' => $this->getAll(...)
 			],
 			'get_count' => [
-				'function' => [$this, 'getTotalCount']
+				'function' => $this->getTotalCount(...)
 			],
 			'columns' => [
 				'title' => [
@@ -179,7 +180,7 @@ class BlockImport extends AbstractCustomBlockImport
 		return (int) $count;
 	}
 
-	protected function getItems(array $blocks): array
+	protected function getItems(array $ids): array
 	{
 		$result = Utils::$smcFunc['db_query']('', '
 			SELECT
@@ -187,11 +188,11 @@ class BlockImport extends AbstractCustomBlockImport
 				bl.customtitle AS title, bl.id_column AS col, bl.permissions, bl.active AS status, bl.blockdata AS content
 			FROM {db_prefix}ezp_blocks AS b
 				INNER JOIN {db_prefix}ezp_block_layout AS bl ON (b.id_block = bl.id_block)
-			WHERE b.blocktype IN ({array_string:types})' . (empty($blocks) ? '' : '
+			WHERE b.blocktype IN ({array_string:types})' . (empty($ids) ? '' : '
 				AND b.id_block IN ({array_int:blocks})'),
 			[
 				'types'  => $this->supportedTypes,
-				'blocks' => $blocks,
+				'blocks' => $ids,
 			]
 		);
 
@@ -222,17 +223,17 @@ class BlockImport extends AbstractCustomBlockImport
 	private function getPlacement(int $col): string
 	{
 		return match ($col) {
-			1 => 'left',
-			2 => 'top',
-			3 => 'right',
-			5 => 'bottom',
-			default => 'header',
+			1 => Placement::LEFT->name(),
+			2 => Placement::TOP->name(),
+			3 => Placement::RIGHT->name(),
+			5 => Placement::BOTTOM->name(),
+			default => Placement::HEADER->name(),
 		};
 	}
 
 	private function getBlockPermission(array $row): int
 	{
-		$permissions = explode(',', $row['permissions']);
+		$permissions = explode(',', (string) $row['permissions']);
 
 		$perm = 0;
 		if (count($permissions) == 1 && $permissions[0] == -1) {

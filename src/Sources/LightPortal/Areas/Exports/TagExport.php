@@ -1,15 +1,13 @@
 <?php declare(strict_types=1);
 
 /**
- * TagExport.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Areas\Exports;
@@ -18,15 +16,24 @@ use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, Sapi, Utils};
 use Bugo\LightPortal\Repositories\TagRepository;
 use Bugo\LightPortal\Utils\ItemList;
+use Bugo\LightPortal\Utils\RequestTrait;
 use DomDocument;
 use DOMException;
+use Nette\Utils\Html;
+
+use function in_array;
+use function trim;
+
+use const LP_NAME;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class TagExport extends AbstractExport
 {
-	private TagRepository $repository;
+	use RequestTrait;
+
+	private readonly TagRepository $repository;
 
 	public function __construct()
 	{
@@ -54,10 +61,10 @@ final class TagExport extends AbstractExport
 			'base_href' => Utils::$context['form_action'],
 			'default_sort_col' => 'id',
 			'get_items' => [
-				'function' => [$this->repository, 'getAll']
+				'function' => $this->repository->getAll(...)
 			],
 			'get_count' => [
-				'function' => [$this->repository, 'getTotalCount']
+				'function' => $this->repository->getTotalCount(...)
 			],
 			'columns' => [
 				'id' => [
@@ -93,13 +100,16 @@ final class TagExport extends AbstractExport
 					],
 					'data' => [
 						'function' => static fn($entry) => $entry['status']
-							? '<a class="bbc_link" href="' . LP_BASE_URL . ';sa=tags;id=' . $entry['id'] . '">' . $entry['title'] . '</a>'
+							? Html::el('a', ['class' => 'bbc_link'])
+								->href(LP_BASE_URL . ';sa=tags;id=' . $entry['id'])
+								->setText($entry['title'])
+								->toHtml()
 							: $entry['title'],
 						'class' => 'word_break',
 					],
 					'sort' => [
-						'default' => 't.title DESC',
-						'reverse' => 't.title',
+						'default' => 't.value DESC',
+						'reverse' => 't.value',
 					],
 				],
 				'actions' => [
@@ -137,9 +147,9 @@ final class TagExport extends AbstractExport
 		$tags = $this->request('tags') && $this->request()->hasNot('export_all') ? $this->request('tags') : null;
 
 		$result = Db::$db->query('', '
-			SELECT c.tag_id, c.icon, c.status, pt.page_id, t.lang, t.title
+			SELECT c.tag_id, c.icon, c.status, pt.page_id, t.lang, t.value AS title
 			FROM {db_prefix}lp_tags AS c
-				LEFT JOIN {db_prefix}lp_page_tags AS pt ON (c.tag_id = pt.tag_id)
+				LEFT JOIN {db_prefix}lp_page_tag AS pt ON (c.tag_id = pt.tag_id)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
 					c.tag_id = t.item_id AND t.type = {literal:tag}
 				)' . (empty($tags) ? '' : '

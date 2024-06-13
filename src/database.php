@@ -2,8 +2,8 @@
 
 global $user_info, $language, $mbname, $modSettings, $settings, $smcFunc, $context;
 
-if (version_compare(PHP_VERSION, '8.0', '<')) {
-	die('This mod needs PHP 8.0 or greater. You will not be able to install/use this mod. Please, contact your host and ask for a php upgrade.');
+if (version_compare(PHP_VERSION, '8.1', '<')) {
+	die('This mod needs PHP 8.1 or greater. You will not be able to install/use this mod. Please, contact your host and ask for a php upgrade.');
 }
 
 if (! extension_loaded('intl')) {
@@ -20,13 +20,15 @@ if ((SMF === 'SSI') && ! $user_info['is_admin']) {
 	die('Admin privileges required.');
 }
 
+defined('LP_CACHE_TIME') || define('LP_CACHE_TIME', 0);
+
 $tables[] = [
 	'name' => 'lp_blocks',
 	'columns' => [
 		[
 			'name'     => 'block_id',
-			'type'     => 'tinyint',
-			'size'     => 3,
+			'type'     => 'smallint',
+			'size'     => 5,
 			'unsigned' => true,
 			'auto'     => true
 		],
@@ -113,8 +115,8 @@ $tables[] = [
 	'columns' => [
 		[
 			'name'     => 'category_id',
-			'type'     => 'tinyint',
-			'size'     => 3,
+			'type'     => 'smallint',
+			'size'     => 5,
 			'unsigned' => true,
 			'auto'     => true
 		],
@@ -204,7 +206,7 @@ $tables[] = [
 ];
 
 $tables[] = [
-	'name'    => 'lp_page_tags',
+	'name'    => 'lp_page_tag',
 	'columns' => [
 		[
 			'name'     => 'page_id',
@@ -232,8 +234,8 @@ $tables[] = [
 	'columns' => [
 		[
 			'name'     => 'page_id',
-			'type'     => 'smallint',
-			'size'     => 5,
+			'type'     => 'int',
+			'size'     => 10,
 			'unsigned' => true,
 			'auto'     => true
 		],
@@ -252,7 +254,7 @@ $tables[] = [
 			'default'  => 0
 		],
 		[
-			'name' => 'alias',
+			'name' => 'slug',
 			'type' => 'varchar',
 			'size' => 255,
 			'null' => false
@@ -339,14 +341,14 @@ $tables[] = [
 		],
 		[
 			'type'    => 'unique',
-			'columns' => ['alias']
+			'columns' => ['slug']
 		]
 	],
 	'default' => [
 		'columns' => [
 			'page_id'     => 'int',
 			'author_id'   => 'int',
-			'alias'       => 'string-255',
+			'slug'        => 'string-255',
 			'content'     => 'string',
 			'type'        => 'string',
 			'permissions' => 'int',
@@ -367,15 +369,22 @@ $tables[] = [
 	'name' => 'lp_params',
 	'columns' => [
 		[
+			'name'     => 'id',
+			'type'     => 'int',
+			'size'     => 10,
+			'unsigned' => true,
+			'auto'     => true
+		],
+		[
 			'name'     => 'item_id',
-			'type'     => 'smallint',
-			'size'     => 5,
+			'type'     => 'int',
+			'size'     => 10,
 			'unsigned' => true
 		],
 		[
 			'name'    => 'type',
 			'type'    => 'varchar',
-			'size'    => 10,
+			'size'    => 30,
 			'default' => 'block',
 			'null'    => false
 		],
@@ -394,6 +403,10 @@ $tables[] = [
 	'indexes' => [
 		[
 			'type'    => 'primary',
+			'columns' => ['id']
+		],
+		[
+			'type'    => 'unique',
 			'columns' => ['item_id', 'type', 'name']
 		]
 	],
@@ -415,6 +428,13 @@ $tables[] = [
 	'name' => 'lp_plugins',
 	'columns' => [
 		[
+			'name'     => 'id',
+			'type'     => 'int',
+			'size'     => 10,
+			'unsigned' => true,
+			'auto'     => true
+		],
+		[
 			'name' => 'name',
 			'type' => 'varchar',
 			'size' => 100,
@@ -435,6 +455,10 @@ $tables[] = [
 	'indexes' => [
 		[
 			'type'    => 'primary',
+			'columns' => ['id']
+		],
+		[
+			'type'    => 'unique',
 			'columns' => ['name', 'config']
 		]
 	],
@@ -459,8 +483,8 @@ $tables[] = [
 	'columns' => [
 		[
 			'name'     => 'tag_id',
-			'type'     => 'smallint',
-			'size'     => 5,
+			'type'     => 'int',
+			'size'     => 10,
 			'unsigned' => true,
 			'auto'     => true
 		],
@@ -490,15 +514,22 @@ $tables[] = [
 	'name' => 'lp_titles',
 	'columns' => [
 		[
+			'name'     => 'id',
+			'type'     => 'int',
+			'size'     => 10,
+			'unsigned' => true,
+			'auto'     => true
+		],
+		[
 			'name'     => 'item_id',
-			'type'     => 'smallint',
-			'size'     => 5,
+			'type'     => 'int',
+			'size'     => 10,
 			'unsigned' => true
 		],
 		[
 			'name'    => 'type',
 			'type'    => 'varchar',
-			'size'    => 10,
+			'size'    => 30,
 			'default' => 'block',
 			'null'    => false
 		],
@@ -509,7 +540,7 @@ $tables[] = [
 			'null' => false
 		],
 		[
-			'name' => 'title',
+			'name' => 'value',
 			'type' => 'varchar',
 			'size' => 255,
 			'null' => false
@@ -518,6 +549,10 @@ $tables[] = [
 	'indexes' => [
 		[
 			'type'    => 'primary',
+			'columns' => ['id']
+		],
+		[
+			'type'    => 'unique',
 			'columns' => ['item_id', 'type', 'lang']
 		]
 	],
@@ -526,7 +561,7 @@ $tables[] = [
 			'item_id' => 'int',
 			'type'    => 'string-10',
 			'lang'    => 'string-20',
-			'title'   => 'string-255'
+			'value'   => 'string-255'
 		],
 		'values' => empty($modSettings['userLanguage']) ? [
 			[1, 'page', $language, $mbname],
@@ -560,8 +595,8 @@ if (! isset($modSettings['lp_enabled_plugins']))
 	$addSettings['lp_enabled_plugins'] = 'CodeMirror,HelloPortal,ThemeSwitcher,UserInfo';
 if (! isset($modSettings['lp_frontpage_layout']))
 	$addSettings['lp_frontpage_layout'] = 'default.blade.php';
-if (! isset($modSettings['lp_show_comment_block']))
-	$addSettings['lp_show_comment_block'] = 'none';
+if (! isset($modSettings['lp_comment_block']))
+	$addSettings['lp_comment_block'] = 'none';
 if (! isset($modSettings['lp_permissions_default']))
 	$addSettings['lp_permissions_default'] = '0';
 if (! isset($modSettings['lp_fa_source']))

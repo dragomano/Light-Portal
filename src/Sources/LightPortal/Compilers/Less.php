@@ -1,15 +1,13 @@
 <?php declare(strict_types=1);
 
 /**
- * Less.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Compilers;
@@ -18,6 +16,8 @@ use Bugo\Compat\ErrorHandler;
 use Exception;
 use Less_Exception_Parser;
 use Less_Parser;
+
+use function file_put_contents;
 
 final class Less extends AbstractCompiler
 {

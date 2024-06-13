@@ -1,38 +1,38 @@
 <?php declare(strict_types=1);
 
 /**
- * TagArea.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, ErrorHandler, Lang, Security, Theme, Utils};
-use Bugo\LightPortal\Actions\PageListInterface;
 use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Areas\Partials\IconSelect;
+use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Areas\Validators\TagValidator;
-use Bugo\LightPortal\Helper;
+use Bugo\LightPortal\Enums\{Status, Tab};
 use Bugo\LightPortal\Models\TagModel;
 use Bugo\LightPortal\Repositories\TagRepository;
-use Bugo\LightPortal\Utils\{Icon, ItemList};
+use Bugo\LightPortal\Utils\{CacheTrait, Icon, ItemList, RequestTrait, Str};
+use Nette\Utils\Html;
+
+use const LP_NAME;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class TagArea
 {
-	use Area;
-	use Helper;
-
-	public const TAB_CONTENT = 'content';
+	use AreaTrait;
+	use CacheTrait;
+	use RequestTrait;
 
 	private TagRepository $repository;
 
@@ -61,10 +61,10 @@ final class TagArea
 			'base_href' => Utils::$context['form_action'],
 			'default_sort_col' => 'title',
 			'get_items' => [
-				'function' => [$this->repository, 'getAll']
+				'function' => $this->repository->getAll(...)
 			],
 			'get_count' => [
-				'function' => [$this->repository, 'getTotalCount']
+				'function' => $this->repository->getTotalCount(...)
 			],
 			'columns' => [
 				'id' => [
@@ -100,13 +100,16 @@ final class TagArea
 					],
 					'data' => [
 						'function' => static fn($entry) => $entry['status']
-							? '<a class="bbc_link" href="' . LP_BASE_URL . ';sa=tags;id=' . $entry['id'] . '">' . $entry['title'] . '</a>'
+							? Html::el('a', ['class' => 'bbc_link'])
+								->href(LP_BASE_URL . ';sa=tags;id=' . $entry['id'])
+								->setText($entry['title'])
+								->toHtml()
 							: $entry['title'],
 						'class' => 'word_break',
 					],
 					'sort' => [
-						'default' => 't.title DESC',
-						'reverse' => 't.title',
+						'default' => 't.value DESC',
+						'reverse' => 't.value',
 					],
 				],
 				'status' => [
@@ -117,7 +120,7 @@ final class TagArea
 						'function' => static fn($entry) => /** @lang text */ '
 							<div
 								data-id="' . $entry['id'] . '"
-								x-data="{ status: ' . ($entry['status'] === PageListInterface::STATUS_ACTIVE ? 'true' : 'false') . ' }"
+								x-data="{ status: ' . ($entry['status'] === Status::ACTIVE->value ? 'true' : 'false') . ' }"
 								x-init="$watch(\'status\', value => tag.toggleStatus($el))"
 							>
 								<span
@@ -167,12 +170,20 @@ final class TagArea
 			'javascript' => 'const tag = new Tag();',
 		];
 
-		$listOptions['title'] = '
-			<span class="floatright">
-				<a href="' . Config::$scripturl . '?action=admin;area=lp_tags;sa=add;' . Utils::$context['session_var'] . '=' . Utils::$context['session_id'] . '" x-data>
-					' . (str_replace(' class=', ' @mouseover="tag.toggleSpin($event.target)" @mouseout="tag.toggleSpin($event.target)" class=', Icon::get('plus', Lang::$txt['lp_tags_add']))) . '
-				</a>
-			</span>' . $listOptions['title'];
+		$listOptions['title'] = Html::el('span', ['class' => 'floatright'])
+			->addHtml(
+				Html::el('a', [
+					'href' => Config::$scripturl . '?action=admin;area=lp_tags;sa=add;' . Utils::$context['session_var'] . '=' . Utils::$context['session_id'],
+					'x-data' => '',
+				])
+				->setHtml(str_replace(
+					' class=',
+					' @mouseover="tag.toggleSpin($event.target)" @mouseout="tag.toggleSpin($event.target)" class=',
+					Icon::get('plus', Lang::$txt['lp_tags_add'])
+				))
+				->toHtml()
+			)
+			->toHtml() . $listOptions['title'];
 
 		new ItemList($listOptions);
 	}
@@ -256,11 +267,10 @@ final class TagArea
 
 		$data = $this->request()->json();
 
-		if (isset($data['del_item']))
-			$this->repository->remove([(int) $data['del_item']]);
-
-		if (isset($data['toggle_item']))
-			$this->repository->toggleStatus([(int) $data['toggle_item']], 'tag');
+		match (true) {
+			isset($data['delete_item']) => $this->repository->remove([(int) $data['delete_item']]),
+			isset($data['toggle_item']) => $this->repository->toggleStatus([(int) $data['toggle_item']]),
+		};
 
 		$this->cache()->flush();
 
@@ -279,7 +289,7 @@ final class TagArea
 			$tag->titles[$lang['filename']] = $postData['title_' . $lang['filename']] ?? $tag->titles[$lang['filename']] ?? '';
 		}
 
-		$this->cleanBbcode($tag->titles);
+		Str::cleanBbcode($tag->titles);
 
 		Utils::$context['lp_tag'] = $tag->toArray();
 	}
@@ -289,7 +299,7 @@ final class TagArea
 		$this->prepareTitleFields();
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
-			->setTab(self::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new IconSelect(), [
 				'icon' => Utils::$context['lp_tag']['icon'],
 			]);
@@ -306,13 +316,14 @@ final class TagArea
 
 		Utils::$context['preview_title'] = Utils::$context['lp_tag']['titles'][Utils::$context['user']['language']];
 
-		$this->cleanBbcode(Utils::$context['preview_title']);
+		Str::cleanBbcode(Utils::$context['preview_title']);
+
 		Lang::censorText(Utils::$context['preview_title']);
 
 		Utils::$context['page_title']    = Lang::$txt['preview'] . (
 			Utils::$context['preview_title'] ? ' - ' . Utils::$context['preview_title'] : ''
 		);
 
-		Utils::$context['preview_title'] = $this->getIcon(Utils::$context['lp_tag']['icon']) . Utils::$context['preview_title'];
+		Utils::$context['preview_title'] = Icon::parse(Utils::$context['lp_tag']['icon']) . Utils::$context['preview_title'];
 	}
 }

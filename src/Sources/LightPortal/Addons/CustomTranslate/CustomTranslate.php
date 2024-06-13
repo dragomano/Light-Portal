@@ -1,8 +1,6 @@
 <?php
 
 /**
- * CustomTranslate.php
- *
  * @package CustomTranslate (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,13 +8,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 21.03.24
+ * @version 05.06.24
  */
 
 namespace Bugo\LightPortal\Addons\CustomTranslate;
 
 use Bugo\Compat\{Config, Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Enums\Hook;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -36,7 +35,7 @@ class CustomTranslate extends Plugin
 
 	public function init(): void
 	{
-		$this->applyHook('menu_buttons');
+		$this->applyHook(Hook::menuButtons);
 	}
 
 	public function menuButtons(): void
@@ -59,12 +58,12 @@ class CustomTranslate extends Plugin
 		if (Utils::$context['current_subaction'] === 'showoperations')
 			return;
 
-		$forumLang = substr(Config::$language, 0, 2);
+		$forumLang = substr(Config::$language ?? '', 0, 2);
 
 		Theme::addInlineJavaScript('new YandexTranslate({baseLang: "' . $forumLang . '"});', true);
 
 		Utils::$context['ctw_languages'] = array_unique(
-			array_merge([$forumLang], explode(',', Utils::$context['lp_custom_translate_plugin']['languages']))
+			array_merge([$forumLang], explode(',', (string) Utils::$context['lp_custom_translate_plugin']['languages']))
 		);
 
 		Utils::$context['ctw_lang_titles'] = array_combine($this->langCodes, $this->langTitles);

@@ -1,8 +1,6 @@
 <?php
 
 /**
- * BoardStats.php
- *
  * @package BoardStats (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,15 +8,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.04.24
+ * @version 24.05.24
  */
 
 namespace Bugo\LightPortal\Addons\BoardStats;
 
 use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, NumberField};
+use Bugo\LightPortal\Enums\Tab;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -64,19 +62,19 @@ class BoardStats extends Block
 			return;
 
 		CheckboxField::make('show_latest_member', Lang::$txt['lp_board_stats']['show_latest_member'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue(Utils::$context['lp_block']['options']['show_latest_member']);
 
 		CheckboxField::make('show_basic_info', Lang::$txt['lp_board_stats']['show_basic_info'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue(Utils::$context['lp_block']['options']['show_basic_info']);
 
 		CheckboxField::make('show_whos_online', Lang::$txt['lp_board_stats']['show_whos_online'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue(Utils::$context['lp_block']['options']['show_whos_online']);
 
 		CheckboxField::make('use_fa_icons', Lang::$txt['lp_board_stats']['use_fa_icons'])
-			->setTab(BlockArea::TAB_APPEARANCE)
+			->setTab(Tab::APPEARANCE)
 			->setValue(Utils::$context['lp_block']['options']['use_fa_icons']);
 
 		NumberField::make('update_interval', Lang::$txt['lp_board_stats']['update_interval'])

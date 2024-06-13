@@ -1,15 +1,13 @@
 <?php declare(strict_types=1);
 
 /**
- * PageExport.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Areas\Exports;
@@ -18,15 +16,24 @@ use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, Sapi, User, Utils};
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Utils\ItemList;
+use Bugo\LightPortal\Utils\RequestTrait;
 use DomDocument;
 use DOMException;
+use Nette\Utils\Html;
+
+use function in_array;
+use function trim;
+
+use const LP_NAME;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class PageExport extends AbstractExport
 {
-	private PageRepository $repository;
+	use RequestTrait;
+
+	private readonly PageRepository $repository;
 
 	public function __construct()
 	{
@@ -56,10 +63,10 @@ final class PageExport extends AbstractExport
 			'base_href' => Utils::$context['form_action'],
 			'default_sort_col' => 'id',
 			'get_items' => [
-				'function' => [$this->repository, 'getAll']
+				'function' => $this->repository->getAll(...)
 			],
 			'get_count' => [
-				'function' => [$this->repository, 'getTotalCount']
+				'function' => $this->repository->getTotalCount(...)
 			],
 			'columns' => [
 				'id' => [
@@ -76,17 +83,17 @@ final class PageExport extends AbstractExport
 						'reverse' => 'p.page_id DESC'
 					]
 				],
-				'alias' => [
+				'slug' => [
 					'header' => [
-						'value' => Lang::$txt['lp_page_alias']
+						'value' => Lang::$txt['lp_page_slug']
 					],
 					'data' => [
-						'db'    => 'alias',
+						'db'    => 'slug',
 						'class' => 'centertext word_break'
 					],
 					'sort' => [
-						'default' => 'p.alias DESC',
-						'reverse' => 'p.alias'
+						'default' => 'p.slug DESC',
+						'reverse' => 'p.slug'
 					]
 				],
 				'title' => [
@@ -94,16 +101,15 @@ final class PageExport extends AbstractExport
 						'value' => Lang::$txt['lp_title']
 					],
 					'data' => [
-						'function' => static fn($entry) => '<a class="bbc_link' . (
-							$entry['is_front']
-								? ' new_posts" href="' . Config::$scripturl
-								: '" href="' . LP_PAGE_URL . $entry['alias']
-							) . '">' . $entry['title'] . '</a>',
+						'function' => static fn($entry) => Html::el('a', [
+								'class' => 'bbc_link' . ($entry['is_front'] ? ' new_posts' : ''),
+								'href'  => $entry['is_front'] ? Config::$scripturl : (LP_PAGE_URL . $entry['slug']),
+							])->setText($entry['title'])->toHtml(),
 						'class' => 'word_break'
 					],
 					'sort' => [
-						'default' => 't.title DESC',
-						'reverse' => 't.title'
+						'default' => 't.value DESC',
+						'reverse' => 't.value'
 					]
 				],
 				'actions' => [
@@ -142,8 +148,8 @@ final class PageExport extends AbstractExport
 
 		$result = Db::$db->query('', '
 			SELECT
-				p.page_id, p.category_id, p.author_id, p.alias, p.description, p.content, p.type, p.permissions,
-				p.status, p.num_views, p.num_comments, p.created_at, p.updated_at, pt.lang, pt.title, pp.name, pp.value,
+				p.page_id, p.category_id, p.author_id, p.slug, p.description, p.content, p.type, p.permissions,
+				p.status, p.num_views, p.num_comments, p.created_at, p.updated_at, pt.lang, pt.value AS title, pp.name, pp.value,
 				com.id, com.parent_id, com.author_id AS com_author_id, com.message, com.created_at AS com_created_at
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS pt ON (p.page_id = pt.item_id AND pt.type = {literal:page})
@@ -161,7 +167,7 @@ final class PageExport extends AbstractExport
 				'page_id'      => $row['page_id'],
 				'category_id'  => $row['category_id'],
 				'author_id'    => $row['author_id'],
-				'alias'        => $row['alias'],
+				'slug'         => $row['slug'],
 				'description'  => trim($row['description'] ?? ''),
 				'content'      => $row['content'],
 				'type'         => $row['type'],
@@ -181,12 +187,12 @@ final class PageExport extends AbstractExport
 				$items[$row['page_id']]['params'][$row['name']] = $row['value'];
 			}
 
-			if ($row['message'] && trim($row['message'])) {
+			if ($row['message'] && trim((string) $row['message'])) {
 				$items[$row['page_id']]['comments'][$row['id']] = [
 					'id'         => $row['id'],
 					'parent_id'  => $row['parent_id'],
 					'author_id'  => $row['com_author_id'],
-					'message'    => trim($row['message']),
+					'message'    => trim((string) $row['message']),
 					'created_at' => $row['com_created_at'],
 				];
 			}

@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
 /**
- * GalleryBlock.php
- *
  * @package GalleryBlock (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,15 +8,16 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.04.24
+ * @version 02.06.24
  */
 
 namespace Bugo\LightPortal\Addons\GalleryBlock;
 
 use Bugo\Compat\{Config, Db, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
-use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField};
+use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -56,7 +55,7 @@ class GalleryBlock extends Block
 			return;
 
 		CustomField::make('categories', Lang::$txt['lp_gallery_block']['categories'])
-			->setTab(BlockArea::TAB_CONTENT)
+			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new CategorySelect());
 
 		NumberField::make('num_images', Lang::$txt['lp_gallery_block']['num_images'])
@@ -73,7 +72,7 @@ class GalleryBlock extends Block
 		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'gallery_pic')))
 			return [];
 
-		$categories = empty($parameters['categories']) ? [] : explode(',', $parameters['categories']);
+		$categories = empty($parameters['categories']) ? [] : explode(',', (string) $parameters['categories']);
 
 		$result = Utils::$smcFunc['db_query']('', '
 			SELECT
@@ -114,8 +113,9 @@ class GalleryBlock extends Block
 				'edit_link' => Config::$scripturl . '?action=gallery;sa=edit;pic=' . $row['id_picture'],
 			];
 
-			if (! empty(Config::$modSettings['lp_show_teaser']))
-				$images[$row['id_picture']]['teaser'] = $this->getTeaser($row['description']);
+			if (! empty(Config::$modSettings['lp_show_teaser'])) {
+				$images[$row['id_picture']]['teaser'] = Str::getTeaser($row['description']);
+			}
 		}
 
 		Utils::$smcFunc['db_free_result']($result);

@@ -31,7 +31,7 @@ Here you can configure:
 
 Here you can configure:
 
-- alias — the page will be available at `?page=alias`
+- slug — is the part of the page URL (`?page=slug`)
 - description — the meta description
 - tags — will be displayed as page tags and the meta keywords
 

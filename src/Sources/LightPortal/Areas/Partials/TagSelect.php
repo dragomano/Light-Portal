@@ -1,23 +1,29 @@
 <?php declare(strict_types=1);
 
 /**
- * TagSelect.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Areas\Partials;
 
 use Bugo\Compat\{Config, Lang, Utils};
+use Bugo\LightPortal\Utils\EntityDataTrait;
+use Bugo\LightPortal\Utils\Icon;
+
+use function implode;
+use function is_array;
+use function json_encode;
 
 final class TagSelect extends AbstractPartial
 {
+	use EntityDataTrait;
+
 	public function __invoke(): string
 	{
 		Utils::$context['lp_tags'] = $this->getEntityData('tag');
@@ -25,7 +31,7 @@ final class TagSelect extends AbstractPartial
 		$data = $values = [];
 		foreach (Utils::$context['lp_tags'] as $id => $tag) {
 			$data[] = [
-				'label' => $this->getIcon($tag['icon']) . $tag['title'],
+				'label' => Icon::parse($tag['icon']) . $tag['title'],
 				'value' => $id,
 			];
 		}

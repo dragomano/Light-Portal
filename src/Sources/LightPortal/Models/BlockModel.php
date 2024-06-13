@@ -1,21 +1,21 @@
 <?php declare(strict_types=1);
 
 /**
- * BlockModel.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Models;
 
 use Bugo\Compat\{Config, Utils};
-use Bugo\LightPortal\Actions\BlockInterface;
+use Bugo\LightPortal\Enums\Status;
+
+use function array_key_first;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -70,7 +70,7 @@ class BlockModel extends AbstractModel
 			?? $currentBlock['permissions']
 			?? (int) (Config::$modSettings['lp_permissions_default'] ?? 2);
 
-		$this->status = $currentBlock['status'] ?? BlockInterface::STATUS_ACTIVE;
+		$this->status = $currentBlock['status'] ?? Status::ACTIVE->value;
 
 		$this->areas = $postData['areas'] ?? $currentBlock['areas'] ?? 'all';
 

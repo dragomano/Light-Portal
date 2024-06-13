@@ -1,15 +1,13 @@
 <?php declare(strict_types=1);
 
 /**
- * TitleList.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Lists;
@@ -23,17 +21,12 @@ final class TitleList implements ListInterface
 {
 	public function __invoke(): array
 	{
-		return $this->getAll();
-	}
-
-	public function getAll(): array
-	{
 		$result = Db::$db->query('', '
-			SELECT item_id, lang, title
+			SELECT item_id, lang, value
 			FROM {db_prefix}lp_titles
 			WHERE type = {string:type}
-				AND title <> {string:blank_string}
-			ORDER BY lang, title',
+				AND value <> {string:blank_string}
+			ORDER BY lang, value',
 			[
 				'type'         => 'page',
 				'blank_string' => '',
@@ -42,7 +35,7 @@ final class TitleList implements ListInterface
 
 		$titles = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
-			$titles[$row['item_id']][$row['lang']] = $row['title'];
+			$titles[$row['item_id']][$row['lang']] = $row['value'];
 		}
 
 		Db::$db->free_result($result);

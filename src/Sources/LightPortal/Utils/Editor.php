@@ -1,20 +1,25 @@
 <?php declare(strict_types=1);
 
 /**
- * Editor.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Utils;
 
 use Bugo\Compat\{Editor as BaseEditor, Lang, Theme, Utils};
+
+use function ob_get_clean;
+use function ob_start;
+use function template_control_richedit;
+
+if (! defined('SMF'))
+	die('No direct access...');
 
 final class Editor extends BaseEditor
 {

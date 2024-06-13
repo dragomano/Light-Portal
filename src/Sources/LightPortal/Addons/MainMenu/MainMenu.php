@@ -1,8 +1,6 @@
 <?php
 
 /**
- * MainMenu.php
- *
  * @package MainMenu (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,13 +8,17 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 19.02.24
+ * @version 05.06.24
  */
 
 namespace Bugo\LightPortal\Addons\MainMenu;
 
 use Bugo\Compat\{Config, User, Utils};
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Areas\Traits\PrepareLanguagesTrait;
+use Bugo\LightPortal\Enums\Hook;
+
+use const LP_ACTION;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -26,28 +28,36 @@ if (! defined('LP_NAME'))
  */
 class MainMenu extends Plugin
 {
+	use PrepareLanguagesTrait;
+
 	public string $type = 'other';
 
 	public function init(): void
 	{
-		$this->applyHook('menu_buttons');
+		$this->applyHook(Hook::menuButtons);
 	}
 
 	public function menuButtons(array &$buttons): void
 	{
 		$this->prepareVariables();
 
-		if (! empty(Utils::$context['lp_main_menu_addon_portal_langs'][User::$info['language']]))
+		if (! empty(Utils::$context['lp_main_menu_addon_portal_langs'][User::$info['language']])) {
 			$buttons[LP_ACTION]['title'] = Utils::$context['lp_main_menu_addon_portal_langs'][User::$info['language']];
+		}
 
-		if (! empty(Utils::$context['lp_main_menu_addon_forum_langs'][User::$info['language']]))
+		if (! empty(Utils::$context['lp_main_menu_addon_forum_langs'][User::$info['language']])) {
 			$buttons[empty(Config::$modSettings['lp_standalone_mode']) ? 'home' : 'forum']['title'] = Utils::$context['lp_main_menu_addon_forum_langs'][User::$info['language']];
+		}
 	}
 
 	public function frontLayouts(): void
 	{
-		if (! empty(Utils::$context['lp_main_menu_addon_portal_langs'][User::$info['language']]) && ! empty(Utils::$context['linktree'][1]))
+		if (
+			! empty(Utils::$context['lp_main_menu_addon_portal_langs'][User::$info['language']])
+			&& ! empty(Utils::$context['linktree'][1])
+		) {
 			Utils::$context['linktree'][1]['name'] = Utils::$context['lp_main_menu_addon_portal_langs'][User::$info['language']];
+		}
 	}
 
 	public function addSettings(array &$settings): void
@@ -95,7 +105,12 @@ class MainMenu extends Plugin
 
 	private function prepareVariables(): void
 	{
-		Utils::$context['lp_main_menu_addon_portal_langs'] = Utils::jsonDecode(Utils::$context['lp_main_menu_plugin']['portal_langs'] ?? '', true);
-		Utils::$context['lp_main_menu_addon_forum_langs']  = Utils::jsonDecode(Utils::$context['lp_main_menu_plugin']['forum_langs'] ?? '', true);
+		Utils::$context['lp_main_menu_addon_portal_langs'] = Utils::jsonDecode(
+			Utils::$context['lp_main_menu_plugin']['portal_langs'] ?? '', true
+		);
+
+		Utils::$context['lp_main_menu_addon_forum_langs']  = Utils::jsonDecode(
+			Utils::$context['lp_main_menu_plugin']['forum_langs'] ?? '', true
+		);
 	}
 }

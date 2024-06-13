@@ -1,8 +1,6 @@
 <?php
 
 /**
- * ExtendedMetaTags.php
- *
  * @package ExtendedMetaTags (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
@@ -10,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.04.24
+ * @version 05.06.24
  */
 
 namespace Bugo\LightPortal\Addons\ExtendedMetaTags;
@@ -18,7 +16,7 @@ namespace Bugo\LightPortal\Addons\ExtendedMetaTags;
 use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\Addons\Plugin;
 use Bugo\LightPortal\Areas\Fields\VirtualSelectField;
-use Bugo\LightPortal\Areas\PageArea;
+use Bugo\LightPortal\Enums\{Hook, Tab};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -36,7 +34,7 @@ class ExtendedMetaTags extends Plugin
 
 	public function init(): void
 	{
-		$this->applyHook('theme_context');
+		$this->applyHook(Hook::themeContext);
 	}
 
 	public function themeContext(): void
@@ -72,12 +70,12 @@ class ExtendedMetaTags extends Plugin
 	public function preparePageFields(): void
 	{
 		VirtualSelectField::make('meta_robots', Lang::$txt['lp_extended_meta_tags']['meta_robots'])
-			->setTab(PageArea::TAB_SEO)
+			->setTab(Tab::SEO)
 			->setOptions(array_combine($this->meta_robots, Lang::$txt['lp_extended_meta_tags']['meta_robots_set']))
 			->setValue(Utils::$context['lp_page']['options']['meta_robots']);
 
 		VirtualSelectField::make('meta_rating', Lang::$txt['lp_extended_meta_tags']['meta_rating'])
-			->setTab(PageArea::TAB_SEO)
+			->setTab(Tab::SEO)
 			->setOptions(array_combine($this->meta_rating, Lang::$txt['lp_extended_meta_tags']['meta_rating_set']))
 			->setValue(Utils::$context['lp_page']['options']['meta_rating']);
 	}

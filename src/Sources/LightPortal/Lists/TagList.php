@@ -9,13 +9,13 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Lists;
 
 use Bugo\Compat\{Config, Db, User};
-use Bugo\LightPortal\Actions\PageListInterface;
+use Bugo\LightPortal\Enums\Status;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -24,13 +24,8 @@ final class TagList implements ListInterface
 {
 	public function __invoke(): array
 	{
-		return $this->getAll();
-	}
-
-	public function getAll(): array
-	{
 		$result = Db::$db->query('', /** @lang text */ '
-			SELECT tag.tag_id, tag.icon, COALESCE(t.title, tf.title) AS title
+			SELECT tag.tag_id, tag.icon, COALESCE(t.value, tf.value) AS title
 			FROM {db_prefix}lp_tags AS tag
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
 					tag.tag_id = t.item_id AND t.type = {literal:tag} AND t.lang = {string:lang}
@@ -43,7 +38,7 @@ final class TagList implements ListInterface
 			[
 				'lang'          => User::$info['language'],
 				'fallback_lang' => Config::$language,
-				'status'        => PageListInterface::STATUS_ACTIVE,
+				'status'        => Status::ACTIVE->value,
 			]
 		);
 

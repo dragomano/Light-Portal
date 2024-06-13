@@ -1,34 +1,32 @@
 {
   "require": {
-    "php": "~8.0",
+    "php": "~8.1",
     "ext-dom": "*",
     "ext-intl": "*",
     "ext-simplexml": "*",
     "ext-zip": "*",
-    "bugo/fa-php-helper": "^0.2.0",
-    "bugo/smf-compat": "^0.1.4",
-    "eftec/bladeone": "^4.11",
-    "laminas/laminas-loader": "^2.9"
+    "bugo/fa-php-helper": "^0.4",
+    "bugo/smf-compat": "^0.2",
+    "eftec/bladeone": "^4.13",
+    "laminas/laminas-config-aggregator": "^1.15",
+    "laminas/laminas-loader": "^2.10"
   },
   "require-dev": {
     "scssphp/scssphp": "^1.12",
-    "wikimedia/less.php": "^4.1"
+    "wikimedia/less.php": "^4.3"
   },
   "config": {
     "vendor-dir": "Libs",
     "optimize-autoloader": true,
     "preferred-install": "dist",
-    "sort-packages": true
+    "sort-packages": true,
+    "platform": {
+      "php": "8.1"
+    }
   },
   "scripts": {
     "post-update-cmd": [
-      "cd Addons/ImageUpload && composer update --no-dev -o",
-      "cd Addons/LatteLayouts && composer update --no-dev -o",
-      "cd Addons/Markdown && composer update --no-dev -o",
-      "cd Addons/MediaBlock && composer update --no-dev -o",
-      "cd Addons/PlatesLayouts && composer update --no-dev -o",
-      "cd Addons/PluginMaker && composer update --no-dev -o",
-      "cd Addons/TwigLayouts && composer update --no-dev -o",
+      "@php update_plugins.php",
       "@php create_index.php"
     ]
   }

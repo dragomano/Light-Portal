@@ -3,7 +3,7 @@
 
 <div class="row">
 	<div class="article_flarum_view col-xs-12">
-		{{ show_pagination() }}
+		@include('partials.pagination')
 
 		<div class="roundframe">
 			<div class="title_bar">
@@ -11,87 +11,87 @@
 			</div>
 
 			@foreach ($context['lp_frontpage_articles'] as $article)
-			<div class="windowbg row">
-				<div class="col-xs-12">
-					<div class="row">
-						<div class="header_img col-xs-2">
-							@empty ($article['image'])
-							<span>@icon('big_image')</span>
-							@endempty
+				<div class="windowbg row">
+					<div class="col-xs-12">
+						<div class="row">
+							<div class="header_img col-xs-2">
+								@empty ($article['image'])
+									<span>@icon('big_image')</span>
+								@endempty
 
-							@if (!empty($article['image']))
-							<span>
-								<img
-									class="avatar"
-									loading="lazy"
-									src="{{ $article['image'] }}"
-									alt="{{ $article['title'] }}"
-								>
-							</span>
-							@endif
-						</div>
-
-						<div class="header_area col-xs">
-							<h3>
-								<a href="{{ $article['msg_link'] }}">{{ $article['title'] }}</a>
-
-								@if ($article['is_new'])
-								<span class="new_posts">{{ $txt['new'] }}</span>
-								@endif
-							</h3>
-
-							@if (!empty($article['section']['name']))
-							<div class="smalltext hidden-md hidden-lg hidden-xl">
-								<span
-									class="new_posts {{ $labels[random_int(0, count($labels) - 1)] }}"
-									href="{{ $article['section']['link'] }}"
-								>{{ $article['section']['name'] }}</span>
-
-								@if (!empty($article['replies']['num']))
-								<span style="margin-left: 1em">
-									<i class="far fa-comment"></i> {{ $article['replies']['num'] }}
-								</span>
-								@endif
+								@unless (empty($article['image']))
+									<span>
+										<img
+											class="avatar"
+											loading="lazy"
+											src="{{ $article['image'] }}"
+											alt="{{ $article['title'] }}"
+										>
+									</span>
+								@endunless
 							</div>
-							@endif
 
-							<div class="smalltext">
-								@if (!empty($article['replies']['num']))
-								<span>@icon('reply')</span>
-								@endif
+							<div class="header_area col-xs">
+								<h3>
+									<a href="{{ $article['msg_link'] }}">{{ $article['title'] }}</a>
 
-								@if (!empty($modSettings['lp_show_author']) && !empty($article['author']))
-								<span>{{ $article['author']['name'] ?? $txt['guest_title'] }}</span>
-								@endif
+									@if ($article['is_new'])
+										<span class="new_posts">{{ $txt['new'] }}</span>
+									@endif
+								</h3>
 
-								<span style="{{ $needLowerCase ? 'text-transform: lowercase' : '' }}">
-									{!! $article['date'] !!}
-								</span>
+								@unless (empty($article['section']['name']))
+									<div class="smalltext hidden-md hidden-lg hidden-xl">
+										<span
+											class="new_posts {{ $labels[random_int(0, count($labels) - 1)] }}"
+											href="{{ $article['section']['link'] }}"
+										>{{ $article['section']['name'] }}</span>
+
+										@unless (empty($article['replies']['num']))
+											<span style="margin-left: 1em">
+												<i class="far fa-comment"></i> {{ $article['replies']['num'] }}
+											</span>
+										@endunless
+									</div>
+								@endunless
+
+								<div class="smalltext">
+									@unless (empty($article['replies']['num']))
+										<span>@icon('reply')</span>
+									@endunless
+
+									@if (!empty($modSettings['lp_show_author']) && !empty($article['author']))
+										<span>{{ $article['author']['name'] ?? $txt['guest_title'] }}</span>
+									@endif
+
+									<span style="{{ $needLowerCase ? 'text-transform: lowercase' : '' }}">
+										{!! $article['date'] !!}
+									</span>
+								</div>
 							</div>
-						</div>
 
-						<div class="righttext smalltext hidden-xs hidden-sm col-xs-2">
-							@if (!empty($article['section']['name']))
-							<a
-								class="new_posts {{ $labels[random_int(0, count($labels) - 1)] }}"
-								href="{{ $article['section']['link'] }}"
-							>{{ $article['section']['name'] }}</a>
-							@endif
+							<div class="righttext smalltext hidden-xs hidden-sm col-xs-2">
+								@unless (empty($article['section']['name']))
+									<a
+										class="new_posts {{ $labels[random_int(0, count($labels) - 1)] }}"
+										href="{{ $article['section']['link'] }}"
+									>{{ $article['section']['name'] }}</a>
+								@endunless
 
-							@if (!empty($article['replies']['num']))
-							<div><i class="far fa-comment"></i> {{ $article['replies']['num'] }}</div>
-							@endif
+								@unless (empty($article['replies']['num']))
+									<div><i class="far fa-comment"></i> {{ $article['replies']['num'] }}</div>
+								@endunless
+							</div>
 						</div>
 					</div>
-				</div>
 
-				@if (!empty($article['teaser']))
-				<div class="col-xs-12">{{ $article['teaser'] }}</div>
-				@endif
-			</div>
+					@unless (empty($article['teaser']))
+						<div class="col-xs-12">{{ $article['teaser'] }}</div>
+					@endunless
+				</div>
 			@endforeach
 		</div>
 
-		{{ show_pagination('bottom') }}
+		@include('partials.pagination', ['position' => 'bottom'])
 	</div>
 </div>

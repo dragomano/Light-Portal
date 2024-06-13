@@ -1,34 +1,48 @@
 <?php declare(strict_types=1);
 
 /**
- * BlockRepository.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Repositories;
 
 use Bugo\Compat\{Config, Db, ErrorHandler};
-use Bugo\Compat\{Msg, Lang, Security, Utils};
+use Bugo\Compat\{Lang, Msg, Security, Utils};
+use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Utils\{CacheTrait, EntityDataTrait};
+use Bugo\LightPortal\Utils\{Icon, RequestTrait, Str};
+
+use function array_filter;
+use function array_flip;
+use function array_keys;
+use function array_merge;
+use function in_array;
+use function sprintf;
+use function str_replace;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class BlockRepository extends AbstractRepository
 {
+	use CacheTrait;
+	use EntityDataTrait;
+	use RequestTrait;
+
 	protected string $entity = 'block';
 
 	public function getAll(): array
 	{
 		$result = Db::$db->query('', '
 			SELECT b.block_id, b.icon, b.type, b.note, b.placement, b.priority, b.permissions, b.status, b.areas,
-				bt.lang, bt.title
+				bt.lang, bt.value AS title
 			FROM {db_prefix}lp_blocks AS b
 				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
 			ORDER BY b.placement DESC, b.priority',
@@ -38,13 +52,13 @@ final class BlockRepository extends AbstractRepository
 		$currentBlocks = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$currentBlocks[$row['placement']][$row['block_id']] ??= [
-				'icon'        => $this->getIcon($row['icon']),
+				'icon'        => Icon::parse($row['icon']),
 				'type'        => $row['type'],
 				'note'        => $row['note'],
 				'priority'    => $row['priority'],
 				'permissions' => $row['permissions'],
 				'status'      => $row['status'],
-				'areas'       => str_replace(',', PHP_EOL, $row['areas']),
+				'areas'       => str_replace(',', PHP_EOL, (string) $row['areas']),
 			];
 
 			$currentBlocks[$row['placement']][$row['block_id']]['titles'][$row['lang']] = $row['title'];
@@ -66,7 +80,7 @@ final class BlockRepository extends AbstractRepository
 			SELECT
 				b.block_id, b.icon, b.type, b.note, b.content, b.placement, b.priority,
 				b.permissions, b.status, b.areas, b.title_class, b.content_class,
-				bt.lang, bt.title, bp.name, bp.value
+				bt.lang, bt.value AS title, bp.name, bp.value
 			FROM {db_prefix}lp_blocks AS b
 				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
 				LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {literal:block})
@@ -104,11 +118,13 @@ final class BlockRepository extends AbstractRepository
 				'content_class' => $row['content_class'],
 			];
 
-			if (! empty($row['lang']))
+			if (! empty($row['lang'])) {
 				$data['titles'][$row['lang']] = $row['title'];
+			}
 
-			if (! empty($row['name']))
+			if (! empty($row['name'])) {
 				$data['options'][$row['name']] = $row['value'];
+			}
 
 			$this->prepareMissingBlockTypes($row['type']);
 		}
@@ -123,17 +139,14 @@ final class BlockRepository extends AbstractRepository
 	 */
 	public function setData(int $item = 0)
 	{
-		if (isset(Utils::$context['post_errors']) || (
-			$this->request()->hasNot('save') &&
-			$this->request()->hasNot('save_exit') &&
-			$this->request()->hasNot('clone'))
-		) {
+		if (isset(Utils::$context['post_errors']) || $this->request()->hasNot(['save', 'save_exit', 'clone'])) {
 			return 0;
 		}
 
 		Security::checkSubmitOnce('check');
 
 		$this->prepareBbcContent(Utils::$context['lp_block']);
+		$this->prepareTitles();
 
 		if (empty($item)) {
 			Utils::$context['lp_block']['titles'] = array_filter(Utils::$context['lp_block']['titles'] ?? []);
@@ -149,11 +162,13 @@ final class BlockRepository extends AbstractRepository
 
 		$this->session('lp')->free('active_blocks');
 
-		if ($this->request()->has('save_exit'))
+		if ($this->request()->has('save_exit')) {
 			Utils::redirectexit('action=admin;area=lp_blocks;sa=main');
+		}
 
-		if ($this->request()->has('save'))
+		if ($this->request()->has('save')) {
 			Utils::redirectexit('action=admin;area=lp_blocks;sa=edit;id=' . $item);
+		}
 	}
 
 	public function remove(array $items): void
@@ -161,7 +176,7 @@ final class BlockRepository extends AbstractRepository
 		if ($items === [])
 			return;
 
-		$this->hook('onBlockRemoving', [$items]);
+		AddonHandler::getInstance()->run(PortalHook::onBlockRemoving, [$items]);
 
 		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_blocks
@@ -192,14 +207,10 @@ final class BlockRepository extends AbstractRepository
 		$this->session('lp')->free('active_blocks');
 	}
 
-	public function updatePriority(): void
+	public function updatePriority(array $blocks = [], string $placement = ''): void
 	{
-		$data = $this->request()->json();
-
-		if (empty($data['update_priority']))
+		if ($blocks === [])
 			return;
-
-		$blocks = $data['update_priority'];
 
 		$conditions = '';
 		foreach ($blocks as $priority => $item) {
@@ -209,27 +220,25 @@ final class BlockRepository extends AbstractRepository
 		if ($conditions === '')
 			return;
 
-		if (is_array($blocks)) {
-			Db::$db->query('', /** @lang text */ '
+		Db::$db->query('', /** @lang text */ '
+			UPDATE {db_prefix}lp_blocks
+			SET priority = CASE ' . $conditions . ' ELSE priority END
+			WHERE block_id IN ({array_int:blocks})',
+			[
+				'blocks' => $blocks,
+			]
+		);
+
+		if ($placement) {
+			Db::$db->query('', '
 				UPDATE {db_prefix}lp_blocks
-				SET priority = CASE ' . $conditions . ' ELSE priority END
+				SET placement = {string:placement}
 				WHERE block_id IN ({array_int:blocks})',
 				[
-					'blocks' => $blocks,
+					'placement' => $placement,
+					'blocks'    => $blocks,
 				]
 			);
-
-			if ($data['update_placement']) {
-				Db::$db->query('', '
-					UPDATE {db_prefix}lp_blocks
-					SET placement = {string:placement}
-					WHERE block_id IN ({array_int:blocks})',
-					[
-						'placement' => $data['update_placement'],
-						'blocks'    => $blocks,
-					]
-				);
-			}
 		}
 	}
 
@@ -274,7 +283,7 @@ final class BlockRepository extends AbstractRepository
 			return 0;
 		}
 
-		$this->hook('onBlockSaving', [$item]);
+		AddonHandler::getInstance()->run(PortalHook::onBlockSaving, [$item]);
 
 		$this->saveTitles($item);
 		$this->saveOptions($item);
@@ -308,7 +317,7 @@ final class BlockRepository extends AbstractRepository
 			]
 		);
 
-		$this->hook('onBlockSaving', [$item]);
+		AddonHandler::getInstance()->run(PortalHook::onBlockSaving, [$item]);
 
 		$this->saveTitles($item, 'replace');
 		$this->saveOptions($item, 'replace');
@@ -331,7 +340,7 @@ final class BlockRepository extends AbstractRepository
 		if (isset(Lang::$txt['lp_' . $type]['title']))
 			return;
 
-		$plugin = $this->getCamelName($type);
+		$plugin = Str::getCamelName($type);
 
 		$message = in_array($plugin, $this->getEntityData('plugin'))
 			? Lang::$txt['lp_addon_not_activated']

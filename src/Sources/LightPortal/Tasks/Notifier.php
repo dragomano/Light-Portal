@@ -1,22 +1,23 @@
 <?php declare(strict_types=1);
 
 /**
- * Notifier.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Tasks;
 
-use Bugo\Compat\{Config, Db, Lang, Mail};
-use Bugo\Compat\{Notify, Theme, User, Utils};
+use Bugo\Compat\{Tasks\BackgroundTask, Config, Db, Lang};
+use Bugo\Compat\{Mail, Actions\Notify, Theme, User, Utils};
 use ErrorException;
+
+use function array_diff;
+use function array_intersect;
 
 final class Notifier extends BackgroundTask
 {

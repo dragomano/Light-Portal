@@ -1,15 +1,13 @@
 <?php declare(strict_types=1);
 
 /**
- * CategoryExport.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Areas\Exports;
@@ -18,15 +16,24 @@ use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, Sapi, Utils};
 use Bugo\LightPortal\Repositories\CategoryRepository;
 use Bugo\LightPortal\Utils\ItemList;
+use Bugo\LightPortal\Utils\RequestTrait;
 use DomDocument;
 use DOMException;
+use Nette\Utils\Html;
+
+use function in_array;
+use function trim;
+
+use const LP_NAME;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class CategoryExport extends AbstractExport
 {
-	private CategoryRepository $repository;
+	use RequestTrait;
+
+	private readonly CategoryRepository $repository;
 
 	public function __construct()
 	{
@@ -54,10 +61,10 @@ final class CategoryExport extends AbstractExport
 			'base_href' => Utils::$context['form_action'],
 			'default_sort_col' => 'id',
 			'get_items' => [
-				'function' => [$this->repository, 'getAll']
+				'function' => $this->repository->getAll(...)
 			],
 			'get_count' => [
-				'function' => [$this->repository, 'getTotalCount']
+				'function' => $this->repository->getTotalCount(...)
 			],
 			'columns' => [
 				'id' => [
@@ -93,13 +100,16 @@ final class CategoryExport extends AbstractExport
 					],
 					'data' => [
 						'function' => static fn($entry) => $entry['status']
-							? '<a class="bbc_link" href="' . LP_BASE_URL . ';sa=categories;id=' . $entry['id'] . '">' . $entry['title'] . '</a>'
+							? Html::el('a', ['class' => 'bbc_link'])
+								->href(LP_BASE_URL . ';sa=categories;id=' . $entry['id'])
+								->setText($entry['title'])
+								->toHtml()
 							: $entry['title'],
 						'class' => 'word_break',
 					],
 					'sort' => [
-						'default' => 't.title DESC',
-						'reverse' => 't.title',
+						'default' => 't.value DESC',
+						'reverse' => 't.value',
 					],
 				],
 				'actions' => [
@@ -137,7 +147,7 @@ final class CategoryExport extends AbstractExport
 		$categories = $this->request('categories') && $this->request()->hasNot('export_all') ? $this->request('categories') : null;
 
 		$result = Db::$db->query('', '
-			SELECT c.category_id, c.icon, c.description, c.priority, c.status,	pt.lang, pt.title
+			SELECT c.category_id, c.icon, c.description, c.priority, c.status,	pt.lang, pt.value AS title
 			FROM {db_prefix}lp_categories AS c
 				LEFT JOIN {db_prefix}lp_titles AS pt ON (c.category_id = pt.item_id AND pt.type = {literal:category})' . (empty($categories) ? '' : '
 			WHERE c.category_id IN ({array_int:categories})'),
@@ -156,8 +166,9 @@ final class CategoryExport extends AbstractExport
 				'status'      => $row['status'],
 			];
 
-			if ($row['lang'] && $row['title'])
+			if ($row['lang'] && $row['title']) {
 				$items[$row['category_id']]['titles'][$row['lang']] = $row['title'];
+			}
 		}
 
 		Db::$db->free_result($result);

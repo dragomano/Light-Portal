@@ -1,20 +1,21 @@
 <?php declare(strict_types=1);
 
 /**
- * PageIconSelect.php
- *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.6
+ * @version 2.7
  */
 
 namespace Bugo\LightPortal\Areas\Partials;
 
 use Bugo\Compat\{Lang, Utils};
+use Bugo\LightPortal\Utils\Icon;
+
+use function func_get_args;
 
 final class PageIconSelect extends AbstractPartial
 {
@@ -27,7 +28,7 @@ final class PageIconSelect extends AbstractPartial
 
 		$icon = empty($params['icon']) ? (Utils::$context['lp_page']['options']['page_icon'] ?? '') : $params['icon'];
 
-		$template = $this->getIcon($icon) . $icon;
+		$template = Icon::parse($icon) . $icon;
 
 		return /** @lang text */ '
 		<div id="' . $id . '" name="' . $id . '"></div>
