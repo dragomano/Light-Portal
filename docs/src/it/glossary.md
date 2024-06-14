@@ -12,7 +12,7 @@ I blocchi sono elementi `a parte` che contengono al loro interno contenuti perso
 
 ## pagina
 
-Le pagine sono contenuti generati dagli utenti disponibili su `https://{your_forum}?page={page_alias}`. Qualsiasi utente con le autorizzazioni appropriate può creare pagine.
+Le pagine sono contenuti generati dagli utenti disponibili su `https://{your_domain}?page={slug}`. Qualsiasi utente con le autorizzazioni appropriate può creare pagine.
 
 ## plugin
 

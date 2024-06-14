@@ -31,7 +31,7 @@ Qui puoi configurare:
 
 Qui puoi configurare:
 
-- alias — la pagina sarà disponibile in `?page=alias`
+- slug — è la parte dell'indirizzo (`?page=slug`)
 - descrizione — Il meta description
 - tags — verranno visualizzati come tag di pagina e meta keywords
 

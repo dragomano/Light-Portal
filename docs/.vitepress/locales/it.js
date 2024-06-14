@@ -8,29 +8,29 @@ export default {
     nav: [
       {
         text: 'Inizio',
-        link: '/',
+        link: '/'
       },
       {
         text: 'Introduzione',
-        link: '/intro',
+        link: '/intro'
       },
       {
         text: 'Esempi',
-        link: '/examples',
+        link: '/examples'
       },
       {
         text: 'Demo',
-        link: 'https://demo.dragomano.ru/',
+        link: 'https://demo.dragomano.ru/'
       },
       {
         text: 'Changelog',
-        link: '/changelog',
-      },
+        link: '/changelog'
+      }
     ],
     outline: { label: 'In questa pagina' },
     docFooter: {
       prev: 'Pagina precedente',
-      next: 'Pagina successiva',
+      next: 'Pagina successiva'
     },
     darkModeSwitchLabel: 'Aspetto',
     lightModeSwitchTitle: 'Passa al tema chiaro',
@@ -40,17 +40,16 @@ export default {
     langMenuLabel: 'Cambia lingua',
     notFound: {
       title: 'PAGINA NON TROVATA',
-      quote:
-        'Ma se non cambi direzione e se continui a guardare, potresti finire dove stai andando.',
+      quote: 'Ma se non cambi direzione e se continui a guardare, potresti finire dove stai andando.',
       linkLabel: 'Vai alla home',
-      linkText: 'Vai alla Home',
+      linkText: 'Vai alla Home'
     },
     search: {
       options: {
         translations: {
           button: {
             buttonText: 'Cerca',
-            buttonAriaLabel: 'Cerca',
+            buttonAriaLabel: 'Cerca'
           },
           modal: {
             displayDetails: 'Visualizza lista dettagliata',
@@ -60,11 +59,11 @@ export default {
             footer: {
               selectText: 'seleziona',
               navigateText: 'naviga',
-              closeText: 'chiudi',
-            },
-          },
-        },
-      },
-    },
-  },
+              closeText: 'chiudi'
+            }
+          }
+        }
+      }
+    }
+  }
 };
