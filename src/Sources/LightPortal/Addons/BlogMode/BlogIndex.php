@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.06.24
+ * @version 15.06.24
  */
 
 namespace Bugo\LightPortal\Addons\BlogMode;
@@ -24,9 +24,9 @@ if (! defined('SMF'))
 
 class BlogIndex
 {
-	private FrontPage $front;
+	private readonly FrontPage $front;
 
-	private string $action;
+	private readonly string $action;
 
 	public function __construct()
 	{

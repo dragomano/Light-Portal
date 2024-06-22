@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 02.06.24
+ * @version 15.06.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleChat;
@@ -16,7 +16,6 @@ namespace Bugo\LightPortal\Addons\SimpleChat;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\Compat\{User, Utils};
-use Bugo\LightPortal\Helper;
 use Bugo\LightPortal\Utils\Avatar;
 
 if (! defined('LP_NAME'))

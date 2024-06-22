@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.02.24
+ * @version 15.06.24
  */
 
 namespace Bugo\LightPortal\Addons\UserInfo;
@@ -16,6 +16,9 @@ namespace Bugo\LightPortal\Addons\UserInfo;
 use Bugo\Compat\{User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Exception;
+
+use function show_user_info;
+use function show_user_info_for_guests;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
