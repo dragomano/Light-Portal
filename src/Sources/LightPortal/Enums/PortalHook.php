@@ -23,6 +23,7 @@ enum PortalHook
 	case credits;
 	case customLayoutExtensions;
 	case downloadRequest;
+	case extendBasicConfig;
 	case findBlockErrors;
 	case findPageErrors;
 	case frontAssets;
