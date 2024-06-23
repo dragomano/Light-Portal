@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.06.24
+ * @version 23.06.24
  */
 
 namespace Bugo\LightPortal\Addons\BlogMode;
@@ -27,9 +27,12 @@ use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\ItemList;
 use Nette\Utils\Html;
 
+use function array_column;
 use function array_keys;
 use function array_merge;
+use function array_search;
 use function array_slice;
+use function count;
 use function sprintf;
 
 if (! defined('LP_NAME'))
@@ -58,8 +61,10 @@ class BlogMode extends Plugin
 
 		$this->applyHook(Hook::actions);
 		$this->applyHook(Hook::menuButtons);
+		$this->applyHook(Hook::loadIllegalGuestPermissions);
+		$this->applyHook(Hook::loadPermissions);
 
-		if (empty(Utils::$context['allow_light_portal_manage_pages_own']))
+		if (empty(User::hasPermission('light_portal_post_blog_entries')))
 			return;
 
 		Lang::$txt['lp_page_status_set'][BlogArticle::STATUS] = Lang::$txt['lp_blog_mode']['blogged_status'];
@@ -106,6 +111,21 @@ class BlogMode extends Plugin
 		Config::$modSettings['lp_frontpage_mode'] = $this->mode;
 	}
 
+	public function extendBasicConfig(&$configVars): void
+	{
+		Lang::$txt['groups_light_portal_post_blog_entries'] = Lang::$txt['lp_blog_mode']['group_permission'];
+
+		$key = array_search('light_portal_approve_pages', array_column($configVars, 1)) + 1;
+
+		$configVars = array_merge(
+			array_slice($configVars, 0, $key, true),
+			[
+				['permissions', 'light_portal_post_blog_entries'],
+			],
+			array_slice($configVars, $key, count($configVars), true)
+		);
+	}
+
 	public function actions(&$actions): void
 	{
 		if ($this->blogAction === '')
@@ -140,6 +160,24 @@ class BlogMode extends Plugin
 			],
 			array_slice($buttons, $counter, null, true)
 		);
+	}
+
+	public function loadIllegalGuestPermissions(): void
+	{
+		Utils::$context['non_guest_permissions'] = array_merge(
+			Utils::$context['non_guest_permissions'],
+			[
+				'light_portal_post_blog_entries',
+			]
+		);
+	}
+
+	public function loadPermissions(array &$permissionGroups, array &$permissionList): void
+	{
+		Lang::$txt['permissionname_light_portal_post_blog_entries']   = Lang::$txt['lp_blog_mode']['permission'];
+		Lang::$txt['group_perms_name_light_portal_post_blog_entries'] = Lang::$txt['lp_blog_mode']['permission'];
+
+		$permissionList['membergroup']['light_portal_post_blog_entries'] = [false, 'light_portal'];
 	}
 
 	public function profileAreas(array &$areas): void
