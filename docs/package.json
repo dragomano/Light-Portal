@@ -1,8 +1,11 @@
 {
+  "dependencies": {
+    "vitepress-plugin-comment-with-giscus": "^1.1.15"
+  },
   "devDependencies": {
-    "@nolebase/vitepress-plugin-enhanced-readabilities": "2.1.1",
+    "@nolebase/vitepress-plugin-enhanced-readabilities": "2.2.0",
     "release-timeline": "^0.6.0",
-    "sass": "^1.77.5",
+    "sass": "^1.77.6",
     "vitepress": "^1.2.3",
     "vitepress-sidebar": "^1.23.2"
   },
@@ -10,8 +13,5 @@
     "docs:dev": "vitepress dev",
     "docs:build": "vitepress build",
     "docs:preview": "vitepress preview"
-  },
-  "dependencies": {
-    "vitepress-plugin-comment-with-giscus": "^1.1.15"
   }
 }
