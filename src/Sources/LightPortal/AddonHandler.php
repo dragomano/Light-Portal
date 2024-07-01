@@ -41,7 +41,9 @@ use function method_exists;
 use function mkdir;
 use function ucfirst;
 
+use const DIRECTORY_SEPARATOR;
 use const GLOB_ONLYDIR;
+use const LOCK_EX;
 use const LP_ADDON_DIR;
 
 if (! defined('SMF'))
@@ -51,11 +53,11 @@ final class AddonHandler
 {
 	private array $settings;
 
-	private SplObjectStorage $storage;
+	private readonly SplObjectStorage $storage;
 
-	private CSS $css;
+	private readonly CSS $css;
 
-	private JS $js;
+	private readonly JS $js;
 
 	private int $maxCssFilemtime = 0;
 

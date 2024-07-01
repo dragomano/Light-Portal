@@ -26,21 +26,14 @@ abstract class AbstractField
 {
 	protected string $tab;
 
-	protected string $name;
-
-	protected string $label;
-
 	protected string $type;
 
 	protected string $after = '';
 
 	protected array $attributes = [];
 
-	public function __construct(string $name, string $label)
+	public function __construct(protected string $name, protected string $label)
 	{
-		$this->name = $name;
-		$this->label = $label;
-
 		$this->setTab(Tab::TUNING);
 	}
 

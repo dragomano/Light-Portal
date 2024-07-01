@@ -25,16 +25,16 @@ class PreCssOutput
 {
 	public function __invoke(): void
 	{
-		echo "\n\t" . Html::el('link', [
-			'rel'  => 'preconnect',
-			'href' => '//cdn.jsdelivr.net',
-		])->toHtml();
+		echo "\n\t" . Html::el('link')
+			->rel('preconnect')
+			->href('//cdn.jsdelivr.net')
+			->toHtml();
 
 		if (! empty(Utils::$context['portal_next_page'])) {
-			echo "\n\t" . Html::el('link', [
-				'rel'  => 'prerender',
-				'href' => Utils::$context['portal_next_page'],
-			])->toHtml();
+			echo "\n\t" . Html::el('link')
+				->rel('prerender')
+				->href(Utils::$context['portal_next_page'])
+				->toHtml();
 		}
 
 		$styles = [];

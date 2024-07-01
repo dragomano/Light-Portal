@@ -18,6 +18,8 @@ use Bugo\LightPortal\Utils\Setting;
 
 use function in_array;
 
+use const LP_BASE_URL;
+
 if (! defined('SMF'))
 	die('No direct access...');
 

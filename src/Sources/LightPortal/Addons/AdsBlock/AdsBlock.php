@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 05.06.24
+ * @version 15.06.24
  */
 
 namespace Bugo\LightPortal\Addons\AdsBlock;
@@ -19,6 +19,21 @@ use Bugo\LightPortal\Areas\Fields\{CustomField, TextareaField, TextField};
 use Bugo\LightPortal\Areas\Partials\{BoardSelect, PageSelect, TopicSelect};
 use Bugo\LightPortal\Enums\{Hook, Tab};
 use Bugo\LightPortal\Utils\Content;
+
+use function array_combine;
+use function array_filter;
+use function array_flip;
+use function array_key_exists;
+use function array_keys;
+use function array_merge;
+use function date;
+use function explode;
+use function function_exists;
+use function lp_show_blocks;
+use function ob_get_clean;
+use function ob_start;
+use function strtotime;
+use function time;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

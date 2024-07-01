@@ -13,6 +13,26 @@
 namespace Bugo\LightPortal;
 
 use Bugo\LightPortal\Enums\Hook;
+use Bugo\LightPortal\Hooks\Actions;
+use Bugo\LightPortal\Hooks\AlertTypes;
+use Bugo\LightPortal\Hooks\CurrentAction;
+use Bugo\LightPortal\Hooks\DefaultAction;
+use Bugo\LightPortal\Hooks\DeleteMembers;
+use Bugo\LightPortal\Hooks\DisplayButtons;
+use Bugo\LightPortal\Hooks\DownloadRequest;
+use Bugo\LightPortal\Hooks\FetchAlerts;
+use Bugo\LightPortal\Hooks\LoadIllegalGuestPermissions;
+use Bugo\LightPortal\Hooks\LoadPermissions;
+use Bugo\LightPortal\Hooks\LoadTheme;
+use Bugo\LightPortal\Hooks\MenuButtons;
+use Bugo\LightPortal\Hooks\PermissionsList;
+use Bugo\LightPortal\Hooks\PreCssOutput;
+use Bugo\LightPortal\Hooks\PreLoad;
+use Bugo\LightPortal\Hooks\ProfileAreas;
+use Bugo\LightPortal\Hooks\ProfilePopup;
+use Bugo\LightPortal\Hooks\Redirect;
+use Bugo\LightPortal\Hooks\UserInfo;
+use Bugo\LightPortal\Hooks\WhosOnline;
 use Bugo\LightPortal\Utils\SMFHookTrait;
 
 use function str_starts_with;
@@ -29,28 +49,28 @@ final class Integration
 	public function __invoke(): void
 	{
 		if (str_starts_with(SMF_VERSION, '3.0')) {
-			$this->applyHook(Hook::preLoad, Hooks\PreLoad::class);
-			$this->applyHook(Hook::permissionsList, Hooks\PermissionsList::class);
+			$this->applyHook(Hook::preLoad, PreLoad::class);
+			$this->applyHook(Hook::permissionsList, PermissionsList::class);
 		} else {
-			$this->applyHook(Hook::userInfo, Hooks\UserInfo::class);
-			$this->applyHook(Hook::loadIllegalGuestPermissions, Hooks\LoadIllegalGuestPermissions::class);
-			$this->applyHook(Hook::loadPermissions, Hooks\LoadPermissions::class);
+			$this->applyHook(Hook::userInfo, UserInfo::class);
+			$this->applyHook(Hook::loadIllegalGuestPermissions, LoadIllegalGuestPermissions::class);
+			$this->applyHook(Hook::loadPermissions, LoadPermissions::class);
 		}
 
-		$this->applyHook(Hook::preCssOutput, Hooks\PreCssOutput::class);
-		$this->applyHook(Hook::loadTheme, Hooks\LoadTheme::class);
-		$this->applyHook(Hook::redirect, Hooks\Redirect::class);
-		$this->applyHook(Hook::actions, Hooks\Actions::class);
-		$this->applyHook(Hook::defaultAction, Hooks\DefaultAction::class);
-		$this->applyHook(Hook::currentAction, Hooks\CurrentAction::class);
-		$this->applyHook(Hook::menuButtons, Hooks\MenuButtons::class);
-		$this->applyHook(Hook::displayButtons, Hooks\DisplayButtons::class);
-		$this->applyHook(Hook::deleteMembers, Hooks\DeleteMembers::class);
-		$this->applyHook(Hook::alertTypes, Hooks\AlertTypes::class);
-		$this->applyHook(Hook::fetchAlerts, Hooks\FetchAlerts::class);
-		$this->applyHook(Hook::profileAreas, Hooks\ProfileAreas::class);
-		$this->applyHook(Hook::profilePopup, Hooks\ProfilePopup::class);
-		$this->applyHook(Hook::downloadRequest, Hooks\DownloadRequest::class);
-		$this->applyHook(Hook::whosOnline, Hooks\WhosOnline::class);
+		$this->applyHook(Hook::preCssOutput, PreCssOutput::class);
+		$this->applyHook(Hook::loadTheme, LoadTheme::class);
+		$this->applyHook(Hook::redirect, Redirect::class);
+		$this->applyHook(Hook::actions, Actions::class);
+		$this->applyHook(Hook::defaultAction, DefaultAction::class);
+		$this->applyHook(Hook::currentAction, CurrentAction::class);
+		$this->applyHook(Hook::menuButtons, MenuButtons::class);
+		$this->applyHook(Hook::displayButtons, DisplayButtons::class);
+		$this->applyHook(Hook::deleteMembers, DeleteMembers::class);
+		$this->applyHook(Hook::alertTypes, AlertTypes::class);
+		$this->applyHook(Hook::fetchAlerts, FetchAlerts::class);
+		$this->applyHook(Hook::profileAreas, ProfileAreas::class);
+		$this->applyHook(Hook::profilePopup, ProfilePopup::class);
+		$this->applyHook(Hook::downloadRequest, DownloadRequest::class);
+		$this->applyHook(Hook::whosOnline, WhosOnline::class);
 	}
 }

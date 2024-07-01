@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 02.06.24
+ * @version 29.06.24
  */
 
 namespace Bugo\LightPortal\Addons\GalleryBlock;
@@ -128,7 +128,10 @@ class GalleryBlock extends Block
 		if ($data->type !== 'gallery_block')
 			return;
 
-		User::mustHavePermission('smfgallery_view');
+		if (! User::hasPermission('smfgallery_manage')) {
+			echo Lang::$txt['cannot_smfgallery_view'];
+			return;
+		}
 
 		$images = $this->cache('gallery_block_addon_b' . $data->id . '_u' . Utils::$context['user']['id'])
 			->setLifeTime($data->cacheTime)

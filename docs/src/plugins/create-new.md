@@ -86,19 +86,6 @@ File `index.php` can be copied from folders of other plugins. The file `HelloWor
 ```php:line-numbers
 <?php
 
-/**
- * HelloWorld.php
- *
- * @package HelloWorld (Light Portal)
- * @link https://custom.simplemachines.org/index.php?mod=4244
- * @author Nickname <email>
- * @copyright 2023 Nickname
- * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
- *
- * @category addon
- * @version 15.02.24 (date when the source code of the plugin was created or last updated, in the format dd.mm.yy)
- */
-
 namespace Bugo\LightPortal\Addons\HelloWorld;
 
 use Bugo\Compat\{Config, Lang, Utils};
@@ -109,9 +96,20 @@ if (! defined('LP_NAME'))
 
 class HelloWorld extends Plugin
 {
-    // Used properties and methods
-    // Access to global variables: Utils::$context['user'], Config::$modSettings['variable'], etc.
-    // Access to language variables: Lang::$txt['lp_hello_world']['variable_name']
+    // FA icon (for blocks only)
+    public string $icon = 'fas fa-globe';
+
+    // Your plugin's type
+    public string $type = 'other';
+
+    // Optional init method
+    public function init(): void
+    {
+        // Access to global variables: Utils::$context['user'], Config::$modSettings['variable'], etc.
+        // Access to language variables: Lang::$txt['lp_hello_world']['variable_name']
+    }
+
+    // Custom properties and methods
 }
 
 ```

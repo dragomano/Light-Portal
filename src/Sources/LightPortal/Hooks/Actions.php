@@ -26,6 +26,8 @@ use Bugo\LightPortal\Utils\RequestTrait;
 use function array_search;
 use function implode;
 
+use const LP_ACTION;
+
 if (! defined('SMF'))
 	die('No direct access...');
 

@@ -32,6 +32,9 @@ use function explode;
 use function microtime;
 use function round;
 
+use const LP_ACTION;
+use const LP_PAGE_URL;
+
 if (! defined('SMF'))
 	die('No direct access...');
 

@@ -21,6 +21,8 @@ use Bugo\LightPortal\Utils\Setting;
 
 use function call_user_func;
 
+use const LP_PAGE_PARAM;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -30,11 +32,13 @@ class DefaultAction
 
 	public function __invoke(): mixed
 	{
-		if ($this->request()->isNotEmpty(LP_PAGE_PARAM))
+		if ($this->request()->isNotEmpty(LP_PAGE_PARAM)) {
 			return call_user_func([new Page(), 'show']);
+		}
 
-		if (empty(Config::$modSettings['lp_frontpage_mode']) || Setting::isStandaloneMode())
+		if (empty(Config::$modSettings['lp_frontpage_mode']) || Setting::isStandaloneMode()) {
 			return call_user_func([new BoardIndex(), 'show']);
+		}
 
 		return call_user_func([new FrontPage(), 'show']);
 	}
