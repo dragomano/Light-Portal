@@ -517,6 +517,12 @@ public function prepareIconList(array &$icons): void
 
 ## Настройки портала
 
+### extendBasicConfig
+
+(`&$configVars`)
+
+> добавление пользовательских параметров в области основных настроек портала
+
 ### updateAdminAreas
 
 (`&$areas`)

@@ -517,6 +517,12 @@ public function prepareIconList(array &$icons): void
 
 ## Impostazioni Portale
 
+### extendBasicConfig
+
+(`&$configVars`)
+
+> aggiunta di configurazioni personalizzate nell'area delle impostazioni di base del portale
+
 ### updateAdminAreas
 
 (`&$areas`)
