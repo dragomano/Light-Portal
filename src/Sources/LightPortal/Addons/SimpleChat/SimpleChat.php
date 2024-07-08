@@ -8,16 +8,21 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 05.06.24
+ * @version 08.07.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleChat;
 
-use Bugo\Compat\{Config, Db, Lang, Theme, Utils};
+use Bugo\Compat\{Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\LightPortal\Enums\{Hook, Tab};
 use Bugo\LightPortal\Utils\Avatar;
+
+use function json_encode;
+use function show_chat_block;
+
+use const FILTER_VALIDATE_BOOLEAN;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -57,7 +62,7 @@ class SimpleChat extends Block
 
 	public function addSettings(): void
 	{
-		$this->prepareTable();
+		$this->chat->prepareTable();
 	}
 
 	public function prepareBlockParams(array &$params): void
@@ -127,63 +132,5 @@ class SimpleChat extends Block
 				'items' => $items,
 			]
 		);
-	}
-
-	private function prepareTable(): void
-	{
-		$tables = [];
-
-		Db::extend('packages');
-
-		if (! empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'lp_simple_chat_messages')))
-			return;
-
-		$tables[] = [
-			'name' => 'lp_simple_chat_messages',
-			'columns' => [
-				[
-					'name'     => 'id',
-					'type'     => 'int',
-					'size'     => 10,
-					'unsigned' => true,
-					'auto'     => true
-				],
-				[
-					'name'     => 'block_id',
-					'type'     => 'int',
-					'size'     => 10,
-					'unsigned' => true
-				],
-				[
-					'name'     => 'user_id',
-					'type'     => 'int',
-					'size'     => 10,
-					'unsigned' => true
-				],
-				[
-					'name' => 'message',
-					'type' => 'varchar',
-					'size' => 255,
-					'null' => false
-				],
-				[
-					'name'     => 'created_at',
-					'type'     => 'int',
-					'size'     => 10,
-					'unsigned' => true,
-					'default'  => 0
-				]
-			],
-			'indexes' => [
-				[
-					'type'    => 'primary',
-					'columns' => ['id']
-				]
-			]
-		];
-
-		foreach ($tables as $table) {
-			Utils::$smcFunc['db_create_table']('{db_prefix}' . $table['name'], $table['columns'], $table['indexes']);
-		}
 	}
 }

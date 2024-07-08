@@ -8,15 +8,20 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 15.06.24
+ * @version 08.07.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleChat;
 
+use Bugo\Compat\{BBCodeParser, Config};
+use Bugo\Compat\{Db, User, Utils};
+use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\RequestTrait;
-use Bugo\Compat\{User, Utils};
-use Bugo\LightPortal\Utils\Avatar;
+
+use function json_encode;
+use function time;
+use function timeformat;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -25,6 +30,64 @@ class Chat
 {
 	use CacheTrait;
 	use RequestTrait;
+
+	public function prepareTable(): void
+	{
+		$tables = [];
+
+		Db::extend('packages');
+
+		if (! empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'lp_simple_chat_messages')))
+			return;
+
+		$tables[] = [
+			'name' => 'lp_simple_chat_messages',
+			'columns' => [
+				[
+					'name'     => 'id',
+					'type'     => 'int',
+					'size'     => 10,
+					'unsigned' => true,
+					'auto'     => true
+				],
+				[
+					'name'     => 'block_id',
+					'type'     => 'int',
+					'size'     => 10,
+					'unsigned' => true
+				],
+				[
+					'name'     => 'user_id',
+					'type'     => 'int',
+					'size'     => 10,
+					'unsigned' => true
+				],
+				[
+					'name' => 'message',
+					'type' => 'varchar',
+					'size' => 255,
+					'null' => false
+				],
+				[
+					'name'     => 'created_at',
+					'type'     => 'int',
+					'size'     => 10,
+					'unsigned' => true,
+					'default'  => 0
+				]
+			],
+			'indexes' => [
+				[
+					'type'    => 'primary',
+					'columns' => ['id']
+				]
+			]
+		];
+
+		foreach ($tables as $table) {
+			Utils::$smcFunc['db_create_table']('{db_prefix}' . $table['name'], $table['columns'], $table['indexes']);
+		}
+	}
 
 	public function getMessages(int $block_id = 0): array
 	{
@@ -45,7 +108,7 @@ class Chat
 			$messages[$row['block_id']][] = [
 				'id'         => $row['id'],
 				'block_id'   => $row['block_id'],
-				'message'    => parse_bbc($row['message']),
+				'message'    => BBCodeParser::load()->parse($row['message']),
 				'created_at' => timeformat($row['created_at']),
 				'author'     => [
 					'id'   => $row['user_id'],
@@ -88,7 +151,7 @@ class Chat
 
 		$result = [
 			'id'         => $id,
-			'message'    => parse_bbc($message),
+			'message'    => BBCodeParser::load()->parse($message),
 			'created_at' => timeformat($time),
 			'author'     => [
 				'id'     => User::$info['id'],
