@@ -464,10 +464,10 @@ final class PageRepository extends AbstractRepository
 				UPDATE {db_prefix}lp_pages
 				SET num_views = num_views + 1
 				WHERE page_id = {int:item}
-					AND status IN ({array_int:statuses})',
+					AND status NOT IN ({array_int:statuses})',
 			[
 				'item'     => $item,
-				'statuses' => [Status::ACTIVE->value, Status::INTERNAL->value],
+				'statuses' => [Status::INACTIVE->value, Status::UNAPPROVED->value],
 			]
 		);
 	}
