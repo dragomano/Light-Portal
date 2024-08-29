@@ -412,7 +412,7 @@ $txt['lp_addon_not_activated'] = 'Plugin %s is not activated';
 
 // Who
 $txt['lp_who_viewing_frontpage'] = 'Viewing <a href="%s">the portal frontpage</a>.';
-$txt['lp_who_viewing_index'] = 'Viewing <a href="{0}">the portal frontpage</a> or <a href="{1}">the forum index</a>.';
+$txt['lp_who_viewing_index'] = 'Viewing <a href="%s">the forum index</a>.';
 $txt['lp_who_viewing_page'] = 'Viewing <a href="%s">the portal page</a>.';
 $txt['lp_who_viewing_tags'] = 'Viewing <a href="%s">the portal page tags</a>.';
 $txt['lp_who_viewing_the_tag'] = 'Viewing the page list with <a href="{0}" class="bbc_link">{1}</a> tag.';

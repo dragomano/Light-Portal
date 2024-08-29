@@ -12,7 +12,7 @@
 
 namespace Bugo\LightPortal\Hooks;
 
-use Bugo\Compat\{Config, Lang, Utils};
+use Bugo\Compat\{Config, Lang};
 use Bugo\LightPortal\Utils\EntityDataTrait;
 use Bugo\LightPortal\Utils\Setting;
 
@@ -37,10 +37,10 @@ class WhosOnline
 			$result = sprintf(Lang::$txt['lp_who_viewing_frontpage'], Config::$scripturl);
 
 			if (Setting::isStandaloneMode()) {
-				$result = Lang::getTxt('lp_who_viewing_index', [
-					Config::$modSettings['lp_standalone_url'],
-					Config::$scripturl
-				]);
+				$result = sprintf(
+					Lang::$txt['lp_who_viewing_frontpage'],
+					Config::$modSettings['lp_standalone_url']
+				);
 			}
 		}
 
@@ -87,10 +87,10 @@ class WhosOnline
 		}
 
 		if ($actions['action'] === 'forum') {
-			$result = Lang::getTxt('who_index', [
-				Config::$scripturl . '?action=forum',
-				Utils::$context['forum_name']
-			]);
+			$result = sprintf(
+				Lang::$txt['lp_who_viewing_index'],
+				Config::$scripturl . '?action=forum'
+			);
 		}
 
 		return $result;
