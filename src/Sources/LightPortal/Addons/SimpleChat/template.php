@@ -14,7 +14,7 @@ function show_chat_block(int $id, bool $show_avatars, bool $full_width): void
 			<template x-for="(comment, index) in comments" :key="index">
 				<li class="smalltext">
 					', $show_avatars === true ? '<span x-html="comment.author.avatar ?? null"></span>' : '', '
-					<strong x-text="comment.author.name"></strong>: <span x-text="comment.message"></span>
+					<strong x-text="comment.author.name"></strong>: <span x-html="comment.message"></span>
 					', Utils::$context['user']['is_admin'] ? ' <span class="main_icons delete floatright" @click="removeComment($refs, index, comment.id)"></span> ' : '', '
 					<span class="floatright" x-html="comment.created_at"></span>
 				</li>
