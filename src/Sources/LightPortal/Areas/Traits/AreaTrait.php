@@ -154,7 +154,7 @@ trait AreaTrait
 
 	public function getFloatSpan(string $text, string $direction = 'left'): string
 	{
-		return Html::el('span', ['class' => "float$direction"])->setText($text)->toHtml();
+		return Html::el('span', ['class' => "float$direction"])->setHtml($text)->toHtml();
 	}
 
 	public function getDefaultTypes(): array

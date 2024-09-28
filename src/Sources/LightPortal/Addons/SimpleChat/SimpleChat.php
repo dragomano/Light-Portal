@@ -8,16 +8,24 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 05.06.24
+ * @version 24.09.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleChat;
 
-use Bugo\Compat\{Config, Db, Lang, Theme, Utils};
+use Bugo\Compat\{Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
+use Bugo\LightPortal\Areas\Fields\RadioField;
 use Bugo\LightPortal\Enums\{Hook, Tab};
 use Bugo\LightPortal\Utils\Avatar;
+
+use function array_combine;
+use function json_encode;
+use function show_chat_block;
+
+use const FILTER_DEFAULT;
+use const FILTER_VALIDATE_BOOLEAN;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -28,6 +36,11 @@ if (! defined('LP_NAME'))
 class SimpleChat extends Block
 {
 	public string $icon = 'fas fa-message';
+
+	private array $params = [
+		'show_avatars'  => false,
+		'form_position' => 'bottom',
+	];
 
 	private readonly Chat $chat;
 
@@ -57,7 +70,7 @@ class SimpleChat extends Block
 
 	public function addSettings(): void
 	{
-		$this->prepareTable();
+		$this->chat->prepareTable();
 	}
 
 	public function prepareBlockParams(array &$params): void
@@ -65,7 +78,7 @@ class SimpleChat extends Block
 		if (Utils::$context['current_block']['type'] !== 'simple_chat')
 			return;
 
-		$params['show_avatars'] = false;
+		$params = $this->params;
 	}
 
 	public function validateBlockParams(array &$params): void
@@ -73,7 +86,10 @@ class SimpleChat extends Block
 		if (Utils::$context['current_block']['type'] !== 'simple_chat')
 			return;
 
-		$params['show_avatars'] = FILTER_VALIDATE_BOOLEAN;
+		$params = [
+			'show_avatars'  => FILTER_VALIDATE_BOOLEAN,
+			'form_position' => FILTER_DEFAULT,
+		];
 	}
 
 	public function prepareBlockFields(): void
@@ -84,6 +100,10 @@ class SimpleChat extends Block
 		CheckboxField::make('show_avatars', Lang::$txt['lp_simple_chat']['show_avatars'])
 			->setTab(Tab::APPEARANCE)
 			->setValue(Utils::$context['lp_block']['options']['show_avatars']);
+
+		RadioField::make('form_position', Lang::$txt['lp_simple_chat']['form_position'])
+			->setOptions(array_combine(['bottom', 'top'], Lang::$txt['lp_simple_chat']['form_position_set']))
+			->setValue(Utils::$context['lp_block']['options']['form_position']);
 	}
 
 	public function getData(int $block_id, array $parameters): array
@@ -105,7 +125,8 @@ class SimpleChat extends Block
 		Theme::loadCSSFile('admin.css');
 		Theme::loadJavaScriptFile('light_portal/bundle.min.js', ['defer' => true]);
 
-		$parameters['show_avatars'] ??= false;
+		$parameters['show_avatars'] ??= $this->params['show_avatars'];
+		$parameters['form_position'] ??= $this->params['form_position'];
 
 		$messages = $this->cache('simple_chat_addon_b' . $data->id)
 			->setLifeTime($data->cacheTime)
@@ -115,7 +136,7 @@ class SimpleChat extends Block
 
 		$this->setTemplate();
 
-		show_chat_block($data->id, (bool) $parameters['show_avatars'], $this->isInSidebar($data->id));
+		show_chat_block($data->id, $parameters, $this->isInSidebar($data->id));
 	}
 
 	public function onBlockRemoving(array $items): void
@@ -127,63 +148,5 @@ class SimpleChat extends Block
 				'items' => $items,
 			]
 		);
-	}
-
-	private function prepareTable(): void
-	{
-		$tables = [];
-
-		Db::extend('packages');
-
-		if (! empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'lp_simple_chat_messages')))
-			return;
-
-		$tables[] = [
-			'name' => 'lp_simple_chat_messages',
-			'columns' => [
-				[
-					'name'     => 'id',
-					'type'     => 'int',
-					'size'     => 10,
-					'unsigned' => true,
-					'auto'     => true
-				],
-				[
-					'name'     => 'block_id',
-					'type'     => 'int',
-					'size'     => 10,
-					'unsigned' => true
-				],
-				[
-					'name'     => 'user_id',
-					'type'     => 'int',
-					'size'     => 10,
-					'unsigned' => true
-				],
-				[
-					'name' => 'message',
-					'type' => 'varchar',
-					'size' => 255,
-					'null' => false
-				],
-				[
-					'name'     => 'created_at',
-					'type'     => 'int',
-					'size'     => 10,
-					'unsigned' => true,
-					'default'  => 0
-				]
-			],
-			'indexes' => [
-				[
-					'type'    => 'primary',
-					'columns' => ['id']
-				]
-			]
-		];
-
-		foreach ($tables as $table) {
-			Utils::$smcFunc['db_create_table']('{db_prefix}' . $table['name'], $table['columns'], $table['indexes']);
-		}
 	}
 }

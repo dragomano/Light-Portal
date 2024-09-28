@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.05.24
+ * @version 18.09.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleFeeder;
@@ -19,6 +19,10 @@ use Bugo\LightPortal\Areas\Fields\{CheckboxField, UrlField};
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Utils\DateTime;
 use IntlException;
+
+use function file_get_contents;
+use function simplexml_load_string;
+use function strtotime;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -67,7 +71,7 @@ class SimpleFeeder extends Block
 
 	public function getData(string $url): array
 	{
-		if (empty($url))
+		if ($url === '')
 			return [];
 
 		$file = file_get_contents($url);

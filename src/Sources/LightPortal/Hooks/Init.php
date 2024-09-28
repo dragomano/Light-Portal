@@ -29,7 +29,7 @@ class Init
 		Utils::$context['lp_load_time'] ??= microtime(true);
 
 		define('LP_NAME', 'Light Portal');
-		define('LP_VERSION', '2.7.1');
+		define('LP_VERSION', '2.7.2');
 		define('LP_PLUGIN_LIST', 'https://d8d75ea98b25aa12.mokky.dev/addons');
 		define('LP_ADDON_DIR', dirname(__DIR__) . '/Addons');
 		define('LP_CACHE_TIME', (int) (Config::$modSettings['lp_cache_interval'] ?? 72000));

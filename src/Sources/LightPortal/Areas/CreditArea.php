@@ -94,6 +94,7 @@ final class CreditArea
 			'Italian'    => ['Darknico'],
 			'Portuguese' => ['Costa'],
 			'Greek'      => ['Panoulis64'],
+			'Dutch'      => ['TeamKC'],
 		];
 
 		Utils::$context['consultants'] = [
