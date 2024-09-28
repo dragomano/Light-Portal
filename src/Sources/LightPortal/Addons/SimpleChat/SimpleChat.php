@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 08.07.24
+ * @version 24.09.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleChat;
@@ -16,12 +16,15 @@ namespace Bugo\LightPortal\Addons\SimpleChat;
 use Bugo\Compat\{Lang, Theme, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
+use Bugo\LightPortal\Areas\Fields\RadioField;
 use Bugo\LightPortal\Enums\{Hook, Tab};
 use Bugo\LightPortal\Utils\Avatar;
 
+use function array_combine;
 use function json_encode;
 use function show_chat_block;
 
+use const FILTER_DEFAULT;
 use const FILTER_VALIDATE_BOOLEAN;
 
 if (! defined('LP_NAME'))
@@ -33,6 +36,11 @@ if (! defined('LP_NAME'))
 class SimpleChat extends Block
 {
 	public string $icon = 'fas fa-message';
+
+	private array $params = [
+		'show_avatars'  => false,
+		'form_position' => 'bottom',
+	];
 
 	private readonly Chat $chat;
 
@@ -70,7 +78,7 @@ class SimpleChat extends Block
 		if (Utils::$context['current_block']['type'] !== 'simple_chat')
 			return;
 
-		$params['show_avatars'] = false;
+		$params = $this->params;
 	}
 
 	public function validateBlockParams(array &$params): void
@@ -78,7 +86,10 @@ class SimpleChat extends Block
 		if (Utils::$context['current_block']['type'] !== 'simple_chat')
 			return;
 
-		$params['show_avatars'] = FILTER_VALIDATE_BOOLEAN;
+		$params = [
+			'show_avatars'  => FILTER_VALIDATE_BOOLEAN,
+			'form_position' => FILTER_DEFAULT,
+		];
 	}
 
 	public function prepareBlockFields(): void
@@ -89,6 +100,10 @@ class SimpleChat extends Block
 		CheckboxField::make('show_avatars', Lang::$txt['lp_simple_chat']['show_avatars'])
 			->setTab(Tab::APPEARANCE)
 			->setValue(Utils::$context['lp_block']['options']['show_avatars']);
+
+		RadioField::make('form_position', Lang::$txt['lp_simple_chat']['form_position'])
+			->setOptions(array_combine(['bottom', 'top'], Lang::$txt['lp_simple_chat']['form_position_set']))
+			->setValue(Utils::$context['lp_block']['options']['form_position']);
 	}
 
 	public function getData(int $block_id, array $parameters): array
@@ -110,7 +125,8 @@ class SimpleChat extends Block
 		Theme::loadCSSFile('admin.css');
 		Theme::loadJavaScriptFile('light_portal/bundle.min.js', ['defer' => true]);
 
-		$parameters['show_avatars'] ??= false;
+		$parameters['show_avatars'] ??= $this->params['show_avatars'];
+		$parameters['form_position'] ??= $this->params['form_position'];
 
 		$messages = $this->cache('simple_chat_addon_b' . $data->id)
 			->setLifeTime($data->cacheTime)
@@ -120,7 +136,7 @@ class SimpleChat extends Block
 
 		$this->setTemplate();
 
-		show_chat_block($data->id, (bool) $parameters['show_avatars'], $this->isInSidebar($data->id));
+		show_chat_block($data->id, $parameters, $this->isInSidebar($data->id));
 	}
 
 	public function onBlockRemoving(array $items): void

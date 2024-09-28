@@ -8,23 +8,17 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 23.06.24
+ * @version 08.07.24
  */
 
 namespace Bugo\LightPortal\Addons\BlogMode;
 
-use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
-use Bugo\Compat\User;
-use Bugo\Compat\Utils;
+use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Plugin;
 use Bugo\LightPortal\Areas\Fields\VirtualSelectField;
-use Bugo\LightPortal\Enums\Hook;
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Enums\{Hook, Status, Tab};
 use Bugo\LightPortal\Repositories\PageRepository;
-use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\ItemList;
+use Bugo\LightPortal\Utils\{Icon, ItemList};
 use Nette\Utils\Html;
 
 use function array_column;
@@ -61,6 +55,7 @@ class BlogMode extends Plugin
 
 		$this->applyHook(Hook::actions);
 		$this->applyHook(Hook::menuButtons);
+		$this->applyHook(Hook::currentAction);
 		$this->applyHook(Hook::loadIllegalGuestPermissions);
 		$this->applyHook(Hook::loadPermissions);
 
@@ -170,6 +165,14 @@ class BlogMode extends Plugin
 				'light_portal_post_blog_entries',
 			]
 		);
+	}
+
+	public function currentAction(string &$action): void
+	{
+		if (empty(Utils::$context['lp_page']) || Utils::$context['lp_page']['status'] !== BlogArticle::STATUS)
+			return;
+
+		$action = $this->blogAction;
 	}
 
 	public function loadPermissions(array &$permissionGroups, array &$permissionList): void

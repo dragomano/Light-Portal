@@ -8,20 +8,19 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category addon
- * @version 08.07.24
+ * @version 17.09.24
  */
 
 namespace Bugo\LightPortal\Addons\SimpleChat;
 
 use Bugo\Compat\{BBCodeParser, Config};
-use Bugo\Compat\{Db, User, Utils};
+use Bugo\Compat\{Db, Time, User, Utils};
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\RequestTrait;
 
 use function json_encode;
 use function time;
-use function timeformat;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -109,7 +108,7 @@ class Chat
 				'id'         => $row['id'],
 				'block_id'   => $row['block_id'],
 				'message'    => BBCodeParser::load()->parse($row['message']),
-				'created_at' => timeformat($row['created_at']),
+				'created_at' => Time::timeformat($row['created_at']),
 				'author'     => [
 					'id'   => $row['user_id'],
 					'name' => $row['real_name'],
@@ -152,7 +151,7 @@ class Chat
 		$result = [
 			'id'         => $id,
 			'message'    => BBCodeParser::load()->parse($message),
-			'created_at' => timeformat($time),
+			'created_at' => Time::timeformat($time),
 			'author'     => [
 				'id'     => User::$info['id'],
 				'name'   => User::$info['name'],
