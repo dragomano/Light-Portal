@@ -521,7 +521,7 @@ public function prepareIconList(array &$icons): void
 
 (`&$configVars`)
 
-> adding custom configs in the portal basic settings area
+> προσθέτοντας προσαρμοσμένες ρυθμίσεις παραμέτρων στην περιοχή βασικών ρυθμίσεων της πύλης
 
 ### updateAdminAreas
 
