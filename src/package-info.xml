@@ -6,14 +6,8 @@
 	<version>2.7.2</version>
 	<type>modification</type>
 
-	<upgrade from="2.6.*" for="2.1.*, 3.0.*">
-		<database>upgrade.php</database>
-		<require-dir name="Sources/LightPortal" destination="$sourcedir" />
-		<require-dir name="Themes/default" destination="$themes_dir" />
-		<require-file name="portal.php" destination="$boarddir" />
-	</upgrade>
-
 	<upgrade from="2.7.*" for="2.1.*, 3.0.*">
+		<database>upgrade.php</database>
 		<require-dir name="Sources/LightPortal" destination="$sourcedir" />
 		<require-dir name="Themes/default" destination="$themes_dir" />
 		<require-file name="portal.php" destination="$boarddir" />
