@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 12.06.24
+ * @version 09.10.24
  */
 
 namespace Bugo\LightPortal\Addons\BlogMode;
@@ -20,7 +20,7 @@ if (! defined('SMF'))
 
 class BlogArticle extends PageArticle
 {
-	public const STATUS = 4;
+	public const TYPE = 'blog';
 
 	public function init(): void
 	{
@@ -28,6 +28,6 @@ class BlogArticle extends PageArticle
 
 		$this->selectedCategories = [];
 
-		$this->params['status'] = self::STATUS;
+		$this->params['entry_type'] = self::TYPE;
 	}
 }

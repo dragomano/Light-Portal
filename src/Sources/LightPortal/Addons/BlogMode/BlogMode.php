@@ -8,15 +8,17 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 08.07.24
+ * @version 09.10.24
  */
 
 namespace Bugo\LightPortal\Addons\BlogMode;
 
 use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Areas\Fields\VirtualSelectField;
 use Bugo\LightPortal\Enums\{Hook, Status, Tab};
+use Bugo\LightPortal\Areas\Partials\EntryTypeSelect;
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Utils\{Icon, ItemList};
 use Nette\Utils\Html;
@@ -46,6 +48,10 @@ class BlogMode extends Plugin
 	public function __construct()
 	{
 		$this->blogAction = Utils::$context['lp_blog_mode_plugin']['blog_action'] ?? $this->blogAction;
+
+		if (Utils::$context['user']['is_admin'] === false) {
+			unset(Utils::$context['lp_page_types']['internal']);
+		}
 	}
 
 	public function init(): void
@@ -62,7 +68,7 @@ class BlogMode extends Plugin
 		if (empty(User::hasPermission('light_portal_post_blog_entries')))
 			return;
 
-		Lang::$txt['lp_page_status_set'][BlogArticle::STATUS] = Lang::$txt['lp_blog_mode']['blogged_status'];
+		Utils::$context['lp_page_types'][$this->blogAction] = Lang::$txt['lp_blog_mode']['blogged_status'];
 
 		if (empty(Utils::$context['lp_blog_mode_plugin']['show_blogs_in_profiles']))
 			return;
@@ -87,13 +93,9 @@ class BlogMode extends Plugin
 		if (Utils::$context['user']['is_admin'])
 			return;
 
-		VirtualSelectField::make('status', Lang::$txt['status'])
+		CustomField::make('entry_type', Lang::$txt['lp_page_type'])
 			->setTab(Tab::ACCESS_PLACEMENT)
-			->setOptions([
-				Status::INACTIVE->value => Lang::$txt['lp_blog_mode']['simple_status'],
-				BlogArticle::STATUS => Lang::$txt['lp_blog_mode']['blogged_status'],
-			])
-			->setValue(Utils::$context['lp_page']['status']);
+			->setValue(static fn() => new EntryTypeSelect());
 	}
 
 	public function frontModes(array &$modes): void
@@ -169,7 +171,7 @@ class BlogMode extends Plugin
 
 	public function currentAction(string &$action): void
 	{
-		if (empty(Utils::$context['lp_page']) || Utils::$context['lp_page']['status'] !== BlogArticle::STATUS)
+		if (empty(Utils::$context['lp_page']) || Utils::$context['lp_page']['entry_type'] !== BlogArticle::TYPE)
 			return;
 
 		$action = $this->blogAction;
@@ -209,8 +211,8 @@ class BlogMode extends Plugin
 		$repository = new PageRepository();
 
 		$params = [
-			'AND p.author_id = {int:current_user} AND p.status = {int:status}',
-			['current_user' => $memID, 'status' => BlogArticle::STATUS],
+			'AND p.author_id = {int:current_user} AND p.entry_type = {string:entry_type}',
+			['current_user' => $memID, 'entry_type' => BlogArticle::TYPE],
 		];
 
 		$listOptions = [
