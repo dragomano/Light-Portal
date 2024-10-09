@@ -13,6 +13,7 @@
 namespace Bugo\LightPortal\Utils;
 
 use Bugo\Compat\{Db, User, Utils};
+use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Status;
 
 if (! defined('SMF'))
@@ -136,9 +137,11 @@ final class SessionManager
 			$result = Db::$db->query('', '
 				SELECT COUNT(page_id)
 				FROM {db_prefix}lp_pages
-				WHERE status = {int:status}',
+				WHERE entry_type = {string:entry_type}
+					AND status = {int:status}',
 				[
-					'status' => Status::INTERNAL->value,
+					'entry_type' => EntryType::INTERNAL->name(),
+					'status'     => Status::ACTIVE->value,
 				]
 			);
 

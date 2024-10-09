@@ -148,8 +148,9 @@ final class PageExport extends AbstractExport
 
 		$result = Db::$db->query('', '
 			SELECT
-				p.page_id, p.category_id, p.author_id, p.slug, p.description, p.content, p.type, p.permissions,
-				p.status, p.num_views, p.num_comments, p.created_at, p.updated_at, pt.lang, pt.value AS title, pp.name, pp.value,
+				p.page_id, p.category_id, p.author_id, p.slug, p.description, p.content, p.type, p.entry_type,
+				p.permissions, p.status, p.num_views, p.num_comments, p.created_at, p.updated_at,
+				pt.lang, pt.value AS title, pp.name, pp.value,
 				com.id, com.parent_id, com.author_id AS com_author_id, com.message, com.created_at AS com_created_at
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS pt ON (p.page_id = pt.item_id AND pt.type = {literal:page})
@@ -171,6 +172,7 @@ final class PageExport extends AbstractExport
 				'description'  => trim($row['description'] ?? ''),
 				'content'      => $row['content'],
 				'type'         => $row['type'],
+				'entry_type'   => $row['entry_type'],
 				'permissions'  => $row['permissions'],
 				'status'       => $row['status'],
 				'num_views'    => $row['num_views'],

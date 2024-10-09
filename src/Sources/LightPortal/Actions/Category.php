@@ -14,7 +14,7 @@ namespace Bugo\LightPortal\Actions;
 
 use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, User, Utils};
-use Bugo\LightPortal\Enums\{Permission, Status};
+use Bugo\LightPortal\Enums\{EntryType, Permission, Status};
 use Bugo\LightPortal\Utils\{Icon, ItemList, RequestTrait};
 use IntlException;
 use Nette\Utils\Html;
@@ -103,7 +103,7 @@ final class Category extends AbstractPageList
 	{
 		$result = Db::$db->query('', '
 			SELECT
-				p.page_id, p.author_id, p.slug, p.content, p.description, p.type,
+				p.page_id, p.author_id, p.slug, p.content, p.description, p.type, p.entry_type,
 				p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
 				COALESCE(mem.real_name, \'\') AS author_name, COALESCE(t.value, tf.value) AS title
 			FROM {db_prefix}lp_pages AS p
@@ -115,7 +115,8 @@ final class Category extends AbstractPageList
 					p.page_id = tf.item_id AND tf.type = {literal:page} AND tf.lang = {string:fallback_lang}
 				)
 			WHERE p.category_id = {int:id}
-				AND p.status IN ({array_int:statuses})
+				AND p.status = {int:status}
+				AND p.entry_type IN ({array_string:types})
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
 			ORDER BY {raw:sort}
@@ -124,7 +125,8 @@ final class Category extends AbstractPageList
 				'lang'          => User::$info['language'],
 				'fallback_lang' => Config::$language,
 				'id'            => Utils::$context['current_category'],
-				'statuses'      => [Status::ACTIVE->value, Status::INTERNAL->value],
+				'status'        => Status::ACTIVE->value,
+				'types'         => EntryType::names(),
 				'current_time'  => time(),
 				'permissions'   => Permission::all(),
 				'sort'          => $sort,
@@ -146,12 +148,14 @@ final class Category extends AbstractPageList
 			SELECT COUNT(page_id)
 			FROM {db_prefix}lp_pages
 			WHERE category_id = {string:id}
-				AND status IN ({array_int:statuses})
+				AND status = {int:status}
+				AND entry_type IN ({array_string:types})
 				AND created_at <= {int:current_time}
 				AND permissions IN ({array_int:permissions})',
 			[
 				'id'           => Utils::$context['current_category'],
-				'statuses'     => [Status::ACTIVE->value, Status::INTERNAL->value],
+				'status'        => Status::ACTIVE->value,
+				'types'        => EntryType::names(),
 				'current_time' => time(),
 				'permissions'  => Permission::all(),
 			]
@@ -243,7 +247,8 @@ final class Category extends AbstractPageList
 					c.category_id = tf.item_id AND tf.type = {literal:category} AND tf.lang = {string:fallback_lang}
 				)
 			WHERE (c.status = {int:status} OR p.category_id = 0)
-				AND p.status IN ({array_int:statuses})
+				AND p.status = {int:status}
+				AND p.entry_type IN ({array_string:types})
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
 			GROUP BY c.category_id, c.icon, c.description, c.priority, t.value, tf.value
@@ -253,7 +258,7 @@ final class Category extends AbstractPageList
 				'lang'          => User::$info['language'],
 				'fallback_lang' => Config::$language,
 				'status'        => Status::ACTIVE->value,
-				'statuses'      => [Status::ACTIVE->value, Status::INTERNAL->value],
+				'types'         => EntryType::names(),
 				'current_time'  => time(),
 				'permissions'   => Permission::all(),
 				'sort'          => $sort,

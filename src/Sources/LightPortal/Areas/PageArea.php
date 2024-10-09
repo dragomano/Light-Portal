@@ -16,7 +16,7 @@ use Bugo\Compat\{Config, ErrorHandler, Lang};
 use Bugo\Compat\{Logging, Security, Theme, User, Utils};
 use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, TextField};
-use Bugo\LightPortal\Areas\Partials\{CategorySelect, PageAuthorSelect, PageIconSelect};
+use Bugo\LightPortal\Areas\Partials\{CategorySelect, EntryTypeSelect, PageAuthorSelect, PageIconSelect};
 use Bugo\LightPortal\Areas\Partials\{PermissionSelect, StatusSelect, TagSelect};
 use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Areas\Validators\PageValidator;
@@ -94,9 +94,9 @@ final class PageArea
 			$tabs['description'] = Lang::$txt['lp_pages_unapproved_description'];
 		}
 
-		if ($this->request()->has('internal')) {
+/* 		if ($this->request()->has('internal')) {
 			$tabs['description'] = Lang::$txt['lp_pages_internal_description'];
-		}
+		} */
 
 		Utils::$context[$menu]['tab_data'] = $tabs;
 
@@ -193,6 +193,19 @@ final class PageArea
 					'sort' => [
 						'default' => 't.value DESC',
 						'reverse' => 't.value',
+					],
+				],
+				'entry_type' => [
+					'header' => [
+						'value' => Lang::$txt['lp_page_type'],
+					],
+					'data' => [
+						'db' => 'entry_type',
+						'class' => 'centertext',
+					],
+					'sort' => [
+						'default' => 'p.entry_type DESC',
+						'reverse' => 'p.entry_type',
 					],
 				],
 				'status' => [
@@ -557,7 +570,7 @@ final class PageArea
 			[
 				'search'            => Utils::$smcFunc['strtolower']($searchParams['string']),
 				'unapproved'        => Status::UNAPPROVED->value,
-				'internal'          => Status::INTERNAL->value,
+				//'internal'          => Status::INTERNAL->value,
 				'included_statuses' => [Status::INACTIVE->value, Status::ACTIVE->value],
 			],
 		];
@@ -575,11 +588,11 @@ final class PageArea
 		} elseif ($this->request()->has('moderate')) {
 			$this->browseType = 'mod';
 			$this->type = ';moderate';
-		} elseif ($this->request()->has('internal')) {
+		}/*  elseif ($this->request()->has('internal')) {
 			$this->browseType = 'int';
 			$this->type = ';internal';
 			$this->status = Status::INTERNAL->value;
-		}
+		} */
 	}
 
 	private function changeTableTitle(): void
@@ -600,11 +613,11 @@ final class PageArea
 				Lang::$txt['awaiting_approval'],
 				Utils::$context['lp_quantities']['unapproved_pages']
 			],
-			'int' => [
+			/* 'int' => [
 				';internal',
 				Lang::$txt['lp_pages_internal'],
 				Utils::$context['lp_quantities']['internal_pages']
-			]
+			] */
 		];
 
 		if (! Utils::$context['allow_light_portal_manage_pages_any']) {
@@ -742,6 +755,10 @@ final class PageArea
 			CustomField::make('status', Lang::$txt['status'])
 				->setTab(Tab::ACCESS_PLACEMENT)
 				->setValue(static fn() => new StatusSelect());
+
+			CustomField::make('entry_type', Lang::$txt['lp_page_type'])
+				->setTab(Tab::ACCESS_PLACEMENT)
+				->setValue(static fn() => new EntryTypeSelect());
 
 			CustomField::make('author_id', Lang::$txt['lp_page_author'])
 				->setTab(Tab::ACCESS_PLACEMENT)

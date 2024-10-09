@@ -14,7 +14,7 @@ namespace Bugo\LightPortal\Articles;
 
 use Bugo\Compat\{BBCodeParser, Config, Db, Lang, User, Utils};
 use Bugo\LightPortal\AddonHandler;
-use Bugo\LightPortal\Enums\{Permission, PortalHook, Status};
+use Bugo\LightPortal\Enums\{EntryType, Permission, PortalHook, Status};
 use Bugo\LightPortal\Utils\{Avatar, Content, EntityDataTrait};
 use Bugo\LightPortal\Utils\{Icon, Setting, Str};
 
@@ -52,6 +52,7 @@ class PageArticle extends AbstractArticle
 			'lang'                => User::$info['language'],
 			'fallback_lang'       => Config::$language,
 			'status'              => Status::ACTIVE->value,
+			'entry_type'          => EntryType::DEFAULT->name(),
 			'current_time'        => time(),
 			'permissions'         => Permission::all(),
 			'selected_categories' => $this->selectedCategories,
@@ -101,6 +102,7 @@ class PageArticle extends AbstractArticle
 				)' . (empty($this->tables) ? '' : '
 				' . implode("\n\t\t\t\t\t", $this->tables)) . '
 			WHERE p.status = {int:status}
+				AND p.entry_type = {string:entry_type}
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})' . (empty($this->selectedCategories) ? '' : '
 				AND p.category_id IN ({array_int:selected_categories})') . (empty($this->wheres) ? '' : '
@@ -151,6 +153,7 @@ class PageArticle extends AbstractArticle
 			FROM {db_prefix}lp_pages AS p' . (empty($this->tables) ? '' : '
 				' . implode("\n\t\t\t\t\t", $this->tables)) . '
 			WHERE p.status = {int:status}
+				AND p.entry_type = {string:entry_type}
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})' . (empty($this->selectedCategories) ? '' : '
 				AND p.category_id IN ({array_int:selected_categories})') . (empty($this->wheres) ? '' : '

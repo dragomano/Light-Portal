@@ -12,13 +12,20 @@
 
 namespace Bugo\LightPortal\Enums;
 
-use Bugo\LightPortal\Enums\Traits\HasValuesTrait;
+use Bugo\Compat\Lang;
+use Bugo\LightPortal\Enums\Traits\HasNamesTrait;
 
-enum Status: int
+use function array_combine;
+
+enum EntryType
 {
-	use HasValuesTrait;
+	use HasNamesTrait;
 
-	case INACTIVE = 0;
-	case ACTIVE = 1;
-	case UNAPPROVED = 2;
+	case DEFAULT;
+	case INTERNAL;
+
+	public static function all(): array
+	{
+		return array_combine(self::names(), Lang::$txt['lp_page_type_set']);
+	}
 }

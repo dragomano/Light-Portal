@@ -69,6 +69,19 @@ final class PageImport extends AbstractImport
 
 		foreach ($xml as $element) {
 			foreach ($element->item as $item) {
+				$status = intval($item['status']);
+
+				switch ($status) {
+					case 3:
+						$entryType = 'internal';
+						break;
+					case 4:
+						$entryType = 'blog';
+						break;
+					default:
+						$entryType = (string) ($item['entry_type'] ?? 'default');
+				}
+
 				$items[] = [
 					'page_id'      => $pageId = intval($item['page_id']),
 					'category_id'  => intval($item['category_id']),
@@ -77,8 +90,9 @@ final class PageImport extends AbstractImport
 					'description'  => $item->description,
 					'content'      => $item->content,
 					'type'         => str_replace('md', 'markdown', (string) $item->type),
+					'entry_type'   => $entryType,
 					'permissions'  => intval($item['permissions']),
-					'status'       => intval($item['status']),
+					'status'       => $status,
 					'num_views'    => intval($item['num_views']),
 					'num_comments' => intval($item['num_comments']),
 					'created_at'   => intval($item['created_at']),
@@ -142,6 +156,7 @@ final class PageImport extends AbstractImport
 				'description'  => 'string-255',
 				'content'      => 'string',
 				'type'         => 'string',
+				'entry_type'   => 'string',
 				'permissions'  => 'int',
 				'status'       => 'int',
 				'num_views'    => 'int',

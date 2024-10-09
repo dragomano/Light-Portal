@@ -224,7 +224,7 @@ $txt['lp_pages_extra'] = 'Portal pages';
 $txt['lp_pages_search'] = 'Slug or title';
 $txt['lp_page_slug'] = 'Slug';
 $txt['lp_page_slug_subtext'] = 'The page slug must begin with a Latin letter and consist of lowercase Latin letters, numbers or dashes.';
-$txt['lp_page_type'] = 'Page type';
+$txt['lp_page_type'] = 'Type';
 $txt['lp_page_description'] = 'Description';
 $txt['lp_page_tags_placeholder'] = 'Select tags';
 $txt['lp_page_tags_empty'] = 'No tags yet';
@@ -236,7 +236,8 @@ $txt['lp_page_show_author_and_date'] = 'Show the author and posting date';
 $txt['lp_page_show_related_pages'] = 'Show related pages';
 $txt['lp_page_allow_comments'] = 'Allow comments';
 $txt['lp_page_show_in_menu'] = 'Show in the Main menu';
-$txt['lp_page_status_set'] = ['Inactive', 'Active', 'Unapproved', 'Internal'];
+$txt['lp_page_status_set'] = ['Inactive', 'Active', 'Unapproved'];
+$txt['lp_page_type_set'] = ['Default', 'Internal'];
 
 // Categories
 $txt['lp_categories'] = 'Categories';

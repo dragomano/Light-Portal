@@ -35,6 +35,8 @@ class PageModel extends AbstractModel
 
 	public string $type;
 
+	public string $entryType;
+
 	public int $permissions;
 
 	public int $status;
@@ -70,6 +72,8 @@ class PageModel extends AbstractModel
 		$this->content = $postData['content'] ?? $currentPage['content'] ?? '';
 
 		$this->type = $postData['type'] ?? $currentPage['type'] ?? 'bbc';
+
+		$this->entryType = $postData['entry_type'] ?? $currentPage['entry_type'] ?? 'default';
 
 		$this->permissions = $postData['permissions'] ?? $currentPage['permissions']
 			?? (int) (Config::$modSettings['lp_permissions_default'] ?? 2);

@@ -37,6 +37,7 @@ class PageValidator extends AbstractValidator
 		'description' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
 		'tags'        => FILTER_DEFAULT,
 		'type'        => FILTER_DEFAULT,
+		'entry_type'  => FILTER_DEFAULT,
 		'permissions' => FILTER_VALIDATE_INT,
 		'status'      => FILTER_VALIDATE_INT,
 		'date'        => FILTER_DEFAULT,

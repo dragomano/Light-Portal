@@ -22,6 +22,7 @@ use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Compilers\CompilerInterface;
 use Bugo\LightPortal\Enums\ContentClass;
 use Bugo\LightPortal\Enums\ContentType;
+use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Placement;
 use Bugo\LightPortal\Enums\PluginType;
 use Bugo\LightPortal\Enums\TitleClass;
@@ -75,6 +76,7 @@ class LoadTheme
 		Utils::$context['lp_block_placements']    = Placement::all();
 		Utils::$context['lp_plugin_types']        = PluginType::all();
 		Utils::$context['lp_content_types']       = ContentType::all();
+		Utils::$context['lp_page_types']          = EntryType::all();
 
 		Utils::$context['lp_enabled_plugins'] = empty(Config::$modSettings['lp_enabled_plugins'])
 			? [] : explode(',', (string) Config::$modSettings['lp_enabled_plugins']);
