@@ -38,6 +38,7 @@ use function date;
 use function floor;
 use function glob;
 use function is_array;
+use function ltrim;
 use function number_format;
 use function ob_get_clean;
 use function ob_start;
@@ -109,6 +110,8 @@ final class FrontPage implements ActionInterface
 		$article->init();
 
 		$key = 'articles_u' . User::$info['id'] . '_' . User::$info['language'] . '_' . $start . '_' . $limit;
+
+		$key = ltrim($this->request('action', '') . '_' . $key, '_');
 
 		if (($data = $this->cache()->get($key)) === null) {
 			$data['total'] = $article->getTotalCount();
