@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 02.06.24
+ * @version 09.10.24
  */
 
 namespace Bugo\LightPortal\Addons\PageList;
@@ -16,8 +16,8 @@ namespace Bugo\LightPortal\Addons\PageList;
 use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField, VirtualSelectField};
-use Bugo\LightPortal\Areas\Partials\CategorySelect;
-use Bugo\LightPortal\Enums\{Permission, Tab};
+use Bugo\LightPortal\Areas\Partials\{CategorySelect, EntryTypeSelect};
+use Bugo\LightPortal\Enums\{EntryType, Permission, Status, Tab};
 use Bugo\LightPortal\Utils\{DateTime, Setting, Str};
 use IntlException;
 
@@ -39,6 +39,7 @@ class PageList extends Block
 
 		$params = [
 			'categories' => '',
+			'types'      => EntryType::DEFAULT->name(),
 			'sort'       => 'page_id',
 			'num_pages'  => 10,
 		];
@@ -51,6 +52,7 @@ class PageList extends Block
 
 		$params = [
 			'categories' => FILTER_DEFAULT,
+			'types'      => FILTER_DEFAULT,
 			'sort'       => FILTER_DEFAULT,
 			'num_pages'  => FILTER_VALIDATE_INT,
 		];
@@ -67,6 +69,13 @@ class PageList extends Block
 				'id'    => 'categories',
 				'hint'  => Lang::$txt['lp_page_list']['categories_select'],
 				'value' => Utils::$context['lp_block']['options']['categories'] ?? '',
+			]);
+
+		CustomField::make('types', Lang::$txt['lp_page_type'])
+			->setTab(Tab::CONTENT)
+			->setValue(static fn() => new EntryTypeSelect(), [
+				'id'    => 'types',
+				'value' => Utils::$context['lp_block']['options']['types'] ?? '',
 			]);
 
 		VirtualSelectField::make('sort', Lang::$txt['lp_page_list']['sort'])
@@ -88,6 +97,8 @@ class PageList extends Block
 
 		$categories = empty($parameters['categories']) ? null : explode(',', (string) $parameters['categories']);
 
+		$type = empty($parameters['types']) ? EntryType::DEFAULT->name() : $parameters['types'];
+
 		$result = Utils::$smcFunc['db_query']('', '
 			SELECT
 				p.page_id, p.category_id, p.slug, p.type, p.num_views, p.num_comments, p.created_at, p.updated_at,
@@ -95,6 +106,7 @@ class PageList extends Block
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 			WHERE p.status = {int:status}
+				AND p.entry_type = {string:entry_type}
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})' . ($categories ? '
 				AND p.category_id IN ({array_int:categories})' : '') . '
@@ -102,7 +114,8 @@ class PageList extends Block
 			LIMIT {int:limit}'),
 			[
 				'guest'        => Lang::$txt['guest_title'],
-				'status'       => 1,
+				'status'       => Status::ACTIVE->value,
+				'entry_type'   => $type,
 				'current_time' => time(),
 				'permissions'  => Permission::all(),
 				'categories'   => $categories,
