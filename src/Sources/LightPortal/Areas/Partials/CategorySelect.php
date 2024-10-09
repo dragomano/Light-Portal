@@ -32,6 +32,7 @@ final class CategorySelect extends AbstractPartial
 		$params['id'] ??= 'lp_frontpage_categories';
 		$params['multiple'] ??= true;
 		$params['full_width'] ??= true;
+		$params['hint'] ??= Lang::$txt['lp_frontpage_categories_select'];
 		$params['data'] ??= $this->getEntityData('category');
 		$params['value'] ??= Config::$modSettings['lp_frontpage_categories'] ?? '';
 
@@ -54,7 +55,7 @@ final class CategorySelect extends AbstractPartial
 				search: true,' . (count($params['data']) < 2 ? '
 				disabled: true,' : '') . '
 				markSearchResults: true,
-				placeholder: "' . ($params['hint'] ?? Lang::$txt['lp_frontpage_categories_select']) . '",
+				placeholder: "' . $params['hint'] . '",
 				noSearchResultsText: "' . Lang::$txt['no_matches'] . '",
 				searchPlaceholderText: "' . Lang::$txt['search'] . '",
 				allOptionsSelectedText: "' . Lang::$txt['all'] . '",' . ($params['multiple'] ? '
