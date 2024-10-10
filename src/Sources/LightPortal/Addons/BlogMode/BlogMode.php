@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 09.10.24
+ * @version 10.10.24
  */
 
 namespace Bugo\LightPortal\Addons\BlogMode;
@@ -90,7 +90,7 @@ class BlogMode extends Plugin
 
 	public function preparePageFields(): void
 	{
-		if (Utils::$context['user']['is_admin'])
+		if (Utils::$context['user']['is_admin'] || empty(User::hasPermission('light_portal_post_blog_entries')))
 			return;
 
 		CustomField::make('entry_type', Lang::$txt['lp_page_type'])
