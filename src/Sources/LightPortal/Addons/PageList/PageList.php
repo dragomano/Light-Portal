@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 09.10.24
+ * @version 10.10.24
  */
 
 namespace Bugo\LightPortal\Addons\PageList;
@@ -106,6 +106,7 @@ class PageList extends Block
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 			WHERE p.status = {int:status}
+				AND p.deleted_at = 0
 				AND p.entry_type = {string:entry_type}
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})' . ($categories ? '

@@ -94,9 +94,9 @@ final class PageArea
 			$tabs['description'] = Lang::$txt['lp_pages_unapproved_description'];
 		}
 
-/* 		if ($this->request()->has('internal')) {
-			$tabs['description'] = Lang::$txt['lp_pages_internal_description'];
-		} */
+		if ($this->request()->has('deleted')) {
+			$tabs['description'] = Lang::$txt['lp_pages_deleted_description'];
+		}
 
 		Utils::$context[$menu]['tab_data'] = $tabs;
 
@@ -251,20 +251,26 @@ final class PageArea
 						'style' => 'width: 8%',
 					],
 					'data' => [
-						'function' => static fn($entry) => /** @lang text */ '
+						'function' => fn($entry) => /** @lang text */ '
 						<div data-id="' . $entry['id'] . '" x-data="{ showContextMenu: false }">
 							<div class="context_menu" @click.outside="showContextMenu = false">
 								<button class="button floatnone" @click.prevent="showContextMenu = true">
 									' . Icon::get('ellipsis') . '
 								</button>
 								<div class="roundframe" x-show="showContextMenu">
-									<ul>
+									<ul>' . ($this->request()->has('deleted') ? '
+										<li>
+											<a @click.prevent="showContextMenu = false; page.restore($root)" class="button">' . Lang::$txt['restore_message'] . '</a>
+										</li>
+										<li>
+											<a @click.prevent="showContextMenu = false; page.removeForever($root)" class="button error">' . Lang::$txt['lp_action_remove_permanently'] . '</a>
+										</li>' : '
 										<li>
 											<a href="' . Config::$scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'] . '" class="button">' . Lang::$txt['modify'] . '</a>
 										</li>
 										<li>
 											<a @click.prevent="showContextMenu = false; page.remove($root)" class="button error">' . Lang::$txt['remove'] . '</a>
-										</li>
+										</li>') . '
 									</ul>
 								</div>
 							</div>
@@ -338,7 +344,9 @@ final class PageArea
 				'value' =>
 					Html::el('select', ['name' => 'page_actions'])
 						->addHtml(
-							Html::el('option', ['value' => 'delete'])->setText(Lang::$txt['remove'])
+							Html::el('option', [
+								'value' => $this->request()->has('deleted') ? 'delete_forever' : 'delete'
+							])->setText(Lang::$txt[$this->request()->has('deleted') ? 'lp_action_remove_permanently' : 'remove'])
 						)
 						->addHtml(
 							Utils::$context['allow_light_portal_approve_pages']
@@ -500,8 +508,10 @@ final class PageArea
 		$data = $this->request()->json();
 
 		match (true) {
-			isset($data['delete_item']) => $this->repository->remove([(int) $data['delete_item']]),
-			isset($data['toggle_item']) => $this->repository->toggleStatus([(int) $data['toggle_item']]),
+			isset($data['delete_item'])    => $this->repository->remove([(int) $data['delete_item']]),
+			isset($data['toggle_item'])    => $this->repository->toggleStatus([(int) $data['toggle_item']]),
+			isset($data['restore_item'])   => $this->repository->restore([(int) $data['restore_item']]),
+			isset($data['remove_forever']) => $this->repository->removePermanently([(int) $data['remove_forever']]),
 		};
 
 		$this->cache()->flush();
@@ -522,6 +532,9 @@ final class PageArea
 		switch (filter_input(INPUT_POST, 'page_actions')) {
 			case 'delete':
 				$this->repository->remove($items);
+				break;
+			case 'delete_forever':
+				$this->repository->removePermanently($items);
 				break;
 			case 'toggle':
 				$this->repository->toggleStatus($items);
@@ -559,19 +572,26 @@ final class PageArea
 					? ''
 					: ' AND (INSTR(LOWER(p.slug), {string:search}) > 0 OR INSTR(LOWER(t.value), {string:search}) > 0)'
 			) . (
-				$this->request()->has('u') ? ' AND p.author_id = {int:user_id}' : ''
+				$this->request()->has('u') ?
+					' AND p.author_id = {int:user_id} AND p.deleted_at = 0'
+					: ''
 			) . (
-				$this->request()->has('moderate') ? ' AND p.status = {int:unapproved}' : ''
+				$this->request()->has('moderate')
+					? ' AND p.status = {int:unapproved} AND p.deleted_at = 0'
+					: ''
 			) . (
-				$this->request()->has('internal') ? ' AND p.status = {int:internal}' : ''
+				$this->request()->has('deleted')
+					? ' AND p.deleted_at <> 0'
+					: ''
 			) . (
-				$this->request()->hasNot(['u', 'moderate', 'internal']) ? ' AND p.status IN ({array_int:included_statuses})' : ''
+				$this->request()->hasNot(['u', 'moderate', 'deleted'])
+					? ' AND p.status IN ({array_int:statuses}) AND p.deleted_at = 0'
+					: ''
 			),
 			[
-				'search'            => Utils::$smcFunc['strtolower']($searchParams['string']),
-				'unapproved'        => Status::UNAPPROVED->value,
-				//'internal'          => Status::INTERNAL->value,
-				'included_statuses' => [Status::INACTIVE->value, Status::ACTIVE->value],
+				'search'     => Utils::$smcFunc['strtolower']($searchParams['string']),
+				'unapproved' => Status::UNAPPROVED->value,
+				'statuses'   => [Status::INACTIVE->value, Status::ACTIVE->value],
 			],
 		];
 	}
@@ -588,11 +608,10 @@ final class PageArea
 		} elseif ($this->request()->has('moderate')) {
 			$this->browseType = 'mod';
 			$this->type = ';moderate';
-		}/*  elseif ($this->request()->has('internal')) {
-			$this->browseType = 'int';
-			$this->type = ';internal';
-			$this->status = Status::INTERNAL->value;
-		} */
+		} elseif ($this->request()->has('deleted')) {
+			$this->browseType = 'del';
+			$this->type = ';deleted';
+		}
 	}
 
 	private function changeTableTitle(): void
@@ -613,15 +632,15 @@ final class PageArea
 				Lang::$txt['awaiting_approval'],
 				Utils::$context['lp_quantities']['unapproved_pages']
 			],
-			/* 'int' => [
-				';internal',
-				Lang::$txt['lp_pages_internal'],
-				Utils::$context['lp_quantities']['internal_pages']
-			] */
+			'del' => [
+				';deleted',
+				Lang::$txt['lp_pages_deleted'],
+				Utils::$context['lp_quantities']['deleted_pages']
+			]
 		];
 
 		if (! Utils::$context['allow_light_portal_manage_pages_any']) {
-			unset($titles['all'], $titles['mod'], $titles['int']);
+			unset($titles['all'], $titles['mod'], $titles['del']);
 		}
 
 		Utils::$context['lp_pages']['title'] .= ': ';
@@ -638,7 +657,7 @@ final class PageArea
 				->setText($details[1] . ' (' . $details[2] . ')')
 				->toHtml();
 
-			if ($browseType !== 'int' && count($titles) > 1) {
+			if ($browseType !== 'del' && count($titles) > 1) {
 				Utils::$context['lp_pages']['title'] .= ' | ';
 			}
 		}

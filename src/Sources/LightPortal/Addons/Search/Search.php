@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 05.06.24
+ * @version 10.10.24
  */
 
 namespace Bugo\LightPortal\Addons\Search;
@@ -124,6 +124,7 @@ class Search extends Block
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 			WHERE (' . $searchFormula . ') > 0
 				AND p.status = {int:status}
+				AND p.deleted_at = 0
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
 			ORDER BY related DESC

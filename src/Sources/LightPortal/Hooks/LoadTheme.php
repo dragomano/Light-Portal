@@ -159,7 +159,7 @@ class LoadTheme
 
 		$entities = [
 			'active_blocks', 'active_pages', 'my_pages', 'unapproved_pages',
-			'internal_pages', 'active_categories', 'active_tags',
+			'deleted_pages', 'active_categories', 'active_tags',
 		];
 
 		Utils::$context['lp_quantities'] = array_map(

@@ -97,6 +97,7 @@ final class PageImport extends AbstractImport
 					'num_comments' => intval($item['num_comments']),
 					'created_at'   => intval($item['created_at']),
 					'updated_at'   => intval($item['updated_at']),
+					'deleted_at'   => intval($item['deleted_at']),
 				];
 
 				if ($item->titles) {

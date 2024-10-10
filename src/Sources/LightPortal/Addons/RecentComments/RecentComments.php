@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 02.06.24
+ * @version 10.10.24
  */
 
 namespace Bugo\LightPortal\Addons\RecentComments;
@@ -93,6 +93,7 @@ class RecentComments extends Block
 					par.item_id = com.page_id AND par.type = {literal:page} AND par.name = {literal:allow_comments}
 				)
 			WHERE p.status = {int:status}
+				AND p.deleted_at = 0
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
 				AND par.value > 0

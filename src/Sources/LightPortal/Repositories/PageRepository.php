@@ -228,7 +228,7 @@ final class PageRepository extends AbstractRepository
 		$this->session('lp')->free('active_pages');
 		$this->session('lp')->free('my_pages');
 		$this->session('lp')->free('unapproved_pages');
-		$this->session('lp')->free('internal_pages');
+		$this->session('lp')->free('deleted_pages');
 
 		if ($this->request()->has('save_exit')) {
 			Utils::redirectexit('action=admin;area=lp_pages;sa=main');
@@ -240,6 +240,47 @@ final class PageRepository extends AbstractRepository
 	}
 
 	public function remove(array $items): void
+	{
+		if ($items === [])
+			return;
+
+		Db::$db->query('', '
+			UPDATE {db_prefix}lp_pages
+			SET deleted_at = {int:time}
+			WHERE page_id IN ({array_int:items})',
+			[
+				'time'  => time(),
+				'items' => $items,
+			]
+		);
+
+		$this->session('lp')->free('active_pages');
+		$this->session('lp')->free('my_pages');
+		$this->session('lp')->free('unapproved_pages');
+		$this->session('lp')->free('deleted_pages');
+	}
+
+	public function restore(array $items): void
+	{
+		if ($items === [])
+			return;
+
+		Db::$db->query('', '
+			UPDATE {db_prefix}lp_pages
+			SET deleted_at = 0
+			WHERE page_id IN ({array_int:items})',
+			[
+				'items' => $items,
+			]
+		);
+
+		$this->session('lp')->free('active_pages');
+		$this->session('lp')->free('my_pages');
+		$this->session('lp')->free('unapproved_pages');
+		$this->session('lp')->free('deleted_pages');
+	}
+
+	public function removePermanently(array $items): void
 	{
 		if ($items === [])
 			return;
@@ -317,7 +358,7 @@ final class PageRepository extends AbstractRepository
 		$this->session('lp')->free('active_pages');
 		$this->session('lp')->free('my_pages');
 		$this->session('lp')->free('unapproved_pages');
-		$this->session('lp')->free('internal_pages');
+		$this->session('lp')->free('deleted_pages');
 	}
 
 	public function getPrevNextLinks(array $page): array

@@ -30,7 +30,7 @@ final class SessionManager
 			'active_pages'      => $this->getActivePagesCount(),
 			'my_pages'          => $this->getMyPagesCount(),
 			'unapproved_pages'  => $this->getUnapprovedPagesCount(),
-			'internal_pages'    => $this->getInternalPagesCount(),
+			'deleted_pages'     => $this->getDeletedPagesCount(),
 			'active_categories' => $this->getActiveCategoriesCount(),
 			'active_tags'       => $this->getActiveTagsCount(),
 			default             => 0,
@@ -67,7 +67,8 @@ final class SessionManager
 			$result = Db::$db->query('', '
 				SELECT COUNT(page_id)
 				FROM {db_prefix}lp_pages
-				WHERE status = {int:status}' . (Utils::$context['allow_light_portal_manage_pages_any'] ? '' : '
+				WHERE status = {int:status}
+					AND deleted_at = 0' . (Utils::$context['allow_light_portal_manage_pages_any'] ? '' : '
 					AND author_id = {int:author}'),
 				[
 					'status' => Status::ACTIVE->value,
@@ -93,7 +94,8 @@ final class SessionManager
 			$result = Db::$db->query('', '
 				SELECT COUNT(page_id)
 				FROM {db_prefix}lp_pages
-				WHERE author_id = {int:author}',
+				WHERE author_id = {int:author}
+					AND deleted_at = 0',
 				[
 					'author' => User::$info['id'],
 				]
@@ -115,7 +117,8 @@ final class SessionManager
 			$result = Db::$db->query('', '
 				SELECT COUNT(page_id)
 				FROM {db_prefix}lp_pages
-				WHERE status = {int:status}',
+				WHERE status = {int:status}
+					AND deleted_at = 0',
 				[
 					'status' => Status::UNAPPROVED->value,
 				]
@@ -131,28 +134,24 @@ final class SessionManager
 		return $this->session('lp')->get('unapproved_pages') ?? 0;
 	}
 
-	public function getInternalPagesCount(): int
+	public function getDeletedPagesCount(): int
 	{
-		if ($this->session('lp')->get('internal_pages') === null) {
+		if ($this->session('lp')->get('deleted_pages') === null) {
 			$result = Db::$db->query('', '
 				SELECT COUNT(page_id)
 				FROM {db_prefix}lp_pages
-				WHERE entry_type = {string:entry_type}
-					AND status = {int:status}',
-				[
-					'entry_type' => EntryType::INTERNAL->name(),
-					'status'     => Status::ACTIVE->value,
-				]
+				WHERE deleted_at <> 0',
+				[]
 			);
 
 			[$count] = Db::$db->fetch_row($result);
 
 			Db::$db->free_result($result);
 
-			$this->session('lp')->put('internal_pages', (int) $count);
+			$this->session('lp')->put('deleted_pages', (int) $count);
 		}
 
-		return $this->session('lp')->get('internal_pages') ?? 0;
+		return $this->session('lp')->get('deleted_pages') ?? 0;
 	}
 
 	public function getActiveCategoriesCount(): int

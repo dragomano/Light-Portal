@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 02.06.24
+ * @version 10.10.24
  */
 
 namespace Bugo\LightPortal\Addons\RandomPages;
@@ -86,6 +86,7 @@ class RandomPages extends Block
 						SELECT min(p.page_id), (
 							SELECT p.page_id FROM {db_prefix}lp_pages AS p
 							WHERE p.status = {int:status}
+								AND p.deleted_at = 0
 								AND p.created_at <= {int:current_time}
 								AND p.permissions IN ({array_int:permissions})' . (empty($categories) ? '' : '
 								AND p.category_id IN ({array_int:categories})') . '
@@ -94,6 +95,7 @@ class RandomPages extends Block
 						) max
 						FROM {db_prefix}lp_pages AS p
 						WHERE p.status = {int:status}
+							AND p.deleted_at = 0
 							AND p.created_at <= {int:current_time}
 							AND p.permissions IN ({array_int:permissions})' . (empty($categories) ? '' : '
 							AND p.category_id IN ({array_int:categories})') . '
@@ -102,6 +104,7 @@ class RandomPages extends Block
 						SELECT p.page_id, min, max, array[]::integer[] || p.page_id AS a, 0 AS n
 						FROM {db_prefix}lp_pages AS p, b
 						WHERE p.status = {int:status}
+							AND p.deleted_at = 0
 							AND p.created_at <= {int:current_time}
 							AND p.permissions IN ({array_int:permissions})
 							AND p.page_id >= min + ((max - min) * random())::int' . (empty($categories) ? '' : '
@@ -111,6 +114,7 @@ class RandomPages extends Block
 						SELECT p.page_id, min, max, a || p.page_id, r.n + 1 AS n
 						FROM {db_prefix}lp_pages AS p, r
 						WHERE p.status = {int:status}
+							AND p.deleted_at = 0
 							AND p.created_at <= {int:current_time}
 							AND p.permissions IN ({array_int:permissions})
 							AND p.page_id >= min + ((max - min) * random())::int
@@ -142,7 +146,9 @@ class RandomPages extends Block
 				return $this->getData(array_merge($parameters, ['num_pages' => $pagesCount - 1]));
 
 			$result = Utils::$smcFunc['db_query']('', '
-				SELECT p.page_id, p.slug, p.created_at, p.num_views, COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
+				SELECT
+					p.page_id, p.slug, p.created_at, p.num_views,
+					COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
 				FROM {db_prefix}lp_pages AS p
 					LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				WHERE p.page_id IN ({array_int:page_ids})',
@@ -153,10 +159,13 @@ class RandomPages extends Block
 			);
 		} else {
 			$result = Utils::$smcFunc['db_query']('', '
-				SELECT p.page_id, p.slug, p.created_at, p.num_views, COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
+				SELECT
+					p.page_id, p.slug, p.created_at, p.num_views,
+					COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
 				FROM {db_prefix}lp_pages AS p
 					LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				WHERE p.status = {int:status}
+					AND p.deleted_at = 0
 					AND p.created_at <= {int:current_time}
 					AND p.permissions IN ({array_int:permissions})' . (empty($categories) ? '' : '
 					AND p.category_id IN ({array_int:categories})') . '

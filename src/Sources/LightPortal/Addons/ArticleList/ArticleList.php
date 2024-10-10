@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 02.06.24
+ * @version 10.10.24
  */
 
 namespace Bugo\LightPortal\Addons\ArticleList;
@@ -151,6 +151,7 @@ class ArticleList extends Block
 			SELECT page_id, slug, content, description, type
 			FROM {db_prefix}lp_pages
 			WHERE status = {int:status}
+				AND deleted_at = 0
 				AND created_at <= {int:current_time}
 				AND permissions IN ({array_int:permissions})
 				AND page_id IN ({array_int:pages})
