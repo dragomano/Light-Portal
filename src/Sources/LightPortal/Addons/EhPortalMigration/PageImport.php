@@ -8,13 +8,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 30.05.24
+ * @version 10.10.24
  */
 
 namespace Bugo\LightPortal\Addons\EhPortalMigration;
 
 use Bugo\Compat\{Config, Db, Lang, User, Utils};
 use Bugo\LightPortal\Areas\Imports\AbstractCustomPageImport;
+use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Utils\{DateTime, ItemList};
 use IntlException;
 
@@ -225,13 +226,13 @@ class PageImport extends AbstractCustomPageImport
 			$groups = $row['groups_allowed'];
 
 			if ($groups == -1) {
-				$perm = 1;
+				$perm = Permission::GUEST->value;
 			} elseif ($groups == 0) {
-				$perm = 2;
+				$perm = Permission::MEMBER->value;
 			} elseif ($groups == 1) {
-				$perm = 0;
+				$perm = Permission::ADMIN->value;
 			} else {
-				$perm = 3;
+				$perm = Permission::ALL->value;
 			}
 		}
 

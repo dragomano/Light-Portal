@@ -8,15 +8,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 30.05.24
+ * @version 10.10.24
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortalMigration;
 
 use Bugo\Compat\{Config, Db, Lang, Utils};
 use Bugo\LightPortal\Areas\Imports\AbstractCustomBlockImport;
-use Bugo\LightPortal\Enums\ContentType;
-use Bugo\LightPortal\Enums\Placement;
+use Bugo\LightPortal\Enums\{ContentType, Permission, Placement};
 use Bugo\LightPortal\Utils\ItemList;
 
 use const LP_NAME;
@@ -195,25 +194,12 @@ class BlockImport extends AbstractCustomBlockImport
 
 		$items = [];
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
-			$permissions = explode(',', (string) $row['access']);
-
-			$perm = 0;
-			if (count($permissions) == 1 && $permissions[0] == -1) {
-				$perm = 1;
-			} elseif (count($permissions) == 1 && $permissions[0] == 0) {
-				$perm = 2;
-			} elseif (in_array(-1, $permissions)) {
-				$perm = 3;
-			} elseif (in_array(0, $permissions)) {
-				$perm = 3;
-			}
-
 			$items[$row['id']] = [
 				'type'          => $this->getType($row['type']),
 				'title'         => $row['title'],
 				'content'       => $row['body'],
 				'placement'     => $this->getPlacement($row['bar']),
-				'permissions'   => $perm,
+				'permissions'   => $this->getBlockPermission($row),
 				'status'        => 0,
 				'title_class'   => array_key_first(Utils::$context['lp_all_title_classes']),
 				'content_class' => array_key_first(Utils::$context['lp_all_content_classes']),
@@ -244,5 +230,23 @@ class BlockImport extends AbstractCustomBlockImport
 			7 => Placement::BOTTOM->name(),
 			default => Placement::TOP->name(),
 		};
+	}
+
+	private function getBlockPermission(array $row): int
+	{
+		$permissions = explode(',', (string) $row['access']);
+
+		$perm = Permission::ADMIN->value;
+		if (count($permissions) == 1 && $permissions[0] == -1) {
+			$perm = Permission::GUEST->value;
+		} elseif (count($permissions) == 1 && $permissions[0] == 0) {
+			$perm = Permission::MEMBER->value;
+		} elseif (in_array(-1, $permissions)) {
+			$perm = Permission::ALL->value;
+		} elseif (in_array(0, $permissions)) {
+			$perm = Permission::ALL->value;
+		}
+
+		return $perm;
 	}
 }

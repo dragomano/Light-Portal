@@ -17,7 +17,7 @@ use Bugo\Compat\{BBCodeParser, Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, RadioField};
 use Bugo\LightPortal\Areas\Partials\{ContentClassSelect, PageSelect, TopicSelect};
-use Bugo\LightPortal\Enums\{Permission, Tab};
+use Bugo\LightPortal\Enums\{EntryType, Permission, Status, Tab};
 use Bugo\LightPortal\Utils\{Content, Setting, Str};
 
 if (! defined('LP_NAME'))
@@ -151,13 +151,15 @@ class ArticleList extends Block
 			SELECT page_id, slug, content, description, type
 			FROM {db_prefix}lp_pages
 			WHERE status = {int:status}
+				AND entry_type = {string:entry_type}
 				AND deleted_at = 0
 				AND created_at <= {int:current_time}
 				AND permissions IN ({array_int:permissions})
 				AND page_id IN ({array_int:pages})
 			ORDER BY page_id DESC',
 			[
-				'status'       => 1,
+				'status'       => Status::ACTIVE->value,
+				'entry_type'   => EntryType::DEFAULT->name(),
 				'current_time' => time(),
 				'permissions'  => Permission::all(),
 				'pages'        => explode(',', (string) $parameters['include_pages']),

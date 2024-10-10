@@ -17,7 +17,7 @@ use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Addons\Block;
 use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField};
 use Bugo\LightPortal\Areas\Partials\CategorySelect;
-use Bugo\LightPortal\Enums\{Permission, Tab};
+use Bugo\LightPortal\Enums\{EntryType, Permission, Status, Tab};
 use Bugo\LightPortal\Utils\{DateTime, Str};
 use IntlException;
 
@@ -86,6 +86,7 @@ class RandomPages extends Block
 						SELECT min(p.page_id), (
 							SELECT p.page_id FROM {db_prefix}lp_pages AS p
 							WHERE p.status = {int:status}
+								AND p.entry_type = {string:entry_type}
 								AND p.deleted_at = 0
 								AND p.created_at <= {int:current_time}
 								AND p.permissions IN ({array_int:permissions})' . (empty($categories) ? '' : '
@@ -95,6 +96,7 @@ class RandomPages extends Block
 						) max
 						FROM {db_prefix}lp_pages AS p
 						WHERE p.status = {int:status}
+							AND p.entry_type = {string:entry_type}
 							AND p.deleted_at = 0
 							AND p.created_at <= {int:current_time}
 							AND p.permissions IN ({array_int:permissions})' . (empty($categories) ? '' : '
@@ -104,6 +106,7 @@ class RandomPages extends Block
 						SELECT p.page_id, min, max, array[]::integer[] || p.page_id AS a, 0 AS n
 						FROM {db_prefix}lp_pages AS p, b
 						WHERE p.status = {int:status}
+							AND p.entry_type = {string:entry_type}
 							AND p.deleted_at = 0
 							AND p.created_at <= {int:current_time}
 							AND p.permissions IN ({array_int:permissions})
@@ -114,6 +117,7 @@ class RandomPages extends Block
 						SELECT p.page_id, min, max, a || p.page_id, r.n + 1 AS n
 						FROM {db_prefix}lp_pages AS p, r
 						WHERE p.status = {int:status}
+							AND p.entry_type = {string:entry_type}
 							AND p.deleted_at = 0
 							AND p.created_at <= {int:current_time}
 							AND p.permissions IN ({array_int:permissions})
@@ -128,7 +132,8 @@ class RandomPages extends Block
 				FROM {db_prefix}lp_pages AS p, r
 				WHERE r.page_id = p.page_id',
 				[
-					'status'       => 1,
+					'status'       => Status::ACTIVE->value,
+					'entry_type'   => EntryType::DEFAULT->name(),
 					'current_time' => time(),
 					'permissions'  => Permission::all(),
 					'categories'   => $categories,
@@ -165,6 +170,7 @@ class RandomPages extends Block
 				FROM {db_prefix}lp_pages AS p
 					LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				WHERE p.status = {int:status}
+					AND p.entry_type = {string:entry_type}
 					AND p.deleted_at = 0
 					AND p.created_at <= {int:current_time}
 					AND p.permissions IN ({array_int:permissions})' . (empty($categories) ? '' : '
@@ -173,7 +179,8 @@ class RandomPages extends Block
 				LIMIT {int:limit}',
 				[
 					'guest'        => Lang::$txt['guest_title'],
-					'status'       => 1,
+					'status'       => Status::ACTIVE->value,
+					'entry_type'   => EntryType::DEFAULT->name(),
 					'current_time' => time(),
 					'permissions'  => Permission::all(),
 					'categories'   => $categories,

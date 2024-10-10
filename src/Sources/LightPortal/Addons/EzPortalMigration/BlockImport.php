@@ -8,14 +8,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 30.05.24
+ * @version 10.10.24
  */
 
 namespace Bugo\LightPortal\Addons\EzPortalMigration;
 
 use Bugo\Compat\{Config, Db, Lang, Utils};
 use Bugo\LightPortal\Areas\Imports\AbstractCustomBlockImport;
-use Bugo\LightPortal\Enums\Placement;
+use Bugo\LightPortal\Enums\{Permission, Placement};
 use Bugo\LightPortal\Utils\ItemList;
 
 use const LP_NAME;
@@ -235,15 +235,15 @@ class BlockImport extends AbstractCustomBlockImport
 	{
 		$permissions = explode(',', (string) $row['permissions']);
 
-		$perm = 0;
+		$perm = Permission::ADMIN->value;
 		if (count($permissions) == 1 && $permissions[0] == -1) {
-			$perm = 1;
+			$perm = Permission::GUEST->value;
 		} elseif (count($permissions) == 1 && $permissions[0] == 0) {
-			$perm = 2;
+			$perm = Permission::MEMBER->value;
 		} elseif (in_array(-1, $permissions)) {
-			$perm = 3;
+			$perm = Permission::ALL->value;
 		} elseif (in_array(0, $permissions)) {
-			$perm = 3;
+			$perm = Permission::ALL->value;
 		}
 
 		return $perm;

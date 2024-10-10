@@ -8,13 +8,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 30.05.24
+ * @version 10.10.24
  */
 
 namespace Bugo\LightPortal\Addons\TinyPortalMigration;
 
 use Bugo\Compat\{BBCodeParser, Config, Db, Lang, User, Utils};
 use Bugo\LightPortal\Areas\Imports\AbstractCustomPageImport;
+use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Utils\{DateTime, ItemList};
 use IntlException;
 
@@ -201,18 +202,7 @@ class PageImport extends AbstractCustomPageImport
 
 		$items = [];
 		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
-			$permissions = explode(',', (string) $row['value3']);
 
-			$perm = 0;
-			if (count($permissions) == 1 && $permissions[0] == -1) {
-				$perm = 1;
-			} elseif (count($permissions) == 1 && $permissions[0] == 0) {
-				$perm = 2;
-			} elseif (in_array(-1, $permissions)) {
-				$perm = 3;
-			} elseif (in_array(0, $permissions)) {
-				$perm = 3;
-			}
 
 			$items[$row['id']] = [
 				'page_id'      => $row['id'],
@@ -221,7 +211,7 @@ class PageImport extends AbstractCustomPageImport
 				'description'  => strip_tags((string) BBCodeParser::load()->parse($row['intro'])),
 				'content'      => $row['body'],
 				'type'         => $row['type'],
-				'permissions'  => $perm,
+				'permissions'  => $this->getPagePermission($row),
 				'status'       => (int) empty($row['off']),
 				'num_views'    => $row['views'],
 				'num_comments' => 0,
@@ -235,5 +225,23 @@ class PageImport extends AbstractCustomPageImport
 		Utils::$smcFunc['db_free_result']($result);
 
 		return $items;
+	}
+
+	private function getPagePermission(array $row): int
+	{
+		$permissions = explode(',', (string) $row['value3']);
+
+		$perm = Permission::ADMIN->value;
+		if (count($permissions) == 1 && $permissions[0] == -1) {
+			$perm = Permission::GUEST->value;
+		} elseif (count($permissions) == 1 && $permissions[0] == 0) {
+			$perm = Permission::MEMBER->value;
+		} elseif (in_array(-1, $permissions)) {
+			$perm = Permission::ALL->value;
+		} elseif (in_array(0, $permissions)) {
+			$perm = Permission::ALL->value;
+		}
+
+		return $perm;
 	}
 }
