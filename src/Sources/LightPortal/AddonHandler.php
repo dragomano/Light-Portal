@@ -21,20 +21,19 @@ use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\Str;
+use Laminas\I18n\Translator\Loader\PhpArray;
+use Laminas\I18n\Translator\Translator;
 use MatthiasMullie\Minify\CSS;
 use MatthiasMullie\Minify\JS;
 use SplObjectStorage;
 
 use function array_map;
-use function array_merge;
-use function array_unique;
 use function basename;
 use function class_exists;
 use function file_put_contents;
 use function filemtime;
 use function glob;
 use function in_array;
-use function is_array;
 use function is_dir;
 use function is_file;
 use function method_exists;
@@ -157,20 +156,17 @@ final class AddonHandler
 		if (isset(Lang::$txt[$this->prefix . $snakeName]))
 			return;
 
-		$userLang  = Language::getNameFromLocale(User::$info['language']);
-		$languages = array_unique(['english', $userLang]);
+		$userLang = Language::getNameFromLocale(User::$info['language']);
 
-		$addonLanguages = [];
-		foreach ($languages as $lang) {
-			$langFile = $path . 'langs' . DIRECTORY_SEPARATOR . $lang . '.php';
-			$addonLanguages[$lang] = is_file($langFile) ? require_once $langFile : [];
-		}
+		$this->translator->addTranslationFilePattern(
+			PhpArray::class,
+			$path . 'langs',
+			'%s.php',
+			$snakeName
+		);
 
-		if (is_array($addonLanguages['english'])) {
-			Lang::$txt[$this->prefix . $snakeName] = array_merge(
-				$addonLanguages['english'], $addonLanguages[$userLang]
-			);
-		}
+		//dump($this->translator->translate('title', $snakeName, $userLang));
+		Lang::$txt[$this->prefix . $snakeName] = $this->translator->getAllMessages($snakeName, $userLang);
 	}
 
 	private function loadAssets(string $path, string $addon): void
@@ -224,12 +220,13 @@ final class AddonHandler
 
 		$this->storage = $this->getStorage();
 
-		$this->css = new CSS();
+		$this->translator = new Translator();
+		$this->translator->setFallbackLocale('english');
 
+		$this->css = new CSS();
 		$this->js = new JS();
 
 		$this->prepareAssets();
-
 		$this->minify();
 	}
 }
