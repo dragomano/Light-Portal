@@ -190,16 +190,25 @@ final class AddonHandler
 		}
 	}
 
-	private function minify(): void
+	private function minifyAssets(): void
 	{
-		$cssFile = Theme::$current->settings['default_theme_dir'] . '/css/light_portal/plugins.css';
-		if (! is_file($cssFile) || $this->maxCssFilemtime > filemtime($cssFile)) {
-			$this->css->minify($cssFile);
-		}
+		$this->minifyFile(
+			Theme::$current->settings['default_theme_dir'] . '/css/light_portal/plugins.css',
+			$this->maxCssFilemtime,
+			[$this->css, 'minify']
+		);
 
-		$jsFile = Theme::$current->settings['default_theme_dir'] . '/scripts/light_portal/plugins.js';
-		if (! is_file($jsFile) || $this->maxJsFilemtime > filemtime($jsFile)) {
-			$this->js->minify($jsFile);
+		$this->minifyFile(
+			Theme::$current->settings['default_theme_dir'] . '/scripts/light_portal/plugins.js',
+			$this->maxJsFilemtime,
+			[$this->js, 'minify']
+		);
+	}
+
+	private function minifyFile(string $filePath, int $maxFilemtime, callable $minifyFunction): void
+	{
+		if (! is_file($filePath) || $maxFilemtime > filemtime($filePath)) {
+			$minifyFunction($filePath);
 		}
 	}
 
@@ -227,6 +236,6 @@ final class AddonHandler
 		$this->js = new JS();
 
 		$this->prepareAssets();
-		$this->minify();
+		$this->minifyAssets();
 	}
 }
