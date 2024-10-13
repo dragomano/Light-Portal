@@ -86,6 +86,12 @@ class PageModel extends AbstractModel
 
 		$this->createdAt = $currentPage['created_at'] ?? time();
 
+		$this->updatedAt = $currentPage['updated_at'] ?? 0;
+
+		$this->deletedAt = $currentPage['deleted_at'] ?? 0;
+
+		$this->lastCommentId = $currentPage['last_comment_id'] ?? 0;
+
 		$this->tags = $postData['tags'] ?? $currentPage['tags'] ?? [];
 	}
 
