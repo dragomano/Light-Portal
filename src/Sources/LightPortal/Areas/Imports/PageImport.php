@@ -71,16 +71,11 @@ final class PageImport extends AbstractImport
 			foreach ($element->item as $item) {
 				$status = intval($item['status']);
 
-				switch ($status) {
-					case 3:
-						$entryType = 'internal';
-						break;
-					case 4:
-						$entryType = 'blog';
-						break;
-					default:
-						$entryType = (string) ($item['entry_type'] ?? 'default');
-				}
+				$entryType = match ($status) {
+					3 => 'internal',
+					4 => 'blog',
+					default => (string) ($item['entry_type'] ?? 'default'),
+				};
 
 				$items[] = [
 					'page_id'      => $pageId = intval($item['page_id']),
