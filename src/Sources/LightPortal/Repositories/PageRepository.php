@@ -51,6 +51,11 @@ final class PageRepository extends AbstractRepository
 
 	protected string $entity = 'page';
 
+	public function __construct()
+	{
+		$this->commentRepository = new CommentRepository();
+	}
+
 	/**
 	 * @throws IntlException
 	 */
@@ -329,31 +334,7 @@ final class PageRepository extends AbstractRepository
 			]
 		);
 
-		$comments = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
-			$comments[] = $row['id'];
-		}
-
-		Db::$db->free_result($result);
-
-		if ($comments) {
-			Db::$db->query('', '
-				DELETE FROM {db_prefix}lp_comments
-				WHERE id IN ({array_int:items})',
-				[
-					'items' => $comments,
-				]
-			);
-
-			Db::$db->query('', '
-				DELETE FROM {db_prefix}lp_params
-				WHERE item_id IN ({array_int:items})
-					AND type = {literal:comment}',
-				[
-					'items' => $comments,
-				]
-			);
-		}
+		$this->commentRepository->removeFromResult($result);
 
 		$this->session('lp')->free('active_pages');
 		$this->session('lp')->free('my_pages');
