@@ -93,7 +93,7 @@ final class AddonHandler
 			return;
 
 		foreach ($addons as $addon) {
-			$className = __NAMESPACE__ . '\Addons\\' . $addon . '\\' . $addon;
+			$className = __NAMESPACE__ . '\Plugins\\' . $addon . '\\' . $addon;
 
 			if (! class_exists($className))
 				continue;

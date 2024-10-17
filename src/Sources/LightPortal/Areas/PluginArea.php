@@ -185,7 +185,7 @@ final class PluginArea
 			$snakeName = Str::getSnakeName($item);
 
 			try {
-				$className = '\Bugo\LightPortal\Addons\\' . $item . '\\' . $item;
+				$className = '\Bugo\LightPortal\Plugins\\' . $item . '\\' . $item;
 				$addonClass = new ReflectionClass($className);
 
 				if ($addonClass->hasProperty('author'))
@@ -320,7 +320,7 @@ final class PluginArea
 		];
 
 		// Add additional data
-		$allPlugins = array_keys(Utils::$context['lp_loaded_addons']);
+		$allPlugins = array_keys(Utils::$context['lp_loaded_addons'] ?? []);
 
 		foreach ($allPlugins as $plugin) {
 			if (isset(Lang::$txt['lp_' . $plugin]))

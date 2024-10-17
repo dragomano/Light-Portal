@@ -4,7 +4,7 @@ if (! getenv('COMPOSER_BINARY')) {
 	die('This script can only be called through Composer!');
 }
 
-$files = glob(__DIR__ . '/Addons/*/composer.json');
+$files = glob(__DIR__ . '/Plugins/*/composer.json');
 
 foreach ($files as $file) {
 	$directory = dirname($file);

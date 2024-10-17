@@ -23,4 +23,4 @@ Bonus plugins are also available to translators (if at least `LightPortal.{your_
 
 ![Download additional plugins](download_plugins.png)
 
-The separate plugin package can be installed on the [Plugin import](./impex) page. But you can also just extract the plugin folder from the downloaded archive and move it to the directory `Sources/LightPortal/Addons`.
+The separate plugin package can be installed on the [Plugin import](./impex) page. But you can also just extract the plugin folder from the downloaded archive and move it to the directory `Sources/LightPortal/Plugins`.

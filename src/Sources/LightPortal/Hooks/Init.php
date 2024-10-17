@@ -31,7 +31,7 @@ class Init
 		define('LP_NAME', 'Light Portal');
 		define('LP_VERSION', '2.7.2');
 		define('LP_PLUGIN_LIST', 'https://d8d75ea98b25aa12.mokky.dev/addons');
-		define('LP_ADDON_DIR', dirname(__DIR__) . '/Addons');
+		define('LP_ADDON_DIR', dirname(__DIR__) . '/Plugins');
 		define('LP_CACHE_TIME', (int) (Config::$modSettings['lp_cache_interval'] ?? 72000));
 		define('LP_ACTION', Config::$modSettings['lp_portal_action'] ?? 'portal');
 		define('LP_PAGE_PARAM', Config::$modSettings['lp_page_param'] ?? 'page');

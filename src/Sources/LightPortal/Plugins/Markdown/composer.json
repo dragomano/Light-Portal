@@ -1,0 +1,14 @@
+{
+    "require": {
+        "league/commonmark": "^2.4",
+        "zoon/commonmark-ext-youtube-iframe": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Bugo\\LightPortal\\Plugins\\Markdown\\SMF\\": "SMF/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true
+    }
+}
