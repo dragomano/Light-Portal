@@ -111,7 +111,7 @@ $txt['lp_fa_source_css_cdn'] = 'Connecting CSS from jsDelivr CDN';
 $txt['lp_fa_source_css_local'] = 'Locally (all.min.css from the theme css folder)';
 $txt['lp_fa_custom'] = 'Custom url to the FontAwesome library';
 $txt['lp_fa_kit'] = 'Font Awesome Kit';
-$txt['lp_permissions'] = ['Show to admins', 'Show to guests', 'Show to members', 'Show to everybody'];
+$txt['lp_permissions'] = ['Show to admins', 'Show to guests', 'Show to members', 'Show to everybody', 'Show to moderators'];
 
 // Panels
 $txt['lp_panels'] = 'Panels';
