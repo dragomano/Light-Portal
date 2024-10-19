@@ -13,7 +13,6 @@
 namespace Bugo\LightPortal\Utils;
 
 use Bugo\Compat\{Db, User, Utils};
-use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Status;
 
 if (! defined('SMF'))

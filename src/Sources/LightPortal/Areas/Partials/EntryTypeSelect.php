@@ -12,7 +12,6 @@
 
 namespace Bugo\LightPortal\Areas\Partials;
 
-use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\EntryType;
 

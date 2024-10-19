@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 10.10.24
+ * @version 18.10.24
  */
 
 namespace Bugo\LightPortal\Plugins\BlogMode;
@@ -16,7 +16,6 @@ namespace Bugo\LightPortal\Plugins\BlogMode;
 use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Areas\Fields\CustomField;
-use Bugo\LightPortal\Areas\Fields\VirtualSelectField;
 use Bugo\LightPortal\Enums\{Hook, Status, Tab};
 use Bugo\LightPortal\Areas\Partials\EntryTypeSelect;
 use Bugo\LightPortal\Repositories\PageRepository;
