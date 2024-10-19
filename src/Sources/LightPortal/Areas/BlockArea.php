@@ -336,7 +336,7 @@ final class BlockArea
 		$example_areas = [
 			'custom_action',
 			'!custom_action',
-			LP_PAGE_PARAM . '=alias',
+			LP_PAGE_PARAM . '=slug',
 			'board=id',
 			'board=1-3',
 			'board=3|7',
