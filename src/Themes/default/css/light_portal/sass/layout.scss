@@ -15,15 +15,16 @@
 	}
 
 	.row {
-		> aside {
+		>aside {
 			margin: 0 !important;
 		}
 
 		flex-wrap: wrap;
+		gap: 0;
 	}
 
-	.between-xs + .row,
-	.row + .between-xs {
+	.between-xs+.row,
+	.row+.between-xs {
 		margin-top: 5px;
 	}
 
@@ -39,11 +40,12 @@
 	}
 
 	aside {
-		> div {
-			> h3,
-			> h4 {
+		>div {
+			>h3,
+			>h4 {
 				white-space: nowrap;
 				text-overflow: ellipsis;
+
 				i {
 					margin-right: .5em;
 				}
