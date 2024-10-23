@@ -20,7 +20,7 @@ use Bugo\LightPortal\Areas\Partials\{CategorySelect, EntryTypeSelect, PageAuthor
 use Bugo\LightPortal\Areas\Partials\{PermissionSelect, StatusSelect, TagSelect};
 use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Areas\Validators\PageValidator;
-use Bugo\LightPortal\Enums\{PortalHook, Status, Tab};
+use Bugo\LightPortal\Enums\{EntryType, PortalHook, Status, Tab};
 use Bugo\LightPortal\Models\PageModel;
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Utils\{CacheTrait, Content, DateTime, EntityDataTrait};
@@ -38,6 +38,7 @@ use function filter_input;
 use function implode;
 use function is_array;
 use function str_replace;
+use function strtoupper;
 use function time;
 use function trim;
 
@@ -195,19 +196,6 @@ final class PageArea
 						'reverse' => 't.value',
 					],
 				],
-				'entry_type' => [
-					'header' => [
-						'value' => Lang::$txt['lp_page_type'],
-					],
-					'data' => [
-						'db' => 'entry_type',
-						'class' => 'centertext',
-					],
-					'sort' => [
-						'default' => 'p.entry_type DESC',
-						'reverse' => 'p.entry_type',
-					],
-				],
 				'status' => [
 					'header' => [
 						'value' => Lang::$txt['status'],
@@ -283,7 +271,6 @@ final class PageArea
 				'name' => 'manage_pages',
 				'href' => Utils::$context['form_action'] . $this->type,
 				'include_sort' => true,
-				'include_start' => true,
 				'hidden_fields' => [
 					Utils::$context['session_var'] => Utils::$context['session_id'],
 					'params' => Utils::$context['search_params'],
@@ -320,6 +307,8 @@ final class PageArea
 				],
 			],
 		];
+
+		$this->addTypeSelect($listOptions);
 
 		if (Utils::$context['user']['is_admin']) {
 			$listOptions['columns']['mass'] = [
@@ -587,11 +576,12 @@ final class PageArea
 				$this->request()->hasNot(['u', 'moderate', 'deleted'])
 					? ' AND p.status IN ({array_int:statuses}) AND p.deleted_at = 0'
 					: ''
-			),
+			) . ' AND p.entry_type = {string:entry_type}',
 			[
 				'search'     => Utils::$smcFunc['strtolower']($searchParams['string']),
 				'unapproved' => Status::UNAPPROVED->value,
 				'statuses'   => [Status::INACTIVE->value, Status::ACTIVE->value],
+				'entry_type' => $this->request('type', EntryType::DEFAULT->name()),
 			],
 		];
 	}
@@ -661,6 +651,32 @@ final class PageArea
 				Utils::$context['lp_pages']['title'] .= ' | ';
 			}
 		}
+	}
+
+	private function addTypeSelect(array &$listOptions): void
+	{
+		$types = '';
+		foreach (Utils::$context['lp_page_types'] as $type => $text) {
+			$types .= Html::el('option', [
+					'value'    => $type,
+					'selected' => $this->request()->has('type') && $this->request()->get('type') === $type,
+				])
+				->setText($text);
+		}
+
+		$listOptions['additional_rows'][] = [
+			'position' => 'above_column_headers',
+			'value' =>
+				Html::el('label', ['for' => 'type'])
+					->setText(Lang::$txt['lp_page_type']) . ' ' .
+				Html::el('select', [
+						'id'       => 'type',
+						'name'     => 'type',
+						'onchange' => 'this.form.submit()',
+					])
+					->addHtml($types),
+			'class' => 'floatright',
+		];
 	}
 
 	private function promote(array $items, string $type = 'up'): void
