@@ -17,8 +17,10 @@ If you want to change the plugin settings, click on the gear next to the plugin 
 
 Some plugins are not included with the portal, they need to be installed separately. Such plugins are divided into downloadable and bonus ones available to project sponsors.
 
-::: info
+:::info Note
+
 Bonus plugins are also available to translators (if at least `LightPortal.{your_language}.php` is 100% quality translated), as well as to all [active participants](../how-to/help-to-project) of the project.
+
 :::
 
 ![Download additional plugins](download_plugins.png)

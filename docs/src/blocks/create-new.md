@@ -5,7 +5,7 @@ order: 2
 
 # Add block
 
-All portal blocks currently available (depending on enabled [plugins](../plugins/manage)) are displayed here. To add, click on the desired block.
+To add a block, simply click on it. Initially, you can create blocks of three types: PHP, HTML, and BBCode. If you need others, first [enable the necessary plugins](../plugins/manage) of type `block`.
 
 Depending on the type of block, various settings will be available, spread across different tabs.
 

@@ -17,9 +17,9 @@ There are no subtleties here. Light Portal can be installed like any other modif
 - PHP extensions `dom` and `simplexml` to export/import pages and blocks
 - PHP extension `zip` to export/import plugins
 
-:::info
+:::info Note
 
-It is enough to download the archive with the portal files (in SMF this is called a package) from the [official catalog](https://custom.simplemachines.org/mods/index.php?mod=4244) and upload via the package manager on your forum.
+It is enough to download the package with the portal files from the [official catalog](https://custom.simplemachines.org/mods/index.php?mod=4244) and upload via the package manager on your forum.
 
 :::
 

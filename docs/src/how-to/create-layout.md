@@ -4,7 +4,7 @@ description: Instructions for creating your own portal layouts
 
 # Create own frontpage layout
 
-:::info
+:::info Note
 
 Since version 2.6 we use [BladeOne](https://github.com/EFTEC/BladeOne) to render frontpage layouts.
 
@@ -58,7 +58,7 @@ To customize stylesheets, create a file `portal_custom.css` in the `/Themes/defa
 }
 ```
 
-:::tip
+:::tip Tip
 
 If you have created your own frontpage template and want to share it with the developer and other users, use https://codepen.io/pen/ or other similar resources.
 
