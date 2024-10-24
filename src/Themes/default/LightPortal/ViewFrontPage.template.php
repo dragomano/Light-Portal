@@ -21,7 +21,7 @@ function template_layout(): void
 
 	echo '
 	<script>window.lazyLoadOptions = {};</script>
-	<script type="module" src="', Theme::$current->settings['default_theme_url'], '/scripts/light_portal/lazyload.esm.min.js" async></script>';
+	<script src="', Theme::$current->settings['default_theme_url'], '/scripts/light_portal/lazyload.min.js" async></script>';
 }
 
 /**

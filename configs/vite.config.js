@@ -22,7 +22,7 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         { src: 'node_modules/sortablejs/Sortable.min.js', dest: dist },
-        { src: 'node_modules/vanilla-lazyload/dist/lazyload.esm.min.js', dest: dist },
+        { src: 'node_modules/vanilla-lazyload/dist/lazyload.min.js', dest: dist },
         { src: 'node_modules/virtual-select-plugin/dist/virtual-select.min.css', dest: cssDir },
         { src: 'node_modules/virtual-select-plugin/dist/virtual-select.min.js', dest: dist },
       ],
