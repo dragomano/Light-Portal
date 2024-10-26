@@ -69,6 +69,8 @@
         <exclude name="Sources/LightPortal/Plugins/Uicons/**" />
         <exclude name="Sources/LightPortal/Plugins/VkComments/**" />
         <exclude name="Sources/LightPortal/Plugins/YandexTurbo/**" />
+        <exclude name="Sources/LightPortal/Compilers/Less.php" />
+        <exclude name="Sources/LightPortal/Compilers/Sass.php" />
         <exclude name="Sources/LightPortal/Settings/development.config.php" />
         <exclude name="Sources/LightPortal/composer.json" />
         <exclude name="Sources/LightPortal/composer.lock" />
@@ -87,6 +89,7 @@
       </fileset>
       <fileset dir="./src">
         <include name="Themes/**" />
+        <exclude name="Themes/default/languages/**" />
         <exclude name="**/.idea/**" />
         <exclude name="Themes/default/css/light_portal/plugins.css" />
         <exclude name="Themes/default/scripts/light_portal/app*" />
@@ -101,8 +104,17 @@
         <exclude name="Sources/LightPortal/Plugins/MediaBlock/**" />
         <exclude name="Sources/LightPortal/Plugins/PageScroll/**" />
         <exclude name="Sources/LightPortal/Plugins/YandexTurbo/**" />
+        <exclude name="Sources/LightPortal/Plugins/*/langs/**" />
         <include name="package-info.xml" />
         <include name="*.php" />
+      </fileset>
+      <fileset dir="./src">
+        <include name="Themes/default/languages/LightPortal/index.php" />
+        <include name="Themes/default/languages/LightPortal/LightPortal.english.php" />
+      </fileset>
+      <fileset dir="./src">
+        <include name="Sources/LightPortal/Plugins/*/langs/english.php" />
+        <include name="Sources/LightPortal/Plugins/*/langs/index.php" />
       </fileset>
     </zip>
   </target>
@@ -138,9 +150,6 @@
       <fileset dir="./src">
         <include name="Themes/default/languages/LightPortal/index.php" />
         <include name="Themes/default/languages/LightPortal/LightPortal.english.php" />
-        <include name="Themes/default/languages/LightPortal/LightPortal.greek.php" />
-        <include name="Themes/default/languages/LightPortal/LightPortal.italian.php" />
-        <include name="Themes/default/languages/LightPortal/LightPortal.russian.php" />
       </fileset>
       <fileset dir="./src">
         <include name="Sources/LightPortal/Plugins/*.php" />
