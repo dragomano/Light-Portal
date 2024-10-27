@@ -6,5 +6,6 @@ return [
 	'source' => 'Tag source',
 	'source_set' => ['Portal page tags', 'Topic keywords'],
 	'sorting' => 'Tag sorting',
-	'sorting_set' => ['By name', 'By frequency']
+	'sorting_set' => ['By name', 'By frequency'],
+	'as_cloud' => 'Display tags as a cloud',
 ];

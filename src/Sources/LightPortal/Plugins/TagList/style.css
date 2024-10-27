@@ -9,4 +9,10 @@
 			transform: rotate(1deg);
 		}
 	}
+
+	.laminas-tag-cloud {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+	}
 }

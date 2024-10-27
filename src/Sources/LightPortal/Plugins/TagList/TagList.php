@@ -8,16 +8,22 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 24.05.24
+ * @version 27.10.24
  */
 
 namespace Bugo\LightPortal\Plugins\TagList;
 
+use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Actions\Tag;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Areas\Fields\RadioField;
 use Bugo\LightPortal\Enums\Tab;
+use Laminas\Tag\Cloud;
+
+use function array_combine;
+use function array_map;
+use function class_exists;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -35,6 +41,7 @@ class TagList extends Block
 			'link_in_title' => Config::$scripturl . '?action=portal;sa=tags',
 			'source'        => 'lp_tags',
 			'sorting'       => 'name',
+			'as_cloud'      => false,
 		];
 	}
 
@@ -44,8 +51,9 @@ class TagList extends Block
 			return;
 
 		$params = [
-			'source'  => FILTER_DEFAULT,
-			'sorting' => FILTER_DEFAULT,
+			'source'   => FILTER_DEFAULT,
+			'sorting'  => FILTER_DEFAULT,
+			'as_cloud' => FILTER_VALIDATE_BOOLEAN,
 		];
 	}
 
@@ -56,8 +64,9 @@ class TagList extends Block
 
 		$sources = array_combine(['lp_tags', 'keywords'], Lang::$txt['lp_tag_list']['source_set']);
 
-		if (! class_exists('\Bugo\Optimus\Handlers\TagHandler'))
+		if (! class_exists('\Bugo\Optimus\Handlers\TagHandler')) {
 			unset($sources['keywords']);
+		}
 
 		RadioField::make('source', Lang::$txt['lp_tag_list']['source'])
 			->setTab(Tab::CONTENT)
@@ -68,6 +77,10 @@ class TagList extends Block
 			->setTab(Tab::CONTENT)
 			->setOptions(array_combine(['name', 'frequency'], Lang::$txt['lp_tag_list']['sorting_set']))
 			->setValue(Utils::$context['lp_block']['options']['sorting']);
+
+		CheckboxField::make('as_cloud', Lang::$txt['lp_tag_list']['as_cloud'])
+			->setTab(Tab::APPEARANCE)
+			->setValue(Utils::$context['lp_block']['options']['as_cloud']);
 	}
 
 	public function getAllTopicKeywords(string $sort = 'ok.name'): array
@@ -105,7 +118,7 @@ class TagList extends Block
 		if ($data->type !== 'tag_list')
 			return;
 
-		if ($parameters['source'] == 'lp_tags') {
+		if ($parameters['source'] === 'lp_tags') {
 			$tagList = $this->cache('tag_list_addon_b' . $data->id . '_u' . User::$info['id'])
 				->setLifeTime($data->cacheTime)
 				->setFallback(Tag::class, 'getAll', 0, 0, $parameters['sorting'] === 'name' ? 'title' : 'frequency DESC');
@@ -116,6 +129,24 @@ class TagList extends Block
 		}
 
 		if ($tagList) {
+			if ($parameters['as_cloud']) {
+				require_once __DIR__ . '/vendor/autoload.php';
+
+				$cloud = new Cloud([
+					'tags' => array_map(function ($item) {
+						return [
+							'title'  => $item['title'],
+							'params' => ['url' => $item['link']],
+							'weight' => $item['frequency'],
+						];
+					}, $tagList),
+				]);
+
+				echo $cloud;
+
+				return;
+			}
+
 			foreach ($tagList as $tag) {
 				echo '
 			<a class="button" href="', $tag['link'], '">', $tag['icon'] ?? '', $tag['title'], ' <span class="amt">', $tag['frequency'], '</span></a>';
@@ -123,5 +154,18 @@ class TagList extends Block
 		} else {
 			echo Lang::$txt['lp_no_tags'];
 		}
+	}
+
+	public function credits(array &$links): void
+	{
+		$links[] = [
+			'title' => 'laminas-tag',
+			'link' => 'https://github.com/laminas/laminas-tag/',
+			'author' => 'Laminas Project a Series of LF Projects, LLC.',
+			'license' => [
+				'name' => 'the BSD-3-Clause License',
+				'link' => 'https://github.com/laminas/laminas-tag/#BSD-3-Clause-1-ov-file'
+			]
+		];
 	}
 }

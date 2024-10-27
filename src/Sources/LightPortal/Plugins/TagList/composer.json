@@ -1,0 +1,8 @@
+{
+  "require": {
+    "laminas/laminas-tag": "^2.11"
+  },
+  "config": {
+    "optimize-autoloader": true
+  }
+}
