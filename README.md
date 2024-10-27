@@ -40,7 +40,6 @@ The portal supports BBC, HTML, PHP, as well as Markdown content within pages and
 
 ## Supported by
 
-- [JetBrains](https://www.jetbrains.com/?from=LightPortal) - Licenses for Open Source Development
 - [Crowdin](https://crowdin.com/project/light-portal) - Crowdin is completely free of charge for open-source projects
 
 Light Portal is completely free to use. It is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY.

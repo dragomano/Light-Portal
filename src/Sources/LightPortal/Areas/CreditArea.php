@@ -136,10 +136,6 @@ final class CreditArea
 				'link' => 'https://x-diesel.com'
 			],
 			[
-				'name' => 'JetBrains',
-				'link' => 'https://www.jetbrains.com/?from=LightPortal'
-			],
-			[
 				'name' => 'Crowdin',
 				'link' => 'https://crowdin.com/project/light-portal'
 			],
