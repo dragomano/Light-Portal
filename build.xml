@@ -63,6 +63,7 @@
         <exclude name="Sources/LightPortal/Plugins/PrettyUrls/**" />
         <exclude name="Sources/LightPortal/Plugins/SiteList/**" />
         <exclude name="Sources/LightPortal/Plugins/Snowflakes/**" />
+        <exclude name="Sources/LightPortal/Plugins/TagList/**" />
         <exclude name="Sources/LightPortal/Plugins/TinyPortalMigration/**" />
         <exclude name="Sources/LightPortal/Plugins/TopicRatingBar/**" />
         <exclude name="Sources/LightPortal/Plugins/TwigLayouts/**" />
