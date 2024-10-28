@@ -28,6 +28,7 @@ use MatthiasMullie\Minify\JS;
 use SplObjectStorage;
 
 use function array_map;
+use function array_merge;
 use function basename;
 use function class_exists;
 use function file_put_contents;
@@ -165,8 +166,10 @@ final class AddonHandler
 			$snakeName
 		);
 
-		//dump($this->translator->translate('title', $snakeName, $userLang));
-		Lang::$txt[$this->prefix . $snakeName] = $this->translator->getAllMessages($snakeName, $userLang);
+		Lang::$txt[$this->prefix . $snakeName] = array_merge(
+			(array) $this->translator->getAllMessages($snakeName, Language::FALLBACK),
+			(array) $this->translator->getAllMessages($snakeName, $userLang),
+		);
 	}
 
 	private function loadAssets(string $path, string $addon): void
@@ -230,7 +233,6 @@ final class AddonHandler
 		$this->storage = $this->getStorage();
 
 		$this->translator = new Translator();
-		$this->translator->setFallbackLocale('english');
 
 		$this->css = new CSS();
 		$this->js = new JS();
