@@ -23,6 +23,7 @@ enum EntryType
 
 	case DEFAULT;
 	case INTERNAL;
+	case DRAFT;
 
 	public static function all(): array
 	{

@@ -657,6 +657,9 @@ final class PageArea
 	{
 		$types = '';
 		foreach (Utils::$context['lp_page_types'] as $type => $text) {
+			if (Utils::$context['user']['is_admin'] === false && $type === 'internal')
+				continue;
+
 			$types .= Html::el('option', [
 					'value'    => $type,
 					'selected' => $this->request()->has('type') && $this->request()->get('type') === $type,
@@ -786,14 +789,14 @@ final class PageArea
 				'value'      => Utils::$context['lp_page']['category_id'],
 			]);
 
+		CustomField::make('entry_type', Lang::$txt['lp_page_type'])
+			->setTab(Tab::ACCESS_PLACEMENT)
+			->setValue(static fn() => new EntryTypeSelect());
+
 		if (Utils::$context['user']['is_admin']) {
 			CustomField::make('status', Lang::$txt['status'])
 				->setTab(Tab::ACCESS_PLACEMENT)
 				->setValue(static fn() => new StatusSelect());
-
-			CustomField::make('entry_type', Lang::$txt['lp_page_type'])
-				->setTab(Tab::ACCESS_PLACEMENT)
-				->setValue(static fn() => new EntryTypeSelect());
 
 			CustomField::make('author_id', Lang::$txt['lp_page_author'])
 				->setTab(Tab::ACCESS_PLACEMENT)

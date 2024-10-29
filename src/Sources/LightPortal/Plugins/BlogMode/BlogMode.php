@@ -8,16 +8,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 18.10.24
+ * @version 29.10.24
  */
 
 namespace Bugo\LightPortal\Plugins\BlogMode;
 
 use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Areas\Fields\CustomField;
-use Bugo\LightPortal\Enums\{Hook, Status, Tab};
-use Bugo\LightPortal\Areas\Partials\EntryTypeSelect;
+use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Utils\{Icon, ItemList};
 use Nette\Utils\Html;
@@ -47,10 +45,6 @@ class BlogMode extends Plugin
 	public function __construct()
 	{
 		$this->blogAction = Utils::$context['lp_blog_mode_plugin']['blog_action'] ?? $this->blogAction;
-
-		if (Utils::$context['user']['is_admin'] === false) {
-			unset(Utils::$context['lp_page_types']['internal']);
-		}
 	}
 
 	public function init(): void
@@ -85,16 +79,6 @@ class BlogMode extends Plugin
 
 		$settings['blog_mode'][] = ['text', 'blog_action'];
 		$settings['blog_mode'][] = ['check', 'show_blogs_in_profiles'];
-	}
-
-	public function preparePageFields(): void
-	{
-		if (Utils::$context['user']['is_admin'] || empty(User::hasPermission('light_portal_post_blog_entries')))
-			return;
-
-		CustomField::make('entry_type', Lang::$txt['lp_page_type'])
-			->setTab(Tab::ACCESS_PLACEMENT)
-			->setValue(static fn() => new EntryTypeSelect());
 	}
 
 	public function frontModes(array &$modes): void

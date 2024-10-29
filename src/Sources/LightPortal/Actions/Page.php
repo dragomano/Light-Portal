@@ -15,7 +15,7 @@ namespace Bugo\LightPortal\Actions;
 use Bugo\Compat\{Config, ErrorHandler, Lang};
 use Bugo\Compat\{PageIndex, Theme, User, Utils};
 use Bugo\LightPortal\AddonHandler;
-use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Enums\{EntryType, PortalHook};
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Utils\{CacheTrait, Content, EntityDataTrait};
 use Bugo\LightPortal\Utils\{Icon, RequestTrait, SessionTrait, Setting, Str};
@@ -83,6 +83,14 @@ final class Page implements PageInterface
 		}
 
 		if (empty(Utils::$context['lp_page']['can_view'])) {
+			$this->changeErrorPage();
+			ErrorHandler::fatalLang('cannot_light_portal_view_page');
+		}
+
+		if (
+			Utils::$context['lp_page']['entry_type'] === EntryType::DRAFT->name()
+			&& Utils::$context['lp_page']['author_id'] !== User::$info['id']
+		) {
 			$this->changeErrorPage();
 			ErrorHandler::fatalLang('cannot_light_portal_view_page');
 		}
