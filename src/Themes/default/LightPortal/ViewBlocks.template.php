@@ -1,7 +1,7 @@
 <?php
 
 use Bugo\Compat\{Config, Utils};
-use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\Utils\{Icon, Setting};
 
 function template_lp_portal_above(): void
 {
@@ -12,7 +12,7 @@ function template_lp_portal_above(): void
 	if (! empty(Utils::$context['lp_blocks']['header'])) {
 		echo '
 		<div class="row between-xs">
-			<div class="col-xs-', Utils::$context['lp_header_panel_width'], '">';
+			<div class="col-xs-', Setting::getHeaderPanelWidth(), '">';
 
 		lp_show_blocks('header');
 
@@ -22,12 +22,12 @@ function template_lp_portal_above(): void
 	}
 
 	echo '
-		<div class="row', empty(Utils::$context['lp_swap_left_right']) ? '' : ' reverse', '">';
+		<div class="row', Setting::isSwapLeftRight() ? ' reverse' : '', '">';
 
 	// Left Side | Левая панель
 	if (! empty(Utils::$context['lp_blocks']['left'])) {
 		echo '
-			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-', Utils::$context['lp_left_panel_width']['lg'], ' col-xl-', Utils::$context['lp_left_panel_width']['xl'], '">
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-', Setting::getLeftPanelWidth()['lg'], ' col-xl-', Setting::getLeftPanelWidth()['xl'], '">
 				<div', empty(Config::$modSettings['lp_left_panel_sticky']) ? '' : ' class="sticky_sidebar"', '>';
 
 		lp_show_blocks('left');
@@ -37,8 +37,8 @@ function template_lp_portal_above(): void
 			</div>';
 	}
 
-	$lg = 12 - ((empty(Utils::$context['lp_blocks']['left']) ? 0 : Utils::$context['lp_left_panel_width']['lg']) + (empty(Utils::$context['lp_blocks']['right']) ? 0 : Utils::$context['lp_right_panel_width']['lg']));
-	$xl = 12 - ((empty(Utils::$context['lp_blocks']['left']) ? 0 : Utils::$context['lp_left_panel_width']['xl']) + (empty(Utils::$context['lp_blocks']['right']) ? 0 : Utils::$context['lp_right_panel_width']['xl']));
+	$lg = 12 - ((empty(Utils::$context['lp_blocks']['left']) ? 0 : Setting::getLeftPanelWidth()['lg']) + (empty(Utils::$context['lp_blocks']['right']) ? 0 : Setting::getRightPanelWidth()['lg']));
+	$xl = 12 - ((empty(Utils::$context['lp_blocks']['left']) ? 0 : Setting::getLeftPanelWidth()['xl']) + (empty(Utils::$context['lp_blocks']['right']) ? 0 : Setting::getRightPanelWidth()['xl']));
 
 	echo '
 			<div class="col-xs', ! empty(Utils::$context['lp_blocks']['left']) || ! empty(Utils::$context['lp_blocks']['right']) ? ('-12 col-sm-12 col-md-12 col-lg-' . $lg . ' col-xl-' . $xl) : '', '">
@@ -89,7 +89,7 @@ function template_lp_portal_below(): void
 	// Right Side | Правая панель
 	if (! empty(Utils::$context['lp_blocks']['right'])) {
 		echo '
-			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-', Utils::$context['lp_right_panel_width']['lg'], ' col-xl-', Utils::$context['lp_right_panel_width']['xl'], '">
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-', Setting::getRightPanelWidth()['lg'], ' col-xl-', Setting::getRightPanelWidth()['xl'], '">
 				<div', empty(Config::$modSettings['lp_right_panel_sticky']) ? '' : ' class="sticky_sidebar"', '>';
 
 		lp_show_blocks('right');
@@ -106,7 +106,7 @@ function template_lp_portal_below(): void
 	if (! empty(Utils::$context['lp_blocks']['footer'])) {
 		echo '
 		<div class="row between-xs">
-			<div class="col-xs-', Utils::$context['lp_footer_panel_width'], '">';
+			<div class="col-xs-', Setting::getFooterPanelWidth(), '">';
 
 		lp_show_blocks('footer');
 
@@ -124,13 +124,13 @@ function lp_show_blocks(string $placement = ''): void
 	if (empty($placement) || empty(Utils::$context['lp_blocks'][$placement]))
 		return;
 
-	if (! empty(Utils::$context['lp_panel_direction'][$placement])) {
+	if (! empty(Setting::getPanelDirection()[$placement])) {
 		echo '
 		<div class="row">';
 	}
 
 	foreach (Utils::$context['lp_blocks'][$placement] as $block) {
-		$class = 'block_' . $block['type'] . (empty(Utils::$context['lp_panel_direction'][$placement]) ? '' : ' col-xs-12 col-sm') . (empty($block['custom_class']) ? '' : (' ' . $block['custom_class']));
+		$class = 'block_' . $block['type'] . (empty(Setting::getPanelDirection()[$placement]) ? '' : ' col-xs-12 col-sm') . (empty($block['custom_class']) ? '' : (' ' . $block['custom_class']));
 
 		echo '
 			<aside id="block_', $block['id'], '" class="', $class, '">';
@@ -153,7 +153,7 @@ function lp_show_blocks(string $placement = ''): void
 			</aside>';
 	}
 
-	if (! empty(Utils::$context['lp_panel_direction'][$placement])) {
+	if (! empty(Setting::getPanelDirection()[$placement])) {
 		echo '
 		</div>';
 	}

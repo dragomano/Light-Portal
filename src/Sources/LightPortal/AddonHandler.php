@@ -20,6 +20,7 @@ use Bugo\Compat\WebFetchApi;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\Language;
+use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 use Laminas\I18n\Translator\Loader\PhpArray;
 use Laminas\I18n\Translator\Translator;
@@ -88,7 +89,7 @@ final class AddonHandler
 	{
 		$hook = $hook->name;
 
-		$addons = $plugins ?: Utils::$context['lp_enabled_plugins'] ?? [];
+		$addons = $plugins ?: Setting::getEnabledPlugins();
 
 		if (empty($addons) || isset(Utils::$context['uninstalling']))
 			return;
@@ -119,7 +120,7 @@ final class AddonHandler
 			}
 
 			if (method_exists($class, $hook)) {
-				$hook === PortalHook::init && in_array($addon, Utils::$context['lp_enabled_plugins'])
+				$hook === PortalHook::init && in_array($addon, Setting::getEnabledPlugins())
 					? $class->init()
 					: $class->$hook(...$vars);
 			}
@@ -183,7 +184,7 @@ final class AddonHandler
 			if (! is_file($file))
 				continue;
 
-			if (in_array($addon, Utils::$context['lp_enabled_plugins'])) {
+			if (in_array($addon, Setting::getEnabledPlugins())) {
 				$this->{$type}->add($file);
 			}
 

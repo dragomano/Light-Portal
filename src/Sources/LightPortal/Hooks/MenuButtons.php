@@ -12,14 +12,11 @@
 
 namespace Bugo\LightPortal\Hooks;
 
-use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
-use Bugo\Compat\Theme;
-use Bugo\Compat\Utils;
+use Bugo\Compat\{Config, Lang, Theme, Utils};
 use Bugo\LightPortal\Actions\Block;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Repositories\PageRepository;
-use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\{Setting, Str};
 use Nette\Utils\Html;
 
 use function array_keys;
@@ -117,8 +114,7 @@ class MenuButtons
 						'plugins' => [
 							'title'   => Lang::$txt['lp_plugins'],
 							'href'    => Config::$scripturl . '?action=admin;area=lp_plugins',
-							'amt'     => Utils::$context['lp_enabled_plugins']
-								? count(Utils::$context['lp_enabled_plugins']) : 0,
+							'amt'     => Setting::getEnabledPlugins() ? count(Setting::getEnabledPlugins()) : 0,
 							'show'    => true,
 							'is_last' => true,
 						],

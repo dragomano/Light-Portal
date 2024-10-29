@@ -20,7 +20,7 @@ use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Enums\{PortalHook, VarType};
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\{CacheTrait, EntityDataTrait, Icon};
-use Bugo\LightPortal\Utils\{Language, RequestTrait, Str};
+use Bugo\LightPortal\Utils\{Language, RequestTrait, Setting, Str};
 use ReflectionClass;
 use ReflectionException;
 
@@ -113,7 +113,7 @@ final class PluginArea
 
 		$pluginId = (int) $data['plugin'];
 
-		$enabledPlugins = Utils::$context['lp_enabled_plugins'];
+		$enabledPlugins = Setting::getEnabledPlugins();
 
 		if ($data['status'] === 'on') {
 			$enabledPlugins = array_filter(
@@ -216,7 +216,7 @@ final class PluginArea
 				'desc'       => Lang::$txt['lp_' . $snakeName]['description'] ?? '',
 				'author'     => $author ?? '',
 				'link'       => $link ?? '',
-				'status'     => in_array($item, Utils::$context['lp_enabled_plugins']) ? 'on' : 'off',
+				'status'     => in_array($item, Setting::getEnabledPlugins()) ? 'on' : 'off',
 				'types'      => $this->getTypes($snakeName),
 				'special'    => $special ?? '',
 				'settings'   => $configVars[$snakeName] ?? [],

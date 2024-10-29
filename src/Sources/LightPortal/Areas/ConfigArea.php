@@ -18,7 +18,7 @@ use Bugo\LightPortal\Areas\Configs\{BasicConfig, ExtraConfig, FeedbackConfig, Mi
 use Bugo\LightPortal\Areas\Exports\{BlockExport, CategoryExport, PageExport, PluginExport, TagExport};
 use Bugo\LightPortal\Areas\Imports\{BlockImport, CategoryImport, PageImport, PluginImport, TagImport};
 use Bugo\LightPortal\Enums\{Hook, PortalHook};
-use Bugo\LightPortal\Utils\{CacheTrait, Icon, RequestTrait, SafeRequireTrait, SMFHookTrait};
+use Bugo\LightPortal\Utils\{CacheTrait, Icon, RequestTrait, SafeRequireTrait, Setting, SMFHookTrait};
 
 use function array_keys;
 use function array_merge;
@@ -145,8 +145,7 @@ final class ConfigArea
 							'label' => Lang::$txt['lp_plugins'],
 							'function' => $this->pluginAreas(...),
 							'icon' => 'modifications',
-							'amt' => Utils::$context['lp_enabled_plugins']
-								? count(Utils::$context['lp_enabled_plugins']) : 0,
+							'amt' => Setting::getEnabledPlugins() ? count(Setting::getEnabledPlugins()) : 0,
 							'permission' => [
 								'admin_forum',
 							],

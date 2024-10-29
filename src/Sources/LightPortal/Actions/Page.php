@@ -305,14 +305,16 @@ final class Page implements PageInterface
 
 		$page = Utils::$context['lp_page']['id'];
 
-		if (($key = array_search($page, Utils::$context['lp_frontpage_pages'])) !== false) {
-			unset(Utils::$context['lp_frontpage_pages'][$key]);
+		$frontpagePages = Setting::getFrontpagePages();
+
+		if (($key = array_search($page, $frontpagePages)) !== false) {
+			unset($frontpagePages[$key]);
 		} else {
-			Utils::$context['lp_frontpage_pages'][] = $page;
+			$frontpagePages[] = $page;
 		}
 
 		Config::updateModSettings([
-			'lp_frontpage_pages' => implode(',', Utils::$context['lp_frontpage_pages'])
+			'lp_frontpage_pages' => implode(',', $frontpagePages)
 		]);
 
 		Utils::redirectexit(Utils::$context['canonical_url']);

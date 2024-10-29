@@ -688,10 +688,10 @@ final class PageArea
 			return;
 
 		if ($type === 'down') {
-			$items = array_diff(Utils::$context['lp_frontpage_pages'], $items);
+			$items = array_diff(Setting::getFrontpagePages(), $items);
 		} else {
 			$items = array_merge(
-				array_diff($items, Utils::$context['lp_frontpage_pages']), Utils::$context['lp_frontpage_pages']
+				array_diff($items, Setting::getFrontpagePages()), Setting::getFrontpagePages()
 			);
 		}
 

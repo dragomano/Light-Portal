@@ -3,7 +3,7 @@
 use Bugo\Compat\{Config, Lang, Theme, Utils};
 use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\Utils\{Icon, Setting};
 
 function template_show_page(): void
 {
@@ -34,7 +34,7 @@ function template_show_page(): void
 
 		if (! (empty(Utils::$context['user']['is_admin']) || empty(Config::$modSettings['lp_frontpage_mode']) || Config::$modSettings['lp_frontpage_mode'] !== 'chosen_pages')) {
 			echo '
-			<a class="button floatright" href="', Utils::$context['canonical_url'], ';promote">', Icon::get('home'), '<span class="hidden-xs hidden-sm">', Lang::$txt['lp_' . (in_array(Utils::$context['lp_page']['id'], Utils::$context['lp_frontpage_pages']) ? 'remove_from' : 'promote_to') . '_fp'], '</span></a>';
+			<a class="button floatright" href="', Utils::$context['canonical_url'], ';promote">', Icon::get('home'), '<span class="hidden-xs hidden-sm">', Lang::$txt['lp_' . (in_array(Utils::$context['lp_page']['id'], Setting::getFrontpagePages()) ? 'remove_from' : 'promote_to') . '_fp'], '</span></a>';
 		}
 
 		echo '

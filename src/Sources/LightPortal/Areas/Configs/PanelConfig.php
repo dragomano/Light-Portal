@@ -13,8 +13,7 @@
 namespace Bugo\LightPortal\Areas\Configs;
 
 use Bugo\Compat\{Actions\ACP, Config, Lang, Theme, User, Utils};
-use Bugo\LightPortal\Utils\RequestTrait;
-use Bugo\LightPortal\Utils\SessionTrait;
+use Bugo\LightPortal\Utils\{RequestTrait, SessionTrait, Setting};
 
 use function json_encode;
 
@@ -40,8 +39,8 @@ final class PanelConfig extends AbstractConfig
 
 		$this->addDefaultValues([
 			'lp_header_panel_width' => 12,
-			'lp_left_panel_width'   => json_encode(Utils::$context['lp_left_panel_width']),
-			'lp_right_panel_width'  => json_encode(Utils::$context['lp_right_panel_width']),
+			'lp_left_panel_width'   => json_encode(Setting::getLeftPanelWidth()),
+			'lp_right_panel_width'  => json_encode(Setting::getRightPanelWidth()),
 			'lp_footer_panel_width' => 12,
 			'lp_left_panel_sticky'  => 1,
 			'lp_right_panel_sticky' => 1,

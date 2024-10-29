@@ -12,7 +12,9 @@
 
 namespace Bugo\LightPortal\Utils;
 
-use Bugo\Compat\Config;
+use Bugo\Compat\{Config, Lang, Utils};
+
+use function explode;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -51,5 +53,66 @@ class Setting
 	public static function showRelatedPages(): bool
 	{
 		return empty(Config::$modSettings['lp_show_related_pages']);
+	}
+
+	public static function getEnabledPlugins(): array
+	{
+		return empty(Config::$modSettings['lp_enabled_plugins'])
+			? []
+			: explode(',', (string) Config::$modSettings['lp_enabled_plugins']);
+	}
+
+	public static function getFrontpagePages(): array
+	{
+		return empty(Config::$modSettings['lp_frontpage_pages'])
+			? []
+			: explode(',', (string) Config::$modSettings['lp_frontpage_pages']);
+	}
+
+	public static function getFrontpageTopics(): array
+	{
+		return empty(Config::$modSettings['lp_frontpage_topics'])
+			? []
+			: explode(',', (string) Config::$modSettings['lp_frontpage_topics']);
+	}
+
+	public static function getHeaderPanelWidth(): int
+	{
+		return empty(Config::$modSettings['lp_header_panel_width'])
+			? 12
+			: (int) Config::$modSettings['lp_header_panel_width'];
+	}
+
+	public static function getFooterPanelWidth(): int
+	{
+		return empty(Config::$modSettings['lp_footer_panel_width'])
+			? 12
+			: (int) Config::$modSettings['lp_footer_panel_width'];
+	}
+
+	public static function getLeftPanelWidth(): array
+	{
+		return empty(Config::$modSettings['lp_left_panel_width'])
+			? ['lg' => 3, 'xl' => 2]
+			: Utils::jsonDecode(Config::$modSettings['lp_left_panel_width'], true);
+	}
+
+	public static function getRightPanelWidth(): array
+	{
+		return empty(Config::$modSettings['lp_right_panel_width'])
+			? ['lg' => 3, 'xl' => 2]
+			: Utils::jsonDecode(Config::$modSettings['lp_right_panel_width'], true);
+	}
+
+	public static function getPanelDirection(): array
+	{
+		return Utils::jsonDecode(Config::$modSettings['lp_panel_direction'] ?? '', true);
+	}
+
+	public static function isSwapLeftRight(): bool
+	{
+		return empty(Lang::$txt['lang_rtl'])
+			? ! empty(Config::$modSettings['lp_swap_left_right'])
+			: empty(Config::$modSettings['lp_swap_left_right']);;
 	}
 }

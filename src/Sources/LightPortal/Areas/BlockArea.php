@@ -22,7 +22,7 @@ use Bugo\LightPortal\Areas\Validators\BlockValidator;
 use Bugo\LightPortal\Enums\{ContentType, PortalHook, Tab};
 use Bugo\LightPortal\Models\BlockModel;
 use Bugo\LightPortal\Repositories\BlockRepository;
-use Bugo\LightPortal\Utils\{CacheTrait, Content, Icon, RequestTrait, Str};
+use Bugo\LightPortal\Utils\{CacheTrait, Content, Icon, RequestTrait, Setting, Str};
 
 use function array_column;
 use function array_combine;
@@ -400,7 +400,7 @@ final class BlockArea
 
 	private function prepareBlockList(): void
 	{
-		$plugins = array_merge(Utils::$context['lp_enabled_plugins'], array_keys(ContentType::all()));
+		$plugins = array_merge(Setting::getEnabledPlugins(), array_keys(ContentType::all()));
 
 		Utils::$context['lp_loaded_addons'] = array_merge(
 			Utils::$context['lp_loaded_addons'] ?? [], $this->getDefaultTypes()
