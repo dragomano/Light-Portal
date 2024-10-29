@@ -230,10 +230,7 @@ final class PageRepository extends AbstractRepository
 
 		$this->cache()->flush();
 
-		$this->session('lp')->free('active_pages');
-		$this->session('lp')->free('my_pages');
-		$this->session('lp')->free('unapproved_pages');
-		$this->session('lp')->free('deleted_pages');
+		$this->session()->free('lp');
 
 		if ($this->request()->has('save_exit')) {
 			Utils::redirectexit('action=admin;area=lp_pages;sa=main');
@@ -259,10 +256,7 @@ final class PageRepository extends AbstractRepository
 			]
 		);
 
-		$this->session('lp')->free('active_pages');
-		$this->session('lp')->free('my_pages');
-		$this->session('lp')->free('unapproved_pages');
-		$this->session('lp')->free('deleted_pages');
+		$this->session()->free('lp');
 	}
 
 	public function restore(array $items): void
@@ -279,10 +273,7 @@ final class PageRepository extends AbstractRepository
 			]
 		);
 
-		$this->session('lp')->free('active_pages');
-		$this->session('lp')->free('my_pages');
-		$this->session('lp')->free('unapproved_pages');
-		$this->session('lp')->free('deleted_pages');
+		$this->session()->free('lp');
 	}
 
 	public function removePermanently(array $items): void
@@ -336,10 +327,7 @@ final class PageRepository extends AbstractRepository
 
 		$this->commentRepository->removeFromResult($result);
 
-		$this->session('lp')->free('active_pages');
-		$this->session('lp')->free('my_pages');
-		$this->session('lp')->free('unapproved_pages');
-		$this->session('lp')->free('deleted_pages');
+		$this->session()->free('lp');
 	}
 
 	public function getPrevNextLinks(array $page): array
