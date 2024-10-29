@@ -120,7 +120,7 @@ final class Tag extends AbstractPageList
 				'fallback_lang' => Config::$language,
 				'id'            => Utils::$context['current_tag'],
 				'status'        => Status::ACTIVE->value,
-				'types'         => EntryType::names(),
+				'types'         => EntryType::withoutDrafts(),
 				'current_time'  => time(),
 				'permissions'   => Permission::all(),
 				'sort'          => $sort,
@@ -152,7 +152,7 @@ final class Tag extends AbstractPageList
 			[
 				'id'           => Utils::$context['current_tag'],
 				'status'       => Status::ACTIVE->value,
-				'types'        => EntryType::names(),
+				'types'        => EntryType::withoutDrafts(),
 				'current_time' => time(),
 				'permissions'  => Permission::all(),
 			]

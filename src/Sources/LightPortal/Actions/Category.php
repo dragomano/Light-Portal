@@ -126,7 +126,7 @@ final class Category extends AbstractPageList
 				'fallback_lang' => Config::$language,
 				'id'            => Utils::$context['current_category'],
 				'status'        => Status::ACTIVE->value,
-				'types'         => EntryType::names(),
+				'types'         => EntryType::withoutDrafts(),
 				'current_time'  => time(),
 				'permissions'   => Permission::all(),
 				'sort'          => $sort,
@@ -155,7 +155,7 @@ final class Category extends AbstractPageList
 			[
 				'id'           => Utils::$context['current_category'],
 				'status'        => Status::ACTIVE->value,
-				'types'        => EntryType::names(),
+				'types'        => EntryType::withoutDrafts(),
 				'current_time' => time(),
 				'permissions'  => Permission::all(),
 			]
@@ -258,7 +258,7 @@ final class Category extends AbstractPageList
 				'lang'          => User::$info['language'],
 				'fallback_lang' => Config::$language,
 				'status'        => Status::ACTIVE->value,
-				'types'         => EntryType::names(),
+				'types'         => EntryType::withoutDrafts(),
 				'current_time'  => time(),
 				'permissions'   => Permission::all(),
 				'sort'          => $sort,

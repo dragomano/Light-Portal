@@ -512,13 +512,13 @@ final class PageRepository extends AbstractRepository
 					LEFT JOIN {db_prefix}lp_params AS pp2 ON (
 						p.page_id = pp2.item_id AND pp2.type = {literal:page} AND pp2.name = {literal:page_icon}
 					)
-				WHERE p.status= {int:status}
+				WHERE p.status = {int:status}
 					AND p.entry_type IN ({array_string:types})
 					AND p.created_at <= {int:current_time}
 					AND pp.name = {literal:show_in_menu}
 					AND pp.value = {string:show_in_menu}',
 				[
-					'types'        => EntryType::names(),
+					'types'        => EntryType::withoutDrafts(),
 					'status'       => Status::ACTIVE->value,
 					'current_time' => time(),
 					'show_in_menu' => '1',

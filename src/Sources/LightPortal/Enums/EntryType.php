@@ -16,6 +16,7 @@ use Bugo\Compat\Lang;
 use Bugo\LightPortal\Enums\Traits\HasNamesTrait;
 
 use function array_combine;
+use function array_filter;
 
 enum EntryType
 {
@@ -28,5 +29,10 @@ enum EntryType
 	public static function all(): array
 	{
 		return array_combine(self::names(), Lang::$txt['lp_page_type_set']);
+	}
+
+	public static function withoutDrafts(): array
+	{
+		return array_filter(self::names(), fn($item) => $item !== self::DRAFT->name());
 	}
 }
