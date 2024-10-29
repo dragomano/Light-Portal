@@ -13,6 +13,7 @@
 namespace Bugo\LightPortal\Models;
 
 use Bugo\Compat\{Config, User, Utils};
+use Bugo\LightPortal\Enums\Status;
 
 use function time;
 
@@ -79,9 +80,10 @@ class PageModel extends AbstractModel
 			?? (int) (Config::$modSettings['lp_permissions_default'] ?? 2);
 
 		$this->status = $postData['status'] ?? $currentPage['status']
-			?? (int) (
+			?? (
 				Utils::$context['allow_light_portal_approve_pages']
-				|| Utils::$context['allow_light_portal_manage_pages_any']
+					? Status::ACTIVE->value
+					: Status::UNAPPROVED->value
 			);
 
 		$this->createdAt = $currentPage['created_at'] ?? time();

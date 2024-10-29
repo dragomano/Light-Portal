@@ -203,7 +203,7 @@ final class PageArea
 					'data' => [
 						'function' => fn($entry) => $entry['status'] >= count(Status::cases()) - 1
 							? Lang::$txt['lp_page_status_set'][$entry['status']] ?? Lang::$txt['no']
-							: (Utils::$context['allow_light_portal_approve_pages'] || Utils::$context['allow_light_portal_manage_pages_any']
+							: (Utils::$context['allow_light_portal_approve_pages']
 								? Html::el('div', [
 										'data-id' => $entry['id'],
 										'x-data'  => '{ status: ' . ($entry['status'] === $this->status ? 'true' : 'false') . ' }',
@@ -339,7 +339,6 @@ final class PageArea
 						)
 						->addHtml(
 							Utils::$context['allow_light_portal_approve_pages']
-									|| Utils::$context['allow_light_portal_manage_pages_any']
 								? Html::el('option', ['value' => 'toggle'])
 									->setText(Lang::$txt['lp_action_toggle'])
 								: ''
