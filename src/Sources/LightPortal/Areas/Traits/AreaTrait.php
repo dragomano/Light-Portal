@@ -29,7 +29,6 @@ if (! defined('SMF'))
 
 trait AreaTrait
 {
-	use PrepareLanguagesTrait;
 	use QueryTrait;
 
 	public function createBbcEditor(string $content = ''): void

@@ -22,7 +22,8 @@ use Bugo\LightPortal\Areas\Validators\BlockValidator;
 use Bugo\LightPortal\Enums\{ContentType, PortalHook, Tab};
 use Bugo\LightPortal\Models\BlockModel;
 use Bugo\LightPortal\Repositories\BlockRepository;
-use Bugo\LightPortal\Utils\{CacheTrait, Content, Icon, RequestTrait, Setting, Str};
+use Bugo\LightPortal\Utils\{CacheTrait, Content, Icon, Language};
+use Bugo\LightPortal\Utils\{RequestTrait, Setting, Str};
 
 use function array_column;
 use function array_combine;
@@ -104,7 +105,8 @@ final class BlockArea
 
 		Utils::$context['current_block']['type'] = $type;
 
-		$this->prepareForumLanguages();
+		Language::prepareList();
+
 		$this->validateData();
 		$this->prepareFormFields();
 		$this->prepareEditor();
@@ -130,7 +132,7 @@ final class BlockArea
 			'description' => Lang::$txt['lp_blocks_edit_description']
 		];
 
-		$this->prepareForumLanguages();
+		Language::prepareList();
 
 		Utils::$context['current_block'] = $this->repository->getData($item);
 

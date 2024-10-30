@@ -24,7 +24,7 @@ use Bugo\LightPortal\Enums\{EntryType, PortalHook, Status, Tab};
 use Bugo\LightPortal\Models\PageModel;
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Utils\{CacheTrait, Content, DateTime, EntityDataTrait};
-use Bugo\LightPortal\Utils\{Icon, ItemList, RequestTrait, Setting, Str};
+use Bugo\LightPortal\Utils\{Icon, ItemList, Language, RequestTrait, Setting, Str};
 use IntlException;
 use Nette\Utils\Html;
 
@@ -416,7 +416,8 @@ final class PageArea
 
 		Utils::$context['lp_current_page']['type'] = $type;
 
-		$this->prepareForumLanguages();
+		Language::prepareList();
+
 		$this->validateData();
 		$this->prepareFormFields();
 		$this->prepareEditor();
@@ -459,7 +460,7 @@ final class PageArea
 			ErrorHandler::fatalLang('lp_page_not_editable');
 		}
 
-		$this->prepareForumLanguages();
+		Language::prepareList();
 
 		if ($this->request()->has('remove')) {
 			if (Utils::$context['lp_current_page']['author_id'] !== User::$info['id']) {

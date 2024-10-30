@@ -21,7 +21,8 @@ use Bugo\LightPortal\Areas\Validators\CategoryValidator;
 use Bugo\LightPortal\Enums\{Status, Tab};
 use Bugo\LightPortal\Models\CategoryModel;
 use Bugo\LightPortal\Repositories\CategoryRepository;
-use Bugo\LightPortal\Utils\{CacheTrait, Icon, ItemList, RequestTrait, Str};
+use Bugo\LightPortal\Utils\{CacheTrait, Icon, ItemList};
+use Bugo\LightPortal\Utils\{Language, RequestTrait, Str};
 use Nette\Utils\Html;
 
 use function str_replace;
@@ -228,7 +229,8 @@ final class CategoryArea
 
 		Utils::$context['lp_current_category'] ??= [];
 
-		$this->prepareForumLanguages();
+		Language::prepareList();
+
 		$this->validateData();
 		$this->prepareFormFields();
 		$this->preparePreview();
@@ -258,7 +260,7 @@ final class CategoryArea
 			ErrorHandler::fatalLang('lp_category_not_found', status: 404);
 		}
 
-		$this->prepareForumLanguages();
+		Language::prepareList();
 
 		if ($this->request()->has('remove')) {
 			$this->repository->remove([$item]);

@@ -12,7 +12,11 @@
 
 namespace Bugo\LightPortal\Utils;
 
-use Bugo\Compat\Lang;
+use Bugo\Compat\{Config, Lang, User, Utils};
+
+use function array_flip;
+use function array_merge;
+use function str_starts_with;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -33,5 +37,23 @@ final class Language
 		}
 
 		return $locale;
+	}
+
+	public static function prepareList(): void
+	{
+		$temp = Lang::get();
+
+		if (empty(Config::$modSettings['userLanguage'])) {
+			Utils::$context['lp_languages'] = [
+				Config::$language => $temp[Config::$language]
+			];
+
+			return;
+		}
+
+		Utils::$context['lp_languages'] = array_merge([
+			User::$info['language'] => $temp[User::$info['language']],
+			Config::$language => $temp[Config::$language],
+		], $temp);
 	}
 }

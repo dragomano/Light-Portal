@@ -20,7 +20,8 @@ use Bugo\LightPortal\Areas\Validators\TagValidator;
 use Bugo\LightPortal\Enums\{Status, Tab};
 use Bugo\LightPortal\Models\TagModel;
 use Bugo\LightPortal\Repositories\TagRepository;
-use Bugo\LightPortal\Utils\{CacheTrait, Icon, ItemList, RequestTrait, Str};
+use Bugo\LightPortal\Utils\{CacheTrait, Icon, ItemList};
+use Bugo\LightPortal\Utils\{Language, RequestTrait, Str};
 use Nette\Utils\Html;
 
 use const LP_NAME;
@@ -207,7 +208,8 @@ final class TagArea
 
 		Utils::$context['lp_current_tag'] ??= [];
 
-		$this->prepareForumLanguages();
+		Language::prepareList();
+
 		$this->validateData();
 		$this->prepareFormFields();
 		$this->preparePreview();
@@ -237,7 +239,7 @@ final class TagArea
 			ErrorHandler::fatalLang('lp_tag_not_found', status: 404);
 		}
 
-		$this->prepareForumLanguages();
+		Language::prepareList();
 
 		if ($this->request()->has('remove')) {
 			$this->repository->remove([$item]);

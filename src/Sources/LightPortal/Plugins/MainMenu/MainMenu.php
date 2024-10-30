@@ -8,15 +8,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 05.06.24
+ * @version 30.10.24
  */
 
 namespace Bugo\LightPortal\Plugins\MainMenu;
 
 use Bugo\Compat\{Config, User, Utils};
 use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Areas\Traits\PrepareLanguagesTrait;
 use Bugo\LightPortal\Enums\Hook;
+use Bugo\LightPortal\Utils\Language;
 
 use const LP_ACTION;
 
@@ -28,8 +28,6 @@ if (! defined('LP_NAME'))
  */
 class MainMenu extends Plugin
 {
-	use PrepareLanguagesTrait;
-
 	public string $type = 'other';
 
 	public function init(): void
@@ -67,7 +65,8 @@ class MainMenu extends Plugin
 
 	public function showList(): bool|string
 	{
-		$this->prepareForumLanguages();
+		Language::prepareList();
+
 		$this->prepareVariables();
 		$this->setTemplate();
 
