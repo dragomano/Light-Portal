@@ -113,6 +113,6 @@ class Setting
 	{
 		return empty(Lang::$txt['lang_rtl'])
 			? ! empty(Config::$modSettings['lp_swap_left_right'])
-			: empty(Config::$modSettings['lp_swap_left_right']);;
+			: empty(Config::$modSettings['lp_swap_left_right']);
 	}
 }

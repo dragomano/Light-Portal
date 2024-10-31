@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 27.10.24
+ * @version 31.10.24
  */
 
 namespace Bugo\LightPortal\Plugins\TagList;
@@ -20,6 +20,7 @@ use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Areas\Fields\RadioField;
 use Bugo\LightPortal\Enums\Tab;
 use Laminas\Tag\Cloud;
+use Nette\Utils\Html;
 
 use function array_combine;
 use function array_map;
@@ -133,13 +134,11 @@ class TagList extends Block
 				require_once __DIR__ . '/vendor/autoload.php';
 
 				$cloud = new Cloud([
-					'tags' => array_map(function ($item) {
-						return [
-							'title'  => $item['title'],
-							'params' => ['url' => $item['link']],
-							'weight' => $item['frequency'],
-						];
-					}, $tagList),
+					'tags' => array_map(fn($item) => [
+						'title'  => $item['title'],
+						'params' => ['url' => $item['link']],
+						'weight' => $item['frequency'],
+					], $tagList),
 				]);
 
 				echo $cloud;
@@ -148,8 +147,12 @@ class TagList extends Block
 			}
 
 			foreach ($tagList as $tag) {
-				echo '
-			<a class="button" href="', $tag['link'], '">', $tag['icon'] ?? '', $tag['title'], ' <span class="amt">', $tag['frequency'], '</span></a>';
+				echo Html::el('a', ['href' => $tag['link'], 'class' => 'button'])
+					->setHtml(
+					($tag['icon'] ?? '') .
+						$tag['title'] .	' ' .
+						Html::el('span', ['class' => 'amt'])->setText($tag['frequency'])
+					);
 			}
 		} else {
 			echo Lang::$txt['lp_no_tags'];

@@ -136,7 +136,7 @@ final class SessionManager
 	public function getDeletedPagesCount(): int
 	{
 		if ($this->session('lp')->get('deleted_pages') === null) {
-			$result = Db::$db->query('', '
+			$result = Db::$db->query('', /** @lang text */ '
 				SELECT COUNT(page_id)
 				FROM {db_prefix}lp_pages
 				WHERE deleted_at <> 0',
