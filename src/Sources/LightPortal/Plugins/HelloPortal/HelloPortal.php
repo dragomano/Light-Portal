@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 11.06.24
+ * @version 31.10.24
  */
 
 namespace Bugo\LightPortal\Plugins\HelloPortal;
@@ -16,7 +16,12 @@ namespace Bugo\LightPortal\Plugins\HelloPortal;
 use Bugo\Compat\{Lang, Theme, Utils};
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Enums\Hook;
-use Nette\Utils\Html;
+
+use function array_combine;
+use function is_file;
+use function str_contains;
+
+use const DIRECTORY_SEPARATOR;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -40,24 +45,16 @@ class HelloPortal extends Plugin
 		if ($this->request()->isNot('admin') || empty($steps = $this->getStepData()))
 			return;
 
-		Lang::load('Post');
+		if (empty($this->request('area')) || empty(Utils::$context['template_layers']))
+			return;
 
-		if (
-			! empty(Utils::$context['admin_menu_name'])
-			&& ! empty(Utils::$context[Utils::$context['admin_menu_name']])
-			&& ! empty(Utils::$context[Utils::$context['admin_menu_name']]['tab_data']['title'])
-		) {
-			$menu = Utils::$context['admin_menu_name'];
-			$tabs = Utils::$context[$menu]['tab_data'];
-			$tabs['title'] .= Html::el('button', [
-					'class' => 'button floatnone lp_hello_portal_button',
-					'x-on:click.prevent' => 'runTour()',
-					'x-data' => '',
-				])
-				->setText(Lang::$txt['lp_hello_portal']['tour_button'])
-				->toHtml();
-			Utils::$context[$menu]['tab_data'] = $tabs;
+		if (str_contains((string) $this->request('area'), 'lp_')) {
+			$this->setTemplate();
+
+			Utils::$context['template_layers'][] = 'tour_info';
 		}
+
+		Lang::load('Post');
 
 		$params = ['external' => true];
 
