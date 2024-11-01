@@ -22,14 +22,13 @@ use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
-use Laminas\I18n\Translator\Loader\PhpArray;
-use Laminas\I18n\Translator\Translator;
 use MatthiasMullie\Minify\CSS;
 use MatthiasMullie\Minify\JS;
 use SplObjectStorage;
 
 use function array_map;
 use function array_merge;
+use function array_unique;
 use function basename;
 use function class_exists;
 use function file_put_contents;
@@ -158,18 +157,14 @@ final class AddonHandler
 		if (isset(Lang::$txt[$this->prefix . $snakeName]))
 			return;
 
-		$userLang = Language::getNameFromLocale(User::$info['language']);
-
-		$this->translator->addTranslationFilePattern(
-			PhpArray::class,
-			$path . 'langs',
-			'%s.php',
-			$snakeName
-		);
+		$userLang  = Language::getNameFromLocale(User::$info['language']);
+		$languages = array_unique([Language::FALLBACK, $userLang]);
 
 		Lang::$txt[$this->prefix . $snakeName] = array_merge(
-			(array) $this->translator->getAllMessages($snakeName, Language::FALLBACK),
-			(array) $this->translator->getAllMessages($snakeName, $userLang),
+			...array_map(function ($lang) use ($path) {
+				$langFile = $path . 'langs' . DIRECTORY_SEPARATOR . $lang . '.php';
+				return is_file($langFile) ? require $langFile : [];
+			}, $languages)
 		);
 	}
 
@@ -230,10 +225,7 @@ final class AddonHandler
 	private function __construct()
 	{
 		$this->settings = (new PluginRepository())->getSettings();
-
 		$this->storage = $this->getStorage();
-
-		$this->translator = new Translator();
 
 		$this->css = new CSS();
 		$this->js = new JS();
