@@ -96,7 +96,7 @@ final class PluginArea
 		$settings = [];
 
 		// You can add settings for your plugins
-		AddonHandler::getInstance()->run(PortalHook::addSettings, [&$settings], Utils::$context['lp_plugins']);
+		AddonHandler::getInstance(Utils::$context['lp_plugins'])->run(PortalHook::addSettings, [&$settings]);
 
 		$this->handleSave($settings);
 		$this->prepareAddonList($settings);
@@ -170,7 +170,7 @@ final class PluginArea
 		}
 
 		// You can do additional actions after settings saving
-		AddonHandler::getInstance()->run(PortalHook::saveSettings, [&$settings], Utils::$context['lp_plugins']);
+		AddonHandler::getInstance(Utils::$context['lp_plugins'])->run(PortalHook::saveSettings, [&$settings]);
 
 		$this->repository->changeSettings($name, $settings);
 

@@ -12,18 +12,11 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\Compat\Lang;
-use Bugo\Compat\Theme;
-use Bugo\Compat\User;
-use Bugo\Compat\Utils;
-use Bugo\Compat\WebFetchApi;
+use Bugo\Compat\{Lang, Theme, User, Utils, WebFetchApi};
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Repositories\PluginRepository;
-use Bugo\LightPortal\Utils\Language;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
-use MatthiasMullie\Minify\CSS;
-use MatthiasMullie\Minify\JS;
+use Bugo\LightPortal\Utils\{Language, Setting, Str};
+use MatthiasMullie\Minify\{CSS, JS};
 use SplObjectStorage;
 
 use function array_map;
@@ -65,12 +58,12 @@ final class AddonHandler
 
 	private static self $instance;
 
-	private string $prefix = 'lp_';
+	private const PREFIX = 'lp_';
 
-	public static function getInstance(): self
+	public static function getInstance(array $plugins = []): self
 	{
-		if (empty(self::$instance)) {
-			self::$instance = new self();
+		if (empty(self::$instance) || $plugins) {
+			self::$instance = new self($plugins);
 		}
 
 		return self::$instance;
@@ -84,46 +77,17 @@ final class AddonHandler
 		return array_map(static fn($item): string => basename($item), $dirs);
 	}
 
-	public function run(PortalHook $hook = PortalHook::init, array $vars = [], array $plugins = []): void
+	public function run(PortalHook $hook = PortalHook::init, array $vars = []): void
 	{
-		$hook = $hook->name;
+		$hookName = $hook->name;
 
-		$addons = $plugins ?: Setting::getEnabledPlugins();
-
-		if (empty($addons) || isset(Utils::$context['uninstalling']))
-			return;
-
-		foreach ($addons as $addon) {
-			$className = __NAMESPACE__ . '\Plugins\\' . $addon . '\\' . $addon;
-
-			if (! class_exists($className))
-				continue;
-
-			$class = new $className();
-
-			if (! $this->storage->contains($class)) {
-				$this->storage->attach($class, [
-					'name' => $addon,
-					'icon' => $class->icon,
-					'type' => $class->type,
-				]);
-
-				$path = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $addon . DIRECTORY_SEPARATOR;
-				$snakeName = Str::getSnakeName($addon);
-
-				Utils::$context[$this->prefix . $snakeName . '_plugin'] = $this->settings[$snakeName] ?? [];
-				Utils::$context['lp_loaded_addons'][$snakeName] = $this->storage->offsetGet($class);
-
-				$this->loadLangs($path, $snakeName);
-				$this->loadAssets($path, $addon);
-			}
-
-			if (method_exists($class, $hook)) {
-				$hook === PortalHook::init && in_array($addon, Setting::getEnabledPlugins())
+        foreach ($this->storage as $class) {
+			if (method_exists($class, $hookName)) {
+				$hookName === PortalHook::init && in_array($class->getName(), Setting::getEnabledPlugins())
 					? $class->init()
-					: $class->$hook(...$vars);
+					: $class->$hookName(...$vars);
 			}
-		}
+        }
 	}
 
 	private function prepareAssets(array $assets = []): void
@@ -136,14 +100,14 @@ final class AddonHandler
 
 			foreach ($assets[$type] as $plugin => $links) {
 				$customName = $type . '/light_portal/' . $plugin;
-				$addonAssetDir = Theme::$current->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . $customName;
+				$pluginAssetDir = Theme::$current->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . $customName;
 
-				if (! is_dir($addonAssetDir)) {
-					@mkdir($addonAssetDir);
+				if (! is_dir($pluginAssetDir)) {
+					@mkdir($pluginAssetDir);
 				}
 
 				foreach ($links as $link) {
-					if (is_file($filename = $addonAssetDir . DIRECTORY_SEPARATOR . basename((string) $link)))
+					if (is_file($filename = $pluginAssetDir . DIRECTORY_SEPARATOR . basename((string) $link)))
 						continue;
 
 					file_put_contents($filename, WebFetchApi::fetch($link), LOCK_EX);
@@ -154,13 +118,13 @@ final class AddonHandler
 
 	private function loadLangs(string $path, string $snakeName): void
 	{
-		if (isset(Lang::$txt[$this->prefix . $snakeName]))
+		if (isset(Lang::$txt[self::PREFIX . $snakeName]))
 			return;
 
 		$userLang  = Language::getNameFromLocale(User::$info['language']);
 		$languages = array_unique([Language::FALLBACK, $userLang]);
 
-		Lang::$txt[$this->prefix . $snakeName] = array_merge(
+		Lang::$txt[self::PREFIX . $snakeName] = array_merge(
 			...array_map(function ($lang) use ($path) {
 				$langFile = $path . 'langs' . DIRECTORY_SEPARATOR . $lang . '.php';
 				return is_file($langFile) ? require $langFile : [];
@@ -168,7 +132,7 @@ final class AddonHandler
 		);
 	}
 
-	private function loadAssets(string $path, string $addon): void
+	private function loadAssets(string $path, string $plugin): void
 	{
 		$assets = [
 			'css' => $path . 'style.css',
@@ -179,7 +143,7 @@ final class AddonHandler
 			if (! is_file($file))
 				continue;
 
-			if (in_array($addon, Setting::getEnabledPlugins())) {
+			if (in_array($plugin, Setting::getEnabledPlugins())) {
 				$this->{$type}->add($file);
 			}
 
@@ -222,15 +186,51 @@ final class AddonHandler
 		};
 	}
 
-	private function __construct()
+	private function prepareList(array $plugins = [])
+	{
+		$plugins = $plugins ?: Setting::getEnabledPlugins();
+
+		if ($plugins === [] || isset(Utils::$context['uninstalling']))
+			return;
+
+		foreach ($plugins as $plugin) {
+			$className = __NAMESPACE__ . "\\Plugins\\$plugin\\$plugin";
+
+			if (! class_exists($className))
+				continue;
+
+			$class = new $className();
+
+			if (! $this->storage->contains($class)) {
+				$this->storage->attach($class, [
+					'name' => $plugin,
+					'icon' => $class->icon,
+					'type' => $class->type,
+				]);
+
+				$path = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $plugin . DIRECTORY_SEPARATOR;
+				$snakeName = Str::getSnakeName($plugin);
+
+				Utils::$context[self::PREFIX . $snakeName . '_plugin'] = $this->settings[$snakeName] ?? [];
+				Utils::$context['lp_loaded_addons'][$snakeName] = $this->storage->offsetGet($class);
+
+				$this->loadLangs($path, $snakeName);
+				$this->loadAssets($path, $plugin);
+			}
+		}
+	}
+
+	private function __construct(array $plugins = [])
 	{
 		$this->settings = (new PluginRepository())->getSettings();
 		$this->storage = $this->getStorage();
 
 		$this->css = new CSS();
-		$this->js = new JS();
+		$this->js  = new JS();
 
 		$this->prepareAssets();
 		$this->minifyAssets();
+
+		$this->prepareList($plugins);
 	}
 }
