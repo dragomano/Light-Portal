@@ -14,6 +14,7 @@ namespace Bugo\LightPortal\Hooks;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
+use DateTime;
 
 use function define;
 use function dirname;
@@ -28,7 +29,7 @@ class Init
 	{
 		Utils::$context['lp_load_time'] ??= microtime(true);
 
-		define('LP_NAME', 'Light Portal');
+		define('LP_NAME', (new DateTime())->format('m-d') === '04-01' ? 'Lazy Panda' : 'Light Portal');
 		define('LP_VERSION', '2.7.2');
 		define('LP_PLUGIN_LIST', 'https://d8d75ea98b25aa12.mokky.dev/addons');
 		define('LP_ADDON_DIR', dirname(__DIR__) . '/Plugins');
