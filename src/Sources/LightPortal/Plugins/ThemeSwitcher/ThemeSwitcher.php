@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 05.06.24
+ * @version 03.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\ThemeSwitcher;
@@ -16,6 +16,7 @@ namespace Bugo\LightPortal\Plugins\ThemeSwitcher;
 use Bugo\Compat\Theme;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Enums\Hook;
+use Nette\Utils\Html;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -31,8 +32,9 @@ class ThemeSwitcher extends Block
 
 	public function manageThemes(): void
 	{
-		if ($this->request()->only(['done', 'do']))
+		if ($this->request()->only(['done', 'do'])) {
 			$this->cache()->flush();
+		}
 	}
 
 	public function prepareContent(object $data): void
@@ -42,36 +44,49 @@ class ThemeSwitcher extends Block
 
 		$themes = $this->getForumThemes();
 
-		if (empty($themes))
+		if ($themes === [])
 			return;
 
 		$id = $data->id;
 
-		echo '
-			<div class="themeswitcher centertext">
-				<select id="lp_block_', $id, '_themeswitcher" onchange="lp_block_', $id, '_themeswitcher_change();"', count($themes) < 2 ? ' disabled' : '', '>';
+		$container = Html::el('div')
+			->class('themeswitcher centertext');
+
+		$select = Html::el('select')
+			->id("lp_block_{$id}_themeswitcher")
+			->setAttribute('onchange', "lp_block_{$id}_themeswitcher_change();")
+			->setAttribute('disabled', count($themes) < 2 ? 'disabled' : null);
 
 		foreach ($themes as $themeId => $name) {
-			echo '
-					<option value="', $themeId, '"', Theme::$current->settings['theme_id'] == $themeId ? ' selected="selected"' : '', '>
-						', $name, '
-					</option>';
+			$option = Html::el('option')
+				->value($themeId)
+				->setText($name);
+
+			if (Theme::$current->settings['theme_id'] === $themeId) {
+				$option->setAttribute('selected', 'selected');
+			}
+
+			$select->addHtml($option);
 		}
 
-		echo '
-				</select>
-				<script>
-					function lp_block_', $id, '_themeswitcher_change() {
-						let lp_block_', $id, '_themeswitcher_theme_id = document.getElementById("lp_block_', $id, '_themeswitcher").value;
-						let search = window.location.search.split(";");
-						let search_args = search.filter(function (item) {
-							return ! item.startsWith("theme=") && ! item.startsWith("?theme=")
-						});
-						search = search_args.join(";");
-						search = search != "" ? search + ";" : "?";
-						window.location = window.location.origin + window.location.pathname + search + "theme=" + lp_block_', $id, '_themeswitcher_theme_id;
-					}
-				</script>
-			</div>';
+		$container->addHtml($select);
+
+		$script = Html::el('script')
+			->setHtml("
+			function lp_block_{$id}_themeswitcher_change() {
+				let lp_block_{$id}_themeswitcher_theme_id = document.getElementById('lp_block_{$id}_themeswitcher').value;
+				let search = window.location.search.split(';');
+				let search_args = search.filter(function (item) {
+					return !item.startsWith('theme=') && !item.startsWith('?theme=');
+				});
+				search = search_args.join(';');
+				search = search != '' ? search + ';' : '?';
+				window.location = window.location.origin + window.location.pathname + search + 'theme=' + lp_block_{$id}_themeswitcher_theme_id;
+			}
+		");
+
+		$container->addHtml($script);
+
+		echo $container;
 	}
 }
