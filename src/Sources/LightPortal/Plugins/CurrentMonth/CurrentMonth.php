@@ -8,12 +8,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category addon
- * @version 01.03.24
+ * @version 04.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\CurrentMonth;
 
-use Bugo\Compat\{Calendar, Config, Lang, Theme, User, Utils};
+use Bugo\Compat\Actions\Calendar;
+use Bugo\Compat\{Config, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Plugins\Block;
 
 if (! defined('LP_NAME'))

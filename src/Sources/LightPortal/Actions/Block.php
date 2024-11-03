@@ -12,10 +12,10 @@
 
 namespace Bugo\LightPortal\Actions;
 
-use Bugo\Compat\{Config, Db};
-use Bugo\Compat\{Lang, Theme, Utils};
-use Bugo\LightPortal\Enums\{Permission, Status};
-use Bugo\LightPortal\Utils\{CacheTrait, Content, Icon, RequestTrait, Setting, Str};
+use Bugo\Compat\{Config, Theme, Utils};
+use Bugo\LightPortal\Enums\Permission;
+use Bugo\LightPortal\Utils\{Content, Icon};
+use Bugo\LightPortal\Utils\{RequestTrait, Setting, Str};
 use Nette\Utils\Html;
 
 use function array_filter;
@@ -35,12 +35,11 @@ if (! defined('SMF'))
 
 final class Block implements BlockInterface
 {
-	use CacheTrait;
 	use RequestTrait;
 
 	public function show(): void
 	{
-		if ($this->hideBlocksInACP() || $this->request()->is('devtools') || $this->request()->has('preview'))
+		if (Setting::hideBlocksInACP() || $this->request()->is('devtools') || $this->request()->has('preview'))
 			return;
 
 		if (empty(Utils::$context['template_layers']) || empty(Utils::$context['lp_active_blocks']))
@@ -96,58 +95,6 @@ final class Block implements BlockInterface
 			['lp_portal'],
 			array_slice(Utils::$context['template_layers'], $counter, null, true)
 		);
-	}
-
-	public function getActive(): array
-	{
-		if ($this->hideBlocksInACP())
-			return [];
-
-		if (($blocks = $this->cache()->get('active_blocks')) === null) {
-			$result = Db::$db->query('', '
-				SELECT
-					b.block_id, b.icon, b.type, b.content, b.placement, b.priority,
-					b.permissions, b.areas, b.title_class, b.content_class,
-					bt.lang, bt.value AS title, bp.name, bp.value
-				FROM {db_prefix}lp_blocks AS b
-					LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
-					LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {literal:block})
-				WHERE b.status = {int:status}
-				ORDER BY b.placement, b.priority',
-				[
-					'status' => Status::ACTIVE->value,
-				]
-			);
-
-			$blocks = [];
-			while ($row = Db::$db->fetch_assoc($result)) {
-				Lang::censorText($row['content']);
-
-				$blocks[$row['block_id']] ??= [
-					'id'            => (int) $row['block_id'],
-					'icon'          => $row['icon'],
-					'type'          => $row['type'],
-					'content'       => $row['content'],
-					'placement'     => $row['placement'],
-					'priority'      => (int) $row['priority'],
-					'permissions'   => (int) $row['permissions'],
-					'areas'         => explode(',', (string) $row['areas']),
-					'title_class'   => $row['title_class'],
-					'content_class' => $row['content_class'],
-				];
-
-				$blocks[$row['block_id']]['titles'][$row['lang']] = $row['title'];
-				$blocks[$row['block_id']]['titles'] = array_filter($blocks[$row['block_id']]['titles']);
-
-				$blocks[$row['block_id']]['parameters'][$row['name']] = $row['value'];
-			}
-
-			Db::$db->free_result($result);
-
-			$this->cache()->put('active_blocks', $blocks);
-		}
-
-		return $blocks;
 	}
 
 	private function getFilteredByAreas(): array
@@ -247,10 +194,5 @@ final class Block implements BlockInterface
 		}
 
 		return $ids;
-	}
-
-	private function hideBlocksInACP(): bool
-	{
-		return ! empty(Config::$modSettings['lp_hide_blocks_in_acp']) && $this->request()->is('admin');
 	}
 }
