@@ -7,16 +7,17 @@
  * @copyright 2020-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 24.05.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Likely;
 
 use Bugo\Compat\{Config, Lang, Theme, Utils};
-use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, RadioField};
 use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -30,24 +31,24 @@ class Likely extends Block
 		'telegram', 'twitter', 'viber', 'vkontakte', 'whatsapp',
 	];
 
-	public function prepareBlockParams(array &$params): void
+	public function prepareBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'likely')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'size'      => 'small',
 			'dark_mode' => false,
 			'buttons'   => $this->buttons,
 		];
 	}
 
-	public function validateBlockParams(array &$params): void
+	public function validateBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'likely')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'size'      => FILTER_DEFAULT,
 			'dark_mode' => FILTER_VALIDATE_BOOLEAN,
 			'buttons'   => FILTER_DEFAULT,
@@ -76,14 +77,16 @@ class Likely extends Block
 			->setValue(Utils::$context['lp_block']['options']['dark_mode']);
 	}
 
-	public function prepareAssets(array &$assets): void
+	public function prepareAssets(Event $e): void
 	{
-		$assets['css']['likely'][] = 'https://cdn.jsdelivr.net/npm/ilyabirman-likely@3/release/likely.min.css';
-		$assets['scripts']['likely'][] = 'https://cdn.jsdelivr.net/npm/ilyabirman-likely@3/release/likely.min.js';
+		$e->args->assets['css']['likely'][] = 'https://cdn.jsdelivr.net/npm/ilyabirman-likely@3/release/likely.min.css';
+		$e->args->assets['scripts']['likely'][] = 'https://cdn.jsdelivr.net/npm/ilyabirman-likely@3/release/likely.min.js';
 	}
 
-	public function prepareContent(object $data, array $parameters): void
+	public function prepareContent(Event $e): void
 	{
+		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+
 		if ($data->type !== 'likely' || empty($parameters['buttons']))
 			return;
 
@@ -117,9 +120,9 @@ class Likely extends Block
 			</div>';
 	}
 
-	public function credits(array &$links): void
+	public function credits(Event $e): void
 	{
-		$links[] = [
+		$e->args->links[] = [
 			'title' => 'Likely',
 			'link' => 'https://github.com/NikolayRys/Likely',
 			'author' => 'Nikolay Rys, Ilya Birman, Evgeny Steblinsky, Artem Sapegin',

@@ -7,16 +7,17 @@
  * @copyright 2021-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 05.06.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\ExtendedMetaTags;
 
 use Bugo\Compat\{Lang, Utils};
-use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Areas\Fields\VirtualSelectField;
 use Bugo\LightPortal\Enums\{Hook, Tab};
+use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\Plugin;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -55,16 +56,16 @@ class ExtendedMetaTags extends Plugin
 		}
 	}
 
-	public function preparePageParams(array &$params): void
+	public function preparePageParams(Event $e): void
 	{
-		$params['meta_robots'] = '';
-		$params['meta_rating'] = '';
+		$e->args->params['meta_robots'] = '';
+		$e->args->params['meta_rating'] = '';
 	}
 
-	public function validatePageParams(array &$params): void
+	public function validatePageParams(Event $e): void
 	{
-		$params['meta_robots'] = FILTER_DEFAULT;
-		$params['meta_rating'] = FILTER_DEFAULT;
+		$e->args->params['meta_robots'] = FILTER_DEFAULT;
+		$e->args->params['meta_rating'] = FILTER_DEFAULT;
 	}
 
 	public function preparePageFields(): void

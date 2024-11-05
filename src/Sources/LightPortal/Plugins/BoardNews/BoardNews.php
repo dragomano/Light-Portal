@@ -7,16 +7,17 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 24.05.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\BoardNews;
 
 use Bugo\Compat\{Config, Lang, Theme, User, Utils};
-use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Areas\Fields\{NumberField, RangeField};
 use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\MessageIndex;
 
 if (! defined('LP_NAME'))
@@ -28,24 +29,24 @@ class BoardNews extends Block
 
 	public string $icon = 'fas fa-newspaper';
 
-	public function prepareBlockParams(array &$params): void
+	public function prepareBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'board_news')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'board_id'      => 0,
 			'num_posts'     => 5,
 			'teaser_length' => 255,
 		];
 	}
 
-	public function validateBlockParams(array &$params): void
+	public function validateBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'board_news')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'board_id'      => FILTER_VALIDATE_INT,
 			'num_posts'     => FILTER_VALIDATE_INT,
 			'teaser_length' => FILTER_VALIDATE_INT,
@@ -74,8 +75,10 @@ class BoardNews extends Block
 			->setValue(Utils::$context['lp_block']['options']['teaser_length']);
 	}
 
-	public function prepareContent(object $data, array $parameters): void
+	public function prepareContent(Event $e): void
 	{
+		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+
 		if ($data->type !== 'board_news')
 			return;
 

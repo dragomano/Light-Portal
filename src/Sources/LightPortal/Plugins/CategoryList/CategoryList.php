@@ -7,15 +7,16 @@
  * @copyright 2022-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 24.02.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\CategoryList;
 
 use Bugo\Compat\{Lang, Utils};
-use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Actions\Category;
+use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -29,13 +30,13 @@ class CategoryList extends Block
 		return (new Category())->getAll(0, 0, 'c.priority');
 	}
 
-	public function prepareContent(object $data): void
+	public function prepareContent(Event $e): void
 	{
-		if ($data->type !== 'category_list')
+		if ($e->args->data->type !== 'category_list')
 			return;
 
 		$categories = $this->cache('category_list_addon_u' . Utils::$context['user']['id'])
-			->setLifeTime($data->cacheTime)
+			->setLifeTime($e->args->data->cacheTime)
 			->setFallback(self::class, 'getData');
 
 		if (empty($categories)) {

@@ -7,14 +7,16 @@
  * @copyright 2023-2024 Bugo
  * @license https://opensource.org/licenses/MIT MIT
  *
- * @category addon
- * @version 21.03.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\TinyMCE;
 
 use Bugo\Compat\{Lang, Theme, Utils};
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
+use Nette\Utils\Html;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -26,17 +28,23 @@ class TinyMCE extends Plugin
 {
 	public string $type = 'editor';
 
-	public function addSettings(array &$settings): void
+	public function addSettings(Event $e): void
 	{
-		$link = '<a href="https://www.tiny.cloud/auth/signup/" class="bbc_link" target="_blank">' . Lang::$txt['lp_tiny_m_c_e']['api_key_subtext'] . '<a>';
+		$link = Html::el('a', [
+			'class'  => 'bbc_link',
+			'target' => '_blank',
+			'href'   => 'https://www.tiny.cloud/auth/signup/',
+		])->setText(Lang::$txt['lp_tiny_m_c_e']['api_key_subtext']);
 
-		$settings['tiny_m_c_e'][] = ['text', 'api_key', 'subtext' => $link];
-		$settings['tiny_m_c_e'][] = ['multiselect', 'dark_themes', $this->getForumThemes()];
+		$e->args->settings['tiny_m_c_e'][] = ['text', 'api_key', 'subtext' => $link->toHtml()];
+		$e->args->settings['tiny_m_c_e'][] = ['multiselect', 'dark_themes', $this->getForumThemes()];
 	}
 
-	public function prepareEditor(array $object): void
+	public function prepareEditor(Event $e): void
 	{
-		if ($object['type'] !== 'html' && (! isset($object['options']['content']) || $object['options']['content'] !== 'html'))
+		$object = $e->args->object;
+
+		if ($object['type'] !== 'html' && (! isset($oobject['options']['content']) || $oobject['options']['content'] !== 'html'))
 			return;
 
 		$apiKey = Utils::$context['lp_tiny_m_c_e_plugin']['api_key'] ?? 'no-api-key';
@@ -66,9 +74,9 @@ class TinyMCE extends Plugin
 		});', true);
 	}
 
-	public function credits(array &$links): void
+	public function credits(Event $e): void
 	{
-		$links[] = [
+		$e->args->links[] = [
 			'title' => 'TinyMCE',
 			'link' => 'https://github.com/tinymce/tinymce',
 			'author' => 'Ephox Corporation DBA Tiny Technologies, Inc.',

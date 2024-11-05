@@ -10,14 +10,14 @@
  * @version 2.7
  */
 
-namespace Bugo\LightPortal;
+namespace Bugo\LightPortal\Plugins;
 
 use Bugo\Compat\{Lang, Theme, User, Utils, WebFetchApi};
 use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\EventManager;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\{Language, Setting, Str};
 use MatthiasMullie\Minify\{CSS, JS};
-use SplObjectStorage;
 
 use function array_map;
 use function array_merge;
@@ -30,23 +30,21 @@ use function glob;
 use function in_array;
 use function is_dir;
 use function is_file;
-use function method_exists;
 use function mkdir;
 use function ucfirst;
 
 use const DIRECTORY_SEPARATOR;
 use const GLOB_ONLYDIR;
 use const LOCK_EX;
-use const LP_ADDON_DIR;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class AddonHandler
+final class PluginHandler
 {
 	private array $settings;
 
-	private readonly SplObjectStorage $storage;
+	private PluginRegistry $registry;
 
 	private readonly CSS $css;
 
@@ -71,28 +69,22 @@ final class AddonHandler
 
 	public function getAll(): array
 	{
-		if (empty($dirs = glob(LP_ADDON_DIR . '/*', GLOB_ONLYDIR)))
+		if (empty($dirs = glob(__DIR__ . '/*', GLOB_ONLYDIR)))
 			return [];
 
 		return array_map(static fn($item): string => basename($item), $dirs);
 	}
 
-	public function run(PortalHook $hook = PortalHook::init, array $vars = []): void
+	private function prepareAssets(): void
 	{
-		$hookName = $hook->name;
+		$assets = [];
 
-        foreach ($this->storage as $class) {
-			if (method_exists($class, $hookName)) {
-				$hookName === PortalHook::init && in_array($class->getName(), Setting::getEnabledPlugins())
-					? $class->init()
-					: $class->$hookName(...$vars);
-			}
-        }
-	}
-
-	private function prepareAssets(array $assets = []): void
-	{
-		$this->run(PortalHook::prepareAssets, [&$assets]);
+		EventManager::getInstance()->dispatch(
+			PortalHook::prepareAssets,
+			new Event(new class ($assets) {
+				public function __construct(public array &$assets) {}
+			})
+		);
 
 		foreach (['css', 'scripts', 'images'] as $type) {
 			if (! isset($assets[$type]))
@@ -175,18 +167,7 @@ final class AddonHandler
 		}
 	}
 
-	private function getStorage(): SplObjectStorage
-	{
-		return new class extends SplObjectStorage
-		{
-			public function getHash($object): string
-			{
-				return $object::class;
-			}
-		};
-	}
-
-	private function prepareList(array $plugins = [])
+	private function prepareListeners(array $plugins = []): void
 	{
 		$plugins = $plugins ?: Setting::getEnabledPlugins();
 
@@ -194,25 +175,28 @@ final class AddonHandler
 			return;
 
 		foreach ($plugins as $plugin) {
-			$className = __NAMESPACE__ . "\\Plugins\\$plugin\\$plugin";
+			$className = __NAMESPACE__ . "\\$plugin\\$plugin";
 
 			if (! class_exists($className))
 				continue;
 
-			$class = new $className();
+			$snakeName = Str::getSnakeName($plugin);
 
-			if (! $this->storage->contains($class)) {
-				$this->storage->attach($class, [
+			if (! $this->registry->has($snakeName)) {
+				$class = new $className();
+
+				EventManager::getInstance()->addListeners(PortalHook::cases(), $class);
+
+				$this->registry->add($snakeName, [
 					'name' => $plugin,
 					'icon' => $class->icon,
 					'type' => $class->type,
 				]);
 
-				$path = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $plugin . DIRECTORY_SEPARATOR;
-				$snakeName = Str::getSnakeName($plugin);
-
 				Utils::$context[self::PREFIX . $snakeName . '_plugin'] = $this->settings[$snakeName] ?? [];
-				Utils::$context['lp_loaded_addons'][$snakeName] = $this->storage->offsetGet($class);
+				Utils::$context['lp_loaded_addons'][$snakeName] = $this->registry->get($snakeName);
+
+				$path = __DIR__ . DIRECTORY_SEPARATOR . $plugin . DIRECTORY_SEPARATOR;
 
 				$this->loadLangs($path, $snakeName);
 				$this->loadAssets($path, $plugin);
@@ -223,14 +207,13 @@ final class AddonHandler
 	private function __construct(array $plugins = [])
 	{
 		$this->settings = (new PluginRepository())->getSettings();
-		$this->storage = $this->getStorage();
+		$this->registry = PluginRegistry::getInstance();
 
 		$this->css = new CSS();
 		$this->js  = new JS();
 
 		$this->prepareAssets();
+		$this->prepareListeners($plugins);
 		$this->minifyAssets();
-
-		$this->prepareList($plugins);
 	}
 }

@@ -14,14 +14,19 @@ namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, ErrorHandler, Lang};
 use Bugo\Compat\{Logging, Security, Theme, User, Utils};
-use Bugo\LightPortal\AddonHandler;
-use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, TextField};
-use Bugo\LightPortal\Areas\Partials\{CategorySelect, EntryTypeSelect, PageAuthorSelect, PageIconSelect};
+use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField};
+use Bugo\LightPortal\Areas\Fields\{TextareaField, TextField};
+use Bugo\LightPortal\Areas\Partials\{CategorySelect, EntryTypeSelect};
+use Bugo\LightPortal\Areas\Partials\{PageAuthorSelect, PageIconSelect};
 use Bugo\LightPortal\Areas\Partials\{PermissionSelect, StatusSelect, TagSelect};
 use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Areas\Validators\PageValidator;
+use Bugo\LightPortal\Args\ObjectArgs;
+use Bugo\LightPortal\Args\ParamsArgs;
 use Bugo\LightPortal\Enums\{EntryType, PortalHook, Status, Tab};
+use Bugo\LightPortal\EventManager;
 use Bugo\LightPortal\Models\PageModel;
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Utils\{CacheTrait, Content, DateTime, EntityDataTrait};
 use Bugo\LightPortal\Utils\{Icon, ItemList, Language, RequestTrait, Setting, Str};
@@ -711,7 +716,7 @@ final class PageArea
 
 		$params = [];
 
-		AddonHandler::getInstance()->run(PortalHook::preparePageParams, [&$params]);
+		EventManager::getInstance()->dispatch(PortalHook::preparePageParams, new Event(new ParamsArgs($params)));
 
 		return array_merge($baseParams, $params);
 	}
@@ -862,14 +867,17 @@ final class PageArea
 				->setValue(Utils::$context['lp_page']['options']['allow_comments']);
 		}
 
-		AddonHandler::getInstance()->run(PortalHook::preparePageFields);
+		EventManager::getInstance()->dispatch(PortalHook::preparePageFields);
 
 		$this->preparePostFields();
 	}
 
 	private function prepareEditor(): void
 	{
-		AddonHandler::getInstance()->run(PortalHook::prepareEditor, [Utils::$context['lp_page']]);
+		EventManager::getInstance()->dispatch(
+			PortalHook::prepareEditor,
+			new Event(new ObjectArgs(Utils::$context['lp_page']))
+		);
 	}
 
 	private function preparePreview(): void

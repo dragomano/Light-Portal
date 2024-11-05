@@ -7,16 +7,19 @@
  * @copyright 2023-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 24.05.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Chart;
 
 use Bugo\Compat\{Lang, Theme, Utils};
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextField};
+use Bugo\LightPortal\Areas\Fields\CheckboxField;
+use Bugo\LightPortal\Areas\Fields\CustomField;
+use Bugo\LightPortal\Areas\Fields\TextField;
 use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -37,15 +40,15 @@ class Chart extends Block
 
 	private array $chartTypes = ['line', 'bar', 'pie', 'doughnut', 'polarArea', 'radar'];
 
-	public function prepareBlockParams(array &$params): void
+	public function prepareBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'chart')
 			return;
 
-		$params = $this->params;
+		$e->args->params = $this->params;
 	}
 
-	public function validateBlockParams(array &$params): void
+	public function validateBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'chart')
 			return;
@@ -73,7 +76,7 @@ class Chart extends Block
 			$this->request()->put('datasets', json_encode($datasets, JSON_UNESCAPED_UNICODE));
 		}
 
-		$params = [
+		$e->args->params = [
 			'chart_title'     => FILTER_DEFAULT,
 			'datasets'        => FILTER_DEFAULT,
 			'labels'          => FILTER_DEFAULT,
@@ -118,13 +121,15 @@ class Chart extends Block
 			->setValue(Utils::$context['lp_block']['options']['horizontal']);
 	}
 
-	public function prepareAssets(array &$assets): void
+	public function prepareAssets(Event $e): void
 	{
-		$assets['scripts']['chart'][] = 'https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js';
+		$e->args->assets['scripts']['chart'][] = 'https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js';
 	}
 
-	public function prepareContent(object $data, array $parameters): void
+	public function prepareContent(Event $e): void
 	{
+		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+
 		if ($data->type !== 'chart')
 			return;
 
@@ -175,9 +180,9 @@ class Chart extends Block
 		});', true);
 	}
 
-	public function credits(array &$links): void
+	public function credits(Event $e): void
 	{
-		$links[] = [
+		$e->args->links[] = [
 			'title' => 'Chart.js',
 			'link' => 'https://github.com/chartjs/Chart.js',
 			'author' => 'Chart.js Contributors',

@@ -7,16 +7,17 @@
  * @copyright 2023-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 11.07.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\GalleryBlock;
 
 use Bugo\Compat\{Config, Db, Lang, User, Utils};
-use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField};
 use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
@@ -26,24 +27,24 @@ class GalleryBlock extends Block
 {
 	public string $icon = 'fas fa-image';
 
-	public function prepareBlockParams(array &$params): void
+	public function prepareBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'gallery_block')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'link_in_title' => Config::$scripturl . '?action=gallery',
 			'categories'    => '',
 			'num_images'    => 10,
 		];
 	}
 
-	public function validateBlockParams(array &$params): void
+	public function validateBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'gallery_block')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'categories' => FILTER_DEFAULT,
 			'num_images' => FILTER_VALIDATE_INT,
 		];
@@ -123,8 +124,10 @@ class GalleryBlock extends Block
 		return $images;
 	}
 
-	public function prepareContent(object $data, array $parameters): void
+	public function prepareContent(Event $e): void
 	{
+		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+
 		if ($data->type !== 'gallery_block')
 			return;
 

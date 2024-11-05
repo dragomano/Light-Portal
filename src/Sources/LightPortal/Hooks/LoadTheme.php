@@ -14,11 +14,13 @@ namespace Bugo\LightPortal\Hooks;
 
 use Bugo\Compat\{Config, Lang, Theme};
 use Bugo\Compat\{User, Utils};
-use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Compilers\CompilerInterface;
 use Bugo\LightPortal\Enums\{ContentClass, ContentType, EntryType};
 use Bugo\LightPortal\Enums\{Placement, PluginType, PortalHook, TitleClass};
+use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\Plugins\PluginHandler;
 use Bugo\LightPortal\Repositories\BlockRepository;
+use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionManager;
 
 use function array_combine;
@@ -31,6 +33,7 @@ if (! defined('SMF'))
 class LoadTheme
 {
 	use CommonChecks;
+	use RequestTrait;
 
 	private array $config;
 
@@ -50,8 +53,10 @@ class LoadTheme
 
 		$this->loadAssets(new $this->config[CompilerInterface::class]);
 
-		// Run all init methods for plugins
-		AddonHandler::getInstance()->run();
+		PluginHandler::getInstance();
+
+		// Run all init methods for active plugins
+		EventManager::getInstance()->dispatch(PortalHook::init);
 	}
 
 	protected function defineVars(): void

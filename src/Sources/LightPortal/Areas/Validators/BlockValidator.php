@@ -13,9 +13,12 @@
 namespace Bugo\LightPortal\Areas\Validators;
 
 use Bugo\Compat\{Lang, Utils};
-use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Args\ErrorsDataArgs;
+use Bugo\LightPortal\Args\ParamsArgs;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
+use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\RequestTrait;
 
 use function array_keys;
@@ -61,7 +64,10 @@ class BlockValidator extends AbstractValidator
 
 			$data = filter_input_array(INPUT_POST, $this->args);
 
-			AddonHandler::getInstance()->run(PortalHook::validateBlockParams, [&$params]);
+			EventManager::getInstance()->dispatch(
+				PortalHook::validateBlockParams,
+				new Event(new ParamsArgs($params))
+			);
 
 			$params = array_merge($this->params, $params);
 
@@ -89,7 +95,10 @@ class BlockValidator extends AbstractValidator
 			$errors[] = 'no_valid_areas';
 		}
 
-		AddonHandler::getInstance()->run(PortalHook::findBlockErrors, [&$errors, $data]);
+		EventManager::getInstance()->dispatch(
+			PortalHook::findBlockErrors,
+			new Event(new ErrorsDataArgs($errors, $data))
+		);
 
 		if ($errors) {
 			$this->request()->put('preview', true);

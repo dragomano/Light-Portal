@@ -7,15 +7,16 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 03.11.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\ThemeSwitcher;
 
 use Bugo\Compat\Theme;
-use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Enums\Hook;
+use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
 use Nette\Utils\Html;
 
 if (! defined('LP_NAME'))
@@ -37,9 +38,9 @@ class ThemeSwitcher extends Block
 		}
 	}
 
-	public function prepareContent(object $data): void
+	public function prepareContent(Event $e): void
 	{
-		if ($data->type !== 'theme_switcher')
+		if ($e->args->data->type !== 'theme_switcher')
 			return;
 
 		$themes = $this->getForumThemes();
@@ -47,7 +48,7 @@ class ThemeSwitcher extends Block
 		if ($themes === [])
 			return;
 
-		$id = $data->id;
+		$id = $e->args->data->id;
 
 		$container = Html::el('div')
 			->class('themeswitcher centertext');

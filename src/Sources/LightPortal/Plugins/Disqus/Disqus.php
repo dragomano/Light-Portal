@@ -7,13 +7,14 @@
  * @copyright 2021-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 02.06.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Disqus;
 
 use Bugo\Compat\{Lang, Theme, Utils};
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Utils\Setting;
 
@@ -29,9 +30,14 @@ class Disqus extends Plugin
 		Lang::$txt['lp_comment_block_set']['disqus'] = 'Disqus';
 	}
 
-	public function addSettings(array &$settings): void
+	public function addSettings(Event $e): void
 	{
-		$settings['disqus'][] = ['text', 'shortname', 'subtext' => Lang::$txt['lp_disqus']['shortname_subtext'], 'required' => true];
+		$e->args->settings['disqus'][] = [
+			'text',
+			'shortname',
+			'subtext' => Lang::$txt['lp_disqus']['shortname_subtext'],
+			'required' => true
+		];
 	}
 
 	public function comments(): void

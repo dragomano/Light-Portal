@@ -7,15 +7,16 @@
  * @copyright 2023-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 23.03.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Reactions;
 
 use Bugo\Compat\{Lang, Theme, User, Utils};
-use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
+use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\Plugin;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -27,14 +28,14 @@ class Reactions extends Plugin
 {
 	public string $type = 'page_options';
 
-	public function preparePageParams(array &$params): void
+	public function preparePageParams(Event $e): void
 	{
-		$params['allow_reactions'] = false;
+		$e->args->params['allow_reactions'] = false;
 	}
 
-	public function validatePageParams(array &$params): void
+	public function validatePageParams(Event $e): void
 	{
-		$params['allow_reactions'] = FILTER_VALIDATE_BOOLEAN;
+		$e->args->params['allow_reactions'] = FILTER_VALIDATE_BOOLEAN;
 	}
 
 	public function preparePageFields(): void
@@ -43,8 +44,10 @@ class Reactions extends Plugin
 			->setValue(Utils::$context['lp_page']['options']['allow_reactions']);
 	}
 
-	public function preparePageData(array $data, bool $isAuthor): void
+	public function preparePageData(Event $e): void
 	{
+		[$data, $isAuthor] = [$e->args->data, $e->args->isAuthor];
+
 		if (empty($data['options']['allow_reactions']))
 			return;
 
@@ -119,10 +122,12 @@ class Reactions extends Plugin
 		show_page_reactions();
 	}
 
-	public function commentButtons(array $comment, array &$buttons): void
+	public function commentButtons(Event $e): void
 	{
 		if (empty(Utils::$context['lp_page']['options']['allow_reactions']))
 			return;
+
+		$comment = $e->args->comment;
 
 		$comment['can_react'] = $comment['poster']['id'] !== User::$info['id'];
 		$comment['reactions'] = json_decode($comment['params']['reactions'] ?? '', true) ?? [];
@@ -133,7 +138,7 @@ class Reactions extends Plugin
 
 		show_comment_reactions($comment);
 
-		$buttons[] = ob_get_clean();
+		$e->args->buttons[] = ob_get_clean();
 	}
 
 	private function getReactionsWithCount(array $reactions): string

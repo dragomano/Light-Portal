@@ -7,7 +7,7 @@
  * @copyright 2023-2024 Bugo
  * @license https://opensource.org/licenses/MIT MIT
  *
- * @category addon
+ * @category plugin
  * @version 17.09.24
  */
 

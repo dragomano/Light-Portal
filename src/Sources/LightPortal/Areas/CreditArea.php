@@ -13,8 +13,9 @@
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, Lang, Theme, User, Utils};
-use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Enums\{Hook, PortalHook};
+use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\SMFHookTrait;
 use Nette\Utils\Html;
 
@@ -323,7 +324,12 @@ final class CreditArea
 		];
 
 		// Adding copyrights of used plugins
-		AddonHandler::getInstance()->run(PortalHook::credits, [&$links]);
+		EventManager::getInstance()->dispatch(
+			PortalHook::credits,
+			new Event(new class ($links) {
+				public function __construct(public array &$links) {}
+			})
+		);
 
 		Utils::$context['lp_components'] = $links;
 

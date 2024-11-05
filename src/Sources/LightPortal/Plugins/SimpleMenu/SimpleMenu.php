@@ -7,16 +7,17 @@
  * @copyright 2021-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 24.05.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleMenu;
 
 use Bugo\Compat\{Config, Lang, Utils};
-use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -28,15 +29,15 @@ class SimpleMenu extends Block
 {
 	public string $icon = 'far fa-list-alt';
 
-	public function prepareBlockParams(array &$params): void
+	public function prepareBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'simple_menu')
 			return;
 
-		$params['items'] = '';
+		$e->args->params['items'] = '';
 	}
 
-	public function validateBlockParams(array &$params): void
+	public function validateBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'simple_menu')
 			return;
@@ -58,7 +59,7 @@ class SimpleMenu extends Block
 			$this->request()->put('items', json_encode($items, JSON_UNESCAPED_UNICODE));
 		}
 
-		$params['items'] = FILTER_DEFAULT;
+		$e->args->params['items'] = FILTER_DEFAULT;
 	}
 
 	public function prepareBlockFields(): void
@@ -105,8 +106,10 @@ class SimpleMenu extends Block
 		return ['content' => $html];
 	}
 
-	public function prepareContent(object $data, array $parameters): void
+	public function prepareContent(Event $e): void
 	{
+		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+
 		if ($data->type !== 'simple_menu' || empty($parameters['items']))
 			return;
 

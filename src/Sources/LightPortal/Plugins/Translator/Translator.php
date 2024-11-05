@@ -7,15 +7,15 @@
  * @copyright 2020-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 24.05.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Translator;
 
 use Bugo\Compat\{Config, Lang, Utils};
-use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, RadioField};
+use Bugo\LightPortal\Plugins\{Block, Event};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -24,12 +24,12 @@ class Translator extends Block
 {
 	public string $icon = 'fas fa-language';
 
-	public function prepareBlockParams(array &$params): void
+	public function prepareBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'translator')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'no_content_class' => true,
 			'engine'           => 'google',
 			'widget_theme'     => 'light',
@@ -37,12 +37,12 @@ class Translator extends Block
 		];
 	}
 
-	public function validateBlockParams(array &$params): void
+	public function validateBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'translator')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'engine'       => FILTER_DEFAULT,
 			'widget_theme' => FILTER_DEFAULT,
 			'auto_mode'    => FILTER_VALIDATE_BOOLEAN,
@@ -69,8 +69,10 @@ class Translator extends Block
 			->setValue(Utils::$context['lp_block']['options']['auto_mode']);
 	}
 
-	public function prepareContent(object $data, array $parameters): void
+	public function prepareContent(Event $e): void
 	{
+		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+
 		if ($data->type !== 'translator')
 			return;
 

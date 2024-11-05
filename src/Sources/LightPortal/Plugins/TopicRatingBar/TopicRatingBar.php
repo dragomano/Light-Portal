@@ -7,13 +7,14 @@
  * @copyright 2020-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 19.02.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\TopicRatingBar;
 
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 
 if (! defined('LP_NAME'))
@@ -28,13 +29,13 @@ class TopicRatingBar extends Plugin
 	 *
 	 * Выбираем столбцы total_votes и total_value из таблицы topic_ratings при выборке тем-статей
 	 */
-	public function frontTopics(array &$columns, array &$tables): void
+	public function frontTopics(Event $e): void
 	{
 		if (! class_exists('TopicRatingBar'))
 			return;
 
-		$columns[] = 'tr.total_votes, tr.total_value';
-		$tables[]  = 'LEFT JOIN {db_prefix}topic_ratings AS tr ON (t.id_topic = tr.id)';
+		$e->args->columns[] = 'tr.total_votes, tr.total_value';
+		$e->args->tables[]  = 'LEFT JOIN {db_prefix}topic_ratings AS tr ON (t.id_topic = tr.id)';
 	}
 
 	/**
@@ -42,9 +43,9 @@ class TopicRatingBar extends Plugin
 	 *
 	 * Меняем некоторые результаты выборки
 	 */
-	public function frontTopicsOutput(array &$topics, array $row): void
+	public function frontTopicsRow(Event $e): void
 	{
-		$topics[$row['id_topic']]['rating'] = empty($row['total_votes']) ? 0 : (number_format($row['total_value'] / $row['total_votes']));
+		$e->args->articles[$e->args->row['id_topic']]['rating'] = empty($e->args->row['total_votes']) ? 0 : (number_format($e->args->row['total_value'] / $e->args->row['total_votes']));
 	}
 
 	/**

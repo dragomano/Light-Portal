@@ -7,20 +7,21 @@
  * @copyright 2020-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 02.06.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\RecentTopics;
 
 use Bugo\Compat\{Config, Lang, User, Utils};
-use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Areas\Fields\NumberField;
 use Bugo\LightPortal\Areas\Fields\RadioField;
 use Bugo\LightPortal\Areas\Partials\BoardSelect;
 use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\DateTime;
 use IntlException;
@@ -34,12 +35,12 @@ class RecentTopics extends Block
 
 	public string $icon = 'fas fa-book-open';
 
-	public function prepareBlockParams(array &$params): void
+	public function prepareBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'recent_topics')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'no_content_class' => true,
 			'link_in_title'    => Config::$scripturl . '?action=unread',
 			'exclude_boards'   => '',
@@ -53,12 +54,12 @@ class RecentTopics extends Block
 		];
 	}
 
-	public function validateBlockParams(array &$params): void
+	public function validateBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'recent_topics')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'exclude_boards'   => FILTER_DEFAULT,
 			'include_boards'   => FILTER_DEFAULT,
 			'use_simple_style' => FILTER_VALIDATE_BOOLEAN,
@@ -147,8 +148,10 @@ class RecentTopics extends Block
 		return $topics;
 	}
 
-	public function prepareContent(object $data, array $parameters): void
+	public function prepareContent(Event $e): void
 	{
+		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+
 		if ($data->type !== 'recent_topics')
 			return;
 

@@ -7,18 +7,19 @@
  * @copyright 2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 06.06.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Events;
 
 use Bugo\Compat\{Actions\Calendar, Lang, User, Utils};
-use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\LightPortal\Areas\Fields\NumberField;
 use Bugo\LightPortal\Areas\Fields\RangeField;
 use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -30,12 +31,12 @@ class Events extends Block
 {
 	public string $icon = 'fas fa-calendar-check';
 
-	public function prepareBlockParams(array &$params): void
+	public function prepareBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'events')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'show_birthdays'  => false,
 			'show_holidays'   => false,
 			'show_events'     => true,
@@ -44,12 +45,12 @@ class Events extends Block
 		];
 	}
 
-	public function validateBlockParams(array &$params): void
+	public function validateBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'events')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'show_birthdays'  => FILTER_VALIDATE_BOOLEAN,
 			'show_holidays'   => FILTER_VALIDATE_BOOLEAN,
 			'show_events'     => FILTER_VALIDATE_BOOLEAN,
@@ -86,10 +87,10 @@ class Events extends Block
 			->setValue(Utils::$context['lp_block']['options']['update_interval']);
 	}
 
-	public function changeIconSet(array &$set): void
+	public function changeIconSet(Event $e): void
 	{
-		$set['cake']  = 'fas fa-cake-candles';
-		$set['event'] = 'fas fa-calendar-days';
+		$e->args->set['cake']  = 'fas fa-cake-candles';
+		$e->args->set['event'] = 'fas fa-calendar-days';
 	}
 
 	public function getData(array $parameters): array
@@ -110,8 +111,10 @@ class Events extends Block
 		return Calendar::getCalendarList($todayDate, $futureDate, $options);
 	}
 
-	public function prepareContent(object $data, array $parameters): void
+	public function prepareContent(Event $e): void
 	{
+		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+
 		if ($data->type !== 'events')
 			return;
 

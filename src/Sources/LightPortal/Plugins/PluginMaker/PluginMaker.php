@@ -7,13 +7,14 @@
  * @copyright 2021-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 05.06.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
 
 use Bugo\Compat\{Lang, Utils};
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Utils\Icon;
 
@@ -38,8 +39,10 @@ class PluginMaker extends Plugin
 		);
 	}
 
-	public function updateAdminAreas(array &$areas): void
+	public function updateAdminAreas(Event $e): void
 	{
+		$areas = &$e->args->areas;
+
 		$areas['lp_plugins']['subsections'] = array_merge(
 			['main' => $areas['lp_plugins']['subsections']['main']],
 			['add'  => [Icon::get('plus') . Lang::$txt['lp_plugin_maker']['add']]],
@@ -47,14 +50,14 @@ class PluginMaker extends Plugin
 		);
 	}
 
-	public function updatePluginAreas(array &$areas): void
+	public function updatePluginAreas(Event $e): void
 	{
-		$areas['add'] = [new Handler, 'add'];
+		$e->args->areas['add'] = [new Handler, 'add'];
 	}
 
-	public function credits(array &$links): void
+	public function credits(Event $e): void
 	{
-		$links[] = [
+		$e->args->links[] = [
 			'title' => 'Nette PHP Generator',
 			'link' => 'https://github.com/nette/php-generator',
 			'author' => 'David Grudl',

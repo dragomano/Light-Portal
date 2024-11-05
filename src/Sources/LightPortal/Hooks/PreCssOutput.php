@@ -14,8 +14,9 @@ namespace Bugo\LightPortal\Hooks;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\Plugins\Event;
 use Nette\Utils\Html;
 
 if (! defined('SMF'))
@@ -43,7 +44,12 @@ class PreCssOutput
 			$styles[] = 'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css';
 		}
 
-		AddonHandler::getInstance()->run(PortalHook::preloadStyles, [&$styles]);
+		EventManager::getInstance()->dispatch(
+			PortalHook::preloadStyles,
+			new Event(new class ($styles) {
+				public function __construct(public array &$styles) {}
+			})
+		);
 
 		foreach ($styles as $style) {
 			echo "\n\t" . Html::el('link', [

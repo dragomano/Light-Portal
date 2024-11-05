@@ -13,9 +13,10 @@
 namespace Bugo\LightPortal\Areas\Traits;
 
 use Bugo\Compat\{Config, Db, Lang, Utils};
-use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\EventManager;
 use Bugo\LightPortal\Lists\IconList;
+use Bugo\LightPortal\Plugins\Event;
 use Nette\Utils\Html;
 
 use function array_filter;
@@ -45,7 +46,12 @@ trait QueryTrait
 		$template = Html::el('i', ['class' => '%1$s fa-fw'])
 			->setAttribute('aria-hidden', 'true') . '&nbsp;%1$s';
 
-		AddonHandler::getInstance()->run(PortalHook::prepareIconList, [&$icons, &$template]);
+		EventManager::getInstance()->dispatch(
+			PortalHook::prepareIconList,
+			new Event(new class ($icons, $template) {
+				public function __construct(public array &$icons, public string &$template) {}
+			})
+		);
 
 		$icons = array_filter($icons, static fn($item) => str_contains((string) $item, $search));
 

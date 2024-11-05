@@ -13,8 +13,11 @@
 namespace Bugo\LightPortal\Articles;
 
 use Bugo\Compat\{BBCodeParser, Config, Db, Lang, User, Utils};
-use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Args\ArticlesArgs;
+use Bugo\LightPortal\Args\ArticlesRowArgs;
 use Bugo\LightPortal\Enums\{EntryType, Permission, PortalHook, Status};
+use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\{Avatar, Content, EntityDataTrait};
 use Bugo\LightPortal\Utils\{Icon, Setting, Str};
 
@@ -65,9 +68,16 @@ class PageArticle extends AbstractArticle
 			'date DESC',
 		];
 
-		AddonHandler::getInstance()->run(PortalHook::frontPages, [
-			&$this->columns, &$this->tables, &$this->params, &$this->wheres, &$this->orders
-		]);
+		EventManager::getInstance()->dispatch(
+			PortalHook::frontPages,
+			new Event(new ArticlesArgs(
+				$this->columns,
+				$this->tables,
+				$this->params,
+				$this->wheres,
+				$this->orders
+			))
+		);
 	}
 
 	public function getData(int $start, int $limit): array
@@ -137,7 +147,10 @@ class PageArticle extends AbstractArticle
 
 			$this->prepareTeaser($pages, $row);
 
-			AddonHandler::getInstance()->run(PortalHook::frontPagesOutput, [&$pages, $row]);
+			EventManager::getInstance()->dispatch(
+				PortalHook::frontPagesRow,
+				new Event(new ArticlesRowArgs($pages, $row))
+			);
 		}
 
 		Db::$db->free_result($result);

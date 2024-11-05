@@ -7,13 +7,14 @@
  * @copyright 2023-2024 Bugo
  * @license https://opensource.org/licenses/MIT MIT
  *
- * @category addon
- * @version 21.03.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Snowflakes;
 
 use Bugo\Compat\{Theme, Utils};
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 
 if (! defined('LP_NAME'))
@@ -49,9 +50,11 @@ class Snowflakes extends Plugin
 			});', true);
 	}
 
-	public function addSettings(array &$settings): void
+	public function addSettings(Event $e): void
 	{
 		$this->addDefaultValues($this->params);
+
+		$settings = &$e->args->settings;
 
 		$settings['snowflakes'][] = ['color', 'icon_color'];
 		$settings['snowflakes'][] = ['int', 'icon_size', 'min' => 1];
@@ -60,15 +63,15 @@ class Snowflakes extends Plugin
 		$settings['snowflakes'][] = ['range', 'snowdrifts_count', 'max' => 10];
 	}
 
-	public function prepareAssets(array &$assets): void
+	public function prepareAssets(Event $e): void
 	{
-		$assets['css']['snowflakes'][]     = 'https://cdn.jsdelivr.net/gh/Alaev-Co/snowflakes/dist/snow.min.css';
-		$assets['scripts']['snowflakes'][] = 'https://cdn.jsdelivr.net/gh/Alaev-Co/snowflakes/dist/Snow.min.js';
+		$e->args->assets['css']['snowflakes'][]     = 'https://cdn.jsdelivr.net/gh/Alaev-Co/snowflakes/dist/snow.min.css';
+		$e->args->assets['scripts']['snowflakes'][] = 'https://cdn.jsdelivr.net/gh/Alaev-Co/snowflakes/dist/Snow.min.js';
 	}
 
-	public function credits(array &$links): void
+	public function credits(Event $e): void
 	{
-		$links[] = [
+		$e->args->links[] = [
 			'title' => 'Snowflakes',
 			'link' => 'https://github.com/Alaev-Co/snowflakes',
 			'author' => 'Alaev & Co',

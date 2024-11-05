@@ -7,15 +7,16 @@
  * @copyright 2023-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 05.06.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\CustomTranslate;
 
 use Bugo\Compat\{Config, Lang, Theme, Utils};
-use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Enums\Hook;
+use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\Plugin;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -71,16 +72,16 @@ class CustomTranslate extends Plugin
 		$this->setTemplate()->withLayer('custom_translate');
 	}
 
-	public function addSettings(array &$settings): void
+	public function addSettings(Event $e): void
 	{
-		$settings['custom_translate'][] = ['multiselect', 'languages', array_combine(
+		$e->args->settings['custom_translate'][] = ['multiselect', 'languages', array_combine(
 			$this->langCodes, Lang::$txt['lp_custom_translate']['languages_set']
 		)];
 	}
 
-	public function credits(array &$links): void
+	public function credits(Event $e): void
 	{
-		$links[] = [
+		$e->args->links[] = [
 			'title' => 'Yandex Translate Custom Widget',
 			'link' => 'https://github.com/get-web/yandex-translate-custom-widget',
 			'author' => 'Vitalii P. (get-web)',

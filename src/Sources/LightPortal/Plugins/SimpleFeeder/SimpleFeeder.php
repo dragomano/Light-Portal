@@ -7,16 +7,17 @@
  * @copyright 2020-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 18.09.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleFeeder;
 
 use Bugo\Compat\{Config, Lang, Utils};
-use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, UrlField};
 use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\DateTime;
 use IntlException;
 
@@ -31,23 +32,23 @@ class SimpleFeeder extends Block
 {
 	public string $icon = 'fas fa-rss';
 
-	public function prepareBlockParams(array &$params): void
+	public function prepareBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'simple_feeder')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'url'       => '',
 			'show_text' => false,
 		];
 	}
 
-	public function validateBlockParams(array &$params): void
+	public function validateBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'simple_feeder')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'url'       => FILTER_VALIDATE_URL,
 			'show_text' => FILTER_VALIDATE_BOOLEAN,
 		];
@@ -83,8 +84,10 @@ class SimpleFeeder extends Block
 	/**
 	 * @throws IntlException
 	 */
-	public function prepareContent(object $data, array $parameters): void
+	public function prepareContent(Event $e): void
 	{
+		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+
 		if ($data->type !== 'simple_feeder')
 			return;
 

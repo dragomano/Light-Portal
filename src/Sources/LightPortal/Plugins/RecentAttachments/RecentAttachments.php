@@ -7,15 +7,15 @@
  * @copyright 2020-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 24.05.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\RecentAttachments;
 
 use Bugo\Compat\{Lang, Theme, User, Utils};
-use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Areas\Fields\{NumberField, TextField};
+use Bugo\LightPortal\Plugins\{Block, Event};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -26,23 +26,23 @@ class RecentAttachments extends Block
 
 	public string $icon = 'fas fa-paperclip';
 
-	public function prepareBlockParams(array &$params): void
+	public function prepareBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'recent_attachments')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'num_attachments' => 5,
 			'extensions'      => 'jpg',
 		];
 	}
 
-	public function validateBlockParams(array &$params): void
+	public function validateBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'recent_attachments')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'num_attachments' => FILTER_VALIDATE_INT,
 			'extensions'      => FILTER_DEFAULT,
 		];
@@ -71,8 +71,10 @@ class RecentAttachments extends Block
 		return $this->getFromSsi('recentAttachments', $parameters['num_attachments'], $extensions, 'array');
 	}
 
-	public function prepareContent(object $data, array $parameters): void
+	public function prepareContent(Event $e): void
 	{
+		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+
 		if ($data->type !== 'recent_attachments')
 			return;
 

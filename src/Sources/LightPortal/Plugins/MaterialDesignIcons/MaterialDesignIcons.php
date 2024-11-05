@@ -7,13 +7,14 @@
  * @copyright 2023-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 21.03.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\MaterialDesignIcons;
 
 use Bugo\Compat\Theme;
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 
 if (! defined('LP_NAME'))
@@ -39,7 +40,7 @@ class MaterialDesignIcons extends Plugin
 		);
 	}
 
-	public function prepareIconList(array &$icons): void
+	public function prepareIconList(Event $e): void
 	{
 		if (($mdIcons = $this->cache()->get('all_md_icons', 30 * 24 * 60 * 60)) === null) {
 			$content = file_get_contents('https://raw.githubusercontent.com/Templarian/MaterialDesign/master/meta.json');
@@ -53,12 +54,12 @@ class MaterialDesignIcons extends Plugin
 			$this->cache()->put('all_md_icons', $mdIcons, 30 * 24 * 60 * 60);
 		}
 
-		$icons = array_merge($icons, $mdIcons);
+		$e->args->icons = array_merge($e->args->icons, $mdIcons);
 	}
 
-	public function credits(array &$links): void
+	public function credits(Event $e): void
 	{
-		$links[] = [
+		$e->args->links[] = [
 			'title' => 'Material Design Icons',
 			'link' => 'https://pictogrammers.com/library/mdi/',
 			'author' => 'Pictogrammers',

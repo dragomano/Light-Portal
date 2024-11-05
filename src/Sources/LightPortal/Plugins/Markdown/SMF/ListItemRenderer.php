@@ -7,7 +7,7 @@
  * @copyright 2020-2024 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  *
- * @category addon
+ * @category plugin
  * @version 31.03.24
  */
 

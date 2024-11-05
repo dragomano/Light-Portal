@@ -7,13 +7,14 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 21.03.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\EasyMarkdownEditor;
 
 use Bugo\Compat\{Lang, Theme, Utils};
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 
 if (! defined('LP_NAME'))
@@ -23,9 +24,9 @@ class EasyMarkdownEditor extends Plugin
 {
 	public string $type = 'editor';
 
-	public function prepareEditor(array $object): void
+	public function prepareEditor(Event $e): void
 	{
-		if ($object['type'] !== 'markdown')
+		if ($e->args->object['type'] !== 'markdown')
 			return;
 
 		Lang::load('Editor');
@@ -157,9 +158,9 @@ class EasyMarkdownEditor extends Plugin
 		});', true);
 	}
 
-	public function credits(array &$links): void
+	public function credits(Event $e): void
 	{
-		$links[] = [
+		$e->args->links[] = [
 			'title' => 'EasyMDE',
 			'link' => 'https://github.com/Ionaru/easy-markdown-editor',
 			'author' => 'Sparksuite, Inc. | Jeroen Akkerman',

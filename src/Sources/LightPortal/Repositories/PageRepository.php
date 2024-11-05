@@ -14,8 +14,10 @@ namespace Bugo\LightPortal\Repositories;
 
 use Bugo\Compat\{Config, Db, Lang, Logging};
 use Bugo\Compat\{Msg, Security, User, Utils};
-use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Args\ItemArgs;
 use Bugo\LightPortal\Enums\{EntryType, Permission, PortalHook, Status};
+use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\{CacheTrait, Content, DateTime};
 use Bugo\LightPortal\Utils\{EntityDataTrait, Icon, Notify};
 use Bugo\LightPortal\Utils\{RequestTrait, Setting, Str};
@@ -281,7 +283,7 @@ final class PageRepository extends AbstractRepository
 		if ($items === [])
 			return;
 
-		AddonHandler::getInstance()->run(PortalHook::onPageRemoving, [$items]);
+		EventManager::getInstance()->dispatch(PortalHook::onPageRemoving, new Event(new ItemsArgs($items)));
 
 		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_pages
@@ -560,7 +562,12 @@ final class PageRepository extends AbstractRepository
 
 		$data['tags'] = $this->getTags($data['id']);
 
-		AddonHandler::getInstance()->run(PortalHook::preparePageData, [&$data, $isAuthor]);
+		EventManager::getInstance()->dispatch(
+			PortalHook::preparePageData,
+			new Event(new class ($data, $isAuthor) {
+				public function __construct(public array &$data, public readonly bool $isAuthor) {}
+			})
+		);
 	}
 
 	private function addData(): int
@@ -602,7 +609,7 @@ final class PageRepository extends AbstractRepository
 			return 0;
 		}
 
-		AddonHandler::getInstance()->run(PortalHook::onPageSaving, [$item]);
+		EventManager::getInstance()->dispatch(PortalHook::onPageSaving, new Event(new ItemArgs($item)));
 
 		$this->saveTitles($item);
 		$this->saveTags($item);
@@ -655,7 +662,7 @@ final class PageRepository extends AbstractRepository
 			]
 		);
 
-		AddonHandler::getInstance()->run(PortalHook::onPageSaving, [$item]);
+		EventManager::getInstance()->dispatch(PortalHook::onPageSaving, new Event(new ItemArgs($item)));
 
 		$this->saveTitles($item, 'replace');
 		$this->saveTags($item, 'replace');

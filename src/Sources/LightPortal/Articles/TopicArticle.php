@@ -13,9 +13,12 @@
 namespace Bugo\LightPortal\Articles;
 
 use Bugo\Compat\{BBCodeParser, Config, Db, Lang, User};
-use Bugo\LightPortal\AddonHandler;
-use Bugo\LightPortal\Utils\{Avatar, Setting, Str};
+use Bugo\LightPortal\Args\ArticlesArgs;
+use Bugo\LightPortal\Args\ArticlesRowArgs;
 use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Utils\{Avatar, Setting, Str};
 
 use function explode;
 use function implode;
@@ -53,9 +56,16 @@ class TopicArticle extends AbstractArticle
 			'date DESC',
 		];
 
-		AddonHandler::getInstance()->run(PortalHook::frontTopics, [
-			&$this->columns, &$this->tables, &$this->params, &$this->wheres, &$this->orders
-		]);
+		EventManager::getInstance()->dispatch(
+			PortalHook::frontTopics,
+			new Event(new ArticlesArgs(
+				$this->columns,
+				$this->tables,
+				$this->params,
+				$this->wheres,
+				$this->orders
+			))
+		);
 	}
 
 	public function getData(int $start, int $limit): array
@@ -138,7 +148,10 @@ class TopicArticle extends AbstractArticle
 
 			$this->prepareTeaser($topics, $row);
 
-			AddonHandler::getInstance()->run(PortalHook::frontTopicsOutput, [&$topics, $row]);
+			EventManager::getInstance()->dispatch(
+				PortalHook::frontTopicsRow,
+				new Event(new ArticlesRowArgs($topics, $row))
+			);
 		}
 
 		Db::$db->free_result($result);

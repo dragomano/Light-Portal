@@ -7,15 +7,16 @@
  * @copyright 2021-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 31.10.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\HelloPortal;
 
 use Bugo\Compat\{Lang, Theme, Utils};
-use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Enums\Hook;
+use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\Plugin;
 
 use function array_combine;
 use function is_file;
@@ -100,8 +101,10 @@ class HelloPortal extends Plugin
 		}');
 	}
 
-	public function addSettings(array &$settings): void
+	public function addSettings(Event $e): void
 	{
+		$settings = &$e->args->settings;
+
 		$settings['hello_portal'][] = [
 			'select', 'theme', array_combine($this->themes, Lang::$txt['lp_hello_portal']['theme_set'])
 		];
@@ -112,9 +115,9 @@ class HelloPortal extends Plugin
 		$settings['hello_portal'][] = ['check', 'disable_interaction'];
 	}
 
-	public function credits(array &$links): void
+	public function credits(Event $e): void
 	{
-		$links[] = [
+		$e->args->links[] = [
 			'title' => 'Intro.js',
 			'link' => 'https://github.com/usablica/intro.js',
 			'author' => 'Afshin Mehrabani',

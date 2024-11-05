@@ -7,16 +7,16 @@
  * @copyright 2022-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 10.10.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\RecentComments;
 
 use Bugo\Compat\{Lang, User, Utils};
-use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Areas\Fields\{NumberField, RangeField};
 use Bugo\LightPortal\Enums\Permission;
+use Bugo\LightPortal\Plugins\{Block, Event};
 use Bugo\LightPortal\Utils\{DateTime, Str};
 use IntlException;
 
@@ -30,24 +30,24 @@ class RecentComments extends Block
 {
 	public string $icon = 'fas fa-comments';
 
-	public function prepareBlockParams(array &$params): void
+	public function prepareBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'recent_comments')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'no_content_class' => true,
 			'num_comments'     => 10,
 			'length'           => 80,
 		];
 	}
 
-	public function validateBlockParams(array &$params): void
+	public function validateBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'recent_comments')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'num_comments' => FILTER_VALIDATE_INT,
 			'length'       => FILTER_VALIDATE_INT,
 		];
@@ -128,8 +128,10 @@ class RecentComments extends Block
 	/**
 	 * @throws IntlException
 	 */
-	public function prepareContent(object $data, array $parameters): void
+	public function prepareContent(Event $e): void
 	{
+		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+
 		if ($data->type !== 'recent_comments')
 			return;
 

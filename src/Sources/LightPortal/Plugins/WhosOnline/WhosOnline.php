@@ -7,15 +7,15 @@
  * @copyright 2020-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 02.06.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\WhosOnline;
 
 use Bugo\Compat\{Config, Lang, User, Utils};
-use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, NumberField};
+use Bugo\LightPortal\Plugins\{Block, Event};
 use Bugo\LightPortal\Utils\Avatar;
 
 if (! defined('LP_NAME'))
@@ -27,12 +27,12 @@ class WhosOnline extends Block
 
 	public string $icon = 'far fa-eye';
 
-	public function prepareBlockParams(array &$params): void
+	public function prepareBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'whos_online')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'link_in_title'   => Config::$scripturl . '?action=who',
 			'show_group_key'  => false,
 			'show_avatars'    => false,
@@ -40,12 +40,12 @@ class WhosOnline extends Block
 		];
 	}
 
-	public function validateBlockParams(array &$params): void
+	public function validateBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'whos_online')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'show_group_key'  => FILTER_VALIDATE_BOOLEAN,
 			'show_avatars'    => FILTER_VALIDATE_BOOLEAN,
 			'update_interval' => FILTER_VALIDATE_INT,
@@ -68,13 +68,16 @@ class WhosOnline extends Block
 			->setValue(Utils::$context['lp_block']['options']['update_interval']);
 	}
 
-	public function prepareContent(object $data, array $parameters): void
+	public function prepareContent(Event $e): void
 	{
+		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+
 		if ($data->type !== 'whos_online')
 			return;
 
-		if ($this->request()->has('preview'))
+		if ($this->request()->has('preview')) {
 			$parameters['update_interval'] = 0;
+		}
 
 		$parameters['show_group_key'] ??= false;
 		$parameters['show_avatars'] ??= false;

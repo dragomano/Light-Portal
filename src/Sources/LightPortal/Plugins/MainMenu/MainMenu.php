@@ -7,15 +7,16 @@
  * @copyright 2021-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 30.10.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\MainMenu;
 
 use Bugo\Compat\{Config, User, Utils};
-use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Enums\Hook;
+use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Utils\Language;
 
 use const LP_ACTION;
@@ -58,9 +59,9 @@ class MainMenu extends Plugin
 		}
 	}
 
-	public function addSettings(array &$settings): void
+	public function addSettings(Event $e): void
 	{
-		$settings['main_menu'][] = ['callback', 'items', $this->showList()];
+		$e->args->settings['main_menu'][] = ['callback', 'items', $this->showList()];
 	}
 
 	public function showList(): bool|string
@@ -77,9 +78,9 @@ class MainMenu extends Plugin
 		return ob_get_clean();
 	}
 
-	public function saveSettings(array &$settings): void
+	public function saveSettings(Event $e): void
 	{
-		if (! isset($settings['items']))
+		if (! isset($e->args->settings['items']))
 			return;
 
 		$portalLangs = $forumLangs = [];
@@ -93,13 +94,14 @@ class MainMenu extends Plugin
 
 		if ($this->request()->has('forum_item_langs')) {
 			foreach ($this->request('forum_item_langs') as $lang => $val) {
-				if (! empty($val))
+				if (! empty($val)) {
 					$forumLangs[$lang] = $val;
+				}
 			}
 		}
 
-		$settings['portal_langs'] = json_encode($portalLangs, JSON_UNESCAPED_UNICODE);
-		$settings['forum_langs']  = json_encode($forumLangs, JSON_UNESCAPED_UNICODE);
+		$e->args->settings['portal_langs'] = json_encode($portalLangs, JSON_UNESCAPED_UNICODE);
+		$e->args->settings['forum_langs']  = json_encode($forumLangs, JSON_UNESCAPED_UNICODE);
 	}
 
 	private function prepareVariables(): void

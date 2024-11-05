@@ -13,14 +13,17 @@
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, ErrorHandler, Lang, Security, Theme, Utils};
-use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, TextField, UrlField};
 use Bugo\LightPortal\Areas\Partials\{AreaSelect, ContentClassSelect, IconSelect};
 use Bugo\LightPortal\Areas\Partials\{PermissionSelect, PlacementSelect, TitleClassSelect};
 use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Areas\Validators\BlockValidator;
+use Bugo\LightPortal\Args\ObjectArgs;
+use Bugo\LightPortal\Args\ParamsArgs;
 use Bugo\LightPortal\Enums\{ContentType, PortalHook, Tab};
+use Bugo\LightPortal\EventManager;
 use Bugo\LightPortal\Models\BlockModel;
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Repositories\BlockRepository;
 use Bugo\LightPortal\Utils\{CacheTrait, Content, Icon, Language};
 use Bugo\LightPortal\Utils\{RequestTrait, Setting, Str};
@@ -215,7 +218,7 @@ final class BlockArea
 
 		$params = [];
 
-		AddonHandler::getInstance()->run(PortalHook::prepareBlockParams, [&$params]);
+		EventManager::getInstance()->dispatch(PortalHook::prepareBlockParams, new Event(new ParamsArgs($params)));
 
 		return array_merge($baseParams, $params);
 	}
@@ -328,7 +331,7 @@ final class BlockArea
 
 		Utils::$context['lp_block_tab_appearance'] = true;
 
-		AddonHandler::getInstance()->run(PortalHook::prepareBlockFields);
+		EventManager::getInstance()->dispatch(PortalHook::prepareBlockFields);
 
 		$this->preparePostFields();
 	}
@@ -360,7 +363,10 @@ final class BlockArea
 
 	private function prepareEditor(): void
 	{
-		AddonHandler::getInstance()->run(PortalHook::prepareEditor, [Utils::$context['lp_block']]);
+		EventManager::getInstance()->dispatch(
+			PortalHook::prepareEditor,
+			new Event(new ObjectArgs(Utils::$context['lp_block']))
+		);
 	}
 
 	private function preparePreview(): void

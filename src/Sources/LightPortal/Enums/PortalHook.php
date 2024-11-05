@@ -28,13 +28,13 @@ enum PortalHook
 	case findPageErrors;
 	case frontAssets;
 	case frontBoards;
-	case frontBoardsOutput;
+	case frontBoardsRow;
 	case frontLayouts;
 	case frontModes;
 	case frontPages;
-	case frontPagesOutput;
+	case frontPagesRow;
 	case frontTopics;
-	case frontTopicsOutput;
+	case frontTopicsRow;
 	case importBlocks;
 	case importCategories;
 	case importPages;

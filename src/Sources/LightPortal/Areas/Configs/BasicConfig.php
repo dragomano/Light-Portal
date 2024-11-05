@@ -14,10 +14,11 @@ namespace Bugo\LightPortal\Areas\Configs;
 
 use Bugo\Compat\{Actions\ACP, Config, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Actions\FrontPage;
-use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Areas\Traits\QueryTrait;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
+use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionTrait;
@@ -203,7 +204,12 @@ final class BasicConfig extends AbstractConfig
 
 		Theme::loadTemplate('LightPortal/ManageSettings');
 
-		AddonHandler::getInstance()->run(PortalHook::extendBasicConfig, [&$configVars]);
+		EventManager::getInstance()->dispatch(
+			PortalHook::extendBasicConfig,
+			new Event(new class ($configVars) {
+				public function __construct(public array &$configVars) {}
+			})
+		);
 
 		// Save
 		if ($this->request()->has('save')) {

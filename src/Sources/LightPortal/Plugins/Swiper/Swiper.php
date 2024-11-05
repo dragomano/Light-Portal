@@ -7,17 +7,18 @@
  * @copyright 2023-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 24.05.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Swiper;
 
 use Bugo\Compat\{Lang, Theme, User, Utils};
-use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField};
 use Bugo\LightPortal\Areas\Fields\{RadioField, RangeField, SelectField};
 use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -28,12 +29,12 @@ class Swiper extends Block
 
 	private array $effects = ['slide', 'fade', 'cube', 'coverflow', 'flip', 'cards', 'creative'];
 
-	public function prepareBlockParams(array &$params): void
+	public function prepareBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'swiper')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'direction'       => 'horizontal',
 			'effect'          => 'coverflow',
 			'slides_per_view' => 3,
@@ -45,7 +46,7 @@ class Swiper extends Block
 		];
 	}
 
-	public function validateBlockParams(array &$params): void
+	public function validateBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'swiper')
 			return;
@@ -67,7 +68,7 @@ class Swiper extends Block
 			$this->request()->put('images', json_encode($images, JSON_UNESCAPED_UNICODE));
 		}
 
-		$params = [
+		$e->args->params = [
 			'direction'       => FILTER_DEFAULT,
 			'effect'          => FILTER_DEFAULT,
 			'slides_per_view' => FILTER_VALIDATE_INT,
@@ -163,8 +164,10 @@ class Swiper extends Block
 		return ['content' => $html];
 	}
 
-	public function prepareContent(object $data, array $parameters): void
+	public function prepareContent(Event $e): void
 	{
+		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+
 		if ($data->type !== 'swiper')
 			return;
 
@@ -230,9 +233,9 @@ class Swiper extends Block
 		echo $swiperHtml['content'] ?? '';
 	}
 
-	public function credits(array &$links): void
+	public function credits(Event $e): void
 	{
-		$links[] = [
+		$e->args->links[] = [
 			'title' => 'Swiper',
 			'link' => 'https://github.com/nolimits4web/swiper',
 			'author' => 'Vladimir Kharlampidi',

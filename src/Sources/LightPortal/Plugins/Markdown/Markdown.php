@@ -7,23 +7,24 @@
  * @copyright 2020-2024 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  *
- * @category addon
- * @version 10.02.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Markdown;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Plugins\Markdown\SMF\{BlockQuoteRenderer, FencedCodeRenderer, HeadingRenderer};
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Markdown\SMF\{ImageRenderer, LinkRenderer, ListBlockRenderer};
-use Bugo\LightPortal\Plugins\Markdown\SMF\{ListItemRenderer, TableRowRenderer, TableRenderer};
+use Bugo\LightPortal\Plugins\Markdown\SMF\{ListItemRenderer, TableRenderer, TableRowRenderer};
+use Bugo\LightPortal\Plugins\Plugin;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Exception\CommonMarkException;
-use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\Extension\CommonMark\Node\Block\{BlockQuote, FencedCode, Heading, ListBlock, ListItem};
 use League\CommonMark\Extension\CommonMark\Node\Inline\{Image, Link};
+use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
 use League\CommonMark\Extension\Table\{Table, TableRow};
 use League\CommonMark\MarkdownConverter;
 use Zoon\CommonMark\Ext\YouTubeIframe\YouTubeIframeExtension;
@@ -45,15 +46,16 @@ class Markdown extends Plugin
 	/**
 	 * @throws CommonMarkException
 	 */
-	public function parseContent(string &$content, string $type): void
+	public function parseContent(Event $e): void
 	{
-		if ($type === 'markdown')
-			$content = $this->getParsedContent($content);
+		if ($e->args->type === 'markdown') {
+			$e->args->content = $this->getParsedContent($e->args->content);
+		}
 	}
 
-	public function credits(array &$links): void
+	public function credits(Event $e): void
 	{
-		$links[] = [
+		$e->args->links[] = [
 			'title' => 'league/commonmark',
 			'link' => 'https://github.com/thephpleague/commonmark',
 			'author' => 'Colin O\'Dell & The League of Extraordinary Packages',

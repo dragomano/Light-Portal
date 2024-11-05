@@ -7,15 +7,15 @@
  * @copyright 2020-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 02.06.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\TopPosters;
 
 use Bugo\Compat\{Config, Lang, User, Utils};
-use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, NumberField};
+use Bugo\LightPortal\Plugins\{Block, Event};
 use Bugo\LightPortal\Utils\Avatar;
 
 if (! defined('LP_NAME'))
@@ -25,24 +25,24 @@ class TopPosters extends Block
 {
 	public string $icon = 'fas fa-users';
 
-	public function prepareBlockParams(array &$params): void
+	public function prepareBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'top_posters')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'show_avatars'      => true,
 			'num_posters'       => 10,
 			'show_numbers_only' => false,
 		];
 	}
 
-	public function validateBlockParams(array &$params): void
+	public function validateBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'top_posters')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'show_avatars'      => FILTER_VALIDATE_BOOLEAN,
 			'num_posters'       => FILTER_VALIDATE_INT,
 			'show_numbers_only' => FILTER_VALIDATE_BOOLEAN,
@@ -107,8 +107,10 @@ class TopPosters extends Block
 		return array_column($posters, 'poster');
 	}
 
-	public function prepareContent(object $data, array $parameters): void
+	public function prepareContent(Event $e): void
 	{
+		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+
 		if ($data->type !== 'top_posters')
 			return;
 

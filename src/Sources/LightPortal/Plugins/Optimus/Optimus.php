@@ -7,13 +7,14 @@
  * @copyright 2020-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 19.02.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Optimus;
 
 use Bugo\Compat\{Config, Utils};
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 
 if (! defined('LP_NAME'))
@@ -23,13 +24,13 @@ class Optimus extends Plugin
 {
 	public string $type = 'article';
 
-	public function addSettings(array &$settings): void
+	public function addSettings(Event $e): void
 	{
-		$settings['optimus'][] = ['check', 'use_topic_descriptions'];
-		$settings['optimus'][] = ['check', 'show_topic_keywords'];
+		$e->args->settings['optimus'][] = ['check', 'use_topic_descriptions'];
+		$e->args->settings['optimus'][] = ['check', 'show_topic_keywords'];
 	}
 
-	public function frontTopics(array &$columns): void
+	public function frontTopics(Event $e): void
 	{
 		if (
 			empty(Utils::$context['lp_optimus_plugin']['use_topic_descriptions'])
@@ -38,17 +39,21 @@ class Optimus extends Plugin
 			return;
 		}
 
-		$columns[] = 't.optimus_description';
+		$e->args->columns[] = 't.optimus_description';
 	}
 
-	public function frontTopicsOutput(array &$topics, array $row): void
+	public function frontTopicsRow(Event $e): void
 	{
 		if (! class_exists('\Bugo\Optimus\Integration'))
 			return;
 
-		if (! empty(Utils::$context['lp_optimus_plugin']['show_topic_keywords']))
+		$topics = &$e->args->articles;
+		$row = $e->args->row;
+
+		if (! empty(Utils::$context['lp_optimus_plugin']['show_topic_keywords'])) {
 			$topics[$row['id_topic']]['tags'] = $this->cache('topic_keywords')
 				->setFallback(self::class, 'getKeywords', (int) $row['id_topic']);
+		}
 
 		if (
 			! empty(Utils::$context['lp_optimus_plugin']['use_topic_descriptions'])

@@ -7,14 +7,14 @@
  * @copyright 2020-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 06.04.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\TinyPortalMigration;
 
 use Bugo\Compat\{Config, Lang, User, Utils};
-use Bugo\LightPortal\Plugins\Plugin;
+use Bugo\LightPortal\Plugins\{Event, Plugin};
 use Bugo\LightPortal\Utils\{Icon, Language};
 
 if (! defined('LP_NAME'))
@@ -24,8 +24,10 @@ class TinyPortalMigration extends Plugin
 {
 	public string $type = 'impex';
 
-	public function updateAdminAreas(array &$areas): void
+	public function updateAdminAreas(Event $e): void
 	{
+		$areas = &$e->args->areas;
+
 		if (User::$info['is_admin']) {
 			$areas['lp_blocks']['subsections']['import_from_tp'] = [
 				Icon::get('import') . Lang::$txt['lp_tiny_portal_migration']['label_name']
@@ -41,25 +43,30 @@ class TinyPortalMigration extends Plugin
 		}
 	}
 
-	public function updateBlockAreas(array &$areas): void
+	public function updateBlockAreas(Event $e): void
 	{
-		$areas['import_from_tp'] = [new BlockImport, 'main'];
+		$e->args->areas['import_from_tp'] = [new BlockImport, 'main'];
 	}
 
-	public function updatePageAreas(array &$areas): void
+	public function updatePageAreas(Event $e): void
 	{
-		$areas['import_from_tp'] = [new PageImport, 'main'];
+		$e->args->areas['import_from_tp'] = [new PageImport, 'main'];
 	}
 
-	public function updateCategoryAreas(array &$areas): void
+	public function updateCategoryAreas(Event $e): void
 	{
-		$areas['import_from_tp'] = [new CategoryImport, 'main'];
+		$e->args->areas['import_from_tp'] = [new CategoryImport, 'main'];
 	}
 
-	public function importPages(array &$items, array &$titles, array &$params, array &$comments): void
+	public function importPages(Event $e): void
 	{
 		if ($this->request('sa') !== 'import_from_tp')
 			return;
+
+		$items = &$e->args->items;
+		$titles = &$e->args->titles;
+		$params = &$e->args->params;
+		$comments = &$e->args->comments;
 
 		$comments = $this->getComments(array_keys($items));
 
@@ -110,7 +117,7 @@ class TinyPortalMigration extends Plugin
 			SELECT *
 			FROM {db_prefix}tp_comments AS com
 				INNER JOIN {db_prefix}members AS mem ON (com.member_id = mem.id_member)
-			WHERE com.item_type = {string:type}' . (empty($pages) ? '' : '
+			WHERE com.item_type = {string:type}' . ($pages === [] ? '' : '
 				AND com.item_id IN ({array_int:pages})'),
 			[
 				'type'  => 'article_comment',

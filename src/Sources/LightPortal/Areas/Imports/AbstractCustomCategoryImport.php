@@ -12,8 +12,10 @@
 namespace Bugo\LightPortal\Areas\Imports;
 
 use Bugo\Compat\Config;
-use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Args\ItemsTitlesArgs;
 use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\Plugins\Event;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -24,7 +26,10 @@ abstract class AbstractCustomCategoryImport extends AbstractCustomImport
 
 	protected function importItems(array &$items, array &$titles): array
 	{
-		AddonHandler::getInstance()->run(PortalHook::importCategories, [&$items, &$titles]);
+		EventManager::getInstance()->dispatch(
+			PortalHook::importCategories,
+			new Event(new ItemsTitlesArgs($items, $titles))
+		);
 
 		foreach ($items as $id => $item) {
 			$titles[] = [

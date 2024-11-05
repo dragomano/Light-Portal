@@ -14,7 +14,7 @@ declare(strict_types=1);
 
 namespace Bugo\LightPortal\Lists;
 
-use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Plugins\PluginHandler;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -23,6 +23,6 @@ final class PluginList implements ListInterface
 {
 	public function __invoke(): array
 	{
-		return AddonHandler::getInstance()->getAll();
+		return PluginHandler::getInstance()->getAll();
 	}
 }

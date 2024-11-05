@@ -7,17 +7,18 @@
  * @copyright 2021-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 24.05.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\TinySlider;
 
 use Bugo\Compat\{Lang, Theme, User, Utils};
-use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField};
 use Bugo\LightPortal\Areas\Fields\{NumberField, RadioField, RangeField};
 use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -48,15 +49,15 @@ class TinySlider extends Block
 		'images'             => '',
 	];
 
-	public function prepareBlockParams(array &$params): void
+	public function prepareBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'tiny_slider')
 			return;
 
-		$params = $this->params;
+		$e->args->params = $this->params;
 	}
 
-	public function validateBlockParams(array &$params): void
+	public function validateBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'tiny_slider')
 			return;
@@ -78,7 +79,7 @@ class TinySlider extends Block
 			$this->request()->put('images', json_encode($images, JSON_UNESCAPED_UNICODE));
 		}
 
-		$params = [
+		$e->args->params = [
 			'axis'               => FILTER_DEFAULT,
 			'num_items'          => FILTER_VALIDATE_INT,
 			'gutter'             => FILTER_VALIDATE_INT,
@@ -244,14 +245,16 @@ class TinySlider extends Block
 		return ['content' => $html];
 	}
 
-	public function prepareAssets(array &$assets): void
+	public function prepareAssets(Event $e): void
 	{
-		$assets['css']['tiny_slider'][]     = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css';
-		$assets['scripts']['tiny_slider'][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/min/tiny-slider.js';
+		$e->args->assets['css']['tiny_slider'][]     = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css';
+		$e->args->assets['scripts']['tiny_slider'][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/min/tiny-slider.js';
 	}
 
-	public function prepareContent(object $data, array $parameters): void
+	public function prepareContent(Event $e): void
 	{
+		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+
 		if ($data->type !== 'tiny_slider')
 			return;
 
@@ -317,9 +320,9 @@ class TinySlider extends Block
 		echo $html['content'] ?? '';
 	}
 
-	public function credits(array &$links): void
+	public function credits(Event $e): void
 	{
-		$links[] = [
+		$e->args->links[] = [
 			'title' => 'Tiny Slider 2',
 			'link' => 'https://github.com/ganlanyuan/tiny-slider',
 			'author' => 'William Lin',

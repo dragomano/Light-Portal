@@ -7,13 +7,14 @@
  * @copyright 2021-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 21.03.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\BootstrapIcons;
 
 use Bugo\Compat\{Theme, Utils};
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 
 if (! defined('LP_NAME'))
@@ -39,7 +40,7 @@ class BootstrapIcons extends Plugin
 		);
 	}
 
-	public function prepareIconList(array &$icons): void
+	public function prepareIconList(Event $e): void
 	{
 		if (($biIcons = $this->cache()->get('all_bi_icons', 30 * 24 * 60 * 60)) === null) {
 			$content = file_get_contents('https://cdn.jsdelivr.net/npm/bootstrap-icons@1/font/bootstrap-icons.json');
@@ -53,12 +54,12 @@ class BootstrapIcons extends Plugin
 			$this->cache()->put('all_bi_icons', $biIcons, 30 * 24 * 60 * 60);
 		}
 
-		$icons = array_merge($icons, $biIcons);
+		$e->args->icons = array_merge($e->args->icons, $biIcons);
 	}
 
-	public function credits(array &$links): void
+	public function credits(Event $e): void
 	{
-		$links[] = [
+		$e->args->links[] = [
 			'title' => 'Bootstrap Icons',
 			'link' => 'https://github.com/twbs/icons',
 			'author' => 'The Bootstrap Authors',

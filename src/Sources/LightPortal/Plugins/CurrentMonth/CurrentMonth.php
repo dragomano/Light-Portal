@@ -7,15 +7,16 @@
  * @copyright 2020-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 04.11.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\CurrentMonth;
 
-use Bugo\Compat\Actions\Calendar;
 use Bugo\Compat\{Config, Lang, Theme, User, Utils};
+use Bugo\Compat\Actions\Calendar;
 use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -24,12 +25,12 @@ class CurrentMonth extends Block
 {
 	public string $icon = 'fas fa-calendar-check';
 
-	public function prepareBlockParams(array &$params): void
+	public function prepareBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'current_month')
 			return;
 
-		$params['no_content_class'] = true;
+		$e->args->params['no_content_class'] = true;
 	}
 
 	public function getData(): array
@@ -58,8 +59,10 @@ class CurrentMonth extends Block
 		return Calendar::getCalendarGrid(date_format($startObject, 'Y-m-d'), $options, has_picker: false);
 	}
 
-	public function prepareContent(object $data): void
+	public function prepareContent(Event $e): void
 	{
+		$data = $e->args->data;
+
 		if ($data->type !== 'current_month')
 			return;
 

@@ -7,13 +7,14 @@
  * @copyright 2020-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 19.02.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\FaBoardIcons;
 
 use Bugo\Compat\Config;
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 
 if (! defined('LP_NAME'))
@@ -23,18 +24,21 @@ class FaBoardIcons extends Plugin
 {
 	public string $type = 'article';
 
-	public function frontBoards(array &$columns): void
+	public function frontBoards(Event $e): void
 	{
 		if (! $this->isBaseModInstalled())
 			return;
 
-		$columns[] = 'b.fabi_icon, b.fabi_color';
+		$e->args->columns[] = 'b.fabi_icon, b.fabi_color';
 	}
 
-	public function frontBoardsOutput(array &$boards, array $row): void
+	public function frontBoardsRow(Event $e): void
 	{
 		if (! $this->isBaseModInstalled())
 			return;
+
+		$boards = &$e->args->articles;
+		$row = $e->args->row;
 
 		$icon = ! empty($row['fabi_icon']) && empty(Config::$modSettings['fabi_force_default_icon'])
 			? $row['fabi_icon']

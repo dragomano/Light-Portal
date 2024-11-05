@@ -1,8 +1,8 @@
 <?php
 
 use Bugo\Compat\{Config, Lang, Theme, Utils};
-use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\EventManager;
 use Bugo\LightPortal\Utils\{Icon, Setting};
 
 function template_show_page(): void
@@ -77,7 +77,9 @@ function template_show_page(): void
 
 	echo '
 		<article class="roundframe" itemprop="articleBody">
-			<h3 style="display: none">', Utils::$context['lp_page']['author'], ' - ', Utils::$context['page_title'], '</h3>';
+			<h3 style="display: none">
+				', Utils::$context['lp_page']['author'], ' - ', Utils::$context['page_title'], '
+			</h3>';
 
 	if (! empty(Utils::$context['lp_page']['tags']) && ! empty(Config::$modSettings['lp_show_tags_on_page'])) {
 		echo '
@@ -93,7 +95,7 @@ function template_show_page(): void
 			<hr>';
 	}
 
-	AddonHandler::getInstance()->run(PortalHook::beforePageContent);
+	EventManager::getInstance()->dispatch(PortalHook::beforePageContent);
 
 	if (! empty(Theme::$current->settings['og_image'])) {
 		echo '
@@ -101,9 +103,11 @@ function template_show_page(): void
 	}
 
 	echo '
-			<div class="page_', Utils::$context['lp_page']['type'], '">', Utils::$context['lp_page']['content'], '</div>';
+			<div class="page_', Utils::$context['lp_page']['type'], '">
+				', Utils::$context['lp_page']['content'], '
+			</div>';
 
-	AddonHandler::getInstance()->run(PortalHook::afterPageContent);
+	EventManager::getInstance()->dispatch(PortalHook::afterPageContent);
 
 	echo '
 		</article>';

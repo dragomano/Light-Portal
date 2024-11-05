@@ -12,18 +12,24 @@
 
 namespace Bugo\LightPortal\Hooks;
 
-use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\Plugins\Event;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 class DownloadRequest
 {
-	public function __invoke(&$attachRequest): void
+	public function __invoke(mixed &$attachRequest): void
 	{
 		(new LoadTheme())();
 
-		AddonHandler::getInstance()->run(PortalHook::downloadRequest, [&$attachRequest]);
+		EventManager::getInstance()->dispatch(
+			PortalHook::downloadRequest,
+			new Event(new class ($attachRequest) {
+				public function __construct(public mixed &$attachRequest) {}
+			})
+		);
 	}
 }

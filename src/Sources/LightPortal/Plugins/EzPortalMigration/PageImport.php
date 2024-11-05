@@ -7,7 +7,7 @@
  * @copyright 2021-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
+ * @category plugin
  * @version 10.10.24
  */
 

@@ -7,15 +7,16 @@
  * @copyright 2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 29.10.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\BlogMode;
 
 use Bugo\Compat\{Config, Lang, User, Utils};
-use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Enums\Hook;
+use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Utils\{Icon, ItemList};
 use Nette\Utils\Html;
@@ -70,30 +71,32 @@ class BlogMode extends Plugin
 		$this->applyHook(Hook::profilePopup);
 	}
 
-	public function addSettings(array &$settings): void
+	public function addSettings(Event $e): void
 	{
 		$this->addDefaultValues([
 			'blog_action' => 'blog',
 			'show_blogs_in_profiles' => false,
 		]);
 
-		$settings['blog_mode'][] = ['text', 'blog_action'];
-		$settings['blog_mode'][] = ['check', 'show_blogs_in_profiles'];
+		$e->args->settings['blog_mode'][] = ['text', 'blog_action'];
+		$e->args->settings['blog_mode'][] = ['check', 'show_blogs_in_profiles'];
 	}
 
-	public function frontModes(array &$modes): void
+	public function frontModes(Event $e): void
 	{
 		if ($this->request()->isNot($this->blogAction))
 			return;
 
-		$modes[$this->mode] = BlogArticle::class;
+		$e->args->modes[$this->mode] = BlogArticle::class;
 
 		Config::$modSettings['lp_frontpage_mode'] = $this->mode;
 	}
 
-	public function extendBasicConfig(&$configVars): void
+	public function extendBasicConfig(Event $e): void
 	{
 		Lang::$txt['groups_light_portal_post_blog_entries'] = Lang::$txt['lp_blog_mode']['group_permission'];
+
+		$configVars = &$e->args->configVars;
 
 		$key = array_search('light_portal_approve_pages', array_column($configVars, 1)) + 1;
 
@@ -106,7 +109,7 @@ class BlogMode extends Plugin
 		);
 	}
 
-	public function actions(&$actions): void
+	public function actions(array &$actions): void
 	{
 		if ($this->blogAction === '')
 			return;
@@ -114,7 +117,7 @@ class BlogMode extends Plugin
 		$actions[$this->blogAction] = [false, [new BlogIndex(), 'show']];
 	}
 
-	public function menuButtons(&$buttons): void
+	public function menuButtons(array &$buttons): void
 	{
 		if ($this->blogAction === '')
 			return;

@@ -7,13 +7,14 @@
  * @copyright 2023-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 02.06.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Giscus;
 
 use Bugo\Compat\{Lang, Utils};
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Utils\Setting;
 
@@ -53,11 +54,13 @@ class Giscus extends Plugin
 		Lang::$txt['lp_comment_block_set']['giscus'] = 'Giscus';
 	}
 
-	public function addSettings(array &$settings): void
+	public function addSettings(Event $e): void
 	{
 		$this->addDefaultValues([
 			'theme' => 'preferred_color_scheme',
 		]);
+
+		$settings = &$e->args->settings;
 
 		$settings['giscus'][] = [
 			'text',

@@ -7,17 +7,17 @@
  * @copyright 2020-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 19.02.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\TopBoards;
 
 use Bugo\Compat\{Lang, User, Utils};
-use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\LightPortal\Areas\Fields\NumberField;
 use Bugo\LightPortal\Areas\Fields\RadioField;
+use Bugo\LightPortal\Plugins\{Block, Event};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -28,24 +28,24 @@ class TopBoards extends Block
 
 	public string $icon = 'fas fa-balance-scale-left';
 
-	public function prepareBlockParams(array &$params): void
+	public function prepareBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'top_boards')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'num_boards'        => 10,
 			'entity_type'       => 'num_topics',
 			'show_numbers_only' => false,
 		];
 	}
 
-	public function validateBlockParams(array &$params): void
+	public function validateBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'top_boards')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'num_boards'        => FILTER_VALIDATE_INT,
 			'entity_type'       => FILTER_DEFAULT,
 			'show_numbers_only' => FILTER_VALIDATE_BOOLEAN,
@@ -69,8 +69,10 @@ class TopBoards extends Block
 			->setValue(Utils::$context['lp_block']['options']['show_numbers_only']);
 	}
 
-	public function prepareContent(object $data, array $parameters): void
+	public function prepareContent(Event $e): void
 	{
+		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+
 		if ($data->type !== 'top_boards')
 			return;
 

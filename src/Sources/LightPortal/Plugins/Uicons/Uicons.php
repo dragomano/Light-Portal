@@ -7,13 +7,14 @@
  * @copyright 2022-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 13.02.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Uicons;
 
 use Bugo\Compat\{Lang, Utils};
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 
 if (! defined('LP_NAME'))
@@ -28,23 +29,27 @@ class Uicons extends Plugin
 
 	private string $prefix = 'fi fi-';
 
-	public function preloadStyles(array &$styles): void
+	public function preloadStyles(Event $e): void
 	{
-		$styles[] = 'https://cdn.jsdelivr.net/npm/@flaticon/flaticon-uicons@1/css/all/all.css';
+		$e->args->styles[] = 'https://cdn.jsdelivr.net/npm/@flaticon/flaticon-uicons@1/css/all/all.css';
 	}
 
-	public function addSettings(array &$settings): void
+	public function addSettings(Event $e): void
 	{
 		$this->addDefaultValues([
 			'weight' => 'r',
 			'corner' => 'r',
 		]);
 
-		$settings['uicons'][] = ['select', 'weight', array_combine(['r', 'b', 's'], Lang::$txt['lp_uicons']['weight_set'])];
-		$settings['uicons'][] = ['select', 'corner', array_combine(['r', 's'], Lang::$txt['lp_uicons']['corner_set'])];
+		$e->args->settings['uicons'][] = [
+			'select', 'weight', array_combine(['r', 'b', 's'], Lang::$txt['lp_uicons']['weight_set'])
+		];
+		$e->args->settings['uicons'][] = [
+			'select', 'corner', array_combine(['r', 's'], Lang::$txt['lp_uicons']['corner_set'])
+		];
 	}
 
-	public function prepareIconList(array &$icons): void
+	public function prepareIconList(Event $e): void
 	{
 		if (($uIcons = $this->cache()->get('all_uicons', 30 * 24 * 60 * 60)) === null) {
 			$weight = empty(Utils::$context['lp_uicons_plugin']['weight']) ? 'r' : Utils::$context['lp_uicons_plugin']['weight'];
@@ -60,12 +65,12 @@ class Uicons extends Plugin
 			$this->cache()->put('all_uicons', $uIcons, 30 * 24 * 60 * 60);
 		}
 
-		$icons = array_merge($icons, $uIcons);
+		$e->args->icons = array_merge($e->args->icons, $uIcons);
 	}
 
-	public function credits(array &$links): void
+	public function credits(Event $e): void
 	{
-		$links[] = [
+		$e->args->links[] = [
 			'title' => 'Uicons',
 			'link' => 'https://www.flaticon.com/uicons',
 			'author' => 'Flaticon',

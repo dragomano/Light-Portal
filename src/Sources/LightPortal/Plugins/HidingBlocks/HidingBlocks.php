@@ -7,16 +7,17 @@
  * @copyright 2020-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 24.05.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\HidingBlocks;
 
 use Bugo\Compat\{Lang, Utils};
-use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\Plugin;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -45,14 +46,14 @@ class HidingBlocks extends Plugin
 		}
 	}
 
-	public function prepareBlockParams(array &$params): void
+	public function prepareBlockParams(Event $e): void
 	{
-		$params['hidden_breakpoints'] = [];
+		$e->args->params['hidden_breakpoints'] = [];
 	}
 
-	public function validateBlockParams(array &$params): void
+	public function validateBlockParams(Event $e): void
 	{
-		$params['hidden_breakpoints'] = FILTER_DEFAULT;
+		$e->args->params['hidden_breakpoints'] = FILTER_DEFAULT;
 	}
 
 	public function prepareBlockFields(): void

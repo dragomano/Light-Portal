@@ -12,9 +12,13 @@
 
 namespace Bugo\LightPortal\Articles;
 
-use Bugo\Compat\{BBCodeParser, Config, Db, Lang, User, Utils};
-use Bugo\LightPortal\AddonHandler;
+use Bugo\Compat\{BBCodeParser, Config};
+use Bugo\Compat\{Db, Lang, User, Utils};
+use Bugo\LightPortal\Args\ArticlesArgs;
+use Bugo\LightPortal\Args\ArticlesRowArgs;
 use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\Str;
 
 use function explode;
@@ -51,9 +55,16 @@ class BoardArticle extends AbstractArticle
 			'last_updated DESC',
 		];
 
-		AddonHandler::getInstance()->run(PortalHook::frontBoards, [
-			&$this->columns, &$this->tables, &$this->params, &$this->wheres, &$this->orders
-		]);
+		EventManager::getInstance()->dispatch(
+			PortalHook::frontBoards,
+			new Event(new ArticlesArgs(
+				$this->columns,
+				$this->tables,
+				$this->params,
+				$this->wheres,
+				$this->orders
+			))
+		);
 	}
 
 	public function getData(int $start, int $limit): array
@@ -124,7 +135,10 @@ class BoardArticle extends AbstractArticle
 
 			$this->prepareTeaser($boards, $row);
 
-			AddonHandler::getInstance()->run(PortalHook::frontBoardsOutput, [&$boards, $row]);
+			EventManager::getInstance()->dispatch(
+				PortalHook::frontBoardsRow,
+				new Event(new ArticlesRowArgs($boards, $row))
+			);
 		}
 
 		Db::$db->free_result($result);

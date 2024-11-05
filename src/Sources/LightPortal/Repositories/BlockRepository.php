@@ -14,8 +14,11 @@ namespace Bugo\LightPortal\Repositories;
 
 use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, Msg, Security, Utils};
-use Bugo\LightPortal\AddonHandler;
-use Bugo\LightPortal\Enums\{Status, PortalHook};
+use Bugo\LightPortal\Args\ItemArgs;
+use Bugo\LightPortal\Args\ItemsArgs;
+use Bugo\LightPortal\Enums\{PortalHook, Status};
+use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\{CacheTrait, EntityDataTrait};
 use Bugo\LightPortal\Utils\{Icon, RequestTrait, Setting, Str};
 
@@ -177,7 +180,7 @@ final class BlockRepository extends AbstractRepository
 		if ($items === [])
 			return;
 
-		AddonHandler::getInstance()->run(PortalHook::onBlockRemoving, [$items]);
+		EventManager::getInstance()->dispatch(PortalHook::onBlockRemoving, new Event(new ItemsArgs($items)));
 
 		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_blocks
@@ -338,7 +341,7 @@ final class BlockRepository extends AbstractRepository
 			return 0;
 		}
 
-		AddonHandler::getInstance()->run(PortalHook::onBlockSaving, [$item]);
+		EventManager::getInstance()->dispatch(PortalHook::onBlockSaving, new Event(new ItemArgs($item)));
 
 		$this->saveTitles($item);
 		$this->saveOptions($item);
@@ -372,7 +375,7 @@ final class BlockRepository extends AbstractRepository
 			]
 		);
 
-		AddonHandler::getInstance()->run(PortalHook::onBlockSaving, [$item]);
+		EventManager::getInstance()->dispatch(PortalHook::onBlockSaving, new Event(new ItemArgs($item)));
 
 		$this->saveTitles($item, 'replace');
 		$this->saveOptions($item, 'replace');

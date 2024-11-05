@@ -7,14 +7,15 @@
  * @copyright 2023-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 21.03.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\ChessBoard;
 
 use Bugo\Compat\{Lang, Theme};
 use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -25,16 +26,16 @@ class ChessBoard extends Block
 
 	public string $icon = 'fas fa-chess';
 
-	public function prepareContent(object $data): void
+	public function prepareContent(Event $e): void
 	{
-		if ($data->type !== 'chess_board')
+		if ($e->args->data->type !== 'chess_board')
 			return;
 
 		Theme::loadCSSFile('https://unpkg.com/@chrisoakman/chessboard2@0/dist/chessboard2.min.css', ['external' => true]);
 		Theme::loadJavaScriptFile('https://unpkg.com/@chrisoakman/chessboard2@0/dist/chessboard2.min.js', ['external' => true]);
 		Theme::loadJavaScriptFile('https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.12.1/chess.js', ['external' => true]);
 
-		$id = $data->id;
+		$id = $e->args->data->id;
 
 		echo /** @lang text */ '
 		<div id="chessBoard' . $id . '"></div>
@@ -54,9 +55,9 @@ class ChessBoard extends Block
 		</script>';
 	}
 
-	public function credits(array &$links): void
+	public function credits(Event $e): void
 	{
-		$links[] = [
+		$e->args->links[] = [
 			'title' => 'chessboard2 javascript library',
 			'link' => 'https://github.com/oakmac/chessboard2',
 			'author' => 'Chris Oakman',
@@ -66,7 +67,7 @@ class ChessBoard extends Block
 			]
 		];
 
-		$links[] = [
+		$e->args->links[] = [
 			'title' => 'chess.js',
 			'link' => 'https://github.com/jhlywa/chess.js',
 			'author' => 'Jeff Hlywa',

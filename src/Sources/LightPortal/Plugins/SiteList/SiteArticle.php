@@ -7,7 +7,7 @@
  * @copyright 2021-2024 Bugo
  * @license Individual (for sponsors)
  *
- * @category addon
+ * @category plugin
  * @version 10.02.24
  */
 

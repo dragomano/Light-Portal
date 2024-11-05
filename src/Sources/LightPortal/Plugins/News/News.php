@@ -7,16 +7,17 @@
  * @copyright 2020-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 23.04.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\News;
 
-use Bugo\LightPortal\Enums\Tab;
 use Bugo\Compat\{Lang, Utils};
-use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Areas\Fields\SelectField;
+use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -27,20 +28,20 @@ class News extends Block
 
 	public string $icon = 'far fa-newspaper';
 
-	public function prepareBlockParams(array &$params): void
+	public function prepareBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'news')
 			return;
 
-		$params['selected_item'] = 0;
+		$e->args->params['selected_item'] = 0;
 	}
 
-	public function validateBlockParams(array &$params): void
+	public function validateBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'news')
 			return;
 
-		$params['selected_item'] = FILTER_VALIDATE_INT;
+		$e->args->params['selected_item'] = FILTER_VALIDATE_INT;
 	}
 
 	public function prepareBlockFields(): void
@@ -72,11 +73,11 @@ class News extends Block
 		return $this->getFromSsi('news', 'return');
 	}
 
-	public function prepareContent(object $data, array $parameters): void
+	public function prepareContent(Event $e): void
 	{
-		if ($data->type !== 'news')
+		if ($e->args->data->type !== 'news')
 			return;
 
-		echo $this->getData($parameters['selected_item']) ?: Lang::$txt['lp_news']['no_items'];
+		echo $this->getData($e->args->parameters['selected_item']) ?: Lang::$txt['lp_news']['no_items'];
 	}
 }

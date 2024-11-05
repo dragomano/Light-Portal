@@ -7,15 +7,15 @@
  * @copyright 2021-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 10.10.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Search;
 
 use Bugo\Compat\{Config, Lang, Theme, Utils};
-use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Enums\{Hook, Permission};
+use Bugo\LightPortal\Plugins\{Block, Event};
 use Bugo\LightPortal\Utils\{Content, DateTime, Str};
 use IntlException;
 
@@ -31,13 +31,13 @@ class Search extends Block
 		$this->applyHook(Hook::actions);
 	}
 
-	public function addSettings(array &$settings): void
+	public function addSettings(Event $e): void
 	{
 		$this->addDefaultValues([
 			'min_chars' => 3,
 		]);
 
-		$settings['search'][] = ['range', 'min_chars', 'min' => 1, 'max' => 10];
+		$e->args->settings['search'][] = ['range', 'min_chars', 'min' => 1, 'max' => 10];
 	}
 
 	public function actions()
@@ -157,15 +157,15 @@ class Search extends Block
 		return $items;
 	}
 
-	public function prepareAssets(array &$assets): void
+	public function prepareAssets(Event $e): void
 	{
-		$assets['css']['search'][]     = 'https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.css';
-		$assets['scripts']['search'][] = 'https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.min.js';
+		$e->args->assets['css']['search'][]     = 'https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.css';
+		$e->args->assets['scripts']['search'][] = 'https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.min.js';
 	}
 
-	public function prepareContent(object $data): void
+	public function prepareContent(Event $e): void
 	{
-		if ($data->type !== 'search')
+		if ($e->args->data->type !== 'search')
 			return;
 
 		Theme::loadCSSFile('light_portal/search/auto-complete.css');
@@ -208,9 +208,9 @@ class Search extends Block
 		</script>';
 	}
 
-	public function credits(array &$links): void
+	public function credits(Event $e): void
 	{
-		$links[] = [
+		$e->args->links[] = [
 			'title' => 'Vanilla JavaScript autoComplete',
 			'link' => 'https://github.com/Pixabay/JavaScript-autoComplete',
 			'author' => 'Simon Steinberger / Pixabay.com',

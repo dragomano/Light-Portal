@@ -7,16 +7,17 @@
  * @copyright 2021-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 24.05.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\BoardStats;
 
 use Bugo\Compat\{Config, Lang, User, Utils};
-use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, NumberField};
 use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -27,12 +28,12 @@ class BoardStats extends Block
 
 	public string $icon = 'fas fa-chart-pie';
 
-	public function prepareBlockParams(array &$params): void
+	public function prepareBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'board_stats')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'link_in_title'      => Config::$scripturl . '?action=stats',
 			'show_latest_member' => false,
 			'show_basic_info'    => true,
@@ -42,12 +43,12 @@ class BoardStats extends Block
 		];
 	}
 
-	public function validateBlockParams(array &$params): void
+	public function validateBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'board_stats')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'show_latest_member' => FILTER_VALIDATE_BOOLEAN,
 			'show_basic_info'    => FILTER_VALIDATE_BOOLEAN,
 			'show_whos_online'   => FILTER_VALIDATE_BOOLEAN,
@@ -100,8 +101,10 @@ class BoardStats extends Block
 		];
 	}
 
-	public function prepareContent(object $data, array $parameters): void
+	public function prepareContent(Event $e): void
 	{
+		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+
 		if ($data->type !== 'board_stats')
 			return;
 

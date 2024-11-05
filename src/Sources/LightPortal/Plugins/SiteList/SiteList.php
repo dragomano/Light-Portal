@@ -7,15 +7,16 @@
  * @copyright 2021-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 02.06.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\SiteList;
 
 use Bugo\Compat\{Config, Theme, Utils};
-use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Enums\VarType;
+use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\Plugin;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -26,9 +27,9 @@ class SiteList extends Plugin
 
 	private string $mode = 'site_list_addon_mode';
 
-	public function addSettings(array &$settings): void
+	public function addSettings(Event $e): void
 	{
-		$settings['site_list'][] = ['callback', 'urls', $this->showList()];
+		$e->args->settings['site_list'][] = ['callback', 'urls', $this->showList()];
 	}
 
 	public function showList(): bool|string
@@ -46,9 +47,9 @@ class SiteList extends Plugin
 		return ob_get_clean();
 	}
 
-	public function saveSettings(array &$settings): void
+	public function saveSettings(Event $e): void
 	{
-		if (! isset($settings['urls']))
+		if (! isset($e->args->settings['urls']))
 			return;
 
 		$sites = [];
@@ -63,12 +64,12 @@ class SiteList extends Plugin
 			}
 		}
 
-		$settings['urls'] = json_encode($sites, JSON_UNESCAPED_UNICODE);
+		$e->args->settings['urls'] = json_encode($sites, JSON_UNESCAPED_UNICODE);
 	}
 
-	public function frontModes(array &$modes): void
+	public function frontModes(Event $e): void
 	{
-		$modes[$this->mode] = SiteArticle::class;
+		$e->args->modes[$this->mode] = SiteArticle::class;
 
 		Config::$modSettings['lp_frontpage_mode'] = $this->mode;
 	}

@@ -7,18 +7,19 @@
  * @copyright 2020-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 31.10.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\TagList;
 
-use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Actions\Tag;
-use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\LightPortal\Areas\Fields\RadioField;
 use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
 use Laminas\Tag\Cloud;
 use Nette\Utils\Html;
 
@@ -33,12 +34,12 @@ class TagList extends Block
 {
 	public string $icon = 'fas fa-tags';
 
-	public function prepareBlockParams(array &$params): void
+	public function prepareBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'tag_list')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'link_in_title' => Config::$scripturl . '?action=portal;sa=tags',
 			'source'        => 'lp_tags',
 			'sorting'       => 'name',
@@ -46,12 +47,12 @@ class TagList extends Block
 		];
 	}
 
-	public function validateBlockParams(array &$params): void
+	public function validateBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'tag_list')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'source'   => FILTER_DEFAULT,
 			'sorting'  => FILTER_DEFAULT,
 			'as_cloud' => FILTER_VALIDATE_BOOLEAN,
@@ -114,8 +115,10 @@ class TagList extends Block
 		return $keywords;
 	}
 
-	public function prepareContent(object $data, array $parameters): void
+	public function prepareContent(Event $e): void
 	{
+		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+
 		if ($data->type !== 'tag_list')
 			return;
 
@@ -159,9 +162,9 @@ class TagList extends Block
 		}
 	}
 
-	public function credits(array &$links): void
+	public function credits(Event $e): void
 	{
-		$links[] = [
+		$e->args->links[] = [
 			'title' => 'laminas-tag',
 			'link' => 'https://github.com/laminas/laminas-tag/',
 			'author' => 'Laminas Project a Series of LF Projects, LLC.',

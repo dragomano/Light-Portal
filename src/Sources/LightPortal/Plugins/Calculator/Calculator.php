@@ -7,14 +7,15 @@
  * @copyright 2023-2024 Bugo
  * @license https://opensource.org/licenses/MIT MIT
  *
- * @category addon
- * @version 10.02.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Calculator;
 
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -26,19 +27,19 @@ class Calculator extends Block
 {
 	public string $icon = 'fas fa-calculator';
 
-	public function prepareBlockParams(array &$params): void
+	public function prepareBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'calculator')
 			return;
 
-		$params['no_content_class'] = true;
+		$e->args->params['no_content_class'] = true;
 	}
 
-	public function prepareContent(object $data): void
+	public function prepareContent(Event $e): void
 	{
-		if ($data->type !== 'calculator')
+		if ($e->args->data->type !== 'calculator')
 			return;
 
-		echo $this->getFromTemplate('show_calculator_block', $data->id);
+		echo $this->getFromTemplate('show_calculator_block', $e->args->data->id);
 	}
 }

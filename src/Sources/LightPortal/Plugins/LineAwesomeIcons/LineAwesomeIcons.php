@@ -7,12 +7,13 @@
  * @copyright 2022-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 13.02.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\LineAwesomeIcons;
 
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 
 if (! defined('LP_NAME'))
@@ -25,12 +26,12 @@ class LineAwesomeIcons extends Plugin
 {
 	public string $type = 'icons';
 
-	public function preloadStyles(array &$styles): void
+	public function preloadStyles(Event $e): void
 	{
-		$styles[] = 'https://cdn.jsdelivr.net/npm/line-awesome@1/dist/line-awesome/css/line-awesome.min.css';
+		$e->args->styles[] = 'https://cdn.jsdelivr.net/npm/line-awesome@1/dist/line-awesome/css/line-awesome.min.css';
 	}
 
-	public function prepareIconList(array &$icons): void
+	public function prepareIconList(Event $e): void
 	{
 		if (($LaIcons = $this->cache()->get('all_la_icons', 30 * 24 * 60 * 60)) === null) {
 			$LaIcons = $this->getIconList();
@@ -38,12 +39,12 @@ class LineAwesomeIcons extends Plugin
 			$this->cache()->put('all_la_icons', $LaIcons, 30 * 24 * 60 * 60);
 		}
 
-		$icons = array_merge($icons, $LaIcons);
+		$e->args->icons = array_merge($e->args->icons, $LaIcons);
 	}
 
-	public function credits(array &$links): void
+	public function credits(Event $e): void
 	{
-		$links[] = [
+		$e->args->links[] = [
 			'title' => 'Line Awesome',
 			'link' => 'https://icons8.com/line-awesome',
 			'author' => 'Icons8',

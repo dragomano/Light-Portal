@@ -7,17 +7,18 @@
  * @copyright 2023-2024 Bugo
  * @license https://opensource.org/licenses/MIT MIT
  *
- * @category addon
- * @version 24.09.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleChat;
 
 use Bugo\Compat\{Lang, Theme, Utils};
-use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\LightPortal\Areas\Fields\RadioField;
 use Bugo\LightPortal\Enums\{Hook, Tab};
+use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\Avatar;
 
 use function array_combine;
@@ -73,20 +74,20 @@ class SimpleChat extends Block
 		$this->chat->prepareTable();
 	}
 
-	public function prepareBlockParams(array &$params): void
+	public function prepareBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'simple_chat')
 			return;
 
-		$params = $this->params;
+		$e->args->params = $this->params;
 	}
 
-	public function validateBlockParams(array &$params): void
+	public function validateBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'simple_chat')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'show_avatars'  => FILTER_VALIDATE_BOOLEAN,
 			'form_position' => FILTER_DEFAULT,
 		];
@@ -117,8 +118,10 @@ class SimpleChat extends Block
 		return $messages;
 	}
 
-	public function prepareContent(object $data, array $parameters): void
+	public function prepareContent(Event $e): void
 	{
+		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+
 		if ($data->type !== 'simple_chat')
 			return;
 
@@ -139,13 +142,13 @@ class SimpleChat extends Block
 		show_chat_block($data->id, $parameters, $this->isInSidebar($data->id));
 	}
 
-	public function onBlockRemoving(array $items): void
+	public function onBlockRemoving(Event $e): void
 	{
 		Utils::$smcFunc['db_query']('', '
 			DELETE FROM {db_prefix}lp_simple_chat_messages
 			WHERE block_id IN ({array_int:items})',
 			[
-				'items' => $items,
+				'items' => $e->args->items,
 			]
 		);
 	}

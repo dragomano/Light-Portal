@@ -7,17 +7,19 @@
  * @copyright 2023-2024 Bugo
  * @license https://opensource.org/licenses/MIT MIT
  *
- * @category addon
- * @version 24.05.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\TwigLayouts;
 
 use Bugo\Compat\{BBCodeParser, Config, ErrorHandler};
-use Bugo\Compat\{Lang, Theme, Sapi, Utils};
+use Bugo\Compat\{Lang, Sapi, Theme, Utils};
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Utils\Icon;
-use Twig\{Loader\FilesystemLoader, Environment, Error\Error, TwigFunction};
+use Twig\{Environment, Error\Error};
+use Twig\{Loader\FilesystemLoader, TwigFunction};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -30,7 +32,7 @@ class TwigLayouts extends Plugin
 
 	private string $extension = '.twig';
 
-	public function addSettings(array &$settings): void
+	public function addSettings(Event $e): void
 	{
 		Lang::$txt['lp_twig_layouts']['note'] = sprintf(
 			Lang::$txt['lp_twig_layouts']['note'],
@@ -38,9 +40,9 @@ class TwigLayouts extends Plugin
 			Theme::$current->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . 'portal_layouts'
 		);
 
-		$settings['twig_layouts'][] = ['desc', 'note'];
-		$settings['twig_layouts'][] = ['title', 'example'];
-		$settings['twig_layouts'][] = ['callback', '_', $this->showExample()];
+		$e->args->settings['twig_layouts'][] = ['desc', 'note'];
+		$e->args->settings['twig_layouts'][] = ['title', 'example'];
+		$e->args->settings['twig_layouts'][] = ['callback', '_', $this->showExample()];
 	}
 
 	public function frontLayouts(): void
@@ -95,14 +97,14 @@ class TwigLayouts extends Plugin
 		Config::$modSettings['lp_frontpage_layout'] = '';
 	}
 
-	public function customLayoutExtensions(array &$extensions): void
+	public function customLayoutExtensions(Event $e): void
 	{
-		$extensions[] = $this->extension;
+		$e->args->extensions[] = $this->extension;
 	}
 
-	public function credits(array &$links): void
+	public function credits(Event $e): void
 	{
-		$links[] = [
+		$e->args->links[] = [
 			'title' => 'Twig',
 			'link' => 'https://github.com/twigphp/Twig',
 			'author' => 'Twig Team',

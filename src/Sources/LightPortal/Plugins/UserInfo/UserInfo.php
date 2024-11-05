@@ -7,14 +7,15 @@
  * @copyright 2020-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 15.06.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\UserInfo;
 
 use Bugo\Compat\{User, Utils};
 use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
 use Exception;
 
 use function show_user_info;
@@ -37,9 +38,9 @@ class UserInfo extends Block
 		return User::loadMemberContext(User::$info['id']);
 	}
 
-	public function prepareContent(object $data): void
+	public function prepareContent(Event $e): void
 	{
-		if ($data->type !== 'user_info')
+		if ($e->args->data->type !== 'user_info')
 			return;
 
 		$this->setTemplate();
@@ -50,7 +51,7 @@ class UserInfo extends Block
 		}
 
 		$userData = $this->cache('user_info_addon_u' . Utils::$context['user']['id'])
-			->setLifeTime($data->cacheTime)
+			->setLifeTime($e->args->data->cacheTime)
 			->setFallback(self::class, 'getData');
 
 		show_user_info($userData);

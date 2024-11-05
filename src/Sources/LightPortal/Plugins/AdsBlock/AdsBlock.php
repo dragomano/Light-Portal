@@ -7,17 +7,18 @@
  * @copyright 2020-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 15.06.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\AdsBlock;
 
 use Bugo\Compat\{Lang, Theme, Utils};
-use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Areas\Fields\{CustomField, TextareaField, TextField};
 use Bugo\LightPortal\Areas\Partials\{BoardSelect, PageSelect, TopicSelect};
 use Bugo\LightPortal\Enums\{Hook, Tab};
+use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\Content;
 
 use function array_combine;
@@ -42,17 +43,17 @@ class AdsBlock extends Block
 {
 	public string $icon = 'fas fa-ad';
 
-	public function addSettings(array &$settings): void
+	public function addSettings(Event $e): void
 	{
-		$settings['ads_block'][] = ['range', 'min_replies'];
+		$e->args->settings['ads_block'][] = ['range', 'min_replies'];
 	}
 
-	public function prepareBlockParams(array &$params): void
+	public function prepareBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'ads_block')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'content'        => 'html',
 			'loader_code'    => '',
 			'ads_placement'  => '',
@@ -63,12 +64,12 @@ class AdsBlock extends Block
 		];
 	}
 
-	public function validateBlockParams(array &$params): void
+	public function validateBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'ads_block')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'loader_code'    => FILTER_UNSAFE_RAW,
 			'ads_placement'  => FILTER_DEFAULT,
 			'include_boards' => FILTER_DEFAULT,
@@ -144,22 +145,22 @@ class AdsBlock extends Block
 			>');
 	}
 
-	public function findBlockErrors(array &$errors, array $data): void
+	public function findBlockErrors(Event $e): void
 	{
-		if ($data['placement'] !== 'ads')
+		if ($e->args->data['placement'] !== 'ads')
 			return;
 
 		Lang::$txt['lp_post_error_no_ads_placement'] = Lang::$txt['lp_ads_block']['no_ads_placement'];
 
-		if (empty($data['parameters']['ads_placement'])) {
-			$errors[] = 'no_ads_placement';
+		if (empty($e->args->data['parameters']['ads_placement'])) {
+			$e->args->errors[] = 'no_ads_placement';
 		}
 	}
 
-	public function parseContent(string &$content, string $type): void
+	public function parseContent(Event $e): void
 	{
-		if ($type === 'ads_block') {
-			$content = Content::parse($content, 'html');
+		if ($e->args->type === 'ads_block') {
+			$e->args->content = Content::parse($e->args->content, 'html');
 		}
 	}
 

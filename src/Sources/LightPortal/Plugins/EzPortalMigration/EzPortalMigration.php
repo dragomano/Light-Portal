@@ -7,13 +7,14 @@
  * @copyright 2021-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 27.03.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\EzPortalMigration;
 
 use Bugo\Compat\{Config, Lang, User};
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Utils\{Icon, Language};
 
@@ -24,32 +25,38 @@ class EzPortalMigration extends Plugin
 {
 	public string $type = 'impex';
 
-	public function updateAdminAreas(array &$areas): void
+	public function updateAdminAreas(Event $e): void
 	{
+		$areas = &$e->args->areas;
+
 		if (User::$info['is_admin']) {
 			$areas['lp_blocks']['subsections']['import_from_ez'] = [
 				Icon::get('import') . Lang::$txt['lp_ez_portal_migration']['label_name']
 			];
+
 			$areas['lp_pages']['subsections']['import_from_ez'] = [
 				Icon::get('import') . Lang::$txt['lp_ez_portal_migration']['label_name']
 			];
 		}
 	}
 
-	public function updateBlockAreas(array &$areas): void
+	public function updateBlockAreas(Event $e): void
 	{
-		$areas['import_from_ez'] = [new BlockImport, 'main'];
+		$e->args->areas['import_from_ez'] = [new BlockImport, 'main'];
 	}
 
-	public function updatePageAreas(array &$areas): void
+	public function updatePageAreas(Event $e): void
 	{
-		$areas['import_from_ez'] = [new PageImport(), 'main'];
+		$e->args->areas['import_from_ez'] = [new PageImport(), 'main'];
 	}
 
-	public function importPages(array &$items, array &$titles): void
+	public function importPages(Event $e): void
 	{
 		if ($this->request('sa') !== 'import_from_ez')
 			return;
+
+		$items  = &$e->args->items;
+		$titles = &$e->args->titles;
 
 		foreach ($items as $pageId => $item) {
 			$titles[] = [

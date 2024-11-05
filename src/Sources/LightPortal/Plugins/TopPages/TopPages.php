@@ -7,16 +7,16 @@
  * @copyright 2020-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 10.10.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\TopPages;
 
 use Bugo\Compat\{Lang, User, Utils};
-use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, NumberField, RadioField};
 use Bugo\LightPortal\Enums\Permission;
+use Bugo\LightPortal\Plugins\{Block, Event};
 use Bugo\LightPortal\Utils\{Setting, Str};
 
 use function array_combine;
@@ -30,24 +30,24 @@ class TopPages extends Block
 {
 	public string $icon = 'fas fa-balance-scale-left';
 
-	public function prepareBlockParams(array &$params): void
+	public function prepareBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'top_pages')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'popularity_type'   => 'comments',
 			'num_pages'         => 10,
 			'show_numbers_only' => false,
 		];
 	}
 
-	public function validateBlockParams(array &$params): void
+	public function validateBlockParams(Event $e): void
 	{
 		if (Utils::$context['current_block']['type'] !== 'top_pages')
 			return;
 
-		$params = [
+		$e->args->params = [
 			'popularity_type'   => FILTER_DEFAULT,
 			'num_pages'         => FILTER_VALIDATE_INT,
 			'show_numbers_only' => FILTER_VALIDATE_BOOLEAN,
@@ -110,8 +110,10 @@ class TopPages extends Block
 		return $pages;
 	}
 
-	public function prepareContent(object $data, array $parameters): void
+	public function prepareContent(Event $e): void
 	{
+		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+
 		if ($data->type !== 'top_pages')
 			return;
 

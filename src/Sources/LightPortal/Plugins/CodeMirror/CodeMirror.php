@@ -7,13 +7,14 @@
  * @copyright 2020-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @category addon
- * @version 26.05.24
+ * @category plugin
+ * @version 05.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\CodeMirror;
 
 use Bugo\Compat\{Lang, Theme, Utils};
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 
 if (! defined('LP_NAME'))
@@ -25,18 +26,20 @@ class CodeMirror extends Plugin
 
 	private array $modes = ['html' => 'HTML', 'php' => 'PHP', 'markdown' => 'Markdown', 'pug' => 'Pug', 'twig' => 'Twig'];
 
-	public function addSettings(array &$settings): void
+	public function addSettings(Event $e): void
 	{
-		$settings['code_mirror'][] = ['multiselect', 'modes', $this->modes];
-		$settings['code_mirror'][] = ['desc', 'small_hint'];
+		$e->args->settings['code_mirror'][] = ['multiselect', 'modes', $this->modes];
+		$e->args->settings['code_mirror'][] = ['desc', 'small_hint'];
 	}
 
-	public function prepareEditor(array $object): void
+	public function prepareEditor(Event $e): void
 	{
+		$object = $e->args->object;
+
 		if ($object['type'] === 'bbc' || (isset($object['options']['content']) && $object['options']['content'] === 'bbc'))
 			return;
 
-		if (empty($modes =  array_filter(explode(',', Utils::$context['lp_code_mirror_plugin']['modes'] ?? ''))))
+		if (empty($modes = array_filter(explode(',', Utils::$context['lp_code_mirror_plugin']['modes'] ?? ''))))
 			return;
 
 		$types = array_keys($this->modes);
@@ -187,9 +190,9 @@ class CodeMirror extends Plugin
 		});', true);
 	}
 
-	public function credits(array &$links): void
+	public function credits(Event $e): void
 	{
-		$links[] = [
+		$e->args->links[] = [
 			'title' => 'CodeMirror',
 			'link' => 'https://github.com/codemirror/codemirror',
 			'author' => 'Marijn Haverbeke and others',
