@@ -12,7 +12,8 @@
 
 namespace Bugo\LightPortal\Areas\Configs;
 
-use Bugo\Compat\{Actions\ACP, Config, Lang, Theme, User, Utils};
+use Bugo\Compat\{Actions\ACP, Config, Lang, Theme};
+use Bugo\Compat\{Time, User, Utils, WebFetchApi};
 use Bugo\LightPortal\Actions\FrontPage;
 use Bugo\LightPortal\Areas\Traits\QueryTrait;
 use Bugo\LightPortal\Enums\PortalHook;
@@ -27,7 +28,12 @@ use Nette\Utils\Html;
 
 use function array_combine;
 use function array_map;
+use function sprintf;
 use function str_replace;
+use function strtotime;
+use function version_compare;
+
+use const LP_VERSION;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -50,6 +56,8 @@ final class BasicConfig extends AbstractConfig
 		Utils::$context['page_title']  = Utils::$context['settings_title'] = Lang::$txt['lp_base'];
 		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_settings;sa=basic';
 		Utils::$context['post_url']    = Utils::$context['form_action'] . ';save';
+
+		$this->showInfoAboutNewRelease();
 
 		$this->addDefaultValues([
 			'lp_frontpage_title'           => str_replace(["'", "\""], "", (string) Utils::$context['forum_name']),
@@ -245,5 +253,41 @@ final class BasicConfig extends AbstractConfig
 		}
 
 		ACP::prepareDBSettingContext($configVars);
+	}
+
+	private function isNewVersionAvailable(): array|bool
+	{
+		if (($xml = $this->cache()->get('repo_data', 86400)) === null) {
+			$repoData = WebFetchApi::fetch('https://api.github.com/repos/dragomano/Light-Portal/releases');
+
+			$xml = empty($repoData) ? [] : Utils::jsonDecode($repoData, true);
+
+			$this->cache()->put('repo_data', $xml, 86400);
+		}
+
+		if (empty($xml[0]))
+			return false;
+
+		if (version_compare('v' . LP_VERSION, $xml[0]['tag_name'], '<')) {
+			return $xml[0];
+		}
+
+		return false;
+	}
+
+	private function showInfoAboutNewRelease(): void
+	{
+		if ($info = $this->isNewVersionAvailable()) {
+			Utils::$context['settings_message'] = [
+				'tag' => 'div',
+				'class' => 'errorbox',
+				'label' => sprintf(
+					Lang::getTxt('lp_new_version', [
+						$info['tag_name'],
+						Time::timeformat(strtotime($info['published_at']), false)
+					])
+				),
+			];
+		}
 	}
 }

@@ -25,6 +25,7 @@ $txt['lp_no_such_members'] = 'Nobody here by that name';
 $txt['lp_promote_to_fp'] = 'Promote to frontpage';
 $txt['lp_remove_from_fp'] = 'Remove from frontpage';
 $txt['lp_task_list'] = 'Task list';
+$txt['lp_new_version'] = 'Your version of the portal is outdated. A new version is available — {0}, released on {1}.';
 
 // Settings
 $txt['lp_settings'] = 'Portal settings';
