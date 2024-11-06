@@ -38,6 +38,7 @@
         <exclude name="Themes/default/scripts/light_portal/plugins.js" />
         <include name="Sources/**" />
         <exclude name="Sources/index.php" />
+        <exclude name="Sources/LightPortal/Plugins/AdsBlock/**" />
         <exclude name="Sources/LightPortal/Plugins/ApexCharts/**" />
         <exclude name="Sources/LightPortal/Plugins/BootstrapIcons/**" />
         <exclude name="Sources/LightPortal/Plugins/DiceBear/**" />
