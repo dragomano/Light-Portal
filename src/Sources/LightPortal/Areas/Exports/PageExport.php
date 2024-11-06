@@ -114,10 +114,17 @@ final class PageExport extends AbstractExport
 				],
 				'actions' => [
 					'header' => [
-						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);">'
+						'value' => Html::el('input', [
+							'type' => 'checkbox',
+							'onclick' => 'invertAll(this, this.form);',
+						])
 					],
 					'data' => [
-						'function' => static fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="pages[]">',
+						'function' => static fn($entry) => Html::el('input', [
+							'type' => 'checkbox',
+							'value' => $entry['id'],
+							'name' => 'pages[]',
+						]),
 						'class' => 'centertext'
 					]
 				]
@@ -128,10 +135,21 @@ final class PageExport extends AbstractExport
 			'additional_rows' => [
 				[
 					'position' => 'below_table_data',
-					'value' => '
-						<input type="hidden">
-						<input type="submit" name="export_selection" value="' . Lang::$txt['lp_export_selection'] . '" class="button">
-						<input type="submit" name="export_all" value="' . Lang::$txt['lp_export_all'] . '" class="button">'
+					'value' => Html::el('input', [
+							'type' => 'hidden',
+						]) .
+						Html::el('input', [
+							'type' => 'submit',
+							'name' => 'export_selection',
+							'value' => Lang::$txt['lp_export_selection'],
+							'class' => 'button',
+						]) .
+						Html::el('input', [
+							'type' => 'submit',
+							'name' => 'export_all',
+							'value' => Lang::$txt['lp_export_all'],
+							'class' => 'button',
+						])
 				]
 			]
 		];

@@ -12,13 +12,14 @@
 
 namespace Bugo\LightPortal\Areas\Configs;
 
-use Bugo\Compat\{Actions\ACP, Config, Lang, Theme, User, Utils};
+use Bugo\Compat\{Actions\ACP, Config, Lang};
+use Bugo\Compat\{Theme, User, Utils};
 use Bugo\LightPortal\Enums\VarType;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionTrait;
-
 use Nette\Utils\Html;
+
 use function asort;
 
 if (! defined('SMF'))
@@ -30,11 +31,6 @@ final class ExtraConfig extends AbstractConfig
 	use RequestTrait;
 	use SessionTrait;
 
-	/**
-	 * Output page and block settings
-	 *
-	 * Выводим настройки страниц и блоков
-	 */
 	public function show(): void
 	{
 		Utils::$context['page_title'] = Utils::$context['settings_title'] = Lang::$txt['lp_extra'];

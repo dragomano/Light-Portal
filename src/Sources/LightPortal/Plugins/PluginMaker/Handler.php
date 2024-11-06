@@ -175,7 +175,7 @@ class Handler extends Plugin
 
 		TextField::make('name', Lang::$txt['lp_plugin_maker']['name'])
 			->setTab(Tab::CONTENT)
-			->setAfter(Lang::$txt['lp_plugin_maker']['name_subtext'])
+			->setDescription(Lang::$txt['lp_plugin_maker']['name_subtext'])
 			->required()
 			->setAttribute('maxlength', 255)
 			->setAttribute('pattern', LP_ADDON_PATTERN)
@@ -215,7 +215,7 @@ class Handler extends Plugin
 
 		UrlField::make('site', Lang::$txt['website'])
 			->setTab('copyright')
-			->setAfter(Lang::$txt['lp_plugin_maker']['site_subtext'])
+			->setDescription(Lang::$txt['lp_plugin_maker']['site_subtext'])
 			->placeholder('https://custom.simplemachines.org/index.php?mod=4244')
 			->setValue(Utils::$context['lp_plugin']['site']);
 

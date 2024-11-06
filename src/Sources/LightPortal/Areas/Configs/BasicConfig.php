@@ -46,9 +46,6 @@ final class BasicConfig extends AbstractConfig
 	use SessionTrait;
 
 	/**
-	 * Output general settings
-	 *
-	 * Выводим общие настройки
 	 * @throws IntlException
 	 */
 	public function show(): void
@@ -281,12 +278,10 @@ final class BasicConfig extends AbstractConfig
 			Utils::$context['settings_message'] = [
 				'tag' => 'div',
 				'class' => 'errorbox',
-				'label' => sprintf(
-					Lang::getTxt('lp_new_version', [
-						$info['tag_name'],
-						Time::timeformat(strtotime($info['published_at']), false)
-					])
-				),
+				'label' => Lang::getTxt('lp_new_version', [
+					$info['tag_name'],
+					Time::timeformat(strtotime($info['published_at']), false)
+				]),
 			];
 		}
 	}

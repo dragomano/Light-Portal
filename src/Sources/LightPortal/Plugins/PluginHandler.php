@@ -171,7 +171,7 @@ final class PluginHandler
 	{
 		$plugins = $plugins ?: Setting::getEnabledPlugins();
 
-		if ($plugins === [] || isset(Utils::$context['uninstalling']))
+		if ($plugins === [])
 			return;
 
 		foreach ($plugins as $plugin) {

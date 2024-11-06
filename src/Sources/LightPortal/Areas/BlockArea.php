@@ -304,7 +304,7 @@ final class BlockArea
 
 		CustomField::make('areas', Lang::$txt['lp_block_areas'])
 			->setTab(Tab::ACCESS_PLACEMENT)
-			->setAfter($this->getAreasInfo())
+			->setDescription($this->getAreasInfo())
 			->setValue(static fn() => new AreaSelect());
 
 		CustomField::make('icon', Lang::$txt['current_icon'])

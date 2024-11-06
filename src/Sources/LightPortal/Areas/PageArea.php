@@ -251,19 +251,33 @@ final class PageArea
 									' . Icon::get('ellipsis') . '
 								</button>
 								<div class="roundframe" x-show="showContextMenu">
-									<ul>' . ($this->request()->has('deleted') ? '
-										<li>
-											<a @click.prevent="showContextMenu = false; page.restore($root)" class="button">' . Lang::$txt['restore_message'] . '</a>
-										</li>
-										<li>
-											<a @click.prevent="showContextMenu = false; page.removeForever($root)" class="button error">' . Lang::$txt['lp_action_remove_permanently'] . '</a>
-										</li>' : '
-										<li>
-											<a href="' . Config::$scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'] . '" class="button">' . Lang::$txt['modify'] . '</a>
-										</li>
-										<li>
-											<a @click.prevent="showContextMenu = false; page.remove($root)" class="button error">' . Lang::$txt['remove'] . '</a>
-										</li>') . '
+									<ul>' . ($this->request()->has('deleted') ? (
+											Html::el('li')->addHtml(
+												Html::el('a')
+													->setAttribute('x-on:click.prevent', 'showContextMenu = false; page.restore($root)')
+													->class('button')
+													->setText(Lang::$txt['restore_message'])
+											) .
+											Html::el('li')->addHtml(
+												Html::el('a')
+													->setAttribute('x-on:click.prevent', 'showContextMenu = false; page.removeForever($root)')
+													->class('button error')
+													->setText(Lang::$txt['lp_action_remove_permanently'])
+											)
+										) : (
+											Html::el('li')->addHtml(
+												Html::el('a')
+													->setAttribute('href', Config::$scripturl . "?action=admin;area=lp_pages;sa=edit;id={$entry['id']}")
+													->class('button')
+													->setText(Lang::$txt['modify'])
+											) .
+											Html::el('li')->addHtml(
+												Html::el('a')
+													->setAttribute('x-on:click.prevent', 'showContextMenu = false; page.removeForever($root)')
+													->class('button error')
+													->setText(Lang::$txt['remove'])
+											)
+										)) . '
 									</ul>
 								</div>
 							</div>
@@ -805,13 +819,13 @@ final class PageArea
 
 			CustomField::make('author_id', Lang::$txt['lp_page_author'])
 				->setTab(Tab::ACCESS_PLACEMENT)
-				->setAfter(Lang::$txt['lp_page_author_placeholder'])
+				->setDescription(Lang::$txt['lp_page_author_placeholder'])
 				->setValue(static fn() => new PageAuthorSelect());
 		}
 
 		TextField::make('slug', Lang::$txt['lp_page_slug'])
 			->setTab(Tab::SEO)
-			->setAfter(Lang::$txt['lp_page_slug_subtext'])
+			->setDescription(Lang::$txt['lp_page_slug_subtext'])
 			->required()
 			->setAttribute('maxlength', 255)
 			->setAttribute('pattern', LP_ALIAS_PATTERN)

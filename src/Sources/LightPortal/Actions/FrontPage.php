@@ -289,11 +289,6 @@ final class FrontPage implements ActionInterface
 		Utils::$context['lp_layout'] = ob_get_clean();
 	}
 
-	/**
-	 * Get the number columns for the frontpage layout
-	 *
-	 * Получаем количество колонок для макета главной страницы
-	 */
 	public function getNumColumns(): int
 	{
 		$columnsCount = 12;
@@ -309,11 +304,6 @@ final class FrontPage implements ActionInterface
 		};
 	}
 
-	/**
-	 * Get the sort condition for SQL
-	 *
-	 * Получаем условие сортировки для SQL
-	 */
 	public function getOrderBy(): string
 	{
 		$sortingTypes = [
@@ -345,9 +335,6 @@ final class FrontPage implements ActionInterface
 	}
 
 	/**
-	 * Post processing for articles
-	 *
-	 * Заключительная обработка статей
 	 * @throws IntlException
 	 */
 	private function postProcess(ArticleInterface $article, array $articles): array
@@ -389,11 +376,6 @@ final class FrontPage implements ActionInterface
 		}
 	}
 
-	/**
-	 * Get a number in friendly format ("10K" instead "10000", etc)
-	 *
-	 * Получаем число в приятном глазу формате («10K» вместо «10000»)
-	 */
 	private function getFriendlyNumber(int $value = 0): string
 	{
 		if ($value < 10000)

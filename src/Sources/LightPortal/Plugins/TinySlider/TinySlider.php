@@ -141,7 +141,7 @@ class TinySlider extends Block
 			->setValue(Utils::$context['lp_block']['options']['arrow_keys']);
 
 		NumberField::make('fixed_width', Lang::$txt['lp_tiny_slider']['fixed_width'])
-			->setAfter(Lang::$txt['zero_for_no_limit'])
+			->setDescription(Lang::$txt['zero_for_no_limit'])
 			->setAttribute('min', 0)
 			->setValue(Utils::$context['lp_block']['options']['fixed_width']);
 

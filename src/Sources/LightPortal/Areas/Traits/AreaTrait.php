@@ -64,44 +64,45 @@ trait AreaTrait
 			? [Config::$language]
 			: array_unique([Utils::$context['user']['language'], Config::$language]);
 
-		$value = '
-			<div>';
+		$value = Html::el('div');
 
 		if (count(Utils::$context['lp_languages']) > 1) {
-			$value .= '
-				<nav' . (Utils::$context['right_to_left'] ? '' : ' class="floatleft"') . '>';
-
-			foreach (Utils::$context['lp_languages'] as $key => $lang) {
-				$value .= '
-					<a
-						class="button floatnone"
-						:class="{ \'active\': tab === \'' . $key . '\' }"
-						data-name="title_' . $key . '"
-						@click.prevent="tab = \'' . $key . '\';
-							window.location.hash = \'' . $key . '\';
-							$nextTick(() => { setTimeout(() => { document.querySelector(\'input[name=title_' . $key . ']\').focus() }, 50); });"
-					>' . $lang['name'] . '</a>';
+			$nav = Html::el('nav');
+			if (!Utils::$context['right_to_left']) {
+				$nav->class('floatleft');
 			}
 
-			$value .= '
-				</nav>';
+			foreach (Utils::$context['lp_languages'] as $key => $lang) {
+				$link = Html::el('a')
+					->class('button floatnone')
+					->setText($lang['name'])
+					->setAttribute(':class', "{ 'active': tab === '$key' }")
+					->setAttribute('data-name', "title_$key")
+					->setAttribute('x-on:click.prevent', "tab = '$key'; window.location.hash = '$key'; \$nextTick(() => { setTimeout(() => { document.querySelector('input[name=title_$key]').focus() }, 50); });");
+
+				$nav->addHtml($link);
+			}
+
+			$value->addHtml($nav);
 		}
 
 		foreach (array_keys(Utils::$context['lp_languages']) as $key) {
-			$value .= '
-				<div x-show="tab === \'' . $key . '\'">
-					<input
-						type="text"
-						name="title_' . $key . '"
-						x-model="title_' . $key . '"
-						value="' . (Utils::$context['lp_' . $entity]['titles'][$key] ?? '') . '"
-						' . (in_array($key, $languages) && $required ? ' required' : '') . '
-					>
-				</div>';
-		}
+			$inputDiv = Html::el('div')
+				->setAttribute('x-show', "tab === '$key'");
 
-		$value .= '
-			</div>';
+			$input = Html::el('input')
+				->setAttribute('type', 'text')
+				->setAttribute('name', "title_$key")
+				->setAttribute('x-model', "title_$key")
+				->setAttribute('value', Utils::$context['lp_' . $entity]['titles'][$key] ?? '');
+
+			if (in_array($key, $languages) && $required) {
+				$input->setAttribute('required', 'required');
+			}
+
+			$inputDiv->addHtml($input);
+			$value->addHtml($inputDiv);
+		}
 
 		CustomField::make('title', Lang::$txt['lp_title'])
 			->setTab('content')
@@ -124,15 +125,17 @@ trait AreaTrait
 
 			// Add label for html type
 			if (isset($data['label']['html']) && $data['label']['html'] !== ' ') {
-				Utils::$context['posting_fields'][$item]['label']['html'] = '<label for="' . $item . '">'
-					. $data['label']['html'] . '</label>';
+				Utils::$context['posting_fields'][$item]['label']['html'] = Html::el('label')
+					->setAttribute('for', $item)
+					->setText($data['label']['html']);
 			}
 
 			// Fancy checkbox
 			if (isset($data['input']['type']) && $data['input']['type'] === 'checkbox') {
 				$data['input']['attributes']['class'] = 'checkbox';
-				$data['input']['after'] = '<label class="label" for="' . $item . '"></label>'
-					. (Utils::$context['posting_fields'][$item]['input']['after'] ?? '');
+				$data['input']['after'] = Html::el('label', ['class' => 'label'])
+					->setAttribute('for', $item) . (Utils::$context['posting_fields'][$item]['input']['after'] ?? '');
+
 				Utils::$context['posting_fields'][$item] = $data;
 			}
 		}

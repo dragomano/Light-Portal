@@ -21,8 +21,6 @@ if (! defined('SMF'))
 
 class Setting
 {
-	use RequestTrait;
-
 	public static function isFrontpage(string $slug): bool
 	{
 		if ($slug === '' || empty(Config::$modSettings['lp_frontpage_chosen_page']))
@@ -120,6 +118,6 @@ class Setting
 
 	public static function hideBlocksInACP(): bool
 	{
-		return ! empty(Config::$modSettings['lp_hide_blocks_in_acp']) && $this->request()->is('admin');
+		return ! empty(Config::$modSettings['lp_hide_blocks_in_acp']) && (new Request())->is('admin');
 	}
 }

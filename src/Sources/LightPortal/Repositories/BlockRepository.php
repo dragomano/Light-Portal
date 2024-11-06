@@ -21,6 +21,7 @@ use Bugo\LightPortal\EventManager;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\{CacheTrait, EntityDataTrait};
 use Bugo\LightPortal\Utils\{Icon, RequestTrait, Setting, Str};
+use Nette\Utils\Html;
 
 use function array_filter;
 use function array_flip;
@@ -388,11 +389,6 @@ final class BlockRepository extends AbstractRepository
 		$this->cache()->forget($prefix . $item . '_u' . Utils::$context['user']['id']);
 	}
 
-	/**
-	 * Prepare plugins list that not installed
-	 *
-	 * Формируем список неустановленных плагинов
-	 */
 	private function prepareMissingBlockTypes(string $type): void
 	{
 		if (isset(Lang::$txt['lp_' . $type]['title']))
@@ -404,7 +400,8 @@ final class BlockRepository extends AbstractRepository
 			? Lang::$txt['lp_addon_not_activated']
 			: Lang::$txt['lp_addon_not_installed'];
 
-		Utils::$context['lp_missing_block_types'][$type] = '<span class="error">' . sprintf($message, $plugin) . '</span>';
+		Utils::$context['lp_missing_block_types'][$type] = Html::el('span')->class('error')
+			->setText(sprintf($message, $plugin));
 	}
 
 	private function getPriority(): int

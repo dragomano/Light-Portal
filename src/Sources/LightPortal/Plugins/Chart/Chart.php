@@ -114,7 +114,7 @@ class Chart extends Block
 			->setValue(Utils::$context['lp_block']['options']['default_palette']);
 
 		CheckboxField::make('stacked', Lang::$txt['lp_chart']['stacked'])
-			->setAfter(Lang::$txt['lp_chart']['stacked_after'])
+			->setDescription(Lang::$txt['lp_chart']['stacked_after'])
 			->setValue(Utils::$context['lp_block']['options']['stacked']);
 
 		CheckboxField::make('horizontal', Lang::$txt['lp_chart']['horizontal'])

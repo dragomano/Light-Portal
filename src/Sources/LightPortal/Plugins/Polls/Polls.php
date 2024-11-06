@@ -55,7 +55,7 @@ class Polls extends Block
 			InputField::make('selected_item', Lang::$txt['lp_polls']['selected_item'])
 				->setType('input')
 				->setTab(Tab::CONTENT)
-				->setAfter(Lang::$txt['lp_polls']['no_items'])
+				->setDescription(Lang::$txt['lp_polls']['no_items'])
 				->setAttribute('disabled', true);
 		} else {
 			SelectField::make('selected_item', Lang::$txt['lp_polls']['selected_item'])

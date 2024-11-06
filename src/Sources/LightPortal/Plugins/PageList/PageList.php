@@ -84,7 +84,7 @@ class PageList extends Block
 			->setValue(Utils::$context['lp_block']['options']['sort']);
 
 		NumberField::make('num_pages', Lang::$txt['lp_page_list']['num_pages'])
-			->setAfter(Lang::$txt['lp_page_list']['num_pages_subtext'])
+			->setDescription(Lang::$txt['lp_page_list']['num_pages_subtext'])
 			->setAttribute('min', 0)
 			->setAttribute('max', 999)
 			->setValue(Utils::$context['lp_block']['options']['num_pages']);

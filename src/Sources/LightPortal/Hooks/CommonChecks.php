@@ -31,11 +31,7 @@ trait CommonChecks
 
 	protected function isPortalCanBeLoaded(): bool
 	{
-		if (
-			! defined('LP_NAME')
-			|| isset(Utils::$context['uninstalling'])
-			|| $this->request()->is('printpage')
-		) {
+		if (! defined('LP_NAME') || $this->request()->is('printpage')) {
 			Config::$modSettings['minimize_files'] = 0;
 			return false;
 		}

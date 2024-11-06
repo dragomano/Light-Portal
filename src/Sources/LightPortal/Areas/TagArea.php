@@ -152,10 +152,16 @@ final class TagArea
 								<div class="roundframe" x-show="showContextMenu">
 									<ul>
 										<li>
-											<a href="' . Config::$scripturl . '?action=admin;area=lp_tags;sa=edit;id=' . $entry['id'] . '" class="button">' . Lang::$txt['modify'] . '</a>
+											' . Html::el('a')
+												->setAttribute('href', Config::$scripturl . "?action=admin;area=lp_tags;sa=edit;id={$entry['id']}")
+												->class('button')
+												->setText(Lang::$txt['modify']) . '
 										</li>
 										<li>
-											<a @click.prevent="showContextMenu = false; tag.remove($root)" class="button error">' . Lang::$txt['remove'] . '</a>
+											' . Html::el('a')
+												->setAttribute('x-on:click.prevent', 'showContextMenu = false; tag.remove($root)')
+												->class('button error')
+												->setText(Lang::$txt['remove']) . '
 										</li>
 									</ul>
 								</div>

@@ -25,6 +25,7 @@ use Bugo\LightPortal\EventManager;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\{CacheTrait, Icon, RequestTrait};
 use Bugo\LightPortal\Utils\{SafeRequireTrait, Setting, SMFHookTrait};
+use Nette\Utils\Html;
 
 use function array_keys;
 use function array_merge;
@@ -240,11 +241,11 @@ final class ConfigArea
 			'title' => LP_NAME,
 			'tabs' => [
 				'basic' => [
-					'description' => '<img
-						class="floatright"
-						src="https://user-images.githubusercontent.com/229402/143980485-16ba84b8-9d8d-4c06-abeb-af949d594f66.png"
-						alt="' . LP_NAME . ' logo"
-					>' . Lang::getTxt('lp_base_info', [
+					'description' => Html::el('img')
+						->class('floatright')
+						->setAttribute('src', 'https://user-images.githubusercontent.com/229402/143980485-16ba84b8-9d8d-4c06-abeb-af949d594f66.png')
+						->setAttribute('alt', LP_NAME . ' logo') .
+					Lang::getTxt('lp_base_info', [
 						LP_VERSION,
 						phpversion(),
 						Utils::$smcFunc['db_title'],
@@ -358,11 +359,6 @@ final class ConfigArea
 		$this->callActionFromAreas($areas);
 	}
 
-	/**
-	 * Calls the requested sub_action if it does exist; otherwise, calls the default action
-	 *
-	 * Вызывает метод, если он существует; в противном случае вызывается метод по умолчанию
-	 */
 	private function callActionFromAreas(array $areas = [], string $defaultAction = 'main'): void
 	{
 		$this->showDocsLink();

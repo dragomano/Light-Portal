@@ -58,7 +58,7 @@ class RecentAttachments extends Block
 			->setValue(Utils::$context['lp_block']['options']['num_attachments']);
 
 		TextField::make('extensions', Lang::$txt['lp_recent_attachments']['extensions'])
-			->setAfter(Lang::$txt['lp_recent_attachments']['extensions_subtext'])
+			->setDescription(Lang::$txt['lp_recent_attachments']['extensions_subtext'])
 			->setAttribute('maxlength', 30)
 			->setAttribute('style', 'width: 100%')
 			->setValue(Utils::$context['lp_block']['options']['extensions']);

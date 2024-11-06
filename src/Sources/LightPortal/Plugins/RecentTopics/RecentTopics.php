@@ -94,7 +94,7 @@ class RecentTopics extends Block
 
 		CheckboxField::make('use_simple_style', Lang::$txt['lp_recent_topics']['use_simple_style'])
 			->setTab(Tab::APPEARANCE)
-			->setAfter(Lang::$txt['lp_recent_topics']['use_simple_style_subtext'])
+			->setDescription(Lang::$txt['lp_recent_topics']['use_simple_style_subtext'])
 			->setValue(Utils::$context['lp_block']['options']['use_simple_style']);
 
 		CheckboxField::make('show_avatars', Lang::$txt['lp_recent_topics']['show_avatars'])

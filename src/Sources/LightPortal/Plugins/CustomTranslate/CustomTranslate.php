@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 07.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\CustomTranslate;
@@ -41,7 +41,7 @@ class CustomTranslate extends Plugin
 
 	public function menuButtons(): void
 	{
-		if (isset(Utils::$context['uninstalling']) || $this->request()->has('xml'))
+		if ($this->request()->has('xml'))
 			return;
 
 		if (empty(Utils::$context['lp_custom_translate_plugin']['languages']))

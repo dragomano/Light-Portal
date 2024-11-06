@@ -100,7 +100,7 @@ final class PluginArea
 
 		PluginHandler::getInstance(Utils::$context['lp_plugins']);
 
-		// You can add settings for your plugins
+		// Plugin authors can add settings here
 		EventManager::getInstance()->dispatch(PortalHook::addSettings, new Event(new SettingsArgs($settings)));
 
 		$this->handleSave($settings);
@@ -174,7 +174,7 @@ final class PluginArea
 			}
 		}
 
-		// You can do additional actions after settings saving
+		// Plugin authors can do additional actions after settings saving
 		EventManager::getInstance()->dispatch(PortalHook::saveSettings, new Event(new SettingsArgs($settings)));
 
 		$this->repository->changeSettings($name, $settings);
@@ -324,7 +324,6 @@ final class PluginArea
 			'download' => Utils::$context['lp_can_download'] ?? [],
 		];
 
-		// Add additional data
 		$allPlugins = array_keys(Utils::$context['lp_loaded_addons'] ?? []);
 
 		foreach ($allPlugins as $plugin) {

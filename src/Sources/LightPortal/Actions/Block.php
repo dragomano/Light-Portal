@@ -48,7 +48,6 @@ final class Block implements BlockInterface
 		if (empty(Utils::$context['allow_light_portal_view']) || empty($blocks = $this->getFilteredByAreas()))
 			return;
 
-		// Block placement
 		foreach ($blocks as $item => $data) {
 			if (Permission::canViewItem($data['permissions']) === false)
 				continue;

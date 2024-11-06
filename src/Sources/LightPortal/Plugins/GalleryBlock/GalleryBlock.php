@@ -60,7 +60,7 @@ class GalleryBlock extends Block
 			->setValue(static fn() => new CategorySelect());
 
 		NumberField::make('num_images', Lang::$txt['lp_gallery_block']['num_images'])
-			->setAfter(Lang::$txt['lp_gallery_block']['num_images_subtext'])
+			->setDescription(Lang::$txt['lp_gallery_block']['num_images_subtext'])
 			->setAttribute('min', 0)
 			->setAttribute('max', 999)
 			->setValue(Utils::$context['lp_block']['options']['num_images']);

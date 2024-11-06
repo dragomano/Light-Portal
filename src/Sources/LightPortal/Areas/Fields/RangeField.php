@@ -37,15 +37,12 @@ class RangeField extends CustomField
 					->setAttribute('min', $this->attributes['min'] ?? null)
 					->setAttribute('max', $this->attributes['max'] ?? null)
 					->setAttribute('step', $this->attributes['step'] ?? null)
-					->toHtml()
 			)
 			->addHtml(
 				Html::el('span', [
 					'class'  => 'progress_bar amt',
 					'x-text' => $this->name,
 				])
-					->toHtml()
-			)
-			->toHtml();
+			);
 	}
 }

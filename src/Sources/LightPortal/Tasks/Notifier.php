@@ -34,8 +34,9 @@ final class Notifier extends BackgroundTask
 		};
 
 		// Let's not notify ourselves, okay?
-		if ($this->_details['sender_id'])
+		if ($this->_details['sender_id']) {
 			$members = array_diff($members, [$this->_details['sender_id']]);
+		}
 
 		$prefs = Notify::getNotifyPrefs($members, match ($this->_details['content_type']) {
 			'new_comment' => 'page_comment',
