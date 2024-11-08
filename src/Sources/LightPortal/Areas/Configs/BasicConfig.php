@@ -15,9 +15,9 @@ namespace Bugo\LightPortal\Areas\Configs;
 use Bugo\Compat\{Actions\ACP, Config, Lang, Theme};
 use Bugo\Compat\{Time, User, Utils, WebFetchApi};
 use Bugo\LightPortal\Actions\FrontPage;
+use Bugo\LightPortal\Areas\Partials\ActionSelect;
 use Bugo\LightPortal\Areas\Traits\QueryTrait;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Enums\VarType;
+use Bugo\LightPortal\Enums\{PortalHook, VarType};
 use Bugo\LightPortal\EventManager;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\CacheTrait;
@@ -44,6 +44,14 @@ final class BasicConfig extends AbstractConfig
 	use QueryTrait;
 	use RequestTrait;
 	use SessionTrait;
+
+	public const TAB_BASE = 'base';
+
+	public const TAB_CARDS = 'cards';
+
+	public const TAB_STANDALONE = 'standalone';
+
+	public const TAB_PERMISSIONS = 'permissions';
 
 	/**
 	 * @throws IntlException
@@ -76,138 +84,161 @@ final class BasicConfig extends AbstractConfig
 			[1, 2, 3, 4, 6],
 		);
 
-		$javascript = ':disabled="[\'0\', \'chosen_page\'].includes(frontpage_mode)"';
-
 		$templateEditLink = sprintf('&nbsp;' . Html::el('a', [
+				'class' => 'button active',
+				'target' => '_blank',
 				'href' => '%s?action=admin;area=theme;th=1;%s=%s;sa=edit;directory=LightPortal/layouts',
-			])->setText(Lang::$txt['lp_template_edit_link'])->toHtml(),
+			])->setText(Lang::$txt['lp_template_edit_link']),
 			Config::$scripturl,
 			Utils::$context['session_var'],
 			Utils::$context['session_id'],
 		);
 
 		$configVars = [
-			['callback', 'frontpage_mode_settings_before'],
 			[
 				'select',
 				'lp_frontpage_mode',
 				Utils::$context['lp_frontpage_modes'],
-				'javascript' => '
-					@change="frontpage_mode = $event.target.value; $dispatch(\'change-mode\', {front: frontpage_mode})"
-				'
+				'attributes' => [
+					'@change' => '$dispatch(\'change-mode\', { front: $event.target.value })',
+				],
+				'tab' => self::TAB_BASE,
 			],
+			['callback', 'frontpage_mode_settings_middle', 'tab' => self::TAB_BASE],
 			[
 				'text',
 				'lp_frontpage_title',
-				'size' => '80" placeholder="' . str_replace(
-					["'", "\""], "", (string) Utils::$context['forum_name']
-				) . ' - ' . Lang::$txt['lp_portal'],
-				'javascript' => $javascript
+				'placeholder' => str_replace(
+						["'", "\""], "", (string) Utils::$context['forum_name']
+					) . ' - ' . Lang::$txt['lp_portal'],
+				'tab' => self::TAB_BASE,
 			],
-			['callback', 'frontpage_mode_settings_middle'],
 			[
 				'check',
 				'lp_show_images_in_articles',
 				'help' => 'lp_show_images_in_articles_help',
-				'javascript' => $javascript
+				'tab' => self::TAB_CARDS,
 			],
 			[
 				'text',
 				'lp_image_placeholder',
-				'size' => '80" placeholder="' . Lang::$txt['lp_example'] . Theme::$current->settings['default_images_url'] . '/smflogo.svg',
-				'javascript' => $javascript
+				'placeholder' => Lang::$txt['lp_example'] .
+					Theme::$current->settings['default_images_url'] . '/smflogo.svg',
+				'tab' => self::TAB_CARDS,
 			],
 			[
 				'check',
 				'lp_show_teaser',
-				'javascript' => $javascript
+				'tab' => self::TAB_CARDS,
 			],
 			[
 				'check',
 				'lp_show_author',
 				'help' => 'lp_show_author_help',
-				'javascript' => $javascript
+				'tab' => self::TAB_CARDS,
 			],
 			[
 				'check',
 				'lp_show_views_and_comments',
-				'javascript' => $javascript
+				'tab' => self::TAB_CARDS,
 			],
 			[
 				'check',
 				'lp_frontpage_order_by_replies',
-				'javascript' => $javascript
+				'tab' => self::TAB_BASE,
 			],
 			[
 				'select',
 				'lp_frontpage_article_sorting',
 				Lang::$txt['lp_frontpage_article_sorting_set'],
 				'help' => 'lp_frontpage_article_sorting_help',
-				'javascript' => $javascript
+				'tab' => self::TAB_BASE,
 			],
 			[
 				'select',
 				'lp_frontpage_layout',
 				(new FrontPage())->getLayouts(),
-				'javascript' => $javascript,
-				'postinput' => $templateEditLink
+				'postinput' => $templateEditLink,
+				'tab' => self::TAB_CARDS,
 			],
 			[
 				'check',
 				'lp_show_layout_switcher',
-				'javascript' => $javascript
+				'tab' => self::TAB_BASE,
 			],
 			[
 				'select',
 				'lp_frontpage_num_columns',
 				Utils::$context['lp_column_set'],
-				'javascript' => $javascript
+				'tab' => self::TAB_BASE,
 			],
 			[
 				'select',
 				'lp_show_pagination',
 				Lang::$txt['lp_show_pagination_set'],
-				'javascript' => $javascript
+				'tab' => self::TAB_BASE,
 			],
 			[
 				'check',
 				'lp_use_simple_pagination',
-				'javascript' => $javascript
+				'tab' => self::TAB_BASE,
 			],
 			[
 				'int',
 				'lp_num_items_per_page',
 				'min' => 1,
-				'javascript' => $javascript
+				'tab' => self::TAB_BASE,
 			],
-			['callback', 'frontpage_mode_settings_after'],
-			['title', 'lp_standalone_mode_title'],
-			['callback', 'standalone_mode_settings_before'],
 			[
 				'check',
 				'lp_standalone_mode',
 				'label' => Lang::$txt['lp_action_on'],
-				'javascript' => '
-					@change="standalone_mode = ! standalone_mode"
-					:disabled="[\'0\', \'chosen_page\'].includes(frontpage_mode)"
-				'
+				'tab' => self::TAB_STANDALONE,
 			],
 			[
 				'text',
 				'lp_standalone_url',
 				'help' => 'lp_standalone_url_help',
-				'size' => '80" placeholder="' . Lang::$txt['lp_example'] . Config::$boardurl . '/portal.php',
-				'javascript' => ':disabled="! standalone_mode || [\'0\', \'chosen_page\'].includes(frontpage_mode)"'
+				'placeholder' => Lang::$txt['lp_example'] . Config::$boardurl . '/portal.php',
+				'tab' => self::TAB_STANDALONE,
 			],
-			['callback', 'standalone_mode_settings_after'],
-			['title', 'edit_permissions'],
-			['permissions', 'light_portal_view', 'help' => 'permissionhelp_light_portal_view'],
-			['permissions', 'light_portal_manage_pages_own', 'help' => 'permissionhelp_light_portal_manage_pages_own'],
-			['permissions', 'light_portal_manage_pages_any', 'help' => 'permissionhelp_light_portal_manage_pages'],
-			['permissions', 'light_portal_approve_pages', 'help' => 'permissionhelp_light_portal_approve_pages'],
+			[
+				'callback',
+				'standalone_mode_settings_after',
+				'label' => Lang::$txt['lp_disabled_actions'],
+				'help' => 'lp_disabled_actions_help',
+				'callback' => static fn() => new ActionSelect(),
+				'tab' => self::TAB_STANDALONE
+			],
+			[
+				'permissions',
+				'light_portal_view',
+				'help' => 'permissionhelp_light_portal_view',
+				'tab' => self::TAB_PERMISSIONS,
+			],
+			[
+				'permissions',
+				'light_portal_manage_pages_own',
+				'help' => 'permissionhelp_light_portal_manage_pages_own',
+				'tab' => self::TAB_PERMISSIONS,
+			],
+			[
+				'permissions',
+				'light_portal_manage_pages_any',
+				'help' => 'permissionhelp_light_portal_manage_pages',
+				'tab' => self::TAB_PERMISSIONS,
+			],
+			[
+				'permissions',
+				'light_portal_approve_pages',
+				'help' => 'permissionhelp_light_portal_approve_pages',
+				'tab' => self::TAB_PERMISSIONS,
+			],
 		];
 
 		Theme::loadTemplate('LightPortal/ManageSettings');
+
+		Utils::$context['sub_template'] = 'portal_basic_settings';
 
 		EventManager::getInstance()->dispatch(
 			PortalHook::extendBasicConfig,
@@ -250,6 +281,8 @@ final class BasicConfig extends AbstractConfig
 		}
 
 		ACP::prepareDBSettingContext($configVars);
+
+		$this->prepareConfigFields($configVars);
 	}
 
 	private function isNewVersionAvailable(): array|bool

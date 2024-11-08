@@ -63,6 +63,7 @@ final class IconList implements ListInterface
 			'list'          => 'list-ul',
 			'main'          => 'table-list',
 			'map_signs'     => 'signs-post',
+			'meteor'        => 'meteor',
 			'pager'         => 'pager',
 			'panels'        => 'table-columns',
 			'plus_circle'   => 'circle-plus',

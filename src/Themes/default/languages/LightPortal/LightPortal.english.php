@@ -29,7 +29,7 @@ $txt['lp_new_version'] = 'Your version of the portal is outdated. A new version 
 
 // Settings
 $txt['lp_settings'] = 'Portal settings';
-$txt['lp_base'] = 'Settings for the frontpage and articles';
+$txt['lp_base'] = 'The front page';
 $txt['lp_base_info'] = 'The mod version: <strong>{0}</strong>, PHP version: <strong>{1}</strong>, {2} version: <strong>{3}</strong>.<br>One can discuss bugs and features of the portal at <a class="bbc_link" href="https://www.simplemachines.org/community/index.php?topic=572393.0">simplemachines.org</a>.<br>The portal always needs new testers, translators, and front-page template makers.';
 
 $txt['lp_frontpage_title'] = 'The frontpage title';
@@ -46,20 +46,10 @@ $txt['lp_frontpage_pages_no_items'] = 'There are no active pages';
 $txt['lp_frontpage_topics'] = 'Topics - sources of articles for the frontpage';
 $txt['lp_frontpage_topics_select'] = 'Select the desired topics';
 $txt['lp_frontpage_topics_no_items'] = 'There are no approved topics';
-$txt['lp_show_images_in_articles'] = 'Show images found in articles';
-$txt['lp_show_images_in_articles_help'] = 'First, it checks whether the article has an attachment (if the article is based on a forum topic), then — whether the article has an IMG tag with an image.';
-$txt['lp_image_placeholder'] = 'URL of the default placeholder image';
-$txt['lp_image_placeholder_subtext'] = 'Used if the option above is disabled.';
-$txt['lp_show_teaser'] = 'Show the article summary';
-$txt['lp_show_author'] = 'Show the article author';
-$txt['lp_show_author_help'] = 'If the board\'s card is displayed, it will show information about the category instead of the author.';
-$txt['lp_show_views_and_comments'] = 'Show the number of views and comments';
 $txt['lp_frontpage_order_by_replies'] = 'Display articles with the highest number of comments first';
 $txt['lp_frontpage_article_sorting'] = 'Sort articles';
 $txt['lp_frontpage_article_sorting_set'] = ['By last comment', 'By posting date (new first)', 'By posting date (old first)', 'By last update (fresh first)'];
 $txt['lp_frontpage_article_sorting_help'] = 'When you select the first option, the article cards display the dates and the latest commentators (if they are available).';
-$txt['lp_frontpage_layout'] = 'Template layout for article cards';
-$txt['lp_template_edit_link'] = 'Edit template layouts';
 $txt['lp_show_layout_switcher'] = 'Show layout switcher';
 $txt['lp_frontpage_num_columns'] = 'Number of columns for displaying articles';
 $txt['lp_frontpage_num_columns_set'] = '{columns, plural,
@@ -70,6 +60,18 @@ $txt['lp_show_pagination'] = 'Show the pagination';
 $txt['lp_show_pagination_set'] = ['Bottom only', 'Top and bottom', 'Top only'];
 $txt['lp_use_simple_pagination'] = 'Use simple pagination';
 $txt['lp_num_items_per_page'] = 'Number of items per page (for pagination)';
+
+$txt['lp_article_cards'] = 'Article cards';
+$txt['lp_show_images_in_articles'] = 'Show images found in articles';
+$txt['lp_show_images_in_articles_help'] = 'First, it checks whether the article has an attachment (if the article is based on a forum topic), then — whether the article has an IMG tag with an image.';
+$txt['lp_image_placeholder'] = 'URL of the default placeholder image';
+$txt['lp_image_placeholder_subtext'] = 'Used if the option above is disabled.';
+$txt['lp_show_teaser'] = 'Show the article summary';
+$txt['lp_show_author'] = 'Show the article author';
+$txt['lp_show_author_help'] = 'If the board\'s card is displayed, it will show information about the category instead of the author.';
+$txt['lp_show_views_and_comments'] = 'Show the number of views and comments';
+$txt['lp_frontpage_layout'] = 'Template layout for article cards';
+$txt['lp_template_edit_link'] = 'Edit template layouts';
 
 $txt['lp_standalone_mode_title'] = 'Standalone mode';
 $txt['lp_standalone_url'] = 'The frontpage URL in the standalone mode';
@@ -426,7 +428,7 @@ $txt['lp_who_viewing_the_category'] = 'Viewing the page list within <a href="{0}
 $txt['permissionname_light_portal_view'] = $txt['group_perms_name_light_portal_view'] = 'View the portal elements';
 $txt['permissionhelp_light_portal_view'] = 'Ability to view portal pages and blocks.';
 $txt['permissionname_light_portal_manage_pages'] = $txt['group_perms_name_light_portal_manage_pages'] = 'Manage pages';
-$txt['permissionhelp_light_portal_manage_pages'] = 'Access to manage the portal pages. The <strong>Page Moderator</strong> has access to all portal pages via the menu <em>Moderate - Unapproved pages</em>.';
+$txt['permissionhelp_light_portal_manage_pages'] = 'Access to manage the portal pages.';
 $txt['permissionname_light_portal_approve_pages'] = $txt['group_perms_name_light_portal_approve_pages'] = 'Post pages without approval';
 $txt['permissionhelp_light_portal_approve_pages'] = 'Ability to post portal pages without approval.';
 $txt['permissionname_light_portal_manage_pages_own'] = $txt['group_perms_name_light_portal_manage_pages_own'] = 'Manage own pages';
