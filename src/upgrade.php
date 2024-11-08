@@ -1,6 +1,6 @@
 <?php
 
-global $user_info, $smcFunc, $db_prefix;
+global $user_info, $smcFunc;
 
 if (file_exists(__DIR__ . '/SSI.php') && ! defined('SMF')) {
 	require_once __DIR__ . '/SSI.php';
@@ -14,101 +14,59 @@ if ((SMF === 'SSI') && ! $user_info['is_admin']) {
 
 db_extend('packages');
 
-// Rename `alias` to `slug`
-$smcFunc['db_change_column']('{db_prefix}lp_pages', 'alias', [
-	'name' => 'slug',
-]);
-
-// Rename `title` to `value`
-$smcFunc['db_change_column']('{db_prefix}lp_titles', 'title', [
-	'name' => 'value',
-]);
-
-// Change sizes of fields
-$smcFunc['db_change_column']('{db_prefix}lp_params', 'type', [
-	'size' => 30,
-]);
-
-$smcFunc['db_change_column']('{db_prefix}lp_titles', 'type', [
-	'size' => 30,
-]);
-
-// Rename `lp_page_tags` table to `lp_page_tag`
-$smcFunc['db_query']('', '
-	ALTER TABLE IF EXISTS {raw:old_table_name}
-	RENAME TO {raw:new_table_name}',
-	[
-		'old_table_name' => str_replace('{db_prefix}', $db_prefix, '{db_prefix}lp_page_tags'),
-		'new_table_name' => str_replace('{db_prefix}', $db_prefix, '{db_prefix}lp_page_tag'),
-	]
-);
-
-// Replace indexes
-$smcFunc['db_remove_index']('{db_prefix}lp_params', 'primary');
-
+// Add `entry_type` to `lp_pages`
 $smcFunc['db_add_column'](
-	'{db_prefix}lp_params',
+	'{db_prefix}lp_pages',
 	[
-		'name'     => 'id',
-		'type'     => 'int',
-		'size'     => 10,
-		'unsigned' => true,
-		'auto'     => true
+		'name'    => 'entry_type',
+		'type'    => 'varchar',
+		'size'    => 10,
+		'default' => 'default',
+		'null'    => false
 	],
 	[],
 	'do_nothing'
 );
 
-$smcFunc['db_add_index']('{db_prefix}lp_params', [
-	'type' => 'unique',
-	'columns' => [
-		'item_id', 'type', 'name',
-	]
-]);
-
-$smcFunc['db_remove_index']('{db_prefix}lp_plugins', 'primary');
-
-$smcFunc['db_add_column'](
-	'{db_prefix}lp_plugins',
-	[
-		'name'     => 'id',
-		'type'     => 'int',
-		'size'     => 10,
-		'unsigned' => true,
-		'auto'     => true
-	],
-	[],
-	'do_nothing'
+// Update entries
+$result = $smcFunc['db_query']('', /** @lang text */ '
+	SELECT page_id AS id, status FROM {db_prefix}lp_pages
+	WHERE status >= 3',
+	[]
 );
 
-$smcFunc['db_add_index']('{db_prefix}lp_plugins', [
-	'type' => 'unique',
-	'columns' => [
-		'name', 'config',
-	]
-]);
+$blog_pages = $internal_pages = [];
+while ($row = $smcFunc['db_fetch_assoc']($result)) {
+	if ($row['status'] === '3') {
+		$internal_pages[] = $row['id'];
+	} elseif ($row['status'] === '4') {
+		$blog_pages[] = $row['id'];
+	}
+}
 
-$smcFunc['db_remove_index']('{db_prefix}lp_titles', 'primary');
+$smcFunc['db_free_result']($result);
 
-$smcFunc['db_add_column'](
-	'{db_prefix}lp_titles',
-	[
-		'name'     => 'id',
-		'type'     => 'int',
-		'size'     => 10,
-		'unsigned' => true,
-		'auto'     => true
-	],
-	[],
-	'do_nothing'
-);
+if ($internal_pages) {
+	$smcFunc['db_query']('', /** @lang text */ '
+		UPDATE {db_prefix}lp_pages
+		SET entry_type = {literal:internal}, status = 1
+		WHERE page_id IN ({array_int:pages})',
+		[
+			'pages' => $internal_pages,
+		]
+	);
+}
 
-$smcFunc['db_add_index']('{db_prefix}lp_titles', [
-	'type' => 'unique',
-	'columns' => [
-		'item_id', 'type', 'lang',
-	]
-]);
+if ($blog_pages) {
+	$smcFunc['db_query']('', /** @lang text */ '
+		UPDATE {db_prefix}lp_pages
+		SET entry_type = {literal:blog}, status = 1
+		WHERE page_id IN ({array_int:pages})',
+		[
+			'pages' => $blog_pages,
+		]
+	);
+}
 
 clean_cache();
 

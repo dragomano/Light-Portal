@@ -7,16 +7,17 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Areas\Traits;
 
 use Bugo\Compat\{Config, Db, Lang, Utils};
-use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\EventManager;
 use Bugo\LightPortal\Lists\IconList;
-use Nette\Utils\Html;
+use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Utils\Str;
 
 use function array_filter;
 use function json_encode;
@@ -42,10 +43,15 @@ trait QueryTrait
 			return;
 
 		$icons = $this->getFaIcons();
-		$template = Html::el('i', ['class' => '%1$s fa-fw'])
+		$template = Str::html('i', ['class' => '%1$s fa-fw'])
 			->setAttribute('aria-hidden', 'true') . '&nbsp;%1$s';
 
-		AddonHandler::getInstance()->run(PortalHook::prepareIconList, [&$icons, &$template]);
+		EventManager::getInstance()->dispatch(
+			PortalHook::prepareIconList,
+			new Event(new class ($icons, $template) {
+				public function __construct(public array &$icons, public string &$template) {}
+			})
+		);
 
 		$icons = array_filter($icons, static fn($item) => str_contains((string) $item, $search));
 

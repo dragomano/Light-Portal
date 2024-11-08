@@ -7,23 +7,24 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Actions;
 
 use Bugo\Compat\{Config, ErrorHandler, Lang, PageIndex};
 use Bugo\Compat\{Sapi, Theme, User, Utils};
-use Bugo\LightPortal\AddonHandler;
-use Bugo\LightPortal\Articles\{ArticleInterface, BoardArticle, ChosenPageArticle};
-use Bugo\LightPortal\Articles\{ChosenTopicArticle, PageArticle, TopicArticle};
+use Bugo\LightPortal\Articles\{ArticleInterface, BoardArticle};
+use Bugo\LightPortal\Articles\{ChosenPageArticle, ChosenTopicArticle};
+use Bugo\LightPortal\Articles\{PageArticle, TopicArticle};
 use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\{CacheTrait, DateTime, Icon};
-use Bugo\LightPortal\Utils\{RequestTrait, SessionTrait, Setting};
+use Bugo\LightPortal\Utils\{RequestTrait, SessionTrait, Setting, Str};
 use eftec\bladeone\BladeOne;
 use Exception;
 use IntlException;
-use Nette\Utils\Html;
 
 use function abs;
 use function array_column;
@@ -38,6 +39,7 @@ use function date;
 use function floor;
 use function glob;
 use function is_array;
+use function ltrim;
 use function number_format;
 use function ob_get_clean;
 use function ob_start;
@@ -71,7 +73,12 @@ final class FrontPage implements ActionInterface
 	{
 		User::mustHavePermission('light_portal_view');
 
-		AddonHandler::getInstance()->run(PortalHook::frontModes, [&$this->modes]);
+		EventManager::getInstance()->dispatch(
+			PortalHook::frontModes,
+			new Event(new class ($this->modes) {
+				public function __construct(public array &$modes) {}
+			})
+		);
 
 		if (array_key_exists(Config::$modSettings['lp_frontpage_mode'], $this->modes)) {
 			$this->prepare(new $this->modes[Config::$modSettings['lp_frontpage_mode']]);
@@ -110,6 +117,8 @@ final class FrontPage implements ActionInterface
 
 		$key = 'articles_u' . User::$info['id'] . '_' . User::$info['language'] . '_' . $start . '_' . $limit;
 
+		$key = ltrim($this->request('action', '') . '_' . $key, '_');
+
 		if (($data = $this->cache()->get($key)) === null) {
 			$data['total'] = $article->getTotalCount();
 
@@ -143,7 +152,7 @@ final class FrontPage implements ActionInterface
 
 		Utils::$context['lp_frontpage_articles'] = $articles;
 
-		AddonHandler::getInstance()->run(PortalHook::frontAssets);
+		EventManager::getInstance()->dispatch(PortalHook::frontAssets);
 	}
 
 	public function prepareTemplates(): void
@@ -161,7 +170,7 @@ final class FrontPage implements ActionInterface
 		$this->prepareLayoutSwitcher();
 
 		// Mod authors can use their own logic here
-		AddonHandler::getInstance()->run(PortalHook::frontLayouts);
+		EventManager::getInstance()->dispatch(PortalHook::frontLayouts);
 
 		$this->view(Config::$modSettings['lp_frontpage_layout']);
 	}
@@ -197,7 +206,12 @@ final class FrontPage implements ActionInterface
 		$extensions = ['.blade.php'];
 
 		// Mod authors can add custom extensions for layouts
-		AddonHandler::getInstance()->run(PortalHook::customLayoutExtensions, [&$extensions]);
+		EventManager::getInstance()->dispatch(
+			PortalHook::customLayoutExtensions,
+			new Event(new class ($extensions) {
+				public function __construct(public array &$extensions) {}
+			})
+		);
 
 		foreach ($extensions as $extension) {
 			$layouts = array_merge(
@@ -275,11 +289,6 @@ final class FrontPage implements ActionInterface
 		Utils::$context['lp_layout'] = ob_get_clean();
 	}
 
-	/**
-	 * Get the number columns for the frontpage layout
-	 *
-	 * Получаем количество колонок для макета главной страницы
-	 */
 	public function getNumColumns(): int
 	{
 		$columnsCount = 12;
@@ -295,11 +304,6 @@ final class FrontPage implements ActionInterface
 		};
 	}
 
-	/**
-	 * Get the sort condition for SQL
-	 *
-	 * Получаем условие сортировки для SQL
-	 */
 	public function getOrderBy(): string
 	{
 		$sortingTypes = [
@@ -331,9 +335,6 @@ final class FrontPage implements ActionInterface
 	}
 
 	/**
-	 * Post processing for articles
-	 *
-	 * Заключительная обработка статей
 	 * @throws IntlException
 	 */
 	private function postProcess(ArticleInterface $article, array $articles): array
@@ -367,19 +368,14 @@ final class FrontPage implements ActionInterface
 		$images = array_column($articles, 'image');
 
 		foreach ($images as $image) {
-			Utils::$context['html_headers'] .= "\n\t" . Html::el('link', [
+			Utils::$context['html_headers'] .= "\n\t" . Str::html('link', [
 				'rel'  => 'preload',
 				'as'   => 'image',
 				'href' => $image,
-			])->toHtml();
+			]);
 		}
 	}
 
-	/**
-	 * Get a number in friendly format ("10K" instead "10000", etc)
-	 *
-	 * Получаем число в приятном глазу формате («10K» вместо «10000»)
-	 */
 	private function getFriendlyNumber(int $value = 0): string
 	{
 		if ($value < 10000)
@@ -408,7 +404,7 @@ final class FrontPage implements ActionInterface
 
 		$paginate = '';
 
-		$button = Html::el('a', [
+		$button = Str::html('a', [
 			'class' => 'button',
 			'href'  => '%s;start=%s',
 		]);

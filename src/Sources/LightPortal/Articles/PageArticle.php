@@ -7,14 +7,17 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Articles;
 
 use Bugo\Compat\{BBCodeParser, Config, Db, Lang, User, Utils};
-use Bugo\LightPortal\AddonHandler;
-use Bugo\LightPortal\Enums\{Permission, PortalHook, Status};
+use Bugo\LightPortal\Args\ArticlesArgs;
+use Bugo\LightPortal\Args\ArticlesRowArgs;
+use Bugo\LightPortal\Enums\{EntryType, Permission, PortalHook, Status};
+use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\{Avatar, Content, EntityDataTrait};
 use Bugo\LightPortal\Utils\{Icon, Setting, Str};
 
@@ -52,6 +55,7 @@ class PageArticle extends AbstractArticle
 			'lang'                => User::$info['language'],
 			'fallback_lang'       => Config::$language,
 			'status'              => Status::ACTIVE->value,
+			'entry_type'          => EntryType::DEFAULT->name(),
 			'current_time'        => time(),
 			'permissions'         => Permission::all(),
 			'selected_categories' => $this->selectedCategories,
@@ -64,9 +68,16 @@ class PageArticle extends AbstractArticle
 			'date DESC',
 		];
 
-		AddonHandler::getInstance()->run(PortalHook::frontPages, [
-			&$this->columns, &$this->tables, &$this->params, &$this->wheres, &$this->orders
-		]);
+		EventManager::getInstance()->dispatch(
+			PortalHook::frontPages,
+			new Event(new ArticlesArgs(
+				$this->columns,
+				$this->tables,
+				$this->params,
+				$this->wheres,
+				$this->orders
+			))
+		);
 	}
 
 	public function getData(int $start, int $limit): array
@@ -101,6 +112,8 @@ class PageArticle extends AbstractArticle
 				)' . (empty($this->tables) ? '' : '
 				' . implode("\n\t\t\t\t\t", $this->tables)) . '
 			WHERE p.status = {int:status}
+				AND p.deleted_at = 0
+				AND p.entry_type = {string:entry_type}
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})' . (empty($this->selectedCategories) ? '' : '
 				AND p.category_id IN ({array_int:selected_categories})') . (empty($this->wheres) ? '' : '
@@ -134,7 +147,10 @@ class PageArticle extends AbstractArticle
 
 			$this->prepareTeaser($pages, $row);
 
-			AddonHandler::getInstance()->run(PortalHook::frontPagesOutput, [&$pages, $row]);
+			EventManager::getInstance()->dispatch(
+				PortalHook::frontPagesRow,
+				new Event(new ArticlesRowArgs($pages, $row))
+			);
 		}
 
 		Db::$db->free_result($result);
@@ -151,6 +167,8 @@ class PageArticle extends AbstractArticle
 			FROM {db_prefix}lp_pages AS p' . (empty($this->tables) ? '' : '
 				' . implode("\n\t\t\t\t\t", $this->tables)) . '
 			WHERE p.status = {int:status}
+				AND p.deleted_at = 0
+				AND p.entry_type = {string:entry_type}
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})' . (empty($this->selectedCategories) ? '' : '
 				AND p.category_id IN ({array_int:selected_categories})') . (empty($this->wheres) ? '' : '

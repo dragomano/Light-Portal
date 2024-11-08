@@ -7,14 +7,15 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Lists;
 
 use Bugo\FontAwesome\Enums\Icon;
-use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\Plugins\Event;
 
 use function array_map;
 
@@ -62,6 +63,7 @@ final class IconList implements ListInterface
 			'list'          => 'list-ul',
 			'main'          => 'table-list',
 			'map_signs'     => 'signs-post',
+			'meteor'        => 'meteor',
 			'pager'         => 'pager',
 			'panels'        => 'table-columns',
 			'plus_circle'   => 'circle-plus',
@@ -101,7 +103,12 @@ final class IconList implements ListInterface
 		$set['big_image'] = 'fa-regular fa-image fa-5x';
 
 		// Plugin authors can extend the icon set
-		AddonHandler::getInstance()->run(PortalHook::changeIconSet, [&$set]);
+		EventManager::getInstance()->dispatch(
+			PortalHook::changeIconSet,
+			new Event(new class ($set) {
+				public function __construct(public array &$set) {}
+			})
+		);
 
 		return array_map(fn($icon): string => \Bugo\LightPortal\Utils\Icon::parse($icon), $set);
 	}

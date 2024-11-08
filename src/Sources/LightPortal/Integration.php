@@ -7,11 +7,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal;
 
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Hooks\Actions;
 use Bugo\LightPortal\Hooks\AlertTypes;
@@ -48,6 +49,9 @@ final class Integration
 
 	public function __invoke(): void
 	{
+		if (isset(Utils::$context['uninstalling']))
+			return;
+
 		if (str_starts_with(SMF_VERSION, '3.0')) {
 			$this->applyHook(Hook::preLoad, PreLoad::class);
 			$this->applyHook(Hook::permissionsList, PermissionsList::class);

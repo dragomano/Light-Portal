@@ -7,7 +7,7 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Hooks;
@@ -31,11 +31,7 @@ trait CommonChecks
 
 	protected function isPortalCanBeLoaded(): bool
 	{
-		if (
-			! defined('LP_NAME')
-			|| isset(Utils::$context['uninstalling'])
-			|| $this->request()->is('printpage')
-		) {
+		if (! defined('LP_NAME') || $this->request()->is('printpage')) {
 			Config::$modSettings['minimize_files'] = 0;
 			return false;
 		}

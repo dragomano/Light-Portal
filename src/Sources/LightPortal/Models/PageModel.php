@@ -7,12 +7,13 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Models;
 
 use Bugo\Compat\{Config, User, Utils};
+use Bugo\LightPortal\Enums\Status;
 
 use function time;
 
@@ -34,6 +35,8 @@ class PageModel extends AbstractModel
 	public string $content;
 
 	public string $type;
+
+	public string $entryType;
 
 	public int $permissions;
 
@@ -71,16 +74,25 @@ class PageModel extends AbstractModel
 
 		$this->type = $postData['type'] ?? $currentPage['type'] ?? 'bbc';
 
+		$this->entryType = $postData['entry_type'] ?? $currentPage['entry_type'] ?? 'default';
+
 		$this->permissions = $postData['permissions'] ?? $currentPage['permissions']
 			?? (int) (Config::$modSettings['lp_permissions_default'] ?? 2);
 
 		$this->status = $postData['status'] ?? $currentPage['status']
-			?? (int) (
+			?? (
 				Utils::$context['allow_light_portal_approve_pages']
-				|| Utils::$context['allow_light_portal_manage_pages_any']
+					? Status::ACTIVE->value
+					: Status::UNAPPROVED->value
 			);
 
 		$this->createdAt = $currentPage['created_at'] ?? time();
+
+		$this->updatedAt = $currentPage['updated_at'] ?? 0;
+
+		$this->deletedAt = $currentPage['deleted_at'] ?? 0;
+
+		$this->lastCommentId = $currentPage['last_comment_id'] ?? 0;
 
 		$this->tags = $postData['tags'] ?? $currentPage['tags'] ?? [];
 	}

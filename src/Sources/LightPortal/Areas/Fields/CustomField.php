@@ -7,7 +7,7 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Areas\Fields;
@@ -27,8 +27,9 @@ class CustomField extends AbstractField
 	protected function build(): void
 	{
 		Utils::$context['posting_fields'][$this->name]['label']['html']  = $this->label;
+		Utils::$context['posting_fields'][$this->name]['label']['after'] = $this->after;
 		Utils::$context['posting_fields'][$this->name]['input']['html']  = $this->attributes['value'];
+		Utils::$context['posting_fields'][$this->name]['input']['after'] = $this->description;
 		Utils::$context['posting_fields'][$this->name]['input']['tab']   = $this->tab;
-		Utils::$context['posting_fields'][$this->name]['input']['after'] = $this->after;
 	}
 }

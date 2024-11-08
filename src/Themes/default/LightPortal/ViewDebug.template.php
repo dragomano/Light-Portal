@@ -4,7 +4,10 @@ use Bugo\Compat\{Lang, Utils};
 
 function template_docs_above(): void
 {
-	$lang = in_array(Lang::$txt['lang_dictionary'], ['ru', 'el', 'it']) ? Lang::$txt['lang_dictionary'] : '';
+	$lang = in_array(
+		Lang::$txt['lang_dictionary'],
+		['ru', 'el', 'it', 'ar', 'es', 'de', 'nl', 'pl', 'uk', 'fr', 'tr']
+	) ? Lang::$txt['lang_dictionary'] : '';
 
 	echo '
 	<div class="noticebox">

@@ -9,18 +9,21 @@ declare(strict_types=1);
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, Lang, Theme};
 use Bugo\Compat\{User, Utils, WebFetchApi};
-use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Args\SettingsArgs;
 use Bugo\LightPortal\Enums\{PortalHook, VarType};
+use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\PluginHandler;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\{CacheTrait, EntityDataTrait, Icon};
-use Bugo\LightPortal\Utils\{Language, RequestTrait, Str};
+use Bugo\LightPortal\Utils\{Language, RequestTrait, Setting, Str};
 use ReflectionClass;
 use ReflectionException;
 
@@ -95,8 +98,10 @@ final class PluginArea
 
 		$settings = [];
 
-		// You can add settings for your plugins
-		AddonHandler::getInstance()->run(PortalHook::addSettings, [&$settings], Utils::$context['lp_plugins']);
+		PluginHandler::getInstance(Utils::$context['lp_plugins']);
+
+		// Plugin authors can add settings here
+		EventManager::getInstance()->dispatch(PortalHook::addSettings, new Event(new SettingsArgs($settings)));
 
 		$this->handleSave($settings);
 		$this->prepareAddonList($settings);
@@ -113,7 +118,7 @@ final class PluginArea
 
 		$pluginId = (int) $data['plugin'];
 
-		$enabledPlugins = Utils::$context['lp_enabled_plugins'];
+		$enabledPlugins = Setting::getEnabledPlugins();
 
 		if ($data['status'] === 'on') {
 			$enabledPlugins = array_filter(
@@ -169,8 +174,8 @@ final class PluginArea
 			}
 		}
 
-		// You can do additional actions after settings saving
-		AddonHandler::getInstance()->run(PortalHook::saveSettings, [&$settings], Utils::$context['lp_plugins']);
+		// Plugin authors can do additional actions after settings saving
+		EventManager::getInstance()->dispatch(PortalHook::saveSettings, new Event(new SettingsArgs($settings)));
 
 		$this->repository->changeSettings($name, $settings);
 
@@ -185,7 +190,7 @@ final class PluginArea
 			$snakeName = Str::getSnakeName($item);
 
 			try {
-				$className = '\Bugo\LightPortal\Addons\\' . $item . '\\' . $item;
+				$className = '\Bugo\LightPortal\Plugins\\' . $item . '\\' . $item;
 				$addonClass = new ReflectionClass($className);
 
 				if ($addonClass->hasProperty('author'))
@@ -216,7 +221,7 @@ final class PluginArea
 				'desc'       => Lang::$txt['lp_' . $snakeName]['description'] ?? '',
 				'author'     => $author ?? '',
 				'link'       => $link ?? '',
-				'status'     => in_array($item, Utils::$context['lp_enabled_plugins']) ? 'on' : 'off',
+				'status'     => in_array($item, Setting::getEnabledPlugins()) ? 'on' : 'off',
 				'types'      => $this->getTypes($snakeName),
 				'special'    => $special ?? '',
 				'settings'   => $configVars[$snakeName] ?? [],
@@ -319,8 +324,7 @@ final class PluginArea
 			'download' => Utils::$context['lp_can_download'] ?? [],
 		];
 
-		// Add additional data
-		$allPlugins = array_keys(Utils::$context['lp_loaded_addons']);
+		$allPlugins = array_keys(Utils::$context['lp_loaded_addons'] ?? []);
 
 		foreach ($allPlugins as $plugin) {
 			if (isset(Lang::$txt['lp_' . $plugin]))

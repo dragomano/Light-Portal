@@ -7,7 +7,7 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Tasks;
@@ -34,8 +34,9 @@ final class Notifier extends BackgroundTask
 		};
 
 		// Let's not notify ourselves, okay?
-		if ($this->_details['sender_id'])
+		if ($this->_details['sender_id']) {
 			$members = array_diff($members, [$this->_details['sender_id']]);
+		}
 
 		$prefs = Notify::getNotifyPrefs($members, match ($this->_details['content_type']) {
 			'new_comment' => 'page_comment',

@@ -1,7 +1,7 @@
 <?php
 
 use Bugo\Compat\{Config, Lang, Utils};
-use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\Utils\{Icon, Setting};
 
 function template_callback_panel_layout(): void
 {
@@ -12,7 +12,7 @@ function template_callback_panel_layout(): void
 	<div class="generic_list_wrapper">
 		<div class="centertext', empty(Config::$modSettings['lp_swap_header_footer']) ? '' : ' column reverse', '">
 			<div class="row center-xs">
-				<div class="col-xs-', Utils::$context['lp_header_panel_width'], '">
+				<div class="col-xs-', Setting::getHeaderPanelWidth(), '">
 					<div class="title_bar">
 						<h3 class="titlebg">', Utils::$context['lp_block_placements']['header'], '</h3>
 					</div>
@@ -22,7 +22,7 @@ function template_callback_panel_layout(): void
 
 		foreach (Utils::$context['lp_header_footer_width_values'] as $value) {
 			echo '
-							<option value="', $value, '"', Utils::$context['lp_header_panel_width'] == $value ? ' selected' : '', '>
+							<option value="', $value, '"', Setting::getHeaderPanelWidth() == $value ? ' selected' : '', '>
 								', $value, '
 							</option>';
 		}
@@ -32,8 +32,8 @@ function template_callback_panel_layout(): void
 					</div>
 				</div>
 			</div>
-			<div class="row', empty(Utils::$context['lp_swap_left_right']) ? '' : ' reverse', '">
-				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-', Utils::$context['lp_left_panel_width']['lg'], ' col-xl-', Utils::$context['lp_left_panel_width']['xl'], '">
+			<div class="row', Setting::isSwapLeftRight() ? ' reverse' : '', '">
+				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-', Setting::getLeftPanelWidth()['lg'], ' col-xl-', Setting::getLeftPanelWidth()['xl'], '">
 					<div class="title_bar">
 						<h3 class="titlebg">', Utils::$context['lp_block_placements']['left'], '</h3>
 					</div>
@@ -48,7 +48,7 @@ function template_callback_panel_layout(): void
 
 	foreach (Utils::$context['lp_left_right_width_values'] as $value) {
 		echo '
-									<option value="', $value, '"', Utils::$context['lp_left_panel_width']['lg'] == $value ? ' selected' : '', '>
+									<option value="', $value, '"', Setting::getLeftPanelWidth()['lg'] == $value ? ' selected' : '', '>
 										', $value, '
 									</option>';
 	}
@@ -62,7 +62,7 @@ function template_callback_panel_layout(): void
 
 	foreach (Utils::$context['lp_left_right_width_values'] as $value) {
 		echo '
-									<option value="', $value, '"', Utils::$context['lp_left_panel_width']['xl'] == $value ? ' selected' : '', '>
+									<option value="', $value, '"', Setting::getLeftPanelWidth()['xl'] == $value ? ' selected' : '', '>
 										', $value, '
 									</option>';
 	}
@@ -110,7 +110,7 @@ function template_callback_panel_layout(): void
 						</div>
 					</div>
 				</div>
-				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-', Utils::$context['lp_right_panel_width']['lg'], ' col-xl-', Utils::$context['lp_right_panel_width']['xl'], '">
+				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-', Setting::getRightPanelWidth()['lg'], ' col-xl-', Setting::getRightPanelWidth()['xl'], '">
 					<div class="title_bar">
 						<h3 class="titlebg">', Utils::$context['lp_block_placements']['right'], '</h3>
 					</div>
@@ -125,7 +125,7 @@ function template_callback_panel_layout(): void
 
 		foreach (Utils::$context['lp_left_right_width_values'] as $value) {
 			echo '
-									<option value="', $value, '"', Utils::$context['lp_right_panel_width']['lg'] == $value ? ' selected' : '', '>
+									<option value="', $value, '"', Setting::getRightPanelWidth()['lg'] == $value ? ' selected' : '', '>
 										', $value, '
 									</option>';
 		}
@@ -139,7 +139,7 @@ function template_callback_panel_layout(): void
 
 		foreach (Utils::$context['lp_left_right_width_values'] as $value) {
 			echo '
-									<option value="', $value, '"', Utils::$context['lp_right_panel_width']['xl'] == $value ? ' selected' : '', '>
+									<option value="', $value, '"', Setting::getRightPanelWidth()['xl'] == $value ? ' selected' : '', '>
 										', $value, '
 									</option>';
 		}
@@ -155,7 +155,7 @@ function template_callback_panel_layout(): void
 				</div>
 			</div>
 			<div class="row center-xs">
-				<div class="col-xs-', Utils::$context['lp_footer_panel_width'], '">
+				<div class="col-xs-', Setting::getFooterPanelWidth(), '">
 					<div class="title_bar">
 						<h3 class="titlebg">', Utils::$context['lp_block_placements']['footer'], '</h3>
 					</div>
@@ -165,7 +165,7 @@ function template_callback_panel_layout(): void
 
 		foreach (Utils::$context['lp_header_footer_width_values'] as $value) {
 			echo '
-							<option value="', $value, '"', Utils::$context['lp_footer_panel_width'] == $value ? ' selected' : '', '>
+							<option value="', $value, '"', Setting::getFooterPanelWidth() == $value ? ' selected' : '', '>
 								', $value, '
 							</option>';
 		}
@@ -202,7 +202,7 @@ function template_callback_panel_direction(): void
 
 		foreach (Lang::$txt['lp_panel_direction_set'] as $value => $direction) {
 			echo '
-							<option value="', $value, '"', !empty(Utils::$context['lp_panel_direction'][$key]) && Utils::$context['lp_panel_direction'][$key] == $value ? ' selected' : '', '>', $direction, '</option>';
+							<option value="', $value, '"', ! empty(Setting::getPanelDirection()[$key]) && Setting::getPanelDirection()[$key] == $value ? ' selected' : '', '>', $direction, '</option>';
 		}
 
 		echo '

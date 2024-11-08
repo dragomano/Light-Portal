@@ -7,22 +7,26 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, ErrorHandler, Lang, Security, Theme, Utils};
-use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, TextField, UrlField};
 use Bugo\LightPortal\Areas\Partials\{AreaSelect, ContentClassSelect, IconSelect};
 use Bugo\LightPortal\Areas\Partials\{PermissionSelect, PlacementSelect, TitleClassSelect};
 use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Areas\Validators\BlockValidator;
+use Bugo\LightPortal\Args\ObjectArgs;
+use Bugo\LightPortal\Args\ParamsArgs;
 use Bugo\LightPortal\Enums\{ContentType, PortalHook, Tab};
+use Bugo\LightPortal\EventManager;
 use Bugo\LightPortal\Models\BlockModel;
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Repositories\BlockRepository;
-use Bugo\LightPortal\Utils\{CacheTrait, Content, Icon, RequestTrait, Str};
+use Bugo\LightPortal\Utils\{CacheTrait, Content, Icon, Language};
+use Bugo\LightPortal\Utils\{RequestTrait, Setting, Str};
 
 use function array_column;
 use function array_combine;
@@ -104,7 +108,8 @@ final class BlockArea
 
 		Utils::$context['current_block']['type'] = $type;
 
-		$this->prepareForumLanguages();
+		Language::prepareList();
+
 		$this->validateData();
 		$this->prepareFormFields();
 		$this->prepareEditor();
@@ -130,7 +135,7 @@ final class BlockArea
 			'description' => Lang::$txt['lp_blocks_edit_description']
 		];
 
-		$this->prepareForumLanguages();
+		Language::prepareList();
 
 		Utils::$context['current_block'] = $this->repository->getData($item);
 
@@ -213,7 +218,7 @@ final class BlockArea
 
 		$params = [];
 
-		AddonHandler::getInstance()->run(PortalHook::prepareBlockParams, [&$params]);
+		EventManager::getInstance()->dispatch(PortalHook::prepareBlockParams, new Event(new ParamsArgs($params)));
 
 		return array_merge($baseParams, $params);
 	}
@@ -299,7 +304,7 @@ final class BlockArea
 
 		CustomField::make('areas', Lang::$txt['lp_block_areas'])
 			->setTab(Tab::ACCESS_PLACEMENT)
-			->setAfter($this->getAreasInfo())
+			->setDescription($this->getAreasInfo())
 			->setValue(static fn() => new AreaSelect());
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
@@ -326,7 +331,7 @@ final class BlockArea
 
 		Utils::$context['lp_block_tab_appearance'] = true;
 
-		AddonHandler::getInstance()->run(PortalHook::prepareBlockFields);
+		EventManager::getInstance()->dispatch(PortalHook::prepareBlockFields);
 
 		$this->preparePostFields();
 	}
@@ -336,7 +341,7 @@ final class BlockArea
 		$example_areas = [
 			'custom_action',
 			'!custom_action',
-			LP_PAGE_PARAM . '=alias',
+			LP_PAGE_PARAM . '=slug',
 			'board=id',
 			'board=1-3',
 			'board=3|7',
@@ -358,7 +363,10 @@ final class BlockArea
 
 	private function prepareEditor(): void
 	{
-		AddonHandler::getInstance()->run(PortalHook::prepareEditor, [Utils::$context['lp_block']]);
+		EventManager::getInstance()->dispatch(
+			PortalHook::prepareEditor,
+			new Event(new ObjectArgs(Utils::$context['lp_block']))
+		);
 	}
 
 	private function preparePreview(): void
@@ -400,7 +408,7 @@ final class BlockArea
 
 	private function prepareBlockList(): void
 	{
-		$plugins = array_merge(Utils::$context['lp_enabled_plugins'], array_keys(ContentType::all()));
+		$plugins = array_merge(Setting::getEnabledPlugins(), array_keys(ContentType::all()));
 
 		Utils::$context['lp_loaded_addons'] = array_merge(
 			Utils::$context['lp_loaded_addons'] ?? [], $this->getDefaultTypes()

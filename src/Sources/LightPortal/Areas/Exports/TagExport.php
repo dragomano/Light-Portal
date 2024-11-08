@@ -7,7 +7,7 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Areas\Exports;
@@ -17,9 +17,9 @@ use Bugo\Compat\{Lang, Sapi, Utils};
 use Bugo\LightPortal\Repositories\TagRepository;
 use Bugo\LightPortal\Utils\ItemList;
 use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\Str;
 use DomDocument;
 use DOMException;
-use Nette\Utils\Html;
 
 use function in_array;
 use function trim;
@@ -100,10 +100,9 @@ final class TagExport extends AbstractExport
 					],
 					'data' => [
 						'function' => static fn($entry) => $entry['status']
-							? Html::el('a', ['class' => 'bbc_link'])
+							? Str::html('a', ['class' => 'bbc_link'])
 								->href(LP_BASE_URL . ';sa=tags;id=' . $entry['id'])
 								->setText($entry['title'])
-								->toHtml()
 							: $entry['title'],
 						'class' => 'word_break',
 					],
@@ -114,10 +113,17 @@ final class TagExport extends AbstractExport
 				],
 				'actions' => [
 					'header' => [
-						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);">'
+						'value' => Str::html('input', [
+							'type' => 'checkbox',
+							'onclick' => 'invertAll(this, this.form);',
+						])
 					],
 					'data' => [
-						'function' => static fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="tags[]">',
+						'function' => static fn($entry) => Str::html('input', [
+							'type' => 'checkbox',
+							'value' => $entry['id'],
+							'name' => 'tags[]',
+						]),
 						'class' => 'centertext'
 					]
 				]
@@ -128,10 +134,21 @@ final class TagExport extends AbstractExport
 			'additional_rows' => [
 				[
 					'position' => 'below_table_data',
-					'value' => '
-						<input type="hidden">
-						<input type="submit" name="export_selection" value="' . Lang::$txt['lp_export_selection'] . '" class="button">
-						<input type="submit" name="export_all" value="' . Lang::$txt['lp_export_all'] . '" class="button">'
+					'value' => Str::html('input', [
+							'type' => 'hidden',
+						]) .
+						Str::html('input', [
+							'type' => 'submit',
+							'name' => 'export_selection',
+							'value' => Lang::$txt['lp_export_selection'],
+							'class' => 'button',
+						]) .
+						Str::html('input', [
+							'type' => 'submit',
+							'name' => 'export_all',
+							'value' => Lang::$txt['lp_export_all'],
+							'class' => 'button',
+						])
 				]
 			]
 		];

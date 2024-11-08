@@ -2,16 +2,48 @@
   --vp-layout-max-width: 80%;
 }
 
-html[lang="it"] {
-  --vp-code-copy-copied-text-content: 'Copiato';
-}
-
 html[lang="ru"] {
   --vp-code-copy-copied-text-content: 'Скопировано';
 }
 
 html[lang="el"] {
   --vp-code-copy-copied-text-content: 'Αντιγράφηκε';
+}
+
+html[lang="it"] {
+  --vp-code-copy-copied-text-content: 'Copiato';
+}
+
+html[lang="ar"] {
+  --vp-code-copy-copied-text-content: 'تم النسخ';
+}
+
+html[lang="es"] {
+  --vp-code-copy-copied-text-content: 'Copiado';
+}
+
+html[lang="de"] {
+  --vp-code-copy-copied-text-content: 'Kopiert';
+}
+
+html[lang="nl"] {
+  --vp-code-copy-copied-text-content: 'Gekopieerd';
+}
+
+html[lang="pl"] {
+  --vp-code-copy-copied-text-content: 'Skopiowano';
+}
+
+html[lang="uk"] {
+  --vp-code-copy-copied-text-content: 'Скопійовано';
+}
+
+html[lang="fr"] {
+  --vp-code-copy-copied-text-content: 'Copié';
+}
+
+html[lang="tr"] {
+  --vp-code-copy-copied-text-content: 'Kopyalandı';
 }
 
 .content-container {

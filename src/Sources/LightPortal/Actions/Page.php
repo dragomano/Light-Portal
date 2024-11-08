@@ -7,20 +7,19 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Actions;
 
 use Bugo\Compat\{Config, ErrorHandler, Lang};
 use Bugo\Compat\{PageIndex, Theme, User, Utils};
-use Bugo\LightPortal\AddonHandler;
-use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Enums\{EntryType, PortalHook};
+use Bugo\LightPortal\EventManager;
 use Bugo\LightPortal\Repositories\PageRepository;
-use Bugo\LightPortal\Utils\{CacheTrait, Content, EntityDataTrait};
-use Bugo\LightPortal\Utils\{Icon, RequestTrait, SessionTrait, Setting, Str};
+use Bugo\LightPortal\Utils\{CacheTrait, Content, EntityDataTrait, Icon};
+use Bugo\LightPortal\Utils\{RequestTrait, SessionTrait, Setting, Str};
 use IntlException;
-use Nette\Utils\Html;
 
 use function array_column;
 use function array_search;
@@ -83,6 +82,14 @@ final class Page implements PageInterface
 		}
 
 		if (empty(Utils::$context['lp_page']['can_view'])) {
+			$this->changeErrorPage();
+			ErrorHandler::fatalLang('cannot_light_portal_view_page');
+		}
+
+		if (
+			Utils::$context['lp_page']['entry_type'] === EntryType::DRAFT->name()
+			&& Utils::$context['lp_page']['author_id'] !== User::$info['id']
+		) {
 			$this->changeErrorPage();
 			ErrorHandler::fatalLang('cannot_light_portal_view_page');
 		}
@@ -226,10 +233,10 @@ final class Page implements PageInterface
 						'value' => Lang::$txt['lp_title']
 					],
 					'data' => [
-						'function' => static fn($entry) => Html::el('a', [
+						'function' => static fn($entry) => Str::html('a', [
 								'class' => 'bbc_link' . ($entry['is_front'] ? ' new_posts' : ''),
 								'href'  => $entry['is_front'] ? Config::$scripturl : (LP_PAGE_URL . $entry['slug']),
-							])->setText($entry['title'])->toHtml(),
+							])->setText($entry['title']),
 						'class' => 'word_break'
 					],
 					'sort' => [
@@ -244,10 +251,9 @@ final class Page implements PageInterface
 					'data' => [
 						'function' => static fn($entry) => empty($entry['author']['name'])
 							? Lang::$txt['guest_title']
-							: Html::el('a')
+							: Str::html('a')
 								->href($entry['author']['link'])
-								->setText($entry['author']['name'])
-								->toHtml(),
+								->setText($entry['author']['name']),
 						'class' => 'centertext'
 					],
 					'sort' => [
@@ -297,14 +303,16 @@ final class Page implements PageInterface
 
 		$page = Utils::$context['lp_page']['id'];
 
-		if (($key = array_search($page, Utils::$context['lp_frontpage_pages'])) !== false) {
-			unset(Utils::$context['lp_frontpage_pages'][$key]);
+		$frontpagePages = Setting::getFrontpagePages();
+
+		if (($key = array_search($page, $frontpagePages)) !== false) {
+			unset($frontpagePages[$key]);
 		} else {
-			Utils::$context['lp_frontpage_pages'][] = $page;
+			$frontpagePages[] = $page;
 		}
 
 		Config::updateModSettings([
-			'lp_frontpage_pages' => implode(',', Utils::$context['lp_frontpage_pages'])
+			'lp_frontpage_pages' => implode(',', $frontpagePages)
 		]);
 
 		Utils::redirectexit(Utils::$context['canonical_url']);
@@ -418,7 +426,7 @@ final class Page implements PageInterface
 
 		Lang::load('Editor');
 
-		AddonHandler::getInstance()->run(PortalHook::comments);
+		EventManager::getInstance()->dispatch(PortalHook::comments);
 
 		if (isset(Utils::$context['lp_' . Config::$modSettings['lp_comment_block'] . '_comment_block']))
 			return;

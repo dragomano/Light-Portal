@@ -7,7 +7,7 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Areas\Fields;
@@ -29,6 +29,8 @@ abstract class AbstractField
 	protected string $type;
 
 	protected string $after = '';
+
+	protected string $description = '';
 
 	protected array $attributes = [];
 
@@ -68,6 +70,13 @@ abstract class AbstractField
 		return $this;
 	}
 
+	public function setDescription(string $description): self
+	{
+		$this->description = $description;
+
+		return $this;
+	}
+
 	public function setValue(mixed $value, ...$params): self
 	{
 		if (is_callable($value) && is_object($value)) {
@@ -86,6 +95,15 @@ abstract class AbstractField
 		return $this;
 	}
 
+	public function setAttributes(array $attributes): self
+	{
+		foreach ($attributes as $name => $value) {
+			$this->setAttribute($name, $value);
+		}
+
+		return $this;
+	}
+
 	public function required(): self
 	{
 		return $this->setAttribute('required', true);
@@ -98,10 +116,14 @@ abstract class AbstractField
 
 	protected function build(): void
 	{
-		Utils::$context['posting_fields'][$this->name]['label']['text'] = $this->label;
+		Utils::$context['posting_fields'][$this->name]['label'] = [
+			'text'  => $this->label,
+			'after' => $this->after,
+		];
+
 		Utils::$context['posting_fields'][$this->name]['input'] = [
 			'type'       => $this->type,
-			'after'      => $this->after,
+			'after'      => $this->description,
 			'tab'        => $this->tab,
 			'attributes' => $this->attributes,
 		];

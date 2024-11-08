@@ -112,11 +112,11 @@ const link = computed(() =>
 );
 
 const toggle = async () => {
-  const data = await axios.post(appStore.baseUrl + '?action=admin;area=lp_plugins;toggle', {
+  const response = await axios.post(appStore.baseUrl + '?action=admin;area=lp_plugins;toggle', {
     plugin: index.value,
     status: status.value,
   });
 
-  if (data.success) props.item.status = status.value === 'on' ? 'off' : 'on';
+  if (response.data.success) props.item.status = status.value === 'on' ? 'off' : 'on';
 };
 </script>

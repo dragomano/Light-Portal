@@ -7,21 +7,15 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Hooks;
 
-use Bugo\Compat\Config;
-use Bugo\Compat\Theme;
-use Bugo\Compat\User;
-use Bugo\Compat\Utils;
-use Bugo\LightPortal\Actions\BoardIndex;
-use Bugo\LightPortal\Actions\Category;
-use Bugo\LightPortal\Actions\FrontPage;
-use Bugo\LightPortal\Actions\Page;
-use Bugo\LightPortal\Actions\Tag;
-use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\Compat\{Config, Theme, User, Utils};
+use Bugo\LightPortal\Actions\{BoardIndex, Category};
+use Bugo\LightPortal\Actions\{FrontPage, Page, Tag};
+use Bugo\LightPortal\Utils\{Setting, RequestTrait};
 
 use function array_search;
 use function implode;
@@ -72,14 +66,16 @@ class Actions
 
 		$topic = $this->request('t');
 
-		if (($key = array_search($topic, Utils::$context['lp_frontpage_topics'])) !== false) {
-			unset(Utils::$context['lp_frontpage_topics'][$key]);
+		$frontpageTopics = Setting::getFrontpageTopics();
+
+		if (($key = array_search($topic, $frontpageTopics)) !== false) {
+			unset($frontpageTopics[$key]);
 		} else {
-			Utils::$context['lp_frontpage_topics'][] = $topic;
+			$frontpageTopics[] = $topic;
 		}
 
 		Config::updateModSettings(
-			['lp_frontpage_topics' => implode(',', Utils::$context['lp_frontpage_topics'])]
+			['lp_frontpage_topics' => implode(',', $frontpageTopics)]
 		);
 
 		Utils::redirectexit('topic=' . $topic);

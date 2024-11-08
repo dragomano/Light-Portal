@@ -1,10 +1,10 @@
 ---
-description: A list of basic concepts used in Light Portal
+description: A list of basic concepts used in the Light Portal
 ---
 
 # Glossary
 
-A list of basic concepts used in Light Portal.
+A list of basic concepts used in the Light Portal.
 
 ## block
 

@@ -7,18 +7,24 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, Db, Lang, Theme, User, Utils};
-use Bugo\LightPortal\AddonHandler;
-use Bugo\LightPortal\Areas\Configs\{BasicConfig, ExtraConfig, FeedbackConfig, MiscConfig, PanelConfig};
-use Bugo\LightPortal\Areas\Exports\{BlockExport, CategoryExport, PageExport, PluginExport, TagExport};
-use Bugo\LightPortal\Areas\Imports\{BlockImport, CategoryImport, PageImport, PluginImport, TagImport};
+use Bugo\LightPortal\Areas\Configs\{BasicConfig, ExtraConfig};
+use Bugo\LightPortal\Areas\Configs\{FeedbackConfig, MiscConfig, PanelConfig};
+use Bugo\LightPortal\Areas\Exports\{BlockExport, CategoryExport};
+use Bugo\LightPortal\Areas\Exports\{PageExport, PluginExport, TagExport};
+use Bugo\LightPortal\Areas\Imports\{BlockImport, CategoryImport};
+use Bugo\LightPortal\Areas\Imports\{PageImport, PluginImport, TagImport};
+use Bugo\LightPortal\Args\AreasArgs;
 use Bugo\LightPortal\Enums\{Hook, PortalHook};
-use Bugo\LightPortal\Utils\{CacheTrait, Icon, RequestTrait, SafeRequireTrait, SMFHookTrait};
+use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Utils\{CacheTrait, Icon, RequestTrait};
+use Bugo\LightPortal\Utils\{SafeRequireTrait, Setting, SMFHookTrait, Str};
 
 use function array_keys;
 use function array_merge;
@@ -40,8 +46,8 @@ final class ConfigArea
 {
 	use CacheTrait;
 	use RequestTrait;
-	use SMFHookTrait;
 	use SafeRequireTrait;
+	use SMFHookTrait;
 
 	public function __invoke(): void
 	{
@@ -145,8 +151,7 @@ final class ConfigArea
 							'label' => Lang::$txt['lp_plugins'],
 							'function' => $this->pluginAreas(...),
 							'icon' => 'modifications',
-							'amt' => Utils::$context['lp_enabled_plugins']
-								? count(Utils::$context['lp_enabled_plugins']) : 0,
+							'amt' => Setting::getEnabledPlugins() ? count(Setting::getEnabledPlugins()) : 0,
 							'permission' => [
 								'admin_forum',
 							],
@@ -189,7 +194,10 @@ final class ConfigArea
 			}
 		}
 
-		AddonHandler::getInstance()->run(PortalHook::updateAdminAreas, [&$areas['lp_portal']['areas']]);
+		EventManager::getInstance()->dispatch(
+			PortalHook::updateAdminAreas,
+			new Event(new AreasArgs($areas['lp_portal']['areas']))
+		);
 	}
 
 	/**
@@ -232,11 +240,11 @@ final class ConfigArea
 			'title' => LP_NAME,
 			'tabs' => [
 				'basic' => [
-					'description' => '<img
-						class="floatright"
-						src="https://user-images.githubusercontent.com/229402/143980485-16ba84b8-9d8d-4c06-abeb-af949d594f66.png"
-						alt="' . LP_NAME . ' logo"
-					>' . Lang::getTxt('lp_base_info', [
+					'description' => Str::html('img')
+						->class('floatright')
+						->setAttribute('src', 'https://user-images.githubusercontent.com/229402/143980485-16ba84b8-9d8d-4c06-abeb-af949d594f66.png')
+						->setAttribute('alt', LP_NAME . ' logo') .
+					Lang::getTxt('lp_base_info', [
 						LP_VERSION,
 						phpversion(),
 						Utils::$smcFunc['db_title'],
@@ -276,7 +284,7 @@ final class ConfigArea
 			'import' => [new BlockImport(), 'main'],
 		];
 
-		AddonHandler::getInstance()->run(PortalHook::updateBlockAreas, [&$areas]);
+		EventManager::getInstance()->dispatch(PortalHook::updateBlockAreas, new Event(new AreasArgs($areas)));
 
 		$this->callActionFromAreas($areas);
 	}
@@ -293,7 +301,7 @@ final class ConfigArea
 			'import' => [new PageImport(), 'main'],
 		];
 
-		AddonHandler::getInstance()->run(PortalHook::updatePageAreas, [&$areas]);
+		EventManager::getInstance()->dispatch(PortalHook::updatePageAreas, new Event(new AreasArgs($areas)));
 
 		$this->callActionFromAreas($areas);
 	}
@@ -310,7 +318,7 @@ final class ConfigArea
 			'import' => [new CategoryImport(), 'main'],
 		];
 
-		AddonHandler::getInstance()->run(PortalHook::updateCategoryAreas, [&$areas]);
+		EventManager::getInstance()->dispatch(PortalHook::updateCategoryAreas, new Event(new AreasArgs($areas)));
 
 		$this->callActionFromAreas($areas);
 	}
@@ -327,7 +335,7 @@ final class ConfigArea
 			'import' => [new TagImport(), 'main'],
 		];
 
-		AddonHandler::getInstance()->run(PortalHook::updateTagAreas, [&$areas]);
+		EventManager::getInstance()->dispatch(PortalHook::updateTagAreas, new Event(new AreasArgs($areas)));
 
 		$this->callActionFromAreas($areas);
 	}
@@ -345,16 +353,11 @@ final class ConfigArea
 			$areas['import'] = [new PluginImport(), 'main'];
 		}
 
-		AddonHandler::getInstance()->run(PortalHook::updatePluginAreas, [&$areas]);
+		EventManager::getInstance()->dispatch(PortalHook::updatePluginAreas, new Event(new AreasArgs($areas)));
 
 		$this->callActionFromAreas($areas);
 	}
 
-	/**
-	 * Calls the requested sub_action if it does exist; otherwise, calls the default action
-	 *
-	 * Вызывает метод, если он существует; в противном случае вызывается метод по умолчанию
-	 */
 	private function callActionFromAreas(array $areas = [], string $defaultAction = 'main'): void
 	{
 		$this->showDocsLink();

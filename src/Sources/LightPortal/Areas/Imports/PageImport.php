@@ -7,7 +7,7 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Areas\Imports;
@@ -69,6 +69,14 @@ final class PageImport extends AbstractImport
 
 		foreach ($xml as $element) {
 			foreach ($element->item as $item) {
+				$status = intval($item['status']);
+
+				$entryType = match ($status) {
+					3 => 'internal',
+					4 => 'blog',
+					default => (string) ($item['entry_type'] ?? 'default'),
+				};
+
 				$items[] = [
 					'page_id'      => $pageId = intval($item['page_id']),
 					'category_id'  => intval($item['category_id']),
@@ -77,12 +85,14 @@ final class PageImport extends AbstractImport
 					'description'  => $item->description,
 					'content'      => $item->content,
 					'type'         => str_replace('md', 'markdown', (string) $item->type),
+					'entry_type'   => $entryType,
 					'permissions'  => intval($item['permissions']),
-					'status'       => intval($item['status']),
+					'status'       => $status,
 					'num_views'    => intval($item['num_views']),
 					'num_comments' => intval($item['num_comments']),
 					'created_at'   => intval($item['created_at']),
 					'updated_at'   => intval($item['updated_at']),
+					'deleted_at'   => intval($item['deleted_at']),
 				];
 
 				if ($item->titles) {
@@ -142,6 +152,7 @@ final class PageImport extends AbstractImport
 				'description'  => 'string-255',
 				'content'      => 'string',
 				'type'         => 'string',
+				'entry_type'   => 'string',
 				'permissions'  => 'int',
 				'status'       => 'int',
 				'num_views'    => 'int',

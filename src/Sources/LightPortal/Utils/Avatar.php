@@ -7,7 +7,7 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Utils;
@@ -16,7 +16,6 @@ use Bugo\Compat\Config;
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\User;
 use Exception;
-use Nette\Utils\Html;
 
 use function array_map;
 use function in_array;
@@ -46,7 +45,7 @@ class Avatar
 			return '';
 
 		return User::$memberContext[$userId]['avatar']['image']
-			?? Html::el('img', [
+			?? Str::html('img', [
 				'class'   => 'avatar',
 				'width'   => 100,
 				'height'  => 100,

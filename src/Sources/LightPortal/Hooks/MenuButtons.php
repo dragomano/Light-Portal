@@ -7,20 +7,16 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Hooks;
 
-use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
-use Bugo\Compat\Theme;
-use Bugo\Compat\Utils;
+use Bugo\Compat\{Config, Lang, Theme, Utils};
 use Bugo\LightPortal\Actions\Block;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Repositories\PageRepository;
-use Bugo\LightPortal\Utils\Str;
-use Nette\Utils\Html;
+use Bugo\LightPortal\Utils\{Setting, Str};
 
 use function array_keys;
 use function array_merge;
@@ -117,8 +113,7 @@ class MenuButtons
 						'plugins' => [
 							'title'   => Lang::$txt['lp_plugins'],
 							'href'    => Config::$scripturl . '?action=admin;area=lp_plugins',
-							'amt'     => Utils::$context['lp_enabled_plugins']
-								? count(Utils::$context['lp_enabled_plugins']) : 0,
+							'amt'     => Setting::getEnabledPlugins() ? count(Setting::getEnabledPlugins()) : 0,
 							'show'    => true,
 							'is_last' => true,
 						],
@@ -156,7 +151,7 @@ class MenuButtons
 			$pageButtons['portal_page_' . $item['slug']] = [
 				'title' => (
 					$item['icon']
-						? Html::el('span', ['class' => 'portal_menu_icons fa-fw ' . $item['icon']])->toHtml()
+						? Str::html('span', ['class' => 'portal_menu_icons fa-fw ' . $item['icon']])
 						: ''
 					) . Str::getTranslatedTitle($item['titles']),
 				'href'  => LP_PAGE_URL . $item['slug'],

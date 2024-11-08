@@ -7,15 +7,18 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Areas\Validators;
 
 use Bugo\Compat\{Config, Db, Lang, Utils};
-use Bugo\LightPortal\AddonHandler;
+use Bugo\LightPortal\Args\ErrorsDataArgs;
+use Bugo\LightPortal\Args\ParamsArgs;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
+use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\RequestTrait;
 
 use function array_merge;
@@ -37,6 +40,7 @@ class PageValidator extends AbstractValidator
 		'description' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
 		'tags'        => FILTER_DEFAULT,
 		'type'        => FILTER_DEFAULT,
+		'entry_type'  => FILTER_DEFAULT,
 		'permissions' => FILTER_VALIDATE_INT,
 		'status'      => FILTER_VALIDATE_INT,
 		'date'        => FILTER_DEFAULT,
@@ -62,7 +66,10 @@ class PageValidator extends AbstractValidator
 				$this->args['title_' . $lang['filename']] = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
 			}
 
-			AddonHandler::getInstance()->run(PortalHook::validatePageParams, [&$params]);
+			EventManager::getInstance()->dispatch(
+				PortalHook::validatePageParams,
+				new Event(new ParamsArgs($params))
+			);
 
 			$params = array_merge($this->params, $params);
 
@@ -104,7 +111,10 @@ class PageValidator extends AbstractValidator
 		if (empty($data['content']))
 			$errors[] = 'no_content';
 
-		AddonHandler::getInstance()->run(PortalHook::findPageErrors, [&$errors, $data]);
+		EventManager::getInstance()->dispatch(
+			PortalHook::findPageErrors,
+			new Event(new ErrorsDataArgs($errors, $data))
+		);
 
 		if ($errors) {
 			$this->request()->put('preview', true);

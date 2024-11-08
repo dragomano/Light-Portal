@@ -2,6 +2,14 @@ import en from './en';
 import ru from './ru';
 import el from './el';
 import it from './it';
+import ar from './ar';
+import es from './es';
+import de from './de';
+import nl from './nl';
+import pl from './pl';
+import uk from './uk';
+import fr from './fr';
+import tr from './tr';
 
 function addPrefixToLinks(prefix, obj) {
   for (const key in obj) {
@@ -20,4 +28,12 @@ export default {
   ru: addPrefixToLinks('ru', ru),
   el: addPrefixToLinks('el', el),
   it: addPrefixToLinks('it', it),
+  ar: addPrefixToLinks('ar', ar),
+  es: addPrefixToLinks('es', es),
+  de: addPrefixToLinks('de', de),
+  nl: addPrefixToLinks('nl', nl),
+  pl: addPrefixToLinks('pl', pl),
+  uk: addPrefixToLinks('uk', uk),
+  fr: addPrefixToLinks('fr', fr),
+  tr: addPrefixToLinks('tr', tr),
 };

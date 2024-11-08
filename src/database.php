@@ -278,6 +278,13 @@ $tables[] = [
 			'null'    => false
 		],
 		[
+			'name'    => 'entry_type',
+			'type'    => 'varchar',
+			'size'    => 10,
+			'default' => 'default',
+			'null'    => false
+		],
+		[
 			'name'     => 'permissions',
 			'type'     => 'tinyint',
 			'size'     => 1,

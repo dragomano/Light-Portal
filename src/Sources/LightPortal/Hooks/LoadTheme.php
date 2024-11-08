@@ -7,30 +7,25 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Hooks;
 
-use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
-use Bugo\Compat\Theme;
-use Bugo\Compat\User;
-use Bugo\Compat\Utils;
-use Bugo\LightPortal\Actions\Block;
-use Bugo\LightPortal\AddonHandler;
+use Bugo\Compat\{Config, Lang, Theme};
+use Bugo\Compat\{User, Utils};
 use Bugo\LightPortal\Compilers\CompilerInterface;
-use Bugo\LightPortal\Enums\ContentClass;
-use Bugo\LightPortal\Enums\ContentType;
-use Bugo\LightPortal\Enums\Placement;
-use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Enums\TitleClass;
+use Bugo\LightPortal\Enums\{ContentClass, ContentType, EntryType};
+use Bugo\LightPortal\Enums\{Placement, PluginType, PortalHook, TitleClass};
+use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\Plugins\PluginHandler;
+use Bugo\LightPortal\Repositories\BlockRepository;
+use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionManager;
 
 use function array_combine;
 use function array_map;
 use function dirname;
-use function explode;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -38,6 +33,7 @@ if (! defined('SMF'))
 class LoadTheme
 {
 	use CommonChecks;
+	use RequestTrait;
 
 	private array $config;
 
@@ -57,8 +53,10 @@ class LoadTheme
 
 		$this->loadAssets(new $this->config[CompilerInterface::class]);
 
-		// Run all init methods for plugins
-		AddonHandler::getInstance()->run();
+		PluginHandler::getInstance();
+
+		// Run all init methods for active plugins
+		EventManager::getInstance()->dispatch(PortalHook::init);
 	}
 
 	protected function defineVars(): void
@@ -75,39 +73,9 @@ class LoadTheme
 		Utils::$context['lp_block_placements']    = Placement::all();
 		Utils::$context['lp_plugin_types']        = PluginType::all();
 		Utils::$context['lp_content_types']       = ContentType::all();
+		Utils::$context['lp_page_types']          = EntryType::all();
 
-		Utils::$context['lp_enabled_plugins'] = empty(Config::$modSettings['lp_enabled_plugins'])
-			? [] : explode(',', (string) Config::$modSettings['lp_enabled_plugins']);
-
-		Utils::$context['lp_frontpage_pages'] = empty(Config::$modSettings['lp_frontpage_pages'])
-			? [] : explode(',', (string) Config::$modSettings['lp_frontpage_pages']);
-
-		Utils::$context['lp_frontpage_topics'] = empty(Config::$modSettings['lp_frontpage_topics'])
-			? [] : explode(',', (string) Config::$modSettings['lp_frontpage_topics']);
-
-		Utils::$context['lp_header_panel_width'] = empty(Config::$modSettings['lp_header_panel_width'])
-			? 12 : (int) Config::$modSettings['lp_header_panel_width'];
-
-		Utils::$context['lp_left_panel_width'] = empty(Config::$modSettings['lp_left_panel_width'])
-			? ['lg' => 3, 'xl' => 2]
-			: Utils::jsonDecode(Config::$modSettings['lp_left_panel_width'], true);
-
-		Utils::$context['lp_right_panel_width'] = empty(Config::$modSettings['lp_right_panel_width'])
-			? ['lg' => 3, 'xl' => 2]
-			: Utils::jsonDecode(Config::$modSettings['lp_right_panel_width'], true);
-
-		Utils::$context['lp_footer_panel_width'] = empty(Config::$modSettings['lp_footer_panel_width'])
-			? 12 : (int) Config::$modSettings['lp_footer_panel_width'];
-
-		Utils::$context['lp_swap_left_right'] = empty(Lang::$txt['lang_rtl'])
-			? ! empty(Config::$modSettings['lp_swap_left_right'])
-			: empty(Config::$modSettings['lp_swap_left_right']);
-
-		Utils::$context['lp_panel_direction'] = Utils::jsonDecode(
-			Config::$modSettings['lp_panel_direction'] ?? '', true
-		);
-
-		Utils::$context['lp_active_blocks'] = (new Block())->getActive();
+		Utils::$context['lp_active_blocks'] = (new BlockRepository())->getActive();
 	}
 
 	protected function loadAssets(CompilerInterface $compiler): void
@@ -157,7 +125,7 @@ class LoadTheme
 
 		$entities = [
 			'active_blocks', 'active_pages', 'my_pages', 'unapproved_pages',
-			'internal_pages', 'active_categories', 'active_tags',
+			'deleted_pages', 'active_categories', 'active_tags',
 		];
 
 		Utils::$context['lp_quantities'] = array_map(

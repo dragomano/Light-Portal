@@ -38,37 +38,41 @@
         <exclude name="Themes/default/scripts/light_portal/plugins.js" />
         <include name="Sources/**" />
         <exclude name="Sources/index.php" />
-        <exclude name="Sources/LightPortal/Addons/ApexCharts/**" />
-        <exclude name="Sources/LightPortal/Addons/BootstrapIcons/**" />
-        <exclude name="Sources/LightPortal/Addons/DiceBear/**" />
-        <exclude name="Sources/LightPortal/Addons/Disqus/**" />
-        <exclude name="Sources/LightPortal/Addons/EasyMarkdownEditor/**" />
-        <exclude name="Sources/LightPortal/Addons/EhPortalMigration/**" />
-        <exclude name="Sources/LightPortal/Addons/EzPortalMigration/**" />
-        <exclude name="Sources/LightPortal/Addons/FaBoardIcons/**" />
-        <exclude name="Sources/LightPortal/Addons/FacebookComments/**" />
-        <exclude name="Sources/LightPortal/Addons/Giscus/**" />
-        <exclude name="Sources/LightPortal/Addons/ImageUpload/**" />
-        <exclude name="Sources/LightPortal/Addons/IndexNow/**" />
-        <exclude name="Sources/LightPortal/Addons/Jodit/**" />
-        <exclude name="Sources/LightPortal/Addons/LatteLayouts/**" />
-        <exclude name="Sources/LightPortal/Addons/LineAwesomeIcons/**" />
-        <exclude name="Sources/LightPortal/Addons/Markdown/**" />
-        <exclude name="Sources/LightPortal/Addons/MaterialDesignIcons/**" />
-        <exclude name="Sources/LightPortal/Addons/MediaBlock/**" />
-        <exclude name="Sources/LightPortal/Addons/Optimus/**" />
-        <exclude name="Sources/LightPortal/Addons/PageScroll/**" />
-        <exclude name="Sources/LightPortal/Addons/PlatesLayouts/**" />
-        <exclude name="Sources/LightPortal/Addons/PluginMaker/**" />
-        <exclude name="Sources/LightPortal/Addons/PrettyUrls/**" />
-        <exclude name="Sources/LightPortal/Addons/SiteList/**" />
-        <exclude name="Sources/LightPortal/Addons/Snowflakes/**" />
-        <exclude name="Sources/LightPortal/Addons/TinyPortalMigration/**" />
-        <exclude name="Sources/LightPortal/Addons/TopicRatingBar/**" />
-        <exclude name="Sources/LightPortal/Addons/TwigLayouts/**" />
-        <exclude name="Sources/LightPortal/Addons/Uicons/**" />
-        <exclude name="Sources/LightPortal/Addons/VkComments/**" />
-        <exclude name="Sources/LightPortal/Addons/YandexTurbo/**" />
+        <exclude name="Sources/LightPortal/Plugins/AdsBlock/**" />
+        <exclude name="Sources/LightPortal/Plugins/ApexCharts/**" />
+        <exclude name="Sources/LightPortal/Plugins/BootstrapIcons/**" />
+        <exclude name="Sources/LightPortal/Plugins/DiceBear/**" />
+        <exclude name="Sources/LightPortal/Plugins/Disqus/**" />
+        <exclude name="Sources/LightPortal/Plugins/EasyMarkdownEditor/**" />
+        <exclude name="Sources/LightPortal/Plugins/EhPortalMigration/**" />
+        <exclude name="Sources/LightPortal/Plugins/EzPortalMigration/**" />
+        <exclude name="Sources/LightPortal/Plugins/FaBoardIcons/**" />
+        <exclude name="Sources/LightPortal/Plugins/FacebookComments/**" />
+        <exclude name="Sources/LightPortal/Plugins/Giscus/**" />
+        <exclude name="Sources/LightPortal/Plugins/ImageUpload/**" />
+        <exclude name="Sources/LightPortal/Plugins/IndexNow/**" />
+        <exclude name="Sources/LightPortal/Plugins/Jodit/**" />
+        <exclude name="Sources/LightPortal/Plugins/LatteLayouts/**" />
+        <exclude name="Sources/LightPortal/Plugins/LineAwesomeIcons/**" />
+        <exclude name="Sources/LightPortal/Plugins/Markdown/**" />
+        <exclude name="Sources/LightPortal/Plugins/MaterialDesignIcons/**" />
+        <exclude name="Sources/LightPortal/Plugins/MediaBlock/**" />
+        <exclude name="Sources/LightPortal/Plugins/Optimus/**" />
+        <exclude name="Sources/LightPortal/Plugins/PageScroll/**" />
+        <exclude name="Sources/LightPortal/Plugins/PlatesLayouts/**" />
+        <exclude name="Sources/LightPortal/Plugins/PluginMaker/**" />
+        <exclude name="Sources/LightPortal/Plugins/PrettyUrls/**" />
+        <exclude name="Sources/LightPortal/Plugins/SiteList/**" />
+        <exclude name="Sources/LightPortal/Plugins/Snowflakes/**" />
+        <exclude name="Sources/LightPortal/Plugins/TagList/**" />
+        <exclude name="Sources/LightPortal/Plugins/TinyPortalMigration/**" />
+        <exclude name="Sources/LightPortal/Plugins/TopicRatingBar/**" />
+        <exclude name="Sources/LightPortal/Plugins/TwigLayouts/**" />
+        <exclude name="Sources/LightPortal/Plugins/Uicons/**" />
+        <exclude name="Sources/LightPortal/Plugins/VkComments/**" />
+        <exclude name="Sources/LightPortal/Plugins/YandexTurbo/**" />
+        <exclude name="Sources/LightPortal/Compilers/Less.php" />
+        <exclude name="Sources/LightPortal/Compilers/Sass.php" />
         <exclude name="Sources/LightPortal/Settings/development.config.php" />
         <exclude name="Sources/LightPortal/composer.json" />
         <exclude name="Sources/LightPortal/composer.lock" />
@@ -87,22 +91,32 @@
       </fileset>
       <fileset dir="./src">
         <include name="Themes/**" />
+        <exclude name="Themes/default/languages/**" />
         <exclude name="**/.idea/**" />
         <exclude name="Themes/default/css/light_portal/plugins.css" />
         <exclude name="Themes/default/scripts/light_portal/app*" />
         <exclude name="Themes/default/scripts/light_portal/plugins.js" />
         <include name="Sources/**" />
         <exclude name="Sources/index.php" />
-        <exclude name="Sources/LightPortal/Addons/ApexCharts/**" />
-        <exclude name="Sources/LightPortal/Addons/DiceBear/**" />
-        <exclude name="Sources/LightPortal/Addons/ImageUpload/**" />
-        <exclude name="Sources/LightPortal/Addons/IndexNow/**" />
-        <exclude name="Sources/LightPortal/Addons/Jodit/**" />
-        <exclude name="Sources/LightPortal/Addons/MediaBlock/**" />
-        <exclude name="Sources/LightPortal/Addons/PageScroll/**" />
-        <exclude name="Sources/LightPortal/Addons/YandexTurbo/**" />
+        <exclude name="Sources/LightPortal/Plugins/ApexCharts/**" />
+        <exclude name="Sources/LightPortal/Plugins/DiceBear/**" />
+        <exclude name="Sources/LightPortal/Plugins/ImageUpload/**" />
+        <exclude name="Sources/LightPortal/Plugins/IndexNow/**" />
+        <exclude name="Sources/LightPortal/Plugins/Jodit/**" />
+        <exclude name="Sources/LightPortal/Plugins/MediaBlock/**" />
+        <exclude name="Sources/LightPortal/Plugins/PageScroll/**" />
+        <exclude name="Sources/LightPortal/Plugins/YandexTurbo/**" />
+        <exclude name="Sources/LightPortal/Plugins/*/langs/**" />
         <include name="package-info.xml" />
         <include name="*.php" />
+      </fileset>
+      <fileset dir="./src">
+        <include name="Themes/default/languages/LightPortal/index.php" />
+        <include name="Themes/default/languages/LightPortal/LightPortal.english.php" />
+      </fileset>
+      <fileset dir="./src">
+        <include name="Sources/LightPortal/Plugins/*/langs/english.php" />
+        <include name="Sources/LightPortal/Plugins/*/langs/index.php" />
       </fileset>
     </zip>
   </target>
@@ -124,7 +138,7 @@
         <exclude name="Themes/default/scripts/light_portal/plugins.js" />
         <include name="Sources/**" />
         <exclude name="Sources/index.php" />
-        <exclude name="Sources/LightPortal/Addons/**" />
+        <exclude name="Sources/LightPortal/Plugins/**" />
         <exclude name="Sources/LightPortal/Compilers/Less.php" />
         <exclude name="Sources/LightPortal/Compilers/Sass.php" />
         <exclude name="Sources/LightPortal/Settings/development.config.php" />
@@ -138,12 +152,9 @@
       <fileset dir="./src">
         <include name="Themes/default/languages/LightPortal/index.php" />
         <include name="Themes/default/languages/LightPortal/LightPortal.english.php" />
-        <include name="Themes/default/languages/LightPortal/LightPortal.greek.php" />
-        <include name="Themes/default/languages/LightPortal/LightPortal.italian.php" />
-        <include name="Themes/default/languages/LightPortal/LightPortal.russian.php" />
       </fileset>
       <fileset dir="./src">
-        <include name="Sources/LightPortal/Addons/*.php" />
+        <include name="Sources/LightPortal/Plugins/*.php" />
       </fileset>
     </zip>
   </target>

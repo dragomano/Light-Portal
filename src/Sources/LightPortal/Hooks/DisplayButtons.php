@@ -7,7 +7,7 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Hooks;
@@ -31,7 +31,7 @@ class DisplayButtons
 			return;
 
 		Utils::$context['normal_buttons']['lp_promote'] = [
-			'text' => in_array(Utils::$context['current_topic'], Utils::$context['lp_frontpage_topics'])
+			'text' => in_array(Utils::$context['current_topic'], Setting::getFrontpageTopics())
 				? 'lp_remove_from_fp'
 				: 'lp_promote_to_fp',
 			'url'  => LP_BASE_URL . ';sa=promote;t=' . Utils::$context['current_topic']

@@ -7,17 +7,16 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Areas\Traits;
 
 use Bugo\Compat\{Config, Lang};
-use Nette\Utils\Html;
 use Bugo\Compat\{Security, Theme, Utils};
 use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Enums\ContentType;
-use Bugo\LightPortal\Utils\Editor;
+use Bugo\LightPortal\Utils\{Editor, Str};
 
 use function array_keys;
 use function array_unique;
@@ -29,7 +28,6 @@ if (! defined('SMF'))
 
 trait AreaTrait
 {
-	use PrepareLanguagesTrait;
 	use QueryTrait;
 
 	public function createBbcEditor(string $content = ''): void
@@ -65,44 +63,45 @@ trait AreaTrait
 			? [Config::$language]
 			: array_unique([Utils::$context['user']['language'], Config::$language]);
 
-		$value = '
-			<div>';
+		$value = Str::html('div');
 
 		if (count(Utils::$context['lp_languages']) > 1) {
-			$value .= '
-				<nav' . (Utils::$context['right_to_left'] ? '' : ' class="floatleft"') . '>';
-
-			foreach (Utils::$context['lp_languages'] as $key => $lang) {
-				$value .= '
-					<a
-						class="button floatnone"
-						:class="{ \'active\': tab === \'' . $key . '\' }"
-						data-name="title_' . $key . '"
-						@click.prevent="tab = \'' . $key . '\';
-							window.location.hash = \'' . $key . '\';
-							$nextTick(() => { setTimeout(() => { document.querySelector(\'input[name=title_' . $key . ']\').focus() }, 50); });"
-					>' . $lang['name'] . '</a>';
+			$nav = Str::html('nav');
+			if (!Utils::$context['right_to_left']) {
+				$nav->class('floatleft');
 			}
 
-			$value .= '
-				</nav>';
+			foreach (Utils::$context['lp_languages'] as $key => $lang) {
+				$link = Str::html('a')
+					->class('button floatnone')
+					->setText($lang['name'])
+					->setAttribute(':class', "{ 'active': tab === '$key' }")
+					->setAttribute('data-name', "title_$key")
+					->setAttribute('x-on:click.prevent', "tab = '$key'; window.location.hash = '$key'; \$nextTick(() => { setTimeout(() => { document.querySelector('input[name=title_$key]').focus() }, 50); });");
+
+				$nav->addHtml($link);
+			}
+
+			$value->addHtml($nav);
 		}
 
 		foreach (array_keys(Utils::$context['lp_languages']) as $key) {
-			$value .= '
-				<div x-show="tab === \'' . $key . '\'">
-					<input
-						type="text"
-						name="title_' . $key . '"
-						x-model="title_' . $key . '"
-						value="' . (Utils::$context['lp_' . $entity]['titles'][$key] ?? '') . '"
-						' . (in_array($key, $languages) && $required ? ' required' : '') . '
-					>
-				</div>';
-		}
+			$inputDiv = Str::html('div')
+				->setAttribute('x-show', "tab === '$key'");
 
-		$value .= '
-			</div>';
+			$input = Str::html('input')
+				->setAttribute('type', 'text')
+				->setAttribute('name', "title_$key")
+				->setAttribute('x-model', "title_$key")
+				->setAttribute('value', Utils::$context['lp_' . $entity]['titles'][$key] ?? '');
+
+			if (in_array($key, $languages) && $required) {
+				$input->setAttribute('required', 'required');
+			}
+
+			$inputDiv->addHtml($input);
+			$value->addHtml($inputDiv);
+		}
 
 		CustomField::make('title', Lang::$txt['lp_title'])
 			->setTab('content')
@@ -125,15 +124,17 @@ trait AreaTrait
 
 			// Add label for html type
 			if (isset($data['label']['html']) && $data['label']['html'] !== ' ') {
-				Utils::$context['posting_fields'][$item]['label']['html'] = '<label for="' . $item . '">'
-					. $data['label']['html'] . '</label>';
+				Utils::$context['posting_fields'][$item]['label']['html'] = Str::html('label')
+					->setAttribute('for', $item)
+					->setText($data['label']['html']);
 			}
 
 			// Fancy checkbox
 			if (isset($data['input']['type']) && $data['input']['type'] === 'checkbox') {
 				$data['input']['attributes']['class'] = 'checkbox';
-				$data['input']['after'] = '<label class="label" for="' . $item . '"></label>'
-					. (Utils::$context['posting_fields'][$item]['input']['after'] ?? '');
+				$data['input']['after'] = Str::html('label', ['class' => 'label'])
+					->setAttribute('for', $item) . (Utils::$context['posting_fields'][$item]['input']['after'] ?? '');
+
 				Utils::$context['posting_fields'][$item] = $data;
 			}
 		}
@@ -154,7 +155,7 @@ trait AreaTrait
 
 	public function getFloatSpan(string $text, string $direction = 'left'): string
 	{
-		return Html::el('span', ['class' => "float$direction"])->setHtml($text)->toHtml();
+		return Str::html('span', ['class' => "float$direction"])->setHtml($text)->toHtml();
 	}
 
 	public function getDefaultTypes(): array

@@ -7,20 +7,21 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Repositories;
 
 use Bugo\Compat\{Config, Db, Lang, Logging};
 use Bugo\Compat\{Msg, Security, User, Utils};
-use Bugo\LightPortal\AddonHandler;
-use Bugo\LightPortal\Enums\{Permission, PortalHook, Status};
+use Bugo\LightPortal\Args\ItemArgs;
+use Bugo\LightPortal\Enums\{EntryType, Permission, PortalHook, Status};
+use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\{CacheTrait, Content, DateTime};
 use Bugo\LightPortal\Utils\{EntityDataTrait, Icon, Notify};
 use Bugo\LightPortal\Utils\{RequestTrait, Setting, Str};
 use IntlException;
-use Nette\Utils\Html;
 
 use function array_filter;
 use function array_merge;
@@ -51,6 +52,11 @@ final class PageRepository extends AbstractRepository
 
 	protected string $entity = 'page';
 
+	public function __construct()
+	{
+		$this->commentRepository = new CommentRepository();
+	}
+
 	/**
 	 * @throws IntlException
 	 */
@@ -63,7 +69,7 @@ final class PageRepository extends AbstractRepository
 	): array
 	{
 		$result = Db::$db->query('', '
-			SELECT p.page_id, p.category_id, p.author_id, p.slug, p.type, p.permissions, p.status,
+			SELECT p.page_id, p.category_id, p.author_id, p.slug, p.type, p.entry_type, p.permissions, p.status,
 				p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
 				mem.real_name AS author_name, COALESCE(t.value, tf.value, p.slug) AS page_title
 			FROM {db_prefix}lp_pages AS p
@@ -95,6 +101,7 @@ final class PageRepository extends AbstractRepository
 				'category_id'  => (int) $row['category_id'],
 				'slug'         => $row['slug'],
 				'type'         => $row['type'],
+				'entry_type'   => $row['entry_type'],
 				'status'       => (int) $row['status'],
 				'num_views'    => (int) $row['num_views'],
 				'num_comments' => (int) $row['num_comments'],
@@ -144,8 +151,8 @@ final class PageRepository extends AbstractRepository
 
 		$result = Db::$db->query('', '
 			SELECT
-				p.page_id, p.category_id, p.author_id, p.slug, p.description, p.content, p.type, p.permissions,
-				p.status, p.num_views, p.created_at, p.updated_at,
+				p.page_id, p.category_id, p.author_id, p.slug, p.description, p.content, p.type, p.entry_type,
+				p.permissions, p.status, p.num_views, p.created_at, p.updated_at,
 				COALESCE(mem.real_name, {string:guest}) AS author_name, pt.lang, pt.value AS title, pp.name, pp.value
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
@@ -185,6 +192,7 @@ final class PageRepository extends AbstractRepository
 				'description' => $row['description'],
 				'content'     => $row['content'],
 				'type'        => $row['type'],
+				'entry_type'  => $row['entry_type'],
 				'permissions' => (int) $row['permissions'],
 				'status'      => (int) $row['status'],
 				'num_views'   => (int) $row['num_views'],
@@ -223,10 +231,7 @@ final class PageRepository extends AbstractRepository
 
 		$this->cache()->flush();
 
-		$this->session('lp')->free('active_pages');
-		$this->session('lp')->free('my_pages');
-		$this->session('lp')->free('unapproved_pages');
-		$this->session('lp')->free('internal_pages');
+		$this->session()->free('lp');
 
 		if ($this->request()->has('save_exit')) {
 			Utils::redirectexit('action=admin;area=lp_pages;sa=main');
@@ -242,7 +247,42 @@ final class PageRepository extends AbstractRepository
 		if ($items === [])
 			return;
 
-		AddonHandler::getInstance()->run(PortalHook::onPageRemoving, [$items]);
+		Db::$db->query('', '
+			UPDATE {db_prefix}lp_pages
+			SET deleted_at = {int:time}
+			WHERE page_id IN ({array_int:items})',
+			[
+				'time'  => time(),
+				'items' => $items,
+			]
+		);
+
+		$this->session()->free('lp');
+	}
+
+	public function restore(array $items): void
+	{
+		if ($items === [])
+			return;
+
+		Db::$db->query('', '
+			UPDATE {db_prefix}lp_pages
+			SET deleted_at = 0
+			WHERE page_id IN ({array_int:items})',
+			[
+				'items' => $items,
+			]
+		);
+
+		$this->session()->free('lp');
+	}
+
+	public function removePermanently(array $items): void
+	{
+		if ($items === [])
+			return;
+
+		EventManager::getInstance()->dispatch(PortalHook::onPageRemoving, new Event(new ItemsArgs($items)));
 
 		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_pages
@@ -286,36 +326,9 @@ final class PageRepository extends AbstractRepository
 			]
 		);
 
-		$comments = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
-			$comments[] = $row['id'];
-		}
+		$this->commentRepository->removeFromResult($result);
 
-		Db::$db->free_result($result);
-
-		if ($comments) {
-			Db::$db->query('', '
-				DELETE FROM {db_prefix}lp_comments
-				WHERE id IN ({array_int:items})',
-				[
-					'items' => $comments,
-				]
-			);
-
-			Db::$db->query('', '
-				DELETE FROM {db_prefix}lp_params
-				WHERE item_id IN ({array_int:items})
-					AND type = {literal:comment}',
-				[
-					'items' => $comments,
-				]
-			);
-		}
-
-		$this->session('lp')->free('active_pages');
-		$this->session('lp')->free('my_pages');
-		$this->session('lp')->free('unapproved_pages');
-		$this->session('lp')->free('internal_pages');
+		$this->session()->free('lp');
 	}
 
 	public function getPrevNextLinks(array $page): array
@@ -369,6 +382,7 @@ final class PageRepository extends AbstractRepository
 					AND p.category_id = {int:category_id}' : '') . '
 					AND p.created_at >= {int:created_at}
 					AND p.created_at <= {int:current_time}
+					AND p.entry_type = {string:type}
 					AND p.status = {int:status}
 					AND p.permissions IN ({array_int:permissions})
 				ORDER BY ' . (empty(Config::$modSettings['lp_frontpage_order_by_replies'])
@@ -380,6 +394,7 @@ final class PageRepository extends AbstractRepository
 				'category_id'  => $page['category_id'],
 				'created_at'   => $page['created_at'],
 				'current_time' => time(),
+				'type'         => $page['entry_type'],
 				'status'       => $page['status'],
 				'permissions'  => Permission::all(),
 			]
@@ -420,6 +435,7 @@ final class PageRepository extends AbstractRepository
 				LEFT JOIN {db_prefix}lp_titles AS tf ON (p.page_id = tf.item_id AND tf.lang = {string:fallback_lang})
 			WHERE (' . $searchFormula . ') > 0
 				AND p.status = {int:status}
+				AND entry_type = {string:type}
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
 				AND p.page_id != {int:current_page}
@@ -429,6 +445,7 @@ final class PageRepository extends AbstractRepository
 				'current_lang'  => Utils::$context['user']['language'],
 				'fallback_lang' => Config::$language,
 				'status'        => $page['status'],
+				'type'          => $page['entry_type'],
 				'current_time'  => time(),
 				'permissions'   => Permission::all(),
 				'current_page'  => $page['id'],
@@ -484,12 +501,14 @@ final class PageRepository extends AbstractRepository
 					LEFT JOIN {db_prefix}lp_params AS pp2 ON (
 						p.page_id = pp2.item_id AND pp2.type = {literal:page} AND pp2.name = {literal:page_icon}
 					)
-				WHERE p.status IN ({array_int:statuses})
+				WHERE p.status = {int:status}
+					AND p.entry_type IN ({array_string:types})
 					AND p.created_at <= {int:current_time}
 					AND pp.name = {literal:show_in_menu}
 					AND pp.value = {string:show_in_menu}',
 				[
-					'statuses'     => [Status::ACTIVE->value, Status::INTERNAL->value],
+					'types'        => EntryType::withoutDrafts(),
+					'status'       => Status::ACTIVE->value,
 					'current_time' => time(),
 					'show_in_menu' => '1',
 				]
@@ -542,7 +561,12 @@ final class PageRepository extends AbstractRepository
 
 		$data['tags'] = $this->getTags($data['id']);
 
-		AddonHandler::getInstance()->run(PortalHook::preparePageData, [&$data, $isAuthor]);
+		EventManager::getInstance()->dispatch(
+			PortalHook::preparePageData,
+			new Event(new class ($data, $isAuthor) {
+				public function __construct(public array &$data, public readonly bool $isAuthor) {}
+			})
+		);
 	}
 
 	private function addData(): int
@@ -558,6 +582,7 @@ final class PageRepository extends AbstractRepository
 				'description' => 'string-255',
 				'content'     => 'string',
 				'type'        => 'string',
+				'entry_type'  => 'string',
 				'permissions' => 'int',
 				'status'      => 'int',
 				'created_at'  => 'int',
@@ -569,6 +594,7 @@ final class PageRepository extends AbstractRepository
 				Utils::$context['lp_page']['description'],
 				Utils::$context['lp_page']['content'],
 				Utils::$context['lp_page']['type'],
+				Utils::$context['lp_page']['entry_type'],
 				Utils::$context['lp_page']['permissions'],
 				Utils::$context['lp_page']['status'],
 				$this->getPublishTime(),
@@ -582,7 +608,7 @@ final class PageRepository extends AbstractRepository
 			return 0;
 		}
 
-		AddonHandler::getInstance()->run(PortalHook::onPageSaving, [$item]);
+		EventManager::getInstance()->dispatch(PortalHook::onPageSaving, new Event(new ItemArgs($item)));
 
 		$this->saveTitles($item);
 		$this->saveTags($item);
@@ -617,7 +643,8 @@ final class PageRepository extends AbstractRepository
 			UPDATE {db_prefix}lp_pages
 			SET category_id = {int:category_id}, author_id = {int:author_id}, slug = {string:slug},
 				description = {string:description}, content = {string:content}, type = {string:type},
-				permissions = {int:permissions}, status = {int:status}, updated_at = {int:updated_at}
+				entry_type = {string:entry_type}, permissions = {int:permissions}, status = {int:status},
+				updated_at = {int:updated_at}
 			WHERE page_id = {int:page_id}',
 			[
 				'category_id' => Utils::$context['lp_page']['category_id'],
@@ -626,6 +653,7 @@ final class PageRepository extends AbstractRepository
 				'description' => Utils::$context['lp_page']['description'],
 				'content'     => Utils::$context['lp_page']['content'],
 				'type'        => Utils::$context['lp_page']['type'],
+				'entry_type'  => Utils::$context['lp_page']['entry_type'],
 				'permissions' => Utils::$context['lp_page']['permissions'],
 				'status'      => Utils::$context['lp_page']['status'],
 				'updated_at'  => time(),
@@ -633,7 +661,7 @@ final class PageRepository extends AbstractRepository
 			]
 		);
 
-		AddonHandler::getInstance()->run(PortalHook::onPageSaving, [$item]);
+		EventManager::getInstance()->dispatch(PortalHook::onPageSaving, new Event(new ItemArgs($item)));
 
 		$this->saveTitles($item, 'replace');
 		$this->saveTags($item, 'replace');
@@ -642,10 +670,9 @@ final class PageRepository extends AbstractRepository
 		if (Utils::$context['lp_page']['author_id'] !== User::$info['id']) {
 			$title = Utils::$context['lp_page']['titles'][User::$info['language']];
 			Logging::logAction('update_lp_page', [
-				'page' => Html::el('a')
+				'page' => Str::html('a')
 					->href(LP_PAGE_URL . Utils::$context['lp_page']['slug'])
 					->setText($title)
-					->toHtml()
 			]);
 		}
 

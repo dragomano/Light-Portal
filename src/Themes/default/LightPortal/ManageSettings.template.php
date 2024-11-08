@@ -1,110 +1,50 @@
 <?php
 
 use Bugo\Compat\{Config, Lang, Theme, Utils};
-use Bugo\LightPortal\Areas\Partials\{ActionSelect, BoardSelect, CategorySelect};
-use Bugo\LightPortal\Areas\Partials\{PageSelect, PageSlugSelect, TopicSelect};
+use Bugo\LightPortal\Areas\Partials\BoardSelect;
+use Bugo\LightPortal\Areas\Partials\CategorySelect;
+use Bugo\LightPortal\Areas\Partials\PageSelect;
+use Bugo\LightPortal\Areas\Partials\PageSlugSelect;
+use Bugo\LightPortal\Areas\Partials\TopicSelect;
+use Bugo\LightPortal\Areas\Configs\BasicConfig;
 use Bugo\LightPortal\Enums\Tab;
-
-function template_callback_frontpage_mode_settings_before(): void
-{
-	echo '
-	<div x-data="{ frontpage_mode: \'', Config::$modSettings['lp_frontpage_mode'] ?? 0, '\' }">';
-}
+use Bugo\LightPortal\Utils\Icon;
 
 function template_callback_frontpage_mode_settings_middle(): void
 {
 	echo '
-		<table class="lp_table_settings">
-			<tbody>
-				<tr>
-					<td x-show="frontpage_mode === \'chosen_page\'">
-						<a id="setting_lp_frontpage_chosen_page"></a>
-						<span>
-							<label for="lp_frontpage_chosen_page">', Lang::$txt['lp_frontpage_chosen_page'], '</label>
-						</span>
-					</td>
-					<td x-show="frontpage_mode === \'chosen_page\'">', new PageSlugSelect(), '</td>
-					<td x-show="frontpage_mode === \'all_pages\'">
-						<a id="setting_lp_frontpage_categories"></a>
-						<span>
-							<label for="lp_frontpage_categories">', Lang::$txt['lp_frontpage_categories'], '</label>
-						</span>
-					</td>
-					<td x-show="frontpage_mode === \'all_pages\'">', new CategorySelect(), '</td>
-					<td x-show="[\'all_topics\', \'chosen_boards\'].includes(frontpage_mode)">
-						<a id="setting_lp_frontpage_boards"></a>
-						<span>
-							<label for="lp_frontpage_boards">', Lang::$txt['lp_frontpage_boards'], '</label>
-						</span>
-					</td>
-					<td x-show="[\'all_topics\', \'chosen_boards\'].includes(frontpage_mode)">', new BoardSelect(), '</td>
-					<td x-show="frontpage_mode === \'chosen_pages\'">
-						<a id="setting_lp_frontpage_pages"></a>
-						<span>
-							<label for="lp_frontpage_pages">', Lang::$txt['lp_frontpage_pages'], '</label>
-						</span>
-					</td>
-					<td x-show="frontpage_mode === \'chosen_pages\'">', new PageSelect(), '</td>
-					<td x-show="frontpage_mode === \'chosen_topics\'">
-						<a id="setting_lp_frontpage_topics"></a>
-						<span>
-							<label for="lp_frontpage_topics">', Lang::$txt['lp_frontpage_topics'], '</label>
-						</span>
-					</td>
-					<td x-show="frontpage_mode === \'chosen_topics\'">', new TopicSelect(), '</td>
-				</tr>
-			</tbody>
-		</table>
-		<hr>';
-}
-
-function template_callback_frontpage_mode_settings_after(): void
-{
-	echo '
-	</div>';
-}
-
-function template_callback_standalone_mode_settings_before(): void
-{
-	echo '
-	<div
-		x-data="{
-			standalone_mode: ', empty(Config::$modSettings['lp_standalone_mode']) ? 'false' : 'true', ',
-			frontpage_mode: \'', Config::$modSettings['lp_frontpage_mode'] ?? 0, '\'
-		}"
-		@change-mode.window="frontpage_mode = $event.detail.front"
-	>';
-}
-
-function template_callback_standalone_mode_settings_after(): void
-{
-	echo '
-		<table
-			class="lp_table_settings"
-			x-show="standalone_mode && ! [\'0\', \'chosen_page\'].includes(frontpage_mode)"
-		>
-			<tbody>
-				<tr>
-					<td>
-						<a
-							id="setting_lp_disabled_actions_help"
-							href="', Config::$scripturl, '?action=helpadmin;help=lp_disabled_actions_help"
-							onclick="return reqOverlayDiv(this.href);"
-						>
-							<span class="main_icons help" title="', Lang::$txt['help'], '"></span>
-						</a>
-						<a id="setting_lp_disabled_actions"></a>
-						<span>
-							<label for="lp_disabled_actions">', Lang::$txt['lp_disabled_actions'], '</label>
-							<br>
-							<span class="smalltext">', Lang::$txt['lp_disabled_actions_subtext'], '</span>
-						</span>
-					</td>
-					<td>', new ActionSelect(), '</td>
-				</tr>
-			</tbody>
-		</table>
-	</div>';
+	<dl style="margin-top: -1.4em">
+		<dt x-show="frontpage_mode === \'chosen_page\'">
+			<label for="lp_frontpage_chosen_page">', Lang::$txt['lp_frontpage_chosen_page'], '</label>
+		</dt>
+		<dd x-show="frontpage_mode === \'chosen_page\'">
+			', new PageSlugSelect(), '
+		</dd>
+		<dt x-show="frontpage_mode === \'all_pages\'">
+			<label for="lp_frontpage_categories">', Lang::$txt['lp_frontpage_categories'], '</label>
+		</dt>
+		<dd x-show="frontpage_mode === \'all_pages\'">
+			', new CategorySelect(), '
+		</dd>
+		<dt x-show="[\'all_topics\', \'chosen_boards\'].includes(frontpage_mode)">
+			<label for="lp_frontpage_boards">', Lang::$txt['lp_frontpage_boards'], '</label>
+		</dt>
+		<dd x-show="[\'all_topics\', \'chosen_boards\'].includes(frontpage_mode)">
+			', new BoardSelect(), '
+		</dd>
+		<dt x-show="frontpage_mode === \'chosen_pages\'">
+			<label for="lp_frontpage_pages">', Lang::$txt['lp_frontpage_pages'], '</label>
+		</dt>
+		<dd x-show="frontpage_mode === \'chosen_pages\'">
+			', new PageSelect(), '
+		</dd>
+		<dt x-show="frontpage_mode === \'chosen_topics\'">
+			<label for="lp_frontpage_topics">', Lang::$txt['lp_frontpage_topics'], '</label>
+		</dt>
+		<dd x-show="frontpage_mode === \'chosen_topics\'">
+			', new TopicSelect(), '
+		</dd>
+	</dl>';
 }
 
 function template_callback_comment_settings_before(): void
@@ -122,13 +62,122 @@ function template_callback_comment_settings_after(): void
 function template_callback_menu_settings_before(): void
 {
 	echo '
-	<div x-data="{ separate_subsection: ', empty(Config::$modSettings['lp_menu_separate_subsection']) ? 'false' : 'true', ' }">';
+	<div x-data="{
+		separate_subsection: ', empty(Config::$modSettings['lp_menu_separate_subsection']) ? 'false' : 'true', '
+	}">';
 }
 
 function template_callback_menu_settings_after(): void
 {
 	echo '
 	</div>';
+}
+
+function template_portal_basic_settings(): void
+{
+	if (! empty(Utils::$context['saved_successful'])) {
+		echo '
+	<div class="infobox">', Lang::$txt['settings_saved'], '</div>';
+	} elseif (! empty(Utils::$context['saved_failed'])) {
+		echo '
+	<div class="errorbox">', sprintf(Lang::$txt['settings_not_saved'], Utils::$context['saved_failed']), '</div>';
+	}
+
+	echo '
+	<div class="cat_bar">
+		<h3 class="catbg">', Lang::$txt['mods_cat_features'], '</h3>
+	</div>
+	<form
+		action="', Utils::$context['post_url'], '"
+		method="post"
+		accept-charset="', Utils::$context['character_set'], '"
+		onsubmit="submitonce(this);"
+		x-data="{ frontpage_mode: \'', Config::$modSettings['lp_frontpage_mode'] ?? 0, '\' }"
+		@change-mode.window="frontpage_mode = $event.detail.front"
+	>';
+
+	if (! empty(Utils::$context['settings_message'])) {
+		$tag = ! empty(Utils::$context['settings_message']['tag']) ? Utils::$context['settings_message']['tag'] : 'span';
+
+		echo '
+		<div class="information">';
+
+		if (is_array(Utils::$context['settings_message'])) {
+			echo '
+			<', $tag, ! empty(Utils::$context['settings_message']['class']) ? ' class="' . Utils::$context['settings_message']['class'] . '"' : '', '>
+				', Utils::$context['settings_message']['label'], '
+			</', $tag, '>';
+		} else {
+			echo Utils::$context['settings_message'];
+		}
+
+		echo '
+		</div>';
+	}
+
+	$fields = Utils::$context['posting_fields'];
+
+	echo '
+		<div class="roundframe', empty(Utils::$context['settings_message']) ? ' noup' : '', '">
+			<div class="lp_tabs">
+				<div data-navigation>
+					<div class="bg odd active_navigation" data-tab="', BasicConfig::TAB_BASE, '">
+						', Icon::get('cog_spin'), Lang::$txt['lp_base'], '
+					</div>
+					<div class="bg odd" data-tab="', BasicConfig::TAB_CARDS, '">
+						', Icon::get('design'), Lang::$txt['lp_article_cards'], '
+					</div>
+					<div class="bg odd" data-tab="', BasicConfig::TAB_STANDALONE, '">
+						', Icon::get('meteor'), Lang::$txt['lp_standalone_mode_title'], '
+					</div>
+					<div class="bg odd" data-tab="', BasicConfig::TAB_PERMISSIONS, '">
+						', Icon::get('access'), Lang::$txt['edit_permissions'], '
+					</div>
+				</div>
+				<div data-content>
+					<section class="bg even active_content" data-content="', BasicConfig::TAB_BASE, '">
+						', template_portal_tab($fields, BasicConfig::TAB_BASE), '
+					</section>
+					<section class="bg even" data-content="', BasicConfig::TAB_CARDS, '">
+						', template_portal_tab($fields, BasicConfig::TAB_CARDS), '
+					</section>
+					<section class="bg even" data-content="', BasicConfig::TAB_STANDALONE, '">
+						', template_portal_tab($fields, BasicConfig::TAB_STANDALONE), '
+					</section>
+					<section class="bg even" data-content="', BasicConfig::TAB_PERMISSIONS, '">
+						', template_portal_tab($fields, BasicConfig::TAB_PERMISSIONS), '
+					</section>
+				</div>
+			</div>
+			<br class="clear">';
+
+	if (empty(Utils::$context['settings_save_dont_show'])) {
+		echo '
+			<input type="submit" value="', Lang::$txt['save'], '"', (! empty(Utils::$context['save_disabled']) ? ' disabled' : ''), (! empty(Utils::$context['settings_save_onclick']) ? ' onclick="' . Utils::$context['settings_save_onclick'] . '"' : ''), ' class="button">';
+	}
+
+	if (isset(Utils::$context['admin-ssc_token'])) {
+		echo '
+			<input type="hidden" name="', Utils::$context['admin-ssc_token_var'], '" value="', Utils::$context['admin-ssc_token'], '">';
+	}
+
+	if (isset(Utils::$context['admin-dbsc_token'])) {
+		echo '
+			<input type="hidden" name="', Utils::$context['admin-dbsc_token_var'], '" value="', Utils::$context['admin-dbsc_token'], '">';
+	}
+
+	if (isset(Utils::$context['admin-mp_token'])) {
+		echo '
+			<input type="hidden" name="', Utils::$context['admin-mp_token_var'], '" value="', Utils::$context['admin-mp_token'], '">';
+	}
+
+	echo '
+			<input type="hidden" name="', Utils::$context['session_var'], '" value="', Utils::$context['session_id'], '">
+		</div>
+		<script>
+			const tabs = new PortalTabs();
+		</script>
+	</form>';
 }
 
 function template_portal_tab(array $fields, Tab|string $tab = 'content'): bool

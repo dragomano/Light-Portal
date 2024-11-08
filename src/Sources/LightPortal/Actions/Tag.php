@@ -7,17 +7,16 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Actions;
 
 use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, User, Utils};
-use Bugo\LightPortal\Enums\{Permission, Status};
-use Bugo\LightPortal\Utils\{Icon, ItemList, RequestTrait};
+use Bugo\LightPortal\Enums\{EntryType, Permission, Status};
+use Bugo\LightPortal\Utils\{Icon, ItemList, RequestTrait, Str};
 use IntlException;
-use Nette\Utils\Html;
 
 use function array_key_exists;
 use function count;
@@ -109,7 +108,8 @@ final class Tag extends AbstractPageList
 				)
 			WHERE pt.tag_id = {int:id}
 				AND tag.status = {int:status}
-				AND p.status IN ({array_int:statuses})
+				AND p.status = {int:status}
+				AND p.entry_type IN ({array_string:types})
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
 			ORDER BY {raw:sort}
@@ -119,7 +119,7 @@ final class Tag extends AbstractPageList
 				'fallback_lang' => Config::$language,
 				'id'            => Utils::$context['current_tag'],
 				'status'        => Status::ACTIVE->value,
-				'statuses'      => [Status::ACTIVE->value, Status::INTERNAL->value],
+				'types'         => EntryType::withoutDrafts(),
 				'current_time'  => time(),
 				'permissions'   => Permission::all(),
 				'sort'          => $sort,
@@ -144,13 +144,14 @@ final class Tag extends AbstractPageList
 				INNER JOIN {db_prefix}lp_tags AS tag ON (pt.tag_id = tag.tag_id)
 			WHERE pt.tag_id = {int:id}
 				AND tag.status = {int:status}
-				AND p.status IN ({array_int:statuses})
+				AND p.status  = {int:status}
+				AND p.entry_type IN ({array_string:types})
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})',
 			[
 				'id'           => Utils::$context['current_tag'],
 				'status'       => Status::ACTIVE->value,
-				'statuses'     => [Status::ACTIVE->value, Status::INTERNAL->value],
+				'types'        => EntryType::withoutDrafts(),
 				'current_time' => time(),
 				'permissions'  => Permission::all(),
 			]
@@ -192,10 +193,9 @@ final class Tag extends AbstractPageList
 						'value' => Lang::$txt['lp_tag_column']
 					],
 					'data' => [
-						'function' => static fn($entry) => $entry['icon'] . ' ' . Html::el('a')
+						'function' => static fn($entry) => $entry['icon'] . ' ' . Str::html('a')
 							->href($entry['link'])
-							->setText($entry['title'])
-							->toHtml(),
+							->setText($entry['title']),
 					],
 					'sort' => [
 						'default' => 'title DESC',
@@ -239,7 +239,8 @@ final class Tag extends AbstractPageList
 				LEFT JOIN {db_prefix}lp_titles AS tf ON (
 					pt.tag_id = tf.item_id AND tf.type = {literal:tag} AND tf.lang = {string:fallback_lang}
 				)
-			WHERE p.status IN ({array_int:statuses})
+			WHERE p.status = {int:status}
+				AND p.entry_type IN ({array_string:types})
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
 				AND tag.status = {int:status}
@@ -249,7 +250,7 @@ final class Tag extends AbstractPageList
 			[
 				'lang'          => User::$info['language'],
 				'fallback_lang' => Config::$language,
-				'statuses'      => [Status::ACTIVE->value, Status::INTERNAL->value],
+				'types'         => EntryType::names(),
 				'current_time'  => time(),
 				'permissions'   => Permission::all(),
 				'status'        => Status::ACTIVE->value,

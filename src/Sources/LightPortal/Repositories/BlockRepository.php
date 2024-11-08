@@ -7,22 +7,26 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Repositories;
 
 use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, Msg, Security, Utils};
-use Bugo\LightPortal\AddonHandler;
-use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Args\ItemArgs;
+use Bugo\LightPortal\Args\ItemsArgs;
+use Bugo\LightPortal\Enums\{PortalHook, Status};
+use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\{CacheTrait, EntityDataTrait};
-use Bugo\LightPortal\Utils\{Icon, RequestTrait, Str};
+use Bugo\LightPortal\Utils\{Icon, RequestTrait, Setting, Str};
 
 use function array_filter;
 use function array_flip;
 use function array_keys;
 use function array_merge;
+use function explode;
 use function in_array;
 use function sprintf;
 use function str_replace;
@@ -176,7 +180,7 @@ final class BlockRepository extends AbstractRepository
 		if ($items === [])
 			return;
 
-		AddonHandler::getInstance()->run(PortalHook::onBlockRemoving, [$items]);
+		EventManager::getInstance()->dispatch(PortalHook::onBlockRemoving, new Event(new ItemsArgs($items)));
 
 		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_blocks
@@ -242,6 +246,60 @@ final class BlockRepository extends AbstractRepository
 		}
 	}
 
+	public function getActive(): array
+	{
+		if (Setting::hideBlocksInACP())
+			return [];
+
+		if (($blocks = $this->cache()->get('active_blocks')) === null) {
+			$result = Db::$db->query('', '
+				SELECT
+					b.block_id, b.icon, b.type, b.content, b.placement, b.priority,
+					b.permissions, b.areas, b.title_class, b.content_class,
+					bt.lang, bt.value AS title, bp.name, bp.value
+				FROM {db_prefix}lp_blocks AS b
+					LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
+					LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {literal:block})
+				WHERE b.status = {int:status}
+				ORDER BY b.placement, b.priority',
+				[
+					'status' => Status::ACTIVE->value,
+				]
+			);
+
+			$blocks = [];
+			while ($row = Db::$db->fetch_assoc($result)) {
+				Lang::censorText($row['content']);
+
+				$blocks[$row['block_id']] ??= [
+					'id'            => (int) $row['block_id'],
+					'icon'          => $row['icon'],
+					'type'          => $row['type'],
+					'content'       => $row['content'],
+					'placement'     => $row['placement'],
+					'priority'      => (int) $row['priority'],
+					'permissions'   => (int) $row['permissions'],
+					'areas'         => explode(',', (string) $row['areas']),
+					'title_class'   => $row['title_class'],
+					'content_class' => $row['content_class'],
+				];
+
+				$blocks[$row['block_id']]['titles'][$row['lang']] = $row['title'];
+				$blocks[$row['block_id']]['titles'] = array_filter($blocks[$row['block_id']]['titles']);
+
+				if ($row['name']) {
+					$blocks[$row['block_id']]['parameters'][$row['name']] = $row['value'];
+				}
+			}
+
+			Db::$db->free_result($result);
+
+			$this->cache()->put('active_blocks', $blocks);
+		}
+
+		return $blocks;
+	}
+
 	private function addData(): int
 	{
 		Db::$db->transaction('begin');
@@ -283,7 +341,7 @@ final class BlockRepository extends AbstractRepository
 			return 0;
 		}
 
-		AddonHandler::getInstance()->run(PortalHook::onBlockSaving, [$item]);
+		EventManager::getInstance()->dispatch(PortalHook::onBlockSaving, new Event(new ItemArgs($item)));
 
 		$this->saveTitles($item);
 		$this->saveOptions($item);
@@ -317,7 +375,7 @@ final class BlockRepository extends AbstractRepository
 			]
 		);
 
-		AddonHandler::getInstance()->run(PortalHook::onBlockSaving, [$item]);
+		EventManager::getInstance()->dispatch(PortalHook::onBlockSaving, new Event(new ItemArgs($item)));
 
 		$this->saveTitles($item, 'replace');
 		$this->saveOptions($item, 'replace');
@@ -330,11 +388,6 @@ final class BlockRepository extends AbstractRepository
 		$this->cache()->forget($prefix . $item . '_u' . Utils::$context['user']['id']);
 	}
 
-	/**
-	 * Prepare plugins list that not installed
-	 *
-	 * Формируем список неустановленных плагинов
-	 */
 	private function prepareMissingBlockTypes(string $type): void
 	{
 		if (isset(Lang::$txt['lp_' . $type]['title']))
@@ -346,7 +399,8 @@ final class BlockRepository extends AbstractRepository
 			? Lang::$txt['lp_addon_not_activated']
 			: Lang::$txt['lp_addon_not_installed'];
 
-		Utils::$context['lp_missing_block_types'][$type] = '<span class="error">' . sprintf($message, $plugin) . '</span>';
+		Utils::$context['lp_missing_block_types'][$type] = Str::html('span')->class('error')
+			->setText(sprintf($message, $plugin));
 	}
 
 	private function getPriority(): int

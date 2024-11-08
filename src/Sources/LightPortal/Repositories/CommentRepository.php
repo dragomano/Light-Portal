@@ -7,7 +7,7 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Repositories;
@@ -15,6 +15,7 @@ namespace Bugo\LightPortal\Repositories;
 use Bugo\Compat\{Config, Db, Lang};
 use Bugo\LightPortal\Utils\Avatar;
 
+use function array_column;
 use function count;
 use function htmlspecialchars_decode;
 use function time;
@@ -184,6 +185,34 @@ final class CommentRepository
 		);
 
 		return $items;
+	}
+
+	public function removeFromResult(object|bool $result): void
+	{
+		$comments = Db::$db->fetch_all($result);
+		$comments = array_column($comments, 'id');
+
+		Db::$db->free_result($result);
+
+		if ($comments === [])
+			return;
+
+		Db::$db->query('', '
+			DELETE FROM {db_prefix}lp_comments
+			WHERE id IN ({array_int:items})',
+			[
+				'items' => $comments,
+			]
+		);
+
+		Db::$db->query('', '
+			DELETE FROM {db_prefix}lp_params
+			WHERE item_id IN ({array_int:items})
+				AND type = {literal:comment}',
+			[
+				'items' => $comments,
+			]
+		);
 	}
 
 	public function updateLastCommentId(int $item, int $pageId): void

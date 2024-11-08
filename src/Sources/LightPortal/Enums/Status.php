@@ -7,7 +7,7 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Enums;
@@ -21,5 +21,4 @@ enum Status: int
 	case INACTIVE = 0;
 	case ACTIVE = 1;
 	case UNAPPROVED = 2;
-	case INTERNAL = 3;
 }

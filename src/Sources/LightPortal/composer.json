@@ -7,6 +7,7 @@
     "ext-zip": "*",
     "bugo/fa-php-helper": "^0.4",
     "bugo/smf-compat": "^0.2",
+    "doctrine/event-manager": "^2.0",
     "eftec/bladeone": "^4.13",
     "laminas/laminas-config-aggregator": "^1.15",
     "laminas/laminas-loader": "^2.10"

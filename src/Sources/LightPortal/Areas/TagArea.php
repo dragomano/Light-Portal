@@ -7,7 +7,7 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Areas;
@@ -20,8 +20,8 @@ use Bugo\LightPortal\Areas\Validators\TagValidator;
 use Bugo\LightPortal\Enums\{Status, Tab};
 use Bugo\LightPortal\Models\TagModel;
 use Bugo\LightPortal\Repositories\TagRepository;
-use Bugo\LightPortal\Utils\{CacheTrait, Icon, ItemList, RequestTrait, Str};
-use Nette\Utils\Html;
+use Bugo\LightPortal\Utils\{CacheTrait, Icon, ItemList};
+use Bugo\LightPortal\Utils\{Language, RequestTrait, Str};
 
 use const LP_NAME;
 
@@ -100,10 +100,9 @@ final class TagArea
 					],
 					'data' => [
 						'function' => static fn($entry) => $entry['status']
-							? Html::el('a', ['class' => 'bbc_link'])
+							? Str::html('a', ['class' => 'bbc_link'])
 								->href(LP_BASE_URL . ';sa=tags;id=' . $entry['id'])
 								->setText($entry['title'])
-								->toHtml()
 							: $entry['title'],
 						'class' => 'word_break',
 					],
@@ -151,10 +150,16 @@ final class TagArea
 								<div class="roundframe" x-show="showContextMenu">
 									<ul>
 										<li>
-											<a href="' . Config::$scripturl . '?action=admin;area=lp_tags;sa=edit;id=' . $entry['id'] . '" class="button">' . Lang::$txt['modify'] . '</a>
+											' . Str::html('a')
+												->setAttribute('href', Config::$scripturl . "?action=admin;area=lp_tags;sa=edit;id={$entry['id']}")
+												->class('button')
+												->setText(Lang::$txt['modify']) . '
 										</li>
 										<li>
-											<a @click.prevent="showContextMenu = false; tag.remove($root)" class="button error">' . Lang::$txt['remove'] . '</a>
+											' . Str::html('a')
+												->setAttribute('x-on:click.prevent', 'showContextMenu = false; tag.remove($root)')
+												->class('button error')
+												->setText(Lang::$txt['remove']) . '
 										</li>
 									</ul>
 								</div>
@@ -170,9 +175,9 @@ final class TagArea
 			'javascript' => 'const tag = new Tag();',
 		];
 
-		$listOptions['title'] = Html::el('span', ['class' => 'floatright'])
+		$listOptions['title'] = Str::html('span', ['class' => 'floatright'])
 			->addHtml(
-				Html::el('a', [
+				Str::html('a', [
 					'href' => Config::$scripturl . '?action=admin;area=lp_tags;sa=add;' . Utils::$context['session_var'] . '=' . Utils::$context['session_id'],
 					'x-data' => '',
 				])
@@ -181,9 +186,7 @@ final class TagArea
 					' @mouseover="tag.toggleSpin($event.target)" @mouseout="tag.toggleSpin($event.target)" class=',
 					Icon::get('plus', Lang::$txt['lp_tags_add'])
 				))
-				->toHtml()
-			)
-			->toHtml() . $listOptions['title'];
+			) . $listOptions['title'];
 
 		new ItemList($listOptions);
 	}
@@ -207,7 +210,8 @@ final class TagArea
 
 		Utils::$context['lp_current_tag'] ??= [];
 
-		$this->prepareForumLanguages();
+		Language::prepareList();
+
 		$this->validateData();
 		$this->prepareFormFields();
 		$this->preparePreview();
@@ -237,7 +241,7 @@ final class TagArea
 			ErrorHandler::fatalLang('lp_tag_not_found', status: 404);
 		}
 
-		$this->prepareForumLanguages();
+		Language::prepareList();
 
 		if ($this->request()->has('remove')) {
 			$this->repository->remove([$item]);

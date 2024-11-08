@@ -1,9 +1,9 @@
 <?php
 
 use Bugo\Compat\{Config, Lang, Theme, Utils};
-use Bugo\LightPortal\AddonHandler;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\Utils\{Icon, Setting};
 
 function template_show_page(): void
 {
@@ -34,7 +34,7 @@ function template_show_page(): void
 
 		if (! (empty(Utils::$context['user']['is_admin']) || empty(Config::$modSettings['lp_frontpage_mode']) || Config::$modSettings['lp_frontpage_mode'] !== 'chosen_pages')) {
 			echo '
-			<a class="button floatright" href="', Utils::$context['canonical_url'], ';promote">', Icon::get('home'), '<span class="hidden-xs hidden-sm">', Lang::$txt['lp_' . (in_array(Utils::$context['lp_page']['id'], Utils::$context['lp_frontpage_pages']) ? 'remove_from' : 'promote_to') . '_fp'], '</span></a>';
+			<a class="button floatright" href="', Utils::$context['canonical_url'], ';promote">', Icon::get('home'), '<span class="hidden-xs hidden-sm">', Lang::$txt['lp_' . (in_array(Utils::$context['lp_page']['id'], Setting::getFrontpagePages()) ? 'remove_from' : 'promote_to') . '_fp'], '</span></a>';
 		}
 
 		echo '
@@ -77,7 +77,9 @@ function template_show_page(): void
 
 	echo '
 		<article class="roundframe" itemprop="articleBody">
-			<h3 style="display: none">', Utils::$context['lp_page']['author'], ' - ', Utils::$context['page_title'], '</h3>';
+			<h3 style="display: none">
+				', Utils::$context['lp_page']['author'], ' - ', Utils::$context['page_title'], '
+			</h3>';
 
 	if (! empty(Utils::$context['lp_page']['tags']) && ! empty(Config::$modSettings['lp_show_tags_on_page'])) {
 		echo '
@@ -93,7 +95,7 @@ function template_show_page(): void
 			<hr>';
 	}
 
-	AddonHandler::getInstance()->run(PortalHook::beforePageContent);
+	EventManager::getInstance()->dispatch(PortalHook::beforePageContent);
 
 	if (! empty(Theme::$current->settings['og_image'])) {
 		echo '
@@ -101,9 +103,11 @@ function template_show_page(): void
 	}
 
 	echo '
-			<div class="page_', Utils::$context['lp_page']['type'], '">', Utils::$context['lp_page']['content'], '</div>';
+			<div class="page_', Utils::$context['lp_page']['type'], '">
+				', Utils::$context['lp_page']['content'], '
+			</div>';
 
-	AddonHandler::getInstance()->run(PortalHook::afterPageContent);
+	EventManager::getInstance()->dispatch(PortalHook::afterPageContent);
 
 	echo '
 		</article>';
@@ -197,7 +201,7 @@ function show_comments(): void
 
 	if (is_file(Theme::$current->settings['default_theme_dir'] . '/scripts/light_portal/dev/helpers.js')) {
 		echo /** @lang text */ '
-	<script src="https://cdn.jsdelivr.net/combine/npm/vue@3/dist/vue.global.min.js,npm/vue3-sfc-loader@0,npm/vue-demi@0,npm/pinia@2,npm/showdown@2,npm/vue-showdown@4,npm/vue-i18n@9/dist/vue-i18n.global.prod.min.js,npm/@vueuse/shared@10,npm/@vueuse/core@10"></script>
+	<script src="https://cdn.jsdelivr.net/combine/npm/vue@3/dist/vue.global.min.js,npm/vue3-sfc-loader@0,npm/vue-demi@0,npm/pinia@2,npm/showdown@2,npm/vue-showdown@4,npm/vue-i18n@10/dist/vue-i18n.global.prod.min.js,npm/@vueuse/shared@10,npm/@vueuse/core@10"></script>
 	<script type="module" src="https://cdn.jsdelivr.net/npm/@github/markdown-toolbar-element@2/dist/index.min.js"></script>
 	<script src="', Theme::$current->settings['default_theme_url'], '/scripts/light_portal/dev/helpers.js"></script>
 	<script type="module" src="', Theme::$current->settings['default_theme_url'], '/scripts/light_portal/dev/comment_helpers.js"></script>

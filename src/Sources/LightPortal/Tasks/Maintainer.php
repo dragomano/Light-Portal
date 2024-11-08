@@ -7,11 +7,12 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Tasks;
 
+use Bugo\LightPortal\Repositories\CommentRepository;
 use Bugo\Compat\{Tasks\BackgroundTask, Db};
 
 use function array_keys;
@@ -74,31 +75,8 @@ final class Maintainer extends BackgroundTask
 			[]
 		);
 
-		$comments = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
-			$comments[] = $row['id'];
-		}
-
-		Db::$db->free_result($result);
-
-		if ($comments) {
-			Db::$db->query('', '
-				DELETE FROM {db_prefix}lp_comments
-				WHERE id IN ({array_int:items})',
-				[
-					'items' => $comments,
-				]
-			);
-
-			Db::$db->query('', '
-				DELETE FROM {db_prefix}lp_params
-				WHERE item_id IN ({array_int:items})
-					AND type = {literal:comment}',
-				[
-					'items' => $comments,
-				]
-			);
-		}
+		$commentRepository = new CommentRepository();
+		$commentRepository->removeFromResult($result);
 	}
 
 	private function updateNumComments(): void

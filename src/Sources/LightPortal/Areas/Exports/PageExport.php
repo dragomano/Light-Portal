@@ -7,7 +7,7 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Areas\Exports;
@@ -17,9 +17,9 @@ use Bugo\Compat\{Lang, Sapi, User, Utils};
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Utils\ItemList;
 use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\Str;
 use DomDocument;
 use DOMException;
-use Nette\Utils\Html;
 
 use function in_array;
 use function trim;
@@ -101,10 +101,10 @@ final class PageExport extends AbstractExport
 						'value' => Lang::$txt['lp_title']
 					],
 					'data' => [
-						'function' => static fn($entry) => Html::el('a', [
+						'function' => static fn($entry) => Str::html('a', [
 								'class' => 'bbc_link' . ($entry['is_front'] ? ' new_posts' : ''),
 								'href'  => $entry['is_front'] ? Config::$scripturl : (LP_PAGE_URL . $entry['slug']),
-							])->setText($entry['title'])->toHtml(),
+							])->setText($entry['title']),
 						'class' => 'word_break'
 					],
 					'sort' => [
@@ -114,10 +114,17 @@ final class PageExport extends AbstractExport
 				],
 				'actions' => [
 					'header' => [
-						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);">'
+						'value' => Str::html('input', [
+							'type' => 'checkbox',
+							'onclick' => 'invertAll(this, this.form);',
+						])
 					],
 					'data' => [
-						'function' => static fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="pages[]">',
+						'function' => static fn($entry) => Str::html('input', [
+							'type' => 'checkbox',
+							'value' => $entry['id'],
+							'name' => 'pages[]',
+						]),
 						'class' => 'centertext'
 					]
 				]
@@ -128,10 +135,21 @@ final class PageExport extends AbstractExport
 			'additional_rows' => [
 				[
 					'position' => 'below_table_data',
-					'value' => '
-						<input type="hidden">
-						<input type="submit" name="export_selection" value="' . Lang::$txt['lp_export_selection'] . '" class="button">
-						<input type="submit" name="export_all" value="' . Lang::$txt['lp_export_all'] . '" class="button">'
+					'value' => Str::html('input', [
+							'type' => 'hidden',
+						]) .
+						Str::html('input', [
+							'type' => 'submit',
+							'name' => 'export_selection',
+							'value' => Lang::$txt['lp_export_selection'],
+							'class' => 'button',
+						]) .
+						Str::html('input', [
+							'type' => 'submit',
+							'name' => 'export_all',
+							'value' => Lang::$txt['lp_export_all'],
+							'class' => 'button',
+						])
 				]
 			]
 		];
@@ -148,8 +166,9 @@ final class PageExport extends AbstractExport
 
 		$result = Db::$db->query('', '
 			SELECT
-				p.page_id, p.category_id, p.author_id, p.slug, p.description, p.content, p.type, p.permissions,
-				p.status, p.num_views, p.num_comments, p.created_at, p.updated_at, pt.lang, pt.value AS title, pp.name, pp.value,
+				p.page_id, p.category_id, p.author_id, p.slug, p.description, p.content, p.type, p.entry_type,
+				p.permissions, p.status, p.num_views, p.num_comments, p.created_at, p.updated_at, p.deleted_at,
+				pt.lang, pt.value AS title, pp.name, pp.value,
 				com.id, com.parent_id, com.author_id AS com_author_id, com.message, com.created_at AS com_created_at
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS pt ON (p.page_id = pt.item_id AND pt.type = {literal:page})
@@ -171,12 +190,14 @@ final class PageExport extends AbstractExport
 				'description'  => trim($row['description'] ?? ''),
 				'content'      => $row['content'],
 				'type'         => $row['type'],
+				'entry_type'   => $row['entry_type'],
 				'permissions'  => $row['permissions'],
 				'status'       => $row['status'],
 				'num_views'    => $row['num_views'],
 				'num_comments' => $row['num_comments'],
 				'created_at'   => $row['created_at'],
 				'updated_at'   => $row['updated_at'],
+				'deleted_at'   => $row['deleted_at'],
 			];
 
 			if ($row['lang'] && $row['title']) {
@@ -222,7 +243,7 @@ final class PageExport extends AbstractExport
 				$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
 				foreach ($item as $key => $val) {
 					$xmlName = $xmlElement->appendChild(
-						in_array($key, ['page_id', 'category_id', 'author_id', 'permissions', 'status', 'num_views', 'num_comments', 'created_at', 'updated_at'])
+						in_array($key, ['page_id', 'category_id', 'author_id', 'permissions', 'status', 'num_views', 'num_comments', 'created_at', 'updated_at', 'deleted_at'])
 							? $xml->createAttribute($key)
 							: $xml->createElement($key)
 					);

@@ -7,7 +7,7 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Enums;
@@ -28,13 +28,13 @@ enum PortalHook
 	case findPageErrors;
 	case frontAssets;
 	case frontBoards;
-	case frontBoardsOutput;
+	case frontBoardsRow;
 	case frontLayouts;
 	case frontModes;
 	case frontPages;
-	case frontPagesOutput;
+	case frontPagesRow;
 	case frontTopics;
-	case frontTopicsOutput;
+	case frontTopicsRow;
 	case importBlocks;
 	case importCategories;
 	case importPages;

@@ -7,18 +7,19 @@
  * @copyright 2019-2024 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.7
+ * @version 2.8
  */
 
 namespace Bugo\LightPortal\Areas\Configs;
 
-use Bugo\Compat\{Actions\ACP, Config, Lang, Theme, User, Utils};
+use Bugo\Compat\{Actions\ACP, Config, Lang};
+use Bugo\Compat\{Theme, User, Utils};
 use Bugo\LightPortal\Enums\VarType;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionTrait;
+use Bugo\LightPortal\Utils\Str;
 
-use Nette\Utils\Html;
 use function asort;
 
 if (! defined('SMF'))
@@ -30,11 +31,6 @@ final class ExtraConfig extends AbstractConfig
 	use RequestTrait;
 	use SessionTrait;
 
-	/**
-	 * Output page and block settings
-	 *
-	 * Выводим настройки страниц и блоков
-	 */
 	public function show(): void
 	{
 		Utils::$context['page_title'] = Utils::$context['settings_title'] = Lang::$txt['lp_extra'];
@@ -46,7 +42,7 @@ final class ExtraConfig extends AbstractConfig
 		unset(Lang::$txt['lp_comment_block_set'][0], Lang::$txt['lp_comment_block_set'][1]);
 		asort(Lang::$txt['lp_comment_block_set']);
 
-		Lang::$txt['lp_fa_source_title'] .= ' ' . Html::el('img', [
+		Lang::$txt['lp_fa_source_title'] .= ' ' . Str::html('img', [
 			'class' => 'floatright',
 			'src'   => 'https://data.jsdelivr.com/v1/package/npm/@fortawesome/fontawesome-free/badge?style=rounded',
 			'alt'   => '',
