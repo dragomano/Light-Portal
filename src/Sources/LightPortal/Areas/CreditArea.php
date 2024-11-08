@@ -17,7 +17,7 @@ use Bugo\LightPortal\Enums\{Hook, PortalHook};
 use Bugo\LightPortal\EventManager;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\SMFHookTrait;
-use Nette\Utils\Html;
+use Bugo\LightPortal\Utils\Str;
 
 use function date;
 use function shuffle;
@@ -65,20 +65,20 @@ final class CreditArea
 			? 'https://dragomano.ru/mods/light-portal'
 			: 'https://custom.simplemachines.org/mods/index.php?mod=4244';
 
-		$license = Lang::$txt['credits_license'] . ': ' . Html::el('a', [
+		$license = Lang::$txt['credits_license'] . ': ' . Str::html('a', [
 			'href'   => 'https://github.com/dragomano/Light-Portal/blob/master/LICENSE',
 			'target' => '_blank',
 			'rel'    => 'noopener',
-		])->setText('GNU GPLv3')->toHtml();
+		])->setText('GNU GPLv3');
 
-		return Html::el('a', [
+		return Str::html('a', [
 			'href'   => $link,
 			'target' => '_blank',
 			'rel'    => 'noopener',
 			'title'  => LP_VERSION,
-		])->setText(LP_NAME)->toHtml() . ' | &copy; ' . Html::el('a', [
+		])->setText(LP_NAME) . ' | &copy; ' . Str::html('a', [
 			'href' => Config::$scripturl . '?action=credits;sa=light_portal',
-		])->setHtml('2019&ndash;' . date('Y'))->toHtml() . ', Bugo | ' . $license;
+		])->setHtml('2019&ndash;' . date('Y')) . ', Bugo | ' . $license;
 	}
 
 	private function prepareComponents(): void

@@ -13,11 +13,10 @@
 namespace Bugo\LightPortal\Areas\Traits;
 
 use Bugo\Compat\{Config, Lang};
-use Nette\Utils\Html;
 use Bugo\Compat\{Security, Theme, Utils};
 use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Enums\ContentType;
-use Bugo\LightPortal\Utils\Editor;
+use Bugo\LightPortal\Utils\{Editor, Str};
 
 use function array_keys;
 use function array_unique;
@@ -64,16 +63,16 @@ trait AreaTrait
 			? [Config::$language]
 			: array_unique([Utils::$context['user']['language'], Config::$language]);
 
-		$value = Html::el('div');
+		$value = Str::html('div');
 
 		if (count(Utils::$context['lp_languages']) > 1) {
-			$nav = Html::el('nav');
+			$nav = Str::html('nav');
 			if (!Utils::$context['right_to_left']) {
 				$nav->class('floatleft');
 			}
 
 			foreach (Utils::$context['lp_languages'] as $key => $lang) {
-				$link = Html::el('a')
+				$link = Str::html('a')
 					->class('button floatnone')
 					->setText($lang['name'])
 					->setAttribute(':class', "{ 'active': tab === '$key' }")
@@ -87,10 +86,10 @@ trait AreaTrait
 		}
 
 		foreach (array_keys(Utils::$context['lp_languages']) as $key) {
-			$inputDiv = Html::el('div')
+			$inputDiv = Str::html('div')
 				->setAttribute('x-show', "tab === '$key'");
 
-			$input = Html::el('input')
+			$input = Str::html('input')
 				->setAttribute('type', 'text')
 				->setAttribute('name', "title_$key")
 				->setAttribute('x-model', "title_$key")
@@ -125,7 +124,7 @@ trait AreaTrait
 
 			// Add label for html type
 			if (isset($data['label']['html']) && $data['label']['html'] !== ' ') {
-				Utils::$context['posting_fields'][$item]['label']['html'] = Html::el('label')
+				Utils::$context['posting_fields'][$item]['label']['html'] = Str::html('label')
 					->setAttribute('for', $item)
 					->setText($data['label']['html']);
 			}
@@ -133,7 +132,7 @@ trait AreaTrait
 			// Fancy checkbox
 			if (isset($data['input']['type']) && $data['input']['type'] === 'checkbox') {
 				$data['input']['attributes']['class'] = 'checkbox';
-				$data['input']['after'] = Html::el('label', ['class' => 'label'])
+				$data['input']['after'] = Str::html('label', ['class' => 'label'])
 					->setAttribute('for', $item) . (Utils::$context['posting_fields'][$item]['input']['after'] ?? '');
 
 				Utils::$context['posting_fields'][$item] = $data;
@@ -156,7 +155,7 @@ trait AreaTrait
 
 	public function getFloatSpan(string $text, string $direction = 'left'): string
 	{
-		return Html::el('span', ['class' => "float$direction"])->setHtml($text)->toHtml();
+		return Str::html('span', ['class' => "float$direction"])->setHtml($text)->toHtml();
 	}
 
 	public function getDefaultTypes(): array

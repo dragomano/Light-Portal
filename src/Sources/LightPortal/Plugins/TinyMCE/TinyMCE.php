@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 05.11.24
+ * @version 08.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\TinyMCE;
@@ -16,7 +16,7 @@ namespace Bugo\LightPortal\Plugins\TinyMCE;
 use Bugo\Compat\{Lang, Theme, Utils};
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
-use Nette\Utils\Html;
+use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -30,7 +30,7 @@ class TinyMCE extends Plugin
 
 	public function addSettings(Event $e): void
 	{
-		$link = Html::el('a', [
+		$link = Str::html('a', [
 			'class'  => 'bbc_link',
 			'target' => '_blank',
 			'href'   => 'https://www.tiny.cloud/auth/signup/',

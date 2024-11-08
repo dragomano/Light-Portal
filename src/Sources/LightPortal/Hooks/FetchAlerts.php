@@ -15,7 +15,7 @@ namespace Bugo\LightPortal\Hooks;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
-use Nette\Utils\Html;
+use Bugo\LightPortal\Utils\Str;
 
 use function in_array;
 use function strtr;
@@ -33,7 +33,7 @@ class FetchAlerts
 				$icon = $alert['content_action'] === 'page_unapproved' ? 'news' : $icon;
 
 				if ($alert['sender_id'] !== User::$info['id']) {
-					$alerts[$id]['icon'] = Html::el('span', ['class' => 'alert_icon main_icons ' . $icon])->toHtml();
+					$alerts[$id]['icon'] = Str::html('span', ['class' => 'alert_icon main_icons ' . $icon]);
 					$alerts[$id]['text'] = Lang::getTxt(
 						'alert_' . $alert['content_type'] . '_' . $alert['content_action'],
 						['gender' => $alert['extra']['sender_gender']]
@@ -43,8 +43,8 @@ class FetchAlerts
 
 					$substitutions = [
 						'{member_link}' => $alert['sender_id'] && $alert['show_links']
-							? Html::el('a')->href($link)->setText($alert['sender_name'])->toHtml()
-							: Html::el('strong')->setText($alert['sender_name'])->toHtml(),
+							? Str::html('a')->href($link)->setText($alert['sender_name'])
+							: Str::html('strong')->setText($alert['sender_name']),
 						'{content_subject}' => '(' . $alert['extra']['content_subject'] . ')'
 					];
 

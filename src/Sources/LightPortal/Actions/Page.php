@@ -17,10 +17,9 @@ use Bugo\Compat\{PageIndex, Theme, User, Utils};
 use Bugo\LightPortal\Enums\{EntryType, PortalHook};
 use Bugo\LightPortal\EventManager;
 use Bugo\LightPortal\Repositories\PageRepository;
-use Bugo\LightPortal\Utils\{CacheTrait, Content, EntityDataTrait};
-use Bugo\LightPortal\Utils\{Icon, RequestTrait, SessionTrait, Setting, Str};
+use Bugo\LightPortal\Utils\{CacheTrait, Content, EntityDataTrait, Icon};
+use Bugo\LightPortal\Utils\{RequestTrait, SessionTrait, Setting, Str};
 use IntlException;
-use Nette\Utils\Html;
 
 use function array_column;
 use function array_search;
@@ -234,10 +233,10 @@ final class Page implements PageInterface
 						'value' => Lang::$txt['lp_title']
 					],
 					'data' => [
-						'function' => static fn($entry) => Html::el('a', [
+						'function' => static fn($entry) => Str::html('a', [
 								'class' => 'bbc_link' . ($entry['is_front'] ? ' new_posts' : ''),
 								'href'  => $entry['is_front'] ? Config::$scripturl : (LP_PAGE_URL . $entry['slug']),
-							])->setText($entry['title'])->toHtml(),
+							])->setText($entry['title']),
 						'class' => 'word_break'
 					],
 					'sort' => [
@@ -252,10 +251,9 @@ final class Page implements PageInterface
 					'data' => [
 						'function' => static fn($entry) => empty($entry['author']['name'])
 							? Lang::$txt['guest_title']
-							: Html::el('a')
+							: Str::html('a')
 								->href($entry['author']['link'])
-								->setText($entry['author']['name'])
-								->toHtml(),
+								->setText($entry['author']['name']),
 						'class' => 'centertext'
 					],
 					'sort' => [

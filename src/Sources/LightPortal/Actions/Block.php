@@ -16,7 +16,6 @@ use Bugo\Compat\{Config, Theme, Utils};
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Utils\{Content, Icon};
 use Bugo\LightPortal\Utils\{RequestTrait, Setting, Str};
-use Nette\Utils\Html;
 
 use function array_filter;
 use function array_flip;
@@ -70,7 +69,7 @@ final class Block implements BlockInterface
 				$icon  = Icon::parse(Utils::$context['lp_blocks'][$data['placement']][$item]['icon']);
 
 				if (! empty($data['parameters']['link_in_title'])) {
-					$title = Html::el('a')->href($data['parameters']['link_in_title'])->setText($title)->toHtml();
+					$title = Str::html('a')->href($data['parameters']['link_in_title'])->setText($title);
 				}
 			} else {
 				$title = $icon = '';

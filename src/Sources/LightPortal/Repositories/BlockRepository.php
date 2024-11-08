@@ -21,7 +21,6 @@ use Bugo\LightPortal\EventManager;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\{CacheTrait, EntityDataTrait};
 use Bugo\LightPortal\Utils\{Icon, RequestTrait, Setting, Str};
-use Nette\Utils\Html;
 
 use function array_filter;
 use function array_flip;
@@ -400,7 +399,7 @@ final class BlockRepository extends AbstractRepository
 			? Lang::$txt['lp_addon_not_activated']
 			: Lang::$txt['lp_addon_not_installed'];
 
-		Utils::$context['lp_missing_block_types'][$type] = Html::el('span')->class('error')
+		Utils::$context['lp_missing_block_types'][$type] = Str::html('span')->class('error')
 			->setText(sprintf($message, $plugin));
 	}
 

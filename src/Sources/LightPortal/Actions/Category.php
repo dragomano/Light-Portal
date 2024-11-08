@@ -15,9 +15,8 @@ namespace Bugo\LightPortal\Actions;
 use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, User, Utils};
 use Bugo\LightPortal\Enums\{EntryType, Permission, Status};
-use Bugo\LightPortal\Utils\{Icon, ItemList, RequestTrait};
+use Bugo\LightPortal\Utils\{Icon, ItemList, RequestTrait, Str};
 use IntlException;
-use Nette\Utils\Html;
 
 use function array_key_exists;
 use function count;
@@ -197,11 +196,11 @@ final class Category extends AbstractPageList
 						'value' => Lang::$txt['lp_category']
 					],
 					'data' => [
-						'function' => static fn($entry) => $entry['icon'] . ' ' . Html::el('a')
+						'function' => static fn($entry) => $entry['icon'] . ' ' . Str::html('a')
 							->href($entry['link'])
-							->setText($entry['title'])
-							->toHtml() . (empty($entry['description']) ? '' : Html::el('p', ['class' => 'smalltext'])
-							->setText($entry['description'])->toHtml())
+							->setText($entry['title']) . (empty($entry['description']) ? '' :
+								Str::html('p', ['class' => 'smalltext'])
+							->setText($entry['description']))
 					],
 					'sort' => [
 						'default' => 'title DESC',

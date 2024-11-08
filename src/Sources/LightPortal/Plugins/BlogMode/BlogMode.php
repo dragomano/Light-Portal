@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 08.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\BlogMode;
@@ -18,8 +18,7 @@ use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Repositories\PageRepository;
-use Bugo\LightPortal\Utils\{Icon, ItemList};
-use Nette\Utils\Html;
+use Bugo\LightPortal\Utils\{Icon, ItemList, Str};
 
 use function array_column;
 use function array_keys;
@@ -262,10 +261,9 @@ class BlogMode extends Plugin
 						'value' => Lang::$txt['lp_title'],
 					],
 					'data' => [
-						'function' => static fn($entry) => Html::el('a', ['class' => 'bbc_link'])
+						'function' => static fn($entry) => Str::html('a', ['class' => 'bbc_link'])
 							->href(LP_PAGE_URL . $entry['slug'])
-							->setText($entry['title'])
-							->toHtml(),
+							->setText($entry['title']),
 						'class' => 'word_break',
 					],
 					'sort' => [
@@ -283,11 +281,10 @@ class BlogMode extends Plugin
 					'style' => 'width: 8%',
 				],
 				'data' => [
-					'function' => static fn($entry) => Html::el('a', ['class' => 'button'])
+					'function' => static fn($entry) => Str::html('a', ['class' => 'button'])
 						->title(Lang::$txt['modify'])
 						->href(Config::$scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'])
-						->setHtml(Html::el('span', ['class' => 'main_icons modify_button']))
-						->toHtml(),
+						->setHtml(Str::html('span', ['class' => 'main_icons modify_button'])),
 					'class' => 'centertext',
 				],
 			];

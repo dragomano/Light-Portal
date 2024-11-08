@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 08.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\TagList;
@@ -20,8 +20,8 @@ use Bugo\LightPortal\Areas\Fields\RadioField;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Utils\Str;
 use Laminas\Tag\Cloud;
-use Nette\Utils\Html;
 
 use function array_combine;
 use function array_map;
@@ -150,11 +150,11 @@ class TagList extends Block
 			}
 
 			foreach ($tagList as $tag) {
-				echo Html::el('a', ['href' => $tag['link'], 'class' => 'button'])
+				echo Str::html('a', ['href' => $tag['link'], 'class' => 'button'])
 					->setHtml(
 					($tag['icon'] ?? '') .
 						$tag['title'] .	' ' .
-						Html::el('span', ['class' => 'amt'])->setText($tag['frequency'])
+						Str::html('span', ['class' => 'amt'])->setText($tag['frequency'])
 					);
 			}
 		} else {

@@ -17,9 +17,9 @@ use Bugo\Compat\{Lang, Sapi, User, Utils};
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Utils\ItemList;
 use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\Str;
 use DomDocument;
 use DOMException;
-use Nette\Utils\Html;
 
 use function in_array;
 use function trim;
@@ -101,10 +101,10 @@ final class PageExport extends AbstractExport
 						'value' => Lang::$txt['lp_title']
 					],
 					'data' => [
-						'function' => static fn($entry) => Html::el('a', [
+						'function' => static fn($entry) => Str::html('a', [
 								'class' => 'bbc_link' . ($entry['is_front'] ? ' new_posts' : ''),
 								'href'  => $entry['is_front'] ? Config::$scripturl : (LP_PAGE_URL . $entry['slug']),
-							])->setText($entry['title'])->toHtml(),
+							])->setText($entry['title']),
 						'class' => 'word_break'
 					],
 					'sort' => [
@@ -114,13 +114,13 @@ final class PageExport extends AbstractExport
 				],
 				'actions' => [
 					'header' => [
-						'value' => Html::el('input', [
+						'value' => Str::html('input', [
 							'type' => 'checkbox',
 							'onclick' => 'invertAll(this, this.form);',
 						])
 					],
 					'data' => [
-						'function' => static fn($entry) => Html::el('input', [
+						'function' => static fn($entry) => Str::html('input', [
 							'type' => 'checkbox',
 							'value' => $entry['id'],
 							'name' => 'pages[]',
@@ -135,16 +135,16 @@ final class PageExport extends AbstractExport
 			'additional_rows' => [
 				[
 					'position' => 'below_table_data',
-					'value' => Html::el('input', [
+					'value' => Str::html('input', [
 							'type' => 'hidden',
 						]) .
-						Html::el('input', [
+						Str::html('input', [
 							'type' => 'submit',
 							'name' => 'export_selection',
 							'value' => Lang::$txt['lp_export_selection'],
 							'class' => 'button',
 						]) .
-						Html::el('input', [
+						Str::html('input', [
 							'type' => 'submit',
 							'name' => 'export_all',
 							'value' => Lang::$txt['lp_export_all'],

@@ -16,7 +16,6 @@ use Bugo\Compat\Config;
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\User;
 use Exception;
-use Nette\Utils\Html;
 
 use function array_map;
 use function in_array;
@@ -46,7 +45,7 @@ class Avatar
 			return '';
 
 		return User::$memberContext[$userId]['avatar']['image']
-			?? Html::el('img', [
+			?? Str::html('img', [
 				'class'   => 'avatar',
 				'width'   => 100,
 				'height'  => 100,

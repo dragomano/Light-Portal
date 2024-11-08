@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 08.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\ThemeSwitcher;
@@ -17,7 +17,7 @@ use Bugo\Compat\Theme;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
-use Nette\Utils\Html;
+use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -50,16 +50,16 @@ class ThemeSwitcher extends Block
 
 		$id = $e->args->data->id;
 
-		$container = Html::el('div')
+		$container = Str::html('div')
 			->class('themeswitcher centertext');
 
-		$select = Html::el('select')
+		$select = Str::html('select')
 			->id("lp_block_{$id}_themeswitcher")
 			->setAttribute('onchange', "lp_block_{$id}_themeswitcher_change();")
 			->setAttribute('disabled', count($themes) < 2 ? 'disabled' : null);
 
 		foreach ($themes as $themeId => $name) {
-			$option = Html::el('option')
+			$option = Str::html('option')
 				->value($themeId)
 				->setText($name);
 
@@ -72,7 +72,7 @@ class ThemeSwitcher extends Block
 
 		$container->addHtml($select);
 
-		$script = Html::el('script')
+		$script = Str::html('script')
 			->setHtml("
 			function lp_block_{$id}_themeswitcher_change() {
 				let lp_block_{$id}_themeswitcher_theme_id = document.getElementById('lp_block_{$id}_themeswitcher').value;

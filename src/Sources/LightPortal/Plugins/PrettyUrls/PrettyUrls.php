@@ -8,14 +8,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 24.06.24
+ * @version 08.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\PrettyUrls;
 
 use Bugo\Compat\{Config, Utils};
 use Bugo\LightPortal\Plugins\Plugin;
-use Nette\Utils\Html;
+use Bugo\LightPortal\Utils\Str;
 
 use function is_file;
 use function preg_match;
@@ -65,12 +65,11 @@ class PrettyUrls extends Plugin
 				'priority' => self::PRIORITY,
 				'rule' => 'RewriteRule ^' . LP_PAGE_PARAM . '/([^/]+)/?$ ./index.php?pretty;' . LP_PAGE_PARAM . '=$1 [L,QSA]',
 			],
-			'title' => Html::el('a')
+			'title' => Str::html('a')
 				->href('https://custom.simplemachines.org/mods/index.php?mod=4244')
 				->target('_blank')
 				->rel('noopener')
-				->setText(LP_NAME)
-				->toHtml() . ' pages',
+				->setText(LP_NAME) . ' pages',
 		];
 
 		Config::updateModSettings(['pretty_filters' => serialize($prettyFilters)]);

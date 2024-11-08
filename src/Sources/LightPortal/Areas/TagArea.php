@@ -22,7 +22,6 @@ use Bugo\LightPortal\Models\TagModel;
 use Bugo\LightPortal\Repositories\TagRepository;
 use Bugo\LightPortal\Utils\{CacheTrait, Icon, ItemList};
 use Bugo\LightPortal\Utils\{Language, RequestTrait, Str};
-use Nette\Utils\Html;
 
 use const LP_NAME;
 
@@ -101,10 +100,9 @@ final class TagArea
 					],
 					'data' => [
 						'function' => static fn($entry) => $entry['status']
-							? Html::el('a', ['class' => 'bbc_link'])
+							? Str::html('a', ['class' => 'bbc_link'])
 								->href(LP_BASE_URL . ';sa=tags;id=' . $entry['id'])
 								->setText($entry['title'])
-								->toHtml()
 							: $entry['title'],
 						'class' => 'word_break',
 					],
@@ -152,13 +150,13 @@ final class TagArea
 								<div class="roundframe" x-show="showContextMenu">
 									<ul>
 										<li>
-											' . Html::el('a')
+											' . Str::html('a')
 												->setAttribute('href', Config::$scripturl . "?action=admin;area=lp_tags;sa=edit;id={$entry['id']}")
 												->class('button')
 												->setText(Lang::$txt['modify']) . '
 										</li>
 										<li>
-											' . Html::el('a')
+											' . Str::html('a')
 												->setAttribute('x-on:click.prevent', 'showContextMenu = false; tag.remove($root)')
 												->class('button error')
 												->setText(Lang::$txt['remove']) . '
@@ -177,9 +175,9 @@ final class TagArea
 			'javascript' => 'const tag = new Tag();',
 		];
 
-		$listOptions['title'] = Html::el('span', ['class' => 'floatright'])
+		$listOptions['title'] = Str::html('span', ['class' => 'floatright'])
 			->addHtml(
-				Html::el('a', [
+				Str::html('a', [
 					'href' => Config::$scripturl . '?action=admin;area=lp_tags;sa=add;' . Utils::$context['session_var'] . '=' . Utils::$context['session_id'],
 					'x-data' => '',
 				])
@@ -188,9 +186,7 @@ final class TagArea
 					' @mouseover="tag.toggleSpin($event.target)" @mouseout="tag.toggleSpin($event.target)" class=',
 					Icon::get('plus', Lang::$txt['lp_tags_add'])
 				))
-				->toHtml()
-			)
-			->toHtml() . $listOptions['title'];
+			) . $listOptions['title'];
 
 		new ItemList($listOptions);
 	}

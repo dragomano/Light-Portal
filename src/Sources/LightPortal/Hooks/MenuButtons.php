@@ -17,7 +17,6 @@ use Bugo\LightPortal\Actions\Block;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Utils\{Setting, Str};
-use Nette\Utils\Html;
 
 use function array_keys;
 use function array_merge;
@@ -152,7 +151,7 @@ class MenuButtons
 			$pageButtons['portal_page_' . $item['slug']] = [
 				'title' => (
 					$item['icon']
-						? Html::el('span', ['class' => 'portal_menu_icons fa-fw ' . $item['icon']])->toHtml()
+						? Str::html('span', ['class' => 'portal_menu_icons fa-fw ' . $item['icon']])
 						: ''
 					) . Str::getTranslatedTitle($item['titles']),
 				'href'  => LP_PAGE_URL . $item['slug'],

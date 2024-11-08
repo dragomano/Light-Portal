@@ -18,7 +18,7 @@ use Bugo\LightPortal\Enums\VarType;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionTrait;
-use Nette\Utils\Html;
+use Bugo\LightPortal\Utils\Str;
 
 use function asort;
 
@@ -42,7 +42,7 @@ final class ExtraConfig extends AbstractConfig
 		unset(Lang::$txt['lp_comment_block_set'][0], Lang::$txt['lp_comment_block_set'][1]);
 		asort(Lang::$txt['lp_comment_block_set']);
 
-		Lang::$txt['lp_fa_source_title'] .= ' ' . Html::el('img', [
+		Lang::$txt['lp_fa_source_title'] .= ' ' . Str::html('img', [
 			'class' => 'floatright',
 			'src'   => 'https://data.jsdelivr.com/v1/package/npm/@fortawesome/fontawesome-free/badge?style=rounded',
 			'alt'   => '',

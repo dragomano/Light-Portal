@@ -24,8 +24,7 @@ use Bugo\LightPortal\Enums\{Hook, PortalHook};
 use Bugo\LightPortal\EventManager;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\{CacheTrait, Icon, RequestTrait};
-use Bugo\LightPortal\Utils\{SafeRequireTrait, Setting, SMFHookTrait};
-use Nette\Utils\Html;
+use Bugo\LightPortal\Utils\{SafeRequireTrait, Setting, SMFHookTrait, Str};
 
 use function array_keys;
 use function array_merge;
@@ -241,7 +240,7 @@ final class ConfigArea
 			'title' => LP_NAME,
 			'tabs' => [
 				'basic' => [
-					'description' => Html::el('img')
+					'description' => Str::html('img')
 						->class('floatright')
 						->setAttribute('src', 'https://user-images.githubusercontent.com/229402/143980485-16ba84b8-9d8d-4c06-abeb-af949d594f66.png')
 						->setAttribute('alt', LP_NAME . ' logo') .

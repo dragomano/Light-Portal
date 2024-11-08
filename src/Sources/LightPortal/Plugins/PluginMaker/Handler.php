@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 08.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
@@ -25,7 +25,6 @@ use Bugo\LightPortal\Plugins\{Block, Event, Plugin};
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\{Language, Str};
 use Nette\PhpGenerator\{PhpFile, PhpNamespace, Printer};
-use Nette\Utils\Html;
 
 use function array_filter;
 use function array_key_exists;
@@ -66,10 +65,9 @@ class Handler extends Plugin
 		];
 
 		Lang::$txt['lp_plugin_maker']['add_info'] = sprintf(Lang::$txt['lp_plugin_maker']['add_info'], sprintf(
-			Html::el('strong')
+			Str::html('strong')
 				->style('color', 'initial')
-				->setHtml('%s/' . Html::el('span', ['x-ref' => 'plugin_name'])->setText('%s'))
-				->toHtml(),
+				->setHtml('%s/' . Str::html('span', ['x-ref' => 'plugin_name'])->setText('%s')),
 			LP_ADDON_DIR,
 			self::PLUGIN_NAME,
 		));

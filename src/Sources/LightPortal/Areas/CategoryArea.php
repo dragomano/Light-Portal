@@ -23,7 +23,6 @@ use Bugo\LightPortal\Models\CategoryModel;
 use Bugo\LightPortal\Repositories\CategoryRepository;
 use Bugo\LightPortal\Utils\{CacheTrait, Icon, ItemList};
 use Bugo\LightPortal\Utils\{Language, RequestTrait, Str};
-use Nette\Utils\Html;
 
 use function str_replace;
 
@@ -108,10 +107,9 @@ final class CategoryArea
 					],
 					'data' => [
 						'function' => static fn($entry) => $entry['status']
-							? Html::el('a', ['class' => 'bbc_link'])
+							? Str::html('a', ['class' => 'bbc_link'])
 								->href(LP_BASE_URL . ';sa=categories;id=' . $entry['id'])
 								->setText($entry['title'])
-								->toHtml()
 							: $entry['title'],
 						'class' => 'word_break',
 					],
@@ -125,9 +123,9 @@ final class CategoryArea
 						'value' => Lang::$txt['lp_block_priority']
 					],
 					'data' => [
-						'function' => static fn($entry) => Html::el('div')->data('id', $entry['id'])
-							->setHtml($entry['priority'] . ' ' . Icon::get('sort', Lang::$txt['lp_action_move'], 'handle '))
-							->toHtml(),
+						'function' => static fn($entry) => Str::html('div')->data('id', $entry['id'])
+							->setHtml($entry['priority'] . ' ' .
+								Icon::get('sort', Lang::$txt['lp_action_move'], 'handle ')),
 						'class' => 'centertext'
 					],
 					'sort' => [
@@ -192,9 +190,9 @@ final class CategoryArea
 			],
 		];
 
-		$listOptions['title'] = Html::el('span', ['class' => 'floatright'])
+		$listOptions['title'] = Str::html('span', ['class' => 'floatright'])
 			->addHtml(
-				Html::el('a', [
+				Str::html('a', [
 					'href' => Config::$scripturl . '?action=admin;area=lp_categories;sa=add;' . Utils::$context['session_var'] . '=' . Utils::$context['session_id'],
 					'x-data' => '',
 				])
@@ -203,9 +201,7 @@ final class CategoryArea
 					' @mouseover="category.toggleSpin($event.target)" @mouseout="category.toggleSpin($event.target)" class=',
 					Icon::get('plus', Lang::$txt['lp_categories_add'])
 				))
-				->toHtml()
-			)
-			->toHtml() . $listOptions['title'];
+			) . $listOptions['title'];
 
 		new ItemList($listOptions);
 	}

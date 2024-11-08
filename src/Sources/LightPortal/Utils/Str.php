@@ -15,6 +15,7 @@ namespace Bugo\LightPortal\Utils;
 use Bugo\Compat\Config;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
+use Nette\Utils\Html;
 
 use function html_entity_decode;
 use function preg_match;
@@ -68,5 +69,10 @@ class Str
 			return '';
 
 		return $result;
+	}
+
+	public static function html(string $name, array $params = []): Html
+	{
+		return Html::el($name, $params);
 	}
 }

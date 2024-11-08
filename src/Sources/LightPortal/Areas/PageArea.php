@@ -31,7 +31,6 @@ use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Utils\{CacheTrait, Content, DateTime, EntityDataTrait};
 use Bugo\LightPortal\Utils\{Icon, ItemList, Language, RequestTrait, Setting, Str};
 use IntlException;
-use Nette\Utils\Html;
 
 use function array_column;
 use function array_diff;
@@ -187,13 +186,13 @@ final class PageArea
 						'value' => Lang::$txt['lp_title'],
 					],
 					'data' => [
-						'function' => fn($entry) => Html::el('i', [
+						'function' => fn($entry) => Str::html('i', [
 								'class' => $this->getPageIcon($entry['type']),
 								'title' => Utils::$context['lp_content_types'][$entry['type']] ?? strtoupper((string) $entry['type']),
-							])->toHtml() . ' ' . Html::el('a', [
+							]) . ' ' . Str::html('a', [
 								'class' => 'bbc_link' . ($entry['is_front'] ? ' _highlight' : ''),
 								'href'  => $entry['is_front'] ? Config::$scripturl : (LP_PAGE_URL . $entry['slug']),
-							])->setText($entry['title'])->toHtml(),
+							])->setText($entry['title']),
 						'class' => 'word_break',
 					],
 					'sort' => [
@@ -209,27 +208,23 @@ final class PageArea
 						'function' => fn($entry) => $entry['status'] >= count(Status::cases()) - 1
 							? Lang::$txt['lp_page_status_set'][$entry['status']] ?? Lang::$txt['no']
 							: (Utils::$context['allow_light_portal_approve_pages']
-								? Html::el('div', [
+								? Str::html('div', [
 										'data-id' => $entry['id'],
 										'x-data'  => '{ status: ' . ($entry['status'] === $this->status ? 'true' : 'false') . ' }',
 										'x-init'  => '$watch(\'status\', value => page.toggleStatus($el))',
-									])->setHtml(
-										Html::el('span', [
-											':class' => '{ \'on\': status, \'off\': !status }',
-											':title' => 'status ? \'' . Lang::$txt['lp_action_off'] . '\' : \'' . Lang::$txt['lp_action_on'] . '\'',
-											'x-on:click.prevent' => 'status = !status',
-										]
-									)
-								)->toHtml()
-								: Html::el('div', [
+									])->setHtml(Str::html('span', [
+										':class' => '{ \'on\': status, \'off\': !status }',
+										':title' => 'status ? \'' . Lang::$txt['lp_action_off'] . '\' : \'' . Lang::$txt['lp_action_on'] . '\'',
+										'x-on:click.prevent' => 'status = !status',
+									])
+								)
+								: Str::html('div', [
 										'x-data' => '{ status: ' . ($entry['status'] === $this->status ? 'true' : 'false') . ' }',
-									])->setHtml(
-										Html::el('span', [
-											':class' => '{ \'on\': status, \'off\': !status }',
-											'style'  => 'cursor: inherit;',
-										]
-									)
-								)->toHtml()
+									])->setHtml(Str::html('span', [
+										':class' => '{ \'on\': status, \'off\': !status }',
+										'style'  => 'cursor: inherit;',
+									])
+								)
 							),
 						'class' => 'centertext',
 					],
@@ -252,27 +247,27 @@ final class PageArea
 								</button>
 								<div class="roundframe" x-show="showContextMenu">
 									<ul>' . ($this->request()->has('deleted') ? (
-											Html::el('li')->addHtml(
-												Html::el('a')
+											Str::html('li')->addHtml(
+												Str::html('a')
 													->setAttribute('x-on:click.prevent', 'showContextMenu = false; page.restore($root)')
 													->class('button')
 													->setText(Lang::$txt['restore_message'])
 											) .
-											Html::el('li')->addHtml(
-												Html::el('a')
+											Str::html('li')->addHtml(
+												Str::html('a')
 													->setAttribute('x-on:click.prevent', 'showContextMenu = false; page.removeForever($root)')
 													->class('button error')
 													->setText(Lang::$txt['lp_action_remove_permanently'])
 											)
 										) : (
-											Html::el('li')->addHtml(
-												Html::el('a')
+											Str::html('li')->addHtml(
+												Str::html('a')
 													->setAttribute('href', Config::$scripturl . "?action=admin;area=lp_pages;sa=edit;id={$entry['id']}")
 													->class('button')
 													->setText(Lang::$txt['modify'])
 											) .
-											Html::el('li')->addHtml(
-												Html::el('a')
+											Str::html('li')->addHtml(
+												Str::html('a')
 													->setAttribute('x-on:click.prevent', 'showContextMenu = false; page.removeForever($root)')
 													->class('button error')
 													->setText(Lang::$txt['remove'])
@@ -300,10 +295,10 @@ final class PageArea
 				[
 					'position' => 'after_title',
 					'value' =>
-						Html::el('div', ['class' => 'row'])
+						Str::html('div', ['class' => 'row'])
 							->addHtml(
-								Html::el('div', ['class' => 'col-lg-10'])->setHtml(
-									Html::el('input', [
+								Str::html('div', ['class' => 'col-lg-10'])->setHtml(
+									Str::html('input', [
 										'type' => 'search',
 										'name' => 'search',
 										'value' => Utils::$context['search']['string'],
@@ -313,16 +308,15 @@ final class PageArea
 								)
 							)
 							->addHtml(
-								Html::el('div', ['class' => 'col-lg-2'])->setHtml(
-									Html::el('button', [
+								Str::html('div', ['class' => 'col-lg-2'])->setHtml(
+									Str::html('button', [
 										'type' => 'submit',
 										'name' => 'is_search',
 										'class' => 'button floatnone',
 										'style' => 'width: 100%',
 									])->setHtml(Icon::get('search') . Lang::$txt['search'])
 								)
-							)
-							->toHtml(),
+							),
 				],
 			],
 		];
@@ -332,17 +326,17 @@ final class PageArea
 		if (Utils::$context['user']['is_admin']) {
 			$listOptions['columns']['mass'] = [
 				'header' => [
-					'value' => Html::el('input', [
+					'value' => Str::html('input', [
 						'type'    => 'checkbox',
 						'onclick' => 'invertAll(this, this.form)',
-					])->toHtml()
+					])
 				],
 				'data' => [
-					'function' => static fn($entry) => Html::el('input', [
+					'function' => static fn($entry) => Str::html('input', [
 						'type'  => 'checkbox',
 						'value' => $entry['id'],
 						'name'  => 'items[]',
-					])->toHtml(),
+					]),
 					'class' => 'centertext',
 				],
 			];
@@ -350,45 +344,44 @@ final class PageArea
 			$listOptions['additional_rows'][] = [
 				'position' => 'below_table_data',
 				'value' =>
-					Html::el('select', ['name' => 'page_actions'])
+					Str::html('select', ['name' => 'page_actions'])
 						->addHtml(
-							Html::el('option', [
+							Str::html('option', [
 								'value' => $this->request()->has('deleted') ? 'delete_forever' : 'delete'
 							])->setText(Lang::$txt[$this->request()->has('deleted') ? 'lp_action_remove_permanently' : 'remove'])
 						)
 						->addHtml(
 							Utils::$context['allow_light_portal_approve_pages']
-								? Html::el('option', ['value' => 'toggle'])
+								? Str::html('option', ['value' => 'toggle'])
 									->setText(Lang::$txt['lp_action_toggle'])
 								: ''
 						)
 						->addHtml(
 							Setting::isFrontpageMode('chosen_pages')
-								? Html::el('option', ['value' => 'promote_up'])
+								? Str::html('option', ['value' => 'promote_up'])
 									->setText(Lang::$txt['lp_promote_to_fp'])
 								: ''
 						)
 						->addHtml(
 							Setting::isFrontpageMode('chosen_pages')
-								? Html::el('option', ['value' => 'promote_down'])
+								? Str::html('option', ['value' => 'promote_down'])
 									->setText(Lang::$txt['lp_remove_from_fp'])
 								: ''
-						)
-						->toHtml() . ' ' .
-					Html::el('input', [
+						) . ' ' .
+					Str::html('input', [
 						'type'    => 'submit',
 						'name'    => 'mass_actions',
 						'value'   => Lang::$txt['quick_mod_go'],
 						'class'   => 'button',
 						'onclick' => 'return document.forms[\'manage_pages\'][\'page_actions\'].value && confirm(\'' . Lang::$txt['quickmod_confirm'] . '\');',
-					])->toHtml(),
+					]),
 				'class' => 'floatright',
 			];
 		}
 
-		$listOptions['title'] = Html::el('span', ['class' => 'floatright'])
+		$listOptions['title'] = Str::html('span', ['class' => 'floatright'])
 			->addHtml(
-				Html::el('a', [
+				Str::html('a', [
 					'href' => Config::$scripturl . '?action=admin;area=lp_pages;sa=add;' . Utils::$context['session_var'] . '=' . Utils::$context['session_id'],
 					'x-data' => '',
 				])
@@ -397,9 +390,7 @@ final class PageArea
 					' @mouseover="page.toggleSpin($event.target)" @mouseout="page.toggleSpin($event.target)" class=',
 					Icon::get('plus', Lang::$txt['lp_pages_add'])
 				))
-				->toHtml()
-			)
-			->toHtml() . $listOptions['title'];
+			) . $listOptions['title'];
 
 		if (Setting::getCommentBlock() === 'default') {
 			unset($listOptions['columns']['num_comments']);
@@ -655,16 +646,14 @@ final class PageArea
 		Utils::$context['lp_pages']['title'] .= ': ';
 		foreach ($titles as $browseType => $details) {
 			if ($this->browseType === $browseType) {
-				Utils::$context['lp_pages']['title'] .= Html::el('img')
+				Utils::$context['lp_pages']['title'] .= Str::html('img')
 					->src(Theme::$current->settings['images_url'] . '/selected.png')
-					->alt('&gt;')
-					->toHtml();
+					->alt('&gt;');
 			}
 
-			Utils::$context['lp_pages']['title'] .= Html::el('a')
+			Utils::$context['lp_pages']['title'] .= Str::html('a')
 				->href(Utils::$context['form_action'] . $details[0])
-				->setText($details[1] . ' (' . $details[2] . ')')
-				->toHtml();
+				->setText($details[1] . ' (' . $details[2] . ')');
 
 			if ($browseType !== 'del' && count($titles) > 1) {
 				Utils::$context['lp_pages']['title'] .= ' | ';
@@ -679,24 +668,22 @@ final class PageArea
 			if (Utils::$context['user']['is_admin'] === false && $type === 'internal')
 				continue;
 
-			$types .= Html::el('option', [
-					'value'    => $type,
-					'selected' => $this->request()->has('type') && $this->request()->get('type') === $type,
-				])
-				->setText($text);
+			$types .= Str::html('option', [
+				'value'    => $type,
+				'selected' => $this->request()->has('type') && $this->request()->get('type') === $type,
+			])->setText($text);
 		}
 
 		$listOptions['additional_rows'][] = [
 			'position' => 'above_column_headers',
 			'value' =>
-				Html::el('label', ['for' => 'type'])
+				Str::html('label', ['for' => 'type'])
 					->setText(Lang::$txt['lp_page_type']) . ' ' .
-				Html::el('select', [
-						'id'       => 'type',
-						'name'     => 'type',
-						'onchange' => 'this.form.submit()',
-					])
-					->addHtml($types),
+				Str::html('select', [
+					'id'       => 'type',
+					'name'     => 'type',
+					'onchange' => 'this.form.submit()',
+				])->addHtml($types),
 			'class' => 'floatright',
 		];
 	}
@@ -852,17 +839,17 @@ final class PageArea
 
 		if (Utils::$context['lp_page']['created_at'] >= time()) {
 			CustomField::make('datetime', Lang::$txt['lp_page_publish_datetime'])
-				->setValue(Html::el('input', [
+				->setValue(Str::html('input', [
 					'type'  => 'date',
 					'id'    => 'datetime',
 					'name'  => 'date',
 					'min'   => date('Y-m-d'),
 					'value' => Utils::$context['lp_page']['date'],
-				])->toHtml() . ' ' . Html::el('input', [
+				]) . ' ' . Str::html('input', [
 					'type'  => 'time',
 					'name'  => 'time',
 					'value' => Utils::$context['lp_page']['time'],
-				])->toHtml());
+				]));
 		}
 
 		CheckboxField::make('show_title', Lang::$txt['lp_page_show_title'])

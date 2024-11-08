@@ -23,8 +23,8 @@ use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionTrait;
+use Bugo\LightPortal\Utils\Str;
 use IntlException;
-use Nette\Utils\Html;
 
 use function array_combine;
 use function array_map;
@@ -84,7 +84,7 @@ final class BasicConfig extends AbstractConfig
 			[1, 2, 3, 4, 6],
 		);
 
-		$templateEditLink = sprintf('&nbsp;' . Html::el('a', [
+		$templateEditLink = sprintf('&nbsp;' . Str::html('a', [
 				'class' => 'button active',
 				'target' => '_blank',
 				'href' => '%s?action=admin;area=theme;th=1;%s=%s;sa=edit;directory=LightPortal/layouts',
@@ -287,19 +287,19 @@ final class BasicConfig extends AbstractConfig
 
 	private function isNewVersionAvailable(): array|bool
 	{
-		if (($xml = $this->cache()->get('repo_data', 86400)) === null) {
-			$repoData = WebFetchApi::fetch('https://api.github.com/repos/dragomano/Light-Portal/releases');
+		if (($xml = $this->cache()->get('repo_data', 3 * 24 * 60 * 60)) === null) {
+			$repoData = WebFetchApi::fetch('https://api.github.com/repos/dragomano/Light-Portal/releases/latest');
 
 			$xml = empty($repoData) ? [] : Utils::jsonDecode($repoData, true);
 
-			$this->cache()->put('repo_data', $xml, 86400);
+			$this->cache()->put('repo_data', $xml, 3 * 24 * 60 * 60);
 		}
 
-		if (empty($xml[0]))
+		if (empty($xml))
 			return false;
 
-		if (version_compare('v' . LP_VERSION, $xml[0]['tag_name'], '<')) {
-			return $xml[0];
+		if (version_compare('v' . LP_VERSION, $xml['tag_name'], '<')) {
+			return $xml;
 		}
 
 		return false;

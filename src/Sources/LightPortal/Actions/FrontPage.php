@@ -14,17 +14,17 @@ namespace Bugo\LightPortal\Actions;
 
 use Bugo\Compat\{Config, ErrorHandler, Lang, PageIndex};
 use Bugo\Compat\{Sapi, Theme, User, Utils};
-use Bugo\LightPortal\Articles\{ArticleInterface, BoardArticle, ChosenPageArticle};
-use Bugo\LightPortal\Articles\{ChosenTopicArticle, PageArticle, TopicArticle};
+use Bugo\LightPortal\Articles\{ArticleInterface, BoardArticle};
+use Bugo\LightPortal\Articles\{ChosenPageArticle, ChosenTopicArticle};
+use Bugo\LightPortal\Articles\{PageArticle, TopicArticle};
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\EventManager;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\{CacheTrait, DateTime, Icon};
-use Bugo\LightPortal\Utils\{RequestTrait, SessionTrait, Setting};
+use Bugo\LightPortal\Utils\{RequestTrait, SessionTrait, Setting, Str};
 use eftec\bladeone\BladeOne;
 use Exception;
 use IntlException;
-use Nette\Utils\Html;
 
 use function abs;
 use function array_column;
@@ -368,11 +368,11 @@ final class FrontPage implements ActionInterface
 		$images = array_column($articles, 'image');
 
 		foreach ($images as $image) {
-			Utils::$context['html_headers'] .= "\n\t" . Html::el('link', [
+			Utils::$context['html_headers'] .= "\n\t" . Str::html('link', [
 				'rel'  => 'preload',
 				'as'   => 'image',
 				'href' => $image,
-			])->toHtml();
+			]);
 		}
 	}
 
@@ -404,7 +404,7 @@ final class FrontPage implements ActionInterface
 
 		$paginate = '';
 
-		$button = Html::el('a', [
+		$button = Str::html('a', [
 			'class' => 'button',
 			'href'  => '%s;start=%s',
 		]);

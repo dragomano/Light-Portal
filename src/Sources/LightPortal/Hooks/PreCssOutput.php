@@ -12,12 +12,11 @@
 
 namespace Bugo\LightPortal\Hooks;
 
-use Bugo\Compat\Config;
-use Bugo\Compat\Utils;
+use Bugo\Compat\{Config, Utils};
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\EventManager;
 use Bugo\LightPortal\Plugins\Event;
-use Nette\Utils\Html;
+use Bugo\LightPortal\Utils\Str;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -26,16 +25,14 @@ class PreCssOutput
 {
 	public function __invoke(): void
 	{
-		echo "\n\t" . Html::el('link')
+		echo "\n\t" . Str::html('link')
 			->rel('preconnect')
-			->href('//cdn.jsdelivr.net')
-			->toHtml();
+			->href('//cdn.jsdelivr.net');
 
 		if (! empty(Utils::$context['portal_next_page'])) {
-			echo "\n\t" . Html::el('link')
+			echo "\n\t" . Str::html('link')
 				->rel('prerender')
-				->href(Utils::$context['portal_next_page'])
-				->toHtml();
+				->href(Utils::$context['portal_next_page']);
 		}
 
 		$styles = [];
@@ -52,12 +49,12 @@ class PreCssOutput
 		);
 
 		foreach ($styles as $style) {
-			echo "\n\t" . Html::el('link', [
+			echo "\n\t" . Str::html('link', [
 				'rel'    => 'preload',
 				'href'   => $style,
 				'as'     => 'style',
 				'onload' => "this.onload=null;this.rel='stylesheet'",
-			])->toHtml();
+			]);
 		}
 	}
 }

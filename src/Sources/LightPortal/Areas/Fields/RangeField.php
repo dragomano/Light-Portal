@@ -13,7 +13,7 @@
 namespace Bugo\LightPortal\Areas\Fields;
 
 use Bugo\Compat\Utils;
-use Nette\Utils\Html;
+use Bugo\LightPortal\Utils\Str;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -24,11 +24,11 @@ class RangeField extends CustomField
 	{
 		parent::build();
 
-		Utils::$context['posting_fields'][$this->name]['input']['html'] = Html::el('div', [
+		Utils::$context['posting_fields'][$this->name]['input']['html'] = Str::html('div', [
 			'x-data' => "{ '$this->name' : {$this->attributes['value']} }",
 		])
 			->addHtml(
-				Html::el('input', [
+				Str::html('input', [
 					'type'    => 'range',
 					'id'      => $this->name,
 					'name'    => $this->name,
@@ -39,8 +39,9 @@ class RangeField extends CustomField
 					->setAttribute('step', $this->attributes['step'] ?? null)
 			)
 			->addHtml(
-				Html::el('span', [
+				Str::html('span', [
 					'class'  => 'progress_bar amt',
+					'style'  => 'margin-left: 10px',
 					'x-text' => $this->name,
 				])
 			);

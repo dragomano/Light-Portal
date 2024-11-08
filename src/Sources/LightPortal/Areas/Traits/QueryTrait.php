@@ -17,7 +17,7 @@ use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\EventManager;
 use Bugo\LightPortal\Lists\IconList;
 use Bugo\LightPortal\Plugins\Event;
-use Nette\Utils\Html;
+use Bugo\LightPortal\Utils\Str;
 
 use function array_filter;
 use function json_encode;
@@ -43,7 +43,7 @@ trait QueryTrait
 			return;
 
 		$icons = $this->getFaIcons();
-		$template = Html::el('i', ['class' => '%1$s fa-fw'])
+		$template = Str::html('i', ['class' => '%1$s fa-fw'])
 			->setAttribute('aria-hidden', 'true') . '&nbsp;%1$s';
 
 		EventManager::getInstance()->dispatch(
