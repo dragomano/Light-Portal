@@ -196,11 +196,9 @@ final class Category extends AbstractPageList
 						'value' => Lang::$txt['lp_category']
 					],
 					'data' => [
-						'function' => static fn($entry) => $entry['icon'] . ' ' . Str::html('a')
-							->href($entry['link'])
-							->setText($entry['title']) . (empty($entry['description']) ? '' :
-								Str::html('p', ['class' => 'smalltext'])
-							->setText($entry['description']))
+						'function' => static fn($entry) => $entry['icon'] . ' ' . Str::html('a', $entry['title'])
+							->href($entry['link']) . (empty($entry['description']) ? '' :
+								Str::html('p', $entry['description'])->class('smalltext'))
 					],
 					'sort' => [
 						'default' => 'title DESC',

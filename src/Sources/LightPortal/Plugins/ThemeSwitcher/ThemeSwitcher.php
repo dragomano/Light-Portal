@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 08.11.24
+ * @version 09.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\ThemeSwitcher;
@@ -50,8 +50,7 @@ class ThemeSwitcher extends Block
 
 		$id = $e->args->data->id;
 
-		$container = Str::html('div')
-			->class('themeswitcher centertext');
+		$container = Str::html('div')->class('themeswitcher centertext');
 
 		$select = Str::html('select')
 			->id("lp_block_{$id}_themeswitcher")
@@ -59,9 +58,7 @@ class ThemeSwitcher extends Block
 			->setAttribute('disabled', count($themes) < 2 ? 'disabled' : null);
 
 		foreach ($themes as $themeId => $name) {
-			$option = Str::html('option')
-				->value($themeId)
-				->setText($name);
+			$option = Str::html('option', $name)->value($themeId);
 
 			if (Theme::$current->settings['theme_id'] === $themeId) {
 				$option->setAttribute('selected', 'selected');

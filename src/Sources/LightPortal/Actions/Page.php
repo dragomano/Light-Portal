@@ -233,10 +233,9 @@ final class Page implements PageInterface
 						'value' => Lang::$txt['lp_title']
 					],
 					'data' => [
-						'function' => static fn($entry) => Str::html('a', [
-								'class' => 'bbc_link' . ($entry['is_front'] ? ' new_posts' : ''),
-								'href'  => $entry['is_front'] ? Config::$scripturl : (LP_PAGE_URL . $entry['slug']),
-							])->setText($entry['title']),
+						'function' => static fn($entry) => Str::html('a', $entry['title'])
+							->class('bbc_link' . ($entry['is_front'] ? ' new_posts' : ''))
+							->href($entry['is_front'] ? Config::$scripturl : (LP_PAGE_URL . $entry['slug'])),
 						'class' => 'word_break'
 					],
 					'sort' => [
@@ -251,9 +250,8 @@ final class Page implements PageInterface
 					'data' => [
 						'function' => static fn($entry) => empty($entry['author']['name'])
 							? Lang::$txt['guest_title']
-							: Str::html('a')
-								->href($entry['author']['link'])
-								->setText($entry['author']['name']),
+							: Str::html('a', $entry['author']['name'])
+								->href($entry['author']['link']),
 						'class' => 'centertext'
 					],
 					'sort' => [

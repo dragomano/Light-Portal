@@ -69,7 +69,7 @@ final class Block implements BlockInterface
 				$icon  = Icon::parse(Utils::$context['lp_blocks'][$data['placement']][$item]['icon']);
 
 				if (! empty($data['parameters']['link_in_title'])) {
-					$title = Str::html('a')->href($data['parameters']['link_in_title'])->setText($title);
+					$title = Str::html('a', $title)->href($data['parameters']['link_in_title']);
 				}
 			} else {
 				$title = $icon = '';

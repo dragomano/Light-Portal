@@ -670,9 +670,7 @@ final class PageRepository extends AbstractRepository
 		if (Utils::$context['lp_page']['author_id'] !== User::$info['id']) {
 			$title = Utils::$context['lp_page']['titles'][User::$info['language']];
 			Logging::logAction('update_lp_page', [
-				'page' => Str::html('a')
-					->href(LP_PAGE_URL . Utils::$context['lp_page']['slug'])
-					->setText($title)
+				'page' => Str::html('a', $title)->href(LP_PAGE_URL . Utils::$context['lp_page']['slug'])
 			]);
 		}
 
