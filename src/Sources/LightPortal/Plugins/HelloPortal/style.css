@@ -1,3 +1,7 @@
 .lp_addon_hello_portal * {
 	font-size: 1.4em;
 }
+
+.introjs-helperLayer {
+	background: transparent !important;
+}

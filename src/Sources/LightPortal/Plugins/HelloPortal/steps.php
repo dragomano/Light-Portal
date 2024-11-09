@@ -14,15 +14,15 @@ return [
 			intro: "' . Lang::$txt['lp_hello_portal']['basic_settings_tour'][1] . '"
 		},' . (! empty(Config::$modSettings['lp_frontpage_mode']) && Config::$modSettings['lp_frontpage_mode'] !== 'chosen_page' ? ('
 		{
-			element: document.getElementById("lp_frontpage_order_by_replies"),
+			element: document.getElementById("caption_lp_frontpage_order_by_replies"),
 			intro: "' . Lang::$txt['lp_hello_portal']['basic_settings_tour'][2] . '"
 		},') : '') . '
 		{
-			element: document.getElementById("setting_lp_standalone_mode").parentNode.parentNode.parentNode,
+			element: document.querySelector("[data-tab=standalone]"),
 			intro: "' . Lang::$txt['lp_hello_portal']['basic_settings_tour'][3] . '"
 		},
 		{
-			element: document.getElementById("setting_light_portal_view").parentNode.parentNode,
+			element: document.querySelector("[data-tab=permissions]"),
 			intro: "' . Lang::$txt['lp_hello_portal']['basic_settings_tour'][4] . '"
 		},
 		{
