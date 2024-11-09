@@ -137,6 +137,9 @@ abstract class AbstractRepository
 
 	protected function prepareTitles(): void
 	{
+		if (empty(Utils::$context['lp_' . $this->entity]['titles']))
+			return;
+
 		// Remove all punctuation symbols
 		Utils::$context['lp_' . $this->entity]['titles'] = preg_replace(
 			"#[[:punct:]]#", "", (array) Utils::$context['lp_' . $this->entity]['titles']

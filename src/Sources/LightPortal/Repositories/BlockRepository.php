@@ -65,7 +65,9 @@ final class BlockRepository extends AbstractRepository
 				'areas'       => str_replace(',', PHP_EOL, (string) $row['areas']),
 			];
 
-			$currentBlocks[$row['placement']][$row['block_id']]['titles'][$row['lang']] = $row['title'];
+			if (! empty($row['lang'])) {
+				$currentBlocks[$row['placement']][$row['block_id']]['titles'][$row['lang']] = $row['title'];
+			}
 
 			$this->prepareMissingBlockTypes($row['type']);
 		}

@@ -101,6 +101,16 @@ function show_block_entry(int $id, array $data): void
 	if (empty($id) || empty($data))
 		return;
 
+	$title = $data['note'] ?? '';
+
+	if (isset($data['titles'])) {
+		if (! empty($data['titles'][Utils::$context['user']['language']])) {
+			$title = $data['titles'][Utils::$context['user']['language']];
+		} elseif (! empty($data['titles'][Config::$language])) {
+			$title = $data['titles'][Config::$language];
+		}
+	}
+
 	echo '
 	<tr
 		class="windowbg"
@@ -112,7 +122,7 @@ function show_block_entry(int $id, array $data): void
 			', $data['icon'], '
 		</td>
 		<td class="title">
-			<div class="hidden-xs hidden-sm hidden-md">', $title = $data['note'] ?: ($data['titles'][Utils::$context['user']['language']] ?? $data['titles'][Config::$language] ?? ''), '</div>
+			<div class="hidden-xs hidden-sm hidden-md">', $title, '</div>
 			<div class="hidden-lg hidden-xl">
 				<table class="table_grid">
 					<tbody>
