@@ -52,6 +52,8 @@ final class PageRepository extends AbstractRepository
 
 	protected string $entity = 'page';
 
+	private CommentRepository $commentRepository;
+
 	public function __construct()
 	{
 		$this->commentRepository = new CommentRepository();
