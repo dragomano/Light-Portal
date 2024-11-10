@@ -53,7 +53,7 @@ Plugins for importing and exporting various portal elements.
 
 ### `block_options` | `page_options`
 
-Plugins that add additional parameters for the corresponding entity (block or .page).
+Plugins that add additional parameters for the corresponding entity (block or page).
 
 ### `icons`
 
