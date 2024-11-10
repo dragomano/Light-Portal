@@ -25,6 +25,9 @@ class PreCssOutput
 {
 	public function __invoke(): void
 	{
+		if (isset(Utils::$context['uninstalling']))
+			return;
+
 		echo "\n\t" . Str::html('link')
 			->rel('preconnect')
 			->href('//cdn.jsdelivr.net');
