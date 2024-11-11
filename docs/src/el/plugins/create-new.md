@@ -7,7 +7,7 @@ order: 2
 
 Τα πρόσθετα είναι οι επεκτάσεις που επεκτείνουν τις δυνατότητες του Light Portal. Για να δημιουργήσετε το δικό σας πρόσθετο, απλώς ακολουθήστε τις παρακάτω οδηγίες.
 
-:::info
+:::info Σημειώσεις
 
 Μπορείτε να χρησιμοποιήσετε το **PluginMaker** ως βοηθητικό για να δημιουργήσετε τα δικά σας πρόσθετα. Κάντε λήψη και ενεργοποιήστε το στη σελίδα _Διαχειριστής -> Ρυθμίσεις πύλης -> Προσθήκες_.
 
@@ -69,10 +69,10 @@ order: 2
 
 ## Δημιουργία καταλόγου προσθηκών
 
-Δημιουργήστε έναν ξεχωριστό φάκελο για τα αρχεία των προσθηκών σας, μέσα στο «/Sources/LightPortal/Addons». Για παράδειγμα, εάν η προσθήκη σας ονομάζεται «HelloWorld», η δομή του φακέλου θα πρέπει να μοιάζει με αυτό:
+Δημιουργήστε έναν ξεχωριστό φάκελο για τα αρχεία των προσθηκών σας, μέσα στο `/Sources/LightPortal/Plugins`. Για παράδειγμα, εάν η προσθήκη σας ονομάζεται «HelloWorld», η δομή του φακέλου θα πρέπει να μοιάζει με αυτό:
 
 ```
-...(Addons)
+...(Plugins)
 └── HelloWorld/
     ├── langs/
     │   ├── english.php
@@ -86,10 +86,10 @@ order: 2
 ```php:line-numbers
 <?php
 
-namespace Bugo\LightPortal\Addons\HelloWorld;
+namespace Bugo\LightPortal\Plugins\HelloWorld;
 
 use Bugo\Compat\{Config, Lang, Utils};
-use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Plugins\Plugin;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
