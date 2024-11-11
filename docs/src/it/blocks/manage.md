@@ -1,5 +1,5 @@
 ---
-description: Descrizione della pagina di gestione dei blocchi
+description: Descrizione dell'area di gestione dei plugin
 order: 1
 ---
 
@@ -11,10 +11,10 @@ Per ogni blocco vengono visualizzati l'icona, la nota o il titolo, la tipologia,
 
 ![Manage blocks](manage_blocks.png)
 
-Per ciascun blocco sono disponibili le seguenti azioni:
+Per ciascuna pagina sono disponibili le seguenti azioni:
 
 - Ordinamento - all'interno di ciascun pannello è possibile impostare un ordine per i blocchi
 - Pulsante stato (abilitato o disabilitato)
 - Clona - creazione di un nuovo blocco basato su quello corrente
-- Modifica - cambia le impostazioni per questo specifico blocco
+- Modifica - cambia le impostazioni per questa specifica pagina
 - Elimina

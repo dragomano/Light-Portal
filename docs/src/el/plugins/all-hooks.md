@@ -16,47 +16,46 @@ order: 4
 ```php
 public function init(): void
 {
-    // integrate_actions hook
+    /* call integrate_actions hook */
     $this->applyHook('actions');
 }
 
+/* integrate_actions hook */
 public function actions(): void
 {
-    if ($this->request()->is(LP_ACTION) && $this->request()->has('turbo'))
+    if ($this->request()->is(LP_ACTION) && $this->request()->has('turbo')) {
         $this->showXml();
+    }
 }
 ```
 
 ### parseContent
 
-(`&$content, $type`)
-
 > ανάλυση περιεχομένου προσαρμοσμένων τύπων μπλοκ/σελίδων
 
 ```php
-public function parseContent(string &$content, string $type): void
+public function parseContent(Event $e): void
 {
-    if ($type === 'markdown')
-        $content = $this->getParsedContent($content);
+    if ($e->args->type === 'markdown') {
+        $e->args->content = $this->getParsedContent($e->args->content);
+    }
 }
 ```
 
 ### prepareContent
 
-(`$data, $parameters`)
-
 > προσθήκη προσαρμοσμένου περιεχομένου της προσθήκης σας
 
 ```php
-public function prepareContent($data): void
+public function prepareContent(Event $e): void
 {
-    if ($data->type !== 'user_info')
+    if ($e->args->data->type !== 'user_info')
         return;
 
     $this->setTemplate();
 
     $userData = $this->cache('user_info_addon_u' . Utils::$context['user']['id'])
-        ->setLifeTime($data->cache_time)
+        ->setLifeTime($e->args->data->cache_time)
         ->setFallback(self::class, 'getData');
 
     show_user_info($userData);
@@ -65,14 +64,12 @@ public function prepareContent($data): void
 
 ### prepareEditor
 
-(`$context['lp_block']` for block, `$context['lp_page']` for page)
-
 > προσθήκη οποιουδήποτε κώδικα στην περιοχή επεξεργασίας μπλοκ/σελίδων
 
 ```php
-public function prepareEditor(array $object): void
+public function prepareEditor(Event $e): void
 {
-    if ($object['type'] !== 'markdown')
+    if ($e->args->object['type'] !== 'markdown')
         return;
 
     Lang::load('Editor');
@@ -88,16 +85,14 @@ public function prepareEditor(array $object): void
 
 ### preloadStyles
 
-(`&$styles`)
-
 > βοηθά στην προφόρτωση των φύλλων στυλ που χρειάζεστε
 
 ::: code-group
 
 ```php [PHP]
-public function preloadStyles(array &$styles): void
+public function preloadStyles(Event $e): void
 {
-    $styles[] = 'https://cdn.jsdelivr.net/npm/@flaticon/flaticon-uicons@1/css/all/all.css';
+    $e->args->styles[] = 'https://cdn.jsdelivr.net/npm/@flaticon/flaticon-uicons@1/css/all/all.css';
 }
 ```
 
@@ -116,17 +111,15 @@ public function preloadStyles(array &$styles): void
 
 ### prepareBlockParams
 
-(`&$params`)
-
 > προσθέτοντας τις παραμέτρους του μπλοκ σας
 
 ```php
-public function prepareBlockParams(array &$params): void
+public function prepareBlockParams(Event $e): void
 {
     if (Utils::$context['current_block']['type'] !== 'article_list')
         return;
 
-    $params = [
+    $e->args->params = [
         'body_class'     => 'descbox',
         'display_type'   => 0,
         'include_topics' => '',
@@ -138,17 +131,15 @@ public function prepareBlockParams(array &$params): void
 
 ### validateBlockParams
 
-(`&$params`)
-
 > προσθήκη προσαρμοσμένων κανόνων επικύρωσης κατά την φραγή προσθήκης/επεξεργασίας
 
 ```php
-public function validateBlockParams(array &$params): void
+public function validateBlockParams(Event $e): void
 {
     if (Utils::$context['current_block']['type'] !== 'article_list')
         return;
 
-    $params = [
+    $e->args->params = [
         'body_class'     => FILTER_DEFAULT,
         'display_type'   => FILTER_VALIDATE_INT,
         'include_topics' => FILTER_DEFAULT,
@@ -160,20 +151,19 @@ public function validateBlockParams(array &$params): void
 
 ### findBlockErrors
 
-(`&$errors, $data`)
-
 > προσθήκη προσαρμοσμένου χειρισμού σφαλμάτων κατά την προσθήκη/επεξεργασία αποκλεισμού
 
 ```php
-public function findBlockErrors(array &$errors, array $data): void
+public function findBlockErrors(Event $e): void
 {
-    if ($data['placement'] !== 'ads')
+    if ($e->args->data['placement'] !== 'ads')
         return;
 
     Lang::$txt['lp_post_error_no_ads_placement'] = Lang::$txt['lp_ads_block']['no_ads_placement'];
 
-    if (empty($data['parameters']['ads_placement']))
-        $errors[] = 'no_ads_placement';
+    if (empty($e->args->data['parameters']['ads_placement'])) {
+        $e->args->errors[] = 'no_ads_placement';
+    }
 }
 ```
 
@@ -199,13 +189,9 @@ public function prepareBlockFields(): void
 
 ### onBlockSaving
 
-(`$item`)
-
 > προσαρμοσμένες ενέργειες για αποθήκευση/επεξεργασία μπλοκ
 
 ### onBlockRemoving
-
-(`$items`)
 
 > προσαρμοσμένες ενέργειες για την αφαίρεση μπλοκ
 
@@ -213,35 +199,29 @@ public function prepareBlockFields(): void
 
 ### preparePageParams
 
-(`&$params`)
-
 > προσθέτοντας τις παραμέτρους της σελίδας σας
 
 ```php
-public function preparePageParams(array &$params): void
+public function preparePageParams(Event $e): void
 {
-    $params['meta_robots'] = '';
-    $params['meta_rating'] = '';
+    $e->args->params['meta_robots'] = '';
+    $e->args->params['meta_rating'] = '';
 }
 ```
 
 ### validatePageParams
 
-(`&$params`)
-
 > προσθήκη προσαρμοσμένων κανόνων επικύρωσης κατά την προσθήκη/επεξεργασία σελίδας
 
 ```php
-public function validatePageParams(array &$params): void
+public function validatePageParams(Event $e): void
 {
-    $params['meta_robots'] = FILTER_DEFAULT;
-    $params['meta_rating'] = FILTER_DEFAULT;
+    $e->args->params['meta_robots'] = FILTER_DEFAULT;
+    $e->args->params['meta_rating'] = FILTER_DEFAULT;
 }
 ```
 
 ### findPageErrors
-
-(`&$errors, $data`)
 
 > προσθήκη προσαρμοσμένου χειρισμού σφαλμάτων κατά την προσθήκη/επεξεργασία σελίδας
 
@@ -261,19 +241,13 @@ public function preparePageFields(): void
 
 ### onPageSaving
 
-(`$item`)
-
 > προσαρμοσμένες ενέργειες κατά την αποθήκευση/επεξεργασία σελίδων
 
 ### onPageRemoving
 
-(`$items`)
-
 > προσαρμοσμένες ενέργειες κατά την κατάργηση σελίδων
 
 ### preparePageData
-
-(`&$data`, `$is_author`)
 
 > πρόσθετη προετοιμασία των δεδομένων τρέχουσας σελίδας της πύλης
 
@@ -311,15 +285,15 @@ public function comments(): void
 
 ### commentButtons
 
-(`$comment`, `&$buttons`)
-
 > προσθέτοντας προσαρμοσμένα κουμπιά κάτω από κάθε σχόλιο
 
 ```php
-public function commentButtons(array $comment, array &$buttons): void
+public function commentButtons(Event $e): void
 {
     if (empty(Utils::$context['lp_page']['options']['allow_reactions']))
         return;
+
+    $comment = $e->args->comment;
 
     $comment['can_react'] = $comment['poster']['id'] !== User::$info['id'];
     $comment['reactions'] = json_decode($comment['params']['reactions'] ?? '', true) ?? [];
@@ -330,7 +304,7 @@ public function commentButtons(array $comment, array &$buttons): void
 
     show_comment_reactions($comment);
 
-    $buttons[] = ob_get_clean();
+    $e->args->buttons[] = ob_get_clean();
 }
 ```
 
@@ -338,14 +312,12 @@ public function commentButtons(array $comment, array &$buttons): void
 
 ### addSettings
 
-(`&$settings`)
-
 > προσθήκη προσαρμοσμένων ρυθμίσεων της προσθήκης σας
 
 ```php
-public function addSettings(array &$settings): void
+public function addSettings(Event $e): void
 {
-    $settings['disqus'][] = [
+    $e->args->settings['disqus'][] = [
         'text',
         'shortname',
         'subtext' => Lang::$txt['lp_disqus']['shortname_subtext'],
@@ -356,21 +328,17 @@ public function addSettings(array &$settings): void
 
 ### saveSettings
 
-(`&$settings`)
-
 > πρόσθετες ενέργειες μετά την αποθήκευση των ρυθμίσεων της προσθήκης
 
 ### prepareAssets
 
-(`&$assets`)
-
 > αποθήκευση εξωτερικών στυλ, σεναρίων και εικόνων για τη βελτίωση της ταχύτητας φόρτωσης των πόρων
 
 ```php
-public function prepareAssets(array &$assets): void
+public function prepareAssets(Event $e): void
 {
-    $assets['css']['tiny_slider'][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css';
-    $assets['scripts']['tiny_slider'][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/min/tiny-slider.js';
+    $e->args->assets['css']['tiny_slider'][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css';
+    $e->args->assets['scripts']['tiny_slider'][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/min/tiny-slider.js';
 }
 ```
 
@@ -378,14 +346,12 @@ public function prepareAssets(array &$assets): void
 
 ### frontModes
 
-(`&$modes`)
-
 > προσθέτοντας προσαρμοσμένες λειτουργίες για την πρώτη σελίδα
 
 ```php
-public function frontModes(array &$modes): void
+public function frontModes(Event $e): void
 {
-    $modes[$this->mode] = CustomArticle::class;
+    $$e->args->modes[$this->mode] = CustomArticle::class;
 
     Config::$modSettings['lp_frontpage_mode'] = $this->mode;
 }
@@ -397,14 +363,12 @@ public function frontModes(array &$modes): void
 
 ### customLayoutExtensions
 
-(`&$extensions`)
-
 > ας προσθέσουμε επεκτάσεις προσαρμοσμένης διάταξης
 
 ```php
-public function customLayoutExtensions(array &$extensions): void
+public function customLayoutExtensions(Event $e): void
 {
-    $extensions[] = '.twig';
+    $e->args->extensions[] = '.twig';
 }
 ```
 
@@ -424,56 +388,44 @@ public function frontAssets(): void
 
 ### frontTopics
 
-(`&$this->columns, &$this->tables, &$this->params, &$this->wheres, &$this->orders`)
-
 > προσθήκη προσαρμοσμένων στηλών, πινάκων, Wheres, παραμέτρων και παραγγελιών στη συνάρτηση __init__function
 
 ```php
-public function frontTopics(array &$columns, array &$tables): void
+public function frontTopics(Event $e): void
 {
     if (! class_exists('TopicRatingBar'))
         return;
 
-    $columns[] = 'tr.total_votes, tr.total_value';
-    $tables[]  = 'LEFT JOIN {db_prefix}topic_ratings AS tr ON (t.id_topic = tr.id)';
+    $e->args->columns[] = 'tr.total_votes, tr.total_value';
+    $e->args->tables[]  = 'LEFT JOIN {db_prefix}topic_ratings AS tr ON (t.id_topic = tr.id)';
 }
 ```
 
-### frontTopicsOutput
-
-(`&$topics, $row`)
+### frontTopicsRow
 
 > διάφορους χειρισμούς με αποτελέσματα ερωτημάτων στη συνάρτηση _getData_λειτουργίες
 
 ```php
-public function frontTopicsOutput(array &$topics, array $row): void
+public function frontTopicsRow(Event $e): void
 {
-    $topics[$row['id_topic']]['rating'] = empty($row['total_votes'])
-        ? 0 : (number_format($row['total_value'] / $row['total_votes']));
+    $e->args->articles[$e->args->row['id_topic']]['rating'] = empty($e->args->row['total_votes'])
+        ? 0 : (number_format($e->args->row['total_value'] / $e->args->row['total_votes']));
 }
 ```
 
 ### frontPages
 
-(`&$this->columns, &$this->tables, &$this->params, &$this->wheres, &$this->orders`)
-
 > προσθήκη προσαρμοσμένων στηλών, πινάκων, Wheres, παραμέτρων και παραγγελιών στη συνάρτηση __init__λειτουργίες
 
-### frontPagesOutput
-
-(`&$pages, $row`)
+### frontPagesRow
 
 > διάφορους χειρισμούς με αποτελέσματα ερωτημάτων στη συνάρτηση _getData_λειτουργίες
 
 ### frontBoards
 
-(`&$this->columns, &$this->tables, &$this->params, &$this->wheres, &$this->orders`)
-
 > προσθήκη προσαρμοσμένων στηλών, πινάκων, Wheres, παραμέτρων και παραγγελιών στη συνάρτηση __init__function
 
-### frontBoardsOutput
-
-(`&$boards, $row`)
+### frontBoardsRow
 
 > διάφορους χειρισμούς με αποτελέσματα ερωτημάτων στη συνάρτηση _getData_λειτουργίες
 
@@ -481,12 +433,10 @@ public function frontTopicsOutput(array &$topics, array $row): void
 
 ### prepareIconList
 
-(`&$icons, &$template`)
-
 > προσθήκη προσαρμοσμένης λίστας εικονιδίων (αντί για FontAwesome)
 
 ```php
-public function prepareIconList(array &$icons): void
+public function prepareIconList(Event $e): void
 {
     if (($mainIcons = $this->cache()->get('all_main_icons', 30 * 24 * 60 * 60)) === null) {
         $set = $this->getIconSet();
@@ -499,19 +449,15 @@ public function prepareIconList(array &$icons): void
         $this->cache()->put('all_main_icons', $mainIcons, 30 * 24 * 60 * 60);
     }
 
-    $icons = array_merge($icons, $mainIcons);
+    $$e->args->icons = array_merge($$e->args->icons, $mainIcons);
 }
 ```
 
 ### prepareIconTemplate
 
-(`&$template, $icon`)
-
 > προσθήκη προσαρμοσμένου προτύπου για την εμφάνιση εικονιδίων
 
 ### changeIconSet
-
-(`&$set`)
 
 > δυνατότητα επέκτασης εικονιδίων διεπαφής που είναι διαθέσιμα μέσω του πίνακα "Utils::$context['lp_icon_set']"
 
@@ -519,21 +465,17 @@ public function prepareIconList(array &$icons): void
 
 ### extendBasicConfig
 
-(`&$configVars`)
-
 > προσθέτοντας προσαρμοσμένες ρυθμίσεις παραμέτρων στην περιοχή βασικών ρυθμίσεων της πύλης
 
 ### updateAdminAreas
 
-(`&$areas`)
-
 > προσθέτει τις προσαρμοσμένες περιοχές της πύλης στο Κέντρο διαχείρισης
 
 ```php
-public function updateAdminAreas(array &$areas): void
+public function updateAdminAreas(Event $e): void
 {
     if (User::$info['is_admin']) {
-        $areas['lp_pages']['subsections']['import_from_ep'] = [
+        $e->args->areas['lp_pages']['subsections']['import_from_ep'] = [
             Utils::$context['lp_icon_set']['import'] . Lang::$txt['lp_eh_portal']['label_name']
         ];
     }
@@ -542,59 +484,49 @@ public function updateAdminAreas(array &$areas): void
 
 ### updateBlockAreas
 
-(`&$areas`)
-
 > προσθήκη προσαρμοσμένων καρτελών στις ρυθμίσεις περιοχής αποκλεισμού
 
 ```php
-public function updateBlockAreas(array &$areas): void
+public function updateBlockAreas(Event $e): void
 {
-    $areas['import_from_tp'] = [new BlockImport(), 'main'];
+    $e->args->areas['import_from_tp'] = [new BlockImport(), 'main'];
 }
 ```
 
 ### updatePageAreas
 
-(`&$areas`)
-
 > προσθήκη προσαρμοσμένων καρτελών στις ρυθμίσεις της περιοχής σελίδας
 
 ```php
-public function updatePageAreas(array &$areas): void
+public function updatePageAreas(Event $e): void
 {
-    $areas['import_from_ep'] = [new Import(), 'main'];
+    $e->args->areas['import_from_ep'] = [new Import(), 'main'];
 }
 ```
 
 ### updateCategoryAreas
 
-(`&$areas`)
-
 > προσθήκη προσαρμοσμένων καρτελών στις ρυθμίσεις περιοχής κατηγορίας
 
 ```php
-public function updateCategoryAreas(array &$areas): void
+public function updateCategoryAreas(Event $e): void
 {
-    $areas['import_from_tp'] = [new Import(), 'main'];
+    $e->args->areas['import_from_tp'] = [new Import(), 'main'];
 }
 ```
 
 ### updateTagAreas
 
-(`&$areas`)
-
 > προσθήκη προσαρμοσμένων καρτελών στις ρυθμίσεις της περιοχής ετικετών
 
 ### updatePluginAreas
 
-(`&$areas`)
-
 > προσθέτει προσαρμοσμένες καρτέλες στις ρυθμίσεις της περιοχής προσθήκης
 
 ```php
-public function updatePluginAreas(array &$areas): void
+public function updatePluginAreas(Event $e): void
 {
-    $areas['add'] = [new Handler(), 'add'];
+    $e->args->areas['add'] = [new Handler(), 'add'];
 }
 ```
 
@@ -602,14 +534,12 @@ public function updatePluginAreas(array &$areas): void
 
 ### credits
 
-(`&$links`)
-
 > προσθήκη πνευματικών δικαιωμάτων χρησιμοποιημένων βιβλιοθηκών/σεναρίων κ.λπ.
 
 ```php
-public function credits(array &$links): void
+public function credits(Event $e): void
 {
-    $links[] = [
+    $e->args->links[] = [
         'title' => 'Uicons',
         'link' => 'https://www.flaticon.com/uicons',
         'author' => 'Flaticon',

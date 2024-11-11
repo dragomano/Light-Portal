@@ -7,7 +7,7 @@ order: 2
 
 Плагины — дополнения, расширяющие возможности портала. Чтобы создать собственный плагин для Light Portal, достаточно следовать инструкциям ниже.
 
-:::info Информация
+:::info Примечание
 
 Вы можете использовать **PluginMaker** в качестве помощника при создании своих плагинов. Скачайте и подключите его на странице _Админка -> Настройки портала -> Плагины_.
 
@@ -69,10 +69,10 @@ order: 2
 
 ## Создание директории плагина
 
-Создайте отдельную папку для файлов вашего дополнения, внутри `/Sources/LightPortal/Addons`. Например, если ваш плагин называется `HelloWorld`, структура папки должна выглядеть так:
+Создайте отдельную папку для файлов вашего дополнения, внутри `/Sources/LightPortal/Plugins` Например, если ваш плагин называется `HelloWorld`, структура папки должна выглядеть так:
 
 ```
-...(Addons)
+...(Plugins)
 └── HelloWorld/
     ├── langs/
     │   ├── english.php
@@ -86,10 +86,10 @@ order: 2
 ```php:line-numbers
 <?php
 
-namespace Bugo\LightPortal\Addons\HelloWorld;
+namespace Bugo\LightPortal\Plugins\HelloWorld;
 
 use Bugo\Compat\{Config, Lang, Utils};
-use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Plugins\Plugin;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

@@ -4,7 +4,7 @@ description: Istruzioni per creare i propri layout del portale
 
 # Creare il proprio layout per il frontpage
 
-:::info
+:::info Nota
 
 Dalla versione 2.6. viene utilizzato [BladeOne](https://github.com/EFTEC/BladeOne) per eseguire il rendering dei layout del frontpage.
 
@@ -58,7 +58,7 @@ Per personalizzare i fogli di stile, crea un file `portal_custom.css` nella cart
 }
 ```
 
-:::tip
+:::tip Suggerimento
 
 Se hai creato il tuo modello del frontpage e desideri condividerlo con lo sviluppatore ed altri utenti, utilizza https://codepen.io/pen/ o altre risorse simili.
 
