@@ -1,11 +1,11 @@
 ---
-description: Breve descrizione dell'interfaccia di creazione dei blocchi
+description: Breve descrizione dell'interfaccia di creazione del plugin
 order: 2
 ---
 
-# Aggiungi blocco
+# Aggiungi Plugin
 
-Tutti i blocchi del portale attualmente disponibili (a seconda dei [plugins](../plugins/manage) abilitati) vengono visualizzati qui. Per aggiungere, clicca sul blocco desiderato.
+Per aggiungere un blocco, fai clic su di esso. Inizialmente, è possibile creare blocchi di tre tipi: PHP, HTML e BBCode. Se hai vuoi altri, [abilita i plugin necessari] (../plugins/manage) di tipo `blocco`.
 
 A seconda del tipo di blocco saranno disponibili diverse impostazioni, suddivise in diverse schede.
 

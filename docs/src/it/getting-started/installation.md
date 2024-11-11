@@ -17,9 +17,9 @@ Non c'è molto da dire qui. Light Portal puoi installarlo come qualsiasi altra m
 - Estensioni PHP `dom` e `simplexml` per esportare/importare pagine e blocchi
 - Estensione PHP `zip` per esportare/importare plugin
 
-:::info
+:::info Nota
 
-È sufficiente scaricare l'archivio con i file del portale (in SMF si chiama pacchetto) dal [catalogo ufficiale](https://custom.simplemachines.org/mods/index.php?mod=4244) e caricarlo tramite il gestore pacchetti sul tuo forum.
+È sufficiente scaricare il pacchetto con i file del portale dal [catalogo ufficiale](https://custom.simplemachines.org/mods/index.php?mod=4244) e caricarlo tramite il gestore pacchetti sul tuo forum.
 
 :::
 
@@ -27,4 +27,4 @@ Non c'è molto da dire qui. Light Portal puoi installarlo come qualsiasi altra m
 
 Se il tuo hosting è troppo "intelligente" con i permessi e i file del portale non sono stati decompressi durante l'installazione, devi estrarre manualmente le cartelle `Themes` e `Sources` dall'archivio della mod nella cartella del forum (dove si trovano le stesse cartelle Themes e Sources, così come i file `cron.php`, `SSI.php`, `Settings.php`, ecc) ed impostare le autorizzazioni appropriate. Molto spesso è "644", "664" o "666" per i file e "755", "775" o "777" per le cartelle.
 
-Inoltre devi estrarre il file `database.php` dall'archivio della mod alla radice del tuo forum, impostarne i diritti di esecuzione (`666`) e accedervi tramite il browser (devi aver effettuato l'accesso come amministratore del forum) Questo file contiene le istruzioni per la creazione delle tabelle utilizzate dal portale.
+Inoltre devi estrarre il file `database.php` dall'archivio della mod alla radice del tuo forum, impostarne i diritti di esecuzione (`666`) e accedervi tramite il browser (devi aver effettuato l'accesso come amministratore del forum) Questo file contiene le istruzioni per la creazione delle tabelle utilizzate dal portale. Questo file contiene le istruzioni per la creazione delle tabelle utilizzate dal portale.

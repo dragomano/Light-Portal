@@ -7,7 +7,7 @@ order: 2
 
 I plugin sono le estensioni che espandono le capacità del Light Portal. Per creare il tuo plugin, basta seguire le istruzioni seguenti.
 
-:::info
+:::info Note
 
 Puoi utilizzare **PluginMaker** come assistente per creare i tuoi plugin. Scaricalo e abilitalo nella pagina _Amministrazione -> Portale -> Plugins_.
 
@@ -69,10 +69,10 @@ Plugin che non sono correlati a nessuna delle categorie sopra indicate.
 
 ## Creazione della cartella del plugin
 
-Crea una cartella separata per i file del plugin, all'interno di `/Sources/LightPortal/Addons`. Ad esempio, se il tuo plugin si chiama "HelloWorld", la struttura delle cartelle dovrebbe assomigliare a questa:
+Crea una cartella separata per i file dei plugin, all'interno di `/Sources/LightPortal/Plugins`. Ad esempio, se il tuo plugin si chiama "HelloWorld", la struttura delle cartelle dovrebbe assomigliare a questa:
 
 ```
-...(Addons)
+...(Plugins)
 └── HelloWorld/
     ├── langs/
     │   ├── english.php
@@ -86,10 +86,10 @@ Il file `index.php` può essere copiato da cartelle di altri plugin. Il file `He
 ```php:line-numbers
 <?php
 
-namespace Bugo\LightPortal\Addons\HelloWorld;
+namespace Bugo\LightPortal\Plugins\HelloWorld;
 
 use Bugo\Compat\{Config, Lang, Utils};
-use Bugo\LightPortal\Addons\Plugin;
+use Bugo\LightPortal\Plugins\Plugin;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

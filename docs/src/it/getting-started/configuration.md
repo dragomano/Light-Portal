@@ -52,8 +52,7 @@ In questa sezione puoi modificare varie impostazioni ausiliarie del portale, che
 
 ### Modalità di compatibilità
 
-- Il valore del parametro **action** del portale - ​puoi modificare questo valore per utilizzare Light Portal insieme ad altre modifiche simili e non avere conflitti.
-  ​ Quindi si aprirà la home page all'indirizzo specificato.
+- Il valore del parametro **action** del portale - ​puoi modificare questo valore per utilizzare Light Portal insieme ad altre modifiche simili e non avere conflitti. ​ Quindi si aprirà la home page all'indirizzo specificato.
 - Il valore del parametro **page** per le pagine del portale - vedi sopra. Allo stesso modo, per le pagine del portale - modifica il valore e si apriranno con URL differenti.
 
 ### Manutenzione
