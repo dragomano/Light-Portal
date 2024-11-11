@@ -16,47 +16,46 @@ Light Portal замечательно расширяется благодаря 
 ```php
 public function init(): void
 {
-    // integrate_actions hook
+    /* call integrate_actions hook */
     $this->applyHook('actions');
 }
 
+/* integrate_actions hook */
 public function actions(): void
 {
-    if ($this->request()->is(LP_ACTION) && $this->request()->has('turbo'))
+    if ($this->request()->is(LP_ACTION) && $this->request()->has('turbo')) {
         $this->showXml();
+    }
 }
 ```
 
 ### parseContent
 
-(`&$content, $type`)
-
 > парсинг контента произвольных типов блоков/страниц
 
 ```php
-public function parseContent(string &$content, string $type): void
+public function parseContent(Event $e): void
 {
-    if ($type === 'markdown')
-        $content = $this->getParsedContent($content);
+    if ($e->args->type === 'markdown') {
+        $e->args->content = $this->getParsedContent($e->args->content);
+    }
 }
 ```
 
 ### prepareContent
 
-(`$data, $parameters`)
-
 > добавление индивидуального контента внутри плагина
 
 ```php
-public function prepareContent($data): void
+public function prepareContent(Event $e): void
 {
-    if ($data->type !== 'user_info')
+    if ($e->args->data->type !== 'user_info')
         return;
 
     $this->setTemplate();
 
     $userData = $this->cache('user_info_addon_u' . Utils::$context['user']['id'])
-        ->setLifeTime($data->cache_time)
+        ->setLifeTime($e->args->data->cache_time)
         ->setFallback(self::class, 'getData');
 
     show_user_info($userData);
@@ -65,14 +64,12 @@ public function prepareContent($data): void
 
 ### prepareEditor
 
-(`$context['lp_block']` for block, `$context['lp_page']` for page)
-
 > добавление вашего кода в области редактирования контента страниц/блоков
 
 ```php
-public function prepareEditor(array $object): void
+public function prepareEditor(Event $e): void
 {
-    if ($object['type'] !== 'markdown')
+    if ($e->args->object['type'] !== 'markdown')
         return;
 
     Lang::load('Editor');
@@ -88,16 +85,14 @@ public function prepareEditor(array $object): void
 
 ### preloadStyles
 
-(`&$styles`)
-
 > помогает с предварительной загрузкой необходимых вам таблиц стилей
 
 ::: code-group
 
 ```php [PHP]
-public function preloadStyles(array &$styles): void
+public function preloadStyles(Event $e): void
 {
-    $styles[] = 'https://cdn.jsdelivr.net/npm/@flaticon/flaticon-uicons@1/css/all/all.css';
+    $e->args->styles[] = 'https://cdn.jsdelivr.net/npm/@flaticon/flaticon-uicons@1/css/all/all.css';
 }
 ```
 
@@ -116,17 +111,15 @@ public function preloadStyles(array &$styles): void
 
 ### prepareBlockParams
 
-(`&$params`)
-
 > добавление параметров блоков
 
 ```php
-public function prepareBlockParams(array &$params): void
+public function prepareBlockParams(Event $e): void
 {
     if (Utils::$context['current_block']['type'] !== 'article_list')
         return;
 
-    $params = [
+    $e->args->params = [
         'body_class'     => 'descbox',
         'display_type'   => 0,
         'include_topics' => '',
@@ -138,17 +131,15 @@ public function prepareBlockParams(array &$params): void
 
 ### validateBlockParams
 
-(`&$params`)
-
 > добавление правил валидации при создании/редактировании блоков
 
 ```php
-public function validateBlockParams(array &$params): void
+public function validateBlockParams(Event $e): void
 {
     if (Utils::$context['current_block']['type'] !== 'article_list')
         return;
 
-    $params = [
+    $e->args->params = [
         'body_class'     => FILTER_DEFAULT,
         'display_type'   => FILTER_VALIDATE_INT,
         'include_topics' => FILTER_DEFAULT,
@@ -160,20 +151,19 @@ public function validateBlockParams(array &$params): void
 
 ### findBlockErrors
 
-(`&$errors, $data`)
-
 > добавление пользовательской обработки ошибок при создании/редактировании блоков
 
 ```php
-public function findBlockErrors(array &$errors, array $data): void
+public function findBlockErrors(Event $e): void
 {
-    if ($data['placement'] !== 'ads')
+    if ($e->args->data['placement'] !== 'ads')
         return;
 
     Lang::$txt['lp_post_error_no_ads_placement'] = Lang::$txt['lp_ads_block']['no_ads_placement'];
 
-    if (empty($data['parameters']['ads_placement']))
-        $errors[] = 'no_ads_placement';
+    if (empty($e->args->data['parameters']['ads_placement'])) {
+        $e->args->errors[] = 'no_ads_placement';
+    }
 }
 ```
 
@@ -199,13 +189,9 @@ public function prepareBlockFields(): void
 
 ### onBlockSaving
 
-(`$item`)
-
 > выполнение вашего кода при сохранении/изменении блоков
 
 ### onBlockRemoving
-
-(`$items`)
 
 > выполнение вашего кода при удалении блоков
 
@@ -213,35 +199,29 @@ public function prepareBlockFields(): void
 
 ### preparePageParams
 
-(`&$params`)
-
 > добавление параметров страниц
 
 ```php
-public function preparePageParams(array &$params): void
+public function preparePageParams(Event $e): void
 {
-    $params['meta_robots'] = '';
-    $params['meta_rating'] = '';
+    $e->args->params['meta_robots'] = '';
+    $e->args->params['meta_rating'] = '';
 }
 ```
 
 ### validatePageParams
 
-(`&$params`)
-
 > добавление правил валидации при создании/редактировании страниц
 
 ```php
-public function validatePageParams(array &$params): void
+public function validatePageParams(Event $e): void
 {
-    $params['meta_robots'] = FILTER_DEFAULT;
-    $params['meta_rating'] = FILTER_DEFAULT;
+    $e->args->params['meta_robots'] = FILTER_DEFAULT;
+    $e->args->params['meta_rating'] = FILTER_DEFAULT;
 }
 ```
 
 ### findPageErrors
-
-(`&$errors, $data`)
 
 > добавление пользовательской обработки ошибок при создании/редактировании страниц
 
@@ -261,19 +241,13 @@ public function preparePageFields(): void
 
 ### onPageSaving
 
-(`$item`)
-
 > выполнение вашего кода при сохранении/изменении страниц
 
 ### onPageRemoving
 
-(`$items`)
-
 > выполнение вашего кода при удалении страниц
 
 ### preparePageData
-
-(`&$data`, `$is_author`)
 
 > дополнительная обработка данных текущей страницы портала
 
@@ -311,15 +285,15 @@ public function comments(): void
 
 ### commentButtons
 
-(`$comment`, `&$buttons`)
-
 > добавление пользовательских кнопок под каждым комментарием
 
 ```php
-public function commentButtons(array $comment, array &$buttons): void
+public function commentButtons(Event $e): void
 {
     if (empty(Utils::$context['lp_page']['options']['allow_reactions']))
         return;
+
+    $comment = $e->args->comment;
 
     $comment['can_react'] = $comment['poster']['id'] !== User::$info['id'];
     $comment['reactions'] = json_decode($comment['params']['reactions'] ?? '', true) ?? [];
@@ -330,7 +304,7 @@ public function commentButtons(array $comment, array &$buttons): void
 
     show_comment_reactions($comment);
 
-    $buttons[] = ob_get_clean();
+    $e->args->buttons[] = ob_get_clean();
 }
 ```
 
@@ -338,14 +312,12 @@ public function commentButtons(array $comment, array &$buttons): void
 
 ### addSettings
 
-(`&$settings`)
-
 > добавление индивидуальных настроек плагинов
 
 ```php
-public function addSettings(array &$settings): void
+public function addSettings(Event $e): void
 {
-    $settings['disqus'][] = [
+    $e->args->settings['disqus'][] = [
         'text',
         'shortname',
         'subtext' => Lang::$txt['lp_disqus']['shortname_subtext'],
@@ -356,21 +328,17 @@ public function addSettings(array &$settings): void
 
 ### saveSettings
 
-(`&$settings`)
-
 > выполнение вашего кода при сохранении настроек плагинов
 
 ### prepareAssets
 
-(`&$assets`)
-
 > сохранение внешних стилей, скриптов и изображений для повышения скорости загрузки ресурсов
 
 ```php
-public function prepareAssets(array &$assets): void
+public function prepareAssets(Event $e): void
 {
-    $assets['css']['tiny_slider'][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css';
-    $assets['scripts']['tiny_slider'][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/min/tiny-slider.js';
+    $e->args->assets['css']['tiny_slider'][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css';
+    $e->args->assets['scripts']['tiny_slider'][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/min/tiny-slider.js';
 }
 ```
 
@@ -378,14 +346,12 @@ public function prepareAssets(array &$assets): void
 
 ### frontModes
 
-(`&$modes`)
-
 > добавление собственных режимов для главной страницы
 
 ```php
-public function frontModes(array &$modes): void
+public function frontModes(Event $e): void
 {
-    $modes[$this->mode] = CustomArticle::class;
+    $$e->args->modes[$this->mode] = CustomArticle::class;
 
     Config::$modSettings['lp_frontpage_mode'] = $this->mode;
 }
@@ -397,14 +363,12 @@ public function frontModes(array &$modes): void
 
 ### customLayoutExtensions
 
-(`&$extensions`)
-
 > позволяет добавлять пользовательские расширения макетов
 
 ```php
-public function customLayoutExtensions(array &$extensions): void
+public function customLayoutExtensions(Event $e): void
 {
-    $extensions[] = '.twig';
+    $e->args->extensions[] = '.twig';
 }
 ```
 
@@ -424,56 +388,44 @@ public function frontAssets(): void
 
 ### frontTopics
 
-(`&$this->columns, &$this->tables, &$this->params, &$this->wheres, &$this->orders`)
-
 > добавление дополнительных полей, таблиц, условий «Where», параметров и сортировок в функции _init_
 
 ```php
-public function frontTopics(array &$columns, array &$tables): void
+public function frontTopics(Event $e): void
 {
     if (! class_exists('TopicRatingBar'))
         return;
 
-    $columns[] = 'tr.total_votes, tr.total_value';
-    $tables[]  = 'LEFT JOIN {db_prefix}topic_ratings AS tr ON (t.id_topic = tr.id)';
+    $e->args->columns[] = 'tr.total_votes, tr.total_value';
+    $e->args->tables[]  = 'LEFT JOIN {db_prefix}topic_ratings AS tr ON (t.id_topic = tr.id)';
 }
 ```
 
-### frontTopicsOutput
-
-(`&$topics, $row`)
+### frontTopicsRow
 
 > различные манипуляции с результатами запроса в функции _getData_
 
 ```php
-public function frontTopicsOutput(array &$topics, array $row): void
+public function frontTopicsRow(Event $e): void
 {
-    $topics[$row['id_topic']]['rating'] = empty($row['total_votes'])
-        ? 0 : (number_format($row['total_value'] / $row['total_votes']));
+    $e->args->articles[$e->args->row['id_topic']]['rating'] = empty($e->args->row['total_votes'])
+        ? 0 : (number_format($e->args->row['total_value'] / $e->args->row['total_votes']));
 }
 ```
 
 ### frontPages
 
-(`&$this->columns, &$this->tables, &$this->params, &$this->wheres, &$this->orders`)
-
 > добавление дополнительных полей, таблиц, условий «Where», параметров и сортировок в функции _init_
 
-### frontPagesOutput
-
-(`&$pages, $row`)
+### frontPagesRow
 
 > различные манипуляции с результатами запроса в функции _getData_
 
 ### frontBoards
 
-(`&$this->columns, &$this->tables, &$this->params, &$this->wheres, &$this->orders`)
-
 > добавление дополнительных полей, таблиц, условий «Where», параметров и сортировок в функции _init_
 
-### frontBoardsOutput
-
-(`&$boards, $row`)
+### frontBoardsRow
 
 > различные манипуляции с результатами запроса в функции _getData_
 
@@ -481,12 +433,10 @@ public function frontTopicsOutput(array &$topics, array $row): void
 
 ### prepareIconList
 
-(`&$icons, &$template`)
-
 > добавление собственного списка иконок (вместо FontAwesome)
 
 ```php
-public function prepareIconList(array &$icons): void
+public function prepareIconList(Event $e): void
 {
     if (($mainIcons = $this->cache()->get('all_main_icons', 30 * 24 * 60 * 60)) === null) {
         $set = $this->getIconSet();
@@ -499,19 +449,15 @@ public function prepareIconList(array &$icons): void
         $this->cache()->put('all_main_icons', $mainIcons, 30 * 24 * 60 * 60);
     }
 
-    $icons = array_merge($icons, $mainIcons);
+    $$e->args->icons = array_merge($$e->args->icons, $mainIcons);
 }
 ```
 
 ### prepareIconTemplate
 
-(`&$template, $icon`)
-
 > добавление собственного шаблона для отображения иконок
 
 ### changeIconSet
-
-(`&$set`)
 
 > возможность расширения иконок интерфейса, доступных через массив `Utils::$context['lp_icon_set']`
 
@@ -519,21 +465,17 @@ public function prepareIconList(array &$icons): void
 
 ### extendBasicConfig
 
-(`&$configVars`)
-
 > добавление пользовательских параметров в области основных настроек портала
 
 ### updateAdminAreas
 
-(`&$areas`)
-
 > добавление пользовательских областей портала в админке
 
 ```php
-public function updateAdminAreas(array &$areas): void
+public function updateAdminAreas(Event $e): void
 {
     if (User::$info['is_admin']) {
-        $areas['lp_pages']['subsections']['import_from_ep'] = [
+        $e->args->areas['lp_pages']['subsections']['import_from_ep'] = [
             Utils::$context['lp_icon_set']['import'] . Lang::$txt['lp_eh_portal']['label_name']
         ];
     }
@@ -542,59 +484,49 @@ public function updateAdminAreas(array &$areas): void
 
 ### updateBlockAreas
 
-(`&$areas`)
-
 > добавление дополнительных вкладок в области «Блоки»
 
 ```php
-public function updateBlockAreas(array &$areas): void
+public function updateBlockAreas(Event $e): void
 {
-    $areas['import_from_tp'] = [new BlockImport(), 'main'];
+    $e->args->areas['import_from_tp'] = [new BlockImport(), 'main'];
 }
 ```
 
 ### updatePageAreas
 
-(`&$areas`)
-
 > добавление дополнительных вкладок в области «Страницы»
 
 ```php
-public function updatePageAreas(array &$areas): void
+public function updatePageAreas(Event $e): void
 {
-    $areas['import_from_ep'] = [new Import(), 'main'];
+    $e->args->areas['import_from_ep'] = [new Import(), 'main'];
 }
 ```
 
 ### updateCategoryAreas
 
-(`&$areas`)
-
 > добавление дополнительных вкладок в области «Категории»
 
 ```php
-public function updateCategoryAreas(array &$areas): void
+public function updateCategoryAreas(Event $e): void
 {
-    $areas['import_from_tp'] = [new Import(), 'main'];
+    $e->args->areas['import_from_tp'] = [new Import(), 'main'];
 }
 ```
 
 ### updateTagAreas
 
-(`&$areas`)
-
 > добавление дополнительных вкладок в области «Теги»
 
 ### updatePluginAreas
 
-(`&$areas`)
-
 > добавление дополнительных вкладок в области «Плагины»
 
 ```php
-public function updatePluginAreas(array &$areas): void
+public function updatePluginAreas(Event $e): void
 {
-    $areas['add'] = [new Handler(), 'add'];
+    $e->args->areas['add'] = [new Handler(), 'add'];
 }
 ```
 
@@ -602,14 +534,12 @@ public function updatePluginAreas(array &$areas): void
 
 ### credits
 
-(`&$links`)
-
 > добавление копирайтов используемых библиотек и скриптов
 
 ```php
-public function credits(array &$links): void
+public function credits(Event $e): void
 {
-    $links[] = [
+    $e->args->links[] = [
         'title' => 'Uicons',
         'link' => 'https://www.flaticon.com/uicons',
         'author' => 'Flaticon',
