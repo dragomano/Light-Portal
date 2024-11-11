@@ -139,7 +139,7 @@ final class PluginArea
 			)
 		]);
 
-		$this->updateAssetMtime(Utils::$context['lp_plugins'][$pluginId]);
+		$this->removeAssets();
 
 		$this->cache()->flush();
 
@@ -342,20 +342,10 @@ final class PluginArea
 		]);
 	}
 
-	private function updateAssetMtime(string $plugin): void
+	private function removeAssets(): void
 	{
-		$path = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $plugin . DIRECTORY_SEPARATOR;
-
-		$assets = [
-			$path . 'style.css',
-			$path . 'script.js',
-		];
-
-		foreach ($assets as $asset) {
-			if (is_file($asset)) {
-				touch($asset);
-			}
-		}
+		unlink(Theme::$current->settings['default_theme_dir'] . '/css/light_portal/plugins.css');
+		unlink(Theme::$current->settings['default_theme_dir'] . '/scripts/light_portal/plugins.js');
 	}
 
 	private function extendPluginList(): void

@@ -404,10 +404,7 @@ final class FrontPage implements ActionInterface
 
 		$paginate = '';
 
-		$button = Str::html('a', [
-			'class' => 'button',
-			'href'  => '%s;start=%s',
-		]);
+		$button = Str::html('a')->class('button')->href('%s;start=%s');
 
 		if ($prev >= 0) {
 			$title = Icon::get('arrow_left') . ' ' . Lang::$txt['prev'];

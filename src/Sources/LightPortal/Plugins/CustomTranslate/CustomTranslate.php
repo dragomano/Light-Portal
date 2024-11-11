@@ -41,7 +41,7 @@ class CustomTranslate extends Plugin
 
 	public function menuButtons(): void
 	{
-		if ($this->request()->has('xml'))
+		if (isset(Utils::$context['uninstalling']) || $this->request()->has('xml'))
 			return;
 
 		if (empty(Utils::$context['lp_custom_translate_plugin']['languages']))

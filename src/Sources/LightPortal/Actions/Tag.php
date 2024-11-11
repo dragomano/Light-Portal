@@ -193,9 +193,8 @@ final class Tag extends AbstractPageList
 						'value' => Lang::$txt['lp_tag_column']
 					],
 					'data' => [
-						'function' => static fn($entry) => $entry['icon'] . ' ' . Str::html('a')
-							->href($entry['link'])
-							->setText($entry['title']),
+						'function' => static fn($entry) => $entry['icon'] . ' ' . Str::html('a', $entry['title'])
+							->href($entry['link']),
 					],
 					'sort' => [
 						'default' => 'title DESC',
