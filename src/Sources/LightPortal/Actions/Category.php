@@ -69,7 +69,7 @@ final class Category extends AbstractPageList
 		];
 
 		Utils::$context['linktree'][] = [
-			'name' => $category['title'],
+			'name' => $category['title'] ?? Lang::$txt['lp_no_category'],
 		];
 
 		$page->showAsCards($this);
