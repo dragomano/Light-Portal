@@ -8,12 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 12.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\DummyArticleCards;
 
-use Bugo\Compat\{Config, Utils};
+use Bugo\Compat\Config;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 
@@ -28,8 +28,8 @@ class DummyArticleCards extends Plugin
 
 	public function addSettings(Event $e): void
 	{
-		$e->args->settings['dummy_article_cards'][] = ['check', 'use_lorem_ipsum'];
-		$e->args->settings['dummy_article_cards'][] = ['text', 'keywords', 'placeholder' => 'paris,girl'];
+		$e->args->settings[$this->name][] = ['check', 'use_lorem_ipsum'];
+		$e->args->settings[$this->name][] = ['text', 'keywords', 'placeholder' => 'paris,girl'];
 	}
 
 	public function frontModes(Event $e): void
@@ -41,7 +41,7 @@ class DummyArticleCards extends Plugin
 
 	public function credits(Event $e): void
 	{
-		if (empty(Utils::$context['lp_dummy_article_cards_plugin']['use_lorem_ipsum'])) {
+		if (empty($this->context['use_lorem_ipsum'])) {
 			$e->args->links[] = [
 				'title'   => 'DummyJSON',
 				'link'    => 'https://github.com/Ovi/DummyJSON',

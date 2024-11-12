@@ -66,7 +66,7 @@ class BlockValidator extends AbstractValidator
 
 			EventManager::getInstance()->dispatch(
 				PortalHook::validateBlockParams,
-				new Event(new ParamsArgs($params))
+				new Event(new ParamsArgs($params, Utils::$context['current_block']['type']))
 			);
 
 			$params = array_merge($this->params, $params);

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.10.24
+ * @version 12.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\EzPortalMigration;
@@ -16,7 +16,7 @@ namespace Bugo\LightPortal\Plugins\EzPortalMigration;
 use Bugo\Compat\{Config, Db, Lang, Utils};
 use Bugo\LightPortal\Areas\Imports\AbstractCustomBlockImport;
 use Bugo\LightPortal\Enums\{Permission, Placement};
-use Bugo\LightPortal\Utils\ItemList;
+use Bugo\LightPortal\Utils\{ItemList, Str};
 
 use const LP_NAME;
 
@@ -95,10 +95,19 @@ class BlockImport extends AbstractCustomBlockImport
 				],
 				'actions' => [
 					'header' => [
-						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);" checked>'
+						'value' => Str::html('input', [
+							'type' => 'checkbox',
+							'onclick' => 'invertAll(this, this.form);',
+							'checked' => 'checked'
+						])
 					],
 					'data' => [
-						'function' => static fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="blocks[]" checked>',
+						'function' => static fn($entry) => Str::html('input', [
+							'type' => 'checkbox',
+							'value' => $entry['id'],
+							'name' => 'blocks[]',
+							'checked' => 'checked'
+						]),
 						'class' => 'centertext'
 					]
 				]
@@ -109,10 +118,19 @@ class BlockImport extends AbstractCustomBlockImport
 			'additional_rows' => [
 				[
 					'position' => 'below_table_data',
-					'value' => '
-						<input type="hidden">
-						<input type="submit" name="import_selection" value="' . Lang::$txt['lp_import_selection'] . '" class="button">
-						<input type="submit" name="import_all" value="' . Lang::$txt['lp_import_all'] . '" class="button">'
+					'value' => Str::html('input', ['type' => 'hidden']) .
+						Str::html('input', [
+							'type' => 'submit',
+							'name' => 'import_selection',
+							'value' => Lang::$txt['lp_import_selection'],
+							'class' => 'button'
+						]) .
+						Str::html('input', [
+							'type' => 'submit',
+							'name' => 'import_all',
+							'value' => Lang::$txt['lp_import_all'],
+							'class' => 'button'
+						])
 				]
 			]
 		];
@@ -122,12 +140,10 @@ class BlockImport extends AbstractCustomBlockImport
 
 	public function getAll(int $start = 0, int $limit = 0, string $sort = 'id_block'): array
 	{
-		Db::extend();
-
-		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'ezp_blocks')))
+		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'ezp_blocks')))
 			return [];
 
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT b.id_block, b.blocktype AS type, bl.customtitle AS title, bl.id_column AS col
 			FROM {db_prefix}ezp_blocks AS b
 				INNER JOIN {db_prefix}ezp_block_layout AS bl ON (b.id_block = bl.id_block)
@@ -143,7 +159,7 @@ class BlockImport extends AbstractCustomBlockImport
 		);
 
 		$items = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['id_block']] = [
 				'id'        => $row['id_block'],
 				'type'      => Lang::$txt['lp_' . $this->getType($row['type'])]['title'],
@@ -152,19 +168,17 @@ class BlockImport extends AbstractCustomBlockImport
 			];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 
 		return $items;
 	}
 
 	public function getTotalCount(): int
 	{
-		Db::extend();
-
-		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'ezp_blocks')))
+		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'ezp_blocks')))
 			return 0;
 
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT COUNT(*)
 			FROM {db_prefix}ezp_blocks
 			WHERE blocktype IN ({array_string:types})',
@@ -173,16 +187,16 @@ class BlockImport extends AbstractCustomBlockImport
 			]
 		);
 
-		[$count] = Utils::$smcFunc['db_fetch_row']($result);
+		[$count] = Db::$db->fetch_row($result);
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 
 		return (int) $count;
 	}
 
 	protected function getItems(array $ids): array
 	{
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT
 				b.id_block, b.blocktype AS type, b.blocktitle,
 				bl.customtitle AS title, bl.id_column AS col, bl.permissions, bl.active AS status, bl.blockdata AS content
@@ -197,7 +211,7 @@ class BlockImport extends AbstractCustomBlockImport
 		);
 
 		$items = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['id_block']] = [
 				'type'          => $this->getType($row['type']),
 				'title'         => $row['title'],
@@ -210,7 +224,7 @@ class BlockImport extends AbstractCustomBlockImport
 			];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 
 		return $items;
 	}

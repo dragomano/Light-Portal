@@ -1,6 +1,7 @@
 <?php
 
-use Bugo\Compat\{Config, Lang};
+use Bugo\Compat\{Config, Lang,};
+use Bugo\LightPortal\Utils\Setting;
 
 return [
 	'basic_settings' => '
@@ -34,7 +35,7 @@ return [
 			element: document.getElementById("setting_lp_show_tags_on_page").parentNode.parentNode,
 			intro: "' . Lang::$txt['lp_hello_portal']['extra_settings_tour'][0] . '",
 			position: "right"
-		},' . (! empty(Config::$modSettings['lp_comment_block']) && Config::$modSettings['lp_comment_block'] === 'default' ? ('
+		},' . (Setting::getCommentBlock() === 'default' ? ('
 		{
 			element: document.getElementById("setting_lp_comment_block").parentNode.parentNode.parentNode,
 			intro: "' . Lang::$txt['lp_hello_portal']['extra_settings_tour'][1] . '"
@@ -80,7 +81,7 @@ return [
 			position: "right"
 		},
 		{
-			element: document.querySelector(".noticebox + .cat_bar"),
+			element: document.querySelector(".infobox + .cat_bar"),
 			intro: "' . Lang::$txt['lp_hello_portal']['blocks_tour'][1] . '"
 		},
 		{

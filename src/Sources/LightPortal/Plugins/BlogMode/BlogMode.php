@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 08.11.24
+ * @version 12.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\BlogMode;
@@ -44,7 +44,9 @@ class BlogMode extends Plugin
 
 	public function __construct()
 	{
-		$this->blogAction = Utils::$context['lp_blog_mode_plugin']['blog_action'] ?? $this->blogAction;
+		parent::__construct();
+
+		$this->blogAction = $this->context['blog_action'] ?? $this->blogAction;
 	}
 
 	public function init(): void
@@ -61,9 +63,9 @@ class BlogMode extends Plugin
 		if (empty(User::hasPermission('light_portal_post_blog_entries')))
 			return;
 
-		Utils::$context['lp_page_types'][$this->blogAction] = Lang::$txt['lp_blog_mode']['blogged_status'];
+		Utils::$context['lp_page_types'][$this->blogAction] = $this->txt['blogged_status'];
 
-		if (empty(Utils::$context['lp_blog_mode_plugin']['show_blogs_in_profiles']))
+		if (empty($this->context['show_blogs_in_profiles']))
 			return;
 
 		$this->applyHook(Hook::profileAreas);
@@ -77,8 +79,8 @@ class BlogMode extends Plugin
 			'show_blogs_in_profiles' => false,
 		]);
 
-		$e->args->settings['blog_mode'][] = ['text', 'blog_action'];
-		$e->args->settings['blog_mode'][] = ['check', 'show_blogs_in_profiles'];
+		$e->args->settings[$this->name][] = ['text', 'blog_action'];
+		$e->args->settings[$this->name][] = ['check', 'show_blogs_in_profiles'];
 	}
 
 	public function frontModes(Event $e): void
@@ -93,7 +95,7 @@ class BlogMode extends Plugin
 
 	public function extendBasicConfig(Event $e): void
 	{
-		Lang::$txt['groups_light_portal_post_blog_entries'] = Lang::$txt['lp_blog_mode']['group_permission'];
+		Lang::$txt['groups_light_portal_post_blog_entries'] = $this->txt['group_permission'];
 
 		$configVars = &$e->args->configVars;
 
@@ -133,7 +135,7 @@ class BlogMode extends Plugin
 			array_slice($buttons, 0, $counter, true),
 			[
 				$this->blogAction => [
-					'title'       => Lang::$txt['lp_blog_mode']['menu_item_title'],
+					'title'       => $this->txt['menu_item_title'],
 					'href'        => Config::$scripturl . '?action=' . $this->blogAction,
 					'icon'        => 'replies',
 					'show'        => true,
@@ -164,8 +166,8 @@ class BlogMode extends Plugin
 
 	public function loadPermissions(array &$permissionGroups, array &$permissionList): void
 	{
-		Lang::$txt['permissionname_light_portal_post_blog_entries']   = Lang::$txt['lp_blog_mode']['permission'];
-		Lang::$txt['group_perms_name_light_portal_post_blog_entries'] = Lang::$txt['lp_blog_mode']['permission'];
+		Lang::$txt['permissionname_light_portal_post_blog_entries']   = $this->txt['permission'];
+		Lang::$txt['group_perms_name_light_portal_post_blog_entries'] = $this->txt['permission'];
 
 		$permissionList['membergroup']['light_portal_post_blog_entries'] = [false, 'light_portal'];
 	}
@@ -173,7 +175,7 @@ class BlogMode extends Plugin
 	public function profileAreas(array &$areas): void
 	{
 		$areas['info']['areas']['blogs'] = [
-			'label'      => Lang::$txt['lp_blog_mode']['menu_item_title'],
+			'label'      => $this->txt['menu_item_title'],
 			'function'   => self::class . '::showBlogEntries#',
 			'icon'       => 'replies',
 			'enabled'    => Utils::$context['allow_light_portal_view'],
@@ -189,7 +191,7 @@ class BlogMode extends Plugin
 		Utils::$context['current_member'] = $memID;
 
 		Utils::$context['page_title'] = sprintf(
-			Lang::$txt['lp_blog_mode']['profile_title'],
+			$this->txt['profile_title'],
 			' - ' . User::$profiles[$memID]['real_name']
 		);
 
@@ -203,7 +205,7 @@ class BlogMode extends Plugin
 		$listOptions = [
 			'id' => 'user_blogs',
 			'items_per_page' => 30,
-			'title' => Lang::$txt['lp_blog_mode']['entries'],
+			'title' => $this->txt['entries'],
 			'no_items_label' => Lang::$txt['lp_no_items'],
 			'base_href' => Config::$scripturl . '?action=profile;area=blogs;u=' . Utils::$context['current_member'],
 			'default_sort_col' => 'date',
@@ -309,7 +311,7 @@ class BlogMode extends Plugin
 				[
 					'menu'  => 'info',
 					'area'  => 'blogs',
-					'title' => Lang::$txt['lp_blog_mode']['menu_item_title'],
+					'title' => $this->txt['menu_item_title'],
 				]
 			],
 			array_slice($items, $counter, null, true)

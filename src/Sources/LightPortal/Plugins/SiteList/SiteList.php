@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 13.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\SiteList;
@@ -29,14 +29,14 @@ class SiteList extends Plugin
 
 	public function addSettings(Event $e): void
 	{
-		$e->args->settings['site_list'][] = ['callback', 'urls', $this->showList()];
+		$e->args->settings[$this->name][] = ['callback', 'urls', $this->showList()];
 	}
 
 	public function showList(): bool|string
 	{
 		$this->setTemplate();
 
-		$urls = Utils::jsonDecode(Utils::$context['lp_site_list_plugin']['urls'] ?? '', true);
+		$urls = Utils::jsonDecode($this->context['urls'] ?? '', true);
 
 		Theme::addInlineJavaScript($this->getFromTemplate('site_list_handle_func', $urls ?? []));
 

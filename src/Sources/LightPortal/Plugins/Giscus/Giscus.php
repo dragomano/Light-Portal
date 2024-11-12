@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 12.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Giscus;
@@ -51,7 +51,7 @@ class Giscus extends Plugin
 
 	public function init(): void
 	{
-		Lang::$txt['lp_comment_block_set']['giscus'] = 'Giscus';
+		Lang::$txt['lp_comment_block_set'][$this->name] = 'Giscus';
 	}
 
 	public function addSettings(Event $e): void
@@ -62,60 +62,60 @@ class Giscus extends Plugin
 
 		$settings = &$e->args->settings;
 
-		$settings['giscus'][] = [
+		$settings[$this->name][] = [
 			'text',
 			'repo',
-			'subtext' => sprintf(Lang::$txt['lp_giscus']['repo_subtext'], $this->url),
+			'subtext' => sprintf($this->txt['repo_subtext'], $this->url),
 			'required' => true
 		];
-		$settings['giscus'][] = [
+		$settings[$this->name][] = [
 			'text',
 			'repo_id',
-			'subtext' => sprintf(Lang::$txt['lp_giscus']['repo_id_subtext'], $this->url),
+			'subtext' => sprintf($this->txt['repo_id_subtext'], $this->url),
 			'required' => true
 		];
-		$settings['giscus'][] = [
+		$settings[$this->name][] = [
 			'text',
 			'category',
-			'subtext' => sprintf(Lang::$txt['lp_giscus']['category_subtext'], $this->url),
+			'subtext' => sprintf($this->txt['category_subtext'], $this->url),
 			'required' => true
 		];
-		$settings['giscus'][] = [
+		$settings[$this->name][] = [
 			'text',
 			'category_id',
-			'subtext' => sprintf(Lang::$txt['lp_giscus']['category_id_subtext'], $this->url),
+			'subtext' => sprintf($this->txt['category_id_subtext'], $this->url),
 			'required' => true
 		];
-		$settings['giscus'][] = ['select', 'theme', $this->themes];
+		$settings[$this->name][] = ['select', 'theme', $this->themes];
 	}
 
 	public function comments(): void
 	{
-		if (Setting::getCommentBlock() !== 'giscus')
+		if (Setting::getCommentBlock() !== $this->name)
 			return;
 
-		if (empty(Utils::$context['lp_giscus_plugin']['repo']) || empty(Utils::$context['lp_giscus_plugin']['repo_id']))
+		if (empty($this->context['repo']) || empty($this->context['repo_id']))
 			return;
 
-		if (empty(Utils::$context['lp_giscus_plugin']['category']))
+		if (empty($this->context['category']))
 			return;
 
-		if (empty(Utils::$context['lp_giscus_plugin']['category_id']))
+		if (empty($this->context['category_id']))
 			return;
 
 		Utils::$context['lp_giscus_comment_block'] = /** @lang text */ '
 			<div class="giscus windowbg"></div>
 			<script src="https://giscus.app/client.js"
-				data-repo="' . Utils::$context['lp_giscus_plugin']['repo'] . '"
-				data-repo-id="' . Utils::$context['lp_giscus_plugin']['repo_id'] . '"
-				data-category="' . Utils::$context['lp_giscus_plugin']['category'] . '"
-				data-category-id="' . Utils::$context['lp_giscus_plugin']['category_id'] . '"
+				data-repo="' . $this->context['repo'] . '"
+				data-repo-id="' . $this->context['repo_id'] . '"
+				data-category="' . $this->context['category'] . '"
+				data-category-id="' . $this->context['category_id'] . '"
 				data-mapping="title"
 				data-strict="1"
 				data-reactions-enabled="1"
 				data-emit-metadata="0"
 				data-input-position="bottom"
-				data-theme="' . Utils::$context['lp_giscus_plugin']['theme'] . '"
+				data-theme="' . $this->context['theme'] . '"
 				data-lang="' . Lang::$txt['lang_dictionary'] . '"
 				data-loading="lazy"
 				crossorigin="anonymous"

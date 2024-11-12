@@ -8,12 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 13.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\RecentTopics;
 
-use Bugo\Compat\{Config, Lang, User, Utils};
+use Bugo\Compat\{Config, User};
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Areas\Fields\NumberField;
@@ -37,7 +37,7 @@ class RecentTopics extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'recent_topics')
+		if ($e->args->type !== $this->name)
 			return;
 
 		$e->args->params = [
@@ -56,7 +56,7 @@ class RecentTopics extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'recent_topics')
+		if ($e->args->type !== $this->name)
 			return;
 
 		$e->args->params = [
@@ -71,57 +71,59 @@ class RecentTopics extends Block
 		];
 	}
 
-	public function prepareBlockFields(): void
+	public function prepareBlockFields(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'recent_topics')
+		if ($e->args->type !== $this->name)
 			return;
 
-		CustomField::make('exclude_boards', Lang::$txt['lp_recent_topics']['exclude_boards'])
+		$options = $e->args->options;
+
+		CustomField::make('exclude_boards', $this->txt['exclude_boards'])
 			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'exclude_boards',
-				'hint'  => Lang::$txt['lp_recent_topics']['exclude_boards_select'],
-				'value' => Utils::$context['lp_block']['options']['exclude_boards'] ?? '',
+				'hint'  => $this->txt['exclude_boards_select'],
+				'value' => $options['exclude_boards'] ?? '',
 			]);
 
-		CustomField::make('include_boards', Lang::$txt['lp_recent_topics']['include_boards'])
+		CustomField::make('include_boards', $this->txt['include_boards'])
 			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'include_boards',
-				'hint'  => Lang::$txt['lp_recent_topics']['include_boards_select'],
-				'value' => Utils::$context['lp_block']['options']['include_boards'] ?? '',
+				'hint'  => $this->txt['include_boards_select'],
+				'value' => $options['include_boards'] ?? '',
 			]);
 
-		CheckboxField::make('use_simple_style', Lang::$txt['lp_recent_topics']['use_simple_style'])
+		CheckboxField::make('use_simple_style', $this->txt['use_simple_style'])
 			->setTab(Tab::APPEARANCE)
-			->setDescription(Lang::$txt['lp_recent_topics']['use_simple_style_subtext'])
-			->setValue(Utils::$context['lp_block']['options']['use_simple_style']);
+			->setDescription($this->txt['use_simple_style_subtext'])
+			->setValue($options['use_simple_style']);
 
-		CheckboxField::make('show_avatars', Lang::$txt['lp_recent_topics']['show_avatars'])
-			->setTab(Tab::APPEARANCE)
-			->setValue(
-				Utils::$context['lp_block']['options']['show_avatars']
-				&& empty(Utils::$context['lp_block']['options']['use_simple_style'])
-			);
-
-		CheckboxField::make('show_icons', Lang::$txt['lp_recent_topics']['show_icons'])
+		CheckboxField::make('show_avatars', $this->txt['show_avatars'])
 			->setTab(Tab::APPEARANCE)
 			->setValue(
-				Utils::$context['lp_block']['options']['show_icons']
-				&& empty(Utils::$context['lp_block']['options']['use_simple_style'])
+				$options['show_avatars']
+				&& empty($options['use_simple_style'])
 			);
 
-		NumberField::make('num_topics', Lang::$txt['lp_recent_topics']['num_topics'])
+		CheckboxField::make('show_icons', $this->txt['show_icons'])
+			->setTab(Tab::APPEARANCE)
+			->setValue(
+				$options['show_icons']
+				&& empty($options['use_simple_style'])
+			);
+
+		NumberField::make('num_topics', $this->txt['num_topics'])
 			->setAttribute('min', 1)
-			->setValue(Utils::$context['lp_block']['options']['num_topics']);
+			->setValue($options['num_topics']);
 
-		RadioField::make('link_type', Lang::$txt['lp_recent_topics']['type'])
-			->setOptions(array_combine(['link', 'preview'], Lang::$txt['lp_recent_topics']['type_set']))
-			->setValue(Utils::$context['lp_block']['options']['link_type']);
+		RadioField::make('link_type', $this->txt['type'])
+			->setOptions(array_combine(['link', 'preview'], $this->txt['type_set']))
+			->setValue($options['link_type']);
 
-		NumberField::make('update_interval', Lang::$txt['lp_recent_topics']['update_interval'])
+		NumberField::make('update_interval', $this->txt['update_interval'])
 			->setAttribute('min', 0)
-			->setValue(Utils::$context['lp_block']['options']['update_interval']);
+			->setValue($options['update_interval']);
 	}
 
 	/**
@@ -150,10 +152,10 @@ class RecentTopics extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		[$data, $parameters] = [$e->args->data, $e->args->parameters];
-
-		if ($data->type !== 'recent_topics')
+		if ($e->args->type !== $this->name)
 			return;
+
+		$parameters = $e->args->parameters;
 
 		if ($this->request()->has('preview')) {
 			$parameters['update_interval'] = 0;
@@ -161,8 +163,8 @@ class RecentTopics extends Block
 
 		$parameters['show_avatars'] ??= false;
 
-		$recentTopics = $this->cache('recent_topics_addon_b' . $data->id . '_u' . User::$info['id'])
-			->setLifeTime($parameters['update_interval'] ?? $data->cacheTime)
+		$recentTopics = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
+			->setLifeTime($parameters['update_interval'] ?? $e->args->cacheTime)
 			->setFallback(self::class, 'getData', $parameters);
 
 		if (empty($recentTopics))
@@ -170,6 +172,6 @@ class RecentTopics extends Block
 
 		$this->setTemplate();
 
-		show_topics($recentTopics, $parameters, $this->isInSidebar($data->id) === false);
+		show_topics($recentTopics, $parameters, $this->isInSidebar($e->args->id) === false);
 	}
 }

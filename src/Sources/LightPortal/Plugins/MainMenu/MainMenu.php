@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 13.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\MainMenu;
@@ -61,7 +61,7 @@ class MainMenu extends Plugin
 
 	public function addSettings(Event $e): void
 	{
-		$e->args->settings['main_menu'][] = ['callback', 'items', $this->showList()];
+		$e->args->settings[$this->name][] = ['callback', 'items', $this->showList()];
 	}
 
 	public function showList(): bool|string
@@ -107,11 +107,11 @@ class MainMenu extends Plugin
 	private function prepareVariables(): void
 	{
 		Utils::$context['lp_main_menu_addon_portal_langs'] = Utils::jsonDecode(
-			Utils::$context['lp_main_menu_plugin']['portal_langs'] ?? '', true
+			$this->context['portal_langs'] ?? '', true
 		);
 
 		Utils::$context['lp_main_menu_addon_forum_langs']  = Utils::jsonDecode(
-			Utils::$context['lp_main_menu_plugin']['forum_langs'] ?? '', true
+			$this->context['forum_langs'] ?? '', true
 		);
 	}
 }

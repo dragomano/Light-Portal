@@ -8,12 +8,12 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 05.11.24
+ * @version 13.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Snowflakes;
 
-use Bugo\Compat\{Theme, Utils};
+use Bugo\Compat\Theme;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 
@@ -42,11 +42,11 @@ class Snowflakes extends Plugin
 
 		Theme::addInlineJavaScript('
 			new Snow({
-				iconColor: "' . (empty(Utils::$context['lp_snowflakes_plugin']['icon_color']) ? $this->params['icon_color'] : Utils::$context['lp_snowflakes_plugin']['icon_color']) . '",
-				iconSize: ' . (empty(Utils::$context['lp_snowflakes_plugin']['icon_size']) ? $this->params['icon_size'] : Utils::$context['lp_snowflakes_plugin']['icon_size']) . ',
-				countSnowflake: ' . (empty(Utils::$context['lp_snowflakes_plugin']['snowflakes_count']) ? $this->params['snowflakes_count'] : Utils::$context['lp_snowflakes_plugin']['snowflakes_count']) . ',
-				showSnowBalls: ' . (empty(Utils::$context['lp_snowflakes_plugin']['enable_snowdrifts']) ? 'false' : 'true') . ',
-				snowBallsLength: ' . (empty(Utils::$context['lp_snowflakes_plugin']['snowdrifts_count']) ? $this->params['snowdrifts_count'] : Utils::$context['lp_snowflakes_plugin']['snowdrifts_count']) . '
+				iconColor: "' . (empty($this->context['icon_color']) ? $this->params['icon_color'] : $this->context['icon_color']) . '",
+				iconSize: ' . (empty($this->context['icon_size']) ? $this->params['icon_size'] : $this->context['icon_size']) . ',
+				countSnowflake: ' . (empty($this->context['snowflakes_count']) ? $this->params['snowflakes_count'] : $this->context['snowflakes_count']) . ',
+				showSnowBalls: ' . (empty($this->context['enable_snowdrifts']) ? 'false' : 'true') . ',
+				snowBallsLength: ' . (empty($this->context['snowdrifts_count']) ? $this->params['snowdrifts_count'] : $this->context['snowdrifts_count']) . '
 			});', true);
 	}
 
@@ -56,17 +56,17 @@ class Snowflakes extends Plugin
 
 		$settings = &$e->args->settings;
 
-		$settings['snowflakes'][] = ['color', 'icon_color'];
-		$settings['snowflakes'][] = ['int', 'icon_size', 'min' => 1];
-		$settings['snowflakes'][] = ['range', 'snowflakes_count'];
-		$settings['snowflakes'][] = ['check', 'enable_snowdrifts'];
-		$settings['snowflakes'][] = ['range', 'snowdrifts_count', 'max' => 10];
+		$settings[$this->name][] = ['color', 'icon_color'];
+		$settings[$this->name][] = ['int', 'icon_size', 'min' => 1];
+		$settings[$this->name][] = ['range', 'snowflakes_count'];
+		$settings[$this->name][] = ['check', 'enable_snowdrifts'];
+		$settings[$this->name][] = ['range', 'snowdrifts_count', 'max' => 10];
 	}
 
 	public function prepareAssets(Event $e): void
 	{
-		$e->args->assets['css']['snowflakes'][]     = 'https://cdn.jsdelivr.net/gh/Alaev-Co/snowflakes/dist/snow.min.css';
-		$e->args->assets['scripts']['snowflakes'][] = 'https://cdn.jsdelivr.net/gh/Alaev-Co/snowflakes/dist/Snow.min.js';
+		$e->args->assets['css'][$this->name][] = 'https://cdn.jsdelivr.net/gh/Alaev-Co/snowflakes/dist/snow.min.css';
+		$e->args->assets['scripts'][$this->name][] = 'https://cdn.jsdelivr.net/gh/Alaev-Co/snowflakes/dist/Snow.min.js';
 	}
 
 	public function credits(Event $e): void

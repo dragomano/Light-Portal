@@ -8,15 +8,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 12.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\WhosOnline;
 
-use Bugo\Compat\{Config, Lang, User, Utils};
+use Bugo\Compat\{Config, Lang, User};
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, NumberField};
 use Bugo\LightPortal\Plugins\{Block, Event};
-use Bugo\LightPortal\Utils\Avatar;
+use Bugo\LightPortal\Utils\{Avatar, Str};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -29,7 +29,7 @@ class WhosOnline extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'whos_online')
+		if ($e->args->type !== $this->name)
 			return;
 
 		$e->args->params = [
@@ -42,7 +42,7 @@ class WhosOnline extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'whos_online')
+		if ($e->args->type !== $this->name)
 			return;
 
 		$e->args->params = [
@@ -52,28 +52,30 @@ class WhosOnline extends Block
 		];
 	}
 
-	public function prepareBlockFields(): void
+	public function prepareBlockFields(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'whos_online')
+		if ($e->args->type !== $this->name)
 			return;
 
-		CheckboxField::make('show_group_key', Lang::$txt['lp_whos_online']['show_group_key'])
-			->setValue(Utils::$context['lp_block']['options']['show_group_key']);
+		$options = $e->args->options;
 
-		CheckboxField::make('show_avatars', Lang::$txt['lp_whos_online']['show_avatars'])
-			->setValue(Utils::$context['lp_block']['options']['show_avatars']);
+		CheckboxField::make('show_group_key', $this->txt['show_group_key'])
+			->setValue($options['show_group_key']);
 
-		NumberField::make('update_interval', Lang::$txt['lp_whos_online']['update_interval'])
+		CheckboxField::make('show_avatars', $this->txt['show_avatars'])
+			->setValue($options['show_avatars']);
+
+		NumberField::make('update_interval', $this->txt['update_interval'])
 			->setAttribute('min', 0)
-			->setValue(Utils::$context['lp_block']['options']['update_interval']);
+			->setValue($options['update_interval']);
 	}
 
 	public function prepareContent(Event $e): void
 	{
-		[$data, $parameters] = [$e->args->data, $e->args->parameters];
-
-		if ($data->type !== 'whos_online')
+		if ($e->args->type !== $this->name)
 			return;
+
+		$parameters = $e->args->parameters;
 
 		if ($this->request()->has('preview')) {
 			$parameters['update_interval'] = 0;
@@ -82,14 +84,15 @@ class WhosOnline extends Block
 		$parameters['show_group_key'] ??= false;
 		$parameters['show_avatars'] ??= false;
 
-		$whoIsOnline = $this->cache('whos_online_addon_b' . $data->id . '_u' . User::$info['id'])
-			->setLifeTime($parameters['update_interval'] ?? $data->cacheTime)
+		$whoIsOnline = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
+			->setLifeTime($parameters['update_interval'] ?? $e->args->cacheTime)
 			->setFallback(self::class, 'getFromSsi', 'whosOnline', 'array');
 
 		if (empty($whoIsOnline))
 			return;
 
-		echo Lang::getTxt('lp_guests_set', ['guests' => $whoIsOnline['num_guests']]) . ', ' . Lang::getTxt('lp_users_set', ['users' => $whoIsOnline['num_users_online']]);
+		echo Lang::getTxt('lp_guests_set', ['guests' => $whoIsOnline['num_guests']]) .
+			', ' . Lang::getTxt('lp_users_set', ['users' => $whoIsOnline['num_users_online']]);
 
 		$onlineList = [];
 
@@ -111,12 +114,13 @@ class WhosOnline extends Block
 
 			$whoIsOnline['list_users_online'] = [];
 			foreach ($whoIsOnline['users_online'] as $key => $user) {
-				$whoIsOnline['list_users_online'][] = '<a href="' . Config::$scripturl . '?action=profile;u=' . $user['id'] . '" title="' . $user['name'] . '">' . $users[$key] . '</a>';
+				$whoIsOnline['list_users_online'][] = Str::html('a', $users[$key])
+					->href(Config::$scripturl . '?action=profile;u=' . $user['id'])
+					->title($user['name']);
 			}
 		}
 
-		echo '
-			<br>' . implode(', ', $whoIsOnline['list_users_online']);
+		echo Str::html('br') . implode(', ', $whoIsOnline['list_users_online']);
 
 		if ($parameters['show_group_key'] && $whoIsOnline['online_groups']) {
 			$groups = [];
@@ -125,15 +129,18 @@ class WhosOnline extends Block
 				if ($group['hidden'] != 0 || $group['id'] == 3)
 					continue;
 
+				$color = empty($group['color']) ? null : 'color: ' . $group['color'];
+
 				if (User::hasPermission('view_mlist')) {
-					$groups[] = '<a href="' . Config::$scripturl . '?action=groups;sa=members;group=' . $group['id'] . '"' . (empty($group['color']) ? '' : ' style="color: ' . $group['color'] . '"') . '>' . $group['name'] . '</a>';
+					$groups[] = Str::html('a', $group['name'])
+						->href(Config::$scripturl . '?action=groups;sa=members;group=' . $group['id'])
+						->style($color);
 				} else {
-					$groups[] = '<span' . (empty($group['color']) ? '' : ' style="color: ' . $group['color'] . '"') . '>' . $group['name'] . '</span>';
+					$groups[] = Str::html('span', $group['name'])->style($color);
 				}
 			}
 
-			echo '
-			<br>' . implode(', ', $groups);
+			echo Str::html('br') . implode(', ', $groups);
 		}
 	}
 }

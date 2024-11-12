@@ -74,7 +74,6 @@ enum Permission: int
 			$result = Db::$db->query('', /** @lang text */ '
 				SELECT id_member
 				FROM {db_prefix}moderators',
-				[]
 			);
 
 			$items = Db::$db->fetch_all($result);

@@ -72,7 +72,6 @@ final class Maintainer extends BackgroundTask
 			SELECT id FROM {db_prefix}lp_comments
 			WHERE parent_id <> 0
 				AND parent_id NOT IN (SELECT * FROM (SELECT id FROM {db_prefix}lp_comments) com)',
-			[]
 		);
 
 		$commentRepository = new CommentRepository();
@@ -87,7 +86,6 @@ final class Maintainer extends BackgroundTask
 				LEFT JOIN {db_prefix}lp_comments c ON (c.page_id = p.page_id)
 			GROUP BY p.page_id
 			ORDER BY p.page_id',
-			[]
 		);
 
 		$pages = [];
@@ -123,7 +121,6 @@ final class Maintainer extends BackgroundTask
 				LEFT JOIN {db_prefix}lp_comments c ON (c.page_id = p.page_id)
 			GROUP BY p.page_id
 			ORDER BY p.page_id',
-			[]
 		);
 
 		$pages = [];
@@ -153,8 +150,6 @@ final class Maintainer extends BackgroundTask
 
 	private function optimizeTables(): void
 	{
-		Db::extend();
-
 		array_map(
 			static fn($table) => Db::$db->optimize_table('{db_prefix}' . $table),
 			[

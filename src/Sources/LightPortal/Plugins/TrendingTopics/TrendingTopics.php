@@ -8,12 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 13.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\TrendingTopics;
 
-use Bugo\Compat\{Config, Lang, User, Utils};
+use Bugo\Compat\{Config, Db, Lang, User};
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\LightPortal\Areas\Fields\NumberField;
 use Bugo\LightPortal\Areas\Fields\SelectField;
@@ -22,6 +22,7 @@ use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\DateTime;
+use Bugo\LightPortal\Utils\Str;
 use IntlException;
 
 if (! defined('LP_NAME'))
@@ -40,7 +41,7 @@ class TrendingTopics extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'trending_topics')
+		if ($e->args->type !== $this->name)
 			return;
 
 		$e->args->params = [
@@ -54,7 +55,7 @@ class TrendingTopics extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'trending_topics')
+		if ($e->args->type !== $this->name)
 			return;
 
 		$e->args->params = [
@@ -65,26 +66,28 @@ class TrendingTopics extends Block
 		];
 	}
 
-	public function prepareBlockFields(): void
+	public function prepareBlockFields(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'trending_topics')
+		if ($e->args->type !== $this->name)
 			return;
 
-		CheckboxField::make('show_avatars', Lang::$txt['lp_trending_topics']['show_avatars'])
+		$options = $e->args->options;
+
+		CheckboxField::make('show_avatars', $this->txt['show_avatars'])
 			->setTab(Tab::APPEARANCE)
-			->setValue(Utils::$context['lp_block']['options']['show_avatars']);
+			->setValue($options['show_avatars']);
 
-		SelectField::make('time_period', Lang::$txt['lp_trending_topics']['time_period'])
-			->setOptions(array_combine($this->timePeriod, Lang::$txt['lp_trending_topics']['time_period_set']))
-			->setValue(Utils::$context['lp_block']['options']['time_period']);
+		SelectField::make('time_period', $this->txt['time_period'])
+			->setOptions(array_combine($this->timePeriod, $this->txt['time_period_set']))
+			->setValue($options['time_period']);
 
-		NumberField::make('min_replies', Lang::$txt['lp_trending_topics']['min_replies'])
+		NumberField::make('min_replies', $this->txt['min_replies'])
 			->setAttribute('min', 1)
-			->setValue(Utils::$context['lp_block']['options']['min_replies']);
+			->setValue($options['min_replies']);
 
-		NumberField::make('num_topics', Lang::$txt['lp_trending_topics']['num_topics'])
+		NumberField::make('num_topics', $this->txt['num_topics'])
 			->setAttribute('min', 1)
-			->setValue(Utils::$context['lp_block']['options']['num_topics']);
+			->setValue($options['num_topics']);
 	}
 
 	/**
@@ -98,7 +101,7 @@ class TrendingTopics extends Block
 		if (empty($topicsCount))
 			return [];
 
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT DISTINCT t.id_topic, t.id_member_started, t.num_replies,
 				COALESCE(mem.real_name, mf.poster_name) AS poster_name, mf.subject,
 				ml.id_msg, ml.poster_time
@@ -116,7 +119,7 @@ class TrendingTopics extends Block
 		);
 
 		$topics = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			$topics[$row['id_topic']] = [
 				'subject'     => $row['subject'],
 				'id_msg'      => $row['id_msg'],
@@ -129,45 +132,49 @@ class TrendingTopics extends Block
 			];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 
 		return $parameters['show_avatars'] ? Avatar::getWithItems($topics, 'poster') : $topics;
 	}
 
 	public function prepareContent(Event $e): void
 	{
-		[$data, $parameters] = [$e->args->data, $e->args->parameters];
-
-		if ($data->type !== 'trending_topics')
+		if ($e->args->type !== $this->name)
 			return;
 
-		$topics = $this->cache('trending_topics_addon_b' . $data->id . '_u' . User::$info['id'])
-			->setLifeTime($data->cacheTime)
+		$parameters = $e->args->parameters;
+
+		$topics = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
+			->setLifeTime($e->args->cacheTime)
 			->setFallback(self::class, 'getData', $parameters);
 
 		if ($topics) {
-			echo '
-			<ul class="trending_topics noup">';
+			echo Str::html('ul', ['class' => $this->name . ' noup'])
+				->setHtml(
+					implode('', array_map(function ($id, $topic) use ($parameters) {
+						$li = Str::html('li', ['class' => 'windowbg']);
 
-			foreach ($topics as $id => $topic) {
-				echo '
-				<li class="windowbg">';
+						if (! empty($parameters['show_avatars']) && isset($topic['poster']['avatar'])) {
+							$avatar = Str::html('span', ['class' => 'poster_avatar', 'title' => $topic['poster']['name']])
+								->setHtml($topic['poster']['avatar']);
 
-				if (! empty($parameters['show_avatars']) && isset($topic['poster']['avatar']))
-					echo '
-					<span class="poster_avatar" title="', $topic['poster']['name'], '">
-						', $topic['poster']['avatar'], '
-					</span>';
+							$li->addHtml($avatar);
+						}
 
-				echo '
-					<a href="', Config::$scripturl, '?topic=' . $id . '.msg' . $topic['id_msg'] . ';topicseen#new">', $topic['subject'], '</a> <span>', $topic['poster_time'], ' (', Lang::getTxt('lp_replies_set', ['replies' => $topic['num_replies']]), ')</span>
-				</li>';
-			}
+						$link = Str::html('a', $topic['subject'])
+							->href(Config::$scripturl . '?topic=' . $id . '.msg' . $topic['id_msg'] . ';topicseen#new');
 
-			echo '
-			</ul>';
+						$info = Str::html('span')
+							->setHtml($topic['poster_time'] . ' (' . Lang::getTxt('lp_replies_set', ['replies' => $topic['num_replies']]) . ')');
+
+						$li->addHtml($link)->addHtml(' ')->addHtml($info);
+
+						return $li->toHtml();
+					}, array_keys($topics), $topics))
+				);
 		} else {
-			echo '<div class="infobox">', Lang::$txt['lp_trending_topics']['none'], '</div>';
+			echo Str::html('div', ['class' => 'infobox'])
+				->setText($this->txt['none']);
 		}
 	}
 }

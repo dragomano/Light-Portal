@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 08.11.24
+ * @version 13.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\TinyMCE;
@@ -34,10 +34,10 @@ class TinyMCE extends Plugin
 			'class'  => 'bbc_link',
 			'target' => '_blank',
 			'href'   => 'https://www.tiny.cloud/auth/signup/',
-		])->setText(Lang::$txt['lp_tiny_m_c_e']['api_key_subtext']);
+		])->setText($this->txt['api_key_subtext']);
 
-		$e->args->settings['tiny_m_c_e'][] = ['text', 'api_key', 'subtext' => $link->toHtml()];
-		$e->args->settings['tiny_m_c_e'][] = ['multiselect', 'dark_themes', $this->getForumThemes()];
+		$e->args->settings[$this->name][] = ['text', 'api_key', 'subtext' => $link->toHtml()];
+		$e->args->settings[$this->name][] = ['multiselect', 'dark_themes', $this->getForumThemes()];
 	}
 
 	public function prepareEditor(Event $e): void
@@ -47,12 +47,15 @@ class TinyMCE extends Plugin
 		if ($object['type'] !== 'html' && (! isset($oobject['options']['content']) || $oobject['options']['content'] !== 'html'))
 			return;
 
-		$apiKey = Utils::$context['lp_tiny_m_c_e_plugin']['api_key'] ?? 'no-api-key';
+		$apiKey = $this->context['api_key'] ?? 'no-api-key';
 
-		Theme::loadJavaScriptFile('https://cdn.tiny.cloud/1/' . $apiKey . '/tinymce/6/tinymce.min.js', ['external' => true, 'attributes' => ['referrerpolicy' => 'origin']]);
+		Theme::loadJavaScriptFile(
+			'https://cdn.tiny.cloud/1/' . $apiKey . '/tinymce/6/tinymce.min.js',
+			['external' => true, 'attributes' => ['referrerpolicy' => 'origin']]
+		);
 
 		Theme::addInlineJavaScript('
-		const useDarkMode = ' . ($this->isDarkTheme(Utils::$context['lp_tiny_m_c_e_plugin']['dark_themes']) ? 'true' : 'false') . ';
+		const useDarkMode = ' . ($this->isDarkTheme($this->context['dark_themes']) ? 'true' : 'false') . ';
 		tinymce.init({
 			selector: "#content",
 			language: "' . Lang::$txt['lang_dictionary'] . '",
@@ -66,7 +69,7 @@ class TinyMCE extends Plugin
 				"bullist numlist outdent indent | link image | preview media fullscreen | " +
 				"forecolor backcolor emoticons | help",
 			menu: {
-				favs: { title: "' . Lang::$txt['lp_tiny_m_c_e']['favorites'] . '", items: "code visualaid | searchreplace | emoticons" }
+				favs: { title: "' . $this->txt['favorites'] . '", items: "code visualaid | searchreplace | emoticons" }
 			},
 			menubar: "favs file edit view insert format tools table help",
 			skin: useDarkMode ? "oxide-dark" : "oxide",

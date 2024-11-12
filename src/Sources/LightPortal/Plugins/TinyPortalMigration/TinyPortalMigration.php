@@ -8,12 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 12.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\TinyPortalMigration;
 
-use Bugo\Compat\{Config, Lang, User, Utils};
+use Bugo\Compat\{Config, Db, User};
 use Bugo\LightPortal\Plugins\{Event, Plugin};
 use Bugo\LightPortal\Utils\{Icon, Language};
 
@@ -24,43 +24,45 @@ class TinyPortalMigration extends Plugin
 {
 	public string $type = 'impex';
 
+	private const AREA = 'import_from_tp';
+
 	public function updateAdminAreas(Event $e): void
 	{
 		$areas = &$e->args->areas;
 
 		if (User::$info['is_admin']) {
-			$areas['lp_blocks']['subsections']['import_from_tp'] = [
-				Icon::get('import') . Lang::$txt['lp_tiny_portal_migration']['label_name']
+			$areas['lp_blocks']['subsections'][self::AREA] = [
+				Icon::get('import') . $this->txt['label_name']
 			];
 
-			$areas['lp_pages']['subsections']['import_from_tp'] = [
-				Icon::get('import') . Lang::$txt['lp_tiny_portal_migration']['label_name']
+			$areas['lp_pages']['subsections'][self::AREA] = [
+				Icon::get('import') . $this->txt['label_name']
 			];
 
-			$areas['lp_categories']['subsections']['import_from_tp'] = [
-				Icon::get('import') . Lang::$txt['lp_tiny_portal_migration']['label_name']
+			$areas['lp_categories']['subsections'][self::AREA] = [
+				Icon::get('import') . $this->txt['label_name']
 			];
 		}
 	}
 
 	public function updateBlockAreas(Event $e): void
 	{
-		$e->args->areas['import_from_tp'] = [new BlockImport, 'main'];
+		$e->args->areas[self::AREA] = [new BlockImport, 'main'];
 	}
 
 	public function updatePageAreas(Event $e): void
 	{
-		$e->args->areas['import_from_tp'] = [new PageImport, 'main'];
+		$e->args->areas[self::AREA] = [new PageImport, 'main'];
 	}
 
 	public function updateCategoryAreas(Event $e): void
 	{
-		$e->args->areas['import_from_tp'] = [new CategoryImport, 'main'];
+		$e->args->areas[self::AREA] = [new CategoryImport, 'main'];
 	}
 
 	public function importPages(Event $e): void
 	{
-		if ($this->request('sa') !== 'import_from_tp')
+		if ($this->request('sa') !== self::AREA)
 			return;
 
 		$items = &$e->args->items;
@@ -113,7 +115,7 @@ class TinyPortalMigration extends Plugin
 
 	private function getComments(array $pages): array
 	{
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT *
 			FROM {db_prefix}tp_comments AS com
 				INNER JOIN {db_prefix}members AS mem ON (com.member_id = mem.id_member)
@@ -126,7 +128,7 @@ class TinyPortalMigration extends Plugin
 		);
 
 		$comments = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			if ($row['item_id'] < 0 || empty($row['comment']))
 				continue;
 
@@ -140,7 +142,7 @@ class TinyPortalMigration extends Plugin
 			];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 
 		return $comments;
 	}

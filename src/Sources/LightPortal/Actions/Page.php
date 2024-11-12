@@ -426,7 +426,7 @@ final class Page implements PageInterface
 
 		EventManager::getInstance()->dispatch(PortalHook::comments);
 
-		if (isset(Utils::$context['lp_' . Config::$modSettings['lp_comment_block'] . '_comment_block']))
+		if (isset(Utils::$context['lp_' . Setting::getCommentBlock() . '_comment_block']))
 			return;
 
 		$this->prepareJsonData();
@@ -461,7 +461,6 @@ final class Page implements PageInterface
 
 		$pageUrl = Utils::$context['lp_page']['url'];
 
-		// @TODO Need to improve this case
 		if (class_exists('\SimpleSEF')) {
 			$pageUrl = (new \SimpleSEF())->getSefUrl($pageUrl);
 		}

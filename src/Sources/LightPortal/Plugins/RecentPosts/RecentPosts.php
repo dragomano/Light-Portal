@@ -8,12 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 13.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\RecentPosts;
 
-use Bugo\Compat\{Config, Lang, User, Utils};
+use Bugo\Compat\{Config, User, Utils};
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, NumberField, RadioField};
 use Bugo\LightPortal\Areas\Partials\{BoardSelect, TopicSelect};
 use Bugo\LightPortal\Enums\Tab;
@@ -32,7 +32,7 @@ class RecentPosts extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'recent_posts')
+		if ($e->args->type !== $this->name)
 			return;
 
 		$e->args->params = [
@@ -54,7 +54,7 @@ class RecentPosts extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'recent_posts')
+		if ($e->args->type !== $this->name)
 			return;
 
 		$e->args->params = [
@@ -72,72 +72,74 @@ class RecentPosts extends Block
 		];
 	}
 
-	public function prepareBlockFields(): void
+	public function prepareBlockFields(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'recent_posts')
+		if ($e->args->type !== $this->name)
 			return;
 
-		CustomField::make('exclude_boards', Lang::$txt['lp_recent_posts']['exclude_boards'])
+		$options = $e->args->options;
+
+		CustomField::make('exclude_boards', $this->txt['exclude_boards'])
 			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'exclude_boards',
-				'hint'  => Lang::$txt['lp_recent_posts']['exclude_boards_select'],
-				'value' => Utils::$context['lp_block']['options']['exclude_boards'] ?? '',
+				'hint'  => $this->txt['exclude_boards_select'],
+				'value' => $options['exclude_boards'] ?? '',
 			]);
 
-		CustomField::make('include_boards', Lang::$txt['lp_recent_posts']['include_boards'])
+		CustomField::make('include_boards', $this->txt['include_boards'])
 			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'include_boards',
-				'hint'  => Lang::$txt['lp_recent_posts']['include_boards_select'],
-				'value' => Utils::$context['lp_block']['options']['include_boards'] ?? '',
+				'hint'  => $this->txt['include_boards_select'],
+				'value' => $options['include_boards'] ?? '',
 			]);
 
-		CustomField::make('exclude_topics', Lang::$txt['lp_recent_posts']['exclude_topics'])
+		CustomField::make('exclude_topics', $this->txt['exclude_topics'])
 			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new TopicSelect(), [
 				'id'    => 'exclude_topics',
-				'hint'  => Lang::$txt['lp_recent_posts']['exclude_topics_select'],
-				'value' => Utils::$context['lp_block']['options']['exclude_topics'] ?? '',
+				'hint'  => $this->txt['exclude_topics_select'],
+				'value' => $options['exclude_topics'] ?? '',
 			]);
 
-		CustomField::make('include_topics', Lang::$txt['lp_recent_posts']['include_topics'])
+		CustomField::make('include_topics', $this->txt['include_topics'])
 			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new TopicSelect(), [
 				'id'    => 'include_topics',
-				'hint'  => Lang::$txt['lp_recent_posts']['include_topics_select'],
-				'value' => Utils::$context['lp_block']['options']['include_topics'] ?? '',
+				'hint'  => $this->txt['include_topics_select'],
+				'value' => $options['include_topics'] ?? '',
 			]);
 
-		CheckboxField::make('use_simple_style', Lang::$txt['lp_recent_posts']['use_simple_style'])
+		CheckboxField::make('use_simple_style', $this->txt['use_simple_style'])
 			->setTab(Tab::APPEARANCE)
-			->setDescription(Lang::$txt['lp_recent_posts']['use_simple_style_subtext'])
-			->setValue(Utils::$context['lp_block']['options']['use_simple_style']);
+			->setDescription($this->txt['use_simple_style_subtext'])
+			->setValue($options['use_simple_style']);
 
-		CheckboxField::make('show_avatars', Lang::$txt['lp_recent_posts']['show_avatars'])
+		CheckboxField::make('show_avatars', $this->txt['show_avatars'])
 			->setTab(Tab::APPEARANCE)
 			->setValue(
-				Utils::$context['lp_block']['options']['show_avatars']
-				&& empty(Utils::$context['lp_block']['options']['use_simple_style'])
+				$options['show_avatars']
+				&& empty($options['use_simple_style'])
 			);
 
-		NumberField::make('num_posts', Lang::$txt['lp_recent_posts']['num_posts'])
+		NumberField::make('num_posts', $this->txt['num_posts'])
 			->setAttribute('min', 1)
-			->setValue(Utils::$context['lp_block']['options']['num_posts']);
+			->setValue($options['num_posts']);
 
-		RadioField::make('link_type', Lang::$txt['lp_recent_posts']['type'])
-			->setOptions(array_combine(['link', 'preview'], Lang::$txt['lp_recent_posts']['type_set']))
-			->setValue(Utils::$context['lp_block']['options']['link_type']);
+		RadioField::make('link_type', $this->txt['type'])
+			->setOptions(array_combine(['link', 'preview'], $this->txt['type_set']))
+			->setValue($options['link_type']);
 
-		CheckboxField::make('show_body', Lang::$txt['lp_recent_posts']['show_body'])
-			->setValue(Utils::$context['lp_block']['options']['show_body']);
+		CheckboxField::make('show_body', $this->txt['show_body'])
+			->setValue($options['show_body']);
 
-		CheckboxField::make('limit_body', Lang::$txt['lp_recent_posts']['limit_body'])
-			->setValue(Utils::$context['lp_block']['options']['limit_body']);
+		CheckboxField::make('limit_body', $this->txt['limit_body'])
+			->setValue($options['limit_body']);
 
-		NumberField::make('update_interval', Lang::$txt['lp_recent_posts']['update_interval'])
+		NumberField::make('update_interval', $this->txt['update_interval'])
 			->setAttribute('min', 0)
-			->setValue(Utils::$context['lp_block']['options']['update_interval']);
+			->setValue($options['update_interval']);
 	}
 
 	/**
@@ -197,19 +199,20 @@ class RecentPosts extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		[$data, $parameters] = [$e->args->data, $e->args->parameters];
-
-		if ($data->type !== 'recent_posts')
+		if ($e->args->type !== $this->name)
 			return;
 
-		if ($this->request()->has('preview'))
+		$parameters = $e->args->parameters;
+
+		if ($this->request()->has('preview')) {
 			$parameters['update_interval'] = 0;
+		}
 
 		$parameters['show_avatars'] ??= false;
 		$parameters['limit_body'] ??= false;
 
-		$recentPosts = $this->cache('recent_posts_addon_b' . $data->id . '_u' . User::$info['id'])
-			->setLifeTime($parameters['update_interval'] ?? $data->cacheTime)
+		$recentPosts = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
+			->setLifeTime($parameters['update_interval'] ?? $e->args->cacheTime)
 			->setFallback(self::class, 'getData', $parameters);
 
 		if (empty($recentPosts))
@@ -217,6 +220,6 @@ class RecentPosts extends Block
 
 		$this->setTemplate();
 
-		show_posts($recentPosts, $parameters, $this->isInSidebar($data->id) === false);
+		show_posts($recentPosts, $parameters, $this->isInSidebar($e->args->id) === false);
 	}
 }

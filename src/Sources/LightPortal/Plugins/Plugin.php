@@ -12,14 +12,11 @@
 
 namespace Bugo\LightPortal\Plugins;
 
-use Bugo\Compat\{Config, Db, ServerSideIncludes, Theme, Utils};
+use Bugo\Compat\{Config, Db, Lang, ServerSideIncludes, Theme, Utils};
 use Bugo\LightPortal\Repositories\PluginRepository;
-use Bugo\LightPortal\Utils\CacheTrait;
-use Bugo\LightPortal\Utils\EntityDataTrait;
-use Bugo\LightPortal\Utils\RequestTrait;
-use Bugo\LightPortal\Utils\SessionTrait;
-use Bugo\LightPortal\Utils\SMFHookTrait;
-use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\{CacheTrait, EntityDataTrait};
+use Bugo\LightPortal\Utils\{RequestTrait, SessionTrait};
+use Bugo\LightPortal\Utils\{SMFHookTrait, Str};
 use ReflectionClass;
 
 use function array_column;
@@ -29,7 +26,7 @@ use function dirname;
 use function explode;
 use function is_file;
 
-if (! defined('SMF'))
+if (! defined('LP_NAME'))
 	die('No direct access...');
 
 abstract class Plugin
@@ -44,6 +41,23 @@ abstract class Plugin
 
 	public string $icon = 'fas fa-puzzle-piece';
 
+	public bool $saveable = true;
+
+	protected string $name;
+
+	protected array $txt;
+
+	protected array $context;
+
+	public function __construct()
+	{
+		$this->name = $this->getShortName();
+
+		$this->txt = Lang::$txt['lp_' . $this->name] ?? [];
+
+		$this->context = Utils::$context['lp_' . $this->name . '_plugin'] ?? [];
+	}
+
 	public function getCalledClass(): ReflectionClass
 	{
 		return new ReflectionClass(static::class);
@@ -52,6 +66,11 @@ abstract class Plugin
 	public function getName(): string
 	{
 		return $this->getCalledClass()->getShortName();
+	}
+
+	public function getShortName(): string
+	{
+		return Str::getSnakeName($this->getName());
 	}
 
 	public function setTemplate(string $name = 'template'): self
@@ -95,7 +114,7 @@ abstract class Plugin
 
 	public function addDefaultValues(array $values): void
 	{
-		$snakeName = Str::getSnakeName($this->getName());
+		$snakeName = $this->getShortName();
 
 		$settings = [];
 		foreach ($values as $option => $value) {

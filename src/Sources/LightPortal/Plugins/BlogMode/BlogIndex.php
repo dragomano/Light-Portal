@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 15.06.24
+ * @version 13.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\BlogMode;
@@ -19,7 +19,7 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Actions\FrontPage;
 use IntlException;
 
-if (! defined('SMF'))
+if (! defined('LP_NAME'))
 	die('No direct access...');
 
 class BlogIndex

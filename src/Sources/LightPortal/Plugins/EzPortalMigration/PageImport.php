@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.10.24
+ * @version 12.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\EzPortalMigration;
@@ -16,7 +16,7 @@ namespace Bugo\LightPortal\Plugins\EzPortalMigration;
 use Bugo\Compat\{Config, Db, Lang, User, Utils};
 use Bugo\LightPortal\Areas\Imports\AbstractCustomPageImport;
 use Bugo\LightPortal\Enums\Permission;
-use Bugo\LightPortal\Utils\{DateTime, ItemList};
+use Bugo\LightPortal\Utils\{DateTime, ItemList, Str};
 use IntlException;
 
 use const LP_NAME;
@@ -93,10 +93,19 @@ class PageImport extends AbstractCustomPageImport
 				],
 				'actions' => [
 					'header' => [
-						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);" checked>'
+						'value' => Str::html('input', [
+							'type' => 'checkbox',
+							'onclick' => 'invertAll(this, this.form);',
+							'checked' => 'checked'
+						])
 					],
 					'data' => [
-						'function' => static fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="pages[]" checked>',
+						'function' => static fn($entry) => Str::html('input', [
+							'type' => 'checkbox',
+							'value' => $entry['id'],
+							'name' => 'pages[]',
+							'checked' => 'checked'
+						]),
 						'class' => 'centertext'
 					]
 				]
@@ -107,10 +116,19 @@ class PageImport extends AbstractCustomPageImport
 			'additional_rows' => [
 				[
 					'position' => 'below_table_data',
-					'value' => '
-						<input type="hidden">
-						<input type="submit" name="import_selection" value="' . Lang::$txt['lp_import_selection'] . '" class="button">
-						<input type="submit" name="import_all" value="' . Lang::$txt['lp_import_all'] . '" class="button">'
+					'value' => Str::html('input', ['type' => 'hidden']) .
+						Str::html('input', [
+							'type' => 'submit',
+							'name' => 'import_selection',
+							'value' => Lang::$txt['lp_import_selection'],
+							'class' => 'button'
+						]) .
+						Str::html('input', [
+							'type' => 'submit',
+							'name' => 'import_all',
+							'value' => Lang::$txt['lp_import_all'],
+							'class' => 'button'
+						])
 				]
 			]
 		];
@@ -123,12 +141,10 @@ class PageImport extends AbstractCustomPageImport
 	 */
 	public function getAll(int $start = 0, int $limit = 0, string $sort = 'id_page'): array
 	{
-		Db::extend();
-
-		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'ezp_page')))
+		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'ezp_page')))
 			return [];
 
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT id_page, date, title, views
 			FROM {db_prefix}ezp_page
 			ORDER BY {raw:sort}
@@ -141,7 +157,7 @@ class PageImport extends AbstractCustomPageImport
 		);
 
 		$items = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['id_page']] = [
 				'id'         => $row['id_page'],
 				'slug'       => Utils::$smcFunc['strtolower'](explode(' ', (string) $row['title'])[0]) . $row['id_page'],
@@ -154,34 +170,31 @@ class PageImport extends AbstractCustomPageImport
 			];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 
 		return $items;
 	}
 
 	public function getTotalCount(): int
 	{
-		Db::extend();
-
-		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'ezp_page')))
+		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'ezp_page')))
 			return 0;
 
-		$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
+		$result = Db::$db->query('', /** @lang text */ '
 			SELECT COUNT(*)
 			FROM {db_prefix}ezp_page',
-			[]
 		);
 
-		[$count] = Utils::$smcFunc['db_fetch_row']($result);
+		[$count] = Db::$db->fetch_row($result);
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 
 		return (int) $count;
 	}
 
 	protected function getItems(array $ids): array
 	{
-		$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
+		$result = Db::$db->query('', /** @lang text */ '
 			SELECT id_page, date, title, content, views, permissions
 			FROM {db_prefix}ezp_page' . (empty($ids) ? '' : '
 			WHERE id_page IN ({array_int:pages})'),
@@ -191,7 +204,7 @@ class PageImport extends AbstractCustomPageImport
 		);
 
 		$items = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['id_page']] = [
 				'page_id'      => $row['id_page'],
 				'author_id'    => User::$info['id'],
@@ -209,7 +222,7 @@ class PageImport extends AbstractCustomPageImport
 			];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 
 		return $items;
 	}

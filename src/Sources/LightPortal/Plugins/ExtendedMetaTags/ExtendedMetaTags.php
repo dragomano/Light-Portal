@@ -8,12 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 12.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\ExtendedMetaTags;
 
-use Bugo\Compat\{Lang, Utils};
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Fields\VirtualSelectField;
 use Bugo\LightPortal\Enums\{Hook, Tab};
 use Bugo\LightPortal\Plugins\Event;
@@ -68,16 +68,16 @@ class ExtendedMetaTags extends Plugin
 		$e->args->params['meta_rating'] = FILTER_DEFAULT;
 	}
 
-	public function preparePageFields(): void
+	public function preparePageFields(Event $e): void
 	{
-		VirtualSelectField::make('meta_robots', Lang::$txt['lp_extended_meta_tags']['meta_robots'])
+		VirtualSelectField::make('meta_robots', $this->txt['meta_robots'])
 			->setTab(Tab::SEO)
-			->setOptions(array_combine($this->meta_robots, Lang::$txt['lp_extended_meta_tags']['meta_robots_set']))
-			->setValue(Utils::$context['lp_page']['options']['meta_robots']);
+			->setOptions(array_combine($this->meta_robots, $this->txt['meta_robots_set']))
+			->setValue($e->args->options['meta_robots']);
 
-		VirtualSelectField::make('meta_rating', Lang::$txt['lp_extended_meta_tags']['meta_rating'])
+		VirtualSelectField::make('meta_rating', $this->txt['meta_rating'])
 			->setTab(Tab::SEO)
-			->setOptions(array_combine($this->meta_rating, Lang::$txt['lp_extended_meta_tags']['meta_rating_set']))
-			->setValue(Utils::$context['lp_page']['options']['meta_rating']);
+			->setOptions(array_combine($this->meta_rating, $this->txt['meta_rating_set']))
+			->setValue($e->args->options['meta_rating']);
 	}
 }

@@ -8,15 +8,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 13.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\TopPosters;
 
-use Bugo\Compat\{Config, Lang, User, Utils};
+use Bugo\Compat\{Config, Db, Lang, User};
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, NumberField};
 use Bugo\LightPortal\Plugins\{Block, Event};
-use Bugo\LightPortal\Utils\Avatar;
+use Bugo\LightPortal\Utils\{Avatar, Str};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -27,7 +27,7 @@ class TopPosters extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'top_posters')
+		if ($e->args->type !== $this->name)
 			return;
 
 		$e->args->params = [
@@ -39,7 +39,7 @@ class TopPosters extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'top_posters')
+		if ($e->args->type !== $this->name)
 			return;
 
 		$e->args->params = [
@@ -49,25 +49,27 @@ class TopPosters extends Block
 		];
 	}
 
-	public function prepareBlockFields(): void
+	public function prepareBlockFields(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'top_posters')
+		if ($e->args->type !== $this->name)
 			return;
 
-		CheckboxField::make('show_avatars', Lang::$txt['lp_top_posters']['show_avatars'])
-			->setValue(Utils::$context['lp_block']['options']['show_avatars']);
+		$options = $e->args->options;
 
-		NumberField::make('num_posters', Lang::$txt['lp_top_posters']['num_posters'])
+		CheckboxField::make('show_avatars', $this->txt['show_avatars'])
+			->setValue($options['show_avatars']);
+
+		NumberField::make('num_posters', $this->txt['num_posters'])
 			->setAttribute('min', 1)
-			->setValue(Utils::$context['lp_block']['options']['num_posters']);
+			->setValue($options['num_posters']);
 
-		CheckboxField::make('show_numbers_only', Lang::$txt['lp_top_posters']['show_numbers_only'])
-			->setValue(Utils::$context['lp_block']['options']['show_numbers_only']);
+		CheckboxField::make('show_numbers_only', $this->txt['show_numbers_only'])
+			->setValue($options['show_numbers_only']);
 	}
 
 	public function getData(array $parameters): array
 	{
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT id_member, real_name, posts
 			FROM {db_prefix}members
 			WHERE posts > {int:num_posts}
@@ -79,7 +81,7 @@ class TopPosters extends Block
 			]
 		);
 
-		$members = Utils::$smcFunc['db_fetch_all']($result);
+		$members = Db::$db->fetch_all($result);
 
 		if (empty($members))
 			return [];
@@ -92,13 +94,14 @@ class TopPosters extends Block
 					'name'   => $row['real_name'],
 					'posts'  => $row['posts'],
 					'link'   => User::hasPermission('profile_view')
-						? '<a href="' . Config::$scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>'
+						? Str::html('a', $row['real_name'])
+							->href(Config::$scripturl . '?action=profile;u=' . $row['id_member'])
 						: $row['real_name'],
 				]
 			];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 
 		if ($parameters['show_avatars'] && empty($parameters['use_simple_style'])) {
 			$posters = Avatar::getWithItems($posters, 'poster');
@@ -109,40 +112,54 @@ class TopPosters extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		[$data, $parameters] = [$e->args->data, $e->args->parameters];
-
-		if ($data->type !== 'top_posters')
+		if ($e->args->type !== $this->name)
 			return;
+
+		$parameters = $e->args->parameters;
 
 		$parameters['show_numbers_only'] ??= false;
 		$parameters['num_posters'] ??= 10;
 
-		$topPosters = $this->cache('top_posters_addon_b' . $data->id . '_u' . User::$info['id'])
-			->setLifeTime($data->cacheTime)
+		$topPosters = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
+			->setLifeTime($e->args->cacheTime)
 			->setFallback(self::class, 'getData', $parameters);
 
 		if (empty($topPosters)) {
-			echo Lang::$txt['lp_top_posters']['none'];
+			echo $this->txt['none'];
 			return;
 		}
 
-		echo '
-		<dl class="top_posters stats">';
+		$dl = Str::html('dl', ['class' => $this->name . ' stats']);
 
 		$max = $topPosters[0]['posts'];
 
 		foreach ($topPosters as $poster) {
 			$width = $poster['posts'] * 100 / $max;
 
-			echo '
-			<dt>', empty($parameters['show_avatars']) ? '' : $poster['avatar'], ' ', $poster['link'], '</dt>
-			<dd class="statsbar generic_bar righttext">
-				<div class="bar', (empty($poster['posts']) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-				<span>', ($parameters['show_numbers_only'] ? $poster['posts'] : Lang::getTxt(Lang::$txt['lp_top_posters']['posts'], ['posts' => $poster['posts']])), '</span>
-			</dd>';
+			$dt = Str::html('dt');
+			if (empty($parameters['show_avatars'])) {
+				$dt->addHtml($poster['link']);
+			} else {
+				$dt->addHtml($poster['avatar'] . ' ' . $poster['link']);
+			}
+
+			$dd = Str::html('dd', ['class' => 'statsbar generic_bar righttext']);
+			$barClass = empty($poster['posts']) ? 'bar empty' : 'bar';
+			$barStyle = empty($poster['posts']) ? null : 'width: ' . $width . '%';
+
+			$bar = Str::html('div', ['class' => $barClass, 'style' => $barStyle]);
+			$dd->addHtml($bar);
+
+			$postCount = $parameters['show_numbers_only']
+				? $poster['posts']
+				: Lang::getTxt($this->txt['posts'], ['posts' => $poster['posts']]);
+
+			$dd->addHtml(Str::html('span', $postCount));
+
+			$dl->addHtml($dt);
+			$dl->addHtml($dd);
 		}
 
-		echo '
-		</dl>';
+		echo $dl;
 	}
 }

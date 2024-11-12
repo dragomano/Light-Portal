@@ -44,7 +44,6 @@ use function ksort;
 use function ltrim;
 use function sort;
 use function sprintf;
-use function touch;
 
 use const LP_NAME;
 
@@ -193,14 +192,17 @@ final class PluginArea
 				$className = '\Bugo\LightPortal\Plugins\\' . $item . '\\' . $item;
 				$addonClass = new ReflectionClass($className);
 
-				if ($addonClass->hasProperty('author'))
+				if ($addonClass->hasProperty('author')) {
 					$author = $addonClass->getProperty('author')->getValue(new $className);
+				}
 
-				if ($addonClass->hasProperty('link'))
+				if ($addonClass->hasProperty('link')) {
 					$link = $addonClass->getProperty('link')->getValue(new $className);
+				}
 
-				if ($addonClass->hasProperty('saveable'))
+				if ($addonClass->hasProperty('saveable')) {
 					$saveable = $addonClass->getProperty('saveable')->getValue(new $className);
+				}
 
 				$composer = is_file(dirname($addonClass->getFileName()) . DIRECTORY_SEPARATOR . 'composer.json');
 			} catch (ReflectionException) {
@@ -327,11 +329,13 @@ final class PluginArea
 		$allPlugins = array_keys(Utils::$context['lp_loaded_addons'] ?? []);
 
 		foreach ($allPlugins as $plugin) {
-			if (isset(Lang::$txt['lp_' . $plugin]))
+			if (isset(Lang::$txt['lp_' . $plugin])) {
 				$txtData['lp_' . $plugin] = Lang::$txt['lp_' . $plugin];
+			}
 
-			if (! empty(Utils::$context['lp_' . $plugin . '_plugin']))
+			if (! empty(Utils::$context['lp_' . $plugin . '_plugin'])) {
 				$contextData['lp_' . $plugin] = Utils::$context['lp_' . $plugin . '_plugin'];
+			}
 		}
 
 		Utils::$context['lp_json'] = json_encode([

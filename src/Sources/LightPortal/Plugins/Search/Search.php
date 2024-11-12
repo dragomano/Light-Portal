@@ -8,12 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 13.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Search;
 
-use Bugo\Compat\{Config, Lang, Theme, Utils};
+use Bugo\Compat\{Config, Db, Lang, Theme, Utils};
 use Bugo\LightPortal\Enums\{Hook, Permission};
 use Bugo\LightPortal\Plugins\{Block, Event};
 use Bugo\LightPortal\Utils\{Content, DateTime, Str};
@@ -37,7 +37,7 @@ class Search extends Block
 			'min_chars' => 3,
 		]);
 
-		$e->args->settings['search'][] = ['range', 'min_chars', 'min' => 1, 'max' => 10];
+		$e->args->settings[$this->name][] = ['range', 'min_chars', 'min' => 1, 'max' => 10];
 	}
 
 	public function actions()
@@ -45,7 +45,7 @@ class Search extends Block
 		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'qsearch')
 			return call_user_func($this->prepareQuickResults(...));
 
-		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'search')
+		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === $this->name)
 			return call_user_func($this->showResults(...));
 
 		return false;
@@ -56,7 +56,7 @@ class Search extends Block
 	 */
 	public function showResults(): void
 	{
-		Utils::$context['page_title']     = Lang::$txt['lp_search']['title'];
+		Utils::$context['page_title'] = $this->txt['title'];
 		Utils::$context['robot_no_index'] = true;
 
 		Utils::$context['linktree'][] = [
@@ -90,10 +90,10 @@ class Search extends Block
 	 */
 	private function getResults(): array
 	{
-		if ($this->request()->isNotEmpty('search') === false)
+		if ($this->request()->isNotEmpty($this->name) === false)
 			return [];
 
-		$query = Utils::$smcFunc['htmltrim'](Utils::htmlspecialchars($this->request('search')));
+		$query = Utils::$smcFunc['htmltrim'](Utils::htmlspecialchars($this->request($this->name)));
 
 		if (empty($query))
 			return [];
@@ -117,7 +117,7 @@ class Search extends Block
 			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE WHEN lower(p.slug) LIKE lower(\'%' . $word . '%\') THEN ' . (count($titleWords) - $key) . ' ELSE 0 END';
 		}
 
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT p.slug, p.content, p.type, GREATEST(p.created_at, p.updated_at) AS date, (' . $searchFormula . ') AS related, t.value, mem.id_member, mem.real_name
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:current_lang})
@@ -138,7 +138,7 @@ class Search extends Block
 		);
 
 		$items = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result))	{
+		while ($row = Db::$db->fetch_assoc($result))	{
 			$row['content'] = Content::parse($row['content'], $row['type']);
 
 			$items[] = [
@@ -152,20 +152,20 @@ class Search extends Block
 			];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 
 		return $items;
 	}
 
 	public function prepareAssets(Event $e): void
 	{
-		$e->args->assets['css']['search'][]     = 'https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.css';
-		$e->args->assets['scripts']['search'][] = 'https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.min.js';
+		$e->args->assets['css'][$this->name][] = 'https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.css';
+		$e->args->assets['scripts'][$this->name][] = 'https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.min.js';
 	}
 
 	public function prepareContent(Event $e): void
 	{
-		if ($e->args->data->type !== 'search')
+		if ($e->args->type !== $this->name)
 			return;
 
 		Theme::loadCSSFile('light_portal/search/auto-complete.css');
@@ -173,12 +173,12 @@ class Search extends Block
 
 		echo '
 		<form class="search_addon centertext" action="', LP_BASE_URL, ';sa=search" method="post" accept-charset="', Utils::$context['character_set'], '">
-			<input type="search" name="search" placeholder="', Lang::$txt['lp_search']['title'], /** @lang text */ '">
+			<input type="search" name="search" placeholder="', $this->txt['title'], /** @lang text */ '">
 		</form>
 		<script>
 			new autoComplete({
-				selector: ".search_addon input",', (empty(Utils::$context['lp_search_plugin']['min_chars']) ? '' : '
-				minChars: ' . Utils::$context['lp_search_plugin']['min_chars'] . ','), '
+				selector: ".search_addon input",', (empty($this->context['min_chars']) ? '' : '
+				minChars: ' . $this->context['min_chars'] . ','), '
 				source: async function(term, response) {
 					const results = await fetch("', LP_BASE_URL, /** @lang text */ ';sa=qsearch", {
 						method: "POST",

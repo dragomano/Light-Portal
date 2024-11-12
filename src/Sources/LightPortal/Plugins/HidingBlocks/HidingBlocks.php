@@ -8,12 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 12.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\HidingBlocks;
 
-use Bugo\Compat\{Lang, Utils};
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Event;
@@ -26,15 +26,17 @@ class HidingBlocks extends Plugin
 {
 	public string $type = 'block_options';
 
+	private const PARAM = 'hidden_breakpoints';
+
 	private array $classes = ['xs', 'sm', 'md', 'lg', 'xl'];
 
 	public function init(): void
 	{
 		foreach (Utils::$context['lp_active_blocks'] as $id => $block) {
-			if (empty($block['parameters']) || empty($block['parameters']['hidden_breakpoints']))
+			if (empty($block['parameters']) || empty($block['parameters'][self::PARAM]))
 				continue;
 
-			$breakpoints = array_flip(explode(',', (string) $block['parameters']['hidden_breakpoints']));
+			$breakpoints = array_flip(explode(',', (string) $block['parameters'][self::PARAM]));
 			foreach ($this->classes as $class) {
 				if (array_key_exists($class, $breakpoints)) {
 					if (empty(Utils::$context['lp_active_blocks'][$id]['custom_class']))
@@ -48,18 +50,20 @@ class HidingBlocks extends Plugin
 
 	public function prepareBlockParams(Event $e): void
 	{
-		$e->args->params['hidden_breakpoints'] = [];
+		$e->args->params[self::PARAM] = [];
 	}
 
 	public function validateBlockParams(Event $e): void
 	{
-		$e->args->params['hidden_breakpoints'] = FILTER_DEFAULT;
+		$e->args->params[self::PARAM] = FILTER_DEFAULT;
 	}
 
-	public function prepareBlockFields(): void
+	public function prepareBlockFields(Event $e): void
 	{
-		CustomField::make('hidden_breakpoints', Lang::$txt['lp_hiding_blocks']['hidden_breakpoints'])
+		CustomField::make(self::PARAM, $this->txt[self::PARAM])
 			->setTab(Tab::ACCESS_PLACEMENT)
-			->setValue(static fn() => new BreakpointSelect());
+			->setValue(static fn() => new BreakpointSelect(), [
+				self::PARAM => $e->args->options[self::PARAM] ?? [],
+			]);
 	}
 }

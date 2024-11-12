@@ -8,12 +8,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 12.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Likely;
 
-use Bugo\Compat\{Config, Lang, Theme, Utils};
+use Bugo\LightPortal\Utils\Str;
+use Bugo\Compat\{Config, Theme};
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, RadioField};
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
@@ -33,7 +34,7 @@ class Likely extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'likely')
+		if ($e->args->type !== $this->name)
 			return;
 
 		$e->args->params = [
@@ -45,7 +46,7 @@ class Likely extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'likely')
+		if ($e->args->type !== $this->name)
 			return;
 
 		$e->args->params = [
@@ -55,69 +56,85 @@ class Likely extends Block
 		];
 	}
 
-	public function prepareBlockFields(): void
+	public function prepareBlockFields(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'likely')
+		if ($e->args->type !== $this->name)
 			return;
 
-		CustomField::make('buttons', Lang::$txt['lp_likely']['buttons'])
+		$options = $e->args->options;
+
+		CustomField::make('buttons', $this->txt['buttons'])
 			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new ButtonSelect(), [
 				'data'  => $this->buttons,
-				'value' => is_array(Utils::$context['lp_block']['options']['buttons'])
-					? Utils::$context['lp_block']['options']['buttons']
-					: explode(',', (string) Utils::$context['lp_block']['options']['buttons'])
+				'value' => is_array($options['buttons'])
+					? $options['buttons']
+					: explode(',', (string) $options['buttons'])
 			]);
 
-		RadioField::make('size', Lang::$txt['lp_likely']['size'])
-			->setOptions(Lang::$txt['lp_likely']['size_set'])
-			->setValue(Utils::$context['lp_block']['options']['size']);
+		RadioField::make('size', $this->txt['size'])
+			->setOptions($this->txt['size_set'])
+			->setValue($options['size']);
 
-		CheckboxField::make('dark_mode', Lang::$txt['lp_likely']['dark_mode'])
-			->setValue(Utils::$context['lp_block']['options']['dark_mode']);
+		CheckboxField::make('dark_mode', $this->txt['dark_mode'])
+			->setValue($options['dark_mode']);
 	}
 
 	public function prepareAssets(Event $e): void
 	{
-		$e->args->assets['css']['likely'][] = 'https://cdn.jsdelivr.net/npm/ilyabirman-likely@3/release/likely.min.css';
-		$e->args->assets['scripts']['likely'][] = 'https://cdn.jsdelivr.net/npm/ilyabirman-likely@3/release/likely.min.js';
+		$e->args->assets['css'][$this->name][] = 'https://cdn.jsdelivr.net/npm/ilyabirman-likely@3/release/likely.min.css';
+		$e->args->assets['scripts'][$this->name][] = 'https://cdn.jsdelivr.net/npm/ilyabirman-likely@3/release/likely.min.js';
 	}
 
 	public function prepareContent(Event $e): void
 	{
-		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+		$parameters = $e->args->parameters;
 
-		if ($data->type !== 'likely' || empty($parameters['buttons']))
+		if ($e->args->type !== $this->name || empty($parameters['buttons']))
 			return;
 
 		Theme::loadCSSFile('light_portal/likely/likely.min.css');
 		Theme::loadJavaScriptFile('light_portal/likely/likely.min.js', ['minimize' => true]);
 
-		echo '
-			<div class="centertext likely_links">
-				<div class="likely likely-', $parameters['size'], (empty($parameters['dark_mode']) ? '' : ' likely-dark-theme'), '">';
+		$parentBlock = Str::html('div', ['class' => 'centertext likely_links']);
+		$likelyBlock = Str::html('div', [
+			'class' => 'likely likely-' . $parameters['size'] . (empty($parameters['dark_mode']) ? '' : ' likely-dark-theme'),
+		]);
 
-		$buttons = is_array($parameters['buttons']) ? $parameters['buttons'] : explode(',', (string) $parameters['buttons']);
+		$buttons = is_array($parameters['buttons'])
+			? $parameters['buttons']
+			: explode(',', (string) $parameters['buttons']);
 
 		foreach ($buttons as $service) {
-			if (empty(Lang::$txt['lp_likely']['buttons_set'][$service]))
+			if (empty($this->txt['buttons_set'][$service]))
 				continue;
 
-			echo '
-					<div
-						class="', $service, '"
-						tabindex="0"
-						role="link"
-						aria-label="', Lang::$txt['lp_likely']['buttons_set'][$service], '"', (! empty(Config::$modSettings['optimus_tw_cards']) && $service === 'twitter' ? '
-						data-via="' . Config::$modSettings['optimus_tw_cards'] . '"' : ''), (! empty(Theme::$current->settings['og_image']) && $service === 'pinterest' ? '
-						data-media="' . Theme::$current->settings['og_image'] . '"' : ''), (! empty(Theme::$current->settings['og_image']) && $service === 'odnoklassniki' ? '
-						data-imageurl="' . Theme::$current->settings['og_image'] . '"' : ''), '
-					>', Lang::$txt['lp_likely']['buttons_set'][$service], '</div>';
+			$button = Str::html('div', [
+				'class' => $service,
+				'tabindex' => '0',
+				'role' => 'link',
+				'aria-label' => $this->txt['buttons_set'][$service],
+			]);
+
+			if (! empty(Config::$modSettings['optimus_tw_cards']) && $service === 'twitter') {
+				$button->setAttribute('data-via', Config::$modSettings['optimus_tw_cards']);
+			}
+
+			if (! empty(Theme::$current->settings['og_image']) && $service === 'pinterest') {
+				$button->setAttribute('data-media', Theme::$current->settings['og_image']);
+			}
+
+			if (! empty(Theme::$current->settings['og_image']) && $service === 'odnoklassniki') {
+				$button->setAttribute('data-imageurl', Theme::$current->settings['og_image']);
+			}
+
+			$button->setText($this->txt['buttons_set'][$service]);
+			$likelyBlock->addHtml($button);
 		}
 
-		echo '
-				</div>
-			</div>';
+		$parentBlock->addHtml($likelyBlock);
+
+		echo $parentBlock;
 	}
 
 	public function credits(Event $e): void

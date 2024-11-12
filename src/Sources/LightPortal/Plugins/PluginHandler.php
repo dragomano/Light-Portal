@@ -37,7 +37,7 @@ use const DIRECTORY_SEPARATOR;
 use const GLOB_ONLYDIR;
 use const LOCK_EX;
 
-if (! defined('SMF'))
+if (! defined('LP_NAME'))
 	die('No direct access...');
 
 final class PluginHandler
@@ -183,6 +183,13 @@ final class PluginHandler
 			$snakeName = Str::getSnakeName($plugin);
 
 			if (! $this->registry->has($snakeName)) {
+				$path = __DIR__ . DIRECTORY_SEPARATOR . $plugin . DIRECTORY_SEPARATOR;
+
+				$this->loadLangs($path, $snakeName);
+				$this->loadAssets($path, $plugin);
+
+				Utils::$context[self::PREFIX . $snakeName . '_plugin'] = $this->settings[$snakeName] ?? [];
+
 				$class = new $className();
 
 				EventManager::getInstance()->addListeners(PortalHook::cases(), $class);
@@ -193,13 +200,7 @@ final class PluginHandler
 					'type' => $class->type,
 				]);
 
-				Utils::$context[self::PREFIX . $snakeName . '_plugin'] = $this->settings[$snakeName] ?? [];
 				Utils::$context['lp_loaded_addons'][$snakeName] = $this->registry->get($snakeName);
-
-				$path = __DIR__ . DIRECTORY_SEPARATOR . $plugin . DIRECTORY_SEPARATOR;
-
-				$this->loadLangs($path, $snakeName);
-				$this->loadAssets($path, $plugin);
 			}
 		}
 	}

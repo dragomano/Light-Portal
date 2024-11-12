@@ -14,7 +14,7 @@ namespace Bugo\LightPortal\Plugins;
 
 use Bugo\Compat\Utils;
 
-if (! defined('SMF'))
+if (! defined('LP_NAME'))
 	die('No direct access...');
 
 abstract class Block extends Plugin

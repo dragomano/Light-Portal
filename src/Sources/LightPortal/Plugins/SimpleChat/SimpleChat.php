@@ -8,12 +8,12 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 05.11.24
+ * @version 13.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleChat;
 
-use Bugo\Compat\{Lang, Theme, Utils};
+use Bugo\Compat\{Db, Theme, Utils};
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\LightPortal\Areas\Fields\RadioField;
 use Bugo\LightPortal\Enums\{Hook, Tab};
@@ -47,7 +47,9 @@ class SimpleChat extends Block
 
 	public function __construct()
 	{
-		$this->chat = new Chat;
+		parent::__construct();
+
+		$this->chat = new Chat($this->name);
 	}
 
 	public function init(): void
@@ -76,7 +78,7 @@ class SimpleChat extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'simple_chat')
+		if ($e->args->type !== $this->name)
 			return;
 
 		$e->args->params = $this->params;
@@ -84,7 +86,7 @@ class SimpleChat extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'simple_chat')
+		if ($e->args->type !== $this->name)
 			return;
 
 		$e->args->params = [
@@ -93,18 +95,20 @@ class SimpleChat extends Block
 		];
 	}
 
-	public function prepareBlockFields(): void
+	public function prepareBlockFields(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'simple_chat')
+		if ($e->args->type !== $this->name)
 			return;
 
-		CheckboxField::make('show_avatars', Lang::$txt['lp_simple_chat']['show_avatars'])
-			->setTab(Tab::APPEARANCE)
-			->setValue(Utils::$context['lp_block']['options']['show_avatars']);
+		$options = $e->args->options;
 
-		RadioField::make('form_position', Lang::$txt['lp_simple_chat']['form_position'])
-			->setOptions(array_combine(['bottom', 'top'], Lang::$txt['lp_simple_chat']['form_position_set']))
-			->setValue(Utils::$context['lp_block']['options']['form_position']);
+		CheckboxField::make('show_avatars', $this->txt['show_avatars'])
+			->setTab(Tab::APPEARANCE)
+			->setValue($options['show_avatars']);
+
+		RadioField::make('form_position', $this->txt['form_position'])
+			->setOptions(array_combine(['bottom', 'top'], $this->txt['form_position_set']))
+			->setValue($options['form_position']);
 	}
 
 	public function getData(int $block_id, array $parameters): array
@@ -120,31 +124,33 @@ class SimpleChat extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		[$data, $parameters] = [$e->args->data, $e->args->parameters];
-
-		if ($data->type !== 'simple_chat')
+		if ($e->args->type !== $this->name)
 			return;
 
 		Theme::loadCSSFile('admin.css');
 		Theme::loadJavaScriptFile('light_portal/bundle.min.js', ['defer' => true]);
 
+		$parameters = $e->args->parameters;
+
 		$parameters['show_avatars'] ??= $this->params['show_avatars'];
 		$parameters['form_position'] ??= $this->params['form_position'];
 
-		$messages = $this->cache('simple_chat_addon_b' . $data->id)
-			->setLifeTime($data->cacheTime)
-			->setFallback(self::class, 'getData', $data->id, $parameters);
+		$id = $e->args->id;
 
-		Utils::$context['lp_chats'][$data->id] = json_encode($messages, JSON_UNESCAPED_UNICODE);
+		$messages = $this->cache($this->name . '_addon_b' . $id)
+			->setLifeTime($e->args->cacheTime)
+			->setFallback(self::class, 'getData', $id, $parameters);
+
+		Utils::$context['lp_chats'][$id] = json_encode($messages, JSON_UNESCAPED_UNICODE);
 
 		$this->setTemplate();
 
-		show_chat_block($data->id, $parameters, $this->isInSidebar($data->id));
+		show_chat_block($id, $parameters, $this->isInSidebar($id));
 	}
 
 	public function onBlockRemoving(Event $e): void
 	{
-		Utils::$smcFunc['db_query']('', '
+		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_simple_chat_messages
 			WHERE block_id IN ({array_int:items})',
 			[

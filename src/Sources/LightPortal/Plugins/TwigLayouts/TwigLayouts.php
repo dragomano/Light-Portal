@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 05.11.24
+ * @version 12.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\TwigLayouts;
@@ -17,7 +17,7 @@ use Bugo\Compat\{BBCodeParser, Config, ErrorHandler};
 use Bugo\Compat\{Lang, Sapi, Theme, Utils};
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\Utils\{Icon, Str};
 use Twig\{Environment, Error\Error};
 use Twig\{Loader\FilesystemLoader, TwigFunction};
 
@@ -40,9 +40,9 @@ class TwigLayouts extends Plugin
 			Theme::$current->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . 'portal_layouts'
 		);
 
-		$e->args->settings['twig_layouts'][] = ['desc', 'note'];
-		$e->args->settings['twig_layouts'][] = ['title', 'example'];
-		$e->args->settings['twig_layouts'][] = ['callback', '_', $this->showExample()];
+		$e->args->settings[$this->name][] = ['desc', 'note'];
+		$e->args->settings[$this->name][] = ['title', 'example'];
+		$e->args->settings[$this->name][] = ['callback', '_', $this->showExample()];
 	}
 
 	public function frontLayouts(): void
@@ -117,8 +117,9 @@ class TwigLayouts extends Plugin
 
 	private function showExample(): string
 	{
-		return '<div class="roundframe">' . BBCodeParser::load()->parse(
-			'[php]' . file_get_contents(__DIR__. '/layouts/example' . $this->extension) . '[/php]'
-		) . '</div>';
+		return Str::html('div', ['class' => 'roundframe'])
+			->setHtml(BBCodeParser::load()->parse(
+				'[php]' . file_get_contents(__DIR__ . '/layouts/example' . $this->extension) . '[/php]'
+			));
 	}
 }

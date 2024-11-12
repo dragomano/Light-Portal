@@ -8,16 +8,18 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 12.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\BoardStats;
 
-use Bugo\Compat\{Config, Lang, User, Utils};
-use Bugo\LightPortal\Areas\Fields\{CheckboxField, NumberField};
+use Bugo\Compat\{Config, Lang, User};
+use Bugo\LightPortal\Areas\Fields\CheckboxField;
+use Bugo\LightPortal\Areas\Fields\NumberField;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -30,7 +32,7 @@ class BoardStats extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'board_stats')
+		if ($e->args->type !== $this->name)
 			return;
 
 		$e->args->params = [
@@ -45,7 +47,7 @@ class BoardStats extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'board_stats')
+		if ($e->args->type !== $this->name)
 			return;
 
 		$e->args->params = [
@@ -57,35 +59,41 @@ class BoardStats extends Block
 		];
 	}
 
-	public function prepareBlockFields(): void
+	public function prepareBlockFields(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'board_stats')
+		if ($e->args->type !== $this->name)
 			return;
 
-		CheckboxField::make('show_latest_member', Lang::$txt['lp_board_stats']['show_latest_member'])
-			->setTab(Tab::CONTENT)
-			->setValue(Utils::$context['lp_block']['options']['show_latest_member']);
+		$options = $e->args->options;
 
-		CheckboxField::make('show_basic_info', Lang::$txt['lp_board_stats']['show_basic_info'])
+		CheckboxField::make('show_latest_member', $this->txt['show_latest_member'])
 			->setTab(Tab::CONTENT)
-			->setValue(Utils::$context['lp_block']['options']['show_basic_info']);
+			->setValue($options['show_latest_member']);
 
-		CheckboxField::make('show_whos_online', Lang::$txt['lp_board_stats']['show_whos_online'])
+		CheckboxField::make('show_basic_info', $this->txt['show_basic_info'])
 			->setTab(Tab::CONTENT)
-			->setValue(Utils::$context['lp_block']['options']['show_whos_online']);
+			->setValue($options['show_basic_info']);
 
-		CheckboxField::make('use_fa_icons', Lang::$txt['lp_board_stats']['use_fa_icons'])
+		CheckboxField::make('show_whos_online', $this->txt['show_whos_online'])
+			->setTab(Tab::CONTENT)
+			->setValue($options['show_whos_online']);
+
+		CheckboxField::make('use_fa_icons', $this->txt['use_fa_icons'])
 			->setTab(Tab::APPEARANCE)
-			->setValue(Utils::$context['lp_block']['options']['use_fa_icons']);
+			->setValue($options['use_fa_icons']);
 
-		NumberField::make('update_interval', Lang::$txt['lp_board_stats']['update_interval'])
+		NumberField::make('update_interval', $this->txt['update_interval'])
 			->setAttribute('min', 0)
-			->setValue(Utils::$context['lp_block']['options']['update_interval']);
+			->setValue($options['update_interval']);
 	}
 
 	public function getData(array $parameters): array
 	{
-		if (empty($parameters['show_latest_member']) && empty($parameters['show_basic_info']) && empty($parameters['show_whos_online']))
+		if (
+			empty($parameters['show_latest_member'])
+			&& empty($parameters['show_basic_info'])
+			&& empty($parameters['show_whos_online'])
+		)
 			return [];
 
 		if ($parameters['show_basic_info']) {
@@ -97,92 +105,118 @@ class BoardStats extends Block
 		return [
 			'latest_member' => Config::$modSettings['latestRealName'] ?? '',
 			'basic_info'    => $info ?? [],
-			'whos_online'   => empty($parameters['show_whos_online']) ? [] : $this->getFromSsi('whosOnline', 'array')
+			'whos_online'   => empty($parameters['show_whos_online'])
+				? [] : $this->getFromSsi('whosOnline', 'array')
 		];
 	}
 
 	public function prepareContent(Event $e): void
 	{
-		[$data, $parameters] = [$e->args->data, $e->args->parameters];
-
-		if ($data->type !== 'board_stats')
+		if ($e->args->type !== $this->name)
 			return;
+
+		$parameters = $e->args->parameters;
 
 		if ($this->request()->has('preview'))
 			$parameters['update_interval'] = 0;
 
 		$parameters['show_latest_member'] ??= false;
 
-		$boardStats = $this->cache('board_stats_addon_b' . $data->id . '_u' . User::$info['id'])
-			->setLifeTime($parameters['update_interval'] ?? $data->cacheTime)
+		$boardStats = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
+			->setLifeTime($parameters['update_interval'] ?? $e->args->cacheTime)
 			->setFallback(self::class, 'getData', $parameters);
 
 		if (empty($boardStats))
 			return;
 
-		echo '
-			<div class="board_stats_areas">';
+		$content = Str::html('div')->class('board_stats_areas');
 
 		if ($parameters['show_latest_member'] && $boardStats['latest_member']) {
-			echo '
-				<div>
-					<h4>
-						', $parameters['use_fa_icons'] ? '<i class="fas fa-user"></i> ' : '<span class="main_icons members"></span> ', Lang::$txt['lp_board_stats']['newbie'], '
-					</h4>
-					<ul class="bbc_list">
-						<li>', $boardStats['latest_member'], '</li>
-					</ul>
-				</div>';
+			$latestMemberDiv = Str::html('div');
+			$latestMemberHeader = Str::html('h4')->addHtml(
+				($parameters['use_fa_icons']
+					? Str::html('i', ['class' => 'fas fa-user'])
+					: Str::html('span', ['class' => 'main_icons members'])) .
+				' ' . $this->txt['newbie']
+			);
+			$latestMemberDiv->addHtml($latestMemberHeader);
+			$latestMemberDiv->addHtml(
+				Str::html('ul')->class('bbc_list')->addHtml(
+					Str::html('li')->setText($boardStats['latest_member'])
+				)
+			);
+			$content->addHtml($latestMemberDiv);
 		}
 
 		if ($parameters['show_basic_info'] && $boardStats['basic_info']) {
 			$statsTitle = User::hasPermission('view_stats')
-				? '<a href="' . Config::$scripturl . '?action=stats">' . Lang::$txt['forum_stats'] . '</a>'
+				? Str::html('a', Lang::$txt['forum_stats'])->href(Config::$scripturl . '?action=stats')
 				: Lang::$txt['forum_stats'];
 
-			echo '
-				<div>
-					<h4>
-						', $parameters['use_fa_icons'] ? '<i class="fas fa-chart-pie"></i> ' : '<span class="main_icons stats"></span> ', $statsTitle, '
-					</h4>';
+			$basicInfoDiv = Str::html('div');
+			$basicInfoHeader = Str::html('h4')->addHtml(
+				($parameters['use_fa_icons']
+					? Str::html('i', ['class' => 'fas fa-chart-pie'])
+					: Str::html('span', ['class' => 'main_icons stats'])) .
+				' ' . $statsTitle
+			);
+			$basicInfoDiv->addHtml($basicInfoHeader);
 
-			echo '
-					<ul class="bbc_list">';
+			$basicInfoList = Str::html('ul')->class('bbc_list');
 
 			if (User::hasPermission('view_stats')) {
-				echo '
-						<li>', Lang::$txt['members'], ': ', $boardStats['basic_info']['members'], '</li>
-						<li>', Lang::$txt['posts'], ': ', $boardStats['basic_info']['posts'], '</li>
-						<li>', Lang::$txt['topics'], ': ', $boardStats['basic_info']['topics'], '</li>';
+				$basicInfoList->addHtml(
+					Str::html('li')
+						->setText(Lang::$txt['members'] . ': ' . $boardStats['basic_info']['members']) .
+					Str::html('li')
+						->setText(Lang::$txt['posts'] . ': ' . $boardStats['basic_info']['posts']) .
+					Str::html('li')
+						->setText(Lang::$txt['topics'] . ': ' . $boardStats['basic_info']['topics'])
+				);
 			}
 
-			echo '
-						<li>', Lang::$txt['lp_board_stats']['online_today'] , ': ', $boardStats['basic_info']['max_online_today'], '</li>
-						<li>', Lang::$txt['lp_board_stats']['max_online'], ': ', $boardStats['basic_info']['max_online'], '</li>
-					</ul>
-				</div>';
+			$basicInfoList->addHtml(
+				Str::html('li')
+					->setText($this->txt['online_today'] . ': ' . $boardStats['basic_info']['max_online_today']) .
+				Str::html('li')
+					->setText($this->txt['max_online'] . ': ' . $boardStats['basic_info']['max_online'])
+			);
+
+			$basicInfoDiv->addHtml($basicInfoList);
+			$content->addHtml($basicInfoDiv);
 		}
 
 		if ($parameters['show_whos_online'] && $boardStats['whos_online']) {
 			$onlineTitle = User::hasPermission('who_view')
-				? '<a href="' . Config::$scripturl . '?action=who">' . Lang::$txt['online_users'] . '</a>'
+				? Str::html('a', Lang::$txt['online_users'])->href(Config::$scripturl . '?action=who')
 				: Lang::$txt['online_users'];
 
-			echo '
-				<div>
-					<h4>
-						', $parameters['use_fa_icons'] ? '<i class="fas fa-users"></i> ' : '<span class="main_icons people"></span> ', $onlineTitle, '
-					</h4>
-					<ul class="bbc_list">
-						<li>', Lang::$txt['members'], ': ', comma_format($boardStats['whos_online']['num_users_online']), '</li>
-						<li>', Lang::$txt['lp_board_stats']['guests'], ': ', comma_format($boardStats['whos_online']['num_guests']), '</li>
-						<li>', Lang::$txt['lp_board_stats']['spiders'], ': ', comma_format($boardStats['whos_online']['num_spiders']), '</li>
-						<li>', Lang::$txt['total'], ': ', comma_format($boardStats['whos_online']['total_users']), '</li>
-					</ul>
-				</div>';
+			$whosOnlineDiv = Str::html('div');
+			$whosOnlineHeader = Str::html('h4')->addHtml(
+				($parameters['use_fa_icons']
+					? Str::html('i', ['class' => 'fas fa-users'])
+					: Str::html('span', ['class' => 'main_icons people'])) .
+				' ' . $onlineTitle
+			);
+			$whosOnlineDiv->addHtml($whosOnlineHeader);
+
+			$whosOnlineList = Str::html('ul')
+				->class('bbc_list')
+				->addHtml(
+					Str::html('li')
+						->setText(Lang::$txt['members'] . ': ' . comma_format($boardStats['whos_online']['num_users_online'])) .
+					Str::html('li')
+						->setText($this->txt['guests'] . ': ' . comma_format($boardStats['whos_online']['num_guests'])) .
+					Str::html('li')
+						->setText($this->txt['spiders'] . ': ' . comma_format($boardStats['whos_online']['num_spiders'])) .
+					Str::html('li')
+						->setText(Lang::$txt['total'] . ': ' . comma_format($boardStats['whos_online']['total_users']))
+				);
+
+			$whosOnlineDiv->addHtml($whosOnlineList);
+			$content->addHtml($whosOnlineDiv);
 		}
 
-		echo '
-			</div>';
+		echo $content;
 	}
 }

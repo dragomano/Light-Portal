@@ -8,12 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 12.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\ChessBoard;
 
-use Bugo\Compat\{Lang, Theme};
+use Bugo\Compat\Theme;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
 
@@ -28,19 +28,19 @@ class ChessBoard extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		if ($e->args->data->type !== 'chess_board')
+		if ($e->args->type !== $this->name)
 			return;
 
 		Theme::loadCSSFile('https://unpkg.com/@chrisoakman/chessboard2@0/dist/chessboard2.min.css', ['external' => true]);
 		Theme::loadJavaScriptFile('https://unpkg.com/@chrisoakman/chessboard2@0/dist/chessboard2.min.js', ['external' => true]);
 		Theme::loadJavaScriptFile('https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.12.1/chess.js', ['external' => true]);
 
-		$id = $e->args->data->id;
+		$id = $e->args->id;
 
 		echo /** @lang text */ '
 		<div id="chessBoard' . $id . '"></div>
 		<div class="floatright" style="margin: 10px">
-			<label for="depth' . $id . '">' . Lang::$txt['lp_chess_board']['search_depth'] . ':</label>
+			<label for="depth' . $id . '">' . $this->txt['search_depth'] . ':</label>
 			<select id="depth' . $id . '">
 				<option value="1">1</option>
 				<option value="2">2</option>
@@ -50,7 +50,7 @@ class ChessBoard extends Block
 			</select>
 		</div>
 		<script>
-			const gameOver = "' . Lang::$txt['lp_chess_board']['game_over'] . '";
+			const gameOver = "' . $this->txt['game_over'] . '";
 			const board' . $id . ' = new ChessboardMaker(' . $id . ');
 		</script>';
 	}

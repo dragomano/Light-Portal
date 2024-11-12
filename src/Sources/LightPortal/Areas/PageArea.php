@@ -21,8 +21,7 @@ use Bugo\LightPortal\Areas\Partials\{PageAuthorSelect, PageIconSelect};
 use Bugo\LightPortal\Areas\Partials\{PermissionSelect, StatusSelect, TagSelect};
 use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Areas\Validators\PageValidator;
-use Bugo\LightPortal\Args\ObjectArgs;
-use Bugo\LightPortal\Args\ParamsArgs;
+use Bugo\LightPortal\Args\{ObjectArgs, OptionsTypeArgs, ParamsArgs};
 use Bugo\LightPortal\Enums\{EntryType, PortalHook, Status, Tab};
 use Bugo\LightPortal\EventManager;
 use Bugo\LightPortal\Models\PageModel;
@@ -717,7 +716,10 @@ final class PageArea
 
 		$params = [];
 
-		EventManager::getInstance()->dispatch(PortalHook::preparePageParams, new Event(new ParamsArgs($params)));
+		EventManager::getInstance()->dispatch(
+			PortalHook::preparePageParams,
+			new Event(new ParamsArgs($params, Utils::$context['lp_current_page']['type']))
+		);
 
 		return array_merge($baseParams, $params);
 	}
@@ -868,7 +870,10 @@ final class PageArea
 				->setValue(Utils::$context['lp_page']['options']['allow_comments']);
 		}
 
-		EventManager::getInstance()->dispatch(PortalHook::preparePageFields);
+		EventManager::getInstance()->dispatch(
+			PortalHook::preparePageFields,
+			new Event(new OptionsTypeArgs(Utils::$context['lp_page']['options'], Utils::$context['lp_page']['type']))
+		);
 
 		$this->preparePostFields();
 	}

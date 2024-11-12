@@ -2,7 +2,7 @@
 
 use Bugo\Compat\{Lang, Theme, Utils};
 
-function chart_template(): string
+function chart_template(array $options): string
 {
 	return /** @lang text */ '
 	<div x-data="handleDataSets()">
@@ -128,10 +128,10 @@ function chart_template(): string
 
 		function handleDataSets() {
 			return {
-				datasets: ' . (Utils::$context['lp_block']['options']['datasets'] ?: '[]') . ',
+				datasets: ' . ($options['datasets'] ?: '[]') . ',
 				charts: ' . json_encode(Utils::$context['lp_chart_types']) . ',
-				type: "' . Utils::$context['lp_block']['options']['chart_type'] . '",
-				usePalette: ' . (empty(Utils::$context['lp_block']['options']['default_palette']) ? 'false' : 'true') . ',
+				type: "' . $options['chart_type'] . '",
+				usePalette: ' . (empty($options['default_palette']) ? 'false' : 'true') . ',
 				addSet() {
 					this.datasets.push(this.usePalette ? {
 						label: "",

@@ -3,7 +3,7 @@
 use Bugo\Compat\{Lang, Theme, Utils};
 use Bugo\LightPortal\Utils\Icon;
 
-function tiny_slider_images(): string
+function tiny_slider_images(array $options): string
 {
 	return /** @lang text */ '
 	<div x-data="handleImages()">
@@ -54,7 +54,7 @@ function tiny_slider_images(): string
 
 		function handleImages() {
 			return {
-				images: ' . (Utils::$context['lp_block']['options']['images'] ?: '[]') . ',
+				images: ' . ($options['images'] ?: '[]') . ',
 				addImage() {
 					this.images.push({
 						link: "",

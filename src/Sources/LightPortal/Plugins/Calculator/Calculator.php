@@ -8,12 +8,11 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 05.11.24
+ * @version 12.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Calculator;
 
-use Bugo\Compat\Utils;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
 
@@ -29,7 +28,7 @@ class Calculator extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'calculator')
+		if ($e->args->type !== $this->name)
 			return;
 
 		$e->args->params['no_content_class'] = true;
@@ -37,9 +36,9 @@ class Calculator extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		if ($e->args->data->type !== 'calculator')
+		if ($e->args->type !== $this->name)
 			return;
 
-		echo $this->getFromTemplate('show_calculator_block', $e->args->data->id);
+		echo $this->getFromTemplate('show_calculator_block', $e->args->id);
 	}
 }

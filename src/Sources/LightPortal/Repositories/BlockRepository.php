@@ -50,7 +50,6 @@ final class BlockRepository extends AbstractRepository
 			FROM {db_prefix}lp_blocks AS b
 				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
 			ORDER BY b.placement DESC, b.priority',
-			[]
 		);
 
 		$currentBlocks = [];
@@ -348,7 +347,7 @@ final class BlockRepository extends AbstractRepository
 		$this->saveTitles($item);
 		$this->saveOptions($item);
 
-		Db::$db->transaction('commit');
+		Db::$db->transaction();
 
 		return $item;
 	}
@@ -382,7 +381,7 @@ final class BlockRepository extends AbstractRepository
 		$this->saveTitles($item, 'replace');
 		$this->saveOptions($item, 'replace');
 
-		Db::$db->transaction('commit');
+		Db::$db->transaction();
 
 		$prefix = Utils::$context['lp_block']['type'] . '_addon_b';
 		$this->cache()->forget($prefix . $item);

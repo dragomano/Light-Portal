@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 12.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\CurrentMonth;
@@ -27,7 +27,7 @@ class CurrentMonth extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'current_month')
+		if ($e->args->type !== $this->name)
 			return;
 
 		$e->args->params['no_content_class'] = true;
@@ -61,28 +61,28 @@ class CurrentMonth extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		$data = $e->args->data;
-
-		if ($data->type !== 'current_month')
+		if ($e->args->type !== $this->name)
 			return;
 
-		$calendarData = $this->cache('current_month_addon_u' . User::$info['id'])
-			->setLifeTime($data->cacheTime)
+		$id = $e->args->id;
+
+		$calendarData = $this->cache($this->name . '_addon_u' . User::$info['id'])
+			->setLifeTime($e->args->cacheTime)
 			->setFallback(self::class, 'getData');
 
 		if ($calendarData) {
-			$calendarData['block_id'] = $data->id;
+			$calendarData['block_id'] = $id;
 
-			$title = Lang::$txt['months_titles'][$calendarData['current_month']] . ' ' . $calendarData['current_year'];
+			$title = Lang::$txt['months_titles'][$calendarData[$this->name]] . ' ' . $calendarData['current_year'];
 
 			// Auto title
 			if (isset(Utils::$context['preview_title']) && empty(Utils::$context['preview_title'])) {
 				Utils::$context['preview_title'] = $title;
 			} elseif (
-				$data->id
-				&& empty(Utils::$context['lp_active_blocks'][$data->id]['titles'][User::$info['language']])
+				$id
+				&& empty(Utils::$context['lp_active_blocks'][$id]['titles'][User::$info['language']])
 			) {
-				Utils::$context['lp_active_blocks'][$data->id]['titles'][User::$info['language']] = $title;
+				Utils::$context['lp_active_blocks'][$id]['titles'][User::$info['language']] = $title;
 			}
 
 			$this->setTemplate();

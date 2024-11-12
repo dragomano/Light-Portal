@@ -8,12 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 13.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Reactions;
 
-use Bugo\Compat\{Lang, Theme, User, Utils};
+use Bugo\Compat\{Db, Theme, User, Utils};
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
@@ -28,27 +28,29 @@ class Reactions extends Plugin
 {
 	public string $type = 'page_options';
 
+	private const PARAM = 'allow_reactions';
+
 	public function preparePageParams(Event $e): void
 	{
-		$e->args->params['allow_reactions'] = false;
+		$e->args->params[self::PARAM] = false;
 	}
 
 	public function validatePageParams(Event $e): void
 	{
-		$e->args->params['allow_reactions'] = FILTER_VALIDATE_BOOLEAN;
+		$e->args->params[self::PARAM] = FILTER_VALIDATE_BOOLEAN;
 	}
 
-	public function preparePageFields(): void
+	public function preparePageFields(Event $e): void
 	{
-		CheckboxField::make('allow_reactions', Lang::$txt['lp_reactions']['allow_reactions'])
-			->setValue(Utils::$context['lp_page']['options']['allow_reactions']);
+		CheckboxField::make(self::PARAM, $this->txt[self::PARAM])
+			->setValue($e->args->options[self::PARAM]);
 	}
 
 	public function preparePageData(Event $e): void
 	{
 		[$data, $isAuthor] = [$e->args->data, $e->args->isAuthor];
 
-		if (empty($data['options']['allow_reactions']))
+		if (empty($data['options'][self::PARAM]))
 			return;
 
 		Utils::$context['reaction_url'] = LP_PAGE_URL . $data['slug'];
@@ -77,7 +79,7 @@ class Reactions extends Plugin
 					})
 			})', true);
 
-		$reactions = json_decode($data['options']['reactions'] ?? '', true) ?? [];
+		$reactions = json_decode($data['options'][$this->name] ?? '', true) ?? [];
 
 		Utils::$context['reaction_buttons'] = $this->getButtons();
 		Utils::$context['prepared_buttons'] = json_decode(Utils::$context['reaction_buttons'], true);
@@ -116,7 +118,7 @@ class Reactions extends Plugin
 
 	public function afterPageContent(): void
 	{
-		if (empty(Utils::$context['lp_page']['options']['allow_reactions']))
+		if (empty(Utils::$context['lp_page']['options'][self::PARAM]))
 			return;
 
 		show_page_reactions();
@@ -124,14 +126,14 @@ class Reactions extends Plugin
 
 	public function commentButtons(Event $e): void
 	{
-		if (empty(Utils::$context['lp_page']['options']['allow_reactions']))
+		if (empty(Utils::$context['lp_page']['options'][self::PARAM]))
 			return;
 
 		$comment = $e->args->comment;
 
 		$comment['can_react'] = $comment['poster']['id'] !== User::$info['id'];
-		$comment['reactions'] = json_decode($comment['params']['reactions'] ?? '', true) ?? [];
-		$comment['prepared_reactions'] = $this->getReactionsWithCount($comment['reactions']);
+		$comment[$this->name] = json_decode($comment['params'][$this->name] ?? '', true) ?? [];
+		$comment['prepared_reactions'] = $this->getReactionsWithCount($comment[$this->name]);
 		$comment['prepared_buttons'] = json_decode($comment['prepared_reactions'], true);
 
 		ob_start();
@@ -151,32 +153,32 @@ class Reactions extends Plugin
 		$buttons = [
 			[
 				'name' => 'like',
-				'title' => Lang::$txt['lp_reactions']['titles'][0],
+				'title' => $this->txt['titles'][0],
 				'emoji' => '👍',
 			],
 			[
 				'name' => 'dislike',
-				'title' => Lang::$txt['lp_reactions']['titles'][1],
+				'title' => $this->txt['titles'][1],
 				'emoji' => '👎',
 			],
 			[
 				'name' => 'love',
-				'title' => Lang::$txt['lp_reactions']['titles'][2],
+				'title' => $this->txt['titles'][2],
 				'emoji' => '❤️',
 			],
 			[
 				'name' => 'laugh',
-				'title' => Lang::$txt['lp_reactions']['titles'][3],
+				'title' => $this->txt['titles'][3],
 				'emoji' => '😆',
 			],
 			[
 				'name' => 'sad',
-				'title' => Lang::$txt['lp_reactions']['titles'][4],
+				'title' => $this->txt['titles'][4],
 				'emoji' => '😢',
 			],
 			[
 				'name' => 'angry',
-				'title' => Lang::$txt['lp_reactions']['titles'][5],
+				'title' => $this->txt['titles'][5],
 				'emoji' => '😡',
 			]
 		];
@@ -186,7 +188,7 @@ class Reactions extends Plugin
 
 	private function getReactions(int $id, string $entity = 'page'): array
 	{
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT value
 			FROM {db_prefix}lp_params
 			WHERE item_id = {int:id}
@@ -199,16 +201,16 @@ class Reactions extends Plugin
 			]
 		);
 
-		[$reactions] = Utils::$smcFunc['db_fetch_row']($result);
+		[$reactions] = Db::$db->fetch_row($result);
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 
 		return json_decode($reactions ?? '', true) ?? [];
 	}
 
 	private function addReaction(int $id, string $value, string $entity = 'page'): void
 	{
-		Utils::$smcFunc['db_insert']('replace',
+		Db::$db->insert('replace',
 			'{db_prefix}lp_params',
 			[
 				'item_id' => 'int',
@@ -219,7 +221,7 @@ class Reactions extends Plugin
 			[
 				'item_id' => $id,
 				'type'    => $entity,
-				'name'    => 'reactions',
+				'name'    => $this->name,
 				'value'   => $value
 			],
 			['item_id', 'type', 'name']

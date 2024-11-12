@@ -33,11 +33,11 @@ use function array_slice;
 use function call_user_func;
 use function count;
 use function extension_loaded;
-use function phpversion;
 use function str_contains;
 
 use const LP_NAME;
 use const LP_VERSION;
+use const PHP_VERSION;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -233,8 +233,6 @@ final class ConfigArea
 			'feedback' => [new FeedbackConfig(), 'show'],
 		];
 
-		Db::extend();
-
 		// Tabs
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title' => LP_NAME,
@@ -246,7 +244,7 @@ final class ConfigArea
 						->setAttribute('alt', LP_NAME . ' logo') .
 					Lang::getTxt('lp_base_info', [
 						LP_VERSION,
-						phpversion(),
+						PHP_VERSION,
 						Utils::$smcFunc['db_title'],
 						Db::$db->get_version(),
 					])

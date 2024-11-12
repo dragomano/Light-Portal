@@ -12,7 +12,7 @@
 
 namespace Bugo\LightPortal\Args;
 
-class ParamsArgs
+class OptionsTypeArgs
 {
-	public function __construct(public array &$params, public readonly string $type) {}
+	public function __construct(public readonly array $options, public readonly string $type) {}
 }

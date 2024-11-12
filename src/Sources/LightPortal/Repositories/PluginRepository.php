@@ -47,7 +47,6 @@ final class PluginRepository
 			$result = Db::$db->query('', /** @lang text */ '
 				SELECT name, config, value
 				FROM {db_prefix}lp_plugins',
-				[]
 			);
 
 			$settings = [];

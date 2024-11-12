@@ -2,7 +2,7 @@
 
 use Bugo\Compat\{Lang, Theme, Utils};
 
-function simple_menu_items(): string
+function simple_menu_items(array $options): string
 {
 	return /** @lang text */ '
 	<div x-data="handleItems()">
@@ -50,7 +50,7 @@ function simple_menu_items(): string
 
 		function handleItems() {
 			return {
-				items: ' . (Utils::$context['lp_block']['options']['items'] ?: '[]') . ',
+				items: ' . ($options['items'] ?: '[]') . ',
 				addItem() {
 					this.items.push({
 						name: "",
