@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 12.11.24
+ * @version 13.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
@@ -65,16 +65,15 @@ class Generator
 		$this->addFrontLayoutsMethod($class);
 		$this->addCustomLayoutExtensionsMethod($class);
 		$this->addInitMethod($class);
+		$this->addUpdateAdminAreasMethod($class);
 		$this->addPrepareBlockParamsMethod($class);
 		$this->addValidateBlockParamsMethod($class);
 		$this->addPrepareBlockFieldsMethod($class, $namespace);
-		$this->addPrepareBlockParamsForOptionsMethod($class);
-		$this->addValidateBlockParamsForOptionsMethod($class);
-		$this->addPrepareBlockFieldsForOptionsMethod($class);
 		$this->addPreparePageParamsMethod($class);
 		$this->addValidatePageParamsMethod($class);
 		$this->addPreparePageFieldsMethod($class);
 		$this->addAddSettingsMethod($class);
+		$this->addParseContentMethod($class);
 		$this->addPrepareContentMethod($class);
 		$this->addPrepareEditorMethod($class);
 		$this->addCommentsMethod($class);
@@ -102,13 +101,13 @@ class Generator
 	private function getSpecialParams(string $type = 'block'): array
 	{
 		$params = [];
-		Utils::$context['lp_plugin']['block_options'] = [];
-		foreach (Utils::$context['lp_plugin']['options'] as $id => $option) {
+		$this->plugin[$type . '_options'] = [];
+		foreach ($this->plugin['options'] as $id => $option) {
 			if (str_contains((string) $option['name'], $type . '_')) {
 				$option['name'] = str_replace($type . '_', '', (string) $option['name']);
 				$params[] = $option;
-				Utils::$context['lp_plugin']['block_options'][$id] = $option;
-				unset(Utils::$context['lp_plugin']['options'][$id]);
+				$this->plugin[$type . '_options'][$id] = $option;
+				unset($this->plugin['options'][$id]);
 			}
 		}
 
@@ -224,9 +223,25 @@ class Generator
 		}
 	}
 
+	private function addUpdateAdminAreasMethod(ClassType $class): void
+	{
+		if ($this->plugin['type'] !== 'impex')
+			return;
+
+		$method = $class
+			->addMethod('updateAdminAreas')
+			->setReturnType('void');
+
+		$method
+			->addParameter('e')
+			->setType(Event::class);
+
+		$method->addBody("// Check out the TinyPortalMigration plugin as an example");
+	}
+
 	private function addPrepareBlockParamsMethod(ClassType $class): void
 	{
-		if ($this->plugin['type'] !== 'block')
+		if (! in_array($this->plugin['type'], ['block', 'block_options']))
 			return;
 
 		$method = $class
@@ -241,8 +256,10 @@ class Generator
 			->addBody("if (\$e->args->type !== \$this->name)")
 			->addBody("\treturn;" . PHP_EOL);
 
-		if (empty($blockParams = $this->getSpecialParams()))
+		if (empty($blockParams = $this->getSpecialParams())) {
+			$method->addBody("// Your code" . PHP_EOL);
 			return;
+		}
 
 		$method->addBody("\$e->args->params = [");
 
@@ -255,7 +272,7 @@ class Generator
 
 	private function addValidateBlockParamsMethod(ClassType $class): void
 	{
-		if ($this->plugin['type'] !== 'block')
+		if (! in_array($this->plugin['type'], ['block', 'block_options']))
 			return;
 
 		$method = $class
@@ -270,8 +287,10 @@ class Generator
 			->addBody("if (\$e->args->type !== \$this->name)")
 			->addBody("\treturn;" . PHP_EOL);
 
-		if (empty($blockParams = $this->getSpecialParams()))
+		if (empty($blockParams = $this->getSpecialParams())) {
+			$method->addBody("// Your code" . PHP_EOL);
 			return;
+		}
 
 		$method->addBody("\$e->args->params = [");
 
@@ -284,7 +303,7 @@ class Generator
 
 	private function addPrepareBlockFieldsMethod(ClassType $class, PhpNamespace $namespace): void
 	{
-		if ($this->plugin['type'] !== 'block')
+		if (! in_array($this->plugin['type'], ['block', 'block_options']))
 			return;
 
 		$method = $class
@@ -390,53 +409,6 @@ class Generator
 		}
 	}
 
-	private function addPrepareBlockParamsForOptionsMethod(ClassType $class): void
-	{
-		if ($this->plugin['type'] !== 'block_options')
-			return;
-
-		$method = $class->addMethod('prepareBlockParams');
-
-		$method
-			->addParameter('e')
-			->setType(Event::class);
-
-		$blockParams = $this->getSpecialParams();
-		foreach ($blockParams as $param) {
-			$method->addBody("\$e->args->params['{$param['name']}'] = {$this->getDefaultValue($param)};");
-		}
-	}
-
-	private function addValidateBlockParamsForOptionsMethod(ClassType $class): void
-	{
-		if ($this->plugin['type'] !== 'block_options')
-			return;
-
-		$method = $class
-			->addMethod('validateBlockParams')
-			->setReturnType('void');
-
-		$method
-			->addParameter('e')
-			->setType(Event::class);
-
-		$blockParams = $this->getSpecialParams();
-		foreach ($blockParams as $param) {
-			$method->addBody("\$e->args->params['{$param['name']}'] = {$this->getFilter($param)};");
-		}
-	}
-
-	private function addPrepareBlockFieldsForOptionsMethod(ClassType $class): void
-	{
-		if ($this->plugin['type'] !== 'block_options')
-			return;
-
-		$class
-			->addMethod('prepareBlockFields')
-			->setBody("// Your code" . PHP_EOL)
-			->setReturnType('void');
-	}
-
 	private function addPreparePageParamsMethod(ClassType $class): void
 	{
 		if ($this->plugin['type'] !== 'page_options')
@@ -450,8 +422,10 @@ class Generator
 			->addParameter('e')
 			->setType(Event::class);
 
-		if (! empty($pageParams = $this->getSpecialParams('page')))
+		if (empty($pageParams = $this->getSpecialParams('page'))) {
+			$method->addBody("// Your code" . PHP_EOL);
 			return;
+		}
 
 		foreach ($pageParams as $param) {
 			$method->addBody("\$e->args->params['{$param['name']}'] = {$this->getDefaultValue($param)};");
@@ -471,8 +445,10 @@ class Generator
 			->addParameter('e')
 			->setType(Event::class);
 
-		if (! empty($pageParams = $this->getSpecialParams('page')))
+		if (empty($pageParams = $this->getSpecialParams('page'))) {
+			$method->addBody("// Your code" . PHP_EOL);
 			return;
+		}
 
 		$method->addBody("\$e->args->params += [");
 
@@ -538,9 +514,38 @@ class Generator
 		}
 	}
 
+	private function addParseContentMethod(ClassType $class): void
+	{
+		if ($this->plugin['type'] !== 'parser')
+			return;
+
+		$method = $class
+			->addMethod('parseContent')
+			->setReturnType('void');
+
+		$method
+			->addParameter('e')
+			->setType(Event::class);
+
+		$method
+			->addBody("if (\$e->args->type !== \$this->name) {")
+			->addBody("\t\$e->args->content = \$this->getParsedContent(\$e->args->content);")
+			->addBody("}" . PHP_EOL);
+
+		$method = $class
+			->addMethod('getParsedContent')
+			->setReturnType('string');
+
+		$method
+			->addParameter('text')
+			->setType('string');
+
+		$method->addBody("return '';");
+	}
+
 	private function addPrepareContentMethod(ClassType $class): void
 	{
-		if ($this->plugin['type'] !== 'block')
+		if (! in_array($this->plugin['type'], ['block', 'ssi']))
 			return;
 
 		$method = $class
@@ -553,8 +558,16 @@ class Generator
 
 		$method
 			->addBody("if (\$e->args->type !== \$this->name)")
-			->addBody("\treturn;" . PHP_EOL)
-			->addBody("echo 'Your html code';");
+			->addBody("\treturn;" . PHP_EOL);
+
+		if ($this->plugin['type'] === 'ssi') {
+			$method
+				->addBody("// Use getFromSsi method to communicate with SSI.php" . PHP_EOL)
+				->addBody("\$data = \$this->getFromSsi('recentTopics', 10, [], [], 'array');" . PHP_EOL)
+				->addBody("var_dump(\$data);");
+		} else {
+			$method->addBody("echo 'Your html code';");
+		}
 	}
 
 	private function addPrepareEditorMethod(ClassType $class): void
@@ -569,6 +582,9 @@ class Generator
 		$method
 			->addParameter('e')
 			->setType(Event::class);
+
+		$method
+			->addBody("var_dump(\$e->args->object);");
 	}
 
 	private function addCommentsMethod(ClassType $class): void
@@ -665,12 +681,14 @@ class Generator
 
 		$this->plugin['options'] = array_merge(
 			$this->plugin['options'] ?? [],
-			$this->plugin['block_options'] ?? []
+			$this->plugin['block_options'] ?? [],
+			$this->plugin['page_options'] ?? [],
 		);
 
 		foreach ($this->plugin['options'] as $option) {
 			foreach ($option['translations'] as $lang => $value) {
-				if (empty($languages[$lang])) continue;
+				if (empty($languages[$lang]))
+					continue;
 
 				$languages[$lang][] = PHP_EOL . "\t'{$option['name']}' => '$value',";
 
