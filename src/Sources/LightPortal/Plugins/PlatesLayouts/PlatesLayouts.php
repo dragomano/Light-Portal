@@ -8,12 +8,12 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 12.11.24
+ * @version 18.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\PlatesLayouts;
 
-use Bugo\Compat\{BBCodeParser, Config, ErrorHandler};
+use Bugo\Compat\{Config, ErrorHandler};
 use Bugo\Compat\{Lang, Theme, Utils};
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
@@ -42,7 +42,7 @@ class PlatesLayouts extends Plugin
 
 		$e->args->settings[$this->name][] = ['desc', 'note'];
 		$e->args->settings[$this->name][] = ['title', 'example'];
-		$e->args->settings[$this->name][] = ['callback', '_', $this->showExample()];
+		$e->args->settings[$this->name][] = ['callback', '_', $this->showExamples()];
 	}
 
 	public function frontLayouts(): void
@@ -111,11 +111,22 @@ class PlatesLayouts extends Plugin
 		];
 	}
 
-	private function showExample(): string
+	private function showExamples(): string
 	{
+		$examples = glob(__DIR__ . '/layouts/*' . $this->extension);
+
+		$list = Str::html('ul', ['class' => 'bbc_list']);
+
+		foreach ($examples as $file) {
+			$file = basename($file);
+			$list->addHtml(
+				Str::html('li')->setHtml(
+					Str::html('a', $file)->href(LP_ADDON_URL . '/PlatesLayouts/layouts/' . $file)
+				)
+			);
+		}
+
 		return Str::html('div', ['class' => 'roundframe'])
-			->setHtml(BBCodeParser::load()->parse(
-				'[php]' . file_get_contents(__DIR__ . '/layouts/example' . $this->extension) . '[/php]'
-			));
+			->setHtml($list);
 	}
 }

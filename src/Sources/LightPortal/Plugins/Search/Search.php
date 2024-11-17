@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 13.11.24
+ * @version 17.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Search;
@@ -17,7 +17,6 @@ use Bugo\Compat\{Config, Db, Lang, Theme, Utils};
 use Bugo\LightPortal\Enums\{Hook, Permission};
 use Bugo\LightPortal\Plugins\{Block, Event};
 use Bugo\LightPortal\Utils\{Content, DateTime, Str};
-use IntlException;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -51,9 +50,6 @@ class Search extends Block
 		return false;
 	}
 
-	/**
-	 * @throws IntlException
-	 */
 	public function showResults(): void
 	{
 		Utils::$context['page_title'] = $this->txt['title'];
@@ -70,9 +66,6 @@ class Search extends Block
 		Utils::obExit();
 	}
 
-	/**
-	 * @throws IntlException
-	 */
 	private function prepareQuickResults(): void
 	{
 		$data = $this->request()->json();
@@ -85,9 +78,6 @@ class Search extends Block
 		exit(json_encode($this->query($query)));
 	}
 
-	/**
-	 * @throws IntlException
-	 */
 	private function getResults(): array
 	{
 		if ($this->request()->isNotEmpty($this->name) === false)
@@ -101,9 +91,6 @@ class Search extends Block
 		return $this->query($query);
 	}
 
-	/**
-	 * @throws IntlException
-	 */
 	private function query(string $query): array
 	{
 		$titleWords = explode(' ', $query);

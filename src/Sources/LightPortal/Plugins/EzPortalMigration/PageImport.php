@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 12.11.24
+ * @version 17.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\EzPortalMigration;
@@ -17,7 +17,6 @@ use Bugo\Compat\{Config, Db, Lang, User, Utils};
 use Bugo\LightPortal\Areas\Imports\AbstractCustomPageImport;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Utils\{DateTime, ItemList, Str};
-use IntlException;
 
 use const LP_NAME;
 
@@ -136,9 +135,6 @@ class PageImport extends AbstractCustomPageImport
 		new ItemList($listOptions);
 	}
 
-	/**
-	 * @throws IntlException
-	 */
 	public function getAll(int $start = 0, int $limit = 0, string $sort = 'id_page'): array
 	{
 		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'ezp_page')))

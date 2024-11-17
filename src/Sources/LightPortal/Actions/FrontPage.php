@@ -24,7 +24,6 @@ use Bugo\LightPortal\Utils\{CacheTrait, DateTime, Icon};
 use Bugo\LightPortal\Utils\{RequestTrait, SessionTrait, Setting, Str};
 use eftec\bladeone\BladeOne;
 use Exception;
-use IntlException;
 
 use function abs;
 use function array_column;
@@ -66,9 +65,6 @@ final class FrontPage implements ActionInterface
 		'chosen_topics' => ChosenTopicArticle::class,
 	];
 
-	/**
-	 * @throws IntlException
-	 */
 	public function show(): void
 	{
 		User::mustHavePermission('light_portal_view');
@@ -105,9 +101,6 @@ final class FrontPage implements ActionInterface
 		$this->prepareTemplates();
 	}
 
-	/**
-	 * @throws IntlException
-	 */
 	public function prepare(ArticleInterface $article): void
 	{
 		$start = (int) $this->request('start');
@@ -334,9 +327,6 @@ final class FrontPage implements ActionInterface
 		$start = (int) abs($start);
 	}
 
-	/**
-	 * @throws IntlException
-	 */
 	private function postProcess(ArticleInterface $article, array $articles): array
 	{
 		return array_map(function ($item) use ($article) {

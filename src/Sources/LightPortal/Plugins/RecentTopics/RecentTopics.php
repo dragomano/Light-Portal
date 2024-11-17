@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 13.11.24
+ * @version 17.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\RecentTopics;
@@ -24,7 +24,6 @@ use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\DateTime;
-use IntlException;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -126,9 +125,6 @@ class RecentTopics extends Block
 			->setValue($options['update_interval']);
 	}
 
-	/**
-	 * @throws IntlException
-	 */
 	public function getData(array $parameters): array
 	{
 		$excludeBoards = empty($parameters['exclude_boards']) ? null : explode(',', (string) $parameters['exclude_boards']);

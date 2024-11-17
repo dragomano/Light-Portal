@@ -19,7 +19,7 @@ use Bugo\LightPortal\EventManager;
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Utils\{CacheTrait, Content, EntityDataTrait, Icon};
 use Bugo\LightPortal\Utils\{RequestTrait, SessionTrait, Setting, Str};
-use IntlException;
+use SimpleSEF;
 
 use function array_column;
 use function array_search;
@@ -51,9 +51,6 @@ final class Page implements PageInterface
 		$this->repository = new PageRepository();
 	}
 
-	/**
-	 * @throws IntlException
-	 */
 	public function show(): void
 	{
 		User::mustHavePermission('light_portal_view');
@@ -61,43 +58,14 @@ final class Page implements PageInterface
 		$slug = $this->request(LP_PAGE_PARAM);
 
 		if (empty($slug)) {
-			if (Setting::isFrontpageMode('chosen_page') && Config::$modSettings['lp_frontpage_chosen_page']) {
-				Utils::$context['lp_page'] = $this->getDataBySlug(Config::$modSettings['lp_frontpage_chosen_page']);
-			} else {
-				Config::updateModSettings(['lp_frontpage_mode' => 0]);
-			}
+			$this->handleEmptySlug();
 		} else {
 			$slug = explode(';', (string) $slug)[0];
-
-			if (Setting::isFrontpage($slug)) {
-				Utils::redirectexit('action=' . LP_ACTION);
-			}
-
-			Utils::$context['lp_page'] = $this->getDataBySlug($slug);
+			$this->handleNonEmptySlug($slug);
 		}
 
-		if (empty(Utils::$context['lp_page'])) {
-			$this->changeErrorPage();
-			ErrorHandler::fatalLang('lp_page_not_found', status: 404);
-		}
-
-		if (empty(Utils::$context['lp_page']['can_view'])) {
-			$this->changeErrorPage();
-			ErrorHandler::fatalLang('cannot_light_portal_view_page');
-		}
-
-		if (
-			Utils::$context['lp_page']['entry_type'] === EntryType::DRAFT->name()
-			&& Utils::$context['lp_page']['author_id'] !== User::$info['id']
-		) {
-			$this->changeErrorPage();
-			ErrorHandler::fatalLang('cannot_light_portal_view_page');
-		}
-
-		if (empty(Utils::$context['lp_page']['status']) && empty(Utils::$context['lp_page']['can_edit'])) {
-			$this->changeErrorPage();
-			ErrorHandler::fatalLang('lp_page_not_activated');
-		}
+		$this->handlePageNotFound();
+		$this->handlePagePermissions();
 
 		if (Utils::$context['lp_page']['created_at'] > time()) {
 			Utils::sendHttpStatus(404);
@@ -112,33 +80,7 @@ final class Page implements PageInterface
 			Utils::$context['lp_page']['content'], Utils::$context['lp_page']['type']
 		);
 
-		if (empty($slug)) {
-			Utils::$context['page_title'] = Str::getTranslatedTitle(
-				Utils::$context['lp_page']['titles']
-			) ?: Lang::$txt['lp_portal'];
-
-			Utils::$context['canonical_url'] = Config::$scripturl;
-			Utils::$context['linktree'][] = [
-				'name' => Lang::$txt['lp_portal'],
-			];
-		} else {
-			Utils::$context['page_title'] = Str::getTranslatedTitle(
-				Utils::$context['lp_page']['titles']
-			) ?: Lang::$txt['lp_post_error_no_title'];
-
-			Utils::$context['canonical_url'] = LP_PAGE_URL . $slug;
-
-			if (isset(Utils::$context['lp_page']['category'])) {
-				Utils::$context['linktree'][] = [
-					'name' => Utils::$context['lp_page']['category'],
-					'url'  => LP_BASE_URL . ';sa=categories;id=' . Utils::$context['lp_page']['category_id'],
-				];
-			}
-
-			Utils::$context['linktree'][] = [
-				'name' => Utils::$context['page_title'],
-			];
-		}
+		$this->setPageTitleAndCanonicalUrl($slug);
 
 		Utils::$context['lp_page']['url'] = Utils::$context['canonical_url'] . (
 			$this->request()->has(LP_PAGE_PARAM) ? ';' : '?'
@@ -148,9 +90,9 @@ final class Page implements PageInterface
 
 		Utils::$context['sub_template'] = 'show_page';
 
-		$this->promote();
-		$this->setMeta();
-		$this->preparePrevNextLinks();
+		$this->handlePromoteAction();
+		$this->prepareMetadata();
+		$this->prepareNavigationLinks();
 		$this->prepareRelatedPages();
 		$this->prepareComments();
 		$this->updateNumViews();
@@ -158,9 +100,6 @@ final class Page implements PageInterface
 		Theme::loadJavaScriptFile('light_portal/bundle.min.js', ['defer' => true]);
 	}
 
-	/**
-	 * @throws IntlException
-	 */
 	public function getDataBySlug(string $slug): array
 	{
 		if (empty($slug))
@@ -279,6 +218,80 @@ final class Page implements PageInterface
 		];
 	}
 
+	private function handleEmptySlug(): void
+	{
+		if (Setting::isFrontpageMode('chosen_page') && Config::$modSettings['lp_frontpage_chosen_page']) {
+			Utils::$context['lp_page'] = $this->getDataBySlug(Config::$modSettings['lp_frontpage_chosen_page']);
+		} else {
+			Config::updateModSettings(['lp_frontpage_mode' => 0]);
+		}
+	}
+
+	private function handleNonEmptySlug(string $slug): void
+	{
+		if (Setting::isFrontpage($slug)) {
+			Utils::redirectexit('action=' . LP_ACTION);
+		}
+
+		Utils::$context['lp_page'] = $this->getDataBySlug($slug);
+	}
+
+	private function handlePageNotFound(): void
+	{
+		if (empty(Utils::$context['lp_page'])) {
+			$this->changeErrorPage();
+			ErrorHandler::fatalLang('lp_page_not_found', status: 404);
+		}
+	}
+
+	private function handlePagePermissions(): void
+	{
+		$page = Utils::$context['lp_page'];
+
+		if (empty($page['can_view'])) {
+			$this->changeErrorPage();
+			ErrorHandler::fatalLang('cannot_light_portal_view_page');
+		}
+
+		if ($page['entry_type'] === EntryType::DRAFT->name() && $page['author_id'] !== User::$info['id']) {
+			$this->changeErrorPage();
+			ErrorHandler::fatalLang('cannot_light_portal_view_page');
+		}
+
+		if (empty($page['status']) && empty($page['can_edit'])) {
+			$this->changeErrorPage();
+			ErrorHandler::fatalLang('lp_page_not_activated');
+		}
+	}
+
+	private function setPageTitleAndCanonicalUrl(?string $slug): void
+	{
+		if (empty($slug)) {
+			Utils::$context['page_title'] = Str::getTranslatedTitle(
+				Utils::$context['lp_page']['titles']
+			) ?: Lang::$txt['lp_portal'];
+
+			Utils::$context['canonical_url'] = Config::$scripturl;
+
+			Utils::$context['linktree'][] = ['name' => Lang::$txt['lp_portal']];
+		} else {
+			Utils::$context['page_title'] = Str::getTranslatedTitle(
+				Utils::$context['lp_page']['titles']
+			) ?: Lang::$txt['lp_post_error_no_title'];
+
+			Utils::$context['canonical_url'] = LP_PAGE_URL . $slug;
+
+			if (isset(Utils::$context['lp_page']['category'])) {
+				Utils::$context['linktree'][] = [
+					'name' => Utils::$context['lp_page']['category'],
+					'url'  => LP_BASE_URL . ';sa=categories;id=' . Utils::$context['lp_page']['category_id'],
+				];
+			}
+
+			Utils::$context['linktree'][] = ['name' => Utils::$context['page_title']];
+		}
+	}
+
 	private function changeErrorPage(): void
 	{
 		Utils::$context['error_link'] = Config::$scripturl;
@@ -294,29 +307,29 @@ final class Page implements PageInterface
 		}
 	}
 
-	private function promote(): void
+	private function handlePromoteAction(): void
 	{
 		if (empty(User::$info['is_admin']) || $this->request()->hasNot('promote'))
 			return;
 
 		$page = Utils::$context['lp_page']['id'];
 
-		$frontpagePages = Setting::getFrontpagePages();
+		$frontPages = Setting::getFrontpagePages();
 
-		if (($key = array_search($page, $frontpagePages)) !== false) {
-			unset($frontpagePages[$key]);
+		if (($key = array_search($page, $frontPages)) !== false) {
+			unset($frontPages[$key]);
 		} else {
-			$frontpagePages[] = $page;
+			$frontPages[] = $page;
 		}
 
 		Config::updateModSettings([
-			'lp_frontpage_pages' => implode(',', $frontpagePages)
+			'lp_frontpage_pages' => implode(',', $frontPages)
 		]);
 
 		Utils::redirectexit(Utils::$context['canonical_url']);
 	}
 
-	private function setMeta(): void
+	private function prepareMetadata(): void
 	{
 		if (empty(Utils::$context['lp_page']))
 			return;
@@ -372,11 +385,12 @@ final class Page implements PageInterface
 			];
 		}
 
-		if (! (empty(Config::$modSettings['lp_page_og_image']) || empty(Utils::$context['lp_page']['image'])))
+		if (! (empty(Config::$modSettings['lp_page_og_image']) || empty(Utils::$context['lp_page']['image']))) {
 			Theme::$current->settings['og_image'] = Utils::$context['lp_page']['image'];
+		}
 	}
 
-	private function preparePrevNextLinks(): void
+	private function prepareNavigationLinks(): void
 	{
 		if (empty($page = Utils::$context['lp_page']) || empty(Config::$modSettings['lp_show_prev_next_links']))
 			return;
@@ -411,9 +425,6 @@ final class Page implements PageInterface
 		Utils::$context['lp_page']['related_pages'] = $this->repository->getRelatedPages($page);
 	}
 
-	/**
-	 * @throws IntlException
-	 */
 	private function prepareComments(): void
 	{
 		if (Setting::getCommentBlock() === '' || Setting::getCommentBlock() === 'none')
@@ -461,8 +472,8 @@ final class Page implements PageInterface
 
 		$pageUrl = Utils::$context['lp_page']['url'];
 
-		if (class_exists('\SimpleSEF')) {
-			$pageUrl = (new \SimpleSEF())->getSefUrl($pageUrl);
+		if (class_exists(SimpleSEF::class, false)) {
+			$pageUrl = (new SimpleSEF())->getSefUrl($pageUrl);
 		}
 
 		$contextData = [

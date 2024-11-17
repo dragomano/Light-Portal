@@ -19,7 +19,6 @@ use Bugo\LightPortal\EventManager;
 use Bugo\LightPortal\Repositories\CommentRepository;
 use Bugo\LightPortal\Utils\{Avatar, CacheTrait, DateTime};
 use Bugo\LightPortal\Utils\{Notify, RequestTrait, Setting};
-use IntlException;
 
 use function array_map;
 use function array_slice;
@@ -46,9 +45,6 @@ final class Comment implements ActionInterface
 		$this->repository = new CommentRepository();
 	}
 
-	/**
-	 * @throws IntlException
-	 */
 	public function show(): void
 	{
 		if (empty($this->pageSlug) || $this->request()->isEmpty('api'))
@@ -64,9 +60,6 @@ final class Comment implements ActionInterface
 		};
 	}
 
-	/**
-	 * @throws IntlException
-	 */
 	private function get(): never
 	{
 		$comments = $this->cache('page_' . $this->pageSlug . '_comments')
@@ -112,9 +105,6 @@ final class Comment implements ActionInterface
 		exit(json_encode($result));
 	}
 
-	/**
-	 * @throws IntlException
-	 */
 	private function add(): never
 	{
 		$result = [

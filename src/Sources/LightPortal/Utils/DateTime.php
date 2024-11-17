@@ -15,7 +15,6 @@ namespace Bugo\LightPortal\Utils;
 use Bugo\Compat\{ErrorHandler, Lang, Utils};
 use DateTime as BaseDateTime;
 use IntlDateFormatter;
-use IntlException;
 
 use function ceil;
 use function compact;
@@ -32,9 +31,6 @@ if (! defined('SMF'))
 
 final class DateTime
 {
-	/**
-	 * @throws IntlException
-	 */
 	public static function relative(int $timestamp): string
 	{
 		$now = time();

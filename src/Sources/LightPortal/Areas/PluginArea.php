@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 /**
  * @package Light Portal
@@ -184,8 +182,6 @@ final class PluginArea
 	private function prepareAddonList(array $configVars): void
 	{
 		Utils::$context['all_lp_plugins'] = array_map(function ($item) use ($configVars) {
-			$composer = false;
-
 			$snakeName = Str::getSnakeName($item);
 
 			try {
@@ -204,7 +200,6 @@ final class PluginArea
 					$saveable = $addonClass->getProperty('saveable')->getValue(new $className);
 				}
 
-				$composer = is_file(dirname($addonClass->getFileName()) . DIRECTORY_SEPARATOR . 'composer.json');
 			} catch (ReflectionException) {
 				if (isset(Utils::$context['lp_can_donate'][$item])) {
 					Utils::$context['lp_loaded_addons'][$snakeName]['type'] = Utils::$context['lp_can_donate'][$item]['type'] ?? 'other';
@@ -227,7 +222,6 @@ final class PluginArea
 				'types'      => $this->getTypes($snakeName),
 				'special'    => $special ?? '',
 				'settings'   => $configVars[$snakeName] ?? [],
-				'composer'   => $composer,
 				'saveable'   => $saveable ?? true,
 			];
 		}, Utils::$context['lp_plugins']);

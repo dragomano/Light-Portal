@@ -24,7 +24,6 @@ use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionTrait;
 use Bugo\LightPortal\Utils\Str;
-use IntlException;
 
 use function array_combine;
 use function array_map;
@@ -53,9 +52,6 @@ final class BasicConfig extends AbstractConfig
 
 	public const TAB_PERMISSIONS = 'permissions';
 
-	/**
-	 * @throws IntlException
-	 */
 	public function show(): void
 	{
 		Utils::$context['page_title']  = Utils::$context['settings_title'] = Lang::$txt['lp_base'];

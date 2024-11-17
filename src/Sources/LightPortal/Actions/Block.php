@@ -109,11 +109,13 @@ final class Block implements BlockInterface
 			}
 		}
 
-		if (isset(Utils::$context['current_board']) || isset(Utils::$context['lp_page']))
+		if (isset(Utils::$context['current_board']) || isset(Utils::$context['lp_page'])) {
 			$area = '';
+		}
 
-		if (! empty(Utils::$context['lp_page']['slug']) && Setting::isFrontpage(Utils::$context['lp_page']['slug']))
+		if (! empty(Utils::$context['lp_page']['slug']) && Setting::isFrontpage(Utils::$context['lp_page']['slug'])) {
 			$area = LP_ACTION;
+		}
 
 		return array_filter(Utils::$context['lp_active_blocks'], function ($block) use ($area) {
 			$tempAreas = $block['areas'];
@@ -163,11 +165,13 @@ final class Block implements BlockInterface
 			foreach ($tempAreas as $areas) {
 				$entity = explode('=', (string) $areas);
 
-				if ($entity[0] === 'board')
+				if ($entity[0] === 'board') {
 					$boards = $this->getAllowedIds($entity[1]);
+				}
 
-				if ($entity[0] === 'topic')
+				if ($entity[0] === 'topic') {
 					$topics = $this->getAllowedIds($entity[1]);
+				}
 			}
 
 			return in_array(Utils::$context['current_board'], $boards)

@@ -16,7 +16,6 @@ use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, User, Utils};
 use Bugo\LightPortal\Enums\{EntryType, Permission, Status};
 use Bugo\LightPortal\Utils\{Icon, ItemList, RequestTrait, Str};
-use IntlException;
 
 use function array_key_exists;
 use function count;
@@ -79,9 +78,6 @@ final class Tag extends AbstractPageList
 		Utils::obExit();
 	}
 
-	/**
-	 * @throws IntlException
-	 */
 	public function getPages(int $start, int $limit, string $sort): array
 	{
 		$result = Db::$db->query('', '

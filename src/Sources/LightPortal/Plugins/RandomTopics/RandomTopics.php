@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 13.11.24
+ * @version 17.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\RandomTopics;
@@ -20,7 +20,6 @@ use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\{DateTime, Str};
-use IntlException;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -235,9 +234,6 @@ class RandomTopics extends Block
 		return $topics;
 	}
 
-	/**
-	 * @throws IntlException
-	 */
 	public function prepareContent(Event $e): void
 	{
 		if ($e->args->type !== $this->name)

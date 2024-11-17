@@ -29,7 +29,6 @@ use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Utils\{CacheTrait, Content, DateTime, EntityDataTrait};
 use Bugo\LightPortal\Utils\{Icon, ItemList, Language, RequestTrait, Setting, Str};
-use IntlException;
 
 use function array_column;
 use function array_diff;
@@ -437,9 +436,6 @@ final class PageArea
 		Utils::$context['sub_template'] = 'page_post';
 	}
 
-	/**
-	 * @throws IntlException
-	 */
 	public function edit(): void
 	{
 		$item = (int) ($this->request('page_id') ?: $this->request('id'));

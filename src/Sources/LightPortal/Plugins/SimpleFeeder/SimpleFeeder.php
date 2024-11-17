@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 13.11.24
+ * @version 17.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleFeeder;
@@ -20,7 +20,6 @@ use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\{DateTime, Str};
-use IntlException;
 
 use function file_get_contents;
 use function simplexml_load_string;
@@ -84,9 +83,6 @@ class SimpleFeeder extends Block
 		return $rss ? ['data' => $rss->channel->item] : [];
 	}
 
-	/**
-	 * @throws IntlException
-	 */
 	public function prepareContent(Event $e): void
 	{
 		if ($e->args->type !== $this->name)
