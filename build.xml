@@ -59,7 +59,6 @@
         <exclude name="Sources/LightPortal/Plugins/MediaBlock/**" />
         <exclude name="Sources/LightPortal/Plugins/Optimus/**" />
         <exclude name="Sources/LightPortal/Plugins/PageScroll/**" />
-        <exclude name="Sources/LightPortal/Plugins/PlatesLayouts/**" />
         <exclude name="Sources/LightPortal/Plugins/PluginMaker/**" />
         <exclude name="Sources/LightPortal/Plugins/PrettyUrls/**" />
         <exclude name="Sources/LightPortal/Plugins/SiteList/**" />
