@@ -36,9 +36,7 @@ public function actions(): void
 ```php
 public function parseContent(Event $e): void
 {
-    if ($e->args->type === 'markdown') {
-        $e->args->content = $this->getParsedContent($e->args->content);
-    }
+    $e->args->content = Content::parse($e->args->content, 'html');
 }
 ```
 
@@ -49,9 +47,6 @@ public function parseContent(Event $e): void
 ```php
 public function prepareContent(Event $e): void
 {
-    if ($e->args->type !== $this->name)
-        return;
-
     $this->setTemplate();
 
     $userData = $this->cache($this->name . '_addon_u' . Utils::$context['user']['id'])
@@ -116,9 +111,6 @@ public function preloadStyles(Event $e): void
 ```php
 public function prepareBlockParams(Event $e): void
 {
-    if ($e->args->type !== $this->name)
-        return;
-
     $e->args->params = [
         'body_class'     => 'descbox',
         'display_type'   => 0,
@@ -136,9 +128,6 @@ public function prepareBlockParams(Event $e): void
 ```php
 public function validateBlockParams(Event $e): void
 {
-    if ($e->args->type !== $this->name)
-        return;
-
     $e->args->params = [
         'body_class'     => FILTER_DEFAULT,
         'display_type'   => FILTER_VALIDATE_INT,
@@ -174,9 +163,6 @@ public function findBlockErrors(Event $e): void
 ```php
 public function prepareBlockFields(Event $e): void
 {
-    if ($e->args->type !== $this->name)
-        return;
-
     RadioField::make('display_type', $this->txt['display_type'])
         ->setTab(BlockArea::TAB_CONTENT)
         ->setOptions($this->txt['display_type_set'])

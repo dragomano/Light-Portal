@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 12.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Events;
@@ -33,9 +33,6 @@ class Events extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params = [
 			'show_birthdays'  => false,
 			'show_holidays'   => false,
@@ -47,9 +44,6 @@ class Events extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params = [
 			'show_birthdays'  => FILTER_VALIDATE_BOOLEAN,
 			'show_holidays'   => FILTER_VALIDATE_BOOLEAN,
@@ -61,9 +55,6 @@ class Events extends Block
 
 	public function prepareBlockFields(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		Lang::load('ManageCalendar');
 
 		$options = $e->args->options;
@@ -115,9 +106,6 @@ class Events extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$parameters = $e->args->parameters;
 
 		if ($this->request()->has('preview')) {

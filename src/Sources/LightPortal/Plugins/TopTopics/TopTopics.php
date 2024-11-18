@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 13.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\TopTopics;
@@ -29,9 +29,6 @@ class TopTopics extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params = [
 			'popularity_type'   => 'replies',
 			'num_topics'        => 10,
@@ -41,9 +38,6 @@ class TopTopics extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params = [
 			'popularity_type'   => FILTER_DEFAULT,
 			'numе_topics'       => FILTER_VALIDATE_INT,
@@ -53,9 +47,6 @@ class TopTopics extends Block
 
 	public function prepareBlockFields(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$options = $e->args->options;
 
 		RadioField::make('popularity_type', $this->txt['type'])
@@ -72,9 +63,6 @@ class TopTopics extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$parameters = $e->args->parameters;
 		$parameters['show_numbers_only'] ??= false;
 

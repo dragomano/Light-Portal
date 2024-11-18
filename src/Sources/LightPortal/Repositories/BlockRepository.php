@@ -103,7 +103,7 @@ final class BlockRepository extends AbstractRepository
 
 		while ($row = Db::$db->fetch_assoc($result)) {
 			if ($row['type'] === 'bbc') {
-				$row['content'] = Msg::unPreparseCode($row['content']);
+				$row['content'] = Msg::un_preparsecode($row['content']);
 			}
 
 			Lang::censorText($row['content']);

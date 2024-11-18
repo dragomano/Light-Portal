@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\RecentPosts;
@@ -31,9 +31,6 @@ class RecentPosts extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params = [
 			'no_content_class' => true,
 			'link_in_title'    => Config::$scripturl . '?action=recent',
@@ -53,9 +50,6 @@ class RecentPosts extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params = [
 			'exclude_boards'   => FILTER_DEFAULT,
 			'include_boards'   => FILTER_DEFAULT,
@@ -73,9 +67,6 @@ class RecentPosts extends Block
 
 	public function prepareBlockFields(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$options = $e->args->options;
 
 		CustomField::make('exclude_boards', $this->txt['exclude_boards'])
@@ -195,9 +186,6 @@ class RecentPosts extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$parameters = $e->args->parameters;
 
 		if ($this->request()->has('preview')) {

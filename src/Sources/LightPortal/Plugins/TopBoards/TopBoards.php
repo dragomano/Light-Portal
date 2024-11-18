@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 13.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\TopBoards;
@@ -31,9 +31,6 @@ class TopBoards extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params = [
 			'num_boards'        => 10,
 			'entity_type'       => 'num_topics',
@@ -43,9 +40,6 @@ class TopBoards extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params = [
 			'num_boards'        => FILTER_VALIDATE_INT,
 			'entity_type'       => FILTER_DEFAULT,
@@ -55,9 +49,6 @@ class TopBoards extends Block
 
 	public function prepareBlockFields(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$options = $e->args->options;
 
 		NumberField::make('num_boards', $this->txt['num_boards'])
@@ -74,9 +65,6 @@ class TopBoards extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$parameters = $e->args->parameters;
 		$parameters['show_numbers_only'] ??= false;
 

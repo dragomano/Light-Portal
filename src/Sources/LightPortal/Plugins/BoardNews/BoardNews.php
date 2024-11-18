@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 12.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\BoardNews;
@@ -31,9 +31,6 @@ class BoardNews extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params = [
 			'board_id'      => 0,
 			'num_posts'     => 5,
@@ -43,9 +40,6 @@ class BoardNews extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params = [
 			'board_id'      => FILTER_VALIDATE_INT,
 			'num_posts'     => FILTER_VALIDATE_INT,
@@ -55,9 +49,6 @@ class BoardNews extends Block
 
 	public function prepareBlockFields(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$options = $e->args->options;
 
 		CustomSelectField::make('board_id', $this->txt['board_id'])
@@ -79,9 +70,6 @@ class BoardNews extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$parameters = $e->args->parameters;
 
 		$teaserLength = empty($parameters['teaser_length']) ? null : $parameters['teaser_length'];

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 12.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\AdsBlock;
@@ -58,9 +58,6 @@ class AdsBlock extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params = [
 			'content'        => 'html',
 			'loader_code'    => '',
@@ -74,9 +71,6 @@ class AdsBlock extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params = [
 			'loader_code'    => FILTER_UNSAFE_RAW,
 			'ads_placement'  => FILTER_DEFAULT,
@@ -89,9 +83,6 @@ class AdsBlock extends Block
 
 	public function prepareBlockFields(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		Theme::addInlineCss('
 		.pf_placement, .pf_areas {
 			display: none;
@@ -169,9 +160,7 @@ class AdsBlock extends Block
 
 	public function parseContent(Event $e): void
 	{
-		if ($e->args->type === $this->name) {
-			$e->args->content = Content::parse($e->args->content, 'html');
-		}
+		$e->args->content = Content::parse($e->args->content, 'html');
 	}
 
 	public function preparePageData(): void

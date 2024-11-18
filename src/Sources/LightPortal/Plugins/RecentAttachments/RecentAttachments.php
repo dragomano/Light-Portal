@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 13.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\RecentAttachments;
@@ -29,9 +29,6 @@ class RecentAttachments extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params = [
 			'num_attachments' => 5,
 			'extensions'      => 'jpg',
@@ -40,9 +37,6 @@ class RecentAttachments extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params = [
 			'num_attachments' => FILTER_VALIDATE_INT,
 			'extensions'      => FILTER_DEFAULT,
@@ -51,9 +45,6 @@ class RecentAttachments extends Block
 
 	public function prepareBlockFields(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$options = $e->args->options;
 
 		NumberField::make('num_attachments', $this->txt['num_attachments'])
@@ -76,11 +67,7 @@ class RecentAttachments extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
-		$parameters = $e->args->parameters;
-		$id = $e->args->id;
+		[$id, $parameters] = [$e->args->id, $e->args->parameters];
 
 		$attachmentList = $this->cache($this->name . '_addon_b' . $id . '_u' . User::$info['id'])
 			->setLifeTime($e->args->cacheTime)

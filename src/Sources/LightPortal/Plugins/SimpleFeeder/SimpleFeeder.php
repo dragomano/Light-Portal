@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleFeeder;
@@ -34,9 +34,6 @@ class SimpleFeeder extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params = [
 			'url'       => '',
 			'show_text' => false,
@@ -45,9 +42,6 @@ class SimpleFeeder extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params = [
 			'url'       => FILTER_VALIDATE_URL,
 			'show_text' => FILTER_VALIDATE_BOOLEAN,
@@ -56,9 +50,6 @@ class SimpleFeeder extends Block
 
 	public function prepareBlockFields(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$options = $e->args->options;
 
 		UrlField::make('url', $this->txt['url'])
@@ -85,9 +76,6 @@ class SimpleFeeder extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$parameters = $e->args->parameters;
 		$parameters['show_text'] ??= false;
 

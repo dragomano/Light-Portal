@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 13.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleMenu;
@@ -32,17 +32,11 @@ class SimpleMenu extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params['items'] = '';
 	}
 
 	public function validateBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$data = $this->request()->only(['item_name', 'item_link']);
 
 		$items = [];
@@ -65,9 +59,6 @@ class SimpleMenu extends Block
 
 	public function prepareBlockFields(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		CustomField::make('items', $this->txt['items'])
 			->setTab(Tab::CONTENT)
 			->setValue($this->getFromTemplate('simple_menu_items', $e->args->options));
@@ -111,7 +102,7 @@ class SimpleMenu extends Block
 	{
 		$parameters = $e->args->parameters;
 
-		if ($e->args->type !== $this->name || empty($parameters['items']))
+		if (empty($parameters['items']))
 			return;
 
 		$html = $this->cache($this->name . '_addon_b' . $e->args->id)

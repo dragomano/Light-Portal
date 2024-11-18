@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\TrendingTopics;
@@ -40,9 +40,6 @@ class TrendingTopics extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params = [
 			'no_content_class' => true,
 			'show_avatars'     => true,
@@ -54,9 +51,6 @@ class TrendingTopics extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params = [
 			'show_avatars' => FILTER_VALIDATE_BOOLEAN,
 			'time_period'  => FILTER_DEFAULT,
@@ -67,9 +61,6 @@ class TrendingTopics extends Block
 
 	public function prepareBlockFields(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$options = $e->args->options;
 
 		CheckboxField::make('show_avatars', $this->txt['show_avatars'])
@@ -135,9 +126,6 @@ class TrendingTopics extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$parameters = $e->args->parameters;
 
 		$topics = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])

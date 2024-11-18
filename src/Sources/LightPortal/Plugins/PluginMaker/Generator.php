@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 13.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
@@ -252,10 +252,6 @@ class Generator
 			->addParameter('e')
 			->setType(Event::class);
 
-		$method
-			->addBody("if (\$e->args->type !== \$this->name)")
-			->addBody("\treturn;" . PHP_EOL);
-
 		if (empty($blockParams = $this->getSpecialParams())) {
 			$method->addBody("// Your code" . PHP_EOL);
 			return;
@@ -282,10 +278,6 @@ class Generator
 		$method
 			->addParameter('e')
 			->setType(Event::class);
-
-		$method
-			->addBody("if (\$e->args->type !== \$this->name)")
-			->addBody("\treturn;" . PHP_EOL);
 
 		if (empty($blockParams = $this->getSpecialParams())) {
 			$method->addBody("// Your code" . PHP_EOL);
@@ -314,10 +306,7 @@ class Generator
 			->addParameter('e')
 			->setType(Event::class);
 
-		$method
-			->addBody("if (\$e->args->type !== \$this->name)")
-			->addBody("\treturn;" . PHP_EOL)
-			->addBody("// Your code" . PHP_EOL);
+		$method->addBody("// Your code" . PHP_EOL);
 
 		if (empty($blockParams = $this->getSpecialParams()))
 			return;
@@ -527,10 +516,7 @@ class Generator
 			->addParameter('e')
 			->setType(Event::class);
 
-		$method
-			->addBody("if (\$e->args->type !== \$this->name) {")
-			->addBody("\t\$e->args->content = \$this->getParsedContent(\$e->args->content);")
-			->addBody("}" . PHP_EOL);
+		$method->addBody("\$e->args->content = \$this->getParsedContent(\$e->args->content);" . PHP_EOL);
 
 		$method = $class
 			->addMethod('getParsedContent')
@@ -555,10 +541,6 @@ class Generator
 		$method
 			->addParameter('e')
 			->setType(Event::class);
-
-		$method
-			->addBody("if (\$e->args->type !== \$this->name)")
-			->addBody("\treturn;" . PHP_EOL);
 
 		if ($this->plugin['type'] === 'ssi') {
 			$method

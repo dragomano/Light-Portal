@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 13.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\News;
@@ -30,25 +30,16 @@ class News extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params['selected_item'] = 0;
 	}
 
 	public function validateBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params['selected_item'] = FILTER_VALIDATE_INT;
 	}
 
 	public function prepareBlockFields(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$this->getData();
 
 		$news = [$this->txt['random_news']];
@@ -75,9 +66,6 @@ class News extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		echo $this->getData($e->args->parameters['selected_item']) ?: $this->txt['no_items'];
 	}
 }

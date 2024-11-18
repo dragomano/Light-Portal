@@ -259,14 +259,17 @@ final class BlockArea
 			) {
 				$postData['parameters'][$option] = 0;
 
-				if ($option === 'no_content_class')
+				if ($option === 'no_content_class') {
 					$postData['parameters'][$option] = $value;
+				}
 
-				if ($parameters[$option] === FILTER_DEFAULT)
+				if ($parameters[$option] === FILTER_DEFAULT) {
 					$postData['parameters'][$option] = '';
+				}
 
-				if (is_array($parameters[$option]) && $parameters[$option]['flags'] === FILTER_REQUIRE_ARRAY)
+				if (is_array($parameters[$option]) && $parameters[$option]['flags'] === FILTER_REQUIRE_ARRAY) {
 					$postData['parameters'][$option] = [];
+				}
 			}
 
 			$block->options[$option] = $postData['parameters'][$option] ?? $blockOptions[$option] ?? $value;

@@ -747,11 +747,13 @@ final class PageArea
 			if (isset($parameters[$option]) && isset($postData) && ! isset($postData[$option])) {
 				$postData[$option] = 0;
 
-				if ($parameters[$option] === FILTER_DEFAULT)
+				if ($parameters[$option] === FILTER_DEFAULT) {
 					$postData[$option] = '';
+				}
 
-				if (is_array($parameters[$option]) && $parameters[$option]['flags'] === FILTER_REQUIRE_ARRAY)
+				if (is_array($parameters[$option]) && $parameters[$option]['flags'] === FILTER_REQUIRE_ARRAY) {
 					$postData[$option] = [];
+				}
 			}
 
 			$page->options[$option] = $postData[$option] ?? $pageOptions[$option] ?? $value;
@@ -939,6 +941,8 @@ final class PageArea
 
 	private function getPageIcon(string $type): string
 	{
-		return $this->getDefaultTypes()[$type]['icon'] ?? Utils::$context['lp_loaded_addons'][$type]['icon'] ?? 'fas fa-question';
+		return $this->getDefaultTypes()[$type]['icon']
+			?? Utils::$context['lp_loaded_addons'][$type]['icon']
+			?? 'fas fa-question';
 	}
 }

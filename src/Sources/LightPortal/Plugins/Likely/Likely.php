@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 12.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Likely;
@@ -34,9 +34,6 @@ class Likely extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params = [
 			'size'      => 'small',
 			'dark_mode' => false,
@@ -46,9 +43,6 @@ class Likely extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params = [
 			'size'      => FILTER_DEFAULT,
 			'dark_mode' => FILTER_VALIDATE_BOOLEAN,
@@ -58,9 +52,6 @@ class Likely extends Block
 
 	public function prepareBlockFields(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$options = $e->args->options;
 
 		CustomField::make('buttons', $this->txt['buttons'])
@@ -90,7 +81,7 @@ class Likely extends Block
 	{
 		$parameters = $e->args->parameters;
 
-		if ($e->args->type !== $this->name || empty($parameters['buttons']))
+		if (empty($parameters['buttons']))
 			return;
 
 		Theme::loadCSSFile('light_portal/likely/likely.min.css');

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 13.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\TopPosters;
@@ -27,9 +27,6 @@ class TopPosters extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params = [
 			'show_avatars'      => true,
 			'num_posters'       => 10,
@@ -39,9 +36,6 @@ class TopPosters extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params = [
 			'show_avatars'      => FILTER_VALIDATE_BOOLEAN,
 			'num_posters'       => FILTER_VALIDATE_INT,
@@ -51,9 +45,6 @@ class TopPosters extends Block
 
 	public function prepareBlockFields(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$options = $e->args->options;
 
 		CheckboxField::make('show_avatars', $this->txt['show_avatars'])
@@ -112,11 +103,7 @@ class TopPosters extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$parameters = $e->args->parameters;
-
 		$parameters['show_numbers_only'] ??= false;
 		$parameters['num_posters'] ??= 10;
 

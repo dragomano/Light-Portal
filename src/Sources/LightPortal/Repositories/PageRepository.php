@@ -544,7 +544,7 @@ final class PageRepository extends AbstractRepository
 			|| (Utils::$context['allow_light_portal_manage_pages_own'] && $isAuthor);
 
 		if ($data['type'] === 'bbc') {
-			$data['content'] = Msg::unPreparseCode($data['content']);
+			$data['content'] = Msg::un_preparsecode($data['content']);
 		}
 
 		if (! empty($data['category_id'])) {

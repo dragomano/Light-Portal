@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Search;
@@ -150,11 +150,8 @@ class Search extends Block
 		$e->args->assets['scripts'][$this->name][] = 'https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.min.js';
 	}
 
-	public function prepareContent(Event $e): void
+	public function prepareContent(): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		Theme::loadCSSFile('light_portal/search/auto-complete.css');
 		Theme::loadJavaScriptFile('light_portal/search/auto-complete.min.js', ['minimize' => true]);
 

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 13.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Swiper;
@@ -32,9 +32,6 @@ class Swiper extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params = [
 			'direction'       => 'horizontal',
 			'effect'          => 'coverflow',
@@ -49,9 +46,6 @@ class Swiper extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$data = $this->request()->only(['image_title', 'image_link']);
 
 		$images = [];
@@ -83,9 +77,6 @@ class Swiper extends Block
 
 	public function prepareBlockFields(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$options = $e->args->options;
 
 		CustomField::make('images', $this->txt['images'])
@@ -184,11 +175,7 @@ class Swiper extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
-		$id = $e->args->id;
-		$parameters = $e->args->parameters;
+		[$id, $parameters] = [$e->args->id, $e->args->parameters];
 
 		$swiperHtml = $this->cache($this->name . '_addon_b' . $id . '_' . User::$info['language'])
 			->setLifeTime($e->args->cacheTime)

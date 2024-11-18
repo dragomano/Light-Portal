@@ -8,12 +8,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 12.11.24
+ * @version 20.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\BlogMode;
 
 use Bugo\Compat\{Config, Lang, User, Utils};
+use Bugo\LightPortal\Areas\Configs\BasicConfig;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
@@ -60,6 +61,8 @@ class BlogMode extends Plugin
 		$this->applyHook(Hook::loadIllegalGuestPermissions);
 		$this->applyHook(Hook::loadPermissions);
 
+		Lang::$txt['group_perms_name_light_portal_post_blog_entries'] = $this->txt['permission'];
+
 		if (empty(User::hasPermission('light_portal_post_blog_entries')))
 			return;
 
@@ -96,6 +99,7 @@ class BlogMode extends Plugin
 	public function extendBasicConfig(Event $e): void
 	{
 		Lang::$txt['groups_light_portal_post_blog_entries'] = $this->txt['group_permission'];
+		Lang::$txt['permissionname_light_portal_post_blog_entries'] = $this->txt['permission'];
 
 		$configVars = &$e->args->configVars;
 
@@ -104,7 +108,11 @@ class BlogMode extends Plugin
 		$configVars = array_merge(
 			array_slice($configVars, 0, $key, true),
 			[
-				['permissions', 'light_portal_post_blog_entries'],
+				[
+					'permissions',
+					'light_portal_post_blog_entries',
+					'tab' => BasicConfig::TAB_PERMISSIONS,
+				],
 			],
 			array_slice($configVars, $key, count($configVars), true)
 		);

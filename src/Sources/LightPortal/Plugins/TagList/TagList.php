@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 13.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\TagList;
@@ -36,9 +36,6 @@ class TagList extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params = [
 			'link_in_title' => Config::$scripturl . '?action=portal;sa=tags',
 			'source'        => 'lp_tags',
@@ -49,9 +46,6 @@ class TagList extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params = [
 			'source'   => FILTER_DEFAULT,
 			'sorting'  => FILTER_DEFAULT,
@@ -61,9 +55,6 @@ class TagList extends Block
 
 	public function prepareBlockFields(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$options = $e->args->options;
 
 		$sources = array_combine(['lp_tags', 'keywords'], $this->txt['source_set']);
@@ -119,9 +110,6 @@ class TagList extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$parameters = $e->args->parameters;
 
 		if ($parameters['source'] === 'lp_tags') {

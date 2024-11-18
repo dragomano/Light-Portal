@@ -74,17 +74,20 @@ abstract class AbstractConfig
 					->setAfter($after)
 					->setDescription($description)
 					->setValue(Config::$modSettings[$var['name']] ?? false),
+
 				'int' => NumberField::make($var['name'], $label)
 					->setTab($var['tab'])
 					->setAfter($after)
 					->setDescription($description)
 					->setValue(Config::$modSettings[$var['name']] ?? 0),
+
 				'text' => TextField::make($var['name'], $label)
 					->setTab($var['tab'])
 					->setAfter($after)
 					->setDescription($description)
 					->placeholder($var['placeholder'] ?? '')
 					->setValue(Config::$modSettings[$var['name']] ?? ''),
+
 				'select' => SelectField::make($var['name'], $label)
 					->setTab($var['tab'])
 					->setAttributes($var['attributes'] ?? [])
@@ -92,6 +95,7 @@ abstract class AbstractConfig
 					->setDescription($description)
 					->setOptions($var['data'])
 					->setValue($value),
+
 				'callback' => CustomField::make($var['name'], $label)
 					->setTab($var['tab'])
 					->setDescription($description)
@@ -111,6 +115,7 @@ abstract class AbstractConfig
 							return (string) ob_get_clean();
 						}
 					}, ['var' => $var]),
+
 				'permissions' => CustomField::make($var['name'], Lang::$txt['permissionname_' . $var['name']])
 					->setTab($var['tab'])
 					->setAfter($after)
@@ -128,6 +133,7 @@ abstract class AbstractConfig
 							return ob_get_clean();
 						}
 					}, ['var' => $var]),
+
 				default => false,
 			};
 

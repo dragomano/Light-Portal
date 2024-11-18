@@ -149,7 +149,7 @@ final class Category extends AbstractPageList
 				AND permissions IN ({array_int:permissions})',
 			[
 				'id'           => Utils::$context['current_category'],
-				'status'        => Status::ACTIVE->value,
+				'status'       => Status::ACTIVE->value,
 				'types'        => EntryType::withoutDrafts(),
 				'current_time' => time(),
 				'permissions'  => Permission::all(),

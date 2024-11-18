@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\RandomPages;
@@ -29,9 +29,6 @@ class RandomPages extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params = [
 			'no_content_class' => true,
 			'categories'       => '',
@@ -41,9 +38,6 @@ class RandomPages extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params = [
 			'categories' => FILTER_DEFAULT,
 			'num_pages'  => FILTER_VALIDATE_INT,
@@ -52,9 +46,6 @@ class RandomPages extends Block
 
 	public function prepareBlockFields(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$options = $e->args->options;
 
 		CustomField::make('categories', Lang::$txt['lp_categories'])
@@ -210,9 +201,6 @@ class RandomPages extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$parameters = $e->args->parameters;
 
 		$randomPages = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])

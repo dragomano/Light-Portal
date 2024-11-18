@@ -87,19 +87,19 @@ final class PluginHandler
 		);
 
 		foreach (['css', 'scripts', 'images'] as $type) {
-			if (! isset($assets[$type]))
+			if (empty($assets[$type]))
 				continue;
 
 			foreach ($assets[$type] as $plugin => $links) {
-				$customName = $type . '/light_portal/' . $plugin;
-				$pluginAssetDir = Theme::$current->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . $customName;
+				$directory = $type . '/light_portal/' . $plugin;
+				$path = Theme::$current->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . $directory;
 
-				if (! is_dir($pluginAssetDir)) {
-					@mkdir($pluginAssetDir);
+				if (! is_dir($path)) {
+					@mkdir($path);
 				}
 
 				foreach ($links as $link) {
-					if (is_file($filename = $pluginAssetDir . DIRECTORY_SEPARATOR . basename((string) $link)))
+					if (is_file($filename = $path . DIRECTORY_SEPARATOR . basename((string) $link)))
 						continue;
 
 					file_put_contents($filename, WebFetchApi::fetch($link), LOCK_EX);

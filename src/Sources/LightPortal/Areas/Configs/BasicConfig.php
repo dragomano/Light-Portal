@@ -68,17 +68,7 @@ final class BasicConfig extends AbstractConfig
 			'lp_standalone_url'            => Config::$boardurl . '/portal.php',
 		]);
 
-		Utils::$context['lp_frontpage_modes'] = array_combine(
-			[0, 'chosen_page', 'all_pages', 'chosen_pages', 'all_topics', 'chosen_topics', 'chosen_boards'],
-			Lang::$txt['lp_frontpage_mode_set'],
-		);
-
 		$this->prepareTopicList();
-
-		Utils::$context['lp_column_set'] = array_map(
-			static fn($item) => Lang::getTxt('lp_frontpage_num_columns_set', ['columns' => $item]),
-			[1, 2, 3, 4, 6],
-		);
 
 		$templateEditLink = sprintf('&nbsp;' . Str::html('a', [
 				'class' => 'button active',
@@ -94,7 +84,10 @@ final class BasicConfig extends AbstractConfig
 			[
 				'select',
 				'lp_frontpage_mode',
-				Utils::$context['lp_frontpage_modes'],
+				array_combine(
+					[0, 'chosen_page', 'all_pages', 'chosen_pages', 'all_topics', 'chosen_topics', 'chosen_boards'],
+					Lang::$txt['lp_frontpage_mode_set'],
+				),
 				'attributes' => [
 					'@change' => '$dispatch(\'change-mode\', { front: $event.target.value })',
 				],
@@ -165,7 +158,10 @@ final class BasicConfig extends AbstractConfig
 			[
 				'select',
 				'lp_frontpage_num_columns',
-				Utils::$context['lp_column_set'],
+				array_map(
+					static fn($item) => Lang::getTxt('lp_frontpage_num_columns_set', ['columns' => $item]),
+					[1, 2, 3, 4, 6],
+				),
 				'tab' => self::TAB_BASE,
 			],
 			[

@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 12.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Calculator;
@@ -28,17 +28,11 @@ class Calculator extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params['no_content_class'] = true;
 	}
 
 	public function prepareContent(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		echo $this->getFromTemplate('show_calculator_block', $e->args->id);
 	}
 }

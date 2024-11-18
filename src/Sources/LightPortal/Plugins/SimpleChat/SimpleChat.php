@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 13.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleChat;
@@ -78,17 +78,11 @@ class SimpleChat extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params = $this->params;
 	}
 
 	public function validateBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params = [
 			'show_avatars'  => FILTER_VALIDATE_BOOLEAN,
 			'form_position' => FILTER_DEFAULT,
@@ -97,9 +91,6 @@ class SimpleChat extends Block
 
 	public function prepareBlockFields(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$options = $e->args->options;
 
 		CheckboxField::make('show_avatars', $this->txt['show_avatars'])
@@ -124,9 +115,6 @@ class SimpleChat extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		Theme::loadCSSFile('admin.css');
 		Theme::loadJavaScriptFile('light_portal/bundle.min.js', ['defer' => true]);
 

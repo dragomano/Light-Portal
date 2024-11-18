@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.11.24
+ * @version 20.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\RecentTopics;
@@ -36,9 +36,6 @@ class RecentTopics extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params = [
 			'no_content_class' => true,
 			'link_in_title'    => Config::$scripturl . '?action=unread',
@@ -55,9 +52,6 @@ class RecentTopics extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$e->args->params = [
 			'exclude_boards'   => FILTER_DEFAULT,
 			'include_boards'   => FILTER_DEFAULT,
@@ -72,9 +66,6 @@ class RecentTopics extends Block
 
 	public function prepareBlockFields(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$options = $e->args->options;
 
 		CustomField::make('exclude_boards', $this->txt['exclude_boards'])
@@ -148,9 +139,6 @@ class RecentTopics extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		if ($e->args->type !== $this->name)
-			return;
-
 		$parameters = $e->args->parameters;
 
 		if ($this->request()->has('preview')) {
@@ -158,6 +146,7 @@ class RecentTopics extends Block
 		}
 
 		$parameters['show_avatars'] ??= false;
+		$parameters['num_topics'] ??= 10;
 
 		$recentTopics = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
 			->setLifeTime($parameters['update_interval'] ?? $e->args->cacheTime)
