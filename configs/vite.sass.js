@@ -15,4 +15,13 @@ export default defineConfig({
       },
     },
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        sassOptions: {
+          quietDeps: true,
+        }
+      }
+    }
+  }
 });
