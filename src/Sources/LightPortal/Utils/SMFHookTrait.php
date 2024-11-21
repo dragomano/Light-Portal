@@ -22,7 +22,7 @@ if (! defined('SMF'))
 
 trait SMFHookTrait
 {
-	protected function applyHook(Hook $hook, string $class = null): void
+	protected function applyHook(Hook $hook, ?string $class = null): void
 	{
 		$class ??= static::class;
 

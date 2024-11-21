@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Swiper;
@@ -19,6 +19,7 @@ use Bugo\LightPortal\Areas\Fields\{RadioField, RangeField, SelectField};
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -31,9 +32,6 @@ class Swiper extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'swiper')
-			return;
-
 		$e->args->params = [
 			'direction'       => 'horizontal',
 			'effect'          => 'coverflow',
@@ -48,9 +46,6 @@ class Swiper extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'swiper')
-			return;
-
 		$data = $this->request()->only(['image_title', 'image_link']);
 
 		$images = [];
@@ -80,39 +75,38 @@ class Swiper extends Block
 		];
 	}
 
-	public function prepareBlockFields(): void
+	public function prepareBlockFields(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'swiper')
-			return;
+		$options = $e->args->options;
 
-		CustomField::make('images', Lang::$txt['lp_swiper']['images'])
+		CustomField::make('images', $this->txt['images'])
 			->setTab(Tab::CONTENT)
-			->setValue($this->getFromTemplate('swiper_images'));
+			->setValue($this->getFromTemplate('swiper_images', $options));
 
-		RadioField::make('direction', Lang::$txt['lp_swiper']['direction'])
+		RadioField::make('direction', $this->txt['direction'])
 			->setOptions(array_combine(['vertical', 'horizontal'], Lang::$txt['lp_panel_direction_set']))
-			->setValue(Utils::$context['lp_block']['options']['direction']);
+			->setValue($options['direction']);
 
-		SelectField::make('effect', Lang::$txt['lp_swiper']['effect'])
+		SelectField::make('effect', $this->txt['effect'])
 			->setOptions(array_combine($this->effects, $this->effects))
-			->setValue(Utils::$context['lp_block']['options']['effect']);
+			->setValue($options['effect']);
 
-		RangeField::make('slides_per_view', Lang::$txt['lp_swiper']['slides_per_view'])
+		RangeField::make('slides_per_view', $this->txt['slides_per_view'])
 			->setAttribute('min', 1)
 			->setAttribute('max', 12)
-			->setValue(Utils::$context['lp_block']['options']['slides_per_view']);
+			->setValue($options['slides_per_view']);
 
-		CheckboxField::make('loop', Lang::$txt['lp_swiper']['loop'])
-			->setValue(Utils::$context['lp_block']['options']['loop']);
+		CheckboxField::make('loop', $this->txt['loop'])
+			->setValue($options['loop']);
 
-		CheckboxField::make('show_pagination', Lang::$txt['lp_swiper']['show_pagination'])
-			->setValue(Utils::$context['lp_block']['options']['show_pagination']);
+		CheckboxField::make('show_pagination', $this->txt['show_pagination'])
+			->setValue($options['show_pagination']);
 
-		CheckboxField::make('show_navigation', Lang::$txt['lp_swiper']['show_navigation'])
-			->setValue(Utils::$context['lp_block']['options']['show_navigation']);
+		CheckboxField::make('show_navigation', $this->txt['show_navigation'])
+			->setValue($options['show_navigation']);
 
-		CheckboxField::make('show_scrollbar', Lang::$txt['lp_swiper']['show_scrollbar'])
-			->setValue(Utils::$context['lp_block']['options']['show_scrollbar']);
+		CheckboxField::make('show_scrollbar', $this->txt['show_scrollbar'])
+			->setValue($options['show_scrollbar']);
 	}
 
 	public function getData(int|string $id, array $parameters): array
@@ -120,61 +114,71 @@ class Swiper extends Block
 		if (empty($parameters['images']))
 			return [];
 
-		$html = '
-		<div id="swiper' . $id . '" class="swiper"' . (Utils::$context['right_to_left'] ? ' dir="rtl"' : '') . '>
-			<div class="swiper-wrapper">';
+		$swiper = Str::html('div', [
+			'id' => 'swiper' . $id,
+			'class' => 'swiper',
+			'dir' => Utils::$context['right_to_left'] ? 'rtl' : null,
+		]);
+
+		$wrapper = Str::html('div', ['class' => 'swiper-wrapper']);
 
 		$images = Utils::jsonDecode($parameters['images'], true);
 
 		foreach ($images as $image) {
 			[$link, $title] = [$image['link'], $image['title']];
 
-			$html .= '
-				<div class="swiper-slide">
-					<img src="' . $link . '" alt="' . ($title ?: '') . '" loading="lazy">';
+			$slide = Str::html('div', ['class' => 'swiper-slide']);
+			$img = Str::html('img', [
+				'src' => $link,
+				'alt' => $title ?: '',
+				'loading' => 'lazy',
+			]);
+
+			$slide->addHtml($img);
 
 			if ($title) {
-				$html .= '
-					<p>' . $title . '</p>';
+				$slide->addHtml(Str::html('p')->setText($title));
 			}
 
-			$html .= '
-				</div>';
+			$wrapper->addHtml($slide);
 		}
 
-		$html .= '
-			</div>';
+		$swiper->addHtml($wrapper);
 
-		if (! empty($parameters['show_pagination']))
-			$html .= '
-			<div id="swiper-pagination' . $id . '" class="swiper-pagination"></div>';
+		if (! empty($parameters['show_pagination'])) {
+			$swiper->addHtml(Str::html('div', [
+				'id' => 'swiper-pagination' . $id,
+				'class' => 'swiper-pagination',
+			]));
+		}
 
-		if (! empty($parameters['show_navigation']))
-			$html .= '
-			<div id="swiper-button-prev' . $id . '" class="swiper-button-prev"></div>
-			<div id="swiper-button-next' . $id . '" class="swiper-button-next"></div>';
+		if (! empty($parameters['show_navigation'])) {
+			$swiper->addHtml(Str::html('div', [
+				'id' => 'swiper-button-prev' . $id,
+				'class' => 'swiper-button-prev',
+			]));
+			$swiper->addHtml(Str::html('div', [
+				'id' => 'swiper-button-next' . $id,
+				'class' => 'swiper-button-next',
+			]));
+		}
 
-		if (! empty($parameters['show_scrollbar']))
-			$html .= '
-			<div id="swiper-scrollbar' . $id . '" class="swiper-scrollbar"></div>';
+		if (! empty($parameters['show_scrollbar'])) {
+			$swiper->addHtml(Str::html('div', [
+				'id' => 'swiper-scrollbar' . $id,
+				'class' => 'swiper-scrollbar',
+			]));
+		}
 
-		$html .= '
-		</div>';
-
-		return ['content' => $html];
+		return ['content' => $swiper->toHtml()];
 	}
 
 	public function prepareContent(Event $e): void
 	{
-		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+		[$id, $parameters] = [$e->args->id, $e->args->parameters];
 
-		if ($data->type !== 'swiper')
-			return;
-
-		$id = $data->id;
-
-		$swiperHtml = $this->cache('swiper_addon_b' . $id . '_' . User::$info['language'])
-			->setLifeTime($data->cacheTime)
+		$swiperHtml = $this->cache($this->name . '_addon_b' . $id . '_' . User::$info['language'])
+			->setLifeTime($e->args->cacheTime)
 			->setFallback(self::class, 'getData', $id, $parameters);
 
 		if (empty($swiperHtml))

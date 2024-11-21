@@ -8,19 +8,18 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\RandomTopics;
 
-use Bugo\Compat\{Config, Lang, Theme, User, Utils};
+use Bugo\Compat\{Config, Db, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField};
 use Bugo\LightPortal\Areas\Partials\BoardSelect;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Utils\DateTime;
-use IntlException;
+use Bugo\LightPortal\Utils\{DateTime, Str};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -31,9 +30,6 @@ class RandomTopics extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'random_topics')
-			return;
-
 		$e->args->params = [
 			'no_content_class' => true,
 			'exclude_boards'   => '',
@@ -44,9 +40,6 @@ class RandomTopics extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'random_topics')
-			return;
-
 		$e->args->params = [
 			'exclude_boards' => FILTER_DEFAULT,
 			'include_boards' => FILTER_DEFAULT,
@@ -54,30 +47,29 @@ class RandomTopics extends Block
 		];
 	}
 
-	public function prepareBlockFields(): void
+	public function prepareBlockFields(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'random_topics')
-			return;
+		$options = $e->args->options;
 
-		CustomField::make('exclude_boards', Lang::$txt['lp_random_topics']['exclude_boards'])
+		CustomField::make('exclude_boards', $this->txt['exclude_boards'])
 			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'exclude_boards',
-				'hint'  => Lang::$txt['lp_random_topics']['exclude_boards_select'],
-				'value' => Utils::$context['lp_block']['options']['exclude_boards'] ?? '',
+				'hint'  => $this->txt['exclude_boards_select'],
+				'value' => $options['exclude_boards'] ?? '',
 			]);
 
-		CustomField::make('include_boards', Lang::$txt['lp_random_topics']['include_boards'])
+		CustomField::make('include_boards', $this->txt['include_boards'])
 			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'include_boards',
-				'hint'  => Lang::$txt['lp_random_topics']['include_boards_select'],
-				'value' => Utils::$context['lp_block']['options']['include_boards'] ?? '',
+				'hint'  => $this->txt['include_boards_select'],
+				'value' => $options['include_boards'] ?? '',
 			]);
 
-		NumberField::make('num_topics', Lang::$txt['lp_random_topics']['num_topics'])
+		NumberField::make('num_topics', $this->txt['num_topics'])
 			->setAttribute('min', 1)
-			->setValue(Utils::$context['lp_block']['options']['num_topics']);
+			->setValue($options['num_topics']);
 	}
 
 	public function getData(array $parameters): array
@@ -90,7 +82,7 @@ class RandomTopics extends Block
 			return [];
 
 		if (Config::$db_type === 'postgresql') {
-			$result = Utils::$smcFunc['db_query']('', '
+			$result = Db::$db->query('', '
 				WITH RECURSIVE r AS (
 					WITH b AS (
 						SELECT min(t.id_topic), (
@@ -142,15 +134,15 @@ class RandomTopics extends Block
 			);
 
 			$topicIds = [];
-			while ($row = Utils::$smcFunc['db_fetch_assoc']($result))
+			while ($row = Db::$db->fetch_assoc($result))
 				$topicIds[] = $row['id_topic'];
 
-			Utils::$smcFunc['db_free_result']($result);
+			Db::$db->free_result($result);
 
 			if (empty($topicIds))
 				return $this->getData(array_merge($parameters, ['num_topics' => $topicsCount - 1]));
 
-			$result = Utils::$smcFunc['db_query']('', '
+			$result = Db::$db->query('', '
 				SELECT
 					mf.poster_time, mf.subject, ml.id_topic, mf.id_member, ml.id_msg,
 					COALESCE(mem.real_name, mf.poster_name) AS poster_name, ' . (User::$info['is_guest'] ? '1 AS is_read' : '
@@ -169,7 +161,7 @@ class RandomTopics extends Block
 				]
 			);
 		} else {
-			$result = Utils::$smcFunc['db_query']('', '
+			$result = Db::$db->query('', '
 				SELECT
 					mf.poster_time, mf.subject, ml.id_topic, mf.id_member, ml.id_msg,
 					COALESCE(mem.real_name, mf.poster_name) AS poster_name, ' . (User::$info['is_guest'] ? '1 AS is_read' : '
@@ -201,58 +193,83 @@ class RandomTopics extends Block
 			$iconSources[$icon] = 'images_url';
 
 		$topics = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			if (! empty(Config::$modSettings['messageIconChecks_enable']) && ! isset($iconSources[$row['icon']])) {
-				$iconSources[$row['icon']] = file_exists(Theme::$current->settings['theme_dir'] . '/images/post/' . $row['icon'] . '.png') ? 'images_url' : 'default_images_url';
+				$iconSources[$row['icon']] = file_exists(Theme::$current->settings['theme_dir'] . '/images/post/' . $row['icon'] . '.png')
+					? 'images_url'
+					: 'default_images_url';
 			} elseif (! isset($iconSources[$row['icon']])) {
 				$iconSources[$row['icon']] = 'images_url';
 			}
 
 			$topics[] = [
-				'poster' => empty($row['id_member']) ? $row['poster_name'] : '<a href="' . Config::$scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['poster_name'] . '</a>',
+				'poster' => empty($row['id_member']) ? $row['poster_name'] : Str::html('a', [
+						'href' => Config::$scripturl . '?action=profile;u=' . $row['id_member']
+					])->setText($row['poster_name']),
 				'time'   => $row['poster_time'],
-				'link'   => '<a href="' . Config::$scripturl . '?topic=' . $row['id_topic'] . '.msg' . $row['id_msg'] . '#new" rel="nofollow">' . $row['subject'] . '</a>',
+				'link'   => Str::html('a', [
+					'href' => Config::$scripturl . '?topic=' . $row['id_topic'] . '.msg' . $row['id_msg'] . '#new',
+					'rel' => 'nofollow'
+				])->setText($row['subject']),
 				'is_new' => empty($row['is_read']),
-				'icon'   => '<img class="centericon" src="' . Theme::$current->settings[$iconSources[$row['icon']]] . '/post/' . $row['icon'] . '.png" alt="' . $row['icon'] . '">'
+				'icon'   => Str::html('img', [
+					'class' => 'centericon',
+					'src' => Theme::$current->settings[$iconSources[$row['icon']]] . '/post/' . $row['icon'] . '.png',
+					'alt' => $row['icon']
+				])
 			];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 
 		return $topics;
 	}
 
-	/**
-	 * @throws IntlException
-	 */
 	public function prepareContent(Event $e): void
 	{
-		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+		$parameters = $e->args->parameters;
 
-		if ($data->type !== 'random_topics')
-			return;
-
-		$randomTopics = $this->cache('random_topics_addon_b' . $data->id . '_u' . User::$info['id'])
-			->setLifeTime($data->cacheTime)
+		$randomTopics = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
+			->setLifeTime($e->args->cacheTime)
 			->setFallback(self::class, 'getData', $parameters);
 
 		if ($randomTopics) {
-			echo '
-			<ul class="random_topics noup">';
+			$ul = Str::html('ul', ['class' => $this->name . ' noup']);
 
 			foreach ($randomTopics as $topic) {
-				echo '
-				<li class="windowbg">', ($topic['is_new'] ? '
-					<span class="new_posts">' . Lang::$txt['new'] . '</span>' : ''), ' ', $topic['icon'], ' ', $topic['link'], '
-					<br><span class="smalltext">', Lang::$txt['by'], ' ', $topic['poster'], '</span>
-					<br><span class="smalltext">', DateTime::relative($topic['time']), '</span>
-				</li>';
+				$li = Str::html('li', ['class' => 'windowbg']);
+
+				if ($topic['is_new']) {
+					$li->addHtml(
+						Str::html('span', Lang::$txt['new'])
+							->class('new_posts')
+					);
+				}
+
+				$li->addHtml($topic['icon'])
+					->addHtml($topic['link'])
+					->addHtml(Str::html('br'));
+
+				$li->addHtml(
+					Str::html('span')
+						->class('smalltext')
+						->setHtml(Lang::$txt['by'] . ' ' . $topic['poster'])
+				)
+					->addHtml(Str::html('br'));
+
+				$li->addHtml(
+					Str::html('span')
+						->class('smalltext')
+						->setHtml(DateTime::relative($topic['time']))
+				);
+
+				$ul->addHtml($li);
 			}
 
-			echo '
-			</ul>';
+			echo $ul;
 		} else {
-			echo '<div class="infobox">', Lang::$txt['lp_random_topics']['none'], '</div>';
+			echo Str::html('div', ['class' => 'infobox'])
+				->setText($this->txt['none']);
 		}
 	}
 }

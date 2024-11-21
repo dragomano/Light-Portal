@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 12.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\HelloPortal;
@@ -61,13 +61,14 @@ class HelloPortal extends Plugin
 
 		Theme::loadCSSFile('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs.min.css', $params);
 
-		if (! empty(Utils::$context['lp_hello_portal_plugin']['theme'])) {
-			$theme = Utils::$context['lp_hello_portal_plugin']['theme'] . '.css';
+		if (! empty($this->context['theme'])) {
+			$theme = $this->context['theme'] . '.css';
 			Theme::loadCSSFile('https://cdn.jsdelivr.net/npm/intro.js@4/themes/introjs-' . $theme, $params);
 		}
 
-		if (Utils::$context['right_to_left'])
+		if (Utils::$context['right_to_left']) {
 			Theme::loadCSSFile('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs-rtl.min.css', $params);
+		}
 
 		Theme::loadJavaScriptFile('https://cdn.jsdelivr.net/npm/intro.js@4/minified/intro.min.js', $params);
 
@@ -80,20 +81,20 @@ class HelloPortal extends Plugin
 				doneLabel: ' . Utils::escapeJavaScript(Lang::$txt['attach_dir_ok']) . ',
 				steps: [' . $steps . '],
 				showProgress: ' . (
-					empty(Utils::$context['lp_hello_portal_plugin']['show_progress']) ? 'false' : 'true'
+					empty($this->context['show_progress']) ? 'false' : 'true'
 				) . ',
 				showButtons: ' . (
-					empty(Utils::$context['lp_hello_portal_plugin']['show_buttons']) ? 'false' : 'true'
+					empty($this->context['show_buttons']) ? 'false' : 'true'
 				) . ',
 				showBullets: false,
 				exitOnOverlayClick: ' . (
-					empty(Utils::$context['lp_hello_portal_plugin']['exit_on_overlay_click']) ? 'false' : 'true'
+					empty($this->context['exit_on_overlay_click']) ? 'false' : 'true'
 				) . ',
 				keyboardNavigation: ' . (
-					empty(Utils::$context['lp_hello_portal_plugin']['keyboard_navigation']) ? 'false' : 'true'
+					empty($this->context['keyboard_navigation']) ? 'false' : 'true'
 				) . ',
 				disableInteraction: ' . (
-					empty(Utils::$context['lp_hello_portal_plugin']['disable_interaction']) ? 'false' : 'true'
+					empty($this->context['disable_interaction']) ? 'false' : 'true'
 				) . ',
 				scrollToElement: true,
 				scrollTo: "tooltip"
@@ -105,14 +106,14 @@ class HelloPortal extends Plugin
 	{
 		$settings = &$e->args->settings;
 
-		$settings['hello_portal'][] = [
-			'select', 'theme', array_combine($this->themes, Lang::$txt['lp_hello_portal']['theme_set'])
+		$settings[$this->name][] = [
+			'select', 'theme', array_combine($this->themes, $this->txt['theme_set'])
 		];
-		$settings['hello_portal'][] = ['check', 'show_progress'];
-		$settings['hello_portal'][] = ['check', 'show_buttons'];
-		$settings['hello_portal'][] = ['check', 'exit_on_overlay_click'];
-		$settings['hello_portal'][] = ['check', 'keyboard_navigation'];
-		$settings['hello_portal'][] = ['check', 'disable_interaction'];
+		$settings[$this->name][] = ['check', 'show_progress'];
+		$settings[$this->name][] = ['check', 'show_buttons'];
+		$settings[$this->name][] = ['check', 'exit_on_overlay_click'];
+		$settings[$this->name][] = ['check', 'keyboard_navigation'];
+		$settings[$this->name][] = ['check', 'disable_interaction'];
 	}
 
 	public function credits(Event $e): void

@@ -8,14 +8,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\RecentAttachments;
 
-use Bugo\Compat\{Lang, Theme, User, Utils};
+use Bugo\Compat\{Theme, User};
 use Bugo\LightPortal\Areas\Fields\{NumberField, TextField};
 use Bugo\LightPortal\Plugins\{Block, Event};
+use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -28,9 +29,6 @@ class RecentAttachments extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'recent_attachments')
-			return;
-
 		$e->args->params = [
 			'num_attachments' => 5,
 			'extensions'      => 'jpg',
@@ -39,29 +37,25 @@ class RecentAttachments extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'recent_attachments')
-			return;
-
 		$e->args->params = [
 			'num_attachments' => FILTER_VALIDATE_INT,
 			'extensions'      => FILTER_DEFAULT,
 		];
 	}
 
-	public function prepareBlockFields(): void
+	public function prepareBlockFields(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'recent_attachments')
-			return;
+		$options = $e->args->options;
 
-		NumberField::make('num_attachments', Lang::$txt['lp_recent_attachments']['num_attachments'])
+		NumberField::make('num_attachments', $this->txt['num_attachments'])
 			->setAttribute('min', 1)
-			->setValue(Utils::$context['lp_block']['options']['num_attachments']);
+			->setValue($options['num_attachments']);
 
-		TextField::make('extensions', Lang::$txt['lp_recent_attachments']['extensions'])
-			->setDescription(Lang::$txt['lp_recent_attachments']['extensions_subtext'])
+		TextField::make('extensions', $this->txt['extensions'])
+			->setDescription($this->txt['extensions_subtext'])
 			->setAttribute('maxlength', 30)
 			->setAttribute('style', 'width: 100%')
-			->setValue(Utils::$context['lp_block']['options']['extensions']);
+			->setValue($options['extensions']);
 	}
 
 	public function getData(array $parameters): array
@@ -73,13 +67,10 @@ class RecentAttachments extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+		[$id, $parameters] = [$e->args->id, $e->args->parameters];
 
-		if ($data->type !== 'recent_attachments')
-			return;
-
-		$attachmentList = $this->cache('recent_attachments_addon_b' . $data->id . '_u' . User::$info['id'])
-			->setLifeTime($data->cacheTime)
+		$attachmentList = $this->cache($this->name . '_addon_b' . $id . '_u' . User::$info['id'])
+			->setLifeTime($e->args->cacheTime)
 			->setFallback(self::class, 'getData', $parameters);
 
 		if (empty($attachmentList))
@@ -87,26 +78,41 @@ class RecentAttachments extends Block
 
 		$fancybox = class_exists('FancyBox');
 
-		echo '
-		<div class="recent_attachments' . ($this->isInSidebar($data->id) ? ' column_direction' : '') . '">';
+		$recentAttachments = Str::html('div')
+			->class('recent_attachments' . ($this->isInSidebar($id) ? ' column_direction' : ''));
 
 		foreach ($attachmentList as $attach) {
+			$item = Str::html('div', ['class' => 'item']);
+
 			if ($attach['file']['image']) {
-				echo '
-			<div class="item">
-				<a', ($fancybox ? ' class="fancybox" data-fancybox="recent_attachments_' . $data->id . '"' : ''), ' href="', $attach['file']['href'], ';image">', $attach['file']['image']['thumb'], '</a>
-			</div>';
+				$link = Str::html('a', [
+					'href' => $attach['file']['href'] . ';image',
+				]);
+
+				if ($fancybox) {
+					$link->class('fancybox')->setAttribute('data-fancybox', 'recent_attachments_' . $id);
+				}
+
+				$link->setHtml($attach['file']['image']['thumb']);
+				$item->addHtml($link);
 			} else {
-				echo '
-			<div class="item">
-				<a href="', $attach['file']['href'], '">
-					<img class="centericon" src="', Theme::$current->settings['images_url'], '/icons/clip.png" alt="', $attach['file']['filename'], '"> ', $attach['file']['filename'], '
-				</a> (', $attach['file']['filesize'], ')
-			</div>';
+				$link = Str::html('a', [
+					'href' => $attach['file']['href'],
+				]);
+
+				$link->addHtml(Str::html('img', [
+					'class' => 'centericon',
+					'src' => Theme::$current->settings['images_url'] . '/icons/clip.png',
+					'alt' => $attach['file']['filename'],
+				]));
+
+				$link->addHtml(' ' . $attach['file']['filename']);
+				$item->addHtml($link)->addHtml(' (' . $attach['file']['filesize'] . ')');
 			}
+
+			$recentAttachments->addHtml($item);
 		}
 
-		echo '
-		</div>';
+		echo $recentAttachments;
 	}
 }

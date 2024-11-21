@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 15.06.24
+ * @version 17.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\BlogMode;
@@ -17,9 +17,8 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Actions\FrontPage;
-use IntlException;
 
-if (! defined('SMF'))
+if (! defined('LP_NAME'))
 	die('No direct access...');
 
 class BlogIndex
@@ -35,9 +34,6 @@ class BlogIndex
 		$this->action = Utils::$context['lp_blog_mode_plugin']['blog_action'] ?? '';
 	}
 
-	/**
-	 * @throws IntlException
-	 */
 	public function show(): void
 	{
 		$this->front->show();

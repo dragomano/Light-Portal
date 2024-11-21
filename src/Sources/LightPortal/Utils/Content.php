@@ -41,18 +41,15 @@ final class Content
 	{
 		ob_start();
 
-		$data = new class($type, $block_id, $cache_time) {
-			public function __construct(
-				public string $type = 'bbc',
-				public int $id = 0,
-				public int $cacheTime = 0
-			) {}
-		};
-
 		EventManager::getInstance()->dispatch(
 			PortalHook::prepareContent,
-			new Event(new class ($data, $parameters) {
-				public function __construct(public readonly object $data, public readonly array $parameters) {}
+			new Event(new class ($type, $block_id, $cache_time, $parameters) {
+				public function __construct(
+					public readonly string $type,
+					public readonly int $id,
+					public readonly int $cacheTime,
+					public readonly array $parameters
+				) {}
 			})
 		);
 

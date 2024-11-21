@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 12.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\FacebookComments;
@@ -16,7 +16,7 @@ namespace Bugo\LightPortal\Plugins\FacebookComments;
 use Bugo\Compat\{Config, Lang, Utils};
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Utils\Setting;
+use Bugo\LightPortal\Utils\{Setting, Str};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -42,18 +42,18 @@ class FacebookComments extends Plugin
 
 		$settings = &$e->args->settings;
 
-		$settings['facebook_comments'][] = [
+		$settings[$this->name][] = [
 			'text',
 			'app_id',
-			'subtext' => Lang::$txt['lp_facebook_comments']['app_id_subtext']
+			'subtext' => $this->txt['app_id_subtext']
 		];
-		$settings['facebook_comments'][] = ['int', 'comments_per_page'];
-		$settings['facebook_comments'][] = [
+		$settings[$this->name][] = ['int', 'comments_per_page'];
+		$settings[$this->name][] = [
 			'select',
 			'comment_order_by',
-			array_combine($this->sortOrder, Lang::$txt['lp_facebook_comments']['comment_order_by_set'])
+			array_combine($this->sortOrder, $this->txt['comment_order_by_set'])
 		];
-		$settings['facebook_comments'][] = ['multiselect', 'dark_themes', $this->getForumThemes()];
+		$settings[$this->name][] = ['multiselect', 'dark_themes', $this->getForumThemes()];
 	}
 
 	public function comments(): void
@@ -66,7 +66,7 @@ class FacebookComments extends Plugin
 			<script>
 				window.fbAsyncInit = function() {
 					FB.init({
-						appId: "'. (Utils::$context['lp_facebook_comments_plugin']['app_id'] ?? '') . '",
+						appId: "'. ($this->context['app_id'] ?? '') . '",
 						xfbml: true,
 						version: "v18.0"
 					});
@@ -76,10 +76,10 @@ class FacebookComments extends Plugin
 			<div
 				class="fb-comments"
 				data-href="' . Utils::$context['canonical_url'] . '"
-				data-numposts="' . (Utils::$context['lp_facebook_comments_plugin']['comments_per_page'] ?? 10) . '"
+				data-numposts="' . ($this->context['comments_per_page'] ?? 10) . '"
 				data-width="100%"
-				data-colorscheme="' . ($this->isDarkTheme(Utils::$context['lp_facebook_comments_plugin']['dark_themes']) ? 'dark' : 'light') . '"' . (empty(Utils::$context['lp_facebook_comments_plugin']['comment_order_by']) ? '' : ('
-				data-order-by="' . Utils::$context['lp_facebook_comments_plugin']['comment_order_by'] . '"')) . '
+				data-colorscheme="' . ($this->isDarkTheme($this->context['dark_themes']) ? 'dark' : 'light') . '"' . (empty($this->context['comment_order_by']) ? '' : ('
+				data-order-by="' . $this->context['comment_order_by'] . '"')) . '
 				data-lazy="true"
 			></div>';
 	}
@@ -90,7 +90,12 @@ class FacebookComments extends Plugin
 			return;
 
 		foreach (Utils::$context['lp_frontpage_articles'] as $id => $page) {
-			Utils::$context['lp_frontpage_articles'][$id]['replies']['after'] .= ' <i class="fas fa-comment"></i> <span class="fb-comments-count" data-href="' . $page['link'] . '"></span>';
+			Utils::$context['lp_frontpage_articles'][$id]['replies']['after'] .= ' ' .
+				Str::html('i')->class('fas fa-comment') . ' ' .
+				Str::html('span', [
+					'class' => 'fb-comments-count',
+					'data-href' => $page['link']
+				]);
 		}
 	}
 }

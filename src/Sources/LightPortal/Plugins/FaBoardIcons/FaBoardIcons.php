@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 12.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\FaBoardIcons;
@@ -16,6 +16,7 @@ namespace Bugo\LightPortal\Plugins\FaBoardIcons;
 use Bugo\Compat\Config;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
+use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -48,7 +49,8 @@ class FaBoardIcons extends Plugin
 			? $row['fabi_color']
 			: (empty(Config::$modSettings['fabi_default_color']) ? '' : Config::$modSettings['fabi_default_color']);
 
-		$boards[$row['id_board']]['title'] = '<i class="' . $icon . ' fa"' . (empty($color) ? '' : ' style="color: ' . $color . '"') . '></i> ' . $boards[$row['id_board']]['title'];
+		$boards[$row['id_board']]['title'] = Str::html('i')->class($icon . ' fa')
+			->style(empty($color) ? null : 'color: ' . $color) . ' ' . $boards[$row['id_board']]['title'];
 	}
 
 	private function isBaseModInstalled(): bool

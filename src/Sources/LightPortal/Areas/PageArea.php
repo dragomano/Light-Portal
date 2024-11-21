@@ -21,8 +21,7 @@ use Bugo\LightPortal\Areas\Partials\{PageAuthorSelect, PageIconSelect};
 use Bugo\LightPortal\Areas\Partials\{PermissionSelect, StatusSelect, TagSelect};
 use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Areas\Validators\PageValidator;
-use Bugo\LightPortal\Args\ObjectArgs;
-use Bugo\LightPortal\Args\ParamsArgs;
+use Bugo\LightPortal\Args\{ObjectArgs, OptionsTypeArgs, ParamsArgs};
 use Bugo\LightPortal\Enums\{EntryType, PortalHook, Status, Tab};
 use Bugo\LightPortal\EventManager;
 use Bugo\LightPortal\Models\PageModel;
@@ -30,7 +29,6 @@ use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Utils\{CacheTrait, Content, DateTime, EntityDataTrait};
 use Bugo\LightPortal\Utils\{Icon, ItemList, Language, RequestTrait, Setting, Str};
-use IntlException;
 
 use function array_column;
 use function array_diff;
@@ -438,9 +436,6 @@ final class PageArea
 		Utils::$context['sub_template'] = 'page_post';
 	}
 
-	/**
-	 * @throws IntlException
-	 */
 	public function edit(): void
 	{
 		$item = (int) ($this->request('page_id') ?: $this->request('id'));
@@ -717,7 +712,10 @@ final class PageArea
 
 		$params = [];
 
-		EventManager::getInstance()->dispatch(PortalHook::preparePageParams, new Event(new ParamsArgs($params)));
+		EventManager::getInstance()->dispatch(
+			PortalHook::preparePageParams,
+			new Event(new ParamsArgs($params, Utils::$context['lp_current_page']['type']))
+		);
 
 		return array_merge($baseParams, $params);
 	}
@@ -749,11 +747,13 @@ final class PageArea
 			if (isset($parameters[$option]) && isset($postData) && ! isset($postData[$option])) {
 				$postData[$option] = 0;
 
-				if ($parameters[$option] === FILTER_DEFAULT)
+				if ($parameters[$option] === FILTER_DEFAULT) {
 					$postData[$option] = '';
+				}
 
-				if (is_array($parameters[$option]) && $parameters[$option]['flags'] === FILTER_REQUIRE_ARRAY)
+				if (is_array($parameters[$option]) && $parameters[$option]['flags'] === FILTER_REQUIRE_ARRAY) {
 					$postData[$option] = [];
+				}
 			}
 
 			$page->options[$option] = $postData[$option] ?? $pageOptions[$option] ?? $value;
@@ -868,7 +868,10 @@ final class PageArea
 				->setValue(Utils::$context['lp_page']['options']['allow_comments']);
 		}
 
-		EventManager::getInstance()->dispatch(PortalHook::preparePageFields);
+		EventManager::getInstance()->dispatch(
+			PortalHook::preparePageFields,
+			new Event(new OptionsTypeArgs(Utils::$context['lp_page']['options'], Utils::$context['lp_page']['type']))
+		);
 
 		$this->preparePostFields();
 	}
@@ -938,6 +941,8 @@ final class PageArea
 
 	private function getPageIcon(string $type): string
 	{
-		return $this->getDefaultTypes()[$type]['icon'] ?? Utils::$context['lp_loaded_addons'][$type]['icon'] ?? 'fas fa-question';
+		return $this->getDefaultTypes()[$type]['icon']
+			?? Utils::$context['lp_loaded_addons'][$type]['icon']
+			?? 'fas fa-question';
 	}
 }

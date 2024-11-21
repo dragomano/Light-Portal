@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 /**
  * @package Light Portal
@@ -34,17 +32,14 @@ use function array_keys;
 use function array_map;
 use function array_search;
 use function array_unique;
-use function dirname;
 use function explode;
 use function implode;
 use function in_array;
-use function is_file;
 use function json_encode;
 use function ksort;
 use function ltrim;
 use function sort;
 use function sprintf;
-use function touch;
 
 use const LP_NAME;
 
@@ -185,24 +180,24 @@ final class PluginArea
 	private function prepareAddonList(array $configVars): void
 	{
 		Utils::$context['all_lp_plugins'] = array_map(function ($item) use ($configVars) {
-			$composer = false;
-
 			$snakeName = Str::getSnakeName($item);
 
 			try {
 				$className = '\Bugo\LightPortal\Plugins\\' . $item . '\\' . $item;
 				$addonClass = new ReflectionClass($className);
 
-				if ($addonClass->hasProperty('author'))
+				if ($addonClass->hasProperty('author')) {
 					$author = $addonClass->getProperty('author')->getValue(new $className);
+				}
 
-				if ($addonClass->hasProperty('link'))
+				if ($addonClass->hasProperty('link')) {
 					$link = $addonClass->getProperty('link')->getValue(new $className);
+				}
 
-				if ($addonClass->hasProperty('saveable'))
+				if ($addonClass->hasProperty('saveable')) {
 					$saveable = $addonClass->getProperty('saveable')->getValue(new $className);
+				}
 
-				$composer = is_file(dirname($addonClass->getFileName()) . DIRECTORY_SEPARATOR . 'composer.json');
 			} catch (ReflectionException) {
 				if (isset(Utils::$context['lp_can_donate'][$item])) {
 					Utils::$context['lp_loaded_addons'][$snakeName]['type'] = Utils::$context['lp_can_donate'][$item]['type'] ?? 'other';
@@ -225,7 +220,6 @@ final class PluginArea
 				'types'      => $this->getTypes($snakeName),
 				'special'    => $special ?? '',
 				'settings'   => $configVars[$snakeName] ?? [],
-				'composer'   => $composer,
 				'saveable'   => $saveable ?? true,
 			];
 		}, Utils::$context['lp_plugins']);
@@ -327,11 +321,13 @@ final class PluginArea
 		$allPlugins = array_keys(Utils::$context['lp_loaded_addons'] ?? []);
 
 		foreach ($allPlugins as $plugin) {
-			if (isset(Lang::$txt['lp_' . $plugin]))
+			if (isset(Lang::$txt['lp_' . $plugin])) {
 				$txtData['lp_' . $plugin] = Lang::$txt['lp_' . $plugin];
+			}
 
-			if (! empty(Utils::$context['lp_' . $plugin . '_plugin']))
+			if (! empty(Utils::$context['lp_' . $plugin . '_plugin'])) {
 				$contextData['lp_' . $plugin] = Utils::$context['lp_' . $plugin . '_plugin'];
+			}
 		}
 
 		Utils::$context['lp_json'] = json_encode([

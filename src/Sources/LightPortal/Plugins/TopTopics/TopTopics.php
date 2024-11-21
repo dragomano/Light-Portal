@@ -8,14 +8,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\TopTopics;
 
-use Bugo\Compat\{Lang, User, Utils};
+use Bugo\Compat\{Lang, User};
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, NumberField, RadioField};
 use Bugo\LightPortal\Plugins\{Block, Event};
+use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -28,9 +29,6 @@ class TopTopics extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'top_topics')
-			return;
-
 		$e->args->params = [
 			'popularity_type'   => 'replies',
 			'num_topics'        => 10,
@@ -40,9 +38,6 @@ class TopTopics extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'top_topics')
-			return;
-
 		$e->args->params = [
 			'popularity_type'   => FILTER_DEFAULT,
 			'numе_topics'       => FILTER_VALIDATE_INT,
@@ -50,34 +45,29 @@ class TopTopics extends Block
 		];
 	}
 
-	public function prepareBlockFields(): void
+	public function prepareBlockFields(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'top_topics')
-			return;
+		$options = $e->args->options;
 
-		RadioField::make('popularity_type', Lang::$txt['lp_top_topics']['type'])
-			->setOptions(array_combine(['replies', 'views'], Lang::$txt['lp_top_topics']['type_set']))
-			->setValue(Utils::$context['lp_block']['options']['popularity_type']);
+		RadioField::make('popularity_type', $this->txt['type'])
+			->setOptions(array_combine(['replies', 'views'], $this->txt['type_set']))
+			->setValue($options['popularity_type']);
 
-		NumberField::make('num_topics', Lang::$txt['lp_top_topics']['num_topics'])
+		NumberField::make('num_topics', $this->txt['num_topics'])
 			->setAttribute('min', 1)
-			->setValue(Utils::$context['lp_block']['options']['num_topics']);
+			->setValue($options['num_topics']);
 
-		CheckboxField::make('show_numbers_only', Lang::$txt['lp_top_topics']['show_numbers_only'])
-			->setValue(Utils::$context['lp_block']['options']['show_numbers_only']);
+		CheckboxField::make('show_numbers_only', $this->txt['show_numbers_only'])
+			->setValue($options['show_numbers_only']);
 	}
 
 	public function prepareContent(Event $e): void
 	{
-		[$data, $parameters] = [$e->args->data, $e->args->parameters];
-
-		if ($data->type !== 'top_topics')
-			return;
-
+		$parameters = $e->args->parameters;
 		$parameters['show_numbers_only'] ??= false;
 
-		$topTopics = $this->cache('top_topics_addon_b' . $data->id . '_u' . User::$info['id'])
-			->setLifeTime($data->cacheTime)
+		$topTopics = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
+			->setLifeTime($e->args->cacheTime)
 			->setFallback(
 				self::class,
 				'getFromSsi',
@@ -90,8 +80,7 @@ class TopTopics extends Block
 		if (empty($topTopics))
 			return;
 
-		echo '
-		<dl class="stats">';
+		$dl = Str::html('dl', ['class' => 'stats']);
 
 		$max = $topTopics[0]['num_' . $parameters['popularity_type']];
 
@@ -101,15 +90,25 @@ class TopTopics extends Block
 
 			$width = $topic['num_' . $parameters['popularity_type']] * 100 / $max;
 
-			echo '
-			<dt>', $topic['link'], '</dt>
-			<dd class="statsbar generic_bar righttext">
-				<div class="bar', (empty($topic['num_' . $parameters['popularity_type']]) ? ' empty"' : '" style="width: ' . $width . '%"'), '></div>
-				<span>', ($parameters['show_numbers_only'] ? $topic['num_' . $parameters['popularity_type']] : Lang::getTxt('lp_' . $parameters['popularity_type'] . '_set', [$parameters['popularity_type'] => $topic['num_' . $parameters['popularity_type']]])), '</span>
-			</dd>';
+			$dt = Str::html('dt')->addHtml($topic['link']);
+
+			$dd = Str::html('dd', ['class' => 'statsbar generic_bar righttext']);
+			$barClass = empty($topic['num_' . $parameters['popularity_type']]) ? 'bar empty' : 'bar';
+			$barStyle = empty($topic['num_' . $parameters['popularity_type']]) ? null : 'width: ' . $width . '%';
+
+			$bar = Str::html('div', ['class' => $barClass, 'style' => $barStyle]);
+			$dd->addHtml($bar);
+
+			$countText = $parameters['show_numbers_only']
+				? $topic['num_' . $parameters['popularity_type']]
+				: Lang::getTxt('lp_' . $parameters['popularity_type'] . '_set', [$parameters['popularity_type'] => $topic['num_' . $parameters['popularity_type']]]);
+
+			$dd->addHtml(Str::html('span', $countText));
+
+			$dl->addHtml($dt);
+			$dl->addHtml($dd);
 		}
 
-		echo '
-		</dl>';
+		echo $dl;
 	}
 }

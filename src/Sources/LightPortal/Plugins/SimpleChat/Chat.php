@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 17.09.24
+ * @version 13.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleChat;
@@ -30,13 +30,13 @@ class Chat
 	use CacheTrait;
 	use RequestTrait;
 
+	public function __construct(private readonly string $name) {}
+
 	public function prepareTable(): void
 	{
 		$tables = [];
 
-		Db::extend('packages');
-
-		if (! empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'lp_simple_chat_messages')))
+		if (! empty(Db::$db->list_tables(false, Config::$db_prefix . 'lp_simple_chat_messages')))
 			return;
 
 		$tables[] = [
@@ -84,13 +84,13 @@ class Chat
 		];
 
 		foreach ($tables as $table) {
-			Utils::$smcFunc['db_create_table']('{db_prefix}' . $table['name'], $table['columns'], $table['indexes']);
+			Db::$db->create_table('{db_prefix}' . $table['name'], $table['columns'], $table['indexes']);
 		}
 	}
 
 	public function getMessages(int $block_id = 0): array
 	{
-		$result = Utils::$smcFunc['db_query']('', /** @lang text */ '
+		$result = Db::$db->query('', /** @lang text */ '
 			SELECT chat.id, chat.block_id, chat.user_id, chat.message, chat.created_at,
 				mem.real_name
 			FROM {db_prefix}lp_simple_chat_messages AS chat
@@ -103,7 +103,7 @@ class Chat
 		);
 
 		$messages = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			$messages[$row['block_id']][] = [
 				'id'         => $row['id'],
 				'block_id'   => $row['block_id'],
@@ -116,7 +116,7 @@ class Chat
 			];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 
 		return $messages[$block_id] ?? [];
 	}
@@ -128,7 +128,7 @@ class Chat
 		if (empty($data['message']))
 			return;
 
-		$id = Utils::$smcFunc['db_insert']('',
+		$id = Db::$db->insert('',
 			'{db_prefix}lp_simple_chat_messages',
 			[
 				'block_id'   => 'int',
@@ -146,7 +146,7 @@ class Chat
 			1
 		);
 
-		$this->cache()->forget('simple_chat_addon_b' . $data['block_id']);
+		$this->cache()->forget($this->name . '_addon_b' . $data['block_id']);
 
 		$result = [
 			'id'         => $id,
@@ -169,7 +169,7 @@ class Chat
 		if (empty($data['id']))
 			return;
 
-		Utils::$smcFunc['db_query']('', '
+		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_simple_chat_messages
 			WHERE id = {int:id}',
 			[
@@ -177,7 +177,7 @@ class Chat
 			]
 		);
 
-		$this->cache()->forget('simple_chat_addon_b' . $data['block_id']);
+		$this->cache()->forget($this->name . '_addon_b' . $data['block_id']);
 
 		exit;
 	}

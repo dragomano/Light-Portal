@@ -30,9 +30,10 @@ class Init
 		Utils::$context['lp_load_time'] ??= microtime(true);
 
 		define('LP_NAME', (new DateTime())->format('m-d') === '04-01' ? 'Lazy Panda' : 'Light Portal');
-		define('LP_VERSION', '2.8.0');
-		define('LP_PLUGIN_LIST', 'https://d8d75ea98b25aa12.mokky.dev/addons');
+		define('LP_VERSION', '2.8.1');
+		define('LP_PLUGIN_LIST', 'https://d8d75ea98b25aa12.mokky.dev/plugins');
 		define('LP_ADDON_DIR', dirname(__DIR__) . '/Plugins');
+		define('LP_ADDON_URL', Config::$boardurl . '/Sources/LightPortal/Plugins');
 		define('LP_CACHE_TIME', (int) (Config::$modSettings['lp_cache_interval'] ?? 72000));
 		define('LP_ACTION', Config::$modSettings['lp_portal_action'] ?? 'portal');
 		define('LP_PAGE_PARAM', Config::$modSettings['lp_page_param'] ?? 'page');

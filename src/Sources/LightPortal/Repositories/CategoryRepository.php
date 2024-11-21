@@ -74,7 +74,6 @@ final class CategoryRepository extends AbstractRepository
 		$result = Db::$db->query('', /** @lang text */ '
 			SELECT COUNT(category_id)
 			FROM {db_prefix}lp_categories',
-			[]
 		);
 
 		[$count] = Db::$db->fetch_row($result);
@@ -213,7 +212,6 @@ final class CategoryRepository extends AbstractRepository
 		$result = Db::$db->query('', /** @lang text */ '
 			SELECT MAX(priority) + 1
 			FROM {db_prefix}lp_categories',
-			[]
 		);
 
 		[$priority] = Db::$db->fetch_row($result);
@@ -252,7 +250,7 @@ final class CategoryRepository extends AbstractRepository
 
 		$this->saveTitles($item);
 
-		Db::$db->transaction('commit');
+		Db::$db->transaction();
 
 		return $item;
 	}
@@ -276,6 +274,6 @@ final class CategoryRepository extends AbstractRepository
 
 		$this->saveTitles($item, 'replace');
 
-		Db::$db->transaction('commit');
+		Db::$db->transaction();
 	}
 }

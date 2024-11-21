@@ -8,18 +8,18 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\BoardList;
 
-use Bugo\Compat\{Config, Lang, Utils};
+use Bugo\Compat\{Config, Utils};
 use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Areas\Partials\{ContentClassSelect, TitleClassSelect};
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Utils\{Icon, MessageIndex};
+use Bugo\LightPortal\Utils\{Icon, MessageIndex, Str};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -30,9 +30,6 @@ class BoardList extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'board_list')
-			return;
-
 		$e->args->params = [
 			'no_content_class' => true,
 			'category_class'   => 'title_bar',
@@ -42,33 +39,29 @@ class BoardList extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'board_list')
-			return;
-
 		$e->args->params = [
 			'category_class' => FILTER_DEFAULT,
 			'board_class'    => FILTER_DEFAULT,
 		];
 	}
 
-	public function prepareBlockFields(): void
+	public function prepareBlockFields(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'board_list')
-			return;
+		$options = $e->args->options;
 
-		CustomField::make('category_class', Lang::$txt['lp_board_list']['category_class'])
+		CustomField::make('category_class', $this->txt['category_class'])
 			->setTab(Tab::APPEARANCE)
 			->setValue(static fn() => new TitleClassSelect(), [
 				'id'    => 'category_class',
 				'data'  => $this->getCategoryClasses(),
-				'value' => Utils::$context['lp_block']['options']['category_class']
+				'value' => $options['category_class']
 			]);
 
-		CustomField::make('board_class', Lang::$txt['lp_board_list']['board_class'])
+		CustomField::make('board_class', $this->txt['board_class'])
 			->setTab(Tab::APPEARANCE)
 			->setValue(static fn() => new ContentClassSelect(), [
 				'id'    => 'board_class',
-				'value' => Utils::$context['lp_block']['options']['board_class'],
+				'value' => $options['board_class'],
 			]);
 	}
 
@@ -79,13 +72,10 @@ class BoardList extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+		$parameters = $e->args->parameters;
 
-		if ($data->type !== 'board_list')
-			return;
-
-		$boardList = $this->cache('board_list_addon_b' . $data->id . '_u' . Utils::$context['user']['id'])
-			->setLifeTime($data->cacheTime)
+		$boardList = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . Utils::$context['user']['id'])
+			->setLifeTime($e->args->cacheTime)
 			->setFallback(self::class, 'getData');
 
 		if (empty($boardList))
@@ -94,36 +84,38 @@ class BoardList extends Block
 		Utils::$context['current_board'] ??= 0;
 
 		foreach ($boardList as $category) {
-			if ($parameters['category_class'])
+			if ($parameters['category_class']) {
 				echo sprintf($this->getCategoryClasses()[$parameters['category_class']], $category['name']);
+			}
 
-			$content = '
-				<ul class="smalltext">';
+			$content = Str::html('ul')->class('smalltext');
 
 			foreach ($category['boards'] as $board) {
 				$board['selected'] = $board['id'] == Utils::$context['current_board'];
 
-				$content .= '
-						<li>';
+				$li = Str::html('li');
 
 				if ($board['child_level']) {
-					$content .= '
-							<ul>
-								<li style="margin-left: 1em">
-									' . Icon::get($board['selected'] ? 'circle_dot' : 'chevron_right') . ' <a href="' . Config::$scripturl . '?board=' . $board['id'] . '.0">' . $board['name'] . '</a>
-								</li>
-							</ul>';
+					$childUl = Str::html('ul');
+					$childLi = Str::html('li')->style('margin-left', '1em');
+
+					$childLi->setHtml(
+						Icon::get($board['selected'] ? 'circle_dot' : 'chevron_right') . ' ' .
+						Str::html('a', $board['name'])
+							->href(Config::$scripturl . '?board=' . $board['id'] . '.0')
+					);
+					$childUl->addHtml($childLi);
+					$li->addHtml($childUl);
 				} else {
-					$content .= '
-							' . Icon::get('circle' . ($board['selected'] ? '_dot' : '')) . ' <a href="' . Config::$scripturl . '?board=' . $board['id'] . '.0">' . $board['name'] . '</a>';
+					$li->setHtml(
+						Icon::get('circle' . ($board['selected'] ? '_dot' : '')) . ' ' .
+						Str::html('a', $board['name'])
+							->href(Config::$scripturl . '?board=' . $board['id'] . '.0')
+					);
 				}
 
-				$content .= '
-						</li>';
+				$content->addHtml($li);
 			}
-
-			$content .= '
-				</ul>';
 
 			echo sprintf(Utils::$context['lp_all_content_classes'][$parameters['board_class']], $content);
 		}
@@ -132,8 +124,12 @@ class BoardList extends Block
 	private function getCategoryClasses(): array
 	{
 		return [
-			'title_bar' => '<div class="title_bar"><h4 class="titlebg">%1$s</h4></div>',
-			'sub_bar'   => '<div class="sub_bar"><h4 class="subbg">%1$s</h4></div>',
+			'title_bar' => Str::html('div')->class('title_bar')
+				->addHtml(Str::html('h4', '%1$s')->class('titlebg'))
+				->toHtml(),
+			'sub_bar'   => Str::html('div')->class('sub_bar')
+				->addHtml(Str::html('h4', '%1$s')->class('subbg'))
+				->toHtml(),
 		];
 	}
 }

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\BoardNews;
@@ -18,7 +18,7 @@ use Bugo\LightPortal\Areas\Fields\{NumberField, RangeField};
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Utils\MessageIndex;
+use Bugo\LightPortal\Utils\{MessageIndex, Str};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -31,9 +31,6 @@ class BoardNews extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'board_news')
-			return;
-
 		$e->args->params = [
 			'board_id'      => 0,
 			'num_posts'     => 5,
@@ -43,9 +40,6 @@ class BoardNews extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'board_news')
-			return;
-
 		$e->args->params = [
 			'board_id'      => FILTER_VALIDATE_INT,
 			'num_posts'     => FILTER_VALIDATE_INT,
@@ -53,39 +47,35 @@ class BoardNews extends Block
 		];
 	}
 
-	public function prepareBlockFields(): void
+	public function prepareBlockFields(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'board_news')
-			return;
+		$options = $e->args->options;
 
-		CustomSelectField::make('board_id', Lang::$txt['lp_board_news']['board_id'])
+		CustomSelectField::make('board_id', $this->txt['board_id'])
 			->setTab(Tab::CONTENT)
 			->setOptions(MessageIndex::getBoardList([
 				'ignore_boards'  => false,
-				'selected_board' => Utils::$context['lp_block']['options']['board_id'] ?? false
+				'selected_board' => $options['board_id'] ?? false
 			]));
 
-		NumberField::make('num_posts', Lang::$txt['lp_board_news']['num_posts'])
+		NumberField::make('num_posts', $this->txt['num_posts'])
 			->setAttribute('min', 1)
-			->setValue(Utils::$context['lp_block']['options']['num_posts']);
+			->setValue($options['num_posts']);
 
-		RangeField::make('teaser_length', Lang::$txt['lp_board_news']['teaser_length'])
+		RangeField::make('teaser_length', $this->txt['teaser_length'])
 			->setAttribute('max', 1000)
 			->setAttribute('step', 5)
-			->setValue(Utils::$context['lp_block']['options']['teaser_length']);
+			->setValue($options['teaser_length']);
 	}
 
 	public function prepareContent(Event $e): void
 	{
-		[$data, $parameters] = [$e->args->data, $e->args->parameters];
-
-		if ($data->type !== 'board_news')
-			return;
+		$parameters = $e->args->parameters;
 
 		$teaserLength = empty($parameters['teaser_length']) ? null : $parameters['teaser_length'];
 
-		$boardNews = $this->cache('board_news_addon_b' . $data->id . '_u' . User::$info['id'])
-			->setLifeTime($data->cacheTime)
+		$boardNews = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
+			->setLifeTime($e->args->cacheTime)
 			->setFallback(
 				self::class,
 				'getFromSsi',
@@ -98,48 +88,62 @@ class BoardNews extends Block
 			);
 
 		if (empty($boardNews)) {
-			echo Lang::$txt['lp_board_news']['no_posts'];
+			echo $this->txt['no_posts'];
 			return;
 		}
 
 		Theme::loadJavaScriptFile('topic.js', ['defer' => false, 'minimize' => true], 'smf_topic');
 
 		foreach ($boardNews as $news) {
-			$news['link'] = '<a href="' . $news['href'] . '">
-				' . Lang::getTxt('lp_comments_set', ['comments' => $news['replies']]) . '
-			</a>';
+			$news['link'] = Str::html('a', Lang::getTxt('lp_comments_set', ['comments' => $news['replies']]))
+				->href($news['href']);
 
-			echo '
-			<div class="news_item">
-				<h3 class="news_header">
-					', $news['icon'], '
-					<a href="', $news['href'], '">', $news['subject'], '</a>
-				</h3>
-				<div class="news_timestamp">
-					', $news['time'], ' ', Lang::$txt['by'], ' ', $news['poster']['link'], '
-				</div>
-				<div class="news_body" style="padding: 2ex 0">', $news['body'], '</div>
-				', $news['link'], ($news['locked'] ? '' : ' | ' . $news['comment_link']), '';
+			$content = Str::html('div')->class('news_item');
+
+			$content->addHtml(
+				Str::html('h3')->class('news_header')
+					->addHtml($news['icon'] . ' ')
+					->addHtml(Str::html('a', $news['subject'])->href($news['href']))
+			);
+
+			$content->addHtml(
+				Str::html('div')->class('news_timestamp')
+					->setHtml($news['time'] . ' ' . Lang::$txt['by'] . ' ' . $news['poster']['link'])
+			);
+
+			$content->addHtml(
+				Str::html('div')->class('news_body')->style('padding: 2ex 0')->setHtml($news['body']) .
+				$news['link'] . ($news['locked'] ? '' : ' | ' . $news['comment_link'])
+			);
 
 			if (! empty($news['likes'])) {
-				echo '
-				<br class="clear">
-				<ul>';
+				$content->addHtml(Str::html('br')->class('clear'));
+				$likesList = Str::html('ul');
 
 				if ($news['likes']['can_like']) {
-					echo '
-					<li class="smflikebutton" id="msg_', $news['message_id'], '_likes">
-						<a href="', Config::$scripturl, '?action=likes;ltype=msg;sa=like;like=', $news['message_id'], ';', Utils::$context['session_var'], '=', Utils::$context['session_id'], '" class="msg_like">
-							<span class="', ($news['likes']['you'] ? 'unlike' : 'like'), '"></span>', ($news['likes']['you'] ? Lang::$txt['unlike'] : Lang::$txt['like']), '
-						</a>
-					</li>';
+					$likesList->addHtml(
+						Str::html('li')->class('smflikebutton')->id('msg_' . $news['message_id'] . '_likes')
+							->addHtml(
+								Str::html('a')->href(implode('', [
+										Config::$scripturl,
+										'?action=likes;ltype=msg;sa=like;like=',
+										$news['message_id'] . ';',
+										Utils::$context['session_var'] . '=',
+										Utils::$context['session_id']
+									]))
+									->class('msg_like')
+									->addHtml(
+										Str::html('span')->class($news['likes']['you'] ? 'unlike' : 'like') .
+										($news['likes']['you'] ? Lang::$txt['unlike'] : Lang::$txt['like'])
+									)
+							)
+					);
 				}
 
 				if ($news['likes']['count'] > 0) {
 					Utils::$context['some_likes'] = true;
 
 					$count = $news['likes']['count'];
-
 					$base = 'likes_';
 					if ($news['likes']['you']) {
 						$base = 'you_' . $base;
@@ -148,24 +152,31 @@ class BoardNews extends Block
 
 					$base .= (isset(Lang::$txt[$base . $count])) ? $count : 'n';
 
-					echo '
-					<li class="like_count smalltext">', sprintf(
-						Lang::$txt[$base],
-						Config::$scripturl . '?action=likes;sa=view;ltype=msg;like=' . $news['message_id'] . ';' . Utils::$context['session_var'] . '=' . Utils::$context['session_id'],
-						comma_format($count)
-					), '</li>';
+					$likesList->addHtml(
+						Str::html('li')->class('like_count smalltext')->setHtml(
+							sprintf(
+								Lang::$txt[$base],
+								implode('', [
+									Config::$scripturl,
+									'?action=likes;sa=view;ltype=msg;like=',
+									$news['message_id'] . ';',
+									Utils::$context['session_var'] . '=',
+									Utils::$context['session_id']
+								]),
+								comma_format($count)
+							)
+						)
+					);
 				}
 
-				echo '
-				</ul>';
+				$content->addHtml($likesList);
 			}
 
-			echo '
-			</div>';
+			echo $content;
 
-			if (! $news['is_last'])
-				echo '
-			<hr class="clear">';
+			if (! $news['is_last']) {
+				echo Str::html('br')->class('clear');
+			}
 		}
 	}
 }

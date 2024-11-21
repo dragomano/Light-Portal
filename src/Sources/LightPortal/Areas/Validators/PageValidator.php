@@ -68,7 +68,7 @@ class PageValidator extends AbstractValidator
 
 			EventManager::getInstance()->dispatch(
 				PortalHook::validatePageParams,
-				new Event(new ParamsArgs($params))
+				new Event(new ParamsArgs($params, Utils::$context['lp_current_page']['type']))
 			);
 
 			$params = array_merge($this->params, $params);

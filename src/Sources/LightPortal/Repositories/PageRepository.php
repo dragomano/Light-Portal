@@ -21,7 +21,6 @@ use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\{CacheTrait, Content, DateTime};
 use Bugo\LightPortal\Utils\{EntityDataTrait, Icon, Notify};
 use Bugo\LightPortal\Utils\{RequestTrait, Setting, Str};
-use IntlException;
 
 use function array_filter;
 use function array_merge;
@@ -59,9 +58,6 @@ final class PageRepository extends AbstractRepository
 		$this->commentRepository = new CommentRepository();
 	}
 
-	/**
-	 * @throws IntlException
-	 */
 	public function getAll(
 		int $start,
 		int $limit,
@@ -143,9 +139,6 @@ final class PageRepository extends AbstractRepository
 		return (int) $count;
 	}
 
-	/**
-	 * @throws IntlException
-	 */
 	public function getData(int|string $item): array
 	{
 		if ($item === 0 || $item === '')
@@ -536,9 +529,6 @@ final class PageRepository extends AbstractRepository
 		return $pages;
 	}
 
-	/**
-	 * @throws IntlException
-	 */
 	public function prepareData(?array &$data): void
 	{
 		if (empty($data))
@@ -554,7 +544,7 @@ final class PageRepository extends AbstractRepository
 			|| (Utils::$context['allow_light_portal_manage_pages_own'] && $isAuthor);
 
 		if ($data['type'] === 'bbc') {
-			$data['content'] = Msg::unPreparseCode($data['content']);
+			$data['content'] = Msg::un_preparsecode($data['content']);
 		}
 
 		if (! empty($data['category_id'])) {

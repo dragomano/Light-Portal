@@ -8,16 +8,17 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleMenu;
 
-use Bugo\Compat\{Config, Lang, Utils};
+use Bugo\Compat\{Config, Utils};
 use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -31,17 +32,11 @@ class SimpleMenu extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'simple_menu')
-			return;
-
 		$e->args->params['items'] = '';
 	}
 
 	public function validateBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'simple_menu')
-			return;
-
 		$data = $this->request()->only(['item_name', 'item_link']);
 
 		$items = [];
@@ -62,14 +57,11 @@ class SimpleMenu extends Block
 		$e->args->params['items'] = FILTER_DEFAULT;
 	}
 
-	public function prepareBlockFields(): void
+	public function prepareBlockFields(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'simple_menu')
-			return;
-
-		CustomField::make('items', Lang::$txt['lp_simple_menu']['items'])
+		CustomField::make('items', $this->txt['items'])
 			->setTab(Tab::CONTENT)
-			->setValue($this->getFromTemplate('simple_menu_items'));
+			->setValue($this->getFromTemplate('simple_menu_items', $e->args->options));
 	}
 
 	public function getData(string $items): array
@@ -77,8 +69,7 @@ class SimpleMenu extends Block
 		if (empty($items))
 			return [];
 
-		$html = '
-		<ul class="dropmenu">';
+		$ul = Str::html('ul', ['class' => 'dropmenu']);
 
 		$items = Utils::jsonDecode($items, true);
 
@@ -88,33 +79,34 @@ class SimpleMenu extends Block
 			$ext = true;
 			if (! str_starts_with((string) $link, 'http')) {
 				$active = $link == Utils::$context['current_action'];
-				$link   = Config::$scripturl . '?action=' . $link;
-				$ext    = false;
+				$link = Config::$scripturl . '?action=' . $link;
+				$ext = false;
 			}
 
-			$html .= '
-			<li style="width: 100%">
-				<a' . (empty($active) ? '' : ' class="active"') . ' href="' . $link . '"' . (empty($ext) ? '' : ' target="_blank" rel="noopener"') . '>
-					<span>' . $title . '</span>
-				</a>
-			</li>';
+			$li = Str::html('li', ['style' => 'width: 100%']);
+			$a = Str::html('a', [
+				'href' => $link,
+				'class' => empty($active) ? null : 'active',
+				'target' => empty($ext) ? null : '_blank',
+				'rel' => empty($ext) ? null : 'noopener',
+			])->setText($title);
+
+			$li->addHtml($a);
+			$ul->addHtml($li);
 		}
 
-		$html .= '
-		</ul>';
-
-		return ['content' => $html];
+		return ['content' => $ul->toHtml()];
 	}
 
 	public function prepareContent(Event $e): void
 	{
-		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+		$parameters = $e->args->parameters;
 
-		if ($data->type !== 'simple_menu' || empty($parameters['items']))
+		if (empty($parameters['items']))
 			return;
 
-		$html = $this->cache('simple_menu_addon_b' . $data->id)
-			->setLifeTime($data->cacheTime)
+		$html = $this->cache($this->name . '_addon_b' . $e->args->id)
+			->setLifeTime($e->args->cacheTime)
 			->setFallback(self::class, 'getData', $parameters['items']);
 
 		if (empty($html))

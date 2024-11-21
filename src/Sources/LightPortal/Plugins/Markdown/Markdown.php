@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  *
  * @category plugin
- * @version 05.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Markdown;
@@ -40,7 +40,7 @@ class Markdown extends Plugin
 
 	public function init(): void
 	{
-		Utils::$context['lp_content_types']['markdown'] = 'Markdown';
+		Utils::$context['lp_content_types'][$this->name] = 'Markdown';
 	}
 
 	/**
@@ -48,9 +48,7 @@ class Markdown extends Plugin
 	 */
 	public function parseContent(Event $e): void
 	{
-		if ($e->args->type === 'markdown') {
-			$e->args->content = $this->getParsedContent($e->args->content);
-		}
+		$e->args->content = $this->getParsedContent($e->args->content);
 	}
 
 	public function credits(Event $e): void

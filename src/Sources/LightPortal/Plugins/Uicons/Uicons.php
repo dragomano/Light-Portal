@@ -8,12 +8,11 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 12.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Uicons;
 
-use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 
@@ -41,19 +40,19 @@ class Uicons extends Plugin
 			'corner' => 'r',
 		]);
 
-		$e->args->settings['uicons'][] = [
-			'select', 'weight', array_combine(['r', 'b', 's'], Lang::$txt['lp_uicons']['weight_set'])
+		$e->args->settings[$this->name][] = [
+			'select', 'weight', array_combine(['r', 'b', 's'], $this->txt['weight_set'])
 		];
-		$e->args->settings['uicons'][] = [
-			'select', 'corner', array_combine(['r', 's'], Lang::$txt['lp_uicons']['corner_set'])
+		$e->args->settings[$this->name][] = [
+			'select', 'corner', array_combine(['r', 's'], $this->txt['corner_set'])
 		];
 	}
 
 	public function prepareIconList(Event $e): void
 	{
 		if (($uIcons = $this->cache()->get('all_uicons', 30 * 24 * 60 * 60)) === null) {
-			$weight = empty(Utils::$context['lp_uicons_plugin']['weight']) ? 'r' : Utils::$context['lp_uicons_plugin']['weight'];
-			$corner = empty(Utils::$context['lp_uicons_plugin']['corner']) ? 'r' : Utils::$context['lp_uicons_plugin']['corner'];
+			$weight = empty($this->context['weight']) ? 'r' : $this->context['weight'];
+			$corner = empty($this->context['corner']) ? 'r' : $this->context['corner'];
 
 			$list = $this->getIconList();
 

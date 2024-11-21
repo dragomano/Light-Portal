@@ -30,8 +30,9 @@ class Avatar
 		if ($userId === 0)
 			return '';
 
-		if ($userData === [])
+		if ($userData === []) {
 			$userData = User::loadMemberData([$userId]);
+		}
 
 		if (! isset(User::$memberContext[$userId]) && in_array($userId, $userData)) {
 			try {

@@ -8,12 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 13.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
 
-use Bugo\Compat\{Lang, Utils};
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Utils\Icon;
@@ -35,7 +35,7 @@ class PluginMaker extends Plugin
 				'text', 'url', 'color', 'int', 'float', 'check',
 				'multiselect', 'select', 'range', 'title', 'desc', 'callback'
 			],
-			Lang::$txt['lp_plugin_maker']['option_type_set']
+			$this->txt['option_type_set']
 		);
 	}
 
@@ -45,7 +45,7 @@ class PluginMaker extends Plugin
 
 		$areas['lp_plugins']['subsections'] = array_merge(
 			['main' => $areas['lp_plugins']['subsections']['main']],
-			['add'  => [Icon::get('plus') . Lang::$txt['lp_plugin_maker']['add']]],
+			['add'  => [Icon::get('plus') . $this->txt['add']]],
 			$areas['lp_plugins']['subsections']
 		);
 	}

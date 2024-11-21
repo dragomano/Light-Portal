@@ -8,12 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\ArticleList;
 
-use Bugo\Compat\{BBCodeParser, Config, Lang, User, Utils};
+use Bugo\Compat\{BBCodeParser, Config, Db, Lang, User, Utils};
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, RadioField};
 use Bugo\LightPortal\Areas\Partials\{ContentClassSelect, PageSelect, TopicSelect};
 use Bugo\LightPortal\Enums\{EntryType, Permission, Status, Tab};
@@ -30,9 +30,6 @@ class ArticleList extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'article_list')
-			return;
-
 		$e->args->params = [
 			'no_content_class' => true,
 			'body_class'       => 'descbox',
@@ -45,9 +42,6 @@ class ArticleList extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'article_list')
-			return;
-
 		$e->args->params = [
 			'body_class'     => FILTER_DEFAULT,
 			'display_type'   => FILTER_VALIDATE_INT,
@@ -57,41 +51,40 @@ class ArticleList extends Block
 		];
 	}
 
-	public function prepareBlockFields(): void
+	public function prepareBlockFields(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'article_list')
-			return;
+		$options = $e->args->options;
 
-		CustomField::make('body_class', Lang::$txt['lp_article_list']['body_class'])
+		CustomField::make('body_class', $this->txt['body_class'])
 			->setTab(Tab::APPEARANCE)
 			->setValue(static fn() => new ContentClassSelect(), [
 				'id'    => 'body_class',
-				'value' => Utils::$context['lp_block']['options']['body_class'],
+				'value' => $options['body_class'],
 			]);
 
-		RadioField::make('display_type', Lang::$txt['lp_article_list']['display_type'])
+		RadioField::make('display_type', $this->txt['display_type'])
 			->setTab(Tab::CONTENT)
-			->setOptions(Lang::$txt['lp_article_list']['display_type_set'])
-			->setValue(Utils::$context['lp_block']['options']['display_type']);
+			->setOptions($this->txt['display_type_set'])
+			->setValue($options['display_type']);
 
-		CustomField::make('include_topics', Lang::$txt['lp_article_list']['include_topics'])
+		CustomField::make('include_topics', $this->txt['include_topics'])
 			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new TopicSelect(), [
 				'id'    => 'include_topics',
-				'hint'  => Lang::$txt['lp_article_list']['include_topics_select'],
-				'value' => Utils::$context['lp_block']['options']['include_topics'] ?? '',
+				'hint'  => $this->txt['include_topics_select'],
+				'value' => $options['include_topics'] ?? '',
 			]);
 
-		CustomField::make('include_pages', Lang::$txt['lp_article_list']['include_pages'])
+		CustomField::make('include_pages', $this->txt['include_pages'])
 			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new PageSelect(), [
 				'id'    => 'include_pages',
-				'hint'  => Lang::$txt['lp_article_list']['include_pages_select'],
-				'value' => Utils::$context['lp_block']['options']['include_pages'] ?? '',
+				'hint'  => $this->txt['include_pages_select'],
+				'value' => $options['include_pages'] ?? '',
 			]);
 
-		CheckboxField::make('seek_images', Lang::$txt['lp_article_list']['seek_images'])
-			->setValue(Utils::$context['lp_block']['options']['seek_images']);
+		CheckboxField::make('seek_images', $this->txt['seek_images'])
+			->setValue($options['seek_images']);
 	}
 
 	public function getTopics(array $parameters): array
@@ -99,7 +92,7 @@ class ArticleList extends Block
 		if (empty($parameters['include_topics']))
 			return [];
 
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT m.id_topic, m.id_msg, m.subject, m.body, m.smileys_enabled
 			FROM {db_prefix}topics AS t
 				INNER JOIN {db_prefix}messages AS m ON (t.id_first_msg = m.id_msg)
@@ -116,7 +109,7 @@ class ArticleList extends Block
 		);
 
 		$topics = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			Lang::censorText($row['subject']);
 			Lang::censorText($row['body']);
 
@@ -136,7 +129,7 @@ class ArticleList extends Block
 			];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 
 		return $topics;
 	}
@@ -148,7 +141,7 @@ class ArticleList extends Block
 
 		$titles = $this->getEntityData('title');
 
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT page_id, slug, content, description, type
 			FROM {db_prefix}lp_pages
 			WHERE status = {int:status}
@@ -168,7 +161,7 @@ class ArticleList extends Block
 		);
 
 		$pages = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			if (Setting::isFrontpage($row['slug']))
 				continue;
 
@@ -185,20 +178,17 @@ class ArticleList extends Block
 			];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 
 		return $pages;
 	}
 
 	public function prepareContent(Event $e): void
 	{
-		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+		$parameters = $e->args->parameters;
 
-		if ($data->type !== 'article_list')
-			return;
-
-		$articles = $this->cache('article_list_addon_b' . $data->id . '_u' . User::$info['id'])
-			->setLifeTime($data->cacheTime)
+		$articles = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
+			->setLifeTime($e->args->cacheTime)
 			->setFallback(
 				self::class,
 				empty($parameters['display_type']) ? 'getTopics' : 'getPages',
@@ -206,46 +196,67 @@ class ArticleList extends Block
 			);
 
 		if ($articles) {
-			echo '
-		<div class="article_list">';
+			$articleList = Str::html('div')->class($this->name);
 
 			if (empty($parameters['display_type'])) {
 				foreach ($articles as $topic) {
-					$content = '';
+					$content = Str::html();
+
 					if ($topic['image']) {
-						$content .= '
-				<div class="article_image">
-					<img src="' . $topic['image'] . '" loading="lazy" alt="' . $topic['title'] . '">
-				</div>';
+						$content->addHtml(
+							Str::html('div')
+								->class('article_image')
+								->addHtml(
+									Str::html('img')
+										->src($topic['image'])
+										->addAttributes(['loading' => 'lazy', 'alt' => $topic['title']])
+								)
+						);
 					}
 
-					$content .= '<a href="' . Config::$scripturl . '?topic=' . $topic['id'] . '.0">' . $topic['title'] . '</a>';
+					$content->addHtml(
+						Str::html('a')
+							->href(Config::$scripturl . '?topic=' . $topic['id'] . '.0')
+							->setText($topic['title'])
+					);
 
-					echo sprintf(Utils::$context['lp_all_content_classes'][$parameters['body_class']], $content);
+					$articleList->addHtml(sprintf(Utils::$context['lp_all_content_classes'][$parameters['body_class']], $content));
 				}
 			} else {
 				foreach ($articles as $page) {
-					if (empty($title = Str::getTranslatedTitle($page['title'])))
+					if (empty($title = Str::getTranslatedTitle($page['title']))) {
 						continue;
-
-					$content = '';
-					if ($page['image']) {
-						$content .= '
-				<div class="article_image">
-					<img src="' . $page['image'] . '" loading="lazy" alt="'. $title . '">
-				</div>';
 					}
 
-					$content .= '<a href="' . LP_PAGE_URL . $page['slug'] . '">' . $title . '</a>';
+					$content = Str::html();
 
-					echo sprintf(Utils::$context['lp_all_content_classes'][$parameters['body_class']], $content);
+					if ($page['image']) {
+						$content->addHtml(
+							Str::html('div')
+								->class('article_image')
+								->addHtml(
+									Str::html('img')
+										->src($page['image'])
+										->addAttributes(['loading' => 'lazy', 'alt' => $title])
+								)
+						);
+					}
+
+					$content->addHtml(
+						Str::html('a', $title)
+							->href(LP_PAGE_URL . $page['slug'])
+					);
+
+					$articleList->addHtml(
+						sprintf(Utils::$context['lp_all_content_classes'][$parameters['body_class']], $content)
+					);
 				}
 			}
 
-			echo '
-		</div>';
+			echo $articleList;
 		} else {
-			echo '<div class="errorbox">', Lang::$txt['lp_article_list']['no_items'], '</div>';
+			echo Str::html('div', $this->txt['no_items'])
+				->class('errorbox');
 		}
 	}
 }

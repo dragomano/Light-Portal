@@ -8,16 +8,17 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Polls;
 
-use Bugo\Compat\{Config, Lang, Utils};
+use Bugo\Compat\{Config, Db, Lang, Utils};
 use Bugo\LightPortal\Areas\Fields\{InputField, SelectField};
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -30,103 +31,114 @@ class Polls extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'polls')
-			return;
-
 		$e->args->params['selected_item'] = 0;
 	}
 
 	public function validateBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'polls')
-			return;
-
 		$e->args->params['selected_item'] = FILTER_VALIDATE_INT;
 	}
 
-	public function prepareBlockFields(): void
+	public function prepareBlockFields(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'polls')
-			return;
-
 		$polls = $this->getAll();
 
 		if (empty($polls)) {
-			InputField::make('selected_item', Lang::$txt['lp_polls']['selected_item'])
+			InputField::make('selected_item', $this->txt['selected_item'])
 				->setType('input')
 				->setTab(Tab::CONTENT)
-				->setDescription(Lang::$txt['lp_polls']['no_items'])
+				->setDescription($this->txt['no_items'])
 				->setAttribute('disabled', true);
 		} else {
-			SelectField::make('selected_item', Lang::$txt['lp_polls']['selected_item'])
+			SelectField::make('selected_item', $this->txt['selected_item'])
 				->setTab(Tab::CONTENT)
 				->setOptions($polls)
-				->setValue(Utils::$context['lp_block']['options']['selected_item']);
+				->setValue($e->args->options['selected_item']);
 		}
 	}
 
 	public function prepareContent(Event $e): void
 	{
-		[$data, $parameters] = [$e->args->data, $e->args->parameters];
-
-		if ($data->type !== 'polls')
-			return;
+		$parameters = $e->args->parameters;
 
 		$poll = $this->getFromSsi('showPoll', $parameters['selected_item'], 'array');
 
 		if ($poll) {
 			if ($poll['allow_vote']) {
-				echo '
-		<form action="', Config::$boardurl, '/SSI.php?ssi_function=pollVote" method="post" accept-charset="', Utils::$context['character_set'], '">
-			<strong>', $poll['question'], '</strong><br>
-			', empty($poll['allowed_warning']) ? '' : ($poll['allowed_warning'] . '<br>');
+				$form = Str::html('form', [
+					'action' => Config::$boardurl . '/SSI.php?ssi_function=pollVote',
+					'method' => 'post',
+					'accept-charset' => Utils::$context['character_set'],
+				]);
 
-				foreach ($poll['options'] as $option) {
-					echo '
-			<label for="', $option['id'], '">', $option['vote_button'], ' ', $option['option'], '</label><br>';
+				$form->addHtml(Str::html('strong')->setText($poll['question']))->addHtml('<br>');
+
+				if (! empty($poll['allowed_warning'])) {
+					$form->addHtml($poll['allowed_warning'] . '<br>');
 				}
 
-				echo '
-			<input type="submit" value="', Lang::$txt['poll_vote'], '" class="button">
-			<input type="hidden" name="poll" value="', $poll['id'], '">
-			<input type="hidden" name="', Utils::$context['session_var'], '" value="', Utils::$context['session_id'], '">
-		</form>';
-			} else {
-				echo '
-		<div>
-			<strong>
-				<a class="bbc_link" href="', Config::$scripturl, '?topic=', $poll['topic'], '.0">', $poll['question'], '</a>
-			</strong>
-			<dl class="stats">';
-
 				foreach ($poll['options'] as $option) {
-					echo '
-				<dt>', $option['option'], '</dt>
-				<dd class="statsbar generic_bar righttext">';
+					$label = Str::html('label', ['for' => $option['id']])
+						->setText($option['vote_button'] . ' ' . $option['option']);
+					$form->addHtml($label)->addHtml('<br>');
+				}
+
+				$form->addHtml(Str::html('input', [
+					'type' => 'submit',
+					'value' => Lang::$txt['poll_vote'],
+					'class' => 'button',
+				]));
+				$form->addHtml(Str::html('input', [
+					'type' => 'hidden',
+					'name' => 'poll',
+					'value' => $poll['id'],
+				]));
+				$form->addHtml(Str::html('input', [
+					'type' => 'hidden',
+					'name' => Utils::$context['session_var'],
+					'value' => Utils::$context['session_id'],
+				]));
+
+				echo $form;
+			} else {
+				$div = Str::html('div');
+				$div->addHtml(Str::html('strong')->addHtml(Str::html('a', [
+					'class' => 'bbc_link',
+					'href' => Config::$scripturl . '?topic=' . $poll['topic'] . '.0',
+				])->setText($poll['question'])));
+
+				$dl = Str::html('dl', ['class' => 'stats']);
+				foreach ($poll['options'] as $option) {
+					$dt = Str::html('dt')->setText($option['option']);
+					$dd = Str::html('dd', ['class' => 'statsbar generic_bar righttext']);
 
 					if ($poll['allow_view_results']) {
-						echo '
-					<div class="bar', (empty($option['percent']) ? ' empty"' : '" style="width: ' . $option['percent'] . '%"'), '></div>
-					<span>', $option['votes'], ' (', $option['percent'], '%)</span>';
+						$bar = Str::html('div', [
+							'class' => 'bar' . (empty($option['percent']) ? ' empty' : ''),
+							'style' => empty($option['percent']) ? '' : 'width: ' . $option['percent'] . '%',
+						]);
+						$dd->addHtml($bar);
+						$dd->addHtml(Str::html('span')->setText($option['votes'] . ' (' . $option['percent'] . '%)'));
 					}
 
-					echo '
-				</dd>';
+					$dl->addHtml($dt)->addHtml($dd);
 				}
 
-				echo '
-			</dl>', ($poll['allow_view_results'] ? '
-			<strong>' . Lang::$txt['poll_total_voters'] . ': ' . $poll['total_votes'] . '</strong>' : ''), '
-		</div>';
+				$div->addHtml($dl);
+				if ($poll['allow_view_results']) {
+					$div->addHtml(Str::html('strong')->setText(Lang::$txt['poll_total_voters'] . ': ' . $poll['total_votes']));
+				}
+
+				echo $div;
 			}
 		} else {
-			echo Lang::$txt['lp_polls']['no_items'];
+			echo $this->txt['no_items'];
 		}
 	}
 
 	private function getAll(): array
 	{
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT t.id_topic, p.question
 			FROM {db_prefix}topics AS t
 				INNER JOIN {db_prefix}polls AS p ON (p.id_poll = t.id_poll)
@@ -139,10 +151,10 @@ class Polls extends Block
 		);
 
 		$polls = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result))
+		while ($row = Db::$db->fetch_assoc($result))
 			$polls[$row['id_topic']] = $row['question'];
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 
 		return $polls;
 	}

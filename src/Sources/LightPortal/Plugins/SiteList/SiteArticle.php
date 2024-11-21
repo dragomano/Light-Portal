@@ -8,7 +8,7 @@
  * @license Individual (for sponsors)
  *
  * @category plugin
- * @version 10.02.24
+ * @version 13.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\SiteList;
@@ -16,7 +16,7 @@ namespace Bugo\LightPortal\Plugins\SiteList;
 use Bugo\Compat\{Config, User, Utils};
 use Bugo\LightPortal\Articles\AbstractArticle;
 
-if (! defined('SMF'))
+if (! defined('LP_NAME'))
 	die('No direct access...');
 
 class SiteArticle extends AbstractArticle

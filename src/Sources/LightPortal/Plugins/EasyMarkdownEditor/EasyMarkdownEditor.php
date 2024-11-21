@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 12.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\EasyMarkdownEditor;
@@ -38,10 +38,10 @@ class EasyMarkdownEditor extends Plugin
 			box-shadow: none;
 		}
 		.editor-statusbar .lines:before {
-			content: "' . Lang::$txt['lp_easy_markdown_editor']['lines'] . '"
+			content: "' . $this->txt['lines'] . '"
 		}
 		.editor-statusbar .words:before {
-			content: "' . Lang::$txt['lp_easy_markdown_editor']['words'] . '"
+			content: "' . $this->txt['words'] . '"
 		}
 		.CodeMirror pre {
 			max-height: none;
@@ -139,7 +139,7 @@ class EasyMarkdownEditor extends Plugin
 						editor.codemirror.focus();
 					},
 					className: "fas fa-tasks",
-					title: "' . Lang::$txt['lp_easy_markdown_editor']['tasks'] . '"
+					title: "' . $this->txt['tasks'] . '"
 				},
 				{
 					name: "horizontal-rule",
@@ -152,7 +152,7 @@ class EasyMarkdownEditor extends Plugin
 					name: "guide",
 					action: "https://github.com/dragomano/Light-Portal/wiki/Markdown-addon",
 					className: "fas fa-question-circle",
-					title: "' . Lang::$txt['lp_easy_markdown_editor']['guide'] . '"
+					title: "' . $this->txt['guide'] . '"
 				}
 			]
 		});', true);

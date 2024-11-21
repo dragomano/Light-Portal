@@ -15,7 +15,6 @@ namespace Bugo\LightPortal\Actions;
 use Bugo\Compat\{Config, Lang, User, Utils};
 use Bugo\LightPortal\Utils\{Avatar, Content, DateTime};
 use Bugo\LightPortal\Utils\{EntityDataTrait, Setting, Str};
-use IntlException;
 
 use function array_pop;
 use function date;
@@ -37,9 +36,6 @@ abstract class AbstractPageList implements PageListInterface
 
 	abstract public function getAll(int $start, int $limit, string $sort): array;
 
-	/**
-	 * @throws IntlException
-	 */
 	protected function getPreparedResults(array $rows = []): array
 	{
 		if ($rows === [])

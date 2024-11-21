@@ -8,12 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 08.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\TagList;
 
-use Bugo\Compat\{Config, Lang, User, Utils};
+use Bugo\Compat\{Config, Db, Lang, User};
 use Bugo\LightPortal\Actions\Tag;
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\LightPortal\Areas\Fields\RadioField;
@@ -36,9 +36,6 @@ class TagList extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'tag_list')
-			return;
-
 		$e->args->params = [
 			'link_in_title' => Config::$scripturl . '?action=portal;sa=tags',
 			'source'        => 'lp_tags',
@@ -49,9 +46,6 @@ class TagList extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'tag_list')
-			return;
-
 		$e->args->params = [
 			'source'   => FILTER_DEFAULT,
 			'sorting'  => FILTER_DEFAULT,
@@ -59,30 +53,29 @@ class TagList extends Block
 		];
 	}
 
-	public function prepareBlockFields(): void
+	public function prepareBlockFields(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'tag_list')
-			return;
+		$options = $e->args->options;
 
-		$sources = array_combine(['lp_tags', 'keywords'], Lang::$txt['lp_tag_list']['source_set']);
+		$sources = array_combine(['lp_tags', 'keywords'], $this->txt['source_set']);
 
 		if (! class_exists('\Bugo\Optimus\Handlers\TagHandler')) {
 			unset($sources['keywords']);
 		}
 
-		RadioField::make('source', Lang::$txt['lp_tag_list']['source'])
+		RadioField::make('source', $this->txt['source'])
 			->setTab(Tab::CONTENT)
 			->setOptions($sources)
-			->setValue(Utils::$context['lp_block']['options']['source']);
+			->setValue($options['source']);
 
-		RadioField::make('sorting', Lang::$txt['lp_tag_list']['sorting'])
+		RadioField::make('sorting', $this->txt['sorting'])
 			->setTab(Tab::CONTENT)
-			->setOptions(array_combine(['name', 'frequency'], Lang::$txt['lp_tag_list']['sorting_set']))
-			->setValue(Utils::$context['lp_block']['options']['sorting']);
+			->setOptions(array_combine(['name', 'frequency'], $this->txt['sorting_set']))
+			->setValue($options['sorting']);
 
-		CheckboxField::make('as_cloud', Lang::$txt['lp_tag_list']['as_cloud'])
+		CheckboxField::make('as_cloud', $this->txt['as_cloud'])
 			->setTab(Tab::APPEARANCE)
-			->setValue(Utils::$context['lp_block']['options']['as_cloud']);
+			->setValue($options['as_cloud']);
 	}
 
 	public function getAllTopicKeywords(string $sort = 'ok.name'): array
@@ -90,7 +83,7 @@ class TagList extends Block
 		if (! class_exists('\Bugo\Optimus\Handlers\TagHandler'))
 			return [];
 
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT ok.id, ok.name, COUNT(olk.keyword_id) AS frequency
 			FROM {db_prefix}optimus_keywords AS ok
 				INNER JOIN {db_prefix}optimus_log_keywords AS olk ON (ok.id = olk.keyword_id)
@@ -102,7 +95,7 @@ class TagList extends Block
 		);
 
 		$keywords = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			$keywords[] = [
 				'title'     => $row['name'],
 				'link'      => Config::$scripturl . '?action=keywords;id=' . $row['id'],
@@ -110,25 +103,22 @@ class TagList extends Block
 			];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 
 		return $keywords;
 	}
 
 	public function prepareContent(Event $e): void
 	{
-		[$data, $parameters] = [$e->args->data, $e->args->parameters];
-
-		if ($data->type !== 'tag_list')
-			return;
+		$parameters = $e->args->parameters;
 
 		if ($parameters['source'] === 'lp_tags') {
-			$tagList = $this->cache('tag_list_addon_b' . $data->id . '_u' . User::$info['id'])
-				->setLifeTime($data->cacheTime)
+			$tagList = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
+				->setLifeTime($e->args->cacheTime)
 				->setFallback(Tag::class, 'getAll', 0, 0, $parameters['sorting'] === 'name' ? 'title' : 'frequency DESC');
 		} else {
-			$tagList = $this->cache('tag_list_addon_b' . $data->id . '_u' . User::$info['id'])
-				->setLifeTime($data->cacheTime)
+			$tagList = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
+				->setLifeTime($e->args->cacheTime)
 				->setFallback(self::class, 'getAllTopicKeywords', $parameters['sorting'] === 'name' ? 'ok.name' : 'frequency DESC');
 		}
 

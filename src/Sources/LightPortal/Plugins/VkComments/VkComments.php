@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 12.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\VkComments;
@@ -41,7 +41,7 @@ class VkComments extends Plugin
 		$settings['vk_comments'][] = [
 			'text',
 			'api_id',
-			'subtext' => Lang::$txt['lp_vk_comments']['api_id_subtext'],
+			'subtext' => $this->txt['api_id_subtext'],
 			'required' => true
 		];
 		$settings['vk_comments'][] = ['int', 'comments_per_page'];
@@ -51,21 +51,18 @@ class VkComments extends Plugin
 
 	public function comments(): void
 	{
-		if (Setting::getCommentBlock() !== 'vk')
+		if (Setting::getCommentBlock() !== 'vk' || empty($this->context['api_id']))
 			return;
 
-		if (empty(Utils::$context['lp_vk_comments_plugin']['api_id']))
-			return;
-
-		$commentsCount    = Utils::$context['lp_vk_comments_plugin']['comments_per_page'] ?? 10;
-		$allowAttachments = Utils::$context['lp_vk_comments_plugin']['allow_attachments'] ?? true;
-		$autoPublish      = Utils::$context['lp_vk_comments_plugin']['auto_publish'] ?? false;
+		$commentsCount    = $this->context['comments_per_page'] ?? 10;
+		$allowAttachments = $this->context['allow_attachments'] ?? true;
+		$autoPublish      = $this->context['auto_publish'] ?? false;
 
 		Utils::$context['lp_vk_comment_block'] = /** @lang text */ '
 			<script src="https://vk.com/js/api/openapi.js?167"></script>
 			<script>
 				VK.init({
-					apiId: ' . Utils::$context['lp_vk_comments_plugin']['api_id'] . ',
+					apiId: ' . $this->context['api_id'] . ',
 					onlyWidgets: true
 				});
 			</script>

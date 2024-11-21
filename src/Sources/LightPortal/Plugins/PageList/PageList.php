@@ -8,19 +8,18 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\PageList;
 
-use Bugo\Compat\{Config, Lang, User, Utils};
+use Bugo\Compat\{Config, Db, Lang, User};
 use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField, VirtualSelectField};
 use Bugo\LightPortal\Areas\Partials\{CategorySelect, EntryTypeSelect};
 use Bugo\LightPortal\Enums\{EntryType, Permission, Status, Tab};
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\{DateTime, Setting, Str};
-use IntlException;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -35,9 +34,6 @@ class PageList extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'page_list')
-			return;
-
 		$e->args->params = [
 			'categories' => '',
 			'types'      => EntryType::DEFAULT->name(),
@@ -48,9 +44,6 @@ class PageList extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'page_list')
-			return;
-
 		$e->args->params = [
 			'categories' => FILTER_DEFAULT,
 			'types'      => FILTER_DEFAULT,
@@ -59,35 +52,34 @@ class PageList extends Block
 		];
 	}
 
-	public function prepareBlockFields(): void
+	public function prepareBlockFields(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'page_list')
-			return;
+		$options = $e->args->options;
 
 		CustomField::make('categories', Lang::$txt['lp_categories'])
 			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new CategorySelect(), [
 				'id'    => 'categories',
-				'hint'  => Lang::$txt['lp_page_list']['categories_select'],
-				'value' => Utils::$context['lp_block']['options']['categories'] ?? '',
+				'hint'  => $this->txt['categories_select'],
+				'value' => $options['categories'] ?? '',
 			]);
 
 		CustomField::make('types', Lang::$txt['lp_page_type'])
 			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new EntryTypeSelect(), [
 				'id'    => 'types',
-				'value' => Utils::$context['lp_block']['options']['types'] ?? '',
+				'value' => $options['types'] ?? '',
 			]);
 
-		VirtualSelectField::make('sort', Lang::$txt['lp_page_list']['sort'])
-			->setOptions(array_combine(self::SORTING_SET, Lang::$txt['lp_page_list']['sort_set']))
-			->setValue(Utils::$context['lp_block']['options']['sort']);
+		VirtualSelectField::make('sort', $this->txt['sort'])
+			->setOptions(array_combine(self::SORTING_SET, $this->txt['sort_set']))
+			->setValue($options['sort']);
 
-		NumberField::make('num_pages', Lang::$txt['lp_page_list']['num_pages'])
-			->setDescription(Lang::$txt['lp_page_list']['num_pages_subtext'])
+		NumberField::make('num_pages', $this->txt['num_pages'])
+			->setDescription($this->txt['num_pages_subtext'])
 			->setAttribute('min', 0)
 			->setAttribute('max', 999)
-			->setValue(Utils::$context['lp_block']['options']['num_pages']);
+			->setValue($options['num_pages']);
 	}
 
 	public function getData(array $parameters): array
@@ -100,7 +92,7 @@ class PageList extends Block
 
 		$type = empty($parameters['types']) ? EntryType::DEFAULT->name() : $parameters['types'];
 
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT
 				p.page_id, p.category_id, p.slug, p.type, p.num_views, p.num_comments, p.created_at, p.updated_at,
 				COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
@@ -127,7 +119,7 @@ class PageList extends Block
 		);
 
 		$pages = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			if (Setting::isFrontpage($row['slug']))
 				continue;
 
@@ -147,49 +139,51 @@ class PageList extends Block
 			];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 
 		return $pages;
 	}
 
-	/**
-	 * @throws IntlException
-	 */
 	public function prepareContent(Event $e): void
 	{
-		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+		$parameters = $e->args->parameters;
 
-		if ($data->type !== 'page_list')
-			return;
-
-		$pageList = $this->cache('page_list_addon_b' . $data->id . '_u' . User::$info['id'])
-			->setLifeTime($data->cacheTime)
+		$pageList = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
+			->setLifeTime($e->args->cacheTime)
 			->setFallback(self::class, 'getData', $parameters);
 
 		if ($pageList) {
-			echo '
-		<ul class="normallist page_list">';
+			$ul = Str::html('ul', ['class' => 'normallist page_list']);
 
 			foreach ($pageList as $page) {
-				if (empty($title = Str::getTranslatedTitle($page['title'])))
+				if (empty($title = Str::getTranslatedTitle($page['title']))) {
 					continue;
-
-				echo '
-			<li>
-				<a href="', Config::$scripturl, '?', LP_PAGE_PARAM, '=', $page['slug'], '">', $title, '</a> ', Lang::$txt['by'], ' ', (empty($page['author_id']) ? $page['author_name'] : '<a href="' . Config::$scripturl . '?action=profile;u=' . $page['author_id'] . '">' . $page['author_name'] . '</a>'), ', ', DateTime::relative($page['created_at']), ' (', Lang::getTxt('lp_views_set', ['views' => $page['num_views']]);
-
-				if ($page['num_comments'] && Setting::getCommentBlock() === 'default') {
-					echo ', ' . Lang::getTxt('lp_comments_set', ['comments' => $page['num_comments']]);
 				}
 
-				echo ')
-			</li>';
+				$li = Str::html('li');
+				$link = Str::html('a', [
+					'href' => Config::$scripturl . '?' . LP_PAGE_PARAM . '=' . $page['slug'],
+				])->setText($title);
+
+				$author = empty($page['author_id']) ? $page['author_name'] : Str::html('a', [
+					'href' => Config::$scripturl . '?action=profile;u=' . $page['author_id'],
+				])->setText($page['author_name']);
+
+				$li->addHtml($link)
+					->addHtml(' ' . Lang::$txt['by'] . ' ' . $author . ', ' . DateTime::relative($page['created_at']) . ' (')
+					->addHtml(Lang::getTxt('lp_views_set', ['views' => $page['num_views']]));
+
+				if ($page['num_comments'] && Setting::getCommentBlock() === 'default') {
+					$li->addHtml(', ' . Lang::getTxt('lp_comments_set', ['comments' => $page['num_comments']]));
+				}
+
+				$li->addHtml(')');
+				$ul->addHtml($li);
 			}
 
-			echo '
-		</ul>';
+			echo $ul;
 		} else {
-			echo '<div class="errorbox">', Lang::$txt['lp_page_list']['no_items'], '</div>';
+			echo Str::html('div', ['class' => 'errorbox'])->setText($this->txt['no_items']);
 		}
 	}
 }

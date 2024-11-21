@@ -140,7 +140,6 @@ final class SessionManager
 				SELECT COUNT(page_id)
 				FROM {db_prefix}lp_pages
 				WHERE deleted_at <> 0',
-				[]
 			);
 
 			[$count] = Db::$db->fetch_row($result);

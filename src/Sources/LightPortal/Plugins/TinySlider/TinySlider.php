@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\TinySlider;
@@ -19,6 +19,7 @@ use Bugo\LightPortal\Areas\Fields\{NumberField, RadioField, RangeField};
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -51,17 +52,11 @@ class TinySlider extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'tiny_slider')
-			return;
-
 		$e->args->params = $this->params;
 	}
 
 	public function validateBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'tiny_slider')
-			return;
-
 		$data = $this->request()->only(['image_title', 'image_link']);
 
 		$images = [];
@@ -102,80 +97,79 @@ class TinySlider extends Block
 		];
 	}
 
-	public function prepareBlockFields(): void
+	public function prepareBlockFields(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'tiny_slider')
-			return;
+		$options = $e->args->options;
 
-		CustomField::make('images', Lang::$txt['lp_tiny_slider']['images'])
+		CustomField::make('images', $this->txt['images'])
 			->setTab(Tab::CONTENT)
-			->setValue($this->getFromTemplate('tiny_slider_images'));
+			->setValue($this->getFromTemplate('tiny_slider_images', $options));
 
-		RadioField::make('axis', Lang::$txt['lp_tiny_slider']['axis'])
+		RadioField::make('axis', $this->txt['axis'])
 			->setOptions(array_combine(['vertical', 'horizontal'], Lang::$txt['lp_panel_direction_set']))
-			->setValue(Utils::$context['lp_block']['options']['axis']);
+			->setValue($options['axis']);
 
-		RangeField::make('num_items', Lang::$txt['lp_tiny_slider']['num_items'])
+		RangeField::make('num_items', $this->txt['num_items'])
 			->setAttribute('min', 1)
 			->setAttribute('max', 12)
-			->setValue(Utils::$context['lp_block']['options']['num_items']);
+			->setValue($options['num_items']);
 
-		NumberField::make('gutter', Lang::$txt['lp_tiny_slider']['gutter'])
+		NumberField::make('gutter', $this->txt['gutter'])
 			->setAttribute('min', 0)
-			->setValue(Utils::$context['lp_block']['options']['gutter']);
+			->setValue($options['gutter']);
 
-		NumberField::make('edge_padding', Lang::$txt['lp_tiny_slider']['edge_padding'])
+		NumberField::make('edge_padding', $this->txt['edge_padding'])
 			->setAttribute('min', 0)
-			->setValue(Utils::$context['lp_block']['options']['edge_padding']);
+			->setValue($options['edge_padding']);
 
-		CheckboxField::make('controls', Lang::$txt['lp_tiny_slider']['controls'])
-			->setValue(Utils::$context['lp_block']['options']['controls']);
+		CheckboxField::make('controls', $this->txt['controls'])
+			->setValue($options['controls']);
 
-		CheckboxField::make('nav', Lang::$txt['lp_tiny_slider']['nav'])
-			->setValue(Utils::$context['lp_block']['options']['nav']);
+		CheckboxField::make('nav', $this->txt['nav'])
+			->setValue($options['nav']);
 
-		CheckboxField::make('nav_as_thumbnails', Lang::$txt['lp_tiny_slider']['nav_as_thumbnails'])
-			->setValue(Utils::$context['lp_block']['options']['nav_as_thumbnails']);
+		CheckboxField::make('nav_as_thumbnails', $this->txt['nav_as_thumbnails'])
+			->setValue($options['nav_as_thumbnails']);
 
-		CheckboxField::make('arrow_keys', Lang::$txt['lp_tiny_slider']['arrow_keys'])
-			->setValue(Utils::$context['lp_block']['options']['arrow_keys']);
+		CheckboxField::make('arrow_keys', $this->txt['arrow_keys'])
+			->setValue($options['arrow_keys']);
 
-		NumberField::make('fixed_width', Lang::$txt['lp_tiny_slider']['fixed_width'])
+		NumberField::make('fixed_width', $this->txt['fixed_width'])
 			->setDescription(Lang::$txt['zero_for_no_limit'])
 			->setAttribute('min', 0)
-			->setValue(Utils::$context['lp_block']['options']['fixed_width']);
+			->setValue($options['fixed_width']);
 
-		RangeField::make('slide_by', Lang::$txt['lp_tiny_slider']['slide_by'])
+		RangeField::make('slide_by', $this->txt['slide_by'])
 			->setAttribute('min', 1)
 			->setAttribute('max', 12)
-			->setValue(Utils::$context['lp_block']['options']['slide_by']);
+			->setValue($options['slide_by']);
 
-		NumberField::make('speed', Lang::$txt['lp_tiny_slider']['speed'])
+		NumberField::make('speed', $this->txt['speed'])
 			->setAttribute('min', 1)
-			->setValue(Utils::$context['lp_block']['options']['speed']);
+			->setValue($options['speed']);
 
-		CheckboxField::make('autoplay', Lang::$txt['lp_tiny_slider']['autoplay'])
-			->setValue(Utils::$context['lp_block']['options']['autoplay']);
+		CheckboxField::make('autoplay', $this->txt['autoplay'])
+			->setValue($options['autoplay']);
 
-		NumberField::make('autoplay_timeout', Lang::$txt['lp_tiny_slider']['autoplay_timeout'])
+		NumberField::make('autoplay_timeout', $this->txt['autoplay_timeout'])
 			->setAttribute('min', 1)
-			->setValue(Utils::$context['lp_block']['options']['autoplay_timeout']);
+			->setValue($options['autoplay_timeout']);
 
-		RadioField::make('autoplay_direction', Lang::$txt['lp_tiny_slider']['autoplay_direction'])
-			->setOptions(array_combine(['forward', 'backward'], Lang::$txt['lp_tiny_slider']['autoplay_direction_set']))
-			->setValue(Utils::$context['lp_block']['options']['autoplay_direction']);
+		RadioField::make('autoplay_direction', $this->txt['autoplay_direction'])
+			->setOptions(array_combine(['forward', 'backward'], $this->txt['autoplay_direction_set']))
+			->setValue($options['autoplay_direction']);
 
-		CheckboxField::make('loop', Lang::$txt['lp_tiny_slider']['loop'])
-			->setValue(Utils::$context['lp_block']['options']['loop']);
+		CheckboxField::make('loop', $this->txt['loop'])
+			->setValue($options['loop']);
 
-		CheckboxField::make('rewind', Lang::$txt['lp_tiny_slider']['rewind'])
-			->setValue(Utils::$context['lp_block']['options']['rewind']);
+		CheckboxField::make('rewind', $this->txt['rewind'])
+			->setValue($options['rewind']);
 
-		CheckboxField::make('lazyload', Lang::$txt['lp_tiny_slider']['lazyload'])
-			->setValue(Utils::$context['lp_block']['options']['lazyload']);
+		CheckboxField::make('lazyload', $this->txt['lazyload'])
+			->setValue($options['lazyload']);
 
-		CheckboxField::make('mouse_drag', Lang::$txt['lp_tiny_slider']['mouse_drag'])
-			->setValue(Utils::$context['lp_block']['options']['mouse_drag']);
+		CheckboxField::make('mouse_drag', $this->txt['mouse_drag'])
+			->setValue($options['mouse_drag']);
 	}
 
 	public function getData(int|string $id, array $parameters): array
@@ -183,101 +177,111 @@ class TinySlider extends Block
 		if (empty($parameters['images']))
 			return [];
 
-		$html = '
-		<div id="tiny_slider' . $id . '">';
+		$tinySlider = Str::html('div', ['id' => $this->name . $id]);
 
 		$images = Utils::jsonDecode($parameters['images'], true);
 
 		foreach ($images as $image) {
 			[$link, $title] = [$image['link'], $image['title']];
 
-			$html .= /** @lang text */
-				'
-			<div class="item">
-				<img ' . (empty($parameters['lazyload']) ? '' : 'class="tns-lazy-img" data-') . 'src="' . $link . '" alt="' . ($title ?: '') . '"' . (empty($parameters['fixed_width']) ? '' : (' width="' . $parameters['fixed_width'] . '"')) . '>';
+			$item = Str::html('div', ['class' => 'item']);
+			$img = Str::html('img', [
+				'src' => $link,
+				'alt' => $title ?: '',
+				'class' => empty($parameters['lazyload']) ? null : 'tns-lazy-img',
+			]);
 
-			if ($title) {
-				$html .= '
-				<p>' . $title . '</p>';
+			if (! empty($parameters['fixed_width'])) {
+				$img->setAttribute('width', $parameters['fixed_width']);
 			}
 
-			$html .= '
-			</div>';
+			$item->addHtml($img);
+
+			if ($title) {
+				$item->addHtml(Str::html('p')->setText($title));
+			}
+
+			$tinySlider->addHtml($item);
 		}
 
-		$html .= '
-		</div>
-		<div class="customize-tools">';
+		$customizeTools = Str::html('div', ['class' => 'customize-tools']);
 
 		if ($parameters['nav'] && $parameters['nav_as_thumbnails']) {
-			$html .= '
-			<ul id="tiny_slider_thumbnails' . $id . '" class="thumbnails customize-thumbnails"' . (empty($parameters['controls']) ? '' : (' style="margin-bottom: -30px"')) . '>';
+			$thumbnails = Str::html('ul', [
+				'id' => 'tiny_slider_thumbnails' . $id,
+				'class' => 'thumbnails customize-thumbnails',
+			]);
+
+			if (! empty($parameters['controls'])) {
+				$thumbnails->setAttribute('style', 'margin-bottom: -30px');
+			}
 
 			foreach ($images as $image) {
 				[$link, $title] = [$image['link'], $image['title']];
 
-				$html .= '
-				<li><img src="' . $link . '" alt="' . ($title ?: '') . '"></li>';
+				$thumbnails->addHtml(
+					Str::html('li')->addHtml(Str::html('img', [
+						'src' => $link,
+						'alt' => $title ?: '',
+					]))
+				);
 			}
 
-			$html .= '
-			</ul>';
+			$customizeTools->addHtml($thumbnails);
 		}
 
 		if ($parameters['controls']) {
-			$buttons = array_combine(['prev', 'next'], Lang::$txt['lp_tiny_slider']['controls_buttons']);
+			$buttons = array_combine(['prev', 'next'], $this->txt['controls_buttons']);
 
-			$html .= /** @lang text */
-				'
-			<ul id="tiny_slider_controls' . $id . '" class="controls customize-controls">
-				<li class="prev">
-					<span class="button"><i class="fas fa-arrow-left"></i> ' . $buttons['prev'] . '</span>
-				</li>
-				<li class="next">
-					<span class="button">' . $buttons['next'] . ' <i class="fas fa-arrow-right"></i></span>
-				</li>
-			</ul>';
+			$controls = Str::html('ul', [
+				'id' => 'tiny_slider_controls' . $id,
+				'class' => 'controls customize-controls',
+			]);
+
+			$controls->addHtml(Str::html('li', ['class' => 'prev'])
+				->addHtml(Str::html('span', ['class' => 'button'])
+					->addHtml(Str::html('i', ['class' => 'fas fa-arrow-left']))
+					->addHtml(' ' . $buttons['prev'])));
+
+			$controls->addHtml(Str::html('li', ['class' => 'next'])
+				->addHtml(Str::html('span', ['class' => 'button'])
+					->addHtml($buttons['next'] . ' ')
+					->addHtml(Str::html('i', ['class' => 'fas fa-arrow-right']))));
+
+			$customizeTools->addHtml($controls);
 		}
 
-		$html .= '
-		</div>';
-
-		return ['content' => $html];
+		return ['content' => $tinySlider->toHtml() . $customizeTools->toHtml()];
 	}
 
 	public function prepareAssets(Event $e): void
 	{
-		$e->args->assets['css']['tiny_slider'][]     = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css';
-		$e->args->assets['scripts']['tiny_slider'][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/min/tiny-slider.js';
+		$e->args->assets['css'][$this->name][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css';
+		$e->args->assets['scripts'][$this->name][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/min/tiny-slider.js';
 	}
 
 	public function prepareContent(Event $e): void
 	{
-		[$data, $parameters] = [$e->args->data, $e->args->parameters];
-
-		if ($data->type !== 'tiny_slider')
-			return;
+		[$id, $parameters] = [$e->args->id, $e->args->parameters];
 
 		$parameters['nav'] ??= false;
 		$parameters['controls'] ??= false;
 		$parameters['nav_as_thumbnails'] ??= false;
 
-		$id = $data->id;
-
-		$html = $this->cache('tiny_slider_addon_b' . $id . '_' . User::$info['language'])
-			->setLifeTime($data->cacheTime)
+		$html = $this->cache($this->name . '_addon_b' . $id . '_' . User::$info['language'])
+			->setLifeTime($e->args->cacheTime)
 			->setFallback(self::class, 'getData', $id, $parameters);
 
 		if (empty($html))
 			return;
 
-		Theme::loadCSSFile('light_portal/tiny_slider/tiny-slider.css');
+		Theme::loadCSSFile('light_portal/' . $this->name . '/tiny-slider.css');
 
-		Theme::loadJavaScriptFile('light_portal/tiny_slider/tiny-slider.js', ['minimize' => true]);
+		Theme::loadJavaScriptFile('light_portal/' . $this->name . '/tiny-slider.js', ['minimize' => true]);
 
 		Theme::addInlineJavaScript('
 			const slider' . $id . ' = tns({
-				container: "#tiny_slider' . $id . '",
+				container: "#' . $this->name . $id . '",
 				axis: "' . (empty($parameters['axis']) ? $this->params['axis'] : $parameters['axis']) . '",
 				items: ' . (empty($parameters['num_items']) ? $this->params['num_items'] : $parameters['num_items']) . ',
 				gutter: ' . (empty($parameters['gutter']) ? $this->params['gutter'] : $parameters['gutter']) . ',

@@ -10,17 +10,9 @@
  * @version 2.8
  */
 
-namespace Bugo\LightPortal\Lists;
+namespace Bugo\LightPortal\Args;
 
-use Bugo\LightPortal\Plugins\PluginHandler;
-
-if (! defined('SMF'))
-	die('No direct access...');
-
-final class PluginList implements ListInterface
+class OptionsTypeArgs
 {
-	public function __invoke(): array
-	{
-		return PluginHandler::getInstance()->getAll();
-	}
+	public function __construct(public readonly array $options, public readonly string $type) {}
 }

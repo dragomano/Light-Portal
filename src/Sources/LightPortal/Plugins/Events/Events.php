@@ -8,12 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Events;
 
-use Bugo\Compat\{Actions\Calendar, Lang, User, Utils};
+use Bugo\Compat\{Actions\Calendar, Lang, User};
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\LightPortal\Areas\Fields\NumberField;
 use Bugo\LightPortal\Areas\Fields\RangeField;
@@ -33,9 +33,6 @@ class Events extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'events')
-			return;
-
 		$e->args->params = [
 			'show_birthdays'  => false,
 			'show_holidays'   => false,
@@ -47,9 +44,6 @@ class Events extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'events')
-			return;
-
 		$e->args->params = [
 			'show_birthdays'  => FILTER_VALIDATE_BOOLEAN,
 			'show_holidays'   => FILTER_VALIDATE_BOOLEAN,
@@ -59,32 +53,31 @@ class Events extends Block
 		];
 	}
 
-	public function prepareBlockFields(): void
+	public function prepareBlockFields(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'events')
-			return;
-
 		Lang::load('ManageCalendar');
+
+		$options = $e->args->options;
 
 		CheckboxField::make('show_birthdays', Lang::$txt['setting_cal_showbdays'])
 			->setTab(Tab::CONTENT)
-			->setValue(Utils::$context['lp_block']['options']['show_birthdays']);
+			->setValue($options['show_birthdays']);
 
 		CheckboxField::make('show_holidays', Lang::$txt['setting_cal_showholidays'])
 			->setTab(Tab::CONTENT)
-			->setValue(Utils::$context['lp_block']['options']['show_holidays']);
+			->setValue($options['show_holidays']);
 
 		CheckboxField::make('show_events', Lang::$txt['setting_cal_showevents'])
 			->setTab(Tab::CONTENT)
-			->setValue(Utils::$context['lp_block']['options']['show_events']);
+			->setValue($options['show_events']);
 
-		RangeField::make('days_in_future', Lang::$txt['lp_events']['days_in_future'])
+		RangeField::make('days_in_future', $this->txt['days_in_future'])
 			->setAttribute('max', 60)
-			->setValue(Utils::$context['lp_block']['options']['days_in_future']);
+			->setValue($options['days_in_future']);
 
-		NumberField::make('update_interval', Lang::$txt['lp_events']['update_interval'])
+		NumberField::make('update_interval', $this->txt['update_interval'])
 			->setAttribute('min', 0)
-			->setValue(Utils::$context['lp_block']['options']['update_interval']);
+			->setValue($options['update_interval']);
 	}
 
 	public function changeIconSet(Event $e): void
@@ -113,16 +106,14 @@ class Events extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+		$parameters = $e->args->parameters;
 
-		if ($data->type !== 'events')
-			return;
-
-		if ($this->request()->has('preview'))
+		if ($this->request()->has('preview')) {
 			$parameters['update_interval'] = 0;
+		}
 
-		$data = $this->cache('events_addon_b' . $data->id . '_u' . User::$info['id'])
-			->setLifeTime($parameters['update_interval'] ?? $data->cacheTime)
+		$data = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
+			->setLifeTime($parameters['update_interval'] ?? $e->args->cacheTime)
 			->setFallback(self::class, 'getData', $parameters);
 
 		$this->setTemplate();

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.06.24
+ * @version 11.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\GalleryBlock;
@@ -23,6 +23,9 @@ final class CategorySelect extends AbstractPartial
 
 	public function __invoke(): string
 	{
+		$params = func_get_args();
+		$params = $params[0] ?? [];
+
 		$categories = $this->getGalleryCategories();
 
 		$data = [];
@@ -50,20 +53,18 @@ final class CategorySelect extends AbstractPartial
 				showValueAsTags: true,
 				maxWidth: "100%",
 				options: ' . json_encode($data) . ',
-				selectedValue: [' . (Utils::$context['lp_block']['options']['categories'] ?? '') . ']
+				selectedValue: [' . $params['categories'] . ']
 			});
 		</script>';
 	}
 
 	private function getGalleryCategories(): array
 	{
-		Db::extend();
-
-		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'gallery_cat')))
+		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'gallery_cat')))
 			return [];
 
 		if (($categories = $this->cache()->get('smf_gallery_categories')) === null) {
-			$result = Utils::$smcFunc['db_query']('', '
+			$result = Db::$db->query('', '
 				SELECT id_cat, title
 				FROM {db_prefix}gallery_cat
 				WHERE redirect = {int:redirect}
@@ -74,10 +75,11 @@ final class CategorySelect extends AbstractPartial
 			);
 
 			$categories = [];
-			while ($row = Utils::$smcFunc['db_fetch_assoc']($result))
+			while ($row = Db::$db->fetch_assoc($result)) {
 				$categories[$row['id_cat']] = $row['title'];
+			}
 
-			Utils::$smcFunc['db_free_result']($result);
+			Db::$db->free_result($result);
 
 			$this->cache()->put('smf_gallery_categories', $categories);
 		}

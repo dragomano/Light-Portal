@@ -106,7 +106,7 @@ class Setting
 
 	public static function getPanelDirection(): array
 	{
-		return Utils::jsonDecode(Config::$modSettings['lp_panel_direction'] ?? '', true);
+		return Utils::jsonDecode(Config::$modSettings['lp_panel_direction'] ?? '', true) ?? [];
 	}
 
 	public static function isSwapLeftRight(): bool

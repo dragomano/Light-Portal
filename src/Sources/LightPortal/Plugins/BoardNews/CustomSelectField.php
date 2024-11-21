@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.02.24
+ * @version 13.11.24
  */
 
 
@@ -17,7 +17,7 @@ namespace Bugo\LightPortal\Plugins\BoardNews;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Fields\{AbstractField, SelectField};
 
-if (! defined('SMF'))
+if (! defined('LP_NAME'))
 	die('No direct access...');
 
 class CustomSelectField extends SelectField

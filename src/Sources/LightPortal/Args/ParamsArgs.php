@@ -14,5 +14,5 @@ namespace Bugo\LightPortal\Args;
 
 class ParamsArgs
 {
-	public function __construct(public array &$params) {}
+	public function __construct(public array &$params, public readonly string $type) {}
 }

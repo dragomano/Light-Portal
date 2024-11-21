@@ -8,14 +8,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 09.10.24
+ * @version 13.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\BlogMode;
 
 use Bugo\LightPortal\Articles\PageArticle;
 
-if (! defined('SMF'))
+if (! defined('LP_NAME'))
 	die('No direct access...');
 
 class BlogArticle extends PageArticle

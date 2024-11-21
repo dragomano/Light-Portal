@@ -8,14 +8,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Translator;
 
-use Bugo\Compat\{Config, Lang, Utils};
+use Bugo\Compat\Config;
 use Bugo\LightPortal\Areas\Fields\{CheckboxField, RadioField};
 use Bugo\LightPortal\Plugins\{Block, Event};
+use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -26,9 +27,6 @@ class Translator extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'translator')
-			return;
-
 		$e->args->params = [
 			'no_content_class' => true,
 			'engine'           => 'google',
@@ -39,9 +37,6 @@ class Translator extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'translator')
-			return;
-
 		$e->args->params = [
 			'engine'       => FILTER_DEFAULT,
 			'widget_theme' => FILTER_DEFAULT,
@@ -49,52 +44,63 @@ class Translator extends Block
 		];
 	}
 
-	public function prepareBlockFields(): void
+	public function prepareBlockFields(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'translator')
+		$options = $e->args->options;
+
+		RadioField::make('engine', $this->txt['engine'])
+			->setOptions(array_combine(['google', 'yandex'], $this->txt['engine_set']))
+			->setValue($options['engine']);
+
+		if ($options['engine'] === 'google')
 			return;
 
-		RadioField::make('engine', Lang::$txt['lp_translator']['engine'])
-			->setOptions(array_combine(['google', 'yandex'], Lang::$txt['lp_translator']['engine_set']))
-			->setValue(Utils::$context['lp_block']['options']['engine']);
+		RadioField::make('widget_theme', $this->txt['widget_theme'])
+			->setOptions(array_combine(['light', 'dark'], $this->txt['widget_theme_set']))
+			->setValue($options['widget_theme']);
 
-		if (Utils::$context['lp_block']['options']['engine'] === 'google')
-			return;
-
-		RadioField::make('widget_theme', Lang::$txt['lp_translator']['widget_theme'])
-			->setOptions(array_combine(['light', 'dark'], Lang::$txt['lp_translator']['widget_theme_set']))
-			->setValue(Utils::$context['lp_block']['options']['widget_theme']);
-
-		CheckboxField::make('auto_mode', Lang::$txt['lp_translator']['auto_mode'])
-			->setValue(Utils::$context['lp_block']['options']['auto_mode']);
+		CheckboxField::make('auto_mode', $this->txt['auto_mode'])
+			->setValue($options['auto_mode']);
 	}
 
 	public function prepareContent(Event $e): void
 	{
-		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+		$id = $e->args->id;
 
-		if ($data->type !== 'translator')
-			return;
-
+		$parameters = $e->args->parameters;
 		$parameters['auto_mode'] ??= false;
 
 		if ($parameters['engine'] === 'yandex') {
-			echo '
-		<div id="ytWidget', $data->id, '" class="centertext noup"></div>
-		<script src="https://translate.yandex.net/website-widget/v1/widget.js?widgetId=ytWidget', $data->id, '&amp;pageLang=', substr(Config::$language ?? '', 0, 2), '&amp;widgetTheme=', $parameters['widget_theme'], '&amp;autoMode=', (bool) $parameters['auto_mode'], '"></script>';
+			echo Str::html('div')
+				->id('ytWidget' . $id)
+				->class('centertext noup');
+
+			echo Str::html('script')->src(
+				implode('', [
+					'https://translate.yandex.net/website-widget/v1/widget.js?widgetId=ytWidget',
+					$id . '&amp;pageLang=',
+					substr(Config::$language ?? '', 0, 2),
+					'&amp;widgetTheme=' . $parameters['widget_theme'],
+					'&amp;autoMode=' . (bool) $parameters['auto_mode'],
+				])
+			);
 		}
 
 		if ($parameters['engine'] === 'google') {
-			echo '
-		<div id="google_translate_element', $data->id, /** @lang text */ '" class="centertext noup"></div>
-		<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-		<script>
-			function googleTranslateElementInit() {
-				new google.translate.TranslateElement({
-					pageLanguage: "', substr(Config::$language ?? '', 0, 2), '"
-				}, "google_translate_element', $data->id, '");
-			}
-		</script>';
+			echo Str::html('div')
+				->id('google_translate_element' . $id)
+				->class('centertext noup');
+
+			echo Str::html('script')
+				->src('https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit');
+
+			echo Str::html('script')->setText('
+			    function googleTranslateElementInit() {
+			        new google.translate.TranslateElement({
+			            pageLanguage: "' . substr(Config::$language ?? '', 0, 2) . '"
+			        }, "google_translate_element' . $id . '");
+			    }
+			');
 		}
 	}
 }

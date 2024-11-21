@@ -8,14 +8,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 30.05.24
+ * @version 12.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\TinyPortalMigration;
 
 use Bugo\Compat\{Config, Db, Lang, Utils};
 use Bugo\LightPortal\Areas\Imports\AbstractCustomCategoryImport;
-use Bugo\LightPortal\Utils\ItemList;
+use Bugo\LightPortal\Utils\{ItemList, Str};
 
 use const LP_NAME;
 
@@ -66,10 +66,19 @@ class CategoryImport extends AbstractCustomCategoryImport
 				],
 				'actions' => [
 					'header' => [
-						'value' => '<input type="checkbox" onclick="invertAll(this, this.form);" checked>'
+						'value' =>  Str::html('input', [
+							'type' => 'checkbox',
+							'onclick' => 'invertAll(this, this.form);',
+							'checked' => 'checked'
+						])
 					],
 					'data' => [
-						'function' => static fn($entry) => '<input type="checkbox" value="' . $entry['id'] . '" name="categories[]" checked>',
+						'function' => static fn($entry) => Str::html('input', [
+							'type' => 'checkbox',
+							'value' => $entry['id'],
+							'name' => 'categories[]',
+							'checked' => 'checked'
+						]),
 						'class' => 'centertext'
 					]
 				]
@@ -80,10 +89,19 @@ class CategoryImport extends AbstractCustomCategoryImport
 			'additional_rows' => [
 				[
 					'position' => 'below_table_data',
-					'value' => '
-						<input type="hidden">
-						<input type="submit" name="import_selection" value="' . Lang::$txt['lp_import_selection'] . '" class="button">
-						<input type="submit" name="import_all" value="' . Lang::$txt['lp_import_all'] . '" class="button">'
+					'value' => Str::html('input', ['type' => 'hidden']) .
+						Str::html('input', [
+							'type' => 'submit',
+							'name' => 'import_selection',
+							'value' => Lang::$txt['lp_import_selection'],
+							'class' => 'button'
+						]) .
+						Str::html('input', [
+							'type' => 'submit',
+							'name' => 'import_all',
+							'value' => Lang::$txt['lp_import_all'],
+							'class' => 'button'
+						])
 				]
 			]
 		];
@@ -93,12 +111,10 @@ class CategoryImport extends AbstractCustomCategoryImport
 
 	public function getAll(int $start = 0, int $limit = 0, string $sort = 'id'): array
 	{
-		Db::extend();
-
-		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'tp_variables')))
+		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'tp_variables')))
 			return [];
 
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT id, value1 AS title
 			FROM {db_prefix}tp_variables
 			WHERE type = {literal:category}
@@ -112,42 +128,39 @@ class CategoryImport extends AbstractCustomCategoryImport
 		);
 
 		$items = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['id']] = [
 				'id'    => $row['id'],
 				'title' => $row['title'],
 			];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 
 		return $items;
 	}
 
 	public function getTotalCount(): int
 	{
-		Db::extend();
-
-		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'tp_variables')))
+		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'tp_variables')))
 			return 0;
 
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT COUNT(*)
 			FROM {db_prefix}tp_variables
 			WHERE type = {literal:category}',
-			[]
 		);
 
-		[$count] = Utils::$smcFunc['db_fetch_row']($result);
+		[$count] = Db::$db->fetch_row($result);
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 
 		return (int) $count;
 	}
 
 	protected function getItems(array $ids): array
 	{
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT id, value1 AS title
 			FROM {db_prefix}tp_variables
 			WHERE type = {literal:category}' . (empty($ids) ? '' : '
@@ -158,7 +171,7 @@ class CategoryImport extends AbstractCustomCategoryImport
 		);
 
 		$items = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['id']] = [
 				'title'       => $row['title'],
 				'icon'        => '',
@@ -168,7 +181,7 @@ class CategoryImport extends AbstractCustomCategoryImport
 			];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 
 		return $items;
 	}

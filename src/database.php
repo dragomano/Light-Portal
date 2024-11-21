@@ -20,8 +20,6 @@ if ((SMF === 'SSI') && ! $user_info['is_admin']) {
 	die('Admin privileges required.');
 }
 
-defined('LP_CACHE_TIME') || define('LP_CACHE_TIME', 0);
-
 $tables[] = [
 	'name' => 'lp_blocks',
 	'columns' => [

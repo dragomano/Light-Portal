@@ -37,7 +37,7 @@ use const DIRECTORY_SEPARATOR;
 use const GLOB_ONLYDIR;
 use const LOCK_EX;
 
-if (! defined('SMF'))
+if (! defined('LP_NAME'))
 	die('No direct access...');
 
 final class PluginHandler
@@ -87,19 +87,19 @@ final class PluginHandler
 		);
 
 		foreach (['css', 'scripts', 'images'] as $type) {
-			if (! isset($assets[$type]))
+			if (empty($assets[$type]))
 				continue;
 
 			foreach ($assets[$type] as $plugin => $links) {
-				$customName = $type . '/light_portal/' . $plugin;
-				$pluginAssetDir = Theme::$current->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . $customName;
+				$directory = $type . '/light_portal/' . $plugin;
+				$path = Theme::$current->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . $directory;
 
-				if (! is_dir($pluginAssetDir)) {
-					@mkdir($pluginAssetDir);
+				if (! is_dir($path)) {
+					@mkdir($path);
 				}
 
 				foreach ($links as $link) {
-					if (is_file($filename = $pluginAssetDir . DIRECTORY_SEPARATOR . basename((string) $link)))
+					if (is_file($filename = $path . DIRECTORY_SEPARATOR . basename((string) $link)))
 						continue;
 
 					file_put_contents($filename, WebFetchApi::fetch($link), LOCK_EX);
@@ -183,6 +183,13 @@ final class PluginHandler
 			$snakeName = Str::getSnakeName($plugin);
 
 			if (! $this->registry->has($snakeName)) {
+				$path = __DIR__ . DIRECTORY_SEPARATOR . $plugin . DIRECTORY_SEPARATOR;
+
+				$this->loadLangs($path, $snakeName);
+				$this->loadAssets($path, $plugin);
+
+				Utils::$context[self::PREFIX . $snakeName . '_plugin'] = $this->settings[$snakeName] ?? [];
+
 				$class = new $className();
 
 				EventManager::getInstance()->addListeners(PortalHook::cases(), $class);
@@ -193,13 +200,7 @@ final class PluginHandler
 					'type' => $class->type,
 				]);
 
-				Utils::$context[self::PREFIX . $snakeName . '_plugin'] = $this->settings[$snakeName] ?? [];
 				Utils::$context['lp_loaded_addons'][$snakeName] = $this->registry->get($snakeName);
-
-				$path = __DIR__ . DIRECTORY_SEPARATOR . $plugin . DIRECTORY_SEPARATOR;
-
-				$this->loadLangs($path, $snakeName);
-				$this->loadAssets($path, $plugin);
 			}
 		}
 	}

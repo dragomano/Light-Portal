@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.06.24
+ * @version 13.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\DummyArticleCards;
@@ -20,7 +20,7 @@ use Bugo\LightPortal\Utils\Str;
 use DateTime;
 use Exception;
 
-if (! defined('SMF'))
+if (! defined('LP_NAME'))
 	die('No direct access...');
 
 class DummyArticle extends AbstractArticle

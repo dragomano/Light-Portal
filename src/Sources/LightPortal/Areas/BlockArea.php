@@ -18,8 +18,7 @@ use Bugo\LightPortal\Areas\Partials\{AreaSelect, ContentClassSelect, IconSelect}
 use Bugo\LightPortal\Areas\Partials\{PermissionSelect, PlacementSelect, TitleClassSelect};
 use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Areas\Validators\BlockValidator;
-use Bugo\LightPortal\Args\ObjectArgs;
-use Bugo\LightPortal\Args\ParamsArgs;
+use Bugo\LightPortal\Args\{ObjectArgs, OptionsTypeArgs, ParamsArgs};
 use Bugo\LightPortal\Enums\{ContentType, PortalHook, Tab};
 use Bugo\LightPortal\EventManager;
 use Bugo\LightPortal\Models\BlockModel;
@@ -218,7 +217,10 @@ final class BlockArea
 
 		$params = [];
 
-		EventManager::getInstance()->dispatch(PortalHook::prepareBlockParams, new Event(new ParamsArgs($params)));
+		EventManager::getInstance()->dispatch(
+			PortalHook::prepareBlockParams,
+			new Event(new ParamsArgs($params, Utils::$context['current_block']['type']))
+		);
 
 		return array_merge($baseParams, $params);
 	}
@@ -257,14 +259,17 @@ final class BlockArea
 			) {
 				$postData['parameters'][$option] = 0;
 
-				if ($option === 'no_content_class')
+				if ($option === 'no_content_class') {
 					$postData['parameters'][$option] = $value;
+				}
 
-				if ($parameters[$option] === FILTER_DEFAULT)
+				if ($parameters[$option] === FILTER_DEFAULT) {
 					$postData['parameters'][$option] = '';
+				}
 
-				if (is_array($parameters[$option]) && $parameters[$option]['flags'] === FILTER_REQUIRE_ARRAY)
+				if (is_array($parameters[$option]) && $parameters[$option]['flags'] === FILTER_REQUIRE_ARRAY) {
 					$postData['parameters'][$option] = [];
+				}
 			}
 
 			$block->options[$option] = $postData['parameters'][$option] ?? $blockOptions[$option] ?? $value;
@@ -331,7 +336,10 @@ final class BlockArea
 
 		Utils::$context['lp_block_tab_appearance'] = true;
 
-		EventManager::getInstance()->dispatch(PortalHook::prepareBlockFields);
+		EventManager::getInstance()->dispatch(
+			PortalHook::prepareBlockFields,
+			new Event(new OptionsTypeArgs(Utils::$context['lp_block']['options'], Utils::$context['current_block']['type']))
+		);
 
 		$this->preparePostFields();
 	}

@@ -8,17 +8,16 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\RecentComments;
 
-use Bugo\Compat\{Lang, User, Utils};
+use Bugo\Compat\{Db, Lang, User};
 use Bugo\LightPortal\Areas\Fields\{NumberField, RangeField};
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Plugins\{Block, Event};
 use Bugo\LightPortal\Utils\{DateTime, Str};
-use IntlException;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -32,9 +31,6 @@ class RecentComments extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'recent_comments')
-			return;
-
 		$e->args->params = [
 			'no_content_class' => true,
 			'num_comments'     => 10,
@@ -44,27 +40,23 @@ class RecentComments extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'recent_comments')
-			return;
-
 		$e->args->params = [
 			'num_comments' => FILTER_VALIDATE_INT,
 			'length'       => FILTER_VALIDATE_INT,
 		];
 	}
 
-	public function prepareBlockFields(): void
+	public function prepareBlockFields(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'recent_comments')
-			return;
+		$options = $e->args->options;
 
-		NumberField::make('num_comments', Lang::$txt['lp_recent_comments']['num_comments'])
+		NumberField::make('num_comments', $this->txt['num_comments'])
 			->setAttribute('min', 1)
-			->setValue(Utils::$context['lp_block']['options']['num_comments']);
+			->setValue($options['num_comments']);
 
-		RangeField::make('length', Lang::$txt['lp_recent_comments']['length'])
+		RangeField::make('length', $this->txt['length'])
 			->setAttribute('min', 10)
-			->setValue(Utils::$context['lp_block']['options']['length']);
+			->setValue($options['length']);
 	}
 
 	public function getData(int $commentsCount, int $length = 80): array
@@ -72,7 +64,7 @@ class RecentComments extends Block
 		if (empty($commentsCount))
 			return [];
 
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT DISTINCT com.id, com.page_id, com.message, com.created_at, p.slug,
 				COALESCE(mem.real_name, {string:guest}) AS author_name,
 				(
@@ -109,7 +101,7 @@ class RecentComments extends Block
 		);
 
 		$comments = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			Lang::censorText($row['message']);
 
 			$comments[$row['id']] = [
@@ -120,41 +112,34 @@ class RecentComments extends Block
 			];
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 
 		return $comments;
 	}
 
-	/**
-	 * @throws IntlException
-	 */
 	public function prepareContent(Event $e): void
 	{
-		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+		$parameters = $e->args->parameters;
 
-		if ($data->type !== 'recent_comments')
-			return;
-
-		$comments = $this->cache('recent_comments_addon_b' . $data->id . '_u' . User::$info['id'])
-			->setLifeTime($data->cacheTime)
+		$comments = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
+			->setLifeTime($e->args->cacheTime)
 			->setFallback(self::class, 'getData', (int) $parameters['num_comments'], (int) $parameters['length']);
 
 		if (empty($comments))
 			return;
 
-		echo '
-		<ul class="recent_comments noup">';
-
-		foreach ($comments as $comment) {
-			echo '
-			<li class="windowbg">
-				<a href="', $comment['link'], '">', $comment['message'], '</a>
-				<br><span class="smalltext">', Lang::$txt['by'], ' ', $comment['author_name'], '</span>
-				<br><span class="smalltext">', DateTime::relative($comment['created_at']), '</span>
-			</li>';
-		}
-
-		echo '
-		</ul>';
+		echo Str::html('ul', ['class' => $this->name . ' noup'])
+			->addHtml(
+				implode('', array_map(fn($comment) => Str::html('li', ['class' => 'windowbg'])
+					->addHtml(Str::html('a')
+						->href($comment['link'])
+						->setText($comment['message']))
+					->addHtml('<br>')
+					->addHtml(Str::html('span', ['class' => 'smalltext'])
+						->setText(Lang::$txt['by'] . ' ' . $comment['author_name']))
+					->addHtml('<br>')
+					->addHtml(Str::html('span', ['class' => 'smalltext'])
+						->setText(DateTime::relative($comment['created_at']))), $comments))
+			);
 	}
 }

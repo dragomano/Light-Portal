@@ -13,6 +13,7 @@
 namespace Bugo\LightPortal\Enums;
 
 use Bugo\LightPortal\Enums\Traits\HasHtmlTrait;
+use Bugo\LightPortal\Utils\Str;
 
 enum ContentClass: string
 {
@@ -33,19 +34,16 @@ enum ContentClass: string
 
 	public function getList(): string
 	{
-		return match ($this) {
-			self::ROUNDFRAME => '<div class="' . self::ROUNDFRAME->value . ' noup">%s</div>',
-			self::ROUNDFRAME2 => '<div class="' . self::ROUNDFRAME->value . '">%s</div>',
-			self::WINDOWBG => '<div class="' . self::WINDOWBG->value . ' noup">%s</div>',
-			self::WINDOWBG2 => '<div class="' . self::WINDOWBG->value . '">%s</div>',
-			self::INFORMATION => '<div class="' . self::INFORMATION->value . '">%s</div>',
-			self::ERRORBOX => '<div class="' . self::ERRORBOX->value . '">%s</div>',
-			self::NOTICEBOX => '<div class="' . self::NOTICEBOX->value . '">%s</div>',
-			self::INFOBOX => '<div class="' . self::INFOBOX->value . '">%s</div>',
-			self::DESCBOX => '<div class="' . self::DESCBOX->value . '">%s</div>',
-			self::BBC_CODE => '<div class="' . self::BBC_CODE->value . '">%s</div>',
-			self::GENERIC_LIST_WRAPPER => '<div class="' . self::GENERIC_LIST_WRAPPER->value . '">%s</div>',
-			self::EMPTY => '<div>%s</div>',
+		$class = match ($this) {
+			self::ROUNDFRAME, self::WINDOWBG => $this->value . ' noup',
+			self::ROUNDFRAME2 => self::ROUNDFRAME->value,
+			self::WINDOWBG2 => self::WINDOWBG->value,
+			self::EMPTY => null,
+			default => $this->value,
 		};
+
+		return Str::html('div', '%s')
+			->class($class)
+			->toHtml();
 	}
 }

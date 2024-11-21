@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 12.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Disqus;
@@ -16,7 +16,7 @@ namespace Bugo\LightPortal\Plugins\Disqus;
 use Bugo\Compat\{Lang, Theme, Utils};
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Utils\Setting;
+use Bugo\LightPortal\Utils\{Setting, Str};
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -27,22 +27,22 @@ class Disqus extends Plugin
 
 	public function init(): void
 	{
-		Lang::$txt['lp_comment_block_set']['disqus'] = 'Disqus';
+		Lang::$txt['lp_comment_block_set'][$this->name] = 'Disqus';
 	}
 
 	public function addSettings(Event $e): void
 	{
-		$e->args->settings['disqus'][] = [
+		$e->args->settings[$this->name][] = [
 			'text',
 			'shortname',
-			'subtext' => Lang::$txt['lp_disqus']['shortname_subtext'],
+			'subtext' => $this->txt['shortname_subtext'],
 			'required' => true
 		];
 	}
 
 	public function comments(): void
 	{
-		if (Setting::getCommentBlock() !== 'disqus' || empty(Utils::$context['lp_disqus_plugin']['shortname']))
+		if (Setting::getCommentBlock() !== $this->name || empty($this->context['shortname']))
 			return;
 
 		Utils::$context['lp_disqus_comment_block'] = /** @lang text */ '
@@ -54,7 +54,7 @@ class Disqus extends Plugin
 				};
 				(function () {
 					let d = document, s = d.createElement("script");
-					s.src = "https://' . Utils::$context['lp_disqus_plugin']['shortname'] . '.disqus.com/embed.js";
+					s.src = "https://' . $this->context['shortname'] . '.disqus.com/embed.js";
 					s.setAttribute("data-timestamp", +new Date());
 					(d.head || d.body).appendChild(s);
 				})();
@@ -63,14 +63,14 @@ class Disqus extends Plugin
 
 	public function frontAssets(): void
 	{
-		if (Setting::getCommentBlock() !== 'disqus' || empty(Utils::$context['lp_frontpage_articles']))
+		if (Setting::getCommentBlock() !== $this->name || empty(Utils::$context['lp_frontpage_articles']))
 			return;
 
-		if (empty(Utils::$context['lp_disqus_plugin']['shortname']))
+		if (empty($this->context['shortname']))
 			return;
 
 		Theme::loadJavaScriptFile(
-			'https://' . Utils::$context['lp_disqus_plugin']['shortname'] . '.disqus.com/count.js',
+			'https://' . $this->context['shortname'] . '.disqus.com/count.js',
 			[
 				'async' => true,
 				'external' => true,
@@ -81,7 +81,12 @@ class Disqus extends Plugin
 		);
 
 		foreach (Utils::$context['lp_frontpage_articles'] as $id => $page) {
-			Utils::$context['lp_frontpage_articles'][$id]['replies']['after'] .= ' <i class="fas fa-comment"></i> <span class="disqus-comment-count" data-disqus-identifier="' . $id . '"></span>';
+			Utils::$context['lp_frontpage_articles'][$id]['replies']['after'] .= ' ' .
+				Str::html('i', ['class' => 'fas fa-comment']) . ' ' .
+				Str::html('span', [
+					'class' => 'disqus-comment-count',
+					'data-disqus-identifier' => $id,
+				]);
 		}
 	}
 }

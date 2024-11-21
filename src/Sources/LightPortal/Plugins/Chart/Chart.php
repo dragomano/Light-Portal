@@ -8,18 +8,19 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Chart;
 
-use Bugo\Compat\{Lang, Theme, Utils};
+use Bugo\Compat\{Theme, Utils};
 use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Areas\Fields\TextField;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -42,17 +43,11 @@ class Chart extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'chart')
-			return;
-
 		$e->args->params = $this->params;
 	}
 
 	public function validateBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'chart')
-			return;
-
 		$post = $this->request()->only([
 			'set_type', 'set_label', 'set_data', 'set_borderColor', 'set_backgroundColor', 'set_borderWidth'
 		]);
@@ -87,58 +82,57 @@ class Chart extends Block
 		];
 	}
 
-	public function prepareBlockFields(): void
+	public function prepareBlockFields(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'chart')
-			return;
+		Utils::$context['lp_chart_types'] = array_combine($this->chartTypes, $this->txt['type_set']);
 
-		Utils::$context['lp_chart_types'] = array_combine($this->chartTypes, Lang::$txt['lp_chart']['type_set']);
+		$options = $e->args->options;
 
-		TextField::make('chart_title', Lang::$txt['lp_chart']['chart_title'])
+		TextField::make('chart_title', $this->txt['chart_title'])
 			->setTab(Tab::CONTENT)
-			->placeholder(Lang::$txt['lp_chart']['chart_title_placeholder'])
-			->setValue(Utils::$context['lp_block']['options']['chart_title'] ?? $this->params['chart_title']);
+			->placeholder($this->txt['chart_title_placeholder'])
+			->setValue($options['chart_title'] ?? $this->params['chart_title']);
 
-		CustomField::make('chart', Lang::$txt['lp_chart']['datasets'])
+		CustomField::make($this->name, $this->txt['datasets'])
 			->setTab(Tab::CONTENT)
-			->setValue($this->getFromTemplate('chart_template'));
+			->setValue($this->getFromTemplate('chart_template', $options));
 
-		TextField::make('labels', Lang::$txt['lp_chart']['labels'])
+		TextField::make('labels', $this->txt['labels'])
 			->setTab(Tab::CONTENT)
-			->placeholder(Lang::$txt['lp_chart']['labels_placeholder'])
+			->placeholder($this->txt['labels_placeholder'])
 			->required()
-			->setValue(Utils::$context['lp_block']['options']['labels'] ?? $this->params['labels']);
+			->setValue($options['labels'] ?? $this->params['labels']);
 
-		CheckboxField::make('default_palette', Lang::$txt['lp_chart']['default_palette'])
+		CheckboxField::make('default_palette', $this->txt['default_palette'])
 			->setTab(Tab::APPEARANCE)
-			->setValue(Utils::$context['lp_block']['options']['default_palette']);
+			->setValue($options['default_palette']);
 
-		CheckboxField::make('stacked', Lang::$txt['lp_chart']['stacked'])
-			->setDescription(Lang::$txt['lp_chart']['stacked_after'])
-			->setValue(Utils::$context['lp_block']['options']['stacked']);
+		CheckboxField::make('stacked', $this->txt['stacked'])
+			->setDescription($this->txt['stacked_after'])
+			->setValue($options['stacked']);
 
-		CheckboxField::make('horizontal', Lang::$txt['lp_chart']['horizontal'])
-			->setValue(Utils::$context['lp_block']['options']['horizontal']);
+		CheckboxField::make('horizontal', $this->txt['horizontal'])
+			->setValue($options['horizontal']);
 	}
 
 	public function prepareAssets(Event $e): void
 	{
-		$e->args->assets['scripts']['chart'][] = 'https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js';
+		$e->args->assets['scripts'][$this->name][] = 'https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js';
 	}
 
 	public function prepareContent(Event $e): void
 	{
-		[$data, $parameters] = [$e->args->data, $e->args->parameters];
+		[$id, $parameters] = [$e->args->id, $e->args->parameters];
 
-		if ($data->type !== 'chart')
-			return;
-
-		$id = $data->id;
-
-		echo '
-		<div>
-			<canvas id="chart' . $id . '" aria-label="' . (empty($parameters['chart_title']) ? 'Simple chart' : $parameters['chart_title']) . '" role="img"></canvas>
-		</div>';
+		echo Str::html('div')->addHtml(
+			Str::html('canvas', [
+				'id' => $this->name . $id,
+				'aria-label' => empty($parameters['chart_title'])
+					? $this->txt['chart_title']
+					: $parameters['chart_title'],
+				'role' => 'img'
+			])
+		);
 
 		$type = $parameters['chart_type'] ?? $this->params['chart_type'];
 

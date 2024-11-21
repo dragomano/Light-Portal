@@ -70,7 +70,6 @@ final class TagRepository extends AbstractRepository
 		$result = Db::$db->query('', /** @lang text */ '
 			SELECT COUNT(tag_id)
 			FROM {db_prefix}lp_tags',
-			[]
 		);
 
 		[$count] = Db::$db->fetch_row($result);
@@ -198,7 +197,7 @@ final class TagRepository extends AbstractRepository
 
 		$this->saveTitles($item);
 
-		Db::$db->transaction('commit');
+		Db::$db->transaction();
 
 		return $item;
 	}
@@ -220,6 +219,6 @@ final class TagRepository extends AbstractRepository
 
 		$this->saveTitles($item, 'replace');
 
-		Db::$db->transaction('commit');
+		Db::$db->transaction();
 	}
 }

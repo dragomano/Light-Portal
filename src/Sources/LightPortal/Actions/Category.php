@@ -16,7 +16,6 @@ use Bugo\Compat\{Config, Db, ErrorHandler};
 use Bugo\Compat\{Lang, User, Utils};
 use Bugo\LightPortal\Enums\{EntryType, Permission, Status};
 use Bugo\LightPortal\Utils\{Icon, ItemList, RequestTrait, Str};
-use IntlException;
 
 use function array_key_exists;
 use function count;
@@ -69,7 +68,7 @@ final class Category extends AbstractPageList
 		];
 
 		Utils::$context['linktree'][] = [
-			'name' => $category['title'],
+			'name' => $category['title'] ?? Lang::$txt['lp_no_category'],
 		];
 
 		$page->showAsCards($this);
@@ -78,6 +77,9 @@ final class Category extends AbstractPageList
 		$listOptions['id'] = 'lp_categories';
 		$listOptions['get_items'] = [
 			'function' => $this->getPages(...)
+		];
+		$listOptions['get_count'] = [
+			'function' => fn() => $this->getTotalCount()
 		];
 
 		if (isset($category['description'])) {
@@ -95,9 +97,6 @@ final class Category extends AbstractPageList
 		Utils::obExit();
 	}
 
-	/**
-	 * @throws IntlException
-	 */
 	public function getPages(int $start, int $limit, string $sort): array
 	{
 		$result = Db::$db->query('', '
@@ -153,7 +152,7 @@ final class Category extends AbstractPageList
 				AND permissions IN ({array_int:permissions})',
 			[
 				'id'           => Utils::$context['current_category'],
-				'status'        => Status::ACTIVE->value,
+				'status'       => Status::ACTIVE->value,
 				'types'        => EntryType::withoutDrafts(),
 				'current_time' => time(),
 				'permissions'  => Permission::all(),

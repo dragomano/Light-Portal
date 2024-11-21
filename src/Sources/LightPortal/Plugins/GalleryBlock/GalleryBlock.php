@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\GalleryBlock;
@@ -29,9 +29,6 @@ class GalleryBlock extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'gallery_block')
-			return;
-
 		$e->args->params = [
 			'link_in_title' => Config::$scripturl . '?action=gallery',
 			'categories'    => '',
@@ -41,41 +38,35 @@ class GalleryBlock extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'gallery_block')
-			return;
-
 		$e->args->params = [
 			'categories' => FILTER_DEFAULT,
 			'num_images' => FILTER_VALIDATE_INT,
 		];
 	}
 
-	public function prepareBlockFields(): void
+	public function prepareBlockFields(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'gallery_block')
-			return;
-
-		CustomField::make('categories', Lang::$txt['lp_gallery_block']['categories'])
+		CustomField::make('categories', $this->txt['categories'])
 			->setTab(Tab::CONTENT)
-			->setValue(static fn() => new CategorySelect());
+			->setValue(static fn() => new CategorySelect(), [
+				'categories' => $e->args->options['categories'] ?? '',
+			]);
 
-		NumberField::make('num_images', Lang::$txt['lp_gallery_block']['num_images'])
-			->setDescription(Lang::$txt['lp_gallery_block']['num_images_subtext'])
+		NumberField::make('num_images', $this->txt['num_images'])
+			->setDescription($this->txt['num_images_subtext'])
 			->setAttribute('min', 0)
 			->setAttribute('max', 999)
-			->setValue(Utils::$context['lp_block']['options']['num_images']);
+			->setValue($e->args->options['num_images']);
 	}
 
 	public function getData(array $parameters): array
 	{
-		Db::extend('packages');
-
-		if (empty(Utils::$smcFunc['db_list_tables'](false, Config::$db_prefix . 'gallery_pic')))
+		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'gallery_pic')))
 			return [];
 
 		$categories = empty($parameters['categories']) ? [] : explode(',', (string) $parameters['categories']);
 
-		$result = Utils::$smcFunc['db_query']('', '
+		$result = Db::$db->query('', '
 			SELECT
 				p.id_picture, p.width, p.height, p.allowcomments, p.id_cat, p.keywords, p.commenttotal AS num_comments,
 				p.filename, p.approved, p.views, p.title, p.id_member, m.real_name, p.date, p.description, c.title AS cat_name
@@ -94,7 +85,7 @@ class GalleryBlock extends Block
 		);
 
 		$images = [];
-		while ($row = Utils::$smcFunc['db_fetch_assoc']($result)) {
+		while ($row = Db::$db->fetch_assoc($result)) {
 			$images[$row['id_picture']] = [
 				'id' => $row['id_picture'],
 				'section' => [
@@ -119,45 +110,46 @@ class GalleryBlock extends Block
 			}
 		}
 
-		Utils::$smcFunc['db_free_result']($result);
+		Db::$db->free_result($result);
 
 		return $images;
 	}
 
 	public function prepareContent(Event $e): void
 	{
-		[$data, $parameters] = [$e->args->data, $e->args->parameters];
-
-		if ($data->type !== 'gallery_block')
-			return;
-
 		if (! User::hasPermission('smfgallery_view')) {
 			echo Lang::$txt['cannot_smfgallery_view'];
 			return;
 		}
 
-		$images = $this->cache('gallery_block_addon_b' . $data->id . '_u' . Utils::$context['user']['id'])
-			->setLifeTime($data->cacheTime)
-			->setFallback(self::class, 'getData', $parameters);
+		$images = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . Utils::$context['user']['id'])
+			->setLifeTime($e->args->cacheTime)
+			->setFallback(self::class, 'getData', $e->args->parameters);
 
 		if (empty($images)) {
-			echo Lang::$txt['lp_gallery_block']['no_items'];
+			echo $this->txt['no_items'];
 			return;
 		}
 
-		echo '
-		<div class="gallery_block"' . ($this->isInSidebar($data->id) ? ' style="grid-auto-flow: row"' : '') . '>';
+		$galleryBlock = Str::html('div', [
+			'class' => $this->name,
+			'style' => $this->isInSidebar($e->args->id) ? 'grid-auto-flow: row' : null,
+		]);
 
 		foreach ($images as $image) {
-			echo '
-			<div class="item">
-				<a href="', $image['link'], '">
-					<img src="', $image['image'], '" title="', $image['title'], '" alt="', $image['title'], '">
-				</a>
-			</div>';
+			$item = Str::html('div', ['class' => 'item']);
+			$link = Str::html('a', ['href' => $image['link']]);
+			$img = Str::html('img', [
+				'src' => $image['image'],
+				'title' => $image['title'],
+				'alt' => $image['title'],
+			]);
+
+			$link->addHtml($img);
+			$item->addHtml($link);
+			$galleryBlock->addHtml($item);
 		}
 
-		echo '
-		</div>';
+		echo $galleryBlock;
 	}
 }

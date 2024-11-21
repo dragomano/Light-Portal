@@ -8,12 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 06.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\AdsBlock;
 
-use Bugo\Compat\{Lang, Theme, Utils};
+use Bugo\Compat\{Lang, Theme};
 use Bugo\LightPortal\Areas\Fields\{CustomField, TextareaField, TextField};
 use Bugo\LightPortal\Areas\Partials\{BoardSelect, PageSelect, TopicSelect};
 use Bugo\LightPortal\Enums\{Hook, Tab};
@@ -53,14 +53,11 @@ class AdsBlock extends Block
 
 	public function addSettings(Event $e): void
 	{
-		$e->args->settings['ads_block'][] = ['range', 'min_replies'];
+		$e->args->settings[$this->name][] = ['range', 'min_replies'];
 	}
 
 	public function prepareBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'ads_block')
-			return;
-
 		$e->args->params = [
 			'content'        => 'html',
 			'loader_code'    => '',
@@ -74,9 +71,6 @@ class AdsBlock extends Block
 
 	public function validateBlockParams(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'ads_block')
-			return;
-
 		$e->args->params = [
 			'loader_code'    => FILTER_UNSAFE_RAW,
 			'ads_placement'  => FILTER_DEFAULT,
@@ -87,19 +81,18 @@ class AdsBlock extends Block
 		];
 	}
 
-	public function prepareBlockFields(): void
+	public function prepareBlockFields(Event $e): void
 	{
-		if (Utils::$context['current_block']['type'] !== 'ads_block')
-			return;
-
 		Theme::addInlineCss('
 		.pf_placement, .pf_areas {
 			display: none;
 		}');
 
-		TextareaField::make('loader_code', Lang::$txt['lp_ads_block']['loader_code'])
+		$options = $e->args->options;
+
+		TextareaField::make('loader_code', $this->txt['loader_code'])
 			->setTab(Tab::CONTENT)
-			->setValue(Utils::$context['lp_block']['options']['loader_code']);
+			->setValue($options['loader_code']);
 
 		TextField::make('placement', '')
 			->setTab(Tab::CONTENT)
@@ -115,41 +108,41 @@ class AdsBlock extends Block
 			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(static fn() => new PlacementSelect(), [
 				'data'  => $this->getPlacements(),
-				'value' => Utils::$context['lp_block']['options']['ads_placement'],
+				'value' => $options['ads_placement'],
 			]);
 
-		CustomField::make('include_boards', Lang::$txt['lp_ads_block']['include_boards'])
+		CustomField::make('include_boards', $this->txt['include_boards'])
 			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(static fn() => new BoardSelect(), [
 				'id'    => 'include_boards',
-				'hint'  => Lang::$txt['lp_ads_block']['include_boards_select'],
-				'value' => Utils::$context['lp_block']['options']['include_boards'] ?? '',
+				'hint'  => $this->txt['include_boards_select'],
+				'value' => $options['include_boards'] ?? '',
 			]);
 
-		CustomField::make('include_topics', Lang::$txt['lp_ads_block']['include_topics'])
+		CustomField::make('include_topics', $this->txt['include_topics'])
 			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(static fn() => new TopicSelect(), [
 				'id'    => 'include_pages',
-				'hint'  => Lang::$txt['lp_ads_block']['include_pages_select'],
-				'value' => Utils::$context['lp_block']['options']['include_pages'] ?? '',
+				'hint'  => $this->txt['include_pages_select'],
+				'value' => $options['include_pages'] ?? '',
 			]);
 
-		CustomField::make('include_pages', Lang::$txt['lp_ads_block']['include_pages'])
+		CustomField::make('include_pages', $this->txt['include_pages'])
 			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(static fn() => new PageSelect(), [
 				'id'    => 'include_pages',
-				'hint'  => Lang::$txt['lp_ads_block']['include_pages_select'],
-				'value' => Utils::$context['lp_block']['options']['include_pages'] ?? '',
+				'hint'  => $this->txt['include_pages_select'],
+				'value' => $options['include_pages'] ?? '',
 			]);
 
-		CustomField::make('end_date', Lang::$txt['lp_ads_block']['end_date'])
+		CustomField::make('end_date', $this->txt['end_date'])
 			->setValue('
 			<input
 				type="date"
 				id="end_date"
 				name="end_date"
 				min="' . date('Y-m-d') . '"
-				value="' . Utils::$context['lp_block']['options']['end_date'] . '"
+				value="' . $options['end_date'] . '"
 			>');
 	}
 
@@ -158,7 +151,7 @@ class AdsBlock extends Block
 		if ($e->args->data['placement'] !== 'ads')
 			return;
 
-		Lang::$txt['lp_post_error_no_ads_placement'] = Lang::$txt['lp_ads_block']['no_ads_placement'];
+		Lang::$txt['lp_post_error_no_ads_placement'] = $this->txt['no_ads_placement'];
 
 		if (empty($e->args->data['parameters']['ads_placement'])) {
 			$e->args->errors[] = 'no_ads_placement';
@@ -167,9 +160,7 @@ class AdsBlock extends Block
 
 	public function parseContent(Event $e): void
 	{
-		if ($e->args->type === 'ads_block') {
-			$e->args->content = Content::parse($e->args->content, 'html');
-		}
+		$e->args->content = Content::parse($e->args->content, 'html');
 	}
 
 	public function preparePageData(): void

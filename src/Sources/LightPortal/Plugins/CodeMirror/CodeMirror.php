@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 12.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\CodeMirror;
@@ -24,12 +24,14 @@ class CodeMirror extends Plugin
 {
 	public string $type = 'editor';
 
-	private array $modes = ['html' => 'HTML', 'php' => 'PHP', 'markdown' => 'Markdown', 'pug' => 'Pug', 'twig' => 'Twig'];
+	private array $modes = [
+		'html' => 'HTML', 'php' => 'PHP', 'markdown' => 'Markdown', 'pug' => 'Pug', 'twig' => 'Twig'
+	];
 
 	public function addSettings(Event $e): void
 	{
-		$e->args->settings['code_mirror'][] = ['multiselect', 'modes', $this->modes];
-		$e->args->settings['code_mirror'][] = ['desc', 'small_hint'];
+		$e->args->settings[$this->name][] = ['multiselect', 'modes', $this->modes];
+		$e->args->settings[$this->name][] = ['desc', 'small_hint'];
 	}
 
 	public function prepareEditor(Event $e): void
@@ -39,7 +41,7 @@ class CodeMirror extends Plugin
 		if ($object['type'] === 'bbc' || (isset($object['options']['content']) && $object['options']['content'] === 'bbc'))
 			return;
 
-		if (empty($modes = array_filter(explode(',', Utils::$context['lp_code_mirror_plugin']['modes'] ?? ''))))
+		if (empty($modes = array_filter(explode(',', $this->context['modes'] ?? ''))))
 			return;
 
 		$types = array_keys($this->modes);

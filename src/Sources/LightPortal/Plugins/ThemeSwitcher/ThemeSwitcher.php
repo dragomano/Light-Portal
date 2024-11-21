@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 09.11.24
+ * @version 19.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\ThemeSwitcher;
@@ -40,15 +40,12 @@ class ThemeSwitcher extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		if ($e->args->data->type !== 'theme_switcher')
-			return;
-
 		$themes = $this->getForumThemes();
 
 		if ($themes === [])
 			return;
 
-		$id = $e->args->data->id;
+		$id = $e->args->id;
 
 		$container = Str::html('div')->class('themeswitcher centertext');
 

@@ -8,16 +8,16 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 05.11.24
+ * @version 18.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\LatteLayouts;
 
-use Bugo\Compat\{BBCodeParser, Config, ErrorHandler};
+use Bugo\Compat\{Config, ErrorHandler};
 use Bugo\Compat\{Lang, Sapi, Theme, Utils};
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\Utils\{Icon, Str};
 use Exception;
 use Latte\Engine;
 use Latte\Essential\RawPhpExtension;
@@ -39,14 +39,14 @@ class LatteLayouts extends Plugin
 	public function addSettings(Event $e): void
 	{
 		Lang::$txt['lp_latte_layouts']['note'] = sprintf(
-			Lang::$txt['lp_latte_layouts']['note'],
+			$this->txt['note'],
 			$this->extension,
 			Theme::$current->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . 'portal_layouts'
 		);
 
-		$e->args->settings['latte_layouts'][] = ['desc', 'note'];
-		$e->args->settings['latte_layouts'][] = ['title', 'example'];
-		$e->args->settings['latte_layouts'][] = ['callback', '_', $this->showExample()];
+		$e->args->settings[$this->name][] = ['desc', 'note'];
+		$e->args->settings[$this->name][] = ['title', 'example'];
+		$e->args->settings[$this->name][] = ['callback', '_', $this->showExamples()];
 	}
 
 	public function frontLayouts(): void
@@ -103,7 +103,7 @@ class LatteLayouts extends Plugin
 
 	public function credits(Event $e): void
 	{
-		$e->args->links[] = 			[
+		$e->args->links[] = [
 			'title' => 'Latte',
 			'link' => 'https://latte.nette.org',
 			'author' => 'David Grudl',
@@ -114,10 +114,22 @@ class LatteLayouts extends Plugin
 		];
 	}
 
-	private function showExample(): string
+	private function showExamples(): string
 	{
-		return '<div class="roundframe">' . BBCodeParser::load()->parse(
-			'[php]' . file_get_contents(__DIR__. '/layouts/example' . $this->extension) . '[/php]'
-		) . '</div>';
+		$examples = glob(__DIR__ . '/layouts/*' . $this->extension);
+
+		$list = Str::html('ul', ['class' => 'bbc_list']);
+
+		foreach ($examples as $file) {
+			$file = basename($file);
+			$list->addHtml(
+				Str::html('li')->setHtml(
+					Str::html('a', $file)->href(LP_ADDON_URL . '/LatteLayouts/layouts/' . $file)
+				)
+			);
+		}
+
+		return Str::html('div', ['class' => 'roundframe'])
+			->setHtml($list);
 	}
 }
