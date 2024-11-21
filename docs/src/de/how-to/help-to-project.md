@@ -12,4 +12,4 @@ Es gibt viele Optionen:
 - Dokumentation - Können Sie eine langweilige Sache auf eine ansprechende Art und Weise erklären? Dann probieren Sie es!
 - Übersetzungen benötigen ständig [Revision, Korrektur und Verbesserung](https://crowdin.com/project/light-portal).
 - Artikel und Rezensionen - schreiben Sie gern? Es wird immer Leser geben!
-- Sponsoring - [donations](https://ko-fi.com/dragomano/) sind immer willkommen.
+- Sponsoring - [Spenden](https://ko-fi.com/dragomano/) sind immer willkommen.
