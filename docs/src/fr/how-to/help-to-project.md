@@ -12,4 +12,4 @@ Il y a de nombreuses options:
 - Documentation - pouvez-vous expliquer une chose ennuyeuse de manière engageante? Alors essayez-le!
 - Traductions ont constamment besoin de [révision, correction et amélioration](https://crowdin.com/project/light-portal).
 - Articles et commentaires - vous aimez écrire? Il y aura toujours des lecteurs!
-- Sponsorship - [donations](https://ko-fi.com/dragomano/) sont toujours les bienvenus.
+- Sponsoring - les [dons](https://ko-fi.com/dragomano/) sont toujours les bienvenus.

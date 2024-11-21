@@ -36,9 +36,7 @@ public function actions(): void
 ```php
 public function parseContent(Event $e): void
 {
-    if ($e->args->type === 'markdown') {
-        $e->args->content = $this->getParsedContent($e->args->content);
-    }
+    $e->args->content = Content::parse($e->args->content, 'html');
 }
 ```
 
@@ -49,13 +47,10 @@ public function parseContent(Event $e): void
 ```php
 public function prepareContent(Event $e): void
 {
-    if ($e->args->data->type !== 'user_info')
-        return;
-
     $this->setTemplate();
 
-    $userData = $this->cache('user_info_addon_u' . Utils::$context['user']['id'])
-        ->setLifeTime($e->args->data->cache_time)
+    $userData = $this->cache($this->name . '_addon_u' . Utils::$context['user']['id'])
+        ->setLifeTime($e->args->cacheTime)
         ->setFallback(self::class, 'getData');
 
     show_user_info($userData);
@@ -116,9 +111,6 @@ public function preloadStyles(Event $e): void
 ```php
 public function prepareBlockParams(Event $e): void
 {
-    if (Utils::$context['current_block']['type'] !== 'article_list')
-        return;
-
     $e->args->params = [
         'body_class'     => 'descbox',
         'display_type'   => 0,
@@ -136,9 +128,6 @@ public function prepareBlockParams(Event $e): void
 ```php
 public function validateBlockParams(Event $e): void
 {
-    if (Utils::$context['current_block']['type'] !== 'article_list')
-        return;
-
     $e->args->params = [
         'body_class'     => FILTER_DEFAULT,
         'display_type'   => FILTER_VALIDATE_INT,
@@ -159,7 +148,7 @@ public function findBlockErrors(Event $e): void
     if ($e->args->data['placement'] !== 'ads')
         return;
 
-    Lang::$txt['lp_post_error_no_ads_placement'] = Lang::$txt['lp_ads_block']['no_ads_placement'];
+    Lang::$txt['lp_post_error_no_ads_placement'] = $this->txt['no_ads_placement'];
 
     if (empty($e->args->data['parameters']['ads_placement'])) {
         $e->args->errors[] = 'no_ads_placement';
@@ -172,18 +161,15 @@ public function findBlockErrors(Event $e): void
 > benutzerdefinierte Felder zum Block Beitragsbereich hinzufügen
 
 ```php
-public function prepareBlockFields(): void
+public function prepareBlockFields(Event $e): void
 {
-    if (Utils::$context['current_block']['type'] !== 'article_list')
-        return;
-
-    RadioField::make('display_type', Lang::$txt['lp_article_list']['display_type'])
+    RadioField::make('display_type', $this->txt['display_type'])
         ->setTab(BlockArea::TAB_CONTENT)
-        ->setOptions(Lang::$txt['lp_article_list']['display_type_set'])
-        ->setValue(Utils::$context['lp_block']['options']['display_type']);
+        ->setOptions($this->txt['display_type_set'])
+        ->setValue($e->args->options['display_type']);
 
-    CheckboxField::make('seek_images', Lang::$txt['lp_article_list']['seek_images'])
-        ->setValue(Utils::$context['lp_block']['options']['seek_images']);
+    CheckboxField::make('seek_images', $this->txt['seek_images'])
+        ->setValue($e->args->options['seek_images']);
 }
 ```
 
@@ -230,12 +216,12 @@ public function validatePageParams(Event $e): void
 > benutzerdefinierte Felder zum Beitragsbereich der Seite hinzufügen
 
 ```php
-public function preparePageFields(): void
+public function preparePageFields(Event $e): void
 {
-    VirtualSelectField::make('meta_robots', Lang::$txt['lp_extended_meta_tags']['meta_robots'])
+    VirtualSelectField::make('meta_robots', $this->txt['meta_robots'])
         ->setTab(PageArea::TAB_SEO)
-        ->setOptions(array_combine($this->meta_robots, Lang::$txt['lp_extended_meta_tags']['meta_robots_set']))
-        ->setValue(Utils::$context['lp_page']['options']['meta_robots']);
+        ->setOptions(array_combine($this->meta_robots, $this->txt['meta_robots_set']))
+        ->setValue($e->args->options['meta_robots']);
 }
 ```
 
@@ -252,7 +238,7 @@ public function preparePageFields(): void
 > zusätzliche Vorbereitung der aktuellen Seitendaten des Portals
 
 ```php
-public function preparePageData(): void
+public function preparePageData(Event $e): void
 {
     $this->setTemplate()->withLayer('ads_placement_page');
 }
@@ -273,7 +259,7 @@ public function preparePageData(): void
 ```php
 public function comments(): void
 {
-    if (! empty(Config::$modSettings['lp_show_comment_block']) && Config::$modSettings['lp_show_comment_block'] === 'disqus' && ! empty(Utils::$context['lp_disqus_plugin']['shortname'])) {
+    if (! empty(Config::$modSettings['lp_show_comment_block']) && Config::$modSettings['lp_show_comment_block'] === 'disqus' && ! empty($this->context['shortname'])) {
         Utils::$context['lp_disqus_comment_block'] = '
             <div id="disqus_thread" class="windowbg"></div>
             <script>
@@ -317,10 +303,10 @@ public function commentButtons(Event $e): void
 ```php
 public function addSettings(Event $e): void
 {
-    $e->args->settings['disqus'][] = [
+    $e->args->settings[$this->name][] = [
         'text',
         'shortname',
-        'subtext' => Lang::$txt['lp_disqus']['shortname_subtext'],
+        'subtext' => $this->txt['shortname_subtext'],
         'required' => true,
     ];
 }
@@ -337,8 +323,8 @@ public function addSettings(Event $e): void
 ```php
 public function prepareAssets(Event $e): void
 {
-    $e->args->assets['css']['tiny_slider'][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css';
-    $e->args->assets['scripts']['tiny_slider'][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/min/tiny-slider.js';
+    $e->args->assets['css'][$this->name][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css';
+    $e->args->assets['scripts'][$this->name][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/min/tiny-slider.js';
 }
 ```
 
@@ -380,7 +366,7 @@ public function customLayoutExtensions(Event $e): void
 public function frontAssets(): void
 {
     Theme::loadJavaScriptFile(
-        'https://' . Utils::$context['lp_disqus_plugin']['shortname'] . '.disqus.com/count.js',
+        'https://' . $this->context['shortname'] . '.disqus.com/count.js',
         ['external' => true],
     );
 }
@@ -397,7 +383,8 @@ public function frontTopics(Event $e): void
         return;
 
     $e->args->columns[] = 'tr.total_votes, tr.total_value';
-    $e->args->tables[]  = 'LEFT JOIN {db_prefix}topic_ratings AS tr ON (t.id_topic = tr.id)';
+
+    $e->args->tables[] = 'LEFT JOIN {db_prefix}topic_ratings AS tr ON (t.id_topic = tr.id)';
 }
 ```
 
@@ -476,7 +463,7 @@ public function updateAdminAreas(Event $e): void
 {
     if (User::$info['is_admin']) {
         $e->args->areas['lp_pages']['subsections']['import_from_ep'] = [
-            Utils::$context['lp_icon_set']['import'] . Lang::$txt['lp_eh_portal']['label_name']
+            Utils::$context['lp_icon_set']['import'] . $this->txt['label_name']
         ];
     }
 }

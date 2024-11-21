@@ -16,5 +16,5 @@ Per ciascuna pagina sono disponibili le seguenti azioni:
 - Ordinamento - all'interno di ciascun pannello è possibile impostare un ordine per i blocchi
 - Pulsante stato (abilitato o disabilitato)
 - Clona - creazione di un nuovo blocco basato su quello corrente
-- Modifica - cambia le impostazioni per questa specifica pagina
+- Modifica - cambia le impostazioni per questo specifico blocco
 - Elimina
