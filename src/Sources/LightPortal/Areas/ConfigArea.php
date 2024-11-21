@@ -24,7 +24,7 @@ use Bugo\LightPortal\Enums\{Hook, PortalHook};
 use Bugo\LightPortal\EventManager;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\{CacheTrait, Icon, RequestTrait};
-use Bugo\LightPortal\Utils\{SafeRequireTrait, Setting, SMFHookTrait, Str};
+use Bugo\LightPortal\Utils\{Setting, SMFHookTrait, Str};
 
 use function array_keys;
 use function array_merge;
@@ -46,7 +46,6 @@ final class ConfigArea
 {
 	use CacheTrait;
 	use RequestTrait;
-	use SafeRequireTrait;
 	use SMFHookTrait;
 
 	public function __invoke(): void
@@ -359,8 +358,6 @@ final class ConfigArea
 	private function callActionFromAreas(array $areas = [], string $defaultAction = 'main'): void
 	{
 		$this->showDocsLink();
-
-		$this->require('ManageServer');
 
 		Utils::$context['sub_template'] = 'show_settings';
 
