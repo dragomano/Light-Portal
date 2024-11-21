@@ -78,6 +78,9 @@ final class Category extends AbstractPageList
 		$listOptions['get_items'] = [
 			'function' => $this->getPages(...)
 		];
+		$listOptions['get_count'] = [
+			'function' => fn() => $this->getTotalCount()
+		];
 
 		if (isset($category['description'])) {
 			$listOptions['additional_rows'] = [

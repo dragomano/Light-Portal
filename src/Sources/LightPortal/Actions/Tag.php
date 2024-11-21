@@ -72,6 +72,9 @@ final class Tag extends AbstractPageList
 		$listOptions['get_items'] = [
 			'function' => $this->getPages(...)
 		];
+		$listOptions['get_count'] = [
+			'function' => fn() => $this->getTotalCount()
+		];
 
 		new ItemList($listOptions);
 
