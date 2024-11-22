@@ -233,7 +233,7 @@ final class CategoryExport extends AbstractExport
 			$file = Sapi::getTempDir() . '/lp_categories_backup.xml';
 			$xml->save($file);
 		} catch (DOMException $e) {
-			ErrorHandler::log('[LP] ' . Lang::$txt['lp_categories_export'] . ': ' . $e->getMessage());
+			ErrorHandler::log('[LP] ' . Lang::$txt['lp_categories_export'] . ': ' . $e->getMessage(), 'user');
 		}
 
 		return $file ?? '';

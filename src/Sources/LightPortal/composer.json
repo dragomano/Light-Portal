@@ -10,8 +10,7 @@
     "doctrine/event-manager": "^2.0",
     "eftec/bladeone": "^4.13",
     "laminas/laminas-config-aggregator": "^1.15",
-    "laminas/laminas-loader": "^2.10",
-    "laminas/laminas-servicemanager": "^4.3"
+    "laminas/laminas-loader": "^2.10"
   },
   "require-dev": {
     "scssphp/scssphp": "^1.12",

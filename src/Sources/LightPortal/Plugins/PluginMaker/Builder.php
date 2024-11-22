@@ -37,7 +37,7 @@ class Builder
 		$isDirReady = mkdir($this->path);
 
 		if (! $isDirReady) {
-			ErrorHandler::fatal(Lang::$txt['lp_plugin_maker']['addon_dir_not_created']);
+			ErrorHandler::fatal(Lang::$txt['lp_plugin_maker']['addon_dir_not_created'], false);
 		}
 
 		copy(LP_ADDON_DIR . DIRECTORY_SEPARATOR . 'index.php', $this->path . DIRECTORY_SEPARATOR . 'index.php');

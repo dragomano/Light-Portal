@@ -14,14 +14,17 @@
 namespace Bugo\LightPortal\Plugins\PluginMaker;
 
 use Bugo\Compat\{Config, Lang, Security, User, Utils};
-use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField};
-use Bugo\LightPortal\Areas\Fields\{SelectField, TextField, UrlField};
-use Bugo\LightPortal\Areas\Partials\IconSelect;
 use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Enums\{PluginType, Tab};
-use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Repositories\PluginRepository;
-use Bugo\LightPortal\Utils\{Language, Str};
+use Bugo\LightPortal\UI\Fields\CheckboxField;
+use Bugo\LightPortal\UI\Fields\CustomField;
+use Bugo\LightPortal\UI\Fields\SelectField;
+use Bugo\LightPortal\UI\Fields\TextField;
+use Bugo\LightPortal\UI\Fields\UrlField;
+use Bugo\LightPortal\UI\Partials\IconSelect;
+use Bugo\LightPortal\Utils\{HasTemplateAware, Language};
+use Bugo\LightPortal\Utils\{RequestTrait, Str};
 
 use function array_filter;
 use function array_keys;
@@ -37,9 +40,11 @@ use const LP_NAME;
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class Handler extends Plugin
+class Handler
 {
 	use AreaTrait;
+	use HasTemplateAware;
+	use RequestTrait;
 
 	private const PLUGIN_NAME = 'MyNewAddon';
 
@@ -220,7 +225,7 @@ class Handler extends Plugin
 		CheckboxField::make('smf_hooks', Lang::$txt['lp_plugin_maker']['use_smf_hooks'])
 			->setValue(Utils::$context['lp_plugin']['smf_hooks']);
 
-		CheckboxField::make('mf_ssi', Lang::$txt['lp_plugin_maker']['use_smf_ssi'])
+		CheckboxField::make('smf_ssi', Lang::$txt['lp_plugin_maker']['use_smf_ssi'])
 			->setValue(Utils::$context['lp_plugin']['smf_ssi']);
 
 		CheckboxField::make('components', Lang::$txt['lp_plugin_maker']['use_components'])

@@ -14,11 +14,13 @@
 namespace Bugo\LightPortal\Plugins\PageList;
 
 use Bugo\Compat\{Config, Db, Lang, User};
-use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField, VirtualSelectField};
-use Bugo\LightPortal\Areas\Partials\{CategorySelect, EntryTypeSelect};
 use Bugo\LightPortal\Enums\{EntryType, Permission, Status, Tab};
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\{Block, Event};
+use Bugo\LightPortal\UI\Fields\CustomField;
+use Bugo\LightPortal\UI\Fields\NumberField;
+use Bugo\LightPortal\UI\Fields\VirtualSelectField;
+use Bugo\LightPortal\UI\Partials\EntryTypeSelect;
+use Bugo\LightPortal\UI\Partials\CategorySelect;
 use Bugo\LightPortal\Utils\{DateTime, Setting, Str};
 
 if (! defined('LP_NAME'))

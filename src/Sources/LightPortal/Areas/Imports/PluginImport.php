@@ -102,9 +102,9 @@ final class PluginImport extends AbstractImport
 				}
 			}
 
-			ErrorHandler::fatalLang('lp_wrong_import_file');
+			ErrorHandler::fatalLang('lp_wrong_import_file', false);
 		} catch (Exception) {
-			ErrorHandler::fatalLang('lp_import_failed');
+			ErrorHandler::fatalLang('lp_import_failed', false);
 		}
 
 		return false;

@@ -13,9 +13,6 @@
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, ErrorHandler, Lang, Security, Theme, Utils};
-use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, TextField, UrlField};
-use Bugo\LightPortal\Areas\Partials\{AreaSelect, ContentClassSelect, IconSelect};
-use Bugo\LightPortal\Areas\Partials\{PermissionSelect, PlacementSelect, TitleClassSelect};
 use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Areas\Validators\BlockValidator;
 use Bugo\LightPortal\Args\{ObjectArgs, OptionsTypeArgs, ParamsArgs};
@@ -24,6 +21,10 @@ use Bugo\LightPortal\EventManager;
 use Bugo\LightPortal\Models\BlockModel;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Repositories\BlockRepository;
+use Bugo\LightPortal\UI\Fields\{CustomField, CheckboxField};
+use Bugo\LightPortal\UI\Fields\{TextareaField, TextField, UrlField};
+use Bugo\LightPortal\UI\Partials\{AreaSelect, ContentClassSelect, IconSelect};
+use Bugo\LightPortal\UI\Partials\{PermissionSelect, PlacementSelect, TitleClassSelect};
 use Bugo\LightPortal\Utils\{CacheTrait, Content, Icon, Language};
 use Bugo\LightPortal\Utils\{RequestTrait, Setting, Str};
 
@@ -139,7 +140,7 @@ final class BlockArea
 		Utils::$context['current_block'] = $this->repository->getData($item);
 
 		if (empty(Utils::$context['current_block'])) {
-			ErrorHandler::fatalLang('lp_block_not_found', status: 404);
+			ErrorHandler::fatalLang('lp_block_not_found', false, status: 404);
 		}
 
 		if ($this->request()->has('remove')) {

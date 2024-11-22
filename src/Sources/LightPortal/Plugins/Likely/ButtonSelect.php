@@ -14,7 +14,7 @@
 namespace Bugo\LightPortal\Plugins\Likely;
 
 use Bugo\Compat\{Lang, Utils};
-use Bugo\LightPortal\Areas\Partials\AbstractPartial;
+use Bugo\LightPortal\UI\Partials\AbstractPartial;
 
 final class ButtonSelect extends AbstractPartial
 {

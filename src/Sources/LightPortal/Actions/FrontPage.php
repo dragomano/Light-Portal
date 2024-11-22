@@ -12,8 +12,8 @@
 
 namespace Bugo\LightPortal\Actions;
 
-use Bugo\Compat\{Config, ErrorHandler, Lang, PageIndex};
-use Bugo\Compat\{Sapi, Theme, User, Utils};
+use Bugo\LightPortal\Renderers\RendererInterface;
+use Bugo\Compat\{Config, Lang, PageIndex, User, Utils};
 use Bugo\LightPortal\Articles\{ArticleInterface, BoardArticle};
 use Bugo\LightPortal\Articles\{ChosenPageArticle, ChosenTopicArticle};
 use Bugo\LightPortal\Articles\{PageArticle, TopicArticle};
@@ -22,30 +22,17 @@ use Bugo\LightPortal\EventManager;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\{CacheTrait, DateTime, Icon};
 use Bugo\LightPortal\Utils\{RequestTrait, SessionTrait, Setting, Str};
-use eftec\bladeone\BladeOne;
-use Exception;
 
 use function abs;
 use function array_column;
-use function array_combine;
 use function array_key_exists;
 use function array_map;
-use function array_merge;
-use function basename;
 use function call_user_func;
-use function count;
 use function date;
 use function floor;
-use function glob;
-use function is_array;
 use function ltrim;
 use function number_format;
-use function ob_get_clean;
-use function ob_start;
 use function sprintf;
-use function str_replace;
-use function strstr;
-use function ucfirst;
 
 use const LP_BASE_URL;
 
@@ -55,8 +42,6 @@ final class FrontPage implements ActionInterface
 	use RequestTrait;
 	use SessionTrait;
 
-	public const DEFAULT_TEMPLATE = 'default.blade.php';
-
 	private array $modes = [
 		'all_pages'     => PageArticle::class,
 		'all_topics'    => TopicArticle::class,
@@ -64,6 +49,17 @@ final class FrontPage implements ActionInterface
 		'chosen_pages'  => ChosenPageArticle::class,
 		'chosen_topics' => ChosenTopicArticle::class,
 	];
+
+	private array $config;
+
+	private RendererInterface $renderer;
+
+	public function __construct()
+	{
+		$this->config = require dirname(__DIR__) . '/Settings/config.php';
+
+		$this->renderer = new $this->config[RendererInterface::class];
+	}
 
 	public function show(): void
 	{
@@ -136,8 +132,9 @@ final class FrontPage implements ActionInterface
 
 		Utils::$context['start'] = $this->request()->get('start');
 
-		if (! empty(Config::$modSettings['lp_use_simple_pagination']))
+		if (! empty(Config::$modSettings['lp_use_simple_pagination'])) {
 			Utils::$context['page_index'] = $this->simplePaginate(LP_BASE_URL, $itemsCount, $limit);
+		}
 
 		Utils::$context['portal_next_page'] = $this->request('start') + $limit < $itemsCount
 			? LP_BASE_URL . ';start=' . ($this->request('start') + $limit)
@@ -146,6 +143,11 @@ final class FrontPage implements ActionInterface
 		Utils::$context['lp_frontpage_articles'] = $articles;
 
 		EventManager::getInstance()->dispatch(PortalHook::frontAssets);
+	}
+
+	public function getLayouts(): array
+	{
+		return $this->renderer->getLayouts();
 	}
 
 	public function prepareTemplates(): void
@@ -162,10 +164,27 @@ final class FrontPage implements ActionInterface
 
 		$this->prepareLayoutSwitcher();
 
-		// Mod authors can use their own logic here
-		EventManager::getInstance()->dispatch(PortalHook::frontLayouts);
+		$currentLayout = Config::$modSettings['lp_frontpage_layout'] ?? $this->renderer::DEFAULT_TEMPLATE;
 
-		$this->view(Config::$modSettings['lp_frontpage_layout']);
+		$params = [
+			'txt'         => Lang::$txt,
+			'context'     => Utils::$context,
+			'modSettings' => Config::$modSettings,
+		];
+
+		// You can add your own logic here
+		EventManager::getInstance()->dispatch(
+			PortalHook::frontLayouts,
+			new Event(new class ($this->renderer, $currentLayout, $params) {
+				public function __construct(
+					public RendererInterface &$renderer,
+					public string &$layout,
+					public array &$params
+				) {}
+			})
+		);
+
+		Utils::$context['lp_layout_content'] = $this->renderer->render($currentLayout, $params);
 	}
 
 	public function prepareLayoutSwitcher(): void
@@ -177,7 +196,7 @@ final class FrontPage implements ActionInterface
 
 		if ($this->session('lp')->isEmpty('frontpage_layout')) {
 			Utils::$context['lp_current_layout'] = $this->request(
-				'layout', Config::$modSettings['lp_frontpage_layout'] ?? self::DEFAULT_TEMPLATE
+				'layout', Config::$modSettings['lp_frontpage_layout'] ?? $this->renderer::DEFAULT_TEMPLATE
 			);
 		} else {
 			Utils::$context['lp_current_layout'] = $this->request(
@@ -188,98 +207,6 @@ final class FrontPage implements ActionInterface
 		$this->session('lp')->put('frontpage_layout', Utils::$context['lp_current_layout']);
 
 		Config::$modSettings['lp_frontpage_layout'] = $this->session('lp')->get('frontpage_layout');
-	}
-
-	public function getLayouts(): array
-	{
-		Theme::loadTemplate('LightPortal/ViewFrontPage');
-
-		$layouts = glob(Theme::$current->settings['default_theme_dir'] . '/LightPortal/layouts/*.blade.php');
-
-		$extensions = ['.blade.php'];
-
-		// Mod authors can add custom extensions for layouts
-		EventManager::getInstance()->dispatch(
-			PortalHook::customLayoutExtensions,
-			new Event(new class ($extensions) {
-				public function __construct(public array &$extensions) {}
-			})
-		);
-
-		foreach ($extensions as $extension) {
-			$layouts = array_merge(
-				$layouts,
-				glob(Theme::$current->settings['default_theme_dir'] . '/portal_layouts/*' . $extension)
-			);
-		}
-
-		$values = $titles = [];
-
-		foreach ($layouts as $layout) {
-			$values[] = $title = basename((string) $layout);
-
-			$shortName = ucfirst(strstr($title, '.', true) ?: $title);
-
-			$titles[] = $title === self::DEFAULT_TEMPLATE
-				? Lang::$txt['lp_default']
-				: str_replace('_', ' ', $shortName);
-		}
-
-		$layouts = array_combine($values, $titles);
-		$default = $layouts[self::DEFAULT_TEMPLATE];
-		unset($layouts[self::DEFAULT_TEMPLATE]);
-
-		return array_merge([self::DEFAULT_TEMPLATE => $default], $layouts);
-	}
-
-	public function view(string $layout): void
-	{
-		if (empty($layout))
-			return;
-
-		$params = [
-			'txt'         => Lang::$txt,
-			'context'     => Utils::$context,
-			'modSettings' => Config::$modSettings,
-		];
-
-		$templates = [
-			Theme::$current->settings['default_theme_dir'] . '/LightPortal/layouts',
-			Theme::$current->settings['default_theme_dir'] . '/portal_layouts',
-		];
-
-		ob_start();
-
-		try {
-			$blade = new BladeOne($templates, Sapi::getTempDir());
-
-			$blade->directiveRT('icon', static function (array|string $expression) {
-				if (is_array($expression)) {
-					[$name, $title] = count($expression) > 1 ? $expression : [$expression[0], false];
-				} else {
-					$name = $expression;
-				}
-
-				$icon = Icon::get($name);
-
-				if (empty($title)) {
-					echo $icon;
-					return;
-				}
-
-				echo str_replace(' class=', ' title="' . $title . '" class=', $icon);
-			});
-
-			$layout = strstr(
-				(string) Config::$modSettings['lp_frontpage_layout'], '.', true
-			) ?: Config::$modSettings['lp_frontpage_layout'];
-
-			echo $blade->run($layout, $params);
-		} catch (Exception $e) {
-			ErrorHandler::fatal($e->getMessage());
-		}
-
-		Utils::$context['lp_layout'] = ob_get_clean();
 	}
 
 	public function getNumColumns(): int

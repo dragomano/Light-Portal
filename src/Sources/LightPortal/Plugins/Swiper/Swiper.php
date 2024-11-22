@@ -14,11 +14,14 @@
 namespace Bugo\LightPortal\Plugins\Swiper;
 
 use Bugo\Compat\{Lang, Theme, User, Utils};
-use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField};
-use Bugo\LightPortal\Areas\Fields\{RadioField, RangeField, SelectField};
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\UI\Fields\CheckboxField;
+use Bugo\LightPortal\UI\Fields\CustomField;
+use Bugo\LightPortal\UI\Fields\RadioField;
+use Bugo\LightPortal\UI\Fields\RangeField;
+use Bugo\LightPortal\UI\Fields\SelectField;
 use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))

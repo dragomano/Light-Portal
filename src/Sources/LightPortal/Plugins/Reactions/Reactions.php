@@ -14,9 +14,9 @@
 namespace Bugo\LightPortal\Plugins\Reactions;
 
 use Bugo\Compat\{Db, Theme, User, Utils};
-use Bugo\LightPortal\Areas\Fields\CheckboxField;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
+use Bugo\LightPortal\UI\Fields\CheckboxField;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

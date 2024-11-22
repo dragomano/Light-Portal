@@ -101,7 +101,7 @@ final class CategoryRepository extends AbstractRepository
 		if (empty(Db::$db->num_rows($result))) {
 			Utils::$context['error_link'] = Config::$scripturl . '?action=admin;area=lp_categories';
 
-			ErrorHandler::fatalLang('lp_category_not_found', status: 404);
+			ErrorHandler::fatalLang('lp_category_not_found', false, status: 404);
 		}
 
 		while ($row = Db::$db->fetch_assoc($result)) {

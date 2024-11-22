@@ -14,7 +14,7 @@
 namespace Bugo\LightPortal\Plugins\GalleryBlock;
 
 use Bugo\Compat\{Config, Db, Lang, Utils};
-use Bugo\LightPortal\Areas\Partials\AbstractPartial;
+use Bugo\LightPortal\UI\Partials\AbstractPartial;
 use Bugo\LightPortal\Utils\CacheTrait;
 
 final class CategorySelect extends AbstractPartial

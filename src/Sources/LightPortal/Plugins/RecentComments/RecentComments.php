@@ -14,9 +14,10 @@
 namespace Bugo\LightPortal\Plugins\RecentComments;
 
 use Bugo\Compat\{Db, Lang, User};
-use Bugo\LightPortal\Areas\Fields\{NumberField, RangeField};
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Plugins\{Block, Event};
+use Bugo\LightPortal\UI\Fields\NumberField;
+use Bugo\LightPortal\UI\Fields\RangeField;
 use Bugo\LightPortal\Utils\{DateTime, Str};
 
 if (! defined('LP_NAME'))

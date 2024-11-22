@@ -14,11 +14,11 @@
 namespace Bugo\LightPortal\Plugins\SimpleFeeder;
 
 use Bugo\Compat\Config;
-use Bugo\LightPortal\Areas\Fields\CheckboxField;
-use Bugo\LightPortal\Areas\Fields\UrlField;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\UI\Fields\CheckboxField;
+use Bugo\LightPortal\UI\Fields\UrlField;
 use Bugo\LightPortal\Utils\{DateTime, Str};
 
 use function file_get_contents;

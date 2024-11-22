@@ -14,13 +14,12 @@
 namespace Bugo\LightPortal\Plugins\AdsBlock;
 
 use Bugo\Compat\{Lang, Utils};
-use Bugo\LightPortal\Areas\Partials\AbstractPartial;
-
+use Bugo\LightPortal\UI\Partials\AbstractPartial;
+use function explode;
 use function func_get_args;
 use function implode;
 use function in_array;
 use function is_array;
-use function explode;
 
 final class PlacementSelect extends AbstractPartial
 {

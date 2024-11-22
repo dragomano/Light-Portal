@@ -58,7 +58,7 @@ final class BlockImport extends AbstractImport
 			return;
 
 		if (! isset($xml->blocks->item[0]['block_id'])) {
-			ErrorHandler::fatalLang('lp_wrong_import_file');
+			ErrorHandler::fatalLang('lp_wrong_import_file', false);
 		}
 
 		$items = $titles = $params = [];

@@ -45,7 +45,7 @@ final class Category extends AbstractPageList
 		if (array_key_exists($category['id'], $categories) === false) {
 			Utils::$context['error_link'] = LP_BASE_URL . ';sa=categories';
 			Lang::$txt['back'] = Lang::$txt['lp_all_categories'];
-			ErrorHandler::fatalLang('lp_category_not_found', status: 404);
+			ErrorHandler::fatalLang('lp_category_not_found', false, status: 404);
 		}
 
 		if ($category['id'] === 0) {

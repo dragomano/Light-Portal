@@ -14,12 +14,12 @@
 namespace Bugo\LightPortal\Plugins\Events;
 
 use Bugo\Compat\{Actions\Calendar, Lang, User};
-use Bugo\LightPortal\Areas\Fields\CheckboxField;
-use Bugo\LightPortal\Areas\Fields\NumberField;
-use Bugo\LightPortal\Areas\Fields\RangeField;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\UI\Fields\CheckboxField;
+use Bugo\LightPortal\UI\Fields\NumberField;
+use Bugo\LightPortal\UI\Fields\RangeField;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

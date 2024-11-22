@@ -14,8 +14,9 @@
 namespace Bugo\LightPortal\Plugins\TopPosters;
 
 use Bugo\Compat\{Config, Db, Lang, User};
-use Bugo\LightPortal\Areas\Fields\{CheckboxField, NumberField};
 use Bugo\LightPortal\Plugins\{Block, Event};
+use Bugo\LightPortal\UI\Fields\CheckboxField;
+use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\Utils\{Avatar, Str};
 
 if (! defined('LP_NAME'))

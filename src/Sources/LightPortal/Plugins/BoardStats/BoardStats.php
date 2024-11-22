@@ -14,11 +14,11 @@
 namespace Bugo\LightPortal\Plugins\BoardStats;
 
 use Bugo\Compat\{Config, Lang, User};
-use Bugo\LightPortal\Areas\Fields\CheckboxField;
-use Bugo\LightPortal\Areas\Fields\NumberField;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\UI\Fields\CheckboxField;
+use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
@@ -88,7 +88,7 @@ class BoardStats extends Block
 			return [];
 
 		if ($parameters['show_basic_info']) {
-			$info = $this->getFromSsi('boardStats', 'array');
+			$info = $this->getFromSSI('boardStats', 'array');
 			$info['max_online_today'] = comma_format(Config::$modSettings['mostOnlineToday']);
 			$info['max_online'] = comma_format(Config::$modSettings['mostOnline']);
 		}
@@ -97,7 +97,7 @@ class BoardStats extends Block
 			'latest_member' => Config::$modSettings['latestRealName'] ?? '',
 			'basic_info'    => $info ?? [],
 			'whos_online'   => empty($parameters['show_whos_online'])
-				? [] : $this->getFromSsi('whosOnline', 'array')
+				? [] : $this->getFromSSI('whosOnline', 'array')
 		];
 	}
 

@@ -45,7 +45,7 @@ final class Tag extends AbstractPageList
 		if (array_key_exists($tag['id'], $tags) === false) {
 			Utils::$context['error_link'] = LP_BASE_URL . ';sa=tags';
 			Lang::$txt['back'] = Lang::$txt['lp_all_page_tags'];
-			ErrorHandler::fatalLang('lp_tag_not_found', status: 404);
+			ErrorHandler::fatalLang('lp_tag_not_found', false, status: 404);
 		}
 
 		$tag = $tags[$tag['id']];

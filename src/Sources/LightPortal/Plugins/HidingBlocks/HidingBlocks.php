@@ -14,10 +14,10 @@
 namespace Bugo\LightPortal\Plugins\HidingBlocks;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
+use Bugo\LightPortal\UI\Fields\CustomField;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

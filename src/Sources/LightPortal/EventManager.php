@@ -12,6 +12,7 @@
 
 namespace Bugo\LightPortal;
 
+use Bugo\LightPortal\Enums\PluginType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Plugin;
 use Doctrine\Common\EventArgs;
@@ -57,7 +58,7 @@ class EventManager
 	{
 		foreach ($this->getAll($hook->name) as $listener) {
 			if (
-				$listener->type !== 'block_options'
+				$listener->type !== PluginType::BLOCK_OPTIONS->name()
 				&& in_array($hook, $this->contentHooks)
 				&& isset($eventArgs->args->type)
 			) {

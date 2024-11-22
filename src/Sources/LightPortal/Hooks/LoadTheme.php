@@ -39,7 +39,7 @@ class LoadTheme
 
 	public function __construct()
 	{
-		$this->config = require_once dirname(__DIR__) . '/Settings/config.php';
+		$this->config = require dirname(__DIR__) . '/Settings/config.php';
 	}
 
 	public function __invoke(): void
@@ -53,6 +53,7 @@ class LoadTheme
 
 		$this->loadAssets(new $this->config[CompilerInterface::class]);
 
+		// Initialize active plugins and add event listeners
 		PluginHandler::getInstance();
 
 		// Run all init methods for active plugins

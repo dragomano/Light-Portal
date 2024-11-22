@@ -14,10 +14,14 @@
 namespace Bugo\LightPortal\Plugins\RecentPosts;
 
 use Bugo\Compat\{Config, User, Utils};
-use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, NumberField, RadioField};
-use Bugo\LightPortal\Areas\Partials\{BoardSelect, TopicSelect};
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\{Block, Event};
+use Bugo\LightPortal\UI\Fields\CheckboxField;
+use Bugo\LightPortal\UI\Fields\CustomField;
+use Bugo\LightPortal\UI\Fields\NumberField;
+use Bugo\LightPortal\UI\Fields\RadioField;
+use Bugo\LightPortal\UI\Partials\BoardSelect;
+use Bugo\LightPortal\UI\Partials\TopicSelect;
 use Bugo\LightPortal\Utils\{Avatar, DateTime};
 
 if (! defined('LP_NAME'))
@@ -161,7 +165,7 @@ class RecentPosts extends Block
 			'min_message_id' => $minMessageId,
 		];
 
-		$posts = $this->getFromSsi(
+		$posts = $this->getFromSSI(
 			'queryPosts',
 			$whereQuery,
 			$whereQueryParams,

@@ -42,9 +42,9 @@ if (! defined('LP_NAME'))
 
 final class PluginHandler
 {
-	private array $settings;
+	private readonly array $settings;
 
-	private PluginRegistry $registry;
+	private readonly PluginRegistry $registry;
 
 	private readonly CSS $css;
 

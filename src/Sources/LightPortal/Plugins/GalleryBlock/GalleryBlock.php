@@ -13,11 +13,13 @@
 
 namespace Bugo\LightPortal\Plugins\GalleryBlock;
 
-use Bugo\Compat\{Config, Db, Lang, User, Utils};
-use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField};
+use Bugo\Compat\{Config, Db};
+use Bugo\Compat\{Lang, User, Utils};
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\UI\Fields\CustomField;
+use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))

@@ -14,8 +14,9 @@
 namespace Bugo\LightPortal\Plugins\RecentAttachments;
 
 use Bugo\Compat\{Theme, User};
-use Bugo\LightPortal\Areas\Fields\{NumberField, TextField};
 use Bugo\LightPortal\Plugins\{Block, Event};
+use Bugo\LightPortal\UI\Fields\NumberField;
+use Bugo\LightPortal\UI\Fields\TextField;
 use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
@@ -62,7 +63,7 @@ class RecentAttachments extends Block
 	{
 		$extensions = empty($parameters['extensions']) ? [] : explode(',', (string) $parameters['extensions']);
 
-		return $this->getFromSsi('recentAttachments', $parameters['num_attachments'], $extensions, 'array');
+		return $this->getFromSSI('recentAttachments', $parameters['num_attachments'], $extensions, 'array');
 	}
 
 	public function prepareContent(Event $e): void

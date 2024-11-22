@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package TwigLayouts (Light Portal)
@@ -8,18 +8,20 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 18.11.24
+ * @version 23.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\TwigLayouts;
 
-use Bugo\Compat\{Config, ErrorHandler};
-use Bugo\Compat\{Lang, Sapi, Theme, Utils};
+use Bugo\Compat\{Lang, Theme};
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Utils\{Icon, Str};
-use Twig\{Environment, Error\Error};
-use Twig\{Loader\FilesystemLoader, TwigFunction};
+use Bugo\LightPortal\Utils\Str;
+
+use function basename;
+use function glob;
+use function sprintf;
+use function str_contains;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -45,59 +47,15 @@ class TwigLayouts extends Plugin
 		$e->args->settings[$this->name][] = ['callback', '_', $this->showExamples()];
 	}
 
-	public function frontLayouts(): void
+	public function frontLayouts(Event $e): void
 	{
-		if (! str_contains((string) Config::$modSettings['lp_frontpage_layout'], $this->extension))
+		if (! str_contains($e->args->layout, $this->extension))
 			return;
 
-		require_once __DIR__ . '/vendor/autoload.php';
-
-		$params = [
-			'txt'         => Lang::$txt,
-			'context'     => Utils::$context,
-			'modSettings' => Config::$modSettings,
-		];
-
-		ob_start();
-
-		try {
-			$loader = new FilesystemLoader(Theme::$current->settings['default_theme_dir'] . '/portal_layouts');
-
-			$twig = new Environment($loader, [
-				'cache' => empty(Config::$modSettings['cache_enable']) ? false : Sapi::getTempDir(),
-				'debug' => false
-			]);
-
-			$twig->addFunction(new TwigFunction('show_pagination', static function (string $position = 'top') {
-				show_pagination($position);
-			}));
-
-			$twig->addFunction(new TwigFunction('icon', static function (string $name, string $title = '') {
-				$icon = Icon::get($name);
-
-				if (empty($title)) {
-					echo $icon;
-					return;
-				}
-
-				echo str_replace(' class=', ' title="' . $title . '" class=', $icon);
-			}));
-
-			$twig->addFunction(new TwigFunction('debug', static function (mixed $data) {
-				echo parse_bbc('[code]' . print_r($data, true) . '[/code]');
-			}));
-
-			echo $twig->render(Config::$modSettings['lp_frontpage_layout'], $params);
-		} catch (Error $e) {
-			ErrorHandler::fatal($e->getMessage());
-		}
-
-		Utils::$context['lp_layout'] = ob_get_clean();
-
-		Config::$modSettings['lp_frontpage_layout'] = '';
+		$e->args->renderer = new TwigRenderer();
 	}
 
-	public function customLayoutExtensions(Event $e): void
+	public function layoutExtensions(Event $e): void
 	{
 		$e->args->extensions[] = $this->extension;
 	}
@@ -131,6 +89,7 @@ class TwigLayouts extends Plugin
 		}
 
 		return Str::html('div', ['class' => 'roundframe'])
-			->setHtml($list);
+			->setHtml($list)
+			->toHtml();
 	}
 }

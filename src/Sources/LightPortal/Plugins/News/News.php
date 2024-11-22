@@ -14,10 +14,10 @@
 namespace Bugo\LightPortal\Plugins\News;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Areas\Fields\SelectField;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\UI\Fields\SelectField;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -61,7 +61,7 @@ class News extends Block
 		if ($item > 0)
 			return Utils::$context['news_lines'][$item - 1];
 
-		return $this->getFromSsi($this->name, 'return');
+		return $this->getFromSSI($this->name, 'return');
 	}
 
 	public function prepareContent(Event $e): void

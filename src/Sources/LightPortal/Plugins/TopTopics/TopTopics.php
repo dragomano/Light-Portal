@@ -14,8 +14,10 @@
 namespace Bugo\LightPortal\Plugins\TopTopics;
 
 use Bugo\Compat\{Lang, User};
-use Bugo\LightPortal\Areas\Fields\{CheckboxField, NumberField, RadioField};
 use Bugo\LightPortal\Plugins\{Block, Event};
+use Bugo\LightPortal\UI\Fields\CheckboxField;
+use Bugo\LightPortal\UI\Fields\NumberField;
+use Bugo\LightPortal\UI\Fields\RadioField;
 use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
@@ -70,7 +72,7 @@ class TopTopics extends Block
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(
 				self::class,
-				'getFromSsi',
+				'getFromSSI',
 				'topTopics',
 				$parameters['popularity_type'],
 				$parameters['num_topics'],

@@ -14,10 +14,11 @@
 namespace Bugo\LightPortal\Plugins\RandomPages;
 
 use Bugo\Compat\{Config, Db, Lang, User};
-use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField};
-use Bugo\LightPortal\Areas\Partials\CategorySelect;
 use Bugo\LightPortal\Enums\{EntryType, Permission, Status, Tab};
 use Bugo\LightPortal\Plugins\{Block, Event};
+use Bugo\LightPortal\UI\Fields\CustomField;
+use Bugo\LightPortal\UI\Fields\NumberField;
+use Bugo\LightPortal\UI\Partials\CategorySelect;
 use Bugo\LightPortal\Utils\{DateTime, Str};
 
 if (! defined('LP_NAME'))

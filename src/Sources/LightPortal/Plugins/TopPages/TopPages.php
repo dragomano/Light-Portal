@@ -14,9 +14,11 @@
 namespace Bugo\LightPortal\Plugins\TopPages;
 
 use Bugo\Compat\{Db, Lang, User};
-use Bugo\LightPortal\Areas\Fields\{CheckboxField, NumberField, RadioField};
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Plugins\{Block, Event};
+use Bugo\LightPortal\UI\Fields\CheckboxField;
+use Bugo\LightPortal\UI\Fields\NumberField;
+use Bugo\LightPortal\UI\Fields\RadioField;
 use Bugo\LightPortal\Utils\{Setting, Str};
 
 use function array_combine;

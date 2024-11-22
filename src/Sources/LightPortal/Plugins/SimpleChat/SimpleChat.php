@@ -14,11 +14,10 @@
 namespace Bugo\LightPortal\Plugins\SimpleChat;
 
 use Bugo\Compat\{Db, Theme, Utils};
-use Bugo\LightPortal\Areas\Fields\CheckboxField;
-use Bugo\LightPortal\Areas\Fields\RadioField;
 use Bugo\LightPortal\Enums\{Hook, Tab};
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\{Block, Event};
+use Bugo\LightPortal\UI\Fields\CheckboxField;
+use Bugo\LightPortal\UI\Fields\RadioField;
 use Bugo\LightPortal\Utils\Avatar;
 
 use function array_combine;

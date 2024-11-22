@@ -14,8 +14,9 @@
 namespace Bugo\LightPortal\Plugins\Translator;
 
 use Bugo\Compat\Config;
-use Bugo\LightPortal\Areas\Fields\{CheckboxField, RadioField};
 use Bugo\LightPortal\Plugins\{Block, Event};
+use Bugo\LightPortal\UI\Fields\CheckboxField;
+use Bugo\LightPortal\UI\Fields\RadioField;
 use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))

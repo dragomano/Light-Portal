@@ -12,19 +12,18 @@
 
 namespace Bugo\LightPortal\Plugins;
 
-use Bugo\Compat\{Config, Db, Lang, ServerSideIncludes, Theme, Utils};
+use Bugo\Compat\{Config, Db, Lang};
+use Bugo\Compat\{ServerSideIncludes, Theme, Utils};
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\{CacheTrait, EntityDataTrait};
 use Bugo\LightPortal\Utils\{RequestTrait, SessionTrait};
-use Bugo\LightPortal\Utils\{SMFHookTrait, Str};
-use ReflectionClass;
+use Bugo\LightPortal\Utils\{HasReflectionAware, HasTemplateAware, SMFHookTrait, Str};
 
 use function array_column;
 use function array_filter;
 use function array_flip;
 use function dirname;
 use function explode;
-use function is_file;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -33,11 +32,11 @@ abstract class Plugin
 {
 	use CacheTrait;
 	use EntityDataTrait;
+	use HasReflectionAware;
+	use HasTemplateAware;
 	use RequestTrait;
 	use SMFHookTrait;
 	use SessionTrait;
-
-	public string $type = 'block';
 
 	public string $icon = 'fas fa-puzzle-piece';
 
@@ -58,11 +57,6 @@ abstract class Plugin
 		$this->context = Utils::$context['lp_' . $this->name . '_plugin'] ?? [];
 	}
 
-	public function getCalledClass(): ReflectionClass
-	{
-		return new ReflectionClass(static::class);
-	}
-
 	public function getName(): string
 	{
 		return $this->getCalledClass()->getShortName();
@@ -73,39 +67,7 @@ abstract class Plugin
 		return Str::getSnakeName($this->getName());
 	}
 
-	public function setTemplate(string $name = 'template'): self
-	{
-		$path = dirname($this->getCalledClass()->getFileName()) . DIRECTORY_SEPARATOR . $name . '.php';
-
-		if (is_file($path)) {
-			require_once $path;
-		}
-
-		return $this;
-	}
-
-	public function withSubTemplate(string $template): self
-	{
-		Utils::$context['sub_template'] = $template;
-
-		return $this;
-	}
-
-	public function withLayer(string $layer): self
-	{
-		Utils::$context['template_layers'][] = $layer;
-
-		return $this;
-	}
-
-	public function getFromTemplate(string $function, ...$params): string
-	{
-		$this->setTemplate();
-
-		return $function(...$params);
-	}
-
-	public function getFromSsi(string $function, ...$params)
+	public function getFromSSI(string $function, ...$params)
 	{
 		require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'SSI.php';
 

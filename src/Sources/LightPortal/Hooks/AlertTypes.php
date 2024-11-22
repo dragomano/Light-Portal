@@ -13,6 +13,7 @@
 namespace Bugo\LightPortal\Hooks;
 
 use Bugo\Compat\Lang;
+use Bugo\LightPortal\Enums\AlertAction;
 use Bugo\LightPortal\Utils\Setting;
 
 if (! defined('SMF'))
@@ -26,7 +27,7 @@ class AlertTypes
 
 		if (Setting::getCommentBlock() === 'default') {
 			$types['light_portal'] = [
-				'page_comment' => [
+				AlertAction::PAGE_COMMENT->name() => [
 					'alert' => 'yes',
 					'email' => 'never',
 					'permission' => [
@@ -34,7 +35,7 @@ class AlertTypes
 						'is_board' => false,
 					]
 				],
-				'page_comment_reply' => [
+				AlertAction::PAGE_COMMENT_REPLY->name() => [
 					'alert' => 'yes',
 					'email' => 'never',
 					'permission' => [
@@ -45,7 +46,7 @@ class AlertTypes
 			];
 		}
 
-		$types['light_portal']['page_unapproved'] = [
+		$types['light_portal'][AlertAction::PAGE_UNAPPROVED->name()] = [
 			'alert' => 'yes',
 			'email' => 'yes',
 			'permission' => [

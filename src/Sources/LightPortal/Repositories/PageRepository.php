@@ -15,7 +15,8 @@ namespace Bugo\LightPortal\Repositories;
 use Bugo\Compat\{Config, Db, Lang, Logging};
 use Bugo\Compat\{Msg, Security, User, Utils};
 use Bugo\LightPortal\Args\ItemArgs;
-use Bugo\LightPortal\Enums\{EntryType, Permission, PortalHook, Status};
+use Bugo\LightPortal\Enums\{AlertAction, EntryType};
+use Bugo\LightPortal\Enums\{Permission, PortalHook, Status};
 use Bugo\LightPortal\EventManager;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\{CacheTrait, Content, DateTime};
@@ -621,7 +622,7 @@ final class PageRepository extends AbstractRepository
 		];
 
 		if (empty(Utils::$context['allow_light_portal_manage_pages_any'])) {
-			Notify::send('new_page', 'page_unapproved', $options);
+			Notify::send('new_page', AlertAction::PAGE_UNAPPROVED->name(), $options);
 		}
 
 		return $item;

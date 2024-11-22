@@ -14,16 +14,16 @@
 namespace Bugo\LightPortal\Plugins\AdsBlock;
 
 use Bugo\Compat\{Lang, Theme};
-use Bugo\LightPortal\Areas\Fields\{CustomField, TextareaField, TextField};
-use Bugo\LightPortal\Areas\Partials\{BoardSelect, PageSelect, TopicSelect};
 use Bugo\LightPortal\Enums\{Hook, Tab};
+use Bugo\LightPortal\Plugins\{Block, Event};
 use Bugo\LightPortal\Plugins\AdsBlock\Hooks\AdminAreas;
 use Bugo\LightPortal\Plugins\AdsBlock\Hooks\DisplayButtons;
 use Bugo\LightPortal\Plugins\AdsBlock\Hooks\MenuButtons;
 use Bugo\LightPortal\Plugins\AdsBlock\Hooks\MessageindexButtons;
 use Bugo\LightPortal\Plugins\AdsBlock\Hooks\PrepareDisplayContext;
 use Bugo\LightPortal\Plugins\AdsBlock\Traits\PlacementProviderTrait;
-use Bugo\LightPortal\Plugins\{Block, Event};
+use Bugo\LightPortal\UI\Fields\{CustomField, TextareaField, TextField};
+use Bugo\LightPortal\UI\Partials\{BoardSelect, PageSelect, TopicSelect};
 use Bugo\LightPortal\Utils\Content;
 
 use function date;

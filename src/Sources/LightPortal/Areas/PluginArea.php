@@ -40,6 +40,7 @@ use function ksort;
 use function ltrim;
 use function sort;
 use function sprintf;
+use function unlink;
 
 use const LP_NAME;
 

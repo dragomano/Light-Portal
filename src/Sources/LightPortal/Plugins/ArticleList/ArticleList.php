@@ -14,11 +14,10 @@
 namespace Bugo\LightPortal\Plugins\ArticleList;
 
 use Bugo\Compat\{BBCodeParser, Config, Db, Lang, User, Utils};
-use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, RadioField};
-use Bugo\LightPortal\Areas\Partials\{ContentClassSelect, PageSelect, TopicSelect};
 use Bugo\LightPortal\Enums\{EntryType, Permission, Status, Tab};
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\{Block, Event};
+use Bugo\LightPortal\UI\Fields\{CheckboxField, CustomField, RadioField};
+use Bugo\LightPortal\UI\Partials\{ContentClassSelect, PageSelect, TopicSelect};
 use Bugo\LightPortal\Utils\{Content, Setting, Str};
 
 if (! defined('LP_NAME'))

@@ -14,8 +14,9 @@
 namespace Bugo\LightPortal\Plugins\WhosOnline;
 
 use Bugo\Compat\{Config, Lang, User};
-use Bugo\LightPortal\Areas\Fields\{CheckboxField, NumberField};
 use Bugo\LightPortal\Plugins\{Block, Event};
+use Bugo\LightPortal\UI\Fields\CheckboxField;
+use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\Utils\{Avatar, Str};
 
 if (! defined('LP_NAME'))
@@ -74,7 +75,7 @@ class WhosOnline extends Block
 
 		$whoIsOnline = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
 			->setLifeTime($parameters['update_interval'] ?? $e->args->cacheTime)
-			->setFallback(self::class, 'getFromSsi', 'whosOnline', 'array');
+			->setFallback(self::class, 'getFromSSI', 'whosOnline', 'array');
 
 		if (empty($whoIsOnline))
 			return;

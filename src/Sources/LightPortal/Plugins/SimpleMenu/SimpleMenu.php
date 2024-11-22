@@ -14,10 +14,10 @@
 namespace Bugo\LightPortal\Plugins\SimpleMenu;
 
 use Bugo\Compat\{Config, Utils};
-use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))

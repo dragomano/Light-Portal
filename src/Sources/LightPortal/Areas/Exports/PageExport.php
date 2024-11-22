@@ -272,7 +272,7 @@ final class PageExport extends AbstractExport
 			$file = Sapi::getTempDir() . '/lp_pages_backup.xml';
 			$xml->save($file);
 		} catch (DOMException $e) {
-			ErrorHandler::log('[LP] ' . Lang::$txt['lp_pages_export'] . ': ' . $e->getMessage());
+			ErrorHandler::log('[LP] ' . Lang::$txt['lp_pages_export'] . ': ' . $e->getMessage(), 'user');
 		}
 
 		return $file ?? '';

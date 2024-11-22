@@ -13,13 +13,13 @@
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, ErrorHandler, Lang, Security, Theme, Utils};
-use Bugo\LightPortal\Areas\Fields\CustomField;
-use Bugo\LightPortal\Areas\Partials\IconSelect;
 use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Areas\Validators\TagValidator;
 use Bugo\LightPortal\Enums\{Status, Tab};
 use Bugo\LightPortal\Models\TagModel;
 use Bugo\LightPortal\Repositories\TagRepository;
+use Bugo\LightPortal\UI\Fields\CustomField;
+use Bugo\LightPortal\UI\Partials\IconSelect;
 use Bugo\LightPortal\Utils\{CacheTrait, Icon, ItemList};
 use Bugo\LightPortal\Utils\{Language, RequestTrait, Str};
 
@@ -238,7 +238,7 @@ final class TagArea
 		Utils::$context['lp_current_tag'] = $this->repository->getData($item);
 
 		if (empty(Utils::$context['lp_current_tag'])) {
-			ErrorHandler::fatalLang('lp_tag_not_found', status: 404);
+			ErrorHandler::fatalLang('lp_tag_not_found', false, status: 404);
 		}
 
 		Language::prepareList();

@@ -14,12 +14,12 @@
 namespace Bugo\LightPortal\Plugins\TrendingTopics;
 
 use Bugo\Compat\{Config, Db, Lang, User};
-use Bugo\LightPortal\Areas\Fields\CheckboxField;
-use Bugo\LightPortal\Areas\Fields\NumberField;
-use Bugo\LightPortal\Areas\Fields\SelectField;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\UI\Fields\CheckboxField;
+use Bugo\LightPortal\UI\Fields\NumberField;
+use Bugo\LightPortal\UI\Fields\SelectField;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\Str;

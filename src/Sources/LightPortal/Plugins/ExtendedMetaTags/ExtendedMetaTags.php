@@ -14,10 +14,9 @@
 namespace Bugo\LightPortal\Plugins\ExtendedMetaTags;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Areas\Fields\VirtualSelectField;
 use Bugo\LightPortal\Enums\{Hook, Tab};
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\Plugin;
+use Bugo\LightPortal\Plugins\{Event, Plugin};
+use Bugo\LightPortal\UI\Fields\VirtualSelectField;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

@@ -62,7 +62,7 @@ final class PageImport extends AbstractImport
 			return;
 
 		if (! isset($xml->pages->item[0]['page_id'])) {
-			ErrorHandler::fatalLang('lp_wrong_import_file');
+			ErrorHandler::fatalLang('lp_wrong_import_file', false);
 		}
 
 		$items = $titles = $params = $comments = [];

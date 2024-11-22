@@ -13,14 +13,14 @@
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, ErrorHandler, Lang, Security, Theme, Utils};
-use Bugo\LightPortal\Areas\Fields\CustomField;
-use Bugo\LightPortal\Areas\Fields\TextareaField;
-use Bugo\LightPortal\Areas\Partials\IconSelect;
 use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Areas\Validators\CategoryValidator;
 use Bugo\LightPortal\Enums\{Status, Tab};
 use Bugo\LightPortal\Models\CategoryModel;
 use Bugo\LightPortal\Repositories\CategoryRepository;
+use Bugo\LightPortal\UI\Fields\CustomField;
+use Bugo\LightPortal\UI\Fields\TextareaField;
+use Bugo\LightPortal\UI\Partials\IconSelect;
 use Bugo\LightPortal\Utils\{CacheTrait, Icon, ItemList};
 use Bugo\LightPortal\Utils\{Language, RequestTrait, Str};
 
@@ -253,7 +253,7 @@ final class CategoryArea
 		Utils::$context['lp_current_category'] = $this->repository->getData($item);
 
 		if (empty(Utils::$context['lp_current_category'])) {
-			ErrorHandler::fatalLang('lp_category_not_found', status: 404);
+			ErrorHandler::fatalLang('lp_category_not_found', false, status: 404);
 		}
 
 		Language::prepareList();

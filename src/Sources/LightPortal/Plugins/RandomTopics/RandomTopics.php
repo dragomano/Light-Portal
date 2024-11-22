@@ -14,11 +14,12 @@
 namespace Bugo\LightPortal\Plugins\RandomTopics;
 
 use Bugo\Compat\{Config, Db, Lang, Theme, User, Utils};
-use Bugo\LightPortal\Areas\Fields\{CustomField, NumberField};
-use Bugo\LightPortal\Areas\Partials\BoardSelect;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\UI\Fields\CustomField;
+use Bugo\LightPortal\UI\Fields\NumberField;
+use Bugo\LightPortal\UI\Partials\BoardSelect;
 use Bugo\LightPortal\Utils\{DateTime, Str};
 
 if (! defined('LP_NAME'))

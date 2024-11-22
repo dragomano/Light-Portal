@@ -14,10 +14,11 @@
 namespace Bugo\LightPortal\Plugins\Polls;
 
 use Bugo\Compat\{Config, Db, Lang, Utils};
-use Bugo\LightPortal\Areas\Fields\{InputField, SelectField};
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\UI\Fields\InputField;
+use Bugo\LightPortal\UI\Fields\SelectField;
 use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
@@ -61,7 +62,7 @@ class Polls extends Block
 	{
 		$parameters = $e->args->parameters;
 
-		$poll = $this->getFromSsi('showPoll', $parameters['selected_item'], 'array');
+		$poll = $this->getFromSSI('showPoll', $parameters['selected_item'], 'array');
 
 		if ($poll) {
 			if ($poll['allow_vote']) {

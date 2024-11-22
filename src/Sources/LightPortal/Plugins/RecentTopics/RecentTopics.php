@@ -14,14 +14,14 @@
 namespace Bugo\LightPortal\Plugins\RecentTopics;
 
 use Bugo\Compat\{Config, User};
-use Bugo\LightPortal\Areas\Fields\CheckboxField;
-use Bugo\LightPortal\Areas\Fields\CustomField;
-use Bugo\LightPortal\Areas\Fields\NumberField;
-use Bugo\LightPortal\Areas\Fields\RadioField;
-use Bugo\LightPortal\Areas\Partials\BoardSelect;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\UI\Fields\CheckboxField;
+use Bugo\LightPortal\UI\Fields\CustomField;
+use Bugo\LightPortal\UI\Fields\NumberField;
+use Bugo\LightPortal\UI\Fields\RadioField;
+use Bugo\LightPortal\UI\Partials\BoardSelect;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\DateTime;
 
@@ -121,7 +121,7 @@ class RecentTopics extends Block
 		$excludeBoards = empty($parameters['exclude_boards']) ? null : explode(',', (string) $parameters['exclude_boards']);
 		$includeBoards = empty($parameters['include_boards']) ? null : explode(',', (string) $parameters['include_boards']);
 
-		$topics = $this->getFromSsi('recentTopics', (int) $parameters['num_topics'], $excludeBoards, $includeBoards, 'array');
+		$topics = $this->getFromSSI('recentTopics', (int) $parameters['num_topics'], $excludeBoards, $includeBoards, 'array');
 
 		if (empty($topics))
 			return [];

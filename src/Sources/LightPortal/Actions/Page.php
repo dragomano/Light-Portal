@@ -240,7 +240,7 @@ final class Page implements PageInterface
 	{
 		if (empty(Utils::$context['lp_page'])) {
 			$this->changeErrorPage();
-			ErrorHandler::fatalLang('lp_page_not_found', status: 404);
+			ErrorHandler::fatalLang('lp_page_not_found', false, status: 404);
 		}
 	}
 
@@ -250,17 +250,17 @@ final class Page implements PageInterface
 
 		if (empty($page['can_view'])) {
 			$this->changeErrorPage();
-			ErrorHandler::fatalLang('cannot_light_portal_view_page');
+			ErrorHandler::fatalLang('cannot_light_portal_view_page', false);
 		}
 
 		if ($page['entry_type'] === EntryType::DRAFT->name() && $page['author_id'] !== User::$info['id']) {
 			$this->changeErrorPage();
-			ErrorHandler::fatalLang('cannot_light_portal_view_page');
+			ErrorHandler::fatalLang('cannot_light_portal_view_page', false);
 		}
 
 		if (empty($page['status']) && empty($page['can_edit'])) {
 			$this->changeErrorPage();
-			ErrorHandler::fatalLang('lp_page_not_activated');
+			ErrorHandler::fatalLang('lp_page_not_activated', false);
 		}
 	}
 

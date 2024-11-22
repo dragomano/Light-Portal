@@ -14,11 +14,11 @@
 namespace Bugo\LightPortal\Plugins\BoardList;
 
 use Bugo\Compat\{Config, Utils};
-use Bugo\LightPortal\Areas\Fields\CustomField;
-use Bugo\LightPortal\Areas\Partials\{ContentClassSelect, TitleClassSelect};
 use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\{Block, Event};
+use Bugo\LightPortal\UI\Fields\CustomField;
+use Bugo\LightPortal\UI\Partials\ContentClassSelect;
+use Bugo\LightPortal\UI\Partials\TitleClassSelect;
 use Bugo\LightPortal\Utils\{Icon, MessageIndex, Str};
 
 if (! defined('LP_NAME'))

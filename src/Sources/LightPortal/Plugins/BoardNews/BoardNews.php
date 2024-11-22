@@ -14,10 +14,9 @@
 namespace Bugo\LightPortal\Plugins\BoardNews;
 
 use Bugo\Compat\{Config, Lang, Theme, User, Utils};
-use Bugo\LightPortal\Areas\Fields\{NumberField, RangeField};
 use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\{Block, Event};
+use Bugo\LightPortal\UI\Fields\{NumberField, RangeField};
 use Bugo\LightPortal\Utils\{MessageIndex, Str};
 
 if (! defined('LP_NAME'))
@@ -78,7 +77,7 @@ class BoardNews extends Block
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(
 				self::class,
-				'getFromSsi',
+				'getFromSSI',
 				'boardNews',
 				(int) $parameters['board_id'],
 				(int) $parameters['num_posts'],

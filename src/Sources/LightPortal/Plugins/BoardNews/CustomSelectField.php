@@ -11,11 +11,11 @@
  * @version 13.11.24
  */
 
-
 namespace Bugo\LightPortal\Plugins\BoardNews;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Areas\Fields\{AbstractField, SelectField};
+use Bugo\LightPortal\UI\Fields\AbstractField;
+use Bugo\LightPortal\UI\Fields\SelectField;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

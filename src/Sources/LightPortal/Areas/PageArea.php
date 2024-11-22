@@ -14,11 +14,6 @@ namespace Bugo\LightPortal\Areas;
 
 use Bugo\Compat\{Config, ErrorHandler, Lang};
 use Bugo\Compat\{Logging, Security, Theme, User, Utils};
-use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField};
-use Bugo\LightPortal\Areas\Fields\{TextareaField, TextField};
-use Bugo\LightPortal\Areas\Partials\{CategorySelect, EntryTypeSelect};
-use Bugo\LightPortal\Areas\Partials\{PageAuthorSelect, PageIconSelect};
-use Bugo\LightPortal\Areas\Partials\{PermissionSelect, StatusSelect, TagSelect};
 use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Areas\Validators\PageValidator;
 use Bugo\LightPortal\Args\{ObjectArgs, OptionsTypeArgs, ParamsArgs};
@@ -27,6 +22,9 @@ use Bugo\LightPortal\EventManager;
 use Bugo\LightPortal\Models\PageModel;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Repositories\PageRepository;
+use Bugo\LightPortal\UI\Fields\{CheckboxField, CustomField, TextareaField, TextField};
+use Bugo\LightPortal\UI\Partials\{CategorySelect, EntryTypeSelect, PageAuthorSelect};
+use Bugo\LightPortal\UI\Partials\{PageIconSelect, PermissionSelect, StatusSelect, TagSelect};
 use Bugo\LightPortal\Utils\{CacheTrait, Content, DateTime, EntityDataTrait};
 use Bugo\LightPortal\Utils\{Icon, ItemList, Language, RequestTrait, Setting, Str};
 
@@ -458,11 +456,11 @@ final class PageArea
 		Utils::$context['lp_current_page'] = $data;
 
 		if (empty(Utils::$context['lp_current_page'])) {
-			ErrorHandler::fatalLang('lp_page_not_found', status: 404);
+			ErrorHandler::fatalLang('lp_page_not_found', false, status: 404);
 		}
 
 		if (Utils::$context['lp_current_page']['can_edit'] === false) {
-			ErrorHandler::fatalLang('lp_page_not_editable');
+			ErrorHandler::fatalLang('lp_page_not_editable', false);
 		}
 
 		Language::prepareList();

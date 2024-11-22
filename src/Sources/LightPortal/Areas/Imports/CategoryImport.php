@@ -56,7 +56,7 @@ final class CategoryImport extends AbstractImport
 			return;
 
 		if (! isset($xml->categories->item[0]['category_id'])) {
-			ErrorHandler::fatalLang('lp_wrong_import_file');
+			ErrorHandler::fatalLang('lp_wrong_import_file', false);
 		}
 
 		$items = $titles = [];

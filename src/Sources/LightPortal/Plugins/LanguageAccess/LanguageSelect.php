@@ -14,7 +14,7 @@
 namespace Bugo\LightPortal\Plugins\LanguageAccess;
 
 use Bugo\Compat\{Lang, Utils};
-use Bugo\LightPortal\Areas\Partials\AbstractPartial;
+use Bugo\LightPortal\UI\Partials\AbstractPartial;
 
 final class LanguageSelect extends AbstractPartial
 {

@@ -150,7 +150,7 @@ final class BlockExport extends AbstractExport
 			$file = Sapi::getTempDir() . '/lp_blocks_backup.xml';
 			$xml->save($file);
 		} catch (DOMException $e) {
-			ErrorHandler::log('[LP] ' . Lang::$txt['lp_blocks_export'] . ': ' . $e->getMessage());
+			ErrorHandler::log('[LP] ' . Lang::$txt['lp_blocks_export'] . ': ' . $e->getMessage(), 'user');
 		}
 
 		return $file ?? '';

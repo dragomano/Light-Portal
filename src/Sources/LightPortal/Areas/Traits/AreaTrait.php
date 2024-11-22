@@ -14,8 +14,8 @@ namespace Bugo\LightPortal\Areas\Traits;
 
 use Bugo\Compat\{Config, Lang};
 use Bugo\Compat\{Security, Theme, Utils};
-use Bugo\LightPortal\Areas\Fields\CustomField;
 use Bugo\LightPortal\Enums\ContentType;
+use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\Utils\{Editor, Str};
 
 use function array_keys;

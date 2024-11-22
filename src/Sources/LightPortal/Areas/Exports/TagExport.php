@@ -246,7 +246,7 @@ final class TagExport extends AbstractExport
 			$file = Sapi::getTempDir() . '/lp_tags_backup.xml';
 			$xml->save($file);
 		} catch (DOMException $e) {
-			ErrorHandler::log('[LP] ' . Lang::$txt['lp_tags_export'] . ': ' . $e->getMessage());
+			ErrorHandler::log('[LP] ' . Lang::$txt['lp_tags_export'] . ': ' . $e->getMessage(), 'user');
 		}
 
 		return $file ?? '';

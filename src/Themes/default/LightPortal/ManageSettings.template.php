@@ -1,13 +1,13 @@
 <?php
 
 use Bugo\Compat\{Config, Lang, Theme, Utils};
-use Bugo\LightPortal\Areas\Partials\BoardSelect;
-use Bugo\LightPortal\Areas\Partials\CategorySelect;
-use Bugo\LightPortal\Areas\Partials\PageSelect;
-use Bugo\LightPortal\Areas\Partials\PageSlugSelect;
-use Bugo\LightPortal\Areas\Partials\TopicSelect;
 use Bugo\LightPortal\Areas\Configs\BasicConfig;
 use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\UI\Partials\BoardSelect;
+use Bugo\LightPortal\UI\Partials\CategorySelect;
+use Bugo\LightPortal\UI\Partials\PageSelect;
+use Bugo\LightPortal\UI\Partials\PageSlugSelect;
+use Bugo\LightPortal\UI\Partials\TopicSelect;
 use Bugo\LightPortal\Utils\Icon;
 
 function template_callback_frontpage_mode_settings_middle(): void
@@ -127,7 +127,7 @@ function template_portal_basic_settings(): void
 					<div class="bg odd" data-tab="', BasicConfig::TAB_CARDS, '">
 						', Icon::get('design'), Lang::$txt['lp_article_cards'], '
 					</div>
-					<div class="bg odd" data-tab="', BasicConfig::TAB_STANDALONE, '">
+					<div x-show="! [\'0\', \'chosen_page\'].includes(frontpage_mode)" class="bg odd" data-tab="', BasicConfig::TAB_STANDALONE, '">
 						', Icon::get('meteor'), Lang::$txt['lp_standalone_mode_title'], '
 					</div>
 					<div class="bg odd" data-tab="', BasicConfig::TAB_PERMISSIONS, '">
@@ -141,7 +141,7 @@ function template_portal_basic_settings(): void
 					<section class="bg even" data-content="', BasicConfig::TAB_CARDS, '">
 						', template_portal_tab($fields, BasicConfig::TAB_CARDS), '
 					</section>
-					<section class="bg even" data-content="', BasicConfig::TAB_STANDALONE, '">
+					<section x-show="! [\'0\', \'chosen_page\'].includes(frontpage_mode)" class="bg even" data-content="', BasicConfig::TAB_STANDALONE, '">
 						', template_portal_tab($fields, BasicConfig::TAB_STANDALONE), '
 					</section>
 					<section class="bg even" data-content="', BasicConfig::TAB_PERMISSIONS, '">

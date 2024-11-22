@@ -13,12 +13,14 @@
 
 namespace Bugo\LightPortal\Plugins\Likely;
 
-use Bugo\LightPortal\Utils\Str;
 use Bugo\Compat\{Config, Theme};
-use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, RadioField};
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\UI\Fields\CustomField;
+use Bugo\LightPortal\UI\Fields\CheckboxField;
+use Bugo\LightPortal\UI\Fields\RadioField;
+use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
