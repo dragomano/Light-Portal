@@ -213,8 +213,8 @@ final class PluginHandler
 		$this->css = new CSS();
 		$this->js  = new JS();
 
-		$this->prepareAssets();
 		$this->prepareListeners($plugins);
+		$this->prepareAssets();
 		$this->minifyAssets();
 	}
 }
