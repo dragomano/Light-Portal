@@ -17,7 +17,7 @@ use Bugo\Compat\{Msg, Security, User, Utils};
 use Bugo\LightPortal\Args\ItemArgs;
 use Bugo\LightPortal\Enums\{AlertAction, EntryType};
 use Bugo\LightPortal\Enums\{Permission, PortalHook, Status};
-use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\{CacheTrait, Content, DateTime};
 use Bugo\LightPortal\Utils\{EntityDataTrait, Icon, Notify};
@@ -278,7 +278,7 @@ final class PageRepository extends AbstractRepository
 		if ($items === [])
 			return;
 
-		EventManager::getInstance()->dispatch(PortalHook::onPageRemoving, new Event(new ItemsArgs($items)));
+		(new EventManagerFactory())()->dispatch(PortalHook::onPageRemoving, new Event(new ItemsArgs($items)));
 
 		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_pages
@@ -554,7 +554,7 @@ final class PageRepository extends AbstractRepository
 
 		$data['tags'] = $this->getTags($data['id']);
 
-		EventManager::getInstance()->dispatch(
+		(new EventManagerFactory())()->dispatch(
 			PortalHook::preparePageData,
 			new Event(new class ($data, $isAuthor) {
 				public function __construct(public array &$data, public readonly bool $isAuthor) {}
@@ -601,7 +601,7 @@ final class PageRepository extends AbstractRepository
 			return 0;
 		}
 
-		EventManager::getInstance()->dispatch(PortalHook::onPageSaving, new Event(new ItemArgs($item)));
+		(new EventManagerFactory())()->dispatch(PortalHook::onPageSaving, new Event(new ItemArgs($item)));
 
 		$this->saveTitles($item);
 		$this->saveTags($item);
@@ -654,7 +654,7 @@ final class PageRepository extends AbstractRepository
 			]
 		);
 
-		EventManager::getInstance()->dispatch(PortalHook::onPageSaving, new Event(new ItemArgs($item)));
+		(new EventManagerFactory())()->dispatch(PortalHook::onPageSaving, new Event(new ItemArgs($item)));
 
 		$this->saveTitles($item, 'replace');
 		$this->saveTags($item, 'replace');

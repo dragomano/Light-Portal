@@ -16,7 +16,7 @@ use Bugo\Compat\{BBCodeParser, Config, Db, Lang, User};
 use Bugo\LightPortal\Args\ArticlesArgs;
 use Bugo\LightPortal\Args\ArticlesRowArgs;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\{Avatar, Setting, Str};
 
@@ -56,7 +56,7 @@ class TopicArticle extends AbstractArticle
 			'date DESC',
 		];
 
-		EventManager::getInstance()->dispatch(
+		(new EventManagerFactory())()->dispatch(
 			PortalHook::frontTopics,
 			new Event(new ArticlesArgs(
 				$this->columns,
@@ -148,7 +148,7 @@ class TopicArticle extends AbstractArticle
 
 			$this->prepareTeaser($topics, $row);
 
-			EventManager::getInstance()->dispatch(
+			(new EventManagerFactory())()->dispatch(
 				PortalHook::frontTopicsRow,
 				new Event(new ArticlesRowArgs($topics, $row))
 			);

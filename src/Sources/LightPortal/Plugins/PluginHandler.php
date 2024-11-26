@@ -54,17 +54,35 @@ final class PluginHandler
 
 	private int $maxJsFilemtime = 0;
 
-	private static self $instance;
-
 	private const PREFIX = 'lp_';
 
-	public static function getInstance(array $plugins = []): self
+	private static EventManager $manager;
+
+	public function __construct(array $plugins = [])
 	{
-		if (empty(self::$instance) || $plugins) {
-			self::$instance = new self($plugins);
+		$this->settings = (new PluginRepository())->getSettings();
+		$this->registry = PluginRegistry::getInstance();
+
+		if (empty(self::$manager)) {
+			self::$manager = new EventManager();
 		}
 
-		return self::$instance;
+		$this->css = new CSS();
+		$this->js  = new JS();
+
+		$this->prepareListeners($plugins);
+		$this->prepareAssets();
+		$this->minifyAssets();
+	}
+
+	public function getManager(): EventManager
+	{
+		return self::$manager;
+	}
+
+	public function getRegistry(): PluginRegistry
+	{
+		return $this->registry;
 	}
 
 	public function getAll(): array
@@ -79,7 +97,7 @@ final class PluginHandler
 	{
 		$assets = [];
 
-		EventManager::getInstance()->dispatch(
+		self::$manager->dispatch(
 			PortalHook::prepareAssets,
 			new Event(new class ($assets) {
 				public function __construct(public array &$assets) {}
@@ -192,7 +210,7 @@ final class PluginHandler
 
 				$class = new $className();
 
-				EventManager::getInstance()->addListeners(PortalHook::cases(), $class);
+				self::$manager->addListeners(PortalHook::cases(), $class);
 
 				$this->registry->add($snakeName, [
 					'name' => $plugin,
@@ -203,18 +221,5 @@ final class PluginHandler
 				Utils::$context['lp_loaded_addons'][$snakeName] = $this->registry->get($snakeName);
 			}
 		}
-	}
-
-	private function __construct(array $plugins = [])
-	{
-		$this->settings = (new PluginRepository())->getSettings();
-		$this->registry = PluginRegistry::getInstance();
-
-		$this->css = new CSS();
-		$this->js  = new JS();
-
-		$this->prepareListeners($plugins);
-		$this->prepareAssets();
-		$this->minifyAssets();
 	}
 }

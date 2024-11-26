@@ -15,6 +15,7 @@ namespace Bugo\LightPortal\UI\Partials;
 use Bugo\Compat\{Config, Lang, Utils};
 use Bugo\LightPortal\Utils\EntityDataTrait;
 use Bugo\LightPortal\Utils\Icon;
+
 use function implode;
 use function is_array;
 use function json_encode;

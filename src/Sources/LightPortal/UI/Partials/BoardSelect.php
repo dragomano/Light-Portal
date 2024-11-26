@@ -14,6 +14,7 @@ namespace Bugo\LightPortal\UI\Partials;
 
 use Bugo\Compat\{Config, Lang, Utils};
 use Bugo\LightPortal\Utils\MessageIndex;
+
 use function func_get_args;
 use function json_encode;
 

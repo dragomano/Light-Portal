@@ -15,6 +15,7 @@ namespace Bugo\LightPortal\UI\Partials;
 use Bugo\Compat\{Config, Lang, Utils};
 use Bugo\LightPortal\Utils\EntityDataTrait;
 use Bugo\LightPortal\Utils\Icon;
+
 use function count;
 use function func_get_args;
 use function json_encode;
@@ -30,7 +31,7 @@ final class CategorySelect extends AbstractPartial
 
 		$params['id'] ??= 'lp_frontpage_categories';
 		$params['multiple'] ??= true;
-		$params['full_width'] ??= true;
+		$params['wide'] ??= true;
 		$params['hint'] ??= Lang::$txt['lp_frontpage_categories_select'];
 		$params['data'] ??= $this->getEntityData('category');
 		$params['value'] ??= Config::$modSettings['lp_frontpage_categories'] ?? '';
@@ -58,7 +59,7 @@ final class CategorySelect extends AbstractPartial
 				noSearchResultsText: "' . Lang::$txt['no_matches'] . '",
 				searchPlaceholderText: "' . Lang::$txt['search'] . '",
 				allOptionsSelectedText: "' . Lang::$txt['all'] . '",' . ($params['multiple'] ? '
-				showValueAsTags: true,' : '') . ($params['full_width'] ? '
+				showValueAsTags: true,' : '') . ($params['wide'] ? '
 				maxWidth: "100%",' : '') . '
 				options: ' . json_encode($data) . ',
 				selectedValue: [' . $params['value'] . ']

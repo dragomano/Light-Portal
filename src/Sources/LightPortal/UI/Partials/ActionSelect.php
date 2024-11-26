@@ -13,6 +13,7 @@
 namespace Bugo\LightPortal\UI\Partials;
 
 use Bugo\Compat\{Config, Lang, Utils};
+
 use function explode;
 use function func_get_args;
 use function implode;

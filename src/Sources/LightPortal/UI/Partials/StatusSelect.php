@@ -13,6 +13,7 @@
 namespace Bugo\LightPortal\UI\Partials;
 
 use Bugo\Compat\{Lang, Utils};
+
 use function json_encode;
 
 final class StatusSelect extends AbstractPartial

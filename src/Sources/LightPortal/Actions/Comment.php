@@ -14,7 +14,7 @@ namespace Bugo\LightPortal\Actions;
 
 use Bugo\Compat\{Config, PageIndex, User, Utils};
 use Bugo\LightPortal\Enums\{AlertAction, PortalHook, VarType};
-use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Repositories\CommentRepository;
 use Bugo\LightPortal\Utils\{Avatar, CacheTrait, DateTime};
@@ -71,7 +71,7 @@ final class Comment implements ActionInterface
 			$comment['authorial']     = Utils::$context['lp_page']['author_id'] === $comment['poster']['id'];
 			$comment['extra_buttons'] = [];
 
-			EventManager::getInstance()->dispatch(
+			(new EventManagerFactory())()->dispatch(
 				PortalHook::commentButtons,
 				new Event(new class ($comment, $comment['extra_buttons']) {
 					public function __construct(public readonly array $comment, public array &$buttons) {}

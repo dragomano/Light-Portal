@@ -13,7 +13,7 @@
 namespace Bugo\LightPortal\Hooks;
 
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 
 if (! defined('SMF'))
@@ -25,7 +25,7 @@ class DownloadRequest
 	{
 		(new LoadTheme())();
 
-		EventManager::getInstance()->dispatch(
+		(new EventManagerFactory())()->dispatch(
 			PortalHook::downloadRequest,
 			new Event(new class ($attachRequest) {
 				public function __construct(public mixed &$attachRequest) {}

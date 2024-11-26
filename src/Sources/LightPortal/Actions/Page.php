@@ -15,7 +15,7 @@ namespace Bugo\LightPortal\Actions;
 use Bugo\Compat\{Config, ErrorHandler, Lang};
 use Bugo\Compat\{PageIndex, Theme, User, Utils};
 use Bugo\LightPortal\Enums\{EntryType, PortalHook};
-use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Utils\{CacheTrait, Content, EntityDataTrait, Icon};
 use Bugo\LightPortal\Utils\{RequestTrait, SessionTrait, Setting, Str};
@@ -435,7 +435,7 @@ final class Page implements PageInterface
 
 		Lang::load('Editor');
 
-		EventManager::getInstance()->dispatch(PortalHook::comments);
+		(new EventManagerFactory())()->dispatch(PortalHook::comments);
 
 		if (isset(Utils::$context['lp_' . Setting::getCommentBlock() . '_comment_block']))
 			return;

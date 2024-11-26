@@ -17,7 +17,7 @@ use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Areas\Validators\BlockValidator;
 use Bugo\LightPortal\Args\{ObjectArgs, OptionsTypeArgs, ParamsArgs};
 use Bugo\LightPortal\Enums\{ContentType, PortalHook, Tab};
-use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Models\BlockModel;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Repositories\BlockRepository;
@@ -218,7 +218,7 @@ final class BlockArea
 
 		$params = [];
 
-		EventManager::getInstance()->dispatch(
+		(new EventManagerFactory())()->dispatch(
 			PortalHook::prepareBlockParams,
 			new Event(new ParamsArgs($params, Utils::$context['current_block']['type']))
 		);
@@ -337,7 +337,7 @@ final class BlockArea
 
 		Utils::$context['lp_block_tab_appearance'] = true;
 
-		EventManager::getInstance()->dispatch(
+		(new EventManagerFactory())()->dispatch(
 			PortalHook::prepareBlockFields,
 			new Event(new OptionsTypeArgs(Utils::$context['lp_block']['options'], Utils::$context['current_block']['type']))
 		);
@@ -372,7 +372,7 @@ final class BlockArea
 
 	private function prepareEditor(): void
 	{
-		EventManager::getInstance()->dispatch(
+		(new EventManagerFactory())()->dispatch(
 			PortalHook::prepareEditor,
 			new Event(new ObjectArgs(Utils::$context['lp_block']))
 		);

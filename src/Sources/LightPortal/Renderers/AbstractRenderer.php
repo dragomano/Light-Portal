@@ -15,7 +15,7 @@ namespace Bugo\LightPortal\Renderers;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 
 use function array_combine;
@@ -48,7 +48,7 @@ abstract class AbstractRenderer implements RendererInterface
 		$extensions = [static::DEFAULT_EXTENSION];
 
 		// You can add custom extensions for layouts
-		EventManager::getInstance()->dispatch(
+		(new EventManagerFactory())()->dispatch(
 			PortalHook::layoutExtensions,
 			new Event(new class ($extensions) {
 				public function __construct(public array &$extensions) {}

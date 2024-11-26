@@ -21,7 +21,7 @@ use Bugo\LightPortal\Areas\Imports\{BlockImport, CategoryImport};
 use Bugo\LightPortal\Areas\Imports\{PageImport, PluginImport, TagImport};
 use Bugo\LightPortal\Args\AreasArgs;
 use Bugo\LightPortal\Enums\{Hook, PortalHook};
-use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\{CacheTrait, Icon, RequestTrait};
 use Bugo\LightPortal\Utils\{Setting, SMFHookTrait, Str};
@@ -193,7 +193,7 @@ final class ConfigArea
 			}
 		}
 
-		EventManager::getInstance()->dispatch(
+		(new EventManagerFactory())()->dispatch(
 			PortalHook::updateAdminAreas,
 			new Event(new AreasArgs($areas['lp_portal']['areas']))
 		);
@@ -281,7 +281,10 @@ final class ConfigArea
 			'import' => [new BlockImport(), 'main'],
 		];
 
-		EventManager::getInstance()->dispatch(PortalHook::updateBlockAreas, new Event(new AreasArgs($areas)));
+		(new EventManagerFactory())()->dispatch(
+			PortalHook::updateBlockAreas,
+			new Event(new AreasArgs($areas))
+		);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -298,7 +301,10 @@ final class ConfigArea
 			'import' => [new PageImport(), 'main'],
 		];
 
-		EventManager::getInstance()->dispatch(PortalHook::updatePageAreas, new Event(new AreasArgs($areas)));
+		(new EventManagerFactory())()->dispatch(
+			PortalHook::updatePageAreas,
+			new Event(new AreasArgs($areas))
+		);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -315,7 +321,10 @@ final class ConfigArea
 			'import' => [new CategoryImport(), 'main'],
 		];
 
-		EventManager::getInstance()->dispatch(PortalHook::updateCategoryAreas, new Event(new AreasArgs($areas)));
+		(new EventManagerFactory())()->dispatch(
+			PortalHook::updateCategoryAreas,
+			new Event(new AreasArgs($areas))
+		);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -332,7 +341,10 @@ final class ConfigArea
 			'import' => [new TagImport(), 'main'],
 		];
 
-		EventManager::getInstance()->dispatch(PortalHook::updateTagAreas, new Event(new AreasArgs($areas)));
+		(new EventManagerFactory())()->dispatch(
+			PortalHook::updateTagAreas,
+			new Event(new AreasArgs($areas))
+		);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -350,7 +362,10 @@ final class ConfigArea
 			$areas['import'] = [new PluginImport(), 'main'];
 		}
 
-		EventManager::getInstance()->dispatch(PortalHook::updatePluginAreas, new Event(new AreasArgs($areas)));
+		(new EventManagerFactory())()->dispatch(
+			PortalHook::updatePluginAreas,
+			new Event(new AreasArgs($areas))
+		);
 
 		$this->callActionFromAreas($areas);
 	}

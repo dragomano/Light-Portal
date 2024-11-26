@@ -18,7 +18,7 @@ use Bugo\LightPortal\Articles\{ArticleInterface, BoardArticle};
 use Bugo\LightPortal\Articles\{ChosenPageArticle, ChosenTopicArticle};
 use Bugo\LightPortal\Articles\{PageArticle, TopicArticle};
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\{CacheTrait, DateTime, Icon};
 use Bugo\LightPortal\Utils\{RequestTrait, SessionTrait, Setting, Str};
@@ -65,7 +65,7 @@ final class FrontPage implements ActionInterface
 	{
 		User::mustHavePermission('light_portal_view');
 
-		EventManager::getInstance()->dispatch(
+		(new EventManagerFactory())()->dispatch(
 			PortalHook::frontModes,
 			new Event(new class ($this->modes) {
 				public function __construct(public array &$modes) {}
@@ -142,7 +142,7 @@ final class FrontPage implements ActionInterface
 
 		Utils::$context['lp_frontpage_articles'] = $articles;
 
-		EventManager::getInstance()->dispatch(PortalHook::frontAssets);
+		(new EventManagerFactory())()->dispatch(PortalHook::frontAssets);
 	}
 
 	public function getLayouts(): array
@@ -173,7 +173,7 @@ final class FrontPage implements ActionInterface
 		];
 
 		// You can add your own logic here
-		EventManager::getInstance()->dispatch(
+		(new EventManagerFactory())()->dispatch(
 			PortalHook::frontLayouts,
 			new Event(new class ($this->renderer, $currentLayout, $params) {
 				public function __construct(

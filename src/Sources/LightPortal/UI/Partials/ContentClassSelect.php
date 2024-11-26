@@ -13,6 +13,7 @@
 namespace Bugo\LightPortal\UI\Partials;
 
 use Bugo\Compat\{Lang, Utils};
+
 use function func_get_args;
 use function json_encode;
 use function sprintf;
@@ -25,6 +26,7 @@ final class ContentClassSelect extends AbstractPartial
 		$params = $params[0] ?? [];
 
 		$params['id'] ??= 'content_class';
+		$params['wide'] ??= false;
 		$params['data'] ??= Utils::$context['lp_all_content_classes'] ?? [];
 		$params['value'] ??= Utils::$context['lp_block']['content_class'] ?? '';
 
@@ -46,7 +48,8 @@ final class ContentClassSelect extends AbstractPartial
 				showSelectedOptionsFirst: true,
 				optionHeight: "60px",
 				placeholder: "' . Lang::$txt['no'] . '",
-				options: ' . json_encode($data) . ',
+				options: ' . json_encode($data) . ',' . ($params['wide'] ? '
+				maxWidth: "100%",' : '') . '
 				selectedValue: "' . $params['value'] . '",
 				labelRenderer: function (data) {
 					return `<div>${data.label}</div>`;

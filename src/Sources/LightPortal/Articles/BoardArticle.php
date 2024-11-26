@@ -17,7 +17,7 @@ use Bugo\Compat\{Db, Lang, User, Utils};
 use Bugo\LightPortal\Args\ArticlesArgs;
 use Bugo\LightPortal\Args\ArticlesRowArgs;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\Str;
 
@@ -55,7 +55,7 @@ class BoardArticle extends AbstractArticle
 			'last_updated DESC',
 		];
 
-		EventManager::getInstance()->dispatch(
+		(new EventManagerFactory())()->dispatch(
 			PortalHook::frontBoards,
 			new Event(new ArticlesArgs(
 				$this->columns,
@@ -135,7 +135,7 @@ class BoardArticle extends AbstractArticle
 
 			$this->prepareTeaser($boards, $row);
 
-			EventManager::getInstance()->dispatch(
+			(new EventManagerFactory())()->dispatch(
 				PortalHook::frontBoardsRow,
 				new Event(new ArticlesRowArgs($boards, $row))
 			);

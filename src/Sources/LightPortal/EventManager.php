@@ -14,8 +14,8 @@ namespace Bugo\LightPortal;
 
 use Bugo\LightPortal\Enums\PluginType;
 use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
-use Doctrine\Common\EventArgs;
 use Doctrine\Common\EventManager as DoctrineEventManager;
 
 use function array_map;
@@ -27,7 +27,10 @@ class EventManager
 {
 	protected DoctrineEventManager $eventManager;
 
-	private static self $instance;
+	public function __construct()
+	{
+		$this->eventManager = new DoctrineEventManager();
+	}
 
 	private array $contentHooks = [
 		PortalHook::prepareBlockParams,
@@ -37,15 +40,6 @@ class EventManager
 		PortalHook::prepareContent
 	];
 
-	public static function getInstance(): self
-	{
-		if (empty(self::$instance)) {
-			self::$instance = new self();
-		}
-
-		return self::$instance;
-	}
-
 	public function addListeners(array $hooks, Plugin $listener): void
 	{
 		$hooks = array_map(fn($item) => $item->name, $hooks);
@@ -54,32 +48,27 @@ class EventManager
 		$this->eventManager->addEventListener($hooks, $listener);
 	}
 
-	public function dispatch(PortalHook $hook, EventArgs|null $eventArgs = null): void
+	public function dispatch(PortalHook $hook, ?Event $args = null): void
 	{
 		foreach ($this->getAll($hook->name) as $listener) {
 			if (
 				$listener->type !== PluginType::BLOCK_OPTIONS->name()
 				&& in_array($hook, $this->contentHooks)
-				&& isset($eventArgs->args->type)
+				&& isset($args->args->type)
 			) {
-				if ($eventArgs->args->type !== $listener->getShortName()) {
+				if ($args->args->type !== $listener->getShortName()) {
 					continue;
 				}
 			}
 
-			$eventArgs ??= EventArgs::getEmptyInstance();
+			$args ??= new Event(new class {});
 
-			$listener->{$hook->name}($eventArgs);
+			$listener->{$hook->name}($args);
 		}
 	}
 
 	public function getAll(string $event = ''): array
 	{
 		return $event ? $this->eventManager->getListeners($event) : $this->eventManager->getAllListeners();
-	}
-
-	private function __construct()
-	{
-		$this->eventManager = new DoctrineEventManager();
 	}
 }

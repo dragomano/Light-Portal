@@ -14,7 +14,7 @@ namespace Bugo\LightPortal\Areas\Traits;
 
 use Bugo\Compat\{Config, Db, Lang, Utils};
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Lists\IconList;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\Str;
@@ -46,7 +46,7 @@ trait QueryTrait
 		$template = Str::html('i', ['class' => '%1$s fa-fw'])
 			->setAttribute('aria-hidden', 'true') . '&nbsp;%1$s';
 
-		EventManager::getInstance()->dispatch(
+		(new EventManagerFactory())()->dispatch(
 			PortalHook::prepareIconList,
 			new Event(new class ($icons, $template) {
 				public function __construct(public array &$icons, public string &$template) {}

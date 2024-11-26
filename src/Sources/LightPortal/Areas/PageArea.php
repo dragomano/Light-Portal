@@ -18,7 +18,7 @@ use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Areas\Validators\PageValidator;
 use Bugo\LightPortal\Args\{ObjectArgs, OptionsTypeArgs, ParamsArgs};
 use Bugo\LightPortal\Enums\{EntryType, PortalHook, Status, Tab};
-use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Models\PageModel;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Repositories\PageRepository;
@@ -710,7 +710,7 @@ final class PageArea
 
 		$params = [];
 
-		EventManager::getInstance()->dispatch(
+		(new EventManagerFactory())()->dispatch(
 			PortalHook::preparePageParams,
 			new Event(new ParamsArgs($params, Utils::$context['lp_current_page']['type']))
 		);
@@ -786,11 +786,11 @@ final class PageArea
 		CustomField::make('category_id', Lang::$txt['lp_category'])
 			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(static fn() => new CategorySelect(), [
-				'id'         => 'category_id',
-				'multiple'   => false,
-				'full_width' => false,
-				'data'       => $this->getEntityData('category'),
-				'value'      => Utils::$context['lp_page']['category_id'],
+				'id'       => 'category_id',
+				'multiple' => false,
+				'wide'     => false,
+				'data'     => $this->getEntityData('category'),
+				'value'    => Utils::$context['lp_page']['category_id'],
 			]);
 
 		CustomField::make('entry_type', Lang::$txt['lp_page_type'])
@@ -866,7 +866,7 @@ final class PageArea
 				->setValue(Utils::$context['lp_page']['options']['allow_comments']);
 		}
 
-		EventManager::getInstance()->dispatch(
+		(new EventManagerFactory())()->dispatch(
 			PortalHook::preparePageFields,
 			new Event(new OptionsTypeArgs(Utils::$context['lp_page']['options'], Utils::$context['lp_page']['type']))
 		);
@@ -876,7 +876,7 @@ final class PageArea
 
 	private function prepareEditor(): void
 	{
-		EventManager::getInstance()->dispatch(
+		(new EventManagerFactory())()->dispatch(
 			PortalHook::prepareEditor,
 			new Event(new ObjectArgs(Utils::$context['lp_page']))
 		);

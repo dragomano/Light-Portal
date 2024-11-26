@@ -13,6 +13,7 @@
 namespace Bugo\LightPortal\UI\Partials;
 
 use Bugo\Compat\{Config, Db, Lang, Utils};
+
 use function explode;
 use function func_get_args;
 use function json_encode;
@@ -92,9 +93,16 @@ final class TopicSelect extends AbstractPartial
 			SELECT t.id_topic, m.subject
 			FROM {db_prefix}topics AS t
 				INNER JOIN {db_prefix}messages AS m ON (m.id_msg = t.id_first_msg)
-			WHERE t.id_topic IN ({array_int:topics})',
+			WHERE t.id_topic IN ({array_int:topics})
+				AND t.approved = {int:is_approved}
+				AND t.id_poll = {int:id_poll}
+				AND t.id_redirect_topic = {int:id_redirect_topic}
+				AND {query_wanna_see_board}',
 			[
-				'topics' => explode(',', $topics),
+				'topics'            => explode(',', $topics),
+				'is_approved'       => 1,
+				'id_poll'           => 0,
+				'id_redirect_topic' => 0,
 			]
 		);
 

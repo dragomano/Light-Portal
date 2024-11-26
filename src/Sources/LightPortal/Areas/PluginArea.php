@@ -16,9 +16,8 @@ use Bugo\Compat\{Config, Lang, Theme};
 use Bugo\Compat\{User, Utils, WebFetchApi};
 use Bugo\LightPortal\Args\SettingsArgs;
 use Bugo\LightPortal\Enums\{PortalHook, VarType};
-use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\PluginHandler;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\{CacheTrait, EntityDataTrait, Icon};
 use Bugo\LightPortal\Utils\{Language, RequestTrait, Setting, Str};
@@ -94,10 +93,11 @@ final class PluginArea
 
 		$settings = [];
 
-		PluginHandler::getInstance(Utils::$context['lp_plugins']);
-
 		// Plugin authors can add settings here
-		EventManager::getInstance()->dispatch(PortalHook::addSettings, new Event(new SettingsArgs($settings)));
+		(new EventManagerFactory())(Utils::$context['lp_plugins'])->dispatch(
+			PortalHook::addSettings,
+			new Event(new SettingsArgs($settings))
+		);
 
 		$this->handleSave($settings);
 		$this->prepareAddonList($settings);
@@ -171,7 +171,10 @@ final class PluginArea
 		}
 
 		// Plugin authors can do additional actions after settings saving
-		EventManager::getInstance()->dispatch(PortalHook::saveSettings, new Event(new SettingsArgs($settings)));
+		(new EventManagerFactory())(Utils::$context['lp_plugins'])->dispatch(
+			PortalHook::saveSettings,
+			new Event(new SettingsArgs($settings))
+		);
 
 		$this->repository->changeSettings($name, $settings);
 

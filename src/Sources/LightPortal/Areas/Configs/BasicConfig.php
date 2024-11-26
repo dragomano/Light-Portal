@@ -17,7 +17,7 @@ use Bugo\Compat\{Time, User, Utils, WebFetchApi};
 use Bugo\LightPortal\Actions\FrontPage;
 use Bugo\LightPortal\Areas\Traits\QueryTrait;
 use Bugo\LightPortal\Enums\{PortalHook, VarType};
-use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\UI\Partials\ActionSelect;
 use Bugo\LightPortal\Utils\CacheTrait;
@@ -230,7 +230,7 @@ final class BasicConfig extends AbstractConfig
 
 		Utils::$context['sub_template'] = 'portal_basic_settings';
 
-		EventManager::getInstance()->dispatch(
+		(new EventManagerFactory())()->dispatch(
 			PortalHook::extendBasicConfig,
 			new Event(new class ($configVars) {
 				public function __construct(public array &$configVars) {}

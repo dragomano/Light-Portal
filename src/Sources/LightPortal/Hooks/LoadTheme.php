@@ -17,8 +17,7 @@ use Bugo\Compat\{User, Utils};
 use Bugo\LightPortal\Compilers\CompilerInterface;
 use Bugo\LightPortal\Enums\{ContentClass, ContentType, EntryType};
 use Bugo\LightPortal\Enums\{Placement, PluginType, PortalHook, TitleClass};
-use Bugo\LightPortal\EventManager;
-use Bugo\LightPortal\Plugins\PluginHandler;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Repositories\BlockRepository;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionManager;
@@ -53,11 +52,8 @@ class LoadTheme
 
 		$this->loadAssets(new $this->config[CompilerInterface::class]);
 
-		// Initialize active plugins and add event listeners
-		PluginHandler::getInstance();
-
 		// Run all init methods for active plugins
-		EventManager::getInstance()->dispatch(PortalHook::init);
+		(new EventManagerFactory())()->dispatch(PortalHook::init);
 	}
 
 	protected function defineVars(): void
