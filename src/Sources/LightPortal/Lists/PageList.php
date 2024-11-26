@@ -14,8 +14,12 @@
 
 namespace Bugo\LightPortal\Lists;
 
+use Bugo\LightPortal\Enums\EntryType;
+use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Repositories\PageRepository;
+
+use function time;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -34,9 +38,20 @@ final class PageList implements ListInterface
 		return $this->repository->getAll(
 			0,
 			$this->repository->getTotalCount(),
-			'p.page_id DESC',
-			'AND p.status = {int:status}',
-			['status' => Status::ACTIVE->value]
+			'page_title',
+			'
+				AND p.status = {int:status}
+				AND entry_type = {string:entry_type}
+				AND deleted_at = 0
+				AND created_at <= {int:current_time}
+				AND permissions IN ({array_int:permissions})
+			',
+			[
+				'status'       => Status::ACTIVE->value,
+				'entry_type'   => EntryType::DEFAULT->name(),
+				'current_time' => time(),
+				'permissions'  => Permission::all()
+			]
 		);
 	}
 }
