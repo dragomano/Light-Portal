@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.11.24
+ * @version 26.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\AdsBlock;
@@ -123,7 +123,7 @@ class AdsBlock extends Block
 			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(static fn() => new TopicSelect(), [
 				'id'    => 'include_pages',
-				'hint'  => $this->txt['include_pages_select'],
+				'hint'  => $this->txt['include_topics_select'],
 				'value' => $options['include_pages'] ?? '',
 			]);
 
