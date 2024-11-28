@@ -66,6 +66,7 @@ class TopTopics extends Block
 	public function prepareContent(Event $e): void
 	{
 		$parameters = $e->args->parameters;
+
 		$parameters['show_numbers_only'] ??= false;
 
 		$topTopics = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])

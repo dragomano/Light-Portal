@@ -12,18 +12,20 @@
 
 namespace Bugo\LightPortal\Plugins;
 
-use Bugo\Compat\{Config, Db, Lang};
-use Bugo\Compat\{ServerSideIncludes, Theme, Utils};
+use Bugo\Compat\{Config, Db};
+use Bugo\Compat\{Lang, ServerSideIncludes, Theme, Utils};
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\{CacheTrait, EntityDataTrait};
-use Bugo\LightPortal\Utils\{RequestTrait, SessionTrait};
-use Bugo\LightPortal\Utils\{HasReflectionAware, HasTemplateAware, SMFHookTrait, Str};
+use Bugo\LightPortal\Utils\{HasReflectionAware, HasTemplateAware};
+use Bugo\LightPortal\Utils\{RequestTrait, SessionTrait, SMFHookTrait, Str};
 
 use function array_column;
 use function array_filter;
 use function array_flip;
+use function basename;
 use function dirname;
 use function explode;
+use function str_replace;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -38,33 +40,34 @@ abstract class Plugin
 	use SMFHookTrait;
 	use SessionTrait;
 
+	public string $name;
+
 	public string $icon = 'fas fa-puzzle-piece';
 
 	public bool $saveable = true;
 
-	protected string $name;
+	private static PluginRepository $repository;
 
-	protected array $txt;
+	private static array $settings;
 
 	protected array $context;
 
+	protected array $txt;
+
 	public function __construct()
 	{
-		$this->name = $this->getShortName();
+		$this->name = Str::getSnakeName(basename(str_replace('\\', '/', static::class)));
 
-		$this->txt = Lang::$txt['lp_' . $this->name] ?? [];
+		self::$repository ??= new PluginRepository();
 
-		$this->context = Utils::$context['lp_' . $this->name . '_plugin'] ?? [];
-	}
+		self::$settings ??= self::$repository->getSettings();
 
-	public function getName(): string
-	{
-		return $this->getCalledClass()->getShortName();
-	}
+		$this->context = self::$settings[$this->name] ?? [];
 
-	public function getShortName(): string
-	{
-		return Str::getSnakeName($this->getName());
+		$this->txt = Lang::$txt['lp_' . $this->name];
+
+		// @TODO This variable is still needed in some templates
+		Utils::$context['lp_' . $this->name . '_plugin'] = $this->context;
 	}
 
 	public function getFromSSI(string $function, ...$params)
@@ -76,22 +79,20 @@ abstract class Plugin
 
 	public function addDefaultValues(array $values): void
 	{
-		$snakeName = $this->getShortName();
-
 		$settings = [];
 		foreach ($values as $option => $value) {
-			if (! isset(Utils::$context['lp_' . $snakeName . '_plugin'][$option])) {
+			if (! isset($this->context[$option])) {
 				$settings[] = [
-					'name'   => $snakeName,
+					'name'   => $this->name,
 					'option' => $option,
 					'value'  => $value,
 				];
 
-				Utils::$context['lp_' . $snakeName . '_plugin'][$option] = $value;
+				$this->context[$option] = $value;
 			}
 		}
 
-		(new PluginRepository())->addSettings($settings);
+		self::$repository->addSettings($settings);
 	}
 
 	public function isDarkTheme(?string $option): bool
@@ -106,9 +107,7 @@ abstract class Plugin
 
 	public function getForumThemes(): array
 	{
-		$themes = $this->cache()->get('forum_themes');
-
-		if ($themes === null) {
+		if (($themes = $this->cache()->get('forum_themes')) === null) {
 			$result = Db::$db->query('', '
 				SELECT id_theme, value
 				FROM {db_prefix}themes

@@ -18,7 +18,7 @@ use Exception;
 use function ob_get_clean;
 use function ob_start;
 
-class PurePHP extends AbstractRenderer
+final class PurePHP extends AbstractRenderer
 {
 	public const DEFAULT_TEMPLATE = 'default.php';
 

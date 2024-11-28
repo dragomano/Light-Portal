@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 11.11.24
+ * @version 28.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
@@ -50,9 +50,9 @@ class Handler
 
 	public function add(): void
 	{
-		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_plugin_maker']['add_title'];
+		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_plugin_maker']['add_title'];
 		Utils::$context['page_area_title'] = Lang::$txt['lp_plugin_maker']['add_title'];
-		Utils::$context['form_action']     = Config::$scripturl . '?action=admin;area=lp_plugins;sa=add';
+		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_plugins;sa=add';
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
@@ -112,10 +112,21 @@ class Handler
 			'name'       => $postData['name'] ?? Utils::$context['lp_plugin']['name'] = self::PLUGIN_NAME,
 			'type'       => $postData['type'] ?? Utils::$context['lp_plugin']['type'] ?? 'block',
 			'icon'       => $postData['icon'] ?? Utils::$context['lp_plugin']['icon'] ?? '',
-			'author'     => $postData['author'] ?? Utils::$context['lp_plugin']['author'] ?? Utils::$context['lp_plugin_maker_plugin']['author'] ?? User::$info['name'],
-			'email'      => $postData['email'] ?? Utils::$context['lp_plugin']['email'] ?? Utils::$context['lp_plugin_maker_plugin']['email'] ?? User::$info['email'],
-			'site'       => $postData['site'] ?? Utils::$context['lp_plugin']['site'] ?? Utils::$context['lp_plugin_maker_plugin']['site'] ?? '',
-			'license'    => $postData['license'] ?? Utils::$context['lp_plugin']['license'] ?? Utils::$context['lp_plugin_maker_plugin']['license'] ?? 'gpl',
+			'author'     => $postData['author']
+								?? Utils::$context['lp_plugin']['author']
+								?? Utils::$context['lp_plugin_maker_plugin']['author']
+								?? User::$info['name'],
+			'email'      => $postData['email'] ?? Utils::$context['lp_plugin']['email']
+								?? Utils::$context['lp_plugin_maker_plugin']['email']
+								?? User::$info['email'],
+			'site'       => $postData['site']
+								?? Utils::$context['lp_plugin']['site']
+								?? Utils::$context['lp_plugin_maker_plugin']['site']
+								?? '',
+			'license'    => $postData['license']
+								?? Utils::$context['lp_plugin']['license']
+								?? Utils::$context['lp_plugin_maker_plugin']['license']
+								?? 'gpl',
 			'smf_hooks'  => $postData['smf_hooks'] ?? Utils::$context['lp_plugin']['smf_hooks'] ?? false,
 			'smf_ssi'    => $postData['smf_ssi'] ?? Utils::$context['lp_plugin']['smf_ssi'] ?? false,
 			'components' => $postData['components'] ?? Utils::$context['lp_plugin']['components'] ?? false,
@@ -143,8 +154,10 @@ class Handler
 		}
 
 		foreach (array_keys(Utils::$context['lp_languages']) as $lang) {
-			Utils::$context['lp_plugin']['titles'][$lang] = $postData['title_' . $lang] ?? Utils::$context['lp_plugin']['titles'][$lang] ?? '';
-			Utils::$context['lp_plugin']['descriptions'][$lang] = $postData['description_' . $lang] ?? Utils::$context['lp_plugin']['descriptions'][$lang] ?? '';
+			Utils::$context['lp_plugin']['titles'][$lang]
+				= $postData['title_' . $lang] ?? Utils::$context['lp_plugin']['titles'][$lang] ?? '';
+			Utils::$context['lp_plugin']['descriptions'][$lang]
+				= $postData['description_' . $lang] ?? Utils::$context['lp_plugin']['descriptions'][$lang] ?? '';
 
 			if (! empty($postData['option_translations'][$lang])) {
 				foreach ($postData['option_translations'][$lang] as $id => $translation) {
@@ -317,7 +330,7 @@ class Handler
 
 	private function saveAuthorData(): void
 	{
-		(new PluginRepository)->changeSettings('plugin_maker', [
+		(new PluginRepository())->changeSettings('plugin_maker', [
 			'author'  => Utils::$context['lp_plugin']['author'],
 			'email'   => Utils::$context['lp_plugin']['email'],
 			'site'    => Utils::$context['lp_plugin']['site'],

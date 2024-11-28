@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 19.11.24
+ * @version 27.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleChat;
@@ -117,12 +117,10 @@ class SimpleChat extends Block
 		Theme::loadCSSFile('admin.css');
 		Theme::loadJavaScriptFile('light_portal/bundle.min.js', ['defer' => true]);
 
-		$parameters = $e->args->parameters;
+		[$id, $parameters] = [$e->args->id, $e->args->parameters];
 
 		$parameters['show_avatars'] ??= $this->params['show_avatars'];
 		$parameters['form_position'] ??= $this->params['form_position'];
-
-		$id = $e->args->id;
 
 		$messages = $this->cache($this->name . '_addon_b' . $id)
 			->setLifeTime($e->args->cacheTime)

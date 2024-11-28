@@ -25,7 +25,7 @@ use function ob_start;
 use function str_replace;
 use function strstr;
 
-class Blade extends AbstractRenderer
+final class Blade extends AbstractRenderer
 {
 	public const DEFAULT_TEMPLATE = 'default.blade.php';
 

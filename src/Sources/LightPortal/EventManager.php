@@ -25,12 +25,7 @@ use function method_exists;
 
 class EventManager
 {
-	protected DoctrineEventManager $eventManager;
-
-	public function __construct()
-	{
-		$this->eventManager = new DoctrineEventManager();
-	}
+	private readonly DoctrineEventManager $eventManager;
 
 	private array $contentHooks = [
 		PortalHook::prepareBlockParams,
@@ -39,6 +34,11 @@ class EventManager
 		PortalHook::parseContent,
 		PortalHook::prepareContent
 	];
+
+	public function __construct()
+	{
+		$this->eventManager = new DoctrineEventManager();
+	}
 
 	public function addListeners(array $hooks, Plugin $listener): void
 	{
@@ -56,7 +56,7 @@ class EventManager
 				&& in_array($hook, $this->contentHooks)
 				&& isset($args->args->type)
 			) {
-				if ($args->args->type !== $listener->getShortName()) {
+				if ($args->args->type !== $listener->name) {
 					continue;
 				}
 			}

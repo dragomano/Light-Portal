@@ -21,8 +21,6 @@ use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\{CacheTrait, EntityDataTrait, Icon};
 use Bugo\LightPortal\Utils\{Language, RequestTrait, Setting, Str};
-use ReflectionClass;
-use ReflectionException;
 
 use function array_filter;
 use function array_flip;
@@ -34,6 +32,7 @@ use function array_unique;
 use function explode;
 use function implode;
 use function in_array;
+use function is_array;
 use function json_encode;
 use function ksort;
 use function ltrim;
@@ -185,31 +184,16 @@ final class PluginArea
 	{
 		Utils::$context['all_lp_plugins'] = array_map(function ($item) use ($configVars) {
 			$snakeName = Str::getSnakeName($item);
+			$pluginData = Utils::$context['lp_loaded_addons'][$snakeName] ?? [];
 
-			try {
-				$className = '\Bugo\LightPortal\Plugins\\' . $item . '\\' . $item;
-				$addonClass = new ReflectionClass($className);
-
-				if ($addonClass->hasProperty('author')) {
-					$author = $addonClass->getProperty('author')->getValue(new $className);
-				}
-
-				if ($addonClass->hasProperty('link')) {
-					$link = $addonClass->getProperty('link')->getValue(new $className);
-				}
-
-				if ($addonClass->hasProperty('saveable')) {
-					$saveable = $addonClass->getProperty('saveable')->getValue(new $className);
-				}
-
-			} catch (ReflectionException) {
-				if (isset(Utils::$context['lp_can_donate'][$item])) {
-					Utils::$context['lp_loaded_addons'][$snakeName]['type'] = Utils::$context['lp_can_donate'][$item]['type'] ?? 'other';
+			if ($pluginData === []) {
+				if (isset(Utils::$context['lp_donate'][$item])) {
+					Utils::$context['lp_loaded_addons'][$snakeName]['type'] = Utils::$context['lp_donate'][$item]['type'];
 					$special = 'can_donate';
 				}
 
-				if (isset(Utils::$context['lp_can_download'][$item])) {
-					Utils::$context['lp_loaded_addons'][$snakeName]['type'] = Utils::$context['lp_can_download'][$item]['type'] ?? 'other';
+				if (isset(Utils::$context['lp_download'][$item])) {
+					Utils::$context['lp_loaded_addons'][$snakeName]['type'] = Utils::$context['lp_download'][$item]['type'];
 					$special = 'can_download';
 				}
 			}
@@ -218,13 +202,13 @@ final class PluginArea
 				'name'       => $item,
 				'snake_name' => $snakeName,
 				'desc'       => Lang::$txt['lp_' . $snakeName]['description'] ?? '',
-				'author'     => $author ?? '',
-				'link'       => $link ?? '',
+				'author'     => $pluginData['author'] ?? '',
+				'link'       => $pluginData['link'] ?? '',
 				'status'     => in_array($item, Setting::getEnabledPlugins()) ? 'on' : 'off',
 				'types'      => $this->getTypes($snakeName),
 				'special'    => $special ?? '',
 				'settings'   => $configVars[$snakeName] ?? [],
-				'saveable'   => $saveable ?? true,
+				'saveable'   => $pluginData['saveable'] ?? false,
 			];
 		}, Utils::$context['lp_plugins']);
 	}
@@ -318,8 +302,8 @@ final class PluginArea
 		$pluginsData = [
 			'list'     => Utils::$context['all_lp_plugins'],
 			'types'    => Utils::$context['lp_plugin_types'],
-			'donate'   => Utils::$context['lp_can_donate'] ?? [],
-			'download' => Utils::$context['lp_can_download'] ?? [],
+			'donate'   => Utils::$context['lp_donate'] ?? [],
+			'download' => Utils::$context['lp_download'] ?? [],
 		];
 
 		$allPlugins = array_keys(Utils::$context['lp_loaded_addons'] ?? []);
@@ -350,8 +334,7 @@ final class PluginArea
 
 	private function extendPluginList(): void
 	{
-		Utils::$context['lp_can_donate'] = [];
-		Utils::$context['lp_can_download'] = [];
+		Utils::$context['lp_donate'] = Utils::$context['lp_download'] = [];
 
 		if (($xml = $this->cache()->get('custom_addon_list', 259200)) === null) {
 			$addonList = WebFetchApi::fetch(LP_PLUGIN_LIST);
@@ -373,12 +356,12 @@ final class PluginArea
 
 		foreach ($xml['donate'] as $addon) {
 			Utils::$context['lp_plugins'][] = $addon['name'];
-			Utils::$context['lp_can_donate'][$addon['name']] = $addon;
+			Utils::$context['lp_donate'][$addon['name']] = $addon;
 		}
 
 		foreach ($xml['download'] as $addon) {
 			Utils::$context['lp_plugins'][] = $addon['name'];
-			Utils::$context['lp_can_download'][$addon['name']] = $addon;
+			Utils::$context['lp_download'][$addon['name']] = $addon;
 		}
 
 		Utils::$context['lp_plugins'] = array_keys(array_flip(Utils::$context['lp_plugins']));
