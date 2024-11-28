@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 26.11.24
+ * @version 28.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\AdsBlock;
@@ -16,12 +16,10 @@ namespace Bugo\LightPortal\Plugins\AdsBlock;
 use Bugo\Compat\{Lang, Theme};
 use Bugo\LightPortal\Enums\{Hook, Tab};
 use Bugo\LightPortal\Plugins\{Block, Event};
-use Bugo\LightPortal\Plugins\AdsBlock\Hooks\AdminAreas;
 use Bugo\LightPortal\Plugins\AdsBlock\Hooks\DisplayButtons;
 use Bugo\LightPortal\Plugins\AdsBlock\Hooks\MenuButtons;
 use Bugo\LightPortal\Plugins\AdsBlock\Hooks\MessageindexButtons;
 use Bugo\LightPortal\Plugins\AdsBlock\Hooks\PrepareDisplayContext;
-use Bugo\LightPortal\Plugins\AdsBlock\Traits\PlacementProviderTrait;
 use Bugo\LightPortal\UI\Fields\{CustomField, TextareaField, TextField};
 use Bugo\LightPortal\UI\Partials\{BoardSelect, PageSelect, TopicSelect};
 use Bugo\LightPortal\Utils\Content;
@@ -34,8 +32,6 @@ if (! defined('LP_NAME'))
 
 class AdsBlock extends Block
 {
-	use PlacementProviderTrait;
-
 	public string $icon = 'fas fa-ad';
 
 	public function init(): void
@@ -45,7 +41,6 @@ class AdsBlock extends Block
 		}
 
 		$this->applyHook(Hook::menuButtons, MenuButtons::class);
-		$this->applyHook(Hook::adminAreas, AdminAreas::class);
 		$this->applyHook(Hook::messageindexButtons, MessageIndexButtons::class);
 		$this->applyHook(Hook::displayButtons, DisplayButtons::class);
 		$this->applyHook(Hook::prepareDisplayContext, PrepareDisplayContext::class);
@@ -107,7 +102,7 @@ class AdsBlock extends Block
 		CustomField::make('ads_placement', Lang::$txt['lp_block_placement'])
 			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(static fn() => new PlacementSelect(), [
-				'data'  => $this->getPlacements(),
+				'data'  => Placement::all(),
 				'value' => $options['ads_placement'],
 			]);
 

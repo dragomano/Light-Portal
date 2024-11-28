@@ -11,13 +11,13 @@
  * @version 06.11.24
  */
 
-namespace Bugo\LightPortal\Plugins\AdsBlock\Traits;
+namespace Bugo\LightPortal\Plugins\AdsBlock;
 
 use Bugo\Compat\Utils;
 
 trait RepliesComparisonTrait
 {
-	protected function isTopicNumRepliesLesserThanMinReplies(): bool
+	protected function isRepliesBelowMinimum(): bool
 	{
 		return isset(Utils::$context['lp_ads_block_plugin']['min_replies'])
 			&& Utils::$context['topicinfo']['num_replies'] < (int) Utils::$context['lp_ads_block_plugin']['min_replies'];

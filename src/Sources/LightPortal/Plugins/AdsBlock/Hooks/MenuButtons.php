@@ -8,19 +8,21 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 06.11.24
+ * @version 28.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\AdsBlock\Hooks;
 
-use Bugo\Compat\{Lang, Utils};
-use Bugo\LightPortal\Plugins\AdsBlock\Traits\PlacementProviderTrait;
+use Bugo\Compat\{Db, Lang, Utils};
+use Bugo\LightPortal\Plugins\AdsBlock\Placement;
 use Bugo\LightPortal\Utils\RequestTrait;
 
 use function array_filter;
 use function array_flip;
 use function array_key_exists;
 use function array_keys;
+use function array_merge;
+use function dirname;
 use function explode;
 use function strtotime;
 use function time;
@@ -28,11 +30,12 @@ use function time;
 class MenuButtons
 {
 	use RequestTrait;
-	use PlacementProviderTrait;
 
 	public function __invoke(): void
 	{
 		Utils::$context['lp_block_placements']['ads'] = Lang::$txt['lp_ads_block']['ads_type'];
+
+		$this->prepareAdsPlacements();
 
 		if ((empty(Utils::$context['current_board']) && empty(Utils::$context['lp_page'])) || $this->request()->is('xml'))
 			return;
@@ -58,13 +61,36 @@ class MenuButtons
 		}
 	}
 
-	public function getData(): array
+	private function prepareAdsPlacements(): void
+	{
+		if ($this->request()->hasNot('area'))
+			return;
+
+		if ($this->request('area') === 'lp_blocks') {
+			require_once dirname(__DIR__) . '/template.php';
+
+			Utils::$context['template_layers'][] = 'ads_block_form';
+		}
+
+		if (
+			$this->request('area') === 'lp_settings'
+			&& Utils::$context['current_subaction'] === 'panels'
+		) {
+			unset(Utils::$context['lp_block_placements']['ads']);
+
+			Utils::$context['lp_block_placements'] = array_merge(
+				Utils::$context['lp_block_placements'], Placement::all()
+			);
+		}
+	}
+
+	private function getData(): array
 	{
 		if (empty(Utils::$context['lp_blocks']['ads']))
 			return [];
 
 		$blocks = [];
-		foreach (array_keys($this->getPlacements()) as $position) {
+		foreach (array_keys(Placement::all()) as $position) {
 			$blocks[$position] = $this->getByPosition($position);
 		}
 

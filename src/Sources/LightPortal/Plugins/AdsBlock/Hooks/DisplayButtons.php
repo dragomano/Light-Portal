@@ -8,13 +8,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 06.11.24
+ * @version 28.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\AdsBlock\Hooks;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Plugins\AdsBlock\Traits\RepliesComparisonTrait;
+use Bugo\LightPortal\Plugins\AdsBlock\RepliesComparisonTrait;
 
 use function dirname;
 
@@ -24,7 +24,7 @@ class DisplayButtons
 
 	public function __invoke(): void
 	{
-		if ($this->isTopicNumRepliesLesserThanMinReplies())
+		if ($this->isRepliesBelowMinimum())
 			return;
 
 		require_once dirname(__DIR__) . '/template.php';
