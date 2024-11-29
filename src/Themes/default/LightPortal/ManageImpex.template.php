@@ -9,6 +9,11 @@ function template_manage_export_blocks(): void
 		<div class="cat_bar">
 			<h3 class="catbg">', Utils::$context['page_area_title'], '</h3>
 		</div>
+		<div class="additional_row">
+			<input type="hidden">
+			<input type="submit" name="export_selection" value="', Lang::$txt['lp_export_selection'], '" class="button">
+			<input type="submit" name="export_all" value="', Lang::$txt['lp_export_all'], '" class="button">
+		</div>
 		<table class="table_grid">
 			<thead>
 				<tr class="title_bar">
@@ -89,6 +94,11 @@ function template_manage_export_plugins(): void
 	<form action="', Utils::$context['form_action'], '" method="post" accept-charset="', Utils::$context['character_set'], '">
 		<div class="cat_bar">
 			<h3 class="catbg">', Utils::$context['page_area_title'], '</h3>
+		</div>
+		<div class="additional_row">
+			<input type="hidden">
+			<input type="submit" name="export_selection" value="', Lang::$txt['lp_export_selection'], '" class="button">
+			<input type="submit" name="export_all" value="', Lang::$txt['lp_export_all'], '" class="button">
 		</div>
 		<table class="table_grid">
 			<thead>

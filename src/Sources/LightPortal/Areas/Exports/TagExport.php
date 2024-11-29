@@ -133,7 +133,27 @@ final class TagExport extends AbstractExport
 			],
 			'additional_rows' => [
 				[
+					'position' => 'above_column_headers',
+					'class' => 'floatright',
+					'value' => Str::html('input', [
+							'type' => 'hidden',
+						]) .
+						Str::html('input', [
+							'type' => 'submit',
+							'name' => 'export_selection',
+							'value' => Lang::$txt['lp_export_selection'],
+							'class' => 'button',
+						]) .
+						Str::html('input', [
+							'type' => 'submit',
+							'name' => 'export_all',
+							'value' => Lang::$txt['lp_export_all'],
+							'class' => 'button',
+						])
+				],
+				[
 					'position' => 'below_table_data',
+					'class' => 'floatright',
 					'value' => Str::html('input', [
 							'type' => 'hidden',
 						]) .
