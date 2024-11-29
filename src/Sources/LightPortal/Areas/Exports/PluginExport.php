@@ -83,7 +83,10 @@ final class PluginExport extends AbstractExport
 		$iterator = new AppendIterator();
 		foreach ($dirs as $dir) {
 			$iterator->append(new RecursiveIteratorIterator(
-				new RecursiveDirectoryIterator(LP_ADDON_DIR . DIRECTORY_SEPARATOR . $dir, FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS)
+				new RecursiveDirectoryIterator(
+					LP_ADDON_DIR . DIRECTORY_SEPARATOR . $dir,
+					FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
+				)
 			));
 		}
 

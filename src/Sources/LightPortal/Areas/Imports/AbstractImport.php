@@ -51,5 +51,5 @@ abstract class AbstractImport implements ImportInterface
 		return simplexml_load_file($file['tmp_name']);
 	}
 
-	abstract protected function run();
+	abstract protected function run(): void;
 }

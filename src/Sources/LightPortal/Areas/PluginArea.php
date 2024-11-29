@@ -202,8 +202,6 @@ final class PluginArea
 				'name'       => $item,
 				'snake_name' => $snakeName,
 				'desc'       => Lang::$txt['lp_' . $snakeName]['description'] ?? '',
-				'author'     => $pluginData['author'] ?? '',
-				'link'       => $pluginData['link'] ?? '',
 				'status'     => in_array($item, Setting::getEnabledPlugins()) ? 'on' : 'off',
 				'types'      => $this->getTypes($snakeName),
 				'special'    => $special ?? '',
@@ -336,7 +334,9 @@ final class PluginArea
 	{
 		Utils::$context['lp_donate'] = Utils::$context['lp_download'] = [];
 
-		if (($xml = $this->cache()->get('custom_addon_list', 259200)) === null) {
+		$cacheTTL = 3 * 24 * 60 * 60;
+
+		if (($xml = $this->cache()->get('custom_addon_list', $cacheTTL)) === null) {
 			$addonList = WebFetchApi::fetch(LP_PLUGIN_LIST);
 
 			if (empty($addonList))
@@ -344,7 +344,7 @@ final class PluginArea
 
 			$xml = Utils::jsonDecode($addonList, true);
 
-			$this->cache()->put('custom_addon_list', $xml, 259200);
+			$this->cache()->put('custom_addon_list', $xml, $cacheTTL);
 		}
 
 		if (isset($xml[0])) {

@@ -49,8 +49,11 @@ class AssetHandler
 			if (empty($assets[$type]))
 				continue;
 
-			foreach ($assets[$type] as $plugin => $links) {
-				$directory = $type . '/light_portal/' . $plugin;
+			foreach ($assets[$type] as $snakeName => $links) {
+				if (empty($snakeName))
+					continue;
+
+				$directory = $type . '/light_portal/' . $snakeName;
 				$path = Theme::$current->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . $directory;
 
 				if (! is_dir($path)) {
@@ -67,7 +70,7 @@ class AssetHandler
 		}
 	}
 
-	public function load(string $path, string $plugin): void
+	public function handle(string $path, string $pluginName): void
 	{
 		$assets = [
 			'css' => $path . 'style.css',
@@ -78,7 +81,7 @@ class AssetHandler
 			if (! is_file($file))
 				continue;
 
-			if (in_array($plugin, Setting::getEnabledPlugins())) {
+			if (in_array($pluginName, Setting::getEnabledPlugins())) {
 				$this->{$type}->add($file);
 			}
 

@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 23.11.24
+ * @version 29.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\TwigLayouts;
@@ -29,8 +29,6 @@ use function str_replace;
 class TwigRenderer extends AbstractRenderer
 {
 	public const DEFAULT_TEMPLATE = 'default.twig';
-
-	public const DEFAULT_EXTENSION = '.twig';
 
 	public function render(string $layout, array $params = []): string
 	{

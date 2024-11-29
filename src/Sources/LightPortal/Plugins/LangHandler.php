@@ -23,7 +23,7 @@ class LangHandler
 {
 	private const PREFIX = 'lp_';
 
-	public function load(string $path, string $snakeName): void
+	public function handle(string $path, string $snakeName): void
 	{
 		if (isset(Lang::$txt[self::PREFIX . $snakeName]))
 			return;

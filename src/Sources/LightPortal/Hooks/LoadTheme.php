@@ -12,15 +12,13 @@
 
 namespace Bugo\LightPortal\Hooks;
 
-use Bugo\Compat\{Config, Lang, Theme};
-use Bugo\Compat\{User, Utils};
+use Bugo\Compat\{Config, Lang, Theme, User, Utils};
 use Bugo\LightPortal\Compilers\CompilerInterface;
 use Bugo\LightPortal\Enums\{ContentClass, ContentType, EntryType};
 use Bugo\LightPortal\Enums\{Placement, PluginType, PortalHook, TitleClass};
 use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Repositories\BlockRepository;
-use Bugo\LightPortal\Utils\RequestTrait;
-use Bugo\LightPortal\Utils\SessionManager;
+use Bugo\LightPortal\Utils\{RequestTrait, SessionManager};
 
 use function array_combine;
 use function array_map;

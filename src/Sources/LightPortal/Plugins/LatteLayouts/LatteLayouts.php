@@ -8,12 +8,12 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 23.11.24
+ * @version 29.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\LatteLayouts;
 
-use Bugo\Compat\{Lang, Theme};
+use Bugo\Compat\Theme;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Utils\Str;
@@ -36,7 +36,7 @@ class LatteLayouts extends Plugin
 
 	public function addSettings(Event $e): void
 	{
-		Lang::$txt['lp_latte_layouts']['note'] = sprintf(
+		$this->txt['note'] = sprintf(
 			$this->txt['note'],
 			$this->extension,
 			Theme::$current->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . 'portal_layouts'

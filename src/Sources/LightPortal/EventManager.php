@@ -15,7 +15,7 @@ namespace Bugo\LightPortal;
 use Bugo\LightPortal\Enums\PluginType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\Plugin;
+use Bugo\LightPortal\Plugins\PluginInterface;
 use Doctrine\Common\EventManager as DoctrineEventManager;
 
 use function array_map;
@@ -40,7 +40,7 @@ class EventManager
 		$this->eventManager = new DoctrineEventManager();
 	}
 
-	public function addListeners(array $hooks, Plugin $listener): void
+	public function addListeners(array $hooks, PluginInterface $listener): void
 	{
 		$hooks = array_map(fn($item) => $item->name, $hooks);
 		$hooks = array_filter($hooks, fn($item) => method_exists($listener, $item));
@@ -48,22 +48,23 @@ class EventManager
 		$this->eventManager->addEventListener($hooks, $listener);
 	}
 
-	public function dispatch(PortalHook $hook, ?Event $args = null): void
+	public function dispatch(PortalHook $hook, ?Event $e = null): void
 	{
+		/* @var PluginInterface $listener */
 		foreach ($this->getAll($hook->name) as $listener) {
 			if (
 				$listener->type !== PluginType::BLOCK_OPTIONS->name()
 				&& in_array($hook, $this->contentHooks)
-				&& isset($args->args->type)
+				&& isset($e->args->type)
 			) {
-				if ($args->args->type !== $listener->name) {
+				if ($e->args->type !== $listener->getShortName()) {
 					continue;
 				}
 			}
 
-			$args ??= new Event(new class {});
+			$e ??= new Event(new class {});
 
-			$listener->{$hook->name}($args);
+			$listener->{$hook->name}($e);
 		}
 	}
 

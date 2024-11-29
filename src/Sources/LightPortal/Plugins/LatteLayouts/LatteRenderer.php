@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 23.11.24
+ * @version 29.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\LatteLayouts;
@@ -30,8 +30,6 @@ use function str_replace;
 class LatteRenderer extends AbstractRenderer
 {
 	public const DEFAULT_TEMPLATE = 'default.latte';
-
-	public const DEFAULT_EXTENSION = '.latte';
 
 	public function render(string $layout, array $params = []): string
 	{

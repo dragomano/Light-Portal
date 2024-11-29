@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.11.24
+ * @version 29.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
@@ -180,11 +180,6 @@ class Generator
 			->addBody("if (! str_contains(Config::\$modSettings['lp_frontpage_layout'], \$this->extension))")
 			->addBody("\treturn;" . PHP_EOL)
 			->addBody("require_once __DIR__ . '/vendor/autoload.php';" . PHP_EOL)
-			->addBody("\$params = [")
-			->addBody("\t'txt'         => Lang::\$txt,")
-			->addBody("\t'context'     => Utils::\$context,")
-			->addBody("\t'modSettings' => Config::\$modSettings,")
-			->addBody("];" . PHP_EOL)
 			->addBody("ob_start();" . PHP_EOL)
 			->addBody("// Add your code here" . PHP_EOL)
 			->addBody("Utils::\$context['lp_layout'] = ob_get_clean();" . PHP_EOL)

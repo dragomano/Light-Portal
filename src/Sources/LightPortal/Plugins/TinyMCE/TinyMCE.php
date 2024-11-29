@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 13.11.24
+ * @version 29.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\TinyMCE;
@@ -16,6 +16,7 @@ namespace Bugo\LightPortal\Plugins\TinyMCE;
 use Bugo\Compat\{Lang, Theme, Utils};
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
+use Bugo\LightPortal\Utils\HasThemesAware;
 use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
@@ -26,6 +27,8 @@ if (! defined('LP_NAME'))
  */
 class TinyMCE extends Plugin
 {
+	use HasThemesAware;
+
 	public string $type = 'editor';
 
 	public function addSettings(Event $e): void

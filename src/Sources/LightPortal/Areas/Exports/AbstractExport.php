@@ -31,13 +31,13 @@ if (! defined('SMF'))
 
 abstract class AbstractExport implements ExportInterface
 {
-	abstract protected function getData();
+	abstract protected function getData(): array;
 
-	abstract protected function getFile();
+	abstract protected function getFile(): string;
 
 	protected function run(): void
 	{
-		if (empty($file = (string) $this->getFile()))
+		if (empty($file = $this->getFile()))
 			return;
 
 		Sapi::setTimeLimit();

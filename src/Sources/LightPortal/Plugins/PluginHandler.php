@@ -17,7 +17,6 @@ use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\EventManager;
 use Bugo\LightPortal\Utils\{Setting, Str};
 
-use function array_filter;
 use function array_map;
 use function basename;
 use function class_exists;
@@ -33,6 +32,8 @@ final class PluginHandler
 {
 	private readonly PluginRegistry $registry;
 
+	private readonly ConfigHandler $configHandler;
+
 	private readonly LangHandler $langHandler;
 
 	private readonly AssetHandler $assetHandler;
@@ -42,6 +43,7 @@ final class PluginHandler
 	public function __construct(array $plugins = [])
 	{
 		$this->registry = PluginRegistry::getInstance();
+		$this->configHandler = new ConfigHandler();
 		$this->langHandler = new LangHandler();
 		$this->assetHandler = new AssetHandler();
 
@@ -95,32 +97,31 @@ final class PluginHandler
 		if ($plugins === [])
 			return;
 
-		foreach ($plugins as $plugin) {
-			$className = __NAMESPACE__ . "\\$plugin\\$plugin";
+		foreach ($plugins as $pluginName) {
+			$className = __NAMESPACE__ . "\\$pluginName\\$pluginName";
 
 			if (! class_exists($className))
 				continue;
 
-			$snakeName = Str::getSnakeName($plugin);
+			$snakeName = Str::getSnakeName($pluginName);
 
 			if (! $this->registry->has($snakeName)) {
-				$path = __DIR__ . DIRECTORY_SEPARATOR . $plugin . DIRECTORY_SEPARATOR;
+				$path = __DIR__ . DIRECTORY_SEPARATOR . $pluginName . DIRECTORY_SEPARATOR;
 
-				$this->langHandler->load($path, $snakeName);
-				$this->assetHandler->load($path, $plugin);
+				$this->configHandler->handle($snakeName);
+				$this->langHandler->handle($path, $snakeName);
+				$this->assetHandler->handle($path, $pluginName);
 
 				$class = new $className();
 
 				self::$manager->addListeners(PortalHook::cases(), $class);
 
-				$this->registry->add($snakeName, array_filter([
-					'name'     => $plugin,
+				$this->registry->add($snakeName, [
+					'name'     => $pluginName,
 					'icon'     => $class->icon,
 					'type'     => $class->type,
-					'author'   => $class->author ?? null,
-					'link'     => $class->link ?? null,
 					'saveable' => $class->saveable,
-				]));
+				]);
 			}
 		}
 	}

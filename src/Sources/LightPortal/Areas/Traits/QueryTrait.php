@@ -68,10 +68,12 @@ trait QueryTrait
 
 	private function getFaIcons(): array
 	{
-		if (($icons = $this->cache()->get('fa_icon_list', 30 * 24 * 60 * 60)) === null) {
+		$cacheTTL = 30 * 24 * 60 * 60;
+
+		if (($icons = $this->cache()->get('fa_icon_list', $cacheTTL)) === null) {
 			$icons = (new IconList())->getList();
 
-			$this->cache()->put('fa_icon_list', $icons, 30 * 24 * 60 * 60);
+			$this->cache()->put('fa_icon_list', $icons, $cacheTTL);
 		}
 
 		return $icons;
