@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.11.24
+ * @version 02.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\WhosOnline;
@@ -103,9 +103,10 @@ class WhosOnline extends Block
 
 			$whoIsOnline['list_users_online'] = [];
 			foreach ($whoIsOnline['users_online'] as $key => $user) {
-				$whoIsOnline['list_users_online'][] = Str::html('a', $users[$key])
+				$whoIsOnline['list_users_online'][] = Str::html('a', '')
 					->href(Config::$scripturl . '?action=profile;u=' . $user['id'])
-					->title($user['name']);
+					->title($user['name'])
+					->addHtml($users[$key]);
 			}
 		}
 
