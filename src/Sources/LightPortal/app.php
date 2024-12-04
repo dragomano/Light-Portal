@@ -15,14 +15,17 @@ if (! defined('SMF'))
 
 require_once __DIR__ . '/Libs/autoload.php';
 
+use Bugo\Compat\Sapi;
 use Bugo\LightPortal\Areas\ConfigArea;
 use Bugo\LightPortal\Areas\CreditArea;
 use Bugo\LightPortal\Integration;
-use Laminas\Loader\StandardAutoloader;
 
 // Register autoloader
-$loader = new StandardAutoloader();
-$loader->registerNamespace('Bugo\LightPortal', __DIR__);
+$loader = new Nette\Loaders\RobotLoader;
+$loader->ignoreDirs[] = 'vendor';
+$loader->addDirectory(__DIR__);
+$loader->excludeDirectory(__DIR__ . '/Libs');
+$loader->setTempDirectory(Sapi::getTempDir());
 $loader->register();
 
 // This is the way
