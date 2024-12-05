@@ -8,12 +8,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.02.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\Likely;
 
-use Bugo\Compat\{Lang, Utils};
+use Bugo\Compat\Lang;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\UI\Partials\AbstractPartial;
 
 final class ButtonSelect extends AbstractPartial

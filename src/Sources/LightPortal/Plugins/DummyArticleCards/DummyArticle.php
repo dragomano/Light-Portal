@@ -8,12 +8,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 13.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\DummyArticleCards;
 
-use Bugo\Compat\{Config, Lang, User, Utils};
+use Bugo\Compat\Config;
+use Bugo\Compat\Lang;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Articles\AbstractArticle;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Str;

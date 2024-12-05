@@ -12,19 +12,38 @@
 
 namespace Bugo\LightPortal\Areas;
 
-use Bugo\Compat\{Config, Db, Lang, Theme, User, Utils};
-use Bugo\LightPortal\Areas\Configs\{BasicConfig, ExtraConfig};
-use Bugo\LightPortal\Areas\Configs\{FeedbackConfig, MiscConfig, PanelConfig};
-use Bugo\LightPortal\Areas\Exports\{BlockExport, CategoryExport};
-use Bugo\LightPortal\Areas\Exports\{PageExport, PluginExport, TagExport};
-use Bugo\LightPortal\Areas\Imports\{BlockImport, CategoryImport};
-use Bugo\LightPortal\Areas\Imports\{PageImport, PluginImport, TagImport};
+use Bugo\Compat\Config;
+use Bugo\Compat\Db;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Theme;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
+use Bugo\LightPortal\Areas\Configs\BasicConfig;
+use Bugo\LightPortal\Areas\Configs\ExtraConfig;
+use Bugo\LightPortal\Areas\Configs\FeedbackConfig;
+use Bugo\LightPortal\Areas\Configs\MiscConfig;
+use Bugo\LightPortal\Areas\Configs\PanelConfig;
+use Bugo\LightPortal\Areas\Exports\BlockExport;
+use Bugo\LightPortal\Areas\Exports\CategoryExport;
+use Bugo\LightPortal\Areas\Exports\PageExport;
+use Bugo\LightPortal\Areas\Exports\PluginExport;
+use Bugo\LightPortal\Areas\Exports\TagExport;
+use Bugo\LightPortal\Areas\Imports\BlockImport;
+use Bugo\LightPortal\Areas\Imports\CategoryImport;
+use Bugo\LightPortal\Areas\Imports\PageImport;
+use Bugo\LightPortal\Areas\Imports\PluginImport;
+use Bugo\LightPortal\Areas\Imports\TagImport;
 use Bugo\LightPortal\Args\AreasArgs;
-use Bugo\LightPortal\Enums\{Hook, PortalHook};
+use Bugo\LightPortal\Enums\Hook;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Utils\{CacheTrait, Icon, RequestTrait};
-use Bugo\LightPortal\Utils\{Setting, SMFHookTrait, Str};
+use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\Setting;
+use Bugo\LightPortal\Utils\SMFHookTrait;
+use Bugo\LightPortal\Utils\Str;
 
 use function array_keys;
 use function array_merge;

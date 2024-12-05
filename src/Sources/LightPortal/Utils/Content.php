@@ -12,8 +12,12 @@
 
 namespace Bugo\LightPortal\Utils;
 
-use Bugo\Compat\{BBCodeParser, IntegrationHook, Sapi, Utils};
-use Bugo\LightPortal\Enums\{ContentType, PortalHook};
+use Bugo\Compat\BBCodeParser;
+use Bugo\Compat\IntegrationHook;
+use Bugo\Compat\Sapi;
+use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\ContentType;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use ParseError;

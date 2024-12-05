@@ -12,16 +12,28 @@
 
 namespace Bugo\LightPortal\Actions;
 
-use Bugo\LightPortal\Renderers\RendererInterface;
-use Bugo\Compat\{Config, Lang, PageIndex, User, Utils};
-use Bugo\LightPortal\Articles\{ArticleInterface, BoardArticle};
-use Bugo\LightPortal\Articles\{ChosenPageArticle, ChosenTopicArticle};
-use Bugo\LightPortal\Articles\{PageArticle, TopicArticle};
+use Bugo\Compat\Config;
+use Bugo\Compat\Lang;
+use Bugo\Compat\PageIndex;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
+use Bugo\LightPortal\Articles\ArticleInterface;
+use Bugo\LightPortal\Articles\BoardArticle;
+use Bugo\LightPortal\Articles\ChosenPageArticle;
+use Bugo\LightPortal\Articles\ChosenTopicArticle;
+use Bugo\LightPortal\Articles\PageArticle;
+use Bugo\LightPortal\Articles\TopicArticle;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Utils\{CacheTrait, DateTime, Icon};
-use Bugo\LightPortal\Utils\{RequestTrait, SessionTrait, Setting, Str};
+use Bugo\LightPortal\Renderers\RendererInterface;
+use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\DateTime;
+use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\SessionTrait;
+use Bugo\LightPortal\Utils\Setting;
+use Bugo\LightPortal\Utils\Str;
 
 use function abs;
 use function array_column;

@@ -15,7 +15,8 @@ namespace Bugo\LightPortal\Plugins;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\EventManager;
-use Bugo\LightPortal\Utils\{Setting, Str};
+use Bugo\LightPortal\Utils\Setting;
+use Bugo\LightPortal\Utils\Str;
 
 use function array_map;
 use function basename;

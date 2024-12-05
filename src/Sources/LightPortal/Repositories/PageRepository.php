@@ -12,16 +12,31 @@
 
 namespace Bugo\LightPortal\Repositories;
 
-use Bugo\Compat\{Config, Db, Lang, Logging};
-use Bugo\Compat\{Msg, Security, User, Utils};
+use Bugo\Compat\Config;
+use Bugo\Compat\Db;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Logging;
+use Bugo\Compat\Msg;
+use Bugo\Compat\Security;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Args\ItemArgs;
-use Bugo\LightPortal\Enums\{AlertAction, EntryType};
-use Bugo\LightPortal\Enums\{Permission, PortalHook, Status};
+use Bugo\LightPortal\Enums\AlertAction;
+use Bugo\LightPortal\Enums\EntryType;
+use Bugo\LightPortal\Enums\Permission;
+use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Utils\{CacheTrait, Content, DateTime};
-use Bugo\LightPortal\Utils\{EntityDataTrait, Icon, Notify};
-use Bugo\LightPortal\Utils\{RequestTrait, Setting, Str};
+use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\Content;
+use Bugo\LightPortal\Utils\DateTime;
+use Bugo\LightPortal\Utils\EntityDataTrait;
+use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\Utils\Notify;
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\Setting;
+use Bugo\LightPortal\Utils\Str;
 
 use function array_filter;
 use function array_merge;

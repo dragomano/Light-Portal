@@ -1,6 +1,7 @@
 <?php
 
-use Bugo\Compat\{Lang, Theme, Utils};
+use Bugo\Compat\Lang;
+use Bugo\Compat\Theme;
 use Bugo\LightPortal\Utils\Icon;
 
 function swiper_images(array $options): string

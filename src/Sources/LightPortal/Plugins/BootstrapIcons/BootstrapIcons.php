@@ -8,12 +8,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 29.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\BootstrapIcons;
 
-use Bugo\Compat\{Theme, Utils};
+use Bugo\Compat\Theme;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 

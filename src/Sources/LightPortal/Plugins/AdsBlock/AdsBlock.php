@@ -8,20 +8,27 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 28.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\AdsBlock;
 
-use Bugo\Compat\{Lang, Theme};
-use Bugo\LightPortal\Enums\{Hook, Tab};
-use Bugo\LightPortal\Plugins\{Block, Event};
+use Bugo\Compat\Lang;
+use Bugo\Compat\Theme;
+use Bugo\LightPortal\Enums\Hook;
+use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\AdsBlock\Hooks\DisplayButtons;
 use Bugo\LightPortal\Plugins\AdsBlock\Hooks\MenuButtons;
 use Bugo\LightPortal\Plugins\AdsBlock\Hooks\MessageindexButtons;
 use Bugo\LightPortal\Plugins\AdsBlock\Hooks\PrepareDisplayContext;
-use Bugo\LightPortal\UI\Fields\{CustomField, TextareaField, TextField};
-use Bugo\LightPortal\UI\Partials\{BoardSelect, PageSelect, TopicSelect};
+use Bugo\LightPortal\UI\Fields\CustomField;
+use Bugo\LightPortal\UI\Fields\TextareaField;
+use Bugo\LightPortal\UI\Fields\TextField;
+use Bugo\LightPortal\UI\Partials\BoardSelect;
+use Bugo\LightPortal\UI\Partials\PageSelect;
+use Bugo\LightPortal\UI\Partials\TopicSelect;
 use Bugo\LightPortal\Utils\Content;
 
 use function date;

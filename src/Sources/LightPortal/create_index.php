@@ -11,6 +11,9 @@ foreach ($iterator as $directory) {
 	if (str_contains((string) $directory->getPathname(), 'Libs'))
 		continue;
 
+	if (str_contains((string) $directory->getPathname(), 'packages'))
+		continue;
+
 	if ($directory->isDir() && ! file_exists($directory . '/index.php')) {
 		file_put_contents($directory . '/index.php', '<?php
 

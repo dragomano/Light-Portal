@@ -13,6 +13,7 @@
 namespace Bugo\LightPortal\Areas\Exports;
 
 use Bugo\Compat\Sapi;
+use Bugo\LightPortal\Utils\RequestTrait;
 use Closure;
 
 use function basename;
@@ -31,6 +32,8 @@ if (! defined('SMF'))
 
 abstract class AbstractExport implements ExportInterface
 {
+	use RequestTrait;
+
 	abstract protected function getData(): array;
 
 	abstract protected function getFile(): string;

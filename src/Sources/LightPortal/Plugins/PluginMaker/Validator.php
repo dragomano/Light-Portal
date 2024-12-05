@@ -8,12 +8,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 13.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
 
-use Bugo\Compat\{Lang, Utils};
+use Bugo\Compat\Lang;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Validators\AbstractValidator;
 use Bugo\LightPortal\Enums\VarType;
 use Bugo\LightPortal\Utils\EntityDataTrait;

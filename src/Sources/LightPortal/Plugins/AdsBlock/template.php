@@ -1,6 +1,7 @@
 <?php
 
-use Bugo\Compat\{Config, Utils};
+use Bugo\Compat\Config;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Plugins\AdsBlock\Placement;
 
 function template_ads_placement_board_above(): void

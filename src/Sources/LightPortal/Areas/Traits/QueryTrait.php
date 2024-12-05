@@ -12,7 +12,10 @@
 
 namespace Bugo\LightPortal\Areas\Traits;
 
-use Bugo\Compat\{Config, Db, Lang, Utils};
+use Bugo\Compat\Config;
+use Bugo\Compat\Db;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Lists\IconList;

@@ -12,7 +12,8 @@
 
 namespace Bugo\LightPortal\Plugins;
 
-use Bugo\Compat\{Lang, User};
+use Bugo\Compat\Lang;
+use Bugo\Compat\User;
 use Bugo\LightPortal\Utils\Language;
 
 use function array_merge;

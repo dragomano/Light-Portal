@@ -12,13 +12,22 @@
 
 namespace Bugo\LightPortal\Actions;
 
-use Bugo\Compat\{Config, PageIndex, User, Utils};
-use Bugo\LightPortal\Enums\{AlertAction, PortalHook, VarType};
+use Bugo\Compat\Config;
+use Bugo\Compat\PageIndex;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\AlertAction;
+use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Enums\VarType;
 use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Repositories\CommentRepository;
-use Bugo\LightPortal\Utils\{Avatar, CacheTrait, DateTime};
-use Bugo\LightPortal\Utils\{Notify, RequestTrait, Setting};
+use Bugo\LightPortal\Utils\Avatar;
+use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\DateTime;
+use Bugo\LightPortal\Utils\Notify;
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\Setting;
 
 use function array_map;
 use function array_slice;

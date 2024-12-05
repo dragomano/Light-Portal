@@ -19,9 +19,10 @@ use Bugo\Compat\Sapi;
 use Bugo\LightPortal\Areas\ConfigArea;
 use Bugo\LightPortal\Areas\CreditArea;
 use Bugo\LightPortal\Integration;
+use Nette\Loaders\RobotLoader;
 
 // Register autoloader
-$loader = new Nette\Loaders\RobotLoader;
+$loader = new RobotLoader;
 $loader->ignoreDirs[] = 'vendor';
 $loader->addDirectory(__DIR__);
 $loader->excludeDirectory(__DIR__ . '/Libs');

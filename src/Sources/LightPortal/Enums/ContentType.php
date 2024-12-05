@@ -12,7 +12,8 @@
 
 namespace Bugo\LightPortal\Enums;
 
-use Bugo\Compat\{Lang, User};
+use Bugo\Compat\Lang;
+use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\Traits\HasNamesTrait;
 
 use function array_slice;

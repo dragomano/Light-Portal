@@ -13,9 +13,12 @@
 namespace Bugo\LightPortal\Areas\Exports;
 
 use AppendIterator;
-use Bugo\Compat\{Config, Lang, Sapi, Theme, Utils};
+use Bugo\Compat\Config;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Sapi;
+use Bugo\Compat\Theme;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Utils\EntityDataTrait;
-use Bugo\LightPortal\Utils\RequestTrait;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -33,7 +36,6 @@ if (! defined('SMF'))
 final class PluginExport extends AbstractExport
 {
 	use EntityDataTrait;
-	use RequestTrait;
 
 	public function main(): void
 	{

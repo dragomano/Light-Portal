@@ -34,6 +34,9 @@ abstract class AbstractRenderer implements RendererInterface
 
 	public function __construct()
 	{
+		if (empty(Theme::$current->settings['default_theme_dir']))
+			return;
+
 		$this->templateDir = Theme::$current->settings['default_theme_dir'] . '/LightPortal/layouts';
 
 		$this->customDir = Theme::$current->settings['default_theme_dir'] . '/portal_layouts';

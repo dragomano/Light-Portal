@@ -12,7 +12,8 @@
 
 namespace Bugo\LightPortal\Utils;
 
-use Bugo\Compat\{Config, Actions\MessageIndex as BaseMessageIndex};
+use Bugo\Compat\Config;
+use Bugo\Compat\Actions\MessageIndex as BaseMessageIndex;
 
 use function array_merge;
 

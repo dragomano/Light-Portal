@@ -1,6 +1,7 @@
 <?php
 
-use Bugo\Compat\{Config, Lang};
+use Bugo\Compat\Config;
+use Bugo\Compat\Lang;
 
 function show_current_month_grid(array $data): void
 {

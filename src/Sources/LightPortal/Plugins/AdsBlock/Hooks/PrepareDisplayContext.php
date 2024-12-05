@@ -8,13 +8,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 28.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\AdsBlock\Hooks;
 
+use Bugo\Compat\Theme;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Plugins\AdsBlock\Placement;
-use Bugo\Compat\{Theme, Utils};
 use Bugo\LightPortal\Plugins\AdsBlock\RepliesComparisonTrait;
 
 use function lp_show_blocks;

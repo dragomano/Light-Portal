@@ -1,6 +1,7 @@
 <?php
 
-use Bugo\Compat\{Lang, Utils};
+use Bugo\Compat\Lang;
+use Bugo\Compat\Utils;
 
 function template_show_results(): void
 {

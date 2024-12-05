@@ -12,7 +12,10 @@
 
 namespace Bugo\LightPortal\Areas\Validators;
 
-use Bugo\Compat\{Config, Db, Lang, Utils};
+use Bugo\Compat\Config;
+use Bugo\Compat\Db;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Args\ErrorsDataArgs;
 use Bugo\LightPortal\Args\ParamsArgs;
 use Bugo\LightPortal\Enums\PortalHook;
@@ -24,9 +27,6 @@ use Bugo\LightPortal\Utils\RequestTrait;
 use function array_merge;
 use function explode;
 use function filter_input_array;
-
-if (! defined('SMF'))
-	die('No direct access...');
 
 class PageValidator extends AbstractValidator
 {

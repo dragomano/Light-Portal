@@ -12,7 +12,8 @@
 
 namespace Bugo\LightPortal\UI\Partials;
 
-use Bugo\Compat\{Lang, Utils};
+use Bugo\Compat\Lang;
+use Bugo\Compat\Utils;
 
 use function array_combine;
 use function array_merge;

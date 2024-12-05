@@ -12,7 +12,9 @@
 
 namespace Bugo\LightPortal\Models;
 
-use Bugo\Compat\{Config, User, Utils};
+use Bugo\Compat\Config;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Status;
 
 use function time;

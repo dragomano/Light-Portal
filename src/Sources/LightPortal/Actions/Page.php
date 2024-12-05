@@ -12,13 +12,30 @@
 
 namespace Bugo\LightPortal\Actions;
 
-use Bugo\Compat\{Config, ErrorHandler, Lang};
-use Bugo\Compat\{PageIndex, Theme, User, Utils};
-use Bugo\LightPortal\Enums\{EntryType, PortalHook};
+use Bugo\Bricks\Tables\Column;
+use Bugo\Bricks\Tables\Interfaces\TableBuilderInterface;
+use Bugo\Compat\Config;
+use Bugo\Compat\ErrorHandler;
+use Bugo\Compat\Lang;
+use Bugo\Compat\PageIndex;
+use Bugo\Compat\Theme;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\EntryType;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Repositories\PageRepository;
-use Bugo\LightPortal\Utils\{CacheTrait, Content, EntityDataTrait, Icon};
-use Bugo\LightPortal\Utils\{RequestTrait, SessionTrait, Setting, Str};
+use Bugo\LightPortal\UI\Tables\DateColumn;
+use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
+use Bugo\LightPortal\UI\Tables\TitleColumn;
+use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\Content;
+use Bugo\LightPortal\Utils\EntityDataTrait;
+use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\SessionTrait;
+use Bugo\LightPortal\Utils\Setting;
+use Bugo\LightPortal\Utils\Str;
 use SimpleSEF;
 
 use function array_column;
@@ -145,77 +162,31 @@ final class Page implements PageInterface
 		Utils::obExit();
 	}
 
-	public function getList(): array
+	public function getBuilder(string $id): TableBuilderInterface
 	{
-		return [
-			'items_per_page' => Config::$modSettings['defaultMaxListItems'] ?: 50,
-			'title' => Utils::$context['page_title'],
-			'no_items_label' => Lang::$txt['lp_no_items'],
-			'base_href' => Utils::$context['canonical_url'],
-			'default_sort_col' => 'date',
-			'columns' => [
-				'date' => [
-					'header' => [
-						'value' => Lang::$txt['date']
-					],
-					'data' => [
-						'db'    => 'date',
-						'class' => 'centertext'
-					],
-					'sort' => [
-						'default' => 'p.created_at DESC, p.updated_at DESC',
-						'reverse' => 'p.created_at, p.updated_at'
-					]
-				],
-				'title' => [
-					'header' => [
-						'value' => Lang::$txt['lp_title']
-					],
-					'data' => [
-						'function' => static fn($entry) => Str::html('a', $entry['title'])
-							->class('bbc_link' . ($entry['is_front'] ? ' new_posts' : ''))
-							->href($entry['is_front'] ? Config::$scripturl : (LP_PAGE_URL . $entry['slug'])),
-						'class' => 'word_break'
-					],
-					'sort' => [
-						'default' => 't.value DESC',
-						'reverse' => 't.value'
-					]
-				],
-				'author' => [
-					'header' => [
-						'value' => Lang::$txt['author']
-					],
-					'data' => [
-						'function' => static fn($entry) => empty($entry['author']['name'])
-							? Lang::$txt['guest_title']
-							: Str::html('a', $entry['author']['name'])
-								->href($entry['author']['link']),
-						'class' => 'centertext'
-					],
-					'sort' => [
-						'default' => 'author_name DESC',
-						'reverse' => 'author_name'
-					]
-				],
-				'num_views' => [
-					'header' => [
-						'value' => Lang::$txt['views']
-					],
-					'data' => [
-						'function' => static fn($entry) => $entry['views']['num'],
-						'class' => 'centertext'
-					],
-					'sort' => [
-						'default' => 'p.num_views DESC',
-						'reverse' => 'p.num_views'
-					]
-				]
-			],
-			'form' => [
-				'href' => Utils::$context['canonical_url']
-			]
-		];
+		return PortalTableBuilder::make($id, Utils::$context['page_title'])
+			->withParams(
+				(int) Config::$modSettings['defaultMaxListItems'] ?: 50,
+				defaultSortColumn: 'date'
+			)
+			->addColumns([
+				DateColumn::make()
+					->setData('date', 'centertext')
+					->setSort('p.created_at DESC, p.updated_at DESC', 'p.created_at, p.updated_at'),
+				TitleColumn::make()
+					->setData(static fn($entry) => Str::html('a', $entry['title'])
+						->class('bbc_link' . ($entry['is_front'] ? ' new_posts' : ''))
+						->href($entry['is_front'] ? Config::$scripturl : (LP_PAGE_URL . $entry['slug'])), 'centertext'),
+				Column::make('author', Lang::$txt['author'])
+					->setData(static fn($entry) => empty($entry['author']['name'])
+						? Lang::$txt['guest_title']
+						: Str::html('a', $entry['author']['name'])
+							->href($entry['author']['link']), 'centertext')
+					->setSort('author_name DESC', 'author_name'),
+				Column::make('num_views', Lang::$txt['views'])
+					->setData(static fn($entry) => $entry['views']['num'], 'centertext')
+					->setSort('p.num_views DESC', 'p.num_views'),
+			]);
 	}
 
 	private function handleEmptySlug(): void

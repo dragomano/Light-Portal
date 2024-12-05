@@ -12,7 +12,8 @@
 
 namespace Bugo\LightPortal\Hooks;
 
-use Bugo\Compat\{Config, Lang};
+use Bugo\Compat\Config;
+use Bugo\Compat\Lang;
 use Bugo\LightPortal\Utils\EntityDataTrait;
 use Bugo\LightPortal\Utils\Setting;
 

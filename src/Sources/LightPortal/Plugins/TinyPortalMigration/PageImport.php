@@ -8,15 +8,27 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\TinyPortalMigration;
 
-use Bugo\Compat\{BBCodeParser, Config, Db, Lang, User, Utils};
+use Bugo\Bricks\Presenters\TablePresenter;
+use Bugo\Bricks\Tables\IdColumn;
+use Bugo\Compat\BBCodeParser;
+use Bugo\Compat\Config;
+use Bugo\Compat\Db;
+use Bugo\Compat\Lang;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Imports\AbstractCustomPageImport;
 use Bugo\LightPortal\Enums\Permission;
-use Bugo\LightPortal\Utils\{DateTime, ItemList, Str};
+use Bugo\LightPortal\UI\Tables\CheckboxColumn;
+use Bugo\LightPortal\UI\Tables\ImportButtonsRow;
+use Bugo\LightPortal\UI\Tables\PageSlugColumn;
+use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
+use Bugo\LightPortal\UI\Tables\TitleColumn;
+use Bugo\LightPortal\Utils\DateTime;
 
 use const LP_NAME;
 
@@ -40,103 +52,24 @@ class PageImport extends AbstractCustomPageImport
 
 		$this->run();
 
-		$listOptions = [
-			'id' => 'tp_pages',
-			'items_per_page' => 50,
-			'title' => Lang::$txt['lp_pages_import'],
-			'no_items_label' => Lang::$txt['lp_no_items'],
-			'base_href' => Utils::$context['form_action'],
-			'default_sort_col' => 'id',
-			'get_items' => [
-				'function' => $this->getAll(...)
-			],
-			'get_count' => [
-				'function' => $this->getTotalCount(...)
-			],
-			'columns' => [
-				'id' => [
-					'header' => [
-						'value' => '#',
-						'style' => 'width: 5%'
-					],
-					'data' => [
-						'db'    => 'id',
-						'class' => 'centertext'
-					],
-					'sort' => [
-						'default' => 'id',
-						'reverse' => 'id DESC'
-					]
-				],
-				'slug' => [
-					'header' => [
-						'value' => Lang::$txt['lp_page_slug']
-					],
-					'data' => [
-						'db'    => 'slug',
-						'class' => 'centertext word_break'
-					],
-					'sort' => [
-						'default' => 'shortname DESC',
-						'reverse' => 'shortname'
-					]
-				],
-				'title' => [
-					'header' => [
-						'value' => Lang::$txt['lp_title']
-					],
-					'data' => [
-						'db'    => 'title',
-						'class' => 'word_break'
-					],
-					'sort' => [
-						'default' => 'subject DESC',
-						'reverse' => 'subject'
-					]
-				],
-				'actions' => [
-					'header' => [
-						'value' => Str::html('input', [
-							'type' => 'checkbox',
-							'onclick' => 'invertAll(this, this.form);',
-							'checked' => 'checked'
-						])
-					],
-					'data' => [
-						'function' => static fn($entry) => Str::html('input', [
-							'type' => 'checkbox',
-							'value' => $entry['id'],
-							'name' => 'pages[]',
-							'checked' => 'checked'
-						]),
-						'class' => 'centertext'
-					]
-				]
-			],
-			'form' => [
-				'href' => Utils::$context['form_action']
-			],
-			'additional_rows' => [
-				[
-					'position' => 'below_table_data',
-					'value' => Str::html('input', ['type' => 'hidden']) .
-						Str::html('input', [
-							'type' => 'submit',
-							'name' => 'import_selection',
-							'value' => Lang::$txt['lp_import_selection'],
-							'class' => 'button'
-						]) .
-						Str::html('input', [
-							'type' => 'submit',
-							'name' => 'import_all',
-							'value' => Lang::$txt['lp_import_all'],
-							'class' => 'button'
-						])
-				]
-			]
-		];
-
-		new ItemList($listOptions);
+		TablePresenter::show(
+			PortalTableBuilder::make('tp_pages', Lang::$txt['lp_pages_import'])
+				->withParams(
+					50,
+					defaultSortColumn: 'id'
+				)
+				->setItems($this->getAll(...))
+				->setCount($this->getTotalCount(...))
+				->addColumns([
+					IdColumn::make()->setSort('id'),
+					PageSlugColumn::make()->setSort('shortname DESC', 'shortname'),
+					TitleColumn::make()
+						->setData('title', 'word_break')
+						->setSort('subject DESC', 'subject'),
+					CheckboxColumn::make(entity: 'pages'),
+				])
+				->addRow(ImportButtonsRow::make())
+		);
 	}
 
 	public function getAll(int $start = 0, int $limit = 0, string $sort = 'id'): array

@@ -1,6 +1,8 @@
 <?php
 
-use Bugo\Compat\{Lang, Theme, Utils};
+use Bugo\Compat\Lang;
+use Bugo\Compat\Theme;
+use Bugo\Compat\Utils;
 
 function chart_template(array $options): string
 {

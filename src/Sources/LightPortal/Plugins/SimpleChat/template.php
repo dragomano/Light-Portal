@@ -1,6 +1,8 @@
 <?php
 
-use Bugo\Compat\{Config, Lang, Utils};
+use Bugo\Compat\Config;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Utils;
 
 function show_chat_block(int $id, array $parameters, bool $isInSidebar): void
 {

@@ -8,12 +8,14 @@
  * @license Individual (for sponsors)
  *
  * @category plugin
- * @version 13.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\SiteList;
 
-use Bugo\Compat\{Config, User, Utils};
+use Bugo\Compat\Config;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Articles\AbstractArticle;
 
 if (! defined('LP_NAME'))

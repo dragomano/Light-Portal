@@ -14,6 +14,7 @@ namespace Bugo\LightPortal\UI\Fields;
 
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Tab;
+
 use function is_callable;
 use function is_object;
 use function is_string;

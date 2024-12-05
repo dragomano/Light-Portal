@@ -12,8 +12,15 @@
 
 namespace Bugo\LightPortal\Tasks;
 
-use Bugo\Compat\{Tasks\BackgroundTask, Config, Db, Lang};
-use Bugo\Compat\{Mail, Actions\Notify, Theme, User, Utils};
+use Bugo\Compat\Actions\Notify;
+use Bugo\Compat\Config;
+use Bugo\Compat\Db;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Mail;
+use Bugo\Compat\Tasks\BackgroundTask;
+use Bugo\Compat\Theme;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\AlertAction;
 use ErrorException;
 

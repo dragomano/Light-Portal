@@ -12,7 +12,8 @@
 
 namespace Bugo\LightPortal\Enums;
 
-use Bugo\Compat\{Db, User};
+use Bugo\Compat\Db;
+use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\Traits\HasValuesTrait;
 use Bugo\LightPortal\Utils\Cache;
 

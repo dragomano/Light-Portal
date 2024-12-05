@@ -1,6 +1,7 @@
 <?php
 
-use Bugo\Compat\{Lang, Utils};
+use Bugo\Compat\Lang;
+use Bugo\Compat\Utils;
 
 function callback_main_menu_table(): void
 {

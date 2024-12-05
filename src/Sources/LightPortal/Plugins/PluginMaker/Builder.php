@@ -8,12 +8,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.06.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
 
-use Bugo\Compat\{ErrorHandler, Lang};
+use Bugo\Compat\ErrorHandler;
+use Bugo\Compat\Lang;
 
 use function copy;
 use function file_put_contents;

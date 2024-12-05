@@ -12,8 +12,13 @@
 
 namespace Bugo\LightPortal\Areas;
 
-use Bugo\Compat\{Config, Lang, Theme, User, Utils};
-use Bugo\LightPortal\Enums\{Hook, PortalHook};
+use Bugo\Compat\Config;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Theme;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\Hook;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\SMFHookTrait;
@@ -130,7 +135,7 @@ final class CreditArea
 			],
 			[
 				'name' => 'Visual Studio Code',
-				'link' => 'https://code.visualstudio.com/Download'
+				'link' => 'https://code.visualstudio.com'
 			],
 			[
 				'name' => 'Unreal Commander',
@@ -155,6 +160,14 @@ final class CreditArea
 			[
 				'name' => 'Vite',
 				'link' => 'https://vitejs.dev'
+			],
+			[
+				'name' => 'PHPStorm',
+				'link' => 'https://www.jetbrains.com/phpstorm/'
+			],
+			[
+				'name' => 'Cursor',
+				'link' => 'https://www.cursor.com/'
 			],
 		];
 

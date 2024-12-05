@@ -8,12 +8,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 20.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\RecentTopics;
 
-use Bugo\Compat\{Config, User};
+use Bugo\Compat\Config;
+use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;

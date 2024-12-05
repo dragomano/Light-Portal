@@ -12,8 +12,15 @@
 
 namespace Bugo\LightPortal\Areas\Configs;
 
-use Bugo\Compat\{Actions\ACP, Config, Lang, Theme, User, Utils};
-use Bugo\LightPortal\Utils\{RequestTrait, SessionTrait, Setting};
+use Bugo\Compat\Actions\ACP;
+use Bugo\Compat\Config;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Theme;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\SessionTrait;
+use Bugo\LightPortal\Utils\Setting;
 
 use function json_encode;
 

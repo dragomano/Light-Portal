@@ -1,6 +1,8 @@
 <?php
 
-use Bugo\Compat\{Config, Lang, Utils};
+use Bugo\Compat\Config;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Utils\Icon;
 
 function show_user_info($data): void

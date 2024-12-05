@@ -12,9 +12,11 @@
 
 namespace Bugo\LightPortal\Plugins;
 
-use Bugo\Compat\{Theme, WebFetchApi};
+use Bugo\Compat\Theme;
+use Bugo\Compat\WebFetchApi;
 use Bugo\LightPortal\Utils\Setting;
-use MatthiasMullie\Minify\{CSS, JS};
+use MatthiasMullie\Minify\CSS;
+use MatthiasMullie\Minify\JS;
 
 use function basename;
 use function file_put_contents;

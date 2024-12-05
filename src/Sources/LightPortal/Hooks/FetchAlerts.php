@@ -12,7 +12,9 @@
 
 namespace Bugo\LightPortal\Hooks;
 
-use Bugo\Compat\{Config, Lang, User};
+use Bugo\Compat\Config;
+use Bugo\Compat\Lang;
+use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\AlertAction;
 use Bugo\LightPortal\Utils\Str;
 

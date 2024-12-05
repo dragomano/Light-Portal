@@ -8,15 +8,25 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 12.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\TinyPortalMigration;
 
-use Bugo\Compat\{Config, Db, Lang, Utils};
+use Bugo\Bricks\Presenters\TablePresenter;
+use Bugo\Bricks\Tables\Column;
+use Bugo\Compat\Config;
+use Bugo\Compat\Db;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Imports\AbstractCustomBlockImport;
-use Bugo\LightPortal\Enums\{ContentType, Permission, Placement};
-use Bugo\LightPortal\Utils\{ItemList, Str};
+use Bugo\LightPortal\Enums\ContentType;
+use Bugo\LightPortal\Enums\Permission;
+use Bugo\LightPortal\Enums\Placement;
+use Bugo\LightPortal\UI\Tables\CheckboxColumn;
+use Bugo\LightPortal\UI\Tables\ImportButtonsRow;
+use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
+use Bugo\LightPortal\UI\Tables\TitleColumn;
 
 use const LP_NAME;
 
@@ -40,102 +50,28 @@ class BlockImport extends AbstractCustomBlockImport
 
 		$this->run();
 
-		$listOptions = [
-			'id' => 'tp_blocks',
-			'items_per_page' => 50,
-			'title' => Lang::$txt['lp_blocks_import'],
-			'no_items_label' => Lang::$txt['lp_no_items'],
-			'base_href' => Utils::$context['form_action'],
-			'default_sort_col' => 'title',
-			'get_items' => [
-				'function' => $this->getAll(...)
-			],
-			'get_count' => [
-				'function' => $this->getTotalCount(...)
-			],
-			'columns' => [
-				'title' => [
-					'header' => [
-						'value' => Lang::$txt['lp_title']
-					],
-					'data' => [
-						'db'    => 'title',
-						'class' => 'word_break'
-					],
-					'sort' => [
-						'default' => 'title DESC',
-						'reverse' => 'title'
-					]
-				],
-				'type' => [
-					'header' => [
-						'value' => Lang::$txt['lp_block_type']
-					],
-					'data' => [
-						'db'    => 'type',
-						'class' => 'centertext'
-					],
-					'sort' => [
-						'default' => 'type DESC',
-						'reverse' => 'type'
-					]
-				],
-				'placement' => [
-					'header' => [
-						'value' => Lang::$txt['lp_block_placement']
-					],
-					'data' => [
-						'db'    => 'placement',
-						'class' => 'centertext'
-					],
-					'sort' => [
-						'default' => 'bar DESC',
-						'reverse' => 'bar'
-					]
-				],
-				'actions' => [
-					'header' => [
-						'value' => Str::html('input', [
-							'type' => 'checkbox',
-							'onclick' => 'invertAll(this, this.form);',
-							'checked' => 'checked'
-						])
-					],
-					'data' => [
-						'function' => static fn($entry) => Str::html('input', [
-							'type' => 'checkbox',
-							'value' => $entry['id'],
-							'name' => 'blocks[]',
-							'checked' => 'checked'
-						]),
-						'class' => 'centertext'
-					]
-				]
-			],
-			'form' => [
-				'href' => Utils::$context['form_action']
-			],
-			'additional_rows' => [
-				[
-					'position' => 'below_table_data',
-					'value' => Str::html('input', ['type' => 'hidden']) .
-						Str::html('input', [
-							'type' => 'submit',
-							'name' => 'import_selection',
-							'value' => Lang::$txt['lp_import_selection'],
-							'class' => 'button'
-						]) .
-						Str::html('input', [
-							'type' => 'submit',
-							'name' => 'import_all',
-							'value' => Lang::$txt['lp_import_all'],
-							'class' => 'button'
-						])
-				]
-			]
-		];
-
-		new ItemList($listOptions);
+		TablePresenter::show(
+			PortalTableBuilder::make('tp_blocks', Lang::$txt['lp_blocks_import'])
+				->withParams(
+					50,
+					defaultSortColumn: 'title'
+				)
+				->setItems($this->getAll(...))
+				->setCount($this->getTotalCount(...))
+				->addColumns([
+					TitleColumn::make()
+						->setData('title', 'word_break')
+						->setSort('title DESC', 'title'),
+					Column::make('type', Lang::$txt['lp_block_type'])
+						->setData('type', 'centertext')
+						->setSort('type DESC', 'type'),
+					Column::make('placement', Lang::$txt['lp_block_placement'])
+						->setData('placement', 'centertext')
+						->setSort('bar DESC', 'bar'),
+					CheckboxColumn::make(entity: 'blocks'),
+				])
+				->addRow(ImportButtonsRow::make())
+		);
 	}
 
 	public function getAll(int $start = 0, int $limit = 0, string $sort = 'id'): array

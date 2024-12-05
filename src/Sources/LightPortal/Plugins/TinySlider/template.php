@@ -1,6 +1,7 @@
 <?php
 
-use Bugo\Compat\{Lang, Theme, Utils};
+use Bugo\Compat\Lang;
+use Bugo\Compat\Theme;
 use Bugo\LightPortal\Utils\Icon;
 
 function tiny_slider_images(array $options): string

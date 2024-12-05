@@ -6,6 +6,7 @@
     "ext-simplexml": "*",
     "ext-zip": "*",
     "bugo/fa-php-helper": "^0.4",
+    "bugo/smf-bricks": "^0.1",
     "bugo/smf-compat": "^0.2",
     "doctrine/event-manager": "^2.0",
     "eftec/bladeone": "^4.13",

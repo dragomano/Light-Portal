@@ -8,14 +8,19 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 28.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
 
-use Bugo\Compat\{Config, Lang, Security, User, Utils};
+use Bugo\Compat\Config;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Security;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Traits\AreaTrait;
-use Bugo\LightPortal\Enums\{PluginType, Tab};
+use Bugo\LightPortal\Enums\PluginType;
+use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\CustomField;
@@ -23,8 +28,10 @@ use Bugo\LightPortal\UI\Fields\SelectField;
 use Bugo\LightPortal\UI\Fields\TextField;
 use Bugo\LightPortal\UI\Fields\UrlField;
 use Bugo\LightPortal\UI\Partials\IconSelect;
-use Bugo\LightPortal\Utils\{HasTemplateAware, Language};
-use Bugo\LightPortal\Utils\{RequestTrait, Str};
+use Bugo\LightPortal\Utils\HasTemplateAware;
+use Bugo\LightPortal\Utils\Language;
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\Str;
 
 use function array_filter;
 use function array_keys;

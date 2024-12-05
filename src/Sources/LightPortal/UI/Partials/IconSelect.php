@@ -12,7 +12,8 @@
 
 namespace Bugo\LightPortal\UI\Partials;
 
-use Bugo\Compat\{Lang, Utils};
+use Bugo\Compat\Lang;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Utils\Icon;
 
 use function func_get_args;

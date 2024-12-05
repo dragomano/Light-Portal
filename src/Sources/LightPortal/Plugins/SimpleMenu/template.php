@@ -1,6 +1,7 @@
 <?php
 
-use Bugo\Compat\{Lang, Theme, Utils};
+use Bugo\Compat\Lang;
+use Bugo\Compat\Theme;
 
 function simple_menu_items(array $options): string
 {

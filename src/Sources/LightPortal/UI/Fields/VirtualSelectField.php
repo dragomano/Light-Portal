@@ -12,7 +12,8 @@
 
 namespace Bugo\LightPortal\UI\Fields;
 
-use Bugo\Compat\{Theme, Utils};
+use Bugo\Compat\Theme;
+use Bugo\Compat\Utils;
 
 if (! defined('SMF'))
 	die('No direct access...');

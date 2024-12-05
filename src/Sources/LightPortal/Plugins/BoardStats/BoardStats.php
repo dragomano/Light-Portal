@@ -8,12 +8,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\BoardStats;
 
-use Bugo\Compat\{Config, Lang, User};
+use Bugo\Compat\Config;
+use Bugo\Compat\Lang;
+use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
@@ -89,8 +91,8 @@ class BoardStats extends Block
 
 		if ($parameters['show_basic_info']) {
 			$info = $this->getFromSSI('boardStats', 'array');
-			$info['max_online_today'] = comma_format(Config::$modSettings['mostOnlineToday']);
-			$info['max_online'] = comma_format(Config::$modSettings['mostOnline']);
+			$info['max_online_today'] = Lang::numberFormat(Config::$modSettings['mostOnlineToday']);
+			$info['max_online'] = Lang::numberFormat(Config::$modSettings['mostOnline']);
 		}
 
 		return [
@@ -110,6 +112,9 @@ class BoardStats extends Block
 		}
 
 		$parameters['show_latest_member'] ??= false;
+		$parameters['show_whos_online'] ??= false;
+		$parameters['show_basic_info'] ??= false;
+		$parameters['use_fa_icons'] ??= false;
 
 		$boardStats = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
 			->setLifeTime($parameters['update_interval'] ?? $e->args->cacheTime)
@@ -193,13 +198,13 @@ class BoardStats extends Block
 				->class('bbc_list')
 				->addHtml(
 					Str::html('li')
-						->setText(Lang::$txt['members'] . ': ' . comma_format($boardStats['whos_online']['num_users_online'])) .
+						->setText(Lang::$txt['members'] . ': ' . Lang::numberFormat($boardStats['whos_online']['num_users_online'])) .
 					Str::html('li')
-						->setText($this->txt['guests'] . ': ' . comma_format($boardStats['whos_online']['num_guests'])) .
+						->setText($this->txt['guests'] . ': ' . Lang::numberFormat($boardStats['whos_online']['num_guests'])) .
 					Str::html('li')
-						->setText($this->txt['spiders'] . ': ' . comma_format($boardStats['whos_online']['num_spiders'])) .
+						->setText($this->txt['spiders'] . ': ' . Lang::numberFormat($boardStats['whos_online']['num_spiders'])) .
 					Str::html('li')
-						->setText(Lang::$txt['total'] . ': ' . comma_format($boardStats['whos_online']['total_users']))
+						->setText(Lang::$txt['total'] . ': ' . Lang::numberFormat($boardStats['whos_online']['total_users']))
 				);
 
 			$whosOnlineDiv->addHtml($whosOnlineList);

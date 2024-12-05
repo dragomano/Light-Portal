@@ -8,17 +8,21 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 29.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\TwigLayouts;
 
-use Bugo\Compat\{BBCodeParser, Config};
-use Bugo\Compat\{ErrorHandler, Sapi};
+use Bugo\Compat\BBCodeParser;
+use Bugo\Compat\Config;
+use Bugo\Compat\ErrorHandler;
+use Bugo\Compat\Sapi;
 use Bugo\LightPortal\Renderers\AbstractRenderer;
 use Bugo\LightPortal\Utils\Icon;
-use Twig\{Environment, Error\Error};
-use Twig\{Loader\FilesystemLoader, TwigFunction};
+use Twig\Environment;
+use Twig\Error\Error;
+use Twig\Loader\FilesystemLoader;
+use Twig\TwigFunction;
 
 use function ob_get_clean;
 use function ob_start;

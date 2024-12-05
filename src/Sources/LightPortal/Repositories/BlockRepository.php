@@ -12,15 +12,25 @@
 
 namespace Bugo\LightPortal\Repositories;
 
-use Bugo\Compat\{Config, Db, ErrorHandler};
-use Bugo\Compat\{Lang, Msg, Security, Utils};
+use Bugo\Compat\Config;
+use Bugo\Compat\Db;
+use Bugo\Compat\ErrorHandler;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Msg;
+use Bugo\Compat\Security;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Args\ItemArgs;
 use Bugo\LightPortal\Args\ItemsArgs;
-use Bugo\LightPortal\Enums\{PortalHook, Status};
+use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Utils\{CacheTrait, EntityDataTrait};
-use Bugo\LightPortal\Utils\{Icon, RequestTrait, Setting, Str};
+use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\EntityDataTrait;
+use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\Setting;
+use Bugo\LightPortal\Utils\Str;
 
 use function array_filter;
 use function array_flip;

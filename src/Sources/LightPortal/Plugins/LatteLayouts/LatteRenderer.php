@@ -8,12 +8,14 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 29.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\LatteLayouts;
 
-use Bugo\Compat\{Config, ErrorHandler, Sapi};
+use Bugo\Compat\Config;
+use Bugo\Compat\ErrorHandler;
+use Bugo\Compat\Sapi;
 use Bugo\LightPortal\Renderers\AbstractRenderer;
 use Bugo\LightPortal\Utils\Icon;
 use Exception;

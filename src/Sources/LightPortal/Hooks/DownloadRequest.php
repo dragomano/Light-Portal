@@ -12,6 +12,7 @@
 
 namespace Bugo\LightPortal\Hooks;
 
+use Bugo\Compat\Lang;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
@@ -23,7 +24,7 @@ class DownloadRequest
 {
 	public function __invoke(mixed &$attachRequest): void
 	{
-		(new LoadTheme())();
+		Lang::load('LightPortal/LightPortal');
 
 		(new EventManagerFactory())()->dispatch(
 			PortalHook::downloadRequest,

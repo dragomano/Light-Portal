@@ -12,10 +12,17 @@
 
 namespace Bugo\LightPortal\Plugins;
 
-use Bugo\Compat\{Lang, ServerSideIncludes, Utils};
+use Bugo\Compat\Lang;
+use Bugo\Compat\ServerSideIncludes;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Repositories\PluginRepository;
-use Bugo\LightPortal\Utils\{CacheTrait, EntityDataTrait, HasTemplateAware};
-use Bugo\LightPortal\Utils\{RequestTrait, SessionTrait, SMFHookTrait, Str};
+use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\EntityDataTrait;
+use Bugo\LightPortal\Utils\HasTemplateAware;
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\SessionTrait;
+use Bugo\LightPortal\Utils\SMFHookTrait;
+use Bugo\LightPortal\Utils\Str;
 
 use function basename;
 use function dirname;

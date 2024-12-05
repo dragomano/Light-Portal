@@ -8,24 +8,36 @@
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  *
  * @category plugin
- * @version 19.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\Markdown;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Plugins\Markdown\SMF\{BlockQuoteRenderer, FencedCodeRenderer, HeadingRenderer};
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\Markdown\SMF\{ImageRenderer, LinkRenderer, ListBlockRenderer};
-use Bugo\LightPortal\Plugins\Markdown\SMF\{ListItemRenderer, TableRenderer, TableRowRenderer};
+use Bugo\LightPortal\Plugins\Markdown\SMF\BlockQuoteRenderer;
+use Bugo\LightPortal\Plugins\Markdown\SMF\FencedCodeRenderer;
+use Bugo\LightPortal\Plugins\Markdown\SMF\HeadingRenderer;
+use Bugo\LightPortal\Plugins\Markdown\SMF\ImageRenderer;
+use Bugo\LightPortal\Plugins\Markdown\SMF\LinkRenderer;
+use Bugo\LightPortal\Plugins\Markdown\SMF\ListBlockRenderer;
+use Bugo\LightPortal\Plugins\Markdown\SMF\ListItemRenderer;
+use Bugo\LightPortal\Plugins\Markdown\SMF\TableRenderer;
+use Bugo\LightPortal\Plugins\Markdown\SMF\TableRowRenderer;
 use Bugo\LightPortal\Plugins\Plugin;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Exception\CommonMarkException;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
-use League\CommonMark\Extension\CommonMark\Node\Block\{BlockQuote, FencedCode, Heading, ListBlock, ListItem};
-use League\CommonMark\Extension\CommonMark\Node\Inline\{Image, Link};
+use League\CommonMark\Extension\CommonMark\Node\Block\BlockQuote;
+use League\CommonMark\Extension\CommonMark\Node\Block\FencedCode;
+use League\CommonMark\Extension\CommonMark\Node\Block\Heading;
+use League\CommonMark\Extension\CommonMark\Node\Block\ListBlock;
+use League\CommonMark\Extension\CommonMark\Node\Block\ListItem;
+use League\CommonMark\Extension\CommonMark\Node\Inline\Image;
+use League\CommonMark\Extension\CommonMark\Node\Inline\Link;
 use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
-use League\CommonMark\Extension\Table\{Table, TableRow};
+use League\CommonMark\Extension\Table\Table;
+use League\CommonMark\Extension\Table\TableRow;
 use League\CommonMark\MarkdownConverter;
 use Zoon\CommonMark\Ext\YouTubeIframe\YouTubeIframeExtension;
 

@@ -8,12 +8,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 28.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\AdsBlock\Hooks;
 
-use Bugo\Compat\{Db, Lang, Utils};
+use Bugo\Compat\Db;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Plugins\AdsBlock\Placement;
 use Bugo\LightPortal\Utils\RequestTrait;
 

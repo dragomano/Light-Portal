@@ -8,14 +8,20 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 29.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
 
-use Bugo\Compat\{Config, Lang, User, Utils};
-use Bugo\LightPortal\Enums\{PluginType, PortalHook};
-use Bugo\LightPortal\Plugins\{Block, Event, Plugin};
+use Bugo\Compat\Config;
+use Bugo\Compat\Lang;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\PluginType;
+use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\ColorField;
 use Bugo\LightPortal\UI\Fields\CustomField;
@@ -25,8 +31,10 @@ use Bugo\LightPortal\UI\Fields\RangeField;
 use Bugo\LightPortal\UI\Fields\SelectField;
 use Bugo\LightPortal\UI\Fields\TextField;
 use Bugo\LightPortal\Utils\Setting;
-use Nette\PhpGenerator\{ClassType, PhpFile};
-use Nette\PhpGenerator\{PhpNamespace, Printer};
+use Nette\PhpGenerator\ClassType;
+use Nette\PhpGenerator\PhpFile;
+use Nette\PhpGenerator\PhpNamespace;
+use Nette\PhpGenerator\Printer;
 
 use function array_filter;
 use function array_key_exists;

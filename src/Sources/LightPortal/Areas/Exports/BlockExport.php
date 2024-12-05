@@ -12,9 +12,13 @@
 
 namespace Bugo\LightPortal\Areas\Exports;
 
-use Bugo\LightPortal\Utils\RequestTrait;
-use Bugo\Compat\{Config, Db, ErrorHandler};
-use Bugo\Compat\{Lang, Sapi, Theme, Utils};
+use Bugo\Compat\Config;
+use Bugo\Compat\Db;
+use Bugo\Compat\ErrorHandler;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Sapi;
+use Bugo\Compat\Theme;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Repositories\BlockRepository;
 use DomDocument;
 use DOMException;
@@ -30,8 +34,6 @@ if (! defined('SMF'))
 
 final class BlockExport extends AbstractExport
 {
-	use RequestTrait;
-
 	private readonly BlockRepository $repository;
 
 	public function __construct()

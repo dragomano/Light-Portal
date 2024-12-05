@@ -12,7 +12,9 @@
 
 namespace Bugo\LightPortal\Areas\Validators;
 
-use Bugo\Compat\{Config, Lang, Utils};
+use Bugo\Compat\Config;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Utils\RequestTrait;
 
 use function filter_input_array;

@@ -12,9 +12,6 @@
 
 namespace Bugo\LightPortal\Areas\Validators;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
 class TagValidator extends AbstractValidator
 {
 	use BaseValidateTrait;

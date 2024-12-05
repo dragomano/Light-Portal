@@ -1,6 +1,7 @@
 <?php
 
-use Bugo\Compat\{Config, Lang};
+use Bugo\Compat\Config;
+use Bugo\Compat\Lang;
 
 function show_posts(array $posts, array $parameters, bool $full_width): void
 {
