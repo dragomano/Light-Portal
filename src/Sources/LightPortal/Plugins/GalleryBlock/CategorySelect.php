@@ -8,13 +8,16 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 11.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\GalleryBlock;
 
-use Bugo\Compat\{Config, Db, Lang, Utils};
-use Bugo\LightPortal\Areas\Partials\AbstractPartial;
+use Bugo\Compat\Config;
+use Bugo\Compat\Db;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Utils;
+use Bugo\LightPortal\UI\Partials\AbstractPartial;
 use Bugo\LightPortal\Utils\CacheTrait;
 
 final class CategorySelect extends AbstractPartial

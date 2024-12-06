@@ -12,7 +12,11 @@
 
 namespace Bugo\LightPortal\Areas\Imports;
 
-use Bugo\Compat\{Config, ErrorHandler, Lang, Theme, Utils};
+use Bugo\Compat\Config;
+use Bugo\Compat\ErrorHandler;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Theme;
+use Bugo\Compat\Utils;
 use Exception;
 use ZipArchive;
 
@@ -102,9 +106,9 @@ final class PluginImport extends AbstractImport
 				}
 			}
 
-			ErrorHandler::fatalLang('lp_wrong_import_file');
+			ErrorHandler::fatalLang('lp_wrong_import_file', false);
 		} catch (Exception) {
-			ErrorHandler::fatalLang('lp_import_failed');
+			ErrorHandler::fatalLang('lp_import_failed', false);
 		}
 
 		return false;

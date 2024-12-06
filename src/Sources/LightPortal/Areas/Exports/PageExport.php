@@ -12,11 +12,22 @@
 
 namespace Bugo\LightPortal\Areas\Exports;
 
-use Bugo\Compat\{Config, Db, ErrorHandler};
-use Bugo\Compat\{Lang, Sapi, User, Utils};
+use Bugo\Bricks\Presenters\TablePresenter;
+use Bugo\Bricks\Tables\IdColumn;
+use Bugo\Bricks\Tables\RowPosition;
+use Bugo\Compat\Config;
+use Bugo\Compat\Db;
+use Bugo\Compat\ErrorHandler;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Sapi;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Repositories\PageRepository;
-use Bugo\LightPortal\Utils\ItemList;
-use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\UI\Tables\CheckboxColumn;
+use Bugo\LightPortal\UI\Tables\ExportButtonsRow;
+use Bugo\LightPortal\UI\Tables\PageSlugColumn;
+use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
+use Bugo\LightPortal\UI\Tables\TitleColumn;
 use Bugo\LightPortal\Utils\Str;
 use DomDocument;
 use DOMException;
@@ -31,8 +42,6 @@ if (! defined('SMF'))
 
 final class PageExport extends AbstractExport
 {
-	use RequestTrait;
-
 	private readonly PageRepository $repository;
 
 	public function __construct()
@@ -55,106 +64,26 @@ final class PageExport extends AbstractExport
 
 		$this->run();
 
-		$listOptions = [
-			'id' => 'lp_pages',
-			'items_per_page' => 20,
-			'title' => Lang::$txt['lp_pages_export'],
-			'no_items_label' => Lang::$txt['lp_no_items'],
-			'base_href' => Utils::$context['form_action'],
-			'default_sort_col' => 'id',
-			'get_items' => [
-				'function' => $this->repository->getAll(...)
-			],
-			'get_count' => [
-				'function' => $this->repository->getTotalCount(...)
-			],
-			'columns' => [
-				'id' => [
-					'header' => [
-						'value' => '#',
-						'style' => 'width: 5%'
-					],
-					'data' => [
-						'db'    => 'id',
-						'class' => 'centertext'
-					],
-					'sort' => [
-						'default' => 'p.page_id',
-						'reverse' => 'p.page_id DESC'
-					]
-				],
-				'slug' => [
-					'header' => [
-						'value' => Lang::$txt['lp_page_slug']
-					],
-					'data' => [
-						'db'    => 'slug',
-						'class' => 'centertext word_break'
-					],
-					'sort' => [
-						'default' => 'p.slug DESC',
-						'reverse' => 'p.slug'
-					]
-				],
-				'title' => [
-					'header' => [
-						'value' => Lang::$txt['lp_title']
-					],
-					'data' => [
-						'function' => static fn($entry) => Str::html('a', [
-								'class' => 'bbc_link' . ($entry['is_front'] ? ' new_posts' : ''),
-								'href'  => $entry['is_front'] ? Config::$scripturl : (LP_PAGE_URL . $entry['slug']),
-							])->setText($entry['title']),
-						'class' => 'word_break'
-					],
-					'sort' => [
-						'default' => 't.value DESC',
-						'reverse' => 't.value'
-					]
-				],
-				'actions' => [
-					'header' => [
-						'value' => Str::html('input', [
-							'type' => 'checkbox',
-							'onclick' => 'invertAll(this, this.form);',
-						])
-					],
-					'data' => [
-						'function' => static fn($entry) => Str::html('input', [
-							'type' => 'checkbox',
-							'value' => $entry['id'],
-							'name' => 'pages[]',
-						]),
-						'class' => 'centertext'
-					]
-				]
-			],
-			'form' => [
-				'href' => Utils::$context['form_action']
-			],
-			'additional_rows' => [
-				[
-					'position' => 'below_table_data',
-					'value' => Str::html('input', [
-							'type' => 'hidden',
-						]) .
-						Str::html('input', [
-							'type' => 'submit',
-							'name' => 'export_selection',
-							'value' => Lang::$txt['lp_export_selection'],
-							'class' => 'button',
-						]) .
-						Str::html('input', [
-							'type' => 'submit',
-							'name' => 'export_all',
-							'value' => Lang::$txt['lp_export_all'],
-							'class' => 'button',
-						])
-				]
-			]
-		];
-
-		new ItemList($listOptions);
+		TablePresenter::show(
+			PortalTableBuilder::make('lp_pages', Lang::$txt['lp_pages_export'])
+				->setDefaultSortColumn('id')
+				->setItems($this->repository->getAll(...))
+				->setCount($this->repository->getTotalCount(...))
+				->addColumns([
+					IdColumn::make()->setSort('p.page_id'),
+					PageSlugColumn::make(),
+					TitleColumn::make(entity: 'pages')->setData(static fn($entry) => Str::html('a', [
+						'class' => 'bbc_link' . ($entry['is_front'] ? ' new_posts' : ''),
+						'href'  => $entry['is_front'] ? Config::$scripturl : (LP_PAGE_URL . $entry['slug']),
+					])->setText($entry['title'])),
+					CheckboxColumn::make(entity: 'pages')
+				])
+				->addRows([
+					ExportButtonsRow::make()
+						->setPosition(RowPosition::ABOVE_COLUMN_HEADERS),
+					ExportButtonsRow::make()
+				])
+		);
 	}
 
 	protected function getData(): array
@@ -243,7 +172,10 @@ final class PageExport extends AbstractExport
 				$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
 				foreach ($item as $key => $val) {
 					$xmlName = $xmlElement->appendChild(
-						in_array($key, ['page_id', 'category_id', 'author_id', 'permissions', 'status', 'num_views', 'num_comments', 'created_at', 'updated_at', 'deleted_at'])
+						in_array($key, [
+							'page_id', 'category_id', 'author_id', 'permissions', 'status', 'num_views',
+							'num_comments', 'created_at', 'updated_at', 'deleted_at'
+						])
 							? $xml->createAttribute($key)
 							: $xml->createElement($key)
 					);
@@ -259,8 +191,12 @@ final class PageExport extends AbstractExport
 						foreach ($val as $comment) {
 							$xmlComment = $xmlName->appendChild($xml->createElement('comment'));
 							foreach ($comment as $label => $text) {
-								$xmlCommentElem = $xmlComment->appendChild($label == 'message' ? $xml->createElement($label) : $xml->createAttribute($label));
-								$xmlCommentElem->appendChild($label == 'message' ? $xml->createCDATASection($text) : $xml->createTextNode($text));
+								$xmlCommentElem = $xmlComment->appendChild($label == 'message'
+									? $xml->createElement($label)
+									: $xml->createAttribute($label));
+								$xmlCommentElem->appendChild($label == 'message'
+									? $xml->createCDATASection($text)
+									: $xml->createTextNode($text));
 							}
 						}
 					} else {
@@ -272,7 +208,7 @@ final class PageExport extends AbstractExport
 			$file = Sapi::getTempDir() . '/lp_pages_backup.xml';
 			$xml->save($file);
 		} catch (DOMException $e) {
-			ErrorHandler::log('[LP] ' . Lang::$txt['lp_pages_export'] . ': ' . $e->getMessage());
+			ErrorHandler::log('[LP] ' . Lang::$txt['lp_pages_export'] . ': ' . $e->getMessage(), 'user');
 		}
 
 		return $file ?? '';

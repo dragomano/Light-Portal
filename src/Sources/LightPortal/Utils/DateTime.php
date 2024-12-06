@@ -12,7 +12,9 @@
 
 namespace Bugo\LightPortal\Utils;
 
-use Bugo\Compat\{ErrorHandler, Lang, Utils};
+use Bugo\Compat\ErrorHandler;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Utils;
 use DateTime as BaseDateTime;
 use IntlDateFormatter;
 

@@ -8,21 +8,21 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 12.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\HelloPortal;
 
-use Bugo\Compat\{Lang, Theme, Utils};
+use Bugo\Compat\Config;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Theme;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 
 use function array_combine;
-use function is_file;
 use function str_contains;
-
-use const DIRECTORY_SEPARATOR;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -131,10 +131,9 @@ class HelloPortal extends Plugin
 
 	private function getStepData(): string
 	{
-		if (! is_file($path = __DIR__ . DIRECTORY_SEPARATOR . 'steps.php'))
-			return '';
+		$this->setTemplate('steps');
 
-		$steps = require_once $path;
+		$steps = getSteps($this->txt, Config::$modSettings);
 
 		if ($this->isCurrentArea('lp_settings', 'basic'))
 			return $steps['basic_settings'];

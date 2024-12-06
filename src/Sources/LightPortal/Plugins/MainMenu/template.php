@@ -1,6 +1,7 @@
 <?php
 
-use Bugo\Compat\{Lang, Utils};
+use Bugo\Compat\Lang;
+use Bugo\Compat\Utils;
 
 function callback_main_menu_table(): void
 {
@@ -24,7 +25,7 @@ function callback_main_menu_table(): void
 						type="text"
 						name="portal_item_langs[', $lang['filename'], ']"
 						placeholder="', $lang['filename'], '"
-						value="', Utils::$context['lp_main_menu_addon_portal_langs'][$lang['filename']] ?? '', '"
+						value="', Utils::$context['lp_main_menu_portal_langs'][$lang['filename']] ?? '', '"
 					>
 				</td>
 			</tr>';
@@ -52,7 +53,7 @@ function callback_main_menu_table(): void
 						type="text"
 						name="forum_item_langs[', $lang['filename'], ']"
 						placeholder="', $lang['filename'], '"
-						value="', Utils::$context['lp_main_menu_addon_forum_langs'][$lang['filename']] ?? '', '"
+						value="', Utils::$context['lp_main_menu_forum_langs'][$lang['filename']] ?? '', '"
 					>
 				</td>
 			</tr>';

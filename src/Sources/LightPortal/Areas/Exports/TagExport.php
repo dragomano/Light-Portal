@@ -12,12 +12,21 @@
 
 namespace Bugo\LightPortal\Areas\Exports;
 
-use Bugo\Compat\{Config, Db, ErrorHandler};
-use Bugo\Compat\{Lang, Sapi, Utils};
+use Bugo\Bricks\Presenters\TablePresenter;
+use Bugo\Bricks\Tables\IdColumn;
+use Bugo\Bricks\Tables\RowPosition;
+use Bugo\Compat\Config;
+use Bugo\Compat\Db;
+use Bugo\Compat\ErrorHandler;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Sapi;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Repositories\TagRepository;
-use Bugo\LightPortal\Utils\ItemList;
-use Bugo\LightPortal\Utils\RequestTrait;
-use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\UI\Tables\CheckboxColumn;
+use Bugo\LightPortal\UI\Tables\ExportButtonsRow;
+use Bugo\LightPortal\UI\Tables\IconColumn;
+use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
+use Bugo\LightPortal\UI\Tables\TitleColumn;
 use DomDocument;
 use DOMException;
 
@@ -31,8 +40,6 @@ if (! defined('SMF'))
 
 final class TagExport extends AbstractExport
 {
-	use RequestTrait;
-
 	private readonly TagRepository $repository;
 
 	public function __construct()
@@ -53,107 +60,23 @@ final class TagExport extends AbstractExport
 
 		$this->run();
 
-		$listOptions = [
-			'id' => 'lp_tags',
-			'items_per_page' => 20,
-			'title' => Lang::$txt['lp_tags_export'],
-			'no_items_label' => Lang::$txt['lp_no_items'],
-			'base_href' => Utils::$context['form_action'],
-			'default_sort_col' => 'id',
-			'get_items' => [
-				'function' => $this->repository->getAll(...)
-			],
-			'get_count' => [
-				'function' => $this->repository->getTotalCount(...)
-			],
-			'columns' => [
-				'id' => [
-					'header' => [
-						'value' => '#',
-						'style' => 'width: 5%'
-					],
-					'data' => [
-						'db'    => 'id',
-						'class' => 'centertext'
-					],
-					'sort' => [
-						'default' => 'tag_id',
-						'reverse' => 'tag_id DESC'
-					]
-				],
-				'icon' => [
-					'header' => [
-						'value' => Lang::$txt['custom_profile_icon']
-					],
-					'data' => [
-						'db'    => 'icon',
-						'class' => 'centertext'
-					],
-					'sort' => [
-						'default' => 'icon',
-						'reverse' => 'icon DESC'
-					]
-				],
-				'title' => [
-					'header' => [
-						'value' => Lang::$txt['lp_title'],
-					],
-					'data' => [
-						'function' => static fn($entry) => $entry['status']
-							? Str::html('a', ['class' => 'bbc_link'])
-								->href(LP_BASE_URL . ';sa=tags;id=' . $entry['id'])
-								->setText($entry['title'])
-							: $entry['title'],
-						'class' => 'word_break',
-					],
-					'sort' => [
-						'default' => 't.value DESC',
-						'reverse' => 't.value',
-					],
-				],
-				'actions' => [
-					'header' => [
-						'value' => Str::html('input', [
-							'type' => 'checkbox',
-							'onclick' => 'invertAll(this, this.form);',
-						])
-					],
-					'data' => [
-						'function' => static fn($entry) => Str::html('input', [
-							'type' => 'checkbox',
-							'value' => $entry['id'],
-							'name' => 'tags[]',
-						]),
-						'class' => 'centertext'
-					]
-				]
-			],
-			'form' => [
-				'href' => Utils::$context['form_action']
-			],
-			'additional_rows' => [
-				[
-					'position' => 'below_table_data',
-					'value' => Str::html('input', [
-							'type' => 'hidden',
-						]) .
-						Str::html('input', [
-							'type' => 'submit',
-							'name' => 'export_selection',
-							'value' => Lang::$txt['lp_export_selection'],
-							'class' => 'button',
-						]) .
-						Str::html('input', [
-							'type' => 'submit',
-							'name' => 'export_all',
-							'value' => Lang::$txt['lp_export_all'],
-							'class' => 'button',
-						])
-				]
-			]
-		];
-
-		new ItemList($listOptions);
+		TablePresenter::show(
+			PortalTableBuilder::make('lp_tags', Lang::$txt['lp_tags_export'])
+				->setDefaultSortColumn('id')
+				->setItems($this->repository->getAll(...))
+				->setCount($this->repository->getTotalCount(...))
+				->addColumns([
+					IdColumn::make()->setSort('tag_id'),
+					IconColumn::make(),
+					TitleColumn::make(entity: 'tags'),
+					CheckboxColumn::make(entity: 'tags')
+				])
+				->addRows([
+					ExportButtonsRow::make()
+						->setPosition(RowPosition::ABOVE_COLUMN_HEADERS),
+					ExportButtonsRow::make()
+				])
+		);
 	}
 
 	protected function getData(): array
@@ -246,7 +169,7 @@ final class TagExport extends AbstractExport
 			$file = Sapi::getTempDir() . '/lp_tags_backup.xml';
 			$xml->save($file);
 		} catch (DOMException $e) {
-			ErrorHandler::log('[LP] ' . Lang::$txt['lp_tags_export'] . ': ' . $e->getMessage());
+			ErrorHandler::log('[LP] ' . Lang::$txt['lp_tags_export'] . ': ' . $e->getMessage(), 'user');
 		}
 
 		return $file ?? '';

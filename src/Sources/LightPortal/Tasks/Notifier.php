@@ -12,8 +12,16 @@
 
 namespace Bugo\LightPortal\Tasks;
 
-use Bugo\Compat\{Tasks\BackgroundTask, Config, Db, Lang};
-use Bugo\Compat\{Mail, Actions\Notify, Theme, User, Utils};
+use Bugo\Compat\Actions\Notify;
+use Bugo\Compat\Config;
+use Bugo\Compat\Db;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Mail;
+use Bugo\Compat\Tasks\BackgroundTask;
+use Bugo\Compat\Theme;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\AlertAction;
 use ErrorException;
 
 use function array_diff;
@@ -39,9 +47,9 @@ final class Notifier extends BackgroundTask
 		}
 
 		$prefs = Notify::getNotifyPrefs($members, match ($this->_details['content_type']) {
-			'new_comment' => 'page_comment',
-			'new_reply'   => 'page_comment_reply',
-			default       => 'page_unapproved'
+			'new_comment' => AlertAction::PAGE_COMMENT->name(),
+			'new_reply'   => AlertAction::PAGE_COMMENT_REPLY->name(),
+			default       => AlertAction::PAGE_UNAPPROVED->name()
 		}, true);
 
 		if ($this->_details['sender_id'] && empty($this->_details['sender_name'])) {
@@ -60,8 +68,8 @@ final class Notifier extends BackgroundTask
 		$notifies = [];
 		foreach ($prefs as $member => $prefOption) {
 			foreach ($alertBits as $type => $bitvalue) {
-				foreach (['page_comment', 'page_comment_reply', 'page_unapproved'] as $option) {
-					if (isset($prefOption[$option]) && ($prefOption[$option] & $bitvalue)) {
+				foreach (AlertAction::names() as $action) {
+					if (isset($prefOption[$action]) && ($prefOption[$action] & $bitvalue)) {
 						$notifies[$type][] = $member;
 					}
 				}
@@ -138,7 +146,7 @@ final class Notifier extends BackgroundTask
 				Lang::load('LightPortal/LightPortal', $lang);
 
 				$emaildata = Mail::loadEmailTemplate(
-					'page_unapproved',
+					AlertAction::PAGE_UNAPPROVED->name(),
 					$replacements,
 					empty(Config::$modSettings['userLanguage']) ? Config::$language : $lang,
 					false

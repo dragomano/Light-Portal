@@ -12,32 +12,33 @@
 
 namespace Bugo\LightPortal\Plugins;
 
-use Bugo\Compat\{Config, Db, Lang, ServerSideIncludes, Theme, Utils};
+use Bugo\Compat\Lang;
+use Bugo\Compat\ServerSideIncludes;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Repositories\PluginRepository;
-use Bugo\LightPortal\Utils\{CacheTrait, EntityDataTrait};
-use Bugo\LightPortal\Utils\{RequestTrait, SessionTrait};
-use Bugo\LightPortal\Utils\{SMFHookTrait, Str};
-use ReflectionClass;
+use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\EntityDataTrait;
+use Bugo\LightPortal\Utils\HasTemplateAware;
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\SessionTrait;
+use Bugo\LightPortal\Utils\SMFHookTrait;
+use Bugo\LightPortal\Utils\Str;
 
-use function array_column;
-use function array_filter;
-use function array_flip;
+use function basename;
 use function dirname;
-use function explode;
-use function is_file;
+use function str_replace;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-abstract class Plugin
+abstract class Plugin implements PluginInterface
 {
 	use CacheTrait;
 	use EntityDataTrait;
+	use HasTemplateAware;
 	use RequestTrait;
 	use SMFHookTrait;
 	use SessionTrait;
-
-	public string $type = 'block';
 
 	public string $icon = 'fas fa-puzzle-piece';
 
@@ -45,67 +46,25 @@ abstract class Plugin
 
 	protected string $name;
 
-	protected array $txt;
-
 	protected array $context;
+
+	protected array $txt;
 
 	public function __construct()
 	{
 		$this->name = $this->getShortName();
 
-		$this->txt = Lang::$txt['lp_' . $this->name] ?? [];
+		$this->context = &Utils::$context['lp_' . $this->name . '_plugin'];
 
-		$this->context = Utils::$context['lp_' . $this->name . '_plugin'] ?? [];
-	}
-
-	public function getCalledClass(): ReflectionClass
-	{
-		return new ReflectionClass(static::class);
-	}
-
-	public function getName(): string
-	{
-		return $this->getCalledClass()->getShortName();
+		$this->txt = &Lang::$txt['lp_' . $this->name];
 	}
 
 	public function getShortName(): string
 	{
-		return Str::getSnakeName($this->getName());
+		return Str::getSnakeName(basename(str_replace('\\', '/', static::class)));
 	}
 
-	public function setTemplate(string $name = 'template'): self
-	{
-		$path = dirname($this->getCalledClass()->getFileName()) . DIRECTORY_SEPARATOR . $name . '.php';
-
-		if (is_file($path)) {
-			require_once $path;
-		}
-
-		return $this;
-	}
-
-	public function withSubTemplate(string $template): self
-	{
-		Utils::$context['sub_template'] = $template;
-
-		return $this;
-	}
-
-	public function withLayer(string $layer): self
-	{
-		Utils::$context['template_layers'][] = $layer;
-
-		return $this;
-	}
-
-	public function getFromTemplate(string $function, ...$params): string
-	{
-		$this->setTemplate();
-
-		return $function(...$params);
-	}
-
-	public function getFromSsi(string $function, ...$params)
+	public function getFromSSI(string $function, ...$params)
 	{
 		require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'SSI.php';
 
@@ -114,65 +73,19 @@ abstract class Plugin
 
 	public function addDefaultValues(array $values): void
 	{
-		$snakeName = $this->getShortName();
-
 		$settings = [];
 		foreach ($values as $option => $value) {
-			if (! isset(Utils::$context['lp_' . $snakeName . '_plugin'][$option])) {
+			if (! isset($this->context[$option])) {
 				$settings[] = [
-					'name'   => $snakeName,
+					'name'   => $this->name,
 					'option' => $option,
 					'value'  => $value,
 				];
 
-				Utils::$context['lp_' . $snakeName . '_plugin'][$option] = $value;
+				$this->context[$option] = $value;
 			}
 		}
 
 		(new PluginRepository())->addSettings($settings);
-	}
-
-	public function isDarkTheme(?string $option): bool
-	{
-		if (empty($option))
-			return false;
-
-		$themes = array_flip(array_filter(explode(',', $option)));
-
-		return $themes && isset($themes[Theme::$current->settings['theme_id']]);
-	}
-
-	public function getForumThemes(): array
-	{
-		$themes = $this->cache()->get('forum_themes');
-
-		if ($themes === null) {
-			$result = Db::$db->query('', '
-				SELECT id_theme, value
-				FROM {db_prefix}themes
-				WHERE id_theme IN ({array_int:themes})
-					AND variable = {literal:name}',
-				[
-					'themes' => empty(Config::$modSettings['knownThemes'])
-						? []
-						: explode(',', (string) Config::$modSettings['knownThemes']),
-				]
-			);
-
-			$themes = [];
-			while ($row = Db::$db->fetch_assoc($result)) {
-				$themes[$row['id_theme']] = [
-					'id'   => (int) $row['id_theme'],
-					'name' => $row['value'],
-				];
-			}
-
-			Db::$db->free_result($result);
-
-			$themes = array_column($themes, 'name', 'id');
-			$this->cache()->put('forum_themes', $themes);
-		}
-
-		return $themes;
 	}
 }

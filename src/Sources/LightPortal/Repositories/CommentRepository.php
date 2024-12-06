@@ -12,7 +12,9 @@
 
 namespace Bugo\LightPortal\Repositories;
 
-use Bugo\Compat\{Config, Db, Lang};
+use Bugo\Compat\Config;
+use Bugo\Compat\Db;
+use Bugo\Compat\Lang;
 use Bugo\LightPortal\Utils\Avatar;
 
 use function array_column;

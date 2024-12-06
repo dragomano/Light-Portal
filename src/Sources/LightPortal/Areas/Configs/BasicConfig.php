@@ -12,14 +12,21 @@
 
 namespace Bugo\LightPortal\Areas\Configs;
 
-use Bugo\Compat\{Actions\ACP, Config, Lang, Theme};
-use Bugo\Compat\{Time, User, Utils, WebFetchApi};
+use Bugo\Compat\Actions\ACP;
+use Bugo\Compat\Config;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Theme;
+use Bugo\Compat\Time;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
+use Bugo\Compat\WebFetchApi;
 use Bugo\LightPortal\Actions\FrontPage;
-use Bugo\LightPortal\Areas\Partials\ActionSelect;
 use Bugo\LightPortal\Areas\Traits\QueryTrait;
-use Bugo\LightPortal\Enums\{PortalHook, VarType};
-use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Enums\VarType;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\UI\Partials\ActionSelect;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionTrait;
@@ -232,7 +239,7 @@ final class BasicConfig extends AbstractConfig
 
 		Utils::$context['sub_template'] = 'portal_basic_settings';
 
-		EventManager::getInstance()->dispatch(
+		(new EventManagerFactory())()->dispatch(
 			PortalHook::extendBasicConfig,
 			new Event(new class ($configVars) {
 				public function __construct(public array &$configVars) {}
@@ -279,12 +286,14 @@ final class BasicConfig extends AbstractConfig
 
 	private function isNewVersionAvailable(): array|bool
 	{
-		if (($xml = $this->cache()->get('repo_data', 3 * 24 * 60 * 60)) === null) {
+		$cacheTTL = 3 * 24 * 60 * 60;
+
+		if (($xml = $this->cache()->get('repo_data', $cacheTTL)) === null) {
 			$repoData = WebFetchApi::fetch('https://api.github.com/repos/dragomano/Light-Portal/releases/latest');
 
 			$xml = empty($repoData) ? [] : Utils::jsonDecode($repoData, true);
 
-			$this->cache()->put('repo_data', $xml, 3 * 24 * 60 * 60);
+			$this->cache()->put('repo_data', $xml, $cacheTTL);
 		}
 
 		if (empty($xml))

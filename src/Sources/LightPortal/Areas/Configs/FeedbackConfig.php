@@ -12,7 +12,10 @@
 
 namespace Bugo\LightPortal\Areas\Configs;
 
-use Bugo\Compat\{Config, Lang, Theme, Utils};
+use Bugo\Compat\Config;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Theme;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Utils\RequestTrait;
 
 if (! defined('SMF'))

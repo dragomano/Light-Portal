@@ -12,9 +12,10 @@
 
 namespace Bugo\LightPortal;
 
+use Bugo\LightPortal\Enums\PluginType;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Plugins\Plugin;
-use Doctrine\Common\EventArgs;
+use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\PluginInterface;
 use Doctrine\Common\EventManager as DoctrineEventManager;
 
 use function array_map;
@@ -24,9 +25,7 @@ use function method_exists;
 
 class EventManager
 {
-	protected DoctrineEventManager $eventManager;
-
-	private static self $instance;
+	private readonly DoctrineEventManager $eventManager;
 
 	private array $contentHooks = [
 		PortalHook::prepareBlockParams,
@@ -36,16 +35,12 @@ class EventManager
 		PortalHook::prepareContent
 	];
 
-	public static function getInstance(): self
+	public function __construct()
 	{
-		if (empty(self::$instance)) {
-			self::$instance = new self();
-		}
-
-		return self::$instance;
+		$this->eventManager = new DoctrineEventManager();
 	}
 
-	public function addListeners(array $hooks, Plugin $listener): void
+	public function addListeners(array $hooks, PluginInterface $listener): void
 	{
 		$hooks = array_map(fn($item) => $item->name, $hooks);
 		$hooks = array_filter($hooks, fn($item) => method_exists($listener, $item));
@@ -53,32 +48,28 @@ class EventManager
 		$this->eventManager->addEventListener($hooks, $listener);
 	}
 
-	public function dispatch(PortalHook $hook, EventArgs|null $eventArgs = null): void
+	public function dispatch(PortalHook $hook, ?Event $e = null): void
 	{
+		/* @var PluginInterface $listener */
 		foreach ($this->getAll($hook->name) as $listener) {
 			if (
-				$listener->type !== 'block_options'
+				$listener->type !== PluginType::BLOCK_OPTIONS->name()
 				&& in_array($hook, $this->contentHooks)
-				&& isset($eventArgs->args->type)
+				&& isset($e->args->type)
 			) {
-				if ($eventArgs->args->type !== $listener->getShortName()) {
+				if ($e->args->type !== $listener->getShortName()) {
 					continue;
 				}
 			}
 
-			$eventArgs ??= EventArgs::getEmptyInstance();
+			$e ??= new Event(new class {});
 
-			$listener->{$hook->name}($eventArgs);
+			$listener->{$hook->name}($e);
 		}
 	}
 
 	public function getAll(string $event = ''): array
 	{
 		return $event ? $this->eventManager->getListeners($event) : $this->eventManager->getAllListeners();
-	}
-
-	private function __construct()
-	{
-		$this->eventManager = new DoctrineEventManager();
 	}
 }

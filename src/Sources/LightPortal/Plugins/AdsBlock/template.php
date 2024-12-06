@@ -1,35 +1,37 @@
 <?php
 
-use Bugo\Compat\{Config, Utils};
+use Bugo\Compat\Config;
+use Bugo\Compat\Utils;
+use Bugo\LightPortal\Plugins\AdsBlock\Placement;
 
 function template_ads_placement_board_above(): void
 {
-	lp_show_blocks('board_top');
+	lp_show_blocks(Placement::BOARD_TOP->name());
 }
 
 function template_ads_placement_board_below(): void
 {
-	lp_show_blocks('board_bottom');
+	lp_show_blocks(Placement::BOARD_BOTTOM->name());
 }
 
 function template_ads_placement_topic_above(): void
 {
-	lp_show_blocks('topic_top');
+	lp_show_blocks(Placement::TOPIC_TOP->name());
 }
 
 function template_ads_placement_topic_below(): void
 {
-	lp_show_blocks('topic_bottom');
+	lp_show_blocks(Placement::TOPIC_BOTTOM->name());
 }
 
 function template_ads_placement_page_above(): void
 {
-	lp_show_blocks('page_top');
+	lp_show_blocks(Placement::PAGE_TOP->name());
 }
 
 function template_ads_placement_page_below(): void
 {
-	lp_show_blocks('page_bottom');
+	lp_show_blocks(Placement::PAGE_BOTTOM->name());
 }
 
 function template_ads_block_form_above() {}

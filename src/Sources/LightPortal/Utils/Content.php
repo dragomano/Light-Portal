@@ -12,9 +12,13 @@
 
 namespace Bugo\LightPortal\Utils;
 
-use Bugo\Compat\{BBCodeParser, IntegrationHook, Sapi, Utils};
-use Bugo\LightPortal\Enums\{ContentType, PortalHook};
-use Bugo\LightPortal\EventManager;
+use Bugo\Compat\BBCodeParser;
+use Bugo\Compat\IntegrationHook;
+use Bugo\Compat\Sapi;
+use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\ContentType;
+use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use ParseError;
 
@@ -41,7 +45,7 @@ final class Content
 	{
 		ob_start();
 
-		EventManager::getInstance()->dispatch(
+		(new EventManagerFactory())()->dispatch(
 			PortalHook::prepareContent,
 			new Event(new class ($type, $block_id, $cache_time, $parameters) {
 				public function __construct(
@@ -90,7 +94,7 @@ final class Content
 			return ob_get_clean();
 		}
 
-		EventManager::getInstance()->dispatch(
+		(new EventManagerFactory())()->dispatch(
 			PortalHook::parseContent,
 			new Event(new class ($content, $type) {
 				public function __construct(public string &$content, public readonly string $type) {}

@@ -8,15 +8,18 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 13.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\Reactions;
 
-use Bugo\Compat\{Db, Theme, User, Utils};
-use Bugo\LightPortal\Areas\Fields\CheckboxField;
+use Bugo\Compat\Db;
+use Bugo\Compat\Theme;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
+use Bugo\LightPortal\UI\Fields\CheckboxField;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

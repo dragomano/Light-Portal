@@ -8,22 +8,27 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\AdsBlock;
 
-use Bugo\Compat\{Lang, Theme};
-use Bugo\LightPortal\Areas\Fields\{CustomField, TextareaField, TextField};
-use Bugo\LightPortal\Areas\Partials\{BoardSelect, PageSelect, TopicSelect};
-use Bugo\LightPortal\Enums\{Hook, Tab};
-use Bugo\LightPortal\Plugins\AdsBlock\Hooks\AdminAreas;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Theme;
+use Bugo\LightPortal\Enums\Hook;
+use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\AdsBlock\Hooks\DisplayButtons;
 use Bugo\LightPortal\Plugins\AdsBlock\Hooks\MenuButtons;
 use Bugo\LightPortal\Plugins\AdsBlock\Hooks\MessageindexButtons;
 use Bugo\LightPortal\Plugins\AdsBlock\Hooks\PrepareDisplayContext;
-use Bugo\LightPortal\Plugins\AdsBlock\Traits\PlacementProviderTrait;
-use Bugo\LightPortal\Plugins\{Block, Event};
+use Bugo\LightPortal\UI\Fields\CustomField;
+use Bugo\LightPortal\UI\Fields\TextareaField;
+use Bugo\LightPortal\UI\Fields\TextField;
+use Bugo\LightPortal\UI\Partials\BoardSelect;
+use Bugo\LightPortal\UI\Partials\PageSelect;
+use Bugo\LightPortal\UI\Partials\TopicSelect;
 use Bugo\LightPortal\Utils\Content;
 
 use function date;
@@ -34,8 +39,6 @@ if (! defined('LP_NAME'))
 
 class AdsBlock extends Block
 {
-	use PlacementProviderTrait;
-
 	public string $icon = 'fas fa-ad';
 
 	public function init(): void
@@ -45,7 +48,6 @@ class AdsBlock extends Block
 		}
 
 		$this->applyHook(Hook::menuButtons, MenuButtons::class);
-		$this->applyHook(Hook::adminAreas, AdminAreas::class);
 		$this->applyHook(Hook::messageindexButtons, MessageIndexButtons::class);
 		$this->applyHook(Hook::displayButtons, DisplayButtons::class);
 		$this->applyHook(Hook::prepareDisplayContext, PrepareDisplayContext::class);
@@ -107,7 +109,7 @@ class AdsBlock extends Block
 		CustomField::make('ads_placement', Lang::$txt['lp_block_placement'])
 			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(static fn() => new PlacementSelect(), [
-				'data'  => $this->getPlacements(),
+				'data'  => Placement::all(),
 				'value' => $options['ads_placement'],
 			]);
 
@@ -123,7 +125,7 @@ class AdsBlock extends Block
 			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(static fn() => new TopicSelect(), [
 				'id'    => 'include_pages',
-				'hint'  => $this->txt['include_pages_select'],
+				'hint'  => $this->txt['include_topics_select'],
 				'value' => $options['include_pages'] ?? '',
 			]);
 

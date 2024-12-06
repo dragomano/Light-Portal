@@ -1,6 +1,7 @@
 <?php
 
-use Bugo\Compat\{Config, Lang};
+use Bugo\Compat\Config;
+use Bugo\Compat\Lang;
 use Bugo\LightPortal\Utils\Icon;
 
 function template_show_events(array $data): void

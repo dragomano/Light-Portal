@@ -12,9 +12,6 @@
 
 namespace Bugo\LightPortal\Areas\Exports;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
 interface ExportInterface
 {
 	public function main();

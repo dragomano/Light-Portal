@@ -8,12 +8,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.06.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
 
-use Bugo\Compat\{ErrorHandler, Lang};
+use Bugo\Compat\ErrorHandler;
+use Bugo\Compat\Lang;
 
 use function copy;
 use function file_put_contents;
@@ -37,7 +38,7 @@ class Builder
 		$isDirReady = mkdir($this->path);
 
 		if (! $isDirReady) {
-			ErrorHandler::fatal(Lang::$txt['lp_plugin_maker']['addon_dir_not_created']);
+			ErrorHandler::fatal(Lang::$txt['lp_plugin_maker']['addon_dir_not_created'], false);
 		}
 
 		copy(LP_ADDON_DIR . DIRECTORY_SEPARATOR . 'index.php', $this->path . DIRECTORY_SEPARATOR . 'index.php');

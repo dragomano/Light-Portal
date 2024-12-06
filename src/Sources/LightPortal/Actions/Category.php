@@ -12,10 +12,23 @@
 
 namespace Bugo\LightPortal\Actions;
 
-use Bugo\Compat\{Config, Db, ErrorHandler};
-use Bugo\Compat\{Lang, User, Utils};
-use Bugo\LightPortal\Enums\{EntryType, Permission, Status};
-use Bugo\LightPortal\Utils\{Icon, ItemList, RequestTrait, Str};
+use Bugo\Bricks\Presenters\TablePresenter;
+use Bugo\Bricks\Tables\Column;
+use Bugo\Bricks\Tables\Row;
+use Bugo\Bricks\Tables\RowPosition;
+use Bugo\Compat\Config;
+use Bugo\Compat\Db;
+use Bugo\Compat\ErrorHandler;
+use Bugo\Compat\Lang;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\EntryType;
+use Bugo\LightPortal\Enums\Permission;
+use Bugo\LightPortal\Enums\Status;
+use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
+use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\Str;
 
 use function array_key_exists;
 use function count;
@@ -45,7 +58,7 @@ final class Category extends AbstractPageList
 		if (array_key_exists($category['id'], $categories) === false) {
 			Utils::$context['error_link'] = LP_BASE_URL . ';sa=categories';
 			Lang::$txt['back'] = Lang::$txt['lp_all_categories'];
-			ErrorHandler::fatalLang('lp_category_not_found', status: 404);
+			ErrorHandler::fatalLang('lp_category_not_found', false, status: 404);
 		}
 
 		if ($category['id'] === 0) {
@@ -73,26 +86,17 @@ final class Category extends AbstractPageList
 
 		$page->showAsCards($this);
 
-		$listOptions = $page->getList();
-		$listOptions['id'] = 'lp_categories';
-		$listOptions['get_items'] = [
-			'function' => $this->getPages(...)
-		];
-		$listOptions['get_count'] = [
-			'function' => fn() => $this->getTotalCount()
-		];
+		$builder = $page->getBuilder('lp_categories');
+		$builder->setItems($this->getPages(...));
+		$builder->setCount(fn() => $this->getTotalCount());
 
-		if (isset($category['description'])) {
-			$listOptions['additional_rows'] = [
-				[
-					'position' => 'top_of_list',
-					'value'    => $category['description'],
-					'class'    => 'information',
-				]
-			];
-		}
+		isset($category['description']) && $builder->addRow(
+			Row::make($category['description'])
+				->setClass('information')
+				->setPosition(RowPosition::TOP_OF_LIST)
+		);
 
-		new ItemList($listOptions);
+		TablePresenter::show($builder);
 
 		Utils::obExit();
 	}
@@ -176,54 +180,30 @@ final class Category extends AbstractPageList
 			'name' => Utils::$context['page_title'],
 		];
 
-		$listOptions = [
-			'id' => 'categories',
-			'items_per_page' => Config::$modSettings['defaultMaxListItems'] ?: 50,
-			'title' => Utils::$context['page_title'],
-			'no_items_label' => Lang::$txt['lp_no_categories'],
-			'base_href' => Utils::$context['canonical_url'],
-			'default_sort_col' => 'title',
-			'get_items' => [
-				'function' => $this->getAll(...)
-			],
-			'get_count' => [
-				'function' => fn() => count($this->getAll())
-			],
-			'columns' => [
-				'title' => [
-					'header' => [
-						'value' => Lang::$txt['lp_category']
-					],
-					'data' => [
-						'function' => static fn($entry) => $entry['icon'] . ' ' . Str::html('a', $entry['title'])
-							->href($entry['link']) . (empty($entry['description']) ? '' :
-								Str::html('p', $entry['description'])->class('smalltext'))
-					],
-					'sort' => [
-						'default' => 'title DESC',
-						'reverse' => 'title'
-					]
-				],
-				'num_pages' => [
-					'header' => [
-						'value' => Lang::$txt['lp_total_pages_column']
-					],
-					'data' => [
-						'db'    => 'num_pages',
-						'class' => 'centertext'
-					],
-					'sort' => [
-						'default' => 'frequency DESC',
-						'reverse' => 'frequency'
-					]
-				]
-			],
-			'form' => [
-				'href' => Utils::$context['canonical_url']
-			]
-		];
-
-		new ItemList($listOptions);
+		TablePresenter::show(
+			PortalTableBuilder::make('categories', Utils::$context['page_title'])
+				->withParams(
+					(int) Config::$modSettings['defaultMaxListItems'] ?: 50,
+					Lang::$txt['lp_no_categories'],
+					Utils::$context['canonical_url'],
+					'title'
+				)
+				->setItems($this->getAll(...))
+				->setCount(fn() => count($this->getAll()))
+				->addColumns([
+					Column::make('title', Lang::$txt['lp_category'])
+						->setData(static fn($entry) => $entry['icon'] . ' ' . Str::html('a', $entry['title'])
+							->href($entry['link']) . (empty($entry['description'])
+								? ''
+								: Str::html('p', $entry['description'])
+							->class('smalltext')))
+						->setSort('title DESC', 'title'),
+					Column::make('num_pages', Lang::$txt['lp_total_pages_column'])
+						->setStyle('width: 15%')
+						->setData('num_pages', 'centertext')
+						->setSort('frequency DESC', 'frequency'),
+				])
+		);
 
 		Utils::obExit();
 	}

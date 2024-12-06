@@ -8,13 +8,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 11.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\LanguageAccess;
 
-use Bugo\Compat\{Lang, Utils};
-use Bugo\LightPortal\Areas\Partials\AbstractPartial;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Utils;
+use Bugo\LightPortal\UI\Partials\AbstractPartial;
 
 final class LanguageSelect extends AbstractPartial
 {

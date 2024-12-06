@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.24
+ * @version 29.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\LineAwesomeIcons;
@@ -33,10 +33,12 @@ class LineAwesomeIcons extends Plugin
 
 	public function prepareIconList(Event $e): void
 	{
-		if (($LaIcons = $this->cache()->get('all_la_icons', 30 * 24 * 60 * 60)) === null) {
+		$cacheTTL = 30 * 24 * 60 * 60;
+
+		if (($LaIcons = $this->cache()->get('all_la_icons', $cacheTTL)) === null) {
 			$LaIcons = $this->getIconList();
 
-			$this->cache()->put('all_la_icons', $LaIcons, 30 * 24 * 60 * 60);
+			$this->cache()->put('all_la_icons', $LaIcons, $cacheTTL);
 		}
 
 		$e->args->icons = array_merge($e->args->icons, $LaIcons);

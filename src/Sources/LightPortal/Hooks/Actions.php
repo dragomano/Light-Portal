@@ -12,10 +12,17 @@
 
 namespace Bugo\LightPortal\Hooks;
 
-use Bugo\Compat\{Config, Theme, User, Utils};
-use Bugo\LightPortal\Actions\{BoardIndex, Category};
-use Bugo\LightPortal\Actions\{FrontPage, Page, Tag};
-use Bugo\LightPortal\Utils\{Setting, RequestTrait};
+use Bugo\Compat\Config;
+use Bugo\Compat\Theme;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
+use Bugo\LightPortal\Actions\BoardIndex;
+use Bugo\LightPortal\Actions\Category;
+use Bugo\LightPortal\Actions\FrontPage;
+use Bugo\LightPortal\Actions\Page;
+use Bugo\LightPortal\Actions\Tag;
+use Bugo\LightPortal\Utils\Setting;
+use Bugo\LightPortal\Utils\RequestTrait;
 
 use function array_search;
 use function implode;

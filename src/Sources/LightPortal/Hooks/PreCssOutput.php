@@ -12,9 +12,10 @@
 
 namespace Bugo\LightPortal\Hooks;
 
-use Bugo\Compat\{Config, Utils};
+use Bugo\Compat\Config;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\Str;
 
@@ -44,7 +45,7 @@ class PreCssOutput
 			$styles[] = 'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css';
 		}
 
-		EventManager::getInstance()->dispatch(
+		(new EventManagerFactory())()->dispatch(
 			PortalHook::preloadStyles,
 			new Event(new class ($styles) {
 				public function __construct(public array &$styles) {}

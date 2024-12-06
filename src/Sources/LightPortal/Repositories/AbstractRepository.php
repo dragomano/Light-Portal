@@ -13,7 +13,9 @@
 namespace Bugo\LightPortal\Repositories;
 
 use Bugo\LightPortal\Utils\SessionTrait;
-use Bugo\Compat\{Db, Msg, Utils};
+use Bugo\Compat\Db;
+use Bugo\Compat\Msg;
+use Bugo\Compat\Utils;
 
 use function implode;
 use function is_array;

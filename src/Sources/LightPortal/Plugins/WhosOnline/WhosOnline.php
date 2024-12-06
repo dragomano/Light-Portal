@@ -8,15 +8,20 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\WhosOnline;
 
-use Bugo\Compat\{Config, Lang, User};
-use Bugo\LightPortal\Areas\Fields\{CheckboxField, NumberField};
-use Bugo\LightPortal\Plugins\{Block, Event};
-use Bugo\LightPortal\Utils\{Avatar, Str};
+use Bugo\Compat\Config;
+use Bugo\Compat\Lang;
+use Bugo\Compat\User;
+use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\UI\Fields\CheckboxField;
+use Bugo\LightPortal\UI\Fields\NumberField;
+use Bugo\LightPortal\Utils\Avatar;
+use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -74,7 +79,7 @@ class WhosOnline extends Block
 
 		$whoIsOnline = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
 			->setLifeTime($parameters['update_interval'] ?? $e->args->cacheTime)
-			->setFallback(self::class, 'getFromSsi', 'whosOnline', 'array');
+			->setFallback(self::class, 'getFromSSI', 'whosOnline', 'array');
 
 		if (empty($whoIsOnline))
 			return;
@@ -102,9 +107,10 @@ class WhosOnline extends Block
 
 			$whoIsOnline['list_users_online'] = [];
 			foreach ($whoIsOnline['users_online'] as $key => $user) {
-				$whoIsOnline['list_users_online'][] = Str::html('a', $users[$key])
+				$whoIsOnline['list_users_online'][] = Str::html('a', '')
 					->href(Config::$scripturl . '?action=profile;u=' . $user['id'])
-					->title($user['name']);
+					->title($user['name'])
+					->addHtml($users[$key]);
 			}
 		}
 

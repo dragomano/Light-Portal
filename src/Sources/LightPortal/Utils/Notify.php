@@ -12,7 +12,9 @@
 
 namespace Bugo\LightPortal\Utils;
 
-use Bugo\Compat\{Db, User, Utils};
+use Bugo\Compat\Db;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Tasks\Notifier;
 
 if (! defined('SMF'))

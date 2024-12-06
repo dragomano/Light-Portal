@@ -12,19 +12,33 @@
 
 namespace Bugo\LightPortal\Areas;
 
-use Bugo\Compat\{Config, ErrorHandler, Lang, Security, Theme, Utils};
-use Bugo\LightPortal\Areas\Fields\CustomField;
-use Bugo\LightPortal\Areas\Fields\TextareaField;
-use Bugo\LightPortal\Areas\Partials\IconSelect;
+use Bugo\Bricks\Presenters\TablePresenter;
+use Bugo\Bricks\Tables\Column;
+use Bugo\Bricks\Tables\IdColumn;
+use Bugo\Compat\Config;
+use Bugo\Compat\ErrorHandler;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Security;
+use Bugo\Compat\Theme;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Areas\Validators\CategoryValidator;
-use Bugo\LightPortal\Enums\{Status, Tab};
+use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Models\CategoryModel;
 use Bugo\LightPortal\Repositories\CategoryRepository;
-use Bugo\LightPortal\Utils\{CacheTrait, Icon, ItemList};
-use Bugo\LightPortal\Utils\{Language, RequestTrait, Str};
-
-use function str_replace;
+use Bugo\LightPortal\UI\Fields\CustomField;
+use Bugo\LightPortal\UI\Fields\TextareaField;
+use Bugo\LightPortal\UI\Partials\IconSelect;
+use Bugo\LightPortal\UI\Tables\ContextMenuColumn;
+use Bugo\LightPortal\UI\Tables\IconColumn;
+use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
+use Bugo\LightPortal\UI\Tables\StatusColumn;
+use Bugo\LightPortal\UI\Tables\TitleColumn;
+use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\Utils\Language;
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\Str;
 
 use const LP_NAME;
 
@@ -60,150 +74,27 @@ final class CategoryArea
 
 		$this->doActions();
 
-		$listOptions = [
-			'id' => 'lp_categories',
-			'items_per_page' => 20,
-			'title' => Lang::$txt['lp_categories'],
-			'no_items_label' => Lang::$txt['lp_no_items'],
-			'base_href' => Utils::$context['form_action'],
-			'default_sort_col' => 'priority',
-			'get_items' => [
-				'function' => $this->repository->getAll(...)
-			],
-			'get_count' => [
-				'function' => $this->repository->getTotalCount(...)
-			],
-			'columns' => [
-				'id' => [
-					'header' => [
-						'value' => '#',
-						'style' => 'width: 5%'
-					],
-					'data' => [
-						'db'    => 'id',
-						'class' => 'centertext'
-					],
-					'sort' => [
-						'default' => 'category_id',
-						'reverse' => 'category_id DESC'
-					]
-				],
-				'icon' => [
-					'header' => [
-						'value' => Lang::$txt['custom_profile_icon']
-					],
-					'data' => [
-						'db'    => 'icon',
-						'class' => 'centertext'
-					],
-					'sort' => [
-						'default' => 'icon',
-						'reverse' => 'icon DESC'
-					]
-				],
-				'title' => [
-					'header' => [
-						'value' => Lang::$txt['lp_title'],
-					],
-					'data' => [
-						'function' => static fn($entry) => $entry['status']
-							? Str::html('a', ['class' => 'bbc_link'])
-								->href(LP_BASE_URL . ';sa=categories;id=' . $entry['id'])
-								->setText($entry['title'])
-							: $entry['title'],
-						'class' => 'word_break',
-					],
-					'sort' => [
-						'default' => 'title DESC',
-						'reverse' => 'title',
-					],
-				],
-				'priority' => [
-					'header' => [
-						'value' => Lang::$txt['lp_block_priority']
-					],
-					'data' => [
-						'function' => static fn($entry) => Str::html('div')->data('id', $entry['id'])
-							->setHtml($entry['priority'] . ' ' .
-								Icon::get('sort', Lang::$txt['lp_action_move'], 'handle ')),
-						'class' => 'centertext'
-					],
-					'sort' => [
-						'default' => 'priority',
-						'reverse' => 'priority DESC'
-					]
-				],
-				'status' => [
-					'header' => [
-						'value' => Lang::$txt['status'],
-					],
-					'data' => [
-						'function' => static fn($entry) => /** @lang text */ '
-							<div
-								data-id="' . $entry['id'] . '"
-								x-data="{ status: ' . ($entry['status'] === Status::ACTIVE->value ? 'true' : 'false') . ' }"
-								x-init="$watch(\'status\', value => category.toggleStatus($el))"
-							>
-								<span
-									:class="{ \'on\': status, \'off\': !status }"
-									:title="status ? \'' . Lang::$txt['lp_action_off'] . '\' : \'' . Lang::$txt['lp_action_on'] . '\'"
-									@click.prevent="status = !status"
-								></span>
-							</div>',
-						'class' => 'centertext'
-					],
-					'sort' => [
-						'default' => 'status DESC',
-						'reverse' => 'status'
-					],
-				],
-				'actions' => [
-					'header' => [
-						'value' => Lang::$txt['lp_actions'],
-						'style' => 'width: 8%',
-					],
-					'data' => [
-						'function' => static fn($entry) => /** @lang text */ '
-						<div data-id="' . $entry['id'] . '" x-data="{ showContextMenu: false }">
-							<div class="context_menu" @click.outside="showContextMenu = false">
-								<button class="button floatnone" @click.prevent="showContextMenu = true">
-									' . Icon::get('ellipsis') . '
-								</button>
-								<div class="roundframe" x-show="showContextMenu">
-									<ul>
-										<li>
-											<a href="' . Config::$scripturl . '?action=admin;area=lp_categories;sa=edit;id=' . $entry['id'] . '" class="button">' . Lang::$txt['modify'] . '</a>
-										</li>
-										<li>
-											<a @click.prevent="showContextMenu = false; category.remove($root)" class="button error">' . Lang::$txt['remove'] . '</a>
-										</li>
-									</ul>
-								</div>
-							</div>
-						</div>',
-						'class' => 'centertext',
-					],
-				],
-			],
-			'form' => [
-				'href' => Utils::$context['form_action']
-			],
-		];
+		$builder = PortalTableBuilder::make('lp_categories', Lang::$txt['lp_categories'])
+			->setDefaultSortColumn('priority')
+			->setScript('const entity = new Category();')
+			->withCreateButton('categories')
+			->setItems($this->repository->getAll(...))
+			->setCount($this->repository->getTotalCount(...))
+			->addColumns([
+				IdColumn::make()->setSort('category_id'),
+				IconColumn::make(),
+				TitleColumn::make(entity: 'categories')->setSort('title DESC', 'title'),
+				Column::make('priority', Lang::$txt['lp_block_priority'])
+					->setStyle('width: 12%')
+					->setData(static fn($entry) => Str::html('div')->data('id', $entry['id'])
+						->setHtml($entry['priority'] . ' ' .
+							Icon::get('sort', Lang::$txt['lp_action_move'], 'handle ')), 'centertext')
+					->setSort('priority'),
+				StatusColumn::make(),
+				ContextMenuColumn::make()
+			]);
 
-		$listOptions['title'] = Str::html('span', ['class' => 'floatright'])
-			->addHtml(
-				Str::html('a', [
-					'href' => Config::$scripturl . '?action=admin;area=lp_categories;sa=add;' . Utils::$context['session_var'] . '=' . Utils::$context['session_id'],
-					'x-data' => '',
-				])
-				->setHtml(str_replace(
-					' class=',
-					' @mouseover="category.toggleSpin($event.target)" @mouseout="category.toggleSpin($event.target)" class=',
-					Icon::get('plus', Lang::$txt['lp_categories_add'])
-				))
-			) . $listOptions['title'];
-
-		new ItemList($listOptions);
+		TablePresenter::show($builder);
 	}
 
 	public function add(): void
@@ -253,7 +144,7 @@ final class CategoryArea
 		Utils::$context['lp_current_category'] = $this->repository->getData($item);
 
 		if (empty(Utils::$context['lp_current_category'])) {
-			ErrorHandler::fatalLang('lp_category_not_found', status: 404);
+			ErrorHandler::fatalLang('lp_category_not_found', false, status: 404);
 		}
 
 		Language::prepareList();

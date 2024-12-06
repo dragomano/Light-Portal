@@ -8,14 +8,18 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\TopTopics;
 
-use Bugo\Compat\{Lang, User};
-use Bugo\LightPortal\Areas\Fields\{CheckboxField, NumberField, RadioField};
-use Bugo\LightPortal\Plugins\{Block, Event};
+use Bugo\Compat\Lang;
+use Bugo\Compat\User;
+use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\UI\Fields\CheckboxField;
+use Bugo\LightPortal\UI\Fields\NumberField;
+use Bugo\LightPortal\UI\Fields\RadioField;
 use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
@@ -64,13 +68,14 @@ class TopTopics extends Block
 	public function prepareContent(Event $e): void
 	{
 		$parameters = $e->args->parameters;
+
 		$parameters['show_numbers_only'] ??= false;
 
 		$topTopics = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(
 				self::class,
-				'getFromSsi',
+				'getFromSSI',
 				'topTopics',
 				$parameters['popularity_type'],
 				$parameters['num_topics'],

@@ -8,20 +8,30 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 11.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
 
-use Bugo\Compat\{Config, Lang, Security, User, Utils};
-use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField};
-use Bugo\LightPortal\Areas\Fields\{SelectField, TextField, UrlField};
-use Bugo\LightPortal\Areas\Partials\IconSelect;
+use Bugo\Compat\Config;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Security;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Traits\AreaTrait;
-use Bugo\LightPortal\Enums\{PluginType, Tab};
-use Bugo\LightPortal\Plugins\Plugin;
+use Bugo\LightPortal\Enums\PluginType;
+use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Repositories\PluginRepository;
-use Bugo\LightPortal\Utils\{Language, Str};
+use Bugo\LightPortal\UI\Fields\CheckboxField;
+use Bugo\LightPortal\UI\Fields\CustomField;
+use Bugo\LightPortal\UI\Fields\SelectField;
+use Bugo\LightPortal\UI\Fields\TextField;
+use Bugo\LightPortal\UI\Fields\UrlField;
+use Bugo\LightPortal\UI\Partials\IconSelect;
+use Bugo\LightPortal\Utils\HasTemplateAware;
+use Bugo\LightPortal\Utils\Language;
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\Str;
 
 use function array_filter;
 use function array_keys;
@@ -37,17 +47,19 @@ use const LP_NAME;
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class Handler extends Plugin
+class Handler
 {
 	use AreaTrait;
+	use HasTemplateAware;
+	use RequestTrait;
 
 	private const PLUGIN_NAME = 'MyNewAddon';
 
 	public function add(): void
 	{
-		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_plugin_maker']['add_title'];
+		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_plugin_maker']['add_title'];
 		Utils::$context['page_area_title'] = Lang::$txt['lp_plugin_maker']['add_title'];
-		Utils::$context['form_action']     = Config::$scripturl . '?action=admin;area=lp_plugins;sa=add';
+		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_plugins;sa=add';
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
@@ -107,10 +119,21 @@ class Handler extends Plugin
 			'name'       => $postData['name'] ?? Utils::$context['lp_plugin']['name'] = self::PLUGIN_NAME,
 			'type'       => $postData['type'] ?? Utils::$context['lp_plugin']['type'] ?? 'block',
 			'icon'       => $postData['icon'] ?? Utils::$context['lp_plugin']['icon'] ?? '',
-			'author'     => $postData['author'] ?? Utils::$context['lp_plugin']['author'] ?? Utils::$context['lp_plugin_maker_plugin']['author'] ?? User::$info['name'],
-			'email'      => $postData['email'] ?? Utils::$context['lp_plugin']['email'] ?? Utils::$context['lp_plugin_maker_plugin']['email'] ?? User::$info['email'],
-			'site'       => $postData['site'] ?? Utils::$context['lp_plugin']['site'] ?? Utils::$context['lp_plugin_maker_plugin']['site'] ?? '',
-			'license'    => $postData['license'] ?? Utils::$context['lp_plugin']['license'] ?? Utils::$context['lp_plugin_maker_plugin']['license'] ?? 'gpl',
+			'author'     => $postData['author']
+								?? Utils::$context['lp_plugin']['author']
+								?? Utils::$context['lp_plugin_maker_plugin']['author']
+								?? User::$info['name'],
+			'email'      => $postData['email'] ?? Utils::$context['lp_plugin']['email']
+								?? Utils::$context['lp_plugin_maker_plugin']['email']
+								?? User::$info['email'],
+			'site'       => $postData['site']
+								?? Utils::$context['lp_plugin']['site']
+								?? Utils::$context['lp_plugin_maker_plugin']['site']
+								?? '',
+			'license'    => $postData['license']
+								?? Utils::$context['lp_plugin']['license']
+								?? Utils::$context['lp_plugin_maker_plugin']['license']
+								?? 'gpl',
 			'smf_hooks'  => $postData['smf_hooks'] ?? Utils::$context['lp_plugin']['smf_hooks'] ?? false,
 			'smf_ssi'    => $postData['smf_ssi'] ?? Utils::$context['lp_plugin']['smf_ssi'] ?? false,
 			'components' => $postData['components'] ?? Utils::$context['lp_plugin']['components'] ?? false,
@@ -138,8 +161,10 @@ class Handler extends Plugin
 		}
 
 		foreach (array_keys(Utils::$context['lp_languages']) as $lang) {
-			Utils::$context['lp_plugin']['titles'][$lang] = $postData['title_' . $lang] ?? Utils::$context['lp_plugin']['titles'][$lang] ?? '';
-			Utils::$context['lp_plugin']['descriptions'][$lang] = $postData['description_' . $lang] ?? Utils::$context['lp_plugin']['descriptions'][$lang] ?? '';
+			Utils::$context['lp_plugin']['titles'][$lang]
+				= $postData['title_' . $lang] ?? Utils::$context['lp_plugin']['titles'][$lang] ?? '';
+			Utils::$context['lp_plugin']['descriptions'][$lang]
+				= $postData['description_' . $lang] ?? Utils::$context['lp_plugin']['descriptions'][$lang] ?? '';
 
 			if (! empty($postData['option_translations'][$lang])) {
 				foreach ($postData['option_translations'][$lang] as $id => $translation) {
@@ -220,7 +245,7 @@ class Handler extends Plugin
 		CheckboxField::make('smf_hooks', Lang::$txt['lp_plugin_maker']['use_smf_hooks'])
 			->setValue(Utils::$context['lp_plugin']['smf_hooks']);
 
-		CheckboxField::make('mf_ssi', Lang::$txt['lp_plugin_maker']['use_smf_ssi'])
+		CheckboxField::make('smf_ssi', Lang::$txt['lp_plugin_maker']['use_smf_ssi'])
 			->setValue(Utils::$context['lp_plugin']['smf_ssi']);
 
 		CheckboxField::make('components', Lang::$txt['lp_plugin_maker']['use_components'])
@@ -312,7 +337,7 @@ class Handler extends Plugin
 
 	private function saveAuthorData(): void
 	{
-		(new PluginRepository)->changeSettings('plugin_maker', [
+		(new PluginRepository())->changeSettings('plugin_maker', [
 			'author'  => Utils::$context['lp_plugin']['author'],
 			'email'   => Utils::$context['lp_plugin']['email'],
 			'site'    => Utils::$context['lp_plugin']['site'],

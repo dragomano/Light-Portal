@@ -8,13 +8,17 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 13.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleChat;
 
-use Bugo\Compat\{BBCodeParser, Config};
-use Bugo\Compat\{Db, Time, User, Utils};
+use Bugo\Compat\BBCodeParser;
+use Bugo\Compat\Config;
+use Bugo\Compat\Db;
+use Bugo\Compat\Time;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\RequestTrait;

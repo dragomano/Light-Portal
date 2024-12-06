@@ -15,6 +15,7 @@ namespace Bugo\LightPortal\Hooks;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
+use Bugo\LightPortal\Enums\AlertAction;
 use Bugo\LightPortal\Utils\Str;
 
 use function in_array;
@@ -28,9 +29,9 @@ class FetchAlerts
 	public function __invoke(array &$alerts): void
 	{
 		foreach ($alerts as $id => $alert) {
-			if (in_array($alert['content_action'], ['page_comment', 'page_comment_reply', 'page_unapproved'])) {
-				$icon = $alert['content_action'] === 'page_comment' ? 'im_off' : 'im_on';
-				$icon = $alert['content_action'] === 'page_unapproved' ? 'news' : $icon;
+			if (in_array($alert['content_action'], AlertAction::names())) {
+				$icon = $alert['content_action'] === AlertAction::PAGE_COMMENT->name() ? 'im_off' : 'im_on';
+				$icon = $alert['content_action'] === AlertAction::PAGE_UNAPPROVED->name() ? 'news' : $icon;
 
 				if ($alert['sender_id'] !== User::$info['id']) {
 					$alerts[$id]['icon'] = Str::html('span', ['class' => 'alert_icon main_icons ' . $icon]);

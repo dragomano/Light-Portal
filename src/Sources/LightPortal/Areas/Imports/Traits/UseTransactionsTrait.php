@@ -37,10 +37,10 @@ trait UseTransactionsTrait
 		if ($results === []) {
 			Db::$db->transaction('rollback');
 
-			ErrorHandler::fatalLang('lp_import_failed');
+			ErrorHandler::fatalLang('lp_import_failed', false);
 		}
 
-		Db::$db->transaction('commit');
+		Db::$db->transaction();
 
 		Utils::$context['import_successful'] = sprintf(
 			Lang::$txt['lp_import_success'],

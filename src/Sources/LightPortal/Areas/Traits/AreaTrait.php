@@ -12,11 +12,15 @@
 
 namespace Bugo\LightPortal\Areas\Traits;
 
-use Bugo\Compat\{Config, Lang};
-use Bugo\Compat\{Security, Theme, Utils};
-use Bugo\LightPortal\Areas\Fields\CustomField;
+use Bugo\Compat\Config;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Security;
+use Bugo\Compat\Theme;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\ContentType;
-use Bugo\LightPortal\Utils\{Editor, Str};
+use Bugo\LightPortal\UI\Fields\CustomField;
+use Bugo\LightPortal\Utils\Editor;
+use Bugo\LightPortal\Utils\Str;
 
 use function array_keys;
 use function array_unique;

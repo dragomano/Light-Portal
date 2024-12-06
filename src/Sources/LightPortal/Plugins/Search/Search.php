@@ -8,15 +8,23 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\Search;
 
-use Bugo\Compat\{Config, Db, Lang, Theme, Utils};
-use Bugo\LightPortal\Enums\{Hook, Permission};
-use Bugo\LightPortal\Plugins\{Block, Event};
-use Bugo\LightPortal\Utils\{Content, DateTime, Str};
+use Bugo\Compat\Config;
+use Bugo\Compat\Db;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Theme;
+use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\Hook;
+use Bugo\LightPortal\Enums\Permission;
+use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Utils\Content;
+use Bugo\LightPortal\Utils\DateTime;
+use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

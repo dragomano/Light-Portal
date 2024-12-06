@@ -12,7 +12,10 @@
 
 namespace Bugo\LightPortal\Utils;
 
-use Bugo\Compat\{Config, Lang, User, Utils};
+use Bugo\Compat\Config;
+use Bugo\Compat\Lang;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
 
 use function array_flip;
 use function array_merge;

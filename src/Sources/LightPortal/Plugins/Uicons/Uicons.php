@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 12.11.24
+ * @version 29.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\Uicons;
@@ -50,7 +50,9 @@ class Uicons extends Plugin
 
 	public function prepareIconList(Event $e): void
 	{
-		if (($uIcons = $this->cache()->get('all_uicons', 30 * 24 * 60 * 60)) === null) {
+		$cacheTTL = 30 * 24 * 60 * 60;
+
+		if (($uIcons = $this->cache()->get('all_uicons', $cacheTTL)) === null) {
 			$weight = empty($this->context['weight']) ? 'r' : $this->context['weight'];
 			$corner = empty($this->context['corner']) ? 'r' : $this->context['corner'];
 
@@ -61,7 +63,7 @@ class Uicons extends Plugin
 				$uIcons[] = $this->prefix . $weight . $corner . '-' . $icon;
 			}
 
-			$this->cache()->put('all_uicons', $uIcons, 30 * 24 * 60 * 60);
+			$this->cache()->put('all_uicons', $uIcons, $cacheTTL);
 		}
 
 		$e->args->icons = array_merge($e->args->icons, $uIcons);

@@ -43,19 +43,22 @@ final class PluginRepository
 
 	public function getSettings(): array
 	{
-		if (($settings = $this->cache()->get('plugin_settings', 259200)) === null) {
+		$cacheTTL = 3 * 24 * 60 * 60;
+
+		if (($settings = $this->cache()->get('plugin_settings', $cacheTTL)) === null) {
 			$result = Db::$db->query('', /** @lang text */ '
 				SELECT name, config, value
 				FROM {db_prefix}lp_plugins',
 			);
 
 			$settings = [];
-			while ($row = Db::$db->fetch_assoc($result))
+			while ($row = Db::$db->fetch_assoc($result)) {
 				$settings[$row['name']][$row['config']] = $row['value'];
+			}
 
 			Db::$db->free_result($result);
 
-			$this->cache()->put('plugin_settings', $settings, 259200);
+			$this->cache()->put('plugin_settings', $settings, $cacheTTL);
 		}
 
 		return $settings;

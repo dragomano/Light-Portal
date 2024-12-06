@@ -12,9 +12,6 @@
 
 namespace Bugo\LightPortal\Areas\Imports;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
 interface ImportInterface
 {
 	public function main();

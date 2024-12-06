@@ -13,6 +13,7 @@
 namespace Bugo\LightPortal\Areas\Exports;
 
 use Bugo\Compat\Sapi;
+use Bugo\LightPortal\Utils\RequestTrait;
 use Closure;
 
 use function basename;
@@ -31,13 +32,15 @@ if (! defined('SMF'))
 
 abstract class AbstractExport implements ExportInterface
 {
-	abstract protected function getData();
+	use RequestTrait;
 
-	abstract protected function getFile();
+	abstract protected function getData(): array;
+
+	abstract protected function getFile(): string;
 
 	protected function run(): void
 	{
-		if (empty($file = (string) $this->getFile()))
+		if (empty($file = $this->getFile()))
 			return;
 
 		Sapi::setTimeLimit();

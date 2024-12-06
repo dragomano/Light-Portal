@@ -8,12 +8,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 13.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\SiteList;
 
-use Bugo\Compat\{Config, Theme, Utils};
+use Bugo\Compat\Config;
+use Bugo\Compat\Theme;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\VarType;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;

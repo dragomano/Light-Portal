@@ -19,6 +19,8 @@ if (! defined('LP_NAME'))
 
 abstract class Block extends Plugin
 {
+	public string $type = 'block';
+
 	public function isInPlacements(int $block_id, array $positions): bool
 	{
 		return in_array(

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.11.24
+ * @version 29.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\ThemeSwitcher;
@@ -17,6 +17,7 @@ use Bugo\Compat\Theme;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Utils\HasThemesAware;
 use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
@@ -24,6 +25,8 @@ if (! defined('LP_NAME'))
 
 class ThemeSwitcher extends Block
 {
+	use HasThemesAware;
+
 	public string $icon = 'fas fa-desktop';
 
 	public function init(): void

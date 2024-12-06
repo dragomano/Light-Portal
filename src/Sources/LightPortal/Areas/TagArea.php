@@ -12,16 +12,31 @@
 
 namespace Bugo\LightPortal\Areas;
 
-use Bugo\Compat\{Config, ErrorHandler, Lang, Security, Theme, Utils};
-use Bugo\LightPortal\Areas\Fields\CustomField;
-use Bugo\LightPortal\Areas\Partials\IconSelect;
+use Bugo\Bricks\Presenters\TablePresenter;
+use Bugo\Bricks\Tables\IdColumn;
+use Bugo\Compat\Config;
+use Bugo\Compat\ErrorHandler;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Security;
+use Bugo\Compat\Theme;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Areas\Validators\TagValidator;
-use Bugo\LightPortal\Enums\{Status, Tab};
+use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Models\TagModel;
 use Bugo\LightPortal\Repositories\TagRepository;
-use Bugo\LightPortal\Utils\{CacheTrait, Icon, ItemList};
-use Bugo\LightPortal\Utils\{Language, RequestTrait, Str};
+use Bugo\LightPortal\UI\Fields\CustomField;
+use Bugo\LightPortal\UI\Partials\IconSelect;
+use Bugo\LightPortal\UI\Tables\ContextMenuColumn;
+use Bugo\LightPortal\UI\Tables\IconColumn;
+use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
+use Bugo\LightPortal\UI\Tables\StatusColumn;
+use Bugo\LightPortal\UI\Tables\TitleColumn;
+use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\Utils\Language;
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\Str;
 
 use const LP_NAME;
 
@@ -53,142 +68,21 @@ final class TagArea
 
 		$this->doActions();
 
-		$listOptions = [
-			'id' => 'lp_tags',
-			'items_per_page' => 20,
-			'title' => Lang::$txt['lp_tags'],
-			'no_items_label' => Lang::$txt['lp_no_items'],
-			'base_href' => Utils::$context['form_action'],
-			'default_sort_col' => 'title',
-			'get_items' => [
-				'function' => $this->repository->getAll(...)
-			],
-			'get_count' => [
-				'function' => $this->repository->getTotalCount(...)
-			],
-			'columns' => [
-				'id' => [
-					'header' => [
-						'value' => '#',
-						'style' => 'width: 5%'
-					],
-					'data' => [
-						'db'    => 'id',
-						'class' => 'centertext'
-					],
-					'sort' => [
-						'default' => 'tag_id',
-						'reverse' => 'tag_id DESC'
-					]
-				],
-				'icon' => [
-					'header' => [
-						'value' => Lang::$txt['custom_profile_icon']
-					],
-					'data' => [
-						'db'    => 'icon',
-						'class' => 'centertext'
-					],
-					'sort' => [
-						'default' => 'icon',
-						'reverse' => 'icon DESC'
-					]
-				],
-				'title' => [
-					'header' => [
-						'value' => Lang::$txt['lp_title'],
-					],
-					'data' => [
-						'function' => static fn($entry) => $entry['status']
-							? Str::html('a', ['class' => 'bbc_link'])
-								->href(LP_BASE_URL . ';sa=tags;id=' . $entry['id'])
-								->setText($entry['title'])
-							: $entry['title'],
-						'class' => 'word_break',
-					],
-					'sort' => [
-						'default' => 't.value DESC',
-						'reverse' => 't.value',
-					],
-				],
-				'status' => [
-					'header' => [
-						'value' => Lang::$txt['status'],
-					],
-					'data' => [
-						'function' => static fn($entry) => /** @lang text */ '
-							<div
-								data-id="' . $entry['id'] . '"
-								x-data="{ status: ' . ($entry['status'] === Status::ACTIVE->value ? 'true' : 'false') . ' }"
-								x-init="$watch(\'status\', value => tag.toggleStatus($el))"
-							>
-								<span
-									:class="{ \'on\': status, \'off\': !status }"
-									:title="status ? \'' . Lang::$txt['lp_action_off'] . '\' : \'' . Lang::$txt['lp_action_on'] . '\'"
-									@click.prevent="status = !status"
-								></span>
-							</div>',
-						'class' => 'centertext'
-					],
-					'sort' => [
-						'default' => 'status DESC',
-						'reverse' => 'status'
-					],
-				],
-				'actions' => [
-					'header' => [
-						'value' => Lang::$txt['lp_actions'],
-						'style' => 'width: 8%',
-					],
-					'data' => [
-						'function' => static fn($entry) => /** @lang text */ '
-						<div data-id="' . $entry['id'] . '" x-data="{ showContextMenu: false }">
-							<div class="context_menu" @click.outside="showContextMenu = false">
-								<button class="button floatnone" @click.prevent="showContextMenu = true">
-									' . Icon::get('ellipsis') . '
-								</button>
-								<div class="roundframe" x-show="showContextMenu">
-									<ul>
-										<li>
-											' . Str::html('a')
-												->setAttribute('href', Config::$scripturl . "?action=admin;area=lp_tags;sa=edit;id={$entry['id']}")
-												->class('button')
-												->setText(Lang::$txt['modify']) . '
-										</li>
-										<li>
-											' . Str::html('a')
-												->setAttribute('x-on:click.prevent', 'showContextMenu = false; tag.remove($root)')
-												->class('button error')
-												->setText(Lang::$txt['remove']) . '
-										</li>
-									</ul>
-								</div>
-							</div>
-						</div>',
-						'class' => 'centertext',
-					],
-				],
-			],
-			'form' => [
-				'href' => Utils::$context['form_action']
-			],
-			'javascript' => 'const tag = new Tag();',
-		];
+		$builder = PortalTableBuilder::make('lp_tags', Lang::$txt['lp_tags'])
+			->setDefaultSortColumn('title')
+			->setScript('const entity = new Tag();')
+			->withCreateButton('tags')
+			->setItems($this->repository->getAll(...))
+			->setCount($this->repository->getTotalCount(...))
+			->addColumns([
+				IdColumn::make()->setSort('tag_id'),
+				IconColumn::make(),
+				TitleColumn::make(entity: 'tags')->setSort('t.value'),
+				StatusColumn::make(),
+				ContextMenuColumn::make()
+			]);
 
-		$listOptions['title'] = Str::html('span', ['class' => 'floatright'])
-			->addHtml(
-				Str::html('a', [
-					'href' => Config::$scripturl . '?action=admin;area=lp_tags;sa=add;' . Utils::$context['session_var'] . '=' . Utils::$context['session_id'],
-					'x-data' => '',
-				])
-				->setHtml(str_replace(
-					' class=',
-					' @mouseover="tag.toggleSpin($event.target)" @mouseout="tag.toggleSpin($event.target)" class=',
-					Icon::get('plus', Lang::$txt['lp_tags_add'])
-				))
-			) . $listOptions['title'];
-
-		new ItemList($listOptions);
+		TablePresenter::show($builder);
 	}
 
 	public function add(): void
@@ -238,7 +132,7 @@ final class TagArea
 		Utils::$context['lp_current_tag'] = $this->repository->getData($item);
 
 		if (empty(Utils::$context['lp_current_tag'])) {
-			ErrorHandler::fatalLang('lp_tag_not_found', status: 404);
+			ErrorHandler::fatalLang('lp_tag_not_found', false, status: 404);
 		}
 
 		Language::prepareList();

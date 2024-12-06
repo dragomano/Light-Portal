@@ -11,7 +11,8 @@
 
 namespace Bugo\LightPortal\Areas\Imports;
 
-use Bugo\Compat\{Sapi, Utils};
+use Bugo\Compat\Sapi;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Imports\Traits\CanInsertDataTrait;
 use Bugo\LightPortal\Areas\Imports\Traits\UseTransactionsTrait;
 use Bugo\LightPortal\Areas\Imports\Traits\WithParamsTrait;
@@ -51,5 +52,5 @@ abstract class AbstractImport implements ImportInterface
 		return simplexml_load_file($file['tmp_name']);
 	}
 
-	abstract protected function run();
+	abstract protected function run(): void;
 }

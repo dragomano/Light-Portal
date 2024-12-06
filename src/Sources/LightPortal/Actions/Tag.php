@@ -12,13 +12,25 @@
 
 namespace Bugo\LightPortal\Actions;
 
-use Bugo\Compat\{Config, Db, ErrorHandler};
-use Bugo\Compat\{Lang, User, Utils};
-use Bugo\LightPortal\Enums\{EntryType, Permission, Status};
-use Bugo\LightPortal\Utils\{Icon, ItemList, RequestTrait, Str};
+use Bugo\Bricks\Presenters\TablePresenter;
+use Bugo\Bricks\Tables\Column;
+use Bugo\Compat\Config;
+use Bugo\Compat\Db;
+use Bugo\Compat\ErrorHandler;
+use Bugo\Compat\Lang;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\EntryType;
+use Bugo\LightPortal\Enums\Permission;
+use Bugo\LightPortal\Enums\Status;
+use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
+use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\Str;
 
 use function array_key_exists;
 use function count;
+use function implode;
 use function sprintf;
 use function time;
 
@@ -45,7 +57,7 @@ final class Tag extends AbstractPageList
 		if (array_key_exists($tag['id'], $tags) === false) {
 			Utils::$context['error_link'] = LP_BASE_URL . ';sa=tags';
 			Lang::$txt['back'] = Lang::$txt['lp_all_page_tags'];
-			ErrorHandler::fatalLang('lp_tag_not_found', status: 404);
+			ErrorHandler::fatalLang('lp_tag_not_found', false, status: 404);
 		}
 
 		$tag = $tags[$tag['id']];
@@ -67,16 +79,11 @@ final class Tag extends AbstractPageList
 
 		$page->showAsCards($this);
 
-		$listOptions = $page->getList();
-		$listOptions['id'] = 'lp_tags';
-		$listOptions['get_items'] = [
-			'function' => $this->getPages(...)
-		];
-		$listOptions['get_count'] = [
-			'function' => fn() => $this->getTotalCount()
-		];
+		$builder = $page->getBuilder('lp_tags');
+		$builder->setItems($this->getPages(...));
+		$builder->setCount(fn() => $this->getTotalCount());
 
-		new ItemList($listOptions);
+		TablePresenter::show($builder);
 
 		Utils::obExit();
 	}
@@ -173,53 +180,29 @@ final class Tag extends AbstractPageList
 			'name' => Utils::$context['page_title'],
 		];
 
-		$listOptions = [
-			'id' => 'tags',
-			'items_per_page' => Config::$modSettings['defaultMaxListItems'] ?: 50,
-			'title' => Utils::$context['page_title'],
-			'no_items_label' => Lang::$txt['lp_no_tags'],
-			'base_href' => Utils::$context['canonical_url'],
-			'default_sort_col' => 'value',
-			'get_items' => [
-				'function' => $this->getAll(...)
-			],
-			'get_count' => [
-				'function' => fn() => count($this->getAll())
-			],
-			'columns' => [
-				'value' => [
-					'header' => [
-						'value' => Lang::$txt['lp_tag_column']
-					],
-					'data' => [
-						'function' => static fn($entry) => $entry['icon'] . ' ' . Str::html('a', $entry['title'])
-							->href($entry['link']),
-					],
-					'sort' => [
-						'default' => 'title DESC',
-						'reverse' => 'title'
-					]
-				],
-				'frequency' => [
-					'header' => [
-						'value' => Lang::$txt['lp_frequency_column']
-					],
-					'data' => [
-						'db'    => 'frequency',
-						'class' => 'centertext'
-					],
-					'sort' => [
-						'default' => 'frequency DESC',
-						'reverse' => 'frequency'
-					]
-				]
-			],
-			'form' => [
-				'href' => Utils::$context['canonical_url']
-			]
-		];
-
-		new ItemList($listOptions);
+		TablePresenter::show(
+			PortalTableBuilder::make('tags', Utils::$context['page_title'])
+				->withParams(
+					(int) Config::$modSettings['defaultMaxListItems'] ?: 50,
+					Lang::$txt['lp_no_tags'],
+					Utils::$context['canonical_url'],
+					'value'
+				)
+				->setItems($this->getAll(...))
+				->setCount(fn() => count($this->getAll()))
+				->addColumns([
+					Column::make('value', Lang::$txt['lp_tag_column'])
+						->setData(static fn($entry) => implode('', [
+							$entry['icon'] . ' ',
+							Str::html('a', $entry['title'])
+								->href($entry['link']),
+						]))
+						->setSort('title DESC', 'title'),
+					Column::make('frequency', Lang::$txt['lp_frequency_column'])
+						->setData('frequency', 'centertext')
+						->setSort('frequency DESC', 'frequency'),
+				])
+		);
 
 		Utils::obExit();
 	}

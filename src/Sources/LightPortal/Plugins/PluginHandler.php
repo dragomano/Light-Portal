@@ -12,59 +12,61 @@
 
 namespace Bugo\LightPortal\Plugins;
 
-use Bugo\Compat\{Lang, Theme, User, Utils, WebFetchApi};
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\EventManager;
-use Bugo\LightPortal\Repositories\PluginRepository;
-use Bugo\LightPortal\Utils\{Language, Setting, Str};
-use MatthiasMullie\Minify\{CSS, JS};
+use Bugo\LightPortal\Utils\Setting;
+use Bugo\LightPortal\Utils\Str;
 
 use function array_map;
-use function array_merge;
-use function array_unique;
 use function basename;
 use function class_exists;
-use function file_put_contents;
-use function filemtime;
 use function glob;
-use function in_array;
-use function is_dir;
-use function is_file;
-use function mkdir;
-use function ucfirst;
 
 use const DIRECTORY_SEPARATOR;
 use const GLOB_ONLYDIR;
-use const LOCK_EX;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
 final class PluginHandler
 {
-	private array $settings;
+	private readonly PluginRegistry $registry;
 
-	private PluginRegistry $registry;
+	private readonly ConfigHandler $configHandler;
 
-	private readonly CSS $css;
+	private readonly LangHandler $langHandler;
 
-	private readonly JS $js;
+	private readonly AssetHandler $assetHandler;
 
-	private int $maxCssFilemtime = 0;
+	private static EventManager $manager;
 
-	private int $maxJsFilemtime = 0;
-
-	private static self $instance;
-
-	private const PREFIX = 'lp_';
-
-	public static function getInstance(array $plugins = []): self
+	public function __construct(array $plugins = [])
 	{
-		if (empty(self::$instance) || $plugins) {
-			self::$instance = new self($plugins);
+		$this->registry = PluginRegistry::getInstance();
+		$this->configHandler = new ConfigHandler();
+		$this->langHandler = new LangHandler();
+		$this->assetHandler = new AssetHandler();
+
+		if (empty(self::$manager)) {
+			self::$manager = new EventManager();
 		}
 
-		return self::$instance;
+		$this->prepareListeners($plugins);
+		$this->prepareAssets();
+		$this->assetHandler->minify();
+
+		Utils::$context['lp_loaded_addons'] = $this->registry->getAll();
+	}
+
+	public function getManager(): EventManager
+	{
+		return self::$manager;
+	}
+
+	public function getRegistry(): PluginRegistry
+	{
+		return $this->registry;
 	}
 
 	public function getAll(): array
@@ -79,92 +81,14 @@ final class PluginHandler
 	{
 		$assets = [];
 
-		EventManager::getInstance()->dispatch(
+		self::$manager->dispatch(
 			PortalHook::prepareAssets,
 			new Event(new class ($assets) {
 				public function __construct(public array &$assets) {}
 			})
 		);
 
-		foreach (['css', 'scripts', 'images'] as $type) {
-			if (empty($assets[$type]))
-				continue;
-
-			foreach ($assets[$type] as $plugin => $links) {
-				$directory = $type . '/light_portal/' . $plugin;
-				$path = Theme::$current->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . $directory;
-
-				if (! is_dir($path)) {
-					@mkdir($path);
-				}
-
-				foreach ($links as $link) {
-					if (is_file($filename = $path . DIRECTORY_SEPARATOR . basename((string) $link)))
-						continue;
-
-					file_put_contents($filename, WebFetchApi::fetch($link), LOCK_EX);
-				}
-			}
-		}
-	}
-
-	private function loadLangs(string $path, string $snakeName): void
-	{
-		if (isset(Lang::$txt[self::PREFIX . $snakeName]))
-			return;
-
-		$userLang  = Language::getNameFromLocale(User::$info['language']);
-		$languages = array_unique([Language::FALLBACK, $userLang]);
-
-		Lang::$txt[self::PREFIX . $snakeName] = array_merge(
-			...array_map(function ($lang) use ($path) {
-				$langFile = $path . 'langs' . DIRECTORY_SEPARATOR . $lang . '.php';
-				return is_file($langFile) ? require $langFile : [];
-			}, $languages)
-		);
-	}
-
-	private function loadAssets(string $path, string $plugin): void
-	{
-		$assets = [
-			'css' => $path . 'style.css',
-			'js'  => $path . 'script.js',
-		];
-
-		foreach ($assets as $type => $file) {
-			if (! is_file($file))
-				continue;
-
-			if (in_array($plugin, Setting::getEnabledPlugins())) {
-				$this->{$type}->add($file);
-			}
-
-			if (($maxFilemtime = filemtime($file)) > $this->{'max' . ucfirst($type) . 'Filemtime'}) {
-				$this->{'max' . ucfirst($type) . 'Filemtime'} = $maxFilemtime;
-			}
-		}
-	}
-
-	private function minifyAssets(): void
-	{
-		$this->minifyFile(
-			Theme::$current->settings['default_theme_dir'] . '/css/light_portal/plugins.css',
-			$this->maxCssFilemtime,
-			[$this->css, 'minify']
-		);
-
-		$this->minifyFile(
-			Theme::$current->settings['default_theme_dir'] . '/scripts/light_portal/plugins.js',
-			$this->maxJsFilemtime,
-			[$this->js, 'minify']
-		);
-	}
-
-	private function minifyFile(string $filePath, int $maxFilemtime, callable $minifyFunction): void
-	{
-		if (! is_file($filePath) || $maxFilemtime > filemtime($filePath)) {
-			$minifyFunction($filePath);
-		}
+		$this->assetHandler->prepare($assets);
 	}
 
 	private function prepareListeners(array $plugins = []): void
@@ -174,47 +98,32 @@ final class PluginHandler
 		if ($plugins === [])
 			return;
 
-		foreach ($plugins as $plugin) {
-			$className = __NAMESPACE__ . "\\$plugin\\$plugin";
+		foreach ($plugins as $pluginName) {
+			$className = __NAMESPACE__ . "\\$pluginName\\$pluginName";
 
 			if (! class_exists($className))
 				continue;
 
-			$snakeName = Str::getSnakeName($plugin);
+			$snakeName = Str::getSnakeName($pluginName);
 
 			if (! $this->registry->has($snakeName)) {
-				$path = __DIR__ . DIRECTORY_SEPARATOR . $plugin . DIRECTORY_SEPARATOR;
+				$path = __DIR__ . DIRECTORY_SEPARATOR . $pluginName . DIRECTORY_SEPARATOR;
 
-				$this->loadLangs($path, $snakeName);
-				$this->loadAssets($path, $plugin);
-
-				Utils::$context[self::PREFIX . $snakeName . '_plugin'] = $this->settings[$snakeName] ?? [];
+				$this->configHandler->handle($snakeName);
+				$this->langHandler->handle($path, $snakeName);
+				$this->assetHandler->handle($path, $pluginName);
 
 				$class = new $className();
 
-				EventManager::getInstance()->addListeners(PortalHook::cases(), $class);
+				self::$manager->addListeners(PortalHook::cases(), $class);
 
 				$this->registry->add($snakeName, [
-					'name' => $plugin,
-					'icon' => $class->icon,
-					'type' => $class->type,
+					'name'     => $pluginName,
+					'icon'     => $class->icon,
+					'type'     => $class->type,
+					'saveable' => $class->saveable,
 				]);
-
-				Utils::$context['lp_loaded_addons'][$snakeName] = $this->registry->get($snakeName);
 			}
 		}
-	}
-
-	private function __construct(array $plugins = [])
-	{
-		$this->settings = (new PluginRepository())->getSettings();
-		$this->registry = PluginRegistry::getInstance();
-
-		$this->css = new CSS();
-		$this->js  = new JS();
-
-		$this->prepareAssets();
-		$this->prepareListeners($plugins);
-		$this->minifyAssets();
 	}
 }

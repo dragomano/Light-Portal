@@ -8,12 +8,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 08.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\PrettyUrls;
 
-use Bugo\Compat\{Config, Utils};
+use Bugo\Compat\Config;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Utils\Str;
 

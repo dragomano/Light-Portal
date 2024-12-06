@@ -21,7 +21,6 @@ enum PortalHook
 	case commentButtons;
 	case comments;
 	case credits;
-	case customLayoutExtensions;
 	case downloadRequest;
 	case extendBasicConfig;
 	case findBlockErrors;
@@ -39,6 +38,7 @@ enum PortalHook
 	case importCategories;
 	case importPages;
 	case init;
+	case layoutExtensions;
 	case onBlockRemoving;
 	case onBlockSaving;
 	case onPageRemoving;

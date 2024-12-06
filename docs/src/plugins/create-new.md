@@ -122,7 +122,7 @@ If the plugin needs to retrieve any data using SSI functions, use the built-in `
 <?php
 
 // See ssi_topTopics function in the SSI.php file
-$data = $this->getFromSsi('topTopics', 'views', 10, 'array');
+$data = $this->getFromSSI('topTopics', 'views', 10, 'array');
 ```
 
 ## Using Composer

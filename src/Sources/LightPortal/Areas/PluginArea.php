@@ -12,18 +12,25 @@
 
 namespace Bugo\LightPortal\Areas;
 
-use Bugo\Compat\{Config, Lang, Theme};
-use Bugo\Compat\{User, Utils, WebFetchApi};
+use Bugo\Compat\Config;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Theme;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
+use Bugo\Compat\WebFetchApi;
 use Bugo\LightPortal\Args\SettingsArgs;
-use Bugo\LightPortal\Enums\{PortalHook, VarType};
-use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Enums\VarType;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\PluginHandler;
 use Bugo\LightPortal\Repositories\PluginRepository;
-use Bugo\LightPortal\Utils\{CacheTrait, EntityDataTrait, Icon};
-use Bugo\LightPortal\Utils\{Language, RequestTrait, Setting, Str};
-use ReflectionClass;
-use ReflectionException;
+use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\EntityDataTrait;
+use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\Utils\Language;
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\Setting;
+use Bugo\LightPortal\Utils\Str;
 
 use function array_filter;
 use function array_flip;
@@ -35,11 +42,13 @@ use function array_unique;
 use function explode;
 use function implode;
 use function in_array;
+use function is_array;
 use function json_encode;
 use function ksort;
 use function ltrim;
 use function sort;
 use function sprintf;
+use function unlink;
 
 use const LP_NAME;
 
@@ -93,10 +102,11 @@ final class PluginArea
 
 		$settings = [];
 
-		PluginHandler::getInstance(Utils::$context['lp_plugins']);
-
 		// Plugin authors can add settings here
-		EventManager::getInstance()->dispatch(PortalHook::addSettings, new Event(new SettingsArgs($settings)));
+		(new EventManagerFactory())(Utils::$context['lp_plugins'])->dispatch(
+			PortalHook::addSettings,
+			new Event(new SettingsArgs($settings))
+		);
 
 		$this->handleSave($settings);
 		$this->prepareAddonList($settings);
@@ -170,7 +180,10 @@ final class PluginArea
 		}
 
 		// Plugin authors can do additional actions after settings saving
-		EventManager::getInstance()->dispatch(PortalHook::saveSettings, new Event(new SettingsArgs($settings)));
+		(new EventManagerFactory())(Utils::$context['lp_plugins'])->dispatch(
+			PortalHook::saveSettings,
+			new Event(new SettingsArgs($settings))
+		);
 
 		$this->repository->changeSettings($name, $settings);
 
@@ -181,31 +194,16 @@ final class PluginArea
 	{
 		Utils::$context['all_lp_plugins'] = array_map(function ($item) use ($configVars) {
 			$snakeName = Str::getSnakeName($item);
+			$pluginData = Utils::$context['lp_loaded_addons'][$snakeName] ?? [];
 
-			try {
-				$className = '\Bugo\LightPortal\Plugins\\' . $item . '\\' . $item;
-				$addonClass = new ReflectionClass($className);
-
-				if ($addonClass->hasProperty('author')) {
-					$author = $addonClass->getProperty('author')->getValue(new $className);
-				}
-
-				if ($addonClass->hasProperty('link')) {
-					$link = $addonClass->getProperty('link')->getValue(new $className);
-				}
-
-				if ($addonClass->hasProperty('saveable')) {
-					$saveable = $addonClass->getProperty('saveable')->getValue(new $className);
-				}
-
-			} catch (ReflectionException) {
-				if (isset(Utils::$context['lp_can_donate'][$item])) {
-					Utils::$context['lp_loaded_addons'][$snakeName]['type'] = Utils::$context['lp_can_donate'][$item]['type'] ?? 'other';
+			if ($pluginData === []) {
+				if (isset(Utils::$context['lp_donate'][$item])) {
+					Utils::$context['lp_loaded_addons'][$snakeName]['type'] = Utils::$context['lp_donate'][$item]['type'];
 					$special = 'can_donate';
 				}
 
-				if (isset(Utils::$context['lp_can_download'][$item])) {
-					Utils::$context['lp_loaded_addons'][$snakeName]['type'] = Utils::$context['lp_can_download'][$item]['type'] ?? 'other';
+				if (isset(Utils::$context['lp_download'][$item])) {
+					Utils::$context['lp_loaded_addons'][$snakeName]['type'] = Utils::$context['lp_download'][$item]['type'];
 					$special = 'can_download';
 				}
 			}
@@ -214,13 +212,11 @@ final class PluginArea
 				'name'       => $item,
 				'snake_name' => $snakeName,
 				'desc'       => Lang::$txt['lp_' . $snakeName]['description'] ?? '',
-				'author'     => $author ?? '',
-				'link'       => $link ?? '',
 				'status'     => in_array($item, Setting::getEnabledPlugins()) ? 'on' : 'off',
 				'types'      => $this->getTypes($snakeName),
 				'special'    => $special ?? '',
 				'settings'   => $configVars[$snakeName] ?? [],
-				'saveable'   => $saveable ?? true,
+				'saveable'   => $pluginData['saveable'] ?? false,
 			];
 		}, Utils::$context['lp_plugins']);
 	}
@@ -314,8 +310,8 @@ final class PluginArea
 		$pluginsData = [
 			'list'     => Utils::$context['all_lp_plugins'],
 			'types'    => Utils::$context['lp_plugin_types'],
-			'donate'   => Utils::$context['lp_can_donate'] ?? [],
-			'download' => Utils::$context['lp_can_download'] ?? [],
+			'donate'   => Utils::$context['lp_donate'] ?? [],
+			'download' => Utils::$context['lp_download'] ?? [],
 		];
 
 		$allPlugins = array_keys(Utils::$context['lp_loaded_addons'] ?? []);
@@ -346,10 +342,11 @@ final class PluginArea
 
 	private function extendPluginList(): void
 	{
-		Utils::$context['lp_can_donate'] = [];
-		Utils::$context['lp_can_download'] = [];
+		Utils::$context['lp_donate'] = Utils::$context['lp_download'] = [];
 
-		if (($xml = $this->cache()->get('custom_addon_list', 259200)) === null) {
+		$cacheTTL = 3 * 24 * 60 * 60;
+
+		if (($xml = $this->cache()->get('custom_addon_list', $cacheTTL)) === null) {
 			$addonList = WebFetchApi::fetch(LP_PLUGIN_LIST);
 
 			if (empty($addonList))
@@ -357,7 +354,7 @@ final class PluginArea
 
 			$xml = Utils::jsonDecode($addonList, true);
 
-			$this->cache()->put('custom_addon_list', $xml, 259200);
+			$this->cache()->put('custom_addon_list', $xml, $cacheTTL);
 		}
 
 		if (isset($xml[0])) {
@@ -369,12 +366,12 @@ final class PluginArea
 
 		foreach ($xml['donate'] as $addon) {
 			Utils::$context['lp_plugins'][] = $addon['name'];
-			Utils::$context['lp_can_donate'][$addon['name']] = $addon;
+			Utils::$context['lp_donate'][$addon['name']] = $addon;
 		}
 
 		foreach ($xml['download'] as $addon) {
 			Utils::$context['lp_plugins'][] = $addon['name'];
-			Utils::$context['lp_can_download'][$addon['name']] = $addon;
+			Utils::$context['lp_download'][$addon['name']] = $addon;
 		}
 
 		Utils::$context['lp_plugins'] = array_keys(array_flip(Utils::$context['lp_plugins']));

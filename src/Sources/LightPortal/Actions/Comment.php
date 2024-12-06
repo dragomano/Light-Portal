@@ -12,13 +12,22 @@
 
 namespace Bugo\LightPortal\Actions;
 
+use Bugo\Compat\Config;
+use Bugo\Compat\PageIndex;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\AlertAction;
+use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Enums\VarType;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\Compat\{Config, PageIndex, User, Utils};
-use Bugo\LightPortal\Enums\{PortalHook, VarType};
-use Bugo\LightPortal\EventManager;
 use Bugo\LightPortal\Repositories\CommentRepository;
-use Bugo\LightPortal\Utils\{Avatar, CacheTrait, DateTime};
-use Bugo\LightPortal\Utils\{Notify, RequestTrait, Setting};
+use Bugo\LightPortal\Utils\Avatar;
+use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\DateTime;
+use Bugo\LightPortal\Utils\Notify;
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\Setting;
 
 use function array_map;
 use function array_slice;
@@ -71,7 +80,7 @@ final class Comment implements ActionInterface
 			$comment['authorial']     = Utils::$context['lp_page']['author_id'] === $comment['poster']['id'];
 			$comment['extra_buttons'] = [];
 
-			EventManager::getInstance()->dispatch(
+			(new EventManagerFactory())()->dispatch(
 				PortalHook::commentButtons,
 				new Event(new class ($comment, $comment['extra_buttons']) {
 					public function __construct(public readonly array $comment, public array &$buttons) {}
@@ -163,8 +172,8 @@ final class Comment implements ActionInterface
 			];
 
 			empty($parentId)
-				? Notify::send('new_comment', 'page_comment', $options)
-				: Notify::send('new_reply', 'page_comment_reply', $options);
+				? Notify::send('new_comment', AlertAction::PAGE_COMMENT->name(), $options)
+				: Notify::send('new_reply', AlertAction::PAGE_COMMENT_REPLY->name(), $options);
 
 			$this->cache()->forget('page_' . $this->pageSlug . '_comments');
 		}

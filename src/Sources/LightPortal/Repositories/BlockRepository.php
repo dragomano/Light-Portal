@@ -12,15 +12,25 @@
 
 namespace Bugo\LightPortal\Repositories;
 
-use Bugo\Compat\{Config, Db, ErrorHandler};
-use Bugo\Compat\{Lang, Msg, Security, Utils};
+use Bugo\Compat\Config;
+use Bugo\Compat\Db;
+use Bugo\Compat\ErrorHandler;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Msg;
+use Bugo\Compat\Security;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Args\ItemArgs;
 use Bugo\LightPortal\Args\ItemsArgs;
-use Bugo\LightPortal\Enums\{PortalHook, Status};
-use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Enums\Status;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Utils\{CacheTrait, EntityDataTrait};
-use Bugo\LightPortal\Utils\{Icon, RequestTrait, Setting, Str};
+use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\EntityDataTrait;
+use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\Setting;
+use Bugo\LightPortal\Utils\Str;
 
 use function array_filter;
 use function array_flip;
@@ -98,7 +108,7 @@ final class BlockRepository extends AbstractRepository
 		if (empty(Db::$db->num_rows($result))) {
 			Utils::$context['error_link'] = Config::$scripturl . '?action=admin;area=lp_blocks';
 
-			ErrorHandler::fatalLang('lp_block_not_found', status: 404);
+			ErrorHandler::fatalLang('lp_block_not_found', false, status: 404);
 		}
 
 		while ($row = Db::$db->fetch_assoc($result)) {
@@ -181,7 +191,7 @@ final class BlockRepository extends AbstractRepository
 		if ($items === [])
 			return;
 
-		EventManager::getInstance()->dispatch(PortalHook::onBlockRemoving, new Event(new ItemsArgs($items)));
+		(new EventManagerFactory())()->dispatch(PortalHook::onBlockRemoving, new Event(new ItemsArgs($items)));
 
 		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_blocks
@@ -342,7 +352,7 @@ final class BlockRepository extends AbstractRepository
 			return 0;
 		}
 
-		EventManager::getInstance()->dispatch(PortalHook::onBlockSaving, new Event(new ItemArgs($item)));
+		(new EventManagerFactory())()->dispatch(PortalHook::onBlockSaving, new Event(new ItemArgs($item)));
 
 		$this->saveTitles($item);
 		$this->saveOptions($item);
@@ -376,7 +386,7 @@ final class BlockRepository extends AbstractRepository
 			]
 		);
 
-		EventManager::getInstance()->dispatch(PortalHook::onBlockSaving, new Event(new ItemArgs($item)));
+		(new EventManagerFactory())()->dispatch(PortalHook::onBlockSaving, new Event(new ItemArgs($item)));
 
 		$this->saveTitles($item, 'replace');
 		$this->saveOptions($item, 'replace');

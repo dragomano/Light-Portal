@@ -12,21 +12,21 @@
 
 namespace Bugo\LightPortal\Areas\Validators;
 
-use Bugo\Compat\{Config, Db, Lang, Utils};
+use Bugo\Compat\Config;
+use Bugo\Compat\Db;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Args\ErrorsDataArgs;
 use Bugo\LightPortal\Args\ParamsArgs;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
-use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\RequestTrait;
 
 use function array_merge;
 use function explode;
 use function filter_input_array;
-
-if (! defined('SMF'))
-	die('No direct access...');
 
 class PageValidator extends AbstractValidator
 {
@@ -66,7 +66,7 @@ class PageValidator extends AbstractValidator
 				$this->args['title_' . $lang['filename']] = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
 			}
 
-			EventManager::getInstance()->dispatch(
+			(new EventManagerFactory())()->dispatch(
 				PortalHook::validatePageParams,
 				new Event(new ParamsArgs($params, Utils::$context['lp_current_page']['type']))
 			);
@@ -111,7 +111,7 @@ class PageValidator extends AbstractValidator
 		if (empty($data['content']))
 			$errors[] = 'no_content';
 
-		EventManager::getInstance()->dispatch(
+		(new EventManagerFactory())()->dispatch(
 			PortalHook::findPageErrors,
 			new Event(new ErrorsDataArgs($errors, $data))
 		);

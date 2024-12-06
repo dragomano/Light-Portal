@@ -12,13 +12,16 @@
 
 namespace Bugo\LightPortal\Areas\Configs;
 
-use Bugo\Compat\{Actions\Permissions, Config, Lang, Utils};
-use Bugo\LightPortal\Areas\Fields\CheckboxField;
-use Bugo\LightPortal\Areas\Fields\CustomField;
-use Bugo\LightPortal\Areas\Fields\NumberField;
-use Bugo\LightPortal\Areas\Fields\SelectField;
-use Bugo\LightPortal\Areas\Fields\TextField;
+use Bugo\Compat\Actions\Permissions;
+use Bugo\Compat\Config;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Traits\AreaTrait;
+use Bugo\LightPortal\UI\Fields\CheckboxField;
+use Bugo\LightPortal\UI\Fields\CustomField;
+use Bugo\LightPortal\UI\Fields\NumberField;
+use Bugo\LightPortal\UI\Fields\SelectField;
+use Bugo\LightPortal\UI\Fields\TextField;
 
 use function array_key_last;
 use function call_user_func;

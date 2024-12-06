@@ -12,9 +12,16 @@
 
 namespace Bugo\LightPortal\Actions;
 
-use Bugo\Compat\{Config, Lang, User, Utils};
-use Bugo\LightPortal\Utils\{Avatar, Content, DateTime};
-use Bugo\LightPortal\Utils\{EntityDataTrait, Setting, Str};
+use Bugo\Compat\Config;
+use Bugo\Compat\Lang;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
+use Bugo\LightPortal\Utils\Avatar;
+use Bugo\LightPortal\Utils\Content;
+use Bugo\LightPortal\Utils\DateTime;
+use Bugo\LightPortal\Utils\EntityDataTrait;
+use Bugo\LightPortal\Utils\Setting;
+use Bugo\LightPortal\Utils\Str;
 
 use function array_pop;
 use function date;

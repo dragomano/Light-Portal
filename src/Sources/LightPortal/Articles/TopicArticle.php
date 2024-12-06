@@ -12,13 +12,19 @@
 
 namespace Bugo\LightPortal\Articles;
 
-use Bugo\Compat\{BBCodeParser, Config, Db, Lang, User};
+use Bugo\Compat\BBCodeParser;
+use Bugo\Compat\Config;
+use Bugo\Compat\Db;
+use Bugo\Compat\Lang;
+use Bugo\Compat\User;
 use Bugo\LightPortal\Args\ArticlesArgs;
 use Bugo\LightPortal\Args\ArticlesRowArgs;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Utils\{Avatar, Setting, Str};
+use Bugo\LightPortal\Utils\Avatar;
+use Bugo\LightPortal\Utils\Setting;
+use Bugo\LightPortal\Utils\Str;
 
 use function explode;
 use function implode;
@@ -56,7 +62,7 @@ class TopicArticle extends AbstractArticle
 			'date DESC',
 		];
 
-		EventManager::getInstance()->dispatch(
+		(new EventManagerFactory())()->dispatch(
 			PortalHook::frontTopics,
 			new Event(new ArticlesArgs(
 				$this->columns,
@@ -148,7 +154,7 @@ class TopicArticle extends AbstractArticle
 
 			$this->prepareTeaser($topics, $row);
 
-			EventManager::getInstance()->dispatch(
+			(new EventManagerFactory())()->dispatch(
 				PortalHook::frontTopicsRow,
 				new Event(new ArticlesRowArgs($topics, $row))
 			);

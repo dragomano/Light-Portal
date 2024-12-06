@@ -21,6 +21,6 @@ final class PluginList implements ListInterface
 {
 	public function __invoke(): array
 	{
-		return PluginHandler::getInstance()->getAll();
+		return (new PluginHandler())->getAll();
 	}
 }

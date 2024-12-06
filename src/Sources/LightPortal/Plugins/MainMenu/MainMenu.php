@@ -8,12 +8,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 13.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\MainMenu;
 
-use Bugo\Compat\{Config, User, Utils};
+use Bugo\Compat\Config;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
@@ -40,22 +42,24 @@ class MainMenu extends Plugin
 	{
 		$this->prepareVariables();
 
-		if (! empty(Utils::$context['lp_main_menu_addon_portal_langs'][User::$info['language']])) {
-			$buttons[LP_ACTION]['title'] = Utils::$context['lp_main_menu_addon_portal_langs'][User::$info['language']];
+		if (! empty(Utils::$context['lp_main_menu_portal_langs'][User::$info['language']])) {
+			$buttons[LP_ACTION]['title'] = Utils::$context['lp_main_menu_portal_langs'][User::$info['language']];
 		}
 
-		if (! empty(Utils::$context['lp_main_menu_addon_forum_langs'][User::$info['language']])) {
-			$buttons[empty(Config::$modSettings['lp_standalone_mode']) ? 'home' : 'forum']['title'] = Utils::$context['lp_main_menu_addon_forum_langs'][User::$info['language']];
+		if (! empty(Utils::$context['lp_main_menu_forum_langs'][User::$info['language']])) {
+			$buttons[empty(Config::$modSettings['lp_standalone_mode']) ? 'home' : 'forum']['title']
+				= Utils::$context['lp_main_menu_forum_langs'][User::$info['language']];
 		}
 	}
 
 	public function frontLayouts(): void
 	{
 		if (
-			! empty(Utils::$context['lp_main_menu_addon_portal_langs'][User::$info['language']])
+			! empty(Utils::$context['lp_main_menu_portal_langs'][User::$info['language']])
 			&& ! empty(Utils::$context['linktree'][1])
 		) {
-			Utils::$context['linktree'][1]['name'] = Utils::$context['lp_main_menu_addon_portal_langs'][User::$info['language']];
+			Utils::$context['linktree'][1]['name']
+				= Utils::$context['lp_main_menu_portal_langs'][User::$info['language']];
 		}
 	}
 
@@ -106,11 +110,11 @@ class MainMenu extends Plugin
 
 	private function prepareVariables(): void
 	{
-		Utils::$context['lp_main_menu_addon_portal_langs'] = Utils::jsonDecode(
+		Utils::$context['lp_main_menu_portal_langs'] = Utils::jsonDecode(
 			$this->context['portal_langs'] ?? '', true
 		);
 
-		Utils::$context['lp_main_menu_addon_forum_langs']  = Utils::jsonDecode(
+		Utils::$context['lp_main_menu_forum_langs']  = Utils::jsonDecode(
 			$this->context['forum_langs'] ?? '', true
 		);
 	}

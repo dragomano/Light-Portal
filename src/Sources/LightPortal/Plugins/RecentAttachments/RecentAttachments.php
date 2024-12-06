@@ -8,14 +8,17 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\RecentAttachments;
 
-use Bugo\Compat\{Theme, User};
-use Bugo\LightPortal\Areas\Fields\{NumberField, TextField};
-use Bugo\LightPortal\Plugins\{Block, Event};
+use Bugo\Compat\Theme;
+use Bugo\Compat\User;
+use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\UI\Fields\NumberField;
+use Bugo\LightPortal\UI\Fields\TextField;
 use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
@@ -62,7 +65,7 @@ class RecentAttachments extends Block
 	{
 		$extensions = empty($parameters['extensions']) ? [] : explode(',', (string) $parameters['extensions']);
 
-		return $this->getFromSsi('recentAttachments', $parameters['num_attachments'], $extensions, 'array');
+		return $this->getFromSSI('recentAttachments', $parameters['num_attachments'], $extensions, 'array');
 	}
 
 	public function prepareContent(Event $e): void

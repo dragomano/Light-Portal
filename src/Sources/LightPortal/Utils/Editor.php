@@ -12,7 +12,10 @@
 
 namespace Bugo\LightPortal\Utils;
 
-use Bugo\Compat\{Editor as BaseEditor, Lang, Theme, Utils};
+use Bugo\Compat\Editor as BaseEditor;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Theme;
+use Bugo\Compat\Utils;
 
 use function ob_get_clean;
 use function ob_start;

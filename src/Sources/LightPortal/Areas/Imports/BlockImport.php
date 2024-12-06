@@ -12,8 +12,11 @@
 
 namespace Bugo\LightPortal\Areas\Imports;
 
-use Bugo\Compat\{Config, ErrorHandler};
-use Bugo\Compat\{Lang, Theme, Utils};
+use Bugo\Compat\Config;
+use Bugo\Compat\ErrorHandler;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Theme;
+use Bugo\Compat\Utils;
 
 use function intval;
 use function str_contains;
@@ -58,7 +61,7 @@ final class BlockImport extends AbstractImport
 			return;
 
 		if (! isset($xml->blocks->item[0]['block_id'])) {
-			ErrorHandler::fatalLang('lp_wrong_import_file');
+			ErrorHandler::fatalLang('lp_wrong_import_file', false);
 		}
 
 		$items = $titles = $params = [];

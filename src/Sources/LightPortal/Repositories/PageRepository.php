@@ -12,15 +12,31 @@
 
 namespace Bugo\LightPortal\Repositories;
 
-use Bugo\Compat\{Config, Db, Lang, Logging};
-use Bugo\Compat\{Msg, Security, User, Utils};
+use Bugo\Compat\Config;
+use Bugo\Compat\Db;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Logging;
+use Bugo\Compat\Msg;
+use Bugo\Compat\Security;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Args\ItemArgs;
-use Bugo\LightPortal\Enums\{EntryType, Permission, PortalHook, Status};
-use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\Enums\AlertAction;
+use Bugo\LightPortal\Enums\EntryType;
+use Bugo\LightPortal\Enums\Permission;
+use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Enums\Status;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Utils\{CacheTrait, Content, DateTime};
-use Bugo\LightPortal\Utils\{EntityDataTrait, Icon, Notify};
-use Bugo\LightPortal\Utils\{RequestTrait, Setting, Str};
+use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\Content;
+use Bugo\LightPortal\Utils\DateTime;
+use Bugo\LightPortal\Utils\EntityDataTrait;
+use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\Utils\Notify;
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\Setting;
+use Bugo\LightPortal\Utils\Str;
 
 use function array_filter;
 use function array_merge;
@@ -277,7 +293,7 @@ final class PageRepository extends AbstractRepository
 		if ($items === [])
 			return;
 
-		EventManager::getInstance()->dispatch(PortalHook::onPageRemoving, new Event(new ItemsArgs($items)));
+		(new EventManagerFactory())()->dispatch(PortalHook::onPageRemoving, new Event(new ItemsArgs($items)));
 
 		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_pages
@@ -553,7 +569,7 @@ final class PageRepository extends AbstractRepository
 
 		$data['tags'] = $this->getTags($data['id']);
 
-		EventManager::getInstance()->dispatch(
+		(new EventManagerFactory())()->dispatch(
 			PortalHook::preparePageData,
 			new Event(new class ($data, $isAuthor) {
 				public function __construct(public array &$data, public readonly bool $isAuthor) {}
@@ -600,7 +616,7 @@ final class PageRepository extends AbstractRepository
 			return 0;
 		}
 
-		EventManager::getInstance()->dispatch(PortalHook::onPageSaving, new Event(new ItemArgs($item)));
+		(new EventManagerFactory())()->dispatch(PortalHook::onPageSaving, new Event(new ItemArgs($item)));
 
 		$this->saveTitles($item);
 		$this->saveTags($item);
@@ -621,7 +637,7 @@ final class PageRepository extends AbstractRepository
 		];
 
 		if (empty(Utils::$context['allow_light_portal_manage_pages_any'])) {
-			Notify::send('new_page', 'page_unapproved', $options);
+			Notify::send('new_page', AlertAction::PAGE_UNAPPROVED->name(), $options);
 		}
 
 		return $item;
@@ -653,7 +669,7 @@ final class PageRepository extends AbstractRepository
 			]
 		);
 
-		EventManager::getInstance()->dispatch(PortalHook::onPageSaving, new Event(new ItemArgs($item)));
+		(new EventManagerFactory())()->dispatch(PortalHook::onPageSaving, new Event(new ItemArgs($item)));
 
 		$this->saveTitles($item, 'replace');
 		$this->saveTags($item, 'replace');

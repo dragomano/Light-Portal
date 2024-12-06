@@ -12,9 +12,6 @@
 
 namespace Bugo\LightPortal\Areas\Imports;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
 interface CustomImportInterface
 {
 	public function getAll(int $start, int $limit, string $sort): array;

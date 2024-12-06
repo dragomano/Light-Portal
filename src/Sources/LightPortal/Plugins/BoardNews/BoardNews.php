@@ -8,17 +8,23 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\BoardNews;
 
-use Bugo\Compat\{Config, Lang, Theme, User, Utils};
-use Bugo\LightPortal\Areas\Fields\{NumberField, RangeField};
+use Bugo\Compat\Config;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Theme;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Utils\{MessageIndex, Str};
+use Bugo\LightPortal\UI\Fields\NumberField;
+use Bugo\LightPortal\UI\Fields\RangeField;
+use Bugo\LightPortal\Utils\MessageIndex;
+use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -78,7 +84,7 @@ class BoardNews extends Block
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(
 				self::class,
-				'getFromSsi',
+				'getFromSSI',
 				'boardNews',
 				(int) $parameters['board_id'],
 				(int) $parameters['num_posts'],
@@ -163,7 +169,7 @@ class BoardNews extends Block
 									Utils::$context['session_var'] . '=',
 									Utils::$context['session_id']
 								]),
-								comma_format($count)
+								Lang::numberFormat($count)
 							)
 						)
 					);

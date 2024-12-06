@@ -36,14 +36,14 @@ class Str
 		$data = preg_replace('~\[[^]]+]~', '', $data);
 	}
 
-	public static function getSnakeName(string $value): string
+	public static function getSnakeName(string $name): string
 	{
-		return strtolower((string) preg_replace('/(?<!^)[A-Z]/', '_$0', $value));
+		return strtolower(preg_replace('/(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])/', '_', $name));
 	}
 
-	public static function getCamelName(string $value): string
+	public static function getCamelName(string $name): string
 	{
-		return str_replace(' ', '', ucwords(str_replace('_', ' ', $value)));
+		return str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
 	}
 
 	public static function getTeaser(string $text, int $length = 150): string

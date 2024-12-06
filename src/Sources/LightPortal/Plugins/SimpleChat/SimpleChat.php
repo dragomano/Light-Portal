@@ -8,17 +8,19 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 19.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleChat;
 
-use Bugo\Compat\{Db, Theme, Utils};
-use Bugo\LightPortal\Areas\Fields\CheckboxField;
-use Bugo\LightPortal\Areas\Fields\RadioField;
-use Bugo\LightPortal\Enums\{Hook, Tab};
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
+use Bugo\Compat\Db;
+use Bugo\Compat\Theme;
+use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\Hook;
+use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Plugins\{Block, Event};
+use Bugo\LightPortal\UI\Fields\CheckboxField;
+use Bugo\LightPortal\UI\Fields\RadioField;
 use Bugo\LightPortal\Utils\Avatar;
 
 use function array_combine;
@@ -118,12 +120,10 @@ class SimpleChat extends Block
 		Theme::loadCSSFile('admin.css');
 		Theme::loadJavaScriptFile('light_portal/bundle.min.js', ['defer' => true]);
 
-		$parameters = $e->args->parameters;
+		[$id, $parameters] = [$e->args->id, $e->args->parameters];
 
 		$parameters['show_avatars'] ??= $this->params['show_avatars'];
 		$parameters['form_position'] ??= $this->params['form_position'];
-
-		$id = $e->args->id;
 
 		$messages = $this->cache($this->name . '_addon_b' . $id)
 			->setLifeTime($e->args->cacheTime)

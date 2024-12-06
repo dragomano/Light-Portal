@@ -8,16 +8,22 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\TopPages;
 
-use Bugo\Compat\{Db, Lang, User};
-use Bugo\LightPortal\Areas\Fields\{CheckboxField, NumberField, RadioField};
+use Bugo\Compat\Db;
+use Bugo\Compat\Lang;
+use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\Permission;
-use Bugo\LightPortal\Plugins\{Block, Event};
-use Bugo\LightPortal\Utils\{Setting, Str};
+use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\UI\Fields\CheckboxField;
+use Bugo\LightPortal\UI\Fields\NumberField;
+use Bugo\LightPortal\UI\Fields\RadioField;
+use Bugo\LightPortal\Utils\Setting;
+use Bugo\LightPortal\Utils\Str;
 
 use function array_combine;
 use function array_key_first;

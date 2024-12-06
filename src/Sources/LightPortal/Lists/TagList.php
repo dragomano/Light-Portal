@@ -14,7 +14,9 @@
 
 namespace Bugo\LightPortal\Lists;
 
-use Bugo\Compat\{Config, Db, User};
+use Bugo\Compat\Config;
+use Bugo\Compat\Db;
+use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\Status;
 
 if (! defined('SMF'))

@@ -17,7 +17,7 @@ function template_wrong_template(): void
 
 function template_layout(): void
 {
-	echo Utils::$context['lp_layout'] ?? '';
+	echo Utils::$context['lp_layout_content'] ?? '';
 
 	echo '
 	<script>window.lazyLoadOptions = {};</script>

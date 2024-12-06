@@ -38,7 +38,7 @@ class Avatar
 			try {
 				User::loadMemberContext($userId, true);
 			} catch (Exception $e) {
-				ErrorHandler::log('[LP] getUserAvatar helper: ' . $e->getMessage());
+				ErrorHandler::log('[LP] getUserAvatar helper: ' . $e->getMessage(), 'user');
 			}
 		}
 

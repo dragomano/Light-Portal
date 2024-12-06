@@ -12,20 +12,42 @@
 
 namespace Bugo\LightPortal\Areas;
 
-use Bugo\Compat\{Config, ErrorHandler, Lang, Security, Theme, Utils};
-use Bugo\LightPortal\Areas\Fields\{CheckboxField, CustomField, TextareaField, TextField, UrlField};
-use Bugo\LightPortal\Areas\Partials\{AreaSelect, ContentClassSelect, IconSelect};
-use Bugo\LightPortal\Areas\Partials\{PermissionSelect, PlacementSelect, TitleClassSelect};
+use Bugo\Compat\Config;
+use Bugo\Compat\ErrorHandler;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Security;
+use Bugo\Compat\Theme;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Areas\Validators\BlockValidator;
-use Bugo\LightPortal\Args\{ObjectArgs, OptionsTypeArgs, ParamsArgs};
-use Bugo\LightPortal\Enums\{ContentType, PortalHook, Tab};
-use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\Args\ObjectArgs;
+use Bugo\LightPortal\Args\OptionsTypeArgs;
+use Bugo\LightPortal\Args\ParamsArgs;
+use Bugo\LightPortal\Enums\ContentType;
+use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Models\BlockModel;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Repositories\BlockRepository;
-use Bugo\LightPortal\Utils\{CacheTrait, Content, Icon, Language};
-use Bugo\LightPortal\Utils\{RequestTrait, Setting, Str};
+use Bugo\LightPortal\UI\Fields\CheckboxField;
+use Bugo\LightPortal\UI\Fields\CustomField;
+use Bugo\LightPortal\UI\Fields\TextareaField;
+use Bugo\LightPortal\UI\Fields\TextField;
+use Bugo\LightPortal\UI\Fields\UrlField;
+use Bugo\LightPortal\UI\Partials\AreaSelect;
+use Bugo\LightPortal\UI\Partials\ContentClassSelect;
+use Bugo\LightPortal\UI\Partials\IconSelect;
+use Bugo\LightPortal\UI\Partials\PermissionSelect;
+use Bugo\LightPortal\UI\Partials\PlacementSelect;
+use Bugo\LightPortal\UI\Partials\TitleClassSelect;
+use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\Content;
+use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\Utils\Language;
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\Setting;
+use Bugo\LightPortal\Utils\Str;
 
 use function array_column;
 use function array_combine;
@@ -139,7 +161,7 @@ final class BlockArea
 		Utils::$context['current_block'] = $this->repository->getData($item);
 
 		if (empty(Utils::$context['current_block'])) {
-			ErrorHandler::fatalLang('lp_block_not_found', status: 404);
+			ErrorHandler::fatalLang('lp_block_not_found', false, status: 404);
 		}
 
 		if ($this->request()->has('remove')) {
@@ -217,7 +239,7 @@ final class BlockArea
 
 		$params = [];
 
-		EventManager::getInstance()->dispatch(
+		(new EventManagerFactory())()->dispatch(
 			PortalHook::prepareBlockParams,
 			new Event(new ParamsArgs($params, Utils::$context['current_block']['type']))
 		);
@@ -336,7 +358,7 @@ final class BlockArea
 
 		Utils::$context['lp_block_tab_appearance'] = true;
 
-		EventManager::getInstance()->dispatch(
+		(new EventManagerFactory())()->dispatch(
 			PortalHook::prepareBlockFields,
 			new Event(new OptionsTypeArgs(Utils::$context['lp_block']['options'], Utils::$context['current_block']['type']))
 		);
@@ -371,7 +393,7 @@ final class BlockArea
 
 	private function prepareEditor(): void
 	{
-		EventManager::getInstance()->dispatch(
+		(new EventManagerFactory())()->dispatch(
 			PortalHook::prepareEditor,
 			new Event(new ObjectArgs(Utils::$context['lp_block']))
 		);

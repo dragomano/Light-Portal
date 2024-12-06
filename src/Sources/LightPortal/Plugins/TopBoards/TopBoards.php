@@ -8,16 +8,18 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\TopBoards;
 
-use Bugo\Compat\{Lang, User};
-use Bugo\LightPortal\Areas\Fields\CheckboxField;
-use Bugo\LightPortal\Areas\Fields\NumberField;
-use Bugo\LightPortal\Areas\Fields\RadioField;
-use Bugo\LightPortal\Plugins\{Block, Event};
+use Bugo\Compat\Lang;
+use Bugo\Compat\User;
+use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\UI\Fields\CheckboxField;
+use Bugo\LightPortal\UI\Fields\NumberField;
+use Bugo\LightPortal\UI\Fields\RadioField;
 use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
@@ -70,7 +72,7 @@ class TopBoards extends Block
 
 		$topBoards = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
 			->setLifeTime($e->args->cacheTime)
-			->setFallback(self::class, 'getFromSsi', 'topBoards', (int) $parameters['num_boards'], 'array');
+			->setFallback(self::class, 'getFromSSI', 'topBoards', (int) $parameters['num_boards'], 'array');
 
 		if (empty($topBoards))
 			return;

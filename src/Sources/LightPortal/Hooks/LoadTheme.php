@@ -12,13 +12,20 @@
 
 namespace Bugo\LightPortal\Hooks;
 
-use Bugo\Compat\{Config, Lang, Theme};
-use Bugo\Compat\{User, Utils};
+use Bugo\Compat\Config;
+use Bugo\Compat\Lang;
+use Bugo\Compat\Theme;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Compilers\CompilerInterface;
-use Bugo\LightPortal\Enums\{ContentClass, ContentType, EntryType};
-use Bugo\LightPortal\Enums\{Placement, PluginType, PortalHook, TitleClass};
-use Bugo\LightPortal\EventManager;
-use Bugo\LightPortal\Plugins\PluginHandler;
+use Bugo\LightPortal\Enums\ContentClass;
+use Bugo\LightPortal\Enums\ContentType;
+use Bugo\LightPortal\Enums\EntryType;
+use Bugo\LightPortal\Enums\Placement;
+use Bugo\LightPortal\Enums\PluginType;
+use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Enums\TitleClass;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Repositories\BlockRepository;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionManager;
@@ -39,7 +46,7 @@ class LoadTheme
 
 	public function __construct()
 	{
-		$this->config = require_once dirname(__DIR__) . '/Settings/config.php';
+		$this->config = require dirname(__DIR__) . '/Settings/config.php';
 	}
 
 	public function __invoke(): void
@@ -53,10 +60,8 @@ class LoadTheme
 
 		$this->loadAssets(new $this->config[CompilerInterface::class]);
 
-		PluginHandler::getInstance();
-
 		// Run all init methods for active plugins
-		EventManager::getInstance()->dispatch(PortalHook::init);
+		(new EventManagerFactory())()->dispatch(PortalHook::init);
 	}
 
 	protected function defineVars(): void

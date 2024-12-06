@@ -8,18 +8,28 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 20.11.24
+ * @version 03.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\BlogMode;
 
-use Bugo\Compat\{Config, Lang, User, Utils};
+use Bugo\Bricks\Presenters\TablePresenter;
+use Bugo\Bricks\Tables\Column;
+use Bugo\Bricks\Tables\IdColumn;
+use Bugo\Compat\Config;
+use Bugo\Compat\Lang;
+use Bugo\Compat\User;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Configs\BasicConfig;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Repositories\PageRepository;
-use Bugo\LightPortal\Utils\{Icon, ItemList, Str};
+use Bugo\LightPortal\UI\Tables\NumViewsColumn;
+use Bugo\LightPortal\UI\Tables\DateColumn;
+use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
+use Bugo\LightPortal\UI\Tables\TitleColumn;
+use Bugo\LightPortal\Utils\Str;
 
 use function array_column;
 use function array_keys;
@@ -210,97 +220,35 @@ class BlogMode extends Plugin
 			['current_user' => $memID, 'entry_type' => BlogArticle::TYPE],
 		];
 
-		$listOptions = [
-			'id' => 'user_blogs',
-			'items_per_page' => 30,
-			'title' => $this->txt['entries'],
-			'no_items_label' => Lang::$txt['lp_no_items'],
-			'base_href' => Config::$scripturl . '?action=profile;area=blogs;u=' . Utils::$context['current_member'],
-			'default_sort_col' => 'date',
-			'get_items' => [
-				'function' => $repository->getAll(...),
-				'params'   => $params,
-			],
-			'get_count' => [
-				'function' => $repository->getTotalCount(...),
-				'params'   => $params,
-			],
-			'columns' => [
-				'id' => [
-					'header' => [
-						'value' => '#',
-						'style' => 'width: 5%',
-					],
-					'data' => [
-						'db' => 'id',
-						'class' => 'centertext',
-					],
-					'sort' => [
-						'default' => 'p.page_id',
-						'reverse' => 'p.page_id DESC',
-					],
-				],
-				'date' => [
-					'header' => [
-						'value' => Lang::$txt['date'],
-					],
-					'data' => [
-						'db' => 'created_at',
-						'class' => 'centertext',
-					],
-					'sort' => [
-						'default' => 'date DESC',
-						'reverse' => 'date',
-					],
-				],
-				'num_views' => [
-					'header' => [
-						'value' => Icon::get('views', Lang::$txt['lp_views'])
-					],
-					'data' => [
-						'db' => 'num_views',
-						'class' => 'centertext',
-					],
-					'sort' => [
-						'default' => 'p.num_views DESC',
-						'reverse' => 'p.num_views',
-					],
-				],
-				'title' => [
-					'header' => [
-						'value' => Lang::$txt['lp_title'],
-					],
-					'data' => [
-						'function' => static fn($entry) => Str::html('a', ['class' => 'bbc_link'])
-							->href(LP_PAGE_URL . $entry['slug'])
-							->setText($entry['title']),
-						'class' => 'word_break',
-					],
-					'sort' => [
-						'default' => 't.value DESC',
-						'reverse' => 't.value',
-					],
-				],
-			],
-		];
+		$builder = PortalTableBuilder::make('user_blogs', $this->txt['entries'])
+			->withParams(
+				30,
+				action: Config::$scripturl . '?action=profile;area=blogs;u=' . Utils::$context['current_member'],
+				defaultSortColumn: 'date'
+			)
+			->setItems($repository->getAll(...), $params)
+			->setCount($repository->getTotalCount(...), $params)
+			->addColumns([
+				IdColumn::make()->setSort('p.page_id'),
+				DateColumn::make(),
+				NumViewsColumn::make(),
+				TitleColumn::make()
+					->setData(static fn($entry) => Str::html('a', ['class' => 'bbc_link'])
+						->href(LP_PAGE_URL . $entry['slug'])
+						->setText($entry['title']), 'word_break'
+					),
+			]);
 
-		if (Utils::$context['user']['is_owner']) {
-			$listOptions['columns']['actions'] = [
-				'header' => [
-					'value' => Lang::$txt['lp_actions'],
-					'style' => 'width: 8%',
-				],
-				'data' => [
-					'function' => static fn($entry) => Str::html('a', ['class' => 'button'])
-						->title(Lang::$txt['modify'])
-						->href(Config::$scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'])
-						->setHtml(Str::html('span', ['class' => 'main_icons modify_button'])),
-					'class' => 'centertext',
-				],
-			];
-		}
+		Utils::$context['user']['is_owner'] && $builder->addColumn(
+			Column::make('actions', Lang::$txt['lp_actions'])
+				->setStyle('width: 8%')
+				->setData(static fn($entry) => Str::html('a', ['class' => 'button'])
+					->title(Lang::$txt['modify'])
+					->href(Config::$scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $entry['id'])
+					->setHtml(Str::html('span', ['class' => 'main_icons modify_button'])), 'centertext'),
+		);
 
-		new ItemList($listOptions);
+		TablePresenter::show($builder);
 	}
 
 	public function profilePopup(array &$items): void
