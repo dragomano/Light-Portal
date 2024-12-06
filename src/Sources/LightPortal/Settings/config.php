@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use Bugo\LightPortal\ConfigProvider;
 use Laminas\ConfigAggregator\ConfigAggregator;
 use Laminas\ConfigAggregator\PhpFileProvider;
 
@@ -9,8 +8,6 @@ $cacheConfig = [
 ];
 
 $aggregator = new ConfigAggregator([
-	ConfigProvider::class,
-
 	new PhpFileProvider(realpath(__DIR__) . '/autoload/{{,*.}global,{,*.}local}.php'),
 
 	new PhpFileProvider(realpath(__DIR__) . '/development.config.php'),
