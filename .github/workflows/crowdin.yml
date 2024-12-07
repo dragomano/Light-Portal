@@ -9,7 +9,7 @@ on:
       - master
     paths:
       - 'src/Themes/default/languages/**'
-      - 'src/Sources/LightPortal/Addons/**'
+      - 'src/Sources/LightPortal/Plugins/**'
       - 'docs/.vitepress/locales/**'
       - 'docs/src/**'
 
