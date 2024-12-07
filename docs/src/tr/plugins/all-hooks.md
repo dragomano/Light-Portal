@@ -347,12 +347,22 @@ public function frontModes(Event $e): void
 
 > Ana sayfada özel mantık ekleme
 
-### customLayoutExtensions
+```php
+public function frontLayouts(Event $e): void
+{
+    if (! str_contains($e->args->layout, $this->extension))
+        return;
+
+    $e->args->renderer = new LatteRenderer();
+}
+```
+
+### layoutExtensions
 
 > Özel düzen uzantıları ekleyelim
 
 ```php
-public function customLayoutExtensions(Event $e): void
+public function layoutExtensions(Event $e): void
 {
     $e->args->extensions[] = '.twig';
 }

@@ -347,12 +347,22 @@ public function frontModes(Event $e): void
 
 > إضافة منطق مخصص في الصفحة الأمامية
 
-### customLayoutExtensions
+```php
+public function frontLayouts(Event $e): void
+{
+    if (! str_contains($e->args->layout, $this->extension))
+        return;
+
+    $e->args->renderer = new LatteRenderer();
+}
+```
+
+### layoutExtensions
 
 > يتيح إضافة ملحقات تخطيط مخصصة
 
 ```php
-public function customLayoutExtensions(Event $e): void
+public function layoutExtensions(Event $e): void
 {
     $e->args->extensions[] = '.twig';
 }

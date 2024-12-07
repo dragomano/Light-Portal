@@ -122,7 +122,7 @@ Jeśli wtyczka musi pobrać jakiekolwiek dane za pomocą funkcji SSI, użyj wbud
 <?php
 
 // See ssi_topTopics function in the SSI.php file
-$data = $this->getFromSsi('topTopics', 'views', 10, 'array');
+$data = $this->getFromSSI('topTopics', 'views', 10, 'array');
 ```
 
 ## Używanie kompozytora
