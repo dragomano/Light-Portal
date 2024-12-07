@@ -121,8 +121,8 @@ class HelloWorld extends Plugin
 ```php
 <?php
 
-// См. функцию ssi_topTopics в файле SSI.php
-$data = $this->getFromSsi('topTopics', 'views', 10, 'array');
+// See ssi_topTopics function in the SSI.php file
+$data = $this->getFromSSI('topTopics', 'views', 10, 'array');
 ```
 
 ## Использование Composer

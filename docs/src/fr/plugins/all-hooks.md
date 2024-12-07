@@ -347,12 +347,22 @@ public function frontModes(Event $e): void
 
 > ajout d'une logique personnalisée sur la page d'accueil
 
-### customLayoutExtensions
+```php
+public function frontLayouts(Event $e): void
+{
+    if (! str_contains($e->args->layout, $this->extension))
+        return;
+
+    $e->args->renderer = new LatteRenderer();
+}
+```
+
+### layoutExtensions
 
 > permet d'ajouter des extensions de mise en page personnalisée
 
 ```php
-public function customLayoutExtensions(Event $e): void
+public function layoutExtensions(Event $e): void
 {
     $e->args->extensions[] = '.twig';
 }

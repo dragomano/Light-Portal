@@ -122,7 +122,7 @@ Se il plugin deve recuperare dati utilizzando le funzioni SSI, utilizzare il met
 <?php
 
 // See ssi_topTopics function in the SSI.php file
-$data = $this->getFromSsi('topTopics', 'views', 10, 'array');
+$data = $this->getFromSSI('topTopics', 'views', 10, 'array');
 ```
 
 ## uso di Composer

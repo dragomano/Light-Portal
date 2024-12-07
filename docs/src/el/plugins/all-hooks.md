@@ -347,12 +347,22 @@ public function frontModes(Event $e): void
 
 > προσθέτοντας προσαρμοσμένες λειτουργίες για την πρώτη σελίδα
 
-### customLayoutExtensions
+```php
+public function frontLayouts(Event $e): void
+{
+    if (! str_contains($e->args->layout, $this->extension))
+        return;
+
+    $e->args->renderer = new LatteRenderer();
+}
+```
+
+### layoutExtensions
 
 > ας προσθέσουμε επεκτάσεις προσαρμοσμένης διάταξης
 
 ```php
-public function customLayoutExtensions(Event $e): void
+public function layoutExtensions(Event $e): void
 {
     $e->args->extensions[] = '.twig';
 }

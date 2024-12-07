@@ -347,12 +347,22 @@ public function frontModes(Event $e): void
 
 > dodawanie niestandardowej logiki na stronie głównej
 
-### customLayoutExtensions
+```php
+public function frontLayouts(Event $e): void
+{
+    if (! str_contains($e->args->layout, $this->extension))
+        return;
+
+    $e->args->renderer = new LatteRenderer();
+}
+```
+
+### layoutExtensions
 
 > pozwala na dodawanie własnych rozszerzeń układu
 
 ```php
-public function customLayoutExtensions(Event $e): void
+public function layoutExtensions(Event $e): void
 {
     $e->args->extensions[] = '.twig';
 }
