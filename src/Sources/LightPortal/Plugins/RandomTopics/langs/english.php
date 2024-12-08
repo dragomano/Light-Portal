@@ -8,5 +8,6 @@ return [
 	'include_boards' => 'Include boards',
 	'include_boards_select' => 'Topics will be displayed ONLY from the selected boards.',
 	'num_topics' => 'Number of topics to display',
+	'show_num_views' => 'Show number of views',
 	'none' => 'There are no random topics',
 ];
