@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 08.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\RandomPages;
@@ -23,6 +23,7 @@ use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Partials\CategorySelect;
@@ -39,17 +40,20 @@ class RandomPages extends Block
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
-			'no_content_class' => true,
-			'categories'       => '',
-			'num_pages'        => 10,
+			'exclude_categories' => '',
+			'include_categories' => '',
+			'num_pages'          => 10,
+			'show_num_views'   => false,
 		];
 	}
 
 	public function validateBlockParams(Event $e): void
 	{
 		$e->args->params = [
-			'categories' => FILTER_DEFAULT,
-			'num_pages'  => FILTER_VALIDATE_INT,
+			'exclude_categories' => FILTER_DEFAULT,
+			'include_categories' => FILTER_DEFAULT,
+			'num_pages'          => FILTER_VALIDATE_INT,
+			'show_num_views'     => FILTER_VALIDATE_BOOLEAN,
 		];
 	}
 
@@ -57,22 +61,34 @@ class RandomPages extends Block
 	{
 		$options = $e->args->options;
 
-		CustomField::make('categories', Lang::$txt['lp_categories'])
+		CustomField::make('exclude_categories', $this->txt['exclude_categories'])
 			->setTab(Tab::CONTENT)
 			->setValue(static fn() => new CategorySelect(), [
-				'id'    => 'categories',
-				'hint'  => $this->txt['categories_select'],
-				'value' => $options['categories'] ?? '',
+				'id'    => 'exclude_categories',
+				'hint'  => $this->txt['exclude_categories_select'],
+				'value' => $options['exclude_categories'] ?? '',
+			]);
+
+		CustomField::make('include_categories', $this->txt['include_categories'])
+			->setTab(Tab::CONTENT)
+			->setValue(static fn() => new CategorySelect(), [
+				'id'    => 'include_categories',
+				'hint'  => $this->txt['include_categories_select'],
+				'value' => $options['include_categories'] ?? '',
 			]);
 
 		NumberField::make('num_pages', $this->txt['num_pages'])
 			->setAttribute('min', 1)
 			->setValue($options['num_pages']);
+
+		CheckboxField::make('show_num_views', $this->txt['show_num_views'])
+			->setValue($options['show_num_views']);
 	}
 
 	public function getData(array $parameters): array
 	{
-		$categories = empty($parameters['categories']) ? null : explode(',', (string) $parameters['categories']);
+		$excludeCategories = empty($parameters['exclude_categories']) ? null : explode(',', (string) $parameters['exclude_categories']);
+		$includeCategories = empty($parameters['include_categories']) ? null : explode(',', (string) $parameters['include_categories']);
 		$pagesCount = empty($parameters['num_pages']) ? 0 : (int) $parameters['num_pages'];
 
 		if (empty($pagesCount))
@@ -90,7 +106,8 @@ class RandomPages extends Block
 								AND p.entry_type = {string:entry_type}
 								AND p.deleted_at = 0
 								AND p.created_at <= {int:current_time}
-								AND p.permissions IN ({array_int:permissions})' . (empty($categories) ? '' : '
+								AND p.permissions IN ({array_int:permissions})' . (empty($excludeCategories) ? '' : '
+								AND p.category_id NOT IN ({array_int:exclude_categories})') . (empty($includeCategories) ? '' : '
 								AND p.category_id IN ({array_int:categories})') . '
 							ORDER BY p.page_id DESC
 							LIMIT 1 OFFSET {int:limit} - 1
@@ -100,8 +117,9 @@ class RandomPages extends Block
 							AND p.entry_type = {string:entry_type}
 							AND p.deleted_at = 0
 							AND p.created_at <= {int:current_time}
-							AND p.permissions IN ({array_int:permissions})' . (empty($categories) ? '' : '
-							AND p.category_id IN ({array_int:categories})') . '
+							AND p.permissions IN ({array_int:permissions})' . (empty($excludeCategories) ? '' : '
+							AND p.category_id NOT IN ({array_int:exclude_categories})') . (empty($includeCategories) ? '' : '
+							AND p.category_id IN ({array_int:include_categories})') . '
 					)
 					(
 						SELECT p.page_id, min, max, array[]::integer[] || p.page_id AS a, 0 AS n
@@ -111,8 +129,9 @@ class RandomPages extends Block
 							AND p.deleted_at = 0
 							AND p.created_at <= {int:current_time}
 							AND p.permissions IN ({array_int:permissions})
-							AND p.page_id >= min + ((max - min) * random())::int' . (empty($categories) ? '' : '
-							AND p.category_id IN ({array_int:categories})') . '
+							AND p.page_id >= min + ((max - min) * random())::int' . (empty($excludeCategories) ? '' : '
+							AND p.category_id NOT IN ({array_int:exclude_categories})') . (empty($includeCategories) ? '' : '
+							AND p.category_id IN ({array_int:include_categories})') . '
 						LIMIT 1
 					) UNION ALL (
 						SELECT p.page_id, min, max, a || p.page_id, r.n + 1 AS n
@@ -123,7 +142,7 @@ class RandomPages extends Block
 							AND p.created_at <= {int:current_time}
 							AND p.permissions IN ({array_int:permissions})
 							AND p.page_id >= min + ((max - min) * random())::int
-							AND p.page_id <> all(a)' . (empty($categories) ? '' : '
+							AND p.page_id <> all(a)' . (empty($includeCategories) ? '' : '
 							AND p.category_id IN ({array_int:categories})') . '
 							AND r.n + 1 < {int:limit}
 						LIMIT 1
@@ -133,18 +152,20 @@ class RandomPages extends Block
 				FROM {db_prefix}lp_pages AS p, r
 				WHERE r.page_id = p.page_id',
 				[
-					'status'       => Status::ACTIVE->value,
-					'entry_type'   => EntryType::DEFAULT->name(),
-					'current_time' => time(),
-					'permissions'  => Permission::all(),
-					'categories'   => $categories,
-					'limit'        => $pagesCount,
+					'status'             => Status::ACTIVE->value,
+					'entry_type'         => EntryType::DEFAULT->name(),
+					'current_time'       => time(),
+					'permissions'        => Permission::all(),
+					'exclude_categories' => $excludeCategories,
+					'include_categories' => $includeCategories,
+					'limit'              => $pagesCount,
 				]
 			);
 
 			$pageIds = [];
-			while ($row = Db::$db->fetch_assoc($result))
+			while ($row = Db::$db->fetch_assoc($result)) {
 				$pageIds[] = $row['page_id'];
+			}
 
 			Db::$db->free_result($result);
 
@@ -174,18 +195,20 @@ class RandomPages extends Block
 					AND p.entry_type = {string:entry_type}
 					AND p.deleted_at = 0
 					AND p.created_at <= {int:current_time}
-					AND p.permissions IN ({array_int:permissions})' . (empty($categories) ? '' : '
-					AND p.category_id IN ({array_int:categories})') . '
+					AND p.permissions IN ({array_int:permissions})' . (empty($excludeCategories) ? '' : '
+					AND p.category_id NOT IN ({array_int:exclude_categories})') . (empty($includeCategories) ? '' : '
+					AND p.category_id IN ({array_int:include_categories})') . '
 				ORDER BY RAND()
 				LIMIT {int:limit}',
 				[
-					'guest'        => Lang::$txt['guest_title'],
-					'status'       => Status::ACTIVE->value,
-					'entry_type'   => EntryType::DEFAULT->name(),
-					'current_time' => time(),
-					'permissions'  => Permission::all(),
-					'categories'   => $categories,
-					'limit'        => $pagesCount,
+					'guest'              => Lang::$txt['guest_title'],
+					'status'             => Status::ACTIVE->value,
+					'entry_type'         => EntryType::DEFAULT->name(),
+					'current_time'       => time(),
+					'permissions'        => Permission::all(),
+					'exclude_categories' => $excludeCategories,
+					'include_categories' => $includeCategories,
+					'limit'              => $pagesCount,
 				]
 			);
 		}
@@ -211,6 +234,7 @@ class RandomPages extends Block
 	public function prepareContent(Event $e): void
 	{
 		$parameters = $e->args->parameters;
+		$parameters['show_num_views'] ??= false;
 
 		$randomPages = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
 			->setLifeTime($e->args->cacheTime)
@@ -219,26 +243,29 @@ class RandomPages extends Block
 		if ($randomPages) {
 			$ul = Str::html('ul', ['class' => $this->name . ' noup']);
 
+			$i = 0;
 			foreach ($randomPages as $page) {
 				if (empty($title = Str::getTranslatedTitle($page['title'])))
 					continue;
 
-				$li = Str::html('li', ['class' => 'windowbg']);
-				$link = Str::html('a', $title)
-					->href(Config::$scripturl . '?' . LP_PAGE_PARAM . '=' . $page['slug']);
-
+				$li = Str::html('li', ['class' => 'generic_list_wrapper bg ' . ($i % 2 === 0 ? 'odd' : 'even')]);
+				$link = Str::html('a', $title)->href(Config::$scripturl . '?' . LP_PAGE_PARAM . '=' . $page['slug']);
 				$author = empty($page['author_id'])
 					? $page['author_name']
 					: Str::html('a', $page['author_name'])
 						->href(Config::$scripturl . '?action=profile;u=' . $page['author_id']);
 
-				$li->addHtml($link)
+				$li
+					->addHtml($link)
 					->addText(' ' . Lang::$txt['by'] . ' ')
 					->addHtml($author)
-					->addHtml(', ' . DateTime::relative($page['created_at']) . ' (')
-					->addText(Lang::getTxt('lp_views_set', ['views' => $page['num_views']]) . ')');
+					->addHtml(', ' . DateTime::relative($page['created_at']));
+
+				$parameters['show_num_views'] && $li
+					->addText(' (' . Lang::getTxt('lp_views_set', ['views' => $page['num_views']]) . ')');
 
 				$ul->addHtml($li);
+				$i++;
 			}
 
 			echo $ul;
