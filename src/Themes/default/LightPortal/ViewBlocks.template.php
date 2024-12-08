@@ -1,160 +1,175 @@
-<?php
+<?php declare(strict_types=1);
 
-use Bugo\Compat\{Config, Utils};
-use Bugo\LightPortal\Utils\{Icon, Setting};
+use Bugo\Compat\Config;
+use Bugo\Compat\Utils;
+use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\Utils\Setting;
 
+/**
+ * @layer lp_portal
+ * @see Utils::$context['template_layers']
+ */
 function template_lp_portal_above(): void
 {
 	echo '
 	<div id="lp_layout"', empty(Config::$modSettings['lp_swap_header_footer']) ? '' : ' class="column reverse"', '>';
 
-	// Header | Шапка
-	if (! empty(Utils::$context['lp_blocks']['header'])) {
-		echo '
-		<div class="row between-xs">
-			<div class="col-xs-', Setting::getHeaderPanelWidth(), '">';
-
-		lp_show_blocks('header');
-
-		echo '
-			</div>
-		</div>';
-	}
+	render_blocks_within('header');
 
 	echo '
 		<div class="row', Setting::isSwapLeftRight() ? ' reverse' : '', '">';
 
-	// Left Side | Левая панель
-	if (! empty(Utils::$context['lp_blocks']['left'])) {
-		echo '
-			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-', Setting::getLeftPanelWidth()['lg'], ' col-xl-', Setting::getLeftPanelWidth()['xl'], '">
-				<div', empty(Config::$modSettings['lp_left_panel_sticky']) ? '' : ' class="sticky_sidebar"', '>';
+	render_blocks_within('left');
 
-		lp_show_blocks('left');
-
-		echo '
-				</div>
-			</div>';
-	}
-
-	$lg = 12 - ((empty(Utils::$context['lp_blocks']['left']) ? 0 : Setting::getLeftPanelWidth()['lg']) + (empty(Utils::$context['lp_blocks']['right']) ? 0 : Setting::getRightPanelWidth()['lg']));
-	$xl = 12 - ((empty(Utils::$context['lp_blocks']['left']) ? 0 : Setting::getLeftPanelWidth()['xl']) + (empty(Utils::$context['lp_blocks']['right']) ? 0 : Setting::getRightPanelWidth()['xl']));
+	$hasBlocks = ! (empty(Utils::$context['lp_blocks']['left']) && empty(Utils::$context['lp_blocks']['right']));
+	$lg = calculate_column_width('lg');
+	$xl = calculate_column_width('xl');
+	$classes = $hasBlocks ? '-12 col-sm-12 col-md-12 col-lg-' . $lg . ' col-xl-' . $xl : '';
 
 	echo '
-			<div class="col-xs', ! empty(Utils::$context['lp_blocks']['left']) || ! empty(Utils::$context['lp_blocks']['right']) ? ('-12 col-sm-12 col-md-12 col-lg-' . $lg . ' col-xl-' . $xl) : '', '">
+			<div class="col-xs', $classes, '">
 				<div', empty(Config::$modSettings['lp_swap_top_bottom']) ? '' : ' class="column reverse"', '>';
 
-	// Center (top) | Центр (верх)
-	if (! empty(Utils::$context['lp_blocks']['top'])) {
-		echo '
+	render_blocks_within('top');
 
-				<div class="row">
-					<div class="col-xs-12 col-sm">';
-
-		lp_show_blocks('top');
-
-		echo '
-					</div>
-				</div>';
-	}
-
-	echo '
+	echo /** @lang text */ '
 				<div class="row">
 					<div class="col-xs noup">';
 }
 
+/**
+ * @layer lp_portal
+ * @see Utils::$context['template_layers']
+ */
 function template_lp_portal_below(): void
 {
-	echo '
+	echo /** @lang text */ '
 					</div>
 				</div>';
 
-	// Center (bottom) | Центр (низ)
-	if (! empty(Utils::$context['lp_blocks']['bottom'])) {
-		echo '
-				<div class="row">
-					<div class="col-xs-12 col-sm">';
+	render_blocks_within('bottom');
 
-		lp_show_blocks('bottom');
-
-		echo '
-					</div>
-				</div>';
-	}
-
-	echo '
+	echo /** @lang text */ '
 				</div>
 			</div>';
 
-	// Right Side | Правая панель
-	if (! empty(Utils::$context['lp_blocks']['right'])) {
-		echo '
-			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-', Setting::getRightPanelWidth()['lg'], ' col-xl-', Setting::getRightPanelWidth()['xl'], '">
-				<div', empty(Config::$modSettings['lp_right_panel_sticky']) ? '' : ' class="sticky_sidebar"', '>';
+	render_blocks_within('right');
 
-		lp_show_blocks('right');
-
-		echo '
-				</div>
-			</div>';
-	}
-
-	echo '
+	echo /** @lang text */ '
 		</div>';
 
-	// Footer | Подвал
-	if (! empty(Utils::$context['lp_blocks']['footer'])) {
-		echo '
-		<div class="row between-xs">
-			<div class="col-xs-', Setting::getFooterPanelWidth(), '">';
+	render_blocks_within('footer');
 
-		lp_show_blocks('footer');
-
-		echo '
-			</div>
-		</div>';
-	}
-
-	echo '
+	echo /** @lang text */ '
 	</div>';
 }
 
-function lp_show_blocks(string $placement = ''): void
+function render_blocks_within(string $panel): void
 {
-	if (empty($placement) || empty(Utils::$context['lp_blocks'][$placement]))
+	if (empty(Utils::$context['lp_blocks'][$panel]))
 		return;
 
-	if (! empty(Setting::getPanelDirection()[$placement])) {
-		echo '
-		<div class="row">';
-	}
+	switch ($panel) {
+		case 'header':
+		case 'footer':
+			$panelWidthMethod = 'get' . ucfirst($panel) . 'PanelWidth';
+			$panelWidth = Setting::$panelWidthMethod();
 
-	foreach (Utils::$context['lp_blocks'][$placement] as $block) {
-		$class = 'block_' . $block['type'] . (empty(Setting::getPanelDirection()[$placement]) ? '' : ' col-xs-12 col-sm') . (empty($block['custom_class']) ? '' : (' ' . $block['custom_class']));
+			echo /** @lang text */ '
+				<div class="row between-xs">
+					<div class="col-xs-' . $panelWidth . '" data-panel="' . $panel . '">';
+
+			lp_show_blocks($panel);
+
+			echo /** @lang text */ '
+					</div>
+				</div>';
+			break;
+
+		case 'left':
+		case 'right':
+			$lg = Setting::getLeftPanelWidth()['lg'];
+			$xl = Setting::getLeftPanelWidth()['xl'];
+			$class = empty(Config::$modSettings['lp_' . $panel . '_panel_sticky']) ? '' : ' class="sticky_sidebar"';
+
+			echo '
+				<div class="col-md-12 col-lg-' . $lg . ' col-xl-' . $xl . '">
+					<div' . $class . ' data-panel="' . $panel . '">';
+
+			lp_show_blocks($panel);
+
+			echo /** @lang text */ '
+					</div>
+				</div>';
+			break;
+
+		case 'top':
+		case 'bottom':
+			echo /** @lang text */ '
+				<div class="row">
+					<div class="col-xs-12 col-sm" data-panel="' . $panel . '">';
+
+			lp_show_blocks($panel);
+
+			echo /** @lang text */ '
+					</div>
+				</div>';
+			break;
+
+		default;
+	}
+}
+
+function lp_show_blocks(string $panel = ''): void
+{
+	if (empty($panel) || empty(Utils::$context['lp_blocks'][$panel]))
+		return;
+
+	$panelDirection = Setting::getPanelDirection()[$panel] ?? null;
+	$panelDirectionClass = $panelDirection ? ' col-xs-12 col-sm' : '';
+
+	echo $panelDirection ? /** @lang text */ '<div class="row">' : '';
+
+	foreach (Utils::$context['lp_blocks'][$panel] as $block) {
+		$customClass = empty($block['custom_class']) ? '' : (' ' . $block['custom_class']);
+		$class = 'block_' . $block['type'] . $panelDirectionClass . $customClass;
 
 		echo '
 			<aside id="block_', $block['id'], '" class="', $class, '">';
 
-		if (! empty($block['can_edit']) && ! empty($block['title']))
-			$block['title'] = $block['title'] . '<a class="floatright block_edit" href="' . Config::$scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $block['id'] . '">' . Icon::get('tools') . '</a>';
+		prepare_edit_icon($block);
 
-		if (empty($block['title']))
-			$block['title'] = '';
+		echo empty($block['title']) ? '' : render_block_part('title', $block);
+		echo render_block_part('content', $block);
 
-		if (! empty($block['title']))
-			echo sprintf(Utils::$context['lp_all_title_classes'][$block['title_class']], $block['title']);
-
-		if (empty($block['content_class']))
-			$block['content_class'] = '';
-
-		echo sprintf(Utils::$context['lp_all_content_classes'][$block['content_class']], $block['content']);
-
-		echo '
+		echo /** @lang text */ '
 			</aside>';
 	}
 
-	if (! empty(Setting::getPanelDirection()[$placement])) {
-		echo '
-		</div>';
-	}
+	echo $panelDirection ? /** @lang text */ '</div>' : '';
+}
+
+function prepare_edit_icon(array &$block): void
+{
+	if (empty($block['can_edit']) || empty($block['title']))
+		return;
+
+	$editLink = Config::$scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $block['id'];
+	$editIcon = Icon::get('tools');
+
+	$block['title'] .= /** @lang text */
+		'<a class="floatright block_edit" href="' . $editLink . '">' . $editIcon . '</a>';
+}
+
+function render_block_part(string $part, array $block): string
+{
+	return sprintf(Utils::$context['lp_all_' . $part . '_classes'][$block[$part . '_class'] ?? ''], $block[$part]);
+}
+
+function calculate_column_width(string $size): int
+{
+	$leftWidth  = empty(Utils::$context['lp_blocks']['left'])  ? 0 : Setting::getLeftPanelWidth()[$size];
+	$rightWidth = empty(Utils::$context['lp_blocks']['right']) ? 0 : Setting::getRightPanelWidth()[$size];
+
+	return 12 - ($leftWidth + $rightWidth);
 }
