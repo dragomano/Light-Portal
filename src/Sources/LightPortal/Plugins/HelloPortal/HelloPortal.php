@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 08.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\HelloPortal;
@@ -57,20 +57,22 @@ class HelloPortal extends Plugin
 
 		Lang::load('Post');
 
-		$params = ['external' => true];
-
-		Theme::loadCSSFile('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs.min.css', $params);
+		$resources = [
+			['type' => 'css', 'url' => 'https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs.min.css'],
+		];
 
 		if (! empty($this->context['theme'])) {
 			$theme = $this->context['theme'] . '.css';
-			Theme::loadCSSFile('https://cdn.jsdelivr.net/npm/intro.js@4/themes/introjs-' . $theme, $params);
+			$resources[] = ['type' => 'css', 'url' => 'https://cdn.jsdelivr.net/npm/intro.js@4/themes/introjs-' . $theme];
 		}
 
 		if (Utils::$context['right_to_left']) {
-			Theme::loadCSSFile('https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs-rtl.min.css', $params);
+			$resources[] = ['type' => 'css', 'url' => 'https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs-rtl.min.css'];
 		}
 
-		Theme::loadJavaScriptFile('https://cdn.jsdelivr.net/npm/intro.js@4/minified/intro.min.js', $params);
+		$resources[] = ['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/intro.js@4/minified/intro.min.js'];
+
+		$this->loadExternalResources($resources);
 
 		Theme::addInlineJavaScript('
 		function runTour() {

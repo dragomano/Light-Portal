@@ -414,6 +414,7 @@ $txt['lp_import_failed'] = 'Failed to import...';
 $txt['lp_wrong_template'] = 'Wrong template. Choose a template that matches the content.';
 $txt['lp_addon_not_installed'] = 'Plugin %s is not installed';
 $txt['lp_addon_not_activated'] = 'Plugin %s is not activated';
+$txt['lp_unsupported_resource_type'] = 'Unsupported resource type: %s';
 
 // Who
 $txt['lp_who_viewing_frontpage'] = 'Viewing <a href="%s">the portal frontpage</a>.';

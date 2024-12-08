@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 09.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\Swiper;
@@ -190,8 +190,10 @@ class Swiper extends Block
 		if (empty($swiperHtml))
 			return;
 
-		Theme::loadCSSFile('https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css', ['external' => true]);
-		Theme::loadJavaScriptFile('https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js', ['external' => true]);
+		$this->loadExternalResources([
+			['type' => 'css', 'url' => 'https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css'],
+			['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js'],
+		]);
 
 		Theme::addInlineJavaScript('
 			const swiper' . $id . ' = new Swiper("#swiper' . $id . '", {

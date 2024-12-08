@@ -12,8 +12,10 @@
 
 namespace Bugo\LightPortal\Plugins;
 
+use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
 use Bugo\Compat\ServerSideIncludes;
+use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\CacheTrait;
@@ -26,6 +28,7 @@ use Bugo\LightPortal\Utils\Str;
 
 use function basename;
 use function dirname;
+use function sprintf;
 use function str_replace;
 
 if (! defined('LP_NAME'))
@@ -87,5 +90,19 @@ abstract class Plugin implements PluginInterface
 		}
 
 		(new PluginRepository())->addSettings($settings);
+	}
+
+	function loadExternalResources(array $resources): void
+	{
+		foreach ($resources as $resource) {
+			$type = $resource['type'] ?? null;
+			$url  = $resource['url'] ?? null;
+
+			match ($type) {
+				'css'   => Theme::loadCSSFile($url, ['external' => true]),
+				'js'    => Theme::loadJavaScriptFile($url, ['external' => true]),
+				default => ErrorHandler::log('[LP] ' . sprintf(Lang::$txt['lp_unsupported_resource_type'], $type)),
+			};
+		}
 	}
 }
