@@ -112,7 +112,6 @@ final class BasicConfig extends AbstractConfig
 			[
 				'check',
 				'lp_show_images_in_articles',
-				'help' => 'lp_show_images_in_articles_help',
 				'tab' => self::TAB_CARDS,
 			],
 			[

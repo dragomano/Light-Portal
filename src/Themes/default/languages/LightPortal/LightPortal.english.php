@@ -63,7 +63,6 @@ $txt['lp_num_items_per_page'] = 'Number of items per page (for pagination)';
 
 $txt['lp_article_cards'] = 'Article cards';
 $txt['lp_show_images_in_articles'] = 'Show images found in articles';
-$txt['lp_show_images_in_articles_help'] = 'First, it checks whether the article has an attachment (if the article is based on a forum topic), then — whether the article has an IMG tag with an image.';
 $txt['lp_image_placeholder'] = 'URL of the default placeholder image';
 $txt['lp_image_placeholder_subtext'] = 'Used if the option above is disabled.';
 $txt['lp_show_teaser'] = 'Show the article summary';
