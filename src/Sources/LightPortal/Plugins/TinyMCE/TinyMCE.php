@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 03.12.24
+ * @version 08.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\TinyMCE;
@@ -56,7 +56,12 @@ class TinyMCE extends Plugin
 
 		Theme::loadJavaScriptFile(
 			'https://cdn.tiny.cloud/1/' . $apiKey . '/tinymce/6/tinymce.min.js',
-			['external' => true, 'attributes' => ['referrerpolicy' => 'origin']]
+			[
+				'external' => true,
+				'attributes' => [
+					'referrerpolicy' => 'origin'
+				]
+			]
 		);
 
 		Theme::addInlineJavaScript('

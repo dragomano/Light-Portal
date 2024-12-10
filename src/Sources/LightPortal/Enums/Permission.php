@@ -66,7 +66,12 @@ enum Permission: int
 
 	public static function isModerator(): bool
 	{
-		return in_array(User::$info['id'], self::getBoardModerators()) || in_array(2, User::$info['groups']);
+		return in_array(User::$info['id'], self::getBoardModerators()) || self::isGroupMember(2);
+	}
+
+	public static function isGroupMember(int $groupId): bool
+	{
+		return in_array($groupId, User::$info['groups']);
 	}
 
 	private static function getBoardModerators(): array

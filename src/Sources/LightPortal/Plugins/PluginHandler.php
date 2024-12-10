@@ -95,7 +95,7 @@ final class PluginHandler
 	{
 		$plugins = $plugins ?: Setting::getEnabledPlugins();
 
-		if ($plugins === [])
+		if ($plugins === [] || isset(Utils::$context['uninstalling']))
 			return;
 
 		foreach ($plugins as $pluginName) {
@@ -113,6 +113,7 @@ final class PluginHandler
 				$this->langHandler->handle($path, $snakeName);
 				$this->assetHandler->handle($path, $pluginName);
 
+				/** @var Plugin $className */
 				$class = new $className();
 
 				self::$manager->addListeners(PortalHook::cases(), $class);

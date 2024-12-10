@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 09.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\TopPosters;
@@ -93,6 +93,7 @@ class TopPosters extends Block
 					'link'   => User::hasPermission('profile_view')
 						? Str::html('a', $row['real_name'])
 							->href(Config::$scripturl . '?action=profile;u=' . $row['id_member'])
+							->toHtml()
 						: $row['real_name'],
 				]
 			];
@@ -110,6 +111,7 @@ class TopPosters extends Block
 	public function prepareContent(Event $e): void
 	{
 		$parameters = $e->args->parameters;
+		$parameters['show_avatars'] ??= false;
 		$parameters['show_numbers_only'] ??= false;
 		$parameters['num_posters'] ??= 10;
 
@@ -148,7 +150,6 @@ class TopPosters extends Block
 				: Lang::getTxt($this->txt['posts'], ['posts' => $poster['posts']]);
 
 			$dd->addHtml(Str::html('span', $postCount));
-
 			$dl->addHtml($dt);
 			$dl->addHtml($dd);
 		}

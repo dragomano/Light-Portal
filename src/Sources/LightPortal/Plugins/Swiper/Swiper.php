@@ -121,9 +121,9 @@ class Swiper extends Block
 			return [];
 
 		$swiper = Str::html('div', [
-			'id' => 'swiper' . $id,
+			'id'    => 'swiper' . $id,
 			'class' => 'swiper',
-			'dir' => Utils::$context['right_to_left'] ? 'rtl' : null,
+			'dir'   => Utils::$context['right_to_left'] ? 'rtl' : null,
 		]);
 
 		$wrapper = Str::html('div', ['class' => 'swiper-wrapper']);
@@ -135,8 +135,8 @@ class Swiper extends Block
 
 			$slide = Str::html('div', ['class' => 'swiper-slide']);
 			$img = Str::html('img', [
-				'src' => $link,
-				'alt' => $title ?: '',
+				'src'     => $link,
+				'alt'     => $title ?: '',
 				'loading' => 'lazy',
 			]);
 
@@ -153,25 +153,25 @@ class Swiper extends Block
 
 		if (! empty($parameters['show_pagination'])) {
 			$swiper->addHtml(Str::html('div', [
-				'id' => 'swiper-pagination' . $id,
+				'id'    => 'swiper-pagination' . $id,
 				'class' => 'swiper-pagination',
 			]));
 		}
 
 		if (! empty($parameters['show_navigation'])) {
 			$swiper->addHtml(Str::html('div', [
-				'id' => 'swiper-button-prev' . $id,
+				'id'    => 'swiper-button-prev' . $id,
 				'class' => 'swiper-button-prev',
 			]));
 			$swiper->addHtml(Str::html('div', [
-				'id' => 'swiper-button-next' . $id,
+				'id'    => 'swiper-button-next' . $id,
 				'class' => 'swiper-button-next',
 			]));
 		}
 
 		if (! empty($parameters['show_scrollbar'])) {
 			$swiper->addHtml(Str::html('div', [
-				'id' => 'swiper-scrollbar' . $id,
+				'id'    => 'swiper-scrollbar' . $id,
 				'class' => 'swiper-scrollbar',
 			]));
 		}

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 09.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\TinySlider;
@@ -192,8 +192,8 @@ class TinySlider extends Block
 
 			$item = Str::html('div', ['class' => 'item']);
 			$img = Str::html('img', [
-				'src' => $link,
-				'alt' => $title ?: '',
+				'src'   => $link,
+				'alt'   => $title ?: '',
 				'class' => empty($parameters['lazyload']) ? null : 'tns-lazy-img',
 			]);
 
@@ -214,7 +214,7 @@ class TinySlider extends Block
 
 		if ($parameters['nav'] && $parameters['nav_as_thumbnails']) {
 			$thumbnails = Str::html('ul', [
-				'id' => 'tiny_slider_thumbnails' . $id,
+				'id'    => 'tiny_slider_thumbnails' . $id,
 				'class' => 'thumbnails customize-thumbnails',
 			]);
 
@@ -240,7 +240,7 @@ class TinySlider extends Block
 			$buttons = array_combine(['prev', 'next'], $this->txt['controls_buttons']);
 
 			$controls = Str::html('ul', [
-				'id' => 'tiny_slider_controls' . $id,
+				'id'    => 'tiny_slider_controls' . $id,
 				'class' => 'controls customize-controls',
 			]);
 

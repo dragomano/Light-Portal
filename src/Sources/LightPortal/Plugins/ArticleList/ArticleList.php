@@ -130,7 +130,7 @@ class ArticleList extends Block
 			$value = null;
 			$image = empty($parameters['seek_images'])
 				? ''
-				: preg_match('/\[img.*]([^]\[]+)\[\/img]/U', (string) $row['body'], $value);
+				: preg_match('/\[img.*]([^]\[]+)\[\/img]/U', $row['body'], $value);
 			$image = $value ? array_pop($value) : ($image ?: Config::$modSettings['lp_image_placeholder'] ?? '');
 
 			$body = BBCodeParser::load()->parse($row['body'], (bool) $row['smileys_enabled'], $row['id_msg']);

@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 03.12.24
+ * @version 10.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleChat;
@@ -18,7 +18,8 @@ use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\{Block, Event};
+use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\RadioField;
 use Bugo\LightPortal\Utils\Avatar;

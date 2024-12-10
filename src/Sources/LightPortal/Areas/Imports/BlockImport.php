@@ -17,6 +17,8 @@ use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\ContentClass;
+use Bugo\LightPortal\Enums\TitleClass;
 
 use function intval;
 use function str_contains;
@@ -79,8 +81,8 @@ final class BlockImport extends AbstractImport
 					'permissions'   => $item['user_id'] > 0 ? 4 : intval($item['permissions']),
 					'status'        => intval($item['status']),
 					'areas'         => $item->areas,
-					'title_class'   => str_contains((string) $item->title_class, 'div.') ? 'cat_bar' : $item->title_class,
-					'content_class' => str_contains((string) $item->content_class, 'div.') ? 'roundframe' : $item->content_class,
+					'title_class'   => str_contains((string) $item->title_class, 'div.') ? TitleClass::CAT_BAR->value : $item->title_class,
+					'content_class' => str_contains((string) $item->content_class, 'div.') ? ContentClass::ROUNDFRAME->value : $item->content_class,
 				];
 
 				if ($item->titles) {

@@ -8,12 +8,13 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 29.11.24
+ * @version 10.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\LatteLayouts;
 
 use Bugo\Compat\Theme;
+use Bugo\LightPortal\Enums\ContentClass;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Utils\Str;
@@ -88,7 +89,7 @@ class LatteLayouts extends Plugin
 			);
 		}
 
-		return Str::html('div', ['class' => 'roundframe'])
+		return Str::html('div', ['class' => ContentClass::ROUNDFRAME->value])
 			->setHtml($list)
 			->toHtml();
 	}

@@ -302,10 +302,11 @@ final class PageArea
 		$data = $this->request()->json();
 
 		match (true) {
-			isset($data['delete_item'])    => $this->repository->remove([(int) $data['delete_item']]),
-			isset($data['toggle_item'])    => $this->repository->toggleStatus([(int) $data['toggle_item']]),
-			isset($data['restore_item'])   => $this->repository->restore([(int) $data['restore_item']]),
+			isset($data['delete_item']) => $this->repository->remove([(int) $data['delete_item']]),
+			isset($data['toggle_item']) => $this->repository->toggleStatus([(int) $data['toggle_item']]),
+			isset($data['restore_item']) => $this->repository->restore([(int) $data['restore_item']]),
 			isset($data['remove_forever']) => $this->repository->removePermanently([(int) $data['remove_forever']]),
+			default => null,
 		};
 
 		$this->cache()->flush();

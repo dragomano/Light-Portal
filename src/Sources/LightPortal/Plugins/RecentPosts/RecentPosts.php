@@ -186,8 +186,9 @@ class RecentPosts extends Block
 			static fn(&$post) => $post['timestamp'] = DateTime::relative((int) $post['timestamp'])
 		);
 
-		if ($parameters['show_avatars'] && empty($parameters['use_simple_style']))
+		if ($parameters['show_avatars'] && empty($parameters['use_simple_style'])) {
 			$posts = Avatar::getWithItems($posts, 'poster');
+		}
 
 		return $posts;
 	}

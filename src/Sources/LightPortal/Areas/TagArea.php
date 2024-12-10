@@ -168,6 +168,7 @@ final class TagArea
 		match (true) {
 			isset($data['delete_item']) => $this->repository->remove([(int) $data['delete_item']]),
 			isset($data['toggle_item']) => $this->repository->toggleStatus([(int) $data['toggle_item']]),
+			default => null,
 		};
 
 		$this->cache()->flush();
