@@ -76,7 +76,7 @@
 						<div class="centertext">
 
 							@unless (empty($article['datetime']))
-								<time datetime="{$article['datetime']}">
+								<time datetime="{{ $article['datetime'] }}">
 									@icon('date') {!! $article['date'] !!}
 								</time>
 							@endunless
