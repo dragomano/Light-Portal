@@ -26,6 +26,7 @@ use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
 use function array_key_exists;
@@ -183,7 +184,7 @@ final class Tag extends AbstractPageList
 		TablePresenter::show(
 			PortalTableBuilder::make('tags', Utils::$context['page_title'])
 				->withParams(
-					(int) Config::$modSettings['defaultMaxListItems'] ?: 50,
+					Setting::get('defaultMaxListItems', 'int', 50),
 					Lang::$txt['lp_no_tags'],
 					Utils::$context['canonical_url'],
 					'value'

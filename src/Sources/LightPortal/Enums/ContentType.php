@@ -16,6 +16,8 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\Traits\HasNamesTrait;
 
+use function array_keys;
+use function array_reduce;
 use function array_slice;
 
 enum ContentType
@@ -35,5 +37,27 @@ enum ContentType
 		];
 
 		return User::$info['is_admin'] ? $types : array_slice($types, 0, 2);
+	}
+
+	public static function icon(string $type): string
+	{
+		return match($type) {
+			self::BBC->name()  => 'fab fa-bimobject',
+			self::HTML->name() => 'fab fa-html5',
+			self::PHP->name()  => 'fab fa-php',
+			default            => '',
+		};
+	}
+
+	public static function default(): array
+	{
+		$types = self::all();
+
+		return array_reduce(array_keys($types), function($carry, $type) use ($types) {
+			$carry[$type] = [
+				'icon' => self::icon($type),
+			];
+			return $carry;
+		}, []);
 	}
 }

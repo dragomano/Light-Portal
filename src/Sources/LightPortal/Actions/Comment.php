@@ -91,7 +91,7 @@ final class Comment implements ActionInterface
 		}, $comments);
 
 		$start = (int) $this->request()->get('start');
-		$limit = (int) (Config::$modSettings['lp_num_comments_per_page'] ?? 10);
+		$limit = Setting::get('lp_num_comments_per_page', 'int', 10);
 
 		$commentTree  = $this->getTree($comments);
 		$parentsCount = count($commentTree);

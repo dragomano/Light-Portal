@@ -12,9 +12,9 @@
 
 namespace Bugo\LightPortal\Models;
 
-use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Status;
+use Bugo\LightPortal\Utils\Setting;
 
 use function array_key_first;
 
@@ -69,7 +69,7 @@ class BlockModel extends AbstractModel
 
 		$this->permissions = $postData['permissions']
 			?? $currentBlock['permissions']
-			?? (int) (Config::$modSettings['lp_permissions_default'] ?? 2);
+			?? Setting::get('lp_permissions_default', 'int', 2);
 
 		$this->status = $currentBlock['status'] ?? Status::ACTIVE->value;
 

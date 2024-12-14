@@ -15,12 +15,12 @@ namespace Bugo\LightPortal\Hooks;
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\Setting;
 
 use function array_flip;
 use function array_key_exists;
 use function array_keys;
 use function defined;
-use function explode;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -75,9 +75,7 @@ trait CommonChecks
 
 	protected function getDisabledActions(): array
 	{
-		$disabledActions = empty(Config::$modSettings['lp_disabled_actions'])
-			? [] : explode(',', (string) Config::$modSettings['lp_disabled_actions']);
-
+		$disabledActions = Setting::getDisabledActions();
 		$disabledActions[] = 'home';
 
 		return $disabledActions;

@@ -115,32 +115,18 @@ trait AreaTrait
 	public function preparePostFields(): void
 	{
 		foreach (Utils::$context['posting_fields'] as $item => $data) {
-			if (! empty($data['input']['after'])) {
-				$tag = 'div';
+			if (empty($data['input']['after']))
+				continue;
 
-				if (isset($data['input']['type']) && in_array($data['input']['type'], ['checkbox', 'number'])) {
-					$tag = 'span';
-				}
+			$tag = 'div';
 
-				Utils::$context['posting_fields'][$item]['input']['after']
-					= "<$tag class=\"descbox alternative2 smalltext\">{$data['input']['after']}</$tag>";
+			if (isset($data['input']['type']) && in_array($data['input']['type'], ['checkbox', 'number'])) {
+				$tag = 'span';
 			}
 
-			// Add label for html type
-			if (isset($data['label']['html']) && $data['label']['html'] !== ' ') {
-				Utils::$context['posting_fields'][$item]['label']['html'] = Str::html('label')
-					->setAttribute('for', $item)
-					->setText($data['label']['html']);
-			}
-
-			// Fancy checkbox
-			if (isset($data['input']['type']) && $data['input']['type'] === 'checkbox') {
-				$data['input']['attributes']['class'] = 'checkbox';
-				$data['input']['after'] = Str::html('label', ['class' => 'label'])
-					->setAttribute('for', $item) . (Utils::$context['posting_fields'][$item]['input']['after'] ?? '');
-
-				Utils::$context['posting_fields'][$item] = $data;
-			}
+			Utils::$context['posting_fields'][$item]['input']['after'] = Str::html($tag)
+				->class('descbox alternative2 smalltext')
+				->setHtml($data['input']['after']);
 		}
 
 		Theme::loadTemplate('LightPortal/ManageSettings');
@@ -160,20 +146,5 @@ trait AreaTrait
 	public function getFloatSpan(string $text, string $direction = 'left'): string
 	{
 		return Str::html('span', ['class' => "float$direction"])->setHtml($text)->toHtml();
-	}
-
-	public function getDefaultTypes(): array
-	{
-		return [
-			ContentType::BBC->name() => [
-				'icon' => 'fab fa-bimobject'
-			],
-			ContentType::HTML->name() => [
-				'icon' => 'fab fa-html5'
-			],
-			ContentType::PHP->name() => [
-				'icon' => 'fab fa-php'
-			],
-		];
 	}
 }

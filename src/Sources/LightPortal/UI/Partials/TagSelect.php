@@ -12,11 +12,11 @@
 
 namespace Bugo\LightPortal\UI\Partials;
 
-use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Utils\EntityDataTrait;
 use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\Utils\Setting;
 
 use function implode;
 use function is_array;
@@ -61,7 +61,7 @@ final class TagSelect extends AbstractPartial
 				searchPlaceholderText: "' . Lang::$txt['search'] . '",
 				noOptionsText: "' . Lang::$txt['lp_page_tags_empty'] . '",
 				clearButtonText: "' . Lang::$txt['remove'] . '",
-				maxValues: ' . (Config::$modSettings['lp_page_maximum_tags'] ?? 10) . ',
+				maxValues: ' . Setting::get('lp_page_maximum_tags', 'int', 10) . ',
 				options: ' . json_encode($data) . ',
 				selectedValue: [' . implode(',', $values) . ']
 			});

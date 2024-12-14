@@ -355,6 +355,8 @@ final class PageRepository extends AbstractRepository
 			filter_input(INPUT_SERVER, 'HTTP_REFERER') ?? '', 'action=portal;sa=categories;id'
 		);
 
+		$sorting = Setting::get('lp_frontpage_article_sorting', 'int', 0);
+
 		$result = Db::$db->query('', '
 			(
 				SELECT p.page_id, p.slug, GREATEST(p.created_at, p.updated_at) AS date,
@@ -374,7 +376,7 @@ final class PageRepository extends AbstractRepository
 					AND p.status = {int:status}
 					AND p.permissions IN ({array_int:permissions})
 					ORDER BY ' . (empty(Config::$modSettings['lp_frontpage_order_by_replies'])
-				? '' : 'num_comments DESC, ') . $orders[Config::$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
+				? '' : 'num_comments DESC, ') . $orders[$sorting] . '
 				LIMIT 1
 			)
 			UNION ALL
@@ -397,7 +399,7 @@ final class PageRepository extends AbstractRepository
 					AND p.status = {int:status}
 					AND p.permissions IN ({array_int:permissions})
 				ORDER BY ' . (empty(Config::$modSettings['lp_frontpage_order_by_replies'])
-				? '' : 'num_comments DESC, ') . $orders[Config::$modSettings['lp_frontpage_article_sorting'] ?? 0] . '
+				? '' : 'num_comments DESC, ') . $orders[$sorting] . '
 				LIMIT 1
 			)',
 			[

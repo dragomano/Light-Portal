@@ -12,7 +12,6 @@
 
 namespace Bugo\LightPortal\Areas\Traits;
 
-use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
@@ -20,6 +19,9 @@ use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Lists\IconList;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
 use function array_filter;
@@ -35,6 +37,9 @@ if (! defined('SMF'))
 
 trait QueryTrait
 {
+	use CacheTrait;
+	use RequestTrait;
+
 	private function prepareIconList(): void
 	{
 		if ($this->request()->hasNot('icons'))
@@ -107,8 +112,7 @@ trait QueryTrait
 				'id_poll'           => 0,
 				'is_approved'       => 1,
 				'id_redirect_topic' => 0,
-				'recycle_board'     => empty(Config::$modSettings['recycle_board'])
-					? Config::$modSettings['recycle_board'] : 0,
+				'recycle_board'     => Setting::get('recycle_board', 'int', 0),
 				'subject'           => trim((string) Utils::$smcFunc['strtolower']($search)),
 			]
 		);

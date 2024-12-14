@@ -26,7 +26,6 @@ use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
-use function explode;
 use function implode;
 use function preg_replace;
 
@@ -41,10 +40,9 @@ class TopicArticle extends AbstractArticle
 
 	public function init(): void
 	{
-		$this->selectedBoards = empty(Config::$modSettings['lp_frontpage_boards'])
-			? [] : explode(',', (string) Config::$modSettings['lp_frontpage_boards']);
+		$this->selectedBoards = Setting::get('lp_frontpage_boards', 'array', []);
 
-		$this->sorting = (int) (Config::$modSettings['lp_frontpage_article_sorting'] ?? 0);
+		$this->sorting = Setting::get('lp_frontpage_article_sorting', 'int', 0);
 
 		$this->params = [
 			'current_member'    => User::$info['id'],

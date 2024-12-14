@@ -12,10 +12,11 @@
 
 namespace Bugo\LightPortal\Lists;
 
-use Bugo\FontAwesome\Enums\Icon;
+use Bugo\FontAwesome\Enums\Icon as IconEnum;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Utils\Icon;
 
 use function array_map;
 
@@ -110,11 +111,11 @@ final class IconList implements ListInterface
 			})
 		);
 
-		return array_map(fn($icon): string => \Bugo\LightPortal\Utils\Icon::parse($icon), $set);
+		return array_map(static fn($icon): string => Icon::parse($icon), $set);
 	}
 
 	public function getList(): array
 	{
-		return Icon::V5->collection();
+		return IconEnum::V5->collection();
 	}
 }

@@ -16,6 +16,7 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\LightPortal\Utils\Avatar;
+use Bugo\LightPortal\Utils\Setting;
 
 use function array_column;
 use function count;
@@ -232,9 +233,11 @@ final class CommentRepository
 
 	private function isCanEdit(int $date): bool
 	{
-		if (empty($timeToChange = (int) (Config::$modSettings['lp_time_to_change_comments'] ?? 0)))
+		$timeToChange = Setting::get('lp_time_to_change_comments', 'int', 0);
+
+		if (empty($timeToChange))
 			return false;
 
-		return $timeToChange && time() - $date <= $timeToChange * 60;
+		return time() - $date <= $timeToChange * 60;
 	}
 }

@@ -14,6 +14,7 @@ namespace Bugo\LightPortal\Hooks;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Utils\Setting;
 use DateTime;
 
 use function define;
@@ -34,9 +35,9 @@ class Init
 		define('LP_PLUGIN_LIST', 'https://d8d75ea98b25aa12.mokky.dev/plugins');
 		define('LP_ADDON_DIR', dirname(__DIR__) . '/Plugins');
 		define('LP_ADDON_URL', Config::$boardurl . '/Sources/LightPortal/Plugins');
-		define('LP_CACHE_TIME', (int) (Config::$modSettings['lp_cache_interval'] ?? 72000));
-		define('LP_ACTION', Config::$modSettings['lp_portal_action'] ?? 'portal');
-		define('LP_PAGE_PARAM', Config::$modSettings['lp_page_param'] ?? 'page');
+		define('LP_CACHE_TIME', Setting::get('lp_cache_interval', 'int', 72000));
+		define('LP_ACTION', Setting::get('lp_portal_action', 'string', 'portal'));
+		define('LP_PAGE_PARAM', Setting::get('lp_page_param', 'string', 'page'));
 		define('LP_BASE_URL', Config::$scripturl . '?action=' . LP_ACTION);
 		define('LP_PAGE_URL', Config::$scripturl . '?' . LP_PAGE_PARAM . '=');
 		define('LP_ALIAS_PATTERN', '^[a-z][a-z0-9\-]+$');

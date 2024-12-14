@@ -113,7 +113,7 @@ final class FrontPage implements ActionInterface
 	public function prepare(ArticleInterface $article): void
 	{
 		$start = (int) $this->request('start');
-		$limit = (int) Config::$modSettings['lp_num_items_per_page'] ?? 12;
+		$limit = Setting::get('lp_num_items_per_page', 'int', 12);
 
 		$article->init();
 
@@ -145,7 +145,7 @@ final class FrontPage implements ActionInterface
 
 		Utils::$context['start'] = $this->request()->get('start');
 
-		if (! empty(Config::$modSettings['lp_use_simple_pagination'])) {
+		if (Setting::get('lp_use_simple_pagination', 'bool', false)) {
 			Utils::$context['page_index'] = $this->simplePaginate(LP_BASE_URL, $itemsCount, $limit);
 		}
 
@@ -224,12 +224,14 @@ final class FrontPage implements ActionInterface
 
 	public function getNumColumns(): int
 	{
-		$columnsCount = 12;
+		$baseColumnsCount = 12;
+		$customColumnsCount = Setting::get('lp_frontpage_num_columns', 'string', '');
 
-		if (empty(Config::$modSettings['lp_frontpage_num_columns']))
-			return $columnsCount;
+		if (empty($customColumnsCount)) {
+			return $baseColumnsCount;
+		}
 
-		return $columnsCount / match (Config::$modSettings['lp_frontpage_num_columns']) {
+		return $baseColumnsCount / match ($customColumnsCount) {
 			'1' => 2,
 			'2' => 3,
 			'3' => 4,
@@ -283,11 +285,13 @@ final class FrontPage implements ActionInterface
 
 			$item['msg_link'] ??= $item['link'];
 
-			if (empty($item['image']) && ! empty(Config::$modSettings['lp_image_placeholder']))
-				$item['image'] = Config::$modSettings['lp_image_placeholder'];
+			if (empty($item['image'])) {
+				$item['image'] = Setting::get('lp_image_placeholder', 'string', '');
+			}
 
-			if (! empty($item['views']['num']))
+			if (! empty($item['views']['num'])) {
 				$item['views']['num'] = $this->getFriendlyNumber($item['views']['num']);
+			}
 
 			return $item;
 		}, $articles);

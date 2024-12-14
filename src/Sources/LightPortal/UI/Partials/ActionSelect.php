@@ -12,11 +12,10 @@
 
 namespace Bugo\LightPortal\UI\Partials;
 
-use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Utils\Setting;
 
-use function explode;
 use function func_get_args;
 use function implode;
 use function json_encode;
@@ -29,10 +28,7 @@ final class ActionSelect extends AbstractPartial
 		$params = $params[0] ?? [];
 
 		$params['id'] ??= 'lp_disabled_actions';
-		$params['data'] ??= (empty(Config::$modSettings['lp_disabled_actions'])
-			? []
-			: explode(',', (string) Config::$modSettings['lp_disabled_actions'])
-		);
+		$params['data'] ??= Setting::getDisabledActions();
 		$params['value'] = [];
 
 		$data = [];

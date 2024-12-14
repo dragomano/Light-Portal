@@ -442,7 +442,7 @@ final class BlockArea
 		$plugins = array_merge(Setting::getEnabledPlugins(), array_keys(ContentType::all()));
 
 		Utils::$context['lp_loaded_addons'] = array_merge(
-			Utils::$context['lp_loaded_addons'] ?? [], $this->getDefaultTypes()
+			Utils::$context['lp_loaded_addons'] ?? [], ContentType::default()
 		);
 
 		Utils::$context['lp_all_blocks'] = [];

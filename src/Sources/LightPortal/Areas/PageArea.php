@@ -29,6 +29,7 @@ use Bugo\LightPortal\Areas\Validators\PageValidator;
 use Bugo\LightPortal\Args\ObjectArgs;
 use Bugo\LightPortal\Args\OptionsTypeArgs;
 use Bugo\LightPortal\Args\ParamsArgs;
+use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Status;
@@ -633,7 +634,7 @@ final class PageArea
 		CheckboxField::make('show_author_and_date', Lang::$txt['lp_page_show_author_and_date'])
 			->setValue(Utils::$context['lp_page']['options']['show_author_and_date']);
 
-		if (! Setting::showRelatedPages()) {
+		if (Setting::showRelatedPages()) {
 			CheckboxField::make('show_related_pages', Lang::$txt['lp_page_show_related_pages'])
 				->setValue(Utils::$context['lp_page']['options']['show_related_pages']);
 		}
@@ -700,13 +701,11 @@ final class PageArea
 
 	private function preparePageList(): void
 	{
-		$defaultTypes = $this->getDefaultTypes();
-
 		Utils::$context['lp_all_pages'] = [];
 		foreach (Utils::$context['lp_content_types'] as $type => $title) {
 			Utils::$context['lp_all_pages'][$type] = [
 				'type'  => $type,
-				'icon'  => $defaultTypes[$type]['icon'] ?? Utils::$context['lp_loaded_addons'][$type]['icon'],
+				'icon'  => ContentType::icon($type) ?: Utils::$context['lp_loaded_addons'][$type]['icon'],
 				'title' => Lang::$txt['lp_' . $type]['title'] ?? $title,
 				'desc'  => Lang::$txt['lp_' . $type]['block_desc'] ?? Lang::$txt['lp_' . $type]['description']
 			];
@@ -718,8 +717,8 @@ final class PageArea
 
 	private function getPageIcon(string $type): string
 	{
-		return $this->getDefaultTypes()[$type]['icon']
-			?? Utils::$context['lp_loaded_addons'][$type]['icon']
+		return ContentType::icon($type)
+			?: Utils::$context['lp_loaded_addons'][$type]['icon']
 			?? 'fas fa-question';
 	}
 }

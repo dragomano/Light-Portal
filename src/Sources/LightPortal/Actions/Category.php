@@ -28,6 +28,7 @@ use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
 use function array_key_exists;
@@ -183,7 +184,7 @@ final class Category extends AbstractPageList
 		TablePresenter::show(
 			PortalTableBuilder::make('categories', Utils::$context['page_title'])
 				->withParams(
-					(int) Config::$modSettings['defaultMaxListItems'] ?: 50,
+					Setting::get('defaultMaxListItems', 'int', 50),
 					Lang::$txt['lp_no_categories'],
 					Utils::$context['canonical_url'],
 					'title'

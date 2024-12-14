@@ -39,7 +39,7 @@ class Actions
 
 	public function __invoke(array &$actions): void
 	{
-		if (! empty(Config::$modSettings['lp_frontpage_mode'])) {
+		if (Setting::get('lp_frontpage_mode', 'bool', false)) {
 			$actions[LP_ACTION] = [false, [new FrontPage(), 'show']];
 		}
 

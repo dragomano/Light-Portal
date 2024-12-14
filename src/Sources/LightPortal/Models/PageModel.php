@@ -12,10 +12,10 @@
 
 namespace Bugo\LightPortal\Models;
 
-use Bugo\Compat\Config;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Status;
+use Bugo\LightPortal\Utils\Setting;
 
 use function time;
 
@@ -79,7 +79,7 @@ class PageModel extends AbstractModel
 		$this->entryType = $postData['entry_type'] ?? $currentPage['entry_type'] ?? 'default';
 
 		$this->permissions = $postData['permissions'] ?? $currentPage['permissions']
-			?? (int) (Config::$modSettings['lp_permissions_default'] ?? 2);
+			?? Setting::get('lp_permissions_default', 'int', 2);
 
 		$this->status = $postData['status'] ?? $currentPage['status']
 			?? (

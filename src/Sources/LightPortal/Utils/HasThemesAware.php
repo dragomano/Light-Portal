@@ -12,7 +12,6 @@
 
 namespace Bugo\LightPortal\Utils;
 
-use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Theme;
 
@@ -47,9 +46,7 @@ trait HasThemesAware
 				WHERE id_theme IN ({array_int:themes})
 					AND variable = {literal:name}',
 				[
-					'themes' => empty(Config::$modSettings['knownThemes'])
-						? []
-						: explode(',', (string) Config::$modSettings['knownThemes']),
+					'themes' => Setting::get('knownThemes', 'array', []),
 				]
 			);
 

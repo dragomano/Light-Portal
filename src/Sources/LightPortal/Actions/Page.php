@@ -137,7 +137,7 @@ final class Page implements PageInterface
 			return;
 
 		$start = (int) $this->request('start');
-		$limit = (int) Config::$modSettings['lp_num_items_per_page'] ?? 12;
+		$limit = Setting::get('lp_num_items_per_page', 'int', 12);
 
 		$itemsCount = $entity->getTotalCount();
 
@@ -167,7 +167,7 @@ final class Page implements PageInterface
 	{
 		return PortalTableBuilder::make($id, Utils::$context['page_title'])
 			->withParams(
-				(int) Config::$modSettings['defaultMaxListItems'] ?: 50,
+				Setting::get('defaultMaxListItems', 'int', 50),
 				defaultSortColumn: 'date'
 			)
 			->addColumns([
@@ -388,7 +388,7 @@ final class Page implements PageInterface
 
 	private function prepareRelatedPages(): void
 	{
-		if (empty($page = Utils::$context['lp_page']) || Setting::showRelatedPages())
+		if (empty($page = Utils::$context['lp_page']) || empty(Setting::showRelatedPages()))
 			return;
 
 		if (empty(Utils::$context['lp_page']['options']['show_related_pages']))

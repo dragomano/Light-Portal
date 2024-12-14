@@ -90,8 +90,9 @@ final class Maintainer extends BackgroundTask
 		);
 
 		$pages = [];
-		while ($row = Db::$db->fetch_assoc($result))
+		while ($row = Db::$db->fetch_assoc($result)) {
 			$pages[$row['page_id']] = $row['amount'];
+		}
 
 		Db::$db->free_result($result);
 
@@ -99,8 +100,9 @@ final class Maintainer extends BackgroundTask
 			return;
 
 		$line = '';
-		foreach ($pages as $pageId => $commentsCount)
+		foreach ($pages as $pageId => $commentsCount) {
 			$line .= ' WHEN page_id = ' . $pageId . ' THEN ' . $commentsCount;
+		}
 
 		Db::$db->query('', /** @lang text */ '
 			UPDATE {db_prefix}lp_pages
@@ -125,8 +127,9 @@ final class Maintainer extends BackgroundTask
 		);
 
 		$pages = [];
-		while ($row = Db::$db->fetch_assoc($result))
+		while ($row = Db::$db->fetch_assoc($result)) {
 			$pages[$row['page_id']] = $row['last_comment_id'] ?? 0;
+		}
 
 		Db::$db->free_result($result);
 
@@ -134,8 +137,9 @@ final class Maintainer extends BackgroundTask
 			return;
 
 		$line = '';
-		foreach ($pages as $pageId => $lastCommentId)
+		foreach ($pages as $pageId => $lastCommentId) {
 			$line .= ' WHEN page_id = ' . $pageId . ' THEN ' . $lastCommentId;
+		}
 
 		Db::$db->query('', /** @lang text */ '
 			UPDATE {db_prefix}lp_pages

@@ -17,109 +17,130 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 
 use function explode;
+use function filter_var;
+
+use const FILTER_VALIDATE_BOOLEAN;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 class Setting
 {
+	public static function get(string $key, string $type = 'string', $default = null, string $from = 'string'): mixed
+	{
+		if (! isset(Config::$modSettings[$key])) {
+			return $default;
+		}
+
+		$value = Config::$modSettings[$key];
+
+		return match ($type) {
+			'bool'  => filter_var($value, FILTER_VALIDATE_BOOLEAN),
+			'int'   => (int) $value,
+			'float' => (float) $value,
+			'array' => self::transformArray($value, $from),
+			default => (string) $value,
+		};
+	}
+
 	public static function isFrontpage(string $slug): bool
 	{
-		if ($slug === '' || empty(Config::$modSettings['lp_frontpage_chosen_page']))
-			return false;
+		$chosenPage = self::get('lp_frontpage_chosen_page', 'string', '');
 
-		return self::isFrontpageMode('chosen_page') && Config::$modSettings['lp_frontpage_chosen_page'] === $slug;
+		if ($slug === '' || empty($chosenPage)) {
+			return false;
+		}
+
+		return self::isFrontpageMode('chosen_page') && $chosenPage === $slug;
 	}
 
 	public static function isFrontpageMode(string $mode): bool
 	{
-		if (empty(Config::$modSettings['lp_frontpage_mode']))
-			return false;
+		$frontpageMode = self::get('lp_frontpage_mode', 'string', '');
 
-		return Config::$modSettings['lp_frontpage_mode'] === $mode;
+		return ! empty($frontpageMode) && $frontpageMode === $mode;
 	}
 
 	public static function isStandaloneMode(): bool
 	{
-		if (empty(Config::$modSettings['lp_standalone_mode']))
-			return false;
+		$standaloneMode = self::get('lp_standalone_mode', 'bool', false);
+		$standaloneUrl  = self::get('lp_standalone_url', 'string', '');
 
-		return ! empty(Config::$modSettings['lp_standalone_url']);
+		return $standaloneMode && ! empty($standaloneUrl);
 	}
 
 	public static function getCommentBlock(): string
 	{
-		return Config::$modSettings['lp_comment_block'] ?? '';
+		return self::get('lp_comment_block', 'string', '');
 	}
 
 	public static function showRelatedPages(): bool
 	{
-		return empty(Config::$modSettings['lp_show_related_pages']);
+		return self::get('lp_show_related_pages', 'bool', true);
 	}
 
 	public static function getEnabledPlugins(): array
 	{
-		return empty(Config::$modSettings['lp_enabled_plugins'])
-			? []
-			: explode(',', (string) Config::$modSettings['lp_enabled_plugins']);
+		return self::get('lp_enabled_plugins', 'array', []);
 	}
 
 	public static function getFrontpagePages(): array
 	{
-		return empty(Config::$modSettings['lp_frontpage_pages'])
-			? []
-			: explode(',', (string) Config::$modSettings['lp_frontpage_pages']);
+		return self::get('lp_frontpage_pages', 'array', []);
 	}
 
 	public static function getFrontpageTopics(): array
 	{
-		return empty(Config::$modSettings['lp_frontpage_topics'])
-			? []
-			: explode(',', (string) Config::$modSettings['lp_frontpage_topics']);
+		return self::get('lp_frontpage_topics', 'array', []);
 	}
 
 	public static function getHeaderPanelWidth(): int
 	{
-		return empty(Config::$modSettings['lp_header_panel_width'])
-			? 12
-			: (int) Config::$modSettings['lp_header_panel_width'];
+		return self::get('lp_header_panel_width', 'int', 12);
 	}
 
 	public static function getFooterPanelWidth(): int
 	{
-		return empty(Config::$modSettings['lp_footer_panel_width'])
-			? 12
-			: (int) Config::$modSettings['lp_footer_panel_width'];
+		return self::get('lp_footer_panel_width', 'int', 12);
 	}
 
 	public static function getLeftPanelWidth(): array
 	{
-		return empty(Config::$modSettings['lp_left_panel_width'])
-			? ['lg' => 3, 'xl' => 2]
-			: Utils::jsonDecode(Config::$modSettings['lp_left_panel_width'], true);
+		return self::get('lp_left_panel_width', 'array', ['lg' => 3, 'xl' => 2], 'json');
 	}
 
 	public static function getRightPanelWidth(): array
 	{
-		return empty(Config::$modSettings['lp_right_panel_width'])
-			? ['lg' => 3, 'xl' => 2]
-			: Utils::jsonDecode(Config::$modSettings['lp_right_panel_width'], true);
+		return self::get('lp_right_panel_width', 'array', ['lg' => 3, 'xl' => 2], 'json');
 	}
 
 	public static function getPanelDirection(): array
 	{
-		return Utils::jsonDecode(Config::$modSettings['lp_panel_direction'] ?? '', true) ?? [];
+		return self::get('lp_panel_direction', 'array', [], 'json');
 	}
 
 	public static function isSwapLeftRight(): bool
 	{
-		return empty(Lang::$txt['lang_rtl'])
-			? ! empty(Config::$modSettings['lp_swap_left_right'])
-			: empty(Config::$modSettings['lp_swap_left_right']);
+		$isRtl = ! empty(Lang::$txt['lang_rtl']);
+		$swapLeftRight = self::get('lp_swap_left_right', 'bool', false);
+
+		return $isRtl ? ! $swapLeftRight : $swapLeftRight;
 	}
 
 	public static function hideBlocksInACP(): bool
 	{
-		return ! empty(Config::$modSettings['lp_hide_blocks_in_acp']) && (new Request())->is('admin');
+		$hideBlocks = self::get('lp_hide_blocks_in_acp', 'bool', false);
+
+		return $hideBlocks && (new Request())->is('admin');
+	}
+
+	public static function getDisabledActions(): array
+	{
+		return self::get('lp_disabled_actions', 'array', []);
+	}
+
+	protected static function transformArray(string $value, string $from): array
+	{
+		return $from === 'json' ? Utils::jsonDecode($value, true) : explode(',', $value);
 	}
 }

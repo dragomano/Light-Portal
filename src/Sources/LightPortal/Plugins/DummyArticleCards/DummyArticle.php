@@ -19,6 +19,7 @@ use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Articles\AbstractArticle;
 use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 use DateTime;
 use Exception;
@@ -34,7 +35,7 @@ class DummyArticle extends AbstractArticle
 
 	public function __construct()
 	{
-		$this->limit = Config::$modSettings['lp_num_items_per_page'] ?? '6';
+		$this->limit = Setting::get('lp_num_items_per_page', 'int', 6);
 	}
 
 	public function init(): void {}

@@ -34,7 +34,6 @@ use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
 use function array_keys;
-use function explode;
 use function implode;
 use function time;
 
@@ -54,14 +53,13 @@ class PageArticle extends AbstractArticle
 
 	public function init(): void
 	{
-		$this->selectedCategories = empty(Config::$modSettings['lp_frontpage_categories'])
-			? [] : explode(',', (string) Config::$modSettings['lp_frontpage_categories']);
+		$this->selectedCategories = Setting::get('lp_frontpage_categories', 'array', []);
 
 		if (empty($this->selectedCategories) && Setting::isFrontpageMode('all_pages')) {
 			$this->selectedCategories = [0];
 		}
 
-		$this->sorting = (int) (Config::$modSettings['lp_frontpage_article_sorting'] ?? 0);
+		$this->sorting = Setting::get('lp_frontpage_article_sorting', 'int', 0);
 
 		$this->params = [
 			'lang'                => User::$info['language'],
