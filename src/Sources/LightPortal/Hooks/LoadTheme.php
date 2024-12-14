@@ -26,7 +26,7 @@ use Bugo\LightPortal\Enums\PluginType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\TitleClass;
 use Bugo\LightPortal\EventManagerFactory;
-use Bugo\LightPortal\Repositories\BlockRepository;
+use Bugo\LightPortal\Lists\ActiveBlockList;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionManager;
 
@@ -73,14 +73,16 @@ class LoadTheme
 
 		$this->calculateNumberOfEntities();
 
-		Utils::$context['lp_all_title_classes']   = TitleClass::values();
+		Utils::$context['lp_all_title_classes'] = TitleClass::values();
 		Utils::$context['lp_all_content_classes'] = ContentClass::values();
-		Utils::$context['lp_block_placements']    = Placement::all();
-		Utils::$context['lp_plugin_types']        = PluginType::all();
-		Utils::$context['lp_content_types']       = ContentType::all();
-		Utils::$context['lp_page_types']          = EntryType::all();
 
-		Utils::$context['lp_active_blocks'] = (new BlockRepository())->getActive();
+		Utils::$context['lp_block_placements'] = Placement::all();
+
+		Utils::$context['lp_plugin_types'] = PluginType::all();
+		Utils::$context['lp_content_types'] = ContentType::all();
+		Utils::$context['lp_page_types'] = EntryType::all();
+
+		Utils::$context['lp_active_blocks'] = (new ActiveBlockList())();
 	}
 
 	protected function loadAssets(CompilerInterface $compiler): void

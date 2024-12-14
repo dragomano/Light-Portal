@@ -1,6 +1,8 @@
 <?php declare(strict_types=1);
 
 /**
+ * PageList.php
+ *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
@@ -12,16 +14,13 @@
 
 namespace Bugo\LightPortal\Lists;
 
-use Bugo\LightPortal\Plugins\PluginHandler;
+use Bugo\LightPortal\Repositories\BlockRepository;
 use Bugo\LightPortal\Utils\Weaver;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
-final class PluginList implements ListInterface
+class ActiveBlockList implements ListInterface
 {
 	public function __invoke(): array
 	{
-		return (new Weaver())(static fn() => (new PluginHandler())->getAll());
+		return (new Weaver())(static fn() => (new BlockRepository())->getActive());
 	}
 }

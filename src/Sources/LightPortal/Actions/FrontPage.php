@@ -34,6 +34,7 @@ use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Weaver;
 
 use function abs;
 use function array_column;
@@ -125,7 +126,7 @@ final class FrontPage implements ActionInterface
 
 			$this->updateStart($data['total'], $start, $limit);
 
-			$data['articles'] = $article->getData($start, $limit);
+			$data['articles'] = (new Weaver())(static fn() => $article->getData($start, $limit));
 
 			$this->cache()->put($key, $data);
 		}

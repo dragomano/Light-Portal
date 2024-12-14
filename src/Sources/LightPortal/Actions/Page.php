@@ -36,6 +36,7 @@ use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Weaver;
 use SimpleSEF;
 
 use function array_column;
@@ -144,7 +145,7 @@ final class Page implements PageInterface
 		$front->updateStart($itemsCount, $start, $limit);
 
 		$sort     = $front->getOrderBy();
-		$articles = $entity->getPages($start, $limit, $sort);
+		$articles = (new Weaver())(static fn() => $entity->getPages($start, $limit, $sort));
 
 		Utils::$context['page_index'] = new PageIndex(
 			Utils::$context['canonical_url'], $start, $itemsCount, $limit
