@@ -31,33 +31,6 @@ class PortalEntity {
     target.closest('tr').remove();
   }
 
-  async restore(target) {
-    if (!confirm(smf_you_sure)) return false;
-    const item = target.dataset.id;
-
-    if (!item) return false;
-
-    await axios.post(this.workUrl, {
-      restore_item: item,
-    });
-
-    target.closest('tr').remove();
-  }
-
-  async removeForever(target) {
-    if (!confirm(smf_you_sure)) return false;
-
-    const item = target.dataset.id;
-
-    if (!item) return false;
-
-    await axios.post(this.workUrl, {
-      remove_forever: item,
-    });
-
-    target.closest('tr').remove();
-  }
-
   post(target) {
     const formElements = target.elements;
 
@@ -160,6 +133,34 @@ class Page extends PortalEntity {
 
     thisForm['add_page'].value = target.dataset.type;
     thisForm.submit();
+  }
+
+  async restore(target) {
+    if (!confirm(smf_you_sure)) return false;
+
+    const item = target.dataset.id;
+
+    if (!item) return false;
+
+    await axios.post(this.workUrl, {
+      restore_item: item,
+    });
+
+    target.closest('tr').remove();
+  }
+
+  async removeForever(target) {
+    if (!confirm(smf_you_sure)) return false;
+
+    const item = target.dataset.id;
+
+    if (!item) return false;
+
+    await axios.post(this.workUrl, {
+      remove_forever: item,
+    });
+
+    target.closest('tr').remove();
   }
 }
 
