@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 10.12.24
+ * @version 18.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleChat;
@@ -21,6 +21,7 @@ use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
+use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\RadioField;
 use Bugo\LightPortal\Utils\Avatar;
 
@@ -44,6 +45,7 @@ class SimpleChat extends Block
 	private array $params = [
 		'show_avatars'  => false,
 		'form_position' => 'bottom',
+		'window_height' => 100,
 	];
 
 	private readonly Chat $chat;
@@ -89,6 +91,7 @@ class SimpleChat extends Block
 		$e->args->params = [
 			'show_avatars'  => FILTER_VALIDATE_BOOLEAN,
 			'form_position' => FILTER_DEFAULT,
+			'window_height' => FILTER_VALIDATE_INT,
 		];
 	}
 
@@ -103,6 +106,10 @@ class SimpleChat extends Block
 		RadioField::make('form_position', $this->txt['form_position'])
 			->setOptions(array_combine(['bottom', 'top'], $this->txt['form_position_set']))
 			->setValue($options['form_position']);
+
+		NumberField::make('window_height', $this->txt['window_height'])
+			->setAttribute('step', 10)
+			->setValue($options['window_height']);
 	}
 
 	public function getData(int $block_id, array $parameters): array
@@ -125,6 +132,7 @@ class SimpleChat extends Block
 
 		$parameters['show_avatars'] ??= $this->params['show_avatars'];
 		$parameters['form_position'] ??= $this->params['form_position'];
+		$parameters['window_height'] ??= $this->params['window_height'];
 
 		$messages = $this->cache($this->name . '_addon_b' . $id)
 			->setLifeTime($e->args->cacheTime)
