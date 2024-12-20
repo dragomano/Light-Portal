@@ -28,6 +28,9 @@ class Init
 {
 	public function __invoke(): void
 	{
+		if (defined('LP_NAME'))
+			return;
+
 		Utils::$context['lp_load_time'] ??= microtime(true);
 
 		define('LP_NAME', (new DateTime())->format('m-d') === '04-01' ? 'Lazy Panda' : 'Light Portal');
