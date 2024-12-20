@@ -35,7 +35,7 @@ abstract class AbstractPageList implements PageListInterface
 {
 	use EntityDataTrait;
 
-	abstract public function show(PageInterface $page);
+	abstract public function show(CardListInterface $cardList);
 
 	abstract public function showAll();
 

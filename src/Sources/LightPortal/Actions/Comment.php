@@ -12,7 +12,6 @@
 
 namespace Bugo\LightPortal\Actions;
 
-use Bugo\Compat\Config;
 use Bugo\Compat\PageIndex;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;

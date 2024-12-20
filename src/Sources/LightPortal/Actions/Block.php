@@ -15,6 +15,7 @@ namespace Bugo\LightPortal\Actions;
 use Bugo\Compat\Config;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\Icon;
@@ -37,7 +38,7 @@ use const LP_PAGE_PARAM;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class Block implements BlockInterface
+final class Block implements ActionInterface
 {
 	use RequestTrait;
 
@@ -103,14 +104,14 @@ final class Block implements BlockInterface
 	private function getFilteredByAreas(): array
 	{
 		$area = Utils::$context['current_action'] ?: (
-			empty(Config::$modSettings['lp_frontpage_mode']) ? 'forum' : LP_ACTION
+			empty(Config::$modSettings['lp_frontpage_mode']) ? Action::FORUM->value : LP_ACTION
 		);
 
 		if (Setting::isStandaloneMode()) {
 			if (Config::$modSettings['lp_standalone_url'] === $this->request()->url()) {
 				$area = LP_ACTION;
 			} elseif (empty(Utils::$context['current_action'])) {
-				$area = 'forum';
+				$area = Action::FORUM->value;
 			}
 		}
 
@@ -134,7 +135,7 @@ final class Block implements BlockInterface
 
 			if (
 				$area === LP_ACTION
-				&& isset($block['areas']['home'])
+				&& isset($block['areas'][Action::HOME->value])
 				&& empty(Utils::$context['lp_page'])
 				&& empty(Utils::$context['current_action'])
 			) {

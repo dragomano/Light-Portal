@@ -45,7 +45,7 @@ final class Category extends AbstractPageList
 {
 	use RequestTrait;
 
-	public function show(PageInterface $page): void
+	public function show(CardListInterface $cardList): void
 	{
 		if ($this->request()->hasNot('id')) {
 			$this->showAll();
@@ -85,9 +85,9 @@ final class Category extends AbstractPageList
 			'name' => $category['title'] ?? Lang::$txt['lp_no_category'],
 		];
 
-		$page->showAsCards($this);
+		$cardList->show($this);
 
-		$builder = $page->getBuilder('lp_categories');
+		$builder = $cardList->getBuilder('lp_categories');
 		$builder->setItems($this->getPages(...));
 		$builder->setCount(fn() => $this->getTotalCount());
 

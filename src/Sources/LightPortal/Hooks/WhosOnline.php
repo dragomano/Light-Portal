@@ -14,6 +14,7 @@ namespace Bugo\LightPortal\Hooks;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
+use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Utils\EntityDataTrait;
 use Bugo\LightPortal\Utils\Setting;
 
@@ -87,7 +88,7 @@ class WhosOnline
 			}
 		}
 
-		if ($actions['action'] === 'forum') {
+		if ($actions['action'] === Action::FORUM->value) {
 			$result = sprintf(
 				Lang::$txt['lp_who_viewing_index'],
 				Config::$scripturl . '?action=forum'

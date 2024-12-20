@@ -44,7 +44,7 @@ final class Tag extends AbstractPageList
 {
 	use RequestTrait;
 
-	public function show(PageInterface $page): void
+	public function show(CardListInterface $cardList): void
 	{
 		if ($this->request()->hasNot('id')) {
 			$this->showAll();
@@ -78,9 +78,9 @@ final class Tag extends AbstractPageList
 			'name' => $tag['title'],
 		];
 
-		$page->showAsCards($this);
+		$cardList->show($this);
 
-		$builder = $page->getBuilder('lp_tags');
+		$builder = $cardList->getBuilder('lp_tags');
 		$builder->setItems($this->getPages(...));
 		$builder->setCount(fn() => $this->getTotalCount());
 

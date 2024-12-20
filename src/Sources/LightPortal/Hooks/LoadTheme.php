@@ -27,12 +27,12 @@ use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\TitleClass;
 use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Lists\ActiveBlockList;
+use Bugo\LightPortal\Utils\ConfigProvider;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionManager;
 
 use function array_combine;
 use function array_map;
-use function dirname;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -46,7 +46,7 @@ class LoadTheme
 
 	public function __construct()
 	{
-		$this->config = require dirname(__DIR__) . '/Settings/config.php';
+		$this->config = (new ConfigProvider())->get();
 	}
 
 	public function __invoke(): void

@@ -10,8 +10,10 @@
  * @version 2.8
  */
 
-namespace Bugo\LightPortal\Actions;
+namespace Bugo\LightPortal\Enums;
 
-interface BlockInterface extends ActionInterface
+enum Action: string
 {
+	case FORUM = 'forum';
+	case HOME = 'home';
 }

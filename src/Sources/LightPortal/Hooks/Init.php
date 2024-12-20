@@ -18,6 +18,7 @@ use Bugo\LightPortal\Utils\Setting;
 use DateTime;
 
 use function define;
+use function defined;
 use function dirname;
 use function microtime;
 

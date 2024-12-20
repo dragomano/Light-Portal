@@ -14,6 +14,7 @@ namespace Bugo\LightPortal\Hooks;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Setting;
 
@@ -75,9 +76,6 @@ trait CommonChecks
 
 	protected function getDisabledActions(): array
 	{
-		$disabledActions = Setting::getDisabledActions();
-		$disabledActions[] = 'home';
-
-		return $disabledActions;
+		return [...Setting::getDisabledActions(), Action::HOME->value];
 	}
 }

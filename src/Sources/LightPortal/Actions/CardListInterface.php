@@ -14,9 +14,9 @@ namespace Bugo\LightPortal\Actions;
 
 use Bugo\Bricks\Tables\Interfaces\TableBuilderInterface;
 
-interface PageInterface extends ActionInterface
+interface CardListInterface
 {
-	public function showAsCards(PageListInterface $entity): void;
+	public function show(PageListInterface $entity): void;
 
 	public function getBuilder(string $id): TableBuilderInterface;
 }

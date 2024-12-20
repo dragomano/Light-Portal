@@ -28,6 +28,7 @@ use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Renderers\RendererInterface;
 use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\ConfigProvider;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\RequestTrait;
@@ -69,7 +70,7 @@ final class FrontPage implements ActionInterface
 
 	public function __construct()
 	{
-		$this->config = require dirname(__DIR__) . '/Settings/config.php';
+		$this->config = (new ConfigProvider())->get();
 
 		$this->renderer = new $this->config[RendererInterface::class];
 	}

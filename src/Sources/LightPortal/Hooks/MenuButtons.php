@@ -17,6 +17,7 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Actions\Block;
+use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Utils\Setting;
@@ -194,7 +195,7 @@ class MenuButtons
 			LP_ACTION => [
 				'title'       => Lang::$txt['lp_portal'],
 				'href'        => Config::$scripturl,
-				'icon'        => 'home',
+				'icon'        => Action::HOME->value,
 				'show'        => true,
 				'action_hook' => true,
 				'is_last'     => Utils::$context['right_to_left'],
@@ -202,9 +203,9 @@ class MenuButtons
 		], $buttons);
 
 		// "Forum"
-		$buttons['home']['title'] = Lang::$txt['lp_forum'];
-		$buttons['home']['href']  = Config::$scripturl . '?action=forum';
-		$buttons['home']['icon']  = 'im_on';
+		$buttons[Action::HOME->value]['title'] = Lang::$txt['lp_forum'];
+		$buttons[Action::HOME->value]['href']  = Config::$scripturl . '?action=forum';
+		$buttons[Action::HOME->value]['icon']  = 'im_on';
 
 		// Standalone mode
 		if (empty(Config::$modSettings['lp_standalone_mode']))
@@ -212,13 +213,13 @@ class MenuButtons
 
 		$buttons[LP_ACTION]['title']   = Lang::$txt['lp_portal'];
 		$buttons[LP_ACTION]['href']    = Config::$modSettings['lp_standalone_url'] ?: Config::$scripturl;
-		$buttons[LP_ACTION]['icon']    = 'home';
+		$buttons[LP_ACTION]['icon']    = Action::HOME->value;
 		$buttons[LP_ACTION]['is_last'] = Utils::$context['right_to_left'];
 
 		$buttons = array_merge(
 			array_slice($buttons, 0, 2, true),
 			[
-				'forum' => [
+				Action::FORUM->value => [
 					'title'       => Lang::$txt['lp_forum'],
 					'href'        => Config::$modSettings['lp_standalone_url']
 						? Config::$scripturl : Config::$scripturl . '?action=forum',
@@ -276,7 +277,7 @@ class MenuButtons
 	 */
 	protected function fixCanonicalUrl(): void
 	{
-		if ($this->request()->is('forum')) {
+		if ($this->request()->is(Action::FORUM->value)) {
 			Utils::$context['canonical_url'] = Config::$scripturl . '?action=forum';
 		}
 	}

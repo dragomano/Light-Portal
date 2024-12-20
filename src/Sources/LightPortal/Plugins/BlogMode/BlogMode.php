@@ -21,6 +21,7 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Configs\BasicConfig;
+use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
@@ -145,7 +146,7 @@ class BlogMode extends Plugin
 		foreach (array_keys($buttons) as $area) {
 			$counter++;
 
-			if ($area === 'home')
+			if ($area === Action::HOME->value)
 				break;
 		}
 

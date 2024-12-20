@@ -17,10 +17,11 @@ use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Actions\BoardIndex;
+use Bugo\LightPortal\Actions\CardList;
 use Bugo\LightPortal\Actions\Category;
 use Bugo\LightPortal\Actions\FrontPage;
-use Bugo\LightPortal\Actions\Page;
 use Bugo\LightPortal\Actions\Tag;
+use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\RequestTrait;
 
@@ -39,20 +40,20 @@ class Actions
 
 	public function __invoke(array &$actions): void
 	{
-		if (Setting::get('lp_frontpage_mode', 'bool', false)) {
+		if (Setting::get('lp_frontpage_mode', 'string', '')) {
 			$actions[LP_ACTION] = [false, [new FrontPage(), 'show']];
 		}
 
-		$actions['forum'] = [false, [new BoardIndex(), 'show']];
+		$actions[Action::FORUM->value] = [false, [new BoardIndex(), 'show']];
 
 		Theme::load();
 
 		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'categories') {
-			(new Category())->show(new Page());
+			(new Category())->show(new CardList());
 		}
 
 		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'tags') {
-			(new Tag())->show(new Page());
+			(new Tag())->show(new CardList());
 		}
 
 		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'promote') {
