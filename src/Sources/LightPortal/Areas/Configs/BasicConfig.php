@@ -313,7 +313,7 @@ final class BasicConfig extends AbstractConfig
 				'class' => 'errorbox',
 				'label' => Lang::getTxt('lp_new_version', [
 					$info['tag_name'],
-					Time::timeformat(strtotime($info['published_at']), false)
+					Time::stringFromUnix(strtotime($info['published_at']))
 				]),
 			];
 		}
