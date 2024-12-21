@@ -35,6 +35,7 @@ enum Hook
 	case memberContext;
 	case menuButtons;
 	case messageindexButtons;
+	case packageUpload;
 	case permissionsList;
 	case preCssOutput;
 	case preLoad;

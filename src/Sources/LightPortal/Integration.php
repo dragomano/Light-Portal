@@ -25,6 +25,7 @@ use Bugo\LightPortal\Hooks\LoadIllegalGuestPermissions;
 use Bugo\LightPortal\Hooks\LoadPermissions;
 use Bugo\LightPortal\Hooks\LoadTheme;
 use Bugo\LightPortal\Hooks\MenuButtons;
+use Bugo\LightPortal\Hooks\PackageUpload;
 use Bugo\LightPortal\Hooks\PermissionsList;
 use Bugo\LightPortal\Hooks\PreCssOutput;
 use Bugo\LightPortal\Hooks\PreLoad;
@@ -68,6 +69,7 @@ final class Integration
 		$this->applyHook(Hook::deleteMembers, DeleteMembers::class);
 		$this->applyHook(Hook::alertTypes, AlertTypes::class);
 		$this->applyHook(Hook::fetchAlerts, FetchAlerts::class);
+		$this->applyHook(Hook::packageUpload, PackageUpload::class);
 		$this->applyHook(Hook::profileAreas, ProfileAreas::class);
 		$this->applyHook(Hook::profilePopup, ProfilePopup::class);
 		$this->applyHook(Hook::downloadRequest, DownloadRequest::class);
