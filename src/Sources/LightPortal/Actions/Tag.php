@@ -54,7 +54,7 @@ final class Tag extends AbstractPageList
 			'id' => (int) $this->request('id', 0)
 		];
 
-		$tags = $this->getEntityData('tag');
+		$tags = app('tag_list');
 		if (array_key_exists($tag['id'], $tags) === false) {
 			Utils::$context['error_link'] = LP_BASE_URL . ';sa=tags';
 			Lang::$txt['back'] = Lang::$txt['lp_all_page_tags'];

@@ -12,7 +12,6 @@
 
 namespace Bugo\LightPortal\Tasks;
 
-use Bugo\LightPortal\Repositories\CommentRepository;
 use Bugo\Compat\Tasks\BackgroundTask;
 use Bugo\Compat\Db;
 
@@ -75,7 +74,7 @@ final class Maintainer extends BackgroundTask
 				AND parent_id NOT IN (SELECT * FROM (SELECT id FROM {db_prefix}lp_comments) com)',
 		);
 
-		$commentRepository = new CommentRepository();
+		$commentRepository = app('comment_repo');
 		$commentRepository->removeFromResult($result);
 	}
 

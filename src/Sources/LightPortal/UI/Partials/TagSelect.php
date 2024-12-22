@@ -14,7 +14,6 @@ namespace Bugo\LightPortal\UI\Partials;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Utils\EntityDataTrait;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Setting;
 
@@ -24,11 +23,9 @@ use function json_encode;
 
 final class TagSelect extends AbstractPartial
 {
-	use EntityDataTrait;
-
 	public function __invoke(): string
 	{
-		Utils::$context['lp_tags'] = $this->getEntityData('tag');
+		Utils::$context['lp_tags'] = app('tag_list');
 
 		$data = $values = [];
 		foreach (Utils::$context['lp_tags'] as $id => $tag) {

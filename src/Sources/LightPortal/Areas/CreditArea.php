@@ -19,7 +19,6 @@ use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\SMFHookTrait;
 use Bugo\LightPortal\Utils\Str;
@@ -337,7 +336,7 @@ final class CreditArea
 		];
 
 		// Adding copyrights of used plugins
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::credits,
 			new Event(new class ($links) {
 				public function __construct(public array &$links) {}

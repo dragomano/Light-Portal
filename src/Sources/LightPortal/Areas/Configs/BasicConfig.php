@@ -20,11 +20,9 @@ use Bugo\Compat\Time;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\Compat\WebFetchApi;
-use Bugo\LightPortal\Actions\FrontPage;
 use Bugo\LightPortal\Areas\Traits\QueryTrait;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
-use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\UI\Partials\ActionSelect;
 use Bugo\LightPortal\Utils\CacheTrait;
@@ -152,7 +150,7 @@ final class BasicConfig extends AbstractConfig
 			[
 				'select',
 				'lp_frontpage_layout',
-				(new FrontPage())->getLayouts(),
+				app('front_page')->getLayouts(),
 				'postinput' => $templateEditLink,
 				'tab' => self::TAB_CARDS,
 			],
@@ -238,7 +236,7 @@ final class BasicConfig extends AbstractConfig
 
 		Utils::$context['sub_template'] = 'portal_basic_settings';
 
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::extendBasicConfig,
 			new Event(new class ($configVars) {
 				public function __construct(public array &$configVars) {}

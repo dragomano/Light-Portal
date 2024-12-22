@@ -41,7 +41,7 @@ final class Cache implements CacheInterface
 		}
 
 		if (($cachedValue = $this->get($this->key, $this->lifeTime)) === null) {
-			$cachedValue = (new Weaver())(fn() => $this->callMethod($className, $methodName, ...$params));
+			$cachedValue = app('weaver')(fn() => $this->callMethod($className, $methodName, ...$params));
 
 			$this->put($this->key, $cachedValue, $this->lifeTime);
 		}

@@ -53,7 +53,7 @@ final class TagArea
 
 	public function __construct()
 	{
-		$this->repository = new TagRepository();
+		$this->repository = app('tag_repo');
 	}
 
 	public function main(): void

@@ -16,17 +16,6 @@ class PluginRegistry
 {
 	private array $plugins = [];
 
-	private static self $instance;
-
-	public static function getInstance(): self
-	{
-		if (empty(self::$instance)) {
-			self::$instance = new self();
-		}
-
-		return self::$instance;
-	}
-
 	public function add(string $name, array $plugin): void
 	{
 		if (! $this->has($name)) {

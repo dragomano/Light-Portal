@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 21.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\TopPages;
@@ -72,7 +72,7 @@ class TopPages extends Block
 
 	public function getData(array $parameters): array
 	{
-		$titles = $this->getEntityData('title');
+		$titles = app('title_list');
 
 		$result = Db::$db->query('', '
 			SELECT page_id, slug, type, num_views, num_comments

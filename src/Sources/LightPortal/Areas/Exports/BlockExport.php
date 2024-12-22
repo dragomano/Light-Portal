@@ -38,7 +38,7 @@ final class BlockExport extends AbstractExport
 
 	public function __construct()
 	{
-		$this->repository = new BlockRepository();
+		$this->repository = app('block_repo');
 	}
 
 	public function main(): void

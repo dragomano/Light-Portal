@@ -18,13 +18,9 @@ use Bugo\LightPortal\EventManager;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
-use function array_map;
-use function basename;
 use function class_exists;
-use function glob;
 
 use const DIRECTORY_SEPARATOR;
-use const GLOB_ONLYDIR;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -33,24 +29,22 @@ final class PluginHandler
 {
 	private readonly PluginRegistry $registry;
 
+	private readonly AssetHandler $assetHandler;
+
 	private readonly ConfigHandler $configHandler;
 
 	private readonly LangHandler $langHandler;
 
-	private readonly AssetHandler $assetHandler;
-
-	private static EventManager $manager;
+	private readonly EventManager $manager;
 
 	public function __construct(array $plugins = [])
 	{
-		$this->registry = PluginRegistry::getInstance();
-		$this->configHandler = new ConfigHandler();
-		$this->langHandler = new LangHandler();
-		$this->assetHandler = new AssetHandler();
+		$this->registry = app('plugin_registry');
+		$this->manager  = app('event_manager');
 
-		if (empty(self::$manager)) {
-			self::$manager = new EventManager();
-		}
+		$this->assetHandler  = new AssetHandler();
+		$this->configHandler = new ConfigHandler();
+		$this->langHandler   = new LangHandler();
 
 		$this->prepareListeners($plugins);
 		$this->prepareAssets();
@@ -59,29 +53,21 @@ final class PluginHandler
 		Utils::$context['lp_loaded_addons'] = $this->registry->getAll();
 	}
 
-	public function getManager(): EventManager
-	{
-		return self::$manager;
-	}
-
 	public function getRegistry(): PluginRegistry
 	{
 		return $this->registry;
 	}
 
-	public function getAll(): array
+	public function getManager(): EventManager
 	{
-		if (empty($dirs = glob(__DIR__ . '/*', GLOB_ONLYDIR)))
-			return [];
-
-		return array_map(static fn($item): string => basename($item), $dirs);
+		return $this->manager;
 	}
 
 	private function prepareAssets(): void
 	{
 		$assets = [];
 
-		self::$manager->dispatch(
+		$this->manager->dispatch(
 			PortalHook::prepareAssets,
 			new Event(new class ($assets) {
 				public function __construct(public array &$assets) {}
@@ -109,14 +95,14 @@ final class PluginHandler
 			if (! $this->registry->has($snakeName)) {
 				$path = __DIR__ . DIRECTORY_SEPARATOR . $pluginName . DIRECTORY_SEPARATOR;
 
+				$this->assetHandler->handle($path, $pluginName);
 				$this->configHandler->handle($snakeName);
 				$this->langHandler->handle($path, $snakeName);
-				$this->assetHandler->handle($path, $pluginName);
 
 				/** @var Plugin $className */
 				$class = new $className();
 
-				self::$manager->addListeners(PortalHook::cases(), $class);
+				$this->manager->addListeners(PortalHook::cases(), $class);
 
 				$this->registry->add($snakeName, [
 					'name'     => $pluginName,

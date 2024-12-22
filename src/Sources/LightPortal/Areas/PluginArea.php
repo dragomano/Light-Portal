@@ -21,11 +21,9 @@ use Bugo\Compat\WebFetchApi;
 use Bugo\LightPortal\Args\SettingsArgs;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
-use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\CacheTrait;
-use Bugo\LightPortal\Utils\EntityDataTrait;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\RequestTrait;
@@ -58,14 +56,13 @@ if (! defined('SMF'))
 final class PluginArea
 {
 	use CacheTrait;
-	use EntityDataTrait;
 	use RequestTrait;
 
 	private PluginRepository $repository;
 
 	public function __construct()
 	{
-		$this->repository = new PluginRepository();
+		$this->repository = app('plugin_repo');
 	}
 
 	public function main(): void
@@ -92,7 +89,7 @@ final class PluginArea
 			),
 		];
 
-		Utils::$context['lp_plugins'] = $this->getEntityData('plugin');
+		Utils::$context['lp_plugins'] = app('plugin_list');
 
 		$this->extendPluginList();
 
@@ -103,7 +100,7 @@ final class PluginArea
 		$settings = [];
 
 		// Plugin authors can add settings here
-		(new EventManagerFactory())(Utils::$context['lp_plugins'])->dispatch(
+		app('events', Utils::$context['lp_plugins'])->dispatch(
 			PortalHook::addSettings,
 			new Event(new SettingsArgs($settings))
 		);
@@ -180,7 +177,7 @@ final class PluginArea
 		}
 
 		// Plugin authors can do additional actions after settings saving
-		(new EventManagerFactory())(Utils::$context['lp_plugins'])->dispatch(
+		app('events', Utils::$context['lp_plugins'])->dispatch(
 			PortalHook::saveSettings,
 			new Event(new SettingsArgs($settings))
 		);
@@ -381,8 +378,9 @@ final class PluginArea
 
 	private function getTypes(string $snakeName): array
 	{
-		if (empty($snakeName) || empty($type = Utils::$context['lp_loaded_addons'][$snakeName]['type'] ?? ''))
+		if (empty($snakeName) || empty($type = Utils::$context['lp_loaded_addons'][$snakeName]['type'] ?? '')) {
 			return [Lang::$txt['not_applicable'] => ''];
+		}
 
 		$types = explode(' ', (string) $type);
 		if (isset($types[1])) {

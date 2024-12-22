@@ -14,7 +14,6 @@ namespace Bugo\LightPortal\Areas\Imports;
 use Bugo\Compat\Config;
 use Bugo\LightPortal\Args\ItemsTitlesArgs;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 
 if (! defined('SMF'))
@@ -26,7 +25,7 @@ abstract class AbstractCustomCategoryImport extends AbstractCustomImport
 
 	protected function importItems(array &$items, array &$titles): array
 	{
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::importCategories,
 			new Event(new ItemsTitlesArgs($items, $titles))
 		);

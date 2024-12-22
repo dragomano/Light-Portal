@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.11.24
+ * @version 21.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\BlogMode;
@@ -29,7 +29,7 @@ class BlogIndex
 
 	public function __construct()
 	{
-		$this->front = new FrontPage();
+		$this->front = app('front_page');
 
 		$this->action = Utils::$context['lp_blog_mode_plugin']['blog_action'] ?? '';
 	}

@@ -30,7 +30,7 @@ final class PageList implements ListInterface
 
 	public function __construct()
 	{
-		$this->repository = new PageRepository();
+		$this->repository = app('page_repo');
 	}
 
 	public function __invoke(): array

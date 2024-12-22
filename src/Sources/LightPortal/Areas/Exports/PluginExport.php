@@ -18,7 +18,6 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Sapi;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Utils\EntityDataTrait;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -35,8 +34,6 @@ if (! defined('SMF'))
 
 final class PluginExport extends AbstractExport
 {
-	use EntityDataTrait;
-
 	public function main(): void
 	{
 		Theme::loadTemplate('LightPortal/ManageImpex');
@@ -52,7 +49,7 @@ final class PluginExport extends AbstractExport
 			'description' => Lang::$txt['lp_plugins_export_description'],
 		];
 
-		Utils::$context['lp_plugins'] = $this->getEntityData('plugin');
+		Utils::$context['lp_plugins'] = app('plugin_list');
 
 		$this->run();
 	}

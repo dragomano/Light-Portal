@@ -24,11 +24,9 @@ use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\Content;
-use Bugo\LightPortal\Utils\EntityDataTrait;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
@@ -45,8 +43,6 @@ if (! defined('SMF'))
 
 class PageArticle extends AbstractArticle
 {
-	use EntityDataTrait;
-
 	protected array $selectedCategories = [];
 
 	protected int $sorting = 0;
@@ -78,7 +74,7 @@ class PageArticle extends AbstractArticle
 			'date DESC',
 		];
 
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::frontPages,
 			new Event(new ArticlesArgs(
 				$this->columns,
@@ -92,7 +88,7 @@ class PageArticle extends AbstractArticle
 
 	public function getData(int $start, int $limit): array
 	{
-		$titles = $this->getEntityData('title');
+		$titles = app('title_list');
 
 		$this->params += [
 			'start' => $start,
@@ -157,7 +153,7 @@ class PageArticle extends AbstractArticle
 
 			$this->prepareTeaser($pages, $row);
 
-			(new EventManagerFactory())()->dispatch(
+			app('events')->dispatch(
 				PortalHook::frontPagesRow,
 				new Event(new ArticlesRowArgs($pages, $row))
 			);

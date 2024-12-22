@@ -14,7 +14,6 @@ use Bugo\LightPortal\UI\Tables\TitleColumn;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Weaver;
 
 class CardList implements CardListInterface
 {
@@ -30,11 +29,11 @@ class CardList implements CardListInterface
 
 		$itemsCount = $entity->getTotalCount();
 
-		$front = new FrontPage();
+		$front = app('front_page');
 		$front->updateStart($itemsCount, $start, $limit);
 
-		$sort     = $front->getOrderBy();
-		$articles = (new Weaver())(static fn() => $entity->getPages($start, $limit, $sort));
+		$sort     = $this->getOrderBy();
+		$articles = app('weaver')(static fn() => $entity->getPages($start, $limit, $sort));
 
 		Utils::$context['page_index'] = new PageIndex(
 			Utils::$context['canonical_url'], $start, $itemsCount, $limit
@@ -50,6 +49,26 @@ class CardList implements CardListInterface
 		$front->prepareTemplates();
 
 		Utils::obExit();
+	}
+
+	public function getOrderBy(): string
+	{
+		$sortingTypes = [
+			'title;desc'       => 't.value DESC',
+			'title'            => 't.value',
+			'created;desc'     => 'p.created_at DESC',
+			'created'          => 'p.created_at',
+			'updated;desc'     => 'p.updated_at DESC',
+			'updated'          => 'p.updated_at',
+			'author_name;desc' => 'author_name DESC',
+			'author_name'      => 'author_name',
+			'num_views;desc'   => 'p.num_views DESC',
+			'num_views'        => 'p.num_views',
+		];
+
+		Utils::$context['current_sorting'] = $this->request('sort', 'created;desc');
+
+		return $sortingTypes[Utils::$context['current_sorting']];
 	}
 
 	public function getBuilder(string $id): TableBuilderInterface

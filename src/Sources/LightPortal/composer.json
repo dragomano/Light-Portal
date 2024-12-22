@@ -10,11 +10,14 @@
     "bugo/smf-compat": "^0.2",
     "doctrine/event-manager": "^2.0",
     "eftec/bladeone": "^4.13",
+    "league/container": "^4.2",
     "nette/robot-loader": "^4.0"
   },
   "require-dev": {
-    "scssphp/scssphp": "^1.12",
-    "wikimedia/less.php": "^4.3"
+    "scssphp/scssphp": "^1.12"
+  },
+  "suggest": {
+    "wikimedia/less.php": "Install this package if you want to use the Less compiler instead of Sass"
   },
   "config": {
     "vendor-dir": "Libs",

@@ -19,7 +19,6 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\DateTime;
-use Bugo\LightPortal\Utils\EntityDataTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
@@ -33,8 +32,6 @@ if (! defined('SMF'))
 
 abstract class AbstractPageList implements PageListInterface
 {
-	use EntityDataTrait;
-
 	abstract public function show(CardListInterface $cardList);
 
 	abstract public function showAll();
@@ -82,7 +79,7 @@ abstract class AbstractPageList implements PageListInterface
 
 	private function getSectionData(array $row): array
 	{
-		if (empty($categories = $this->getEntityData('category')))
+		if (empty($categories = app('category_list')))
 			return [];
 
 		if (isset($row['category_id'])) {

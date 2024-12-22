@@ -17,9 +17,7 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\ServerSideIncludes;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\CacheTrait;
-use Bugo\LightPortal\Utils\EntityDataTrait;
 use Bugo\LightPortal\Utils\HasTemplateAware;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionTrait;
@@ -37,7 +35,6 @@ if (! defined('LP_NAME'))
 abstract class Plugin implements PluginInterface
 {
 	use CacheTrait;
-	use EntityDataTrait;
 	use HasTemplateAware;
 	use RequestTrait;
 	use SMFHookTrait;
@@ -89,7 +86,7 @@ abstract class Plugin implements PluginInterface
 			}
 		}
 
-		(new PluginRepository())->addSettings($settings);
+		app('plugin_repo')->addSettings($settings);
 	}
 
 	function loadExternalResources(array $resources): void

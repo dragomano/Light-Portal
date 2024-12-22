@@ -20,7 +20,6 @@ use Bugo\Compat\User;
 use Bugo\LightPortal\Args\ArticlesArgs;
 use Bugo\LightPortal\Args\ArticlesRowArgs;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\Setting;
@@ -60,7 +59,7 @@ class TopicArticle extends AbstractArticle
 			'date DESC',
 		];
 
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::frontTopics,
 			new Event(new ArticlesArgs(
 				$this->columns,
@@ -152,7 +151,7 @@ class TopicArticle extends AbstractArticle
 
 			$this->prepareTeaser($topics, $row);
 
-			(new EventManagerFactory())()->dispatch(
+			app('events')->dispatch(
 				PortalHook::frontTopicsRow,
 				new Event(new ArticlesRowArgs($topics, $row))
 			);

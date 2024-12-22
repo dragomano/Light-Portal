@@ -95,9 +95,9 @@ class PageList extends Block
 
 	public function getData(array $parameters): array
 	{
-		$titles = $this->getEntityData('title');
+		$titles = app('title_list');
 
-		$allCategories = $this->getEntityData('category');
+		$allCategories = app('category_list');
 
 		$categories = empty($parameters['categories']) ? null : explode(',', (string) $parameters['categories']);
 

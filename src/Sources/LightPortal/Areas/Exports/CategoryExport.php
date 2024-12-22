@@ -44,7 +44,7 @@ final class CategoryExport extends AbstractExport
 
 	public function __construct()
 	{
-		$this->repository = new CategoryRepository();
+		$this->repository = app('category_repo');
 	}
 
 	public function main(): void

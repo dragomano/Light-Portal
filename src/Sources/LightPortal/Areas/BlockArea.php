@@ -26,7 +26,6 @@ use Bugo\LightPortal\Args\ParamsArgs;
 use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Models\BlockModel;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Repositories\BlockRepository;
@@ -78,7 +77,7 @@ final class BlockArea
 
 	public function __construct()
 	{
-		$this->repository = new BlockRepository;
+		$this->repository = app('block_repo');
 	}
 
 	public function main(): void
@@ -240,7 +239,7 @@ final class BlockArea
 
 		$params = [];
 
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::prepareBlockParams,
 			new Event(new ParamsArgs($params, Utils::$context['current_block']['type']))
 		);
@@ -359,7 +358,7 @@ final class BlockArea
 
 		Utils::$context['lp_block_tab_appearance'] = true;
 
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::prepareBlockFields,
 			new Event(new OptionsTypeArgs(Utils::$context['lp_block']['options'], Utils::$context['current_block']['type']))
 		);
@@ -394,7 +393,7 @@ final class BlockArea
 
 	private function prepareEditor(): void
 	{
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::prepareEditor,
 			new Event(new ObjectArgs(Utils::$context['lp_block']))
 		);

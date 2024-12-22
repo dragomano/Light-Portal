@@ -34,7 +34,6 @@ use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Models\PageModel;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Repositories\PageRepository;
@@ -63,7 +62,6 @@ use Bugo\LightPortal\UI\Tables\TitleColumn;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\DateTime;
-use Bugo\LightPortal\Utils\EntityDataTrait;
 use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Setting;
@@ -91,7 +89,6 @@ final class PageArea
 {
 	use AreaTrait;
 	use CacheTrait;
-	use EntityDataTrait;
 	use RequestTrait;
 
 	private array $params = [];
@@ -106,7 +103,7 @@ final class PageArea
 
 	public function __construct()
 	{
-		$this->repository = new PageRepository;
+		$this->repository = app('page_repo');
 	}
 
 	public function main(): void
@@ -488,7 +485,7 @@ final class PageArea
 
 		$params = [];
 
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::preparePageParams,
 			new Event(new ParamsArgs($params, Utils::$context['lp_current_page']['type']))
 		);
@@ -567,7 +564,7 @@ final class PageArea
 				'id'       => 'category_id',
 				'multiple' => false,
 				'wide'     => false,
-				'data'     => $this->getEntityData('category'),
+				'data'     => app('category_list'),
 				'value'    => Utils::$context['lp_page']['category_id'],
 			]);
 
@@ -644,7 +641,7 @@ final class PageArea
 				->setValue(Utils::$context['lp_page']['options']['allow_comments']);
 		}
 
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::preparePageFields,
 			new Event(new OptionsTypeArgs(Utils::$context['lp_page']['options'], Utils::$context['lp_page']['type']))
 		);
@@ -654,7 +651,7 @@ final class PageArea
 
 	private function prepareEditor(): void
 	{
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::prepareEditor,
 			new Event(new ObjectArgs(Utils::$context['lp_page']))
 		);

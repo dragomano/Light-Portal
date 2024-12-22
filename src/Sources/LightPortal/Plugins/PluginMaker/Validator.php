@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 21.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
@@ -17,7 +17,6 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Validators\AbstractValidator;
 use Bugo\LightPortal\Enums\VarType;
-use Bugo\LightPortal\Utils\EntityDataTrait;
 use Bugo\LightPortal\Utils\RequestTrait;
 
 if (! defined('LP_NAME'))
@@ -25,7 +24,6 @@ if (! defined('LP_NAME'))
 
 class Validator extends AbstractValidator
 {
-	use EntityDataTrait;
 	use RequestTrait;
 
 	protected array $args = [
@@ -121,6 +119,6 @@ class Validator extends AbstractValidator
 	 */
 	private function isUnique(string $name): bool
 	{
-		return ! in_array($name, $this->getEntityData('plugin'));
+		return ! in_array($name, app('plugin_list'));
 	}
 }

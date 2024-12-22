@@ -25,9 +25,6 @@ use Bugo\LightPortal\Enums\Placement;
 use Bugo\LightPortal\Enums\PluginType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\TitleClass;
-use Bugo\LightPortal\EventManagerFactory;
-use Bugo\LightPortal\Lists\ActiveBlockList;
-use Bugo\LightPortal\Utils\ConfigProvider;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionManager;
 
@@ -42,13 +39,6 @@ class LoadTheme
 	use CommonChecks;
 	use RequestTrait;
 
-	private array $config;
-
-	public function __construct()
-	{
-		$this->config = (new ConfigProvider())->get();
-	}
-
 	public function __invoke(): void
 	{
 		if ($this->isPortalCanBeLoaded() === false)
@@ -58,10 +48,10 @@ class LoadTheme
 
 		$this->defineVars();
 
-		$this->loadAssets(new $this->config[CompilerInterface::class]);
+		$this->loadAssets(app('compiler'));
 
 		// Run all init methods for active plugins
-		(new EventManagerFactory())()->dispatch(PortalHook::init);
+		app('events')->dispatch(PortalHook::init);
 	}
 
 	protected function defineVars(): void
@@ -82,7 +72,7 @@ class LoadTheme
 		Utils::$context['lp_content_types'] = ContentType::all();
 		Utils::$context['lp_page_types'] = EntryType::all();
 
-		Utils::$context['lp_active_blocks'] = (new ActiveBlockList())();
+		Utils::$context['lp_active_blocks'] = app('active_blocks');
 	}
 
 	protected function loadAssets(CompilerInterface $compiler): void

@@ -20,11 +20,9 @@ use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Content;
-use Bugo\LightPortal\Utils\EntityDataTrait;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionTrait;
@@ -51,7 +49,6 @@ if (! defined('SMF'))
 final class Page implements ActionInterface
 {
 	use CacheTrait;
-	use EntityDataTrait;
 	use RequestTrait;
 	use SessionTrait;
 
@@ -59,7 +56,7 @@ final class Page implements ActionInterface
 
 	public function __construct()
 	{
-		$this->repository = new PageRepository();
+		$this->repository = app('page_repo');
 	}
 
 	public function show(): void
@@ -301,7 +298,7 @@ final class Page implements ActionInterface
 		if (empty($page = Utils::$context['lp_page']) || empty(Config::$modSettings['lp_show_prev_next_links']))
 			return;
 
-		$titles = $this->getEntityData('title');
+		$titles = app('title_list');
 
 		[$prevId, $prevSlug, $nextId, $nextSlug] = $this->repository->getPrevNextLinks($page);
 
@@ -341,7 +338,7 @@ final class Page implements ActionInterface
 
 		Lang::load('Editor');
 
-		(new EventManagerFactory())()->dispatch(PortalHook::comments);
+		app('events')->dispatch(PortalHook::comments);
 
 		if (isset(Utils::$context['lp_' . Setting::getCommentBlock() . '_comment_block']))
 			return;

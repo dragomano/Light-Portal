@@ -14,7 +14,6 @@ namespace Bugo\LightPortal\Hooks;
 
 use Bugo\Compat\Lang;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 
 if (! defined('SMF'))
@@ -26,7 +25,7 @@ class DownloadRequest
 	{
 		Lang::load('LightPortal/LightPortal');
 
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::downloadRequest,
 			new Event(new class ($attachRequest) {
 				public function __construct(public mixed &$attachRequest) {}

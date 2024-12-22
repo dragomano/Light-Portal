@@ -15,7 +15,6 @@ namespace Bugo\LightPortal\Enums;
 use Bugo\Compat\Db;
 use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\Traits\HasValuesTrait;
-use Bugo\LightPortal\Utils\Cache;
 
 use function array_column;
 use function array_filter;
@@ -76,7 +75,7 @@ enum Permission: int
 
 	private static function getBoardModerators(): array
 	{
-		if (($moderators = (new Cache())->get('board_moderators')) === null) {
+		if (($moderators = app('cache')->get('board_moderators')) === null) {
 			$result = Db::$db->query('', /** @lang text */ '
 				SELECT id_member
 				FROM {db_prefix}moderators',
@@ -88,7 +87,7 @@ enum Permission: int
 
 			$moderators = array_column($items, 'id_member');
 
-			(new Cache())->put('board_moderators', $moderators);
+			app('cache')->put('board_moderators', $moderators);
 		}
 
 		return $moderators;

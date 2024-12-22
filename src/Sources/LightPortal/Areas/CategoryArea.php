@@ -55,7 +55,7 @@ final class CategoryArea
 
 	public function __construct()
 	{
-		$this->repository = new CategoryRepository();
+		$this->repository = app('category_repo');
 	}
 
 	public function main(): void

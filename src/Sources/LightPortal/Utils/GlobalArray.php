@@ -50,7 +50,7 @@ abstract class GlobalArray
 
 	public function hasNot(array|string $keys): bool
 	{
-		return array_reduce((array) $keys, fn($carry, $key) => $carry && !isset($this->storage[$key]), true);
+		return array_reduce((array) $keys, fn($carry, $key) => $carry && ! isset($this->storage[$key]), true);
 	}
 
 	public function isEmpty(string $key): bool

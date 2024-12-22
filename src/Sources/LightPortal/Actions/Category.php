@@ -55,7 +55,7 @@ final class Category extends AbstractPageList
 			'id' => (int) $this->request('id', 0)
 		];
 
-		$categories = $this->getEntityData('category');
+		$categories = app('category_list');
 		if (array_key_exists($category['id'], $categories) === false) {
 			Utils::$context['error_link'] = LP_BASE_URL . ';sa=categories';
 			Lang::$txt['back'] = Lang::$txt['lp_all_categories'];

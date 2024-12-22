@@ -18,7 +18,6 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\AlertAction;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
-use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Repositories\CommentRepository;
 use Bugo\LightPortal\Utils\Avatar;
@@ -50,7 +49,7 @@ final class Comment implements ActionInterface
 
 	public function __construct(private readonly string $pageSlug = '')
 	{
-		$this->repository = new CommentRepository();
+		$this->repository = app('comment_repo');
 	}
 
 	public function show(): void
@@ -79,7 +78,7 @@ final class Comment implements ActionInterface
 			$comment['authorial']     = Utils::$context['lp_page']['author_id'] === $comment['poster']['id'];
 			$comment['extra_buttons'] = [];
 
-			(new EventManagerFactory())()->dispatch(
+			app('events')->dispatch(
 				PortalHook::commentButtons,
 				new Event(new class ($comment, $comment['extra_buttons']) {
 					public function __construct(public readonly array $comment, public array &$buttons) {}

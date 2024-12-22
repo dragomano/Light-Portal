@@ -18,6 +18,7 @@ require_once __DIR__ . '/Libs/autoload.php';
 use Bugo\Compat\Sapi;
 use Bugo\LightPortal\Areas\ConfigArea;
 use Bugo\LightPortal\Areas\CreditArea;
+use Bugo\LightPortal\Container;
 use Bugo\LightPortal\Integration;
 use Nette\Loaders\RobotLoader;
 
@@ -43,3 +44,19 @@ $app = new class {
 };
 
 new $app;
+
+// Helper to work with Container::class
+function app(string $service = '', array $params = []): mixed
+{
+	if (empty($service)) {
+		return Container::getInstance();
+	}
+
+	$instance = Container::get($service);
+
+	if ($service === 'events') {
+		return $instance($params);
+	}
+
+	return $instance;
+}

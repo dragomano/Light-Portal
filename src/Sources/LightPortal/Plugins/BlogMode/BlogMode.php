@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\BlogMode;
@@ -25,7 +25,6 @@ use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\UI\Tables\NumViewsColumn;
 use Bugo\LightPortal\UI\Tables\DateColumn;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
@@ -214,7 +213,7 @@ class BlogMode extends Plugin
 			' - ' . User::$profiles[$memID]['real_name']
 		);
 
-		$repository = new PageRepository();
+		$repository = app('page_repo');
 
 		$params = [
 			'AND p.author_id = {int:current_user} AND p.entry_type = {string:entry_type}',

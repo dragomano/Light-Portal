@@ -24,24 +24,20 @@ use Bugo\LightPortal\Articles\ChosenTopicArticle;
 use Bugo\LightPortal\Articles\PageArticle;
 use Bugo\LightPortal\Articles\TopicArticle;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Renderers\RendererInterface;
 use Bugo\LightPortal\Utils\CacheTrait;
-use Bugo\LightPortal\Utils\ConfigProvider;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Weaver;
 
 use function abs;
 use function array_column;
 use function array_key_exists;
 use function array_map;
-use function call_user_func;
 use function date;
 use function floor;
 use function ltrim;
@@ -64,22 +60,18 @@ final class FrontPage implements ActionInterface
 		'chosen_topics' => ChosenTopicArticle::class,
 	];
 
-	private array $config;
-
 	private RendererInterface $renderer;
 
 	public function __construct()
 	{
-		$this->config = (new ConfigProvider())->get();
-
-		$this->renderer = new $this->config[RendererInterface::class];
+		$this->renderer = app('renderer');
 	}
 
 	public function show(): void
 	{
 		User::mustHavePermission('light_portal_view');
 
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::frontModes,
 			new Event(new class ($this->modes) {
 				public function __construct(public array &$modes) {}
@@ -89,7 +81,8 @@ final class FrontPage implements ActionInterface
 		if (array_key_exists(Config::$modSettings['lp_frontpage_mode'], $this->modes)) {
 			$this->prepare(new $this->modes[Config::$modSettings['lp_frontpage_mode']]);
 		} elseif (Setting::isFrontpageMode('chosen_page')) {
-			call_user_func([new Page(), 'show']);
+			app('page')->show();
+
 			return;
 		}
 
@@ -127,7 +120,7 @@ final class FrontPage implements ActionInterface
 
 			$this->updateStart($data['total'], $start, $limit);
 
-			$data['articles'] = (new Weaver())(static fn() => $article->getData($start, $limit));
+			$data['articles'] = app('weaver')(static fn() => $article->getData($start, $limit));
 
 			$this->cache()->put($key, $data);
 		}
@@ -156,7 +149,7 @@ final class FrontPage implements ActionInterface
 
 		Utils::$context['lp_frontpage_articles'] = $articles;
 
-		(new EventManagerFactory())()->dispatch(PortalHook::frontAssets);
+		app('events')->dispatch(PortalHook::frontAssets);
 	}
 
 	public function getLayouts(): array
@@ -187,7 +180,7 @@ final class FrontPage implements ActionInterface
 		];
 
 		// You can add your own logic here
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::frontLayouts,
 			new Event(new class ($this->renderer, $currentLayout, $params) {
 				public function __construct(
@@ -238,26 +231,6 @@ final class FrontPage implements ActionInterface
 			'3' => 4,
 			default => 6,
 		};
-	}
-
-	public function getOrderBy(): string
-	{
-		$sortingTypes = [
-			'title;desc'       => 't.value DESC',
-			'title'            => 't.value',
-			'created;desc'     => 'p.created_at DESC',
-			'created'          => 'p.created_at',
-			'updated;desc'     => 'p.updated_at DESC',
-			'updated'          => 'p.updated_at',
-			'author_name;desc' => 'author_name DESC',
-			'author_name'      => 'author_name',
-			'num_views;desc'   => 'p.num_views DESC',
-			'num_views'        => 'p.num_views',
-		];
-
-		Utils::$context['current_sorting'] = $this->request('sort', 'created;desc');
-
-		return $sortingTypes[Utils::$context['current_sorting']];
 	}
 
 	public function updateStart(int $total, int &$start, int $limit): void

@@ -13,13 +13,8 @@
 namespace Bugo\LightPortal\Hooks;
 
 use Bugo\Compat\Config;
-use Bugo\LightPortal\Actions\BoardIndex;
-use Bugo\LightPortal\Actions\FrontPage;
-use Bugo\LightPortal\Actions\Page;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Setting;
-
-use function call_user_func;
 
 use const LP_PAGE_PARAM;
 
@@ -33,13 +28,13 @@ class DefaultAction
 	public function __invoke(): mixed
 	{
 		if ($this->request()->isNotEmpty(LP_PAGE_PARAM)) {
-			return call_user_func([new Page(), 'show']);
+			return app('page')->show();
 		}
 
 		if (empty(Config::$modSettings['lp_frontpage_mode']) || Setting::isStandaloneMode()) {
-			return call_user_func([new BoardIndex(), 'show']);
+			return app('board_index')->show();
 		}
 
-		return call_user_func([new FrontPage(), 'show']);
+		return app('front_page')->show();
 	}
 }
