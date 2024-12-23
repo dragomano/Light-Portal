@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package RecentComments (Light Portal)
@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\RecentComments;
@@ -128,7 +128,7 @@ class RecentComments extends Block
 
 		$comments = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
 			->setLifeTime($e->args->cacheTime)
-			->setFallback(self::class, 'getData', (int) $parameters['num_comments'], (int) $parameters['length']);
+			->setFallback(fn() => $this->getData((int) $parameters['num_comments'], (int) $parameters['length']));
 
 		if (empty($comments))
 			return;

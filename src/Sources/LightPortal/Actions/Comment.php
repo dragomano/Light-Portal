@@ -70,7 +70,7 @@ final class Comment implements ActionInterface
 	private function get(): never
 	{
 		$comments = $this->cache('page_' . $this->pageSlug . '_comments')
-			->setFallback(CommentRepository::class, 'getByPageId', Utils::$context['lp_page']['id']);
+			->setFallback(fn() => app('comment_repo')->getByPageId(Utils::$context['lp_page']['id']));
 
 		$comments = array_map(function ($comment) {
 			$comment['human_date']    = DateTime::relative($comment['created_at']);

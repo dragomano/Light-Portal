@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package EzPortalMigration (Light Portal)
@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 24.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\EzPortalMigration;
@@ -97,7 +97,7 @@ class PageImport extends AbstractCustomPageImport
 				'status'     => 1,
 				'num_views'  => $row['views'],
 				'author_id'  => User::$info['id'],
-				'created_at' => DateTime::relative($row['date']),
+				'created_at' => DateTime::relative((int) $row['date']),
 				'title'      => $row['title'],
 			];
 		}

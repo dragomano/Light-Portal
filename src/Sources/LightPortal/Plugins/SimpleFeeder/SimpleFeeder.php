@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package SimpleFeeder (Light Portal)
@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleFeeder;
@@ -82,7 +82,7 @@ class SimpleFeeder extends Block
 
 		$feed = $this->cache($this->name . '_addon_b' . $e->args->id)
 			->setLifeTime($e->args->cacheTime)
-			->setFallback(self::class, 'getData', $parameters['url']);
+			->setFallback(fn() => $this->getData($parameters['url']));
 
 		if (empty($feed))
 			return;

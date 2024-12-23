@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package UserInfo (Light Portal)
@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\UserInfo;
@@ -50,7 +50,7 @@ class UserInfo extends Block
 
 		$userData = $this->cache($this->name . '_addon_u' . Utils::$context['user']['id'])
 			->setLifeTime($e->args->cacheTime)
-			->setFallback(self::class, 'getData');
+			->setFallback(fn() => $this->getData());
 
 		show_user_info($userData);
 	}

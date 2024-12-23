@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package TopPosters (Light Portal)
@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 09.12.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\TopPosters;
@@ -117,7 +117,7 @@ class TopPosters extends Block
 
 		$topPosters = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
 			->setLifeTime($e->args->cacheTime)
-			->setFallback(self::class, 'getData', $parameters);
+			->setFallback(fn() => $this->getData($parameters));
 
 		if (empty($topPosters)) {
 			echo $this->txt['none'];

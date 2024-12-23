@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package TinyPortalMigration (Light Portal)
@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 24.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\TinyPortalMigration;
@@ -98,7 +98,7 @@ class PageImport extends AbstractCustomPageImport
 				'status'     => (int) empty($row['off']),
 				'num_views'  => $row['views'],
 				'author_id'  => $row['author_id'],
-				'created_at' => DateTime::relative($row['date']),
+				'created_at' => DateTime::relative((int) $row['date']),
 				'title'      => $row['subject'],
 			];
 		}

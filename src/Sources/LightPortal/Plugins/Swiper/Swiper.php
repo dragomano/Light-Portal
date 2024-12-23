@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package Swiper (Light Portal)
@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 09.12.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\Swiper;
@@ -185,7 +185,7 @@ class Swiper extends Block
 
 		$swiperHtml = $this->cache($this->name . '_addon_b' . $id . '_' . User::$info['language'])
 			->setLifeTime($e->args->cacheTime)
-			->setFallback(self::class, 'getData', $id, $parameters);
+			->setFallback(fn() => $this->getData($id, $parameters));
 
 		if (empty($swiperHtml))
 			return;

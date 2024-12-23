@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package EhPortalMigration (Light Portal)
@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 24.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\EhPortalMigration;
@@ -98,7 +98,7 @@ class BlockImport extends AbstractCustomBlockImport
 				'id'        => $row['id_block'],
 				'type'      => Lang::$txt['lp_' . $this->getType($row['type'])]['title'],
 				'title'     => $row['title'],
-				'placement' => Utils::$context['lp_block_placements'][$this->getPlacement($row['col'])],
+				'placement' => Utils::$context['lp_block_placements'][$this->getPlacement((int) $row['col'])],
 			];
 		}
 

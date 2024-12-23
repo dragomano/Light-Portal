@@ -114,7 +114,7 @@ final class Page implements ActionInterface
 			return [];
 
 		$data = $this->cache('page_' . $slug)
-			->setFallback(PageRepository::class, 'getData', $slug);
+			->setFallback(fn() => app('page_repo')->getData($slug));
 
 		$this->repository->prepareData($data);
 

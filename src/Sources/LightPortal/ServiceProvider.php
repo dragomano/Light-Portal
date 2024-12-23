@@ -37,12 +37,15 @@ use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Repositories\TagRepository;
 use Bugo\LightPortal\Utils\Cache;
 use Bugo\LightPortal\Utils\ConfigProvider;
+use Bugo\LightPortal\Utils\File;
 use Bugo\LightPortal\Utils\Post;
 use Bugo\LightPortal\Utils\Request;
 use Bugo\LightPortal\Utils\Session;
 use Bugo\LightPortal\Utils\Weaver;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use Nette\Utils\Html;
+
+use function in_array;
 
 class ServiceProvider extends AbstractServiceProvider
 {
@@ -66,6 +69,7 @@ class ServiceProvider extends AbstractServiceProvider
 			'cache',
 			'request',
 			'post',
+			'file',
 			'session',
 			'block_repo',
 			'category_repo',
@@ -73,7 +77,6 @@ class ServiceProvider extends AbstractServiceProvider
 			'page_repo',
 			'plugin_repo',
 			'tag_repo',
-			'html',
 			'board_index',
 			'front_page',
 			'block',
@@ -81,6 +84,7 @@ class ServiceProvider extends AbstractServiceProvider
 			'category',
 			'tag',
 			'card_list',
+			'html',
 			'weaver',
 		];
 
@@ -109,6 +113,7 @@ class ServiceProvider extends AbstractServiceProvider
 		$this->getContainer()->add('cache', Cache::class);
 		$this->getContainer()->add('request', Request::class);
 		$this->getContainer()->add('post', Post::class);
+		$this->getContainer()->add('file', File::class);
 		$this->getContainer()->add('session', Session::class);
 
 		$this->getContainer()->add('block_repo', BlockRepository::class);

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package WhosOnline (Light Portal)
@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\WhosOnline;
@@ -79,7 +79,7 @@ class WhosOnline extends Block
 
 		$whoIsOnline = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
 			->setLifeTime($parameters['update_interval'] ?? $e->args->cacheTime)
-			->setFallback(self::class, 'getFromSSI', 'whosOnline', 'array');
+			->setFallback(fn() => $this->getFromSSI('whosOnline', 'array'));
 
 		if (empty($whoIsOnline))
 			return;

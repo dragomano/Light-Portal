@@ -16,7 +16,7 @@ interface CacheInterface
 {
 	public function setLifeTime(int $lifeTime): self;
 
-	public function setFallback(string $className, string $methodName, ...$params): mixed;
+	public function setFallback(callable $callback): mixed;
 
 	public function get(string $key, int $time): mixed;
 

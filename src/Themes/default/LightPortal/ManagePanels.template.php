@@ -202,7 +202,7 @@ function template_callback_panel_direction(): void
 
 		foreach (Lang::$txt['lp_panel_direction_set'] as $value => $direction) {
 			echo '
-							<option value="', $value, '"', ! empty(Setting::getPanelDirection()[$key]) && Setting::getPanelDirection()[$key] == $value ? ' selected' : '', '>', $direction, '</option>';
+							<option value="', $value, '"', Setting::getPanelDirection()[$key] == $value ? ' selected' : '', '>', $direction, '</option>';
 		}
 
 		echo '

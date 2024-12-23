@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package SimpleChat (Light Portal)
@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 21.12.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleChat;

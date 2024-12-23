@@ -16,16 +16,16 @@ trait RequestTrait
 {
 	public function request(?string $key = null, mixed $default = null): mixed
 	{
-		return $key ? ((new Request())->get($key) ?? $default) : new Request();
+		return $key ? (app('request')->get($key) ?? $default) : app('request');
 	}
 
 	public function post(?string $key = null, mixed $default = null): mixed
 	{
-		return $key ? ((new Post())->get($key) ?? $default) : new Post();
+		return $key ? (app('post')->get($key) ?? $default) : app('post');
 	}
 
 	public function files(?string $key = null): mixed
 	{
-		return $key ? (new File())->get($key) : new File();
+		return $key ? app('file')->get($key) : app('file');
 	}
 }

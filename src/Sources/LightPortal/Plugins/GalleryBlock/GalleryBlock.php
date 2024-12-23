@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\GalleryBlock;
@@ -129,7 +129,7 @@ class GalleryBlock extends Block
 
 		$images = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . Utils::$context['user']['id'])
 			->setLifeTime($e->args->cacheTime)
-			->setFallback(self::class, 'getData', $e->args->parameters);
+			->setFallback(fn() => $this->getData($e->args->parameters));
 
 		if (empty($images)) {
 			echo $this->txt['no_items'];

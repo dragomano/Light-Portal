@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package RandomPages (Light Portal)
@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 21.12.24
+ * @version 24.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\RandomPages;
@@ -216,12 +216,12 @@ class RandomPages extends Block
 		$pages = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$pages[] = [
-				'page_id'     => $row['page_id'],
+				'page_id'     => (int) $row['page_id'],
 				'slug'        => $row['slug'],
-				'created_at'  => $row['created_at'],
-				'num_views'   => $row['num_views'],
+				'created_at'  => (int) $row['created_at'],
+				'num_views'   => (int) $row['num_views'],
 				'title'       => $titles[$row['page_id']] ?? [],
-				'author_id'   => $row['author_id'],
+				'author_id'   => (int) $row['author_id'],
 				'author_name' => $row['author_name'],
 			];
 		}
@@ -238,7 +238,7 @@ class RandomPages extends Block
 
 		$randomPages = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
 			->setLifeTime($e->args->cacheTime)
-			->setFallback(self::class, 'getData', $parameters);
+			->setFallback(fn() => $this->getData($parameters));
 
 		if ($randomPages) {
 			$ul = Str::html('ul', ['class' => $this->name . ' noup']);

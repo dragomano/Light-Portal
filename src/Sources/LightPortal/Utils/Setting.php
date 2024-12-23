@@ -58,7 +58,7 @@ class Setting
 	{
 		$frontpageMode = self::get('lp_frontpage_mode', 'string', '');
 
-		return ! empty($frontpageMode) && $frontpageMode === $mode;
+		return $frontpageMode === $mode;
 	}
 
 	public static function isStandaloneMode(): bool

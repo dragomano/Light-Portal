@@ -78,7 +78,7 @@ final class ConfigArea
 		Theme::loadJavaScriptFile('light_portal/virtual-select.min.js');
 
 		Theme::loadJavaScriptFile('light_portal/bundle.min.js', ['defer' => true]);
-		Theme::loadJavaScriptFile('light_portal/admin.js', ['minimize' => true]);
+		Theme::loadJavaScriptFile('light_portal/portal.js', ['minimize' => true]);
 
 		Lang::load('ManageSettings');
 
@@ -168,7 +168,7 @@ final class ConfigArea
 							'label' => Lang::$txt['lp_plugins'],
 							'function' => $this->pluginAreas(...),
 							'icon' => 'modifications',
-							'amt' => Setting::getEnabledPlugins() ? count(Setting::getEnabledPlugins()) : 0,
+							'amt' => count(Setting::getEnabledPlugins()),
 							'permission' => [
 								'admin_forum',
 							],

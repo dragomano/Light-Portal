@@ -115,7 +115,7 @@ class MenuButtons
 						'plugins' => [
 							'title'   => Lang::$txt['lp_plugins'],
 							'href'    => Config::$scripturl . '?action=admin;area=lp_plugins',
-							'amt'     => Setting::getEnabledPlugins() ? count(Setting::getEnabledPlugins()) : 0,
+							'amt'     => count(Setting::getEnabledPlugins()),
 							'show'    => true,
 							'is_last' => true,
 						],

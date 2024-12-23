@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package CurrentMonth (Light Portal)
@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\CurrentMonth;
@@ -66,7 +66,7 @@ class CurrentMonth extends Block
 
 		$calendarData = $this->cache($this->name . '_addon_u' . User::$info['id'])
 			->setLifeTime($e->args->cacheTime)
-			->setFallback(self::class, 'getData');
+			->setFallback(fn() => $this->getData());
 
 		if ($calendarData) {
 			$calendarData['block_id'] = $id;

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\DummyArticleCards;
@@ -47,11 +47,11 @@ class DummyArticle extends AbstractArticle
 	{
 		$products = $this->cache('active_layout_addon_demo_products')
 			->setLifeTime(21600)
-			->setFallback(self::class, 'getProducts');
+			->setFallback(fn() => $this->getProducts());
 
 		$users = $this->cache('active_layout_addon_demo_users')
 			->setLifeTime(21600)
-			->setFallback(self::class, 'getUsers');
+			->setFallback(fn() => $this->getUsers());
 
 		$demoArticles = [];
 
@@ -120,7 +120,7 @@ class DummyArticle extends AbstractArticle
 	{
 		$products = $this->cache('active_layout_addon_demo_products')
 			->setLifeTime(21600)
-			->setFallback(self::class, 'getProducts');
+			->setFallback(fn() => $this->getProducts());
 
 		return count($products);
 	}

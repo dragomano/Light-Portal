@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package SimpleChat (Light Portal)
@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 18.12.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleChat;
@@ -136,7 +136,7 @@ class SimpleChat extends Block
 
 		$messages = $this->cache($this->name . '_addon_b' . $id)
 			->setLifeTime($e->args->cacheTime)
-			->setFallback(self::class, 'getData', $id, $parameters);
+			->setFallback(fn() => $this->getData($id, $parameters));
 
 		Utils::$context['lp_chats'][$id] = json_encode($messages, JSON_UNESCAPED_UNICODE);
 

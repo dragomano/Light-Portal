@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package TopTopics (Light Portal)
@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\TopTopics;
@@ -74,12 +74,12 @@ class TopTopics extends Block
 		$topTopics = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(
-				self::class,
-				'getFromSSI',
-				'topTopics',
-				$parameters['popularity_type'],
-				$parameters['num_topics'],
-				'array'
+				fn() => $this->getFromSSI(
+					'topTopics',
+					$parameters['popularity_type'],
+					$parameters['num_topics'],
+					'array'
+				)
 			);
 
 		if (empty($topTopics))

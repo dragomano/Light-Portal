@@ -6,6 +6,7 @@ use Bugo\LightPortal\Renderers\Blade;
 use Bugo\LightPortal\Renderers\RendererInterface;
 
 return [
+	'debug' => false,
 	CompilerInterface::class => Zero::class,
 	RendererInterface::class => Blade::class,
 ];

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package Snowflakes (Light Portal)
@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 13.11.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\Snowflakes;

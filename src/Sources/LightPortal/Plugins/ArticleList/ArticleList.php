@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package ArticleList (Light Portal)
@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 21.12.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\ArticleList;
@@ -203,11 +203,7 @@ class ArticleList extends Block
 
 		$articles = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
 			->setLifeTime($e->args->cacheTime)
-			->setFallback(
-				self::class,
-				empty($parameters['display_type']) ? 'getTopics' : 'getPages',
-				$parameters
-			);
+			->setFallback(fn() => empty($parameters['display_type']) ? $this->getTopics($parameters) : $this->getPages($parameters));
 
 		if ($articles) {
 			$articleList = Str::html('div')->class($this->name);

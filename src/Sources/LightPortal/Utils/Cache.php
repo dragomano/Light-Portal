@@ -14,8 +14,6 @@ namespace Bugo\LightPortal\Utils;
 
 use Bugo\Compat\CacheApi;
 
-use function method_exists;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -34,14 +32,14 @@ final class Cache implements CacheInterface
 		return $this;
 	}
 
-	public function setFallback(string $className, string $methodName = '__invoke', ...$params): mixed
+	public function setFallback(callable $callback): mixed
 	{
-		if (empty($methodName) || empty($className) || $this->lifeTime === 0) {
+		if ($this->lifeTime === 0) {
 			$this->forget($this->key);
 		}
 
 		if (($cachedValue = $this->get($this->key, $this->lifeTime)) === null) {
-			$cachedValue = app('weaver')(fn() => $this->callMethod($className, $methodName, ...$params));
+			$cachedValue = app('weaver')($callback);
 
 			$this->put($this->key, $cachedValue, $this->lifeTime);
 		}
@@ -67,14 +65,5 @@ final class Cache implements CacheInterface
 	public function flush(): void
 	{
 		CacheApi::clean();
-	}
-
-	protected function callMethod(string $className, string $methodName, ...$params): mixed
-	{
-		if (method_exists($className, $methodName)) {
-			return (new $className())->{$methodName}(...$params);
-		}
-
-		return null;
 	}
 }

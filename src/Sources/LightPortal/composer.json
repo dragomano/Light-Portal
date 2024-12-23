@@ -13,11 +13,9 @@
     "league/container": "^4.2",
     "nette/robot-loader": "^4.0"
   },
-  "require-dev": {
-    "scssphp/scssphp": "^1.12"
-  },
   "suggest": {
-    "wikimedia/less.php": "Install this package if you want to use the Less compiler instead of Sass"
+    "scssphp/scssphp": "Install v1.13 if you want to use the Sass compiler",
+    "wikimedia/less.php": "Install v5.1 if you want to use the Less compiler"
   },
   "config": {
     "vendor-dir": "Libs",

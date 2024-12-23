@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package FaBoardIcons (Light Portal)
@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 12.11.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\FaBoardIcons;
