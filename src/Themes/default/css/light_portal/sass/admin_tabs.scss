@@ -1,3 +1,6 @@
+@use "functions";
+@use "variables";
+
 .lp_tabs {
 	padding: 0;
 	margin: 0 auto;
@@ -17,24 +20,24 @@
 		}
 
 		> div {
-			@include bradius(6px, 6px);
+			@include functions.bradius(6px, 6px);
 			display: inline-block;
 			margin: 0 0 -1px;
 			padding: 15px 25px;
 			font-weight: 600;
 			text-align: center;
-			color: $tabs-label-color;
-			border: 1px solid $color-light-gray;
+			color: variables.$tabs-label-color;
+			border: 1px solid variables.$color-light-gray;
 
 			&.active_navigation {
-				color: $tabs-input-color !important;
-				border-top: 1px solid $tabs-input-border-color !important;
-				border-bottom: 1px solid $color-white !important;
+				color: variables.$tabs-input-color !important;
+				border-top: 1px solid variables.$tabs-input-border-color !important;
+				border-bottom: 1px solid variables.$color-white !important;
 			}
 
 			&:hover {
-				@include pointer;
-				color: $tabs-label-hover-color;
+				@include functions.pointer;
+				color: variables.$tabs-label-hover-color;
 			}
 
 			i,
@@ -61,8 +64,8 @@
 	section {
 		display: none;
 		padding: 15px;
-		border: 1px solid $color-light-gray;
-		@include bradius(0, 7px, 7px, 7px);
+		border: 1px solid variables.$color-light-gray;
+		@include functions.bradius(0, 7px, 7px, 7px);
 
 		&.active_content {
 			display: block;
@@ -157,7 +160,7 @@
 		}
 
 		.choices__inner {
-			@include bradius;
+			@include functions.bradius;
 		}
 
 		.add_option {

@@ -1,3 +1,6 @@
+@use "functions";
+@use "variables";
+
 .block_bbc,
 .block_html,
 .block_markdown {
@@ -76,7 +79,7 @@
 .status,
 .actions {
 	span {
-		@include pointer;
+		@include functions.pointer;
 	}
 }
 
@@ -136,16 +139,16 @@
 
 /* Virtual Select */
 .vscomp-value-tag {
-	background: $tag-bg-color;
-	border: 0 solid $tag-border-color;
-	color: $tag-color;
+	background: variables.$tag-bg-color;
+	border: 0 solid variables.$tag-border-color;
+	color: variables.$tag-color;
 	margin: 0 3px 3px 0;
 	padding: 2px 6px;
-	@include pointer;
-	@include bradius(0);
+	@include functions.pointer;
+	@include functions.bradius(0);
 
 	&[data-value^="!"] {
-		background: $ignore-action;
+		background: variables.$ignore-action;
 	}
 }
 .vscomp-value {

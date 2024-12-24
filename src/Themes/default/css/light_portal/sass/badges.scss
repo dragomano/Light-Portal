@@ -1,3 +1,5 @@
+@use "sass:color";
+
 .new_posts {
 	$block_color: #667d99;
 	$editor_color: #48bf83;
@@ -33,7 +35,7 @@
 	}
 
 	&.lp_type_block_options {
-		background: adjust-color($comment_color, $lightness: 10%);
+		background: color.adjust($comment_color, $lightness: 10%);
 	}
 
 	&.lp_type_page_options {
@@ -41,11 +43,11 @@
 	}
 
 	&.lp_type_icons {
-		background: adjust-color($editor_color, $lightness: -20%);
+		background: color.adjust($editor_color, $lightness: -20%);
 	}
 
 	&.lp_type_seo {
-		background: adjust-color($article_color, $lightness: -20%);
+		background: color.adjust($article_color, $lightness: -20%);
 	}
 
 	&.lp_type_other {
@@ -53,6 +55,6 @@
 	}
 
 	&.lp_type_ssi {
-		background: adjust-color($comment_color, $lightness: -20%);
+		background: color.adjust($comment_color, $lightness: -20%);
 	}
 }

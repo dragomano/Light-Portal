@@ -1,3 +1,6 @@
+@use "functions";
+@use "variables";
+
 .lp_frontpage_articles {
 	display: flex;
 	flex-direction: row;
@@ -10,7 +13,7 @@
 	}
 
 	article {
-		@include bradius(12px);
+		@include functions.bradius(12px);
 		transition: all .4s cubic-bezier(.175, .885, 0, 1);
 		position: relative;
 		overflow: hidden;
@@ -111,7 +114,7 @@
 
 			.card_date {
 				font-weight: 500;
-				color: $article-category-color;
+				color: variables.$article-category-color;
 			}
 
 			h3 {
@@ -148,7 +151,7 @@
 			.card_author {
 				font-weight: 600;
 				text-decoration: none;
-				color: $article-author-color;
+				color: variables.$article-author-color;
 			}
 		}
 	}

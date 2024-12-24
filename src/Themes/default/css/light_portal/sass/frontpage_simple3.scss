@@ -1,3 +1,5 @@
+@use "functions";
+
 .article_simple3_view {
 	display: grid;
 	grid-template-columns: repeat(1, minmax(0, 1fr));
@@ -16,7 +18,7 @@
 	}
 
 	> div {
-		@include bradius(.25rem);
+		@include functions.bradius(.25rem);
 		overflow: hidden;
 		box-shadow: 0 10px 15px -3px rgba(0, 0, 0, .1), 0 4px 6px -2px rgba(0, 0, 0, .05);
 

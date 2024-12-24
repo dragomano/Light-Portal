@@ -1,9 +1,11 @@
+@use "functions";
+
 .article_simple2_view {
 	.card {
 		box-shadow: 0 20px 25px -5px rgba(0, 0, 0, .1), 0 10px 10px -5px rgba(0, 0, 0, .04);
 		flex-direction: column;
 		height: 18rem;
-		@include bradius(.5rem);
+		@include functions.bradius(.5rem);
 		align-items: center;
 		display: flex;
 		position: relative;
@@ -24,10 +26,10 @@
 			order: 1;
 			height: 20rem;
 			width: 100%;
-			@include bradius(.5rem);
+			@include functions.bradius(.5rem);
 
 			@media (min-width: 768px) {
-				@include bradius(0);
+				@include functions.bradius(0);
 				border-top-right-radius: .5rem;
 				border-bottom-right-radius: .5rem;
 				width: 40%;
@@ -120,7 +122,7 @@
 				box-shadow: 0 10px 10px -5px rgba(0, 0, 0, .04);
 				padding: 2rem;
 				background-color: rgba(255, 255, 255, 1);
-				@include bradius(.5rem);
+				@include functions.bradius(.5rem);
 				height: 100%;
 				margin-left: .5rem;
 				margin-right: .5rem;
@@ -129,7 +131,7 @@
 					box-shadow: none;
 					padding-left: 3.5rem;
 					padding-bottom: 3rem;
-					@include bradius(0);
+					@include functions.bradius(0);
 					border-top-left-radius: .5rem;
 					border-bottom-left-radius: .5rem;
 					margin-left: 0;

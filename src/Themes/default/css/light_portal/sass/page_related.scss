@@ -1,8 +1,10 @@
+@use "functions";
+
 .related_pages {
 	margin-top: 1em;
 
 	.cat_bar {
-		@include bradius;
+		@include functions.bradius;
 	}
 
 	.list {

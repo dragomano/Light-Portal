@@ -1,8 +1,11 @@
+@use "functions";
+@use "variables";
+
 .comments {
 	margin-top: 1em;
 
 	.cat_bar {
-		@include bradius;
+		@include functions.bradius;
 	}
 
 	.pagesection {
@@ -102,7 +105,7 @@
 		position: absolute;
 		width: 74px;
 		left: 10px;
-		@include valign(top);
+		@include functions.valign(top);
 
 		@media (max-width: 600px) {
 			display: none;
@@ -112,7 +115,7 @@
 			max-width: 45px !important;
 			max-height: 45px !important;
 			box-shadow: 0 0 4px #666;
-			@include bradius(100%);
+			@include functions.bradius(100%);
 		}
 	}
 
@@ -124,9 +127,9 @@
 			display: block;
 			position: relative;
 			padding: 0 12px 8px;
-			border: 1px solid $color-light-gray;
+			border: 1px solid variables.$color-light-gray;
 			box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
-			@include bradius(7px);
+			@include functions.bradius(7px);
 
 			.edit_form {
 				textarea {
@@ -148,7 +151,7 @@
 
 						&:hover {
 							opacity: 1;
-							@include pointer;
+							@include functions.pointer;
 						}
 					}
 				}
@@ -168,20 +171,20 @@
 
 		> span {
 			font-weight: bold;
-			border: 1px solid $color-light-gray;
+			border: 1px solid variables.$color-light-gray;
 			display: inline-block;
 			padding: 6px 11px;
-			@include bradius(7px, 0, 7px, 0);
-			@include valign(top);
+			@include functions.bradius(7px, 0, 7px, 0);
+			@include functions.valign(top);
 		}
 
 		.comment_date {
-			border: 1px solid $color-light-gray;
+			border: 1px solid variables.$color-light-gray;
 			display: inline-block;
 			padding: 6px 11px;
 			opacity: .8;
-			@include bradius(0, 7px, 0, 7px);
-			@include valign(top);
+			@include functions.bradius(0, 7px, 0, 7px);
+			@include functions.valign(top);
 
 			.bbc_link {
 				margin-left: 10px;
@@ -199,14 +202,14 @@
 		gap: 10px;
 		margin-top: 6px;
 		padding-top: 6px;
-		border-top: 1px dashed $comment-smalltext-color;
+		border-top: 1px dashed variables.$comment-smalltext-color;
 
 		[role='button'] {
 			opacity: .6;
 
 			&:hover {
 				opacity: 1;
-				@include pointer;
+				@include functions.pointer;
 			}
 
 			&:last-child {
@@ -231,11 +234,11 @@
 	}
 
 	.comment_title span.bg {
-		@include bradius(0, 7px, 0, 7px);
+		@include functions.bradius(0, 7px, 0, 7px);
 	}
 
 	.comment_date {
-		@include bradius(7px, 0, 7px, 0);
+		@include functions.bradius(7px, 0, 7px, 0);
 	}
 
 	.comment_buttons {

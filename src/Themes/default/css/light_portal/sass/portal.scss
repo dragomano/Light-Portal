@@ -1,41 +1,41 @@
-@import "_variables";
-@import "_functions";
+@use "_variables";
+@use "_functions";
 
 /* Layouts */
-@import "layout_switcher";
-@import "frontpage_default";
-@import "frontpage_featured_grid";
-@import "frontpage_alt";
-@import "frontpage_alt2";
-@import "frontpage_alt3";
-@import "frontpage_simple";
-@import "frontpage_simple_grid";
-@import "frontpage_simple2";
-@import "frontpage_simple3";
-@import "frontpage_flarum";
-@import "frontpage_spectre";
+@use "layout_switcher";
+@use "frontpage_default";
+@use "frontpage_featured_grid";
+@use "frontpage_alt";
+@use "frontpage_alt2";
+@use "frontpage_alt3";
+@use "frontpage_simple";
+@use "frontpage_simple_grid";
+@use "frontpage_simple2";
+@use "frontpage_simple3";
+@use "frontpage_flarum";
+@use "frontpage_spectre";
 
 /* Menu, main layout */
-@import "menu";
-@import "layout";
+@use "menu";
+@use "layout";
 
 /* Page template */
-@import "page";
-@import "page_related";
-@import "page_comments";
+@use "page";
+@use "page_related";
+@use "page_comments";
 
 /* Portal admin area */
-@import "admin_settings";
-@import "admin_context";
-@import "admin_tabs";
-@import "admin_categories";
-@import "admin_tags";
-@import "admin_checkbox";
-@import "admin_blocks";
-@import "admin_pages";
-@import "admin_plugins";
+@use "admin_settings";
+@use "admin_context";
+@use "admin_tabs";
+@use "admin_categories";
+@use "admin_tags";
+@use "admin_checkbox";
+@use "admin_blocks";
+@use "admin_pages";
+@use "admin_plugins";
 
-@import "badges";
+@use "badges";
 
 /* Custom fixes */
-@import "hacks";
+@use "hacks";

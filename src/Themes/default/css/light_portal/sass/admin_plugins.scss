@@ -1,3 +1,5 @@
+@use "functions";
+
 #vue_plugins {
 	.fade-enter-active,
 	.fade-move {
@@ -32,14 +34,14 @@
 
 			&:hover {
 				opacity: 1;
-				@include pointer;
+				@include functions.pointer;
 			}
 		}
 	}
 
 	#filter {
 		margin-left: 4px;
-		@include pointer;
+		@include functions.pointer;
 	}
 
 	@media screen and (max-width: 468px) {
@@ -87,7 +89,7 @@
 		justify-content: space-between;
 		align-items: center;
 		gap: 6px;
-		@include pointer;
+		@include functions.pointer;
 	}
 
 	form {
@@ -154,7 +156,7 @@
 			position: absolute;
 			text-align: left;
 			left: 60px;
-			@include pointer;
+			@include functions.pointer;
 			color: initial;
 			font-size: 1.2em;
 			width: #{"max(8vw, 200px)"};

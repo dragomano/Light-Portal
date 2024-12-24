@@ -1,9 +1,11 @@
+@use "functions";
+
 .article_spectre_view {
 	.card {
 		border: 0;
 		box-shadow: 0 0.25rem 1rem rgba(48,55,66,.15);
 		height: 100%;
-		@include bradius(.1rem);
+		@include functions.bradius(.1rem);
 		display: flex;
 		flex-direction: column;
 
