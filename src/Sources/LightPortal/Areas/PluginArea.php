@@ -38,6 +38,7 @@ use function array_map;
 use function array_search;
 use function array_unique;
 use function explode;
+use function header;
 use function implode;
 use function in_array;
 use function is_array;
@@ -74,12 +75,18 @@ final class PluginArea
 		Utils::$context['sub_template'] = 'manage_plugins';
 
 		Theme::loadCSSFile(
-			'https://cdn.jsdelivr.net/combine/npm/@vueform/multiselect@2/themes/default.min.css,npm/@vueform/toggle@2/themes/default.min.css',
+			implode('', [
+				'https://cdn.jsdelivr.net/combine/',
+				'npm/@vueform/multiselect@2/themes/default.min.css,',
+				'npm/@vueform/toggle@2/themes/default.min.css'
+			]),
 			['external' => true]
 		);
 
 		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_plugins_manage'];
 		Utils::$context['post_url']   = Config::$scripturl . '?action=admin;area=lp_plugins;save';
+
+		Utils::$context['lp_plugins_api_endpoint'] = Config::$scripturl . '?action=admin;area=lp_plugins;api';
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
@@ -108,7 +115,7 @@ final class PluginArea
 		$this->handleSave($settings);
 		$this->prepareAddonList($settings);
 		$this->prepareAddonChart();
-		$this->prepareJsonData();
+		$this->handleApi();
 	}
 
 	private function handleToggle(): void
@@ -271,7 +278,18 @@ final class PluginArea
 		</script>';
 	}
 
-	private function prepareJsonData(): void
+	private function handleApi(): void
+	{
+		if ($this->request()->hasNot('api')) {
+			return;
+		}
+
+		header('Content-Type: application/json; charset=utf-8');
+
+		exit(json_encode($this->preparedData()));
+	}
+
+	private function preparedData(): array
 	{
 		$txtData = [
 			'plugins'           => Lang::$txt['lp_plugins'],
@@ -323,12 +341,12 @@ final class PluginArea
 			}
 		}
 
-		Utils::$context['lp_json'] = json_encode([
+		return [
 			'txt'     => $txtData,
 			'context' => $contextData,
 			'plugins' => $pluginsData,
 			'icons'   => Icon::all(),
-		]);
+		];
 	}
 
 	private function removeAssets(): void

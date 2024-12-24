@@ -35,6 +35,7 @@ use function array_search;
 use function class_exists;
 use function date;
 use function explode;
+use function header;
 use function implode;
 use function json_encode;
 use function time;
@@ -89,6 +90,8 @@ final class Page implements ActionInterface
 		);
 
 		$this->setPageTitleAndCanonicalUrl($slug);
+
+		Utils::$context['lp_comments_api_endpoint'] = Utils::$context['canonical_url'] . ';fetch_data';
 
 		Utils::$context['lp_page']['url'] = Utils::$context['canonical_url'] . (
 			$this->request()->has(LP_PAGE_PARAM) ? ';' : '?'
@@ -343,12 +346,23 @@ final class Page implements ActionInterface
 		if (isset(Utils::$context['lp_' . Setting::getCommentBlock() . '_comment_block']))
 			return;
 
-		$this->prepareJsonData();
+		$this->handleApi();
 
 		(new Comment(Utils::$context['lp_page']['slug']))->show();
 	}
 
-	private function prepareJsonData(): void
+	private function handleApi(): void
+	{
+		if ($this->request()->hasNot('fetch_data')) {
+			return;
+		}
+
+		header('Content-Type: application/json; charset=utf-8');
+
+		exit(json_encode($this->preparedData()));
+	}
+
+	private function preparedData(): array
 	{
 		$txtData = [
 			'pages'         => Lang::$txt['pages'],
@@ -389,13 +403,13 @@ final class Page implements ActionInterface
 			'lp_comment_sorting' => Config::$modSettings['lp_comment_sorting'] ?? '0',
 		];
 
-		Utils::$context['lp_json'] = json_encode([
+		return [
 			'txt'      => $txtData,
 			'context'  => $contextData,
 			'settings' => $settingsData,
 			'icons'    => Icon::all(),
 			'user'     => Utils::$context['user'],
-		]);
+		];
 	}
 
 	private function updateNumViews(): void

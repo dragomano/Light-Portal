@@ -195,18 +195,30 @@ function show_comments(): void
 	echo /** @lang text */ '
 	<div id="vue_comments"></div>
 	<script>
-		const vueGlobals = ', Utils::$context['lp_json'], ';
-	</script>';
+		let vueGlobals = "";
 
-	if (is_file(Theme::$current->settings['default_theme_dir'] . '/scripts/light_portal/dev/helpers.js')) {
-		echo /** @lang text */ '
-	<script src="https://cdn.jsdelivr.net/combine/npm/vue@3/dist/vue.global.min.js,npm/vue3-sfc-loader@0,npm/vue-demi@0,npm/pinia@2,npm/showdown@2,npm/vue-showdown@4,npm/vue-i18n@10/dist/vue-i18n.global.prod.min.js,npm/@vueuse/shared@10,npm/@vueuse/core@10"></script>
-	<script type="module" src="https://cdn.jsdelivr.net/npm/@github/markdown-toolbar-element@2/dist/index.min.js"></script>
-	<script src="', Theme::$current->settings['default_theme_url'], '/scripts/light_portal/dev/helpers.js"></script>
-	<script type="module" src="', Theme::$current->settings['default_theme_url'], '/scripts/light_portal/dev/comment_helpers.js"></script>
-	<script type="module" src="', Theme::$current->settings['default_theme_url'], '/scripts/light_portal/dev/vue_comments.js"></script>';
-	} else {
-		echo '
-	<script type="module" src="', Theme::$current->settings['default_theme_url'], '/scripts/light_portal/bundle_comments.js"></script>';
-	}
+		fetch("', Utils::$context['lp_comments_api_endpoint'], '")
+			.then(response => {
+				return response.json();
+			})
+			.then(data => {
+				vueGlobals = data;
+
+				const devMode = "', app('config')['debug'], '" === "1";
+
+				const loadScripts = async () => {
+					if (devMode) {
+						await loadExternalScript("https://cdn.jsdelivr.net/combine/npm/vue@3/dist/vue.global.min.js,npm/vue3-sfc-loader@0,npm/vue-demi@0,npm/pinia@2,npm/showdown@2,npm/vue-showdown@4,npm/vue-i18n@10/dist/vue-i18n.global.prod.min.js,npm/@vueuse/shared@10,npm/@vueuse/core@10");
+						await loadExternalScript("https://cdn.jsdelivr.net/npm/@github/markdown-toolbar-element@2/dist/index.min.js", true);
+						await loadExternalScript(smf_default_theme_url + "/scripts/light_portal/dev/helpers.js");
+						await loadExternalScript(smf_default_theme_url + "/scripts/light_portal/dev/comment_helpers.js", true);
+						await loadExternalScript(smf_default_theme_url + "/scripts/light_portal/dev/vue_comments.js", true);
+					} else {
+						await loadExternalScript(smf_default_theme_url + "/scripts/light_portal/bundle_comments.js", true);
+					}
+				};
+
+				return loadScripts();
+			});
+	</script>';
 }
