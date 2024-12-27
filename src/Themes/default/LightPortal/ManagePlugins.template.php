@@ -12,14 +12,12 @@ function template_manage_plugins(): void
 	echo /** @lang text */ '
 	<div id="vue_plugins"></div>
 	<script>
-		let vueGlobals = "";
-
 		fetch("', Utils::$context['lp_plugins_api_endpoint'], '")
 			.then(response => {
 				return response.json();
 			})
 			.then(data => {
-				vueGlobals = data;
+				window.portalJson = data;
 
 				const devMode = "', app('config')['debug'], '" === "1";
 
@@ -32,10 +30,10 @@ function template_manage_plugins(): void
 				const loadScripts = async () => {
 					if (devMode) {
 						for (const script of scripts) {
-							await loadExternalScript(script);
+							await loadPortalScript(script);
 						}
 					} else {
-						await loadExternalScript(smf_default_theme_url + "/scripts/light_portal/bundle_plugins.js", true);
+						await loadPortalScript(smf_default_theme_url + "/scripts/light_portal/bundle_plugins.js", true);
 					}
 				};
 

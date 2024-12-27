@@ -10,7 +10,7 @@ export default defineConfig({
     outDir: dist,
     emptyOutDir: false,
     rollupOptions: {
-      input: 'src/Themes/default/scripts/light_portal/app_plugins',
+      input: 'src/Themes/default/scripts/light_portal/app_plugins.js',
       output: {
         entryFileNames: 'bundle_plugins.js',
         format: 'esm',

@@ -9,5 +9,5 @@ export const useAppStore = defineStore('app', {
 });
 
 export const usePluginStore = defineStore('plugins', {
-  state: () => vueGlobals.plugins,
+  state: () => portalJson.plugins,
 });

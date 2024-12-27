@@ -43,10 +43,10 @@ class VueAdapter {
 
     import('./plurals.js').then(function (m) {
       const i18n = VueI18n.createI18n({
-        locale: vueGlobals.context.locale,
+        locale: portalJson.context.locale,
         pluralizationRules: new m.default().rules(),
         messages: {
-          [vueGlobals.context.locale]: vueGlobals.txt,
+          [portalJson.context.locale]: portalJson.txt,
         },
       });
 

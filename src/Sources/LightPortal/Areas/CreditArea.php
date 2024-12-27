@@ -164,10 +164,6 @@ final class CreditArea
 				'name' => 'PHPStorm',
 				'link' => 'https://www.jetbrains.com/phpstorm/'
 			],
-			[
-				'name' => 'Cursor',
-				'link' => 'https://www.cursor.com/'
-			],
 		];
 
 		$links = [

@@ -56,7 +56,7 @@
               :class="isHover ? 'error' : undefined"
               @mouseover="isHover = true"
               @mouseleave="isHover = false"
-              @click.prevent="remove($el.dataset.id)"
+              @click.prevent="remove(parent.dataset.id)"
               tag="span"
               icon="remove"
             >
@@ -67,7 +67,7 @@
       </div>
 
       <keep-alive>
-        <ReplyForm v-if="replyMode" :parent="$el.dataset" @submit="add">
+        <ReplyForm v-if="replyMode" :parent="parent.dataset" @submit="add">
           <Button class="active" @click.self="replyMode = false">{{ $t('modify_cancel') }}</Button>
         </ReplyForm>
       </keep-alive>

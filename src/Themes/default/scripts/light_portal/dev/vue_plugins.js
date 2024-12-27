@@ -9,15 +9,15 @@ const useAppStore = defineStore('app', {
 });
 
 const usePluginStore = defineStore('plugins', {
-  state: () => vueGlobals.plugins,
+  state: () => portalJson.plugins,
 });
 
 const useContextStore = defineStore('context', {
-  state: () => vueGlobals.context,
+  state: () => portalJson.context,
 });
 
 const useIconStore = defineStore('icons', {
-  state: () => vueGlobals.icons,
+  state: () => portalJson.icons,
 });
 
 const modules = {

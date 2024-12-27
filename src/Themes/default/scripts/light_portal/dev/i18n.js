@@ -3,11 +3,13 @@ import Plurals from './plurals';
 
 const plurals = new Plurals();
 
+const { context, txt } = portalJson;
+
 const i18n = createI18n({
-  locale: vueGlobals.context.locale,
+  locale: context.locale,
   pluralizationRules: plurals.rules(),
   messages: {
-    [vueGlobals.context.locale]: vueGlobals.txt,
+    [context.locale]: txt,
   },
 });
 

@@ -8,9 +8,9 @@ export const useAppStore = defineStore('app', {
 });
 
 export const useUserStore = defineStore('user', {
-  state: () => vueGlobals.user,
+  state: () => portalJson.user,
 });
 
 export const useSettingStore = defineStore('settings', {
-  state: () => vueGlobals.settings,
+  state: () => portalJson.settings,
 });

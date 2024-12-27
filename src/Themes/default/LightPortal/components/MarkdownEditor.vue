@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-import { defineEmits, getCurrentInstance, ref, computed, onMounted } from 'vue';
+import { defineEmits, ref, computed, onMounted } from 'vue';
 import MarkdownPreview from './MarkdownPreview.vue';
 import Button from './BaseButton.vue';
 
@@ -28,9 +28,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['update:modelValue']);
-
-const instance = getCurrentInstance();
-const uuid = ref(instance.uid);
+const uuid = 'id-' + crypto.randomUUID();
 const textarea = ref();
 
 const message = computed({

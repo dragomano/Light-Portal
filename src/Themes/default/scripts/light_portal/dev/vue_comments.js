@@ -2,6 +2,8 @@ import { CommentManager, ObjectHelper } from './comment_helpers.js';
 
 const { defineStore } = window.Pinia;
 
+const { user, context, settings, icons } = portalJson;
+
 const useAppStore = defineStore('app', {
   state: () => ({
     baseUrl: smf_scripturl,
@@ -10,19 +12,19 @@ const useAppStore = defineStore('app', {
 });
 
 const useUserStore = defineStore('user', {
-  state: () => vueGlobals.user,
+  state: () => user,
 });
 
 const useContextStore = defineStore('context', {
-  state: () => vueGlobals.context,
+  state: () => context,
 });
 
 const useSettingStore = defineStore('settings', {
-  state: () => vueGlobals.settings,
+  state: () => settings,
 });
 
 const useIconStore = defineStore('icons', {
-  state: () => vueGlobals.icons,
+  state: () => icons,
 });
 
 const modules = {

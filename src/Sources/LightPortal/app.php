@@ -45,13 +45,9 @@ $app = new class {
 
 new $app;
 
-// Helper to work with Container::class
-function app(string $service = '', array $params = []): mixed
+// Helper to work with Container
+function app(string $service, array $params = []): mixed
 {
-	if (empty($service)) {
-		return Container::getInstance();
-	}
-
 	$instance = Container::get($service);
 
 	if ($service === 'events') {
