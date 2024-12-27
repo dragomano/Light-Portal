@@ -143,11 +143,13 @@ final class CommentRepository
 			]
 		);
 
-		Db::$db->db_query('', '
+		Db::$db->query('', '
 			UPDATE {db_prefix}lp_pages
-			SET num_comments = num_comments - {int:num_items}
-			WHERE slug = {string:slug}
-				AND num_comments - {int:num_items} >= 0',
+			SET num_comments = CASE
+				WHEN num_comments < {int:num_items} THEN 0
+				ELSE num_comments - {int:num_items}
+				END
+			WHERE slug = {string:slug}',
 			[
 				'num_items' => count($items),
 				'slug'      => $pageSlug,
