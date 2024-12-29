@@ -9,7 +9,7 @@ export default defineConfig({
     outDir: dist,
     emptyOutDir: false,
     rollupOptions: {
-      input: 'src/Themes/default/css/light_portal/sass/portal.scss',
+      input: 'resources/sass/portal.scss',
       output: {
         assetFileNames: 'portal.css',
       },

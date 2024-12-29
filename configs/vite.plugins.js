@@ -1,6 +1,6 @@
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
-import vue from '@vitejs/plugin-vue';
+import { svelte } from '@sveltejs/vite-plugin-svelte';
 
 const dist = resolve('./src/Themes/default/scripts/light_portal');
 
@@ -10,17 +10,16 @@ export default defineConfig({
     outDir: dist,
     emptyOutDir: false,
     rollupOptions: {
-      input: 'src/Themes/default/scripts/light_portal/app_plugins.js',
+      input: 'resources/js/app_plugins.js',
       output: {
         entryFileNames: 'bundle_plugins.js',
         format: 'esm',
       },
     },
   },
-  plugins: [vue()],
-  resolve: {
-    alias: {
-      '@scripts': resolve('./src/Themes/default/scripts/light_portal/dev'),
-    },
-  },
+  plugins: [
+    svelte({
+      emitCss: false,
+    }),
+  ],
 });

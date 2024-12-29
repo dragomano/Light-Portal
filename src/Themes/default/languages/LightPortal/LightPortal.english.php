@@ -355,13 +355,18 @@ $txt['lp_plugins_types'][10] = 'Icons';
 $txt['lp_plugins_types'][11] = 'SEO';
 $txt['lp_plugins_types'][12] = 'Other';
 $txt['lp_plugins_select'] = 'Make a choice';
+$txt['lp_plugins_no_options'] = 'No options';
 
 // Related pages
 $txt['lp_related_pages'] = 'Related pages';
 
 // Comments
 $txt['lp_comments'] = 'Comments';
-$txt['lp_comments_title'] = 'No comments | One comment | {count} comments';
+$txt['lp_comments_title'] = '{count, plural,
+=0 {No comments yet}
+one {# comment}
+other {# comments}
+}';
 $txt['lp_comment_placeholder'] = 'Leave a comment...';
 
 // Alerts

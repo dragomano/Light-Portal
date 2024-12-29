@@ -195,78 +195,6 @@ final class CreditArea
 				]
 			],
 			[
-				'title' => 'Vue.js',
-				'link' => 'https://github.com/vuejs/core',
-				'author' => 'Yuxi (Evan) You',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/vuejs/core/blob/main/LICENSE'
-				]
-			],
-			[
-				'title' => 'vue3-sfc-loader',
-				'link' => 'https://github.com/FranckFreiburger/vue3-sfc-loader',
-				'author' => 'Franck Freiburger',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/vuejs/core/blob/main/LICENSE'
-				]
-			],
-			[
-				'title' => 'Pinia',
-				'link' => 'https://github.com/vuejs/pinia',
-				'author' => 'Eduardo San Martin Morote',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/vuejs/pinia/blob/v2/LICENSE'
-				]
-			],
-			[
-				'title' => 'VueUse',
-				'link' => 'https://github.com/vueuse/vueuse',
-				'author' => 'Anthony Fu',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/vueuse/vueuse/blob/main/LICENSE'
-				]
-			],
-			[
-				'title' => 'Vue Showdown',
-				'link' => 'https://github.com/meteorlxy/vue-showdown/',
-				'author' => 'meteorlxy & contributors',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/meteorlxy/vue-showdown/blob/main/LICENSE'
-				]
-			],
-			[
-				'title' => 'Vue 3 Multiselect',
-				'link' => 'https://github.com/vueform/multiselect',
-				'author' => 'Adam Berecz',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/vueform/multiselect/blob/main/LICENSE.md'
-				]
-			],
-			[
-				'title' => 'Vue 3 Toggle',
-				'link' => 'https://github.com/vueform/toggle',
-				'author' => 'Adam Berecz',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/vueform/toggle/blob/main/LICENSE.md'
-				]
-			],
-			[
-				'title' => 'vue-i18n-next',
-				'link' => 'https://github.com/intlify/vue-i18n-next/',
-				'author' => 'kazuya kawaguchi',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/intlify/vue-i18n-next/blob/master/LICENSE'
-				]
-			],
-			[
 				'title' => '&lt;markdown-toolbar&gt; element',
 				'link' => 'https://github.com/github/markdown-toolbar-element',
 				'author' => 'GitHub, Inc.',
@@ -327,6 +255,33 @@ final class CreditArea
 				'license' => [
 					'name' => 'the MIT License',
 					'link' => 'https://github.com/verlok/vanilla-lazyload/blob/master/LICENSE'
+				]
+			],
+			[
+				'title' => 'Svelte',
+				'link' => 'https://github.com/sveltejs/svelte',
+				'author' => 'Svelte contributors',
+				'license' => [
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/sveltejs/svelte#MIT-1-ov-file'
+				]
+			],
+			[
+				'title' => 'svelte-toggle',
+				'link' => 'https://github.com/metonym/svelte-toggle',
+				'author' => 'Eric Liu',
+				'license' => [
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/metonym/svelte-toggle/blob/master/LICENSE'
+				]
+			],
+			[
+				'title' => 'Svelecte',
+				'link' => 'https://github.com/mskocik/svelecte',
+				'author' => 'Martin Skočík',
+				'license' => [
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/mskocik/svelecte?tab=MIT-1-ov-file#readme'
 				]
 			]
 		];

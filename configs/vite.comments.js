@@ -1,6 +1,6 @@
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
-import vue from '@vitejs/plugin-vue';
+import { svelte } from '@sveltejs/vite-plugin-svelte';
 
 const dist = resolve('./src/Themes/default/scripts/light_portal');
 
@@ -10,7 +10,7 @@ export default defineConfig({
     outDir: dist,
     emptyOutDir: false,
     rollupOptions: {
-      input: 'src/Themes/default/scripts/light_portal/app_comments.js',
+      input: 'resources/js/app_comments.js',
       output: {
         entryFileNames: 'bundle_comments.js',
         format: 'esm',
@@ -18,17 +18,6 @@ export default defineConfig({
     },
   },
   plugins: [
-    vue({
-      template: {
-        compilerOptions: {
-          isCustomElement: (tag) => tag === 'markdown-toolbar' || tag.startsWith('md-'),
-        },
-      },
-    }),
+    svelte(),
   ],
-  resolve: {
-    alias: {
-      '@scripts': resolve('./src/Themes/default/scripts/light_portal/dev'),
-    },
-  },
 });

@@ -306,6 +306,7 @@ final class PluginArea
 			'settings_saved'    => Lang::$txt['settings_saved'],
 			'find_close'        => Lang::$txt['find_close'],
 			'save'              => Lang::$txt['save'],
+			'no_options'        => Lang::$txt['lp_plugins_no_options'],
 			'no_matches'        => Lang::$txt['no_matches'],
 			'search'            => Lang::$txt['search'],
 			'remove'            => Lang::$txt['remove'],
