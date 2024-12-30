@@ -1,0 +1,68 @@
+.puzzle-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 1em;
+  font-family: Arial, sans-serif;
+}
+
+.puzzle-container .grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 10px;
+  border: 2px solid #3c3c3c;
+  padding: 10px;
+  background-color: #bbada0;
+  width: 100%;
+  max-width: 420px;
+
+  .cell {
+    background-color: #ccc0b3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    border-radius: 5px;
+    aspect-ratio: 1;
+  }
+  .cell-2 { background-color: #eee4da; }
+  .cell-4 { background-color: #ede0c8; }
+  .cell-8 { background-color: #f2b179; }
+  .cell-16 { background-color: #f59563; }
+  .cell-32 { background-color: #f67c5f; }
+  .cell-64 { background-color: #f65e3b; }
+  .cell-128 { background-color: #edcf72; }
+  .cell-256 { background-color: #edcc61; }
+  .cell-512 { background-color: #edc850; }
+  .cell-1024 { background-color: #edc53f; }
+  .cell-2048 { background-color: #edc22e; }
+}
+
+.puzzle-container .controls {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-top: 20px;
+  width: 100%;
+
+  .button-control {
+    background-color: #8f7a66;
+    color: #f9f6f2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    border: 2px solid #3c3c3c;
+    border-radius: 5px;
+    margin: 5px;
+    cursor: pointer;
+    padding: 10px;
+    width: 100%;
+    max-width: 100px;
+  }
+}
