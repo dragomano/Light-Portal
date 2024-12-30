@@ -1,6 +1,6 @@
 ## How to contribute
 
-- Fork the repository. If you are not used to Github, please check out [fork a repository](https://help.github.com/fork-a-repo).
+- Fork the repository. If you are not used to GitHub, please check out [fork a repository](https://help.github.com/fork-a-repo).
 - Branch your repository, to commit the desired changes.
 - Test your code.
 - Send a pull request to us.
@@ -16,13 +16,13 @@
 
 ## How to submit a pull request
 
-- Check if the develop branch exists. If it exist use it to pull your request into.
+- Check if the develop branch exists. If it exists use it to pull your request into.
 - If you want to send a bug fix, use `Fix` word in the title of your PR (i.e. `Fix page permissions`).
 - If you want to send a new feature, use `Add` word in the title of your PR (i.e `Add a new frontpage template`).
 
 In any case, the title of each of your commits should continue such a phrase — `If applied, this commit will  ...` (`Update HelloPortal addon`, etc.)
 
-## Styleguides with examples
+## Styleguide with examples
 
 ### PHP Styleguide
 
@@ -72,9 +72,9 @@ var_dump($result);
 
 ### CSS Styleguide
 
-- Use LESS (`portal.less`) to modify desired rules.
+- Use SASS (see `resources/sass/portal.scss`) to modify desired rules.
 
-```less
+```scss
 #comment_form {
   textarea {
     width: 100%;
@@ -93,7 +93,7 @@ var_dump($result);
 
 ### JavaScript Styleguide
 
-- Use native JavaScript, or [Alpine.js](https://github.com/alpinejs/alpine) (3.x), or [Vue.js](https://vuejs.org) (3.x) instead of jQuery.
+- Use native JavaScript, [Alpine.js](https://github.com/alpinejs/alpine) (3.x), [htmx](https://htmx.org) (2.x), or [Svelte](https://svelte.dev/) (5.x).
 - Use [`const`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const) or [`let`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let) instead of `var`.
 
 ```js
