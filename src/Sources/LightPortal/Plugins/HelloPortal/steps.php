@@ -26,10 +26,6 @@ function getSteps(array $txt, array $modSettings): array
 			{
 				element: document.querySelector("[data-tab=permissions]"),
 				intro: "' . $txt['basic_settings_tour'][4] . '"
-			},
-			{
-				element: document.querySelector(".information"),
-				intro: "' . $txt['basic_settings_tour'][5] . '"
 			}',
 		'extra_settings' => '
 			{
@@ -176,7 +172,7 @@ function getSteps(array $txt, array $modSettings): array
 				intro: "' . $txt['plugins_tour'][3] . '"
 			},
 			{
-				element: document.querySelector(".toggle-container"),
+				element: document.querySelector(".features button[role=switch]"),
 				intro: "' . $txt['plugins_tour'][4] . '"
 			}',
 		'add_plugins' => '
