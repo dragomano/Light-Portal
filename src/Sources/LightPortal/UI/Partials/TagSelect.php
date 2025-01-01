@@ -4,19 +4,18 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\UI\Partials;
 
-use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Utils\EntityDataTrait;
 use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\Utils\Setting;
 
 use function implode;
 use function is_array;
@@ -24,11 +23,9 @@ use function json_encode;
 
 final class TagSelect extends AbstractPartial
 {
-	use EntityDataTrait;
-
 	public function __invoke(): string
 	{
-		Utils::$context['lp_tags'] = $this->getEntityData('tag');
+		Utils::$context['lp_tags'] = app('tag_list');
 
 		$data = $values = [];
 		foreach (Utils::$context['lp_tags'] as $id => $tag) {
@@ -61,7 +58,7 @@ final class TagSelect extends AbstractPartial
 				searchPlaceholderText: "' . Lang::$txt['search'] . '",
 				noOptionsText: "' . Lang::$txt['lp_page_tags_empty'] . '",
 				clearButtonText: "' . Lang::$txt['remove'] . '",
-				maxValues: ' . (Config::$modSettings['lp_page_maximum_tags'] ?? 10) . ',
+				maxValues: ' . Setting::get('lp_page_maximum_tags', 'int', 10) . ',
 				options: ' . json_encode($data) . ',
 				selectedValue: [' . implode(',', $values) . ']
 			});

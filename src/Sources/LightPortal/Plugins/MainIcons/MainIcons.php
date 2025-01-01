@@ -1,14 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package MainIcons (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2022-2024 Bugo
+ * @copyright 2022-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 29.11.24
+ * @version 23.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\MainIcons;
@@ -58,7 +58,6 @@ class MainIcons extends Plugin
 			'boards',
 			'calendar_export',
 			'calendar_modify',
-			'calendar',
 			'calendar',
 			'change_menu',
 			'change_menu2',

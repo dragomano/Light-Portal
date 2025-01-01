@@ -1,14 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package Markdown (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2024 Bugo
+ * @copyright 2020-2025 Bugo
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  *
  * @category plugin
- * @version 03.12.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\Markdown;
@@ -125,6 +125,6 @@ class Markdown extends Plugin
 
 		$converter = new MarkdownConverter($environment);
 
-		return $converter->convert(Utils::htmlspecialcharsDecode($text));
+		return (string) $converter->convert(Utils::htmlspecialcharsDecode($text));
 	}
 }

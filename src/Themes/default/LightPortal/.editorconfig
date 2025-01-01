@@ -8,7 +8,3 @@ indent_size = tab
 tab_width = 4
 trim_trailing_whitespace = true
 charset = utf-8
-
-[*.vue]
-indent_style = space
-indent_size = 2

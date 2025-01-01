@@ -4,10 +4,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Hooks;
@@ -16,11 +16,7 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Actions\BoardIndex;
-use Bugo\LightPortal\Actions\Category;
-use Bugo\LightPortal\Actions\FrontPage;
-use Bugo\LightPortal\Actions\Page;
-use Bugo\LightPortal\Actions\Tag;
+use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\RequestTrait;
 
@@ -39,20 +35,20 @@ class Actions
 
 	public function __invoke(array &$actions): void
 	{
-		if (! empty(Config::$modSettings['lp_frontpage_mode'])) {
-			$actions[LP_ACTION] = [false, [new FrontPage(), 'show']];
+		if (Setting::get('lp_frontpage_mode', 'string', '')) {
+			$actions[LP_ACTION] = [false, [app('front_page'), 'show']];
 		}
 
-		$actions['forum'] = [false, [new BoardIndex(), 'show']];
+		$actions[Action::FORUM->value] = [false, [app('board_index'), 'show']];
 
 		Theme::load();
 
 		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'categories') {
-			(new Category())->show(new Page());
+			app('category')->show(app('card_list'));
 		}
 
 		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'tags') {
-			(new Tag())->show(new Page());
+			app('tag')->show(app('card_list'));
 		}
 
 		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'promote') {

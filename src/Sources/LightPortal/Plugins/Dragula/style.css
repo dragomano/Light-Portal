@@ -1,0 +1,14 @@
+[data-panel].gu-over:before {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+[data-panel].gu-over {
+  border: 3px dashed orangered;
+  padding: 1em;
+}
+
+.gu-mirror {
+  cursor: grabbing !important;
+}

@@ -1,14 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package PageList (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2024 Bugo
+ * @copyright 2020-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 24.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\PageList;
@@ -95,9 +95,9 @@ class PageList extends Block
 
 	public function getData(array $parameters): array
 	{
-		$titles = $this->getEntityData('title');
+		$titles = app('title_list');
 
-		$allCategories = $this->getEntityData('category');
+		$allCategories = app('category_list');
 
 		$categories = empty($parameters['categories']) ? null : explode(',', (string) $parameters['categories']);
 
@@ -135,18 +135,18 @@ class PageList extends Block
 				continue;
 
 			$pages[$row['page_id']] = [
-				'id'            => $row['page_id'],
-				'category_id'   => $row['category_id'],
+				'id'            => (int) $row['page_id'],
+				'category_id'   => (int) $row['category_id'],
 				'category_name' => $allCategories[$row['category_id']]['title'],
 				'category_link' => LP_BASE_URL . ';sa=categories;id=' . $row['category_id'],
 				'title'         => $titles[$row['page_id']] ?? [],
-				'author_id'     => $row['author_id'],
+				'author_id'     => (int) $row['author_id'],
 				'author_name'   => $row['author_name'],
 				'slug'          => $row['slug'],
-				'num_views'     => $row['num_views'],
-				'num_comments'  => $row['num_comments'],
-				'created_at'    => $row['created_at'],
-				'updated_at'    => $row['updated_at']
+				'num_views'     => (int) $row['num_views'],
+				'num_comments'  => (int) $row['num_comments'],
+				'created_at'    => (int) $row['created_at'],
+				'updated_at'    => (int) $row['updated_at']
 			];
 		}
 
@@ -161,7 +161,7 @@ class PageList extends Block
 
 		$pageList = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
 			->setLifeTime($e->args->cacheTime)
-			->setFallback(self::class, 'getData', $parameters);
+			->setFallback(fn() => $this->getData($parameters));
 
 		if ($pageList) {
 			$ul = Str::html('ul', ['class' => 'normallist page_list']);

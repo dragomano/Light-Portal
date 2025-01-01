@@ -4,10 +4,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Actions;
@@ -24,7 +24,6 @@ use Bugo\LightPortal\Articles\ChosenTopicArticle;
 use Bugo\LightPortal\Articles\PageArticle;
 use Bugo\LightPortal\Articles\TopicArticle;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Renderers\RendererInterface;
 use Bugo\LightPortal\Utils\CacheTrait;
@@ -39,7 +38,6 @@ use function abs;
 use function array_column;
 use function array_key_exists;
 use function array_map;
-use function call_user_func;
 use function date;
 use function floor;
 use function ltrim;
@@ -62,22 +60,18 @@ final class FrontPage implements ActionInterface
 		'chosen_topics' => ChosenTopicArticle::class,
 	];
 
-	private array $config;
-
 	private RendererInterface $renderer;
 
 	public function __construct()
 	{
-		$this->config = require dirname(__DIR__) . '/Settings/config.php';
-
-		$this->renderer = new $this->config[RendererInterface::class];
+		$this->renderer = app('renderer');
 	}
 
 	public function show(): void
 	{
 		User::mustHavePermission('light_portal_view');
 
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::frontModes,
 			new Event(new class ($this->modes) {
 				public function __construct(public array &$modes) {}
@@ -87,7 +81,8 @@ final class FrontPage implements ActionInterface
 		if (array_key_exists(Config::$modSettings['lp_frontpage_mode'], $this->modes)) {
 			$this->prepare(new $this->modes[Config::$modSettings['lp_frontpage_mode']]);
 		} elseif (Setting::isFrontpageMode('chosen_page')) {
-			call_user_func([new Page(), 'show']);
+			app('page')->show();
+
 			return;
 		}
 
@@ -112,7 +107,7 @@ final class FrontPage implements ActionInterface
 	public function prepare(ArticleInterface $article): void
 	{
 		$start = (int) $this->request('start');
-		$limit = (int) Config::$modSettings['lp_num_items_per_page'] ?? 12;
+		$limit = Setting::get('lp_num_items_per_page', 'int', 12);
 
 		$article->init();
 
@@ -125,7 +120,7 @@ final class FrontPage implements ActionInterface
 
 			$this->updateStart($data['total'], $start, $limit);
 
-			$data['articles'] = $article->getData($start, $limit);
+			$data['articles'] = app('weaver')(static fn() => $article->getData($start, $limit));
 
 			$this->cache()->put($key, $data);
 		}
@@ -144,7 +139,7 @@ final class FrontPage implements ActionInterface
 
 		Utils::$context['start'] = $this->request()->get('start');
 
-		if (! empty(Config::$modSettings['lp_use_simple_pagination'])) {
+		if (Setting::get('lp_use_simple_pagination', 'bool', false)) {
 			Utils::$context['page_index'] = $this->simplePaginate(LP_BASE_URL, $itemsCount, $limit);
 		}
 
@@ -154,7 +149,7 @@ final class FrontPage implements ActionInterface
 
 		Utils::$context['lp_frontpage_articles'] = $articles;
 
-		(new EventManagerFactory())()->dispatch(PortalHook::frontAssets);
+		app('events')->dispatch(PortalHook::frontAssets);
 	}
 
 	public function getLayouts(): array
@@ -185,7 +180,7 @@ final class FrontPage implements ActionInterface
 		];
 
 		// You can add your own logic here
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::frontLayouts,
 			new Event(new class ($this->renderer, $currentLayout, $params) {
 				public function __construct(
@@ -223,37 +218,19 @@ final class FrontPage implements ActionInterface
 
 	public function getNumColumns(): int
 	{
-		$columnsCount = 12;
+		$baseColumnsCount = 12;
+		$customColumnsCount = Setting::get('lp_frontpage_num_columns', 'string', '');
 
-		if (empty(Config::$modSettings['lp_frontpage_num_columns']))
-			return $columnsCount;
+		if (empty($customColumnsCount)) {
+			return $baseColumnsCount;
+		}
 
-		return $columnsCount / match (Config::$modSettings['lp_frontpage_num_columns']) {
+		return $baseColumnsCount / match ($customColumnsCount) {
 			'1' => 2,
 			'2' => 3,
 			'3' => 4,
 			default => 6,
 		};
-	}
-
-	public function getOrderBy(): string
-	{
-		$sortingTypes = [
-			'title;desc'       => 't.value DESC',
-			'title'            => 't.value',
-			'created;desc'     => 'p.created_at DESC',
-			'created'          => 'p.created_at',
-			'updated;desc'     => 'p.updated_at DESC',
-			'updated'          => 'p.updated_at',
-			'author_name;desc' => 'author_name DESC',
-			'author_name'      => 'author_name',
-			'num_views;desc'   => 'p.num_views DESC',
-			'num_views'        => 'p.num_views',
-		];
-
-		Utils::$context['current_sorting'] = $this->request('sort', 'created;desc');
-
-		return $sortingTypes[Utils::$context['current_sorting']];
 	}
 
 	public function updateStart(int $total, int &$start, int $limit): void
@@ -282,11 +259,13 @@ final class FrontPage implements ActionInterface
 
 			$item['msg_link'] ??= $item['link'];
 
-			if (empty($item['image']) && ! empty(Config::$modSettings['lp_image_placeholder']))
-				$item['image'] = Config::$modSettings['lp_image_placeholder'];
+			if (empty($item['image'])) {
+				$item['image'] = Setting::get('lp_image_placeholder', 'string', '');
+			}
 
-			if (! empty($item['views']['num']))
+			if (! empty($item['views']['num'])) {
 				$item['views']['num'] = $this->getFriendlyNumber($item['views']['num']);
+			}
 
 			return $item;
 		}, $articles);

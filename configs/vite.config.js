@@ -11,7 +11,7 @@ export default defineConfig({
     outDir: dist,
     emptyOutDir: false,
     rollupOptions: {
-      input: 'src/Themes/default/scripts/light_portal/app.js',
+      input: 'resources/js/app.js',
       output: {
         entryFileNames: 'bundle.min.js',
         format: 'iife',

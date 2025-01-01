@@ -1,14 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package TinyMCE (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2023-2024 Bugo
+ * @copyright 2023-2025 Bugo
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 03.12.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\TinyMCE;
@@ -56,7 +56,12 @@ class TinyMCE extends Plugin
 
 		Theme::loadJavaScriptFile(
 			'https://cdn.tiny.cloud/1/' . $apiKey . '/tinymce/6/tinymce.min.js',
-			['external' => true, 'attributes' => ['referrerpolicy' => 'origin']]
+			[
+				'external' => true,
+				'attributes' => [
+					'referrerpolicy' => 'origin'
+				]
+			]
 		);
 
 		Theme::addInlineJavaScript('

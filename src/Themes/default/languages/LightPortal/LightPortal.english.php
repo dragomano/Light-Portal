@@ -63,7 +63,6 @@ $txt['lp_num_items_per_page'] = 'Number of items per page (for pagination)';
 
 $txt['lp_article_cards'] = 'Article cards';
 $txt['lp_show_images_in_articles'] = 'Show images found in articles';
-$txt['lp_show_images_in_articles_help'] = 'First, it checks whether the article has an attachment (if the article is based on a forum topic), then — whether the article has an IMG tag with an image.';
 $txt['lp_image_placeholder'] = 'URL of the default placeholder image';
 $txt['lp_image_placeholder_subtext'] = 'Used if the option above is disabled.';
 $txt['lp_show_teaser'] = 'Show the article summary';
@@ -356,13 +355,18 @@ $txt['lp_plugins_types'][10] = 'Icons';
 $txt['lp_plugins_types'][11] = 'SEO';
 $txt['lp_plugins_types'][12] = 'Other';
 $txt['lp_plugins_select'] = 'Make a choice';
+$txt['lp_plugins_no_options'] = 'No options';
 
 // Related pages
 $txt['lp_related_pages'] = 'Related pages';
 
 // Comments
 $txt['lp_comments'] = 'Comments';
-$txt['lp_comments_title'] = 'No comments | One comment | {count} comments';
+$txt['lp_comments_title'] = '{count, plural,
+=0 {No comments yet}
+one {# comment}
+other {# comments}
+}';
 $txt['lp_comment_placeholder'] = 'Leave a comment...';
 
 // Alerts
@@ -414,6 +418,7 @@ $txt['lp_import_failed'] = 'Failed to import...';
 $txt['lp_wrong_template'] = 'Wrong template. Choose a template that matches the content.';
 $txt['lp_addon_not_installed'] = 'Plugin %s is not installed';
 $txt['lp_addon_not_activated'] = 'Plugin %s is not activated';
+$txt['lp_unsupported_resource_type'] = 'Unsupported resource type: %s';
 
 // Who
 $txt['lp_who_viewing_frontpage'] = 'Viewing <a href="%s">the portal frontpage</a>.';

@@ -6,10 +6,10 @@ declare(strict_types=1);
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Areas;
@@ -29,11 +29,11 @@ use Bugo\LightPortal\Areas\Validators\PageValidator;
 use Bugo\LightPortal\Args\ObjectArgs;
 use Bugo\LightPortal\Args\OptionsTypeArgs;
 use Bugo\LightPortal\Args\ParamsArgs;
+use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Models\PageModel;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Repositories\PageRepository;
@@ -62,7 +62,6 @@ use Bugo\LightPortal\UI\Tables\TitleColumn;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\DateTime;
-use Bugo\LightPortal\Utils\EntityDataTrait;
 use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Setting;
@@ -90,7 +89,6 @@ final class PageArea
 {
 	use AreaTrait;
 	use CacheTrait;
-	use EntityDataTrait;
 	use RequestTrait;
 
 	private array $params = [];
@@ -105,7 +103,7 @@ final class PageArea
 
 	public function __construct()
 	{
-		$this->repository = new PageRepository;
+		$this->repository = app('page_repo');
 	}
 
 	public function main(): void
@@ -302,10 +300,11 @@ final class PageArea
 		$data = $this->request()->json();
 
 		match (true) {
-			isset($data['delete_item'])    => $this->repository->remove([(int) $data['delete_item']]),
-			isset($data['toggle_item'])    => $this->repository->toggleStatus([(int) $data['toggle_item']]),
-			isset($data['restore_item'])   => $this->repository->restore([(int) $data['restore_item']]),
+			isset($data['delete_item']) => $this->repository->remove([(int) $data['delete_item']]),
+			isset($data['toggle_item']) => $this->repository->toggleStatus([(int) $data['toggle_item']]),
+			isset($data['restore_item']) => $this->repository->restore([(int) $data['restore_item']]),
 			isset($data['remove_forever']) => $this->repository->removePermanently([(int) $data['remove_forever']]),
+			default => null,
 		};
 
 		$this->cache()->flush();
@@ -486,7 +485,7 @@ final class PageArea
 
 		$params = [];
 
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::preparePageParams,
 			new Event(new ParamsArgs($params, Utils::$context['lp_current_page']['type']))
 		);
@@ -565,7 +564,7 @@ final class PageArea
 				'id'       => 'category_id',
 				'multiple' => false,
 				'wide'     => false,
-				'data'     => $this->getEntityData('category'),
+				'data'     => app('category_list'),
 				'value'    => Utils::$context['lp_page']['category_id'],
 			]);
 
@@ -632,7 +631,7 @@ final class PageArea
 		CheckboxField::make('show_author_and_date', Lang::$txt['lp_page_show_author_and_date'])
 			->setValue(Utils::$context['lp_page']['options']['show_author_and_date']);
 
-		if (! Setting::showRelatedPages()) {
+		if (Setting::showRelatedPages()) {
 			CheckboxField::make('show_related_pages', Lang::$txt['lp_page_show_related_pages'])
 				->setValue(Utils::$context['lp_page']['options']['show_related_pages']);
 		}
@@ -642,7 +641,7 @@ final class PageArea
 				->setValue(Utils::$context['lp_page']['options']['allow_comments']);
 		}
 
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::preparePageFields,
 			new Event(new OptionsTypeArgs(Utils::$context['lp_page']['options'], Utils::$context['lp_page']['type']))
 		);
@@ -652,7 +651,7 @@ final class PageArea
 
 	private function prepareEditor(): void
 	{
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::prepareEditor,
 			new Event(new ObjectArgs(Utils::$context['lp_page']))
 		);
@@ -699,13 +698,11 @@ final class PageArea
 
 	private function preparePageList(): void
 	{
-		$defaultTypes = $this->getDefaultTypes();
-
 		Utils::$context['lp_all_pages'] = [];
 		foreach (Utils::$context['lp_content_types'] as $type => $title) {
 			Utils::$context['lp_all_pages'][$type] = [
 				'type'  => $type,
-				'icon'  => $defaultTypes[$type]['icon'] ?? Utils::$context['lp_loaded_addons'][$type]['icon'],
+				'icon'  => ContentType::icon($type) ?: Utils::$context['lp_loaded_addons'][$type]['icon'],
 				'title' => Lang::$txt['lp_' . $type]['title'] ?? $title,
 				'desc'  => Lang::$txt['lp_' . $type]['block_desc'] ?? Lang::$txt['lp_' . $type]['description']
 			];
@@ -717,8 +714,8 @@ final class PageArea
 
 	private function getPageIcon(string $type): string
 	{
-		return $this->getDefaultTypes()[$type]['icon']
-			?? Utils::$context['lp_loaded_addons'][$type]['icon']
+		return ContentType::icon($type)
+			?: Utils::$context['lp_loaded_addons'][$type]['icon']
 			?? 'fas fa-question';
 	}
 }

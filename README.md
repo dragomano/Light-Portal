@@ -36,7 +36,6 @@ The portal supports BBCode, HTML, PHP, as well as Markdown content within pages 
 - Built-in ad manager (AdsBlock plugin)
 - Import and export functionality for pages, blocks, and plugins
 - Support for standalone mode
-- Feedback area
 
 ## Supported by
 

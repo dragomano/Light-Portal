@@ -15,9 +15,11 @@ function show_chat_block(int $id, array $parameters, bool $isInSidebar): void
 		class="column', $parameters['form_position'] === 'top' ? ' reverse' : '', '"
 		x-data="chat', $id, '.handleComments()"
 	>
-		<ul class="moderation_notes column', $parameters['form_position'] === 'top' ? '' : ' reverse', '">
+		<ul
+			class="moderation_notes column', $parameters['form_position'] === 'top' ? '' : ' reverse', '" style="max-height: ', $parameters['window_height'], 'px"
+		>
 			<template x-for="(comment, index) in comments" :key="index">
-				<li class="', $isInSidebar ? 'floatleft' : '', ' smalltext">
+				<li class="smalltext', $isInSidebar ? ' floatleft' : '', '">
 					', $parameters['show_avatars'] ? '<span x-html="comment.author.avatar ?? null"></span>' : '', '
 					<strong x-text="comment.author.name"></strong>: <span x-html="comment.message"></span>
 					', Utils::$context['user']['is_admin'] ? ' <span class="main_icons delete floatright" @click="removeComment($refs, index, comment.id)"></span> ' : '', '

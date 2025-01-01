@@ -1,14 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package RandomTopics (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2024 Bugo
+ * @copyright 2020-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\RandomTopics;
@@ -16,12 +16,11 @@ namespace Bugo\LightPortal\Plugins\RandomTopics;
 use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
-use Bugo\Compat\Theme;
 use Bugo\Compat\User;
-use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Partials\BoardSelect;
@@ -38,10 +37,10 @@ class RandomTopics extends Block
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
-			'no_content_class' => true,
 			'exclude_boards'   => '',
 			'include_boards'   => '',
 			'num_topics'       => 10,
+			'show_num_views'   => false,
 		];
 	}
 
@@ -51,6 +50,7 @@ class RandomTopics extends Block
 			'exclude_boards' => FILTER_DEFAULT,
 			'include_boards' => FILTER_DEFAULT,
 			'num_topics'     => FILTER_VALIDATE_INT,
+			'show_num_views' => FILTER_VALIDATE_BOOLEAN,
 		];
 	}
 
@@ -77,6 +77,9 @@ class RandomTopics extends Block
 		NumberField::make('num_topics', $this->txt['num_topics'])
 			->setAttribute('min', 1)
 			->setValue($options['num_topics']);
+
+		CheckboxField::make('show_num_views', $this->txt['show_num_views'])
+			->setValue($options['show_num_views']);
 	}
 
 	public function getData(array $parameters): array
@@ -141,8 +144,9 @@ class RandomTopics extends Block
 			);
 
 			$topicIds = [];
-			while ($row = Db::$db->fetch_assoc($result))
+			while ($row = Db::$db->fetch_assoc($result)) {
 				$topicIds[] = $row['id_topic'];
+			}
 
 			Db::$db->free_result($result);
 
@@ -172,7 +176,7 @@ class RandomTopics extends Block
 				SELECT
 					mf.poster_time, mf.subject, ml.id_topic, mf.id_member, ml.id_msg,
 					COALESCE(mem.real_name, mf.poster_name) AS poster_name, ' . (User::$info['is_guest'] ? '1 AS is_read' : '
-					COALESCE(lt.id_msg, lmr.id_msg, 0) >= ml.id_msg_modified AS is_read') . ', mf.icon
+					COALESCE(lt.id_msg, lmr.id_msg, 0) >= ml.id_msg_modified AS is_read') . ', t.num_views
 				FROM {db_prefix}topics AS t
 					INNER JOIN {db_prefix}messages AS ml ON (t.id_last_msg = ml.id_msg)
 					INNER JOIN {db_prefix}messages AS mf ON (t.id_first_msg = mf.id_msg)
@@ -195,35 +199,16 @@ class RandomTopics extends Block
 			);
 		}
 
-		$iconSources = [];
-		foreach (Utils::$context['stable_icons'] as $icon)
-			$iconSources[$icon] = 'images_url';
-
 		$topics = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
-			if (! empty(Config::$modSettings['messageIconChecks_enable']) && ! isset($iconSources[$row['icon']])) {
-				$iconSources[$row['icon']] = file_exists(Theme::$current->settings['theme_dir'] . '/images/post/' . $row['icon'] . '.png')
-					? 'images_url'
-					: 'default_images_url';
-			} elseif (! isset($iconSources[$row['icon']])) {
-				$iconSources[$row['icon']] = 'images_url';
-			}
-
 			$topics[] = [
-				'poster' => empty($row['id_member']) ? $row['poster_name'] : Str::html('a', [
-						'href' => Config::$scripturl . '?action=profile;u=' . $row['id_member']
-					])->setText($row['poster_name']),
-				'time'   => $row['poster_time'],
-				'link'   => Str::html('a', [
-					'href' => Config::$scripturl . '?topic=' . $row['id_topic'] . '.msg' . $row['id_msg'] . '#new',
-					'rel' => 'nofollow'
-				])->setText($row['subject']),
-				'is_new' => empty($row['is_read']),
-				'icon'   => Str::html('img', [
-					'class' => 'centericon',
-					'src' => Theme::$current->settings[$iconSources[$row['icon']]] . '/post/' . $row['icon'] . '.png',
-					'alt' => $row['icon']
-				])
+				'author_id'   => $row['id_member'] ?? 0,
+				'author_name' => $row['poster_name'],
+				'time'        => (int) $row['poster_time'],
+				'num_views'   => $row['num_views'],
+				'href'        => Config::$scripturl . '?topic=' . $row['id_topic'] . '.msg' . $row['id_msg'] . '#new',
+				'title'       => $row['subject'],
+				'is_new'      => empty($row['is_read']),
 			];
 		}
 
@@ -235,16 +220,21 @@ class RandomTopics extends Block
 	public function prepareContent(Event $e): void
 	{
 		$parameters = $e->args->parameters;
+		$parameters['show_num_views'] ??= false;
 
 		$randomTopics = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
 			->setLifeTime($e->args->cacheTime)
-			->setFallback(self::class, 'getData', $parameters);
+			->setFallback(fn() => $this->getData($parameters));
 
 		if ($randomTopics) {
 			$ul = Str::html('ul', ['class' => $this->name . ' noup']);
 
+			$i = 0;
 			foreach ($randomTopics as $topic) {
-				$li = Str::html('li', ['class' => 'windowbg']);
+				$li = Str::html('li', ['class' => 'generic_list_wrapper bg ' . ($i % 2 === 0 ? 'odd' : 'even')]);
+				$link = Str::html('a', $topic['title'])->href($topic['href']);
+				$author = empty($topic['author_id']) ? $topic['author_name'] : Str::html('a', $topic['author_name'])
+					->href(Config::$scripturl . '?action=profile;u=' . $topic['author_id']);
 
 				if ($topic['is_new']) {
 					$li->addHtml(
@@ -253,24 +243,17 @@ class RandomTopics extends Block
 					);
 				}
 
-				$li->addHtml($topic['icon'])
-					->addHtml($topic['link'])
-					->addHtml(Str::html('br'));
+				$li
+					->addHtml($link)
+					->addText(' ' . Lang::$txt['by'] . ' ')
+					->addHtml($author)
+					->addHtml(', ' . DateTime::relative($topic['time']));
 
-				$li->addHtml(
-					Str::html('span')
-						->class('smalltext')
-						->setHtml(Lang::$txt['by'] . ' ' . $topic['poster'])
-				)
-					->addHtml(Str::html('br'));
-
-				$li->addHtml(
-					Str::html('span')
-						->class('smalltext')
-						->setHtml(DateTime::relative($topic['time']))
-				);
+				$parameters['show_num_views'] && $li
+					->addText(' (' . Lang::getTxt('lp_views_set', ['views' => $topic['num_views']]) . ')');
 
 				$ul->addHtml($li);
+				$i++;
 			}
 
 			echo $ul;

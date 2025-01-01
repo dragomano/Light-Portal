@@ -1,14 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package Search (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2021-2024 Bugo
+ * @copyright 2021-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 24.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\Search;
@@ -143,7 +143,7 @@ class Search extends Block
 				'author'  => empty($row['id_member'])
 					? Lang::$txt['guest']
 					: ('<a href="' . Config::$scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>'),
-				'date'    => DateTime::relative($row['date']),
+				'date'    => DateTime::relative((int) $row['date']),
 			];
 		}
 

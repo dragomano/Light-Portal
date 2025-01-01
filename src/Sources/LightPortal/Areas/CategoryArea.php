@@ -4,10 +4,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Areas;
@@ -55,7 +55,7 @@ final class CategoryArea
 
 	public function __construct()
 	{
-		$this->repository = new CategoryRepository();
+		$this->repository = app('category_repo');
 	}
 
 	public function main(): void
@@ -181,6 +181,7 @@ final class CategoryArea
 			isset($data['delete_item']) => $this->repository->remove([(int) $data['delete_item']]),
 			isset($data['toggle_item']) => $this->repository->toggleStatus([(int) $data['toggle_item']]),
 			isset($data['update_priority']) => $this->repository->updatePriority($data['update_priority']),
+			default => null,
 		};
 
 		$this->cache()->flush();

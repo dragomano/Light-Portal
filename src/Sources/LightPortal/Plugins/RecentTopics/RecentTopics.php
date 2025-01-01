@@ -1,14 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package RecentTopics (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2024 Bugo
+ * @copyright 2020-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\RecentTopics;
@@ -151,7 +151,7 @@ class RecentTopics extends Block
 
 		$recentTopics = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
 			->setLifeTime($parameters['update_interval'] ?? $e->args->cacheTime)
-			->setFallback(self::class, 'getData', $parameters);
+			->setFallback(fn() => $this->getData($parameters));
 
 		if (empty($recentTopics))
 			return;

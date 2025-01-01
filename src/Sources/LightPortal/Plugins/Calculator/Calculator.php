@@ -1,14 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package Calculator (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2023-2024 Bugo
+ * @copyright 2023-2025 Bugo
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 19.11.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\Calculator;

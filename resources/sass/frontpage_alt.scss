@@ -1,0 +1,50 @@
+.article_alt_view {
+	article {
+		transition: all .4s cubic-bezier(.175, .885, 0, 1);
+		position: relative;
+		padding: 1em;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		height: 99%;
+
+		header {
+			.title_bar {
+				padding: 8px 12px;
+
+				h3 {
+					white-space: nowrap;
+					overflow: hidden;
+					text-overflow: ellipsis;
+				}
+
+				+ div {
+					padding: 10px;
+				}
+			}
+
+			img {
+				max-height: 235px;
+				width: 100%;
+			}
+		}
+
+		.article_body {
+			p {
+				margin-bottom: 5px;
+				overflow: hidden;
+				display: -webkit-box;
+				line-clamp: 3;
+				-webkit-line-clamp: 3;
+				-webkit-box-orient: vertical;
+				line-height: 1.4;
+			}
+		}
+
+		.article_footer {
+			div {
+				padding: 4px;
+			}
+		}
+	}
+}

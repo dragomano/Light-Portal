@@ -1,14 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package TagList (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2024 Bugo
+ * @copyright 2020-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\TagList;
@@ -17,7 +17,6 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
-use Bugo\LightPortal\Actions\Tag;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
@@ -118,11 +117,11 @@ class TagList extends Block
 		if ($parameters['source'] === 'lp_tags') {
 			$tagList = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
 				->setLifeTime($e->args->cacheTime)
-				->setFallback(Tag::class, 'getAll', 0, 0, $parameters['sorting'] === 'name' ? 'title' : 'frequency DESC');
+				->setFallback(fn() => app('tag')->getAll(0, 0, $parameters['sorting'] === 'name' ? 'title' : 'frequency DESC'));
 		} else {
 			$tagList = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
 				->setLifeTime($e->args->cacheTime)
-				->setFallback(self::class, 'getAllTopicKeywords', $parameters['sorting'] === 'name' ? 'ok.name' : 'frequency DESC');
+				->setFallback(fn() => $this->getAllTopicKeywords($parameters['sorting'] === 'name' ? 'ok.name' : 'frequency DESC'));
 		}
 
 		if ($tagList) {

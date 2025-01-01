@@ -4,11 +4,11 @@
  * @package AdsBlock (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2024 Bugo
+ * @copyright 2020-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 08.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\AdsBlock\Hooks;
@@ -44,8 +44,9 @@ class MenuButtons
 
 		Utils::$context['lp_ads_blocks'] = $this->getData();
 
-		if (Utils::$context['lp_ads_blocks'])
+		if (Utils::$context['lp_ads_blocks']) {
 			Utils::$context['lp_blocks'] = array_merge(Utils::$context['lp_blocks'], Utils::$context['lp_ads_blocks']);
+		}
 
 		if (! empty(Utils::$context['lp_blocks']['ads'])) {
 			foreach (Utils::$context['lp_blocks']['ads'] as $block) {

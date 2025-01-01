@@ -4,10 +4,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Areas\Validators;
@@ -18,7 +18,6 @@ use Bugo\LightPortal\Args\ErrorsDataArgs;
 use Bugo\LightPortal\Args\ParamsArgs;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
-use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\RequestTrait;
 
@@ -62,7 +61,7 @@ class BlockValidator extends AbstractValidator
 
 			$data = filter_input_array(INPUT_POST, $this->args);
 
-			(new EventManagerFactory())()->dispatch(
+			app('events')->dispatch(
 				PortalHook::validateBlockParams,
 				new Event(new ParamsArgs($params, Utils::$context['current_block']['type']))
 			);
@@ -93,7 +92,7 @@ class BlockValidator extends AbstractValidator
 			$errors[] = 'no_valid_areas';
 		}
 
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::findBlockErrors,
 			new Event(new ErrorsDataArgs($errors, $data))
 		);

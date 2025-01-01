@@ -4,10 +4,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal;
@@ -25,6 +25,7 @@ use Bugo\LightPortal\Hooks\LoadIllegalGuestPermissions;
 use Bugo\LightPortal\Hooks\LoadPermissions;
 use Bugo\LightPortal\Hooks\LoadTheme;
 use Bugo\LightPortal\Hooks\MenuButtons;
+use Bugo\LightPortal\Hooks\PackageUpload;
 use Bugo\LightPortal\Hooks\PermissionsList;
 use Bugo\LightPortal\Hooks\PreCssOutput;
 use Bugo\LightPortal\Hooks\PreLoad;
@@ -68,6 +69,7 @@ final class Integration
 		$this->applyHook(Hook::deleteMembers, DeleteMembers::class);
 		$this->applyHook(Hook::alertTypes, AlertTypes::class);
 		$this->applyHook(Hook::fetchAlerts, FetchAlerts::class);
+		$this->applyHook(Hook::packageUpload, PackageUpload::class);
 		$this->applyHook(Hook::profileAreas, ProfileAreas::class);
 		$this->applyHook(Hook::profilePopup, ProfilePopup::class);
 		$this->applyHook(Hook::downloadRequest, DownloadRequest::class);

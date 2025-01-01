@@ -4,10 +4,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Areas\Configs;
@@ -20,11 +20,9 @@ use Bugo\Compat\Time;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\Compat\WebFetchApi;
-use Bugo\LightPortal\Actions\FrontPage;
 use Bugo\LightPortal\Areas\Traits\QueryTrait;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
-use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\UI\Partials\ActionSelect;
 use Bugo\LightPortal\Utils\CacheTrait;
@@ -112,7 +110,6 @@ final class BasicConfig extends AbstractConfig
 			[
 				'check',
 				'lp_show_images_in_articles',
-				'help' => 'lp_show_images_in_articles_help',
 				'tab' => self::TAB_CARDS,
 			],
 			[
@@ -153,7 +150,7 @@ final class BasicConfig extends AbstractConfig
 			[
 				'select',
 				'lp_frontpage_layout',
-				(new FrontPage())->getLayouts(),
+				app('front_page')->getLayouts(),
 				'postinput' => $templateEditLink,
 				'tab' => self::TAB_CARDS,
 			],
@@ -239,7 +236,7 @@ final class BasicConfig extends AbstractConfig
 
 		Utils::$context['sub_template'] = 'portal_basic_settings';
 
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::extendBasicConfig,
 			new Event(new class ($configVars) {
 				public function __construct(public array &$configVars) {}
@@ -314,7 +311,7 @@ final class BasicConfig extends AbstractConfig
 				'class' => 'errorbox',
 				'label' => Lang::getTxt('lp_new_version', [
 					$info['tag_name'],
-					Time::timeformat(strtotime($info['published_at']), false)
+					Time::stringFromUnix(strtotime($info['published_at']))
 				]),
 			];
 		}

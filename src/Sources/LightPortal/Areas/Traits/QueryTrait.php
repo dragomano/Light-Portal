@@ -4,22 +4,23 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Areas\Traits;
 
-use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Lists\IconList;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
 use function array_filter;
@@ -35,6 +36,9 @@ if (! defined('SMF'))
 
 trait QueryTrait
 {
+	use CacheTrait;
+	use RequestTrait;
+
 	private function prepareIconList(): void
 	{
 		if ($this->request()->hasNot('icons'))
@@ -49,7 +53,7 @@ trait QueryTrait
 		$template = Str::html('i', ['class' => '%1$s fa-fw'])
 			->setAttribute('aria-hidden', 'true') . '&nbsp;%1$s';
 
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::prepareIconList,
 			new Event(new class ($icons, $template) {
 				public function __construct(public array &$icons, public string &$template) {}
@@ -107,8 +111,7 @@ trait QueryTrait
 				'id_poll'           => 0,
 				'is_approved'       => 1,
 				'id_redirect_topic' => 0,
-				'recycle_board'     => empty(Config::$modSettings['recycle_board'])
-					? Config::$modSettings['recycle_board'] : 0,
+				'recycle_board'     => Setting::get('recycle_board', 'int', 0),
 				'subject'           => trim((string) Utils::$smcFunc['strtolower']($search)),
 			]
 		);

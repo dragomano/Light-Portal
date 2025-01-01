@@ -1,14 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package CategoryList (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2022-2024 Bugo
+ * @copyright 2022-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.11.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\CategoryList;
@@ -35,7 +35,7 @@ class CategoryList extends Block
 	{
 		$categories = $this->cache($this->name . '_addon_u' . Utils::$context['user']['id'])
 			->setLifeTime($e->args->cacheTime)
-			->setFallback(self::class, 'getData');
+			->setFallback(fn() => $this->getData());
 
 		if (empty($categories)) {
 			echo $this->txt['no_items'];

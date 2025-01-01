@@ -4,10 +4,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Actions;
@@ -28,6 +28,7 @@ use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
 use function array_key_exists;
@@ -44,7 +45,7 @@ final class Category extends AbstractPageList
 {
 	use RequestTrait;
 
-	public function show(PageInterface $page): void
+	public function show(CardListInterface $cardList): void
 	{
 		if ($this->request()->hasNot('id')) {
 			$this->showAll();
@@ -54,7 +55,7 @@ final class Category extends AbstractPageList
 			'id' => (int) $this->request('id', 0)
 		];
 
-		$categories = $this->getEntityData('category');
+		$categories = app('category_list');
 		if (array_key_exists($category['id'], $categories) === false) {
 			Utils::$context['error_link'] = LP_BASE_URL . ';sa=categories';
 			Lang::$txt['back'] = Lang::$txt['lp_all_categories'];
@@ -84,9 +85,9 @@ final class Category extends AbstractPageList
 			'name' => $category['title'] ?? Lang::$txt['lp_no_category'],
 		];
 
-		$page->showAsCards($this);
+		$cardList->show($this);
 
-		$builder = $page->getBuilder('lp_categories');
+		$builder = $cardList->getBuilder('lp_categories');
 		$builder->setItems($this->getPages(...));
 		$builder->setCount(fn() => $this->getTotalCount());
 
@@ -183,7 +184,7 @@ final class Category extends AbstractPageList
 		TablePresenter::show(
 			PortalTableBuilder::make('categories', Utils::$context['page_title'])
 				->withParams(
-					(int) Config::$modSettings['defaultMaxListItems'] ?: 50,
+					Setting::get('defaultMaxListItems', 'int', 50),
 					Lang::$txt['lp_no_categories'],
 					Utils::$context['canonical_url'],
 					'title'

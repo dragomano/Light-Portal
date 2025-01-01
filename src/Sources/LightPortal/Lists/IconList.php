@@ -4,18 +4,18 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Lists;
 
-use Bugo\FontAwesome\Enums\Icon;
+use Bugo\FontAwesome\Enums\Icon as IconEnum;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Utils\Icon;
 
 use function array_map;
 
@@ -103,18 +103,18 @@ final class IconList implements ListInterface
 		$set['big_image'] = 'fa-regular fa-image fa-5x';
 
 		// Plugin authors can extend the icon set
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::changeIconSet,
 			new Event(new class ($set) {
 				public function __construct(public array &$set) {}
 			})
 		);
 
-		return array_map(fn($icon): string => \Bugo\LightPortal\Utils\Icon::parse($icon), $set);
+		return array_map(static fn($icon): string => Icon::parse($icon), $set);
 	}
 
 	public function getList(): array
 	{
-		return Icon::V5->collection();
+		return IconEnum::V5->collection();
 	}
 }

@@ -1,14 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package TrendingTopics (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2023-2024 Bugo
+ * @copyright 2023-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 24.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\TrendingTopics;
@@ -112,11 +112,11 @@ class TrendingTopics extends Block
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$topics[$row['id_topic']] = [
 				'subject'     => $row['subject'],
-				'id_msg'      => $row['id_msg'],
-				'poster_time' => DateTime::relative($row['poster_time']),
-				'num_replies' => $row['num_replies'],
+				'id_msg'      => (int) $row['id_msg'],
+				'poster_time' => DateTime::relative((int) $row['poster_time']),
+				'num_replies' => (int) $row['num_replies'],
 				'poster'      => [
-					'id'   => $row['id_member_started'],
+					'id'   => (int) $row['id_member_started'],
 					'name' => $row['poster_name'],
 				],
 			];
@@ -133,7 +133,7 @@ class TrendingTopics extends Block
 
 		$topics = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
 			->setLifeTime($e->args->cacheTime)
-			->setFallback(self::class, 'getData', $parameters);
+			->setFallback(fn() => $this->getData($parameters));
 
 		if ($topics) {
 			echo Str::html('ul', ['class' => $this->name . ' noup'])

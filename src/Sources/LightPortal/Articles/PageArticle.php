@@ -4,10 +4,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Articles;
@@ -24,17 +24,14 @@ use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\Content;
-use Bugo\LightPortal\Utils\EntityDataTrait;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
 use function array_keys;
-use function explode;
 use function implode;
 use function time;
 
@@ -46,22 +43,19 @@ if (! defined('SMF'))
 
 class PageArticle extends AbstractArticle
 {
-	use EntityDataTrait;
-
 	protected array $selectedCategories = [];
 
 	protected int $sorting = 0;
 
 	public function init(): void
 	{
-		$this->selectedCategories = empty(Config::$modSettings['lp_frontpage_categories'])
-			? [] : explode(',', (string) Config::$modSettings['lp_frontpage_categories']);
+		$this->selectedCategories = Setting::get('lp_frontpage_categories', 'array', []);
 
 		if (empty($this->selectedCategories) && Setting::isFrontpageMode('all_pages')) {
 			$this->selectedCategories = [0];
 		}
 
-		$this->sorting = (int) (Config::$modSettings['lp_frontpage_article_sorting'] ?? 0);
+		$this->sorting = Setting::get('lp_frontpage_article_sorting', 'int', 0);
 
 		$this->params = [
 			'lang'                => User::$info['language'],
@@ -80,7 +74,7 @@ class PageArticle extends AbstractArticle
 			'date DESC',
 		];
 
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::frontPages,
 			new Event(new ArticlesArgs(
 				$this->columns,
@@ -94,7 +88,7 @@ class PageArticle extends AbstractArticle
 
 	public function getData(int $start, int $limit): array
 	{
-		$titles = $this->getEntityData('title');
+		$titles = app('title_list');
 
 		$this->params += [
 			'start' => $start,
@@ -159,7 +153,7 @@ class PageArticle extends AbstractArticle
 
 			$this->prepareTeaser($pages, $row);
 
-			(new EventManagerFactory())()->dispatch(
+			app('events')->dispatch(
 				PortalHook::frontPagesRow,
 				new Event(new ArticlesRowArgs($pages, $row))
 			);

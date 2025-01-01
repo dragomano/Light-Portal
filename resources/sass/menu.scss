@@ -1,0 +1,17 @@
+@use "functions";
+
+.fa-portal {
+	&::before {
+		content: "\f0ac";
+	}
+}
+
+.portal_menu_icons {
+	font-size: .875rem;
+	@include functions.valign;
+
+	&.fas,
+	&.far {
+		margin: -3px 8px 0 0;
+	}
+}

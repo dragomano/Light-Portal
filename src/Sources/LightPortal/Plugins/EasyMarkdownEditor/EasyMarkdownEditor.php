@@ -1,14 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package EasyMarkdownEditor (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\EasyMarkdownEditor;
@@ -33,7 +33,10 @@ class EasyMarkdownEditor extends Plugin
 
 		Lang::load('Editor');
 
-		Theme::loadCSSFile('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.css', ['external' => true]);
+		$this->loadExternalResources([
+			['type' => 'css', 'url' => 'https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.css'],
+			['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.js'],
+		]);
 
 		Theme::addInlineCss('
 		.editor-toolbar button {
@@ -48,8 +51,6 @@ class EasyMarkdownEditor extends Plugin
 		.CodeMirror pre {
 			max-height: none;
 		}');
-
-		Theme::loadJavaScriptFile('https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.js', ['external' => true]);
 
 		Theme::addInlineJavaScript('
 		let easymde = new EasyMDE({

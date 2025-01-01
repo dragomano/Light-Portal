@@ -4,10 +4,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Areas;
@@ -26,7 +26,6 @@ use Bugo\LightPortal\Args\ParamsArgs;
 use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Models\BlockModel;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Repositories\BlockRepository;
@@ -78,7 +77,7 @@ final class BlockArea
 
 	public function __construct()
 	{
-		$this->repository = new BlockRepository;
+		$this->repository = app('block_repo');
 	}
 
 	public function main(): void
@@ -193,6 +192,7 @@ final class BlockArea
 			isset($data['delete_item']) => $this->repository->remove([(int) $data['delete_item']]),
 			isset($data['toggle_item']) => $this->repository->toggleStatus([(int) $data['toggle_item']]),
 			isset($data['update_priority']) => $this->repository->updatePriority($data['update_priority'], $data['update_placement']),
+			default => null,
 		};
 
 		$this->cache()->flush();
@@ -239,7 +239,7 @@ final class BlockArea
 
 		$params = [];
 
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::prepareBlockParams,
 			new Event(new ParamsArgs($params, Utils::$context['current_block']['type']))
 		);
@@ -358,7 +358,7 @@ final class BlockArea
 
 		Utils::$context['lp_block_tab_appearance'] = true;
 
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::prepareBlockFields,
 			new Event(new OptionsTypeArgs(Utils::$context['lp_block']['options'], Utils::$context['current_block']['type']))
 		);
@@ -393,7 +393,7 @@ final class BlockArea
 
 	private function prepareEditor(): void
 	{
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::prepareEditor,
 			new Event(new ObjectArgs(Utils::$context['lp_block']))
 		);
@@ -441,7 +441,7 @@ final class BlockArea
 		$plugins = array_merge(Setting::getEnabledPlugins(), array_keys(ContentType::all()));
 
 		Utils::$context['lp_loaded_addons'] = array_merge(
-			Utils::$context['lp_loaded_addons'] ?? [], $this->getDefaultTypes()
+			Utils::$context['lp_loaded_addons'] ?? [], ContentType::default()
 		);
 
 		Utils::$context['lp_all_blocks'] = [];

@@ -4,33 +4,25 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Actions;
 
-use Bugo\Bricks\Tables\Column;
-use Bugo\Bricks\Tables\Interfaces\TableBuilderInterface;
 use Bugo\Compat\Config;
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
-use Bugo\Compat\PageIndex;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Repositories\PageRepository;
-use Bugo\LightPortal\UI\Tables\DateColumn;
-use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
-use Bugo\LightPortal\UI\Tables\TitleColumn;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Content;
-use Bugo\LightPortal\Utils\EntityDataTrait;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionTrait;
@@ -43,6 +35,7 @@ use function array_search;
 use function class_exists;
 use function date;
 use function explode;
+use function header;
 use function implode;
 use function json_encode;
 use function time;
@@ -54,10 +47,9 @@ use const LP_PAGE_URL;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class Page implements PageInterface
+final class Page implements ActionInterface
 {
 	use CacheTrait;
-	use EntityDataTrait;
 	use RequestTrait;
 	use SessionTrait;
 
@@ -65,7 +57,7 @@ final class Page implements PageInterface
 
 	public function __construct()
 	{
-		$this->repository = new PageRepository();
+		$this->repository = app('page_repo');
 	}
 
 	public function show(): void
@@ -99,6 +91,8 @@ final class Page implements PageInterface
 
 		$this->setPageTitleAndCanonicalUrl($slug);
 
+		Utils::$context['lp_comments_api_endpoint'] = Utils::$context['canonical_url'] . ';fetch_data';
+
 		Utils::$context['lp_page']['url'] = Utils::$context['canonical_url'] . (
 			$this->request()->has(LP_PAGE_PARAM) ? ';' : '?'
 		);
@@ -123,70 +117,11 @@ final class Page implements PageInterface
 			return [];
 
 		$data = $this->cache('page_' . $slug)
-			->setFallback(PageRepository::class, 'getData', $slug);
+			->setFallback(fn() => app('page_repo')->getData($slug));
 
 		$this->repository->prepareData($data);
 
 		return $data;
-	}
-
-	public function showAsCards(PageListInterface $entity): void
-	{
-		if (empty(Config::$modSettings['lp_show_items_as_articles']))
-			return;
-
-		$start = (int) $this->request('start');
-		$limit = (int) Config::$modSettings['lp_num_items_per_page'] ?? 12;
-
-		$itemsCount = $entity->getTotalCount();
-
-		$front = new FrontPage();
-		$front->updateStart($itemsCount, $start, $limit);
-
-		$sort     = $front->getOrderBy();
-		$articles = $entity->getPages($start, $limit, $sort);
-
-		Utils::$context['page_index'] = new PageIndex(
-			Utils::$context['canonical_url'], $start, $itemsCount, $limit
-		);
-
-		Utils::$context['start'] = $this->request()->get('start');
-
-		Utils::$context['lp_frontpage_articles']    = $articles;
-		Utils::$context['lp_frontpage_num_columns'] = $front->getNumColumns();
-
-		Utils::$context['template_layers'][] = 'sorting';
-
-		$front->prepareTemplates();
-
-		Utils::obExit();
-	}
-
-	public function getBuilder(string $id): TableBuilderInterface
-	{
-		return PortalTableBuilder::make($id, Utils::$context['page_title'])
-			->withParams(
-				(int) Config::$modSettings['defaultMaxListItems'] ?: 50,
-				defaultSortColumn: 'date'
-			)
-			->addColumns([
-				DateColumn::make()
-					->setData('date', 'centertext')
-					->setSort('p.created_at DESC, p.updated_at DESC', 'p.created_at, p.updated_at'),
-				TitleColumn::make()
-					->setData(static fn($entry) => Str::html('a', $entry['title'])
-						->class('bbc_link' . ($entry['is_front'] ? ' new_posts' : ''))
-						->href($entry['is_front'] ? Config::$scripturl : (LP_PAGE_URL . $entry['slug'])), 'centertext'),
-				Column::make('author', Lang::$txt['author'])
-					->setData(static fn($entry) => empty($entry['author']['name'])
-						? Lang::$txt['guest_title']
-						: Str::html('a', $entry['author']['name'])
-							->href($entry['author']['link']), 'centertext')
-					->setSort('author_name DESC', 'author_name'),
-				Column::make('num_views', Lang::$txt['views'])
-					->setData(static fn($entry) => $entry['views']['num'], 'centertext')
-					->setSort('p.num_views DESC', 'p.num_views'),
-			]);
 	}
 
 	private function handleEmptySlug(): void
@@ -366,7 +301,7 @@ final class Page implements PageInterface
 		if (empty($page = Utils::$context['lp_page']) || empty(Config::$modSettings['lp_show_prev_next_links']))
 			return;
 
-		$titles = $this->getEntityData('title');
+		$titles = app('title_list');
 
 		[$prevId, $prevSlug, $nextId, $nextSlug] = $this->repository->getPrevNextLinks($page);
 
@@ -387,7 +322,7 @@ final class Page implements PageInterface
 
 	private function prepareRelatedPages(): void
 	{
-		if (empty($page = Utils::$context['lp_page']) || Setting::showRelatedPages())
+		if (empty($page = Utils::$context['lp_page']) || empty(Setting::showRelatedPages()))
 			return;
 
 		if (empty(Utils::$context['lp_page']['options']['show_related_pages']))
@@ -406,17 +341,28 @@ final class Page implements PageInterface
 
 		Lang::load('Editor');
 
-		(new EventManagerFactory())()->dispatch(PortalHook::comments);
+		app('events')->dispatch(PortalHook::comments);
 
 		if (isset(Utils::$context['lp_' . Setting::getCommentBlock() . '_comment_block']))
 			return;
 
-		$this->prepareJsonData();
+		$this->handleApi();
 
 		(new Comment(Utils::$context['lp_page']['slug']))->show();
 	}
 
-	private function prepareJsonData(): void
+	private function handleApi(): void
+	{
+		if ($this->request()->hasNot('fetch_data')) {
+			return;
+		}
+
+		header('Content-Type: application/json; charset=utf-8');
+
+		exit(json_encode($this->preparedData()));
+	}
+
+	private function preparedData(): array
 	{
 		$txtData = [
 			'pages'         => Lang::$txt['pages'],
@@ -457,13 +403,13 @@ final class Page implements PageInterface
 			'lp_comment_sorting' => Config::$modSettings['lp_comment_sorting'] ?? '0',
 		];
 
-		Utils::$context['lp_json'] = json_encode([
+		return [
 			'txt'      => $txtData,
 			'context'  => $contextData,
 			'settings' => $settingsData,
 			'icons'    => Icon::all(),
 			'user'     => Utils::$context['user'],
-		]);
+		];
 	}
 
 	private function updateNumViews(): void

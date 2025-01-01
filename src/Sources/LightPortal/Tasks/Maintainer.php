@@ -4,15 +4,14 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Tasks;
 
-use Bugo\LightPortal\Repositories\CommentRepository;
 use Bugo\Compat\Tasks\BackgroundTask;
 use Bugo\Compat\Db;
 
@@ -75,7 +74,7 @@ final class Maintainer extends BackgroundTask
 				AND parent_id NOT IN (SELECT * FROM (SELECT id FROM {db_prefix}lp_comments) com)',
 		);
 
-		$commentRepository = new CommentRepository();
+		$commentRepository = app('comment_repo');
 		$commentRepository->removeFromResult($result);
 	}
 
@@ -90,8 +89,9 @@ final class Maintainer extends BackgroundTask
 		);
 
 		$pages = [];
-		while ($row = Db::$db->fetch_assoc($result))
+		while ($row = Db::$db->fetch_assoc($result)) {
 			$pages[$row['page_id']] = $row['amount'];
+		}
 
 		Db::$db->free_result($result);
 
@@ -99,8 +99,9 @@ final class Maintainer extends BackgroundTask
 			return;
 
 		$line = '';
-		foreach ($pages as $pageId => $commentsCount)
+		foreach ($pages as $pageId => $commentsCount) {
 			$line .= ' WHEN page_id = ' . $pageId . ' THEN ' . $commentsCount;
+		}
 
 		Db::$db->query('', /** @lang text */ '
 			UPDATE {db_prefix}lp_pages
@@ -125,8 +126,9 @@ final class Maintainer extends BackgroundTask
 		);
 
 		$pages = [];
-		while ($row = Db::$db->fetch_assoc($result))
+		while ($row = Db::$db->fetch_assoc($result)) {
 			$pages[$row['page_id']] = $row['last_comment_id'] ?? 0;
+		}
 
 		Db::$db->free_result($result);
 
@@ -134,8 +136,9 @@ final class Maintainer extends BackgroundTask
 			return;
 
 		$line = '';
-		foreach ($pages as $pageId => $lastCommentId)
+		foreach ($pages as $pageId => $lastCommentId) {
 			$line .= ' WHEN page_id = ' . $pageId . ' THEN ' . $lastCommentId;
+		}
 
 		Db::$db->query('', /** @lang text */ '
 			UPDATE {db_prefix}lp_pages

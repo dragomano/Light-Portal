@@ -7,39 +7,7 @@ lead: If you want to add your site into this list, just send me a message via <e
 ---
 
 <script setup>
-import {
-  VPTeamPage,
-  VPTeamPageTitle
-} from 'vitepress/theme'
-import ExampleSites from './ExampleSites.vue'
-
-const sites = [
-  {
-    image: '/example_1.png',
-    title: 'Light Portal Showcase',
-    link: 'https://demo.dragomano.ru',
-  },
-  {
-    image: '/example_2.png',
-    title: 'Απανταχού Τριγλιανοί Απόγονοι',
-    link: 'https://www.triglianoi.gr'
-  },
-  {
-    image: '/example_3.png',
-    title: 'Italian SMF',
-    link: 'https://www.italiansmf.net/forum/'
-  },
-]
+import ExampleArea from './ExampleArea.vue'
 </script>
 
-<VPTeamPage>
-  <VPTeamPageTitle>
-    <template #title>
-      {{ $frontmatter.subtitle }}
-    </template>
-    <template #lead>
-      <span v-html="$frontmatter.lead"></span>
-    </template>
-  </VPTeamPageTitle>
-  <ExampleSites :sites="sites" />
-</VPTeamPage>
+<ExampleArea />

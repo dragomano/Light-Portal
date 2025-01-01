@@ -4,10 +4,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Hooks;
@@ -16,9 +16,8 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Actions\Block;
+use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Enums\Permission;
-use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
@@ -26,7 +25,6 @@ use function array_keys;
 use function array_merge;
 use function array_search;
 use function array_slice;
-use function call_user_func;
 use function count;
 use function explode;
 use function microtime;
@@ -47,7 +45,7 @@ class MenuButtons
 		if ($this->isPortalCanBeLoaded() === false)
 			return;
 
-		call_user_func([new Block(), 'show']);
+		app('block')->show();
 
 		$this->prepareAdminButtons($buttons);
 		$this->prepareModerationButtons($buttons);
@@ -117,7 +115,7 @@ class MenuButtons
 						'plugins' => [
 							'title'   => Lang::$txt['lp_plugins'],
 							'href'    => Config::$scripturl . '?action=admin;area=lp_plugins',
-							'amt'     => Setting::getEnabledPlugins() ? count(Setting::getEnabledPlugins()) : 0,
+							'amt'     => count(Setting::getEnabledPlugins()),
 							'show'    => true,
 							'is_last' => true,
 						],
@@ -147,7 +145,7 @@ class MenuButtons
 
 	protected function preparePageButtons(array &$buttons): void
 	{
-		if (empty(Utils::$context['lp_menu_pages'] = (new PageRepository())->getMenuItems()))
+		if (empty(Utils::$context['lp_menu_pages'] = app('page_repo')->getMenuItems()))
 			return;
 
 		$pageButtons = [];
@@ -194,7 +192,7 @@ class MenuButtons
 			LP_ACTION => [
 				'title'       => Lang::$txt['lp_portal'],
 				'href'        => Config::$scripturl,
-				'icon'        => 'home',
+				'icon'        => Action::HOME->value,
 				'show'        => true,
 				'action_hook' => true,
 				'is_last'     => Utils::$context['right_to_left'],
@@ -202,9 +200,9 @@ class MenuButtons
 		], $buttons);
 
 		// "Forum"
-		$buttons['home']['title'] = Lang::$txt['lp_forum'];
-		$buttons['home']['href']  = Config::$scripturl . '?action=forum';
-		$buttons['home']['icon']  = 'im_on';
+		$buttons[Action::HOME->value]['title'] = Lang::$txt['lp_forum'];
+		$buttons[Action::HOME->value]['href']  = Config::$scripturl . '?action=forum';
+		$buttons[Action::HOME->value]['icon']  = 'im_on';
 
 		// Standalone mode
 		if (empty(Config::$modSettings['lp_standalone_mode']))
@@ -212,13 +210,13 @@ class MenuButtons
 
 		$buttons[LP_ACTION]['title']   = Lang::$txt['lp_portal'];
 		$buttons[LP_ACTION]['href']    = Config::$modSettings['lp_standalone_url'] ?: Config::$scripturl;
-		$buttons[LP_ACTION]['icon']    = 'home';
+		$buttons[LP_ACTION]['icon']    = Action::HOME->value;
 		$buttons[LP_ACTION]['is_last'] = Utils::$context['right_to_left'];
 
 		$buttons = array_merge(
 			array_slice($buttons, 0, 2, true),
 			[
-				'forum' => [
+				Action::FORUM->value => [
 					'title'       => Lang::$txt['lp_forum'],
 					'href'        => Config::$modSettings['lp_standalone_url']
 						? Config::$scripturl : Config::$scripturl . '?action=forum',
@@ -276,7 +274,7 @@ class MenuButtons
 	 */
 	protected function fixCanonicalUrl(): void
 	{
-		if ($this->request()->is('forum')) {
+		if ($this->request()->is(Action::FORUM->value)) {
 			Utils::$context['canonical_url'] = Config::$scripturl . '?action=forum';
 		}
 	}

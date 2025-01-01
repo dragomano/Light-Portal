@@ -4,10 +4,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Actions;
@@ -19,13 +19,10 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\DateTime;
-use Bugo\LightPortal\Utils\EntityDataTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
-use function array_pop;
 use function date;
-use function preg_match;
 
 use const LP_BASE_URL;
 use const LP_PAGE_URL;
@@ -35,9 +32,7 @@ if (! defined('SMF'))
 
 abstract class AbstractPageList implements PageListInterface
 {
-	use EntityDataTrait;
-
-	abstract public function show(PageInterface $page);
+	abstract public function show(CardListInterface $cardList);
 
 	abstract public function showAll();
 
@@ -84,7 +79,7 @@ abstract class AbstractPageList implements PageListInterface
 
 	private function getSectionData(array $row): array
 	{
-		if (empty($categories = $this->getEntityData('category')))
+		if (empty($categories = app('category_list')))
 			return [];
 
 		if (isset($row['category_id'])) {
@@ -136,13 +131,12 @@ abstract class AbstractPageList implements PageListInterface
 	{
 		$image = '';
 
-		if (! empty(Config::$modSettings['lp_show_images_in_articles'])) {
-			$firstPostImage = preg_match('/<img(.*)src(.*)=(.*)"(.*)"/U', (string) $row['content'], $value);
-			$image = $firstPostImage ? array_pop($value) : null;
+		if (Setting::get('lp_show_images_in_articles', 'bool', false)) {
+			$image = Str::getImageFromText((string) $row['content']);
 		}
 
-		if (empty($image) && ! empty(Config::$modSettings['lp_image_placeholder'])) {
-			$image = Config::$modSettings['lp_image_placeholder'];
+		if ($image === '') {
+			$image = Setting::get('lp_image_placeholder', 'string', '');
 		}
 
 		return $image;

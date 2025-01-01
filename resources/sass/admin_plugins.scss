@@ -1,0 +1,151 @@
+@use "functions";
+
+#svelte_plugins {
+	.information {
+		[role='button'] {
+			opacity: 0.6;
+
+			&:hover {
+				opacity: 1;
+				@include functions.pointer;
+			}
+		}
+	}
+
+	#filter {
+		margin-left: 4px;
+		@include functions.pointer;
+	}
+
+	@media screen and (max-width: 468px) {
+		label[for="filter"] {
+			display: none;
+		}
+	}
+}
+
+#addon_list {
+	.windowbg {
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
+	}
+}
+
+.addon_list {
+	display: grid;
+	grid-template-columns: auto auto;
+	grid-column-gap: 10px;
+
+	.windowbg {
+		&:only-child {
+			grid-column-start: 1;
+			grid-column-end: -1;
+		}
+	}
+
+	@media screen and (max-width: 468px) {
+		grid-template-columns: auto;
+	}
+}
+
+.features {
+	.floatleft {
+		width: 80%;
+
+		.new_posts {
+			margin: 2px;
+		}
+	}
+
+	.floatright {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 6px;
+		@include functions.pointer;
+	}
+
+	.roundframe {
+		overflow: hidden;
+	}
+
+	form {
+		div[is]:has(input[type='text']:focus) {
+			border: 1px solid var(--toggle-border-on, #10b981);
+		}
+
+		textarea {
+			width: 100%;
+		}
+	}
+}
+
+.form_settings {
+	> div {
+		margin: 1em;
+	}
+
+	label {
+		font-weight: bold;
+		color: initial;
+	}
+
+	input {
+		height: 28px;
+
+		&[type='text'],
+		&[type='url'] {
+			width: 100%;
+		}
+
+		&[type='number'] {
+			width: 15%;
+
+			& {
+				@media screen and (max-width: 600px) {
+					width: 100%;
+				}
+			}
+		}
+	}
+
+	textarea {
+		width: 100%;
+		resize: none;
+	}
+}
+
+.footer {
+	.infobox {
+		opacity: 0;
+		height: 25px;
+		margin-bottom: 0;
+		width: auto;
+		transition: opacity 3s ease-in-out;
+
+		&.show {
+			opacity: 1;
+		}
+	}
+
+	.button {
+		margin-left: 2px;
+
+		&[disabled] {
+			opacity: 0.5;
+			cursor: not-allowed;
+		}
+	}
+
+	@media screen and (max-width: 500px) {
+		display: grid;
+		gap: 4px;
+	}
+}
+
+#addon_chart {
+	margin-bottom: 1em;
+}
+
+.windowbg:has(.features .floatright span.fa-spin) {
+	border: 2px solid var(--toggle-border-on, #10b981);
+}

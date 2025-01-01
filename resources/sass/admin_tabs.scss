@@ -1,0 +1,183 @@
+@use "functions";
+@use "variables";
+
+.lp_tabs {
+	padding: 0;
+	margin: 0 auto;
+
+	input,
+	textarea {
+		&:invalid {
+			border: 3px double red;
+		}
+	}
+
+	div[data-navigation] {
+		@media screen and (min-width: 401px) and (max-width: 790px) {
+			display: grid;
+			grid-template-columns: repeat(2, 1fr);
+			grid-auto-rows: minmax(10px, auto);
+		}
+
+		> div {
+			@include functions.bradius(6px, 6px);
+			display: inline-block;
+			margin: 0 0 -1px;
+			padding: 15px 25px;
+			font-weight: 600;
+			text-align: center;
+			color: variables.$tabs-label-color;
+			border: 1px solid variables.$color-light-gray;
+
+			&.active_navigation {
+				color: variables.$tabs-input-color !important;
+				border-top: 1px solid variables.$tabs-input-border-color !important;
+				border-bottom: 1px solid variables.$color-white !important;
+			}
+
+			&:hover {
+				@include functions.pointer;
+				color: variables.$tabs-label-hover-color;
+			}
+
+			i,
+			svg {
+				font-size: 1.2em !important;
+			}
+
+			@media screen and (max-width: 680px) {
+				i,
+				svg {
+					font-size: 1.6em !important;
+				}
+			}
+
+			@media screen and (max-width: 400px) {
+				padding: 15px;
+				display: grid;
+				grid-auto-flow: column;
+				justify-content: space-between;
+			}
+		}
+	}
+
+	section {
+		display: none;
+		padding: 15px;
+		border: 1px solid variables.$color-light-gray;
+		@include functions.bradius(0, 7px, 7px, 7px);
+
+		&.active_content {
+			display: block;
+		}
+
+		> div {
+			margin-top: 1em;
+		}
+
+		#post_header {
+			display: flex;
+			flex-wrap: wrap;
+			flex-direction: column;
+			line-height: 1.5;
+			-webkit-animation-duration: 1s;
+			animation-duration: 1s;
+			-webkit-animation-fill-mode: both;
+			animation-fill-mode: both;
+			-webkit-animation-name: fadeIn;
+			animation-name: fadeIn;
+
+			@media (max-width: 600px) {
+				flex-direction: row;
+			}
+
+			dt {
+				width: 50%;
+
+				label {
+					font-weight: bold;
+				}
+			}
+
+			dt,
+			dd {
+				margin-block-end: 5px;
+				margin-inline-start: 0;
+				padding-top: 5px;
+
+				&:first-child {
+					margin-block-start: 0;
+				}
+
+				&:last-child {
+					margin-block-end: 0;
+				}
+
+				& > *:first-child {
+					margin-block-start: 0;
+				}
+
+				& > *:last-child {
+					margin-block-end: 0;
+				}
+
+				width: auto !important;
+				float: none !important;
+				flex: 2 50%;
+
+				input[type="text"],
+				input[type="url"] {
+					width: 100%;
+					margin-top: 4px;
+					padding: 20px 10px;
+					font-size: 1.2em;
+					box-shadow: 0 1px 3px #575555 inset;
+
+					&:focus {
+						border: 1px solid var(--toggle-border-on, #10b981);
+					}
+				}
+
+				@media (max-width: 600px) {
+					flex: 1 100%;
+					text-align: center;
+
+					&.pf_title {
+						nav {
+							float: none;
+						}
+					}
+				}
+			}
+
+			.pf_content {
+				width: 100%;
+
+				@media (max-width: 600px) {
+					text-align: justify;
+				}
+			}
+		}
+
+		.choices__inner {
+			@include functions.bradius;
+		}
+
+		.add_option {
+			width: 100%;
+
+			select,
+			input {
+				width: 100%;
+			}
+
+			@media screen and (max-width: 680px) {
+				.plugin_options {
+					td:first-child {
+						display: none;
+					}
+				}
+			}
+		}
+	}
+}

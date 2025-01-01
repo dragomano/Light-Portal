@@ -96,8 +96,8 @@ export default defineConfig({
     resolve: {
       alias: [
         {
-          find: /^.*\/ExampleSites\.vue$/,
-          replacement: fileURLToPath(new URL('./components/ExampleSites.vue', import.meta.url)),
+          find: /^.*\/ExampleArea\.vue$/,
+          replacement: fileURLToPath(new URL('./components/ExampleArea.vue', import.meta.url)),
         },
       ],
     },

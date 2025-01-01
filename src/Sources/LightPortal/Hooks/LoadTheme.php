@@ -4,10 +4,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Hooks;
@@ -25,14 +25,11 @@ use Bugo\LightPortal\Enums\Placement;
 use Bugo\LightPortal\Enums\PluginType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\TitleClass;
-use Bugo\LightPortal\EventManagerFactory;
-use Bugo\LightPortal\Repositories\BlockRepository;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionManager;
 
 use function array_combine;
 use function array_map;
-use function dirname;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -41,13 +38,6 @@ class LoadTheme
 {
 	use CommonChecks;
 	use RequestTrait;
-
-	private array $config;
-
-	public function __construct()
-	{
-		$this->config = require dirname(__DIR__) . '/Settings/config.php';
-	}
 
 	public function __invoke(): void
 	{
@@ -58,10 +48,10 @@ class LoadTheme
 
 		$this->defineVars();
 
-		$this->loadAssets(new $this->config[CompilerInterface::class]);
+		$this->loadAssets(app('compiler'));
 
 		// Run all init methods for active plugins
-		(new EventManagerFactory())()->dispatch(PortalHook::init);
+		app('events')->dispatch(PortalHook::init);
 	}
 
 	protected function defineVars(): void
@@ -73,14 +63,16 @@ class LoadTheme
 
 		$this->calculateNumberOfEntities();
 
-		Utils::$context['lp_all_title_classes']   = TitleClass::values();
+		Utils::$context['lp_all_title_classes'] = TitleClass::values();
 		Utils::$context['lp_all_content_classes'] = ContentClass::values();
-		Utils::$context['lp_block_placements']    = Placement::all();
-		Utils::$context['lp_plugin_types']        = PluginType::all();
-		Utils::$context['lp_content_types']       = ContentType::all();
-		Utils::$context['lp_page_types']          = EntryType::all();
 
-		Utils::$context['lp_active_blocks'] = (new BlockRepository())->getActive();
+		Utils::$context['lp_block_placements'] = Placement::all();
+
+		Utils::$context['lp_plugin_types'] = PluginType::all();
+		Utils::$context['lp_content_types'] = ContentType::all();
+		Utils::$context['lp_page_types'] = EntryType::all();
+
+		Utils::$context['lp_active_blocks'] = app('active_blocks');
 	}
 
 	protected function loadAssets(CompilerInterface $compiler): void

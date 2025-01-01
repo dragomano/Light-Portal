@@ -4,7 +4,7 @@
  * @package SiteList (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2021-2024 Bugo
+ * @copyright 2021-2025 Bugo
  * @license Individual (for sponsors)
  *
  * @category plugin

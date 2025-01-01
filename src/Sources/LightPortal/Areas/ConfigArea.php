@@ -4,10 +4,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Areas;
@@ -36,7 +36,6 @@ use Bugo\LightPortal\Areas\Imports\TagImport;
 use Bugo\LightPortal\Args\AreasArgs;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Icon;
@@ -79,7 +78,7 @@ final class ConfigArea
 		Theme::loadJavaScriptFile('light_portal/virtual-select.min.js');
 
 		Theme::loadJavaScriptFile('light_portal/bundle.min.js', ['defer' => true]);
-		Theme::loadJavaScriptFile('light_portal/admin.js', ['minimize' => true]);
+		Theme::loadJavaScriptFile('light_portal/portal.js', ['minimize' => true]);
 
 		Lang::load('ManageSettings');
 
@@ -169,7 +168,7 @@ final class ConfigArea
 							'label' => Lang::$txt['lp_plugins'],
 							'function' => $this->pluginAreas(...),
 							'icon' => 'modifications',
-							'amt' => Setting::getEnabledPlugins() ? count(Setting::getEnabledPlugins()) : 0,
+							'amt' => count(Setting::getEnabledPlugins()),
 							'permission' => [
 								'admin_forum',
 							],
@@ -212,15 +211,12 @@ final class ConfigArea
 			}
 		}
 
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::updateAdminAreas,
 			new Event(new AreasArgs($areas['lp_portal']['areas']))
 		);
 	}
 
-	/**
-	 * @hook integrate_helpadmin
-	 */
 	public function helpadmin(): void
 	{
 		Lang::$txt['lp_standalone_url_help'] = Lang::getTxt('lp_standalone_url_help', [
@@ -234,11 +230,6 @@ final class ConfigArea
 		]);
 	}
 
-	/**
-	 * List of tabs with settings
-	 *
-	 * Список вкладок с настройками
-	 */
 	public function settingAreas(): void
 	{
 		User::mustHavePermission('admin_forum');
@@ -300,10 +291,7 @@ final class ConfigArea
 			'import' => [new BlockImport(), 'main'],
 		];
 
-		(new EventManagerFactory())()->dispatch(
-			PortalHook::updateBlockAreas,
-			new Event(new AreasArgs($areas))
-		);
+		app('events')->dispatch(PortalHook::updateBlockAreas, new Event(new AreasArgs($areas)));
 
 		$this->callActionFromAreas($areas);
 	}
@@ -320,7 +308,7 @@ final class ConfigArea
 			'import' => [new PageImport(), 'main'],
 		];
 
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::updatePageAreas,
 			new Event(new AreasArgs($areas))
 		);
@@ -340,7 +328,7 @@ final class ConfigArea
 			'import' => [new CategoryImport(), 'main'],
 		];
 
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::updateCategoryAreas,
 			new Event(new AreasArgs($areas))
 		);
@@ -360,10 +348,7 @@ final class ConfigArea
 			'import' => [new TagImport(), 'main'],
 		];
 
-		(new EventManagerFactory())()->dispatch(
-			PortalHook::updateTagAreas,
-			new Event(new AreasArgs($areas))
-		);
+		app('events')->dispatch(PortalHook::updateTagAreas, new Event(new AreasArgs($areas)));
 
 		$this->callActionFromAreas($areas);
 	}
@@ -381,10 +366,7 @@ final class ConfigArea
 			$areas['import'] = [new PluginImport(), 'main'];
 		}
 
-		(new EventManagerFactory())()->dispatch(
-			PortalHook::updatePluginAreas,
-			new Event(new AreasArgs($areas))
-		);
+		app('events')->dispatch(PortalHook::updatePluginAreas, new Event(new AreasArgs($areas)));
 
 		$this->callActionFromAreas($areas);
 	}

@@ -4,10 +4,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Actions;
@@ -26,6 +26,7 @@ use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
 use function array_key_exists;
@@ -43,7 +44,7 @@ final class Tag extends AbstractPageList
 {
 	use RequestTrait;
 
-	public function show(PageInterface $page): void
+	public function show(CardListInterface $cardList): void
 	{
 		if ($this->request()->hasNot('id')) {
 			$this->showAll();
@@ -53,7 +54,7 @@ final class Tag extends AbstractPageList
 			'id' => (int) $this->request('id', 0)
 		];
 
-		$tags = $this->getEntityData('tag');
+		$tags = app('tag_list');
 		if (array_key_exists($tag['id'], $tags) === false) {
 			Utils::$context['error_link'] = LP_BASE_URL . ';sa=tags';
 			Lang::$txt['back'] = Lang::$txt['lp_all_page_tags'];
@@ -77,9 +78,9 @@ final class Tag extends AbstractPageList
 			'name' => $tag['title'],
 		];
 
-		$page->showAsCards($this);
+		$cardList->show($this);
 
-		$builder = $page->getBuilder('lp_tags');
+		$builder = $cardList->getBuilder('lp_tags');
 		$builder->setItems($this->getPages(...));
 		$builder->setCount(fn() => $this->getTotalCount());
 
@@ -183,7 +184,7 @@ final class Tag extends AbstractPageList
 		TablePresenter::show(
 			PortalTableBuilder::make('tags', Utils::$context['page_title'])
 				->withParams(
-					(int) Config::$modSettings['defaultMaxListItems'] ?: 50,
+					Setting::get('defaultMaxListItems', 'int', 50),
 					Lang::$txt['lp_no_tags'],
 					Utils::$context['canonical_url'],
 					'value'

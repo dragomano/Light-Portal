@@ -1,22 +1,25 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package BoardList (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\BoardList;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\ContentClass;
 use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\{Block, Event};
+use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Enums\TitleClass;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Partials\ContentClassSelect;
 use Bugo\LightPortal\UI\Partials\TitleClassSelect;
@@ -35,8 +38,8 @@ class BoardList extends Block
 	{
 		$e->args->params = [
 			'no_content_class' => true,
-			'category_class'   => 'title_bar',
-			'board_class'      => 'roundframe',
+			'category_class'   => TitleClass::TITLE_BAR->value,
+			'board_class'      => ContentClass::ROUNDFRAME->value,
 		];
 	}
 
@@ -79,7 +82,7 @@ class BoardList extends Block
 
 		$boardList = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . Utils::$context['user']['id'])
 			->setLifeTime($e->args->cacheTime)
-			->setFallback(self::class, 'getData');
+			->setFallback(fn() => $this->getData());
 
 		if (empty($boardList))
 			return;
@@ -126,13 +129,14 @@ class BoardList extends Block
 
 	private function getCategoryClasses(): array
 	{
+		$createHtml = fn(TitleClass $class, string $headerClass): string => Str::html('div')
+			->class($class->value)
+			->addHtml(Str::html('h4', '%1$s')->class($headerClass))
+			->toHtml();
+
 		return [
-			'title_bar' => Str::html('div')->class('title_bar')
-				->addHtml(Str::html('h4', '%1$s')->class('titlebg'))
-				->toHtml(),
-			'sub_bar'   => Str::html('div')->class('sub_bar')
-				->addHtml(Str::html('h4', '%1$s')->class('subbg'))
-				->toHtml(),
+			TitleClass::TITLE_BAR->value => $createHtml(TitleClass::TITLE_BAR, 'titlebg'),
+			TitleClass::SUB_BAR->value   => $createHtml(TitleClass::SUB_BAR, 'subbg'),
 		];
 	}
 }

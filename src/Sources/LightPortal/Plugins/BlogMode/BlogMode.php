@@ -4,11 +4,11 @@
  * @package BlogMode (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2024 Bugo
+ * @copyright 2024-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\BlogMode;
@@ -21,10 +21,10 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Configs\BasicConfig;
+use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\UI\Tables\NumViewsColumn;
 use Bugo\LightPortal\UI\Tables\DateColumn;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
@@ -145,7 +145,7 @@ class BlogMode extends Plugin
 		foreach (array_keys($buttons) as $area) {
 			$counter++;
 
-			if ($area === 'home')
+			if ($area === Action::HOME->value)
 				break;
 		}
 
@@ -213,7 +213,7 @@ class BlogMode extends Plugin
 			' - ' . User::$profiles[$memID]['real_name']
 		);
 
-		$repository = new PageRepository();
+		$repository = app('page_repo');
 
 		$params = [
 			'AND p.author_id = {int:current_user} AND p.entry_type = {string:entry_type}',

@@ -4,10 +4,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Areas;
@@ -19,7 +19,6 @@ use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\SMFHookTrait;
 use Bugo\LightPortal\Utils\Str;
@@ -165,10 +164,6 @@ final class CreditArea
 				'name' => 'PHPStorm',
 				'link' => 'https://www.jetbrains.com/phpstorm/'
 			],
-			[
-				'name' => 'Cursor',
-				'link' => 'https://www.cursor.com/'
-			],
 		];
 
 		$links = [
@@ -197,78 +192,6 @@ final class CreditArea
 				'license' => [
 					'name' => 'the MIT License',
 					'link' => 'https://github.com/alpinejs/alpine/blob/master/LICENSE.md'
-				]
-			],
-			[
-				'title' => 'Vue.js',
-				'link' => 'https://github.com/vuejs/core',
-				'author' => 'Yuxi (Evan) You',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/vuejs/core/blob/main/LICENSE'
-				]
-			],
-			[
-				'title' => 'vue3-sfc-loader',
-				'link' => 'https://github.com/FranckFreiburger/vue3-sfc-loader',
-				'author' => 'Franck Freiburger',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/vuejs/core/blob/main/LICENSE'
-				]
-			],
-			[
-				'title' => 'Pinia',
-				'link' => 'https://github.com/vuejs/pinia',
-				'author' => 'Eduardo San Martin Morote',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/vuejs/pinia/blob/v2/LICENSE'
-				]
-			],
-			[
-				'title' => 'VueUse',
-				'link' => 'https://github.com/vueuse/vueuse',
-				'author' => 'Anthony Fu',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/vueuse/vueuse/blob/main/LICENSE'
-				]
-			],
-			[
-				'title' => 'Vue Showdown',
-				'link' => 'https://github.com/meteorlxy/vue-showdown/',
-				'author' => 'meteorlxy & contributors',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/meteorlxy/vue-showdown/blob/main/LICENSE'
-				]
-			],
-			[
-				'title' => 'Vue 3 Multiselect',
-				'link' => 'https://github.com/vueform/multiselect',
-				'author' => 'Adam Berecz',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/vueform/multiselect/blob/main/LICENSE.md'
-				]
-			],
-			[
-				'title' => 'Vue 3 Toggle',
-				'link' => 'https://github.com/vueform/toggle',
-				'author' => 'Adam Berecz',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/vueform/toggle/blob/main/LICENSE.md'
-				]
-			],
-			[
-				'title' => 'vue-i18n-next',
-				'link' => 'https://github.com/intlify/vue-i18n-next/',
-				'author' => 'kazuya kawaguchi',
-				'license' => [
-					'name' => 'the MIT License',
-					'link' => 'https://github.com/intlify/vue-i18n-next/blob/master/LICENSE'
 				]
 			],
 			[
@@ -333,11 +256,38 @@ final class CreditArea
 					'name' => 'the MIT License',
 					'link' => 'https://github.com/verlok/vanilla-lazyload/blob/master/LICENSE'
 				]
+			],
+			[
+				'title' => 'Svelte',
+				'link' => 'https://github.com/sveltejs/svelte',
+				'author' => 'Svelte contributors',
+				'license' => [
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/sveltejs/svelte#MIT-1-ov-file'
+				]
+			],
+			[
+				'title' => 'svelte-toggle',
+				'link' => 'https://github.com/metonym/svelte-toggle',
+				'author' => 'Eric Liu',
+				'license' => [
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/metonym/svelte-toggle/blob/master/LICENSE'
+				]
+			],
+			[
+				'title' => 'Svelecte',
+				'link' => 'https://github.com/mskocik/svelecte',
+				'author' => 'Martin Skočík',
+				'license' => [
+					'name' => 'the MIT License',
+					'link' => 'https://github.com/mskocik/svelecte?tab=MIT-1-ov-file#readme'
+				]
 			]
 		];
 
 		// Adding copyrights of used plugins
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::credits,
 			new Event(new class ($links) {
 				public function __construct(public array &$links) {}

@@ -4,19 +4,18 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\UI\Partials;
 
-use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Utils\Setting;
 
-use function explode;
 use function func_get_args;
 use function implode;
 use function json_encode;
@@ -29,10 +28,7 @@ final class ActionSelect extends AbstractPartial
 		$params = $params[0] ?? [];
 
 		$params['id'] ??= 'lp_disabled_actions';
-		$params['data'] ??= (empty(Config::$modSettings['lp_disabled_actions'])
-			? []
-			: explode(',', (string) Config::$modSettings['lp_disabled_actions'])
-		);
+		$params['data'] ??= Setting::getDisabledActions();
 		$params['value'] = [];
 
 		$data = [];

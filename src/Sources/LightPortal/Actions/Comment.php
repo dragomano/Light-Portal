@@ -4,22 +4,20 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Actions;
 
-use Bugo\Compat\Config;
 use Bugo\Compat\PageIndex;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\AlertAction;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
-use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Repositories\CommentRepository;
 use Bugo\LightPortal\Utils\Avatar;
@@ -51,7 +49,7 @@ final class Comment implements ActionInterface
 
 	public function __construct(private readonly string $pageSlug = '')
 	{
-		$this->repository = new CommentRepository();
+		$this->repository = app('comment_repo');
 	}
 
 	public function show(): void
@@ -72,7 +70,7 @@ final class Comment implements ActionInterface
 	private function get(): never
 	{
 		$comments = $this->cache('page_' . $this->pageSlug . '_comments')
-			->setFallback(CommentRepository::class, 'getByPageId', Utils::$context['lp_page']['id']);
+			->setFallback(fn() => app('comment_repo')->getByPageId(Utils::$context['lp_page']['id']));
 
 		$comments = array_map(function ($comment) {
 			$comment['human_date']    = DateTime::relative($comment['created_at']);
@@ -80,7 +78,7 @@ final class Comment implements ActionInterface
 			$comment['authorial']     = Utils::$context['lp_page']['author_id'] === $comment['poster']['id'];
 			$comment['extra_buttons'] = [];
 
-			(new EventManagerFactory())()->dispatch(
+			app('events')->dispatch(
 				PortalHook::commentButtons,
 				new Event(new class ($comment, $comment['extra_buttons']) {
 					public function __construct(public readonly array $comment, public array &$buttons) {}
@@ -91,7 +89,7 @@ final class Comment implements ActionInterface
 		}, $comments);
 
 		$start = (int) $this->request()->get('start');
-		$limit = (int) (Config::$modSettings['lp_num_comments_per_page'] ?? 10);
+		$limit = Setting::get('lp_num_comments_per_page', 'int', 10);
 
 		$commentTree  = $this->getTree($comments);
 		$parentsCount = count($commentTree);

@@ -4,10 +4,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Areas\Configs;
@@ -22,6 +22,7 @@ use Bugo\LightPortal\Enums\VarType;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionTrait;
+use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
 use function asort;
@@ -132,7 +133,7 @@ final class ExtraConfig extends AbstractConfig
 			[
 				'text',
 				'lp_fa_custom',
-				'disabled' => isset(Config::$modSettings['lp_fa_source']) && Config::$modSettings['lp_fa_source'] !== 'custom',
+				'disabled' => Setting::get('lp_fa_source', 'string', '') !== 'custom',
 				'size' => 75
 			],
 			[

@@ -1,14 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package MainMenu (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2021-2024 Bugo
+ * @copyright 2021-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\MainMenu;
@@ -16,6 +16,7 @@ namespace Bugo\LightPortal\Plugins\MainMenu;
 use Bugo\Compat\Config;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
@@ -47,8 +48,8 @@ class MainMenu extends Plugin
 		}
 
 		if (! empty(Utils::$context['lp_main_menu_forum_langs'][User::$info['language']])) {
-			$buttons[empty(Config::$modSettings['lp_standalone_mode']) ? 'home' : 'forum']['title']
-				= Utils::$context['lp_main_menu_forum_langs'][User::$info['language']];
+			$action = empty(Config::$modSettings['lp_standalone_mode']) ? Action::HOME->value : Action::FORUM->value;
+			$buttons[$action]['title'] = Utils::$context['lp_main_menu_forum_langs'][User::$info['language']];
 		}
 	}
 

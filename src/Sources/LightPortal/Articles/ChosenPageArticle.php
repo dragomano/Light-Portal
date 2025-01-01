@@ -4,17 +4,15 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Articles;
 
-use Bugo\Compat\Config;
-
-use function explode;
+use Bugo\LightPortal\Utils\Setting;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -29,8 +27,7 @@ final class ChosenPageArticle extends PageArticle
 
 		$this->selectedCategories = [];
 
-		$this->selectedPages = empty(Config::$modSettings['lp_frontpage_pages'])
-			? [] : explode(',', (string) Config::$modSettings['lp_frontpage_pages']);
+		$this->selectedPages = Setting::get('lp_frontpage_pages', 'array', []);
 
 		$this->wheres[] = 'AND p.page_id IN ({array_int:selected_pages})';
 

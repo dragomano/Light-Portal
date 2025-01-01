@@ -1,14 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package ArticleList (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2024 Bugo
+ * @copyright 2020-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\ArticleList;
@@ -130,7 +130,7 @@ class ArticleList extends Block
 			$value = null;
 			$image = empty($parameters['seek_images'])
 				? ''
-				: preg_match('/\[img.*]([^]\[]+)\[\/img]/U', (string) $row['body'], $value);
+				: preg_match('/\[img.*]([^]\[]+)\[\/img]/U', $row['body'], $value);
 			$image = $value ? array_pop($value) : ($image ?: Config::$modSettings['lp_image_placeholder'] ?? '');
 
 			$body = BBCodeParser::load()->parse($row['body'], (bool) $row['smileys_enabled'], $row['id_msg']);
@@ -153,7 +153,7 @@ class ArticleList extends Block
 		if (empty($parameters['include_pages']))
 			return [];
 
-		$titles = $this->getEntityData('title');
+		$titles = app('title_list');
 
 		$result = Db::$db->query('', '
 			SELECT page_id, slug, content, description, type
@@ -203,11 +203,7 @@ class ArticleList extends Block
 
 		$articles = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
 			->setLifeTime($e->args->cacheTime)
-			->setFallback(
-				self::class,
-				empty($parameters['display_type']) ? 'getTopics' : 'getPages',
-				$parameters
-			);
+			->setFallback(fn() => empty($parameters['display_type']) ? $this->getTopics($parameters) : $this->getPages($parameters));
 
 		if ($articles) {
 			$articleList = Str::html('div')->class($this->name);

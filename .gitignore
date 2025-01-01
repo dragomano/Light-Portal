@@ -5,6 +5,7 @@
 **/output/
 node_modules/
 src/Sources/LightPortal/Libs/*
+src/Sources/LightPortal/packages/*
 src/Sources/index.php
 composer.lock
 
@@ -18,13 +19,8 @@ src/Themes/default/css/light_portal/virtual-select.min.css
 
 src/Themes/default/scripts/light_portal/*
 !src/Themes/default/scripts/light_portal/index.php
-!src/Themes/default/scripts/light_portal/admin.js
-!src/Themes/default/scripts/light_portal/app.js
-!src/Themes/default/scripts/light_portal/app_comments.js
-!src/Themes/default/scripts/light_portal/app_plugins.js
-!src/Themes/default/scripts/light_portal/dev
+!src/Themes/default/scripts/light_portal/portal.js
 
-**/Plugins/**/*.less
 **/Plugins/**/langs/*
 
 **/Plugins/ApexCharts/*

@@ -4,10 +4,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\UI\Partials;
@@ -15,7 +15,6 @@ namespace Bugo\LightPortal\UI\Partials;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Utils\EntityDataTrait;
 use Bugo\LightPortal\Utils\Icon;
 
 use function count;
@@ -24,8 +23,6 @@ use function json_encode;
 
 final class CategorySelect extends AbstractPartial
 {
-	use EntityDataTrait;
-
 	public function __invoke(): string
 	{
 		$params = func_get_args();
@@ -35,7 +32,7 @@ final class CategorySelect extends AbstractPartial
 		$params['multiple'] ??= true;
 		$params['wide'] ??= true;
 		$params['hint'] ??= Lang::$txt['lp_frontpage_categories_select'];
-		$params['data'] ??= $this->getEntityData('category');
+		$params['data'] ??= app('category_list');
 		$params['value'] ??= Config::$modSettings['lp_frontpage_categories'] ?? '';
 
 		$data = [];

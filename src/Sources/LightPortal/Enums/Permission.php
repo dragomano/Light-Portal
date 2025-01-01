@@ -4,10 +4,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Enums;
@@ -15,7 +15,6 @@ namespace Bugo\LightPortal\Enums;
 use Bugo\Compat\Db;
 use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\Traits\HasValuesTrait;
-use Bugo\LightPortal\Utils\Cache;
 
 use function array_column;
 use function array_filter;
@@ -66,12 +65,17 @@ enum Permission: int
 
 	public static function isModerator(): bool
 	{
-		return in_array(User::$info['id'], self::getBoardModerators()) || in_array(2, User::$info['groups']);
+		return in_array(User::$info['id'], self::getBoardModerators()) || self::isGroupMember(2);
+	}
+
+	public static function isGroupMember(int $groupId): bool
+	{
+		return in_array($groupId, User::$info['groups']);
 	}
 
 	private static function getBoardModerators(): array
 	{
-		if (($moderators = (new Cache())->get('board_moderators')) === null) {
+		if (($moderators = app('cache')->get('board_moderators')) === null) {
 			$result = Db::$db->query('', /** @lang text */ '
 				SELECT id_member
 				FROM {db_prefix}moderators',
@@ -83,7 +87,7 @@ enum Permission: int
 
 			$moderators = array_column($items, 'id_member');
 
-			(new Cache())->put('board_moderators', $moderators);
+			app('cache')->put('board_moderators', $moderators);
 		}
 
 		return $moderators;

@@ -4,17 +4,17 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Hooks;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Utils\EntityDataTrait;
+use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Utils\Setting;
 
 use function sprintf;
@@ -29,8 +29,6 @@ if (! defined('SMF'))
 
 class WhosOnline
 {
-	use EntityDataTrait;
-
 	public function __invoke(array $actions): string
 	{
 		$result = '';
@@ -59,7 +57,7 @@ class WhosOnline
 			$result = sprintf(Lang::$txt['lp_who_viewing_frontpage'], LP_BASE_URL);
 
 			if (isset($actions['sa']) && $actions['sa'] === 'tags') {
-				$tags = $this->getEntityData('tag');
+				$tags = app('tag_list');
 
 				$result = isset($actions['id'])
 					? Lang::getTxt('lp_who_viewing_the_tag', [
@@ -73,7 +71,7 @@ class WhosOnline
 			}
 
 			if (isset($actions['sa']) && $actions['sa'] === 'categories') {
-				$categories = $this->getEntityData('category');
+				$categories = app('category_list');
 
 				$result = isset($actions['id'])
 					? Lang::getTxt('lp_who_viewing_the_category', [
@@ -87,7 +85,7 @@ class WhosOnline
 			}
 		}
 
-		if ($actions['action'] === 'forum') {
+		if ($actions['action'] === Action::FORUM->value) {
 			$result = sprintf(
 				Lang::$txt['lp_who_viewing_index'],
 				Config::$scripturl . '?action=forum'

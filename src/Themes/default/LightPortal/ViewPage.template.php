@@ -2,7 +2,6 @@
 
 use Bugo\Compat\{Config, Lang, Theme, Utils};
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Utils\{Icon, Setting};
 
 function template_show_page(): void
@@ -95,7 +94,7 @@ function template_show_page(): void
 			<hr>';
 	}
 
-	(new EventManagerFactory())()->dispatch(PortalHook::beforePageContent);
+	app('events')->dispatch(PortalHook::beforePageContent);
 
 	if (! empty(Theme::$current->settings['og_image'])) {
 		echo '
@@ -107,7 +106,7 @@ function template_show_page(): void
 				', Utils::$context['lp_page']['content'], '
 			</div>';
 
-	(new EventManagerFactory())()->dispatch(PortalHook::afterPageContent);
+	app('events')->dispatch(PortalHook::afterPageContent);
 
 	echo '
 		</article>';
@@ -194,20 +193,8 @@ function show_comments(): void
 		return;
 
 	echo /** @lang text */ '
-	<div id="vue_comments"></div>
-	<script>
-		const vueGlobals = ', Utils::$context['lp_json'], ';
+	<div id="svelte_comments"></div>
+	<script type="module">
+		usePortalApi("', Utils::$context['lp_comments_api_endpoint'], '", "bundle_comments.js")
 	</script>';
-
-	if (is_file(Theme::$current->settings['default_theme_dir'] . '/scripts/light_portal/dev/helpers.js')) {
-		echo /** @lang text */ '
-	<script src="https://cdn.jsdelivr.net/combine/npm/vue@3/dist/vue.global.min.js,npm/vue3-sfc-loader@0,npm/vue-demi@0,npm/pinia@2,npm/showdown@2,npm/vue-showdown@4,npm/vue-i18n@10/dist/vue-i18n.global.prod.min.js,npm/@vueuse/shared@10,npm/@vueuse/core@10"></script>
-	<script type="module" src="https://cdn.jsdelivr.net/npm/@github/markdown-toolbar-element@2/dist/index.min.js"></script>
-	<script src="', Theme::$current->settings['default_theme_url'], '/scripts/light_portal/dev/helpers.js"></script>
-	<script type="module" src="', Theme::$current->settings['default_theme_url'], '/scripts/light_portal/dev/comment_helpers.js"></script>
-	<script type="module" src="', Theme::$current->settings['default_theme_url'], '/scripts/light_portal/dev/vue_comments.js"></script>';
-	} else {
-		echo '
-	<script type="module" src="', Theme::$current->settings['default_theme_url'], '/scripts/light_portal/bundle_comments.js"></script>';
-	}
 }

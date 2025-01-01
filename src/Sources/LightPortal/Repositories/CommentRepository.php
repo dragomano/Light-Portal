@@ -4,10 +4,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Repositories;
@@ -16,6 +16,7 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\LightPortal\Utils\Avatar;
+use Bugo\LightPortal\Utils\Setting;
 
 use function array_column;
 use function count;
@@ -62,7 +63,7 @@ final class CommentRepository
 				'id'          => (int) $row['id'],
 				'page_id'     => (int) $row['page_id'],
 				'parent_id'   => (int) $row['parent_id'],
-				'message'     => htmlspecialchars_decode((string) $row['message']),
+				'message'     => htmlspecialchars_decode($row['message']),
 				'created_at'  => (int) $row['created_at'],
 				'can_edit'    => $this->isCanEdit((int) $row['created_at']),
 				'poster'      => [
@@ -142,11 +143,13 @@ final class CommentRepository
 			]
 		);
 
-		Db::$db->db_query('', '
+		Db::$db->query('', '
 			UPDATE {db_prefix}lp_pages
-			SET num_comments = num_comments - {int:num_items}
-			WHERE slug = {string:slug}
-				AND num_comments - {int:num_items} >= 0',
+			SET num_comments = CASE
+				WHEN num_comments < {int:num_items} THEN 0
+				ELSE num_comments - {int:num_items}
+				END
+			WHERE slug = {string:slug}',
 			[
 				'num_items' => count($items),
 				'slug'      => $pageSlug,
@@ -232,9 +235,11 @@ final class CommentRepository
 
 	private function isCanEdit(int $date): bool
 	{
-		if (empty($timeToChange = (int) (Config::$modSettings['lp_time_to_change_comments'] ?? 0)))
+		$timeToChange = Setting::get('lp_time_to_change_comments', 'int', 0);
+
+		if (empty($timeToChange))
 			return false;
 
-		return $timeToChange && time() - $date <= $timeToChange * 60;
+		return time() - $date <= $timeToChange * 60;
 	}
 }

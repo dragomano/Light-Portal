@@ -4,15 +4,14 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Utils;
 
-use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Theme;
 
@@ -47,9 +46,7 @@ trait HasThemesAware
 				WHERE id_theme IN ({array_int:themes})
 					AND variable = {literal:name}',
 				[
-					'themes' => empty(Config::$modSettings['knownThemes'])
-						? []
-						: explode(',', (string) Config::$modSettings['knownThemes']),
+					'themes' => Setting::get('knownThemes', 'array', []),
 				]
 			);
 

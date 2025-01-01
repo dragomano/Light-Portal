@@ -1,14 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package SimpleChat (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2023-2024 Bugo
+ * @copyright 2023-2025 Bugo
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 03.12.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleChat;
@@ -18,8 +18,10 @@ use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\{Block, Event};
+use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
+use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\RadioField;
 use Bugo\LightPortal\Utils\Avatar;
 
@@ -43,6 +45,7 @@ class SimpleChat extends Block
 	private array $params = [
 		'show_avatars'  => false,
 		'form_position' => 'bottom',
+		'window_height' => 100,
 	];
 
 	private readonly Chat $chat;
@@ -88,6 +91,7 @@ class SimpleChat extends Block
 		$e->args->params = [
 			'show_avatars'  => FILTER_VALIDATE_BOOLEAN,
 			'form_position' => FILTER_DEFAULT,
+			'window_height' => FILTER_VALIDATE_INT,
 		];
 	}
 
@@ -102,6 +106,10 @@ class SimpleChat extends Block
 		RadioField::make('form_position', $this->txt['form_position'])
 			->setOptions(array_combine(['bottom', 'top'], $this->txt['form_position_set']))
 			->setValue($options['form_position']);
+
+		NumberField::make('window_height', $this->txt['window_height'])
+			->setAttribute('step', 10)
+			->setValue($options['window_height']);
 	}
 
 	public function getData(int $block_id, array $parameters): array
@@ -124,10 +132,11 @@ class SimpleChat extends Block
 
 		$parameters['show_avatars'] ??= $this->params['show_avatars'];
 		$parameters['form_position'] ??= $this->params['form_position'];
+		$parameters['window_height'] ??= $this->params['window_height'];
 
 		$messages = $this->cache($this->name . '_addon_b' . $id)
 			->setLifeTime($e->args->cacheTime)
-			->setFallback(self::class, 'getData', $id, $parameters);
+			->setFallback(fn() => $this->getData($id, $parameters));
 
 		Utils::$context['lp_chats'][$id] = json_encode($messages, JSON_UNESCAPED_UNICODE);
 

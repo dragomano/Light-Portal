@@ -1,18 +1,19 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package News (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2024 Bugo
+ * @copyright 2020-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.11.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\News;
 
+use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
@@ -56,12 +57,9 @@ class News extends Block
 
 	public function getData(int $item = 0): string
 	{
-		setupThemeContext();
+		Theme::setupContext();
 
-		if ($item > 0)
-			return Utils::$context['news_lines'][$item - 1];
-
-		return $this->getFromSSI($this->name, 'return');
+		return $item > 0 ? Utils::$context['news_lines'][$item - 1] : $this->getFromSSI($this->name, 'return');
 	}
 
 	public function prepareContent(Event $e): void

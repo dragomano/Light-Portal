@@ -4,10 +4,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Utils;
@@ -18,7 +18,6 @@ use Bugo\Compat\Sapi;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use ParseError;
 
@@ -45,7 +44,7 @@ final class Content
 	{
 		ob_start();
 
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::prepareContent,
 			new Event(new class ($type, $block_id, $cache_time, $parameters) {
 				public function __construct(
@@ -94,7 +93,7 @@ final class Content
 			return ob_get_clean();
 		}
 
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::parseContent,
 			new Event(new class ($content, $type) {
 				public function __construct(public string &$content, public readonly string $type) {}

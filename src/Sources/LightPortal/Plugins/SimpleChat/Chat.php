@@ -1,14 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package SimpleChat (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2023-2024 Bugo
+ * @copyright 2023-2025 Bugo
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 03.12.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleChat;
@@ -112,7 +112,7 @@ class Chat
 				'id'         => $row['id'],
 				'block_id'   => $row['block_id'],
 				'message'    => BBCodeParser::load()->parse($row['message']),
-				'created_at' => Time::timeformat($row['created_at']),
+				'created_at' => Time::stringFromUnix($row['created_at']),
 				'author'     => [
 					'id'   => $row['user_id'],
 					'name' => $row['real_name'],
@@ -155,7 +155,7 @@ class Chat
 		$result = [
 			'id'         => $id,
 			'message'    => BBCodeParser::load()->parse($message),
-			'created_at' => Time::timeformat($time),
+			'created_at' => Time::stringFromUnix($time),
 			'author'     => [
 				'id'     => User::$info['id'],
 				'name'   => User::$info['name'],

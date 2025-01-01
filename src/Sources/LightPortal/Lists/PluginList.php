@@ -1,26 +1,36 @@
 <?php declare(strict_types=1);
 
 /**
+ * TagList.php
+ *
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Lists;
 
-use Bugo\LightPortal\Plugins\PluginHandler;
+use function array_map;
+use function basename;
+use function glob;
+
+use const GLOB_ONLYDIR;
+use const LP_ADDON_DIR;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class PluginList implements ListInterface
+class PluginList implements ListInterface
 {
 	public function __invoke(): array
 	{
-		return (new PluginHandler())->getAll();
+		if (empty($dirs = glob(LP_ADDON_DIR . '/*', GLOB_ONLYDIR)))
+			return [];
+
+		return array_map(static fn($item): string => basename($item), $dirs);
 	}
 }

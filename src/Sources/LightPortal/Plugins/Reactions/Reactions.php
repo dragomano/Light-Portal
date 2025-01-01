@@ -1,14 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package Reactions (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2023-2024 Bugo
+ * @copyright 2023-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 25.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\Reactions;
@@ -56,17 +56,17 @@ class Reactions extends Plugin
 		if (empty($data['options'][self::PARAM]))
 			return;
 
-		Utils::$context['reaction_url'] = LP_PAGE_URL . $data['slug'];
 		Utils::$context['can_react'] = empty($isAuthor);
 
 		Theme::addInlineJavaScript('
 			document.addEventListener("addReaction", (event) => {
+				const pageUrl = ' . Utils::escapeJavaScript(LP_PAGE_URL . $data['slug']) . '
 				const isComment = typeof event.detail.comment !== "undefined"
-				axios.post("' . Utils::$context['reaction_url'] . ';add_reaction", event.detail)
+				axios.post(pageUrl + ";add_reaction", event.detail)
 					.then(() => {
 						isComment
 						? axios
-							.post("' . Utils::$context['reaction_url'] . ';get_reactions", {
+							.post(pageUrl + ";get_reactions", {
 								comment: event.detail.comment
 							})
 							.then(response => {
@@ -74,7 +74,7 @@ class Reactions extends Plugin
 								window["commentReactions" + event.detail.comment].reactions = response.data
 							})
 						: axios
-							.get("' . Utils::$context['reaction_url'] . ';get_reactions")
+							.get(pageUrl + ";get_reactions")
 							.then(response => {
 								window.pageReactions.showButtons = false
 								window.pageReactions.reactions = response.data

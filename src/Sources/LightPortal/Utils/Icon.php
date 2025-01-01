@@ -4,17 +4,16 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Utils;
 
 use Bugo\FontAwesome\IconBuilder;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 
 use function str_replace;
@@ -42,7 +41,7 @@ final class Icon
 
 		$template = (new IconBuilder($icon, ['aria-hidden' => true]))->html() . ' ';
 
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::prepareIconTemplate,
 			new Event(new class ($template, $icon) {
 				public function __construct(public string &$template, public readonly string $icon) {}
@@ -54,6 +53,6 @@ final class Icon
 
 	public static function all(): array
 	{
-		return (new EntityManager())('icon');
+		return app('icon_list');
 	}
 }

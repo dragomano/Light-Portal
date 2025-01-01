@@ -37,9 +37,9 @@ function show_current_month_grid(array $data): void
 			if ($day['day']) {
 				$classes[] = empty($day['is_today']) ? 'windowbg' : 'calendar_today';
 
-				foreach (['events', 'holidays', 'birthdays'] as $type)
-					if ($day[$type])
-						$classes[] = $type;
+				foreach (['events', 'holidays', 'birthdays'] as $type) {
+					$day[$type] && $classes[] = $type;
+				}
 			} else {
 				$classes[] = 'disabled';
 			}

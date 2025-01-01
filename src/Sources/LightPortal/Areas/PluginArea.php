@@ -4,10 +4,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Areas;
@@ -21,11 +21,9 @@ use Bugo\Compat\WebFetchApi;
 use Bugo\LightPortal\Args\SettingsArgs;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
-use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\CacheTrait;
-use Bugo\LightPortal\Utils\EntityDataTrait;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\RequestTrait;
@@ -40,12 +38,12 @@ use function array_map;
 use function array_search;
 use function array_unique;
 use function explode;
+use function header;
 use function implode;
 use function in_array;
 use function is_array;
 use function json_encode;
 use function ksort;
-use function ltrim;
 use function sort;
 use function sprintf;
 use function unlink;
@@ -58,14 +56,13 @@ if (! defined('SMF'))
 final class PluginArea
 {
 	use CacheTrait;
-	use EntityDataTrait;
 	use RequestTrait;
 
 	private PluginRepository $repository;
 
 	public function __construct()
 	{
-		$this->repository = new PluginRepository();
+		$this->repository = app('plugin_repo');
 	}
 
 	public function main(): void
@@ -77,12 +74,18 @@ final class PluginArea
 		Utils::$context['sub_template'] = 'manage_plugins';
 
 		Theme::loadCSSFile(
-			'https://cdn.jsdelivr.net/combine/npm/@vueform/multiselect@2/themes/default.min.css,npm/@vueform/toggle@2/themes/default.min.css',
+			implode('', [
+				'https://cdn.jsdelivr.net/combine/',
+				'npm/@vueform/multiselect@2/themes/default.min.css,',
+				'npm/@vueform/toggle@2/themes/default.min.css'
+			]),
 			['external' => true]
 		);
 
 		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_plugins_manage'];
 		Utils::$context['post_url']   = Config::$scripturl . '?action=admin;area=lp_plugins;save';
+
+		Utils::$context['lp_plugins_api_endpoint'] = Config::$scripturl . '?action=admin;area=lp_plugins;api';
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
@@ -92,7 +95,7 @@ final class PluginArea
 			),
 		];
 
-		Utils::$context['lp_plugins'] = $this->getEntityData('plugin');
+		Utils::$context['lp_plugins'] = app('plugin_list');
 
 		$this->extendPluginList();
 
@@ -103,7 +106,7 @@ final class PluginArea
 		$settings = [];
 
 		// Plugin authors can add settings here
-		(new EventManagerFactory())(Utils::$context['lp_plugins'])->dispatch(
+		app('events', Utils::$context['lp_plugins'])->dispatch(
 			PortalHook::addSettings,
 			new Event(new SettingsArgs($settings))
 		);
@@ -111,7 +114,7 @@ final class PluginArea
 		$this->handleSave($settings);
 		$this->prepareAddonList($settings);
 		$this->prepareAddonChart();
-		$this->prepareJsonData();
+		$this->handleApi();
 	}
 
 	private function handleToggle(): void
@@ -171,8 +174,6 @@ final class PluginArea
 					$settings[$var[1]] = VarType::FLOAT->filter($this->request($var[1]));
 				} elseif ($var[0] === 'url') {
 					$settings[$var[1]] = VarType::URL->filter($this->request($var[1]));
-				} elseif ($var[0] === 'multiselect') {
-					$settings[$var[1]] = ltrim(implode(',', $this->request($var[1])), ',');
 				} else {
 					$settings[$var[1]] = $this->request($var[1]);
 				}
@@ -180,7 +181,7 @@ final class PluginArea
 		}
 
 		// Plugin authors can do additional actions after settings saving
-		(new EventManagerFactory())(Utils::$context['lp_plugins'])->dispatch(
+		app('events', Utils::$context['lp_plugins'])->dispatch(
 			PortalHook::saveSettings,
 			new Event(new SettingsArgs($settings))
 		);
@@ -274,7 +275,18 @@ final class PluginArea
 		</script>';
 	}
 
-	private function prepareJsonData(): void
+	private function handleApi(): void
+	{
+		if ($this->request()->hasNot('api')) {
+			return;
+		}
+
+		header('Content-Type: application/json; charset=utf-8');
+
+		exit(json_encode($this->preparedData()));
+	}
+
+	private function preparedData(): array
 	{
 		$txtData = [
 			'plugins'           => Lang::$txt['lp_plugins'],
@@ -291,6 +303,7 @@ final class PluginArea
 			'settings_saved'    => Lang::$txt['settings_saved'],
 			'find_close'        => Lang::$txt['find_close'],
 			'save'              => Lang::$txt['save'],
+			'no_options'        => Lang::$txt['lp_plugins_no_options'],
 			'no_matches'        => Lang::$txt['no_matches'],
 			'search'            => Lang::$txt['search'],
 			'remove'            => Lang::$txt['remove'],
@@ -326,12 +339,12 @@ final class PluginArea
 			}
 		}
 
-		Utils::$context['lp_json'] = json_encode([
+		return [
 			'txt'     => $txtData,
 			'context' => $contextData,
 			'plugins' => $pluginsData,
 			'icons'   => Icon::all(),
-		]);
+		];
 	}
 
 	private function removeAssets(): void
@@ -381,8 +394,9 @@ final class PluginArea
 
 	private function getTypes(string $snakeName): array
 	{
-		if (empty($snakeName) || empty($type = Utils::$context['lp_loaded_addons'][$snakeName]['type'] ?? ''))
+		if (empty($snakeName) || empty($type = Utils::$context['lp_loaded_addons'][$snakeName]['type'] ?? '')) {
 			return [Lang::$txt['not_applicable'] => ''];
+		}
 
 		$types = explode(' ', (string) $type);
 		if (isset($types[1])) {

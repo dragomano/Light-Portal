@@ -4,10 +4,10 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Articles;
@@ -20,13 +20,11 @@ use Bugo\Compat\User;
 use Bugo\LightPortal\Args\ArticlesArgs;
 use Bugo\LightPortal\Args\ArticlesRowArgs;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
-use function explode;
 use function implode;
 use function preg_replace;
 
@@ -41,10 +39,9 @@ class TopicArticle extends AbstractArticle
 
 	public function init(): void
 	{
-		$this->selectedBoards = empty(Config::$modSettings['lp_frontpage_boards'])
-			? [] : explode(',', (string) Config::$modSettings['lp_frontpage_boards']);
+		$this->selectedBoards = Setting::get('lp_frontpage_boards', 'array', []);
 
-		$this->sorting = (int) (Config::$modSettings['lp_frontpage_article_sorting'] ?? 0);
+		$this->sorting = Setting::get('lp_frontpage_article_sorting', 'int', 0);
 
 		$this->params = [
 			'current_member'    => User::$info['id'],
@@ -62,7 +59,7 @@ class TopicArticle extends AbstractArticle
 			'date DESC',
 		];
 
-		(new EventManagerFactory())()->dispatch(
+		app('events')->dispatch(
 			PortalHook::frontTopics,
 			new Event(new ArticlesArgs(
 				$this->columns,
@@ -154,7 +151,7 @@ class TopicArticle extends AbstractArticle
 
 			$this->prepareTeaser($topics, $row);
 
-			(new EventManagerFactory())()->dispatch(
+			app('events')->dispatch(
 				PortalHook::frontTopicsRow,
 				new Event(new ArticlesRowArgs($topics, $row))
 			);

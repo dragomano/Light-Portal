@@ -4,11 +4,11 @@
  * @package DummyArticleCards (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2021-2024 Bugo
+ * @copyright 2021-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\DummyArticleCards;
@@ -19,6 +19,7 @@ use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Articles\AbstractArticle;
 use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 use DateTime;
 use Exception;
@@ -34,7 +35,7 @@ class DummyArticle extends AbstractArticle
 
 	public function __construct()
 	{
-		$this->limit = Config::$modSettings['lp_num_items_per_page'] ?? '6';
+		$this->limit = Setting::get('lp_num_items_per_page', 'int', 6);
 	}
 
 	public function init(): void {}
@@ -46,11 +47,11 @@ class DummyArticle extends AbstractArticle
 	{
 		$products = $this->cache('active_layout_addon_demo_products')
 			->setLifeTime(21600)
-			->setFallback(self::class, 'getProducts');
+			->setFallback(fn() => $this->getProducts());
 
 		$users = $this->cache('active_layout_addon_demo_users')
 			->setLifeTime(21600)
-			->setFallback(self::class, 'getUsers');
+			->setFallback(fn() => $this->getUsers());
 
 		$demoArticles = [];
 
@@ -119,7 +120,7 @@ class DummyArticle extends AbstractArticle
 	{
 		$products = $this->cache('active_layout_addon_demo_products')
 			->setLifeTime(21600)
-			->setFallback(self::class, 'getProducts');
+			->setFallback(fn() => $this->getProducts());
 
 		return count($products);
 	}

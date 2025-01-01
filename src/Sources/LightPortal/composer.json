@@ -10,12 +10,19 @@
     "bugo/smf-compat": "^0.2",
     "doctrine/event-manager": "^2.0",
     "eftec/bladeone": "^4.13",
-    "laminas/laminas-config-aggregator": "^1.15",
-    "nette/robot-loader": "^4.0"
+    "league/container": "^4.2"
   },
-  "require-dev": {
-    "scssphp/scssphp": "^1.12",
-    "wikimedia/less.php": "^4.3"
+  "suggest": {
+    "scssphp/scssphp": "Install v1.13 if you want to use the Sass compiler",
+    "wikimedia/less.php": "Install v5.1 if you want to use the Less compiler"
+  },
+  "autoload": {
+    "psr-4": {
+      "Bugo\\LightPortal\\": ""
+    },
+    "exclude-from-classmap": [
+      "Plugins"
+    ]
   },
   "config": {
     "vendor-dir": "Libs",

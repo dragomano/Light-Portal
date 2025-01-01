@@ -1,14 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package PluginMaker (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2021-2024 Bugo
+ * @copyright 2021-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 21.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
@@ -21,7 +21,6 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Enums\PluginType;
 use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\SelectField;
@@ -69,7 +68,8 @@ class Handler
 		Lang::$txt['lp_plugin_maker']['add_info'] = sprintf(Lang::$txt['lp_plugin_maker']['add_info'], sprintf(
 			Str::html('strong')
 				->style('color', 'initial')
-				->setHtml('%s/' . Str::html('span', ['x-ref' => 'plugin_name'])->setText('%s')),
+				->setHtml('%s/' . Str::html('span', ['x-ref' => 'plugin_name'])->setText('%s'))
+				->toHtml(),
 			LP_ADDON_DIR,
 			self::PLUGIN_NAME,
 		));
@@ -337,7 +337,7 @@ class Handler
 
 	private function saveAuthorData(): void
 	{
-		(new PluginRepository())->changeSettings('plugin_maker', [
+		app('plugin_repo')->changeSettings('plugin_maker', [
 			'author'  => Utils::$context['lp_plugin']['author'],
 			'email'   => Utils::$context['lp_plugin']['email'],
 			'site'    => Utils::$context['lp_plugin']['site'],

@@ -1,14 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @package UserInfo (Light Portal)
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2020-2024 Bugo
+ * @copyright 2020-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 22.12.24
  */
 
 namespace Bugo\LightPortal\Plugins\UserInfo;
@@ -50,7 +50,7 @@ class UserInfo extends Block
 
 		$userData = $this->cache($this->name . '_addon_u' . Utils::$context['user']['id'])
 			->setLifeTime($e->args->cacheTime)
-			->setFallback(self::class, 'getData');
+			->setFallback(fn() => $this->getData());
 
 		show_user_info($userData);
 	}

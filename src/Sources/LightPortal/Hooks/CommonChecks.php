@@ -4,23 +4,24 @@
  * @package Light Portal
  * @link https://dragomano.ru/mods/light-portal
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2019-2024 Bugo
+ * @copyright 2019-2025 Bugo
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
- * @version 2.8
+ * @version 2.9
  */
 
 namespace Bugo\LightPortal\Hooks;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\Setting;
 
 use function array_flip;
 use function array_key_exists;
 use function array_keys;
 use function defined;
-use function explode;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -75,11 +76,6 @@ trait CommonChecks
 
 	protected function getDisabledActions(): array
 	{
-		$disabledActions = empty(Config::$modSettings['lp_disabled_actions'])
-			? [] : explode(',', (string) Config::$modSettings['lp_disabled_actions']);
-
-		$disabledActions[] = 'home';
-
-		return $disabledActions;
+		return [...Setting::getDisabledActions(), Action::HOME->value];
 	}
 }
