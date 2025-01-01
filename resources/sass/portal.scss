@@ -18,6 +18,7 @@
 /* Menu, main layout */
 @use "menu";
 @use "layout";
+@use "badges";
 
 /* Page template */
 @use "page";
@@ -34,8 +35,6 @@
 @use "admin_blocks";
 @use "admin_pages";
 @use "admin_plugins";
-
-@use "badges";
 
 /* Custom fixes */
 @use "hacks";

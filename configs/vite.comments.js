@@ -18,6 +18,8 @@ export default defineConfig({
     },
   },
   plugins: [
-    svelte(),
+    svelte({
+      emitCss: false,
+    }),
   ],
 });

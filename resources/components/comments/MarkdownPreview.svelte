@@ -1,5 +1,5 @@
 <script>
-  import { SvelteShowdown } from './index.js';
+  import { SvelteShowdown } from 'svelte-showdown';
 
   const classMap = {
     blockquote: 'bbc_standard_quote',

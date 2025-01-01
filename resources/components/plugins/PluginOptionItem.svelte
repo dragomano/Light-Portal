@@ -1,6 +1,5 @@
 <script>
   import { _ } from 'svelte-i18n';
-  import { get, derived } from 'svelte/store';
   import { useContextStore } from '../../js/stores.js';
   import {
     CallbackOption,
@@ -20,7 +19,7 @@
 
   let { option, plugin } = $props();
 
-  const contextStore = get(useContextStore);
+  const contextStore = $useContextStore;
   const type = $derived(option[0]);
   const name = $derived(option[1]);
   const id = $derived(`${plugin}.${name}`);
@@ -30,53 +29,37 @@
   const optionType = $derived(['float', 'int'].includes(type) ? 'number' : type);
 
   const dynamicProps = $derived.by(() => {
-    let componentProps;
-
     switch (optionType) {
       case 'callback':
-        componentProps = { Component: CallbackOption, option };
-        break;
+        return { Component: CallbackOption, option };
       case 'check':
-        componentProps = { Component: CheckOption, id, name, value };
-        break;
+        return { Component: CheckOption, id, name, value };
       case 'color':
-        componentProps = { Component: ColorOption, id, name, value };
-        break;
+        return { Component: ColorOption, id, name, value };
       case 'desc':
-        componentProps = { Component: DescOption, id };
-        break;
+        return { Component: DescOption, id };
       case 'large_text':
-        componentProps = { Component: LargeTextOption, id, name, value };
-        break;
+        return { Component: LargeTextOption, id, name, value };
       case 'multiselect':
-        componentProps = { Component: MultiSelectOption, id, name, value, option };
-        break;
+        return { Component: MultiSelectOption, id, name, value, option };
       case 'number':
-        componentProps = { Component: NumberOption, id, name, value, option };
-        break;
+        return { Component: NumberOption, id, name, value, option };
       case 'range':
-        componentProps = { Component: RangeOption, id, name, value, option };
-        break;
+        return { Component: RangeOption, id, name, value, option };
       case 'select':
-        componentProps = { Component: SelectOption, id, name, value, option };
-        break;
+        return { Component: SelectOption, id, name, value, option };
       case 'text':
-        componentProps = { Component: TextOption, id, name, value, option };
-        break;
+        return { Component: TextOption, id, name, value, option };
       case 'title':
-        componentProps = { Component: TitleOption, id };
-        break;
+        return { Component: TitleOption, id };
       case 'url':
-        componentProps = { Component: UrlOption, id, name, value, option };
-        break;
+        return { Component: UrlOption, id, name, value, option };
       default:
-        componentProps = null;
+        return null;
     }
-
-    return componentProps;
   });
 
-  const Component = $derived(dynamicProps.Component);
+  const Component = $derived(dynamicProps?.Component);
 </script>
 
 <div>

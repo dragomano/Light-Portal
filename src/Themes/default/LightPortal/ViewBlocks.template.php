@@ -125,7 +125,7 @@ function lp_show_blocks(string $panel = ''): void
 	if (empty($panel) || empty(Utils::$context['lp_blocks'][$panel]))
 		return;
 
-	$panelDirection = Setting::getPanelDirection()[$panel] ?? null;
+	$panelDirection = Setting::getPanelDirection($panel);
 	$panelDirectionClass = $panelDirection ? ' col-xs-12 col-sm' : '';
 
 	echo $panelDirection ? /** @lang text */ '<div class="row">' : '';

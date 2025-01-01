@@ -1,29 +1,48 @@
 <script>
-  import { onMount, onDestroy } from 'svelte';
-  import { get } from 'svelte/store';
   import { _ } from 'svelte-i18n';
   import { useIconStore, useSettingStore, useLocalStorage } from '../../js/stores.js';
   import { api, helper } from '../../js/helpers.js';
-  import { CommentItem, PurePagination, ReplyForm } from './index.js';
+  import { CommentItem, Pagination, ReplyForm } from './index.js';
 
-  const { comments: commentsIcon } = get(useIconStore);
-  const { lp_comment_sorting } = get(useSettingStore);
+  const { comments: commentsIcon } = $useIconStore;
+  const { lp_comment_sorting } = $useSettingStore;
 
+  /**
+   * @typedef {Object} CommentData
+   * @property {number} id - Unique identifier of the comment
+   * @property {string} message - Text of the comment
+   * @property {number|null} parent_id - ID of the parent comment, if any
+   */
   let comments = $state([]);
   let parentsCount = $state(0);
   let total = $state(0);
   let limit = $state(0);
   let start = useLocalStorage('lpCommentsStart', 0);
-  let startIndex = get(start);
+  let startIndex = $start;
+
+  $effect(() => {
+    startIndex = $start;
+
+    setCommentHash();
+    getComments();
+  })
 
   const totalOnPage = $derived(comments.length);
   const showBottomPagination = $derived(totalOnPage > 5);
   const showReplyFormOnTop = lp_comment_sorting === '1';
 
+  /**
+   * @typedef {Object} ApiResponse
+   * @property {number} total - Total number of comments
+   * @property {number} parentsCount - Number of parent comments
+   * @property {number} limit - Number of comments per page
+   * @property {CommentData[]} comments - Array of comments
+   * @returns {Promise<ApiResponse>}
+   */
   const getComments = async () => {
     const data = await api.get(startIndex);
 
-    if (!data.total) return;
+    if (!data.total) return null;
 
     comments = helper.getSortedTree(helper.getData(data.comments), showReplyFormOnTop);
     parentsCount = data.parentsCount;
@@ -89,19 +108,6 @@
       window.history.replaceState({}, '', window.location.href.split('#')[0]);
     }
   };
-
-  const unsubscribe = start.subscribe((value) => {
-    startIndex = value;
-
-    setCommentHash();
-    getComments();
-  });
-
-  onDestroy(() => {
-    unsubscribe();
-  });
-
-  onMount(() => getComments());
 </script>
 
 <aside class="comments">
@@ -116,7 +122,7 @@
       <ReplyForm submit={addComment} />
     {/if}
 
-    <PurePagination bind:start={$start} totalItems={parentsCount} itemsPerPage={limit} />
+    <Pagination bind:start={$start} totalItems={parentsCount} itemsPerPage={limit} />
 
     {#if comments.length}
       <ul class="comment_list row">
@@ -127,7 +133,7 @@
     {/if}
 
     {#if showBottomPagination}
-      <PurePagination bind:start={$start} totalItems={parentsCount} itemsPerPage={limit} />
+      <Pagination bind:start={$start} totalItems={parentsCount} itemsPerPage={limit} />
     {/if}
 
     {#if !showReplyFormOnTop}

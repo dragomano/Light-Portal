@@ -114,9 +114,11 @@ class Setting
 		return self::get('lp_right_panel_width', 'array', ['lg' => 3, 'xl' => 2], 'json');
 	}
 
-	public static function getPanelDirection(): array
+	public static function getPanelDirection(string $panel): string
 	{
-		return self::get('lp_panel_direction', 'array', [], 'json');
+		$directions = self::get('lp_panel_direction', 'array', [], 'json');
+
+		return (string) $directions[$panel];
 	}
 
 	public static function isSwapLeftRight(): bool

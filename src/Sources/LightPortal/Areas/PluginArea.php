@@ -44,7 +44,6 @@ use function in_array;
 use function is_array;
 use function json_encode;
 use function ksort;
-use function ltrim;
 use function sort;
 use function sprintf;
 use function unlink;
@@ -175,8 +174,6 @@ final class PluginArea
 					$settings[$var[1]] = VarType::FLOAT->filter($this->request($var[1]));
 				} elseif ($var[0] === 'url') {
 					$settings[$var[1]] = VarType::URL->filter($this->request($var[1]));
-				} elseif ($var[0] === 'multiselect') {
-					$settings[$var[1]] = ltrim(implode(',', $this->request($var[1])), ',');
 				} else {
 					$settings[$var[1]] = $this->request($var[1]);
 				}

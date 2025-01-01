@@ -5,14 +5,6 @@
 
   let { comment, submit, cancel } = $props();
   let message = $state(comment.message);
-
-  const handleSubmit = () => {
-    submit({ id: comment.id, content: message });
-  };
-
-  const handleCancel = () => {
-    cancel();
-  };
 </script>
 
 <div class="edit_form">
@@ -20,11 +12,12 @@
 
   <div class="comment_edit_buttons">
     {#if message.length}
-      <Button onclick={handleSubmit} tag="span" icon="save">
+      <Button onclick={() => submit({ id: comment.id, content: message })} tag="span" icon="save">
         {$_('save')}
       </Button>
     {/if}
-    <Button onclick={handleCancel} tag="span" icon="undo">
+
+    <Button onclick={() => cancel()} tag="span" icon="undo">
       {$_('modify_cancel')}
     </Button>
   </div>

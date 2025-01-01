@@ -2,10 +2,10 @@
   let { children } = $props();
 </script>
 
-<span class="postfix">{@render children?.()}</span>
+<span>{@render children?.()}</span>
 
 <style>
-  .postfix {
+  span {
     margin-left: 4px;
   }
 </style>

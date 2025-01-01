@@ -8,7 +8,7 @@
   let {
     id,
     name,
-    value = $bindable(''),
+    value = '',
     option = {},
     multiple = false,
     clearable = false
@@ -16,7 +16,7 @@
 
   const params = $derived(option[2]);
   const options = $derived(
-    params ? Object.entries(params).map(([value, label]) => ({ label, value })) : []
+    params ? Object.entries(params).map(([value, label]) => ({ value, label })) : []
   );
 </script>
 

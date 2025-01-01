@@ -1,6 +1,6 @@
 <script>
   import { _ } from 'svelte-i18n';
-  import { derived, get } from 'svelte/store';
+  import { slide } from 'svelte/transition';
   import { useContextStore, useIconStore, useAppStore, usePluginStore } from '../../js/stores.js';
   import { PluginOptionList } from './index.js';
   import Toggle from 'svelte-toggle';
@@ -9,10 +9,10 @@
   /** @type {{ item: { snake_name: string, settings: array, special: string } }} */
   let { item } = $props();
 
-  const appStore = get(useAppStore);
-  const pluginStore = get(usePluginStore);
-  const contextStore = get(useContextStore);
-  const { donate: donateIcon, download: downloadIcon } = get(useIconStore);
+  const appStore = $useAppStore;
+  const pluginStore = $usePluginStore;
+  const contextStore = $useContextStore;
+  const { donate: donateIcon, download: downloadIcon } = $useIconStore;
 
   let show = $state(false);
   let toggled = $state(item.status === 'on');
@@ -44,7 +44,7 @@
   };
 </script>
 
-<div class="windowbg">
+<div class="windowbg" transition:slide>
   <div class="features" data-id={index}>
     <div class="floatleft">
       <h4>
@@ -74,11 +74,13 @@
       {/if}
 
       {#if item.special}
-        {#if item.special === 'can_donate'}
-          <a href={donateLink} rel="noopener" target="_blank">{@html donateIcon}</a>
-        {:else}
-          <a href={downloadLink} rel="noopener" target="_blank">{@html downloadIcon}</a>
-        {/if}
+        <a
+          href={item.special === 'can_donate' ? donateLink : downloadLink}
+          rel="noopener"
+          target="_blank"
+        >
+          {@html item.special === 'can_donate' ? donateIcon : downloadIcon}
+        </a>
       {/if}
 
       {#if showToggle}

@@ -3,9 +3,8 @@ import CommentList from './CommentList.svelte';
 import EditForm from './EditForm.svelte';
 import MarkdownEditor from './MarkdownEditor.svelte';
 import MarkdownPreview from './MarkdownPreview.svelte';
-import PurePagination from './PurePagination.svelte';
+import Pagination from './Pagination.svelte';
 import ReplyForm from './ReplyForm.svelte';
-import SvelteShowdown from './SvelteShowdown.svelte';
 
 export {
   CommentItem,
@@ -13,7 +12,6 @@ export {
   EditForm,
   MarkdownEditor,
   MarkdownPreview,
-  PurePagination,
+  Pagination,
   ReplyForm,
-  SvelteShowdown,
 };

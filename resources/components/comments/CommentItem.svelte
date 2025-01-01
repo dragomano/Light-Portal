@@ -1,6 +1,5 @@
 <script>
   import { _ } from 'svelte-i18n';
-  import { get } from 'svelte/store';
   import { fade } from 'svelte/transition';
   import { useUserStore } from '../../js/stores.js';
   import { CommentItem, EditForm, ReplyForm, MarkdownPreview } from './index.js';
@@ -12,11 +11,12 @@
    *     can_edit: boolean,
    *     authorial: boolean,
    *     poster: {
+   *       name: string,
    *       avatar: string
    *     },
    *     extra_buttons: array,
    *     human_date: string,
-   *     published_at: string
+   *     published_at: number
    *   }
    * }}
    */
@@ -26,7 +26,7 @@
   let editMode = $state(false);
   let parent = $state();
 
-  const { id: userId, is_admin: isAdmin } = get(useUserStore);
+  const { id: userId, is_admin: isAdmin } = $useUserStore;
   const showReplyButton = $derived(level < 5 && userId !== comment.poster.id);
   const showRemoveButton = $derived(comment.poster.id === userId || isAdmin);
   const canEdit = $derived(
@@ -35,7 +35,7 @@
       comment.poster.id === userId
   );
 
-  const add = (newComment) => {
+  const submit = (newComment) => {
     addComment(newComment);
     replyMode = false;
   };
@@ -46,9 +46,7 @@
     editMode = false;
   };
 
-  const remove = (id) => {
-    removeComment(id);
-  };
+  const itemType = 'https://schema.org/Comment';
 </script>
 
 <li
@@ -60,7 +58,7 @@
   data-author={comment.poster.id}
   itemprop="comment"
   itemscope
-  itemtype="https://schema.org/Comment"
+  itemtype={itemType}
 >
   <div class="comment_wrapper" id={`comment=${comment.id}`}>
     <div class="comment_avatar">
@@ -98,20 +96,23 @@
                 {$_('reply')}
               </Button>
             {/if}
+
             {#if canEdit}
               <Button onclick={() => (editMode = true)} tag="span" icon="edit">
                 {$_('modify')}
               </Button>
             {/if}
+
             {#each comment.extra_buttons as button}
               {@html button}
             {/each}
+
             {#if showRemoveButton}
               <Button
                 class={isHover ? 'error' : undefined}
                 onmouseover={() => (isHover = true)}
                 onmouseleave={() => (isHover = false)}
-                onclick={() => remove(parent.dataset.id)}
+                onclick={() => removeComment(parent.dataset.id)}
                 tag="span"
                 icon="remove"
               >
@@ -124,7 +125,7 @@
     </div>
 
     {#if replyMode}
-      <ReplyForm parent={parent.dataset} submit={add}>
+      <ReplyForm parent={parent.dataset} {submit}>
         <Button class="active" onclick={() => (replyMode = false)}>
           {$_('modify_cancel')}
         </Button>
@@ -138,9 +139,9 @@
             comment={reply}
             index={index + 1}
             level={level + 1}
-            addComment={add}
+            addComment={submit}
             updateComment={update}
-            removeComment={remove}
+            {removeComment}
           />
         {/each}
       </ul>

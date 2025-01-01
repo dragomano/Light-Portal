@@ -8,11 +8,11 @@
 
 <div>
   <input type="range" bind:value {id} {name} {min} {max} {step} />
-  <span class="range_field">{value}</span>
+  <span>{value}</span>
 </div>
 
 <style>
-  .range_field {
+  span {
     margin-left: 6px;
     font-weight: bold;
   }

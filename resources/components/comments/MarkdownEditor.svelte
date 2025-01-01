@@ -1,7 +1,7 @@
 <script>
   import '@github/markdown-toolbar-element';
-  import { onMount } from 'svelte';
   import { _ } from 'svelte-i18n';
+  import { onMount } from 'svelte';
   import { MarkdownPreview } from './index.js';
   import Button from '../BaseButton.svelte';
 
@@ -10,8 +10,8 @@
 
   const uuid = 'id-' + crypto.randomUUID();
 
-  const handleInput = (event) => {
-    message = event.target.value;
+  const oninput = (e) => {
+    message = e.target.value;
   };
 
   onMount(() => textarea.focus());
@@ -32,5 +32,14 @@
   <md-task-list><Button icon="task" aria-label={$_('task_list')} /></md-task-list>
 </markdown-toolbar>
 
-<textarea {...rest} bind:this={textarea} bind:value={message} id={uuid} oninput={handleInput}
+<textarea {...rest} bind:this={textarea} bind:value={message} id={uuid} {oninput}
 ></textarea>
+
+<style>
+  markdown-toolbar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+</style>

@@ -1,6 +1,5 @@
 <script>
   import { _ } from 'svelte-i18n';
-  import { get } from 'svelte/store';
   import { fade } from 'svelte/transition';
   import { useContextStore, useAppStore } from '../../js/stores.js';
   import { PluginOptionItem } from './index.js';
@@ -11,8 +10,8 @@
   let success = $state(false);
   let form = $state();
 
-  const { sessionId, sessionVar } = get(useAppStore);
-  const { postUrl } = get(useContextStore);
+  const { sessionId, sessionVar } = $useAppStore;
+  const { postUrl } = $useContextStore;
 
   const blockId = $derived(`${item.snake_name}_${sessionId}_settings`);
   const formId = $derived(`${item.snake_name}_form_${sessionId}`);
@@ -21,12 +20,6 @@
     e.preventDefault();
 
     const formData = new FormData(form);
-    const lpCheckboxes = form.querySelectorAll('input[type=checkbox]');
-
-    lpCheckboxes.forEach((val) => {
-      formData.append(val.getAttribute('name'), val.checked);
-    });
-
     const { data } = await axios.post(String(postUrl), formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
@@ -35,7 +28,7 @@
 
     if (data.success) {
       success = true;
-      setTimeout(() => success = false, 3000);
+      setTimeout(() => success = false, 2000);
     }
   };
 </script>
@@ -46,11 +39,11 @@
   </div>
 
   <div class="noticebox">
-    <form bind:this={form} class="form_settings" id={formId} onsubmit={(e) => saveSettings(e)}>
+    <form bind:this={form} class="form_settings" id={formId} onsubmit={saveSettings}>
       <input type="hidden" name="plugin_name" value={item.snake_name} />
       <input type="hidden" name={sessionVar} value={sessionId} />
 
-      {#each item.settings as option}
+      {#each item.settings as option (option[1])}
         <PluginOptionItem {option} plugin={item.snake_name} />
       {/each}
     </form>
