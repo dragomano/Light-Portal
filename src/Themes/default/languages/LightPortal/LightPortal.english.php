@@ -363,9 +363,9 @@ $txt['lp_related_pages'] = 'Related pages';
 // Comments
 $txt['lp_comments'] = 'Comments';
 $txt['lp_comments_title'] = '{count, plural,
-=0 {No comments yet}
-one {# comment}
-other {# comments}
+	=0 {No comments yet}
+	one {# comment}
+	other {# comments}
 }';
 $txt['lp_comment_placeholder'] = 'Leave a comment...';
 
