@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 05.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleFeeder;
@@ -78,7 +78,6 @@ class SimpleFeeder extends Block
 	public function prepareContent(Event $e): void
 	{
 		$parameters = $e->args->parameters;
-		$parameters['show_text'] ??= false;
 
 		$feed = $this->cache($this->name . '_addon_b' . $e->args->id)
 			->setLifeTime($e->args->cacheTime)
@@ -100,10 +99,18 @@ class SimpleFeeder extends Block
 									Str::html('h5')
 										->addHtml(Str::html('a')->href($item->link)->setText($item->title))
 								)
-								->addHtml(Str::html('em')->setText(DateTime::relative(strtotime((string) $item->pubDate))))
+								->addHtml(
+									Str::html('em')
+										->setText(DateTime::relative(strtotime((string) $item->pubDate)))
+								)
 						)
 				)
-				->addHtml($parameters['show_text'] ? Str::html('div', ['class' => 'list_posts double_height'])->setText($item->description) : '');
+				->addHtml(
+					$parameters['show_text']
+						? Str::html('div', ['class' => 'list_posts double_height'])
+							->setText($item->description)
+						: ''
+				);
 		}
 	}
 }

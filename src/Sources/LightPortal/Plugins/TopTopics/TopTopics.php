@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 05.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\TopTopics;
@@ -21,6 +21,7 @@ use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\RadioField;
 use Bugo\LightPortal\Utils\Str;
+use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -69,15 +70,16 @@ class TopTopics extends Block
 	{
 		$parameters = $e->args->parameters;
 
-		$parameters['show_numbers_only'] ??= false;
+		$type = Typed::string($parameters['popularity_type'], default: 'replies');
+		$numTopics = Typed::int($parameters['num_topics'], default: 10);
 
 		$topTopics = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(
 				fn() => $this->getFromSSI(
 					'topTopics',
-					$parameters['popularity_type'],
-					$parameters['num_topics'],
+					$type,
+					$numTopics,
 					'array'
 				)
 			);
@@ -87,26 +89,26 @@ class TopTopics extends Block
 
 		$dl = Str::html('dl', ['class' => 'stats']);
 
-		$max = $topTopics[0]['num_' . $parameters['popularity_type']];
+		$max = $topTopics[0]['num_' . $type];
 
 		foreach ($topTopics as $topic) {
-			if ($topic['num_' . $parameters['popularity_type']] < 1)
+			if ($topic['num_' . $type] < 1)
 				continue;
 
-			$width = $topic['num_' . $parameters['popularity_type']] * 100 / $max;
+			$width = $topic['num_' . $type] * 100 / $max;
 
 			$dt = Str::html('dt')->addHtml($topic['link']);
 
 			$dd = Str::html('dd', ['class' => 'statsbar generic_bar righttext']);
-			$barClass = empty($topic['num_' . $parameters['popularity_type']]) ? 'bar empty' : 'bar';
-			$barStyle = empty($topic['num_' . $parameters['popularity_type']]) ? null : 'width: ' . $width . '%';
+			$barClass = empty($topic['num_' . $type]) ? 'bar empty' : 'bar';
+			$barStyle = empty($topic['num_' . $type]) ? null : 'width: ' . $width . '%';
 
 			$bar = Str::html('div', ['class' => $barClass, 'style' => $barStyle]);
 			$dd->addHtml($bar);
 
 			$countText = $parameters['show_numbers_only']
-				? $topic['num_' . $parameters['popularity_type']]
-				: Lang::getTxt('lp_' . $parameters['popularity_type'] . '_set', [$parameters['popularity_type'] => $topic['num_' . $parameters['popularity_type']]]);
+				? $topic['num_' . $type]
+				: Lang::getTxt('lp_' . $type . '_set', [$type => $topic['num_' . $type]]);
 
 			$dd->addHtml(Str::html('span', $countText));
 

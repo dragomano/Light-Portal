@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 05.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\Polls;
@@ -23,6 +23,7 @@ use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\UI\Fields\InputField;
 use Bugo\LightPortal\UI\Fields\SelectField;
 use Bugo\LightPortal\Utils\Str;
+use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -63,9 +64,7 @@ class Polls extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		$parameters = $e->args->parameters;
-
-		$poll = $this->getFromSSI('showPoll', $parameters['selected_item'], 'array');
+		$poll = $this->getFromSSI('showPoll', Typed::int($e->args->parameters['selected_item']), 'array');
 
 		if ($poll) {
 			if ($poll['allow_vote']) {

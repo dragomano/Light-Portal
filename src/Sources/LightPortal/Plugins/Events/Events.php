@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 05.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\Events;
@@ -22,6 +22,8 @@ use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\RangeField;
+use Bugo\LightPortal\Utils\ParamWrapper;
+use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -88,14 +90,14 @@ class Events extends Block
 		$e->args->set['event'] = 'fas fa-calendar-days';
 	}
 
-	public function getData(array $parameters): array
+	public function getData(ParamWrapper $parameters): array
 	{
 		$now = time();
 		$todayDate = date('Y-m-d', $now);
 
 		$futureDate = empty($parameters['days_in_future'])
 			? $todayDate
-			: date('Y-m-d', ($now + $parameters['days_in_future'] * 24 * 60 * 60));
+			: date('Y-m-d', ($now + (int) $parameters['days_in_future'] * 24 * 60 * 60));
 
 		$options = [
 			'show_birthdays' => (bool) $parameters['show_birthdays'],
@@ -110,12 +112,14 @@ class Events extends Block
 	{
 		$parameters = $e->args->parameters;
 
+		$cacheTime = Typed::int($parameters['update_interval']);
+
 		if ($this->request()->has('preview')) {
-			$parameters['update_interval'] = 0;
+			$cacheTime = 0;
 		}
 
 		$data = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
-			->setLifeTime($parameters['update_interval'] ?? $e->args->cacheTime)
+			->setLifeTime($cacheTime)
 			->setFallback(fn() => $this->getData($parameters));
 
 		$this->setTemplate();

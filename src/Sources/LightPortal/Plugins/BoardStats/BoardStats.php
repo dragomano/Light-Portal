@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 05.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\BoardStats;
@@ -21,7 +21,9 @@ use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\NumberField;
+use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Str;
+use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -80,7 +82,7 @@ class BoardStats extends Block
 			->setValue($options['update_interval']);
 	}
 
-	public function getData(array $parameters): array
+	public function getData(ParamWrapper $parameters): array
 	{
 		if (
 			empty($parameters['show_latest_member'])
@@ -107,17 +109,14 @@ class BoardStats extends Block
 	{
 		$parameters = $e->args->parameters;
 
+		$cacheTime = Typed::int($parameters['update_interval']);
+
 		if ($this->request()->has('preview')) {
-			$parameters['update_interval'] = 0;
+			$cacheTime = 0;
 		}
 
-		$parameters['show_latest_member'] ??= false;
-		$parameters['show_whos_online'] ??= false;
-		$parameters['show_basic_info'] ??= false;
-		$parameters['use_fa_icons'] ??= false;
-
 		$boardStats = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
-			->setLifeTime($parameters['update_interval'] ?? $e->args->cacheTime)
+			->setLifeTime($cacheTime)
 			->setFallback(fn() => $this->getData($parameters));
 
 		if (empty($boardStats))

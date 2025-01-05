@@ -25,6 +25,7 @@ use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\RadioField;
 use Bugo\LightPortal\UI\Fields\RangeField;
 use Bugo\LightPortal\UI\Fields\SelectField;
+use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
@@ -115,7 +116,7 @@ class Swiper extends Block
 			->setValue($options['show_scrollbar']);
 	}
 
-	public function getData(int|string $id, array $parameters): array
+	public function getData(int|string $id, ParamWrapper $parameters): array
 	{
 		if (empty($parameters['images']))
 			return [];

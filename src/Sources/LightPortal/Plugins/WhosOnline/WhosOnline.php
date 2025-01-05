@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 05.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\WhosOnline;
@@ -22,6 +22,7 @@ use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\Str;
+use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -70,15 +71,14 @@ class WhosOnline extends Block
 	{
 		$parameters = $e->args->parameters;
 
+		$cacheTime = Typed::int($parameters['update_interval']);
+
 		if ($this->request()->has('preview')) {
-			$parameters['update_interval'] = 0;
+			$cacheTime = 0;
 		}
 
-		$parameters['show_group_key'] ??= false;
-		$parameters['show_avatars'] ??= false;
-
 		$whoIsOnline = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
-			->setLifeTime($parameters['update_interval'] ?? $e->args->cacheTime)
+			->setLifeTime($cacheTime)
 			->setFallback(fn() => $this->getFromSSI('whosOnline', 'array'));
 
 		if (empty($whoIsOnline))
@@ -89,21 +89,25 @@ class WhosOnline extends Block
 
 		$onlineList = [];
 
-		if (User::$info['buddies'] && $whoIsOnline['num_buddies'])
+		if (User::$info['buddies'] && $whoIsOnline['num_buddies']) {
 			$onlineList[] = Lang::getTxt('lp_buddies_set', ['buddies' => $whoIsOnline['num_buddies']]);
+		}
 
-		if ($whoIsOnline['num_spiders'])
+		if ($whoIsOnline['num_spiders']) {
 			$onlineList[] = Lang::getTxt('lp_spiders_set', ['spiders' => $whoIsOnline['num_spiders']]);
+		}
 
-		if ($whoIsOnline['num_users_hidden'])
+		if ($whoIsOnline['num_users_hidden']) {
 			$onlineList[] = Lang::getTxt('lp_hidden_set', ['hidden' => $whoIsOnline['num_users_hidden']]);
+		}
 
-		if ($onlineList)
+		if ($onlineList) {
 			echo ' (' . Lang::sentenceList($onlineList) . ')';
+		}
 
 		// With avatars
 		if ($parameters['show_avatars']) {
-			$users = array_map(fn($item) => Avatar::get($item['id']), $whoIsOnline['users_online']);
+			$users = array_map(fn($item) => Avatar::get((int) $item['id']), $whoIsOnline['users_online']);
 
 			$whoIsOnline['list_users_online'] = [];
 			foreach ($whoIsOnline['users_online'] as $key => $user) {

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 05.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\Translator;
@@ -70,7 +70,6 @@ class Translator extends Block
 		$id = $e->args->id;
 
 		$parameters = $e->args->parameters;
-		$parameters['auto_mode'] ??= false;
 
 		if ($parameters['engine'] === 'yandex') {
 			echo Str::html('div')

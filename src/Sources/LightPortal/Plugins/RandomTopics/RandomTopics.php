@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 05.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\RandomTopics;
@@ -25,7 +25,9 @@ use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Partials\BoardSelect;
 use Bugo\LightPortal\Utils\DateTime;
+use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Str;
+use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -82,11 +84,11 @@ class RandomTopics extends Block
 			->setValue($options['show_num_views']);
 	}
 
-	public function getData(array $parameters): array
+	public function getData(ParamWrapper $parameters): array
 	{
 		$excludeBoards = empty($parameters['exclude_boards']) ? null : explode(',', (string) $parameters['exclude_boards']);
 		$includeBoards = empty($parameters['include_boards']) ? null : explode(',', (string) $parameters['include_boards']);
-		$topicsCount   = empty($parameters['num_topics']) ? 0 : (int) $parameters['num_topics'];
+		$topicsCount   = Typed::int($parameters['num_topics']);
 
 		if (empty($topicsCount))
 			return [];
@@ -150,8 +152,11 @@ class RandomTopics extends Block
 
 			Db::$db->free_result($result);
 
-			if (empty($topicIds))
-				return $this->getData(array_merge($parameters, ['num_topics' => $topicsCount - 1]));
+			if (empty($topicIds)) {
+				$parameters['num_topics'] = $topicsCount - 1;
+
+				return $this->getData($parameters);
+			}
 
 			$result = Db::$db->query('', '
 				SELECT
@@ -202,10 +207,10 @@ class RandomTopics extends Block
 		$topics = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$topics[] = [
-				'author_id'   => $row['id_member'] ?? 0,
+				'author_id'   => (int) $row['id_member'],
 				'author_name' => $row['poster_name'],
 				'time'        => (int) $row['poster_time'],
-				'num_views'   => $row['num_views'],
+				'num_views'   => (int) $row['num_views'],
 				'href'        => Config::$scripturl . '?topic=' . $row['id_topic'] . '.msg' . $row['id_msg'] . '#new',
 				'title'       => $row['subject'],
 				'is_new'      => empty($row['is_read']),
@@ -220,7 +225,6 @@ class RandomTopics extends Block
 	public function prepareContent(Event $e): void
 	{
 		$parameters = $e->args->parameters;
-		$parameters['show_num_views'] ??= false;
 
 		$randomTopics = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
 			->setLifeTime($e->args->cacheTime)

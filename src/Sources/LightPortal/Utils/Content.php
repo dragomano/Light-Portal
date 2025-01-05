@@ -44,6 +44,8 @@ final class Content
 	{
 		ob_start();
 
+		$parameters = new ParamWrapper($parameters);
+
 		app('events')->dispatch(
 			PortalHook::prepareContent,
 			new Event(new class ($type, $block_id, $cache_time, $parameters) {
@@ -51,7 +53,7 @@ final class Content
 					public readonly string $type,
 					public readonly int $id,
 					public readonly int $cacheTime,
-					public readonly array $parameters
+					public readonly ParamWrapper $parameters
 				) {}
 			})
 		);

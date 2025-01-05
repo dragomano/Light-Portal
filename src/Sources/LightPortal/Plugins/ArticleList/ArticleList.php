@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 05.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\ArticleList;
@@ -32,8 +32,10 @@ use Bugo\LightPortal\UI\Partials\ContentClassSelect;
 use Bugo\LightPortal\UI\Partials\PageSelect;
 use Bugo\LightPortal\UI\Partials\TopicSelect;
 use Bugo\LightPortal\Utils\Content;
+use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -101,7 +103,7 @@ class ArticleList extends Block
 			->setValue($options['seek_images']);
 	}
 
-	public function getTopics(array $parameters): array
+	public function getTopics(ParamWrapper $parameters): array
 	{
 		if (empty($parameters['include_topics']))
 			return [];
@@ -148,7 +150,7 @@ class ArticleList extends Block
 		return $topics;
 	}
 
-	public function getPages(array $parameters): array
+	public function getPages(ParamWrapper $parameters): array
 	{
 		if (empty($parameters['include_pages']))
 			return [];
@@ -201,14 +203,17 @@ class ArticleList extends Block
 	{
 		$parameters = $e->args->parameters;
 
+		$type = Typed::int($parameters['display_type']);
+
 		$articles = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
 			->setLifeTime($e->args->cacheTime)
-			->setFallback(fn() => empty($parameters['display_type']) ? $this->getTopics($parameters) : $this->getPages($parameters));
+			->setFallback(fn() => $type === 0 ? $this->getTopics($parameters) : $this->getPages($parameters));
 
 		if ($articles) {
 			$articleList = Str::html('div')->class($this->name);
+			$bodyClass = Typed::string($parameters['body_class']);
 
-			if (empty($parameters['display_type'])) {
+			if ($type === 0) {
 				foreach ($articles as $topic) {
 					$content = Str::html();
 
@@ -230,7 +235,7 @@ class ArticleList extends Block
 							->setText($topic['title'])
 					);
 
-					$articleList->addHtml(sprintf(Utils::$context['lp_all_content_classes'][$parameters['body_class']], $content));
+					$articleList->addHtml(sprintf(Utils::$context['lp_all_content_classes'][$bodyClass], $content));
 				}
 			} else {
 				foreach ($articles as $page) {
@@ -258,7 +263,7 @@ class ArticleList extends Block
 					);
 
 					$articleList->addHtml(
-						sprintf(Utils::$context['lp_all_content_classes'][$parameters['body_class']], $content)
+						sprintf(Utils::$context['lp_all_content_classes'][$bodyClass], $content)
 					);
 				}
 			}

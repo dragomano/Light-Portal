@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 05.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\TopBoards;
@@ -21,6 +21,7 @@ use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\RadioField;
 use Bugo\LightPortal\Utils\Str;
+use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -68,11 +69,12 @@ class TopBoards extends Block
 	public function prepareContent(Event $e): void
 	{
 		$parameters = $e->args->parameters;
-		$parameters['show_numbers_only'] ??= false;
+
+		$numBoards = Typed::int($parameters['num_boards'], default: 10);
 
 		$topBoards = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
 			->setLifeTime($e->args->cacheTime)
-			->setFallback(fn() => $this->getFromSSI('topBoards', (int) $parameters['num_boards'], 'array'));
+			->setFallback(fn() => $this->getFromSSI('topBoards', $numBoards, 'array'));
 
 		if (empty($topBoards))
 			return;

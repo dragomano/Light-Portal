@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 24.12.24
+ * @version 05.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\PageList;
@@ -29,8 +29,10 @@ use Bugo\LightPortal\UI\Fields\VirtualSelectField;
 use Bugo\LightPortal\UI\Partials\EntryTypeSelect;
 use Bugo\LightPortal\UI\Partials\CategorySelect;
 use Bugo\LightPortal\Utils\DateTime;
+use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -93,15 +95,15 @@ class PageList extends Block
 			->setValue($options['num_pages']);
 	}
 
-	public function getData(array $parameters): array
+	public function getData(ParamWrapper $parameters): array
 	{
 		$titles = app('title_list');
-
 		$allCategories = app('category_list');
 
 		$categories = empty($parameters['categories']) ? null : explode(',', (string) $parameters['categories']);
-
-		$type = empty($parameters['types']) ? EntryType::DEFAULT->name() : $parameters['types'];
+		$sort = Typed::string($parameters['sort'], default: 'page_id');
+		$numPages = Typed::int($parameters['num_pages'], default: 10);
+		$type = Typed::string($parameters['types'], default: EntryType::DEFAULT->name());
 
 		$result = Db::$db->query('', '
 			SELECT
@@ -124,8 +126,8 @@ class PageList extends Block
 				'current_time' => time(),
 				'permissions'  => Permission::all(),
 				'categories'   => $categories,
-				'sort'         => $parameters['sort'],
-				'limit'        => $parameters['num_pages'],
+				'sort'         => $sort,
+				'limit'        => $numPages,
 			]
 		);
 
@@ -157,11 +159,9 @@ class PageList extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		$parameters = $e->args->parameters;
-
 		$pageList = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
 			->setLifeTime($e->args->cacheTime)
-			->setFallback(fn() => $this->getData($parameters));
+			->setFallback(fn() => $this->getData($e->args->parameters));
 
 		if ($pageList) {
 			$ul = Str::html('ul', ['class' => 'normallist page_list']);

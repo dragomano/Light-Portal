@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 24.12.24
+ * @version 05.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\TrendingTopics;
@@ -25,7 +25,9 @@ use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\SelectField;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\DateTime;
+use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Str;
+use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -83,12 +85,12 @@ class TrendingTopics extends Block
 			->setValue($options['num_topics']);
 	}
 
-	public function getData(array $parameters): array
+	public function getData(ParamWrapper $parameters): array
 	{
-		$timePeriod  = $parameters['time_period'] ?? $this->timePeriod[1];
-		$topicsCount = empty($parameters['num_topics']) ? 0 : (int) $parameters['num_topics'];
+		$timePeriod = Typed::string($parameters['time_period'], default: $this->timePeriod[1]);
+		$numTopics = Typed::int($parameters['num_topics'], default: 10);
 
-		if (empty($topicsCount))
+		if (empty($numTopics))
 			return [];
 
 		$result = Db::$db->query('', '
@@ -103,8 +105,8 @@ class TrendingTopics extends Block
 			ORDER BY t.num_replies DESC
 			LIMIT {int:limit}',
 			[
-				'period' => strtoupper((string) $timePeriod),
-				'limit'  => $topicsCount,
+				'period' => strtoupper($timePeriod),
+				'limit'  => $numTopics,
 			]
 		);
 

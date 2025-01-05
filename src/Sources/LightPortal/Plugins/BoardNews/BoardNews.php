@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 05.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\BoardNews;
@@ -25,6 +25,7 @@ use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\RangeField;
 use Bugo\LightPortal\Utils\MessageIndex;
 use Bugo\LightPortal\Utils\Str;
+use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -78,17 +79,15 @@ class BoardNews extends Block
 	{
 		$parameters = $e->args->parameters;
 
-		$teaserLength = empty($parameters['teaser_length']) ? null : $parameters['teaser_length'];
-
 		$boardNews = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(
 				fn() => $this->getFromSSI(
 					'boardNews',
-					(int) $parameters['board_id'],
-					(int) $parameters['num_posts'],
+					Typed::int($parameters['board_id']),
+					Typed::int($parameters['num_posts']),
 					null,
-					$teaserLength,
+					Typed::int($parameters['teaser_length']),
 					'array'
 				)
 			);

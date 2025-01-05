@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 24.12.24
+ * @version 05.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\RandomPages;
@@ -28,7 +28,9 @@ use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Partials\CategorySelect;
 use Bugo\LightPortal\Utils\DateTime;
+use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Str;
+use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -85,11 +87,11 @@ class RandomPages extends Block
 			->setValue($options['show_num_views']);
 	}
 
-	public function getData(array $parameters): array
+	public function getData(ParamWrapper $parameters): array
 	{
 		$excludeCategories = empty($parameters['exclude_categories']) ? null : explode(',', (string) $parameters['exclude_categories']);
 		$includeCategories = empty($parameters['include_categories']) ? null : explode(',', (string) $parameters['include_categories']);
-		$pagesCount = empty($parameters['num_pages']) ? 0 : (int) $parameters['num_pages'];
+		$pagesCount = Typed::int($parameters['num_pages']);
 
 		if (empty($pagesCount))
 			return [];
@@ -169,8 +171,11 @@ class RandomPages extends Block
 
 			Db::$db->free_result($result);
 
-			if (empty($pageIds))
-				return $this->getData(array_merge($parameters, ['num_pages' => $pagesCount - 1]));
+			if (empty($pageIds)) {
+				$parameters['num_pages'] = $pagesCount - 1;
+
+				return $this->getData($parameters);
+			}
 
 			$result = Db::$db->query('', '
 				SELECT
@@ -234,7 +239,6 @@ class RandomPages extends Block
 	public function prepareContent(Event $e): void
 	{
 		$parameters = $e->args->parameters;
-		$parameters['show_num_views'] ??= false;
 
 		$randomPages = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
 			->setLifeTime($e->args->cacheTime)

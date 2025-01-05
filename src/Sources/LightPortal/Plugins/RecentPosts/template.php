@@ -2,8 +2,9 @@
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
+use Bugo\LightPortal\Utils\ParamWrapper;
 
-function show_posts(array $posts, array $parameters, bool $full_width): void
+function show_posts(array $posts, ParamWrapper $parameters, bool $full_width): void
 {
 	if ($full_width) {
 		echo '

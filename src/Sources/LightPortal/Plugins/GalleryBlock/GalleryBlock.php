@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 05.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\GalleryBlock;
@@ -23,7 +23,9 @@ use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\NumberField;
+use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Str;
+use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -64,7 +66,7 @@ class GalleryBlock extends Block
 			->setValue($e->args->options['num_images']);
 	}
 
-	public function getData(array $parameters): array
+	public function getData(ParamWrapper $parameters): array
 	{
 		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'gallery_pic')))
 			return [];
@@ -85,7 +87,7 @@ class GalleryBlock extends Block
 			[
 				'approved'   => 1,
 				'categories' => $categories,
-				'limit'      => $parameters['num_images'],
+				'limit'      => Typed::int($parameters['num_images'], default: 10),
 			]
 		);
 

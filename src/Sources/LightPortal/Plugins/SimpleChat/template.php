@@ -3,8 +3,9 @@
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Utils\ParamWrapper;
 
-function show_chat_block(int $id, array $parameters, bool $isInSidebar): void
+function show_chat_block(int $id, ParamWrapper $parameters, bool $isInSidebar): void
 {
 	echo /** @lang text */ '
 	<script>

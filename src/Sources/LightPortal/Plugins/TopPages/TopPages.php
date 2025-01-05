@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 05.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\TopPages;
@@ -22,8 +22,11 @@ use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\RadioField;
+use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+
+use WPLake\Typed\Typed;
 
 use function array_combine;
 use function array_key_first;
@@ -70,9 +73,12 @@ class TopPages extends Block
 			->setValue($options['show_numbers_only']);
 	}
 
-	public function getData(array $parameters): array
+	public function getData(ParamWrapper $parameters): array
 	{
 		$titles = app('title_list');
+
+		$type = Typed::string($parameters['popularity_type'], default: 'comments');
+		$numPages = Typed::int($parameters['num_pages'], default: 10);
 
 		$result = Db::$db->query('', '
 			SELECT page_id, slug, type, num_views, num_comments
@@ -81,13 +87,13 @@ class TopPages extends Block
 				AND deleted_at = 0
 				AND created_at <= {int:current_time}
 				AND permissions IN ({array_int:permissions})
-			ORDER BY ' . ($parameters['popularity_type'] === 'comments' ? 'num_comments' : 'num_views') . ' DESC
+			ORDER BY ' . ($type === 'comments' ? 'num_comments' : 'num_views') . ' DESC
 			LIMIT {int:limit}',
 			[
 				'status'       => 1,
 				'current_time' => time(),
 				'permissions'  => Permission::all(),
-				'limit'        => $parameters['num_pages'],
+				'limit'        => $numPages,
 			]
 		);
 
@@ -113,14 +119,13 @@ class TopPages extends Block
 	{
 		$parameters = $e->args->parameters;
 
-		$parameters['show_numbers_only'] ??= false;
-
 		$topPages = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(fn() => $this->getData($parameters));
 
 		if ($topPages) {
-			$max = $topPages[array_key_first($topPages)]['num_' . $parameters['popularity_type']];
+			$type = Typed::string($parameters['popularity_type'], default: 'comments');
+			$max = $topPages[array_key_first($topPages)]['num_' . $type];
 
 			if (empty($max)) {
 				echo $this->txt['no_items'];
@@ -128,27 +133,24 @@ class TopPages extends Block
 				$dl = Str::html('dl', ['class' => 'stats']);
 
 				foreach ($topPages as $page) {
-					if ($page['num_' . $parameters['popularity_type']] < 1 || empty($title = Str::getTranslatedTitle($page['title'])))
+					if ($page['num_' . $type] < 1 || empty($title = Str::getTranslatedTitle($page['title'])))
 						continue;
 
-					$width = $page['num_' . $parameters['popularity_type']] * 100 / $max;
+					$width = $page['num_' . $type] * 100 / $max;
 
 					$dt = Str::html('dt')
 						->addHtml(Str::html('a', $title)->href($page['href']));
 
 					$dd = Str::html('dd', ['class' => 'statsbar generic_bar righttext']);
-					$barClass = empty($page['num_' . $parameters['popularity_type']]) ? 'bar empty' : 'bar';
-					$barStyle = empty($page['num_' . $parameters['popularity_type']]) ? null : 'width: ' . $width . '%';
+					$barClass = empty($page['num_' . $type]) ? 'bar empty' : 'bar';
+					$barStyle = empty($page['num_' . $type]) ? null : 'width: ' . $width . '%';
 
 					$bar = Str::html('div', ['class' => $barClass, 'style' => $barStyle]);
 					$dd->addHtml($bar);
 
 					$countText = $parameters['show_numbers_only']
-						? $page['num_' . $parameters['popularity_type']]
-						: Lang::getTxt(
-							'lp_' . $parameters['popularity_type'] . '_set',
-							[$parameters['popularity_type'] => $page['num_' . $parameters['popularity_type']]]
-						);
+						? $page['num_' . $type]
+						: Lang::getTxt('lp_' . $type . '_set', [$type => $page['num_' . $type]]);
 
 					$dd->addHtml(Str::html('span', $countText));
 

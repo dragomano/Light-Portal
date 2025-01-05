@@ -25,6 +25,8 @@ use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\RadioField;
 use Bugo\LightPortal\Utils\Avatar;
 
+use Bugo\LightPortal\Utils\ParamWrapper;
+
 use function array_combine;
 use function json_encode;
 use function show_chat_block;
@@ -112,7 +114,7 @@ class SimpleChat extends Block
 			->setValue($options['window_height']);
 	}
 
-	public function getData(int $block_id, array $parameters): array
+	public function getData(int $block_id, ParamWrapper $parameters): array
 	{
 		$messages = $this->chat->getMessages($block_id);
 

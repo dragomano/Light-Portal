@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 05.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\BoardList;
@@ -26,6 +26,7 @@ use Bugo\LightPortal\UI\Partials\TitleClassSelect;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\MessageIndex;
 use Bugo\LightPortal\Utils\Str;
+use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -71,27 +72,25 @@ class BoardList extends Block
 			]);
 	}
 
-	public function getData(): array
-	{
-		return MessageIndex::getBoardList();
-	}
-
 	public function prepareContent(Event $e): void
 	{
-		$parameters = $e->args->parameters;
-
 		$boardList = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . Utils::$context['user']['id'])
 			->setLifeTime($e->args->cacheTime)
-			->setFallback(fn() => $this->getData());
+			->setFallback(fn() => MessageIndex::getBoardList());
 
 		if (empty($boardList))
 			return;
 
 		Utils::$context['current_board'] ??= 0;
 
+		$parameters = $e->args->parameters;
+
+		$categoryClass = Typed::string($parameters['category_class']);
+		$boardClass = Typed::string($parameters['board_class']);
+
 		foreach ($boardList as $category) {
-			if ($parameters['category_class']) {
-				echo sprintf($this->getCategoryClasses()[$parameters['category_class']], $category['name']);
+			if ($categoryClass) {
+				echo sprintf($this->getCategoryClasses()[$categoryClass], $category['name']);
 			}
 
 			$content = Str::html('ul')->class('smalltext');
@@ -123,7 +122,7 @@ class BoardList extends Block
 				$content->addHtml($li);
 			}
 
-			echo sprintf(Utils::$context['lp_all_content_classes'][$parameters['board_class']], $content);
+			echo sprintf(Utils::$context['lp_all_content_classes'][$boardClass], $content);
 		}
 	}
 

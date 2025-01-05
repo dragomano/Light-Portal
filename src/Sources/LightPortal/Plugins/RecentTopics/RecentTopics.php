@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 05.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\RecentTopics;
@@ -25,6 +25,8 @@ use Bugo\LightPortal\UI\Fields\RadioField;
 use Bugo\LightPortal\UI\Partials\BoardSelect;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\DateTime;
+use Bugo\LightPortal\Utils\ParamWrapper;
+use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -117,12 +119,18 @@ class RecentTopics extends Block
 			->setValue($options['update_interval']);
 	}
 
-	public function getData(array $parameters): array
+	public function getData(ParamWrapper $parameters): array
 	{
 		$excludeBoards = empty($parameters['exclude_boards']) ? null : explode(',', (string) $parameters['exclude_boards']);
 		$includeBoards = empty($parameters['include_boards']) ? null : explode(',', (string) $parameters['include_boards']);
 
-		$topics = $this->getFromSSI('recentTopics', (int) $parameters['num_topics'], $excludeBoards, $includeBoards, 'array');
+		$topics = $this->getFromSSI(
+			'recentTopics',
+			Typed::int($parameters['num_topics'], default: 10),
+			$excludeBoards,
+			$includeBoards,
+			'array'
+		);
 
 		if (empty($topics))
 			return [];
@@ -142,15 +150,14 @@ class RecentTopics extends Block
 	{
 		$parameters = $e->args->parameters;
 
+		$cacheTime = Typed::int($parameters['update_interval']);
+
 		if ($this->request()->has('preview')) {
-			$parameters['update_interval'] = 0;
+			$cacheTime = 0;
 		}
 
-		$parameters['show_avatars'] ??= false;
-		$parameters['num_topics'] ??= 10;
-
 		$recentTopics = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
-			->setLifeTime($parameters['update_interval'] ?? $e->args->cacheTime)
+			->setLifeTime($cacheTime)
 			->setFallback(fn() => $this->getData($parameters));
 
 		if (empty($recentTopics))

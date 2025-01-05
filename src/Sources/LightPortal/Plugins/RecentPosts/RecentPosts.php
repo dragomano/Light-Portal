@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 05.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\RecentPosts;
@@ -27,6 +27,8 @@ use Bugo\LightPortal\UI\Partials\BoardSelect;
 use Bugo\LightPortal\UI\Partials\TopicSelect;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\DateTime;
+use Bugo\LightPortal\Utils\ParamWrapper;
+use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -140,16 +142,18 @@ class RecentPosts extends Block
 			->setValue($options['update_interval']);
 	}
 
-	public function getData(array $parameters): array
+	public function getData(ParamWrapper $parameters): array
 	{
 		$excludeBoards = empty($parameters['exclude_boards']) ? [] : explode(',', (string) $parameters['exclude_boards']);
 		$includeBoards = empty($parameters['include_boards']) ? [] : explode(',', (string) $parameters['include_boards']);
 		$excludeTopics = empty($parameters['exclude_topics']) ? [] : explode(',', (string) $parameters['exclude_topics']);
 		$includeTopics = empty($parameters['include_topics']) ? [] : explode(',', (string) $parameters['include_topics']);
 
+		$numPosts = Typed::int($parameters['num_posts'], default: 10);
+
 		$minMessageId = Config::$modSettings['maxMsgID'] - (
 			empty(Utils::$context['min_message_posts']) ? 25 : Utils::$context['min_message_posts']
-		) * min((int) $parameters['num_posts'], 5);
+		) * min($numPosts, 5);
 
 		$whereQuery = '
 			m.id_msg >= {int:min_message_id}' . (empty($excludeBoards) ? '' : '
@@ -173,10 +177,10 @@ class RecentPosts extends Block
 			'queryPosts',
 			$whereQuery,
 			$whereQueryParams,
-			(int) $parameters['num_posts'],
+			$numPosts,
 			'm.id_msg DESC',
 			'array',
-			(bool) $parameters['limit_body']
+			Typed::bool($parameters['limit_body'])
 		);
 
 		if (empty($posts))
@@ -197,15 +201,14 @@ class RecentPosts extends Block
 	{
 		$parameters = $e->args->parameters;
 
+		$cacheTime = Typed::int($parameters['update_interval']);
+
 		if ($this->request()->has('preview')) {
-			$parameters['update_interval'] = 0;
+			$cacheTime = 0;
 		}
 
-		$parameters['show_avatars'] ??= false;
-		$parameters['limit_body'] ??= false;
-
 		$recentPosts = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
-			->setLifeTime($parameters['update_interval'] ?? $e->args->cacheTime)
+			->setLifeTime($cacheTime)
 			->setFallback(fn() => $this->getData($parameters));
 
 		if (empty($recentPosts))

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 05.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\News;
@@ -19,6 +19,7 @@ use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\UI\Fields\SelectField;
+use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -64,6 +65,6 @@ class News extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		echo $this->getData($e->args->parameters['selected_item']) ?: $this->txt['no_items'];
+		echo $this->getData(Typed::int($e->args->parameters['selected_item'])) ?: $this->txt['no_items'];
 	}
 }

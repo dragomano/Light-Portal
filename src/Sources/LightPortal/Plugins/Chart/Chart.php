@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 05.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\Chart;
@@ -137,7 +137,7 @@ class Chart extends Block
 
 		$type = $parameters['chart_type'] ?? $this->params['chart_type'];
 
-		$datasets = Utils::jsonDecode($parameters['datasets'] ?? $this->params['datasets'], true);
+		$datasets = Utils::jsonDecode($parameters['datasets'] ?? $this->params['datasets'], true) ?? [];
 		array_walk($datasets, static fn(&$val) => $val['data'] = explode(', ', (string) $val['data']));
 		$datasets = json_encode($datasets);
 

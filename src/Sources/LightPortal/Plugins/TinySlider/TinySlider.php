@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 05.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\TinySlider;
@@ -25,6 +25,7 @@ use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\RadioField;
 use Bugo\LightPortal\UI\Fields\RangeField;
+use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
@@ -178,7 +179,7 @@ class TinySlider extends Block
 			->setValue($options['mouse_drag']);
 	}
 
-	public function getData(int|string $id, array $parameters): array
+	public function getData(int $id, ParamWrapper $parameters): array
 	{
 		if (empty($parameters['images']))
 			return [];
@@ -269,10 +270,6 @@ class TinySlider extends Block
 	public function prepareContent(Event $e): void
 	{
 		[$id, $parameters] = [$e->args->id, $e->args->parameters];
-
-		$parameters['nav'] ??= false;
-		$parameters['controls'] ??= false;
-		$parameters['nav_as_thumbnails'] ??= false;
 
 		$html = $this->cache($this->name . '_addon_b' . $id . '_' . User::$info['language'])
 			->setLifeTime($e->args->cacheTime)

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 05.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\RecentAttachments;
@@ -19,7 +19,9 @@ use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\TextField;
+use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Str;
+use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -61,11 +63,16 @@ class RecentAttachments extends Block
 			->setValue($options['extensions']);
 	}
 
-	public function getData(array $parameters): array
+	public function getData(ParamWrapper $parameters): array
 	{
 		$extensions = empty($parameters['extensions']) ? [] : explode(',', (string) $parameters['extensions']);
 
-		return $this->getFromSSI('recentAttachments', $parameters['num_attachments'], $extensions, 'array');
+		return $this->getFromSSI(
+			'recentAttachments',
+			Typed::int($parameters['num_attachments'], default: 5),
+			$extensions,
+			'array'
+		);
 	}
 
 	public function prepareContent(Event $e): void
