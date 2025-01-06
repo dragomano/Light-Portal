@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.01.25
+ * @version 08.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\BoardNews;
@@ -25,6 +25,7 @@ use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\RangeField;
 use Bugo\LightPortal\Utils\MessageIndex;
 use Bugo\LightPortal\Utils\Str;
+use Nette\Utils\Html;
 use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
@@ -121,61 +122,7 @@ class BoardNews extends Block
 				$news['link'] . ($news['locked'] ? '' : ' | ' . $news['comment_link'])
 			);
 
-			if (! empty($news['likes'])) {
-				$content->addHtml(Str::html('br')->class('clear'));
-				$likesList = Str::html('ul');
-
-				if ($news['likes']['can_like']) {
-					$likesList->addHtml(
-						Str::html('li')->class('smflikebutton')->id('msg_' . $news['message_id'] . '_likes')
-							->addHtml(
-								Str::html('a')->href(implode('', [
-										Config::$scripturl,
-										'?action=likes;ltype=msg;sa=like;like=',
-										$news['message_id'] . ';',
-										Utils::$context['session_var'] . '=',
-										Utils::$context['session_id']
-									]))
-									->class('msg_like')
-									->addHtml(
-										Str::html('span')->class($news['likes']['you'] ? 'unlike' : 'like') .
-										($news['likes']['you'] ? Lang::$txt['unlike'] : Lang::$txt['like'])
-									)
-							)
-					);
-				}
-
-				if ($news['likes']['count'] > 0) {
-					Utils::$context['some_likes'] = true;
-
-					$count = $news['likes']['count'];
-					$base = 'likes_';
-					if ($news['likes']['you']) {
-						$base = 'you_' . $base;
-						$count--;
-					}
-
-					$base .= (isset(Lang::$txt[$base . $count])) ? $count : 'n';
-
-					$likesList->addHtml(
-						Str::html('li')->class('like_count smalltext')->setHtml(
-							sprintf(
-								Lang::$txt[$base],
-								implode('', [
-									Config::$scripturl,
-									'?action=likes;sa=view;ltype=msg;like=',
-									$news['message_id'] . ';',
-									Utils::$context['session_var'] . '=',
-									Utils::$context['session_id']
-								]),
-								Lang::numberFormat($count)
-							)
-						)
-					);
-				}
-
-				$content->addHtml($likesList);
-			}
+			$this->processLikes($news, $content);
 
 			echo $content;
 
@@ -183,5 +130,65 @@ class BoardNews extends Block
 				echo Str::html('br')->class('clear');
 			}
 		}
+	}
+
+	private function processLikes(array $news, Html $content): void
+	{
+		if (empty($news['likes']))
+			return;
+
+		$content->addHtml(Str::html('br')->class('clear'));
+		$likesList = Str::html('ul');
+
+		if ($news['likes']['can_like']) {
+			$likesList->addHtml(
+				Str::html('li')->class('smflikebutton')->id('msg_' . $news['message_id'] . '_likes')
+					->addHtml(
+						Str::html('a')->href(implode('', [
+							Config::$scripturl,
+							'?action=likes;ltype=msg;sa=like;like=',
+							$news['message_id'] . ';',
+							Utils::$context['session_var'] . '=',
+							Utils::$context['session_id']
+						]))
+							->class('msg_like')
+							->addHtml(
+								Str::html('span')->class($news['likes']['you'] ? 'unlike' : 'like') .
+								($news['likes']['you'] ? Lang::$txt['unlike'] : Lang::$txt['like'])
+							)
+					)
+			);
+		}
+
+		if ($news['likes']['count'] > 0) {
+			Utils::$context['some_likes'] = true;
+
+			$count = $news['likes']['count'];
+			$base = 'likes_';
+			if ($news['likes']['you']) {
+				$base = 'you_' . $base;
+				$count--;
+			}
+
+			$base .= (isset(Lang::$txt[$base . $count])) ? $count : 'n';
+
+			$likesList->addHtml(
+				Str::html('li')->class('like_count smalltext')->setHtml(
+					sprintf(
+						Lang::$txt[$base],
+						implode('', [
+							Config::$scripturl,
+							'?action=likes;sa=view;ltype=msg;like=',
+							$news['message_id'] . ';',
+							Utils::$context['session_var'] . '=',
+							Utils::$context['session_id']
+						]),
+						Lang::numberFormat($count)
+					)
+				)
+			);
+		}
+
+		$content->addHtml($likesList);
 	}
 }

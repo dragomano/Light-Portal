@@ -118,7 +118,7 @@ class Setting
 	{
 		$directions = self::get('lp_panel_direction', 'array', [], 'json');
 
-		return (string) $directions[$panel];
+		return $directions[$panel] ?? '0';
 	}
 
 	public static function isSwapLeftRight(): bool

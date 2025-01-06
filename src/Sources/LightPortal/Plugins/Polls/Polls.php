@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.01.25
+ * @version 08.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\Polls;
@@ -82,7 +82,7 @@ class Polls extends Block
 
 				foreach ($poll['options'] as $option) {
 					$label = Str::html('label', ['for' => $option['id']])
-						->setText($option['vote_button'] . ' ' . $option['option']);
+						->addHtml($option['vote_button'] . ' ' . $option['option']);
 					$form->addHtml($label)->addHtml('<br>');
 				}
 
