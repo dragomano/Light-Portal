@@ -109,17 +109,6 @@ final class CreditArea
 			]
 		];
 
-		Utils::$context['testers'] = [
-			[
-				'name' => 'Wylek',
-				'link' => 'https://www.simplemachines.org/community/index.php?action=profile;u=608635'
-			],
-			[
-				'name' => 'Panoulis64',
-				'link' => 'https://www.simplemachines.org/community/index.php?action=profile;u=301719'
-			]
-		];
-
 		Utils::$context['sponsors'] = [
 			[
 				'name' => 'vbgamer45 <span class="amt">$50</span>',
