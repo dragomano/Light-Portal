@@ -69,15 +69,16 @@ function render_blocks_within(string $panel): void
 	if (empty(Utils::$context['lp_blocks'][$panel]))
 		return;
 
+	$method = 'get' . ucfirst($panel) . 'PanelWidth';
+
 	switch ($panel) {
 		case 'header':
 		case 'footer':
-			$panelWidthMethod = 'get' . ucfirst($panel) . 'PanelWidth';
-			$panelWidth = Setting::$panelWidthMethod();
+			$xs = Setting::$method();
 
 			echo /** @lang text */ '
 				<div class="row between-xs">
-					<div class="col-xs-' . $panelWidth . '" data-panel="' . $panel . '">';
+					<div class="col-xs-' . $xs . '" data-panel="' . $panel . '">';
 
 			lp_show_blocks($panel);
 
@@ -88,8 +89,8 @@ function render_blocks_within(string $panel): void
 
 		case 'left':
 		case 'right':
-			$lg = Setting::getLeftPanelWidth()['lg'];
-			$xl = Setting::getLeftPanelWidth()['xl'];
+			$lg = Setting::$method()['lg'];
+			$xl = Setting::$method()['xl'];
 			$class = empty(Config::$modSettings['lp_' . $panel . '_panel_sticky']) ? '' : ' class="sticky_sidebar"';
 
 			echo '
