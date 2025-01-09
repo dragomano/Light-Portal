@@ -49,6 +49,7 @@ use function sprintf;
 use function unlink;
 
 use const LP_NAME;
+use const LP_VERSION;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -375,6 +376,9 @@ final class PluginArea
 		}
 
 		if (empty($xml) || ! is_array($xml))
+			return;
+
+		if (empty($xml['version']) || $xml['version'] !== LP_VERSION)
 			return;
 
 		foreach ($xml['donate'] as $addon) {
