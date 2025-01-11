@@ -328,7 +328,8 @@ class Handler
 
 		Security::checkSubmitOnce('check');
 
-		new Generator(Utils::$context['lp_plugin']);
+		$generator = new Generator(Utils::$context['lp_plugin']);
+		$generator->generate();
 
 		$this->saveAuthorData();
 
