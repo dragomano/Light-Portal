@@ -26,8 +26,8 @@ class PageButtonsRow extends Row
 		return parent::make($value ?: Str::html('select', ['name' => 'page_actions'])
 			->addHtml(
 				Str::html('option', [
-					'value' => (new Request())->has('deleted') ? 'delete_forever' : 'delete'
-				])->setText(Lang::$txt[(new Request())->has('deleted') ? 'lp_action_remove_permanently' : 'remove'])
+					'value' => app(Request::class)->has('deleted') ? 'delete_forever' : 'delete'
+				])->setText(Lang::$txt[app(Request::class)->has('deleted') ? 'lp_action_remove_permanently' : 'remove'])
 			)
 			->addHtml(
 				Utils::$context['allow_light_portal_approve_pages']

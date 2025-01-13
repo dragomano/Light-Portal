@@ -14,6 +14,7 @@ namespace Bugo\LightPortal\Lists;
 
 use Bugo\FontAwesome\Enums\Icon as IconEnum;
 use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\Icon;
 
@@ -103,7 +104,7 @@ final class IconList implements ListInterface
 		$set['big_image'] = 'fa-regular fa-image fa-5x';
 
 		// Plugin authors can extend the icon set
-		app('events')->dispatch(
+		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::changeIconSet,
 			new Event(new class ($set) {
 				public function __construct(public array &$set) {}

@@ -69,9 +69,9 @@ final class PanelConfig extends AbstractConfig
 		if ($this->request()->has('save')) {
 			User::$me->checkSession();
 
-			$this->post()->put('lp_left_panel_width', json_encode($this->request('lp_left_panel_width')));
-			$this->post()->put('lp_right_panel_width', json_encode($this->request('lp_right_panel_width')));
-			$this->post()->put('lp_panel_direction', json_encode($this->request('lp_panel_direction')));
+			$this->post()->put('lp_left_panel_width', json_encode($this->request()->get('lp_left_panel_width')));
+			$this->post()->put('lp_right_panel_width', json_encode($this->request()->get('lp_right_panel_width')));
+			$this->post()->put('lp_panel_direction', json_encode($this->request()->get('lp_panel_direction')));
 
 			$saveVars = $configVars;
 

@@ -41,7 +41,7 @@ abstract class AbstractImport implements ImportInterface
 
 	protected function getFile(string $name = 'import_file'): SimpleXMLElement|bool
 	{
-		if (empty($file = $this->files($name)))
+		if (empty($file = $this->files()->get($name)))
 			return false;
 
 		Sapi::setTimeLimit();

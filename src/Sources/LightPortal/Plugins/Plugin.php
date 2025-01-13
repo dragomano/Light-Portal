@@ -17,6 +17,7 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\ServerSideIncludes;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\HasTemplateAware;
 use Bugo\LightPortal\Utils\RequestTrait;
@@ -86,7 +87,7 @@ abstract class Plugin implements PluginInterface
 			}
 		}
 
-		app('plugin_repo')->addSettings($settings);
+		app(PluginRepository::class)->addSettings($settings);
 	}
 
 	function loadExternalResources(array $resources): void

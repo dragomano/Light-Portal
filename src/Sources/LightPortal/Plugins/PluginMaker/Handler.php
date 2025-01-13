@@ -21,6 +21,7 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Enums\PluginType;
 use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\SelectField;
@@ -338,7 +339,7 @@ class Handler
 
 	private function saveAuthorData(): void
 	{
-		app('plugin_repo')->changeSettings('plugin_maker', [
+		app(PluginRepository::class)->changeSettings('plugin_maker', [
 			'author'  => Utils::$context['lp_plugin']['author'],
 			'email'   => Utils::$context['lp_plugin']['email'],
 			'site'    => Utils::$context['lp_plugin']['site'],

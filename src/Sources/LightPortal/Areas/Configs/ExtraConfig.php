@@ -153,16 +153,16 @@ final class ExtraConfig extends AbstractConfig
 			if ($this->request()->isNotEmpty('lp_menu_separate_subsection_href')) {
 				$this->post()->put(
 					'lp_menu_separate_subsection_href',
-					VarType::URL->filter($this->request('lp_menu_separate_subsection_href'))
+					VarType::URL->filter($this->request()->get('lp_menu_separate_subsection_href'))
 				);
 			}
 
 			if ($this->request()->isNotEmpty('lp_fa_custom')) {
-				$this->post()->put('lp_fa_custom', VarType::URL->filter($this->request('lp_fa_custom')));
+				$this->post()->put('lp_fa_custom', VarType::URL->filter($this->request()->get('lp_fa_custom')));
 			}
 
 			if ($this->request()->isNotEmpty('lp_fa_kit')) {
-				$this->post()->put('lp_fa_kit', VarType::URL->filter($this->request('lp_fa_kit')));
+				$this->post()->put('lp_fa_kit', VarType::URL->filter($this->request()->get('lp_fa_kit')));
 			}
 
 			$saveVars = $configVars;

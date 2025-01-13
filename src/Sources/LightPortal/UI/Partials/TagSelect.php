@@ -14,6 +14,7 @@ namespace Bugo\LightPortal\UI\Partials;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Lists\TagList;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Setting;
 
@@ -25,7 +26,7 @@ final class TagSelect extends AbstractPartial
 {
 	public function __invoke(): string
 	{
-		Utils::$context['lp_tags'] = app('tag_list');
+		Utils::$context['lp_tags'] = app(TagList::class);
 
 		$data = $values = [];
 		foreach (Utils::$context['lp_tags'] as $id => $tag) {

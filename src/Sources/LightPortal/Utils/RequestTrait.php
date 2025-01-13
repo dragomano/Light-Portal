@@ -14,18 +14,18 @@ namespace Bugo\LightPortal\Utils;
 
 trait RequestTrait
 {
-	public function request(?string $key = null, mixed $default = null): mixed
+	public function request(): Request
 	{
-		return $key ? (app('request')->get($key) ?? $default) : app('request');
+		return app(Request::class);
 	}
 
-	public function post(?string $key = null, mixed $default = null): mixed
+	public function post(): Post
 	{
-		return $key ? (app('post')->get($key) ?? $default) : app('post');
+		return app(Post::class);
 	}
 
-	public function files(?string $key = null): mixed
+	public function files(): File
 	{
-		return $key ? app('file')->get($key) : app('file');
+		return app(File::class);
 	}
 }

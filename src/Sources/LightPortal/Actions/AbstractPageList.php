@@ -16,6 +16,7 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\DateTime;
@@ -32,8 +33,6 @@ if (! defined('SMF'))
 
 abstract class AbstractPageList implements PageListInterface
 {
-	abstract public function show(CardListInterface $cardList);
-
 	abstract public function showAll();
 
 	abstract public function getAll(int $start, int $limit, string $sort): array;
@@ -79,7 +78,7 @@ abstract class AbstractPageList implements PageListInterface
 
 	private function getSectionData(array $row): array
 	{
-		if (empty($categories = app('category_list')))
+		if (empty($categories = app(CategoryList::class)))
 			return [];
 
 		if (isset($row['category_id'])) {

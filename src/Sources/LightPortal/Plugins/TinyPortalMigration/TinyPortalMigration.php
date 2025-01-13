@@ -66,7 +66,7 @@ class TinyPortalMigration extends Plugin
 
 	public function importPages(Event $e): void
 	{
-		if ($this->request('sa') !== self::AREA)
+		if ($this->request()->get('sa') !== self::AREA)
 			return;
 
 		$items = &$e->args->items;

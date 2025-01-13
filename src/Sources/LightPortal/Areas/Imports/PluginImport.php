@@ -64,9 +64,9 @@ final class PluginImport extends AbstractImport
 
 	protected function extractPackage(): bool
 	{
-		$file = $this->files('import_file');
+		$file = $this->files()->get('import_file');
 
-		if (empty($file) || $file['error'] !== UPLOAD_ERR_OK)
+		if ($file['error'] !== UPLOAD_ERR_OK)
 			return false;
 
 		switch ($file['type']) {

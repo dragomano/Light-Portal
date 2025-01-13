@@ -45,21 +45,26 @@ trait CommonChecks
 		$disabledActions = array_flip($this->getDisabledActions());
 
 		foreach (array_keys($data) as $action) {
-			if (array_key_exists($action, $disabledActions))
+			if (array_key_exists($action, $disabledActions)) {
 				unset($data[$action]);
+			}
 		}
 
-		if (array_key_exists('search', $disabledActions))
+		if (array_key_exists('search', $disabledActions)) {
 			Utils::$context['allow_search'] = false;
+		}
 
-		if (array_key_exists('moderate', $disabledActions))
+		if (array_key_exists('moderate', $disabledActions)) {
 			Utils::$context['allow_moderation_center'] = false;
+		}
 
-		if (array_key_exists('calendar', $disabledActions))
+		if (array_key_exists('calendar', $disabledActions)) {
 			Utils::$context['allow_calendar'] = false;
+		}
 
-		if (array_key_exists('mlist', $disabledActions))
+		if (array_key_exists('mlist', $disabledActions)) {
 			Utils::$context['allow_memberlist'] = false;
+		}
 
 		Utils::$context['lp_disabled_actions'] = $disabledActions;
 	}

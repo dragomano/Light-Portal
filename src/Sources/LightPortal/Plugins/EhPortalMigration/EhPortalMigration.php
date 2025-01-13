@@ -68,7 +68,7 @@ class EhPortalMigration extends Plugin
 		$items  = &$e->args->items;
 		$titles = &$e->args->titles;
 
-		if ($this->request('sa') !== self::AREA)
+		if ($this->request()->get('sa') !== self::AREA)
 			return;
 
 		foreach ($items as $pageId => $item) {

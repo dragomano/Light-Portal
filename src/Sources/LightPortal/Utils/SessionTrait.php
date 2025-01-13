@@ -16,6 +16,6 @@ trait SessionTrait
 {
 	public function session(?string $key = null): Session
 	{
-		return new Session($key);
+		return app(Session::class)($key);
 	}
 }

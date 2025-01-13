@@ -56,9 +56,9 @@ if (! defined('LP_NAME'))
 
 class Generator
 {
-	private PhpNamespace $namespace;
+	private readonly PhpNamespace $namespace;
 
-	private ClassType $class;
+	private readonly ClassType $class;
 
 	public function __construct(private array $plugin)
 	{

@@ -57,11 +57,11 @@ class SiteList extends Plugin
 		$sites = [];
 
 		if ($this->request()->has('url')) {
-			foreach ($this->request('url') as $key => $value) {
+			foreach ($this->request()->get('url') as $key => $value) {
 				$sites[VarType::URL->filter($value)] = [
-					VarType::URL->filter($this->request('image')[$key]),
-					$this->request('title')[$key],
-					$this->request('desc')[$key],
+					VarType::URL->filter($this->request()->get('image')[$key]),
+					$this->request()->get('title')[$key],
+					$this->request()->get('desc')[$key],
 				];
 			}
 		}

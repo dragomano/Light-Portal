@@ -40,8 +40,8 @@ abstract class AbstractCustomImport implements ImportInterface, CustomImportInte
 
 		Sapi::setTimeLimit();
 
-		$data = $this->request($this->entity) && $this->request()->hasNot('import_all')
-			? $this->request($this->entity)
+		$data = $this->request()->get($this->entity) && $this->request()->hasNot('import_all')
+			? $this->request()->get($this->entity)
 			: [];
 
 		$items = $this->getItems($data);

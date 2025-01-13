@@ -36,10 +36,10 @@ class Setting
 
 		return match ($type) {
 			'bool'  => filter_var($value, FILTER_VALIDATE_BOOLEAN),
-			'int'   => (int) $value,
-			'float' => (float) $value,
+			'int'   => filter_var($value, FILTER_VALIDATE_INT),
+			'float' => filter_var($value, FILTER_VALIDATE_FLOAT),
 			'array' => self::transformArray($value, $from),
-			default => (string) $value,
+			default => filter_var($value),
 		};
 	}
 
@@ -133,7 +133,7 @@ class Setting
 	{
 		$hideBlocks = self::get('lp_hide_blocks_in_acp', 'bool', false);
 
-		return $hideBlocks && (new Request())->is('admin');
+		return $hideBlocks && app(Request::class)->is('admin');
 	}
 
 	public static function getDisabledActions(): array

@@ -12,7 +12,7 @@
 
 namespace Bugo\LightPortal\Actions;
 
-interface PageListInterface
+interface PageListInterface extends ActionInterface
 {
 	public function getPages(int $start, int $limit, string $sort): array;
 

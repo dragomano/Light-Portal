@@ -25,11 +25,13 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\Status;
+use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use WPLake\Typed\Typed;
 
 use function array_key_exists;
 use function count;
@@ -45,17 +47,19 @@ final class Category extends AbstractPageList
 {
 	use RequestTrait;
 
-	public function show(CardListInterface $cardList): void
+	public function __construct(private readonly CardListInterface $cardList) {}
+
+	public function show(): void
 	{
 		if ($this->request()->hasNot('id')) {
 			$this->showAll();
 		}
 
 		$category = [
-			'id' => (int) $this->request('id', 0)
+			'id' => Typed::int($this->request()->get('id'))
 		];
 
-		$categories = app('category_list');
+		$categories = app(CategoryList::class);
 		if (array_key_exists($category['id'], $categories) === false) {
 			Utils::$context['error_link'] = LP_BASE_URL . ';sa=categories';
 			Lang::$txt['back'] = Lang::$txt['lp_all_categories'];
@@ -85,9 +89,9 @@ final class Category extends AbstractPageList
 			'name' => $category['title'] ?? Lang::$txt['lp_no_category'],
 		];
 
-		$cardList->show($this);
+		$this->cardList->show($this);
 
-		$builder = $cardList->getBuilder('lp_categories');
+		$builder = $this->cardList->getBuilder('lp_categories');
 		$builder->setItems($this->getPages(...));
 		$builder->setCount(fn() => $this->getTotalCount());
 

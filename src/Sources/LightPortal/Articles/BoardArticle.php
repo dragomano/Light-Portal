@@ -57,7 +57,7 @@ class BoardArticle extends AbstractArticle
 			'last_updated DESC',
 		];
 
-		app('events')->dispatch(
+		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::frontBoards,
 			new Event(new ArticlesArgs(
 				$this->columns,
@@ -137,7 +137,7 @@ class BoardArticle extends AbstractArticle
 
 			$this->prepareTeaser($boards, $row);
 
-			app('events')->dispatch(
+			app(EventManagerFactory::class)()->dispatch(
 				PortalHook::frontBoardsRow,
 				new Event(new ArticlesRowArgs($boards, $row))
 			);

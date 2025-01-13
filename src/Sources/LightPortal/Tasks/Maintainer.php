@@ -15,6 +15,8 @@ namespace Bugo\LightPortal\Tasks;
 use Bugo\Compat\Tasks\BackgroundTask;
 use Bugo\Compat\Db;
 
+use Bugo\LightPortal\Repositories\CommentRepository;
+
 use function array_keys;
 use function array_map;
 use function ini_set;
@@ -74,7 +76,7 @@ final class Maintainer extends BackgroundTask
 				AND parent_id NOT IN (SELECT * FROM (SELECT id FROM {db_prefix}lp_comments) com)',
 		);
 
-		$commentRepository = app('comment_repo');
+		$commentRepository = app(CommentRepository::class);
 		$commentRepository->removeFromResult($result);
 	}
 
@@ -105,9 +107,7 @@ final class Maintainer extends BackgroundTask
 
 		Db::$db->query('', /** @lang text */ '
 			UPDATE {db_prefix}lp_pages
-			SET num_comments = CASE ' . $line . '
-				ELSE num_comments
-				END
+			SET num_comments = CASE ' . $line . ' ELSE num_comments	END
 			WHERE page_id IN ({array_int:pages})',
 			[
 				'pages' => array_keys($pages),
@@ -142,9 +142,7 @@ final class Maintainer extends BackgroundTask
 
 		Db::$db->query('', /** @lang text */ '
 			UPDATE {db_prefix}lp_pages
-			SET last_comment_id = CASE ' . $line . '
-				ELSE last_comment_id
-				END
+			SET last_comment_id = CASE ' . $line . ' ELSE last_comment_id END
 			WHERE page_id IN ({array_int:pages})',
 			[
 				'pages' => array_keys($pages),

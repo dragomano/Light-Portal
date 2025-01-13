@@ -39,8 +39,8 @@ final class PluginHandler
 
 	public function __construct(array $plugins = [])
 	{
-		$this->registry = app('plugin_registry');
-		$this->manager  = app('event_manager');
+		$this->registry = app(PluginRegistry::class);
+		$this->manager  = app(EventManager::class);
 
 		$this->assetHandler  = new AssetHandler();
 		$this->configHandler = new ConfigHandler();

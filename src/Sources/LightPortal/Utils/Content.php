@@ -18,6 +18,7 @@ use Bugo\Compat\Sapi;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use ParseError;
 
@@ -46,7 +47,7 @@ final class Content
 
 		$parameters = new ParamWrapper($parameters);
 
-		app('events')->dispatch(
+		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::prepareContent,
 			new Event(new class ($type, $block_id, $cache_time, $parameters) {
 				public function __construct(
@@ -95,7 +96,7 @@ final class Content
 			return ob_get_clean();
 		}
 
-		app('events')->dispatch(
+		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::parseContent,
 			new Event(new class ($content, $type) {
 				public function __construct(public string &$content, public readonly string $type) {}

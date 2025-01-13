@@ -69,14 +69,14 @@ class MenuButtons
 		if ($this->request()->hasNot('area'))
 			return;
 
-		if ($this->request('area') === 'lp_blocks') {
+		if ($this->request()->get('area') === 'lp_blocks') {
 			require_once dirname(__DIR__) . '/template.php';
 
 			Utils::$context['template_layers'][] = 'ads_block_form';
 		}
 
 		if (
-			$this->request('area') === 'lp_settings'
+			$this->request()->get('area') === 'lp_settings'
 			&& Utils::$context['current_subaction'] === 'panels'
 		) {
 			unset(Utils::$context['lp_block_placements']['ads']);

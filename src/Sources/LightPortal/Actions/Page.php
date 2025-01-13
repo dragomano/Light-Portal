@@ -20,6 +20,8 @@ use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\EventManagerFactory;
+use Bugo\LightPortal\Lists\TitleList;
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Content;
@@ -53,18 +55,13 @@ final class Page implements ActionInterface
 	use RequestTrait;
 	use SessionTrait;
 
-	private PageRepository $repository;
-
-	public function __construct()
-	{
-		$this->repository = app('page_repo');
-	}
+	public function __construct(private readonly PageRepository $repository) {}
 
 	public function show(): void
 	{
 		User::mustHavePermission('light_portal_view');
 
-		$slug = $this->request(LP_PAGE_PARAM);
+		$slug = $this->request()->get(LP_PAGE_PARAM);
 
 		if (empty($slug)) {
 			$this->handleEmptySlug();
@@ -117,7 +114,7 @@ final class Page implements ActionInterface
 			return [];
 
 		$data = $this->cache('page_' . $slug)
-			->setFallback(fn() => app('page_repo')->getData($slug));
+			->setFallback(fn() => app(PageRepository::class)->getData($slug));
 
 		$this->repository->prepareData($data);
 
@@ -301,7 +298,7 @@ final class Page implements ActionInterface
 		if (empty($page = Utils::$context['lp_page']) || empty(Config::$modSettings['lp_show_prev_next_links']))
 			return;
 
-		$titles = app('title_list');
+		$titles = app(TitleList::class);
 
 		[$prevId, $prevSlug, $nextId, $nextSlug] = $this->repository->getPrevNextLinks($page);
 
@@ -341,14 +338,14 @@ final class Page implements ActionInterface
 
 		Lang::load('Editor');
 
-		app('events')->dispatch(PortalHook::comments);
+		app(EventManagerFactory::class)()->dispatch(PortalHook::comments);
 
 		if (isset(Utils::$context['lp_' . Setting::getCommentBlock() . '_comment_block']))
 			return;
 
 		$this->handleApi();
 
-		(new Comment(Utils::$context['lp_page']['slug']))->show();
+		app(Comment::class)->show();
 	}
 
 	private function handleApi(): void

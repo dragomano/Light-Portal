@@ -30,7 +30,7 @@ class PageTypeSelectRow extends Row
 
 			$types .= Str::html('option', [
 				'value'    => $type,
-				'selected' => (new Request())->has('type') && (new Request())->get('type') === $type,
+				'selected' => app(Request::class)->has('type') && app(Request::class)->get('type') === $type,
 			])->setText($text);
 		}
 

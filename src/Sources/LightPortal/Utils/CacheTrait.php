@@ -16,6 +16,6 @@ trait CacheTrait
 {
 	public function cache(?string $key = null): Cache
 	{
-		return new Cache($key);
+		return app(Cache::class)($key);
 	}
 }

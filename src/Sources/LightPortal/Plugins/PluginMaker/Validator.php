@@ -17,6 +17,7 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Validators\AbstractValidator;
 use Bugo\LightPortal\Enums\VarType;
+use Bugo\LightPortal\Lists\PluginList;
 use Bugo\LightPortal\Utils\RequestTrait;
 
 if (! defined('LP_NAME'))
@@ -119,6 +120,6 @@ class Validator extends AbstractValidator
 
 	private function isUnique(string $name): bool
 	{
-		return ! in_array($name, app('plugin_list'));
+		return ! in_array($name, app(PluginList::class));
 	}
 }

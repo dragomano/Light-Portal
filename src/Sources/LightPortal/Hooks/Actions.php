@@ -16,6 +16,10 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Actions\BoardIndex;
+use Bugo\LightPortal\Actions\Category;
+use Bugo\LightPortal\Actions\FrontPage;
+use Bugo\LightPortal\Actions\Tag;
 use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\RequestTrait;
@@ -36,19 +40,19 @@ class Actions
 	public function __invoke(array &$actions): void
 	{
 		if (Setting::get('lp_frontpage_mode', 'string', '')) {
-			$actions[LP_ACTION] = [false, [app('front_page'), 'show']];
+			$actions[LP_ACTION] = [false, [app(FrontPage::class), 'show']];
 		}
 
-		$actions[Action::FORUM->value] = [false, [app('board_index'), 'show']];
+		$actions[Action::FORUM->value] = [false, [app(BoardIndex::class), 'show']];
 
 		Theme::load();
 
 		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'categories') {
-			app('category')->show(app('card_list'));
+			app(Category::class)->show();
 		}
 
 		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'tags') {
-			app('tag')->show(app('card_list'));
+			app(Tag::class)->show();
 		}
 
 		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'promote') {
@@ -67,7 +71,7 @@ class Actions
 		if (empty(User::$info['is_admin']) || $this->request()->hasNot('t'))
 			return;
 
-		$topic = $this->request('t');
+		$topic = $this->request()->get('t');
 
 		$frontpageTopics = Setting::getFrontpageTopics();
 

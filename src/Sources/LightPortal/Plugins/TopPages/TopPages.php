@@ -17,6 +17,7 @@ use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\Permission;
+use Bugo\LightPortal\Lists\TitleList;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
@@ -75,7 +76,7 @@ class TopPages extends Block
 
 	public function getData(ParamWrapper $parameters): array
 	{
-		$titles = app('title_list');
+		$titles = app(TitleList::class);
 
 		$type = Typed::string($parameters['popularity_type'], default: 'comments');
 		$numPages = Typed::int($parameters['num_pages'], default: 10);

@@ -17,6 +17,7 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
+use Bugo\LightPortal\Actions\Tag;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
@@ -123,7 +124,7 @@ class TagList extends Block
 		if ($source) {
 			$tagList = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
 				->setLifeTime($e->args->cacheTime)
-				->setFallback(fn() => app('tag')->getAll(0, 0, $sorting === 'name' ? 'title' : 'frequency DESC'));
+				->setFallback(fn() => app(Tag::class)->getAll(0, 0, $sorting === 'name' ? 'title' : 'frequency DESC'));
 		} else {
 			$tagList = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
 				->setLifeTime($e->args->cacheTime)

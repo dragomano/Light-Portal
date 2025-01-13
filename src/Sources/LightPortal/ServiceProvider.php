@@ -15,10 +15,27 @@ namespace Bugo\LightPortal;
 use Bugo\LightPortal\Actions\Block;
 use Bugo\LightPortal\Actions\BoardIndex;
 use Bugo\LightPortal\Actions\CardList;
+use Bugo\LightPortal\Actions\CardListInterface;
 use Bugo\LightPortal\Actions\Category;
+use Bugo\LightPortal\Actions\Comment;
 use Bugo\LightPortal\Actions\FrontPage;
 use Bugo\LightPortal\Actions\Page;
 use Bugo\LightPortal\Actions\Tag;
+use Bugo\LightPortal\Areas\BlockArea;
+use Bugo\LightPortal\Areas\CategoryArea;
+use Bugo\LightPortal\Areas\Exports\BlockExport;
+use Bugo\LightPortal\Areas\Exports\CategoryExport;
+use Bugo\LightPortal\Areas\Exports\PageExport;
+use Bugo\LightPortal\Areas\Exports\PluginExport;
+use Bugo\LightPortal\Areas\Exports\TagExport;
+use Bugo\LightPortal\Areas\Imports\BlockImport;
+use Bugo\LightPortal\Areas\Imports\CategoryImport;
+use Bugo\LightPortal\Areas\Imports\PageImport;
+use Bugo\LightPortal\Areas\Imports\PluginImport;
+use Bugo\LightPortal\Areas\Imports\TagImport;
+use Bugo\LightPortal\Areas\PageArea;
+use Bugo\LightPortal\Areas\PluginArea;
+use Bugo\LightPortal\Areas\TagArea;
 use Bugo\LightPortal\Compilers\CompilerInterface;
 use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\Lists\IconList;
@@ -43,7 +60,6 @@ use Bugo\LightPortal\Utils\Request;
 use Bugo\LightPortal\Utils\Session;
 use Bugo\LightPortal\Utils\Weaver;
 use League\Container\ServiceProvider\AbstractServiceProvider;
-use Nette\Utils\Html;
 
 use function in_array;
 
@@ -52,40 +68,7 @@ class ServiceProvider extends AbstractServiceProvider
 	public function provides(string $id): bool
 	{
 		$services = [
-			'event_manager',
-			'events',
-			'config',
-			'compiler',
-			'renderer',
-			'plugin_handler',
-			'plugin_registry',
-			'category_list',
-			'page_list',
-			'tag_list',
-			'title_list',
-			'icon_list',
-			'plugin_list',
-			'active_blocks',
-			'cache',
-			'request',
-			'post',
-			'file',
-			'session',
-			'block_repo',
-			'category_repo',
-			'comment_repo',
-			'page_repo',
-			'plugin_repo',
-			'tag_repo',
-			'board_index',
-			'front_page',
-			'block',
-			'page',
-			'category',
-			'tag',
-			'card_list',
-			'html',
-			'weaver',
+			Request::class,
 		];
 
 		return in_array($id, $services);
@@ -93,45 +76,60 @@ class ServiceProvider extends AbstractServiceProvider
 
 	public function register(): void
 	{
-		$this->getContainer()->add('event_manager', EventManager::class);
-		$this->getContainer()->add('events', EventManagerFactory::class);
 		$this->getContainer()->add('config', fn() => (new ConfigProvider())->get());
-		$this->getContainer()->add('compiler', app('config')[CompilerInterface::class]);
-		$this->getContainer()->add('renderer', app('config')[RendererInterface::class]);
-		$this->getContainer()->add('plugin_handler', PluginHandler::class);
-		$this->getContainer()->add('plugin_registry', PluginRegistry::class);
+		$this->getContainer()->add(CompilerInterface::class, fn() => $this->getContainer()->get('config')[CompilerInterface::class]);
+		$this->getContainer()->add(RendererInterface::class, fn() => $this->getContainer()->get('config')[RendererInterface::class]);
 
-		$this->getContainer()->add('category_list', fn() => (new CategoryList())());
-		$this->getContainer()->add('page_list', fn() => (new PageList())());
-		$this->getContainer()->add('tag_list', fn() => (new TagList())());
-		$this->getContainer()->add('title_list', fn() => (new TitleList())());
-		$this->getContainer()->add('icon_list', fn() => (new IconList())());
-		$this->getContainer()->add('plugin_list', fn() => (new PluginList())());
+		$this->getContainer()->add(EventManager::class);
+		$this->getContainer()->add(EventManagerFactory::class);
+		$this->getContainer()->add(PluginHandler::class, fn() => fn(array $plugins = []) => new PluginHandler($plugins));
+		$this->getContainer()->add(PluginRegistry::class);
 
-		$this->getContainer()->add('active_blocks', fn() => app('block_repo')->getActive());
+		$this->getContainer()->add(CategoryList::class, fn() => (new CategoryList())());
+		$this->getContainer()->add(PageList::class, fn() => (new PageList($this->getContainer()->get(PageRepository::class)))());
+		$this->getContainer()->add(TagList::class, fn() => (new TagList())());
+		$this->getContainer()->add(TitleList::class, fn() => (new TitleList())());
+		$this->getContainer()->add(IconList::class, fn() => (new IconList())());
+		$this->getContainer()->add(PluginList::class, fn() => (new PluginList())());
 
-		$this->getContainer()->add('cache', Cache::class);
-		$this->getContainer()->add('request', Request::class);
-		$this->getContainer()->add('post', Post::class);
-		$this->getContainer()->add('file', File::class);
-		$this->getContainer()->add('session', Session::class);
+		$this->getContainer()->add(Request::class);
+		$this->getContainer()->add(Post::class);
+		$this->getContainer()->add(File::class);
+		$this->getContainer()->add(Cache::class, fn() => fn(?string $key = null) => new Cache($key));
+		$this->getContainer()->add(Session::class, fn() => fn(?string $key = null) => new Session($key));
 
-		$this->getContainer()->add('block_repo', BlockRepository::class);
-		$this->getContainer()->add('category_repo', CategoryRepository::class);
-		$this->getContainer()->add('comment_repo', CommentRepository::class);
-		$this->getContainer()->add('page_repo', PageRepository::class);
-		$this->getContainer()->add('plugin_repo', PluginRepository::class);
-		$this->getContainer()->add('tag_repo', TagRepository::class);
+		$this->getContainer()->add(BlockRepository::class);
+		$this->getContainer()->add(CategoryRepository::class);
+		$this->getContainer()->add(CommentRepository::class);
+		$this->getContainer()->add(PageRepository::class);
+		$this->getContainer()->add(PluginRepository::class);
+		$this->getContainer()->add(TagRepository::class);
 
-		$this->getContainer()->add('board_index', BoardIndex::class);
-		$this->getContainer()->add('front_page', FrontPage::class);
-		$this->getContainer()->add('block', Block::class);
-		$this->getContainer()->add('page', Page::class);
-		$this->getContainer()->add('category', Category::class);
-		$this->getContainer()->add('tag', Tag::class);
-		$this->getContainer()->add('card_list', CardList::class);
+		$this->getContainer()->add(BlockArea::class)->addArgument(BlockRepository::class);
+		$this->getContainer()->add(BlockExport::class)->addArgument(BlockRepository::class);
+		$this->getContainer()->add(BlockImport::class);
+		$this->getContainer()->add(PageArea::class)->addArgument(PageRepository::class);
+		$this->getContainer()->add(PageExport::class)->addArgument(PageRepository::class);
+		$this->getContainer()->add(PageImport::class);
+		$this->getContainer()->add(CategoryArea::class)->addArgument(CategoryRepository::class);
+		$this->getContainer()->add(CategoryExport::class)->addArgument(CategoryRepository::class);
+		$this->getContainer()->add(CategoryImport::class);
+		$this->getContainer()->add(TagArea::class)->addArgument(TagRepository::class);
+		$this->getContainer()->add(TagExport::class)->addArgument(TagRepository::class);
+		$this->getContainer()->add(TagImport::class);
+		$this->getContainer()->add(PluginArea::class)->addArgument(PluginRepository::class);
+		$this->getContainer()->add(PluginExport::class);
+		$this->getContainer()->add(PluginImport::class);
 
-		$this->getContainer()->add('html', Html::class)->setShared(false);
-		$this->getContainer()->add('weaver', Weaver::class)->setShared(false);
+		$this->getContainer()->add(BoardIndex::class);
+		$this->getContainer()->add(FrontPage::class)->addArgument(RendererInterface::class);
+		$this->getContainer()->add(Block::class);
+		$this->getContainer()->add(Page::class)->addArgument(PageRepository::class);
+		$this->getContainer()->add(Comment::class)->addArgument(CommentRepository::class);
+		$this->getContainer()->add(Category::class)->addArgument(CardListInterface::class);
+		$this->getContainer()->add(Tag::class)->addArgument(CardListInterface::class);
+		$this->getContainer()->add(CardListInterface::class, CardList::class);
+
+		$this->getContainer()->add(Weaver::class, Weaver::class)->setShared(false);
 	}
 }

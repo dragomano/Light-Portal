@@ -15,6 +15,7 @@ namespace Bugo\LightPortal\UI\Partials;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\Utils\Icon;
 
 use function count;
@@ -32,7 +33,7 @@ final class CategorySelect extends AbstractPartial
 		$params['multiple'] ??= true;
 		$params['wide'] ??= true;
 		$params['hint'] ??= Lang::$txt['lp_frontpage_categories_select'];
-		$params['data'] ??= app('category_list');
+		$params['data'] ??= app(CategoryList::class);
 		$params['value'] ??= Config::$modSettings['lp_frontpage_categories'] ?? '';
 
 		$data = [];

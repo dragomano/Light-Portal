@@ -26,11 +26,10 @@ final class EventManagerFactory
 	{
 		if ($plugins !== self::$plugins) {
 			self::$plugins = $plugins;
-			self::$handler = new PluginHandler($plugins);
+			self::$handler = app(PluginHandler::class)($plugins);
 		}
 
-		self::$handler ??= new PluginHandler();
-
+		self::$handler ??= app(PluginHandler::class)();
 		self::$manager = self::$handler->getManager();
 
 		return self::$manager;

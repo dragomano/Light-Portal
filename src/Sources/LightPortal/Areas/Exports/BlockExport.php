@@ -34,12 +34,7 @@ if (! defined('SMF'))
 
 final class BlockExport extends AbstractExport
 {
-	private readonly BlockRepository $repository;
-
-	public function __construct()
-	{
-		$this->repository = app('block_repo');
-	}
+	public function __construct(private readonly BlockRepository $repository) {}
 
 	public function main(): void
 	{
@@ -66,7 +61,8 @@ final class BlockExport extends AbstractExport
 		if ($this->request()->isEmpty('blocks') && $this->request()->hasNot('export_all'))
 			return [];
 
-		$blocks = $this->request('blocks') && $this->request()->hasNot('export_all') ? $this->request('blocks') : null;
+		$blocks = $this->request()->get('blocks') && $this->request()->hasNot('export_all')
+			? $this->request()->get('blocks') : [];
 
 		$result = Db::$db->query('', '
 			SELECT

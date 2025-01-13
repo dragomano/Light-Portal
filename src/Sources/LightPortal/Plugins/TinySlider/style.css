@@ -85,9 +85,7 @@
 	.block_tiny_slider .customize-tools .thumbnails {
 		margin-bottom: 10px;
 	}
-}
 
-@media (max-width: 640px) {
 	.block_tiny_slider .customize-tools .controls li {
 		display: inline-block;
 		position: relative;

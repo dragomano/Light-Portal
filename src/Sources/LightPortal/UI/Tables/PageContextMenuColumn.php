@@ -28,7 +28,7 @@ class PageContextMenuColumn extends ContextMenuColumn
 						' . IconButton::make('ellipsis', ['x-on:click.prevent' => 'showContextMenu = true'], 'button floatnone') . '
 						<div class="roundframe" x-show="showContextMenu">
 							<ul>' . (
-								(new Request())->has('deleted') ? (
+								app(Request::class)->has('deleted') ? (
 									Str::html('li')->addHtml(
 										LinkButton::make(Lang::$txt['restore_message'], ['x-on:click.prevent' => 'showContextMenu = false; entity.restore($root)'])
 									) .

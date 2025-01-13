@@ -18,6 +18,7 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\AlertAction;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Repositories\CommentRepository;
 use Bugo\LightPortal\Utils\Avatar;
@@ -26,6 +27,7 @@ use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\Notify;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Setting;
+use WPLake\Typed\Typed;
 
 use function array_map;
 use function array_slice;
@@ -45,11 +47,18 @@ final class Comment implements ActionInterface
 	use CacheTrait;
 	use RequestTrait;
 
-	private CommentRepository $repository;
+	private string $pageSlug;
 
-	public function __construct(private readonly string $pageSlug = '')
+	public function __construct(private readonly CommentRepository $repository)
 	{
-		$this->repository = app('comment_repo');
+		$this->setPageSlug(Utils::$context['lp_page']['slug']);
+	}
+
+	public function setPageSlug(string $pageSlug): self
+	{
+		$this->pageSlug = $pageSlug;
+
+		return $this;
 	}
 
 	public function show(): void
@@ -59,7 +68,7 @@ final class Comment implements ActionInterface
 
 		header('Content-Type: application/json; charset=utf-8');
 
-		match ($this->request('api')) {
+		match ($this->request()->get('api')) {
 			'add_comment'    => $this->add(),
 			'update_comment' => $this->update(),
 			'remove_comment' => $this->remove(),
@@ -70,7 +79,7 @@ final class Comment implements ActionInterface
 	private function get(): never
 	{
 		$comments = $this->cache('page_' . $this->pageSlug . '_comments')
-			->setFallback(fn() => app('comment_repo')->getByPageId(Utils::$context['lp_page']['id']));
+			->setFallback(fn() => app(CommentRepository::class)->getByPageId(Utils::$context['lp_page']['id']));
 
 		$comments = array_map(function ($comment) {
 			$comment['human_date']    = DateTime::relative($comment['created_at']);
@@ -78,7 +87,7 @@ final class Comment implements ActionInterface
 			$comment['authorial']     = Utils::$context['lp_page']['author_id'] === $comment['poster']['id'];
 			$comment['extra_buttons'] = [];
 
-			app('events')->dispatch(
+			app(EventManagerFactory::class)()->dispatch(
 				PortalHook::commentButtons,
 				new Event(new class ($comment, $comment['extra_buttons']) {
 					public function __construct(public readonly array $comment, public array &$buttons) {}
@@ -98,7 +107,7 @@ final class Comment implements ActionInterface
 			$this->getPageIndexUrl(), $start, $parentsCount, $limit
 		);
 
-		$start = (int) $this->request('start');
+		$start = Typed::int($this->request()->get('start'));
 
 		http_response_code(200);
 

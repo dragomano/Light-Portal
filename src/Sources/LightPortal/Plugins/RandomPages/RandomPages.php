@@ -21,6 +21,7 @@ use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Lists\TitleList;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
@@ -96,7 +97,7 @@ class RandomPages extends Block
 		if (empty($pagesCount))
 			return [];
 
-		$titles = app('title_list');
+		$titles = app(TitleList::class);
 
 		if (Config::$db_type === 'postgresql') {
 			$result = Db::$db->query('', '

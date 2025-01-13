@@ -26,12 +26,7 @@ if (! defined('SMF'))
 
 final class PageList implements ListInterface
 {
-	private readonly PageRepository $repository;
-
-	public function __construct()
-	{
-		$this->repository = app('page_repo');
-	}
+	public function __construct(private readonly PageRepository $repository) {}
 
 	public function __invoke(): array
 	{

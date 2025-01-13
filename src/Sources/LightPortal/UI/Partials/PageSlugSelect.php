@@ -16,6 +16,8 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 
+use Bugo\LightPortal\Lists\PageList;
+
 use function func_get_args;
 use function json_encode;
 
@@ -28,7 +30,7 @@ final class PageSlugSelect extends AbstractPartial
 
 		$params['id'] ??= 'lp_frontpage_chosen_page';
 		$params['value'] ??= Config::$modSettings['lp_frontpage_chosen_page'] ?? '';
-		$params['data'] ??= app('page_list');
+		$params['data'] ??= app(PageList::class);
 
 		$data = [];
 		foreach ($params['data'] as $page) {

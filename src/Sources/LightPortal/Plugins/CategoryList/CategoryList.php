@@ -18,6 +18,7 @@ use Bugo\LightPortal\Actions\Category;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\Str;
+use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -28,7 +29,7 @@ class CategoryList extends Block
 
 	public function getData(): array
 	{
-		return (new Category())->getAll(0, 0, 'c.priority');
+		return (app(Category::class))->getAll(0, 0, 'c.priority');
 	}
 
 	public function prepareContent(Event $e): void
@@ -44,8 +45,8 @@ class CategoryList extends Block
 
 		$currentCat = Utils::$context['current_action'] === 'portal'
 			&& $this->request()->has('sa')
-			&& $this->request('sa') === 'categories'
-				? (int) $this->request('id', 0) : false;
+			&& $this->request()->get('sa') === 'categories'
+				? Typed::int($this->request()->get('id')) : false;
 
 		if (isset(Utils::$context['lp_page']['category_id'])) {
 			$currentCat = Utils::$context['lp_page']['category_id'];
