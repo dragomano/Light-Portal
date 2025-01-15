@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use Bugo\Compat\{Config, Lang, Theme, Utils};
 use Bugo\LightPortal\Enums\Tab;
@@ -154,7 +154,7 @@ function show_block_entry(int $id, array $data): void
 				<button class="button floatnone" @click.prevent="showContextMenu = true">
 					', Icon::get('ellipsis'), '
 				</button>
-				<div class="roundframe" x-show="showContextMenu">
+				<div class="roundframe" x-show="showContextMenu" x-transition.duration.500ms>
 					<ul>
 						<li>
 							<a @click.prevent="block.clone($root)" class="button">', Lang::$txt['lp_action_clone'], '</a>

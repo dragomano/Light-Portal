@@ -26,7 +26,7 @@ class PageContextMenuColumn extends ContextMenuColumn
 				<div data-id="' . $entry['id'] . '" x-data="{ showContextMenu: false }">
 					<div class="context_menu" @click.outside="showContextMenu = false">
 						' . IconButton::make('ellipsis', ['x-on:click.prevent' => 'showContextMenu = true'], 'button floatnone') . '
-						<div class="roundframe" x-show="showContextMenu">
+						<div class="roundframe" x-show="showContextMenu" x-transition.duration.500ms>
 							<ul>' . (
 								app(Request::class)->has('deleted') ? (
 									Str::html('li')->addHtml(
