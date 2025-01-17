@@ -1,12 +1,12 @@
 <script>
   import { _ } from 'svelte-i18n';
-  import { fade } from 'svelte/transition';
+  import { slide } from 'svelte/transition';
   import { useContextStore, useAppStore } from '../../js/stores.js';
   import { PluginOptionItem } from './index.js';
   import Button from '../BaseButton.svelte';
 
   /** @type {{ item: { snake_name: string, saveable: boolean, settings: array } }} */
-  let { item, hide } = $props();
+  let { item } = $props();
   let success = $state(false);
   let form = $state();
 
@@ -33,7 +33,7 @@
   };
 </script>
 
-<div class="roundframe" id={blockId} transition:fade>
+<div class="roundframe" id={blockId} transition:slide>
   <div class="title_bar">
     <h5 class="titlebg">{$_('settings')}</h5>
   </div>
@@ -54,10 +54,8 @@
       {$_('settings_saved')}
     </span>
 
-    <Button icon="close" onclick={hide}>{$_('find_close')}</Button>
-
     {#if item.saveable}
-      <Button icon="save" form={formId} type="submit">
+      <Button icon="save" form={formId} type="submit" onclick={(e) => e.target.blur()}>
         {$_('save')}
       </Button>
     {/if}

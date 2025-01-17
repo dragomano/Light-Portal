@@ -1,4 +1,5 @@
 <script>
+  import { slide } from 'svelte/transition';
   import { SvelteShowdown } from 'svelte-showdown';
 
   const classMap = {
@@ -29,6 +30,6 @@
   let { content = '', ...rest } = $props();
 </script>
 
-<fieldset {...rest}>
+<fieldset transition:slide {...rest}>
   <SvelteShowdown {content} extensions={[bindings]} {options} />
 </fieldset>

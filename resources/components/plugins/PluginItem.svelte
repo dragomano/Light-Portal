@@ -73,14 +73,18 @@
         />
       {/if}
 
-      {#if item.special}
-        <a
-          href={item.special === 'can_donate' ? donateLink : downloadLink}
-          rel="noopener"
-          target="_blank"
-        >
-          {@html item.special === 'can_donate' ? donateIcon : downloadIcon}
+      {#snippet specialLink(link, icon)}
+        <a href={link} rel="noopener" target="_blank">
+          {@html icon}
         </a>
+      {/snippet}
+
+      {#if item.special}
+        {#if item.special === 'can_donate'}
+          {@render specialLink(donateLink, donateIcon)}
+        {:else}
+          {@render specialLink(downloadLink, downloadIcon)}
+        {/if}
       {/if}
 
       {#if showToggle}
@@ -98,7 +102,7 @@
 
     {#if show && item.settings.length}
       <br class="clear" />
-      <PluginOptionList {item} hide={() => (show = false)} />
+      <PluginOptionList {item} />
     {/if}
   </div>
 </div>
