@@ -35,7 +35,7 @@ class Init
 		Utils::$context['lp_load_time'] ??= microtime(true);
 
 		define('LP_NAME', (new DateTime())->format('m-d') === '04-01' ? 'Lazy Panda' : 'Light Portal');
-		define('LP_VERSION', '2.9.0');
+		define('LP_VERSION', '2.9.1');
 		define('LP_PLUGIN_LIST', 'https://d8d75ea98b25aa12.mokky.dev/json');
 		define('LP_ADDON_DIR', dirname(__DIR__) . '/Plugins');
 		define('LP_ADDON_URL', Config::$boardurl . '/Sources/LightPortal/Plugins');
