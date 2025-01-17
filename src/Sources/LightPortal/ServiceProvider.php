@@ -58,6 +58,7 @@ use Bugo\LightPortal\Utils\File;
 use Bugo\LightPortal\Utils\Post;
 use Bugo\LightPortal\Utils\Request;
 use Bugo\LightPortal\Utils\Session;
+use Bugo\LightPortal\Utils\SessionManager;
 use Bugo\LightPortal\Utils\Weaver;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 
@@ -91,6 +92,7 @@ class ServiceProvider extends AbstractServiceProvider
 		$this->getContainer()->add(TitleList::class, fn() => (new TitleList())());
 		$this->getContainer()->add(IconList::class, fn() => (new IconList())());
 		$this->getContainer()->add(PluginList::class, fn() => (new PluginList())());
+		$this->getContainer()->add(SessionManager::class, fn() => (new SessionManager())());
 
 		$this->getContainer()->add(Request::class);
 		$this->getContainer()->add(Post::class);

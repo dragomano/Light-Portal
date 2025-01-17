@@ -26,7 +26,7 @@ if (! defined('SMF'))
 
 class Setting
 {
-	public static function get(string $key, string $type = 'string', $default = null, string $from = 'string'): mixed
+	public static function get(string $key, string $type = 'string', mixed $default = null, string $from = 'string'): mixed
 	{
 		if (! isset(Config::$modSettings[$key])) {
 			return $default;

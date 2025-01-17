@@ -24,9 +24,9 @@ final class SessionManager
 {
 	use SessionTrait;
 
-	public function __invoke(string $key): int
+	public function __invoke(): array
 	{
-		return match ($key) {
+		return [
 			'active_blocks'     => $this->getActiveBlocksCount(),
 			'active_pages'      => $this->getActivePagesCount(),
 			'my_pages'          => $this->getMyPagesCount(),
@@ -34,8 +34,7 @@ final class SessionManager
 			'deleted_pages'     => $this->getDeletedPagesCount(),
 			'active_categories' => $this->getActiveCategoriesCount(),
 			'active_tags'       => $this->getActiveTagsCount(),
-			default             => 0,
-		};
+		];
 	}
 
 	public function getActiveBlocksCount(): int

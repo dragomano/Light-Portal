@@ -71,15 +71,6 @@ final class PluginArea
 
 		Utils::$context['sub_template'] = 'manage_plugins';
 
-		Theme::loadCSSFile(
-			implode('', [
-				'https://cdn.jsdelivr.net/combine/',
-				'npm/@vueform/multiselect@2/themes/default.min.css,',
-				'npm/@vueform/toggle@2/themes/default.min.css'
-			]),
-			['external' => true]
-		);
-
 		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_plugins_manage'];
 		Utils::$context['post_url']   = Config::$scripturl . '?action=admin;area=lp_plugins;save';
 

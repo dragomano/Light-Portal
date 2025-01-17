@@ -330,8 +330,7 @@ final class PageRepository extends AbstractRepository
 			]
 		);
 
-		$commentRepository = new CommentRepository();
-		$commentRepository->removeFromResult($result);
+		app(CommentRepository::class)->removeFromResult($result);
 
 		$this->session()->free('lp');
 	}

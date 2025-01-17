@@ -30,9 +30,6 @@ use Bugo\LightPortal\Repositories\BlockRepository;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionManager;
 
-use function array_combine;
-use function array_map;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -63,7 +60,7 @@ class LoadTheme
 		Utils::$context['allow_light_portal_manage_pages_any'] = User::hasPermission('light_portal_manage_pages_any');
 		Utils::$context['allow_light_portal_approve_pages']    = User::hasPermission('light_portal_approve_pages');
 
-		$this->calculateNumberOfEntities();
+		Utils::$context['lp_quantities'] = app(SessionManager::class);
 
 		Utils::$context['lp_all_title_classes'] = TitleClass::values();
 		Utils::$context['lp_all_content_classes'] = ContentClass::values();
@@ -116,19 +113,5 @@ class LoadTheme
 				]
 			);
 		}
-	}
-
-	private function calculateNumberOfEntities(): void
-	{
-		$sessionManager = new SessionManager();
-
-		$entities = [
-			'active_blocks', 'active_pages', 'my_pages', 'unapproved_pages',
-			'deleted_pages', 'active_categories', 'active_tags',
-		];
-
-		Utils::$context['lp_quantities'] = array_map(
-			static fn($key) => $sessionManager($key), array_combine($entities, $entities)
-		);
 	}
 }

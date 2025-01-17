@@ -76,8 +76,7 @@ final class Maintainer extends BackgroundTask
 				AND parent_id NOT IN (SELECT * FROM (SELECT id FROM {db_prefix}lp_comments) com)',
 		);
 
-		$commentRepository = app(CommentRepository::class);
-		$commentRepository->removeFromResult($result);
+		app(CommentRepository::class)->removeFromResult($result);
 	}
 
 	private function updateNumComments(): void

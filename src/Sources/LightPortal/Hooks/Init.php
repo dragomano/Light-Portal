@@ -36,7 +36,7 @@ class Init
 
 		define('LP_NAME', (new DateTime())->format('m-d') === '04-01' ? 'Lazy Panda' : 'Light Portal');
 		define('LP_VERSION', '2.9.0');
-		define('LP_PLUGIN_LIST', 'https://d8d75ea98b25aa12.mokky.dev/plugins');
+		define('LP_PLUGIN_LIST', 'https://d8d75ea98b25aa12.mokky.dev/json');
 		define('LP_ADDON_DIR', dirname(__DIR__) . '/Plugins');
 		define('LP_ADDON_URL', Config::$boardurl . '/Sources/LightPortal/Plugins');
 		define('LP_CACHE_TIME', Setting::get('lp_cache_interval', 'int', 72000));
