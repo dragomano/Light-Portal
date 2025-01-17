@@ -125,7 +125,7 @@ trait AreaTrait
 			}
 
 			Utils::$context['posting_fields'][$item]['input']['after'] = Str::html($tag)
-				->class('descbox alternative2 smalltext')
+				->class('roundframe smalltext')
 				->setHtml($data['input']['after']);
 		}
 
