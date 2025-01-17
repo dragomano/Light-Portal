@@ -36,7 +36,6 @@ use Bugo\LightPortal\Areas\Imports\TagImport;
 use Bugo\LightPortal\Areas\PageArea;
 use Bugo\LightPortal\Areas\PluginArea;
 use Bugo\LightPortal\Areas\TagArea;
-use Bugo\LightPortal\Compilers\CompilerInterface;
 use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\Lists\IconList;
 use Bugo\LightPortal\Lists\PageList;
@@ -45,6 +44,7 @@ use Bugo\LightPortal\Lists\TagList;
 use Bugo\LightPortal\Lists\TitleList;
 use Bugo\LightPortal\Plugins\PluginHandler;
 use Bugo\LightPortal\Plugins\PluginRegistry;
+use Bugo\LightPortal\Renderers\Blade;
 use Bugo\LightPortal\Renderers\RendererInterface;
 use Bugo\LightPortal\Repositories\BlockRepository;
 use Bugo\LightPortal\Repositories\CategoryRepository;
@@ -53,7 +53,6 @@ use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Repositories\TagRepository;
 use Bugo\LightPortal\Utils\Cache;
-use Bugo\LightPortal\Utils\ConfigProvider;
 use Bugo\LightPortal\Utils\File;
 use Bugo\LightPortal\Utils\Post;
 use Bugo\LightPortal\Utils\Request;
@@ -69,7 +68,53 @@ class ServiceProvider extends AbstractServiceProvider
 	public function provides(string $id): bool
 	{
 		$services = [
+			RendererInterface::class,
+			EventManager::class,
+			EventManagerFactory::class,
+			PluginHandler::class,
+			PluginRegistry::class,
+			CategoryList::class,
+			PageList::class,
+			TagList::class,
+			TitleList::class,
+			IconList::class,
+			PluginList::class,
+			SessionManager::class,
 			Request::class,
+			Post::class,
+			File::class,
+			Cache::class,
+			Session::class,
+			BlockRepository::class,
+			CategoryRepository::class,
+			CommentRepository::class,
+			PageRepository::class,
+			PluginRepository::class,
+			TagRepository::class,
+			BlockArea::class,
+			BlockExport::class,
+			BlockImport::class,
+			PageArea::class,
+			PageExport::class,
+			PageImport::class,
+			CategoryArea::class,
+			CategoryExport::class,
+			CategoryImport::class,
+			TagArea::class,
+			TagExport::class,
+			TagImport::class,
+			PluginArea::class,
+			PluginExport::class,
+			PluginImport::class,
+			BoardIndex::class,
+			FrontPage::class,
+			Block::class,
+			Page::class,
+			Comment::class,
+			Category::class,
+			Tag::class,
+			CardListInterface::class,
+			Weaver::class,
 		];
 
 		return in_array($id, $services);
@@ -77,9 +122,7 @@ class ServiceProvider extends AbstractServiceProvider
 
 	public function register(): void
 	{
-		$this->getContainer()->add('config', fn() => (new ConfigProvider())->get());
-		$this->getContainer()->add(CompilerInterface::class, fn() => $this->getContainer()->get('config')[CompilerInterface::class]);
-		$this->getContainer()->add(RendererInterface::class, fn() => $this->getContainer()->get('config')[RendererInterface::class]);
+		$this->getContainer()->add(RendererInterface::class, Blade::class);
 
 		$this->getContainer()->add(EventManager::class);
 		$this->getContainer()->add(EventManagerFactory::class);

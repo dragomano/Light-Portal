@@ -23,30 +23,33 @@ class PageSearchRow extends Row
 {
 	public static function make(string $value = '', ?string $class = null): static
 	{
-		return parent::make($value ?: Str::html('div', ['class' => 'row'])
-			->addHtml(
-				Str::html('div', ['class' => 'col-lg-10'])->setHtml(
-					Str::html('input', [
-						'type' => 'search',
-						'name' => 'search',
-						'value' => Utils::$context['search']['string'],
-						'placeholder' => Lang::$txt['lp_pages_search'],
-						'style' => 'width: 100%',
-					])
-				)
-			)
-			->addHtml(
-				Str::html('div', ['class' => 'col-lg-2'])->setHtml(
-					Str::html('button', [
-						'type' => 'submit',
-						'name' => 'is_search',
-						'class' => 'button floatnone',
-						'style' => 'width: 100%',
-					])->setHtml(Icon::get('search') . Lang::$txt['search'])
-				)
-			)
-			->toHtml()
-		)
+		$input = Str::html('input', [
+			'type'        => 'search',
+			'name'        => 'search',
+			'value'       => Utils::$context['search']['string'],
+			'placeholder' => Lang::$txt['lp_pages_search'],
+			'style'       => 'width: 100%',
+		]);
+
+		$search = Str::html('div', ['class' => 'col-lg-10'])->setHtml($input);
+
+		$icon = Icon::get('search') . Lang::$txt['search'];
+
+		$button = Str::html('button', [
+			'type'  => 'submit',
+			'name'  => 'is_search',
+			'class' => 'button floatnone',
+			'style' => 'width: 100%',
+		])->setHtml($icon);
+
+		$div = Str::html('div', ['class' => 'col-lg-2'])->setHtml($button);
+
+		$row = Str::html('div', ['class' => 'row'])
+			->addHtml($search)
+			->addHtml($div)
+			->toHtml();
+
+		return parent::make($value ?: $row)
 			->setClass('floatnone')
 			->setPosition(RowPosition::AFTER_TITLE);
 	}

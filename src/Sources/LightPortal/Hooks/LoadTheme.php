@@ -17,7 +17,6 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Compilers\CompilerInterface;
 use Bugo\LightPortal\Enums\ContentClass;
 use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Enums\EntryType;
@@ -47,7 +46,7 @@ class LoadTheme
 
 		$this->defineVars();
 
-		$this->loadAssets(app(CompilerInterface::class));
+		$this->loadAssets();
 
 		// Run all init methods for active plugins
 		app(EventManagerFactory::class)()->dispatch(PortalHook::init);
@@ -74,11 +73,9 @@ class LoadTheme
 		Utils::$context['lp_active_blocks'] = app(BlockRepository::class)->getActive();
 	}
 
-	protected function loadAssets(CompilerInterface $compiler): void
+	protected function loadAssets(): void
 	{
 		$this->loadFontAwesome();
-
-		$compiler->compile();
 
 		Theme::loadCSSFile('light_portal/flexboxgrid.css');
 		Theme::loadCSSFile('light_portal/portal.css');

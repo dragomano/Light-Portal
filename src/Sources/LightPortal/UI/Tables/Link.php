@@ -14,7 +14,7 @@ namespace Bugo\LightPortal\UI\Tables;
 
 use Bugo\LightPortal\Utils\Str;
 
-class LinkButton
+class Link
 {
 	public function __construct(
 		private readonly string $text,

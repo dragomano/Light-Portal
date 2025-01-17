@@ -23,38 +23,41 @@ class PageButtonsRow extends Row
 {
 	public static function make(string $value = '', ?string $class = null): static
 	{
-		return parent::make($value ?: Str::html('select', ['name' => 'page_actions'])
-			->addHtml(
-				Str::html('option', [
-					'value' => app(Request::class)->has('deleted') ? 'delete_forever' : 'delete'
-				])->setText(Lang::$txt[app(Request::class)->has('deleted') ? 'lp_action_remove_permanently' : 'remove'])
-			)
-			->addHtml(
-				Utils::$context['allow_light_portal_approve_pages']
-					? Str::html('option', ['value' => 'toggle'])
-						->setText(Lang::$txt['lp_action_toggle'])
-					: ''
-			)
-			->addHtml(
-				Setting::isFrontpageMode('chosen_pages')
-					? Str::html('option', ['value' => 'promote_up'])
-						->setText(Lang::$txt['lp_promote_to_fp'])
-					: ''
-			)
-			->addHtml(
-				Setting::isFrontpageMode('chosen_pages')
-					? Str::html('option', ['value' => 'promote_down'])
-						->setText(Lang::$txt['lp_remove_from_fp'])
-					: ''
-			) . ' ' .
-			Str::html('input', [
-				'type'    => 'submit',
-				'name'    => 'mass_actions',
-				'value'   => Lang::$txt['quick_mod_go'],
-				'class'   => 'button',
-				'onclick' => "return document.forms['manage_pages']['page_actions'].value && confirm('" . Lang::$txt['quickmod_confirm'] . ");",
-			])
-		)
-		->setClass('floatright');
+		$text = Lang::$txt[app(Request::class)->has('deleted') ? 'lp_action_remove_permanently' : 'remove'];
+
+		$delete = Str::html('option', [
+			'value' => app(Request::class)->has('deleted') ? 'delete_forever' : 'delete'
+		]);
+
+		$toggle = Utils::$context['allow_light_portal_approve_pages']
+			? Str::html('option', ['value' => 'toggle'])
+				->setText(Lang::$txt['lp_action_toggle'])
+			: '';
+
+		$promoteUp = Setting::isFrontpageMode('chosen_pages')
+			? Str::html('option', ['value' => 'promote_up'])
+				->setText(Lang::$txt['lp_promote_to_fp'])
+			: '';
+
+		$promoteDown = Setting::isFrontpageMode('chosen_pages')
+			? Str::html('option', ['value' => 'promote_down'])
+				->setText(Lang::$txt['lp_remove_from_fp'])
+			: '';
+
+		$submit = Str::html('input', [
+			'type'    => 'submit',
+			'name'    => 'mass_actions',
+			'value'   => Lang::$txt['quick_mod_go'],
+			'class'   => 'button',
+			'onclick' => "return document.forms['manage_pages']['page_actions'].value && confirm('" . Lang::$txt['quickmod_confirm'] . ");",
+		]);
+
+		$select = Str::html('select', ['name' => 'page_actions'])
+			->addHtml($delete->setText($text))
+			->addHtml($toggle)
+			->addHtml($promoteUp)
+			->addHtml($promoteDown);
+
+		return parent::make($value ?: $select . ' ' . $submit)->setClass('floatright');
 	}
 }

@@ -90,7 +90,7 @@ abstract class Plugin implements PluginInterface
 		app(PluginRepository::class)->addSettings($settings);
 	}
 
-	function loadExternalResources(array $resources): void
+	public function loadExternalResources(array $resources): void
 	{
 		foreach ($resources as $resource) {
 			$type = $resource['type'] ?? null;

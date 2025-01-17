@@ -30,17 +30,17 @@ class PageContextMenuColumn extends ContextMenuColumn
 							<ul>' . (
 								app(Request::class)->has('deleted') ? (
 									Str::html('li')->addHtml(
-										LinkButton::make(Lang::$txt['restore_message'], ['x-on:click.prevent' => 'showContextMenu = false; entity.restore($root)'])
+										Link::make(Lang::$txt['restore_message'], ['x-on:click.prevent' => 'showContextMenu = false; entity.restore($root)'])
 									) .
 									Str::html('li')->addHtml(
-										LinkButton::make(Lang::$txt['lp_action_remove_permanently'], ['x-on:click.prevent' => 'showContextMenu = false; entity.removeForever($root)'], 'button error')
+										Link::make(Lang::$txt['lp_action_remove_permanently'], ['x-on:click.prevent' => 'showContextMenu = false; entity.removeForever($root)'], 'button error')
 									)
 								) : (
 									Str::html('li')->addHtml(
-										LinkButton::make(Lang::$txt['modify'], ['href' => Config::$scripturl . "?action=admin;area=lp_pages;sa=edit;id={$entry['id']}"])
+										Link::make(Lang::$txt['modify'], ['href' => Config::$scripturl . "?action=admin;area=lp_pages;sa=edit;id={$entry['id']}"])
 									) .
 									Str::html('li')->addHtml(
-										LinkButton::make(Lang::$txt['remove'], ['x-on:click.prevent' => 'showContextMenu = false; entity.remove($root)'], 'button error')
+										Link::make(Lang::$txt['remove'], ['x-on:click.prevent' => 'showContextMenu = false; entity.remove($root)'], 'button error')
 									)
 								)
 							) . '

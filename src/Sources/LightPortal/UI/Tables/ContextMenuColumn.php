@@ -28,8 +28,8 @@ class ContextMenuColumn extends Column
 						' . IconButton::make('ellipsis', ['x-on:click.prevent' => 'showContextMenu = true'], 'button floatnone') . '
 						<div class="roundframe" x-show="showContextMenu" x-transition.duration.500ms>
 							<ul>
-								<li>' . LinkButton::make(Lang::$txt['modify'], ['href' => Utils::$context['form_action'] . ";sa=edit;id={$entry['id']}"]) . '</li>
-								<li>' . LinkButton::make(Lang::$txt['remove'], ['x-on:click.prevent' => 'showContextMenu = false; entity.remove($root)'], 'button error') . '</li>
+								<li>' . Link::make(Lang::$txt['modify'], ['href' => Utils::$context['form_action'] . ";sa=edit;id={$entry['id']}"]) . '</li>
+								<li>' . Link::make(Lang::$txt['remove'], ['x-on:click.prevent' => 'showContextMenu = false; entity.remove($root)'], 'button error') . '</li>
 							</ul>
 						</div>
 					</div>

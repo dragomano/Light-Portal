@@ -34,13 +34,16 @@ class PageTypeSelectRow extends Row
 			])->setText($text);
 		}
 
-		return parent::make($value ?: Str::html('label', ['for' => 'type'])
-				->setText(Lang::$txt['lp_page_type']) . ' ' .
-			Str::html('select', [
-				'id'       => 'type',
-				'name'     => 'type',
-				'onchange' => 'this.form.submit()',
-			])->addHtml($types), 'floatright')
+		$label = Str::html('label', ['for' => 'type'])
+			->setText(Lang::$txt['lp_page_type']);
+
+		$select = Str::html('select', [
+			'id'       => 'type',
+			'name'     => 'type',
+			'onchange' => 'this.form.submit()',
+		]);
+
+		return parent::make($value ?: $label . ' ' . $select->addHtml($types), 'floatright')
 			->setPosition(RowPosition::ABOVE_COLUMN_HEADERS);
 	}
 }
