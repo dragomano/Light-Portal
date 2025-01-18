@@ -21,16 +21,15 @@ abstract class Block extends Plugin
 {
 	public string $type = 'block';
 
-	public function isInPlacements(int $block_id, array $positions): bool
+	public function isInPlacements(int $id, array $placements): bool
 	{
-		return in_array(
-			(Utils::$context['lp_active_blocks'][$block_id] ?? Utils::$context['lp_block'])['placement'],
-			$positions
-		);
+		$block = Utils::$context['lp_active_blocks'][$id] ?? Utils::$context['lp_block'];
+
+		return in_array($block['placement'], $placements);
 	}
 
-	public function isInSidebar(int $block_id): bool
+	public function isInSidebar(int $id): bool
 	{
-		return $this->isInPlacements($block_id, ['left', 'right']);
+		return $this->isInPlacements($id, ['left', 'right']);
 	}
 }

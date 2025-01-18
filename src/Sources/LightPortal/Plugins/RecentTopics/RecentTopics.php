@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.01.25
+ * @version 06.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\RecentTopics;
@@ -150,14 +150,8 @@ class RecentTopics extends Block
 	{
 		$parameters = $e->args->parameters;
 
-		$cacheTime = Typed::int($parameters['update_interval']);
-
-		if ($this->request()->has('preview')) {
-			$cacheTime = 0;
-		}
-
 		$recentTopics = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
-			->setLifeTime($cacheTime)
+			->setLifeTime(Typed::int($parameters['update_interval']))
 			->setFallback(fn() => $this->getData($parameters));
 
 		if (empty($recentTopics))

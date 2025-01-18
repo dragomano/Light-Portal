@@ -40,12 +40,7 @@ if (! defined('SMF'))
 
 final class CategoryExport extends AbstractExport
 {
-	private readonly CategoryRepository $repository;
-
-	public function __construct()
-	{
-		$this->repository = app('category_repo');
-	}
+	public function __construct(private readonly CategoryRepository $repository) {}
 
 	public function main(): void
 	{
@@ -84,7 +79,8 @@ final class CategoryExport extends AbstractExport
 		if ($this->request()->isEmpty('categories') && $this->request()->hasNot('export_all'))
 			return [];
 
-		$categories = $this->request('categories') && $this->request()->hasNot('export_all') ? $this->request('categories') : null;
+		$categories = $this->request()->get('categories') && $this->request()->hasNot('export_all')
+			? $this->request()->get('categories') : [];
 
 		$result = Db::$db->query('', '
 			SELECT c.category_id, c.icon, c.description, c.priority, c.status,	pt.lang, pt.value AS title

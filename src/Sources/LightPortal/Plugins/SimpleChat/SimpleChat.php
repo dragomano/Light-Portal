@@ -69,11 +69,11 @@ class SimpleChat extends Block
 		if ($this->request()->isNot('portal'))
 			return;
 
-		if ($this->request()->has('chat') && $this->request('chat') === 'post') {
+		if ($this->request()->has('chat') && $this->request()->get('chat') === 'post') {
 			$this->chat->addMessage();
 		}
 
-		if ($this->request()->has('chat') && $this->request('chat') === 'update') {
+		if ($this->request()->has('chat') && $this->request()->get('chat') === 'update') {
 			$this->chat->deleteMessage();
 		}
 	}

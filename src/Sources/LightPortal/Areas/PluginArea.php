@@ -21,6 +21,8 @@ use Bugo\Compat\WebFetchApi;
 use Bugo\LightPortal\Args\SettingsArgs;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
+use Bugo\LightPortal\EventManagerFactory;
+use Bugo\LightPortal\Lists\PluginList;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\CacheTrait;
@@ -49,6 +51,7 @@ use function sprintf;
 use function unlink;
 
 use const LP_NAME;
+use const LP_VERSION;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -58,12 +61,7 @@ final class PluginArea
 	use CacheTrait;
 	use RequestTrait;
 
-	private PluginRepository $repository;
-
-	public function __construct()
-	{
-		$this->repository = app('plugin_repo');
-	}
+	public function __construct(private readonly PluginRepository $repository) {}
 
 	public function main(): void
 	{
@@ -72,15 +70,6 @@ final class PluginArea
 		Theme::loadTemplate('LightPortal/ManagePlugins');
 
 		Utils::$context['sub_template'] = 'manage_plugins';
-
-		Theme::loadCSSFile(
-			implode('', [
-				'https://cdn.jsdelivr.net/combine/',
-				'npm/@vueform/multiselect@2/themes/default.min.css,',
-				'npm/@vueform/toggle@2/themes/default.min.css'
-			]),
-			['external' => true]
-		);
 
 		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_plugins_manage'];
 		Utils::$context['post_url']   = Config::$scripturl . '?action=admin;area=lp_plugins;save';
@@ -95,7 +84,7 @@ final class PluginArea
 			),
 		];
 
-		Utils::$context['lp_plugins'] = app('plugin_list');
+		Utils::$context['lp_plugins'] = app(PluginList::class);
 
 		$this->extendPluginList();
 
@@ -106,7 +95,7 @@ final class PluginArea
 		$settings = [];
 
 		// Plugin authors can add settings here
-		app('events', Utils::$context['lp_plugins'])->dispatch(
+		app(EventManagerFactory::class)(Utils::$context['lp_plugins'])->dispatch(
 			PortalHook::addSettings,
 			new Event(new SettingsArgs($settings))
 		);
@@ -161,27 +150,27 @@ final class PluginArea
 
 		User::$me->checkSession();
 
-		$name = $this->request('plugin_name');
+		$name = $this->request()->get('plugin_name');
 		$settings = [];
 
 		foreach ($configVars[$name] as $var) {
 			if ($this->request()->has($var[1])) {
 				if ($var[0] === 'check') {
-					$settings[$var[1]] = VarType::BOOLEAN->filter($this->request($var[1]));
+					$settings[$var[1]] = VarType::BOOLEAN->filter($this->request()->get($var[1]));
 				} elseif ($var[0] === 'int') {
-					$settings[$var[1]] = VarType::INTEGER->filter($this->request($var[1]));
+					$settings[$var[1]] = VarType::INTEGER->filter($this->request()->get($var[1]));
 				} elseif ($var[0] === 'float') {
-					$settings[$var[1]] = VarType::FLOAT->filter($this->request($var[1]));
+					$settings[$var[1]] = VarType::FLOAT->filter($this->request()->get($var[1]));
 				} elseif ($var[0] === 'url') {
-					$settings[$var[1]] = VarType::URL->filter($this->request($var[1]));
+					$settings[$var[1]] = VarType::URL->filter($this->request()->get($var[1]));
 				} else {
-					$settings[$var[1]] = $this->request($var[1]);
+					$settings[$var[1]] = $this->request()->get($var[1]);
 				}
 			}
 		}
 
 		// Plugin authors can do additional actions after settings saving
-		app('events', Utils::$context['lp_plugins'])->dispatch(
+		app(EventManagerFactory::class)(Utils::$context['lp_plugins'])->dispatch(
 			PortalHook::saveSettings,
 			new Event(new SettingsArgs($settings))
 		);
@@ -375,6 +364,9 @@ final class PluginArea
 		}
 
 		if (empty($xml) || ! is_array($xml))
+			return;
+
+		if (empty($xml['version']) || $xml['version'] !== LP_VERSION)
 			return;
 
 		foreach ($xml['donate'] as $addon) {

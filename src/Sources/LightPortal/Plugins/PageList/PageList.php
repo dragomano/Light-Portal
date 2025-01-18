@@ -21,6 +21,8 @@ use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Lists\CategoryList;
+use Bugo\LightPortal\Lists\TitleList;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\UI\Fields\CustomField;
@@ -97,8 +99,8 @@ class PageList extends Block
 
 	public function getData(ParamWrapper $parameters): array
 	{
-		$titles = app('title_list');
-		$allCategories = app('category_list');
+		$titles = app(TitleList::class);
+		$allCategories = app(CategoryList::class);
 
 		$categories = empty($parameters['categories']) ? null : explode(',', (string) $parameters['categories']);
 		$sort = Typed::string($parameters['sort'], default: 'page_id');

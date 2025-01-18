@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.01.25
+ * @version 08.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\RandomTopics;
@@ -244,6 +244,7 @@ class RandomTopics extends Block
 					$li->addHtml(
 						Str::html('span', Lang::$txt['new'])
 							->class('new_posts')
+							->style('margin-right: 4px')
 					);
 				}
 

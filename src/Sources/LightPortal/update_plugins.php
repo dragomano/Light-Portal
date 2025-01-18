@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 if (! getenv('COMPOSER_BINARY')) {
 	die('This script can only be called through Composer!');

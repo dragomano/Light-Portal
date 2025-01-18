@@ -17,7 +17,6 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Compilers\CompilerInterface;
 use Bugo\LightPortal\Enums\ContentClass;
 use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Enums\EntryType;
@@ -25,11 +24,10 @@ use Bugo\LightPortal\Enums\Placement;
 use Bugo\LightPortal\Enums\PluginType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\TitleClass;
+use Bugo\LightPortal\EventManagerFactory;
+use Bugo\LightPortal\Repositories\BlockRepository;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionManager;
-
-use function array_combine;
-use function array_map;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -48,10 +46,10 @@ class LoadTheme
 
 		$this->defineVars();
 
-		$this->loadAssets(app('compiler'));
+		$this->loadAssets();
 
 		// Run all init methods for active plugins
-		app('events')->dispatch(PortalHook::init);
+		app(EventManagerFactory::class)()->dispatch(PortalHook::init);
 	}
 
 	protected function defineVars(): void
@@ -61,7 +59,7 @@ class LoadTheme
 		Utils::$context['allow_light_portal_manage_pages_any'] = User::hasPermission('light_portal_manage_pages_any');
 		Utils::$context['allow_light_portal_approve_pages']    = User::hasPermission('light_portal_approve_pages');
 
-		$this->calculateNumberOfEntities();
+		Utils::$context['lp_quantities'] = app(SessionManager::class);
 
 		Utils::$context['lp_all_title_classes'] = TitleClass::values();
 		Utils::$context['lp_all_content_classes'] = ContentClass::values();
@@ -72,14 +70,12 @@ class LoadTheme
 		Utils::$context['lp_content_types'] = ContentType::all();
 		Utils::$context['lp_page_types'] = EntryType::all();
 
-		Utils::$context['lp_active_blocks'] = app('active_blocks');
+		Utils::$context['lp_active_blocks'] = app(BlockRepository::class)->getActive();
 	}
 
-	protected function loadAssets(CompilerInterface $compiler): void
+	protected function loadAssets(): void
 	{
 		$this->loadFontAwesome();
-
-		$compiler->compile();
 
 		Theme::loadCSSFile('light_portal/flexboxgrid.css');
 		Theme::loadCSSFile('light_portal/portal.css');
@@ -114,19 +110,5 @@ class LoadTheme
 				]
 			);
 		}
-	}
-
-	private function calculateNumberOfEntities(): void
-	{
-		$sessionManager = new SessionManager();
-
-		$entities = [
-			'active_blocks', 'active_pages', 'my_pages', 'unapproved_pages',
-			'deleted_pages', 'active_categories', 'active_tags',
-		];
-
-		Utils::$context['lp_quantities'] = array_map(
-			static fn($key) => $sessionManager($key), array_combine($entities, $entities)
-		);
 	}
 }

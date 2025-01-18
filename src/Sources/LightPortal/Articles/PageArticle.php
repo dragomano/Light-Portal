@@ -24,6 +24,8 @@ use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Status;
+use Bugo\LightPortal\EventManagerFactory;
+use Bugo\LightPortal\Lists\TitleList;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\Content;
@@ -74,7 +76,7 @@ class PageArticle extends AbstractArticle
 			'date DESC',
 		];
 
-		app('events')->dispatch(
+		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::frontPages,
 			new Event(new ArticlesArgs(
 				$this->columns,
@@ -88,7 +90,7 @@ class PageArticle extends AbstractArticle
 
 	public function getData(int $start, int $limit): array
 	{
-		$titles = app('title_list');
+		$titles = app(TitleList::class);
 
 		$this->params += [
 			'start' => $start,
@@ -153,7 +155,7 @@ class PageArticle extends AbstractArticle
 
 			$this->prepareTeaser($pages, $row);
 
-			app('events')->dispatch(
+			app(EventManagerFactory::class)()->dispatch(
 				PortalHook::frontPagesRow,
 				new Event(new ArticlesRowArgs($pages, $row))
 			);

@@ -23,6 +23,7 @@ use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Lists\TitleList;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
@@ -155,7 +156,7 @@ class ArticleList extends Block
 		if (empty($parameters['include_pages']))
 			return [];
 
-		$titles = app('title_list');
+		$titles = app(TitleList::class);
 
 		$result = Db::$db->query('', '
 			SELECT page_id, slug, content, description, type

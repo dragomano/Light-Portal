@@ -20,6 +20,7 @@ use Bugo\LightPortal\Args\ErrorsDataArgs;
 use Bugo\LightPortal\Args\ParamsArgs;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\RequestTrait;
 
@@ -65,7 +66,7 @@ class PageValidator extends AbstractValidator
 				$this->args['title_' . $lang['filename']] = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
 			}
 
-			app('events')->dispatch(
+			app(EventManagerFactory::class)()->dispatch(
 				PortalHook::validatePageParams,
 				new Event(new ParamsArgs($params, Utils::$context['lp_current_page']['type']))
 			);
@@ -110,7 +111,7 @@ class PageValidator extends AbstractValidator
 		if (empty($data['content']))
 			$errors[] = 'no_content';
 
-		app('events')->dispatch(PortalHook::findPageErrors,	new Event(new ErrorsDataArgs($errors, $data)));
+		app(EventManagerFactory::class)()->dispatch(PortalHook::findPageErrors,	new Event(new ErrorsDataArgs($errors, $data)));
 
 		if ($errors) {
 			$this->request()->put('preview', true);

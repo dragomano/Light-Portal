@@ -110,6 +110,14 @@
   };
 </script>
 
+{#snippet pagination()}
+  <Pagination bind:start={$start} totalItems={parentsCount} itemsPerPage={limit} />
+{/snippet}
+
+{#snippet replies()}
+  <ReplyForm submit={addComment} />
+{/snippet}
+
 <aside class="comments">
   <div class="cat_bar">
     <h3 class="catbg">
@@ -119,10 +127,10 @@
   </div>
   <div>
     {#if showReplyFormOnTop}
-      <ReplyForm submit={addComment} />
+      {@render replies()}
     {/if}
 
-    <Pagination bind:start={$start} totalItems={parentsCount} itemsPerPage={limit} />
+    {@render pagination()}
 
     {#if comments.length}
       <ul class="comment_list row">
@@ -133,11 +141,11 @@
     {/if}
 
     {#if showBottomPagination}
-      <Pagination bind:start={$start} totalItems={parentsCount} itemsPerPage={limit} />
+      {@render pagination()}
     {/if}
 
     {#if !showReplyFormOnTop}
-      <ReplyForm submit={addComment} />
+      {@render replies()}
     {/if}
   </div>
 </aside>

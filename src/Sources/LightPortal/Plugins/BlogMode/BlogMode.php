@@ -25,6 +25,7 @@ use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
+use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\UI\Tables\NumViewsColumn;
 use Bugo\LightPortal\UI\Tables\DateColumn;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
@@ -51,6 +52,8 @@ class BlogMode extends Plugin
 
 	private string $blogAction = 'blog';
 
+	private readonly PageRepository $pageRepository;
+
 	private string $mode = 'blog_pages';
 
 	public function __construct()
@@ -58,6 +61,8 @@ class BlogMode extends Plugin
 		parent::__construct();
 
 		$this->blogAction = $this->context['blog_action'] ?? $this->blogAction;
+
+		$this->pageRepository = app(PageRepository::class);
 	}
 
 	public function init(): void
@@ -76,7 +81,7 @@ class BlogMode extends Plugin
 		if (empty(User::hasPermission('light_portal_post_blog_entries')))
 			return;
 
-		Utils::$context['lp_page_types'][$this->blogAction] = $this->txt['blogged_status'];
+		Utils::$context['lp_page_types']['blog'] = $this->txt['blogged_status'];
 
 		if (empty($this->context['show_blogs_in_profiles']))
 			return;
@@ -213,8 +218,6 @@ class BlogMode extends Plugin
 			' - ' . User::$profiles[$memID]['real_name']
 		);
 
-		$repository = app('page_repo');
-
 		$params = [
 			'AND p.author_id = {int:current_user} AND p.entry_type = {string:entry_type}',
 			['current_user' => $memID, 'entry_type' => BlogArticle::TYPE],
@@ -226,8 +229,8 @@ class BlogMode extends Plugin
 				action: Config::$scripturl . '?action=profile;area=blogs;u=' . Utils::$context['current_member'],
 				defaultSortColumn: 'date'
 			)
-			->setItems($repository->getAll(...), $params)
-			->setCount($repository->getTotalCount(...), $params)
+			->setItems($this->pageRepository->getAll(...), $params)
+			->setCount($this->pageRepository->getTotalCount(...), $params)
 			->addColumns([
 				IdColumn::make()->setSort('p.page_id'),
 				DateColumn::make(),

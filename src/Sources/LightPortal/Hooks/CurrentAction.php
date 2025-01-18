@@ -75,7 +75,7 @@ class CurrentAction
 			return;
 
 		if ($this->request()->url() === LP_PAGE_URL . Utils::$context['lp_page']['slug']) {
-			$action = 'portal_page_' . $this->request(LP_PAGE_PARAM);
+			$action = 'portal_page_' . $this->request()->get(LP_PAGE_PARAM);
 		}
 	}
 }

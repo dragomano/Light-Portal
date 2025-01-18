@@ -20,9 +20,11 @@ use Bugo\Compat\Time;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\Compat\WebFetchApi;
+use Bugo\LightPortal\Actions\FrontPage;
 use Bugo\LightPortal\Areas\Traits\QueryTrait;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\UI\Partials\ActionSelect;
 use Bugo\LightPortal\Utils\CacheTrait;
@@ -150,7 +152,7 @@ final class BasicConfig extends AbstractConfig
 			[
 				'select',
 				'lp_frontpage_layout',
-				app('front_page')->getLayouts(),
+				app(FrontPage::class)->getLayouts(),
 				'postinput' => $templateEditLink,
 				'tab' => self::TAB_CARDS,
 			],
@@ -236,7 +238,7 @@ final class BasicConfig extends AbstractConfig
 
 		Utils::$context['sub_template'] = 'portal_basic_settings';
 
-		app('events')->dispatch(
+		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::extendBasicConfig,
 			new Event(new class ($configVars) {
 				public function __construct(public array &$configVars) {}
@@ -249,13 +251,13 @@ final class BasicConfig extends AbstractConfig
 
 			if ($this->request()->isNotEmpty('lp_image_placeholder')) {
 				$this->post()->put(
-					'lp_image_placeholder', VarType::URL->filter($this->request('lp_image_placeholder'))
+					'lp_image_placeholder', VarType::URL->filter($this->request()->get('lp_image_placeholder'))
 				);
 			}
 
 			if ($this->request()->isNotEmpty('lp_standalone_url')) {
 				$this->post()->put(
-					'lp_standalone_url', VarType::URL->filter($this->request('lp_standalone_url'))
+					'lp_standalone_url', VarType::URL->filter($this->request()->get('lp_standalone_url'))
 				);
 			}
 

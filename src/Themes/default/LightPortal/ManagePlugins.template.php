@@ -1,6 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 
-use Bugo\Compat\{Theme, Utils};
+use Bugo\Compat\Utils;
 
 function template_manage_plugins(): void
 {

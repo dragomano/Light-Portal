@@ -19,14 +19,18 @@ if (! defined('SMF'))
 
 final class Cache implements CacheInterface
 {
+	use RequestTrait;
+
 	private string $prefix = 'lp_';
 
-	public function __construct(private readonly ?string $key = null, private int $lifeTime = LP_CACHE_TIME ?? 0)
-	{
-	}
+	public function __construct(private readonly ?string $key = null, private int $lifeTime = LP_CACHE_TIME ?? 0) {}
 
 	public function setLifeTime(int $lifeTime): self
 	{
+		if ($this->request()->has('preview')) {
+			$lifeTime = 0;
+		}
+
 		$this->lifeTime = $lifeTime;
 
 		return $this;
@@ -39,7 +43,7 @@ final class Cache implements CacheInterface
 		}
 
 		if (($cachedValue = $this->get($this->key, $this->lifeTime)) === null) {
-			$cachedValue = app('weaver')($callback);
+			$cachedValue = app(Weaver::class)($callback);
 
 			$this->put($this->key, $cachedValue, $this->lifeTime);
 		}

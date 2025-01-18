@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use Bugo\Compat\{Config, Lang, Utils};
 use Bugo\LightPortal\Utils\{Icon, Setting};

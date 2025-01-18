@@ -35,22 +35,24 @@ class PortalTableBuilder extends TableBuilder implements PortalTableBuilderInter
 
 	public function withCreateButton(string $entity, string $title = ''): static
 	{
-		$this->setTitle($title ?: Str::html('span', ['class' => 'floatright'])
-			->addHtml(
-				Str::html('a', [
-					'href' => implode('', [
-						Config::$scripturl . "?action=admin;area=lp_$entity;sa=add;",
-						Utils::$context['session_var'] . '=' . Utils::$context['session_id']
-					]),
-					'x-data' => '',
-				])
-					->setHtml(str_replace(
-						' class=',
-						' @mouseover="entity.toggleSpin($event.target)" @mouseout="entity.toggleSpin($event.target)" class=',
-						Icon::get('plus', Lang::$txt["lp_{$entity}_add"])
-					))
-			) . parent::getTitle()
+		$icon = str_replace(
+			' class=',
+			' @mouseover="entity.toggleSpin($event.target)" @mouseout="entity.toggleSpin($event.target)" class=',
+			Icon::get('plus', Lang::$txt["lp_{$entity}_add"])
 		);
+
+		$link = Str::html('a', [
+			'href' => implode('', [
+				Config::$scripturl . "?action=admin;area=lp_$entity;sa=add;",
+				Utils::$context['session_var'] . '=' . Utils::$context['session_id']
+			]),
+			'x-data' => '',
+		]);
+
+		$button = Str::html('span', ['class' => 'floatright'])
+			->addHtml($link->setHtml($icon));
+
+		$this->setTitle($title ?: $button . parent::getTitle());
 
 		return $this;
 	}

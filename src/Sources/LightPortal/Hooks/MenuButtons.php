@@ -16,8 +16,10 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Actions\Block;
 use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Enums\Permission;
+use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
@@ -45,7 +47,7 @@ class MenuButtons
 		if ($this->isPortalCanBeLoaded() === false)
 			return;
 
-		app('block')->show();
+		app(Block::class)->show();
 
 		$this->prepareAdminButtons($buttons);
 		$this->prepareModerationButtons($buttons);
@@ -145,7 +147,7 @@ class MenuButtons
 
 	protected function preparePageButtons(array &$buttons): void
 	{
-		if (empty(Utils::$context['lp_menu_pages'] = app('page_repo')->getMenuItems()))
+		if (empty(Utils::$context['lp_menu_pages'] = app(PageRepository::class)->getMenuItems()))
 			return;
 
 		$pageButtons = [];

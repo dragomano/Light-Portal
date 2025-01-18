@@ -4,9 +4,9 @@
   },
   "devDependencies": {
     "@nolebase/vitepress-plugin-enhanced-readabilities": "^2.12.0",
-    "@rive-app/canvas": "^2.25.3",
+    "@rive-app/canvas": "^2.25.4",
     "release-timeline": "^0.6.0",
-    "sass": "^1.83.0",
+    "sass": "^1.83.4",
     "vitepress": "^1.5.0",
     "vitepress-sidebar": "^1.30.2"
   },

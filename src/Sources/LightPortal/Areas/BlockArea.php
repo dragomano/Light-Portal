@@ -26,6 +26,7 @@ use Bugo\LightPortal\Args\ParamsArgs;
 use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Models\BlockModel;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Repositories\BlockRepository;
@@ -47,6 +48,7 @@ use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use WPLake\Typed\Typed;
 
 use function array_column;
 use function array_combine;
@@ -73,12 +75,7 @@ final class BlockArea
 	use CacheTrait;
 	use RequestTrait;
 
-	private BlockRepository $repository;
-
-	public function __construct()
-	{
-		$this->repository = app('block_repo');
-	}
+	public function __construct(private readonly BlockRepository $repository) {}
 
 	public function main(): void
 	{
@@ -116,12 +113,12 @@ final class BlockArea
 			Lang::$txt['lp_blocks_add_instruction'], Config::$scripturl . '?action=admin;area=lp_plugins'
 		);
 
-		Utils::$context['current_block']['placement'] = $this->request('placement', 'top');
+		Utils::$context['current_block']['placement'] = $this->request()->get('placement') ?? 'top';
 
 		$this->prepareBlockList();
 
 		$json = $this->request()->json();
-		$type = $json['add_block'] ?? $this->request('add_block', '') ?? '';
+		$type = $json['add_block'] ?? $this->request()->get('add_block') ?? '';
 
 		if (empty($type) && empty($json['search']))
 			return;
@@ -142,7 +139,7 @@ final class BlockArea
 
 	public function edit(): void
 	{
-		$item = (int) ($this->request('block_id') ?: $this->request('id'));
+		$item = Typed::int($this->request()->get('block_id') ?: $this->request()->get('id'));
 
 		Theme::loadTemplate('LightPortal/ManageBlocks');
 
@@ -239,7 +236,7 @@ final class BlockArea
 
 		$params = [];
 
-		app('events')->dispatch(
+		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::prepareBlockParams,
 			new Event(new ParamsArgs($params, Utils::$context['current_block']['type']))
 		);
@@ -358,7 +355,7 @@ final class BlockArea
 
 		Utils::$context['lp_block_tab_appearance'] = true;
 
-		app('events')->dispatch(
+		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::prepareBlockFields,
 			new Event(new OptionsTypeArgs(Utils::$context['lp_block']['options'], Utils::$context['current_block']['type']))
 		);
@@ -393,7 +390,7 @@ final class BlockArea
 
 	private function prepareEditor(): void
 	{
-		app('events')->dispatch(
+		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::prepareEditor,
 			new Event(new ObjectArgs(Utils::$context['lp_block']))
 		);

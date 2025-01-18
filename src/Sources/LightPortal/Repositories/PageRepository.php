@@ -26,6 +26,9 @@ use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Status;
+use Bugo\LightPortal\EventManagerFactory;
+use Bugo\LightPortal\Lists\CategoryList;
+use Bugo\LightPortal\Lists\TitleList;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Content;
@@ -63,13 +66,6 @@ final class PageRepository extends AbstractRepository
 	use RequestTrait;
 
 	protected string $entity = 'page';
-
-	private CommentRepository $commentRepository;
-
-	public function __construct()
-	{
-		$this->commentRepository = app('comment_repo');
-	}
 
 	public function getAll(
 		int $start,
@@ -290,7 +286,7 @@ final class PageRepository extends AbstractRepository
 		if ($items === [])
 			return;
 
-		app('events')->dispatch(PortalHook::onPageRemoving, new Event(new ItemsArgs($items)));
+		app(EventManagerFactory::class)()->dispatch(PortalHook::onPageRemoving, new Event(new ItemsArgs($items)));
 
 		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_pages
@@ -334,7 +330,7 @@ final class PageRepository extends AbstractRepository
 			]
 		);
 
-		$this->commentRepository->removeFromResult($result);
+		app(CommentRepository::class)->removeFromResult($result);
 
 		$this->session()->free('lp');
 	}
@@ -502,7 +498,7 @@ final class PageRepository extends AbstractRepository
 	public function getMenuItems(): array
 	{
 		if (($pages = $this->cache()->get('menu_pages')) === null) {
-			$titles = app('title_list');
+			$titles = app(TitleList::class);
 
 			$result = Db::$db->query('', '
 				SELECT p.page_id, p.slug, p.permissions, pp2.value AS icon
@@ -563,12 +559,12 @@ final class PageRepository extends AbstractRepository
 		}
 
 		if (! empty($data['category_id'])) {
-			$data['category'] = app('category_list')[$data['category_id']]['title'];
+			$data['category'] = app(CategoryList::class)[$data['category_id']]['title'];
 		}
 
 		$data['tags'] = $this->getTags($data['id']);
 
-		app('events')->dispatch(
+		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::preparePageData,
 			new Event(new class ($data, $isAuthor) {
 				public function __construct(public array &$data, public readonly bool $isAuthor) {}
@@ -615,7 +611,7 @@ final class PageRepository extends AbstractRepository
 			return 0;
 		}
 
-		app('events')->dispatch(PortalHook::onPageSaving, new Event(new ItemArgs($item)));
+		app(EventManagerFactory::class)()->dispatch(PortalHook::onPageSaving, new Event(new ItemArgs($item)));
 
 		$this->saveTitles($item);
 		$this->saveTags($item);
@@ -668,7 +664,7 @@ final class PageRepository extends AbstractRepository
 			]
 		);
 
-		app('events')->dispatch(PortalHook::onPageSaving, new Event(new ItemArgs($item)));
+		app(EventManagerFactory::class)()->dispatch(PortalHook::onPageSaving, new Event(new ItemArgs($item)));
 
 		$this->saveTitles($item, 'replace');
 		$this->saveTags($item, 'replace');

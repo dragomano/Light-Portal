@@ -34,6 +34,8 @@ use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\EventManagerFactory;
+use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\Models\PageModel;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Repositories\PageRepository;
@@ -66,6 +68,7 @@ use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use WPLake\Typed\Typed;
 
 use function array_column;
 use function array_diff;
@@ -99,12 +102,7 @@ final class PageArea
 
 	private int $status;
 
-	private PageRepository $repository;
-
-	public function __construct()
-	{
-		$this->repository = app('page_repo');
-	}
+	public function __construct(private readonly PageRepository $repository) {}
 
 	public function main(): void
 	{
@@ -215,7 +213,7 @@ final class PageArea
 		$this->preparePageList();
 
 		$json = $this->request()->json();
-		$type = $json['add_page'] ?? $this->request('add_page', '') ?? '';
+		$type = $json['add_page'] ?? $this->request()->get('add_page') ?? '';
 
 		if (empty($type) && empty($json['search']))
 			return;
@@ -236,7 +234,7 @@ final class PageArea
 
 	public function edit(): void
 	{
-		$item = (int) ($this->request('page_id') ?: $this->request('id'));
+		$item = Typed::int($this->request()->get('page_id') ?: $this->request()->get('id'));
 
 		Theme::loadTemplate('LightPortal/ManagePages');
 
@@ -321,7 +319,7 @@ final class PageArea
 			'options' => ['default' => 'action=admin;area=lp_pages']
 		]);
 
-		$items = $this->request('items');
+		$items = $this->request()->get('items') ?? [];
 		switch (filter_input(INPUT_POST, 'page_actions')) {
 			case 'delete':
 				$this->repository->remove($items);
@@ -347,7 +345,7 @@ final class PageArea
 
 	private function calculateParams(): void
 	{
-		$searchParamString = trim((string) $this->request('search', ''));
+		$searchParamString = trim((string) $this->request()->get('search'));
 		$searchParams = [
 			'string' => Utils::htmlspecialchars($searchParamString),
 		];
@@ -385,7 +383,7 @@ final class PageArea
 				'search'     => Utils::$smcFunc['strtolower']($searchParams['string']),
 				'unapproved' => Status::UNAPPROVED->value,
 				'statuses'   => [Status::INACTIVE->value, Status::ACTIVE->value],
-				'entry_type' => $this->request('type', EntryType::DEFAULT->name()),
+				'entry_type' => $this->request()->get('type') ?? EntryType::DEFAULT->name(),
 			],
 		];
 	}
@@ -485,7 +483,7 @@ final class PageArea
 
 		$params = [];
 
-		app('events')->dispatch(
+		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::preparePageParams,
 			new Event(new ParamsArgs($params, Utils::$context['lp_current_page']['type']))
 		);
@@ -564,7 +562,7 @@ final class PageArea
 				'id'       => 'category_id',
 				'multiple' => false,
 				'wide'     => false,
-				'data'     => app('category_list'),
+				'data'     => app(CategoryList::class),
 				'value'    => Utils::$context['lp_page']['category_id'],
 			]);
 
@@ -641,7 +639,7 @@ final class PageArea
 				->setValue(Utils::$context['lp_page']['options']['allow_comments']);
 		}
 
-		app('events')->dispatch(
+		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::preparePageFields,
 			new Event(new OptionsTypeArgs(Utils::$context['lp_page']['options'], Utils::$context['lp_page']['type']))
 		);
@@ -651,7 +649,7 @@ final class PageArea
 
 	private function prepareEditor(): void
 	{
-		app('events')->dispatch(
+		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::prepareEditor,
 			new Event(new ObjectArgs(Utils::$context['lp_page']))
 		);

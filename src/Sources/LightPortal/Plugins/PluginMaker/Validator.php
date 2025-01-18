@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 21.12.24
+ * @version 09.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
@@ -17,6 +17,7 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Validators\AbstractValidator;
 use Bugo\LightPortal\Enums\VarType;
+use Bugo\LightPortal\Lists\PluginList;
 use Bugo\LightPortal\Utils\RequestTrait;
 
 if (! defined('LP_NAME'))
@@ -86,8 +87,9 @@ class Validator extends AbstractValidator
 	{
 		$errors = [];
 
-		if (empty($data['name']))
+		if (empty($data['name'])) {
 			$errors[] = 'no_name';
+		}
 
 		if (
 			! empty($data['name'])
@@ -98,27 +100,26 @@ class Validator extends AbstractValidator
 			$errors[] = 'no_valid_name';
 		}
 
-		if (! empty($data['name']) && ! $this->isUnique($data['name']))
+		if (! empty($data['name']) && ! $this->isUnique($data['name'])) {
 			$errors[] = 'no_unique_name';
+		}
 
-		if (empty($data['description_english']))
+		if (empty($data['description_english'])) {
 			$errors[] = 'no_description';
+		}
 
 		if (! empty($errors)) {
 			Utils::$context['post_errors'] = [];
 
-			foreach ($errors as $error)
-				Utils::$context['post_errors'][] = Lang::$txt['lp_post_error_' . $error] ?? Lang::$txt['lp_plugin_maker'][$error];
+			foreach ($errors as $error) {
+				Utils::$context['post_errors'][]
+					= Lang::$txt['lp_post_error_' . $error] ?? Lang::$txt['lp_plugin_maker'][$error];
+			}
 		}
 	}
 
-	/**
-	 * Check the uniqueness of the plugin
-	 *
-	 * Проверяем уникальность плагина
-	 */
 	private function isUnique(string $name): bool
 	{
-		return ! in_array($name, app('plugin_list'));
+		return ! in_array($name, app(PluginList::class));
 	}
 }

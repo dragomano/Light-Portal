@@ -1,8 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 use Bugo\Compat\{Config, Lang, Theme, Utils};
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Utils\{Icon, Setting};
+use Bugo\LightPortal\EventManagerFactory;
 
 function template_show_page(): void
 {
@@ -94,7 +95,7 @@ function template_show_page(): void
 			<hr>';
 	}
 
-	app('events')->dispatch(PortalHook::beforePageContent);
+	app(EventManagerFactory::class)()->dispatch(PortalHook::beforePageContent);
 
 	if (! empty(Theme::$current->settings['og_image'])) {
 		echo '
@@ -106,7 +107,7 @@ function template_show_page(): void
 				', Utils::$context['lp_page']['content'], '
 			</div>';
 
-	app('events')->dispatch(PortalHook::afterPageContent);
+	app(EventManagerFactory::class)()->dispatch(PortalHook::afterPageContent);
 
 	echo '
 		</article>';

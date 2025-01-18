@@ -18,6 +18,7 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Sapi;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Lists\PluginList;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -49,7 +50,7 @@ final class PluginExport extends AbstractExport
 			'description' => Lang::$txt['lp_plugins_export_description'],
 		];
 
-		Utils::$context['lp_plugins'] = app('plugin_list');
+		Utils::$context['lp_plugins'] = app(PluginList::class);
 
 		$this->run();
 	}
@@ -59,7 +60,7 @@ final class PluginExport extends AbstractExport
 		if ($this->request()->isEmpty('plugins') && $this->request()->hasNot('export_all'))
 			return [];
 
-		return $this->request()->has('export_all') ? Utils::$context['lp_plugins'] : $this->request('plugins');
+		return $this->request()->has('export_all') ? Utils::$context['lp_plugins'] : $this->request()->get('plugins');
 	}
 
 	protected function getFile(): string

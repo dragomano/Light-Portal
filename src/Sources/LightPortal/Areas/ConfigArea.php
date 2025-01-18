@@ -36,6 +36,7 @@ use Bugo\LightPortal\Areas\Imports\TagImport;
 use Bugo\LightPortal\Args\AreasArgs;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Icon;
@@ -211,7 +212,7 @@ final class ConfigArea
 			}
 		}
 
-		app('events')->dispatch(
+		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::updateAdminAreas,
 			new Event(new AreasArgs($areas['lp_portal']['areas']))
 		);
@@ -284,14 +285,17 @@ final class ConfigArea
 		User::mustHavePermission('admin_forum');
 
 		$areas = [
-			'main'   => [new BlockArea(), 'main'],
-			'add'    => [new BlockArea(), 'add'],
-			'edit'   => [new BlockArea(), 'edit'],
-			'export' => [new BlockExport(), 'main'],
-			'import' => [new BlockImport(), 'main'],
+			'main'   => [app(BlockArea::class), 'main'],
+			'add'    => [app(BlockArea::class), 'add'],
+			'edit'   => [app(BlockArea::class), 'edit'],
+			'export' => [app(BlockExport::class), 'main'],
+			'import' => [app(BlockImport::class), 'main'],
 		];
 
-		app('events')->dispatch(PortalHook::updateBlockAreas, new Event(new AreasArgs($areas)));
+		app(EventManagerFactory::class)()->dispatch(
+			PortalHook::updateBlockAreas,
+			new Event(new AreasArgs($areas))
+		);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -301,14 +305,14 @@ final class ConfigArea
 		User::mustHavePermission(['light_portal_manage_pages_own', 'light_portal_manage_pages_any']);
 
 		$areas = [
-			'main'   => [new PageArea(), 'main'],
-			'add'    => [new PageArea(), 'add'],
-			'edit'   => [new PageArea(), 'edit'],
-			'export' => [new PageExport(), 'main'],
-			'import' => [new PageImport(), 'main'],
+			'main'   => [app(PageArea::class), 'main'],
+			'add'    => [app(PageArea::class), 'add'],
+			'edit'   => [app(PageArea::class), 'edit'],
+			'export' => [app(PageExport::class), 'main'],
+			'import' => [app(PageImport::class), 'main'],
 		];
 
-		app('events')->dispatch(
+		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::updatePageAreas,
 			new Event(new AreasArgs($areas))
 		);
@@ -321,14 +325,14 @@ final class ConfigArea
 		User::mustHavePermission('admin_forum');
 
 		$areas = [
-			'main'   => [new CategoryArea(), 'main'],
-			'add'    => [new CategoryArea(), 'add'],
-			'edit'   => [new CategoryArea(), 'edit'],
-			'export' => [new CategoryExport(), 'main'],
-			'import' => [new CategoryImport(), 'main'],
+			'main'   => [app(CategoryArea::class), 'main'],
+			'add'    => [app(CategoryArea::class), 'add'],
+			'edit'   => [app(CategoryArea::class), 'edit'],
+			'export' => [app(CategoryExport::class), 'main'],
+			'import' => [app(CategoryImport::class), 'main'],
 		];
 
-		app('events')->dispatch(
+		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::updateCategoryAreas,
 			new Event(new AreasArgs($areas))
 		);
@@ -341,14 +345,17 @@ final class ConfigArea
 		User::mustHavePermission('admin_forum');
 
 		$areas = [
-			'main'   => [new TagArea(), 'main'],
-			'add'    => [new TagArea(), 'add'],
-			'edit'   => [new TagArea(), 'edit'],
-			'export' => [new TagExport(), 'main'],
-			'import' => [new TagImport(), 'main'],
+			'main'   => [app(TagArea::class), 'main'],
+			'add'    => [app(TagArea::class), 'add'],
+			'edit'   => [app(TagArea::class), 'edit'],
+			'export' => [app(TagExport::class), 'main'],
+			'import' => [app(TagImport::class), 'main'],
 		];
 
-		app('events')->dispatch(PortalHook::updateTagAreas, new Event(new AreasArgs($areas)));
+		app(EventManagerFactory::class)()->dispatch(
+			PortalHook::updateTagAreas,
+			new Event(new AreasArgs($areas))
+		);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -358,15 +365,18 @@ final class ConfigArea
 		User::mustHavePermission('admin_forum');
 
 		$areas = [
-			'main' => [new PluginArea(), 'main'],
+			'main' => [app(PluginArea::class), 'main'],
 		];
 
 		if (extension_loaded('zip')) {
-			$areas['export'] = [new PluginExport(), 'main'];
-			$areas['import'] = [new PluginImport(), 'main'];
+			$areas['export'] = [app(PluginExport::class), 'main'];
+			$areas['import'] = [app(PluginImport::class), 'main'];
 		}
 
-		app('events')->dispatch(PortalHook::updatePluginAreas, new Event(new AreasArgs($areas)));
+		app(EventManagerFactory::class)()->dispatch(
+			PortalHook::updatePluginAreas,
+			new Event(new AreasArgs($areas))
+		);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -377,18 +387,19 @@ final class ConfigArea
 
 		Utils::$context['sub_template'] = 'show_settings';
 
-		Utils::$context['sub_action'] = $this->request()->has('sa') && isset($areas[$this->request('sa')])
-			? $this->request('sa') : $defaultAction;
+		Utils::$context['sub_action'] = $this->request()->has('sa') && isset($areas[$this->request()->get('sa')])
+			? $this->request()->get('sa')
+			: $defaultAction;
 
 		call_user_func($areas[Utils::$context['sub_action']]);
 	}
 
 	private function showDocsLink(): void
 	{
-		if (empty($this->request('area')) || empty(Utils::$context['template_layers']))
+		if (empty($this->request()->get('area')) || empty(Utils::$context['template_layers']))
 			return;
 
-		if (str_contains((string) $this->request('area'), 'lp_')) {
+		if (str_contains((string) $this->request()->get('area'), 'lp_')) {
 			Theme::loadTemplate('LightPortal/ViewDebug');
 
 			Utils::$context['template_layers'][] = 'docs';

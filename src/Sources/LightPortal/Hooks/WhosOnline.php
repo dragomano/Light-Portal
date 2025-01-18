@@ -15,6 +15,8 @@ namespace Bugo\LightPortal\Hooks;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\LightPortal\Enums\Action;
+use Bugo\LightPortal\Lists\CategoryList;
+use Bugo\LightPortal\Lists\TagList;
 use Bugo\LightPortal\Utils\Setting;
 
 use function sprintf;
@@ -57,7 +59,7 @@ class WhosOnline
 			$result = sprintf(Lang::$txt['lp_who_viewing_frontpage'], LP_BASE_URL);
 
 			if (isset($actions['sa']) && $actions['sa'] === 'tags') {
-				$tags = app('tag_list');
+				$tags = app(TagList::class);
 
 				$result = isset($actions['id'])
 					? Lang::getTxt('lp_who_viewing_the_tag', [
@@ -71,7 +73,7 @@ class WhosOnline
 			}
 
 			if (isset($actions['sa']) && $actions['sa'] === 'categories') {
-				$categories = app('category_list');
+				$categories = app(CategoryList::class);
 
 				$result = isset($actions['id'])
 					? Lang::getTxt('lp_who_viewing_the_category', [

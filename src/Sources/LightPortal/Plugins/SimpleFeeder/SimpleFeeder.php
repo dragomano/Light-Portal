@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.01.25
+ * @version 08.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleFeeder;
@@ -70,7 +70,8 @@ class SimpleFeeder extends Block
 			return [];
 
 		$file = file_get_contents($url);
-		$rss  = simplexml_load_string($file);
+
+		$rss = $file === false ? false : simplexml_load_string($file);
 
 		return $rss ? ['data' => $rss->channel->item] : [];
 	}
@@ -86,8 +87,9 @@ class SimpleFeeder extends Block
 		if (empty($feed))
 			return;
 
-		if (isset($feed['data']))
+		if (isset($feed['data'])) {
 			$feed = $feed['data'];
+		}
 
 		foreach ($feed as $item) {
 			echo Str::html('div', ['class' => 'windowbg'])
@@ -97,7 +99,7 @@ class SimpleFeeder extends Block
 							Str::html('span', ['class' => 'floatleft'])
 								->addHtml(
 									Str::html('h5')
-										->addHtml(Str::html('a')->href($item->link)->setText($item->title))
+										->addHtml(Str::html('a')->href((string) $item->link)->setText($item->title))
 								)
 								->addHtml(
 									Str::html('em')

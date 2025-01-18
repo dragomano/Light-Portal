@@ -29,7 +29,7 @@ class BlogIndex
 
 	public function __construct()
 	{
-		$this->front = app('front_page');
+		$this->front = app(FrontPage::class);
 
 		$this->action = Utils::$context['lp_blog_mode_plugin']['blog_action'] ?? '';
 	}

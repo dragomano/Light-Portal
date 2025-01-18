@@ -26,7 +26,7 @@ if (! defined('SMF'))
 
 class Setting
 {
-	public static function get(string $key, string $type = 'string', $default = null, string $from = 'string'): mixed
+	public static function get(string $key, string $type = 'string', mixed $default = null, string $from = 'string'): mixed
 	{
 		if (! isset(Config::$modSettings[$key])) {
 			return $default;
@@ -36,10 +36,10 @@ class Setting
 
 		return match ($type) {
 			'bool'  => filter_var($value, FILTER_VALIDATE_BOOLEAN),
-			'int'   => (int) $value,
-			'float' => (float) $value,
+			'int'   => filter_var($value, FILTER_VALIDATE_INT),
+			'float' => filter_var($value, FILTER_VALIDATE_FLOAT),
 			'array' => self::transformArray($value, $from),
-			default => (string) $value,
+			default => filter_var($value),
 		};
 	}
 
@@ -118,7 +118,7 @@ class Setting
 	{
 		$directions = self::get('lp_panel_direction', 'array', [], 'json');
 
-		return (string) $directions[$panel];
+		return $directions[$panel] ?? '0';
 	}
 
 	public static function isSwapLeftRight(): bool
@@ -133,7 +133,7 @@ class Setting
 	{
 		$hideBlocks = self::get('lp_hide_blocks_in_acp', 'bool', false);
 
-		return $hideBlocks && (new Request())->is('admin');
+		return $hideBlocks && app(Request::class)->is('admin');
 	}
 
 	public static function getDisabledActions(): array

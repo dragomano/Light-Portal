@@ -91,7 +91,7 @@ class Search extends Block
 		if ($this->request()->isNotEmpty($this->name) === false)
 			return [];
 
-		$query = Utils::$smcFunc['htmltrim'](Utils::htmlspecialchars($this->request($this->name)));
+		$query = Utils::$smcFunc['htmltrim'](Utils::htmlspecialchars($this->request()->get($this->name)));
 
 		if (empty($query))
 			return [];

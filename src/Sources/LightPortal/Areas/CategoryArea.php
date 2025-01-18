@@ -39,6 +39,7 @@ use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Str;
+use WPLake\Typed\Typed;
 
 use const LP_NAME;
 
@@ -51,12 +52,7 @@ final class CategoryArea
 	use CacheTrait;
 	use RequestTrait;
 
-	private CategoryRepository $repository;
-
-	public function __construct()
-	{
-		$this->repository = app('category_repo');
-	}
+	public function __construct(private readonly CategoryRepository $repository) {}
 
 	public function main(): void
 	{
@@ -127,7 +123,7 @@ final class CategoryArea
 
 	public function edit(): void
 	{
-		$item = (int) ($this->request('category_id') ?: $this->request('id'));
+		$item = Typed::int($this->request()->get('category_id') ?: $this->request()->get('id'));
 
 		Theme::loadTemplate('LightPortal/ManageCategories');
 

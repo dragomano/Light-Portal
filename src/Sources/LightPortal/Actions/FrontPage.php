@@ -24,6 +24,7 @@ use Bugo\LightPortal\Articles\ChosenTopicArticle;
 use Bugo\LightPortal\Articles\PageArticle;
 use Bugo\LightPortal\Articles\TopicArticle;
 use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Renderers\RendererInterface;
 use Bugo\LightPortal\Utils\CacheTrait;
@@ -33,6 +34,8 @@ use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Weaver;
+use WPLake\Typed\Typed;
 
 use function abs;
 use function array_column;
@@ -60,18 +63,13 @@ final class FrontPage implements ActionInterface
 		'chosen_topics' => ChosenTopicArticle::class,
 	];
 
-	private RendererInterface $renderer;
-
-	public function __construct()
-	{
-		$this->renderer = app('renderer');
-	}
+	public function __construct(private RendererInterface $renderer) {}
 
 	public function show(): void
 	{
 		User::mustHavePermission('light_portal_view');
 
-		app('events')->dispatch(
+		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::frontModes,
 			new Event(new class ($this->modes) {
 				public function __construct(public array &$modes) {}
@@ -81,7 +79,7 @@ final class FrontPage implements ActionInterface
 		if (array_key_exists(Config::$modSettings['lp_frontpage_mode'], $this->modes)) {
 			$this->prepare(new $this->modes[Config::$modSettings['lp_frontpage_mode']]);
 		} elseif (Setting::isFrontpageMode('chosen_page')) {
-			app('page')->show();
+			app(Page::class)->show();
 
 			return;
 		}
@@ -106,21 +104,21 @@ final class FrontPage implements ActionInterface
 
 	public function prepare(ArticleInterface $article): void
 	{
-		$start = (int) $this->request('start');
+		$start = Typed::int($this->request()->get('start'));
 		$limit = Setting::get('lp_num_items_per_page', 'int', 12);
 
 		$article->init();
 
 		$key = 'articles_u' . User::$info['id'] . '_' . User::$info['language'] . '_' . $start . '_' . $limit;
 
-		$key = ltrim($this->request('action', '') . '_' . $key, '_');
+		$key = ltrim(($this->request()->get('action') ?? '') . '_' . $key, '_');
 
 		if (($data = $this->cache()->get($key)) === null) {
 			$data['total'] = $article->getTotalCount();
 
 			$this->updateStart($data['total'], $start, $limit);
 
-			$data['articles'] = app('weaver')(static fn() => $article->getData($start, $limit));
+			$data['articles'] = app(Weaver::class)(static fn() => $article->getData($start, $limit));
 
 			$this->cache()->put($key, $data);
 		}
@@ -143,13 +141,13 @@ final class FrontPage implements ActionInterface
 			Utils::$context['page_index'] = $this->simplePaginate(LP_BASE_URL, $itemsCount, $limit);
 		}
 
-		Utils::$context['portal_next_page'] = $this->request('start') + $limit < $itemsCount
-			? LP_BASE_URL . ';start=' . ($this->request('start') + $limit)
+		Utils::$context['portal_next_page'] = $this->request()->get('start') + $limit < $itemsCount
+			? LP_BASE_URL . ';start=' . ($this->request()->get('start') + $limit)
 			: '';
 
 		Utils::$context['lp_frontpage_articles'] = $articles;
 
-		app('events')->dispatch(PortalHook::frontAssets);
+		app(EventManagerFactory::class)()->dispatch(PortalHook::frontAssets);
 	}
 
 	public function getLayouts(): array
@@ -180,7 +178,7 @@ final class FrontPage implements ActionInterface
 		];
 
 		// You can add your own logic here
-		app('events')->dispatch(
+		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::frontLayouts,
 			new Event(new class ($this->renderer, $currentLayout, $params) {
 				public function __construct(
@@ -202,13 +200,11 @@ final class FrontPage implements ActionInterface
 		Utils::$context['template_layers'][] = 'layout_switcher';
 
 		if ($this->session('lp')->isEmpty('frontpage_layout')) {
-			Utils::$context['lp_current_layout'] = $this->request(
-				'layout', Config::$modSettings['lp_frontpage_layout'] ?? $this->renderer::DEFAULT_TEMPLATE
-			);
+			Utils::$context['lp_current_layout'] = $this->request()->get('layout')
+				?? Config::$modSettings['lp_frontpage_layout'] ?? $this->renderer::DEFAULT_TEMPLATE;
 		} else {
-			Utils::$context['lp_current_layout'] = $this->request(
-				'layout', $this->session('lp')->get('frontpage_layout')
-			);
+			Utils::$context['lp_current_layout'] = $this->request()->get('layout')
+				?? $this->session('lp')->get('frontpage_layout');
 		}
 
 		$this->session('lp')->put('frontpage_layout', Utils::$context['lp_current_layout']);

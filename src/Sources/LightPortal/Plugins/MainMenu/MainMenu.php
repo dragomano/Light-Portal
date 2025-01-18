@@ -91,14 +91,14 @@ class MainMenu extends Plugin
 		$portalLangs = $forumLangs = [];
 
 		if ($this->request()->has('portal_item_langs')) {
-			foreach ($this->request('portal_item_langs') as $lang => $val) {
+			foreach ($this->request()->get('portal_item_langs') as $lang => $val) {
 				if (! empty($val))
 					$portalLangs[$lang] = $val;
 			}
 		}
 
 		if ($this->request()->has('forum_item_langs')) {
-			foreach ($this->request('forum_item_langs') as $lang => $val) {
+			foreach ($this->request()->get('forum_item_langs') as $lang => $val) {
 				if (! empty($val)) {
 					$forumLangs[$lang] = $val;
 				}

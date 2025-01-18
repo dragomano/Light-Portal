@@ -42,12 +42,7 @@ if (! defined('SMF'))
 
 final class PageExport extends AbstractExport
 {
-	private readonly PageRepository $repository;
-
-	public function __construct()
-	{
-		$this->repository = app('page_repo');
-	}
+	public function __construct(private readonly PageRepository $repository) {}
 
 	public function main(): void
 	{
@@ -91,7 +86,8 @@ final class PageExport extends AbstractExport
 		if ($this->request()->isEmpty('pages') && $this->request()->hasNot('export_all'))
 			return [];
 
-		$pages = $this->request('pages') && $this->request()->hasNot('export_all') ? $this->request('pages') : null;
+		$pages = $this->request()->get('pages') && $this->request()->hasNot('export_all')
+			? $this->request()->get('pages') : [];
 
 		$result = Db::$db->query('', '
 			SELECT

@@ -46,33 +46,44 @@
     editMode = false;
   };
 
-  const itemType = 'https://schema.org/Comment';
+  const even = index % 2 === 0;
+  const odd = !even;
 </script>
 
 <li
   transition:fade
   bind:this={parent}
   id={`comment${comment.id}`}
-  class={`col-xs-12 generic_list_wrapper bg ${index % 2 === 0 ? 'even' : 'odd'}`}
+  class="col-xs-12 generic_list_wrapper bg"
+  class:even
+  class:odd
   data-id={comment.id}
   data-author={comment.poster.id}
   itemprop="comment"
   itemscope
-  itemtype={itemType}
+  itemtype={'https://schema.org/Comment'}
 >
   <div class="comment_wrapper" id={`comment=${comment.id}`}>
     <div class="comment_avatar">
       <span>{@html comment.poster.avatar}</span>
+
       {#if comment.authorial}
         <span class="new_posts">{$_('author')}</span>
       {/if}
     </div>
-    <div class="comment_entry bg {index % 2 === 0 ? 'odd' : 'even'}">
+
+    <div class="comment_entry bg" class:even={odd} class:odd={even}>
       <div class="comment_title">
-        <span class="bg {index % 2 === 0 ? 'even' : 'odd'}" data-id={comment.id} itemprop="creator"
-          >{comment.poster.name}</span
+        <span
+          class="bg"
+          class:even
+          class:odd
+          data-id={comment.id}
+          itemprop="creator"
         >
-        <div class="comment_date bg {index % 2 === 0 ? 'even' : 'odd'}">
+          {comment.poster.name}
+        </span>
+        <div class="comment_date bg" class:even class:odd>
           <span itemprop="datePublished" content={comment.published_at}>
             {@html comment.human_date}
             <a class="bbc_link" href={`#comment=${comment.id}`}>#{comment.id}</a>
@@ -86,9 +97,10 @@
         <MarkdownPreview
           content={comment.message}
           class="comment_content"
-          style="border: none;"
+          style="border: none"
           itemprop="text"
         />
+
         {#if userId}
           <div class="comment_buttons">
             {#if showReplyButton}

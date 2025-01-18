@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use Bugo\Compat\{Lang, Utils};
 use Bugo\LightPortal\Utils\Icon;
@@ -33,18 +33,6 @@ function template_portal_credits(): void
 		<div class="roundframe noup">';
 
 	foreach (Utils::$context['consultants'] as $tester) {
-		echo '
-			<a class="button" href="', $tester['link'], '" target="_blank" rel="nofollow noopener">', $tester['name'], '</a>';
-	}
-
-	echo '
-		</div>
-		<div class="title_bar">
-			<h4 class="titlebg">', Lang::$txt['lp_testers'], '</h4>
-		</div>
-		<div class="roundframe noup">';
-
-	foreach (Utils::$context['testers'] as $tester) {
 		echo '
 			<a class="button" href="', $tester['link'], '" target="_blank" rel="nofollow noopener">', $tester['name'], '</a>';
 	}

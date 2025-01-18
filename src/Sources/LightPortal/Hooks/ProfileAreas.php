@@ -33,7 +33,7 @@ class ProfileAreas
 			'label'      => Lang::$txt['lp_my_pages'],
 			'custom_url' => Config::$scripturl . '?action=admin;area=lp_pages',
 			'icon'       => 'reports',
-			'enabled'    => $this->request('area') === 'popup',
+			'enabled'    => $this->request()->get('area') === 'popup',
 			'permission' => [
 				'own' => 'light_portal_manage_pages_own',
 			],

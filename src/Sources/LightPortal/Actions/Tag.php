@@ -23,11 +23,13 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\Status;
+use Bugo\LightPortal\Lists\TagList;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use WPLake\Typed\Typed;
 
 use function array_key_exists;
 use function count;
@@ -44,17 +46,19 @@ final class Tag extends AbstractPageList
 {
 	use RequestTrait;
 
-	public function show(CardListInterface $cardList): void
+	public function __construct(private readonly CardListInterface $cardList) {}
+
+	public function show(): void
 	{
 		if ($this->request()->hasNot('id')) {
 			$this->showAll();
 		}
 
 		$tag = [
-			'id' => (int) $this->request('id', 0)
+			'id' => Typed::int($this->request()->get('id'))
 		];
 
-		$tags = app('tag_list');
+		$tags = app(TagList::class);
 		if (array_key_exists($tag['id'], $tags) === false) {
 			Utils::$context['error_link'] = LP_BASE_URL . ';sa=tags';
 			Lang::$txt['back'] = Lang::$txt['lp_all_page_tags'];
@@ -78,9 +82,9 @@ final class Tag extends AbstractPageList
 			'name' => $tag['title'],
 		];
 
-		$cardList->show($this);
+		$this->cardList->show($this);
 
-		$builder = $cardList->getBuilder('lp_tags');
+		$builder = $this->cardList->getBuilder('lp_tags');
 		$builder->setItems($this->getPages(...));
 		$builder->setCount(fn() => $this->getTotalCount());
 

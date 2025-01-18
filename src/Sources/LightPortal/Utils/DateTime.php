@@ -120,7 +120,7 @@ final class DateTime
 		// like "Yesterday at ..."
 		elseif ($d.$m.$y === date('jmY', strtotime('-1 day')))
 			return Lang::$txt['yesterday'] . $t;
-		// like "Tuesday, 20 February, H:m" (current month)
+		// like "Thursday, 20 February, H:m" (current month)
 		elseif ($m === date('m', $now) && $y === date('Y', $now))
 			return self::getLocalDate($timestamp);
 		// like "20 February, H:m" (current year)

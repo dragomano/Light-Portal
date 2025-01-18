@@ -46,10 +46,10 @@ class HelloPortal extends Plugin
 		if ($this->request()->isNot('admin') || empty($steps = $this->getStepData()))
 			return;
 
-		if (empty($this->request('area')) || empty(Utils::$context['template_layers']))
+		if (empty($this->request()->get('area')) || empty(Utils::$context['template_layers']))
 			return;
 
-		if (str_contains((string) $this->request('area'), 'lp_')) {
+		if (str_contains((string) $this->request()->get('area'), 'lp_')) {
 			$this->setTemplate();
 
 			Utils::$context['template_layers'][] = 'tour_info';
@@ -169,7 +169,7 @@ class HelloPortal extends Plugin
 
 	private function isCurrentArea(string $area, string $sa = 'main', bool $canBeEmpty = true): bool
 	{
-		return $this->request()->has('area') && $this->request('area') === $area &&
+		return $this->request()->has('area') && $this->request()->get('area') === $area &&
 			(
 				$canBeEmpty
 				? (Utils::$context['current_subaction'] === $sa || empty(Utils::$context['current_subaction']))

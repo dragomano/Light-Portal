@@ -40,12 +40,7 @@ if (! defined('SMF'))
 
 final class TagExport extends AbstractExport
 {
-	private readonly TagRepository $repository;
-
-	public function __construct()
-	{
-		$this->repository = app('tag_repo');
-	}
+	public function __construct(private readonly TagRepository $repository) {}
 
 	public function main(): void
 	{
@@ -84,7 +79,8 @@ final class TagExport extends AbstractExport
 		if ($this->request()->isEmpty('tags') && $this->request()->hasNot('export_all'))
 			return [];
 
-		$tags = $this->request('tags') && $this->request()->hasNot('export_all') ? $this->request('tags') : null;
+		$tags = $this->request()->get('tags') && $this->request()->hasNot('export_all')
+			? $this->request()->get('tags') : [];
 
 		$result = Db::$db->query('', '
 			SELECT c.tag_id, c.icon, c.status, pt.page_id, t.lang, t.value AS title

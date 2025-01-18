@@ -37,6 +37,7 @@ use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Str;
+use WPLake\Typed\Typed;
 
 use const LP_NAME;
 
@@ -49,12 +50,7 @@ final class TagArea
 	use CacheTrait;
 	use RequestTrait;
 
-	private TagRepository $repository;
-
-	public function __construct()
-	{
-		$this->repository = app('tag_repo');
-	}
+	public function __construct(private readonly TagRepository $repository) {}
 
 	public function main(): void
 	{
@@ -115,7 +111,7 @@ final class TagArea
 
 	public function edit(): void
 	{
-		$item = (int) ($this->request('tag_id') ?: $this->request('id'));
+		$item = Typed::int($this->request()->get('tag_id') ?: $this->request()->get('id'));
 
 		Theme::loadTemplate('LightPortal/ManageTags');
 
