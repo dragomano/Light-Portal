@@ -9,7 +9,7 @@ Falls im Änderungsprotokoll der neuesten Version keine weiteren Hinweise enthal
 
 :::info Hinweis
 
-Seit Version 2.4 können Sie aktualisieren, ohne die vorherige Version zu deinstallieren. Laden Sie einfach das neue Archiv herunter, rufen Sie die Paketverwaltung auf und klicken Sie auf den „Upgrade“-Button neben dem hochgeladenen Paket.
+If the new version can be installed without removing the previous one, you'll see the "Upgrade" button instead of the "Install" button:
 
 ![Updating](upgrade.png)
 

@@ -9,7 +9,7 @@ Jeśli nie ma notatek w dzienniku zmian najnowszej wersji, wystarczy, aby wyodr�
 
 :::info Notatka
 
-Od wersji 2.4 można zaktualizować bez odinstalowywania poprzedniej wersji. Po prostu pobierz nowe archiwum, przejdź do Menedżera pakietów i kliknij przycisk "Aktualizuj" obok przesłanego pakietu.
+If the new version can be installed without removing the previous one, you'll see the "Upgrade" button instead of the "Install" button:
 
 ![Updating](upgrade.png)
 

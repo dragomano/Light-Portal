@@ -9,7 +9,7 @@ S'il n'y a pas de notes dans le changelog de la dernière version, il suffit d'e
 
 :::info Note
 
-Depuis la version 2.4, vous pouvez mettre à jour sans désinstaller la version précédente. Téléchargez simplement la nouvelle archive, allez dans le Gestionnaire de paquets et cliquez sur le bouton « Mettre à jour » à côté du package téléchargé.
+If the new version can be installed without removing the previous one, you'll see the "Upgrade" button instead of the "Install" button:
 
 ![Updating](upgrade.png)
 
