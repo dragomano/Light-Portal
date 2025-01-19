@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 19.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\HelloPortal;
@@ -22,6 +22,7 @@ use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 
 use function array_combine;
+use function function_exists;
 use function str_contains;
 
 if (! defined('LP_NAME'))
@@ -134,6 +135,9 @@ class HelloPortal extends Plugin
 	private function getStepData(): string
 	{
 		$this->setTemplate('steps');
+
+		if (! function_exists('getSteps'))
+			return '';
 
 		$steps = getSteps($this->txt, Config::$modSettings);
 
