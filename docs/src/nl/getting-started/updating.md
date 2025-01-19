@@ -9,7 +9,7 @@ Als er geen notities in het logboek van de laatste versie staan, het is genoeg o
 
 :::info Opmerking
 
-Sinds versie 2.4 kunt u upgraden zonder de vorige versie te deïnstalleren. Download gewoon het nieuwe archief, ga naar de Pakket Manager en klik op de knop "Upgrade" naast het geüploade pakket.
+If the new version can be installed without removing the previous one, you'll see the "Upgrade" button instead of the "Install" button:
 
 ![Updating](upgrade.png)
 

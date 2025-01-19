@@ -9,7 +9,7 @@ order: 2
 
 :::info ملاحظة
 
-منذ الإصدار 2.4 يمكنك الترقية دون إلغاء تثبيت الإصدار السابق. ببساطة قم بتنزيل الأرشيف الجديد، انتقل إلى مدير الحزمة وانقر فوق زر "ترقية" بجانب الحزمة التي تم تحميلها.
+If the new version can be installed without removing the previous one, you'll see the "Upgrade" button instead of the "Install" button:
 
 ![Updating](upgrade.png)
 

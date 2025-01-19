@@ -5,7 +5,7 @@ order: 2
 
 # Προσθήκη μπλοκ
 
-To add a block, simply click on it. Initially, you can create blocks of three types: PHP, HTML, and BBCode. If you need others, first [enable the necessary plugins](../plugins/manage) of type `block`.
+Για να προσθέσετε ένα μπλοκ, απλώς κάντε κλικ σε αυτό. Αρχικά, μπορείτε να δημιουργήσετε μπλοκ τριών τύπων: PHP, HTML και BBCode. Εάν χρειάζεστε άλλα, πρώτα [ενεργοποιήστε τα απαραίτητα πρόσθετα](../plugins/manage) τύπου `block`.
 
 Ανάλογα με τον τύπο του μπλοκ, θα είναι διαθέσιμες διάφορες ρυθμίσεις, κατανεμημένες σε διαφορετικές καρτέλες.
 

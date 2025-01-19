@@ -9,7 +9,7 @@ Si no hay notas en el registro de cambios de la última versión, es suficiente 
 
 :::info Nota
 
-Desde la versión 2.4 puede actualizar sin desinstalar la versión anterior. Simplemente descargue el nuevo archivo, vaya al Administrador de Paquetes y haga clic en el botón "Actualizar" junto al paquete subido.
+If the new version can be installed without removing the previous one, you'll see the "Upgrade" button instead of the "Install" button:
 
 ![Updating](upgrade.png)
 

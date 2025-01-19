@@ -9,7 +9,7 @@ order: 2
 
 :::info Примітка
 
-Починаючи з версії 2.4, ви можете оновитися без видалення попередньої версії. Просто завантажте новий архів, перейдіть до Менеджер пакунків і натисніть кнопку "Оновити" поруч з завантаженим пакетом.
+If the new version can be installed without removing the previous one, you'll see the "Upgrade" button instead of the "Install" button:
 
 ![Updating](upgrade.png)
 
