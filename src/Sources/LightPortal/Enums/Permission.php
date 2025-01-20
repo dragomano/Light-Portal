@@ -76,7 +76,9 @@ enum Permission: int
 
 	private static function getBoardModerators(): array
 	{
-		if (($moderators = app(Cache::class)->get('board_moderators')) === null) {
+		$cache = new Cache();
+
+		if (($moderators = $cache->get('board_moderators')) === null) {
 			$result = Db::$db->query('', /** @lang text */ '
 				SELECT id_member
 				FROM {db_prefix}moderators',
@@ -88,7 +90,7 @@ enum Permission: int
 
 			$moderators = array_column($items, 'id_member');
 
-			app(Cache::class)->put('board_moderators', $moderators);
+			$cache->put('board_moderators', $moderators);
 		}
 
 		return $moderators;
