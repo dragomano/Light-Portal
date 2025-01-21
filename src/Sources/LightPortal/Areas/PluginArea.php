@@ -338,8 +338,8 @@ final class PluginArea
 
 	private function removeAssets(): void
 	{
-		unlink(Theme::$current->settings['default_theme_dir'] . '/css/light_portal/plugins.css');
-		unlink(Theme::$current->settings['default_theme_dir'] . '/scripts/light_portal/plugins.js');
+		@unlink(Theme::$current->settings['default_theme_dir'] . '/css/light_portal/plugins.css');
+		@unlink(Theme::$current->settings['default_theme_dir'] . '/scripts/light_portal/plugins.js');
 	}
 
 	private function extendPluginList(): void
