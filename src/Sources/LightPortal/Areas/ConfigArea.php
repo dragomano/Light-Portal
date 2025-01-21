@@ -12,7 +12,6 @@
 
 namespace Bugo\LightPortal\Areas;
 
-use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
@@ -220,11 +219,6 @@ final class ConfigArea
 
 	public function helpadmin(): void
 	{
-		Lang::$txt['lp_standalone_url_help'] = Lang::getTxt('lp_standalone_url_help', [
-			Config::$boardurl . '/portal.php',
-			Config::$scripturl
-		]);
-
 		Lang::$txt['lp_menu_separate_subsection_title_help'] = Lang::getTxt('lp_menu_separate_subsection_title_help', [
 			'<var>{lp_pages}</var>',
 			'<var>$txt[`lp_pages`]</var>',

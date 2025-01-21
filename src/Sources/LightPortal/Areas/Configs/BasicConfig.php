@@ -87,6 +87,11 @@ final class BasicConfig extends AbstractConfig
 			Utils::$context['session_id'],
 		);
 
+		Lang::$txt['lp_standalone_url_help'] = Lang::getTxt('lp_standalone_url_help', [
+			Config::$boardurl . '/portal.php',
+			Config::$scripturl
+		]);
+
 		$configVars = [
 			[
 				'select',
