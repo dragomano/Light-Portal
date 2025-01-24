@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 21.12.24
+ * @version 24.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
@@ -97,8 +97,9 @@ class Handler
 		if (empty(Config::$modSettings['userLanguage'])) {
 			Utils::$context['lp_languages'] = ['english' => $temp[Language::getFallbackValue()]];
 
-			if ($baseLang !== 'english')
+			if ($baseLang !== 'english') {
 				Utils::$context['lp_languages'][$baseLang] = $temp[Config::$language];
+			}
 
 			return;
 		}
@@ -141,8 +142,9 @@ class Handler
 			'options'    => Utils::$context['lp_plugin']['options'] ?? []
 		];
 
-		if (Utils::$context['lp_plugin']['type'] !== 'block' || Utils::$context['lp_plugin']['icon'] === 'undefined')
+		if (Utils::$context['lp_plugin']['type'] !== 'block' || Utils::$context['lp_plugin']['icon'] === 'undefined') {
 			Utils::$context['lp_plugin']['icon'] = '';
+		}
 
 		if (! empty($postData['option_name'])) {
 			foreach ($postData['option_name'] as $id => $option) {
@@ -169,8 +171,9 @@ class Handler
 
 			if (! empty($postData['option_translations'][$lang])) {
 				foreach ($postData['option_translations'][$lang] as $id => $translation) {
-					if (! empty($translation))
+					if (! empty($translation)) {
 						Utils::$context['lp_plugin']['options'][$id]['translations'][$lang] = $translation;
+					}
 				}
 			}
 		}

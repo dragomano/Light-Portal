@@ -13,6 +13,7 @@
 namespace Bugo\LightPortal\Hooks;
 
 use Bugo\Compat\Config;
+use Bugo\LightPortal\Actions\ActionInterface;
 use Bugo\LightPortal\Actions\BoardIndex;
 use Bugo\LightPortal\Actions\FrontPage;
 use Bugo\LightPortal\Actions\Page;
@@ -32,14 +33,19 @@ class DefaultAction
 
 	public function __invoke(): mixed
 	{
+		return call_user_func([$this->determineAction(), 'show']);
+	}
+
+	private function determineAction(): ActionInterface
+	{
 		if ($this->request()->isNotEmpty(LP_PAGE_PARAM)) {
-			return call_user_func([app(Page::class), 'show']);
+			return app(Page::class);
 		}
 
 		if (empty(Config::$modSettings['lp_frontpage_mode']) || Setting::isStandaloneMode()) {
-			return call_user_func([app(BoardIndex::class), 'show']);
+			return app(BoardIndex::class);
 		}
 
-		return call_user_func([app(FrontPage::class), 'show']);
+		return app(FrontPage::class);
 	}
 }

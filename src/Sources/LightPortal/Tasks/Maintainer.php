@@ -14,7 +14,6 @@ namespace Bugo\LightPortal\Tasks;
 
 use Bugo\Compat\Tasks\BackgroundTask;
 use Bugo\Compat\Db;
-
 use Bugo\LightPortal\Repositories\CommentRepository;
 
 use function array_keys;

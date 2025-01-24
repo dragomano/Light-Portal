@@ -14,7 +14,6 @@ namespace Bugo\LightPortal\Areas\Validators;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Db;
-use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Args\ErrorsDataArgs;
 use Bugo\LightPortal\Args\ParamsArgs;
@@ -22,7 +21,6 @@ use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
 use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Utils\RequestTrait;
 
 use function array_merge;
 use function explode;
@@ -30,8 +28,6 @@ use function filter_input_array;
 
 class PageValidator extends AbstractValidator
 {
-	use RequestTrait;
-
 	protected array $args = [
 		'page_id'     => FILTER_VALIDATE_INT,
 		'category_id' => FILTER_VALIDATE_INT,
@@ -82,19 +78,18 @@ class PageValidator extends AbstractValidator
 		return [$data, $params];
 	}
 
-	private function findErrors(array $data): void
+	protected function findErrors(array $data): void
 	{
-		$errors = [];
-
 		if (
 			(Config::$modSettings['userLanguage'] && empty($data['title_' . Config::$language]))
 			|| empty($data['title_' . Utils::$context['user']['language']])
 		) {
-			$errors[] = 'no_title';
+			$this->errors[] = 'no_title';
 		}
 
-		if (empty($data['slug']))
-			$errors[] = 'no_slug';
+		if (empty($data['slug'])) {
+			$this->errors[] = 'no_slug';
+		}
 
 		if (
 			$data['slug']
@@ -102,25 +97,23 @@ class PageValidator extends AbstractValidator
 				'options' => ['regexp' => '/' . LP_ALIAS_PATTERN . '/']
 			]))
 		) {
-			$errors[] = 'no_valid_slug';
+			$this->errors[] = 'no_valid_slug';
 		}
 
-		if ($data['slug'] && ! $this->isUnique($data))
-			$errors[] = 'no_unique_slug';
-
-		if (empty($data['content']))
-			$errors[] = 'no_content';
-
-		app(EventManagerFactory::class)()->dispatch(PortalHook::findPageErrors,	new Event(new ErrorsDataArgs($errors, $data)));
-
-		if ($errors) {
-			$this->request()->put('preview', true);
-			Utils::$context['post_errors'] = [];
-
-			foreach ($errors as $error) {
-				Utils::$context['post_errors'][] = Lang::$txt['lp_post_error_' . $error];
-			}
+		if ($data['slug'] && ! $this->isUnique($data)) {
+			$this->errors[] = 'no_unique_slug';
 		}
+
+		if (empty($data['content'])) {
+			$this->errors[] = 'no_content';
+		}
+
+		app(EventManagerFactory::class)()->dispatch(
+			PortalHook::findPageErrors,
+			new Event(new ErrorsDataArgs($this->errors, $data))
+		);
+
+		$this->handleErrors();
 	}
 
 	private function isUnique(array $data): bool

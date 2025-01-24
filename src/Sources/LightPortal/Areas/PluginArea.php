@@ -280,6 +280,8 @@ final class PluginArea
 		$txtData = [
 			'plugins'           => Lang::$txt['lp_plugins'],
 			'apply_filter'      => Lang::$txt['apply_filter'],
+			'list_view'         => Lang::$txt['lp_list_view'],
+			'card_view'         => Lang::$txt['lp_card_view'],
 			'all'               => Lang::$txt['all'],
 			'lp_active_only'    => Lang::$txt['lp_active_only'],
 			'lp_plugins_desc'   => Lang::$txt['lp_plugins_desc'],

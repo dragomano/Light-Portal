@@ -68,6 +68,7 @@ class ServiceProvider extends AbstractServiceProvider
 	public function provides(string $id): bool
 	{
 		$services = [
+			PortalApp::class,
 			RendererInterface::class,
 			EventManager::class,
 			EventManagerFactory::class,
@@ -122,6 +123,7 @@ class ServiceProvider extends AbstractServiceProvider
 
 	public function register(): void
 	{
+		$this->getContainer()->add(PortalApp::class);
 		$this->getContainer()->add(RendererInterface::class, Blade::class);
 
 		$this->getContainer()->add(EventManager::class);

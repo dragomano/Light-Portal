@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 23.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\TinyPortalMigration;
@@ -51,17 +51,17 @@ class TinyPortalMigration extends Plugin
 
 	public function updateBlockAreas(Event $e): void
 	{
-		$e->args->areas[self::AREA] = [new BlockImport, 'main'];
+		$e->args->areas[self::AREA] = [new BlockImport(), 'main'];
 	}
 
 	public function updatePageAreas(Event $e): void
 	{
-		$e->args->areas[self::AREA] = [new PageImport, 'main'];
+		$e->args->areas[self::AREA] = [new PageImport(), 'main'];
 	}
 
 	public function updateCategoryAreas(Event $e): void
 	{
-		$e->args->areas[self::AREA] = [new CategoryImport, 'main'];
+		$e->args->areas[self::AREA] = [new CategoryImport(), 'main'];
 	}
 
 	public function importPages(Event $e): void

@@ -13,7 +13,6 @@
 namespace Bugo\LightPortal\Hooks;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Actions\BoardIndex;
@@ -44,8 +43,6 @@ class Actions
 		}
 
 		$actions[Action::FORUM->value] = [false, [app(BoardIndex::class), 'show']];
-
-		Theme::load();
 
 		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'categories') {
 			app(Category::class)->show();
