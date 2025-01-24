@@ -1,35 +1,27 @@
 <script>
   import { _ } from 'svelte-i18n';
-  import { useIconStore, useSettingStore, useLocalStorage } from '../../js/stores.js';
+  import { iconState, settingState } from '../../js/states.svelte.js';
+  import { localStore } from '../../js/stores.js';
   import { api, helper } from '../../js/helpers.js';
   import { CommentItem, Pagination, ReplyForm } from './index.js';
-
-  const { comments: commentsIcon } = $useIconStore;
-  const { lp_comment_sorting } = $useSettingStore;
 
   /**
    * @typedef {Object} CommentData
    * @property {number} id - Unique identifier of the comment
    * @property {string} message - Text of the comment
-   * @property {number|null} parent_id - ID of the parent comment, if any
+   * @property {number} parent_id - ID of the parent comment
    */
   let comments = $state([]);
+
   let parentsCount = $state(0);
   let total = $state(0);
   let limit = $state(0);
-  let start = useLocalStorage('lpCommentsStart', 0);
-  let startIndex = $start;
 
-  $effect(() => {
-    startIndex = $start;
-
-    setCommentHash();
-    getComments();
-  })
+  let start = localStore('lpCommentsStart', 0);
 
   const totalOnPage = $derived(comments.length);
   const showBottomPagination = $derived(totalOnPage > 5);
-  const showReplyFormOnTop = lp_comment_sorting === '1';
+  const showReplyFormOnTop = settingState['lp_comment_sorting'] === '1';
 
   /**
    * @typedef {Object} ApiResponse
@@ -39,8 +31,8 @@
    * @property {CommentData[]} comments - Array of comments
    * @returns {Promise<ApiResponse>}
    */
-  const getComments = async () => {
-    const data = await api.get(startIndex);
+  const fetchComments = async () => {
+    const data = await api.get($start);
 
     if (!data.total) return null;
 
@@ -49,7 +41,7 @@
     total = data.total;
     limit = data.limit;
 
-    if (startIndex > parentsCount) start.set(0);
+    if ($start > parentsCount) start.set(0);
   };
 
   const addComment = async ({ content }) => {
@@ -58,11 +50,11 @@
     if (!response.id) return;
 
     if (showReplyFormOnTop) {
-      startIndex !== 0 ? start.set(0) : await getComments();
+      $start !== 0 ? start.set(0) : await fetchComments();
     } else {
       const maxStart = Math.ceil((parentsCount + 1) / limit) * limit - limit;
 
-      startIndex !== maxStart ? start.set(maxStart) : await getComments();
+      $start !== maxStart ? start.set(maxStart) : await fetchComments();
     }
 
     setCommentHash(response.id);
@@ -97,7 +89,7 @@
     total -= items.length;
 
     if (totalOnPage === 0) {
-      startIndex !== 0 ? start.set(startIndex - limit) : await getComments();
+      $start !== 0 ? start.set($start - limit) : await fetchComments();
     }
   };
 
@@ -108,44 +100,49 @@
       window.history.replaceState({}, '', window.location.href.split('#')[0]);
     }
   };
+
+  $effect(() => {
+    setCommentHash();
+    fetchComments();
+  })
 </script>
 
-{#snippet pagination()}
-  <Pagination bind:start={$start} totalItems={parentsCount} itemsPerPage={limit} />
+{#snippet pagination(totalItems, itemsPerPage)}
+  <Pagination bind:start={$start} {totalItems} {itemsPerPage} />
 {/snippet}
 
-{#snippet replies()}
-  <ReplyForm submit={addComment} />
+{#snippet replies(submit)}
+  <ReplyForm {submit} />
 {/snippet}
 
 <aside class="comments">
   <div class="cat_bar">
     <h3 class="catbg">
       <span>{$_('title', { values: { count: total } })}</span>
-      <span class="floatright">{@html commentsIcon}</span>
+      <span class="floatright">{@html iconState['comments']}</span>
     </h3>
   </div>
   <div>
     {#if showReplyFormOnTop}
-      {@render replies()}
+      {@render replies(addComment)}
     {/if}
 
-    {@render pagination()}
+    {@render pagination(parentsCount, limit)}
 
     {#if comments.length}
       <ul class="comment_list row">
-        {#each comments as comment, index}
+        {#each comments as comment, index (comment.id)}
           <CommentItem {comment} {index} addComment={addReply} {updateComment} {removeComment} />
         {/each}
       </ul>
     {/if}
 
     {#if showBottomPagination}
-      {@render pagination()}
+      {@render pagination(parentsCount, limit)}
     {/if}
 
     {#if !showReplyFormOnTop}
-      {@render replies()}
+      {@render replies(addComment)}
     {/if}
   </div>
 </aside>

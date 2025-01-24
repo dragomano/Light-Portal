@@ -1,9 +1,8 @@
-import { get } from 'svelte/store';
-import { useContextStore } from './stores.js';
+import { contextState } from './states.svelte.js';
 
-const { pageUrl } = get(useContextStore);
+const { pageUrl } = contextState;
 
-class CommentManager {
+class CommentApi {
   constructor(url) {
     this.workUrl = url;
   }
@@ -125,7 +124,7 @@ class ObjectHelper {
   }
 }
 
-const api = new CommentManager(pageUrl);
+const api = new CommentApi(pageUrl);
 const helper = new ObjectHelper();
 
 export { api, helper };

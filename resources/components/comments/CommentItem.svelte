@@ -1,22 +1,29 @@
 <script>
   import { _ } from 'svelte-i18n';
   import { fade } from 'svelte/transition';
-  import { useUserStore } from '../../js/stores.js';
+  import { userState } from '../../js/states.svelte.js';
   import { CommentItem, EditForm, ReplyForm, MarkdownPreview } from './index.js';
   import Button from '../BaseButton.svelte';
 
   /**
    * @type {{
    *   comment: {
-   *     can_edit: boolean,
    *     authorial: boolean,
+   *     can_edit: boolean,
+   *     created_at: number,
+   *     extra_buttons: array,
+   *     human_date: string,
+   *     id: number,
+   *     message: string,
+   *     page_id: number,
+   *     parent_id: number,
    *     poster: {
+   *       id: number,
    *       name: string,
    *       avatar: string
    *     },
-   *     extra_buttons: array,
-   *     human_date: string,
-   *     published_at: number
+   *     published_at: string,
+   *     replies: array
    *   }
    * }}
    */
@@ -26,7 +33,7 @@
   let editMode = $state(false);
   let parent = $state();
 
-  const { id: userId, is_admin: isAdmin } = $useUserStore;
+  const { id: userId, is_admin: isAdmin } = userState;
   const showReplyButton = $derived(level < 5 && userId !== comment.poster.id);
   const showRemoveButton = $derived(comment.poster.id === userId || isAdmin);
   const canEdit = $derived(
@@ -84,15 +91,15 @@
           {comment.poster.name}
         </span>
         <div class="comment_date bg" class:even class:odd>
-          <span itemprop="datePublished" content={comment.published_at}>
+          <time itemprop="datePublished" datetime={comment.published_at}>
             {@html comment.human_date}
             <a class="bbc_link" href={`#comment=${comment.id}`}>#{comment.id}</a>
-          </span>
+          </time>
         </div>
       </div>
 
       {#if editMode}
-        <EditForm {comment} submit={update} cancel={() => (editMode = false)} />
+        <EditForm {comment} submit={update} cancel={() => editMode = false} />
       {:else}
         <MarkdownPreview
           content={comment.message}
@@ -104,13 +111,13 @@
         {#if userId}
           <div class="comment_buttons">
             {#if showReplyButton}
-              <Button onclick={() => (replyMode = !replyMode)} tag="span" icon="reply">
+              <Button onclick={() => replyMode = !replyMode} tag="span" icon="reply">
                 {$_('reply')}
               </Button>
             {/if}
 
             {#if canEdit}
-              <Button onclick={() => (editMode = true)} tag="span" icon="edit">
+              <Button onclick={() => editMode = true} tag="span" icon="edit">
                 {$_('modify')}
               </Button>
             {/if}
@@ -122,8 +129,8 @@
             {#if showRemoveButton}
               <Button
                 class={isHover ? 'error' : undefined}
-                onmouseover={() => (isHover = true)}
-                onmouseleave={() => (isHover = false)}
+                onmouseover={() => isHover = true}
+                onmouseleave={() => isHover = false}
                 onclick={() => removeComment(parent.dataset.id)}
                 tag="span"
                 icon="remove"
@@ -138,7 +145,7 @@
 
     {#if replyMode}
       <ReplyForm parent={parent.dataset} {submit}>
-        <Button class="active" onclick={() => (replyMode = false)}>
+        <Button class="active" onclick={() => replyMode = false}>
           {$_('modify_cancel')}
         </Button>
       </ReplyForm>
@@ -146,7 +153,7 @@
 
     {#if comment.replies.length}
       <ul class="comment_list row">
-        {#each comment.replies as reply}
+        {#each comment.replies as reply (reply.id)}
           <CommentItem
             comment={reply}
             index={index + 1}
