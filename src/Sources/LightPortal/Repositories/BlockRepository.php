@@ -19,13 +19,11 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Msg;
 use Bugo\Compat\Security;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Args\ItemArgs;
-use Bugo\LightPortal\Args\ItemsArgs;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Status;
+use Bugo\LightPortal\EventArgs;
 use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Lists\PluginList;
-use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\RequestTrait;
@@ -190,7 +188,10 @@ final class BlockRepository extends AbstractRepository
 		if ($items === [])
 			return;
 
-		app(EventManagerFactory::class)()->dispatch(PortalHook::onBlockRemoving, new Event(new ItemsArgs($items)));
+		app(EventManagerFactory::class)()->dispatch(
+			PortalHook::onBlockRemoving,
+			new EventArgs(['items' => $items])
+		);
 
 		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_blocks
@@ -351,7 +352,10 @@ final class BlockRepository extends AbstractRepository
 			return 0;
 		}
 
-		app(EventManagerFactory::class)()->dispatch(PortalHook::onBlockSaving, new Event(new ItemArgs($item)));
+		app(EventManagerFactory::class)()->dispatch(
+			PortalHook::onBlockSaving,
+			new EventArgs(['item' => $item])
+		);
 
 		$this->saveTitles($item);
 		$this->saveOptions($item);
@@ -385,7 +389,10 @@ final class BlockRepository extends AbstractRepository
 			]
 		);
 
-		app(EventManagerFactory::class)()->dispatch(PortalHook::onBlockSaving, new Event(new ItemArgs($item)));
+		app(EventManagerFactory::class)()->dispatch(
+			PortalHook::onBlockSaving,
+			new EventArgs(['item' => $item])
+		);
 
 		$this->saveTitles($item, 'replace');
 		$this->saveOptions($item, 'replace');

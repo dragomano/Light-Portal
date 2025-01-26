@@ -18,8 +18,8 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\AlertAction;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
+use Bugo\LightPortal\EventArgs;
 use Bugo\LightPortal\EventManagerFactory;
-use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Repositories\CommentRepository;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\CacheTrait;
@@ -89,9 +89,7 @@ final class Comment implements ActionInterface
 
 			app(EventManagerFactory::class)()->dispatch(
 				PortalHook::commentButtons,
-				new Event(new class ($comment, $comment['extra_buttons']) {
-					public function __construct(public readonly array $comment, public array &$buttons) {}
-				})
+				new EventArgs(['comment' => $comment, 'buttons' => &$comment['extra_buttons']])
 			);
 
 			return $comment;

@@ -12,12 +12,9 @@
 
 namespace Bugo\LightPortal\Areas\Configs;
 
-use Bugo\Compat\Actions\ACP;
-use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
-use Bugo\Compat\Theme;
-use Bugo\Compat\User;
-use Bugo\Compat\Utils;
+use Bugo\Compat\Actions\Admin\ACP;
+use Bugo\Compat\{Config, Lang, Theme};
+use Bugo\Compat\{User, Utils};
 use Bugo\LightPortal\Enums\VarType;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\RequestTrait;

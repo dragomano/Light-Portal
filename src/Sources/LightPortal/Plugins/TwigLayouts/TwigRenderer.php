@@ -13,10 +13,10 @@
 
 namespace Bugo\LightPortal\Plugins\TwigLayouts;
 
-use Bugo\Compat\BBCodeParser;
 use Bugo\Compat\Config;
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Sapi;
+use Bugo\Compat\Parsers\BBCodeParser;
 use Bugo\LightPortal\Renderers\AbstractRenderer;
 use Bugo\LightPortal\Utils\Icon;
 use Twig\Environment;

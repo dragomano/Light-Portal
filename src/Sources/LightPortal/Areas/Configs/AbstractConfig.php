@@ -12,10 +12,8 @@
 
 namespace Bugo\LightPortal\Areas\Configs;
 
-use Bugo\Compat\Actions\Permissions;
-use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
-use Bugo\Compat\Utils;
+use Bugo\Compat\Actions\Admin\Permissions;
+use Bugo\Compat\{Config, Lang, Utils};
 use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\CustomField;

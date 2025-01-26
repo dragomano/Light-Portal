@@ -12,21 +12,19 @@
 
 namespace Bugo\LightPortal\Articles;
 
-use Bugo\Compat\BBCodeParser;
 use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
+use Bugo\Compat\Parsers\BBCodeParser;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Args\ArticlesArgs;
-use Bugo\LightPortal\Args\ArticlesRowArgs;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Status;
+use Bugo\LightPortal\EventArgs;
 use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Lists\TitleList;
-use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\Icon;
@@ -78,13 +76,13 @@ class PageArticle extends AbstractArticle
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::frontPages,
-			new Event(new ArticlesArgs(
-				$this->columns,
-				$this->tables,
-				$this->params,
-				$this->wheres,
-				$this->orders
-			))
+			new EventArgs([
+				'columns' => &$this->columns,
+				'tables'  => &$this->tables,
+				'params'  => &$this->params,
+				'wheres'  => &$this->wheres,
+				'orders'  => &$this->orders
+			])
 		);
 	}
 
@@ -157,7 +155,7 @@ class PageArticle extends AbstractArticle
 
 			app(EventManagerFactory::class)()->dispatch(
 				PortalHook::frontPagesRow,
-				new Event(new ArticlesRowArgs($pages, $row))
+				new EventArgs(['articles' => &$pages, 'row' => $row])
 			);
 		}
 

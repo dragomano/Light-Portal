@@ -15,12 +15,12 @@ namespace Bugo\LightPortal\Plugins\TinyPortalMigration;
 
 use Bugo\Bricks\Presenters\TablePresenter;
 use Bugo\Bricks\Tables\IdColumn;
-use Bugo\Compat\BBCodeParser;
 use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
+use Bugo\Compat\Parsers\BBCodeParser;
 use Bugo\LightPortal\Areas\Imports\AbstractCustomPageImport;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\UI\Tables\CheckboxColumn;

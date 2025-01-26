@@ -32,11 +32,10 @@ use Bugo\LightPortal\Areas\Imports\CategoryImport;
 use Bugo\LightPortal\Areas\Imports\PageImport;
 use Bugo\LightPortal\Areas\Imports\PluginImport;
 use Bugo\LightPortal\Areas\Imports\TagImport;
-use Bugo\LightPortal\Args\AreasArgs;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\EventArgs;
 use Bugo\LightPortal\EventManagerFactory;
-use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\RequestTrait;
@@ -213,7 +212,7 @@ final class ConfigArea
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::updateAdminAreas,
-			new Event(new AreasArgs($areas['lp_portal']['areas']))
+			new EventArgs(['areas' => &$areas['lp_portal']['areas']])
 		);
 	}
 
@@ -288,7 +287,7 @@ final class ConfigArea
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::updateBlockAreas,
-			new Event(new AreasArgs($areas))
+			new EventArgs(['areas' => &$areas])
 		);
 
 		$this->callActionFromAreas($areas);
@@ -308,7 +307,7 @@ final class ConfigArea
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::updatePageAreas,
-			new Event(new AreasArgs($areas))
+			new EventArgs(['areas' => &$areas])
 		);
 
 		$this->callActionFromAreas($areas);
@@ -328,7 +327,7 @@ final class ConfigArea
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::updateCategoryAreas,
-			new Event(new AreasArgs($areas))
+			new EventArgs(['areas' => &$areas])
 		);
 
 		$this->callActionFromAreas($areas);
@@ -348,7 +347,7 @@ final class ConfigArea
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::updateTagAreas,
-			new Event(new AreasArgs($areas))
+			new EventArgs(['areas' => &$areas])
 		);
 
 		$this->callActionFromAreas($areas);
@@ -369,7 +368,7 @@ final class ConfigArea
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::updatePluginAreas,
-			new Event(new AreasArgs($areas))
+			new EventArgs(['areas' => &$areas])
 		);
 
 		$this->callActionFromAreas($areas);

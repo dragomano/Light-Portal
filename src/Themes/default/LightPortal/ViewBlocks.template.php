@@ -1,9 +1,7 @@
 <?php declare(strict_types=1);
 
-use Bugo\Compat\Config;
-use Bugo\Compat\Utils;
-use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\Setting;
+use Bugo\Compat\{Config, Utils};
+use Bugo\LightPortal\Utils\{Icon, Setting};
 
 /**
  * @layer lp_portal

@@ -13,12 +13,12 @@
 
 namespace Bugo\LightPortal\Plugins\SimpleChat;
 
-use Bugo\Compat\BBCodeParser;
 use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Time;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
+use Bugo\Compat\Parsers\BBCodeParser;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\RequestTrait;

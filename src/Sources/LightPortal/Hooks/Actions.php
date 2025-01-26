@@ -70,16 +70,16 @@ class Actions
 
 		$topic = $this->request()->get('t');
 
-		$frontpageTopics = Setting::getFrontpageTopics();
+		$homeTopics = Setting::getFrontpageTopics();
 
-		if (($key = array_search($topic, $frontpageTopics)) !== false) {
-			unset($frontpageTopics[$key]);
+		if (($key = array_search($topic, $homeTopics)) !== false) {
+			unset($homeTopics[$key]);
 		} else {
-			$frontpageTopics[] = $topic;
+			$homeTopics[] = $topic;
 		}
 
 		Config::updateModSettings(
-			['lp_frontpage_topics' => implode(',', $frontpageTopics)]
+			['lp_frontpage_topics' => implode(',', $homeTopics)]
 		);
 
 		Utils::redirectexit('topic=' . $topic);

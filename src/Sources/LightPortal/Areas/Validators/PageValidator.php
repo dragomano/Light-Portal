@@ -15,12 +15,10 @@ namespace Bugo\LightPortal\Areas\Validators;
 use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Args\ErrorsDataArgs;
-use Bugo\LightPortal\Args\ParamsArgs;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
+use Bugo\LightPortal\EventArgs;
 use Bugo\LightPortal\EventManagerFactory;
-use Bugo\LightPortal\Plugins\Event;
 
 use function array_merge;
 use function explode;
@@ -64,7 +62,7 @@ class PageValidator extends AbstractValidator
 
 			app(EventManagerFactory::class)()->dispatch(
 				PortalHook::validatePageParams,
-				new Event(new ParamsArgs($params, Utils::$context['lp_current_page']['type']))
+				new EventArgs(['params' => &$params, 'type' => Utils::$context['lp_current_page']['type']])
 			);
 
 			$params = array_merge($this->params, $params);
@@ -110,7 +108,7 @@ class PageValidator extends AbstractValidator
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::findPageErrors,
-			new Event(new ErrorsDataArgs($this->errors, $data))
+			new EventArgs(['errors' => &$this->errors, 'data' => $data])
 		);
 
 		$this->handleErrors();

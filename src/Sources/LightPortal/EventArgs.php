@@ -10,9 +10,16 @@
  * @version 2.9
  */
 
-namespace Bugo\LightPortal\Args;
+namespace Bugo\LightPortal;
 
-class ParamsArgs
+use stdClass;
+
+class EventArgs extends stdClass
 {
-	public function __construct(public array &$params, public readonly string $type) {}
+	public function __construct(array $args = [])
+	{
+		foreach ($args as $key => &$value) {
+			$this->$key = &$value;
+		}
+	}
 }

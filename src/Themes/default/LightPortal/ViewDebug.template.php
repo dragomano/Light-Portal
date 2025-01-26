@@ -12,7 +12,7 @@ function template_docs_above(): void
 	echo '
 	<div class="noticebox">
 		<a class="bbc_link" href="https://dragomano.github.io/Light-Portal/' . $lang . '" target="_blank" rel="noopener">
-			', Lang::$txt['admin_search_type_online'], '
+			' . Lang::$txt['admin_search_type_online'] . '
 		</a>
 	</div>';
 }

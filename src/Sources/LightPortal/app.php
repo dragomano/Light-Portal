@@ -19,15 +19,9 @@ use Bugo\LightPortal\Container;
 use Bugo\LightPortal\PortalApp;
 
 // Helper to work with Container
-function app(string $service, array $params = []): mixed
+function app(string $service): mixed
 {
-	$instance = Container::get($service);
-
-	if ($service === 'events') {
-		return $instance($params);
-	}
-
-	return $instance;
+	return Container::get($service);
 }
 
 // This is the way

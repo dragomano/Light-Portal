@@ -20,16 +20,15 @@ use Bugo\Compat\Msg;
 use Bugo\Compat\Security;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Args\ItemArgs;
 use Bugo\LightPortal\Enums\AlertAction;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Status;
+use Bugo\LightPortal\EventArgs;
 use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\Lists\TitleList;
-use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\DateTime;
@@ -286,7 +285,10 @@ final class PageRepository extends AbstractRepository
 		if ($items === [])
 			return;
 
-		app(EventManagerFactory::class)()->dispatch(PortalHook::onPageRemoving, new Event(new ItemsArgs($items)));
+		app(EventManagerFactory::class)()->dispatch(
+			PortalHook::onPageRemoving,
+			new EventArgs(['items' => $items])
+		);
 
 		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_pages
@@ -566,9 +568,7 @@ final class PageRepository extends AbstractRepository
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::preparePageData,
-			new Event(new class ($data, $isAuthor) {
-				public function __construct(public array &$data, public readonly bool $isAuthor) {}
-			})
+			new EventArgs(['data' => &$data, 'isAuthor' => $isAuthor])
 		);
 	}
 
@@ -611,13 +611,16 @@ final class PageRepository extends AbstractRepository
 			return 0;
 		}
 
-		app(EventManagerFactory::class)()->dispatch(PortalHook::onPageSaving, new Event(new ItemArgs($item)));
+		app(EventManagerFactory::class)()->dispatch(
+			PortalHook::onPageSaving,
+			new EventArgs(['item' => $item])
+		);
 
 		$this->saveTitles($item);
 		$this->saveTags($item);
 		$this->saveOptions($item);
 
-		Db::$db->transaction('commit');
+		Db::$db->transaction();
 
 		// Notify page moderators about new page
 		$title = Utils::$context['lp_page']['titles'][User::$info['language']]
@@ -664,7 +667,10 @@ final class PageRepository extends AbstractRepository
 			]
 		);
 
-		app(EventManagerFactory::class)()->dispatch(PortalHook::onPageSaving, new Event(new ItemArgs($item)));
+		app(EventManagerFactory::class)()->dispatch(
+			PortalHook::onPageSaving,
+			new EventArgs(['item' => $item])
+		);
 
 		$this->saveTitles($item, 'replace');
 		$this->saveTags($item, 'replace');
@@ -677,7 +683,7 @@ final class PageRepository extends AbstractRepository
 			]);
 		}
 
-		Db::$db->transaction('commit');
+		Db::$db->transaction();
 	}
 
 	private function getTags(int $item): array

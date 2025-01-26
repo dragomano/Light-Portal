@@ -13,12 +13,12 @@
 
 namespace Bugo\LightPortal\Plugins\ArticleList;
 
-use Bugo\Compat\BBCodeParser;
 use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
+use Bugo\Compat\Parsers\BBCodeParser;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\Status;

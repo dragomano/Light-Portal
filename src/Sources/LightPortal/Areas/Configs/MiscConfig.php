@@ -12,12 +12,9 @@
 
 namespace Bugo\LightPortal\Areas\Configs;
 
-use Bugo\Compat\Actions\ACP;
-use Bugo\Compat\Config;
-use Bugo\Compat\Db;
-use Bugo\Compat\Lang;
-use Bugo\Compat\User;
-use Bugo\Compat\Utils;
+use Bugo\Compat\Actions\Admin\ACP;
+use Bugo\Compat\{Config, Db, Lang};
+use Bugo\Compat\{User, Utils};
 use Bugo\LightPortal\Tasks\Maintainer;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionTrait;

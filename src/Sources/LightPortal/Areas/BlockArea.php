@@ -20,15 +20,12 @@ use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Areas\Validators\BlockValidator;
-use Bugo\LightPortal\Args\ObjectArgs;
-use Bugo\LightPortal\Args\OptionsTypeArgs;
-use Bugo\LightPortal\Args\ParamsArgs;
 use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\EventArgs;
 use Bugo\LightPortal\EventManagerFactory;
 use Bugo\LightPortal\Models\BlockModel;
-use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Repositories\BlockRepository;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\CustomField;
@@ -238,7 +235,7 @@ final class BlockArea
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::prepareBlockParams,
-			new Event(new ParamsArgs($params, Utils::$context['current_block']['type']))
+			new EventArgs(['params' => &$params, 'type' => Utils::$context['current_block']['type']])
 		);
 
 		return array_merge($baseParams, $params);
@@ -357,7 +354,10 @@ final class BlockArea
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::prepareBlockFields,
-			new Event(new OptionsTypeArgs(Utils::$context['lp_block']['options'], Utils::$context['current_block']['type']))
+			new EventArgs([
+				'options' => Utils::$context['lp_block']['options'],
+				'type' => Utils::$context['current_block']['type']
+			])
 		);
 
 		$this->preparePostFields();
@@ -392,7 +392,7 @@ final class BlockArea
 	{
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::prepareEditor,
-			new Event(new ObjectArgs(Utils::$context['lp_block']))
+			new EventArgs(['object' => Utils::$context['lp_block']])
 		);
 	}
 

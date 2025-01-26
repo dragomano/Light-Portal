@@ -13,12 +13,10 @@
 namespace Bugo\LightPortal\Areas\Validators;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Args\ErrorsDataArgs;
-use Bugo\LightPortal\Args\ParamsArgs;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
+use Bugo\LightPortal\EventArgs;
 use Bugo\LightPortal\EventManagerFactory;
-use Bugo\LightPortal\Plugins\Event;
 
 use function array_keys;
 use function array_merge;
@@ -60,7 +58,7 @@ class BlockValidator extends AbstractValidator
 
 			app(EventManagerFactory::class)()->dispatch(
 				PortalHook::validateBlockParams,
-				new Event(new ParamsArgs($params, Utils::$context['current_block']['type']))
+				new EventArgs(['params' => &$params, 'type' => Utils::$context['current_block']['type']])
 			);
 
 			$params = array_merge($this->params, $params);
@@ -90,7 +88,7 @@ class BlockValidator extends AbstractValidator
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::findBlockErrors,
-			new Event(new ErrorsDataArgs($this->errors, $data))
+			new EventArgs(['errors' => &$this->errors, 'data' => $data])
 		);
 
 		$this->handleErrors();
