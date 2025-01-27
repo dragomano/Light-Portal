@@ -43,6 +43,7 @@ files:
           '/docs/src/fr',
           '/docs/src/cs',
           '/docs/src/sv',
+          '/docs/src/sl',
         ],
     },
   ]
