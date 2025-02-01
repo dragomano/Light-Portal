@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 30.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\PrettyUrls;
@@ -60,11 +60,12 @@ class PrettyUrls extends Plugin
 			'enabled' => 0,
 			'filter' => [
 				'priority' => self::PRIORITY,
-				'callback' => $this->filter(...),
+				'callback' => [$this, 'filter'],
 			],
 			'rewrite' => [
 				'priority' => self::PRIORITY,
-				'rule' => 'RewriteRule ^' . LP_PAGE_PARAM . '/([^/]+)/?$ ./index.php?pretty;' . LP_PAGE_PARAM . '=$1 [L,QSA]',
+				'rule' => 'RewriteRule ^pages/' . LP_ALIAS_PATTERN . ' ./index.php?pretty;' . LP_PAGE_PARAM . '=$1 [L,QSA]',
+				"nginx" => 'rewrite ^pages/' . LP_ALIAS_PATTERN . ' "/index.php?pretty;' . LP_PAGE_PARAM . '=$1" last;'
 			],
 			'title' => Str::html('a')
 				->href('https://custom.simplemachines.org/mods/index.php?mod=4244')
@@ -83,7 +84,7 @@ class PrettyUrls extends Plugin
 	public function filter(array $urls): array
 	{
 		$pattern = '`' . Config::$scripturl . '(.*)' . LP_PAGE_PARAM . '=([^;]+)`S';
-		$replacement = Config::$boardurl . '/' . LP_PAGE_PARAM . '/$2/$1';
+		$replacement = Config::$boardurl . '/pages/$2/$1';
 
 		foreach ($urls as $id => $url) {
 			if (! isset($url['replacement']) && preg_match($pattern, (string) $url['url'])) {
