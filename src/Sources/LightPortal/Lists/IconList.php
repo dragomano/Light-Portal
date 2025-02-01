@@ -14,8 +14,8 @@ namespace Bugo\LightPortal\Lists;
 
 use Bugo\FontAwesome\Enums\Icon as IconEnum;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventArgs;
-use Bugo\LightPortal\EventManagerFactory;
+use Bugo\LightPortal\Events\EventArgs;
+use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Utils\Icon;
 
 use function array_map;

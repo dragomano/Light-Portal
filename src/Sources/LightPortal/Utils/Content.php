@@ -18,8 +18,8 @@ use Bugo\Compat\Sapi;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventArgs;
-use Bugo\LightPortal\EventManagerFactory;
+use Bugo\LightPortal\Events\EventArgs;
+use Bugo\LightPortal\Events\EventManagerFactory;
 use ParseError;
 
 use function file_put_contents;

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 31.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\TinyPortalMigration;
@@ -44,7 +44,7 @@ class CategoryImport extends AbstractCustomCategoryImport
 
 		$this->run();
 
-		TablePresenter::show(
+		app(TablePresenter::class)->show(
 			PortalTableBuilder::make('tp_categories', Lang::$txt['lp_categories_import'])
 				->withParams(
 					50,

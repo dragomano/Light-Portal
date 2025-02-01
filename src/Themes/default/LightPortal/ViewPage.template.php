@@ -2,7 +2,7 @@
 
 use Bugo\Compat\{Config, Lang, Theme, Utils};
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManagerFactory;
+use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Utils\{Icon, Setting};
 
 function template_show_page(): void

@@ -14,8 +14,8 @@ namespace Bugo\LightPortal\Plugins;
 
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventArgs;
-use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\Events\EventArgs;
+use Bugo\LightPortal\Events\EventManager;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
@@ -52,11 +52,6 @@ final class PluginHandler
 		$this->assetHandler->minify();
 
 		Utils::$context['lp_loaded_addons'] = $this->registry->getAll();
-	}
-
-	public function getRegistry(): PluginRegistry
-	{
-		return $this->registry;
 	}
 
 	public function getManager(): EventManager

@@ -31,8 +31,6 @@
         <include name="Themes/**" />
         <exclude name="**/.idea/**" />
         <exclude name="Themes/default/css/light_portal/plugins.css" />
-        <exclude name="Themes/default/scripts/light_portal/dev/**" />
-        <exclude name="Themes/default/scripts/light_portal/app*" />
         <exclude name="Themes/default/scripts/light_portal/plugins.js" />
         <include name="Sources/**" />
         <exclude name="Sources/index.php" />
@@ -88,7 +86,6 @@
         <exclude name="Themes/default/languages/**" />
         <exclude name="**/.idea/**" />
         <exclude name="Themes/default/css/light_portal/plugins.css" />
-        <exclude name="Themes/default/scripts/light_portal/app*" />
         <exclude name="Themes/default/scripts/light_portal/plugins.js" />
         <include name="Sources/**" />
         <exclude name="Sources/index.php" />
@@ -125,8 +122,6 @@
         <exclude name="Themes/default/languages/**" />
         <exclude name="**/.idea/**" />
         <exclude name="Themes/default/css/light_portal/plugins.css" />
-        <exclude name="Themes/default/scripts/light_portal/dev/**" />
-        <exclude name="Themes/default/scripts/light_portal/app*" />
         <exclude name="Themes/default/scripts/light_portal/plugins.js" />
         <include name="Sources/**" />
         <exclude name="Sources/index.php" />

@@ -12,6 +12,7 @@
 
 namespace Bugo\LightPortal;
 
+use Bugo\Bricks\Presenters\TablePresenter;
 use Bugo\LightPortal\Actions\Block;
 use Bugo\LightPortal\Actions\BoardIndex;
 use Bugo\LightPortal\Actions\CardList;
@@ -36,6 +37,8 @@ use Bugo\LightPortal\Areas\Imports\TagImport;
 use Bugo\LightPortal\Areas\PageArea;
 use Bugo\LightPortal\Areas\PluginArea;
 use Bugo\LightPortal\Areas\TagArea;
+use Bugo\LightPortal\Events\EventManager;
+use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\Lists\IconList;
 use Bugo\LightPortal\Lists\PageList;
@@ -52,6 +55,7 @@ use Bugo\LightPortal\Repositories\CommentRepository;
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Repositories\TagRepository;
+use Bugo\LightPortal\UI\Tables\TableRenderer;
 use Bugo\LightPortal\Utils\Cache;
 use Bugo\LightPortal\Utils\File;
 use Bugo\LightPortal\Utils\Post;
@@ -68,6 +72,8 @@ class ServiceProvider extends AbstractServiceProvider
 	public array $services = [
 		PortalApp::class,
 		RendererInterface::class,
+		TablePresenter::class,
+		TableRenderer::class,
 		EventManager::class,
 		EventManagerFactory::class,
 		PluginHandler::class,
@@ -125,6 +131,9 @@ class ServiceProvider extends AbstractServiceProvider
 	{
 		$this->getContainer()->add(PortalApp::class);
 		$this->getContainer()->add(RendererInterface::class, Blade::class);
+
+		$this->getContainer()->add(TablePresenter::class)->addArgument(TableRenderer::class);
+		$this->getContainer()->add(TableRenderer::class);
 
 		$this->getContainer()->add(EventManager::class);
 		$this->getContainer()->add(EventManagerFactory::class);

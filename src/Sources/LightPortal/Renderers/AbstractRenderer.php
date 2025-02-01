@@ -15,8 +15,8 @@ namespace Bugo\LightPortal\Renderers;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventArgs;
-use Bugo\LightPortal\EventManagerFactory;
+use Bugo\LightPortal\Events\EventArgs;
+use Bugo\LightPortal\Events\EventManagerFactory;
 
 use function array_combine;
 use function array_merge;
@@ -46,6 +46,16 @@ abstract class AbstractRenderer implements RendererInterface
 	{
 		Theme::loadTemplate('LightPortal/ViewFrontPage');
 
+		$layouts = $this->collectLayouts();
+
+		$default = $layouts[static::DEFAULT_TEMPLATE];
+		unset($layouts[static::DEFAULT_TEMPLATE]);
+
+		return array_merge([static::DEFAULT_TEMPLATE => $default], $layouts);
+	}
+
+	private function collectLayouts(): array
+	{
 		$layouts = glob($this->templateDir . '/*' . static::DEFAULT_EXTENSION);
 
 		$extensions = [static::DEFAULT_EXTENSION];
@@ -63,6 +73,11 @@ abstract class AbstractRenderer implements RendererInterface
 			);
 		}
 
+		return $this->processLayouts($layouts);
+	}
+
+	private function processLayouts(array $layouts): array
+	{
 		$values = $titles = [];
 
 		foreach ($layouts as $layout) {
@@ -75,10 +90,6 @@ abstract class AbstractRenderer implements RendererInterface
 				: str_replace('_', ' ', $shortName);
 		}
 
-		$layouts = array_combine($values, $titles);
-		$default = $layouts[static::DEFAULT_TEMPLATE];
-		unset($layouts[static::DEFAULT_TEMPLATE]);
-
-		return array_merge([static::DEFAULT_TEMPLATE => $default], $layouts);
+		return array_combine($values, $titles);
 	}
 }

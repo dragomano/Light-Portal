@@ -101,7 +101,7 @@ final class Category extends AbstractPageList
 				->setPosition(RowPosition::TOP_OF_LIST)
 		);
 
-		TablePresenter::show($builder);
+		app(TablePresenter::class)->show($builder);
 
 		Utils::obExit();
 	}
@@ -185,7 +185,7 @@ final class Category extends AbstractPageList
 			'name' => Utils::$context['page_title'],
 		];
 
-		TablePresenter::show(
+		app(TablePresenter::class)->show(
 			PortalTableBuilder::make('categories', Utils::$context['page_title'])
 				->withParams(
 					Setting::get('defaultMaxListItems', 'int', 50),

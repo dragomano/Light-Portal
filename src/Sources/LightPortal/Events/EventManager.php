@@ -10,7 +10,7 @@
  * @version 2.9
  */
 
-namespace Bugo\LightPortal;
+namespace Bugo\LightPortal\Events;
 
 use Bugo\LightPortal\Enums\PluginType;
 use Bugo\LightPortal\Enums\PortalHook;

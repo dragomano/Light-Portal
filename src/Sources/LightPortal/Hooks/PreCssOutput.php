@@ -15,8 +15,8 @@ namespace Bugo\LightPortal\Hooks;
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventArgs;
-use Bugo\LightPortal\EventManagerFactory;
+use Bugo\LightPortal\Events\EventArgs;
+use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Utils\Str;
 
 if (! defined('SMF'))

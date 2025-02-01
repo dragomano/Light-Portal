@@ -55,7 +55,7 @@ final class TagExport extends AbstractExport
 
 		$this->run();
 
-		TablePresenter::show(
+		app(TablePresenter::class)->show(
 			PortalTableBuilder::make('lp_tags', Lang::$txt['lp_tags_export'])
 				->setDefaultSortColumn('id')
 				->setItems($this->repository->getAll(...))

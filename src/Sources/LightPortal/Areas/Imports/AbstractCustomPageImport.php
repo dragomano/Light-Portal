@@ -13,8 +13,8 @@ namespace Bugo\LightPortal\Areas\Imports;
 
 use Bugo\LightPortal\Areas\Imports\Traits\WithCommentsTrait;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventArgs;
-use Bugo\LightPortal\EventManagerFactory;
+use Bugo\LightPortal\Events\EventArgs;
+use Bugo\LightPortal\Events\EventManagerFactory;
 
 if (! defined('SMF'))
 	die('No direct access...');

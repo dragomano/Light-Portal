@@ -78,7 +78,7 @@ final class TagArea
 				ContextMenuColumn::make()
 			]);
 
-		TablePresenter::show($builder);
+		app(TablePresenter::class)->show($builder);
 	}
 
 	public function add(): void

@@ -55,7 +55,7 @@ final class CategoryExport extends AbstractExport
 
 		$this->run();
 
-		TablePresenter::show(
+		app(TablePresenter::class)->show(
 			PortalTableBuilder::make('lp_categories', Lang::$txt['lp_categories_export'])
 				->setDefaultSortColumn('id')
 				->setItems($this->repository->getAll(...))

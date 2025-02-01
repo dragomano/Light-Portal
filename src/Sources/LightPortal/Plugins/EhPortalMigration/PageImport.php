@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 31.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\EhPortalMigration;
@@ -51,7 +51,7 @@ class PageImport extends AbstractCustomPageImport
 
 		$this->run();
 
-		TablePresenter::show(
+		app(TablePresenter::class)->show(
 			PortalTableBuilder::make('eh_pages', Lang::$txt['lp_pages_import'])
 				->withParams(
 					50,

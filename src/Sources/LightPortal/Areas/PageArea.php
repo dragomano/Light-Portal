@@ -31,8 +31,8 @@ use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\EventArgs;
-use Bugo\LightPortal\EventManagerFactory;
+use Bugo\LightPortal\Events\EventArgs;
+use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\Models\PageModel;
 use Bugo\LightPortal\Repositories\PageRepository;
@@ -187,7 +187,7 @@ final class PageArea
 			->addColumn(CheckboxColumn::make(name: 'mass', entity: 'items'))
 			->addRow(PageButtonsRow::make());
 
-		TablePresenter::show($builder);
+		app(TablePresenter::class)->show($builder);
 
 		$this->changeTableTitle();
 	}

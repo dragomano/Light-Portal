@@ -15,8 +15,8 @@ namespace Bugo\LightPortal\Areas\Validators;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
-use Bugo\LightPortal\EventArgs;
-use Bugo\LightPortal\EventManagerFactory;
+use Bugo\LightPortal\Events\EventArgs;
+use Bugo\LightPortal\Events\EventManagerFactory;
 
 use function array_keys;
 use function array_merge;

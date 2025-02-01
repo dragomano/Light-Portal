@@ -88,7 +88,7 @@ final class Tag extends AbstractPageList
 		$builder->setItems($this->getPages(...));
 		$builder->setCount(fn() => $this->getTotalCount());
 
-		TablePresenter::show($builder);
+		app(TablePresenter::class)->show($builder);
 
 		Utils::obExit();
 	}
@@ -185,7 +185,7 @@ final class Tag extends AbstractPageList
 			'name' => Utils::$context['page_title'],
 		];
 
-		TablePresenter::show(
+		app(TablePresenter::class)->show(
 			PortalTableBuilder::make('tags', Utils::$context['page_title'])
 				->withParams(
 					Setting::get('defaultMaxListItems', 'int', 50),
