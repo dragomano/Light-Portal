@@ -91,7 +91,7 @@ final class CreditArea
 		User::mustHavePermission('light_portal_view');
 
 		Utils::$context['portal_translations'] = [
-			'Polish'     => ['Adrek', 'jsqx'],
+			'Polish'     => ['Adrek', 'jsqx', 'cieplutki'],
 			'Spanish'    => ['Rock Lee', 'Diego Andrés'],
 			'French'     => ['Papoune57'],
 			'Turkish'    => ['gevv'],
