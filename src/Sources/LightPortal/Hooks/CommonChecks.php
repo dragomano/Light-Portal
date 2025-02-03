@@ -16,6 +16,7 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\ResponseTrait;
 use Bugo\LightPortal\Utils\Setting;
 
 use function array_flip;
@@ -29,6 +30,7 @@ if (! defined('SMF'))
 trait CommonChecks
 {
 	use RequestTrait;
+	use ResponseTrait;
 
 	protected function isPortalCanBeLoaded(): bool
 	{
@@ -75,7 +77,7 @@ trait CommonChecks
 			return;
 
 		if (array_key_exists(Utils::$context['current_action'], Utils::$context['lp_disabled_actions'])) {
-			Utils::redirectexit();
+			$this->response()->redirect();
 		}
 	}
 

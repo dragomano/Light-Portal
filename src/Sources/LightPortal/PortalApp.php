@@ -25,8 +25,8 @@ final class PortalApp
 		if (SMF === 'BACKGROUND')
 			return;
 
-		(new Integration())();
-		(new ConfigArea())();
-		(new CreditArea())();
+		app(Integration::class)();
+		app(ConfigArea::class)();
+		app(CreditArea::class)();
 	}
 }

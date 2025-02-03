@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php declare(strict_types = 1);
 
 /**
  * @package Light Portal
@@ -10,11 +10,12 @@
  * @version 2.9
  */
 
-namespace Bugo\LightPortal\Plugins;
+namespace Bugo\LightPortal\Utils;
 
-interface PluginInterface
+trait ResponseTrait
 {
-	public function getCamelName(): string;
-
-	public function getSnakeName(): string;
+	public function response(): Response
+	{
+		return app(Response::class);
+	}
 }

@@ -58,11 +58,9 @@ use Bugo\LightPortal\UI\Tables\PageStatusColumn;
 use Bugo\LightPortal\UI\Tables\PageTypeSelectRow;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
 use Bugo\LightPortal\UI\Tables\TitleColumn;
-use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\Language;
-use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 use WPLake\Typed\Typed;
@@ -88,8 +86,6 @@ if (! defined('SMF'))
 final class PageArea
 {
 	use AreaTrait;
-	use CacheTrait;
-	use RequestTrait;
 
 	private array $params = [];
 
@@ -271,7 +267,7 @@ final class PageArea
 
 			$this->cache()->flush();
 
-			Utils::redirectexit('action=admin;area=lp_pages');
+			$this->response()->redirect('action=admin;area=lp_pages');
 		}
 
 		$this->validateData();
@@ -337,7 +333,7 @@ final class PageArea
 
 		$this->cache()->flush();
 
-		Utils::redirectexit($redirect);
+		$this->response()->redirect($redirect);
 	}
 
 	private function calculateParams(): void
@@ -690,7 +686,7 @@ final class PageArea
 	private function checkUser(): void
 	{
 		if (Utils::$context['allow_light_portal_manage_pages_any'] === false && $this->request()->hasNot('u')) {
-			Utils::redirectexit('action=admin;area=lp_pages;u=' . User::$info['id']);
+			$this->response()->redirect('action=admin;area=lp_pages;u=' . User::$info['id']);
 		}
 	}
 

@@ -19,8 +19,12 @@ use Bugo\LightPortal\Container;
 use Bugo\LightPortal\PortalApp;
 
 // Helper to work with Container
-function app(string $service): mixed
+function app(string $service = ''): mixed
 {
+	if (empty($service)) {
+		return Container::getInstance();
+	}
+
 	return Container::get($service);
 }
 

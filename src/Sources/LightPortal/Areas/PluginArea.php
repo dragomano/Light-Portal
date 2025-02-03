@@ -28,6 +28,7 @@ use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\ResponseTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
@@ -43,7 +44,6 @@ use function header;
 use function implode;
 use function in_array;
 use function is_array;
-use function json_encode;
 use function ksort;
 use function sort;
 use function sprintf;
@@ -59,6 +59,7 @@ final class PluginArea
 {
 	use CacheTrait;
 	use RequestTrait;
+	use ResponseTrait;
 
 	public function __construct(private readonly PluginRepository $repository) {}
 
@@ -139,7 +140,7 @@ final class PluginArea
 
 		$this->cache()->flush();
 
-		exit(json_encode(['success' => true]));
+		$this->response()->json(['success' => true]);
 	}
 
 	private function handleSave(array $configVars): void
@@ -176,7 +177,7 @@ final class PluginArea
 
 		$this->repository->changeSettings($name, $settings);
 
-		exit(json_encode(['success' => true]));
+		$this->response()->json(['success' => true]);
 	}
 
 	private function prepareAddonList(array $configVars): void
@@ -271,7 +272,7 @@ final class PluginArea
 
 		header('Content-Type: application/json; charset=utf-8');
 
-		exit(json_encode($this->preparedData()));
+		$this->response()->json($this->preparedData());
 	}
 
 	private function preparedData(): array

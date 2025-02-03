@@ -57,7 +57,7 @@ class EventManager
 				&& in_array($hook, $this->contentHooks)
 				&& isset($args->type)
 			) {
-				if ($args->type !== $listener->getShortName()) {
+				if ($args->type !== $listener->getSnakeName()) {
 					continue;
 				}
 			}

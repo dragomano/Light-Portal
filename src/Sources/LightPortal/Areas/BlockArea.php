@@ -38,11 +38,9 @@ use Bugo\LightPortal\UI\Partials\IconSelect;
 use Bugo\LightPortal\UI\Partials\PermissionSelect;
 use Bugo\LightPortal\UI\Partials\PlacementSelect;
 use Bugo\LightPortal\UI\Partials\TitleClassSelect;
-use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Language;
-use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 use WPLake\Typed\Typed;
@@ -54,7 +52,6 @@ use function array_merge;
 use function array_multisort;
 use function in_array;
 use function is_array;
-use function json_encode;
 use function ob_get_clean;
 use function ob_start;
 use function sprintf;
@@ -69,8 +66,6 @@ if (! defined('SMF'))
 final class BlockArea
 {
 	use AreaTrait;
-	use CacheTrait;
-	use RequestTrait;
 
 	public function __construct(private readonly BlockRepository $repository) {}
 
@@ -160,7 +155,7 @@ final class BlockArea
 		if ($this->request()->has('remove')) {
 			$this->repository->remove([$item]);
 
-			Utils::redirectexit('action=admin;area=lp_blocks;sa=main');
+			$this->response()->redirect('action=admin;area=lp_blocks;sa=main');
 		}
 
 		$this->validateData();
@@ -217,7 +212,7 @@ final class BlockArea
 
 		$this->cache()->forget('active_blocks');
 
-		exit(json_encode($result));
+		$this->response()->json($result);
 	}
 
 	private function getParams(): array

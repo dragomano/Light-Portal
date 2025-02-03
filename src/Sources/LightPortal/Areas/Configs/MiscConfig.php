@@ -88,7 +88,7 @@ final class MiscConfig extends AbstractConfig
 
 			$this->session()->put('adm-save', true);
 
-			Utils::redirectexit('action=admin;area=lp_settings;sa=misc');
+			$this->response()->redirect('action=admin;area=lp_settings;sa=misc');
 		}
 
 		ACP::prepareDBSettingContext($configVars);

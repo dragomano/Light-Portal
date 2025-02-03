@@ -337,7 +337,7 @@ class Handler
 
 		$this->saveAuthorData();
 
-		Utils::redirectexit('action=admin;area=lp_plugins;sa=main');
+		$this->response()->redirect('action=admin;area=lp_plugins;sa=main');
 	}
 
 	private function saveAuthorData(): void

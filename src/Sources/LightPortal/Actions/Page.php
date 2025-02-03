@@ -27,6 +27,7 @@ use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\ResponseTrait;
 use Bugo\LightPortal\Utils\SessionTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
@@ -39,7 +40,6 @@ use function date;
 use function explode;
 use function header;
 use function implode;
-use function json_encode;
 use function time;
 
 use const LP_BASE_URL;
@@ -53,6 +53,7 @@ final class Page implements ActionInterface
 {
 	use CacheTrait;
 	use RequestTrait;
+	use ResponseTrait;
 	use SessionTrait;
 
 	public function __construct(private readonly PageRepository $repository) {}
@@ -133,7 +134,7 @@ final class Page implements ActionInterface
 	private function handleNonEmptySlug(string $slug): void
 	{
 		if (Setting::isFrontpage($slug)) {
-			Utils::redirectexit('action=' . LP_ACTION);
+			$this->response()->redirect('action=' . LP_ACTION);
 		}
 
 		Utils::$context['lp_page'] = $this->getDataBySlug($slug);
@@ -229,7 +230,7 @@ final class Page implements ActionInterface
 			'lp_frontpage_pages' => implode(',', $frontPages)
 		]);
 
-		Utils::redirectexit(Utils::$context['canonical_url']);
+		$this->response()->redirect(Utils::$context['canonical_url']);
 	}
 
 	private function prepareMetadata(): void
@@ -356,7 +357,7 @@ final class Page implements ActionInterface
 
 		header('Content-Type: application/json; charset=utf-8');
 
-		exit(json_encode($this->preparedData()));
+		$this->response()->json($this->preparedData());
 	}
 
 	private function preparedData(): array

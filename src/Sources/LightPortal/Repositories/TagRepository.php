@@ -21,6 +21,7 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\ResponseTrait;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -29,6 +30,7 @@ final class TagRepository extends AbstractRepository
 {
 	use CacheTrait;
 	use RequestTrait;
+	use ResponseTrait;
 
 	protected string $entity = 'tag';
 
@@ -142,11 +144,11 @@ final class TagRepository extends AbstractRepository
 		$this->session('lp')->free('active_tags');
 
 		if ($this->request()->has('save_exit')) {
-			Utils::redirectexit('action=admin;area=lp_tags;sa=main');
+			$this->response()->redirect('action=admin;area=lp_tags;sa=main');
 		}
 
 		if ($this->request()->has('save')) {
-			Utils::redirectexit('action=admin;area=lp_tags;sa=edit;id=' . $item);
+			$this->response()->redirect('action=admin;area=lp_tags;sa=edit;id=' . $item);
 		}
 	}
 

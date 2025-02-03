@@ -22,6 +22,7 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\ResponseTrait;
 
 use function array_filter;
 
@@ -32,6 +33,7 @@ final class CategoryRepository extends AbstractRepository
 {
 	use CacheTrait;
 	use RequestTrait;
+	use ResponseTrait;
 
 	protected string $entity = 'category';
 
@@ -151,11 +153,11 @@ final class CategoryRepository extends AbstractRepository
 		$this->session('lp')->free('active_categories');
 
 		if ($this->request()->has('save_exit')) {
-			Utils::redirectexit('action=admin;area=lp_categories;sa=main');
+			$this->response()->redirect('action=admin;area=lp_categories;sa=main');
 		}
 
 		if ($this->request()->has('save')) {
-			Utils::redirectexit('action=admin;area=lp_categories;sa=edit;id=' . $item);
+			$this->response()->redirect('action=admin;area=lp_categories;sa=edit;id=' . $item);
 		}
 	}
 

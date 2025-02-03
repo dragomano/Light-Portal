@@ -35,6 +35,7 @@ use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Notify;
 use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\ResponseTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
@@ -63,6 +64,7 @@ final class PageRepository extends AbstractRepository
 {
 	use CacheTrait;
 	use RequestTrait;
+	use ResponseTrait;
 
 	protected string $entity = 'page';
 
@@ -237,11 +239,11 @@ final class PageRepository extends AbstractRepository
 		$this->session()->free('lp');
 
 		if ($this->request()->has('save_exit')) {
-			Utils::redirectexit('action=admin;area=lp_pages;sa=main');
+			$this->response()->redirect('action=admin;area=lp_pages;sa=main');
 		}
 
 		if ($this->request()->has('save')) {
-			Utils::redirectexit('action=admin;area=lp_pages;sa=edit;id=' . $item);
+			$this->response()->redirect('action=admin;area=lp_pages;sa=edit;id=' . $item);
 		}
 	}
 
@@ -561,7 +563,8 @@ final class PageRepository extends AbstractRepository
 		}
 
 		if (! empty($data['category_id'])) {
-			$data['category'] = app(CategoryList::class)[$data['category_id']]['title'];
+			$categories = app(CategoryList::class);
+			$data['category'] = $categories[$data['category_id']]['title'];
 		}
 
 		$data['tags'] = $this->getTags($data['id']);

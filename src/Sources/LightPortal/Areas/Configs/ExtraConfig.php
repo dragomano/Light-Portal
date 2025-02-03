@@ -16,8 +16,6 @@ use Bugo\Compat\Actions\Admin\ACP;
 use Bugo\Compat\{Config, Lang, Theme};
 use Bugo\Compat\{User, Utils};
 use Bugo\LightPortal\Enums\VarType;
-use Bugo\LightPortal\Utils\CacheTrait;
-use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
@@ -29,8 +27,6 @@ if (! defined('SMF'))
 
 final class ExtraConfig extends AbstractConfig
 {
-	use CacheTrait;
-	use RequestTrait;
 	use SessionTrait;
 
 	public function show(): void
@@ -168,7 +164,7 @@ final class ExtraConfig extends AbstractConfig
 			$this->session()->put('adm-save', true);
 			$this->cache()->flush();
 
-			Utils::redirectexit('action=admin;area=lp_settings;sa=extra');
+			$this->response()->redirect('action=admin;area=lp_settings;sa=extra');
 		}
 
 		ACP::prepareDBSettingContext($configVars);

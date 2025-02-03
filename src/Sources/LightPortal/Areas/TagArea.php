@@ -32,10 +32,8 @@ use Bugo\LightPortal\UI\Tables\IconColumn;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
 use Bugo\LightPortal\UI\Tables\StatusColumn;
 use Bugo\LightPortal\UI\Tables\TitleColumn;
-use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Language;
-use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Str;
 use WPLake\Typed\Typed;
 
@@ -47,8 +45,6 @@ if (! defined('SMF'))
 final class TagArea
 {
 	use AreaTrait;
-	use CacheTrait;
-	use RequestTrait;
 
 	public function __construct(private readonly TagRepository $repository) {}
 
@@ -138,7 +134,7 @@ final class TagArea
 
 			$this->cache()->flush();
 
-			Utils::redirectexit('action=admin;area=lp_tags');
+			$this->response()->redirect('action=admin;area=lp_tags');
 		}
 
 		$this->validateData();

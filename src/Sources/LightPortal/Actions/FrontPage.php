@@ -148,11 +148,6 @@ final class FrontPage implements ActionInterface
 		app(EventManagerFactory::class)()->dispatch(PortalHook::frontAssets);
 	}
 
-	public function getLayouts(): array
-	{
-		return $this->renderer->getLayouts();
-	}
-
 	public function prepareTemplates(): void
 	{
 		if (empty(Utils::$context['lp_frontpage_articles'])) {
@@ -163,7 +158,7 @@ final class FrontPage implements ActionInterface
 				: 'layout';
 		}
 
-		Utils::$context['lp_frontpage_layouts'] = $this->getLayouts();
+		Utils::$context['lp_frontpage_layouts'] = $this->renderer->getLayouts();
 
 		$this->prepareLayoutSwitcher();
 

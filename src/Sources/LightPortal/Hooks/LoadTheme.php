@@ -45,7 +45,6 @@ class LoadTheme
 		Lang::load('LightPortal/LightPortal');
 
 		$this->defineVars();
-
 		$this->loadAssets();
 
 		// Run all init methods for active plugins

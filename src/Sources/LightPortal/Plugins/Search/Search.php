@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 24.12.24
+ * @version 02.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\Search;
@@ -83,7 +83,7 @@ class Search extends Block
 
 		$query = Utils::$smcFunc['htmltrim'](Utils::htmlspecialchars($data['phrase']));
 
-		exit(json_encode($this->query($query)));
+		$this->response()->json($this->query($query));
 	}
 
 	private function getResults(): array

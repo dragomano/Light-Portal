@@ -21,7 +21,6 @@ use Bugo\LightPortal\Actions\FrontPage;
 use Bugo\LightPortal\Actions\Tag;
 use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\RequestTrait;
 
 use function array_search;
 use function implode;
@@ -34,7 +33,6 @@ if (! defined('SMF'))
 class Actions
 {
 	use CommonChecks;
-	use RequestTrait;
 
 	public function __invoke(array &$actions): void
 	{
@@ -82,6 +80,6 @@ class Actions
 			['lp_frontpage_topics' => implode(',', $homeTopics)]
 		);
 
-		Utils::redirectexit('topic=' . $topic);
+		$this->response()->redirect('topic=' . $topic);
 	}
 }

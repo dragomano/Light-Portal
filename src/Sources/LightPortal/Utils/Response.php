@@ -1,0 +1,33 @@
+<?php declare(strict_types = 1);
+
+/**
+ * @package Light Portal
+ * @link https://dragomano.ru/mods/light-portal
+ * @author Bugo <bugo@dragomano.ru>
+ * @copyright 2019-2025 Bugo
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
+ *
+ * @version 2.9
+ */
+
+namespace Bugo\LightPortal\Utils;
+
+use Bugo\Compat\Utils;
+
+use function header;
+use function json_encode;
+
+class Response
+{
+	public function json(mixed $data, int $flags = 0): never
+	{
+		header('Content-Type: application/json; charset=utf-8');
+
+		exit(json_encode($data, $flags));
+	}
+
+	public function redirect(string $url = ''): void
+	{
+		Utils::redirectexit($url);
+	}
+}

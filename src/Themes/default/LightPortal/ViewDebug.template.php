@@ -6,7 +6,7 @@ function template_docs_above(): void
 {
 	$lang = in_array(
 		Lang::$txt['lang_dictionary'],
-		['ru', 'el', 'it', 'ar', 'es', 'de', 'nl', 'pl', 'uk', 'fr', 'tr']
+		['ru', 'el', 'it', 'ar', 'es', 'de', 'nl', 'pl', 'uk', 'fr', 'tr', 'sl']
 	) ? Lang::$txt['lang_dictionary'] : '';
 
 	echo '

@@ -21,11 +21,11 @@ use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Lists\IconList;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\ResponseTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
 use function array_filter;
-use function json_encode;
 use function sprintf;
 use function str_contains;
 use function strtolower;
@@ -39,6 +39,7 @@ trait QueryTrait
 {
 	use CacheTrait;
 	use RequestTrait;
+	use ResponseTrait;
 
 	private function prepareIconList(): void
 	{
@@ -69,7 +70,7 @@ trait QueryTrait
 			];
 		}
 
-		exit(json_encode($results));
+		$this->response()->json($results);
 	}
 
 	private function getFaIcons(): array
@@ -127,7 +128,7 @@ trait QueryTrait
 
 		Db::$db->free_result($result);
 
-		exit(json_encode($topics));
+		$this->response()->json($topics);
 	}
 
 	private function prepareMemberList(): void
@@ -169,6 +170,6 @@ trait QueryTrait
 
 		Db::$db->free_result($result);
 
-		exit(json_encode($members));
+		$this->response()->json($members);
 	}
 }
