@@ -28,7 +28,7 @@ jobs:
 
       - name: Crowdin Action
         if: env.CROWDIN_API_TOKEN != null
-        uses: crowdin/github-action@v1
+        uses: crowdin/github-action@v2
         with:
           upload_sources: true
           upload_translations: false
