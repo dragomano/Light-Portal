@@ -94,7 +94,7 @@ final class CreditArea
 			'Polish'     => ['Adrek', 'jsqx', 'cieplutki'],
 			'Spanish'    => ['Rock Lee', 'Diego Andrés'],
 			'French'     => ['Papoune57'],
-			'Turkish'    => ['gevv'],
+			'Turkish'    => ['gevv', 'Elmacik'],
 			'Ukrainian'  => ['valciriya1986'],
 			'German'     => ['trucker2006', 'm4z'],
 			'Italian'    => ['Darknico'],
