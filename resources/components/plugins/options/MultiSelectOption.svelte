@@ -1,7 +1,7 @@
 <script>
   import { SelectOption } from './index.js';
 
-  let { id, name, value = '', option = {} } = $props();
+  let { id, name, value = $bindable(''), option = {} } = $props();
   let values = $state(value.split(',').filter(Boolean))
 </script>
 

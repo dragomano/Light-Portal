@@ -8,7 +8,7 @@
   let {
     id,
     name,
-    value = '',
+    value = $bindable(''),
     option = {},
     multiple = false,
     clearable = false
