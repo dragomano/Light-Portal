@@ -30,7 +30,7 @@ Portal ana sayfasının içeriğini değiştirmek için uygun "portal ana sayfas
 
 ### Bağımsız mod
 
-Bu, kendi ana sayfanızı belirleyebileceğiniz (başka bir sitede bile olsa) ve ana menüden gereksiz öğeleri (kullanıcı listesi, takvim vb.) kaldırabileceğiniz bir moddur. Örneğin, forum kökünde `portal.php` dosyasına bakın.
+Bu kendi ana sayfanızı belirleyebileceğiniz ve ana menüden (kullanıcı listesi, takvim vb.) istenmeyen öğeleri kaldırabileceğiniz bir moddur. Örneğin, forum kökünde `portal.php` dosyasına bakın.
 
 ### Izinler
 

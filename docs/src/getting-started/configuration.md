@@ -28,7 +28,7 @@ To change the content of the portal home page, select the appropriate "the porta
 
 ### Standalone mode
 
-This is a mode where you can specify your own home page (even if it is on another site), and remove unnecessary items from the main menu (user list, calendar, etc.). See `portal.php` in the forum root for example.
+This is a mode where you can specify your own home page, and remove unnecessary items from the main menu (user list, calendar, etc.). See `portal.php` in the forum root for example.
 
 ### Permissions
 

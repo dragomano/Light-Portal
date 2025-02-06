@@ -6,7 +6,7 @@ description: Instrukcje dotyczące dodawania własnych komentarzy dla stron port
 
 Załóżmy, że jesteś niezadowolony z domyślnego systemu komentarzy i zdecyduj się na integrację usługi zewnętrznej.
 
-Wybierz i włącz jedną z pluginów widżetu komentarzy:
+Wybierz i włącz jedną ze wtyczek widżetu komentarzy:
 
 - Disqus
 - FacebookComments

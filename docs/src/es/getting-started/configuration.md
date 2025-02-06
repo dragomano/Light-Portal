@@ -30,7 +30,7 @@ Para cambiar el contenido de la página de inicio del portal, seleccione el modo
 
 ### Modo independiente
 
-Este es un modo en el que puedes especificar tu propia página de inicio (incluso si está en otro sitio), y eliminar elementos innecesarios del menú principal (lista de usuarios, calendario, etc.). Vea `portal.php` en la raíz del foro por ejemplo.
+This is a mode where you can specify your own home page, and remove unnecessary items from the main menu (user list, calendar, etc.). Vea `portal.php` en la raíz del foro por ejemplo.
 
 ### Permisos
 

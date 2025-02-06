@@ -19,11 +19,7 @@ export default {
         link: '/examples'
       },
       {
-        text: 'Δοκιμή',
-        link: 'https://demo.dragomano.ru/'
-      },
-      {
-        text: 'Καταγραφή αλλαγών',
+        text: 'Αρχείο καταγραφής αλλαγών',
         link: '/changelog'
       }
     ],

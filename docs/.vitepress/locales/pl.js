@@ -19,10 +19,6 @@ export default {
         link: '/examples'
       },
       {
-        text: 'Demo',
-        link: 'https://demo.dragomano.ru/'
-      },
-      {
         text: 'Lista zmian',
         link: '/changelog'
       }

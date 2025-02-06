@@ -5,7 +5,7 @@ order: 1
 
 # Instalacja
 
-Nie ma tutaj żadnych subtelów. Light Portal może być zainstalowany tak jak każda inna modyfikacja dla SMF - poprzez menedżera pakietów.
+Nie ma tutaj żadnych subtelności. Light Portal może być zainstalowany tak jak każda inna modyfikacja dla SMF, poprzez menedżera pakietów.
 
 ## Wymagania
 

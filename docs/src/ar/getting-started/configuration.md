@@ -30,7 +30,7 @@ outline:
 
 ### الوضع المستقل
 
-هذا هو الوضع الذي يمكنك فيه تحديد الصفحة الرئيسية الخاصة بك (حتى إذا كانت على موقع آخر)، وإزالة العناصر غير الضرورية من القائمة الرئيسية (قائمة المستخدمين، التقويم، إلخ). انظر `portal.php` في المنتدى الجذر على سبيل المثال.
+This is a mode where you can specify your own home page, and remove unnecessary items from the main menu (user list, calendar, etc.). انظر `portal.php` في المنتدى الجذر على سبيل المثال.
 
 ### الأذونات
 

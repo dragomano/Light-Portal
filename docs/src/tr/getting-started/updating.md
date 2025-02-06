@@ -9,7 +9,7 @@ Eğer en son sürümün değişiklik günlüğünde not yoksa, güncellemenin do
 
 :::info Not
 
-If the new version can be installed without removing the previous one, you'll see the "Upgrade" button instead of the "Install" button:
+Eğer yeni sürüm öncekini kaldırmadan kurulabiliyorsa, "Kur" tuşu yerine "Yükselt" tuşu göreceksiniz.
 
 ![Updating](upgrade.png)
 

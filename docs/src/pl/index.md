@@ -22,7 +22,7 @@ hero:
 features:
   - icon: 🧊
     title: Bloki
-    details: Udekoruj forum nieograniczoną liczbą bloków zawierających dowolną zawartość - niech twoja wyobraźnia będzie działać dzikiem!
+    details: Udekoruj forum nieograniczoną liczbą bloków zawierających dowolną zawartość, niech twoja wyobraźnia będzie działać dzikiem!
     link: ./blocks/manage
   - icon: 📰
     title: Strony

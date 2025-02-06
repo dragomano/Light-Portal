@@ -2,13 +2,13 @@
 description: Lista podstawowych pojęć używanych w Light Portal
 ---
 
-# Glossary
+# Słowniczek
 
 Lista podstawowych pojęć używanych w Light Portal.
 
 ## blok
 
-Bloki są elementami `aside`, które mają niestandardowe lub inne predefiniowane treści. Tak jak niektóre domy składają się z cegieł i podłogi, strony portalu mogą zawierać wiele bloków ułożonych w różnych panelach.
+Bloki są elementami "z boku", które mają niestandardowe lub inne predefiniowane treści. Tak jak niektóre domy składają się z cegieł i podłogi, strony portalu mogą zawierać wiele bloków ułożonych w różnych panelach.
 
 ## strona
 
@@ -26,6 +26,6 @@ Karty na stronie głównej, które wyświetlają zawartość ustawioną w ustawi
 
 Kategorie są potrzebne do kategoryzowania stron portalu. Możesz jednak zrobić to bez nich, jeśli forum jest poświęcone jednemu tematowi.
 
-## znacznik
+## tagi
 
-Tagi są również przeznaczone do kategoryzowania stron portalu. Są one również słowami kluczowymi używanymi w meta 'kluczowe'.
+Tagi są również przeznaczone do kategoryzowania stron portalu. Są one również słowami "kluczowymi" używanymi w meta tag

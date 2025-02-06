@@ -6,7 +6,7 @@ description: Pozdrowienia dla czytelników dokumentacji
 
 Witamy w szybkim rozpoczęciu Light Portal!
 
-> Light Portal to modyfikacja która przekształca twoje forum zbudowane na silniku [SMF](https://www.simplemachines.org) w łatwy i wygodny portal z blokami i stronami.
+> Light Portal to modyfikacja, która przekształca twoje forum zbudowane na silniku [SMF](https://www.simplemachines.org) w łatwy i wygodny portal z blokami i stronami.
 
 ---
 

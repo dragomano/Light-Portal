@@ -3,7 +3,7 @@ description: Krótki opis interfejsu do eksportowania i importowania stron porta
 order: 3
 ---
 
-# Wywóz i import
+# Eksport i import
 
 Strony portalu mogą być zapisane w specjalnym pliku, do przeniesienia na inne forum lub do przywrócenia po czystej instalacji forum.
 

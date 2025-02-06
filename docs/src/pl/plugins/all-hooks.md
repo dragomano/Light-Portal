@@ -1,17 +1,17 @@
 ---
-description: Lista wszystkich dostępnych hooków portalu
+description: Lista wszystkich dostępnych haków portalu
 order: 4
 ---
 
-# Portal hooks
+# Haki portalu
 
-Lekki portal jest świetnie rozbudowany dzięki wtyczkom. Haki umożliwiają wtyczkom interakcję z różnymi komponentami portalu.
+Light Portal jest świetnie rozbudowany dzięki wtyczkom. Haki umożliwiają wtyczkom interakcję z różnymi komponentami portalu.
 
 ## Podstawowe haki
 
 ### init
 
-> redefiniowanie zmiennych $txt , uruchamianie haczyków SMF itp.
+> re definiowanie zmiennych $txt , uruchamianie haków SMF itp.
 
 ```php
 public function init(): void
@@ -294,7 +294,7 @@ public function commentButtons(Event $e): void
 }
 ```
 
-## Pracuj z wtyczkami
+## Pracuj ze wtyczkami
 
 ### addSettings
 
@@ -384,7 +384,7 @@ public function frontAssets(): void
 
 ### frontTopics
 
-> dodawanie niestandardowych kolumn, tabel, kół, paramów i zamówień do funkcji _init_
+> dodawanie niestandardowych kolumn, tabel, kół, parametry i polecenia do funkcji _init_
 
 ```php
 public function frontTopics(Event $e): void
@@ -412,7 +412,7 @@ public function frontTopicsRow(Event $e): void
 
 ### frontPages
 
-> dodawanie niestandardowych kolumn, tabel, kół, paramów i zamówień do funkcji _init_
+> dodawanie niestandardowych kolumn, tabel, kół, parametry i polecenia do funkcji _init_
 
 ### frontPagesRow
 
@@ -420,7 +420,7 @@ public function frontTopicsRow(Event $e): void
 
 ### frontBoards
 
-> dodawanie niestandardowych kolumn, tabel, kół, paramów i zamówień do funkcji _init_
+> dodawanie niestandardowych kolumn, tabel, kół, parametry i polecenia do funkcji _init_
 
 ### frontBoardsRow
 
@@ -456,7 +456,7 @@ public function prepareIconList(Event $e): void
 
 ### changeIconSet
 
-> możliwość rozszerzenia ikon interfejsu dostępnych przez tablicę `Utils::$context['lp_icon_set']`
+> możliwość rozszerzenia ikon interfejsu dostępnych przez tablicę "Utils::$context['lp_icon_set']"
 
 ## Ustawienia portalu
 
@@ -527,7 +527,7 @@ public function updatePluginAreas(Event $e): void
 }
 ```
 
-## Miscellaneous
+## Inne
 
 ### credits
 

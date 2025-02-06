@@ -5,11 +5,11 @@ order: 2
 
 # Dodaj wtyczkę
 
-Aby dodać blok, po prostu kliknij na niego. Na początku możesz tworzyć bloki trzech typów: PHP, HTML i BBCode. Jeśli potrzebujesz innych, najpierw [włącz niezbędne wtyczki](../plugins/manage) typu `block`.
+Aby dodać blok, po prostu kliknij. Na początku możesz tworzyć bloki trzech typów: PHP, HTML i BBCode. Jeśli potrzebujesz innych, najpierw [włącz niezbędne wtyczki](../plugins/manage) typu `block`.
 
 W zależności od typu bloku dostępne będą różne ustawienia, rozprzestrzeniane na różne karty.
 
-## Content tab
+## Karta zawartości
 
 Tutaj możesz skonfigurować:
 
@@ -37,7 +37,7 @@ Tutaj możesz skonfigurować:
 
 ![Appearance tab](appearance_tab.png)
 
-## Tuning tab
+## Karta tuning
 
 Tunery specyficzne dla bloku są zazwyczaj dostępne na karcie **Tuning**.
 
