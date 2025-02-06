@@ -1,28 +1,31 @@
 <script>
   import { _ } from 'svelte-i18n';
   import { PluginItem } from './index.js';
-  import { usePluginStore, useLocalStorage } from '../../js/stores.js';
+  import { pluginState } from '../../js/states.svelte.js';
+  import { localStore } from '../../js/stores.js';
   import Button from '../BaseButton.svelte';
 
-  const pluginStore = $usePluginStore;
-  const types = $state(pluginStore.types);
-  const filter = useLocalStorage('lpPluginsFilter', 'all');
-  const layout = useLocalStorage('lpPluginsLayout', 'list');
-  const isCardView = $derived($layout === 'card');
+  const FILTER_ALL = 'all';
+  const FILTER_ACTIVE = 'active';
+  const LAYOUT_LIST = 'list';
+  const LAYOUT_CARD = 'card';
+
+  const types = $state(pluginState.types);
+
+  const filter = localStore('lpPluginsFilter', FILTER_ALL);
+  const layout = localStore('lpPluginsLayout', LAYOUT_LIST);
 
   const filteredPlugins = $derived.by(() => {
-    const plugins = Object.values(pluginStore.list);
+    const plugins = Object.values(pluginState.list);
+    const isFilterInTypes = types[$filter];
 
-    if ($filter === 'all') return plugins;
-    if ($filter === 'active') return plugins.filter((item) => item.status === 'on');
+    if ($filter === FILTER_ALL) return plugins;
+    if ($filter === FILTER_ACTIVE) return plugins.filter((item) => item.status === 'on');
 
-    return plugins.filter((item) => {
-      const isFilterInTypes = types[$filter];
-
-      return !isFilterInTypes || item.types?.[isFilterInTypes];
-    });
+    return plugins.filter((item) => !isFilterInTypes || item.types?.[isFilterInTypes]);
   });
 
+  const isCardView = $derived($layout === LAYOUT_CARD);
   const count = $derived(filteredPlugins.length);
 </script>
 
@@ -33,8 +36,8 @@
     <span class="floatright">
       <label for="filter">{$_('apply_filter')}</label>
       <select id="filter" bind:value={$filter}>
-        <option value="all">{$_('all')}</option>
-        <option value="active">{$_('lp_active_only')}</option>
+        <option value={FILTER_ALL}>{$_('all')}</option>
+        <option value={FILTER_ACTIVE}>{$_('lp_active_only')}</option>
         {#each Object.entries(types) as [type, name]}
           <option value={type}>{name}</option>
         {/each}
@@ -50,19 +53,21 @@
       tag="span"
       icon="simple"
       style="opacity: {isCardView ? '.5' : '1'}"
-      onclick={() => ($layout = 'list')}
+      aria-label={$_('list_view')}
+      onclick={() => $layout = LAYOUT_LIST}
     />
     <Button
       tag="span"
       icon="tile"
       style="opacity: {isCardView ? '1' : '.5'}"
-      onclick={() => ($layout = 'card')}
+      aria-label={$_('card_view')}
+      onclick={() => $layout = LAYOUT_CARD}
     />
   </div>
 </div>
 
-<div id="addon_list" class={isCardView && 'addon_list'}>
-  {#each filteredPlugins as plugin}
+<div id="addon_list" class:addon_list={isCardView}>
+  {#each filteredPlugins as plugin (plugin.snake_name)}
     <PluginItem item={plugin} />
   {/each}
 </div>

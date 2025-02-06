@@ -10,9 +10,9 @@ Od wersji 2.6 używamy [BladeOne](https://github.com/EFTEC/BladeOne) do renderow
 
 :::
 
-Oprócz istniejących układów, zawsze możesz dodać własne.
+Oprócz istniejących układów zawsze możesz dodać własne.
 
-Aby to zrobić, utwórz plik `custom.blade.php` w katalogu `/Themes/default/portal_layouts`:
+Aby to zrobić, utwórz plik "custom.blade.php" w katalogu "/Themes/default/portal_layouts":
 
 ```php:line-numbers {9}
 @empty ($context['lp_active_blocks'])
@@ -43,13 +43,13 @@ Aby to zrobić, utwórz plik `custom.blade.php` w katalogu `/Themes/default/port
 @endempty
 ```
 
-Następnie zobaczysz nowy układ strony głównej - `Własny` - w ustawieniach portalu:
+Następnie zobaczysz nowy układ strony głównej - "Własny" - w ustawieniach portalu:
 
 ![Select custom template](set_custom_template.png)
 
-Możesz stworzyć tyle takich układów, ile chcesz. Użyj `debug.blade.php` i innych układów w katalogu `/Themes/default/LightPortal/layouts` jako przykładów.
+Możesz stworzyć tyle takich układów, ile chcesz. Użyj "debug.blade.php" i innych układów w katalogu "/Themes/default/LightPortal/layouts" jako przykładów.
 
-Aby dostosować arkusz stylów, utwórz plik `portal_custom.css` w katalogu `/Themes/default/css`:
+Aby dostosować arkusz stylów, utwórz plik "portal_custom.css" w katalogu "/Themes/default/css":
 
 ```css {3}
 /* Custom layout */
@@ -60,6 +60,6 @@ Aby dostosować arkusz stylów, utwórz plik `portal_custom.css` w katalogu `/Th
 
 :::tip Porada
 
-Jeśli utworzyłeś własny szablon strony głównej i chcesz udostępnić go programistowi i innym użytkownikom, użyj https://codepen.io/pen/ lub innych podobnych zasobów.
+Jeśli utworzyłeś własny szablon strony głównej i chcesz udostępnić go programistom i innym użytkownikom, użyj https://codepen.io/pen/ lub innych podobnych zasobów.
 
 :::

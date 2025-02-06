@@ -21,23 +21,25 @@ use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\HasTemplateAware;
 use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\ResponseTrait;
 use Bugo\LightPortal\Utils\SessionTrait;
 use Bugo\LightPortal\Utils\SMFHookTrait;
 use Bugo\LightPortal\Utils\Str;
+use Stringable;
 
 use function basename;
 use function dirname;
 use function sprintf;
-use function str_replace;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-abstract class Plugin implements PluginInterface
+abstract class Plugin implements PluginInterface, Stringable
 {
 	use CacheTrait;
 	use HasTemplateAware;
 	use RequestTrait;
+	use ResponseTrait;
 	use SMFHookTrait;
 	use SessionTrait;
 
@@ -53,16 +55,26 @@ abstract class Plugin implements PluginInterface
 
 	public function __construct()
 	{
-		$this->name = $this->getShortName();
+		$this->name = $this->getSnakeName();
 
 		$this->context = &Utils::$context['lp_' . $this->name . '_plugin'];
 
 		$this->txt = &Lang::$txt['lp_' . $this->name];
 	}
 
-	public function getShortName(): string
+	public function __toString(): string
 	{
-		return Str::getSnakeName(basename(str_replace('\\', '/', static::class)));
+		return $this->getCamelName();
+	}
+
+	public function getCamelName(): string
+	{
+		return basename(static::class);
+	}
+
+	public function getSnakeName(): string
+	{
+		return Str::getSnakeName($this->getCamelName());
 	}
 
 	public function getFromSSI(string $function, ...$params)

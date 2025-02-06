@@ -13,8 +13,8 @@ Dla każdego bloku wyświetlana jest jego ikona, notatka lub tytuł, typ, obszar
 
 Dla każdej strony dostępne są następujące działania:
 
-- Zmień priorytet - wewnątrz każdego panelu możesz ustawić kolejność bloków
+- Zmień priorytet, wewnątrz każdego panelu możesz ustawić kolejność bloków
 - Przełącz status (włącz lub wyłączone)
-- Klonuj - tworzenie nowego bloku, który kopiuje bieżący
-- Edytuj - zmień ustawienia określonego bloku
+- Klonuj, tworzenie nowego bloku, który kopiuje bieżący
+- Edytuj, zmień ustawienia określonego bloku
 - Usuń

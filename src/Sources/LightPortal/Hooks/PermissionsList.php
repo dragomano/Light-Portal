@@ -12,7 +12,7 @@
 
 namespace Bugo\LightPortal\Hooks;
 
-use Bugo\Compat\Actions\Permissions;
+use Bugo\Compat\Actions\Admin\Permissions;
 use Bugo\Compat\Lang;
 
 use const LP_NAME;

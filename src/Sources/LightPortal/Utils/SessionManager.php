@@ -37,7 +37,7 @@ final class SessionManager
 		];
 	}
 
-	public function getActiveBlocksCount(): int
+	private function getActiveBlocksCount(): int
 	{
 		if ($this->session('lp')->get('active_blocks') === null) {
 			$result = Db::$db->query('', '
@@ -59,7 +59,7 @@ final class SessionManager
 		return $this->session('lp')->get('active_blocks') ?? 0;
 	}
 
-	public function getActivePagesCount(): int
+	private function getActivePagesCount(): int
 	{
 		$key = Utils::$context['allow_light_portal_manage_pages_any'] ? '' : ('_u' . User::$info['id']);
 
@@ -86,7 +86,7 @@ final class SessionManager
 		return $this->session('lp')->get('active_pages' . $key) ?? 0;
 	}
 
-	public function getMyPagesCount(): int
+	private function getMyPagesCount(): int
 	{
 		$key = Utils::$context['allow_light_portal_manage_pages_any'] ? '' : ('_u' . User::$info['id']);
 
@@ -111,7 +111,7 @@ final class SessionManager
 		return $this->session('lp')->get('my_pages' . $key) ?? 0;
 	}
 
-	public function getUnapprovedPagesCount(): int
+	private function getUnapprovedPagesCount(): int
 	{
 		if ($this->session('lp')->get('unapproved_pages') === null) {
 			$result = Db::$db->query('', '
@@ -134,7 +134,7 @@ final class SessionManager
 		return $this->session('lp')->get('unapproved_pages') ?? 0;
 	}
 
-	public function getDeletedPagesCount(): int
+	private function getDeletedPagesCount(): int
 	{
 		if ($this->session('lp')->get('deleted_pages') === null) {
 			$result = Db::$db->query('', /** @lang text */ '
@@ -153,7 +153,7 @@ final class SessionManager
 		return $this->session('lp')->get('deleted_pages') ?? 0;
 	}
 
-	public function getActiveCategoriesCount(): int
+	private function getActiveCategoriesCount(): int
 	{
 		if ($this->session('lp')->get('active_categories') === null) {
 			$result = Db::$db->query('', '
@@ -175,7 +175,7 @@ final class SessionManager
 		return $this->session('lp')->get('active_categories') ?? 0;
 	}
 
-	public function getActiveTagsCount(): int
+	private function getActiveTagsCount(): int
 	{
 		if ($this->session('lp')->get('active_tags') === null) {
 			$result = Db::$db->query('', '

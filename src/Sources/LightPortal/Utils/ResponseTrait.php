@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php declare(strict_types = 1);
 
 /**
  * @package Light Portal
@@ -10,9 +10,12 @@
  * @version 2.9
  */
 
-namespace Bugo\LightPortal\Args;
+namespace Bugo\LightPortal\Utils;
 
-class ParamsArgs
+trait ResponseTrait
 {
-	public function __construct(public array &$params, public readonly string $type) {}
+	public function response(): Response
+	{
+		return app(Response::class);
+	}
 }

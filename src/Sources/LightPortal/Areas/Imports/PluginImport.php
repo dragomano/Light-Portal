@@ -66,7 +66,7 @@ final class PluginImport extends AbstractImport
 	{
 		$file = $this->files()->get('import_file');
 
-		if ($file['error'] !== UPLOAD_ERR_OK)
+		if (empty($file) || $file['error'] !== UPLOAD_ERR_OK)
 			return false;
 
 		switch ($file['type']) {

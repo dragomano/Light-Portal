@@ -14,5 +14,7 @@ namespace Bugo\LightPortal\Plugins;
 
 interface PluginInterface
 {
-	public function getShortName(): string;
+	public function getCamelName(): string;
+
+	public function getSnakeName(): string;
 }

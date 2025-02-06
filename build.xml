@@ -22,8 +22,8 @@
     </if>
   </target>
   <target name="standard_edition" depends="update_version">
-    <delete file="light_portal_${release.version}.zip" quiet="true" />
-    <zip destfile="light_portal_${release.version}.zip">
+    <delete file="light_portal_${release.version}.tgz" quiet="true" />
+    <tar destfile="light_portal_${release.version}.tgz" compression="gzip">
       <fileset dir=".">
         <include name="LICENSE" />
       </fileset>
@@ -31,8 +31,6 @@
         <include name="Themes/**" />
         <exclude name="**/.idea/**" />
         <exclude name="Themes/default/css/light_portal/plugins.css" />
-        <exclude name="Themes/default/scripts/light_portal/dev/**" />
-        <exclude name="Themes/default/scripts/light_portal/app*" />
         <exclude name="Themes/default/scripts/light_portal/plugins.js" />
         <include name="Sources/**" />
         <exclude name="Sources/index.php" />
@@ -75,11 +73,11 @@
         <include name="package-info.xml" />
         <include name="*.php" />
       </fileset>
-    </zip>
+    </tar>
   </target>
   <target name="dev_edition" depends="update_version">
-    <delete file="light_portal_${release.version}_dev_edition.zip" quiet="true" />
-    <zip destfile="light_portal_${release.version}_dev_edition.zip">
+    <delete file="light_portal_${release.version}_dev_edition.tgz" quiet="true" />
+    <tar destfile="light_portal_${release.version}_dev_edition.tgz" compression="gzip">
       <fileset dir=".">
         <include name="LICENSE" />
       </fileset>
@@ -88,7 +86,6 @@
         <exclude name="Themes/default/languages/**" />
         <exclude name="**/.idea/**" />
         <exclude name="Themes/default/css/light_portal/plugins.css" />
-        <exclude name="Themes/default/scripts/light_portal/app*" />
         <exclude name="Themes/default/scripts/light_portal/plugins.js" />
         <include name="Sources/**" />
         <exclude name="Sources/index.php" />
@@ -112,11 +109,11 @@
         <include name="Sources/LightPortal/Plugins/*/langs/english.php" />
         <include name="Sources/LightPortal/Plugins/*/langs/index.php" />
       </fileset>
-    </zip>
+    </tar>
   </target>
   <target name="geek_edition" depends="update_version">
-    <delete file="light_portal_${release.version}_geek_edition.zip" quiet="true" />
-    <zip destfile="light_portal_${release.version}_geek_edition.zip">
+    <delete file="light_portal_${release.version}_geek_edition.tgz" quiet="true" />
+    <tar destfile="light_portal_${release.version}_geek_edition.tgz" compression="gzip">
       <fileset dir=".">
         <include name="LICENSE" />
       </fileset>
@@ -125,8 +122,6 @@
         <exclude name="Themes/default/languages/**" />
         <exclude name="**/.idea/**" />
         <exclude name="Themes/default/css/light_portal/plugins.css" />
-        <exclude name="Themes/default/scripts/light_portal/dev/**" />
-        <exclude name="Themes/default/scripts/light_portal/app*" />
         <exclude name="Themes/default/scripts/light_portal/plugins.js" />
         <include name="Sources/**" />
         <exclude name="Sources/index.php" />
@@ -145,6 +140,6 @@
       <fileset dir="./src">
         <include name="Sources/LightPortal/Plugins/*.php" />
       </fileset>
-    </zip>
+    </tar>
   </target>
 </project>

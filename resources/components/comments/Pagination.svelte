@@ -2,7 +2,7 @@
   import { _ } from 'svelte-i18n';
   import Button from '../BaseButton.svelte';
 
-  let { start = 0, totalItems, itemsPerPage, totalVisible = 5 } = $props();
+  let { start = $bindable(0), totalItems, itemsPerPage, totalVisible = 5 } = $props();
 
   const showPagination = $derived(Math.ceil(totalItems / itemsPerPage) > 1);
   const currentPage = $derived(Math.floor(start / itemsPerPage) + 1);

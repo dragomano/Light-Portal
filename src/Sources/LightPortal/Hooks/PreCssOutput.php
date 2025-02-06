@@ -15,8 +15,8 @@ namespace Bugo\LightPortal\Hooks;
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManagerFactory;
-use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Events\EventArgs;
+use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Utils\Str;
 
 if (! defined('SMF'))
@@ -47,9 +47,7 @@ class PreCssOutput
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::preloadStyles,
-			new Event(new class ($styles) {
-				public function __construct(public array &$styles) {}
-			})
+			new EventArgs(['styles' => &$styles])
 		);
 
 		foreach ($styles as $style) {

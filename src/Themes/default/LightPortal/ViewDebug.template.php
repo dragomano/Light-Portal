@@ -6,13 +6,13 @@ function template_docs_above(): void
 {
 	$lang = in_array(
 		Lang::$txt['lang_dictionary'],
-		['ru', 'el', 'it', 'ar', 'es', 'de', 'nl', 'pl', 'uk', 'fr', 'tr']
+		['ru', 'el', 'it', 'ar', 'es', 'de', 'nl', 'pl', 'uk', 'fr', 'tr', 'sl']
 	) ? Lang::$txt['lang_dictionary'] : '';
 
 	echo '
 	<div class="noticebox">
 		<a class="bbc_link" href="https://dragomano.github.io/Light-Portal/' . $lang . '" target="_blank" rel="noopener">
-			', Lang::$txt['admin_search_type_online'], '
+			' . Lang::$txt['admin_search_type_online'] . '
 		</a>
 	</div>';
 }

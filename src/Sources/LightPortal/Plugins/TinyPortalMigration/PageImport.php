@@ -8,19 +8,19 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 24.12.24
+ * @version 31.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\TinyPortalMigration;
 
 use Bugo\Bricks\Presenters\TablePresenter;
 use Bugo\Bricks\Tables\IdColumn;
-use Bugo\Compat\BBCodeParser;
 use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
+use Bugo\Compat\Parsers\BBCodeParser;
 use Bugo\LightPortal\Areas\Imports\AbstractCustomPageImport;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\UI\Tables\CheckboxColumn;
@@ -52,7 +52,7 @@ class PageImport extends AbstractCustomPageImport
 
 		$this->run();
 
-		TablePresenter::show(
+		app(TablePresenter::class)->show(
 			PortalTableBuilder::make('tp_pages', Lang::$txt['lp_pages_import'])
 				->withParams(
 					50,

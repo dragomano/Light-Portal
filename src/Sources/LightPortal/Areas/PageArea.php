@@ -26,18 +26,15 @@ use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Areas\Validators\PageValidator;
-use Bugo\LightPortal\Args\ObjectArgs;
-use Bugo\LightPortal\Args\OptionsTypeArgs;
-use Bugo\LightPortal\Args\ParamsArgs;
 use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\EventManagerFactory;
+use Bugo\LightPortal\Events\EventArgs;
+use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\Models\PageModel;
-use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\CustomField;
@@ -61,11 +58,9 @@ use Bugo\LightPortal\UI\Tables\PageStatusColumn;
 use Bugo\LightPortal\UI\Tables\PageTypeSelectRow;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
 use Bugo\LightPortal\UI\Tables\TitleColumn;
-use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\Language;
-use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 use WPLake\Typed\Typed;
@@ -91,8 +86,6 @@ if (! defined('SMF'))
 final class PageArea
 {
 	use AreaTrait;
-	use CacheTrait;
-	use RequestTrait;
 
 	private array $params = [];
 
@@ -190,7 +183,7 @@ final class PageArea
 			->addColumn(CheckboxColumn::make(name: 'mass', entity: 'items'))
 			->addRow(PageButtonsRow::make());
 
-		TablePresenter::show($builder);
+		app(TablePresenter::class)->show($builder);
 
 		$this->changeTableTitle();
 	}
@@ -274,7 +267,7 @@ final class PageArea
 
 			$this->cache()->flush();
 
-			Utils::redirectexit('action=admin;area=lp_pages');
+			$this->response()->redirect('action=admin;area=lp_pages');
 		}
 
 		$this->validateData();
@@ -340,7 +333,7 @@ final class PageArea
 
 		$this->cache()->flush();
 
-		Utils::redirectexit($redirect);
+		$this->response()->redirect($redirect);
 	}
 
 	private function calculateParams(): void
@@ -485,7 +478,7 @@ final class PageArea
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::preparePageParams,
-			new Event(new ParamsArgs($params, Utils::$context['lp_current_page']['type']))
+			new EventArgs(['params' => &$params, 'type' => Utils::$context['lp_current_page']['type']])
 		);
 
 		return array_merge($baseParams, $params);
@@ -641,7 +634,10 @@ final class PageArea
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::preparePageFields,
-			new Event(new OptionsTypeArgs(Utils::$context['lp_page']['options'], Utils::$context['lp_page']['type']))
+			new EventArgs([
+				'options' => Utils::$context['lp_page']['options'],
+				'type' => Utils::$context['lp_page']['type']
+			])
 		);
 
 		$this->preparePostFields();
@@ -651,7 +647,7 @@ final class PageArea
 	{
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::prepareEditor,
-			new Event(new ObjectArgs(Utils::$context['lp_page']))
+			new EventArgs(['object' => Utils::$context['lp_page']])
 		);
 	}
 
@@ -690,7 +686,7 @@ final class PageArea
 	private function checkUser(): void
 	{
 		if (Utils::$context['allow_light_portal_manage_pages_any'] === false && $this->request()->hasNot('u')) {
-			Utils::redirectexit('action=admin;area=lp_pages;u=' . User::$info['id']);
+			$this->response()->redirect('action=admin;area=lp_pages;u=' . User::$info['id']);
 		}
 	}
 

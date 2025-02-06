@@ -2,8 +2,8 @@
 
 use Bugo\Compat\{Config, Lang, Theme, Utils};
 use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Utils\{Icon, Setting};
-use Bugo\LightPortal\EventManagerFactory;
 
 function template_show_page(): void
 {
@@ -196,6 +196,6 @@ function show_comments(): void
 	echo /** @lang text */ '
 	<div id="svelte_comments"></div>
 	<script type="module">
-		usePortalApi("', Utils::$context['lp_comments_api_endpoint'], '", "bundle_comments.js")
+		usePortalApi("' . Utils::$context['lp_comments_api_endpoint'] . '", "bundle_comments.js")
 	</script>';
 }

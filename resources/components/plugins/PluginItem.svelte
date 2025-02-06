@@ -1,7 +1,7 @@
 <script>
   import { _ } from 'svelte-i18n';
-  import { slide } from 'svelte/transition';
-  import { useContextStore, useIconStore, useAppStore, usePluginStore } from '../../js/stores.js';
+  import { fade } from 'svelte/transition';
+  import { appState, contextState, iconState, pluginState } from '../../js/states.svelte.js';
   import { PluginOptionList } from './index.js';
   import Toggle from 'svelte-toggle';
   import Button from '../BaseButton.svelte';
@@ -9,31 +9,28 @@
   /** @type {{ item: { snake_name: string, settings: array, special: string } }} */
   let { item } = $props();
 
-  const appStore = $useAppStore;
-  const pluginStore = $usePluginStore;
-  const contextStore = $useContextStore;
-  const { donate: donateIcon, download: downloadIcon } = $useIconStore;
+  const { donate: donateIcon, download: downloadIcon } = iconState;
 
   let show = $state(false);
   let toggled = $state(item.status === 'on');
 
-  /** @type {{ pluginStore: { donate: { link: string }, donwload: { link: string } } }} */
-  const donateLink = $derived(pluginStore.donate[item.name].link);
-  const downloadLink = $derived(pluginStore.download[item.name].link);
+  /** @type {{ pluginState: { donate: { link: string }, donwload: { link: string } } }} */
+  const donateLink = $derived(pluginState.donate[item.name].link);
+  const downloadLink = $derived(pluginState.download[item.name].link);
 
   const key = $derived(item.special === 'can_donate' ? 'donate' : 'download');
   const specialDesc = $derived(
-    pluginStore[key][item.name]?.languages[contextStore.lang ?? 'english']
+    pluginState[key][item.name]?.languages[contextState.lang ?? 'english']
   );
 
   const showToggle = $derived(!item.special && Object.keys(item.types)[0] !== $_('not_applicable'));
-  const settingsId = $derived(item.snake_name + '_' + appStore.sessionId);
+  const settingsId = $derived(item.snake_name + '_' + appState.sessionId);
   const index = $derived(
-    Object.values(pluginStore.list).findIndex((plugin) => plugin.snake_name === item.snake_name)
+    Object.values(pluginState.list).findIndex((plugin) => plugin.snake_name === item.snake_name)
   );
 
   const toggle = async () => {
-    const response = await axios.post(appStore.baseUrl + '?action=admin;area=lp_plugins;toggle', {
+    const response = await axios.post(appState.baseUrl + '?action=admin;area=lp_plugins;toggle', {
       plugin: index,
       status: item.status
     });
@@ -44,7 +41,7 @@
   };
 </script>
 
-<div class="windowbg" transition:slide>
+<div class="windowbg" transition:fade>
   <div class="features" data-id={index}>
     <div class="floatleft">
       <h4>
@@ -69,7 +66,7 @@
           icon="gear"
           class={show && 'fa-spin'}
           data-id={settingsId}
-          onclick={() => (show = !show)}
+          onclick={() => show = !show}
         />
       {/if}
 

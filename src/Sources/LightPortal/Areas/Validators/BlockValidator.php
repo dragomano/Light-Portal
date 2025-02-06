@@ -12,15 +12,11 @@
 
 namespace Bugo\LightPortal\Areas\Validators;
 
-use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Args\ErrorsDataArgs;
-use Bugo\LightPortal\Args\ParamsArgs;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
-use Bugo\LightPortal\EventManagerFactory;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Events\EventArgs;
+use Bugo\LightPortal\Events\EventManagerFactory;
 
 use function array_keys;
 use function array_merge;
@@ -29,8 +25,6 @@ use function filter_var_array;
 
 class BlockValidator extends AbstractValidator
 {
-	use RequestTrait;
-
 	protected array $args = [
 		'block_id'      => FILTER_VALIDATE_INT,
 		'icon'          => FILTER_DEFAULT,
@@ -64,7 +58,7 @@ class BlockValidator extends AbstractValidator
 
 			app(EventManagerFactory::class)()->dispatch(
 				PortalHook::validateBlockParams,
-				new Event(new ParamsArgs($params, Utils::$context['current_block']['type']))
+				new EventArgs(['params' => &$params, 'type' => Utils::$context['current_block']['type']])
 			);
 
 			$params = array_merge($this->params, $params);
@@ -77,12 +71,11 @@ class BlockValidator extends AbstractValidator
 		return [$data, $params];
 	}
 
-	private function findErrors(array $data): void
+	protected function findErrors(array $data): void
 	{
-		$errors = [];
-
-		if (empty($data['areas']))
-			$errors[] = 'no_areas';
+		if (empty($data['areas'])) {
+			$this->errors[] = 'no_areas';
+		}
 
 		if (
 			$data['areas']
@@ -90,21 +83,14 @@ class BlockValidator extends AbstractValidator
 				'options' => ['regexp' => '/' . LP_AREAS_PATTERN . '/']
 			]))
 		) {
-			$errors[] = 'no_valid_areas';
+			$this->errors[] = 'no_valid_areas';
 		}
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::findBlockErrors,
-			new Event(new ErrorsDataArgs($errors, $data))
+			new EventArgs(['errors' => &$this->errors, 'data' => $data])
 		);
 
-		if ($errors) {
-			$this->request()->put('preview', true);
-			Utils::$context['post_errors'] = [];
-
-			foreach ($errors as $error) {
-				Utils::$context['post_errors'][] = Lang::$txt['lp_post_error_' . $error];
-			}
-		}
+		$this->handleErrors();
 	}
 }

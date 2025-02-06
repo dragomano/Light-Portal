@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 24.12.24
+ * @version 31.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\EhPortalMigration;
@@ -49,7 +49,7 @@ class BlockImport extends AbstractCustomBlockImport
 
 		$this->run();
 
-		TablePresenter::show(
+		app(TablePresenter::class)->show(
 			PortalTableBuilder::make('ep_blocks', Lang::$txt['lp_blocks_import'])
 				->withParams(
 					50,

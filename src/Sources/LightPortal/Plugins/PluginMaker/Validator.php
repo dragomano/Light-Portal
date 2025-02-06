@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 09.01.25
+ * @version 24.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
@@ -18,15 +18,12 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Validators\AbstractValidator;
 use Bugo\LightPortal\Enums\VarType;
 use Bugo\LightPortal\Lists\PluginList;
-use Bugo\LightPortal\Utils\RequestTrait;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
 class Validator extends AbstractValidator
 {
-	use RequestTrait;
-
 	protected array $args = [
 		'name'    => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
 		'type'    => FILTER_DEFAULT,
@@ -83,12 +80,10 @@ class Validator extends AbstractValidator
 		return $data;
 	}
 
-	private function findErrors(array $data): void
+	protected function findErrors(array $data): void
 	{
-		$errors = [];
-
 		if (empty($data['name'])) {
-			$errors[] = 'no_name';
+			$this->errors[] = 'no_name';
 		}
 
 		if (
@@ -97,21 +92,21 @@ class Validator extends AbstractValidator
 				'options' => ['regexp' => '/' . LP_ADDON_PATTERN . '/']
 			]))
 		) {
-			$errors[] = 'no_valid_name';
+			$this->errors[] = 'no_valid_name';
 		}
 
 		if (! empty($data['name']) && ! $this->isUnique($data['name'])) {
-			$errors[] = 'no_unique_name';
+			$this->errors[] = 'no_unique_name';
 		}
 
 		if (empty($data['description_english'])) {
-			$errors[] = 'no_description';
+			$this->errors[] = 'no_description';
 		}
 
-		if (! empty($errors)) {
+		if (! empty($this->errors)) {
 			Utils::$context['post_errors'] = [];
 
-			foreach ($errors as $error) {
+			foreach ($this->errors as $error) {
 				Utils::$context['post_errors'][]
 					= Lang::$txt['lp_post_error_' . $error] ?? Lang::$txt['lp_plugin_maker'][$error];
 			}

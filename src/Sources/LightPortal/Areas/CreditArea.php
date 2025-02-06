@@ -19,8 +19,8 @@ use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManagerFactory;
-use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Events\EventArgs;
+use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Utils\SMFHookTrait;
 use Bugo\LightPortal\Utils\Str;
 
@@ -91,16 +91,17 @@ final class CreditArea
 		User::mustHavePermission('light_portal_view');
 
 		Utils::$context['portal_translations'] = [
-			'Polish'     => ['Adrek', 'jsqx'],
+			'Polish'     => ['Adrek', 'jsqx', 'cieplutki'],
 			'Spanish'    => ['Rock Lee', 'Diego Andrés'],
 			'French'     => ['Papoune57'],
-			'Turkish'    => ['gevv'],
+			'Turkish'    => ['gevv', 'Elmacik'],
 			'Ukrainian'  => ['valciriya1986'],
 			'German'     => ['trucker2006', 'm4z'],
 			'Italian'    => ['Darknico'],
 			'Portuguese' => ['Costa'],
 			'Greek'      => ['Panoulis64'],
 			'Dutch'      => ['TeamKC'],
+			'Slovenian'  => ['grega'],
 		];
 
 		Utils::$context['consultants'] = [
@@ -279,9 +280,7 @@ final class CreditArea
 		// Adding copyrights of used plugins
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::credits,
-			new Event(new class ($links) {
-				public function __construct(public array &$links) {}
-			})
+			new EventArgs(['links' => &$links])
 		);
 
 		Utils::$context['lp_components'] = $links;

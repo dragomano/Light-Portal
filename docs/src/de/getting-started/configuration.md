@@ -30,7 +30,7 @@ Um den Inhalt der Portal-Startseite zu ändern, wählen Sie den passenden "Porta
 
 ### Autonomer Modus
 
-Dies ist ein Modus, in dem Sie Ihre eigene Homepage festlegen können (auch wenn sie auf einer anderen Seite ist), und entfernen Sie unnötige Elemente aus dem Hauptmenü (Benutzerliste, Kalender, etc.). Siehe zum Beispiel `portal.php` im Forum root .
+This is a mode where you can specify your own home page, and remove unnecessary items from the main menu (user list, calendar, etc.). Siehe zum Beispiel `portal.php` im Forum root .
 
 ### Berechtigungen
 

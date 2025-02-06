@@ -30,7 +30,7 @@ Om de inhoud van de homepagina van het portaal te wijzigen, selecteer je de juis
 
 ### Alleenstaande modus
 
-Dit is een modus waar u uw eigen startpagina kunt opgeven (zelfs als het op een andere site staat), en verwijder onnodige items uit het hoofdmenu (gebruikerslijst, kalender, etc.). Zie `portal.php` in de forum hoofdmap voor bijvoorbeeld.
+This is a mode where you can specify your own home page, and remove unnecessary items from the main menu (user list, calendar, etc.). Zie `portal.php` in de forum hoofdmap voor bijvoorbeeld.
 
 ### Machtigingen
 

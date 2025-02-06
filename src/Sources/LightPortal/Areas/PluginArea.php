@@ -17,18 +17,18 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\Compat\WebFetchApi;
-use Bugo\LightPortal\Args\SettingsArgs;
+use Bugo\Compat\WebFetch\WebFetchApi;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
-use Bugo\LightPortal\EventManagerFactory;
+use Bugo\LightPortal\Events\EventArgs;
+use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Lists\PluginList;
-use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\ResponseTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
@@ -44,7 +44,6 @@ use function header;
 use function implode;
 use function in_array;
 use function is_array;
-use function json_encode;
 use function ksort;
 use function sort;
 use function sprintf;
@@ -60,6 +59,7 @@ final class PluginArea
 {
 	use CacheTrait;
 	use RequestTrait;
+	use ResponseTrait;
 
 	public function __construct(private readonly PluginRepository $repository) {}
 
@@ -97,7 +97,7 @@ final class PluginArea
 		// Plugin authors can add settings here
 		app(EventManagerFactory::class)(Utils::$context['lp_plugins'])->dispatch(
 			PortalHook::addSettings,
-			new Event(new SettingsArgs($settings))
+			new EventArgs(['settings' => &$settings])
 		);
 
 		$this->handleSave($settings);
@@ -140,7 +140,7 @@ final class PluginArea
 
 		$this->cache()->flush();
 
-		exit(json_encode(['success' => true]));
+		$this->response()->json(['success' => true]);
 	}
 
 	private function handleSave(array $configVars): void
@@ -172,12 +172,12 @@ final class PluginArea
 		// Plugin authors can do additional actions after settings saving
 		app(EventManagerFactory::class)(Utils::$context['lp_plugins'])->dispatch(
 			PortalHook::saveSettings,
-			new Event(new SettingsArgs($settings))
+			new EventArgs(['settings' => &$settings])
 		);
 
 		$this->repository->changeSettings($name, $settings);
 
-		exit(json_encode(['success' => true]));
+		$this->response()->json(['success' => true]);
 	}
 
 	private function prepareAddonList(array $configVars): void
@@ -272,7 +272,7 @@ final class PluginArea
 
 		header('Content-Type: application/json; charset=utf-8');
 
-		exit(json_encode($this->preparedData()));
+		$this->response()->json($this->preparedData());
 	}
 
 	private function preparedData(): array
@@ -280,6 +280,8 @@ final class PluginArea
 		$txtData = [
 			'plugins'           => Lang::$txt['lp_plugins'],
 			'apply_filter'      => Lang::$txt['apply_filter'],
+			'list_view'         => Lang::$txt['lp_list_view'],
+			'card_view'         => Lang::$txt['lp_card_view'],
 			'all'               => Lang::$txt['all'],
 			'lp_active_only'    => Lang::$txt['lp_active_only'],
 			'lp_plugins_desc'   => Lang::$txt['lp_plugins_desc'],
@@ -338,8 +340,8 @@ final class PluginArea
 
 	private function removeAssets(): void
 	{
-		unlink(Theme::$current->settings['default_theme_dir'] . '/css/light_portal/plugins.css');
-		unlink(Theme::$current->settings['default_theme_dir'] . '/scripts/light_portal/plugins.js');
+		@unlink(Theme::$current->settings['default_theme_dir'] . '/css/light_portal/plugins.css');
+		@unlink(Theme::$current->settings['default_theme_dir'] . '/scripts/light_portal/plugins.js');
 	}
 
 	private function extendPluginList(): void

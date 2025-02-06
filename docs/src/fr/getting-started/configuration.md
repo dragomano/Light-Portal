@@ -30,7 +30,7 @@ Pour modifier le contenu de la page d'accueil du portail, sélectionnez le mode 
 
 ### Mode autonome
 
-Il s'agit d'un mode où vous pouvez spécifier votre propre page d'accueil (même si c'est sur un autre site), et supprimer les éléments inutiles du menu principal (liste d'utilisateurs, calendrier, etc.). Voir `portal.php` à la racine du forum par exemple.
+This is a mode where you can specify your own home page, and remove unnecessary items from the main menu (user list, calendar, etc.). Voir `portal.php` à la racine du forum par exemple.
 
 ### Permissions
 

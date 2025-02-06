@@ -14,8 +14,8 @@ namespace Bugo\LightPortal\Hooks;
 
 use Bugo\Compat\Lang;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManagerFactory;
-use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Events\EventArgs;
+use Bugo\LightPortal\Events\EventManagerFactory;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -28,9 +28,7 @@ class DownloadRequest
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::downloadRequest,
-			new Event(new class ($attachRequest) {
-				public function __construct(public mixed &$attachRequest) {}
-			})
+			new EventArgs(['attachRequest' => &$attachRequest])
 		);
 	}
 }

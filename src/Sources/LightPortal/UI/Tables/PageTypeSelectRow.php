@@ -16,6 +16,7 @@ use Bugo\Bricks\Tables\Row;
 use Bugo\Bricks\Tables\RowPosition;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Utils\Request;
 use Bugo\LightPortal\Utils\Str;
 
@@ -25,7 +26,7 @@ class PageTypeSelectRow extends Row
 	{
 		$types = '';
 		foreach (Utils::$context['lp_page_types'] as $type => $text) {
-			if (Utils::$context['user']['is_admin'] === false && $type === 'internal')
+			if (Utils::$context['user']['is_admin'] === false && $type === EntryType::INTERNAL->name())
 				continue;
 
 			$types .= Str::html('option', [

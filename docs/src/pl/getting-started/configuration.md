@@ -18,7 +18,7 @@ W tej sekcji możesz w pełni dostosować stronę główną portalu, włączyć 
 
 ### Ustawienia strony głównej i artykułów
 
-Aby zmienić zawartość strony głównej portalu, wybierz odpowiedni tryb "frontpage":
+Aby zmienić zawartość strony głównej portalu, wybierz odpowiedni tryb "strona główna":
 
 - Wyłącz
 - Określona strona (tylko wybrana strona będzie wyświetlana)
@@ -28,9 +28,9 @@ Aby zmienić zawartość strony głównej portalu, wybierz odpowiedni tryb "fron
 - Wybrane wątki
 - Wybrane działy
 
-### Tryb portalu
+### Tryb autonomiczny
 
-Jest to tryb, w którym możesz określić swoją własną stronę główną (nawet jeśli znajduje się ona na innej stronie), i usuń niepotrzebne elementy z menu głównego (lista użytkowników, kalendarz itp.). Na przykład zobacz `portal.php` w katalogu głównym forum.
+W tym trybie możesz określić własną stronę główną i usunąć niepotrzebne elementy z menu głównego (listy użytkowników, kalendarza itp.). Na przykład zobacz `portal.php` w katalogu głównym forum.
 
 ### Uprawnienia
 
@@ -46,15 +46,15 @@ W tej sekcji możesz zmienić niektóre ustawienia istniejących paneli portalow
 
 ![Panels](panels.png)
 
-## Miscellaneous
+## Inne
 
 W tej sekcji możesz zmienić różne ustawienia pomocnicze portalu, które mogą być przydatne dla twórców szablonów i wtyczek.
 
 ### Tryb kompatybilności
 
-- Wartość parametru **akcji** portalu - można zmienić to ustawienie na Portal Światła w połączeniu z innymi podobnymi modyfikacjami. Następnie strona główna zostanie otwarta pod podanym adrem.
-- Parametr **strony** dla stron portalu - patrz powyżej. Podobnie, dla stron portalowych - zmień parametr i otworzą się za pomocą różnych adresów URL.
+- Wartość parametru **akcji** portalu, można zmienić to ustawienie na Portal Światła w połączeniu z innymi podobnymi modyfikacjami. Następnie strona główna zostanie otwarta pod podanym adres.
+- Parametr **strony** dla stron portalu, patrz powyżej. Podobnie, dla stron portalowych, zmień parametr i otworzą się za pomocą różnych adresów URL.
 
 ### Konserwacja
 
-- Tygodniowa optymalizacja tabel portalu - włącz tę opcję, aby raz w tygodniu wiersze z pustymi wartościami w tabelach portalu w bazie danych zostały usunięte i tabele zostaną zoptymalizowane.
+- Tygodniowa optymalizacja tabel portalu, włącz tę opcję, aby raz w tygodniu wiersze z pustymi wartościami w tabelach portalu w bazie danych zostały usunięte i tabele zostaną zoptymalizowane.

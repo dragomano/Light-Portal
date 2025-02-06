@@ -59,8 +59,9 @@ abstract class AbstractExport implements ExportInterface
 			header('Content-Length: ' . filesize($file));
 
 			if ($fd = fopen($file, 'rb')) {
-				while (! feof($fd))
+				while (! feof($fd)) {
 					print fread($fd, 1024);
+				}
 
 				fclose($fd);
 			}

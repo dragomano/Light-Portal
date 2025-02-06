@@ -8,22 +8,22 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 22.12.24
+ * @version 02.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleChat;
 
-use Bugo\Compat\BBCodeParser;
 use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Time;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
+use Bugo\Compat\Parsers\BBCodeParser;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\ResponseTrait;
 
-use function json_encode;
 use function time;
 
 if (! defined('LP_NAME'))
@@ -33,6 +33,7 @@ class Chat
 {
 	use CacheTrait;
 	use RequestTrait;
+	use ResponseTrait;
 
 	public function __construct(private readonly string $name) {}
 
@@ -163,7 +164,7 @@ class Chat
 			],
 		];
 
-		exit(json_encode($result));
+		$this->response()->json($result);
 	}
 
 	public function deleteMessage(): void

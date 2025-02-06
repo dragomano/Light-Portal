@@ -31,7 +31,7 @@ final class EntryTypeSelect extends AbstractPartial
 
 		$data = [];
 		foreach ($params['data'] as $value => $label) {
-			if (Utils::$context['user']['is_admin'] === false && $value === 'internal')
+			if (Utils::$context['user']['is_admin'] === false && $value === EntryType::INTERNAL->name())
 				continue;
 
 			$data[] = [

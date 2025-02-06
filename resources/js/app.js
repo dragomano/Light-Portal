@@ -27,7 +27,7 @@ window.loadExternalScript = (url, isModule = false) => {
 }
 
 window.loadPortalScript = (url, isModule = false) => {
-  return loadExternalScript(smf_default_theme_url + '/scripts/light_portal/' + url, isModule);
+  return loadExternalScript(window.smf_default_theme_url + '/scripts/light_portal/' + url, isModule);
 }
 
 window.usePortalApi = (endpoint, scriptName) => {

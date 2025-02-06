@@ -13,6 +13,8 @@
 namespace Bugo\LightPortal\Models;
 
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\Permission;
+use Bugo\LightPortal\Enums\Placement;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Utils\Setting;
 
@@ -63,13 +65,13 @@ class BlockModel extends AbstractModel
 
 		$this->content = $postData['content'] ?? $currentBlock['content'] ?? '';
 
-		$this->placement = $postData['placement'] ?? $currentBlock['placement'] ?? 'top';
+		$this->placement = $postData['placement'] ?? $currentBlock['placement'] ?? Placement::TOP->name();
 
 		$this->priority = $postData['priority'] ?? $currentBlock['priority'] ?? 0;
 
 		$this->permissions = $postData['permissions']
 			?? $currentBlock['permissions']
-			?? Setting::get('lp_permissions_default', 'int', 2);
+			?? Setting::get('lp_permissions_default', 'int', Permission::MEMBER->value);
 
 		$this->status = $currentBlock['status'] ?? Status::ACTIVE->value;
 

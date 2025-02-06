@@ -10,9 +10,16 @@
  * @version 2.9
  */
 
-namespace Bugo\LightPortal\Args;
+namespace Bugo\LightPortal\Events;
 
-class ItemsTitlesArgs
+use stdClass;
+
+class EventArgs extends stdClass
 {
-	public function __construct(public array &$items, public array &$titles) {}
+	public function __construct(array $args = [])
+	{
+		foreach ($args as $key => &$value) {
+			$this->$key = &$value;
+		}
+	}
 }

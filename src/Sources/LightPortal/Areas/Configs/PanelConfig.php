@@ -12,12 +12,9 @@
 
 namespace Bugo\LightPortal\Areas\Configs;
 
-use Bugo\Compat\Actions\ACP;
-use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
-use Bugo\Compat\Theme;
-use Bugo\Compat\User;
-use Bugo\Compat\Utils;
+use Bugo\Compat\Actions\Admin\ACP;
+use Bugo\Compat\{Config, Lang, Theme};
+use Bugo\Compat\{User, Utils};
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionTrait;
 use Bugo\LightPortal\Utils\Setting;
@@ -87,7 +84,7 @@ final class PanelConfig extends AbstractConfig
 
 			$this->session()->put('adm-save', true);
 
-			Utils::redirectexit('action=admin;area=lp_settings;sa=panels');
+			$this->response()->redirect('action=admin;area=lp_settings;sa=panels');
 		}
 
 		ACP::prepareDBSettingContext($configVars);

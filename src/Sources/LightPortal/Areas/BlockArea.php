@@ -20,15 +20,12 @@ use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Areas\Validators\BlockValidator;
-use Bugo\LightPortal\Args\ObjectArgs;
-use Bugo\LightPortal\Args\OptionsTypeArgs;
-use Bugo\LightPortal\Args\ParamsArgs;
 use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\EventManagerFactory;
+use Bugo\LightPortal\Events\EventArgs;
+use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Models\BlockModel;
-use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Repositories\BlockRepository;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\CustomField;
@@ -41,11 +38,9 @@ use Bugo\LightPortal\UI\Partials\IconSelect;
 use Bugo\LightPortal\UI\Partials\PermissionSelect;
 use Bugo\LightPortal\UI\Partials\PlacementSelect;
 use Bugo\LightPortal\UI\Partials\TitleClassSelect;
-use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Language;
-use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 use WPLake\Typed\Typed;
@@ -57,7 +52,6 @@ use function array_merge;
 use function array_multisort;
 use function in_array;
 use function is_array;
-use function json_encode;
 use function ob_get_clean;
 use function ob_start;
 use function sprintf;
@@ -72,8 +66,6 @@ if (! defined('SMF'))
 final class BlockArea
 {
 	use AreaTrait;
-	use CacheTrait;
-	use RequestTrait;
 
 	public function __construct(private readonly BlockRepository $repository) {}
 
@@ -163,7 +155,7 @@ final class BlockArea
 		if ($this->request()->has('remove')) {
 			$this->repository->remove([$item]);
 
-			Utils::redirectexit('action=admin;area=lp_blocks;sa=main');
+			$this->response()->redirect('action=admin;area=lp_blocks;sa=main');
 		}
 
 		$this->validateData();
@@ -220,7 +212,7 @@ final class BlockArea
 
 		$this->cache()->forget('active_blocks');
 
-		exit(json_encode($result));
+		$this->response()->json($result);
 	}
 
 	private function getParams(): array
@@ -238,7 +230,7 @@ final class BlockArea
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::prepareBlockParams,
-			new Event(new ParamsArgs($params, Utils::$context['current_block']['type']))
+			new EventArgs(['params' => &$params, 'type' => Utils::$context['current_block']['type']])
 		);
 
 		return array_merge($baseParams, $params);
@@ -357,7 +349,10 @@ final class BlockArea
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::prepareBlockFields,
-			new Event(new OptionsTypeArgs(Utils::$context['lp_block']['options'], Utils::$context['current_block']['type']))
+			new EventArgs([
+				'options' => Utils::$context['lp_block']['options'],
+				'type' => Utils::$context['current_block']['type']
+			])
 		);
 
 		$this->preparePostFields();
@@ -392,7 +387,7 @@ final class BlockArea
 	{
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::prepareEditor,
-			new Event(new ObjectArgs(Utils::$context['lp_block']))
+			new EventArgs(['object' => Utils::$context['lp_block']])
 		);
 	}
 

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 31.01.25
  */
 
 namespace Bugo\LightPortal\Plugins\BlogMode;
@@ -251,7 +251,7 @@ class BlogMode extends Plugin
 					->setHtml(Str::html('span', ['class' => 'main_icons modify_button'])), 'centertext'),
 		);
 
-		TablePresenter::show($builder);
+		app(TablePresenter::class)->show($builder);
 	}
 
 	public function profilePopup(array &$items): void

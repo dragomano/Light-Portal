@@ -12,23 +12,17 @@
 
 namespace Bugo\LightPortal\Areas\Configs;
 
-use Bugo\Compat\Actions\ACP;
-use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
-use Bugo\Compat\Theme;
-use Bugo\Compat\Time;
-use Bugo\Compat\User;
-use Bugo\Compat\Utils;
-use Bugo\Compat\WebFetchApi;
-use Bugo\LightPortal\Actions\FrontPage;
+use Bugo\LightPortal\Renderers\RendererInterface;
+use Bugo\Compat\{Config, Lang, Theme};
+use Bugo\Compat\{Time, User, Utils};
+use Bugo\Compat\Actions\Admin\ACP;
+use Bugo\Compat\WebFetch\WebFetchApi;
 use Bugo\LightPortal\Areas\Traits\QueryTrait;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
-use Bugo\LightPortal\EventManagerFactory;
-use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Events\EventArgs;
+use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\UI\Partials\ActionSelect;
-use Bugo\LightPortal\Utils\CacheTrait;
-use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionTrait;
 use Bugo\LightPortal\Utils\Str;
 
@@ -46,9 +40,7 @@ if (! defined('SMF'))
 
 final class BasicConfig extends AbstractConfig
 {
-	use CacheTrait;
 	use QueryTrait;
-	use RequestTrait;
 	use SessionTrait;
 
 	public const TAB_BASE = 'base';
@@ -86,6 +78,11 @@ final class BasicConfig extends AbstractConfig
 			Utils::$context['session_var'],
 			Utils::$context['session_id'],
 		);
+
+		Lang::$txt['lp_standalone_url_help'] = Lang::getTxt('lp_standalone_url_help', [
+			Config::$boardurl . '/portal.php',
+			Config::$scripturl
+		]);
 
 		$configVars = [
 			[
@@ -152,7 +149,7 @@ final class BasicConfig extends AbstractConfig
 			[
 				'select',
 				'lp_frontpage_layout',
-				app(FrontPage::class)->getLayouts(),
+				app(RendererInterface::class)->getLayouts(),
 				'postinput' => $templateEditLink,
 				'tab' => self::TAB_CARDS,
 			],
@@ -240,9 +237,7 @@ final class BasicConfig extends AbstractConfig
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::extendBasicConfig,
-			new Event(new class ($configVars) {
-				public function __construct(public array &$configVars) {}
-			})
+			new EventArgs(['configVars' => &$configVars])
 		);
 
 		// Save
@@ -275,7 +270,7 @@ final class BasicConfig extends AbstractConfig
 			$this->session()->put('adm-save', true);
 			$this->cache()->flush();
 
-			Utils::redirectexit('action=admin;area=lp_settings;sa=basic');
+			$this->response()->redirect('action=admin;area=lp_settings;sa=basic');
 		}
 
 		ACP::prepareDBSettingContext($configVars);

@@ -9,8 +9,9 @@
     "ext-dom": "*"
   },
   "require-dev": {
-    "rector/rector": "^2.0",
-    "phing/phing": "3.*"
+    "pear/archive_tar": "^1.5",
+    "phing/phing": "3.*",
+    "rector/rector": "^2.0"
   },
   "config": {
     "platform": {

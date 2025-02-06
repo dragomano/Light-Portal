@@ -1,6 +1,6 @@
 <script>
   import { _ } from 'svelte-i18n';
-  import { useUserStore } from '../../js/stores.js';
+  import { userState } from '../../js/states.svelte.js';
   import { MarkdownEditor } from './index.js';
   import Button from '../BaseButton.svelte';
 
@@ -13,7 +13,7 @@
   };
 </script>
 
-{#if $useUserStore.id}
+{#if userState.id}
   <div class="reply_form roundframe descbox">
     <MarkdownEditor bind:message placeholder={$_('add_comment')} />
 

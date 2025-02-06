@@ -59,7 +59,7 @@ final class PageExport extends AbstractExport
 
 		$this->run();
 
-		TablePresenter::show(
+		app(TablePresenter::class)->show(
 			PortalTableBuilder::make('lp_pages', Lang::$txt['lp_pages_export'])
 				->setDefaultSortColumn('id')
 				->setItems($this->repository->getAll(...))

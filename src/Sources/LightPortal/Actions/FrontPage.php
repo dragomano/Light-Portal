@@ -24,8 +24,8 @@ use Bugo\LightPortal\Articles\ChosenTopicArticle;
 use Bugo\LightPortal\Articles\PageArticle;
 use Bugo\LightPortal\Articles\TopicArticle;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManagerFactory;
-use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Events\EventArgs;
+use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Renderers\RendererInterface;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\DateTime;
@@ -71,9 +71,7 @@ final class FrontPage implements ActionInterface
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::frontModes,
-			new Event(new class ($this->modes) {
-				public function __construct(public array &$modes) {}
-			})
+			new EventArgs(['modes' => &$this->modes])
 		);
 
 		if (array_key_exists(Config::$modSettings['lp_frontpage_mode'], $this->modes)) {
@@ -150,11 +148,6 @@ final class FrontPage implements ActionInterface
 		app(EventManagerFactory::class)()->dispatch(PortalHook::frontAssets);
 	}
 
-	public function getLayouts(): array
-	{
-		return $this->renderer->getLayouts();
-	}
-
 	public function prepareTemplates(): void
 	{
 		if (empty(Utils::$context['lp_frontpage_articles'])) {
@@ -165,7 +158,7 @@ final class FrontPage implements ActionInterface
 				: 'layout';
 		}
 
-		Utils::$context['lp_frontpage_layouts'] = $this->getLayouts();
+		Utils::$context['lp_frontpage_layouts'] = $this->renderer->getLayouts();
 
 		$this->prepareLayoutSwitcher();
 
@@ -180,13 +173,7 @@ final class FrontPage implements ActionInterface
 		// You can add your own logic here
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::frontLayouts,
-			new Event(new class ($this->renderer, $currentLayout, $params) {
-				public function __construct(
-					public RendererInterface &$renderer,
-					public string &$layout,
-					public array &$params
-				) {}
-			})
+			new EventArgs(['renderer' => &$this->renderer, 'layout' => &$currentLayout, 'params' => &$params])
 		);
 
 		Utils::$context['lp_layout_content'] = $this->renderer->render($currentLayout, $params);

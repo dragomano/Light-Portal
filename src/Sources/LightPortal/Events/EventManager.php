@@ -10,7 +10,7 @@
  * @version 2.9
  */
 
-namespace Bugo\LightPortal;
+namespace Bugo\LightPortal\Events;
 
 use Bugo\LightPortal\Enums\PluginType;
 use Bugo\LightPortal\Enums\PortalHook;
@@ -18,8 +18,8 @@ use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\PluginInterface;
 use Doctrine\Common\EventManager as DoctrineEventManager;
 
-use function array_map;
 use function array_filter;
+use function array_map;
 use function in_array;
 use function method_exists;
 
@@ -48,23 +48,23 @@ class EventManager
 		$this->eventManager->addEventListener($hooks, $listener);
 	}
 
-	public function dispatch(PortalHook $hook, ?Event $e = null): void
+	public function dispatch(PortalHook $hook, ?EventArgs $args = null): void
 	{
 		/* @var PluginInterface $listener */
 		foreach ($this->getAll($hook->name) as $listener) {
 			if (
 				$listener->type !== PluginType::BLOCK_OPTIONS->name()
 				&& in_array($hook, $this->contentHooks)
-				&& isset($e->args->type)
+				&& isset($args->type)
 			) {
-				if ($e->args->type !== $listener->getShortName()) {
+				if ($args->type !== $listener->getSnakeName()) {
 					continue;
 				}
 			}
 
-			$e ??= new Event(new class {});
+			$event = new Event($args ?: new class {});
 
-			$listener->{$hook->name}($e);
+			$listener->{$hook->name}($event);
 		}
 	}
 

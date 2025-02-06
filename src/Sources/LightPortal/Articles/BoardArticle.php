@@ -12,16 +12,15 @@
 
 namespace Bugo\LightPortal\Articles;
 
-use Bugo\Compat\BBCodeParser;
 use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
+use Bugo\Compat\Parsers\BBCodeParser;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Args\ArticlesArgs;
-use Bugo\LightPortal\Args\ArticlesRowArgs;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Events\EventArgs;
+use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
@@ -59,13 +58,13 @@ class BoardArticle extends AbstractArticle
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::frontBoards,
-			new Event(new ArticlesArgs(
-				$this->columns,
-				$this->tables,
-				$this->params,
-				$this->wheres,
-				$this->orders
-			))
+			new EventArgs([
+				'columns' => &$this->columns,
+				'tables'  => &$this->tables,
+				'params'  => &$this->params,
+				'wheres'  => &$this->wheres,
+				'orders'  => &$this->orders
+			])
 		);
 	}
 
@@ -139,7 +138,7 @@ class BoardArticle extends AbstractArticle
 
 			app(EventManagerFactory::class)()->dispatch(
 				PortalHook::frontBoardsRow,
-				new Event(new ArticlesRowArgs($boards, $row))
+				new EventArgs(['articles' => &$boards, 'row' => $row])
 			);
 		}
 

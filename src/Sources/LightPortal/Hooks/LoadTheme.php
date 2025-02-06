@@ -24,7 +24,7 @@ use Bugo\LightPortal\Enums\Placement;
 use Bugo\LightPortal\Enums\PluginType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\TitleClass;
-use Bugo\LightPortal\EventManagerFactory;
+use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Repositories\BlockRepository;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionManager;
@@ -45,7 +45,6 @@ class LoadTheme
 		Lang::load('LightPortal/LightPortal');
 
 		$this->defineVars();
-
 		$this->loadAssets();
 
 		// Run all init methods for active plugins

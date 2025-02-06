@@ -12,7 +12,6 @@
 
 namespace Bugo\LightPortal\Areas;
 
-use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
@@ -33,11 +32,10 @@ use Bugo\LightPortal\Areas\Imports\CategoryImport;
 use Bugo\LightPortal\Areas\Imports\PageImport;
 use Bugo\LightPortal\Areas\Imports\PluginImport;
 use Bugo\LightPortal\Areas\Imports\TagImport;
-use Bugo\LightPortal\Args\AreasArgs;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManagerFactory;
-use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Events\EventArgs;
+use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\RequestTrait;
@@ -214,17 +212,12 @@ final class ConfigArea
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::updateAdminAreas,
-			new Event(new AreasArgs($areas['lp_portal']['areas']))
+			new EventArgs(['areas' => &$areas['lp_portal']['areas']])
 		);
 	}
 
 	public function helpadmin(): void
 	{
-		Lang::$txt['lp_standalone_url_help'] = Lang::getTxt('lp_standalone_url_help', [
-			Config::$boardurl . '/portal.php',
-			Config::$scripturl
-		]);
-
 		Lang::$txt['lp_menu_separate_subsection_title_help'] = Lang::getTxt('lp_menu_separate_subsection_title_help', [
 			'<var>{lp_pages}</var>',
 			'<var>$txt[`lp_pages`]</var>',
@@ -294,7 +287,7 @@ final class ConfigArea
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::updateBlockAreas,
-			new Event(new AreasArgs($areas))
+			new EventArgs(['areas' => &$areas])
 		);
 
 		$this->callActionFromAreas($areas);
@@ -314,7 +307,7 @@ final class ConfigArea
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::updatePageAreas,
-			new Event(new AreasArgs($areas))
+			new EventArgs(['areas' => &$areas])
 		);
 
 		$this->callActionFromAreas($areas);
@@ -334,7 +327,7 @@ final class ConfigArea
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::updateCategoryAreas,
-			new Event(new AreasArgs($areas))
+			new EventArgs(['areas' => &$areas])
 		);
 
 		$this->callActionFromAreas($areas);
@@ -354,7 +347,7 @@ final class ConfigArea
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::updateTagAreas,
-			new Event(new AreasArgs($areas))
+			new EventArgs(['areas' => &$areas])
 		);
 
 		$this->callActionFromAreas($areas);
@@ -375,7 +368,7 @@ final class ConfigArea
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::updatePluginAreas,
-			new Event(new AreasArgs($areas))
+			new EventArgs(['areas' => &$areas])
 		);
 
 		$this->callActionFromAreas($areas);

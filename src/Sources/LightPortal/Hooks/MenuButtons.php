@@ -52,14 +52,12 @@ class MenuButtons
 		$this->prepareAdminButtons($buttons);
 		$this->prepareModerationButtons($buttons);
 		$this->preparePageButtons($buttons);
-
 		$this->showDebugInfo();
 
 		if (empty(Config::$modSettings['lp_frontpage_mode']))
 			return;
 
 		$this->preparePortalButtons($buttons);
-
 		$this->fixCanonicalUrl();
 		$this->fixLinktree();
 	}

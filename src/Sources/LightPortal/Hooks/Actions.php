@@ -13,7 +13,6 @@
 namespace Bugo\LightPortal\Hooks;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Actions\BoardIndex;
@@ -22,7 +21,6 @@ use Bugo\LightPortal\Actions\FrontPage;
 use Bugo\LightPortal\Actions\Tag;
 use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\RequestTrait;
 
 use function array_search;
 use function implode;
@@ -35,7 +33,6 @@ if (! defined('SMF'))
 class Actions
 {
 	use CommonChecks;
-	use RequestTrait;
 
 	public function __invoke(array &$actions): void
 	{
@@ -44,8 +41,6 @@ class Actions
 		}
 
 		$actions[Action::FORUM->value] = [false, [app(BoardIndex::class), 'show']];
-
-		Theme::load();
 
 		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'categories') {
 			app(Category::class)->show();
@@ -73,18 +68,18 @@ class Actions
 
 		$topic = $this->request()->get('t');
 
-		$frontpageTopics = Setting::getFrontpageTopics();
+		$homeTopics = Setting::getFrontpageTopics();
 
-		if (($key = array_search($topic, $frontpageTopics)) !== false) {
-			unset($frontpageTopics[$key]);
+		if (($key = array_search($topic, $homeTopics)) !== false) {
+			unset($homeTopics[$key]);
 		} else {
-			$frontpageTopics[] = $topic;
+			$homeTopics[] = $topic;
 		}
 
 		Config::updateModSettings(
-			['lp_frontpage_topics' => implode(',', $frontpageTopics)]
+			['lp_frontpage_topics' => implode(',', $homeTopics)]
 		);
 
-		Utils::redirectexit('topic=' . $topic);
+		$this->response()->redirect('topic=' . $topic);
 	}
 }

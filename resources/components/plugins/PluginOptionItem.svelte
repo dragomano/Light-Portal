@@ -1,6 +1,6 @@
 <script>
   import { _ } from 'svelte-i18n';
-  import { useContextStore } from '../../js/stores.js';
+  import { contextState } from '../../js/states.svelte.js';
   import {
     CallbackOption,
     CheckOption,
@@ -19,11 +19,10 @@
 
   let { option, plugin } = $props();
 
-  const contextStore = $useContextStore;
   const type = $derived(option[0]);
   const name = $derived(option[1]);
   const id = $derived(`${plugin}.${name}`);
-  const value = $derived(contextStore[`lp_${plugin}`]?.[name]);
+  const value = $derived(contextState[`lp_${plugin}`]?.[name]);
   const { postfix, subtext } = $derived(option);
   const showLabel = $derived(!['callback', 'title', 'desc', 'check'].includes(type));
   const optionType = $derived(['float', 'int'].includes(type) ? 'number' : type);

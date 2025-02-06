@@ -15,34 +15,18 @@ if (! defined('SMF'))
 
 require_once __DIR__ . '/Libs/autoload.php';
 
-use Bugo\LightPortal\Areas\ConfigArea;
-use Bugo\LightPortal\Areas\CreditArea;
 use Bugo\LightPortal\Container;
-use Bugo\LightPortal\Integration;
-
-// This is the way
-$app = new class {
-	public function __construct()
-	{
-		if (SMF === 'BACKGROUND')
-			return;
-
-		(new Integration())();
-		(new ConfigArea())();
-		(new CreditArea())();
-	}
-};
-
-new $app;
+use Bugo\LightPortal\PortalApp;
 
 // Helper to work with Container
-function app(string $service, array $params = []): mixed
+function app(string $service = ''): mixed
 {
-	$instance = Container::get($service);
-
-	if ($service === 'events') {
-		return $instance($params);
+	if (empty($service)) {
+		return Container::getInstance();
 	}
 
-	return $instance;
+	return Container::get($service);
 }
+
+// This is the way
+app(PortalApp::class);

@@ -9,7 +9,6 @@ export default {
       { text: 'Home', link: '/' },
       { text: 'Introduction', link: '/intro' },
       { text: 'Examples', link: '/examples' },
-      { text: 'Demo', link: 'https://demo.dragomano.ru/' },
       { text: 'Changelog', link: '/changelog' },
     ],
     outline: {

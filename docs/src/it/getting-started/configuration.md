@@ -30,7 +30,7 @@ Per modificare il contenuto della home page del portale, selezionare la desidera
 
 ### Modalità Standalone
 
-Questa è una modalità in cui puoi specificare la tua home page (anche se si trova su un altro sito) e rimuovere voci non necessarie dal menu principale (utenti, calendario, ecc.). Vedi ad esempio il file `portal.php` nella root del forum.
+Questa è una modalità in cui puoi specificare la tua home page e rimuovere voci non necessarie dal menu principale (utenti, calendario, ecc.). Vedi ad esempio il file `portal.php` nella root del forum.
 
 ### Permessi
 

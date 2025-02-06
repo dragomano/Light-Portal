@@ -37,3 +37,4 @@ src/Themes/default/scripts/light_portal/*
 !**/Plugins/**/langs/english.php
 
 *.zip
+*.tgz

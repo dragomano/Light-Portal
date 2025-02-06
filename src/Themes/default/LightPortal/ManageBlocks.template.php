@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
-use Bugo\Compat\{Config, Lang, Theme, Utils};
+use Bugo\Compat\{Config, Lang};
+use Bugo\Compat\{Theme, Utils};
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Utils\Icon;
 

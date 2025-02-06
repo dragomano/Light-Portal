@@ -14,11 +14,15 @@ namespace Bugo\LightPortal\Plugins;
 
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManager;
+use Bugo\LightPortal\Events\EventArgs;
+use Bugo\LightPortal\Events\EventManager;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
+use function array_map;
+use function array_merge;
 use function class_exists;
+use function get_object_vars;
 
 use const DIRECTORY_SEPARATOR;
 
@@ -27,8 +31,6 @@ if (! defined('LP_NAME'))
 
 final class PluginHandler
 {
-	private readonly PluginRegistry $registry;
-
 	private readonly AssetHandler $assetHandler;
 
 	private readonly ConfigHandler $configHandler;
@@ -39,23 +41,31 @@ final class PluginHandler
 
 	public function __construct(array $plugins = [])
 	{
-		$this->registry = app(PluginRegistry::class);
-		$this->manager  = app(EventManager::class);
-
-		$this->assetHandler  = new AssetHandler();
-		$this->configHandler = new ConfigHandler();
-		$this->langHandler   = new LangHandler();
+		$this->manager       = app(EventManager::class);
+		$this->assetHandler  = app(AssetHandler::class);
+		$this->configHandler = app(ConfigHandler::class);
+		$this->langHandler   = app(LangHandler::class);
 
 		$this->prepareListeners($plugins);
 		$this->prepareAssets();
 		$this->assetHandler->minify();
 
-		Utils::$context['lp_loaded_addons'] = $this->registry->getAll();
+		Utils::$context['lp_loaded_addons'] = $this->getLoadedPlugins();
 	}
 
-	public function getRegistry(): PluginRegistry
+	public function getLoadedPlugins(): array
 	{
-		return $this->registry;
+		if (! app()->has('plugins')) {
+			return [];
+		}
+
+		$plugins = array_map(function (PluginInterface $plugin) {
+			$data = get_object_vars($plugin);
+			$data['name'] = $plugin->getCamelName();
+			return [$plugin->getSnakeName() => $data];
+		}, app()->get('plugins'));
+
+		return array_merge(...$plugins);
 	}
 
 	public function getManager(): EventManager
@@ -69,9 +79,7 @@ final class PluginHandler
 
 		$this->manager->dispatch(
 			PortalHook::prepareAssets,
-			new Event(new class ($assets) {
-				public function __construct(public array &$assets) {}
-			})
+			new EventArgs(['assets' => &$assets])
 		);
 
 		$this->assetHandler->prepare($assets);
@@ -87,30 +95,25 @@ final class PluginHandler
 		foreach ($plugins as $pluginName) {
 			$className = __NAMESPACE__ . "\\$pluginName\\$pluginName";
 
-			if (! class_exists($className))
+			if (! class_exists($className) || app()->has($className))
 				continue;
 
-			$snakeName = Str::getSnakeName($pluginName);
+			$this->handlePlugin($pluginName);
 
-			if (! $this->registry->has($snakeName)) {
-				$path = __DIR__ . DIRECTORY_SEPARATOR . $pluginName . DIRECTORY_SEPARATOR;
+			app()->add($className)->addTag('plugins');
 
-				$this->assetHandler->handle($path, $pluginName);
-				$this->configHandler->handle($snakeName);
-				$this->langHandler->handle($path, $snakeName);
-
-				/** @var Plugin $className */
-				$class = new $className();
-
-				$this->manager->addListeners(PortalHook::cases(), $class);
-
-				$this->registry->add($snakeName, [
-					'name'     => $pluginName,
-					'icon'     => $class->icon,
-					'type'     => $class->type,
-					'saveable' => $class->saveable,
-				]);
-			}
+			$this->manager->addListeners(PortalHook::cases(), app($className));
 		}
+	}
+
+	private function handlePlugin(string $pluginName): void
+	{
+		$snakeName = Str::getSnakeName($pluginName);
+
+		$path = __DIR__ . DIRECTORY_SEPARATOR . $pluginName . DIRECTORY_SEPARATOR;
+
+		$this->assetHandler->handle($path, $pluginName);
+		$this->configHandler->handle($snakeName);
+		$this->langHandler->handle($path, $snakeName);
 	}
 }

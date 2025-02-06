@@ -16,16 +16,16 @@ use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManagerFactory;
+use Bugo\LightPortal\Events\EventArgs;
+use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Lists\IconList;
-use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\ResponseTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
 use function array_filter;
-use function json_encode;
 use function sprintf;
 use function str_contains;
 use function strtolower;
@@ -39,6 +39,7 @@ trait QueryTrait
 {
 	use CacheTrait;
 	use RequestTrait;
+	use ResponseTrait;
 
 	private function prepareIconList(): void
 	{
@@ -56,9 +57,7 @@ trait QueryTrait
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::prepareIconList,
-			new Event(new class ($icons, $template) {
-				public function __construct(public array &$icons, public string &$template) {}
-			})
+			new EventArgs(['icons' => &$icons, 'template' => &$template])
 		);
 
 		$icons = array_filter($icons, static fn($item) => str_contains((string) $item, $search));
@@ -71,7 +70,7 @@ trait QueryTrait
 			];
 		}
 
-		exit(json_encode($results));
+		$this->response()->json($results);
 	}
 
 	private function getFaIcons(): array
@@ -129,7 +128,7 @@ trait QueryTrait
 
 		Db::$db->free_result($result);
 
-		exit(json_encode($topics));
+		$this->response()->json($topics);
 	}
 
 	private function prepareMemberList(): void
@@ -150,7 +149,7 @@ trait QueryTrait
 			FROM {db_prefix}members
 			WHERE {raw:real_name} LIKE {string:search}
 				AND is_activated IN (1, 11)
-			LIMIT 1000',
+			LIMIT 100',
 			[
 				'real_name' => Utils::$smcFunc['db_case_sensitive'] ? 'LOWER(real_name)' : 'real_name',
 				'search'    => $search,
@@ -171,6 +170,6 @@ trait QueryTrait
 
 		Db::$db->free_result($result);
 
-		exit(json_encode($members));
+		$this->response()->json($members);
 	}
 }

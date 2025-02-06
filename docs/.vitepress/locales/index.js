@@ -10,6 +10,7 @@ import pl from './pl';
 import uk from './uk';
 import fr from './fr';
 import tr from './tr';
+import sl from './sl';
 
 function addPrefixToLinks(prefix, obj) {
   for (const key in obj) {
@@ -36,4 +37,5 @@ export default {
   uk: addPrefixToLinks('uk', uk),
   fr: addPrefixToLinks('fr', fr),
   tr: addPrefixToLinks('tr', tr),
+  sl: addPrefixToLinks('sl', sl),
 };

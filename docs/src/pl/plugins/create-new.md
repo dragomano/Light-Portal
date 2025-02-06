@@ -5,9 +5,9 @@ order: 2
 
 # Dodaj wtyczkę
 
-Wtyczki to rozszerzenia, które rozszerzają możliwości portalu Światła. Aby utworzyć własną wtyczkę, postępuj zgodnie z poniższymi instrukcjami.
+Wtyczki to rozszerzenia, które rozszerzają możliwości Light Portal. Aby utworzyć własną wtyczkę, postępuj zgodnie z poniższymi instrukcjami.
 
-:::info Przypis
+:::info Uwaga
 
 Możesz użyć **PluginMaker** jako pomocnika do tworzenia własnych wtyczek. Pobierz i włącz na stronie _Admin -> Ustawienia portalu -> Wtyczki_.
 
@@ -53,7 +53,7 @@ Wtyczki do importu i eksportu różnych elementów portalu.
 
 ### `block_options` | `page_options`
 
-Wtyczki, które dodają dodatkowe parametry dla odpowiedniej jednostki (blok lub .page).
+Wtyczki, które dodają dodatkowe parametry dla odpowiedniej jednostki (blok lub strona).
 
 ### `icons`
 
@@ -69,7 +69,7 @@ Wtyczki, które nie są związane z żadną z powyższych kategorii.
 
 ## Tworzenie katalogu wtyczek
 
-Utwórz osobny folder dla swoich plików wtyczek w katalogu `/Sources/LightPortal/Plugins`. Na przykład, jeśli wtyczka jest nazywana `HelloWorld`, struktura folderów powinna wyglądać tak:
+Utwórz osobny folder dla swoich plików wtyczek w katalogu "/Sources/LightPortal/Plugins". Na przykład, jeśli wtyczka jest nazywana "HelloWorld", struktura folderów powinna wyglądać tak:
 
 ```
 ...(Plugins)
@@ -81,7 +81,7 @@ Utwórz osobny folder dla swoich plików wtyczek w katalogu `/Sources/LightPorta
     └── HelloWorld.php
 ```
 
-Plik `index.php` może być skopiowany z folderów innych wtyczek. Plik `HelloWorld.php` zawiera logikę wtyczki:
+Plik "index.php" może być skopiowany z folderów innych wtyczek. Plik "HelloWorld.php" zawiera logikę wtyczki:
 
 ```php:line-numbers
 <?php
@@ -116,7 +116,7 @@ class HelloWorld extends Plugin
 
 ## Używanie SSI
 
-Jeśli wtyczka musi pobrać jakiekolwiek dane za pomocą funkcji SSI, użyj wbudowanej metody `getFromSsi(ciąg $function, ...$params)`. Jako parametr `$function` musisz podać nazwę jednej z funkcji zawartych w pliku **SSI.php**, bez prefiksu `ssi_`. Na przykład:
+Jeśli wtyczka musi pobrać jakiekolwiek dane za pomocą funkcji SSI, użyj wbudowanej metody "getFromSsi(string $function, ...$params)". Jako parametr `$function` musisz podać nazwę jednej z funkcji zawartych w pliku **SSI.php**, bez prefiksu `ssi_`. Na przykład:
 
 ```php
 <?php
@@ -127,4 +127,4 @@ $data = $this->getFromSSI('topTopics', 'views', 10, 'array');
 
 ## Używanie kompozytora
 
-Wtyczka może korzystać z bibliotek firm trzecich zainstalowanych przez Composer. Upewnij się, że plik `composer.json`, który zawiera niezbędne zależności, znajduje się w katalogu wtyczki. Przed opublikowaniem wtyczki, otwórz katalog wtyczek w wierszu poleceń i uruchom polecenie: `composer install --no-dev -o`. Następnie cała zawartość katalogu wtyczek może być zapakowana jako oddzielna modyfikacja dla SMF (na przykład patrz pakiet **PluginMaker**).
+Wtyczka może korzystać z bibliotek firm trzecich zainstalowanych przez Composer. Upewnij się, że plik `composer.json`, który zawiera niezbędne zależności, znajduje się w katalogu wtyczki. Przed opublikowaniem wtyczki, otwórz katalog wtyczek w wierszu poleceń i uruchom polecenie: "composer install --no-dev -o". Następnie cała zawartość katalogu wtyczek może być zapakowana jako oddzielna modyfikacja dla SMF (na przykład patrz pakiet **PluginMaker**).

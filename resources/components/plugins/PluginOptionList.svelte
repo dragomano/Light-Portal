@@ -1,7 +1,7 @@
 <script>
   import { _ } from 'svelte-i18n';
   import { slide } from 'svelte/transition';
-  import { useContextStore, useAppStore } from '../../js/stores.js';
+  import { appState, contextState } from '../../js/states.svelte.js';
   import { PluginOptionItem } from './index.js';
   import Button from '../BaseButton.svelte';
 
@@ -10,8 +10,8 @@
   let success = $state(false);
   let form = $state();
 
-  const { sessionId, sessionVar } = $useAppStore;
-  const { postUrl } = $useContextStore;
+  const { sessionId, sessionVar } = appState;
+  const { postUrl } = contextState;
 
   const blockId = $derived(`${item.snake_name}_${sessionId}_settings`);
   const formId = $derived(`${item.snake_name}_form_${sessionId}`);

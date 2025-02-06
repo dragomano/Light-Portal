@@ -13,7 +13,6 @@
 namespace Bugo\LightPortal\Areas\Validators;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Utils\RequestTrait;
 
@@ -40,24 +39,15 @@ trait BaseValidateTrait
 		return $data;
 	}
 
-	private function findErrors(array $data): void
+	protected function findErrors(array $data): void
 	{
-		$errors = [];
-
 		if (
 			(Config::$modSettings['userLanguage'] && empty($data['title_' . Config::$language]))
 			|| empty($data['title_' . Utils::$context['user']['language']])
 		) {
-			$errors[] = 'no_title';
+			$this->errors[] = 'no_title';
 		}
 
-		if ($errors) {
-			$this->request()->put('preview', true);
-			Utils::$context['post_errors'] = [];
-
-			foreach ($errors as $error) {
-				Utils::$context['post_errors'][] = Lang::$txt['lp_post_error_' . $error];
-			}
-		}
+		$this->handleErrors();
 	}
 }

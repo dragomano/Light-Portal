@@ -13,8 +13,8 @@ namespace Bugo\LightPortal\Areas\Imports;
 
 use Bugo\LightPortal\Areas\Imports\Traits\WithCommentsTrait;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManagerFactory;
-use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Events\EventArgs;
+use Bugo\LightPortal\Events\EventManagerFactory;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -33,14 +33,12 @@ abstract class AbstractCustomPageImport extends AbstractCustomImport
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::importPages,
-			new Event(new class ($items, $titles, $params, $comments) {
-				public function __construct(
-					public array &$items,
-					public array &$titles,
-					public array &$params,
-					public array &$comments
-				) {}
-			})
+			new EventArgs([
+				'items'    => &$items,
+				'titles'   => &$titles,
+				'params'   => &$params,
+				'comments' => &$comments
+			])
 		);
 
 		$results = $this->insertData(

@@ -14,9 +14,9 @@ namespace Bugo\LightPortal\Utils;
 
 use Bugo\FontAwesome\IconBuilder;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\EventManagerFactory;
+use Bugo\LightPortal\Events\EventArgs;
+use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Lists\IconList;
-use Bugo\LightPortal\Plugins\Event;
 
 use function str_replace;
 
@@ -45,9 +45,7 @@ final class Icon
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::prepareIconTemplate,
-			new Event(new class ($template, $icon) {
-				public function __construct(public string &$template, public readonly string $icon) {}
-			})
+			new EventArgs(['template' => &$template, 'icon' => $icon])
 		);
 
 		return $template;

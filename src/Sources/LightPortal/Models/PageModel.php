@@ -14,6 +14,8 @@ namespace Bugo\LightPortal\Models;
 
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\EntryType;
+use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Utils\Setting;
 
@@ -76,10 +78,10 @@ class PageModel extends AbstractModel
 
 		$this->type = $postData['type'] ?? $currentPage['type'] ?? 'bbc';
 
-		$this->entryType = $postData['entry_type'] ?? $currentPage['entry_type'] ?? 'default';
+		$this->entryType = $postData['entry_type'] ?? $currentPage['entry_type'] ?? EntryType::DEFAULT->name();
 
 		$this->permissions = $postData['permissions'] ?? $currentPage['permissions']
-			?? Setting::get('lp_permissions_default', 'int', 2);
+			?? Setting::get('lp_permissions_default', 'int', Permission::MEMBER->value);
 
 		$this->status = $postData['status'] ?? $currentPage['status']
 			?? (

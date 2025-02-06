@@ -18,14 +18,15 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\AlertAction;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
-use Bugo\LightPortal\EventManagerFactory;
-use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Events\EventArgs;
+use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Repositories\CommentRepository;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\Notify;
 use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\ResponseTrait;
 use Bugo\LightPortal\Utils\Setting;
 use WPLake\Typed\Typed;
 
@@ -34,7 +35,6 @@ use function array_slice;
 use function count;
 use function date;
 use function http_response_code;
-use function json_encode;
 use function trim;
 
 use const LP_BASE_URL;
@@ -46,6 +46,7 @@ final class Comment implements ActionInterface
 {
 	use CacheTrait;
 	use RequestTrait;
+	use ResponseTrait;
 
 	private string $pageSlug;
 
@@ -89,9 +90,7 @@ final class Comment implements ActionInterface
 
 			app(EventManagerFactory::class)()->dispatch(
 				PortalHook::commentButtons,
-				new Event(new class ($comment, $comment['extra_buttons']) {
-					public function __construct(public readonly array $comment, public array &$buttons) {}
-				})
+				new EventArgs(['comment' => $comment, 'buttons' => &$comment['extra_buttons']])
 			);
 
 			return $comment;
@@ -118,7 +117,7 @@ final class Comment implements ActionInterface
 			'limit'        => $limit,
 		];
 
-		exit(json_encode($result));
+		$this->response()->json($result);
 	}
 
 	private function add(): never
@@ -127,13 +126,15 @@ final class Comment implements ActionInterface
 			'id' => null,
 		];
 
-		if (empty(User::$info['id']))
-			exit(json_encode($result));
+		if (empty(User::$info['id'])) {
+			$this->response()->json($result);
+		}
 
 		$data = $this->request()->json();
 
-		if (empty($data['message']))
-			exit(json_encode($result));
+		if (empty($data['message'])) {
+			$this->response()->json($result);
+		}
 
 		$parentId = VarType::INTEGER->filter($data['parent_id']);
 		$message  = Utils::htmlspecialchars($data['message']);
@@ -141,8 +142,9 @@ final class Comment implements ActionInterface
 		$pageId   = Utils::$context['lp_page']['id'];
 		$pageUrl  = Utils::$context['canonical_url'];
 
-		if (empty($pageId) || empty($message))
-			exit(json_encode($result));
+		if (empty($pageId) || empty($message)) {
+			$this->response()->json($result);
+		}
 
 		$item = $this->repository->save([
 			'parent_id'  => $parentId,
@@ -187,7 +189,7 @@ final class Comment implements ActionInterface
 
 		http_response_code(201);
 
-		exit(json_encode($result));
+		$this->response()->json($result);
 	}
 
 	private function update(): never
@@ -198,15 +200,17 @@ final class Comment implements ActionInterface
 			'success' => false,
 		];
 
-		if (empty($data) || Utils::$context['user']['is_guest'])
-			exit(json_encode($result));
+		if (empty($data) || Utils::$context['user']['is_guest']) {
+			$this->response()->json($result);
+		}
 
 		$item    = $data['comment_id'];
 		$message = trim((string) $data['message']);
 		$message = Utils::htmlspecialchars($message);
 
-		if (empty($item) || $message === '')
-			exit(json_encode($result));
+		if (empty($item) || $message === '') {
+			$this->response()->json($result);
+		}
 
 		$this->repository->update([
 			'message' => Utils::shorten($message, 65531),
@@ -221,7 +225,7 @@ final class Comment implements ActionInterface
 
 		$this->cache()->forget('page_' . $this->pageSlug . '_comments');
 
-		exit(json_encode($result));
+		$this->response()->json($result);
 	}
 
 	private function remove(): never
@@ -229,14 +233,14 @@ final class Comment implements ActionInterface
 		$item = (int) $this->request()->json('comment_id');
 
 		if (empty($item)) {
-			exit(json_encode(['success' => false]));
+			$this->response()->json(['success' => false]);
 		}
 
 		$items = $this->repository->remove($item, $this->pageSlug);
 
 		$this->cache()->forget('page_' . $this->pageSlug . '_comments');
 
-		exit(json_encode(['success' => true, 'items' => $items]));
+		$this->response()->json(['success' => true, 'items' => $items]);
 	}
 
 	private function getTree(array $data): array
