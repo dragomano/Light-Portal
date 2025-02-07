@@ -65,7 +65,6 @@
         <exclude name="Sources/LightPortal/Plugins/TwigLayouts/**" />
         <exclude name="Sources/LightPortal/Plugins/Uicons/**" />
         <exclude name="Sources/LightPortal/Plugins/VkComments/**" />
-        <exclude name="Sources/LightPortal/Plugins/YandexTurbo/**" />
         <exclude name="Sources/LightPortal/composer.json" />
         <exclude name="Sources/LightPortal/composer.lock" />
         <exclude name="Sources/LightPortal/create_index.php" />
@@ -96,7 +95,6 @@
         <exclude name="Sources/LightPortal/Plugins/Jodit/**" />
         <exclude name="Sources/LightPortal/Plugins/MediaBlock/**" />
         <exclude name="Sources/LightPortal/Plugins/PageScroll/**" />
-        <exclude name="Sources/LightPortal/Plugins/YandexTurbo/**" />
         <exclude name="Sources/LightPortal/Plugins/*/langs/**" />
         <include name="package-info.xml" />
         <include name="*.php" />
