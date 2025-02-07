@@ -67,7 +67,7 @@ final class FrontPage implements ActionInterface
 
 	public function show(): void
 	{
-		User::mustHavePermission('light_portal_view');
+		User::$me->isAllowedTo('light_portal_view');
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::frontModes,

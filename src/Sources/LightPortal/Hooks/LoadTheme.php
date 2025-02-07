@@ -53,10 +53,10 @@ class LoadTheme
 
 	protected function defineVars(): void
 	{
-		Utils::$context['allow_light_portal_view']             = User::hasPermission('light_portal_view');
-		Utils::$context['allow_light_portal_manage_pages_own'] = User::hasPermission('light_portal_manage_pages_own');
-		Utils::$context['allow_light_portal_manage_pages_any'] = User::hasPermission('light_portal_manage_pages_any');
-		Utils::$context['allow_light_portal_approve_pages']    = User::hasPermission('light_portal_approve_pages');
+		Utils::$context['allow_light_portal_view']             = User::$me->allowedTo('light_portal_view');
+		Utils::$context['allow_light_portal_manage_pages_own'] = User::$me->allowedTo('light_portal_manage_pages_own');
+		Utils::$context['allow_light_portal_manage_pages_any'] = User::$me->allowedTo('light_portal_manage_pages_any');
+		Utils::$context['allow_light_portal_approve_pages']    = User::$me->allowedTo('light_portal_approve_pages');
 
 		Utils::$context['lp_quantities'] = app(SessionManager::class);
 

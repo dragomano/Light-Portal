@@ -31,12 +31,12 @@ class Avatar
 			return '';
 
 		if ($userData === []) {
-			$userData = User::loadMemberData([$userId]);
+			$userData = self::getPreparedData([$userId]);
 		}
 
 		if (! isset(User::$memberContext[$userId]) && in_array($userId, $userData)) {
 			try {
-				User::loadMemberContext($userId, true);
+				User::$loaded[$userId]->format(true);
 			} catch (Exception $e) {
 				ErrorHandler::log('[LP] getUserAvatar helper: ' . $e->getMessage(), 'user');
 			}
@@ -58,11 +58,16 @@ class Avatar
 
 	public static function getWithItems(array $items, string $entity = 'author'): array
 	{
-		$userData = User::loadMemberData(array_map(static fn($item) => $item[$entity]['id'], $items));
+		$userData = self::getPreparedData(array_map(static fn($item) => $item[$entity]['id'], $items));
 
 		return array_map(function ($item) use ($userData, $entity) {
 			$item[$entity]['avatar'] = self::get((int) $item[$entity]['id'], $userData);
 			return $item;
 		}, $items);
+	}
+
+	protected static function getPreparedData(array $data): array
+	{
+		return array_map(fn($user) => $user->id, User::load($data));
 	}
 }

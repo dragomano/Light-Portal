@@ -46,7 +46,7 @@ final class PageExport extends AbstractExport
 
 	public function main(): void
 	{
-		User::mustHavePermission('admin_forum');
+		User::$me->isAllowedTo('admin_forum');
 
 		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_pages_export'];
 		Utils::$context['page_area_title'] = Lang::$txt['lp_pages_export'];

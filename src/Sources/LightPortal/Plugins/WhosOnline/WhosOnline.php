@@ -123,7 +123,7 @@ class WhosOnline extends Block
 
 				$color = empty($group['color']) ? null : 'color: ' . $group['color'];
 
-				if (User::hasPermission('view_mlist')) {
+				if (User::$me->allowedTo('view_mlist')) {
 					$groups[] = Str::html('a', $group['name'])
 						->href(Config::$scripturl . '?action=groups;sa=members;group=' . $group['id'])
 						->style($color);

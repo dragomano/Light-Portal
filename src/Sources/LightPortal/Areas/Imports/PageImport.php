@@ -39,7 +39,7 @@ final class PageImport extends AbstractImport
 
 	public function main(): void
 	{
-		User::mustHavePermission('admin_forum');
+		User::$me->isAllowedTo('admin_forum');
 
 		Theme::loadTemplate('LightPortal/ManageImpex');
 

@@ -222,7 +222,7 @@ class BoardArticle extends AbstractArticle
 
 	private function canEdit(): bool
 	{
-		return User::$info['is_admin'] || User::hasPermission('manage_boards');
+		return User::$info['is_admin'] || User::$me->allowedTo('manage_boards');
 	}
 
 	private function getEditLink(array $row): string

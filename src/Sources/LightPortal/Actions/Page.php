@@ -60,7 +60,7 @@ final class Page implements ActionInterface
 
 	public function show(): void
 	{
-		User::mustHavePermission('light_portal_view');
+		User::$me->isAllowedTo('light_portal_view');
 
 		$slug = $this->request()->get(LP_PAGE_PARAM);
 

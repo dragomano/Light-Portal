@@ -17,7 +17,6 @@ use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
-use Exception;
 
 use function show_user_info;
 use function show_user_info_for_guests;
@@ -29,14 +28,11 @@ class UserInfo extends Block
 {
 	public string $icon = 'fas fa-user';
 
-	/**
-	 * @throws Exception
-	 */
 	public function getData(): array
 	{
-		User::loadMemberData([User::$info['id']]);
+		User::load(User::$info['id']);
 
-		return User::loadMemberContext(User::$info['id']);
+		return User::$loaded[User::$info['id']]->format();
 	}
 
 	public function prepareContent(Event $e): void

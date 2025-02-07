@@ -53,7 +53,7 @@ final class Notifier extends BackgroundTask
 		}, true);
 
 		if ($this->_details['sender_id'] && empty($this->_details['sender_name'])) {
-			User::loadMemberData([$this->_details['sender_id']]);
+			User::load($this->_details['sender_id'], dataset: 'minimal');
 
 			empty(User::$profiles[$this->_details['sender_id']])
 				? $this->_details['sender_id']   = 0
@@ -128,8 +128,9 @@ final class Notifier extends BackgroundTask
 			);
 
 			while ($row = Db::$db->fetch_assoc($result)) {
-				if (empty($row['lngfile']))
+				if (empty($row['lngfile'])) {
 					$row['lngfile'] = Config::$language;
+				}
 
 				$emails[$row['lngfile']][$row['id_member']] = $row['email_address'];
 			}

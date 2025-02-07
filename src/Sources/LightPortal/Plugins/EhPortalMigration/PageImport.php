@@ -38,7 +38,7 @@ class PageImport extends AbstractCustomPageImport
 {
 	public function main(): void
 	{
-		User::mustHavePermission('admin_forum');
+		User::$me->isAllowedTo('admin_forum');
 
 		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_eh_portal_migration']['label_name'];
 		Utils::$context['page_area_title'] = Lang::$txt['lp_pages_import'];

@@ -78,7 +78,7 @@ class BlogMode extends Plugin
 
 		Lang::$txt['group_perms_name_light_portal_post_blog_entries'] = $this->txt['permission'];
 
-		if (empty(User::hasPermission('light_portal_post_blog_entries')))
+		if (empty(User::$me->allowedTo('light_portal_post_blog_entries')))
 			return;
 
 		Utils::$context['lp_page_types']['blog'] = $this->txt['blogged_status'];

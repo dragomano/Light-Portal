@@ -108,7 +108,7 @@ class GalleryBlock extends Block
 				'title'  => $row['title'],
 				'link'   => Config::$scripturl . '?action=gallery;sa=view;pic=' . $row['id_picture'],
 				'image'     => (Config::$modSettings['gallery_url'] ?? (Config::$boardurl . '/gallery/')) . $row['filename'],
-				'can_edit'  => User::hasPermission('smfgallery_manage') || (User::hasPermission('smfgallery_edit') && $row['id_member'] == User::$info['id']),
+				'can_edit'  => User::$me->allowedTo('smfgallery_manage') || (User::$me->allowedTo('smfgallery_edit') && $row['id_member'] == User::$info['id']),
 				'edit_link' => Config::$scripturl . '?action=gallery;sa=edit;pic=' . $row['id_picture'],
 			];
 
@@ -124,7 +124,7 @@ class GalleryBlock extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		if (! User::hasPermission('smfgallery_view')) {
+		if (! User::$me->allowedTo('smfgallery_view')) {
 			echo Lang::$txt['cannot_smfgallery_view'];
 			return;
 		}

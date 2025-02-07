@@ -226,7 +226,7 @@ final class ConfigArea
 
 	public function settingAreas(): void
 	{
-		User::mustHavePermission('admin_forum');
+		User::$me->isAllowedTo('admin_forum');
 
 		$areas = [
 			'basic'    => [new BasicConfig(), 'show'],
@@ -275,7 +275,7 @@ final class ConfigArea
 
 	public function blockAreas(): void
 	{
-		User::mustHavePermission('admin_forum');
+		User::$me->isAllowedTo('admin_forum');
 
 		$areas = [
 			'main'   => [app(BlockArea::class), 'main'],
@@ -295,7 +295,7 @@ final class ConfigArea
 
 	public function pageAreas(): void
 	{
-		User::mustHavePermission(['light_portal_manage_pages_own', 'light_portal_manage_pages_any']);
+		User::$me->isAllowedTo(['light_portal_manage_pages_own', 'light_portal_manage_pages_any']);
 
 		$areas = [
 			'main'   => [app(PageArea::class), 'main'],
@@ -315,7 +315,7 @@ final class ConfigArea
 
 	public function categoryAreas(): void
 	{
-		User::mustHavePermission('admin_forum');
+		User::$me->isAllowedTo('admin_forum');
 
 		$areas = [
 			'main'   => [app(CategoryArea::class), 'main'],
@@ -335,7 +335,7 @@ final class ConfigArea
 
 	public function tagAreas(): void
 	{
-		User::mustHavePermission('admin_forum');
+		User::$me->isAllowedTo('admin_forum');
 
 		$areas = [
 			'main'   => [app(TagArea::class), 'main'],
@@ -355,7 +355,7 @@ final class ConfigArea
 
 	public function pluginAreas(): void
 	{
-		User::mustHavePermission('admin_forum');
+		User::$me->isAllowedTo('admin_forum');
 
 		$areas = [
 			'main' => [app(PluginArea::class), 'main'],

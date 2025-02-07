@@ -94,7 +94,7 @@ class TopPosters extends Block
 					'id'     => $row['id_member'],
 					'name'   => $row['real_name'],
 					'posts'  => $row['posts'],
-					'link'   => User::hasPermission('profile_view')
+					'link'   => User::$me->allowedTo('profile_view')
 						? Str::html('a', $row['real_name'])
 							->href(Config::$scripturl . '?action=profile;u=' . $row['id_member'])
 							->toHtml()
