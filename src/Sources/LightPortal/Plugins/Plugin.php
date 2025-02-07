@@ -30,6 +30,7 @@ use Stringable;
 use function basename;
 use function dirname;
 use function sprintf;
+use function str_replace;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -69,7 +70,7 @@ abstract class Plugin implements PluginInterface, Stringable
 
 	public function getCamelName(): string
 	{
-		return basename(static::class);
+		return basename(str_replace('\\', '/', static::class));
 	}
 
 	public function getSnakeName(): string
