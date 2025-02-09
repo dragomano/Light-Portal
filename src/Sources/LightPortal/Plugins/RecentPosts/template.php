@@ -19,7 +19,7 @@ function show_posts(array $posts, ParamWrapper $parameters, bool $full_width): v
 			$post['preview'] = '<a href="' . $post['href'] . '">' . $post['preview'] . '</a>';
 
 			echo '
-		<div class="windowbg">';
+		<div class="windowbg word_break">';
 
 			if ($parameters['show_avatars'] && isset($post['poster']['avatar']))
 				echo '
