@@ -10,15 +10,9 @@
  * @version 2.9
  */
 
-namespace Bugo\LightPortal\Areas\Validators;
+namespace Bugo\LightPortal\Models;
 
-class TagValidator extends AbstractValidator
+interface FactoryInterface
 {
-	use BaseValidateTrait;
-
-	protected array $args = [
-		'tag_id' => FILTER_VALIDATE_INT,
-		'icon'   => FILTER_DEFAULT,
-		'status' => FILTER_VALIDATE_INT,
-	];
+	public function create(array $data): ModelInterface;
 }

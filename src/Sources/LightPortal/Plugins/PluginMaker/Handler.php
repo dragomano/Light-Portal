@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 24.01.25
+ * @version 10.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
@@ -165,9 +165,9 @@ class Handler
 
 		foreach (array_keys(Utils::$context['lp_languages']) as $lang) {
 			Utils::$context['lp_plugin']['titles'][$lang]
-				= $postData['title_' . $lang] ?? Utils::$context['lp_plugin']['titles'][$lang] ?? '';
+				= $postData['titles'][$lang] ?? Utils::$context['lp_plugin']['titles'][$lang] ?? '';
 			Utils::$context['lp_plugin']['descriptions'][$lang]
-				= $postData['description_' . $lang] ?? Utils::$context['lp_plugin']['descriptions'][$lang] ?? '';
+				= $postData['descriptions'][$lang] ?? Utils::$context['lp_plugin']['descriptions'][$lang] ?? '';
 
 			if (! empty($postData['option_translations'][$lang])) {
 				foreach ($postData['option_translations'][$lang] as $id => $translation) {
@@ -269,52 +269,62 @@ class Handler
 
 		$languages = array_unique([Language::getNameFromLocale(Language::getFallbackValue()), ...$languages]);
 
-		$value = /** @lang text */	'
-			<div>';
+		$value = Str::html('div');
 
 		if (count(Utils::$context['lp_languages']) > 1) {
-			$value .= '
-			<nav' . (Utils::$context['right_to_left'] ? '' : ' class="floatleft"') . '>';
-
-			foreach (Utils::$context['lp_languages'] as $key => $lang) {
-				$value .= /** @lang text */
-					'
-				<a
-					class="button floatnone"
-					:class="{ \'active\': tab === \'' . $key . '\' }"
-					@click.prevent="tab = \'' . $key . '\';
-						window.location.hash = \'' . $key . '\';
-						$nextTick(() => { setTimeout(() => { document.querySelector(\'input[name=description_' . $key . ']\').focus() }, 50); });"
-				>' . $lang['name'] . '</a>';
+			$nav = Str::html('nav');
+			if (! Utils::$context['right_to_left']) {
+				$nav->class('floatleft');
 			}
 
-			$value .= /** @lang text */	'
-			</nav>';
+			foreach (Utils::$context['lp_languages'] as $key => $lang) {
+				$link = Str::html('a')
+					->class('button floatnone')
+					->setText($lang['name'])
+					->setAttribute(':class', "{ 'active': tab === '$key' }")
+					->setAttribute('x-on:click.prevent', implode('; ', [
+						"tab = '$key'",
+						"window.location.hash = '$key'",
+						"\$nextTick(() => {
+							setTimeout(() => { document.querySelector('input[name=\"descriptions[$key]\"]').focus() }, 50);
+						})"
+					]));
+
+				$nav->addHtml($link);
+			}
+
+			$value->addHtml($nav);
 		}
 
 		$i = count($languages) - 1;
 		foreach (Utils::$context['lp_languages'] as $key => $lang) {
-			$value .= /** @lang text */
-				'
-				<div x-show="tab === \'' . $key . '\'">
-					<input
-						type="text"
-						name="title_' . $key . '"
-						value="' . (Utils::$context['lp_plugin']['titles'][$key] ?? '') . '"
-						placeholder="' . Lang::$txt['lp_title'] . '"
-					>
-					<input
-						type="text"
-						name="description_' . $key . '"
-						value="' . (Utils::$context['lp_plugin']['descriptions'][$key] ?? '') . '"
-						placeholder="' . Lang::$txt['lp_page_description'] . '"
-						' . (in_array($key, $languages) ? 'x-ref="title_' . $i-- . '"' : '') . ($lang['filename'] === Language::getFallbackValue() ? ' required' : '') . '
-					>
-				</div>';
-		}
+			$inputDiv = Str::html('div')
+				->setAttribute('x-show', "tab === '$key'");
 
-		$value .= /** @lang text */	'
-			</div>';
+			$inputTitle = Str::html('input')
+				->setAttribute('type', 'text')
+				->setAttribute('name', "titles[$key]")
+				->setAttribute('value', Utils::$context['lp_plugin']['titles'][$key] ?? '')
+				->placeholder(Lang::$txt['lp_title']);
+
+			$inputDescription = Str::html('input')
+				->setAttribute('type', 'text')
+				->setAttribute('name', "descriptions[$key]")
+				->setAttribute('value', Utils::$context['lp_plugin']['descriptions'][$key] ?? '')
+				->placeholder(Lang::$txt['lp_page_description']);
+
+			if (in_array($key, $languages)) {
+				$inputDescription->setAttribute('x-ref', 'title_' . $i--);
+			}
+
+			if ($lang['filename'] === Language::getFallbackValue()) {
+				$inputDescription->setAttribute('required', 'required');
+			}
+
+			$inputDiv->addHtml($inputTitle);
+			$inputDiv->addHtml($inputDescription);
+			$value->addHtml($inputDiv);
+		}
 
 		CustomField::make('title', Lang::$txt['lp_title'] . ' | ' . Lang::$txt['lp_page_description'])
 			->setTab(Tab::CONTENT)

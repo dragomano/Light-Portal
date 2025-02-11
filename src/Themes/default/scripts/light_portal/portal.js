@@ -46,8 +46,10 @@ class PortalEntity {
 
         nav.click();
 
-        if (formElements[i].name.startsWith('title_')) {
-          document.querySelector(`[data-name=${formElements[i].name}]`).click();
+        if (formElements[i].name.startsWith('titles')) {
+          const language = formElements[i].name.match(/\[(.*?)\]/);
+
+          document.querySelector(`[data-name=title_${language[1]}]`).click();
         }
       }
     }

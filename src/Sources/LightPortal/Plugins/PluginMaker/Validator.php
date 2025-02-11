@@ -8,108 +8,109 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 24.01.25
+ * @version 10.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Areas\Validators\AbstractValidator;
 use Bugo\LightPortal\Enums\VarType;
 use Bugo\LightPortal\Lists\PluginList;
+use Bugo\LightPortal\Validators\AbstractValidator;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
 class Validator extends AbstractValidator
 {
-	protected array $args = [
-		'name'    => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-		'type'    => FILTER_DEFAULT,
-		'icon'    => FILTER_DEFAULT,
-		'author'  => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-		'email'   => FILTER_SANITIZE_EMAIL,
-		'site'    => FILTER_SANITIZE_URL,
-		'license' => FILTER_DEFAULT,
+	protected array $filters = [
+		'name'        => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+		'type'        => FILTER_DEFAULT,
+		'icon'        => FILTER_DEFAULT,
+		'author'      => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+		'email'       => FILTER_SANITIZE_EMAIL,
+		'site'        => FILTER_SANITIZE_URL,
+		'license'     => FILTER_DEFAULT,
 		'option_name' => [
-			'name'   => 'option_name',
 			'filter' => FILTER_DEFAULT,
 			'flags'  => FILTER_REQUIRE_ARRAY
 		],
 		'option_type' => [
-			'name'   => 'option_type',
 			'filter' => FILTER_DEFAULT,
 			'flags'  => FILTER_REQUIRE_ARRAY
 		],
 		'option_defaults' => [
-			'name'   => 'option_defaults',
 			'filter' => FILTER_DEFAULT,
 			'flags'  => FILTER_REQUIRE_ARRAY
 		],
 		'option_variants' => [
-			'name'   => 'option_variants',
 			'filter' => FILTER_DEFAULT,
 			'flags'  => FILTER_REQUIRE_ARRAY
 		],
 		'option_translations' => [
-			'name'   => 'option_translations',
 			'filter' => FILTER_DEFAULT,
 			'flags'  => FILTER_REQUIRE_ARRAY
 		],
 		'smf_hooks'  => FILTER_VALIDATE_BOOLEAN,
 		'smf_ssi'    => FILTER_VALIDATE_BOOLEAN,
-		'components' => FILTER_VALIDATE_BOOLEAN
+		'components' => FILTER_VALIDATE_BOOLEAN,
+		'titles' => [
+			'filter' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+			'flags'  => FILTER_REQUIRE_ARRAY,
+		],
+		'descriptions' => [
+			'filter' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+			'flags'  => FILTER_REQUIRE_ARRAY,
+		]
 	];
 
 	public function validate(): array
 	{
-		$data = [];
-
-		if ($this->request()->has('save')) {
-			foreach (array_keys(Utils::$context['lp_languages']) as $lang) {
-				$this->args['title_' . $lang]       = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
-				$this->args['description_' . $lang] = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
-			}
-
-			$data = filter_input_array(INPUT_POST, $this->args);
-
-			$this->findErrors($data);
+		if ($this->request()->hasNot('save')) {
+			return [];
 		}
 
-		return $data;
+		$this->filteredData = filter_input_array(INPUT_POST, $this->filters);
+
+		$this->checkErrors();
+		$this->handleErrors();
+
+		return $this->filteredData;
 	}
 
-	protected function findErrors(array $data): void
+	protected function checkErrors(): void
 	{
-		if (empty($data['name'])) {
+		if (empty($this->filteredData['name'])) {
 			$this->errors[] = 'no_name';
 		}
 
 		if (
-			! empty($data['name'])
-			&& empty(VarType::ARRAY->filter($data['name'], [
-				'options' => ['regexp' => '/' . LP_ADDON_PATTERN . '/']
-			]))
+			! empty($this->filteredData['name'])
+			&& empty(VarType::ARRAY->filter($this->filteredData['name'], ['regexp' => '/' . LP_ADDON_PATTERN . '/']))
 		) {
 			$this->errors[] = 'no_valid_name';
 		}
 
-		if (! empty($data['name']) && ! $this->isUnique($data['name'])) {
+		if (! empty($this->filteredData['name']) && ! $this->isUnique($this->filteredData['name'])) {
 			$this->errors[] = 'no_unique_name';
 		}
 
-		if (empty($data['description_english'])) {
+		if (empty($this->filteredData['descriptions']['english'])) {
 			$this->errors[] = 'no_description';
 		}
+	}
 
-		if (! empty($this->errors)) {
-			Utils::$context['post_errors'] = [];
+	protected function handleErrors(): void
+	{
+		if ($this->errors === [])
+			return;
 
-			foreach ($this->errors as $error) {
-				Utils::$context['post_errors'][]
-					= Lang::$txt['lp_post_error_' . $error] ?? Lang::$txt['lp_plugin_maker'][$error];
-			}
+		Utils::$context['post_errors'] = [];
+
+		foreach ($this->errors as $error) {
+			Utils::$context['post_errors'][] = Lang::$txt['lp_post_error_' . $error]
+				?? Lang::$txt['lp_plugin_maker'][$error] ?? $error;
 		}
 	}
 

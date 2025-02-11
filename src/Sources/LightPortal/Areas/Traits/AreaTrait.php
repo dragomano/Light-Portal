@@ -71,7 +71,7 @@ trait AreaTrait
 
 		if (count(Utils::$context['lp_languages']) > 1) {
 			$nav = Str::html('nav');
-			if (!Utils::$context['right_to_left']) {
+			if (! Utils::$context['right_to_left']) {
 				$nav->class('floatleft');
 			}
 
@@ -81,7 +81,13 @@ trait AreaTrait
 					->setText($lang['name'])
 					->setAttribute(':class', "{ 'active': tab === '$key' }")
 					->setAttribute('data-name', "title_$key")
-					->setAttribute('x-on:click.prevent', "tab = '$key'; window.location.hash = '$key'; \$nextTick(() => { setTimeout(() => { document.querySelector('input[name=title_$key]').focus() }, 50); });");
+					->setAttribute('x-on:click.prevent', implode('; ', [
+						"tab = '$key'",
+						"window.location.hash = '$key'",
+						"\$nextTick(() => {
+							setTimeout(() => { document.querySelector('input[name=\"titles[$key]\"]').focus() }, 50);
+						})"
+					]));
 
 				$nav->addHtml($link);
 			}
@@ -95,7 +101,7 @@ trait AreaTrait
 
 			$input = Str::html('input')
 				->setAttribute('type', 'text')
-				->setAttribute('name', "title_$key")
+				->setAttribute('name', "titles[$key]")
 				->setAttribute('x-model', "title_$key")
 				->setAttribute('value', Utils::$context['lp_' . $entity]['titles'][$key] ?? '');
 
@@ -143,7 +149,7 @@ trait AreaTrait
 		) . '<br>';
 	}
 
-	public function getFloatSpan(string $text, string $direction = 'left'): string
+	protected function getFloatSpan(string $text, string $direction = 'left'): string
 	{
 		return Str::html('span', ['class' => "float$direction"])->setHtml($text)->toHtml();
 	}

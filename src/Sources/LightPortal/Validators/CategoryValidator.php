@@ -10,17 +10,13 @@
  * @version 2.9
  */
 
-namespace Bugo\LightPortal\Areas\Validators;
+namespace Bugo\LightPortal\Validators;
 
 class CategoryValidator extends AbstractValidator
 {
-	use BaseValidateTrait;
-
-	protected array $args = [
+	protected array $filters = [
 		'category_id' => FILTER_VALIDATE_INT,
 		'icon'        => FILTER_DEFAULT,
 		'description' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-		'priority'    => FILTER_VALIDATE_INT,
-		'status'      => FILTER_VALIDATE_INT,
 	];
 }

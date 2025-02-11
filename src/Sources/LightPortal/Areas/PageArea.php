@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 /**
  * @package Light Portal
@@ -25,7 +23,6 @@ use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Traits\AreaTrait;
-use Bugo\LightPortal\Areas\Validators\PageValidator;
 use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\PortalHook;
@@ -34,7 +31,7 @@ use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Events\EventArgs;
 use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Lists\CategoryList;
-use Bugo\LightPortal\Models\PageModel;
+use Bugo\LightPortal\Models\PageFactory;
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\CustomField;
@@ -42,10 +39,8 @@ use Bugo\LightPortal\UI\Fields\TextareaField;
 use Bugo\LightPortal\UI\Fields\TextField;
 use Bugo\LightPortal\UI\Partials\CategorySelect;
 use Bugo\LightPortal\UI\Partials\EntryTypeSelect;
-use Bugo\LightPortal\UI\Partials\PageAuthorSelect;
 use Bugo\LightPortal\UI\Partials\PageIconSelect;
 use Bugo\LightPortal\UI\Partials\PermissionSelect;
-use Bugo\LightPortal\UI\Partials\StatusSelect;
 use Bugo\LightPortal\UI\Partials\TagSelect;
 use Bugo\LightPortal\UI\Tables\CheckboxColumn;
 use Bugo\LightPortal\UI\Tables\DateColumn;
@@ -63,17 +58,21 @@ use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Validators\PageValidator;
 use WPLake\Typed\Typed;
 
 use function array_column;
 use function array_diff;
+use function array_diff_key;
+use function array_fill_keys;
+use function array_intersect_key;
+use function array_keys;
 use function array_merge;
 use function array_multisort;
 use function base64_encode;
 use function count;
 use function filter_input;
 use function implode;
-use function is_array;
 use function strtoupper;
 use function time;
 use function trim;
@@ -211,7 +210,9 @@ final class PageArea
 		if (empty($type) && empty($json['search']))
 			return;
 
-		Utils::$context['lp_current_page']['type'] = $type;
+		Utils::$context['lp_current_page']['type']      = $type;
+		Utils::$context['lp_current_page']['author_id'] = User::$info['id'];
+		Utils::$context['lp_current_page']['options']   = $this->getParams();
 
 		Language::prepareList();
 
@@ -466,9 +467,9 @@ final class PageArea
 	private function getParams(): array
 	{
 		$baseParams = [
-			'show_title'           => true,
-			'show_in_menu'         => false,
 			'page_icon'            => '',
+			'show_in_menu'         => false,
+			'show_title'           => true,
 			'show_author_and_date' => true,
 			'show_related_pages'   => false,
 			'allow_comments'       => false,
@@ -486,44 +487,23 @@ final class PageArea
 
 	private function validateData(): void
 	{
-		[$postData, $parameters] = (new PageValidator())->validate();
+		$this->post()->put('options', array_intersect_key($this->post()->all(), $this->getParams()));
 
-		$options = $this->getParams();
-		$pageOptions = Utils::$context['lp_current_page']['options'] ?? $options;
+		$validatedData = app(PageValidator::class)->validate();
 
-		$page = new PageModel($postData, Utils::$context['lp_current_page']);
-		$page->authorId = empty($postData['author_id']) ? $page->authorId : $postData['author_id'];
-		$page->titles = Utils::$context['lp_current_page']['titles'] ?? [];
-		$page->options = $options;
+		$page = app(PageFactory::class)->create(
+			array_merge(Utils::$context['lp_current_page'], $validatedData)
+		);
 
 		$dateTime = DateTime::get();
-		$page->date = $postData['date'] ?? $dateTime->format('Y-m-d');
-		$page->time = $postData['time'] ?? $dateTime->format('H:i');
-
-		foreach (Utils::$context['lp_languages'] as $lang) {
-			$page->titles[$lang['filename']] = $postData['title_' . $lang['filename']] ?? $page->titles[$lang['filename']] ?? '';
-		}
-
-		Str::cleanBbcode($page->titles);
-		Str::cleanBbcode($page->description);
-
-		foreach ($page->options as $option => $value) {
-			if (isset($parameters[$option]) && isset($postData) && ! isset($postData[$option])) {
-				$postData[$option] = 0;
-
-				if ($parameters[$option] === FILTER_DEFAULT) {
-					$postData[$option] = '';
-				}
-
-				if (is_array($parameters[$option]) && $parameters[$option]['flags'] === FILTER_REQUIRE_ARRAY) {
-					$postData[$option] = [];
-				}
-			}
-
-			$page->options[$option] = $postData[$option] ?? $pageOptions[$option] ?? $value;
-		}
+		$page->date ??= $dateTime->format('Y-m-d');
+		$page->time ??= $dateTime->format('H:i');
 
 		Utils::$context['lp_page'] = $page->toArray();
+
+		$missingKeys = array_diff_key($this->getParams(), Utils::$context['lp_page']['options']);
+		$falseValues = array_fill_keys(array_keys($missingKeys), '');
+		Utils::$context['lp_page']['options'] = array_merge(Utils::$context['lp_page']['options'], $falseValues);
 	}
 
 	private function prepareFormFields(): void
@@ -562,17 +542,6 @@ final class PageArea
 		CustomField::make('entry_type', Lang::$txt['lp_page_type'])
 			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(static fn() => new EntryTypeSelect());
-
-		if (Utils::$context['user']['is_admin']) {
-			CustomField::make('status', Lang::$txt['status'])
-				->setTab(Tab::ACCESS_PLACEMENT)
-				->setValue(static fn() => new StatusSelect());
-
-			CustomField::make('author_id', Lang::$txt['lp_page_author'])
-				->setTab(Tab::ACCESS_PLACEMENT)
-				->setDescription(Lang::$txt['lp_page_author_placeholder'])
-				->setValue(static fn() => new PageAuthorSelect());
-		}
 
 		TextField::make('slug', Lang::$txt['lp_page_slug'])
 			->setTab(Tab::SEO)
@@ -636,7 +605,7 @@ final class PageArea
 			PortalHook::preparePageFields,
 			new EventArgs([
 				'options' => Utils::$context['lp_page']['options'],
-				'type' => Utils::$context['lp_page']['type']
+				'type'    => Utils::$context['lp_page']['type'],
 			])
 		);
 
@@ -658,7 +627,7 @@ final class PageArea
 
 		Security::checkSubmitOnce('free');
 
-		Utils::$context['preview_title']   = Utils::$context['lp_page']['titles'][Utils::$context['user']['language']];
+		Utils::$context['preview_title']   = Utils::$context['lp_page']['titles'][Language::getCurrent()] ?? '';
 		Utils::$context['preview_content'] = Utils::htmlspecialchars(
 			Utils::$context['lp_page']['content'],
 			ENT_QUOTES

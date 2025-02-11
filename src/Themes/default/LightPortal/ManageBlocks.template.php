@@ -207,7 +207,7 @@ function template_block_add(): void
 	echo '
 			</div>
 			<input type="hidden" name="add_block">
-			<input type="hidden" name="placement" value="', Utils::$context['current_block']['placement'], '">
+			<input type="hidden" name="placement" value="', Utils::$context['lp_current_block']['placement'], '">
 		</form>
 	</div>
 

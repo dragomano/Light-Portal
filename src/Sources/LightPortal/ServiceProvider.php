@@ -47,6 +47,10 @@ use Bugo\LightPortal\Lists\PageList;
 use Bugo\LightPortal\Lists\PluginList;
 use Bugo\LightPortal\Lists\TagList;
 use Bugo\LightPortal\Lists\TitleList;
+use Bugo\LightPortal\Models\BlockFactory;
+use Bugo\LightPortal\Models\CategoryFactory;
+use Bugo\LightPortal\Models\PageFactory;
+use Bugo\LightPortal\Models\TagFactory;
 use Bugo\LightPortal\Plugins\AssetHandler;
 use Bugo\LightPortal\Plugins\ConfigHandler;
 use Bugo\LightPortal\Plugins\LangHandler;
@@ -68,6 +72,10 @@ use Bugo\LightPortal\Utils\Response;
 use Bugo\LightPortal\Utils\Session;
 use Bugo\LightPortal\Utils\SessionManager;
 use Bugo\LightPortal\Utils\Weaver;
+use Bugo\LightPortal\Validators\BlockValidator;
+use Bugo\LightPortal\Validators\CategoryValidator;
+use Bugo\LightPortal\Validators\PageValidator;
+use Bugo\LightPortal\Validators\TagValidator;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 
 use function in_array;
@@ -79,17 +87,21 @@ class ServiceProvider extends AbstractServiceProvider
 		Block::class,
 		BlockArea::class,
 		BlockExport::class,
+		BlockFactory::class,
 		BlockImport::class,
 		BlockRepository::class,
+		BlockValidator::class,
 		BoardIndex::class,
 		Cache::class,
 		CardListInterface::class,
 		Category::class,
 		CategoryArea::class,
 		CategoryExport::class,
+		CategoryFactory::class,
 		CategoryImport::class,
 		CategoryList::class,
 		CategoryRepository::class,
+		CategoryValidator::class,
 		Comment::class,
 		CommentRepository::class,
 		ConfigArea::class,
@@ -105,9 +117,11 @@ class ServiceProvider extends AbstractServiceProvider
 		Page::class,
 		PageArea::class,
 		PageExport::class,
+		PageFactory::class,
 		PageImport::class,
 		PageList::class,
 		PageRepository::class,
+		PageValidator::class,
 		PluginArea::class,
 		PluginExport::class,
 		PluginHandler::class,
@@ -126,9 +140,11 @@ class ServiceProvider extends AbstractServiceProvider
 		Tag::class,
 		TagArea::class,
 		TagExport::class,
+		TagFactory::class,
 		TagImport::class,
 		TagList::class,
 		TagRepository::class,
+		TagValidator::class,
 		TitleList::class,
 		Weaver::class,
 	];
@@ -202,6 +218,15 @@ class ServiceProvider extends AbstractServiceProvider
 		$this->getContainer()->add(Category::class)->addArgument(CardListInterface::class);
 		$this->getContainer()->add(Tag::class)->addArgument(CardListInterface::class);
 		$this->getContainer()->add(CardListInterface::class, CardList::class);
+
+		$this->getContainer()->add(BlockValidator::class);
+		$this->getContainer()->add(BlockFactory::class);
+		$this->getContainer()->add(CategoryValidator::class);
+		$this->getContainer()->add(CategoryFactory::class);
+		$this->getContainer()->add(PageValidator::class);
+		$this->getContainer()->add(PageFactory::class);
+		$this->getContainer()->add(TagValidator::class);
+		$this->getContainer()->add(TagFactory::class);
 
 		$this->getContainer()->add(Weaver::class, Weaver::class)->setShared(false);
 	}

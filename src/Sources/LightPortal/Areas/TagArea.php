@@ -21,9 +21,8 @@ use Bugo\Compat\Security;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Traits\AreaTrait;
-use Bugo\LightPortal\Areas\Validators\TagValidator;
 use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Models\TagModel;
+use Bugo\LightPortal\Models\TagFactory;
 use Bugo\LightPortal\Repositories\TagRepository;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Partials\IconSelect;
@@ -35,7 +34,10 @@ use Bugo\LightPortal\UI\Tables\TitleColumn;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Validators\TagValidator;
 use WPLake\Typed\Typed;
+
+use function array_merge;
 
 use const LP_NAME;
 
@@ -170,17 +172,11 @@ final class TagArea
 
 	private function validateData(): void
 	{
-		$postData = (new TagValidator())->validate();
+		$validatedData = app(TagValidator::class)->validate();
 
-		$tag = new TagModel($postData, Utils::$context['lp_current_tag']);
-		$tag->icon = $tag->icon === 'undefined' ? '' : $tag->icon;
-		$tag->titles = Utils::$context['lp_current_tag']['titles'] ?? [];
-
-		foreach (Utils::$context['lp_languages'] as $lang) {
-			$tag->titles[$lang['filename']] = $postData['title_' . $lang['filename']] ?? $tag->titles[$lang['filename']] ?? '';
-		}
-
-		Str::cleanBbcode($tag->titles);
+		$tag = app(TagFactory::class)->create(
+			array_merge(Utils::$context['lp_current_tag'], $validatedData)
+		);
 
 		Utils::$context['lp_tag'] = $tag->toArray();
 	}
@@ -205,7 +201,7 @@ final class TagArea
 
 		Security::checkSubmitOnce('free');
 
-		Utils::$context['preview_title'] = Utils::$context['lp_tag']['titles'][Utils::$context['user']['language']];
+		Utils::$context['preview_title'] = Utils::$context['lp_tag']['titles'][Language::getCurrent()] ?? '';
 
 		Str::cleanBbcode(Utils::$context['preview_title']);
 

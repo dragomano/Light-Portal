@@ -19,13 +19,12 @@ use Bugo\Compat\Security;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Traits\AreaTrait;
-use Bugo\LightPortal\Areas\Validators\BlockValidator;
 use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Events\EventArgs;
 use Bugo\LightPortal\Events\EventManagerFactory;
-use Bugo\LightPortal\Models\BlockModel;
+use Bugo\LightPortal\Models\BlockFactory;
 use Bugo\LightPortal\Repositories\BlockRepository;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\CustomField;
@@ -43,6 +42,7 @@ use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Validators\BlockValidator;
 use WPLake\Typed\Typed;
 
 use function array_column;
@@ -51,7 +51,6 @@ use function array_keys;
 use function array_merge;
 use function array_multisort;
 use function in_array;
-use function is_array;
 use function ob_get_clean;
 use function ob_start;
 use function sprintf;
@@ -105,7 +104,7 @@ final class BlockArea
 			Lang::$txt['lp_blocks_add_instruction'], Config::$scripturl . '?action=admin;area=lp_plugins'
 		);
 
-		Utils::$context['current_block']['placement'] = $this->request()->get('placement') ?? 'top';
+		Utils::$context['lp_current_block']['placement'] = $this->request()->get('placement') ?: 'top';
 
 		$this->prepareBlockList();
 
@@ -115,7 +114,9 @@ final class BlockArea
 		if (empty($type) && empty($json['search']))
 			return;
 
-		Utils::$context['current_block']['type'] = $type;
+		Utils::$context['lp_current_block']['type'] = $type;
+		Utils::$context['lp_current_block']['icon'] ??= Utils::$context['lp_loaded_addons'][$type]['icon'] ?? '';
+		Utils::$context['lp_current_block']['options'] = $this->getParams();
 
 		Language::prepareList();
 
@@ -146,15 +147,15 @@ final class BlockArea
 
 		Language::prepareList();
 
-		Utils::$context['current_block'] = $this->repository->getData($item);
+		Utils::$context['lp_current_block'] = $this->repository->getData($item);
 
-		if (empty(Utils::$context['current_block'])) {
+		if (empty(Utils::$context['lp_current_block'])) {
 			ErrorHandler::fatalLang('lp_block_not_found', false, status: 404);
 		}
 
 		if ($this->request()->has('remove')) {
 			$this->repository->remove([$item]);
-
+			$this->cache()->forget('active_blocks');
 			$this->response()->redirect('action=admin;area=lp_blocks;sa=main');
 		}
 
@@ -222,7 +223,7 @@ final class BlockArea
 			'no_content_class' => false,
 		];
 
-		if (in_array(Utils::$context['current_block']['type'], array_keys(Utils::$context['lp_content_types']))) {
+		if (in_array(Utils::$context['lp_current_block']['type'], array_keys(Utils::$context['lp_content_types']))) {
 			$baseParams['content'] = true;
 		}
 
@@ -230,7 +231,7 @@ final class BlockArea
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::prepareBlockParams,
-			new EventArgs(['params' => &$params, 'type' => Utils::$context['current_block']['type']])
+			new EventArgs(['params' => &$params, 'type' => Utils::$context['lp_current_block']['type']])
 		);
 
 		return array_merge($baseParams, $params);
@@ -238,55 +239,19 @@ final class BlockArea
 
 	private function validateData(): void
 	{
-		[$postData, $parameters] = (new BlockValidator())->validate();
+		$this->post()->put('options', array_intersect_key($this->post()->all(), $this->getParams()));
 
-		$options = $this->getParams();
+		$validatedData = app(BlockValidator::class)->validate();
 
-		$blockOptions = Utils::$context['current_block']['options'] ?? $options;
-
-		$type = Utils::$context['current_block']['type'];
-		Utils::$context['current_block']['icon'] ??= Utils::$context['lp_loaded_addons'][$type]['icon'] ?? '';
-
-		$block = new BlockModel($postData, Utils::$context['current_block']);
-		$block->icon = $block->icon === 'undefined' ? '' : $block->icon;
-		$block->permissions = empty(Utils::$context['user']['is_admin']) ? 4 : $block->permissions;
-		$block->contentClass = empty($block->options['no_content_class']) ? $block->contentClass : '';
-		$block->titles = Utils::$context['current_block']['titles'] ?? [];
-		$block->options = $options;
-
-		foreach (Utils::$context['lp_languages'] as $lang) {
-			$block->titles[$lang['filename']] = $postData['title_' . $lang['filename']]
-				?? $block->titles[$lang['filename']]
-				?? '';
-		}
-
-		Str::cleanBbcode($block->titles);
-
-		foreach ($block->options as $option => $value) {
-			if (
-				isset($parameters[$option])
-				&& isset($postData['parameters'])
-				&& ! isset($postData['parameters'][$option])
-			) {
-				$postData['parameters'][$option] = 0;
-
-				if ($option === 'no_content_class') {
-					$postData['parameters'][$option] = $value;
-				}
-
-				if ($parameters[$option] === FILTER_DEFAULT) {
-					$postData['parameters'][$option] = '';
-				}
-
-				if (is_array($parameters[$option]) && $parameters[$option]['flags'] === FILTER_REQUIRE_ARRAY) {
-					$postData['parameters'][$option] = [];
-				}
-			}
-
-			$block->options[$option] = $postData['parameters'][$option] ?? $blockOptions[$option] ?? $value;
-		}
+		$block = app(BlockFactory::class)->create(
+			array_merge(Utils::$context['lp_current_block'], $validatedData)
+		);
 
 		Utils::$context['lp_block'] = $block->toArray();
+
+		$missingKeys = array_diff_key($this->getParams(), Utils::$context['lp_block']['options']);
+		$falseValues = array_fill_keys(array_keys($missingKeys), '');
+		Utils::$context['lp_block']['options'] = array_merge(Utils::$context['lp_block']['options'], $falseValues);
 	}
 
 	private function prepareFormFields(): void
@@ -351,7 +316,7 @@ final class BlockArea
 			PortalHook::prepareBlockFields,
 			new EventArgs([
 				'options' => Utils::$context['lp_block']['options'],
-				'type' => Utils::$context['current_block']['type']
+				'type'    => Utils::$context['lp_current_block']['type'],
 			])
 		);
 
@@ -400,7 +365,7 @@ final class BlockArea
 
 		Security::checkSubmitOnce('free');
 
-		Utils::$context['preview_title']   = Utils::$context['lp_block']['titles'][Utils::$context['user']['language']] ?? '';
+		Utils::$context['preview_title']   = Utils::$context['lp_block']['titles'][Language::getCurrent()] ?? '';
 		Utils::$context['preview_content'] = Utils::htmlspecialchars(Utils::$context['lp_block']['content'], ENT_QUOTES);
 
 		Str::cleanBbcode(Utils::$context['preview_title']);

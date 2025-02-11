@@ -19,6 +19,7 @@ use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Utils\Setting;
 
 use function array_key_first;
+use function is_null;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -53,39 +54,31 @@ class BlockModel extends AbstractModel
 
 	public array $options = [];
 
-	public function __construct(array $postData, array $currentBlock)
+	public function __construct(array $data)
 	{
-		$this->id = $postData['block_id'] ?? $currentBlock['id'] ?? 0;
+		$permissions = Setting::get('lp_permissions_default', 'int', Permission::MEMBER->value);
 
-		$this->icon = $postData['icon'] ?? $currentBlock['icon'] ?? '';
+		foreach ($data as $key => $value) {
+			if (is_null($value)) {
+				$data[$key] = Utils::$context['lp_current_block'][$key] ?? null;
+			}
+		}
 
-		$this->type = $postData['type'] ?? $currentBlock['type'] ?? '';
+		$this->id           = $data['block_id'] ?? $data['id'] ?? 0;
+		$this->icon         = $data['icon'] ?? '';
+		$this->type         = $data['type'] ?? '';
+		$this->note         = $data['note'] ?? '';
+		$this->content      = $data['content'] ?? '';
+		$this->placement    = $data['placement'] ?? Placement::TOP->name();
+		$this->priority     = $data['priority'] ?? 0;
+		$this->permissions  = $data['permissions'] ?? $permissions;
+		$this->status       = $data['status'] ?? Status::ACTIVE->value;
+		$this->areas        = $data['areas'] ?? 'all';
+		$this->titleClass   = $data['title_class'] ?? array_key_first(Utils::$context['lp_all_title_classes']);
+		$this->contentClass = $data['content_class'] ?? array_key_first(Utils::$context['lp_all_content_classes']);
+		$this->titles       = $data['titles'] ?? [];
+		$this->options      = $data['options'] ?? [];
 
-		$this->note = $postData['note'] ?? $currentBlock['note'] ?? '';
-
-		$this->content = $postData['content'] ?? $currentBlock['content'] ?? '';
-
-		$this->placement = $postData['placement'] ?? $currentBlock['placement'] ?? Placement::TOP->name();
-
-		$this->priority = $postData['priority'] ?? $currentBlock['priority'] ?? 0;
-
-		$this->permissions = $postData['permissions']
-			?? $currentBlock['permissions']
-			?? Setting::get('lp_permissions_default', 'int', Permission::MEMBER->value);
-
-		$this->status = $currentBlock['status'] ?? Status::ACTIVE->value;
-
-		$this->areas = $postData['areas'] ?? $currentBlock['areas'] ?? 'all';
-
-		$this->titleClass = $postData['title_class'] ?? $currentBlock['title_class']
-			?? array_key_first(Utils::$context['lp_all_title_classes']);
-
-		$this->contentClass = $postData['content_class'] ?? $currentBlock['content_class']
-			?? array_key_first(Utils::$context['lp_all_content_classes']);
-	}
-
-	protected static function getTableName(): string
-	{
-		return 'lp_blocks';
+		$this->contentClass = empty($this->options['no_content_class']) ? $this->contentClass : '';
 	}
 }
