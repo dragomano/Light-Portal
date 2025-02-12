@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.01.25
+ * @version 11.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\BoardList;
@@ -122,7 +122,7 @@ class BoardList extends Block
 				$content->addHtml($li);
 			}
 
-			echo sprintf(Utils::$context['lp_all_content_classes'][$boardClass], $content);
+			echo sprintf(ContentClass::values()[$boardClass], $content);
 		}
 	}
 

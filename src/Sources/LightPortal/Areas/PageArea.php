@@ -41,6 +41,7 @@ use Bugo\LightPortal\UI\Partials\CategorySelect;
 use Bugo\LightPortal\UI\Partials\EntryTypeSelect;
 use Bugo\LightPortal\UI\Partials\PageIconSelect;
 use Bugo\LightPortal\UI\Partials\PermissionSelect;
+use Bugo\LightPortal\UI\Partials\StatusSelect;
 use Bugo\LightPortal\UI\Partials\TagSelect;
 use Bugo\LightPortal\UI\Tables\CheckboxColumn;
 use Bugo\LightPortal\UI\Tables\DateColumn;
@@ -523,6 +524,10 @@ final class PageArea
 			CustomField::make('show_in_menu', Lang::$txt['lp_page_show_in_menu'])
 				->setTab(Tab::ACCESS_PLACEMENT)
 				->setValue(static fn() => new PageIconSelect());
+
+			CustomField::make('status', Lang::$txt['status'])
+				->setTab(Tab::ACCESS_PLACEMENT)
+				->setValue(static fn() => new StatusSelect());
 		}
 
 		CustomField::make('permissions', Lang::$txt['edit_permissions'])

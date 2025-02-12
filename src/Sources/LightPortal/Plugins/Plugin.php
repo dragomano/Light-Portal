@@ -44,6 +44,8 @@ abstract class Plugin implements PluginInterface, Stringable
 	use SMFHookTrait;
 	use SessionTrait;
 
+	public string $type;
+
 	public string $icon = 'fas fa-puzzle-piece';
 
 	public bool $saveable = true;

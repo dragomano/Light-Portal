@@ -67,8 +67,6 @@ final class Comment implements ActionInterface
 		if (empty($this->pageSlug) || $this->request()->isEmpty('api'))
 			return;
 
-		header('Content-Type: application/json; charset=utf-8');
-
 		match ($this->request()->get('api')) {
 			'add_comment'    => $this->add(),
 			'update_comment' => $this->update(),

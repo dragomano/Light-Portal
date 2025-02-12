@@ -61,7 +61,6 @@ trait AreaTrait
 
 		$this->prepareIconList();
 		$this->prepareTopicList();
-		$this->prepareMemberList();
 
 		$languages = empty(Config::$modSettings['userLanguage'])
 			? [Config::$language]

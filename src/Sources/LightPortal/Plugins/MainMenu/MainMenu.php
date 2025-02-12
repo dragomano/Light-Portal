@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 11.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\MainMenu;
@@ -20,6 +20,7 @@ use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
+use Bugo\LightPortal\Utils\Breadcrumbs;
 use Bugo\LightPortal\Utils\Language;
 
 use const LP_ACTION;
@@ -57,10 +58,11 @@ class MainMenu extends Plugin
 	{
 		if (
 			! empty(Utils::$context['lp_main_menu_portal_langs'][User::$info['language']])
-			&& ! empty(Utils::$context['linktree'][1])
+			&& ! empty(app(Breadcrumbs::class)->getByIndex(1))
 		) {
-			Utils::$context['linktree'][1]['name']
-				= Utils::$context['lp_main_menu_portal_langs'][User::$info['language']];
+			app(Breadcrumbs::class)->update(
+				1, 'name', Utils::$context['lp_main_menu_portal_langs'][User::$info['language']]
+			);
 		}
 	}
 

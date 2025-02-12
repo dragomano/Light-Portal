@@ -20,6 +20,8 @@ use function explode;
 use function filter_var;
 
 use const FILTER_VALIDATE_BOOLEAN;
+use const FILTER_VALIDATE_FLOAT;
+use const FILTER_VALIDATE_INT;
 
 if (! defined('SMF'))
 	die('No direct access...');

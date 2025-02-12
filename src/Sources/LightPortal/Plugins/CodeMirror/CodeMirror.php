@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 11.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\CodeMirror;
@@ -48,10 +48,8 @@ class CodeMirror extends Plugin
 
 		$types = array_keys($this->modes);
 		foreach ($types as $type) {
-			if (
-				($object['type'] === $type || (isset($object['options']['content']) && $object['options']['content'] === $type))
-				&& in_array($type, $modes)
-			) {
+			$isTypeMatched = $object['type'] === $type || (isset($object['options']['content']) && $object['options']['content'] === $type);
+			if ($isTypeMatched && in_array($type, $modes)) {
 				$currentMode = $type;
 				break;
 			}
@@ -156,6 +154,7 @@ class CodeMirror extends Plugin
 
 		$resources[] = ['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/codemirror@5/addon/selection/active-line.min.js'];
 		$resources[] = ['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/codemirror@5/addon/edit/matchbrackets.min.js'];
+		$resources[] = ['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/codemirror@5/addon/display/autorefresh.js'];
 
 		$this->loadExternalResources($resources);
 
@@ -239,6 +238,7 @@ class CodeMirror extends Plugin
 			lineNumbers: true,
 			mode: '. $mode . ',
 			firstLineNumber: 1,
+			autoRefresh: true,
 			lineWrapping: true,
 			direction: "' . (Utils::$context['right_to_left'] ? 'rtl' : 'ltr') . '",
 			styleActiveLine: true,
@@ -263,12 +263,12 @@ class CodeMirror extends Plugin
 	public function credits(Event $e): void
 	{
 		$e->args->links[] = [
-			'title' => 'CodeMirror',
-			'link' => 'https://github.com/codemirror/codemirror',
+			'title' => 'CodeMirror 5',
+			'link' => 'https://github.com/codemirror/codemirror5',
 			'author' => 'Marijn Haverbeke and others',
 			'license' => [
 				'name' => 'the MIT License',
-				'link' => 'https://github.com/codemirror/CodeMirror/blob/master/LICENSE'
+				'link' => 'https://github.com/codemirror/codemirror5?tab=MIT-1-ov-file'
 			]
 		];
 	}

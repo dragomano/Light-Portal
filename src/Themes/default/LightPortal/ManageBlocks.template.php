@@ -2,7 +2,9 @@
 
 use Bugo\Compat\{Config, Lang};
 use Bugo\Compat\{Theme, Utils};
+use Bugo\LightPortal\Enums\ContentClass;
 use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Enums\TitleClass;
 use Bugo\LightPortal\Utils\Icon;
 
 function template_manage_blocks(): void
@@ -221,11 +223,11 @@ function template_block_post(): void
 	if (isset(Utils::$context['preview_content']) && empty(Utils::$context['post_errors'])) {
 		echo '
 	<div class="preview_frame">';
-		echo sprintf(Utils::$context['lp_all_title_classes'][Utils::$context['lp_block']['title_class']], Utils::$context['preview_title']);
+		echo sprintf(TitleClass::values()[Utils::$context['lp_block']['title_class']], Utils::$context['preview_title']);
 
 		echo '
 		<div class="preview block_', Utils::$context['lp_block']['type'], '">
-			', sprintf(Utils::$context['lp_all_content_classes'][Utils::$context['lp_block']['content_class']], Utils::$context['preview_content']), '
+			', sprintf(ContentClass::values()[Utils::$context['lp_block']['content_class']], Utils::$context['preview_content']), '
 		</div>
 	</div>';
 	} else {

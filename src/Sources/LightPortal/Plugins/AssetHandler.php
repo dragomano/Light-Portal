@@ -60,6 +60,7 @@ class AssetHandler
 
 				if (! is_dir($path)) {
 					@mkdir($path);
+					@copy(__DIR__ . '/index.php', $path . '/index.php');
 				}
 
 				foreach ($links as $link) {

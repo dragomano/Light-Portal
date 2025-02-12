@@ -27,6 +27,7 @@ use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
+use Bugo\LightPortal\Utils\Breadcrumbs;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Setting;
@@ -73,21 +74,14 @@ final class Category extends AbstractPageList
 			Utils::$context['page_title'] = sprintf(Lang::$txt['lp_all_pages_with_category'], $category['title']);
 		}
 
-		Utils::$context['current_category'] = $category['id'];
-
 		Utils::$context['description'] = $category['description'] ?? '';
-
+		Utils::$context['lp_category_edit_link'] = Config::$scripturl . '?action=admin;area=lp_categories;sa=edit;id=' . $category['id'];
 		Utils::$context['canonical_url']  = LP_BASE_URL . ';sa=categories;id=' . $category['id'];
 		Utils::$context['robot_no_index'] = true;
 
-		Utils::$context['linktree'][] = [
-			'name' => Lang::$txt['lp_all_categories'],
-			'url'  => LP_BASE_URL . ';sa=categories',
-		];
-
-		Utils::$context['linktree'][] = [
-			'name' => $category['title'] ?? Lang::$txt['lp_no_category'],
-		];
+		app(Breadcrumbs::class)
+			->add(Lang::$txt['lp_all_categories'], LP_BASE_URL . ';sa=categories')
+			->add($category['title'] ?? Lang::$txt['lp_no_category']);
 
 		$this->cardList->show($this);
 
@@ -131,7 +125,7 @@ final class Category extends AbstractPageList
 			[
 				'lang'          => User::$info['language'],
 				'fallback_lang' => Config::$language,
-				'id'            => Utils::$context['current_category'],
+				'id'            => $this->request()->get('id'),
 				'status'        => Status::ACTIVE->value,
 				'types'         => EntryType::withoutDrafts(),
 				'current_time'  => time(),
@@ -160,7 +154,7 @@ final class Category extends AbstractPageList
 				AND created_at <= {int:current_time}
 				AND permissions IN ({array_int:permissions})',
 			[
-				'id'           => Utils::$context['current_category'],
+				'id'           => $this->request()->get('id'),
 				'status'       => Status::ACTIVE->value,
 				'types'        => EntryType::withoutDrafts(),
 				'current_time' => time(),
@@ -181,9 +175,7 @@ final class Category extends AbstractPageList
 		Utils::$context['canonical_url']  = LP_BASE_URL . ';sa=categories';
 		Utils::$context['robot_no_index'] = true;
 
-		Utils::$context['linktree'][] = [
-			'name' => Utils::$context['page_title'],
-		];
+		app(Breadcrumbs::class)->add(Utils::$context['page_title']);
 
 		app(TablePresenter::class)->show(
 			PortalTableBuilder::make('categories', Utils::$context['page_title'])

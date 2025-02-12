@@ -13,6 +13,7 @@
 namespace Bugo\LightPortal\Enums\Traits;
 
 use function array_combine;
+use function array_key_first;
 use function array_map;
 use function sprintf;
 
@@ -24,6 +25,11 @@ trait HasHtmlTrait
 			array_map(fn($class) => $class->value, self::cases()),
 			array_map(fn($class) => $class->getList(), self::cases())
 		);
+	}
+
+	public static function first(): string
+	{
+		return array_key_first(self::values());
 	}
 
 	public static function html(string $content, string $class = ''): string

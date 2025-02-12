@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 21.12.24
+ * @version 11.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\BlogMode;
@@ -17,6 +17,7 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Actions\FrontPage;
+use Bugo\LightPortal\Utils\Breadcrumbs;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -42,10 +43,8 @@ class BlogIndex
 
 		Utils::$context['page_title'] = Utils::$context['forum_name'] . ' - ' . Lang::$txt['lp_blog_mode']['menu_item_title'];
 
-		unset(Utils::$context['linktree'][1]);
-
-		Utils::$context['linktree'][] = [
-			'name' => Lang::$txt['lp_blog_mode']['menu_item_title'],
-		];
+		app(Breadcrumbs::class)
+			->remove(1)
+			->add(Lang::$txt['lp_blog_mode']['menu_item_title']);
 	}
 }

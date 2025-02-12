@@ -20,6 +20,7 @@ use Bugo\LightPortal\Actions\Block;
 use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Repositories\PageRepository;
+use Bugo\LightPortal\Utils\Breadcrumbs;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
@@ -286,21 +287,23 @@ class MenuButtons
 	 */
 	protected function fixLinktree(): void
 	{
+		$linkTree = app(Breadcrumbs::class)->getByIndex(1);
+
 		if (
 			$this->request()->hasNot('c')
 			&& empty(Utils::$context['current_board'])
-			|| empty(Utils::$context['linktree'][1])
-			|| empty(Utils::$context['linktree'][1]['url'])
+			|| empty($linkTree)
+			|| empty($linkTree['url'])
 		) {
 			return;
 		}
 
-		$oldUrl = explode('#', (string) Utils::$context['linktree'][1]['url']);
+		$oldUrl = explode('#', $linkTree['url']);
 
 		if (empty($oldUrl[1]))
 			return;
 
-		Utils::$context['linktree'][1]['url'] = Config::$scripturl . '?action=forum#' . $oldUrl[1];
+		app(Breadcrumbs::class)->update(1, 'url', Config::$scripturl . '?action=forum#' . $oldUrl[1]);
 	}
 
 	private function getPageSubsectionTitle(): string

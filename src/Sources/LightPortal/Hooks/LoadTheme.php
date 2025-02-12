@@ -17,13 +17,11 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\ContentClass;
 use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Placement;
 use Bugo\LightPortal\Enums\PluginType;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Enums\TitleClass;
 use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Repositories\BlockRepository;
 use Bugo\LightPortal\Utils\RequestTrait;
@@ -58,18 +56,13 @@ class LoadTheme
 		Utils::$context['allow_light_portal_manage_pages_any'] = User::$me->allowedTo('light_portal_manage_pages_any');
 		Utils::$context['allow_light_portal_approve_pages']    = User::$me->allowedTo('light_portal_approve_pages');
 
-		Utils::$context['lp_quantities'] = app(SessionManager::class);
-
-		Utils::$context['lp_all_title_classes'] = TitleClass::values();
-		Utils::$context['lp_all_content_classes'] = ContentClass::values();
+		Utils::$context['lp_quantities']    = app(SessionManager::class);
+		Utils::$context['lp_active_blocks'] = app(BlockRepository::class)->getActive();
 
 		Utils::$context['lp_block_placements'] = Placement::all();
-
-		Utils::$context['lp_plugin_types'] = PluginType::all();
-		Utils::$context['lp_content_types'] = ContentType::all();
-		Utils::$context['lp_page_types'] = EntryType::all();
-
-		Utils::$context['lp_active_blocks'] = app(BlockRepository::class)->getActive();
+		Utils::$context['lp_plugin_types']     = PluginType::all();
+		Utils::$context['lp_content_types']    = ContentType::all();
+		Utils::$context['lp_page_types']       = EntryType::all();
 	}
 
 	protected function loadAssets(): void
@@ -80,7 +73,6 @@ class LoadTheme
 		Theme::loadCSSFile('light_portal/portal.css');
 		Theme::loadCSSFile('light_portal/plugins.css');
 		Theme::loadCSSFile('portal_custom.css');
-
 		Theme::loadJavaScriptFile('light_portal/plugins.js', ['minimize' => true]);
 	}
 

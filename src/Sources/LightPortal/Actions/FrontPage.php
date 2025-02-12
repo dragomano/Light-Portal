@@ -27,6 +27,7 @@ use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Events\EventArgs;
 use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Renderers\RendererInterface;
+use Bugo\LightPortal\Utils\Breadcrumbs;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\Icon;
@@ -90,12 +91,12 @@ final class FrontPage implements ActionInterface
 			Utils::$context['forum_name'] . ' - ' . Lang::$txt['lp_portal']
 		);
 
-		Utils::$context['linktree'][] = [
-			'name'        => Lang::$txt['lp_portal'],
-			'extra_after' => '(' . Lang::getTxt('lp_articles_set', [
+		app(Breadcrumbs::class)->add(
+			Lang::$txt['lp_portal'],
+			after: '(' . Lang::getTxt('lp_articles_set', [
 				'articles' => Utils::$context['total_articles']
 			]) . ')'
-		];
+		);
 
 		$this->prepareTemplates();
 	}

@@ -25,6 +25,7 @@ use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Lists\TagList;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
+use Bugo\LightPortal\Utils\Breadcrumbs;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Setting;
@@ -73,14 +74,9 @@ final class Tag extends AbstractPageList
 		Utils::$context['canonical_url']  = LP_BASE_URL . ';sa=tags;id=' . $tag['id'];
 		Utils::$context['robot_no_index'] = true;
 
-		Utils::$context['linktree'][] = [
-			'name' => Lang::$txt['lp_all_page_tags'],
-			'url'  => LP_BASE_URL . ';sa=tags',
-		];
-
-		Utils::$context['linktree'][] = [
-			'name' => $tag['title'],
-		];
+		app(Breadcrumbs::class)
+			->add(Lang::$txt['lp_all_page_tags'], LP_BASE_URL . ';sa=tags')
+			->add($tag['title']);
 
 		$this->cardList->show($this);
 
@@ -181,9 +177,7 @@ final class Tag extends AbstractPageList
 		Utils::$context['canonical_url']  = LP_BASE_URL . ';sa=tags';
 		Utils::$context['robot_no_index'] = true;
 
-		Utils::$context['linktree'][] = [
-			'name' => Utils::$context['page_title'],
-		];
+		app(Breadcrumbs::class)->add(Utils::$context['page_title']);
 
 		app(TablePresenter::class)->show(
 			PortalTableBuilder::make('tags', Utils::$context['page_title'])

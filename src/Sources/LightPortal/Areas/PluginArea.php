@@ -25,6 +25,7 @@ use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Lists\PluginList;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\RequestTrait;
@@ -40,11 +41,12 @@ use function array_map;
 use function array_search;
 use function array_unique;
 use function explode;
-use function header;
+use function file_get_contents;
 use function implode;
 use function in_array;
 use function is_array;
 use function ksort;
+use function preg_match;
 use function sort;
 use function sprintf;
 use function unlink;
@@ -186,6 +188,14 @@ final class PluginArea
 			$snakeName = Str::getSnakeName($item);
 			$pluginData = Utils::$context['lp_loaded_addons'][$snakeName] ?? [];
 
+			$version = $this->getVersion($item);
+			$plugin = Utils::$context['lp_download'][$item] ?? Utils::$context['lp_donate'][$item];
+			$outdated = DateTime::dateCompare($version, $plugin['version'] ?? '') ? Lang::$txt['lp_plugin_outdated'] : null;
+			if ($outdated) {
+				$pluginData = [];
+				$configVars[$snakeName] = [];
+			}
+
 			if ($pluginData === []) {
 				if (isset(Utils::$context['lp_donate'][$item])) {
 					Utils::$context['lp_loaded_addons'][$snakeName]['type'] = Utils::$context['lp_donate'][$item]['type'];
@@ -200,8 +210,10 @@ final class PluginArea
 
 			return [
 				'name'       => $item,
+				'version'    => $version,
+				'outdated'   => $outdated,
 				'snake_name' => $snakeName,
-				'desc'       => Lang::$txt['lp_' . $snakeName]['description'] ?? '',
+				'desc'       => $outdated ?? Lang::$txt['lp_' . $snakeName]['description'] ?? '',
 				'status'     => in_array($item, Setting::getEnabledPlugins()) ? 'on' : 'off',
 				'types'      => $this->getTypes($snakeName),
 				'special'    => $special ?? '',
@@ -209,6 +221,19 @@ final class PluginArea
 				'saveable'   => $pluginData['saveable'] ?? false,
 			];
 		}, Utils::$context['lp_plugins']);
+	}
+
+	private function getVersion(string $item): string
+	{
+		$file = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $item . DIRECTORY_SEPARATOR . $item . '.php';
+		$docBlock = file_get_contents($file, length: 400);
+
+		$version = '';
+		if (preg_match('/@version\s+([0-9]+\.[0-9]+\.[0-9]+)/', $docBlock, $matches)) {
+			$version = $matches[1];
+		}
+
+		return $version;
 	}
 
 	private function prepareAddonChart(): void
@@ -237,8 +262,7 @@ final class PluginArea
 
 		ksort($typeCount);
 
-		Utils::$context['insert_after_template'] .= /** @lang text */
-			'
+		Utils::$context['insert_after_template'] .= /** @lang text */ '
 		<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.js"></script>
 		<script>
 			new Chart("addon_chart", {
@@ -269,8 +293,6 @@ final class PluginArea
 		if ($this->request()->hasNot('api')) {
 			return;
 		}
-
-		header('Content-Type: application/json; charset=utf-8');
 
 		$this->response()->json($this->preparedData());
 	}

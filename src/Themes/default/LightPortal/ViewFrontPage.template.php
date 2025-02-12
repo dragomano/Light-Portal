@@ -73,7 +73,19 @@ function template_sorting_above(): void
 {
 	echo '
 	<div class="cat_bar">
-		<h3 class="catbg">', Utils::$context['page_title'], '</h3>
+		<h3 class="catbg">
+			', Utils::$context['page_title'];
+
+	if (Utils::$context['user']['is_admin']) {
+		echo '
+			<a class="floatright" href="', Utils::$context['lp_category_edit_link'], '">
+				', Icon::get('edit'), '
+				<span class="hidden-xs">', Lang::$txt['edit'], '</span>
+			</a>';
+	}
+
+	echo '
+		</h3>
 	</div>';
 
 	if (empty(Utils::$context['lp_frontpage_articles'])) {

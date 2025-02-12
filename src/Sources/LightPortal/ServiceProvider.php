@@ -64,6 +64,7 @@ use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Repositories\TagRepository;
 use Bugo\LightPortal\UI\Tables\TableRenderer;
+use Bugo\LightPortal\Utils\Breadcrumbs;
 use Bugo\LightPortal\Utils\Cache;
 use Bugo\LightPortal\Utils\File;
 use Bugo\LightPortal\Utils\Post;
@@ -92,6 +93,7 @@ class ServiceProvider extends AbstractServiceProvider
 		BlockRepository::class,
 		BlockValidator::class,
 		BoardIndex::class,
+		Breadcrumbs::class,
 		Cache::class,
 		CardListInterface::class,
 		Category::class,
@@ -227,6 +229,8 @@ class ServiceProvider extends AbstractServiceProvider
 		$this->getContainer()->add(PageFactory::class);
 		$this->getContainer()->add(TagValidator::class);
 		$this->getContainer()->add(TagFactory::class);
+
+		$this->getContainer()->add(Breadcrumbs::class);
 
 		$this->getContainer()->add(Weaver::class, Weaver::class)->setShared(false);
 	}

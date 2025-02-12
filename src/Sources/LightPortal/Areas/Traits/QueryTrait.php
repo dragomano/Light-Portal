@@ -29,7 +29,6 @@ use function array_filter;
 use function sprintf;
 use function str_contains;
 use function strtolower;
-use function strtr;
 use function trim;
 
 if (! defined('SMF'))
@@ -129,47 +128,5 @@ trait QueryTrait
 		Db::$db->free_result($result);
 
 		$this->response()->json($topics);
-	}
-
-	private function prepareMemberList(): void
-	{
-		if ($this->request()->hasNot('members'))
-			return;
-
-		$data = $this->request()->json();
-
-		if (empty($search = $data['search']))
-			return;
-
-		$search = trim((string) Utils::$smcFunc['strtolower']($search)) . '*';
-		$search = strtr($search, ['%' => '\%', '_' => '\_', '*' => '%', '?' => '_', '&#038;' => '&amp;']);
-
-		$result = Db::$db->query('', '
-			SELECT id_member, real_name
-			FROM {db_prefix}members
-			WHERE {raw:real_name} LIKE {string:search}
-				AND is_activated IN (1, 11)
-			LIMIT 100',
-			[
-				'real_name' => Utils::$smcFunc['db_case_sensitive'] ? 'LOWER(real_name)' : 'real_name',
-				'search'    => $search,
-			]
-		);
-
-		$members = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
-			$row['real_name'] = strtr(
-				$row['real_name'], ['&amp;' => '&#038;', '&lt;' => '&#060;', '&gt;' => '&#062;', '&quot;' => '&#034;']
-			);
-
-			$members[] = [
-				'text'  => $row['real_name'],
-				'value' => $row['id_member'],
-			];
-		}
-
-		Db::$db->free_result($result);
-
-		$this->response()->json($members);
 	}
 }

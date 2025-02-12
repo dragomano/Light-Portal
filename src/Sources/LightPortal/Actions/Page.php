@@ -23,6 +23,7 @@ use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Lists\TitleList;
 use Bugo\LightPortal\Repositories\PageRepository;
+use Bugo\LightPortal\Utils\Breadcrumbs;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\Icon;
@@ -38,7 +39,6 @@ use function array_search;
 use function class_exists;
 use function date;
 use function explode;
-use function header;
 use function implode;
 use function time;
 
@@ -89,6 +89,7 @@ final class Page implements ActionInterface
 
 		$this->setPageTitleAndCanonicalUrl($slug);
 
+		Utils::$context['lp_page_edit_link'] = Config::$scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . Utils::$context['lp_page']['id'];
 		Utils::$context['lp_comments_api_endpoint'] = Utils::$context['canonical_url'] . ';fetch_data';
 
 		Utils::$context['lp_page']['url'] = Utils::$context['canonical_url'] . (
@@ -177,7 +178,7 @@ final class Page implements ActionInterface
 
 			Utils::$context['canonical_url'] = Config::$scripturl;
 
-			Utils::$context['linktree'][] = ['name' => Lang::$txt['lp_portal']];
+			app(Breadcrumbs::class)->add(Lang::$txt['lp_portal']);
 		} else {
 			Utils::$context['page_title'] = Str::getTranslatedTitle(
 				Utils::$context['lp_page']['titles']
@@ -186,13 +187,13 @@ final class Page implements ActionInterface
 			Utils::$context['canonical_url'] = LP_PAGE_URL . $slug;
 
 			if (isset(Utils::$context['lp_page']['category'])) {
-				Utils::$context['linktree'][] = [
-					'name' => Utils::$context['lp_page']['category'],
-					'url'  => LP_BASE_URL . ';sa=categories;id=' . Utils::$context['lp_page']['category_id'],
-				];
+				app(Breadcrumbs::class)->add(
+					Utils::$context['lp_page']['category'],
+					LP_BASE_URL . ';sa=categories;id=' . Utils::$context['lp_page']['category_id']
+				);
 			}
 
-			Utils::$context['linktree'][] = ['name' => Utils::$context['page_title']];
+			app(Breadcrumbs::class)->add(Utils::$context['page_title']);
 		}
 	}
 
@@ -354,8 +355,6 @@ final class Page implements ActionInterface
 		if ($this->request()->hasNot('fetch_data')) {
 			return;
 		}
-
-		header('Content-Type: application/json; charset=utf-8');
 
 		$this->response()->json($this->preparedData());
 	}

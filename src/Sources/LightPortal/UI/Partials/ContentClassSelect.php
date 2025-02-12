@@ -15,6 +15,8 @@ namespace Bugo\LightPortal\UI\Partials;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 
+use Bugo\LightPortal\Enums\ContentClass;
+
 use function func_get_args;
 use function json_encode;
 use function sprintf;
@@ -28,7 +30,7 @@ final class ContentClassSelect extends AbstractPartial
 
 		$params['id'] ??= 'content_class';
 		$params['wide'] ??= false;
-		$params['data'] ??= Utils::$context['lp_all_content_classes'] ?? [];
+		$params['data'] ??= ContentClass::values() ?? [];
 		$params['value'] ??= Utils::$context['lp_block']['content_class'] ?? '';
 
 		$data = [];

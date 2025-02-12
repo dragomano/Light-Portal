@@ -23,11 +23,11 @@ $txt['lp_card_view'] = 'Card view';
 $txt['lp_can_donate'] = 'For sponsors';
 $txt['lp_can_download'] = 'Can download';
 $txt['lp_min_search_length'] = 'Please enter at least %d characters';
-$txt['lp_no_such_members'] = 'Nobody here by that name';
 $txt['lp_promote_to_fp'] = 'Promote to frontpage';
 $txt['lp_remove_from_fp'] = 'Remove from frontpage';
 $txt['lp_task_list'] = 'Task list';
 $txt['lp_new_version'] = 'Your version of the portal is outdated. A new version is available — {0}, released on {1}.';
+$txt['lp_plugin_outdated'] = 'An outdated version of the plugin is being used. Please update!';
 
 // Settings
 $txt['lp_settings'] = 'Portal settings';
@@ -235,8 +235,6 @@ $txt['lp_page_description'] = 'Description';
 $txt['lp_page_tags_placeholder'] = 'Select tags';
 $txt['lp_page_tags_empty'] = 'No tags yet';
 $txt['lp_page_publish_datetime'] = 'Date and time of publication';
-$txt['lp_page_author'] = 'Transfer of authorship';
-$txt['lp_page_author_placeholder'] = 'Specify a username to transfer rights to the page';
 $txt['lp_page_show_title'] = 'Show the title';
 $txt['lp_page_show_author_and_date'] = 'Show the author and posting date';
 $txt['lp_page_show_related_pages'] = 'Show related pages';

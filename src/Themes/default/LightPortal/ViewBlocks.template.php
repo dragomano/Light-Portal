@@ -1,6 +1,8 @@
 <?php declare(strict_types=1);
 
 use Bugo\Compat\{Config, Utils};
+use Bugo\LightPortal\Enums\ContentClass;
+use Bugo\LightPortal\Enums\TitleClass;
 use Bugo\LightPortal\Utils\{Icon, Setting};
 
 /**
@@ -162,7 +164,12 @@ function prepare_edit_icon(array &$block): void
 
 function render_block_part(string $part, array $block): string
 {
-	return sprintf(Utils::$context['lp_all_' . $part . '_classes'][$block[$part . '_class'] ?? ''], $block[$part]);
+	$class = match ($part) {
+		'title'   => TitleClass::class,
+		'content' => ContentClass::class,
+	};
+
+	return sprintf($class::values()[$block[$part . '_class'] ?? ''], $block[$part]);
 }
 
 function calculate_column_width(string $size): int

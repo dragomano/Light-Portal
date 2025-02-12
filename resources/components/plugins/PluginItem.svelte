@@ -14,6 +14,8 @@
   let show = $state(false);
   let toggled = $state(item.status === 'on');
 
+  const outdated = $state(item.outdated);
+
   /** @type {{ pluginState: { donate: { link: string }, donwload: { link: string } } }} */
   const donateLink = $derived(pluginState.donate[item.name].link);
   const downloadLink = $derived(pluginState.download[item.name].link);
@@ -41,7 +43,7 @@
   };
 </script>
 
-<div class="windowbg" transition:fade>
+<div class="windowbg" class:outdated transition:fade>
   <div class="features" data-id={index}>
     <div class="floatleft">
       <h4>
@@ -51,7 +53,7 @@
         {/each}
       </h4>
       <div>
-        {#if item.special}
+        {#if item.special && !item.outdated}
           <p>{@html specialDesc}</p>
         {:else}
           <p>{@html item.desc}</p>
@@ -66,7 +68,7 @@
           icon="gear"
           class={show && 'fa-spin'}
           data-id={settingsId}
-          onclick={() => show = !show}
+          onclick={() => (show = !show)}
         />
       {/if}
 
@@ -103,3 +105,9 @@
     {/if}
   </div>
 </div>
+
+<style>
+  .outdated {
+    background: darkgray;
+  }
+</style>

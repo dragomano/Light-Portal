@@ -13,12 +13,13 @@
 namespace Bugo\LightPortal\Models;
 
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\ContentClass;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\Placement;
 use Bugo\LightPortal\Enums\Status;
+use Bugo\LightPortal\Enums\TitleClass;
 use Bugo\LightPortal\Utils\Setting;
 
-use function array_key_first;
 use function is_null;
 
 if (! defined('SMF'))
@@ -74,8 +75,8 @@ class BlockModel extends AbstractModel
 		$this->permissions  = $data['permissions'] ?? $permissions;
 		$this->status       = $data['status'] ?? Status::ACTIVE->value;
 		$this->areas        = $data['areas'] ?? 'all';
-		$this->titleClass   = $data['title_class'] ?? array_key_first(Utils::$context['lp_all_title_classes']);
-		$this->contentClass = $data['content_class'] ?? array_key_first(Utils::$context['lp_all_content_classes']);
+		$this->titleClass   = $data['title_class'] ?? TitleClass::first();
+		$this->contentClass = $data['content_class'] ?? ContentClass::first();
 		$this->titles       = $data['titles'] ?? [];
 		$this->options      = $data['options'] ?? [];
 
