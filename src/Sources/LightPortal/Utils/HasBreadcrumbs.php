@@ -10,14 +10,12 @@
  * @version 2.9
  */
 
-namespace Bugo\LightPortal\Enums\Traits;
+namespace Bugo\LightPortal\Utils;
 
-use function array_map;
-
-trait HasValuesTrait
+trait HasBreadcrumbs
 {
-	public static function values(): array
+	public function breadcrumbs(): Breadcrumbs
 	{
-		return array_map(fn($item) => $item->value, self::cases());
+		return app(Breadcrumbs::class);
 	}
 }

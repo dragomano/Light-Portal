@@ -20,8 +20,7 @@ use Bugo\Compat\Utils;
 use Bugo\Compat\WebFetch\WebFetchApi;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
-use Bugo\LightPortal\Events\EventArgs;
-use Bugo\LightPortal\Events\EventManagerFactory;
+use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Lists\PluginList;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\CacheTrait;
@@ -45,6 +44,7 @@ use function file_get_contents;
 use function implode;
 use function in_array;
 use function is_array;
+use function is_file;
 use function ksort;
 use function preg_match;
 use function sort;
@@ -62,6 +62,7 @@ final class PluginArea
 	use CacheTrait;
 	use RequestTrait;
 	use ResponseTrait;
+	use HasEvents;
 
 	public function __construct(private readonly PluginRepository $repository) {}
 
@@ -86,7 +87,7 @@ final class PluginArea
 			),
 		];
 
-		Utils::$context['lp_plugins'] = app(PluginList::class);
+		Utils::$context['lp_plugins'] = app(PluginList::class)();
 
 		$this->extendPluginList();
 
@@ -97,10 +98,7 @@ final class PluginArea
 		$settings = [];
 
 		// Plugin authors can add settings here
-		app(EventManagerFactory::class)(Utils::$context['lp_plugins'])->dispatch(
-			PortalHook::addSettings,
-			new EventArgs(['settings' => &$settings])
-		);
+		$this->events(Utils::$context['lp_plugins'])->dispatch(PortalHook::addSettings, ['settings' => &$settings]);
 
 		$this->handleSave($settings);
 		$this->prepareAddonList($settings);
@@ -172,10 +170,7 @@ final class PluginArea
 		}
 
 		// Plugin authors can do additional actions after settings saving
-		app(EventManagerFactory::class)(Utils::$context['lp_plugins'])->dispatch(
-			PortalHook::saveSettings,
-			new EventArgs(['settings' => &$settings])
-		);
+		$this->events(Utils::$context['lp_plugins'])->dispatch(PortalHook::saveSettings, ['settings' => &$settings]);
 
 		$this->repository->changeSettings($name, $settings);
 
@@ -189,7 +184,7 @@ final class PluginArea
 			$pluginData = Utils::$context['lp_loaded_addons'][$snakeName] ?? [];
 
 			$version = $this->getVersion($item);
-			$plugin = Utils::$context['lp_download'][$item] ?? Utils::$context['lp_donate'][$item];
+			$plugin = Utils::$context['lp_download'][$item] ?? Utils::$context['lp_donate'][$item] ?? [];
 			$outdated = DateTime::dateCompare($version, $plugin['version'] ?? '') ? Lang::$txt['lp_plugin_outdated'] : null;
 			if ($outdated) {
 				$pluginData = [];
@@ -226,10 +221,14 @@ final class PluginArea
 	private function getVersion(string $item): string
 	{
 		$file = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $item . DIRECTORY_SEPARATOR . $item . '.php';
+
+		if (! is_file($file))
+			return '';
+
 		$docBlock = file_get_contents($file, length: 400);
 
 		$version = '';
-		if (preg_match('/@version\s+([0-9]+\.[0-9]+\.[0-9]+)/', $docBlock, $matches)) {
+		if ($docBlock && preg_match('/@version\s+([0-9]+\.[0-9]+\.[0-9]+)/', $docBlock, $matches)) {
 			$version = $matches[1];
 		}
 

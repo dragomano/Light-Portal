@@ -11,17 +11,15 @@
 
 namespace Bugo\LightPortal\Areas\Imports;
 
-use Bugo\LightPortal\Areas\Imports\Traits\WithCommentsTrait;
+use Bugo\LightPortal\Areas\Imports\Traits\HasComments;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\EventArgs;
-use Bugo\LightPortal\Events\EventManagerFactory;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 abstract class AbstractCustomPageImport extends AbstractCustomImport
 {
-	use WithCommentsTrait {
+	use HasComments {
 		replaceComments as replaceCommentsTrait;
 	}
 
@@ -31,14 +29,14 @@ abstract class AbstractCustomPageImport extends AbstractCustomImport
 	{
 		$params = $comments = [];
 
-		app(EventManagerFactory::class)()->dispatch(
+		$this->events()->dispatch(
 			PortalHook::importPages,
-			new EventArgs([
+			[
 				'items'    => &$items,
 				'titles'   => &$titles,
 				'params'   => &$params,
-				'comments' => &$comments
-			])
+				'comments' => &$comments,
+			]
 		);
 
 		$results = $this->insertData(

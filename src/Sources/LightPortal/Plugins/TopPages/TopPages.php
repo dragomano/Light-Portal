@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.01.25
+ * @version 13.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\TopPages;
@@ -76,7 +76,7 @@ class TopPages extends Block
 
 	public function getData(ParamWrapper $parameters): array
 	{
-		$titles = app(TitleList::class);
+		$titles = app(TitleList::class)();
 
 		$type = Typed::string($parameters['popularity_type'], default: 'comments');
 		$numPages = Typed::int($parameters['num_pages'], default: 10);

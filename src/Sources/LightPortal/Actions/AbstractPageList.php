@@ -20,6 +20,7 @@ use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\DateTime;
+use Bugo\LightPortal\Utils\HasBreadcrumbs;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
@@ -33,6 +34,8 @@ if (! defined('SMF'))
 
 abstract class AbstractPageList implements PageListInterface
 {
+	use HasBreadcrumbs;
+
 	abstract public function showAll();
 
 	abstract public function getAll(int $start, int $limit, string $sort): array;
@@ -78,7 +81,7 @@ abstract class AbstractPageList implements PageListInterface
 
 	private function getSectionData(array $row): array
 	{
-		if (empty($categories = app(CategoryList::class)))
+		if (empty($categories = app(CategoryList::class)()))
 			return [];
 
 		if (isset($row['category_id'])) {

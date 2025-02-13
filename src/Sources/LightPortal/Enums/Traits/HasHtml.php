@@ -17,7 +17,7 @@ use function array_key_first;
 use function array_map;
 use function sprintf;
 
-trait HasHtmlTrait
+trait HasHtml
 {
 	public static function values(): array
 	{

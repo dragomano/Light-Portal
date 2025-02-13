@@ -20,12 +20,12 @@ use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\EventManagerFactory;
+use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Lists\TitleList;
 use Bugo\LightPortal\Repositories\PageRepository;
-use Bugo\LightPortal\Utils\Breadcrumbs;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Content;
+use Bugo\LightPortal\Utils\HasBreadcrumbs;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\ResponseTrait;
@@ -52,6 +52,8 @@ if (! defined('SMF'))
 final class Page implements ActionInterface
 {
 	use CacheTrait;
+	use HasBreadcrumbs;
+	use HasEvents;
 	use RequestTrait;
 	use ResponseTrait;
 	use SessionTrait;
@@ -178,7 +180,7 @@ final class Page implements ActionInterface
 
 			Utils::$context['canonical_url'] = Config::$scripturl;
 
-			app(Breadcrumbs::class)->add(Lang::$txt['lp_portal']);
+			$this->breadcrumbs()->add(Lang::$txt['lp_portal']);
 		} else {
 			Utils::$context['page_title'] = Str::getTranslatedTitle(
 				Utils::$context['lp_page']['titles']
@@ -187,13 +189,13 @@ final class Page implements ActionInterface
 			Utils::$context['canonical_url'] = LP_PAGE_URL . $slug;
 
 			if (isset(Utils::$context['lp_page']['category'])) {
-				app(Breadcrumbs::class)->add(
+				$this->breadcrumbs()->add(
 					Utils::$context['lp_page']['category'],
 					LP_BASE_URL . ';sa=categories;id=' . Utils::$context['lp_page']['category_id']
 				);
 			}
 
-			app(Breadcrumbs::class)->add(Utils::$context['page_title']);
+			$this->breadcrumbs()->add(Utils::$context['page_title']);
 		}
 	}
 
@@ -300,7 +302,7 @@ final class Page implements ActionInterface
 		if (empty($page = Utils::$context['lp_page']) || empty(Config::$modSettings['lp_show_prev_next_links']))
 			return;
 
-		$titles = app(TitleList::class);
+		$titles = app(TitleList::class)();
 
 		[$prevId, $prevSlug, $nextId, $nextSlug] = $this->repository->getPrevNextLinks($page);
 
@@ -340,7 +342,7 @@ final class Page implements ActionInterface
 
 		Lang::load('Editor');
 
-		app(EventManagerFactory::class)()->dispatch(PortalHook::comments);
+		$this->events()->dispatch(PortalHook::comments);
 
 		if (isset(Utils::$context['lp_' . Setting::getCommentBlock() . '_comment_block']))
 			return;

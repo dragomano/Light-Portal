@@ -12,15 +12,12 @@
 
 namespace Bugo\LightPortal\Models;
 
-use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\ContentClass;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\Placement;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Enums\TitleClass;
 use Bugo\LightPortal\Utils\Setting;
-
-use function is_null;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -58,12 +55,6 @@ class BlockModel extends AbstractModel
 	public function __construct(array $data)
 	{
 		$permissions = Setting::get('lp_permissions_default', 'int', Permission::MEMBER->value);
-
-		foreach ($data as $key => $value) {
-			if (is_null($value)) {
-				$data[$key] = Utils::$context['lp_current_block'][$key] ?? null;
-			}
-		}
 
 		$this->id           = $data['block_id'] ?? $data['id'] ?? 0;
 		$this->icon         = $data['icon'] ?? '';

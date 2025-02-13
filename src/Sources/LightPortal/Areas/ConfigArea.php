@@ -34,8 +34,7 @@ use Bugo\LightPortal\Areas\Imports\PluginImport;
 use Bugo\LightPortal\Areas\Imports\TagImport;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\EventArgs;
-use Bugo\LightPortal\Events\EventManagerFactory;
+use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\RequestTrait;
@@ -62,6 +61,7 @@ if (! defined('SMF'))
 final class ConfigArea
 {
 	use CacheTrait;
+	use HasEvents;
 	use RequestTrait;
 	use SMFHookTrait;
 
@@ -210,10 +210,7 @@ final class ConfigArea
 			}
 		}
 
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::updateAdminAreas,
-			new EventArgs(['areas' => &$areas['lp_portal']['areas']])
-		);
+		$this->events()->dispatch(PortalHook::updateAdminAreas, ['areas' => &$areas['lp_portal']['areas']]);
 	}
 
 	public function helpadmin(): void
@@ -285,10 +282,7 @@ final class ConfigArea
 			'import' => [app(BlockImport::class), 'main'],
 		];
 
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::updateBlockAreas,
-			new EventArgs(['areas' => &$areas])
-		);
+		$this->events()->dispatch(PortalHook::updateBlockAreas, ['areas' => &$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -305,10 +299,7 @@ final class ConfigArea
 			'import' => [app(PageImport::class), 'main'],
 		];
 
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::updatePageAreas,
-			new EventArgs(['areas' => &$areas])
-		);
+		$this->events()->dispatch(PortalHook::updatePageAreas, ['areas' => &$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -325,10 +316,7 @@ final class ConfigArea
 			'import' => [app(CategoryImport::class), 'main'],
 		];
 
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::updateCategoryAreas,
-			new EventArgs(['areas' => &$areas])
-		);
+		$this->events()->dispatch(PortalHook::updateCategoryAreas, ['areas' => &$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -345,10 +333,7 @@ final class ConfigArea
 			'import' => [app(TagImport::class), 'main'],
 		];
 
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::updateTagAreas,
-			new EventArgs(['areas' => &$areas])
-		);
+		$this->events()->dispatch(PortalHook::updateTagAreas, ['areas' => &$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -366,10 +351,7 @@ final class ConfigArea
 			$areas['import'] = [app(PluginImport::class), 'main'];
 		}
 
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::updatePluginAreas,
-			new EventArgs(['areas' => &$areas])
-		);
+		$this->events()->dispatch(PortalHook::updatePluginAreas, ['areas' => &$areas]);
 
 		$this->callActionFromAreas($areas);
 	}

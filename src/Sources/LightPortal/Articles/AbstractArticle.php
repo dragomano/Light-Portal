@@ -12,11 +12,15 @@
 
 namespace Bugo\LightPortal\Articles;
 
+use Bugo\LightPortal\Events\HasEvents;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
 abstract class AbstractArticle implements ArticleInterface
 {
+	use HasEvents;
+
 	protected array $columns = [];
 
 	protected array $tables  = [];

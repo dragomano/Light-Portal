@@ -19,6 +19,7 @@ use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\HasBreadcrumbs;
 use Bugo\LightPortal\Utils\HasTemplateAware;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\ResponseTrait;
@@ -38,6 +39,7 @@ if (! defined('LP_NAME'))
 abstract class Plugin implements PluginInterface, Stringable
 {
 	use CacheTrait;
+	use HasBreadcrumbs;
 	use HasTemplateAware;
 	use RequestTrait;
 	use ResponseTrait;

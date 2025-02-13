@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.01.25
+ * @version 12.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\TinySlider;
@@ -60,11 +60,8 @@ class TinySlider extends Block
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = $this->params;
-	}
 
-	public function validateBlockParams(Event $e): void
-	{
-		$data = $this->request()->only(['image_title', 'image_link']);
+		$data = $this->post()->only(['image_title', 'image_link']);
 
 		$images = [];
 		if ($data && isset($data['image_title']) && isset($data['image_link'])) {
@@ -78,9 +75,12 @@ class TinySlider extends Block
 				];
 			}
 
-			$this->request()->put('images', json_encode($images, JSON_UNESCAPED_UNICODE));
+			$this->post()->put('images', json_encode($images, JSON_UNESCAPED_UNICODE));
 		}
+	}
 
+	public function validateBlockParams(Event $e): void
+	{
 		$e->args->params = [
 			'axis'               => FILTER_DEFAULT,
 			'num_items'          => FILTER_VALIDATE_INT,

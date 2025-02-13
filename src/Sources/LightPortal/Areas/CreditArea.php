@@ -19,8 +19,7 @@ use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\EventArgs;
-use Bugo\LightPortal\Events\EventManagerFactory;
+use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Utils\SMFHookTrait;
 use Bugo\LightPortal\Utils\Str;
 
@@ -38,6 +37,7 @@ if (! defined('SMF'))
  */
 final class CreditArea
 {
+	use HasEvents;
 	use SMFHookTrait;
 
 	public function __invoke(): void
@@ -278,10 +278,7 @@ final class CreditArea
 		];
 
 		// Adding copyrights of used plugins
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::credits,
-			new EventArgs(['links' => &$links])
-		);
+		$this->events()->dispatch(PortalHook::credits, ['links' => &$links]);
 
 		Utils::$context['lp_components'] = $links;
 

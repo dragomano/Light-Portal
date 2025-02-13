@@ -27,7 +27,6 @@ use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
-use Bugo\LightPortal\Utils\Breadcrumbs;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Setting;
@@ -60,7 +59,7 @@ final class Category extends AbstractPageList
 			'id' => Typed::int($this->request()->get('id'))
 		];
 
-		$categories = app(CategoryList::class);
+		$categories = app(CategoryList::class)();
 		if (array_key_exists($category['id'], $categories) === false) {
 			Utils::$context['error_link'] = LP_BASE_URL . ';sa=categories';
 			Lang::$txt['back'] = Lang::$txt['lp_all_categories'];
@@ -79,7 +78,7 @@ final class Category extends AbstractPageList
 		Utils::$context['canonical_url']  = LP_BASE_URL . ';sa=categories;id=' . $category['id'];
 		Utils::$context['robot_no_index'] = true;
 
-		app(Breadcrumbs::class)
+		$this->breadcrumbs()
 			->add(Lang::$txt['lp_all_categories'], LP_BASE_URL . ';sa=categories')
 			->add($category['title'] ?? Lang::$txt['lp_no_category']);
 
@@ -175,7 +174,7 @@ final class Category extends AbstractPageList
 		Utils::$context['canonical_url']  = LP_BASE_URL . ';sa=categories';
 		Utils::$context['robot_no_index'] = true;
 
-		app(Breadcrumbs::class)->add(Utils::$context['page_title']);
+		$this->breadcrumbs()->add(Utils::$context['page_title']);
 
 		app(TablePresenter::class)->show(
 			PortalTableBuilder::make('categories', Utils::$context['page_title'])

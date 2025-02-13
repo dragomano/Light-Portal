@@ -19,8 +19,6 @@ use Bugo\Compat\Parsers\BBCodeParser;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\EventArgs;
-use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
@@ -56,15 +54,15 @@ class BoardArticle extends AbstractArticle
 			'last_updated DESC',
 		];
 
-		app(EventManagerFactory::class)()->dispatch(
+		$this->events()->dispatch(
 			PortalHook::frontBoards,
-			new EventArgs([
+			[
 				'columns' => &$this->columns,
 				'tables'  => &$this->tables,
 				'params'  => &$this->params,
 				'wheres'  => &$this->wheres,
-				'orders'  => &$this->orders
-			])
+				'orders'  => &$this->orders,
+			]
 		);
 	}
 
@@ -136,10 +134,7 @@ class BoardArticle extends AbstractArticle
 
 			$this->prepareTeaser($boards, $row);
 
-			app(EventManagerFactory::class)()->dispatch(
-				PortalHook::frontBoardsRow,
-				new EventArgs(['articles' => &$boards, 'row' => $row])
-			);
+			$this->events()->dispatch(PortalHook::frontBoardsRow, ['articles' => &$boards, 'row' => $row]);
 		}
 
 		Db::$db->free_result($result);

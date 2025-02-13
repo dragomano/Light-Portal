@@ -14,7 +14,7 @@ namespace Bugo\LightPortal\Enums;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
-use Bugo\LightPortal\Enums\Traits\HasNamesTrait;
+use Bugo\LightPortal\Enums\Traits\HasNames;
 
 use function array_keys;
 use function array_reduce;
@@ -22,7 +22,7 @@ use function array_slice;
 
 enum ContentType
 {
-	use HasNamesTrait;
+	use HasNames;
 
 	case BBC;
 	case HTML;

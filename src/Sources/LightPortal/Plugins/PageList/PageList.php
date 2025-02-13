@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.01.25
+ * @version 13.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\PageList;
@@ -99,8 +99,8 @@ class PageList extends Block
 
 	public function getData(ParamWrapper $parameters): array
 	{
-		$titles = app(TitleList::class);
-		$allCategories = app(CategoryList::class);
+		$titles = app(TitleList::class)();
+		$allCategories = app(CategoryList::class)();
 
 		$categories = empty($parameters['categories']) ? null : explode(',', (string) $parameters['categories']);
 		$sort = Typed::string($parameters['sort'], default: 'page_id');

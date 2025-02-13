@@ -16,8 +16,7 @@ use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\EventArgs;
-use Bugo\LightPortal\Events\EventManagerFactory;
+use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Lists\IconList;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\RequestTrait;
@@ -37,6 +36,7 @@ if (! defined('SMF'))
 trait QueryTrait
 {
 	use CacheTrait;
+	use HasEvents;
 	use RequestTrait;
 	use ResponseTrait;
 
@@ -54,10 +54,7 @@ trait QueryTrait
 		$template = Str::html('i', ['class' => '%1$s fa-fw'])
 			->setAttribute('aria-hidden', 'true') . '&nbsp;%1$s';
 
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::prepareIconList,
-			new EventArgs(['icons' => &$icons, 'template' => &$template])
-		);
+		$this->events()->dispatch(PortalHook::prepareIconList, ['icons' => &$icons, 'template' => &$template]);
 
 		$icons = array_filter($icons, static fn($item) => str_contains((string) $item, $search));
 
@@ -77,7 +74,7 @@ trait QueryTrait
 		$cacheTTL = 30 * 24 * 60 * 60;
 
 		if (($icons = $this->cache()->get('fa_icon_list', $cacheTTL)) === null) {
-			$icons = (new IconList())->getList();
+			$icons = app(IconList::class)->getList();
 
 			$this->cache()->put('fa_icon_list', $icons, $cacheTTL);
 		}

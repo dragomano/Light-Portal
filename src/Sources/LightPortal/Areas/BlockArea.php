@@ -22,8 +22,7 @@ use Bugo\LightPortal\Areas\Traits\AreaTrait;
 use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Events\EventArgs;
-use Bugo\LightPortal\Events\EventManagerFactory;
+use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Models\BlockFactory;
 use Bugo\LightPortal\Repositories\BlockRepository;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
@@ -50,9 +49,11 @@ use function array_combine;
 use function array_keys;
 use function array_merge;
 use function array_multisort;
+use function get_debug_type;
 use function in_array;
 use function ob_get_clean;
 use function ob_start;
+use function settype;
 use function sprintf;
 use function template_show_areas_info;
 
@@ -65,6 +66,7 @@ if (! defined('SMF'))
 final class BlockArea
 {
 	use AreaTrait;
+	use HasEvents;
 
 	public function __construct(private readonly BlockRepository $repository) {}
 
@@ -116,7 +118,6 @@ final class BlockArea
 
 		Utils::$context['lp_current_block']['type'] = $type;
 		Utils::$context['lp_current_block']['icon'] ??= Utils::$context['lp_loaded_addons'][$type]['icon'] ?? '';
-		Utils::$context['lp_current_block']['options'] = $this->getParams();
 
 		Language::prepareList();
 
@@ -138,7 +139,8 @@ final class BlockArea
 
 		Utils::$context['sub_template'] = 'block_post';
 
-		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_blocks_edit_title'];
+		Utils::$context['page_title']  = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_blocks_edit_title'];
+		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $item;
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
@@ -155,14 +157,12 @@ final class BlockArea
 
 		if ($this->request()->has('remove')) {
 			$this->repository->remove([$item]);
+
 			$this->cache()->forget('active_blocks');
 			$this->response()->redirect('action=admin;area=lp_blocks;sa=main');
 		}
 
 		$this->validateData();
-
-		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . Utils::$context['lp_block']['id'];
-
 		$this->prepareFormFields();
 		$this->prepareEditor();
 		$this->preparePreview();
@@ -216,7 +216,7 @@ final class BlockArea
 		$this->response()->json($result);
 	}
 
-	private function getParams(): array
+	private function getDefaultOptions(): array
 	{
 		$baseParams = [
 			'hide_header'      => false,
@@ -229,9 +229,12 @@ final class BlockArea
 
 		$params = [];
 
-		app(EventManagerFactory::class)()->dispatch(
+		$this->events()->dispatch(
 			PortalHook::prepareBlockParams,
-			new EventArgs(['params' => &$params, 'type' => Utils::$context['lp_current_block']['type']])
+			[
+				'params' => &$params,
+				'type'   => Utils::$context['lp_current_block']['type'],
+			]
 		);
 
 		return array_merge($baseParams, $params);
@@ -239,7 +242,11 @@ final class BlockArea
 
 	private function validateData(): void
 	{
-		$this->post()->put('options', array_intersect_key($this->post()->all(), $this->getParams()));
+		$options = $this->getDefaultOptions();
+
+		$this->post()->put('type', Utils::$context['lp_current_block']['type']);
+
+		Utils::$context['lp_current_block']['options'] ??= $options;
 
 		$validatedData = app(BlockValidator::class)->validate();
 
@@ -249,9 +256,11 @@ final class BlockArea
 
 		Utils::$context['lp_block'] = $block->toArray();
 
-		$missingKeys = array_diff_key($this->getParams(), Utils::$context['lp_block']['options']);
-		$falseValues = array_fill_keys(array_keys($missingKeys), '');
-		Utils::$context['lp_block']['options'] = array_merge(Utils::$context['lp_block']['options'], $falseValues);
+		$missingKeys = array_diff_key($options, Utils::$context['lp_block']['options']);
+
+		foreach (array_keys($missingKeys) as $key) {
+			settype(Utils::$context['lp_block']['options'][$key], get_debug_type($options[$key]));
+		}
 	}
 
 	private function prepareFormFields(): void
@@ -312,12 +321,12 @@ final class BlockArea
 
 		Utils::$context['lp_block_tab_appearance'] = true;
 
-		app(EventManagerFactory::class)()->dispatch(
+		$this->events()->dispatch(
 			PortalHook::prepareBlockFields,
-			new EventArgs([
+			[
 				'options' => Utils::$context['lp_block']['options'],
 				'type'    => Utils::$context['lp_current_block']['type'],
-			])
+			]
 		);
 
 		$this->preparePostFields();
@@ -350,10 +359,7 @@ final class BlockArea
 
 	private function prepareEditor(): void
 	{
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::prepareEditor,
-			new EventArgs(['object' => Utils::$context['lp_block']])
-		);
+		$this->events()->dispatch(PortalHook::prepareEditor, ['object' => Utils::$context['lp_block']]);
 	}
 
 	private function preparePreview(): void

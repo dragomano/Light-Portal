@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.01.25
+ * @version 12.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\TagList;
@@ -24,8 +24,6 @@ use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\RadioField;
 use Bugo\LightPortal\Utils\Str;
-use Laminas\Tag\Cloud;
-
 use WPLake\Typed\Typed;
 
 use function array_combine;
@@ -119,7 +117,7 @@ class TagList extends Block
 
 		$source = Typed::string($parameters['source'], default: 'lp_tags');
 		$sorting = Typed::string($parameters['sorting'], default: 'name');
-		$asCloud = Typed::bool($parameters['as_cloud']);
+		$asCloud = Typed::boolExtended($parameters['as_cloud']);
 
 		if ($source) {
 			$tagList = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
@@ -135,7 +133,7 @@ class TagList extends Block
 			if ($asCloud) {
 				require_once __DIR__ . '/vendor/autoload.php';
 
-				$cloud = new Cloud([
+				$cloud = new TagCloud([
 					'tags' => array_map(fn($item) => [
 						'title'  => $item['title'],
 						'params' => ['url' => $item['link']],

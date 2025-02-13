@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.01.25
+ * @version 13.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\RandomPages;
@@ -97,7 +97,7 @@ class RandomPages extends Block
 		if (empty($pagesCount))
 			return [];
 
-		$titles = app(TitleList::class);
+		$titles = app(TitleList::class)();
 
 		if (Config::$db_type === 'postgresql') {
 			$result = Db::$db->query('', '

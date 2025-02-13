@@ -21,7 +21,7 @@ use Bugo\LightPortal\Utils\CacheTrait;
 use function count;
 use function sprintf;
 
-trait UseTransactionsTrait
+trait HasTransactions
 {
 	use CacheTrait;
 

@@ -20,7 +20,7 @@ use Bugo\LightPortal\Actions\Block;
 use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Repositories\PageRepository;
-use Bugo\LightPortal\Utils\Breadcrumbs;
+use Bugo\LightPortal\Utils\HasBreadcrumbs;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
@@ -42,6 +42,7 @@ if (! defined('SMF'))
 class MenuButtons
 {
 	use CommonChecks;
+	use HasBreadcrumbs;
 
 	public function __invoke(array &$buttons): void
 	{
@@ -232,11 +233,6 @@ class MenuButtons
 		$this->unsetDisabledActions($buttons);
 	}
 
-	/**
-	 * Show the script execution time and the number of the portal queries
-	 *
-	 * Отображаем время выполнения скрипта и количество запросов к базе
-	 */
 	protected function showDebugInfo(): void
 	{
 		if (
@@ -268,11 +264,6 @@ class MenuButtons
 		);
 	}
 
-	/**
-	 * Fix canonical url for forum action
-	 *
-	 * Исправляем канонический адрес для области forum
-	 */
 	protected function fixCanonicalUrl(): void
 	{
 		if ($this->request()->is(Action::FORUM->value)) {
@@ -280,14 +271,9 @@ class MenuButtons
 		}
 	}
 
-	/**
-	 * Change the link tree
-	 *
-	 * Меняем дерево ссылок
-	 */
 	protected function fixLinktree(): void
 	{
-		$linkTree = app(Breadcrumbs::class)->getByIndex(1);
+		$linkTree = $this->breadcrumbs()->getByIndex(1);
 
 		if (
 			$this->request()->hasNot('c')
@@ -303,7 +289,7 @@ class MenuButtons
 		if (empty($oldUrl[1]))
 			return;
 
-		app(Breadcrumbs::class)->update(1, 'url', Config::$scripturl . '?action=forum#' . $oldUrl[1]);
+		$this->breadcrumbs()->update(1, 'url', Config::$scripturl . '?action=forum#' . $oldUrl[1]);
 	}
 
 	private function getPageSubsectionTitle(): string

@@ -8,14 +8,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.02.25
+ * @version 13.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\VarType;
 use Bugo\LightPortal\Lists\PluginList;
 use Bugo\LightPortal\Validators\AbstractValidator;
 
@@ -25,7 +24,10 @@ if (! defined('LP_NAME'))
 class Validator extends AbstractValidator
 {
 	protected array $filters = [
-		'name'        => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+		'name'        => [
+			'filter'  => FILTER_VALIDATE_REGEXP,
+			'options' => ['regexp' => '/' . LP_ADDON_PATTERN . '/'],
+		],
 		'type'        => FILTER_DEFAULT,
 		'icon'        => FILTER_DEFAULT,
 		'author'      => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
@@ -34,23 +36,23 @@ class Validator extends AbstractValidator
 		'license'     => FILTER_DEFAULT,
 		'option_name' => [
 			'filter' => FILTER_DEFAULT,
-			'flags'  => FILTER_REQUIRE_ARRAY
+			'flags'  => FILTER_REQUIRE_ARRAY,
 		],
 		'option_type' => [
 			'filter' => FILTER_DEFAULT,
-			'flags'  => FILTER_REQUIRE_ARRAY
+			'flags'  => FILTER_REQUIRE_ARRAY,
 		],
 		'option_defaults' => [
 			'filter' => FILTER_DEFAULT,
-			'flags'  => FILTER_REQUIRE_ARRAY
+			'flags'  => FILTER_REQUIRE_ARRAY,
 		],
 		'option_variants' => [
 			'filter' => FILTER_DEFAULT,
-			'flags'  => FILTER_REQUIRE_ARRAY
+			'flags'  => FILTER_REQUIRE_ARRAY,
 		],
 		'option_translations' => [
 			'filter' => FILTER_DEFAULT,
-			'flags'  => FILTER_REQUIRE_ARRAY
+			'flags'  => FILTER_REQUIRE_ARRAY,
 		],
 		'smf_hooks'  => FILTER_VALIDATE_BOOLEAN,
 		'smf_ssi'    => FILTER_VALIDATE_BOOLEAN,
@@ -81,23 +83,33 @@ class Validator extends AbstractValidator
 
 	protected function checkErrors(): void
 	{
-		if (empty($this->filteredData['name'])) {
-			$this->errors[] = 'no_name';
-		}
-
-		if (
-			! empty($this->filteredData['name'])
-			&& empty(VarType::ARRAY->filter($this->filteredData['name'], ['regexp' => '/' . LP_ADDON_PATTERN . '/']))
-		) {
-			$this->errors[] = 'no_valid_name';
-		}
-
-		if (! empty($this->filteredData['name']) && ! $this->isUnique($this->filteredData['name'])) {
-			$this->errors[] = 'no_unique_name';
-		}
+		$this->checkName();
 
 		if (empty($this->filteredData['descriptions']['english'])) {
 			$this->errors[] = 'no_description';
+		}
+	}
+
+	protected function checkName(): void
+	{
+		$nameValue = $this->post()->get('name');
+		$validatedName = $this->filteredData['name'] ?? null;
+
+		$isEmptyName = empty($nameValue);
+		$isInvalidName = ! $isEmptyName && $validatedName === false;
+		$isNonUniqueName = ! $isEmptyName && $validatedName !== false && ! $this->isUnique();
+
+		if ($isEmptyName) {
+			$this->errors[] = 'no_name';
+		}
+
+		if ($isInvalidName) {
+			$this->errors[] = 'no_valid_name';
+			$this->filteredData['name'] = $nameValue;
+		}
+
+		if ($isNonUniqueName) {
+			$this->errors[] = 'no_unique_name';
 		}
 	}
 
@@ -114,8 +126,8 @@ class Validator extends AbstractValidator
 		}
 	}
 
-	private function isUnique(string $name): bool
+	protected function isUnique(): bool
 	{
-		return ! in_array($name, app(PluginList::class));
+		return ! in_array($this->filteredData['name'], app(PluginList::class)());
 	}
 }

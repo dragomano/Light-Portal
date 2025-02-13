@@ -10,17 +10,14 @@
  * @version 2.9
  */
 
-namespace Bugo\LightPortal\Enums;
+namespace Bugo\LightPortal\Enums\Traits;
 
-use Bugo\LightPortal\Enums\Traits\HasNames;
+use function array_map;
 
-enum Tab
+trait HasValues
 {
-	use HasNames;
-
-	case CONTENT;
-	case ACCESS_PLACEMENT;
-	case APPEARANCE;
-	case SEO;
-	case TUNING;
+	public static function values(): array
+	{
+		return array_map(fn($item) => $item->value, self::cases());
+	}
 }

@@ -12,6 +12,7 @@
 
 namespace Bugo\LightPortal\Repositories;
 
+use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Utils\SessionTrait;
 use Bugo\Compat\Db;
 use Bugo\Compat\Msg;

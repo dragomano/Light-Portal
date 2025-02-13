@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 11.02.25
+ * @version 12.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\BlogMode;
@@ -17,13 +17,15 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Actions\FrontPage;
-use Bugo\LightPortal\Utils\Breadcrumbs;
+use Bugo\LightPortal\Utils\HasBreadcrumbs;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
 class BlogIndex
 {
+	use HasBreadcrumbs;
+
 	private readonly FrontPage $front;
 
 	private readonly string $action;
@@ -43,7 +45,7 @@ class BlogIndex
 
 		Utils::$context['page_title'] = Utils::$context['forum_name'] . ' - ' . Lang::$txt['lp_blog_mode']['menu_item_title'];
 
-		app(Breadcrumbs::class)
+		$this->breadcrumbs()
 			->remove(1)
 			->add(Lang::$txt['lp_blog_mode']['menu_item_title']);
 	}

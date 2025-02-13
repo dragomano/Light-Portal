@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.01.25
+ * @version 12.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\Chart;
@@ -45,11 +45,8 @@ class Chart extends Block
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = $this->params;
-	}
 
-	public function validateBlockParams(Event $e): void
-	{
-		$post = $this->request()->only([
+		$post = $this->post()->only([
 			'set_type', 'set_label', 'set_data', 'set_borderColor', 'set_backgroundColor', 'set_borderWidth'
 		]);
 
@@ -69,9 +66,12 @@ class Chart extends Block
 				];
 			}
 
-			$this->request()->put('datasets', json_encode($datasets, JSON_UNESCAPED_UNICODE));
+			$this->post()->put('datasets', json_encode($datasets, JSON_UNESCAPED_UNICODE));
 		}
+	}
 
+	public function validateBlockParams(Event $e): void
+	{
 		$e->args->params = [
 			'chart_title'     => FILTER_DEFAULT,
 			'datasets'        => FILTER_DEFAULT,

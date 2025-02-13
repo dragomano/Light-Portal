@@ -48,8 +48,10 @@ class EventManager
 		$this->eventManager->addEventListener($hooks, $listener);
 	}
 
-	public function dispatch(PortalHook $hook, ?EventArgs $args = null): void
+	public function dispatch(PortalHook $hook, array $params = []): void
 	{
+		$args = new EventArgs($params);
+
 		/* @var PluginInterface $listener */
 		foreach ($this->getAll($hook->name) as $listener) {
 			if (
@@ -62,7 +64,7 @@ class EventManager
 				}
 			}
 
-			$event = new Event($args ?: new class {});
+			$event = new Event($args);
 
 			$listener->{$hook->name}($event);
 		}

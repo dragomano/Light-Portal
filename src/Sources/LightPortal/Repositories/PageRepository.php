@@ -25,8 +25,7 @@ use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Events\EventArgs;
-use Bugo\LightPortal\Events\EventManagerFactory;
+use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\Lists\TitleList;
 use Bugo\LightPortal\Utils\CacheTrait;
@@ -63,6 +62,7 @@ if (! defined('SMF'))
 final class PageRepository extends AbstractRepository
 {
 	use CacheTrait;
+	use HasEvents;
 	use RequestTrait;
 	use ResponseTrait;
 
@@ -287,10 +287,7 @@ final class PageRepository extends AbstractRepository
 		if ($items === [])
 			return;
 
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::onPageRemoving,
-			new EventArgs(['items' => $items])
-		);
+		$this->events()->dispatch(PortalHook::onPageRemoving, ['items' => $items]);
 
 		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_pages
@@ -502,7 +499,7 @@ final class PageRepository extends AbstractRepository
 	public function getMenuItems(): array
 	{
 		if (($pages = $this->cache()->get('menu_pages')) === null) {
-			$titles = app(TitleList::class);
+			$titles = app(TitleList::class)();
 
 			$result = Db::$db->query('', '
 				SELECT p.page_id, p.slug, p.permissions, pp2.value AS icon
@@ -563,16 +560,13 @@ final class PageRepository extends AbstractRepository
 		}
 
 		if (! empty($data['category_id'])) {
-			$categories = app(CategoryList::class);
+			$categories = app(CategoryList::class)();
 			$data['category'] = $categories[$data['category_id']]['title'];
 		}
 
 		$data['tags'] = $this->getTags($data['id']);
 
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::preparePageData,
-			new EventArgs(['data' => &$data, 'isAuthor' => $isAuthor])
-		);
+		$this->events()->dispatch(PortalHook::preparePageData, ['data' => &$data, 'isAuthor' => $isAuthor]);
 	}
 
 	private function addData(): int
@@ -614,10 +608,7 @@ final class PageRepository extends AbstractRepository
 			return 0;
 		}
 
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::onPageSaving,
-			new EventArgs(['item' => $item])
-		);
+		$this->events()->dispatch(PortalHook::onPageSaving, ['item' => $item]);
 
 		$this->saveTitles($item);
 		$this->saveTags($item);
@@ -670,10 +661,7 @@ final class PageRepository extends AbstractRepository
 			]
 		);
 
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::onPageSaving,
-			new EventArgs(['item' => $item])
-		);
+		$this->events()->dispatch(PortalHook::onPageSaving, ['item' => $item]);
 
 		$this->saveTitles($item, 'replace');
 		$this->saveTags($item, 'replace');

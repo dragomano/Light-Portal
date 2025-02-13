@@ -14,11 +14,10 @@ namespace Bugo\LightPortal\Validators;
 
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Enums\VarType;
-use Bugo\LightPortal\Events\EventArgs;
-use Bugo\LightPortal\Events\EventManagerFactory;
 
+use function array_keys;
 use function array_merge;
+use function filter_var_array;
 
 class BlockValidator extends AbstractValidator
 {
@@ -31,46 +30,72 @@ class BlockValidator extends AbstractValidator
 		'placement'     => FILTER_DEFAULT,
 		'priority'      => FILTER_VALIDATE_INT,
 		'permissions'   => FILTER_VALIDATE_INT,
-		'areas'         => FILTER_DEFAULT,
+		'areas'         => [
+			'filter'  => FILTER_VALIDATE_REGEXP,
+			'options' => ['regexp' => '/' . LP_AREAS_PATTERN . '/'],
+		],
 		'title_class'   => FILTER_DEFAULT,
 		'content_class' => FILTER_DEFAULT,
-		'options'       => [
-			'flags'   => FILTER_REQUIRE_ARRAY,
-			'options' => [
-				'hide_header'      => FILTER_VALIDATE_BOOLEAN,
-				'no_content_class' => FILTER_VALIDATE_BOOLEAN,
-				'link_in_title'    => FILTER_VALIDATE_URL,
-			]
-		]
+	];
+
+	protected array $customFilters = [
+		'hide_header'      => FILTER_VALIDATE_BOOLEAN,
+		'no_content_class' => FILTER_VALIDATE_BOOLEAN,
+		'link_in_title'    => FILTER_VALIDATE_URL,
 	];
 
 	protected function extendFilters(): void
 	{
-		$params = [];
+		$filters = [];
 
-		app(EventManagerFactory::class)()->dispatch(
+		$this->events()->dispatch(
 			PortalHook::validateBlockParams,
-			new EventArgs(['params' => &$params, 'type' => Utils::$context['lp_current_block']['type']])
+			[
+				'params' => &$filters,
+				'type'   => Utils::$context['lp_current_block']['type'],
+			]
 		);
 
-		$this->filters['options']['options'] = array_merge($this->filters['options']['options'], $params);
+		$this->customFilters = array_merge($this->customFilters, $filters);
+	}
+
+	protected function modifyData(): void
+	{
+		$this->filteredData['options'] = filter_var_array(
+			$this->post()->only(array_keys($this->customFilters)), $this->customFilters
+		);
 	}
 
 	protected function extendErrors(): void
 	{
 		$this->errors = [];
 
-		if (empty($this->filteredData['areas'])) {
+		$this->checkAreas();
+
+		$this->events()->dispatch(
+			PortalHook::findBlockErrors,
+			[
+				'errors' => &$this->errors,
+				'data'   => $this->filteredData,
+			]
+		);
+	}
+
+	protected function checkAreas(): void
+	{
+		$areasValue = $this->post()->get('areas');
+		$validatedAreas = $this->filteredData['areas'] ?? null;
+
+		$isEmptyAreas = empty($areasValue);
+		$isInvalidAreas = ! $isEmptyAreas && $validatedAreas === false;
+
+		if ($isEmptyAreas) {
 			$this->errors[] = 'no_areas';
-		} else {
-			if (empty(VarType::ARRAY->filter($this->filteredData['areas'], ['regexp' => '/' . LP_AREAS_PATTERN . '/']))) {
-				$this->errors[] = 'no_valid_areas';
-			}
 		}
 
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::findBlockErrors,
-			new EventArgs(['errors' => &$this->errors, 'data' => $this->filteredData])
-		);
+		if ($isInvalidAreas) {
+			$this->errors[] = 'no_valid_areas';
+			$this->filteredData['areas'] = $areasValue;
+		}
 	}
 }

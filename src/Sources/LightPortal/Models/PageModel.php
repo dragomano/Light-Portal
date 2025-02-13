@@ -20,7 +20,6 @@ use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Utils\Setting;
 
-use function is_null;
 use function time;
 
 class PageModel extends AbstractModel
@@ -67,12 +66,6 @@ class PageModel extends AbstractModel
 		$status = Utils::$context['allow_light_portal_approve_pages']
 			? Status::ACTIVE->value
 			: Status::UNAPPROVED->value;
-
-		foreach ($data as $key => $value) {
-			if (is_null($value)) {
-				$data[$key] = Utils::$context['lp_current_page'][$key] ?? null;
-			}
-		}
 
 		$this->id            = $data['page_id'] ?? $data['id'] ?? 0;
 		$this->categoryId    = $data['category_id'] ?? 0;

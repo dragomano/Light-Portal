@@ -18,8 +18,6 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Parsers\BBCodeParser;
 use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\EventArgs;
-use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
@@ -58,15 +56,15 @@ class TopicArticle extends AbstractArticle
 			'date DESC',
 		];
 
-		app(EventManagerFactory::class)()->dispatch(
+		$this->events()->dispatch(
 			PortalHook::frontTopics,
-			new EventArgs([
+			[
 				'columns' => &$this->columns,
 				'tables'  => &$this->tables,
 				'params'  => &$this->params,
 				'wheres'  => &$this->wheres,
-				'orders'  => &$this->orders
-			])
+				'orders'  => &$this->orders,
+			]
 		);
 	}
 
@@ -150,10 +148,7 @@ class TopicArticle extends AbstractArticle
 
 			$this->prepareTeaser($topics, $row);
 
-			app(EventManagerFactory::class)()->dispatch(
-				PortalHook::frontTopicsRow,
-				new EventArgs(['articles' => &$topics, 'row' => $row])
-			);
+			$this->events()->dispatch(PortalHook::frontTopicsRow, ['articles' => &$topics, 'row' => $row]);
 		}
 
 		Db::$db->free_result($result);

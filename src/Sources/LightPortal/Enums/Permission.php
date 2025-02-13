@@ -14,7 +14,7 @@ namespace Bugo\LightPortal\Enums;
 
 use Bugo\Compat\Db;
 use Bugo\Compat\User;
-use Bugo\LightPortal\Enums\Traits\HasValuesTrait;
+use Bugo\LightPortal\Enums\Traits\HasValues;
 use Bugo\LightPortal\Utils\Cache;
 
 use function array_column;
@@ -24,7 +24,7 @@ use function is_int;
 
 enum Permission: int
 {
-	use HasValuesTrait;
+	use HasValues;
 
 	case ADMIN = 0;
 	case GUEST = 1;

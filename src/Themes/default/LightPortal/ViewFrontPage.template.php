@@ -76,7 +76,7 @@ function template_sorting_above(): void
 		<h3 class="catbg">
 			', Utils::$context['page_title'];
 
-	if (Utils::$context['user']['is_admin']) {
+	if (Utils::$context['user']['is_admin'] && isset(Utils::$context['lp_category_edit_link'])) {
 		echo '
 			<a class="floatright" href="', Utils::$context['lp_category_edit_link'], '">
 				', Icon::get('edit'), '

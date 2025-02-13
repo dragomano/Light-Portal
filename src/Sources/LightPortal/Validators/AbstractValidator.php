@@ -14,13 +14,17 @@ namespace Bugo\LightPortal\Validators;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\RequestTrait;
 
+use function array_filter;
 use function filter_var_array;
+use function is_array;
 
 abstract class AbstractValidator implements ValidatorInterface
 {
+	use HasEvents;
 	use RequestTrait;
 
 	protected array $filters = [];
@@ -47,11 +51,15 @@ abstract class AbstractValidator implements ValidatorInterface
 
 		$this->filteredData = filter_var_array($this->post()->all(), $this->filters);
 
+		$this->modifyData();
 		$this->checkErrors();
-		$this->handleErrors();
 
-		return $this->filteredData;
+		return $this->recursiveArrayFilter($this->filteredData);
 	}
+
+	protected function extendFilters(): void {}
+
+	protected function modifyData(): void {}
 
 	protected function checkErrors(): void
 	{
@@ -60,9 +68,8 @@ abstract class AbstractValidator implements ValidatorInterface
 		}
 
 		$this->extendErrors();
+		$this->handleErrors();
 	}
-
-	protected function extendFilters(): void {}
 
 	protected function extendErrors(): void	{}
 
@@ -78,5 +85,23 @@ abstract class AbstractValidator implements ValidatorInterface
 		foreach ($this->errors as $error) {
 			Utils::$context['post_errors'][] = Lang::$txt['lp_post_error_' . $error] ?? $error;
 		}
+	}
+
+	protected function isUnique(): bool
+	{
+		return true;
+	}
+
+	private function recursiveArrayFilter($array): array
+	{
+		$filteredArray = array_filter($array, fn($value) => $value !== null);
+
+		foreach ($filteredArray as $key => $value) {
+			if (is_array($value)) {
+				$filteredArray[$key] = $this->recursiveArrayFilter($value);
+			}
+		}
+
+		return $filteredArray;
 	}
 }

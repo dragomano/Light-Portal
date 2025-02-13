@@ -158,80 +158,81 @@ class ServiceProvider extends AbstractServiceProvider
 
 	public function register(): void
 	{
-		$this->getContainer()->add(PortalApp::class);
-		$this->getContainer()->add(Integration::class);
-		$this->getContainer()->add(ConfigArea::class);
-		$this->getContainer()->add(CreditArea::class);
+		$container = $this->getContainer();
 
-		$this->getContainer()->add(RendererInterface::class, Blade::class);
-		$this->getContainer()->add(TablePresenter::class)->addArgument(TableRenderer::class);
-		$this->getContainer()->add(TableRenderer::class);
+		$container->add(PortalApp::class);
+		$container->add(Integration::class);
+		$container->add(ConfigArea::class);
+		$container->add(CreditArea::class);
 
-		$this->getContainer()->add(EventManager::class);
-		$this->getContainer()->add(AssetHandler::class);
-		$this->getContainer()->add(ConfigHandler::class);
-		$this->getContainer()->add(LangHandler::class);
-		$this->getContainer()->add(EventManagerFactory::class);
-		$this->getContainer()->add(PluginHandler::class, fn() => fn(array $plugins = []) => new PluginHandler($plugins));
+		$container->add(RendererInterface::class, Blade::class);
+		$container->add(TablePresenter::class)->addArgument(TableRenderer::class);
+		$container->add(TableRenderer::class);
 
-		$this->getContainer()->add(CategoryList::class, fn() => (new CategoryList())());
-		$this->getContainer()->add(PageList::class, fn() => (new PageList(app(PageRepository::class)))());
-		$this->getContainer()->add(TagList::class, fn() => (new TagList())());
-		$this->getContainer()->add(TitleList::class, fn() => (new TitleList())());
-		$this->getContainer()->add(IconList::class, fn() => (new IconList())());
-		$this->getContainer()->add(PluginList::class, fn() => (new PluginList())());
-		$this->getContainer()->add(SessionManager::class, fn() => (new SessionManager())());
+		$container->add(EventManager::class);
+		$container->add(AssetHandler::class);
+		$container->add(ConfigHandler::class);
+		$container->add(LangHandler::class);
+		$container->add(EventManagerFactory::class);
+		$container->add(PluginHandler::class, fn() => fn(array $plugins = []) => new PluginHandler($plugins));
 
-		$this->getContainer()->add(Request::class);
-		$this->getContainer()->add(Response::class);
-		$this->getContainer()->add(Post::class);
-		$this->getContainer()->add(File::class);
-		$this->getContainer()->add(Cache::class, fn() => fn(?string $key = null) => new Cache($key));
-		$this->getContainer()->add(Session::class, fn() => fn(?string $key = null) => new Session($key));
+		$container->add(IconList::class);
+		$container->add(CategoryList::class);
+		$container->add(PageList::class)->addArgument(PageRepository::class);
+		$container->add(TagList::class);
+		$container->add(TitleList::class);
+		$container->add(PluginList::class);
+		$container->add(SessionManager::class);
 
-		$this->getContainer()->add(BlockRepository::class);
-		$this->getContainer()->add(CategoryRepository::class);
-		$this->getContainer()->add(CommentRepository::class);
-		$this->getContainer()->add(PageRepository::class);
-		$this->getContainer()->add(PluginRepository::class);
-		$this->getContainer()->add(TagRepository::class);
+		$container->add(Request::class);
+		$container->add(Response::class);
+		$container->add(Post::class);
+		$container->add(File::class);
+		$container->add(Cache::class, fn() => fn(?string $key = null) => new Cache($key));
+		$container->add(Session::class, fn() => fn(?string $key = null) => new Session($key));
+		$container->add(Breadcrumbs::class);
 
-		$this->getContainer()->add(BlockArea::class)->addArgument(BlockRepository::class);
-		$this->getContainer()->add(BlockExport::class)->addArgument(BlockRepository::class);
-		$this->getContainer()->add(BlockImport::class);
-		$this->getContainer()->add(PageArea::class)->addArgument(PageRepository::class);
-		$this->getContainer()->add(PageExport::class)->addArgument(PageRepository::class);
-		$this->getContainer()->add(PageImport::class);
-		$this->getContainer()->add(CategoryArea::class)->addArgument(CategoryRepository::class);
-		$this->getContainer()->add(CategoryExport::class)->addArgument(CategoryRepository::class);
-		$this->getContainer()->add(CategoryImport::class);
-		$this->getContainer()->add(TagArea::class)->addArgument(TagRepository::class);
-		$this->getContainer()->add(TagExport::class)->addArgument(TagRepository::class);
-		$this->getContainer()->add(TagImport::class);
-		$this->getContainer()->add(PluginArea::class)->addArgument(PluginRepository::class);
-		$this->getContainer()->add(PluginExport::class);
-		$this->getContainer()->add(PluginImport::class);
+		$container->add(BlockRepository::class);
+		$container->add(CategoryRepository::class);
+		$container->add(CommentRepository::class);
+		$container->add(PageRepository::class);
+		$container->add(PluginRepository::class);
+		$container->add(TagRepository::class);
 
-		$this->getContainer()->add(BoardIndex::class);
-		$this->getContainer()->add(FrontPage::class)->addArgument(RendererInterface::class);
-		$this->getContainer()->add(Block::class);
-		$this->getContainer()->add(Page::class)->addArgument(PageRepository::class);
-		$this->getContainer()->add(Comment::class)->addArgument(CommentRepository::class);
-		$this->getContainer()->add(Category::class)->addArgument(CardListInterface::class);
-		$this->getContainer()->add(Tag::class)->addArgument(CardListInterface::class);
-		$this->getContainer()->add(CardListInterface::class, CardList::class);
+		$container->add(BlockArea::class)->addArgument(BlockRepository::class);
+		$container->add(BlockExport::class)->addArgument(BlockRepository::class);
+		$container->add(BlockImport::class);
+		$container->add(PageArea::class)->addArgument(PageRepository::class);
+		$container->add(PageExport::class)->addArgument(PageRepository::class);
+		$container->add(PageImport::class);
+		$container->add(CategoryArea::class)->addArgument(CategoryRepository::class);
+		$container->add(CategoryExport::class)->addArgument(CategoryRepository::class);
+		$container->add(CategoryImport::class);
+		$container->add(TagArea::class)->addArgument(TagRepository::class);
+		$container->add(TagExport::class)->addArgument(TagRepository::class);
+		$container->add(TagImport::class);
+		$container->add(PluginArea::class)->addArgument(PluginRepository::class);
+		$container->add(PluginExport::class);
+		$container->add(PluginImport::class);
 
-		$this->getContainer()->add(BlockValidator::class);
-		$this->getContainer()->add(BlockFactory::class);
-		$this->getContainer()->add(CategoryValidator::class);
-		$this->getContainer()->add(CategoryFactory::class);
-		$this->getContainer()->add(PageValidator::class);
-		$this->getContainer()->add(PageFactory::class);
-		$this->getContainer()->add(TagValidator::class);
-		$this->getContainer()->add(TagFactory::class);
+		$container->add(BoardIndex::class);
+		$container->add(FrontPage::class)->addArgument(RendererInterface::class);
+		$container->add(Block::class);
+		$container->add(Page::class)->addArgument(PageRepository::class);
+		$container->add(Comment::class)->addArgument(CommentRepository::class);
+		$container->add(Category::class)->addArgument(CardListInterface::class);
+		$container->add(Tag::class)->addArgument(CardListInterface::class);
+		$container->add(CardListInterface::class, CardList::class);
 
-		$this->getContainer()->add(Breadcrumbs::class);
+		$container->add(BlockValidator::class);
+		$container->add(BlockFactory::class);
+		$container->add(CategoryValidator::class);
+		$container->add(CategoryFactory::class);
+		$container->add(PageValidator::class);
+		$container->add(PageFactory::class);
+		$container->add(TagValidator::class);
+		$container->add(TagFactory::class);
 
-		$this->getContainer()->add(Weaver::class, Weaver::class)->setShared(false);
+		$container->add(Weaver::class, Weaver::class)->setShared(false);
 	}
 }

@@ -12,24 +12,29 @@
 
 namespace Bugo\LightPortal\Areas\Imports\Traits;
 
-trait WithParamsTrait
+trait HasTitles
 {
-	protected function replaceParams(array $params, array &$results): void
+	protected function replaceTitles(array $titles, array &$results, string $method = 'replace'): void
 	{
-		if ($params === [] || $results === [])
+		if ($titles === [] || $results === [])
 			return;
 
 		$results = $this->insertData(
-			'lp_params',
-			'replace',
-			$params,
-			[
+			'lp_titles',
+			$method,
+			$titles,
+			$method === 'replace' ? [
 				'item_id' => 'int',
 				'type'    => 'string',
-				'name'    => 'string',
+				'lang'    => 'string',
 				'value'   => 'string',
+			] : [
+				'type'    => 'string',
+				'lang'    => 'string',
+				'value'   => 'string',
+				'item_id' => 'int',
 			],
-			['item_id', 'type', 'name'],
+			$method === 'replace' ? ['item_id', 'type', 'lang'] : ['id'],
 		);
 	}
 }

@@ -20,8 +20,6 @@ use Bugo\Compat\WebFetch\WebFetchApi;
 use Bugo\LightPortal\Areas\Traits\QueryTrait;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
-use Bugo\LightPortal\Events\EventArgs;
-use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\UI\Partials\ActionSelect;
 use Bugo\LightPortal\Utils\SessionTrait;
 use Bugo\LightPortal\Utils\Str;
@@ -235,10 +233,7 @@ final class BasicConfig extends AbstractConfig
 
 		Utils::$context['sub_template'] = 'portal_basic_settings';
 
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::extendBasicConfig,
-			new EventArgs(['configVars' => &$configVars])
-		);
+		$this->events()->dispatch(PortalHook::extendBasicConfig, ['configVars' => &$configVars]);
 
 		// Save
 		if ($this->request()->has('save')) {

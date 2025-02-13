@@ -26,7 +26,7 @@ final class TagSelect extends AbstractPartial
 {
 	public function __invoke(): string
 	{
-		Utils::$context['lp_tags'] = app(TagList::class);
+		Utils::$context['lp_tags'] = app(TagList::class)();
 
 		$data = $values = [];
 		foreach (Utils::$context['lp_tags'] as $id => $tag) {

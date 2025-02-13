@@ -28,8 +28,6 @@ use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Events\EventArgs;
-use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\Models\PageFactory;
 use Bugo\LightPortal\Repositories\PageRepository;
@@ -65,15 +63,15 @@ use WPLake\Typed\Typed;
 use function array_column;
 use function array_diff;
 use function array_diff_key;
-use function array_fill_keys;
-use function array_intersect_key;
 use function array_keys;
 use function array_merge;
 use function array_multisort;
 use function base64_encode;
 use function count;
 use function filter_input;
+use function get_debug_type;
 use function implode;
+use function settype;
 use function strtoupper;
 use function time;
 use function trim;
@@ -194,9 +192,10 @@ final class PageArea
 
 		Utils::$context['sub_template'] = 'page_add';
 
-		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_pages_add_title'];
+		Utils::$context['page_title']  = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_pages_add_title'];
+		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_pages;sa=add';
+
 		Utils::$context['page_area_title'] = Lang::$txt['lp_pages_add_title'];
-		Utils::$context['form_action']     = Config::$scripturl . '?action=admin;area=lp_pages;sa=add';
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
@@ -211,9 +210,7 @@ final class PageArea
 		if (empty($type) && empty($json['search']))
 			return;
 
-		Utils::$context['lp_current_page']['type']      = $type;
-		Utils::$context['lp_current_page']['author_id'] = User::$info['id'];
-		Utils::$context['lp_current_page']['options']   = $this->getParams();
+		Utils::$context['lp_current_page']['type'] = $type;
 
 		Language::prepareList();
 
@@ -235,7 +232,10 @@ final class PageArea
 
 		Utils::$context['sub_template'] = 'page_post';
 
-		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_pages_edit_title'];
+		Utils::$context['page_title']  = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_pages_edit_title'];
+		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $item;
+
+		Utils::$context['page_area_title'] = Lang::$txt['lp_pages_edit_title'];
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
@@ -268,16 +268,10 @@ final class PageArea
 			$this->repository->remove([$item]);
 
 			$this->cache()->flush();
-
 			$this->response()->redirect('action=admin;area=lp_pages');
 		}
 
 		$this->validateData();
-
-		$pageTitle = Utils::$context['lp_page']['titles'][Utils::$context['user']['language']] ?? '';
-		Utils::$context['page_area_title'] = Lang::$txt['lp_pages_edit_title'] . ($pageTitle ? ' - ' . $pageTitle : '');
-		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . Utils::$context['lp_page']['id'];
-
 		$this->prepareFormFields();
 		$this->prepareEditor();
 		$this->preparePreview();
@@ -465,7 +459,7 @@ final class PageArea
 		Config::updateModSettings(['lp_frontpage_pages' => implode(',', $items)]);
 	}
 
-	private function getParams(): array
+	private function getDefaultOptions(): array
 	{
 		$baseParams = [
 			'page_icon'            => '',
@@ -478,9 +472,12 @@ final class PageArea
 
 		$params = [];
 
-		app(EventManagerFactory::class)()->dispatch(
+		$this->events()->dispatch(
 			PortalHook::preparePageParams,
-			new EventArgs(['params' => &$params, 'type' => Utils::$context['lp_current_page']['type']])
+			[
+				'params' => &$params,
+				'type'   => Utils::$context['lp_current_page']['type'],
+			]
 		);
 
 		return array_merge($baseParams, $params);
@@ -488,7 +485,11 @@ final class PageArea
 
 	private function validateData(): void
 	{
-		$this->post()->put('options', array_intersect_key($this->post()->all(), $this->getParams()));
+		$options = $this->getDefaultOptions();
+
+		$this->post()->put('type', Utils::$context['lp_current_page']['type']);
+
+		Utils::$context['lp_current_page']['options'] ??= $options;
 
 		$validatedData = app(PageValidator::class)->validate();
 
@@ -502,9 +503,11 @@ final class PageArea
 
 		Utils::$context['lp_page'] = $page->toArray();
 
-		$missingKeys = array_diff_key($this->getParams(), Utils::$context['lp_page']['options']);
-		$falseValues = array_fill_keys(array_keys($missingKeys), '');
-		Utils::$context['lp_page']['options'] = array_merge(Utils::$context['lp_page']['options'], $falseValues);
+		$missingKeys = array_diff_key($options, Utils::$context['lp_page']['options']);
+
+		foreach (array_keys($missingKeys) as $key) {
+			settype(Utils::$context['lp_page']['options'][$key], get_debug_type($options[$key]));
+		}
 	}
 
 	private function prepareFormFields(): void
@@ -540,7 +543,7 @@ final class PageArea
 				'id'       => 'category_id',
 				'multiple' => false,
 				'wide'     => false,
-				'data'     => app(CategoryList::class),
+				'data'     => app(CategoryList::class)(),
 				'value'    => Utils::$context['lp_page']['category_id'],
 			]);
 
@@ -606,12 +609,12 @@ final class PageArea
 				->setValue(Utils::$context['lp_page']['options']['allow_comments']);
 		}
 
-		app(EventManagerFactory::class)()->dispatch(
+		$this->events()->dispatch(
 			PortalHook::preparePageFields,
-			new EventArgs([
+			[
 				'options' => Utils::$context['lp_page']['options'],
 				'type'    => Utils::$context['lp_page']['type'],
-			])
+			]
 		);
 
 		$this->preparePostFields();
@@ -619,10 +622,7 @@ final class PageArea
 
 	private function prepareEditor(): void
 	{
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::prepareEditor,
-			new EventArgs(['object' => Utils::$context['lp_page']])
-		);
+		$this->events()->dispatch(PortalHook::prepareEditor, ['object' => Utils::$context['lp_page']]);
 	}
 
 	private function preparePreview(): void

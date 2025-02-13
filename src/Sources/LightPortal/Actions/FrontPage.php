@@ -24,12 +24,11 @@ use Bugo\LightPortal\Articles\ChosenTopicArticle;
 use Bugo\LightPortal\Articles\PageArticle;
 use Bugo\LightPortal\Articles\TopicArticle;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\EventArgs;
-use Bugo\LightPortal\Events\EventManagerFactory;
+use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Renderers\RendererInterface;
-use Bugo\LightPortal\Utils\Breadcrumbs;
 use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\DateTime;
+use Bugo\LightPortal\Utils\HasBreadcrumbs;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionTrait;
@@ -53,6 +52,8 @@ use const LP_BASE_URL;
 final class FrontPage implements ActionInterface
 {
 	use CacheTrait;
+	use HasBreadcrumbs;
+	use HasEvents;
 	use RequestTrait;
 	use SessionTrait;
 
@@ -70,10 +71,7 @@ final class FrontPage implements ActionInterface
 	{
 		User::$me->isAllowedTo('light_portal_view');
 
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::frontModes,
-			new EventArgs(['modes' => &$this->modes])
-		);
+		$this->events()->dispatch(PortalHook::frontModes, ['modes' => &$this->modes]);
 
 		if (array_key_exists(Config::$modSettings['lp_frontpage_mode'], $this->modes)) {
 			$this->prepare(new $this->modes[Config::$modSettings['lp_frontpage_mode']]);
@@ -91,7 +89,7 @@ final class FrontPage implements ActionInterface
 			Utils::$context['forum_name'] . ' - ' . Lang::$txt['lp_portal']
 		);
 
-		app(Breadcrumbs::class)->add(
+		$this->breadcrumbs()->add(
 			Lang::$txt['lp_portal'],
 			after: '(' . Lang::getTxt('lp_articles_set', [
 				'articles' => Utils::$context['total_articles']
@@ -146,7 +144,7 @@ final class FrontPage implements ActionInterface
 
 		Utils::$context['lp_frontpage_articles'] = $articles;
 
-		app(EventManagerFactory::class)()->dispatch(PortalHook::frontAssets);
+		$this->events()->dispatch(PortalHook::frontAssets);
 	}
 
 	public function prepareTemplates(): void
@@ -172,9 +170,13 @@ final class FrontPage implements ActionInterface
 		];
 
 		// You can add your own logic here
-		app(EventManagerFactory::class)()->dispatch(
+		$this->events()->dispatch(
 			PortalHook::frontLayouts,
-			new EventArgs(['renderer' => &$this->renderer, 'layout' => &$currentLayout, 'params' => &$params])
+			[
+				'renderer' => &$this->renderer,
+				'layout'   => &$currentLayout,
+				'params'   => &$params,
+			]
 		);
 
 		Utils::$context['lp_layout_content'] = $this->renderer->render($currentLayout, $params);

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 11.02.25
+ * @version 13.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\ArticleList;
@@ -156,7 +156,7 @@ class ArticleList extends Block
 		if (empty($parameters['include_pages']))
 			return [];
 
-		$titles = app(TitleList::class);
+		$titles = app(TitleList::class)();
 
 		$result = Db::$db->query('', '
 			SELECT page_id, slug, content, description, type

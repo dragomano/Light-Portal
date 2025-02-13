@@ -22,7 +22,7 @@ use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Placement;
 use Bugo\LightPortal\Enums\PluginType;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\EventManagerFactory;
+use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Repositories\BlockRepository;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionManager;
@@ -33,6 +33,7 @@ if (! defined('SMF'))
 class LoadTheme
 {
 	use CommonChecks;
+	use HasEvents;
 	use RequestTrait;
 
 	public function __invoke(): void
@@ -46,7 +47,7 @@ class LoadTheme
 		$this->loadAssets();
 
 		// Run all init methods for active plugins
-		app(EventManagerFactory::class)()->dispatch(PortalHook::init);
+		$this->events()->dispatch(PortalHook::init);
 	}
 
 	protected function defineVars(): void
@@ -56,7 +57,7 @@ class LoadTheme
 		Utils::$context['allow_light_portal_manage_pages_any'] = User::$me->allowedTo('light_portal_manage_pages_any');
 		Utils::$context['allow_light_portal_approve_pages']    = User::$me->allowedTo('light_portal_approve_pages');
 
-		Utils::$context['lp_quantities']    = app(SessionManager::class);
+		Utils::$context['lp_quantities']    = app(SessionManager::class)();
 		Utils::$context['lp_active_blocks'] = app(BlockRepository::class)->getActive();
 
 		Utils::$context['lp_block_placements'] = Placement::all();

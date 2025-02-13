@@ -20,7 +20,7 @@ function show_topics(array $topics, ParamWrapper $parameters, bool $full_width):
 			$topic['preview'] = '<a href="' . $topic['href'] . '">' . $topic['preview'] . '</a>';
 
 			echo '
-		<div class="windowbg word_break">';
+		<div class="word_break">';
 
 			if (! empty($parameters['show_avatars']) && isset($topic['poster']['avatar']))
 				echo '

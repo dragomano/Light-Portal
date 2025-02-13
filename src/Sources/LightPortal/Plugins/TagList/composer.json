@@ -1,6 +1,7 @@
 {
   "require": {
-    "laminas/laminas-tag": "^2.11"
+    "laminas/laminas-tag": "^2.11",
+    "laminas/laminas-servicemanager": "^4.4.0"
   },
   "config": {
     "optimize-autoloader": true

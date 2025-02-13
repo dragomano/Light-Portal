@@ -15,11 +15,10 @@ namespace Bugo\LightPortal\Validators;
 use Bugo\Compat\Db;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Enums\VarType;
-use Bugo\LightPortal\Events\EventArgs;
-use Bugo\LightPortal\Events\EventManagerFactory;
 
+use function array_keys;
 use function array_merge;
+use function filter_var_array;
 
 class PageValidator extends AbstractValidator
 {
@@ -27,7 +26,10 @@ class PageValidator extends AbstractValidator
 		'page_id'     => FILTER_VALIDATE_INT,
 		'category_id' => FILTER_VALIDATE_INT,
 		'author_id'   => FILTER_VALIDATE_INT,
-		'slug'        => FILTER_DEFAULT,
+		'slug'        => [
+			'filter'  => FILTER_VALIDATE_REGEXP,
+			'options' => ['regexp' => '/' . LP_ALIAS_PATTERN . '/'],
+		],
 		'description' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
 		'content'     => FILTER_UNSAFE_RAW,
 		'type'        => FILTER_DEFAULT,
@@ -37,29 +39,37 @@ class PageValidator extends AbstractValidator
 		'date'        => FILTER_DEFAULT,
 		'time'        => FILTER_DEFAULT,
 		'tags'        => FILTER_DEFAULT,
-		'options'     => [
-			'flags'   => FILTER_REQUIRE_ARRAY,
-			'options' => [
-				'page_icon'            => FILTER_DEFAULT,
-				'show_in_menu'         => FILTER_VALIDATE_BOOLEAN,
-				'show_title'           => FILTER_VALIDATE_BOOLEAN,
-				'show_author_and_date' => FILTER_VALIDATE_BOOLEAN,
-				'show_related_pages'   => FILTER_VALIDATE_BOOLEAN,
-				'allow_comments'       => FILTER_VALIDATE_BOOLEAN,
-			]
-		]
+	];
+
+	protected array $customFilters = [
+		'page_icon'            => FILTER_DEFAULT,
+		'show_in_menu'         => FILTER_VALIDATE_BOOLEAN,
+		'show_title'           => FILTER_VALIDATE_BOOLEAN,
+		'show_author_and_date' => FILTER_VALIDATE_BOOLEAN,
+		'show_related_pages'   => FILTER_VALIDATE_BOOLEAN,
+		'allow_comments'       => FILTER_VALIDATE_BOOLEAN,
 	];
 
 	protected function extendFilters(): void
 	{
-		$params = [];
+		$filters = [];
 
-		app(EventManagerFactory::class)()->dispatch(
+		$this->events()->dispatch(
 			PortalHook::validatePageParams,
-			new EventArgs(['params' => &$params, 'type' => Utils::$context['lp_current_page']['type']])
+			[
+				'params' => &$filters,
+				'type'   => Utils::$context['lp_current_page']['type'],
+			]
 		);
 
-		$this->filters['options']['options'] = array_merge($this->filters['options']['options'], $params);
+		$this->customFilters = array_merge($this->customFilters, $filters);
+	}
+
+	protected function modifyData(): void
+	{
+		$this->filteredData['options'] = filter_var_array(
+			$this->post()->only(array_keys($this->customFilters)), $this->customFilters
+		);
 	}
 
 	protected function extendErrors(): void
@@ -68,25 +78,41 @@ class PageValidator extends AbstractValidator
 			$this->errors[] = 'no_content';
 		}
 
-		if (empty($this->filteredData['slug'])) {
-			$this->errors[] = 'no_slug';
-		} else {
-			if (empty(VarType::ARRAY->filter($this->filteredData['slug'], ['regexp' => '/' . LP_ALIAS_PATTERN . '/']))) {
-				$this->errors[] = 'no_valid_slug';
-			}
+		$this->checkSlug();
 
-			if (! $this->isUnique($this->filteredData)) {
-				$this->errors[] = 'no_unique_slug';
-			}
-		}
-
-		app(EventManagerFactory::class)()->dispatch(
+		$this->events()->dispatch(
 			PortalHook::findPageErrors,
-			new EventArgs(['errors' => &$this->errors, 'data' => $this->filteredData])
+			[
+				'errors' => &$this->errors,
+				'data'   => $this->filteredData,
+			]
 		);
 	}
 
-	private function isUnique(array $data): bool
+	protected function checkSlug(): void
+	{
+		$rawSlug = $this->post()->get('slug');
+		$validatedSlug = $this->filteredData['slug'] ?? null;
+
+		$isEmptySlug = empty($rawSlug);
+		$isInvalidSlug = ! $isEmptySlug && $validatedSlug === false;
+		$isNonUniqueSlug = ! $isEmptySlug && $validatedSlug !== false && ! $this->isUnique();
+
+		if ($isEmptySlug) {
+			$this->errors[] = 'no_slug';
+		}
+
+		if ($isInvalidSlug) {
+			$this->errors[] = 'no_valid_slug';
+			$this->filteredData['slug'] = $rawSlug;
+		}
+
+		if ($isNonUniqueSlug) {
+			$this->errors[] = 'no_unique_slug';
+		}
+	}
+
+	protected function isUnique(): bool
 	{
 		$result = Db::$db->query('', '
 			SELECT COUNT(page_id)
@@ -94,8 +120,8 @@ class PageValidator extends AbstractValidator
 			WHERE slug = {string:slug}
 				AND page_id != {int:item}',
 			[
-				'slug' => $data['slug'],
-				'item' => $data['page_id'],
+				'slug' => $this->filteredData['slug'],
+				'item' => $this->filteredData['page_id'],
 			]
 		);
 

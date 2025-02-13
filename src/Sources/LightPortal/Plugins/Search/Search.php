@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 11.02.25
+ * @version 12.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\Search;
@@ -22,7 +22,6 @@ use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Utils\Breadcrumbs;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\Str;
@@ -64,7 +63,7 @@ class Search extends Block
 		Utils::$context['page_title'] = $this->txt['title'];
 		Utils::$context['robot_no_index'] = true;
 
-		app(Breadcrumbs::class)->add(Utils::$context['page_title']);
+		$this->breadcrumbs()->add(Utils::$context['page_title']);
 
 		Utils::$context['search_results'] = $this->getResults();
 

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 06.01.25
+ * @version 12.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\RecentPosts;
@@ -180,7 +180,7 @@ class RecentPosts extends Block
 			$numPosts,
 			'm.id_msg DESC',
 			'array',
-			Typed::bool($parameters['limit_body'])
+			Typed::boolExtended($parameters['limit_body'])
 		);
 
 		if (empty($posts))

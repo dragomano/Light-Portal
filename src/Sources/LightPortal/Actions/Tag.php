@@ -25,7 +25,6 @@ use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Lists\TagList;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
-use Bugo\LightPortal\Utils\Breadcrumbs;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Setting;
@@ -59,7 +58,7 @@ final class Tag extends AbstractPageList
 			'id' => Typed::int($this->request()->get('id'))
 		];
 
-		$tags = app(TagList::class);
+		$tags = app(TagList::class)();
 		if (array_key_exists($tag['id'], $tags) === false) {
 			Utils::$context['error_link'] = LP_BASE_URL . ';sa=tags';
 			Lang::$txt['back'] = Lang::$txt['lp_all_page_tags'];
@@ -74,7 +73,7 @@ final class Tag extends AbstractPageList
 		Utils::$context['canonical_url']  = LP_BASE_URL . ';sa=tags;id=' . $tag['id'];
 		Utils::$context['robot_no_index'] = true;
 
-		app(Breadcrumbs::class)
+		$this->breadcrumbs()
 			->add(Lang::$txt['lp_all_page_tags'], LP_BASE_URL . ';sa=tags')
 			->add($tag['title']);
 
@@ -177,7 +176,7 @@ final class Tag extends AbstractPageList
 		Utils::$context['canonical_url']  = LP_BASE_URL . ';sa=tags';
 		Utils::$context['robot_no_index'] = true;
 
-		app(Breadcrumbs::class)->add(Utils::$context['page_title']);
+		$this->breadcrumbs()->add(Utils::$context['page_title']);
 
 		app(TablePresenter::class)->show(
 			PortalTableBuilder::make('tags', Utils::$context['page_title'])

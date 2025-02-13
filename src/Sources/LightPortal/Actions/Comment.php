@@ -18,8 +18,7 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\AlertAction;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
-use Bugo\LightPortal\Events\EventArgs;
-use Bugo\LightPortal\Events\EventManagerFactory;
+use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Repositories\CommentRepository;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\CacheTrait;
@@ -45,6 +44,7 @@ if (! defined('SMF'))
 final class Comment implements ActionInterface
 {
 	use CacheTrait;
+	use HasEvents;
 	use RequestTrait;
 	use ResponseTrait;
 
@@ -86,9 +86,12 @@ final class Comment implements ActionInterface
 			$comment['authorial']     = Utils::$context['lp_page']['author_id'] === $comment['poster']['id'];
 			$comment['extra_buttons'] = [];
 
-			app(EventManagerFactory::class)()->dispatch(
+			$this->events()->dispatch(
 				PortalHook::commentButtons,
-				new EventArgs(['comment' => $comment, 'buttons' => &$comment['extra_buttons']])
+				[
+					'comment' => $comment,
+					'buttons' => &$comment['extra_buttons'],
+				]
 			);
 
 			return $comment;

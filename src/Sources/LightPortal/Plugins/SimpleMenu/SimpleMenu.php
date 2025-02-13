@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 12.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleMenu;
@@ -34,11 +34,8 @@ class SimpleMenu extends Block
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params['items'] = '';
-	}
 
-	public function validateBlockParams(Event $e): void
-	{
-		$data = $this->request()->only(['item_name', 'item_link']);
+		$data = $this->post()->only(['item_name', 'item_link']);
 
 		$items = [];
 		if ($data && isset($data['item_name']) && isset($data['item_link'])) {
@@ -52,9 +49,12 @@ class SimpleMenu extends Block
 				];
 			}
 
-			$this->request()->put('items', json_encode($items, JSON_UNESCAPED_UNICODE));
+			$this->post()->put('items', json_encode($items, JSON_UNESCAPED_UNICODE));
 		}
+	}
 
+	public function validateBlockParams(Event $e): void
+	{
 		$e->args->params['items'] = FILTER_DEFAULT;
 	}
 
