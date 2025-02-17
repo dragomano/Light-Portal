@@ -15,6 +15,7 @@ namespace Bugo\LightPortal;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Hooks\Actions;
 use Bugo\LightPortal\Hooks\AlertTypes;
+use Bugo\LightPortal\Hooks\BuildRoute;
 use Bugo\LightPortal\Hooks\CurrentAction;
 use Bugo\LightPortal\Hooks\DefaultAction;
 use Bugo\LightPortal\Hooks\DeleteMembers;
@@ -25,6 +26,7 @@ use Bugo\LightPortal\Hooks\LoadIllegalGuestPermissions;
 use Bugo\LightPortal\Hooks\LoadPermissions;
 use Bugo\LightPortal\Hooks\LoadTheme;
 use Bugo\LightPortal\Hooks\MenuButtons;
+use Bugo\LightPortal\Hooks\RouteParsers;
 use Bugo\LightPortal\Hooks\PermissionsList;
 use Bugo\LightPortal\Hooks\PreCssOutput;
 use Bugo\LightPortal\Hooks\PreLoad;
@@ -51,6 +53,8 @@ final class Integration
 		if (str_starts_with(SMF_VERSION, '3.0')) {
 			$this->applyHook(Hook::preLoad, PreLoad::class);
 			$this->applyHook(Hook::permissionsList, PermissionsList::class);
+			$this->applyHook(Hook::buildRoute, BuildRoute::class);
+			$this->applyHook(Hook::routeParsers, RouteParsers::class);
 		} else {
 			$this->applyHook(Hook::userInfo, UserInfo::class);
 			$this->applyHook(Hook::loadIllegalGuestPermissions, LoadIllegalGuestPermissions::class);
