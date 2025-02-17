@@ -31,6 +31,7 @@ use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\HasBreadcrumbs;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\ResponseTrait;
 use Bugo\LightPortal\Utils\SessionTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
@@ -41,8 +42,10 @@ use function abs;
 use function array_column;
 use function array_key_exists;
 use function array_map;
+use function array_search;
 use function date;
 use function floor;
+use function implode;
 use function ltrim;
 use function number_format;
 use function sprintf;
@@ -55,6 +58,7 @@ final class FrontPage implements ActionInterface
 	use HasBreadcrumbs;
 	use HasEvents;
 	use RequestTrait;
+	use ResponseTrait;
 	use SessionTrait;
 
 	private array $modes = [
@@ -77,9 +81,10 @@ final class FrontPage implements ActionInterface
 			$this->prepare(new $this->modes[Config::$modSettings['lp_frontpage_mode']]);
 		} elseif (Setting::isFrontpageMode('chosen_page')) {
 			app(Page::class)->show();
-
 			return;
 		}
+
+		$this->handleSubActions();
 
 		Utils::$context['lp_frontpage_num_columns'] = $this->getNumColumns();
 
@@ -138,8 +143,10 @@ final class FrontPage implements ActionInterface
 			Utils::$context['page_index'] = $this->simplePaginate(LP_BASE_URL, $itemsCount, $limit);
 		}
 
-		Utils::$context['portal_next_page'] = $this->request()->get('start') + $limit < $itemsCount
-			? LP_BASE_URL . ';start=' . ($this->request()->get('start') + $limit)
+		$start = (int) $this->request()->get('start');
+
+		Utils::$context['portal_next_page'] = $start + $limit < $itemsCount
+			? LP_BASE_URL . ';start=' . ($start + $limit)
 			: '';
 
 		Utils::$context['lp_frontpage_articles'] = $articles;
@@ -205,16 +212,16 @@ final class FrontPage implements ActionInterface
 	public function getNumColumns(): int
 	{
 		$baseColumnsCount = 12;
-		$customColumnsCount = Setting::get('lp_frontpage_num_columns', 'string', '');
+		$userColumnsCount = Setting::get('lp_frontpage_num_columns', 'string', '');
 
-		if (empty($customColumnsCount)) {
+		if (empty($userColumnsCount)) {
 			return $baseColumnsCount;
 		}
 
-		return $baseColumnsCount / match ($customColumnsCount) {
-			'1' => 2,
-			'2' => 3,
-			'3' => 4,
+		return $baseColumnsCount / match ($userColumnsCount) {
+			'1'     => 2,
+			'2'     => 3,
+			'3'     => 4,
 			default => 6,
 		};
 	}
@@ -223,10 +230,49 @@ final class FrontPage implements ActionInterface
 	{
 		if ($start >= $total) {
 			Utils::sendHttpStatus(404);
+
 			$start = (floor(($total - 1) / $limit) + 1) * $limit - $limit;
 		}
 
 		$start = (int) abs($start);
+	}
+
+	private function handleSubActions(): void
+	{
+		$sa = $this->request()->get('sa') ?? '';
+
+		if ($this->request()->is(LP_ACTION)) {
+			match ($sa) {
+				'categories' => app(Category::class)->show(),
+				'tags'       => app(Tag::class)->show(),
+				'promote'    => $this->promoteTopic(),
+				default      => null,
+			};
+		}
+	}
+
+	private function promoteTopic(): void
+	{
+		if (empty(User::$info['is_admin']) || $this->request()->hasNot('t'))
+			return;
+
+		$topic = $this->request()->get('t');
+
+		$homeTopics = Setting::getFrontpageTopics();
+
+		if (($key = array_search($topic, $homeTopics)) !== false) {
+			unset($homeTopics[$key]);
+		} else {
+			$homeTopics[] = $topic;
+		}
+
+		Config::updateModSettings(
+			['lp_frontpage_topics' => implode(',', $homeTopics)]
+		);
+
+		$this->cache()->flush();
+
+		$this->response()->redirect('topic=' . $topic);
 	}
 
 	private function postProcess(ArticleInterface $article, array $articles): array

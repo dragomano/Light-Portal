@@ -285,7 +285,7 @@ final class BasicConfig extends AbstractConfig
 			$this->cache()->put('repo_data', $xml, $cacheTTL);
 		}
 
-		if (empty($xml))
+		if (empty($xml) || empty($xml['tag_name']))
 			return false;
 
 		if (version_compare('v' . LP_VERSION, $xml['tag_name'], '<')) {

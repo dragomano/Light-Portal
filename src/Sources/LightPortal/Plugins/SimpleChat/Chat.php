@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 02.02.25
+ * @version 14.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleChat;
@@ -164,7 +164,7 @@ class Chat
 			],
 		];
 
-		$this->response()->json($result);
+		$this->response()->exit($result);
 	}
 
 	public function deleteMessage(): void

@@ -106,9 +106,13 @@ final class CreditArea
 
 		Utils::$context['consultants'] = [
 			[
+				'name' => 'Sesquipedalian',
+				'link' => 'https://www.simplemachines.org/community/index.php?action=profile;u=394956',
+			],
+			[
 				'name' => 'Tyrsson',
 				'link' => 'https://www.simplemachines.org/community/index.php?action=profile;u=155269',
-			]
+			],
 		];
 
 		Utils::$context['sponsors'] = [
@@ -274,14 +278,13 @@ final class CreditArea
 					'name' => 'the MIT License',
 					'link' => 'https://github.com/mskocik/svelecte?tab=MIT-1-ov-file#readme'
 				]
-			]
+			],
 		];
 
-		// Adding copyrights of used plugins
 		$this->events()->dispatch(PortalHook::credits, ['links' => &$links]);
 
-		Utils::$context['lp_components'] = $links;
+		shuffle($links);
 
-		shuffle(Utils::$context['lp_components']);
+		Utils::$context['lp_components'] = $links;
 	}
 }

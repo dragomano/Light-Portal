@@ -40,6 +40,8 @@ abstract class AbstractPageList implements PageListInterface
 
 	abstract public function getAll(int $start, int $limit, string $sort): array;
 
+	abstract public function getTotalPages(): int;
+
 	protected function getPreparedResults(array $rows = []): array
 	{
 		if ($rows === [])

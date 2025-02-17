@@ -32,7 +32,6 @@ use Bugo\LightPortal\Utils\Str;
 use WPLake\Typed\Typed;
 
 use function array_key_exists;
-use function count;
 use function implode;
 use function sprintf;
 use function time;
@@ -81,7 +80,7 @@ final class Tag extends AbstractPageList
 
 		$builder = $this->cardList->getBuilder('lp_tags');
 		$builder->setItems($this->getPages(...));
-		$builder->setCount(fn() => $this->getTotalCount());
+		$builder->setCount($this->getTotalPages(...));
 
 		app(TablePresenter::class)->show($builder);
 
@@ -141,7 +140,7 @@ final class Tag extends AbstractPageList
 		return $this->getPreparedResults($rows);
 	}
 
-	public function getTotalCount(): int
+	public function getTotalPages(): int
 	{
 		$result = Db::$db->query('', '
 			SELECT COUNT(p.page_id)
@@ -187,7 +186,7 @@ final class Tag extends AbstractPageList
 					'value'
 				)
 				->setItems($this->getAll(...))
-				->setCount(fn() => count($this->getAll()))
+				->setCount($this->getTotalCount(...))
 				->addColumns([
 					Column::make('value', Lang::$txt['lp_tag_column'])
 						->setData(static fn($entry) => implode('', [
@@ -229,10 +228,10 @@ final class Tag extends AbstractPageList
 			[
 				'lang'          => User::$info['language'],
 				'fallback_lang' => Config::$language,
+				'status'        => Status::ACTIVE->value,
 				'types'         => EntryType::names(),
 				'current_time'  => time(),
 				'permissions'   => Permission::all(),
-				'status'        => Status::ACTIVE->value,
 				'sort'          => $sort,
 				'start'         => $start,
 				'limit'         => $limit,
@@ -252,5 +251,41 @@ final class Tag extends AbstractPageList
 		Db::$db->free_result($result);
 
 		return $items;
+	}
+
+	public function getTotalCount(): int
+	{
+		$result = Db::$db->query('', /** @lang text */ '
+			SELECT COUNT(DISTINCT tag.tag_id) AS unique_tag_count
+			FROM {db_prefix}lp_pages AS p
+				INNER JOIN {db_prefix}lp_page_tag AS pt ON (p.page_id = pt.page_id)
+				INNER JOIN {db_prefix}lp_tags AS tag ON (pt.tag_id = tag.tag_id)
+				LEFT JOIN {db_prefix}lp_titles AS tt ON (
+					pt.tag_id = tt.item_id AND tt.type = {literal:tag} AND tt.lang = {string:lang}
+				)
+				LEFT JOIN {db_prefix}lp_titles AS tf ON (
+					pt.tag_id = tf.item_id AND tf.type = {literal:tag} AND tf.lang = {string:fallback_lang}
+				)
+			WHERE p.status = {int:status}
+				AND p.entry_type IN ({array_string:types})
+				AND p.created_at <= {int:current_time}
+				AND p.permissions IN ({array_int:permissions})
+				AND tag.status = {int:status}
+			LIMIT 1',
+			[
+				'lang'          => User::$info['language'],
+				'fallback_lang' => Config::$language,
+				'status'        => Status::ACTIVE->value,
+				'types'         => EntryType::names(),
+				'current_time'  => time(),
+				'permissions'   => Permission::all(),
+			]
+		);
+
+		[$count] = Db::$db->fetch_row($result);
+
+		Db::$db->free_result($result);
+
+		return (int) $count;
 	}
 }

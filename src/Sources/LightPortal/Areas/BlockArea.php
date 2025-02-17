@@ -213,7 +213,7 @@ final class BlockArea
 
 		$this->cache()->forget('active_blocks');
 
-		$this->response()->json($result);
+		$this->response()->exit($result);
 	}
 
 	private function getDefaultOptions(): array

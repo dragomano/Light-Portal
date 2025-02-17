@@ -15,6 +15,8 @@ namespace Bugo\LightPortal\Routes;
 use Bugo\Compat\Routable;
 use Bugo\LightPortal\Utils\Response;
 
+use function array_shift;
+
 class Page implements Routable
 {
 	public static function buildRoute(array $params): array
@@ -35,7 +37,7 @@ class Page implements Routable
 	{
 		array_shift($route);
 
-		// We need to redirect from /pages to /
+		// We need to redirect from "/pages" to "/"
 		if (empty($route)) {
 			(new Response())->redirect();
 		}

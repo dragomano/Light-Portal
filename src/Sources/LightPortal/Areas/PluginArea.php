@@ -140,7 +140,7 @@ final class PluginArea
 
 		$this->cache()->flush();
 
-		$this->response()->json(['success' => true]);
+		$this->response()->exit(['success' => true]);
 	}
 
 	private function handleSave(array $configVars): void
@@ -174,7 +174,7 @@ final class PluginArea
 
 		$this->repository->changeSettings($name, $settings);
 
-		$this->response()->json(['success' => true]);
+		$this->response()->exit(['success' => true]);
 	}
 
 	private function prepareAddonList(array $configVars): void
@@ -293,7 +293,7 @@ final class PluginArea
 			return;
 		}
 
-		$this->response()->json($this->preparedData());
+		$this->response()->exit($this->preparedData());
 	}
 
 	private function preparedData(): array

@@ -233,7 +233,9 @@ final class Page implements ActionInterface
 			'lp_frontpage_pages' => implode(',', $frontPages)
 		]);
 
-		$this->response()->redirect(Utils::$context['canonical_url']);
+		$this->cache()->flush();
+
+		$this->response()->redirect(LP_PAGE_PARAM . '=' . Utils::$context['lp_page']['slug']);
 	}
 
 	private function prepareMetadata(): void
@@ -358,7 +360,7 @@ final class Page implements ActionInterface
 			return;
 		}
 
-		$this->response()->json($this->preparedData());
+		$this->response()->exit($this->preparedData());
 	}
 
 	private function preparedData(): array

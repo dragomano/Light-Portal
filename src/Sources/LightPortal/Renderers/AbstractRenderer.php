@@ -35,12 +35,12 @@ abstract class AbstractRenderer implements RendererInterface
 
 	public function __construct()
 	{
-		if (empty(Theme::$current->settings['default_theme_dir']))
-			return;
+		Theme::loadEssential();
 
-		$this->templateDir = Theme::$current->settings['default_theme_dir'] . '/LightPortal/layouts';
+		$path = Theme::$current->settings['default_theme_dir'];
 
-		$this->customDir = Theme::$current->settings['default_theme_dir'] . '/portal_layouts';
+		$this->templateDir = $path . '/LightPortal/layouts';
+		$this->customDir   = $path . '/portal_layouts';
 	}
 
 	public function getLayouts(): array

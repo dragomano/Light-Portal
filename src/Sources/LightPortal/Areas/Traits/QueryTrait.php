@@ -66,7 +66,7 @@ trait QueryTrait
 			];
 		}
 
-		$this->response()->json($results);
+		$this->response()->exit($results);
 	}
 
 	private function getFaIcons(): array
@@ -124,6 +124,6 @@ trait QueryTrait
 
 		Db::$db->free_result($result);
 
-		$this->response()->json($topics);
+		$this->response()->exit($topics);
 	}
 }

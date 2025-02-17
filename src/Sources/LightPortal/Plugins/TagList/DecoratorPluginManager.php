@@ -8,35 +8,37 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 12.02.25
+ * @version 17.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\TagList;
 
 use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\InvalidServiceException;
-use Laminas\Tag\Cloud\Decorator;
+use Laminas\Tag\Cloud\Decorator\DecoratorInterface;
+use Laminas\Tag\Cloud\Decorator\HtmlCloud;
+use Laminas\Tag\Cloud\Decorator\HtmlTag;
 use Psr\Container\ContainerExceptionInterface;
 use RuntimeException;
 
 class DecoratorPluginManager extends AbstractPluginManager
 {
 	protected array $aliases = [
-		'htmlcloud' => Decorator\HtmlCloud::class,
-		'htmlCloud' => Decorator\HtmlCloud::class,
-		'Htmlcloud' => Decorator\HtmlCloud::class,
-		'HtmlCloud' => Decorator\HtmlCloud::class,
-		'htmltag'   => Decorator\HtmlTag::class,
-		'htmlTag'   => Decorator\HtmlTag::class,
-		'Htmltag'   => Decorator\HtmlTag::class,
-		'HtmlTag'   => Decorator\HtmlTag::class,
-		'tag'       => Decorator\HtmlTag::class,
-		'Tag'       => Decorator\HtmlTag::class,
+		'htmlcloud' => HtmlCloud::class,
+		'htmlCloud' => HtmlCloud::class,
+		'Htmlcloud' => HtmlCloud::class,
+		'HtmlCloud' => HtmlCloud::class,
+		'htmltag'   => HtmlTag::class,
+		'htmlTag'   => HtmlTag::class,
+		'Htmltag'   => HtmlTag::class,
+		'HtmlTag'   => HtmlTag::class,
+		'tag'       => HtmlTag::class,
+		'Tag'       => HtmlTag::class,
 	];
 
 	protected array $factories = [];
 
-	protected string $instanceOf = Decorator\DecoratorInterface::class;
+	protected string $instanceOf = DecoratorInterface::class;
 
 	public function validate(mixed $instance): void
 	{
@@ -45,7 +47,7 @@ class DecoratorPluginManager extends AbstractPluginManager
 				'%s can only create instances of %s; %s is invalid',
 				static::class,
 				$this->instanceOf,
-				is_object($instance) ? $instance::class : gettype($instance)
+				get_debug_type($instance)
 			));
 		}
 	}

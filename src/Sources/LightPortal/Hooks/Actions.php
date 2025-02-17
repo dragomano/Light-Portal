@@ -13,17 +13,10 @@
 namespace Bugo\LightPortal\Hooks;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\User;
-use Bugo\Compat\Utils;
 use Bugo\LightPortal\Actions\BoardIndex;
-use Bugo\LightPortal\Actions\Category;
 use Bugo\LightPortal\Actions\FrontPage;
-use Bugo\LightPortal\Actions\Tag;
 use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Utils\Setting;
-
-use function array_search;
-use function implode;
 
 use const LP_ACTION;
 
@@ -42,44 +35,10 @@ class Actions
 
 		$actions[Action::FORUM->value] = [false, [app(BoardIndex::class), 'show']];
 
-		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'categories') {
-			app(Category::class)->show();
-		}
-
-		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'tags') {
-			app(Tag::class)->show();
-		}
-
-		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'promote') {
-			$this->promoteTopic();
-		}
-
 		if (empty(Config::$modSettings['lp_standalone_mode']))
 			return;
 
 		$this->unsetDisabledActions($actions);
 		$this->redirectFromDisabledActions();
-	}
-
-	protected function promoteTopic(): void
-	{
-		if (empty(User::$info['is_admin']) || $this->request()->hasNot('t'))
-			return;
-
-		$topic = $this->request()->get('t');
-
-		$homeTopics = Setting::getFrontpageTopics();
-
-		if (($key = array_search($topic, $homeTopics)) !== false) {
-			unset($homeTopics[$key]);
-		} else {
-			$homeTopics[] = $topic;
-		}
-
-		Config::updateModSettings(
-			['lp_frontpage_topics' => implode(',', $homeTopics)]
-		);
-
-		$this->response()->redirect('topic=' . $topic);
 	}
 }

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 25.12.24
+ * @version 14.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\Reactions;
@@ -148,7 +148,7 @@ class Reactions extends Plugin
 
 	private function getReactionsWithCount(array $reactions): string
 	{
-		return json_encode(array_count_values($reactions) ?? '', JSON_FORCE_OBJECT);
+		return $this->response()->json(array_count_values($reactions) ?? '', JSON_FORCE_OBJECT);
 	}
 
 	private function getButtons(): string
@@ -229,5 +229,7 @@ class Reactions extends Plugin
 			],
 			['item_id', 'type', 'name']
 		);
+
+		$this->response()->exit(['success' => true]);
 	}
 }

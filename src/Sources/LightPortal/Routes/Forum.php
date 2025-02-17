@@ -14,6 +14,8 @@ namespace Bugo\LightPortal\Routes;
 
 use Bugo\Compat\Routable;
 
+use function array_shift;
+
 class Forum implements Routable
 {
 	public static function buildRoute(array $params): array

@@ -39,13 +39,12 @@ class CardList implements CardListInterface
 		$start = Typed::int($this->request()->get('start'));
 		$limit = Setting::get('lp_num_items_per_page', 'int', 12);
 
-		$itemsCount = $entity->getTotalCount();
+		$itemsCount = $entity->getTotalPages();
 
 		$front = app(FrontPage::class);
 		$front->updateStart($itemsCount, $start, $limit);
 
-		$sort     = $this->getOrderBy();
-		$articles = app(Weaver::class)(static fn() => $entity->getPages($start, $limit, $sort));
+		$articles = app(Weaver::class)(fn() => $entity->getPages($start, $limit, $this->getOrderBy()));
 
 		Utils::$context['page_index'] = new PageIndex(
 			Utils::$context['canonical_url'], $start, $itemsCount, $limit

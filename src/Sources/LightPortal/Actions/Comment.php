@@ -118,7 +118,7 @@ final class Comment implements ActionInterface
 			'limit'        => $limit,
 		];
 
-		$this->response()->json($result);
+		$this->response()->exit($result);
 	}
 
 	private function add(): never
@@ -128,13 +128,13 @@ final class Comment implements ActionInterface
 		];
 
 		if (empty(User::$info['id'])) {
-			$this->response()->json($result);
+			$this->response()->exit($result);
 		}
 
 		$data = $this->request()->json();
 
 		if (empty($data['message'])) {
-			$this->response()->json($result);
+			$this->response()->exit($result);
 		}
 
 		$parentId = VarType::INTEGER->filter($data['parent_id']);
@@ -144,7 +144,7 @@ final class Comment implements ActionInterface
 		$pageUrl  = Utils::$context['canonical_url'];
 
 		if (empty($pageId) || empty($message)) {
-			$this->response()->json($result);
+			$this->response()->exit($result);
 		}
 
 		$item = $this->repository->save([
@@ -190,7 +190,7 @@ final class Comment implements ActionInterface
 
 		http_response_code(201);
 
-		$this->response()->json($result);
+		$this->response()->exit($result);
 	}
 
 	private function update(): never
@@ -202,7 +202,7 @@ final class Comment implements ActionInterface
 		];
 
 		if (empty($data) || Utils::$context['user']['is_guest']) {
-			$this->response()->json($result);
+			$this->response()->exit($result);
 		}
 
 		$item    = $data['comment_id'];
@@ -210,7 +210,7 @@ final class Comment implements ActionInterface
 		$message = Utils::htmlspecialchars($message);
 
 		if (empty($item) || $message === '') {
-			$this->response()->json($result);
+			$this->response()->exit($result);
 		}
 
 		$this->repository->update([
@@ -226,7 +226,7 @@ final class Comment implements ActionInterface
 
 		$this->cache()->forget('page_' . $this->pageSlug . '_comments');
 
-		$this->response()->json($result);
+		$this->response()->exit($result);
 	}
 
 	private function remove(): never
@@ -234,14 +234,14 @@ final class Comment implements ActionInterface
 		$item = (int) $this->request()->json('comment_id');
 
 		if (empty($item)) {
-			$this->response()->json(['success' => false]);
+			$this->response()->exit(['success' => false]);
 		}
 
 		$items = $this->repository->remove($item, $this->pageSlug);
 
 		$this->cache()->forget('page_' . $this->pageSlug . '_comments');
 
-		$this->response()->json(['success' => true, 'items' => $items]);
+		$this->response()->exit(['success' => true, 'items' => $items]);
 	}
 
 	private function getTree(array $data): array

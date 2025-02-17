@@ -34,7 +34,6 @@ use Bugo\LightPortal\Utils\Str;
 use WPLake\Typed\Typed;
 
 use function array_key_exists;
-use function count;
 use function sprintf;
 use function time;
 
@@ -86,7 +85,7 @@ final class Category extends AbstractPageList
 
 		$builder = $this->cardList->getBuilder('lp_categories');
 		$builder->setItems($this->getPages(...));
-		$builder->setCount(fn() => $this->getTotalCount());
+		$builder->setCount($this->getTotalPages(...));
 
 		isset($category['description']) && $builder->addRow(
 			Row::make($category['description'])
@@ -142,7 +141,7 @@ final class Category extends AbstractPageList
 		return $this->getPreparedResults($rows);
 	}
 
-	public function getTotalCount(): int
+	public function getTotalPages(): int
 	{
 		$result = Db::$db->query('', '
 			SELECT COUNT(page_id)
@@ -185,7 +184,7 @@ final class Category extends AbstractPageList
 					'title'
 				)
 				->setItems($this->getAll(...))
-				->setCount(fn() => count($this->getAll()))
+				->setCount($this->getTotalCount(...))
 				->addColumns([
 					Column::make('title', Lang::$txt['lp_category'])
 						->setData(static fn($entry) => $entry['icon'] . ' ' . Str::html('a', $entry['title'])
@@ -195,7 +194,7 @@ final class Category extends AbstractPageList
 							->class('smalltext')))
 						->setSort('title DESC', 'title'),
 					Column::make('num_pages', Lang::$txt['lp_total_pages_column'])
-						->setStyle('width: 15%')
+						->setStyle('width: 16%')
 						->setData('num_pages', 'centertext')
 						->setSort('frequency DESC', 'frequency'),
 				])
@@ -254,5 +253,40 @@ final class Category extends AbstractPageList
 		Db::$db->free_result($result);
 
 		return $items;
+	}
+
+	public function getTotalCount(): int
+	{
+		$result = Db::$db->query('', /** @lang text */ '
+			SELECT COUNT(DISTINCT COALESCE(c.category_id, 0)) AS unique_category_count
+			FROM {db_prefix}lp_pages AS p
+				LEFT JOIN {db_prefix}lp_categories AS c ON (p.category_id = c.category_id)
+				LEFT JOIN {db_prefix}lp_titles AS t ON (
+					c.category_id = t.item_id AND t.type = {literal:category} AND t.lang = {string:lang}
+				)
+				LEFT JOIN {db_prefix}lp_titles AS tf ON (
+					c.category_id = tf.item_id AND tf.type = {literal:category} AND tf.lang = {string:fallback_lang}
+				)
+			WHERE (c.status = {int:status} OR p.category_id = 0)
+				AND p.status = {int:status}
+				AND p.entry_type IN ({array_string:types})
+				AND p.created_at <= {int:current_time}
+				AND p.permissions IN ({array_int:permissions})
+			LIMIT 1',
+			[
+				'lang'          => User::$info['language'],
+				'fallback_lang' => Config::$language,
+				'status'        => Status::ACTIVE->value,
+				'types'         => EntryType::withoutDrafts(),
+				'current_time'  => time(),
+				'permissions'   => Permission::all(),
+			]
+		);
+
+		[$count] = Db::$db->fetch_row($result);
+
+		Db::$db->free_result($result);
+
+		return (int) $count;
 	}
 }

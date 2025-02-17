@@ -19,66 +19,59 @@ use function array_search;
 use function array_shift;
 use function count;
 use function in_array;
+use function is_numeric;
 
 class Portal implements Routable
 {
 	public static function getDataFromCache(string $type = 'categories'): array
 	{
-		return (new Cache())->get('lp_sef_' . $type) ?? [];
+		return (new Cache())->get('lp_sef_' . $type) ?: [];
 	}
 
 	public static function getCachedName(string $id, string $type = 'categories'): string
 	{
-		$data = self::getDataFromCache($type);
-
-		if (empty($data))
-			return $id;
-
-		return $data[(int) $id] ?? $id;
+		return self::getDataFromCache($type)[(int) $id] ?? $id;
 	}
 
 	public static function getEntryId(string $id, string $type = 'categories'): string
 	{
-		$data = self::getDataFromCache($type);
-
-		if (empty($data))
-			return $id;
-
-		return (string) array_search($id, $data);
+		return (string) array_search($id, self::getDataFromCache($type), true) ?: $id;
 	}
 
 	public static function buildRoute(array $params): array
 	{
-		$route[] = $params['action'];
+		$route = [];
+
+		if (count($params) > 1) {
+			$route[] = $params['action'];
+		}
 
 		unset($params['action']);
 
 		if (isset($params['sa'])) {
 			$route[] = $params['sa'];
 
-			if (isset($params['id'])) {
+			if ($params['sa'] === 'promote' && isset($params['t'])) {
+				$route[] = $params['t'];
+
+				unset($params['t'], $params['start']);
+			} elseif (isset($params['id'])) {
 				$route[] = self::getCachedName($params['id'], $params['sa']);
 
 				unset($params['id']);
 			}
 
 			unset($params['sa']);
-
-			if (in_array('promote', $route) && isset($params['t'])) {
-				$route[] = $params['t'];
-
-				unset($params['t']);
-			}
 		}
 
 		if (isset($params['start'])) {
-			if ($params['start'] > 0) {
-				$route[] = $params['start'];
-			} else {
-				$route = [];
-			}
+			$route[] = $params['start'];
+		}
 
-			unset($params['start']);
+		unset($params['start']);
+
+		if ($route === ['portal', '0']) {
+			$route = [];
 		}
 
 		return ['route' => $route, 'params' => $params];
@@ -86,25 +79,38 @@ class Portal implements Routable
 
 	public static function parseRoute(array $route, array $params = []): array
 	{
+		if (empty($route)) {
+			$params['action'] = 'portal';
+
+			return $params;
+		}
+
 		$params['action'] = array_shift($route);
 
-		if (! empty($route) && count($route) > 1) {
-			$params['sa'] = array_shift($route);
+		if (count($route) === 1 && is_numeric($route[0])) {
+			$params['start'] = array_shift($route);
 
-			if (! empty($route)) {
-				$id = array_shift($route);
-				$params['id'] = self::getEntryId($id, $params['sa']);
-			}
-
-			if ($params['sa'] === 'promote') {
-				$params['t'] = $params['id'];
-
-				unset($params['id']);
-			}
+			return $params;
 		}
 
 		if (! empty($route)) {
-			$params['start'] = array_shift($route);
+			$params['sa'] = array_shift($route);
+
+			if (! empty($route)) {
+				if ($params['sa'] === 'promote') {
+					$params['t'] = array_shift($route);
+				} elseif (in_array($params['sa'], ['categories', 'tags'])) {
+					if (is_numeric($route[0])) {
+						$params['start'] = array_shift($route);
+					} else {
+						$params['id'] = self::getEntryId(array_shift($route), $params['sa']);
+
+						if (! empty($route) && is_numeric($route[0])) {
+							$params['start'] = array_shift($route);
+						}
+					}
+				}
+			}
 		}
 
 		return $params;
