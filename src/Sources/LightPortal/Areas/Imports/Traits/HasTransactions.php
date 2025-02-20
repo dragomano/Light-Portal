@@ -16,14 +16,14 @@ use Bugo\Compat\Db;
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\Traits\HasCache;
 
 use function count;
 use function sprintf;
 
 trait HasTransactions
 {
-	use CacheTrait;
+	use HasCache;
 
 	protected function startTransaction(array $items): void
 	{

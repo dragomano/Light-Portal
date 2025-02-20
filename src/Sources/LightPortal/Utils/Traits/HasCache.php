@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php declare(strict_types = 1);
 
 /**
  * @package Light Portal
@@ -10,12 +10,14 @@
  * @version 2.9
  */
 
-namespace Bugo\LightPortal\Utils;
+namespace Bugo\LightPortal\Utils\Traits;
 
-trait SessionTrait
+use Bugo\LightPortal\Utils\Cache;
+
+trait HasCache
 {
-	public function session(?string $key = null): Session
+	public function cache(?string $key = null): Cache
 	{
-		return app(Session::class)($key);
+		return app(Cache::class)($key);
 	}
 }

@@ -18,7 +18,7 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Security;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Areas\Traits\AreaTrait;
+use Bugo\LightPortal\Areas\Traits\HasArea;
 use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Tab;
@@ -65,7 +65,7 @@ if (! defined('SMF'))
 
 final class BlockArea
 {
-	use AreaTrait;
+	use HasArea;
 	use HasEvents;
 
 	public function __construct(private readonly BlockRepository $repository) {}

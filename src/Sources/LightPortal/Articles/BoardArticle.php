@@ -43,7 +43,7 @@ class BoardArticle extends AbstractArticle
 
 		$this->params = [
 			'blank_string'    => '',
-			'current_member'  => User::$info['id'],
+			'current_member'  => User::$me->id,
 			'selected_boards' => $this->selectedBoards,
 		];
 
@@ -82,7 +82,7 @@ class BoardArticle extends AbstractArticle
 				CASE WHEN b.redirect != {string:blank_string} THEN 1 ELSE 0 END AS is_redirect, b.num_posts,
 				m.poster_time, GREATEST(m.poster_time, m.modified_time) AS last_updated, m.id_msg, m.id_topic,
 				c.name AS cat_name,' . (
-					User::$info['is_guest']
+					User::$me->is_guest
 						? ' 1 AS is_read, 0 AS new_from'
 						: ' (CASE WHEN COALESCE(lb.id_msg, 0) >= b.id_last_msg THEN 1 ELSE 0 END) AS is_read,
 						COALESCE(lb.id_msg, -1) + 1 AS new_from'
@@ -94,7 +94,7 @@ class BoardArticle extends AbstractArticle
 				' . implode(', ', $this->columns)) . '
 			FROM {db_prefix}boards AS b
 				INNER JOIN {db_prefix}categories AS c ON (b.id_cat = c.id_cat)
-				LEFT JOIN {db_prefix}messages AS m ON (b.id_last_msg = m.id_msg)' . (User::$info['is_guest'] ? '' : '
+				LEFT JOIN {db_prefix}messages AS m ON (b.id_last_msg = m.id_msg)' . (User::$me->is_guest ? '' : '
 				LEFT JOIN {db_prefix}log_boards AS lb ON (
 					b.id_board = lb.id_board AND lb.id_member = {int:current_member}
 				)') . (empty(Config::$modSettings['lp_show_images_in_articles']) ? '' : '
@@ -217,7 +217,7 @@ class BoardArticle extends AbstractArticle
 
 	private function canEdit(): bool
 	{
-		return User::$info['is_admin'] || User::$me->allowedTo('manage_boards');
+		return User::$me->is_admin || User::$me->allowedTo('manage_boards');
 	}
 
 	private function getEditLink(array $row): string

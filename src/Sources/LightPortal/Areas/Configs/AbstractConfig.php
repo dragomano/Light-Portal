@@ -12,29 +12,22 @@
 
 namespace Bugo\LightPortal\Areas\Configs;
 
-use Bugo\Compat\Actions\Admin\Permissions;
 use Bugo\Compat\{Config, Lang, Utils};
-use Bugo\LightPortal\Areas\Traits\AreaTrait;
+use Bugo\LightPortal\Areas\Traits\HasArea;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\SelectField;
 use Bugo\LightPortal\UI\Fields\TextField;
 
-use function array_key_last;
-use function call_user_func;
-use function function_exists;
-use function gettype;
-use function ob_get_clean;
-use function ob_start;
-use function settype;
+use function in_array;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 abstract class AbstractConfig
 {
-	use AreaTrait;
+	use HasArea;
 
 	abstract public function show(): void;
 
@@ -56,87 +49,32 @@ abstract class AbstractConfig
 	protected function prepareConfigFields(array $configVars): void
 	{
 		$i = 0;
-		foreach (Utils::$context['config_vars'] as $var) {
-			$value = '';
-			if ($var['type'] === 'select') {
-				$var['data'] = $configVars[$i][2];
-				$type = gettype(array_key_last($var['data']));
-				$value = Config::$modSettings[$var['name']] ?? '';
-				settype($value, $type);
-			}
 
+		foreach (Utils::$context['config_vars'] as $var) {
 			$label = $var['label'] ?? Lang::$txt[$var['name']] ?? '';
 			$after = $var['postinput'] ?? '';
 			$description = isset($var['help']) ? Lang::$txt[$var['help']] ?? '' : '';
+			$varFactory = new VarFactory($var['name'], $var['type']);
 
-			match ($var['type']) {
-				'check' => CheckboxField::make($var['name'], $label)
-					->setTab($var['tab'])
-					->setAfter($after)
-					->setDescription($description)
-					->setValue(Config::$modSettings[$var['name']] ?? false),
+			$value = $varFactory->getValue($data = $configVars[$i][2] ?? []);
 
-				'int' => NumberField::make($var['name'], $label)
-					->setTab($var['tab'])
-					->setAfter($after)
-					->setDescription($description)
-					->setValue(Config::$modSettings[$var['name']] ?? 0),
-
-				'text' => TextField::make($var['name'], $label)
-					->setTab($var['tab'])
-					->setAfter($after)
-					->setDescription($description)
-					->placeholder($var['placeholder'] ?? '')
-					->setValue(Config::$modSettings[$var['name']] ?? ''),
-
-				'select' => SelectField::make($var['name'], $label)
-					->setTab($var['tab'])
-					->setAttributes($var['attributes'] ?? [])
-					->setAfter($after)
-					->setDescription($description)
-					->setOptions($var['data'])
-					->setValue($value),
-
-				'callback' => CustomField::make($var['name'], $label)
-					->setTab($var['tab'])
-					->setDescription($description)
-					->setValue($var['callback'] ?? static fn() => new class {
-						public function __invoke(): string
-						{
-							$params = func_get_args();
-							$var = $params[0]['var'] ?? [];
-
-							if (! function_exists('template_callback_' . $var['name']))
-								return '';
-
-							ob_start();
-
-							call_user_func('template_callback_' . $var['name']);
-
-							return (string) ob_get_clean();
-						}
-					}, ['var' => $var]),
-
-				'permissions' => CustomField::make($var['name'], Lang::$txt['permissionname_' . $var['name']])
-					->setTab($var['tab'])
-					->setAfter($after)
-					->setDescription($description)
-					->setValue(static fn() => new class {
-						public function __invoke(): string
-						{
-							$params = func_get_args();
-							$var = $params[0]['var'] ?? [];
-
-							ob_start();
-
-							Permissions::theme_inline_permissions($var['name']);
-
-							return ob_get_clean();
-						}
-					}, ['var' => $var]),
-
-				default => false,
+			$field = match ($var['type']) {
+				'check'       => CheckboxField::make($var['name'], $label),
+				'int'         => NumberField::make($var['name'], $label),
+				'text'        => TextField::make($var['name'], $label)->placeholder($var['placeholder'] ?? ''),
+				'select'      => SelectField::make($var['name'], $label)->setAttributes($var['attributes'] ?? [])->setOptions($data),
+				'callback'    => CustomField::make($var['name'], $label)->setValue($var['callback'] ?? $varFactory->createTemplateCallback()),
+				'permissions' => CustomField::make($var['name'], Lang::$txt['permissionname_' . $var['name']])->setValue($varFactory->createPermissionsCallback()),
+				default       => null,
 			};
+
+			$field?->setTab($var['tab'])
+				->setAfter($after)
+				->setDescription($description);
+
+			if (! in_array($var['type'], ['callback', 'permissions'])) {
+				$field?->setValue($value ?? $varFactory->getDefaultValue());
+			}
 
 			$i++;
 		}

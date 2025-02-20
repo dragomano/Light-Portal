@@ -37,7 +37,7 @@ final class CategoryList implements ListInterface
 			WHERE c.status = {int:status}
 			ORDER BY c.priority',
 			[
-				'lang'          => User::$info['language'],
+				'lang'          => User::$me->language,
 				'fallback_lang' => Config::$language,
 				'status'        => Status::ACTIVE->value,
 			]

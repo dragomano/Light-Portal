@@ -23,15 +23,15 @@ use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Lists\TitleList;
 use Bugo\LightPortal\Repositories\PageRepository;
-use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Content;
-use Bugo\LightPortal\Utils\HasBreadcrumbs;
 use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\RequestTrait;
-use Bugo\LightPortal\Utils\ResponseTrait;
-use Bugo\LightPortal\Utils\SessionTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasCache;
+use Bugo\LightPortal\Utils\Traits\HasBreadcrumbs;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
+use Bugo\LightPortal\Utils\Traits\HasResponse;
+use Bugo\LightPortal\Utils\Traits\HasSession;
 use SimpleSEF;
 
 use function array_column;
@@ -51,12 +51,12 @@ if (! defined('SMF'))
 
 final class Page implements ActionInterface
 {
-	use CacheTrait;
+	use HasCache;
 	use HasBreadcrumbs;
 	use HasEvents;
-	use RequestTrait;
-	use ResponseTrait;
-	use SessionTrait;
+	use HasRequest;
+	use HasResponse;
+	use HasSession;
 
 	public function __construct(private readonly PageRepository $repository) {}
 
@@ -160,7 +160,7 @@ final class Page implements ActionInterface
 			ErrorHandler::fatalLang('cannot_light_portal_view_page', false);
 		}
 
-		if ($page['entry_type'] === EntryType::DRAFT->name() && $page['author_id'] !== User::$info['id']) {
+		if ($page['entry_type'] === EntryType::DRAFT->name() && $page['author_id'] !== User::$me->id) {
 			$this->changeErrorPage();
 			ErrorHandler::fatalLang('cannot_light_portal_view_page', false);
 		}
@@ -216,7 +216,7 @@ final class Page implements ActionInterface
 
 	private function handlePromoteAction(): void
 	{
-		if (empty(User::$info['is_admin']) || $this->request()->hasNot('promote'))
+		if (empty(User::$me->is_admin) || $this->request()->hasNot('promote'))
 			return;
 
 		$page = Utils::$context['lp_page']['id'];
@@ -415,7 +415,7 @@ final class Page implements ActionInterface
 
 	private function updateNumViews(): void
 	{
-		if (empty(Utils::$context['lp_page']['id']) || User::$info['possibly_robot'])
+		if (empty(Utils::$context['lp_page']['id']) || User::$me->possibly_robot)
 			return;
 
 		if (

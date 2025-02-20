@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.01.25
+ * @version 19.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\RecentAttachments;
@@ -79,7 +79,7 @@ class RecentAttachments extends Block
 	{
 		[$id, $parameters] = [$e->args->id, $e->args->parameters];
 
-		$attachmentList = $this->cache($this->name . '_addon_b' . $id . '_u' . User::$info['id'])
+		$attachmentList = $this->cache($this->name . '_addon_b' . $id . '_u' . User::$me->id)
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(fn() => $this->getData($parameters));
 

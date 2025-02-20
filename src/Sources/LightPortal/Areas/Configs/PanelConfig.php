@@ -12,12 +12,12 @@
 
 namespace Bugo\LightPortal\Areas\Configs;
 
-use Bugo\Compat\Actions\Admin\ACP;
 use Bugo\Compat\{Config, Lang, Theme};
 use Bugo\Compat\{User, Utils};
-use Bugo\LightPortal\Utils\RequestTrait;
-use Bugo\LightPortal\Utils\SessionTrait;
+use Bugo\Compat\Actions\Admin\ACP;
 use Bugo\LightPortal\Utils\Setting;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
+use Bugo\LightPortal\Utils\Traits\HasSession;
 
 use function json_encode;
 
@@ -26,8 +26,8 @@ if (! defined('SMF'))
 
 final class PanelConfig extends AbstractConfig
 {
-	use RequestTrait;
-	use SessionTrait;
+	use HasRequest;
+	use HasSession;
 
 	public function show(): void
 	{

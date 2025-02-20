@@ -13,7 +13,6 @@
 namespace Bugo\LightPortal\Models;
 
 use Bugo\Compat\User;
-use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Permission;
@@ -63,13 +62,13 @@ class PageModel extends AbstractModel
 	public function __construct(array $data)
 	{
 		$permissions = Setting::get('lp_permissions_default', 'int', Permission::MEMBER->value);
-		$status = Utils::$context['allow_light_portal_approve_pages']
+		$status = User::$me->allowedTo('light_portal_approve_pages')
 			? Status::ACTIVE->value
 			: Status::UNAPPROVED->value;
 
 		$this->id            = $data['page_id'] ?? $data['id'] ?? 0;
 		$this->categoryId    = $data['category_id'] ?? 0;
-		$this->authorId      = $data['author_id'] ?? User::$info['id'];
+		$this->authorId      = $data['author_id'] ?? User::$me->id;
 		$this->slug          = $data['slug'] ?? '';
 		$this->description   = $data['description'] ?? '';
 		$this->content       = $data['content'] ?? '';

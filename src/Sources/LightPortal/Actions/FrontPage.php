@@ -26,15 +26,15 @@ use Bugo\LightPortal\Articles\TopicArticle;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Renderers\RendererInterface;
-use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\DateTime;
-use Bugo\LightPortal\Utils\HasBreadcrumbs;
 use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\RequestTrait;
-use Bugo\LightPortal\Utils\ResponseTrait;
-use Bugo\LightPortal\Utils\SessionTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasCache;
+use Bugo\LightPortal\Utils\Traits\HasBreadcrumbs;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
+use Bugo\LightPortal\Utils\Traits\HasResponse;
+use Bugo\LightPortal\Utils\Traits\HasSession;
 use Bugo\LightPortal\Utils\Weaver;
 use WPLake\Typed\Typed;
 
@@ -54,12 +54,12 @@ use const LP_BASE_URL;
 
 final class FrontPage implements ActionInterface
 {
-	use CacheTrait;
+	use HasCache;
 	use HasBreadcrumbs;
 	use HasEvents;
-	use RequestTrait;
-	use ResponseTrait;
-	use SessionTrait;
+	use HasRequest;
+	use HasResponse;
+	use HasSession;
 
 	private array $modes = [
 		'all_pages'     => PageArticle::class,
@@ -111,7 +111,7 @@ final class FrontPage implements ActionInterface
 
 		$article->init();
 
-		$key = 'articles_u' . User::$info['id'] . '_' . User::$info['language'] . '_' . $start . '_' . $limit;
+		$key = 'articles_u' . User::$me->id . '_' . User::$me->language . '_' . $start . '_' . $limit;
 
 		$key = ltrim(($this->request()->get('action') ?? '') . '_' . $key, '_');
 
@@ -253,7 +253,7 @@ final class FrontPage implements ActionInterface
 
 	private function promoteTopic(): void
 	{
-		if (empty(User::$info['is_admin']) || $this->request()->hasNot('t'))
+		if (empty(User::$me->is_admin) || $this->request()->hasNot('t'))
 			return;
 
 		$topic = $this->request()->get('t');

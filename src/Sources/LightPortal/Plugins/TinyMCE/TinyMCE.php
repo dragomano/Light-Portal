@@ -18,8 +18,8 @@ use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Utils\HasThemesAware;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasThemes;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -29,7 +29,7 @@ if (! defined('LP_NAME'))
  */
 class TinyMCE extends Plugin
 {
-	use HasThemesAware;
+	use HasThemes;
 
 	public string $type = 'editor';
 

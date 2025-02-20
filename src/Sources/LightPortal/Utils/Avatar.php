@@ -13,9 +13,7 @@
 namespace Bugo\LightPortal\Utils;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\User;
-use Exception;
 
 use function array_map;
 use function in_array;
@@ -34,25 +32,23 @@ class Avatar
 			$userData = self::getPreparedData([$userId]);
 		}
 
-		if (! isset(User::$memberContext[$userId]) && in_array($userId, $userData)) {
-			try {
-				User::$loaded[$userId]->format(true);
-			} catch (Exception $e) {
-				ErrorHandler::log('[LP] getUserAvatar helper: ' . $e->getMessage(), 'user');
-			}
+		if (empty(User::$loaded[$userId]) && in_array($userId, $userData)) {
+			User::load($userId);
 		}
 
-		if (empty(User::$memberContext[$userId]))
+		if (empty(User::$loaded[$userId]))
 			return '';
 
-		return User::$memberContext[$userId]['avatar']['image']
+		$data = User::$loaded[$userId]->format(true);
+
+		return $data['avatar']['image']
 			?? Str::html('img', [
 				'class'   => 'avatar',
 				'width'   => 100,
 				'height'  => 100,
 				'src'     => Config::$modSettings['avatar_url'] . '/default.png',
 				'loading' => 'lazy',
-				'alt'     => User::$memberContext[$userId]['name'],
+				'alt'     => $data['name'],
 			])->toHtml();
 	}
 

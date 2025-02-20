@@ -23,14 +23,14 @@ use Bugo\LightPortal\Enums\VarType;
 use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Lists\PluginList;
 use Bugo\LightPortal\Repositories\PluginRepository;
-use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Language;
-use Bugo\LightPortal\Utils\RequestTrait;
-use Bugo\LightPortal\Utils\ResponseTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasCache;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
+use Bugo\LightPortal\Utils\Traits\HasResponse;
 
 use function array_filter;
 use function array_flip;
@@ -59,9 +59,9 @@ if (! defined('SMF'))
 
 final class PluginArea
 {
-	use CacheTrait;
-	use RequestTrait;
-	use ResponseTrait;
+	use HasCache;
+	use HasRequest;
+	use HasResponse;
 	use HasEvents;
 
 	public function __construct(private readonly PluginRepository $repository) {}
@@ -329,7 +329,7 @@ final class PluginArea
 			'charset' => Utils::$context['character_set'],
 			'user'    => Utils::$context['user'],
 			'rtl'     => Utils::$context['right_to_left'],
-			'lang'    => Language::getNameFromLocale(User::$info['language']),
+			'lang'    => Language::getNameFromLocale(User::$me->language),
 		];
 
 		$pluginsData = [

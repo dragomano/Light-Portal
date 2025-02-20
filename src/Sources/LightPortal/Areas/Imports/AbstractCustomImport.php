@@ -17,7 +17,7 @@ use Bugo\LightPortal\Areas\Imports\Traits\HasParams;
 use Bugo\LightPortal\Areas\Imports\Traits\HasTitles;
 use Bugo\LightPortal\Areas\Imports\Traits\HasTransactions;
 use Bugo\LightPortal\Events\HasEvents;
-use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -29,7 +29,7 @@ abstract class AbstractCustomImport implements ImportInterface, CustomImportInte
 	use HasParams;
 	use HasTitles;
 	use HasTransactions;
-	use RequestTrait;
+	use HasRequest;
 
 	abstract protected function getItems(array $ids): array;
 

@@ -30,9 +30,9 @@ use function in_array;
 if (! defined('SMF'))
 	die('No direct access...');
 
-trait AreaTrait
+trait HasArea
 {
-	use QueryTrait;
+	use HasQuery;
 
 	public function createBbcEditor(string $content = ''): void
 	{

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 12.02.25
+ * @version 20.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\MainMenu;
@@ -43,24 +43,24 @@ class MainMenu extends Plugin
 	{
 		$this->prepareVariables();
 
-		if (! empty(Utils::$context['lp_main_menu_portal_langs'][User::$info['language']])) {
-			$buttons[LP_ACTION]['title'] = Utils::$context['lp_main_menu_portal_langs'][User::$info['language']];
+		if (! empty(Utils::$context['lp_main_menu_portal_langs'][User::$me->language])) {
+			$buttons[LP_ACTION]['title'] = Utils::$context['lp_main_menu_portal_langs'][User::$me->language];
 		}
 
-		if (! empty(Utils::$context['lp_main_menu_forum_langs'][User::$info['language']])) {
+		if (! empty(Utils::$context['lp_main_menu_forum_langs'][User::$me->language])) {
 			$action = empty(Config::$modSettings['lp_standalone_mode']) ? Action::HOME->value : Action::FORUM->value;
-			$buttons[$action]['title'] = Utils::$context['lp_main_menu_forum_langs'][User::$info['language']];
+			$buttons[$action]['title'] = Utils::$context['lp_main_menu_forum_langs'][User::$me->language];
 		}
 	}
 
 	public function frontLayouts(): void
 	{
 		if (
-			! empty(Utils::$context['lp_main_menu_portal_langs'][User::$info['language']])
+			! empty(Utils::$context['lp_main_menu_portal_langs'][User::$me->language])
 			&& ! empty($this->breadcrumbs()->getByIndex(1))
 		) {
 			$this->breadcrumbs()->update(
-				1, 'name', Utils::$context['lp_main_menu_portal_langs'][User::$info['language']]
+				1, 'name', Utils::$context['lp_main_menu_portal_langs'][User::$me->language]
 			);
 		}
 	}
@@ -75,7 +75,7 @@ class MainMenu extends Plugin
 		Language::prepareList();
 
 		$this->prepareVariables();
-		$this->setTemplate();
+		$this->useTemplate();
 
 		ob_start();
 

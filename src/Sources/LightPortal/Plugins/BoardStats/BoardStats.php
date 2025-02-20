@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 06.01.25
+ * @version 19.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\BoardStats;
@@ -109,7 +109,7 @@ class BoardStats extends Block
 	{
 		$parameters = $e->args->parameters;
 
-		$boardStats = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
+		$boardStats = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$me->id)
 			->setLifeTime(Typed::int($parameters['update_interval']))
 			->setFallback(fn() => $this->getData($parameters));
 

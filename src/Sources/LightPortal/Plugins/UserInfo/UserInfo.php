@@ -8,13 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 20.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\UserInfo;
 
 use Bugo\Compat\User;
-use Bugo\Compat\Utils;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
 
@@ -30,21 +29,21 @@ class UserInfo extends Block
 
 	public function getData(): array
 	{
-		User::load(User::$info['id']);
+		User::load(User::$me->id);
 
-		return User::$loaded[User::$info['id']]->format();
+		return User::$loaded[User::$me->id]->format();
 	}
 
 	public function prepareContent(Event $e): void
 	{
-		$this->setTemplate();
+		$this->useTemplate();
 
-		if (! Utils::$context['user']['is_logged']) {
+		if (User::$me->is_guest) {
 			show_user_info_for_guests();
 			return;
 		}
 
-		$userData = $this->cache($this->name . '_addon_u' . Utils::$context['user']['id'])
+		$userData = $this->cache($this->name . '_addon_u' . User::$me->id)
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(fn() => $this->getData());
 

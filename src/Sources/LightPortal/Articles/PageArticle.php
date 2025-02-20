@@ -17,7 +17,6 @@ use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Parsers\BBCodeParser;
 use Bugo\Compat\User;
-use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\PortalHook;
@@ -56,7 +55,7 @@ class PageArticle extends AbstractArticle
 		$this->sorting = Setting::get('lp_frontpage_article_sorting', 'int', 0);
 
 		$this->params = [
-			'lang'                => User::$info['language'],
+			'lang'                => User::$me->language,
 			'fallback_lang'       => Config::$language,
 			'status'              => Status::ACTIVE->value,
 			'entry_type'          => EntryType::DEFAULT->name(),
@@ -248,7 +247,7 @@ class PageArticle extends AbstractArticle
 
 	private function isNew(array $row): bool
 	{
-		return User::$info['last_login'] < $row['date'] && (int) $row['author_id'] !== User::$info['id'];
+		return User::$me->last_login < $row['date'] && (int) $row['author_id'] !== User::$me->id;
 	}
 
 	private function getImage(array $row): string
@@ -261,9 +260,9 @@ class PageArticle extends AbstractArticle
 
 	private function canEdit(array $row): bool
 	{
-		return User::$info['is_admin']
-			|| Utils::$context['allow_light_portal_manage_pages_any']
-			|| (Utils::$context['allow_light_portal_manage_pages_own'] && (int) $row['author_id'] === User::$info['id']);
+		return User::$me->is_admin
+			|| User::$me->allowedTo('light_portal_manage_pages_any')
+			|| (User::$me->allowedTo('light_portal_manage_pages_own') && (int) $row['author_id'] === User::$me->id);
 	}
 
 	private function getEditLink(array $row): string
@@ -302,7 +301,7 @@ class PageArticle extends AbstractArticle
 				AND t.status = {int:status}
 			ORDER BY title',
 			[
-				'lang'          => User::$info['language'],
+				'lang'          => User::$me->language,
 				'fallback_lang' => Config::$language,
 				'pages'         => array_keys($pages),
 				'status'        => Status::ACTIVE->value,

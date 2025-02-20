@@ -21,15 +21,15 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\UI\Tables\DateColumn;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
 use Bugo\LightPortal\UI\Tables\TitleColumn;
-use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
 use Bugo\LightPortal\Utils\Weaver;
 use WPLake\Typed\Typed;
 
 class CardList implements CardListInterface
 {
-	use RequestTrait;
+	use HasRequest;
 
 	public function show(PageListInterface $entity): void
 	{

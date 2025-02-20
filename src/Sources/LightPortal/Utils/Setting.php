@@ -16,6 +16,7 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 
+use function array_filter;
 use function explode;
 use function filter_var;
 
@@ -150,6 +151,6 @@ class Setting
 
 	protected static function transformArray(string $value, string $from): array
 	{
-		return $from === 'json' ? Utils::jsonDecode($value, true) : explode(',', $value);
+		return $from === 'json' ? Utils::jsonDecode($value, true) : array_filter(explode(',', $value));
 	}
 }

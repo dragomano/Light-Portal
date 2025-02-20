@@ -17,15 +17,15 @@ use Bugo\Compat\Theme;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Utils\HasThemesAware;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasThemes;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
 class ThemeSwitcher extends Block
 {
-	use HasThemesAware;
+	use HasThemes;
 
 	public string $icon = 'fas fa-desktop';
 

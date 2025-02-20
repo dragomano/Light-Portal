@@ -13,14 +13,14 @@
 namespace Bugo\LightPortal\Hooks;
 
 use Bugo\Compat\Db;
-use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\Traits\HasCache;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 class DeleteMembers
 {
-	use CacheTrait;
+	use HasCache;
 
 	public function __invoke(array $users): void
 	{

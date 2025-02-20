@@ -10,10 +10,11 @@
  * @version 2.9
  */
 
-namespace Bugo\LightPortal\Utils;
+namespace Bugo\LightPortal\Utils\Traits;
 
 use Bugo\Compat\Db;
 use Bugo\Compat\Theme;
+use Bugo\LightPortal\Utils\Setting;
 
 use function array_column;
 use function array_filter;
@@ -23,9 +24,9 @@ use function explode;
 if (! defined('SMF'))
 	die('No direct access...');
 
-trait HasThemesAware
+trait HasThemes
 {
-	use CacheTrait;
+	use HasCache;
 
 	public function isDarkTheme(?string $option): bool
 	{

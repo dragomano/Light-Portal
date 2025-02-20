@@ -21,12 +21,12 @@ use Bugo\LightPortal\Enums\VarType;
 use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Repositories\CommentRepository;
 use Bugo\LightPortal\Utils\Avatar;
-use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\Notify;
-use Bugo\LightPortal\Utils\RequestTrait;
-use Bugo\LightPortal\Utils\ResponseTrait;
 use Bugo\LightPortal\Utils\Setting;
+use Bugo\LightPortal\Utils\Traits\HasCache;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
+use Bugo\LightPortal\Utils\Traits\HasResponse;
 use WPLake\Typed\Typed;
 
 use function array_map;
@@ -43,10 +43,10 @@ if (! defined('SMF'))
 
 final class Comment implements ActionInterface
 {
-	use CacheTrait;
+	use HasCache;
 	use HasEvents;
-	use RequestTrait;
-	use ResponseTrait;
+	use HasRequest;
+	use HasResponse;
 
 	private string $pageSlug;
 
@@ -123,17 +123,13 @@ final class Comment implements ActionInterface
 
 	private function add(): never
 	{
+		$data = $this->request()->json();
+
 		$result = [
 			'id' => null,
 		];
 
-		if (empty(User::$info['id'])) {
-			$this->response()->exit($result);
-		}
-
-		$data = $this->request()->json();
-
-		if (empty($data['message'])) {
+		if (empty($data['message']) || User::$me->is_guest) {
 			$this->response()->exit($result);
 		}
 
@@ -150,7 +146,7 @@ final class Comment implements ActionInterface
 		$item = $this->repository->save([
 			'parent_id'  => $parentId,
 			'page_id'    => $pageId,
-			'author_id'  => User::$info['id'],
+			'author_id'  => User::$me->id,
 			'message'    => $message,
 			'created_at' => $time = time(),
 		]);
@@ -167,9 +163,9 @@ final class Comment implements ActionInterface
 				'human_date'   => DateTime::relative($time),
 				'can_edit'     => true,
 				'poster'       => [
-					'id'     => User::$info['id'],
-					'name'   => User::$info['name'],
-					'avatar' => Avatar::get(User::$info['id']),
+					'id'     => User::$me->id,
+					'name'   => User::$me->name,
+					'avatar' => Avatar::get(User::$me->id),
 				],
 			];
 
@@ -201,7 +197,7 @@ final class Comment implements ActionInterface
 			'success' => false,
 		];
 
-		if (empty($data) || Utils::$context['user']['is_guest']) {
+		if (empty($data) || User::$me->is_guest) {
 			$this->response()->exit($result);
 		}
 

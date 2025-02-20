@@ -15,9 +15,9 @@ namespace Bugo\LightPortal\Hooks;
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Action;
-use Bugo\LightPortal\Utils\RequestTrait;
-use Bugo\LightPortal\Utils\ResponseTrait;
 use Bugo\LightPortal\Utils\Setting;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
+use Bugo\LightPortal\Utils\Traits\HasResponse;
 
 use function array_flip;
 use function array_key_exists;
@@ -27,10 +27,10 @@ use function defined;
 if (! defined('SMF'))
 	die('No direct access...');
 
-trait CommonChecks
+trait HasCommonChecks
 {
-	use RequestTrait;
-	use ResponseTrait;
+	use HasRequest;
+	use HasResponse;
 
 	protected function isPortalCanBeLoaded(): bool
 	{

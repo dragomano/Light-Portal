@@ -29,7 +29,7 @@ class LangHandler
 		if (isset(Lang::$txt[self::PREFIX . $snakeName]))
 			return;
 
-		$userLang  = Language::getNameFromLocale(User::$info['language']);
+		$userLang  = Language::getNameFromLocale(User::$me->language);
 		$languages = array_unique([Language::FALLBACK, $userLang]);
 
 		// @TODO This variable is still needed in some templates

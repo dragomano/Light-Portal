@@ -10,14 +10,14 @@
  * @version 2.9
  */
 
-namespace Bugo\LightPortal\Utils;
+namespace Bugo\LightPortal\Utils\Traits;
 
 use ReflectionClass;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-trait HasReflectionAware
+trait HasReflection
 {
 	public function getCalledClass(): ReflectionClass
 	{

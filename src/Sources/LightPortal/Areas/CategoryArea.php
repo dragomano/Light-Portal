@@ -21,7 +21,7 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Security;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Areas\Traits\AreaTrait;
+use Bugo\LightPortal\Areas\Traits\HasArea;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Models\CategoryFactory;
 use Bugo\LightPortal\Repositories\CategoryRepository;
@@ -48,7 +48,7 @@ if (! defined('SMF'))
 
 final class CategoryArea
 {
-	use AreaTrait;
+	use HasArea;
 
 	public function __construct(private readonly CategoryRepository $repository) {}
 

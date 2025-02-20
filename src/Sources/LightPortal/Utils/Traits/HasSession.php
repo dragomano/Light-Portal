@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 /**
  * @package Light Portal
@@ -10,12 +10,14 @@
  * @version 2.9
  */
 
-namespace Bugo\LightPortal\Utils;
+namespace Bugo\LightPortal\Utils\Traits;
 
-trait ResponseTrait
+use Bugo\LightPortal\Utils\Session;
+
+trait HasSession
 {
-	public function response(): Response
+	public function session(?string $key = null): Session
 	{
-		return app(Response::class);
+		return app(Session::class)($key);
 	}
 }

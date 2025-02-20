@@ -26,9 +26,9 @@ use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Lists\TagList;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
 use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
 use WPLake\Typed\Typed;
 
 use function array_key_exists;
@@ -43,7 +43,7 @@ if (! defined('SMF'))
 
 final class Tag extends AbstractPageList
 {
-	use RequestTrait;
+	use HasRequest;
 
 	public function __construct(private readonly CardListInterface $cardList) {}
 
@@ -120,7 +120,7 @@ final class Tag extends AbstractPageList
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
 			[
-				'lang'          => User::$info['language'],
+				'lang'          => User::$me->language,
 				'fallback_lang' => Config::$language,
 				'id'            => Utils::$context['current_tag'],
 				'status'        => Status::ACTIVE->value,
@@ -226,7 +226,7 @@ final class Tag extends AbstractPageList
 			ORDER BY {raw:sort}' . ($limit ? '
 			LIMIT {int:start}, {int:limit}' : ''),
 			[
-				'lang'          => User::$info['language'],
+				'lang'          => User::$me->language,
 				'fallback_lang' => Config::$language,
 				'status'        => Status::ACTIVE->value,
 				'types'         => EntryType::names(),
@@ -273,7 +273,7 @@ final class Tag extends AbstractPageList
 				AND tag.status = {int:status}
 			LIMIT 1',
 			[
-				'lang'          => User::$info['language'],
+				'lang'          => User::$me->language,
 				'fallback_lang' => Config::$language,
 				'status'        => Status::ACTIVE->value,
 				'types'         => EntryType::names(),

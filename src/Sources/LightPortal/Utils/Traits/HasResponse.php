@@ -10,12 +10,14 @@
  * @version 2.9
  */
 
-namespace Bugo\LightPortal\Utils;
+namespace Bugo\LightPortal\Utils\Traits;
 
-trait CacheTrait
+use Bugo\LightPortal\Utils\Response;
+
+trait HasResponse
 {
-	public function cache(?string $key = null): Cache
+	public function response(): Response
 	{
-		return app(Cache::class)($key);
+		return app(Response::class);
 	}
 }

@@ -56,7 +56,7 @@ class Str
 
 	public static function getTranslatedTitle(array $titles): string
 	{
-		return $titles[User::$info['language']] ?? $titles[Config::$language] ?? '';
+		return $titles[User::$me->language] ?? $titles[Config::$language] ?? '';
 	}
 
 	public static function getImageFromText(string $text): string

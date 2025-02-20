@@ -16,7 +16,7 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Utils\Language;
-use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
 
 use function array_filter;
 use function filter_var_array;
@@ -25,7 +25,7 @@ use function is_array;
 abstract class AbstractValidator implements ValidatorInterface
 {
 	use HasEvents;
-	use RequestTrait;
+	use HasRequest;
 
 	protected array $filters = [];
 

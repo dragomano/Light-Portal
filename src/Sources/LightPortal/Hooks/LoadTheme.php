@@ -15,7 +15,6 @@ namespace Bugo\LightPortal\Hooks;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
-use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Enums\EntryType;
@@ -24,17 +23,17 @@ use Bugo\LightPortal\Enums\PluginType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Repositories\BlockRepository;
-use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\SessionManager;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 class LoadTheme
 {
-	use CommonChecks;
+	use HasCommonChecks;
 	use HasEvents;
-	use RequestTrait;
+	use HasRequest;
 
 	public function __invoke(): void
 	{
@@ -52,11 +51,6 @@ class LoadTheme
 
 	protected function defineVars(): void
 	{
-		Utils::$context['allow_light_portal_view']             = User::$me->allowedTo('light_portal_view');
-		Utils::$context['allow_light_portal_manage_pages_own'] = User::$me->allowedTo('light_portal_manage_pages_own');
-		Utils::$context['allow_light_portal_manage_pages_any'] = User::$me->allowedTo('light_portal_manage_pages_any');
-		Utils::$context['allow_light_portal_approve_pages']    = User::$me->allowedTo('light_portal_approve_pages');
-
 		Utils::$context['lp_quantities']    = app(SessionManager::class)();
 		Utils::$context['lp_active_blocks'] = app(BlockRepository::class)->getActive();
 

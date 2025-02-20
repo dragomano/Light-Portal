@@ -98,7 +98,7 @@ final class PluginHandler
 
 			app()->add($className)->addTag('plugins');
 
-			$this->manager->addListeners(PortalHook::cases(), app($className));
+			$this->manager->addHookListener(PortalHook::cases(), app($className));
 		}
 	}
 

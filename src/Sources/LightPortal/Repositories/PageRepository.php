@@ -28,15 +28,15 @@ use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\Lists\TitleList;
-use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Notify;
-use Bugo\LightPortal\Utils\RequestTrait;
-use Bugo\LightPortal\Utils\ResponseTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasCache;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
+use Bugo\LightPortal\Utils\Traits\HasResponse;
 
 use function array_filter;
 use function array_merge;
@@ -61,10 +61,10 @@ if (! defined('SMF'))
 
 final class PageRepository extends AbstractRepository
 {
-	use CacheTrait;
+	use HasCache;
 	use HasEvents;
-	use RequestTrait;
-	use ResponseTrait;
+	use HasRequest;
+	use HasResponse;
 
 	protected string $entity = 'page';
 
@@ -93,9 +93,9 @@ final class PageRepository extends AbstractRepository
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
 			array_merge($queryParams, [
-				'lang'          => User::$info['language'],
+				'lang'          => User::$me->language,
 				'fallback_lang' => Config::$language,
-				'user_id'       => User::$info['id'],
+				'user_id'       => User::$me->id,
 				'sort'          => $sort,
 				'start'         => $start,
 				'limit'         => $limit,
@@ -137,8 +137,8 @@ final class PageRepository extends AbstractRepository
 			WHERE 1=1' . (empty($queryString) ? '' : '
 				' . $queryString),
 			array_merge($queryParams, [
-				'lang'    => User::$info['language'],
-				'user_id' => User::$info['id'],
+				'lang'    => User::$me->language,
+				'user_id' => User::$me->id,
 			])
 		);
 
@@ -546,14 +546,14 @@ final class PageRepository extends AbstractRepository
 		if (empty($data))
 			return;
 
-		$isAuthor = $data['author_id'] && $data['author_id'] == User::$info['id'];
+		$isAuthor = $data['author_id'] && $data['author_id'] == User::$me->id;
 
 		$data['created']  = DateTime::relative((int) $data['created_at']);
 		$data['updated']  = DateTime::relative((int) $data['updated_at']);
-		$data['can_view'] = Permission::canViewItem($data['permissions']) || User::$info['is_admin'] || $isAuthor;
-		$data['can_edit'] = User::$info['is_admin']
-			|| Utils::$context['allow_light_portal_manage_pages_any']
-			|| (Utils::$context['allow_light_portal_manage_pages_own'] && $isAuthor);
+		$data['can_view'] = Permission::canViewItem($data['permissions']) || User::$me->is_admin || $isAuthor;
+		$data['can_edit'] = User::$me->is_admin
+			|| User::$me->allowedTo('light_portal_manage_pages_any')
+			|| (User::$me->allowedTo('light_portal_manage_pages_own') && $isAuthor);
 
 		if ($data['type'] === 'bbc') {
 			$data['content'] = Msg::un_preparsecode($data['content']);
@@ -617,7 +617,7 @@ final class PageRepository extends AbstractRepository
 		Db::$db->transaction();
 
 		// Notify page moderators about new page
-		$title = Utils::$context['lp_page']['titles'][User::$info['language']]
+		$title = Utils::$context['lp_page']['titles'][User::$me->language]
 			?? Utils::$context['lp_page']['titles'][Config::$language];
 
 		$options = [
@@ -628,7 +628,7 @@ final class PageRepository extends AbstractRepository
 			'url'       => LP_PAGE_URL . Utils::$context['lp_page']['slug']
 		];
 
-		if (empty(Utils::$context['allow_light_portal_manage_pages_any'])) {
+		if (! User::$me->allowedTo('light_portal_manage_pages_any')) {
 			Notify::send('new_page', AlertAction::PAGE_UNAPPROVED->name(), $options);
 		}
 
@@ -667,8 +667,8 @@ final class PageRepository extends AbstractRepository
 		$this->saveTags($item, 'replace');
 		$this->saveOptions($item, 'replace');
 
-		if (Utils::$context['lp_page']['author_id'] !== User::$info['id']) {
-			$title = Utils::$context['lp_page']['titles'][User::$info['language']];
+		if (Utils::$context['lp_page']['author_id'] !== User::$me->id) {
+			$title = Utils::$context['lp_page']['titles'][User::$me->language];
 			Logging::logAction('update_lp_page', [
 				'page' => Str::html('a', $title)->href(LP_PAGE_URL . Utils::$context['lp_page']['slug'])
 			]);
@@ -693,7 +693,7 @@ final class PageRepository extends AbstractRepository
 				AND pt.page_id = {int:page_id}
 			ORDER BY title',
 			[
-				'lang'          => User::$info['language'],
+				'lang'          => User::$me->language,
 				'fallback_lang' => Config::$language,
 				'status'        => Status::ACTIVE->value,
 				'page_id'       => $item,

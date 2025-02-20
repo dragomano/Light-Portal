@@ -33,7 +33,7 @@ class FetchAlerts
 				$icon = $alert['content_action'] === AlertAction::PAGE_COMMENT->name() ? 'im_off' : 'im_on';
 				$icon = $alert['content_action'] === AlertAction::PAGE_UNAPPROVED->name() ? 'news' : $icon;
 
-				if ($alert['sender_id'] !== User::$info['id']) {
+				if ($alert['sender_id'] !== User::$me->id) {
 					$alerts[$id]['icon'] = Str::html('span', ['class' => 'alert_icon main_icons ' . $icon]);
 					$alerts[$id]['text'] = Lang::getTxt(
 						'alert_' . $alert['content_type'] . '_' . $alert['content_action'],

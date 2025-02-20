@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 08.01.25
+ * @version 19.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\RandomTopics;
@@ -161,18 +161,18 @@ class RandomTopics extends Block
 			$result = Db::$db->query('', '
 				SELECT
 					mf.poster_time, mf.subject, ml.id_topic, mf.id_member, ml.id_msg,
-					COALESCE(mem.real_name, mf.poster_name) AS poster_name, ' . (User::$info['is_guest'] ? '1 AS is_read' : '
+					COALESCE(mem.real_name, mf.poster_name) AS poster_name, ' . (User::$me->is_guest ? '1 AS is_read' : '
 					COALESCE(lt.id_msg, lmr.id_msg, 0) >= ml.id_msg_modified AS is_read') . ', mf.icon
 				FROM {db_prefix}topics AS t
 					INNER JOIN {db_prefix}messages AS ml ON (t.id_last_msg = ml.id_msg)
 					INNER JOIN {db_prefix}messages AS mf ON (t.id_first_msg = mf.id_msg)
-					LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . (User::$info['is_guest'] ? '' : '
+					LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . (User::$me->is_guest ? '' : '
 					LEFT JOIN {db_prefix}log_topics AS lt ON (t.id_topic = lt.id_topic AND lt.id_member = {int:current_member})
 					LEFT JOIN {db_prefix}log_mark_read AS lmr ON (t.id_board = lmr.id_board AND lmr.id_member = {int:current_member})') . '
 				WHERE {query_wanna_see_topic_board}
 					AND t.id_topic IN ({array_int:topic_ids})',
 				[
-					'current_member' => User::$info['id'],
+					'current_member' => User::$me->id,
 					'topic_ids'      => $topicIds,
 				]
 			);
@@ -180,12 +180,12 @@ class RandomTopics extends Block
 			$result = Db::$db->query('', '
 				SELECT
 					mf.poster_time, mf.subject, ml.id_topic, mf.id_member, ml.id_msg,
-					COALESCE(mem.real_name, mf.poster_name) AS poster_name, ' . (User::$info['is_guest'] ? '1 AS is_read' : '
+					COALESCE(mem.real_name, mf.poster_name) AS poster_name, ' . (User::$me->is_guest ? '1 AS is_read' : '
 					COALESCE(lt.id_msg, lmr.id_msg, 0) >= ml.id_msg_modified AS is_read') . ', t.num_views
 				FROM {db_prefix}topics AS t
 					INNER JOIN {db_prefix}messages AS ml ON (t.id_last_msg = ml.id_msg)
 					INNER JOIN {db_prefix}messages AS mf ON (t.id_first_msg = mf.id_msg)
-					LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . (User::$info['is_guest'] ? '' : '
+					LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . (User::$me->is_guest ? '' : '
 					LEFT JOIN {db_prefix}log_topics AS lt ON (t.id_topic = lt.id_topic AND lt.id_member = {int:current_member})
 					LEFT JOIN {db_prefix}log_mark_read AS lmr ON (t.id_board = lmr.id_board AND lmr.id_member = {int:current_member})') . '
 				WHERE {query_wanna_see_topic_board}
@@ -195,7 +195,7 @@ class RandomTopics extends Block
 				ORDER BY RAND()
 				LIMIT {int:limit}',
 				[
-					'current_member' => User::$info['id'],
+					'current_member' => User::$me->id,
 					'is_approved'    => 1,
 					'exclude_boards' => $excludeBoards,
 					'include_boards' => $includeBoards,
@@ -226,7 +226,7 @@ class RandomTopics extends Block
 	{
 		$parameters = $e->args->parameters;
 
-		$randomTopics = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
+		$randomTopics = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$me->id)
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(fn() => $this->getData($parameters));
 

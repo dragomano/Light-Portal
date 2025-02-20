@@ -15,8 +15,7 @@ namespace Bugo\LightPortal\Hooks;
 use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Utils;
-
-use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\Traits\HasCache;
 
 use function urlencode;
 
@@ -25,7 +24,7 @@ use const LP_PAGE_PARAM;
 
 class BuildRoute
 {
-	use CacheTrait;
+	use HasCache;
 
 	private ?array $categories;
 

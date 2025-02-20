@@ -14,14 +14,15 @@ namespace Bugo\LightPortal\Actions;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Theme;
+use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
 
 use function array_filter;
 use function array_flip;
@@ -40,7 +41,7 @@ if (! defined('SMF'))
 
 final class Block implements ActionInterface
 {
-	use RequestTrait;
+	use HasRequest;
 
 	public function show(): void
 	{
@@ -50,7 +51,7 @@ final class Block implements ActionInterface
 		if (empty(Utils::$context['template_layers']) || empty(Utils::$context['lp_active_blocks']))
 			return;
 
-		if (empty(Utils::$context['allow_light_portal_view']) || empty($blocks = $this->getFilteredByAreas()))
+		if (empty(User::$me->allowedTo('light_portal_view')) || empty($blocks = $this->getFilteredByAreas()))
 			return;
 
 		foreach ($blocks as $item => $data) {

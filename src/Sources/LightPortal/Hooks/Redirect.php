@@ -13,15 +13,15 @@
 namespace Bugo\LightPortal\Hooks;
 
 use Bugo\Compat\Config;
-use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Setting;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 class Redirect
 {
-	use RequestTrait;
+	use HasRequest;
 
 	public function __invoke(string &$setLocation): void
 	{

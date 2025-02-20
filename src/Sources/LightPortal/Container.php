@@ -27,9 +27,16 @@ class Container
 		return self::$leagueContainer;
 	}
 
-	public static function get(string $serviceName): mixed
+	/**
+	 * @template RequestedType
+	 *
+	 * @param class-string<RequestedType>|string $service
+	 *
+	 * @return RequestedType|mixed
+	 */
+	public static function get(string $service): mixed
 	{
-		return self::getInstance()->get($serviceName);
+		return self::getInstance()->get($service);
 	}
 
 	protected static function init(): void

@@ -12,13 +12,13 @@
 
 namespace Bugo\LightPortal\Areas\Configs;
 
-use Bugo\Compat\Actions\Admin\ACP;
 use Bugo\Compat\{Config, Lang, Theme};
 use Bugo\Compat\{User, Utils};
+use Bugo\Compat\Actions\Admin\ACP;
 use Bugo\LightPortal\Enums\VarType;
-use Bugo\LightPortal\Utils\SessionTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasSession;
 
 use function asort;
 
@@ -27,7 +27,7 @@ if (! defined('SMF'))
 
 final class ExtraConfig extends AbstractConfig
 {
-	use SessionTrait;
+	use HasSession;
 
 	public function show(): void
 	{

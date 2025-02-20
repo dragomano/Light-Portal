@@ -15,8 +15,8 @@ namespace Bugo\LightPortal\Hooks;
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Action;
-use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Setting;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
 
 use function in_array;
 
@@ -29,8 +29,8 @@ if (! defined('SMF'))
 
 class CurrentAction
 {
-	use CommonChecks;
-	use RequestTrait;
+	use HasCommonChecks;
+	use HasRequest;
 
 	public function __invoke(string &$action): void
 	{

@@ -14,15 +14,15 @@ namespace Bugo\LightPortal\Utils;
 
 use Bugo\Compat\Db;
 use Bugo\Compat\User;
-use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Status;
+use Bugo\LightPortal\Utils\Traits\HasSession;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class SessionManager
 {
-	use SessionTrait;
+	use HasSession;
 
 	public function __invoke(): array
 	{
@@ -61,18 +61,18 @@ final class SessionManager
 
 	private function getActivePagesCount(): int
 	{
-		$key = Utils::$context['allow_light_portal_manage_pages_any'] ? '' : ('_u' . User::$info['id']);
+		$key = User::$me->allowedTo('light_portal_manage_pages_any') ? '' : ('_u' . User::$me->id);
 
 		if ($this->session('lp')->get('active_pages' . $key) === null) {
 			$result = Db::$db->query('', '
 				SELECT COUNT(page_id)
 				FROM {db_prefix}lp_pages
 				WHERE status = {int:status}
-					AND deleted_at = 0' . (Utils::$context['allow_light_portal_manage_pages_any'] ? '' : '
+					AND deleted_at = 0' . (User::$me->allowedTo('light_portal_manage_pages_any') ? '' : '
 					AND author_id = {int:author}'),
 				[
 					'status' => Status::ACTIVE->value,
-					'author' => User::$info['id'],
+					'author' => User::$me->id,
 				]
 			);
 
@@ -88,7 +88,7 @@ final class SessionManager
 
 	private function getMyPagesCount(): int
 	{
-		$key = Utils::$context['allow_light_portal_manage_pages_any'] ? '' : ('_u' . User::$info['id']);
+		$key = User::$me->allowedTo('light_portal_manage_pages_any') ? '' : ('_u' . User::$me->id);
 
 		if ($this->session('lp')->get('my_pages' . $key) === null) {
 			$result = Db::$db->query('', '
@@ -97,7 +97,7 @@ final class SessionManager
 				WHERE author_id = {int:author}
 					AND deleted_at = 0',
 				[
-					'author' => User::$info['id'],
+					'author' => User::$me->id,
 				]
 			);
 

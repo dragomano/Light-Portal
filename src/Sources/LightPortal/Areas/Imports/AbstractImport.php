@@ -14,10 +14,10 @@ namespace Bugo\LightPortal\Areas\Imports;
 use Bugo\Compat\Sapi;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Imports\Traits\CanInsertDataTrait;
-use Bugo\LightPortal\Areas\Imports\Traits\HasTransactions;
 use Bugo\LightPortal\Areas\Imports\Traits\HasParams;
 use Bugo\LightPortal\Areas\Imports\Traits\HasTitles;
-use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Areas\Imports\Traits\HasTransactions;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
 use SimpleXMLElement;
 
 use function ini_get;
@@ -32,7 +32,7 @@ abstract class AbstractImport implements ImportInterface
 	use HasParams;
 	use HasTitles;
 	use HasTransactions;
-	use RequestTrait;
+	use HasRequest;
 
 	public function __construct()
 	{

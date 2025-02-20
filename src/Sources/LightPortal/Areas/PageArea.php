@@ -22,7 +22,7 @@ use Bugo\Compat\Security;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Areas\Traits\AreaTrait;
+use Bugo\LightPortal\Areas\Traits\HasArea;
 use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\PortalHook;
@@ -83,7 +83,7 @@ if (! defined('SMF'))
 
 final class PageArea
 {
-	use AreaTrait;
+	use HasArea;
 
 	private array $params = [];
 
@@ -111,7 +111,7 @@ final class PageArea
 		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_pages;sa=main';
 
 		$menu = Utils::$context['admin_menu_name'];
-		$key  = Utils::$context['allow_light_portal_manage_pages_any'] && $this->request()->hasNot('u') ? 'all' : 'own';
+		$key  = User::$me->allowedTo('light_portal_manage_pages_any') && $this->request()->hasNot('u') ? 'all' : 'own';
 		$tabs = [
 			'title'       => LP_NAME,
 			'description' => implode('', [
@@ -259,9 +259,9 @@ final class PageArea
 		Language::prepareList();
 
 		if ($this->request()->has('remove')) {
-			if (Utils::$context['lp_current_page']['author_id'] !== User::$info['id']) {
+			if (Utils::$context['lp_current_page']['author_id'] !== User::$me->id) {
 				Logging::logAction('remove_lp_page', [
-					'page' => Utils::$context['lp_current_page']['titles'][User::$info['language']]
+					'page' => Utils::$context['lp_current_page']['titles'][User::$me->language]
 				]);
 			}
 
@@ -385,7 +385,7 @@ final class PageArea
 
 		if ($this->request()->has('u')) {
 			$this->browseType = 'own';
-			$this->type = ';u=' . User::$info['id'];
+			$this->type = ';u=' . User::$me->id;
 		} elseif ($this->request()->has('moderate')) {
 			$this->browseType = 'mod';
 			$this->type = ';moderate';
@@ -404,7 +404,7 @@ final class PageArea
 				Utils::$context['lp_quantities']['active_pages']
 			],
 			'own' => [
-				';u=' . User::$info['id'],
+				';u=' . User::$me->id,
 				Lang::$txt['lp_my_pages'],
 				Utils::$context['lp_quantities']['my_pages']
 			],
@@ -420,7 +420,7 @@ final class PageArea
 			]
 		];
 
-		if (! Utils::$context['allow_light_portal_manage_pages_any']) {
+		if (! User::$me->allowedTo('light_portal_manage_pages_any')) {
 			unset($titles['all'], $titles['mod'], $titles['del']);
 		}
 
@@ -559,7 +559,7 @@ final class PageArea
 			->setAttribute('pattern', LP_ALIAS_PATTERN)
 			->setAttribute(
 				'x-slug.lazy.replacement._',
-				empty(Utils::$context['lp_page']['id']) ? 'title_' . User::$info['language'] : '{}'
+				empty(Utils::$context['lp_page']['id']) ? 'title_' . User::$me->language : '{}'
 			)
 			->setValue(Utils::$context['lp_page']['slug']);
 
@@ -659,8 +659,8 @@ final class PageArea
 
 	private function checkUser(): void
 	{
-		if (Utils::$context['allow_light_portal_manage_pages_any'] === false && $this->request()->hasNot('u')) {
-			$this->response()->redirect('action=admin;area=lp_pages;u=' . User::$info['id']);
+		if (! User::$me->allowedTo('light_portal_manage_pages_any') && $this->request()->hasNot('u')) {
+			$this->response()->redirect('action=admin;area=lp_pages;u=' . User::$me->id);
 		}
 	}
 

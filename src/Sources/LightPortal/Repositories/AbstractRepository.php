@@ -12,10 +12,10 @@
 
 namespace Bugo\LightPortal\Repositories;
 
-use Bugo\LightPortal\Utils\SessionTrait;
 use Bugo\Compat\Db;
 use Bugo\Compat\Msg;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Utils\Traits\HasSession;
 
 use function implode;
 use function is_array;
@@ -26,7 +26,7 @@ if (! defined('SMF'))
 
 abstract class AbstractRepository
 {
-	use SessionTrait;
+	use HasSession;
 
 	protected string $entity;
 

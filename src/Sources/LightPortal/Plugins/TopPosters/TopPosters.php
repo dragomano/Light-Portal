@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.01.25
+ * @version 19.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\TopPosters;
@@ -116,7 +116,7 @@ class TopPosters extends Block
 	{
 		$parameters = $e->args->parameters;
 
-		$topPosters = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
+		$topPosters = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$me->id)
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(fn() => $this->getData($parameters));
 

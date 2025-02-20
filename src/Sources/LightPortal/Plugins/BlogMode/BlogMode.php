@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 31.01.25
+ * @version 19.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\BlogMode;
@@ -67,7 +67,7 @@ class BlogMode extends Plugin
 
 	public function init(): void
 	{
-		if (empty(Utils::$context['allow_light_portal_view']))
+		if (empty(User::$me->allowedTo('light_portal_view')))
 			return;
 
 		$this->applyHook(Hook::actions);
@@ -201,7 +201,7 @@ class BlogMode extends Plugin
 			'label'      => $this->txt['menu_item_title'],
 			'function'   => self::class . '::showBlogEntries#',
 			'icon'       => 'replies',
-			'enabled'    => Utils::$context['allow_light_portal_view'],
+			'enabled'    => User::$me->allowedTo('light_portal_view'),
 			'permission' => [
 				'own' => 'light_portal_manage_pages_own',
 				'any' => ['profile_view', 'light_portal_view'],

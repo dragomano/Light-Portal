@@ -40,7 +40,7 @@ class EventManager
 		$this->eventManager = new DoctrineEventManager();
 	}
 
-	public function addListeners(array $hooks, PluginInterface $listener): void
+	public function addHookListener(array $hooks, PluginInterface $listener): void
 	{
 		$hooks = array_map(fn($item) => $item->name, $hooks);
 		$hooks = array_filter($hooks, fn($item) => method_exists($listener, $item));

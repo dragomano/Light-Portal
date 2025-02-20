@@ -20,8 +20,8 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Events\HasEvents;
-use Bugo\LightPortal\Utils\SMFHookTrait;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasForumHooks;
 
 use function date;
 use function shuffle;
@@ -38,7 +38,7 @@ if (! defined('SMF'))
 final class CreditArea
 {
 	use HasEvents;
-	use SMFHookTrait;
+	use HasForumHooks;
 
 	public function __invoke(): void
 	{

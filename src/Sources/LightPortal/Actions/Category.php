@@ -28,9 +28,9 @@ use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
 use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
 use WPLake\Typed\Typed;
 
 use function array_key_exists;
@@ -44,7 +44,7 @@ if (! defined('SMF'))
 
 final class Category extends AbstractPageList
 {
-	use RequestTrait;
+	use HasRequest;
 
 	public function __construct(private readonly CardListInterface $cardList) {}
 
@@ -121,7 +121,7 @@ final class Category extends AbstractPageList
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
 			[
-				'lang'          => User::$info['language'],
+				'lang'          => User::$me->language,
 				'fallback_lang' => Config::$language,
 				'id'            => $this->request()->get('id'),
 				'status'        => Status::ACTIVE->value,
@@ -226,7 +226,7 @@ final class Category extends AbstractPageList
 			ORDER BY {raw:sort}' . ($limit ? '
 			LIMIT {int:start}, {int:limit}' : ''),
 			[
-				'lang'          => User::$info['language'],
+				'lang'          => User::$me->language,
 				'fallback_lang' => Config::$language,
 				'status'        => Status::ACTIVE->value,
 				'types'         => EntryType::withoutDrafts(),
@@ -274,7 +274,7 @@ final class Category extends AbstractPageList
 				AND p.permissions IN ({array_int:permissions})
 			LIMIT 1',
 			[
-				'lang'          => User::$info['language'],
+				'lang'          => User::$me->language,
 				'fallback_lang' => Config::$language,
 				'status'        => Status::ACTIVE->value,
 				'types'         => EntryType::withoutDrafts(),

@@ -25,7 +25,7 @@ if (! defined('SMF'))
 
 class Actions
 {
-	use CommonChecks;
+	use HasCommonChecks;
 
 	public function __invoke(array &$actions): void
 	{

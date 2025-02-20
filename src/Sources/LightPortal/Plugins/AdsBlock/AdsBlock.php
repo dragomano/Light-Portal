@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 20.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\AdsBlock;
@@ -167,6 +167,6 @@ class AdsBlock extends Block
 
 	public function preparePageData(): void
 	{
-		$this->setTemplate()->withLayer('ads_placement_page');
+		$this->useTemplate()->withLayer('ads_placement_page');
 	}
 }

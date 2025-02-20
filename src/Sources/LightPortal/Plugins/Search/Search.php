@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 14.02.25
+ * @version 20.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\Search;
@@ -67,7 +67,7 @@ class Search extends Block
 
 		Utils::$context['search_results'] = $this->getResults();
 
-		$this->setTemplate()->withSubTemplate('show_results');
+		$this->useTemplate()->withSubTemplate('show_results');
 
 		Utils::obExit();
 	}

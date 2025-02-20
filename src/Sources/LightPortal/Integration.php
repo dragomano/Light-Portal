@@ -26,16 +26,16 @@ use Bugo\LightPortal\Hooks\LoadIllegalGuestPermissions;
 use Bugo\LightPortal\Hooks\LoadPermissions;
 use Bugo\LightPortal\Hooks\LoadTheme;
 use Bugo\LightPortal\Hooks\MenuButtons;
-use Bugo\LightPortal\Hooks\RouteParsers;
 use Bugo\LightPortal\Hooks\PermissionsList;
 use Bugo\LightPortal\Hooks\PreCssOutput;
 use Bugo\LightPortal\Hooks\PreLoad;
 use Bugo\LightPortal\Hooks\ProfileAreas;
 use Bugo\LightPortal\Hooks\ProfilePopup;
 use Bugo\LightPortal\Hooks\Redirect;
+use Bugo\LightPortal\Hooks\RouteParsers;
 use Bugo\LightPortal\Hooks\UserInfo;
 use Bugo\LightPortal\Hooks\WhosOnline;
-use Bugo\LightPortal\Utils\SMFHookTrait;
+use Bugo\LightPortal\Utils\Traits\HasForumHooks;
 
 use function str_starts_with;
 
@@ -46,7 +46,7 @@ if (! defined('SMF'))
 
 final class Integration
 {
-	use SMFHookTrait;
+	use HasForumHooks;
 
 	public function __invoke(): void
 	{

@@ -35,12 +35,12 @@ use Bugo\LightPortal\Areas\Imports\TagImport;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Events\HasEvents;
-use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\SMFHookTrait;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasCache;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
+use Bugo\LightPortal\Utils\Traits\HasForumHooks;
 
 use function array_keys;
 use function array_merge;
@@ -60,10 +60,10 @@ if (! defined('SMF'))
 
 final class ConfigArea
 {
-	use CacheTrait;
+	use HasCache;
 	use HasEvents;
-	use RequestTrait;
-	use SMFHookTrait;
+	use HasRequest;
+	use HasForumHooks;
 
 	public function __invoke(): void
 	{
@@ -383,7 +383,7 @@ final class ConfigArea
 
 	private function getPagesCount(): int
 	{
-		return $this->request()->has('u') && ! Utils::$context['allow_light_portal_manage_pages_any']
+		return $this->request()->has('u') && ! User::$me->allowedTo('light_portal_manage_pages_any')
 			? Utils::$context['lp_quantities']['my_pages']
 			: Utils::$context['lp_quantities']['active_pages'];
 	}

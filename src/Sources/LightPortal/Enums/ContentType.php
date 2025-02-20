@@ -36,7 +36,7 @@ enum ContentType
 			self::PHP->name()  => Lang::$txt['lp_php']['title'],
 		];
 
-		return User::$info['is_admin'] ? $types : array_slice($types, 0, 2);
+		return User::$me->is_admin ? $types : array_slice($types, 0, 2);
 	}
 
 	public static function icon(string $type): string

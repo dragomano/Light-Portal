@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.02.25
+ * @version 20.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
@@ -18,7 +18,7 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Security;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Areas\Traits\AreaTrait;
+use Bugo\LightPortal\Areas\Traits\HasArea;
 use Bugo\LightPortal\Enums\PluginType;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Repositories\PluginRepository;
@@ -28,10 +28,10 @@ use Bugo\LightPortal\UI\Fields\SelectField;
 use Bugo\LightPortal\UI\Fields\TextField;
 use Bugo\LightPortal\UI\Fields\UrlField;
 use Bugo\LightPortal\UI\Partials\IconSelect;
-use Bugo\LightPortal\Utils\HasTemplateAware;
 use Bugo\LightPortal\Utils\Language;
-use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasTemplate;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
 
 use function array_filter;
 use function array_keys;
@@ -49,9 +49,9 @@ if (! defined('LP_NAME'))
 
 class Handler
 {
-	use AreaTrait;
-	use HasTemplateAware;
-	use RequestTrait;
+	use HasArea;
+	use HasTemplate;
+	use HasRequest;
 
 	private const PLUGIN_NAME = 'MyNewAddon';
 
@@ -85,7 +85,7 @@ class Handler
 		$this->validateData();
 		$this->prepareFormFields();
 		$this->setData();
-		$this->setTemplate()->withSubTemplate('plugin_post');
+		$this->useTemplate()->withSubTemplate('plugin_post');
 	}
 
 	public function prepareForumLanguages(): void
@@ -104,11 +104,11 @@ class Handler
 			return;
 		}
 
-		$userLang = Language::getNameFromLocale(User::$info['language']);
+		$userLang = Language::getNameFromLocale(User::$me->language);
 
 		Utils::$context['lp_languages'] = array_merge([
 			'english' => $temp[Language::getFallbackValue()],
-			$userLang => $temp[User::$info['language']],
+			$userLang => $temp[User::$me->language],
 			$baseLang => $temp[Config::$language],
 		]);
 	}
@@ -124,10 +124,10 @@ class Handler
 			'author'     => $postData['author']
 								?? Utils::$context['lp_plugin']['author']
 								?? Utils::$context['lp_plugin_maker_plugin']['author']
-								?? User::$info['name'],
+								?? User::$me->name,
 			'email'      => $postData['email'] ?? Utils::$context['lp_plugin']['email']
 								?? Utils::$context['lp_plugin_maker_plugin']['email']
-								?? User::$info['email'],
+								?? User::$me->email,
 			'site'       => $postData['site']
 								?? Utils::$context['lp_plugin']['site']
 								?? Utils::$context['lp_plugin_maker_plugin']['site']

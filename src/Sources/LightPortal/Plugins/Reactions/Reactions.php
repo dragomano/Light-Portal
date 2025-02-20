@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 14.02.25
+ * @version 20.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\Reactions;
@@ -105,18 +105,18 @@ class Reactions extends Plugin
 			if (isset($json['reaction'])) {
 				if (isset($json['comment'])) {
 					$commentReactions = $this->getReactions($json['comment'], 'comment');
-					$commentReactions[User::$info['id']] = $json['reaction'];
+					$commentReactions[User::$me->id] = $json['reaction'];
 					$this->addReaction($json['comment'], json_encode($commentReactions), 'comment');
 					$this->cache()->forget('page_' . $data['slug'] . '_comments');
 				} else {
-					$reactions[User::$info['id']] = $json['reaction'];
+					$reactions[User::$me->id] = $json['reaction'];
 					$this->addReaction($data['id'], json_encode($reactions));
 					$this->cache()->forget('page_' . $data['slug']);
 				}
 			}
 		}
 
-		$this->setTemplate();
+		$this->useTemplate();
 	}
 
 	public function afterPageContent(): void
@@ -134,7 +134,7 @@ class Reactions extends Plugin
 
 		$comment = $e->args->comment;
 
-		$comment['can_react'] = $comment['poster']['id'] !== User::$info['id'];
+		$comment['can_react'] = $comment['poster']['id'] !== User::$me->id;
 		$comment[$this->name] = json_decode($comment['params'][$this->name] ?? '', true) ?? [];
 		$comment['prepared_reactions'] = $this->getReactionsWithCount($comment[$this->name]);
 		$comment['prepared_buttons'] = json_decode($comment['prepared_reactions'], true);

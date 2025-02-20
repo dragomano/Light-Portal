@@ -18,11 +18,11 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Lists\IconList;
-use Bugo\LightPortal\Utils\CacheTrait;
-use Bugo\LightPortal\Utils\RequestTrait;
-use Bugo\LightPortal\Utils\ResponseTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasCache;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
+use Bugo\LightPortal\Utils\Traits\HasResponse;
 
 use function array_filter;
 use function sprintf;
@@ -33,12 +33,12 @@ use function trim;
 if (! defined('SMF'))
 	die('No direct access...');
 
-trait QueryTrait
+trait HasQuery
 {
-	use CacheTrait;
+	use HasCache;
 	use HasEvents;
-	use RequestTrait;
-	use ResponseTrait;
+	use HasRequest;
+	use HasResponse;
 
 	private function prepareIconList(): void
 	{

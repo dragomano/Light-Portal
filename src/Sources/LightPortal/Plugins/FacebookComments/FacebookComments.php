@@ -18,16 +18,16 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Utils\HasThemesAware;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasThemes;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
 class FacebookComments extends Plugin
 {
-	use HasThemesAware;
+	use HasThemes;
 
 	public string $type = 'comment';
 

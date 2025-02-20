@@ -38,7 +38,7 @@ final class TagList implements ListInterface
 			WHERE tag.status = {int:status}
 			ORDER BY title',
 			[
-				'lang'          => User::$info['language'],
+				'lang'          => User::$me->language,
 				'fallback_lang' => Config::$language,
 				'status'        => Status::ACTIVE->value,
 			]

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 12.02.25
+ * @version 19.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\TinySlider;
@@ -271,7 +271,7 @@ class TinySlider extends Block
 	{
 		[$id, $parameters] = [$e->args->id, $e->args->parameters];
 
-		$html = $this->cache($this->name . '_addon_b' . $id . '_' . User::$info['language'])
+		$html = $this->cache($this->name . '_addon_b' . $id . '_' . User::$me->language)
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(fn() => $this->getData($id, $parameters));
 

@@ -39,8 +39,8 @@ class Notify
 				'task_class' => '\\' . Notifier::class,
 				'task_data'  => Utils::$smcFunc['json_encode']([
 					'time'              => $options['time'],
-					'sender_id'	        => User::$info['id'],
-					'sender_name'       => User::$info['name'],
+					'sender_id'	        => User::$me->id,
+					'sender_name'       => User::$me->name,
 					'content_author_id' => $options['author_id'],
 					'content_type'      => $type,
 					'content_id'        => $options['item'],
@@ -58,11 +58,11 @@ class Notify
 
 	protected static function getUserGender(): string
 	{
-		if (empty(User::$profiles[User::$info['id']]))
+		if (empty(User::$profiles[User::$me->id]))
 			return 'male';
 
-		return isset(User::$profiles[User::$info['id']]['options']['cust_gender'])
-			&& User::$profiles[User::$info['id']]['options']['cust_gender'] === '{gender_2}'
+		return isset(User::$profiles[User::$me->id]['options']['cust_gender'])
+			&& User::$profiles[User::$me->id]['options']['cust_gender'] === '{gender_2}'
 				? 'female' : 'male';
 	}
 }

@@ -10,7 +10,7 @@
  * @version 2.9
  */
 
-namespace Bugo\LightPortal\Utils;
+namespace Bugo\LightPortal\Utils\Traits;
 
 use Bugo\Compat\Utils;
 
@@ -20,11 +20,11 @@ use function is_file;
 if (! defined('SMF'))
 	die('No direct access...');
 
-trait HasTemplateAware
+trait HasTemplate
 {
-	use HasReflectionAware;
+	use HasReflection;
 
-	public function setTemplate(string $name = 'template'): self
+	public function useTemplate(string $name = 'template'): self
 	{
 		$path = dirname($this->getCalledClass()->getFileName()) . DIRECTORY_SEPARATOR . $name . '.php';
 
@@ -51,7 +51,7 @@ trait HasTemplateAware
 
 	public function getFromTemplate(string $function, ...$params): string
 	{
-		$this->setTemplate();
+		$this->useTemplate();
 
 		return $function(...$params);
 	}

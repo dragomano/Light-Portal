@@ -17,7 +17,7 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Actions\FrontPage;
-use Bugo\LightPortal\Utils\HasBreadcrumbs;
+use Bugo\LightPortal\Utils\Traits\HasBreadcrumbs;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

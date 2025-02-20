@@ -10,7 +10,9 @@
  * @version 2.9
  */
 
-namespace Bugo\LightPortal\Utils;
+namespace Bugo\LightPortal\Utils\Traits;
+
+use Bugo\LightPortal\Utils\Breadcrumbs;
 
 trait HasBreadcrumbs
 {

@@ -10,9 +10,13 @@
  * @version 2.9
  */
 
-namespace Bugo\LightPortal\Utils;
+namespace Bugo\LightPortal\Utils\Traits;
 
-trait RequestTrait
+use Bugo\LightPortal\Utils\File;
+use Bugo\LightPortal\Utils\Post;
+use Bugo\LightPortal\Utils\Request;
+
+trait HasRequest
 {
 	public function request(): Request
 	{

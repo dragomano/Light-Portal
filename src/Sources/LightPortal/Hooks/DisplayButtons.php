@@ -27,7 +27,7 @@ class DisplayButtons
 {
 	public function __invoke(): void
 	{
-		if (empty(User::$info['is_admin']) || Setting::isFrontpageMode('chosen_topics') === false)
+		if (empty(User::$me->is_admin) || Setting::isFrontpageMode('chosen_topics') === false)
 			return;
 
 		Utils::$context['normal_buttons']['lp_promote'] = [

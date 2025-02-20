@@ -14,7 +14,7 @@ namespace Bugo\LightPortal\UI\Tables;
 
 use Bugo\Bricks\Tables\Row;
 use Bugo\Compat\Lang;
-use Bugo\Compat\Utils;
+use Bugo\Compat\User;
 use Bugo\LightPortal\Utils\Request;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
@@ -29,7 +29,7 @@ class PageButtonsRow extends Row
 			'value' => app(Request::class)->has('deleted') ? 'delete_forever' : 'delete'
 		]);
 
-		$toggle = Utils::$context['allow_light_portal_approve_pages']
+		$toggle = User::$me->allowedTo('light_portal_approve_pages')
 			? Str::html('option', ['value' => 'toggle'])
 				->setText(Lang::$txt['lp_action_toggle'])
 			: '';

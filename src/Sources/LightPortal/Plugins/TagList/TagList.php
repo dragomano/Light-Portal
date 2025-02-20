@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 12.02.25
+ * @version 19.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\TagList;
@@ -120,11 +120,11 @@ class TagList extends Block
 		$asCloud = Typed::boolExtended($parameters['as_cloud']);
 
 		if ($source) {
-			$tagList = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
+			$tagList = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$me->id)
 				->setLifeTime($e->args->cacheTime)
 				->setFallback(fn() => app(Tag::class)->getAll(0, 0, $sorting === 'name' ? 'title' : 'frequency DESC'));
 		} else {
-			$tagList = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
+			$tagList = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$me->id)
 				->setLifeTime($e->args->cacheTime)
 				->setFallback(fn() => $this->getAllTopicKeywords($sorting === 'name' ? 'ok.name' : 'frequency DESC'));
 		}

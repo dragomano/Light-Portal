@@ -2,6 +2,7 @@
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
+use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Utils\Icon;
 
@@ -30,7 +31,7 @@ function show_user_info($data): void
 		</li>';
 	}
 
-	if (Utils::$context['allow_light_portal_manage_pages_own']) {
+	if (User::$me->allowedTo('light_portal_manage_pages_own')) {
 		echo '
 		<li class="lefttext">
 			<hr>
@@ -40,7 +41,7 @@ function show_user_info($data): void
 		</li>';
 	}
 
-	if (Utils::$context['allow_light_portal_manage_pages_any']) {
+	if (User::$me->allowedTo('light_portal_manage_pages_any')) {
 		echo '
 		<li class="lefttext">
 			<hr>

@@ -20,9 +20,9 @@ use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\DateTime;
-use Bugo\LightPortal\Utils\HasBreadcrumbs;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasBreadcrumbs;
 
 use function date;
 
@@ -128,7 +128,7 @@ abstract class AbstractPageList implements PageListInterface
 
 	private function isNew(array $row): bool
 	{
-		return User::$info['last_login'] < $row['date'] && (int) $row['author_id'] !== User::$info['id'];
+		return User::$me->last_login < $row['date'] && (int) $row['author_id'] !== User::$me->id;
 	}
 
 	private function getImage(array $row): string
@@ -148,10 +148,10 @@ abstract class AbstractPageList implements PageListInterface
 
 	private function canEdit(array $row): bool
 	{
-		if (User::$info['is_admin'])
+		if (User::$me->is_admin)
 			return true;
 
-		return Utils::$context['allow_light_portal_manage_pages_own'] && (int) $row['author_id'] === User::$info['id'];
+		return User::$me->allowedTo('light_portal_manage_pages_own') && (int) $row['author_id'] === User::$me->id;
 	}
 
 	private function getEditLink(array $row): string

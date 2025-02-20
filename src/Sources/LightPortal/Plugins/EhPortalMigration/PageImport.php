@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 31.01.25
+ * @version 19.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\EhPortalMigration;
@@ -96,7 +96,7 @@ class PageImport extends AbstractCustomPageImport
 				'type'       => $row['type'],
 				'status'     => $row['status'],
 				'num_views'  => $row['views'],
-				'author_id'  => User::$info['id'],
+				'author_id'  => User::$me->id,
 				'created_at' => DateTime::relative(time()),
 				'title'      => $row['title'],
 			];
@@ -139,7 +139,7 @@ class PageImport extends AbstractCustomPageImport
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['id_page']] = [
 				'page_id'      => $row['id_page'],
-				'author_id'    => User::$info['id'],
+				'author_id'    => User::$me->id,
 				'slug'         => $row['namespace'] ?: ('page_' . $row['id_page']),
 				'description'  => '',
 				'content'      => $row['body'],
