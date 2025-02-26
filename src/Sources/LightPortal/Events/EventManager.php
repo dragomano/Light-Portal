@@ -50,7 +50,7 @@ class EventManager
 
 	public function dispatch(PortalHook $hook, array $params = []): void
 	{
-		$args = new EventArgs($params);
+		$args = $hook->createArgs($params);
 
 		/* @var PluginInterface $listener */
 		foreach ($this->getAll($hook->name) as $listener) {
