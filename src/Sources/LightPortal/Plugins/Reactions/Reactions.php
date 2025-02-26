@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 20.02.25
+ * @version 25.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\Reactions;
@@ -106,12 +106,10 @@ class Reactions extends Plugin
 				if (isset($json['comment'])) {
 					$commentReactions = $this->getReactions($json['comment'], 'comment');
 					$commentReactions[User::$me->id] = $json['reaction'];
-					$this->addReaction($json['comment'], json_encode($commentReactions), 'comment');
-					$this->cache()->forget('page_' . $data['slug'] . '_comments');
+					$this->addReaction($json['comment'], json_encode($commentReactions), $data['slug'], 'comment');
 				} else {
 					$reactions[User::$me->id] = $json['reaction'];
-					$this->addReaction($data['id'], json_encode($reactions));
-					$this->cache()->forget('page_' . $data['slug']);
+					$this->addReaction($data['id'], json_encode($reactions), $data['slug']);
 				}
 			}
 		}
@@ -211,7 +209,7 @@ class Reactions extends Plugin
 		return json_decode($reactions ?? '', true) ?? [];
 	}
 
-	private function addReaction(int $id, string $value, string $entity = 'page'): void
+	private function addReaction(int $id, string $value, string $slug, string $entity = 'page'): void
 	{
 		Db::$db->insert('replace',
 			'{db_prefix}lp_params',
@@ -229,6 +227,8 @@ class Reactions extends Plugin
 			],
 			['item_id', 'type', 'name']
 		);
+
+		$this->cache()->forget('page_' . $slug . ($entity === 'comment' ? '_comments' : ''));
 
 		$this->response()->exit(['success' => true]);
 	}
