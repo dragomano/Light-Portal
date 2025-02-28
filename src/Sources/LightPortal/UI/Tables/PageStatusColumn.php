@@ -13,7 +13,7 @@
 namespace Bugo\LightPortal\UI\Tables;
 
 use Bugo\Compat\Lang;
-use Bugo\Compat\Utils;
+use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Utils\Str;
 
@@ -24,7 +24,7 @@ class PageStatusColumn extends StatusColumn
 		return parent::make($name, $title)
 			->setData(fn($entry) => $entry['status'] >= count(Status::cases()) - 1
 				? Lang::$txt['lp_page_status_set'][$entry['status']] ?? Lang::$txt['no']
-				: (Utils::$context['allow_light_portal_approve_pages']
+				: (User::$me->allowedTo('light_portal_approve_pages')
 					? Str::html('div', [
 							'data-id' => $entry['id'],
 							'x-data'  => '{ status: ' . ($entry['status'] === $status ? 'true' : 'false') . ' }',

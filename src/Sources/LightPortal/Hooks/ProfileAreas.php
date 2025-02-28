@@ -15,14 +15,14 @@ namespace Bugo\LightPortal\Hooks;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 class ProfileAreas
 {
-	use RequestTrait;
+	use HasRequest;
 
 	public function __invoke(array &$areas): void
 	{

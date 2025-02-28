@@ -1,0 +1,118 @@
+<?php declare(strict_types=1);
+
+/**
+ * @package Light Portal
+ * @link https://dragomano.ru/mods/light-portal
+ * @author Bugo <bugo@dragomano.ru>
+ * @copyright 2019-2025 Bugo
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
+ *
+ * @version 2.9
+ */
+
+namespace Bugo\LightPortal\Routes;
+
+use Bugo\Compat\Routable;
+use Bugo\LightPortal\Utils\Cache;
+
+use function array_search;
+use function array_shift;
+use function count;
+use function in_array;
+use function is_numeric;
+
+class Portal implements Routable
+{
+	public static function getDataFromCache(string $type = 'categories'): array
+	{
+		return (new Cache())->get('lp_sef_' . $type) ?: [];
+	}
+
+	public static function getCachedName(string $id, string $type = 'categories'): string
+	{
+		return self::getDataFromCache($type)[(int) $id] ?? $id;
+	}
+
+	public static function getEntryId(string $id, string $type = 'categories'): string
+	{
+		return (string) array_search($id, self::getDataFromCache($type), true) ?: $id;
+	}
+
+	public static function buildRoute(array $params): array
+	{
+		$route = [];
+
+		if (count($params) > 1) {
+			$route[] = $params['action'];
+		}
+
+		unset($params['action']);
+
+		if (isset($params['sa'])) {
+			$route[] = $params['sa'];
+
+			if ($params['sa'] === 'promote' && isset($params['t'])) {
+				$route[] = $params['t'];
+
+				unset($params['t'], $params['start']);
+			} elseif (isset($params['id'])) {
+				$route[] = self::getCachedName($params['id'], $params['sa']);
+
+				unset($params['id']);
+			}
+
+			unset($params['sa']);
+		}
+
+		if (isset($params['start'])) {
+			$route[] = $params['start'];
+		}
+
+		unset($params['start']);
+
+		if ($route === ['portal', '0']) {
+			$route = [];
+		}
+
+		return ['route' => $route, 'params' => $params];
+	}
+
+	public static function parseRoute(array $route, array $params = []): array
+	{
+		if (empty($route)) {
+			$params['action'] = 'portal';
+
+			return $params;
+		}
+
+		$params['action'] = array_shift($route);
+
+		if (count($route) === 1 && is_numeric($route[0])) {
+			$params['start'] = array_shift($route);
+
+			return $params;
+		}
+
+		if (! empty($route)) {
+			$params['sa'] = array_shift($route);
+
+			if (! empty($route)) {
+				if ($params['sa'] === 'promote') {
+					$params['t'] = array_shift($route);
+				} elseif (in_array($params['sa'], ['categories', 'tags'])) {
+					if (is_numeric($route[0])) {
+						$params['start'] = array_shift($route);
+					} else {
+						$params['id'] = self::getEntryId(array_shift($route), $params['sa']);
+
+						if (! empty($route) && is_numeric($route[0])) {
+							$params['start'] = array_shift($route);
+						}
+					}
+				}
+			}
+		}
+
+		return $params;
+	}
+}

@@ -1,8 +1,6 @@
+@extends('partials.base')
 
-@empty ($context['lp_active_blocks'])
-<div class="col-xs">
-@endempty
-
+@section('content')
 	@set($i = 0)
 	<div class="lp_frontpage_articles article_alt3_view">
 		@include('partials.pagination')
@@ -79,7 +77,4 @@
 
 		@include('partials.pagination', ['position' => 'bottom'])
 	</div>
-
-@empty ($context['lp_active_blocks'])
-</div>
-@endempty
+@endsection

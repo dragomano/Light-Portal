@@ -22,6 +22,7 @@ use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasBreadcrumbs;
 
 use function date;
 
@@ -33,9 +34,13 @@ if (! defined('SMF'))
 
 abstract class AbstractPageList implements PageListInterface
 {
+	use HasBreadcrumbs;
+
 	abstract public function showAll();
 
 	abstract public function getAll(int $start, int $limit, string $sort): array;
+
+	abstract public function getTotalPages(): int;
 
 	protected function getPreparedResults(array $rows = []): array
 	{
@@ -78,7 +83,7 @@ abstract class AbstractPageList implements PageListInterface
 
 	private function getSectionData(array $row): array
 	{
-		if (empty($categories = app(CategoryList::class)))
+		if (empty($categories = app(CategoryList::class)()))
 			return [];
 
 		if (isset($row['category_id'])) {
@@ -123,7 +128,7 @@ abstract class AbstractPageList implements PageListInterface
 
 	private function isNew(array $row): bool
 	{
-		return User::$info['last_login'] < $row['date'] && (int) $row['author_id'] !== User::$info['id'];
+		return User::$me->last_login < $row['date'] && (int) $row['author_id'] !== User::$me->id;
 	}
 
 	private function getImage(array $row): string
@@ -143,10 +148,10 @@ abstract class AbstractPageList implements PageListInterface
 
 	private function canEdit(array $row): bool
 	{
-		if (User::$info['is_admin'])
+		if (User::$me->is_admin)
 			return true;
 
-		return Utils::$context['allow_light_portal_manage_pages_own'] && (int) $row['author_id'] === User::$info['id'];
+		return User::$me->allowedTo('light_portal_manage_pages_own') && (int) $row['author_id'] === User::$me->id;
 	}
 
 	private function getEditLink(array $row): string

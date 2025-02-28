@@ -18,8 +18,6 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Parsers\BBCodeParser;
 use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\EventArgs;
-use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
@@ -43,7 +41,7 @@ class TopicArticle extends AbstractArticle
 		$this->sorting = Setting::get('lp_frontpage_article_sorting', 'int', 0);
 
 		$this->params = [
-			'current_member'    => User::$info['id'],
+			'current_member'    => User::$me->id,
 			'is_approved'       => 1,
 			'id_poll'           => 0,
 			'id_redirect_topic' => 0,
@@ -58,15 +56,15 @@ class TopicArticle extends AbstractArticle
 			'date DESC',
 		];
 
-		app(EventManagerFactory::class)()->dispatch(
+		$this->events()->dispatch(
 			PortalHook::frontTopics,
-			new EventArgs([
+			[
 				'columns' => &$this->columns,
 				'tables'  => &$this->tables,
 				'params'  => &$this->params,
 				'wheres'  => &$this->wheres,
-				'orders'  => &$this->orders
-			])
+				'orders'  => &$this->orders,
+			]
 		);
 	}
 
@@ -97,7 +95,7 @@ class TopicArticle extends AbstractArticle
 					ORDER BY id_attach
 					LIMIT 1
 				) AS id_attach, ') . (
-					User::$info['is_guest']
+					User::$me->is_guest
 						? '0'
 						: 'COALESCE(lt.id_msg, lmr.id_msg, -1) + 1'
 				) . ' AS new_from, ml.id_msg_modified' . (empty($this->columns) ? '' : ',
@@ -107,7 +105,7 @@ class TopicArticle extends AbstractArticle
 				INNER JOIN {db_prefix}messages AS mf ON (t.id_first_msg = mf.id_msg)
 				INNER JOIN {db_prefix}boards AS b ON (t.id_board = b.id_board)
 				LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . (
-					User::$info['is_guest'] ? '' : '
+					User::$me->is_guest ? '' : '
 				LEFT JOIN {db_prefix}log_topics AS lt ON (
 					t.id_topic = lt.id_topic AND lt.id_member = {int:current_member}
 				)
@@ -150,10 +148,7 @@ class TopicArticle extends AbstractArticle
 
 			$this->prepareTeaser($topics, $row);
 
-			app(EventManagerFactory::class)()->dispatch(
-				PortalHook::frontTopicsRow,
-				new EventArgs(['articles' => &$topics, 'row' => $row])
-			);
+			$this->events()->dispatch(PortalHook::frontTopicsRow, ['articles' => &$topics, 'row' => $row]);
 		}
 
 		Db::$db->free_result($result);
@@ -246,7 +241,7 @@ class TopicArticle extends AbstractArticle
 
 	private function isNew(array $row): bool
 	{
-		return $row['new_from'] <= $row['id_msg_modified'] && (int) $row['last_poster_id'] !== User::$info['id'];
+		return $row['new_from'] <= $row['id_msg_modified'] && (int) $row['last_poster_id'] !== User::$me->id;
 	}
 
 	private function getViewsData(array $row): array
@@ -281,7 +276,7 @@ class TopicArticle extends AbstractArticle
 
 	private function canEdit(array $row): bool
 	{
-		return User::$info['is_admin'] || (User::$info['id'] && (int) $row['id_member'] === User::$info['id']);
+		return User::$me->is_admin || (User::$me->id && (int) $row['id_member'] === User::$me->id);
 	}
 
 	private function getEditLink(array $row): string

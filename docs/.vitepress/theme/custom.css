@@ -62,10 +62,6 @@ html[lang="ru"] {
   display: none;
 }
 
-.box .icon {
-  text-shadow: 4px 4px 16px #000000;
-}
-
 img.VPImage {
   filter: drop-shadow(5px 5px 10px #000000);
 }

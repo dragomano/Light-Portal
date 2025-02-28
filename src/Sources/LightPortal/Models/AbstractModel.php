@@ -23,7 +23,7 @@ use function ucwords;
 if (! defined('SMF'))
 	die('No direct access...');
 
-abstract class AbstractModel extends stdClass
+abstract class AbstractModel extends stdClass implements ModelInterface
 {
 	public function __set(string $name, mixed $value)
 	{
@@ -44,8 +44,6 @@ abstract class AbstractModel extends stdClass
 
 		return $result;
 	}
-
-	abstract protected static function getTableName(): string;
 
 	private function underscoreToCamelCase(string $source): string
 	{

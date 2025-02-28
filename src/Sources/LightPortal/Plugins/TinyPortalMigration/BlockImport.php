@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 31.01.25
+ * @version 11.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\TinyPortalMigration;
@@ -20,9 +20,11 @@ use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Imports\AbstractCustomBlockImport;
+use Bugo\LightPortal\Enums\ContentClass;
 use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\Placement;
+use Bugo\LightPortal\Enums\TitleClass;
 use Bugo\LightPortal\UI\Tables\CheckboxColumn;
 use Bugo\LightPortal\UI\Tables\ImportButtonsRow;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
@@ -151,8 +153,8 @@ class BlockImport extends AbstractCustomBlockImport
 				'placement'     => $this->getPlacement($row['bar']),
 				'permissions'   => $this->getBlockPermission($row),
 				'status'        => 0,
-				'title_class'   => array_key_first(Utils::$context['lp_all_title_classes']),
-				'content_class' => array_key_first(Utils::$context['lp_all_content_classes']),
+				'title_class'   => TitleClass::first(),
+				'content_class' => ContentClass::first(),
 			];
 		}
 

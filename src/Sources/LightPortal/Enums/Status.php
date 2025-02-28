@@ -12,11 +12,11 @@
 
 namespace Bugo\LightPortal\Enums;
 
-use Bugo\LightPortal\Enums\Traits\HasValuesTrait;
+use Bugo\LightPortal\Enums\Traits\HasValues;
 
 enum Status: int
 {
-	use HasValuesTrait;
+	use HasValues;
 
 	case INACTIVE = 0;
 	case ACTIVE = 1;

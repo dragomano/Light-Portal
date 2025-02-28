@@ -30,13 +30,13 @@ final class PageSelect extends AbstractPartial
 
 		$params['id'] ??= 'lp_frontpage_pages';
 		$params['value'] ??= Config::$modSettings['lp_frontpage_pages'] ?? '';
-		$params['data'] ??= app(PageList::class);
+		$params['data'] ??= app(PageList::class)();
 
 		$data = [];
 		foreach ($params['data'] as $id => $page) {
 			$data[] = [
 				'label' => $page['title'],
-				'value' => $id
+				'value' => $id,
 			];
 		}
 

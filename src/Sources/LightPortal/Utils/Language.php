@@ -42,6 +42,11 @@ final class Language
 		return $locale;
 	}
 
+	public static function getCurrent(): string
+	{
+		return empty(Config::$modSettings['userLanguage']) ? Config::$language : User::$me->language;
+	}
+
 	public static function prepareList(): void
 	{
 		$temp = Lang::get();
@@ -55,8 +60,8 @@ final class Language
 		}
 
 		Utils::$context['lp_languages'] = array_merge([
-			User::$info['language'] => $temp[User::$info['language']],
-			Config::$language => $temp[Config::$language],
+			User::$me->language => $temp[User::$me->language],
+			Config::$language   => $temp[Config::$language],
 		], $temp);
 	}
 }

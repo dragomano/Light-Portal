@@ -14,8 +14,7 @@ namespace Bugo\LightPortal\Lists;
 
 use Bugo\FontAwesome\Enums\Icon as IconEnum;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\EventArgs;
-use Bugo\LightPortal\Events\EventManagerFactory;
+use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Utils\Icon;
 
 use function array_map;
@@ -25,6 +24,8 @@ if (! defined('SMF'))
 
 final class IconList implements ListInterface
 {
+	use HasEvents;
+
 	private string $prefix = 'fa-solid fa-';
 
 	private array $set = [
@@ -104,10 +105,7 @@ final class IconList implements ListInterface
 		$set['big_image'] = 'fa-regular fa-image fa-5x';
 
 		// Plugin authors can extend the icon set
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::changeIconSet,
-			new EventArgs(['set' => &$set])
-		);
+		$this->events()->dispatch(PortalHook::changeIconSet, ['set' => &$set]);
 
 		return array_map(static fn($icon): string => Icon::parse($icon), $set);
 	}

@@ -9,7 +9,7 @@ const sidebar = {
   useTitleFromFrontmatter: true,
   useFolderTitleFromIndexFile: true,
   sortMenusByFrontmatterOrder: true,
-  excludeFiles: ['changelog.md', 'examples.md'],
+  excludePattern: ['changelog.md', 'examples.md'],
   manualSortFileNameByPriority: [
     'intro.md',
     'getting-started',
@@ -70,7 +70,7 @@ export default defineConfig({
     },
     sidebar: generateSidebar({
       ...sidebar,
-      excludeFolders: languages,
+      excludePattern: languages,
     }),
     socialLinks: [{ icon: 'github', link: 'https://github.com/dragomano/Light-Portal' }],
   },

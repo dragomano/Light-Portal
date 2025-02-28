@@ -17,8 +17,8 @@ use Bugo\LightPortal\Actions\ActionInterface;
 use Bugo\LightPortal\Actions\BoardIndex;
 use Bugo\LightPortal\Actions\FrontPage;
 use Bugo\LightPortal\Actions\Page;
-use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Setting;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
 
 use function call_user_func;
 
@@ -29,7 +29,7 @@ if (! defined('SMF'))
 
 class DefaultAction
 {
-	use RequestTrait;
+	use HasRequest;
 
 	public function __invoke(): mixed
 	{

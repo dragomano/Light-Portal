@@ -13,10 +13,11 @@ namespace Bugo\LightPortal\Areas\Imports;
 
 use Bugo\Compat\Sapi;
 use Bugo\LightPortal\Areas\Imports\Traits\CanInsertDataTrait;
-use Bugo\LightPortal\Areas\Imports\Traits\WithParamsTrait;
-use Bugo\LightPortal\Areas\Imports\Traits\WithTitlesTrait;
-use Bugo\LightPortal\Areas\Imports\Traits\UseTransactionsTrait;
-use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Areas\Imports\Traits\HasParams;
+use Bugo\LightPortal\Areas\Imports\Traits\HasTitles;
+use Bugo\LightPortal\Areas\Imports\Traits\HasTransactions;
+use Bugo\LightPortal\Events\HasEvents;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -24,10 +25,11 @@ if (! defined('SMF'))
 abstract class AbstractCustomImport implements ImportInterface, CustomImportInterface
 {
 	use CanInsertDataTrait;
-	use RequestTrait;
-	use UseTransactionsTrait;
-	use WithParamsTrait;
-	use WithTitlesTrait;
+	use HasEvents;
+	use HasParams;
+	use HasTitles;
+	use HasTransactions;
+	use HasRequest;
 
 	abstract protected function getItems(array $ids): array;
 

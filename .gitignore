@@ -30,7 +30,6 @@ src/Themes/default/scripts/light_portal/*
 **/Plugins/Jodit/*
 **/Plugins/MediaBlock/*
 **/Plugins/PageScroll/*
-**/Plugins/YandexTurbo/*
 
 !**/Plugins/**/index.php
 !**/Plugins/**/langs

@@ -14,21 +14,19 @@ namespace Bugo\LightPortal\Hooks;
 
 use Bugo\Compat\Lang;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\EventArgs;
-use Bugo\LightPortal\Events\EventManagerFactory;
+use Bugo\LightPortal\Events\HasEvents;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 class DownloadRequest
 {
+	use HasEvents;
+
 	public function __invoke(mixed &$attachRequest): void
 	{
 		Lang::load('LightPortal/LightPortal');
 
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::downloadRequest,
-			new EventArgs(['attachRequest' => &$attachRequest])
-		);
+		$this->events()->dispatch(PortalHook::downloadRequest, ['attachRequest' => &$attachRequest]);
 	}
 }

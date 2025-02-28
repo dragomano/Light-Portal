@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.01.25
+ * @version 19.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\ArticleList;
@@ -17,8 +17,8 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
-use Bugo\Compat\Utils;
 use Bugo\Compat\Parsers\BBCodeParser;
+use Bugo\LightPortal\Enums\ContentClass;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\Status;
@@ -156,7 +156,7 @@ class ArticleList extends Block
 		if (empty($parameters['include_pages']))
 			return [];
 
-		$titles = app(TitleList::class);
+		$titles = app(TitleList::class)();
 
 		$result = Db::$db->query('', '
 			SELECT page_id, slug, content, description, type
@@ -206,7 +206,7 @@ class ArticleList extends Block
 
 		$type = Typed::int($parameters['display_type']);
 
-		$articles = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
+		$articles = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$me->id)
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(fn() => $type === 0 ? $this->getTopics($parameters) : $this->getPages($parameters));
 
@@ -236,7 +236,7 @@ class ArticleList extends Block
 							->setText($topic['title'])
 					);
 
-					$articleList->addHtml(sprintf(Utils::$context['lp_all_content_classes'][$bodyClass], $content));
+					$articleList->addHtml(sprintf(ContentClass::values()[$bodyClass], $content));
 				}
 			} else {
 				foreach ($articles as $page) {
@@ -264,7 +264,7 @@ class ArticleList extends Block
 					);
 
 					$articleList->addHtml(
-						sprintf(Utils::$context['lp_all_content_classes'][$bodyClass], $content)
+						sprintf(ContentClass::values()[$bodyClass], $content)
 					);
 				}
 			}

@@ -14,7 +14,7 @@ namespace Bugo\LightPortal\Enums;
 
 use Bugo\Compat\Db;
 use Bugo\Compat\User;
-use Bugo\LightPortal\Enums\Traits\HasValuesTrait;
+use Bugo\LightPortal\Enums\Traits\HasValues;
 use Bugo\LightPortal\Utils\Cache;
 
 use function array_column;
@@ -24,7 +24,7 @@ use function is_int;
 
 enum Permission: int
 {
-	use HasValuesTrait;
+	use HasValues;
 
 	case ADMIN = 0;
 	case GUEST = 1;
@@ -38,12 +38,12 @@ enum Permission: int
 		$permission = is_int($permission) ? self::tryFrom($permission) : $permission;
 
 		return match ($permission) {
-			self::ADMIN  => User::$info['is_admin'],
-			self::GUEST  => User::$info['is_guest'],
-			self::MEMBER => User::$info['id'] > 0,
+			self::ADMIN  => User::$me->is_admin,
+			self::GUEST  => User::$me->is_guest,
+			self::MEMBER => User::$me->id > 0,
 			self::ALL    => true,
 			self::MOD    => self::isAdminOrModerator(),
-			self::OWNER  => User::$info['id'] === $userId,
+			self::OWNER  => User::$me->id === $userId,
 			default      => false,
 		};
 	}
@@ -51,27 +51,27 @@ enum Permission: int
 	public static function all(): array
 	{
 		return match (true) {
-			User::$info['is_admin'] => array_filter(self::values(), fn($value) => $value !== self::OWNER->value),
-			User::$info['is_guest'] => [self::GUEST->value, self::ALL->value],
-			self::isModerator()     => [self::MEMBER->value, self::ALL->value, self::MOD->value],
-			User::$info['id'] > 0   => [self::MEMBER->value, self::ALL->value],
-			default                 => [self::ALL->value],
+			User::$me->is_admin => array_filter(self::values(), fn($value) => $value !== self::OWNER->value),
+			User::$me->is_guest => [self::GUEST->value, self::ALL->value],
+			self::isModerator() => [self::MEMBER->value, self::ALL->value, self::MOD->value],
+			User::$me->id > 0   => [self::MEMBER->value, self::ALL->value],
+			default             => [self::ALL->value],
 		};
 	}
 
 	public static function isAdminOrModerator(): bool
 	{
-		return User::$info['is_admin'] || self::isModerator();
+		return User::$me->is_admin || self::isModerator();
 	}
 
 	public static function isModerator(): bool
 	{
-		return in_array(User::$info['id'], self::getBoardModerators()) || self::isGroupMember(2);
+		return in_array(User::$me->id, self::getBoardModerators()) || self::isGroupMember(2);
 	}
 
 	public static function isGroupMember(int $groupId): bool
 	{
-		return in_array($groupId, User::$info['groups']);
+		return in_array($groupId, User::$me->groups);
 	}
 
 	private static function getBoardModerators(): array

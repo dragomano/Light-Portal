@@ -14,9 +14,6 @@ namespace Bugo\LightPortal\Models;
 
 use Bugo\LightPortal\Enums\Status;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
 class CategoryModel extends AbstractModel
 {
 	public int $id;
@@ -31,21 +28,13 @@ class CategoryModel extends AbstractModel
 
 	public array $titles = [];
 
-	public function __construct(array $postData, array $currentCategory)
+	public function __construct(array $data)
 	{
-		$this->id = $postData['category_id'] ?? $currentCategory['id'] ?? 0;
-
-		$this->icon = $postData['icon'] ?? $currentCategory['icon'] ?? '';
-
-		$this->description = $postData['description'] ?? $currentCategory['description'] ?? '';
-
-		$this->priority = $currentCategory['priority'] ?? 0;
-
-		$this->status = $currentCategory['status'] ?? Status::ACTIVE->value;
-	}
-
-	protected static function getTableName(): string
-	{
-		return 'lp_categories';
+		$this->id          = $data['category_id'] ?? $data['id'] ?? 0;
+		$this->icon        = $data['icon'] ?? '';
+		$this->description = $data['description'] ?? '';
+		$this->priority    = $data['priority'] ?? 0;
+		$this->status      = $data['status'] ?? Status::ACTIVE->value;
+		$this->titles      = $data['titles'] ?? [];
 	}
 }

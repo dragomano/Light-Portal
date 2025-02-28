@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 20.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\CustomTranslate;
@@ -76,7 +76,7 @@ class CustomTranslate extends Plugin
 
 		Utils::$context['ctw_lang_titles'] = array_combine($this->langCodes, $this->langTitles);
 
-		$this->setTemplate()->withLayer($this->name);
+		$this->useTemplate()->withLayer($this->name);
 	}
 
 	public function addSettings(Event $e): void

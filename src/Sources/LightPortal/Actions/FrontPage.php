@@ -24,16 +24,17 @@ use Bugo\LightPortal\Articles\ChosenTopicArticle;
 use Bugo\LightPortal\Articles\PageArticle;
 use Bugo\LightPortal\Articles\TopicArticle;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\EventArgs;
-use Bugo\LightPortal\Events\EventManagerFactory;
+use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Renderers\RendererInterface;
-use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\RequestTrait;
-use Bugo\LightPortal\Utils\SessionTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasCache;
+use Bugo\LightPortal\Utils\Traits\HasBreadcrumbs;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
+use Bugo\LightPortal\Utils\Traits\HasResponse;
+use Bugo\LightPortal\Utils\Traits\HasSession;
 use Bugo\LightPortal\Utils\Weaver;
 use WPLake\Typed\Typed;
 
@@ -41,8 +42,10 @@ use function abs;
 use function array_column;
 use function array_key_exists;
 use function array_map;
+use function array_search;
 use function date;
 use function floor;
+use function implode;
 use function ltrim;
 use function number_format;
 use function sprintf;
@@ -51,9 +54,12 @@ use const LP_BASE_URL;
 
 final class FrontPage implements ActionInterface
 {
-	use CacheTrait;
-	use RequestTrait;
-	use SessionTrait;
+	use HasCache;
+	use HasBreadcrumbs;
+	use HasEvents;
+	use HasRequest;
+	use HasResponse;
+	use HasSession;
 
 	private array $modes = [
 		'all_pages'     => PageArticle::class,
@@ -67,20 +73,18 @@ final class FrontPage implements ActionInterface
 
 	public function show(): void
 	{
-		User::mustHavePermission('light_portal_view');
+		User::$me->isAllowedTo('light_portal_view');
 
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::frontModes,
-			new EventArgs(['modes' => &$this->modes])
-		);
+		$this->events()->dispatch(PortalHook::frontModes, ['modes' => &$this->modes]);
 
 		if (array_key_exists(Config::$modSettings['lp_frontpage_mode'], $this->modes)) {
 			$this->prepare(new $this->modes[Config::$modSettings['lp_frontpage_mode']]);
 		} elseif (Setting::isFrontpageMode('chosen_page')) {
 			app(Page::class)->show();
-
 			return;
 		}
+
+		$this->handleSubActions();
 
 		Utils::$context['lp_frontpage_num_columns'] = $this->getNumColumns();
 
@@ -90,12 +94,12 @@ final class FrontPage implements ActionInterface
 			Utils::$context['forum_name'] . ' - ' . Lang::$txt['lp_portal']
 		);
 
-		Utils::$context['linktree'][] = [
-			'name'        => Lang::$txt['lp_portal'],
-			'extra_after' => '(' . Lang::getTxt('lp_articles_set', [
+		$this->breadcrumbs()->add(
+			Lang::$txt['lp_portal'],
+			after: '(' . Lang::getTxt('lp_articles_set', [
 				'articles' => Utils::$context['total_articles']
 			]) . ')'
-		];
+		);
 
 		$this->prepareTemplates();
 	}
@@ -107,7 +111,7 @@ final class FrontPage implements ActionInterface
 
 		$article->init();
 
-		$key = 'articles_u' . User::$info['id'] . '_' . User::$info['language'] . '_' . $start . '_' . $limit;
+		$key = 'articles_u' . User::$me->id . '_' . User::$me->language . '_' . $start . '_' . $limit;
 
 		$key = ltrim(($this->request()->get('action') ?? '') . '_' . $key, '_');
 
@@ -139,13 +143,15 @@ final class FrontPage implements ActionInterface
 			Utils::$context['page_index'] = $this->simplePaginate(LP_BASE_URL, $itemsCount, $limit);
 		}
 
-		Utils::$context['portal_next_page'] = $this->request()->get('start') + $limit < $itemsCount
-			? LP_BASE_URL . ';start=' . ($this->request()->get('start') + $limit)
+		$start = (int) $this->request()->get('start');
+
+		Utils::$context['portal_next_page'] = $start + $limit < $itemsCount
+			? LP_BASE_URL . ';start=' . ($start + $limit)
 			: '';
 
 		Utils::$context['lp_frontpage_articles'] = $articles;
 
-		app(EventManagerFactory::class)()->dispatch(PortalHook::frontAssets);
+		$this->events()->dispatch(PortalHook::frontAssets);
 	}
 
 	public function prepareTemplates(): void
@@ -171,9 +177,13 @@ final class FrontPage implements ActionInterface
 		];
 
 		// You can add your own logic here
-		app(EventManagerFactory::class)()->dispatch(
+		$this->events()->dispatch(
 			PortalHook::frontLayouts,
-			new EventArgs(['renderer' => &$this->renderer, 'layout' => &$currentLayout, 'params' => &$params])
+			[
+				'renderer' => &$this->renderer,
+				'layout'   => &$currentLayout,
+				'params'   => &$params,
+			]
 		);
 
 		Utils::$context['lp_layout_content'] = $this->renderer->render($currentLayout, $params);
@@ -202,16 +212,16 @@ final class FrontPage implements ActionInterface
 	public function getNumColumns(): int
 	{
 		$baseColumnsCount = 12;
-		$customColumnsCount = Setting::get('lp_frontpage_num_columns', 'string', '');
+		$userColumnsCount = Setting::get('lp_frontpage_num_columns', 'string', '');
 
-		if (empty($customColumnsCount)) {
+		if (empty($userColumnsCount)) {
 			return $baseColumnsCount;
 		}
 
-		return $baseColumnsCount / match ($customColumnsCount) {
-			'1' => 2,
-			'2' => 3,
-			'3' => 4,
+		return $baseColumnsCount / match ($userColumnsCount) {
+			'1'     => 2,
+			'2'     => 3,
+			'3'     => 4,
 			default => 6,
 		};
 	}
@@ -220,10 +230,49 @@ final class FrontPage implements ActionInterface
 	{
 		if ($start >= $total) {
 			Utils::sendHttpStatus(404);
+
 			$start = (floor(($total - 1) / $limit) + 1) * $limit - $limit;
 		}
 
 		$start = (int) abs($start);
+	}
+
+	private function handleSubActions(): void
+	{
+		$sa = $this->request()->get('sa') ?? '';
+
+		if ($this->request()->is(LP_ACTION)) {
+			match ($sa) {
+				'categories' => app(Category::class)->show(),
+				'tags'       => app(Tag::class)->show(),
+				'promote'    => $this->promoteTopic(),
+				default      => null,
+			};
+		}
+	}
+
+	private function promoteTopic(): void
+	{
+		if (empty(User::$me->is_admin) || $this->request()->hasNot('t'))
+			return;
+
+		$topic = $this->request()->get('t');
+
+		$homeTopics = Setting::getFrontpageTopics();
+
+		if (($key = array_search($topic, $homeTopics)) !== false) {
+			unset($homeTopics[$key]);
+		} else {
+			$homeTopics[] = $topic;
+		}
+
+		Config::updateModSettings(
+			['lp_frontpage_topics' => implode(',', $homeTopics)]
+		);
+
+		$this->cache()->flush();
+
+		$this->response()->redirect('topic=' . $topic);
 	}
 
 	private function postProcess(ArticleInterface $article, array $articles): array

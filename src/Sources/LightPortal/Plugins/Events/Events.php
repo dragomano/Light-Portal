@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 06.01.25
+ * @version 20.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\Events;
@@ -112,11 +112,11 @@ class Events extends Block
 	{
 		$parameters = $e->args->parameters;
 
-		$data = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
+		$data = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$me->id)
 			->setLifeTime(Typed::int($parameters['update_interval']))
 			->setFallback(fn() => $this->getData($parameters));
 
-		$this->setTemplate();
+		$this->useTemplate();
 
 		template_show_events($data);
 	}

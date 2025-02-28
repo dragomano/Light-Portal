@@ -13,13 +13,13 @@
 namespace Bugo\LightPortal\Enums;
 
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Enums\Traits\HasNamesTrait;
+use Bugo\LightPortal\Enums\Traits\HasNames;
 
 use function array_combine;
 
 enum Placement
 {
-	use HasNamesTrait;
+	use HasNames;
 
 	case HEADER;
 	case TOP;

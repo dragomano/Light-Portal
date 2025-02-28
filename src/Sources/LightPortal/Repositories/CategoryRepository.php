@@ -19,10 +19,10 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Security;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\RequestTrait;
-use Bugo\LightPortal\Utils\ResponseTrait;
+use Bugo\LightPortal\Utils\Traits\HasCache;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
+use Bugo\LightPortal\Utils\Traits\HasResponse;
 
 use function array_filter;
 
@@ -31,9 +31,9 @@ if (! defined('SMF'))
 
 final class CategoryRepository extends AbstractRepository
 {
-	use CacheTrait;
-	use RequestTrait;
-	use ResponseTrait;
+	use HasCache;
+	use HasRequest;
+	use HasResponse;
 
 	protected string $entity = 'category';
 
@@ -51,7 +51,7 @@ final class CategoryRepository extends AbstractRepository
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
 			[
-				'lang'          => User::$info['language'],
+				'lang'          => User::$me->language,
 				'fallback_lang' => Config::$language,
 				'sort'          => $sort,
 				'start'         => $start,

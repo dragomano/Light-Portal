@@ -12,11 +12,11 @@
 
 namespace Bugo\LightPortal\Enums;
 
-use Bugo\LightPortal\Enums\Traits\HasNamesTrait;
+use Bugo\LightPortal\Enums\Traits\HasNames;
 
 enum AlertAction
 {
-	use HasNamesTrait;
+	use HasNames;
 
 	case PAGE_COMMENT;
 	case PAGE_COMMENT_REPLY;

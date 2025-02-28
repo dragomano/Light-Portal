@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 22.12.24
+ * @version 20.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleChat;
@@ -142,7 +142,7 @@ class SimpleChat extends Block
 
 		Utils::$context['lp_chats'][$id] = json_encode($messages, JSON_UNESCAPED_UNICODE);
 
-		$this->setTemplate();
+		$this->useTemplate();
 
 		show_chat_block($id, $parameters, $this->isInSidebar($id));
 	}

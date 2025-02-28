@@ -8,21 +8,21 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 02.02.25
+ * @version 14.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleChat;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Db;
+use Bugo\Compat\Parsers\BBCodeParser;
 use Bugo\Compat\Time;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\Compat\Parsers\BBCodeParser;
 use Bugo\LightPortal\Utils\Avatar;
-use Bugo\LightPortal\Utils\CacheTrait;
-use Bugo\LightPortal\Utils\RequestTrait;
-use Bugo\LightPortal\Utils\ResponseTrait;
+use Bugo\LightPortal\Utils\Traits\HasCache;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
+use Bugo\LightPortal\Utils\Traits\HasResponse;
 
 use function time;
 
@@ -31,9 +31,9 @@ if (! defined('LP_NAME'))
 
 class Chat
 {
-	use CacheTrait;
-	use RequestTrait;
-	use ResponseTrait;
+	use HasCache;
+	use HasRequest;
+	use HasResponse;
 
 	public function __construct(private readonly string $name) {}
 
@@ -143,7 +143,7 @@ class Chat
 			],
 			[
 				'block_id'   => $data['block_id'],
-				'user_id'    => User::$info['id'],
+				'user_id'    => User::$me->id,
 				'message'    => $message = Utils::htmlspecialchars($data['message']),
 				'created_at' => $time = time(),
 			],
@@ -158,13 +158,13 @@ class Chat
 			'message'    => BBCodeParser::load()->parse($message),
 			'created_at' => Time::stringFromUnix($time),
 			'author'     => [
-				'id'     => User::$info['id'],
-				'name'   => User::$info['name'],
-				'avatar' => Avatar::get(User::$info['id']),
+				'id'     => User::$me->id,
+				'name'   => User::$me->name,
+				'avatar' => Avatar::get(User::$me->id),
 			],
 		];
 
-		$this->response()->json($result);
+		$this->response()->exit($result);
 	}
 
 	public function deleteMessage(): void

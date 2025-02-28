@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.01.25
+ * @version 20.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\HelloPortal;
@@ -51,7 +51,7 @@ class HelloPortal extends Plugin
 			return;
 
 		if (str_contains((string) $this->request()->get('area'), 'lp_')) {
-			$this->setTemplate();
+			$this->useTemplate();
 
 			Utils::$context['template_layers'][] = 'tour_info';
 		}
@@ -134,7 +134,7 @@ class HelloPortal extends Plugin
 
 	private function getStepData(): string
 	{
-		$this->setTemplate('steps');
+		$this->useTemplate('steps');
 
 		if (! function_exists('getSteps'))
 			return '';

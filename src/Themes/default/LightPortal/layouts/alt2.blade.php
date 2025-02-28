@@ -1,7 +1,6 @@
-@empty ($context['lp_active_blocks'])
-<div class="col-xs">
-@endempty
+@extends('partials.base')
 
+@section('content')
 	<div class="lp_frontpage_articles article_alt2_view">
 		@include('partials.pagination')
 
@@ -43,12 +42,12 @@
 							@endunless
 
 							<span>
-								@if (!empty($article['author']['id']) && !empty($article['author']['name']))
+									@if (!empty($article['author']['id']) && !empty($article['author']['name']))
 									<a href="{{ $article['author']['link'] }}">{{ $article['author']['name'] }}</a>
 								@else
 									<span>{{ $txt['guest_title'] }}</span>
 								@endif
-							</span>
+								</span>
 						</footer>
 					@endif
 
@@ -58,7 +57,4 @@
 
 		@include('partials.pagination', ['position' => 'bottom'])
 	</div>
-
-@empty ($context['lp_active_blocks'])
-</div>
-@endempty
+@endsection

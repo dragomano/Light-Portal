@@ -34,14 +34,13 @@ use Bugo\LightPortal\Areas\Imports\PluginImport;
 use Bugo\LightPortal\Areas\Imports\TagImport;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\EventArgs;
-use Bugo\LightPortal\Events\EventManagerFactory;
-use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\SMFHookTrait;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasCache;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
+use Bugo\LightPortal\Utils\Traits\HasForumHooks;
 
 use function array_keys;
 use function array_merge;
@@ -61,9 +60,10 @@ if (! defined('SMF'))
 
 final class ConfigArea
 {
-	use CacheTrait;
-	use RequestTrait;
-	use SMFHookTrait;
+	use HasCache;
+	use HasEvents;
+	use HasRequest;
+	use HasForumHooks;
 
 	public function __invoke(): void
 	{
@@ -210,10 +210,7 @@ final class ConfigArea
 			}
 		}
 
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::updateAdminAreas,
-			new EventArgs(['areas' => &$areas['lp_portal']['areas']])
-		);
+		$this->events()->dispatch(PortalHook::updateAdminAreas, ['areas' => &$areas['lp_portal']['areas']]);
 	}
 
 	public function helpadmin(): void
@@ -226,7 +223,7 @@ final class ConfigArea
 
 	public function settingAreas(): void
 	{
-		User::mustHavePermission('admin_forum');
+		User::$me->isAllowedTo('admin_forum');
 
 		$areas = [
 			'basic'    => [new BasicConfig(), 'show'],
@@ -275,7 +272,7 @@ final class ConfigArea
 
 	public function blockAreas(): void
 	{
-		User::mustHavePermission('admin_forum');
+		User::$me->isAllowedTo('admin_forum');
 
 		$areas = [
 			'main'   => [app(BlockArea::class), 'main'],
@@ -285,17 +282,14 @@ final class ConfigArea
 			'import' => [app(BlockImport::class), 'main'],
 		];
 
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::updateBlockAreas,
-			new EventArgs(['areas' => &$areas])
-		);
+		$this->events()->dispatch(PortalHook::updateBlockAreas, ['areas' => &$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
 
 	public function pageAreas(): void
 	{
-		User::mustHavePermission(['light_portal_manage_pages_own', 'light_portal_manage_pages_any']);
+		User::$me->isAllowedTo(['light_portal_manage_pages_own', 'light_portal_manage_pages_any']);
 
 		$areas = [
 			'main'   => [app(PageArea::class), 'main'],
@@ -305,17 +299,14 @@ final class ConfigArea
 			'import' => [app(PageImport::class), 'main'],
 		];
 
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::updatePageAreas,
-			new EventArgs(['areas' => &$areas])
-		);
+		$this->events()->dispatch(PortalHook::updatePageAreas, ['areas' => &$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
 
 	public function categoryAreas(): void
 	{
-		User::mustHavePermission('admin_forum');
+		User::$me->isAllowedTo('admin_forum');
 
 		$areas = [
 			'main'   => [app(CategoryArea::class), 'main'],
@@ -325,17 +316,14 @@ final class ConfigArea
 			'import' => [app(CategoryImport::class), 'main'],
 		];
 
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::updateCategoryAreas,
-			new EventArgs(['areas' => &$areas])
-		);
+		$this->events()->dispatch(PortalHook::updateCategoryAreas, ['areas' => &$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
 
 	public function tagAreas(): void
 	{
-		User::mustHavePermission('admin_forum');
+		User::$me->isAllowedTo('admin_forum');
 
 		$areas = [
 			'main'   => [app(TagArea::class), 'main'],
@@ -345,17 +333,14 @@ final class ConfigArea
 			'import' => [app(TagImport::class), 'main'],
 		];
 
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::updateTagAreas,
-			new EventArgs(['areas' => &$areas])
-		);
+		$this->events()->dispatch(PortalHook::updateTagAreas, ['areas' => &$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
 
 	public function pluginAreas(): void
 	{
-		User::mustHavePermission('admin_forum');
+		User::$me->isAllowedTo('admin_forum');
 
 		$areas = [
 			'main' => [app(PluginArea::class), 'main'],
@@ -366,10 +351,7 @@ final class ConfigArea
 			$areas['import'] = [app(PluginImport::class), 'main'];
 		}
 
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::updatePluginAreas,
-			new EventArgs(['areas' => &$areas])
-		);
+		$this->events()->dispatch(PortalHook::updatePluginAreas, ['areas' => &$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -401,7 +383,7 @@ final class ConfigArea
 
 	private function getPagesCount(): int
 	{
-		return $this->request()->has('u') && ! Utils::$context['allow_light_portal_manage_pages_any']
+		return $this->request()->has('u') && ! User::$me->allowedTo('light_portal_manage_pages_any')
 			? Utils::$context['lp_quantities']['my_pages']
 			: Utils::$context['lp_quantities']['active_pages'];
 	}

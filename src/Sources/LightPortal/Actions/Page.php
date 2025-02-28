@@ -20,17 +20,18 @@ use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\EventManagerFactory;
+use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Lists\TitleList;
 use Bugo\LightPortal\Repositories\PageRepository;
-use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\RequestTrait;
-use Bugo\LightPortal\Utils\ResponseTrait;
-use Bugo\LightPortal\Utils\SessionTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasCache;
+use Bugo\LightPortal\Utils\Traits\HasBreadcrumbs;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
+use Bugo\LightPortal\Utils\Traits\HasResponse;
+use Bugo\LightPortal\Utils\Traits\HasSession;
 use SimpleSEF;
 
 use function array_column;
@@ -38,7 +39,6 @@ use function array_search;
 use function class_exists;
 use function date;
 use function explode;
-use function header;
 use function implode;
 use function time;
 
@@ -51,16 +51,18 @@ if (! defined('SMF'))
 
 final class Page implements ActionInterface
 {
-	use CacheTrait;
-	use RequestTrait;
-	use ResponseTrait;
-	use SessionTrait;
+	use HasCache;
+	use HasBreadcrumbs;
+	use HasEvents;
+	use HasRequest;
+	use HasResponse;
+	use HasSession;
 
 	public function __construct(private readonly PageRepository $repository) {}
 
 	public function show(): void
 	{
-		User::mustHavePermission('light_portal_view');
+		User::$me->isAllowedTo('light_portal_view');
 
 		$slug = $this->request()->get(LP_PAGE_PARAM);
 
@@ -89,6 +91,7 @@ final class Page implements ActionInterface
 
 		$this->setPageTitleAndCanonicalUrl($slug);
 
+		Utils::$context['lp_page_edit_link'] = Config::$scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . Utils::$context['lp_page']['id'];
 		Utils::$context['lp_comments_api_endpoint'] = Utils::$context['canonical_url'] . ';fetch_data';
 
 		Utils::$context['lp_page']['url'] = Utils::$context['canonical_url'] . (
@@ -157,7 +160,7 @@ final class Page implements ActionInterface
 			ErrorHandler::fatalLang('cannot_light_portal_view_page', false);
 		}
 
-		if ($page['entry_type'] === EntryType::DRAFT->name() && $page['author_id'] !== User::$info['id']) {
+		if ($page['entry_type'] === EntryType::DRAFT->name() && $page['author_id'] !== User::$me->id) {
 			$this->changeErrorPage();
 			ErrorHandler::fatalLang('cannot_light_portal_view_page', false);
 		}
@@ -177,7 +180,7 @@ final class Page implements ActionInterface
 
 			Utils::$context['canonical_url'] = Config::$scripturl;
 
-			Utils::$context['linktree'][] = ['name' => Lang::$txt['lp_portal']];
+			$this->breadcrumbs()->add(Lang::$txt['lp_portal']);
 		} else {
 			Utils::$context['page_title'] = Str::getTranslatedTitle(
 				Utils::$context['lp_page']['titles']
@@ -186,13 +189,13 @@ final class Page implements ActionInterface
 			Utils::$context['canonical_url'] = LP_PAGE_URL . $slug;
 
 			if (isset(Utils::$context['lp_page']['category'])) {
-				Utils::$context['linktree'][] = [
-					'name' => Utils::$context['lp_page']['category'],
-					'url'  => LP_BASE_URL . ';sa=categories;id=' . Utils::$context['lp_page']['category_id'],
-				];
+				$this->breadcrumbs()->add(
+					Utils::$context['lp_page']['category'],
+					LP_BASE_URL . ';sa=categories;id=' . Utils::$context['lp_page']['category_id']
+				);
 			}
 
-			Utils::$context['linktree'][] = ['name' => Utils::$context['page_title']];
+			$this->breadcrumbs()->add(Utils::$context['page_title']);
 		}
 	}
 
@@ -213,7 +216,7 @@ final class Page implements ActionInterface
 
 	private function handlePromoteAction(): void
 	{
-		if (empty(User::$info['is_admin']) || $this->request()->hasNot('promote'))
+		if (empty(User::$me->is_admin) || $this->request()->hasNot('promote'))
 			return;
 
 		$page = Utils::$context['lp_page']['id'];
@@ -230,7 +233,9 @@ final class Page implements ActionInterface
 			'lp_frontpage_pages' => implode(',', $frontPages)
 		]);
 
-		$this->response()->redirect(Utils::$context['canonical_url']);
+		$this->cache()->flush();
+
+		$this->response()->redirect(LP_PAGE_PARAM . '=' . Utils::$context['lp_page']['slug']);
 	}
 
 	private function prepareMetadata(): void
@@ -299,7 +304,7 @@ final class Page implements ActionInterface
 		if (empty($page = Utils::$context['lp_page']) || empty(Config::$modSettings['lp_show_prev_next_links']))
 			return;
 
-		$titles = app(TitleList::class);
+		$titles = app(TitleList::class)();
 
 		[$prevId, $prevSlug, $nextId, $nextSlug] = $this->repository->getPrevNextLinks($page);
 
@@ -339,7 +344,7 @@ final class Page implements ActionInterface
 
 		Lang::load('Editor');
 
-		app(EventManagerFactory::class)()->dispatch(PortalHook::comments);
+		$this->events()->dispatch(PortalHook::comments);
 
 		if (isset(Utils::$context['lp_' . Setting::getCommentBlock() . '_comment_block']))
 			return;
@@ -355,9 +360,7 @@ final class Page implements ActionInterface
 			return;
 		}
 
-		header('Content-Type: application/json; charset=utf-8');
-
-		$this->response()->json($this->preparedData());
+		$this->response()->exit($this->preparedData());
 	}
 
 	private function preparedData(): array
@@ -412,7 +415,7 @@ final class Page implements ActionInterface
 
 	private function updateNumViews(): void
 	{
-		if (empty(Utils::$context['lp_page']['id']) || User::$info['possibly_robot'])
+		if (empty(Utils::$context['lp_page']['id']) || User::$me->possibly_robot)
 			return;
 
 		if (

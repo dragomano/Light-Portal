@@ -12,6 +12,7 @@
 
 namespace Bugo\LightPortal\Utils;
 
+use function array_diff_key;
 use function array_flip;
 use function array_intersect_key;
 use function array_reduce;
@@ -41,6 +42,11 @@ abstract class GlobalArray
 	public function only(array $keys): array
 	{
 		return array_intersect_key($this->all(), array_flip($keys));
+	}
+
+	public function except(array $keys): array
+	{
+		return array_diff_key($this->all(), array_flip($keys));
 	}
 
 	public function has(array|string $keys): bool

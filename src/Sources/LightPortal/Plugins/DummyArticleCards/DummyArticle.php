@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 19.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\DummyArticleCards;
@@ -18,9 +18,9 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Articles\AbstractArticle;
-use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasCache;
 use DateTime;
 use Exception;
 
@@ -29,7 +29,7 @@ if (! defined('LP_NAME'))
 
 class DummyArticle extends AbstractArticle
 {
-	use CacheTrait;
+	use HasCache;
 
 	private readonly string $limit;
 
@@ -99,7 +99,7 @@ class DummyArticle extends AbstractArticle
 				],
 				'css_class' => random_int(0, 1) ? ' sticky' : '',
 				'image'     => $image,
-				'can_edit'  => User::$info['is_admin'],
+				'can_edit'  => User::$me->is_admin,
 				'edit_link' => Config::$scripturl . '?action=post;msg=' . ($msgId = random_int(0, 9999)) . ';topic=' . $article['id'] . '.0',
 				'teaser'    => $teaser,
 				'msg_link'  => $numReplies ? Config::$scripturl . '?msg=' . $msgId : $link,

@@ -18,30 +18,35 @@ use Bugo\Compat\ServerSideIncludes;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Repositories\PluginRepository;
-use Bugo\LightPortal\Utils\CacheTrait;
-use Bugo\LightPortal\Utils\HasTemplateAware;
-use Bugo\LightPortal\Utils\RequestTrait;
-use Bugo\LightPortal\Utils\ResponseTrait;
-use Bugo\LightPortal\Utils\SessionTrait;
-use Bugo\LightPortal\Utils\SMFHookTrait;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasCache;
+use Bugo\LightPortal\Utils\Traits\HasBreadcrumbs;
+use Bugo\LightPortal\Utils\Traits\HasTemplate;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
+use Bugo\LightPortal\Utils\Traits\HasResponse;
+use Bugo\LightPortal\Utils\Traits\HasSession;
+use Bugo\LightPortal\Utils\Traits\HasForumHooks;
 use Stringable;
 
 use function basename;
 use function dirname;
 use function sprintf;
+use function str_replace;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
 abstract class Plugin implements PluginInterface, Stringable
 {
-	use CacheTrait;
-	use HasTemplateAware;
-	use RequestTrait;
-	use ResponseTrait;
-	use SMFHookTrait;
-	use SessionTrait;
+	use HasBreadcrumbs;
+	use HasCache;
+	use HasForumHooks;
+	use HasRequest;
+	use HasResponse;
+	use HasSession;
+	use HasTemplate;
+
+	public string $type;
 
 	public string $icon = 'fas fa-puzzle-piece';
 
@@ -69,7 +74,7 @@ abstract class Plugin implements PluginInterface, Stringable
 
 	public function getCamelName(): string
 	{
-		return basename(static::class);
+		return basename(str_replace('\\', '/', static::class));
 	}
 
 	public function getSnakeName(): string

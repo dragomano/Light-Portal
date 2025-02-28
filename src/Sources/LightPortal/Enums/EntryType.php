@@ -13,14 +13,14 @@
 namespace Bugo\LightPortal\Enums;
 
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Enums\Traits\HasNamesTrait;
+use Bugo\LightPortal\Enums\Traits\HasNames;
 
 use function array_combine;
 use function array_filter;
 
 enum EntryType
 {
-	use HasNamesTrait;
+	use HasNames;
 
 	case DEFAULT;
 	case INTERNAL;

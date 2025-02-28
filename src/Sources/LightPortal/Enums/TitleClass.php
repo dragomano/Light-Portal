@@ -12,12 +12,12 @@
 
 namespace Bugo\LightPortal\Enums;
 
-use Bugo\LightPortal\Enums\Traits\HasHtmlTrait;
+use Bugo\LightPortal\Enums\Traits\HasHtml;
 use Bugo\LightPortal\Utils\Str;
 
 enum TitleClass: string
 {
-	use HasHtmlTrait;
+	use HasHtml;
 
 	case CAT_BAR = 'cat_bar';
 	case TITLE_BAR = 'title_bar';

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.01.25
+ * @version 19.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\TopTopics;
@@ -73,7 +73,7 @@ class TopTopics extends Block
 		$type = Typed::string($parameters['popularity_type'], default: 'replies');
 		$numTopics = Typed::int($parameters['num_topics'], default: 10);
 
-		$topTopics = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
+		$topTopics = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$me->id)
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(
 				fn() => $this->getFromSSI(

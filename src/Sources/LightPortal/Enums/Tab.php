@@ -12,11 +12,11 @@
 
 namespace Bugo\LightPortal\Enums;
 
-use Bugo\LightPortal\Enums\Traits\HasNamesTrait;
+use Bugo\LightPortal\Enums\Traits\HasNames;
 
 enum Tab
 {
-	use HasNamesTrait;
+	use HasNames;
 
 	case CONTENT;
 	case ACCESS_PLACEMENT;

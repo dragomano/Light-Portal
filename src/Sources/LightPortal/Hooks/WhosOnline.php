@@ -59,7 +59,7 @@ class WhosOnline
 			$result = sprintf(Lang::$txt['lp_who_viewing_frontpage'], LP_BASE_URL);
 
 			if (isset($actions['sa']) && $actions['sa'] === 'tags') {
-				$tags = app(TagList::class);
+				$tags = app(TagList::class)();
 
 				$result = isset($actions['id'])
 					? Lang::getTxt('lp_who_viewing_the_tag', [
@@ -73,7 +73,7 @@ class WhosOnline
 			}
 
 			if (isset($actions['sa']) && $actions['sa'] === 'categories') {
-				$categories = app(CategoryList::class);
+				$categories = app(CategoryList::class)();
 
 				$result = isset($actions['id'])
 					? Lang::getTxt('lp_who_viewing_the_category', [

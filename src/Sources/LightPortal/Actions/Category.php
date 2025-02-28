@@ -28,13 +28,12 @@ use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
 use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
 use WPLake\Typed\Typed;
 
 use function array_key_exists;
-use function count;
 use function sprintf;
 use function time;
 
@@ -45,7 +44,7 @@ if (! defined('SMF'))
 
 final class Category extends AbstractPageList
 {
-	use RequestTrait;
+	use HasRequest;
 
 	public function __construct(private readonly CardListInterface $cardList) {}
 
@@ -59,7 +58,7 @@ final class Category extends AbstractPageList
 			'id' => Typed::int($this->request()->get('id'))
 		];
 
-		$categories = app(CategoryList::class);
+		$categories = app(CategoryList::class)();
 		if (array_key_exists($category['id'], $categories) === false) {
 			Utils::$context['error_link'] = LP_BASE_URL . ';sa=categories';
 			Lang::$txt['back'] = Lang::$txt['lp_all_categories'];
@@ -73,27 +72,20 @@ final class Category extends AbstractPageList
 			Utils::$context['page_title'] = sprintf(Lang::$txt['lp_all_pages_with_category'], $category['title']);
 		}
 
-		Utils::$context['current_category'] = $category['id'];
-
 		Utils::$context['description'] = $category['description'] ?? '';
-
+		Utils::$context['lp_category_edit_link'] = Config::$scripturl . '?action=admin;area=lp_categories;sa=edit;id=' . $category['id'];
 		Utils::$context['canonical_url']  = LP_BASE_URL . ';sa=categories;id=' . $category['id'];
 		Utils::$context['robot_no_index'] = true;
 
-		Utils::$context['linktree'][] = [
-			'name' => Lang::$txt['lp_all_categories'],
-			'url'  => LP_BASE_URL . ';sa=categories',
-		];
-
-		Utils::$context['linktree'][] = [
-			'name' => $category['title'] ?? Lang::$txt['lp_no_category'],
-		];
+		$this->breadcrumbs()
+			->add(Lang::$txt['lp_all_categories'], LP_BASE_URL . ';sa=categories')
+			->add($category['title'] ?? Lang::$txt['lp_no_category']);
 
 		$this->cardList->show($this);
 
 		$builder = $this->cardList->getBuilder('lp_categories');
 		$builder->setItems($this->getPages(...));
-		$builder->setCount(fn() => $this->getTotalCount());
+		$builder->setCount($this->getTotalPages(...));
 
 		isset($category['description']) && $builder->addRow(
 			Row::make($category['description'])
@@ -129,9 +121,9 @@ final class Category extends AbstractPageList
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
 			[
-				'lang'          => User::$info['language'],
+				'lang'          => User::$me->language,
 				'fallback_lang' => Config::$language,
-				'id'            => Utils::$context['current_category'],
+				'id'            => $this->request()->get('id'),
 				'status'        => Status::ACTIVE->value,
 				'types'         => EntryType::withoutDrafts(),
 				'current_time'  => time(),
@@ -149,7 +141,7 @@ final class Category extends AbstractPageList
 		return $this->getPreparedResults($rows);
 	}
 
-	public function getTotalCount(): int
+	public function getTotalPages(): int
 	{
 		$result = Db::$db->query('', '
 			SELECT COUNT(page_id)
@@ -160,7 +152,7 @@ final class Category extends AbstractPageList
 				AND created_at <= {int:current_time}
 				AND permissions IN ({array_int:permissions})',
 			[
-				'id'           => Utils::$context['current_category'],
+				'id'           => $this->request()->get('id'),
 				'status'       => Status::ACTIVE->value,
 				'types'        => EntryType::withoutDrafts(),
 				'current_time' => time(),
@@ -181,9 +173,7 @@ final class Category extends AbstractPageList
 		Utils::$context['canonical_url']  = LP_BASE_URL . ';sa=categories';
 		Utils::$context['robot_no_index'] = true;
 
-		Utils::$context['linktree'][] = [
-			'name' => Utils::$context['page_title'],
-		];
+		$this->breadcrumbs()->add(Utils::$context['page_title']);
 
 		app(TablePresenter::class)->show(
 			PortalTableBuilder::make('categories', Utils::$context['page_title'])
@@ -194,7 +184,7 @@ final class Category extends AbstractPageList
 					'title'
 				)
 				->setItems($this->getAll(...))
-				->setCount(fn() => count($this->getAll()))
+				->setCount($this->getTotalCount(...))
 				->addColumns([
 					Column::make('title', Lang::$txt['lp_category'])
 						->setData(static fn($entry) => $entry['icon'] . ' ' . Str::html('a', $entry['title'])
@@ -204,7 +194,7 @@ final class Category extends AbstractPageList
 							->class('smalltext')))
 						->setSort('title DESC', 'title'),
 					Column::make('num_pages', Lang::$txt['lp_total_pages_column'])
-						->setStyle('width: 15%')
+						->setStyle('width: 16%')
 						->setData('num_pages', 'centertext')
 						->setSort('frequency DESC', 'frequency'),
 				])
@@ -236,7 +226,7 @@ final class Category extends AbstractPageList
 			ORDER BY {raw:sort}' . ($limit ? '
 			LIMIT {int:start}, {int:limit}' : ''),
 			[
-				'lang'          => User::$info['language'],
+				'lang'          => User::$me->language,
 				'fallback_lang' => Config::$language,
 				'status'        => Status::ACTIVE->value,
 				'types'         => EntryType::withoutDrafts(),
@@ -263,5 +253,40 @@ final class Category extends AbstractPageList
 		Db::$db->free_result($result);
 
 		return $items;
+	}
+
+	public function getTotalCount(): int
+	{
+		$result = Db::$db->query('', /** @lang text */ '
+			SELECT COUNT(DISTINCT COALESCE(c.category_id, 0)) AS unique_category_count
+			FROM {db_prefix}lp_pages AS p
+				LEFT JOIN {db_prefix}lp_categories AS c ON (p.category_id = c.category_id)
+				LEFT JOIN {db_prefix}lp_titles AS t ON (
+					c.category_id = t.item_id AND t.type = {literal:category} AND t.lang = {string:lang}
+				)
+				LEFT JOIN {db_prefix}lp_titles AS tf ON (
+					c.category_id = tf.item_id AND tf.type = {literal:category} AND tf.lang = {string:fallback_lang}
+				)
+			WHERE (c.status = {int:status} OR p.category_id = 0)
+				AND p.status = {int:status}
+				AND p.entry_type IN ({array_string:types})
+				AND p.created_at <= {int:current_time}
+				AND p.permissions IN ({array_int:permissions})
+			LIMIT 1',
+			[
+				'lang'          => User::$me->language,
+				'fallback_lang' => Config::$language,
+				'status'        => Status::ACTIVE->value,
+				'types'         => EntryType::withoutDrafts(),
+				'current_time'  => time(),
+				'permissions'   => Permission::all(),
+			]
+		);
+
+		[$count] = Db::$db->fetch_row($result);
+
+		Db::$db->free_result($result);
+
+		return (int) $count;
 	}
 }

@@ -15,8 +15,7 @@ namespace Bugo\LightPortal\Hooks;
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\EventArgs;
-use Bugo\LightPortal\Events\EventManagerFactory;
+use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Utils\Str;
 
 if (! defined('SMF'))
@@ -24,6 +23,8 @@ if (! defined('SMF'))
 
 class PreCssOutput
 {
+	use HasEvents;
+
 	public function __invoke(): void
 	{
 		if (isset(Utils::$context['uninstalling']))
@@ -45,10 +46,7 @@ class PreCssOutput
 			$styles[] = 'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css';
 		}
 
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::preloadStyles,
-			new EventArgs(['styles' => &$styles])
-		);
+		$this->events()->dispatch(PortalHook::preloadStyles, ['styles' => &$styles]);
 
 		foreach ($styles as $style) {
 			echo "\n\t" . Str::html('link', [

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 19.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\Swiper;
@@ -49,11 +49,8 @@ class Swiper extends Block
 			'show_scrollbar'  => true,
 			'images'          => '',
 		];
-	}
 
-	public function validateBlockParams(Event $e): void
-	{
-		$data = $this->request()->only(['image_title', 'image_link']);
+		$data = $this->post()->only(['image_title', 'image_link']);
 
 		$images = [];
 		if ($data && isset($data['image_title']) && isset($data['image_link'])) {
@@ -67,9 +64,12 @@ class Swiper extends Block
 				];
 			}
 
-			$this->request()->put('images', json_encode($images, JSON_UNESCAPED_UNICODE));
+			$this->post()->put('images', json_encode($images, JSON_UNESCAPED_UNICODE));
 		}
+	}
 
+	public function validateBlockParams(Event $e): void
+	{
 		$e->args->params = [
 			'direction'       => FILTER_DEFAULT,
 			'effect'          => FILTER_DEFAULT,
@@ -184,7 +184,7 @@ class Swiper extends Block
 	{
 		[$id, $parameters] = [$e->args->id, $e->args->parameters];
 
-		$swiperHtml = $this->cache($this->name . '_addon_b' . $id . '_' . User::$info['language'])
+		$swiperHtml = $this->cache($this->name . '_addon_b' . $id . '_' . User::$me->language)
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(fn() => $this->getData($id, $parameters));
 

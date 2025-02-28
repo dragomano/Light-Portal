@@ -15,6 +15,7 @@ namespace Bugo\LightPortal\Hooks;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
+use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Actions\Block;
 use Bugo\LightPortal\Enums\Action;
@@ -22,6 +23,7 @@ use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasBreadcrumbs;
 
 use function array_keys;
 use function array_merge;
@@ -40,7 +42,8 @@ if (! defined('SMF'))
 
 class MenuButtons
 {
-	use CommonChecks;
+	use HasCommonChecks;
+	use HasBreadcrumbs;
 
 	public function __invoke(array &$buttons): void
 	{
@@ -128,7 +131,7 @@ class MenuButtons
 
 	protected function prepareModerationButtons(array &$buttons): void
 	{
-		if (Utils::$context['allow_light_portal_manage_pages_any'] === false)
+		if (! User::$me->allowedTo('light_portal_manage_pages_any'))
 			return;
 
 		$buttons['moderate']['show'] = true;
@@ -177,7 +180,7 @@ class MenuButtons
 					'title' => $this->getPageSubsectionTitle(),
 					'href'  => Config::$modSettings['lp_menu_separate_subsection_href'] ?? Config::$scripturl,
 					'icon'  => 'topics_replies',
-					'show'  => Utils::$context['allow_light_portal_view'],
+					'show'  => User::$me->allowedTo('light_portal_view'),
 					'sub_buttons' => $pageButtons,
 				]
 			],
@@ -231,11 +234,6 @@ class MenuButtons
 		$this->unsetDisabledActions($buttons);
 	}
 
-	/**
-	 * Show the script execution time and the number of the portal queries
-	 *
-	 * Отображаем время выполнения скрипта и количество запросов к базе
-	 */
 	protected function showDebugInfo(): void
 	{
 		if (
@@ -267,11 +265,6 @@ class MenuButtons
 		);
 	}
 
-	/**
-	 * Fix canonical url for forum action
-	 *
-	 * Исправляем канонический адрес для области forum
-	 */
 	protected function fixCanonicalUrl(): void
 	{
 		if ($this->request()->is(Action::FORUM->value)) {
@@ -279,28 +272,25 @@ class MenuButtons
 		}
 	}
 
-	/**
-	 * Change the link tree
-	 *
-	 * Меняем дерево ссылок
-	 */
 	protected function fixLinktree(): void
 	{
+		$linkTree = $this->breadcrumbs()->getByIndex(1);
+
 		if (
 			$this->request()->hasNot('c')
 			&& empty(Utils::$context['current_board'])
-			|| empty(Utils::$context['linktree'][1])
-			|| empty(Utils::$context['linktree'][1]['url'])
+			|| empty($linkTree)
+			|| empty($linkTree['url'])
 		) {
 			return;
 		}
 
-		$oldUrl = explode('#', (string) Utils::$context['linktree'][1]['url']);
+		$oldUrl = explode('#', $linkTree['url']);
 
 		if (empty($oldUrl[1]))
 			return;
 
-		Utils::$context['linktree'][1]['url'] = Config::$scripturl . '?action=forum#' . $oldUrl[1];
+		$this->breadcrumbs()->update(1, 'url', Config::$scripturl . '?action=forum#' . $oldUrl[1]);
 	}
 
 	private function getPageSubsectionTitle(): string

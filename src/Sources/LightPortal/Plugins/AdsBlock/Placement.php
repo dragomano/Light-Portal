@@ -2,25 +2,25 @@
 
 /**
  * @package AdsBlock (Light Portal)
- * * @link https://custom.simplemachines.org/index.php?mod=4244
- * * @author Bugo <bugo@dragomano.ru>
- * * @copyright 2020-2025 Bugo
- * * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
- * *
- * * @category plugin
- * * @version 28.11.24
+ * @link https://custom.simplemachines.org/index.php?mod=4244
+ * @author Bugo <bugo@dragomano.ru>
+ * @copyright 2020-2025 Bugo
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
+ *
+ * @category plugin
+ * @version 28.11.24
  */
 
 namespace Bugo\LightPortal\Plugins\AdsBlock;
 
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Enums\Traits\HasNamesTrait;
+use Bugo\LightPortal\Enums\Traits\HasNames;
 
 use function array_combine;
 
 enum Placement
 {
-	use HasNamesTrait;
+	use HasNames;
 
 	case BOARD_TOP;
 	case BOARD_BOTTOM;

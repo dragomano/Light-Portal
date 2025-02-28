@@ -12,6 +12,9 @@
 
 namespace Bugo\LightPortal\Enums;
 
+use Bugo\LightPortal\Renderers\RendererInterface;
+use Bugo\LightPortal\Utils\ParamWrapper;
+
 enum PortalHook
 {
 	case addSettings;
@@ -64,4 +67,130 @@ enum PortalHook
 	case updateTagAreas;
 	case validateBlockParams;
 	case validatePageParams;
+
+	public function createArgs(array $data = []): object
+	{
+		return match ($this) {
+			self::addSettings,
+			self::saveSettings => new class(...$data) {
+				public function __construct(public array &$settings) {}
+			},
+			self::changeIconSet => new class(...$data) {
+				public function __construct(public array &$set) {}
+			},
+			self::commentButtons => new class(...$data) {
+				public function __construct(public readonly array $comment, public array &$buttons) {}
+			},
+			self::credits => new class(...$data) {
+				public function __construct(public array &$links) {}
+			},
+			self::downloadRequest => new class(...$data) {
+				public function __construct(public mixed &$attachRequest) {}
+			},
+			self::extendBasicConfig => new class(...$data) {
+				public function __construct(public array &$configVars) {}
+			},
+			self::findBlockErrors,
+			self::findPageErrors => new class(...$data) {
+				public function __construct(public array &$errors, public readonly array $data) {}
+			},
+			self::frontBoards,
+			self::frontPages,
+			self::frontTopics => new class(...$data) {
+				public function __construct(
+					public array &$columns,
+					public array &$tables,
+					public array &$params,
+					public array &$wheres,
+					public array &$orders
+				) {}
+			},
+			self::frontBoardsRow,
+			self::frontPagesRow,
+			self::frontTopicsRow => new class(...$data) {
+				public function __construct(public array &$articles, public readonly array $row) {}
+			},
+			self::frontLayouts => new class(...$data) {
+				public function __construct(
+					public RendererInterface &$renderer,
+					public string &$layout,
+					public array &$params
+				) {}
+			},
+			self::frontModes => new class(...$data) {
+				public function __construct(public array &$modes) {}
+			},
+			self::importBlocks,
+			self::importCategories => new class(...$data) {
+				public function __construct(public array &$items, public array &$titles) {}
+			},
+			self::importPages => new class(...$data) {
+				public function __construct(
+					public array &$items,
+					public array &$titles,
+					public array &$params,
+					public array &$comments
+				) {}
+			},
+			self::layoutExtensions => new class(...$data) {
+				public function __construct(public array &$extensions) {}
+			},
+			self::onBlockRemoving,
+			self::onPageRemoving => new class(...$data) {
+				public function __construct(public readonly array $items) {}
+			},
+			self::onBlockSaving,
+			self::onPageSaving => new class(...$data) {
+				public function __construct(public readonly int $item) {}
+			},
+			self::parseContent => new class(...$data) {
+				public function __construct(public string &$content, public readonly string $type) {}
+			},
+			self::preloadStyles => new class(...$data) {
+				public function __construct(public array $styles) {}
+			},
+			self::prepareAssets => new class(...$data) {
+				public function __construct(public array &$assets) {}
+			},
+			self::prepareBlockFields,
+			self::preparePageFields => new class(...$data) {
+				public function __construct(public readonly array $options, public readonly string $type) {}
+			},
+			self::prepareBlockParams,
+			self::preparePageParams,
+			self::validateBlockParams,
+			self::validatePageParams => new class(...$data) {
+				public function __construct(public array &$params, public readonly string $type) {}
+			},
+			self::prepareContent => new class(...$data) {
+				public function __construct(
+					public readonly string $type,
+					public readonly int $id,
+					public readonly int $cacheTime,
+					public readonly ParamWrapper $parameters
+				) {}
+			},
+			self::prepareEditor => new class(...$data) {
+				public function __construct(public readonly array $object) {}
+			},
+			self::prepareIconList => new class(...$data) {
+				public function __construct(public array &$icons, public string &$template) {}
+			},
+			self::prepareIconTemplate => new class(...$data) {
+				public function __construct(public string &$template, public readonly string $icon) {}
+			},
+			self::preparePageData => new class(...$data) {
+				public function __construct(public array &$data, public readonly bool $isAuthor) {}
+			},
+			self::updateAdminAreas,
+			self::updateBlockAreas,
+			self::updatePageAreas,
+			self::updateCategoryAreas,
+			self::updateTagAreas,
+			self::updatePluginAreas => new class(...$data) {
+				public function __construct(public array &$areas) {}
+			},
+			default => new class {},
+		};
+	}
 }

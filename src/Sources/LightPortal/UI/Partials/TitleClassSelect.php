@@ -15,6 +15,8 @@ namespace Bugo\LightPortal\UI\Partials;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 
+use Bugo\LightPortal\Enums\TitleClass;
+
 use function func_get_args;
 use function json_encode;
 use function sprintf;
@@ -27,7 +29,7 @@ final class TitleClassSelect extends AbstractPartial
 		$params = $params[0] ?? [];
 
 		$params['id'] ??= 'title_class';
-		$params['data'] ??= Utils::$context['lp_all_title_classes'] ?? [];
+		$params['data'] ??= TitleClass::values() ?? [];
 		$params['value'] ??= Utils::$context['lp_block']['title_class'] ?? '';
 
 		$data = [];

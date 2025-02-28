@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 06.01.25
+ * @version 19.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\BoardStats;
@@ -109,7 +109,7 @@ class BoardStats extends Block
 	{
 		$parameters = $e->args->parameters;
 
-		$boardStats = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
+		$boardStats = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$me->id)
 			->setLifeTime(Typed::int($parameters['update_interval']))
 			->setFallback(fn() => $this->getData($parameters));
 
@@ -136,7 +136,7 @@ class BoardStats extends Block
 		}
 
 		if ($parameters['show_basic_info'] && $boardStats['basic_info']) {
-			$statsTitle = User::hasPermission('view_stats')
+			$statsTitle = User::$me->allowedTo('view_stats')
 				? Str::html('a', Lang::$txt['forum_stats'])->href(Config::$scripturl . '?action=stats')
 				: Lang::$txt['forum_stats'];
 
@@ -151,7 +151,7 @@ class BoardStats extends Block
 
 			$basicInfoList = Str::html('ul')->class('bbc_list');
 
-			if (User::hasPermission('view_stats')) {
+			if (User::$me->allowedTo('view_stats')) {
 				$basicInfoList->addHtml(
 					Str::html('li')
 						->setText(Lang::$txt['members'] . ': ' . $boardStats['basic_info']['members']) .
@@ -174,7 +174,7 @@ class BoardStats extends Block
 		}
 
 		if ($parameters['show_whos_online'] && $boardStats['whos_online']) {
-			$onlineTitle = User::hasPermission('who_view')
+			$onlineTitle = User::$me->allowedTo('who_view')
 				? Str::html('a', Lang::$txt['online_users'])->href(Config::$scripturl . '?action=who')
 				: Lang::$txt['online_users'];
 

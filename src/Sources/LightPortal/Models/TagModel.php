@@ -14,9 +14,6 @@ namespace Bugo\LightPortal\Models;
 
 use Bugo\LightPortal\Enums\Status;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
 class TagModel extends AbstractModel
 {
 	public int $id;
@@ -27,17 +24,11 @@ class TagModel extends AbstractModel
 
 	public array $titles = [];
 
-	public function __construct(array $postData, array $currentTag)
+	public function __construct(array $data)
 	{
-		$this->id = $postData['tag_id'] ?? $currentTag['id'] ?? 0;
-
-		$this->icon = $postData['icon'] ?? $currentTag['icon'] ?? '';
-
-		$this->status = $currentTag['status'] ?? Status::ACTIVE->value;
-	}
-
-	protected static function getTableName(): string
-	{
-		return 'lp_tags';
+		$this->id     = $data['tag_id'] ?? $data['id'] ?? 0;
+		$this->icon   = $data['icon'] ?? '';
+		$this->status = $data['status'] ?? Status::ACTIVE->value;
+		$this->titles = $data['titles'] ?? [];
 	}
 }

@@ -19,11 +19,16 @@ use function json_encode;
 
 class Response
 {
-	public function json(mixed $data, int $flags = 0): never
+	public function json(mixed $data, int $flags = 0): false|string
 	{
 		header('Content-Type: application/json; charset=utf-8');
 
-		exit(json_encode($data, $flags));
+		return json_encode($data, $flags);
+	}
+
+	public function exit(mixed $data, int $flags = 0): never
+	{
+		exit($this->json($data, $flags));
 	}
 
 	public function redirect(string $url = ''): void

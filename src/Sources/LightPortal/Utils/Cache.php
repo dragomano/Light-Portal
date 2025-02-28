@@ -13,13 +13,14 @@
 namespace Bugo\LightPortal\Utils;
 
 use Bugo\Compat\Cache\CacheApi;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class Cache implements CacheInterface
 {
-	use RequestTrait;
+	use HasRequest;
 
 	private string $prefix = 'lp_';
 

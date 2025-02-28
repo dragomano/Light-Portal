@@ -21,15 +21,14 @@ use Bugo\Compat\Security;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Events\EventArgs;
-use Bugo\LightPortal\Events\EventManagerFactory;
+use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Lists\PluginList;
-use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\RequestTrait;
-use Bugo\LightPortal\Utils\ResponseTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasCache;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
+use Bugo\LightPortal\Utils\Traits\HasResponse;
 
 use function array_filter;
 use function array_flip;
@@ -45,9 +44,10 @@ if (! defined('SMF'))
 
 final class BlockRepository extends AbstractRepository
 {
-	use CacheTrait;
-	use RequestTrait;
-	use ResponseTrait;
+	use HasCache;
+	use HasEvents;
+	use HasRequest;
+	use HasResponse;
 
 	protected string $entity = 'block';
 
@@ -190,10 +190,7 @@ final class BlockRepository extends AbstractRepository
 		if ($items === [])
 			return;
 
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::onBlockRemoving,
-			new EventArgs(['items' => $items])
-		);
+		$this->events()->dispatch(PortalHook::onBlockRemoving, ['items' => $items]);
 
 		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_blocks
@@ -354,10 +351,7 @@ final class BlockRepository extends AbstractRepository
 			return 0;
 		}
 
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::onBlockSaving,
-			new EventArgs(['item' => $item])
-		);
+		$this->events()->dispatch(PortalHook::onBlockSaving, ['item' => $item]);
 
 		$this->saveTitles($item);
 		$this->saveOptions($item);
@@ -391,10 +385,7 @@ final class BlockRepository extends AbstractRepository
 			]
 		);
 
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::onBlockSaving,
-			new EventArgs(['item' => $item])
-		);
+		$this->events()->dispatch(PortalHook::onBlockSaving, ['item' => $item]);
 
 		$this->saveTitles($item, 'replace');
 		$this->saveOptions($item, 'replace');
@@ -414,7 +405,7 @@ final class BlockRepository extends AbstractRepository
 
 		$plugin = Str::getCamelName($type);
 
-		$message = in_array($plugin, app(PluginList::class))
+		$message = in_array($plugin, app(PluginList::class)())
 			? Lang::$txt['lp_addon_not_activated']
 			: Lang::$txt['lp_addon_not_installed'];
 

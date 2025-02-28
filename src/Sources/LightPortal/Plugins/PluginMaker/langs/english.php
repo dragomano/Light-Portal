@@ -10,7 +10,7 @@ return [
 	'tab_copyrights' => 'Copyrights',
 	'tab_tuning' => 'Additional',
 	'name' => 'The plugin name',
-	'name_subtext' => 'In Latin letters, without spaces!',
+	'name_subtext' => 'Starts with a capital letter, no numbers, spaces, or symbols, only Latin letters.',
 	'type' => 'The plugin type',
 	'site_subtext' => 'Website where users can download new versions of this plugin.',
 	'license' => 'The plugin license',

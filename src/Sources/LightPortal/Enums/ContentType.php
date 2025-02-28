@@ -14,7 +14,7 @@ namespace Bugo\LightPortal\Enums;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
-use Bugo\LightPortal\Enums\Traits\HasNamesTrait;
+use Bugo\LightPortal\Enums\Traits\HasNames;
 
 use function array_keys;
 use function array_reduce;
@@ -22,7 +22,7 @@ use function array_slice;
 
 enum ContentType
 {
-	use HasNamesTrait;
+	use HasNames;
 
 	case BBC;
 	case HTML;
@@ -36,7 +36,7 @@ enum ContentType
 			self::PHP->name()  => Lang::$txt['lp_php']['title'],
 		];
 
-		return User::$info['is_admin'] ? $types : array_slice($types, 0, 2);
+		return User::$me->is_admin ? $types : array_slice($types, 0, 2);
 	}
 
 	public static function icon(string $type): string

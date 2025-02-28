@@ -18,7 +18,7 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Areas\Imports\Traits\WithCommentsTrait;
+use Bugo\LightPortal\Areas\Imports\Traits\HasComments;
 
 use function intval;
 use function str_replace;
@@ -33,13 +33,13 @@ if (! defined('SMF'))
  */
 final class PageImport extends AbstractImport
 {
-	use WithCommentsTrait;
+	use HasComments;
 
 	protected string $entity = 'pages';
 
 	public function main(): void
 	{
-		User::mustHavePermission('admin_forum');
+		User::$me->isAllowedTo('admin_forum');
 
 		Theme::loadTemplate('LightPortal/ManageImpex');
 

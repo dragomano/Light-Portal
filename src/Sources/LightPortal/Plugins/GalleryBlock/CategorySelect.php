@@ -18,11 +18,11 @@ use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\UI\Partials\AbstractPartial;
-use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\Traits\HasCache;
 
 final class CategorySelect extends AbstractPartial
 {
-	use CacheTrait;
+	use HasCache;
 
 	public function __invoke(): string
 	{

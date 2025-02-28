@@ -30,13 +30,13 @@ final class PageSlugSelect extends AbstractPartial
 
 		$params['id'] ??= 'lp_frontpage_chosen_page';
 		$params['value'] ??= Config::$modSettings['lp_frontpage_chosen_page'] ?? '';
-		$params['data'] ??= app(PageList::class);
+		$params['data'] ??= app(PageList::class)();
 
 		$data = [];
 		foreach ($params['data'] as $page) {
 			$data[] = [
 				'label' => $page['title'],
-				'value' => $page['slug']
+				'value' => $page['slug'],
 			];
 		}
 

@@ -1,7 +1,6 @@
-@empty ($context['lp_active_blocks'])
-<div class="col-xs">
-@endempty
+@extends('partials.base')
 
+@section('content')
 	@include('partials.pagination')
 
 	<div class="simple-grid columns-{{ $context['lp_frontpage_num_columns'] }}">
@@ -19,7 +18,4 @@
 	</div>
 
 	@include('partials.pagination', ['position' => 'bottom'])
-
-@empty ($context['lp_active_blocks'])
-</div>
-@endempty
+@endsection

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 06.01.25
+ * @version 19.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\WhosOnline;
@@ -71,7 +71,7 @@ class WhosOnline extends Block
 	{
 		$parameters = $e->args->parameters;
 
-		$whoIsOnline = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
+		$whoIsOnline = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$me->id)
 			->setLifeTime(Typed::int($parameters['update_interval']))
 			->setFallback(fn() => $this->getFromSSI('whosOnline', 'array'));
 
@@ -83,7 +83,7 @@ class WhosOnline extends Block
 
 		$onlineList = [];
 
-		if (User::$info['buddies'] && $whoIsOnline['num_buddies']) {
+		if (User::$me->buddies && $whoIsOnline['num_buddies']) {
 			$onlineList[] = Lang::getTxt('lp_buddies_set', ['buddies' => $whoIsOnline['num_buddies']]);
 		}
 
@@ -123,7 +123,7 @@ class WhosOnline extends Block
 
 				$color = empty($group['color']) ? null : 'color: ' . $group['color'];
 
-				if (User::hasPermission('view_mlist')) {
+				if (User::$me->allowedTo('view_mlist')) {
 					$groups[] = Str::html('a', $group['name'])
 						->href(Config::$scripturl . '?action=groups;sa=members;group=' . $group['id'])
 						->style($color);

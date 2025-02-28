@@ -40,7 +40,7 @@ class EventManager
 		$this->eventManager = new DoctrineEventManager();
 	}
 
-	public function addListeners(array $hooks, PluginInterface $listener): void
+	public function addHookListener(array $hooks, PluginInterface $listener): void
 	{
 		$hooks = array_map(fn($item) => $item->name, $hooks);
 		$hooks = array_filter($hooks, fn($item) => method_exists($listener, $item));
@@ -48,8 +48,10 @@ class EventManager
 		$this->eventManager->addEventListener($hooks, $listener);
 	}
 
-	public function dispatch(PortalHook $hook, ?EventArgs $args = null): void
+	public function dispatch(PortalHook $hook, array $params = []): void
 	{
+		$args = $hook->createArgs($params);
+
 		/* @var PluginInterface $listener */
 		foreach ($this->getAll($hook->name) as $listener) {
 			if (
@@ -62,7 +64,7 @@ class EventManager
 				}
 			}
 
-			$event = new Event($args ?: new class {});
+			$event = new Event($args);
 
 			$listener->{$hook->name}($event);
 		}

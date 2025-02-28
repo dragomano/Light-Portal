@@ -8,7 +8,7 @@
  * @license Individual (for sponsors)
  *
  * @category plugin
- * @version 03.12.24
+ * @version 19.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\SiteList;
@@ -41,7 +41,7 @@ class SiteArticle extends AbstractArticle
 				'title'     => $data[1] ?: $url,
 				'is_new'    => false,
 				'edit_link' => Config::$scripturl . '?action=admin;area=lp_plugins',
-				'can_edit'  => User::$info['is_admin'],
+				'can_edit'  => User::$me->is_admin,
 				'link'      => $url,
 				'msg_link'  => $url,
 				'teaser'    => $data[2] ?? '',

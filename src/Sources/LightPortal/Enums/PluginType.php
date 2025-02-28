@@ -13,13 +13,13 @@
 namespace Bugo\LightPortal\Enums;
 
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Enums\Traits\HasNamesTrait;
+use Bugo\LightPortal\Enums\Traits\HasNames;
 
 use function array_combine;
 
 enum PluginType
 {
-	use HasNamesTrait;
+	use HasNames;
 
 	case BLOCK;
 	case SSI;

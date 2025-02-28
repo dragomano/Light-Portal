@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 07.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\CategoryList;
@@ -29,7 +29,7 @@ class CategoryList extends Block
 
 	public function getData(): array
 	{
-		return (app(Category::class))->getAll(0, 0, 'c.priority');
+		return app(Category::class)->getAll(0, 0, 'c.priority');
 	}
 
 	public function prepareContent(Event $e): void

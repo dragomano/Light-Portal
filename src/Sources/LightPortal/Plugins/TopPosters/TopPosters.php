@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.01.25
+ * @version 19.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\TopPosters;
@@ -94,7 +94,7 @@ class TopPosters extends Block
 					'id'     => $row['id_member'],
 					'name'   => $row['real_name'],
 					'posts'  => $row['posts'],
-					'link'   => User::hasPermission('profile_view')
+					'link'   => User::$me->allowedTo('profile_view')
 						? Str::html('a', $row['real_name'])
 							->href(Config::$scripturl . '?action=profile;u=' . $row['id_member'])
 							->toHtml()
@@ -116,7 +116,7 @@ class TopPosters extends Block
 	{
 		$parameters = $e->args->parameters;
 
-		$topPosters = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
+		$topPosters = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$me->id)
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(fn() => $this->getData($parameters));
 

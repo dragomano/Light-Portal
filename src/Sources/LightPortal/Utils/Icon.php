@@ -14,7 +14,6 @@ namespace Bugo\LightPortal\Utils;
 
 use Bugo\FontAwesome\IconBuilder;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\EventArgs;
 use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Lists\IconList;
 
@@ -45,7 +44,10 @@ final class Icon
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::prepareIconTemplate,
-			new EventArgs(['template' => &$template, 'icon' => $icon])
+			[
+				'template' => &$template,
+				'icon'     => $icon,
+			]
 		);
 
 		return $template;
@@ -53,6 +55,6 @@ final class Icon
 
 	public static function all(): array
 	{
-		return app(IconList::class);
+		return app(IconList::class)();
 	}
 }

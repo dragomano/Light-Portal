@@ -18,16 +18,15 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\AlertAction;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
-use Bugo\LightPortal\Events\EventArgs;
-use Bugo\LightPortal\Events\EventManagerFactory;
+use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Repositories\CommentRepository;
 use Bugo\LightPortal\Utils\Avatar;
-use Bugo\LightPortal\Utils\CacheTrait;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\Notify;
-use Bugo\LightPortal\Utils\RequestTrait;
-use Bugo\LightPortal\Utils\ResponseTrait;
 use Bugo\LightPortal\Utils\Setting;
+use Bugo\LightPortal\Utils\Traits\HasCache;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
+use Bugo\LightPortal\Utils\Traits\HasResponse;
 use WPLake\Typed\Typed;
 
 use function array_map;
@@ -44,9 +43,10 @@ if (! defined('SMF'))
 
 final class Comment implements ActionInterface
 {
-	use CacheTrait;
-	use RequestTrait;
-	use ResponseTrait;
+	use HasCache;
+	use HasEvents;
+	use HasRequest;
+	use HasResponse;
 
 	private string $pageSlug;
 
@@ -67,8 +67,6 @@ final class Comment implements ActionInterface
 		if (empty($this->pageSlug) || $this->request()->isEmpty('api'))
 			return;
 
-		header('Content-Type: application/json; charset=utf-8');
-
 		match ($this->request()->get('api')) {
 			'add_comment'    => $this->add(),
 			'update_comment' => $this->update(),
@@ -88,9 +86,12 @@ final class Comment implements ActionInterface
 			$comment['authorial']     = Utils::$context['lp_page']['author_id'] === $comment['poster']['id'];
 			$comment['extra_buttons'] = [];
 
-			app(EventManagerFactory::class)()->dispatch(
+			$this->events()->dispatch(
 				PortalHook::commentButtons,
-				new EventArgs(['comment' => $comment, 'buttons' => &$comment['extra_buttons']])
+				[
+					'comment' => $comment,
+					'buttons' => &$comment['extra_buttons'],
+				]
 			);
 
 			return $comment;
@@ -117,23 +118,19 @@ final class Comment implements ActionInterface
 			'limit'        => $limit,
 		];
 
-		$this->response()->json($result);
+		$this->response()->exit($result);
 	}
 
 	private function add(): never
 	{
+		$data = $this->request()->json();
+
 		$result = [
 			'id' => null,
 		];
 
-		if (empty(User::$info['id'])) {
-			$this->response()->json($result);
-		}
-
-		$data = $this->request()->json();
-
-		if (empty($data['message'])) {
-			$this->response()->json($result);
+		if (empty($data['message']) || User::$me->is_guest) {
+			$this->response()->exit($result);
 		}
 
 		$parentId = VarType::INTEGER->filter($data['parent_id']);
@@ -143,13 +140,13 @@ final class Comment implements ActionInterface
 		$pageUrl  = Utils::$context['canonical_url'];
 
 		if (empty($pageId) || empty($message)) {
-			$this->response()->json($result);
+			$this->response()->exit($result);
 		}
 
 		$item = $this->repository->save([
 			'parent_id'  => $parentId,
 			'page_id'    => $pageId,
-			'author_id'  => User::$info['id'],
+			'author_id'  => User::$me->id,
 			'message'    => $message,
 			'created_at' => $time = time(),
 		]);
@@ -166,9 +163,9 @@ final class Comment implements ActionInterface
 				'human_date'   => DateTime::relative($time),
 				'can_edit'     => true,
 				'poster'       => [
-					'id'     => User::$info['id'],
-					'name'   => User::$info['name'],
-					'avatar' => Avatar::get(User::$info['id']),
+					'id'     => User::$me->id,
+					'name'   => User::$me->name,
+					'avatar' => Avatar::get(User::$me->id),
 				],
 			];
 
@@ -189,7 +186,7 @@ final class Comment implements ActionInterface
 
 		http_response_code(201);
 
-		$this->response()->json($result);
+		$this->response()->exit($result);
 	}
 
 	private function update(): never
@@ -200,8 +197,8 @@ final class Comment implements ActionInterface
 			'success' => false,
 		];
 
-		if (empty($data) || Utils::$context['user']['is_guest']) {
-			$this->response()->json($result);
+		if (empty($data) || User::$me->is_guest) {
+			$this->response()->exit($result);
 		}
 
 		$item    = $data['comment_id'];
@@ -209,7 +206,7 @@ final class Comment implements ActionInterface
 		$message = Utils::htmlspecialchars($message);
 
 		if (empty($item) || $message === '') {
-			$this->response()->json($result);
+			$this->response()->exit($result);
 		}
 
 		$this->repository->update([
@@ -225,7 +222,7 @@ final class Comment implements ActionInterface
 
 		$this->cache()->forget('page_' . $this->pageSlug . '_comments');
 
-		$this->response()->json($result);
+		$this->response()->exit($result);
 	}
 
 	private function remove(): never
@@ -233,14 +230,14 @@ final class Comment implements ActionInterface
 		$item = (int) $this->request()->json('comment_id');
 
 		if (empty($item)) {
-			$this->response()->json(['success' => false]);
+			$this->response()->exit(['success' => false]);
 		}
 
 		$items = $this->repository->remove($item, $this->pageSlug);
 
 		$this->cache()->forget('page_' . $this->pageSlug . '_comments');
 
-		$this->response()->json(['success' => true, 'items' => $items]);
+		$this->response()->exit(['success' => true, 'items' => $items]);
 	}
 
 	private function getTree(array $data): array

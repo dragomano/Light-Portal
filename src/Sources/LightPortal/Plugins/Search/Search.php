@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 02.02.25
+ * @version 20.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\Search;
@@ -63,13 +63,11 @@ class Search extends Block
 		Utils::$context['page_title'] = $this->txt['title'];
 		Utils::$context['robot_no_index'] = true;
 
-		Utils::$context['linktree'][] = [
-			'name' => Utils::$context['page_title']
-		];
+		$this->breadcrumbs()->add(Utils::$context['page_title']);
 
 		Utils::$context['search_results'] = $this->getResults();
 
-		$this->setTemplate()->withSubTemplate('show_results');
+		$this->useTemplate()->withSubTemplate('show_results');
 
 		Utils::obExit();
 	}
@@ -83,7 +81,7 @@ class Search extends Block
 
 		$query = Utils::$smcFunc['htmltrim'](Utils::htmlspecialchars($data['phrase']));
 
-		$this->response()->json($this->query($query));
+		$this->response()->exit($this->query($query));
 	}
 
 	private function getResults(): array

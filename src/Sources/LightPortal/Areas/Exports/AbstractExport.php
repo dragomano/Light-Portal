@@ -13,7 +13,7 @@
 namespace Bugo\LightPortal\Areas\Exports;
 
 use Bugo\Compat\Sapi;
-use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
 use Closure;
 
 use function basename;
@@ -32,7 +32,7 @@ if (! defined('SMF'))
 
 abstract class AbstractExport implements ExportInterface
 {
-	use RequestTrait;
+	use HasRequest;
 
 	abstract protected function getData(): array;
 

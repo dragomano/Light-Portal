@@ -13,8 +13,6 @@ namespace Bugo\LightPortal\Areas\Imports;
 
 use Bugo\Compat\Config;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\EventArgs;
-use Bugo\LightPortal\Events\EventManagerFactory;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -25,10 +23,7 @@ abstract class AbstractCustomBlockImport extends AbstractCustomImport
 
 	protected function importItems(array &$items, array &$titles): array
 	{
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::importBlocks,
-			new EventArgs(['items' => &$items, 'titles' => &$titles])
-		);
+		$this->events()->dispatch(PortalHook::importBlocks, ['items' => &$items, 'titles' => &$titles]);
 
 		foreach ($items as $id => $item) {
 			$titles[] = [

@@ -14,7 +14,6 @@ namespace Bugo\LightPortal\Plugins;
 
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\EventArgs;
 use Bugo\LightPortal\Events\EventManager;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
@@ -77,10 +76,7 @@ final class PluginHandler
 	{
 		$assets = [];
 
-		$this->manager->dispatch(
-			PortalHook::prepareAssets,
-			new EventArgs(['assets' => &$assets])
-		);
+		$this->manager->dispatch(PortalHook::prepareAssets, ['assets' => &$assets]);
 
 		$this->assetHandler->prepare($assets);
 	}
@@ -102,7 +98,7 @@ final class PluginHandler
 
 			app()->add($className)->addTag('plugins');
 
-			$this->manager->addListeners(PortalHook::cases(), app($className));
+			$this->manager->addHookListener(PortalHook::cases(), app($className));
 		}
 	}
 

@@ -31,7 +31,7 @@ class Dragula extends Plugin
 
 	public function init(): void
 	{
-		if (! User::hasPermission('admin_forum'))
+		if (! User::$me->allowedTo('admin_forum'))
 			return;
 
 		foreach (Placement::all() as $alias => $placement) {

@@ -91,7 +91,7 @@ function template_page_post(): void
 		onsubmit="submitonce(this);"
 		x-data="{ tab: window.location.hash ? window.location.hash.substring(1) : \'', Config::$language, '\'', $titles, ' }"
 	>
-		<div class="roundframe', isset(Utils::$context['preview_content']) ? '' : ' noup', '">
+		<div class="roundframe">
 			<div class="lp_tabs">
 				<div data-navigation>
 					<div class="bg odd active_navigation" data-tab="common">', Icon::get('content'), Lang::$txt['lp_tab_content'], '</div>

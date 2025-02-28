@@ -17,7 +17,7 @@ use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Plugins\AdsBlock\Placement;
-use Bugo\LightPortal\Utils\RequestTrait;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
 
 use function array_filter;
 use function array_flip;
@@ -31,7 +31,7 @@ use function time;
 
 class MenuButtons
 {
-	use RequestTrait;
+	use HasRequest;
 
 	public function __invoke(): void
 	{

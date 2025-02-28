@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 20.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\CurrentMonth;
@@ -64,7 +64,7 @@ class CurrentMonth extends Block
 	{
 		$id = $e->args->id;
 
-		$calendarData = $this->cache($this->name . '_addon_u' . User::$info['id'])
+		$calendarData = $this->cache($this->name . '_addon_u' . User::$me->id)
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(fn() => $this->getData());
 
@@ -78,12 +78,12 @@ class CurrentMonth extends Block
 				Utils::$context['preview_title'] = $title;
 			} elseif (
 				$id
-				&& empty(Utils::$context['lp_active_blocks'][$id]['titles'][User::$info['language']])
+				&& empty(Utils::$context['lp_active_blocks'][$id]['titles'][User::$me->language])
 			) {
-				Utils::$context['lp_active_blocks'][$id]['titles'][User::$info['language']] = $title;
+				Utils::$context['lp_active_blocks'][$id]['titles'][User::$me->language] = $title;
 			}
 
-			$this->setTemplate();
+			$this->useTemplate();
 
 			show_current_month_grid($calendarData);
 		}

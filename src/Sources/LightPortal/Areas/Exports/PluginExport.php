@@ -50,7 +50,7 @@ final class PluginExport extends AbstractExport
 			'description' => Lang::$txt['lp_plugins_export_description'],
 		];
 
-		Utils::$context['lp_plugins'] = app(PluginList::class);
+		Utils::$context['lp_plugins'] = app(PluginList::class)();
 
 		$this->run();
 	}

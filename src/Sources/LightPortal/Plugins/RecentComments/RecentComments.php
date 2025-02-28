@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.01.25
+ * @version 19.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\RecentComments;
@@ -127,7 +127,7 @@ class RecentComments extends Block
 	{
 		$parameters = $e->args->parameters;
 
-		$comments = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$info['id'])
+		$comments = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$me->id)
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(fn() => $this->getData(
 				Typed::int($parameters['num_comments'], default: 10),

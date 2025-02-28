@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 /**
  * @package Light Portal
@@ -24,17 +22,14 @@ use Bugo\Compat\Security;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Areas\Traits\AreaTrait;
-use Bugo\LightPortal\Areas\Validators\PageValidator;
+use Bugo\LightPortal\Areas\Traits\HasArea;
 use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Events\EventArgs;
-use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Lists\CategoryList;
-use Bugo\LightPortal\Models\PageModel;
+use Bugo\LightPortal\Models\PageFactory;
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\CustomField;
@@ -42,7 +37,6 @@ use Bugo\LightPortal\UI\Fields\TextareaField;
 use Bugo\LightPortal\UI\Fields\TextField;
 use Bugo\LightPortal\UI\Partials\CategorySelect;
 use Bugo\LightPortal\UI\Partials\EntryTypeSelect;
-use Bugo\LightPortal\UI\Partials\PageAuthorSelect;
 use Bugo\LightPortal\UI\Partials\PageIconSelect;
 use Bugo\LightPortal\UI\Partials\PermissionSelect;
 use Bugo\LightPortal\UI\Partials\StatusSelect;
@@ -63,17 +57,21 @@ use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Validators\PageValidator;
 use WPLake\Typed\Typed;
 
 use function array_column;
 use function array_diff;
+use function array_diff_key;
+use function array_keys;
 use function array_merge;
 use function array_multisort;
 use function base64_encode;
 use function count;
 use function filter_input;
+use function get_debug_type;
 use function implode;
-use function is_array;
+use function settype;
 use function strtoupper;
 use function time;
 use function trim;
@@ -85,7 +83,7 @@ if (! defined('SMF'))
 
 final class PageArea
 {
-	use AreaTrait;
+	use HasArea;
 
 	private array $params = [];
 
@@ -113,7 +111,7 @@ final class PageArea
 		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_pages;sa=main';
 
 		$menu = Utils::$context['admin_menu_name'];
-		$key  = Utils::$context['allow_light_portal_manage_pages_any'] && $this->request()->hasNot('u') ? 'all' : 'own';
+		$key  = User::$me->allowedTo('light_portal_manage_pages_any') && $this->request()->hasNot('u') ? 'all' : 'own';
 		$tabs = [
 			'title'       => LP_NAME,
 			'description' => implode('', [
@@ -194,9 +192,10 @@ final class PageArea
 
 		Utils::$context['sub_template'] = 'page_add';
 
-		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_pages_add_title'];
+		Utils::$context['page_title']  = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_pages_add_title'];
+		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_pages;sa=add';
+
 		Utils::$context['page_area_title'] = Lang::$txt['lp_pages_add_title'];
-		Utils::$context['form_action']     = Config::$scripturl . '?action=admin;area=lp_pages;sa=add';
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
@@ -233,7 +232,10 @@ final class PageArea
 
 		Utils::$context['sub_template'] = 'page_post';
 
-		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_pages_edit_title'];
+		Utils::$context['page_title']  = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_pages_edit_title'];
+		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $item;
+
+		Utils::$context['page_area_title'] = Lang::$txt['lp_pages_edit_title'];
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
@@ -257,25 +259,19 @@ final class PageArea
 		Language::prepareList();
 
 		if ($this->request()->has('remove')) {
-			if (Utils::$context['lp_current_page']['author_id'] !== User::$info['id']) {
+			if (Utils::$context['lp_current_page']['author_id'] !== User::$me->id) {
 				Logging::logAction('remove_lp_page', [
-					'page' => Utils::$context['lp_current_page']['titles'][User::$info['language']]
+					'page' => Utils::$context['lp_current_page']['titles'][User::$me->language]
 				]);
 			}
 
 			$this->repository->remove([$item]);
 
 			$this->cache()->flush();
-
 			$this->response()->redirect('action=admin;area=lp_pages');
 		}
 
 		$this->validateData();
-
-		$pageTitle = Utils::$context['lp_page']['titles'][Utils::$context['user']['language']] ?? '';
-		Utils::$context['page_area_title'] = Lang::$txt['lp_pages_edit_title'] . ($pageTitle ? ' - ' . $pageTitle : '');
-		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . Utils::$context['lp_page']['id'];
-
 		$this->prepareFormFields();
 		$this->prepareEditor();
 		$this->preparePreview();
@@ -389,7 +385,7 @@ final class PageArea
 
 		if ($this->request()->has('u')) {
 			$this->browseType = 'own';
-			$this->type = ';u=' . User::$info['id'];
+			$this->type = ';u=' . User::$me->id;
 		} elseif ($this->request()->has('moderate')) {
 			$this->browseType = 'mod';
 			$this->type = ';moderate';
@@ -408,7 +404,7 @@ final class PageArea
 				Utils::$context['lp_quantities']['active_pages']
 			],
 			'own' => [
-				';u=' . User::$info['id'],
+				';u=' . User::$me->id,
 				Lang::$txt['lp_my_pages'],
 				Utils::$context['lp_quantities']['my_pages']
 			],
@@ -424,7 +420,7 @@ final class PageArea
 			]
 		];
 
-		if (! Utils::$context['allow_light_portal_manage_pages_any']) {
+		if (! User::$me->allowedTo('light_portal_manage_pages_any')) {
 			unset($titles['all'], $titles['mod'], $titles['del']);
 		}
 
@@ -463,12 +459,12 @@ final class PageArea
 		Config::updateModSettings(['lp_frontpage_pages' => implode(',', $items)]);
 	}
 
-	private function getParams(): array
+	private function getDefaultOptions(): array
 	{
 		$baseParams = [
-			'show_title'           => true,
-			'show_in_menu'         => false,
 			'page_icon'            => '',
+			'show_in_menu'         => false,
+			'show_title'           => true,
 			'show_author_and_date' => true,
 			'show_related_pages'   => false,
 			'allow_comments'       => false,
@@ -476,9 +472,12 @@ final class PageArea
 
 		$params = [];
 
-		app(EventManagerFactory::class)()->dispatch(
+		$this->events()->dispatch(
 			PortalHook::preparePageParams,
-			new EventArgs(['params' => &$params, 'type' => Utils::$context['lp_current_page']['type']])
+			[
+				'params' => &$params,
+				'type'   => Utils::$context['lp_current_page']['type'],
+			]
 		);
 
 		return array_merge($baseParams, $params);
@@ -486,44 +485,29 @@ final class PageArea
 
 	private function validateData(): void
 	{
-		[$postData, $parameters] = (new PageValidator())->validate();
+		$options = $this->getDefaultOptions();
 
-		$options = $this->getParams();
-		$pageOptions = Utils::$context['lp_current_page']['options'] ?? $options;
+		$this->post()->put('type', Utils::$context['lp_current_page']['type']);
 
-		$page = new PageModel($postData, Utils::$context['lp_current_page']);
-		$page->authorId = empty($postData['author_id']) ? $page->authorId : $postData['author_id'];
-		$page->titles = Utils::$context['lp_current_page']['titles'] ?? [];
-		$page->options = $options;
+		Utils::$context['lp_current_page']['options'] ??= $options;
+
+		$validatedData = app(PageValidator::class)->validate();
+
+		$page = app(PageFactory::class)->create(
+			array_merge(Utils::$context['lp_current_page'], $validatedData)
+		);
 
 		$dateTime = DateTime::get();
-		$page->date = $postData['date'] ?? $dateTime->format('Y-m-d');
-		$page->time = $postData['time'] ?? $dateTime->format('H:i');
-
-		foreach (Utils::$context['lp_languages'] as $lang) {
-			$page->titles[$lang['filename']] = $postData['title_' . $lang['filename']] ?? $page->titles[$lang['filename']] ?? '';
-		}
-
-		Str::cleanBbcode($page->titles);
-		Str::cleanBbcode($page->description);
-
-		foreach ($page->options as $option => $value) {
-			if (isset($parameters[$option]) && isset($postData) && ! isset($postData[$option])) {
-				$postData[$option] = 0;
-
-				if ($parameters[$option] === FILTER_DEFAULT) {
-					$postData[$option] = '';
-				}
-
-				if (is_array($parameters[$option]) && $parameters[$option]['flags'] === FILTER_REQUIRE_ARRAY) {
-					$postData[$option] = [];
-				}
-			}
-
-			$page->options[$option] = $postData[$option] ?? $pageOptions[$option] ?? $value;
-		}
+		$page->date ??= $dateTime->format('Y-m-d');
+		$page->time ??= $dateTime->format('H:i');
 
 		Utils::$context['lp_page'] = $page->toArray();
+
+		$missingKeys = array_diff_key($options, Utils::$context['lp_page']['options']);
+
+		foreach (array_keys($missingKeys) as $key) {
+			settype(Utils::$context['lp_page']['options'][$key], get_debug_type($options[$key]));
+		}
 	}
 
 	private function prepareFormFields(): void
@@ -543,6 +527,10 @@ final class PageArea
 			CustomField::make('show_in_menu', Lang::$txt['lp_page_show_in_menu'])
 				->setTab(Tab::ACCESS_PLACEMENT)
 				->setValue(static fn() => new PageIconSelect());
+
+			CustomField::make('status', Lang::$txt['status'])
+				->setTab(Tab::ACCESS_PLACEMENT)
+				->setValue(static fn() => new StatusSelect());
 		}
 
 		CustomField::make('permissions', Lang::$txt['edit_permissions'])
@@ -555,24 +543,13 @@ final class PageArea
 				'id'       => 'category_id',
 				'multiple' => false,
 				'wide'     => false,
-				'data'     => app(CategoryList::class),
+				'data'     => app(CategoryList::class)(),
 				'value'    => Utils::$context['lp_page']['category_id'],
 			]);
 
 		CustomField::make('entry_type', Lang::$txt['lp_page_type'])
 			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(static fn() => new EntryTypeSelect());
-
-		if (Utils::$context['user']['is_admin']) {
-			CustomField::make('status', Lang::$txt['status'])
-				->setTab(Tab::ACCESS_PLACEMENT)
-				->setValue(static fn() => new StatusSelect());
-
-			CustomField::make('author_id', Lang::$txt['lp_page_author'])
-				->setTab(Tab::ACCESS_PLACEMENT)
-				->setDescription(Lang::$txt['lp_page_author_placeholder'])
-				->setValue(static fn() => new PageAuthorSelect());
-		}
 
 		TextField::make('slug', Lang::$txt['lp_page_slug'])
 			->setTab(Tab::SEO)
@@ -582,7 +559,7 @@ final class PageArea
 			->setAttribute('pattern', LP_ALIAS_PATTERN)
 			->setAttribute(
 				'x-slug.lazy.replacement._',
-				empty(Utils::$context['lp_page']['id']) ? 'title_' . User::$info['language'] : '{}'
+				empty(Utils::$context['lp_page']['id']) ? 'title_' . User::$me->language : '{}'
 			)
 			->setValue(Utils::$context['lp_page']['slug']);
 
@@ -632,12 +609,12 @@ final class PageArea
 				->setValue(Utils::$context['lp_page']['options']['allow_comments']);
 		}
 
-		app(EventManagerFactory::class)()->dispatch(
+		$this->events()->dispatch(
 			PortalHook::preparePageFields,
-			new EventArgs([
+			[
 				'options' => Utils::$context['lp_page']['options'],
-				'type' => Utils::$context['lp_page']['type']
-			])
+				'type'    => Utils::$context['lp_page']['type'],
+			]
 		);
 
 		$this->preparePostFields();
@@ -645,10 +622,7 @@ final class PageArea
 
 	private function prepareEditor(): void
 	{
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::prepareEditor,
-			new EventArgs(['object' => Utils::$context['lp_page']])
-		);
+		$this->events()->dispatch(PortalHook::prepareEditor, ['object' => Utils::$context['lp_page']]);
 	}
 
 	private function preparePreview(): void
@@ -658,7 +632,7 @@ final class PageArea
 
 		Security::checkSubmitOnce('free');
 
-		Utils::$context['preview_title']   = Utils::$context['lp_page']['titles'][Utils::$context['user']['language']];
+		Utils::$context['preview_title']   = Utils::$context['lp_page']['titles'][Language::getCurrent()] ?? '';
 		Utils::$context['preview_content'] = Utils::htmlspecialchars(
 			Utils::$context['lp_page']['content'],
 			ENT_QUOTES
@@ -685,8 +659,8 @@ final class PageArea
 
 	private function checkUser(): void
 	{
-		if (Utils::$context['allow_light_portal_manage_pages_any'] === false && $this->request()->hasNot('u')) {
-			$this->response()->redirect('action=admin;area=lp_pages;u=' . User::$info['id']);
+		if (! User::$me->allowedTo('light_portal_manage_pages_any') && $this->request()->hasNot('u')) {
+			$this->response()->redirect('action=admin;area=lp_pages;u=' . User::$me->id);
 		}
 	}
 

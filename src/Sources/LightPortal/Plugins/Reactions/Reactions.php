@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 25.12.24
+ * @version 25.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\Reactions;
@@ -105,18 +105,16 @@ class Reactions extends Plugin
 			if (isset($json['reaction'])) {
 				if (isset($json['comment'])) {
 					$commentReactions = $this->getReactions($json['comment'], 'comment');
-					$commentReactions[User::$info['id']] = $json['reaction'];
-					$this->addReaction($json['comment'], json_encode($commentReactions), 'comment');
-					$this->cache()->forget('page_' . $data['slug'] . '_comments');
+					$commentReactions[User::$me->id] = $json['reaction'];
+					$this->addReaction($json['comment'], json_encode($commentReactions), $data['slug'], 'comment');
 				} else {
-					$reactions[User::$info['id']] = $json['reaction'];
-					$this->addReaction($data['id'], json_encode($reactions));
-					$this->cache()->forget('page_' . $data['slug']);
+					$reactions[User::$me->id] = $json['reaction'];
+					$this->addReaction($data['id'], json_encode($reactions), $data['slug']);
 				}
 			}
 		}
 
-		$this->setTemplate();
+		$this->useTemplate();
 	}
 
 	public function afterPageContent(): void
@@ -134,7 +132,7 @@ class Reactions extends Plugin
 
 		$comment = $e->args->comment;
 
-		$comment['can_react'] = $comment['poster']['id'] !== User::$info['id'];
+		$comment['can_react'] = $comment['poster']['id'] !== User::$me->id;
 		$comment[$this->name] = json_decode($comment['params'][$this->name] ?? '', true) ?? [];
 		$comment['prepared_reactions'] = $this->getReactionsWithCount($comment[$this->name]);
 		$comment['prepared_buttons'] = json_decode($comment['prepared_reactions'], true);
@@ -148,7 +146,7 @@ class Reactions extends Plugin
 
 	private function getReactionsWithCount(array $reactions): string
 	{
-		return json_encode(array_count_values($reactions) ?? '', JSON_FORCE_OBJECT);
+		return $this->response()->json(array_count_values($reactions) ?? '', JSON_FORCE_OBJECT);
 	}
 
 	private function getButtons(): string
@@ -211,7 +209,7 @@ class Reactions extends Plugin
 		return json_decode($reactions ?? '', true) ?? [];
 	}
 
-	private function addReaction(int $id, string $value, string $entity = 'page'): void
+	private function addReaction(int $id, string $value, string $slug, string $entity = 'page'): void
 	{
 		Db::$db->insert('replace',
 			'{db_prefix}lp_params',
@@ -229,5 +227,9 @@ class Reactions extends Plugin
 			],
 			['item_id', 'type', 'name']
 		);
+
+		$this->cache()->forget('page_' . $slug . ($entity === 'comment' ? '_comments' : ''));
+
+		$this->response()->exit(['success' => true]);
 	}
 }

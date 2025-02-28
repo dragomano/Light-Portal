@@ -26,13 +26,12 @@ use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Lists\TagList;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
 use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\RequestTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
 use WPLake\Typed\Typed;
 
 use function array_key_exists;
-use function count;
 use function implode;
 use function sprintf;
 use function time;
@@ -44,7 +43,7 @@ if (! defined('SMF'))
 
 final class Tag extends AbstractPageList
 {
-	use RequestTrait;
+	use HasRequest;
 
 	public function __construct(private readonly CardListInterface $cardList) {}
 
@@ -58,7 +57,7 @@ final class Tag extends AbstractPageList
 			'id' => Typed::int($this->request()->get('id'))
 		];
 
-		$tags = app(TagList::class);
+		$tags = app(TagList::class)();
 		if (array_key_exists($tag['id'], $tags) === false) {
 			Utils::$context['error_link'] = LP_BASE_URL . ';sa=tags';
 			Lang::$txt['back'] = Lang::$txt['lp_all_page_tags'];
@@ -73,20 +72,15 @@ final class Tag extends AbstractPageList
 		Utils::$context['canonical_url']  = LP_BASE_URL . ';sa=tags;id=' . $tag['id'];
 		Utils::$context['robot_no_index'] = true;
 
-		Utils::$context['linktree'][] = [
-			'name' => Lang::$txt['lp_all_page_tags'],
-			'url'  => LP_BASE_URL . ';sa=tags',
-		];
-
-		Utils::$context['linktree'][] = [
-			'name' => $tag['title'],
-		];
+		$this->breadcrumbs()
+			->add(Lang::$txt['lp_all_page_tags'], LP_BASE_URL . ';sa=tags')
+			->add($tag['title']);
 
 		$this->cardList->show($this);
 
 		$builder = $this->cardList->getBuilder('lp_tags');
 		$builder->setItems($this->getPages(...));
-		$builder->setCount(fn() => $this->getTotalCount());
+		$builder->setCount($this->getTotalPages(...));
 
 		app(TablePresenter::class)->show($builder);
 
@@ -126,7 +120,7 @@ final class Tag extends AbstractPageList
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
 			[
-				'lang'          => User::$info['language'],
+				'lang'          => User::$me->language,
 				'fallback_lang' => Config::$language,
 				'id'            => Utils::$context['current_tag'],
 				'status'        => Status::ACTIVE->value,
@@ -146,7 +140,7 @@ final class Tag extends AbstractPageList
 		return $this->getPreparedResults($rows);
 	}
 
-	public function getTotalCount(): int
+	public function getTotalPages(): int
 	{
 		$result = Db::$db->query('', '
 			SELECT COUNT(p.page_id)
@@ -181,9 +175,7 @@ final class Tag extends AbstractPageList
 		Utils::$context['canonical_url']  = LP_BASE_URL . ';sa=tags';
 		Utils::$context['robot_no_index'] = true;
 
-		Utils::$context['linktree'][] = [
-			'name' => Utils::$context['page_title'],
-		];
+		$this->breadcrumbs()->add(Utils::$context['page_title']);
 
 		app(TablePresenter::class)->show(
 			PortalTableBuilder::make('tags', Utils::$context['page_title'])
@@ -194,7 +186,7 @@ final class Tag extends AbstractPageList
 					'value'
 				)
 				->setItems($this->getAll(...))
-				->setCount(fn() => count($this->getAll()))
+				->setCount($this->getTotalCount(...))
 				->addColumns([
 					Column::make('value', Lang::$txt['lp_tag_column'])
 						->setData(static fn($entry) => implode('', [
@@ -234,12 +226,12 @@ final class Tag extends AbstractPageList
 			ORDER BY {raw:sort}' . ($limit ? '
 			LIMIT {int:start}, {int:limit}' : ''),
 			[
-				'lang'          => User::$info['language'],
+				'lang'          => User::$me->language,
 				'fallback_lang' => Config::$language,
+				'status'        => Status::ACTIVE->value,
 				'types'         => EntryType::names(),
 				'current_time'  => time(),
 				'permissions'   => Permission::all(),
-				'status'        => Status::ACTIVE->value,
 				'sort'          => $sort,
 				'start'         => $start,
 				'limit'         => $limit,
@@ -259,5 +251,41 @@ final class Tag extends AbstractPageList
 		Db::$db->free_result($result);
 
 		return $items;
+	}
+
+	public function getTotalCount(): int
+	{
+		$result = Db::$db->query('', /** @lang text */ '
+			SELECT COUNT(DISTINCT tag.tag_id) AS unique_tag_count
+			FROM {db_prefix}lp_pages AS p
+				INNER JOIN {db_prefix}lp_page_tag AS pt ON (p.page_id = pt.page_id)
+				INNER JOIN {db_prefix}lp_tags AS tag ON (pt.tag_id = tag.tag_id)
+				LEFT JOIN {db_prefix}lp_titles AS tt ON (
+					pt.tag_id = tt.item_id AND tt.type = {literal:tag} AND tt.lang = {string:lang}
+				)
+				LEFT JOIN {db_prefix}lp_titles AS tf ON (
+					pt.tag_id = tf.item_id AND tf.type = {literal:tag} AND tf.lang = {string:fallback_lang}
+				)
+			WHERE p.status = {int:status}
+				AND p.entry_type IN ({array_string:types})
+				AND p.created_at <= {int:current_time}
+				AND p.permissions IN ({array_int:permissions})
+				AND tag.status = {int:status}
+			LIMIT 1',
+			[
+				'lang'          => User::$me->language,
+				'fallback_lang' => Config::$language,
+				'status'        => Status::ACTIVE->value,
+				'types'         => EntryType::names(),
+				'current_time'  => time(),
+				'permissions'   => Permission::all(),
+			]
+		);
+
+		[$count] = Db::$db->fetch_row($result);
+
+		Db::$db->free_result($result);
+
+		return (int) $count;
 	}
 }

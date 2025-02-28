@@ -20,17 +20,17 @@ use Bugo\Compat\Utils;
 use Bugo\Compat\WebFetch\WebFetchApi;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
-use Bugo\LightPortal\Events\EventArgs;
-use Bugo\LightPortal\Events\EventManagerFactory;
+use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Lists\PluginList;
 use Bugo\LightPortal\Repositories\PluginRepository;
-use Bugo\LightPortal\Utils\CacheTrait;
+use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Language;
-use Bugo\LightPortal\Utils\RequestTrait;
-use Bugo\LightPortal\Utils\ResponseTrait;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasCache;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
+use Bugo\LightPortal\Utils\Traits\HasResponse;
 
 use function array_filter;
 use function array_flip;
@@ -40,11 +40,13 @@ use function array_map;
 use function array_search;
 use function array_unique;
 use function explode;
-use function header;
+use function file_get_contents;
 use function implode;
 use function in_array;
 use function is_array;
+use function is_file;
 use function ksort;
+use function preg_match;
 use function sort;
 use function sprintf;
 use function unlink;
@@ -57,9 +59,10 @@ if (! defined('SMF'))
 
 final class PluginArea
 {
-	use CacheTrait;
-	use RequestTrait;
-	use ResponseTrait;
+	use HasCache;
+	use HasRequest;
+	use HasResponse;
+	use HasEvents;
 
 	public function __construct(private readonly PluginRepository $repository) {}
 
@@ -84,7 +87,7 @@ final class PluginArea
 			),
 		];
 
-		Utils::$context['lp_plugins'] = app(PluginList::class);
+		Utils::$context['lp_plugins'] = app(PluginList::class)();
 
 		$this->extendPluginList();
 
@@ -95,10 +98,7 @@ final class PluginArea
 		$settings = [];
 
 		// Plugin authors can add settings here
-		app(EventManagerFactory::class)(Utils::$context['lp_plugins'])->dispatch(
-			PortalHook::addSettings,
-			new EventArgs(['settings' => &$settings])
-		);
+		$this->events(Utils::$context['lp_plugins'])->dispatch(PortalHook::addSettings, ['settings' => &$settings]);
 
 		$this->handleSave($settings);
 		$this->prepareAddonList($settings);
@@ -140,7 +140,7 @@ final class PluginArea
 
 		$this->cache()->flush();
 
-		$this->response()->json(['success' => true]);
+		$this->response()->exit(['success' => true]);
 	}
 
 	private function handleSave(array $configVars): void
@@ -170,14 +170,11 @@ final class PluginArea
 		}
 
 		// Plugin authors can do additional actions after settings saving
-		app(EventManagerFactory::class)(Utils::$context['lp_plugins'])->dispatch(
-			PortalHook::saveSettings,
-			new EventArgs(['settings' => &$settings])
-		);
+		$this->events(Utils::$context['lp_plugins'])->dispatch(PortalHook::saveSettings, ['settings' => &$settings]);
 
 		$this->repository->changeSettings($name, $settings);
 
-		$this->response()->json(['success' => true]);
+		$this->response()->exit(['success' => true]);
 	}
 
 	private function prepareAddonList(array $configVars): void
@@ -185,6 +182,14 @@ final class PluginArea
 		Utils::$context['all_lp_plugins'] = array_map(function ($item) use ($configVars) {
 			$snakeName = Str::getSnakeName($item);
 			$pluginData = Utils::$context['lp_loaded_addons'][$snakeName] ?? [];
+
+			$version = $this->getVersion($item);
+			$plugin = Utils::$context['lp_download'][$item] ?? Utils::$context['lp_donate'][$item] ?? [];
+			$outdated = DateTime::dateCompare($version, $plugin['version'] ?? '') ? Lang::$txt['lp_plugin_outdated'] : null;
+			if ($outdated) {
+				$pluginData = [];
+				$configVars[$snakeName] = [];
+			}
 
 			if ($pluginData === []) {
 				if (isset(Utils::$context['lp_donate'][$item])) {
@@ -200,8 +205,10 @@ final class PluginArea
 
 			return [
 				'name'       => $item,
+				'version'    => $version,
+				'outdated'   => $outdated,
 				'snake_name' => $snakeName,
-				'desc'       => Lang::$txt['lp_' . $snakeName]['description'] ?? '',
+				'desc'       => $outdated ?? Lang::$txt['lp_' . $snakeName]['description'] ?? '',
 				'status'     => in_array($item, Setting::getEnabledPlugins()) ? 'on' : 'off',
 				'types'      => $this->getTypes($snakeName),
 				'special'    => $special ?? '',
@@ -209,6 +216,23 @@ final class PluginArea
 				'saveable'   => $pluginData['saveable'] ?? false,
 			];
 		}, Utils::$context['lp_plugins']);
+	}
+
+	private function getVersion(string $item): string
+	{
+		$file = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $item . DIRECTORY_SEPARATOR . $item . '.php';
+
+		if (! is_file($file))
+			return '';
+
+		$docBlock = file_get_contents($file, length: 400);
+
+		$version = '';
+		if ($docBlock && preg_match('/@version\s+([0-9]+\.[0-9]+\.[0-9]+)/', $docBlock, $matches)) {
+			$version = $matches[1];
+		}
+
+		return $version;
 	}
 
 	private function prepareAddonChart(): void
@@ -237,8 +261,7 @@ final class PluginArea
 
 		ksort($typeCount);
 
-		Utils::$context['insert_after_template'] .= /** @lang text */
-			'
+		Utils::$context['insert_after_template'] .= /** @lang text */ '
 		<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.js"></script>
 		<script>
 			new Chart("addon_chart", {
@@ -270,9 +293,7 @@ final class PluginArea
 			return;
 		}
 
-		header('Content-Type: application/json; charset=utf-8');
-
-		$this->response()->json($this->preparedData());
+		$this->response()->exit($this->preparedData());
 	}
 
 	private function preparedData(): array
@@ -308,7 +329,7 @@ final class PluginArea
 			'charset' => Utils::$context['character_set'],
 			'user'    => Utils::$context['user'],
 			'rtl'     => Utils::$context['right_to_left'],
-			'lang'    => Language::getNameFromLocale(User::$info['language']),
+			'lang'    => Language::getNameFromLocale(User::$me->language),
 		];
 
 		$pluginsData = [

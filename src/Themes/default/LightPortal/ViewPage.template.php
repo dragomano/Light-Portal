@@ -12,7 +12,6 @@ function template_show_page(): void
 	<aside class="errorbox">
 		<ul>';
 
-		Utils::$context['lp_page']['errors'] = array_unique(Utils::$context['lp_page']['errors']);
 		foreach (Utils::$context['lp_page']['errors'] as $error) {
 			echo '
 			<li><strong>', $error, '</strong></li>';
@@ -30,11 +29,19 @@ function template_show_page(): void
 			<strong>', Lang::$txt['edit_permissions'], '</strong>: ', Lang::$txt['lp_permissions'][Utils::$context['lp_page']['permissions']], '
 		</div>
 		<div>
-			<a class="button floatright" href="', Config::$scripturl, '?action=admin;area=lp_pages;sa=edit;id=', Utils::$context['lp_page']['id'], '">', Icon::get('edit'), '<span class="hidden-xs">', Lang::$txt['edit'], '</span></a>';
+			<a class="button floatright" href="', Utils::$context['lp_page_edit_link'], '">
+				', Icon::get('edit'), '
+				<span class="hidden-xs">', Lang::$txt['edit'], '</span>
+			</a>';
 
 		if (! (empty(Utils::$context['user']['is_admin']) || empty(Config::$modSettings['lp_frontpage_mode']) || Config::$modSettings['lp_frontpage_mode'] !== 'chosen_pages')) {
 			echo '
-			<a class="button floatright" href="', Utils::$context['canonical_url'], ';promote">', Icon::get('home'), '<span class="hidden-xs hidden-sm">', Lang::$txt['lp_' . (in_array(Utils::$context['lp_page']['id'], Setting::getFrontpagePages()) ? 'remove_from' : 'promote_to') . '_fp'], '</span></a>';
+			<a class="button floatright" href="', Utils::$context['canonical_url'], ';promote">
+				', Icon::get('home'), '
+				<span class="hidden-xs hidden-sm">
+					', Lang::$txt['lp_' . (in_array(Utils::$context['lp_page']['id'], Setting::getFrontpagePages()) ? 'remove_from' : 'promote_to') . '_fp'], '
+				</span>
+			</a>';
 		}
 
 		echo '

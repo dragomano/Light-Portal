@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 23.01.25
+ * @version 19.02.25
  */
 
 namespace Bugo\LightPortal\Plugins\TinyPortalMigration;
@@ -34,7 +34,7 @@ class TinyPortalMigration extends Plugin
 	{
 		$areas = &$e->args->areas;
 
-		if (User::$info['is_admin']) {
+		if (User::$me->is_admin) {
 			$areas['lp_blocks']['subsections'][self::AREA] = [
 				Icon::get('import') . $this->txt['label_name']
 			];

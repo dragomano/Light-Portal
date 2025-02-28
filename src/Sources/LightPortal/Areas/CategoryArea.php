@@ -21,10 +21,9 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Security;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Areas\Traits\AreaTrait;
-use Bugo\LightPortal\Areas\Validators\CategoryValidator;
+use Bugo\LightPortal\Areas\Traits\HasArea;
 use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Models\CategoryModel;
+use Bugo\LightPortal\Models\CategoryFactory;
 use Bugo\LightPortal\Repositories\CategoryRepository;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\TextareaField;
@@ -37,7 +36,10 @@ use Bugo\LightPortal\UI\Tables\TitleColumn;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Validators\CategoryValidator;
 use WPLake\Typed\Typed;
+
+use function array_merge;
 
 use const LP_NAME;
 
@@ -46,7 +48,7 @@ if (! defined('SMF'))
 
 final class CategoryArea
 {
-	use AreaTrait;
+	use HasArea;
 
 	public function __construct(private readonly CategoryRepository $repository) {}
 
@@ -143,9 +145,7 @@ final class CategoryArea
 
 		if ($this->request()->has('remove')) {
 			$this->repository->remove([$item]);
-
-			$this->cache()->flush();
-
+			$this->cache()->forget('all_categories');
 			$this->response()->redirect('action=admin;area=lp_categories');
 		}
 
@@ -183,18 +183,11 @@ final class CategoryArea
 
 	private function validateData(): void
 	{
-		$postData = (new CategoryValidator())->validate();
+		$validatedData = app(CategoryValidator::class)->validate();
 
-		$category = new CategoryModel($postData, Utils::$context['lp_current_category']);
-		$category->icon = $category->icon === 'undefined' ? '' : $category->icon;
-		$category->titles = Utils::$context['lp_current_category']['titles'] ?? [];
-
-		foreach (Utils::$context['lp_languages'] as $lang) {
-			$category->titles[$lang['filename']] = $postData['title_' . $lang['filename']] ?? $category->titles[$lang['filename']] ?? '';
-		}
-
-		Str::cleanBbcode($category->titles);
-		Str::cleanBbcode($category->description);
+		$category = app(CategoryFactory::class)->create(
+			array_merge(Utils::$context['lp_current_category'], $validatedData)
+		);
 
 		Utils::$context['lp_category'] = $category->toArray();
 	}
@@ -224,7 +217,7 @@ final class CategoryArea
 
 		Security::checkSubmitOnce('free');
 
-		Utils::$context['preview_title']   = Utils::$context['lp_category']['titles'][Utils::$context['user']['language']];
+		Utils::$context['preview_title']   = Utils::$context['lp_category']['titles'][Language::getCurrent()] ?? '';
 		Utils::$context['preview_content'] = Utils::htmlspecialchars(Utils::$context['lp_category']['description'], ENT_QUOTES);
 
 		Str::cleanBbcode(Utils::$context['preview_title']);

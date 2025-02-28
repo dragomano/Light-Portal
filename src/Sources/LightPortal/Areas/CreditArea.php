@@ -19,10 +19,9 @@ use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\EventArgs;
-use Bugo\LightPortal\Events\EventManagerFactory;
-use Bugo\LightPortal\Utils\SMFHookTrait;
+use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasForumHooks;
 
 use function date;
 use function shuffle;
@@ -38,7 +37,8 @@ if (! defined('SMF'))
  */
 final class CreditArea
 {
-	use SMFHookTrait;
+	use HasEvents;
+	use HasForumHooks;
 
 	public function __invoke(): void
 	{
@@ -88,7 +88,7 @@ final class CreditArea
 
 	private function prepareComponents(): void
 	{
-		User::mustHavePermission('light_portal_view');
+		User::$me->isAllowedTo('light_portal_view');
 
 		Utils::$context['portal_translations'] = [
 			'Polish'     => ['Adrek', 'jsqx', 'cieplutki'],
@@ -106,9 +106,13 @@ final class CreditArea
 
 		Utils::$context['consultants'] = [
 			[
+				'name' => 'Sesquipedalian',
+				'link' => 'https://www.simplemachines.org/community/index.php?action=profile;u=394956',
+			],
+			[
 				'name' => 'Tyrsson',
 				'link' => 'https://www.simplemachines.org/community/index.php?action=profile;u=155269',
-			]
+			],
 		];
 
 		Utils::$context['sponsors'] = [
@@ -274,17 +278,13 @@ final class CreditArea
 					'name' => 'the MIT License',
 					'link' => 'https://github.com/mskocik/svelecte?tab=MIT-1-ov-file#readme'
 				]
-			]
+			],
 		];
 
-		// Adding copyrights of used plugins
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::credits,
-			new EventArgs(['links' => &$links])
-		);
+		$this->events()->dispatch(PortalHook::credits, ['links' => &$links]);
+
+		shuffle($links);
 
 		Utils::$context['lp_components'] = $links;
-
-		shuffle(Utils::$context['lp_components']);
 	}
 }

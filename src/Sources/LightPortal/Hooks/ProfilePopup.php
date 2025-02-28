@@ -13,7 +13,7 @@
 namespace Bugo\LightPortal\Hooks;
 
 use Bugo\Compat\Lang;
-use Bugo\Compat\Utils;
+use Bugo\Compat\User;
 
 use function array_merge;
 use function array_slice;
@@ -25,7 +25,7 @@ class ProfilePopup
 {
 	public function __invoke(array &$items): void
 	{
-		if (Utils::$context['user']['is_admin'] || empty(Utils::$context['allow_light_portal_manage_pages_own']))
+		if (User::$me->is_admin || empty(User::$me->allowedTo('light_portal_manage_pages_own')))
 			return;
 
 		$counter = 0;

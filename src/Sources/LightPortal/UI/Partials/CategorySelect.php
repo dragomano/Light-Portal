@@ -33,7 +33,7 @@ final class CategorySelect extends AbstractPartial
 		$params['multiple'] ??= true;
 		$params['wide'] ??= true;
 		$params['hint'] ??= Lang::$txt['lp_frontpage_categories_select'];
-		$params['data'] ??= app(CategoryList::class);
+		$params['data'] ??= app(CategoryList::class)();
 		$params['value'] ??= Config::$modSettings['lp_frontpage_categories'] ?? '';
 
 		$data = [];

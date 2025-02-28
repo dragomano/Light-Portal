@@ -12,19 +12,17 @@
 
 namespace Bugo\LightPortal\Areas\Configs;
 
-use Bugo\LightPortal\Renderers\RendererInterface;
 use Bugo\Compat\{Config, Lang, Theme};
 use Bugo\Compat\{Time, User, Utils};
 use Bugo\Compat\Actions\Admin\ACP;
 use Bugo\Compat\WebFetch\WebFetchApi;
-use Bugo\LightPortal\Areas\Traits\QueryTrait;
+use Bugo\LightPortal\Areas\Traits\HasQuery;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
-use Bugo\LightPortal\Events\EventArgs;
-use Bugo\LightPortal\Events\EventManagerFactory;
+use Bugo\LightPortal\Renderers\RendererInterface;
 use Bugo\LightPortal\UI\Partials\ActionSelect;
-use Bugo\LightPortal\Utils\SessionTrait;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasSession;
 
 use function array_combine;
 use function array_map;
@@ -40,8 +38,8 @@ if (! defined('SMF'))
 
 final class BasicConfig extends AbstractConfig
 {
-	use QueryTrait;
-	use SessionTrait;
+	use HasQuery;
+	use HasSession;
 
 	public const TAB_BASE = 'base';
 
@@ -235,10 +233,7 @@ final class BasicConfig extends AbstractConfig
 
 		Utils::$context['sub_template'] = 'portal_basic_settings';
 
-		app(EventManagerFactory::class)()->dispatch(
-			PortalHook::extendBasicConfig,
-			new EventArgs(['configVars' => &$configVars])
-		);
+		$this->events()->dispatch(PortalHook::extendBasicConfig, ['configVars' => &$configVars]);
 
 		// Save
 		if ($this->request()->has('save')) {
@@ -290,7 +285,7 @@ final class BasicConfig extends AbstractConfig
 			$this->cache()->put('repo_data', $xml, $cacheTTL);
 		}
 
-		if (empty($xml))
+		if (empty($xml) || empty($xml['tag_name']))
 			return false;
 
 		if (version_compare('v' . LP_VERSION, $xml['tag_name'], '<')) {

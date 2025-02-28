@@ -23,10 +23,10 @@ enum VarType
 	case URL;
 	case ARRAY;
 
-	public function filter(mixed $var, array|int $options = 0): mixed
+	public function filter(mixed $var, array $options = []): mixed
 	{
 		if ($this === self::ARRAY) {
-			return filter_var($var, FILTER_VALIDATE_REGEXP, $options);
+			return filter_var($var, FILTER_VALIDATE_REGEXP, ['options' => $options]);
 		}
 
 		$filter = match ($this) {

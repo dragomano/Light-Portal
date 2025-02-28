@@ -6,13 +6,14 @@
   import Toggle from 'svelte-toggle';
   import Button from '../BaseButton.svelte';
 
-  /** @type {{ item: { snake_name: string, settings: array, special: string } }} */
+  /** @type {{ item: { snake_name: string, settings: array, special: string, outdated: string } }} */
   let { item } = $props();
 
   const { donate: donateIcon, download: downloadIcon } = iconState;
 
   let show = $state(false);
   let toggled = $state(item.status === 'on');
+  let outdated = $state(item.outdated);
 
   /** @type {{ pluginState: { donate: { link: string }, donwload: { link: string } } }} */
   const donateLink = $derived(pluginState.donate[item.name].link);
@@ -41,7 +42,7 @@
   };
 </script>
 
-<div class="windowbg" transition:fade>
+<div class="windowbg" class:outdated transition:fade>
   <div class="features" data-id={index}>
     <div class="floatleft">
       <h4>
@@ -51,7 +52,7 @@
         {/each}
       </h4>
       <div>
-        {#if item.special}
+        {#if item.special && !outdated}
           <p>{@html specialDesc}</p>
         {:else}
           <p>{@html item.desc}</p>
@@ -66,7 +67,7 @@
           icon="gear"
           class={show && 'fa-spin'}
           data-id={settingsId}
-          onclick={() => show = !show}
+          onclick={() => (show = !show)}
         />
       {/if}
 
@@ -103,3 +104,9 @@
     {/if}
   </div>
 </div>
+
+<style>
+  .outdated {
+    background: darkgray;
+  }
+</style>

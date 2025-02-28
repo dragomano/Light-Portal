@@ -12,12 +12,12 @@
 
 namespace Bugo\LightPortal\Enums;
 
-use Bugo\LightPortal\Enums\Traits\HasHtmlTrait;
+use Bugo\LightPortal\Enums\Traits\HasHtml;
 use Bugo\LightPortal\Utils\Str;
 
 enum ContentClass: string
 {
-	use HasHtmlTrait;
+	use HasHtml;
 
 	case ROUNDFRAME = 'roundframe';
 	case ROUNDFRAME2 = 'roundframe2';

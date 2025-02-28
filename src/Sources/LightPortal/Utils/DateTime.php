@@ -16,11 +16,16 @@ use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use DateTime as BaseDateTime;
+use Exception;
 use IntlDateFormatter;
+
+use InvalidArgumentException;
 
 use function ceil;
 use function compact;
+use function count;
 use function date;
+use function explode;
 use function extension_loaded;
 use function floor;
 use function round;
@@ -137,6 +142,49 @@ final class DateTime
 		$dateTime->setTimestamp($timestamp ?: time());
 
 		return $dateTime;
+	}
+
+	public static function getValueForDate(): string
+	{
+		$dateTime = new BaseDateTime();
+
+		return match($dateTime->format('m-d')) {
+			'04-01' => "\x4C\x61\x7A\x79\x20\x50\x61\x6E\x64\x61",
+			'07-09' => "\x46\x61\x6E\x63\x79\x20\x50\x6F\x72\x74\x61\x6C",
+			default => "\x4C\x69\x67\x68\x74\x20\x50\x6F\x72\x74\x61\x6C",
+		};
+	}
+
+	public static function dateCompare(string $date1, string $date2, string $operator = '<'): bool {
+		$parseDate = function ($dateStr) {
+			$parts = explode('.', $dateStr);
+
+			if (count($parts) !== 3)
+				return null;
+
+			try {
+				return new BaseDateTime("20$parts[2]-$parts[1]-$parts[0]");
+			} catch (Exception) {
+				return null;
+			}
+		};
+
+		$dateTime1 = $parseDate($date1);
+		$dateTime2 = $parseDate($date2);
+
+		if (! $dateTime1 || ! $dateTime2) {
+			return false;
+		}
+
+		return match ($operator) {
+			'<'        => $dateTime1 < $dateTime2,
+			'<='       => $dateTime1 <= $dateTime2,
+			'>'        => $dateTime1 > $dateTime2,
+			'>='       => $dateTime1 >= $dateTime2,
+			'==', '='  => $dateTime1 == $dateTime2,
+			'!=', '<>' => $dateTime1 != $dateTime2,
+			default    => throw new InvalidArgumentException("Unknown operator: $operator")
+		};
 	}
 
 	private static function getLocalDate(
