@@ -6,15 +6,14 @@
   import Toggle from 'svelte-toggle';
   import Button from '../BaseButton.svelte';
 
-  /** @type {{ item: { snake_name: string, settings: array, special: string } }} */
+  /** @type {{ item: { snake_name: string, settings: array, special: string, outdated: string } }} */
   let { item } = $props();
 
   const { donate: donateIcon, download: downloadIcon } = iconState;
 
   let show = $state(false);
   let toggled = $state(item.status === 'on');
-
-  const outdated = $state(item.outdated);
+  let outdated = $state(item.outdated);
 
   /** @type {{ pluginState: { donate: { link: string }, donwload: { link: string } } }} */
   const donateLink = $derived(pluginState.donate[item.name].link);
@@ -53,7 +52,7 @@
         {/each}
       </h4>
       <div>
-        {#if item.special && !item.outdated}
+        {#if item.special && !outdated}
           <p>{@html specialDesc}</p>
         {:else}
           <p>{@html item.desc}</p>
