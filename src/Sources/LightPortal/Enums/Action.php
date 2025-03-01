@@ -16,4 +16,5 @@ enum Action: string
 {
 	case FORUM = 'forum';
 	case HOME = 'home';
+	case PAGES = 'pages';
 }

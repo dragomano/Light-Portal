@@ -21,6 +21,8 @@ use function count;
 use function in_array;
 use function is_numeric;
 
+use const LP_ACTION;
+
 class Portal implements Routable
 {
 	public static function getDataFromCache(string $type = 'categories'): array
@@ -70,7 +72,7 @@ class Portal implements Routable
 
 		unset($params['start']);
 
-		if ($route === ['portal', '0']) {
+		if ($route === [LP_ACTION, '0']) {
 			$route = [];
 		}
 
@@ -80,7 +82,7 @@ class Portal implements Routable
 	public static function parseRoute(array $route, array $params = []): array
 	{
 		if (empty($route)) {
-			$params['action'] = 'portal';
+			$params['action'] = LP_ACTION;
 
 			return $params;
 		}
