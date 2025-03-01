@@ -24,6 +24,7 @@ use Bugo\LightPortal\Articles\ChosenTopicArticle;
 use Bugo\LightPortal\Articles\PageArticle;
 use Bugo\LightPortal\Articles\TopicArticle;
 use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Enums\PortalSubAction;
 use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Renderers\RendererInterface;
 use Bugo\LightPortal\Utils\DateTime;
@@ -243,10 +244,10 @@ final class FrontPage implements ActionInterface
 
 		if ($this->request()->is(LP_ACTION)) {
 			match ($sa) {
-				'categories' => app(Category::class)->show(),
-				'tags'       => app(Tag::class)->show(),
-				'promote'    => $this->promoteTopic(),
-				default      => null,
+				PortalSubAction::CATEGORIES->name() => app(Category::class)->show(),
+				PortalSubAction::TAGS->name()       => app(Tag::class)->show(),
+				PortalSubAction::PROMOTE->name()    => $this->promoteTopic(),
+				default                             => null,
 			};
 		}
 	}

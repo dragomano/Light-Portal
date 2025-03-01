@@ -20,6 +20,7 @@ use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Enums\PortalSubAction;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Lists\TitleList;
 use Bugo\LightPortal\Utils\Avatar;
@@ -32,7 +33,6 @@ use function array_keys;
 use function implode;
 use function time;
 
-use const LP_BASE_URL;
 use const LP_PAGE_URL;
 
 if (! defined('SMF'))
@@ -188,7 +188,7 @@ class PageArticle extends AbstractArticle
 		return [
 			'icon' => Icon::parse($row['cat_icon']),
 			'name' => empty($row['category_id']) ? '' : $row['cat_title'],
-			'link' => empty($row['category_id']) ? '' : (LP_BASE_URL . ';sa=categories;id=' . $row['category_id']),
+			'link' => empty($row['category_id']) ? '' : (PortalSubAction::CATEGORIES->url() . ';id=' . $row['category_id']),
 		];
 	}
 
@@ -312,7 +312,7 @@ class PageArticle extends AbstractArticle
 			$pages[$row['page_id']]['tags'][] = [
 				'icon'  => Icon::parse($row['icon']),
 				'title' => $row['title'],
-				'href'  => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id'],
+				'href'  => PortalSubAction::TAGS->url() . ';id=' . $row['tag_id'],
 			];
 		}
 

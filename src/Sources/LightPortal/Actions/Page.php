@@ -20,6 +20,7 @@ use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Enums\PortalSubAction;
 use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Lists\TitleList;
 use Bugo\LightPortal\Repositories\PageRepository;
@@ -42,7 +43,6 @@ use function explode;
 use function implode;
 use function time;
 
-use const LP_BASE_URL;
 use const LP_PAGE_PARAM;
 use const LP_PAGE_URL;
 
@@ -191,7 +191,7 @@ final class Page implements ActionInterface
 			if (isset(Utils::$context['lp_page']['category'])) {
 				$this->breadcrumbs()->add(
 					Utils::$context['lp_page']['category'],
-					LP_BASE_URL . ';sa=categories;id=' . Utils::$context['lp_page']['category_id']
+					PortalSubAction::CATEGORIES->url() . ';id=' . Utils::$context['lp_page']['category_id']
 				);
 			}
 
@@ -216,7 +216,7 @@ final class Page implements ActionInterface
 
 	private function handlePromoteAction(): void
 	{
-		if (empty(User::$me->is_admin) || $this->request()->hasNot('promote'))
+		if (empty(User::$me->is_admin) || $this->request()->hasNot(PortalSubAction::PROMOTE->name()))
 			return;
 
 		$page = Utils::$context['lp_page']['id'];

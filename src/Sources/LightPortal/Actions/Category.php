@@ -24,6 +24,7 @@ use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Permission;
+use Bugo\LightPortal\Enums\PortalSubAction;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
@@ -36,8 +37,6 @@ use WPLake\Typed\Typed;
 use function array_key_exists;
 use function sprintf;
 use function time;
-
-use const LP_BASE_URL;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -60,7 +59,7 @@ final class Category extends AbstractPageList
 
 		$categories = app(CategoryList::class)();
 		if (array_key_exists($category['id'], $categories) === false) {
-			Utils::$context['error_link'] = LP_BASE_URL . ';sa=categories';
+			Utils::$context['error_link'] = PortalSubAction::CATEGORIES->url();
 			Lang::$txt['back'] = Lang::$txt['lp_all_categories'];
 			ErrorHandler::fatalLang('lp_category_not_found', false, status: 404);
 		}
@@ -74,11 +73,11 @@ final class Category extends AbstractPageList
 
 		Utils::$context['description'] = $category['description'] ?? '';
 		Utils::$context['lp_category_edit_link'] = Config::$scripturl . '?action=admin;area=lp_categories;sa=edit;id=' . $category['id'];
-		Utils::$context['canonical_url']  = LP_BASE_URL . ';sa=categories;id=' . $category['id'];
+		Utils::$context['canonical_url']  = PortalSubAction::CATEGORIES->url() . ';id=' . $category['id'];
 		Utils::$context['robot_no_index'] = true;
 
 		$this->breadcrumbs()
-			->add(Lang::$txt['lp_all_categories'], LP_BASE_URL . ';sa=categories')
+			->add(Lang::$txt['lp_all_categories'], PortalSubAction::CATEGORIES->url())
 			->add($category['title'] ?? Lang::$txt['lp_no_category']);
 
 		$this->cardList->show($this);
@@ -170,7 +169,7 @@ final class Category extends AbstractPageList
 	public function showAll(): void
 	{
 		Utils::$context['page_title']     = Lang::$txt['lp_all_categories'];
-		Utils::$context['canonical_url']  = LP_BASE_URL . ';sa=categories';
+		Utils::$context['canonical_url']  = PortalSubAction::CATEGORIES->url();
 		Utils::$context['robot_no_index'] = true;
 
 		$this->breadcrumbs()->add(Utils::$context['page_title']);
@@ -244,7 +243,7 @@ final class Category extends AbstractPageList
 				'icon'        => Icon::parse($row['icon']),
 				'title'       => $row['title'] ?: Lang::$txt['lp_no_category'],
 				'description' => $row['description'] ?? '',
-				'link'        => LP_BASE_URL . ';sa=categories;id=' . $row['category_id'],
+				'link'        => PortalSubAction::CATEGORIES->url() . ';id=' . $row['category_id'],
 				'priority'    => (int) $row['priority'],
 				'num_pages'   => (int) $row['frequency'],
 			];

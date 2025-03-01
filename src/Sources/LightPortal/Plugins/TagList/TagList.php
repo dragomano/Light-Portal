@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.02.25
+ * @version 01.03.25
  */
 
 namespace Bugo\LightPortal\Plugins\TagList;
@@ -18,6 +18,7 @@ use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\LightPortal\Actions\Tag;
+use Bugo\LightPortal\Enums\PortalSubAction;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
@@ -40,7 +41,7 @@ class TagList extends Block
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
-			'link_in_title' => Config::$scripturl . '?action=portal;sa=tags',
+			'link_in_title' => PortalSubAction::TAGS->url(),
 			'source'        => 'lp_tags',
 			'sorting'       => 'name',
 			'as_cloud'      => false,

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.02.25
+ * @version 01.03.25
  */
 
 namespace Bugo\LightPortal\Plugins\DummyArticleCards;
@@ -18,6 +18,7 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Articles\AbstractArticle;
+use Bugo\LightPortal\Enums\PortalSubAction;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasCache;
@@ -105,7 +106,7 @@ class DummyArticle extends AbstractArticle
 				'msg_link'  => $numReplies ? Config::$scripturl . '?msg=' . $msgId : $link,
 				'rating'    => $article['rating'],
 				'tags'      => [
-					['title' => $tag, 'href' => LP_BASE_URL . ';sa=tags;id=' . random_int(1, 99)]
+					['title' => $tag, 'href' => PortalSubAction::TAGS->url() . ';id=' . random_int(1, 99)]
 				],
 			];
 		}

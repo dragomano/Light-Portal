@@ -15,6 +15,7 @@ namespace Bugo\LightPortal\Hooks;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\LightPortal\Enums\Action;
+use Bugo\LightPortal\Enums\PortalSubAction;
 use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\Lists\TagList;
 use Bugo\LightPortal\Utils\Setting;
@@ -58,31 +59,31 @@ class WhosOnline
 		if ($actions['action'] === LP_ACTION) {
 			$result = sprintf(Lang::$txt['lp_who_viewing_frontpage'], LP_BASE_URL);
 
-			if (isset($actions['sa']) && $actions['sa'] === 'tags') {
+			if (isset($actions['sa']) && $actions['sa'] === PortalSubAction::TAGS->name()) {
 				$tags = app(TagList::class)();
 
 				$result = isset($actions['id'])
 					? Lang::getTxt('lp_who_viewing_the_tag', [
-						LP_BASE_URL . ';sa=tags;id=' . $actions['id'],
+						PortalSubAction::TAGS->url() . ';id=' . $actions['id'],
 						$tags[$actions['id']]
 					])
 					: sprintf(
 						Lang::$txt['lp_who_viewing_tags'],
-						LP_BASE_URL . ';sa=tags'
+						PortalSubAction::TAGS->url()
 					);
 			}
 
-			if (isset($actions['sa']) && $actions['sa'] === 'categories') {
+			if (isset($actions['sa']) && $actions['sa'] === PortalSubAction::CATEGORIES->name()) {
 				$categories = app(CategoryList::class)();
 
 				$result = isset($actions['id'])
 					? Lang::getTxt('lp_who_viewing_the_category', [
-						LP_BASE_URL . ';sa=categories;id=' . $actions['id'],
+						PortalSubAction::CATEGORIES->url() . ';id=' . $actions['id'],
 						$categories[$actions['id']]['name']
 					])
 					: sprintf(
 						Lang::$txt['lp_who_viewing_categories'],
-						LP_BASE_URL . ';sa=categories'
+						PortalSubAction::CATEGORIES->url()
 					);
 			}
 		}

@@ -24,6 +24,7 @@ use Bugo\LightPortal\Enums\AlertAction;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Enums\PortalSubAction;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Lists\CategoryList;
@@ -53,7 +54,7 @@ use function str_contains;
 use function strtotime;
 use function time;
 
-use const LP_BASE_URL;
+use const LP_ACTION;
 use const LP_PAGE_URL;
 
 if (! defined('SMF'))
@@ -346,7 +347,8 @@ final class PageRepository extends AbstractRepository
 		];
 
 		$withinCategory = str_contains(
-			filter_input(INPUT_SERVER, 'HTTP_REFERER') ?? '', 'action=portal;sa=categories;id'
+			filter_input(INPUT_SERVER, 'HTTP_REFERER') ?? '',
+			'action=' . LP_ACTION . ';sa=' . PortalSubAction::CATEGORIES->name() . ';id'
 		);
 
 		$sorting = Setting::get('lp_frontpage_article_sorting', 'int', 0);
@@ -705,7 +707,7 @@ final class PageRepository extends AbstractRepository
 			$items[$row['tag_id']] = [
 				'icon'  => Icon::parse($row['icon'] ?: 'fas fa-tag'),
 				'title' => $row['title'],
-				'href'  => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id'],
+				'href'  => PortalSubAction::TAGS->url() . ';id=' . $row['tag_id'],
 			];
 		}
 

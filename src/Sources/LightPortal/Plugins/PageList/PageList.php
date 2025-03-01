@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.02.25
+ * @version 01.03.25
  */
 
 namespace Bugo\LightPortal\Plugins\PageList;
@@ -19,6 +19,7 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Permission;
+use Bugo\LightPortal\Enums\PortalSubAction;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Lists\CategoryList;
@@ -142,7 +143,7 @@ class PageList extends Block
 				'id'            => (int) $row['page_id'],
 				'category_id'   => (int) $row['category_id'],
 				'category_name' => $allCategories[$row['category_id']]['title'],
-				'category_link' => LP_BASE_URL . ';sa=categories;id=' . $row['category_id'],
+				'category_link' => PortalSubAction::CATEGORIES->url() . ';id=' . $row['category_id'],
 				'title'         => $titles[$row['page_id']] ?? [],
 				'author_id'     => (int) $row['author_id'],
 				'author_name'   => $row['author_name'],
