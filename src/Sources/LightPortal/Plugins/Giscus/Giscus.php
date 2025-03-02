@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 02.03.25
  */
 
 namespace Bugo\LightPortal\Plugins\Giscus;
@@ -48,6 +48,14 @@ class Giscus extends Plugin
 		'noborder_gray'          => 'NoBorder Gray',
 		'cobalt'                 => 'RStudio Cobalt',
 		'purple_dark'            => 'Purple Dark',
+		'gruvbox'                => 'Gruvbox',
+		'gruvbox_dark'           => 'Gruvbox Dark',
+		'gruvbox_light'          => 'Gruvbox Light',
+		'catppuccin_latte'       => 'Catppuccin Latte',
+		'catppuccin_frappe'      => 'Catppuccin Frappé',
+		'catppuccin_macchiato'   => 'Catppuccin Macchiato',
+		'catppuccin_mocha'       => 'Catppuccin Mocha',
+		'fro'                    => 'Fro',
 	];
 
 	public function init(): void
@@ -120,7 +128,8 @@ class Giscus extends Plugin
 				data-lang="' . Lang::$txt['lang_dictionary'] . '"
 				data-loading="lazy"
 				crossorigin="anonymous"
-				async>
+				async
+			>
 			</script>';
 	}
 }
