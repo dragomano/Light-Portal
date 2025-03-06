@@ -20,7 +20,6 @@ enum Hook
 	case adminAreas;
 	case alertTypes;
 	case buildRoute;
-	case cleanCache;
 	case credits;
 	case currentAction;
 	case defaultAction;
@@ -45,7 +44,6 @@ enum Hook
 	case redirect;
 	case repairAttachmentsNomsg;
 	case routeParsers;
-	case simpleActions;
 	case themeContext;
 	case userInfo;
 	case whosOnline;
