@@ -1,8 +1,7 @@
-export default {
-  label: 'Slovenščina',
-  // https://gist.github.com/Josantonius/b455e315bc7f790d14b136d61d9ae469
+import { defineConfig } from 'vitepress';
+export default defineConfig({
   lang: 'sl',
-  title: 'Light Portal dokumentacija',
+  // https://gist.github.com/Josantonius/b455e315bc7f790d14b136d61d9ae469
   description: 'Spletna dokumentacija za Light Portal',
   themeConfig: {
     nav: [
@@ -62,4 +61,4 @@ export default {
       }
     }
   }
-};
+});

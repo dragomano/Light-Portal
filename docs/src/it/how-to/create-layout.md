@@ -14,14 +14,14 @@ Oltre ai layout esistenti, puoi sempre aggiungerne di tuoi.
 
 Per farlo, crea un file `custom.blade.php` nella cartella `/Themes/default/portal_layouts`:
 
-```php:line-numbers {9}
-@empty ($context['lp_active_blocks'])
-<div class="col-xs">
-@endempty
+```php:line-numbers {6,16}
+@extends('partials.base')
+
+@section('content')
 	<!-- <div> @dump($context['user']) </div> -->
 
 	<div class="lp_frontpage_articles article_custom">
-		{{ show_pagination() }}
+		@include('partials.pagination')
 
 		@foreach ($context['lp_frontpage_articles'] as $article)
 		<div class="
@@ -35,12 +35,9 @@ Per farlo, crea un file `custom.blade.php` nella cartella `/Themes/default/porta
 		</div>
 		@endforeach
 
-		{{ show_pagination('bottom') }}
+		@include('partials.pagination', ['position' => 'bottom'])
 	</div>
-
-@empty ($context['lp_active_blocks'])
-</div>
-@endempty
+@endsection
 ```
 
 Successivamente vedrai un nuovo layout del frontpage - "Custom" - nelle impostazioni del portale:

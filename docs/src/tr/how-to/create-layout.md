@@ -14,14 +14,14 @@ Mevcut düzenlere ek olarak, her zaman kendi düzeninizi ekleyebilirsiniz.
 
 Bunu yapmak için, `/Themes/default/portal_layouts` dizininde `custom.blade.php` adlı bir dosya oluşturun:
 
-```php:line-numbers {9}
-@empty ($context['lp_active_blocks'])
-<div class="col-xs">
-@endempty
+```php:line-numbers {6,16}
+@extends('partials.base')
+
+@section('content')
 	<!-- <div> @dump($context['user']) </div> -->
 
 	<div class="lp_frontpage_articles article_custom">
-		{{ show_pagination() }}
+		@include('partials.pagination')
 
 		@foreach ($context['lp_frontpage_articles'] as $article)
 		<div class="
@@ -35,12 +35,9 @@ Bunu yapmak için, `/Themes/default/portal_layouts` dizininde `custom.blade.php`
 		</div>
 		@endforeach
 
-		{{ show_pagination('bottom') }}
+		@include('partials.pagination', ['position' => 'bottom'])
 	</div>
-
-@empty ($context['lp_active_blocks'])
-</div>
-@endempty
+@endsection
 ```
 
 Bundan sonra, portal ayarlarında yeni bir ana sayfa düzeni - `Custom` - göreceksiniz:

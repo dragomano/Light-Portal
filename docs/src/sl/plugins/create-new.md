@@ -19,53 +19,20 @@ Za lažje ustvarjanje lastnih vtičnikov lahko uporabiš **PluginMaker**. Prenes
 
 Trenutno so na voljo naslednje vrste vtičnikov:
 
-### `block`
-
-Vtičniki, ki dodajo nov tip blokov za portal.
-
-### `ssi`
-
-Vtičniki (ponavadi bloki), ki uporabljajo SSI funkcije za pridobivanje podatkov.
-
-### `editor`
-
-Vtičniki, ki dodajo urejevalnik tretjih strani za različne vrste vsebin.
-
-### `comment`
-
-Vtičniki, ki namesto vgrajenega dodajo urejevalnik komentarjev
-
-### `parser`
-
-Vtičniki, ki implementirajo parser za vsebino strani in blokov.
-
-### `article`
-
-Vtičniki za obdelavo vsebine kartic člankov na glavni strani.
-
-### `frontpage`
-
-Vtičniki za prilagoditev glavne strani portala.
-
-### `impex`
-
-Vtičniki za uvoz in izvoz različnih elementov portala.
-
-### `block_options` | `page_options`
-
-Vtičniki, ki dodajo dodatne parametre za ustrezno entiteto (blok ali stran).
-
-### `icons`
-
-Vtičniki, ki dodajo nove knjižnice ikon za zamenjavo elementov vmesnika ali za uporabo v naslovih blokov.
-
-### `seo`
-
-Vtičniki, ki na nek način vplivajo na vidnost foruma na omrežju.
-
-### `other`
-
-Vtičniki, ki niso povezani z nobeno od zgoraj navedenih kategorij.
+| Vrsta                           |                                                                                                                      Opis |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------: |
+| `block`                         |                                                             Vtičniki, ki dodajo nov tip blokov za portal. |
+| `ssi`                           |       Vtičniki (ponavadi bloki), ki uporabljajo SSI funkcije za pridobivanje podatkov. |
+| `editor`                        |                                  Vtičniki, ki dodajo urejevalnik tretjih strani za različne vrste vsebin. |
+| `comment`                       |                                                            Vtičniki, ki namesto vgrajenega dodajo urejevalnik komentarjev |
+| `parser`                        |                                           Vtičniki, ki implementirajo parser za vsebino strani in blokov. |
+| `article`                       |                                             Vtičniki za obdelavo vsebine kartic člankov na glavni strani. |
+| `frontpage`                     |                                                           Vtičniki za prilagoditev glavne strani portala. |
+| `impex`                         |                                                    Vtičniki za uvoz in izvoz različnih elementov portala. |
+| `block_options`, `page_options` |           Vtičniki, ki dodajo dodatne parametre za ustrezno entiteto (blok ali stran). |
+| `icons`                         | Vtičniki, ki dodajo nove knjižnice ikon za zamenjavo elementov vmesnika ali za uporabo v naslovih blokov. |
+| `seo`                           |                                          Vtičniki, ki na nek način vplivajo na vidnost foruma na omrežju. |
+| `other`                         |                                        Vtičniki, ki niso povezani z nobeno od zgoraj navedenih kategorij. |
 
 ## Ustvarjanje mape za vtičnike
 
@@ -83,8 +50,8 @@ Ustvari ločeno mapo za datoteke svojega vtičnika znotraj `/Sources/LightPortal
 
 Datoteko `index.php` je mogoče kopirati iz map drugih vtičnikov. Datoteka `HelloWorld.php` vsebuje logiko vtičnika:
 
-```php:line-numbers
-<?php
+```php:line-numbers {17}
+<?php declare(strict_types=1);
 
 namespace Bugo\LightPortal\Plugins\HelloWorld;
 
@@ -92,7 +59,7 @@ use Bugo\Compat\{Config, Lang, Utils};
 use Bugo\LightPortal\Plugins\Plugin;
 
 if (! defined('LP_NAME'))
-	die('No direct access...');
+    die('No direct access...');
 
 class HelloWorld extends Plugin
 {
@@ -105,11 +72,10 @@ class HelloWorld extends Plugin
     // Optional init method
     public function init(): void
     {
-        // Access to global variables: Utils::$context['user'], Config::$modSettings['variable'], etc.
-        // Access to language variables: Lang::$txt['lp_hello_world']['variable_name']
+        echo 'Hello world!';
     }
 
-    // Custom properties and methods
+    // Hookable and custom methods
 }
 
 ```
@@ -119,9 +85,6 @@ class HelloWorld extends Plugin
 Če vtičnik potrebuje pridobivanje podatkov z uporabo SSI funkcij, uporabi vgrajeno metodo `getFromSsi(string $function, ...$params)`. Kot parameter `$function` moraš posredovati ime ene izmed funkcij, ki so vsebovane v datoteki **SSI.php**, brez predpone `ssi_`. Na primer:
 
 ```php
-<?php
-
-// See ssi_topTopics function in the SSI.php file
 $data = $this->getFromSSI('topTopics', 'views', 10, 'array');
 ```
 

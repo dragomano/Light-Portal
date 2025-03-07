@@ -19,53 +19,20 @@ Puedes usar el **PluginMaker** como un ayudante para crear tus propios plugins. 
 
 Actualmente, los siguientes tipos de plugins están disponibles:
 
-### `block`
-
-Plugins que añaden un nuevo tipo de bloques para el portal.
-
-### `ssi`
-
-Plugins (normalmente bloques) que utilizan funciones SSI para recuperar datos.
-
-### `editor`
-
-Plugins que añaden un editor de terceros para diferentes tipos de contenido.
-
-### `comment`
-
-Plugins que añaden un widget de comentarios de terceros en lugar de los incorporados.
-
-### `parser`
-
-Plugins que implementan el analizador para el contenido de páginas y bloques.
-
-### `article`
-
-Plugins para procesar el contenido de las tarjetas de artículos en la página principal.
-
-### `frontpage`
-
-Plugins para cambiar la página principal del portal.
-
-### `impex`
-
-Plugins para importar y exportar varios elementos del portal.
-
-### `block_options` | `page_options`
-
-Plugins que añaden parámetros adicionales para la entidad correspondiente (bloque o .page).
-
-### `icons`
-
-Plugins que añaden nuevas librerías de iconos para reemplazar elementos de interfaz o para usar en las cabeceras de bloques
-
-### `seo`
-
-Plugins que de alguna manera afectan a la visibilidad del foro en la red.
-
-### `other`
-
-Plugins que no están relacionados con ninguna de las categorías anteriores.
+| Type                            |                                                                                                                                    Description |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------: |
+| `block`                         |                                                                    Plugins que añaden un nuevo tipo de bloques para el portal. |
+| `ssi`                           |                              Plugins (normalmente bloques) que utilizan funciones SSI para recuperar datos. |
+| `editor`                        |                                                   Plugins que añaden un editor de terceros para diferentes tipos de contenido. |
+| `comment`                       |                                          Plugins que añaden un widget de comentarios de terceros en lugar de los incorporados. |
+| `parser`                        |                                                  Plugins que implementan el analizador para el contenido de páginas y bloques. |
+| `article`                       |                                        Plugins para procesar el contenido de las tarjetas de artículos en la página principal. |
+| `frontpage`                     |                                                                           Plugins para cambiar la página principal del portal. |
+| `impex`                         |                                                                  Plugins para importar y exportar varios elementos del portal. |
+| `block_options`, `page_options` | Plugins que añaden parámetros adicionales para la entidad correspondiente (bloque o .page). |
+| `icons`                         |                    Plugins que añaden nuevas librerías de iconos para reemplazar elementos de interfaz o para usar en las cabeceras de bloques |
+| `seo`                           |                                                      Plugins que de alguna manera afectan a la visibilidad del foro en la red. |
+| `other`                         |                                                    Plugins que no están relacionados con ninguna de las categorías anteriores. |
 
 ## Creando un directorio de plugins
 
@@ -83,8 +50,8 @@ Crea una carpeta separada para tus archivos de plugin, dentro de `/Sources/Light
 
 El archivo `index.php` puede ser copiado de carpetas de otros plugins. El archivo `HelloWorld.php` contiene la lógica del plugin:
 
-```php:line-numbers
-<?php
+```php:line-numbers {17}
+<?php declare(strict_types=1);
 
 namespace Bugo\LightPortal\Plugins\HelloWorld;
 
@@ -92,7 +59,7 @@ use Bugo\Compat\{Config, Lang, Utils};
 use Bugo\LightPortal\Plugins\Plugin;
 
 if (! defined('LP_NAME'))
-	die('No direct access...');
+    die('No direct access...');
 
 class HelloWorld extends Plugin
 {
@@ -105,11 +72,10 @@ class HelloWorld extends Plugin
     // Optional init method
     public function init(): void
     {
-        // Access to global variables: Utils::$context['user'], Config::$modSettings['variable'], etc.
-        // Access to language variables: Lang::$txt['lp_hello_world']['variable_name']
+        echo 'Hello world!';
     }
 
-    // Custom properties and methods
+    // Hookable and custom methods
 }
 
 ```
@@ -119,9 +85,6 @@ class HelloWorld extends Plugin
 Si el plugin necesita recuperar cualquier dato usando funciones SSI, utilice el método integrado `getFromSsi(string $function, ...$params)`. Como parámetro `$function` debes pasar el nombre de una de las funciones contenidas en el archivo **SSI.php**, sin prefijo `ssi_`. Por ejemplo:
 
 ```php
-<?php
-
-// See ssi_topTopics function in the SSI.php file
 $data = $this->getFromSSI('topTopics', 'views', 10, 'array');
 ```
 

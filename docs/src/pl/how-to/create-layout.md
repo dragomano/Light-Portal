@@ -14,14 +14,14 @@ Oprócz istniejących układów zawsze możesz dodać własne.
 
 Aby to zrobić, utwórz plik "custom.blade.php" w katalogu "/Themes/default/portal_layouts":
 
-```php:line-numbers {9}
-@empty ($context['lp_active_blocks'])
-<div class="col-xs">
-@endempty
+```php:line-numbers {6,16}
+@extends('partials.base')
+
+@section('content')
 	<!-- <div> @dump($context['user']) </div> -->
 
 	<div class="lp_frontpage_articles article_custom">
-		{{ show_pagination() }}
+		@include('partials.pagination')
 
 		@foreach ($context['lp_frontpage_articles'] as $article)
 		<div class="
@@ -35,12 +35,9 @@ Aby to zrobić, utwórz plik "custom.blade.php" w katalogu "/Themes/default/port
 		</div>
 		@endforeach
 
-		{{ show_pagination('bottom') }}
+		@include('partials.pagination', ['position' => 'bottom'])
 	</div>
-
-@empty ($context['lp_active_blocks'])
-</div>
-@endempty
+@endsection
 ```
 
 Następnie zobaczysz nowy układ strony głównej - "Własny" - w ustawieniach portalu:

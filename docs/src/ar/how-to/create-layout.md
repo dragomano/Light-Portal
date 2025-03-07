@@ -14,14 +14,14 @@ description: تعليمات لإنشاء مخططات بوابتك الخاصة
 
 للقيام بذلك، أنشئ ملف `custom.blade.php` في دليل `/Themes/default/portal_layouts`:
 
-```php:line-numbers {9}
-@empty ($context['lp_active_blocks'])
-<div class="col-xs">
-@endempty
+```php:line-numbers {6,16}
+@extends('partials.base')
+
+@section('content')
 	<!-- <div> @dump($context['user']) </div> -->
 
 	<div class="lp_frontpage_articles article_custom">
-		{{ show_pagination() }}
+		@include('partials.pagination')
 
 		@foreach ($context['lp_frontpage_articles'] as $article)
 		<div class="
@@ -35,12 +35,9 @@ description: تعليمات لإنشاء مخططات بوابتك الخاصة
 		</div>
 		@endforeach
 
-		{{ show_pagination('bottom') }}
+		@include('partials.pagination', ['position' => 'bottom'])
 	</div>
-
-@empty ($context['lp_active_blocks'])
-</div>
-@endempty
+@endsection
 ```
 
 بعد ذلك سترى تخطيط جديد للصفحة الأمامية - 'مخصص' - على إعدادات البوابة:

@@ -1,7 +1,7 @@
 {
+  "type": "module",
   "devDependencies": {
-    "@nolebase/vitepress-plugin-enhanced-readabilities": "^2.15.0",
-    "@rive-app/canvas": "^2.26.3",
+    "esbuild": ">=0.25.0",
     "release-timeline": "^0.6.0",
     "sass": "^1.85.1",
     "vitepress": "^1.6.3",

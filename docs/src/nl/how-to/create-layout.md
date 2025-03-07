@@ -14,14 +14,14 @@ Naast de bestaande lay-outs kunt u altijd uw eigen lay-outs toevoegen.
 
 Om dit te doen, maak een bestand `custom.blade.php` aan in de `/Themes/default/portal_layouts` map:
 
-```php:line-numbers {9}
-@empty ($context['lp_active_blocks'])
-<div class="col-xs">
-@endempty
+```php:line-numbers {6,16}
+@extends('partials.base')
+
+@section('content')
 	<!-- <div> @dump($context['user']) </div> -->
 
 	<div class="lp_frontpage_articles article_custom">
-		{{ show_pagination() }}
+		@include('partials.pagination')
 
 		@foreach ($context['lp_frontpage_articles'] as $article)
 		<div class="
@@ -35,12 +35,9 @@ Om dit te doen, maak een bestand `custom.blade.php` aan in de `/Themes/default/p
 		</div>
 		@endforeach
 
-		{{ show_pagination('bottom') }}
+		@include('partials.pagination', ['position' => 'bottom'])
 	</div>
-
-@empty ($context['lp_active_blocks'])
-</div>
-@endempty
+@endsection
 ```
 
 Daarna ziet u een nieuwe voorpagina-layout - `Custom` - in de portal-instellingen:
