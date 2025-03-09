@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "checkJs": false,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true
+  },
+  "include": ["resources/**/*"],
+  "exclude": [
+    "resources/**/*.js",
+    "resources/**/*.svelte"
+  ]
+}
