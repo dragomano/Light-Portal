@@ -1,6 +1,6 @@
-<script>
+<script lang="ts">
   import { _ } from 'svelte-i18n';
-  import { contextState } from '../../js/states.svelte.js';
+  import { contextState } from '../../js/states.svelte';
   import {
     CallbackOption,
     CheckOption,
@@ -16,14 +16,16 @@
     TitleOption,
     UrlOption
   } from './options/index.js';
+  import type { Component } from 'svelte';
 
   let { option, plugin } = $props();
 
-  const type = $derived(option[0]);
-  const name = $derived(option[1]);
-  const id = $derived(`${plugin}.${name}`);
-  const value = $derived(contextState[`lp_${plugin}`]?.[name]);
-  const { postfix, subtext } = $derived(option);
+  let type = $state(option[0]);
+  let name = $state(option[1]);
+  let id = $state(`${plugin}.${name}`);
+  let value = $state(contextState[`lp_${plugin}`]?.[name]);
+  let { postfix, subtext } = $state(option);
+
   const showLabel = $derived(!['callback', 'title', 'desc', 'check'].includes(type));
   const optionType = $derived(['float', 'int'].includes(type) ? 'number' : type);
 
@@ -58,7 +60,7 @@
     }
   });
 
-  const Component = $derived(dynamicProps?.Component);
+  const DynamicComponent = $derived<Component>(dynamicProps?.Component);
 </script>
 
 <div>
@@ -72,7 +74,7 @@
   {/if}
 
   {#if dynamicProps}
-    <Component {...dynamicProps} />
+    <DynamicComponent {...dynamicProps} />
   {/if}
 
   {#if subtext}

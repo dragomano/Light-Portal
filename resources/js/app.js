@@ -30,14 +30,9 @@ window.loadPortalScript = (url, isModule = false) => {
   return loadExternalScript(window.smf_default_theme_url + '/scripts/light_portal/' + url, isModule);
 }
 
-window.usePortalApi = (endpoint, scriptName) => {
-  return fetch(endpoint)
-    .then(response => {
-      return response.json();
-    })
-    .then(data => {
-      window.portalJson = data;
+window.usePortalApi = async (endpoint, scriptName) => {
+  const response = await fetch(endpoint);
+  window.portalJson = await response.json();
 
-      return loadPortalScript(scriptName, true);
-    });
+  return loadPortalScript(scriptName, true);
 }

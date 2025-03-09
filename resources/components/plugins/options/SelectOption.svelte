@@ -1,9 +1,18 @@
-<script>
+<script lang="ts">
   import { _ } from 'svelte-i18n';
   import Svelecte, { config } from 'svelecte';
 
   config.i18n.empty = $_('no_options');
   config.i18n.nomatch = $_('no_matches');
+
+  interface Props {
+    id?: string;
+    name?: string;
+    value?: any;
+    option?: object;
+    multiple?: boolean;
+    clearable?: boolean;
+  }
 
   let {
     id,
@@ -12,7 +21,7 @@
     option = {},
     multiple = false,
     clearable = false
-  } = $props();
+  }: Props = $props();
 
   const params = $derived(option[2]);
   const options = $derived(

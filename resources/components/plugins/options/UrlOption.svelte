@@ -1,8 +1,8 @@
 <script>
   let { id, name, value = '', option = {} } = $props();
 
-  const placeholder = $derived(option.placeholder);
-  const required = $derived(option.required);
+  let placeholder = $state(option.placeholder);
+  let required = $state(option.required);
 </script>
 
 <div>

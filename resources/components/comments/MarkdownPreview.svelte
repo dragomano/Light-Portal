@@ -1,6 +1,7 @@
-<script>
+<script lang="ts">
   import { slide } from 'svelte/transition';
   import { SvelteShowdown } from 'svelte-showdown';
+  import type { ShowdownExtension } from 'showdown';
 
   const classMap = {
     blockquote: 'bbc_standard_quote',
@@ -15,7 +16,7 @@
     tr: 'windowbg'
   };
 
-  const bindings = Object.keys(classMap).map((key) => ({
+  const bindings: ShowdownExtension[] = Object.keys(classMap).map((key) => ({
     type: 'output',
     regex: new RegExp(`<${key}(.*)>`, 'g'),
     replace: `<${key} class="${classMap[key]}" $1>`
@@ -31,5 +32,5 @@
 </script>
 
 <fieldset transition:slide {...rest}>
-  <SvelteShowdown {content} extensions={[bindings]} {options} />
+  <SvelteShowdown {content} extensions={bindings} {options} />
 </fieldset>

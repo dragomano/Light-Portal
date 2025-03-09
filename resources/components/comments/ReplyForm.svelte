@@ -1,10 +1,18 @@
-<script>
+<script lang="ts">
   import { _ } from 'svelte-i18n';
-  import { userState } from '../../js/states.svelte.js';
+  import { userState } from '../../js/states.svelte';
   import { MarkdownEditor } from './index.js';
   import Button from '../BaseButton.svelte';
+  import type { Snippet } from 'svelte';
+  import type { Parent } from '../types';
 
-  let { parent, submit, children } = $props();
+  interface Props {
+    parent?: Parent;
+    submit: Function;
+    children?: Snippet;
+  }
+
+  let { parent, submit, children }: Props = $props();
   let message = $state('');
 
   const onclick = () => {

@@ -1,9 +1,9 @@
 <script>
   let { id, name, value = 0, option = {} } = $props();
 
-  const min = $derived(option.min ?? 0);
-  const max = $derived(option.max ?? 100);
-  const step = $derived(option.step ?? 1);
+  let min = $state(option.min ?? 0);
+  let max = $state(option.max ?? 100);
+  let step = $state(option.step ?? 1);
 </script>
 
 <div>

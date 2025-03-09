@@ -1,34 +1,32 @@
-<script>
+<script lang="ts">
   import { _ } from 'svelte-i18n';
   import { fade } from 'svelte/transition';
-  import { appState, contextState, iconState, pluginState } from '../../js/states.svelte.js';
+  import { appState, contextState, iconState, pluginState, axios } from '../../js/states.svelte';
   import { PluginOptionList } from './index.js';
   import Toggle from 'svelte-toggle';
   import Button from '../BaseButton.svelte';
+  import type { Plugin } from '../types';
 
-  /** @type {{ item: { snake_name: string, settings: array, special: string, outdated: string } }} */
-  let { item } = $props();
+  interface Props {
+    item: Plugin;
+  }
 
-  const { donate: donateIcon, download: downloadIcon } = iconState;
+  let { item }: Props = $props();
 
   let show = $state(false);
   let toggled = $state(item.status === 'on');
   let outdated = $state(item.outdated);
+  let settingsId = $state(item.snake_name + '_' + appState.sessionId);
+  let index = $state(Object.values(pluginState.list).findIndex((plugin: Plugin) => plugin.snake_name === item.snake_name));
 
-  /** @type {{ pluginState: { donate: { link: string }, donwload: { link: string } } }} */
+  const { donate: donateIcon, download: downloadIcon } = iconState;
   const donateLink = $derived(pluginState.donate[item.name].link);
   const downloadLink = $derived(pluginState.download[item.name].link);
-
+  const specialLink = $derived(item.special === 'can_donate' ? donateLink : downloadLink);
+  const specialIcon = $derived(item.special === 'can_donate' ? donateIcon : downloadIcon);
   const key = $derived(item.special === 'can_donate' ? 'donate' : 'download');
-  const specialDesc = $derived(
-    pluginState[key][item.name]?.languages[contextState.lang ?? 'english']
-  );
-
+  const specialDesc = $derived(pluginState[key][item.name]?.languages[contextState.lang ?? 'english']);
   const showToggle = $derived(!item.special && Object.keys(item.types)[0] !== $_('not_applicable'));
-  const settingsId = $derived(item.snake_name + '_' + appState.sessionId);
-  const index = $derived(
-    Object.values(pluginState.list).findIndex((plugin) => plugin.snake_name === item.snake_name)
-  );
 
   const toggle = async () => {
     const response = await axios.post(appState.baseUrl + '?action=admin;area=lp_plugins;toggle', {
@@ -51,13 +49,7 @@
           <strong class="new_posts {label}" data-key={type}>{type}</strong>
         {/each}
       </h4>
-      <div>
-        {#if item.special && !outdated}
-          <p>{@html specialDesc}</p>
-        {:else}
-          <p>{@html item.desc}</p>
-        {/if}
-      </div>
+      <p>{@html item.special && !outdated ? specialDesc : item.desc}</p>
     </div>
 
     <div class="floatright">
@@ -71,18 +63,10 @@
         />
       {/if}
 
-      {#snippet specialLink(link, icon)}
-        <a href={link} rel="noopener" target="_blank">
-          {@html icon}
-        </a>
-      {/snippet}
-
       {#if item.special}
-        {#if item.special === 'can_donate'}
-          {@render specialLink(donateLink, donateIcon)}
-        {:else}
-          {@render specialLink(downloadLink, downloadIcon)}
-        {/if}
+        <a href={specialLink} rel="noopener" target="_blank">
+          {@html specialIcon}
+        </a>
       {/if}
 
       {#if showToggle}

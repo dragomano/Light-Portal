@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import '@github/markdown-toolbar-element';
   import { _ } from 'svelte-i18n';
   import { onMount } from 'svelte';
@@ -6,12 +6,14 @@
   import Button from '../BaseButton.svelte';
 
   let { message = $bindable(''), ...rest } = $props();
-  let textarea = $state();
+  let textarea: HTMLTextAreaElement = $state();
 
   const uuid = 'id-' + crypto.randomUUID();
 
-  const oninput = (e) => {
-    message = e.target.value;
+  const oninput = (e: Event) => {
+    const target = e.target as HTMLTextAreaElement;
+
+    message = target.value;
   };
 
   onMount(() => textarea.focus());
