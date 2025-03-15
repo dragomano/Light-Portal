@@ -290,8 +290,6 @@ final class FrontPage implements ActionInterface
 				$item['date']     = DateTime::relative($item['date']);
 			}
 
-			$item['msg_link'] ??= $item['link'];
-
 			if (empty($item['image'])) {
 				$item['image'] = Setting::get('lp_image_placeholder', 'string', '');
 			}

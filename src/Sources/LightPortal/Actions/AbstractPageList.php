@@ -59,7 +59,6 @@ abstract class AbstractPageList implements PageListInterface
 				'date'      => DateTime::relative((int) $row['date']),
 				'datetime'  => date('Y-m-d', (int) $row['date']),
 				'link'      => $this->getLink($row),
-				'msg_link'  => $this->getLink($row),
 				'views'     => $this->getViewsData($row),
 				'replies'   => $this->getRepliesData($row),
 				'title'     => $row['title'],

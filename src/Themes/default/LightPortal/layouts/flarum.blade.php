@@ -33,7 +33,7 @@
 
 							<div class="header_area col-xs">
 								<h3>
-									<a href="{{ $article['msg_link'] }}">{{ $article['title'] }}</a>
+									<a href="{{ $article['link'] }}">{{ $article['title'] }}</a>
 
 									@if ($article['is_new'])
 										<span class="new_posts">{{ $txt['new'] }}</span>
