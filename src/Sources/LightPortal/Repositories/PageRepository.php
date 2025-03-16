@@ -28,7 +28,6 @@ use Bugo\LightPortal\Enums\PortalSubAction;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Lists\CategoryList;
-use Bugo\LightPortal\Lists\TitleList;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\Icon;
@@ -79,8 +78,8 @@ final class PageRepository extends AbstractRepository
 	{
 		$result = Db::$db->query('', '
 			SELECT p.page_id, p.category_id, p.author_id, p.slug, p.type, p.entry_type, p.permissions, p.status,
-				p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
-				mem.real_name AS author_name, COALESCE(t.value, tf.value, p.slug) AS page_title
+				p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date, p.created_at, p.updated_at,
+				COALESCE(mem.real_name, {string:guest}) AS author_name, COALESCE(t.value, tf.value, p.slug) AS page_title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_titles AS t ON (
@@ -94,6 +93,7 @@ final class PageRepository extends AbstractRepository
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
 			array_merge($queryParams, [
+				'guest'         => Lang::$txt['guest_title'],
 				'lang'          => User::$me->language,
 				'fallback_lang' => Config::$language,
 				'user_id'       => User::$me->id,
@@ -116,7 +116,9 @@ final class PageRepository extends AbstractRepository
 				'num_comments' => (int) $row['num_comments'],
 				'author_id'    => (int) $row['author_id'],
 				'author_name'  => $row['author_name'],
-				'created_at'   => DateTime::relative((int) $row['date']),
+				'date'         => DateTime::relative((int) $row['date']),
+				'created_at'   => (int) $row['created_at'],
+				'updated_at'   => (int) $row['updated_at'],
 				'is_front'     => Setting::isFrontpage($row['slug']),
 				'title'        => $row['page_title'],
 			];
@@ -355,7 +357,17 @@ final class PageRepository extends AbstractRepository
 
 		$result = Db::$db->query('', '
 			(
-				SELECT p.page_id, p.slug, GREATEST(p.created_at, p.updated_at) AS date,
+				SELECT
+					(
+						SELECT value
+						FROM {db_prefix}lp_titles
+						WHERE item_id = p.page_id
+							AND type = {literal:page}
+							AND lang IN ({string:lang}, {string:fallback_lang})
+						ORDER BY lang = {string:lang} DESC
+						LIMIT 1
+					) AS page_title, p.slug, p.page_id,
+					GREATEST(p.created_at, p.updated_at) AS date,
 					CASE WHEN COALESCE(par.value, \'0\') != \'0\' THEN p.num_comments ELSE 0 END AS num_comments,
 					com.created_at AS comment_date
 				FROM {db_prefix}lp_pages AS p
@@ -377,7 +389,17 @@ final class PageRepository extends AbstractRepository
 			)
 			UNION ALL
 			(
-				SELECT p.page_id, p.slug, GREATEST(p.created_at, p.updated_at) AS date,
+				SELECT
+					(
+						SELECT value
+						FROM {db_prefix}lp_titles
+						WHERE item_id = p.page_id
+							AND type = {literal:page}
+							AND lang IN ({string:lang}, {string:fallback_lang})
+						ORDER BY lang = {string:lang} DESC
+						LIMIT 1
+					) AS page_title, p.slug, p.page_id,
+					GREATEST(p.created_at, p.updated_at) AS date,
 					CASE WHEN COALESCE(par.value, \'0\') != \'0\' THEN p.num_comments ELSE 0 END AS num_comments,
 					com.created_at AS comment_date
 				FROM {db_prefix}lp_pages AS p
@@ -399,22 +421,24 @@ final class PageRepository extends AbstractRepository
 				LIMIT 1
 			)',
 			[
-				'page_id'      => $page['id'],
-				'category_id'  => $page['category_id'],
-				'created_at'   => $page['created_at'],
-				'current_time' => time(),
-				'type'         => $page['entry_type'],
-				'status'       => $page['status'],
-				'permissions'  => Permission::all(),
+				'lang'          => User::$me->language,
+				'fallback_lang' => Config::$language,
+				'page_id'       => $page['id'],
+				'category_id'   => $page['category_id'],
+				'created_at'    => $page['created_at'],
+				'current_time'  => time(),
+				'type'          => $page['entry_type'],
+				'status'        => $page['status'],
+				'permissions'   => Permission::all(),
 			]
 		);
 
-		[$prevId, $prevSlug] = Db::$db->fetch_row($result);
-		[$nextId, $nextSlug] = Db::$db->fetch_row($result);
+		[$prevTitle, $prevSlug] = Db::$db->fetch_row($result);
+		[$nextTitle, $nextSlug] = Db::$db->fetch_row($result);
 
 		Db::$db->free_result($result);
 
-		return [$prevId, $prevSlug, $nextId, $nextSlug];
+		return [$prevTitle, $prevSlug, $nextTitle, $nextSlug];
 	}
 
 	public function getRelatedPages(array $page): array
@@ -440,8 +464,12 @@ final class PageRepository extends AbstractRepository
 				p.page_id, p.slug, p.content, p.type, (' . $searchFormula . ') AS related,
 				COALESCE(t.value, tf.value) AS title
 			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}lp_titles AS t ON (p.page_id = t.item_id AND t.lang = {string:current_lang})
-				LEFT JOIN {db_prefix}lp_titles AS tf ON (p.page_id = tf.item_id AND tf.lang = {string:fallback_lang})
+			LEFT JOIN {db_prefix}lp_titles AS t ON (
+				p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang}
+			)
+			LEFT JOIN {db_prefix}lp_titles AS tf ON (
+				p.page_id = tf.item_id AND tf.type = {literal:page} AND tf.lang = {string:fallback_lang}
+			)
 			WHERE (' . $searchFormula . ') > 0
 				AND p.status = {int:status}
 				AND entry_type = {string:type}
@@ -451,7 +479,7 @@ final class PageRepository extends AbstractRepository
 			ORDER BY related DESC
 			LIMIT 4',
 			[
-				'current_lang'  => Utils::$context['user']['language'],
+				'lang'          => User::$me->language,
 				'fallback_lang' => Config::$language,
 				'status'        => $page['status'],
 				'type'          => $page['entry_type'],
@@ -487,10 +515,10 @@ final class PageRepository extends AbstractRepository
 	public function updateNumViews(int $item): void
 	{
 		Db::$db->query('', '
-				UPDATE {db_prefix}lp_pages
-				SET num_views = num_views + 1
-				WHERE page_id = {int:item}
-					AND status NOT IN ({array_int:statuses})',
+			UPDATE {db_prefix}lp_pages
+			SET num_views = num_views + 1
+			WHERE page_id = {int:item}
+				AND status NOT IN ({array_int:statuses})',
 			[
 				'item'     => $item,
 				'statuses' => [Status::INACTIVE->value, Status::UNAPPROVED->value],
@@ -500,11 +528,19 @@ final class PageRepository extends AbstractRepository
 
 	public function getMenuItems(): array
 	{
-		if (($pages = $this->cache()->get('menu_pages')) === null) {
-			$titles = app(TitleList::class)();
-
+		if (($pages = $this->cache()->get('menu_pages_' . User::$me->language)) === null) {
 			$result = Db::$db->query('', '
-				SELECT p.page_id, p.slug, p.permissions, pp2.value AS icon
+				SELECT
+					p.page_id, p.slug, p.permissions, pp2.value AS icon,
+					(
+						SELECT value
+						FROM {db_prefix}lp_titles
+						WHERE item_id = p.page_id
+							AND type = {literal:page}
+							AND lang IN ({string:lang}, {string:fallback_lang})
+						ORDER BY lang = {string:lang} DESC
+						LIMIT 1
+					) AS page_title
 				FROM {db_prefix}lp_pages AS p
 					LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {literal:page})
 					LEFT JOIN {db_prefix}lp_params AS pp2 ON (
@@ -516,10 +552,12 @@ final class PageRepository extends AbstractRepository
 					AND pp.name = {literal:show_in_menu}
 					AND pp.value = {string:show_in_menu}',
 				[
-					'types'        => EntryType::withoutDrafts(),
-					'status'       => Status::ACTIVE->value,
-					'current_time' => time(),
-					'show_in_menu' => '1',
+					'lang'          => User::$me->language,
+					'fallback_lang' => Config::$language,
+					'types'         => EntryType::withoutDrafts(),
+					'status'        => Status::ACTIVE->value,
+					'current_time'  => time(),
+					'show_in_menu'  => '1',
 				]
 			);
 
@@ -527,17 +565,16 @@ final class PageRepository extends AbstractRepository
 			while ($row = Db::$db->fetch_assoc($result)) {
 				$pages[$row['page_id']] = [
 					'id'          => (int) $row['page_id'],
+					'title'       => $row['page_title'],
 					'slug'        => $row['slug'],
 					'permissions' => (int) $row['permissions'],
 					'icon'        => $row['icon'],
 				];
-
-				$pages[$row['page_id']]['titles'] = $titles[$row['page_id']];
 			}
 
 			Db::$db->free_result($result);
 
-			$this->cache()->put('menu_pages', $pages);
+			$this->cache()->put('menu_pages_' . User::$me->language, $pages);
 		}
 
 		return $pages;

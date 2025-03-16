@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.02.25
+ * @version 15.03.25
  */
 
 namespace Bugo\LightPortal\Plugins\ArticleList;
@@ -23,7 +23,6 @@ use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Lists\TitleList;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
@@ -156,24 +155,34 @@ class ArticleList extends Block
 		if (empty($parameters['include_pages']))
 			return [];
 
-		$titles = app(TitleList::class)();
-
 		$result = Db::$db->query('', '
-			SELECT page_id, slug, content, description, type
-			FROM {db_prefix}lp_pages
-			WHERE status = {int:status}
-				AND entry_type = {string:entry_type}
-				AND deleted_at = 0
-				AND created_at <= {int:current_time}
-				AND permissions IN ({array_int:permissions})
-				AND page_id IN ({array_int:pages})
-			ORDER BY page_id DESC',
+			SELECT
+				p.page_id, p.slug, p.content, p.description, p.type,
+				(
+					SELECT value
+					FROM {db_prefix}lp_titles
+					WHERE item_id = p.page_id
+						AND type = {literal:page}
+						AND lang IN ({string:lang}, {string:fallback_lang})
+					ORDER BY lang = {string:lang} DESC
+					LIMIT 1
+				) AS page_title
+			FROM {db_prefix}lp_pages AS p
+			WHERE p.status = {int:status}
+				AND p.entry_type = {string:entry_type}
+				AND p.deleted_at = 0
+				AND p.created_at <= {int:current_time}
+				AND p.permissions IN ({array_int:permissions})
+				AND p.page_id IN ({array_int:pages})
+			ORDER BY p.page_id DESC',
 			[
-				'status'       => Status::ACTIVE->value,
-				'entry_type'   => EntryType::DEFAULT->name(),
-				'current_time' => time(),
-				'permissions'  => Permission::all(),
-				'pages'        => explode(',', (string) $parameters['include_pages']),
+				'lang'          => User::$me->language,
+				'fallback_lang' => Config::$language,
+				'status'        => Status::ACTIVE->value,
+				'entry_type'    => EntryType::DEFAULT->name(),
+				'current_time'  => time(),
+				'permissions'   => Permission::all(),
+				'pages'         => explode(',', (string) $parameters['include_pages']),
 			]
 		);
 
@@ -188,7 +197,7 @@ class ArticleList extends Block
 
 			$pages[$row['page_id']] = [
 				'id'          => $row['page_id'],
-				'title'       => $titles[$row['page_id']] ?? [],
+				'title'       => $row['page_title'],
 				'slug'        => $row['slug'],
 				'description' => Str::getTeaser($row['description'] ?: strip_tags($row['content'])),
 				'image'       => $image ?: (Config::$modSettings['lp_image_placeholder'] ?? ''),
@@ -206,7 +215,7 @@ class ArticleList extends Block
 
 		$type = Typed::int($parameters['display_type']);
 
-		$articles = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$me->id)
+		$articles = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$me->id . '_' . User::$me->language)
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(fn() => $type === 0 ? $this->getTopics($parameters) : $this->getPages($parameters));
 
@@ -240,7 +249,7 @@ class ArticleList extends Block
 				}
 			} else {
 				foreach ($articles as $page) {
-					if (empty($title = Str::getTranslatedTitle($page['title']))) {
+					if (empty($title = $page['title'])) {
 						continue;
 					}
 

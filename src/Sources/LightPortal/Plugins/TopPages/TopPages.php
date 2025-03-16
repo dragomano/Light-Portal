@@ -8,16 +8,16 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.02.25
+ * @version 15.03.25
  */
 
 namespace Bugo\LightPortal\Plugins\TopPages;
 
+use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\Permission;
-use Bugo\LightPortal\Lists\TitleList;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
@@ -76,25 +76,34 @@ class TopPages extends Block
 
 	public function getData(ParamWrapper $parameters): array
 	{
-		$titles = app(TitleList::class)();
-
 		$type = Typed::string($parameters['popularity_type'], default: 'comments');
 		$numPages = Typed::int($parameters['num_pages'], default: 10);
 
 		$result = Db::$db->query('', '
-			SELECT page_id, slug, type, num_views, num_comments
-			FROM {db_prefix}lp_pages
-			WHERE status = {int:status}
-				AND deleted_at = 0
-				AND created_at <= {int:current_time}
-				AND permissions IN ({array_int:permissions})
-			ORDER BY ' . ($type === 'comments' ? 'num_comments' : 'num_views') . ' DESC
+			SELECT p.page_id, p.slug, p.type, p.num_views, p.num_comments,
+				(
+					SELECT value
+					FROM {db_prefix}lp_titles
+					WHERE item_id = p.page_id
+						AND type = {literal:page}
+						AND lang IN ({string:lang}, {string:fallback_lang})
+					ORDER BY lang = {string:lang} DESC
+					LIMIT 1
+				) AS page_title
+			FROM {db_prefix}lp_pages AS p
+			WHERE p.status = {int:status}
+				AND p.deleted_at = 0
+				AND p.created_at <= {int:current_time}
+				AND p.permissions IN ({array_int:permissions})
+			ORDER BY ' . ($type === 'comments' ? 'p.num_comments' : 'p.num_views') . ' DESC
 			LIMIT {int:limit}',
 			[
-				'status'       => 1,
-				'current_time' => time(),
-				'permissions'  => Permission::all(),
-				'limit'        => $numPages,
+				'lang'          => User::$me->language,
+				'fallback_lang' => Config::$language,
+				'status'        => 1,
+				'current_time'  => time(),
+				'permissions'   => Permission::all(),
+				'limit'         => $numPages,
 			]
 		);
 
@@ -104,10 +113,10 @@ class TopPages extends Block
 				continue;
 
 			$pages[$row['page_id']] = [
-				'title'        => $titles[$row['page_id']] ?? [],
+				'title'        => $row['page_title'],
 				'num_comments' => $row['num_comments'],
 				'num_views'    => $row['num_views'],
-				'href'         => LP_PAGE_URL . $row['slug']
+				'href'         => LP_PAGE_URL . $row['slug'],
 			];
 		}
 
@@ -120,7 +129,7 @@ class TopPages extends Block
 	{
 		$parameters = $e->args->parameters;
 
-		$topPages = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$me->id)
+		$topPages = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$me->id . '_' . User::$me->language)
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(fn() => $this->getData($parameters));
 
@@ -134,7 +143,7 @@ class TopPages extends Block
 				$dl = Str::html('dl', ['class' => 'stats']);
 
 				foreach ($topPages as $page) {
-					if ($page['num_' . $type] < 1 || empty($title = Str::getTranslatedTitle($page['title'])))
+					if ($page['num_' . $type] < 1 || empty($title = $page['title']))
 						continue;
 
 					$width = $page['num_' . $type] * 100 / $max;

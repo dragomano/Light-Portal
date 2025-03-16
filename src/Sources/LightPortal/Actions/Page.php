@@ -22,7 +22,6 @@ use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\PortalSubAction;
 use Bugo\LightPortal\Events\HasEvents;
-use Bugo\LightPortal\Lists\TitleList;
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\Icon;
@@ -304,21 +303,19 @@ final class Page implements ActionInterface
 		if (empty($page = Utils::$context['lp_page']) || empty(Config::$modSettings['lp_show_prev_next_links']))
 			return;
 
-		$titles = app(TitleList::class)();
-
-		[$prevId, $prevSlug, $nextId, $nextSlug] = $this->repository->getPrevNextLinks($page);
+		[$prevTitle, $prevSlug, $nextTitle, $nextSlug] = $this->repository->getPrevNextLinks($page);
 
 		if (! empty($prevSlug)) {
 			Utils::$context['lp_page']['prev'] = [
 				'link'  => LP_PAGE_URL . $prevSlug,
-				'title' => Str::getTranslatedTitle($titles[$prevId])
+				'title' => $prevTitle,
 			];
 		}
 
 		if (! empty($nextSlug)) {
 			Utils::$context['lp_page']['next'] = [
 				'link'  => LP_PAGE_URL . $nextSlug,
-				'title' => Str::getTranslatedTitle($titles[$nextId])
+				'title' => $nextTitle,
 			];
 		}
 	}

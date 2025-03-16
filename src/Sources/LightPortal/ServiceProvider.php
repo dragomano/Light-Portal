@@ -46,7 +46,6 @@ use Bugo\LightPortal\Lists\IconList;
 use Bugo\LightPortal\Lists\PageList;
 use Bugo\LightPortal\Lists\PluginList;
 use Bugo\LightPortal\Lists\TagList;
-use Bugo\LightPortal\Lists\TitleList;
 use Bugo\LightPortal\Models\BlockFactory;
 use Bugo\LightPortal\Models\CategoryFactory;
 use Bugo\LightPortal\Models\PageFactory;
@@ -147,7 +146,6 @@ class ServiceProvider extends AbstractServiceProvider
 		TagList::class,
 		TagRepository::class,
 		TagValidator::class,
-		TitleList::class,
 		Weaver::class,
 	];
 
@@ -180,7 +178,6 @@ class ServiceProvider extends AbstractServiceProvider
 		$container->add(CategoryList::class);
 		$container->add(PageList::class)->addArgument(PageRepository::class);
 		$container->add(TagList::class);
-		$container->add(TitleList::class);
 		$container->add(PluginList::class);
 		$container->add(SessionManager::class);
 

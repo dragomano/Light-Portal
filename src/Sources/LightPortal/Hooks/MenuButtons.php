@@ -158,7 +158,7 @@ class MenuButtons
 					$item['icon']
 						? Str::html('span', ['class' => 'portal_menu_icons fa-fw ' . $item['icon']])
 						: ''
-					) . Str::getTranslatedTitle($item['titles']),
+					) . $item['title'],
 				'href'  => LP_PAGE_URL . $item['slug'],
 				'icon'  => '" style="display: none"></span><span',
 				'show'  => Permission::canViewItem($item['permissions']),
@@ -177,10 +177,10 @@ class MenuButtons
 			array_slice($buttons, 0, $counter, true),
 			empty(Config::$modSettings['lp_menu_separate_subsection']) ? $pageButtons : [
 				'lp_pages' => [
-					'title' => $this->getPageSubsectionTitle(),
-					'href'  => Config::$modSettings['lp_menu_separate_subsection_href'] ?? Config::$scripturl,
-					'icon'  => 'topics_replies',
-					'show'  => User::$me->allowedTo('light_portal_view'),
+					'title'       => $this->getPageSubsectionTitle(),
+					'href'        => Config::$modSettings['lp_menu_separate_subsection_href'] ?? Config::$scripturl,
+					'icon'        => 'topics_replies',
+					'show'        => User::$me->allowedTo('light_portal_view'),
 					'sub_buttons' => $pageButtons,
 				]
 			],
