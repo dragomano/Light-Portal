@@ -65,6 +65,7 @@ use Bugo\LightPortal\Repositories\TagRepository;
 use Bugo\LightPortal\UI\Tables\TableRenderer;
 use Bugo\LightPortal\Utils\Breadcrumbs;
 use Bugo\LightPortal\Utils\Cache;
+use Bugo\LightPortal\Utils\CacheInterface;
 use Bugo\LightPortal\Utils\File;
 use Bugo\LightPortal\Utils\Post;
 use Bugo\LightPortal\Utils\Request;
@@ -93,7 +94,7 @@ class ServiceProvider extends AbstractServiceProvider
 		BlockValidator::class,
 		BoardIndex::class,
 		Breadcrumbs::class,
-		Cache::class,
+		CacheInterface::class,
 		CardListInterface::class,
 		Category::class,
 		CategoryArea::class,
@@ -181,11 +182,11 @@ class ServiceProvider extends AbstractServiceProvider
 		$container->add(PluginList::class);
 		$container->add(SessionManager::class);
 
+		$container->add(CacheInterface::class, fn() => fn(?string $key = null) => new Cache($key));
 		$container->add(Request::class);
 		$container->add(Response::class);
 		$container->add(Post::class);
 		$container->add(File::class);
-		$container->add(Cache::class, fn() => fn(?string $key = null) => new Cache($key));
 		$container->add(Session::class, fn() => fn(?string $key = null) => new Session($key));
 		$container->add(Breadcrumbs::class);
 

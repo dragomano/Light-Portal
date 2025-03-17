@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 15.03.25
+ * @version 17.03.25
  */
 
 namespace Bugo\LightPortal\Plugins\TopPages;
@@ -129,7 +129,7 @@ class TopPages extends Block
 	{
 		$parameters = $e->args->parameters;
 
-		$topPages = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$me->id . '_' . User::$me->language)
+		$topPages = $this->langCache($this->name . '_addon_b' . $e->args->id)
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(fn() => $this->getData($parameters));
 

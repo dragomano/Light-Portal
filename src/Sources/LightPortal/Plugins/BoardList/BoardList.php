@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 11.02.25
+ * @version 17.03.25
  */
 
 namespace Bugo\LightPortal\Plugins\BoardList;
@@ -74,7 +74,7 @@ class BoardList extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		$boardList = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . Utils::$context['user']['id'])
+		$boardList = $this->userCache($this->name . '_addon_b' . $e->args->id)
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(fn() => MessageIndex::getBoardList());
 

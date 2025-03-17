@@ -15,7 +15,7 @@ namespace Bugo\LightPortal\Enums;
 use Bugo\Compat\Db;
 use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\Traits\HasValues;
-use Bugo\LightPortal\Utils\Cache;
+use Bugo\LightPortal\Utils\CacheInterface;
 
 use function array_column;
 use function array_filter;
@@ -76,7 +76,7 @@ enum Permission: int
 
 	private static function getBoardModerators(): array
 	{
-		$cache = new Cache();
+		$cache = app(CacheInterface::class);
 
 		if (($moderators = $cache->get('board_moderators')) === null) {
 			$result = Db::$db->query('', /** @lang text */ '

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 15.03.25
+ * @version 17.03.25
  */
 
 namespace Bugo\LightPortal\Plugins\ArticleList;
@@ -215,7 +215,7 @@ class ArticleList extends Block
 
 		$type = Typed::int($parameters['display_type']);
 
-		$articles = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$me->id . '_' . User::$me->language)
+		$articles = $this->langCache($this->name . '_addon_b' . $e->args->id)
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(fn() => $type === 0 ? $this->getTopics($parameters) : $this->getPages($parameters));
 

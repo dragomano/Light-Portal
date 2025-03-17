@@ -14,7 +14,7 @@ namespace Bugo\LightPortal\Routes;
 
 use Bugo\Compat\Routable;
 use Bugo\LightPortal\Enums\PortalSubAction;
-use Bugo\LightPortal\Utils\Cache;
+use Bugo\LightPortal\Utils\CacheInterface;
 
 use function array_search;
 use function array_shift;
@@ -28,7 +28,7 @@ class Portal implements Routable
 {
 	public static function getDataFromCache(string $type = 'categories'): array
 	{
-		return (new Cache())->get('lp_sef_' . $type) ?: [];
+		return app(CacheInterface::class)->get('lp_sef_' . $type) ?: [];
 	}
 
 	public static function getCachedName(string $id, string $type = 'categories'): string

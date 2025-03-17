@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 15.03.25
+ * @version 17.03.25
  */
 
 namespace Bugo\LightPortal\Plugins\RandomPages;
@@ -251,7 +251,7 @@ class RandomPages extends Block
 	{
 		$parameters = $e->args->parameters;
 
-		$randomPages = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$me->id . '_' . User::$me->language)
+		$randomPages = $this->langCache($this->name . '_addon_b' . $e->args->id)
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(fn() => $this->getData($parameters));
 

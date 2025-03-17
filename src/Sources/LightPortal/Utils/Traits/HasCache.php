@@ -12,12 +12,56 @@
 
 namespace Bugo\LightPortal\Utils\Traits;
 
-use Bugo\LightPortal\Utils\Cache;
+use Bugo\Compat\User;
+use Bugo\LightPortal\Utils\CacheInterface;
 
 trait HasCache
 {
-	public function cache(?string $key = null): Cache
+	public function cache(?string $key = null): CacheInterface
 	{
-		return app(Cache::class)($key);
+		return $this->getCacheInstance($key);
+	}
+
+	public function langCache(?string $key = null): CacheInterface
+	{
+		return $this->getCacheInstance($this->appendLangSuffix($key));
+	}
+
+	public function userCache(?string $key = null): CacheInterface
+	{
+		return $this->getCacheInstance($this->appendUserSuffix($key));
+	}
+
+	protected function appendUserSuffix(?string $key): ?string
+	{
+		if ($key) {
+			$key .= $this->getUserSuffix();
+		}
+
+		return $key;
+	}
+
+	protected function appendLangSuffix(?string $key): ?string
+	{
+		if ($key) {
+			$key .= $this->getLangSuffix();
+		}
+
+		return $key;
+	}
+
+	protected function getUserSuffix(): string
+	{
+		return '_u' . User::$me->id;
+	}
+
+	protected function getLangSuffix(): string
+	{
+		return $this->getUserSuffix() . '_' . User::$me->language;
+	}
+
+	protected function getCacheInstance(?string $key = null): CacheInterface
+	{
+		return app(CacheInterface::class)($key);
 	}
 }

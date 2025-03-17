@@ -8,13 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 20.02.25
+ * @version 17.03.25
  */
 
 namespace Bugo\LightPortal\Plugins\RecentPosts;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
@@ -201,7 +200,7 @@ class RecentPosts extends Block
 	{
 		$parameters = $e->args->parameters;
 
-		$recentPosts = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$me->id)
+		$recentPosts = $this->userCache($this->name . '_addon_b' . $e->args->id)
 			->setLifeTime(Typed::int($parameters['update_interval']))
 			->setFallback(fn() => $this->getData($parameters));
 

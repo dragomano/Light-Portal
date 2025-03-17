@@ -112,19 +112,19 @@ final class FrontPage implements ActionInterface
 
 		$article->init();
 
-		$key = 'articles_u' . User::$me->id . '_' . User::$me->language . '_' . $start . '_' . $limit;
-
+		$key = "articles_{$start}_$limit";
 		$key = ltrim(($this->request()->get('action') ?? '') . '_' . $key, '_');
 
-		if (($data = $this->cache()->get($key)) === null) {
-			$data['total'] = $article->getTotalCount();
+		$data = $this->langCache($key)
+			->setFallback(function () use ($article, $start, $limit) {
+				$total = $article->getTotalCount();
 
-			$this->updateStart($data['total'], $start, $limit);
+				$this->updateStart($total, $start, $limit);
 
-			$data['articles'] = app(Weaver::class)(static fn() => $article->getData($start, $limit));
+				$articles = app(Weaver::class)(static fn() => $article->getData($start, $limit));
 
-			$this->cache()->put($key, $data);
-		}
+				return ['total' => $total, 'articles' => $articles];
+			});
 
 		[$articles, $itemsCount] = [$data['articles'], $data['total']];
 
