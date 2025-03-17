@@ -13,12 +13,12 @@
 namespace Bugo\LightPortal\Actions;
 
 use Bugo\Bricks\Tables\Column;
+use Bugo\Bricks\Tables\DateColumn;
 use Bugo\Bricks\Tables\Interfaces\TableBuilderInterface;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\PageIndex;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\UI\Tables\DateColumn;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
 use Bugo\LightPortal\UI\Tables\TitleColumn;
 use Bugo\LightPortal\Utils\Setting;
@@ -90,8 +90,7 @@ class CardList implements CardListInterface
 				defaultSortColumn: 'date'
 			)
 			->addColumns([
-				DateColumn::make()
-					->setData('date', 'centertext')
+				DateColumn::make(title: Lang::$txt['date'])
 					->setSort('p.created_at DESC, p.updated_at DESC', 'p.created_at, p.updated_at'),
 				TitleColumn::make()
 					->setData(static fn($entry) => Str::html('a', $entry['title'])

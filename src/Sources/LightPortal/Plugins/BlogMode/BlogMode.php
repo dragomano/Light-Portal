@@ -8,13 +8,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.02.25
+ * @version 17.03.25
  */
 
 namespace Bugo\LightPortal\Plugins\BlogMode;
 
 use Bugo\Bricks\Presenters\TablePresenter;
 use Bugo\Bricks\Tables\Column;
+use Bugo\Bricks\Tables\DateColumn;
 use Bugo\Bricks\Tables\IdColumn;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
@@ -27,7 +28,6 @@ use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\UI\Tables\NumViewsColumn;
-use Bugo\LightPortal\UI\Tables\DateColumn;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
 use Bugo\LightPortal\UI\Tables\TitleColumn;
 use Bugo\LightPortal\Utils\Str;
@@ -233,7 +233,7 @@ class BlogMode extends Plugin
 			->setCount($this->pageRepository->getTotalCount(...), $params)
 			->addColumns([
 				IdColumn::make()->setSort('p.page_id'),
-				DateColumn::make(),
+				DateColumn::make(title: Lang::$txt['date']),
 				NumViewsColumn::make(),
 				TitleColumn::make()
 					->setData(static fn($entry) => Str::html('a', ['class' => 'bbc_link'])
