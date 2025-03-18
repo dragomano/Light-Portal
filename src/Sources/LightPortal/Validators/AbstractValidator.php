@@ -36,8 +36,8 @@ abstract class AbstractValidator implements ValidatorInterface
 	public function __construct()
 	{
 		$this->filters['titles'] = [
-			'filter' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-			'flags'  => FILTER_REQUIRE_ARRAY,
+			'filter'  => FILTER_CALLBACK,
+			'options' => fn($title) => Utils::htmlspecialchars($title, ENT_QUOTES),
 		];
 	}
 
