@@ -12,6 +12,14 @@
 
 namespace Bugo\LightPortal\Areas\Configs;
 
+use Bugo\Bricks\Settings\CallbackConfig;
+use Bugo\Bricks\Settings\CheckConfig;
+use Bugo\Bricks\Settings\ConfigBuilder;
+use Bugo\Bricks\Settings\DividerConfig;
+use Bugo\Bricks\Settings\IntConfig;
+use Bugo\Bricks\Settings\SelectConfig;
+use Bugo\Bricks\Settings\TextConfig;
+use Bugo\Bricks\Settings\TitleConfig;
 use Bugo\Compat\{Config, Lang, Theme};
 use Bugo\Compat\{User, Utils};
 use Bugo\Compat\Actions\Admin\ACP;
@@ -51,91 +59,66 @@ final class ExtraConfig extends AbstractConfig
 			'lp_page_maximum_tags'     => 10,
 		]);
 
-		$configVars = [
-			['check', 'lp_show_tags_on_page'],
-			['select', 'lp_page_og_image', Lang::$txt['lp_page_og_image_set']],
-			['check', 'lp_show_prev_next_links'],
-			['check', 'lp_show_related_pages'],
-			'',
-			['callback', 'comment_settings_before'],
-			[
-				'select',
-				'lp_comment_block',
-				Lang::$txt['lp_comment_block_set'],
-				'javascript' => '@change="comment_block = $event.target.value"'
-			],
-			[
-				'int',
-				'lp_time_to_change_comments',
-				'postinput' => Lang::$txt['manageposts_minutes'],
-				'javascript' => ':disabled="comment_block !== \'default\'"'
-			],
-			[
-				'int',
-				'lp_num_comments_per_page',
-				'javascript' => ':disabled="comment_block !== \'default\'"'
-			],
-			[
-				'select',
-				'lp_comment_sorting',
-				[Lang::$txt['lp_sort_by_created'], Lang::$txt['lp_sort_by_created_desc']],
-				'javascript' => ':disabled="comment_block !== \'default\'"'
-			],
-			['callback', 'comment_settings_after'],
-			'',
-			['check', 'lp_show_items_as_articles'],
-			['int', 'lp_page_maximum_tags', 'min' => 1],
-			['select', 'lp_permissions_default', Lang::$txt['lp_permissions']],
-			['check', 'lp_hide_blocks_in_acp'],
-			['title', 'mobile_user_menu'],
-			['callback', 'menu_settings_before'],
-			[
-				'check',
-				'lp_menu_separate_subsection',
-				'help' => 'lp_menu_separate_subsection_help',
-				'javascript' => '@change="separate_subsection = ! separate_subsection"'
-			],
-			[
-				'text',
-				'lp_menu_separate_subsection_title',
-				'help' => 'lp_menu_separate_subsection_title_help',
-				'javascript' => ':disabled="separate_subsection === false"',
-				'size' => '75" placeholder="{lp_pages}',
-			],
-			[
-				'text',
-				'lp_menu_separate_subsection_href',
-				'javascript' => ':disabled="separate_subsection === false"',
-				'size' => '75" placeholder="' . Config::$scripturl,
-			],
-			['callback', 'menu_settings_after'],
-			['title', 'lp_fa_source_title'],
-			[
-				'select',
-				'lp_fa_source',
-				[
+		$vars = ConfigBuilder::make()->addVars([
+			CheckConfig::make('lp_show_tags_on_page'),
+			SelectConfig::make('lp_page_og_image')
+				->setOptions(Lang::$txt['lp_page_og_image_set']),
+			CheckConfig::make('lp_show_prev_next_links'),
+			CheckConfig::make('lp_show_related_pages'),
+			DividerConfig::make(),
+			CallbackConfig::make('comment_settings_before'),
+			SelectConfig::make('lp_comment_block')
+				->setOptions(Lang::$txt['lp_comment_block_set'])
+				->setJavaScript('@change="comment_block = $event.target.value"'),
+			IntConfig::make('lp_time_to_change_comments')
+				->setPostInput(Lang::$txt['manageposts_minutes'])
+				->setJavaScript(':disabled="comment_block !== \'default\'"'),
+			IntConfig::make('lp_num_comments_per_page')
+				->setJavaScript(':disabled="comment_block !== \'default\'"'),
+			SelectConfig::make('lp_comment_sorting')
+				->setOptions([Lang::$txt['lp_sort_by_created'], Lang::$txt['lp_sort_by_created_desc']])
+				->setJavaScript(':disabled="comment_block !== \'default\'"'),
+			CallbackConfig::make('comment_settings_after'),
+			DividerConfig::make(),
+			CheckConfig::make('lp_show_items_as_articles'),
+			IntConfig::make('lp_page_maximum_tags')
+				->setMin(1),
+			SelectConfig::make('lp_permissions_default')
+				->setOptions(Lang::$txt['lp_permissions']),
+			CheckConfig::make('lp_hide_blocks_in_acp'),
+			TitleConfig::make('mobile_user_menu'),
+			CallbackConfig::make('menu_settings_before'),
+			CheckConfig::make('lp_menu_separate_subsection')
+				->setHelp('lp_menu_separate_subsection_help')
+				->setJavaScript('@change="separate_subsection = ! separate_subsection"'),
+			TextConfig::make('lp_menu_separate_subsection_title')
+				->setHelp('lp_menu_separate_subsection_title_help')
+				->setJavaScript(':disabled="separate_subsection === false"')
+				->setSize('75" placeholder="{lp_pages}'),
+			TextConfig::make('lp_menu_separate_subsection_href')
+				->setJavaScript(':disabled="separate_subsection === false"')
+				->setSize('75" placeholder="' . Config::$scripturl),
+			CallbackConfig::make('menu_settings_after'),
+			TitleConfig::make('lp_fa_source_title'),
+			SelectConfig::make('lp_fa_source')
+				->setOptions([
 					'none'      => Lang::$txt['no'],
 					'css_cdn'   => Lang::$txt['lp_fa_source_css_cdn'],
 					'css_local' => Lang::$txt['lp_fa_source_css_local'],
 					'custom'    => Lang::$txt['lp_fa_custom'],
 					'kit'       => Lang::$txt['lp_fa_kit'],
-				],
-				'onchange' => 'document.getElementById(\'lp_fa_custom\').disabled = this.value !== \'custom\';
-					document.getElementById(\'lp_fa_kit\').disabled = this.value !== \'kit\';'
-			],
-			[
-				'text',
-				'lp_fa_custom',
-				'disabled' => Setting::get('lp_fa_source', 'string', '') !== 'custom',
-				'size' => 75
-			],
-			[
-				'text',
-				'lp_fa_kit',
-				'disabled' => isset(Config::$modSettings['lp_fa_kit']) && Config::$modSettings['lp_fa_source'] !== 'kit',
-				'size' => '75" placeholder="https://kit.fontawesome.com/xxx.js'
-			],
-		];
+				])
+				->setOnChange('document.getElementById(\'lp_fa_custom\').disabled = this.value !== \'custom\';
+					document.getElementById(\'lp_fa_kit\').disabled = this.value !== \'kit\';'),
+			TextConfig::make('lp_fa_custom')
+				->setDisabled(Setting::get('lp_fa_source', 'string', '') !== 'custom')
+				->setSize('75'),
+			TextConfig::make('lp_fa_kit')
+				->setDisabled(isset(Config::$modSettings['lp_fa_kit']) && Config::$modSettings['lp_fa_source'] !== 'kit')
+				->setSize('75" placeholder="https://kit.fontawesome.com/xxx.js'),
+		]);
+
+		$configVars = $vars->build();
 
 		Theme::loadTemplate('LightPortal/ManageSettings');
 

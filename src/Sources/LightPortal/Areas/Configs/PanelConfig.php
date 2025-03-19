@@ -12,6 +12,9 @@
 
 namespace Bugo\LightPortal\Areas\Configs;
 
+use Bugo\Bricks\Settings\CallbackConfig;
+use Bugo\Bricks\Settings\CheckConfig;
+use Bugo\Bricks\Settings\ConfigBuilder;
 use Bugo\Compat\{Config, Lang, Theme};
 use Bugo\Compat\{User, Utils};
 use Bugo\Compat\Actions\Admin\ACP;
@@ -53,13 +56,15 @@ final class PanelConfig extends AbstractConfig
 		Utils::$context['lp_left_right_width_values']    = [2, 3, 4];
 		Utils::$context['lp_header_footer_width_values'] = [6, 8, 10, 12];
 
-		$configVars = [
-			['check', 'lp_swap_header_footer'],
-			['check', 'lp_swap_left_right'],
-			['check', 'lp_swap_top_bottom'],
-			['callback', 'panel_layout'],
-			['callback', 'panel_direction']
-		];
+		$vars = ConfigBuilder::make()->addVars([
+			CheckConfig::make('lp_swap_header_footer'),
+			CheckConfig::make('lp_swap_left_right'),
+			CheckConfig::make('lp_swap_top_bottom'),
+			CallbackConfig::make('panel_layout'),
+			CallbackConfig::make('panel_direction'),
+		]);
+
+		$configVars = $vars->build();
 
 		Utils::$context['sub_template'] = 'show_settings';
 
