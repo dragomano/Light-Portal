@@ -19,7 +19,7 @@ Puedes usar el **PluginMaker** como un ayudante para crear tus propios plugins. 
 
 Actualmente, los siguientes tipos de plugins están disponibles:
 
-| Type                            |                                                                                                                                    Description |
+| Type                            |                                                                                                                                    Descripción |
 | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------: |
 | `block`                         |                                                                    Plugins que añaden un nuevo tipo de bloques para el portal. |
 | `ssi`                           |                              Plugins (normalmente bloques) que utilizan funciones SSI para recuperar datos. |

@@ -1,6 +1,7 @@
-import { defineConfig } from 'vitepress'
+import { defineConfig } from 'vitepress';
 import { fileURLToPath, URL } from 'node:url';
 import { withSidebar } from 'vitepress-sidebar';
+import markdownSteps from 'markdown-it-steps';
 
 const commonSidebarConfigs = {
   documentRootPath: 'src',
@@ -50,6 +51,9 @@ const vitePressConfigs = defineConfig({
   markdown: {
     image: {
       lazyLoading: true,
+    },
+    config: (md) => {
+      md.use(markdownSteps);
     },
   },
   themeConfig: {

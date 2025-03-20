@@ -18,7 +18,7 @@ export default defineConfig({
         link: '/examples'
       },
       {
-        text: 'Changelog',
+        text: 'تغيير',
         link: '/changelog'
       }
     ],
