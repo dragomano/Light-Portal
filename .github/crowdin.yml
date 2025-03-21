@@ -21,7 +21,22 @@ files:
       translation: '/docs/.vitepress/config/%two_letters_code%.js',
     },
     {
-      source: '/docs/src/en/**',
+      source: '/docs/src/en/**/*.*',
       translation: '/docs/src/%two_letters_code%/**/%original_file_name%',
     },
   ]
+
+export_languages: [
+  "ar",
+  "de",
+  "el",
+  "es",
+  "fr",
+  "it",
+  "nl",
+  "pl",
+  "ru",
+  "sl",
+  "tr",
+  "uk"
+]
