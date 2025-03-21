@@ -22,14 +22,17 @@
     </if>
   </target>
   <target name="standard_edition" depends="update_version">
+    <property name="included_translations" value="(index|english|greek|italian|polish|russian|slovenian|turkish).php" />
+    <property name="excluded_plugins" value="**/AdsBlock/langs/*,**/ApexCharts/langs/*,**/BootstrapIcons/langs/*,**/DiceBear/langs/*,**/Disqus/langs/*,**/EasyMarkdownEditor/langs/*,**/EhPortalMigration/langs/*,**/EzPortalMigration/langs/*,**/FaBoardIcons/langs/*,**/FacebookComments/langs/*,**/Giscus/langs/*,**/ImageUpload/langs/*,**/IndexNow/langs/*,**/Jodit/langs/*,**/LatteLayouts/langs/*,**/LineAwesomeIcons/langs/*,**/Markdown/langs/*,**/MaterialDesignIcons/langs/*,**/MediaBlock/langs/*,**/Optimus/langs/*,**/PageScroll/langs/*,**/PluginMaker/langs/*,**/PrettyUrls/langs/*,**/SiteList/langs/*,**/Snowflakes/langs/*,**/TagList/langs/*,**/TinyPortalMigration/langs/*,**/TopicRatingBar/langs/*,**/TwigLayouts/langs/*,**/Uicons/langs/*,**/VkComments/langs/*" />
     <delete file="light_portal_${release.version}.tgz" quiet="true" />
     <tar destfile="light_portal_${release.version}.tgz" compression="gzip">
       <fileset dir=".">
         <include name="LICENSE" />
       </fileset>
       <fileset dir="./src">
-        <include name="Themes/**" />
         <exclude name="**/.idea/**" />
+        <include name="Themes/**" />
+        <exclude name="Themes/default/languages/**" />
         <exclude name="Themes/default/css/light_portal/plugins.css" />
         <exclude name="Themes/default/scripts/light_portal/plugins.js" />
         <include name="Sources/**" />
@@ -65,12 +68,19 @@
         <exclude name="Sources/LightPortal/Plugins/TwigLayouts/**" />
         <exclude name="Sources/LightPortal/Plugins/Uicons/**" />
         <exclude name="Sources/LightPortal/Plugins/VkComments/**" />
+        <exclude name="Sources/LightPortal/Plugins/*/langs/**" />
         <exclude name="Sources/LightPortal/composer.json" />
         <exclude name="Sources/LightPortal/composer.lock" />
         <exclude name="Sources/LightPortal/create_index.php" />
         <exclude name="Sources/LightPortal/update_plugins.php" />
         <include name="package-info.xml" />
         <include name="*.php" />
+      </fileset>
+      <fileset dir="./src" includes="Themes/default/languages/LightPortal/*">
+        <filename regex="${included_translations}" />
+      </fileset>
+      <fileset dir="./src" includes="Sources/LightPortal/Plugins/*/langs/*" excludes="${excluded_plugins}">
+        <filename regex="${included_translations}" />
       </fileset>
     </tar>
   </target>
@@ -81,9 +91,8 @@
         <include name="LICENSE" />
       </fileset>
       <fileset dir="./src">
-        <include name="Themes/**" />
-        <exclude name="Themes/default/languages/**" />
         <exclude name="**/.idea/**" />
+        <include name="Themes/**" />
         <exclude name="Themes/default/css/light_portal/plugins.css" />
         <exclude name="Themes/default/scripts/light_portal/plugins.js" />
         <include name="Sources/**" />
@@ -95,17 +104,8 @@
         <exclude name="Sources/LightPortal/Plugins/Jodit/**" />
         <exclude name="Sources/LightPortal/Plugins/MediaBlock/**" />
         <exclude name="Sources/LightPortal/Plugins/PageScroll/**" />
-        <exclude name="Sources/LightPortal/Plugins/*/langs/**" />
         <include name="package-info.xml" />
         <include name="*.php" />
-      </fileset>
-      <fileset dir="./src">
-        <include name="Themes/default/languages/LightPortal/index.php" />
-        <include name="Themes/default/languages/LightPortal/LightPortal.english.php" />
-      </fileset>
-      <fileset dir="./src">
-        <include name="Sources/LightPortal/Plugins/*/langs/english.php" />
-        <include name="Sources/LightPortal/Plugins/*/langs/index.php" />
       </fileset>
     </tar>
   </target>
@@ -116,9 +116,9 @@
         <include name="LICENSE" />
       </fileset>
       <fileset dir="./src">
+        <exclude name="**/.idea/**" />
         <include name="Themes/**" />
         <exclude name="Themes/default/languages/**" />
-        <exclude name="**/.idea/**" />
         <exclude name="Themes/default/css/light_portal/plugins.css" />
         <exclude name="Themes/default/scripts/light_portal/plugins.js" />
         <include name="Sources/**" />

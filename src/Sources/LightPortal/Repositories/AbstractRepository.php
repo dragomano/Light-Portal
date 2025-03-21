@@ -142,9 +142,9 @@ abstract class AbstractRepository
 		if (empty(Utils::$context['lp_' . $this->entity]['titles']))
 			return;
 
-		// Remove all punctuation symbols
+		// Remove some punctuation symbols
 		Utils::$context['lp_' . $this->entity]['titles'] = preg_replace(
-			"#[[:punct:]]#", "", (array) Utils::$context['lp_' . $this->entity]['titles']
+			"#[.,!?;:]#", "", (array) Utils::$context['lp_' . $this->entity]['titles']
 		);
 	}
 }

@@ -1,8 +1,7 @@
-export default {
-  label: 'Αγγλικά',
-  // https://gist.github.com/Josantonius/b455e315bc7f790d14b136d61d9ae469
+import { defineConfig } from 'vitepress';
+export default defineConfig({
   lang: 'el',
-  title: 'Έγγραφα Light Portal',
+  // https://gist.github.com/Josantonius/b455e315bc7f790d14b136d61d9ae469
   description: 'Light Portal Online Τεκμηρίωση',
   themeConfig: {
     nav: [
@@ -62,4 +61,4 @@ export default {
       }
     }
   }
-};
+});

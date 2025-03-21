@@ -1,7 +1,14 @@
-<script>
+<script lang="ts">
   import { SelectOption } from './index.js';
 
-  let { id, name, value = $bindable(''), option = {} } = $props();
+  interface Props {
+    id?: string;
+    name?: string;
+    value?: any;
+    option?: object;
+  }
+
+  let { id, name, value = $bindable(''), option = {} }: Props = $props();
   let values = $state(value.split(',').filter(Boolean))
 </script>
 

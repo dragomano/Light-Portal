@@ -12,6 +12,13 @@
 
 namespace Bugo\LightPortal\Areas\Configs;
 
+use Bugo\Bricks\Settings\CallbackConfig;
+use Bugo\Bricks\Settings\CheckConfig;
+use Bugo\Bricks\Settings\ConfigBuilder;
+use Bugo\Bricks\Settings\IntConfig;
+use Bugo\Bricks\Settings\PermissionsConfig;
+use Bugo\Bricks\Settings\SelectConfig;
+use Bugo\Bricks\Settings\TextConfig;
 use Bugo\Compat\{Config, Lang, Theme};
 use Bugo\Compat\{Time, User, Utils};
 use Bugo\Compat\Actions\Admin\ACP;
@@ -68,9 +75,9 @@ final class BasicConfig extends AbstractConfig
 		$this->prepareTopicList();
 
 		$templateEditLink = sprintf('&nbsp;' . Str::html('a', [
-				'class' => 'button active',
+				'class'  => 'button active',
 				'target' => '_blank',
-				'href' => '%s?action=admin;area=theme;th=1;%s=%s;sa=edit;directory=LightPortal/layouts',
+				'href'   => '%s?action=admin;area=theme;th=1;%s=%s;sa=edit;directory=LightPortal/layouts',
 			])->setText(Lang::$txt['lp_template_edit_link']),
 			Config::$scripturl,
 			Utils::$context['session_var'],
@@ -79,155 +86,93 @@ final class BasicConfig extends AbstractConfig
 
 		Lang::$txt['lp_standalone_url_help'] = Lang::getTxt('lp_standalone_url_help', [
 			Config::$boardurl . '/portal.php',
-			Config::$scripturl
+			Config::$scripturl,
 		]);
 
-		$configVars = [
-			[
-				'select',
-				'lp_frontpage_mode',
-				array_combine(
+		$vars = ConfigBuilder::make()->addVars([
+			SelectConfig::make('lp_frontpage_mode')
+				->setOptions(array_combine(
 					[0, 'chosen_page', 'all_pages', 'chosen_pages', 'all_topics', 'chosen_topics', 'chosen_boards'],
 					Lang::$txt['lp_frontpage_mode_set'],
-				),
-				'attributes' => [
-					'@change' => '$dispatch(\'change-mode\', { front: $event.target.value })',
-				],
-				'tab' => self::TAB_BASE,
-			],
-			['callback', 'frontpage_mode_settings_middle', 'tab' => self::TAB_BASE],
-			[
-				'text',
-				'lp_frontpage_title',
-				'placeholder' => str_replace(
-						["'", "\""], "", (string) Utils::$context['forum_name']
-					) . ' - ' . Lang::$txt['lp_portal'],
-				'tab' => self::TAB_BASE,
-			],
-			[
-				'check',
-				'lp_show_images_in_articles',
-				'tab' => self::TAB_CARDS,
-			],
-			[
-				'text',
-				'lp_image_placeholder',
-				'placeholder' => Lang::$txt['lp_example'] .
-					Theme::$current->settings['default_images_url'] . '/smflogo.svg',
-				'tab' => self::TAB_CARDS,
-			],
-			[
-				'check',
-				'lp_show_teaser',
-				'tab' => self::TAB_CARDS,
-			],
-			[
-				'check',
-				'lp_show_author',
-				'help' => 'lp_show_author_help',
-				'tab' => self::TAB_CARDS,
-			],
-			[
-				'check',
-				'lp_show_views_and_comments',
-				'tab' => self::TAB_CARDS,
-			],
-			[
-				'check',
-				'lp_frontpage_order_by_replies',
-				'tab' => self::TAB_BASE,
-			],
-			[
-				'select',
-				'lp_frontpage_article_sorting',
-				Lang::$txt['lp_frontpage_article_sorting_set'],
-				'help' => 'lp_frontpage_article_sorting_help',
-				'tab' => self::TAB_BASE,
-			],
-			[
-				'select',
-				'lp_frontpage_layout',
-				app(RendererInterface::class)->getLayouts(),
-				'postinput' => $templateEditLink,
-				'tab' => self::TAB_CARDS,
-			],
-			[
-				'check',
-				'lp_show_layout_switcher',
-				'tab' => self::TAB_BASE,
-			],
-			[
-				'select',
-				'lp_frontpage_num_columns',
-				array_map(
+				))
+				->setAttribute('@change', '$dispatch(\'change-mode\', { front: $event.target.value })')
+				->setTab(self::TAB_BASE),
+			CallbackConfig::make('frontpage_mode_settings_middle')
+				->setTab(self::TAB_BASE),
+			TextConfig::make('lp_frontpage_title')
+				->setPlaceholder(str_replace(
+					["'", "\""], "", (string) Utils::$context['forum_name']
+				) . ' - ' . Lang::$txt['lp_portal'])
+				->setTab(self::TAB_BASE),
+			CheckConfig::make('lp_frontpage_order_by_replies')
+				->setTab(self::TAB_BASE),
+			SelectConfig::make('lp_frontpage_article_sorting')
+				->setOptions(Lang::$txt['lp_frontpage_article_sorting_set'])
+				->setHelp('lp_frontpage_article_sorting_help')
+				->setTab(self::TAB_BASE),
+			CheckConfig::make('lp_show_layout_switcher')
+				->setTab(self::TAB_BASE),
+			SelectConfig::make('lp_frontpage_num_columns')
+				->setOptions(array_map(
 					static fn($item) => Lang::getTxt('lp_frontpage_num_columns_set', ['columns' => $item]),
 					[1, 2, 3, 4, 6],
-				),
-				'tab' => self::TAB_BASE,
-			],
-			[
-				'select',
-				'lp_show_pagination',
-				Lang::$txt['lp_show_pagination_set'],
-				'tab' => self::TAB_BASE,
-			],
-			[
-				'check',
-				'lp_use_simple_pagination',
-				'tab' => self::TAB_BASE,
-			],
-			[
-				'int',
-				'lp_num_items_per_page',
-				'min' => 1,
-				'tab' => self::TAB_BASE,
-			],
-			[
-				'check',
-				'lp_standalone_mode',
-				'label' => Lang::$txt['lp_action_on'],
-				'tab' => self::TAB_STANDALONE,
-			],
-			[
-				'text',
-				'lp_standalone_url',
-				'help' => 'lp_standalone_url_help',
-				'placeholder' => Lang::$txt['lp_example'] . Config::$boardurl . '/portal.php',
-				'tab' => self::TAB_STANDALONE,
-			],
-			[
-				'callback',
-				'standalone_mode_settings_after',
-				'label' => Lang::$txt['lp_disabled_actions'],
-				'help' => 'lp_disabled_actions_help',
-				'callback' => static fn() => new ActionSelect(),
-				'tab' => self::TAB_STANDALONE
-			],
-			[
-				'permissions',
-				'light_portal_view',
-				'help' => 'permissionhelp_light_portal_view',
-				'tab' => self::TAB_PERMISSIONS,
-			],
-			[
-				'permissions',
-				'light_portal_manage_pages_own',
-				'help' => 'permissionhelp_light_portal_manage_pages_own',
-				'tab' => self::TAB_PERMISSIONS,
-			],
-			[
-				'permissions',
-				'light_portal_manage_pages_any',
-				'help' => 'permissionhelp_light_portal_manage_pages',
-				'tab' => self::TAB_PERMISSIONS,
-			],
-			[
-				'permissions',
-				'light_portal_approve_pages',
-				'help' => 'permissionhelp_light_portal_approve_pages',
-				'tab' => self::TAB_PERMISSIONS,
-			],
-		];
+				))
+				->setTab(self::TAB_BASE),
+			SelectConfig::make('lp_show_pagination')
+				->setOptions(Lang::$txt['lp_show_pagination_set'])
+				->setTab(self::TAB_BASE),
+			CheckConfig::make('lp_use_simple_pagination')
+				->setTab(self::TAB_BASE),
+			IntConfig::make('lp_num_items_per_page')
+				->setMin(1)
+				->setTab(self::TAB_BASE),
+			CheckConfig::make('lp_show_images_in_articles')
+				->setTab(self::TAB_CARDS),
+			TextConfig::make('lp_image_placeholder')
+				->setPlaceholder(implode('', [
+					Lang::$txt['lp_example'],
+					Theme::$current->settings['default_images_url'],
+					'/smflogo.svg',
+				]))
+				->setTab(self::TAB_CARDS),
+			CheckConfig::make('lp_show_teaser')
+				->setTab(self::TAB_CARDS),
+			CheckConfig::make('lp_show_author')
+				->setHelp('lp_show_author_help')
+				->setTab(self::TAB_CARDS),
+			CheckConfig::make('lp_show_views_and_comments')
+				->setTab(self::TAB_CARDS),
+			SelectConfig::make('lp_frontpage_layout')
+				->setOptions(app(RendererInterface::class)->getLayouts())
+				->setPostInput($templateEditLink)
+				->setTab(self::TAB_CARDS),
+			CheckConfig::make('lp_standalone_mode')
+				->setLabel(Lang::$txt['lp_action_on'])
+				->setTab(self::TAB_STANDALONE),
+			TextConfig::make('lp_standalone_url')
+				->setHelp('lp_standalone_url_help')
+				->setPlaceholder(Lang::$txt['lp_example'] . Config::$boardurl . '/portal.php')
+				->setTab(self::TAB_STANDALONE),
+			CallbackConfig::make('standalone_mode_settings_after')
+				->setLabel(Lang::$txt['lp_disabled_actions'])
+				->setHelp('lp_disabled_actions_help')
+				->setCallback(static fn() => new ActionSelect())
+				->setTab(self::TAB_STANDALONE),
+			PermissionsConfig::make('light_portal_view')
+				->setHelp('permissionhelp_light_portal_view')
+				->setTab(self::TAB_PERMISSIONS),
+			PermissionsConfig::make('light_portal_manage_pages_own')
+				->setHelp('permissionhelp_light_portal_manage_pages_own')
+				->setTab(self::TAB_PERMISSIONS),
+			PermissionsConfig::make('light_portal_manage_pages_any')
+				->setHelp('permissionhelp_light_portal_manage_pages')
+				->setTab(self::TAB_PERMISSIONS),
+			PermissionsConfig::make('light_portal_approve_pages')
+				->setHelp('permissionhelp_light_portal_approve_pages')
+				->setTab(self::TAB_PERMISSIONS),
+		]);
+
+		$configVars = $vars->build();
 
 		Theme::loadTemplate('LightPortal/ManageSettings');
 

@@ -1,9 +1,16 @@
-<script>
+<script lang="ts">
   import { _ } from 'svelte-i18n';
   import { MarkdownEditor } from './index.js';
   import Button from '../BaseButton.svelte';
+  import type { Comment } from '../types';
 
-  let { comment, submit, cancel } = $props();
+  interface Props {
+    comment: Comment;
+    submit: Function;
+    cancel: Function;
+  }
+
+  let { comment, submit, cancel }: Props = $props();
   let message = $state(comment.message);
 </script>
 

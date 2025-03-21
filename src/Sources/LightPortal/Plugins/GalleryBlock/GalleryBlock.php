@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.02.25
+ * @version 17.03.25
  */
 
 namespace Bugo\LightPortal\Plugins\GalleryBlock;
@@ -17,7 +17,6 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
-use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
@@ -129,7 +128,7 @@ class GalleryBlock extends Block
 			return;
 		}
 
-		$images = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . Utils::$context['user']['id'])
+		$images = $this->userCache($this->name . '_addon_b' . $e->args->id)
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(fn() => $this->getData($e->args->parameters));
 

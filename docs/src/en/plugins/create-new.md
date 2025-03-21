@@ -19,53 +19,20 @@ You can use the **PluginMaker** as a helper to create your own plugins. Download
 
 Currently, the following types of plugins are available:
 
-### `block`
-
-Plugins that add a new type of blocks for the portal.
-
-### `ssi`
-
-Plugins (usually blocks) that use SSI functions to retrieve data.
-
-### `editor`
-
-Plugins that add a third-party editor for different types of content.
-
-### `comment`
-
-Plugins that add a third-party comment widget instead of the built-in.
-
-### `parser`
-
-Plugins that implement the parser for the content of pages and blocks.
-
-### `article`
-
-Plugins for processing the content of article cards on the main page.
-
-### `frontpage`
-
-Plugins for changing the main page of the portal.
-
-### `impex`
-
-Plugins for importing and exporting various portal elements.
-
-### `block_options` | `page_options`
-
-Plugins that add additional parameters for the corresponding entity (block or page).
-
-### `icons`
-
-Plugins that add new icon libraries to replace interface elements or for use in block headers
-
-### `seo`
-
-Plugins that somehow affect the visibility of the forum on the network.
-
-### `other`
-
-Plugins that are not related to any of the categories above.
+| Type                            |                                                                                   Description |
+| ------------------------------- | --------------------------------------------------------------------------------------------: |
+| `block`                         |                                         Plugins that add a new type of blocks for the portal. |
+| `ssi`                           |                             Plugins (usually blocks) that use SSI functions to retrieve data. |
+| `editor`                        |                         Plugins that add a third-party editor for different types of content. |
+| `comment`                       |                        Plugins that add a third-party comment widget instead of the built-in. |
+| `parser`                        |                        Plugins that implement the parser for the content of pages and blocks. |
+| `article`                       |                         Plugins for processing the content of article cards on the main page. |
+| `frontpage`                     |                                             Plugins for changing the main page of the portal. |
+| `impex`                         |                                  Plugins for importing and exporting various portal elements. |
+| `block_options`, `page_options` |          Plugins that add additional parameters for the corresponding entity (block or page). |
+| `icons`                         | Plugins that add new icon libraries to replace interface elements or for use in block headers |
+| `seo`                           |                       Plugins that somehow affect the visibility of the forum on the network. |
+| `other`                         |                                  Plugins that are not related to any of the categories above. |
 
 ## Creating a plugin directory
 
@@ -83,8 +50,8 @@ Create a separate folder for your plugin files, inside `/Sources/LightPortal/Plu
 
 File `index.php` can be copied from folders of other plugins. The file `HelloWorld.php` contains the plugin logic:
 
-```php:line-numbers
-<?php
+```php:line-numbers {17}
+<?php declare(strict_types=1);
 
 namespace Bugo\LightPortal\Plugins\HelloWorld;
 
@@ -92,7 +59,7 @@ use Bugo\Compat\{Config, Lang, Utils};
 use Bugo\LightPortal\Plugins\Plugin;
 
 if (! defined('LP_NAME'))
-	die('No direct access...');
+    die('No direct access...');
 
 class HelloWorld extends Plugin
 {
@@ -105,11 +72,10 @@ class HelloWorld extends Plugin
     // Optional init method
     public function init(): void
     {
-        // Access to global variables: Utils::$context['user'], Config::$modSettings['variable'], etc.
-        // Access to language variables: Lang::$txt['lp_hello_world']['variable_name']
+        echo 'Hello world!';
     }
 
-    // Custom properties and methods
+    // Hookable and custom methods
 }
 
 ```
@@ -119,9 +85,6 @@ class HelloWorld extends Plugin
 If the plugin needs to retrieve any data using SSI functions, use the built-in `getFromSsi(string $function, ...$params)` method. As parameter `$function` you must pass the name of one of the functions contained in file **SSI.php**, without prefix `ssi_`. For example:
 
 ```php
-<?php
-
-// See ssi_topTopics function in the SSI.php file
 $data = $this->getFromSSI('topTopics', 'views', 10, 'array');
 ```
 

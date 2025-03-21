@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<meta-storm xmlns="meta-storm">
+	<definitions>
+		<classMethod class="\Bugo\LightPortal\Utils\Icon" method="get" argument="0">
+			<arrayKeys xpath="\Bugo\LightPortal\Lists\IconList.$set"/>
+		</classMethod>
+		<classMethod class="\Bugo\LightPortal\Utils\Setting" method="isFrontpageMode" argument="0">
+			<arrayKeys xpath="\Bugo\LightPortal\Actions\FrontPage.$modes"/>
+			<collection name="frontpage_modes"/>
+		</classMethod>
+		<classProperty class="\Bugo\LightPortal\Plugins\Plugin" property="type" targetInArray="key">
+			<collection name="plugin_types"/>
+		</classProperty>
+	</definitions>
+	<collections>
+		<strings name="frontpage_modes">
+			<value>chosen_page</value>
+		</strings>
+		<strings name="plugin_types">
+			<value>block</value>
+			<value>ssi</value>
+			<value>editor</value>
+			<value>comment</value>
+			<value>parser</value>
+			<value>article</value>
+			<value>frontpage</value>
+			<value>impex</value>
+			<value>block_options</value>
+			<value>page_options</value>
+			<value>icons</value>
+			<value>seo</value>
+			<value>other</value>
+		</strings>
+	</collections>
+</meta-storm>

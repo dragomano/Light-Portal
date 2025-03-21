@@ -122,7 +122,6 @@ class BoardArticle extends AbstractArticle
 				'date'        => $this->getDate($row),
 				'title'       => $this->getTitle($row),
 				'link'        => $this->getLink($row),
-				'msg_link'    => $this->getMsgLink($row),
 				'is_new'      => empty($row['is_read']),
 				'replies'     => $this->getRepliesData($row),
 				'image'       => $this->getImage($row),
@@ -180,11 +179,6 @@ class BoardArticle extends AbstractArticle
 		return $row['is_redirect']
 			? $row['redirect'] . '" rel="nofollow noopener'
 			: (Config::$scripturl . '?board=' . $row['id_board'] . '.0');
-	}
-
-	private function getMsgLink(array $row): string
-	{
-		return empty($row['is_redirect']) ? Config::$scripturl . '?msg=' . $row['id_msg'] : $this->getLink($row);
 	}
 
 	private function getRepliesData(array $row): array

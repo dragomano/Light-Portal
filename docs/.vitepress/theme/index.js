@@ -1,33 +1,12 @@
 import DefaultTheme from 'vitepress/theme';
 import './custom.css';
+import 'markdown-it-steps/style.css';
 import giscusTalk from 'vitepress-plugin-comment-with-giscus';
 import { useData, useRoute } from 'vitepress';
-import { h, toRefs } from 'vue';
-import {
-  NolebaseEnhancedReadabilitiesMenu,
-  NolebaseEnhancedReadabilitiesScreenMenu,
-} from '@nolebase/vitepress-plugin-enhanced-readabilities/client';
-import '@nolebase/vitepress-plugin-enhanced-readabilities/client/style.css';
-import { InjectionKey } from '@nolebase/vitepress-plugin-enhanced-readabilities/client';
-import { locales } from './locales';
+import { toRefs } from 'vue';
 
 export default {
   ...DefaultTheme,
-  Layout: () => {
-    return h(DefaultTheme.Layout, null, {
-      // A enhanced readabilities menu for wider screens
-      'nav-bar-content-after': () => h(NolebaseEnhancedReadabilitiesMenu),
-      // A enhanced readabilities menu for narrower screens (usually smaller than iPad Mini)
-      'nav-screen-content-after': () => h(NolebaseEnhancedReadabilitiesScreenMenu),
-    });
-  },
-  enhanceApp(ctx) {
-    ctx.app.provide(InjectionKey, {
-      locales,
-    });
-
-    DefaultTheme.enhanceApp(ctx);
-  },
   setup() {
     const { frontmatter } = toRefs(useData());
     const route = useRoute();

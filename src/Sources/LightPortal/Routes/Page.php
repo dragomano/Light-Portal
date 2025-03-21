@@ -13,9 +13,12 @@
 namespace Bugo\LightPortal\Routes;
 
 use Bugo\Compat\Routable;
+use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Utils\Response;
 
 use function array_shift;
+
+use const LP_PAGE_PARAM;
 
 class Page implements Routable
 {
@@ -23,11 +26,11 @@ class Page implements Routable
 	{
 		$route = [];
 
-		if (isset($params['page'])) {
-			$route[] = 'pages';
-			$route[] = $params['page'];
+		if (isset($params[LP_PAGE_PARAM])) {
+			$route[] = Action::PAGES->value;
+			$route[] = $params[LP_PAGE_PARAM];
 
-			unset($params['page']);
+			unset($params[LP_PAGE_PARAM]);
 		}
 
 		return ['route' => $route, 'params' => $params];
@@ -42,7 +45,7 @@ class Page implements Routable
 			(new Response())->redirect();
 		}
 
-		$params['page'] = array_shift($route);
+		$params[LP_PAGE_PARAM] = array_shift($route);
 
 		return $params;
 	}

@@ -46,7 +46,6 @@ use Bugo\LightPortal\Lists\IconList;
 use Bugo\LightPortal\Lists\PageList;
 use Bugo\LightPortal\Lists\PluginList;
 use Bugo\LightPortal\Lists\TagList;
-use Bugo\LightPortal\Lists\TitleList;
 use Bugo\LightPortal\Models\BlockFactory;
 use Bugo\LightPortal\Models\CategoryFactory;
 use Bugo\LightPortal\Models\PageFactory;
@@ -66,6 +65,7 @@ use Bugo\LightPortal\Repositories\TagRepository;
 use Bugo\LightPortal\UI\Tables\TableRenderer;
 use Bugo\LightPortal\Utils\Breadcrumbs;
 use Bugo\LightPortal\Utils\Cache;
+use Bugo\LightPortal\Utils\CacheInterface;
 use Bugo\LightPortal\Utils\File;
 use Bugo\LightPortal\Utils\Post;
 use Bugo\LightPortal\Utils\Request;
@@ -94,7 +94,7 @@ class ServiceProvider extends AbstractServiceProvider
 		BlockValidator::class,
 		BoardIndex::class,
 		Breadcrumbs::class,
-		Cache::class,
+		CacheInterface::class,
 		CardListInterface::class,
 		Category::class,
 		CategoryArea::class,
@@ -147,7 +147,6 @@ class ServiceProvider extends AbstractServiceProvider
 		TagList::class,
 		TagRepository::class,
 		TagValidator::class,
-		TitleList::class,
 		Weaver::class,
 	];
 
@@ -180,15 +179,14 @@ class ServiceProvider extends AbstractServiceProvider
 		$container->add(CategoryList::class);
 		$container->add(PageList::class)->addArgument(PageRepository::class);
 		$container->add(TagList::class);
-		$container->add(TitleList::class);
 		$container->add(PluginList::class);
 		$container->add(SessionManager::class);
 
+		$container->add(CacheInterface::class, fn() => fn(?string $key = null) => new Cache($key));
 		$container->add(Request::class);
 		$container->add(Response::class);
 		$container->add(Post::class);
 		$container->add(File::class);
-		$container->add(Cache::class, fn() => fn(?string $key = null) => new Cache($key));
 		$container->add(Session::class, fn() => fn(?string $key = null) => new Session($key));
 		$container->add(Breadcrumbs::class);
 

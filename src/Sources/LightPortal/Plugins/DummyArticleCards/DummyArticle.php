@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.02.25
+ * @version 14.03.25
  */
 
 namespace Bugo\LightPortal\Plugins\DummyArticleCards;
@@ -18,6 +18,7 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Articles\AbstractArticle;
+use Bugo\LightPortal\Enums\PortalSubAction;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasCache;
@@ -87,25 +88,24 @@ class DummyArticle extends AbstractArticle
 				],
 				'date'      => random_int((new DateTime('-2 years'))->getTimestamp(), time()),
 				'title'     => $title,
-				'link'      => $link = Config::$scripturl . '?topic=' . $article['id'] . '.0',
+				'link'      => Config::$scripturl . '?topic=' . $article['id'] . '.0',
 				'is_new'    => random_int(0, 1),
 				'views'     => [
 					'num'   => random_int(0, 9999),
 					'title' => Lang::$txt['lp_views']
 				],
 				'replies'   => [
-					'num'   => $numReplies = random_int(0, 9999),
+					'num'   => random_int(0, 9999),
 					'title' => Lang::$txt['lp_replies']
 				],
 				'css_class' => random_int(0, 1) ? ' sticky' : '',
 				'image'     => $image,
 				'can_edit'  => User::$me->is_admin,
-				'edit_link' => Config::$scripturl . '?action=post;msg=' . ($msgId = random_int(0, 9999)) . ';topic=' . $article['id'] . '.0',
+				'edit_link' => Config::$scripturl . '?action=post;msg=' . (random_int(0, 9999)) . ';topic=' . $article['id'] . '.0',
 				'teaser'    => $teaser,
-				'msg_link'  => $numReplies ? Config::$scripturl . '?msg=' . $msgId : $link,
 				'rating'    => $article['rating'],
 				'tags'      => [
-					['title' => $tag, 'href' => LP_BASE_URL . ';sa=tags;id=' . random_int(1, 99)]
+					['title' => $tag, 'href' => PortalSubAction::TAGS->url() . ';id=' . random_int(1, 99)]
 				],
 			];
 		}

@@ -8,13 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.02.25
+ * @version 17.03.25
  */
 
 namespace Bugo\LightPortal\Plugins\TopBoards;
 
 use Bugo\Compat\Lang;
-use Bugo\Compat\User;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
@@ -72,7 +71,7 @@ class TopBoards extends Block
 
 		$numBoards = Typed::int($parameters['num_boards'], default: 10);
 
-		$topBoards = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$me->id)
+		$topBoards = $this->userCache($this->name . '_addon_b' . $e->args->id)
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(fn() => $this->getFromSSI('topBoards', $numBoards, 'array'));
 

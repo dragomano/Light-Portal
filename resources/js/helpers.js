@@ -1,4 +1,4 @@
-import { contextState } from './states.svelte.js';
+import { contextState } from './states.svelte.ts';
 
 const { pageUrl } = contextState;
 

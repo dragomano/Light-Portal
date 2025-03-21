@@ -135,7 +135,6 @@ class TopicArticle extends AbstractArticle
 					'date'      => $this->getDate($row),
 					'title'     => $this->getTitle($row),
 					'link'      => $this->getLink($row),
-					'msg_link'  => $this->getMsgLink($row),
 					'is_new'    => $this->isNew($row),
 					'views'     => $this->getViewsData($row),
 					'replies'   => $this->getRepliesData($row),
@@ -223,24 +222,14 @@ class TopicArticle extends AbstractArticle
 
 	private function getLink(array $row): string
 	{
-		if ($row['new_from'] && $row['new_from'] <= $row['id_msg_modified']) {
-			return Config::$scripturl . '?topic=' . $row['id_topic'] . '.new;topicseen#new';
-		}
-
 		return Config::$scripturl . '?topic=' . $row['id_topic'] . '.0';
-	}
-
-	private function getMsgLink(array $row): string
-	{
-		if ($row['num_replies']) {
-			return Config::$scripturl . '?msg=' . $row['id_msg'];
-		}
-
-		return $this->getLink($row);
 	}
 
 	private function isNew(array $row): bool
 	{
+		if (empty($row['new_from']))
+			return false;
+
 		return $row['new_from'] <= $row['id_msg_modified'] && (int) $row['last_poster_id'] !== User::$me->id;
 	}
 

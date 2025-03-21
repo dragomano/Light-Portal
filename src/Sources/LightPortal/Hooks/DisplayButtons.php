@@ -14,11 +14,10 @@ namespace Bugo\LightPortal\Hooks;
 
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\PortalSubAction;
 use Bugo\LightPortal\Utils\Setting;
 
 use function in_array;
-
-use const LP_BASE_URL;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -34,7 +33,7 @@ class DisplayButtons
 			'text' => in_array(Utils::$context['current_topic'], Setting::getFrontpageTopics())
 				? 'lp_remove_from_fp'
 				: 'lp_promote_to_fp',
-			'url'  => LP_BASE_URL . ';sa=promote;t=' . Utils::$context['current_topic']
+			'url'  => PortalSubAction::PROMOTE->url() . ';t=' . Utils::$context['current_topic']
 		];
 	}
 }

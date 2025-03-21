@@ -24,6 +24,7 @@ use Bugo\LightPortal\Articles\ChosenTopicArticle;
 use Bugo\LightPortal\Articles\PageArticle;
 use Bugo\LightPortal\Articles\TopicArticle;
 use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Enums\PortalSubAction;
 use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Renderers\RendererInterface;
 use Bugo\LightPortal\Utils\DateTime;
@@ -111,19 +112,19 @@ final class FrontPage implements ActionInterface
 
 		$article->init();
 
-		$key = 'articles_u' . User::$me->id . '_' . User::$me->language . '_' . $start . '_' . $limit;
-
+		$key = "articles_{$start}_$limit";
 		$key = ltrim(($this->request()->get('action') ?? '') . '_' . $key, '_');
 
-		if (($data = $this->cache()->get($key)) === null) {
-			$data['total'] = $article->getTotalCount();
+		$data = $this->langCache($key)
+			->setFallback(function () use ($article, $start, $limit) {
+				$total = $article->getTotalCount();
 
-			$this->updateStart($data['total'], $start, $limit);
+				$this->updateStart($total, $start, $limit);
 
-			$data['articles'] = app(Weaver::class)(static fn() => $article->getData($start, $limit));
+				$articles = app(Weaver::class)(static fn() => $article->getData($start, $limit));
 
-			$this->cache()->put($key, $data);
-		}
+				return ['total' => $total, 'articles' => $articles];
+			});
 
 		[$articles, $itemsCount] = [$data['articles'], $data['total']];
 
@@ -243,10 +244,10 @@ final class FrontPage implements ActionInterface
 
 		if ($this->request()->is(LP_ACTION)) {
 			match ($sa) {
-				'categories' => app(Category::class)->show(),
-				'tags'       => app(Tag::class)->show(),
-				'promote'    => $this->promoteTopic(),
-				default      => null,
+				PortalSubAction::CATEGORIES->name() => app(Category::class)->show(),
+				PortalSubAction::TAGS->name()       => app(Tag::class)->show(),
+				PortalSubAction::PROMOTE->name()    => $this->promoteTopic(),
+				default                             => null,
 			};
 		}
 	}
@@ -288,8 +289,6 @@ final class FrontPage implements ActionInterface
 				$item['raw_date'] = $item['date'];
 				$item['date']     = DateTime::relative($item['date']);
 			}
-
-			$item['msg_link'] ??= $item['link'];
 
 			if (empty($item['image'])) {
 				$item['image'] = Setting::get('lp_image_placeholder', 'string', '');

@@ -8,7 +8,7 @@
  * @license Individual (for sponsors)
  *
  * @category plugin
- * @version 19.02.25
+ * @version 14.03.25
  */
 
 namespace Bugo\LightPortal\Plugins\SiteList;
@@ -43,7 +43,6 @@ class SiteArticle extends AbstractArticle
 				'edit_link' => Config::$scripturl . '?action=admin;area=lp_plugins',
 				'can_edit'  => User::$me->is_admin,
 				'link'      => $url,
-				'msg_link'  => $url,
 				'teaser'    => $data[2] ?? '',
 				'image'     => $data[0] ?: ('https://mini.s-shot.ru/?' . urlencode($url))
 			];

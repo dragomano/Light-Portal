@@ -1,8 +1,7 @@
-export default {
-  label: 'English',
-  // https://gist.github.com/Josantonius/b455e315bc7f790d14b136d61d9ae469
-  lang: 'en',
-  title: 'Light Portal Docs',
+import { defineConfig } from 'vitepress'
+
+export default defineConfig({
+  lang: 'en',// https://gist.github.com/Josantonius/b455e315bc7f790d14b136d61d9ae469
   description: 'Light Portal Online Documentation',
   themeConfig: {
     nav: [
@@ -53,4 +52,4 @@ export default {
       },
     },
   },
-};
+})

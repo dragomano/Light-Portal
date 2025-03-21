@@ -1,5 +1,5 @@
 ---
-title: Cambios
+title: Changelog
 description: Información sobre las versiones de Light Portal
 layout: page
 releases: Publicaciones

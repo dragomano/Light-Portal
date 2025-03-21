@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.02.25
+ * @version 17.03.25
  */
 
 namespace Bugo\LightPortal\Plugins\RandomPages;
@@ -21,7 +21,6 @@ use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Lists\TitleList;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
@@ -92,12 +91,22 @@ class RandomPages extends Block
 	{
 		$excludeCategories = empty($parameters['exclude_categories']) ? null : explode(',', (string) $parameters['exclude_categories']);
 		$includeCategories = empty($parameters['include_categories']) ? null : explode(',', (string) $parameters['include_categories']);
-		$pagesCount = Typed::int($parameters['num_pages']);
 
-		if (empty($pagesCount))
+		if (empty($pagesCount = Typed::int($parameters['num_pages'])))
 			return [];
 
-		$titles = app(TitleList::class)();
+		$params = [
+			'lang'               => User::$me->language,
+			'fallback_lang'      => Config::$language,
+			'guest'              => Lang::$txt['guest_title'],
+			'status'             => Status::ACTIVE->value,
+			'entry_type'         => EntryType::DEFAULT->name(),
+			'current_time'       => time(),
+			'permissions'        => Permission::all(),
+			'exclude_categories' => $excludeCategories,
+			'include_categories' => $includeCategories,
+			'limit'              => $pagesCount,
+		];
 
 		if (Config::$db_type === 'postgresql') {
 			$result = Db::$db->query('', '
@@ -154,15 +163,7 @@ class RandomPages extends Block
 				SELECT p.page_id
 				FROM {db_prefix}lp_pages AS p, r
 				WHERE r.page_id = p.page_id',
-				[
-					'status'             => Status::ACTIVE->value,
-					'entry_type'         => EntryType::DEFAULT->name(),
-					'current_time'       => time(),
-					'permissions'        => Permission::all(),
-					'exclude_categories' => $excludeCategories,
-					'include_categories' => $includeCategories,
-					'limit'              => $pagesCount,
-				]
+				$params
 			);
 
 			$pageIds = [];
@@ -181,7 +182,16 @@ class RandomPages extends Block
 			$result = Db::$db->query('', '
 				SELECT
 					p.page_id, p.slug, p.created_at, p.num_views,
-					COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
+					COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id,
+					(
+						SELECT value
+						FROM {db_prefix}lp_titles
+						WHERE item_id = p.page_id
+							AND type = {literal:page}
+							AND lang IN ({string:lang}, {string:fallback_lang})
+						ORDER BY lang = {string:lang} DESC
+						LIMIT 1
+					) AS page_title
 				FROM {db_prefix}lp_pages AS p
 					LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				WHERE p.page_id IN ({array_int:page_ids})',
@@ -194,7 +204,16 @@ class RandomPages extends Block
 			$result = Db::$db->query('', '
 				SELECT
 					p.page_id, p.slug, p.created_at, p.num_views,
-					COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
+					COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id,
+					(
+						SELECT value
+						FROM {db_prefix}lp_titles
+						WHERE item_id = p.page_id
+							AND type = {literal:page}
+							AND lang IN ({string:lang}, {string:fallback_lang})
+						ORDER BY lang = {string:lang} DESC
+						LIMIT 1
+					) AS page_title
 				FROM {db_prefix}lp_pages AS p
 					LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				WHERE p.status = {int:status}
@@ -206,16 +225,7 @@ class RandomPages extends Block
 					AND p.category_id IN ({array_int:include_categories})') . '
 				ORDER BY RAND()
 				LIMIT {int:limit}',
-				[
-					'guest'              => Lang::$txt['guest_title'],
-					'status'             => Status::ACTIVE->value,
-					'entry_type'         => EntryType::DEFAULT->name(),
-					'current_time'       => time(),
-					'permissions'        => Permission::all(),
-					'exclude_categories' => $excludeCategories,
-					'include_categories' => $includeCategories,
-					'limit'              => $pagesCount,
-				]
+				$params
 			);
 		}
 
@@ -226,7 +236,7 @@ class RandomPages extends Block
 				'slug'        => $row['slug'],
 				'created_at'  => (int) $row['created_at'],
 				'num_views'   => (int) $row['num_views'],
-				'title'       => $titles[$row['page_id']] ?? [],
+				'title'       => $row['page_title'],
 				'author_id'   => (int) $row['author_id'],
 				'author_name' => $row['author_name'],
 			];
@@ -241,7 +251,7 @@ class RandomPages extends Block
 	{
 		$parameters = $e->args->parameters;
 
-		$randomPages = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$me->id)
+		$randomPages = $this->langCache($this->name . '_addon_b' . $e->args->id)
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(fn() => $this->getData($parameters));
 
@@ -250,7 +260,7 @@ class RandomPages extends Block
 
 			$i = 0;
 			foreach ($randomPages as $page) {
-				if (empty($title = Str::getTranslatedTitle($page['title'])))
+				if (empty($title = $page['title']))
 					continue;
 
 				$li = Str::html('li', ['class' => 'generic_list_wrapper bg ' . ($i % 2 === 0 ? 'odd' : 'even')]);

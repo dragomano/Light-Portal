@@ -1,8 +1,7 @@
-export default {
-  label: 'Dutch',
-  // https://gist.github.com/Josantonius/b455e315bc7f790d14b136d61d9ae469
+import { defineConfig } from 'vitepress';
+export default defineConfig({
   lang: 'nl',
-  title: 'Light Portal Documenten',
+  // https://gist.github.com/Josantonius/b455e315bc7f790d14b136d61d9ae469
   description: 'Light Portal Online Documentatie',
   themeConfig: {
     nav: [
@@ -62,4 +61,4 @@ export default {
       }
     }
   }
-};
+});

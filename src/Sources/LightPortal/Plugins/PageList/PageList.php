@@ -8,23 +8,22 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.02.25
+ * @version 17.03.25
  */
 
 namespace Bugo\LightPortal\Plugins\PageList;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
-use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Permission;
+use Bugo\LightPortal\Enums\PortalSubAction;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Lists\CategoryList;
-use Bugo\LightPortal\Lists\TitleList;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\VirtualSelectField;
@@ -99,7 +98,6 @@ class PageList extends Block
 
 	public function getData(ParamWrapper $parameters): array
 	{
-		$titles = app(TitleList::class)();
 		$allCategories = app(CategoryList::class)();
 
 		$categories = empty($parameters['categories']) ? null : explode(',', (string) $parameters['categories']);
@@ -107,61 +105,54 @@ class PageList extends Block
 		$numPages = Typed::int($parameters['num_pages'], default: 10);
 		$type = Typed::string($parameters['types'], default: EntryType::DEFAULT->name());
 
-		$result = Db::$db->query('', '
-			SELECT
-				p.page_id, p.category_id, p.slug, p.type, p.num_views, p.num_comments, p.created_at, p.updated_at,
-				COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id
-			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
-			WHERE p.status = {int:status}
-				AND p.deleted_at = 0
-				AND p.entry_type = {string:entry_type}
-				AND p.created_at <= {int:current_time}
-				AND p.permissions IN ({array_int:permissions})' . ($categories ? '
-				AND p.category_id IN ({array_int:categories})' : '') . '
-			ORDER BY {raw:sort} DESC' . (empty($parameters['num_pages']) ? '' : '
-			LIMIT {int:limit}'),
-			[
-				'guest'        => Lang::$txt['guest_title'],
-				'status'       => Status::ACTIVE->value,
-				'entry_type'   => $type,
-				'current_time' => time(),
-				'permissions'  => Permission::all(),
-				'categories'   => $categories,
-				'sort'         => $sort,
-				'limit'        => $numPages,
-			]
+		$queryString = '
+	        AND p.status = {int:status}
+	        AND p.deleted_at = 0
+	        AND p.entry_type = {string:entry_type}
+	        AND p.created_at <= {int:current_time}
+	        AND p.permissions IN ({array_int:permissions})' . ($categories ? '
+	        AND p.category_id IN ({array_int:categories})' : '');
+
+		$queryParams = [
+			'status'       => Status::ACTIVE->value,
+			'entry_type'   => $type,
+			'current_time' => time(),
+			'permissions'  => Permission::all(),
+			'categories'   => $categories,
+		];
+
+		$items = app(PageRepository::class)->getAll(
+			0, $numPages, $sort . ' DESC', $queryString, $queryParams
 		);
 
 		$pages = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
-			if (Setting::isFrontpage($row['slug']))
+		foreach ($items as $row) {
+			if (Setting::isFrontpage($row['slug'])) {
 				continue;
+			}
 
-			$pages[$row['page_id']] = [
-				'id'            => (int) $row['page_id'],
-				'category_id'   => (int) $row['category_id'],
+			$pages[$row['id']] = [
+				'id'            => $row['id'],
+				'category_id'   => $row['category_id'],
 				'category_name' => $allCategories[$row['category_id']]['title'],
-				'category_link' => LP_BASE_URL . ';sa=categories;id=' . $row['category_id'],
-				'title'         => $titles[$row['page_id']] ?? [],
-				'author_id'     => (int) $row['author_id'],
+				'category_link' => PortalSubAction::CATEGORIES->url() . ';id=' . $row['category_id'],
+				'title'         => $row['title'],
+				'author_id'     => $row['author_id'],
 				'author_name'   => $row['author_name'],
 				'slug'          => $row['slug'],
-				'num_views'     => (int) $row['num_views'],
-				'num_comments'  => (int) $row['num_comments'],
-				'created_at'    => (int) $row['created_at'],
-				'updated_at'    => (int) $row['updated_at']
+				'num_views'     => $row['num_views'],
+				'num_comments'  => $row['num_comments'],
+				'created_at'    => $row['created_at'],
+				'updated_at'    => $row['created_at'],
 			];
 		}
-
-		Db::$db->free_result($result);
 
 		return $pages;
 	}
 
 	public function prepareContent(Event $e): void
 	{
-		$pageList = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$me->id)
+		$pageList = $this->langCache($this->name . '_addon_b' . $e->args->id)
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(fn() => $this->getData($e->args->parameters));
 
@@ -169,7 +160,7 @@ class PageList extends Block
 			$ul = Str::html('ul', ['class' => 'normallist page_list']);
 
 			foreach ($pageList as $page) {
-				if (empty($title = Str::getTranslatedTitle($page['title']))) {
+				if (empty($title = $page['title'])) {
 					continue;
 				}
 

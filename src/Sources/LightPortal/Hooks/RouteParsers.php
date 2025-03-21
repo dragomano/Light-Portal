@@ -13,16 +13,19 @@
 namespace Bugo\LightPortal\Hooks;
 
 use Bugo\Compat\QueryString;
+use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Routes\Forum;
 use Bugo\LightPortal\Routes\Page;
 use Bugo\LightPortal\Routes\Portal;
+
+use const LP_ACTION;
 
 class RouteParsers
 {
 	public function __invoke(): void
 	{
-		QueryString::$route_parsers['forum']  = Forum::class;
-		QueryString::$route_parsers['pages']  = Page::class;
-		QueryString::$route_parsers['portal'] = Portal::class;
+		QueryString::$route_parsers[Action::FORUM->value] = Forum::class;
+		QueryString::$route_parsers[Action::PAGES->value] = Page::class;
+		QueryString::$route_parsers[LP_ACTION] = Portal::class;
 	}
 }

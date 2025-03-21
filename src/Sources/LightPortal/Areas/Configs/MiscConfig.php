@@ -12,6 +12,11 @@
 
 namespace Bugo\LightPortal\Areas\Configs;
 
+use Bugo\Bricks\Settings\CheckConfig;
+use Bugo\Bricks\Settings\ConfigBuilder;
+use Bugo\Bricks\Settings\IntConfig;
+use Bugo\Bricks\Settings\TextConfig;
+use Bugo\Bricks\Settings\TitleConfig;
 use Bugo\Compat\{Config, Db, Lang};
 use Bugo\Compat\{User, Utils};
 use Bugo\Compat\Actions\Admin\ACP;
@@ -42,24 +47,22 @@ final class MiscConfig extends AbstractConfig
 			'lp_page_param'     => LP_PAGE_PARAM,
 		]);
 
-		$configVars = [
-			['title', 'lp_debug_and_caching'],
-			['check', 'lp_show_debug_info', 'help' => 'lp_show_debug_info_help'],
-			['int', 'lp_cache_interval', 'postinput' => Lang::$txt['seconds']],
-			['title', 'lp_compatibility_mode'],
-			[
-				'text',
-				'lp_portal_action',
-				'subtext' => Config::$scripturl . '?action=<strong>' . LP_ACTION . '</strong>'
-			],
-			[
-				'text',
-				'lp_page_param',
-				'subtext' => Config::$scripturl . '?<strong>' . LP_PAGE_PARAM . '</strong>=page_slug'
-			],
-			['title', 'admin_maintenance'],
-			['check', 'lp_weekly_cleaning']
-		];
+		$vars = ConfigBuilder::make()->addVars([
+			TitleConfig::make('lp_debug_and_caching'),
+			CheckConfig::make('lp_show_debug_info')
+				->setHelp('lp_show_debug_info_help'),
+			IntConfig::make('lp_cache_interval')
+				->setPostInput(Lang::$txt['seconds']),
+			TitleConfig::make('lp_compatibility_mode'),
+			TextConfig::make('lp_portal_action')
+				->setSubText(Config::$scripturl . '?action=<strong>' . LP_ACTION . '</strong>'),
+			TextConfig::make('lp_page_param')
+				->setSubText(Config::$scripturl . '?<strong>' . LP_PAGE_PARAM . '</strong>=page_slug'),
+			TitleConfig::make('admin_maintenance'),
+			CheckConfig::make('lp_weekly_cleaning'),
+		]);
+
+		$configVars = $vars->build();
 
 		Utils::$context['sub_template'] = 'show_settings';
 

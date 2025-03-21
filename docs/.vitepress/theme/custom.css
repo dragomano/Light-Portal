@@ -62,7 +62,7 @@ html[lang="ru"] {
   display: none;
 }
 
-img.VPImage {
+img.VPImage.image-src {
   filter: drop-shadow(5px 5px 10px #000000);
 }
 
@@ -70,4 +70,11 @@ img.VPImage {
   .VPNavBar .container {
     max-width: none;
   }
+}
+
+.group:has([role='button']) .VPSidebarItem.level-0 .items {
+  padding-left: 16px !important;
+  border-left: 1px solid var(--vp-c-divider);
+  border-radius: 2px;
+  transition: background-color 0.25s;
 }

@@ -1,9 +1,10 @@
-<script>
+<script lang="ts">
   import { _ } from 'svelte-i18n';
   import { PluginItem } from './index.js';
-  import { pluginState } from '../../js/states.svelte.js';
+  import { pluginState } from '../../js/states.svelte';
   import { localStore } from '../../js/stores.js';
   import Button from '../BaseButton.svelte';
+  import type { Plugin } from '../types';
 
   const FILTER_ALL = 'all';
   const FILTER_ACTIVE = 'active';
@@ -15,14 +16,14 @@
   const filter = localStore('lpPluginsFilter', FILTER_ALL);
   const layout = localStore('lpPluginsLayout', LAYOUT_LIST);
 
-  const filteredPlugins = $derived.by(() => {
+  const filteredPlugins = $derived.by<Plugin[]>(() => {
     const plugins = Object.values(pluginState.list);
     const isFilterInTypes = types[$filter];
 
     if ($filter === FILTER_ALL) return plugins;
-    if ($filter === FILTER_ACTIVE) return plugins.filter((item) => item.status === 'on');
+    if ($filter === FILTER_ACTIVE) return plugins.filter((item: Plugin) => item.status === 'on');
 
-    return plugins.filter((item) => !isFilterInTypes || item.types?.[isFilterInTypes]);
+    return plugins.filter((item: Plugin) => !isFilterInTypes || item.types?.[isFilterInTypes]);
   });
 
   const isCardView = $derived($layout === LAYOUT_CARD);

@@ -8,13 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.02.25
+ * @version 17.03.25
  */
 
 namespace Bugo\LightPortal\Plugins\TopTopics;
 
 use Bugo\Compat\Lang;
-use Bugo\Compat\User;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
@@ -73,7 +72,7 @@ class TopTopics extends Block
 		$type = Typed::string($parameters['popularity_type'], default: 'replies');
 		$numTopics = Typed::int($parameters['num_topics'], default: 10);
 
-		$topTopics = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$me->id)
+		$topTopics = $this->userCache($this->name . '_addon_b' . $e->args->id)
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(
 				fn() => $this->getFromSSI(

@@ -1,9 +1,9 @@
 import { defineConfig } from 'vitepress';
 import { fileURLToPath, URL } from 'node:url';
-import { generateSidebar } from 'vitepress-sidebar';
-import locales from './locales';
+import { withSidebar } from 'vitepress-sidebar';
+import markdownSteps from 'markdown-it-steps';
 
-const sidebar = {
+const commonSidebarConfigs = {
   documentRootPath: 'src',
   useTitleFromFileHeading: true,
   useTitleFromFrontmatter: true,
@@ -20,22 +20,13 @@ const sidebar = {
   ],
 };
 
-const languages = Object.keys(locales).filter((locale) => locale !== 'root');
-
-languages.forEach((lang) => {
-  locales[lang].themeConfig = {
-    ...locales[lang].themeConfig,
-    sidebar: generateSidebar([
-      {
-        ...sidebar,
-        documentRootPath: `src/${lang}`,
-        resolvePath: `/${lang}/`,
-      },
-    ]),
-  };
-});
-
-export default defineConfig({
+const vitePressConfigs = defineConfig({
+  title: 'Light Portal',
+  base: '/Light-Portal/',
+  srcDir: './src',
+  rewrites: {
+    'en/:rest*': ':rest*'
+  },
   head: [
     ['link', { rel: 'icon', href: '/Light-Portal/favicon.ico' }],
     [
@@ -55,51 +46,52 @@ export default defineConfig({
       })(window, document, 'clarity', 'script', 'ke5jb39203')`,
     ],
   ],
-  base: '/Light-Portal/',
-  srcDir: './src',
+  lastUpdated: true,
   cleanUrls: true,
   markdown: {
     image: {
       lazyLoading: true,
     },
+    config: (md) => {
+      md.use(markdownSteps);
+    },
   },
   themeConfig: {
+    logo: '/logo.png',
+    siteTitle: 'Light Portal',
     externalLinkIcon: true,
     search: {
       provider: 'local',
     },
-    sidebar: generateSidebar({
-      ...sidebar,
-      excludePattern: languages,
-    }),
     socialLinks: [{ icon: 'github', link: 'https://github.com/dragomano/Light-Portal' }],
   },
-  locales,
   sitemap: {
     hostname: 'https://dragomano.github.io/Light-Portal/',
   },
   vite: {
-    optimizeDeps: {
-      include: [
-        // @rive-app/canvas is a CJS/UMD module, so it needs to be included here
-        // for Vite to properly bundle it.
-        '@nolebase/vitepress-plugin-enhanced-readabilities > @nolebase/ui > @rive-app/canvas',
-      ],
-      exclude: ['@nolebase/vitepress-plugin-enhanced-readabilities/client'],
-    },
-    ssr: {
-      noExternal: [
-        // If there are other packages that need to be processed by Vite, you can add them here.
-        '@nolebase/vitepress-plugin-enhanced-readabilities',
-      ],
-    },
     resolve: {
       alias: [
         {
           find: /^.*\/ExampleArea\.vue$/,
-          replacement: fileURLToPath(new URL('./components/ExampleArea.vue', import.meta.url)),
+          replacement: fileURLToPath(new URL('./../components/ExampleArea.vue', import.meta.url)),
         },
       ],
     },
   },
-});
+})
+
+const rootLocale = 'en'
+const supportedLocales = [rootLocale, 'ru', 'el', 'it', 'ar', 'es', 'de', 'nl', 'pl', 'uk', 'fr', 'tr', 'sl'];
+
+const vitePressSidebarConfigs = [
+  ...supportedLocales.map((lang) => {
+    return {
+      ...commonSidebarConfigs,
+      ...(rootLocale === lang ? {} : { basePath: `/${lang}/` }),
+      documentRootPath: `/src/${lang}`,
+      resolvePath: rootLocale === lang ? '/' : `/${lang}/`,
+    };
+  })
+]
+
+export const shared = defineConfig(withSidebar(vitePressConfigs, vitePressSidebarConfigs))

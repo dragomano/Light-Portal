@@ -13,6 +13,7 @@
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\Bricks\Presenters\TablePresenter;
+use Bugo\Bricks\Tables\DateColumn;
 use Bugo\Bricks\Tables\IdColumn;
 use Bugo\Compat\Config;
 use Bugo\Compat\ErrorHandler;
@@ -42,7 +43,6 @@ use Bugo\LightPortal\UI\Partials\PermissionSelect;
 use Bugo\LightPortal\UI\Partials\StatusSelect;
 use Bugo\LightPortal\UI\Partials\TagSelect;
 use Bugo\LightPortal\UI\Tables\CheckboxColumn;
-use Bugo\LightPortal\UI\Tables\DateColumn;
 use Bugo\LightPortal\UI\Tables\NumViewsColumn;
 use Bugo\LightPortal\UI\Tables\PageButtonsRow;
 use Bugo\LightPortal\UI\Tables\PageContextMenuColumn;
@@ -148,7 +148,7 @@ final class PageArea
 			->setCount($this->repository->getTotalCount(...), $this->params)
 			->addColumns([
 				IdColumn::make()->setSort('p.page_id'),
-				DateColumn::make(),
+				DateColumn::make(title: Lang::$txt['date']),
 				NumViewsColumn::make(),
 				PageSlugColumn::make(),
 				TitleColumn::make()->setData(

@@ -20,8 +20,8 @@ use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Enums\PortalSubAction;
 use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Lists\TitleList;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\Icon;
@@ -32,7 +32,6 @@ use function array_keys;
 use function implode;
 use function time;
 
-use const LP_BASE_URL;
 use const LP_PAGE_URL;
 
 if (! defined('SMF'))
@@ -85,8 +84,6 @@ class PageArticle extends AbstractArticle
 
 	public function getData(int $start, int $limit): array
 	{
-		$titles = app(TitleList::class)();
-
 		$this->params += [
 			'start' => $start,
 			'limit' => $limit,
@@ -95,21 +92,34 @@ class PageArticle extends AbstractArticle
 		$result = Db::$db->query('', /** @lang text */ '
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.slug, p.content, p.description, p.type, p.status, p.num_views,
-				CASE WHEN COALESCE(par.value, \'0\') != \'0\' THEN p.num_comments ELSE 0 END AS num_comments, p.created_at,
-				GREATEST(p.created_at, p.updated_at) AS date, COALESCE(t.value, tf.value) AS cat_title, mem.real_name AS author_name,
-				cat.icon as cat_icon, com.created_at AS comment_date, com.author_id AS comment_author_id, mem2.real_name AS comment_author_name,
+				CASE WHEN COALESCE(par.value, \'0\') != \'0\' THEN p.num_comments ELSE 0 END AS num_comments,
+				p.created_at, GREATEST(p.created_at, p.updated_at) AS date,
+				(
+					SELECT value
+					FROM {db_prefix}lp_titles
+					WHERE item_id = p.page_id
+						AND type = {literal:page}
+						AND lang IN ({string:lang}, {string:fallback_lang})
+					ORDER BY lang = {string:lang} DESC
+					LIMIT 1
+				) AS page_title,
+			    (
+				    SELECT value
+					FROM {db_prefix}lp_titles
+					WHERE item_id = cat.category_id
+						AND type = {literal:category}
+						AND lang IN ({string:lang}, {string:fallback_lang})
+					ORDER BY lang = {string:lang} DESC
+					LIMIT 1
+				) AS cat_title,
+                mem.real_name AS author_name, cat.icon as cat_icon, com.created_at AS comment_date,
+                com.author_id AS comment_author_id, mem2.real_name AS comment_author_name,
 				com.message AS comment_message' . (empty($this->columns) ? '' : ', ' . implode(', ', $this->columns)) . '
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_categories AS cat ON (cat.category_id = p.category_id)
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_comments AS com ON (p.last_comment_id = com.id)
 				LEFT JOIN {db_prefix}members AS mem2 ON (com.author_id = mem2.id_member)
-				LEFT JOIN {db_prefix}lp_titles AS t ON (
-					cat.category_id = t.item_id AND t.type = {literal:category} AND t.lang = {string:lang}
-				)
-				LEFT JOIN {db_prefix}lp_titles AS tf ON (
-					cat.category_id = tf.item_id AND tf.type = {literal:category} AND tf.lang = {string:fallback_lang}
-				)
 				LEFT JOIN {db_prefix}lp_params AS par ON (
 					par.item_id = com.page_id AND par.type = {literal:page} AND par.name = {literal:allow_comments}
 				)' . (empty($this->tables) ? '' : '
@@ -137,7 +147,7 @@ class PageArticle extends AbstractArticle
 					'section'   => $this->getSectionData($row),
 					'author'    => $this->getAuthorData($row),
 					'date'      => $this->getDate($row),
-					'title'     => $this->getTitle($titles, $row),
+					'title'     => $row['page_title'],
 					'link'      => LP_PAGE_URL . $row['slug'],
 					'views'     => $this->getViewsData($row),
 					'replies'   => $this->getRepliesData($row),
@@ -188,7 +198,7 @@ class PageArticle extends AbstractArticle
 		return [
 			'icon' => Icon::parse($row['cat_icon']),
 			'name' => empty($row['category_id']) ? '' : $row['cat_title'],
-			'link' => empty($row['category_id']) ? '' : (LP_BASE_URL . ';sa=categories;id=' . $row['category_id']),
+			'link' => empty($row['category_id']) ? '' : (PortalSubAction::CATEGORIES->url() . ';id=' . $row['category_id']),
 		];
 	}
 
@@ -220,11 +230,6 @@ class PageArticle extends AbstractArticle
 		}
 
 		return (int) $row['created_at'];
-	}
-
-	private function getTitle(array $titles, array $row): string
-	{
-		return Str::getTranslatedTitle($titles[$row['page_id']] ?? []);
 	}
 
 	private function getViewsData(array $row): array
@@ -312,7 +317,7 @@ class PageArticle extends AbstractArticle
 			$pages[$row['page_id']]['tags'][] = [
 				'icon'  => Icon::parse($row['icon']),
 				'title' => $row['title'],
-				'href'  => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id'],
+				'href'  => PortalSubAction::TAGS->url() . ';id=' . $row['tag_id'],
 			];
 		}
 

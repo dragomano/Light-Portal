@@ -1,8 +1,9 @@
-<script>
+<script lang="ts">
   import { _ } from 'svelte-i18n';
   import Button from '../BaseButton.svelte';
+  import type { Pagination } from '../types';
 
-  let { start = $bindable(0), totalItems, itemsPerPage, totalVisible = 5 } = $props();
+  let { start = $bindable(0), totalItems, itemsPerPage, totalVisible = 5 }: Pagination = $props();
 
   const showPagination = $derived(Math.ceil(totalItems / itemsPerPage) > 1);
   const currentPage = $derived(Math.floor(start / itemsPerPage) + 1);
@@ -40,7 +41,7 @@
     return pages;
   });
 
-  const changePage = (page) => {
+  const changePage = (page: number) => {
     start = page * itemsPerPage - itemsPerPage;
   };
 </script>
@@ -58,7 +59,7 @@
       {#each visiblePages as page}
         <Button
           disabled={page.text === '...'}
-          class={['nav-page', page.number === currentPage && 'active']}
+          class={['nav-page', page.number === currentPage && 'active'].filter(Boolean).join(' ')}
           onclick={() => changePage(page.number)}
         >
           {page.text}

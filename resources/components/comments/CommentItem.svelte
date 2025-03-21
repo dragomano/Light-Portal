@@ -1,37 +1,25 @@
-<script>
+<script lang="ts">
   import { _ } from 'svelte-i18n';
   import { fade } from 'svelte/transition';
-  import { userState } from '../../js/states.svelte.js';
+  import { userState } from '../../js/states.svelte';
   import { CommentItem, EditForm, ReplyForm, MarkdownPreview } from './index.js';
   import Button from '../BaseButton.svelte';
+  import type { AddCommentType, Comment, RemoveCommentType, UpdateCommentType } from '../types';
 
-  /**
-   * @type {{
-   *   comment: {
-   *     authorial: boolean,
-   *     can_edit: boolean,
-   *     created_at: number,
-   *     extra_buttons: array,
-   *     human_date: string,
-   *     id: number,
-   *     message: string,
-   *     page_id: number,
-   *     parent_id: number,
-   *     poster: {
-   *       id: number,
-   *       name: string,
-   *       avatar: string
-   *     },
-   *     published_at: string,
-   *     replies: array
-   *   }
-   * }}
-   */
-  let { comment, index, level = 1, addComment, updateComment, removeComment } = $props();
+  interface Props {
+    comment: Comment;
+    index: number;
+    level?: number;
+    addComment: (comment: AddCommentType) => void;
+    updateComment: (comment: UpdateCommentType) => void;
+    removeComment: (comment: RemoveCommentType) => void;
+  }
+
+  let { comment, index, level = 1, addComment, updateComment, removeComment }: Props = $props();
   let isHover = $state(false);
   let replyMode = $state(false);
   let editMode = $state(false);
-  let parent = $state();
+  let parent = $state<HTMLLIElement | null>();
 
   const { id: userId, is_admin: isAdmin } = userState;
   const showReplyButton = $derived(level < 5 && userId !== comment.poster.id);
@@ -42,12 +30,12 @@
       comment.poster.id === userId
   );
 
-  const submit = (newComment) => {
+  const submit = (newComment: AddCommentType) => {
     addComment(newComment);
     replyMode = false;
   };
 
-  const update = (updatedComment) => {
+  const update = (updatedComment: UpdateCommentType) => {
     updateComment(updatedComment);
     comment.message = updatedComment.content;
     editMode = false;
@@ -131,7 +119,7 @@
                 class={isHover ? 'error' : undefined}
                 onmouseover={() => isHover = true}
                 onmouseleave={() => isHover = false}
-                onclick={() => removeComment(parent.dataset.id)}
+                onclick={() => removeComment({ id: parent?.dataset.id ?? '' })}
                 tag="span"
                 icon="remove"
               >
@@ -144,7 +132,10 @@
     </div>
 
     {#if replyMode}
-      <ReplyForm parent={parent.dataset} {submit}>
+      <ReplyForm parent={{
+        id: parent.dataset.id,
+        author: parent.dataset.author
+      }} {submit}>
         <Button class="active" onclick={() => replyMode = false}>
           {$_('modify_cancel')}
         </Button>

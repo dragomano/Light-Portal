@@ -14,14 +14,14 @@ description: Οδηγίες για τη δημιουργία δικής σας �
 
 Για να το κάνετε αυτό, δημιουργήστε ένα αρχείο «custom.blade.php» στον κατάλογο «/Themes/default/portal_layouts»:
 
-```php:line-numbers {9}
-@empty ($context['lp_active_blocks'])
-<div class="col-xs">
-@endempty
+```php:line-numbers {6,16}
+@extends('partials.base')
+
+@section('content')
 	<!-- <div> @dump($context['user']) </div> -->
 
 	<div class="lp_frontpage_articles article_custom">
-		{{ show_pagination() }}
+		@include('partials.pagination')
 
 		@foreach ($context['lp_frontpage_articles'] as $article)
 		<div class="
@@ -35,12 +35,9 @@ description: Οδηγίες για τη δημιουργία δικής σας �
 		</div>
 		@endforeach
 
-		{{ show_pagination('bottom') }}
+		@include('partials.pagination', ['position' => 'bottom'])
 	</div>
-
-@empty ($context['lp_active_blocks'])
-</div>
-@endempty
+@endsection
 ```
 
 Μετά από αυτό, θα δείτε μια νέα διάταξη πρώτης σελίδας - "Προσαρμοσμένη" - στις ρυθμίσεις της πύλης:

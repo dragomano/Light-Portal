@@ -14,14 +14,14 @@ Además de los diseños existentes, siempre puedes añadir los tuyos.
 
 Para hacer esto, crea un archivo `custom.blade.php` en el directorio `/Themes/default/portal_layouts`:
 
-```php:line-numbers {9}
-@empty ($context['lp_active_blocks'])
-<div class="col-xs">
-@endempty
+```php:line-numbers {6,16}
+@extends('partials.base')
+
+@section('content')
 	<!-- <div> @dump($context['user']) </div> -->
 
 	<div class="lp_frontpage_articles article_custom">
-		{{ show_pagination() }}
+		@include('partials.pagination')
 
 		@foreach ($context['lp_frontpage_articles'] as $article)
 		<div class="
@@ -35,12 +35,9 @@ Para hacer esto, crea un archivo `custom.blade.php` en el directorio `/Themes/de
 		</div>
 		@endforeach
 
-		{{ show_pagination('bottom') }}
+		@include('partials.pagination', ['position' => 'bottom'])
 	</div>
-
-@empty ($context['lp_active_blocks'])
-</div>
-@endempty
+@endsection
 ```
 
 Después, verás un nuevo diseño de página principal - `Personalizado` - en la configuración del portal:

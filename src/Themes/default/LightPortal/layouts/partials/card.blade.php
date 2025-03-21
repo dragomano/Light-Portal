@@ -2,7 +2,7 @@
 	@include('partials.card-header', ['article' => $article])
 
 	<h3>
-		<a href="{{ $article['msg_link'] }}">{{ $article['title'] }}</a>
+		<a href="{{ $article['link'] }}">{{ $article['title'] }}</a>
 	</h3>
 
 	@unless (empty($article['teaser']))

@@ -1,37 +1,29 @@
-<script>
+<script lang="ts">
   import { _ } from 'svelte-i18n';
-  import { iconState, settingState } from '../../js/states.svelte.js';
+  import { iconState, settingState } from '../../js/states.svelte';
   import { localStore } from '../../js/stores.js';
   import { api, helper } from '../../js/helpers.js';
   import { CommentItem, Pagination, ReplyForm } from './index.js';
+  import type {
+    AddCommentType,
+    ApiResponse,
+    Comment,
+    RemoveCommentType,
+    ReplyCommentType,
+    UpdateCommentType
+  } from '../types';
 
-  /**
-   * @typedef {Object} CommentData
-   * @property {number} id - Unique identifier of the comment
-   * @property {string} message - Text of the comment
-   * @property {number} parent_id - ID of the parent comment
-   */
-  let comments = $state([]);
-
+  let comments: Comment[] = $state([]);
   let parentsCount = $state(0);
   let total = $state(0);
   let limit = $state(0);
-
   let start = localStore('lpCommentsStart', 0);
 
   const totalOnPage = $derived(comments.length);
   const showBottomPagination = $derived(totalOnPage > 5);
   const showReplyFormOnTop = settingState['lp_comment_sorting'] === '1';
 
-  /**
-   * @typedef {Object} ApiResponse
-   * @property {number} total - Total number of comments
-   * @property {number} parentsCount - Number of parent comments
-   * @property {number} limit - Number of comments per page
-   * @property {CommentData[]} comments - Array of comments
-   * @returns {Promise<ApiResponse>}
-   */
-  const fetchComments = async () => {
+  const fetchComments = async (): Promise<ApiResponse> => {
     const data = await api.get($start);
 
     if (!data.total) return null;
@@ -44,7 +36,7 @@
     if ($start > parentsCount) start.set(0);
   };
 
-  const addComment = async ({ content }) => {
+  const addComment = async ({ content }: AddCommentType) => {
     const response = await api.add(0, 0, content);
 
     if (!response.id) return;
@@ -60,7 +52,7 @@
     setCommentHash(response.id);
   };
 
-  const addReply = async ({ parent, content }) => {
+  const addReply = async ({ parent, content }: ReplyCommentType) => {
     const response = await api.add(parent.id, parent.author, content);
 
     if (!response.id) return;
@@ -73,9 +65,9 @@
     setCommentHash(response.id);
   };
 
-  const updateComment = async ({ id, content }) => await api.update(id, content);
+  const updateComment = async ({ id, content }: UpdateCommentType) => await api.update(id, content);
 
-  const removeComment = async (id) => {
+  const removeComment = async ({ id }: RemoveCommentType) => {
     const { success, items } = await api.remove(id);
 
     if (!success) return;
@@ -84,8 +76,8 @@
 
     const currentParents = comments.map((comment) => comment.id);
 
-    parentsCount -= items.filter((i) => currentParents.includes(i)).length;
-    comments = helper.getFilteredTree(comments, (comment) => !items.includes(comment.id));
+    parentsCount -= items.filter((i: number) => currentParents.includes(i)).length;
+    comments = helper.getFilteredTree(comments, (comment: Comment) => !items.includes(comment.id));
     total -= items.length;
 
     if (totalOnPage === 0) {
@@ -93,7 +85,7 @@
     }
   };
 
-  const setCommentHash = (comment) => {
+  const setCommentHash = (comment?: number) => {
     if (comment) {
       window.location.hash = 'comment=' + comment;
     } else {

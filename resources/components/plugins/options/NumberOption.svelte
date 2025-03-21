@@ -3,10 +3,10 @@
 
   let { id, name, value = '', option = { postfix: false } } = $props();
 
-  const min = $derived(option.min ?? 0);
-  const max = $derived(option.max);
-  const step = $derived(option.step ?? (option[0] === 'int' ? 1 : 0.01));
-  const postfix = $derived(option.postfix);
+  let min = $state(option.min ?? 0);
+  let max = $state(option.max);
+  let step = $state(option.step ?? (option[0] === 'int' ? 1 : 0.01));
+  let postfix = $state(option.postfix);
 </script>
 
 <div>

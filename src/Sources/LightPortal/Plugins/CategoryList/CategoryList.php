@@ -15,6 +15,7 @@ namespace Bugo\LightPortal\Plugins\CategoryList;
 
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Actions\Category;
+use Bugo\LightPortal\Enums\PortalSubAction;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\Str;
@@ -45,7 +46,7 @@ class CategoryList extends Block
 
 		$currentCat = Utils::$context['current_action'] === 'portal'
 			&& $this->request()->has('sa')
-			&& $this->request()->get('sa') === 'categories'
+			&& $this->request()->get('sa') === PortalSubAction::CATEGORIES->name()
 				? Typed::int($this->request()->get('id')) : false;
 
 		if (isset(Utils::$context['lp_page']['category_id'])) {

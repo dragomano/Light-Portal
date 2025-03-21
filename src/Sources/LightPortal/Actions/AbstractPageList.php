@@ -16,6 +16,7 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\PortalSubAction;
 use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\Content;
@@ -26,7 +27,6 @@ use Bugo\LightPortal\Utils\Traits\HasBreadcrumbs;
 
 use function date;
 
-use const LP_BASE_URL;
 use const LP_PAGE_URL;
 
 if (! defined('SMF'))
@@ -59,7 +59,6 @@ abstract class AbstractPageList implements PageListInterface
 				'date'      => DateTime::relative((int) $row['date']),
 				'datetime'  => date('Y-m-d', (int) $row['date']),
 				'link'      => $this->getLink($row),
-				'msg_link'  => $this->getLink($row),
 				'views'     => $this->getViewsData($row),
 				'replies'   => $this->getRepliesData($row),
 				'title'     => $row['title'],
@@ -89,7 +88,7 @@ abstract class AbstractPageList implements PageListInterface
 		if (isset($row['category_id'])) {
 			return [
 				'name' => $categories[$row['category_id']]['title'],
-				'link' => LP_BASE_URL . ';sa=categories;id=' . $row['category_id'],
+				'link' => PortalSubAction::CATEGORIES->url() . ';id=' . $row['category_id'],
 			];
 		}
 

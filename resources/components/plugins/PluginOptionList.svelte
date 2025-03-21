@@ -1,14 +1,18 @@
-<script>
+<script lang="ts">
   import { _ } from 'svelte-i18n';
   import { slide } from 'svelte/transition';
-  import { appState, contextState } from '../../js/states.svelte.js';
+  import { appState, contextState, axios } from '../../js/states.svelte';
   import { PluginOptionItem } from './index.js';
   import Button from '../BaseButton.svelte';
+  import type { Plugin } from '../types';
 
-  /** @type {{ item: { snake_name: string, saveable: boolean, settings: array } }} */
-  let { item } = $props();
+  interface Props {
+    item: Plugin;
+  }
+
+  let { item }: Props = $props();
   let success = $state(false);
-  let form = $state();
+  let form: HTMLFormElement = $state();
 
   const { sessionId, sessionVar } = appState;
   const { postUrl } = contextState;
@@ -16,7 +20,7 @@
   const blockId = $derived(`${item.snake_name}_${sessionId}_settings`);
   const formId = $derived(`${item.snake_name}_form_${sessionId}`);
 
-  const saveSettings = async (e) => {
+  const saveSettings = async (e: SubmitEvent) => {
     e.preventDefault();
 
     const formData = new FormData(form);
@@ -31,6 +35,10 @@
       setTimeout(() => success = false, 2000);
     }
   };
+
+  const onclick = (e: MouseEvent) => {
+    (e.target as HTMLElement).blur();
+  }
 </script>
 
 <div class="roundframe" id={blockId} transition:slide>
@@ -55,7 +63,7 @@
     </span>
 
     {#if item.saveable}
-      <Button icon="save" form={formId} type="submit" onclick={(e) => e.target.blur()}>
+      <Button icon="save" form={formId} type="submit" {onclick}>
         {$_('save')}
       </Button>
     {/if}

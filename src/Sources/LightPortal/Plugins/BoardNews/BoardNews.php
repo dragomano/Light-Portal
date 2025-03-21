@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.02.25
+ * @version 17.03.25
  */
 
 namespace Bugo\LightPortal\Plugins\BoardNews;
@@ -16,7 +16,6 @@ namespace Bugo\LightPortal\Plugins\BoardNews;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
-use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
@@ -80,7 +79,7 @@ class BoardNews extends Block
 	{
 		$parameters = $e->args->parameters;
 
-		$boardNews = $this->cache($this->name . '_addon_b' . $e->args->id . '_u' . User::$me->id)
+		$boardNews = $this->userCache($this->name . '_addon_b' . $e->args->id)
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(
 				fn() => $this->getFromSSI(

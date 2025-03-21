@@ -23,7 +23,7 @@
 								</time>
 							@endunless
 
-							<h3><a href="{{ $article['msg_link'] }}">{{ $article['title'] }}</a></h3>
+							<h3><a href="{{ $article['link'] }}">{{ $article['title'] }}</a></h3>
 						</header>
 
 						@unless (empty($article['teaser']))

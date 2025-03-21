@@ -10,15 +10,22 @@
  * @version 2.9
  */
 
-namespace Bugo\LightPortal\Hooks;
+namespace Bugo\LightPortal\Enums;
 
-if (! defined('SMF'))
-	die('No direct access...');
+use Bugo\LightPortal\Enums\Traits\HasNames;
 
-class PreLoad
+use const LP_BASE_URL;
+
+enum PortalSubAction
 {
-	public function __invoke(): void
+	use HasNames;
+
+	case CATEGORIES;
+	case TAGS;
+	case PROMOTE;
+
+	public function url(): string
 	{
-		(new Init())();
+		return LP_BASE_URL . ';sa=' . $this->name();
 	}
 }

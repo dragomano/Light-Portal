@@ -22,6 +22,7 @@ use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Permission;
+use Bugo\LightPortal\Enums\PortalSubAction;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Lists\TagList;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
@@ -35,8 +36,6 @@ use function array_key_exists;
 use function implode;
 use function sprintf;
 use function time;
-
-use const LP_BASE_URL;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -59,7 +58,7 @@ final class Tag extends AbstractPageList
 
 		$tags = app(TagList::class)();
 		if (array_key_exists($tag['id'], $tags) === false) {
-			Utils::$context['error_link'] = LP_BASE_URL . ';sa=tags';
+			Utils::$context['error_link'] = PortalSubAction::TAGS->url();
 			Lang::$txt['back'] = Lang::$txt['lp_all_page_tags'];
 			ErrorHandler::fatalLang('lp_tag_not_found', false, status: 404);
 		}
@@ -69,11 +68,11 @@ final class Tag extends AbstractPageList
 
 		Utils::$context['current_tag'] = $tag['id'];
 
-		Utils::$context['canonical_url']  = LP_BASE_URL . ';sa=tags;id=' . $tag['id'];
+		Utils::$context['canonical_url']  = PortalSubAction::TAGS->url() . ';id=' . $tag['id'];
 		Utils::$context['robot_no_index'] = true;
 
 		$this->breadcrumbs()
-			->add(Lang::$txt['lp_all_page_tags'], LP_BASE_URL . ';sa=tags')
+			->add(Lang::$txt['lp_all_page_tags'], PortalSubAction::TAGS->url())
 			->add($tag['title']);
 
 		$this->cardList->show($this);
@@ -172,7 +171,7 @@ final class Tag extends AbstractPageList
 	public function showAll(): void
 	{
 		Utils::$context['page_title']     = Lang::$txt['lp_all_page_tags'];
-		Utils::$context['canonical_url']  = LP_BASE_URL . ';sa=tags';
+		Utils::$context['canonical_url']  = PortalSubAction::TAGS->url();
 		Utils::$context['robot_no_index'] = true;
 
 		$this->breadcrumbs()->add(Utils::$context['page_title']);
@@ -243,7 +242,7 @@ final class Tag extends AbstractPageList
 			$items[$row['tag_id']] = [
 				'icon'      => Icon::parse($row['icon']),
 				'title'     => $row['title'],
-				'link'      => LP_BASE_URL . ';sa=tags;id=' . $row['tag_id'],
+				'link'      => PortalSubAction::TAGS->url() . ';id=' . $row['tag_id'],
 				'frequency' => (int) $row['frequency'],
 			];
 		}

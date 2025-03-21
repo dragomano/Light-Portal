@@ -76,6 +76,8 @@ abstract class AbstractConfig
 				$field?->setValue($value ?? $varFactory->getDefaultValue());
 			}
 
+			unset($field);
+
 			$i++;
 		}
 

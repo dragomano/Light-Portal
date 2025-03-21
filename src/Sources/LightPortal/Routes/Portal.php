@@ -13,7 +13,8 @@
 namespace Bugo\LightPortal\Routes;
 
 use Bugo\Compat\Routable;
-use Bugo\LightPortal\Utils\Cache;
+use Bugo\LightPortal\Enums\PortalSubAction;
+use Bugo\LightPortal\Utils\CacheInterface;
 
 use function array_search;
 use function array_shift;
@@ -21,11 +22,13 @@ use function count;
 use function in_array;
 use function is_numeric;
 
+use const LP_ACTION;
+
 class Portal implements Routable
 {
 	public static function getDataFromCache(string $type = 'categories'): array
 	{
-		return (new Cache())->get('lp_sef_' . $type) ?: [];
+		return app(CacheInterface::class)->get('lp_sef_' . $type) ?: [];
 	}
 
 	public static function getCachedName(string $id, string $type = 'categories'): string
@@ -51,7 +54,7 @@ class Portal implements Routable
 		if (isset($params['sa'])) {
 			$route[] = $params['sa'];
 
-			if ($params['sa'] === 'promote' && isset($params['t'])) {
+			if ($params['sa'] === PortalSubAction::PROMOTE->name() && isset($params['t'])) {
 				$route[] = $params['t'];
 
 				unset($params['t'], $params['start']);
@@ -70,7 +73,7 @@ class Portal implements Routable
 
 		unset($params['start']);
 
-		if ($route === ['portal', '0']) {
+		if ($route === [LP_ACTION, '0']) {
 			$route = [];
 		}
 
@@ -80,7 +83,7 @@ class Portal implements Routable
 	public static function parseRoute(array $route, array $params = []): array
 	{
 		if (empty($route)) {
-			$params['action'] = 'portal';
+			$params['action'] = LP_ACTION;
 
 			return $params;
 		}
@@ -97,9 +100,9 @@ class Portal implements Routable
 			$params['sa'] = array_shift($route);
 
 			if (! empty($route)) {
-				if ($params['sa'] === 'promote') {
+				if ($params['sa'] === PortalSubAction::PROMOTE->name()) {
 					$params['t'] = array_shift($route);
-				} elseif (in_array($params['sa'], ['categories', 'tags'])) {
+				} elseif (in_array($params['sa'], [PortalSubAction::CATEGORIES->name(), PortalSubAction::TAGS->name()])) {
 					if (is_numeric($route[0])) {
 						$params['start'] = array_shift($route);
 					} else {

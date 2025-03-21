@@ -14,14 +14,14 @@ En plus des mises en page existantes, vous pouvez toujours ajouter les vôtres.
 
 Pour cela, créez un fichier `custom.blade.php` dans le répertoire `/Themes/default/portal_layouts` :
 
-```php:line-numbers {9}
-@empty ($context['lp_active_blocks'])
-<div class="col-xs">
-@endempty
+```php:line-numbers {6,16}
+@extends('partials.base')
+
+@section('content')
 	<!-- <div> @dump($context['user']) </div> -->
 
 	<div class="lp_frontpage_articles article_custom">
-		{{ show_pagination() }}
+		@include('partials.pagination')
 
 		@foreach ($context['lp_frontpage_articles'] as $article)
 		<div class="
@@ -35,12 +35,9 @@ Pour cela, créez un fichier `custom.blade.php` dans le répertoire `/Themes/def
 		</div>
 		@endforeach
 
-		{{ show_pagination('bottom') }}
+		@include('partials.pagination', ['position' => 'bottom'])
 	</div>
-
-@empty ($context['lp_active_blocks'])
-</div>
-@endempty
+@endsection
 ```
 
 Après cela, vous verrez une nouvelle mise en page - `Custom` - dans les paramètres du portail:

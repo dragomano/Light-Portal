@@ -14,14 +14,14 @@ Poleg obstoječih postavitev lahko vedno dodaš svoje.
 
 Da to storiš, ustvari datoteko `custom.blade.php` v mapi `/Themes/default/portal_layouts`:
 
-```php:line-numbers {9}
-@empty ($context['lp_active_blocks'])
-<div class="col-xs">
-@endempty
+```php:line-numbers {6,16}
+@extends('partials.base')
+
+@section('content')
 	<!-- <div> @dump($context['user']) </div> -->
 
 	<div class="lp_frontpage_articles article_custom">
-		{{ show_pagination() }}
+		@include('partials.pagination')
 
 		@foreach ($context['lp_frontpage_articles'] as $article)
 		<div class="
@@ -35,12 +35,9 @@ Da to storiš, ustvari datoteko `custom.blade.php` v mapi `/Themes/default/porta
 		</div>
 		@endforeach
 
-		{{ show_pagination('bottom') }}
+		@include('partials.pagination', ['position' => 'bottom'])
 	</div>
-
-@empty ($context['lp_active_blocks'])
-</div>
-@endempty
+@endsection
 ```
 
 Po tem se bo v nastavitvah portala prikazala nova postavitev začetne strani – `Custom`:
