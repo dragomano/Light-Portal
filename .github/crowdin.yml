@@ -25,18 +25,3 @@ files:
       translation: '/docs/src/%two_letters_code%/**/%original_file_name%',
     },
   ]
-
-export_languages: [
-  "ar",
-  "de",
-  "el",
-  "es",
-  "fr",
-  "it",
-  "nl",
-  "pl",
-  "ru",
-  "sl",
-  "tr",
-  "uk"
-]
