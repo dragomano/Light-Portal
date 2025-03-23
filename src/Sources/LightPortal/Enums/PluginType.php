@@ -34,6 +34,7 @@ enum PluginType
 	case ICONS;
 	case SEO;
 	case OTHER;
+	case GAMES;
 
 	public static function all(): array
 	{
