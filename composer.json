@@ -6,11 +6,12 @@
   },
   "require": {
     "php": "^8.1",
-    "ext-dom": "*"
+    "ext-dom": "*",
+    "ext-simplexml": "*"
   },
   "require-dev": {
+    "consolidation/robo": "^4.0",
     "pear/archive_tar": "^1.5",
-    "phing/phing": "3.*",
     "rector/rector": "^2.0"
   },
   "config": {
@@ -31,23 +32,24 @@
       "cd src/Sources/LightPortal && composer update --no-dev -o",
       "composer update"
     ],
+    "release": ["vendor/bin/robo build"],
     "build": [
       "composer run up",
-      "vendor/bin/phing"
+      "vendor/bin/robo build:default"
+    ],
+    "build:geek": [
+      "composer run up",
+      "vendor/bin/robo build:geek"
     ],
     "build:dev": [
       "cd src/Sources/LightPortal && composer update",
       "composer update",
-      "vendor/bin/phing dev_edition"
-    ],
-    "build:geek": [
-      "composer run up",
-      "vendor/bin/phing geek_edition"
+      "vendor/bin/robo build:develop"
     ],
     "build:all": [
       "composer run assets",
       "composer run build",
-      "vendor/bin/phing geek_edition",
+      "vendor/bin/robo build:geek",
       "composer run build:dev"
     ]
   }
