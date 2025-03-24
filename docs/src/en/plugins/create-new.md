@@ -33,6 +33,7 @@ Currently, the following types of plugins are available:
 | `icons`                         | Plugins that add new icon libraries to replace interface elements or for use in block headers |
 | `seo`                           |                       Plugins that somehow affect the visibility of the forum on the network. |
 | `other`                         |                                  Plugins that are not related to any of the categories above. |
+| `games`                         |                                    Plugins that typically add a block with some kind of game. |
 
 ## Creating a plugin directory
 
