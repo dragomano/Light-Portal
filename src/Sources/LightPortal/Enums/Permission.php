@@ -76,7 +76,7 @@ enum Permission: int
 
 	private static function getBoardModerators(): array
 	{
-		$cache = app(CacheInterface::class);
+		$cache = app(CacheInterface::class)();
 
 		if (($moderators = $cache->get('board_moderators')) === null) {
 			$result = Db::$db->query('', /** @lang text */ '
