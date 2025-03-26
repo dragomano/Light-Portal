@@ -159,6 +159,10 @@ final class CreditArea
 				'name' => 'PHPStorm',
 				'link' => 'https://www.jetbrains.com/phpstorm/'
 			],
+			[
+				'name' => 'Robo',
+				'link' => 'https://robo.li/'
+			],
 		];
 
 		$links = [
