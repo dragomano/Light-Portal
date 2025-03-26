@@ -35,5 +35,7 @@ src/Themes/default/scripts/light_portal/*
 !**/Plugins/**/langs
 !**/Plugins/**/langs/english.php
 
+src/Sources/LightPortal/Plugins/Memory/memory.js
+
 *.zip
 *.tgz
