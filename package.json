@@ -6,6 +6,7 @@
     "build:comments": "vite build --config=configs/vite.comments.js",
     "build:plugins": "vite build --config=configs/vite.plugins.js",
     "build:sass": "vite build --config=configs/vite.sass.js",
+    "build:apps": "node configs/build_apps.js",
     "test": "svelte-check --workspace resources",
     "preinstall": "npx only-allow pnpm"
   },
