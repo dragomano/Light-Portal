@@ -161,7 +161,7 @@ final class CreditArea
 			],
 			[
 				'name' => 'Robo',
-				'link' => 'http://robo.li/'
+				'link' => 'https://robo.li/'
 			],
 		];
 
