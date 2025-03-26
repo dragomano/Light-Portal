@@ -354,6 +354,7 @@ $txt['lp_plugins_types'][9] = 'Page options';
 $txt['lp_plugins_types'][10] = 'Icons';
 $txt['lp_plugins_types'][11] = 'SEO';
 $txt['lp_plugins_types'][12] = 'Other';
+$txt['lp_plugins_types'][13] = 'Games';
 $txt['lp_plugins_select'] = 'Make a choice';
 $txt['lp_plugins_no_options'] = 'No options';
 
