@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 22.12.24
+ * @version 23.03.25
  */
 
 namespace Bugo\LightPortal\Plugins\TwentyFortyEight;
@@ -23,6 +23,8 @@ if (! defined('LP_NAME'))
  */
 class TwentyFortyEight extends Block
 {
+	public string $type = 'block games';
+
 	public string $icon = 'fas fa-table-cells';
 
 	public function prepareContent(): void

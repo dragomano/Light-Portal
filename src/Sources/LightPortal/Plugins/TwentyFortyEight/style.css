@@ -29,17 +29,50 @@
     border-radius: 5px;
     aspect-ratio: 1;
   }
-  .cell-2 { background-color: #eee4da; }
-  .cell-4 { background-color: #ede0c8; }
-  .cell-8 { background-color: #f2b179; }
-  .cell-16 { background-color: #f59563; }
-  .cell-32 { background-color: #f67c5f; }
-  .cell-64 { background-color: #f65e3b; }
-  .cell-128 { background-color: #edcf72; }
-  .cell-256 { background-color: #edcc61; }
-  .cell-512 { background-color: #edc850; }
-  .cell-1024 { background-color: #edc53f; }
-  .cell-2048 { background-color: #edc22e; }
+
+  .cell-2 {
+    background-color: #eee4da;
+  }
+
+  .cell-4 {
+    background-color: #ede0c8;
+  }
+
+  .cell-8 {
+    background-color: #f2b179;
+  }
+
+  .cell-16 {
+    background-color: #f59563;
+  }
+
+  .cell-32 {
+    background-color: #f67c5f;
+  }
+
+  .cell-64 {
+    background-color: #f65e3b;
+  }
+
+  .cell-128 {
+    background-color: #edcf72;
+  }
+
+  .cell-256 {
+    background-color: #edcc61;
+  }
+
+  .cell-512 {
+    background-color: #edc850;
+  }
+
+  .cell-1024 {
+    background-color: #edc53f;
+  }
+
+  .cell-2048 {
+    background-color: #edc22e;
+  }
 }
 
 .puzzle-container .controls {
@@ -64,5 +97,21 @@
     padding: 10px;
     width: 100%;
     max-width: 100px;
+  }
+}
+
+[data-panel="left"],
+[data-panel="right"] {
+  .puzzle-container {
+    padding: 0;
+  }
+
+  .puzzle-container .controls {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .button-control {
+    width: 100%;
   }
 }
