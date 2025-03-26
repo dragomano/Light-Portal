@@ -1,6 +1,7 @@
 class ChessboardMaker {
-	constructor(block_id) {
-		this.id = block_id
+	constructor(id, gameOver) {
+		this.id = id
+    this.gameOver = gameOver
 		this.game = new Chess()
 
 		this.minimaxRoot = this.minimaxRoot.bind(this)
@@ -25,7 +26,7 @@ class ChessboardMaker {
 			onSnapEnd : this.onSnapEnd
 		}
 
-		this.board = Chessboard2('chessBoard' + block_id, this.config)
+		this.board = Chessboard2('chessBoard' + this.id, this.config)
 
 		this.pendingMove = null
 	}
@@ -257,7 +258,7 @@ class ChessboardMaker {
 
 	getBestMove() {
 		if (this.game.game_over()) {
-			alert(gameOver)
+			alert(this.gameOver)
 
 			return this.game.reset()
 		}

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 23.03.25
  */
 
 namespace Bugo\LightPortal\Plugins\ChessBoard;
@@ -21,7 +21,7 @@ if (! defined('LP_NAME'))
 
 class ChessBoard extends Block
 {
-	public string $type = 'block';
+	public string $type = 'block games';
 
 	public string $icon = 'fas fa-chess';
 
@@ -48,8 +48,7 @@ class ChessBoard extends Block
 			</select>
 		</div>
 		<script>
-			const gameOver = "' . $this->txt['game_over'] . '";
-			const board' . $id . ' = new ChessboardMaker(' . $id . ');
+			const board' . $id . ' = new ChessboardMaker(' . $id . ', "' . $this->txt['game_over'] . '");
 		</script>';
 	}
 
