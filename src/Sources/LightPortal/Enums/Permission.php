@@ -76,23 +76,19 @@ enum Permission: int
 
 	private static function getBoardModerators(): array
 	{
-		$cache = app(CacheInterface::class)();
+		$cache = app(CacheInterface::class);
 
-		if (($moderators = $cache->get('board_moderators')) === null) {
+		return $cache->remember('board_moderators', function () {
 			$result = Db::$db->query('', /** @lang text */ '
 				SELECT id_member
-				FROM {db_prefix}moderators',
+				FROM {db_prefix}moderators'
 			);
 
 			$items = Db::$db->fetch_all($result);
 
 			Db::$db->free_result($result);
 
-			$moderators = array_column($items, 'id_member');
-
-			$cache->put('board_moderators', $moderators);
-		}
-
-		return $moderators;
+			return array_column($items, 'id_member');
+		});
 	}
 }

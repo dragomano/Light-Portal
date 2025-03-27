@@ -43,9 +43,7 @@ final class PluginRepository
 
 	public function getSettings(): array
 	{
-		$cacheTTL = 3 * 24 * 60 * 60;
-
-		if (($settings = $this->cache()->get('plugin_settings', $cacheTTL)) === null) {
+		return $this->cache()->remember('plugin_settings', function () {
 			$result = Db::$db->query('', /** @lang text */ '
 				SELECT name, config, value
 				FROM {db_prefix}lp_plugins',
@@ -58,10 +56,8 @@ final class PluginRepository
 
 			Db::$db->free_result($result);
 
-			$this->cache()->put('plugin_settings', $settings, $cacheTTL);
-		}
-
-		return $settings;
+			return $settings;
+		}, 3 * 24 * 60 * 60);
 	}
 
 	public function changeSettings(string $name, array $settings = []): void

@@ -31,6 +31,11 @@ final class Session extends GlobalArray
 		$this->storage = &$_SESSION;
 	}
 
+	public function withKey(?string $key): self
+	{
+		return new self($key);
+	}
+
 	public function free(string $key): void
 	{
 		unset($this->storage[$key]);

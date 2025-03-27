@@ -28,7 +28,7 @@ class Portal implements Routable
 {
 	public static function getDataFromCache(string $type = 'categories'): array
 	{
-		return app(CacheInterface::class)()->get('lp_sef_' . $type) ?: [];
+		return app(CacheInterface::class)->get('lp_sef_' . $type) ?: [];
 	}
 
 	public static function getCachedName(string $id, string $type = 'categories'): string

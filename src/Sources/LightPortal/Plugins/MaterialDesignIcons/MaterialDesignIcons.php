@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 27.03.25
  */
 
 namespace Bugo\LightPortal\Plugins\MaterialDesignIcons;
@@ -42,19 +42,17 @@ class MaterialDesignIcons extends Plugin
 
 	public function prepareIconList(Event $e): void
 	{
-		$cacheTTL = 30 * 24 * 60 * 60;
-
-		if (($mdIcons = $this->cache()->get('all_md_icons', $cacheTTL)) === null) {
+		$mdIcons = $this->cache()->remember('all_md_icons', function () {
 			$content = file_get_contents('https://raw.githubusercontent.com/Templarian/MaterialDesign/master/meta.json');
 			$json = json_decode($content);
 
-			$mdIcons = [];
+			$icons = [];
 			foreach ($json as $icon) {
-				$mdIcons[] = $this->prefix . $icon->name;
+				$icons[] = $this->prefix . $icon->name;
 			}
 
-			$this->cache()->put('all_md_icons', $mdIcons, $cacheTTL);
-		}
+			return $icons;
+		}, 30 * 24 * 60 * 60);
 
 		$e->args->icons = array_merge($e->args->icons, $mdIcons);
 	}

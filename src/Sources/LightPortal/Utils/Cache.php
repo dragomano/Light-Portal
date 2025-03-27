@@ -26,6 +26,11 @@ final class Cache implements CacheInterface
 
 	public function __construct(private readonly ?string $key = null, private int $lifeTime = LP_CACHE_TIME ?? 0) {}
 
+	public function withKey(?string $key): self
+	{
+		return new self($key);
+	}
+
 	public function setLifeTime(int $lifeTime): self
 	{
 		if ($this->request()->has('preview')) {
@@ -37,19 +42,28 @@ final class Cache implements CacheInterface
 		return $this;
 	}
 
+	public function remember(string $key, callable $callback, int $time = LP_CACHE_TIME ?? 0): mixed
+	{
+		if ($time === 0) {
+			$this->forget($key);
+		}
+
+		$data = $this->get($key, $time);
+
+		if ($data === null) {
+			$data = $callback();
+
+			$this->put($key, $data, $time);
+		}
+
+		return $data;
+	}
+
 	public function setFallback(callable $callback): mixed
 	{
-		if ($this->lifeTime === 0) {
-			$this->forget($this->key);
-		}
-
-		if (($cachedValue = $this->get($this->key, $this->lifeTime)) === null) {
-			$cachedValue = app(Weaver::class)($callback);
-
-			$this->put($this->key, $cachedValue, $this->lifeTime);
-		}
-
-		return $cachedValue;
+		return $this->remember($this->key, function() use ($callback) {
+			return app(Weaver::class)($callback);
+		}, $this->lifeTime);
 	}
 
 	public function get(string $key, ?int $time = null): mixed
