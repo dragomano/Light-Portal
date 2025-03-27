@@ -26,7 +26,8 @@
       "pnpm run build",
       "pnpm run build:comments",
       "pnpm run build:plugins",
-      "pnpm run build:sass"
+      "pnpm run build:sass",
+      "pnpm run build:apps"
     ],
     "up": [
       "cd src/Sources/LightPortal && composer update --no-dev -o",
