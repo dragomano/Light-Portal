@@ -213,31 +213,31 @@ function template_plugin_post(): void
 	</form>
 
 	<script>
-		class PluginMaker extends PortalEntity {
-			change(target) {
-				if (target !== "block") {
-					document.querySelector("dt.pf_icon").style.display = "none";
-					document.querySelector("dd.pf_icon").style.display = "none";';
+		document.querySelector("#type").addEventListener("change", function() {
+            if (! ["block", "ssi", "games"].some(type => this.value.includes(type))) {
+				document.querySelector("dt.pf_icon").style.display = "none";
+				document.querySelector("dd.pf_icon").style.display = "none";';
 
 	foreach (array_keys(Utils::$context['lp_languages']) as $lang) {
 		echo '
-					document.querySelector("input[name=title_' . $lang, ']").style.display = "none";';
+				document.querySelector("input[name=\"titles[' . $lang . ']\"]").style.display = "none";';
 	}
 
 	echo '
-				} else {
-					document.querySelector("dt.pf_icon").style.display = "block";
-					document.querySelector("dd.pf_icon").style.display = "block";';
+			} else {
+				document.querySelector("dt.pf_icon").style.display = "block";
+				document.querySelector("dd.pf_icon").style.display = "block";';
 
 	foreach (array_keys(Utils::$context['lp_languages']) as $lang) {
 		echo '
-					document.querySelector("input[name=title_' . $lang, ']").style.display = "inline-block";';
+				document.querySelector("input[name=\"titles[' . $lang . ']\"]").style.display = "inline-block";';
 	}
 
 	echo '
-				}
 			}
+		});
 
+		class PluginMaker extends PortalEntity {
 			handleOptions() {
 				return {
 					options: ', json_encode(Utils::$context['lp_plugin']['options']), ',

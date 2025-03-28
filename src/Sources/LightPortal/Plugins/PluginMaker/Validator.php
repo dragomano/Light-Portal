@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 13.02.25
+ * @version 27.03.25
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
@@ -57,15 +57,17 @@ class Validator extends AbstractValidator
 		'smf_hooks'  => FILTER_VALIDATE_BOOLEAN,
 		'smf_ssi'    => FILTER_VALIDATE_BOOLEAN,
 		'components' => FILTER_VALIDATE_BOOLEAN,
-		'titles' => [
-			'filter' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-			'flags'  => FILTER_REQUIRE_ARRAY,
-		],
-		'descriptions' => [
-			'filter' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-			'flags'  => FILTER_REQUIRE_ARRAY,
-		]
 	];
+
+	public function __construct()
+	{
+		parent::__construct();
+
+		$this->filters['descriptions'] = [
+			'filter'  => FILTER_CALLBACK,
+			'options' => fn($title) => Utils::htmlspecialchars($title, ENT_QUOTES),
+		];
+	}
 
 	public function validate(): array
 	{

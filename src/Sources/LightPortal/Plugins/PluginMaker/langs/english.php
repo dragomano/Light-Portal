@@ -12,6 +12,7 @@ return [
 	'name' => 'The plugin name',
 	'name_subtext' => 'Starts with a capital letter, no numbers, spaces, or symbols, only Latin letters.',
 	'type' => 'The plugin type',
+	'type_select' => 'Select the plugin type(s)',
 	'site_subtext' => 'Website where users can download new versions of this plugin.',
 	'license' => 'The plugin license',
 	'license_own' => 'Own license',

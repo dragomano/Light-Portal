@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 20.02.25
+ * @version 26.03.25
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
@@ -38,6 +38,7 @@ use function array_keys;
 use function array_merge;
 use function array_unique;
 use function count;
+use function explode;
 use function in_array;
 use function is_writable;
 use function sprintf;
@@ -119,7 +120,7 @@ class Handler
 
 		Utils::$context['lp_plugin'] = [
 			'name'       => $postData['name'] ?? Utils::$context['lp_plugin']['name'] = self::PLUGIN_NAME,
-			'type'       => $postData['type'] ?? Utils::$context['lp_plugin']['type'] ?? 'block',
+			'type'       => $postData['type'] ?? Utils::$context['lp_plugin']['type'] ?? PluginType::BLOCK->name(),
 			'icon'       => $postData['icon'] ?? Utils::$context['lp_plugin']['icon'] ?? '',
 			'author'     => $postData['author']
 								?? Utils::$context['lp_plugin']['author']
@@ -131,7 +132,7 @@ class Handler
 			'site'       => $postData['site']
 								?? Utils::$context['lp_plugin']['site']
 								?? Utils::$context['lp_plugin_maker_plugin']['site']
-								?? '',
+								?? 'https://custom.simplemachines.org/index.php?mod=4244',
 			'license'    => $postData['license']
 								?? Utils::$context['lp_plugin']['license']
 								?? Utils::$context['lp_plugin_maker_plugin']['license']
@@ -142,7 +143,10 @@ class Handler
 			'options'    => Utils::$context['lp_plugin']['options'] ?? []
 		];
 
-		if (Utils::$context['lp_plugin']['type'] !== 'block' || Utils::$context['lp_plugin']['icon'] === 'undefined') {
+		if (
+			Utils::$context['lp_plugin']['type'] !== PluginType::BLOCK->name()
+			|| Utils::$context['lp_plugin']['icon'] === 'undefined'
+		) {
 			Utils::$context['lp_plugin']['icon'] = '';
 		}
 
@@ -194,19 +198,17 @@ class Handler
 			->setTab(Tab::CONTENT)
 			->setDescription(Lang::$txt['lp_plugin_maker']['name_subtext'])
 			->required()
-			->setAttribute('maxlength', 255)
-			->setAttribute('pattern', LP_ADDON_PATTERN)
-			->setAttribute('style', 'width: 100%')
-			->setAttribute('@change', 'plugin.updateState($event.target.value, $refs)')
+			->setAttributes([
+				'maxlength' => 255,
+				'pattern'   => LP_ADDON_PATTERN,
+				'style'     => 'width: 100%',
+				'@change'   => 'plugin.updateState($event.target.value, $refs)',
+			])
 			->setValue(Utils::$context['lp_plugin']['name']);
 
-		SelectField::make('type', Lang::$txt['lp_plugin_maker']['type'])
+		CustomField::make('type', Lang::$txt['lp_plugin_maker']['type'])
 			->setTab(Tab::CONTENT)
-			->setAttribute('@change', 'plugin.change($event.target.value)')
-			->setOptions(array_filter(
-				Utils::$context['lp_plugin_types'], static fn($type) => $type !== PluginType::SSI->name()
-			))
-			->setValue(Utils::$context['lp_plugin']['type']);
+			->setValue(static fn() => new TypeSelect());
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
 			->setTab(Tab::CONTENT)
@@ -341,6 +343,8 @@ class Handler
 			return;
 
 		Security::checkSubmitOnce('check');
+
+		Utils::$context['lp_plugin']['types'] = explode(',', Utils::$context['lp_plugin']['type']);
 
 		$generator = new Generator(Utils::$context['lp_plugin']);
 		$generator->generate();
