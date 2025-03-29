@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 27.03.25
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
