@@ -160,7 +160,6 @@ final class BlockRepository extends AbstractRepository
 		Security::checkSubmitOnce('check');
 
 		$this->prepareBbcContent(Utils::$context['lp_block']);
-		$this->prepareTitles();
 
 		if (empty($item)) {
 			Utils::$context['lp_block']['titles'] = array_filter(Utils::$context['lp_block']['titles'] ?? []);

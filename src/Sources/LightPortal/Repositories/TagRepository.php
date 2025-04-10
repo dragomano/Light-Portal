@@ -130,8 +130,6 @@ final class TagRepository extends AbstractRepository
 
 		Security::checkSubmitOnce('check');
 
-		$this->prepareTitles();
-
 		if (empty($item)) {
 			Utils::$context['lp_tag']['titles'] = array_filter(Utils::$context['lp_tag']['titles']);
 			$item = $this->addData();

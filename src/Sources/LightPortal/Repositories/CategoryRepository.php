@@ -139,8 +139,6 @@ final class CategoryRepository extends AbstractRepository
 
 		Security::checkSubmitOnce('check');
 
-		$this->prepareTitles();
-
 		if (empty($item)) {
 			Utils::$context['lp_category']['titles'] = array_filter(Utils::$context['lp_category']['titles']);
 			$item = $this->addData();
