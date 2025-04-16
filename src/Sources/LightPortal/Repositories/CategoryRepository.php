@@ -173,6 +173,15 @@ final class CategoryRepository extends AbstractRepository
 		);
 
 		Db::$db->query('', '
+			DELETE FROM {db_prefix}lp_titles
+			WHERE item_id IN ({array_int:items})
+				AND type = {literal:category}',
+			[
+				'items' => $items,
+			]
+		);
+
+		Db::$db->query('', '
 			UPDATE {db_prefix}lp_pages
 			SET category_id = {int:category}
 			WHERE category_id IN ({array_int:items})',

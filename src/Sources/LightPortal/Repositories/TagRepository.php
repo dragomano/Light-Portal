@@ -164,6 +164,15 @@ final class TagRepository extends AbstractRepository
 		);
 
 		Db::$db->query('', '
+			DELETE FROM {db_prefix}lp_titles
+			WHERE item_id IN ({array_int:items})
+				AND type = {literal:tag}',
+			[
+				'items' => $items,
+			]
+		);
+
+		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_page_tag
 			WHERE tag_id IN ({array_int:items})',
 			[
