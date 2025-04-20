@@ -163,6 +163,7 @@ final class PageImport extends AbstractImport
 				'num_comments' => 'int',
 				'created_at'   => 'int',
 				'updated_at'   => 'int',
+				'deleted_at'   => 'int',
 			],
 			['page_id'],
 		);
