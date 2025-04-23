@@ -86,7 +86,7 @@ final class Category extends AbstractPageList
 		$builder->setItems($this->getPages(...));
 		$builder->setCount($this->getTotalPages(...));
 
-		isset($category['description']) && $builder->addRow(
+		! empty($category['description']) && $builder->addRow(
 			Row::make($category['description'])
 				->setClass('information')
 				->setPosition(RowPosition::TOP_OF_LIST)
@@ -114,6 +114,7 @@ final class Category extends AbstractPageList
 				)
 			WHERE p.category_id = {int:id}
 				AND p.status = {int:status}
+				AND p.deleted_at = 0
 				AND p.entry_type IN ({array_string:types})
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
@@ -147,6 +148,7 @@ final class Category extends AbstractPageList
 			FROM {db_prefix}lp_pages
 			WHERE category_id = {string:id}
 				AND status = {int:status}
+				AND deleted_at = 0
 				AND entry_type IN ({array_string:types})
 				AND created_at <= {int:current_time}
 				AND permissions IN ({array_int:permissions})',
@@ -218,6 +220,7 @@ final class Category extends AbstractPageList
 				)
 			WHERE (c.status = {int:status} OR p.category_id = 0)
 				AND p.status = {int:status}
+				AND p.deleted_at = 0
 				AND p.entry_type IN ({array_string:types})
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
@@ -260,25 +263,18 @@ final class Category extends AbstractPageList
 			SELECT COUNT(DISTINCT COALESCE(c.category_id, 0)) AS unique_category_count
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_categories AS c ON (p.category_id = c.category_id)
-				LEFT JOIN {db_prefix}lp_titles AS t ON (
-					c.category_id = t.item_id AND t.type = {literal:category} AND t.lang = {string:lang}
-				)
-				LEFT JOIN {db_prefix}lp_titles AS tf ON (
-					c.category_id = tf.item_id AND tf.type = {literal:category} AND tf.lang = {string:fallback_lang}
-				)
 			WHERE (c.status = {int:status} OR p.category_id = 0)
 				AND p.status = {int:status}
+				AND p.deleted_at = 0
 				AND p.entry_type IN ({array_string:types})
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
 			LIMIT 1',
 			[
-				'lang'          => User::$me->language,
-				'fallback_lang' => Config::$language,
-				'status'        => Status::ACTIVE->value,
-				'types'         => EntryType::withoutDrafts(),
-				'current_time'  => time(),
-				'permissions'   => Permission::all(),
+				'status'       => Status::ACTIVE->value,
+				'types'        => EntryType::withoutDrafts(),
+				'current_time' => time(),
+				'permissions'  => Permission::all(),
 			]
 		);
 

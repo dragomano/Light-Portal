@@ -61,9 +61,7 @@ final class Cache implements CacheInterface
 
 	public function setFallback(callable $callback): mixed
 	{
-		return $this->remember($this->key, function() use ($callback) {
-			return app(Weaver::class)($callback);
-		}, $this->lifeTime);
+		return $this->remember($this->key, fn() => app(Weaver::class)($callback), $this->lifeTime);
 	}
 
 	public function get(string $key, ?int $time = null): mixed
