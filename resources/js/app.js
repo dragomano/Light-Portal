@@ -1,4 +1,5 @@
 import Alpine from 'alpinejs';
+// @ts-ignore
 import slug from 'alpinejs-slug';
 import axios from 'axios';
 
@@ -27,12 +28,12 @@ window.loadExternalScript = (url, isModule = false) => {
 }
 
 window.loadPortalScript = (url, isModule = false) => {
-  return loadExternalScript(window.smf_default_theme_url + '/scripts/light_portal/' + url, isModule);
+  return window.loadExternalScript(window.smf_default_theme_url + '/scripts/light_portal/' + url, isModule);
 }
 
 window.usePortalApi = async (endpoint, scriptName) => {
   const response = await fetch(endpoint);
   window.portalJson = await response.json();
 
-  return loadPortalScript(scriptName, true);
+  return window.loadPortalScript(scriptName, true);
 }

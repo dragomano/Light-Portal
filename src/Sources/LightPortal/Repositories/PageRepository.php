@@ -228,7 +228,6 @@ final class PageRepository extends AbstractRepository
 		Security::checkSubmitOnce('check');
 
 		$this->prepareBbcContent(Utils::$context['lp_page']);
-		$this->prepareTitles();
 
 		if (empty($item)) {
 			Utils::$context['lp_page']['titles'] = array_filter(Utils::$context['lp_page']['titles']);

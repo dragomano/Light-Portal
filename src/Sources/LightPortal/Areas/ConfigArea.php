@@ -236,19 +236,18 @@ final class ConfigArea
 		// Tabs
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title' => LP_NAME,
+			'description' => Str::html('img')
+				->class('floatright')
+				->setAttribute('src', 'https://user-images.githubusercontent.com/229402/143980485-16ba84b8-9d8d-4c06-abeb-af949d594f66.png')
+				->setAttribute('alt', LP_NAME . ' logo') .
+				Lang::getTxt('lp_base_info', [
+					LP_VERSION,
+					PHP_VERSION,
+					Utils::$smcFunc['db_title'],
+					Db::$db->get_version(),
+				]),
 			'tabs' => [
-				'basic' => [
-					'description' => Str::html('img')
-						->class('floatright')
-						->setAttribute('src', 'https://user-images.githubusercontent.com/229402/143980485-16ba84b8-9d8d-4c06-abeb-af949d594f66.png')
-						->setAttribute('alt', LP_NAME . ' logo') .
-					Lang::getTxt('lp_base_info', [
-						LP_VERSION,
-						PHP_VERSION,
-						Utils::$smcFunc['db_title'],
-						Db::$db->get_version(),
-					])
-				],
+				'basic' => [],
 				'extra' => [
 					'description' => Lang::$txt['lp_extra_info']
 				],

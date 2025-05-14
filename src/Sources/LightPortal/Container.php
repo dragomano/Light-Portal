@@ -13,6 +13,7 @@
 namespace Bugo\LightPortal;
 
 use League\Container\Container as LeagueContainer;
+use Throwable;
 
 class Container
 {
@@ -29,10 +30,9 @@ class Container
 
 	/**
 	 * @template RequestedType
-	 *
 	 * @param class-string<RequestedType>|string $service
-	 *
 	 * @return RequestedType|mixed
+	 * @throws Throwable
 	 */
 	public static function get(string $service): mixed
 	{

@@ -18,6 +18,8 @@ trait HasSession
 {
 	public function session(?string $key = null): Session
 	{
-		return app(Session::class)($key);
+		return $key === null
+			? app(Session::class)
+			: app(Session::class)->withKey($key);
 	}
 }

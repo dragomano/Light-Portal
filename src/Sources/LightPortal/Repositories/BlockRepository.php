@@ -160,7 +160,6 @@ final class BlockRepository extends AbstractRepository
 		Security::checkSubmitOnce('check');
 
 		$this->prepareBbcContent(Utils::$context['lp_block']);
-		$this->prepareTitles();
 
 		if (empty($item)) {
 			Utils::$context['lp_block']['titles'] = array_filter(Utils::$context['lp_block']['titles'] ?? []);
@@ -391,11 +390,6 @@ final class BlockRepository extends AbstractRepository
 		$this->saveOptions($item, 'replace');
 
 		Db::$db->transaction();
-
-		$prefix = Utils::$context['lp_block']['type'] . '_addon_b';
-		$this->cache()->forget($prefix . $item);
-		$this->cache()->forget($prefix . Utils::$context['user']['id']);
-		$this->cache()->forget($prefix . $item . '_u' . Utils::$context['user']['id']);
 	}
 
 	private function prepareMissingBlockTypes(string $type): void

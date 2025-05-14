@@ -194,7 +194,7 @@ final class CategoryArea
 
 	private function prepareFormFields(): void
 	{
-		$this->prepareTitleFields();
+		$this->prepareTitleFields('category');
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
 			->setTab(Tab::CONTENT)

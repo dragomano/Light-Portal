@@ -15,14 +15,13 @@ if (! defined('SMF'))
 
 require_once __DIR__ . '/Libs/autoload.php';
 
+use Bugo\Compat\ErrorHandler;
 use Bugo\LightPortal\Container;
 use Bugo\LightPortal\PortalApp;
 
 /**
  * @template RequestedType
- *
  * @param class-string<RequestedType>|string $service
- *
  * @return RequestedType|mixed
  */
 function app(string $service = ''): mixed
@@ -31,7 +30,13 @@ function app(string $service = ''): mixed
 		return Container::getInstance();
 	}
 
-	return Container::get($service);
+	try {
+		return Container::get($service);
+	} catch (Throwable $e) {
+		ErrorHandler::fatal($e->getMessage(), 'critical');
+	}
+
+	return false;
 }
 
 // This is the way

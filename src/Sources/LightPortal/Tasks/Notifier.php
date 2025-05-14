@@ -35,9 +35,9 @@ final class Notifier extends BackgroundTask
 	public function execute(): bool
 	{
 		$members = match ($this->_details['content_type']) {
-			'new_page' => User::membersAllowedTo('light_portal_manage_pages_any'),
+			'new_page' => User::getAllowedTo('light_portal_manage_pages_any'),
 			default    => array_intersect(
-				User::membersAllowedTo('light_portal_view'), [$this->_details['content_author_id']]
+				User::getAllowedTo('light_portal_view'), [$this->_details['content_author_id']]
 			)
 		};
 

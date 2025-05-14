@@ -130,8 +130,6 @@ final class TagRepository extends AbstractRepository
 
 		Security::checkSubmitOnce('check');
 
-		$this->prepareTitles();
-
 		if (empty($item)) {
 			Utils::$context['lp_tag']['titles'] = array_filter(Utils::$context['lp_tag']['titles']);
 			$item = $this->addData();
@@ -160,6 +158,15 @@ final class TagRepository extends AbstractRepository
 		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_tags
 			WHERE tag_id IN ({array_int:items})',
+			[
+				'items' => $items,
+			]
+		);
+
+		Db::$db->query('', '
+			DELETE FROM {db_prefix}lp_titles
+			WHERE item_id IN ({array_int:items})
+				AND type = {literal:tag}',
 			[
 				'items' => $items,
 			]

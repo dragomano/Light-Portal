@@ -183,7 +183,7 @@ final class TagArea
 
 	private function prepareFormFields(): void
 	{
-		$this->prepareTitleFields();
+		$this->prepareTitleFields('tag');
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
 			->setTab(Tab::CONTENT)

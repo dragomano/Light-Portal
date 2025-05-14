@@ -24,7 +24,6 @@ use Bugo\LightPortal\Articles\ChosenTopicArticle;
 use Bugo\LightPortal\Articles\PageArticle;
 use Bugo\LightPortal\Articles\TopicArticle;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Enums\PortalSubAction;
 use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Renderers\RendererInterface;
 use Bugo\LightPortal\Utils\DateTime;
@@ -43,10 +42,8 @@ use function abs;
 use function array_column;
 use function array_key_exists;
 use function array_map;
-use function array_search;
 use function date;
 use function floor;
-use function implode;
 use function ltrim;
 use function number_format;
 use function sprintf;
@@ -84,8 +81,6 @@ final class FrontPage implements ActionInterface
 			app(Page::class)->show();
 			return;
 		}
-
-		$this->handleSubActions();
 
 		Utils::$context['lp_frontpage_num_columns'] = $this->getNumColumns();
 
@@ -236,44 +231,6 @@ final class FrontPage implements ActionInterface
 		}
 
 		$start = (int) abs($start);
-	}
-
-	private function handleSubActions(): void
-	{
-		$sa = $this->request()->get('sa') ?? '';
-
-		if ($this->request()->is(LP_ACTION)) {
-			match ($sa) {
-				PortalSubAction::CATEGORIES->name() => app(Category::class)->show(),
-				PortalSubAction::TAGS->name()       => app(Tag::class)->show(),
-				PortalSubAction::PROMOTE->name()    => $this->promoteTopic(),
-				default                             => null,
-			};
-		}
-	}
-
-	private function promoteTopic(): void
-	{
-		if (empty(User::$me->is_admin) || $this->request()->hasNot('t'))
-			return;
-
-		$topic = $this->request()->get('t');
-
-		$homeTopics = Setting::getFrontpageTopics();
-
-		if (($key = array_search($topic, $homeTopics)) !== false) {
-			unset($homeTopics[$key]);
-		} else {
-			$homeTopics[] = $topic;
-		}
-
-		Config::updateModSettings(
-			['lp_frontpage_topics' => implode(',', $homeTopics)]
-		);
-
-		$this->cache()->flush();
-
-		$this->response()->redirect('topic=' . $topic);
 	}
 
 	private function postProcess(ArticleInterface $article, array $articles): array
