@@ -12,9 +12,15 @@
 
 namespace Bugo\LightPortal\Utils;
 
+use const LP_CACHE_TIME;
+
 interface CacheInterface
 {
+	public function withKey(?string $key): self;
+
 	public function setLifeTime(int $lifeTime): self;
+
+	public function remember(string $key, callable $callback, int $time = LP_CACHE_TIME ?? 0): mixed;
 
 	public function setFallback(callable $callback): mixed;
 

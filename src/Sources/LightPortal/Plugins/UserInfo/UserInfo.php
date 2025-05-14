@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 20.02.25
+ * @version 27.03.25
  */
 
 namespace Bugo\LightPortal\Plugins\UserInfo;
@@ -43,7 +43,7 @@ class UserInfo extends Block
 			return;
 		}
 
-		$userData = $this->cache($this->name . '_addon_u' . User::$me->id)
+		$userData = $this->userCache($this->name . '_addon')
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(fn() => $this->getData());
 

@@ -92,8 +92,7 @@ final class Tag extends AbstractPageList
 			SELECT
 				p.page_id, p.category_id, p.author_id, p.slug, p.description, p.content,
 				p.type, p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
-				COALESCE(mem.real_name, \'\') AS author_name, COALESCE(t.value, tf.value) AS title,
-				COALESCE(tt.value, ttf.value) AS tag_title
+				COALESCE(mem.real_name, \'\') AS author_name, COALESCE(t.value, tf.value) AS title
 			FROM {db_prefix}lp_pages AS p
 				INNER JOIN {db_prefix}lp_page_tag AS pt ON (p.page_id = pt.page_id)
 				INNER JOIN {db_prefix}lp_tags AS tag ON (pt.tag_id = tag.tag_id)
@@ -104,15 +103,10 @@ final class Tag extends AbstractPageList
 				LEFT JOIN {db_prefix}lp_titles AS tf ON (
 					p.page_id = tf.item_id AND tf.type = {literal:page} AND tf.lang = {string:fallback_lang}
 				)
-				LEFT JOIN {db_prefix}lp_titles AS tt ON (
-					pt.tag_id = tt.item_id AND tt.type = {literal:tag} AND tt.lang = {string:lang}
-				)
-				LEFT JOIN {db_prefix}lp_titles AS ttf ON (
-					pt.tag_id = ttf.item_id AND ttf.type = {literal:tag} AND ttf.lang = {string:fallback_lang}
-				)
 			WHERE pt.tag_id = {int:id}
 				AND tag.status = {int:status}
 				AND p.status = {int:status}
+				AND p.deleted_at = 0
 				AND p.entry_type IN ({array_string:types})
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
@@ -149,6 +143,7 @@ final class Tag extends AbstractPageList
 			WHERE pt.tag_id = {int:id}
 				AND tag.status = {int:status}
 				AND p.status  = {int:status}
+				AND p.deleted_at = 0
 				AND p.entry_type IN ({array_string:types})
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})',
@@ -217,11 +212,12 @@ final class Tag extends AbstractPageList
 					pt.tag_id = tf.item_id AND tf.type = {literal:tag} AND tf.lang = {string:fallback_lang}
 				)
 			WHERE p.status = {int:status}
+				AND p.deleted_at = 0
 				AND p.entry_type IN ({array_string:types})
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
 				AND tag.status = {int:status}
-			GROUP BY tag.tag_id, tag.icon, tt.value, tf.value
+			GROUP BY tag.tag_id, tag.icon, title
 			ORDER BY {raw:sort}' . ($limit ? '
 			LIMIT {int:start}, {int:limit}' : ''),
 			[
@@ -259,25 +255,18 @@ final class Tag extends AbstractPageList
 			FROM {db_prefix}lp_pages AS p
 				INNER JOIN {db_prefix}lp_page_tag AS pt ON (p.page_id = pt.page_id)
 				INNER JOIN {db_prefix}lp_tags AS tag ON (pt.tag_id = tag.tag_id)
-				LEFT JOIN {db_prefix}lp_titles AS tt ON (
-					pt.tag_id = tt.item_id AND tt.type = {literal:tag} AND tt.lang = {string:lang}
-				)
-				LEFT JOIN {db_prefix}lp_titles AS tf ON (
-					pt.tag_id = tf.item_id AND tf.type = {literal:tag} AND tf.lang = {string:fallback_lang}
-				)
 			WHERE p.status = {int:status}
+				AND p.deleted_at = 0
 				AND p.entry_type IN ({array_string:types})
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
 				AND tag.status = {int:status}
 			LIMIT 1',
 			[
-				'lang'          => User::$me->language,
-				'fallback_lang' => Config::$language,
-				'status'        => Status::ACTIVE->value,
-				'types'         => EntryType::names(),
-				'current_time'  => time(),
-				'permissions'   => Permission::all(),
+				'status'       => Status::ACTIVE->value,
+				'types'        => EntryType::names(),
+				'current_time' => time(),
+				'permissions'  => Permission::all(),
 			]
 		);
 

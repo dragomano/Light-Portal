@@ -14,7 +14,6 @@ namespace Bugo\LightPortal\UI\Partials;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-
 use Bugo\LightPortal\Enums\ContentClass;
 
 use function func_get_args;

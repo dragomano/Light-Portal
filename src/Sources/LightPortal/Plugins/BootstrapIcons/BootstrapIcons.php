@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 27.03.25
  */
 
 namespace Bugo\LightPortal\Plugins\BootstrapIcons;
@@ -43,19 +43,17 @@ class BootstrapIcons extends Plugin
 
 	public function prepareIconList(Event $e): void
 	{
-		$cacheTTL = 30 * 24 * 60 * 60;
-
-		if (($biIcons = $this->cache()->get('all_bi_icons', $cacheTTL)) === null) {
+		$biIcons = $this->cache()->remember('all_bi_icons', function () {
 			$content = file_get_contents('https://cdn.jsdelivr.net/npm/bootstrap-icons@1/font/bootstrap-icons.json');
 			$json = array_flip(Utils::jsonDecode($content, true));
 
-			$biIcons = [];
+			$icons = [];
 			foreach ($json as $icon) {
-				$biIcons[] = $this->prefix . $icon;
+				$icons[] = $this->prefix . $icon;
 			}
 
-			$this->cache()->put('all_bi_icons', $biIcons, $cacheTTL);
-		}
+			return $icons;
+		}, 30 * 24 * 60 * 60);
 
 		$e->args->icons = array_merge($e->args->icons, $biIcons);
 	}

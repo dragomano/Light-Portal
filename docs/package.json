@@ -1,10 +1,8 @@
 {
   "type": "module",
   "devDependencies": {
-    "esbuild": "^0.25.1",
-    "markdown-it-steps": "^0.1.0",
     "release-timeline": "^0.6.0",
-    "sass": "^1.86.0",
+    "sass": "^1.88.0",
     "vitepress": "^1.6.3",
     "vitepress-plugin-comment-with-giscus": "^1.1.15",
     "vitepress-sidebar": "^1.31.1"

@@ -18,6 +18,7 @@ use Bugo\Compat\Security;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\ContentType;
+use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\Utils\Editor;
 use Bugo\LightPortal\Utils\Str;
@@ -113,7 +114,7 @@ trait HasArea
 		}
 
 		CustomField::make('title', Lang::$txt['lp_title'])
-			->setTab('content')
+			->setTab(Tab::CONTENT)
 			->setValue($value);
 	}
 

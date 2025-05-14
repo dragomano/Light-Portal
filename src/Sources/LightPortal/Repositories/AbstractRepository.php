@@ -19,7 +19,6 @@ use Bugo\LightPortal\Utils\Traits\HasSession;
 
 use function implode;
 use function is_array;
-use function preg_replace;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -134,17 +133,6 @@ abstract class AbstractRepository
 			],
 			$params,
 			['item_id', 'type', 'name'],
-		);
-	}
-
-	protected function prepareTitles(): void
-	{
-		if (empty(Utils::$context['lp_' . $this->entity]['titles']))
-			return;
-
-		// Remove some punctuation symbols
-		Utils::$context['lp_' . $this->entity]['titles'] = preg_replace(
-			"#[.,!?;:]#", "", (array) Utils::$context['lp_' . $this->entity]['titles']
 		);
 	}
 }

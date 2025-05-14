@@ -10,7 +10,7 @@
     "bugo/smf-compat": "^0.3",
     "doctrine/event-manager": "^2.0",
     "eftec/bladeone": "^4.13",
-    "league/container": "^4.2",
+    "league/container": "^5.0",
     "wplake/typed": "^1.1"
   },
   "autoload": {

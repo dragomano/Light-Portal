@@ -139,8 +139,6 @@ final class CategoryRepository extends AbstractRepository
 
 		Security::checkSubmitOnce('check');
 
-		$this->prepareTitles();
-
 		if (empty($item)) {
 			Utils::$context['lp_category']['titles'] = array_filter(Utils::$context['lp_category']['titles']);
 			$item = $this->addData();
@@ -169,6 +167,15 @@ final class CategoryRepository extends AbstractRepository
 		Db::$db->query('', '
 			DELETE FROM {db_prefix}lp_categories
 			WHERE category_id IN ({array_int:items})',
+			[
+				'items' => $items,
+			]
+		);
+
+		Db::$db->query('', '
+			DELETE FROM {db_prefix}lp_titles
+			WHERE item_id IN ({array_int:items})
+				AND type = {literal:category}',
 			[
 				'items' => $items,
 			]

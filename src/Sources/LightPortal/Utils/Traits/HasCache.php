@@ -62,6 +62,8 @@ trait HasCache
 
 	protected function getCacheInstance(?string $key = null): CacheInterface
 	{
-		return app(CacheInterface::class)($key);
+		return $key === null 
+			? app(CacheInterface::class) 
+			: app(CacheInterface::class)->withKey($key);
 	}
 }

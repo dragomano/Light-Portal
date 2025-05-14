@@ -15,7 +15,6 @@ namespace Bugo\LightPortal\UI\Partials;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-
 use Bugo\LightPortal\Lists\PageList;
 
 use function func_get_args;

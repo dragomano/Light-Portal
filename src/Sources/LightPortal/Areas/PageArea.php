@@ -558,7 +558,7 @@ final class PageArea
 			->setAttribute('maxlength', 255)
 			->setAttribute('pattern', LP_ALIAS_PATTERN)
 			->setAttribute(
-				'x-slug.lazy.replacement._',
+				'x-slug.lazy',
 				empty(Utils::$context['lp_page']['id']) ? 'title_' . User::$me->language : '{}'
 			)
 			->setValue(Utils::$context['lp_page']['slug']);

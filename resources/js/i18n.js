@@ -1,6 +1,6 @@
 import { register, init, locale } from 'svelte-i18n';
 
-const { context, txt } = portalJson;
+const { context, txt } = window.portalJson;
 
 register(context.locale, () => Promise.resolve(txt));
 

@@ -71,15 +71,9 @@ trait HasQuery
 
 	private function getFaIcons(): array
 	{
-		$cacheTTL = 30 * 24 * 60 * 60;
-
-		if (($icons = $this->cache()->get('fa_icon_list', $cacheTTL)) === null) {
-			$icons = app(IconList::class)->getList();
-
-			$this->cache()->put('fa_icon_list', $icons, $cacheTTL);
-		}
-
-		return $icons;
+		return $this
+			->cache()
+			->remember('fa_icon_list', fn() => app(IconList::class)->getList(), 30 * 24 * 60 * 60);
 	}
 
 	private function prepareTopicList(): void

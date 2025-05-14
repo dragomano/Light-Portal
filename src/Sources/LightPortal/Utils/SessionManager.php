@@ -14,6 +14,7 @@ namespace Bugo\LightPortal\Utils;
 
 use Bugo\Compat\Db;
 use Bugo\Compat\User;
+use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Utils\Traits\HasSession;
 
@@ -68,11 +69,13 @@ final class SessionManager
 				SELECT COUNT(page_id)
 				FROM {db_prefix}lp_pages
 				WHERE status = {int:status}
-					AND deleted_at = 0' . (User::$me->allowedTo('light_portal_manage_pages_any') ? '' : '
+					AND deleted_at = 0
+					AND entry_type = {string:entry_type}' . (User::$me->allowedTo('light_portal_manage_pages_any') ? '' : '
 					AND author_id = {int:author}'),
 				[
-					'status' => Status::ACTIVE->value,
-					'author' => User::$me->id,
+					'status'     => Status::ACTIVE->value,
+					'entry_type' => EntryType::DEFAULT->name(),
+					'author'     => User::$me->id,
 				]
 			);
 
@@ -95,9 +98,11 @@ final class SessionManager
 				SELECT COUNT(page_id)
 				FROM {db_prefix}lp_pages
 				WHERE author_id = {int:author}
-					AND deleted_at = 0',
+					AND deleted_at = 0
+					AND entry_type = {string:entry_type}',
 				[
-					'author' => User::$me->id,
+					'author'     => User::$me->id,
+					'entry_type' => EntryType::DEFAULT->name(),
 				]
 			);
 
