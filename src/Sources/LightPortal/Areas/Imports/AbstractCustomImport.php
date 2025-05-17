@@ -11,10 +11,11 @@
 
 namespace Bugo\LightPortal\Areas\Imports;
 
+use Bugo\Compat\Config;
 use Bugo\Compat\Sapi;
 use Bugo\LightPortal\Areas\Imports\Traits\CanInsertDataTrait;
 use Bugo\LightPortal\Areas\Imports\Traits\HasParams;
-use Bugo\LightPortal\Areas\Imports\Traits\HasTitles;
+use Bugo\LightPortal\Areas\Imports\Traits\HasTranslations;
 use Bugo\LightPortal\Areas\Imports\Traits\HasTransactions;
 use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
@@ -27,13 +28,41 @@ abstract class AbstractCustomImport implements ImportInterface, CustomImportInte
 	use CanInsertDataTrait;
 	use HasEvents;
 	use HasParams;
-	use HasTitles;
+	use HasTranslations;
 	use HasTransactions;
 	use HasRequest;
 
 	abstract protected function getItems(array $ids): array;
 
-	abstract protected function importItems(array &$items, array &$titles): array;
+	abstract protected function getResults(array $items): array;
+
+	protected function importItems(array $items): array
+	{
+		$translations = [];
+		foreach ($items as $id => $item) {
+			$translations[] = [
+				'type'        => $this->type,
+				'lang'        => Config::$language,
+				'title'       => $item['title'] ?? '',
+				'content'     => $item['content'] ?? '',
+				'description' => $item['description'] ?? '',
+			];
+
+			unset($items[$id]['title'], $items[$id]['content'], $items[$id]['description']);
+		}
+
+		$results = $this->getResults($items);
+
+		if ($translations && $results) {
+			foreach ($results as $key => $value) {
+				$translations[$key]['item_id'] = $value;
+			}
+
+			$this->replaceTranslations($translations, $results, '');
+		}
+
+		return $results;
+	}
 
 	protected function run(): void
 	{
@@ -48,11 +77,9 @@ abstract class AbstractCustomImport implements ImportInterface, CustomImportInte
 
 		$items = $this->getItems($data);
 
-		$titles = [];
-
 		$this->startTransaction($items);
 
-		$results = $this->importItems($items, $titles);
+		$results = $this->importItems($items);
 
 		$this->finishTransaction($results);
 	}

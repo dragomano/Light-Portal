@@ -31,10 +31,6 @@ class PageModel extends AbstractModel
 
 	public string $slug;
 
-	public string $description;
-
-	public string $content;
-
 	public string $type;
 
 	public string $entryType;
@@ -53,7 +49,11 @@ class PageModel extends AbstractModel
 
 	public int $lastCommentId;
 
-	public array $titles = [];
+	public string $title;
+
+	public string $description;
+
+	public string $content;
 
 	public array $tags = [];
 
@@ -70,8 +70,6 @@ class PageModel extends AbstractModel
 		$this->categoryId    = $data['category_id'] ?? 0;
 		$this->authorId      = $data['author_id'] ?? User::$me->id;
 		$this->slug          = $data['slug'] ?? '';
-		$this->description   = $data['description'] ?? '';
-		$this->content       = $data['content'] ?? '';
 		$this->type          = $data['type'] ?? ContentType::BBC->name();
 		$this->entryType     = $data['entry_type'] ?? EntryType::DEFAULT->name();
 		$this->permissions   = $data['permissions'] ?? $permissions;
@@ -81,7 +79,9 @@ class PageModel extends AbstractModel
         $this->updatedAt     = $data['updated_at'] ?? 0;
         $this->deletedAt     = $data['deleted_at'] ?? 0;
         $this->lastCommentId = $data['last_comment_id'] ?? 0;
-        $this->titles        = $data['titles'] ?? [];
+        $this->title         = $data['title'] ?? '';
+		$this->description   = $data['description'] ?? '';
+		$this->content       = $data['content'] ?? '';
 		$this->tags          = $data['tags'] ?? [];
         $this->options       = $data['options'] ?? [];
 	}

@@ -48,9 +48,7 @@ function template_layout_switcher_above(): void
 
 	foreach (Utils::$context['lp_frontpage_layouts'] as $layout => $title) {
 		echo '
-					<option value="', $layout, '"', Utils::$context['lp_current_layout'] === $layout ? ' selected' : '', '>
-						', $title, '
-					</option>';
+					<option value="', $layout, '"', Utils::$context['lp_current_layout'] === $layout ? ' selected' : '', '>', $title, '</option>';
 	}
 
 	echo '

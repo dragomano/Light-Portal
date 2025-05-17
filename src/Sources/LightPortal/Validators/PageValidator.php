@@ -15,6 +15,7 @@ namespace Bugo\LightPortal\Validators;
 use Bugo\Compat\Db;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Utils\Language;
 
 use function array_keys;
 use function array_merge;
@@ -30,7 +31,7 @@ class PageValidator extends AbstractValidator
 			'filter'  => FILTER_VALIDATE_REGEXP,
 			'options' => ['regexp' => '/' . LP_ALIAS_PATTERN . '/'],
 		],
-		'description' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+		'description' => FILTER_UNSAFE_RAW,
 		'content'     => FILTER_UNSAFE_RAW,
 		'type'        => FILTER_DEFAULT,
 		'entry_type'  => FILTER_DEFAULT,
@@ -74,7 +75,7 @@ class PageValidator extends AbstractValidator
 
 	protected function extendErrors(): void
 	{
-		if (empty($this->filteredData['content'])) {
+		if (Language::isDefault() && empty($this->filteredData['content'])) {
 			$this->errors[] = 'no_content';
 		}
 

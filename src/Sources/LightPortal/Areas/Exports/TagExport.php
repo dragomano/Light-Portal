@@ -40,6 +40,8 @@ if (! defined('SMF'))
 
 final class TagExport extends AbstractExport
 {
+	protected string $entity = 'tags';
+
 	public function __construct(private readonly TagRepository $repository) {}
 
 	public function main(): void
@@ -63,8 +65,8 @@ final class TagExport extends AbstractExport
 				->addColumns([
 					IdColumn::make()->setSort('tag_id'),
 					IconColumn::make(),
-					TitleColumn::make(entity: 'tags'),
-					CheckboxColumn::make(entity: 'tags')
+					TitleColumn::make(entity: $this->entity),
+					CheckboxColumn::make(entity: $this->entity)
 				])
 				->addRows([
 					ExportButtonsRow::make()
@@ -76,22 +78,23 @@ final class TagExport extends AbstractExport
 
 	protected function getData(): array
 	{
-		if ($this->request()->isEmpty('tags') && $this->request()->hasNot('export_all'))
+		if ($this->isEntityEmpty())
 			return [];
 
-		$tags = $this->request()->get('tags') && $this->request()->hasNot('export_all')
-			? $this->request()->get('tags') : [];
+		$tags = $this->hasEntityInRequest() ? $this->request()->get($this->entity) : [];
 
 		$result = Db::$db->query('', '
-			SELECT c.tag_id, c.icon, c.status, pt.page_id, t.lang, t.value AS title
+			SELECT c.*, pt.page_id, t.lang, COALESCE(t.title, {string:empty_string}) AS title
 			FROM {db_prefix}lp_tags AS c
 				LEFT JOIN {db_prefix}lp_page_tag AS pt ON (c.tag_id = pt.tag_id)
-				LEFT JOIN {db_prefix}lp_titles AS t ON (
+				LEFT JOIN {db_prefix}lp_translations AS t ON (
 					c.tag_id = t.item_id AND t.type = {literal:tag}
-				)' . (empty($tags) ? '' : '
-			WHERE c.tag_id IN ({array_int:tags})'),
+				)
+			WHERE (title IS NOT NULL AND title != {string:empty_string})' . (empty($tags) ? '' : '
+				AND c.tag_id IN ({array_int:tags})'),
 			[
-				'tags' => $tags,
+				'empty_string' => '',
+				'tags'         => $tags,
 			]
 		);
 
@@ -104,7 +107,7 @@ final class TagExport extends AbstractExport
 			];
 
 			if ($row['lang'] && $row['title']) {
-				$items[$row['tag_id']]['titles'][$row['lang']] = $row['title'];
+				$items[$row['tag_id']]['titles'][$row['lang']] = trim($row['title']);
 			}
 
 			if ($row['page_id']) {
@@ -130,7 +133,7 @@ final class TagExport extends AbstractExport
 
 			$xml->formatOutput = true;
 
-			$xmlElements = $root->appendChild($xml->createElement('tags'));
+			$xmlElements = $root->appendChild($xml->createElement($this->entity));
 
 			$items = $this->getGeneratorFrom($items);
 
@@ -148,7 +151,7 @@ final class TagExport extends AbstractExport
 							$xmlTitle = $xmlName->appendChild($xml->createElement($k));
 							$xmlTitle->appendChild($xml->createTextNode($v));
 						}
-					} elseif ($key == 'pages') {
+					} elseif ($key === 'pages') {
 						foreach ($val as $page) {
 							$xmlPage = $xmlName->appendChild($xml->createElement('page'));
 							foreach ($page as $label => $text) {

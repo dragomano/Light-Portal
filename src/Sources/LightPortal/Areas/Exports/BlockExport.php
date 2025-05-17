@@ -26,6 +26,7 @@ use DOMException;
 use function array_filter;
 use function array_map;
 use function in_array;
+use function trim;
 
 use const LP_NAME;
 
@@ -34,6 +35,8 @@ if (! defined('SMF'))
 
 final class BlockExport extends AbstractExport
 {
+	protected string $entity = 'blocks';
+
 	public function __construct(private readonly BlockRepository $repository) {}
 
 	public function main(): void
@@ -58,22 +61,31 @@ final class BlockExport extends AbstractExport
 
 	protected function getData(): array
 	{
-		if ($this->request()->isEmpty('blocks') && $this->request()->hasNot('export_all'))
+		if ($this->isEntityEmpty())
 			return [];
 
-		$blocks = $this->request()->get('blocks') && $this->request()->hasNot('export_all')
-			? $this->request()->get('blocks') : [];
+		$blocks = $this->hasEntityInRequest() ? $this->request()->get($this->entity) : [];
 
 		$result = Db::$db->query('', '
 			SELECT
-				b.block_id, b.icon, b.type, b.note, b.content, b.placement, b.priority, b.permissions, b.status, b.areas, b.title_class, b.content_class,
-				pt.lang, pt.value AS title, pp.name, pp.value
+				b.*, pt.lang, pp.name, pp.value,
+				COALESCE(pt.title, {string:empty_string}) AS title,
+				COALESCE(pt.content, {string:empty_string}) AS content,
+				COALESCE(pt.description, {string:empty_string}) AS description
 			FROM {db_prefix}lp_blocks AS b
-				LEFT JOIN {db_prefix}lp_titles AS pt ON (b.block_id = pt.item_id AND pt.type = {literal:block})
-				LEFT JOIN {db_prefix}lp_params AS pp ON (b.block_id = pp.item_id AND pp.type = {literal:block})' . (empty($blocks) ? '' : '
-			WHERE b.block_id IN ({array_int:blocks})'),
+				LEFT JOIN {db_prefix}lp_translations AS pt ON (
+					b.block_id = pt.item_id AND pt.type = {literal:block}
+				)
+				LEFT JOIN {db_prefix}lp_params AS pp ON (
+					b.block_id = pp.item_id AND pp.type = {literal:block}
+				)
+			WHERE ((title IS NOT NULL AND title != {string:empty_string})
+				OR (content IS NOT NULL AND content != {string:empty_string})
+				OR (description IS NOT NULL AND description != {string:empty_string}))' . (empty($blocks) ? '' : '
+				AND b.block_id IN ({array_int:blocks})'),
 			[
-				'blocks' => $blocks,
+				'empty_string' => '',
+				'blocks'       => $blocks,
 			]
 		);
 
@@ -83,8 +95,6 @@ final class BlockExport extends AbstractExport
 				'block_id'      => $row['block_id'],
 				'icon'          => $row['icon'],
 				'type'          => $row['type'],
-				'note'          => $row['note'],
-				'content'       => $row['content'],
 				'placement'     => $row['placement'],
 				'priority'      => $row['priority'],
 				'permissions'   => $row['permissions'],
@@ -95,7 +105,15 @@ final class BlockExport extends AbstractExport
 			];
 
 			if ($row['lang'] && $row['title']) {
-				$items[$row['block_id']]['titles'][$row['lang']] = $row['title'];
+				$items[$row['block_id']]['titles'][$row['lang']] = trim($row['title']);
+			}
+
+			if ($row['lang'] && $row['content']) {
+				$items[$row['block_id']]['contents'][$row['lang']] = $row['content'];
+			}
+
+			if ($row['lang'] && $row['description']) {
+				$items[$row['block_id']]['descriptions'][$row['lang']] = trim($row['description']);
 			}
 
 			if ($row['name'] && $row['value']) {
@@ -119,7 +137,7 @@ final class BlockExport extends AbstractExport
 
 			$xml->formatOutput = true;
 
-			$xmlElements = $root->appendChild($xml->createElement('blocks'));
+			$xmlElements = $root->appendChild($xml->createElement($this->entity));
 
 			$items = $this->getGeneratorFrom($items);
 
@@ -137,8 +155,11 @@ final class BlockExport extends AbstractExport
 							$xmlTitle = $xmlName->appendChild($xml->createElement($k));
 							$xmlTitle->appendChild($xml->createTextNode($v));
 						}
-					} elseif ($key == 'content') {
-						$xmlName->appendChild($xml->createCDATASection($val));
+					} elseif (in_array($key, ['contents', 'descriptions'])) {
+						foreach ($val as $k => $v) {
+							$xmlContent = $xmlName->appendChild($xml->createElement($k));
+							$xmlContent->appendChild($xml->createCDATASection($v));
+						}
 					} else {
 						$xmlName->appendChild($xml->createTextNode($val));
 					}

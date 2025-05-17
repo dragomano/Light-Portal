@@ -61,14 +61,6 @@ final class Maintainer extends BackgroundTask
 			]
 		);
 
-		Db::$db->query('', '
-			DELETE FROM {db_prefix}lp_titles
-			WHERE value = {string:empty_value}',
-			[
-				'empty_value' => '',
-			]
-		);
-
 		$result = Db::$db->query('', /** @lang text */ '
 			SELECT id FROM {db_prefix}lp_comments
 			WHERE parent_id <> 0
@@ -161,7 +153,7 @@ final class Maintainer extends BackgroundTask
 				'lp_params',
 				'lp_plugins',
 				'lp_tags',
-				'lp_titles',
+				'lp_translations'
 			]
 		);
 	}

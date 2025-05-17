@@ -71,7 +71,7 @@ final class TagArea
 			->addColumns([
 				IdColumn::make()->setSort('tag_id'),
 				IconColumn::make(),
-				TitleColumn::make(entity: 'tags')->setSort('t.value'),
+				TitleColumn::make(entity: 'tags'),
 				StatusColumn::make(),
 				ContextMenuColumn::make()
 			]);
@@ -115,7 +115,8 @@ final class TagArea
 
 		Utils::$context['sub_template'] = 'tag_post';
 
-		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_tags_edit_title'];
+		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_tags_edit_title'];
+
 		Utils::$context['page_area_title'] = Lang::$txt['lp_tags_edit_title'];
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
@@ -141,7 +142,7 @@ final class TagArea
 
 		$this->validateData();
 
-		$tagTitle = Utils::$context['lp_tag']['titles'][Utils::$context['user']['language']] ?? '';
+		$tagTitle = Utils::$context['lp_tag']['title'] ?? '';
 		Utils::$context['page_area_title'] = Lang::$txt['lp_tags_edit_title'] . ($tagTitle ? ' - ' . $tagTitle : '');
 
 		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_tags;sa=edit;id=' . Utils::$context['lp_tag']['id'];
@@ -201,13 +202,13 @@ final class TagArea
 
 		Security::checkSubmitOnce('free');
 
-		Utils::$context['preview_title'] = Utils::$context['lp_tag']['titles'][Language::getCurrent()] ?? '';
+		Utils::$context['preview_title'] = Utils::$context['lp_tag']['title'] ?? '';
 
 		Str::cleanBbcode(Utils::$context['preview_title']);
 
 		Lang::censorText(Utils::$context['preview_title']);
 
-		Utils::$context['page_title']    = Lang::$txt['preview'] . (
+		Utils::$context['page_title'] = Lang::$txt['preview'] . (
 			Utils::$context['preview_title'] ? ' - ' . Utils::$context['preview_title'] : ''
 		);
 

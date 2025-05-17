@@ -94,7 +94,8 @@ final class BlockArea
 
 		Utils::$context['sub_template'] = 'block_add';
 
-		Utils::$context['page_title']  = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_blocks_add_title'];
+		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_blocks_add_title'];
+
 		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_blocks;sa=add';
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
@@ -139,12 +140,13 @@ final class BlockArea
 
 		Utils::$context['sub_template'] = 'block_post';
 
-		Utils::$context['page_title']  = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_blocks_edit_title'];
+		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_blocks_edit_title'];
+
 		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $item;
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_blocks_edit_description']
+			'description' => Lang::$txt['lp_blocks_edit_description'],
 		];
 
 		Language::prepareList();
@@ -159,6 +161,7 @@ final class BlockArea
 			$this->repository->remove([$item]);
 
 			$this->cache()->forget('active_blocks');
+
 			$this->response()->redirect('action=admin;area=lp_blocks;sa=main');
 		}
 
@@ -267,10 +270,10 @@ final class BlockArea
 	{
 		$this->prepareTitleFields('block', false);
 
-		TextField::make('note', Lang::$txt['lp_block_note'])
+		TextField::make('description', Lang::$txt['lp_block_note'])
 			->setTab(Tab::CONTENT)
 			->setAttribute('maxlength', 255)
-			->setValue(Utils::$context['lp_block']['note']);
+			->setValue(Utils::$context['lp_block']['description']);
 
 		if (isset(Utils::$context['lp_block']['options']['content'])) {
 			if (Utils::$context['lp_block']['type'] !== 'bbc') {
@@ -371,7 +374,7 @@ final class BlockArea
 
 		Security::checkSubmitOnce('free');
 
-		Utils::$context['preview_title']   = Utils::$context['lp_block']['titles'][Language::getCurrent()] ?? '';
+		Utils::$context['preview_title']   = Utils::$context['lp_block']['title'] ?? '';
 		Utils::$context['preview_content'] = Utils::htmlspecialchars(Utils::$context['lp_block']['content'], ENT_QUOTES);
 
 		Str::cleanBbcode(Utils::$context['preview_title']);

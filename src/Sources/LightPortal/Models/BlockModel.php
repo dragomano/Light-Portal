@@ -30,10 +30,6 @@ class BlockModel extends AbstractModel
 
 	public string $type;
 
-	public string $note;
-
-	public string $content;
-
 	public string $placement;
 
 	public int $priority;
@@ -48,7 +44,11 @@ class BlockModel extends AbstractModel
 
 	public string $contentClass;
 
-	public array $titles = [];
+	public string $title;
+
+	public string $description;
+
+	public string $content;
 
 	public array $options = [];
 
@@ -59,8 +59,6 @@ class BlockModel extends AbstractModel
 		$this->id           = $data['block_id'] ?? $data['id'] ?? 0;
 		$this->icon         = $data['icon'] ?? '';
 		$this->type         = $data['type'] ?? '';
-		$this->note         = $data['note'] ?? '';
-		$this->content      = $data['content'] ?? '';
 		$this->placement    = $data['placement'] ?? Placement::TOP->name();
 		$this->priority     = $data['priority'] ?? 0;
 		$this->permissions  = $data['permissions'] ?? $permissions;
@@ -68,7 +66,9 @@ class BlockModel extends AbstractModel
 		$this->areas        = $data['areas'] ?? 'all';
 		$this->titleClass   = $data['title_class'] ?? TitleClass::first();
 		$this->contentClass = $data['content_class'] ?? ContentClass::first();
-		$this->titles       = $data['titles'] ?? [];
+		$this->title        = $data['title'] ?? '';
+		$this->content      = $data['content'] ?? '';
+		$this->description  = $data['description'] ?? '';
 		$this->options      = $data['options'] ?? [];
 
 		$this->contentClass = empty($this->options['no_content_class']) ? $this->contentClass : '';

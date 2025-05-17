@@ -34,11 +34,7 @@ use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Notify;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasCache;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
-use Bugo\LightPortal\Utils\Traits\HasResponse;
 
-use function array_filter;
 use function array_merge;
 use function array_pop;
 use function array_shift;
@@ -46,6 +42,7 @@ use function count;
 use function date;
 use function explode;
 use function filter_input;
+use function htmlentities;
 use function is_array;
 use function is_int;
 use function preg_match_all;
@@ -61,10 +58,7 @@ if (! defined('SMF'))
 
 final class PageRepository extends AbstractRepository
 {
-	use HasCache;
 	use HasEvents;
-	use HasRequest;
-	use HasResponse;
 
 	protected string $entity = 'page';
 
@@ -77,34 +71,35 @@ final class PageRepository extends AbstractRepository
 	): array
 	{
 		$result = Db::$db->query('', '
-			SELECT p.page_id, p.category_id, p.author_id, p.slug, p.type, p.entry_type, p.permissions, p.status,
-				p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date, p.created_at, p.updated_at,
-				COALESCE(mem.real_name, {string:guest}) AS author_name, COALESCE(t.value, tf.value, p.slug) AS page_title
+			SELECT
+				p.*, GREATEST(p.created_at, p.updated_at) AS date,
+				COALESCE(mem.real_name, {string:guest}) AS author_name,
+				COALESCE(t.title, tf.title, {string:empty_string}) AS title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
-				LEFT JOIN {db_prefix}lp_titles AS t ON (
+				LEFT JOIN {db_prefix}lp_translations AS t ON (
 					p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang}
 				)
-				LEFT JOIN {db_prefix}lp_titles AS tf ON (
+				LEFT JOIN {db_prefix}lp_translations AS tf ON (
 					p.page_id = tf.item_id AND tf.type = {literal:page} AND tf.lang = {string:fallback_lang}
 				)
 			WHERE 1=1' . (empty($queryString) ? '' : '
 				' . $queryString) . '
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
-			array_merge($queryParams, [
-				'guest'         => Lang::$txt['guest_title'],
-				'lang'          => User::$me->language,
-				'fallback_lang' => Config::$language,
-				'user_id'       => User::$me->id,
-				'sort'          => $sort,
-				'start'         => $start,
-				'limit'         => $limit,
+			array_merge($queryParams, $this->getLangQueryParams(), [
+				'guest'   => Lang::$txt['guest_title'],
+				'user_id' => User::$me->id,
+				'sort'    => $sort,
+				'start'   => $start,
+				'limit'   => $limit,
 			])
 		);
 
 		$items = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
+			Lang::censorText($row['title']);
+
 			$items[$row['page_id']] = [
 				'id'           => (int) $row['page_id'],
 				'category_id'  => (int) $row['category_id'],
@@ -120,7 +115,7 @@ final class PageRepository extends AbstractRepository
 				'created_at'   => (int) $row['created_at'],
 				'updated_at'   => (int) $row['updated_at'],
 				'is_front'     => Setting::isFrontpage($row['slug']),
-				'title'        => $row['page_title'],
+				'title'        => $row['title'],
 			];
 		}
 
@@ -134,15 +129,12 @@ final class PageRepository extends AbstractRepository
 		$result = Db::$db->query('', '
 			SELECT COUNT(p.page_id)
 			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}lp_titles AS t ON (
+				LEFT JOIN {db_prefix}lp_translations AS t ON (
 					p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang}
 				)
 			WHERE 1=1' . (empty($queryString) ? '' : '
 				' . $queryString),
-			array_merge($queryParams, [
-				'lang'    => User::$me->language,
-				'user_id' => User::$me->id,
-			])
+			array_merge($queryParams, $this->getLangQueryParams(), ['user_id' => User::$me->id])
 		);
 
 		[$count] = Db::$db->fetch_row($result);
@@ -159,46 +151,37 @@ final class PageRepository extends AbstractRepository
 
 		$result = Db::$db->query('', '
 			SELECT
-				p.page_id, p.category_id, p.author_id, p.slug, p.description, p.content, p.type, p.entry_type,
-				p.permissions, p.status, p.num_views, p.created_at, p.updated_at,
-				COALESCE(mem.real_name, {string:guest}) AS author_name, pt.lang, pt.value AS title, pp.name, pp.value
+				p.*, pp.name, pp.value,
+				COALESCE(mem.real_name, {string:guest}) AS author_name,
+				COALESCE(NULLIF(t.title, {string:empty_string}), tf.title, {string:empty_string}) AS title,
+				COALESCE(NULLIF(t.content, {string:empty_string}), tf.content, {string:empty_string}) AS content,
+				COALESCE(NULLIF(t.description, {string:empty_string}), tf.description, {string:empty_string}) AS description
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
-				LEFT JOIN {db_prefix}lp_titles AS pt ON (p.page_id = pt.item_id AND pt.type = {literal:page})
+				LEFT JOIN {db_prefix}lp_translations AS t ON (
+					p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang}
+				)
+				LEFT JOIN {db_prefix}lp_translations AS tf ON (
+					p.page_id = tf.item_id AND tf.type = {literal:page} AND tf.lang = {string:fallback_lang}
+				)
 				LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {literal:page})
 			WHERE p.' . (is_int($item) ? 'page_id = {int:item}' : 'slug = {string:item}'),
-			[
-				'guest' => Lang::$txt['guest_title'],
-				'item'  => $item,
-			]
+			array_merge(
+				$this->getLangQueryParams(),
+				[
+					'guest' => Lang::$txt['guest_title'],
+					'item'  => $item,
+				]
+			)
 		);
 
 		while ($row = Db::$db->fetch_assoc($result)) {
-			Lang::censorText($row['content']);
-
-			$ogImage = null;
-			if (! empty(Config::$modSettings['lp_page_og_image'])) {
-				$content = $row['content'];
-				$content = Content::parse($content, $row['type']);
-				$imageIsFound = preg_match_all('/<img(.*)src(.*)=(.*)"(.*)"/U', $content, $values);
-
-				if ($imageIsFound && is_array($values)) {
-					$allImages = array_pop($values);
-					$image = Config::$modSettings['lp_page_og_image'] == 1
-						? array_shift($allImages)
-						: array_pop($allImages);
-					$ogImage = Utils::htmlspecialchars($image);
-				}
-			}
-
 			$data ??= [
 				'id'          => (int) $row['page_id'],
 				'category_id' => (int) $row['category_id'],
 				'author_id'   => (int) $row['author_id'],
 				'author'      => $row['author_name'],
 				'slug'        => $row['slug'],
-				'description' => $row['description'],
-				'content'     => $row['content'],
 				'type'        => $row['type'],
 				'entry_type'  => $row['entry_type'],
 				'permissions' => (int) $row['permissions'],
@@ -206,10 +189,11 @@ final class PageRepository extends AbstractRepository
 				'num_views'   => (int) $row['num_views'],
 				'created_at'  => (int) $row['created_at'],
 				'updated_at'  => (int) $row['updated_at'],
-				'image'       => $ogImage,
+				'image'       => $this->getImageFromContent($row['content'], $row['type']),
+				'title'       => $row['title'],
+				'content'     => $row['content'],
+				'description' => $row['description'],
 			];
-
-			$data['titles'][$row['lang']] = $row['title'];
 
 			$data['options'][$row['name']] = $row['value'];
 		}
@@ -230,7 +214,6 @@ final class PageRepository extends AbstractRepository
 		$this->prepareBbcContent(Utils::$context['lp_page']);
 
 		if (empty($item)) {
-			Utils::$context['lp_page']['titles'] = array_filter(Utils::$context['lp_page']['titles']);
 			$item = $this->addData();
 		} else {
 			$this->updateData($item);
@@ -300,7 +283,7 @@ final class PageRepository extends AbstractRepository
 		);
 
 		Db::$db->query('', '
-			DELETE FROM {db_prefix}lp_titles
+			DELETE FROM {db_prefix}lp_translations
 			WHERE item_id IN ({array_int:items})
 				AND type = {literal:page}',
 			[
@@ -358,8 +341,8 @@ final class PageRepository extends AbstractRepository
 			(
 				SELECT
 					(
-						SELECT value
-						FROM {db_prefix}lp_titles
+						SELECT title
+						FROM {db_prefix}lp_translations
 						WHERE item_id = p.page_id
 							AND type = {literal:page}
 							AND lang IN ({string:lang}, {string:fallback_lang})
@@ -382,16 +365,16 @@ final class PageRepository extends AbstractRepository
 					AND p.created_at <= {int:current_time}
 					AND p.status = {int:status}
 					AND p.permissions IN ({array_int:permissions})
-					ORDER BY ' . (empty(Config::$modSettings['lp_frontpage_order_by_replies'])
-				? '' : 'num_comments DESC, ') . $orders[$sorting] . '
+				ORDER BY ' . (empty(Config::$modSettings['lp_frontpage_order_by_replies'])
+					? '' : 'num_comments DESC, ') . $orders[$sorting] . '
 				LIMIT 1
 			)
 			UNION ALL
 			(
 				SELECT
 					(
-						SELECT value
-						FROM {db_prefix}lp_titles
+						SELECT title
+						FROM {db_prefix}lp_translations
 						WHERE item_id = p.page_id
 							AND type = {literal:page}
 							AND lang IN ({string:lang}, {string:fallback_lang})
@@ -416,20 +399,18 @@ final class PageRepository extends AbstractRepository
 					AND p.status = {int:status}
 					AND p.permissions IN ({array_int:permissions})
 				ORDER BY ' . (empty(Config::$modSettings['lp_frontpage_order_by_replies'])
-				? '' : 'num_comments DESC, ') . $orders[$sorting] . '
+					? '' : 'num_comments DESC, ') . $orders[$sorting] . '
 				LIMIT 1
 			)',
-			[
-				'lang'          => User::$me->language,
-				'fallback_lang' => Config::$language,
-				'page_id'       => $page['id'],
-				'category_id'   => $page['category_id'],
-				'created_at'    => $page['created_at'],
-				'current_time'  => time(),
-				'type'          => $page['entry_type'],
-				'status'        => $page['status'],
-				'permissions'   => Permission::all(),
-			]
+			array_merge($this->getLangQueryParams(), [
+				'page_id'      => $page['id'],
+				'category_id'  => $page['category_id'],
+				'created_at'   => $page['created_at'],
+				'current_time' => time(),
+				'type'         => $page['entry_type'],
+				'status'       => $page['status'],
+				'permissions'  => Permission::all(),
+			])
 		);
 
 		[$prevTitle, $prevSlug] = Db::$db->fetch_row($result);
@@ -442,13 +423,13 @@ final class PageRepository extends AbstractRepository
 
 	public function getRelatedPages(array $page): array
 	{
-		$titleWords = explode(' ', Str::getTranslatedTitle($page['titles']));
+		$titleWords = explode(' ', $page['title']);
 		$slugWords  = explode('_', (string) $page['slug']);
 
 		$searchFormula = '';
 		foreach ($titleWords as $key => $word) {
 			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE
-			WHEN lower(t.value) LIKE lower(\'%' . $word . '%\')
+			WHEN lower(t.title) LIKE lower(\'%' . htmlentities($word) . '%\')
 			THEN ' . (count($titleWords) - $key) * 2 . ' ELSE 0 END';
 		}
 
@@ -460,15 +441,16 @@ final class PageRepository extends AbstractRepository
 
 		$result = Db::$db->query('', '
 			SELECT
-				p.page_id, p.slug, p.content, p.type, (' . $searchFormula . ') AS related,
-				COALESCE(t.value, tf.value) AS title
+				p.page_id, p.slug, p.type, (' . $searchFormula . ') AS related,
+				COALESCE(t.title, tf.title, {string:empty_string}) AS title,
+				COALESCE(t.content, tf.content, {string:empty_string}) AS content
 			FROM {db_prefix}lp_pages AS p
-			LEFT JOIN {db_prefix}lp_titles AS t ON (
-				p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang}
-			)
-			LEFT JOIN {db_prefix}lp_titles AS tf ON (
-				p.page_id = tf.item_id AND tf.type = {literal:page} AND tf.lang = {string:fallback_lang}
-			)
+				LEFT JOIN {db_prefix}lp_translations AS t ON (
+					p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang}
+				)
+				LEFT JOIN {db_prefix}lp_translations AS tf ON (
+					p.page_id = tf.item_id AND tf.type = {literal:page} AND tf.lang = {string:fallback_lang}
+				)
 			WHERE (' . $searchFormula . ') > 0
 				AND p.status = {int:status}
 				AND entry_type = {string:type}
@@ -477,15 +459,13 @@ final class PageRepository extends AbstractRepository
 				AND p.page_id != {int:current_page}
 			ORDER BY related DESC
 			LIMIT 4',
-			[
-				'lang'          => User::$me->language,
-				'fallback_lang' => Config::$language,
-				'status'        => $page['status'],
-				'type'          => $page['entry_type'],
-				'current_time'  => time(),
-				'permissions'   => Permission::all(),
-				'current_page'  => $page['id'],
-			]
+			array_merge($this->getLangQueryParams(), [
+				'status'       => $page['status'],
+				'type'         => $page['entry_type'],
+				'current_time' => time(),
+				'permissions'  => Permission::all(),
+				'current_page' => $page['id'],
+			])
 		);
 
 		$items = [];
@@ -499,10 +479,10 @@ final class PageRepository extends AbstractRepository
 
 			$items[$row['page_id']] = [
 				'id'    => $row['page_id'],
-				'title' => $row['title'],
 				'slug'  => $row['slug'],
 				'link'  => LP_PAGE_URL . $row['slug'],
 				'image' => $image ?: (Config::$modSettings['lp_image_placeholder'] ?? ''),
+				'title' => $row['title'],
 			];
 		}
 
@@ -527,13 +507,13 @@ final class PageRepository extends AbstractRepository
 
 	public function getMenuItems(): array
 	{
-		if (($pages = $this->cache()->get('menu_pages_' . User::$me->language)) === null) {
+		if (($pages = $this->langCache()->get('menu_pages')) === null) {
 			$result = Db::$db->query('', '
 				SELECT
 					p.page_id, p.slug, p.permissions, pp2.value AS icon,
 					(
-						SELECT value
-						FROM {db_prefix}lp_titles
+						SELECT title
+						FROM {db_prefix}lp_translations
 						WHERE item_id = p.page_id
 							AND type = {literal:page}
 							AND lang IN ({string:lang}, {string:fallback_lang})
@@ -550,30 +530,30 @@ final class PageRepository extends AbstractRepository
 					AND p.created_at <= {int:current_time}
 					AND pp.name = {literal:show_in_menu}
 					AND pp.value = {string:show_in_menu}',
-				[
-					'lang'          => User::$me->language,
-					'fallback_lang' => Config::$language,
-					'types'         => EntryType::withoutDrafts(),
-					'status'        => Status::ACTIVE->value,
-					'current_time'  => time(),
-					'show_in_menu'  => '1',
-				]
+				array_merge($this->getLangQueryParams(), [
+					'types'        => EntryType::withoutDrafts(),
+					'status'       => Status::ACTIVE->value,
+					'current_time' => time(),
+					'show_in_menu' => '1',
+				])
 			);
 
 			$pages = [];
 			while ($row = Db::$db->fetch_assoc($result)) {
+				Lang::censorText($row['page_title']);
+
 				$pages[$row['page_id']] = [
 					'id'          => (int) $row['page_id'],
-					'title'       => $row['page_title'],
 					'slug'        => $row['slug'],
 					'permissions' => (int) $row['permissions'],
 					'icon'        => $row['icon'],
+					'title'       => $row['page_title'],
 				];
 			}
 
 			Db::$db->free_result($result);
 
-			$this->cache()->put('menu_pages_' . User::$me->language, $pages);
+			$this->langCache()->put('menu_pages', $pages);
 		}
 
 		return $pages;
@@ -617,8 +597,6 @@ final class PageRepository extends AbstractRepository
 				'category_id' => 'int',
 				'author_id'   => 'int',
 				'slug'        => 'string-255',
-				'description' => 'string-255',
-				'content'     => 'string',
 				'type'        => 'string',
 				'entry_type'  => 'string',
 				'permissions' => 'int',
@@ -629,8 +607,6 @@ final class PageRepository extends AbstractRepository
 				Utils::$context['lp_page']['category_id'],
 				Utils::$context['lp_page']['author_id'],
 				Utils::$context['lp_page']['slug'],
-				Utils::$context['lp_page']['description'],
-				Utils::$context['lp_page']['content'],
 				Utils::$context['lp_page']['type'],
 				Utils::$context['lp_page']['entry_type'],
 				Utils::$context['lp_page']['permissions'],
@@ -648,21 +624,18 @@ final class PageRepository extends AbstractRepository
 
 		$this->events()->dispatch(PortalHook::onPageSaving, ['item' => $item]);
 
-		$this->saveTitles($item);
+		$this->saveTranslations($item);
 		$this->saveTags($item);
 		$this->saveOptions($item);
 
 		Db::$db->transaction();
 
 		// Notify page moderators about new page
-		$title = Utils::$context['lp_page']['titles'][User::$me->language]
-			?? Utils::$context['lp_page']['titles'][Config::$language];
-
 		$options = [
 			'item'      => $item,
 			'time'      => $this->getPublishTime(),
 			'author_id' => Utils::$context['lp_page']['author_id'],
-			'title'     => $title,
+			'title'     => Utils::$context['lp_page']['title'],
 			'url'       => LP_PAGE_URL . Utils::$context['lp_page']['slug']
 		];
 
@@ -680,16 +653,13 @@ final class PageRepository extends AbstractRepository
 		Db::$db->query('', '
 			UPDATE {db_prefix}lp_pages
 			SET category_id = {int:category_id}, author_id = {int:author_id}, slug = {string:slug},
-				description = {string:description}, content = {string:content}, type = {string:type},
-				entry_type = {string:entry_type}, permissions = {int:permissions}, status = {int:status},
-				updated_at = {int:updated_at}
+				type = {string:type}, entry_type = {string:entry_type}, permissions = {int:permissions},
+				status = {int:status}, updated_at = {int:updated_at}
 			WHERE page_id = {int:page_id}',
 			[
 				'category_id' => Utils::$context['lp_page']['category_id'],
 				'author_id'   => Utils::$context['lp_page']['author_id'],
 				'slug'        => Utils::$context['lp_page']['slug'],
-				'description' => Utils::$context['lp_page']['description'],
-				'content'     => Utils::$context['lp_page']['content'],
 				'type'        => Utils::$context['lp_page']['type'],
 				'entry_type'  => Utils::$context['lp_page']['entry_type'],
 				'permissions' => Utils::$context['lp_page']['permissions'],
@@ -701,12 +671,13 @@ final class PageRepository extends AbstractRepository
 
 		$this->events()->dispatch(PortalHook::onPageSaving, ['item' => $item]);
 
-		$this->saveTitles($item, 'replace');
+		$this->saveTranslations($item, 'replace');
 		$this->saveTags($item, 'replace');
 		$this->saveOptions($item, 'replace');
 
 		if (Utils::$context['lp_page']['author_id'] !== User::$me->id) {
-			$title = Utils::$context['lp_page']['titles'][User::$me->language];
+			$title = Utils::$context['lp_page']['title'];
+
 			Logging::logAction('update_lp_page', [
 				'page' => Str::html('a', $title)->href(LP_PAGE_URL . Utils::$context['lp_page']['slug'])
 			]);
@@ -718,32 +689,32 @@ final class PageRepository extends AbstractRepository
 	private function getTags(int $item): array
 	{
 		$result = Db::$db->query('', '
-			SELECT tag.tag_id, tag.icon, COALESCE(t.value, tf.value) AS title
+			SELECT tag.tag_id, tag.icon, COALESCE(t.title, tf.title, {string:empty_string}) AS title
 			FROM {db_prefix}lp_tags AS tag
 				INNER JOIN {db_prefix}lp_page_tag AS pt ON (tag.tag_id = pt.tag_id)
-				LEFT JOIN {db_prefix}lp_titles AS t ON (
+				LEFT JOIN {db_prefix}lp_translations AS t ON (
 					tag.tag_id = t.item_id AND t.type = {literal:tag} AND t.lang = {string:lang}
 				)
-				LEFT JOIN {db_prefix}lp_titles AS tf ON (
+				LEFT JOIN {db_prefix}lp_translations AS tf ON (
 					tag.tag_id = tf.item_id AND tf.type = {literal:tag} AND tf.lang = {string:fallback_lang}
 				)
 			WHERE tag.status = {int:status}
 				AND pt.page_id = {int:page_id}
 			ORDER BY title',
-			[
-				'lang'          => User::$me->language,
-				'fallback_lang' => Config::$language,
-				'status'        => Status::ACTIVE->value,
-				'page_id'       => $item,
-			]
+			array_merge($this->getLangQueryParams(), [
+				'status'  => Status::ACTIVE->value,
+				'page_id' => $item,
+			])
 		);
 
 		$items = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
+			Lang::censorText($row['title']);
+
 			$items[$row['tag_id']] = [
 				'icon'  => Icon::parse($row['icon'] ?: 'fas fa-tag'),
-				'title' => $row['title'],
 				'href'  => PortalSubAction::TAGS->url() . ';id=' . $row['tag_id'],
+				'title' => $row['title'],
 			];
 		}
 
@@ -812,5 +783,25 @@ final class PageRepository extends AbstractRepository
 		Db::$db->free_result($result);
 
 		return (int) $value + 1;
+	}
+
+	private function getImageFromContent(string $content, string $type): string
+	{
+		if (empty(Config::$modSettings['lp_page_og_image']))
+			return '';
+
+		$content = Content::parse($content, $type);
+		$imageIsFound = preg_match_all('/<img(.*)src(.*)=(.*)"(.*)"/U', $content, $values);
+
+		if ($imageIsFound && is_array($values)) {
+			$allImages = array_pop($values);
+			$image = Config::$modSettings['lp_page_og_image'] == 1
+				? array_shift($allImages)
+				: array_pop($allImages);
+
+			return Utils::htmlspecialchars($image);
+		}
+
+		return '';
 	}
 }

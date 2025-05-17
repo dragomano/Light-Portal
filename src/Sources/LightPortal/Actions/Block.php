@@ -72,7 +72,7 @@ final class Block implements ActionInterface
 			Utils::$context['lp_blocks'][$data['placement']][$item] = $data;
 
 			if (empty($data['parameters']['hide_header'])) {
-				$title = Str::getTranslatedTitle($data['titles']);
+				$title = $data['title'];
 				$icon  = Icon::parse(Utils::$context['lp_blocks'][$data['placement']][$item]['icon']);
 
 				if (! empty($data['parameters']['link_in_title'])) {

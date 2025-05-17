@@ -26,11 +26,7 @@ use Bugo\LightPortal\Lists\PluginList;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasCache;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
-use Bugo\LightPortal\Utils\Traits\HasResponse;
 
-use function array_filter;
 use function array_flip;
 use function array_keys;
 use function array_merge;
@@ -44,38 +40,43 @@ if (! defined('SMF'))
 
 final class BlockRepository extends AbstractRepository
 {
-	use HasCache;
 	use HasEvents;
-	use HasRequest;
-	use HasResponse;
 
 	protected string $entity = 'block';
 
 	public function getAll(): array
 	{
 		$result = Db::$db->query('', '
-			SELECT b.block_id, b.icon, b.type, b.note, b.placement, b.priority, b.permissions, b.status, b.areas,
-				bt.lang, bt.value AS title
+			SELECT
+				b.*,
+				COALESCE(NULLIF(t.title, {string:empty_string}), tf.title, {string:empty_string}) AS title,
+				COALESCE(NULLIF(t.description, {string:empty_string}), tf.description, {string:empty_string}) AS description
 			FROM {db_prefix}lp_blocks AS b
-				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
+				LEFT JOIN {db_prefix}lp_translations AS t ON (
+					b.block_id = t.item_id AND t.type = {literal:block} AND t.lang = {string:lang}
+				)
+				LEFT JOIN {db_prefix}lp_translations AS tf ON (
+					b.block_id = tf.item_id AND tf.type = {literal:block} AND tf.lang = {string:fallback_lang}
+				)
 			ORDER BY b.placement DESC, b.priority',
+			$this->getLangQueryParams()
 		);
 
 		$currentBlocks = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
+			Lang::censorText($row['title']);
+			Lang::censorText($row['description']);
+
 			$currentBlocks[$row['placement']][$row['block_id']] ??= [
 				'icon'        => Icon::parse($row['icon']),
 				'type'        => $row['type'],
-				'note'        => $row['note'],
 				'priority'    => $row['priority'],
 				'permissions' => $row['permissions'],
 				'status'      => $row['status'],
 				'areas'       => str_replace(',', PHP_EOL, (string) $row['areas']),
+				'title'       => $row['title'],
+				'description' => $row['description'],
 			];
-
-			if (! empty($row['lang'])) {
-				$currentBlocks[$row['placement']][$row['block_id']]['titles'][$row['lang']] = $row['title'];
-			}
 
 			$this->prepareMissingBlockTypes($row['type']);
 		}
@@ -92,16 +93,20 @@ final class BlockRepository extends AbstractRepository
 
 		$result = Db::$db->query('', '
 			SELECT
-				b.block_id, b.icon, b.type, b.note, b.content, b.placement, b.priority,
-				b.permissions, b.status, b.areas, b.title_class, b.content_class,
-				bt.lang, bt.value AS title, bp.name, bp.value
+				b.*, bp.name, bp.value,
+				COALESCE(t.title, {string:empty_string}) AS title,
+				COALESCE(NULLIF(t.content, {string:empty_string}), tf.content, {string:empty_string}) AS content,
+				COALESCE(t.description, {string:empty_string}) AS description
 			FROM {db_prefix}lp_blocks AS b
-				LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
+				LEFT JOIN {db_prefix}lp_translations AS t ON (
+					b.block_id = t.item_id AND t.type = {literal:block} AND t.lang = {string:lang}
+				)
+				LEFT JOIN {db_prefix}lp_translations AS tf ON (
+					b.block_id = tf.item_id AND tf.type = {literal:block} AND tf.lang = {string:fallback_lang}
+				)
 				LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {literal:block})
 			WHERE b.block_id = {int:item}',
-			[
-				'item' => $item,
-			]
+			array_merge($this->getLangQueryParams(), compact('item'))
 		);
 
 		if (empty(Db::$db->num_rows($result))) {
@@ -115,14 +120,10 @@ final class BlockRepository extends AbstractRepository
 				$row['content'] = Msg::un_preparsecode($row['content']);
 			}
 
-			Lang::censorText($row['content']);
-
 			$data ??= [
 				'id'            => (int) $row['block_id'],
 				'icon'          => $row['icon'],
 				'type'          => $row['type'],
-				'note'          => $row['note'],
-				'content'       => $row['content'],
 				'placement'     => $row['placement'],
 				'priority'      => (int) $row['priority'],
 				'permissions'   => (int) $row['permissions'],
@@ -130,11 +131,10 @@ final class BlockRepository extends AbstractRepository
 				'areas'         => $row['areas'],
 				'title_class'   => $row['title_class'],
 				'content_class' => $row['content_class'],
+				'title'         => $row['title'],
+				'content'       => $row['content'],
+				'description'   => $row['description'],
 			];
-
-			if (! empty($row['lang'])) {
-				$data['titles'][$row['lang']] = $row['title'];
-			}
 
 			if (! empty($row['name'])) {
 				$data['options'][$row['name']] = $row['value'];
@@ -162,7 +162,6 @@ final class BlockRepository extends AbstractRepository
 		$this->prepareBbcContent(Utils::$context['lp_block']);
 
 		if (empty($item)) {
-			Utils::$context['lp_block']['titles'] = array_filter(Utils::$context['lp_block']['titles'] ?? []);
 			$item = $this->addData();
 		} else {
 			$this->updateData($item);
@@ -200,7 +199,7 @@ final class BlockRepository extends AbstractRepository
 		);
 
 		Db::$db->query('', '
-			DELETE FROM {db_prefix}lp_titles
+			DELETE FROM {db_prefix}lp_translations
 			WHERE item_id IN ({array_int:items})
 				AND type = {literal:block}',
 			[
@@ -260,41 +259,43 @@ final class BlockRepository extends AbstractRepository
 		if (Setting::hideBlocksInACP())
 			return [];
 
-		if (($blocks = $this->cache()->get('active_blocks')) === null) {
+		if (($blocks = $this->langCache()->get('active_blocks')) === null) {
 			$result = Db::$db->query('', '
 				SELECT
-					b.block_id, b.icon, b.type, b.content, b.placement, b.priority,
-					b.permissions, b.areas, b.title_class, b.content_class,
-					bt.lang, bt.value AS title, bp.name, bp.value
+					b.*, bp.name, bp.value,
+					COALESCE(t.title, tf.title, {string:empty_string}) AS title,
+					COALESCE(NULLIF(t.content, {string:empty_string}), tf.content, {string:empty_string}) AS content
 				FROM {db_prefix}lp_blocks AS b
-					LEFT JOIN {db_prefix}lp_titles AS bt ON (b.block_id = bt.item_id AND bt.type = {literal:block})
+					LEFT JOIN {db_prefix}lp_translations AS t ON (
+						b.block_id = t.item_id AND t.type = {literal:block} AND t.lang = {string:lang}
+					)
+					LEFT JOIN {db_prefix}lp_translations AS tf ON (
+						b.block_id = tf.item_id AND tf.type = {literal:block} AND tf.lang = {string:fallback_lang}
+					)
 					LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {literal:block})
 				WHERE b.status = {int:status}
 				ORDER BY b.placement, b.priority',
-				[
-					'status' => Status::ACTIVE->value,
-				]
+				array_merge($this->getLangQueryParams(), ['status' => Status::ACTIVE->value])
 			);
 
 			$blocks = [];
 			while ($row = Db::$db->fetch_assoc($result)) {
+				Lang::censorText($row['title']);
 				Lang::censorText($row['content']);
 
 				$blocks[$row['block_id']] ??= [
 					'id'            => (int) $row['block_id'],
 					'icon'          => $row['icon'],
 					'type'          => $row['type'],
-					'content'       => $row['content'],
 					'placement'     => $row['placement'],
 					'priority'      => (int) $row['priority'],
 					'permissions'   => (int) $row['permissions'],
 					'areas'         => explode(',', (string) $row['areas']),
 					'title_class'   => $row['title_class'],
 					'content_class' => $row['content_class'],
+					'title'         => $row['title'],
+					'content'       => $row['content'],
 				];
-
-				$blocks[$row['block_id']]['titles'][$row['lang']] = $row['title'];
-				$blocks[$row['block_id']]['titles'] = array_filter($blocks[$row['block_id']]['titles']);
 
 				if ($row['name']) {
 					$blocks[$row['block_id']]['parameters'][$row['name']] = $row['value'];
@@ -303,7 +304,7 @@ final class BlockRepository extends AbstractRepository
 
 			Db::$db->free_result($result);
 
-			$this->cache()->put('active_blocks', $blocks);
+			$this->langCache()->put('active_blocks', $blocks);
 		}
 
 		return $blocks;
@@ -318,8 +319,6 @@ final class BlockRepository extends AbstractRepository
 			[
 				'icon'          => 'string',
 				'type'          => 'string',
-				'note'          => 'string',
-				'content'       => 'string-65534',
 				'placement'     => 'string-10',
 				'priority'      => 'int',
 				'permissions'   => 'int',
@@ -331,8 +330,6 @@ final class BlockRepository extends AbstractRepository
 			[
 				Utils::$context['lp_block']['icon'],
 				Utils::$context['lp_block']['type'],
-				Utils::$context['lp_block']['note'],
-				Utils::$context['lp_block']['content'],
 				Utils::$context['lp_block']['placement'],
 				$this->getPriority(),
 				Utils::$context['lp_block']['permissions'],
@@ -352,7 +349,7 @@ final class BlockRepository extends AbstractRepository
 
 		$this->events()->dispatch(PortalHook::onBlockSaving, ['item' => $item]);
 
-		$this->saveTitles($item);
+		$this->saveTranslations($item);
 		$this->saveOptions($item);
 
 		Db::$db->transaction();
@@ -366,15 +363,13 @@ final class BlockRepository extends AbstractRepository
 
 		Db::$db->query('', '
 			UPDATE {db_prefix}lp_blocks
-			SET icon = {string:icon}, type = {string:type}, note = {string:note}, content = {string:content},
-				placement = {string:placement}, permissions = {int:permissions}, areas = {string:areas},
-				title_class = {string:title_class}, content_class = {string:content_class}
+			SET icon = {string:icon}, type = {string:type}, placement = {string:placement},
+				permissions = {int:permissions}, areas = {string:areas}, title_class = {string:title_class},
+				content_class = {string:content_class}
 			WHERE block_id = {int:block_id}',
 			[
 				'icon'          => Utils::$context['lp_block']['icon'],
 				'type'          => Utils::$context['lp_block']['type'],
-				'note'          => Utils::$context['lp_block']['note'],
-				'content'       => Utils::$context['lp_block']['content'],
 				'placement'     => Utils::$context['lp_block']['placement'],
 				'permissions'   => Utils::$context['lp_block']['permissions'],
 				'areas'         => Utils::$context['lp_block']['areas'],
@@ -386,7 +381,7 @@ final class BlockRepository extends AbstractRepository
 
 		$this->events()->dispatch(PortalHook::onBlockSaving, ['item' => $item]);
 
-		$this->saveTitles($item, 'replace');
+		$this->saveTranslations($item, 'replace');
 		$this->saveOptions($item, 'replace');
 
 		Db::$db->transaction();

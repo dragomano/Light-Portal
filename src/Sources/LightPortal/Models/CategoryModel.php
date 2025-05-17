@@ -20,21 +20,21 @@ class CategoryModel extends AbstractModel
 
 	public string $icon;
 
-	public string $description;
-
 	public int $priority;
 
 	public int $status;
 
-	public array $titles = [];
+	public string $title;
+
+	public string $description;
 
 	public function __construct(array $data)
 	{
 		$this->id          = $data['category_id'] ?? $data['id'] ?? 0;
 		$this->icon        = $data['icon'] ?? '';
-		$this->description = $data['description'] ?? '';
 		$this->priority    = $data['priority'] ?? 0;
 		$this->status      = $data['status'] ?? Status::ACTIVE->value;
-		$this->titles      = $data['titles'] ?? [];
+		$this->title       = $data['title'] ?? '';
+		$this->description = $data['description'] ?? '';
 	}
 }

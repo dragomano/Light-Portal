@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 11.02.25
+ * @version 22.04.25
  */
 
 namespace Bugo\LightPortal\Plugins\EhPortalMigration;
@@ -53,16 +53,12 @@ class BlockImport extends AbstractCustomBlockImport
 
 		app(TablePresenter::class)->show(
 			PortalTableBuilder::make('ep_blocks', Lang::$txt['lp_blocks_import'])
-				->withParams(
-					50,
-					defaultSortColumn: 'title'
-				)
+				->withParams(50, defaultSortColumn: 'title')
 				->setItems($this->getAll(...))
 				->setCount($this->getTotalCount(...))
 				->addColumns([
 					TitleColumn::make()
-						->setData('title', 'word_break')
-						->setSort('title DESC', 'title'),
+						->setData('title', 'word_break'),
 					Column::make('type', Lang::$txt['lp_block_type'])
 						->setData('type', 'centertext')
 						->setSort('type DESC', 'type'),
@@ -100,7 +96,7 @@ class BlockImport extends AbstractCustomBlockImport
 				'id'        => $row['id_block'],
 				'type'      => Lang::$txt['lp_' . $this->getType($row['type'])]['title'],
 				'title'     => $row['title'],
-				'placement' => Utils::$context['lp_block_placements'][$this->getPlacement((int) $row['col'])],
+				'placement' => Utils::$context['lp_block_placements'][$this->getPlacement($row['col'])],
 			];
 		}
 
@@ -170,9 +166,9 @@ class BlockImport extends AbstractCustomBlockImport
 		return str_replace('sp_', '', $type);
 	}
 
-	private function getPlacement(int $col): string
+	private function getPlacement(string $col): string
 	{
-		return match ($col) {
+		return match ((int) $col) {
 			1 => Placement::LEFT->name(),
 			3 => Placement::BOTTOM->name(),
 			4 => Placement::RIGHT->name(),
@@ -184,20 +180,15 @@ class BlockImport extends AbstractCustomBlockImport
 
 	private function getBlockPermission(array $row): int
 	{
-		$perm = $row['permission_set'];
+		$perm = (int) $row['permission_set'];
 
 		if (empty($row['permission_set'])) {
-			$groups = $row['groups_allowed'];
-
-			if ($groups == -1) {
-				$perm = Permission::GUEST->value;
-			} elseif ($groups == 0) {
-				$perm = Permission::MEMBER->value;
-			} elseif ($groups == 1) {
-				$perm = Permission::ADMIN->value;
-			} else {
-				$perm = Permission::ALL->value;
-			}
+			$perm = match ((int) $row['groups_allowed']) {
+				-1      => Permission::GUEST->value,
+				0       => Permission::MEMBER->value,
+				1       => Permission::ADMIN->value,
+				default => Permission::ALL->value,
+			};
 		}
 
 		return $perm;

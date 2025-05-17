@@ -11,51 +11,27 @@
 
 namespace Bugo\LightPortal\Areas\Imports;
 
-use Bugo\Compat\Config;
-use Bugo\LightPortal\Enums\PortalHook;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
 abstract class AbstractCustomCategoryImport extends AbstractCustomImport
 {
+	protected string $type = 'category';
+
 	protected string $entity = 'categories';
 
-	protected function importItems(array &$items, array &$titles): array
+	protected function getResults(array $items): array
 	{
-		$this->events()->dispatch(PortalHook::importCategories, ['items' => &$items, 'titles' => &$titles]);
-
-		foreach ($items as $id => $item) {
-			$titles[] = [
-				'type'  => 'category',
-				'lang'  => Config::$language,
-				'value' => $item['title'],
-			];
-
-			unset($items[$id]['title']);
-		}
-
-		$results = $this->insertData(
+		return $this->insertData(
 			'lp_categories',
 			'',
 			$items,
 			[
-				'icon'        => 'string-60',
-				'description' => 'string-255',
-				'priority'    => 'int',
-				'status'      => 'int',
+				'icon'     => 'string-60',
+				'priority' => 'int',
+				'status'   => 'int',
 			],
 			['category_id'],
 		);
-
-		if ($titles && $results) {
-			foreach ($results as $key => $value) {
-				$titles[$key]['item_id'] = $value;
-			}
-
-			$this->replaceTitles($titles, $results, '');
-		}
-
-		return $results;
 	}
 }
