@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.03.25
+ * @version 17.04.25
  */
 
 namespace Bugo\LightPortal\Plugins\TopPages;
@@ -18,6 +18,7 @@ use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\Permission;
+use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
@@ -26,7 +27,6 @@ use Bugo\LightPortal\UI\Fields\RadioField;
 use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
-
 use WPLake\Typed\Typed;
 
 use function array_combine;
@@ -82,8 +82,8 @@ class TopPages extends Block
 		$result = Db::$db->query('', '
 			SELECT p.page_id, p.slug, p.type, p.num_views, p.num_comments,
 				(
-					SELECT value
-					FROM {db_prefix}lp_titles
+					SELECT title
+					FROM {db_prefix}lp_translations
 					WHERE item_id = p.page_id
 						AND type = {literal:page}
 						AND lang IN ({string:lang}, {string:fallback_lang})
@@ -100,7 +100,7 @@ class TopPages extends Block
 			[
 				'lang'          => User::$me->language,
 				'fallback_lang' => Config::$language,
-				'status'        => 1,
+				'status'        => Status::ACTIVE->value,
 				'current_time'  => time(),
 				'permissions'   => Permission::all(),
 				'limit'         => $numPages,
@@ -112,11 +112,13 @@ class TopPages extends Block
 			if (Setting::isFrontpage($row['slug']))
 				continue;
 
+			Lang::censorText($row['page_title']);
+
 			$pages[$row['page_id']] = [
-				'title'        => $row['page_title'],
 				'num_comments' => $row['num_comments'],
 				'num_views'    => $row['num_views'],
 				'href'         => LP_PAGE_URL . $row['slug'],
+				'title'        => $row['page_title'],
 			];
 		}
 

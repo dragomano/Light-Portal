@@ -8,18 +8,16 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.02.25
+ * @version 23.04.25
  */
 
 namespace Bugo\LightPortal\Plugins\TinyPortalMigration;
 
-use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\User;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\Language;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -64,40 +62,16 @@ class TinyPortalMigration extends Plugin
 		$e->args->areas[self::AREA] = [new CategoryImport(), 'main'];
 	}
 
-	public function importPages(Event $e): void
+	public function onCustomPageImport(Event $e): void
 	{
 		if ($this->request()->get('sa') !== self::AREA)
 			return;
 
 		$items = &$e->args->items;
-		$titles = &$e->args->titles;
 		$params = &$e->args->params;
-		$comments = &$e->args->comments;
-
-		$comments = $this->getComments(array_keys($items));
 
 		foreach ($items as $pageId => $item) {
-			$items[$pageId]['num_comments'] = empty($comments[$pageId]) ? 0 : sizeof($comments[$pageId]);
-
-			$titles[] = [
-				'item_id' => $pageId,
-				'type'    => 'page',
-				'lang'    => Config::$language,
-				'title'   => $item['subject'],
-			];
-
-			if (Config::$language !== Language::getFallbackValue() && ! empty(Config::$modSettings['userLanguage'])) {
-				$titles[] = [
-					'item_id' => $pageId,
-					'type'    => 'page',
-					'lang'    => Language::getFallbackValue(),
-					'title'   => $item['subject'],
-				];
-			}
-
-			unset($items[$pageId]['subject']);
-
-			if (in_array('author', $items[$pageId]['options']) || in_array('date', $items[$pageId]['options']))
+			if (in_array('author', $item['options']) || in_array('date', $item['options']))
 				$params[] = [
 					'item_id' => $pageId,
 					'type'    => 'page',
@@ -105,16 +79,19 @@ class TinyPortalMigration extends Plugin
 					'value'   => 1,
 				];
 
-			if (in_array('commentallow', $items[$pageId]['options']))
+			if (in_array('commentallow', $item['options'])) {
 				$params[] = [
 					'item_id' => $pageId,
 					'type'    => 'page',
 					'name'    => 'allow_comments',
 					'value'   => 1,
 				];
+			}
 
 			unset($items[$pageId]['options']);
 		}
+
+		$e->args->comments = $this->getComments(array_keys($items));
 	}
 
 	private function getComments(array $pages): array
@@ -136,7 +113,7 @@ class TinyPortalMigration extends Plugin
 			if ($row['item_id'] < 0 || empty($row['comment']))
 				continue;
 
-			$comments[$row['item_id']][] = [
+			$comments[] = [
 				'id'         => $row['id'],
 				'parent_id'  => 0,
 				'page_id'    => $row['item_id'],

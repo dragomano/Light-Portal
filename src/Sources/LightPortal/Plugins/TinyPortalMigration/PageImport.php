@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 31.01.25
+ * @version 23.04.25
  */
 
 namespace Bugo\LightPortal\Plugins\TinyPortalMigration;
@@ -54,10 +54,7 @@ class PageImport extends AbstractCustomPageImport
 
 		app(TablePresenter::class)->show(
 			PortalTableBuilder::make('tp_pages', Lang::$txt['lp_pages_import'])
-				->withParams(
-					50,
-					defaultSortColumn: 'id'
-				)
+				->withParams(50, defaultSortColumn: 'id')
 				->setItems($this->getAll(...))
 				->setCount($this->getTotalCount(...))
 				->addColumns([
@@ -65,7 +62,7 @@ class PageImport extends AbstractCustomPageImport
 					PageSlugColumn::make()->setSort('shortname DESC', 'shortname'),
 					TitleColumn::make()
 						->setData('title', 'word_break')
-						->setSort('subject DESC', 'subject'),
+						->setSort('subject', 'subject DESC'),
 					CheckboxColumn::make(entity: 'pages'),
 				])
 				->addRow(ImportButtonsRow::make())
@@ -144,8 +141,6 @@ class PageImport extends AbstractCustomPageImport
 
 		$items = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
-
-
 			$items[$row['id']] = [
 				'page_id'      => $row['id'],
 				'author_id'    => $row['author_id'],
@@ -156,10 +151,10 @@ class PageImport extends AbstractCustomPageImport
 				'permissions'  => $this->getPagePermission($row),
 				'status'       => (int) empty($row['off']),
 				'num_views'    => $row['views'],
-				'num_comments' => 0,
+				'num_comments' => $row['comments'],
 				'created_at'   => $row['date'],
 				'updated_at'   => 0,
-				'subject'      => $row['subject'],
+				'title'        => $row['subject'],
 				'options'      => explode(',', (string) $row['options']),
 			];
 		}
@@ -173,17 +168,11 @@ class PageImport extends AbstractCustomPageImport
 	{
 		$permissions = explode(',', (string) $row['value3']);
 
-		$perm = Permission::ADMIN->value;
-		if (count($permissions) == 1 && $permissions[0] == -1) {
-			$perm = Permission::GUEST->value;
-		} elseif (count($permissions) == 1 && $permissions[0] == 0) {
-			$perm = Permission::MEMBER->value;
-		} elseif (in_array(-1, $permissions)) {
-			$perm = Permission::ALL->value;
-		} elseif (in_array(0, $permissions)) {
-			$perm = Permission::ALL->value;
-		}
-
-		return $perm;
+		return match (true) {
+			count($permissions) == 1 && $permissions[0] == -1 => Permission::GUEST->value,
+			count($permissions) == 1 && $permissions[0] == 0 => Permission::MEMBER->value,
+			in_array(-1, $permissions), in_array(0, $permissions) => Permission::ALL->value,
+			default => Permission::ADMIN->value,
+		};
 	}
 }

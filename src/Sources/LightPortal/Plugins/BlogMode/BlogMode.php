@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.03.25
+ * @version 19.04.25
  */
 
 namespace Bugo\LightPortal\Plugins\BlogMode;
@@ -93,7 +93,7 @@ class BlogMode extends Plugin
 	public function addSettings(Event $e): void
 	{
 		$this->addDefaultValues([
-			'blog_action' => 'blog',
+			'blog_action' => $this->blogAction,
 			'show_blogs_in_profiles' => false,
 		]);
 

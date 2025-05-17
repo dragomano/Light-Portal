@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.02.25
+ * @version 22.04.25
  */
 
 namespace Bugo\LightPortal\Plugins\EhPortalMigration;
@@ -53,18 +53,16 @@ class PageImport extends AbstractCustomPageImport
 
 		app(TablePresenter::class)->show(
 			PortalTableBuilder::make('eh_pages', Lang::$txt['lp_pages_import'])
-				->withParams(
-					50,
-					defaultSortColumn: 'id'
-				)
+				->withParams(50, defaultSortColumn: 'id')
 				->setItems($this->getAll(...))
 				->setCount($this->getTotalCount(...))
 				->addColumns([
-					IdColumn::make()->setSort('id_page'),
-					PageSlugColumn::make()->setSort('namespace DESC', 'namespace'),
+					IdColumn::make()
+						->setSort('id_page'),
+					PageSlugColumn::make()
+						->setSort('namespace DESC', 'namespace'),
 					TitleColumn::make()
-						->setData('title', 'word_break')
-						->setSort('title DESC', 'title'),
+						->setData('title', 'word_break'),
 					CheckboxColumn::make(entity: 'pages'),
 				])
 				->addRow(ImportButtonsRow::make())
@@ -161,20 +159,15 @@ class PageImport extends AbstractCustomPageImport
 
 	private function getPagePermission(array $row): int
 	{
-		$perm = $row['permission_set'];
+		$perm = (int) $row['permission_set'];
 
 		if (empty($row['permission_set'])) {
-			$groups = $row['groups_allowed'];
-
-			if ($groups == -1) {
-				$perm = Permission::GUEST->value;
-			} elseif ($groups == 0) {
-				$perm = Permission::MEMBER->value;
-			} elseif ($groups == 1) {
-				$perm = Permission::ADMIN->value;
-			} else {
-				$perm = Permission::ALL->value;
-			}
+			$perm = match ((int) $row['groups_allowed']) {
+				-1      => Permission::GUEST->value,
+				0       => Permission::MEMBER->value,
+				1       => Permission::ADMIN->value,
+				default => Permission::ALL->value,
+			};
 		}
 
 		return $perm;

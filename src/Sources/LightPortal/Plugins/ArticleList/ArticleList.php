@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.03.25
+ * @version 17.04.25
  */
 
 namespace Bugo\LightPortal\Plugins\ArticleList;
@@ -157,17 +157,17 @@ class ArticleList extends Block
 
 		$result = Db::$db->query('', '
 			SELECT
-				p.page_id, p.slug, p.content, p.description, p.type,
-				(
-					SELECT value
-					FROM {db_prefix}lp_titles
-					WHERE item_id = p.page_id
-						AND type = {literal:page}
-						AND lang IN ({string:lang}, {string:fallback_lang})
-					ORDER BY lang = {string:lang} DESC
-					LIMIT 1
-				) AS page_title
+				p.page_id, p.slug, p.type,
+				COALESCE(NULLIF(t.title, {string:empty_string}), tf.title, {string:empty_string}) AS title,
+				COALESCE(NULLIF(t.content, {string:empty_string}), tf.content, {string:empty_string}) AS content,
+				COALESCE(NULLIF(t.description, {string:empty_string}), tf.description, {string:empty_string}) AS description
 			FROM {db_prefix}lp_pages AS p
+				LEFT JOIN {db_prefix}lp_translations AS t ON (
+					p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang}
+				)
+				LEFT JOIN {db_prefix}lp_translations AS tf ON (
+					p.page_id = tf.item_id AND tf.type = {literal:page} AND tf.lang = {string:fallback_lang}
+				)
 			WHERE p.status = {int:status}
 				AND p.entry_type = {string:entry_type}
 				AND p.deleted_at = 0
@@ -176,6 +176,7 @@ class ArticleList extends Block
 				AND p.page_id IN ({array_int:pages})
 			ORDER BY p.page_id DESC',
 			[
+				'empty_string'  => '',
 				'lang'          => User::$me->language,
 				'fallback_lang' => Config::$language,
 				'status'        => Status::ACTIVE->value,
@@ -191,16 +192,20 @@ class ArticleList extends Block
 			if (Setting::isFrontpage($row['slug']))
 				continue;
 
+			Lang::censorText($row['title']);
+			Lang::censorText($row['content']);
+			Lang::censorText($row['description']);
+
 			$row['content'] = Content::parse($row['content'], $row['type']);
 
 			$image = empty($parameters['seek_images']) ? '' : Str::getImageFromText($row['content']);
 
 			$pages[$row['page_id']] = [
 				'id'          => $row['page_id'],
-				'title'       => $row['page_title'],
 				'slug'        => $row['slug'],
-				'description' => Str::getTeaser($row['description'] ?: strip_tags($row['content'])),
 				'image'       => $image ?: (Config::$modSettings['lp_image_placeholder'] ?? ''),
+				'title'       => $row['title'],
+				'description' => Str::getTeaser($row['description'] ?: strip_tags($row['content'])),
 			];
 		}
 
