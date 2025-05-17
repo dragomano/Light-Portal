@@ -17,6 +17,6 @@ class CategoryValidator extends AbstractValidator
 	protected array $filters = [
 		'category_id' => FILTER_VALIDATE_INT,
 		'icon'        => FILTER_DEFAULT,
-		'description' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+		'description' => FILTER_UNSAFE_RAW,
 	];
 }

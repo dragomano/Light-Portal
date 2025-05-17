@@ -26,17 +26,21 @@ final class CategoryList implements ListInterface
 	public function __invoke(): array
 	{
 		$result = Db::$db->query('', /** @lang text */ '
-			SELECT c.category_id, c.icon, c.description, c.priority, COALESCE(t.value, tf.value) AS title
+			SELECT
+				c.category_id, c.icon, c.priority,
+				COALESCE(t.title, tf.title, {string:empty_string}) AS title,
+				COALESCE(t.description, tf.description, {string:empty_string}) AS description
 			FROM {db_prefix}lp_categories AS c
-				LEFT JOIN {db_prefix}lp_titles AS t ON (
+				LEFT JOIN {db_prefix}lp_translations AS t ON (
 					c.category_id = t.item_id AND t.type = {literal:category} AND t.lang = {string:lang}
 				)
-				LEFT JOIN {db_prefix}lp_titles AS tf ON (
+				LEFT JOIN {db_prefix}lp_translations AS tf ON (
 					c.category_id = tf.item_id AND tf.type = {literal:category} AND tf.lang = {string:fallback_lang}
 				)
 			WHERE c.status = {int:status}
 			ORDER BY c.priority',
 			[
+				'empty_string'  => '',
 				'lang'          => User::$me->language,
 				'fallback_lang' => Config::$language,
 				'status'        => Status::ACTIVE->value,
@@ -51,12 +55,15 @@ final class CategoryList implements ListInterface
 		];
 
 		while ($row = Db::$db->fetch_assoc($result)) {
+			Lang::censorText($row['title']);
+			Lang::censorText($row['description']);
+
 			$items[$row['category_id']] = [
 				'id'          => (int) $row['category_id'],
 				'icon'        => $row['icon'],
+				'priority'    => (int) $row['priority'],
 				'title'       => $row['title'],
 				'description' => $row['description'],
-				'priority'    => (int) $row['priority'],
 			];
 		}
 

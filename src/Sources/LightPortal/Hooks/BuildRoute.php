@@ -34,9 +34,9 @@ class BuildRoute
 	{
 		if (($this->categories = $this->cache()->get('lp_sef_categories', LP_CACHE_TIME)) === null) {
 			$result = Db::$db->query('', /** @lang text */ '
-				SELECT c.category_id, t.value AS title
+				SELECT c.category_id, t.title
 				FROM {db_prefix}lp_categories AS c
-					LEFT JOIN {db_prefix}lp_titles AS t ON (
+					LEFT JOIN {db_prefix}lp_translations AS t ON (
 						c.category_id = t.item_id AND t.type = {literal:category} AND t.lang = {string:lang}
 					)
 				ORDER BY c.category_id',
@@ -57,9 +57,9 @@ class BuildRoute
 
 		if (($this->tags = $this->cache()->get('lp_sef_tags', LP_CACHE_TIME)) == null) {
 			$result = Db::$db->query('', /** @lang text */ '
-				SELECT tag.tag_id, t.value AS title
+				SELECT tag.tag_id, t.title
 				FROM {db_prefix}lp_tags AS tag
-					LEFT JOIN {db_prefix}lp_titles AS t ON (
+					LEFT JOIN {db_prefix}lp_translations AS t ON (
 						tag.tag_id = t.item_id AND t.type = {literal:tag} AND t.lang = {string:lang}
 					)
 				ORDER BY tag.tag_id',

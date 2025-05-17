@@ -15,7 +15,6 @@ namespace Bugo\LightPortal\Validators;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Events\HasEvents;
-use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 
 use function array_filter;
@@ -35,7 +34,7 @@ abstract class AbstractValidator implements ValidatorInterface
 
 	public function __construct()
 	{
-		$this->filters['titles'] = [
+		$this->filters['title'] = [
 			'filter'  => FILTER_CALLBACK,
 			'options' => fn($title) => Utils::htmlspecialchars($title, ENT_NOQUOTES),
 		];
@@ -63,7 +62,7 @@ abstract class AbstractValidator implements ValidatorInterface
 
 	protected function checkErrors(): void
 	{
-		if (empty($this->filteredData['titles'][Language::getCurrent()])) {
+		if (empty($this->filteredData['title'])) {
 			$this->errors[] = 'no_title';
 		}
 

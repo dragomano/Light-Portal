@@ -65,8 +65,8 @@ class CardList implements CardListInterface
 	public function getOrderBy(): string
 	{
 		$sortingTypes = [
-			'title;desc'       => 't.value DESC',
-			'title'            => 't.value',
+			'title;desc'       => 'title DESC',
+			'title'            => 'title',
 			'created;desc'     => 'p.created_at DESC',
 			'created'          => 'p.created_at',
 			'updated;desc'     => 'p.updated_at DESC',

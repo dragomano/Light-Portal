@@ -20,8 +20,8 @@ class BlockFactory extends AbstractFactory
 
 	protected function modifyData(array $data): array
 	{
-		if (! empty($data['note'])) {
-			Str::cleanBbcode($data['note']);
+		if (! empty($data['description'])) {
+			Str::cleanBbcode($data['description']);
 		}
 
 		return $data;

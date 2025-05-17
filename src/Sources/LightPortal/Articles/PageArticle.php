@@ -54,6 +54,7 @@ class PageArticle extends AbstractArticle
 		$this->sorting = Setting::get('lp_frontpage_article_sorting', 'int', 0);
 
 		$this->params = [
+			'empty_string'        => '',
 			'lang'                => User::$me->language,
 			'fallback_lang'       => Config::$language,
 			'status'              => Status::ACTIVE->value,
@@ -91,21 +92,14 @@ class PageArticle extends AbstractArticle
 
 		$result = Db::$db->query('', /** @lang text */ '
 			SELECT
-				p.page_id, p.category_id, p.author_id, p.slug, p.content, p.description, p.type, p.status, p.num_views,
-				CASE WHEN COALESCE(par.value, \'0\') != \'0\' THEN p.num_comments ELSE 0 END AS num_comments,
-				p.created_at, GREATEST(p.created_at, p.updated_at) AS date,
-				(
-					SELECT value
-					FROM {db_prefix}lp_titles
-					WHERE item_id = p.page_id
-						AND type = {literal:page}
-						AND lang IN ({string:lang}, {string:fallback_lang})
-					ORDER BY lang = {string:lang} DESC
-					LIMIT 1
-				) AS page_title,
+				p.*, GREATEST(p.created_at, p.updated_at) AS date,
+				CASE WHEN COALESCE(par.value, "0") != "0" THEN p.num_comments ELSE 0 END AS num_comments,
+				COALESCE(NULLIF(t.title, {string:empty_string}), tf.title, {string:empty_string}) AS title,
+				COALESCE(NULLIF(t.content, {string:empty_string}), tf.content, {string:empty_string}) AS content,
+				COALESCE(NULLIF(t.description, {string:empty_string}), tf.description, {string:empty_string}) AS description,
 			    (
-				    SELECT value
-					FROM {db_prefix}lp_titles
+				    SELECT title
+					FROM {db_prefix}lp_translations
 					WHERE item_id = cat.category_id
 						AND type = {literal:category}
 						AND lang IN ({string:lang}, {string:fallback_lang})
@@ -120,6 +114,12 @@ class PageArticle extends AbstractArticle
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_comments AS com ON (p.last_comment_id = com.id)
 				LEFT JOIN {db_prefix}members AS mem2 ON (com.author_id = mem2.id_member)
+				LEFT JOIN {db_prefix}lp_translations AS t ON (
+					p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang}
+				)
+				LEFT JOIN {db_prefix}lp_translations AS tf ON (
+					p.page_id = tf.item_id AND tf.type = {literal:page} AND tf.lang = {string:fallback_lang}
+				)
 				LEFT JOIN {db_prefix}lp_params AS par ON (
 					par.item_id = com.page_id AND par.type = {literal:page} AND par.name = {literal:allow_comments}
 				)' . (empty($this->tables) ? '' : '
@@ -140,6 +140,10 @@ class PageArticle extends AbstractArticle
 		$pages = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
 			if (! isset($pages[$row['page_id']])) {
+				Lang::censorText($row['title']);
+				Lang::censorText($row['content']);
+				Lang::censorText($row['description']);
+
 				$row['content'] = Content::parse($row['content'], $row['type']);
 
 				$pages[$row['page_id']] = [
@@ -147,7 +151,6 @@ class PageArticle extends AbstractArticle
 					'section'   => $this->getSectionData($row),
 					'author'    => $this->getAuthorData($row),
 					'date'      => $this->getDate($row),
-					'title'     => $row['page_title'],
 					'link'      => LP_PAGE_URL . $row['slug'],
 					'views'     => $this->getViewsData($row),
 					'replies'   => $this->getRepliesData($row),
@@ -155,6 +158,7 @@ class PageArticle extends AbstractArticle
 					'image'     => $this->getImage($row),
 					'can_edit'  => $this->canEdit($row),
 					'edit_link' => $this->getEditLink($row),
+					'title'     => $row['title'],
 				];
 			}
 
@@ -293,19 +297,20 @@ class PageArticle extends AbstractArticle
 			return;
 
 		$result = Db::$db->query('', '
-			SELECT t.tag_id, t.icon, pt.page_id, COALESCE(tt.value, tf.value) AS title
+			SELECT t.tag_id, t.icon, pt.page_id, COALESCE(tt.title, tf.title, {string:empty_string}) AS title
 			FROM {db_prefix}lp_tags AS t
 				LEFT JOIN {db_prefix}lp_page_tag AS pt ON (t.tag_id = pt.tag_id)
-				LEFT JOIN {db_prefix}lp_titles AS tt ON (
+				LEFT JOIN {db_prefix}lp_translations AS tt ON (
 					pt.tag_id = tt.item_id AND tt.type = {literal:tag} AND tt.lang = {string:lang}
 				)
-				LEFT JOIN {db_prefix}lp_titles AS tf ON (
+				LEFT JOIN {db_prefix}lp_translations AS tf ON (
 					pt.tag_id = tf.item_id AND tf.type = {literal:tag} AND tf.lang = {string:fallback_lang}
 				)
 			WHERE pt.page_id IN ({array_int:pages})
 				AND t.status = {int:status}
 			ORDER BY title',
 			[
+				'empty_string'  => '',
 				'lang'          => User::$me->language,
 				'fallback_lang' => Config::$language,
 				'pages'         => array_keys($pages),
@@ -316,8 +321,8 @@ class PageArticle extends AbstractArticle
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$pages[$row['page_id']]['tags'][] = [
 				'icon'  => Icon::parse($row['icon']),
-				'title' => $row['title'],
 				'href'  => PortalSubAction::TAGS->url() . ';id=' . $row['tag_id'],
+				'title' => $row['title'],
 			];
 		}
 
