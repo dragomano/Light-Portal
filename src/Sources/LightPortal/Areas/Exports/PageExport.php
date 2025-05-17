@@ -42,6 +42,8 @@ if (! defined('SMF'))
 
 final class PageExport extends AbstractExport
 {
+	protected string $entity = 'pages';
+
 	public function __construct(private readonly PageRepository $repository) {}
 
 	public function main(): void
@@ -67,11 +69,11 @@ final class PageExport extends AbstractExport
 				->addColumns([
 					IdColumn::make()->setSort('p.page_id'),
 					PageSlugColumn::make(),
-					TitleColumn::make(entity: 'pages')->setData(static fn($entry) => Str::html('a', [
+					TitleColumn::make(entity: $this->entity)->setData(static fn($entry) => Str::html('a', [
 						'class' => 'bbc_link' . ($entry['is_front'] ? ' new_posts' : ''),
 						'href'  => $entry['is_front'] ? Config::$scripturl : (LP_PAGE_URL . $entry['slug']),
 					])->setText($entry['title'])),
-					CheckboxColumn::make(entity: 'pages')
+					CheckboxColumn::make(entity: $this->entity)
 				])
 				->addRows([
 					ExportButtonsRow::make()
@@ -83,25 +85,35 @@ final class PageExport extends AbstractExport
 
 	protected function getData(): array
 	{
-		if ($this->request()->isEmpty('pages') && $this->request()->hasNot('export_all'))
+		if ($this->isEntityEmpty())
 			return [];
 
-		$pages = $this->request()->get('pages') && $this->request()->hasNot('export_all')
-			? $this->request()->get('pages') : [];
+		$pages = $this->hasEntityInRequest() ? $this->request()->get($this->entity) : [];
 
 		$result = Db::$db->query('', '
 			SELECT
-				p.page_id, p.category_id, p.author_id, p.slug, p.description, p.content, p.type, p.entry_type,
-				p.permissions, p.status, p.num_views, p.num_comments, p.created_at, p.updated_at, p.deleted_at,
-				pt.lang, pt.value AS title, pp.name, pp.value,
+				p.*, pt.lang, pp.name, pp.value,
+				COALESCE(pt.title, {string:empty_string}) AS title,
+				COALESCE(pt.content, {string:empty_string}) AS content,
+				COALESCE(pt.description, {string:empty_string}) AS description,
 				com.id, com.parent_id, com.author_id AS com_author_id, com.message, com.created_at AS com_created_at
 			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}lp_titles AS pt ON (p.page_id = pt.item_id AND pt.type = {literal:page})
-				LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {literal:page})
-				LEFT JOIN {db_prefix}lp_comments AS com ON (p.page_id = com.page_id)' . (empty($pages) ? '' : '
-			WHERE p.page_id IN ({array_int:pages})'),
+				LEFT JOIN {db_prefix}lp_translations AS pt ON (
+					p.page_id = pt.item_id AND pt.type = {literal:page}
+				)
+				LEFT JOIN {db_prefix}lp_params AS pp ON (
+					p.page_id = pp.item_id AND pp.type = {literal:page}
+				)
+				LEFT JOIN {db_prefix}lp_comments AS com ON (
+					p.page_id = com.page_id
+				)
+			WHERE ((title IS NOT NULL AND title != {string:empty_string})
+				OR (content IS NOT NULL AND content != {string:empty_string})
+				OR (description IS NOT NULL AND description != {string:empty_string}))' . (empty($pages) ? '' : '
+				AND p.page_id IN ({array_int:pages})'),
 			[
-				'pages' => $pages,
+				'empty_string' => '',
+				'pages'        => $pages,
 			]
 		);
 
@@ -112,8 +124,6 @@ final class PageExport extends AbstractExport
 				'category_id'  => $row['category_id'],
 				'author_id'    => $row['author_id'],
 				'slug'         => $row['slug'],
-				'description'  => trim($row['description'] ?? ''),
-				'content'      => $row['content'],
 				'type'         => $row['type'],
 				'entry_type'   => $row['entry_type'],
 				'permissions'  => $row['permissions'],
@@ -126,7 +136,15 @@ final class PageExport extends AbstractExport
 			];
 
 			if ($row['lang'] && $row['title']) {
-				$items[$row['page_id']]['titles'][$row['lang']] = $row['title'];
+				$items[$row['page_id']]['titles'][$row['lang']] = trim($row['title']);
+			}
+
+			if ($row['lang'] && $row['content']) {
+				$items[$row['page_id']]['contents'][$row['lang']] = $row['content'];
+			}
+
+			if ($row['lang'] && $row['description']) {
+				$items[$row['page_id']]['descriptions'][$row['lang']] = trim($row['description']);
 			}
 
 			if ($row['name'] && $row['value']) {
@@ -160,7 +178,7 @@ final class PageExport extends AbstractExport
 
 			$xml->formatOutput = true;
 
-			$xmlElements = $root->appendChild($xml->createElement('pages'));
+			$xmlElements = $root->appendChild($xml->createElement($this->entity));
 
 			$items = $this->getGeneratorFrom($items);
 
@@ -181,16 +199,19 @@ final class PageExport extends AbstractExport
 							$xmlTitle = $xmlName->appendChild($xml->createElement($k));
 							$xmlTitle->appendChild($xml->createTextNode($v));
 						}
-					} elseif (in_array($key, ['description', 'content'])) {
-						$xmlName->appendChild($xml->createCDATASection($val));
-					} elseif ($key == 'comments') {
+					} elseif (in_array($key, ['contents', 'descriptions'])) {
+						foreach ($val as $k => $v) {
+							$xmlContent = $xmlName->appendChild($xml->createElement($k));
+							$xmlContent->appendChild($xml->createCDATASection($v));
+						}
+					} elseif ($key === 'comments') {
 						foreach ($val as $comment) {
 							$xmlComment = $xmlName->appendChild($xml->createElement('comment'));
 							foreach ($comment as $label => $text) {
-								$xmlCommentElem = $xmlComment->appendChild($label == 'message'
+								$xmlCommentElem = $xmlComment->appendChild($label === 'message'
 									? $xml->createElement($label)
 									: $xml->createAttribute($label));
-								$xmlCommentElem->appendChild($label == 'message'
+								$xmlCommentElem->appendChild($label === 'message'
 									? $xml->createCDATASection($text)
 									: $xml->createTextNode($text));
 							}

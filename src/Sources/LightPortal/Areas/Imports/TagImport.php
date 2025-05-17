@@ -62,7 +62,7 @@ final class TagImport extends AbstractImport
 			ErrorHandler::fatalLang('lp_wrong_import_file', false);
 		}
 
-		$items = $titles = $pages = [];
+		$items = $translations = $pages = [];
 
 		foreach ($xml as $element) {
 			foreach ($element->item as $item) {
@@ -74,13 +74,15 @@ final class TagImport extends AbstractImport
 
 				if ($item->titles) {
 					foreach ($item->titles as $title) {
-						foreach ($title as $k => $v) {
-							$titles[] = [
-								'item_id' => $tagId,
-								'type'    => 'tag',
-								'lang'    => $k,
-								'value'   => $v,
-							];
+						foreach ($title as $lang => $text) {
+							if (! isset($translations[$lang . '_' . $tagId])) {
+								$translations[] = [
+									'item_id' => $tagId,
+									'type'    => 'tag',
+									'lang'    => $lang,
+									'title'   => (string) $text,
+								];
+							}
 						}
 					}
 				}
@@ -112,7 +114,7 @@ final class TagImport extends AbstractImport
 			['tag_id'],
 		);
 
-		$this->replaceTitles($titles, $results);
+		$this->replaceTranslations($translations, $results);
 
 		if ($results) {
 			$results = $this->insertData(

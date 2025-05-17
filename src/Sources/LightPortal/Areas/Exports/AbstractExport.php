@@ -34,6 +34,8 @@ abstract class AbstractExport implements ExportInterface
 {
 	use HasRequest;
 
+	protected string $entity;
+
 	abstract protected function getData(): array;
 
 	abstract protected function getFile(): string;
@@ -75,5 +77,15 @@ abstract class AbstractExport implements ExportInterface
 	protected function getGeneratorFrom(array $items): Closure
 	{
 		return static fn() => yield from $items;
+	}
+
+	protected function isEntityEmpty(): bool
+	{
+		return $this->request()->isEmpty($this->entity) && $this->request()->hasNot('export_all');
+	}
+
+	protected function hasEntityInRequest(): bool
+	{
+		return $this->request()->get($this->entity) && $this->request()->hasNot('export_all');
 	}
 }
