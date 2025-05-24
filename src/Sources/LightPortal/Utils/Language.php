@@ -47,6 +47,11 @@ final class Language
 		return empty(Config::$modSettings['userLanguage']) ? Config::$language : User::$me->language;
 	}
 
+	public static function isDefault(): bool
+	{
+		return Config::$language === User::$me->language;
+	}
+
 	public static function prepareList(): void
 	{
 		$temp = Lang::get();

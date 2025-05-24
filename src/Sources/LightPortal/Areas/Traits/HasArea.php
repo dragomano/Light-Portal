@@ -12,20 +12,17 @@
 
 namespace Bugo\LightPortal\Areas\Traits;
 
-use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Security;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\UI\Fields\CustomField;
+use Bugo\LightPortal\UI\Fields\TextField;
 use Bugo\LightPortal\Utils\Editor;
+use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\Str;
 
-use function array_keys;
-use function array_unique;
-use function count;
 use function in_array;
 
 if (! defined('SMF'))
@@ -63,63 +60,20 @@ trait HasArea
 		$this->prepareIconList();
 		$this->prepareTopicList();
 
-		$languages = empty(Config::$modSettings['userLanguage'])
-			? [Config::$language]
-			: array_unique([Utils::$context['user']['language'], Config::$language]);
-
-		$value = Str::html('div');
-
-		if (count(Utils::$context['lp_languages']) > 1) {
-			$nav = Str::html('nav');
-			if (! Utils::$context['right_to_left']) {
-				$nav->class('floatleft');
-			}
-
-			foreach (Utils::$context['lp_languages'] as $key => $lang) {
-				$link = Str::html('a')
-					->class('button floatnone')
-					->setText($lang['name'])
-					->setAttribute(':class', "{ 'active': tab === '$key' }")
-					->setAttribute('data-name', "title_$key")
-					->setAttribute('x-on:click.prevent', implode('; ', [
-						"tab = '$key'",
-						"window.location.hash = '$key'",
-						"\$nextTick(() => {
-							setTimeout(() => { document.querySelector('input[name=\"titles[$key]\"]').focus() }, 50);
-						})"
-					]));
-
-				$nav->addHtml($link);
-			}
-
-			$value->addHtml($nav);
-		}
-
-		foreach (array_keys(Utils::$context['lp_languages']) as $key) {
-			$inputDiv = Str::html('div')
-				->setAttribute('x-show', "tab === '$key'");
-
-			$input = Str::html('input')
-				->setAttribute('type', 'text')
-				->setAttribute('name', "titles[$key]")
-				->setAttribute('x-model', "title_$key")
-				->setAttribute('value', Utils::$context['lp_' . $entity]['titles'][$key] ?? '');
-
-			if (in_array($key, $languages) && $required) {
-				$input->setAttribute('required', 'required');
-			}
-
-			$inputDiv->addHtml($input);
-			$value->addHtml($inputDiv);
-		}
-
-		CustomField::make('title', Lang::$txt['lp_title'])
+		$title = TextField::make('title', Lang::$txt['lp_title'])
 			->setTab(Tab::CONTENT)
-			->setValue($value);
+			->setAttribute('x-model', 'title')
+			->setValue(Utils::$context['lp_' . $entity]['title']);
+
+		if (Language::isDefault() && $required) {
+			$title->required();
+		}
 	}
 
 	public function preparePostFields(): void
 	{
+		Utils::$context['lp_content_language'] ??= $this->post()->get('content_language');
+
 		foreach (Utils::$context['posting_fields'] as $item => $data) {
 			if (empty($data['input']['after']))
 				continue;

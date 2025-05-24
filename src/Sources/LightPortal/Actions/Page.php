@@ -26,7 +26,6 @@ use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasCache;
 use Bugo\LightPortal\Utils\Traits\HasBreadcrumbs;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
@@ -173,17 +172,13 @@ final class Page implements ActionInterface
 	private function setPageTitleAndCanonicalUrl(?string $slug): void
 	{
 		if (empty($slug)) {
-			Utils::$context['page_title'] = Str::getTranslatedTitle(
-				Utils::$context['lp_page']['titles']
-			) ?: Lang::$txt['lp_portal'];
+			Utils::$context['page_title'] = Utils::$context['lp_page']['title'] ?: Lang::$txt['lp_portal'];
 
 			Utils::$context['canonical_url'] = Config::$scripturl;
 
 			$this->breadcrumbs()->add(Lang::$txt['lp_portal']);
 		} else {
-			Utils::$context['page_title'] = Str::getTranslatedTitle(
-				Utils::$context['lp_page']['titles']
-			) ?: Lang::$txt['lp_post_error_no_title'];
+			Utils::$context['page_title'] = Utils::$context['lp_page']['title'] ?: Lang::$txt['lp_post_error_no_title'];
 
 			Utils::$context['canonical_url'] = LP_PAGE_URL . $slug;
 

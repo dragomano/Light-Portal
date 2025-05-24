@@ -13,7 +13,6 @@
 namespace Bugo\LightPortal\Utils;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Nette\Utils\Html;
 
@@ -52,11 +51,6 @@ class Str
 		$text = preg_replace('#(<cite.*?>).*?(</cite>)#', '$1$2', $text);
 
 		return Utils::shorten(strip_tags((string) $text), $length) ?: '...';
-	}
-
-	public static function getTranslatedTitle(array $titles): string
-	{
-		return $titles[User::$me->language] ?? $titles[Config::$language] ?? '';
 	}
 
 	public static function getImageFromText(string $text): string

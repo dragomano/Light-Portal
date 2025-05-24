@@ -37,13 +37,11 @@ enum PortalHook
 	case frontPagesRow;
 	case frontTopics;
 	case frontTopicsRow;
-	case importBlocks;
-	case importCategories;
-	case importPages;
 	case init;
 	case layoutExtensions;
 	case onBlockRemoving;
 	case onBlockSaving;
+	case onCustomPageImport;
 	case onPageRemoving;
 	case onPageSaving;
 	case parseContent;
@@ -120,20 +118,15 @@ enum PortalHook
 			self::frontModes => new class(...$data) {
 				public function __construct(public array &$modes) {}
 			},
-			self::importBlocks,
-			self::importCategories => new class(...$data) {
-				public function __construct(public array &$items, public array &$titles) {}
+			self::layoutExtensions => new class(...$data) {
+				public function __construct(public array &$extensions) {}
 			},
-			self::importPages => new class(...$data) {
+			self::onCustomPageImport => new class(...$data) {
 				public function __construct(
 					public array &$items,
-					public array &$titles,
 					public array &$params,
 					public array &$comments
 				) {}
-			},
-			self::layoutExtensions => new class(...$data) {
-				public function __construct(public array &$extensions) {}
 			},
 			self::onBlockRemoving,
 			self::onPageRemoving => new class(...$data) {

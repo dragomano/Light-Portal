@@ -45,12 +45,6 @@ class PortalEntity {
         localStorage.removeItem('tab');
 
         nav.click();
-
-        if (formElements[i].name.startsWith('titles')) {
-          const language = formElements[i].name.match(/\[(.*?)\]/);
-
-          document.querySelector(`[data-name=title_${language[1]}]`).click();
-        }
       }
     }
   }

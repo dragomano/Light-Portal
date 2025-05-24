@@ -101,15 +101,17 @@ final class Category extends AbstractPageList
 	{
 		$result = Db::$db->query('', '
 			SELECT
-				p.page_id, p.author_id, p.slug, p.content, p.description, p.type, p.entry_type,
-				p.num_views, p.num_comments, GREATEST(p.created_at, p.updated_at) AS date,
-				COALESCE(mem.real_name, \'\') AS author_name, COALESCE(t.value, tf.value) AS title
+				p.*, GREATEST(p.created_at, p.updated_at) AS date,
+				COALESCE(mem.real_name, {string:empty_string}) AS author_name,
+				COALESCE(NULLIF(t.title, {string:empty_string}), tf.title, {string:empty_string}) AS title,
+				COALESCE(NULLIF(t.content, {string:empty_string}), tf.content, {string:empty_string}) AS content,
+				COALESCE(NULLIF(t.description, {string:empty_string}), tf.description, {string:empty_string}) AS description
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
-				LEFT JOIN {db_prefix}lp_titles AS t ON (
+				LEFT JOIN {db_prefix}lp_translations AS t ON (
 					p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang}
 				)
-				LEFT JOIN {db_prefix}lp_titles AS tf ON (
+				LEFT JOIN {db_prefix}lp_translations AS tf ON (
 					p.page_id = tf.item_id AND tf.type = {literal:page} AND tf.lang = {string:fallback_lang}
 				)
 			WHERE p.category_id = {int:id}
@@ -121,6 +123,7 @@ final class Category extends AbstractPageList
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
 			[
+				'empty_string'  => '',
 				'lang'          => User::$me->language,
 				'fallback_lang' => Config::$language,
 				'id'            => $this->request()->get('id'),
@@ -208,14 +211,15 @@ final class Category extends AbstractPageList
 	{
 		$result = Db::$db->query('', '
 			SELECT
-				COALESCE(c.category_id, 0) AS category_id, c.icon, c.description, c.priority,
-				COUNT(p.page_id) AS frequency, COALESCE(t.value, tf.value) AS title
+				COALESCE(c.category_id, 0) AS category_id, c.icon, c.priority, COUNT(p.page_id) AS frequency,
+				COALESCE(NULLIF(t.title, {string:empty_string}), tf.title, {string:empty_string}) AS title,
+				COALESCE(NULLIF(t.description, {string:empty_string}), tf.description, {string:empty_string}) AS description
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_categories AS c ON (p.category_id = c.category_id)
-				LEFT JOIN {db_prefix}lp_titles AS t ON (
+				LEFT JOIN {db_prefix}lp_translations AS t ON (
 					c.category_id = t.item_id AND t.type = {literal:category} AND t.lang = {string:lang}
 				)
-				LEFT JOIN {db_prefix}lp_titles AS tf ON (
+				LEFT JOIN {db_prefix}lp_translations AS tf ON (
 					c.category_id = tf.item_id AND tf.type = {literal:category} AND tf.lang = {string:fallback_lang}
 				)
 			WHERE (c.status = {int:status} OR p.category_id = 0)
@@ -224,10 +228,11 @@ final class Category extends AbstractPageList
 				AND p.entry_type IN ({array_string:types})
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
-			GROUP BY c.category_id, c.icon, c.description, c.priority, t.value, tf.value
+			GROUP BY c.category_id, c.icon, c.priority, title, description
 			ORDER BY {raw:sort}' . ($limit ? '
 			LIMIT {int:start}, {int:limit}' : ''),
 			[
+				'empty_string'  => '',
 				'lang'          => User::$me->language,
 				'fallback_lang' => Config::$language,
 				'status'        => Status::ACTIVE->value,
@@ -244,11 +249,11 @@ final class Category extends AbstractPageList
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['category_id']] = [
 				'icon'        => Icon::parse($row['icon']),
-				'title'       => $row['title'] ?: Lang::$txt['lp_no_category'],
-				'description' => $row['description'] ?? '',
 				'link'        => PortalSubAction::CATEGORIES->url() . ';id=' . $row['category_id'],
 				'priority'    => (int) $row['priority'],
 				'num_pages'   => (int) $row['frequency'],
+				'title'       => $row['title'] ?: Lang::$txt['lp_no_category'],
+				'description' => $row['description'] ?? '',
 			];
 		}
 

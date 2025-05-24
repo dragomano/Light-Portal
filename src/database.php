@@ -20,6 +20,10 @@ if ((SMF === 'SSI') && ! $user_info['is_admin']) {
 	die('Admin privileges required.');
 }
 
+$content = '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc porttitor posuere accumsan. Aliquam erat volutpat. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Phasellus vel blandit dui. Aliquam nunc est, vehicula sit amet eleifend in, scelerisque quis sem. In aliquam nec lorem nec volutpat. Sed eu blandit erat. Suspendisse elementum lectus a ligula commodo, at lobortis justo accumsan. Aliquam mollis lectus ultricies, semper urna eu, fermentum eros. Sed a interdum odio. Quisque sit amet feugiat enim. Curabitur aliquam lectus at metus tristique tempus. Sed vitae nisi ultricies, tincidunt lacus non, ultrices ante.</p><p><br></p>
+<p>Duis ac ex sed dolor suscipit vulputate at eu ligula. Aliquam efficitur ac ante convallis ultricies. Nullam pretium vitae purus dapibus tempor. Aenean vel fringilla eros. Proin lectus velit, tristique ut condimentum eu, semper sed ipsum. Duis venenatis dolor lectus, et ullamcorper tortor varius eu. Vestibulum quis nisi ut nunc mollis fringilla. Sed consectetur semper magna, eget blandit nulla commodo sed. Aenean sem ipsum, auctor eget enim id, scelerisque malesuada nibh. Nulla ornare pharetra laoreet. Phasellus dignissim nisl nec arcu cursus luctus.</p><p><br></p>
+<p>Aliquam in quam ut diam consectetur semper. Aliquam commodo mi purus, bibendum laoreet massa tristique eget. Suspendisse ut purus nisi. Mauris euismod dolor nec scelerisque ullamcorper. Praesent imperdiet semper neque, ac luctus nunc ultricies eget. Praesent sodales ante sed dignissim vulputate. Ut vel ligula id sem feugiat sollicitudin non at metus. Aliquam vel est non sapien sodales semper. Suspendisse potenti. Sed convallis quis turpis eu pulvinar. Vivamus nulla elit, condimentum vitae commodo eu, pellentesque ullamcorper enim. Maecenas faucibus dolor nec enim interdum, quis iaculis lacus suscipit. Pellentesque aliquam, lectus id volutpat euismod, ante tellus mollis dui, sed placerat erat arcu sit amet purus.</p>';
+
 $tables[] = [
 	'name' => 'lp_blocks',
 	'columns' => [
@@ -41,17 +45,6 @@ $tables[] = [
 			'type' => 'varchar',
 			'size' => 30,
 			'null' => false
-		],
-		[
-			'name' => 'note',
-			'type' => 'varchar',
-			'size' => 255,
-			'null' => true
-		],
-		[
-			'name' => 'content',
-			'type' => 'text',
-			'null' => true
 		],
 		[
 			'name' => 'placement',
@@ -120,12 +113,6 @@ $tables[] = [
 		],
 		[
 			'name' => 'icon',
-			'type' => 'varchar',
-			'size' => 255,
-			'null' => true
-		],
-		[
-			'name' => 'description',
 			'type' => 'varchar',
 			'size' => 255,
 			'null' => true
@@ -258,17 +245,6 @@ $tables[] = [
 			'null' => false
 		],
 		[
-			'name' => 'description',
-			'type' => 'varchar',
-			'size' => 255,
-			'null' => true
-		],
-		[
-			'name' => 'content',
-			'type' => 'mediumtext',
-			'null' => false
-		],
-		[
 			'name'    => 'type',
 			'type'    => 'varchar',
 			'size'    => 10,
@@ -354,16 +330,13 @@ $tables[] = [
 			'page_id'     => 'int',
 			'author_id'   => 'int',
 			'slug'        => 'string-255',
-			'content'     => 'string',
 			'type'        => 'string',
 			'permissions' => 'int',
 			'created_at'  => 'int'
 		],
 		'values' => [
 			[
-				1, $user_info['id'], 'home', '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc porttitor posuere accumsan. Aliquam erat volutpat. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Phasellus vel blandit dui. Aliquam nunc est, vehicula sit amet eleifend in, scelerisque quis sem. In aliquam nec lorem nec volutpat. Sed eu blandit erat. Suspendisse elementum lectus a ligula commodo, at lobortis justo accumsan. Aliquam mollis lectus ultricies, semper urna eu, fermentum eros. Sed a interdum odio. Quisque sit amet feugiat enim. Curabitur aliquam lectus at metus tristique tempus. Sed vitae nisi ultricies, tincidunt lacus non, ultrices ante.</p><p><br></p>
-				<p>Duis ac ex sed dolor suscipit vulputate at eu ligula. Aliquam efficitur ac ante convallis ultricies. Nullam pretium vitae purus dapibus tempor. Aenean vel fringilla eros. Proin lectus velit, tristique ut condimentum eu, semper sed ipsum. Duis venenatis dolor lectus, et ullamcorper tortor varius eu. Vestibulum quis nisi ut nunc mollis fringilla. Sed consectetur semper magna, eget blandit nulla commodo sed. Aenean sem ipsum, auctor eget enim id, scelerisque malesuada nibh. Nulla ornare pharetra laoreet. Phasellus dignissim nisl nec arcu cursus luctus.</p><p><br></p>
-				<p>Aliquam in quam ut diam consectetur semper. Aliquam commodo mi purus, bibendum laoreet massa tristique eget. Suspendisse ut purus nisi. Mauris euismod dolor nec scelerisque ullamcorper. Praesent imperdiet semper neque, ac luctus nunc ultricies eget. Praesent sodales ante sed dignissim vulputate. Ut vel ligula id sem feugiat sollicitudin non at metus. Aliquam vel est non sapien sodales semper. Suspendisse potenti. Sed convallis quis turpis eu pulvinar. Vivamus nulla elit, condimentum vitae commodo eu, pellentesque ullamcorper enim. Maecenas faucibus dolor nec enim interdum, quis iaculis lacus suscipit. Pellentesque aliquam, lectus id volutpat euismod, ante tellus mollis dui, sed placerat erat arcu sit amet purus.</p>', 'html', 3, time()
+				1, $user_info['id'], 'home', 'html', 3, time()
 			]
 		],
 		'keys' => ['page_id']
@@ -516,7 +489,7 @@ $tables[] = [
 ];
 
 $tables[] = [
-	'name' => 'lp_titles',
+	'name' => 'lp_translations',
 	'columns' => [
 		[
 			'name'     => 'id',
@@ -545,11 +518,22 @@ $tables[] = [
 			'null' => false
 		],
 		[
-			'name' => 'value',
+			'name' => 'title',
 			'type' => 'varchar',
 			'size' => 255,
-			'null' => false
-		]
+			'null' => true
+		],
+		[
+			'name' => 'content',
+			'type' => 'mediumtext',
+			'null' => true,
+		],
+		[
+			'name' => 'description',
+			'type' => 'varchar',
+			'size' => 510,
+			'null' => true
+		],
 	],
 	'indexes' => [
 		[
@@ -559,6 +543,10 @@ $tables[] = [
 		[
 			'type'    => 'unique',
 			'columns' => ['item_id', 'type', 'lang']
+		],
+		[
+			'type'    => 'index',
+			'columns' => ['type', 'item_id', 'lang']
 		]
 	],
 	'default' => [
@@ -566,13 +554,14 @@ $tables[] = [
 			'item_id' => 'int',
 			'type'    => 'string-10',
 			'lang'    => 'string-20',
-			'value'   => 'string-255'
+			'title'   => 'string-255',
+			'content' => 'string',
 		],
-		'values' => empty($modSettings['userLanguage']) ? [
-			[1, 'page', $language, $mbname],
+		'values' => $language === $user_info['language'] ? [
+			[1, 'page', $language, $mbname, $content],
 		] : [
-			[1, 'page', $language, $mbname],
-			[1, 'page', $user_info['language'], $mbname],
+			[1, 'page', $language, $mbname, $content],
+			[1, 'page', $user_info['language'], $mbname, ''],
 		],
 		'keys' => ['item_id', 'type', 'lang']
 	]
@@ -583,9 +572,12 @@ db_extend('packages');
 foreach ($tables as $table) {
 	$smcFunc['db_create_table']('{db_prefix}' . $table['name'], $table['columns'], $table['indexes']);
 
-	if (isset($table['default']))
+	if (isset($table['default'])) {
 		$smcFunc['db_insert']('ignore', '{db_prefix}' . $table['name'], $table['default']['columns'], $table['default']['values'], $table['default']['keys']);
+	}
 }
+
+$smcFunc['db_query']('', 'CREATE INDEX title_prefix ON {db_prefix}lp_translations (title(100))', []);
 
 $smcFunc['db_query']('', '
 	DELETE FROM {db_prefix}background_tasks

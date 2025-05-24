@@ -8,17 +8,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.02.25
+ * @version 23.04.25
  */
 
 namespace Bugo\LightPortal\Plugins\EhPortalMigration;
 
-use Bugo\Compat\Config;
 use Bugo\Compat\User;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\Language;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -61,34 +59,5 @@ class EhPortalMigration extends Plugin
 	public function updateCategoryAreas(Event $e): void
 	{
 		$e->args->areas[self::AREA] = [new CategoryImport(), 'main'];
-	}
-
-	public function importPages(Event $e): void
-	{
-		$items  = &$e->args->items;
-		$titles = &$e->args->titles;
-
-		if ($this->request()->get('sa') !== self::AREA)
-			return;
-
-		foreach ($items as $pageId => $item) {
-			$titles[] = [
-				'item_id' => $pageId,
-				'type'    => 'page',
-				'lang'    => Config::$language,
-				'title'   => $item['title'],
-			];
-
-			if (Config::$language !== Language::getFallbackValue() && ! empty(Config::$modSettings['userLanguage'])) {
-				$titles[] = [
-					'item_id' => $pageId,
-					'type'    => 'page',
-					'lang'    => Language::getFallbackValue(),
-					'title'   => $item['title'],
-				];
-			}
-
-			unset($items[$pageId]['title']);
-		}
 	}
 }

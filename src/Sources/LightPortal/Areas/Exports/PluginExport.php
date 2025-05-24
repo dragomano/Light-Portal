@@ -35,6 +35,8 @@ if (! defined('SMF'))
 
 final class PluginExport extends AbstractExport
 {
+	protected string $entity = 'plugins';
+
 	public function main(): void
 	{
 		Theme::loadTemplate('LightPortal/ManageImpex');
@@ -57,10 +59,12 @@ final class PluginExport extends AbstractExport
 
 	protected function getData(): array
 	{
-		if ($this->request()->isEmpty('plugins') && $this->request()->hasNot('export_all'))
+		if ($this->isEntityEmpty())
 			return [];
 
-		return $this->request()->has('export_all') ? Utils::$context['lp_plugins'] : $this->request()->get('plugins');
+		return $this->request()->has('export_all')
+			? Utils::$context['lp_plugins']
+			: $this->request()->get($this->entity);
 	}
 
 	protected function getFile(): string

@@ -66,7 +66,7 @@ final class BlockImport extends AbstractImport
 			ErrorHandler::fatalLang('lp_wrong_import_file', false);
 		}
 
-		$items = $titles = $params = [];
+		$items = $translations = $params = [];
 
 		foreach ($xml as $element) {
 			foreach ($element->item as $item) {
@@ -74,26 +74,58 @@ final class BlockImport extends AbstractImport
 					'block_id'      => $blockId = intval($item['block_id']),
 					'icon'          => $item->icon,
 					'type'          => str_replace('md', 'markdown', (string) $item->type),
-					'note'          => $item->note,
-					'content'       => $item->content,
 					'placement'     => $item->placement,
 					'priority'      => intval($item['priority']),
 					'permissions'   => $item['user_id'] > 0 ? 4 : intval($item['permissions']),
 					'status'        => intval($item['status']),
 					'areas'         => $item->areas,
-					'title_class'   => str_contains((string) $item->title_class, 'div.') ? TitleClass::CAT_BAR->value : $item->title_class,
-					'content_class' => str_contains((string) $item->content_class, 'div.') ? ContentClass::ROUNDFRAME->value : $item->content_class,
+					'title_class'   => str_contains((string) $item->title_class, 'div.')
+						? TitleClass::CAT_BAR->value
+						: $item->title_class,
+					'content_class' => str_contains((string) $item->content_class, 'div.')
+						? ContentClass::ROUNDFRAME->value
+						: $item->content_class,
 				];
 
-				if ($item->titles) {
+				if ($item->titles || $item->contents || $item->descriptions) {
 					foreach ($item->titles as $title) {
-						foreach ($title as $k => $v) {
-							$titles[] = [
-								'item_id' => $blockId,
-								'type'    => 'block',
-								'lang'    => $k,
-								'value'   => $v,
-							];
+						foreach ($title as $lang => $text) {
+							if (! isset($translations[$lang . '_' . $blockId])) {
+								$translations[$lang . '_' . $blockId] = [
+									'item_id' => $blockId,
+									'type'    => 'block',
+									'lang'    => $lang,
+									'title'   => (string) $text,
+								];
+							}
+						}
+					}
+
+					foreach ($item->contents as $content) {
+						foreach ($content as $lang => $text) {
+							if (! isset($translations[$lang . '_' . $blockId])) {
+								$translations[$lang . '_' . $blockId] = [
+									'item_id' => $blockId,
+									'type'    => 'block',
+									'lang'    => $lang,
+								];
+							}
+
+							$translations[$lang . '_' . $blockId]['content'] = (string) $text;
+						}
+					}
+
+					foreach ($item->descriptions as $description) {
+						foreach ($description as $lang => $text) {
+							if (! isset($translations[$lang . '_' . $blockId])) {
+								$translations[$lang . '_' . $blockId] = [
+									'item_id' => $blockId,
+									'type'    => 'block',
+									'lang'    => $lang,
+								];
+							}
+
+							$translations[$lang . '_' . $blockId]['description'] = (string) $text;
 						}
 					}
 				}
@@ -123,8 +155,6 @@ final class BlockImport extends AbstractImport
 				'block_id'      => 'int',
 				'icon'          => 'string',
 				'type'          => 'string',
-				'note'          => 'string',
-				'content'       => 'string-65534',
 				'placement'     => 'string-10',
 				'priority'      => 'int',
 				'permissions'   => 'int',
@@ -136,8 +166,9 @@ final class BlockImport extends AbstractImport
 			['block_id'],
 		);
 
-		$this->replaceTitles($titles, $results);
+		$this->replaceTranslations($translations, $results);
 		$this->replaceParams($params, $results);
+
 		$this->finishTransaction($results);
 	}
 }

@@ -26,6 +26,6 @@ class TitleColumn extends Column
 					->href(LP_BASE_URL . ";sa=$entity;id=" . $entry['id'])
 					->setText($entry['title'])
 				: $entry['title'], 'word_break')
-			->setSort('t.value DESC', 't.value');
+			->setSort('title', 'title DESC');
 	}
 }

@@ -25,7 +25,7 @@ class BlockValidator extends AbstractValidator
 		'block_id'      => FILTER_VALIDATE_INT,
 		'icon'          => FILTER_DEFAULT,
 		'type'          => FILTER_DEFAULT,
-		'note'          => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+		'description'   => FILTER_UNSAFE_RAW,
 		'content'       => FILTER_UNSAFE_RAW,
 		'placement'     => FILTER_DEFAULT,
 		'priority'      => FILTER_VALIDATE_INT,

@@ -202,3 +202,46 @@ function template_portal_tab(array $fields, Tab|string $tab = 'content'): bool
 
 	return false;
 }
+
+function show_post_errors(): void
+{
+	if (empty(Utils::$context['post_errors']))
+		return;
+
+	echo '
+	<div class="errorbox">
+		<ul>';
+
+	foreach (Utils::$context['post_errors'] as $error) {
+		echo '
+			<li>', $error, '</li>';
+	}
+
+	echo '
+		</ul>
+	</div>';
+}
+
+function show_language_switcher(int $id): void
+{
+	if (empty($id) || empty(Config::$modSettings['userLanguage']))
+		return;
+
+	echo '
+	<form method="post">
+		<div class="roundframe descbox" style="margin-bottom: 8px">
+			<label for="content_language">', Lang::$txt['lp_content_language'], '</label>
+			<select id="content_language" name="content_language" onchange="this.form.submit()">';
+
+	foreach (Utils::$context['lp_languages'] as $lang => $data) {
+		echo '
+				<option value="', $lang, '"', Utils::$context['lp_content_language'] === $lang ? ' selected' : '', '>
+					', $data['name'], '
+				</option>';
+	}
+
+	echo '
+			</select>
+		</div>
+	</form>';
+}

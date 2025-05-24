@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.03.25
+ * @version 17.04.25
  */
 
 namespace Bugo\LightPortal\Plugins\RandomPages;
@@ -184,8 +184,8 @@ class RandomPages extends Block
 					p.page_id, p.slug, p.created_at, p.num_views,
 					COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id,
 					(
-						SELECT value
-						FROM {db_prefix}lp_titles
+						SELECT title
+						FROM {db_prefix}lp_translations
 						WHERE item_id = p.page_id
 							AND type = {literal:page}
 							AND lang IN ({string:lang}, {string:fallback_lang})
@@ -206,8 +206,8 @@ class RandomPages extends Block
 					p.page_id, p.slug, p.created_at, p.num_views,
 					COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id,
 					(
-						SELECT value
-						FROM {db_prefix}lp_titles
+						SELECT title
+						FROM {db_prefix}lp_translations
 						WHERE item_id = p.page_id
 							AND type = {literal:page}
 							AND lang IN ({string:lang}, {string:fallback_lang})
@@ -231,14 +231,16 @@ class RandomPages extends Block
 
 		$pages = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
+			Lang::censorText($row['page_title']);
+
 			$pages[] = [
 				'page_id'     => (int) $row['page_id'],
 				'slug'        => $row['slug'],
 				'created_at'  => (int) $row['created_at'],
 				'num_views'   => (int) $row['num_views'],
-				'title'       => $row['page_title'],
 				'author_id'   => (int) $row['author_id'],
 				'author_name' => $row['author_name'],
+				'title'       => $row['page_title'],
 			];
 		}
 
