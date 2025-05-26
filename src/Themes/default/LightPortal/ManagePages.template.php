@@ -66,8 +66,6 @@ function template_page_post(): void
 
 	show_post_errors();
 
-	show_language_switcher(Utils::$context['lp_page']['id']);
-
 	$fields = Utils::$context['posting_fields'];
 
 	echo '

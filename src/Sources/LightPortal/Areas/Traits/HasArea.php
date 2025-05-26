@@ -72,8 +72,6 @@ trait HasArea
 
 	public function preparePostFields(): void
 	{
-		Utils::$context['lp_content_language'] ??= $this->post()->get('content_language');
-
 		foreach (Utils::$context['posting_fields'] as $item => $data) {
 			if (empty($data['input']['after']))
 				continue;

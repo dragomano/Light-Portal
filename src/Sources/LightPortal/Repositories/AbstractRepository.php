@@ -17,6 +17,7 @@ use Bugo\Compat\Db;
 use Bugo\Compat\Msg;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\Traits\HasCache;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 use Bugo\LightPortal\Utils\Traits\HasResponse;
@@ -86,7 +87,7 @@ abstract class AbstractRepository
 		$rows = [
 			'item_id'     => $item,
 			'type'        => $this->entity,
-			'lang'        => empty($method) ? Config::$language : User::$me->language,
+			'lang'        => User::$me->language,
 			'title'       => Utils::$context['lp_' . $this->entity]['title'] ?? '',
 			'content'     => Utils::$context['lp_' . $this->entity]['content'] ?? '',
 			'description' => Utils::htmlspecialchars(Utils::$context['lp_' . $this->entity]['description'] ?? ''),
@@ -101,7 +102,7 @@ abstract class AbstractRepository
 			'description' => 'string-510',
 		];
 
-		if (Config::$language !== User::$me->language) {
+		if (! Language::isDefault()) {
 			$default = $this->getDefaultTranslations($item);
 
 			foreach (['title', 'content', 'description'] as $field) {
@@ -151,7 +152,7 @@ abstract class AbstractRepository
 	{
 		return [
 			'empty_string'  => '',
-			'lang'          => $this->post()->get('content_language') ?? User::$me->language,
+			'lang'          => User::$me->language,
 			'fallback_lang' => Config::$language,
 		];
 	}

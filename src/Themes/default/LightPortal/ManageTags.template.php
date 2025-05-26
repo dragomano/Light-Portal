@@ -22,8 +22,6 @@ function template_tag_post(): void
 
 	show_post_errors();
 
-	show_language_switcher(Utils::$context['lp_tag']['id']);
-
 	$fields = Utils::$context['posting_fields'];
 
 	echo '

@@ -157,7 +157,6 @@ $txt['lp_action_clone'] = 'Clone';
 $txt['lp_action_move'] = 'Move';
 $txt['lp_read_more'] = 'Read more...';
 $txt['lp_save_and_exit'] = 'Save and exit';
-$txt['lp_content_language'] = 'Content language';
 
 // Blocks
 $txt['lp_blocks'] = 'Blocks';

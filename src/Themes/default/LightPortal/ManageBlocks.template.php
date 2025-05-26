@@ -234,8 +234,6 @@ function template_block_post(): void
 
 	show_post_errors();
 
-	show_language_switcher(Utils::$context['lp_block']['id']);
-
 	$fields = Utils::$context['posting_fields'];
 
 	echo '

@@ -39,8 +39,6 @@ function template_category_post(): void
 
 	show_post_errors();
 
-	show_language_switcher(Utils::$context['lp_category']['id']);
-
 	$fields = Utils::$context['posting_fields'];
 
 	echo '
