@@ -259,8 +259,9 @@ final class BlockRepository extends AbstractRepository
 		if (Setting::hideBlocksInACP())
 			return [];
 
-		if (($blocks = $this->langCache()->get('active_blocks')) === null) {
-			$result = Db::$db->query('', '
+		return $this->langCache('active_blocks')
+			->setFallback(function () {
+				$result = Db::$db->query('', '
 				SELECT
 					b.*, bp.name, bp.value,
 					COALESCE(t.title, tf.title, {string:empty_string}) AS title,
@@ -275,39 +276,37 @@ final class BlockRepository extends AbstractRepository
 					LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {literal:block})
 				WHERE b.status = {int:status}
 				ORDER BY b.placement, b.priority',
-				array_merge($this->getLangQueryParams(), ['status' => Status::ACTIVE->value])
-			);
+					array_merge($this->getLangQueryParams(), ['status' => Status::ACTIVE->value])
+				);
 
-			$blocks = [];
-			while ($row = Db::$db->fetch_assoc($result)) {
-				Lang::censorText($row['title']);
-				Lang::censorText($row['content']);
+				$blocks = [];
+				while ($row = Db::$db->fetch_assoc($result)) {
+					Lang::censorText($row['title']);
+					Lang::censorText($row['content']);
 
-				$blocks[$row['block_id']] ??= [
-					'id'            => (int) $row['block_id'],
-					'icon'          => $row['icon'],
-					'type'          => $row['type'],
-					'placement'     => $row['placement'],
-					'priority'      => (int) $row['priority'],
-					'permissions'   => (int) $row['permissions'],
-					'areas'         => explode(',', (string) $row['areas']),
-					'title_class'   => $row['title_class'],
-					'content_class' => $row['content_class'],
-					'title'         => $row['title'],
-					'content'       => $row['content'],
-				];
+					$blocks[$row['block_id']] ??= [
+						'id'            => (int) $row['block_id'],
+						'icon'          => $row['icon'],
+						'type'          => $row['type'],
+						'placement'     => $row['placement'],
+						'priority'      => (int) $row['priority'],
+						'permissions'   => (int) $row['permissions'],
+						'areas'         => explode(',', (string) $row['areas']),
+						'title_class'   => $row['title_class'],
+						'content_class' => $row['content_class'],
+						'title'         => $row['title'],
+						'content'       => $row['content'],
+					];
 
-				if ($row['name']) {
-					$blocks[$row['block_id']]['parameters'][$row['name']] = $row['value'];
+					if ($row['name']) {
+						$blocks[$row['block_id']]['parameters'][$row['name']] = $row['value'];
+					}
 				}
-			}
 
-			Db::$db->free_result($result);
+				Db::$db->free_result($result);
 
-			$this->langCache()->put('active_blocks', $blocks);
-		}
-
-		return $blocks;
+				return $blocks;
+			});
 	}
 
 	private function addData(): int

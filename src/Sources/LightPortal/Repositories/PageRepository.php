@@ -507,8 +507,9 @@ final class PageRepository extends AbstractRepository
 
 	public function getMenuItems(): array
 	{
-		if (($pages = $this->langCache()->get('menu_pages')) === null) {
-			$result = Db::$db->query('', '
+		return $this->langCache('menu_pages')
+			->setFallback(function () {
+				$result = Db::$db->query('', '
 				SELECT
 					p.page_id, p.slug, p.permissions, pp2.value AS icon,
 					(
@@ -530,33 +531,31 @@ final class PageRepository extends AbstractRepository
 					AND p.created_at <= {int:current_time}
 					AND pp.name = {literal:show_in_menu}
 					AND pp.value = {string:show_in_menu}',
-				array_merge($this->getLangQueryParams(), [
-					'types'        => EntryType::withoutDrafts(),
-					'status'       => Status::ACTIVE->value,
-					'current_time' => time(),
-					'show_in_menu' => '1',
-				])
-			);
+					array_merge($this->getLangQueryParams(), [
+						'types'        => EntryType::withoutDrafts(),
+						'status'       => Status::ACTIVE->value,
+						'current_time' => time(),
+						'show_in_menu' => '1',
+					])
+				);
 
-			$pages = [];
-			while ($row = Db::$db->fetch_assoc($result)) {
-				Lang::censorText($row['page_title']);
+				$pages = [];
+				while ($row = Db::$db->fetch_assoc($result)) {
+					Lang::censorText($row['page_title']);
 
-				$pages[$row['page_id']] = [
-					'id'          => (int) $row['page_id'],
-					'slug'        => $row['slug'],
-					'permissions' => (int) $row['permissions'],
-					'icon'        => $row['icon'],
-					'title'       => $row['page_title'],
-				];
-			}
+					$pages[$row['page_id']] = [
+						'id'          => (int) $row['page_id'],
+						'slug'        => $row['slug'],
+						'permissions' => (int) $row['permissions'],
+						'icon'        => $row['icon'],
+						'title'       => $row['page_title'],
+					];
+				}
 
-			Db::$db->free_result($result);
+				Db::$db->free_result($result);
 
-			$this->langCache()->put('menu_pages', $pages);
-		}
-
-		return $pages;
+				return $pages;
+			});
 	}
 
 	public function prepareData(?array &$data): void
