@@ -144,6 +144,9 @@ class PageArticle extends AbstractArticle
 				Lang::censorText($row['content']);
 				Lang::censorText($row['description']);
 
+				if ($row['title'] === '')
+					continue;
+
 				$row['content'] = Content::parse($row['content'], $row['type']);
 
 				$pages[$row['page_id']] = [
@@ -319,6 +322,9 @@ class PageArticle extends AbstractArticle
 		);
 
 		while ($row = Db::$db->fetch_assoc($result)) {
+			if ($row['title'] === '')
+				continue;
+
 			$pages[$row['page_id']]['tags'][] = [
 				'icon'  => Icon::parse($row['icon']),
 				'href'  => PortalSubAction::TAGS->url() . ';id=' . $row['tag_id'],
