@@ -33,7 +33,7 @@ final class PageList implements ListInterface
 		return $this->repository->getAll(
 			0,
 			$this->repository->getTotalCount(),
-			'page_title',
+			'title',
 			'
 				AND p.status = {int:status}
 				AND entry_type = {string:entry_type}

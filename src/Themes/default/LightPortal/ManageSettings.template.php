@@ -202,3 +202,22 @@ function template_portal_tab(array $fields, Tab|string $tab = 'content'): bool
 
 	return false;
 }
+
+function show_post_errors(): void
+{
+	if (empty(Utils::$context['post_errors']))
+		return;
+
+	echo '
+	<div class="errorbox">
+		<ul>';
+
+	foreach (Utils::$context['post_errors'] as $error) {
+		echo '
+			<li>', $error, '</li>';
+	}
+
+	echo '
+		</ul>
+	</div>';
+}

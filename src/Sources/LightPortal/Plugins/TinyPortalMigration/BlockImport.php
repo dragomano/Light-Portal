@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 11.02.25
+ * @version 22.04.25
  */
 
 namespace Bugo\LightPortal\Plugins\TinyPortalMigration;
@@ -54,16 +54,12 @@ class BlockImport extends AbstractCustomBlockImport
 
 		app(TablePresenter::class)->show(
 			PortalTableBuilder::make('tp_blocks', Lang::$txt['lp_blocks_import'])
-				->withParams(
-					50,
-					defaultSortColumn: 'title'
-				)
+				->withParams(50, defaultSortColumn: 'title')
 				->setItems($this->getAll(...))
 				->setCount($this->getTotalCount(...))
 				->addColumns([
 					TitleColumn::make()
-						->setData('title', 'word_break')
-						->setSort('title DESC', 'title'),
+						->setData('title', 'word_break'),
 					Column::make('type', Lang::$txt['lp_block_type'])
 						->setData('type', 'centertext')
 						->setSort('type DESC', 'type'),
@@ -99,9 +95,9 @@ class BlockImport extends AbstractCustomBlockImport
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['id']] = [
 				'id'        => $row['id'],
-				'type'      => Lang::$txt['lp_' . $this->getType((int) $row['type'])]['title'],
+				'type'      => Lang::$txt['lp_' . $this->getType($row['type'])]['title'],
 				'title'     => $row['title'],
-				'placement' => Utils::$context['lp_block_placements'][$this->getPlacement((int) $row['bar'])],
+				'placement' => Utils::$context['lp_block_placements'][$this->getPlacement($row['bar'])],
 			];
 		}
 
@@ -163,18 +159,18 @@ class BlockImport extends AbstractCustomBlockImport
 		return $items;
 	}
 
-	private function getType(int $type): string
+	private function getType(string $type): string
 	{
-		return match ($type) {
+		return match ((int) $type) {
 			5  => ContentType::BBC->name(),
 			10 => ContentType::PHP->name(),
 			default => ContentType::HTML->name(),
 		};
 	}
 
-	private function getPlacement(int $bar): string
+	private function getPlacement(string $bar): string
 	{
-		return match ($bar) {
+		return match ((int) $bar) {
 			1 => Placement::LEFT->name(),
 			2 => Placement::RIGHT->name(),
 			5 => Placement::FOOTER->name(),
@@ -188,17 +184,11 @@ class BlockImport extends AbstractCustomBlockImport
 	{
 		$permissions = explode(',', (string) $row['access']);
 
-		$perm = Permission::ADMIN->value;
-		if (count($permissions) == 1 && $permissions[0] == -1) {
-			$perm = Permission::GUEST->value;
-		} elseif (count($permissions) == 1 && $permissions[0] == 0) {
-			$perm = Permission::MEMBER->value;
-		} elseif (in_array(-1, $permissions)) {
-			$perm = Permission::ALL->value;
-		} elseif (in_array(0, $permissions)) {
-			$perm = Permission::ALL->value;
-		}
-
-		return $perm;
+		return match (true) {
+			count($permissions) == 1 && $permissions[0] == -1 => Permission::GUEST->value,
+			count($permissions) == 1 && $permissions[0] == 0 => Permission::MEMBER->value,
+			in_array(-1, $permissions), in_array(0, $permissions) => Permission::ALL->value,
+			default => Permission::ADMIN->value,
+		};
 	}
 }

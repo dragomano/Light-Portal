@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.03.25
+ * @version 23.04.25
  */
 
 namespace Bugo\LightPortal\Plugins\TagList;
@@ -115,11 +115,11 @@ class TagList extends Block
 	{
 		$parameters = $e->args->parameters;
 
-		$source = Typed::string($parameters['source'], default: 'lp_tags');
+		$source  = Typed::string($parameters['source'], default: 'lp_tags');
 		$sorting = Typed::string($parameters['sorting'], default: 'name');
 		$asCloud = Typed::boolExtended($parameters['as_cloud']);
 
-		if ($source) {
+		if ($source === 'lp_tags') {
 			$tagList = $this->userCache($this->name . '_addon_b' . $e->args->id)
 				->setLifeTime($e->args->cacheTime)
 				->setFallback(fn() => app(Tag::class)->getAll(0, 0, $sorting === 'name' ? 'title' : 'frequency DESC'));
@@ -129,33 +129,36 @@ class TagList extends Block
 				->setFallback(fn() => $this->getAllTopicKeywords($sorting === 'name' ? 'ok.name' : 'frequency DESC'));
 		}
 
-		if ($tagList) {
-			if ($asCloud) {
-				require_once __DIR__ . '/vendor/autoload.php';
-
-				$cloud = new TagCloud([
-					'tags' => array_map(fn($item) => [
-						'title'  => $item['title'],
-						'params' => ['url' => $item['link']],
-						'weight' => $item['frequency'],
-					], $tagList),
-				]);
-
-				echo $cloud;
-
-				return;
-			}
-
-			foreach ($tagList as $tag) {
-				echo Str::html('a', ['href' => $tag['link'], 'class' => 'button'])
-					->setHtml(
-						($tag['icon'] ?? '') .
-						$tag['title'] .	' ' .
-						Str::html('span', ['class' => 'amt'])->setText($tag['frequency'])
-					);
-			}
-		} else {
+		if (! $tagList) {
 			echo Lang::$txt['lp_no_tags'];
+
+			return;
+		}
+
+		if ($asCloud) {
+			require_once __DIR__ . '/vendor/autoload.php';
+
+			$cloud = new TagCloud([
+				'tags' => array_map(fn($item) => [
+					'title'  => $item['title'],
+					'params' => ['url' => $item['link']],
+					'weight' => $item['frequency'],
+				], $tagList),
+			]);
+
+			echo $cloud;
+
+			return;
+		}
+
+		foreach ($tagList as $tag) {
+			echo Str::html('a', ['href' => $tag['link'], 'class' => 'button'])
+				->setHtml(
+					($tag['icon'] ?? '') .
+					$tag['title'] .	' ' .
+					Str::html('span', ['class' => 'amt'])
+						->setText($tag['frequency'])
+				);
 		}
 	}
 

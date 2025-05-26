@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 31.01.25
+ * @version 22.04.25
  */
 
 namespace Bugo\LightPortal\Plugins\TinyPortalMigration;
@@ -46,16 +46,12 @@ class CategoryImport extends AbstractCustomCategoryImport
 
 		app(TablePresenter::class)->show(
 			PortalTableBuilder::make('tp_categories', Lang::$txt['lp_categories_import'])
-				->withParams(
-					50,
-					defaultSortColumn: 'title'
-				)
+				->withParams(50, defaultSortColumn: 'title')
 				->setItems($this->getAll(...))
 				->setCount($this->getTotalCount(...))
 				->addColumns([
 					TitleColumn::make()
-						->setData('title', 'word_break')
-						->setSort('title DESC', 'title'),
+						->setData('title', 'word_break'),
 					CheckboxColumn::make(entity: 'categories'),
 				])
 				->addRow(ImportButtonsRow::make())

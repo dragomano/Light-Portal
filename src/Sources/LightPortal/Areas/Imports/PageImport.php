@@ -19,6 +19,7 @@ use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Imports\Traits\HasComments;
+use Bugo\LightPortal\Enums\EntryType;
 
 use function intval;
 use function str_replace;
@@ -69,16 +70,16 @@ final class PageImport extends AbstractImport
 			ErrorHandler::fatalLang('lp_wrong_import_file', false);
 		}
 
-		$items = $titles = $params = $comments = [];
+		$items = $translations = $params = $comments = [];
 
 		foreach ($xml as $element) {
 			foreach ($element->item as $item) {
 				$status = intval($item['status']);
 
 				$entryType = match ($status) {
-					3 => 'internal',
-					4 => 'blog',
-					default => (string) ($item['entry_type'] ?? 'default'),
+					3       => EntryType::INTERNAL->name(),
+					4       => 'blog', // Deprecated status
+					default => (string) ($item['entry_type'] ?? EntryType::DEFAULT->name()),
 				};
 
 				$items[] = [
@@ -86,8 +87,6 @@ final class PageImport extends AbstractImport
 					'category_id'  => intval($item['category_id']),
 					'author_id'    => intval($item['author_id']),
 					'slug'         => (string) ($item->alias ?? $item->slug),
-					'description'  => $item->description,
-					'content'      => $item->content,
 					'type'         => str_replace('md', 'markdown', (string) $item->type),
 					'entry_type'   => $entryType,
 					'permissions'  => intval($item['permissions']),
@@ -99,15 +98,45 @@ final class PageImport extends AbstractImport
 					'deleted_at'   => intval($item['deleted_at']),
 				];
 
-				if ($item->titles) {
+				if ($item->titles || $item->contents || $item->descriptions) {
 					foreach ($item->titles as $title) {
-						foreach ($title as $k => $v) {
-							$titles[] = [
-								'item_id' => $pageId,
-								'type'    => 'page',
-								'lang'    => $k,
-								'value'   => $v,
-							];
+						foreach ($title as $lang => $text) {
+							if (! isset($translations[$lang . '_' . $pageId])) {
+								$translations[$lang . '_' . $pageId] = [
+									'item_id' => $pageId,
+									'type'    => 'page',
+									'lang'    => $lang,
+									'title'   => (string) $text,
+								];
+							}
+						}
+					}
+
+					foreach ($item->contents as $content) {
+						foreach ($content as $lang => $text) {
+							if (! isset($translations[$lang . '_' . $pageId])) {
+								$translations[$lang . '_' . $pageId] = [
+									'item_id' => $pageId,
+									'type'    => 'page',
+									'lang'    => $lang,
+								];
+							}
+
+							$translations[$lang . '_' . $pageId]['content'] = (string) $text;
+						}
+					}
+
+					foreach ($item->descriptions as $description) {
+						foreach ($description as $lang => $text) {
+							if (! isset($translations[$lang . '_' . $pageId])) {
+								$translations[$lang . '_' . $pageId] = [
+									'item_id' => $pageId,
+									'type'    => 'page',
+									'lang'    => $lang,
+								];
+							}
+
+							$translations[$lang . '_' . $pageId]['description'] = (string) $text;
 						}
 					}
 				}
@@ -153,8 +182,6 @@ final class PageImport extends AbstractImport
 				'category_id'  => 'int',
 				'author_id'    => 'int',
 				'slug'         => 'string-255',
-				'description'  => 'string-255',
-				'content'      => 'string',
 				'type'         => 'string',
 				'entry_type'   => 'string',
 				'permissions'  => 'int',
@@ -168,9 +195,10 @@ final class PageImport extends AbstractImport
 			['page_id'],
 		);
 
-		$this->replaceTitles($titles, $results);
+		$this->replaceTranslations($translations, $results);
 		$this->replaceParams($params, $results);
 		$this->replaceComments($comments, $results);
+
 		$this->finishTransaction($results);
 	}
 }

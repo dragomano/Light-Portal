@@ -15,49 +15,42 @@ namespace Bugo\LightPortal\Repositories;
 use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\ErrorHandler;
+use Bugo\Compat\Lang;
 use Bugo\Compat\Security;
-use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\Traits\HasCache;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
-use Bugo\LightPortal\Utils\Traits\HasResponse;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class TagRepository extends AbstractRepository
 {
-	use HasCache;
-	use HasRequest;
-	use HasResponse;
-
 	protected string $entity = 'tag';
 
 	public function getAll(int $start, int $limit, string $sort): array
 	{
 		$result = Db::$db->query('', /** @lang text */ '
-			SELECT tag.tag_id, tag.icon, tag.status, COALESCE(t.value, tf.value) AS title
+			SELECT tag.*, COALESCE(t.title, tf.title, {string:empty_string}) AS title
 			FROM {db_prefix}lp_tags AS tag
-				LEFT JOIN {db_prefix}lp_titles AS t ON (
+				LEFT JOIN {db_prefix}lp_translations AS t ON (
 					tag.tag_id = t.item_id AND t.type = {literal:tag} AND t.lang = {string:lang}
 				)
-				LEFT JOIN {db_prefix}lp_titles AS tf ON (
+				LEFT JOIN {db_prefix}lp_translations AS tf ON (
 					tag.tag_id = tf.item_id AND tf.type = {literal:tag} AND tf.lang = {string:fallback_lang}
 				)
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
-			[
-				'lang'          => User::$me->language,
-				'fallback_lang' => Config::$language,
-				'sort'          => $sort,
-				'start'         => $start,
-				'limit'         => $limit,
-			]
+			array_merge($this->getLangQueryParams(), [
+				'sort'  => $sort,
+				'start' => $start,
+				'limit' => $limit,
+			])
 		);
 
 		$items = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
+			Lang::censorText($row['title']);
+
 			$items[$row['tag_id']] = [
 				'id'     => (int) $row['tag_id'],
 				'icon'   => Icon::parse($row['icon']),
@@ -91,13 +84,13 @@ final class TagRepository extends AbstractRepository
 			return [];
 
 		$result = Db::$db->query('', '
-			SELECT tag.tag_id, tag.icon, tag.status, t.lang, t.value AS title
+			SELECT tag.*, COALESCE(t.title, {string:empty_string}) AS title
 			FROM {db_prefix}lp_tags AS tag
-				LEFT JOIN {db_prefix}lp_titles AS t ON (tag.tag_id = t.item_id AND t.type = {literal:tag})
+				LEFT JOIN {db_prefix}lp_translations AS t ON (
+					tag.tag_id = t.item_id AND t.type = {literal:tag} AND t.lang = {string:lang}
+				)
 			WHERE tag.tag_id = {int:item}',
-			[
-				'item' => $item,
-			]
+			array_merge($this->getLangQueryParams(), compact('item'))
 		);
 
 		if (empty(Db::$db->num_rows($result))) {
@@ -111,10 +104,8 @@ final class TagRepository extends AbstractRepository
 				'id'     => (int) $row['tag_id'],
 				'icon'   => $row['icon'],
 				'status' => (int) $row['status'],
+				'title'  => $row['title'],
 			];
-
-			if (! empty($row['lang']))
-				$data['titles'][$row['lang']] = $row['title'];
 		}
 
 		Db::$db->free_result($result);
@@ -131,7 +122,6 @@ final class TagRepository extends AbstractRepository
 		Security::checkSubmitOnce('check');
 
 		if (empty($item)) {
-			Utils::$context['lp_tag']['titles'] = array_filter(Utils::$context['lp_tag']['titles']);
 			$item = $this->addData();
 		} else {
 			$this->updateData($item);
@@ -164,7 +154,7 @@ final class TagRepository extends AbstractRepository
 		);
 
 		Db::$db->query('', '
-			DELETE FROM {db_prefix}lp_titles
+			DELETE FROM {db_prefix}lp_translations
 			WHERE item_id IN ({array_int:items})
 				AND type = {literal:tag}',
 			[
@@ -208,7 +198,7 @@ final class TagRepository extends AbstractRepository
 			return 0;
 		}
 
-		$this->saveTitles($item);
+		$this->saveTranslations($item);
 
 		Db::$db->transaction();
 
@@ -230,7 +220,7 @@ final class TagRepository extends AbstractRepository
 			]
 		);
 
-		$this->saveTitles($item, 'replace');
+		$this->saveTranslations($item, 'replace');
 
 		Db::$db->transaction();
 	}

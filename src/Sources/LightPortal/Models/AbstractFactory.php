@@ -20,8 +20,8 @@ abstract class AbstractFactory implements FactoryInterface
 
 	public function create(array $data): ModelInterface
 	{
-		if (! empty($data['titles'])) {
-			Str::cleanBbcode($data['titles']);
+		if (! empty($data['title'])) {
+			Str::cleanBbcode($data['title']);
 		}
 
 		$data = $this->modifyData($data);

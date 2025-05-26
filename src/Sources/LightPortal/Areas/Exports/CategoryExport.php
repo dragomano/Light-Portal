@@ -40,6 +40,8 @@ if (! defined('SMF'))
 
 final class CategoryExport extends AbstractExport
 {
+	protected string $entity = 'categories';
+
 	public function __construct(private readonly CategoryRepository $repository) {}
 
 	public function main(): void
@@ -63,8 +65,8 @@ final class CategoryExport extends AbstractExport
 				->addColumns([
 					IdColumn::make()->setSort('category_id'),
 					IconColumn::make(),
-					TitleColumn::make(entity: 'categories'),
-					CheckboxColumn::make(entity: 'categories')
+					TitleColumn::make(entity: $this->entity),
+					CheckboxColumn::make(entity: $this->entity)
 				])
 				->addRows([
 					ExportButtonsRow::make()
@@ -76,19 +78,26 @@ final class CategoryExport extends AbstractExport
 
 	protected function getData(): array
 	{
-		if ($this->request()->isEmpty('categories') && $this->request()->hasNot('export_all'))
+		if ($this->isEntityEmpty())
 			return [];
 
-		$categories = $this->request()->get('categories') && $this->request()->hasNot('export_all')
-			? $this->request()->get('categories') : [];
+		$categories = $this->hasEntityInRequest() ? $this->request()->get($this->entity) : [];
 
 		$result = Db::$db->query('', '
-			SELECT c.category_id, c.icon, c.description, c.priority, c.status,	pt.lang, pt.value AS title
+			SELECT
+				c.*, pt.lang,
+				COALESCE(pt.title, {string:empty_string}) AS title,
+				COALESCE(pt.description, {string:empty_string}) AS description
 			FROM {db_prefix}lp_categories AS c
-				LEFT JOIN {db_prefix}lp_titles AS pt ON (c.category_id = pt.item_id AND pt.type = {literal:category})' . (empty($categories) ? '' : '
-			WHERE c.category_id IN ({array_int:categories})'),
+				LEFT JOIN {db_prefix}lp_translations AS pt ON (
+					c.category_id = pt.item_id AND pt.type = {literal:category}
+				)
+			WHERE ((title IS NOT NULL AND title != {string:empty_string})
+				OR (description IS NOT NULL AND description != {string:empty_string}))' . (empty($categories) ? '' : '
+				AND c.category_id IN ({array_int:categories})'),
 			[
-				'categories' => $categories,
+				'empty_string' => '',
+				'categories'   => $categories,
 			]
 		);
 
@@ -97,13 +106,16 @@ final class CategoryExport extends AbstractExport
 			$items[$row['category_id']] ??= [
 				'category_id' => $row['category_id'],
 				'icon'        => trim($row['icon'] ?? ''),
-				'description' => trim($row['description'] ?? ''),
 				'priority'    => $row['priority'],
 				'status'      => $row['status'],
 			];
 
 			if ($row['lang'] && $row['title']) {
-				$items[$row['category_id']]['titles'][$row['lang']] = $row['title'];
+				$items[$row['category_id']]['titles'][$row['lang']] = trim($row['title']);
+			}
+
+			if ($row['lang'] && $row['description']) {
+				$items[$row['category_id']]['descriptions'][$row['lang']] = trim($row['description']);
 			}
 		}
 
@@ -123,7 +135,7 @@ final class CategoryExport extends AbstractExport
 
 			$xml->formatOutput = true;
 
-			$xmlElements = $root->appendChild($xml->createElement('categories'));
+			$xmlElements = $root->appendChild($xml->createElement($this->entity));
 
 			$items = $this->getGeneratorFrom($items);
 
@@ -141,8 +153,11 @@ final class CategoryExport extends AbstractExport
 							$xmlTitle = $xmlName->appendChild($xml->createElement($k));
 							$xmlTitle->appendChild($xml->createTextNode($v));
 						}
-					} elseif ($key === 'description') {
-						$xmlName->appendChild($xml->createCDATASection($val));
+					} elseif ($key === 'descriptions') {
+						foreach ($val as $k => $v) {
+							$xmlContent = $xmlName->appendChild($xml->createElement($k));
+							$xmlContent->appendChild($xml->createCDATASection($v));
+						}
 					} else {
 						$xmlName->appendChild($xml->createTextNode($val));
 					}

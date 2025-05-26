@@ -12,9 +12,15 @@
 
 namespace Bugo\LightPortal\Repositories;
 
+use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Msg;
+use Bugo\Compat\User;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Utils\Language;
+use Bugo\LightPortal\Utils\Traits\HasCache;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
+use Bugo\LightPortal\Utils\Traits\HasResponse;
 use Bugo\LightPortal\Utils\Traits\HasSession;
 
 use function implode;
@@ -25,6 +31,9 @@ if (! defined('SMF'))
 
 abstract class AbstractRepository
 {
+	use HasCache;
+	use HasRequest;
+	use HasResponse;
 	use HasSession;
 
 	protected string $entity;
@@ -47,7 +56,13 @@ abstract class AbstractRepository
 
 		Db::$db->query('', '
 			UPDATE {db_prefix}lp_' . $table . '
-			SET status = CASE status WHEN 1 THEN 0 WHEN 0 THEN 1 WHEN 2 THEN 1 WHEN 3 THEN 0 ELSE status END
+			SET status = CASE status
+				WHEN 1 THEN 0
+				WHEN 0 THEN 1
+				WHEN 2 THEN 1
+				WHEN 3 THEN 0
+				ELSE status
+			END
 			WHERE ' . $this->entity . '_id IN ({array_int:items})',
 			[
 				'items' => $items,
@@ -67,40 +82,37 @@ abstract class AbstractRepository
 		Msg::preparseCode($entity['content']);
 	}
 
-	protected function saveTitles(int $item, string $method = ''): void
+	protected function saveTranslations(int $item, string $method = ''): void
 	{
-		if (empty(Utils::$context['lp_' . $this->entity]['titles']))
-			return;
+		$rows = [
+			'item_id'     => $item,
+			'type'        => $this->entity,
+			'lang'        => User::$me->language,
+			'title'       => Utils::$context['lp_' . $this->entity]['title'] ?? '',
+			'content'     => Utils::$context['lp_' . $this->entity]['content'] ?? '',
+			'description' => Utils::htmlspecialchars(Utils::$context['lp_' . $this->entity]['description'] ?? ''),
+		];
 
-		$titles = [];
-		foreach (Utils::$context['lp_' . $this->entity]['titles'] as $lang => $title) {
-			$title = Utils::$smcFunc['htmltrim']($title);
+		$params = [
+			'item_id'     => 'int',
+			'type'        => 'string',
+			'lang'        => 'string',
+			'title'       => 'string-255',
+			'content'     => 'string',
+			'description' => 'string-510',
+		];
 
-			if ($method === '' && $title === '')
-				continue;
+		if (! Language::isDefault()) {
+			$default = $this->getDefaultTranslations($item);
 
-			$titles[] = [
-				'item_id' => $item,
-				'type'    => $this->entity,
-				'lang'    => $lang,
-				'title'   => $title,
-			];
+			foreach (['title', 'content', 'description'] as $field) {
+				if ($rows[$field] === $default[$field]) {
+					unset($rows[$field], $params[$field]);
+				}
+			}
 		}
 
-		if ($titles === [])
-			return;
-
-		Db::$db->insert($method,
-			'{db_prefix}lp_titles',
-			[
-				'item_id' => 'int',
-				'type'    => 'string',
-				'lang'    => 'string',
-				'value'   => 'string',
-			],
-			$titles,
-			['item_id', 'type', 'lang']
-		);
+		Db::$db->insert($method, '{db_prefix}lp_translations', $params, $rows, ['item_id', 'type', 'lang']);
 	}
 
 	protected function saveOptions(int $item, string $method = ''): void
@@ -134,5 +146,36 @@ abstract class AbstractRepository
 			$params,
 			['item_id', 'type', 'name'],
 		);
+	}
+
+	protected function getLangQueryParams(): array
+	{
+		return [
+			'empty_string'  => '',
+			'lang'          => User::$me->language,
+			'fallback_lang' => Config::$language,
+		];
+	}
+
+	private function getDefaultTranslations(int $item): array
+	{
+		$result = Db::$db->query('', '
+			SELECT title, content, description
+			FROM {db_prefix}lp_translations
+			WHERE item_id = {int:item_id}
+				AND type = {string:type}
+				AND lang = {string:lang}',
+			[
+				'item_id' => $item,
+				'type'    => $this->entity,
+				'lang'    => Config::$language,
+			]
+		);
+
+		$translations = Db::$db->fetch_assoc($result) ?: ['title' => null, 'content' => null, 'description' => null];
+
+		Db::$db->free_result($result);
+
+		return $translations;
 	}
 }

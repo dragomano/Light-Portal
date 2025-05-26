@@ -22,13 +22,13 @@ class TagModel extends AbstractModel
 
 	public int $status;
 
-	public array $titles = [];
+	public string $title;
 
 	public function __construct(array $data)
 	{
 		$this->id     = $data['tag_id'] ?? $data['id'] ?? 0;
 		$this->icon   = $data['icon'] ?? '';
 		$this->status = $data['status'] ?? Status::ACTIVE->value;
-		$this->titles = $data['titles'] ?? [];
+		$this->title  = $data['title'] ?? '';
 	}
 }

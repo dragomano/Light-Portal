@@ -192,7 +192,8 @@ final class PageArea
 
 		Utils::$context['sub_template'] = 'page_add';
 
-		Utils::$context['page_title']  = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_pages_add_title'];
+		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_pages_add_title'];
+
 		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_pages;sa=add';
 
 		Utils::$context['page_area_title'] = Lang::$txt['lp_pages_add_title'];
@@ -232,7 +233,8 @@ final class PageArea
 
 		Utils::$context['sub_template'] = 'page_post';
 
-		Utils::$context['page_title']  = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_pages_edit_title'];
+		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_pages_edit_title'];
+
 		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $item;
 
 		Utils::$context['page_area_title'] = Lang::$txt['lp_pages_edit_title'];
@@ -268,6 +270,7 @@ final class PageArea
 			$this->repository->remove([$item]);
 
 			$this->cache()->flush();
+
 			$this->response()->redirect('action=admin;area=lp_pages');
 		}
 
@@ -350,7 +353,7 @@ final class PageArea
 			(
 				empty($searchParams['string'])
 				? ''
-				: ' AND (INSTR(LOWER(p.slug), {string:search}) > 0 OR INSTR(LOWER(t.value), {string:search}) > 0)'
+				: ' AND (INSTR(LOWER(p.slug), {string:search}) > 0 OR INSTR(LOWER(t.title), {string:search}) > 0)'
 			) . (
 				$this->request()->has('u') ?
 				' AND p.author_id = {int:user_id} AND p.deleted_at = 0'
@@ -559,7 +562,7 @@ final class PageArea
 			->setAttribute('pattern', LP_ALIAS_PATTERN)
 			->setAttribute(
 				'x-slug.lazy',
-				empty(Utils::$context['lp_page']['id']) ? 'title_' . User::$me->language : '{}'
+				empty(Utils::$context['lp_page']['id']) ? 'title' : '{}'
 			)
 			->setValue(Utils::$context['lp_page']['slug']);
 
@@ -632,11 +635,8 @@ final class PageArea
 
 		Security::checkSubmitOnce('free');
 
-		Utils::$context['preview_title']   = Utils::$context['lp_page']['titles'][Language::getCurrent()] ?? '';
-		Utils::$context['preview_content'] = Utils::htmlspecialchars(
-			Utils::$context['lp_page']['content'],
-			ENT_QUOTES
-		);
+		Utils::$context['preview_title']   = Utils::$context['lp_page']['title'] ?? '';
+		Utils::$context['preview_content'] = Utils::htmlspecialchars(Utils::$context['lp_page']['content'], ENT_QUOTES);
 
 		Str::cleanBbcode(Utils::$context['preview_title']);
 

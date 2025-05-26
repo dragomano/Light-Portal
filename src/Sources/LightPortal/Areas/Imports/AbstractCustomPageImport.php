@@ -19,27 +19,15 @@ if (! defined('SMF'))
 
 abstract class AbstractCustomPageImport extends AbstractCustomImport
 {
-	use HasComments {
-		replaceComments as replaceCommentsTrait;
-	}
+	use HasComments;
+
+	protected string $type = 'page';
 
 	protected string $entity = 'pages';
 
-	protected function importItems(array &$items, array &$titles): array
+	protected function getResults(array $items): array
 	{
-		$params = $comments = [];
-
-		$this->events()->dispatch(
-			PortalHook::importPages,
-			[
-				'items'    => &$items,
-				'titles'   => &$titles,
-				'params'   => &$params,
-				'comments' => &$comments,
-			]
-		);
-
-		$results = $this->insertData(
+		return $this->insertData(
 			'lp_pages',
 			'replace',
 			$items,
@@ -47,8 +35,6 @@ abstract class AbstractCustomPageImport extends AbstractCustomImport
 				'page_id'      => 'int',
 				'author_id'    => 'int',
 				'slug'         => 'string-255',
-				'description'  => 'string-255',
-				'content'      => 'string',
 				'type'         => 'string',
 				'permissions'  => 'int',
 				'status'       => 'int',
@@ -59,30 +45,29 @@ abstract class AbstractCustomPageImport extends AbstractCustomImport
 			],
 			['page_id'],
 		);
+	}
+
+	protected function importItems(array $items): array
+	{
+		$params = $comments = [];
+
+		$this->events()->dispatch(
+			PortalHook::onCustomPageImport,
+			[
+				'items'    => &$items,
+				'params'   => &$params,
+				'comments' => &$comments,
+			]
+		);
+
+		$results = parent::importItems($items);
 
 		if ($results === [])
 			return [];
 
-		$this->replaceTitles($titles, $results);
 		$this->replaceParams($params, $results);
 		$this->replaceComments($comments, $results);
 
 		return $results;
-	}
-
-	private function replaceComments(array $comments, array &$results): void
-	{
-		if ($comments === [] && $results === [])
-			return;
-
-		$tempComments = [];
-
-		foreach ($comments as $comment) {
-			foreach ($comment as $com) {
-				$tempComments[] = $com;
-			}
-		}
-
-		$this->replaceCommentsTrait($tempComments, $results);
 	}
 }

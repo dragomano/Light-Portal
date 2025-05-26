@@ -17,57 +17,51 @@ use Bugo\Compat\Db;
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Security;
-use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\Traits\HasCache;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
-use Bugo\LightPortal\Utils\Traits\HasResponse;
-
-use function array_filter;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class CategoryRepository extends AbstractRepository
 {
-	use HasCache;
-	use HasRequest;
-	use HasResponse;
-
 	protected string $entity = 'category';
 
 	public function getAll(int $start, int $limit, string $sort): array
 	{
 		$result = Db::$db->query('', /** @lang text */ '
-			SELECT c.category_id, c.icon, c.description, c.priority, c.status, COALESCE(t.value, tf.value) AS title
+			SELECT
+				c.*,
+				COALESCE(t.title, tf.title, {string:empty_string}) AS title,
+				COALESCE(t.description, tf.description, {string:empty_string}) AS description
 			FROM {db_prefix}lp_categories AS c
-				LEFT JOIN {db_prefix}lp_titles AS t ON (
+				LEFT JOIN {db_prefix}lp_translations AS t ON (
 					c.category_id = t.item_id AND t.type = {literal:category} AND t.lang = {string:lang}
 				)
-				LEFT JOIN {db_prefix}lp_titles AS tf ON (
+				LEFT JOIN {db_prefix}lp_translations AS tf ON (
 					c.category_id = tf.item_id AND tf.type = {literal:category} AND tf.lang = {string:fallback_lang}
 				)
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
-			[
-				'lang'          => User::$me->language,
-				'fallback_lang' => Config::$language,
-				'sort'          => $sort,
-				'start'         => $start,
-				'limit'         => $limit,
-			]
+			array_merge($this->getLangQueryParams(), [
+				'sort'  => $sort,
+				'start' => $start,
+				'limit' => $limit,
+			])
 		);
 
 		$items = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
+			Lang::censorText($row['title']);
+			Lang::censorText($row['description']);
+
 			$items[$row['category_id']] = [
-				'id'       => (int) $row['category_id'],
-				'icon'     => Icon::parse($row['icon']),
-				'desc'     => $row['description'],
-				'priority' => (int) $row['priority'],
-				'status'   => (int) $row['status'],
-				'title'    => $row['title'],
+				'id'          => (int) $row['category_id'],
+				'icon'        => Icon::parse($row['icon']),
+				'priority'    => (int) $row['priority'],
+				'status'      => (int) $row['status'],
+				'title'       => $row['title'],
+				'description' => $row['description'],
 			];
 		}
 
@@ -96,13 +90,16 @@ final class CategoryRepository extends AbstractRepository
 			return [];
 
 		$result = Db::$db->query('', '
-			SELECT c.category_id, c.icon, c.description, c.priority, c.status, t.lang, t.value AS title
+			SELECT
+				c.*,
+				COALESCE(t.title, {string:empty_string}) AS title,
+				COALESCE(t.description, {string:empty_string}) AS description
 			FROM {db_prefix}lp_categories AS c
-				LEFT JOIN {db_prefix}lp_titles AS t ON (c.category_id = t.item_id AND t.type = {literal:category})
+				LEFT JOIN {db_prefix}lp_translations AS t ON (
+					c.category_id = t.item_id AND t.type = {literal:category} AND t.lang = {string:lang}
+				)
 			WHERE c.category_id = {int:item}',
-			[
-				'item' => $item,
-			]
+			array_merge($this->getLangQueryParams(), compact('item'))
 		);
 
 		if (empty(Db::$db->num_rows($result))) {
@@ -112,18 +109,14 @@ final class CategoryRepository extends AbstractRepository
 		}
 
 		while ($row = Db::$db->fetch_assoc($result)) {
-			Lang::censorText($row['description']);
-
 			$data ??= [
 				'id'          => (int) $row['category_id'],
 				'icon'        => $row['icon'],
-				'description' => $row['description'],
 				'priority'    => (int) $row['priority'],
 				'status'      => (int) $row['status'],
+				'title'       => $row['title'],
+				'description' => $row['description'],
 			];
-
-			if (! empty($row['lang']))
-				$data['titles'][$row['lang']] = $row['title'];
 		}
 
 		Db::$db->free_result($result);
@@ -140,7 +133,6 @@ final class CategoryRepository extends AbstractRepository
 		Security::checkSubmitOnce('check');
 
 		if (empty($item)) {
-			Utils::$context['lp_category']['titles'] = array_filter(Utils::$context['lp_category']['titles']);
 			$item = $this->addData();
 		} else {
 			$this->updateData($item);
@@ -173,7 +165,7 @@ final class CategoryRepository extends AbstractRepository
 		);
 
 		Db::$db->query('', '
-			DELETE FROM {db_prefix}lp_titles
+			DELETE FROM {db_prefix}lp_translations
 			WHERE item_id IN ({array_int:items})
 				AND type = {literal:category}',
 			[
@@ -243,13 +235,11 @@ final class CategoryRepository extends AbstractRepository
 			'{db_prefix}lp_categories',
 			[
 				'icon'        => 'string-60',
-				'description' => 'string-255',
 				'priority'    => 'int',
 				'status'      => 'int',
 			],
 			[
 				Utils::$context['lp_category']['icon'],
-				Utils::$context['lp_category']['description'],
 				$this->getPriority(),
 				Utils::$context['lp_category']['status'],
 			],
@@ -262,7 +252,7 @@ final class CategoryRepository extends AbstractRepository
 			return 0;
 		}
 
-		$this->saveTitles($item);
+		$this->saveTranslations($item);
 
 		Db::$db->transaction();
 
@@ -275,18 +265,17 @@ final class CategoryRepository extends AbstractRepository
 
 		Db::$db->query('', '
 			UPDATE {db_prefix}lp_categories
-			SET icon = {string:icon}, description = {string:description}, priority = {int:priority}, status = {int:status}
+			SET icon = {string:icon}, priority = {int:priority}, status = {int:status}
 			WHERE category_id = {int:category_id}',
 			[
 				'icon'        => Utils::$context['lp_category']['icon'],
-				'description' => Utils::$context['lp_category']['description'],
 				'priority'    => Utils::$context['lp_category']['priority'],
 				'status'      => Utils::$context['lp_category']['status'],
 				'category_id' => $item,
 			]
 		);
 
-		$this->saveTitles($item, 'replace');
+		$this->saveTranslations($item, 'replace');
 
 		Db::$db->transaction();
 	}

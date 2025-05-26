@@ -104,15 +104,7 @@ function show_block_entry(int $id, array $data): void
 	if (empty($id) || empty($data))
 		return;
 
-	$title = $data['note'] ?? '';
-
-	if (isset($data['titles'])) {
-		if (! empty($data['titles'][Utils::$context['user']['language']])) {
-			$title = $data['titles'][Utils::$context['user']['language']];
-		} elseif (! empty($data['titles'][Config::$language])) {
-			$title = $data['titles'][Config::$language];
-		}
-	}
+	$title = $data['description'] ?: $data['title'] ?: '';
 
 	echo '
 	<tr
@@ -240,27 +232,9 @@ function template_block_post(): void
 	</div>';
 	}
 
-	if (! empty(Utils::$context['post_errors'])) {
-		echo '
-	<div class="errorbox">
-		<ul>';
-
-		foreach (Utils::$context['post_errors'] as $error) {
-			echo '
-			<li>', $error, '</li>';
-		}
-
-		echo '
-		</ul>
-	</div>';
-	}
+	show_post_errors();
 
 	$fields = Utils::$context['posting_fields'];
-
-	$titles = '';
-	foreach (Utils::$context['lp_languages'] as $lang) {
-		$titles .= ', title_' . $lang['filename'] . ': `' . (Utils::$context['lp_block']['titles'][$lang['filename']] ?? '') . '`';
-	}
 
 	echo '
 	<form
@@ -269,21 +243,45 @@ function template_block_post(): void
 		method="post"
 		accept-charset="', Utils::$context['character_set'], '"
 		onsubmit="submitonce(this);"
-		x-data="{ tab: window.location.hash ? window.location.hash.substring(1) : \'', Config::$language, '\'', $titles, ' }"
+		x-data="{ title: \'', Utils::$context['lp_block']['title'], '\' }"
 	>
 		<div class="windowbg">
 			<div class="lp_tabs">
 				<div data-navigation>
-					<div class="bg odd active_navigation" data-tab="common">', Icon::get('content'), Lang::$txt['lp_tab_content'], '</div>
-					<div class="bg odd" data-tab="access">', Icon::get('access'), Lang::$txt['lp_tab_access_placement'], '</div>
-					<div class="bg odd" data-tab="appearance" x-show="', (int) Utils::$context['lp_block_tab_appearance'], '">', Icon::get('design'), Lang::$txt['lp_tab_appearance'], '</div>
-					<div class="bg odd" data-tab="tuning">', Icon::get('tools'), Lang::$txt['lp_tab_tuning'], '</div>
+					<div class="bg odd active_navigation" data-tab="common">
+						', Icon::get('content'), Lang::$txt['lp_tab_content'], '
+					</div>
+					<div class="bg odd" data-tab="access">
+						', Icon::get('access'), Lang::$txt['lp_tab_access_placement'], '
+					</div>
+					<div
+						class="bg odd"
+						data-tab="appearance"
+						x-show="', (int) Utils::$context['lp_block_tab_appearance'], '"
+					>
+						', Icon::get('design'), Lang::$txt['lp_tab_appearance'], '
+					</div>
+					<div class="bg odd" data-tab="tuning">
+						', Icon::get('tools'), Lang::$txt['lp_tab_tuning'], '
+					</div>
 				</div>
 				<div data-content>
-					<section class="bg even active_content" data-content="common">', template_portal_tab($fields), '</section>
-					<section class="bg even" data-content="access">', template_portal_tab($fields, Tab::ACCESS_PLACEMENT), '</section>
-					<section class="bg even" data-content="appearance" x-show="', (int) Utils::$context['lp_block_tab_appearance'], '">', template_portal_tab($fields, Tab::APPEARANCE), '</section>
-					<section class="bg even" data-content="tuning">', template_portal_tab($fields, Tab::TUNING), '</section>
+					<section class="bg even active_content" data-content="common">
+						', template_portal_tab($fields), '
+					</section>
+					<section class="bg even" data-content="access">
+						', template_portal_tab($fields, Tab::ACCESS_PLACEMENT), '
+					</section>
+					<section
+						class="bg even"
+						data-content="appearance"
+						x-show="', (int) Utils::$context['lp_block_tab_appearance'], '"
+					>
+						', template_portal_tab($fields, Tab::APPEARANCE), '
+					</section>
+					<section class="bg even" data-content="tuning">
+						', template_portal_tab($fields, Tab::TUNING), '
+					</section>
 				</div>
 			</div>
 			<br class="clear">
@@ -292,10 +290,24 @@ function template_block_post(): void
 				<input type="hidden" name="add_block" value="', Utils::$context['lp_block']['type'], '">
 				<input type="hidden" name="', Utils::$context['session_var'], '" value="', Utils::$context['session_id'], '">
 				<input type="hidden" name="seqnum" value="', Utils::$context['form_sequence_number'], '">
-				<button type="submit" class="button active" name="remove" style="float: left" x-show="!', (int) empty(Utils::$context['lp_block']['id']), '">', Lang::$txt['remove'], '</button>
-				<button type="submit" class="button" name="preview" @click="block.post($root)">', Icon::get('preview'), Lang::$txt['preview'], '</button>
-				<button type="submit" class="button" name="save" @click="block.post($root)">', Icon::get('save'), Lang::$txt['save'], '</button>
-				<button type="submit" class="button" name="save_exit" @click="block.post($root)">', Icon::get('save_exit'), Lang::$txt['lp_save_and_exit'], '</button>
+				<button
+					type="submit"
+					class="button active"
+					name="remove"
+					style="float: left"
+					x-show="!', (int) empty(Utils::$context['lp_block']['id']), '"
+				>
+					', Lang::$txt['remove'], '
+				</button>
+				<button type="submit" class="button" name="preview" @click="block.post($root)">
+					', Icon::get('preview'), Lang::$txt['preview'], '
+				</button>
+				<button type="submit" class="button" name="save" @click="block.post($root)">
+					', Icon::get('save'), Lang::$txt['save'], '
+				</button>
+				<button type="submit" class="button" name="save_exit" @click="block.post($root)">
+					', Icon::get('save_exit'), Lang::$txt['lp_save_and_exit'], '
+				</button>
 			</div>
 		</div>
 	</form>

@@ -49,6 +49,10 @@ abstract class AbstractPageList implements PageListInterface
 
 		$items = [];
 		foreach ($rows as $row) {
+			Lang::censorText($row['title']);
+			Lang::censorText($row['content']);
+			Lang::censorText($row['description']);
+
 			$row['content'] = Content::parse($row['content'], $row['type']);
 
 			$items[$row['page_id']] = [
@@ -61,12 +65,12 @@ abstract class AbstractPageList implements PageListInterface
 				'link'      => $this->getLink($row),
 				'views'     => $this->getViewsData($row),
 				'replies'   => $this->getRepliesData($row),
-				'title'     => $row['title'],
 				'is_new'    => $this->isNew($row),
 				'is_front'  => Setting::isFrontpage($row['slug']),
 				'image'     => $this->getImage($row),
 				'can_edit'  => $this->canEdit($row),
 				'edit_link' => $this->getEditLink($row),
+				'title'     => $row['title'],
 			];
 
 			$this->prepareTeaser($items, $row);

@@ -77,7 +77,7 @@ final class CategoryArea
 			->addColumns([
 				IdColumn::make()->setSort('category_id'),
 				IconColumn::make(),
-				TitleColumn::make(entity: 'categories')->setSort('title DESC', 'title'),
+				TitleColumn::make(entity: 'categories'),
 				Column::make('priority', Lang::$txt['lp_block_priority'])
 					->setStyle('width: 12%')
 					->setData(static fn($entry) => Str::html('div')->data('id', $entry['id'])
@@ -127,7 +127,8 @@ final class CategoryArea
 
 		Utils::$context['sub_template'] = 'category_post';
 
-		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_categories_edit_title'];
+		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_categories_edit_title'];
+
 		Utils::$context['page_area_title'] = Lang::$txt['lp_categories_edit_title'];
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
@@ -145,13 +146,15 @@ final class CategoryArea
 
 		if ($this->request()->has('remove')) {
 			$this->repository->remove([$item]);
+
 			$this->cache()->forget('all_categories');
+
 			$this->response()->redirect('action=admin;area=lp_categories');
 		}
 
 		$this->validateData();
 
-		$categoryTitle = Utils::$context['lp_category']['titles'][Utils::$context['user']['language']] ?? '';
+		$categoryTitle = Utils::$context['lp_category']['title'] ?? '';
 		Utils::$context['page_area_title'] = Lang::$txt['lp_categories_edit_title'] . ($categoryTitle ? ' - ' . $categoryTitle : '');
 
 		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_categories;sa=edit;id=' . Utils::$context['lp_category']['id'];
@@ -217,7 +220,7 @@ final class CategoryArea
 
 		Security::checkSubmitOnce('free');
 
-		Utils::$context['preview_title']   = Utils::$context['lp_category']['titles'][Language::getCurrent()] ?? '';
+		Utils::$context['preview_title']   = Utils::$context['lp_category']['title'] ?? '';
 		Utils::$context['preview_content'] = Utils::htmlspecialchars(Utils::$context['lp_category']['description'], ENT_QUOTES);
 
 		Str::cleanBbcode(Utils::$context['preview_title']);
@@ -225,7 +228,10 @@ final class CategoryArea
 		Lang::censorText(Utils::$context['preview_title']);
 		Lang::censorText(Utils::$context['preview_content']);
 
-		Utils::$context['page_title']    = Lang::$txt['preview'] . (Utils::$context['preview_title'] ? ' - ' . Utils::$context['preview_title'] : '');
+		Utils::$context['page_title'] = Lang::$txt['preview'] . (
+			Utils::$context['preview_title'] ? ' - ' . Utils::$context['preview_title'] : ''
+		);
+
 		Utils::$context['preview_title'] = $this->getPreviewTitle(Icon::parse(Utils::$context['lp_category']['icon']));
 	}
 }

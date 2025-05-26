@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 27.03.25
+ * @version 15.04.25
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
@@ -86,6 +86,10 @@ class Validator extends AbstractValidator
 	protected function checkErrors(): void
 	{
 		$this->checkName();
+
+		if (empty($this->filteredData['titles']['english'])) {
+			$this->errors[] = 'no_title';
+		}
 
 		if (empty($this->filteredData['descriptions']['english'])) {
 			$this->errors[] = 'no_description';
