@@ -62,6 +62,19 @@ $smcFunc['db_add_column'](
 	'do_nothing'
 );
 
+$smcFunc['db_add_column'](
+	'{db_prefix}lp_categories',
+	[
+		'name'     => 'parent_id',
+		'type'     => 'int',
+		'size'     => 10,
+		'unsigned' => true,
+		'default'  => 0,
+	],
+	[],
+	'do_nothing'
+);
+
 // Copy page data
 $colData = $smcFunc['db_list_columns']('{db_prefix}lp_pages', true);
 
