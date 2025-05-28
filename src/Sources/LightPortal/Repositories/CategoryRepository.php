@@ -57,6 +57,7 @@ final class CategoryRepository extends AbstractRepository
 
 			$items[$row['category_id']] = [
 				'id'          => (int) $row['category_id'],
+				'slug'        => $row['slug'],
 				'icon'        => Icon::parse($row['icon']),
 				'priority'    => (int) $row['priority'],
 				'status'      => (int) $row['status'],
@@ -111,6 +112,7 @@ final class CategoryRepository extends AbstractRepository
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$data ??= [
 				'id'          => (int) $row['category_id'],
+				'slug'        => $row['slug'],
 				'icon'        => $row['icon'],
 				'priority'    => (int) $row['priority'],
 				'status'      => (int) $row['status'],
@@ -234,11 +236,13 @@ final class CategoryRepository extends AbstractRepository
 		$item = (int) Db::$db->insert('',
 			'{db_prefix}lp_categories',
 			[
-				'icon'        => 'string-60',
-				'priority'    => 'int',
-				'status'      => 'int',
+				'slug'     => 'string',
+				'icon'     => 'string-60',
+				'priority' => 'int',
+				'status'   => 'int',
 			],
 			[
+				Utils::$context['lp_category']['slug'],
 				Utils::$context['lp_category']['icon'],
 				$this->getPriority(),
 				Utils::$context['lp_category']['status'],
@@ -265,9 +269,10 @@ final class CategoryRepository extends AbstractRepository
 
 		Db::$db->query('', '
 			UPDATE {db_prefix}lp_categories
-			SET icon = {string:icon}, priority = {int:priority}, status = {int:status}
+			SET slug = {string:slug}, icon = {string:icon}, priority = {int:priority}, status = {int:status}
 			WHERE category_id = {int:category_id}',
 			[
+				'slug'        => Utils::$context['lp_category']['slug'],
 				'icon'        => Utils::$context['lp_category']['icon'],
 				'priority'    => Utils::$context['lp_category']['priority'],
 				'status'      => Utils::$context['lp_category']['status'],

@@ -27,7 +27,7 @@ final class CategoryList implements ListInterface
 	{
 		$result = Db::$db->query('', /** @lang text */ '
 			SELECT
-				c.category_id, c.icon, c.priority,
+				c.*,
 				COALESCE(t.title, tf.title, {string:empty_string}) AS title,
 				COALESCE(t.description, tf.description, {string:empty_string}) AS description
 			FROM {db_prefix}lp_categories AS c
@@ -60,6 +60,7 @@ final class CategoryList implements ListInterface
 
 			$items[$row['category_id']] = [
 				'id'          => (int) $row['category_id'],
+				'slug'        => $row['slug'],
 				'icon'        => $row['icon'],
 				'priority'    => (int) $row['priority'],
 				'title'       => $row['title'],

@@ -554,9 +554,9 @@ final class PageArea
 			->setTab(Tab::ACCESS_PLACEMENT)
 			->setValue(static fn() => new EntryTypeSelect());
 
-		TextField::make('slug', Lang::$txt['lp_page_slug'])
+		TextField::make('slug', Lang::$txt['lp_slug'])
 			->setTab(Tab::SEO)
-			->setDescription(Lang::$txt['lp_page_slug_subtext'])
+			->setDescription(Lang::$txt['lp_slug_subtext'])
 			->required()
 			->setAttribute('maxlength', 255)
 			->setAttribute('pattern', LP_ALIAS_PATTERN)

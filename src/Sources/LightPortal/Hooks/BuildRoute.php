@@ -14,6 +14,7 @@ namespace Bugo\LightPortal\Hooks;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Db;
+use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Utils\Traits\HasCache;
 
@@ -34,14 +35,18 @@ class BuildRoute
 	{
 		if (($this->categories = $this->cache()->get('lp_sef_categories', LP_CACHE_TIME)) === null) {
 			$result = Db::$db->query('', /** @lang text */ '
-				SELECT c.category_id, t.title
+				SELECT c.category_id, COALESCE(c.slug, t.title, tf.title) AS title
 				FROM {db_prefix}lp_categories AS c
 					LEFT JOIN {db_prefix}lp_translations AS t ON (
 						c.category_id = t.item_id AND t.type = {literal:category} AND t.lang = {string:lang}
 					)
+					LEFT JOIN {db_prefix}lp_translations AS tf ON (
+						c.category_id = tf.item_id AND tf.type = {literal:category} AND tf.lang = {string:fallback_lang}
+					)
 				ORDER BY c.category_id',
 				[
-					'lang' => Config::$language,
+					'lang'          => User::$me->language,
+					'fallback_lang' => Config::$language,
 				]
 			);
 
@@ -55,7 +60,7 @@ class BuildRoute
 			$this->cache()->put('lp_sef_categories', $this->categories, LP_CACHE_TIME);
 		}
 
-		if (($this->tags = $this->cache()->get('lp_sef_tags', LP_CACHE_TIME)) == null) {
+		if (($this->tags = $this->cache()->get('lp_sef_tags', LP_CACHE_TIME)) === null) {
 			$result = Db::$db->query('', /** @lang text */ '
 				SELECT tag.tag_id, t.title
 				FROM {db_prefix}lp_tags AS tag

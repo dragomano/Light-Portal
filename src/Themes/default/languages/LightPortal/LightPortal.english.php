@@ -28,6 +28,8 @@ $txt['lp_remove_from_fp'] = 'Remove from the front page';
 $txt['lp_task_list'] = 'Task list';
 $txt['lp_new_version'] = 'Your version of the portal is outdated. A new version is available — {0}, released on {1}.';
 $txt['lp_plugin_outdated'] = 'An outdated version of the plugin is being used. Please update!';
+$txt['lp_slug'] = 'Slug';
+$txt['lp_slug_subtext'] = 'The slug must begin with a Latin letter and consist of lowercase Latin letters, numbers or dashes.';
 
 // Settings
 $txt['lp_settings'] = 'Portal settings';
@@ -227,8 +229,6 @@ $txt['lp_pages_edit_title'] = 'Editing page';
 $txt['lp_pages_edit_description'] = 'Make the necessary changes.';
 $txt['lp_pages_extra'] = 'Portal pages';
 $txt['lp_pages_search'] = 'Slug or title';
-$txt['lp_page_slug'] = 'Slug';
-$txt['lp_page_slug_subtext'] = 'The page slug must begin with a Latin letter and consist of lowercase Latin letters, numbers or dashes.';
 $txt['lp_page_type'] = 'Type';
 $txt['lp_page_type_set'] = ['Default', 'Internal', 'Draft'];
 $txt['lp_page_description'] = 'Description';
@@ -409,7 +409,7 @@ $txt['lp_block_not_found'] = 'Block not found!';
 $txt['lp_post_error_no_title'] = 'The <strong>title</strong> field was not filled out. It is required.';
 $txt['lp_post_error_no_slug'] = 'The <strong>slug</strong> field was not filled out. It is required.';
 $txt['lp_post_error_no_valid_slug'] = 'The specified slug is not correct!';
-$txt['lp_post_error_no_unique_slug'] = 'A page with this slug already exists!';
+$txt['lp_post_error_no_unique_slug'] = 'This slug is already being used!';
 $txt['lp_post_error_no_content'] = 'The content not specified! It is required.';
 $txt['lp_post_error_no_areas'] = 'The <strong>areas</strong> field was not filled out. It is required.';
 $txt['lp_post_error_no_valid_areas'] = 'The <strong>areas</strong> field was set incorrectly!';
