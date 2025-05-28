@@ -12,11 +12,42 @@
 
 namespace Bugo\LightPortal\Validators;
 
+use Bugo\Compat\Db;
+
 class CategoryValidator extends AbstractValidator
 {
 	protected array $filters = [
 		'category_id' => FILTER_VALIDATE_INT,
+		'slug'        => [
+			'filter'  => FILTER_VALIDATE_REGEXP,
+			'options' => ['regexp' => '/' . LP_ALIAS_PATTERN . '/'],
+		],
 		'icon'        => FILTER_DEFAULT,
 		'description' => FILTER_UNSAFE_RAW,
 	];
+
+	protected function extendErrors(): void
+	{
+		$this->checkSlug();
+	}
+
+	protected function isUnique(): bool
+	{
+		$result = Db::$db->query('', '
+			SELECT COUNT(category_id)
+			FROM {db_prefix}lp_categories
+			WHERE slug = {string:slug}
+				AND category_id != {int:item}',
+			[
+				'slug' => $this->filteredData['slug'],
+				'item' => $this->filteredData['category_id'],
+			]
+		);
+
+		[$count] = Db::$db->fetch_row($result);
+
+		Db::$db->free_result($result);
+
+		return $count == 0;
+	}
 }

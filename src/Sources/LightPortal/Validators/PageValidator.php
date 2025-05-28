@@ -90,29 +90,6 @@ class PageValidator extends AbstractValidator
 		);
 	}
 
-	protected function checkSlug(): void
-	{
-		$rawSlug = $this->post()->get('slug');
-		$validatedSlug = $this->filteredData['slug'] ?? null;
-
-		$isEmptySlug = empty($rawSlug);
-		$isInvalidSlug = ! $isEmptySlug && $validatedSlug === false;
-		$isNonUniqueSlug = ! $isEmptySlug && $validatedSlug !== false && ! $this->isUnique();
-
-		if ($isEmptySlug) {
-			$this->errors[] = 'no_slug';
-		}
-
-		if ($isInvalidSlug) {
-			$this->errors[] = 'no_valid_slug';
-			$this->filteredData['slug'] = $rawSlug;
-		}
-
-		if ($isNonUniqueSlug) {
-			$this->errors[] = 'no_unique_slug';
-		}
-	}
-
 	protected function isUnique(): bool
 	{
 		$result = Db::$db->query('', '

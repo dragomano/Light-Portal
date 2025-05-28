@@ -211,7 +211,7 @@ final class Category extends AbstractPageList
 	{
 		$result = Db::$db->query('', '
 			SELECT
-				COALESCE(c.category_id, 0) AS category_id, c.icon, c.priority, COUNT(p.page_id) AS frequency,
+				COALESCE(c.category_id, 0) AS category_id, c.slug, c.icon, c.priority, COUNT(p.page_id) AS frequency,
 				COALESCE(NULLIF(t.title, {string:empty_string}), tf.title, {string:empty_string}) AS title,
 				COALESCE(NULLIF(t.description, {string:empty_string}), tf.description, {string:empty_string}) AS description
 			FROM {db_prefix}lp_pages AS p
@@ -248,6 +248,7 @@ final class Category extends AbstractPageList
 		$items = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['category_id']] = [
+				'slug'        => $row['slug'],
 				'icon'        => Icon::parse($row['icon']),
 				'link'        => PortalSubAction::CATEGORIES->url() . ';id=' . $row['category_id'],
 				'priority'    => (int) $row['priority'],

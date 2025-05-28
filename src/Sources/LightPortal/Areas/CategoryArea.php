@@ -27,6 +27,7 @@ use Bugo\LightPortal\Models\CategoryFactory;
 use Bugo\LightPortal\Repositories\CategoryRepository;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\TextareaField;
+use Bugo\LightPortal\UI\Fields\TextField;
 use Bugo\LightPortal\UI\Partials\IconSelect;
 use Bugo\LightPortal\UI\Tables\ContextMenuColumn;
 use Bugo\LightPortal\UI\Tables\IconColumn;
@@ -200,13 +201,25 @@ final class CategoryArea
 		$this->prepareTitleFields('category');
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
-			->setTab(Tab::CONTENT)
+			->setTab(Tab::APPEARANCE)
 			->setValue(static fn() => new IconSelect(), [
 				'icon' => Utils::$context['lp_category']['icon'],
 			]);
 
+		TextField::make('slug', Lang::$txt['lp_slug'])
+			->setTab(Tab::SEO)
+			->setDescription(Lang::$txt['lp_slug_subtext'])
+			->required()
+			->setAttribute('maxlength', 255)
+			->setAttribute('pattern', LP_ALIAS_PATTERN)
+			->setAttribute(
+				'x-slug.lazy',
+				empty(Utils::$context['lp_category']['id']) ? 'title' : '{}'
+			)
+			->setValue(Utils::$context['lp_category']['slug']);
+
 		TextareaField::make('description', Lang::$txt['lp_category_description'])
-			->setTab(Tab::CONTENT)
+			->setTab(Tab::SEO)
 			->setAttribute('maxlength', 255)
 			->setValue(Utils::$context['lp_category']['description']);
 

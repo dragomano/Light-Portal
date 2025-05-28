@@ -105,6 +105,7 @@ final class CategoryExport extends AbstractExport
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['category_id']] ??= [
 				'category_id' => $row['category_id'],
+				'slug'        => $row['slug'],
 				'icon'        => trim($row['icon'] ?? ''),
 				'priority'    => $row['priority'],
 				'status'      => $row['status'],

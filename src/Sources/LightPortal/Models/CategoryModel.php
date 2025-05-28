@@ -18,6 +18,8 @@ class CategoryModel extends AbstractModel
 {
 	public int $id;
 
+	public string $slug;
+
 	public string $icon;
 
 	public int $priority;
@@ -31,6 +33,7 @@ class CategoryModel extends AbstractModel
 	public function __construct(array $data)
 	{
 		$this->id          = $data['category_id'] ?? $data['id'] ?? 0;
+		$this->slug        = $data['slug'] ?? '';
 		$this->icon        = $data['icon'] ?? '';
 		$this->priority    = $data['priority'] ?? 0;
 		$this->status      = $data['status'] ?? Status::ACTIVE->value;

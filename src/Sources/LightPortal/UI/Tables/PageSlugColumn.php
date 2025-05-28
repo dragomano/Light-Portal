@@ -19,7 +19,7 @@ class PageSlugColumn extends Column
 {
 	public static function make(string $name = 'slug', string $title = ''): static
 	{
-		return parent::make($name, $title ?: Lang::$txt['lp_page_slug'])
+		return parent::make($name, $title ?: Lang::$txt['lp_slug'])
 			->setData('slug', 'centertext')
 			->setSort('p.slug DESC', 'p.slug');
 	}

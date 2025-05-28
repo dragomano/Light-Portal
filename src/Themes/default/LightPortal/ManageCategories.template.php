@@ -2,6 +2,7 @@
 
 use Bugo\Compat\{Config, Lang};
 use Bugo\Compat\{Theme, Utils};
+use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Utils\Icon;
 
 function template_manage_categories_above() {}
@@ -56,10 +57,22 @@ function template_category_post(): void
 					<div class="bg odd active_navigation" data-tab="common">
 						', Icon::get('content'), Lang::$txt['lp_tab_content'], '
 					</div>
+					<div class="bg odd" data-tab="appearance">
+						', Icon::get('design'), Lang::$txt['lp_tab_appearance'], '
+					</div>
+					<div class="bg odd" data-tab="seo">
+						', Icon::get('spider'), Lang::$txt['lp_tab_seo'], '
+					</div>
 				</div>
 				<div data-content>
 					<section class="bg even active_content" data-content="common">
 						', template_portal_tab($fields), '
+					</section>
+					<section class="bg even" data-content="appearance">
+						', template_portal_tab($fields, Tab::APPEARANCE), '
+					</section>
+					<section class="bg even" data-content="seo">
+						', template_portal_tab($fields, Tab::SEO), '
 					</section>
 				</div>
 			</div>
@@ -91,5 +104,6 @@ function template_category_post(): void
 	</form>
 	<script>
 		const category = new Category();
+		const tabs = new PortalTabs();
 	</script>';
 }
