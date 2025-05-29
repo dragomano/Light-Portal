@@ -18,6 +18,8 @@ class TagModel extends AbstractModel
 {
 	public int $id;
 
+	public string $slug;
+
 	public string $icon;
 
 	public int $status;
@@ -27,6 +29,7 @@ class TagModel extends AbstractModel
 	public function __construct(array $data)
 	{
 		$this->id     = $data['tag_id'] ?? $data['id'] ?? 0;
+		$this->slug   = $data['slug'] ?? '';
 		$this->icon   = $data['icon'] ?? '';
 		$this->status = $data['status'] ?? Status::ACTIVE->value;
 		$this->title  = $data['title'] ?? '';

@@ -484,6 +484,12 @@ $tables[] = [
 			'auto'     => true
 		],
 		[
+			'name' => 'slug',
+			'type' => 'varchar',
+			'size' => 255,
+			'null' => false
+		],
+		[
 			'name' => 'icon',
 			'type' => 'varchar',
 			'size' => 255,
@@ -501,6 +507,10 @@ $tables[] = [
 		[
 			'type'    => 'primary',
 			'columns' => ['tag_id']
+		],
+		[
+			'type'    => 'unique',
+			'columns' => ['slug']
 		]
 	]
 ];

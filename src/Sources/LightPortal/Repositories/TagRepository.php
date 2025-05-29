@@ -53,6 +53,7 @@ final class TagRepository extends AbstractRepository
 
 			$items[$row['tag_id']] = [
 				'id'     => (int) $row['tag_id'],
+				'slug'   => $row['slug'],
 				'icon'   => Icon::parse($row['icon']),
 				'status' => (int) $row['status'],
 				'title'  => $row['title'],
@@ -102,6 +103,7 @@ final class TagRepository extends AbstractRepository
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$data ??= [
 				'id'     => (int) $row['tag_id'],
+				'slug'   => $row['slug'],
 				'icon'   => $row['icon'],
 				'status' => (int) $row['status'],
 				'title'  => $row['title'],
@@ -182,10 +184,12 @@ final class TagRepository extends AbstractRepository
 		$item = (int) Db::$db->insert('',
 			'{db_prefix}lp_tags',
 			[
+				'slug'   => 'string',
 				'icon'   => 'string-60',
 				'status' => 'int',
 			],
 			[
+				Utils::$context['lp_tag']['slug'],
 				Utils::$context['lp_tag']['icon'],
 				Utils::$context['lp_tag']['status'],
 			],
@@ -211,9 +215,10 @@ final class TagRepository extends AbstractRepository
 
 		Db::$db->query('', '
 			UPDATE {db_prefix}lp_tags
-			SET icon = {string:icon}, status = {int:status}
+			SET slug = {string:slug}, icon = {string:icon}, status = {int:status}
 			WHERE tag_id = {int:tag_id}',
 			[
+				'slug'   => Utils::$context['lp_tag']['slug'],
 				'icon'   => Utils::$context['lp_tag']['icon'],
 				'status' => Utils::$context['lp_tag']['status'],
 				'tag_id' => $item,

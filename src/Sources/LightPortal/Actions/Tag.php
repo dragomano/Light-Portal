@@ -205,7 +205,7 @@ final class Tag extends AbstractPageList
 	{
 		$result = Db::$db->query('', '
 			SELECT
-				tag.tag_id, tag.icon, COUNT(tag.tag_id) AS frequency,
+				tag.tag_id, tag.slug, tag.icon, COUNT(tag.tag_id) AS frequency,
 				COALESCE(NULLIF(t.title, {string:empty_string}), tf.title, {string:empty_string}) AS title
 			FROM {db_prefix}lp_pages AS p
 				INNER JOIN {db_prefix}lp_page_tag AS pt ON (p.page_id = pt.page_id)
@@ -242,6 +242,7 @@ final class Tag extends AbstractPageList
 		$items = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['tag_id']] = [
+				'slug'      => $row['slug'],
 				'icon'      => Icon::parse($row['icon']),
 				'link'      => PortalSubAction::TAGS->url() . ';id=' . $row['tag_id'],
 				'frequency' => (int) $row['frequency'],
