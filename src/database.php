@@ -112,6 +112,13 @@ $tables[] = [
 			'auto'     => true
 		],
 		[
+			'name'     => 'parent_id',
+			'type'     => 'int',
+			'size'     => 10,
+			'unsigned' => true,
+			'default'  => 0
+		],
+		[
 			'name' => 'slug',
 			'type' => 'varchar',
 			'size' => 255,
@@ -567,12 +574,7 @@ $tables[] = [
 			'title'   => 'string-255',
 			'content' => 'string',
 		],
-		'values' => $language === $user_info['language'] ? [
-			[1, 'page', $language, $mbname, $content],
-		] : [
-			[1, 'page', $language, $mbname, $content],
-			[1, 'page', $user_info['language'], $mbname, ''],
-		],
+		'values' => [1, 'page', $language, $mbname, $content],
 		'keys' => ['item_id', 'type', 'lang']
 	]
 ];
@@ -586,8 +588,6 @@ foreach ($tables as $table) {
 		$smcFunc['db_insert']('ignore', '{db_prefix}' . $table['name'], $table['default']['columns'], $table['default']['values'], $table['default']['keys']);
 	}
 }
-
-$smcFunc['db_query']('', 'CREATE INDEX title_prefix ON {db_prefix}lp_translations (title(100))', []);
 
 $smcFunc['db_query']('', '
 	DELETE FROM {db_prefix}background_tasks
