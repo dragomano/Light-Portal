@@ -75,6 +75,18 @@ $smcFunc['db_add_column'](
 	'do_nothing'
 );
 
+$smcFunc['db_add_column'](
+	'{db_prefix}lp_tags',
+	[
+		'name' => 'slug',
+		'type' => 'varchar',
+		'size' => 255,
+		'null' => false,
+	],
+	[],
+	'do_nothing'
+);
+
 // Copy page data
 $colData = $smcFunc['db_list_columns']('{db_prefix}lp_pages', true);
 

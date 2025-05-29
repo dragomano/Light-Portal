@@ -68,6 +68,7 @@ final class TagImport extends AbstractImport
 			foreach ($element->item as $item) {
 				$items[] = [
 					'tag_id' => $tagId = intval($item['tag_id']),
+					'slug'   => (string) $item->slug,
 					'icon'   => $item->icon,
 					'status' => intval($item['status']),
 				];
@@ -108,6 +109,7 @@ final class TagImport extends AbstractImport
 			$items,
 			[
 				'tag_id' => 'int',
+				'slug'   => 'string',
 				'icon'   => 'string',
 				'status' => 'int',
 			],

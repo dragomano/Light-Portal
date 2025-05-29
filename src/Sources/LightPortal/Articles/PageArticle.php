@@ -300,17 +300,17 @@ class PageArticle extends AbstractArticle
 			return;
 
 		$result = Db::$db->query('', '
-			SELECT t.tag_id, t.icon, pt.page_id, COALESCE(tt.title, tf.title, {string:empty_string}) AS title
-			FROM {db_prefix}lp_tags AS t
-				LEFT JOIN {db_prefix}lp_page_tag AS pt ON (t.tag_id = pt.tag_id)
-				LEFT JOIN {db_prefix}lp_translations AS tt ON (
-					pt.tag_id = tt.item_id AND tt.type = {literal:tag} AND tt.lang = {string:lang}
+			SELECT tag.*, pt.page_id, COALESCE(t.title, tf.title, {string:empty_string}) AS title
+			FROM {db_prefix}lp_tags AS tag
+				LEFT JOIN {db_prefix}lp_page_tag AS pt ON (tag.tag_id = pt.tag_id)
+				LEFT JOIN {db_prefix}lp_translations AS t ON (
+					pt.tag_id = t.item_id AND t.type = {literal:tag} AND t.lang = {string:lang}
 				)
 				LEFT JOIN {db_prefix}lp_translations AS tf ON (
 					pt.tag_id = tf.item_id AND tf.type = {literal:tag} AND tf.lang = {string:fallback_lang}
 				)
 			WHERE pt.page_id IN ({array_int:pages})
-				AND t.status = {int:status}
+				AND tag.status = {int:status}
 			ORDER BY title',
 			[
 				'empty_string'  => '',
@@ -326,6 +326,7 @@ class PageArticle extends AbstractArticle
 				continue;
 
 			$pages[$row['page_id']]['tags'][] = [
+				'slug'  => $row['slug'],
 				'icon'  => Icon::parse($row['icon']),
 				'href'  => PortalSubAction::TAGS->url() . ';id=' . $row['tag_id'],
 				'title' => $row['title'],

@@ -28,7 +28,7 @@ final class TagList implements ListInterface
 	public function __invoke(): array
 	{
 		$result = Db::$db->query('', /** @lang text */ '
-			SELECT tag.tag_id, tag.icon, COALESCE(t.title, tf.title, {string:empty_string}) AS title
+			SELECT tag.tag_id, tag.slug, tag.icon, COALESCE(t.title, tf.title, {string:empty_string}) AS title
 			FROM {db_prefix}lp_tags AS tag
 				LEFT JOIN {db_prefix}lp_translations AS t ON (
 					tag.tag_id = t.item_id AND t.type = {literal:tag} AND t.lang = {string:lang}
@@ -52,6 +52,7 @@ final class TagList implements ListInterface
 
 			$items[$row['tag_id']] = [
 				'id'    => (int) $row['tag_id'],
+				'slug'  => $row['slug'],
 				'icon'  => $row['icon'],
 				'title' => $row['title'],
 			];

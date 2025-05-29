@@ -62,14 +62,18 @@ class BuildRoute
 
 		if (($this->tags = $this->cache()->get('lp_sef_tags', LP_CACHE_TIME)) === null) {
 			$result = Db::$db->query('', /** @lang text */ '
-				SELECT tag.tag_id, t.title
+				SELECT tag.tag_id, COALESCE(tag.slug, t.title, tf.title) AS title
 				FROM {db_prefix}lp_tags AS tag
 					LEFT JOIN {db_prefix}lp_translations AS t ON (
 						tag.tag_id = t.item_id AND t.type = {literal:tag} AND t.lang = {string:lang}
 					)
+					LEFT JOIN {db_prefix}lp_translations AS tf ON (
+						tag.tag_id = tf.item_id AND tf.type = {literal:tag} AND tf.lang = {string:fallback_lang}
+					)
 				ORDER BY tag.tag_id',
 				[
-					'lang' => Config::$language,
+					'lang'          => User::$me->language,
+					'fallback_lang' => Config::$language,
 				]
 			);
 

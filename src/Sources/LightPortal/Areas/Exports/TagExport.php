@@ -84,14 +84,14 @@ final class TagExport extends AbstractExport
 		$tags = $this->hasEntityInRequest() ? $this->request()->get($this->entity) : [];
 
 		$result = Db::$db->query('', '
-			SELECT c.*, pt.page_id, t.lang, COALESCE(t.title, {string:empty_string}) AS title
-			FROM {db_prefix}lp_tags AS c
-				LEFT JOIN {db_prefix}lp_page_tag AS pt ON (c.tag_id = pt.tag_id)
+			SELECT tag.*, pt.page_id, t.lang, COALESCE(t.title, {string:empty_string}) AS title
+			FROM {db_prefix}lp_tags AS tag
+				LEFT JOIN {db_prefix}lp_page_tag AS pt ON (tag.tag_id = pt.tag_id)
 				LEFT JOIN {db_prefix}lp_translations AS t ON (
-					c.tag_id = t.item_id AND t.type = {literal:tag}
+					tag.tag_id = t.item_id AND t.type = {literal:tag}
 				)
 			WHERE (title IS NOT NULL AND title != {string:empty_string})' . (empty($tags) ? '' : '
-				AND c.tag_id IN ({array_int:tags})'),
+				AND tag.tag_id IN ({array_int:tags})'),
 			[
 				'empty_string' => '',
 				'tags'         => $tags,
@@ -102,6 +102,7 @@ final class TagExport extends AbstractExport
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['tag_id']] ??= [
 				'tag_id' => $row['tag_id'],
+				'slug'   => $row['slug'],
 				'icon'   => trim($row['icon'] ?? ''),
 				'status' => $row['status'],
 			];
