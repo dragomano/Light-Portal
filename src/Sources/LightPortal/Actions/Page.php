@@ -47,7 +47,7 @@ use const LP_PAGE_URL;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class Page implements ActionInterface
+final readonly class Page implements ActionInterface
 {
 	use HasCache;
 	use HasBreadcrumbs;
@@ -56,7 +56,7 @@ final class Page implements ActionInterface
 	use HasResponse;
 	use HasSession;
 
-	public function __construct(private readonly PageRepository $repository) {}
+	public function __construct(private PageRepository $repository) {}
 
 	public function show(): void
 	{

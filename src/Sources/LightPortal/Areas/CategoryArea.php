@@ -47,11 +47,11 @@ use const LP_NAME;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class CategoryArea
+final readonly class CategoryArea
 {
 	use HasArea;
 
-	public function __construct(private readonly CategoryRepository $repository) {}
+	public function __construct(private CategoryRepository $repository) {}
 
 	public function main(): void
 	{

@@ -57,14 +57,14 @@ use const LP_VERSION;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class PluginArea
+final readonly class PluginArea
 {
 	use HasCache;
 	use HasRequest;
 	use HasResponse;
 	use HasEvents;
 
-	public function __construct(private readonly PluginRepository $repository) {}
+	public function __construct(private PluginRepository $repository) {}
 
 	public function main(): void
 	{

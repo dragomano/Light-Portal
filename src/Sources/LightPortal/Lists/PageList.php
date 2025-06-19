@@ -24,9 +24,9 @@ use function time;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class PageList implements ListInterface
+final readonly class PageList implements ListInterface
 {
-	public function __construct(private readonly PageRepository $repository) {}
+	public function __construct(private PageRepository $repository) {}
 
 	public function __invoke(): array
 	{
