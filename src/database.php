@@ -2,8 +2,8 @@
 
 global $user_info, $language, $mbname, $modSettings, $settings, $smcFunc, $context;
 
-if (version_compare(PHP_VERSION, '8.1', '<')) {
-	die('This mod needs PHP 8.1 or greater. You will not be able to install/use this mod. Please, contact your host and ask for a php upgrade.');
+if (version_compare(PHP_VERSION, '8.2', '<')) {
+	die('This mod needs PHP 8.2 or greater. You will not be able to install/use this mod. Please, contact your host and ask for a php upgrade.');
 }
 
 if (! extension_loaded('intl')) {
