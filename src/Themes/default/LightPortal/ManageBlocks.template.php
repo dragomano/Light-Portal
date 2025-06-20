@@ -104,7 +104,7 @@ function show_block_entry(int $id, array $data): void
 	if (empty($id) || empty($data))
 		return;
 
-	$title = $data['description'] ?: $data['title'] ?: '';
+	$title = ($data['description'] ?: $data['title']) ?: '';
 
 	echo '
 	<tr

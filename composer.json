@@ -5,18 +5,18 @@
     }
   },
   "require": {
-    "php": "^8.1",
+    "php": "^8.2",
     "ext-dom": "*",
     "ext-simplexml": "*"
   },
   "require-dev": {
-    "consolidation/robo": "^4.0",
+    "consolidation/robo": "^5.1",
     "pear/archive_tar": "^1.5",
     "rector/rector": "^2.0"
   },
   "config": {
     "platform": {
-      "php": "8.1"
+      "php": "8.2"
     }
   },
   "scripts": {

@@ -45,11 +45,11 @@ use const LP_NAME;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class TagArea
+final readonly class TagArea
 {
 	use HasArea;
 
-	public function __construct(private readonly TagRepository $repository) {}
+	public function __construct(private TagRepository $repository) {}
 
 	public function main(): void
 	{

@@ -28,15 +28,15 @@ use const DIRECTORY_SEPARATOR;
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-final class PluginHandler
+final readonly class PluginHandler
 {
-	private readonly AssetHandler $assetHandler;
+	private AssetHandler $assetHandler;
 
-	private readonly ConfigHandler $configHandler;
+	private ConfigHandler $configHandler;
 
-	private readonly LangHandler $langHandler;
+	private LangHandler $langHandler;
 
-	private readonly EventManager $manager;
+	private EventManager $manager;
 
 	public function __construct(array $plugins = [])
 	{

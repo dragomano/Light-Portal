@@ -63,12 +63,12 @@ use const LP_PAGE_PARAM;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class BlockArea
+final readonly class BlockArea
 {
 	use HasArea;
 	use HasEvents;
 
-	public function __construct(private readonly BlockRepository $repository) {}
+	public function __construct(private BlockRepository $repository) {}
 
 	public function main(): void
 	{
