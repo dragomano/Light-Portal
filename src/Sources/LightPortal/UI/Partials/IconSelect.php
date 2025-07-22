@@ -52,7 +52,7 @@ final class IconSelect extends AbstractPartial
 				],
 				selectedValue: "' . $icon . '",
 				labelRenderer: function (data) {
-					return `<i class="${data.value} fa-fw"></i> ${data.value}`;
+					return `<i class="${data.value}"></i> ${data.value}`;
 				},
 				onServerSearch: async function (search, virtualSelect) {
 					await axios.post("' . Utils::$context['form_action'] . ';icons", {

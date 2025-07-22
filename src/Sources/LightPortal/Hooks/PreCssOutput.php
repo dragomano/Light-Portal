@@ -43,7 +43,7 @@ class PreCssOutput
 		$styles = [];
 
 		if (empty(Config::$modSettings['lp_fa_source']) || Config::$modSettings['lp_fa_source'] === 'css_cdn') {
-			$styles[] = 'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css';
+			$styles[] = 'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7/css/all.min.css';
 		}
 
 		$this->events()->dispatch(PortalHook::preloadStyles, ['styles' => &$styles]);
