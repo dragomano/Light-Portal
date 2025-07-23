@@ -51,7 +51,7 @@ trait HasQuery
 			return;
 
 		$icons = $this->getFaIcons();
-		$template = Str::html('i', ['class' => '%1$s fa-fw'])
+		$template = Str::html('i', ['class' => '%1$s'])
 			->setAttribute('aria-hidden', 'true') . '&nbsp;%1$s';
 
 		$this->events()->dispatch(PortalHook::prepareIconList, ['icons' => &$icons, 'template' => &$template]);
