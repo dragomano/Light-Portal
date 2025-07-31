@@ -40,7 +40,7 @@ final class CommentRepository
 			'com.created_at DESC',
 		];
 
-		$result = Db::$db->query('', /** @lang text */ '
+		$result = Db::$db->query(/** @lang text */ '
 			SELECT com.id, com.parent_id, com.page_id, com.author_id, com.message, com.created_at,
 				mem.real_name AS author_name, par.name, par.value
 			FROM {db_prefix}lp_comments AS com
@@ -103,7 +103,7 @@ final class CommentRepository
 
 	public function update(array $data): void
 	{
-		Db::$db->query('', '
+		Db::$db->query('
 			UPDATE {db_prefix}lp_comments
 			SET message = {string:message}
 			WHERE id = {int:id}
@@ -114,7 +114,7 @@ final class CommentRepository
 
 	public function remove(int $item, string $pageSlug): array
 	{
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT id
 			FROM {db_prefix}lp_comments
 			WHERE id = {int:item}
@@ -135,7 +135,7 @@ final class CommentRepository
 			return [];
 		}
 
-		Db::$db->query('', '
+		Db::$db->query('
 			DELETE FROM {db_prefix}lp_comments
 			WHERE id IN ({array_int:items})',
 			[
@@ -143,7 +143,7 @@ final class CommentRepository
 			]
 		);
 
-		Db::$db->query('', '
+		Db::$db->query('
 			UPDATE {db_prefix}lp_pages
 			SET num_comments = CASE
 				WHEN num_comments < {int:num_items} THEN 0
@@ -156,7 +156,7 @@ final class CommentRepository
 			]
 		);
 
-		Db::$db->query('', '
+		Db::$db->query('
 			DELETE FROM {db_prefix}lp_params
 			WHERE item_id IN ({array_int:items})
 				AND type = {literal:comment}',
@@ -165,7 +165,7 @@ final class CommentRepository
 			]
 		);
 
-		Db::$db->query('', '
+		Db::$db->query('
 			DELETE FROM {db_prefix}user_alerts
 			WHERE content_type = {string:type}
 				AND content_id IN ({array_int:items})',
@@ -175,7 +175,7 @@ final class CommentRepository
 			]
 		);
 
-		Db::$db->query('', '
+		Db::$db->query('
 			UPDATE {db_prefix}lp_pages
 			SET last_comment_id = (
 				SELECT COALESCE(MAX(com.id), 0)
@@ -202,7 +202,7 @@ final class CommentRepository
 		if ($comments === [])
 			return;
 
-		Db::$db->query('', '
+		Db::$db->query('
 			DELETE FROM {db_prefix}lp_comments
 			WHERE id IN ({array_int:items})',
 			[
@@ -210,7 +210,7 @@ final class CommentRepository
 			]
 		);
 
-		Db::$db->query('', '
+		Db::$db->query('
 			DELETE FROM {db_prefix}lp_params
 			WHERE item_id IN ({array_int:items})
 				AND type = {literal:comment}',
@@ -222,7 +222,7 @@ final class CommentRepository
 
 	public function updateLastCommentId(int $item, int $pageId): void
 	{
-		Db::$db->query('', '
+		Db::$db->query('
 			UPDATE {db_prefix}lp_pages
 			SET num_comments = num_comments + 1, last_comment_id = {int:item}
 			WHERE page_id = {int:page_id}',

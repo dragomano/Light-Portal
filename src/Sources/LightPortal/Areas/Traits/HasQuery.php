@@ -92,7 +92,7 @@ trait HasQuery
 		if (empty($search = $data['search']))
 			return;
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT t.id_topic, m.subject
 			FROM {db_prefix}topics AS t
 				INNER JOIN {db_prefix}messages AS m ON (m.id_msg = t.id_first_msg)

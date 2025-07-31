@@ -70,7 +70,7 @@ class Optimus extends Plugin
 		if (empty($topic))
 			return [];
 
-		$result = Db::$db->query('', /** @lang text */ '
+		$result = Db::$db->query(/** @lang text */ '
 			SELECT ok.id, ok.name, olk.topic_id
 			FROM {db_prefix}optimus_keywords AS ok
 				INNER JOIN {db_prefix}optimus_log_keywords AS olk ON (ok.id = olk.keyword_id)

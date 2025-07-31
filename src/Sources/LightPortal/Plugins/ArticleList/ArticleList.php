@@ -108,7 +108,7 @@ class ArticleList extends Block
 		if (empty($parameters['include_topics']))
 			return [];
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT m.id_topic, m.id_msg, m.subject, m.body, m.smileys_enabled
 			FROM {db_prefix}topics AS t
 				INNER JOIN {db_prefix}messages AS m ON (t.id_first_msg = m.id_msg)
@@ -155,7 +155,7 @@ class ArticleList extends Block
 		if (empty($parameters['include_pages']))
 			return [];
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT
 				p.page_id, p.slug, p.type,
 				COALESCE(NULLIF(t.title, {string:empty_string}), tf.title, {string:empty_string}) AS title,

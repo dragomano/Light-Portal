@@ -69,7 +69,7 @@ class RecentComments extends Block
 		if (empty($commentsCount))
 			return [];
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT DISTINCT com.id, com.page_id, com.message, com.created_at, p.slug,
 				COALESCE(mem.real_name, {string:guest}) AS author_name,
 				(

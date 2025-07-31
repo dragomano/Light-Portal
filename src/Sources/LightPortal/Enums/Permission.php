@@ -79,7 +79,7 @@ enum Permission: int
 		$cache = app(CacheInterface::class);
 
 		return $cache->remember('board_moderators', function () {
-			$result = Db::$db->query('', /** @lang text */ '
+			$result = Db::$db->query(/** @lang text */ '
 				SELECT id_member
 				FROM {db_prefix}moderators'
 			);

@@ -54,7 +54,7 @@ trait HasTranslations
 		if (! $results)
 			return;
 
-		Db::$db->query('', '
+		Db::$db->query('
 			UPDATE {db_prefix}lp_translations
 			SET title = NULLIF(title, {string:empty_string}),
 				content = NULLIF(content, {string:empty_string}),

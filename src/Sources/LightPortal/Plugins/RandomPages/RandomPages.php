@@ -109,7 +109,7 @@ class RandomPages extends Block
 		];
 
 		if (Config::$db_type === 'postgresql') {
-			$result = Db::$db->query('', '
+			$result = Db::$db->query('
 				WITH RECURSIVE r AS (
 					WITH b AS (
 						SELECT min(p.page_id), (
@@ -179,7 +179,7 @@ class RandomPages extends Block
 				return $this->getData($parameters);
 			}
 
-			$result = Db::$db->query('', '
+			$result = Db::$db->query('
 				SELECT
 					p.page_id, p.slug, p.created_at, p.num_views,
 					COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id,
@@ -201,7 +201,7 @@ class RandomPages extends Block
 				]
 			);
 		} else {
-			$result = Db::$db->query('', '
+			$result = Db::$db->query('
 				SELECT
 					p.page_id, p.slug, p.created_at, p.num_views,
 					COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id,

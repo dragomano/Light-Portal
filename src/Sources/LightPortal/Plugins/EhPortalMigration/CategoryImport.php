@@ -67,7 +67,7 @@ class CategoryImport extends AbstractCustomCategoryImport
 		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'sp_categories')))
 			return [];
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT id_category, name AS title, publish AS status
 			FROM {db_prefix}sp_categories
 			ORDER BY {raw:sort}
@@ -98,7 +98,7 @@ class CategoryImport extends AbstractCustomCategoryImport
 		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'sp_categories')))
 			return 0;
 
-		$result = Db::$db->query('', /** @lang text */ '
+		$result = Db::$db->query(/** @lang text */ '
 			SELECT COUNT(*)
 			FROM {db_prefix}sp_categories',
 		);
@@ -112,7 +112,7 @@ class CategoryImport extends AbstractCustomCategoryImport
 
 	protected function getItems(array $ids): array
 	{
-		$result = Db::$db->query('', /** @lang text */ '
+		$result = Db::$db->query(/** @lang text */ '
 			SELECT id_category, name AS title, publish AS status
 			FROM {db_prefix}sp_categories' . (empty($ids) ? '' : '
 			WHERE id_category IN ({array_int:categories})'),

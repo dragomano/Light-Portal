@@ -44,7 +44,7 @@ final class PluginRepository
 	public function getSettings(): array
 	{
 		return $this->cache()->remember('plugin_settings', function () {
-			$result = Db::$db->query('', /** @lang text */ '
+			$result = Db::$db->query(/** @lang text */ '
 				SELECT name, config, value
 				FROM {db_prefix}lp_plugins',
 			);
@@ -88,7 +88,7 @@ final class PluginRepository
 		if ($settings === [])
 			return;
 
-		Db::$db->query('', '
+		Db::$db->query('
 			DELETE FROM {db_prefix}lp_plugins
 			WHERE name = {string:name}
 				AND config IN ({array_string:settings})',

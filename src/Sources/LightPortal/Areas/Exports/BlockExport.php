@@ -66,7 +66,7 @@ final class BlockExport extends AbstractExport
 
 		$blocks = $this->hasEntityInRequest() ? $this->request()->get($this->entity) : [];
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT
 				b.*, pt.lang, pp.name, pp.value,
 				COALESCE(pt.title, {string:empty_string}) AS title,

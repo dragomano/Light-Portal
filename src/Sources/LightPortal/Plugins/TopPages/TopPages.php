@@ -79,7 +79,7 @@ class TopPages extends Block
 		$type = Typed::string($parameters['popularity_type'], default: 'comments');
 		$numPages = Typed::int($parameters['num_pages'], default: 10);
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT p.page_id, p.slug, p.type, p.num_views, p.num_comments,
 				(
 					SELECT title

@@ -69,7 +69,7 @@ final class MiscConfig extends AbstractConfig
 		if ($this->request()->has('save')) {
 			User::$me->checkSession();
 
-			Db::$db->query('', '
+			Db::$db->query('
 				DELETE FROM {db_prefix}background_tasks
 				WHERE task_file LIKE {string:task_file}',
 				[

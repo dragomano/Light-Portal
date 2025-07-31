@@ -118,7 +118,7 @@ final class Notifier extends BackgroundTask
 			Theme::loadEssential();
 
 			$emails = [];
-			$result = Db::$db->query('', '
+			$result = Db::$db->query('
 				SELECT id_member, lngfile, email_address
 				FROM {db_prefix}members
 				WHERE id_member IN ({array_int:members})',

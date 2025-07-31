@@ -46,7 +46,7 @@ final class BlockRepository extends AbstractRepository
 
 	public function getAll(): array
 	{
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT
 				b.*,
 				COALESCE(NULLIF(t.title, {string:empty_string}), tf.title, {string:empty_string}) AS title,
@@ -91,7 +91,7 @@ final class BlockRepository extends AbstractRepository
 		if ($item === 0)
 			return [];
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT
 				b.*, bp.name, bp.value,
 				COALESCE(t.title, {string:empty_string}) AS title,
@@ -190,7 +190,7 @@ final class BlockRepository extends AbstractRepository
 
 		$this->events()->dispatch(PortalHook::onBlockRemoving, ['items' => $items]);
 
-		Db::$db->query('', '
+		Db::$db->query('
 			DELETE FROM {db_prefix}lp_blocks
 			WHERE block_id IN ({array_int:items})',
 			[
@@ -198,7 +198,7 @@ final class BlockRepository extends AbstractRepository
 			]
 		);
 
-		Db::$db->query('', '
+		Db::$db->query('
 			DELETE FROM {db_prefix}lp_translations
 			WHERE item_id IN ({array_int:items})
 				AND type = {literal:block}',
@@ -207,7 +207,7 @@ final class BlockRepository extends AbstractRepository
 			]
 		);
 
-		Db::$db->query('', '
+		Db::$db->query('
 			DELETE FROM {db_prefix}lp_params
 			WHERE item_id IN ({array_int:items})
 				AND type = {literal:block}',
@@ -232,7 +232,7 @@ final class BlockRepository extends AbstractRepository
 		if ($conditions === '')
 			return;
 
-		Db::$db->query('', /** @lang text */ '
+		Db::$db->query(/** @lang text */ '
 			UPDATE {db_prefix}lp_blocks
 			SET priority = CASE ' . $conditions . ' ELSE priority END
 			WHERE block_id IN ({array_int:blocks})',
@@ -242,7 +242,7 @@ final class BlockRepository extends AbstractRepository
 		);
 
 		if ($placement) {
-			Db::$db->query('', '
+			Db::$db->query('
 				UPDATE {db_prefix}lp_blocks
 				SET placement = {string:placement}
 				WHERE block_id IN ({array_int:blocks})',
@@ -261,7 +261,7 @@ final class BlockRepository extends AbstractRepository
 
 		return $this->langCache('active_blocks')
 			->setFallback(function () {
-				$result = Db::$db->query('', '
+				$result = Db::$db->query('
 				SELECT
 					b.*, bp.name, bp.value,
 					COALESCE(t.title, tf.title, {string:empty_string}) AS title,
@@ -360,7 +360,7 @@ final class BlockRepository extends AbstractRepository
 	{
 		Db::$db->transaction('begin');
 
-		Db::$db->query('', '
+		Db::$db->query('
 			UPDATE {db_prefix}lp_blocks
 			SET icon = {string:icon}, type = {string:type}, placement = {string:placement},
 				permissions = {int:permissions}, areas = {string:areas}, title_class = {string:title_class},
@@ -406,7 +406,7 @@ final class BlockRepository extends AbstractRepository
 		if (empty(Utils::$context['lp_block']['placement']))
 			return 0;
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT MAX(priority) + 1
 			FROM {db_prefix}lp_blocks
 			WHERE placement = {string:placement}',

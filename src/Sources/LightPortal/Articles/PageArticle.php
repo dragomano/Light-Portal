@@ -90,7 +90,7 @@ class PageArticle extends AbstractArticle
 			'limit' => $limit,
 		];
 
-		$result = Db::$db->query('', /** @lang text */ '
+		$result = Db::$db->query(/** @lang text */ '
 			SELECT
 				p.*, GREATEST(p.created_at, p.updated_at) AS date,
 				CASE WHEN COALESCE(par.value, "0") != "0" THEN p.num_comments ELSE 0 END AS num_comments,
@@ -179,7 +179,7 @@ class PageArticle extends AbstractArticle
 
 	public function getTotalCount(): int
 	{
-		$result = Db::$db->query('', /** @lang text */ '
+		$result = Db::$db->query(/** @lang text */ '
 			SELECT COUNT(p.page_id)
 			FROM {db_prefix}lp_pages AS p' . (empty($this->tables) ? '' : '
 				' . implode("\n\t\t\t\t\t", $this->tables)) . '
@@ -299,7 +299,7 @@ class PageArticle extends AbstractArticle
 		if ($pages === [])
 			return;
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT tag.*, pt.page_id, COALESCE(t.title, tf.title, {string:empty_string}) AS title
 			FROM {db_prefix}lp_tags AS tag
 				LEFT JOIN {db_prefix}lp_page_tag AS pt ON (tag.tag_id = pt.tag_id)

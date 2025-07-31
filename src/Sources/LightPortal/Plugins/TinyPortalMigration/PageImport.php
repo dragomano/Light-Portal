@@ -74,7 +74,7 @@ class PageImport extends AbstractCustomPageImport
 		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'tp_articles')))
 			return [];
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT id, date, subject, author_id, off, views, shortname, type
 			FROM {db_prefix}tp_articles
 			ORDER BY {raw:sort}
@@ -110,7 +110,7 @@ class PageImport extends AbstractCustomPageImport
 		if (empty(Db::$db->list_tables(false, Config::$db_prefix. 'tp_articles')))
 			return 0;
 
-		$result = Db::$db->query('', /** @lang text */ '
+		$result = Db::$db->query(/** @lang text */ '
 			SELECT COUNT(*)
 			FROM {db_prefix}tp_articles',
 		);
@@ -124,7 +124,7 @@ class PageImport extends AbstractCustomPageImport
 
 	protected function getItems(array $ids): array
 	{
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT
 				a.id, a.date, a.body, a.intro, a.subject, a.author_id, a.off, a.options, a.comments, a.views,
 				a.shortname, a.type, a.pub_start, a.pub_end, v.value3

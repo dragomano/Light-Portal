@@ -95,7 +95,7 @@ class Chat
 
 	public function getMessages(int $block_id = 0): array
 	{
-		$result = Db::$db->query('', /** @lang text */ '
+		$result = Db::$db->query(/** @lang text */ '
 			SELECT chat.id, chat.block_id, chat.user_id, chat.message, chat.created_at,
 				mem.real_name
 			FROM {db_prefix}lp_simple_chat_messages AS chat
@@ -174,7 +174,7 @@ class Chat
 		if (empty($data['id']))
 			return;
 
-		Db::$db->query('', '
+		Db::$db->query('
 			DELETE FROM {db_prefix}lp_simple_chat_messages
 			WHERE id = {int:id}',
 			[

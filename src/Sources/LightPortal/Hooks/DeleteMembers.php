@@ -27,7 +27,7 @@ class DeleteMembers
 		if (empty($users))
 			return;
 
-		Db::$db->query('', '
+		Db::$db->query('
 			DELETE FROM {db_prefix}lp_comments
 			WHERE author_id IN ({array_int:users})',
 			[
@@ -35,7 +35,7 @@ class DeleteMembers
 			]
 		);
 
-		Db::$db->query('', '
+		Db::$db->query('
 			DELETE FROM {db_prefix}user_alerts
 			WHERE id_member IN ({array_int:users})
 				OR id_member_started IN ({array_int:users})',

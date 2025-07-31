@@ -12,7 +12,7 @@
 
 namespace Bugo\LightPortal\Lists;
 
-use Bugo\FontAwesome\Enums\Icon as IconEnum;
+use Bugo\FontAwesome\Icon as FontAwesome;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Utils\Icon;
@@ -112,6 +112,6 @@ final class IconList implements ListInterface
 
 	public function getList(): array
 	{
-		return IconEnum::V5->collection();
+		return FontAwesome::collection(useOldStyle: true);
 	}
 }

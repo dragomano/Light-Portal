@@ -41,7 +41,7 @@ trait HasThemes
 	public function getForumThemes(): array
 	{
 		if (($themes = $this->cache()->get('forum_themes')) === null) {
-			$result = Db::$db->query('', '
+			$result = Db::$db->query('
 				SELECT id_theme, value
 				FROM {db_prefix}themes
 				WHERE id_theme IN ({array_int:themes})

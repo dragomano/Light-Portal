@@ -76,7 +76,7 @@ class BlockImport extends AbstractCustomBlockImport
 		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'sp_blocks')))
 			return [];
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT id_block, type, label AS title, col
 			FROM {db_prefix}sp_blocks
 			WHERE type IN ({array_string:types})
@@ -110,7 +110,7 @@ class BlockImport extends AbstractCustomBlockImport
 		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'sp_blocks')))
 			return 0;
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT COUNT(*)
 			FROM {db_prefix}sp_blocks
 			WHERE type IN ({array_string:types})',
@@ -128,7 +128,7 @@ class BlockImport extends AbstractCustomBlockImport
 
 	protected function getItems(array $ids): array
 	{
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT
 				b.id_block, b.type, b.label AS title, b.col, b.permission_set, b.groups_allowed, b.state AS status,
 				p.value AS content

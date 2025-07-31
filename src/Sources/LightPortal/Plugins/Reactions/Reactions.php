@@ -189,7 +189,7 @@ class Reactions extends Plugin
 
 	private function getReactions(int $id, string $entity = 'page'): array
 	{
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT value
 			FROM {db_prefix}lp_params
 			WHERE item_id = {int:id}

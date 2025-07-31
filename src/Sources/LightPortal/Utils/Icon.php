@@ -40,7 +40,7 @@ final class Icon
 		if (empty($icon))
 			return '';
 
-		$template = (new IconBuilder($icon, ['aria-hidden' => true]))->html() . ' ';
+		$template = IconBuilder::make($icon)->ariaHidden()->html() . ' ';
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::prepareIconTemplate,

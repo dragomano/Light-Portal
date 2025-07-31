@@ -94,7 +94,7 @@ class RandomTopics extends Block
 			return [];
 
 		if (Config::$db_type === 'postgresql') {
-			$result = Db::$db->query('', '
+			$result = Db::$db->query('
 				WITH RECURSIVE r AS (
 					WITH b AS (
 						SELECT min(t.id_topic), (
@@ -158,7 +158,7 @@ class RandomTopics extends Block
 				return $this->getData($parameters);
 			}
 
-			$result = Db::$db->query('', '
+			$result = Db::$db->query('
 				SELECT
 					mf.poster_time, mf.subject, ml.id_topic, mf.id_member, ml.id_msg,
 					COALESCE(mem.real_name, mf.poster_name) AS poster_name, ' . (User::$me->is_guest ? '1 AS is_read' : '
@@ -177,7 +177,7 @@ class RandomTopics extends Block
 				]
 			);
 		} else {
-			$result = Db::$db->query('', '
+			$result = Db::$db->query('
 				SELECT
 					mf.poster_time, mf.subject, ml.id_topic, mf.id_member, ml.id_msg,
 					COALESCE(mem.real_name, mf.poster_name) AS poster_name, ' . (User::$me->is_guest ? '1 AS is_read' : '

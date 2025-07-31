@@ -88,7 +88,7 @@ final class Tag extends AbstractPageList
 
 	public function getPages(int $start, int $limit, string $sort): array
 	{
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT
 				p.*, GREATEST(p.created_at, p.updated_at) AS date,
 				COALESCE(mem.real_name, {string:empty_string}) AS author_name,
@@ -138,7 +138,7 @@ final class Tag extends AbstractPageList
 
 	public function getTotalPages(): int
 	{
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT COUNT(p.page_id)
 			FROM {db_prefix}lp_pages AS p
 				INNER JOIN {db_prefix}lp_page_tag AS pt ON (p.page_id = pt.page_id)
@@ -203,7 +203,7 @@ final class Tag extends AbstractPageList
 
 	public function getAll(int $start = 0, int $limit = 0, string $sort = 'title'): array
 	{
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT
 				tag.tag_id, tag.slug, tag.icon, COUNT(tag.tag_id) AS frequency,
 				COALESCE(NULLIF(t.title, {string:empty_string}), tf.title, {string:empty_string}) AS title
@@ -257,7 +257,7 @@ final class Tag extends AbstractPageList
 
 	public function getTotalCount(): int
 	{
-		$result = Db::$db->query('', /** @lang text */ '
+		$result = Db::$db->query(/** @lang text */ '
 			SELECT COUNT(DISTINCT tag.tag_id) AS unique_tag_count
 			FROM {db_prefix}lp_pages AS p
 				INNER JOIN {db_prefix}lp_page_tag AS pt ON (p.page_id = pt.page_id)

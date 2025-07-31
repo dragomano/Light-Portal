@@ -70,7 +70,7 @@ final class PageRepository extends AbstractRepository
 		array $queryParams = []
 	): array
 	{
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT
 				p.*, GREATEST(p.created_at, p.updated_at) AS date,
 				COALESCE(mem.real_name, {string:guest}) AS author_name,
@@ -126,7 +126,7 @@ final class PageRepository extends AbstractRepository
 
 	public function getTotalCount(string $queryString = '', array $queryParams = []): int
 	{
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT COUNT(p.page_id)
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_translations AS t ON (
@@ -149,7 +149,7 @@ final class PageRepository extends AbstractRepository
 		if ($item === 0 || $item === '')
 			return [];
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT
 				p.*, pp.name, pp.value,
 				COALESCE(mem.real_name, {string:guest}) AS author_name,
@@ -237,7 +237,7 @@ final class PageRepository extends AbstractRepository
 		if ($items === [])
 			return;
 
-		Db::$db->query('', '
+		Db::$db->query('
 			UPDATE {db_prefix}lp_pages
 			SET deleted_at = {int:time}
 			WHERE page_id IN ({array_int:items})',
@@ -255,7 +255,7 @@ final class PageRepository extends AbstractRepository
 		if ($items === [])
 			return;
 
-		Db::$db->query('', '
+		Db::$db->query('
 			UPDATE {db_prefix}lp_pages
 			SET deleted_at = 0
 			WHERE page_id IN ({array_int:items})',
@@ -274,7 +274,7 @@ final class PageRepository extends AbstractRepository
 
 		$this->events()->dispatch(PortalHook::onPageRemoving, ['items' => $items]);
 
-		Db::$db->query('', '
+		Db::$db->query('
 			DELETE FROM {db_prefix}lp_pages
 			WHERE page_id IN ({array_int:items})',
 			[
@@ -282,7 +282,7 @@ final class PageRepository extends AbstractRepository
 			]
 		);
 
-		Db::$db->query('', '
+		Db::$db->query('
 			DELETE FROM {db_prefix}lp_translations
 			WHERE item_id IN ({array_int:items})
 				AND type = {literal:page}',
@@ -291,7 +291,7 @@ final class PageRepository extends AbstractRepository
 			]
 		);
 
-		Db::$db->query('', '
+		Db::$db->query('
 			DELETE FROM {db_prefix}lp_params
 			WHERE item_id IN ({array_int:items})
 				AND type = {literal:page}',
@@ -300,7 +300,7 @@ final class PageRepository extends AbstractRepository
 			]
 		);
 
-		Db::$db->query('', '
+		Db::$db->query('
 			DELETE FROM {db_prefix}lp_page_tag
 			WHERE page_id IN ({array_int:items})',
 			[
@@ -308,7 +308,7 @@ final class PageRepository extends AbstractRepository
 			]
 		);
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT id FROM {db_prefix}lp_comments
 			WHERE page_id IN ({array_int:items})',
 			[
@@ -337,7 +337,7 @@ final class PageRepository extends AbstractRepository
 
 		$sorting = Setting::get('lp_frontpage_article_sorting', 'int', 0);
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			(
 				SELECT
 					(
@@ -439,7 +439,7 @@ final class PageRepository extends AbstractRepository
 			THEN ' . (count($slugWords) - $key) . ' ELSE 0 END';
 		}
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT
 				p.page_id, p.slug, p.type, (' . $searchFormula . ') AS related,
 				COALESCE(t.title, tf.title, {string:empty_string}) AS title,
@@ -493,7 +493,7 @@ final class PageRepository extends AbstractRepository
 
 	public function updateNumViews(int $item): void
 	{
-		Db::$db->query('', '
+		Db::$db->query('
 			UPDATE {db_prefix}lp_pages
 			SET num_views = num_views + 1
 			WHERE page_id = {int:item}
@@ -509,7 +509,7 @@ final class PageRepository extends AbstractRepository
 	{
 		return $this->langCache('menu_pages')
 			->setFallback(function () {
-				$result = Db::$db->query('', '
+				$result = Db::$db->query('
 				SELECT
 					p.page_id, p.slug, p.permissions, pp2.value AS icon,
 					(
@@ -649,7 +649,7 @@ final class PageRepository extends AbstractRepository
 	{
 		Db::$db->transaction('begin');
 
-		Db::$db->query('', '
+		Db::$db->query('
 			UPDATE {db_prefix}lp_pages
 			SET category_id = {int:category_id}, author_id = {int:author_id}, slug = {string:slug},
 				type = {string:type}, entry_type = {string:entry_type}, permissions = {int:permissions},
@@ -687,7 +687,7 @@ final class PageRepository extends AbstractRepository
 
 	private function getTags(int $item): array
 	{
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT tag.tag_id, tag.icon, COALESCE(t.title, tf.title, {string:empty_string}) AS title
 			FROM {db_prefix}lp_tags AS tag
 				INNER JOIN {db_prefix}lp_page_tag AS pt ON (tag.tag_id = pt.tag_id)
@@ -724,7 +724,7 @@ final class PageRepository extends AbstractRepository
 
 	private function saveTags(int $item, string $method = ''): void
 	{
-		Db::$db->query('', '
+		Db::$db->query('
 			DELETE FROM {db_prefix}lp_page_tag
 			WHERE page_id = {int:item}',
 			[
@@ -773,7 +773,7 @@ final class PageRepository extends AbstractRepository
 
 	private function getAutoIncrementValue(): int
 	{
-		$result = Db::$db->query('', /** @lang text */ "
+		$result = Db::$db->query(/** @lang text */ "
 			SELECT setval('{db_prefix}lp_pages_seq', (SELECT MAX(page_id) FROM {db_prefix}lp_pages))"
 		);
 

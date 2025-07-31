@@ -150,7 +150,7 @@ class Polls extends Block
 
 	private function getAll(): array
 	{
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT t.id_topic, p.question
 			FROM {db_prefix}topics AS t
 				INNER JOIN {db_prefix}polls AS p ON (p.id_poll = t.id_poll)

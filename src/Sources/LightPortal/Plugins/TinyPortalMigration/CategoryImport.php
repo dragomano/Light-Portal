@@ -63,7 +63,7 @@ class CategoryImport extends AbstractCustomCategoryImport
 		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'tp_variables')))
 			return [];
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT id, value1 AS title
 			FROM {db_prefix}tp_variables
 			WHERE type = {literal:category}
@@ -94,7 +94,7 @@ class CategoryImport extends AbstractCustomCategoryImport
 		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'tp_variables')))
 			return 0;
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT COUNT(*)
 			FROM {db_prefix}tp_variables
 			WHERE type = {literal:category}',
@@ -109,7 +109,7 @@ class CategoryImport extends AbstractCustomCategoryImport
 
 	protected function getItems(array $ids): array
 	{
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT id, value1 AS title
 			FROM {db_prefix}tp_variables
 			WHERE type = {literal:category}' . (empty($ids) ? '' : '

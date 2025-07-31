@@ -92,7 +92,7 @@ class TrendingTopics extends Block
 		if (empty($numTopics))
 			return [];
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT DISTINCT t.id_topic, t.id_member_started, t.num_replies,
 				COALESCE(mem.real_name, mf.poster_name) AS poster_name, mf.subject,
 				ml.id_msg, ml.poster_time

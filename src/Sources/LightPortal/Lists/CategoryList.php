@@ -25,7 +25,7 @@ final class CategoryList implements ListInterface
 {
 	public function __invoke(): array
 	{
-		$result = Db::$db->query('', /** @lang text */ '
+		$result = Db::$db->query(/** @lang text */ '
 			SELECT
 				c.*,
 				COALESCE(t.title, tf.title, {string:empty_string}) AS title,

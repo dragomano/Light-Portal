@@ -29,7 +29,7 @@ final class CategoryRepository extends AbstractRepository
 
 	public function getAll(int $start, int $limit, string $sort): array
 	{
-		$result = Db::$db->query('', /** @lang text */ '
+		$result = Db::$db->query(/** @lang text */ '
 			SELECT
 				c.*,
 				COALESCE(t.title, tf.title, {string:empty_string}) AS title,
@@ -73,7 +73,7 @@ final class CategoryRepository extends AbstractRepository
 
 	public function getTotalCount(): int
 	{
-		$result = Db::$db->query('', /** @lang text */ '
+		$result = Db::$db->query(/** @lang text */ '
 			SELECT COUNT(category_id)
 			FROM {db_prefix}lp_categories',
 		);
@@ -90,7 +90,7 @@ final class CategoryRepository extends AbstractRepository
 		if ($item === 0)
 			return [];
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT
 				c.*,
 				COALESCE(t.title, {string:empty_string}) AS title,
@@ -158,7 +158,7 @@ final class CategoryRepository extends AbstractRepository
 		if ($items === [])
 			return;
 
-		Db::$db->query('', '
+		Db::$db->query('
 			DELETE FROM {db_prefix}lp_categories
 			WHERE category_id IN ({array_int:items})',
 			[
@@ -166,7 +166,7 @@ final class CategoryRepository extends AbstractRepository
 			]
 		);
 
-		Db::$db->query('', '
+		Db::$db->query('
 			DELETE FROM {db_prefix}lp_translations
 			WHERE item_id IN ({array_int:items})
 				AND type = {literal:category}',
@@ -175,7 +175,7 @@ final class CategoryRepository extends AbstractRepository
 			]
 		);
 
-		Db::$db->query('', '
+		Db::$db->query('
 			UPDATE {db_prefix}lp_pages
 			SET category_id = {int:category}
 			WHERE category_id IN ({array_int:items})',
@@ -203,7 +203,7 @@ final class CategoryRepository extends AbstractRepository
 		if ($conditions === '')
 			return;
 
-		Db::$db->query('', /** @lang text */ '
+		Db::$db->query(/** @lang text */ '
 			UPDATE {db_prefix}lp_categories
 			SET priority = CASE ' . $conditions . ' ELSE priority END
 			WHERE category_id IN ({array_int:categories})',
@@ -217,7 +217,7 @@ final class CategoryRepository extends AbstractRepository
 
 	private function getPriority(): int
 	{
-		$result = Db::$db->query('', /** @lang text */ '
+		$result = Db::$db->query(/** @lang text */ '
 			SELECT MAX(priority) + 1
 			FROM {db_prefix}lp_categories',
 		);
@@ -267,7 +267,7 @@ final class CategoryRepository extends AbstractRepository
 	{
 		Db::$db->transaction('begin');
 
-		Db::$db->query('', '
+		Db::$db->query('
 			UPDATE {db_prefix}lp_categories
 			SET slug = {string:slug}, icon = {string:icon}, priority = {int:priority}, status = {int:status}
 			WHERE category_id = {int:category_id}',

@@ -96,7 +96,7 @@ class TinyPortalMigration extends Plugin
 
 	private function getComments(array $pages): array
 	{
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT *
 			FROM {db_prefix}tp_comments AS com
 				INNER JOIN {db_prefix}members AS mem ON (com.member_id = mem.id_member)

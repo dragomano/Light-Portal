@@ -78,7 +78,7 @@ class TopicArticle extends AbstractArticle
 			'limit' => $limit,
 		];
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT
 				t.id_topic, t.id_board, t.num_views, t.num_replies, t.is_sticky, t.id_first_msg, t.id_member_started,
 				mf.subject, mf.body AS body, mf.smileys_enabled, COALESCE(mem.real_name, mf.poster_name) AS poster_name,
@@ -160,7 +160,7 @@ class TopicArticle extends AbstractArticle
 		if (empty($this->selectedBoards) && Setting::isFrontpageMode('all_topics'))
 			return 0;
 
-		$result = Db::$db->query('', /** @lang text */ '
+		$result = Db::$db->query(/** @lang text */ '
 			SELECT COUNT(t.id_topic)
 			FROM {db_prefix}topics AS t
 				INNER JOIN {db_prefix}boards AS b ON (t.id_board = b.id_board)' . (empty($this->tables) ? '' : '

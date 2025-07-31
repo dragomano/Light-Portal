@@ -149,7 +149,7 @@ class SimpleChat extends Block
 
 	public function onBlockRemoving(Event $e): void
 	{
-		Db::$db->query('', '
+		Db::$db->query('
 			DELETE FROM {db_prefix}lp_simple_chat_messages
 			WHERE block_id IN ({array_int:items})',
 			[

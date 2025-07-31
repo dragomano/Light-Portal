@@ -92,7 +92,7 @@ class PageValidator extends AbstractValidator
 
 	protected function isUnique(): bool
 	{
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT COUNT(page_id)
 			FROM {db_prefix}lp_pages
 			WHERE slug = {string:slug}

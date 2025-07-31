@@ -74,7 +74,7 @@ class PageImport extends AbstractCustomPageImport
 		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'ezp_page')))
 			return [];
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT id_page, date, title, views
 			FROM {db_prefix}ezp_page
 			ORDER BY {raw:sort}
@@ -110,7 +110,7 @@ class PageImport extends AbstractCustomPageImport
 		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'ezp_page')))
 			return 0;
 
-		$result = Db::$db->query('', /** @lang text */ '
+		$result = Db::$db->query(/** @lang text */ '
 			SELECT COUNT(*)
 			FROM {db_prefix}ezp_page',
 		);
@@ -124,7 +124,7 @@ class PageImport extends AbstractCustomPageImport
 
 	protected function getItems(array $ids): array
 	{
-		$result = Db::$db->query('', /** @lang text */ '
+		$result = Db::$db->query(/** @lang text */ '
 			SELECT id_page, date, title, content, views, permissions
 			FROM {db_prefix}ezp_page' . (empty($ids) ? '' : '
 			WHERE id_page IN ({array_int:pages})'),

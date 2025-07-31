@@ -32,7 +32,7 @@ class TagValidator extends AbstractValidator
 
 	protected function isUnique(): bool
 	{
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT COUNT(tag_id)
 			FROM {db_prefix}lp_tags
 			WHERE slug = {string:slug}

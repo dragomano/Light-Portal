@@ -29,7 +29,7 @@ final class TagRepository extends AbstractRepository
 
 	public function getAll(int $start, int $limit, string $sort): array
 	{
-		$result = Db::$db->query('', /** @lang text */ '
+		$result = Db::$db->query(/** @lang text */ '
 			SELECT tag.*, COALESCE(t.title, tf.title, {string:empty_string}) AS title
 			FROM {db_prefix}lp_tags AS tag
 				LEFT JOIN {db_prefix}lp_translations AS t ON (
@@ -67,7 +67,7 @@ final class TagRepository extends AbstractRepository
 
 	public function getTotalCount(): int
 	{
-		$result = Db::$db->query('', /** @lang text */ '
+		$result = Db::$db->query(/** @lang text */ '
 			SELECT COUNT(tag_id)
 			FROM {db_prefix}lp_tags',
 		);
@@ -84,7 +84,7 @@ final class TagRepository extends AbstractRepository
 		if ($item === 0)
 			return [];
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT tag.*, COALESCE(t.title, {string:empty_string}) AS title
 			FROM {db_prefix}lp_tags AS tag
 				LEFT JOIN {db_prefix}lp_translations AS t ON (
@@ -147,7 +147,7 @@ final class TagRepository extends AbstractRepository
 		if ($items === [])
 			return;
 
-		Db::$db->query('', '
+		Db::$db->query('
 			DELETE FROM {db_prefix}lp_tags
 			WHERE tag_id IN ({array_int:items})',
 			[
@@ -155,7 +155,7 @@ final class TagRepository extends AbstractRepository
 			]
 		);
 
-		Db::$db->query('', '
+		Db::$db->query('
 			DELETE FROM {db_prefix}lp_translations
 			WHERE item_id IN ({array_int:items})
 				AND type = {literal:tag}',
@@ -164,7 +164,7 @@ final class TagRepository extends AbstractRepository
 			]
 		);
 
-		Db::$db->query('', '
+		Db::$db->query('
 			DELETE FROM {db_prefix}lp_page_tag
 			WHERE tag_id IN ({array_int:items})',
 			[
@@ -213,7 +213,7 @@ final class TagRepository extends AbstractRepository
 	{
 		Db::$db->transaction('begin');
 
-		Db::$db->query('', '
+		Db::$db->query('
 			UPDATE {db_prefix}lp_tags
 			SET slug = {string:slug}, icon = {string:icon}, status = {int:status}
 			WHERE tag_id = {int:tag_id}',

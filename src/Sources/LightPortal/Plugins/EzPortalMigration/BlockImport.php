@@ -77,7 +77,7 @@ class BlockImport extends AbstractCustomBlockImport
 		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'ezp_blocks')))
 			return [];
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT b.id_block, b.blocktype AS type, bl.customtitle AS title, bl.id_column AS col
 			FROM {db_prefix}ezp_blocks AS b
 				INNER JOIN {db_prefix}ezp_block_layout AS bl ON (b.id_block = bl.id_block)
@@ -112,7 +112,7 @@ class BlockImport extends AbstractCustomBlockImport
 		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'ezp_blocks')))
 			return 0;
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT COUNT(*)
 			FROM {db_prefix}ezp_blocks
 			WHERE blocktype IN ({array_string:types})',
@@ -130,7 +130,7 @@ class BlockImport extends AbstractCustomBlockImport
 
 	protected function getItems(array $ids): array
 	{
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT
 				b.id_block, b.blocktype AS type, b.blocktitle,
 				bl.customtitle AS title, bl.id_column AS col, bl.permissions, bl.active AS status, bl.blockdata AS content

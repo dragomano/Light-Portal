@@ -33,7 +33,7 @@ class CategoryValidator extends AbstractValidator
 
 	protected function isUnique(): bool
 	{
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT COUNT(category_id)
 			FROM {db_prefix}lp_categories
 			WHERE slug = {string:slug}

@@ -76,7 +76,7 @@ class BoardArticle extends AbstractArticle
 			'limit' => $limit,
 		];
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT
 				b.id_board, b.name, b.description, b.redirect,
 				CASE WHEN b.redirect != {string:blank_string} THEN 1 ELSE 0 END AS is_redirect, b.num_posts,
@@ -146,7 +146,7 @@ class BoardArticle extends AbstractArticle
 		if (empty($this->selectedBoards))
 			return 0;
 
-		$result = Db::$db->query('', /** @lang text */ '
+		$result = Db::$db->query(/** @lang text */ '
 			SELECT COUNT(b.id_board)
 			FROM {db_prefix}boards AS b
 				INNER JOIN {db_prefix}categories AS c ON (b.id_cat = c.id_cat)' . (empty($this->tables) ? '' : '

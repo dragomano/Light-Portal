@@ -67,7 +67,7 @@ final class CategorySelect extends AbstractPartial
 			return [];
 
 		if (($categories = $this->cache()->get('smf_gallery_categories')) === null) {
-			$result = Db::$db->query('', '
+			$result = Db::$db->query('
 				SELECT id_cat, title
 				FROM {db_prefix}gallery_cat
 				WHERE redirect = {int:redirect}

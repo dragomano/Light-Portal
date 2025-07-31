@@ -83,7 +83,7 @@ final class TagExport extends AbstractExport
 
 		$tags = $this->hasEntityInRequest() ? $this->request()->get($this->entity) : [];
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT tag.*, pt.page_id, t.lang, COALESCE(t.title, {string:empty_string}) AS title
 			FROM {db_prefix}lp_tags AS tag
 				LEFT JOIN {db_prefix}lp_page_tag AS pt ON (tag.tag_id = pt.tag_id)

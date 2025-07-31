@@ -179,7 +179,7 @@ class MenuButtons
 
 	private function disableBlock(int $item): void
 	{
-		Db::$db->query('', '
+		Db::$db->query('
 			UPDATE {db_prefix}lp_blocks
 			SET status = {int:status}
 			WHERE block_id = {int:item}',

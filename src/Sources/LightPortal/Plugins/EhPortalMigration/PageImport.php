@@ -74,7 +74,7 @@ class PageImport extends AbstractCustomPageImport
 		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'sp_pages')))
 			return [];
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT id_page, namespace, title, body, type, permission_set, groups_allowed, views, status
 			FROM {db_prefix}sp_pages
 			ORDER BY {raw:sort}
@@ -110,7 +110,7 @@ class PageImport extends AbstractCustomPageImport
 		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'sp_pages')))
 			return 0;
 
-		$result = Db::$db->query('', /** @lang text */ '
+		$result = Db::$db->query(/** @lang text */ '
 			SELECT COUNT(*)
 			FROM {db_prefix}sp_pages',
 		);
@@ -124,7 +124,7 @@ class PageImport extends AbstractCustomPageImport
 
 	protected function getItems(array $ids): array
 	{
-		$result = Db::$db->query('', /** @lang text */ '
+		$result = Db::$db->query(/** @lang text */ '
 			SELECT id_page, namespace, title, body, type, permission_set, groups_allowed, views, status
 			FROM {db_prefix}sp_pages' . (empty($ids) ? '' : '
 			WHERE id_page IN ({array_int:pages})'),

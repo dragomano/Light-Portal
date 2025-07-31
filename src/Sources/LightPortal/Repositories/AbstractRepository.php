@@ -54,7 +54,7 @@ abstract class AbstractRepository
 			default    => $this->entity . 's',
 		};
 
-		Db::$db->query('', '
+		Db::$db->query('
 			UPDATE {db_prefix}lp_' . $table . '
 			SET status = CASE status
 				WHEN 1 THEN 0
@@ -159,7 +159,7 @@ abstract class AbstractRepository
 
 	private function getDefaultTranslations(int $item): array
 	{
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT title, content, description
 			FROM {db_prefix}lp_translations
 			WHERE item_id = {int:item_id}

@@ -112,7 +112,7 @@ class Search extends Block
 			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE WHEN lower(p.slug) LIKE lower(\'%' . $word . '%\') THEN ' . (count($titleWords) - $key) . ' ELSE 0 END';
 		}
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT
 				p.slug, p.type, GREATEST(p.created_at, p.updated_at) AS date,
 				(' . $searchFormula . ') AS related, mem.id_member, mem.real_name,

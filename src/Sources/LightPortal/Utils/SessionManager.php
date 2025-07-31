@@ -41,7 +41,7 @@ final class SessionManager
 	private function getActiveBlocksCount(): int
 	{
 		if ($this->session('lp')->get('active_blocks') === null) {
-			$result = Db::$db->query('', '
+			$result = Db::$db->query('
 				SELECT COUNT(block_id)
 				FROM {db_prefix}lp_blocks
 				WHERE status = {int:status}',
@@ -65,7 +65,7 @@ final class SessionManager
 		$key = User::$me->allowedTo('light_portal_manage_pages_any') ? '' : ('_u' . User::$me->id);
 
 		if ($this->session('lp')->get('active_pages' . $key) === null) {
-			$result = Db::$db->query('', '
+			$result = Db::$db->query('
 				SELECT COUNT(page_id)
 				FROM {db_prefix}lp_pages
 				WHERE status = {int:status}
@@ -94,7 +94,7 @@ final class SessionManager
 		$key = User::$me->allowedTo('light_portal_manage_pages_any') ? '' : ('_u' . User::$me->id);
 
 		if ($this->session('lp')->get('my_pages' . $key) === null) {
-			$result = Db::$db->query('', '
+			$result = Db::$db->query('
 				SELECT COUNT(page_id)
 				FROM {db_prefix}lp_pages
 				WHERE author_id = {int:author}
@@ -119,7 +119,7 @@ final class SessionManager
 	private function getUnapprovedPagesCount(): int
 	{
 		if ($this->session('lp')->get('unapproved_pages') === null) {
-			$result = Db::$db->query('', '
+			$result = Db::$db->query('
 				SELECT COUNT(page_id)
 				FROM {db_prefix}lp_pages
 				WHERE status = {int:status}
@@ -142,7 +142,7 @@ final class SessionManager
 	private function getDeletedPagesCount(): int
 	{
 		if ($this->session('lp')->get('deleted_pages') === null) {
-			$result = Db::$db->query('', /** @lang text */ '
+			$result = Db::$db->query(/** @lang text */ '
 				SELECT COUNT(page_id)
 				FROM {db_prefix}lp_pages
 				WHERE deleted_at <> 0',
@@ -161,7 +161,7 @@ final class SessionManager
 	private function getActiveCategoriesCount(): int
 	{
 		if ($this->session('lp')->get('active_categories') === null) {
-			$result = Db::$db->query('', '
+			$result = Db::$db->query('
 				SELECT COUNT(category_id)
 				FROM {db_prefix}lp_categories
 				WHERE status = {int:status}',
@@ -183,7 +183,7 @@ final class SessionManager
 	private function getActiveTagsCount(): int
 	{
 		if ($this->session('lp')->get('active_tags') === null) {
-			$result = Db::$db->query('', '
+			$result = Db::$db->query('
 				SELECT COUNT(tag_id)
 				FROM {db_prefix}lp_tags
 				WHERE status = {int:status}',

@@ -83,7 +83,7 @@ final class CategoryExport extends AbstractExport
 
 		$categories = $this->hasEntityInRequest() ? $this->request()->get($this->entity) : [];
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT
 				c.*, pt.lang,
 				COALESCE(pt.title, {string:empty_string}) AS title,

@@ -99,7 +99,7 @@ final class Category extends AbstractPageList
 
 	public function getPages(int $start, int $limit, string $sort): array
 	{
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT
 				p.*, GREATEST(p.created_at, p.updated_at) AS date,
 				COALESCE(mem.real_name, {string:empty_string}) AS author_name,
@@ -146,7 +146,7 @@ final class Category extends AbstractPageList
 
 	public function getTotalPages(): int
 	{
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT COUNT(page_id)
 			FROM {db_prefix}lp_pages
 			WHERE category_id = {string:id}
@@ -209,7 +209,7 @@ final class Category extends AbstractPageList
 
 	public function getAll(int $start = 0, int $limit = 0, string $sort = 'title'): array
 	{
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT
 				COALESCE(c.category_id, 0) AS category_id, c.slug, c.icon, c.priority, COUNT(p.page_id) AS frequency,
 				COALESCE(NULLIF(t.title, {string:empty_string}), tf.title, {string:empty_string}) AS title,
@@ -265,7 +265,7 @@ final class Category extends AbstractPageList
 
 	public function getTotalCount(): int
 	{
-		$result = Db::$db->query('', /** @lang text */ '
+		$result = Db::$db->query(/** @lang text */ '
 			SELECT COUNT(DISTINCT COALESCE(c.category_id, 0)) AS unique_category_count
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_categories AS c ON (p.category_id = c.category_id)

@@ -70,7 +70,7 @@ class TopPosters extends Block
 	{
 		$numPosters = Typed::int($parameters['num_posters'], default: 10);
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT id_member, real_name, posts
 			FROM {db_prefix}members
 			WHERE posts > {int:num_posts}

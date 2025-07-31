@@ -5,7 +5,7 @@
     "ext-intl": "*",
     "ext-simplexml": "*",
     "ext-zip": "*",
-    "bugo/fa-php-helper": "^0.5",
+    "bugo/fa-icon-builder": "^0.1",
     "bugo/smf-bricks": "^0.5",
     "bugo/smf-compat": "^0.3",
     "doctrine/event-manager": "^2.0",

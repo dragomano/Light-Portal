@@ -53,7 +53,7 @@ final class Maintainer extends BackgroundTask
 
 	private function removeRedundantValues(): void
 	{
-		Db::$db->query('', '
+		Db::$db->query('
 			DELETE FROM {db_prefix}lp_params
 			WHERE value = {string:empty_value}',
 			[
@@ -61,7 +61,7 @@ final class Maintainer extends BackgroundTask
 			]
 		);
 
-		$result = Db::$db->query('', /** @lang text */ '
+		$result = Db::$db->query(/** @lang text */ '
 			SELECT id FROM {db_prefix}lp_comments
 			WHERE parent_id <> 0
 				AND parent_id NOT IN (SELECT * FROM (SELECT id FROM {db_prefix}lp_comments) com)',
@@ -72,7 +72,7 @@ final class Maintainer extends BackgroundTask
 
 	private function updateNumComments(): void
 	{
-		$result = Db::$db->query('', /** @lang text */ '
+		$result = Db::$db->query(/** @lang text */ '
 			SELECT p.page_id, COUNT(c.id) AS amount
 			FROM {db_prefix}lp_pages p
 				LEFT JOIN {db_prefix}lp_comments c ON (c.page_id = p.page_id)
@@ -95,7 +95,7 @@ final class Maintainer extends BackgroundTask
 			$line .= ' WHEN page_id = ' . $pageId . ' THEN ' . $commentsCount;
 		}
 
-		Db::$db->query('', /** @lang text */ '
+		Db::$db->query(/** @lang text */ '
 			UPDATE {db_prefix}lp_pages
 			SET num_comments = CASE ' . $line . ' ELSE num_comments	END
 			WHERE page_id IN ({array_int:pages})',
@@ -107,7 +107,7 @@ final class Maintainer extends BackgroundTask
 
 	private function updateLastCommentIds(): void
 	{
-		$result = Db::$db->query('', /** @lang text */ '
+		$result = Db::$db->query(/** @lang text */ '
 			SELECT p.page_id, MAX(c.id) AS last_comment_id
 			FROM {db_prefix}lp_pages p
 				LEFT JOIN {db_prefix}lp_comments c ON (c.page_id = p.page_id)
@@ -130,7 +130,7 @@ final class Maintainer extends BackgroundTask
 			$line .= ' WHEN page_id = ' . $pageId . ' THEN ' . $lastCommentId;
 		}
 
-		Db::$db->query('', /** @lang text */ '
+		Db::$db->query(/** @lang text */ '
 			UPDATE {db_prefix}lp_pages
 			SET last_comment_id = CASE ' . $line . ' ELSE last_comment_id END
 			WHERE page_id IN ({array_int:pages})',

@@ -34,7 +34,7 @@ class BuildRoute
 	public function __construct()
 	{
 		if (($this->categories = $this->cache()->get('lp_sef_categories', LP_CACHE_TIME)) === null) {
-			$result = Db::$db->query('', /** @lang text */ '
+			$result = Db::$db->query(/** @lang text */ '
 				SELECT c.category_id, COALESCE(c.slug, t.title, tf.title) AS title
 				FROM {db_prefix}lp_categories AS c
 					LEFT JOIN {db_prefix}lp_translations AS t ON (
@@ -61,7 +61,7 @@ class BuildRoute
 		}
 
 		if (($this->tags = $this->cache()->get('lp_sef_tags', LP_CACHE_TIME)) === null) {
-			$result = Db::$db->query('', /** @lang text */ '
+			$result = Db::$db->query(/** @lang text */ '
 				SELECT tag.tag_id, COALESCE(tag.slug, t.title, tf.title) AS title
 				FROM {db_prefix}lp_tags AS tag
 					LEFT JOIN {db_prefix}lp_translations AS t ON (

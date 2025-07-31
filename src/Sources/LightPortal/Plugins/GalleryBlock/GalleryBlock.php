@@ -72,7 +72,7 @@ class GalleryBlock extends Block
 
 		$categories = empty($parameters['categories']) ? [] : explode(',', (string) $parameters['categories']);
 
-		$result = Db::$db->query('', '
+		$result = Db::$db->query('
 			SELECT
 				p.id_picture, p.width, p.height, p.allowcomments, p.id_cat, p.keywords, p.commenttotal AS num_comments,
 				p.filename, p.approved, p.views, p.title, p.id_member, m.real_name, p.date, p.description, c.title AS cat_name
