@@ -14,6 +14,7 @@ namespace Bugo\LightPortal\Utils;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
+use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 
 use function array_filter;
@@ -147,6 +148,11 @@ class Setting
 	public static function getDisabledActions(): array
 	{
 		return self::get('lp_disabled_actions', 'array', []);
+	}
+
+	public static function canMention(): bool
+	{
+		return self::get('enable_mentions', 'bool', false) || ! User::$me->allowedTo('mention');
 	}
 
 	protected static function transformArray(string $value, string $from): array

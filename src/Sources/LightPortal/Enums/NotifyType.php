@@ -14,12 +14,12 @@ namespace Bugo\LightPortal\Enums;
 
 use Bugo\LightPortal\Enums\Traits\HasNames;
 
-enum AlertAction
+enum NotifyType
 {
 	use HasNames;
 
-	case PAGE_COMMENT_MENTION;
-	case PAGE_COMMENT_REPLY;
-	case PAGE_COMMENT;
-	case PAGE_UNAPPROVED;
+	case NEW_COMMENT;
+	case NEW_MENTION;
+	case NEW_PAGE;
+	case NEW_REPLY;
 }

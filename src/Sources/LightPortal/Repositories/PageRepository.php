@@ -22,6 +22,7 @@ use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\AlertAction;
 use Bugo\LightPortal\Enums\EntryType;
+use Bugo\LightPortal\Enums\NotifyType;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\PortalSubAction;
@@ -639,7 +640,7 @@ final class PageRepository extends AbstractRepository
 		];
 
 		if (! User::$me->allowedTo('light_portal_manage_pages_any')) {
-			Notify::send('new_page', AlertAction::PAGE_UNAPPROVED->name(), $options);
+			Notify::send(NotifyType::NEW_PAGE->name(), AlertAction::PAGE_UNAPPROVED->name(), $options);
 		}
 
 		return $item;
