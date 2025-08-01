@@ -15,6 +15,7 @@ namespace Bugo\LightPortal\Repositories;
 use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
+use Bugo\LightPortal\Enums\NotifyType;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\Setting;
 
@@ -170,7 +171,7 @@ final class CommentRepository
 			WHERE content_type = {string:type}
 				AND content_id IN ({array_int:items})',
 			[
-				'type'  => 'new_comment',
+				'type'  => NotifyType::NEW_COMMENT->name(),
 				'items' => $items,
 			]
 		);

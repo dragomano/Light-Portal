@@ -12,10 +12,13 @@
 
 namespace Bugo\LightPortal\Actions;
 
+use Bugo\Compat\Config;
+use Bugo\Compat\Mentions;
 use Bugo\Compat\PageIndex;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\AlertAction;
+use Bugo\LightPortal\Enums\NotifyType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
 use Bugo\LightPortal\Events\HasEvents;
@@ -34,6 +37,7 @@ use function array_slice;
 use function count;
 use function date;
 use function http_response_code;
+use function preg_replace_callback;
 use function trim;
 
 use const LP_BASE_URL;
@@ -143,6 +147,10 @@ final class Comment implements ActionInterface
 			$this->response()->exit($result);
 		}
 
+		$verifiedMembers = $this->getMembersToMention($message);
+
+		$message = $this->replaceMemberTagsToMarkdown($message);
+
 		$item = $this->repository->save([
 			'parent_id'  => $parentId,
 			'page_id'    => $pageId,
@@ -177,9 +185,11 @@ final class Comment implements ActionInterface
 				'url'       => $pageUrl . '#comment=' . $item,
 			];
 
+			$this->mentionMembers($verifiedMembers, $options);
+
 			empty($parentId)
-				? Notify::send('new_comment', AlertAction::PAGE_COMMENT->name(), $options)
-				: Notify::send('new_reply', AlertAction::PAGE_COMMENT_REPLY->name(), $options);
+				? Notify::send(NotifyType::NEW_COMMENT->name(), AlertAction::PAGE_COMMENT->name(), $options)
+				: Notify::send(NotifyType::NEW_REPLY->name(), AlertAction::PAGE_COMMENT_REPLY->name(), $options);
 
 			$this->cache()->forget('page_' . $this->pageSlug . '_comments');
 		}
@@ -187,6 +197,43 @@ final class Comment implements ActionInterface
 		http_response_code(201);
 
 		$this->response()->exit($result);
+	}
+
+	private function getMembersToMention(string &$message): array
+	{
+		if (! Setting::canMention())
+			return [];
+
+		$members = Mentions::getMentionedMembers($message);
+		$message = Mentions::getBody($message, $members);
+
+		return Mentions::verifyMentionedMembers($message, $members);
+	}
+
+	private function replaceMemberTagsToMarkdown(string $text): string
+	{
+		return preg_replace_callback(
+			'/\[member=(\d+)](.*?)\[\/member]/',
+			function (array $matches) {
+				$id = $matches[1];
+				$name = $matches[2];
+
+				return "[@$name](" . Config::$scripturl . '?action=profile;u=' . $id . ")";
+			},
+			$text
+		);
+	}
+
+	private function mentionMembers(array $verifiedMembers, array $options): void
+	{
+		if (! Setting::canMention() || empty($verifiedMembers))
+			return;
+
+		foreach ($verifiedMembers as $member) {
+			$options['author_id'] = (int) $member['id'];
+
+			Notify::send(NotifyType::NEW_MENTION->name(), AlertAction::PAGE_COMMENT_MENTION->name(), $options);
+		}
 	}
 
 	private function update(): never
