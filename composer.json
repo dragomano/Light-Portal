@@ -12,15 +12,38 @@
   "require-dev": {
     "consolidation/robo": "^5.1",
     "pear/archive_tar": "^1.5",
-    "rector/rector": "^2.0"
+    "pestphp/pest-plugin-faker": "^3.0",
+    "pestphp/pest": "^3.8",
+    "rector/rector": "^2.0",
+    "simplemachines/forum": "^2.1"
   },
+  "repositories": [
+    {
+      "type": "package",
+      "package": {
+        "name": "simplemachines/forum",
+        "version": "2.1.6",
+        "dist": {
+          "url": "https://download.simplemachines.org/index.php/smf_2-1-6_install.zip",
+          "type": "zip"
+        }
+      }
+    }
+  ],
   "config": {
     "platform": {
       "php": "8.2"
+    },
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
     }
   },
   "scripts": {
     "check": "vendor/bin/rector process --dry-run --clear-cache",
+    "tests": "vendor/bin/pest --colors=always",
+    "tests-coverage": "vendor/bin/pest --colors=always --coverage --min=10",
+    "tests-coverage-clover": "vendor/bin/pest --colors=always --min=10 --coverage-clover coverage.xml",
+    "tests-coverage-html": "vendor/bin/pest --colors=always --min=10 --coverage-html coverage",
     "assets": [
       "pnpm update",
       "pnpm run build",
