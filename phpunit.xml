@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+>
+    <testsuites>
+        <testsuite name="Test Suite">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <const name="SMF" value="true"/>
+        <const name="SMF_VERSION" value="2.1"/>
+    </php>
+    <source>
+        <include>
+            <directory>src/Sources/LightPortal</directory>
+			<file>src/Sources/LightPortal/Plugins/AssetHandler.php</file>
+			<file>src/Sources/LightPortal/Plugins/ConfigHandler.php</file>
+			<file>src/Sources/LightPortal/Plugins/LangHandler.php</file>
+			<file>src/Sources/LightPortal/Plugins/Plugin.php</file>
+			<file>src/Sources/LightPortal/Plugins/PluginHandler.php</file>
+        </include>
+        <exclude>
+            <directory>src/Sources/LightPortal/Libs</directory>
+            <directory>src/Sources/LightPortal/UI</directory>
+            <directory>src/Sources/LightPortal/Plugins</directory>
+			<file>src/Sources/LightPortal/Actions/index.php</file>
+			<file>src/Sources/LightPortal/Areas/index.php</file>
+			<file>src/Sources/LightPortal/Areas/Configs/index.php</file>
+			<file>src/Sources/LightPortal/Areas/Exports/index.php</file>
+			<file>src/Sources/LightPortal/Areas/Imports/index.php</file>
+			<file>src/Sources/LightPortal/Areas/Imports/Traits/index.php</file>
+			<file>src/Sources/LightPortal/Areas/Traits/index.php</file>
+			<file>src/Sources/LightPortal/Articles/index.php</file>
+			<file>src/Sources/LightPortal/Enums/index.php</file>
+			<file>src/Sources/LightPortal/Enums/Traits/index.php</file>
+			<file>src/Sources/LightPortal/Events/index.php</file>
+			<file>src/Sources/LightPortal/Hooks/index.php</file>
+			<file>src/Sources/LightPortal/Lists/index.php</file>
+			<file>src/Sources/LightPortal/Models/index.php</file>
+			<file>src/Sources/LightPortal/Renderers/index.php</file>
+			<file>src/Sources/LightPortal/Repositories/index.php</file>
+			<file>src/Sources/LightPortal/Routes/index.php</file>
+			<file>src/Sources/LightPortal/Tasks/index.php</file>
+			<file>src/Sources/LightPortal/Utils/index.php</file>
+			<file>src/Sources/LightPortal/Utils/Traits/index.php</file>
+			<file>src/Sources/LightPortal/Validators/index.php</file>
+        </exclude>
+    </source>
+</phpunit>
