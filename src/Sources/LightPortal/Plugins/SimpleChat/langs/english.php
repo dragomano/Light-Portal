@@ -7,5 +7,6 @@ return [
 	'form_position' => 'Position of the input form',
 	'form_position_set' => ['At the bottom', 'At the top'],
 	'window_height' => 'Chat window height (px)',
+	'refresh_interval' => 'Message list refresh interval (in seconds)',
 	'login' => 'Log in to participate in the discussion',
 ];

@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 20.02.25
+ * @version 07.08.25
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleChat;
@@ -16,15 +16,12 @@ namespace Bugo\LightPortal\Plugins\SimpleChat;
 use Bugo\Compat\Db;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\RadioField;
-use Bugo\LightPortal\Utils\Avatar;
-
 use Bugo\LightPortal\Utils\ParamWrapper;
 
 use function array_combine;
@@ -33,6 +30,7 @@ use function show_chat_block;
 
 use const FILTER_DEFAULT;
 use const FILTER_VALIDATE_BOOLEAN;
+use const JSON_UNESCAPED_UNICODE;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -44,10 +42,11 @@ class SimpleChat extends Block
 {
 	public string $icon = 'fas fa-message';
 
-	private array $params = [
-		'show_avatars'  => false,
-		'form_position' => 'bottom',
-		'window_height' => 100,
+	private array $defaultParams = [
+		'show_avatars'     => false,
+		'form_position'    => 'bottom',
+		'window_height'    => 100,
+		'refresh_interval' => 2,
 	];
 
 	private readonly Chat $chat;
@@ -59,25 +58,6 @@ class SimpleChat extends Block
 		$this->chat = new Chat($this->name);
 	}
 
-	public function init(): void
-	{
-		$this->applyHook(Hook::actions);
-	}
-
-	public function actions(): void
-	{
-		if ($this->request()->isNot('portal'))
-			return;
-
-		if ($this->request()->has('chat') && $this->request()->get('chat') === 'post') {
-			$this->chat->addMessage();
-		}
-
-		if ($this->request()->has('chat') && $this->request()->get('chat') === 'update') {
-			$this->chat->deleteMessage();
-		}
-	}
-
 	public function addSettings(): void
 	{
 		$this->chat->prepareTable();
@@ -85,15 +65,16 @@ class SimpleChat extends Block
 
 	public function prepareBlockParams(Event $e): void
 	{
-		$e->args->params = $this->params;
+		$e->args->params = $this->defaultParams;
 	}
 
 	public function validateBlockParams(Event $e): void
 	{
 		$e->args->params = [
-			'show_avatars'  => FILTER_VALIDATE_BOOLEAN,
-			'form_position' => FILTER_DEFAULT,
-			'window_height' => FILTER_VALIDATE_INT,
+			'show_avatars'     => FILTER_VALIDATE_BOOLEAN,
+			'form_position'    => FILTER_DEFAULT,
+			'window_height'    => FILTER_VALIDATE_INT,
+			'refresh_interval' => FILTER_VALIDATE_INT,
 		];
 	}
 
@@ -111,40 +92,33 @@ class SimpleChat extends Block
 
 		NumberField::make('window_height', $this->txt['window_height'])
 			->setAttribute('step', 10)
+			->setAttribute('min', 0)
 			->setValue($options['window_height']);
-	}
 
-	public function getData(int $block_id, ParamWrapper $parameters): array
-	{
-		$messages = $this->chat->getMessages($block_id);
-
-		if ($parameters['show_avatars']) {
-			$messages = Avatar::getWithItems($messages);
-		}
-
-		return $messages;
+		NumberField::make('refresh_interval', $this->txt['refresh_interval'])
+			->setAttribute('min', 0)
+			->setValue($options['refresh_interval']);
 	}
 
 	public function prepareContent(Event $e): void
 	{
-		Theme::loadCSSFile('admin.css');
-		Theme::loadJavaScriptFile('light_portal/bundle.min.js', ['defer' => true]);
+		$this->loadDependencies();
 
 		[$id, $parameters] = [$e->args->id, $e->args->parameters];
 
-		$parameters['show_avatars'] ??= $this->params['show_avatars'];
-		$parameters['form_position'] ??= $this->params['form_position'];
-		$parameters['window_height'] ??= $this->params['window_height'];
+		$parameters = $this->mergeWithDefaultParams($parameters);
 
-		$messages = $this->cache($this->name . '_addon_b' . $id)
-			->setLifeTime($e->args->cacheTime)
-			->setFallback(fn() => $this->getData($id, $parameters));
+		$this->chat->setInSidebar($this->isInSidebar($id));
+		$this->chat->setParameters($parameters);
+
+		$messages = $this->getCachedMessages($id, $e->args->cacheTime);
 
 		Utils::$context['lp_chats'][$id] = json_encode($messages, JSON_UNESCAPED_UNICODE);
 
 		$this->useTemplate();
 
-		show_chat_block($id, $parameters, $this->isInSidebar($id));
+		$this->handleChatRequests($id, $messages);
+		$this->renderChatBlock($id, $parameters);
 	}
 
 	public function onBlockRemoving(Event $e): void
@@ -156,5 +130,57 @@ class SimpleChat extends Block
 				'items' => $e->args->items,
 			]
 		);
+	}
+
+	private function loadDependencies(): void
+	{
+		Theme::loadCSSFile('admin.css');
+		Theme::loadJavaScriptFile(
+			'https://cdn.jsdelivr.net/npm/htmx.org@2/dist/htmx.min.js',
+			[
+				'defer'    => true,
+				'external' => true,
+			]
+		);
+	}
+
+	private function mergeWithDefaultParams(ParamWrapper $parameters): ParamWrapper
+	{
+		foreach ($this->defaultParams as $key => $value) {
+			$parameters[$key] ??= $value;
+		}
+
+		return $parameters;
+	}
+
+	private function getCachedMessages(int $id, int $cacheTime): array
+	{
+		return $this->cache($this->name . '_addon_b' . $id)
+			->setLifeTime($cacheTime)
+			->setFallback(fn() => $this->chat->getMessages($id));
+	}
+
+	private function handleChatRequests(int $id, array $messages): void
+	{
+		if ($this->request()->isNot('portal')) {
+			return;
+		}
+
+		if ($this->request()->has('chat')) {
+			$action = $this->request()->get('chat');
+
+			if ($action === 'add_message') {
+				$this->chat->addMessage();
+			} elseif ($action === 'remove_message') {
+				$this->chat->deleteMessage();
+			} else {
+				$this->chat->renderMessages($messages, $id);
+			}
+		}
+	}
+
+	private function renderChatBlock(int $id, ParamWrapper $parameters): void
+	{
+		show_chat_block($id, $parameters, $this->isInSidebar($id));
 	}
 }
