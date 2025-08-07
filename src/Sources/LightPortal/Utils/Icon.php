@@ -16,6 +16,7 @@ use Bugo\FontAwesome\IconBuilder;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Lists\IconList;
+use InvalidArgumentException;
 
 use function str_replace;
 
@@ -40,7 +41,11 @@ final class Icon
 		if (empty($icon))
 			return '';
 
-		$template = IconBuilder::make($icon)->ariaHidden()->html() . ' ';
+		try {
+			$template = IconBuilder::make($icon)->ariaHidden()->html() . ' ';
+		} catch (InvalidArgumentException) {
+			$template = Str::html('i', ['aria-hidden' => 'true'])->class($icon)->toHtml();
+		}
 
 		app(EventManagerFactory::class)()->dispatch(
 			PortalHook::prepareIconTemplate,
