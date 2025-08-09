@@ -228,7 +228,7 @@ final class Category extends AbstractPageList
 				AND p.entry_type IN ({array_string:types})
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
-			GROUP BY c.category_id, c.icon, c.priority, title, description
+			GROUP BY c.category_id, c.slug, c.icon, c.priority, title, description
 			ORDER BY {raw:sort}' . ($limit ? '
 			LIMIT {int:start}, {int:limit}' : ''),
 			[

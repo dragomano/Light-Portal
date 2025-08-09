@@ -222,7 +222,7 @@ final class Tag extends AbstractPageList
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
 				AND tag.status = {int:status}
-			GROUP BY tag.tag_id, tag.icon, title
+			GROUP BY tag.tag_id, tag.slug, tag.icon, title
 			ORDER BY {raw:sort}' . ($limit ? '
 			LIMIT {int:start}, {int:limit}' : ''),
 			[
