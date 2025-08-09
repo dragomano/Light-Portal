@@ -12,6 +12,8 @@
 
 namespace Bugo\LightPortal;
 
+use Bugo\Bricks\Breadcrumbs\BreadcrumbBuilder;
+use Bugo\Bricks\Breadcrumbs\BreadcrumbPresenter;
 use Bugo\Bricks\Tables\TablePresenter;
 use Bugo\LightPortal\Actions\Block;
 use Bugo\LightPortal\Actions\BoardIndex;
@@ -62,8 +64,9 @@ use Bugo\LightPortal\Repositories\CommentRepository;
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Repositories\TagRepository;
+use Bugo\LightPortal\UI\Breadcrumbs\BreadcrumbRenderer;
+use Bugo\LightPortal\UI\Breadcrumbs\BreadcrumbWrapper;
 use Bugo\LightPortal\UI\Tables\TableRenderer;
-use Bugo\LightPortal\Utils\Breadcrumbs;
 use Bugo\LightPortal\Utils\Cache;
 use Bugo\LightPortal\Utils\CacheInterface;
 use Bugo\LightPortal\Utils\File;
@@ -93,7 +96,10 @@ class ServiceProvider extends AbstractServiceProvider
 		BlockRepository::class,
 		BlockValidator::class,
 		BoardIndex::class,
-		Breadcrumbs::class,
+		BreadcrumbBuilder::class,
+		BreadcrumbPresenter::class,
+		BreadcrumbRenderer::class,
+		BreadcrumbWrapper::class,
 		Cache::class,
 		CacheInterface::class,
 		CardListInterface::class,
@@ -189,7 +195,6 @@ class ServiceProvider extends AbstractServiceProvider
 		$container->add(Post::class);
 		$container->add(File::class);
 		$container->add(Session::class);
-		$container->add(Breadcrumbs::class);
 
 		$container->add(BlockRepository::class);
 		$container->add(CategoryRepository::class);
@@ -231,6 +236,14 @@ class ServiceProvider extends AbstractServiceProvider
 		$container->add(PageFactory::class);
 		$container->add(TagValidator::class);
 		$container->add(TagFactory::class);
+
+		$container->add(BreadcrumbRenderer::class);
+		$container->add(BreadcrumbPresenter::class)->addArgument(BreadcrumbRenderer::class);
+		$container->add(BreadcrumbBuilder::class, static fn() => BreadcrumbBuilder::make())->setShared(false);
+		$container->add(BreadcrumbWrapper::class)
+			->addArgument(BreadcrumbBuilder::class)
+			->addArgument(BreadcrumbPresenter::class)
+			->setShared(false);
 
 		$container->add(Weaver::class, Weaver::class)->setShared(false);
 	}

@@ -12,12 +12,12 @@
 
 namespace Bugo\LightPortal\Utils\Traits;
 
-use Bugo\LightPortal\Utils\Breadcrumbs;
+use Bugo\LightPortal\UI\Breadcrumbs\BreadcrumbWrapper;
 
 trait HasBreadcrumbs
 {
-	public function breadcrumbs(): Breadcrumbs
+	public function breadcrumbs(): BreadcrumbWrapper
 	{
-		return app(Breadcrumbs::class);
+		return app(BreadcrumbWrapper::class);
 	}
 }
