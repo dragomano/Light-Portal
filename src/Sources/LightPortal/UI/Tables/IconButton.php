@@ -15,12 +15,12 @@ namespace Bugo\LightPortal\UI\Tables;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Str;
 
-class IconButton
+readonly class IconButton
 {
 	public function __construct(
-		private readonly string $icon,
-		private readonly array $attributes,
-		private readonly string $class = 'button'
+		private string $icon,
+		private array  $attributes,
+		private string $class = 'button'
 	) {}
 
 	public static function make(string $icon, array $attributes, string $class = 'button'): string

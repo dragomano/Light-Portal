@@ -12,9 +12,9 @@
 
 namespace Bugo\LightPortal\Areas\Exports;
 
-use Bugo\Bricks\Presenters\TablePresenter;
 use Bugo\Bricks\Tables\IdColumn;
 use Bugo\Bricks\Tables\RowPosition;
+use Bugo\Bricks\Tables\TablePresenter;
 use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\ErrorHandler;

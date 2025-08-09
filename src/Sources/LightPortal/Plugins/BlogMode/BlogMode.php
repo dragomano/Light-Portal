@@ -8,15 +8,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.04.25
+ * @version 08.08.25
  */
 
 namespace Bugo\LightPortal\Plugins\BlogMode;
 
-use Bugo\Bricks\Presenters\TablePresenter;
 use Bugo\Bricks\Tables\Column;
 use Bugo\Bricks\Tables\DateColumn;
 use Bugo\Bricks\Tables\IdColumn;
+use Bugo\Bricks\Tables\TablePresenter;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;

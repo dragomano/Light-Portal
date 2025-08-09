@@ -12,7 +12,7 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\Bricks\Presenters\TablePresenter;
+use Bugo\Bricks\Tables\TablePresenter;
 use Bugo\LightPortal\Actions\Block;
 use Bugo\LightPortal\Actions\BoardIndex;
 use Bugo\LightPortal\Actions\CardList;

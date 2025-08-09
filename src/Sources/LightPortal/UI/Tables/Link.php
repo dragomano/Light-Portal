@@ -14,12 +14,12 @@ namespace Bugo\LightPortal\UI\Tables;
 
 use Bugo\LightPortal\Utils\Str;
 
-class Link
+readonly class Link
 {
 	public function __construct(
-		private readonly string $text,
-		private readonly array $attributes,
-		private readonly string $class = 'button'
+		private string $text,
+		private array  $attributes,
+		private string $class = 'button'
 	) {}
 
 	public static function make(string $text, array $attributes, string $class = 'button'): string

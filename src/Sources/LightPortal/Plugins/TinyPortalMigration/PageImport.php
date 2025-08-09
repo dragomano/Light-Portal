@@ -8,19 +8,19 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 23.04.25
+ * @version 08.08.25
  */
 
 namespace Bugo\LightPortal\Plugins\TinyPortalMigration;
 
-use Bugo\Bricks\Presenters\TablePresenter;
 use Bugo\Bricks\Tables\IdColumn;
+use Bugo\Bricks\Tables\TablePresenter;
 use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
+use Bugo\Compat\Parsers\BBCodeParser;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\Compat\Parsers\BBCodeParser;
 use Bugo\LightPortal\Areas\Imports\AbstractCustomPageImport;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\UI\Tables\CheckboxColumn;

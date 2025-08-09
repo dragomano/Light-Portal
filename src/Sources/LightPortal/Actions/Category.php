@@ -12,10 +12,10 @@
 
 namespace Bugo\LightPortal\Actions;
 
-use Bugo\Bricks\Presenters\TablePresenter;
 use Bugo\Bricks\Tables\Column;
 use Bugo\Bricks\Tables\Row;
 use Bugo\Bricks\Tables\RowPosition;
+use Bugo\Bricks\Tables\TablePresenter;
 use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\ErrorHandler;

@@ -12,9 +12,9 @@
 
 namespace Bugo\LightPortal\UI\Tables;
 
-use Bugo\Bricks\Renderers\RendererInterface;
 use Bugo\Compat\ItemList;
 use Bugo\Compat\Utils;
+use Bugo\Bricks\RendererInterface;
 
 class TableRenderer implements RendererInterface
 {

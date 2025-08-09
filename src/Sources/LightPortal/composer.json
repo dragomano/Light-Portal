@@ -6,7 +6,7 @@
     "ext-simplexml": "*",
     "ext-zip": "*",
     "bugo/fa-icon-builder": "^0.1",
-    "bugo/smf-bricks": "^0.5",
+    "bugo/smf-bricks": "^0.6",
     "bugo/smf-compat": "^0.3",
     "doctrine/event-manager": "^2.0",
     "eftec/bladeone": "^4.18",

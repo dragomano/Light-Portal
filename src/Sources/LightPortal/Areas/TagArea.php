@@ -12,8 +12,8 @@
 
 namespace Bugo\LightPortal\Areas;
 
-use Bugo\Bricks\Presenters\TablePresenter;
 use Bugo\Bricks\Tables\IdColumn;
+use Bugo\Bricks\Tables\TablePresenter;
 use Bugo\Compat\Config;
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
