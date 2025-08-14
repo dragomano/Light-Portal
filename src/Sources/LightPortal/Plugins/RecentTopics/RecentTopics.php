@@ -8,15 +8,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.03.25
+ * @version 14.08.25
  */
 
 namespace Bugo\LightPortal\Plugins\RecentTopics;
 
 use Bugo\Compat\Config;
 use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\SSI;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\NumberField;
@@ -30,10 +30,8 @@ use WPLake\Typed\Typed;
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class RecentTopics extends Block
+class RecentTopics extends SSI
 {
-	public string $type = 'block ssi';
-
 	public string $icon = 'fas fa-book-open';
 
 	public function prepareBlockParams(Event $e): void

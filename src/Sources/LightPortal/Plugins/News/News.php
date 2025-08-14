@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.01.25
+ * @version 14.08.25
  */
 
 namespace Bugo\LightPortal\Plugins\News;
@@ -16,18 +16,16 @@ namespace Bugo\LightPortal\Plugins\News;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\SSI;
 use Bugo\LightPortal\UI\Fields\SelectField;
 use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class News extends Block
+class News extends SSI
 {
-	public string $type = 'block ssi';
-
 	public string $icon = 'far fa-newspaper';
 
 	public function prepareBlockParams(Event $e): void

@@ -14,7 +14,6 @@ namespace Bugo\LightPortal\Plugins;
 
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
-use Bugo\Compat\ServerSideIncludes;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Repositories\PluginRepository;
@@ -29,7 +28,6 @@ use Bugo\LightPortal\Utils\Traits\HasForumHooks;
 use Stringable;
 
 use function basename;
-use function dirname;
 use function sprintf;
 use function str_replace;
 
@@ -80,13 +78,6 @@ abstract class Plugin implements PluginInterface, Stringable
 	public function getSnakeName(): string
 	{
 		return Str::getSnakeName($this->getCamelName());
-	}
-
-	public function getFromSSI(string $function, ...$params)
-	{
-		require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'SSI.php';
-
-		return ServerSideIncludes::{$function}(...$params);
 	}
 
 	public function addDefaultValues(array $values): void

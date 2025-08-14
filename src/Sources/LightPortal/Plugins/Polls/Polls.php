@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 11.01.25
+ * @version 14.08.25
  */
 
 namespace Bugo\LightPortal\Plugins\Polls;
@@ -18,8 +18,8 @@ use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\SSI;
 use Bugo\LightPortal\UI\Fields\InputField;
 use Bugo\LightPortal\UI\Fields\SelectField;
 use Bugo\LightPortal\Utils\Str;
@@ -28,10 +28,8 @@ use WPLake\Typed\Typed;
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class Polls extends Block
+class Polls extends SSI
 {
-	public string $type = 'block ssi';
-
 	public string $icon = 'fas fa-poll';
 
 	public function prepareBlockParams(Event $e): void

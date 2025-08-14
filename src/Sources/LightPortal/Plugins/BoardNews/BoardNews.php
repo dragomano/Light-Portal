@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.03.25
+ * @version 14.08.25
  */
 
 namespace Bugo\LightPortal\Plugins\BoardNews;
@@ -18,8 +18,8 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\SSI;
 use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\RangeField;
 use Bugo\LightPortal\Utils\MessageIndex;
@@ -30,10 +30,8 @@ use WPLake\Typed\Typed;
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class BoardNews extends Block
+class BoardNews extends SSI
 {
-	public string $type = 'block ssi';
-
 	public string $icon = 'fas fa-newspaper';
 
 	public function prepareBlockParams(Event $e): void

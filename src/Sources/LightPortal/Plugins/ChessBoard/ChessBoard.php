@@ -8,21 +8,19 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 23.03.25
+ * @version 14.08.25
  */
 
 namespace Bugo\LightPortal\Plugins\ChessBoard;
 
-use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\Games;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class ChessBoard extends Block
+class ChessBoard extends Games
 {
-	public string $type = 'block games';
-
 	public string $icon = 'fas fa-chess';
 
 	public function prepareContent(Event $e): void

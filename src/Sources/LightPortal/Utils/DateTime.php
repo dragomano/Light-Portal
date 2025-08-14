@@ -18,7 +18,6 @@ use Bugo\Compat\Utils;
 use DateTime as BaseDateTime;
 use Exception;
 use IntlDateFormatter;
-
 use InvalidArgumentException;
 
 use function ceil;

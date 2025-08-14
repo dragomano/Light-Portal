@@ -8,15 +8,15 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 26.03.25
+ * @version 14.08.25
  */
 
 namespace Bugo\LightPortal\Plugins\Memory;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\Games;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -24,10 +24,8 @@ if (! defined('LP_NAME'))
 /**
  * https://svelte.dev/playground/9786b11205ee4bd49834e85ea288204e?version=5.25.2
  */
-class Memory extends Block
+class Memory extends Games
 {
-	public string $type = 'block games';
-
 	public string $icon = 'fas fa-memory';
 
 	public function prepareAssets(Event $e): void
