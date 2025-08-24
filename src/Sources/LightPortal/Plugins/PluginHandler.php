@@ -61,6 +61,7 @@ final readonly class PluginHandler
 		$plugins = array_map(function (PluginInterface $plugin) {
 			$data = get_object_vars($plugin);
 			$data['name'] = $plugin->getCamelName();
+
 			return [$plugin->getSnakeName() => $data];
 		}, app()->get('plugins'));
 

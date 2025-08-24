@@ -19,8 +19,10 @@ use MatthiasMullie\Minify\CSS;
 use MatthiasMullie\Minify\JS;
 
 use function basename;
+use function copy;
 use function file_put_contents;
 use function filemtime;
+use function in_array;
 use function is_dir;
 use function is_file;
 use function mkdir;

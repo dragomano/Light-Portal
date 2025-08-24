@@ -33,7 +33,7 @@ class YandexTranslate {
 
 	handleHtml(code) {
 		document.querySelector('[data-lang-active]').innerHTML = `<div class="lang__code lang_${code}"></div>`;
-		document.querySelector(`[data-ya-lang="${code}"]`).remove();
+		document.querySelector(`[data-ya-lang="${code}"]`)?.remove();
 	}
 
 	handleEvent(event, selector, handler) {

@@ -210,7 +210,7 @@ final class ConfigArea
 			}
 		}
 
-		$this->events()->dispatch(PortalHook::updateAdminAreas, ['areas' => &$areas['lp_portal']['areas']]);
+		$this->events()->dispatch(PortalHook::extendAdminAreas, ['areas' => &$areas['lp_portal']['areas']]);
 	}
 
 	public function helpadmin(): void
@@ -281,7 +281,7 @@ final class ConfigArea
 			'import' => [app(BlockImport::class), 'main'],
 		];
 
-		$this->events()->dispatch(PortalHook::updateBlockAreas, ['areas' => &$areas]);
+		$this->events()->dispatch(PortalHook::extendBlockAreas, ['areas' => &$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -298,7 +298,7 @@ final class ConfigArea
 			'import' => [app(PageImport::class), 'main'],
 		];
 
-		$this->events()->dispatch(PortalHook::updatePageAreas, ['areas' => &$areas]);
+		$this->events()->dispatch(PortalHook::extendPageAreas, ['areas' => &$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -315,7 +315,7 @@ final class ConfigArea
 			'import' => [app(CategoryImport::class), 'main'],
 		];
 
-		$this->events()->dispatch(PortalHook::updateCategoryAreas, ['areas' => &$areas]);
+		$this->events()->dispatch(PortalHook::extendCategoryAreas, ['areas' => &$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -332,7 +332,7 @@ final class ConfigArea
 			'import' => [app(TagImport::class), 'main'],
 		];
 
-		$this->events()->dispatch(PortalHook::updateTagAreas, ['areas' => &$areas]);
+		$this->events()->dispatch(PortalHook::extendTagAreas, ['areas' => &$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -350,7 +350,7 @@ final class ConfigArea
 			$areas['import'] = [app(PluginImport::class), 'main'];
 		}
 
-		$this->events()->dispatch(PortalHook::updatePluginAreas, ['areas' => &$areas]);
+		$this->events()->dispatch(PortalHook::extendPluginAreas, ['areas' => &$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -374,9 +374,9 @@ final class ConfigArea
 			return;
 
 		if (str_contains((string) $this->request()->get('area'), 'lp_')) {
-			Theme::loadTemplate('LightPortal/ViewDebug');
+			Theme::loadTemplate('LightPortal/ViewDocs');
 
-			Utils::$context['template_layers'][] = 'docs';
+			Utils::$context['template_layers'][] = 'lp_docs';
 		}
 	}
 

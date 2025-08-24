@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 22.12.24
+ * @version 19.08.25
  */
 
 namespace Bugo\LightPortal\Plugins\TinyMCE;
@@ -49,7 +49,7 @@ class TinyMCE extends Plugin
 	{
 		$object = $e->args->object;
 
-		if ($object['type'] !== 'html' && (! isset($oobject['options']['content']) || $oobject['options']['content'] !== 'html'))
+		if ($object['type'] !== 'html' && (! isset($object['options']['content']) || $object['options']['content'] !== 'html'))
 			return;
 
 		$apiKey = $this->context['api_key'] ?? 'no-api-key';

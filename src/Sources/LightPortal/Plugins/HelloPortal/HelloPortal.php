@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 20.02.25
+ * @version 26.08.25
  */
 
 namespace Bugo\LightPortal\Plugins\HelloPortal;
@@ -20,9 +20,9 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
+use Bugo\LightPortal\Utils\Str;
 
 use function array_combine;
-use function function_exists;
 use function str_contains;
 
 if (! defined('LP_NAME'))
@@ -37,6 +37,15 @@ class HelloPortal extends Plugin
 
 	private array $themes = [false, 'dark', 'modern', 'flattener'];
 
+	private string $steps;
+
+	public function __construct()
+	{
+		parent::__construct();
+
+		$this->steps = $this->getStepData();
+	}
+
 	public function init(): void
 	{
 		$this->applyHook(Hook::menuButtons);
@@ -44,17 +53,8 @@ class HelloPortal extends Plugin
 
 	public function menuButtons(): void
 	{
-		if ($this->request()->isNot('admin') || empty($steps = $this->getStepData()))
+		if (! $this->canShowTourButton())
 			return;
-
-		if (empty($this->request()->get('area')) || empty(Utils::$context['template_layers']))
-			return;
-
-		if (str_contains((string) $this->request()->get('area'), 'lp_')) {
-			$this->useTemplate();
-
-			Utils::$context['template_layers'][] = 'tour_info';
-		}
 
 		Lang::load('Post');
 
@@ -82,7 +82,7 @@ class HelloPortal extends Plugin
 				nextLabel: ' . Utils::escapeJavaScript(Lang::$txt['admin_next']) . ',
 				prevLabel: ' . Utils::escapeJavaScript(Lang::$txt['back']) . ',
 				doneLabel: ' . Utils::escapeJavaScript(Lang::$txt['attach_dir_ok']) . ',
-				steps: [' . $steps . '],
+				steps: [' . $this->steps . '],
 				showProgress: ' . (
 					empty($this->context['show_progress']) ? 'false' : 'true'
 				) . ',
@@ -103,6 +103,26 @@ class HelloPortal extends Plugin
 				scrollTo: "tooltip"
 			}).start();
 		}');
+	}
+
+	public function addLayerAbove(): void
+	{
+		if (! $this->canShowTourButton())
+			return;
+
+		if (str_contains((string) $this->request()->get('area'), 'lp_')) {
+			echo Str::html('div')
+				->class('infobox centertext')
+				->addHtml(
+					Str::html('button', [
+						'x-on:click.prevent' => 'runTour()',
+						'x-data' => '',
+					])
+						->class('button')
+						->setText(Lang::$txt['lp_hello_portal']['tour_button'])
+				)
+				->toHtml();
+		}
 	}
 
 	public function addSettings(Event $e): void
@@ -134,41 +154,20 @@ class HelloPortal extends Plugin
 
 	private function getStepData(): string
 	{
-		$this->useTemplate('steps');
+		$steps = (new TourRegistry())->getSteps($this->txt, Config::$modSettings);
 
-		if (! function_exists('getSteps'))
-			return '';
-
-		$steps = getSteps($this->txt, Config::$modSettings);
-
-		if ($this->isCurrentArea('lp_settings', 'basic'))
-			return $steps['basic_settings'];
-
-		if ($this->isCurrentArea('lp_settings', 'extra', false))
-			return $steps['extra_settings'];
-
-		if ($this->isCurrentArea('lp_settings', 'panels', false))
-			return $steps['panels'];
-
-		if ($this->isCurrentArea('lp_settings', 'misc', false))
-			return $steps['misc'];
-
-		if ($this->isCurrentArea('lp_blocks'))
-			return $steps['blocks'];
-
-		if ($this->isCurrentArea('lp_pages'))
-			return $steps['pages'];
-
-		if ($this->isCurrentArea('lp_categories'))
-			return $steps['categories'];
-
-		if ($this->isCurrentArea('lp_plugins'))
-			return $steps['plugins'];
-
-		if ($this->isCurrentArea('lp_plugins', 'add', false))
-			return $steps['add_plugins'];
-
-		return '';
+		return match (true) {
+			$this->isCurrentArea('lp_settings', 'basic') => $steps['basic_settings'],
+			$this->isCurrentArea('lp_settings', 'extra', false) => $steps['extra_settings'],
+			$this->isCurrentArea('lp_settings', 'panels', false) => $steps['panels'],
+			$this->isCurrentArea('lp_settings', 'misc', false) => $steps['misc'],
+			$this->isCurrentArea('lp_blocks') => $steps['blocks'],
+			$this->isCurrentArea('lp_pages') => $steps['pages'],
+			$this->isCurrentArea('lp_categories') => $steps['categories'],
+			$this->isCurrentArea('lp_plugins') => $steps['plugins'],
+			$this->isCurrentArea('lp_plugins', 'add', false) => $steps['add_plugins'],
+			default => ''
+		};
 	}
 
 	private function isCurrentArea(string $area, string $sa = 'main', bool $canBeEmpty = true): bool
@@ -179,5 +178,16 @@ class HelloPortal extends Plugin
 				? (Utils::$context['current_subaction'] === $sa || empty(Utils::$context['current_subaction']))
 				: Utils::$context['current_subaction'] === $sa
 			);
+	}
+
+	private function canShowTourButton(): bool
+	{
+		if ($this->request()->isNot('admin') || empty($this->steps))
+			return false;
+
+		if (empty($this->request()->get('area')) || empty(Utils::$context['template_layers']))
+			return false;
+
+		return true;
 	}
 }

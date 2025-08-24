@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 23.04.25
+ * @version 24.08.25
  */
 
 namespace Bugo\LightPortal\Plugins\EzPortalMigration;
@@ -27,7 +27,7 @@ class EzPortalMigration extends Plugin
 
 	private const AREA = 'import_from_ez';
 
-	public function updateAdminAreas(Event $e): void
+	public function extendAdminAreas(Event $e): void
 	{
 		$areas = &$e->args->areas;
 
@@ -42,12 +42,12 @@ class EzPortalMigration extends Plugin
 		}
 	}
 
-	public function updateBlockAreas(Event $e): void
+	public function extendBlockAreas(Event $e): void
 	{
 		$e->args->areas[self::AREA] = [new BlockImport(), 'main'];
 	}
 
-	public function updatePageAreas(Event $e): void
+	public function extendPageAreas(Event $e): void
 	{
 		$e->args->areas[self::AREA] = [new PageImport(), 'main'];
 	}

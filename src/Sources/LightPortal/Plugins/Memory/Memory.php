@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 14.08.25
+ * @version 24.08.25
  */
 
 namespace Bugo\LightPortal\Plugins\Memory;
@@ -59,9 +59,8 @@ class Memory extends Games
 
 	private function handleApi(): void
 	{
-		if ($this->request()->hasNot('api')) {
+		if ($this->request()->hasNot('api'))
 			return;
-		}
 
 		$this->response()->exit($this->preparedData());
 	}

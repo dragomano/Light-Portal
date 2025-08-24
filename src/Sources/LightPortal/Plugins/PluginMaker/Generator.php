@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 14.08.25
+ * @version 24.08.25
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
@@ -221,7 +221,7 @@ class Generator
 			return;
 
 		$method = $this->class
-			->addMethod(PortalHook::updateAdminAreas->name)
+			->addMethod(PortalHook::extendAdminAreas->name)
 			->setReturnType('void');
 
 		$method

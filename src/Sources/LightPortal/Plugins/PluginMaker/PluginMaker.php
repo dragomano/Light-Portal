@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 27.03.25
+ * @version 24.08.25
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
@@ -39,7 +39,7 @@ class PluginMaker extends Plugin
 		);
 	}
 
-	public function updateAdminAreas(Event $e): void
+	public function extendAdminAreas(Event $e): void
 	{
 		$areas = &$e->args->areas;
 
@@ -50,7 +50,7 @@ class PluginMaker extends Plugin
 		);
 	}
 
-	public function updatePluginAreas(Event $e): void
+	public function extendPluginAreas(Event $e): void
 	{
 		$e->args->areas['add'] = [new Handler, 'add'];
 	}

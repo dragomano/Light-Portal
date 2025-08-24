@@ -15,7 +15,11 @@ namespace Bugo\LightPortal\Utils\Traits;
 use Bugo\Compat\Utils;
 
 use function dirname;
+use function function_exists;
 use function is_file;
+use function is_string;
+use function ob_get_clean;
+use function ob_start;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -53,6 +57,15 @@ trait HasTemplate
 	{
 		$this->useTemplate();
 
-		return $function(...$params);
+		if (! function_exists($function))
+			return '';
+
+		ob_start();
+
+		$result = $function(...$params);
+
+		$output = ob_get_clean();
+
+		return is_string($result) ? $result : $output;
 	}
 }

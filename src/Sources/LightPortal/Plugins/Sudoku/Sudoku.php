@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 14.08.25
+ * @version 24.08.25
  */
 
 namespace Bugo\LightPortal\Plugins\Sudoku;
@@ -17,6 +17,7 @@ use Bugo\Compat\Theme;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Games;
 use Bugo\LightPortal\UI\Fields\RangeField;
+use Bugo\LightPortal\Utils\Str;
 use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
@@ -67,8 +68,10 @@ class Sudoku extends Games
 
 		$difficulty = Typed::int($parameters['difficulty'], default: $this->difficulty);
 
-		echo '
-		<div id="sudoku' . $id . '" class="sudoku-game"></div>';
+		echo Str::html('div', [
+			'id'    => 'sudoku' . $id,
+			'class' => 'sudoku-game',
+		])->toHtml();
 
 		Theme::addInlineJavaScript('
 		  const sudoku' . $id . ' = document.getElementById("sudoku' . $id . '");

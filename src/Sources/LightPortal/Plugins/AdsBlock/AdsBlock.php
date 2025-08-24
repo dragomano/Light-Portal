@@ -8,20 +8,22 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 20.02.25
+ * @version 25.08.25
  */
 
 namespace Bugo\LightPortal\Plugins\AdsBlock;
 
+use Bugo\Bricks\Forms\FormBuilder;
+use Bugo\Bricks\Forms\FormPresenter;
+use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
+use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\AdsBlock\Hooks\DisplayButtons;
 use Bugo\LightPortal\Plugins\AdsBlock\Hooks\MenuButtons;
-use Bugo\LightPortal\Plugins\AdsBlock\Hooks\MessageindexButtons;
 use Bugo\LightPortal\Plugins\AdsBlock\Hooks\PrepareDisplayContext;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\TextareaField;
@@ -33,12 +35,17 @@ use Bugo\LightPortal\Utils\Content;
 
 use function date;
 use function function_exists;
+use function lp_show_blocks;
+use function ob_get_clean;
+use function ob_start;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
 class AdsBlock extends Block
 {
+	use RepliesComparisonTrait;
+
 	public string $icon = 'fas fa-ad';
 
 	public function init(): void
@@ -48,9 +55,31 @@ class AdsBlock extends Block
 		}
 
 		$this->applyHook(Hook::menuButtons, MenuButtons::class);
-		$this->applyHook(Hook::messageindexButtons, MessageIndexButtons::class);
-		$this->applyHook(Hook::displayButtons, DisplayButtons::class);
 		$this->applyHook(Hook::prepareDisplayContext, PrepareDisplayContext::class);
+	}
+
+	public function extendBlockAreas(): void
+	{
+		$form = FormBuilder::make('ads_block_form')
+			->setAction(Config::$scripturl . '?action=admin;area=lp_blocks;sa=add')
+			->setStyle('display: none')
+			->setScript('
+				const addButton = document.querySelector(\'h3 a[href$="placement=ads"]\');
+				if (addButton) {
+					addButton.removeAttribute("href");
+					addButton.addEventListener("click", () => document.forms.ads_block_form.submit());
+				}'
+			)
+			->addHiddenFields([
+				'add_block' => 'ads_block',
+				'placement' => 'ads',
+			]);
+
+		ob_start();
+
+		app(FormPresenter::class)->show($form);
+
+		Utils::$context['insert_after_template'] .= ob_get_clean();
 	}
 
 	public function addSettings(Event $e): void
@@ -155,7 +184,7 @@ class AdsBlock extends Block
 
 		Lang::$txt['lp_post_error_no_ads_placement'] = $this->txt['no_ads_placement'];
 
-		if (empty($e->args->data['parameters']['ads_placement'])) {
+		if (empty($e->args->data['options']['ads_placement'])) {
 			$e->args->errors[] = 'no_ads_placement';
 		}
 	}
@@ -165,8 +194,23 @@ class AdsBlock extends Block
 		$e->args->content = Content::parse($e->args->content, 'html');
 	}
 
-	public function preparePageData(): void
+	public function addLayerAbove(): void
 	{
-		$this->useTemplate()->withLayer('ads_placement_page');
+		match (true) {
+			! empty(Utils::$context['lp_page']) => lp_show_blocks(Placement::PAGE_TOP->name()),
+			! empty(Utils::$context['current_board']) => lp_show_blocks(Placement::BOARD_TOP->name()),
+			! empty(Utils::$context['current_topic']) && ! $this->isRepliesBelowMinimum() => lp_show_blocks(Placement::TOPIC_TOP->name()),
+			default => null
+		};
+	}
+
+	public function addLayerBelow(): void
+	{
+		match (true) {
+			! empty(Utils::$context['lp_page']) => lp_show_blocks(Placement::PAGE_BOTTOM->name()),
+			! empty(Utils::$context['current_board']) => lp_show_blocks(Placement::BOARD_BOTTOM->name()),
+			! empty(Utils::$context['current_topic']) && ! $this->isRepliesBelowMinimum() => lp_show_blocks(Placement::TOPIC_BOTTOM->name()),
+			default => null
+		};
 	}
 }

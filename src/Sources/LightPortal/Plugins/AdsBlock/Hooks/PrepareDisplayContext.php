@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 24.08.25
  */
 
 namespace Bugo\LightPortal\Plugins\AdsBlock\Hooks;
@@ -47,7 +47,10 @@ class PrepareDisplayContext
 			lp_show_blocks(Placement::BEFORE_FIRST_POST->name());
 		}
 
-		if (Utils::$context['lp_ads_blocks'][Placement::BEFORE_EVERY_FIRST_POST->name()] && $currentCounter == $output['counter']) {
+		if (
+			Utils::$context['lp_ads_blocks'][Placement::BEFORE_EVERY_FIRST_POST->name()]
+			&& $currentCounter == $output['counter']
+		) {
 			lp_show_blocks(Placement::BEFORE_EVERY_FIRST_POST->name());
 		}
 
@@ -94,9 +97,9 @@ class PrepareDisplayContext
 			};
 
 			Theme::addInlineJavaScript('
-	    var quickModForm = document.querySelector("#quickModForm > div.windowbg:last-of-type");
-	    if (quickModForm) {
-	        quickModForm.insertAdjacentHTML("afterend", ' . Utils::escapeJavaScript($afterEveryLastPost()) . ');
+	    let quickModFormAfter' . $output['id'] . ' = document.querySelector("#quickModForm > div.windowbg:last-of-type");
+	    if (quickModFormAfter' . $output['id'] . ') {
+	        quickModFormAfter' . $output['id'] . '.insertAdjacentHTML("afterend", ' . Utils::escapeJavaScript($afterEveryLastPost()) . ');
 	    }', true);
 		}
 
@@ -111,9 +114,9 @@ class PrepareDisplayContext
 			};
 
 			Theme::addInlineJavaScript('
-	    var quickModForm = document.getElementById("quickModForm");
-	    if (quickModForm) {
-	        quickModForm.insertAdjacentHTML("beforeend", ' . Utils::escapeJavaScript($afterLastPost()) . ');
+	    let quickModFormBefore' . $output['id'] . ' = document.getElementById("quickModForm");
+	    if (quickModFormBefore' . $output['id'] . ') {
+	        quickModFormBefore' . $output['id'] . '.insertAdjacentHTML("beforeend", ' . Utils::escapeJavaScript($afterLastPost()) . ');
 	    }', true);
 		}
 	}

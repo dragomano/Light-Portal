@@ -14,6 +14,8 @@ namespace Bugo\LightPortal;
 
 use Bugo\Bricks\Breadcrumbs\BreadcrumbBuilder;
 use Bugo\Bricks\Breadcrumbs\BreadcrumbPresenter;
+use Bugo\Bricks\Forms\FormPresenter;
+use Bugo\Bricks\Forms\FormRenderer;
 use Bugo\Bricks\Tables\TablePresenter;
 use Bugo\LightPortal\Actions\Block;
 use Bugo\LightPortal\Actions\BoardIndex;
@@ -119,6 +121,8 @@ class ServiceProvider extends AbstractServiceProvider
 		EventManager::class,
 		EventManagerFactory::class,
 		File::class,
+		FormPresenter::class,
+		FormRenderer::class,
 		FrontPage::class,
 		IconList::class,
 		Integration::class,
@@ -174,6 +178,8 @@ class ServiceProvider extends AbstractServiceProvider
 		$container->add(RendererInterface::class, Blade::class);
 		$container->add(TablePresenter::class)->addArgument(TableRenderer::class);
 		$container->add(TableRenderer::class);
+		$container->add(FormPresenter::class)->addArgument(FormRenderer::class);
+		$container->add(FormRenderer::class);
 
 		$container->add(EventManager::class);
 		$container->add(AssetHandler::class);

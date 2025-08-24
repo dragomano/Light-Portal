@@ -464,12 +464,12 @@ public function prepareIconList(Event $e): void
 
 > adding custom configs in the portal basic settings area
 
-### updateAdminAreas
+### extendAdminAreas
 
 > adding the portal custom areas in the Administration Center
 
 ```php
-public function updateAdminAreas(Event $e): void
+public function extendAdminAreas(Event $e): void
 {
     if (User::$info['is_admin']) {
         $e->args->areas['lp_pages']['subsections']['import_from_ep'] = [
@@ -479,49 +479,49 @@ public function updateAdminAreas(Event $e): void
 }
 ```
 
-### updateBlockAreas
+### extendBlockAreas
 
 > adding custom tabs into Block area settings
 
 ```php
-public function updateBlockAreas(Event $e): void
+public function extendBlockAreas(Event $e): void
 {
     $e->args->areas['import_from_tp'] = [new BlockImport(), 'main'];
 }
 ```
 
-### updatePageAreas
+### extendPageAreas
 
 > adding custom tabs into Page area settings
 
 ```php
-public function updatePageAreas(Event $e): void
+public function extendPageAreas(Event $e): void
 {
     $e->args->areas['import_from_ep'] = [new Import(), 'main'];
 }
 ```
 
-### updateCategoryAreas
+### extendCategoryAreas
 
 > adding custom tabs into Category area settings
 
 ```php
-public function updateCategoryAreas(Event $e): void
+public function extendCategoryAreas(Event $e): void
 {
     $e->args->areas['import_from_tp'] = [new Import(), 'main'];
 }
 ```
 
-### updateTagAreas
+### extendTagAreas
 
 > adding custom tabs into Tag area settings
 
-### updatePluginAreas
+### extendPluginAreas
 
 > adding custom tabs into Plugin area settings
 
 ```php
-public function updatePluginAreas(Event $e): void
+public function extendPluginAreas(Event $e): void
 {
     $e->args->areas['add'] = [new Handler(), 'add'];
 }

@@ -17,6 +17,8 @@ use Bugo\LightPortal\Utils\ParamWrapper;
 
 enum PortalHook
 {
+	case addLayerAbove;
+	case addLayerBelow;
 	case addSettings;
 	case afterPageContent;
 	case beforePageContent;
@@ -25,7 +27,13 @@ enum PortalHook
 	case comments;
 	case credits;
 	case downloadRequest;
+	case extendAdminAreas;
 	case extendBasicConfig;
+	case extendBlockAreas;
+	case extendCategoryAreas;
+	case extendPageAreas;
+	case extendPluginAreas;
+	case extendTagAreas;
 	case findBlockErrors;
 	case findPageErrors;
 	case frontAssets;
@@ -57,12 +65,6 @@ enum PortalHook
 	case preparePageFields;
 	case preparePageParams;
 	case saveSettings;
-	case updateAdminAreas;
-	case updateBlockAreas;
-	case updateCategoryAreas;
-	case updatePageAreas;
-	case updatePluginAreas;
-	case updateTagAreas;
 	case validateBlockParams;
 	case validatePageParams;
 
@@ -87,6 +89,14 @@ enum PortalHook
 			},
 			self::extendBasicConfig => new class(...$data) {
 				public function __construct(public array &$configVars) {}
+			},
+			self::extendAdminAreas,
+			self::extendBlockAreas,
+			self::extendPageAreas,
+			self::extendCategoryAreas,
+			self::extendTagAreas,
+			self::extendPluginAreas => new class(...$data) {
+				public function __construct(public array &$areas) {}
 			},
 			self::findBlockErrors,
 			self::findPageErrors => new class(...$data) {
@@ -174,14 +184,6 @@ enum PortalHook
 			},
 			self::preparePageData => new class(...$data) {
 				public function __construct(public array &$data, public readonly bool $isAuthor) {}
-			},
-			self::updateAdminAreas,
-			self::updateBlockAreas,
-			self::updatePageAreas,
-			self::updateCategoryAreas,
-			self::updateTagAreas,
-			self::updatePluginAreas => new class(...$data) {
-				public function __construct(public array &$areas) {}
 			},
 			default => new class {},
 		};

@@ -52,6 +52,10 @@ class MenuButtons
 
 		app(Block::class)->show();
 
+		Theme::loadTemplate('LightPortal/ViewPluginLayers');
+
+		Utils::$context['template_layers'][] = 'lp_plugins';
+
 		$this->prepareAdminButtons($buttons);
 		$this->prepareModerationButtons($buttons);
 		$this->preparePageButtons($buttons);
@@ -241,6 +245,7 @@ class MenuButtons
 			|| empty(Utils::$context['user']['is_admin'])
 			|| empty(Utils::$context['template_layers'])
 			|| $this->request()->is('devtools')
+			|| $this->request()->is('xmlhttp')
 		) {
 			return;
 		}

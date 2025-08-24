@@ -16,6 +16,7 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\LightPortal\Utils\Language;
 
+use function array_map;
 use function array_merge;
 use function array_unique;
 use function is_file;
