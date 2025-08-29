@@ -8,25 +8,28 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 27.03.25
+ * @version 26.08.25
  */
 
 namespace Bugo\LightPortal\Plugins\CurrentMonth;
 
+use Bugo\Compat\Actions\Calendar;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\Compat\Actions\Calendar;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Utils\Traits\HasView;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
 class CurrentMonth extends Block
 {
+	use HasView;
+
 	public string $icon = 'fas fa-calendar-check';
 
 	public function prepareBlockParams(Event $e): void
@@ -83,9 +86,7 @@ class CurrentMonth extends Block
 				Utils::$context['lp_active_blocks'][$id]['titles'][User::$me->language] = $title;
 			}
 
-			$this->useTemplate();
-
-			show_current_month_grid($calendarData);
+			echo $this->view(params: ['data' => $calendarData]);
 		}
 	}
 }

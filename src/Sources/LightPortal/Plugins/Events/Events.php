@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.03.25
+ * @version 26.08.25
  */
 
 namespace Bugo\LightPortal\Plugins\Events;
@@ -22,6 +22,7 @@ use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\RangeField;
 use Bugo\LightPortal\Utils\ParamWrapper;
+use Bugo\LightPortal\Utils\Traits\HasView;
 use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
@@ -32,6 +33,8 @@ if (! defined('LP_NAME'))
  */
 class Events extends Block
 {
+	use HasView;
+
 	public string $icon = 'fas fa-calendar-check';
 
 	public function prepareBlockParams(Event $e): void
@@ -115,8 +118,6 @@ class Events extends Block
 			->setLifeTime(Typed::int($parameters['update_interval']))
 			->setFallback(fn() => $this->getData($parameters));
 
-		$this->useTemplate();
-
-		template_show_events($data);
+		echo $this->view(params: ['data' => $data]);
 	}
 }

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 12.02.25
+ * @version 29.08.25
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleMenu;
@@ -20,6 +20,7 @@ use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasView;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -29,6 +30,8 @@ if (! defined('LP_NAME'))
  */
 class SimpleMenu extends Block
 {
+	use HasView;
+
 	public string $icon = 'far fa-list-alt';
 
 	public function prepareBlockParams(Event $e): void
@@ -62,7 +65,7 @@ class SimpleMenu extends Block
 	{
 		CustomField::make('items', $this->txt['items'])
 			->setTab(Tab::CONTENT)
-			->setValue($this->getFromTemplate('simple_menu_items', $e->args->options));
+			->setValue($this->view(params: ['options' => $e->args->options]));
 	}
 
 	public function getData(string $items): array

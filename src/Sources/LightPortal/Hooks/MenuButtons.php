@@ -52,9 +52,9 @@ class MenuButtons
 
 		app(Block::class)->show();
 
-		Theme::loadTemplate('LightPortal/ViewPluginLayers');
+		Theme::loadTemplate('LightPortal/ViewCustom');
 
-		Utils::$context['template_layers'][] = 'lp_plugins';
+		Utils::$context['template_layers'][] = 'custom';
 
 		$this->prepareAdminButtons($buttons);
 		$this->prepareModerationButtons($buttons);
@@ -140,14 +140,17 @@ class MenuButtons
 
 		$buttons['moderate']['show'] = true;
 
-		$buttons['moderate']['sub_buttons'] = [
-			'lp_pages' => [
-				'title' => Lang::$txt['lp_pages_unapproved'],
-				'href'  => Config::$scripturl . '?action=admin;area=lp_pages;sa=main;moderate',
-				'amt'   => Utils::$context['lp_quantities']['unapproved_pages'],
-				'show'  => true,
+		$buttons['moderate']['sub_buttons'] = array_merge(
+			[
+				'lp_pages' => [
+					'title' => Lang::$txt['lp_pages_unapproved'],
+					'href'  => Config::$scripturl . '?action=admin;area=lp_pages;sa=main;moderate',
+					'amt'   => Utils::$context['lp_quantities']['unapproved_pages'],
+					'show'  => true,
+				],
 			],
-		] + $buttons['moderate']['sub_buttons'];
+			(array) $buttons['moderate']['sub_buttons']
+		);
 	}
 
 	protected function preparePageButtons(array &$buttons): void

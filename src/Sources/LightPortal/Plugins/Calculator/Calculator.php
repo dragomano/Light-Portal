@@ -8,13 +8,14 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 22.12.24
+ * @version 26.08.25
  */
 
 namespace Bugo\LightPortal\Plugins\Calculator;
 
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Utils\Traits\HasView;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -24,6 +25,8 @@ if (! defined('LP_NAME'))
  */
 class Calculator extends Block
 {
+	use HasView;
+
 	public string $icon = 'fas fa-calculator';
 
 	public function prepareBlockParams(Event $e): void
@@ -33,6 +36,6 @@ class Calculator extends Block
 
 	public function prepareContent(Event $e): void
 	{
-		echo $this->getFromTemplate('show_calculator_block', $e->args->id);
+		echo $this->view(params: ['id' => $e->args->id]);
 	}
 }

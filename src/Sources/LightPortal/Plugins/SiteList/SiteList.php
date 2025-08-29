@@ -8,45 +8,39 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 20.02.25
+ * @version 27.08.25
  */
 
 namespace Bugo\LightPortal\Plugins\SiteList;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\VarType;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
+use Bugo\LightPortal\Utils\Traits\HasView;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
 class SiteList extends Plugin
 {
+	use HasView;
+
 	public string $type = 'frontpage';
 
 	private string $mode = 'site_list_addon_mode';
 
 	public function addSettings(Event $e): void
 	{
-		$e->args->settings[$this->name][] = ['callback', 'urls', $this->showList()];
+		$e->args->settings[$this->name][] = ['callback', 'urls', $this->view()];
 	}
 
-	public function showList(): bool|string
+	public function addLayerBelow(): void
 	{
-		$this->useTemplate();
-
 		$urls = Utils::jsonDecode($this->context['urls'] ?? '', true);
 
-		Theme::addInlineJavaScript($this->getFromTemplate('site_list_handle_func', $urls ?? []));
-
-		ob_start();
-
-		callback_site_list_table();
-
-		return ob_get_clean();
+		echo $this->view('handle_sites', ['urls' => $urls ?? []]);
 	}
 
 	public function saveSettings(Event $e): void

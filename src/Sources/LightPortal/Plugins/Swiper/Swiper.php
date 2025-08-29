@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.03.25
+ * @version 29.08.25
  */
 
 namespace Bugo\LightPortal\Plugins\Swiper;
@@ -26,12 +26,15 @@ use Bugo\LightPortal\UI\Fields\RangeField;
 use Bugo\LightPortal\UI\Fields\SelectField;
 use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasView;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
 class Swiper extends Block
 {
+	use HasView;
+
 	public string $icon = 'far fa-images';
 
 	private array $effects = ['slide', 'fade', 'cube', 'coverflow', 'flip', 'cards', 'creative'];
@@ -87,7 +90,7 @@ class Swiper extends Block
 
 		CustomField::make('images', $this->txt['images'])
 			->setTab(Tab::CONTENT)
-			->setValue($this->getFromTemplate('swiper_images', $options));
+			->setValue($this->view(params: ['options' => $options]));
 
 		RadioField::make('direction', $this->txt['direction'])
 			->setOptions(array_combine(['vertical', 'horizontal'], Lang::$txt['lp_panel_direction_set']))

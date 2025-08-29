@@ -20,7 +20,6 @@ use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasCache;
 use Bugo\LightPortal\Utils\Traits\HasBreadcrumbs;
-use Bugo\LightPortal\Utils\Traits\HasTemplate;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 use Bugo\LightPortal\Utils\Traits\HasResponse;
 use Bugo\LightPortal\Utils\Traits\HasSession;
@@ -42,7 +41,6 @@ abstract class Plugin implements PluginInterface, Stringable
 	use HasRequest;
 	use HasResponse;
 	use HasSession;
-	use HasTemplate;
 
 	public string $type;
 

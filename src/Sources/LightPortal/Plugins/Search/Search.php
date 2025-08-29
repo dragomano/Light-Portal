@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 23.04.25
+ * @version 30.08.25
  */
 
 namespace Bugo\LightPortal\Plugins\Search;
@@ -25,12 +25,15 @@ use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasView;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
 class Search extends Block
 {
+	use HasView;
+
 	public string $icon = 'fas fa-search';
 
 	public function init(): void
@@ -49,11 +52,13 @@ class Search extends Block
 
 	public function actions()
 	{
-		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'qsearch')
+		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === 'qsearch') {
 			return call_user_func($this->prepareQuickResults(...));
+		}
 
-		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === $this->name)
+		if ($this->request()->is(LP_ACTION) && Utils::$context['current_subaction'] === $this->name) {
 			return call_user_func($this->showResults(...));
+		}
 
 		return false;
 	}
@@ -61,13 +66,14 @@ class Search extends Block
 	public function showResults(): void
 	{
 		Utils::$context['page_title'] = $this->txt['title'];
+
 		Utils::$context['robot_no_index'] = true;
 
 		$this->breadcrumbs()->add(Utils::$context['page_title']);
 
 		Utils::$context['search_results'] = $this->getResults();
 
-		$this->useTemplate()->withSubTemplate('show_results');
+		$this->useCustomTemplate();
 
 		Utils::obExit();
 	}
@@ -116,11 +122,14 @@ class Search extends Block
 			SELECT
 				p.slug, p.type, GREATEST(p.created_at, p.updated_at) AS date,
 				(' . $searchFormula . ') AS related, mem.id_member, mem.real_name,
-				COALESCE(t.title, {string:empty_string}) AS title,
-				COALESCE(t.content, {string:empty_string}) AS content
+				COALESCE(t.title, tf.title, {string:empty_string}) AS title,
+				COALESCE(t.content, tf.content, {string:empty_string}) AS content
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_translations AS t ON (
 					p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:current_lang}
+				)
+				LEFT JOIN {db_prefix}lp_translations AS tf ON (
+					p.page_id = tf.item_id AND tf.type = {literal:page} AND tf.lang = {string:fallback_lang}
 				)
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 			WHERE (' . $searchFormula . ') > 0
@@ -131,11 +140,12 @@ class Search extends Block
 			ORDER BY related DESC
 			LIMIT 10',
 			[
-				'empty_string' => '',
-				'current_lang' => Utils::$context['user']['language'],
-				'status'       => 1,
-				'current_time' => time(),
-				'permissions'  => Permission::all(),
+				'empty_string'  => '',
+				'current_lang'  => Utils::$context['user']['language'],
+				'fallback_lang' => Config::$language,
+				'status'        => 1,
+				'current_time'  => time(),
+				'permissions'   => Permission::all(),
 			]
 		);
 
@@ -173,41 +183,10 @@ class Search extends Block
 		Theme::loadCSSFile('light_portal/search/auto-complete.css');
 		Theme::loadJavaScriptFile('light_portal/search/auto-complete.min.js', ['minimize' => true]);
 
-		echo '
-		<form class="search_addon centertext" action="', LP_BASE_URL, ';sa=search" method="post" accept-charset="', Utils::$context['character_set'], '">
-			<input type="search" name="search" placeholder="', $this->txt['title'], /** @lang text */ '">
-		</form>
-		<script>
-			new autoComplete({
-				selector: ".search_addon input",', (empty($this->context['min_chars']) ? '' : '
-				minChars: ' . $this->context['min_chars'] . ','), '
-				source: async function(term, response) {
-					const results = await fetch("', LP_BASE_URL, /** @lang text */ ';sa=qsearch", {
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json; charset=utf-8"
-						},
-						body: JSON.stringify({
-							phrase: term
-						})
-					});
-
-					if (results.ok) {
-						const data = await results.json();
-						response(data);
-					}
-				},
-				renderItem: function (item, search) {
-					search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
-					let re = new RegExp("(" + search.split(" ").join("|") + ")", "gi");
-
-					return `<div class="autocomplete-suggestion" data-val="` + item.title + `" data-link="` + item.link + `" style="cursor: pointer">` + item.title.replace(re, "<b>$1</b>") + `</div>`;
-				},
-				onSelect: function(e, term, item) {
-					window.location = item.dataset.link;
-				}
-			});
-		</script>';
+		echo $this->view('form', [
+			'baseUrl' => LP_BASE_URL,
+			'plugin'  => $this,
+		]);
 	}
 
 	public function credits(Event $e): void

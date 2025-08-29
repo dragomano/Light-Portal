@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 25.02.25
+ * @version 27.08.25
  */
 
 namespace Bugo\LightPortal\Plugins\Reactions;
@@ -20,6 +20,11 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
+use Bugo\LightPortal\Utils\Traits\HasView;
+
+use function array_count_values;
+use function json_decode;
+use function json_encode;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -29,6 +34,8 @@ if (! defined('LP_NAME'))
  */
 class Reactions extends Plugin
 {
+	use HasView;
+
 	public string $type = 'page_options';
 
 	private const PARAM = 'allow_reactions';
@@ -113,8 +120,6 @@ class Reactions extends Plugin
 				}
 			}
 		}
-
-		$this->useTemplate();
 	}
 
 	public function afterPageContent(): void
@@ -122,7 +127,7 @@ class Reactions extends Plugin
 		if (empty(Utils::$context['lp_page']['options'][self::PARAM]))
 			return;
 
-		show_page_reactions();
+		echo $this->view('page_reactions');
 	}
 
 	public function commentButtons(Event $e): void
@@ -137,11 +142,7 @@ class Reactions extends Plugin
 		$comment['prepared_reactions'] = $this->getReactionsWithCount($comment[$this->name]);
 		$comment['prepared_buttons'] = json_decode($comment['prepared_reactions'], true);
 
-		ob_start();
-
-		show_comment_reactions($comment);
-
-		$e->args->buttons[] = ob_get_clean();
+		$e->args->buttons[] = $this->view('comments_reactions', ['comment' => $comment]);
 	}
 
 	private function getReactionsWithCount(array $reactions): string

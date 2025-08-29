@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 26.03.25
+ * @version 30.08.25
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
@@ -30,8 +30,9 @@ use Bugo\LightPortal\UI\Fields\UrlField;
 use Bugo\LightPortal\UI\Partials\IconSelect;
 use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasTemplate;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
+
+use Bugo\LightPortal\Utils\Traits\HasView;
 
 use function array_filter;
 use function array_keys;
@@ -43,6 +44,7 @@ use function in_array;
 use function is_writable;
 use function sprintf;
 
+use const LP_ADDON_DIR;
 use const LP_NAME;
 
 if (! defined('LP_NAME'))
@@ -51,8 +53,8 @@ if (! defined('LP_NAME'))
 class Handler
 {
 	use HasArea;
-	use HasTemplate;
 	use HasRequest;
+	use HasView;
 
 	private const PLUGIN_NAME = 'MyNewAddon';
 
@@ -64,7 +66,7 @@ class Handler
 
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_plugin_maker']['add_desc']
+			'description' => Lang::$txt['lp_plugin_maker']['add_desc'],
 		];
 
 		Lang::$txt['lp_plugin_maker']['add_info'] = sprintf(Lang::$txt['lp_plugin_maker']['add_info'], sprintf(
@@ -86,7 +88,9 @@ class Handler
 		$this->validateData();
 		$this->prepareFormFields();
 		$this->setData();
-		$this->useTemplate()->withSubTemplate('plugin_post');
+		$this->useCustomTemplate();
+
+		Utils::obExit();
 	}
 
 	public function prepareForumLanguages(): void

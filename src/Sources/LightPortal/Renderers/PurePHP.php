@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 /**
  * @package Light Portal
@@ -15,10 +17,15 @@ namespace Bugo\LightPortal\Renderers;
 use Bugo\Compat\ErrorHandler;
 use Exception;
 
+use function extract;
+use function is_file;
 use function ob_get_clean;
 use function ob_start;
 
-final class PurePHP extends AbstractRenderer
+use const DIRECTORY_SEPARATOR;
+use const EXTR_SKIP;
+
+class PurePHP extends AbstractRenderer
 {
 	public const DEFAULT_TEMPLATE = 'default.php';
 
@@ -35,6 +42,8 @@ final class PurePHP extends AbstractRenderer
 			$path = is_file($this->customDir . DIRECTORY_SEPARATOR . $layout)
 				? $this->customDir
 				: $this->templateDir;
+
+			extract($params, EXTR_SKIP);
 
 			require $path . DIRECTORY_SEPARATOR . $layout;
 		} catch (Exception $e) {

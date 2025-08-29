@@ -25,8 +25,9 @@ use Bugo\LightPortal\Utils\Traits\HasCache;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 use Bugo\LightPortal\Utils\Traits\HasResponse;
 
+use Bugo\LightPortal\Utils\Traits\HasView;
+
 use function http_response_code;
-use function render_single_message;
 use function str_replace;
 use function time;
 
@@ -38,6 +39,7 @@ class Chat
 	use HasCache;
 	use HasRequest;
 	use HasResponse;
+	use HasView;
 
 	private bool $inSidebar = false;
 
@@ -131,7 +133,13 @@ class Chat
 
 	public function renderMessage(array $message, int $blockId): void
 	{
-		echo render_single_message($message, $blockId, $this->inSidebar, $this->parameters);
+		echo $this->view('message', [
+			'id'          => $blockId,
+			'message'     => $message,
+			'baseUrl'     => LP_BASE_URL,
+			'isInSidebar' => $this->inSidebar,
+			'parameters'  => $this->parameters
+		]);
 	}
 
 	private function createChatTable(): void

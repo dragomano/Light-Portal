@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 07.08.25
+ * @version 29.08.25
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleChat;
@@ -23,10 +23,10 @@ use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\RadioField;
 use Bugo\LightPortal\Utils\ParamWrapper;
+use Bugo\LightPortal\Utils\Traits\HasView;
 
 use function array_combine;
 use function json_encode;
-use function show_chat_block;
 
 use const FILTER_DEFAULT;
 use const FILTER_VALIDATE_BOOLEAN;
@@ -40,6 +40,8 @@ if (! defined('LP_NAME'))
  */
 class SimpleChat extends Block
 {
+	use HasView;
+
 	public string $icon = 'fas fa-message';
 
 	private array $defaultParams = [
@@ -115,10 +117,14 @@ class SimpleChat extends Block
 
 		Utils::$context['lp_chats'][$id] = json_encode($messages, JSON_UNESCAPED_UNICODE);
 
-		$this->useTemplate();
-
 		$this->handleChatRequests($id, $messages);
-		$this->renderChatBlock($id, $parameters);
+
+		echo $this->view(params: [
+			'id'          => $id,
+			'baseUrl'     => LP_BASE_URL,
+			'parameters'  => $parameters,
+			'isInSidebar' => $this->isInSidebar($id)
+		]);
 	}
 
 	public function onBlockRemoving(Event $e): void
@@ -177,10 +183,5 @@ class SimpleChat extends Block
 				$this->chat->renderMessages($messages, $id);
 			}
 		}
-	}
-
-	private function renderChatBlock(int $id, ParamWrapper $parameters): void
-	{
-		show_chat_block($id, $parameters, $this->isInSidebar($id));
 	}
 }
