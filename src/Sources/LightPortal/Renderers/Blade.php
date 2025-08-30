@@ -25,7 +25,7 @@ use function ob_start;
 use function str_replace;
 use function strstr;
 
-final class Blade extends AbstractRenderer
+class Blade extends AbstractRenderer
 {
 	public const DEFAULT_TEMPLATE = 'default.blade.php';
 
@@ -41,11 +41,11 @@ final class Blade extends AbstractRenderer
 		try {
 			$blade = new BladeOne([$this->templateDir, $this->customDir], Sapi::getTempDir());
 
-			$blade->directiveRT('icon', static function (array|string $expression) {
-				if (is_array($expression)) {
-					[$name, $title] = count($expression) > 1 ? $expression : [$expression[0], false];
-				} else {
-					$name = $expression;
+			$blade->directiveRT('icon', static function ($name, $title = '') {
+				if (is_array($name)) {
+					[$n, $t] = count($name) > 1 ? $name : [$name[0], ''];
+					$name = $n;
+					$title = $t;
 				}
 
 				$icon = Icon::get($name);

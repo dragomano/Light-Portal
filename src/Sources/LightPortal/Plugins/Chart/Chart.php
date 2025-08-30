@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 12.02.25
+ * @version 26.08.25
  */
 
 namespace Bugo\LightPortal\Plugins\Chart;
@@ -22,12 +22,15 @@ use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\TextField;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasView;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
 class Chart extends Block
 {
+	use HasView;
+
 	public string $icon = 'fas fa-chart-simple';
 
 	private array $params = [
@@ -96,7 +99,7 @@ class Chart extends Block
 
 		CustomField::make($this->name, $this->txt['datasets'])
 			->setTab(Tab::CONTENT)
-			->setValue($this->getFromTemplate('chart_template', $options));
+			->setValue($this->view(params: ['options' => $options]));
 
 		TextField::make('labels', $this->txt['labels'])
 			->setTab(Tab::CONTENT)

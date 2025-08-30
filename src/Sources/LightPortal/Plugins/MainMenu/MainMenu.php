@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 20.02.25
+ * @version 27.08.25
  */
 
 namespace Bugo\LightPortal\Plugins\MainMenu;
@@ -21,6 +21,7 @@ use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Utils\Language;
+use Bugo\LightPortal\Utils\Traits\HasView;
 
 use const LP_ACTION;
 
@@ -32,6 +33,8 @@ if (! defined('LP_NAME'))
  */
 class MainMenu extends Plugin
 {
+	use HasView;
+
 	public string $type = 'other';
 
 	public function init(): void
@@ -67,21 +70,16 @@ class MainMenu extends Plugin
 
 	public function addSettings(Event $e): void
 	{
-		$e->args->settings[$this->name][] = ['callback', 'items', $this->showList()];
+		$e->args->settings[$this->name][] = ['callback', 'items', $this->getTemplate()];
 	}
 
-	public function showList(): bool|string
+	public function getTemplate(): string
 	{
 		Language::prepareList();
 
 		$this->prepareVariables();
-		$this->useTemplate();
 
-		ob_start();
-
-		callback_main_menu_table();
-
-		return ob_get_clean();
+		return $this->view();
 	}
 
 	public function saveSettings(Event $e): void

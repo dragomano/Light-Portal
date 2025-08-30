@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 14.08.25
+ * @version 29.08.25
  */
 
 namespace Bugo\LightPortal\Plugins\RecentTopics;
@@ -25,6 +25,7 @@ use Bugo\LightPortal\UI\Partials\BoardSelect;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\ParamWrapper;
+use Bugo\LightPortal\Utils\Traits\HasView;
 use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
@@ -32,6 +33,8 @@ if (! defined('LP_NAME'))
 
 class RecentTopics extends SSI
 {
+	use HasView;
+
 	public string $icon = 'fas fa-book-open';
 
 	public function prepareBlockParams(Event $e): void
@@ -154,8 +157,10 @@ class RecentTopics extends SSI
 		if (empty($recentTopics))
 			return;
 
-		$this->useTemplate();
-
-		show_topics($recentTopics, $parameters, $this->isInSidebar($e->args->id) === false);
+		echo $this->view(params: [
+			'topics'      => $recentTopics,
+			'parameters'  => $parameters,
+			'isInSidebar' => $this->isInSidebar($e->args->id) === false
+		]);
 	}
 }
