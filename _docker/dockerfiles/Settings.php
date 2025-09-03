@@ -79,7 +79,7 @@ $cookiename = 'SMFCookie979';
  *
  * @var string
  */
-$auth_secret = 'b881f4741f5821dd68449cdee9a6a0734da328f4722a69e62077b33c79395836';
+$auth_secret = '';
 
 ########## Database Info ##########
 /**
