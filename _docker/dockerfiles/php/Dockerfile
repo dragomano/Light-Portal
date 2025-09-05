@@ -1,6 +1,8 @@
-ARG PHP_VERSION
+ARG PHP_VERSION=8.2
 
 FROM php:${PHP_VERSION}-fpm
+
+COPY dockerfiles/php/php.ini /usr/local/etc/php/conf.d/99-overrides.ini
 
 RUN apt-get update && apt-get install -y \
     unzip \
@@ -56,6 +58,7 @@ RUN set -eux; \
     && rm -rf /tmp/turkish /tmp/turkish.zip
 
 RUN curl -o /tmp/light_portal.tgz "https://custom.simplemachines.org/index.php?action=download;mod=4244;attach=294687" \
+    && cp /tmp/light_portal.tgz /var/www/html/Packages/light_portal.tgz \
     && tar -xzf /tmp/light_portal.tgz -C /var/www/html --wildcards "Sources/*" "Themes/*" "portal.php" \
     && ls -l /var/www/html \
     && ls -l /var/www/html/Sources /var/www/html/Themes /var/www/html/portal.php \

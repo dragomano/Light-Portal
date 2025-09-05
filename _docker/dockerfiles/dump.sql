@@ -959,7 +959,7 @@ CREATE TABLE `smf_log_packages` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 INSERT INTO `smf_log_packages` (`id_install`, `filename`, `package_id`, `name`, `version`, `id_member_installed`, `member_installed`, `time_installed`, `id_member_removed`, `member_removed`, `time_removed`, `install_state`, `failed_steps`, `themes_installed`, `db_changes`, `credits`, `sha256_hash`) VALUES
-(1,	'light_portal_2.9.5.tgz',	'Bugo:LightPortal',	'Light Portal',	'2.9.5',	1,	'Test',	1756827505,	0,	'0',	0,	1,	'[]',	'1',	'[[\"remove_table\",\"smf_lp_blocks\"],[\"remove_table\",\"smf_lp_categories\"],[\"remove_table\",\"smf_lp_comments\"],[\"remove_table\",\"smf_lp_page_tag\"],[\"remove_table\",\"smf_lp_pages\"],[\"remove_table\",\"smf_lp_params\"],[\"remove_table\",\"smf_lp_plugins\"],[\"remove_table\",\"smf_lp_tags\"],[\"remove_table\",\"smf_lp_titles\"]]',	'',	'ad78e39eb30926a0e3d3935ddc503351bd71ec6a52b85d32b35b589d0ea1ed74');
+(1,	'light_portal.tgz',	'Bugo:LightPortal',	'Light Portal',	'2.9.5',	1,	'Test',	1756827505,	0,	'0',	0,	1,	'[]',	'1',	'[[\"remove_table\",\"smf_lp_blocks\"],[\"remove_table\",\"smf_lp_categories\"],[\"remove_table\",\"smf_lp_comments\"],[\"remove_table\",\"smf_lp_page_tag\"],[\"remove_table\",\"smf_lp_pages\"],[\"remove_table\",\"smf_lp_params\"],[\"remove_table\",\"smf_lp_plugins\"],[\"remove_table\",\"smf_lp_tags\"],[\"remove_table\",\"smf_lp_titles\"]]',	'',	'ad78e39eb30926a0e3d3935ddc503351bd71ec6a52b85d32b35b589d0ea1ed74');
 
 DROP TABLE IF EXISTS `smf_log_polls`;
 CREATE TABLE `smf_log_polls` (
