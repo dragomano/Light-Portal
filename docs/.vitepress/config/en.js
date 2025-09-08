@@ -23,6 +23,7 @@ export default defineConfig({
     sidebarMenuLabel: 'Menu',
     returnToTopLabel: 'Back to top',
     langMenuLabel: 'Change language',
+    lastUpdatedText: 'Last updated',
     notFound: {
       title: 'PAGE NOT FOUND',
       quote:
