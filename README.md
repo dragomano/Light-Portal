@@ -37,6 +37,26 @@ The portal supports BBCode, HTML, PHP, as well as Markdown content within pages 
 - Import and export functionality for pages, blocks, and plugins
 - Support for standalone mode
 
+## Docker
+
+You can try this with Docker.
+
+Run to start:
+
+```sh
+cd _docker
+docker compose up -d
+```
+
+Run to stop:
+
+```sh
+cd _docker
+docker compose down
+```
+
+See `_docker/.env.example` file for details.
+
 ## Supported by
 
 - [Crowdin](https://crowdin.com/project/light-portal) is completely free of charge for open-source projects
