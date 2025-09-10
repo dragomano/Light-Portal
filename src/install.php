@@ -22,14 +22,15 @@ use Bugo\LightPortal\Migrations\Installer;
 
 $installer = new Installer();
 
-if (! $installer->uninstall()) {
-	exit('<b>Error:</b> An error occurred while removing portal data from the database!');
+if (! $installer->install()) {
+	exit('<b>Error:</b> An error occurred while adding tables to the database!');
 }
 
 try {
 	deleteDirectory(dirname(__DIR__, 2) . '/Sources/LightPortal');
+	copyDirectory(__DIR__ . '/Sources/LightPortal', dirname(__DIR__, 2) . '/Sources/LightPortal');
 } catch (RuntimeException $e) {
 	echo "Error: " . $e->getMessage();
 } finally {
-	echo 'I\'ll see you again. I promise ©️';
+	echo 'Database changes are complete! Please wait...';
 }
