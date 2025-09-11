@@ -14,7 +14,9 @@ namespace Bugo\LightPortal\Migrations\Upgraders;
 
 use Bugo\LightPortal\Migrations\PortalAdapter;
 use Bugo\LightPortal\Migrations\PortalAdapterFactory;
+use Exception;
 use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Metadata\Source\Factory as MetadataFactory;
 use Laminas\Db\Sql\Sql;
 
 abstract class AbstractTableUpgrader implements TableUpgraderInterface
@@ -38,5 +40,16 @@ abstract class AbstractTableUpgrader implements TableUpgraderInterface
 	{
 		$sqlString = $this->sql->buildSqlString($builder);
 		$this->adapter->query($sqlString, Adapter::QUERY_MODE_EXECUTE);
+	}
+
+	protected function columnExists(string $tableName, string $columnName): bool
+	{
+		try {
+			$metadata = MetadataFactory::createSourceFromAdapter($this->adapter);
+
+			return in_array($columnName, $metadata->getColumnNames($this->getTableName($tableName)));
+		} catch (Exception) {
+			return false;
+		}
 	}
 }

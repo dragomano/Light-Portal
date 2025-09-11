@@ -34,6 +34,10 @@ class CategoriesUpgradeTask extends AbstractTableUpgrader
 		int $default = null
 	): void
 	{
+		if ($this->columnExists($table, $columnName)) {
+			return;
+		}
+
 		$alter = new AlterTable($this->getTableName($table));
 		$alter->addColumn($this->defineColumn($columnName, $type, $size, $default));
 
@@ -54,7 +58,7 @@ class CategoriesUpgradeTask extends AbstractTableUpgrader
 		};
 
 		if ($type === 'int' && $size) {
-			$column->setLength($size);
+			$column->setOption('length', $size);
 		}
 
 		return $column;

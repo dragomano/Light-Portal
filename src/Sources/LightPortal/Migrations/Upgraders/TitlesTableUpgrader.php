@@ -50,6 +50,10 @@ class TitlesTableUpgrader extends AbstractTableUpgrader
 
 	protected function addColumn(string $table, string $columnName, string $type, int $size = null): void
 	{
+		if ($this->columnExists($table, $columnName)) {
+			return;
+		}
+
 		$alter = new AlterTable($this->getTableName($table));
 		$alter->addColumn($this->defineColumn($columnName, $type, $size));
 
@@ -58,6 +62,10 @@ class TitlesTableUpgrader extends AbstractTableUpgrader
 
 	protected function renameColumn(string $table, string $oldName, string $newName): void
 	{
+		if (! $this->columnExists($table, $oldName)) {
+			return;
+		}
+
 		$sql = "ALTER TABLE " . $this->getTableName($table) . " CHANGE $oldName $newName VARCHAR(255) DEFAULT NULL";
 
 		$this->adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
@@ -103,20 +111,24 @@ class TitlesTableUpgrader extends AbstractTableUpgrader
 	protected function addIndex(string $table, string $indexName, array $columns): void
 	{
 		$columnList = implode(', ', $columns);
-		$sql = "CREATE INDEX $indexName ON {$this->getTableName($table)} ($columnList)";
+		$sql = "CREATE INDEX IF NOT EXISTS $indexName ON {$this->getTableName($table)} ($columnList)";
 
 		$this->adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
 	}
 
 	protected function addPrefixIndex(string $fullTableName, string $indexName, string $column, int $length): void
 	{
-		$sql = "CREATE INDEX $indexName ON $fullTableName ($column($length))";
+		$sql = "CREATE INDEX IF NOT EXISTS $indexName ON $fullTableName ($column($length))";
 
 		$this->adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
 	}
 
 	protected function removeColumn(string $table, string $column): void
 	{
+		if (! $this->columnExists($table, $column)) {
+			return;
+		}
+
 		$alter = new AlterTable($this->getTableName($table));
 		$alter->dropColumn($column);
 
@@ -161,16 +173,31 @@ class TitlesTableUpgrader extends AbstractTableUpgrader
 
 	protected function migrateRowToTitles(int $itemId, string $type, string $content, string $description): void
 	{
-		$insert = new Insert($this->getTableName('titles'));
-		$insert->values([
-			'item_id'     => $itemId,
-			'type'        => $type,
-			'lang'        => $this->getLanguage(),
-			'content'     => $content,
-			'description' => $description,
-		]);
+		$lang = $this->getLanguage();
 
-		$this->executeSql($insert);
+		$select = new Select($this->getTableName('titles'));
+		$select->where([
+			'item_id' => $itemId,
+			'type'    => $type,
+			'lang'    => $lang,
+		]);
+		$select->columns(['count' => new Expression('COUNT(*)')], false);
+
+		$result = $this->sql->prepareStatementForSqlObject($select)->execute();
+		$row = $result->current();
+
+		if ($row['count'] == 0) {
+			$insert = new Insert($this->getTableName('titles'));
+			$insert->values([
+				'item_id'     => $itemId,
+				'type'        => $type,
+				'lang'        => $lang,
+				'content'     => $content,
+				'description' => $description,
+			]);
+
+			$this->executeSql($insert);
+		}
 	}
 
 	protected function tableExists(string $tableName): bool
@@ -179,6 +206,7 @@ class TitlesTableUpgrader extends AbstractTableUpgrader
 
 		return in_array($this->getTableName($tableName), $metadata->getTableNames());
 	}
+
 
 	protected function getLanguage(): string
 	{
