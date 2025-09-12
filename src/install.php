@@ -5,11 +5,12 @@ require_once __DIR__ . '/init.php';
 $setup = PortalSetup::init();
 $installer = $setup->getInstaller();
 
-if (! $installer->upgrade()) {
-	exit('<b>Error:</b> An error occurred while upgrading the portal data in the database!');
+if (! $installer->install()) {
+	exit('<b>Error:</b> An error occurred while adding the portal tables to the database!');
 }
 
 try {
+	$setup->deletePortalFiles();
 	$setup->copyPortalFiles();
 } catch (RuntimeException $e) {
 	$setup->handleError($e->getMessage());

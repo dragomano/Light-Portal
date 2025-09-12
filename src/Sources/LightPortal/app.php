@@ -19,24 +19,26 @@ use Bugo\Compat\ErrorHandler;
 use Bugo\LightPortal\Container;
 use Bugo\LightPortal\PortalApp;
 
-/**
- * @template RequestedType
- * @param class-string<RequestedType>|string $service
- * @return RequestedType|mixed
- */
-function app(string $service = ''): mixed
-{
-	if (empty($service)) {
-		return Container::getInstance();
-	}
+if (! function_exists('app')) {
+	/**
+	 * @template RequestedType
+	 * @param class-string<RequestedType>|string $service
+	 * @return RequestedType|mixed
+	 */
+	function app(string $service = ''): mixed
+	{
+		if (empty($service)) {
+			return Container::getInstance();
+		}
 
-	try {
-		return Container::get($service);
-	} catch (Throwable $e) {
-		ErrorHandler::fatal($e->getMessage(), 'critical');
-	}
+		try {
+			return Container::get($service);
+		} catch (Throwable $e) {
+			ErrorHandler::fatal($e->getMessage(), 'critical');
+		}
 
-	return false;
+		return false;
+	}
 }
 
 // This is the way
