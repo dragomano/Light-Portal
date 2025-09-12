@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 10.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\Optimus;
@@ -17,6 +17,7 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
+use Bugo\Optimus\Prime;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -33,19 +34,15 @@ class Optimus extends Plugin
 
 	public function frontTopics(Event $e): void
 	{
-		if (
-			empty($this->context['use_topic_descriptions'])
-			|| ! class_exists('\Bugo\Optimus\Integration')
-		) {
+		if (empty($this->context['use_topic_descriptions']) || ! $this->isOptimusLoaded())
 			return;
-		}
 
 		$e->args->columns[] = 't.optimus_description';
 	}
 
 	public function frontTopicsRow(Event $e): void
 	{
-		if (! class_exists('\Bugo\Optimus\Integration'))
+		if (! $this->isOptimusLoaded())
 			return;
 
 		$topics = &$e->args->articles;
@@ -88,5 +85,10 @@ class Optimus extends Plugin
 		Db::$db->free_result($result);
 
 		return $keywords[$topic] ?? [];
+	}
+
+	private function isOptimusLoaded(): bool
+	{
+		return class_exists(Prime::class);
 	}
 }
