@@ -113,7 +113,7 @@ class RoboFile extends Tasks
 
 	public function buildDefault(): void
 	{
-		$file = "light_portal_$this->version.tgz";
+		$file = "light_portal_{$this->getNormalizedVersion()}.tgz";
 
 		$this->_remove($file);
 
@@ -128,7 +128,7 @@ class RoboFile extends Tasks
 
 	public function buildGeek(): void
 	{
-		$file = "light_portal_{$this->version}_geek_edition.tgz";
+		$file = "light_portal_{$this->getNormalizedVersion()}_geek_edition.tgz";
 
 		$this->_remove($file);
 
@@ -144,7 +144,7 @@ class RoboFile extends Tasks
 
 	public function buildDevelop(): void
 	{
-		$file = "light_portal_{$this->version}_dev_edition.tgz";
+		$file = "light_portal_{$this->getNormalizedVersion()}_dev_edition.tgz";
 
 		$this->_remove($file);
 
@@ -162,6 +162,11 @@ class RoboFile extends Tasks
 		$xml = simplexml_load_file('src/package-info.xml');
 
 		return (string) $xml->version;
+	}
+
+	private function getNormalizedVersion(): string
+	{
+		return str_replace(' ', '_', $this->version);
 	}
 
 	private function changeVersion(string $version): void
