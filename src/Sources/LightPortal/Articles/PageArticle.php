@@ -83,7 +83,7 @@ class PageArticle extends AbstractArticle
 		);
 	}
 
-	public function getData(int $start, int $limit): array
+	public function getData(int $start, int $limit): iterable
 	{
 		$this->params += [
 			'start' => $start,
@@ -97,8 +97,8 @@ class PageArticle extends AbstractArticle
 				COALESCE(NULLIF(t.title, {string:empty_string}), tf.title, {string:empty_string}) AS title,
 				COALESCE(NULLIF(t.content, {string:empty_string}), tf.content, {string:empty_string}) AS content,
 				COALESCE(NULLIF(t.description, {string:empty_string}), tf.description, {string:empty_string}) AS description,
-			    (
-				    SELECT title
+				(
+					SELECT title
 					FROM {db_prefix}lp_translations
 					WHERE item_id = cat.category_id
 						AND type = {literal:category}
@@ -106,8 +106,8 @@ class PageArticle extends AbstractArticle
 					ORDER BY lang = {string:lang} DESC
 					LIMIT 1
 				) AS cat_title,
-                mem.real_name AS author_name, cat.icon as cat_icon, com.created_at AS comment_date,
-                com.author_id AS comment_author_id, mem2.real_name AS comment_author_name,
+				mem.real_name AS author_name, cat.icon as cat_icon, com.created_at AS comment_date,
+				com.author_id AS comment_author_id, mem2.real_name AS comment_author_name,
 				com.message AS comment_message' . (empty($this->columns) ? '' : ', ' . implode(', ', $this->columns)) . '
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}lp_categories AS cat ON (cat.category_id = p.category_id)
@@ -137,44 +137,43 @@ class PageArticle extends AbstractArticle
 			$this->params,
 		);
 
-		$pages = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
-			if (! isset($pages[$row['page_id']])) {
-				Lang::censorText($row['title']);
-				Lang::censorText($row['content']);
-				Lang::censorText($row['description']);
+			Lang::censorText($row['title']);
+			Lang::censorText($row['content']);
+			Lang::censorText($row['description']);
 
-				if ($row['title'] === '')
-					continue;
+			if ($row['title'] === '')
+				continue;
 
-				$row['content'] = Content::parse($row['content'], $row['type']);
+			$row['content'] = Content::parse($row['content'], $row['type']);
 
-				$pages[$row['page_id']] = [
-					'id'        => (int) $row['page_id'],
-					'section'   => $this->getSectionData($row),
-					'author'    => $this->getAuthorData($row),
-					'date'      => $this->getDate($row),
-					'link'      => LP_PAGE_URL . $row['slug'],
-					'views'     => $this->getViewsData($row),
-					'replies'   => $this->getRepliesData($row),
-					'is_new'    => $this->isNew($row),
-					'image'     => $this->getImage($row),
-					'can_edit'  => $this->canEdit($row),
-					'edit_link' => $this->getEditLink($row),
-					'title'     => $row['title'],
-				];
-			}
+			$page = [
+				'id'        => (int) $row['page_id'],
+				'section'   => $this->getSectionData($row),
+				'author'    => $this->getAuthorData($row),
+				'date'      => $this->getDate($row),
+				'link'      => LP_PAGE_URL . $row['slug'],
+				'views'     => $this->getViewsData($row),
+				'replies'   => $this->getRepliesData($row),
+				'is_new'    => $this->isNew($row),
+				'image'     => $this->getImage($row),
+				'can_edit'  => $this->canEdit($row),
+				'edit_link' => $this->getEditLink($row),
+				'title'     => $row['title'],
+			];
 
-			$this->prepareTeaser($pages, $row);
+			$this->prepareTeaser($page, $row);
 
-			$this->events()->dispatch(PortalHook::frontPagesRow, ['articles' => &$pages, 'row' => $row]);
+			$articles = [$row['page_id'] => $page];
+
+			$this->events()->dispatch(PortalHook::frontPagesRow, ['articles' => &$articles, 'row' => $row]);
+
+			$page = $articles[$row['page_id']];
+
+			yield $row['page_id'] => Avatar::getWithItems([$page])[0] ?? [];
 		}
 
 		Db::$db->free_result($result);
-
-		$this->prepareTags($pages);
-
-		return Avatar::getWithItems($pages);
 	}
 
 	public function getTotalCount(): int
@@ -282,19 +281,19 @@ class PageArticle extends AbstractArticle
 		return Config::$scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $row['page_id'];
 	}
 
-	private function prepareTeaser(array &$pages, array $row): void
+	private function prepareTeaser(array &$page, array $row): void
 	{
 		if (empty(Config::$modSettings['lp_show_teaser']))
 			return;
 
-		$pages[$row['page_id']]['teaser'] = Str::getTeaser(
+		$page['teaser'] = Str::getTeaser(
 			$this->sorting === 0 && $row['num_comments']
 				? BBCodeParser::load()->parse($row['comment_message'])
 				: ($row['description'] ?: $row['content'])
 		);
 	}
 
-	private function prepareTags(array &$pages): void
+	public function prepareTags(array &$pages): void
 	{
 		if ($pages === [])
 			return;
@@ -326,10 +325,10 @@ class PageArticle extends AbstractArticle
 				continue;
 
 			$pages[$row['page_id']]['tags'][] = [
-				'slug'  => $row['slug'],
-				'icon'  => Icon::parse($row['icon']),
-				'href'  => PortalSubAction::TAGS->url() . ';id=' . $row['tag_id'],
-				'title' => $row['title'],
+				'slug' => $row['slug'],
+				'icon' => Icon::parse($row['icon']),
+				'href' => PortalSubAction::TAGS->url() . ';id=' . $row['tag_id'],
+				'name' => $row['title'],
 			];
 		}
 

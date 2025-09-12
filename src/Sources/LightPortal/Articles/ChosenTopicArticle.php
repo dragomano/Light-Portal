@@ -34,7 +34,7 @@ final class ChosenTopicArticle extends TopicArticle
 		$this->params['selected_topics'] = $this->selectedTopics;
 	}
 
-	public function getData(int $start, int $limit): array
+	public function getData(int $start, int $limit): iterable
 	{
 		if (empty($this->selectedTopics))
 			return [];

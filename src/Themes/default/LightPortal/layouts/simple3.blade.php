@@ -23,7 +23,7 @@
 						<summary>{{ $txt['lp_tags'] }}</summary>
 
 						@foreach ($article['tags'] as $tag)
-							<a href="{{ $tag['href'] }}">#{{ $tag['title'] }}</a>
+							<a href="{{ $tag['href'] }}">#{{ $tag['name'] }}</a>
 						@endforeach
 					</details>
 				@endunless

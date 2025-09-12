@@ -19,7 +19,7 @@ interface ArticleInterface
 {
 	public function init(): void;
 
-	public function getData(int $start, int $limit): array;
+	public function getData(int $start, int $limit): iterable;
 
 	public function getTotalCount(): int;
 }

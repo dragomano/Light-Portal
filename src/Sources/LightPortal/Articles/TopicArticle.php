@@ -68,10 +68,11 @@ class TopicArticle extends AbstractArticle
 		);
 	}
 
-	public function getData(int $start, int $limit): array
+	public function getData(int $start, int $limit): iterable
 	{
-		if (empty($this->selectedBoards) && Setting::isFrontpageMode('all_topics'))
-			return [];
+		if (empty($this->selectedBoards) && Setting::isFrontpageMode('all_topics')) {
+			return;
+		}
 
 		$this->params += [
 			'start' => $start,
@@ -125,34 +126,35 @@ class TopicArticle extends AbstractArticle
 			$this->params,
 		);
 
-		$topics = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
-			if (! isset($topics[$row['id_topic']])) {
-				$topics[$row['id_topic']] = [
-					'id'        => (int) $row['id_topic'],
-					'section'   => $this->getSectionData($row),
-					'author'    => $this->getAuthorData($row),
-					'date'      => $this->getDate($row),
-					'title'     => $this->getTitle($row),
-					'link'      => $this->getLink($row),
-					'is_new'    => $this->isNew($row),
-					'views'     => $this->getViewsData($row),
-					'replies'   => $this->getRepliesData($row),
-					'css_class' => $row['is_sticky'] ? ' sticky' : '',
-					'image'     => $this->getImage($row),
-					'can_edit'  => $this->canEdit($row),
-					'edit_link' => $this->getEditLink($row),
-				];
-			}
+			$topic = [
+				'id'        => (int) $row['id_topic'],
+				'section'   => $this->getSectionData($row),
+				'author'    => $this->getAuthorData($row),
+				'date'      => $this->getDate($row),
+				'title'     => $this->getTitle($row),
+				'link'      => $this->getLink($row),
+				'is_new'    => $this->isNew($row),
+				'views'     => $this->getViewsData($row),
+				'replies'   => $this->getRepliesData($row),
+				'css_class' => $row['is_sticky'] ? ' sticky' : '',
+				'image'     => $this->getImage($row),
+				'can_edit'  => $this->canEdit($row),
+				'edit_link' => $this->getEditLink($row),
+			];
 
-			$this->prepareTeaser($topics, $row);
+			$this->prepareTeaser($topic, $row);
 
-			$this->events()->dispatch(PortalHook::frontTopicsRow, ['articles' => &$topics, 'row' => $row]);
+			$articles = [$row['id_topic'] => $topic];
+
+			$this->events()->dispatch(PortalHook::frontTopicsRow, ['articles' => &$articles, 'row' => $row]);
+
+			$topic = $articles[$row['id_topic']];
+
+			yield $row['id_topic'] => Avatar::getWithItems([$topic])[0] ?? [];
 		}
 
 		Db::$db->free_result($result);
-
-		return Avatar::getWithItems($topics);
 	}
 
 	public function getTotalCount(): int
@@ -273,7 +275,7 @@ class TopicArticle extends AbstractArticle
 		return Config::$scripturl . '?action=post;msg=' . $row['id_first_msg'] . ';topic=' . $row['id_topic'] . '.0';
 	}
 
-	private function prepareTeaser(array &$topics, array $row): void
+	private function prepareTeaser(array &$topic, array $row): void
 	{
 		if (empty(Config::$modSettings['lp_show_teaser']))
 			return;
@@ -288,6 +290,6 @@ class TopicArticle extends AbstractArticle
 		$body = preg_replace('~\[code.*].*?\[/code]~Usi', '', $body);
 		$body = BBCodeParser::load()->parse($body, (bool) $row['smileys_enabled'], (int) $row['id_first_msg']);
 
-		$topics[$row['id_topic']]['teaser'] = Str::getTeaser($body);
+		$topic['teaser'] = Str::getTeaser($body);
 	}
 }

@@ -116,9 +116,9 @@ final class FrontPage implements ActionInterface
 
 				$this->updateStart($total, $start, $limit);
 
-				$articles = app(Weaver::class)(static fn() => $article->getData($start, $limit));
+				$articles = app(Weaver::class)(static fn() => $article->getData($start, $limit), false);
 
-				return ['total' => $total, 'articles' => $articles];
+				return ['total' => $total, 'articles' => iterator_to_array($articles)];
 			});
 
 		[$articles, $itemsCount] = [$data['articles'], $data['total']];
@@ -233,8 +233,16 @@ final class FrontPage implements ActionInterface
 		$start = (int) abs($start);
 	}
 
-	private function postProcess(ArticleInterface $article, array $articles): array
+	private function postProcess(ArticleInterface $article, iterable $articles): array
 	{
+		if (! is_array($articles)) {
+			$articles = iterator_to_array($articles);
+		}
+
+		if ($article instanceof PageArticle) {
+			$article->prepareTags($articles);
+		}
+
 		return array_map(function ($item) use ($article) {
 			if (Utils::$context['user']['is_guest']) {
 				$item['is_new'] = false;

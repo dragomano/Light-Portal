@@ -34,7 +34,7 @@ final class ChosenPageArticle extends PageArticle
 		$this->params['selected_pages'] = $this->selectedPages;
 	}
 
-	public function getData(int $start, int $limit): array
+	public function getData(int $start, int $limit): iterable
 	{
 		if (empty($this->selectedPages))
 			return [];

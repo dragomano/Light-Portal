@@ -66,10 +66,10 @@ class BoardArticle extends AbstractArticle
 		);
 	}
 
-	public function getData(int $start, int $limit): array
+	public function getData(int $start, int $limit): iterable
 	{
 		if (empty($this->selectedBoards))
-			return [];
+			return;
 
 		$this->params += [
 			'start' => $start,
@@ -111,13 +111,12 @@ class BoardArticle extends AbstractArticle
 			$this->params,
 		);
 
-		$boards = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$row['description'] = BBCodeParser::load()->parse(
 				$row['description'], false, '', Utils::$context['description_allowed_tags']
 			);
 
-			$boards[$row['id_board']] = [
+			$board = [
 				'id'          => (int) $row['id_board'],
 				'date'        => $this->getDate($row),
 				'title'       => $this->getTitle($row),
@@ -131,14 +130,18 @@ class BoardArticle extends AbstractArticle
 				'is_redirect' => $row['is_redirect'],
 			];
 
-			$this->prepareTeaser($boards, $row);
+			$this->prepareTeaser($board, $row);
 
-			$this->events()->dispatch(PortalHook::frontBoardsRow, ['articles' => &$boards, 'row' => $row]);
+			$articles = [$row['id_board'] => $board];
+
+			$this->events()->dispatch(PortalHook::frontBoardsRow, ['articles' => &$articles, 'row' => $row]);
+
+			$board = $articles[$row['id_board']];
+
+			yield $row['id_board'] => $board;
 		}
 
 		Db::$db->free_result($result);
-
-		return $boards;
 	}
 
 	public function getTotalCount(): int
@@ -224,11 +227,11 @@ class BoardArticle extends AbstractArticle
 		return BBCodeParser::load()->parse($row['cat_name'], false, '', Utils::$context['description_allowed_tags']);
 	}
 
-	private function prepareTeaser(array &$boards, array $row): void
+	private function prepareTeaser(array &$board, array $row): void
 	{
 		if (empty(Config::$modSettings['lp_show_teaser']))
 			return;
 
-		$boards[$row['id_board']]['teaser'] = Str::getTeaser($row['description']);
+		$board['teaser'] = Str::getTeaser($row['description']);
 	}
 }

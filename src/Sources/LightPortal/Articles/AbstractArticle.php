@@ -33,7 +33,7 @@ abstract class AbstractArticle implements ArticleInterface
 
 	abstract public function init(): void;
 
-	abstract public function getData(int $start, int $limit): array;
+	abstract public function getData(int $start, int $limit): iterable;
 
 	abstract public function getTotalCount(): int;
 }
