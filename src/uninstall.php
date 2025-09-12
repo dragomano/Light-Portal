@@ -2,34 +2,17 @@
 
 require_once __DIR__ . '/init.php';
 
-checkRequirements();
-
-$classMap = [];
-$autoload = __DIR__ . '/Sources/LightPortal/Libs/composer/autoload_classmap.php';
-if (file_exists($autoload)) {
-	$classMap = include $autoload;
-}
-
-spl_autoload_register(function ($class) use ($classMap) {
-	if (isset($classMap[$class]) && file_exists($classMap[$class])) {
-		include_once $classMap[$class];
-	}
-});
-
-include_once __DIR__ . '/Sources/LightPortal/Libs/bugo/smf-compat/src/app.php';
-
-use Bugo\LightPortal\Migrations\Installer;
-
-$installer = new Installer();
+$setup = PortalSetup::init();
+$installer = $setup->getInstaller();
 
 if (! $installer->uninstall()) {
-	exit('<b>Error:</b> An error occurred while removing portal data from the database!');
+	exit('<b>Error:</b> An error occurred while removing the portal data from the database!');
 }
 
 try {
-	deleteDirectory(dirname(__DIR__, 2) . '/Sources/LightPortal');
+	$setup->deletePortalFiles();
 } catch (RuntimeException $e) {
-	echo "Error: " . $e->getMessage();
+	$setup->handleError($e->getMessage());
 } finally {
-	echo 'I\'ll see you again. I promise ©️';
+	$setup->finalize('I\'ll see you again. I promise ©️');
 }

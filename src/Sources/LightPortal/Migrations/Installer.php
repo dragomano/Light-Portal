@@ -29,6 +29,7 @@ use Bugo\LightPortal\Migrations\Creators\TranslationsTableCreator;
 use Bugo\LightPortal\Migrations\Upgraders\TitlesTableUpgrader;
 use Bugo\LightPortal\Migrations\Upgraders\CategoriesUpgradeTask;
 use Bugo\LightPortal\Migrations\Upgraders\TableUpgraderInterface;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
 use Laminas\Db\Sql\Delete;
 use Laminas\Db\Sql\Select;
 use Laminas\Db\Sql\Sql;
@@ -39,6 +40,8 @@ use function is_writable;
 
 class Installer implements InstallerInterface
 {
+	use HasRequest;
+
 	public function __construct(private ?PortalAdapter $adapter = null, private ?Sql $sql = null)
 	{
 		$this->adapter = $this->adapter ?? PortalAdapterFactory::create();
@@ -60,7 +63,7 @@ class Installer implements InstallerInterface
 		$this->cleanBackgroundTasks();
 		$this->updateSettings();
 
-		if (empty($_POST['do_db_changes']))
+		if ($this->post()->hasNot('do_db_changes'))
 			return true;
 
 		$this->processTables('uninstall');
