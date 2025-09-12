@@ -86,6 +86,9 @@ use League\Container\ServiceProvider\AbstractServiceProvider;
 
 use function in_array;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 class ServiceProvider extends AbstractServiceProvider
 {
 	private array $services = [

@@ -14,6 +14,9 @@ namespace Bugo\LightPortal\Migrations;
 
 use Bugo\Compat\Config;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 class PortalAdapterFactory
 {
 	public static function create(): PortalAdapter

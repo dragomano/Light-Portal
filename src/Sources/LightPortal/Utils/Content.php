@@ -21,6 +21,7 @@ use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Events\EventManagerFactory;
 use ParseError;
 
+use function app;
 use function file_put_contents;
 use function html_entity_decode;
 use function ob_get_clean;

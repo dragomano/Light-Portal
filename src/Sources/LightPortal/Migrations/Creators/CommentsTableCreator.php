@@ -19,6 +19,9 @@ use Bugo\LightPortal\Migrations\Columns\UnsignedInteger;
 use Bugo\LightPortal\Migrations\CreatePortalTable;
 use Laminas\Db\Sql\Ddl\Column\Text;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 class CommentsTableCreator extends AbstractTableCreator
 {
 	protected function getTableSuffix(): string

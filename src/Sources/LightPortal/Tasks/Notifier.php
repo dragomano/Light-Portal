@@ -63,12 +63,7 @@ final class Notifier extends BackgroundTask
 		$notifies = $this->getNotifies($prefs);
 
 		$this->addAlerts($notifies);
-
-		try {
-			$this->sendEmails($notifies);
-		} catch (ErrorException $e) {
-			ErrorHandler::log("[LP] notifications: {$e->getMessage()}");
-		}
+		$this->sendEmails($notifies);
 
 		return true;
 	}
@@ -121,9 +116,6 @@ final class Notifier extends BackgroundTask
 		}
 	}
 
-	/**
-	 * @throws ErrorException
-	 */
 	protected function sendEmails(array $notifies): void
 	{
 		if (empty($notifies['email']))
@@ -150,15 +142,19 @@ final class Notifier extends BackgroundTask
 			);
 
 			foreach ($recipients as $email) {
-				Mail::send(
-					$email,
-					$emaildata['subject'],
-					$emaildata['body'],
-					null,
-					'page#' . $this->_details['content_id'],
-					$emaildata['is_html'],
-					2
-				);
+				try {
+					Mail::send(
+						$email,
+						$emaildata['subject'],
+						$emaildata['body'],
+						null,
+						'page#' . $this->_details['content_id'],
+						$emaildata['is_html'],
+						2
+					);
+				} catch (ErrorException $e) {
+					ErrorHandler::log("[LP] notifications: {$e->getMessage()}", file: $e->getFile(), line: $e->getLine());
+				}
 			}
 		}
 	}

@@ -37,6 +37,10 @@ use Laminas\Db\Sql\Update;
 
 use function array_filter;
 use function is_writable;
+use function time;
+
+if (! defined('SMF'))
+	die('No direct access...');
 
 class Installer implements InstallerInterface
 {
@@ -44,7 +48,7 @@ class Installer implements InstallerInterface
 
 	public function __construct(private ?PortalAdapter $adapter = null, private ?Sql $sql = null)
 	{
-		$this->adapter = $this->adapter ?? PortalAdapterFactory::create();
+		$this->adapter ??= PortalAdapterFactory::create();
 		$this->sql = $sql ?? new Sql($this->adapter);
 	}
 
@@ -87,9 +91,11 @@ class Installer implements InstallerInterface
 	{
 		$creators = $this->getCreators();
 
-		/* @var TableCreatorInterface[] $creators */
 		foreach ($creators as $creatorClass) {
 			$creator = new $creatorClass($this->adapter, $this->sql);
+			if (! $creator instanceof TableCreatorInterface) {
+				continue;
+			}
 
 			if ($mode === 'install') {
 				$creator->createTable();
@@ -104,9 +110,12 @@ class Installer implements InstallerInterface
 	{
 		$upgradeTasks = $this->getUpgradeTasks();
 
-		/* @var TableUpgraderInterface[] $upgradeTasks */
 		foreach ($upgradeTasks as $taskClass) {
 			$task = new $taskClass($this->adapter, $this->sql);
+			if (! $task instanceof TableUpgraderInterface) {
+				continue;
+			}
+
 			$task->upgrade();
 		}
 	}

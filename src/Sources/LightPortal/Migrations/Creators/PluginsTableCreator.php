@@ -21,6 +21,9 @@ use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Insert;
 use Laminas\Db\Sql\Select;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 class PluginsTableCreator extends AbstractTableCreator
 {
 	protected function getTableSuffix(): string

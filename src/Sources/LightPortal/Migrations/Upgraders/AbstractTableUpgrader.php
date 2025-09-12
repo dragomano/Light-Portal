@@ -27,7 +27,7 @@ abstract class AbstractTableUpgrader implements TableUpgraderInterface
 
 	public function __construct(?PortalAdapter $adapter = null, ?Sql $sql = null)
 	{
-		$this->adapter = $this->adapter ?? PortalAdapterFactory::create();
+		$this->adapter ??= PortalAdapterFactory::create();
 		$this->sql = $sql ?? new Sql($this->adapter);
 	}
 

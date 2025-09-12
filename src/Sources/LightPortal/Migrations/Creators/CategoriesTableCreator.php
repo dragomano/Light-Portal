@@ -18,6 +18,9 @@ use Bugo\LightPortal\Migrations\Columns\UnsignedInteger;
 use Bugo\LightPortal\Migrations\CreatePortalTable;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 class CategoriesTableCreator extends AbstractTableCreator
 {
 	protected function getTableSuffix(): string

@@ -16,6 +16,9 @@ use Bugo\LightPortal\Migrations\Columns\UnsignedInteger;
 use Bugo\LightPortal\Migrations\CreatePortalTable;
 use Laminas\Db\Sql\Ddl\Constraint\PrimaryKey;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 class PageTagTableCreator extends AbstractTableCreator
 {
 	protected function getTableSuffix(): string

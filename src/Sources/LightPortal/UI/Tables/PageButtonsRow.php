@@ -19,6 +19,8 @@ use Bugo\LightPortal\Utils\Request;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
+use function app;
+
 class PageButtonsRow extends Row
 {
 	public static function make(string $value = '', ?string $class = null): static

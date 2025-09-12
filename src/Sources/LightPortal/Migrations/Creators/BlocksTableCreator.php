@@ -20,6 +20,9 @@ use Bugo\LightPortal\Migrations\Columns\TinyInteger;
 use Bugo\LightPortal\Migrations\CreatePortalTable;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 class BlocksTableCreator extends AbstractTableCreator
 {
 	protected function getTableSuffix(): string

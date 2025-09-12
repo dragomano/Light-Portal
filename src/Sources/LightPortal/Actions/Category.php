@@ -34,6 +34,7 @@ use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 use WPLake\Typed\Typed;
 
+use function app;
 use function array_key_exists;
 use function sprintf;
 use function time;

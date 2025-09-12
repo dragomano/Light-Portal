@@ -14,6 +14,8 @@ namespace Bugo\LightPortal\Utils\Traits;
 
 use Bugo\LightPortal\UI\Breadcrumbs\BreadcrumbWrapper;
 
+use function app;
+
 trait HasBreadcrumbs
 {
 	public function breadcrumbs(): BreadcrumbWrapper

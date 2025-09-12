@@ -38,6 +38,7 @@ use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Validators\TagValidator;
 use WPLake\Typed\Typed;
 
+use function app;
 use function array_merge;
 
 use const LP_NAME;

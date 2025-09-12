@@ -17,6 +17,8 @@ use Bugo\Compat\Lang;
 use Bugo\LightPortal\Utils\Request;
 use Bugo\LightPortal\Utils\Str;
 
+use function app;
+
 class PageContextMenuColumn extends ContextMenuColumn
 {
 	public static function make(string $name = 'actions', string $title = ''): static

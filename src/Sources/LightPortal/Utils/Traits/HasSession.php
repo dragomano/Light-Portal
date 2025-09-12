@@ -14,6 +14,8 @@ namespace Bugo\LightPortal\Utils\Traits;
 
 use Bugo\LightPortal\Utils\Session;
 
+use function app;
+
 trait HasSession
 {
 	public function session(?string $key = null): Session

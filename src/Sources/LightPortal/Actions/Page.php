@@ -33,6 +33,7 @@ use Bugo\LightPortal\Utils\Traits\HasResponse;
 use Bugo\LightPortal\Utils\Traits\HasSession;
 use SimpleSEF;
 
+use function app;
 use function array_column;
 use function array_search;
 use function class_exists;

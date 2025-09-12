@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
+use Rector\DeadCode\Rector\If_\UnwrapFutureCompatibleIfPhpVersionRector;
 use Rector\Php81\Rector\FuncCall\NullToStrictStringFuncCallArgRector;
 
 return RectorConfig::configure()
@@ -13,6 +14,7 @@ return RectorConfig::configure()
 		__DIR__ . '**/Libs/*',
 		__DIR__ . '**/vendor/*',
 		NullToStrictStringFuncCallArgRector::class,
+		UnwrapFutureCompatibleIfPhpVersionRector::class,
 	])
 	->withParallel(360)
 	->withIndent(indentChar: "\t")

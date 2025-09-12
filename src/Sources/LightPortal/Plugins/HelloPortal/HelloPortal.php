@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 26.08.25
+ * @version 12.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\HelloPortal;
@@ -37,7 +37,7 @@ class HelloPortal extends Plugin
 
 	private array $themes = [false, 'dark', 'modern', 'flattener'];
 
-	private string $steps;
+	private readonly string $steps;
 
 	public function __construct()
 	{

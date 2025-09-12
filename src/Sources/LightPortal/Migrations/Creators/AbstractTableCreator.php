@@ -23,6 +23,9 @@ use Laminas\Db\Sql\Insert;
 use Laminas\Db\Sql\Select;
 use Laminas\Db\Sql\Sql;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 abstract class AbstractTableCreator implements TableCreatorInterface
 {
 	protected ?PortalAdapter $adapter = null;
@@ -31,7 +34,7 @@ abstract class AbstractTableCreator implements TableCreatorInterface
 
 	public function __construct(?PortalAdapter $adapter = null, ?Sql $sql = null)
 	{
-		$this->adapter = $this->adapter ?? PortalAdapterFactory::create();
+		$this->adapter ??= PortalAdapterFactory::create();
 		$this->sql = $sql ?? new Sql($this->adapter);
 	}
 

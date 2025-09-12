@@ -50,21 +50,34 @@ abstract class AbstractConfig
 	{
 		$i = 0;
 
+		$factoryCache = [];
 		foreach (Utils::$context['config_vars'] as $var) {
-			$label = $var['label'] ?? Lang::$txt[$var['name']] ?? '';
+			$name = $var['name'];
+			$type = $var['type'];
+
+			$label = $var['label'] ?? Lang::$txt[$name] ?? '';
 			$after = $var['postinput'] ?? '';
+
 			$description = isset($var['help']) ? Lang::$txt[$var['help']] ?? '' : '';
-			$varFactory = new VarFactory($var['name'], $var['type']);
 
-			$value = $varFactory->getValue($data = $configVars[$i][2] ?? []);
+			$varFactory = null;
+			$value = null;
+			$defaultValue = null;
 
-			$field = match ($var['type']) {
-				'check'       => CheckboxField::make($var['name'], $label),
-				'int'         => NumberField::make($var['name'], $label),
-				'text'        => TextField::make($var['name'], $label)->placeholder($var['placeholder'] ?? ''),
-				'select'      => SelectField::make($var['name'], $label)->setAttributes($var['attributes'] ?? [])->setOptions($data),
-				'callback'    => CustomField::make($var['name'], $label)->setValue($var['callback'] ?? $varFactory->createTemplateCallback()),
-				'permissions' => CustomField::make($var['name'], Lang::$txt['permissionname_' . $var['name']])->setValue($varFactory->createPermissionsCallback()),
+			if (! in_array($type, ['callback', 'permissions'])) {
+				$cacheKey = $name . ':' . $type;
+				$varFactory = $factoryCache[$cacheKey] ??= new VarFactory($name, $type);
+				$value = $varFactory->getValue($data = $configVars[$i][2] ?? []);
+				$defaultValue = $varFactory->getDefaultValue();
+			}
+
+			$field = match ($type) {
+				'check'       => CheckboxField::make($name, $label),
+				'int'         => NumberField::make($name, $label),
+				'text'        => TextField::make($name, $label)->placeholder($var['placeholder'] ?? ''),
+				'select'      => SelectField::make($name, $label)->setAttributes($var['attributes'] ?? [])->setOptions($data ?? []),
+				'callback'    => CustomField::make($name, $label)->setValue($var['callback'] ?? (new VarFactory($name, $type))->createTemplateCallback()),
+				'permissions' => CustomField::make($name, Lang::$txt['permissionname_' . $name])->setValue((new VarFactory($name, $type))->createPermissionsCallback()),
 				default       => null,
 			};
 
@@ -73,10 +86,8 @@ abstract class AbstractConfig
 				->setDescription($description);
 
 			if (! in_array($var['type'], ['callback', 'permissions'])) {
-				$field?->setValue($value ?? $varFactory->getDefaultValue());
+				$field?->setValue($value ?? $defaultValue);
 			}
-
-			unset($field);
 
 			$i++;
 		}

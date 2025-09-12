@@ -18,6 +18,7 @@ use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Lists\IconList;
 use InvalidArgumentException;
 
+use function app;
 use function str_replace;
 
 if (! defined('SMF'))

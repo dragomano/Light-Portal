@@ -20,6 +20,9 @@ use Bugo\Compat\Security;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Utils\Icon;
 
+use function array_merge;
+use function compact;
+
 if (! defined('SMF'))
 	die('No direct access...');
 

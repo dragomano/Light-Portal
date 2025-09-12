@@ -39,11 +39,14 @@ use Bugo\LightPortal\Utils\Weaver;
 use WPLake\Typed\Typed;
 
 use function abs;
+use function app;
 use function array_column;
 use function array_key_exists;
 use function array_map;
 use function date;
 use function floor;
+use function is_array;
+use function iterator_to_array;
 use function ltrim;
 use function number_format;
 use function sprintf;

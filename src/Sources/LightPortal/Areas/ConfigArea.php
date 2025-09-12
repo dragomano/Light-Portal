@@ -42,6 +42,7 @@ use Bugo\LightPortal\Utils\Traits\HasCache;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 use Bugo\LightPortal\Utils\Traits\HasForumHooks;
 
+use function app;
 use function array_keys;
 use function array_merge;
 use function array_search;

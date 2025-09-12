@@ -14,6 +14,9 @@ namespace Bugo\LightPortal\Migrations;
 
 use Laminas\Db\Adapter\Adapter;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 class PortalAdapter extends Adapter
 {
 	public function getPrefix(): string

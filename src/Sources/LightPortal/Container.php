@@ -12,37 +12,47 @@
 
 namespace Bugo\LightPortal;
 
+use Bugo\Compat\ErrorHandler;
 use League\Container\Container as LeagueContainer;
-use Throwable;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+
+if (! defined('SMF'))
+	die('No direct access...');
 
 class Container
 {
-	private static ?LeagueContainer $leagueContainer = null;
+	private static ?LeagueContainer $container = null;
 
 	public static function getInstance(): LeagueContainer
 	{
-		if (self::$leagueContainer === null) {
+		if (self::$container === null) {
 			self::init();
 		}
 
-		return self::$leagueContainer;
+		return self::$container;
 	}
 
 	/**
 	 * @template RequestedType
 	 * @param class-string<RequestedType>|string $service
 	 * @return RequestedType|mixed
-	 * @throws Throwable
 	 */
 	public static function get(string $service): mixed
 	{
-		return self::getInstance()->get($service);
+		try {
+			return self::getInstance()->get($service);
+		} catch (NotFoundExceptionInterface | ContainerExceptionInterface $e) {
+			ErrorHandler::log('[LP] container: ' . $e->getMessage(), file: $e->getFile(), line: $e->getLine());
+		}
+
+		return false;
 	}
 
 	protected static function init(): void
 	{
-		self::$leagueContainer = new LeagueContainer();
-		self::$leagueContainer->defaultToShared();
-		self::$leagueContainer->addServiceProvider(new ServiceProvider());
+		self::$container = new LeagueContainer();
+		self::$container->defaultToShared();
+		self::$container->addServiceProvider(new ServiceProvider());
 	}
 }

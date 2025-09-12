@@ -27,6 +27,8 @@ use Bugo\LightPortal\Utils\Traits\HasRequest;
 use Bugo\LightPortal\Utils\Weaver;
 use WPLake\Typed\Typed;
 
+use function app;
+
 class CardList implements CardListInterface
 {
 	use HasRequest;

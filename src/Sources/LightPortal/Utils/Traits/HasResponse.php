@@ -14,6 +14,8 @@ namespace Bugo\LightPortal\Utils\Traits;
 
 use Bugo\LightPortal\Utils\Response;
 
+use function app;
+
 trait HasResponse
 {
 	public function response(): Response

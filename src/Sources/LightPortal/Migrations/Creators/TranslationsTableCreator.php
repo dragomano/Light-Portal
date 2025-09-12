@@ -20,6 +20,9 @@ use Laminas\Db\Sql\Ddl\Column\Text;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
 use Laminas\Db\Sql\Ddl\Constraint\UniqueKey;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 class TranslationsTableCreator extends AbstractTableCreator
 {
 	protected function getTableSuffix(): string

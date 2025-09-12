@@ -20,6 +20,8 @@ use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Utils\Request;
 use Bugo\LightPortal\Utils\Str;
 
+use function app;
+
 class PageTypeSelectRow extends Row
 {
 	public static function make(string $value = '', ?string $class = null): static

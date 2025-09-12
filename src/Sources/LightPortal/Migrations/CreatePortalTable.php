@@ -16,6 +16,9 @@ use Laminas\Db\Sql\Ddl\Constraint\PrimaryKey;
 use Laminas\Db\Sql\Ddl\Constraint\UniqueKey;
 use Laminas\Db\Sql\Ddl\CreateTable;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 class CreatePortalTable extends CreateTable
 {
 	public function addAutoIncrementColumn($column): static

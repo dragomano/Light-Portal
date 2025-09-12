@@ -15,7 +15,6 @@ if (! defined('SMF'))
 
 require_once __DIR__ . '/Libs/autoload.php';
 
-use Bugo\Compat\ErrorHandler;
 use Bugo\LightPortal\Container;
 use Bugo\LightPortal\PortalApp;
 
@@ -31,13 +30,7 @@ if (! function_exists('app')) {
 			return Container::getInstance();
 		}
 
-		try {
-			return Container::get($service);
-		} catch (Throwable $e) {
-			ErrorHandler::fatal($e->getMessage(), 'critical');
-		}
-
-		return false;
+		return Container::get($service);
 	}
 }
 
