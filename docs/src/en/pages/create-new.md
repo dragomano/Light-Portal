@@ -5,14 +5,28 @@ order: 2
 
 # Add page
 
-In this section, you can create a portal page with the content you need. Required fields are highlighted with a colored frame.
+In this section, you can create a portal page with the content you need.
+
+## Page types
+
+### Built-in content types
+
+- **BBC**: Allows BBCode markup for content
+- **HTML**: Raw HTML content
+- **PHP**: Executable PHP code (admin only)
+
+### Plugin-based pages
+
+Plugins can extend the functionality by adding new page types or statuses. Examples:
+
+- **Markdown**: Enables Markdown syntax for content
+- **Blog**: Blog-style pages provided by the BlogMode plugin
 
 ## Content tab
 
 Here you can configure:
 
 - title
-- page type
 - content
 
 ![Content tab](content_tab.png)
@@ -21,9 +35,10 @@ Here you can configure:
 
 Here you can configure:
 
+- status — inactive, active, or unapproved
 - permissions — specify who will access your page
 - category — if you like to keep things organized
-- transfer of authorship — if you want to change the author
+- type — default, internal, or draft
 
 ![Access tab](access_tab.png)
 

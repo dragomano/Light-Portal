@@ -5,9 +5,9 @@ order: 1
 
 # Manage pages
 
-This section lists all created portal pages that can be edited by the current user. There is a search for pages by title or slug.
+This section shows all the pages you've created that you can edit. You can search for them by their title or slug.
 
-For each page, its ID, creation/update date, number of views, number of comments, type, slug, title, and list of actions are displayed.
+Each page has its ID, when it was created or last updated, how many times it's been viewed, how many comments it has, what kind of page it is, its slug, and its title. You also see a list of actions you can do with it.
 
 ![Manage pages](manage_pages.png)
 

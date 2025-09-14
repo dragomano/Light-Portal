@@ -181,6 +181,15 @@ public function prepareBlockFields(Event $e): void
 
 > custom actions on removing blocks
 
+```php
+public function onBlockRemoving(Event $e): void
+{
+    foreach ($e->args->items as $item) {
+        $this->cache()->forget('block_' . $item . '_cache');
+    }
+}
+```
+
 ## Work with pages
 
 ### preparePageParams
@@ -229,9 +238,33 @@ public function preparePageFields(Event $e): void
 
 > custom actions on saving/editing pages
 
+### onCustomPageImport
+
+> custom actions on custom page import
+
+```php
+public function onCustomPageImport(Event $e): void
+{
+    $e->args->items = array_map(function ($item) {
+        $item['title'] = Utils::$smcFunc['htmlspecialchars']($item['title']);
+
+        return $item;
+    }, $e->args->items);
+}
+```
+
 ### onPageRemoving
 
 > custom actions on removing pages
+
+```php
+public function onPageRemoving(Event $e): void
+{
+    foreach ($e->args->items as $item) {
+        $this->cache()->forget('page_' . $item . '_cache');
+    }
+}
+```
 
 ### preparePageData
 
@@ -316,6 +349,13 @@ public function addSettings(Event $e): void
 
 > additional actions after plugin settings saving
 
+```php
+public function saveSettings(Event $e): void
+{
+    $this->cache()->flush();
+}
+```
+
 ### prepareAssets
 
 > saving external styles, scripts, and images to improve resource speed loading
@@ -375,16 +415,25 @@ public function layoutExtensions(Event $e): void
 ```php
 public function frontAssets(): void
 {
-    Theme::loadJavaScriptFile(
-        'https://' . $this->context['shortname'] . '.disqus.com/count.js',
-        ['external' => true],
-    );
+    $this->loadExternalResources([
+        ['type' => 'css', 'url' => 'https://cdn.example.com/custom.css'],
+        ['type' => 'js', 'url' => 'https://cdn.example.com/custom.js'],
+    ]);
 }
 ```
 
 ### frontTopics
 
 > adding custom columns, tables, wheres, params and orders to _init_ function
+
+```php
+public function frontTopics(Event $e): void
+{
+    $e->args->columns[] = 't.num_replies';
+    $e->args->wheres[] = 't.num_replies > {int:min_replies}';
+    $e->args->params['min_replies'] = 10;
+}
+```
 
 ```php
 public function frontTopics(Event $e): void
@@ -405,6 +454,13 @@ public function frontTopics(Event $e): void
 ```php
 public function frontTopicsRow(Event $e): void
 {
+    $e->args->articles[$e->args->row['id_topic']]['replies'] = $e->args->row['num_replies'] ?? 0;
+}
+```
+
+```php
+public function frontTopicsRow(Event $e): void
+{
     $e->args->articles[$e->args->row['id_topic']]['rating'] = empty($e->args->row['total_votes'])
         ? 0 : (number_format($e->args->row['total_value'] / $e->args->row['total_votes']));
 }
@@ -414,17 +470,50 @@ public function frontTopicsRow(Event $e): void
 
 > adding custom columns, tables, wheres, params and orders to _init_ function
 
+```php
+public function frontPages(Event $e): void
+{
+    $e->args->columns[] = 'lp.num_comments';
+    $e->args->tables[] = 'LEFT JOIN {db_prefix}lp_comments AS lc ON (lp.page_id = lc.page_id)';
+    $e->args->wheres[] = 'lc.approved = {int:approved}';
+    $e->args->params['approved'] = 1;
+}
+```
+
 ### frontPagesRow
 
 > various manipulations with query results to _getData_ function
+
+```php
+public function frontPagesRow(Event $e): void
+{
+    $e->args->articles[$e->args->row['id']]['comments'] = $e->args->row['num_comments'] ?? 0;
+}
+```
 
 ### frontBoards
 
 > adding custom columns, tables, wheres, params and orders to _init_ function
 
+```php
+public function frontBoards(Event $e): void
+{
+    $e->args->columns[] = 'b.num_topics';
+    $e->args->wheres[] = 'b.num_topics > {int:min_topics}';
+    $e->args->params['min_topics'] = 5;
+}
+```
+
 ### frontBoardsRow
 
 > various manipulations with query results to _getData_ function
+
+```php
+public function frontBoardsRow(Event $e): void
+{
+    $e->args->articles[$e->args->row['id_board']]['custom_field'] = 'value';
+}
+```
 
 ## Work with icons
 
@@ -454,15 +543,36 @@ public function prepareIconList(Event $e): void
 
 > adding custom template for displaying icons
 
+```php
+public function prepareIconTemplate(Event $e): void
+{
+    $e->args->template = "<i class=\"custom-class {$e->args->icon}\" aria-hidden=\"true\"></i>";
+}
+```
+
 ### changeIconSet
 
 > ability to extend interface icons available via `Utils::$context['lp_icon_set']` array
+
+```php
+public function changeIconSet(Event $e): void
+{
+    $e->args->set['snowman'] = 'fa-solid fa-snowman';
+}
+```
 
 ## Portal settings
 
 ### extendBasicConfig
 
 > adding custom configs in the portal basic settings area
+
+```php
+public function extendBasicConfig(Event $e): void
+{
+    $e->args->configVars[] = ['text', 'option_key', 'subtext' => $this->txt['my_mod_description']];
+}
+```
 
 ### extendAdminAreas
 
@@ -545,5 +655,18 @@ public function credits(Event $e): void
             'link' => 'https://www.freepikcompany.com/legal#nav-flaticon-agreement'
         ]
     ];
+}
+```
+
+### downloadRequest
+
+> handling download requests for portal attachments
+
+```php
+public function downloadRequest(Event $e): void
+{
+    if ($e->args->attachRequest['id'] === (int) $this->request()->get('attach')) {
+        // Some handling
+    }
 }
 ```
