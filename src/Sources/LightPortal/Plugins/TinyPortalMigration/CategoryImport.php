@@ -18,7 +18,7 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Areas\Imports\AbstractCustomCategoryImport;
+use Bugo\LightPortal\Areas\Imports\Custom\AbstractCustomCategoryImport;
 use Bugo\LightPortal\UI\Tables\CheckboxColumn;
 use Bugo\LightPortal\UI\Tables\ImportButtonsRow;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;

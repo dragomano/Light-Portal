@@ -17,9 +17,7 @@ use Bugo\Bricks\Tables\RowPosition;
 use Bugo\Bricks\Tables\TablePresenter;
 use Bugo\Compat\Config;
 use Bugo\Compat\Db;
-use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
-use Bugo\Compat\Sapi;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Repositories\TagRepository;
 use Bugo\LightPortal\UI\Tables\CheckboxColumn;
@@ -27,10 +25,7 @@ use Bugo\LightPortal\UI\Tables\ExportButtonsRow;
 use Bugo\LightPortal\UI\Tables\IconColumn;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
 use Bugo\LightPortal\UI\Tables\TitleColumn;
-use DomDocument;
-use DOMException;
 
-use function in_array;
 use function trim;
 
 use const LP_NAME;
@@ -38,7 +33,7 @@ use const LP_NAME;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class TagExport extends AbstractExport
+final class TagExport extends XmlExporter
 {
 	protected string $entity = 'tags';
 
@@ -125,53 +120,8 @@ final class TagExport extends AbstractExport
 
 	protected function getFile(): string
 	{
-		if (empty($items = $this->getData()))
-			return '';
+		$items = $this->getData();
 
-		try {
-			$xml = new DomDocument('1.0', 'utf-8');
-			$root = $xml->appendChild($xml->createElement('light_portal'));
-
-			$xml->formatOutput = true;
-
-			$xmlElements = $root->appendChild($xml->createElement($this->entity));
-
-			$items = $this->getGeneratorFrom($items);
-
-			foreach ($items() as $item) {
-				$xmlElement = $xmlElements->appendChild($xml->createElement('item'));
-				foreach ($item as $key => $val) {
-					$xmlName = $xmlElement->appendChild(
-						in_array($key, ['tag_id', 'status'])
-							? $xml->createAttribute($key)
-							: $xml->createElement($key)
-					);
-
-					if ($key === 'titles') {
-						foreach ($val as $k => $v) {
-							$xmlTitle = $xmlName->appendChild($xml->createElement($k));
-							$xmlTitle->appendChild($xml->createTextNode($v));
-						}
-					} elseif ($key === 'pages') {
-						foreach ($val as $page) {
-							$xmlPage = $xmlName->appendChild($xml->createElement('page'));
-							foreach ($page as $label => $text) {
-								$xmlPageElem = $xmlPage->appendChild($xml->createAttribute($label));
-								$xmlPageElem->appendChild($xml->createTextNode($text));
-							}
-						}
-					} else {
-						$xmlName->appendChild($xml->createTextNode($val));
-					}
-				}
-			}
-
-			$file = Sapi::getTempDir() . '/lp_tags_backup.xml';
-			$xml->save($file);
-		} catch (DOMException $e) {
-			ErrorHandler::log('[LP] ' . Lang::$txt['lp_tags_export'] . ': ' . $e->getMessage(), 'user');
-		}
-
-		return $file ?? '';
+		return $this->createXmlFile($items, ['tag_id', 'status']);
 	}
 }

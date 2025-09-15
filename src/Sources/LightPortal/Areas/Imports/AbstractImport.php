@@ -39,6 +39,8 @@ abstract class AbstractImport implements ImportInterface
 		Utils::$context['max_file_size'] = Sapi::memoryReturnBytes(ini_get('upload_max_filesize'));
 	}
 
+	abstract protected function run(): void;
+
 	protected function getFile(string $name = 'import_file'): SimpleXMLElement|bool
 	{
 		if (empty($file = $this->files()->get($name)))
@@ -51,6 +53,4 @@ abstract class AbstractImport implements ImportInterface
 
 		return simplexml_load_file($file['tmp_name']);
 	}
-
-	abstract protected function run(): void;
 }

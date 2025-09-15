@@ -13,22 +13,21 @@
 namespace Bugo\LightPortal\Areas\Imports;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 
+use function array_merge;
 use function intval;
+use function str_starts_with;
+use function trim;
 
 use const LP_NAME;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-/**
- * @property mixed|void $item
- */
-final class CategoryImport extends AbstractImport
+final class CategoryImport extends XmlImporter
 {
 	protected string $entity = 'categories';
 
@@ -53,55 +52,42 @@ final class CategoryImport extends AbstractImport
 		$this->run();
 	}
 
-	protected function run(): void
+	protected function processItems(): void
 	{
-		if (empty($xml = $this->getFile()))
-			return;
+		$items = $translations = [];
+		$categoryTitles = [];
 
-		if (! isset($xml->categories->item[0]['category_id'])) {
-			ErrorHandler::fatalLang('lp_wrong_import_file', false);
+		foreach ($this->xml->{$this->entity}->item as $item) {
+			$categoryId = intval($item['category_id']);
+			$slug = (string) $item->slug;
+
+			$itemTranslations = $this->extractTranslations($item);
+			foreach ($itemTranslations as $translation) {
+				if (isset($translation['title'])) {
+					$categoryTitles[$categoryId][$translation['lang']] = $translation['title'];
+				}
+			}
+
+			if (empty(trim($slug))) {
+				$slug = 'temp-' . $categoryId;
+			}
+
+			$items[] = [
+				'category_id' => $categoryId,
+				'slug'        => $slug,
+				'icon'        => (string) $item->icon,
+				'priority'    => intval($item['priority']),
+				'status'      => intval($item['status']),
+			];
+
+			$translations = array_merge($translations, $itemTranslations);
 		}
 
-		$items = $translations = [];
-
-		foreach ($xml as $element) {
-			foreach ($element->item as $item) {
-				$items[] = [
-					'category_id' => $categoryId = intval($item['category_id']),
-					'slug'        => (string) $item->slug,
-					'icon'        => $item->icon,
-					'priority'    => intval($item['priority']),
-					'status'      => intval($item['status']),
-				];
-
-				if ($item->titles || $item->descriptions) {
-					foreach ($item->titles as $title) {
-						foreach ($title as $lang => $text) {
-							if (! isset($translations[$lang . '_' . $categoryId])) {
-								$translations[] = [
-									'item_id' => $categoryId,
-									'type'    => 'category',
-									'lang'    => $lang,
-									'title'   => (string) $text,
-								];
-							}
-						}
-					}
-
-					foreach ($item->descriptions as $description) {
-						foreach ($description as $lang => $text) {
-							if (! isset($translations[$lang . '_' . $categoryId])) {
-								$translations[$lang . '_' . $categoryId] = [
-									'item_id' => $categoryId,
-									'type'    => 'category',
-									'lang'    => $lang,
-								];
-							}
-
-							$translations[$lang . '_' . $categoryId]['description'] = (string) $text;
-						}
-					}
-				}
+		foreach ($items as &$item) {
+			if (str_starts_with($item['slug'], 'temp-')) {
+				$categoryId = $item['category_id'];
+				$titles = $categoryTitles[$categoryId] ?? [];
+				$item['slug'] = $this->generateSlug($titles);
 			}
 		}
 

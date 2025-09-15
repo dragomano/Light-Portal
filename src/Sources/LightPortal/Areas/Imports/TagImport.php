@@ -13,22 +13,22 @@
 namespace Bugo\LightPortal\Areas\Imports;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use SimpleXMLElement;
 
+use function array_merge;
 use function intval;
+use function str_starts_with;
+use function trim;
 
 use const LP_NAME;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-/**
- * @property mixed|void $item
- */
-final class TagImport extends AbstractImport
+final class TagImport extends XmlImporter
 {
 	protected string $entity = 'tags';
 
@@ -53,51 +53,42 @@ final class TagImport extends AbstractImport
 		$this->run();
 	}
 
-	protected function run(): void
+	protected function processItems(): void
 	{
-		if (empty($xml = $this->getFile()))
-			return;
+		$items = $translations = $pages = [];
+		$tagTitles = [];
 
-		if (! isset($xml->tags->item[0]['tag_id'])) {
-			ErrorHandler::fatalLang('lp_wrong_import_file', false);
+		foreach ($this->xml->{$this->entity}->item as $item) {
+			$tagId = intval($item['tag_id']);
+			$slug = (string) $item->slug;
+
+			$itemTranslations = $this->extractTranslations($item);
+			foreach ($itemTranslations as $translation) {
+				if (isset($translation['title'])) {
+					$tagTitles[$tagId][$translation['lang']] = $translation['title'];
+				}
+			}
+
+			if (empty(trim($slug))) {
+				$slug = 'temp-' . $tagId;
+			}
+
+			$items[] = [
+				'tag_id' => $tagId,
+				'slug'   => $slug,
+				'icon'   => (string) $item->icon,
+				'status' => intval($item['status']),
+			];
+
+			$translations = array_merge($translations, $itemTranslations);
+			$pages = array_merge($pages, $this->extractPages($item));
 		}
 
-		$items = $translations = $pages = [];
-
-		foreach ($xml as $element) {
-			foreach ($element->item as $item) {
-				$items[] = [
-					'tag_id' => $tagId = intval($item['tag_id']),
-					'slug'   => (string) $item->slug,
-					'icon'   => $item->icon,
-					'status' => intval($item['status']),
-				];
-
-				if ($item->titles) {
-					foreach ($item->titles as $title) {
-						foreach ($title as $lang => $text) {
-							if (! isset($translations[$lang . '_' . $tagId])) {
-								$translations[] = [
-									'item_id' => $tagId,
-									'type'    => 'tag',
-									'lang'    => $lang,
-									'title'   => (string) $text,
-								];
-							}
-						}
-					}
-				}
-
-				if ($item->pages) {
-					foreach ($item->pages as $page) {
-						foreach ($page as $v) {
-							$pages[] = [
-								'page_id' => intval($v['id']),
-								'tag_id'  => $tagId,
-							];
-						}
-					}
-				}
+		foreach ($items as &$item) {
+			if (str_starts_with($item['slug'], 'temp-')) {
+				$tagId = $item['tag_id'];
+				$titles = $tagTitles[$tagId] ?? [];
+				$item['slug'] = $this->generateSlug($titles);
 			}
 		}
 
@@ -117,20 +108,44 @@ final class TagImport extends AbstractImport
 		);
 
 		$this->replaceTranslations($translations, $results);
-
-		if ($results) {
-			$results = $this->insertData(
-				'lp_page_tag',
-				'replace',
-				$pages,
-				[
-					'page_id' => 'int',
-					'tag_id'  => 'int',
-				],
-				['page_id', 'tag_id'],
-			);
-		}
+		$this->replacePages($pages, $results);
 
 		$this->finishTransaction($results);
+	}
+
+	protected function extractPages(SimpleXMLElement $item): array
+	{
+		$pages = [];
+		$itemId = (string) $item['tag_id'];
+
+		if ($item->pages ?? null) {
+			foreach ($item->pages as $page) {
+				foreach ($page as $v) {
+					$pages[] = [
+						'page_id' => intval($v['id']),
+						'tag_id'  => $itemId,
+					];
+				}
+			}
+		}
+
+		return $pages;
+	}
+
+	protected function replacePages(array $pages, array &$results): void
+	{
+		if ($pages === [] || $results === [])
+			return;
+
+		$results = $this->insertData(
+			'lp_page_tag',
+			'replace',
+			$pages,
+			[
+				'page_id' => 'int',
+				'tag_id'  => 'int',
+			],
+			['page_id', 'tag_id'],
+		);
 	}
 }

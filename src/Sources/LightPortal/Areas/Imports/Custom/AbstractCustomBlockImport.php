@@ -9,29 +9,32 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Areas\Imports;
+namespace Bugo\LightPortal\Areas\Imports\Custom;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-abstract class AbstractCustomCategoryImport extends AbstractCustomImport
+abstract class AbstractCustomBlockImport extends AbstractCustomImport
 {
-	protected string $type = 'category';
+	protected string $type = 'block';
 
-	protected string $entity = 'categories';
+	protected string $entity = 'blocks';
 
 	protected function getResults(array $items): array
 	{
 		return $this->insertData(
-			'lp_categories',
+			'lp_blocks',
 			'',
 			$items,
 			[
-				'icon'     => 'string-60',
-				'priority' => 'int',
-				'status'   => 'int',
+				'type'          => 'string',
+				'placement'     => 'string',
+				'permissions'   => 'int',
+				'status'        => 'int',
+				'title_class'   => 'string',
+				'content_class' => 'string',
 			],
-			['category_id'],
+			['block_id'],
 		);
 	}
 }

@@ -9,7 +9,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Areas\Imports;
+namespace Bugo\LightPortal\Areas\Imports\Custom;
 
 use Bugo\LightPortal\Areas\Imports\Traits\HasComments;
 use Bugo\LightPortal\Enums\PortalHook;

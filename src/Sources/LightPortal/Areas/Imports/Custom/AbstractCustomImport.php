@@ -9,14 +9,15 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Areas\Imports;
+namespace Bugo\LightPortal\Areas\Imports\Custom;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Sapi;
+use Bugo\LightPortal\Areas\Imports\ImportInterface;
 use Bugo\LightPortal\Areas\Imports\Traits\CanInsertDataTrait;
 use Bugo\LightPortal\Areas\Imports\Traits\HasParams;
-use Bugo\LightPortal\Areas\Imports\Traits\HasTranslations;
 use Bugo\LightPortal\Areas\Imports\Traits\HasTransactions;
+use Bugo\LightPortal\Areas\Imports\Traits\HasTranslations;
 use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 
@@ -76,11 +77,9 @@ abstract class AbstractCustomImport implements ImportInterface, CustomImportInte
 			: [];
 
 		$items = $this->getItems($data);
-
 		$this->startTransaction($items);
 
 		$results = $this->importItems($items);
-
 		$this->finishTransaction($results);
 	}
 }

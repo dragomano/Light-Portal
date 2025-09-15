@@ -22,11 +22,16 @@ trait HasTranslations
 			return;
 
 		foreach ($translations as $id => $translation) {
-			foreach (['title', 'content', 'description'] as $field) {
-				if (! isset($translation[$field])) {
-					$translations[$id][$field] = '';
-				}
-			}
+			$orderedTranslation = [
+				'item_id'     => $translation['item_id'],
+				'type'        => $translation['type'],
+				'lang'        => $translation['lang'],
+				'title'       => $translation['title'] ?? '',
+				'content'     => $translation['content'] ?? '',
+				'description' => $translation['description'] ?? '',
+			];
+
+			$translations[$id] = $orderedTranslation;
 		}
 
 		$results = $this->insertData(
@@ -35,17 +40,17 @@ trait HasTranslations
 			$translations,
 			$method === 'replace' ? [
 				'item_id'     => 'int',
-				'type'        => 'string',
-				'lang'        => 'string',
-				'title'       => 'string',
+				'type'        => 'string-30',
+				'lang'        => 'string-60',
+				'title'       => 'string-255',
 				'content'     => 'string',
-				'description' => 'string',
+				'description' => 'string-255',
 			] : [
-				'type'        => 'string',
-				'lang'        => 'string',
-				'title'       => 'string',
+				'type'        => 'string-30',
+				'lang'        => 'string-60',
+				'title'       => 'string-255',
 				'content'     => 'string',
-				'description' => 'string',
+				'description' => 'string-255',
 				'item_id'     => 'int',
 			],
 			$method === 'replace' ? ['item_id', 'type', 'lang'] : ['id'],
@@ -61,11 +66,11 @@ trait HasTranslations
 				description = NULLIF(description, {string:empty_string})
 			WHERE id IN ({array_int:ids})
 				AND title = {string:empty_string}
-			    OR content = {string:empty_string}
-			    OR description = {string:empty_string}',
+				OR content = {string:empty_string}
+				OR description = {string:empty_string}',
 			[
 				'ids'          => $results,
-				'empty_string' => ''
+				'empty_string' => '',
 			]
 		);
 	}

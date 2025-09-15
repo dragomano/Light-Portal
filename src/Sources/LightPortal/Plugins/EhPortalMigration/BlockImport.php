@@ -19,7 +19,7 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Areas\Imports\AbstractCustomBlockImport;
+use Bugo\LightPortal\Areas\Imports\Custom\AbstractCustomBlockImport;
 use Bugo\LightPortal\Enums\ContentClass;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\Placement;

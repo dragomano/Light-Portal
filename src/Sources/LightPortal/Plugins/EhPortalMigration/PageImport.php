@@ -20,7 +20,7 @@ use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Areas\Imports\AbstractCustomPageImport;
+use Bugo\LightPortal\Areas\Imports\Custom\AbstractCustomPageImport;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\UI\Tables\CheckboxColumn;
 use Bugo\LightPortal\UI\Tables\ImportButtonsRow;

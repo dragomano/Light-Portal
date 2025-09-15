@@ -13,26 +13,26 @@
 namespace Bugo\LightPortal\Areas\Imports;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Imports\Traits\HasComments;
 use Bugo\LightPortal\Enums\EntryType;
+use SimpleXMLElement;
 
+use function array_merge;
 use function intval;
 use function str_replace;
+use function str_starts_with;
+use function trim;
 
 use const LP_NAME;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-/**
- * @property mixed|void $item
- */
-final class PageImport extends AbstractImport
+final class PageImport extends XmlImporter
 {
 	use HasComments;
 
@@ -61,113 +61,59 @@ final class PageImport extends AbstractImport
 		$this->run();
 	}
 
-	protected function run(): void
+	protected function processItems(): void
 	{
-		if (empty($xml = $this->getFile()))
-			return;
+		$items = $translations = $params = $comments = [];
+		$pageTitles = [];
 
-		if (! isset($xml->pages->item[0]['page_id'])) {
-			ErrorHandler::fatalLang('lp_wrong_import_file', false);
+		foreach ($this->xml->{$this->entity}->item as $item) {
+			$pageId = intval($item['page_id']);
+			$status = intval($item['status']);
+			$slug = (string) ($item->alias ?? $item->slug);
+
+			$itemTranslations = $this->extractTranslations($item);
+			foreach ($itemTranslations as $translation) {
+				if (isset($translation['title'])) {
+					$pageTitles[$pageId][$translation['lang']] = $translation['title'];
+				}
+			}
+
+			$entryType = match ($status) {
+				3       => EntryType::INTERNAL->name(),
+				4       => 'blog', // Deprecated status
+				default => (string) ($item['entry_type'] ?? EntryType::DEFAULT->name()),
+			};
+
+			if (empty(trim($slug))) {
+				$slug = 'temp-' . $pageId;
+			}
+
+			$items[] = [
+				'page_id'      => $pageId,
+				'category_id'  => intval($item['category_id']),
+				'author_id'    => intval($item['author_id']),
+				'slug'         => $slug,
+				'type'         => str_replace('md', 'markdown', (string) $item->type),
+				'entry_type'   => $entryType,
+				'permissions'  => intval($item['permissions']),
+				'status'       => $status,
+				'num_views'    => intval($item['num_views']),
+				'num_comments' => intval($item['num_comments']),
+				'created_at'   => intval($item['created_at']),
+				'updated_at'   => intval($item['updated_at']),
+				'deleted_at'   => intval($item['deleted_at']),
+			];
+
+			$translations = array_merge($translations, $itemTranslations);
+			$params = array_merge($params, $this->extractParams($item));
+			$comments = array_merge($comments, $this->extractComments($item));
 		}
 
-		$items = $translations = $params = $comments = [];
-
-		foreach ($xml as $element) {
-			foreach ($element->item as $item) {
-				$status = intval($item['status']);
-
-				$entryType = match ($status) {
-					3       => EntryType::INTERNAL->name(),
-					4       => 'blog', // Deprecated status
-					default => (string) ($item['entry_type'] ?? EntryType::DEFAULT->name()),
-				};
-
-				$items[] = [
-					'page_id'      => $pageId = intval($item['page_id']),
-					'category_id'  => intval($item['category_id']),
-					'author_id'    => intval($item['author_id']),
-					'slug'         => (string) ($item->alias ?? $item->slug),
-					'type'         => str_replace('md', 'markdown', (string) $item->type),
-					'entry_type'   => $entryType,
-					'permissions'  => intval($item['permissions']),
-					'status'       => $status,
-					'num_views'    => intval($item['num_views']),
-					'num_comments' => intval($item['num_comments']),
-					'created_at'   => intval($item['created_at']),
-					'updated_at'   => intval($item['updated_at']),
-					'deleted_at'   => intval($item['deleted_at']),
-				];
-
-				if ($item->titles || $item->contents || $item->descriptions) {
-					foreach ($item->titles as $title) {
-						foreach ($title as $lang => $text) {
-							if (! isset($translations[$lang . '_' . $pageId])) {
-								$translations[$lang . '_' . $pageId] = [
-									'item_id' => $pageId,
-									'type'    => 'page',
-									'lang'    => $lang,
-									'title'   => (string) $text,
-								];
-							}
-						}
-					}
-
-					foreach ($item->contents as $content) {
-						foreach ($content as $lang => $text) {
-							if (! isset($translations[$lang . '_' . $pageId])) {
-								$translations[$lang . '_' . $pageId] = [
-									'item_id' => $pageId,
-									'type'    => 'page',
-									'lang'    => $lang,
-								];
-							}
-
-							$translations[$lang . '_' . $pageId]['content'] = (string) $text;
-						}
-					}
-
-					foreach ($item->descriptions as $description) {
-						foreach ($description as $lang => $text) {
-							if (! isset($translations[$lang . '_' . $pageId])) {
-								$translations[$lang . '_' . $pageId] = [
-									'item_id' => $pageId,
-									'type'    => 'page',
-									'lang'    => $lang,
-								];
-							}
-
-							$translations[$lang . '_' . $pageId]['description'] = (string) $text;
-						}
-					}
-				}
-
-				if ($item->comments) {
-					foreach ($item->comments as $comment) {
-						foreach ($comment as $v) {
-							$comments[] = [
-								'id'         => intval($v['id']),
-								'parent_id'  => intval($v['parent_id']),
-								'page_id'    => $pageId,
-								'author_id'  => intval($v['author_id']),
-								'message'    => $v->message,
-								'created_at' => intval($v['created_at']),
-							];
-						}
-					}
-				}
-
-				if ($item->params) {
-					foreach ($item->params as $param) {
-						foreach ($param as $k => $v) {
-							$params[] = [
-								'item_id' => $pageId,
-								'type'    => 'page',
-								'name'    => $k,
-								'value'   => $v,
-							];
-						}
-					}
-				}
+		foreach ($items as &$item) {
+			if (str_starts_with($item['slug'], 'temp-')) {
+				$pageId = $item['page_id'];
+				$titles = $pageTitles[$pageId] ?? [];
+				$item['slug'] = $this->generateSlug($titles);
 			}
 		}
 
@@ -200,5 +146,28 @@ final class PageImport extends AbstractImport
 		$this->replaceComments($comments, $results);
 
 		$this->finishTransaction($results);
+	}
+
+	protected function extractComments(SimpleXMLElement $item): array
+	{
+		$comments = [];
+		$itemId = (string) $item['page_id'];
+
+		if ($item->comments ?? null) {
+			foreach ($item->comments as $comment) {
+				foreach ($comment as $v) {
+					$comments[] = [
+						'id'         => intval($v['id']),
+						'parent_id'  => intval($v['parent_id']),
+						'page_id'    => $itemId,
+						'author_id'  => intval($v['author_id']),
+						'message'    => (string) $v->message,
+						'created_at' => intval($v['created_at']),
+					];
+				}
+			}
+		}
+
+		return $comments;
 	}
 }
