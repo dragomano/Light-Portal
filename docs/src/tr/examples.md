@@ -6,8 +6,4 @@ subtitle: Light Portal'ı kullanan siteler
 lead: Eğer sitenizi bu listeye eklemek istiyorsanız, forumunuzdaki <em>Yönetici -> Portal -> Ayarlar -> Geri Bildirim</em> alanı aracılığıyla bana bir mesaj gönderin.
 ---
 
-<script setup>
-import ExampleArea from './ExampleArea.vue'
-</script>
-
 <ExampleArea />

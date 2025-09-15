@@ -2,6 +2,7 @@
   "type": "module",
   "devDependencies": {
     "release-timeline": "^0.6.0",
+    "rolldown": "1.0.0-beta.38",
     "sass": "^1.88.0",
     "vitepress": "^1.6.3",
     "vitepress-plugin-comment-with-giscus": "^1.1.15",

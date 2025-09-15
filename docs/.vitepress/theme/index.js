@@ -3,9 +3,17 @@ import './custom.css';
 import giscusTalk from 'vitepress-plugin-comment-with-giscus';
 import { useData, useRoute } from 'vitepress';
 import { toRefs } from 'vue';
+import ExampleArea from '../components/ExampleArea.vue';
+import ExampleSites from '../components/ExampleSites.vue';
+import ExampleSitesItem from '../components/ExampleSitesItem.vue';
 
 export default {
   ...DefaultTheme,
+  enhanceApp({ app }) {
+    app.component('ExampleArea', ExampleArea);
+    app.component('ExampleSites', ExampleSites);
+    app.component('ExampleSitesItem', ExampleSitesItem);
+  },
   setup() {
     const { frontmatter } = toRefs(useData());
     const route = useRoute();
