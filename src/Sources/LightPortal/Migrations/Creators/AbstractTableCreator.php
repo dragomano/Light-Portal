@@ -32,6 +32,8 @@ abstract class AbstractTableCreator implements TableCreatorInterface
 
 	protected ?Sql $sql = null;
 
+	private ?CreatePortalTable $table = null;
+
 	public function __construct(?PortalAdapter $adapter = null, ?Sql $sql = null)
 	{
 		$this->adapter ??= PortalAdapterFactory::create();
@@ -44,9 +46,19 @@ abstract class AbstractTableCreator implements TableCreatorInterface
 			return;
 		}
 
-		$createTable = new CreatePortalTable($this->getTableName());
-		$this->defineColumns($createTable);
-		$this->executeSql($createTable);
+		$this->table = new CreatePortalTable($this->getTableName());
+		$this->defineColumns($this->table);
+		$this->executeSql($this->table);
+	}
+
+	public function getSql(): string
+	{
+		if ($this->table === null) {
+			$this->table = new CreatePortalTable($this->getTableName());
+			$this->defineColumns($this->table);
+		}
+
+		return $this->sql->buildSqlString($this->table);
 	}
 
 	public function insertDefaultData(): void {}

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 30.08.25
+ * @version 19.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
@@ -31,18 +31,7 @@ use Bugo\LightPortal\UI\Partials\IconSelect;
 use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
-
 use Bugo\LightPortal\Utils\Traits\HasView;
-
-use function array_filter;
-use function array_keys;
-use function array_merge;
-use function array_unique;
-use function count;
-use function explode;
-use function in_array;
-use function is_writable;
-use function sprintf;
 
 use const LP_ADDON_DIR;
 use const LP_NAME;

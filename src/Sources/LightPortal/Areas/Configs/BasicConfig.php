@@ -31,13 +31,6 @@ use Bugo\LightPortal\UI\Partials\ActionSelect;
 use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasSession;
 
-use function array_combine;
-use function array_map;
-use function sprintf;
-use function str_replace;
-use function strtotime;
-use function version_compare;
-
 use const LP_VERSION;
 
 if (! defined('SMF'))

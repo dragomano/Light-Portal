@@ -31,7 +31,7 @@ class TagsTableCreator extends AbstractTableCreator
 	{
 		$tagId  = new AutoIncrementInteger('tag_id');
 		$slug   = new Varchar('slug', 255);
-		$icon   = new Varchar('icon', 255, true);
+		$icon   = new Varchar('icon', 60, true);
 		$status = new TinyInteger('status', default: 1);
 
 		$createTable->addAutoIncrementColumn($tagId);

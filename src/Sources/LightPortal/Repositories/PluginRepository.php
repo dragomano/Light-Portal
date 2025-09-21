@@ -18,7 +18,7 @@ use Bugo\LightPortal\Utils\Traits\HasCache;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class PluginRepository
+final class PluginRepository implements PluginRepositoryInterface
 {
 	use HasCache;
 

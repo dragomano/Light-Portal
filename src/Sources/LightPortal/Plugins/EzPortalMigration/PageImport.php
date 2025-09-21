@@ -8,65 +8,45 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 08.08.25
+ * @version 23.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\EzPortalMigration;
 
 use Bugo\Bricks\Tables\IdColumn;
-use Bugo\Bricks\Tables\TablePresenter;
 use Bugo\Compat\Config;
 use Bugo\Compat\Db;
-use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Areas\Imports\Custom\AbstractCustomPageImport;
-use Bugo\LightPortal\Enums\Permission;
+use Bugo\LightPortal\DataHandlers\Imports\Custom\AbstractCustomPageImport;
+use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\UI\Tables\CheckboxColumn;
-use Bugo\LightPortal\UI\Tables\ImportButtonsRow;
 use Bugo\LightPortal\UI\Tables\PageSlugColumn;
-use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
 use Bugo\LightPortal\UI\Tables\TitleColumn;
 use Bugo\LightPortal\Utils\DateTime;
-
-use const LP_NAME;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
 class PageImport extends AbstractCustomPageImport
 {
-	public function main(): void
+	protected string $langKey = 'lp_ez_portal_migration';
+
+	protected string $formAction = 'import_from_ez';
+
+	protected string $uiTableId = 'ez_pages';
+
+	protected function defineUiColumns(): array
 	{
-		User::$me->isAllowedTo('admin_forum');
-
-		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_ez_portal_migration']['label_name'];
-		Utils::$context['page_area_title'] = Lang::$txt['lp_pages_import'];
-		Utils::$context['form_action']     = Config::$scripturl . '?action=admin;area=lp_pages;sa=import_from_ez';
-
-		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
-			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_ez_portal_migration']['page_import_desc'],
+		return [
+			IdColumn::make()
+				->setSort('id_page'),
+			PageSlugColumn::make()
+				->setSort('title DESC', 'title'),
+			TitleColumn::make()
+				->setData('title', 'word_break'),
+			CheckboxColumn::make(entity: 'pages'),
 		];
-
-		$this->run();
-
-		app(TablePresenter::class)->show(
-			PortalTableBuilder::make('ez_pages', Lang::$txt['lp_pages_import'])
-				->withParams(50, defaultSortColumn: 'id')
-				->setItems($this->getAll(...))
-				->setCount($this->getTotalCount(...))
-				->addColumns([
-					IdColumn::make()
-						->setSort('id_page'),
-					PageSlugColumn::make()
-						->setSort('title DESC', 'title'),
-					TitleColumn::make()
-						->setData('title', 'word_break'),
-					CheckboxColumn::make(entity: 'pages'),
-				])
-				->addRow(ImportButtonsRow::make())
-		);
 	}
 
 	public function getAll(int $start = 0, int $limit = 0, string $sort = 'id_page'): array
@@ -90,7 +70,7 @@ class PageImport extends AbstractCustomPageImport
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['id_page']] = [
 				'id'         => $row['id_page'],
-				'slug'       => Utils::$smcFunc['strtolower'](explode(' ', (string) $row['title'])[0]) . $row['id_page'],
+				'slug'       => $this->getSlug($row),
 				'type'       => 'html',
 				'status'     => 1,
 				'num_views'  => $row['views'],
@@ -136,19 +116,23 @@ class PageImport extends AbstractCustomPageImport
 		$items = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['id_page']] = [
-				'page_id'      => $row['id_page'],
-				'author_id'    => User::$me->id,
-				'slug'         => 'page_' . $row['id_page'],
-				'description'  => '',
-				'content'      => $row['content'],
-				'type'         => 'html',
-				'permissions'  => $this->getPagePermission($row),
-				'status'       => 1,
-				'num_views'    => $row['views'],
-				'num_comments' => 0,
-				'created_at'   => $row['date'],
-				'updated_at'   => 0,
-				'title'        => $row['title'],
+				'page_id'         => (int) $row['id_page'],
+				'category_id'     => 0,
+				'author_id'       => User::$me->id,
+				'slug'            => $this->getSlug($row),
+				'description'     => '',
+				'content'         => $row['content'],
+				'type'            => 'html',
+				'entry_type'      => EntryType::DEFAULT->name(),
+				'permissions'     => $this->getPermission($row),
+				'status'          => 1,
+				'num_views'       => (int) $row['views'],
+				'num_comments'    => 0,
+				'created_at'      => (int) $row['date'],
+				'updated_at'      => 0,
+				'deleted_at'      => 0,
+				'last_comment_id' => 0,
+				'title'           => $row['title'],
 			];
 		}
 
@@ -157,15 +141,13 @@ class PageImport extends AbstractCustomPageImport
 		return $items;
 	}
 
-	private function getPagePermission(array $row): int
+	protected function extractPermissions(array $row): int|array
 	{
-		$permissions = explode(',', (string) $row['permissions']);
+		return array_map('intval', explode(',', (string) $row['permissions']));
+	}
 
-		return match (true) {
-			count($permissions) == 1 && $permissions[0] == -1 => Permission::GUEST->value,
-			count($permissions) == 1 && $permissions[0] == 0 => Permission::MEMBER->value,
-			in_array(-1, $permissions), in_array(0, $permissions) => Permission::ALL->value,
-			default => Permission::ADMIN->value,
-		};
+	private function getSlug(array $row): string
+	{
+		return Utils::$smcFunc['strtolower'](explode(' ', (string) $row['title'])[0]) . $row['id_page'];
 	}
 }

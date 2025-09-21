@@ -23,7 +23,7 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Traits\HasArea;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Models\TagFactory;
-use Bugo\LightPortal\Repositories\TagRepository;
+use Bugo\LightPortal\Repositories\TagRepositoryInterface;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\TextField;
 use Bugo\LightPortal\UI\Partials\IconSelect;
@@ -39,7 +39,6 @@ use Bugo\LightPortal\Validators\TagValidator;
 use WPLake\Typed\Typed;
 
 use function app;
-use function array_merge;
 
 use const LP_NAME;
 
@@ -50,7 +49,7 @@ final readonly class TagArea
 {
 	use HasArea;
 
-	public function __construct(private TagRepository $repository) {}
+	public function __construct(private TagRepositoryInterface $repository) {}
 
 	public function main(): void
 	{

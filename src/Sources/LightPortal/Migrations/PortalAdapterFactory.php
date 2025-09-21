@@ -21,8 +21,14 @@ class PortalAdapterFactory
 {
 	public static function create(): PortalAdapter
 	{
+		$driver = match (Config::$db_type) {
+			'postgresql' => 'Pdo_Pgsql',
+			'sqlite'     => 'Pdo_Sqlite',
+			default      => 'Pdo_Mysql',
+		};
+
 		return new PortalAdapter([
-			'driver'   => Config::$db_type === 'mysql' ? 'Pdo_Mysql' : 'Pdo_Pgsql',
+			'driver'   => $driver,
 			'hostname' => Config::$db_server,
 			'database' => Config::$db_name,
 			'prefix'   => str_replace('`' . Config::$db_name . '`.', '', Config::$db_prefix),

@@ -57,7 +57,7 @@ use const LP_PAGE_URL;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class PageRepository extends AbstractRepository
+final class PageRepository extends AbstractRepository implements PageRepositoryInterface
 {
 	use HasEvents;
 

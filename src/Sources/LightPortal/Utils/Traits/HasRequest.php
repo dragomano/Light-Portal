@@ -12,26 +12,26 @@
 
 namespace Bugo\LightPortal\Utils\Traits;
 
-use Bugo\LightPortal\Utils\File;
-use Bugo\LightPortal\Utils\Post;
-use Bugo\LightPortal\Utils\Request;
+use Bugo\LightPortal\Utils\FileInterface;
+use Bugo\LightPortal\Utils\PostInterface;
+use Bugo\LightPortal\Utils\RequestInterface;
 
 use function app;
 
 trait HasRequest
 {
-	public function request(): Request
+	public function request(): RequestInterface
 	{
-		return app(Request::class);
+		return app(RequestInterface::class);
 	}
 
-	public function post(): Post
+	public function post(): PostInterface
 	{
-		return app(Post::class);
+		return app(PostInterface::class);
 	}
 
-	public function files(): File
+	public function files(): FileInterface
 	{
-		return app(File::class);
+		return app(FileInterface::class);
 	}
 }

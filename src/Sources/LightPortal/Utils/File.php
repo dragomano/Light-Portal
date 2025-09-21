@@ -15,7 +15,7 @@ namespace Bugo\LightPortal\Utils;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class File extends GlobalArray
+class File extends GlobalArray implements FileInterface
 {
 	public function __construct()
 	{

@@ -24,7 +24,7 @@ use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Models\BlockFactory;
-use Bugo\LightPortal\Repositories\BlockRepository;
+use Bugo\LightPortal\Repositories\BlockRepositoryInterface;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\TextareaField;
@@ -44,17 +44,6 @@ use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Validators\BlockValidator;
 use WPLake\Typed\Typed;
 
-use function array_column;
-use function array_combine;
-use function array_keys;
-use function array_merge;
-use function array_multisort;
-use function get_debug_type;
-use function in_array;
-use function ob_get_clean;
-use function ob_start;
-use function settype;
-use function sprintf;
 use function template_show_areas_info;
 
 use const LP_NAME;
@@ -68,7 +57,7 @@ final readonly class BlockArea
 	use HasArea;
 	use HasEvents;
 
-	public function __construct(private BlockRepository $repository) {}
+	public function __construct(private BlockRepositoryInterface $repository) {}
 
 	public function main(): void
 	{
@@ -204,8 +193,9 @@ final readonly class BlockArea
 			'success' => false,
 		];
 
-		Utils::$context['lp_block']       = $this->repository->getData($item);
-		Utils::$context['lp_block']['id'] = $this->repository->setData();
+		Utils::$context['lp_block'] = $this->repository->getData($item);
+
+		$this->repository->setData();
 
 		if (Utils::$context['lp_block']['id']) {
 			$result = [

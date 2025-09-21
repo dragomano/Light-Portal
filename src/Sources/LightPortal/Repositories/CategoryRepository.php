@@ -26,7 +26,7 @@ use function compact;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class CategoryRepository extends AbstractRepository
+final class CategoryRepository extends AbstractRepository implements CategoryRepositoryInterface
 {
 	protected string $entity = 'category';
 

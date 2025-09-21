@@ -8,67 +8,50 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 08.08.25
+ * @version 23.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\EhPortalMigration;
 
 use Bugo\Bricks\Tables\Column;
-use Bugo\Bricks\Tables\TablePresenter;
 use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Areas\Imports\Custom\AbstractCustomBlockImport;
+use Bugo\LightPortal\DataHandlers\Imports\Custom\AbstractCustomBlockImport;
 use Bugo\LightPortal\Enums\ContentClass;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\Placement;
 use Bugo\LightPortal\Enums\TitleClass;
 use Bugo\LightPortal\UI\Tables\CheckboxColumn;
-use Bugo\LightPortal\UI\Tables\ImportButtonsRow;
-use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
 use Bugo\LightPortal\UI\Tables\TitleColumn;
-
-use const LP_NAME;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
 class BlockImport extends AbstractCustomBlockImport
 {
+	protected string $langKey = 'lp_eh_portal_migration';
+
+	protected string $formAction = 'import_from_eh';
+
+	protected string $uiTableId = 'eh_blocks';
+
 	private array $supportedTypes = ['sp_bbc', 'sp_html', 'sp_php'];
 
-	public function main(): void
+	protected function defineUiColumns(): array
 	{
-		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_eh_portal_migration']['label_name'];
-		Utils::$context['page_area_title'] = Lang::$txt['lp_blocks_import'];
-		Utils::$context['form_action']     = Config::$scripturl . '?action=admin;area=lp_blocks;sa=import_from_ep';
-
-		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
-			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_eh_portal_migration']['block_import_desc'],
+		return [
+			TitleColumn::make()
+				->setData('title', 'word_break'),
+			Column::make('type', Lang::$txt['lp_block_type'])
+				->setData('type', 'centertext')
+				->setSort('type DESC', 'type'),
+			Column::make('placement', Lang::$txt['lp_block_placement'])
+				->setData('placement', 'centertext')
+				->setSort('col DESC', 'col'),
+			CheckboxColumn::make(entity: 'blocks'),
 		];
-
-		$this->run();
-
-		app(TablePresenter::class)->show(
-			PortalTableBuilder::make('ep_blocks', Lang::$txt['lp_blocks_import'])
-				->withParams(50, defaultSortColumn: 'title')
-				->setItems($this->getAll(...))
-				->setCount($this->getTotalCount(...))
-				->addColumns([
-					TitleColumn::make()
-						->setData('title', 'word_break'),
-					Column::make('type', Lang::$txt['lp_block_type'])
-						->setData('type', 'centertext')
-						->setSort('type DESC', 'type'),
-					Column::make('placement', Lang::$txt['lp_block_placement'])
-						->setData('placement', 'centertext')
-						->setSort('col DESC', 'col'),
-					CheckboxColumn::make(entity: 'blocks'),
-				])
-				->addRow(ImportButtonsRow::make())
-		);
 	}
 
 	public function getAll(int $start = 0, int $limit = 0, string $sort = 'id_block'): array
@@ -149,7 +132,7 @@ class BlockImport extends AbstractCustomBlockImport
 				'title'         => $row['title'],
 				'content'       => $row['content'],
 				'placement'     => $this->getPlacement($row['col']),
-				'permissions'   => $this->getBlockPermission($row),
+				'permissions'   => $this->getPermission($row),
 				'status'        => (int) $row['status'],
 				'title_class'   => TitleClass::first(),
 				'content_class' => ContentClass::first(),
@@ -161,12 +144,12 @@ class BlockImport extends AbstractCustomBlockImport
 		return $items;
 	}
 
-	private function getType(string $type): string
+	protected function getType(string $type): string
 	{
 		return str_replace('sp_', '', $type);
 	}
 
-	private function getPlacement(string $col): string
+	protected function getPlacement(string $col): string
 	{
 		return match ((int) $col) {
 			1 => Placement::LEFT->name(),
@@ -178,19 +161,17 @@ class BlockImport extends AbstractCustomBlockImport
 		};
 	}
 
-	private function getBlockPermission(array $row): int
+	protected function extractPermissions(array $row): int|array
 	{
-		$perm = (int) $row['permission_set'];
-
-		if (empty($row['permission_set'])) {
-			$perm = match ((int) $row['groups_allowed']) {
-				-1      => Permission::GUEST->value,
-				0       => Permission::MEMBER->value,
-				1       => Permission::ADMIN->value,
-				default => Permission::ALL->value,
-			};
+		if (! empty($row['permission_set'])) {
+			return (int) $row['permission_set'];
 		}
 
-		return $perm;
+		return match ((int) $row['groups_allowed']) {
+			-1      => Permission::GUEST->value,
+			0       => Permission::MEMBER->value,
+			1       => Permission::ADMIN->value,
+			default => Permission::ALL->value,
+		};
 	}
 }

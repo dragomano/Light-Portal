@@ -23,8 +23,6 @@ use Bugo\LightPortal\Utils\Editor;
 use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\Str;
 
-use function in_array;
-
 if (! defined('SMF'))
 	die('No direct access...');
 

@@ -31,7 +31,7 @@ use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\Models\PageFactory;
-use Bugo\LightPortal\Repositories\PageRepository;
+use Bugo\LightPortal\Repositories\PageRepositoryInterface;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\TextareaField;
@@ -60,22 +60,6 @@ use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Validators\PageValidator;
 use WPLake\Typed\Typed;
 
-use function array_column;
-use function array_diff;
-use function array_diff_key;
-use function array_keys;
-use function array_merge;
-use function array_multisort;
-use function base64_encode;
-use function count;
-use function filter_input;
-use function get_debug_type;
-use function implode;
-use function settype;
-use function strtoupper;
-use function time;
-use function trim;
-
 use const LP_NAME;
 
 if (! defined('SMF'))
@@ -93,7 +77,7 @@ final class PageArea
 
 	private int $status;
 
-	public function __construct(private readonly PageRepository $repository) {}
+	public function __construct(private readonly PageRepositoryInterface $repository) {}
 
 	public function main(): void
 	{

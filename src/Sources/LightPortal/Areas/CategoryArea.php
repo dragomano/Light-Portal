@@ -24,7 +24,7 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Traits\HasArea;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Models\CategoryFactory;
-use Bugo\LightPortal\Repositories\CategoryRepository;
+use Bugo\LightPortal\Repositories\CategoryRepositoryInterface;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\TextareaField;
 use Bugo\LightPortal\UI\Fields\TextField;
@@ -40,8 +40,6 @@ use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Validators\CategoryValidator;
 use WPLake\Typed\Typed;
 
-use function array_merge;
-
 use const LP_NAME;
 
 if (! defined('SMF'))
@@ -51,7 +49,7 @@ final readonly class CategoryArea
 {
 	use HasArea;
 
-	public function __construct(private CategoryRepository $repository) {}
+	public function __construct(private CategoryRepositoryInterface $repository) {}
 
 	public function main(): void
 	{
