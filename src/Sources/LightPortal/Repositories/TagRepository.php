@@ -26,7 +26,7 @@ use function compact;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class TagRepository extends AbstractRepository
+final class TagRepository extends AbstractRepository implements TagRepositoryInterface
 {
 	protected string $entity = 'tag';
 

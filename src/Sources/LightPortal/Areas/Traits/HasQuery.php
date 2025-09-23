@@ -25,11 +25,6 @@ use Bugo\LightPortal\Utils\Traits\HasRequest;
 use Bugo\LightPortal\Utils\Traits\HasResponse;
 
 use function app;
-use function array_filter;
-use function sprintf;
-use function str_contains;
-use function strtolower;
-use function trim;
 
 if (! defined('SMF'))
 	die('No direct access...');

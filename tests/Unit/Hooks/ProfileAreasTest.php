@@ -1,7 +1,9 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 use Bugo\LightPortal\Hooks\ProfileAreas;
 
 arch()
-	->expect(ProfileAreas::class)
-	->toBeInvokable();
+    ->expect(ProfileAreas::class)
+    ->toBeInvokable();

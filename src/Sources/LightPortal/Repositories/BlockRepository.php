@@ -38,7 +38,7 @@ use function str_replace;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class BlockRepository extends AbstractRepository
+final class BlockRepository extends AbstractRepository implements BlockRepositoryInterface
 {
 	use HasEvents;
 
@@ -148,13 +148,11 @@ final class BlockRepository extends AbstractRepository
 		return $data ?? [];
 	}
 
-	/**
-	 * @return int|void
-	 */
-	public function setData(int $item = 0)
+	public function setData(int $item = 0): void
 	{
 		if (isset(Utils::$context['post_errors']) || $this->request()->hasNot(['save', 'save_exit', 'clone'])) {
-			return 0;
+			Utils::$context['lp_block']['id'] = 0;
+			return;
 		}
 
 		Security::checkSubmitOnce('check');
@@ -167,8 +165,10 @@ final class BlockRepository extends AbstractRepository
 			$this->updateData($item);
 		}
 
-		if ($this->request()->isNotEmpty('clone'))
-			return $item;
+		if ($this->request()->isNotEmpty('clone')) {
+			Utils::$context['lp_block']['id'] = $item;
+			return;
+		}
 
 		$this->cache()->flush();
 

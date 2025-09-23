@@ -1,7 +1,9 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 use Bugo\LightPortal\Enums\Tab;
 
 arch()
-	->expect(Tab::class)
-	->toBeEnum();
+    ->expect(Tab::class)
+    ->toBeEnum();

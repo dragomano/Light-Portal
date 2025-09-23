@@ -1,7 +1,9 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 use Bugo\LightPortal\Enums\ContentClass;
 
 arch()
-	->expect(ContentClass::class)
-	->toBeStringBackedEnum();
+    ->expect(ContentClass::class)
+    ->toBeStringBackedEnum();

@@ -17,7 +17,7 @@ namespace Bugo\LightPortal\Lists;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Repositories\PageRepository;
+use Bugo\LightPortal\Repositories\PageRepositoryInterface;
 
 use function time;
 
@@ -26,7 +26,7 @@ if (! defined('SMF'))
 
 final readonly class PageList implements ListInterface
 {
-	public function __construct(private PageRepository $repository) {}
+	public function __construct(private PageRepositoryInterface $repository) {}
 
 	public function __invoke(): array
 	{

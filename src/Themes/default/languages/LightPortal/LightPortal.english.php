@@ -497,13 +497,21 @@ $txt['lp_articles_set'] = '{articles, plural,
 }';
 
 // Other units
+$txt['lp_blocks_set'] = '{blocks, plural,
+	one {# block}
+	other {# blocks}
+}';
+$txt['lp_categories_set'] = '{categories, plural,
+	one {# category}
+	other {# categories}
+}';
 $txt['lp_pages_set'] = '{pages, plural,
 	one {# page}
 	other {# pages}
 }';
-$txt['lp_blocks_set'] = '{blocks, plural,
-	one {# block}
-	other {# blocks}
+$txt['lp_tags_set'] = '{tags, plural,
+	one {# tag}
+	other {# tags}
 }';
 $txt['lp_users_set'] = '{users, plural,
 	one {# user}

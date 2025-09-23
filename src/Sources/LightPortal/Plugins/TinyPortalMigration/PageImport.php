@@ -8,65 +8,44 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 08.08.25
+ * @version 23.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\TinyPortalMigration;
 
 use Bugo\Bricks\Tables\IdColumn;
-use Bugo\Bricks\Tables\TablePresenter;
 use Bugo\Compat\Config;
 use Bugo\Compat\Db;
-use Bugo\Compat\Lang;
 use Bugo\Compat\Parsers\BBCodeParser;
-use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Areas\Imports\AbstractCustomPageImport;
-use Bugo\LightPortal\Enums\Permission;
+use Bugo\LightPortal\DataHandlers\Imports\Custom\AbstractCustomPageImport;
+use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\UI\Tables\CheckboxColumn;
-use Bugo\LightPortal\UI\Tables\ImportButtonsRow;
 use Bugo\LightPortal\UI\Tables\PageSlugColumn;
-use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
 use Bugo\LightPortal\UI\Tables\TitleColumn;
 use Bugo\LightPortal\Utils\DateTime;
-
-use const LP_NAME;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
 class PageImport extends AbstractCustomPageImport
 {
-	public function main(): void
+	protected string $langKey = 'lp_tiny_portal_migration';
+
+	protected string $formAction = 'import_from_tp';
+
+	protected string $uiTableId = 'tp_pages';
+
+	protected function defineUiColumns(): array
 	{
-		User::$me->isAllowedTo('admin_forum');
-
-		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_tiny_portal_migration']['label_name'];
-		Utils::$context['page_area_title'] = Lang::$txt['lp_pages_import'];
-		Utils::$context['form_action']     = Config::$scripturl . '?action=admin;area=lp_pages;sa=import_from_tp';
-
-		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
-			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_tiny_portal_migration']['page_import_desc'],
+		return [
+			IdColumn::make()->setSort('id'),
+			PageSlugColumn::make()->setSort('shortname DESC', 'shortname'),
+			TitleColumn::make()
+				->setData('title', 'word_break')
+				->setSort('subject', 'subject DESC'),
+			CheckboxColumn::make(entity: 'pages'),
 		];
-
-		$this->run();
-
-		app(TablePresenter::class)->show(
-			PortalTableBuilder::make('tp_pages', Lang::$txt['lp_pages_import'])
-				->withParams(50, defaultSortColumn: 'id')
-				->setItems($this->getAll(...))
-				->setCount($this->getTotalCount(...))
-				->addColumns([
-					IdColumn::make()->setSort('id'),
-					PageSlugColumn::make()->setSort('shortname DESC', 'shortname'),
-					TitleColumn::make()
-						->setData('title', 'word_break')
-						->setSort('subject', 'subject DESC'),
-					CheckboxColumn::make(entity: 'pages'),
-				])
-				->addRow(ImportButtonsRow::make())
-		);
 	}
 
 	public function getAll(int $start = 0, int $limit = 0, string $sort = 'id'): array
@@ -90,7 +69,7 @@ class PageImport extends AbstractCustomPageImport
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['id']] = [
 				'id'         => $row['id'],
-				'slug'       => $row['shortname'],
+				'slug'       => $row['shortname'] ?: $this->getSlug($row),
 				'type'       => $row['type'],
 				'status'     => (int) empty($row['off']),
 				'num_views'  => $row['views'],
@@ -142,20 +121,24 @@ class PageImport extends AbstractCustomPageImport
 		$items = [];
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$items[$row['id']] = [
-				'page_id'      => $row['id'],
-				'author_id'    => $row['author_id'],
-				'slug'         => $row['shortname'] ?: ('page_' . $row['id']),
-				'description'  => strip_tags((string) BBCodeParser::load()->parse($row['intro'])),
-				'content'      => $row['body'],
-				'type'         => $row['type'],
-				'permissions'  => $this->getPagePermission($row),
-				'status'       => (int) empty($row['off']),
-				'num_views'    => $row['views'],
-				'num_comments' => $row['comments'],
-				'created_at'   => $row['date'],
-				'updated_at'   => 0,
-				'title'        => $row['subject'],
-				'options'      => explode(',', (string) $row['options']),
+				'page_id'         => (int) $row['id'],
+				'category_id'     => 0,
+				'author_id'       => (int) $row['author_id'],
+				'slug'            => $row['shortname'] ?: $this->getSlug($row),
+				'description'     => strip_tags((string) BBCodeParser::load()->parse($row['intro'])),
+				'content'         => $row['body'],
+				'type'            => $row['type'],
+				'entry_type'      => EntryType::DEFAULT->name(),
+				'permissions'     => $this->getPermission($row),
+				'status'          => (int) empty($row['off']),
+				'num_views'       => (int) $row['views'],
+				'num_comments'    => (int) $row['comments'],
+				'created_at'      => (int) $row['date'],
+				'updated_at'      => 0,
+				'deleted_at'      => 0,
+				'last_comment_id' => 0,
+				'title'           => $row['subject'],
+				'options'         => explode(',', (string) $row['options']),
 			];
 		}
 
@@ -164,15 +147,13 @@ class PageImport extends AbstractCustomPageImport
 		return $items;
 	}
 
-	private function getPagePermission(array $row): int
+	protected function extractPermissions(array $row): int|array
 	{
-		$permissions = explode(',', (string) $row['value3']);
+		return array_map('intval', explode(',', (string) $row['value3']));
+	}
 
-		return match (true) {
-			count($permissions) == 1 && $permissions[0] == -1 => Permission::GUEST->value,
-			count($permissions) == 1 && $permissions[0] == 0 => Permission::MEMBER->value,
-			in_array(-1, $permissions), in_array(0, $permissions) => Permission::ALL->value,
-			default => Permission::ADMIN->value,
-		};
+	private function getSlug(array $row): string
+	{
+		return Utils::$smcFunc['strtolower'](explode(' ', (string) $row['subject'])[0]) . $row['id'];
 	}
 }

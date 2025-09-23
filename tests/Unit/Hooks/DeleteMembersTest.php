@@ -1,7 +1,9 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 use Bugo\LightPortal\Hooks\DeleteMembers;
 
 arch()
-	->expect(DeleteMembers::class)
-	->toBeInvokable();
+    ->expect(DeleteMembers::class)
+    ->toBeInvokable();

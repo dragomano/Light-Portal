@@ -18,7 +18,7 @@ use function json_decode;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class Request extends GlobalArray
+class Request extends GlobalArray implements RequestInterface
 {
 	public function __construct()
 	{

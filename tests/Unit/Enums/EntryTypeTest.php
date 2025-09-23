@@ -1,7 +1,9 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 use Bugo\LightPortal\Enums\EntryType;
 
 arch()
-	->expect(EntryType::class)
-	->toBeEnum();
+    ->expect(EntryType::class)
+    ->toBeEnum();

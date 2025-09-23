@@ -1,7 +1,9 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 use Bugo\LightPortal\Enums\Status;
 
 arch()
-	->expect(Status::class)
-	->toBeIntBackedEnum();
+    ->expect(Status::class)
+    ->toBeIntBackedEnum();

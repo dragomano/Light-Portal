@@ -22,7 +22,7 @@ use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\PortalSubAction;
 use Bugo\LightPortal\Events\HasEvents;
-use Bugo\LightPortal\Repositories\PageRepository;
+use Bugo\LightPortal\Repositories\PageRepositoryInterface;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Setting;
@@ -57,7 +57,7 @@ final readonly class Page implements ActionInterface
 	use HasResponse;
 	use HasSession;
 
-	public function __construct(private PageRepository $repository) {}
+	public function __construct(private PageRepositoryInterface $repository) {}
 
 	public function show(): void
 	{
@@ -117,7 +117,7 @@ final readonly class Page implements ActionInterface
 			return [];
 
 		$data = $this->cache('page_' . $slug)
-			->setFallback(fn() => app(PageRepository::class)->getData($slug));
+			->setFallback(fn() => app(PageRepositoryInterface::class)->getData($slug));
 
 		$this->repository->prepareData($data);
 

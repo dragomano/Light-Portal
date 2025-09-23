@@ -8,68 +8,50 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 08.08.25
+ * @version 23.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\EzPortalMigration;
 
 use Bugo\Bricks\Tables\Column;
-use Bugo\Bricks\Tables\TablePresenter;
 use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Areas\Imports\AbstractCustomBlockImport;
+use Bugo\LightPortal\DataHandlers\Imports\Custom\AbstractCustomBlockImport;
 use Bugo\LightPortal\Enums\ContentClass;
-use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\Placement;
 use Bugo\LightPortal\Enums\TitleClass;
 use Bugo\LightPortal\UI\Tables\CheckboxColumn;
-use Bugo\LightPortal\UI\Tables\ImportButtonsRow;
-use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
 use Bugo\LightPortal\UI\Tables\TitleColumn;
-
-use const LP_NAME;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
 class BlockImport extends AbstractCustomBlockImport
 {
+	protected string $langKey = 'lp_ez_portal_migration';
+
+	protected string $formAction = 'import_from_ez';
+
+	protected string $uiTableId = 'ez_blocks';
+
 	private array $supportedTypes = ['HTML', 'PHP'];
 
-	public function main(): void
+	protected function defineUiColumns(): array
 	{
-		Utils::$context['page_title']      = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_ez_portal_migration']['label_name'];
-		Utils::$context['page_area_title'] = Lang::$txt['lp_blocks_import'];
-		Utils::$context['form_action']     = Config::$scripturl . '?action=admin;area=lp_blocks;sa=import_from_ez';
-
-		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
-			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_ez_portal_migration']['block_import_desc'],
+		return [
+			TitleColumn::make()
+				->setData('title', 'word_break')
+				->setSort('blocktitle', 'blocktitle DESC'),
+			Column::make('type', Lang::$txt['lp_block_type'])
+				->setData('type', 'centertext')
+				->setSort('blocktitle DESC', 'blocktitle'),
+			Column::make('placement', Lang::$txt['lp_block_placement'])
+				->setData('placement', 'centertext')
+				->setSort('col DESC', 'col'),
+			CheckboxColumn::make(entity: 'blocks'),
 		];
-
-		$this->run();
-
-		app(TablePresenter::class)->show(
-			PortalTableBuilder::make('ez_blocks', Lang::$txt['lp_blocks_import'])
-				->withParams(50, defaultSortColumn: 'title')
-				->setItems($this->getAll(...))
-				->setCount($this->getTotalCount(...))
-				->addColumns([
-					TitleColumn::make()
-						->setData('title', 'word_break')
-						->setSort('blocktitle', 'blocktitle DESC'),
-					Column::make('type', Lang::$txt['lp_block_type'])
-						->setData('type', 'centertext')
-						->setSort('blocktitle DESC', 'blocktitle'),
-					Column::make('placement', Lang::$txt['lp_block_placement'])
-						->setData('placement', 'centertext')
-						->setSort('col DESC', 'col'),
-					CheckboxColumn::make(entity: 'blocks'),
-				])
-				->addRow(ImportButtonsRow::make())
-		);
 	}
 
 	public function getAll(int $start = 0, int $limit = 0, string $sort = 'id_block'): array
@@ -151,7 +133,7 @@ class BlockImport extends AbstractCustomBlockImport
 				'title'         => $row['title'],
 				'content'       => $row['content'],
 				'placement'     => $this->getPlacement($row['col']),
-				'permissions'   => $this->getBlockPermission($row),
+				'permissions'   => $this->getPermission($row),
 				'status'        => (int) $row['status'],
 				'title_class'   => TitleClass::first(),
 				'content_class' => ContentClass::first(),
@@ -163,12 +145,12 @@ class BlockImport extends AbstractCustomBlockImport
 		return $items;
 	}
 
-	private function getType(string $type): string
+	protected function getType(string $type): string
 	{
 		return strtolower($type);
 	}
 
-	private function getPlacement(string $col): string
+	protected function getPlacement(string $col): string
 	{
 		return match ((int) $col) {
 			1 => Placement::LEFT->name(),
@@ -179,15 +161,8 @@ class BlockImport extends AbstractCustomBlockImport
 		};
 	}
 
-	private function getBlockPermission(array $row): int
+	protected function extractPermissions(array $row): int|array
 	{
-		$permissions = explode(',', (string) $row['permissions']);
-
-		return match (true) {
-			count($permissions) == 1 && $permissions[0] == -1 => Permission::GUEST->value,
-			count($permissions) == 1 && $permissions[0] == 0 => Permission::MEMBER->value,
-			in_array(-1, $permissions), in_array(0, $permissions) => Permission::ALL->value,
-			default => Permission::ADMIN->value,
-		};
+		return array_map('intval', explode(',', (string) $row['permissions']));
 	}
 }

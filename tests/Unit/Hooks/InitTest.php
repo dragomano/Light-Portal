@@ -1,7 +1,9 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 use Bugo\LightPortal\Hooks\Init;
 
 arch()
-	->expect(Init::class)
-	->toBeInvokable();
+    ->expect(Init::class)
+    ->toBeInvokable();

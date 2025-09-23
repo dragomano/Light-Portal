@@ -29,7 +29,7 @@ use function is_array;
 if (! defined('SMF'))
 	die('No direct access...');
 
-abstract class AbstractRepository
+abstract class AbstractRepository implements RepositoryInterface
 {
 	use HasCache;
 	use HasRequest;
@@ -40,7 +40,7 @@ abstract class AbstractRepository
 
 	abstract public function getData(int $item): array;
 
-	abstract public function setData(int $item = 0);
+	abstract public function setData(int $item = 0): void;
 
 	abstract public function remove(array $items): void;
 

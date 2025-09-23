@@ -9,7 +9,7 @@
 [![](https://img.shields.io/badge/Demo-Forum-brightgreen.svg)](https://demo.dragomano.ru)
 [![](https://img.shields.io/badge/Docs-Site-orange.svg)](https://dragomano.github.io/Light-Portal/)
 
-- **Tested on:** 8.3.22 / MariaDB 11.7.2
+- **Tested on:** 8.3.25 / MariaDB 11.8.3
 - **Translations:** Russian, Polish, Spanish, French, Turkish, Ukrainian, German, Italian, Portuguese, Greek, Czech, Danish, Dutch, Norwegian, Swedish, Arabic, Slovenian
 
 ## Description ([обзор на русском](https://dragomano.ru/mods/light-portal))

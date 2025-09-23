@@ -22,16 +22,16 @@ use Bugo\LightPortal\Areas\Configs\ExtraConfig;
 use Bugo\LightPortal\Areas\Configs\FeedbackConfig;
 use Bugo\LightPortal\Areas\Configs\MiscConfig;
 use Bugo\LightPortal\Areas\Configs\PanelConfig;
-use Bugo\LightPortal\Areas\Exports\BlockExport;
-use Bugo\LightPortal\Areas\Exports\CategoryExport;
-use Bugo\LightPortal\Areas\Exports\PageExport;
-use Bugo\LightPortal\Areas\Exports\PluginExport;
-use Bugo\LightPortal\Areas\Exports\TagExport;
-use Bugo\LightPortal\Areas\Imports\BlockImport;
-use Bugo\LightPortal\Areas\Imports\CategoryImport;
-use Bugo\LightPortal\Areas\Imports\PageImport;
-use Bugo\LightPortal\Areas\Imports\PluginImport;
-use Bugo\LightPortal\Areas\Imports\TagImport;
+use Bugo\LightPortal\DataHandlers\Exports\BlockExport;
+use Bugo\LightPortal\DataHandlers\Exports\CategoryExport;
+use Bugo\LightPortal\DataHandlers\Exports\PageExport;
+use Bugo\LightPortal\DataHandlers\Exports\PluginExport;
+use Bugo\LightPortal\DataHandlers\Exports\TagExport;
+use Bugo\LightPortal\DataHandlers\Imports\BlockImport;
+use Bugo\LightPortal\DataHandlers\Imports\CategoryImport;
+use Bugo\LightPortal\DataHandlers\Imports\PageImport;
+use Bugo\LightPortal\DataHandlers\Imports\PluginImport;
+use Bugo\LightPortal\DataHandlers\Imports\TagImport;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Events\HasEvents;
@@ -39,9 +39,8 @@ use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasCache;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
 use Bugo\LightPortal\Utils\Traits\HasForumHooks;
-
+use Bugo\LightPortal\Utils\Traits\HasRequest;
 use function app;
 use function array_keys;
 use function array_merge;
@@ -51,7 +50,6 @@ use function call_user_func;
 use function count;
 use function extension_loaded;
 use function str_contains;
-
 use const LP_NAME;
 use const LP_VERSION;
 use const PHP_VERSION;
@@ -216,10 +214,13 @@ final class ConfigArea
 
 	public function helpadmin(): void
 	{
-		Lang::$txt['lp_menu_separate_subsection_title_help'] = Lang::getTxt('lp_menu_separate_subsection_title_help', [
-			'<var>{lp_pages}</var>',
-			'<var>$txt[`lp_pages`]</var>',
-		]);
+		Lang::$txt['lp_menu_separate_subsection_title_help'] = Lang::getTxt(
+			'lp_menu_separate_subsection_title_help',
+			[
+				'<var>{lp_pages}</var>',
+				'<var>$txt[`lp_pages`]</var>',
+			]
+		);
 	}
 
 	public function settingAreas(): void

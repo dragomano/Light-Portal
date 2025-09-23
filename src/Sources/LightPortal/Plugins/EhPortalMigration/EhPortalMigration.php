@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 24.08.25
+ * @version 21.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\EhPortalMigration;
@@ -16,6 +16,8 @@ namespace Bugo\LightPortal\Plugins\EhPortalMigration;
 use Bugo\Compat\User;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
+use Bugo\LightPortal\Utils\DatabaseInterface;
+use Bugo\LightPortal\Utils\ErrorHandlerInterface;
 use Bugo\LightPortal\Utils\Icon;
 
 if (! defined('LP_NAME'))
@@ -48,16 +50,25 @@ class EhPortalMigration extends Plugin
 
 	public function extendBlockAreas(Event $e): void
 	{
-		$e->args->areas[self::AREA] = [new BlockImport(), 'main'];
+		$db = app(DatabaseInterface::class);
+		$errorHandler = app(ErrorHandlerInterface::class);
+
+		$e->args->areas[self::AREA] = [new BlockImport($db, $errorHandler), 'main'];
 	}
 
 	public function extendPageAreas(Event $e): void
 	{
-		$e->args->areas[self::AREA] = [new PageImport(), 'main'];
+		$db = app(DatabaseInterface::class);
+		$errorHandler = app(ErrorHandlerInterface::class);
+
+		$e->args->areas[self::AREA] = [new PageImport($db, $errorHandler), 'main'];
 	}
 
 	public function extendCategoryAreas(Event $e): void
 	{
-		$e->args->areas[self::AREA] = [new CategoryImport(), 'main'];
+		$db = app(DatabaseInterface::class);
+		$errorHandler = app(ErrorHandlerInterface::class);
+
+		$e->args->areas[self::AREA] = [new CategoryImport($db, $errorHandler), 'main'];
 	}
 }
