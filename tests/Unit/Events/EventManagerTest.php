@@ -1,7 +1,9 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 use Bugo\LightPortal\Events\EventManager;
 
 arch()
-	->expect(EventManager::class)
-	->toHaveMethods(['addHookListener', 'dispatch', 'getAll']);
+    ->expect(EventManager::class)
+    ->toHaveMethods(['addHookListener', 'dispatch', 'getAll']);

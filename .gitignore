@@ -4,6 +4,9 @@
 **/composer.lock
 **/output/
 node_modules/
+coverage/
+coverage-report/
+coverage.xml
 src/Sources/LightPortal/Libs/*
 src/Sources/LightPortal/packages/*
 src/Sources/index.php

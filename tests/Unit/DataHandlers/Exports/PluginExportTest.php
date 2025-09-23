@@ -1,0 +1,129 @@
+<?php
+
+declare(strict_types=1);
+
+use Bugo\Compat\Utils;
+use Bugo\LightPortal\DataHandlers\Exports\PluginExport;
+use Bugo\LightPortal\Utils\DatabaseInterface;
+use Bugo\LightPortal\Utils\ErrorHandlerInterface;
+use Bugo\LightPortal\Utils\FilesystemInterface;
+use Bugo\LightPortal\Utils\RequestInterface;
+use Tests\AppMockRegistry;
+
+beforeEach(function () {
+    $this->requestMock = Mockery::mock(RequestInterface::class);
+    $this->dbMock = Mockery::mock(DatabaseInterface::class);
+    $this->fileMock = Mockery::mock(FilesystemInterface::class);
+    $this->errorHandlerMock = Mockery::mock(ErrorHandlerInterface::class);
+
+    AppMockRegistry::set(RequestInterface::class, $this->requestMock);
+});
+
+afterEach(function () {
+    AppMockRegistry::clear();
+});
+
+
+it('getData returns empty array when entity is empty', function () {
+    $export = Mockery::mock(PluginExport::class, [$this->dbMock, $this->fileMock, $this->errorHandlerMock])->makePartial();
+
+    $this->requestMock->shouldReceive('isEmpty')->with('plugins')->andReturn(true);
+    $this->requestMock->shouldReceive('hasNot')->with('export_all')->andReturn(true);
+
+    $export->shouldReceive('request')->andReturn($this->requestMock);
+
+    $export->shouldAllowMockingProtectedMethods();
+    $result = $export->getData();
+
+    expect($result)->toBe([]);
+});
+
+it('getData returns selected plugins when provided', function () {
+    $export = Mockery::mock(PluginExport::class, [$this->dbMock, $this->fileMock, $this->errorHandlerMock])->makePartial();
+
+    $this->requestMock->shouldReceive('isEmpty')->with('plugins')->andReturn(false);
+    $this->requestMock->shouldReceive('hasNot')->with('export_all')->andReturn(true);
+    $this->requestMock->shouldReceive('has')->with('export_all')->andReturn(false);
+    $this->requestMock->shouldReceive('get')->with('plugins')->andReturn(['TestPlugin']);
+
+    $export->shouldReceive('request')->andReturn($this->requestMock);
+
+    $export->shouldAllowMockingProtectedMethods();
+    $result = $export->getData();
+
+    expect($result)->toBe(['TestPlugin']);
+});
+
+it('getData returns all plugins when export_all', function () {
+    $export = Mockery::mock(PluginExport::class, [$this->dbMock, $this->fileMock, $this->errorHandlerMock])->makePartial();
+
+    Utils::$context['lp_plugins'] = ['TestPlugin', 'AnotherPlugin'];
+    $this->requestMock->shouldReceive('isEmpty')->with('plugins')->andReturn(true);
+    $this->requestMock->shouldReceive('hasNot')->with('export_all')->andReturn(false);
+    $this->requestMock->shouldReceive('has')->with('export_all')->andReturn(true);
+
+    $export->shouldReceive('request')->andReturn($this->requestMock);
+
+    $export->shouldAllowMockingProtectedMethods();
+    $result = $export->getData();
+
+    expect($result)->toBe(['TestPlugin', 'AnotherPlugin']);
+});
+
+it('getFile returns empty string when no dirs', function () {
+    $export = Mockery::mock(PluginExport::class, [$this->dbMock, $this->fileMock, $this->errorHandlerMock])->makePartial();
+    $export->shouldAllowMockingProtectedMethods();
+    $export->shouldReceive('request')->andReturn($this->requestMock);
+    $export->shouldReceive('run')->andReturn();
+    $export->shouldReceive('request')->andReturn($this->requestMock)->byDefault();
+
+    $export->shouldReceive('getData')->andReturn([]);
+
+    $result = $export->getFile();
+
+    expect($result)->toBe('');
+});
+
+it('createPackage creates ZIP archive for plugins', function ($dirs, $expectedFile) {
+    $export = Mockery::mock(PluginExport::class, [$this->dbMock, $this->fileMock, $this->errorHandlerMock])->makePartial();
+    $export->shouldAllowMockingProtectedMethods();
+
+    $result = $export->createPackage($dirs);
+
+    expect($result)->toBeString()
+        ->and(file_exists($result))->toBeTrue()
+        ->and(str_ends_with($result, $expectedFile))->toBeTrue();
+
+    // Cleanup
+})->with([
+    [['TestPlugin'], 'TestPlugin.zip'], // Single plugin export scenario
+    [['TestPlugin', 'AnotherPlugin'], 'lp_plugins.zip'], // Multiple plugins export scenario
+]);
+
+it('handles ZipArchive creation failure', function () {
+    $export = Mockery::mock(PluginExport::class, [$this->dbMock, $this->fileMock, $this->errorHandlerMock])->makePartial();
+    $export->shouldAllowMockingProtectedMethods();
+
+    // For failure test, use temp dir but make TestPlugin a file instead of directory
+    $tempDir = sys_get_temp_dir() . '/lp_test_plugins';
+    if (! is_dir($tempDir)) {
+        mkdir($tempDir);
+    }
+
+    $testPluginPath = $tempDir . '/TestPlugin';
+
+    if (! file_exists($testPluginPath)) {
+        touch($testPluginPath); // Create as file, not directory
+    }
+
+    Utils::$context['lp_addon_dir'] = $tempDir;
+
+    $dirs = ['TestPlugin'];
+    $result = $export->createPackage($dirs);
+
+    expect($result)->toBe('');
+
+    // Cleanup
+    unlink($testPluginPath);
+    rmdir($tempDir);
+});

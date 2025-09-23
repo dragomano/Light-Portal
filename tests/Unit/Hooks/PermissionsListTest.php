@@ -1,7 +1,9 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 use Bugo\LightPortal\Hooks\PermissionsList;
 
 arch()
-	->expect(PermissionsList::class)
-	->toBeInvokable();
+    ->expect(PermissionsList::class)
+    ->toBeInvokable();

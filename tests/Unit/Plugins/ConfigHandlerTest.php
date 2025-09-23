@@ -1,7 +1,9 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 use Bugo\LightPortal\Plugins\ConfigHandler;
 
 arch()
-	->expect(ConfigHandler::class)
-	->toHaveMethod('handle');
+    ->expect(ConfigHandler::class)
+    ->toHaveMethod('handle');

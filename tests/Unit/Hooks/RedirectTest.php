@@ -1,7 +1,9 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 use Bugo\LightPortal\Hooks\Redirect;
 
 arch()
-	->expect(Redirect::class)
-	->toBeInvokable();
+    ->expect(Redirect::class)
+    ->toBeInvokable();

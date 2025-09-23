@@ -1,7 +1,9 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 use Bugo\LightPortal\Enums\PortalHook;
 
 arch()
-	->expect(PortalHook::class)
-	->toBeEnum();
+    ->expect(PortalHook::class)
+    ->toBeEnum();
