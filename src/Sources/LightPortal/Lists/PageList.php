@@ -19,8 +19,6 @@ use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Repositories\PageRepositoryInterface;
 
-use function time;
-
 if (! defined('SMF'))
 	die('No direct access...');
 

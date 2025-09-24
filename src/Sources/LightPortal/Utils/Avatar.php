@@ -15,9 +15,6 @@ namespace Bugo\LightPortal\Utils;
 use Bugo\Compat\Config;
 use Bugo\Compat\User;
 
-use function array_map;
-use function in_array;
-
 if (! defined('SMF'))
 	die('No direct access...');
 

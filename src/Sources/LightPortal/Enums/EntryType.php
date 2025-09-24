@@ -15,9 +15,6 @@ namespace Bugo\LightPortal\Enums;
 use Bugo\Compat\Lang;
 use Bugo\LightPortal\Enums\Traits\HasNames;
 
-use function array_combine;
-use function array_filter;
-
 enum EntryType
 {
 	use HasNames;

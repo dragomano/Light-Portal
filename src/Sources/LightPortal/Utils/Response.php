@@ -14,9 +14,6 @@ namespace Bugo\LightPortal\Utils;
 
 use Bugo\Compat\Utils;
 
-use function header;
-use function json_encode;
-
 class Response
 {
 	public function json(mixed $data, int $flags = 0): false|string

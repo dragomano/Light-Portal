@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 29.08.25
+ * @version 24.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleChat;
@@ -24,13 +24,6 @@ use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\RadioField;
 use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Traits\HasView;
-
-use function array_combine;
-use function json_encode;
-
-use const FILTER_DEFAULT;
-use const FILTER_VALIDATE_BOOLEAN;
-use const JSON_UNESCAPED_UNICODE;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

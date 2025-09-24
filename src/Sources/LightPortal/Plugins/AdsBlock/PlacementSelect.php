@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 24.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\AdsBlock;
@@ -16,12 +16,6 @@ namespace Bugo\LightPortal\Plugins\AdsBlock;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\UI\Partials\AbstractPartial;
-
-use function explode;
-use function func_get_args;
-use function implode;
-use function in_array;
-use function is_array;
 
 final class PlacementSelect extends AbstractPartial
 {

@@ -18,8 +18,6 @@ use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 
-use function in_array;
-
 use const LP_ACTION;
 use const LP_PAGE_PARAM;
 use const LP_PAGE_URL;

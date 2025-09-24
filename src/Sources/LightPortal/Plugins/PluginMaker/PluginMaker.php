@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 24.08.25
+ * @version 24.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
@@ -17,9 +17,6 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Utils\Icon;
-
-use function array_combine;
-use function array_merge;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

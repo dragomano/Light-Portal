@@ -12,9 +12,6 @@
 
 namespace Bugo\LightPortal\Enums\Traits;
 
-use function array_map;
-use function strtolower;
-
 trait HasNames
 {
 	public function name(): string

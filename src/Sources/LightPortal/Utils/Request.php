@@ -12,9 +12,6 @@
 
 namespace Bugo\LightPortal\Utils;
 
-use function file_get_contents;
-use function json_decode;
-
 if (! defined('SMF'))
 	die('No direct access...');
 

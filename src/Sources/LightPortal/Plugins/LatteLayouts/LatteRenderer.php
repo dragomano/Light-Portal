@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 24.12.24
+ * @version 24.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\LatteLayouts;
@@ -24,10 +24,6 @@ use Latte\Essential\RawPhpExtension;
 use Latte\Loaders\FileLoader;
 use Latte\Runtime\Html;
 use Latte\RuntimeException;
-
-use function ob_get_clean;
-use function ob_start;
-use function str_replace;
 
 class LatteRenderer extends AbstractRenderer
 {

@@ -20,13 +20,6 @@ use Bugo\LightPortal\Renderers\Blade as GlobalBlade;
 use Bugo\LightPortal\Renderers\PurePHP as GlobalPurePHP;
 use Bugo\LightPortal\Renderers\RendererInterface;
 
-use function is_file;
-use function str_contains;
-use function str_ends_with;
-use function str_replace;
-
-use const DIRECTORY_SEPARATOR;
-
 if (! defined('LP_NAME'))
 	die('No direct access...');
 

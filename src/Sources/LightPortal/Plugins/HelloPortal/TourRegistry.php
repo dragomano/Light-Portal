@@ -8,15 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 26.08.25
+ * @version 24.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\HelloPortal;
 
 use Bugo\LightPortal\Utils\Setting;
-
-use function array_reduce;
-use function sprintf;
 
 use const LP_PAGE_PARAM;
 

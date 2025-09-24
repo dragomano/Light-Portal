@@ -16,8 +16,6 @@ namespace Bugo\LightPortal\Plugins\AdsBlock;
 use Bugo\Compat\Lang;
 use Bugo\LightPortal\Enums\Traits\HasNames;
 
-use function array_combine;
-
 enum Placement
 {
 	use HasNames;

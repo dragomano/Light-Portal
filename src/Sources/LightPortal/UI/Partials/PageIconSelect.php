@@ -16,8 +16,6 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Utils\Icon;
 
-use function func_get_args;
-
 final class PageIconSelect extends AbstractPartial
 {
 	public function __invoke(): string

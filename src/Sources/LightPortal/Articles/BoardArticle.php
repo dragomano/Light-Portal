@@ -22,10 +22,6 @@ use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
-use function implode;
-use function trim;
-use function urlencode;
-
 if (! defined('SMF'))
 	die('No direct access...');
 

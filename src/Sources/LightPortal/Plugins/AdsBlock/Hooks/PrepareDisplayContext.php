@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 24.08.25
+ * @version 24.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\AdsBlock\Hooks;
@@ -17,10 +17,6 @@ use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Plugins\AdsBlock\Placement;
 use Bugo\LightPortal\Plugins\AdsBlock\RepliesComparisonTrait;
-
-use function lp_show_blocks;
-use function ob_get_clean;
-use function ob_start;
 
 class PrepareDisplayContext
 {

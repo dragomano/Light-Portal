@@ -24,14 +24,6 @@ use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 
-use function array_filter;
-use function array_flip;
-use function array_merge;
-use function array_slice;
-use function explode;
-use function in_array;
-use function str_contains;
-
 use const LP_ACTION;
 use const LP_CACHE_TIME;
 use const LP_PAGE_PARAM;

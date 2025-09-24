@@ -19,8 +19,6 @@ use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Utils\Setting;
 
-use function time;
-
 class PageModel extends AbstractModel
 {
 	public int $id;

@@ -17,14 +17,6 @@ namespace Bugo\LightPortal\Renderers;
 use Bugo\Compat\ErrorHandler;
 use Exception;
 
-use function extract;
-use function is_file;
-use function ob_get_clean;
-use function ob_start;
-
-use const DIRECTORY_SEPARATOR;
-use const EXTR_SKIP;
-
 class PurePHP extends AbstractRenderer
 {
 	public const DEFAULT_TEMPLATE = 'default.php';

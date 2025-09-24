@@ -14,11 +14,6 @@
 
 namespace Bugo\LightPortal\Lists;
 
-use function array_map;
-use function basename;
-use function glob;
-
-use const GLOB_ONLYDIR;
 use const LP_ADDON_DIR;
 
 if (! defined('SMF'))

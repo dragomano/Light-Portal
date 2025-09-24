@@ -15,8 +15,6 @@ namespace Bugo\LightPortal\Utils\Traits;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\UI\View;
 
-use function dirname;
-
 if (! defined('SMF'))
 	die('No direct access...');
 

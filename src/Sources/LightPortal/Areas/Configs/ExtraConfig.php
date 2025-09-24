@@ -28,8 +28,6 @@ use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasSession;
 
-use function asort;
-
 if (! defined('SMF'))
 	die('No direct access...');
 

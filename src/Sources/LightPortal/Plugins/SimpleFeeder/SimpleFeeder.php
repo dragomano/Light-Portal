@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 08.01.25
+ * @version 24.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleFeeder;
@@ -21,10 +21,6 @@ use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\UrlField;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\Str;
-
-use function file_get_contents;
-use function simplexml_load_string;
-use function strtotime;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

@@ -17,9 +17,6 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Utils\MessageIndex;
 
-use function func_get_args;
-use function json_encode;
-
 final class BoardSelect extends AbstractPartial
 {
 	public function __invoke(): string

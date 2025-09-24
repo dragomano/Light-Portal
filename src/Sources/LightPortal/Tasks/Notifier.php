@@ -26,9 +26,6 @@ use Bugo\LightPortal\Enums\AlertAction;
 use Bugo\LightPortal\Enums\NotifyType;
 use ErrorException;
 
-use function array_diff;
-use function array_intersect;
-
 final class Notifier extends BackgroundTask
 {
 	public function execute(): bool

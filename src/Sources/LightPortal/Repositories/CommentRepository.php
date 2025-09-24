@@ -19,11 +19,6 @@ use Bugo\LightPortal\Enums\NotifyType;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\Setting;
 
-use function array_column;
-use function count;
-use function htmlspecialchars_decode;
-use function time;
-
 if (! defined('SMF'))
 	die('No direct access...');
 

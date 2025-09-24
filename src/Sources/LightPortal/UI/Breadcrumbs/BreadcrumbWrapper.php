@@ -7,8 +7,6 @@ use Bugo\Bricks\Breadcrumbs\Interfaces\BreadcrumbBuilderInterface as Builder;
 use Bugo\Bricks\Breadcrumbs\Interfaces\BreadcrumbPresenterInterface as Presenter;
 use Bugo\Compat\Utils;
 
-use function in_array;
-
 /**
  * @method self add(string $name, ?string $url = null, ?string $before = null, ?string $after = null)
  * @method self addItem(BreadcrumbItem $item)

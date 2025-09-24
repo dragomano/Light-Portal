@@ -15,11 +15,6 @@ namespace Bugo\LightPortal\Models;
 use Bugo\LightPortal\Utils\Str;
 use stdClass;
 
-use function get_object_vars;
-use function lcfirst;
-use function str_replace;
-use function ucwords;
-
 if (! defined('SMF'))
 	die('No direct access...');
 

@@ -15,8 +15,6 @@ namespace Bugo\LightPortal\UI\Fields;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Utils\Str;
 
-use function implode;
-
 if (! defined('SMF'))
 	die('No direct access...');
 

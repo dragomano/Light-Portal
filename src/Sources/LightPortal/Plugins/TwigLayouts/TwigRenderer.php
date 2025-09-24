@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 03.12.24
+ * @version 24.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\TwigLayouts;
@@ -23,12 +23,6 @@ use Twig\Environment;
 use Twig\Error\Error;
 use Twig\Loader\FilesystemLoader;
 use Twig\TwigFunction;
-
-use function ob_get_clean;
-use function ob_start;
-use function print_r;
-use function show_pagination;
-use function str_replace;
 
 class TwigRenderer extends AbstractRenderer
 {

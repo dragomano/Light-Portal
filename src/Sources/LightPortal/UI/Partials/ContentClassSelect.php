@@ -16,10 +16,6 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\ContentClass;
 
-use function func_get_args;
-use function json_encode;
-use function sprintf;
-
 final class ContentClassSelect extends AbstractPartial
 {
 	public function __invoke(): string

@@ -17,8 +17,6 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalSubAction;
 use Bugo\LightPortal\Utils\Setting;
 
-use function in_array;
-
 if (! defined('SMF'))
 	die('No direct access...');
 

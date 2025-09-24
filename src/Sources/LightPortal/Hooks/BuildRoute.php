@@ -18,8 +18,6 @@ use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Utils\Traits\HasCache;
 
-use function urlencode;
-
 use const LP_CACHE_TIME;
 use const LP_PAGE_PARAM;
 

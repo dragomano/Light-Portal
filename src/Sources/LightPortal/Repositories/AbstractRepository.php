@@ -23,9 +23,6 @@ use Bugo\LightPortal\Utils\Traits\HasRequest;
 use Bugo\LightPortal\Utils\Traits\HasResponse;
 use Bugo\LightPortal\Utils\Traits\HasSession;
 
-use function implode;
-use function is_array;
-
 if (! defined('SMF'))
 	die('No direct access...');
 

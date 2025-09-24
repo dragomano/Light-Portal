@@ -36,8 +36,6 @@ use Bugo\LightPortal\Hooks\RouteParsers;
 use Bugo\LightPortal\Hooks\WhosOnline;
 use Bugo\LightPortal\Utils\Traits\HasForumHooks;
 
-use function str_starts_with;
-
 use const SMF_VERSION;
 
 if (! defined('SMF'))

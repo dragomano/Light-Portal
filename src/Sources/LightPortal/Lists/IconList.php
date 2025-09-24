@@ -17,8 +17,6 @@ use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Utils\Icon;
 
-use function array_map;
-
 if (! defined('SMF'))
 	die('No direct access...');
 

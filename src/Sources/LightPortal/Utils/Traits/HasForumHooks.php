@@ -15,8 +15,6 @@ namespace Bugo\LightPortal\Utils\Traits;
 use Bugo\Compat\IntegrationHook;
 use Bugo\LightPortal\Enums\Hook;
 
-use function method_exists;
-
 if (! defined('SMF'))
 	die('No direct access...');
 

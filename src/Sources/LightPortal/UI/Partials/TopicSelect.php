@@ -17,10 +17,6 @@ use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 
-use function explode;
-use function func_get_args;
-use function json_encode;
-
 final class TopicSelect extends AbstractPartial
 {
 	public function __invoke(): string

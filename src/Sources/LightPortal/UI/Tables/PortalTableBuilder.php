@@ -19,9 +19,6 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Str;
 
-use function implode;
-use function str_replace;
-
 class PortalTableBuilder extends TableBuilder implements PortalTableBuilderInterface
 {
 	protected function __construct(string $id, string $title)

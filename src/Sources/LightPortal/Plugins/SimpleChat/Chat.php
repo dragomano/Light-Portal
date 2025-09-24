@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 07.08.25
+ * @version 24.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleChat;
@@ -24,12 +24,7 @@ use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Traits\HasCache;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 use Bugo\LightPortal\Utils\Traits\HasResponse;
-
 use Bugo\LightPortal\Utils\Traits\HasView;
-
-use function http_response_code;
-use function str_replace;
-use function time;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

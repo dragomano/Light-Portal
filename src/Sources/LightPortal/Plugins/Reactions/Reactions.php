@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 27.08.25
+ * @version 24.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\Reactions;
@@ -21,10 +21,6 @@ use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\Utils\Traits\HasView;
-
-use function array_count_values;
-use function json_decode;
-use function json_encode;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

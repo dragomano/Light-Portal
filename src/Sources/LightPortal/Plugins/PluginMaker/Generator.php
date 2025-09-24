@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 24.08.25
+ * @version 24.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
@@ -38,22 +38,6 @@ use Nette\PhpGenerator\Method;
 use Nette\PhpGenerator\PhpFile;
 use Nette\PhpGenerator\PhpNamespace;
 use Nette\PhpGenerator\Printer;
-
-use function array_filter;
-use function array_intersect;
-use function array_key_exists;
-use function array_map;
-use function array_merge;
-use function array_unique;
-use function date;
-use function explode;
-use function implode;
-use function in_array;
-use function is_array;
-use function sprintf;
-use function str_contains;
-use function str_replace;
-use function var_export;
 
 use const LP_NAME;
 

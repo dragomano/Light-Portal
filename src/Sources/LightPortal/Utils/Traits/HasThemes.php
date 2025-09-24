@@ -16,11 +16,6 @@ use Bugo\Compat\Db;
 use Bugo\Compat\Theme;
 use Bugo\LightPortal\Utils\Setting;
 
-use function array_column;
-use function array_filter;
-use function array_flip;
-use function explode;
-
 if (! defined('SMF'))
 	die('No direct access...');
 

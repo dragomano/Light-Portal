@@ -14,8 +14,6 @@ namespace Bugo\LightPortal\Utils;
 
 use Bugo\Compat\Actions\MessageIndex as BaseMessageIndex;
 
-use function array_merge;
-
 if (! defined('SMF'))
 	die('No direct access...');
 

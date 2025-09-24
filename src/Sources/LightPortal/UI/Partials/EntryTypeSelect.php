@@ -15,9 +15,6 @@ namespace Bugo\LightPortal\UI\Partials;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\EntryType;
 
-use function func_get_args;
-use function json_encode;
-
 final class EntryTypeSelect extends AbstractPartial
 {
 	public function __invoke(): string

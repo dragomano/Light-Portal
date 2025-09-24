@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 24.08.25
+ * @version 24.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\AdsBlock\Hooks;
@@ -18,15 +18,6 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Plugins\AdsBlock\Placement;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
-
-use function array_filter;
-use function array_flip;
-use function array_key_exists;
-use function array_keys;
-use function array_merge;
-use function explode;
-use function strtotime;
-use function time;
 
 class MenuButtons
 {

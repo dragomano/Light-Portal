@@ -18,13 +18,6 @@ use Bugo\LightPortal\Utils\Icon;
 use eftec\bladeone\BladeOne;
 use Exception;
 
-use function count;
-use function is_array;
-use function ob_get_clean;
-use function ob_start;
-use function str_replace;
-use function strstr;
-
 class Blade extends AbstractRenderer
 {
 	public const DEFAULT_TEMPLATE = 'default.blade.php';

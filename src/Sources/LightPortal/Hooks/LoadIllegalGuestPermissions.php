@@ -14,8 +14,6 @@ namespace Bugo\LightPortal\Hooks;
 
 use Bugo\Compat\Utils;
 
-use function array_merge;
-
 if (! defined('SMF'))
 	die('No direct access...');
 

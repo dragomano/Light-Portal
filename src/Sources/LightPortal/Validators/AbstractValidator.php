@@ -17,10 +17,6 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 
-use function array_filter;
-use function filter_var_array;
-use function is_array;
-
 abstract class AbstractValidator implements ValidatorInterface
 {
 	use HasEvents;

@@ -17,10 +17,6 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Utils\Language;
 
-use function array_keys;
-use function array_merge;
-use function filter_var_array;
-
 class PageValidator extends AbstractValidator
 {
 	protected array $filters = [

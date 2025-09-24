@@ -15,9 +15,6 @@ namespace Bugo\LightPortal\UI\Partials;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 
-use function func_get_args;
-use function json_encode;
-
 final class PlacementSelect extends AbstractPartial
 {
 	public function __invoke(): string

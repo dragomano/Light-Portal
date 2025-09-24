@@ -14,8 +14,6 @@ namespace Bugo\LightPortal\Plugins;
 
 use Bugo\Compat\ServerSideIncludes;
 
-use function dirname;
-
 class SSI extends Block
 {
 	public string $type = 'block ssi';

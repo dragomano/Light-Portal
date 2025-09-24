@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.04.25
+ * @version 24.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\TopPages;
@@ -28,10 +28,6 @@ use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 use WPLake\Typed\Typed;
-
-use function array_combine;
-use function array_key_first;
-use function time;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

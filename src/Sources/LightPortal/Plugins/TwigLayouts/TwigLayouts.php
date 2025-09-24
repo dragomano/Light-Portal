@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 10.12.24
+ * @version 24.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\TwigLayouts;
@@ -18,11 +18,6 @@ use Bugo\LightPortal\Enums\ContentClass;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Utils\Str;
-
-use function basename;
-use function glob;
-use function sprintf;
-use function str_contains;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

@@ -15,10 +15,6 @@ namespace Bugo\LightPortal\Validators;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalHook;
 
-use function array_keys;
-use function array_merge;
-use function filter_var_array;
-
 class BlockValidator extends AbstractValidator
 {
 	protected array $filters = [

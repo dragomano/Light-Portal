@@ -16,10 +16,6 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Utils\Setting;
 
-use function func_get_args;
-use function implode;
-use function json_encode;
-
 final class ActionSelect extends AbstractPartial
 {
 	public function __invoke(): string

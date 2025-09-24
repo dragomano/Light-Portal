@@ -16,14 +16,6 @@ use Bugo\Compat\Actions\Admin\Permissions;
 use Bugo\Compat\Config;
 use Closure;
 
-use function array_key_last;
-use function call_user_func;
-use function function_exists;
-use function gettype;
-use function ob_get_clean;
-use function ob_start;
-use function settype;
-
 class VarFactory
 {
 	public function __construct(private readonly string $name, private readonly string $type) {}

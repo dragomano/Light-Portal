@@ -20,8 +20,6 @@ use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\SelectField;
 use Bugo\LightPortal\UI\Fields\TextField;
 
-use function in_array;
-
 if (! defined('SMF'))
 	die('No direct access...');
 

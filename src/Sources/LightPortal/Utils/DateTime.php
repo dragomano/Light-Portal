@@ -20,18 +20,6 @@ use Exception;
 use IntlDateFormatter;
 use InvalidArgumentException;
 
-use function ceil;
-use function compact;
-use function count;
-use function date;
-use function explode;
-use function extension_loaded;
-use function floor;
-use function round;
-use function sprintf;
-use function strtotime;
-use function time;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -106,7 +94,7 @@ final class DateTime
 		}
 
 		// Less than an hour
-		$lastMinutes = round($timeDifference / 60);
+		$lastMinutes = $timeDifference / 60;
 
 		// like "n seconds ago"
 		if ($timeDifference < 60)

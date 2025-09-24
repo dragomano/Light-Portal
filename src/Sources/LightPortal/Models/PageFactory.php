@@ -14,9 +14,6 @@ namespace Bugo\LightPortal\Models;
 
 use Bugo\LightPortal\Utils\Str;
 
-use function explode;
-use function is_array;
-
 class PageFactory extends AbstractFactory
 {
 	protected string $modelClass = PageModel::class;

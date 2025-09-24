@@ -16,15 +16,6 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
 use Nette\Utils\Html;
 
-use function html_entity_decode;
-use function preg_match;
-use function preg_replace;
-use function str_contains;
-use function str_replace;
-use function strip_tags;
-use function strtolower;
-use function ucwords;
-
 if (! defined('SMF'))
 	die('No direct access...');
 

@@ -16,8 +16,6 @@ use Bugo\Compat\Routable;
 use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Utils\Response;
 
-use function array_shift;
-
 use const LP_PAGE_PARAM;
 
 class Page implements Routable

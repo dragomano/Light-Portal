@@ -19,11 +19,6 @@ use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 use Bugo\LightPortal\Utils\Traits\HasResponse;
 
-use function array_flip;
-use function array_key_exists;
-use function array_keys;
-use function defined;
-
 if (! defined('SMF'))
 	die('No direct access...');
 

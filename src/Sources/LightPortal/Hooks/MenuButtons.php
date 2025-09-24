@@ -248,7 +248,7 @@ class MenuButtons
 
 		Utils::$context['lp_load_page_stats'] = Lang::getTxt('lp_load_page_stats', [
 			Lang::getTxt('lp_seconds_set', [
-				'seconds' => round(microtime(true) - Utils::$context['lp_load_time'], 3)
+				'seconds' => microtime(true) - Utils::$context['lp_load_time']
 			]),
 		]);
 

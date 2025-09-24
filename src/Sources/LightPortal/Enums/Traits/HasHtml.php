@@ -12,11 +12,6 @@
 
 namespace Bugo\LightPortal\Enums\Traits;
 
-use function array_combine;
-use function array_key_first;
-use function array_map;
-use function sprintf;
-
 trait HasHtml
 {
 	public static function values(): array

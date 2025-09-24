@@ -22,9 +22,6 @@ use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
-use function implode;
-use function preg_replace;
-
 if (! defined('SMF'))
 	die('No direct access...');
 

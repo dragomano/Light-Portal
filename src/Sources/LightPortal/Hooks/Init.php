@@ -17,11 +17,6 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\Setting;
 
-use function define;
-use function defined;
-use function dirname;
-use function microtime;
-
 if (! defined('SMF'))
 	die('No direct access...');
 

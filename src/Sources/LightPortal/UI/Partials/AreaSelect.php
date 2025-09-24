@@ -15,13 +15,6 @@ namespace Bugo\LightPortal\UI\Partials;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 
-use function array_combine;
-use function array_merge;
-use function explode;
-use function json_encode;
-use function str_replace;
-use function str_starts_with;
-
 final class AreaSelect extends AbstractPartial
 {
 	public function __invoke(): string

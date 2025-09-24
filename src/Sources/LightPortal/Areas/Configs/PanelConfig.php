@@ -22,8 +22,6 @@ use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 use Bugo\LightPortal\Utils\Traits\HasSession;
 
-use function json_encode;
-
 if (! defined('SMF'))
 	die('No direct access...');
 

@@ -17,10 +17,6 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 
-use function ob_get_clean;
-use function ob_start;
-use function template_control_richedit;
-
 if (! defined('SMF'))
 	die('No direct access...');
 

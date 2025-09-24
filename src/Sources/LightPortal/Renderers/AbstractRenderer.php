@@ -17,14 +17,6 @@ use Bugo\Compat\Theme;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Events\HasEvents;
 
-use function array_combine;
-use function array_merge;
-use function basename;
-use function glob;
-use function str_replace;
-use function strstr;
-use function ucfirst;
-
 abstract class AbstractRenderer implements RendererInterface
 {
 	use HasEvents;

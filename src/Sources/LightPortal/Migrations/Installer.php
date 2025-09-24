@@ -35,10 +35,6 @@ use Laminas\Db\Sql\Select;
 use Laminas\Db\Sql\Sql;
 use Laminas\Db\Sql\Update;
 
-use function array_filter;
-use function is_writable;
-use function time;
-
 if (! defined('SMF'))
 	die('No direct access...');
 

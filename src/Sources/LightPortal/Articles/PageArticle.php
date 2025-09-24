@@ -28,10 +28,6 @@ use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
-use function array_keys;
-use function implode;
-use function time;
-
 use const LP_PAGE_URL;
 
 if (! defined('SMF'))

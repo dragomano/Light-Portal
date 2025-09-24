@@ -8,18 +8,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 24.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
 
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
-
-use function copy;
-use function file_put_contents;
-use function mkdir;
-use function str_replace;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

@@ -18,9 +18,6 @@ use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\AlertAction;
 use Bugo\LightPortal\Utils\Str;
 
-use function in_array;
-use function strtr;
-
 if (! defined('SMF'))
 	die('No direct access...');
 

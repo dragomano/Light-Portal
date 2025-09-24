@@ -17,10 +17,6 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 
-use function array_flip;
-use function array_merge;
-use function str_starts_with;
-
 if (! defined('SMF'))
 	die('No direct access...');
 

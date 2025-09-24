@@ -5,8 +5,6 @@ namespace Bugo\LightPortal\UI\Breadcrumbs;
 use Bugo\Bricks\RendererInterface;
 use Bugo\Compat\Utils;
 
-use function array_filter;
-
 final class BreadcrumbRenderer implements RendererInterface
 {
 	public function render(array $data): void

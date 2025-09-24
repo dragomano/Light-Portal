@@ -20,8 +20,6 @@ use Bugo\LightPortal\Utils\Str;
 
 use function Bugo\LightPortal\app;
 
-use const DIRECTORY_SEPARATOR;
-
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
