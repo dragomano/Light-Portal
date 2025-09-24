@@ -16,11 +16,7 @@ use Bugo\Compat\Routable;
 use Bugo\LightPortal\Enums\PortalSubAction;
 use Bugo\LightPortal\Utils\CacheInterface;
 
-use function array_search;
-use function array_shift;
-use function count;
-use function in_array;
-use function is_numeric;
+use function Bugo\LightPortal\app;
 
 use const LP_ACTION;
 

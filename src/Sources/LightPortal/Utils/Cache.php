@@ -15,6 +15,8 @@ namespace Bugo\LightPortal\Utils;
 use Bugo\Compat\Cache\CacheApi;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 
+use function Bugo\LightPortal\app;
+
 if (! defined('SMF'))
 	die('No direct access...');
 

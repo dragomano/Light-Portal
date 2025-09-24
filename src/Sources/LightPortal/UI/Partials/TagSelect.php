@@ -18,9 +18,7 @@ use Bugo\LightPortal\Lists\TagList;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Setting;
 
-use function implode;
-use function is_array;
-use function json_encode;
+use function Bugo\LightPortal\app;
 
 final class TagSelect extends AbstractPartial
 {

@@ -27,13 +27,7 @@ use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
-use function array_flip;
-use function array_keys;
-use function array_merge;
-use function explode;
-use function in_array;
-use function sprintf;
-use function str_replace;
+use function Bugo\LightPortal\app;
 
 if (! defined('SMF'))
 	die('No direct access...');

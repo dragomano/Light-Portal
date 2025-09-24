@@ -41,18 +41,11 @@ use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasCache;
 use Bugo\LightPortal\Utils\Traits\HasForumHooks;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
-use function app;
-use function array_keys;
-use function array_merge;
-use function array_search;
-use function array_slice;
-use function call_user_func;
-use function count;
-use function extension_loaded;
-use function str_contains;
+
+use function Bugo\LightPortal\app;
+
 use const LP_NAME;
 use const LP_VERSION;
-use const PHP_VERSION;
 
 if (! defined('SMF'))
 	die('No direct access...');

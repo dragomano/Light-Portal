@@ -17,8 +17,7 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Lists\PageList;
 
-use function func_get_args;
-use function json_encode;
+use function Bugo\LightPortal\app;
 
 final class PageSlugSelect extends AbstractPartial
 {

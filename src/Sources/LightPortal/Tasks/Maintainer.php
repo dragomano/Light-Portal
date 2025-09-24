@@ -16,10 +16,7 @@ use Bugo\Compat\Tasks\BackgroundTask;
 use Bugo\Compat\Db;
 use Bugo\LightPortal\Repositories\CommentRepository;
 
-use function array_keys;
-use function array_map;
-use function ini_set;
-use function time;
+use function Bugo\LightPortal\app;
 
 final class Maintainer extends BackgroundTask
 {

@@ -2,9 +2,6 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Utils\CacheInterface;
-use Bugo\LightPortal\Utils\RequestInterface;
-use Tests\AppMockRegistry;
 use Tests\CustomTestCase;
 
 require_once __DIR__ . '/../src/Sources/LightPortal/Libs/autoload.php';
@@ -203,106 +200,4 @@ if (! function_exists('remove_integration_function')) {
     }
 }
 
-if (! function_exists('app')) {
-    function app(string $service = ''): mixed
-    {
-        if ($mock = AppMockRegistry::get($service)) {
-            return $mock;
-        }
-
-        if (str_contains($service, 'TablePresenter')) {
-            return new class {
-                public function show($table)
-                {
-                }
-            };
-        }
-
-        if (str_contains($service, 'PluginList')) {
-            return function () {
-                return [];
-            };
-        }
-
-        if (str_contains($service, 'CacheInterface')) {
-            return new class implements CacheInterface {
-                public function withKey(?string $key): CacheInterface
-                {
-                    return $this;
-                }
-                public function setLifeTime(int $lifeTime): CacheInterface
-                {
-                    return $this;
-                }
-                public function remember(string $key, callable $callback, int $time = 0): mixed
-                {
-                    return $callback();
-                }
-                public function setFallback(callable $callback): null
-                {
-                    return null;
-                }
-                public function get(string $key, int $time): null
-                {
-                    return null;
-                }
-                public function put(string $key, mixed $value, int $time): void
-                {
-                }
-                public function forget(string $key): void
-                {
-                }
-                public function flush(): void
-                {
-                }
-            };
-        }
-
-        if (str_contains($service, 'RequestInterface')) {
-            return new class implements RequestInterface {
-                public function isEmpty(string $key): bool
-                {
-                    return true;
-                }
-                public function hasNot(string $key): bool
-                {
-                    return true;
-                }
-                public function get(string $key): null
-                {
-                    return null;
-                }
-                public function has(string $key): bool
-                {
-                    return false;
-                }
-                public function post(string $key): null
-                {
-                    return null;
-                }
-
-                public function is(string $action, string $type = 'action'): bool
-                {
-                    return true;
-                }
-
-                public function isNot(string $action, string $type = 'action'): bool
-                {
-                    return true;
-                }
-
-                public function json(?string $key = null, mixed $default = null): array
-                {
-                    return [];
-                }
-
-                public function url(): string
-                {
-                    return '';
-                }
-            };
-        }
-
-        return null;
-    }
-}
+require_once __DIR__ . '/functions.php';

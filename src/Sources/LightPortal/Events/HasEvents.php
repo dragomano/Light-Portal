@@ -2,6 +2,8 @@
 
 namespace Bugo\LightPortal\Events;
 
+use function Bugo\LightPortal\app;
+
 trait HasEvents
 {
 	public function events(array $plugins = []): EventManager

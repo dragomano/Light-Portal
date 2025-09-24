@@ -20,7 +20,7 @@ use Bugo\LightPortal\Actions\Page;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 
-use function call_user_func;
+use function Bugo\LightPortal\app;
 
 use const LP_PAGE_PARAM;
 

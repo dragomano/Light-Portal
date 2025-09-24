@@ -18,9 +18,7 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\Utils\Icon;
 
-use function count;
-use function func_get_args;
-use function json_encode;
+use function Bugo\LightPortal\app;
 
 final class CategorySelect extends AbstractPartial
 {

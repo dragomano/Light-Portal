@@ -25,7 +25,7 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use ZipArchive;
 
-use function app;
+use function Bugo\LightPortal\app;
 
 if (! defined('SMF'))
 	die('No direct access...');

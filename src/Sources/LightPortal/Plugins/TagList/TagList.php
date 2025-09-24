@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 23.04.25
+ * @version 24.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\TagList;
@@ -26,9 +26,7 @@ use Bugo\LightPortal\UI\Fields\RadioField;
 use Bugo\LightPortal\Utils\Str;
 use WPLake\Typed\Typed;
 
-use function array_combine;
-use function array_map;
-use function class_exists;
+use function Bugo\LightPortal\app;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

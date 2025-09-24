@@ -20,7 +20,7 @@ use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Utils\Request;
 use Bugo\LightPortal\Utils\Str;
 
-use function app;
+use function Bugo\LightPortal\app;
 
 class PageTypeSelectRow extends Row
 {

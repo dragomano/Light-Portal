@@ -32,11 +32,7 @@ use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 use WPLake\Typed\Typed;
 
-use function app;
-use function array_key_exists;
-use function implode;
-use function sprintf;
-use function time;
+use function Bugo\LightPortal\app;
 
 if (! defined('SMF'))
 	die('No direct access...');

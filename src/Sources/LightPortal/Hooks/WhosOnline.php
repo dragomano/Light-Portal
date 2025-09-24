@@ -20,7 +20,7 @@ use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\Lists\TagList;
 use Bugo\LightPortal\Utils\Setting;
 
-use function sprintf;
+use function Bugo\LightPortal\app;
 
 use const LP_ACTION;
 use const LP_BASE_URL;

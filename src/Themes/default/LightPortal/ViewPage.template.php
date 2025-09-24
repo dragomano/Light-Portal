@@ -5,6 +5,8 @@ use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Events\EventManagerFactory;
 use Bugo\LightPortal\Utils\{Icon, Setting};
 
+use function Bugo\LightPortal\app;
+
 function template_show_page(): void
 {
 	if (! empty(Utils::$context['lp_page']['errors'])) {

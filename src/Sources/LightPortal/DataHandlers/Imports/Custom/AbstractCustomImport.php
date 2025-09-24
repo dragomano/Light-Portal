@@ -23,7 +23,7 @@ use Bugo\LightPortal\UI\Tables\ImportButtonsRow;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 
-use function app;
+use function Bugo\LightPortal\app;
 
 use const LP_NAME;
 

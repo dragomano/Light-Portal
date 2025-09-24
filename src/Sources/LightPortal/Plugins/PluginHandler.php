@@ -18,10 +18,7 @@ use Bugo\LightPortal\Events\EventManager;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
-use function array_map;
-use function array_merge;
-use function class_exists;
-use function get_object_vars;
+use function Bugo\LightPortal\app;
 
 use const DIRECTORY_SEPARATOR;
 

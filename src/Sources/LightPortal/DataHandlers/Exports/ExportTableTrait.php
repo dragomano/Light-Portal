@@ -18,7 +18,7 @@ use Bugo\Compat\Lang;
 use Bugo\LightPortal\UI\Tables\ExportButtonsRow;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
 
-use function app;
+use function Bugo\LightPortal\app;
 
 if (! defined('SMF'))
 	die('No direct access...');

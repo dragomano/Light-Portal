@@ -17,10 +17,7 @@ use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\Traits\HasValues;
 use Bugo\LightPortal\Utils\CacheInterface;
 
-use function array_column;
-use function array_filter;
-use function in_array;
-use function is_int;
+use function Bugo\LightPortal\app;
 
 enum Permission: int
 {

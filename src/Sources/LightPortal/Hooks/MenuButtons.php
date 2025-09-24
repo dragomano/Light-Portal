@@ -25,14 +25,7 @@ use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasBreadcrumbs;
 
-use function array_keys;
-use function array_merge;
-use function array_search;
-use function array_slice;
-use function count;
-use function explode;
-use function microtime;
-use function round;
+use function Bugo\LightPortal\app;
 
 use const LP_ACTION;
 use const LP_PAGE_URL;

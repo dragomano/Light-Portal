@@ -15,8 +15,6 @@ namespace Bugo\LightPortal;
 use Bugo\LightPortal\Areas\ConfigArea;
 use Bugo\LightPortal\Areas\CreditArea;
 
-use function app;
-
 if (! defined('SMF'))
 	die('No direct access...');
 

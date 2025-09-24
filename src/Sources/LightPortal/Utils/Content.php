@@ -21,15 +21,7 @@ use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Events\EventManagerFactory;
 use ParseError;
 
-use function app;
-use function file_put_contents;
-use function html_entity_decode;
-use function ob_get_clean;
-use function ob_start;
-use function str_replace;
-use function tempnam;
-use function trim;
-use function unlink;
+use function Bugo\LightPortal\app;
 
 if (! defined('SMF'))
 	die('No direct access...');

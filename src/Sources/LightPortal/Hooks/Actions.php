@@ -23,8 +23,7 @@ use Bugo\LightPortal\Enums\PortalSubAction;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Traits\HasCache;
 
-use function array_search;
-use function implode;
+use function Bugo\LightPortal\app;
 
 use const LP_ACTION;
 

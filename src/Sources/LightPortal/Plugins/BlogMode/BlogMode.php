@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 08.08.25
+ * @version 24.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\BlogMode;
@@ -32,13 +32,7 @@ use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
 use Bugo\LightPortal\UI\Tables\TitleColumn;
 use Bugo\LightPortal\Utils\Str;
 
-use function array_column;
-use function array_keys;
-use function array_merge;
-use function array_search;
-use function array_slice;
-use function count;
-use function sprintf;
+use function Bugo\LightPortal\app;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

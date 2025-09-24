@@ -38,7 +38,7 @@ use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Validators\TagValidator;
 use WPLake\Typed\Typed;
 
-use function app;
+use function Bugo\LightPortal\app;
 
 use const LP_NAME;
 

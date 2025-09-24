@@ -14,7 +14,7 @@ namespace Bugo\LightPortal\Utils\Traits;
 
 use Bugo\LightPortal\Utils\Session;
 
-use function app;
+use function Bugo\LightPortal\app;
 
 trait HasSession
 {

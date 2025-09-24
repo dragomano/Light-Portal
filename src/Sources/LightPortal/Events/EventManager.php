@@ -18,11 +18,6 @@ use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\PluginInterface;
 use Doctrine\Common\EventManager as DoctrineEventManager;
 
-use function array_filter;
-use function array_map;
-use function in_array;
-use function method_exists;
-
 class EventManager
 {
 	private readonly DoctrineEventManager $eventManager;

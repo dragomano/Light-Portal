@@ -33,14 +33,7 @@ use Bugo\LightPortal\Utils\Traits\HasResponse;
 use Bugo\LightPortal\Utils\Traits\HasSession;
 use SimpleSEF;
 
-use function app;
-use function array_column;
-use function array_search;
-use function class_exists;
-use function date;
-use function explode;
-use function implode;
-use function time;
+use function Bugo\LightPortal\app;
 
 use const LP_PAGE_PARAM;
 use const LP_PAGE_URL;

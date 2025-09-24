@@ -16,7 +16,7 @@ use Bugo\LightPortal\Utils\FileInterface;
 use Bugo\LightPortal\Utils\PostInterface;
 use Bugo\LightPortal\Utils\RequestInterface;
 
-use function app;
+use function Bugo\LightPortal\app;
 
 trait HasRequest
 {

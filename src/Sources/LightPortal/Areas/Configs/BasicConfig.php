@@ -31,6 +31,8 @@ use Bugo\LightPortal\UI\Partials\ActionSelect;
 use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasSession;
 
+use function Bugo\LightPortal\app;
+
 use const LP_VERSION;
 
 if (! defined('SMF'))

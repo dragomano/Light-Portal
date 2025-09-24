@@ -60,6 +60,8 @@ use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Validators\PageValidator;
 use WPLake\Typed\Typed;
 
+use function Bugo\LightPortal\app;
+
 use const LP_NAME;
 
 if (! defined('SMF'))

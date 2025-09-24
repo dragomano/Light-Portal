@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 21.09.25
+ * @version 24.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\EzPortalMigration;
@@ -19,6 +19,8 @@ use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Utils\DatabaseInterface;
 use Bugo\LightPortal\Utils\ErrorHandlerInterface;
 use Bugo\LightPortal\Utils\Icon;
+
+use function Bugo\LightPortal\app;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

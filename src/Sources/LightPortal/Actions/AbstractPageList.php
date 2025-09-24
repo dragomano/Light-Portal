@@ -25,8 +25,7 @@ use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasBreadcrumbs;
 
-use function app;
-use function date;
+use function Bugo\LightPortal\app;
 
 use const LP_PAGE_URL;
 

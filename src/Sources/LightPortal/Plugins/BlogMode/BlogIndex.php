@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 12.02.25
+ * @version 24.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\BlogMode;
@@ -18,6 +18,8 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Actions\FrontPage;
 use Bugo\LightPortal\Utils\Traits\HasBreadcrumbs;
+
+use function Bugo\LightPortal\app;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

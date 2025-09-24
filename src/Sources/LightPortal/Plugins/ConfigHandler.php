@@ -15,6 +15,8 @@ namespace Bugo\LightPortal\Plugins;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Repositories\PluginRepository;
 
+use function Bugo\LightPortal\app;
+
 class ConfigHandler
 {
 	private static array $settings;

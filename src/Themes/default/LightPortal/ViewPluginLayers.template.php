@@ -3,6 +3,8 @@
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Events\EventManagerFactory;
 
+use function Bugo\LightPortal\app;
+
 /**
  * @layer lp_plugins
  * @see Utils::$context['template_layers']

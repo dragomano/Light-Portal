@@ -32,15 +32,7 @@ use Bugo\LightPortal\Utils\Traits\HasRequest;
 use Bugo\LightPortal\Utils\Traits\HasResponse;
 use WPLake\Typed\Typed;
 
-use function app;
-use function array_map;
-use function array_slice;
-use function count;
-use function date;
-use function http_response_code;
-use function preg_replace_callback;
-use function time;
-use function trim;
+use function Bugo\LightPortal\app;
 
 use const LP_BASE_URL;
 

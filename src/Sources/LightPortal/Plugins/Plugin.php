@@ -26,9 +26,7 @@ use Bugo\LightPortal\Utils\Traits\HasSession;
 use Bugo\LightPortal\Utils\Traits\HasForumHooks;
 use Stringable;
 
-use function basename;
-use function sprintf;
-use function str_replace;
+use function Bugo\LightPortal\app;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

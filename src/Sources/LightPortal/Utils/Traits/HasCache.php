@@ -15,7 +15,7 @@ namespace Bugo\LightPortal\Utils\Traits;
 use Bugo\Compat\User;
 use Bugo\LightPortal\Utils\CacheInterface;
 
-use function app;
+use function Bugo\LightPortal\app;
 
 trait HasCache
 {

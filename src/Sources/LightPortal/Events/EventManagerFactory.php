@@ -14,6 +14,8 @@ namespace Bugo\LightPortal\Events;
 
 use Bugo\LightPortal\Plugins\PluginHandler;
 
+use function Bugo\LightPortal\app;
+
 final class EventManagerFactory
 {
 	private static array $plugins = [];

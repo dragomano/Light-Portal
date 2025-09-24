@@ -36,20 +36,7 @@ use Bugo\LightPortal\Utils\Notify;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
-use function array_merge;
-use function array_pop;
-use function array_shift;
-use function count;
-use function date;
-use function explode;
-use function filter_input;
-use function htmlentities;
-use function is_array;
-use function is_int;
-use function preg_match_all;
-use function str_contains;
-use function strtotime;
-use function time;
+use function Bugo\LightPortal\app;
 
 use const LP_ACTION;
 use const LP_PAGE_URL;

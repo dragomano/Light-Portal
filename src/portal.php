@@ -13,6 +13,8 @@
 use Bugo\Compat\{Config, Lang, Utils};
 use Bugo\LightPortal\Actions\FrontPage;
 
+use function Bugo\LightPortal\app;
+
 require_once __DIR__ . '/SSI.php';
 
 if (empty(Config::$sourcedir)) {

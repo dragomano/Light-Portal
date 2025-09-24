@@ -44,6 +44,7 @@ use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Validators\BlockValidator;
 use WPLake\Typed\Typed;
 
+use function Bugo\LightPortal\app;
 use function template_show_areas_info;
 
 use const LP_NAME;

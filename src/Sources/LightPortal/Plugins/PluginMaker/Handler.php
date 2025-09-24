@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 19.09.25
+ * @version 24.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
@@ -32,6 +32,8 @@ use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 use Bugo\LightPortal\Utils\Traits\HasView;
+
+use function Bugo\LightPortal\app;
 
 use const LP_ADDON_DIR;
 use const LP_NAME;

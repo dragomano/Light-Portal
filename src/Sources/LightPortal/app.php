@@ -10,13 +10,12 @@
  * @version 3.0
  */
 
+namespace Bugo\LightPortal;
+
 if (! defined('SMF'))
 	die('We gotta get out of here!');
 
 require_once __DIR__ . '/Libs/autoload.php';
-
-use Bugo\LightPortal\Container;
-use Bugo\LightPortal\PortalApp;
 
 if (! function_exists('app')) {
 	/**

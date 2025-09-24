@@ -32,25 +32,7 @@ use Bugo\LightPortal\Utils\Traits\HasCache;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 use Bugo\LightPortal\Utils\Traits\HasResponse;
 
-use function app;
-use function array_filter;
-use function array_flip;
-use function array_intersect;
-use function array_keys;
-use function array_map;
-use function array_search;
-use function array_unique;
-use function explode;
-use function file_get_contents;
-use function implode;
-use function in_array;
-use function is_array;
-use function is_file;
-use function ksort;
-use function preg_match;
-use function sort;
-use function sprintf;
-use function unlink;
+use function Bugo\LightPortal\app;
 
 use const LP_NAME;
 use const LP_VERSION;

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 25.08.25
+ * @version 24.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\AdsBlock;
@@ -33,11 +33,7 @@ use Bugo\LightPortal\UI\Partials\PageSelect;
 use Bugo\LightPortal\UI\Partials\TopicSelect;
 use Bugo\LightPortal\Utils\Content;
 
-use function date;
-use function function_exists;
-use function lp_show_blocks;
-use function ob_get_clean;
-use function ob_start;
+use function Bugo\LightPortal\app;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

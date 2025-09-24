@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 14.08.25
+ * @version 24.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
@@ -17,6 +17,8 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Lists\PluginList;
 use Bugo\LightPortal\Validators\AbstractValidator;
+
+use function Bugo\LightPortal\app;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

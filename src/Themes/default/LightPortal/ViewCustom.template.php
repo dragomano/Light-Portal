@@ -4,6 +4,8 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Events\EventManagerFactory;
 
+use function Bugo\LightPortal\app;
+
 /**
  * @layer custom
  * @see Utils::$context['template_layers']

@@ -19,7 +19,7 @@ use Bugo\LightPortal\Utils\Request;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
-use function app;
+use function Bugo\LightPortal\app;
 
 class PageButtonsRow extends Row
 {

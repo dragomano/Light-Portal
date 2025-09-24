@@ -26,6 +26,8 @@ use Bugo\LightPortal\Repositories\BlockRepository;
 use Bugo\LightPortal\Utils\SessionManager;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 
+use function Bugo\LightPortal\app;
+
 if (! defined('SMF'))
 	die('No direct access...');
 

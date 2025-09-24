@@ -17,7 +17,7 @@ use Bugo\Compat\Lang;
 use Bugo\LightPortal\Utils\Request;
 use Bugo\LightPortal\Utils\Str;
 
-use function app;
+use function Bugo\LightPortal\app;
 
 class PageContextMenuColumn extends ContextMenuColumn
 {
