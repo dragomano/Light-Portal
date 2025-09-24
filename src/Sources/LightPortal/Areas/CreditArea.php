@@ -23,9 +23,6 @@ use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasForumHooks;
 
-use function date;
-use function shuffle;
-
 use const LP_NAME;
 use const LP_VERSION;
 
@@ -163,6 +160,10 @@ final class CreditArea
 				'name' => 'Robo',
 				'link' => 'https://robo.li/'
 			],
+			[
+				'name' => 'Pest',
+				'link' => 'https://pestphp.com'
+			],
 		];
 
 		$links = [
@@ -207,7 +208,7 @@ final class CreditArea
 				'link' => 'https://github.com/EFTEC/BladeOne',
 				'author' => 'Jorge Patricio Castro Castillo',
 				'license' => [
-					'name' => 'The MIT License',
+					'name' => 'the MIT License',
 					'link' => 'https://github.com/EFTEC/BladeOne/blob/master/LICENSE'
 				]
 			],
