@@ -48,6 +48,7 @@
 			<file>src/Sources/LightPortal/Lists/index.php</file>
 			<file>src/Sources/LightPortal/Migrations/Columns/index.php</file>
 			<file>src/Sources/LightPortal/Migrations/Creators/index.php</file>
+			<file>src/Sources/LightPortal/Migrations/Operations/index.php</file>
 			<file>src/Sources/LightPortal/Migrations/Upgraders/index.php</file>
 			<file>src/Sources/LightPortal/Migrations/index.php</file>
 			<file>src/Sources/LightPortal/Models/index.php</file>

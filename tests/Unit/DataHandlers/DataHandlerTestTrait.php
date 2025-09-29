@@ -598,7 +598,7 @@ trait DataHandlerTestTrait
         $mock->shouldReceive('insertData')->andReturn($config['insertDataReturn']);
 
         // Set XML data if provided
-        if (!empty($config['xmlData'])) {
+        if (! empty($config['xmlData'])) {
             $xmlMock = $this->createXmlMock($config['xmlData'], $config['entity']);
             $reflection = new ReflectionClass($importClass);
             if ($reflection->hasProperty('xml')) {

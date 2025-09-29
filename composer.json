@@ -37,9 +37,9 @@
     "check": "vendor/bin/rector process --dry-run --clear-cache",
     "tests": "vendor/bin/pest --colors=always",
     "tests-debug": "vendor/bin/pest --colors=always --display-warnings",
-    "tests-coverage": "vendor/bin/pest --colors=always --coverage --min=10",
-    "tests-coverage-clover": "vendor/bin/pest --colors=always --min=10 --coverage-clover coverage.xml",
-    "tests-coverage-html": "vendor/bin/pest --colors=always --min=10 --coverage-html coverage",
+    "tests-coverage": "vendor/bin/pest --colors=always --coverage --min=30",
+    "tests-coverage-clover": "vendor/bin/pest --colors=always --min=30 --coverage-clover coverage.xml",
+    "tests-coverage-html": "vendor/bin/pest --colors=always --min=30 --coverage-html coverage",
     "assets": [
       "pnpm update",
       "pnpm run build",
