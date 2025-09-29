@@ -33,6 +33,11 @@ use Bugo\LightPortal\Areas\CreditArea;
 use Bugo\LightPortal\Areas\PageArea;
 use Bugo\LightPortal\Areas\PluginArea;
 use Bugo\LightPortal\Areas\TagArea;
+use Bugo\LightPortal\Articles\BoardArticle;
+use Bugo\LightPortal\Articles\ChosenPageArticle;
+use Bugo\LightPortal\Articles\ChosenTopicArticle;
+use Bugo\LightPortal\Articles\PageArticle;
+use Bugo\LightPortal\Articles\TopicArticle;
 use Bugo\LightPortal\DataHandlers\Exports\BlockExport;
 use Bugo\LightPortal\DataHandlers\Exports\CategoryExport;
 use Bugo\LightPortal\DataHandlers\Exports\PageExport;
@@ -50,6 +55,9 @@ use Bugo\LightPortal\Lists\IconList;
 use Bugo\LightPortal\Lists\PageList;
 use Bugo\LightPortal\Lists\PluginList;
 use Bugo\LightPortal\Lists\TagList;
+use Bugo\LightPortal\Migrations\PortalAdapter;
+use Bugo\LightPortal\Migrations\PortalAdapterFactory;
+use Bugo\LightPortal\Migrations\PortalAdapterInterface;
 use Bugo\LightPortal\Models\BlockFactory;
 use Bugo\LightPortal\Models\CategoryFactory;
 use Bugo\LightPortal\Models\PageFactory;
@@ -60,7 +68,6 @@ use Bugo\LightPortal\Plugins\LangHandler;
 use Bugo\LightPortal\Plugins\PluginHandler;
 use Bugo\LightPortal\Renderers\Blade;
 use Bugo\LightPortal\Renderers\RendererInterface;
-use Bugo\LightPortal\Repositories\AbstractRepository;
 use Bugo\LightPortal\Repositories\BlockRepository;
 use Bugo\LightPortal\Repositories\BlockRepositoryInterface;
 use Bugo\LightPortal\Repositories\CategoryRepository;
@@ -70,7 +77,6 @@ use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Repositories\PageRepositoryInterface;
 use Bugo\LightPortal\Repositories\PluginRepository;
 use Bugo\LightPortal\Repositories\PluginRepositoryInterface;
-use Bugo\LightPortal\Repositories\RepositoryInterface;
 use Bugo\LightPortal\Repositories\TagRepository;
 use Bugo\LightPortal\Repositories\TagRepositoryInterface;
 use Bugo\LightPortal\UI\Breadcrumbs\BreadcrumbRenderer;
@@ -105,7 +111,7 @@ if (! defined('SMF'))
 
 class ServiceProvider extends AbstractServiceProvider
 {
-	private array $services = [
+	private const SERVICES = [
 		AssetHandler::class,
 		Block::class,
 		BlockArea::class,
@@ -114,6 +120,7 @@ class ServiceProvider extends AbstractServiceProvider
 		BlockImport::class,
 		BlockRepository::class,
 		BlockValidator::class,
+		BoardArticle::class,
 		BoardIndex::class,
 		BreadcrumbBuilder::class,
 		BreadcrumbPresenter::class,
@@ -130,6 +137,8 @@ class ServiceProvider extends AbstractServiceProvider
 		CategoryList::class,
 		CategoryRepository::class,
 		CategoryValidator::class,
+		ChosenPageArticle::class,
+		ChosenTopicArticle::class,
 		Comment::class,
 		CommentRepository::class,
 		ConfigArea::class,
@@ -152,6 +161,7 @@ class ServiceProvider extends AbstractServiceProvider
 		LangHandler::class,
 		Page::class,
 		PageArea::class,
+		PageArticle::class,
 		PageExport::class,
 		PageFactory::class,
 		PageImport::class,
@@ -165,6 +175,8 @@ class ServiceProvider extends AbstractServiceProvider
 		PluginList::class,
 		PluginRepository::class,
 		PluginRepositoryInterface::class,
+		PortalAdapter::class,
+		PortalAdapterInterface::class,
 		PortalApp::class,
 		Post::class,
 		PostInterface::class,
@@ -184,12 +196,13 @@ class ServiceProvider extends AbstractServiceProvider
 		TagList::class,
 		TagRepository::class,
 		TagValidator::class,
+		TopicArticle::class,
 		Weaver::class,
 	];
 
 	public function provides(string $id): bool
 	{
-		return in_array($id, $this->services);
+		return in_array($id, self::SERVICES, true);
 	}
 
 	public function register(): void
@@ -198,6 +211,9 @@ class ServiceProvider extends AbstractServiceProvider
 
 		$container->add(Database::class);
 		$container->add(DatabaseInterface::class, Database::class);
+
+		$container->add(PortalAdapter::class);
+		$container->add(PortalAdapterInterface::class, PortalAdapter::class);
 
 		$container->add(PortalApp::class);
 		$container->add(Integration::class);
@@ -209,6 +225,12 @@ class ServiceProvider extends AbstractServiceProvider
 		$container->add(TableRenderer::class);
 		$container->add(FormPresenter::class)->addArgument(FormRenderer::class);
 		$container->add(FormRenderer::class);
+
+		$container->add(PageArticle::class);
+		$container->add(TopicArticle::class);
+		$container->add(BoardArticle::class);
+		$container->add(ChosenPageArticle::class);
+		$container->add(ChosenTopicArticle::class);
 
 		$container->add(EventManager::class);
 		$container->add(AssetHandler::class);
@@ -234,14 +256,17 @@ class ServiceProvider extends AbstractServiceProvider
 		$container->add(FileInterface::class, File::class);
 		$container->add(Session::class);
 
-		$container->add(BlockRepository::class);
-		$container->add(CategoryRepository::class);
 		$container->add(CommentRepository::class);
-		$container->add(PageRepository::class);
-		$container->add(TagRepository::class);
 		$container->add(PluginRepository::class);
 
-		$container->add(RepositoryInterface::class, AbstractRepository::class);
+		$container->add(PageRepositoryInterface::class, function () {
+			return new PageRepository(PortalAdapterFactory::create());
+		});
+
+		$container->add(BlockRepository::class);
+		$container->add(CategoryRepository::class);
+		$container->add(TagRepository::class);
+
 		$container->add(BlockRepositoryInterface::class, BlockRepository::class);
 		$container->add(PageRepositoryInterface::class, PageRepository::class);
 		$container->add(CategoryRepositoryInterface::class, CategoryRepository::class);

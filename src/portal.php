@@ -15,7 +15,12 @@ use Bugo\LightPortal\Actions\FrontPage;
 
 use function Bugo\LightPortal\app;
 
-require_once __DIR__ . '/SSI.php';
+$ssi = __DIR__ . DIRECTORY_SEPARATOR . 'SSI.php';
+if (! file_exists($ssi)) {
+	die('No SSI file found');
+}
+
+require_once $ssi;
 
 if (empty(Config::$sourcedir)) {
 	die('<strong>' . Lang::$txt['error_occured'] . '</strong> ' . Lang::$txt['lp_standalone_mode_error']);

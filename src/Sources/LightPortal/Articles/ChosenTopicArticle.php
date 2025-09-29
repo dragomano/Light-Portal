@@ -34,12 +34,12 @@ final class ChosenTopicArticle extends TopicArticle
 		$this->params['selected_topics'] = $this->selectedTopics;
 	}
 
-	public function getData(int $start, int $limit): iterable
+	public function getData(int $start, int $limit, string $sortType = null): iterable
 	{
 		if (empty($this->selectedTopics))
 			return [];
 
-		return parent::getData($start, $limit);
+		return parent::getData($start, $limit, $sortType);
 	}
 
 	public function getTotalCount(): int

@@ -6,10 +6,12 @@ namespace Tests;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
+use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Mockery;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 class CustomTestCase extends TestCase
 {
@@ -22,7 +24,13 @@ class CustomTestCase extends TestCase
 
         Utils::$context = &$GLOBALS['context'];
         Utils::$smcFunc = &$GLOBALS['smcFunc'];
+
         Utils::$context['admin_menu_name'] = 'admin';
+        Utils::$context['right_to_left'] = false;
+
+        $themeCurrent = new stdClass();
+        $themeCurrent->settings = ['default_theme_dir' => '/themes/default'];
+        Theme::$current = $themeCurrent;
 
         User::$me = new User(1);
         User::$me->name = 'TestUser';

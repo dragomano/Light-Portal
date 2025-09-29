@@ -50,11 +50,11 @@ $txt['lp_frontpage_pages_no_items'] = 'There are no active pages';
 $txt['lp_frontpage_topics'] = 'Topics - sources of articles for the front page';
 $txt['lp_frontpage_topics_select'] = 'Select the desired topics';
 $txt['lp_frontpage_topics_no_items'] = 'There are no approved topics';
-$txt['lp_frontpage_order_by_replies'] = 'Display articles with the highest number of comments first';
 $txt['lp_frontpage_article_sorting'] = 'Sort articles';
-$txt['lp_frontpage_article_sorting_set'] = ['By last comment', 'By posting date (new first)', 'By posting date (old first)', 'By last update (fresh first)'];
+$txt['lp_frontpage_article_sorting_set'] = ['last_comment;desc' => 'By last comment', 'created;desc' => 'By posting date (new first)', 'updated;desc' => 'By last update (fresh first)', 'title;desc' => 'By title', 'author_name;desc' => 'By author name'];
 $txt['lp_frontpage_article_sorting_help'] = 'When you select the first option, the article cards display the dates and the latest commentators (if they are available).';
 $txt['lp_show_layout_switcher'] = 'Show layout switcher';
+$txt['lp_show_sort_dropdown'] = 'Show sort dropdown';
 $txt['lp_frontpage_num_columns'] = 'Number of columns for displaying articles';
 $txt['lp_frontpage_num_columns_set'] = '{columns, plural,
 	one {# column}
@@ -102,7 +102,6 @@ $txt['lp_comment_block_set'] = ['None', 'Integrated'];
 $txt['lp_time_to_change_comments'] = 'Maximum time after commenting to allow edit';
 $txt['lp_num_comments_per_page'] = 'Number of parent comments per page';
 $txt['lp_comment_sorting'] = 'Sort comments by default';
-$txt['lp_show_items_as_articles'] = 'Show items on tag/category pages as cards';
 $txt['lp_page_maximum_tags'] = 'The maximum number of tags that can be added to a page';
 $txt['lp_permissions_default'] = 'Default permissions for pages and blocks';
 $txt['lp_hide_blocks_in_acp'] = 'Hide active blocks in the admin area';
@@ -289,6 +288,14 @@ $txt['lp_sort_by_author_desc'] = 'Author name (desc)';
 $txt['lp_sort_by_author'] = 'Author name (asc)';
 $txt['lp_sort_by_num_views_desc'] = 'Number of views (desc)';
 $txt['lp_sort_by_num_views'] = 'Number of views (asc)';
+$txt['lp_sort_by_num_replies_desc'] = 'Number of replies (desc)';
+$txt['lp_sort_by_num_replies'] = 'Number of replies (asc)';
+$txt['lp_sort_by_num_comments_desc'] = 'Number of comments (desc)';
+$txt['lp_sort_by_num_comments'] = 'Number of comments (asc)';
+$txt['lp_sort_by_last_reply_desc'] = 'Last reply date (desc)';
+$txt['lp_sort_by_last_reply'] = 'Last reply date (asc)';
+$txt['lp_sort_by_last_comment_desc'] = 'Last comment date (desc)';
+$txt['lp_sort_by_last_comment'] = 'Last comment date (asc)';
 
 // Modlog
 $txt['modlog_ac_update_lp_page'] = 'Updated page "{page}"';

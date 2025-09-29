@@ -14,6 +14,7 @@ namespace Bugo\LightPortal\Repositories;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Db;
+use Bugo\Compat\Lang;
 use Bugo\Compat\Msg;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
@@ -151,6 +152,7 @@ abstract class AbstractRepository implements RepositoryInterface
 			'empty_string'  => '',
 			'lang'          => User::$me->language,
 			'fallback_lang' => Config::$language,
+			'guest'         => Lang::$txt['guest_title'],
 		];
 	}
 

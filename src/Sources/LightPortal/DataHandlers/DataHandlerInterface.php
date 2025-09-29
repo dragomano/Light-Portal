@@ -12,9 +12,6 @@
 
 namespace Bugo\LightPortal\DataHandlers;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
 interface DataHandlerInterface
 {
 	public function main(): void;

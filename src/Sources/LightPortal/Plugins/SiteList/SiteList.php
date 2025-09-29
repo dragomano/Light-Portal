@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 27.08.25
+ * @version 24.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\SiteList;
@@ -19,6 +19,8 @@ use Bugo\LightPortal\Enums\VarType;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Utils\Traits\HasView;
+
+use function Bugo\LightPortal\app;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -66,6 +68,8 @@ class SiteList extends Plugin
 	public function frontModes(Event $e): void
 	{
 		$e->args->modes[$this->mode] = SiteArticle::class;
+
+		app()->add(SiteArticle::class);
 
 		Config::$modSettings['lp_frontpage_mode'] = $this->mode;
 	}

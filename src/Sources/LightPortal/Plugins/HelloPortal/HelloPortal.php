@@ -8,12 +8,11 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 24.09.25
+ * @version 25.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\HelloPortal;
 
-use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
@@ -151,7 +150,7 @@ class HelloPortal extends Plugin
 
 	private function getStepData(): string
 	{
-		$steps = (new TourRegistry())->getSteps($this->txt, Config::$modSettings);
+		$steps = (new TourRegistry())->getSteps($this->txt);
 
 		return match (true) {
 			$this->isCurrentArea('lp_settings', 'basic') => $steps['basic_settings'],

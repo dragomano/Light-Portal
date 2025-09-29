@@ -19,7 +19,7 @@ if (! defined('SMF'))
 
 class PortalAdapterFactory
 {
-	public static function create(): PortalAdapter
+	public static function create(array $options = []): PortalAdapterInterface
 	{
 		$driver = match (Config::$db_type) {
 			'postgresql' => 'Pdo_Pgsql',
@@ -27,13 +27,15 @@ class PortalAdapterFactory
 			default      => 'Pdo_Mysql',
 		};
 
-		return new PortalAdapter([
+		$config = [
 			'driver'   => $driver,
 			'hostname' => Config::$db_server,
 			'database' => Config::$db_name,
 			'prefix'   => str_replace('`' . Config::$db_name . '`.', '', Config::$db_prefix),
 			'username' => Config::$db_user,
 			'password' => Config::$db_passwd,
-		]);
+		];
+
+		return new PortalAdapter(array_merge($config, $options));
 	}
 }

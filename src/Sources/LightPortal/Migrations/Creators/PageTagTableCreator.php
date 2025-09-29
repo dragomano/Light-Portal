@@ -13,7 +13,7 @@
 namespace Bugo\LightPortal\Migrations\Creators;
 
 use Bugo\LightPortal\Migrations\Columns\UnsignedInteger;
-use Bugo\LightPortal\Migrations\CreatePortalTable;
+use Bugo\LightPortal\Migrations\PortalTable;
 use Laminas\Db\Sql\Ddl\Constraint\PrimaryKey;
 
 if (! defined('SMF'))
@@ -21,20 +21,17 @@ if (! defined('SMF'))
 
 class PageTagTableCreator extends AbstractTableCreator
 {
-	protected function getTableSuffix(): string
-	{
-		return 'page_tag';
-	}
+	protected string $tableName = 'lp_page_tag';
 
-	protected function defineColumns(CreatePortalTable $createTable): void
+	protected function defineColumns(PortalTable $table): void
 	{
 		$pageId = new UnsignedInteger('page_id');
 		$tagId  = new UnsignedInteger('tag_id');
 
-		$createTable->addColumn($pageId);
-		$createTable->addColumn($tagId);
+		$table->addColumn($pageId);
+		$table->addColumn($tagId);
 
 		$compositePrimaryKey = new PrimaryKey(['page_id', 'tag_id']);
-		$createTable->addConstraint($compositePrimaryKey);
+		$table->addConstraint($compositePrimaryKey);
 	}
 }

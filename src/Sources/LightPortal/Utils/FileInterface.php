@@ -12,9 +12,6 @@
 
 namespace Bugo\LightPortal\Utils;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
 interface FileInterface
 {
 	public function free(string $key): void;

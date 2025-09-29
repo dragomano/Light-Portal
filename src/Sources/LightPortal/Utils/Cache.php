@@ -17,6 +17,8 @@ use Bugo\LightPortal\Utils\Traits\HasRequest;
 
 use function Bugo\LightPortal\app;
 
+use const LP_CACHE_TIME;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -26,7 +28,12 @@ final class Cache implements CacheInterface
 
 	private string $prefix = 'lp_';
 
-	public function __construct(private readonly ?string $key = null, private int $lifeTime = LP_CACHE_TIME ?? 0) {}
+	public function __construct(private readonly ?string $key = null, private ?int $lifeTime = null)
+	{
+		if ($lifeTime === null) {
+			$this->lifeTime = LP_CACHE_TIME ?? 0;
+		}
+	}
 
 	public function withKey(?string $key): self
 	{
@@ -44,8 +51,12 @@ final class Cache implements CacheInterface
 		return $this;
 	}
 
-	public function remember(string $key, callable $callback, int $time = LP_CACHE_TIME ?? 0): mixed
+	public function remember(string $key, callable $callback, ?int $time = null): mixed
 	{
+		if ($time === null) {
+			$time = $this->lifeTime;
+		}
+
 		if ($time === 0) {
 			$this->forget($key);
 		}

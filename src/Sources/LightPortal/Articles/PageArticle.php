@@ -15,7 +15,6 @@ namespace Bugo\LightPortal\Articles;
 use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
-use Bugo\Compat\Parsers\BBCodeParser;
 use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Permission;
@@ -37,8 +36,6 @@ class PageArticle extends AbstractArticle
 {
 	protected array $selectedCategories = [];
 
-	protected int $sorting = 0;
-
 	public function init(): void
 	{
 		$this->selectedCategories = Setting::get('lp_frontpage_categories', 'array', []);
@@ -46,8 +43,6 @@ class PageArticle extends AbstractArticle
 		if (empty($this->selectedCategories) && Setting::isFrontpageMode('all_pages')) {
 			$this->selectedCategories = [0];
 		}
-
-		$this->sorting = Setting::get('lp_frontpage_article_sorting', 'int', 0);
 
 		$this->params = [
 			'empty_string'        => '',
@@ -61,10 +56,20 @@ class PageArticle extends AbstractArticle
 		];
 
 		$this->orders = [
-			'CASE WHEN com.created_at > 0 THEN 0 ELSE 1 END, comment_date DESC',
-			'p.created_at DESC',
-			'p.created_at',
-			'date DESC',
+			'created;desc'      => 'p.created_at DESC',
+			'created'           => 'p.created_at',
+			'updated;desc'      => 'GREATEST(p.created_at, p.updated_at) DESC',
+			'updated'           => 'GREATEST(p.created_at, p.updated_at)',
+			'last_comment;desc' => 'comment_date DESC',
+			'last_comment'      => 'comment_date',
+			'title;desc'        => 'title DESC',
+			'title'             => 'title',
+			'author_name;desc'  => 'author_name DESC',
+			'author_name'       => 'author_name',
+			'num_views;desc'    => 'p.num_views DESC',
+			'num_views'         => 'p.num_views',
+			'num_replies;desc'  => 'p.num_comments DESC',
+			'num_replies'       => 'p.num_comments',
 		];
 
 		$this->events()->dispatch(
@@ -79,20 +84,43 @@ class PageArticle extends AbstractArticle
 		);
 	}
 
-	public function getData(int $start, int $limit): iterable
+	public function getSortingOptions(): array
 	{
+		return [
+			'created;desc'      => Lang::$txt['lp_sort_by_created_desc'],
+			'created'           => Lang::$txt['lp_sort_by_created'],
+			'updated;desc'      => Lang::$txt['lp_sort_by_updated_desc'],
+			'updated'           => Lang::$txt['lp_sort_by_updated'],
+			'last_comment;desc' => Lang::$txt['lp_sort_by_last_comment_desc'],
+			'last_comment'      => Lang::$txt['lp_sort_by_last_comment'],
+			'title;desc'        => Lang::$txt['lp_sort_by_title_desc'],
+			'title'             => Lang::$txt['lp_sort_by_title'],
+			'author_name;desc'  => Lang::$txt['lp_sort_by_author_desc'],
+			'author_name'       => Lang::$txt['lp_sort_by_author'],
+			'num_views;desc'    => Lang::$txt['lp_sort_by_num_views_desc'],
+			'num_views'         => Lang::$txt['lp_sort_by_num_views'],
+			'num_replies;desc'  => Lang::$txt['lp_sort_by_num_comments_desc'],
+			'num_replies'       => Lang::$txt['lp_sort_by_num_comments'],
+		];
+	}
+
+	public function getData(int $start, int $limit, string $sortType = null): iterable
+	{
+		$this->sorting = $sortType;
+
 		$this->params += [
 			'start' => $start,
 			'limit' => $limit,
+			'sort'  => $this->orders[$this->sorting],
 		];
 
 		$result = Db::$db->query(/** @lang text */ '
 			SELECT
 				p.*, GREATEST(p.created_at, p.updated_at) AS date,
 				CASE WHEN COALESCE(par.value, "0") != "0" THEN p.num_comments ELSE 0 END AS num_comments,
-				COALESCE(NULLIF(t.title, {string:empty_string}), tf.title, {string:empty_string}) AS title,
-				COALESCE(NULLIF(t.content, {string:empty_string}), tf.content, {string:empty_string}) AS content,
-				COALESCE(NULLIF(t.description, {string:empty_string}), tf.description, {string:empty_string}) AS description,
+				COALESCE(t.title, tf.title, {string:empty_string}) AS title,
+				COALESCE(t.content, tf.content, {string:empty_string}) AS content,
+				COALESCE(t.description, tf.description, {string:empty_string}) AS description,
 				(
 					SELECT title
 					FROM {db_prefix}lp_translations
@@ -102,7 +130,7 @@ class PageArticle extends AbstractArticle
 					ORDER BY lang = {string:lang} DESC
 					LIMIT 1
 				) AS cat_title,
-				mem.real_name AS author_name, cat.icon as cat_icon, com.created_at AS comment_date,
+				mem.real_name AS author_name, cat.icon as cat_icon, COALESCE(com.created_at, p.created_at) AS comment_date,
 				com.author_id AS comment_author_id, mem2.real_name AS comment_author_name,
 				com.message AS comment_message' . (empty($this->columns) ? '' : ', ' . implode(', ', $this->columns)) . '
 			FROM {db_prefix}lp_pages AS p
@@ -117,7 +145,7 @@ class PageArticle extends AbstractArticle
 					p.page_id = tf.item_id AND tf.type = {literal:page} AND tf.lang = {string:fallback_lang}
 				)
 				LEFT JOIN {db_prefix}lp_params AS par ON (
-					par.item_id = com.page_id AND par.type = {literal:page} AND par.name = {literal:allow_comments}
+					par.item_id = p.page_id AND par.type = {literal:page} AND par.name = {literal:allow_comments}
 				)' . (empty($this->tables) ? '' : '
 				' . implode("\n\t\t\t\t\t", $this->tables)) . '
 			WHERE p.status = {int:status}
@@ -127,8 +155,7 @@ class PageArticle extends AbstractArticle
 				AND p.permissions IN ({array_int:permissions})' . (empty($this->selectedCategories) ? '' : '
 				AND p.category_id IN ({array_int:selected_categories})') . (empty($this->wheres) ? '' : '
 				' . implode("\n\t\t\t\t\t", $this->wheres)) . '
-			ORDER BY ' . (empty(Config::$modSettings['lp_frontpage_order_by_replies']) ? '' : 'num_comments DESC, ')
-				. $this->orders[$this->sorting] . '
+			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
 			$this->params,
 		);
@@ -144,18 +171,21 @@ class PageArticle extends AbstractArticle
 			$row['content'] = Content::parse($row['content'], $row['type']);
 
 			$page = [
-				'id'        => (int) $row['page_id'],
-				'section'   => $this->getSectionData($row),
-				'author'    => $this->getAuthorData($row),
-				'date'      => $this->getDate($row),
-				'link'      => LP_PAGE_URL . $row['slug'],
-				'views'     => $this->getViewsData($row),
-				'replies'   => $this->getRepliesData($row),
-				'is_new'    => $this->isNew($row),
-				'image'     => $this->getImage($row),
-				'can_edit'  => $this->canEdit($row),
-				'edit_link' => $this->getEditLink($row),
-				'title'     => $row['title'],
+				'id'           => (int) $row['page_id'],
+				'section'      => $this->getSectionData($row),
+				'author'       => $this->getAuthorData($row),
+				'date'         => $this->getDate($row),
+				'created'      => (int) $row['created_at'],
+				'updated'      => (int) $row['updated_at'],
+				'last_comment' => (int) $row['comment_date'],
+				'link'         => LP_PAGE_URL . $row['slug'],
+				'views'        => $this->getViewsData($row),
+				'replies'      => $this->getRepliesData($row),
+				'is_new'       => $this->isNew($row),
+				'image'        => $this->getImage($row),
+				'can_edit'     => $this->canEdit($row),
+				'edit_link'    => $this->getEditLink($row),
+				'title'        => $row['title'],
 			];
 
 			$this->prepareTeaser($page, $row);
@@ -195,6 +225,48 @@ class PageArticle extends AbstractArticle
 		return (int) $count;
 	}
 
+	public function prepareTags(array &$pages): void
+	{
+		if ($pages === [])
+			return;
+
+		$result = Db::$db->query('
+			SELECT tag.*, pt.page_id, COALESCE(t.title, tf.title, {string:empty_string}) AS title
+			FROM {db_prefix}lp_tags AS tag
+				LEFT JOIN {db_prefix}lp_page_tag AS pt ON (tag.tag_id = pt.tag_id)
+				LEFT JOIN {db_prefix}lp_translations AS t ON (
+					pt.tag_id = t.item_id AND t.type = {literal:tag} AND t.lang = {string:lang}
+				)
+				LEFT JOIN {db_prefix}lp_translations AS tf ON (
+					pt.tag_id = tf.item_id AND tf.type = {literal:tag} AND tf.lang = {string:fallback_lang}
+				)
+			WHERE pt.page_id IN ({array_int:pages})
+				AND tag.status = {int:status}
+			ORDER BY title',
+			[
+				'empty_string'  => '',
+				'lang'          => User::$me->language,
+				'fallback_lang' => Config::$language,
+				'pages'         => array_keys($pages),
+				'status'        => Status::ACTIVE->value,
+			]
+		);
+
+		while ($row = Db::$db->fetch_assoc($result)) {
+			if ($row['title'] === '')
+				continue;
+
+			$pages[$row['page_id']]['tags'][] = [
+				'slug' => $row['slug'],
+				'icon' => Icon::parse($row['icon']),
+				'href' => PortalSubAction::TAGS->url() . ';id=' . $row['tag_id'],
+				'name' => $row['title'],
+			];
+		}
+
+		Db::$db->free_result($result);
+	}
+
 	private function getSectionData(array $row): array
 	{
 		return [
@@ -209,7 +281,7 @@ class PageArticle extends AbstractArticle
 		$authorId   = $row['author_id'];
 		$authorName = $row['author_name'];
 
-		if ($this->sorting === 0 && $row['num_comments']) {
+		if (str_contains($this->sorting, 'last_comment') && $row['num_comments']) {
 			$authorId   = $row['comment_author_id'];
 			$authorName = $row['comment_author_name'];
 		}
@@ -223,11 +295,11 @@ class PageArticle extends AbstractArticle
 
 	private function getDate(array $row): int
 	{
-		if ($this->sorting === 0 && $row['comment_date']) {
+		if (str_contains($this->sorting, 'last_comment') && $row['comment_date']) {
 			return (int) $row['comment_date'];
 		}
 
-		if ($this->sorting === 3) {
+		if (str_contains($this->sorting, 'updated')) {
 			return (int) $row['date'];
 		}
 
@@ -282,52 +354,6 @@ class PageArticle extends AbstractArticle
 		if (empty(Config::$modSettings['lp_show_teaser']))
 			return;
 
-		$page['teaser'] = Str::getTeaser(
-			$this->sorting === 0 && $row['num_comments']
-				? BBCodeParser::load()->parse($row['comment_message'])
-				: ($row['description'] ?: $row['content'])
-		);
-	}
-
-	public function prepareTags(array &$pages): void
-	{
-		if ($pages === [])
-			return;
-
-		$result = Db::$db->query('
-			SELECT tag.*, pt.page_id, COALESCE(t.title, tf.title, {string:empty_string}) AS title
-			FROM {db_prefix}lp_tags AS tag
-				LEFT JOIN {db_prefix}lp_page_tag AS pt ON (tag.tag_id = pt.tag_id)
-				LEFT JOIN {db_prefix}lp_translations AS t ON (
-					pt.tag_id = t.item_id AND t.type = {literal:tag} AND t.lang = {string:lang}
-				)
-				LEFT JOIN {db_prefix}lp_translations AS tf ON (
-					pt.tag_id = tf.item_id AND tf.type = {literal:tag} AND tf.lang = {string:fallback_lang}
-				)
-			WHERE pt.page_id IN ({array_int:pages})
-				AND tag.status = {int:status}
-			ORDER BY title',
-			[
-				'empty_string'  => '',
-				'lang'          => User::$me->language,
-				'fallback_lang' => Config::$language,
-				'pages'         => array_keys($pages),
-				'status'        => Status::ACTIVE->value,
-			]
-		);
-
-		while ($row = Db::$db->fetch_assoc($result)) {
-			if ($row['title'] === '')
-				continue;
-
-			$pages[$row['page_id']]['tags'][] = [
-				'slug' => $row['slug'],
-				'icon' => Icon::parse($row['icon']),
-				'href' => PortalSubAction::TAGS->url() . ';id=' . $row['tag_id'],
-				'name' => $row['title'],
-			];
-		}
-
-		Db::$db->free_result($result);
+		$page['teaser'] = Str::getTeaser($row['description'] ?: $row['content']);
 	}
 }

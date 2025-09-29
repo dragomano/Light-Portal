@@ -13,6 +13,7 @@
 namespace Bugo\LightPortal\Articles;
 
 use Bugo\LightPortal\Events\HasEvents;
+use Bugo\LightPortal\Utils\Traits\HasRequest;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -20,6 +21,9 @@ if (! defined('SMF'))
 abstract class AbstractArticle implements ArticleInterface
 {
 	use HasEvents;
+	use HasRequest;
+
+	protected string $sorting;
 
 	protected array $columns = [];
 
@@ -33,7 +37,9 @@ abstract class AbstractArticle implements ArticleInterface
 
 	abstract public function init(): void;
 
-	abstract public function getData(int $start, int $limit): iterable;
+	abstract public function getSortingOptions(): array;
+
+	abstract public function getData(int $start, int $limit, string $sortType = null): iterable;
 
 	abstract public function getTotalCount(): int;
 }

@@ -17,7 +17,7 @@ use Bugo\LightPortal\Enums\ContentClass;
 use Bugo\LightPortal\Enums\TitleClass;
 use Bugo\LightPortal\Migrations\Columns\AutoIncrementInteger;
 use Bugo\LightPortal\Migrations\Columns\TinyInteger;
-use Bugo\LightPortal\Migrations\CreatePortalTable;
+use Bugo\LightPortal\Migrations\PortalTable;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
 
 if (! defined('SMF'))
@@ -25,12 +25,9 @@ if (! defined('SMF'))
 
 class BlocksTableCreator extends AbstractTableCreator
 {
-	protected function getTableSuffix(): string
-	{
-		return 'blocks';
-	}
+	protected string $tableName = 'lp_blocks';
 
-	protected function defineColumns(CreatePortalTable $createTable): void
+	protected function defineColumns(PortalTable $table): void
 	{
 		$id           = new AutoIncrementInteger('block_id');
 		$icon         = new Varchar('icon', 60, true);
@@ -43,16 +40,16 @@ class BlocksTableCreator extends AbstractTableCreator
 		$titleClass   = new Varchar('title_class', 255, true);
 		$contentClass = new Varchar('content_class', 255, true);
 
-		$createTable->addAutoIncrementColumn($id);
-		$createTable->addColumn($icon);
-		$createTable->addColumn($type);
-		$createTable->addColumn($placement);
-		$createTable->addColumn($priority);
-		$createTable->addColumn($permissions);
-		$createTable->addColumn($status);
-		$createTable->addColumn($areas);
-		$createTable->addColumn($titleClass);
-		$createTable->addColumn($contentClass);
+		$table->addAutoIncrementColumn($id);
+		$table->addColumn($icon);
+		$table->addColumn($type);
+		$table->addColumn($placement);
+		$table->addColumn($priority);
+		$table->addColumn($permissions);
+		$table->addColumn($status);
+		$table->addColumn($areas);
+		$table->addColumn($titleClass);
+		$table->addColumn($contentClass);
 	}
 
 	public function insertDefaultData(): void

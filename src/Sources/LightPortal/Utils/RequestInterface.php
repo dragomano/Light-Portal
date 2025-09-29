@@ -12,9 +12,6 @@
 
 namespace Bugo\LightPortal\Utils;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
 interface RequestInterface
 {
 	public function is(string $action, string $type = 'action'): bool;

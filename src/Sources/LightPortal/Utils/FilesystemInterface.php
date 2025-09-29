@@ -12,9 +12,6 @@
 
 namespace Bugo\LightPortal\Utils;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
 interface FilesystemInterface
 {
 	public function read(string $path): string;

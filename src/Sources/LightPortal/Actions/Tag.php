@@ -62,9 +62,7 @@ final class Tag extends AbstractPageList
 
 		$tag = $tags[$tag['id']];
 		Utils::$context['page_title'] = sprintf(Lang::$txt['lp_all_tags_by_key'], $tag['title']);
-
 		Utils::$context['current_tag'] = $tag['id'];
-
 		Utils::$context['canonical_url']  = PortalSubAction::TAGS->url() . ';id=' . $tag['id'];
 		Utils::$context['robot_no_index'] = true;
 
@@ -73,12 +71,6 @@ final class Tag extends AbstractPageList
 			->add($tag['title']);
 
 		$this->cardList->show($this);
-
-		$builder = $this->cardList->getBuilder('lp_tags');
-		$builder->setItems($this->getPages(...));
-		$builder->setCount($this->getTotalPages(...));
-
-		app(TablePresenter::class)->show($builder);
 
 		Utils::obExit();
 	}
@@ -89,13 +81,15 @@ final class Tag extends AbstractPageList
 			SELECT
 				p.*, GREATEST(p.created_at, p.updated_at) AS date,
 				COALESCE(mem.real_name, {string:empty_string}) AS author_name,
+				COALESCE(com.created_at, 0) AS comment_date,
 				COALESCE(NULLIF(t.title, {string:empty_string}), tf.title, {string:empty_string}) AS title,
 				COALESCE(NULLIF(t.content, {string:empty_string}), tf.content, {string:empty_string}) AS content,
 				COALESCE(NULLIF(t.description, {string:empty_string}), tf.description, {string:empty_string}) AS description
 			FROM {db_prefix}lp_pages AS p
+				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				INNER JOIN {db_prefix}lp_page_tag AS pt ON (p.page_id = pt.page_id)
 				INNER JOIN {db_prefix}lp_tags AS tag ON (pt.tag_id = tag.tag_id)
-				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
+				LEFT JOIN {db_prefix}lp_comments AS com ON (p.last_comment_id = com.id)
 				LEFT JOIN {db_prefix}lp_translations AS t ON (
 					p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang}
 				)

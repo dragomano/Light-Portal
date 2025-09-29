@@ -14,7 +14,7 @@ namespace Bugo\LightPortal\Migrations\Creators;
 
 use Bugo\LightPortal\Migrations\Columns\AutoIncrementInteger;
 use Bugo\LightPortal\Migrations\Columns\TinyInteger;
-use Bugo\LightPortal\Migrations\CreatePortalTable;
+use Bugo\LightPortal\Migrations\PortalTable;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
 
 if (! defined('SMF'))
@@ -22,21 +22,18 @@ if (! defined('SMF'))
 
 class TagsTableCreator extends AbstractTableCreator
 {
-	protected function getTableSuffix(): string
-	{
-		return 'tags';
-	}
+	protected string $tableName = 'lp_tags';
 
-	protected function defineColumns(CreatePortalTable $createTable): void
+	protected function defineColumns(PortalTable $table): void
 	{
 		$tagId  = new AutoIncrementInteger('tag_id');
 		$slug   = new Varchar('slug', 255);
 		$icon   = new Varchar('icon', 60, true);
 		$status = new TinyInteger('status', default: 1);
 
-		$createTable->addAutoIncrementColumn($tagId);
-		$createTable->addUniqueColumn($slug);
-		$createTable->addColumn($icon);
-		$createTable->addColumn($status);
+		$table->addAutoIncrementColumn($tagId);
+		$table->addUniqueColumn($slug);
+		$table->addColumn($icon);
+		$table->addColumn($status);
 	}
 }

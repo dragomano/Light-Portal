@@ -16,7 +16,7 @@ use Bugo\LightPortal\Migrations\Columns\AutoIncrementInteger;
 use Bugo\LightPortal\Migrations\Columns\MediumInteger;
 use Bugo\LightPortal\Migrations\Columns\SmallInteger;
 use Bugo\LightPortal\Migrations\Columns\UnsignedInteger;
-use Bugo\LightPortal\Migrations\CreatePortalTable;
+use Bugo\LightPortal\Migrations\PortalTable;
 use Laminas\Db\Sql\Ddl\Column\Text;
 
 if (! defined('SMF'))
@@ -24,12 +24,9 @@ if (! defined('SMF'))
 
 class CommentsTableCreator extends AbstractTableCreator
 {
-	protected function getTableSuffix(): string
-	{
-		return 'comments';
-	}
+	protected string $tableName = 'lp_comments';
 
-	protected function defineColumns(CreatePortalTable $createTable): void
+	protected function defineColumns(PortalTable $table): void
 	{
 		$id        = new AutoIncrementInteger();
 		$parentId  = new UnsignedInteger('parent_id');
@@ -38,11 +35,13 @@ class CommentsTableCreator extends AbstractTableCreator
 		$message   = new Text('message');
 		$createdAt = new UnsignedInteger('created_at');
 
-		$createTable->addAutoIncrementColumn($id);
-		$createTable->addColumn($parentId);
-		$createTable->addColumn($pageId);
-		$createTable->addColumn($authorId);
-		$createTable->addColumn($message);
-		$createTable->addColumn($createdAt);
+		$table->addAutoIncrementColumn($id);
+		$table->addColumn($parentId);
+		$table->addColumn($pageId);
+		$table->addColumn($authorId);
+		$table->addColumn($message);
+		$table->addColumn($createdAt);
+
+		$table->addIndex(['created_at'], 'idx_comments_created_at');
 	}
 }

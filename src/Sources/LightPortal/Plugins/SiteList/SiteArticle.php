@@ -8,7 +8,7 @@
  * @license Individual (for sponsors)
  *
  * @category plugin
- * @version 14.03.25
+ * @version 27.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\SiteList;
@@ -30,14 +30,15 @@ class SiteArticle extends AbstractArticle
 		$this->sites = Utils::jsonDecode(Utils::$context['lp_site_list_plugin']['urls'] ?? '', true);
 	}
 
-	public function getData(int $start, int $limit): array
+	public function getSortingOptions(): array
 	{
-		if (empty($this->sites))
-			return [];
+		return [];
+	}
 
-		$items = [];
+	public function getData(int $start, int $limit, string $sortType = null): iterable
+	{
 		foreach ($this->sites as $url => $data) {
-			$items[] = [
+			$item = [
 				'title'     => $data[1] ?: $url,
 				'is_new'    => false,
 				'edit_link' => Config::$scripturl . '?action=admin;area=lp_plugins',
@@ -46,9 +47,9 @@ class SiteArticle extends AbstractArticle
 				'teaser'    => $data[2] ?? '',
 				'image'     => $data[0] ?: ('https://mini.s-shot.ru/?' . urlencode($url))
 			];
-		}
 
-		return $items;
+			yield $url => $item;
+		}
 	}
 
 	public function getTotalCount(): int

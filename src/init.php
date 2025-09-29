@@ -5,16 +5,25 @@ use Bugo\LightPortal\Migrations\Installer;
 class PortalSetup
 {
 	private array $classMap = [];
+
 	private ?object $installer = null;
 
 	private static function checkRequirements(): void
 	{
 		if (version_compare(PHP_VERSION, '8.2', '<')) {
-			die('This mod needs PHP 8.2 or greater. You will not be able to install/use this mod. Please, contact your host and ask for a php upgrade.');
+			throw new RuntimeException(
+				'This mod needs PHP 8.2 or greater. ' .
+				'You will not be able to install/use this mod. ' .
+				'Please, contact your host and ask for a PHP upgrade.'
+			);
 		}
 
 		if (! extension_loaded('intl')) {
-			die('This mod needs intl extension to properly work with plurals, locale-aware numbers, and much more. Contact your host or install this extension by manual.');
+			throw new RuntimeException(
+				'This mod needs the intl extension to properly work with plurals, ' .
+				'locale-aware numbers, and much more. ' .
+				'Contact your host or install this extension manually.'
+			);
 		}
 	}
 

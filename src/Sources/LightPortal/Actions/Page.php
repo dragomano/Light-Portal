@@ -30,11 +30,12 @@ use Bugo\LightPortal\Utils\Traits\HasCache;
 use Bugo\LightPortal\Utils\Traits\HasBreadcrumbs;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 use Bugo\LightPortal\Utils\Traits\HasResponse;
-use Bugo\LightPortal\Utils\Traits\HasSession;
+use Bugo\LightPortal\Utils\Traits\HasSorting;
 use SimpleSEF;
 
 use function Bugo\LightPortal\app;
 
+use const LP_ACTION;
 use const LP_PAGE_PARAM;
 use const LP_PAGE_URL;
 
@@ -48,13 +49,15 @@ final readonly class Page implements ActionInterface
 	use HasEvents;
 	use HasRequest;
 	use HasResponse;
-	use HasSession;
+	use HasSorting;
 
 	public function __construct(private PageRepositoryInterface $repository) {}
 
 	public function show(): void
 	{
 		User::$me->isAllowedTo('light_portal_view');
+
+		$this->prepareSorting('frontpage_sorting');
 
 		$slug = $this->request()->get(LP_PAGE_PARAM);
 
@@ -292,18 +295,26 @@ final readonly class Page implements ActionInterface
 		if (empty($page = Utils::$context['lp_page']) || empty(Config::$modSettings['lp_show_prev_next_links']))
 			return;
 
-		[$prevTitle, $prevSlug, $nextTitle, $nextSlug] = $this->repository->getPrevNextLinks($page);
+		$withinCategory = str_contains(
+			filter_input(INPUT_SERVER, 'HTTP_REFERER') ?? '',
+			'action=' . LP_ACTION . ';sa=' . PortalSubAction::CATEGORIES->name() . ';id'
+		);
+		$withinCategory = $this->request()->has('from_category') ? true : $withinCategory;
+
+		[$prevTitle, $prevSlug, $nextTitle, $nextSlug] = $this->repository->getPrevNextLinks($page, $withinCategory);
+
+		$suffix = $withinCategory ? ';from_category' : '';
 
 		if (! empty($prevSlug)) {
 			Utils::$context['lp_page']['prev'] = [
-				'link'  => LP_PAGE_URL . $prevSlug,
+				'link'  => LP_PAGE_URL . $prevSlug . $suffix,
 				'title' => $prevTitle,
 			];
 		}
 
 		if (! empty($nextSlug)) {
 			Utils::$context['lp_page']['next'] = [
-				'link'  => LP_PAGE_URL . $nextSlug,
+				'link'  => LP_PAGE_URL . $nextSlug . $suffix,
 				'title' => $nextTitle,
 			];
 		}

@@ -21,7 +21,7 @@ if (! function_exists('app')) {
 	/**
 	 * @template RequestedType
 	 * @param class-string<RequestedType>|string $service
-	 * @return RequestedType|mixed
+	 * @return RequestedType|mixed|\League\Container\Container
 	 */
 	function app(string $service = ''): mixed
 	{

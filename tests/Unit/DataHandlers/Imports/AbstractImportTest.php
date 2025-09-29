@@ -77,7 +77,7 @@ it('returns false for invalid file type', function () {
         'tmp_name' => '/tmp/test.xml'
     ];
 
-    $fileMock = Mockery::mock('Bugo\LightPortal\Utils\File');
+    $fileMock = Mockery::mock(File::class);
     $fileMock->shouldReceive('get')->with('import_file')->andReturn($file);
     $mock->shouldReceive('files')->andReturn($fileMock);
 

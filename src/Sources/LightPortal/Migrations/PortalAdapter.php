@@ -17,10 +17,15 @@ use Laminas\Db\Adapter\Adapter;
 if (! defined('SMF'))
 	die('No direct access...');
 
-class PortalAdapter extends Adapter
+class PortalAdapter extends Adapter implements PortalAdapterInterface
 {
 	public function getPrefix(): string
 	{
 		return $this->getDriver()->getConnection()->getConnectionParameters()['prefix'] ?? '';
+	}
+
+	public function getSqlBuilder(): PortalSqlInterface
+	{
+		return new PortalSql($this);
 	}
 }

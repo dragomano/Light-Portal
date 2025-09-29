@@ -13,45 +13,38 @@
 namespace Bugo\LightPortal\Migrations\Creators;
 
 use Bugo\LightPortal\Migrations\Columns\AutoIncrementInteger;
-use Bugo\LightPortal\Migrations\CreatePortalTable;
+use Bugo\LightPortal\Migrations\PortalTable;
 use Laminas\Db\Sql\Ddl\Column\Text;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
 use Laminas\Db\Sql\Ddl\Constraint\UniqueKey;
 use Laminas\Db\Sql\Expression;
-use Laminas\Db\Sql\Insert;
-use Laminas\Db\Sql\Select;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 class PluginsTableCreator extends AbstractTableCreator
 {
-	protected function getTableSuffix(): string
-	{
-		return 'plugins';
-	}
+	protected string $tableName = 'lp_plugins';
 
-	protected function defineColumns(CreatePortalTable $createTable): void
+	protected function defineColumns(PortalTable $table): void
 	{
 		$id     = new AutoIncrementInteger();
 		$name   = new Varchar('name', 100, false);
 		$config = new Varchar('config', 100, false);
 		$value  = new Text('value', nullable: true);
 
-		$createTable->addAutoIncrementColumn($id);
-		$createTable->addColumn($name);
-		$createTable->addColumn($config);
-		$createTable->addColumn($value);
+		$table->addAutoIncrementColumn($id);
+		$table->addColumn($name);
+		$table->addColumn($config);
+		$table->addColumn($value);
 
 		$compositeUniqueKey = new UniqueKey(['name', 'config']);
-		$createTable->addConstraint($compositeUniqueKey);
+		$table->addConstraint($compositeUniqueKey);
 	}
 
 	public function insertDefaultData(): void
 	{
-		$tableName = $this->adapter->getPrefix() . 'lp_plugins';
-
-		$select = new Select($tableName);
+		$select = $this->sql->select($this->tableName);
 		$select->where(['name' => 'hello_portal', 'config' => 'keyboard_navigation']);
 		$select->columns(['count' => new Expression('COUNT(*)')], false);
 
@@ -59,7 +52,7 @@ class PluginsTableCreator extends AbstractTableCreator
 		$result = $statement->execute();
 		$row = $result->current();
 		if ($row['count'] == 0) {
-			$insert = new Insert($tableName);
+			$insert = $this->sql->insert($this->tableName);
 
 			$values = [
 				['hello_portal', 'keyboard_navigation', '1'],

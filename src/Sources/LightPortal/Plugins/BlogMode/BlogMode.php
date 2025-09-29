@@ -26,7 +26,7 @@ use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Enums\Hook;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Repositories\PageRepository;
+use Bugo\LightPortal\Repositories\PageRepositoryInterface;
 use Bugo\LightPortal\UI\Tables\NumViewsColumn;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
 use Bugo\LightPortal\UI\Tables\TitleColumn;
@@ -46,7 +46,7 @@ class BlogMode extends Plugin
 
 	private string $blogAction = 'blog';
 
-	private readonly PageRepository $pageRepository;
+	private readonly PageRepositoryInterface $pageRepository;
 
 	private string $mode = 'blog_pages';
 
@@ -56,7 +56,7 @@ class BlogMode extends Plugin
 
 		$this->blogAction = $this->context['blog_action'] ?? $this->blogAction;
 
-		$this->pageRepository = app(PageRepository::class);
+		$this->pageRepository = app(PageRepositoryInterface::class);
 	}
 
 	public function init(): void
@@ -101,6 +101,8 @@ class BlogMode extends Plugin
 			return;
 
 		$e->args->modes[$this->mode] = BlogArticle::class;
+
+		app()->add(BlogArticle::class);
 
 		Config::$modSettings['lp_frontpage_mode'] = $this->mode;
 	}
