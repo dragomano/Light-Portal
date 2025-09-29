@@ -12,9 +12,6 @@
 
 namespace Bugo\LightPortal\Repositories;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
 interface BlockRepositoryInterface
 {
 	public function getAll(): array;

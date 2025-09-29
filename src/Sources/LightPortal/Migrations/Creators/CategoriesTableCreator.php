@@ -15,7 +15,7 @@ namespace Bugo\LightPortal\Migrations\Creators;
 use Bugo\LightPortal\Migrations\Columns\AutoIncrementInteger;
 use Bugo\LightPortal\Migrations\Columns\TinyInteger;
 use Bugo\LightPortal\Migrations\Columns\UnsignedInteger;
-use Bugo\LightPortal\Migrations\CreatePortalTable;
+use Bugo\LightPortal\Migrations\PortalTable;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
 
 if (! defined('SMF'))
@@ -23,12 +23,9 @@ if (! defined('SMF'))
 
 class CategoriesTableCreator extends AbstractTableCreator
 {
-	protected function getTableSuffix(): string
-	{
-		return 'categories';
-	}
+	protected string $tableName = 'lp_categories';
 
-	protected function defineColumns(CreatePortalTable $createTable): void
+	protected function defineColumns(PortalTable $table): void
 	{
 		$id       = new AutoIncrementInteger('category_id');
 		$parentId = new UnsignedInteger('parent_id');
@@ -37,11 +34,11 @@ class CategoriesTableCreator extends AbstractTableCreator
 		$priority = new TinyInteger('priority');
 		$status   = new TinyInteger('status', default: 1);
 
-		$createTable->addAutoIncrementColumn($id);
-		$createTable->addColumn($parentId);
-		$createTable->addUniqueColumn($slug);
-		$createTable->addColumn($icon);
-		$createTable->addColumn($priority);
-		$createTable->addColumn($status);
+		$table->addAutoIncrementColumn($id);
+		$table->addColumn($parentId);
+		$table->addUniqueColumn($slug);
+		$table->addColumn($icon);
+		$table->addColumn($priority);
+		$table->addColumn($status);
 	}
 }

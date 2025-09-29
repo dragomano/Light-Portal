@@ -11,7 +11,7 @@
 		<require-dir name="Themes/default" destination="$themes_dir" />
 		<require-file name="portal.php" destination="$boarddir" />
 		<code type="inline"><![CDATA[<?php
-			updateSettings(['lp_enabled_plugins' => '']);
+			updateSettings(['lp_enabled_plugins' => '', 'lp_frontpage_article_sorting' => 'created;desc']);
 		?>]]></code>
 	</upgrade>
 

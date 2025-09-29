@@ -12,14 +12,11 @@
 
 namespace Bugo\LightPortal\Articles;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
 interface ArticleInterface
 {
 	public function init(): void;
 
-	public function getData(int $start, int $limit): iterable;
+	public function getData(int $start, int $limit, string $sortType = null): iterable;
 
 	public function getTotalCount(): int;
 }

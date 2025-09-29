@@ -12,13 +12,8 @@
 
 namespace Bugo\LightPortal\Migrations\Creators;
 
-use Bugo\LightPortal\Migrations\PortalAdapter;
-use Laminas\Db\Sql\Sql;
-
 interface TableCreatorInterface
 {
-    public function __construct(?PortalAdapter $adapter = null, ?Sql $sql = null);
-
     public function createTable(): void;
 
     public function insertDefaultData(): void;

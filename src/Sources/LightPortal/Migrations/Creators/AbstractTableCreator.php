@@ -12,32 +12,30 @@
 
 namespace Bugo\LightPortal\Migrations\Creators;
 
-use Bugo\LightPortal\Migrations\CreatePortalTable;
-use Bugo\LightPortal\Migrations\PortalAdapter;
+use Bugo\LightPortal\Migrations\PortalAdapterInterface;
+use Bugo\LightPortal\Migrations\PortalSqlInterface;
+use Bugo\LightPortal\Migrations\PortalTable;
 use Bugo\LightPortal\Migrations\PortalAdapterFactory;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Metadata\Source\Factory as MetadataFactory;
 use Laminas\Db\Sql\Ddl\DropTable;
 use Laminas\Db\Sql\Expression;
-use Laminas\Db\Sql\Insert;
-use Laminas\Db\Sql\Select;
-use Laminas\Db\Sql\Sql;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 abstract class AbstractTableCreator implements TableCreatorInterface
 {
-	protected ?PortalAdapter $adapter = null;
+	protected string $tableName;
 
-	protected ?Sql $sql = null;
+	protected PortalSqlInterface $sql;
 
-	private ?CreatePortalTable $table = null;
+	private ?PortalTable $table = null;
 
-	public function __construct(?PortalAdapter $adapter = null, ?Sql $sql = null)
+	public function __construct(protected ?PortalAdapterInterface $adapter = null)
 	{
 		$this->adapter ??= PortalAdapterFactory::create();
-		$this->sql = $sql ?? new Sql($this->adapter);
+		$this->sql = $this->adapter->getSqlBuilder();
 	}
 
 	public function createTable(): void
@@ -46,7 +44,7 @@ abstract class AbstractTableCreator implements TableCreatorInterface
 			return;
 		}
 
-		$this->table = new CreatePortalTable($this->getTableName());
+		$this->table = new PortalTable($this->getFullTableName());
 		$this->defineColumns($this->table);
 		$this->executeSql($this->table);
 	}
@@ -54,7 +52,7 @@ abstract class AbstractTableCreator implements TableCreatorInterface
 	public function getSql(): string
 	{
 		if ($this->table === null) {
-			$this->table = new CreatePortalTable($this->getTableName());
+			$this->table = new PortalTable($this->getFullTableName());
 			$this->defineColumns($this->table);
 		}
 
@@ -69,37 +67,34 @@ abstract class AbstractTableCreator implements TableCreatorInterface
 			return;
 		}
 
-		$dropTable = new DropTable($this->getTableName());
+		$dropTable = new DropTable($this->getFullTableName());
 		$this->executeSql($dropTable);
 	}
 
-	abstract protected function getTableSuffix(): string;
+	abstract protected function defineColumns(PortalTable $table): void;
 
-	abstract protected function defineColumns(CreatePortalTable $createTable): void;
-
-	protected function getTableName(): string
+	protected function getFullTableName(): string
 	{
-		return $this->adapter->getPrefix() . 'lp_' . $this->getTableSuffix();
+		return $this->adapter->getPrefix() . $this->tableName;
 	}
 
 	protected function tableExists(): bool
 	{
 		$metadata = MetadataFactory::createSourceFromAdapter($this->adapter);
 
-		return in_array($this->getTableName(), $metadata->getTableNames());
+		return in_array($this->getFullTableName(), $metadata->getTableNames());
 	}
 
 	protected function executeSql($builder): void
 	{
 		$sqlString = $this->sql->buildSqlString($builder);
+
 		$this->adapter->query($sqlString, Adapter::QUERY_MODE_EXECUTE);
 	}
 
 	protected function insertDefaultIfNotExists(array $where, array $columns, array $values): void
 	{
-		$tableName = $this->getTableName();
-
-		$select = new Select($tableName);
+		$select = $this->sql->select($this->tableName);
 		$select->where($where);
 		$select->columns(['count' => new Expression('COUNT(*)')], false);
 
@@ -108,7 +103,7 @@ abstract class AbstractTableCreator implements TableCreatorInterface
 		$row = $result->current();
 
 		if ($row['count'] == 0) {
-			$insert = new Insert($tableName);
+			$insert = $this->sql->insert($this->tableName);
 			$insert->columns($columns)->values($values);
 
 			$statement = $this->sql->prepareStatementForSqlObject($insert);

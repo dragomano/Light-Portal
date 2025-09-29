@@ -29,16 +29,19 @@ use Bugo\LightPortal\Enums\PortalSubAction;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Lists\CategoryList;
+use Bugo\LightPortal\Migrations\PortalAdapterInterface;
+use Bugo\LightPortal\Migrations\PortalSqlInterface;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Notify;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Laminas\Db\Sql\Predicate\Expression;
+use Laminas\Db\Sql\Select;
 
 use function Bugo\LightPortal\app;
 
-use const LP_ACTION;
 use const LP_PAGE_URL;
 
 if (! defined('SMF'))
@@ -49,6 +52,13 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 	use HasEvents;
 
 	protected string $entity = 'page';
+
+	protected PortalSqlInterface $sql;
+
+	public function __construct(protected PortalAdapterInterface $adapter)
+	{
+		$this->sql = $adapter->getSqlBuilder();
+	}
 
 	public function getAll(
 		int $start,
@@ -65,6 +75,7 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 				COALESCE(t.title, tf.title, {string:empty_string}) AS title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
+				LEFT JOIN {db_prefix}lp_params AS par ON (p.page_id = par.item_id AND par.type = {literal:page} AND par.name = {literal:allow_comments})
 				LEFT JOIN {db_prefix}lp_translations AS t ON (
 					p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang}
 				)
@@ -76,7 +87,6 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
 			array_merge($queryParams, $this->getLangQueryParams(), [
-				'guest'   => Lang::$txt['guest_title'],
 				'user_id' => User::$me->id,
 				'sort'    => $sort,
 				'start'   => $start,
@@ -143,7 +153,9 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 				COALESCE(mem.real_name, {string:guest}) AS author_name,
 				COALESCE(NULLIF(t.title, {string:empty_string}), tf.title, {string:empty_string}) AS title,
 				COALESCE(NULLIF(t.content, {string:empty_string}), tf.content, {string:empty_string}) AS content,
-				COALESCE(NULLIF(t.description, {string:empty_string}), tf.description, {string:empty_string}) AS description
+				COALESCE(NULLIF(t.description, {string:empty_string}), tf.description, {string:empty_string}) AS description,
+				CASE WHEN pac.value != \'0\' THEN p.num_comments ELSE 0 END AS num_comments,
+				COALESCE(com.created_at, 0) AS sort_value
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
 				LEFT JOIN {db_prefix}lp_translations AS t ON (
@@ -153,34 +165,38 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 					p.page_id = tf.item_id AND tf.type = {literal:page} AND tf.lang = {string:fallback_lang}
 				)
 				LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {literal:page})
+				LEFT JOIN {db_prefix}lp_params AS pac ON (p.page_id = pac.item_id AND pac.type = {literal:page} AND pac.name = {literal:allow_comments})
+				LEFT JOIN {db_prefix}lp_comments AS com ON (com.id = p.last_comment_id)
 			WHERE p.' . (is_int($item) ? 'page_id = {int:item}' : 'slug = {string:item}'),
 			array_merge(
 				$this->getLangQueryParams(),
 				[
-					'guest' => Lang::$txt['guest_title'],
-					'item'  => $item,
+					'item' => $item,
 				]
 			)
 		);
 
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$data ??= [
-				'id'          => (int) $row['page_id'],
-				'category_id' => (int) $row['category_id'],
-				'author_id'   => (int) $row['author_id'],
-				'author'      => $row['author_name'],
-				'slug'        => $row['slug'],
-				'type'        => $row['type'],
-				'entry_type'  => $row['entry_type'],
-				'permissions' => (int) $row['permissions'],
-				'status'      => (int) $row['status'],
-				'num_views'   => (int) $row['num_views'],
-				'created_at'  => (int) $row['created_at'],
-				'updated_at'  => (int) $row['updated_at'],
-				'image'       => $this->getImageFromContent($row['content'], $row['type']),
-				'title'       => $row['title'],
-				'content'     => $row['content'],
-				'description' => $row['description'],
+				'id'              => (int) $row['page_id'],
+				'category_id'     => (int) $row['category_id'],
+				'author_id'       => (int) $row['author_id'],
+				'author'          => $row['author_name'],
+				'slug'            => $row['slug'],
+				'type'            => $row['type'],
+				'entry_type'      => $row['entry_type'],
+				'permissions'     => (int) $row['permissions'],
+				'status'          => (int) $row['status'],
+				'num_views'       => (int) $row['num_views'],
+				'num_comments'    => (int) $row['num_comments'],
+				'created_at'      => (int) $row['created_at'],
+				'updated_at'      => (int) $row['updated_at'],
+				'last_comment_id' => (int) $row['last_comment_id'],
+				'sort_value'      => (int) $row['sort_value'],
+				'image'           => $this->getImageFromContent($row['content'], $row['type']),
+				'title'           => $row['title'],
+				'content'         => $row['content'],
+				'description'     => $row['description'],
 			];
 
 			$data['options'][$row['name']] = $row['value'];
@@ -309,104 +325,162 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 		$this->session()->free('lp');
 	}
 
-	public function getPrevNextLinks(array $page): array
+	public function getPrevNextLinks(array $page, bool $withinCategory = false): array
 	{
-		$orders = [
-			'CASE WHEN com.created_at > 0 THEN 0 ELSE 1 END, comment_date DESC',
-			'p.created_at DESC',
-			'p.created_at',
-			'date DESC',
+		$params = $this->getLangQueryParams();
+
+		$sortOptions = [
+			'created;desc'      => ['field' => 'p.created_at', 'direction' => 'desc'],
+			'created'           => ['field' => 'p.created_at', 'direction' => 'asc'],
+			'updated;desc'      => ['field' => 'GREATEST(p.created_at, p.updated_at)', 'direction' => 'desc'],
+			'updated'           => ['field' => 'GREATEST(p.created_at, p.updated_at)', 'direction' => 'asc'],
+			'last_comment;desc' => ['field' => 'COALESCE(com.created_at, p.created_at)', 'direction' => 'desc'],
+			'last_comment'      => ['field' => 'COALESCE(com.created_at, p.created_at)', 'direction' => 'asc'],
+			'title;desc'        => ['field' => 'LOWER(COALESCE(t.title, tf.title))', 'direction' => 'desc'],
+			'title'             => ['field' => 'LOWER(COALESCE(t.title, tf.title))', 'direction' => 'asc'],
+			'author_name;desc'  => ['field' => 'COALESCE(mem.real_name, ?)', 'direction' => 'desc', 'bind' => $params['guest']],
+			'author_name'       => ['field' => 'COALESCE(mem.real_name, ?)', 'direction' => 'asc', 'bind' => $params['guest']],
+			'num_views;desc'    => ['field' => 'p.num_views', 'direction' => 'desc'],
+			'num_views'         => ['field' => 'p.num_views', 'direction' => 'asc'],
+			'num_replies;desc'  => ['field' => 'p.num_comments', 'direction' => 'desc'],
+			'num_replies'       => ['field' => 'p.num_comments', 'direction' => 'asc'],
 		];
 
-		$withinCategory = str_contains(
-			filter_input(INPUT_SERVER, 'HTTP_REFERER') ?? '',
-			'action=' . LP_ACTION . ';sa=' . PortalSubAction::CATEGORIES->name() . ';id'
-		);
+		$sorting = Utils::$context['lp_current_sorting'] ?? 'created;desc';
+		$sortOption = $sortOptions[$sorting] ?? $sortOptions['created;desc'];
+		$sortField = $sortOption['field'];
+		$sortDirection = strtoupper($sortOption['direction']);
+		$sortBind = $sortOption['bind'] ?? null;
 
-		$sorting = Setting::get('lp_frontpage_article_sorting', 'int', 0);
+		$currentSortValue = match (true) {
+			str_contains($sorting, 'updated')      => max($page['created_at'], $page['updated_at']),
+			str_contains($sorting, 'last_comment') => $page['sort_value'] ?? $page['created_at'],
+			str_contains($sorting, 'title')        => Utils::$smcFunc['strtolower']($page['title']),
+			str_contains($sorting, 'author_name')  => Utils::$smcFunc['strtolower']($page['author']),
+			str_contains($sorting, 'num_views')    => $page['num_views'],
+			str_contains($sorting, 'num_replies')  => $page['num_comments'],
+			default => $page['created_at'],
+		};
 
-		$result = Db::$db->query('
-			(
-				SELECT
-					(
-						SELECT title
-						FROM {db_prefix}lp_translations
-						WHERE item_id = p.page_id
-							AND type = {literal:page}
-							AND lang IN ({string:lang}, {string:fallback_lang})
-						ORDER BY lang = {string:lang} DESC
-						LIMIT 1
-					) AS page_title, p.slug, p.page_id,
-					GREATEST(p.created_at, p.updated_at) AS date,
-					CASE WHEN COALESCE(par.value, \'0\') != \'0\' THEN p.num_comments ELSE 0 END AS num_comments,
-					com.created_at AS comment_date
-				FROM {db_prefix}lp_pages AS p
-					LEFT JOIN {db_prefix}lp_comments AS com ON (p.last_comment_id = com.id)
-					LEFT JOIN {db_prefix}lp_params AS par ON (
-						par.item_id = com.page_id
-						AND par.type = {literal:page}
-						AND par.name = {literal:allow_comments}
-					)
-				WHERE p.page_id != {int:page_id}' . ($withinCategory ? '
-					AND p.category_id = {int:category_id}' : '') . '
-					AND p.created_at <= {int:created_at}
-					AND p.created_at <= {int:current_time}
-					AND p.status = {int:status}
-					AND p.permissions IN ({array_int:permissions})
-				ORDER BY ' . (empty(Config::$modSettings['lp_frontpage_order_by_replies'])
-					? '' : 'num_comments DESC, ') . $orders[$sorting] . '
-				LIMIT 1
-			)
-			UNION ALL
-			(
-				SELECT
-					(
-						SELECT title
-						FROM {db_prefix}lp_translations
-						WHERE item_id = p.page_id
-							AND type = {literal:page}
-							AND lang IN ({string:lang}, {string:fallback_lang})
-						ORDER BY lang = {string:lang} DESC
-						LIMIT 1
-					) AS page_title, p.slug, p.page_id,
-					GREATEST(p.created_at, p.updated_at) AS date,
-					CASE WHEN COALESCE(par.value, \'0\') != \'0\' THEN p.num_comments ELSE 0 END AS num_comments,
-					com.created_at AS comment_date
-				FROM {db_prefix}lp_pages AS p
-					LEFT JOIN {db_prefix}lp_comments AS com ON (p.last_comment_id = com.id)
-					LEFT JOIN {db_prefix}lp_params AS par ON (
-						par.item_id = com.page_id
-						AND par.type = {literal:page}
-						AND par.name = {literal:allow_comments}
-					)
-				WHERE p.page_id != {int:page_id}' . ($withinCategory ? '
-					AND p.category_id = {int:category_id}' : '') . '
-					AND p.created_at >= {int:created_at}
-					AND p.created_at <= {int:current_time}
-					AND p.entry_type = {string:type}
-					AND p.status = {int:status}
-					AND p.permissions IN ({array_int:permissions})
-				ORDER BY ' . (empty(Config::$modSettings['lp_frontpage_order_by_replies'])
-					? '' : 'num_comments DESC, ') . $orders[$sorting] . '
-				LIMIT 1
-			)',
-			array_merge($this->getLangQueryParams(), [
-				'page_id'      => $page['id'],
-				'category_id'  => $page['category_id'],
-				'created_at'   => $page['created_at'],
-				'current_time' => time(),
-				'type'         => $page['entry_type'],
-				'status'       => $page['status'],
-				'permissions'  => Permission::all(),
+		$categories = Setting::get('lp_frontpage_categories', 'array', []);
+
+		$baseWhere = [
+			'p.created_at <= ?' => time(),
+			'p.entry_type = ?'  => EntryType::DEFAULT->name(),
+			'p.status = ?'      => Status::ACTIVE->value,
+			'p.deleted_at = ?'  => 0,
+			'p.permissions'     => Permission::all(),
+		];
+
+		if (! empty($categories)) {
+			$baseWhere['p.category_id'] = $categories;
+		}
+
+		if ($withinCategory) {
+			$baseWhere['p.category_id = ?'] = $page['category_id'];
+		}
+
+		$secondaryField = 'p.created_at';
+		$currentSecondaryValue = $page['created_at'];
+		$listAsc = $sortDirection === 'ASC';
+
+		$nextPrimaryOp = $listAsc ? '>' : '<';
+		$nextSecondaryOp = $listAsc ? '>' : '<';
+
+		$prevPrimaryOp = $listAsc ? '<' : '>';
+		$prevSecondaryOp = $listAsc ? '<' : '>';
+
+		if ($sortBind !== null) {
+			$nextWhereParams = [$sortBind, $currentSortValue, $sortBind, $currentSortValue, $currentSecondaryValue];
+			$prevWhereParams = [$sortBind, $currentSortValue, $sortBind, $currentSortValue, $currentSecondaryValue];
+		} else {
+			$nextWhereParams = [$currentSortValue, $currentSortValue, $currentSecondaryValue];
+			$prevWhereParams = [$currentSortValue, $currentSortValue, $currentSecondaryValue];
+		}
+
+		$nextWhereSql = '(' . $sortField . ' ' . $nextPrimaryOp . ' ? OR (' . $sortField . ' = ? AND ' . $secondaryField . ' ' . $nextSecondaryOp . ' ?))';
+		$prevWhereSql = '(' . $sortField . ' ' . $prevPrimaryOp . ' ? OR (' . $sortField . ' = ? AND ' . $secondaryField . ' ' . $prevSecondaryOp . ' ?))';
+
+		$nextWhere = new Expression($nextWhereSql, $nextWhereParams);
+		$prevWhere = new Expression($prevWhereSql, $prevWhereParams);
+
+		$languages = array_unique([$params['lang'], $params['fallback_lang']]);
+
+		$base = $this->sql->select()
+			->from(['p' => 'lp_pages'])
+			->columns([
+				'page_id',
+				'slug',
+				'title' => new Expression('COALESCE(t.title, tf.title)')
 			])
-		);
+			->join(
+				['t' => 'lp_translations'],
+				new Expression(
+					't.item_id = p.page_id AND t.type = ? AND t.lang = ?',
+					['page', $params['lang']]
+				),
+				[],
+				Select::JOIN_LEFT
+			)
+			->join(
+				['tf' => 'lp_translations'],
+				new Expression(
+					'tf.item_id = p.page_id AND tf.type = ? AND tf.lang = ?',
+					['page', $params['fallback_lang']]
+				),
+				[],
+				Select::JOIN_LEFT
+			)
+			->where(['(t.lang IN (?) OR tf.lang IN (?))' => [$languages, $languages]])
+			->having(['title IS NOT NULL']);
 
-		[$prevTitle, $prevSlug] = Db::$db->fetch_row($result);
-		[$nextTitle, $nextSlug] = Db::$db->fetch_row($result);
+		if (str_contains($sorting, 'last_comment')) {
+			$base->join(
+				['com' => 'lp_comments'],
+				'com.id = p.last_comment_id',
+				['created_at'],
+				Select::JOIN_LEFT
+			);
+		}
 
-		Db::$db->free_result($result);
+		if (str_contains($sorting, 'author_name')) {
+			$base->join(
+				['mem' => 'members'],
+				'mem.id_member = p.author_id',
+				['real_name'],
+				Select::JOIN_LEFT
+			);
+		}
 
-		return [$prevTitle, $prevSlug, $nextTitle, $nextSlug];
+		$listOrder = [
+			new Expression($sortField . ' ' . $sortDirection, $sortBind !== null ? [$sortBind] : []),
+			new Expression($secondaryField . ' ' . $sortDirection),
+			new Expression('CASE WHEN t.title IS NOT NULL THEN 1 WHEN tf.title IS NOT NULL THEN 2 END')
+		];
+
+		$reverseOrder = [
+			new Expression($sortField . ' ' . ($listAsc ? 'DESC' : 'ASC'), $sortBind !== null ? [$sortBind] : []),
+			new Expression($secondaryField . ' ' . ($listAsc ? 'DESC' : 'ASC')),
+			new Expression('CASE WHEN t.title IS NOT NULL THEN 1 WHEN tf.title IS NOT NULL THEN 2 END')
+		];
+
+		$prev = clone $base;
+		$next = clone $base;
+
+		$prev->where($baseWhere)->where($prevWhere)->order($reverseOrder)->limit(1);
+		$next->where($baseWhere)->where($nextWhere)->order($listOrder)->limit(1);
+
+		$result = [
+			'prev' => $this->sql->prepareStatementForSqlObject($prev)->execute()->current() ?: [],
+			'next' => $this->sql->prepareStatementForSqlObject($next)->execute()->current() ?: [],
+		];
+
+		return [
+			$result['prev']['title'] ?? '',
+			$result['prev']['slug'] ?? '',
+			$result['next']['title'] ?? '',
+			$result['next']['slug'] ?? '',
+		];
 	}
 
 	public function getRelatedPages(array $page): array
@@ -791,4 +865,5 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 
 		return '';
 	}
+
 }

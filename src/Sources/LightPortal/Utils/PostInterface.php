@@ -12,9 +12,6 @@
 
 namespace Bugo\LightPortal\Utils;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
 interface PostInterface
 {
 	public function &get(string $key): mixed;

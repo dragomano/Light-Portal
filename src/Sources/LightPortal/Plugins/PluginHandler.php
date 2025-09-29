@@ -12,11 +12,13 @@
 
 namespace Bugo\LightPortal\Plugins;
 
+use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Events\EventManager;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Throwable;
 
 use function Bugo\LightPortal\app;
 
@@ -53,12 +55,20 @@ final readonly class PluginHandler
 			return [];
 		}
 
+		$warehouse = [];
+
+		try {
+			$warehouse = app()->get('plugins');
+		} catch (Throwable $e) {
+			ErrorHandler::log('[LP] pluginHandler: ' . $e->getMessage(), file: $e->getFile(), line: $e->getLine());
+		}
+
 		$plugins = array_map(function (PluginInterface $plugin) {
 			$data = get_object_vars($plugin);
 			$data['name'] = $plugin->getCamelName();
 
 			return [$plugin->getSnakeName() => $data];
-		}, app()->get('plugins'));
+		}, $warehouse);
 
 		return array_merge(...$plugins);
 	}

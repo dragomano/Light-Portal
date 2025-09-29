@@ -16,7 +16,7 @@ use Bugo\LightPortal\Migrations\Columns\AutoIncrementInteger;
 use Bugo\LightPortal\Migrations\Columns\MediumInteger;
 use Bugo\LightPortal\Migrations\Columns\UnsignedInteger;
 use Bugo\LightPortal\Migrations\Columns\TinyInteger;
-use Bugo\LightPortal\Migrations\CreatePortalTable;
+use Bugo\LightPortal\Migrations\PortalTable;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
 
 if (! defined('SMF'))
@@ -24,12 +24,9 @@ if (! defined('SMF'))
 
 class PagesTableCreator extends AbstractTableCreator
 {
-	protected function getTableSuffix(): string
-	{
-		return 'pages';
-	}
+	protected string $tableName = 'lp_pages';
 
-	protected function defineColumns(CreatePortalTable $createTable): void
+	protected function defineColumns(PortalTable $table): void
 	{
 		$id          = new AutoIncrementInteger('page_id');
 		$categoryId  = new UnsignedInteger('category_id');
@@ -46,20 +43,22 @@ class PagesTableCreator extends AbstractTableCreator
 		$deletedAt   = new UnsignedInteger('deleted_at');
 		$lastComment = new UnsignedInteger('last_comment_id');
 
-		$createTable->addAutoIncrementColumn($id);
-		$createTable->addColumn($categoryId);
-		$createTable->addColumn($authorId);
-		$createTable->addUniqueColumn($slug);
-		$createTable->addColumn($type);
-		$createTable->addColumn($entryType);
-		$createTable->addColumn($permissions);
-		$createTable->addColumn($status);
-		$createTable->addColumn($numViews);
-		$createTable->addColumn($numComments);
-		$createTable->addColumn($createdAt);
-		$createTable->addColumn($updatedAt);
-		$createTable->addColumn($deletedAt);
-		$createTable->addColumn($lastComment);
+		$table->addAutoIncrementColumn($id);
+		$table->addColumn($categoryId);
+		$table->addColumn($authorId);
+		$table->addUniqueColumn($slug);
+		$table->addColumn($type);
+		$table->addColumn($entryType);
+		$table->addColumn($permissions);
+		$table->addColumn($status);
+		$table->addColumn($numViews);
+		$table->addColumn($numComments);
+		$table->addColumn($createdAt);
+		$table->addColumn($updatedAt);
+		$table->addColumn($deletedAt);
+		$table->addColumn($lastComment);
+
+		$table->addIndex(['created_at'], 'idx_pages_created_at');
 	}
 
 	public function insertDefaultData(): void

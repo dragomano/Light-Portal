@@ -12,9 +12,6 @@
 
 namespace Bugo\LightPortal\Repositories;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
 interface PageRepositoryInterface extends RepositoryInterface
 {
 	public function getAll(
@@ -37,7 +34,7 @@ interface PageRepositoryInterface extends RepositoryInterface
 
 	public function removePermanently(array $items): void;
 
-	public function getPrevNextLinks(array $page): array;
+	public function getPrevNextLinks(array $page, bool $withinCategory = false): array;
 
 	public function getRelatedPages(array $page): array;
 

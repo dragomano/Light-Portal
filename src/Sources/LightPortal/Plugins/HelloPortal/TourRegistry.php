@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 24.09.25
+ * @version 25.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\HelloPortal;
@@ -19,7 +19,7 @@ use const LP_PAGE_PARAM;
 
 class TourRegistry
 {
-	public function getSteps(array $txt, array $modSettings): array
+	public function getSteps(array $txt): array
 	{
 		$formatStep = fn($step) => "{
 					element: {$step['element']},
@@ -31,7 +31,7 @@ class TourRegistry
 		);
 
 		return [
-			'basic_settings' => $toString($this->getBasicSettingsSteps($txt, $modSettings)),
+			'basic_settings' => $toString($this->getBasicSettingsSteps($txt)),
 			'extra_settings' => $toString($this->getExtraSettingsSteps($txt)),
 			'panels'         => $toString($this->getPanelsSteps($txt)),
 			'misc'           => $toString($this->getMiscSteps($txt)),
@@ -43,9 +43,9 @@ class TourRegistry
 		];
 	}
 
-	private function getBasicSettingsSteps(array $txt, array $modSettings): array
+	private function getBasicSettingsSteps(array $txt): array
 	{
-		$steps = [
+		return [
 			[
 				'element'  => 'document.getElementById("admin_content")',
 				'intro'    => $txt['basic_settings_tour'][0],
@@ -54,26 +54,16 @@ class TourRegistry
 			[
 				'element' => 'document.getElementById("lp_frontpage_mode")',
 				'intro'   => $txt['basic_settings_tour'][1]
+			],
+			[
+				'element' => 'document.querySelector("[data-tab=standalone]")',
+				'intro'   => $txt['basic_settings_tour'][2]
+			],
+			[
+				'element' => 'document.querySelector("[data-tab=permissions]")',
+				'intro'   => $txt['basic_settings_tour'][3]
 			]
 		];
-
-		if (! empty($modSettings['lp_frontpage_mode']) && $modSettings['lp_frontpage_mode'] !== 'chosen_page') {
-			$steps[] = [
-				'element' => 'document.getElementById("caption_lp_frontpage_order_by_replies")',
-				'intro'   => $txt['basic_settings_tour'][2]
-			];
-		}
-
-		$steps[] = [
-			'element' => 'document.querySelector("[data-tab=standalone]")',
-			'intro'   => $txt['basic_settings_tour'][3]
-		];
-		$steps[] = [
-			'element' => 'document.querySelector("[data-tab=permissions]")',
-			'intro'   => $txt['basic_settings_tour'][4]
-		];
-
-		return $steps;
 	}
 
 	private function getExtraSettingsSteps(array $txt): array

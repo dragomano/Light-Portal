@@ -14,7 +14,7 @@ namespace Bugo\LightPortal\Migrations\Creators;
 
 use Bugo\LightPortal\Migrations\Columns\AutoIncrementInteger;
 use Bugo\LightPortal\Migrations\Columns\UnsignedInteger;
-use Bugo\LightPortal\Migrations\CreatePortalTable;
+use Bugo\LightPortal\Migrations\PortalTable;
 use Laminas\Db\Sql\Ddl\Column\Text;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
 use Laminas\Db\Sql\Ddl\Constraint\UniqueKey;
@@ -24,12 +24,9 @@ if (! defined('SMF'))
 
 class ParamsTableCreator extends AbstractTableCreator
 {
-	protected function getTableSuffix(): string
-	{
-		return 'params';
-	}
+	protected string $tableName = 'lp_params';
 
-	protected function defineColumns(CreatePortalTable $createTable): void
+	protected function defineColumns(PortalTable $table): void
 	{
 		$id     = new AutoIncrementInteger();
 		$itemId = new UnsignedInteger('item_id');
@@ -37,14 +34,14 @@ class ParamsTableCreator extends AbstractTableCreator
 		$name   = new Varchar('name', 255);
 		$value  = new Text('value');
 
-		$createTable->addAutoIncrementColumn($id);
-		$createTable->addColumn($itemId);
-		$createTable->addColumn($type);
-		$createTable->addColumn($name);
-		$createTable->addColumn($value);
+		$table->addAutoIncrementColumn($id);
+		$table->addColumn($itemId);
+		$table->addColumn($type);
+		$table->addColumn($name);
+		$table->addColumn($value);
 
 		$compositeUniqueKey = new UniqueKey(['item_id', 'type', 'name']);
-		$createTable->addConstraint($compositeUniqueKey);
+		$table->addConstraint($compositeUniqueKey);
 	}
 
 	public function insertDefaultData(): void

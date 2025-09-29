@@ -29,13 +29,9 @@ class TopicArticle extends AbstractArticle
 {
 	protected array $selectedBoards = [];
 
-	protected int $sorting = 0;
-
 	public function init(): void
 	{
 		$this->selectedBoards = Setting::get('lp_frontpage_boards', 'array', []);
-
-		$this->sorting = Setting::get('lp_frontpage_article_sorting', 'int', 0);
 
 		$this->params = [
 			'current_member'    => User::$me->id,
@@ -47,10 +43,20 @@ class TopicArticle extends AbstractArticle
 		];
 
 		$this->orders = [
-			't.id_last_msg DESC',
-			'mf.poster_time DESC',
-			'mf.poster_time',
-			'date DESC',
+			'created;desc'      => 'mf.poster_time DESC',
+			'created'           => 'mf.poster_time',
+			'updated;desc'      => 'GREATEST(mf.poster_time, mf.modified_time) DESC',
+			'updated'           => 'GREATEST(mf.poster_time, mf.modified_time) DESC',
+			'last_comment;desc' => 't.id_last_msg DESC',
+			'last_comment'      => 't.id_last_msg',
+			'title;desc'        => 'mf.subject DESC',
+			'title'             => 'mf.subject',
+			'author_name;desc'  => 'poster_name DESC',
+			'author_name'       => 'poster_name',
+			'num_views;desc'    => 't.num_views DESC',
+			'num_views'         => 't.num_views',
+			'num_replies;desc'  => 't.num_replies DESC',
+			'num_replies'       => 't.num_replies',
 		];
 
 		$this->events()->dispatch(
@@ -65,8 +71,30 @@ class TopicArticle extends AbstractArticle
 		);
 	}
 
-	public function getData(int $start, int $limit): iterable
+	public function getSortingOptions(): array
 	{
+		return [
+			'created;desc'      => Lang::$txt['lp_sort_by_created_desc'],
+			'created'           => Lang::$txt['lp_sort_by_created'],
+			'updated;desc'      => Lang::$txt['lp_sort_by_updated_desc'],
+			'updated'           => Lang::$txt['lp_sort_by_updated'],
+			'last_comment;desc' => Lang::$txt['lp_sort_by_last_reply_desc'],
+			'last_comment'      => Lang::$txt['lp_sort_by_last_reply'],
+			'title;desc'        => Lang::$txt['lp_sort_by_title_desc'],
+			'title'             => Lang::$txt['lp_sort_by_title'],
+			'author_name;desc'  => Lang::$txt['lp_sort_by_author_desc'],
+			'author_name'       => Lang::$txt['lp_sort_by_author'],
+			'num_views;desc'    => Lang::$txt['lp_sort_by_num_views_desc'],
+			'num_views'         => Lang::$txt['lp_sort_by_num_views'],
+			'num_replies;desc'  => Lang::$txt['lp_sort_by_num_replies_desc'],
+			'num_replies'       => Lang::$txt['lp_sort_by_num_replies'],
+		];
+	}
+
+	public function getData(int $start, int $limit, string $sortType = null): iterable
+	{
+		$this->sorting = $sortType ?: $this->sorting;
+
 		if (empty($this->selectedBoards) && Setting::isFrontpageMode('all_topics')) {
 			return;
 		}
@@ -74,6 +102,7 @@ class TopicArticle extends AbstractArticle
 		$this->params += [
 			'start' => $start,
 			'limit' => $limit,
+			'sort'  => $this->orders[$this->sorting],
 		];
 
 		$result = Db::$db->query('
@@ -117,27 +146,27 @@ class TopicArticle extends AbstractArticle
 				AND t.id_board IN ({array_int:selected_boards})') . '
 				AND {query_wanna_see_board}' . (empty($this->wheres) ? '' : '
 				' . implode("\n\t\t\t\t\t", $this->wheres)) . '
-			ORDER BY ' . (empty(Config::$modSettings['lp_frontpage_order_by_replies']) ? '' : 't.num_replies DESC, ')
-				. $this->orders[$this->sorting] . '
+			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
 			$this->params,
 		);
 
 		while ($row = Db::$db->fetch_assoc($result)) {
 			$topic = [
-				'id'        => (int) $row['id_topic'],
-				'section'   => $this->getSectionData($row),
-				'author'    => $this->getAuthorData($row),
-				'date'      => $this->getDate($row),
-				'title'     => $this->getTitle($row),
-				'link'      => $this->getLink($row),
-				'is_new'    => $this->isNew($row),
-				'views'     => $this->getViewsData($row),
-				'replies'   => $this->getRepliesData($row),
-				'css_class' => $row['is_sticky'] ? ' sticky' : '',
-				'image'     => $this->getImage($row),
-				'can_edit'  => $this->canEdit($row),
-				'edit_link' => $this->getEditLink($row),
+				'id'           => (int) $row['id_topic'],
+				'section'      => $this->getSectionData($row),
+				'author'       => $this->getAuthorData($row),
+				'date'         => $this->getDate($row),
+				'last_comment' => (int) $row['last_msg_time'],
+				'title'        => $this->getTitle($row),
+				'link'         => $this->getLink($row),
+				'is_new'       => $this->isNew($row),
+				'views'        => $this->getViewsData($row),
+				'replies'      => $this->getRepliesData($row),
+				'css_class'    => $row['is_sticky'] ? ' sticky' : '',
+				'image'        => $this->getImage($row),
+				'can_edit'     => $this->canEdit($row),
+				'edit_link'    => $this->getEditLink($row),
 			];
 
 			$this->prepareTeaser($topic, $row);
@@ -191,19 +220,19 @@ class TopicArticle extends AbstractArticle
 	private function getAuthorData(array $row): array
 	{
 		return [
-			'id'   => $authorId = (int) ($this->sorting === 0 ? $row['last_poster_id'] : $row['id_member']),
+			'id'   => $authorId = (int) (str_contains($this->sorting, 'last_comment') ? $row['last_poster_id'] : $row['id_member']),
 			'link' => Config::$scripturl . '?action=profile;u=' . $authorId,
-			'name' => $this->sorting === 0 ? $row['last_poster_name'] : $row['poster_name'],
+			'name' => str_contains($this->sorting, 'last_comment') ? $row['last_poster_name'] : $row['poster_name'],
 		];
 	}
 
 	private function getDate(array $row): int
 	{
-		if ($this->sorting === 0 && $row['last_msg_time']) {
+		if (str_contains($this->sorting, 'last_comment') && $row['last_msg_time']) {
 			return (int) $row['last_msg_time'];
 		}
 
-		if ($this->sorting === 3) {
+		if (str_contains($this->sorting, 'updated')) {
 			return (int) $row['date'];
 		}
 
@@ -277,7 +306,7 @@ class TopicArticle extends AbstractArticle
 		if (empty(Config::$modSettings['lp_show_teaser']))
 			return;
 
-		$body = (string) ($this->sorting === 0 ? $row['last_body'] : $row['body']);
+		$body = (string) (str_contains($this->sorting, 'last_comment') ? $row['last_body'] : $row['body']);
 
 		Lang::censorText($body);
 

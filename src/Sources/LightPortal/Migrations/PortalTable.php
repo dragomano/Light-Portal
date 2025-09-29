@@ -12,16 +12,18 @@
 
 namespace Bugo\LightPortal\Migrations;
 
+use Laminas\Db\Sql\Ddl\Column\ColumnInterface;
 use Laminas\Db\Sql\Ddl\Constraint\PrimaryKey;
 use Laminas\Db\Sql\Ddl\Constraint\UniqueKey;
 use Laminas\Db\Sql\Ddl\CreateTable;
+use Laminas\Db\Sql\Ddl\Index\Index;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-class CreatePortalTable extends CreateTable
+class PortalTable extends CreateTable
 {
-	public function addAutoIncrementColumn($column): static
+	public function addAutoIncrementColumn(ColumnInterface $column): static
 	{
 		$this->addColumn($column);
 		$this->addPrimaryKey($column->getName());
@@ -29,7 +31,7 @@ class CreatePortalTable extends CreateTable
 		return $this;
 	}
 
-	public function addPrimaryKey($column): static
+	public function addPrimaryKey(string $column): static
 	{
 		$pk = new PrimaryKey($column);
 		$this->addConstraint($pk);
@@ -37,7 +39,7 @@ class CreatePortalTable extends CreateTable
 		return $this;
 	}
 
-	public function addUniqueColumn($column, $indexName = null): static
+	public function addUniqueColumn(ColumnInterface $column, string $indexName = null): static
 	{
 		$this->addColumn($column);
 		$this->addUniqueKey($column->getName(), $indexName);
@@ -45,7 +47,7 @@ class CreatePortalTable extends CreateTable
 		return $this;
 	}
 
-	public function addUniqueKey($column, $name = null): static
+	public function addUniqueKey(string $column, string $name = null): static
 	{
 		$uk = new UniqueKey($column);
 
@@ -54,6 +56,14 @@ class CreatePortalTable extends CreateTable
 		}
 
 		$this->addConstraint($uk);
+
+		return $this;
+	}
+
+	public function addIndex(array $columns, string $name): static
+	{
+		$index = new Index($columns, $name);
+		$this->addConstraint($index);
 
 		return $this;
 	}

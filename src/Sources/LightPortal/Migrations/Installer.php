@@ -19,21 +19,21 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Migrations\Creators\BlocksTableCreator;
 use Bugo\LightPortal\Migrations\Creators\CategoriesTableCreator;
 use Bugo\LightPortal\Migrations\Creators\CommentsTableCreator;
-use Bugo\LightPortal\Migrations\Creators\PageTagTableCreator;
 use Bugo\LightPortal\Migrations\Creators\PagesTableCreator;
+use Bugo\LightPortal\Migrations\Creators\PageTagTableCreator;
 use Bugo\LightPortal\Migrations\Creators\ParamsTableCreator;
 use Bugo\LightPortal\Migrations\Creators\PluginsTableCreator;
 use Bugo\LightPortal\Migrations\Creators\TableCreatorInterface;
 use Bugo\LightPortal\Migrations\Creators\TagsTableCreator;
 use Bugo\LightPortal\Migrations\Creators\TranslationsTableCreator;
-use Bugo\LightPortal\Migrations\Upgraders\TitlesTableUpgrader;
-use Bugo\LightPortal\Migrations\Upgraders\CategoriesUpgradeTask;
+use Bugo\LightPortal\Migrations\Upgraders\BlocksTableUpgrader;
+use Bugo\LightPortal\Migrations\Upgraders\CategoriesTableUpgrader;
+use Bugo\LightPortal\Migrations\Upgraders\CommentsTableUpgrader;
+use Bugo\LightPortal\Migrations\Upgraders\PagesTableUpgrader;
 use Bugo\LightPortal\Migrations\Upgraders\TableUpgraderInterface;
+use Bugo\LightPortal\Migrations\Upgraders\TitlesTableUpgrader;
+use Bugo\LightPortal\Migrations\Upgraders\TranslationsTableUpgrader;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
-use Laminas\Db\Sql\Delete;
-use Laminas\Db\Sql\Select;
-use Laminas\Db\Sql\Sql;
-use Laminas\Db\Sql\Update;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -42,10 +42,12 @@ class Installer implements InstallerInterface
 {
 	use HasRequest;
 
-	public function __construct(private ?PortalAdapter $adapter = null, private ?Sql $sql = null)
+	protected PortalSqlInterface $sql;
+
+	public function __construct(protected ?PortalAdapterInterface $adapter = null)
 	{
 		$this->adapter ??= PortalAdapterFactory::create();
-		$this->sql = $sql ?? new Sql($this->adapter);
+		$this->sql = $this->adapter->getSqlBuilder();
 	}
 
 	public function install(): bool
@@ -83,7 +85,7 @@ class Installer implements InstallerInterface
 		return true;
 	}
 
-	private function processTables(string $mode): void
+	protected function processTables(string $mode): void
 	{
 		$creators = $this->getCreators();
 
@@ -102,17 +104,17 @@ class Installer implements InstallerInterface
 		}
 	}
 
-	private function processUpgradeTasks(): void
+	protected function processUpgradeTasks(): void
 	{
-		$upgradeTasks = $this->getUpgradeTasks();
+		$upgraders = $this->getUpgraders();
 
-		foreach ($upgradeTasks as $taskClass) {
-			$task = new $taskClass($this->adapter, $this->sql);
-			if (! $task instanceof TableUpgraderInterface) {
+		foreach ($upgraders as $upgraderClass) {
+			$upgrader = new $upgraderClass($this->adapter, $this->sql);
+			if (! $upgrader instanceof TableUpgraderInterface) {
 				continue;
 			}
 
-			$task->upgrade();
+			$upgrader->updateTable();
 		}
 	}
 
@@ -131,17 +133,21 @@ class Installer implements InstallerInterface
 		];
 	}
 
-	private function getUpgradeTasks(): array
+	private function getUpgraders(): array
 	{
 		return [
 			TitlesTableUpgrader::class,
-			CategoriesUpgradeTask::class,
+			PagesTableUpgrader::class,
+			BlocksTableUpgrader::class,
+			CategoriesTableUpgrader::class,
+			TranslationsTableUpgrader::class,
+			CommentsTableUpgrader::class,
 		];
 	}
 
-	private function cleanBackgroundTasks(): void
+	protected function cleanBackgroundTasks(): void
 	{
-		$delete = new Delete($this->adapter->getPrefix() . 'background_tasks');
+		$delete = $this->sql->delete('background_tasks');
 		$delete->where(['task_file LIKE ?' => '%$sourcedir/LightPortal%']);
 
 		$statement = $this->sql->prepareStatementForSqlObject($delete);
@@ -185,9 +191,9 @@ class Installer implements InstallerInterface
 		}
 	}
 
-	private function removePortalSettings(): void
+	protected function removePortalSettings(): void
 	{
-		$select = new Select($this->adapter->getPrefix() . 'settings');
+		$select = $this->sql->select('settings');
 		$select->where->like('variable', 'lp_%');
 
 		$statement = $this->sql->prepareStatementForSqlObject($select);
@@ -199,7 +205,7 @@ class Installer implements InstallerInterface
 		}
 
 		if (! empty($settingsToRemove)) {
-			$delete = new Delete($this->adapter->getPrefix() . 'settings');
+			$delete = $this->sql->delete('settings');
 			$delete->where->in('variable', $settingsToRemove);
 
 			$statement = $this->sql->prepareStatementForSqlObject($delete);
@@ -207,18 +213,18 @@ class Installer implements InstallerInterface
 		}
 	}
 
-	private function removePortalPermissions(): void
+	protected function removePortalPermissions(): void
 	{
-		$delete = new Delete($this->adapter->getPrefix() . 'permissions');
+		$delete = $this->sql->delete('permissions');
 		$delete->where->like('permission', '%light_portal%');
 
 		$statement = $this->sql->prepareStatementForSqlObject($delete);
 		$statement->execute();
 	}
 
-	private function updateSettings(): void
+	protected function updateSettings(): void
 	{
-		$update = new Update($this->adapter->getPrefix() . 'settings');
+		$update = $this->sql->update('settings');
 		$update->set(['value' => (string) time()]);
 		$update->where(['variable' => 'settings_updated']);
 

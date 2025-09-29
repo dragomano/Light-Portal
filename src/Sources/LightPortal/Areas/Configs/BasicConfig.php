@@ -62,7 +62,7 @@ final class BasicConfig extends AbstractConfig
 		$this->addDefaultValues([
 			'lp_frontpage_title'           => str_replace(["'", "\""], "", (string) Utils::$context['forum_name']),
 			'lp_show_views_and_comments'   => 1,
-			'lp_frontpage_article_sorting' => 1,
+			'lp_frontpage_article_sorting' => 'created;desc',
 			'lp_num_items_per_page'        => 10,
 			'lp_standalone_url'            => Config::$boardurl . '/portal.php',
 		]);
@@ -99,13 +99,13 @@ final class BasicConfig extends AbstractConfig
 					["'", "\""], "", (string) Utils::$context['forum_name']
 				) . ' - ' . Lang::$txt['lp_portal'])
 				->setTab(self::TAB_BASE),
-			CheckConfig::make('lp_frontpage_order_by_replies')
-				->setTab(self::TAB_BASE),
 			SelectConfig::make('lp_frontpage_article_sorting')
 				->setOptions(Lang::$txt['lp_frontpage_article_sorting_set'])
 				->setHelp('lp_frontpage_article_sorting_help')
 				->setTab(self::TAB_BASE),
 			CheckConfig::make('lp_show_layout_switcher')
+				->setTab(self::TAB_BASE),
+			CheckConfig::make('lp_show_sort_dropdown')
 				->setTab(self::TAB_BASE),
 			SelectConfig::make('lp_frontpage_num_columns')
 				->setOptions(array_map(

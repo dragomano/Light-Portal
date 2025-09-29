@@ -17,6 +17,8 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 
+use function Bugo\LightPortal\app;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -149,6 +151,6 @@ class Setting
 
 	protected static function transformArray(string $value, string $from): array
 	{
-		return $from === 'json' ? Utils::jsonDecode($value, true) : array_filter(explode(',', $value));
+		return $from === 'json' ? Utils::jsonDecode($value, true) : explode(',', $value);
 	}
 }

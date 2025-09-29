@@ -12,13 +12,9 @@
 
 namespace Bugo\LightPortal\Actions;
 
-use Bugo\Bricks\Tables\Interfaces\TableBuilderInterface;
-
 interface CardListInterface
 {
 	public function show(PageListInterface $entity): void;
 
 	public function getOrderBy(): string;
-
-	public function getBuilder(string $id): TableBuilderInterface;
 }

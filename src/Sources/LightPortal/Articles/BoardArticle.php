@@ -29,13 +29,9 @@ class BoardArticle extends AbstractArticle
 {
 	private array $selectedBoards = [];
 
-	protected int $sorting = 0;
-
 	public function init(): void
 	{
 		$this->selectedBoards = Setting::get('lp_frontpage_boards', 'array', []);
-
-		$this->sorting = Setting::get('lp_frontpage_article_sorting', 'int', 0);
 
 		$this->params = [
 			'blank_string'    => '',
@@ -44,10 +40,16 @@ class BoardArticle extends AbstractArticle
 		];
 
 		$this->orders = [
-			'b.id_last_msg DESC',
-			'm.poster_time DESC',
-			'm.poster_time',
-			'last_updated DESC',
+			'created;desc'      => 'm.poster_time DESC',
+			'created'           => 'm.poster_time',
+			'updated;desc'      => 'GREATEST(m.poster_time, m.modified_time) DESC',
+			'updated'           => 'GREATEST(m.poster_time, m.modified_time) DESC',
+			'last_comment;desc' => 'b.id_last_msg DESC',
+			'last_comment'      => 'b.id_last_msg',
+			'title;desc'        => 'b.name DESC',
+			'title'             => 'b.name',
+			'num_replies;desc'  => 'b.num_posts DESC',
+			'num_replies'       => 'b.num_posts',
 		];
 
 		$this->events()->dispatch(
@@ -62,21 +64,40 @@ class BoardArticle extends AbstractArticle
 		);
 	}
 
-	public function getData(int $start, int $limit): iterable
+	public function getSortingOptions(): array
 	{
+		return [
+			'created;desc'      => Lang::$txt['lp_sort_by_created_desc'],
+			'created'           => Lang::$txt['lp_sort_by_created'],
+			'updated;desc'      => Lang::$txt['lp_sort_by_updated_desc'],
+			'updated'           => Lang::$txt['lp_sort_by_updated'],
+			'last_comment;desc' => Lang::$txt['lp_sort_by_last_reply_desc'],
+			'last_comment'      => Lang::$txt['lp_sort_by_last_reply'],
+			'title;desc'        => Lang::$txt['lp_sort_by_title_desc'],
+			'title'             => Lang::$txt['lp_sort_by_title'],
+			'num_replies;desc'  => Lang::$txt['lp_sort_by_num_replies_desc'],
+			'num_replies'       => Lang::$txt['lp_sort_by_num_replies'],
+		];
+	}
+
+	public function getData(int $start, int $limit, string $sortType = null): iterable
+	{
+		$this->sorting = $sortType ?: $this->sorting;
+
 		if (empty($this->selectedBoards))
 			return;
 
 		$this->params += [
 			'start' => $start,
 			'limit' => $limit,
+			'sort'  => $this->orders[$this->sorting],
 		];
 
 		$result = Db::$db->query('
 			SELECT
-				b.id_board, b.name, b.description, b.redirect,
+				b.id_board, b.name, b.description, b.redirect, b.id_last_msg,
 				CASE WHEN b.redirect != {string:blank_string} THEN 1 ELSE 0 END AS is_redirect, b.num_posts,
-				m.poster_time, GREATEST(m.poster_time, m.modified_time) AS last_updated, m.id_msg, m.id_topic,
+				GREATEST(m.poster_time, m.modified_time) AS last_updated, m.id_msg, m.id_topic,
 				c.name AS cat_name,' . (
 					User::$me->is_guest
 						? ' 1 AS is_read, 0 AS new_from'
@@ -101,8 +122,7 @@ class BoardArticle extends AbstractArticle
 			WHERE b.id_board IN ({array_int:selected_boards})
 				AND {query_see_board}' . (empty($this->wheres) ? '' : '
 				' . implode("\n\t\t\t\t\t", $this->wheres)) . '
-			ORDER BY ' . (empty(Config::$modSettings['lp_frontpage_order_by_replies']) ? '' : 'b.num_posts DESC, ')
-				. $this->orders[$this->sorting] . '
+			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
 			$this->params,
 		);
@@ -113,17 +133,18 @@ class BoardArticle extends AbstractArticle
 			);
 
 			$board = [
-				'id'          => (int) $row['id_board'],
-				'date'        => $this->getDate($row),
-				'title'       => $this->getTitle($row),
-				'link'        => $this->getLink($row),
-				'is_new'      => empty($row['is_read']),
-				'replies'     => $this->getRepliesData($row),
-				'image'       => $this->getImage($row),
-				'can_edit'    => $this->canEdit(),
-				'edit_link'   => $this->getEditLink($row),
-				'category'    => $this->getCategory($row),
-				'is_redirect' => $row['is_redirect'],
+				'id'           => (int) $row['id_board'],
+				'date'         => $this->getDate($row),
+				'last_comment' => (int) $row['id_last_msg'],
+				'title'        => $this->getTitle($row),
+				'link'         => $this->getLink($row),
+				'is_new'       => empty($row['is_read']),
+				'replies'      => $this->getRepliesData($row),
+				'image'        => $this->getImage($row),
+				'can_edit'     => $this->canEdit(),
+				'edit_link'    => $this->getEditLink($row),
+				'category'     => $this->getCategory($row),
+				'is_redirect'  => $row['is_redirect'],
 			];
 
 			$this->prepareTeaser($board, $row);
@@ -165,7 +186,7 @@ class BoardArticle extends AbstractArticle
 
 	private function getDate(array $row): int
 	{
-		return $this->sorting === 3 && $row['last_updated'] ? (int) $row['last_updated'] : (int) $row['poster_time'];
+		return str_contains($this->sorting, 'updated') && $row['last_updated'] ? (int) $row['last_updated'] : (int) $row['poster_time'];
 	}
 
 	private function getTitle(array $row): string

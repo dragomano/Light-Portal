@@ -249,7 +249,7 @@ final class PageArea
 		if ($this->request()->has('remove')) {
 			if (Utils::$context['lp_current_page']['author_id'] !== User::$me->id) {
 				Logging::logAction('remove_lp_page', [
-					'page' => Utils::$context['lp_current_page']['titles'][User::$me->language]
+					'page' => Utils::$context['lp_current_page']['title']
 				]);
 			}
 

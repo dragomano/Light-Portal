@@ -14,9 +14,6 @@ namespace Bugo\LightPortal\Utils;
 
 use Throwable;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
 interface ErrorHandlerInterface
 {
 	public function log(string $message, string $level, array $context): void;

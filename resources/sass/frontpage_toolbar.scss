@@ -1,0 +1,45 @@
+.frontpage_toolbar {
+	margin: 1px 0 5px 0;
+
+	form {
+		display: flex;
+		justify-content: space-between;
+		gap: 10px;
+	}
+
+	@media (max-width: 768px) {
+		.floatleft {
+			display: none;
+		}
+
+		.floatright {
+			width: 100%;
+
+			form {
+				width: 100%;
+				display: flex;
+				flex-direction: column;
+				gap: 10px;
+
+				label {
+					width: 100%;
+					display: block;
+				}
+
+				select {
+					width: 100%;
+				}
+			}
+		}
+
+		.sr-only {
+			position: static;
+			width: auto;
+			height: auto;
+			margin: 0;
+			overflow: visible;
+			clip: auto;
+			white-space: normal;
+		}
+	}
+}

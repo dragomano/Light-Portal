@@ -20,7 +20,7 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Actions\Block;
 use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Enums\Permission;
-use Bugo\LightPortal\Repositories\PageRepository;
+use Bugo\LightPortal\Repositories\PageRepositoryInterface;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasBreadcrumbs;
@@ -148,7 +148,7 @@ class MenuButtons
 
 	protected function preparePageButtons(array &$buttons): void
 	{
-		if (empty(Utils::$context['lp_menu_pages'] = app(PageRepository::class)->getMenuItems()))
+		if (empty(Utils::$context['lp_menu_pages'] = app(PageRepositoryInterface::class)->getMenuItems()))
 			return;
 
 		$pageButtons = [];

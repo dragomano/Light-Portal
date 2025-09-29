@@ -12,9 +12,6 @@
 
 namespace Bugo\LightPortal\Repositories;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
 interface TagRepositoryInterface extends RepositoryInterface
 {
 	public function getAll(int $start, int $limit, string $sort): array;

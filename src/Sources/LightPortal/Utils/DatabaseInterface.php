@@ -12,9 +12,6 @@
 
 namespace Bugo\LightPortal\Utils;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
 interface DatabaseInterface
 {
 	public function query(string $sql, array $params = []): mixed;

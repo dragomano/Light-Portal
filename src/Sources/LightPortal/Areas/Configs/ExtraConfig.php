@@ -78,7 +78,6 @@ final class ExtraConfig extends AbstractConfig
 				->setJavaScript(':disabled="comment_block !== \'default\'"'),
 			CallbackConfig::make('comment_settings_after'),
 			DividerConfig::make(),
-			CheckConfig::make('lp_show_items_as_articles'),
 			IntConfig::make('lp_page_maximum_tags')
 				->setMin(1),
 			SelectConfig::make('lp_permissions_default')

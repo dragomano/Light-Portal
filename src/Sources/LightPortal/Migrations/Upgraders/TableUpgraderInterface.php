@@ -12,12 +12,7 @@
 
 namespace Bugo\LightPortal\Migrations\Upgraders;
 
-use Bugo\LightPortal\Migrations\PortalAdapter;
-use Laminas\Db\Sql\Sql;
-
 interface TableUpgraderInterface
 {
-	public function __construct(?PortalAdapter $adapter = null, ?Sql $sql = null);
-
 	public function upgrade(): void;
 }

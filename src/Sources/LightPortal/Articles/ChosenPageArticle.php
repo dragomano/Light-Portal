@@ -34,12 +34,12 @@ final class ChosenPageArticle extends PageArticle
 		$this->params['selected_pages'] = $this->selectedPages;
 	}
 
-	public function getData(int $start, int $limit): iterable
+	public function getData(int $start, int $limit, string $sortType = null): iterable
 	{
 		if (empty($this->selectedPages))
 			return [];
 
-		return parent::getData($start, $limit);
+		return parent::getData($start, $limit, $sortType);
 	}
 
 	public function getTotalCount(): int

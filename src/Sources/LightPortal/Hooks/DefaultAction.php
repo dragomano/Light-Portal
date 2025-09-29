@@ -38,7 +38,7 @@ class DefaultAction
 
 	private function determineAction(): ActionInterface
 	{
-		if ($this->request()->isNotEmpty(LP_PAGE_PARAM)) {
+		if ($this->request()->isNotEmpty(LP_PAGE_PARAM) || Setting::isFrontpageMode('chosen_page')) {
 			return app(Page::class);
 		}
 

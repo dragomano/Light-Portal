@@ -15,7 +15,7 @@ namespace Bugo\LightPortal\Migrations\Creators;
 use Bugo\Compat\Config;
 use Bugo\LightPortal\Migrations\Columns\AutoIncrementInteger;
 use Bugo\LightPortal\Migrations\Columns\UnsignedInteger;
-use Bugo\LightPortal\Migrations\CreatePortalTable;
+use Bugo\LightPortal\Migrations\PortalTable;
 use Laminas\Db\Sql\Ddl\Column\Text;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
 use Laminas\Db\Sql\Ddl\Constraint\UniqueKey;
@@ -25,12 +25,9 @@ if (! defined('SMF'))
 
 class TranslationsTableCreator extends AbstractTableCreator
 {
-	protected function getTableSuffix(): string
-	{
-		return 'translations';
-	}
+	protected string $tableName = 'lp_translations';
 
-	protected function defineColumns(CreatePortalTable $createTable): void
+	protected function defineColumns(PortalTable $table): void
 	{
 		$id          = new AutoIncrementInteger();
 		$itemId      = new UnsignedInteger('item_id');
@@ -40,16 +37,16 @@ class TranslationsTableCreator extends AbstractTableCreator
 		$content     = new Text('content', nullable: true);
 		$description = new Varchar('description', 510, true);
 
-		$createTable->addAutoIncrementColumn($id);
-		$createTable->addColumn($itemId);
-		$createTable->addColumn($type);
-		$createTable->addColumn($lang);
-		$createTable->addColumn($title);
-		$createTable->addColumn($content);
-		$createTable->addColumn($description);
+		$table->addAutoIncrementColumn($id);
+		$table->addColumn($itemId);
+		$table->addColumn($type);
+		$table->addColumn($lang);
+		$table->addColumn($title);
+		$table->addColumn($content);
+		$table->addColumn($description);
 
 		$compositeUniqueKey = new UniqueKey(['item_id', 'type', 'lang']);
-		$createTable->addConstraint($compositeUniqueKey);
+		$table->addConstraint($compositeUniqueKey);
 	}
 
 	public function insertDefaultData(): void

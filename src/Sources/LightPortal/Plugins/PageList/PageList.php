@@ -23,7 +23,7 @@ use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Repositories\PageRepository;
+use Bugo\LightPortal\Repositories\PageRepositoryInterface;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\VirtualSelectField;
@@ -123,7 +123,7 @@ class PageList extends Block
 			'categories'   => $categories,
 		];
 
-		$items = app(PageRepository::class)->getAll(
+		$items = app(PageRepositoryInterface::class)->getAll(
 			0, $numPages, $sort . ' DESC', $queryString, $queryParams
 		);
 
