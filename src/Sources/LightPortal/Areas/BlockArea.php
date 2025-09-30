@@ -161,7 +161,7 @@ final readonly class BlockArea
 		$this->prepareEditor();
 		$this->preparePreview();
 
-		$this->repository->setData(Utils::$context['lp_block']['id']);
+		$this->repository->setData(Utils::$context['lp_current_block']['id']);
 	}
 
 	private function doActions(): void
