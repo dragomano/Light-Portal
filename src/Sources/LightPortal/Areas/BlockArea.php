@@ -19,6 +19,7 @@ use Bugo\Compat\Security;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Traits\HasArea;
+use Bugo\LightPortal\Enums\BlockAreaType;
 use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Tab;
@@ -328,7 +329,7 @@ final readonly class BlockArea
 
 	private function getAreasInfo(): string
 	{
-		$example_areas = [
+		$exampleAreas = [
 			'custom_action',
 			'!custom_action',
 			LP_PAGE_PARAM . '=slug',
@@ -340,9 +341,17 @@ final readonly class BlockArea
 			'topic=3|7',
 		];
 
-		Lang::$txt['lp_block_areas_values'][0] = sprintf(Lang::$txt['lp_block_areas_values'][0], 'pm,agreement,search');
+		Lang::$txt['lp_block_areas_values'][BlockAreaType::CUSTOM_ACTION->name()] = sprintf(
+			Lang::$txt['lp_block_areas_values'][BlockAreaType::CUSTOM_ACTION->name()],
+			'pm,agreement,search'
+		);
 
-		Utils::$context['lp_possible_areas'] = array_combine($example_areas, Lang::$txt['lp_block_areas_values']);
+		$descriptions = [];
+		foreach (BlockAreaType::cases() as $type) {
+			$descriptions[] = Lang::$txt['lp_block_areas_values'][$type->name()];
+		}
+
+		Utils::$context['lp_possible_areas'] = array_combine($exampleAreas, $descriptions);
 
 		ob_start();
 
