@@ -14,7 +14,7 @@ namespace Bugo\LightPortal\Enums;
 
 use Bugo\LightPortal\Utils\Str;
 
-enum Hook
+enum ForumHook
 {
 	case actions;
 	case adminAreas;

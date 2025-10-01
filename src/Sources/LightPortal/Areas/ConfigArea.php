@@ -32,7 +32,7 @@ use Bugo\LightPortal\DataHandlers\Imports\CategoryImport;
 use Bugo\LightPortal\DataHandlers\Imports\PageImport;
 use Bugo\LightPortal\DataHandlers\Imports\PluginImport;
 use Bugo\LightPortal\DataHandlers\Imports\TagImport;
-use Bugo\LightPortal\Enums\Hook;
+use Bugo\LightPortal\Enums\ForumHook;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Utils\Icon;
@@ -59,8 +59,8 @@ final class ConfigArea
 
 	public function __invoke(): void
 	{
-		$this->applyHook(Hook::adminAreas);
-		$this->applyHook(Hook::helpadmin);
+		$this->applyHook(ForumHook::adminAreas);
+		$this->applyHook(ForumHook::helpadmin);
 	}
 
 	public function adminAreas(array &$areas): void
