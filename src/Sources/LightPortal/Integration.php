@@ -12,7 +12,7 @@
 
 namespace Bugo\LightPortal;
 
-use Bugo\LightPortal\Enums\Hook;
+use Bugo\LightPortal\Enums\ForumHook;
 use Bugo\LightPortal\Hooks\Actions;
 use Bugo\LightPortal\Hooks\AlertTypes;
 use Bugo\LightPortal\Hooks\BuildRoute;
@@ -48,30 +48,30 @@ final class Integration
 	public function __invoke(): void
 	{
 		if (str_starts_with(SMF_VERSION, '3.0')) {
-			$this->applyHook(Hook::preLoad, Init::class);
-			$this->applyHook(Hook::permissionsList, PermissionsList::class);
-			$this->applyHook(Hook::buildRoute, BuildRoute::class);
-			$this->applyHook(Hook::routeParsers, RouteParsers::class);
+			$this->applyHook(ForumHook::preLoad, Init::class);
+			$this->applyHook(ForumHook::permissionsList, PermissionsList::class);
+			$this->applyHook(ForumHook::buildRoute, BuildRoute::class);
+			$this->applyHook(ForumHook::routeParsers, RouteParsers::class);
 		} else {
-			$this->applyHook(Hook::userInfo, Init::class);
-			$this->applyHook(Hook::loadIllegalGuestPermissions, LoadIllegalGuestPermissions::class);
-			$this->applyHook(Hook::loadPermissions, LoadPermissions::class);
+			$this->applyHook(ForumHook::userInfo, Init::class);
+			$this->applyHook(ForumHook::loadIllegalGuestPermissions, LoadIllegalGuestPermissions::class);
+			$this->applyHook(ForumHook::loadPermissions, LoadPermissions::class);
 		}
 
-		$this->applyHook(Hook::preCssOutput, PreCssOutput::class);
-		$this->applyHook(Hook::loadTheme, LoadTheme::class);
-		$this->applyHook(Hook::redirect, Redirect::class);
-		$this->applyHook(Hook::actions, Actions::class);
-		$this->applyHook(Hook::defaultAction, DefaultAction::class);
-		$this->applyHook(Hook::currentAction, CurrentAction::class);
-		$this->applyHook(Hook::menuButtons, MenuButtons::class);
-		$this->applyHook(Hook::displayButtons, DisplayButtons::class);
-		$this->applyHook(Hook::deleteMembers, DeleteMembers::class);
-		$this->applyHook(Hook::alertTypes, AlertTypes::class);
-		$this->applyHook(Hook::fetchAlerts, FetchAlerts::class);
-		$this->applyHook(Hook::profileAreas, ProfileAreas::class);
-		$this->applyHook(Hook::profilePopup, ProfilePopup::class);
-		$this->applyHook(Hook::downloadRequest, DownloadRequest::class);
-		$this->applyHook(Hook::whosOnline, WhosOnline::class);
+		$this->applyHook(ForumHook::preCssOutput, PreCssOutput::class);
+		$this->applyHook(ForumHook::loadTheme, LoadTheme::class);
+		$this->applyHook(ForumHook::redirect, Redirect::class);
+		$this->applyHook(ForumHook::actions, Actions::class);
+		$this->applyHook(ForumHook::defaultAction, DefaultAction::class);
+		$this->applyHook(ForumHook::currentAction, CurrentAction::class);
+		$this->applyHook(ForumHook::menuButtons, MenuButtons::class);
+		$this->applyHook(ForumHook::displayButtons, DisplayButtons::class);
+		$this->applyHook(ForumHook::deleteMembers, DeleteMembers::class);
+		$this->applyHook(ForumHook::alertTypes, AlertTypes::class);
+		$this->applyHook(ForumHook::fetchAlerts, FetchAlerts::class);
+		$this->applyHook(ForumHook::profileAreas, ProfileAreas::class);
+		$this->applyHook(ForumHook::profilePopup, ProfilePopup::class);
+		$this->applyHook(ForumHook::downloadRequest, DownloadRequest::class);
+		$this->applyHook(ForumHook::whosOnline, WhosOnline::class);
 	}
 }

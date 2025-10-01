@@ -8,27 +8,30 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 14.08.25
+ * @version 30.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\ChessBoard;
 
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\Games;
+use Bugo\LightPortal\Plugins\GameBlock;
+use Bugo\LightPortal\Plugins\HookAttribute;
+use Bugo\LightPortal\Plugins\PluginAttribute;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class ChessBoard extends Games
+#[PluginAttribute(icon: 'fas fa-chess')]
+class ChessBoard extends GameBlock
 {
-	public string $icon = 'fas fa-chess';
-
+	#[HookAttribute(PortalHook::prepareContent)]
 	public function prepareContent(Event $e): void
 	{
 		$this->loadExternalResources([
 			['type' => 'css', 'url' => 'https://cdn.jsdelivr.net/npm/@chrisoakman/chessboard2@0/dist/chessboard2.min.css'],
-			['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/@chrisoakman/chessboard2@0/dist/chessboard2.min.js'],
-			['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/chess.js@0.12.1/chess.min.js'],
+			['type' => 'js',  'url' => 'https://cdn.jsdelivr.net/npm/@chrisoakman/chessboard2@0/dist/chessboard2.min.js'],
+			['type' => 'js',  'url' => 'https://cdn.jsdelivr.net/npm/chess.js@0.12.1/chess.min.js'],
 		]);
 
 		$id = $e->args->id;
@@ -50,6 +53,7 @@ class ChessBoard extends Games
 		</script>';
 	}
 
+	#[HookAttribute(PortalHook::credits)]
 	public function credits(Event $e): void
 	{
 		$e->args->links[] = [

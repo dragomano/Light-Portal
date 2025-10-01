@@ -12,16 +12,7 @@
 
 namespace Bugo\LightPortal\Plugins;
 
-use Bugo\Compat\ServerSideIncludes;
-
-class SSI extends Block
+#[PluginAttribute(type: 'block games')]
+abstract class GameBlock extends Block
 {
-	public string $type = 'block ssi';
-
-	public function getFromSSI(string $function, ...$params)
-	{
-		require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'SSI.php';
-
-		return ServerSideIncludes::{$function}(...$params);
-	}
 }

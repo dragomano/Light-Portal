@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 30.08.25
+ * @version 30.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\Search;
@@ -18,10 +18,13 @@ use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\Hook;
+use Bugo\LightPortal\Enums\ForumHook;
 use Bugo\LightPortal\Enums\Permission;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\HookAttribute;
+use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\Str;
@@ -30,17 +33,12 @@ use Bugo\LightPortal\Utils\Traits\HasView;
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(icon: 'fas fa-search')]
 class Search extends Block
 {
 	use HasView;
 
-	public string $icon = 'fas fa-search';
-
-	public function init(): void
-	{
-		$this->applyHook(Hook::actions);
-	}
-
+	#[HookAttribute(PortalHook::addSettings)]
 	public function addSettings(Event $e): void
 	{
 		$this->addDefaultValues([
@@ -48,6 +46,45 @@ class Search extends Block
 		]);
 
 		$e->args->settings[$this->name][] = ['range', 'min_chars', 'min' => 1, 'max' => 10];
+	}
+
+	#[HookAttribute(PortalHook::prepareAssets)]
+	public function prepareAssets(Event $e): void
+	{
+		$e->args->assets['css'][$this->name][] = 'https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.css';
+		$e->args->assets['scripts'][$this->name][] = 'https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.min.js';
+	}
+
+	#[HookAttribute(PortalHook::prepareContent)]
+	public function prepareContent(): void
+	{
+		Theme::loadCSSFile('light_portal/search/auto-complete.css');
+		Theme::loadJavaScriptFile('light_portal/search/auto-complete.min.js', ['minimize' => true]);
+
+		echo $this->view('form', [
+			'baseUrl' => LP_BASE_URL,
+			'plugin'  => $this,
+		]);
+	}
+
+	#[HookAttribute(PortalHook::credits)]
+	public function credits(Event $e): void
+	{
+		$e->args->links[] = [
+			'title' => 'Vanilla JavaScript autoComplete',
+			'link' => 'https://github.com/Pixabay/JavaScript-autoComplete',
+			'author' => 'Simon Steinberger / Pixabay.com',
+			'license' => [
+				'name' => 'the MIT License',
+				'link' => 'https://www.opensource.org/licenses/mit-license.php'
+			]
+		];
+	}
+
+	#[HookAttribute(PortalHook::init)]
+	public function init(): void
+	{
+		$this->applyHook(ForumHook::actions);
 	}
 
 	public function actions()
@@ -170,35 +207,5 @@ class Search extends Block
 		Db::$db->free_result($result);
 
 		return $items;
-	}
-
-	public function prepareAssets(Event $e): void
-	{
-		$e->args->assets['css'][$this->name][] = 'https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.css';
-		$e->args->assets['scripts'][$this->name][] = 'https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.min.js';
-	}
-
-	public function prepareContent(): void
-	{
-		Theme::loadCSSFile('light_portal/search/auto-complete.css');
-		Theme::loadJavaScriptFile('light_portal/search/auto-complete.min.js', ['minimize' => true]);
-
-		echo $this->view('form', [
-			'baseUrl' => LP_BASE_URL,
-			'plugin'  => $this,
-		]);
-	}
-
-	public function credits(Event $e): void
-	{
-		$e->args->links[] = [
-			'title' => 'Vanilla JavaScript autoComplete',
-			'link' => 'https://github.com/Pixabay/JavaScript-autoComplete',
-			'author' => 'Simon Steinberger / Pixabay.com',
-			'license' => [
-				'name' => 'the MIT License',
-				'link' => 'https://www.opensource.org/licenses/mit-license.php'
-			]
-		];
 	}
 }

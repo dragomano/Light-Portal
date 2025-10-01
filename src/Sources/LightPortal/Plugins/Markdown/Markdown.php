@@ -8,13 +8,17 @@
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  *
  * @category plugin
- * @version 22.12.24
+ * @version 01.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\Markdown;
 
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\PluginType;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\HookAttribute;
+use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\Plugins\Markdown\SMF\BlockQuoteRenderer;
 use Bugo\LightPortal\Plugins\Markdown\SMF\FencedCodeRenderer;
 use Bugo\LightPortal\Plugins\Markdown\SMF\HeadingRenderer;
@@ -44,12 +48,10 @@ use Zoon\CommonMark\Ext\YouTubeIframe\YouTubeIframeExtension;
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(type: PluginType::PARSER, icon: 'fab fa-markdown')]
 class Markdown extends Plugin
 {
-	public string $icon = 'fab fa-markdown';
-
-	public string $type = 'parser';
-
+	#[HookAttribute(PortalHook::init)]
 	public function init(): void
 	{
 		Utils::$context['lp_content_types'][$this->name] = 'Markdown';
@@ -58,11 +60,13 @@ class Markdown extends Plugin
 	/**
 	 * @throws CommonMarkException
 	 */
+	#[HookAttribute(PortalHook::parseContent)]
 	public function parseContent(Event $e): void
 	{
 		$e->args->content = $this->getParsedContent($e->args->content);
 	}
 
+	#[HookAttribute(PortalHook::credits)]
 	public function credits(Event $e): void
 	{
 		$e->args->links[] = [

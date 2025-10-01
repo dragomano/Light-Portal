@@ -13,14 +13,14 @@
 namespace Bugo\LightPortal\Utils\Traits;
 
 use Bugo\Compat\IntegrationHook;
-use Bugo\LightPortal\Enums\Hook;
+use Bugo\LightPortal\Enums\ForumHook;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 trait HasForumHooks
 {
-	protected function applyHook(Hook $hook, ?string $class = null): void
+	protected function applyHook(ForumHook $hook, ?string $class = null): void
 	{
 		$class ??= static::class;
 

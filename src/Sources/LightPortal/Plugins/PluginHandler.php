@@ -18,6 +18,9 @@ use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Events\EventManager;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use ReflectionClass;
+use ReflectionException;
+use ReflectionMethod;
 use Throwable;
 
 use function Bugo\LightPortal\app;
@@ -35,6 +38,9 @@ final readonly class PluginHandler
 
 	private EventManager $manager;
 
+	/**
+	 * @throws ReflectionException
+	 */
 	public function __construct(array $plugins = [])
 	{
 		$this->manager       = app(EventManager::class);
@@ -65,7 +71,10 @@ final readonly class PluginHandler
 
 		$plugins = array_map(function (PluginInterface $plugin) {
 			$data = get_object_vars($plugin);
-			$data['name'] = $plugin->getCamelName();
+			$data['name']     = $plugin->getCamelName();
+			$data['type']     = $plugin->getPluginType();
+			$data['icon']     = $plugin->getPluginIcon();
+			$data['saveable'] = $plugin->isPluginSaveable();
 
 			return [$plugin->getSnakeName() => $data];
 		}, $warehouse);
@@ -87,6 +96,9 @@ final readonly class PluginHandler
 		$this->assetHandler->prepare($assets);
 	}
 
+	/**
+	 * @throws ReflectionException
+	 */
 	private function prepareListeners(array $plugins = []): void
 	{
 		$plugins = $plugins ?: Setting::getEnabledPlugins();
@@ -104,7 +116,7 @@ final readonly class PluginHandler
 
 			app()->add($className)->addTag('plugins');
 
-			$this->manager->addHookListener(PortalHook::cases(), app($className));
+			$this->registerPluginHooks($className);
 		}
 	}
 
@@ -117,5 +129,22 @@ final readonly class PluginHandler
 		$this->assetHandler->handle($path, $pluginName);
 		$this->configHandler->handle($snakeName);
 		$this->langHandler->handle($path, $snakeName);
+	}
+
+	/**
+	 * @throws ReflectionException
+	 */
+	private function registerPluginHooks(string $className): void
+	{
+		$reflection = new ReflectionClass($className);
+
+		foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+			$hookAttrs = $method->getAttributes(HookAttribute::class);
+
+			foreach ($hookAttrs as $attr) {
+				$hookData = $attr->newInstance();
+				$this->manager->addHookListener([$hookData->hook], app($className));
+			}
+		}
 	}
 }

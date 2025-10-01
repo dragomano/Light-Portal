@@ -8,14 +8,17 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 14.08.25
+ * @version 01.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\TopTopics;
 
 use Bugo\Compat\Lang;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\SSI;
+use Bugo\LightPortal\Plugins\HookAttribute;
+use Bugo\LightPortal\Plugins\PluginAttribute;
+use Bugo\LightPortal\Plugins\SsiBlock;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\RadioField;
@@ -25,10 +28,10 @@ use WPLake\Typed\Typed;
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class TopTopics extends SSI
+#[PluginAttribute(icon: 'fas fa-balance-scale-left')]
+class TopTopics extends SsiBlock
 {
-	public string $icon = 'fas fa-balance-scale-left';
-
+	#[HookAttribute(PortalHook::prepareBlockParams)]
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -38,15 +41,17 @@ class TopTopics extends SSI
 		];
 	}
 
+	#[HookAttribute(PortalHook::validateBlockParams)]
 	public function validateBlockParams(Event $e): void
 	{
 		$e->args->params = [
 			'popularity_type'   => FILTER_DEFAULT,
-			'numе_topics'       => FILTER_VALIDATE_INT,
+			'num_topics'        => FILTER_VALIDATE_INT,
 			'show_numbers_only' => FILTER_VALIDATE_BOOLEAN,
 		];
 	}
 
+	#[HookAttribute(PortalHook::prepareBlockFields)]
 	public function prepareBlockFields(Event $e): void
 	{
 		$options = $e->args->options;
@@ -63,6 +68,7 @@ class TopTopics extends SSI
 			->setValue($options['show_numbers_only']);
 	}
 
+	#[HookAttribute(PortalHook::prepareContent)]
 	public function prepareContent(Event $e): void
 	{
 		$parameters = $e->args->parameters;

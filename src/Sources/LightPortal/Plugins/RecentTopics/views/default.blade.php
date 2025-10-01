@@ -5,7 +5,7 @@
 			@php
 				$topic['preview'] = '<a href="' . $topic['href'] . '">' . $topic['preview'] . '</a>';
 			@endphp
-			<div class="word_break">
+			<div class="windowbg word_break">
 				@if (! empty($parameters['show_avatars']) && isset($topic['poster']['avatar']))
 					<div class="poster_avatar" title="{{ $topic['poster']['name'] }}">
 						{!! $topic['poster']['avatar'] !!}

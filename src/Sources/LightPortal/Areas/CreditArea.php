@@ -17,7 +17,7 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\Hook;
+use Bugo\LightPortal\Enums\ForumHook;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Utils\Str;
@@ -39,7 +39,7 @@ final class CreditArea
 
 	public function __invoke(): void
 	{
-		$this->applyHook(Hook::credits);
+		$this->applyHook(ForumHook::credits);
 	}
 
 	public function credits(): void

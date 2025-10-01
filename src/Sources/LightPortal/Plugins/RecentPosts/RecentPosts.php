@@ -8,16 +8,19 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 29.08.25
+ * @version 01.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\RecentPosts;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\SSI;
+use Bugo\LightPortal\Plugins\HookAttribute;
+use Bugo\LightPortal\Plugins\PluginAttribute;
+use Bugo\LightPortal\Plugins\SsiBlock;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\NumberField;
@@ -33,12 +36,12 @@ use WPLake\Typed\Typed;
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class RecentPosts extends SSI
+#[PluginAttribute(icon: 'far fa-comment-alt')]
+class RecentPosts extends SsiBlock
 {
 	use HasView;
 
-	public string $icon = 'far fa-comment-alt';
-
+	#[HookAttribute(PortalHook::prepareBlockParams)]
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -58,6 +61,7 @@ class RecentPosts extends SSI
 		];
 	}
 
+	#[HookAttribute(PortalHook::validateBlockParams)]
 	public function validateBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -75,6 +79,7 @@ class RecentPosts extends SSI
 		];
 	}
 
+	#[HookAttribute(PortalHook::prepareBlockFields)]
 	public function prepareBlockFields(Event $e): void
 	{
 		$options = $e->args->options;
@@ -197,6 +202,7 @@ class RecentPosts extends SSI
 		return $posts;
 	}
 
+	#[HookAttribute(PortalHook::prepareContent)]
 	public function prepareContent(Event $e): void
 	{
 		$parameters = $e->args->parameters;

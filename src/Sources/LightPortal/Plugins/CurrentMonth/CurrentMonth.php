@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 26.08.25
+ * @version 30.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\CurrentMonth;
@@ -19,19 +19,22 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\HookAttribute;
+use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\Utils\Traits\HasView;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(icon: 'fas fa-calendar-check')]
 class CurrentMonth extends Block
 {
 	use HasView;
 
-	public string $icon = 'fas fa-calendar-check';
-
+	#[HookAttribute(PortalHook::prepareBlockParams)]
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params['no_content_class'] = true;
@@ -63,6 +66,7 @@ class CurrentMonth extends Block
 		return Calendar::getCalendarGrid(date_format($startObject, 'Y-m-d'), $options, has_picker: false);
 	}
 
+	#[HookAttribute(PortalHook::prepareContent)]
 	public function prepareContent(Event $e): void
 	{
 		$id = $e->args->id;

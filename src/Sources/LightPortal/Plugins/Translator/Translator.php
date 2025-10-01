@@ -8,14 +8,17 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.01.25
+ * @version 01.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\Translator;
 
 use Bugo\Compat\Config;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\HookAttribute;
+use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\RadioField;
 use Bugo\LightPortal\Utils\Str;
@@ -23,10 +26,10 @@ use Bugo\LightPortal\Utils\Str;
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(icon: 'fas fa-language')]
 class Translator extends Block
 {
-	public string $icon = 'fas fa-language';
-
+	#[HookAttribute(PortalHook::prepareBlockParams)]
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -37,6 +40,7 @@ class Translator extends Block
 		];
 	}
 
+	#[HookAttribute(PortalHook::validateBlockParams)]
 	public function validateBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -46,6 +50,7 @@ class Translator extends Block
 		];
 	}
 
+	#[HookAttribute(PortalHook::prepareBlockFields)]
 	public function prepareBlockFields(Event $e): void
 	{
 		$options = $e->args->options;
@@ -65,6 +70,7 @@ class Translator extends Block
 			->setValue($options['auto_mode']);
 	}
 
+	#[HookAttribute(PortalHook::prepareContent)]
 	public function prepareContent(Event $e): void
 	{
 		$id = $e->args->id;
@@ -96,11 +102,11 @@ class Translator extends Block
 				->src('https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit');
 
 			echo Str::html('script')->setText('
-			    function googleTranslateElementInit() {
-			        new google.translate.TranslateElement({
-			            pageLanguage: "' . substr(Config::$language ?? '', 0, 2) . '"
-			        }, "google_translate_element' . $id . '");
-			    }
+				function googleTranslateElementInit() {
+					new google.translate.TranslateElement({
+						pageLanguage: "' . substr(Config::$language ?? '', 0, 2) . '"
+					}, "google_translate_element' . $id . '");
+				}
 			');
 		}
 	}

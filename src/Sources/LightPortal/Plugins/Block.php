@@ -13,14 +13,15 @@
 namespace Bugo\LightPortal\Plugins;
 
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\Placement;
+use Bugo\LightPortal\Enums\PluginType;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(type: PluginType::BLOCK)]
 abstract class Block extends Plugin
 {
-	public string $type = 'block';
-
 	public function isInPlacements(int $id, array $placements): bool
 	{
 		$block = Utils::$context['lp_active_blocks'][$id] ?? Utils::$context['lp_block'];
@@ -30,6 +31,6 @@ abstract class Block extends Plugin
 
 	public function isInSidebar(int $id): bool
 	{
-		return $this->isInPlacements($id, ['left', 'right']);
+		return $this->isInPlacements($id, [Placement::LEFT->name(), Placement::RIGHT->name()]);
 	}
 }

@@ -17,4 +17,14 @@ interface PluginInterface
 	public function getCamelName(): string;
 
 	public function getSnakeName(): string;
+
+	public function getPluginType(): string;
+
+	public function getPluginIcon(): string;
+
+	public function isPluginSaveable(): bool;
+
+	public function addDefaultValues(array $values): void;
+
+	public function loadExternalResources(array $resources): void;
 }

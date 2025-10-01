@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 14.08.25
+ * @version 30.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\BoardNews;
@@ -17,9 +17,12 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\SSI;
+use Bugo\LightPortal\Plugins\HookAttribute;
+use Bugo\LightPortal\Plugins\PluginAttribute;
+use Bugo\LightPortal\Plugins\SsiBlock;
 use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\RangeField;
 use Bugo\LightPortal\Utils\MessageIndex;
@@ -30,10 +33,10 @@ use WPLake\Typed\Typed;
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class BoardNews extends SSI
+#[PluginAttribute(icon: 'fas fa-newspaper')]
+class BoardNews extends SsiBlock
 {
-	public string $icon = 'fas fa-newspaper';
-
+	#[HookAttribute(PortalHook::prepareBlockParams)]
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -43,6 +46,7 @@ class BoardNews extends SSI
 		];
 	}
 
+	#[HookAttribute(PortalHook::validateBlockParams)]
 	public function validateBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -52,6 +56,7 @@ class BoardNews extends SSI
 		];
 	}
 
+	#[HookAttribute(PortalHook::prepareBlockFields)]
 	public function prepareBlockFields(Event $e): void
 	{
 		$options = $e->args->options;
@@ -73,6 +78,7 @@ class BoardNews extends SSI
 			->setValue($options['teaser_length']);
 	}
 
+	#[HookAttribute(PortalHook::prepareContent)]
 	public function prepareContent(Event $e): void
 	{
 		$parameters = $e->args->parameters;

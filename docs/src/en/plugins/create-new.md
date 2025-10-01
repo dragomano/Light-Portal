@@ -7,6 +7,51 @@ order: 2
 
 Plugins are the extensions that expand the capabilities of the Light Portal. To create your own plugin, just follow the instructions below.
 
+:::warning Important
+
+Starting from version 3.0, Light Portal uses PHP attributes for plugin configuration. Methods can be named anything - the main thing is to specify the required attributes for hooks. The old system with properties `$type`, `$icon` is still supported for backward compatibility, but it is recommended to use the new enum-based system for better type safety.
+
+:::
+
+## Using PluginType enum
+
+For better type safety and IDE support, you can use the `PluginType` enum instead of string values for the `type` parameter:
+
+```php
+use Bugo\LightPortal\Enums\PluginType;
+
+// Instead of: #[PluginAttribute(type: 'editor')]
+#[PluginAttribute(type: PluginType::EDITOR)]
+
+// Instead of: #[PluginAttribute(type: 'block')]
+#[PluginAttribute(type: PluginType::BLOCK)]
+
+// Instead of: #[PluginAttribute(type: 'other')]
+#[PluginAttribute(type: PluginType::OTHER)]
+
+// Or simply omit the type parameter since OTHER is default:
+#[PluginAttribute]
+```
+
+Available PluginType values:
+
+- `PluginType::ARTICLE` - For processing article content
+- `PluginType::BLOCK` - For blocks
+- `PluginType::BLOCK_OPTIONS` - For block options
+- `PluginType::COMMENT` - For comment systems
+- `PluginType::EDITOR` - For editors
+- `PluginType::FRONTPAGE` - For frontpage modifications
+- `PluginType::GAMES` - For games
+- `PluginType::ICONS` - For icon libraries
+- `PluginType::IMPEX` - For import/export
+- `PluginType::OTHER` - Default type (can be omitted)
+- `PluginType::PAGE_OPTIONS` - For page options
+- `PluginType::PARSER` - For parsers
+- `PluginType::SEO` - For SEO
+- `PluginType::SSI` - For blocks with SSI functions
+
+For plugins extending `Block`, `Games`, or `SSI` classes, the type is automatically inherited and doesn't need to be specified explicitly.
+
 :::info Note
 
 You can use the **PluginMaker** as a helper to create your own plugins. Download and enable it on the page _Admin -> Portal settings -> Plugins_.
@@ -57,26 +102,26 @@ File `index.php` can be copied from folders of other plugins. The file `HelloWor
 namespace Bugo\LightPortal\Plugins\HelloWorld;
 
 use Bugo\Compat\{Config, Lang, Utils};
+use Bugo\LightPortal\Enums\PluginType;
+use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\Plugin;
+use Bugo\LightPortal\Plugins\PluginAttribute;
 
 if (! defined('LP_NAME'))
     die('No direct access...');
 
+#[PluginAttribute(icon: 'fas fa-globe')]
 class HelloWorld extends Plugin
 {
-    // FA icon (for blocks only)
-    public string $icon = 'fas fa-globe';
-
-    // Your plugin's type
-    public string $type = 'other';
-
-    // Optional init method
+    #[HookAttribute(PortalHook::init)]
     public function init(): void
     {
         echo 'Hello world!';
     }
 
-    // Hookable and custom methods
+    // Other hooks and custom methods
 }
 
 ```
@@ -112,16 +157,19 @@ Add this plugin as a block type to display top topics on your portal pages.
 
 namespace Bugo\LightPortal\Plugins\TopTopics;
 
-use Bugo\LightPortal\Plugins\SSI;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\HookAttribute;
+use Bugo\LightPortal\Plugins\PluginAttribute;
+use Bugo\LightPortal\Plugins\SSI;
 
 if (! defined('LP_NAME'))
     die('No direct access...');
 
+#[PluginAttribute(icon: 'fas fa-star')]
 class TopTopics extends SSI
 {
-    public string $icon = 'fas fa-star';
-
+    #[HookAttribute(PortalHook::prepareContent)]
     public function prepareContent(Event $e): void
     {
         $data = $this->getFromSSI('topTopics', 'views', 10, 'array');
@@ -146,24 +194,28 @@ The Calculator plugin is a simple block that displays a calculator widget. Here'
 
 namespace Bugo\LightPortal\Plugins\Calculator;
 
-use Bugo\LightPortal\Plugins\Block;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\HookAttribute;
+use Bugo\LightPortal\Plugins\PluginAttribute;
+use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Utils\Traits\HasView;
 
 if (! defined('LP_NAME'))
     die('No direct access...');
 
+#[PluginAttribute(icon: 'fas fa-calculator')]
 class Calculator extends Block
 {
     use HasView;
 
-    public string $icon = 'fas fa-calculator';
-
+    #[HookAttribute(PortalHook::prepareBlockParams)]
     public function prepareBlockParams(Event $e): void
     {
         $e->args->params['no_content_class'] = true;
     }
 
+    #[HookAttribute(PortalHook::prepareContent)]
     public function prepareContent(Event $e): void
     {
         echo $this->view(params: ['id' => $e->args->id]);
@@ -241,16 +293,19 @@ This plugin can be used in blocks or pages to display formatted dates. The `init
 
 namespace Bugo\LightPortal\Plugins\CarbonDate;
 
+use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\Plugin;
+use Bugo\LightPortal\Plugins\PluginAttribute;
 use Carbon\Carbon;
 
 if (! defined('LP_NAME'))
     die('No direct access...');
 
+#[PluginAttribute]
 class CarbonDate extends Plugin
 {
-    public string $type = 'other';
-
+    #[HookAttribute(PortalHook::init)]
     public function init(): void
     {
         require_once __DIR__ . '/vendor/autoload.php';

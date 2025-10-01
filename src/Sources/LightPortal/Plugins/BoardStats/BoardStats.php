@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 14.08.25
+ * @version 30.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\BoardStats;
@@ -16,9 +16,12 @@ namespace Bugo\LightPortal\Plugins\BoardStats;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\SSI;
+use Bugo\LightPortal\Plugins\HookAttribute;
+use Bugo\LightPortal\Plugins\PluginAttribute;
+use Bugo\LightPortal\Plugins\SsiBlock;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\Utils\ParamWrapper;
@@ -28,10 +31,10 @@ use WPLake\Typed\Typed;
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class BoardStats extends SSI
+#[PluginAttribute(icon: 'fas fa-chart-pie')]
+class BoardStats extends SsiBlock
 {
-	public string $icon = 'fas fa-chart-pie';
-
+	#[HookAttribute(PortalHook::prepareBlockParams)]
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -44,6 +47,7 @@ class BoardStats extends SSI
 		];
 	}
 
+	#[HookAttribute(PortalHook::validateBlockParams)]
 	public function validateBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -55,6 +59,7 @@ class BoardStats extends SSI
 		];
 	}
 
+	#[HookAttribute(PortalHook::prepareBlockFields)]
 	public function prepareBlockFields(Event $e): void
 	{
 		$options = $e->args->options;
@@ -103,6 +108,7 @@ class BoardStats extends SSI
 		];
 	}
 
+	#[HookAttribute(PortalHook::prepareContent)]
 	public function prepareContent(Event $e): void
 	{
 		$parameters = $e->args->parameters;

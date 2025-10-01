@@ -8,16 +8,19 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 25.09.25
+ * @version 30.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\CategoryList;
 
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Actions\Category;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\PortalSubAction;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\HookAttribute;
+use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\Utils\Str;
 use WPLake\Typed\Typed;
 
@@ -26,15 +29,15 @@ use function Bugo\LightPortal\app;
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(icon: 'fas fa-folder')]
 class CategoryList extends Block
 {
-	public string $icon = 'fas fa-folder';
-
 	public function getData(): array
 	{
 		return app(Category::class)->getAll(0, 0, 'c.priority');
 	}
 
+	#[HookAttribute(PortalHook::prepareContent)]
 	public function prepareContent(Event $e): void
 	{
 		$categories = $this->userCache($this->name . '_addon')
@@ -66,7 +69,7 @@ class CategoryList extends Block
 				$subbg->addHtml(
 					Str::html('a', ['href' => $category['link']])
 						->setHtml($category['icon'] . ' ' . $category['title'])
-				)->addHtml(' ' . Str::html('span', $category['num_pages'])
+				)->addHtml(' ' . Str::html('span', (string) $category['num_pages'])
 					->class('floatright amt')
 				);
 

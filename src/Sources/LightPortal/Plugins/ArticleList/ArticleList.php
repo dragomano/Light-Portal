@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.04.25
+ * @version 30.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\ArticleList;
@@ -21,10 +21,13 @@ use Bugo\Compat\Parsers\BBCodeParser;
 use Bugo\LightPortal\Enums\ContentClass;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Permission;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\HookAttribute;
+use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\RadioField;
@@ -40,10 +43,10 @@ use WPLake\Typed\Typed;
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(icon: 'far fa-file-alt')]
 class ArticleList extends Block
 {
-	public string $icon = 'far fa-file-alt';
-
+	#[HookAttribute(PortalHook::prepareBlockParams)]
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -56,6 +59,7 @@ class ArticleList extends Block
 		];
 	}
 
+	#[HookAttribute(PortalHook::validateBlockParams)]
 	public function validateBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -67,6 +71,7 @@ class ArticleList extends Block
 		];
 	}
 
+	#[HookAttribute(PortalHook::prepareBlockFields)]
 	public function prepareBlockFields(Event $e): void
 	{
 		$options = $e->args->options;
@@ -101,6 +106,83 @@ class ArticleList extends Block
 
 		CheckboxField::make('seek_images', $this->txt['seek_images'])
 			->setValue($options['seek_images']);
+	}
+
+	#[HookAttribute(PortalHook::prepareContent)]
+	public function prepareContent(Event $e): void
+	{
+		$parameters = $e->args->parameters;
+
+		$type = Typed::int($parameters['display_type']);
+
+		$articles = $this->langCache($this->name . '_addon_b' . $e->args->id)
+			->setLifeTime($e->args->cacheTime)
+			->setFallback(fn() => $type === 0 ? $this->getTopics($parameters) : $this->getPages($parameters));
+
+		if ($articles) {
+			$articleList = Str::html('div')->class($this->name);
+			$bodyClass = Typed::string($parameters['body_class']);
+
+			if ($type === 0) {
+				foreach ($articles as $topic) {
+					$content = Str::html();
+
+					if ($topic['image']) {
+						$content->addHtml(
+							Str::html('div')
+								->class('article_image')
+								->addHtml(
+									Str::html('img')
+										->src($topic['image'])
+										->addAttributes(['loading' => 'lazy', 'alt' => $topic['title']])
+								)
+						);
+					}
+
+					$content->addHtml(
+						Str::html('a')
+							->href(Config::$scripturl . '?topic=' . $topic['id'] . '.0')
+							->setText($topic['title'])
+					);
+
+					$articleList->addHtml(sprintf(ContentClass::values()[$bodyClass], $content));
+				}
+			} else {
+				foreach ($articles as $page) {
+					if (empty($title = $page['title'])) {
+						continue;
+					}
+
+					$content = Str::html();
+
+					if ($page['image']) {
+						$content->addHtml(
+							Str::html('div')
+								->class('article_image')
+								->addHtml(
+									Str::html('img')
+										->src($page['image'])
+										->addAttributes(['loading' => 'lazy', 'alt' => $title])
+								)
+						);
+					}
+
+					$content->addHtml(
+						Str::html('a', $title)
+							->href(LP_PAGE_URL . $page['slug'])
+					);
+
+					$articleList->addHtml(
+						sprintf(ContentClass::values()[$bodyClass], $content)
+					);
+				}
+			}
+
+			echo $articleList;
+		} else {
+			echo Str::html('div', $this->txt['no_items'])
+				->class('errorbox');
+		}
 	}
 
 	public function getTopics(ParamWrapper $parameters): array
@@ -212,81 +294,5 @@ class ArticleList extends Block
 		Db::$db->free_result($result);
 
 		return $pages;
-	}
-
-	public function prepareContent(Event $e): void
-	{
-		$parameters = $e->args->parameters;
-
-		$type = Typed::int($parameters['display_type']);
-
-		$articles = $this->langCache($this->name . '_addon_b' . $e->args->id)
-			->setLifeTime($e->args->cacheTime)
-			->setFallback(fn() => $type === 0 ? $this->getTopics($parameters) : $this->getPages($parameters));
-
-		if ($articles) {
-			$articleList = Str::html('div')->class($this->name);
-			$bodyClass = Typed::string($parameters['body_class']);
-
-			if ($type === 0) {
-				foreach ($articles as $topic) {
-					$content = Str::html();
-
-					if ($topic['image']) {
-						$content->addHtml(
-							Str::html('div')
-								->class('article_image')
-								->addHtml(
-									Str::html('img')
-										->src($topic['image'])
-										->addAttributes(['loading' => 'lazy', 'alt' => $topic['title']])
-								)
-						);
-					}
-
-					$content->addHtml(
-						Str::html('a')
-							->href(Config::$scripturl . '?topic=' . $topic['id'] . '.0')
-							->setText($topic['title'])
-					);
-
-					$articleList->addHtml(sprintf(ContentClass::values()[$bodyClass], $content));
-				}
-			} else {
-				foreach ($articles as $page) {
-					if (empty($title = $page['title'])) {
-						continue;
-					}
-
-					$content = Str::html();
-
-					if ($page['image']) {
-						$content->addHtml(
-							Str::html('div')
-								->class('article_image')
-								->addHtml(
-									Str::html('img')
-										->src($page['image'])
-										->addAttributes(['loading' => 'lazy', 'alt' => $title])
-								)
-						);
-					}
-
-					$content->addHtml(
-						Str::html('a', $title)
-							->href(LP_PAGE_URL . $page['slug'])
-					);
-
-					$articleList->addHtml(
-						sprintf(ContentClass::values()[$bodyClass], $content)
-					);
-				}
-			}
-
-			echo $articleList;
-		} else {
-			echo Str::html('div', $this->txt['no_items'])
-				->class('errorbox');
-		}
 	}
 }

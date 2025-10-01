@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 30.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\EasyMarkdownEditor;
@@ -16,16 +16,20 @@ namespace Bugo\LightPortal\Plugins\EasyMarkdownEditor;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\PluginType;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\Plugin;
+use Bugo\LightPortal\Plugins\PluginAttribute;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(type: PluginType::EDITOR)]
 class EasyMarkdownEditor extends Plugin
 {
-	public string $type = 'editor';
-
+	#[HookAttribute(PortalHook::prepareEditor)]
 	public function prepareEditor(Event $e): void
 	{
 		if ($e->args->object['type'] !== 'markdown')
@@ -35,7 +39,7 @@ class EasyMarkdownEditor extends Plugin
 
 		$this->loadExternalResources([
 			['type' => 'css', 'url' => 'https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.css'],
-			['type' => 'js', 'url' => 'https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.js'],
+			['type' => 'js',  'url' => 'https://cdn.jsdelivr.net/npm/easymde@2/dist/easymde.min.js'],
 		]);
 
 		Theme::addInlineCss('
@@ -161,6 +165,7 @@ class EasyMarkdownEditor extends Plugin
 		});', true);
 	}
 
+	#[HookAttribute(PortalHook::credits)]
 	public function credits(Event $e): void
 	{
 		$e->args->links[] = [

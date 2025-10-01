@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.03.25
+ * @version 30.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\BoardList;
@@ -16,10 +16,13 @@ namespace Bugo\LightPortal\Plugins\BoardList;
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\ContentClass;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\Enums\TitleClass;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Enums\TitleClass;
+use Bugo\LightPortal\Plugins\HookAttribute;
+use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Partials\ContentClassSelect;
 use Bugo\LightPortal\UI\Partials\TitleClassSelect;
@@ -31,10 +34,10 @@ use WPLake\Typed\Typed;
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(icon: 'far fa-list-alt')]
 class BoardList extends Block
 {
-	public string $icon = 'far fa-list-alt';
-
+	#[HookAttribute(PortalHook::prepareBlockParams)]
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -44,6 +47,7 @@ class BoardList extends Block
 		];
 	}
 
+	#[HookAttribute(PortalHook::validateBlockParams)]
 	public function validateBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -52,6 +56,7 @@ class BoardList extends Block
 		];
 	}
 
+	#[HookAttribute(PortalHook::prepareBlockFields)]
 	public function prepareBlockFields(Event $e): void
 	{
 		$options = $e->args->options;
@@ -72,6 +77,7 @@ class BoardList extends Block
 			]);
 	}
 
+	#[HookAttribute(PortalHook::prepareContent)]
 	public function prepareContent(Event $e): void
 	{
 		$boardList = $this->userCache($this->name . '_addon_b' . $e->args->id)
