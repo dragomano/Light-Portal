@@ -18,7 +18,6 @@
 		</classMethod>
 		<function name="\Bugo\LightPortal\app" argument="0">
 			<collection name="app_service_classes"/>
-			<stopCompletion/>
 		</function>
 	</definitions>
 	<collections>
@@ -130,6 +129,7 @@
 			<value>Post::class</value>
 			<value>PostInterface::class</value>
 			<value>RendererInterface::class</value>
+			<value>RepositoryInterface::class</value>
 			<value>Request::class</value>
 			<value>RequestInterface::class</value>
 			<value>Response::class</value>

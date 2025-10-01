@@ -18,6 +18,7 @@ use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\Compat\WebFetch\WebFetchApi;
+use Bugo\LightPortal\Enums\PluginType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
 use Bugo\LightPortal\Events\HasEvents;
@@ -229,8 +230,9 @@ final readonly class PluginArea
 			foreach ($types as $type) {
 				$key = array_search($type, Lang::$txt['lp_plugins_types'], true);
 
-				if ($key === false)
-					$key = 7;
+				if ($key === false) {
+					$key = PluginType::OTHER->name();
+				}
 
 				$typeCount[$key] ??= 0;
 				$typeCount[$key]++;
@@ -253,10 +255,7 @@ final readonly class PluginArea
 					labels: ["' . implode('", "', Utils::$context['lp_plugin_types']) . '"],
 					datasets: [{
 						data: [' . implode(', ', $typeCount) . '],
-						backgroundColor: [
-							"#667d99", "#5f2c8c", "#48bf83", "#9354ca", "#91ae26", "#ef564f", "#d68b4f",
-							"#2361ad", "#ac7bd6", "#a39d47", "#2a7750", "#c61a12", "#414141", "#ff0000"
-						]
+						backgroundColor: ["' . implode('", "', PluginType::colors()) . '"]
 					}]
 				},
 				options: {

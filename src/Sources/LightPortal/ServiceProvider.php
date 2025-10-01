@@ -259,9 +259,7 @@ class ServiceProvider extends AbstractServiceProvider
 		$container->add(CommentRepository::class);
 		$container->add(PluginRepository::class);
 
-		$container->add(PageRepositoryInterface::class, function () {
-			return new PageRepository(PortalAdapterFactory::create());
-		});
+		$container->add(PageRepositoryInterface::class, fn() => new PageRepository(PortalAdapterFactory::create()));
 
 		$container->add(BlockRepository::class);
 		$container->add(CategoryRepository::class);

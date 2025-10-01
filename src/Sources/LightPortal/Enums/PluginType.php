@@ -19,23 +19,43 @@ enum PluginType
 {
 	use HasNames;
 
-	case BLOCK;
-	case SSI;
-	case EDITOR;
-	case COMMENT;
-	case PARSER;
 	case ARTICLE;
-	case FRONTPAGE;
-	case IMPEX;
+	case BLOCK;
 	case BLOCK_OPTIONS;
-	case PAGE_OPTIONS;
-	case ICONS;
-	case SEO;
-	case OTHER;
+	case COMMENT;
+	case EDITOR;
+	case FRONTPAGE;
 	case GAMES;
+	case ICONS;
+	case IMPEX;
+	case OTHER;
+	case PAGE_OPTIONS;
+	case PARSER;
+	case SEO;
+	case SSI;
 
 	public static function all(): array
 	{
-		return array_combine(self::names(), Lang::$txt['lp_plugins_types']);
+		return Lang::$txt['lp_plugins_types'];
+	}
+
+	public static function colors(): array
+	{
+		return [
+			self::ARTICLE->name()       => '#ef564f',
+			self::BLOCK->name()         => '#667d99',
+			self::BLOCK_OPTIONS->name() => '#ac7bd6',
+			self::COMMENT->name()       => '#9354ca',
+			self::EDITOR->name()        => '#48bf83',
+			self::FRONTPAGE->name()     => '#d68b4f',
+			self::GAMES->name()         => '#ff0000',
+			self::ICONS->name()         => '#2a7750',
+			self::IMPEX->name()         => '#2361ad',
+			self::OTHER->name()         => '#414141',
+			self::PAGE_OPTIONS->name()  => '#a39d47',
+			self::PARSER->name()        => '#91ae26',
+			self::SEO->name()           => '#c61a12',
+			self::SSI->name()           => '#5f2c8c',
+		];
 	}
 }
