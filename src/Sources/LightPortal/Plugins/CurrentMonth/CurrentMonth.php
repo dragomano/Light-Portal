@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 30.09.25
+ * @version 01.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\CurrentMonth;
@@ -29,16 +29,10 @@ use Bugo\LightPortal\Utils\Traits\HasView;
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-#[PluginAttribute(icon: 'fas fa-calendar-check')]
+#[PluginAttribute(icon: 'fas fa-calendar-check', showContentClass: false)]
 class CurrentMonth extends Block
 {
 	use HasView;
-
-	#[HookAttribute(PortalHook::prepareBlockParams)]
-	public function prepareBlockParams(Event $e): void
-	{
-		$e->args->params['no_content_class'] = true;
-	}
 
 	public function getData(): array
 	{

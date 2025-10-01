@@ -209,12 +209,6 @@ class Calculator extends Block
 {
     use HasView;
 
-    #[HookAttribute(PortalHook::prepareBlockParams)]
-    public function prepareBlockParams(Event $e): void
-    {
-        $e->args->params['no_content_class'] = true;
-    }
-
     #[HookAttribute(PortalHook::prepareContent)]
     public function prepareContent(Event $e): void
     {

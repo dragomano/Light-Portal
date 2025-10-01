@@ -26,17 +26,16 @@ use Bugo\LightPortal\Utils\Str;
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-#[PluginAttribute(icon: 'fas fa-language')]
+#[PluginAttribute(icon: 'fas fa-language', showContentClass: false)]
 class Translator extends Block
 {
 	#[HookAttribute(PortalHook::prepareBlockParams)]
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
-			'no_content_class' => true,
-			'engine'           => 'google',
-			'widget_theme'     => 'light',
-			'auto_mode'        => false,
+			'engine'       => 'google',
+			'widget_theme' => 'light',
+			'auto_mode'    => false,
 		];
 	}
 

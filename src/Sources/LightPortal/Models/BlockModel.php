@@ -70,7 +70,5 @@ class BlockModel extends AbstractModel
 		$this->content      = $data['content'] ?? '';
 		$this->description  = $data['description'] ?? '';
 		$this->options      = $data['options'] ?? [];
-
-		$this->contentClass = empty($this->options['no_content_class']) ? $this->contentClass : '';
 	}
 }

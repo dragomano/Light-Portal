@@ -14,14 +14,13 @@ namespace Bugo\LightPortal\Utils\Traits;
 
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\UI\View;
+use ReflectionClass;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 trait HasView
 {
-	use HasReflection;
-
 	private ?View $view = null;
 
 	public function useLayerAbove(string $template = 'default', array $params = []): void
@@ -44,7 +43,8 @@ trait HasView
 	protected function viewInstance(): View
 	{
 		if (! $this->view) {
-			$baseDir = dirname($this->getCalledClass()->getFileName());
+			$reflection = new ReflectionClass(static::class);
+			$baseDir = dirname($reflection->getFileName());
 			$this->view = new View($baseDir);
 		}
 

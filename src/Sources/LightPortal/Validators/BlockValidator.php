@@ -35,9 +35,8 @@ class BlockValidator extends AbstractValidator
 	];
 
 	protected array $customFilters = [
-		'hide_header'      => FILTER_VALIDATE_BOOLEAN,
-		'no_content_class' => FILTER_VALIDATE_BOOLEAN,
-		'link_in_title'    => FILTER_VALIDATE_URL,
+		'hide_header'   => FILTER_VALIDATE_BOOLEAN,
+		'link_in_title' => FILTER_VALIDATE_URL,
 	];
 
 	protected function extendFilters(): void

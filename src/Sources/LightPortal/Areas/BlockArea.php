@@ -25,6 +25,7 @@ use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Models\BlockFactory;
+use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Repositories\BlockRepositoryInterface;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\CustomField;
@@ -214,8 +215,7 @@ final readonly class BlockArea
 	private function getDefaultOptions(): array
 	{
 		$baseParams = [
-			'hide_header'      => false,
-			'no_content_class' => false,
+			'hide_header' => false,
 		];
 
 		if (in_array(Utils::$context['lp_current_block']['type'], array_keys(Utils::$context['lp_content_types']))) {
@@ -300,7 +300,7 @@ final readonly class BlockArea
 			->setTab(Tab::APPEARANCE)
 			->setValue(static fn() => new TitleClassSelect());
 
-		if (empty(Utils::$context['lp_block']['options']['no_content_class'])) {
+		if (Block::showContentClassField(Utils::$context['lp_block']['type'])) {
 			CustomField::make('content_class', Lang::$txt['lp_block_content_class'])
 				->setTab(Tab::APPEARANCE)
 				->setValue(static fn() => new ContentClassSelect());

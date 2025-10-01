@@ -35,7 +35,7 @@ use WPLake\Typed\Typed;
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-#[PluginAttribute(icon: 'fas fa-arrow-trend-up')]
+#[PluginAttribute(icon: 'fas fa-arrow-trend-up', showContentClass: false)]
 class TrendingTopics extends Block
 {
 	private array $timePeriod = [
@@ -46,11 +46,10 @@ class TrendingTopics extends Block
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
-			'no_content_class' => true,
-			'show_avatars'     => true,
-			'time_period'      => '1 week',
-			'min_replies'      => 10,
-			'num_topics'       => 10,
+			'show_avatars' => true,
+			'time_period'  => '1 week',
+			'min_replies'  => 10,
+			'num_topics'   => 10,
 		];
 	}
 

@@ -36,7 +36,7 @@ use WPLake\Typed\Typed;
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-#[PluginAttribute(icon: 'far fa-comment-alt')]
+#[PluginAttribute(icon: 'far fa-comment-alt', showContentClass: false)]
 class RecentPosts extends SsiBlock
 {
 	use HasView;
@@ -45,7 +45,6 @@ class RecentPosts extends SsiBlock
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
-			'no_content_class' => true,
 			'link_in_title'    => Config::$scripturl . '?action=recent',
 			'exclude_boards'   => '',
 			'include_boards'   => '',

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 30.09.25
+ * @version 01.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\RecentTopics;
@@ -34,7 +34,7 @@ use WPLake\Typed\Typed;
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-#[PluginAttribute(icon: 'fas fa-book-open')]
+#[PluginAttribute(icon: 'fas fa-book-open', showContentClass: false)]
 class RecentTopics extends SsiBlock
 {
 	use HasView;
@@ -43,7 +43,6 @@ class RecentTopics extends SsiBlock
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
-			'no_content_class' => true,
 			'link_in_title'    => Config::$scripturl . '?action=unread',
 			'exclude_boards'   => '',
 			'include_boards'   => '',

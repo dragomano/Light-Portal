@@ -12,9 +12,12 @@
 
 namespace Bugo\LightPortal\Plugins;
 
+use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Placement;
 use Bugo\LightPortal\Enums\PluginType;
+use ReflectionClass;
+use ReflectionException;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -32,5 +35,30 @@ abstract class Block extends Plugin
 	public function isInSidebar(int $id): bool
 	{
 		return $this->isInPlacements($id, [Placement::LEFT->name(), Placement::RIGHT->name()]);
+	}
+
+	public static function showContentClassField(string $type): bool
+	{
+		$camelCase = str_replace(' ', '', ucwords(str_replace('_', ' ', $type)));
+		$className = __NAMESPACE__ . "\\$camelCase\\$camelCase";
+
+		if (! class_exists($className, false)) {
+			return true;
+		}
+
+		try {
+			$reflection = new ReflectionClass($className);
+			$attributes = $reflection->getAttributes(PluginAttribute::class);
+		} catch (ReflectionException $e) {
+			ErrorHandler::log("[LP] $className: {$e->getMessage()}");
+		}
+
+		if (! empty($attributes)) {
+			$pluginAttr = $attributes[0]->newInstance();
+
+			return $pluginAttr->showContentClass ?? true;
+		}
+
+		return true;
 	}
 }
