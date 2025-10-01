@@ -15,6 +15,7 @@ namespace Bugo\LightPortal\Utils;
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
 use Nette\Utils\Html;
+use WPLake\Typed\Typed;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -59,5 +60,10 @@ class Str
 	public static function html(?string $name = null, array|string|null $params = null): Html
 	{
 		return Html::el($name, $params);
+	}
+
+	public static function typed(string $type, ...$args): mixed
+	{
+		return Typed::$type(...$args);
 	}
 }

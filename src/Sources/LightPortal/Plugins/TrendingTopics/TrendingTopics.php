@@ -30,7 +30,6 @@ use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Str;
-use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -88,8 +87,8 @@ class TrendingTopics extends Block
 
 	public function getData(ParamWrapper $parameters): array
 	{
-		$timePeriod = Typed::string($parameters['time_period'], default: $this->timePeriod[1]);
-		$numTopics = Typed::int($parameters['num_topics'], default: 10);
+		$timePeriod = Str::typed('string', $parameters['time_period'], default: $this->timePeriod[1]);
+		$numTopics = Str::typed('int', $parameters['num_topics'], default: 10);
 
 		if (empty($numTopics))
 			return [];

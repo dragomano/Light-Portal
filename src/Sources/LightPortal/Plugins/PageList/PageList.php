@@ -36,7 +36,6 @@ use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
-use WPLake\Typed\Typed;
 
 use function Bugo\LightPortal\app;
 
@@ -108,9 +107,9 @@ class PageList extends Block
 		$allCategories = app(CategoryList::class)();
 
 		$categories = empty($parameters['categories']) ? null : explode(',', (string) $parameters['categories']);
-		$sort = Typed::string($parameters['sort'], default: 'page_id');
-		$numPages = Typed::int($parameters['num_pages'], default: 10);
-		$type = Typed::string($parameters['types'], default: EntryType::DEFAULT->name());
+		$sort = Str::typed('string', $parameters['sort'], default: 'page_id');
+		$numPages = Str::typed('int', $parameters['num_pages'], default: 10);
+		$type = Str::typed('string', $parameters['types'], default: EntryType::DEFAULT->name());
 
 		$queryString = '
 			AND p.status = {int:status}

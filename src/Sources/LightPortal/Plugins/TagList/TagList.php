@@ -27,7 +27,6 @@ use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\RadioField;
 use Bugo\LightPortal\Utils\Str;
-use WPLake\Typed\Typed;
 
 use function Bugo\LightPortal\app;
 
@@ -119,9 +118,9 @@ class TagList extends Block
 	{
 		$parameters = $e->args->parameters;
 
-		$source  = Typed::string($parameters['source'], default: 'lp_tags');
-		$sorting = Typed::string($parameters['sorting'], default: 'name');
-		$asCloud = Typed::boolExtended($parameters['as_cloud']);
+		$source  = Str::typed('string', $parameters['source'], default: 'lp_tags');
+		$sorting = Str::typed('string', $parameters['sorting'], default: 'name');
+		$asCloud = Str::typed('boolExtended', $parameters['as_cloud']);
 
 		if ($source === 'lp_tags') {
 			$tagList = $this->userCache($this->name . '_addon_b' . $e->args->id)

@@ -38,7 +38,6 @@ use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
-use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -112,7 +111,7 @@ class ArticleList extends Block
 	{
 		$parameters = $e->args->parameters;
 
-		$type = Typed::int($parameters['display_type']);
+		$type = Str::typed('int', $parameters['display_type']);
 
 		$articles = $this->langCache($this->name . '_addon_b' . $e->args->id)
 			->setLifeTime($e->args->cacheTime)
@@ -120,7 +119,7 @@ class ArticleList extends Block
 
 		if ($articles) {
 			$articleList = Str::html('div')->class($this->name);
-			$bodyClass = Typed::string($parameters['body_class']);
+			$bodyClass = Str::typed('string', $parameters['body_class']);
 
 			if ($type === 0) {
 				foreach ($articles as $topic) {

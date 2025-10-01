@@ -27,7 +27,6 @@ use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Str;
-use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -73,7 +72,7 @@ class TopPosters extends Block
 
 	public function getData(ParamWrapper $parameters): array
 	{
-		$numPosters = Typed::int($parameters['num_posters'], default: 10);
+		$numPosters = Str::typed('int', $parameters['num_posters'], default: 10);
 
 		$result = Db::$db->query('
 			SELECT id_member, real_name, posts

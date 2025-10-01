@@ -26,7 +26,6 @@ use Bugo\LightPortal\Plugins\SsiBlock;
 use Bugo\LightPortal\UI\Fields\InputField;
 use Bugo\LightPortal\UI\Fields\SelectField;
 use Bugo\LightPortal\Utils\Str;
-use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -68,7 +67,11 @@ class Polls extends SsiBlock
 	#[HookAttribute(PortalHook::prepareContent)]
 	public function prepareContent(Event $e): void
 	{
-		$poll = $this->getFromSSI('showPoll', Typed::int($e->args->parameters['selected_item']), 'array');
+		$poll = $this->getFromSSI(
+			'showPoll',
+			Str::typed('int', $e->args->parameters['selected_item']),
+			'array'
+		);
 
 		if (! $poll) {
 			echo $this->txt['no_items'];

@@ -16,6 +16,9 @@
 			<collection name="get_settings"/>
 			<stopCompletion/>
 		</classMethod>
+		<classMethod class="\Bugo\LightPortal\Utils\Str" method="typed" argument="0">
+			<collection name="typed_methods"/>
+		</classMethod>
 		<function name="\Bugo\LightPortal\app" argument="0">
 			<collection name="app_service_classes"/>
 		</function>
@@ -56,6 +59,28 @@
 			<value>lp_show_num_views</value>
 			<value>lp_standalone_mode</value>
 			<value>lp_use_simple_pagination</value>
+		</strings>
+		<strings name="typed_methods">
+			<value>any</value>
+			<value>string</value>
+			<value>stringExtended</value>
+			<value>stringOrNull</value>
+			<value>stringExtendedOrNull</value>
+			<value>int</value>
+			<value>intOrNull</value>
+			<value>float</value>
+			<value>floatOrNull</value>
+			<value>bool</value>
+			<value>boolOrNull</value>
+			<value>boolExtended</value>
+			<value>boolExtendedOrNull</value>
+			<value>array</value>
+			<value>arrayOrNull</value>
+			<value>object</value>
+			<value>objectOrNull</value>
+			<value>dateTime</value>
+			<value>dateTimeOrNull</value>
+			<value>setItem</value>
 		</strings>
 		<strings name="app_service_classes">
 			<value>AssetHandler::class</value>

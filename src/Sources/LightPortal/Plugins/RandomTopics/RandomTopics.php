@@ -30,7 +30,6 @@ use Bugo\LightPortal\UI\Partials\BoardSelect;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Str;
-use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -93,7 +92,7 @@ class RandomTopics extends Block
 	{
 		$excludeBoards = empty($parameters['exclude_boards']) ? null : explode(',', (string) $parameters['exclude_boards']);
 		$includeBoards = empty($parameters['include_boards']) ? null : explode(',', (string) $parameters['include_boards']);
-		$topicsCount   = Typed::int($parameters['num_topics']);
+		$topicsCount   = Str::typed('int', $parameters['num_topics']);
 
 		if (empty($topicsCount))
 			return [];

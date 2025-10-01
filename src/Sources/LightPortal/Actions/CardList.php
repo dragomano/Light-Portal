@@ -16,10 +16,10 @@ use Bugo\Compat\PageIndex;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Articles\PageArticle;
 use Bugo\LightPortal\Utils\Setting;
+use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 use Bugo\LightPortal\Utils\Traits\HasSorting;
 use Bugo\LightPortal\Utils\Weaver;
-use WPLake\Typed\Typed;
 
 use function Bugo\LightPortal\app;
 
@@ -33,7 +33,7 @@ class CardList implements CardListInterface
 		$this->prepareSortingOptions(app(PageArticle::class));
 		$this->prepareSorting('card_list_sorting');
 
-		$start = Typed::int($this->request()->get('start'));
+		$start = Str::typed('int', $this->request()->get('start'));
 		$limit = Setting::get('lp_num_items_per_page', 'int', 12);
 
 		$itemsCount = $entity->getTotalPages();

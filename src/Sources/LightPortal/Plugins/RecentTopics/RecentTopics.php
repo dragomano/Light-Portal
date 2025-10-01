@@ -28,8 +28,8 @@ use Bugo\LightPortal\UI\Partials\BoardSelect;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\ParamWrapper;
+use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasView;
-use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -130,7 +130,7 @@ class RecentTopics extends SsiBlock
 
 		$topics = $this->getFromSSI(
 			'recentTopics',
-			Typed::int($parameters['num_topics'], default: 10),
+			Str::typed('int', $parameters['num_topics'], default: 10),
 			$excludeBoards,
 			$includeBoards,
 			'array'
@@ -156,7 +156,7 @@ class RecentTopics extends SsiBlock
 		$parameters = $e->args->parameters;
 
 		$recentTopics = $this->userCache($this->name . '_addon_b' . $e->args->id)
-			->setLifeTime(Typed::int($parameters['update_interval']))
+			->setLifeTime(Str::typed('int', $parameters['update_interval']))
 			->setFallback(fn() => $this->getData($parameters));
 
 		if (empty($recentTopics))

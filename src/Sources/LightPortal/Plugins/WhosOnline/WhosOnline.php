@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 30.09.25
+ * @version 01.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\WhosOnline;
@@ -25,7 +25,6 @@ use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\Str;
-use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -76,7 +75,7 @@ class WhosOnline extends SsiBlock
 		$parameters = $e->args->parameters;
 
 		$whoIsOnline = $this->userCache($this->name . '_addon_b' . $e->args->id)
-			->setLifeTime(Typed::int($parameters['update_interval']))
+			->setLifeTime(Str::typed('int', $parameters['update_interval']))
 			->setFallback(fn() => $this->getFromSSI('whosOnline', 'array'));
 
 		if (empty($whoIsOnline))

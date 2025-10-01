@@ -23,7 +23,6 @@ use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\TextField;
 use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Str;
-use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -71,7 +70,7 @@ class RecentAttachments extends SsiBlock
 
 		return $this->getFromSSI(
 			'recentAttachments',
-			Typed::int($parameters['num_attachments'], default: 5),
+			Str::typed('int', $parameters['num_attachments'], default: 5),
 			$extensions,
 			'array'
 		);

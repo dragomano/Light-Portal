@@ -38,7 +38,6 @@ use Bugo\LightPortal\Utils\Traits\HasSorting;
 use Bugo\LightPortal\Utils\Weaver;
 use Ramsey\Collection\Collection;
 use Ramsey\Collection\CollectionInterface;
-use WPLake\Typed\Typed;
 
 use function Bugo\LightPortal\app;
 
@@ -98,7 +97,7 @@ final class FrontPage implements ActionInterface
 
 	public function prepareArticles(): void
 	{
-		$start = Typed::int($this->request()->get('start'));
+		$start = Str::typed('int', $this->request()->get('start'));
 		$limit = Setting::get('lp_num_items_per_page', 'int', 12);
 
 		$this->article->init();

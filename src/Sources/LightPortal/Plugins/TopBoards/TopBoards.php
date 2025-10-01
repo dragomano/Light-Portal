@@ -23,7 +23,6 @@ use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\RadioField;
 use Bugo\LightPortal\Utils\Str;
-use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -73,7 +72,7 @@ class TopBoards extends SsiBlock
 	{
 		$parameters = $e->args->parameters;
 
-		$numBoards = Typed::int($parameters['num_boards'], default: 10);
+		$numBoards = Str::typed('int', $parameters['num_boards'], default: 10);
 
 		$topBoards = $this->userCache($this->name . '_addon_b' . $e->args->id)
 			->setLifeTime($e->args->cacheTime)

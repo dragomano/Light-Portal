@@ -29,7 +29,6 @@ use Bugo\LightPortal\UI\Partials\TitleClassSelect;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\MessageIndex;
 use Bugo\LightPortal\Utils\Str;
-use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -90,8 +89,8 @@ class BoardList extends Block
 
 		$parameters = $e->args->parameters;
 
-		$categoryClass = Typed::string($parameters['category_class']);
-		$boardClass = Typed::string($parameters['board_class']);
+		$categoryClass = Str::typed('string', $parameters['category_class']);
+		$boardClass = Str::typed('string', $parameters['board_class']);
 
 		foreach ($boardList as $category) {
 			if ($categoryClass) {

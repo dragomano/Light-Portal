@@ -22,7 +22,7 @@ use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\Plugins\SsiBlock;
 use Bugo\LightPortal\UI\Fields\SelectField;
-use WPLake\Typed\Typed;
+use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -69,6 +69,6 @@ class News extends SsiBlock
 	#[HookAttribute(PortalHook::prepareContent)]
 	public function prepareContent(Event $e): void
 	{
-		echo $this->getData(Typed::int($e->args->parameters['selected_item'])) ?: $this->txt['no_items'];
+		echo $this->getData(Str::typed('int', $e->args->parameters['selected_item'])) ?: $this->txt['no_items'];
 	}
 }

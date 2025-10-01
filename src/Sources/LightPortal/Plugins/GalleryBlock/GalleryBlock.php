@@ -27,7 +27,6 @@ use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Str;
-use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -91,7 +90,7 @@ class GalleryBlock extends Block
 			[
 				'approved'   => 1,
 				'categories' => $categories,
-				'limit'      => Typed::int($parameters['num_images'], default: 10),
+				'limit'      => Str::typed('int', $parameters['num_images'], default: 10),
 			]
 		);
 

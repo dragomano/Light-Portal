@@ -44,7 +44,6 @@ use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Validators\BlockValidator;
-use WPLake\Typed\Typed;
 
 use function Bugo\LightPortal\app;
 use function template_show_areas_info;
@@ -126,7 +125,7 @@ final readonly class BlockArea
 
 	public function edit(): void
 	{
-		$item = Typed::int($this->request()->get('block_id') ?: $this->request()->get('id'));
+		$item = Str::typed('int', $this->request()->get('block_id') ?: $this->request()->get('id'));
 
 		Theme::loadTemplate('LightPortal/ManageBlocks');
 

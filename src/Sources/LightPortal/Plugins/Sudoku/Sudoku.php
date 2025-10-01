@@ -21,7 +21,6 @@ use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\UI\Fields\RangeField;
 use Bugo\LightPortal\Utils\Str;
-use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -72,7 +71,7 @@ class Sudoku extends GameBlock
 			'newGame'     => $this->txt['new_game'],
 		]);
 
-		$difficulty = Typed::int($parameters['difficulty'], default: $this->difficulty);
+		$difficulty = Str::typed('int', $parameters['difficulty'], default: $this->difficulty);
 
 		echo Str::html('div', [
 			'id'    => 'sudoku' . $id,

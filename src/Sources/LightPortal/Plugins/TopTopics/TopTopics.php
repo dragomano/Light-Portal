@@ -23,7 +23,6 @@ use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\RadioField;
 use Bugo\LightPortal\Utils\Str;
-use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -73,8 +72,8 @@ class TopTopics extends SsiBlock
 	{
 		$parameters = $e->args->parameters;
 
-		$type = Typed::string($parameters['popularity_type'], default: 'replies');
-		$numTopics = Typed::int($parameters['num_topics'], default: 10);
+		$type = Str::typed('string', $parameters['popularity_type'], default: $e->args->params['popularity_type']);
+		$numTopics = Str::typed('int', $parameters['num_topics'], default: $e->args->params['num_topics']);
 
 		$topTopics = $this->userCache($this->name . '_addon_b' . $e->args->id)
 			->setLifeTime($e->args->cacheTime)

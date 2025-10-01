@@ -30,7 +30,6 @@ use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
-use WPLake\Typed\Typed;
 
 use function Bugo\LightPortal\app;
 
@@ -50,7 +49,7 @@ final class Tag extends AbstractPageList
 		}
 
 		$tag = [
-			'id' => Typed::int($this->request()->get('id'))
+			'id' => Str::typed('int', $this->request()->get('id'))
 		];
 
 		$tags = app(TagList::class)();

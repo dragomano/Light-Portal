@@ -33,7 +33,6 @@ use Bugo\LightPortal\UI\Partials\CategorySelect;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Str;
-use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -97,7 +96,7 @@ class RandomPages extends Block
 		$excludeCategories = empty($parameters['exclude_categories']) ? null : explode(',', (string) $parameters['exclude_categories']);
 		$includeCategories = empty($parameters['include_categories']) ? null : explode(',', (string) $parameters['include_categories']);
 
-		if (empty($pagesCount = Typed::int($parameters['num_pages'])))
+		if (empty($pagesCount = Str::typed('int', $parameters['num_pages'])))
 			return [];
 
 		$params = [

@@ -38,7 +38,6 @@ use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Validators\CategoryValidator;
-use WPLake\Typed\Typed;
 
 use function Bugo\LightPortal\app;
 
@@ -122,7 +121,7 @@ final readonly class CategoryArea
 
 	public function edit(): void
 	{
-		$item = Typed::int($this->request()->get('category_id') ?: $this->request()->get('id'));
+		$item = Str::typed('int', $this->request()->get('category_id') ?: $this->request()->get('id'));
 
 		Theme::loadTemplate('LightPortal/ManageCategories');
 

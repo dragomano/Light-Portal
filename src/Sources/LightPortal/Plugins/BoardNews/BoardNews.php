@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 30.09.25
+ * @version 01.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\BoardNews;
@@ -28,7 +28,6 @@ use Bugo\LightPortal\UI\Fields\RangeField;
 use Bugo\LightPortal\Utils\MessageIndex;
 use Bugo\LightPortal\Utils\Str;
 use Nette\Utils\Html;
-use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -88,10 +87,10 @@ class BoardNews extends SsiBlock
 			->setFallback(
 				fn() => $this->getFromSSI(
 					'boardNews',
-					Typed::int($parameters['board_id']),
-					Typed::int($parameters['num_posts']),
+					Str::typed('int', $parameters['board_id']),
+					Str::typed('int', $parameters['num_posts']),
 					null,
-					Typed::int($parameters['teaser_length']),
+					Str::typed('int', $parameters['teaser_length']),
 					'array'
 				)
 			);

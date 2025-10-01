@@ -30,8 +30,8 @@ use Bugo\LightPortal\UI\Partials\TopicSelect;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\ParamWrapper;
+use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasView;
-use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -153,7 +153,7 @@ class RecentPosts extends SsiBlock
 		$excludeTopics = empty($parameters['exclude_topics']) ? [] : explode(',', (string) $parameters['exclude_topics']);
 		$includeTopics = empty($parameters['include_topics']) ? [] : explode(',', (string) $parameters['include_topics']);
 
-		$numPosts = Typed::int($parameters['num_posts'], default: 10);
+		$numPosts = Str::typed('int', $parameters['num_posts'], default: 10);
 
 		$minMessageId = Config::$modSettings['maxMsgID'] - (
 			empty(Utils::$context['min_message_posts']) ? 25 : Utils::$context['min_message_posts']
@@ -184,7 +184,7 @@ class RecentPosts extends SsiBlock
 			$numPosts,
 			'm.id_msg DESC',
 			'array',
-			Typed::boolExtended($parameters['limit_body'])
+			Str::typed('boolExtended', $parameters['limit_body'])
 		);
 
 		if (empty($posts))
@@ -207,7 +207,7 @@ class RecentPosts extends SsiBlock
 		$parameters = $e->args->parameters;
 
 		$recentPosts = $this->userCache($this->name . '_addon_b' . $e->args->id)
-			->setLifeTime(Typed::int($parameters['update_interval']))
+			->setLifeTime(Str::typed('int', $parameters['update_interval']))
 			->setFallback(fn() => $this->getData($parameters));
 
 		if (empty($recentPosts))

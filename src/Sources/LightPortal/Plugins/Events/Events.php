@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 30.09.25
+ * @version 01.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\Events;
@@ -25,8 +25,8 @@ use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\RangeField;
 use Bugo\LightPortal\Utils\ParamWrapper;
+use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasView;
-use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -122,7 +122,7 @@ class Events extends Block
 		$parameters = $e->args->parameters;
 
 		$data = $this->cache($this->name . '_addon_b' . $e->args->id)
-			->setLifeTime(Typed::int($parameters['update_interval']))
+			->setLifeTime(Str::typed('int', $parameters['update_interval']))
 			->setFallback(fn() => $this->getData($parameters));
 
 		echo $this->view(params: ['data' => $data]);

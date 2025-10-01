@@ -30,7 +30,6 @@ use Bugo\LightPortal\UI\Fields\RadioField;
 use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
-use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -77,8 +76,8 @@ class TopPages extends Block
 
 	public function getData(ParamWrapper $parameters): array
 	{
-		$type = Typed::string($parameters['popularity_type'], default: 'comments');
-		$numPages = Typed::int($parameters['num_pages'], default: 10);
+		$type = Str::typed('string', $parameters['popularity_type'], default: 'comments');
+		$numPages = Str::typed('int', $parameters['num_pages'], default: 10);
 
 		$result = Db::$db->query('
 			SELECT p.page_id, p.slug, p.type, p.num_views, p.num_comments,
@@ -138,7 +137,7 @@ class TopPages extends Block
 			->setFallback(fn() => $this->getData($parameters));
 
 		if ($topPages) {
-			$type = Typed::string($parameters['popularity_type'], default: 'comments');
+			$type = Str::typed('string',$parameters['popularity_type'], default: 'comments');
 			$max = $topPages[array_key_first($topPages)]['num_' . $type];
 
 			if (empty($max)) {

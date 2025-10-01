@@ -27,10 +27,10 @@ use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\Notify;
 use Bugo\LightPortal\Utils\Setting;
+use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasCache;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 use Bugo\LightPortal\Utils\Traits\HasResponse;
-use WPLake\Typed\Typed;
 
 use function Bugo\LightPortal\app;
 
@@ -105,7 +105,7 @@ final class Comment implements ActionInterface
 			$this->getPageIndexUrl(), $start, $parentsCount, $limit
 		);
 
-		$start = Typed::int($this->request()->get('start'));
+		$start = Str::typed('int', $this->request()->get('start'));
 
 		http_response_code(200);
 

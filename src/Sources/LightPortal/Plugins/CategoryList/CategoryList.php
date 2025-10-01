@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 30.09.25
+ * @version 01.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\CategoryList;
@@ -22,7 +22,6 @@ use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\Utils\Str;
-use WPLake\Typed\Typed;
 
 use function Bugo\LightPortal\app;
 
@@ -52,7 +51,7 @@ class CategoryList extends Block
 		$currentCat = Utils::$context['current_action'] === 'portal'
 			&& $this->request()->has('sa')
 			&& $this->request()->get('sa') === PortalSubAction::CATEGORIES->name()
-				? Typed::int($this->request()->get('id')) : false;
+				? Str::typed('int', $this->request()->get('id')) : false;
 
 		if (isset(Utils::$context['lp_page']['category_id'])) {
 			$currentCat = Utils::$context['lp_page']['category_id'];

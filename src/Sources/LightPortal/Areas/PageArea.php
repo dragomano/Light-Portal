@@ -58,7 +58,6 @@ use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Validators\PageValidator;
-use WPLake\Typed\Typed;
 
 use function Bugo\LightPortal\app;
 
@@ -213,7 +212,7 @@ final class PageArea
 
 	public function edit(): void
 	{
-		$item = Typed::int($this->request()->get('page_id') ?: $this->request()->get('id'));
+		$item = Str::typed('int', $this->request()->get('page_id') ?: $this->request()->get('id'));
 
 		Theme::loadTemplate('LightPortal/ManagePages');
 

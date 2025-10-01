@@ -17,7 +17,6 @@ use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\HookAttribute;
@@ -26,7 +25,6 @@ use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\RangeField;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\Str;
-use WPLake\Typed\Typed;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -135,8 +133,8 @@ class RecentComments extends Block
 		$comments = $this->userCache($this->name . '_addon_b' . $e->args->id)
 			->setLifeTime($e->args->cacheTime)
 			->setFallback(fn() => $this->getData(
-				Typed::int($parameters['num_comments'], default: 10),
-				Typed::int($parameters['length'], default: 80)
+				Str::typed('int', $parameters['num_comments'], default: 10),
+				Str::typed('int', $parameters['length'], default: 80)
 			));
 
 		if (empty($comments))
