@@ -115,14 +115,19 @@ final class FrontPage implements ActionInterface
 
 				$this->updateStart($total, $start, $limit);
 
-				$articles = app(Weaver::class)(fn() => $this->article->getData($start, $limit, Utils::$context['lp_current_sorting']), false);
+				$articles = app(Weaver::class)(
+					fn() => $this->article->getData($start, $limit, Utils::$context['lp_current_sorting']),
+					false
+				);
 
 				$articles = iterator_to_array($articles);
 
-				return ['total' => $total, 'articles' => new Collection('mixed', $articles)];
+				return ['total' => $total, 'articles' => $articles];
 			});
 
-		[$articles, $itemsCount] = [$data['articles'], $data['total']];
+		[$articlesData, $itemsCount] = [$data['articles'], $data['total']];
+
+		$articles = new Collection('mixed', $articlesData);
 
 		Utils::$context['total_articles'] = $itemsCount;
 
@@ -234,7 +239,7 @@ final class FrontPage implements ActionInterface
 		$start = (int) abs($start);
 	}
 
-	private function postProcess(CollectionInterface $articles): Collection
+	private function postProcess(CollectionInterface $articles): CollectionInterface
 	{
 		$articles = $articles->map(function ($item) {
 			if (Utils::$context['user']['is_guest']) {
@@ -268,7 +273,7 @@ final class FrontPage implements ActionInterface
 		return $articles;
 	}
 
-	private function preLoadImages(Collection $articles): void
+	private function preLoadImages(CollectionInterface $articles): void
 	{
 		$images = $articles->column('image');
 
