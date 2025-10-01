@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 30.09.25
+ * @version 01.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleChat;
@@ -27,6 +27,8 @@ use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\RadioField;
 use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Traits\HasView;
+
+use const LP_BASE_URL;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -117,7 +119,7 @@ class SimpleChat extends Block
 
 		Utils::$context['lp_chats'][$id] = json_encode($messages, JSON_UNESCAPED_UNICODE);
 
-		$this->handleChatRequests($id, $messages);
+		$this->handleChatRequests($id, $e->args->cacheTime);
 
 		echo $this->view(params: [
 			'id'          => $id,
@@ -167,9 +169,9 @@ class SimpleChat extends Block
 			->setFallback(fn() => $this->chat->getMessages($id));
 	}
 
-	private function handleChatRequests(int $id, array $messages): void
+	private function handleChatRequests(int $id, int $cacheTime): void
 	{
-		if ($this->request()->isNot('portal')) {
+		if ($this->request()->isNot('portal') || $this->request()->has('preview')) {
 			return;
 		}
 
@@ -181,7 +183,9 @@ class SimpleChat extends Block
 			} elseif ($action === 'remove_message') {
 				$this->chat->deleteMessage();
 			} else {
-				$this->chat->renderMessages($messages, $id);
+				$blockId = (int) $this->request()->get('id') ?: $id;
+				$messagesToRender = $this->getCachedMessages($blockId, $cacheTime);
+				$this->chat->renderMessages($messagesToRender, $blockId);
 			}
 		}
 	}

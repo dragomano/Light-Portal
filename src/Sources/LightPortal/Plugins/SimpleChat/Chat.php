@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 24.09.25
+ * @version 01.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleChat;
@@ -203,12 +203,8 @@ class Chat
 			];
 		}
 
-		if ($this->parameters['show_avatars']) {
-			if ($messages[$blockId]) {
-				$messages[$blockId] = Avatar::getWithItems($messages[$blockId]);
-			} else {
-				$messages = Avatar::getWithItems($messages);
-			}
+		if ($this->parameters['show_avatars'] && $messages[$blockId]) {
+			$messages[$blockId] = Avatar::getWithItems($messages[$blockId]);
 		}
 
 		return $messages[$blockId] ?? [];

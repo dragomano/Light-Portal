@@ -1,3 +1,4 @@
+@php /** @var array $message */ @endphp
 <li class="smalltext{{ $isInSidebar ? ' floatleft' : '' }}">
 	@if ($parameters['show_avatars'] && isset($message['author']['avatar']))
 		{!! $message['author']['avatar'] !!}

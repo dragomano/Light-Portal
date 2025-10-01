@@ -8,7 +8,7 @@
 <div
 	class="column{{ $parameters['form_position'] === 'top' ? ' reverse' : '' }}"
 	id="chat-container-{{ $id }}"
-	hx-get="{{ $baseUrl }};chat=get_messages"
+	hx-get="{{ $baseUrl }};chat=get_messages;id={{ $id }}"
 	hx-trigger="every {{ $parameters['refresh_interval'] ?? 2 }}s, updateChat{{ $id }} from:body"
 	hx-swap-oob="innerHTML"
 	hx-target="#chat-messages-{{ $id }}"
