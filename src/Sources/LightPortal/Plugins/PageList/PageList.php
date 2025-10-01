@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 24.09.25
+ * @version 01.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\PageList;
@@ -17,12 +17,15 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Permission;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\PortalSubAction;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\HookAttribute;
+use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\Repositories\PageRepositoryInterface;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\NumberField;
@@ -40,14 +43,14 @@ use function Bugo\LightPortal\app;
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(icon: 'far fa-file-alt')]
 class PageList extends Block
 {
-	public string $icon = 'far fa-file-alt';
-
 	private const SORTING_SET = [
 		'page_id', 'author_name', 'title', 'slug', 'type', 'num_views', 'created_at', 'updated_at'
 	];
 
+	#[HookAttribute(PortalHook::prepareBlockParams)]
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -58,6 +61,7 @@ class PageList extends Block
 		];
 	}
 
+	#[HookAttribute(PortalHook::validateBlockParams)]
 	public function validateBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -68,6 +72,7 @@ class PageList extends Block
 		];
 	}
 
+	#[HookAttribute(PortalHook::prepareBlockFields)]
 	public function prepareBlockFields(Event $e): void
 	{
 		$options = $e->args->options;
@@ -108,12 +113,12 @@ class PageList extends Block
 		$type = Typed::string($parameters['types'], default: EntryType::DEFAULT->name());
 
 		$queryString = '
-	        AND p.status = {int:status}
-	        AND p.deleted_at = 0
-	        AND p.entry_type = {string:entry_type}
-	        AND p.created_at <= {int:current_time}
-	        AND p.permissions IN ({array_int:permissions})' . ($categories ? '
-	        AND p.category_id IN ({array_int:categories})' : '');
+			AND p.status = {int:status}
+			AND p.deleted_at = 0
+			AND p.entry_type = {string:entry_type}
+			AND p.created_at <= {int:current_time}
+			AND p.permissions IN ({array_int:permissions})' . ($categories ? '
+			AND p.category_id IN ({array_int:categories})' : '');
 
 		$queryParams = [
 			'status'       => Status::ACTIVE->value,
@@ -152,6 +157,7 @@ class PageList extends Block
 		return $pages;
 	}
 
+	#[HookAttribute(PortalHook::prepareContent)]
 	public function prepareContent(Event $e): void
 	{
 		$pageList = $this->langCache($this->name . '_addon_b' . $e->args->id)

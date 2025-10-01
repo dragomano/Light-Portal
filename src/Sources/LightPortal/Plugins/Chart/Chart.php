@@ -8,16 +8,19 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 26.08.25
+ * @version 30.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\Chart;
 
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\HookAttribute;
+use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\TextField;
@@ -27,11 +30,10 @@ use Bugo\LightPortal\Utils\Traits\HasView;
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(icon: 'fas fa-chart-simple')]
 class Chart extends Block
 {
 	use HasView;
-
-	public string $icon = 'fas fa-chart-simple';
 
 	private array $params = [
 		'chart_title'     => '',
@@ -45,6 +47,7 @@ class Chart extends Block
 
 	private array $chartTypes = ['line', 'bar', 'pie', 'doughnut', 'polarArea', 'radar'];
 
+	#[HookAttribute(PortalHook::prepareBlockParams)]
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = $this->params;
@@ -73,6 +76,7 @@ class Chart extends Block
 		}
 	}
 
+	#[HookAttribute(PortalHook::validateBlockParams)]
 	public function validateBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -86,6 +90,7 @@ class Chart extends Block
 		];
 	}
 
+	#[HookAttribute(PortalHook::prepareBlockFields)]
 	public function prepareBlockFields(Event $e): void
 	{
 		Utils::$context['lp_chart_types'] = array_combine($this->chartTypes, $this->txt['type_set']);
@@ -119,11 +124,13 @@ class Chart extends Block
 			->setValue($options['horizontal']);
 	}
 
+	#[HookAttribute(PortalHook::prepareAssets)]
 	public function prepareAssets(Event $e): void
 	{
 		$e->args->assets['scripts'][$this->name][] = 'https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js';
 	}
 
+	#[HookAttribute(PortalHook::prepareContent)]
 	public function prepareContent(Event $e): void
 	{
 		[$id, $parameters] = [$e->args->id, $e->args->parameters];
@@ -178,6 +185,7 @@ class Chart extends Block
 		});', true);
 	}
 
+	#[HookAttribute(PortalHook::credits)]
 	public function credits(Event $e): void
 	{
 		$e->args->links[] = [

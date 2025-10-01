@@ -8,28 +8,30 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 24.09.25
+ * @version 01.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\TwigLayouts;
 
 use Bugo\Compat\Theme;
 use Bugo\LightPortal\Enums\ContentClass;
+use Bugo\LightPortal\Enums\PluginType;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\Plugin;
+use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(type: PluginType::FRONTPAGE, saveable: false)]
 class TwigLayouts extends Plugin
 {
-	public string $type = 'frontpage';
-
-	public bool $saveable = false;
-
 	private string $extension = '.twig';
 
+	#[HookAttribute(PortalHook::addSettings)]
 	public function addSettings(Event $e): void
 	{
 		$this->txt['note'] = sprintf(
@@ -43,6 +45,7 @@ class TwigLayouts extends Plugin
 		$e->args->settings[$this->name][] = ['callback', '_', $this->showExamples()];
 	}
 
+	#[HookAttribute(PortalHook::frontLayouts)]
 	public function frontLayouts(Event $e): void
 	{
 		if (! str_contains($e->args->layout, $this->extension))
@@ -51,11 +54,13 @@ class TwigLayouts extends Plugin
 		$e->args->renderer = new TwigRenderer();
 	}
 
+	#[HookAttribute(PortalHook::layoutExtensions)]
 	public function layoutExtensions(Event $e): void
 	{
 		$e->args->extensions[] = $this->extension;
 	}
 
+	#[HookAttribute(PortalHook::credits)]
 	public function credits(Event $e): void
 	{
 		$e->args->links[] = [

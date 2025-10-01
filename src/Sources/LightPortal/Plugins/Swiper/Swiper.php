@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 29.08.25
+ * @version 01.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\Swiper;
@@ -16,11 +16,15 @@ namespace Bugo\LightPortal\Plugins\Swiper;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\HookAttribute;
+use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\CustomField;
+use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\RadioField;
 use Bugo\LightPortal\UI\Fields\RangeField;
 use Bugo\LightPortal\UI\Fields\SelectField;
@@ -31,14 +35,14 @@ use Bugo\LightPortal\Utils\Traits\HasView;
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(icon: 'far fa-images')]
 class Swiper extends Block
 {
 	use HasView;
 
-	public string $icon = 'far fa-images';
-
 	private array $effects = ['slide', 'fade', 'cube', 'coverflow', 'flip', 'cards', 'creative'];
 
+	#[HookAttribute(PortalHook::prepareBlockParams)]
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -70,6 +74,7 @@ class Swiper extends Block
 		}
 	}
 
+	#[HookAttribute(PortalHook::validateBlockParams)]
 	public function validateBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -84,6 +89,7 @@ class Swiper extends Block
 		];
 	}
 
+	#[HookAttribute(PortalHook::prepareBlockFields)]
 	public function prepareBlockFields(Event $e): void
 	{
 		$options = $e->args->options;
@@ -182,6 +188,7 @@ class Swiper extends Block
 		return ['content' => $swiper->toHtml()];
 	}
 
+	#[HookAttribute(PortalHook::prepareContent)]
 	public function prepareContent(Event $e): void
 	{
 		[$id, $parameters] = [$e->args->id, $e->args->parameters];
@@ -248,6 +255,7 @@ class Swiper extends Block
 		echo $swiperHtml['content'] ?? '';
 	}
 
+	#[HookAttribute(PortalHook::credits)]
 	public function credits(Event $e): void
 	{
 		$e->args->links[] = [

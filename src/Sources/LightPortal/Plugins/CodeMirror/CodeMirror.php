@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 11.02.25
+ * @version 30.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\CodeMirror;
@@ -16,26 +16,31 @@ namespace Bugo\LightPortal\Plugins\CodeMirror;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\PluginType;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\Plugin;
+use Bugo\LightPortal\Plugins\PluginAttribute;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(type: PluginType::EDITOR)]
 class CodeMirror extends Plugin
 {
-	public string $type = 'editor';
-
 	private array $modes = [
 		'html' => 'HTML', 'php' => 'PHP', 'markdown' => 'Markdown', 'pug' => 'Pug', 'twig' => 'Twig'
 	];
 
+	#[HookAttribute(PortalHook::addSettings)]
 	public function addSettings(Event $e): void
 	{
 		$e->args->settings[$this->name][] = ['multiselect', 'modes', $this->modes];
 		$e->args->settings[$this->name][] = ['desc', 'small_hint'];
 	}
 
+	#[HookAttribute(PortalHook::prepareEditor)]
 	public function prepareEditor(Event $e): void
 	{
 		$object = $e->args->object;
@@ -260,6 +265,7 @@ class CodeMirror extends Plugin
 		});', true);
 	}
 
+	#[HookAttribute(PortalHook::credits)]
 	public function credits(Event $e): void
 	{
 		$e->args->links[] = [

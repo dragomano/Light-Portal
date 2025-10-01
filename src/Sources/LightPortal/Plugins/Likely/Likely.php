@@ -8,16 +8,19 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 01.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\Likely;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Theme;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\HookAttribute;
+use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\RadioField;
@@ -26,15 +29,15 @@ use Bugo\LightPortal\Utils\Str;
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(icon: 'far fa-share-square')]
 class Likely extends Block
 {
-	public string $icon = 'far fa-share-square';
-
 	private array $buttons = [
 		'facebook', 'linkedin', 'odnoklassniki', 'pinterest', 'reddit',
 		'telegram', 'twitter', 'viber', 'vkontakte', 'whatsapp',
 	];
 
+	#[HookAttribute(PortalHook::prepareBlockParams)]
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -44,6 +47,7 @@ class Likely extends Block
 		];
 	}
 
+	#[HookAttribute(PortalHook::validateBlockParams)]
 	public function validateBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -53,6 +57,7 @@ class Likely extends Block
 		];
 	}
 
+	#[HookAttribute(PortalHook::prepareBlockFields)]
 	public function prepareBlockFields(Event $e): void
 	{
 		$options = $e->args->options;
@@ -74,12 +79,14 @@ class Likely extends Block
 			->setValue($options['dark_mode']);
 	}
 
+	#[HookAttribute(PortalHook::prepareAssets)]
 	public function prepareAssets(Event $e): void
 	{
 		$e->args->assets['css'][$this->name][] = 'https://cdn.jsdelivr.net/npm/ilyabirman-likely@3/release/likely.min.css';
 		$e->args->assets['scripts'][$this->name][] = 'https://cdn.jsdelivr.net/npm/ilyabirman-likely@3/release/likely.min.js';
 	}
 
+	#[HookAttribute(PortalHook::prepareContent)]
 	public function prepareContent(Event $e): void
 	{
 		$parameters = $e->args->parameters;
@@ -131,6 +138,7 @@ class Likely extends Block
 		echo $parentBlock;
 	}
 
+	#[HookAttribute(PortalHook::credits)]
 	public function credits(Event $e): void
 	{
 		$e->args->links[] = [

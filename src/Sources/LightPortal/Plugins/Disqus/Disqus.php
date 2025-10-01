@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.12.24
+ * @version 30.09.25
  */
 
 namespace Bugo\LightPortal\Plugins\Disqus;
@@ -16,33 +16,39 @@ namespace Bugo\LightPortal\Plugins\Disqus;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\PluginType;
+use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
+use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\Plugin;
+use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
+#[PluginAttribute(type: PluginType::COMMENT)]
 class Disqus extends Plugin
 {
-	public string $type = 'comment';
-
+	#[HookAttribute(PortalHook::init)]
 	public function init(): void
 	{
 		Lang::$txt['lp_comment_block_set'][$this->name] = 'Disqus';
 	}
 
+	#[HookAttribute(PortalHook::addSettings)]
 	public function addSettings(Event $e): void
 	{
 		$e->args->settings[$this->name][] = [
 			'text',
 			'shortname',
 			'subtext' => $this->txt['shortname_subtext'],
-			'required' => true
+			'required' => true,
 		];
 	}
 
+	#[HookAttribute(PortalHook::comments)]
 	public function comments(): void
 	{
 		if (Setting::getCommentBlock() !== $this->name || empty($this->context['shortname']))
@@ -64,6 +70,7 @@ class Disqus extends Plugin
 			</script>';
 	}
 
+	#[HookAttribute(PortalHook::frontAssets)]
 	public function frontAssets(): void
 	{
 		if (Setting::getCommentBlock() !== $this->name || empty(Utils::$context['lp_frontpage_articles']))

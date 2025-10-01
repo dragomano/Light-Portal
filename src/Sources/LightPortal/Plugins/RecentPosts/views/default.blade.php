@@ -5,7 +5,7 @@
 			@php
 				$post['preview'] = '<a href="' . $post['href'] . '">' . $post['preview'] . '</a>';
 			@endphp
-			<div class="word_break">
+			<div class="windowbg word_break">
 				@if ($parameters['show_avatars'] && isset($post['poster']['avatar']))
 					<div class="poster_avatar" title="{{ $post['poster']['name'] }}">
 						{!! $post['poster']['avatar'] !!}
