@@ -151,6 +151,6 @@ class Setting
 
 	protected static function transformArray(string $value, string $from): array
 	{
-		return $from === 'json' ? Utils::jsonDecode($value, true) : explode(',', $value);
+		return $from === 'json' ? Utils::jsonDecode($value, true) : array_filter(explode(',', $value));
 	}
 }

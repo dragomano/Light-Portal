@@ -22,7 +22,7 @@ use Bugo\LightPortal\Repositories\PageRepositoryInterface;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final readonly class PageList implements ListInterface
+readonly class PageList implements ListInterface
 {
 	public function __construct(private PageRepositoryInterface $repository) {}
 

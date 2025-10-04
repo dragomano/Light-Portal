@@ -143,7 +143,7 @@ final readonly class PluginHandler
 
 			foreach ($hookAttrs as $attr) {
 				$hookData = $attr->newInstance();
-				$this->manager->addHookListener([$hookData->hook], app($className));
+				$this->manager->addHookListener($hookData->hook, app($className));
 			}
 		}
 	}

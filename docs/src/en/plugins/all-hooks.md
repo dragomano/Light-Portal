@@ -128,7 +128,7 @@ public function prepareBlockParams(Event $e): void
         'display_type'   => 0,
         'include_topics' => '',
         'include_pages'  => '',
-        'seek_images'    => false
+        'seek_images'    => false,
     ];
 }
 ```
@@ -448,7 +448,7 @@ public function frontAssets(): void
 {
     $this->loadExternalResources([
         ['type' => 'css', 'url' => 'https://cdn.example.com/custom.css'],
-        ['type' => 'js', 'url' => 'https://cdn.example.com/custom.js'],
+        ['type' => 'js',  'url' => 'https://cdn.example.com/custom.js'],
     ]);
 }
 ```
