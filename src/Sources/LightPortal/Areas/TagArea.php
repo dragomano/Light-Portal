@@ -26,7 +26,7 @@ use Bugo\LightPortal\Models\TagFactory;
 use Bugo\LightPortal\Repositories\TagRepositoryInterface;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\TextField;
-use Bugo\LightPortal\UI\Partials\IconSelect;
+use Bugo\LightPortal\UI\Partials\SelectFactory;
 use Bugo\LightPortal\UI\Tables\ContextMenuColumn;
 use Bugo\LightPortal\UI\Tables\IconColumn;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
@@ -188,9 +188,9 @@ final readonly class TagArea
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
 			->setTab(Tab::APPEARANCE)
-			->setValue(static fn() => new IconSelect(), [
+			->setValue(static fn() => SelectFactory::icon([
 				'icon' => Utils::$context['lp_tag']['icon'],
-			]);
+			]));
 
 		TextField::make('slug', Lang::$txt['lp_slug'])
 			->setTab(Tab::SEO)

@@ -23,7 +23,7 @@ use Bugo\LightPortal\Renderers\RendererInterface;
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-final readonly class View
+readonly class View
 {
 	public function __construct(private string $baseDir) {}
 

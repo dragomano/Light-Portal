@@ -15,21 +15,20 @@ namespace Bugo\LightPortal\UI\Partials;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\EntryType;
 
-final class EntryTypeSelect extends AbstractPartial
-{
-	public function __invoke(): string
-	{
-		$params = func_get_args();
-		$params = $params[0] ?? [];
+if (! defined('SMF'))
+	die('No direct access...');
 
-		$params['id'] ??= 'entry_type';
-		$params['data'] ??= Utils::$context['lp_page_types'] ?? [];
-		$params['value'] ??= Utils::$context['lp_page']['entry_type'] ?? EntryType::DEFAULT->name();
+final class EntryTypeSelect extends AbstractSelect
+{
+	public function getData(): array
+	{
+		$pageTypes = Utils::$context['lp_page_types'] ?? [];
 
 		$data = [];
-		foreach ($params['data'] as $value => $label) {
-			if (Utils::$context['user']['is_admin'] === false && $value === EntryType::INTERNAL->name())
+		foreach ($pageTypes as $value => $label) {
+			if (Utils::$context['user']['is_admin'] === false && $value === EntryType::INTERNAL->name()) {
 				continue;
+			}
 
 			$data[] = [
 				'label' => $label,
@@ -37,18 +36,17 @@ final class EntryTypeSelect extends AbstractPartial
 			];
 		}
 
-		return /** @lang text */ '
-		<div id="' . $params['id'] . '" name="' . $params['id'] . '"></div>
-		<script>
-			VirtualSelect.init({
-				ele: "#' . $params['id'] . '",
-				hideClearButton: true,' . (Utils::$context['right_to_left'] ? '
-				textDirection: "rtl",' : '') . '
-				dropboxWrapper: "body",
-				markSearchResults: true,
-				options: ' . json_encode($data) . ',
-				selectedValue: "' . $params['value'] . '"
-			});
-		</script>';
+		return $data;
+	}
+
+	protected function getDefaultParams(): array
+	{
+		return [
+			'id'       => 'entry_type',
+			'multiple' => false,
+			'wide'     => false,
+			'hint'     => '',
+			'value'    => Utils::$context['lp_page']['entry_type'] ?? EntryType::DEFAULT->name(),
+		];
 	}
 }

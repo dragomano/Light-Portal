@@ -3,11 +3,7 @@
 use Bugo\Compat\{Config, Lang, Theme, Utils};
 use Bugo\LightPortal\Areas\Configs\BasicConfig;
 use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\UI\Partials\BoardSelect;
-use Bugo\LightPortal\UI\Partials\CategorySelect;
-use Bugo\LightPortal\UI\Partials\PageSelect;
-use Bugo\LightPortal\UI\Partials\PageSlugSelect;
-use Bugo\LightPortal\UI\Partials\TopicSelect;
+use Bugo\LightPortal\UI\Partials\SelectFactory;
 use Bugo\LightPortal\Utils\Icon;
 
 function template_callback_frontpage_mode_settings_middle(): void
@@ -18,31 +14,31 @@ function template_callback_frontpage_mode_settings_middle(): void
 			<label for="lp_frontpage_chosen_page">', Lang::$txt['lp_frontpage_chosen_page'], '</label>
 		</dt>
 		<dd x-show="frontpage_mode === \'chosen_page\'">
-			', new PageSlugSelect(), '
+			', SelectFactory::pageSlug(), '
 		</dd>
 		<dt x-show="frontpage_mode === \'all_pages\'">
 			<label for="lp_frontpage_categories">', Lang::$txt['lp_frontpage_categories'], '</label>
 		</dt>
 		<dd x-show="frontpage_mode === \'all_pages\'">
-			', new CategorySelect(), '
+			', SelectFactory::category(), '
 		</dd>
 		<dt x-show="[\'all_topics\', \'chosen_boards\'].includes(frontpage_mode)">
 			<label for="lp_frontpage_boards">', Lang::$txt['lp_frontpage_boards'], '</label>
 		</dt>
 		<dd x-show="[\'all_topics\', \'chosen_boards\'].includes(frontpage_mode)">
-			', new BoardSelect(), '
+			', SelectFactory::board(), '
 		</dd>
 		<dt x-show="frontpage_mode === \'chosen_pages\'">
 			<label for="lp_frontpage_pages">', Lang::$txt['lp_frontpage_pages'], '</label>
 		</dt>
 		<dd x-show="frontpage_mode === \'chosen_pages\'">
-			', new PageSelect(), '
+			', SelectFactory::page(), '
 		</dd>
 		<dt x-show="frontpage_mode === \'chosen_topics\'">
 			<label for="lp_frontpage_topics">', Lang::$txt['lp_frontpage_topics'], '</label>
 		</dt>
 		<dd x-show="frontpage_mode === \'chosen_topics\'">
-			', new TopicSelect(), '
+			', SelectFactory::topic(), '
 		</dd>
 	</dl>';
 }

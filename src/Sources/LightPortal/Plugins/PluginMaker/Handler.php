@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 01.10.25
+ * @version 04.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
@@ -27,7 +27,7 @@ use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\SelectField;
 use Bugo\LightPortal\UI\Fields\TextField;
 use Bugo\LightPortal\UI\Fields\UrlField;
-use Bugo\LightPortal\UI\Partials\IconSelect;
+use Bugo\LightPortal\UI\Partials\SelectFactory;
 use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
@@ -208,10 +208,10 @@ class Handler
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
 			->setTab(Tab::CONTENT)
-			->setValue(static fn() => new IconSelect(), [
+			->setValue(static fn() => SelectFactory::icon([
 				'icon' => Utils::$context['lp_plugin']['icon'],
 				'type' => Utils::$context['lp_plugin']['type'],
-			]);
+			]));
 
 		$this->setTitleField();
 

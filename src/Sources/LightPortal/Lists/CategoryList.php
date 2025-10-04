@@ -21,7 +21,7 @@ use Bugo\LightPortal\Enums\Status;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class CategoryList implements ListInterface
+class CategoryList implements ListInterface
 {
 	public function __invoke(): array
 	{

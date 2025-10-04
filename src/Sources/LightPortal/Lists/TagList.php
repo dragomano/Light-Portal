@@ -23,7 +23,7 @@ use Bugo\LightPortal\Enums\Status;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class TagList implements ListInterface
+class TagList implements ListInterface
 {
 	public function __invoke(): array
 	{

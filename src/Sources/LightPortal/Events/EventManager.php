@@ -27,7 +27,7 @@ class EventManager
 		PortalHook::validateBlockParams,
 		PortalHook::prepareBlockFields,
 		PortalHook::parseContent,
-		PortalHook::prepareContent
+		PortalHook::prepareContent,
 	];
 
 	public function __construct()
@@ -35,12 +35,9 @@ class EventManager
 		$this->eventManager = new DoctrineEventManager();
 	}
 
-	public function addHookListener(array $hooks, PluginInterface $listener): void
+	public function addHookListener(PortalHook $hook, PluginInterface $listener): void
 	{
-		$hooks = array_map(fn($item) => $item->name, $hooks);
-		$hooks = array_filter($hooks, fn($item) => method_exists($listener, $item));
-
-		$this->eventManager->addEventListener($hooks, $listener);
+		$this->eventManager->addEventListener($hook->name, $listener);
 	}
 
 	public function dispatch(PortalHook $hook, array $params = []): void

@@ -12,64 +12,41 @@
 
 namespace Bugo\LightPortal\UI\Partials;
 
-use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Utils\Icon;
 
-final class IconSelect extends AbstractPartial
+if (! defined('SMF'))
+	die('No direct access...');
+
+final class IconSelect extends AbstractSelect
 {
-	public function __invoke(): string
+	protected string $template = 'icon_select';
+
+	public function getData(): array
 	{
-		$params = func_get_args();
-		$params = $params[0] ?? [];
-
-		$id = empty($params['id']) ? 'icon' : $params['id'];
-
-		$icon = empty($params['icon']) ? (Utils::$context['lp_block']['icon'] ?? '') : $params['icon'];
-		$type = empty($params['type']) ? (Utils::$context['lp_block']['type'] ?? '') : $params['type'];
-
+		$icon = $this->params['value'];
 		$template = Icon::parse($icon) . $icon;
 
-		return /** @lang text */ '
-		<div id="' . $id . '" name="' . $id . '"></div>
-		<script>
-			VirtualSelect.init({
-				ele: "#' . $id . '",' . (Utils::$context['right_to_left'] ? '
-				textDirection: "rtl",' : '') . '
-				dropboxWrapper: "body",
-				search: true,
-				allowNewOption: true,
-				placeholder: "cheese",
-				noSearchResultsText: "' . Lang::$txt['no_matches'] . '",
-				searchPlaceholderText: "' . Lang::$txt['search'] . '",
-				options: [
-					{
-						label: ' . Utils::escapeJavaScript($template) . ',
-						value: "' . $icon . '"
-					}
-				],
-				selectedValue: "' . $icon . '",
-				labelRenderer: function (data) {
-					return `<i class="${data.value}"></i> ${data.value}`;
-				},
-				onServerSearch: async function (search, virtualSelect) {
-					await axios.post("' . Utils::$context['form_action'] . ';icons", {
-						search,
-						add_block: "' . $type . '"
-					})
-						.then(({ data }) => {
-							const icons = [];
-							for (let i = 0; i < data.length; i++) {
-								icons.push({ label: data[i].innerHTML, value: data[i].value })
-							}
+		return [
+			[
+				'label' => $template,
+				'value' => $icon,
+			]
+		];
+	}
 
-							virtualSelect.setServerOptions(icons)
-						})
-						.catch(function (error) {
-							virtualSelect.setServerOptions(false)
-						})
-				}
-			});
-		</script>';
+	protected function getDefaultParams(): array
+	{
+		$icon = $this->params['icon'] ?? Utils::$context['lp_block']['icon'] ?? '';
+		$type = $this->params['type'] ?? Utils::$context['lp_block']['type'] ?? '';
+
+		return [
+			'id'         => 'icon',
+			'multiple'   => false,
+			'wide'       => false,
+			'hint'       => 'cheese',
+			'value'      => $icon,
+			'block_type' => $type,
+		];
 	}
 }

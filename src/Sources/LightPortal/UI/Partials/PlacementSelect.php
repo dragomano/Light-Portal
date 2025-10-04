@@ -15,16 +15,13 @@ namespace Bugo\LightPortal\UI\Partials;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 
-final class PlacementSelect extends AbstractPartial
+if (! defined('SMF'))
+	die('No direct access...');
+
+final class PlacementSelect extends AbstractSelect
 {
-	public function __invoke(): string
+	public function getData(): array
 	{
-		$params = func_get_args();
-		$params = $params[0] ?? [];
-
-		$params['id'] ??= 'placement';
-		$params['value'] ??= Utils::$context['lp_block']['placement'];
-
 		$data = [];
 		foreach (Utils::$context['lp_block_placements'] as $level => $title) {
 			$data[] = [
@@ -33,18 +30,17 @@ final class PlacementSelect extends AbstractPartial
 			];
 		}
 
-		return /** @lang text */ '
-		<div id="' . $params['id'] . '" name="' . $params['id'] . '"></div>
-		<script>
-			VirtualSelect.init({
-				ele: "#' . $params['id'] . '",
-				hideClearButton: true,' . (Utils::$context['right_to_left'] ? '
-				textDirection: "rtl",' : '') . '
-				dropboxWrapper: "body",
-				placeholder: "' . Lang::$txt['lp_block_placement_select'] . '",
-				options: ' . json_encode($data) . ',
-				selectedValue: "' . $params['value'] . '"
-			});
-		</script>';
+		return $data;
+	}
+
+	protected function getDefaultParams(): array
+	{
+		return [
+			'id'       => 'placement',
+			'multiple' => false,
+			'wide'     => false,
+			'hint'     => Lang::$txt['lp_block_placement_select'],
+			'value'    => Utils::$context['lp_block']['placement'] ?? '',
+		];
 	}
 }

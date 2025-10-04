@@ -16,41 +16,35 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\TitleClass;
 
-final class TitleClassSelect extends AbstractPartial
+if (! defined('SMF'))
+	die('No direct access...');
+
+final class TitleClassSelect extends AbstractSelect
 {
-	public function __invoke(): string
+	protected string $template = 'preview_select';
+
+	public function getData(): array
 	{
-		$params = func_get_args();
-		$params = $params[0] ?? [];
-
-		$params['id'] ??= 'title_class';
-		$params['data'] ??= TitleClass::values() ?? [];
-		$params['value'] ??= Utils::$context['lp_block']['title_class'] ?? '';
-
 		$data = [];
-		foreach ($params['data'] as $key => $template) {
+		foreach ($this->params['data'] as $key => $template) {
 			$data[] = [
 				'label' => sprintf($template, empty($key) ? Lang::$txt['no'] : $key),
 				'value' => $key,
 			];
 		}
 
-		return /** @lang text */ '
-		<div id="' . $params['id'] . '" name="' . $params['id'] . '"></div>
-		<script>
-			VirtualSelect.init({
-				ele: "#' . $params['id'] . '",' . (Utils::$context['right_to_left'] ? '
-				textDirection: "rtl",' : '') . '
-				dropboxWrapper: "body",
-				showSelectedOptionsFirst: true,
-				optionHeight: "60px",
-				placeholder: "' . Lang::$txt['no'] . '",
-				options: ' . json_encode($data) . ',
-				selectedValue: "' . $params['value'] . '",
-				labelRenderer: function (data) {
-					return `<div>${data.label}</div>`;
-				}
-			});
-		</script>';
+		return $data;
+	}
+
+	protected function getDefaultParams(): array
+	{
+		return [
+			'id'       => 'title_class',
+			'multiple' => false,
+			'wide'     => false,
+			'hint'     => Lang::$txt['no'],
+			'data'     => TitleClass::values() ?? [],
+			'value'    => Utils::$context['lp_block']['title_class'] ?? '',
+		];
 	}
 }

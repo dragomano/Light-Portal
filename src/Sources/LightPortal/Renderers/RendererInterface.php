@@ -14,7 +14,7 @@ namespace Bugo\LightPortal\Renderers;
 
 interface RendererInterface
 {
-	public function getLayouts(): array;
-
 	public function render(string $layout, array $params = []): string;
+
+	public function getLayouts(): array;
 }

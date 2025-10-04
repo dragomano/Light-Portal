@@ -51,7 +51,9 @@ class Blade extends AbstractRenderer
 				echo str_replace(' class=', ' title="' . $title . '" class=', $icon);
 			});
 
-			$layout = strstr($layout, '.', true) ?: $layout;
+			if (str_ends_with($layout, self::DEFAULT_EXTENSION)) {
+				$layout = substr($layout, 0, -strlen(self::DEFAULT_EXTENSION));
+			}
 
 			echo $blade->run($layout, $params);
 		} catch (Exception $e) {

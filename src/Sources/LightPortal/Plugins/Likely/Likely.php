@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 01.10.25
+ * @version 04.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\Likely;
@@ -64,12 +64,10 @@ class Likely extends Block
 
 		CustomField::make('buttons', $this->txt['buttons'])
 			->setTab(Tab::CONTENT)
-			->setValue(static fn() => new ButtonSelect(), [
-				'data'  => $this->buttons,
-				'value' => is_array($options['buttons'])
-					? $options['buttons']
-					: explode(',', (string) $options['buttons'])
-			]);
+			->setValue(fn() => new ButtonSelect([
+				'data'    => $this->buttons,
+				'buttons' => $options['buttons'] ?? [],
+			]));
 
 		RadioField::make('size', $this->txt['size'])
 			->setOptions($this->txt['size_set'])
@@ -111,9 +109,9 @@ class Likely extends Block
 				continue;
 
 			$button = Str::html('div', [
-				'class' => $service,
-				'tabindex' => '0',
-				'role' => 'link',
+				'class'      => $service,
+				'tabindex'   => '0',
+				'role'       => 'link',
 				'aria-label' => $this->txt['buttons_set'][$service],
 			]);
 

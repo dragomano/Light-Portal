@@ -36,12 +36,7 @@ use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\TextareaField;
 use Bugo\LightPortal\UI\Fields\TextField;
-use Bugo\LightPortal\UI\Partials\CategorySelect;
-use Bugo\LightPortal\UI\Partials\EntryTypeSelect;
-use Bugo\LightPortal\UI\Partials\PageIconSelect;
-use Bugo\LightPortal\UI\Partials\PermissionSelect;
-use Bugo\LightPortal\UI\Partials\StatusSelect;
-use Bugo\LightPortal\UI\Partials\TagSelect;
+use Bugo\LightPortal\UI\Partials\SelectFactory;
 use Bugo\LightPortal\UI\Tables\CheckboxColumn;
 use Bugo\LightPortal\UI\Tables\NumViewsColumn;
 use Bugo\LightPortal\UI\Tables\PageButtonsRow;
@@ -514,30 +509,30 @@ final class PageArea
 		if (Utils::$context['user']['is_admin']) {
 			CustomField::make('show_in_menu', Lang::$txt['lp_page_show_in_menu'])
 				->setTab(Tab::ACCESS_PLACEMENT)
-				->setValue(static fn() => new PageIconSelect());
+				->setValue(static fn() => SelectFactory::pageIcon());
 
 			CustomField::make('status', Lang::$txt['status'])
 				->setTab(Tab::ACCESS_PLACEMENT)
-				->setValue(static fn() => new StatusSelect());
+				->setValue(static fn() => SelectFactory::status());
 		}
 
 		CustomField::make('permissions', Lang::$txt['edit_permissions'])
 			->setTab(Tab::ACCESS_PLACEMENT)
-			->setValue(static fn() => new PermissionSelect());
+			->setValue(static fn() => SelectFactory::permission());
 
 		CustomField::make('category_id', Lang::$txt['lp_category'])
 			->setTab(Tab::ACCESS_PLACEMENT)
-			->setValue(static fn() => new CategorySelect(), [
+			->setValue(static fn() => SelectFactory::category([
 				'id'       => 'category_id',
 				'multiple' => false,
 				'wide'     => false,
 				'data'     => app(CategoryList::class)(),
 				'value'    => Utils::$context['lp_page']['category_id'],
-			]);
+			]));
 
 		CustomField::make('entry_type', Lang::$txt['lp_page_type'])
 			->setTab(Tab::ACCESS_PLACEMENT)
-			->setValue(static fn() => new EntryTypeSelect());
+			->setValue(static fn() => SelectFactory::entryType());
 
 		TextField::make('slug', Lang::$txt['lp_slug'])
 			->setTab(Tab::SEO)
@@ -563,7 +558,7 @@ final class PageArea
 		} else {
 			CustomField::make('tags', Lang::$txt['lp_tags'])
 				->setTab(Tab::SEO)
-				->setValue(static fn() => new TagSelect());
+				->setValue(static fn() => SelectFactory::tag());
 		}
 
 		if (Utils::$context['lp_page']['created_at'] >= time()) {

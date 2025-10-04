@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 30.09.25
+ * @version 04.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\HidingBlocks;
@@ -43,8 +43,9 @@ class HidingBlocks extends Plugin
 			$breakpoints = array_flip(explode(',', (string) $block['parameters'][self::PARAM]));
 			foreach ($this->classes as $class) {
 				if (array_key_exists($class, $breakpoints)) {
-					if (empty(Utils::$context['lp_active_blocks'][$id]['custom_class']))
+					if (empty(Utils::$context['lp_active_blocks'][$id]['custom_class'])) {
 						Utils::$context['lp_active_blocks'][$id]['custom_class'] = '';
+					}
 
 					Utils::$context['lp_active_blocks'][$id]['custom_class'] .= ' hidden-' . $class;
 				}
@@ -69,8 +70,9 @@ class HidingBlocks extends Plugin
 	{
 		CustomField::make(self::PARAM, $this->txt[self::PARAM])
 			->setTab(Tab::ACCESS_PLACEMENT)
-			->setValue(static fn() => new BreakpointSelect(), [
+			->setValue(fn() => new BreakpointSelect([
+				'classes'   => $this->classes,
 				self::PARAM => $e->args->options[self::PARAM] ?? [],
-			]);
+			]));
 	}
 }

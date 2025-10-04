@@ -81,7 +81,9 @@ use Bugo\LightPortal\Repositories\TagRepository;
 use Bugo\LightPortal\Repositories\TagRepositoryInterface;
 use Bugo\LightPortal\UI\Breadcrumbs\BreadcrumbRenderer;
 use Bugo\LightPortal\UI\Breadcrumbs\BreadcrumbWrapper;
+use Bugo\LightPortal\UI\Partials\SelectRenderer;
 use Bugo\LightPortal\UI\Tables\TableRenderer;
+use Bugo\LightPortal\UI\View;
 use Bugo\LightPortal\Utils\Cache;
 use Bugo\LightPortal\Utils\CacheInterface;
 use Bugo\LightPortal\Utils\Database;
@@ -184,6 +186,7 @@ class ServiceProvider extends AbstractServiceProvider
 		Request::class,
 		RequestInterface::class,
 		Response::class,
+		SelectRenderer::class,
 		Session::class,
 		SessionManager::class,
 		TablePresenter::class,
@@ -197,6 +200,7 @@ class ServiceProvider extends AbstractServiceProvider
 		TagRepository::class,
 		TagValidator::class,
 		TopicArticle::class,
+		View::class,
 		Weaver::class,
 	];
 
@@ -212,13 +216,15 @@ class ServiceProvider extends AbstractServiceProvider
 		$container->add(Database::class);
 		$container->add(DatabaseInterface::class, Database::class);
 
-		$container->add(PortalAdapter::class);
-		$container->add(PortalAdapterInterface::class, PortalAdapter::class);
+		$container->add(PortalAdapterInterface::class, fn() => PortalAdapterFactory::create());
 
 		$container->add(PortalApp::class);
 		$container->add(Integration::class);
 		$container->add(ConfigArea::class);
 		$container->add(CreditArea::class);
+
+		$container->add(View::class, fn() => new View(realpath(__DIR__ . '/../../Themes/default/LightPortal')));
+		$container->add(SelectRenderer::class)->addArgument(View::class);
 
 		$container->add(RendererInterface::class, Blade::class);
 		$container->add(TablePresenter::class)->addArgument(TableRenderer::class);
@@ -239,13 +245,6 @@ class ServiceProvider extends AbstractServiceProvider
 		$container->add(EventManagerFactory::class);
 		$container->add(PluginHandler::class, fn() => fn(array $plugins = []) => new PluginHandler($plugins));
 
-		$container->add(IconList::class);
-		$container->add(CategoryList::class);
-		$container->add(PageList::class)->addArgument(PageRepositoryInterface::class);
-		$container->add(TagList::class);
-		$container->add(PluginList::class);
-		$container->add(SessionManager::class);
-
 		$container->add(CacheInterface::class, Cache::class);
 		$container->add(Request::class);
 		$container->add(RequestInterface::class, Request::class);
@@ -258,18 +257,23 @@ class ServiceProvider extends AbstractServiceProvider
 
 		$container->add(CommentRepository::class);
 		$container->add(PluginRepository::class);
-
-		$container->add(PageRepositoryInterface::class, fn() => new PageRepository(PortalAdapterFactory::create()));
-
 		$container->add(BlockRepository::class);
 		$container->add(CategoryRepository::class);
 		$container->add(TagRepository::class);
 
 		$container->add(BlockRepositoryInterface::class, BlockRepository::class);
-		$container->add(PageRepositoryInterface::class, PageRepository::class);
+		$container->add(PageRepositoryInterface::class, PageRepository::class)
+			->addArgument(PortalAdapterInterface::class);
 		$container->add(CategoryRepositoryInterface::class, CategoryRepository::class);
 		$container->add(TagRepositoryInterface::class, TagRepository::class);
 		$container->add(PluginRepositoryInterface::class, PluginRepository::class);
+
+		$container->add(IconList::class);
+		$container->add(CategoryList::class);
+		$container->add(PageList::class)->addArgument(PageRepositoryInterface::class);
+		$container->add(TagList::class);
+		$container->add(PluginList::class);
+		$container->add(SessionManager::class);
 
 		$container->add(BlockArea::class)->addArgument(BlockRepositoryInterface::class);
 		$container->add(BlockExport::class)

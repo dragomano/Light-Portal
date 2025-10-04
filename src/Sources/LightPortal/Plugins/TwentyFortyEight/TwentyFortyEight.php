@@ -8,12 +8,11 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 01.10.25
+ * @version 04.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\TwentyFortyEight;
 
-use Bugo\LightPortal\Enums\PluginType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\GameBlock;
 use Bugo\LightPortal\Plugins\HookAttribute;

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 01.10.25
+ * @version 04.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\RecentTopics;
@@ -24,7 +24,7 @@ use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\RadioField;
-use Bugo\LightPortal\UI\Partials\BoardSelect;
+use Bugo\LightPortal\UI\Partials\SelectFactory;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\ParamWrapper;
@@ -77,19 +77,19 @@ class RecentTopics extends SsiBlock
 
 		CustomField::make('exclude_boards', $this->txt['exclude_boards'])
 			->setTab(Tab::CONTENT)
-			->setValue(static fn() => new BoardSelect(), [
+			->setValue(fn() => SelectFactory::board([
 				'id'    => 'exclude_boards',
 				'hint'  => $this->txt['exclude_boards_select'],
 				'value' => $options['exclude_boards'] ?? '',
-			]);
+			]));
 
 		CustomField::make('include_boards', $this->txt['include_boards'])
 			->setTab(Tab::CONTENT)
-			->setValue(static fn() => new BoardSelect(), [
+			->setValue(fn() => SelectFactory::board([
 				'id'    => 'include_boards',
 				'hint'  => $this->txt['include_boards_select'],
 				'value' => $options['include_boards'] ?? '',
-			]);
+			]));
 
 		CheckboxField::make('use_simple_style', $this->txt['use_simple_style'])
 			->setTab(Tab::APPEARANCE)

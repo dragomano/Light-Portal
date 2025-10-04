@@ -20,7 +20,7 @@ use Bugo\LightPortal\Utils\Icon;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class IconList implements ListInterface
+class IconList implements ListInterface
 {
 	use HasEvents;
 

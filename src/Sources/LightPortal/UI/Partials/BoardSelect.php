@@ -14,55 +14,43 @@ namespace Bugo\LightPortal\UI\Partials;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
-use Bugo\Compat\Utils;
 use Bugo\LightPortal\Utils\MessageIndex;
 
-final class BoardSelect extends AbstractPartial
+if (! defined('SMF'))
+	die('No direct access...');
+
+final class BoardSelect extends AbstractSelect
 {
-	public function __invoke(): string
+	public function getData(): array
 	{
-		$params = func_get_args();
-		$params = $params[0] ?? [];
-
-		$params['id'] ??= 'lp_frontpage_boards';
-		$params['value'] ??= Config::$modSettings['lp_frontpage_boards'] ?? '';
-		$params['data'] ??= MessageIndex::getBoardList();
-
 		$data = [];
-		foreach ($params['data'] as $cat) {
+		foreach ($this->params['data'] as $cat) {
 			$options = [];
 			foreach ($cat['boards'] as $id_board => $board) {
 				$options[] = [
 					'label' => $board['name'],
-					'value' => $id_board
+					'value' => $id_board,
 				];
 			}
 
 			$data[] = [
 				'label'   => $cat['name'],
-				'options' => $options
+				'options' => $options,
 			];
 		}
 
-		return /** @lang text */ '
-		<div id="' . $params['id'] . '" name="' . $params['id'] . '"></div>
-		<script>
-			VirtualSelect.init({
-				ele: "#' . $params['id'] . '",' . (Utils::$context['right_to_left'] ? '
-				textDirection: "rtl",' : '') . '
-				dropboxWrapper: "body",
-				multiple: true,
-				search: true,
-				markSearchResults: true,
-				placeholder: "' . ($params['hint'] ?? Lang::$txt['lp_frontpage_boards_select']) . '",
-				noSearchResultsText: "' . Lang::$txt['no_matches'] . '",
-				searchPlaceholderText: "' . Lang::$txt['search'] . '",
-				allOptionsSelectedText: "' . Lang::$txt['all'] . '",
-				showValueAsTags: true,
-				maxWidth: "100%",
-				options: ' . json_encode($data) . ',
-				selectedValue: [' . $params['value'] . ']
-			});
-		</script>';
+		return $data;
+	}
+
+	protected function getDefaultParams(): array
+	{
+		return [
+			'id'       => 'lp_frontpage_boards',
+			'multiple' => true,
+			'wide'     => true,
+			'hint'     => Lang::$txt['lp_frontpage_boards_select'],
+			'data'     => MessageIndex::getBoardList(),
+			'value'    => $this->normalizeValue(Config::$modSettings['lp_frontpage_boards'] ?? ''),
+		];
 	}
 }

@@ -17,7 +17,7 @@ use Bugo\Compat\Actions\MessageIndex as BaseMessageIndex;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class MessageIndex extends BaseMessageIndex
+class MessageIndex extends BaseMessageIndex
 {
 	public static function getBoardList(array $boardListOptions = []): array
 	{
@@ -34,6 +34,8 @@ final class MessageIndex extends BaseMessageIndex
 			unset($defaultOptions['excluded_boards']);
 		}
 
-		return parent::getBoardList(array_merge($defaultOptions, $boardListOptions));
+		$options = array_merge($defaultOptions, $boardListOptions);
+
+		return parent::getBoardList($options);
 	}
 }

@@ -14,15 +14,9 @@ namespace Bugo\LightPortal\UI\Partials;
 
 use Stringable;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
-abstract class AbstractPartial implements Stringable
+interface SelectInterface extends Stringable
 {
-	abstract public function __invoke(): string;
+	public function getParams(): array;
 
-	public function __toString(): string
-	{
-		return static::__invoke();
-	}
+	public function getData(): array;
 }

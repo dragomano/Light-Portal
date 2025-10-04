@@ -8,52 +8,41 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 24.09.25
+ * @version 04.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\AdsBlock;
 
 use Bugo\Compat\Lang;
-use Bugo\Compat\Utils;
-use Bugo\LightPortal\UI\Partials\AbstractPartial;
+use Bugo\LightPortal\UI\Partials\AbstractSelect;
 
-final class PlacementSelect extends AbstractPartial
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
+final class PlacementSelect extends AbstractSelect
 {
-	public function __invoke(): string
+	public function getData(): array
 	{
-		$params = func_get_args();
-		$params = $params[0] ?? [];
-
-		if (! is_array($params['value'])) {
-			$params['value'] = explode(',', (string) $params['value']);
+		$data = [];
+		foreach ($this->params['data'] as $position => $title) {
+			$data[] = [
+				'label' => $title,
+				'value' => $position,
+			];
 		}
 
-		$data = $items = [];
-		foreach ($params['data'] as $position => $title) {
-			$data[] = '{label: "' . $title . '", value: "' . $position . '"}';
+		return $data;
+	}
 
-			if (in_array($position, $params['value'])) {
-				$items[] = Utils::escapeJavaScript($position);
-			}
-		}
-
-		return /** @lang text */ '
-		<div id="ads_placement" name="ads_placement"></div>
-		<script>
-			VirtualSelect.init({
-				ele: "#ads_placement",' . (Utils::$context['right_to_left'] ? '
-				textDirection: "rtl",' : '') . '
-				dropboxWrapper: "body",
-				maxWidth: "100%",
-				showValueAsTags: true,
-				search: false,
-				multiple: true,
-				placeholder: "' . Lang::$txt['lp_block_placement_select'] . '",
-				clearButtonText: "' . Lang::$txt['remove'] . '",
-				selectAllText: "' . Lang::$txt['check_all'] . '",
-				options: [' . implode(',', $data) . '],
-				selectedValue: [' . implode(',', $items) . ']
-			});
-		</script>';
+	protected function getDefaultParams(): array
+	{
+		return [
+			'id'       => 'ads_placement',
+			'multiple' => true,
+			'search'   => false,
+			'hint'     => Lang::$txt['lp_block_placement_select'],
+			'data'     => Placement::all(),
+			'value'    => $this->normalizeValue($this->params['placements']),
+		];
 	}
 }
