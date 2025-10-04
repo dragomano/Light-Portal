@@ -46,8 +46,9 @@ class BlockValidator extends AbstractValidator
 		$this->events()->dispatch(
 			PortalHook::validateBlockParams,
 			[
-				'params' => &$filters,
-				'type'   => Utils::$context['lp_current_block']['type'],
+				'baseParams' => &$this->customFilters,
+				'params'     => &$filters,
+				'type'       => Utils::$context['lp_current_block']['type'],
 			]
 		);
 

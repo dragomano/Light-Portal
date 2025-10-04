@@ -221,8 +221,9 @@ final readonly class BlockArea
 		$this->events()->dispatch(
 			PortalHook::prepareBlockParams,
 			[
-				'params' => &$params,
-				'type'   => Utils::$context['lp_current_block']['type'],
+				'baseParams' => &$baseParams,
+				'params'     => &$params,
+				'type'       => Utils::$context['lp_current_block']['type'],
 			]
 		);
 

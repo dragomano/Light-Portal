@@ -48,13 +48,13 @@ class LanguageAccess extends Plugin
 	#[HookAttribute(PortalHook::prepareBlockParams)]
 	public function prepareBlockParams(Event $e): void
 	{
-		$e->args->params[self::PARAM] = [];
+		$e->args->baseParams[self::PARAM] = [];
 	}
 
 	#[HookAttribute(PortalHook::validateBlockParams)]
 	public function validateBlockParams(Event $e): void
 	{
-		$e->args->params[self::PARAM] = FILTER_DEFAULT;
+		$e->args->baseParams[self::PARAM] = FILTER_DEFAULT;
 	}
 
 	#[HookAttribute(PortalHook::prepareBlockFields)]

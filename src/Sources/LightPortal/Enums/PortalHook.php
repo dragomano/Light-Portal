@@ -160,10 +160,12 @@ enum PortalHook
 				public function __construct(public readonly array $options, public readonly string $type) {}
 			},
 			self::prepareBlockParams,
-			self::preparePageParams,
-			self::validateBlockParams,
-			self::validatePageParams => new class(...$data) {
-				public function __construct(public array &$params, public readonly string $type) {}
+			self::validateBlockParams => new class(...$data) {
+				public function __construct(
+					public array &$baseParams,
+					public array &$params,
+					public readonly string $type
+				) {}
 			},
 			self::prepareContent => new class(...$data) {
 				public function __construct(
@@ -184,6 +186,10 @@ enum PortalHook
 			},
 			self::preparePageData => new class(...$data) {
 				public function __construct(public array &$data, public readonly bool $isAuthor) {}
+			},
+			self::preparePageParams,
+			self::validatePageParams => new class(...$data) {
+				public function __construct(public array &$params, public readonly string $type) {}
 			},
 			default => new class {},
 		};
