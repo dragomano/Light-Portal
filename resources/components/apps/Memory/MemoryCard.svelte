@@ -1,7 +1,7 @@
 <script lang="ts">
   interface Props {
     image: string;
-    status: "closed" | "opened" | "matched";
+    status: 'closed' | 'opened' | 'matched';
     disabled?: boolean;
     onclick?: () => void;
   }
@@ -9,7 +9,7 @@
   let { image, status, disabled, ...rest }: Props = $props();
 </script>
 
-<div class={`card ${status} ${disabled ? "disabled" : ""}`} {...rest}>
+<div class={`card ${status} ${disabled ? 'disabled' : ''}`} {...rest}>
   <div class="card-inner">
     <div class="card-face card-back"></div>
     <div class="card-face card-front">
@@ -24,7 +24,7 @@
     perspective: 1000px;
     cursor: pointer;
     transition: transform 0.3s ease-in-out;
-  
+
     &.opened .card-inner,
     &.matched .card-inner {
       transform: rotateY(180deg);

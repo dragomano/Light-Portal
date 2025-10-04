@@ -22,7 +22,7 @@ if (! defined('LP_NAME'))
 class PluginAttribute
 {
 	public function __construct(
-		public PluginType|string|null $type = null,
+		public PluginType|array|null $type = null,
 		public ?string $icon = null,
 		public ?bool $saveable = null,
 		public ?bool $showContentClass = null

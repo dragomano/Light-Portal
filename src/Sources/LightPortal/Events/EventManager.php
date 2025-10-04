@@ -30,6 +30,11 @@ class EventManager
 		PortalHook::prepareContent,
 	];
 
+	private array $layerHooks = [
+		PortalHook::addLayerAbove,
+		PortalHook::addLayerBelow,
+	];
+
 	public function __construct()
 	{
 		$this->eventManager = new DoctrineEventManager();
@@ -54,6 +59,10 @@ class EventManager
 				if ($args->type !== $listener->getSnakeName()) {
 					continue;
 				}
+			}
+
+			if (in_array($hook, $this->layerHooks) && ! $listener->isEnabled()) {
+				continue;
 			}
 
 			$event = new Event($args);

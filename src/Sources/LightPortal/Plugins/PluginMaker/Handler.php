@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 04.10.25
+ * @version 05.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
@@ -139,12 +139,9 @@ class Handler
 			'options'    => Utils::$context['lp_plugin']['options'] ?? []
 		];
 
-		if (
-			Utils::$context['lp_plugin']['type'] !== PluginType::BLOCK->name()
-			|| Utils::$context['lp_plugin']['icon'] === 'undefined'
-		) {
-			Utils::$context['lp_plugin']['icon'] = '';
-		}
+		$this->prepareTypes();
+
+		$this->validateIcon();
 
 		if (! empty($postData['option_name'])) {
 			foreach ($postData['option_name'] as $id => $option) {
@@ -340,14 +337,39 @@ class Handler
 
 		Security::checkSubmitOnce('check');
 
-		Utils::$context['lp_plugin']['types'] = explode(',', Utils::$context['lp_plugin']['type']);
-
 		$generator = new Generator(Utils::$context['lp_plugin']);
 		$generator->generate();
 
 		$this->saveAuthorData();
 
 		$this->response()->redirect('action=admin;area=lp_plugins;sa=main');
+	}
+
+	private function prepareTypes(): void
+	{
+		$types = explode(',', Utils::$context['lp_plugin']['type']);
+
+		if (in_array(PluginType::GAMES->name(), $types) || in_array(PluginType::SSI->name(), $types)) {
+			$types = array_unique(array_merge([PluginType::BLOCK->name()], $types));
+		}
+
+		Utils::$context['lp_plugin']['types'] = $types;
+	}
+
+	private function validateIcon(): void
+	{
+		$types = Utils::$context['lp_plugin']['types'];
+		$icon  = Utils::$context['lp_plugin']['icon'];
+
+		$excludes = [
+			PluginType::BLOCK->name(),
+			PluginType::GAMES->name(),
+			PluginType::SSI->name(),
+		];
+
+		if (empty(array_intersect($types, $excludes)) || $icon === 'undefined') {
+			Utils::$context['lp_plugin']['icon'] = '';
+		}
 	}
 
 	private function saveAuthorData(): void

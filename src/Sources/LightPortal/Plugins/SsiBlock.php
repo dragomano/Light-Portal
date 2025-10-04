@@ -13,8 +13,9 @@
 namespace Bugo\LightPortal\Plugins;
 
 use Bugo\Compat\ServerSideIncludes;
+use Bugo\LightPortal\Enums\PluginType;
 
-#[PluginAttribute(type: 'block ssi')]
+#[PluginAttribute(type: [PluginType::BLOCK, PluginType::SSI])]
 abstract class SsiBlock extends Block
 {
 	abstract public function prepareBlockFields(Event $e): void;

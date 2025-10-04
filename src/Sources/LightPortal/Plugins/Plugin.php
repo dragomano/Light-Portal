@@ -18,6 +18,7 @@ use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PluginType;
 use Bugo\LightPortal\Repositories\PluginRepository;
+use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasCache;
 use Bugo\LightPortal\Utils\Traits\HasBreadcrumbs;
@@ -54,9 +55,9 @@ abstract class Plugin implements PluginInterface, Stringable
 		public bool $saveable = true
 	)
 	{
-		$this->name = $this->getSnakeName();
-		$this->type = $this->getPluginType();
-		$this->icon = $this->getPluginIcon();
+		$this->name     = $this->getSnakeName();
+		$this->type     = $this->getPluginType();
+		$this->icon     = $this->getPluginIcon();
 		$this->saveable = $this->isPluginSaveable();
 
 		$this->context = &Utils::$context['lp_' . $this->name . '_plugin'];
@@ -85,6 +86,10 @@ abstract class Plugin implements PluginInterface, Stringable
 
 		$type = $pluginAttr->type ?? $this->type;
 
+		if (is_array($type)) {
+			return implode(' ', array_map(fn(PluginType $t) => $t->name(), $type));
+		}
+
 		return $type instanceof PluginType ? $type->name() : $type;
 	}
 
@@ -100,6 +105,11 @@ abstract class Plugin implements PluginInterface, Stringable
 		$pluginAttr = $this->getPluginAttribute();
 
 		return $pluginAttr->saveable ?? $this->saveable;
+	}
+
+	public function isEnabled(): bool
+	{
+		return in_array($this->getCamelName(), Setting::getEnabledPlugins());
 	}
 
 	public function addDefaultValues(array $values): void

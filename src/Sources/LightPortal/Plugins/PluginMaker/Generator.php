@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 30.09.25
+ * @version 05.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
@@ -62,7 +62,7 @@ class Generator
 		$attributes = [];
 
 		if ($type = $this->getPluginType()) {
-			$attributes['type'] = $type instanceof PluginType ? new Literal('PluginType::' . $type->name) : $type;
+			$attributes['type'] = $type;
 		}
 
 		if ($icon = $this->plugin['icon']) {
@@ -98,43 +98,6 @@ class Generator
 		$this->createFile();
 	}
 
-	private function getExtendedClass(): string
-	{
-		return match (true) {
-			$this->hasType(PluginType::GAMES) => GameBlock::class,
-			$this->hasType(PluginType::SSI)   => SsiBlock::class,
-			$this->hasType(PluginType::BLOCK) => Block::class,
-			default => Plugin::class,
-		};
-	}
-
-	private function getPluginType(): PluginType|string|null
-	{
-		if (count($this->plugin['types']) === 1) {
-			$type = $this->plugin['types'][0];
-
-			return match ($type) {
-				PluginType::ARTICLE->name()       => PluginType::ARTICLE,
-				PluginType::BLOCK->name()         => PluginType::BLOCK,
-				PluginType::BLOCK_OPTIONS->name() => PluginType::BLOCK_OPTIONS,
-				PluginType::COMMENT->name()       => PluginType::COMMENT,
-				PluginType::EDITOR->name()        => PluginType::EDITOR,
-				PluginType::FRONTPAGE->name()     => PluginType::FRONTPAGE,
-				PluginType::GAMES->name()         => PluginType::GAMES,
-				PluginType::ICONS->name()         => PluginType::ICONS,
-				PluginType::IMPEX->name()         => PluginType::IMPEX,
-				PluginType::OTHER->name()         => null, // Skip OTHER as it's default
-				PluginType::PAGE_OPTIONS->name()  => PluginType::PAGE_OPTIONS,
-				PluginType::PARSER->name()        => PluginType::PARSER,
-				PluginType::SEO->name()           => PluginType::SEO,
-				PluginType::SSI->name()           => PluginType::SSI,
-				default => $type,
-			};
-		}
-
-		return implode(' ', $this->plugin['types']);
-	}
-
 	private function getNamespace(): PhpNamespace
 	{
 		$namespace = new PhpNamespace('Bugo\LightPortal\Plugins\\' . $this->plugin['name']);
@@ -156,10 +119,44 @@ class Generator
 		return $namespace;
 	}
 
+	private function getPluginType(): Literal|array|null
+	{
+		$excludes = [
+			PluginType::BLOCK->name(),
+			PluginType::GAMES->name(),
+			PluginType::OTHER->name(),
+			PluginType::SSI->name(),
+		];
+
+		$filteredTypes = array_values(array_filter(
+			$this->plugin['types'],
+			fn($type) => ! in_array($type, $excludes)
+		));
+
+		if (empty($filteredTypes)) {
+			return null;
+		}
+
+		$parsedTypes = array_map(
+			fn($type) => new Literal('PluginType::' . strtoupper($type)),
+			$filteredTypes
+		);
+
+		return count($parsedTypes) === 1 ? $parsedTypes[0] : $parsedTypes;
+	}
+
+	private function getExtendedClass(): string
+	{
+		return match (true) {
+			$this->hasType(PluginType::GAMES) => GameBlock::class,
+			$this->hasType(PluginType::SSI)   => SsiBlock::class,
+			$this->hasType(PluginType::BLOCK) => Block::class,
+			default => Plugin::class,
+		};
+	}
+
 	private function addProperties(): void
 	{
-		// Свойства больше не нужны - используется атрибут PluginAttribute
-
 		if ($this->hasType(PluginType::FRONTPAGE)) {
 			$this->class
 				->addProperty('saveable', false)
@@ -257,7 +254,7 @@ class Generator
 			->setType(Event::class);
 
 		if (empty($blockParams = $this->getSpecialParams())) {
-			$method->addBody("// Your code" . PHP_EOL);
+			$method->addBody("// TODO: Implement prepareBlockParams() method." . PHP_EOL);
 			return;
 		}
 
@@ -285,7 +282,7 @@ class Generator
 			->setType(Event::class);
 
 		if (empty($blockParams = $this->getSpecialParams())) {
-			$method->addBody("// Your code" . PHP_EOL);
+			$method->addBody("// TODO: Implement validateBlockParams() method." . PHP_EOL);
 			return;
 		}
 
@@ -312,7 +309,7 @@ class Generator
 			->addParameter('e')
 			->setType(Event::class);
 
-		$method->addBody("// Your code" . PHP_EOL);
+		$method->addBody("// TODO: Implement prepareBlockFields() method." . PHP_EOL);
 
 		$this->prepareFields($method);
 	}
@@ -332,7 +329,7 @@ class Generator
 			->setType(Event::class);
 
 		if (empty($pageParams = $this->getSpecialParams('page'))) {
-			$method->addBody("// Your code" . PHP_EOL);
+			$method->addBody("// TODO: Implement preparePageParams() method." . PHP_EOL);
 			return;
 		}
 
@@ -356,7 +353,7 @@ class Generator
 			->setType(Event::class);
 
 		if (empty($pageParams = $this->getSpecialParams('page'))) {
-			$method->addBody("// Your code" . PHP_EOL);
+			$method->addBody("// TODO: Implement validatePageParams() method." . PHP_EOL);
 			return;
 		}
 
@@ -383,7 +380,7 @@ class Generator
 			->addParameter('e')
 			->setType(Event::class);
 
-		$method->addBody("// Your code" . PHP_EOL);
+		$method->addBody("// TODO: Implement preparePageFields() method." . PHP_EOL);
 
 		$this->prepareFields($method, 'page');
 	}
@@ -471,11 +468,10 @@ class Generator
 
 		if ($this->hasType(PluginType::SSI)) {
 			$method
-				->addBody("// Use getFromSSI method to communicate with SSI.php" . PHP_EOL)
 				->addBody("\$data = \$this->getFromSSI('recentTopics', 10, [], [], 'array');" . PHP_EOL)
 				->addBody("var_dump(\$data);");
 		} else {
-			$method->addBody("echo 'Your html code';");
+			$method->addBody("echo 'Add your html code here';");
 		}
 	}
 
@@ -510,7 +506,7 @@ class Generator
 		$method
 			->addBody("if (Setting::getCommentBlock() !== \$this->name)")
 			->addBody("\treturn;" . PHP_EOL)
-			->addBody("// Your code");
+			->addBody("// TODO: Implement comments() method.");
 	}
 
 	private function addCreditsMethod(): void
