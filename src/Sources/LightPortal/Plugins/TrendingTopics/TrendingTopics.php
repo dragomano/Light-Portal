@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 01.10.25
+ * @version 04.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\TrendingTopics;
@@ -23,7 +23,6 @@ use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\SelectField;
 use Bugo\LightPortal\Utils\Avatar;

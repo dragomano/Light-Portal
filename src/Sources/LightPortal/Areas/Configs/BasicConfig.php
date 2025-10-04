@@ -27,7 +27,7 @@ use Bugo\LightPortal\Areas\Traits\HasQuery;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
 use Bugo\LightPortal\Renderers\RendererInterface;
-use Bugo\LightPortal\UI\Partials\ActionSelect;
+use Bugo\LightPortal\UI\Partials\SelectFactory;
 use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasSession;
 
@@ -151,7 +151,7 @@ final class BasicConfig extends AbstractConfig
 			CallbackConfig::make('standalone_mode_settings_after')
 				->setLabel(Lang::$txt['lp_disabled_actions'])
 				->setHelp('lp_disabled_actions_help')
-				->setCallback(static fn() => new ActionSelect())
+				->setCallback(static fn() => SelectFactory::action())
 				->setTab(self::TAB_STANDALONE),
 			PermissionsConfig::make('light_portal_view')
 				->setHelp('permissionhelp_light_portal_view')

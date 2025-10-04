@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 04.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\GalleryBlock;
@@ -16,49 +16,38 @@ namespace Bugo\LightPortal\Plugins\GalleryBlock;
 use Bugo\Compat\Config;
 use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
-use Bugo\Compat\Utils;
-use Bugo\LightPortal\UI\Partials\AbstractPartial;
+use Bugo\LightPortal\UI\Partials\AbstractSelect;
 use Bugo\LightPortal\Utils\Traits\HasCache;
 
-final class CategorySelect extends AbstractPartial
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
+final class CategorySelect extends AbstractSelect
 {
 	use HasCache;
 
-	public function __invoke(): string
+	public function getData(): array
 	{
-		$params = func_get_args();
-		$params = $params[0] ?? [];
-
-		$categories = $this->getGalleryCategories();
-
 		$data = [];
-		foreach ($categories as $id => $title) {
+		foreach ($this->params['data'] as $id => $title) {
 			$data[] = [
 				'label' => $title,
 				'value' => $id,
 			];
 		}
 
-		return /** @lang text */ '
-		<div id="categories" name="categories"></div>
-		<script>
-			VirtualSelect.init({
-				ele: "#categories",' . (Utils::$context['right_to_left'] ? '
-				textDirection: "rtl",' : '') . '
-				dropboxWrapper: "body",
-				multiple: true,
-				search: true,
-				markSearchResults: true,
-				placeholder: "' . Lang::$txt['lp_gallery_block']['categories_select'] . '",
-				noSearchResultsText: "' . Lang::$txt['no_matches'] . '",
-				searchPlaceholderText: "' . Lang::$txt['search'] . '",
-				allOptionsSelectedText: "' . Lang::$txt['all'] . '",
-				showValueAsTags: true,
-				maxWidth: "100%",
-				options: ' . json_encode($data) . ',
-				selectedValue: [' . $params['categories'] . ']
-			});
-		</script>';
+		return $data;
+	}
+
+	protected function getDefaultParams(): array
+	{
+		return [
+			'id'       => 'categories',
+			'multiple' => true,
+			'hint'     => Lang::$txt['lp_gallery_block']['categories_select'],
+			'data'     => $this->getGalleryCategories(),
+			'value'    => $this->normalizeValue($this->params['categories']),
+		];
 	}
 
 	private function getGalleryCategories(): array

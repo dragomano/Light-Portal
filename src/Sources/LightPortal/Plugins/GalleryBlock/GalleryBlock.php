@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 01.10.25
+ * @version 03.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\GalleryBlock;
@@ -58,9 +58,9 @@ class GalleryBlock extends Block
 	{
 		CustomField::make('categories', $this->txt['categories'])
 			->setTab(Tab::CONTENT)
-			->setValue(static fn() => new CategorySelect(), [
+			->setValue(static fn() => new CategorySelect([
 				'categories' => $e->args->options['categories'] ?? '',
-			]);
+			]));
 
 		NumberField::make('num_images', $this->txt['num_images'])
 			->setDescription($this->txt['num_images_subtext'])

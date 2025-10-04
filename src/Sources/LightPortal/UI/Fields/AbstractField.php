@@ -14,6 +14,7 @@ namespace Bugo\LightPortal\UI\Fields;
 
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Tab;
+use Bugo\LightPortal\UI\Partials\SelectInterface;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -75,8 +76,16 @@ abstract class AbstractField
 
 	public function setValue(mixed $value, ...$params): self
 	{
-		if (is_callable($value) && is_object($value)) {
-			$this->setAttribute('value', $value()(...$params));
+		if ($value instanceof SelectInterface) {
+			$this->setAttribute('value', (string) $value);
+		} elseif (is_callable($value)) {
+			$result = $value(...$params);
+
+			if ($result instanceof SelectInterface) {
+				$this->setAttribute('value', (string) $result);
+			} else {
+				$this->setAttribute('value', $result);
+			}
 		} else {
 			$this->setAttribute('value', $value);
 		}
@@ -125,3 +134,4 @@ abstract class AbstractField
 		];
 	}
 }
+

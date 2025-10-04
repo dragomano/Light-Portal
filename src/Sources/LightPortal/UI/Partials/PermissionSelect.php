@@ -15,17 +15,18 @@ namespace Bugo\LightPortal\UI\Partials;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 
-final class PermissionSelect extends AbstractPartial
-{
-	public function __invoke(): string
-	{
-		$params = func_get_args();
-		$entity = $params[0]['type'] ?? 'page';
+if (! defined('SMF'))
+	die('No direct access...');
 
+final class PermissionSelect extends AbstractSelect
+{
+	public function getData(): array
+	{
 		$data = [];
 		foreach (Lang::$txt['lp_permissions'] as $level => $title) {
-			if (empty(Utils::$context['user']['is_admin']) && empty($level))
+			if (empty(Utils::$context['user']['is_admin']) && empty($level)) {
 				continue;
+			}
 
 			$data[] = [
 				'label' => $title,
@@ -33,17 +34,19 @@ final class PermissionSelect extends AbstractPartial
 			];
 		}
 
-		return /** @lang text */ '
-		<div id="permissions" name="permissions"></div>
-		<script>
-			VirtualSelect.init({
-				ele: "#permissions",
-				hideClearButton: true,' . (Utils::$context['right_to_left'] ? '
-				textDirection: "rtl",' : '') . '
-				dropboxWrapper: "body",
-				options: ' . json_encode($data) . ',
-				selectedValue: "' . Utils::$context['lp_' . $entity]['permissions'] . '"
-			});
-		</script>';
+		return $data;
+	}
+
+	protected function getDefaultParams(): array
+	{
+		$entity = $this->params['type'] ?? 'page';
+
+		return [
+			'id'       => 'permissions',
+			'multiple' => false,
+			'wide'     => false,
+			'hint'     => '',
+			'value'    => Utils::$context['lp_' . $entity]['permissions'] ?? 0,
+		];
 	}
 }

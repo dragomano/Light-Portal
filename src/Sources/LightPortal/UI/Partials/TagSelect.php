@@ -18,49 +18,51 @@ use Bugo\LightPortal\Lists\TagList;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Setting;
 
-use function Bugo\LightPortal\app;
+if (! defined('SMF'))
+	die('No direct access...');
 
-final class TagSelect extends AbstractPartial
+final class TagSelect extends AbstractSelect
 {
-	public function __invoke(): string
+	public function __construct(private readonly TagList $tagList, protected array $params = [])
 	{
-		Utils::$context['lp_tags'] = app(TagList::class)();
+		parent::__construct($params);
+	}
 
-		$data = $values = [];
-		foreach (Utils::$context['lp_tags'] as $id => $tag) {
+	public function getData(): array
+	{
+		$list = ($this->tagList)();
+
+		$data = [];
+		foreach ($list as $id => $tag) {
 			$data[] = [
 				'label' => Icon::parse($tag['icon']) . $tag['title'],
 				'value' => $id,
 			];
 		}
 
-		foreach (Utils::$context['lp_page']['tags'] as $tagId => $tagData) {
+		return $data;
+	}
+
+	protected function getDefaultParams(): array
+	{
+		return array_merge(['showSelectedOptionsFirst' => true], [
+			'id'        => 'tags',
+			'multiple'  => true,
+			'wide'      => true,
+			'maxValues' => Setting::get('lp_page_maximum_tags', 'int', 10),
+			'hint'      => Lang::$txt['lp_page_tags_placeholder'],
+			'empty'     => Lang::$txt['lp_page_tags_empty'],
+			'value'     => $this->prepareSelectedValues(),
+		]);
+	}
+
+	private function prepareSelectedValues(): array
+	{
+		$values = [];
+		foreach (Utils::$context['lp_page']['tags'] ?? [] as $tagId => $tagData) {
 			$values[] = is_array($tagData) ? $tagId : Utils::escapeJavaScript($tagData);
 		}
 
-		return /** @lang text */ '
-		<div id="tags" name="tags"></div>
-		<script>
-			VirtualSelect.init({
-				ele: "#tags",' . (Utils::$context['right_to_left'] ? '
-				textDirection: "rtl",' : '') . '
-				dropboxWrapper: "body",
-				maxWidth: "100%",
-				multiple: true,
-				search: true,
-				markSearchResults: true,
-				showValueAsTags: true,
-				allowNewOption: false,
-				showSelectedOptionsFirst: true,
-				placeholder: "' . Lang::$txt['lp_page_tags_placeholder'] . '",
-				noSearchResultsText: "' . Lang::$txt['no_matches'] . '",
-				searchPlaceholderText: "' . Lang::$txt['search'] . '",
-				noOptionsText: "' . Lang::$txt['lp_page_tags_empty'] . '",
-				clearButtonText: "' . Lang::$txt['remove'] . '",
-				maxValues: ' . Setting::get('lp_page_maximum_tags', 'int', 10) . ',
-				options: ' . json_encode($data) . ',
-				selectedValue: [' . implode(',', $values) . ']
-			});
-		</script>';
+		return $values;
 	}
 }

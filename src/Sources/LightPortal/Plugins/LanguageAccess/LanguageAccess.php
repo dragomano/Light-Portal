@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 01.10.25
+ * @version 04.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\LanguageAccess;
@@ -62,8 +62,8 @@ class LanguageAccess extends Plugin
 	{
 		CustomField::make(self::PARAM, $this->txt[self::PARAM])
 			->setTab(Tab::ACCESS_PLACEMENT)
-			->setValue(static fn() => new LanguageSelect(), [
+			->setValue(static fn() => new LanguageSelect([
 				self::PARAM => $e->args->options[self::PARAM] ?? [],
-			]);
+			]));
 	}
 }

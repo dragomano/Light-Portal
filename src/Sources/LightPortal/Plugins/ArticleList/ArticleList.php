@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 01.10.25
+ * @version 04.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\ArticleList;
@@ -31,9 +31,7 @@ use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\RadioField;
-use Bugo\LightPortal\UI\Partials\ContentClassSelect;
-use Bugo\LightPortal\UI\Partials\PageSelect;
-use Bugo\LightPortal\UI\Partials\TopicSelect;
+use Bugo\LightPortal\UI\Partials\SelectFactory;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Setting;
@@ -76,10 +74,10 @@ class ArticleList extends Block
 
 		CustomField::make('body_class', $this->txt['body_class'])
 			->setTab(Tab::APPEARANCE)
-			->setValue(static fn() => new ContentClassSelect(), [
+			->setValue(static fn() => SelectFactory::contentClass([
 				'id'    => 'body_class',
 				'value' => $options['body_class'],
-			]);
+			]));
 
 		RadioField::make('display_type', $this->txt['display_type'])
 			->setTab(Tab::CONTENT)
@@ -88,19 +86,19 @@ class ArticleList extends Block
 
 		CustomField::make('include_topics', $this->txt['include_topics'])
 			->setTab(Tab::CONTENT)
-			->setValue(static fn() => new TopicSelect(), [
+			->setValue(fn() => SelectFactory::topic([
 				'id'    => 'include_topics',
 				'hint'  => $this->txt['include_topics_select'],
 				'value' => $options['include_topics'] ?? '',
-			]);
+			]));
 
 		CustomField::make('include_pages', $this->txt['include_pages'])
 			->setTab(Tab::CONTENT)
-			->setValue(static fn() => new PageSelect(), [
+			->setValue(fn() => SelectFactory::page([
 				'id'    => 'include_pages',
 				'hint'  => $this->txt['include_pages_select'],
 				'value' => $options['include_pages'] ?? '',
-			]);
+			]));
 
 		CheckboxField::make('seek_images', $this->txt['seek_images'])
 			->setValue($options['seek_images']);

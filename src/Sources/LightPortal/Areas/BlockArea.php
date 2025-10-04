@@ -32,12 +32,7 @@ use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\TextareaField;
 use Bugo\LightPortal\UI\Fields\TextField;
 use Bugo\LightPortal\UI\Fields\UrlField;
-use Bugo\LightPortal\UI\Partials\AreaSelect;
-use Bugo\LightPortal\UI\Partials\ContentClassSelect;
-use Bugo\LightPortal\UI\Partials\IconSelect;
-use Bugo\LightPortal\UI\Partials\PermissionSelect;
-use Bugo\LightPortal\UI\Partials\PlacementSelect;
-use Bugo\LightPortal\UI\Partials\TitleClassSelect;
+use Bugo\LightPortal\UI\Partials\SelectFactory;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Language;
@@ -278,31 +273,31 @@ final readonly class BlockArea
 
 		CustomField::make('placement', Lang::$txt['lp_block_placement'])
 			->setTab(Tab::ACCESS_PLACEMENT)
-			->setValue(static fn() => new PlacementSelect());
+			->setValue(static fn() => SelectFactory::placement());
 
 		CustomField::make('permissions', Lang::$txt['edit_permissions'])
 			->setTab(Tab::ACCESS_PLACEMENT)
-			->setValue(static fn() => new PermissionSelect(), [
+			->setValue(static fn() => SelectFactory::permission([
 				'type' => 'block'
-			]);
+			]));
 
 		CustomField::make('areas', Lang::$txt['lp_block_areas'])
 			->setTab(Tab::ACCESS_PLACEMENT)
 			->setDescription($this->getAreasInfo())
-			->setValue(static fn() => new AreaSelect());
+			->setValue(static fn() => SelectFactory::area());
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
 			->setTab(Tab::APPEARANCE)
-			->setValue(static fn() => new IconSelect());
+			->setValue(static fn() => SelectFactory::icon());
 
 		CustomField::make('title_class', Lang::$txt['lp_block_title_class'])
 			->setTab(Tab::APPEARANCE)
-			->setValue(static fn() => new TitleClassSelect());
+			->setValue(static fn() => SelectFactory::titleClass());
 
 		if (Block::showContentClassField(Utils::$context['lp_block']['type'])) {
 			CustomField::make('content_class', Lang::$txt['lp_block_content_class'])
 				->setTab(Tab::APPEARANCE)
-				->setValue(static fn() => new ContentClassSelect());
+				->setValue(static fn() => SelectFactory::contentClass());
 		}
 
 		CheckboxField::make('hide_header', Lang::$txt['lp_block_hide_header'])

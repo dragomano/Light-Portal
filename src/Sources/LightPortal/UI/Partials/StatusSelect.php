@@ -15,9 +15,12 @@ namespace Bugo\LightPortal\UI\Partials;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 
-final class StatusSelect extends AbstractPartial
+if (! defined('SMF'))
+	die('No direct access...');
+
+final class StatusSelect extends AbstractSelect
 {
-	public function __invoke(): string
+	public function getData(): array
 	{
 		$data = [];
 		foreach (Lang::$txt['lp_page_status_set'] as $value => $label) {
@@ -27,17 +30,17 @@ final class StatusSelect extends AbstractPartial
 			];
 		}
 
-		return /** @lang text */ '
-		<div id="status" name="status"></div>
-		<script>
-			VirtualSelect.init({
-				ele: "#status",
-				hideClearButton: true,' . (Utils::$context['right_to_left'] ? '
-				textDirection: "rtl",' : '') . '
-				dropboxWrapper: "body",
-				options: ' . json_encode($data) . ',
-				selectedValue: ' . Utils::$context['lp_page']['status'] . '
-			});
-		</script>';
+		return $data;
+	}
+
+	protected function getDefaultParams(): array
+	{
+		return [
+			'id'       => 'status',
+			'multiple' => false,
+			'wide'     => false,
+			'hint'     => '',
+			'value'    => Utils::$context['lp_page']['status'] ?? 1,
+		];
 	}
 }

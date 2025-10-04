@@ -8,58 +8,44 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 04.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\HidingBlocks;
 
 use Bugo\Compat\Lang;
-use Bugo\Compat\Utils;
-use Bugo\LightPortal\UI\Partials\AbstractPartial;
+use Bugo\LightPortal\UI\Partials\AbstractSelect;
 
-final class BreakpointSelect extends AbstractPartial
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
+final class BreakpointSelect extends AbstractSelect
 {
-	public function __invoke(): string
+	public function getData(): array
 	{
-		$params = func_get_args();
-		$params = $params[0] ?? [];
-
-		$currentBreakpoints = $params['hidden_breakpoints'];
-		$currentBreakpoints = is_array($currentBreakpoints)
-			? $currentBreakpoints
-			: explode(',', (string) $currentBreakpoints);
-
 		$breakpoints = array_combine(
-			['xs', 'sm', 'md', 'lg', 'xl'], Lang::$txt['lp_hiding_blocks']['hidden_breakpoints_set']
+			$this->params['classes'],
+			Lang::$txt['lp_hiding_blocks']['hidden_breakpoints_set']
 		);
 
-		$data = $items = [];
-
+		$data = [];
 		foreach ($breakpoints as $bp => $name) {
-			$data[] = '{label: "' . $name . '", value: "' . $bp . '"}';
-
-			if (in_array($bp, $currentBreakpoints)) {
-				$items[] = Utils::escapeJavaScript($bp);
-			}
+			$data[] = [
+				'label' => $name,
+				'value' => $bp,
+			];
 		}
 
-		return /** @lang text */ '
-		<div id="hidden_breakpoints" name="hidden_breakpoints"></div>
-		<script>
-			VirtualSelect.init({
-				ele: "#hidden_breakpoints",' . (Utils::$context['right_to_left'] ? '
-				textDirection: "rtl",' : '') . '
-				dropboxWrapper: "body",
-				maxWidth: "100%",
-				showValueAsTags: true,
-				placeholder: "' . Lang::$txt['lp_hiding_blocks']['hidden_breakpoints_subtext'] . '",
-				clearButtonText: "' . Lang::$txt['remove'] . '",
-				selectAllText: "' . Lang::$txt['check_all'] . '",
-				multiple: true,
-				search: false,
-				options: [' . implode(',', $data) . '],
-				selectedValue: [' . implode(',', $items) . ']
-			});
-		</script>';
+		return $data;
+	}
+
+	protected function getDefaultParams(): array
+	{
+		return [
+			'id'       => 'hidden_breakpoints',
+			'multiple' => true,
+			'hint'     => Lang::$txt['lp_hiding_blocks']['hidden_breakpoints_subtext'],
+			'value'    => $this->normalizeValue($this->params['hidden_breakpoints']),
+		];
 	}
 }

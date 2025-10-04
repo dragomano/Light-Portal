@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 01.10.25
+ * @version 04.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\PageList;
@@ -30,8 +30,7 @@ use Bugo\LightPortal\Repositories\PageRepositoryInterface;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\UI\Fields\VirtualSelectField;
-use Bugo\LightPortal\UI\Partials\EntryTypeSelect;
-use Bugo\LightPortal\UI\Partials\CategorySelect;
+use Bugo\LightPortal\UI\Partials\SelectFactory;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Setting;
@@ -78,18 +77,18 @@ class PageList extends Block
 
 		CustomField::make('categories', Lang::$txt['lp_categories'])
 			->setTab(Tab::CONTENT)
-			->setValue(static fn() => new CategorySelect(), [
+			->setValue(fn() => SelectFactory::category([
 				'id'    => 'categories',
 				'hint'  => $this->txt['categories_select'],
 				'value' => $options['categories'] ?? '',
-			]);
+			]));
 
 		CustomField::make('types', Lang::$txt['lp_page_type'])
 			->setTab(Tab::CONTENT)
-			->setValue(static fn() => new EntryTypeSelect(), [
+			->setValue(static fn() => SelectFactory::entryType([
 				'id'    => 'types',
 				'value' => $options['types'] ?? '',
-			]);
+			]));
 
 		VirtualSelectField::make('sort', $this->txt['sort'])
 			->setOptions(array_combine(self::SORTING_SET, $this->txt['sort_set']))

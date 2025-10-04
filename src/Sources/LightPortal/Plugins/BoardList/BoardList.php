@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 01.10.25
+ * @version 04.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\BoardList;
@@ -24,8 +24,7 @@ use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\UI\Fields\CustomField;
-use Bugo\LightPortal\UI\Partials\ContentClassSelect;
-use Bugo\LightPortal\UI\Partials\TitleClassSelect;
+use Bugo\LightPortal\UI\Partials\SelectFactory;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\MessageIndex;
 use Bugo\LightPortal\Utils\Str;
@@ -61,18 +60,18 @@ class BoardList extends Block
 
 		CustomField::make('category_class', $this->txt['category_class'])
 			->setTab(Tab::APPEARANCE)
-			->setValue(static fn() => new TitleClassSelect(), [
+			->setValue(fn() => SelectFactory::titleClass([
 				'id'    => 'category_class',
 				'data'  => $this->getCategoryClasses(),
-				'value' => $options['category_class']
-			]);
+				'value' => $options['category_class'],
+			]));
 
 		CustomField::make('board_class', $this->txt['board_class'])
 			->setTab(Tab::APPEARANCE)
-			->setValue(static fn() => new ContentClassSelect(), [
+			->setValue(static fn() => SelectFactory::contentClass([
 				'id'    => 'board_class',
 				'value' => $options['board_class'],
-			]);
+			]));
 	}
 
 	#[HookAttribute(PortalHook::prepareContent)]

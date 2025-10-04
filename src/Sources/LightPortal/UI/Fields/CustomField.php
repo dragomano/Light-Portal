@@ -34,9 +34,14 @@ class CustomField extends AbstractField
 				->setText($label);
 		}
 
+		$value = $this->attributes['value'] ?? '';
+		if (is_callable($value)) {
+			$value = $value();
+		}
+
 		Utils::$context['posting_fields'][$this->name]['label']['html']  = $label;
 		Utils::$context['posting_fields'][$this->name]['label']['after'] = $this->after;
-		Utils::$context['posting_fields'][$this->name]['input']['html']  = $this->attributes['value'] ?? '';
+		Utils::$context['posting_fields'][$this->name]['input']['html']  = $value;
 		Utils::$context['posting_fields'][$this->name]['input']['after'] = $this->description;
 		Utils::$context['posting_fields'][$this->name]['input']['tab']   = $this->tab;
 	}

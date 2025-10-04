@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 30.09.25
+ * @version 04.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\AdsBlock;
@@ -31,9 +31,7 @@ use Bugo\LightPortal\Plugins\AdsBlock\Hooks\PrepareDisplayContext;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\TextareaField;
 use Bugo\LightPortal\UI\Fields\TextField;
-use Bugo\LightPortal\UI\Partials\BoardSelect;
-use Bugo\LightPortal\UI\Partials\PageSelect;
-use Bugo\LightPortal\UI\Partials\TopicSelect;
+use Bugo\LightPortal\UI\Partials\SelectFactory;
 use Bugo\LightPortal\Utils\Content;
 
 use function Bugo\LightPortal\app;
@@ -141,34 +139,33 @@ class AdsBlock extends Block
 
 		CustomField::make('ads_placement', Lang::$txt['lp_block_placement'])
 			->setTab(Tab::ACCESS_PLACEMENT)
-			->setValue(static fn() => new PlacementSelect(), [
-				'data'  => Placement::all(),
-				'value' => $options['ads_placement'],
-			]);
+			->setValue(static fn() => new PlacementSelect([
+				'placements' => $options['ads_placement'],
+			]));
 
 		CustomField::make('include_boards', $this->txt['include_boards'])
 			->setTab(Tab::ACCESS_PLACEMENT)
-			->setValue(static fn() => new BoardSelect(), [
+			->setValue(fn() => SelectFactory::board([
 				'id'    => 'include_boards',
 				'hint'  => $this->txt['include_boards_select'],
 				'value' => $options['include_boards'] ?? '',
-			]);
+			]));
 
 		CustomField::make('include_topics', $this->txt['include_topics'])
 			->setTab(Tab::ACCESS_PLACEMENT)
-			->setValue(static fn() => new TopicSelect(), [
-				'id'    => 'include_pages',
+			->setValue(fn() => SelectFactory::topic([
+				'id'    => 'include_topics',
 				'hint'  => $this->txt['include_topics_select'],
-				'value' => $options['include_pages'] ?? '',
-			]);
+				'value' => $options['include_topics'] ?? '',
+			]));
 
 		CustomField::make('include_pages', $this->txt['include_pages'])
 			->setTab(Tab::ACCESS_PLACEMENT)
-			->setValue(static fn() => new PageSelect(), [
+			->setValue(fn() => SelectFactory::page([
 				'id'    => 'include_pages',
 				'hint'  => $this->txt['include_pages_select'],
 				'value' => $options['include_pages'] ?? '',
-			]);
+			]));
 
 		CustomField::make('end_date', $this->txt['end_date'])
 			->setValue('

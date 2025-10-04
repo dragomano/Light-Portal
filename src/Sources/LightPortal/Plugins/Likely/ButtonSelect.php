@@ -8,54 +8,41 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.12.24
+ * @version 04.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\Likely;
 
 use Bugo\Compat\Lang;
-use Bugo\Compat\Utils;
-use Bugo\LightPortal\UI\Partials\AbstractPartial;
+use Bugo\LightPortal\UI\Partials\AbstractSelect;
 
-final class ButtonSelect extends AbstractPartial
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
+final class ButtonSelect extends AbstractSelect
 {
-	public function __invoke(): string
+	public function getData(): array
 	{
-		$params = func_get_args();
-		$params = $params[0] ?? [];
+		$buttons = $this->params['data'] ?? [];
 
-		$params['data']  ??= [];
-		$params['value'] ??= [];
-
-		$data = $items = [];
-		foreach ($params['data'] as $button) {
-			$data[] = '{label: "' . $button . '", value: "' . $button . '"}';
-
-			if (in_array($button, $params['value'])) {
-				$items[] = Utils::escapeJavaScript($button);
-			}
+		$data = [];
+		foreach ($buttons as $button) {
+			$data[] = [
+				'label' => $button,
+				'value' => $button,
+			];
 		}
 
-		return /** @lang text */ '
-		<div id="buttons" name="buttons"></div>
-		<script>
-			VirtualSelect.init({
-				ele: "#buttons",' . (Utils::$context['right_to_left'] ? '
-				textDirection: "rtl",' : '') . '
-				dropboxWrapper: "body",
-				maxWidth: "100%",
-				multiple: true,
-				search: true,
-				markSearchResults: true,
-				showValueAsTags: true,
-				showSelectedOptionsFirst: true,
-				placeholder: "' . Lang::$txt['lp_likely']['select_buttons'] . '",
-				noSearchResultsText: "' . Lang::$txt['no_matches'] . '",
-				searchPlaceholderText: "' . Lang::$txt['search'] . '",
-				clearButtonText: "' . Lang::$txt['remove'] . '",
-				options: [' . implode(',', $data) . '],
-				selectedValue: [' . implode(',', $items) . ']
-			});
-		</script>';
+		return $data;
+	}
+
+	protected function getDefaultParams(): array
+	{
+		return array_merge(['showSelectedOptionsFirst' => true], [
+			'id'       => 'buttons',
+			'multiple' => true,
+			'hint'     => Lang::$txt['lp_likely']['select_buttons'],
+			'value'    => $this->normalizeValue($this->params['buttons']),
+		]);
 	}
 }

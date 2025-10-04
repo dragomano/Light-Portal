@@ -8,53 +8,42 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 24.09.25
+ * @version 03.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\UI\Partials\AbstractPartial;
+use Bugo\LightPortal\UI\Partials\AbstractSelect;
 
-final class TypeSelect extends AbstractPartial
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
+final class TypeSelect extends AbstractSelect
 {
-	public function __invoke(): string
+	public function getData(): array
 	{
-		$params = func_get_args();
-		$params = $params[0] ?? [];
-
-		$params['id'] ??= 'type';
-		$params['value'] ??= Utils::escapeJavaScript(Utils::$context['lp_plugin']['type']);
-		$params['data'] ??= Utils::$context['lp_plugin_types'];
+		$types = Utils::$context['lp_plugin_types'];
 
 		$data = [];
-		foreach ($params['data'] as $key => $value) {
+		foreach ($types as $key => $value) {
 			$data[] = [
 				'label' => $value,
 				'value' => $key,
 			];
 		}
 
-		return /** @lang text */ '
-		<div id="' . $params['id'] . '" name="' . $params['id'] . '"></div>
-		<script>
-			VirtualSelect.init({
-				ele: "#' . $params['id'] . '",' . (Utils::$context['right_to_left'] ? '
-				textDirection: "rtl",' : '') . '
-				dropboxWrapper: "body",
-				multiple: true,
-				search: true,
-				markSearchResults: true,
-				placeholder: "' . ($params['hint'] ?? Lang::$txt['lp_plugin_maker']['type_select']) . '",
-				noSearchResultsText: "' . Lang::$txt['no_matches'] . '",
-				searchPlaceholderText: "' . Lang::$txt['search'] . '",
-				allOptionsSelectedText: "' . Lang::$txt['all'] . '",
-				showValueAsTags: true,
-				maxWidth: "100%",
-				options: ' . json_encode($data) . ',
-				selectedValue: [' . $params['value'] . ']
-			});
-		</script>';
+		return $data;
+	}
+
+	protected function getDefaultParams(): array
+	{
+		return [
+			'id'       => 'type',
+			'multiple' => true,
+			'hint'     => Lang::$txt['lp_plugin_maker']['type_select'],
+			'value'    => Utils::$context['lp_plugin']['type'],
+		];
 	}
 }
