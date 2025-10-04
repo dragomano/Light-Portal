@@ -32,7 +32,7 @@ abstract class AbstractValidator implements ValidatorInterface
 	{
 		$this->filters['title'] = [
 			'filter'  => FILTER_CALLBACK,
-			'options' => fn($title) => Utils::htmlspecialchars($title, ENT_NOQUOTES),
+			'options' => fn($title) => Utils::htmlspecialchars(strip_tags($title), ENT_NOQUOTES),
 		];
 	}
 
