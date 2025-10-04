@@ -17,15 +17,20 @@
 		<include>
 			<directory>src/Sources/LightPortal</directory>
 			<file>src/Sources/LightPortal/Plugins/AssetHandler.php</file>
+			<file>src/Sources/LightPortal/Plugins/Block.php</file>
 			<file>src/Sources/LightPortal/Plugins/ConfigHandler.php</file>
+			<file>src/Sources/LightPortal/Plugins/Event.php</file>
+			<file>src/Sources/LightPortal/Plugins/GameBlock.php</file>
+			<file>src/Sources/LightPortal/Plugins/HookAttribute.php</file>
 			<file>src/Sources/LightPortal/Plugins/LangHandler.php</file>
 			<file>src/Sources/LightPortal/Plugins/Plugin.php</file>
+			<file>src/Sources/LightPortal/Plugins/PluginAttribute.php</file>
 			<file>src/Sources/LightPortal/Plugins/PluginHandler.php</file>
+			<file>src/Sources/LightPortal/Plugins/SsiBlock.php</file>
 		</include>
 		<exclude>
 			<directory>src/Sources/LightPortal/.idea</directory>
 			<directory>src/Sources/LightPortal/Libs</directory>
-			<directory>src/Sources/LightPortal/UI</directory>
 			<directory>src/Sources/LightPortal/Plugins</directory>
 			<file>src/Sources/LightPortal/Actions/index.php</file>
 			<file>src/Sources/LightPortal/Areas/index.php</file>
@@ -56,6 +61,11 @@
 			<file>src/Sources/LightPortal/Repositories/index.php</file>
 			<file>src/Sources/LightPortal/Routes/index.php</file>
 			<file>src/Sources/LightPortal/Tasks/index.php</file>
+			<file>src/Sources/LightPortal/UI/Breadcrumbs/index.php</file>
+			<file>src/Sources/LightPortal/UI/Fields/index.php</file>
+			<file>src/Sources/LightPortal/UI/Partials/index.php</file>
+			<file>src/Sources/LightPortal/UI/Tables/index.php</file>
+			<file>src/Sources/LightPortal/UI/index.php</file>
 			<file>src/Sources/LightPortal/Utils/index.php</file>
 			<file>src/Sources/LightPortal/Utils/Traits/index.php</file>
 			<file>src/Sources/LightPortal/Validators/index.php</file>
