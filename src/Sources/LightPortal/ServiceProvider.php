@@ -269,9 +269,9 @@ class ServiceProvider extends AbstractServiceProvider
 		$container->add(PluginRepositoryInterface::class, PluginRepository::class);
 
 		$container->add(IconList::class);
-		$container->add(CategoryList::class);
+		$container->add(CategoryList::class)->addArgument(CategoryRepositoryInterface::class);
 		$container->add(PageList::class)->addArgument(PageRepositoryInterface::class);
-		$container->add(TagList::class);
+		$container->add(TagList::class)->addArgument(TagRepositoryInterface::class);
 		$container->add(PluginList::class);
 		$container->add(SessionManager::class);
 

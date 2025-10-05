@@ -156,7 +156,7 @@ class MenuButtons
 			$pageButtons['portal_page_' . $item['slug']] = [
 				'title' => (
 					$item['icon']
-						? Str::html('span', ['class' => 'portal_menu_icons ' . $item['icon']])
+						? Str::html('span', ['class' => 'portal_menu_icons ' . $item['icon']]) . ' '
 						: ''
 					) . $item['title'],
 				'href'  => LP_PAGE_URL . $item['slug'],

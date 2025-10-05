@@ -76,7 +76,7 @@ readonly class SelectRenderer
 			'ele'                    => '#' . $id,
 			'dropboxWrapper'         => 'body',
 			'markSearchResults'      => true,
-			'hideClearButton'        => ! $config['multiple'],
+			'hideClearButton'        => ! (isset($config['multiple']) && $config['multiple']),
 			'multiple'               => $config['multiple'] ?? false,
 			'search'                 => $config['search'] ?? true,
 			'placeholder'            => $config['hint'] ?? '',

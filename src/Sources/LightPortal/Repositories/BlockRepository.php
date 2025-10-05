@@ -268,7 +268,7 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 						b.block_id = tf.item_id AND tf.type = {literal:block} AND tf.lang = {string:fallback_lang}
 					)
 					LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {literal:block})
-				WHERE b.status = {int:status}
+				WHERE b.status = {int:status}' . $this->getTranslationFilter() . '
 				ORDER BY b.placement, b.priority',
 					array_merge($this->getLangQueryParams(), ['status' => Status::ACTIVE->value])
 				);

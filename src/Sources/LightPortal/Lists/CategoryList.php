@@ -12,64 +12,47 @@
 
 namespace Bugo\LightPortal\Lists;
 
-use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
-use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\Status;
+use Bugo\LightPortal\Repositories\CategoryRepositoryInterface;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-class CategoryList implements ListInterface
+readonly class CategoryList implements ListInterface
 {
+	public function __construct(private CategoryRepositoryInterface $repository) {}
+
 	public function __invoke(): array
 	{
-		$result = Db::$db->query(/** @lang text */ '
-			SELECT
-				c.*,
-				COALESCE(t.title, tf.title, {string:empty_string}) AS title,
-				COALESCE(t.description, tf.description, {string:empty_string}) AS description
-			FROM {db_prefix}lp_categories AS c
-				LEFT JOIN {db_prefix}lp_translations AS t ON (
-					c.category_id = t.item_id AND t.type = {literal:category} AND t.lang = {string:lang}
-				)
-				LEFT JOIN {db_prefix}lp_translations AS tf ON (
-					c.category_id = tf.item_id AND tf.type = {literal:category} AND tf.lang = {string:fallback_lang}
-				)
-			WHERE c.status = {int:status}
-			ORDER BY c.priority',
-			[
-				'empty_string'  => '',
-				'lang'          => User::$me->language,
-				'fallback_lang' => Config::$language,
-				'status'        => Status::ACTIVE->value,
-			]
+		$items = $this->repository->getAll(
+			0,
+			$this->repository->getTotalCount(),
+			'priority',
+			'AND c.status = {int:status}' . $this->repository->getTranslationFilter(
+				'c', 'category_id', ['title', 'description']
+			),
+			['status' => Status::ACTIVE->value]
 		);
 
-		$items = [
+		$processedItems = [
 			0 => [
 				'icon'  => '',
 				'title' => Lang::$txt['lp_no_category'],
 			]
 		];
 
-		while ($row = Db::$db->fetch_assoc($result)) {
-			Lang::censorText($row['title']);
-			Lang::censorText($row['description']);
-
-			$items[$row['category_id']] = [
-				'id'          => (int) $row['category_id'],
-				'slug'        => $row['slug'],
-				'icon'        => $row['icon'],
-				'priority'    => (int) $row['priority'],
-				'title'       => $row['title'],
-				'description' => $row['description'],
+		foreach ($items as $id => $item) {
+			$processedItems[$id] = [
+				'id'          => $item['id'],
+				'slug'        => $item['slug'],
+				'icon'        => $item['icon'],
+				'priority'    => $item['priority'],
+				'title'       => $item['title'],
+				'description' => $item['description'],
 			];
 		}
 
-		Db::$db->free_result($result);
-
-		return $items;
+		return $processedItems;
 	}
 }

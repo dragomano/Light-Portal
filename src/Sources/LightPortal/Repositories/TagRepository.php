@@ -27,7 +27,13 @@ final class TagRepository extends AbstractRepository implements TagRepositoryInt
 {
 	protected string $entity = 'tag';
 
-	public function getAll(int $start, int $limit, string $sort): array
+	public function getAll(
+		int $start,
+		int $limit,
+		string $sort,
+		string $queryString = '',
+		array $queryParams = []
+	): array
 	{
 		$result = Db::$db->query(/** @lang text */ '
 			SELECT tag.*, COALESCE(t.title, tf.title, {string:empty_string}) AS title
@@ -38,9 +44,11 @@ final class TagRepository extends AbstractRepository implements TagRepositoryInt
 				LEFT JOIN {db_prefix}lp_translations AS tf ON (
 					tag.tag_id = tf.item_id AND tf.type = {literal:tag} AND tf.lang = {string:fallback_lang}
 				)
+			WHERE 1=1' . (empty($queryString) ? '' : '
+				' . $queryString) . '
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
-			array_merge($this->getLangQueryParams(), [
+			array_merge($queryParams, $this->getLangQueryParams(), [
 				'sort'  => $sort,
 				'start' => $start,
 				'limit' => $limit,
@@ -65,11 +73,14 @@ final class TagRepository extends AbstractRepository implements TagRepositoryInt
 		return $items;
 	}
 
-	public function getTotalCount(): int
+	public function getTotalCount(string $queryString = '', array $queryParams = []): int
 	{
 		$result = Db::$db->query(/** @lang text */ '
 			SELECT COUNT(tag_id)
-			FROM {db_prefix}lp_tags',
+			FROM {db_prefix}lp_tags
+			WHERE 1=1' . (empty($queryString) ? '' : '
+				' . $queryString),
+			$queryParams
 		);
 
 		[$count] = Db::$db->fetch_row($result);

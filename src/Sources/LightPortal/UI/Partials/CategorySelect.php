@@ -15,7 +15,6 @@ namespace Bugo\LightPortal\UI\Partials;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\LightPortal\Lists\CategoryList;
-use Bugo\LightPortal\Utils\Icon;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -34,7 +33,7 @@ final class CategorySelect extends AbstractSelect
 		$data = [];
 		foreach ($list as $id => $cat) {
 			$data[] = [
-				'label' => Icon::parse($cat['icon']) . $cat['title'],
+				'label' => $cat['icon'] . $cat['title'],
 				'value' => $id,
 			];
 		}

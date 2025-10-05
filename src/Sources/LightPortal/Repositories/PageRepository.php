@@ -75,7 +75,9 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 				COALESCE(t.title, tf.title, {string:empty_string}) AS title
 			FROM {db_prefix}lp_pages AS p
 				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
-				LEFT JOIN {db_prefix}lp_params AS par ON (p.page_id = par.item_id AND par.type = {literal:page} AND par.name = {literal:allow_comments})
+				LEFT JOIN {db_prefix}lp_params AS par ON (
+					p.page_id = par.item_id AND par.type = {literal:page} AND par.name = {literal:allow_comments}
+				)
 				LEFT JOIN {db_prefix}lp_translations AS t ON (
 					p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang}
 				)
@@ -432,6 +434,11 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 				Select::JOIN_LEFT
 			)
 			->where(['(t.lang IN (?) OR tf.lang IN (?))' => [$languages, $languages]])
+			->where(new Expression(
+				"EXISTS (SELECT 1 FROM " . Config::$db_prefix . "lp_translations
+				WHERE item_id = p.page_id AND type = 'page' AND lang IN (?, ?) AND (title != '' OR content != ''))",
+				[User::$me->language, Config::$language]
+			))
 			->having(['title IS NOT NULL']);
 
 		if (str_contains($sorting, 'last_comment')) {
@@ -518,7 +525,7 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 				AND entry_type = {string:type}
 				AND p.created_at <= {int:current_time}
 				AND p.permissions IN ({array_int:permissions})
-				AND p.page_id != {int:current_page}
+				AND p.page_id != {int:current_page}' . $this->getTranslationFilter('p', 'page_id') . '
 			ORDER BY related DESC
 			LIMIT 4',
 			array_merge($this->getLangQueryParams(), [
@@ -592,7 +599,7 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 					AND p.entry_type IN ({array_string:types})
 					AND p.created_at <= {int:current_time}
 					AND pp.name = {literal:show_in_menu}
-					AND pp.value = {string:show_in_menu}',
+					AND pp.value = {string:show_in_menu}' . $this->getTranslationFilter('p', 'page_id', ['title']),
 					array_merge($this->getLangQueryParams(), [
 						'types'        => EntryType::withoutDrafts(),
 						'status'       => Status::ACTIVE->value,
@@ -760,7 +767,7 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 					tag.tag_id = tf.item_id AND tf.type = {literal:tag} AND tf.lang = {string:fallback_lang}
 				)
 			WHERE tag.status = {int:status}
-				AND pt.page_id = {int:page_id}
+				AND pt.page_id = {int:page_id}' . $this->getTranslationFilter('tag', 'tag_id', ['title']) . '
 			ORDER BY title',
 			array_merge($this->getLangQueryParams(), [
 				'status'  => Status::ACTIVE->value,

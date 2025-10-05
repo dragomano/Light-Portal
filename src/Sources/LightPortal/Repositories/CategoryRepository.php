@@ -27,7 +27,13 @@ final class CategoryRepository extends AbstractRepository implements CategoryRep
 {
 	protected string $entity = 'category';
 
-	public function getAll(int $start, int $limit, string $sort): array
+	public function getAll(
+		int $start,
+		int $limit,
+		string $sort,
+		string $queryString = '',
+		array $queryParams = []
+	): array
 	{
 		$result = Db::$db->query(/** @lang text */ '
 			SELECT
@@ -41,9 +47,11 @@ final class CategoryRepository extends AbstractRepository implements CategoryRep
 				LEFT JOIN {db_prefix}lp_translations AS tf ON (
 					c.category_id = tf.item_id AND tf.type = {literal:category} AND tf.lang = {string:fallback_lang}
 				)
+			WHERE 1=1' . (empty($queryString) ? '' : '
+				' . $queryString) . '
 			ORDER BY {raw:sort}
 			LIMIT {int:start}, {int:limit}',
-			array_merge($this->getLangQueryParams(), [
+			array_merge($queryParams, $this->getLangQueryParams(), [
 				'sort'  => $sort,
 				'start' => $start,
 				'limit' => $limit,
@@ -71,11 +79,14 @@ final class CategoryRepository extends AbstractRepository implements CategoryRep
 		return $items;
 	}
 
-	public function getTotalCount(): int
+	public function getTotalCount(string $queryString = '', array $queryParams = []): int
 	{
 		$result = Db::$db->query(/** @lang text */ '
 			SELECT COUNT(category_id)
-			FROM {db_prefix}lp_categories',
+			FROM {db_prefix}lp_categories
+			WHERE 1=1' . (empty($queryString) ? '' : '
+				' . $queryString),
+			$queryParams
 		);
 
 		[$count] = Db::$db->fetch_row($result);

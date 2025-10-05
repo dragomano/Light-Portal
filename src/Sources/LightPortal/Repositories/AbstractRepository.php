@@ -70,6 +70,28 @@ abstract class AbstractRepository implements RepositoryInterface
 		$this->session('lp')->free('active_' . $table);
 	}
 
+	public function getTranslationFilter(
+		string $tableAlias = 'b',
+		string $idField = 'block_id',
+		array $fields = ['title', 'content', 'description']
+	): string
+	{
+		$fieldConditions = [];
+		foreach ($fields as $field) {
+			$fieldConditions[] = "$field != {string:empty_string}";
+		}
+
+		$fieldsSql = implode(' OR ', $fieldConditions);
+
+		return " AND EXISTS (
+			SELECT 1 FROM {db_prefix}lp_translations
+			WHERE item_id = $tableAlias.$idField
+				AND type = {literal:$this->entity}
+				AND lang IN ({string:lang}, {string:fallback_lang})
+				AND ($fieldsSql)
+		)";
+	}
+
 	protected function prepareBbcContent(array &$entity): void
 	{
 		if ($entity['type'] !== 'bbc')

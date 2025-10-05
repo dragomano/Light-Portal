@@ -38,7 +38,7 @@ readonly class PageList implements ListInterface
 				AND deleted_at = 0
 				AND created_at <= {int:current_time}
 				AND permissions IN ({array_int:permissions})
-			',
+			' . $this->repository->getTranslationFilter('p', 'page_id'),
 			[
 				'status'       => Status::ACTIVE->value,
 				'entry_type'   => EntryType::DEFAULT->name(),

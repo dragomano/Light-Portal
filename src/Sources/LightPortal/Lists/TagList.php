@@ -14,52 +14,26 @@
 
 namespace Bugo\LightPortal\Lists;
 
-use Bugo\Compat\Config;
-use Bugo\Compat\Db;
-use Bugo\Compat\Lang;
-use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\Status;
+use Bugo\LightPortal\Repositories\TagRepositoryInterface;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-class TagList implements ListInterface
+readonly class TagList implements ListInterface
 {
+	public function __construct(private TagRepositoryInterface $repository) {}
+
 	public function __invoke(): array
 	{
-		$result = Db::$db->query(/** @lang text */ '
-			SELECT tag.tag_id, tag.slug, tag.icon, COALESCE(t.title, tf.title, {string:empty_string}) AS title
-			FROM {db_prefix}lp_tags AS tag
-				LEFT JOIN {db_prefix}lp_translations AS t ON (
-					tag.tag_id = t.item_id AND t.type = {literal:tag} AND t.lang = {string:lang}
-				)
-				LEFT JOIN {db_prefix}lp_translations AS tf ON (
-					tag.tag_id = tf.item_id AND tf.type = {literal:tag} AND tf.lang = {string:fallback_lang}
-				)
-			WHERE tag.status = {int:status}
-			ORDER BY title',
-			[
-				'empty_string'  => '',
-				'lang'          => User::$me->language,
-				'fallback_lang' => Config::$language,
-				'status'        => Status::ACTIVE->value,
-			]
+		return $this->repository->getAll(
+			0,
+			$this->repository->getTotalCount(),
+			'title',
+			'AND tag.status = {int:status}' . $this->repository->getTranslationFilter(
+				'tag', 'tag_id', ['title']
+			),
+			['status' => Status::ACTIVE->value]
 		);
-
-		$items = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
-			Lang::censorText($row['title']);
-
-			$items[$row['tag_id']] = [
-				'id'    => (int) $row['tag_id'],
-				'slug'  => $row['slug'],
-				'icon'  => $row['icon'],
-				'title' => $row['title'],
-			];
-		}
-
-		Db::$db->free_result($result);
-
-		return $items;
 	}
 }
