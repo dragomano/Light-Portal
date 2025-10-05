@@ -195,17 +195,21 @@ final class Tag extends AbstractPageList
 	{
 		$result = Db::$db->query('
 			SELECT
-				tag.tag_id, tag.slug, tag.icon, COUNT(tag.tag_id) AS frequency,
-				COALESCE(NULLIF(t.title, {string:empty_string}), tf.title, {string:empty_string}) AS title
+				tag.tag_id, tag.slug, tag.icon, COUNT(DISTINCT p.page_id) AS frequency,
+				(
+					SELECT COALESCE(NULLIF(t.title, {string:empty_string}), tf.title, {string:empty_string})
+					FROM (SELECT 1) AS dummy
+						LEFT JOIN {db_prefix}lp_translations AS t ON (
+							t.item_id = tag.tag_id AND t.type = {literal:tag} AND t.lang = {string:lang}
+						)
+						LEFT JOIN {db_prefix}lp_translations AS tf ON (
+							tf.item_id = tag.tag_id AND tf.type = {literal:tag} AND tf.lang = {string:fallback_lang}
+						)
+					LIMIT 1
+				) AS title
 			FROM {db_prefix}lp_pages AS p
 				INNER JOIN {db_prefix}lp_page_tag AS pt ON (p.page_id = pt.page_id)
 				INNER JOIN {db_prefix}lp_tags AS tag ON (pt.tag_id = tag.tag_id)
-				LEFT JOIN {db_prefix}lp_translations AS t ON (
-					pt.tag_id = t.item_id AND t.type = {literal:tag} AND t.lang = {string:lang}
-				)
-				LEFT JOIN {db_prefix}lp_translations AS tf ON (
-					pt.tag_id = tf.item_id AND tf.type = {literal:tag} AND tf.lang = {string:fallback_lang}
-				)
 			WHERE p.status = {int:status}
 				AND p.deleted_at = 0
 				AND p.entry_type IN ({array_string:types})
@@ -220,7 +224,7 @@ final class Tag extends AbstractPageList
 				'lang'          => User::$me->language,
 				'fallback_lang' => Config::$language,
 				'status'        => Status::ACTIVE->value,
-				'types'         => EntryType::names(),
+				'types'         => EntryType::withoutDrafts(),
 				'current_time'  => time(),
 				'permissions'   => Permission::all(),
 				'sort'          => $sort,
@@ -261,9 +265,9 @@ final class Tag extends AbstractPageList
 			LIMIT 1',
 			[
 				'status'       => Status::ACTIVE->value,
-				'types'        => EntryType::names(),
+				'types'        => EntryType::withoutDrafts(),
 				'current_time' => time(),
-				'permissions'  => Permission::all(),
+				'permissions' => Permission::all(),
 			]
 		);
 
