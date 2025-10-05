@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Bugo\Compat\Lang;
+use Bugo\LightPortal\Lists\PageList;
 use Bugo\LightPortal\UI\Partials\PageSlugSelect;
 use Bugo\LightPortal\UI\Partials\SelectInterface;
 use Bugo\LightPortal\UI\Partials\SelectRenderer;
@@ -20,13 +21,13 @@ afterEach(function () {
 });
 
 it('implements SelectInterface', function () {
-    $select = new PageSlugSelect(app('Bugo\LightPortal\Lists\PageList'));
+    $select = new PageSlugSelect(app(PageList::class));
 
     expect($select)->toBeInstanceOf(SelectInterface::class);
 });
 
 it('initializes with default params', function () {
-    $select = new PageSlugSelect(app('Bugo\LightPortal\Lists\PageList'));
+    $select = new PageSlugSelect(app(PageList::class));
 
     $config = $select->getParams();
 
@@ -36,7 +37,7 @@ it('initializes with default params', function () {
 
 it('initializes with custom id parameter', function () {
     $params = ['id' => 'custom_page_slug_id'];
-    $select = new PageSlugSelect(app('Bugo\LightPortal\Lists\PageList'), $params);
+    $select = new PageSlugSelect(app(PageList::class), $params);
 
     $config = $select->getParams();
 
@@ -45,7 +46,7 @@ it('initializes with custom id parameter', function () {
 
 it('initializes with custom value parameter', function () {
     $params = ['value' => ['slug1']];
-    $select = new PageSlugSelect(app('Bugo\LightPortal\Lists\PageList'), $params);
+    $select = new PageSlugSelect(app(PageList::class), $params);
 
     $config = $select->getParams();
 
@@ -54,7 +55,7 @@ it('initializes with custom value parameter', function () {
 
 it('initializes with custom hint parameter', function () {
     $params = ['hint' => 'Custom hint'];
-    $select = new PageSlugSelect(app('Bugo\LightPortal\Lists\PageList'), $params);
+    $select = new PageSlugSelect(app(PageList::class), $params);
 
     $config = $select->getParams();
 
@@ -63,7 +64,7 @@ it('initializes with custom hint parameter', function () {
 
 it('initializes with custom empty parameter', function () {
     $params = ['empty' => 'Custom empty'];
-    $select = new PageSlugSelect(app('Bugo\LightPortal\Lists\PageList'), $params);
+    $select = new PageSlugSelect(app(PageList::class), $params);
 
     $config = $select->getParams();
 
@@ -73,7 +74,7 @@ it('initializes with custom empty parameter', function () {
 it('initializes with custom data parameter', function () {
     $customData = [['label' => 'Custom Page', 'value' => 'slug']];
     $params = ['data' => $customData];
-    $select = new PageSlugSelect(app('Bugo\LightPortal\Lists\PageList'), $params);
+    $select = new PageSlugSelect(app(PageList::class), $params);
 
     $config = $select->getParams();
 
@@ -82,7 +83,7 @@ it('initializes with custom data parameter', function () {
 
 it('merges default and custom params', function () {
     $params = ['id' => 'custom_id'];
-    $select = new PageSlugSelect(app('Bugo\LightPortal\Lists\PageList'), $params);
+    $select = new PageSlugSelect(app(PageList::class), $params);
 
     $config = $select->getParams();
 
@@ -90,7 +91,7 @@ it('merges default and custom params', function () {
 });
 
 it('returns config array', function () {
-    $select = new PageSlugSelect(app('Bugo\LightPortal\Lists\PageList'));
+    $select = new PageSlugSelect(app(PageList::class));
 
     $config = $select->getParams();
 
@@ -100,7 +101,7 @@ it('returns config array', function () {
 });
 
 it('returns data array', function () {
-    $select = new PageSlugSelect(app('Bugo\LightPortal\Lists\PageList'));
+    $select = new PageSlugSelect(app(PageList::class));
 
     $data = $select->getData();
 
@@ -115,7 +116,7 @@ it('renders to string', function () {
 
     AppMockRegistry::set(SelectRenderer::class, $mockRenderer);
 
-    $select = new PageSlugSelect(app('Bugo\LightPortal\Lists\PageList'));
+    $select = new PageSlugSelect(app(PageList::class));
 
     $result = (string) $select;
 
@@ -123,13 +124,13 @@ it('renders to string', function () {
 });
 
 it('handles empty params', function () {
-    $select = new PageSlugSelect(app('Bugo\LightPortal\Lists\PageList'), []);
+    $select = new PageSlugSelect(app(PageList::class), []);
 
     expect($select->getParams())->toBeArray();
 });
 
 it('template is set correctly', function () {
-    $select = new PageSlugSelect(app('Bugo\LightPortal\Lists\PageList'));
+    $select = new PageSlugSelect(app(PageList::class));
 
     $reflection = new ReflectionClass($select);
     $property = $reflection->getProperty('template');

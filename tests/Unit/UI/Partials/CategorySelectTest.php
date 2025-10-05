@@ -9,22 +9,19 @@ use Bugo\LightPortal\UI\Partials\SelectInterface;
 use Bugo\LightPortal\UI\Partials\SelectRenderer;
 use Tests\AppMockRegistry;
 
+use function Bugo\LightPortal\app;
+
 beforeEach(function () {
     Lang::$txt['lp_frontpage_categories_select'] = 'Select categories';
+    Lang::$txt['lp_no_category'] = 'No category';
 });
 
 afterEach(function () {
     Mockery::close();
 });
 
-$mockCategoryList = Mockery::mock(CategoryList::class);
-$mockCategoryList->shouldReceive('__invoke')->andReturn([]);
-
 it('implements SelectInterface', function () {
-    $mockCategoryList = Mockery::mock(CategoryList::class);
-    $mockCategoryList->shouldReceive('__invoke')->andReturn([]);
-
-    $select = new CategorySelect($mockCategoryList);
+    $select = new CategorySelect(app(CategoryList::class));
 
     expect($select)->toBeInstanceOf(SelectInterface::class);
 });
@@ -108,10 +105,7 @@ dataset('initialization cases', [
 ]);
 
 it('initializes with params', function ($params, $expected) {
-    $mockCategoryList = Mockery::mock(CategoryList::class);
-    $mockCategoryList->shouldReceive('__invoke')->andReturn([]);
-
-    $select = new CategorySelect($mockCategoryList, $params);
+    $select = new CategorySelect(app(CategoryList::class), $params);
 
     $config = $select->getParams();
 
@@ -125,10 +119,7 @@ it('initializes with params', function ($params, $expected) {
 })->with('initialization cases');
 
 it('returns config array', function () {
-    $mockCategoryList = Mockery::mock(CategoryList::class);
-    $mockCategoryList->shouldReceive('__invoke')->andReturn([]);
-
-    $select = new CategorySelect($mockCategoryList);
+    $select = new CategorySelect(app(CategoryList::class));
 
     $config = $select->getParams();
 
@@ -138,10 +129,7 @@ it('returns config array', function () {
 });
 
 it('returns data array', function () {
-    $mockCategoryList = Mockery::mock(CategoryList::class);
-    $mockCategoryList->shouldReceive('__invoke')->andReturn([]);
-
-    $select = new CategorySelect($mockCategoryList);
+    $select = new CategorySelect(app(CategoryList::class));
 
     $data = $select->getData();
 
@@ -149,9 +137,6 @@ it('returns data array', function () {
 });
 
 it('renders to string', function () {
-    $mockCategoryList = Mockery::mock(CategoryList::class);
-    $mockCategoryList->shouldReceive('__invoke')->andReturn([]);
-
     $mockRenderer = Mockery::mock();
     $mockRenderer->shouldReceive('render')
         ->once()
@@ -159,19 +144,15 @@ it('renders to string', function () {
 
     AppMockRegistry::set(SelectRenderer::class, $mockRenderer);
 
-    $select = new CategorySelect($mockCategoryList);
+    $select = new CategorySelect(app(CategoryList::class));
 
     $result = (string) $select;
 
     expect($result)->toBe('<select></select>');
 });
 
-
 it('template is set correctly', function () {
-    $mockCategoryList = Mockery::mock(CategoryList::class);
-    $mockCategoryList->shouldReceive('__invoke')->andReturn([]);
-
-    $select = new CategorySelect($mockCategoryList);
+    $select = new CategorySelect(app(CategoryList::class));
 
     $reflection = new ReflectionClass($select);
     $property = $reflection->getProperty('template');

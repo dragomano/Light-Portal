@@ -9,7 +9,9 @@ use Bugo\LightPortal\Events\EventManager;
 use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\Lists\PageList;
 use Bugo\LightPortal\Lists\TagList;
+use Bugo\LightPortal\Repositories\CategoryRepositoryInterface;
 use Bugo\LightPortal\Repositories\PageRepositoryInterface;
+use Bugo\LightPortal\Repositories\TagRepositoryInterface;
 use Bugo\LightPortal\UI\Partials\SelectRenderer;
 use Bugo\LightPortal\UI\View;
 use Bugo\LightPortal\Utils\CacheInterface;
@@ -106,15 +108,29 @@ if (! function_exists('Bugo\\LightPortal\\app')) {
 
             return $mockView;
         } elseif (str_contains($service, 'CategoryList')) {
-            $mockList = Mockery::mock('overload:' . CategoryList::class);
-            $mockList->shouldReceive('__invoke')->andReturn([]);
+            if ($mock = AppMockRegistry::get(CategoryList::class)) {
+                return $mock;
+            }
 
-            return $mockList;
+            // Create default CategoryList with mocked dependencies
+            $mockRepo = Mockery::mock(CategoryRepositoryInterface::class);
+            $mockRepo->shouldReceive('getTotalCount')->andReturn(0);
+            $mockRepo->shouldReceive('getAll')->andReturn([]);
+            $mockRepo->shouldReceive('getTranslationFilter')->andReturn('');
+
+            return new CategoryList($mockRepo);
         } elseif (str_contains($service, 'TagList')) {
-            $mockList = Mockery::mock('overload:' . TagList::class);
-            $mockList->shouldReceive('__invoke')->andReturn([]);
+            if ($mock = AppMockRegistry::get(TagList::class)) {
+                return $mock;
+            }
 
-            return $mockList;
+            // Create default TagList with mocked dependencies
+            $mockRepo = Mockery::mock(TagRepositoryInterface::class);
+            $mockRepo->shouldReceive('getTotalCount')->andReturn(0);
+            $mockRepo->shouldReceive('getAll')->andReturn([]);
+            $mockRepo->shouldReceive('getTranslationFilter')->andReturn('');
+
+            return new TagList($mockRepo);
         } elseif (str_contains($service, 'PageList')) {
             if ($mock = AppMockRegistry::get(PageList::class)) {
                 return $mock;
@@ -124,6 +140,7 @@ if (! function_exists('Bugo\\LightPortal\\app')) {
             $mockRepo = Mockery::mock(PageRepositoryInterface::class);
             $mockRepo->shouldReceive('getTotalCount')->andReturn(0);
             $mockRepo->shouldReceive('getAll')->andReturn([]);
+            $mockRepo->shouldReceive('getTranslationFilter')->andReturn('');
 
             // Mock Db for Permission::all()
             $mockDb = Mockery::mock();

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Bugo\Compat\Lang;
+use Bugo\LightPortal\Lists\PageList;
 use Bugo\LightPortal\UI\Partials\PageSelect;
 use Bugo\LightPortal\UI\Partials\SelectInterface;
 use Bugo\LightPortal\UI\Partials\SelectRenderer;
@@ -20,99 +21,113 @@ afterEach(function () {
 });
 
 it('implements SelectInterface', function () {
-    $select = new PageSelect(app('Bugo\LightPortal\Lists\PageList'));
+    $select = new PageSelect(app(PageList::class));
 
     expect($select)->toBeInstanceOf(SelectInterface::class);
 });
 
-it('initializes with default params', function () {
-    $select = new PageSelect(app('Bugo\LightPortal\Lists\PageList'));
+dataset('initialization cases', [
+    'default params' => [
+        'params' => [],
+        'expected' => [
+            'id'       => 'lp_frontpage_pages',
+            'multiple' => true,
+            'wide'     => true,
+            'more'     => true,
+            'value'    => fn($value) => is_array($value),
+        ],
+    ],
+    'custom id' => [
+        'params' => ['id' => 'custom_pages_id'],
+        'expected' => [
+            'id'       => 'custom_pages_id',
+            'multiple' => true,
+            'wide'     => true,
+            'more'     => true,
+            'value'    => fn($value) => is_array($value),
+        ],
+    ],
+    'custom value' => [
+        'params' => ['value' => ['1', '2']],
+        'expected' => [
+            'id'       => 'lp_frontpage_pages',
+            'multiple' => true,
+            'wide'     => true,
+            'more'     => true,
+            'value'    => ['1', '2'],
+        ],
+    ],
+    'custom multiple' => [
+        'params' => ['multiple' => false],
+        'expected' => [
+            'id'       => 'lp_frontpage_pages',
+            'multiple' => false,
+            'wide'     => true,
+            'more'     => true,
+            'value'    => fn($value) => is_array($value),
+        ],
+    ],
+    'custom wide' => [
+        'params' => ['wide' => false],
+        'expected' => [
+            'id'       => 'lp_frontpage_pages',
+            'multiple' => true,
+            'wide'     => false,
+            'more'     => true,
+            'value'    => fn($value) => is_array($value),
+        ],
+    ],
+    'custom hint' => [
+        'params' => ['hint' => 'Custom hint'],
+        'expected' => [
+            'id'       => 'lp_frontpage_pages',
+            'multiple' => true,
+            'wide'     => true,
+            'more'     => true,
+            'hint'     => 'Custom hint',
+            'value'    => fn($value) => is_array($value),
+        ],
+    ],
+    'custom empty' => [
+        'params' => ['empty' => 'Custom empty'],
+        'expected' => [
+            'id'       => 'lp_frontpage_pages',
+            'multiple' => true,
+            'wide'     => true,
+            'more'     => true,
+            'empty'    => 'Custom empty',
+            'value'    => fn($value) => is_array($value),
+        ],
+    ],
+    'custom data' => [
+        'params' => ['data' => [['label' => 'Custom Page', 'value' => '999']]],
+        'expected' => [
+            'id'       => 'lp_frontpage_pages',
+            'multiple' => true,
+            'wide'     => true,
+            'more'     => true,
+            'data'     => [['label' => 'Custom Page', 'value' => '999']],
+            'value'    => fn($value) => is_array($value),
+        ],
+    ],
+]);
+
+it('initializes with params', function ($params, $expected) {
+    $select = new PageSelect(app(PageList::class), $params);
 
     $config = $select->getParams();
 
-    expect($config['id'])->toBe('lp_frontpage_pages')
-        ->and($config['multiple'])->toBeTrue()
-        ->and($config['wide'])->toBeTrue()
-        ->and($config['more'])->toBeTrue()
-        ->and($config['value'])->toBeArray();
-});
-
-it('initializes with custom id parameter', function () {
-    $params = ['id' => 'custom_pages_id'];
-    $select = new PageSelect(app('Bugo\LightPortal\Lists\PageList'), $params);
-
-    $config = $select->getParams();
-
-    expect($config['id'])->toBe('custom_pages_id');
-});
-
-it('initializes with custom value parameter', function () {
-    $params = ['value' => ['1', '2']];
-    $select = new PageSelect(app('Bugo\LightPortal\Lists\PageList'), $params);
-
-    $config = $select->getParams();
-
-    expect($config['value'])->toBe(['1', '2']);
-});
-
-it('initializes with custom multiple parameter', function () {
-    $params = ['multiple' => false];
-    $select = new PageSelect(app('Bugo\LightPortal\Lists\PageList'), $params);
-
-    $config = $select->getParams();
-
-    expect($config['multiple'])->toBeFalse();
-});
-
-it('initializes with custom wide parameter', function () {
-    $params = ['wide' => false];
-    $select = new PageSelect(app('Bugo\LightPortal\Lists\PageList'), $params);
-
-    $config = $select->getParams();
-
-    expect($config['wide'])->toBeFalse();
-});
-
-it('initializes with custom hint parameter', function () {
-    $params = ['hint' => 'Custom hint'];
-    $select = new PageSelect(app('Bugo\LightPortal\Lists\PageList'), $params);
-
-    $config = $select->getParams();
-
-    expect($config['hint'])->toBe('Custom hint');
-});
-
-it('initializes with custom empty parameter', function () {
-    $params = ['empty' => 'Custom empty'];
-    $select = new PageSelect(app('Bugo\LightPortal\Lists\PageList'), $params);
-
-    $config = $select->getParams();
-
-    expect($config['empty'])->toBe('Custom empty');
-});
-
-it('initializes with custom data parameter', function () {
-    $customData = [['label' => 'Custom Page', 'value' => '999']];
-    $params = ['data' => $customData];
-    $select = new PageSelect(app('Bugo\LightPortal\Lists\PageList'), $params);
-
-    $config = $select->getParams();
-
-    expect($config['data'])->toBe($customData);
-});
-
-it('merges default and custom params', function () {
-    $params = ['id' => 'custom_id'];
-    $select = new PageSelect(app('Bugo\LightPortal\Lists\PageList'), $params);
-
-    $config = $select->getParams();
-
-    expect($config['id'])->toBe('custom_id')
-        ->and($config['multiple'])->toBeTrue(); // default
-});
+    foreach ($expected as $key => $value) {
+        if (is_callable($value)) {
+            expect($value($config[$key]))->toBeTrue();
+        } else {
+            expect($config[$key])->toBe($value);
+        }
+    }
+})->with('initialization cases');
 
 it('returns config array', function () {
-    $select = new PageSelect(app('Bugo\LightPortal\Lists\PageList'));
+    $select = new PageSelect(app(PageList::class));
 
     $config = $select->getParams();
 
@@ -122,7 +137,7 @@ it('returns config array', function () {
 });
 
 it('returns data array', function () {
-    $select = new PageSelect(app('Bugo\LightPortal\Lists\PageList'));
+    $select = new PageSelect(app(PageList::class));
 
     $data = $select->getData();
 
@@ -137,21 +152,15 @@ it('renders to string', function () {
 
     AppMockRegistry::set(SelectRenderer::class, $mockRenderer);
 
-    $select = new PageSelect(app('Bugo\LightPortal\Lists\PageList'));
+    $select = new PageSelect(app(PageList::class));
 
     $result = (string) $select;
 
     expect($result)->toBe('<select></select>');
 });
 
-it('handles empty params', function () {
-    $select = new PageSelect(app('Bugo\LightPortal\Lists\PageList'), []);
-
-    expect($select->getParams())->toBeArray();
-});
-
 it('template is set correctly', function () {
-    $select = new PageSelect(app('Bugo\LightPortal\Lists\PageList'));
+    $select = new PageSelect(app(PageList::class));
 
     $reflection = new ReflectionClass($select);
     $property = $reflection->getProperty('template');

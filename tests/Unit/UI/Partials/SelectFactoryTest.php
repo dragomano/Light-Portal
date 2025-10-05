@@ -6,6 +6,7 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Lists\CategoryList;
+use Bugo\LightPortal\Lists\ListInterface;
 use Bugo\LightPortal\UI\Partials\ActionSelect;
 use Bugo\LightPortal\UI\Partials\AreaSelect;
 use Bugo\LightPortal\UI\Partials\BoardSelect;
@@ -55,15 +56,9 @@ it('creates board select', function () {
 });
 
 it('creates category select', function () {
-    $categoryList = Mockery::mock(CategoryList::class);
-    $categoryList->shouldReceive('__invoke')->andReturn([]);
-    AppMockRegistry::set(CategoryList::class, $categoryList);
-
     $select = SelectFactory::category();
 
     expect($select)->toBeInstanceOf(CategorySelect::class);
-
-    AppMockRegistry::clear();
 });
 
 it('creates content class select', function () {

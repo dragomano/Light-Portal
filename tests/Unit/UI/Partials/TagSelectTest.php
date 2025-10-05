@@ -11,6 +11,8 @@ use Bugo\LightPortal\UI\Partials\SelectInterface;
 use Bugo\LightPortal\UI\Partials\SelectRenderer;
 use Tests\AppMockRegistry;
 
+use function Bugo\LightPortal\app;
+
 beforeEach(function () {
     Lang::$txt['lp_page_tags_placeholder'] = 'Select tags';
     Lang::$txt['lp_page_tags_empty'] = 'No tags';
@@ -28,143 +30,115 @@ afterEach(function () {
 });
 
 it('implements SelectInterface', function () {
-    $mockTagList = Mockery::mock(TagList::class);
-    $mockTagList->shouldReceive('__invoke')->andReturn([]);
-
-    $select = new TagSelect($mockTagList);
+    $select = new TagSelect(app(TagList::class));
 
     expect($select)->toBeInstanceOf(SelectInterface::class);
 });
 
-it('initializes with default params', function () {
-    $mockTagList = Mockery::mock(TagList::class);
-    $mockTagList->shouldReceive('__invoke')->andReturn([]);
+dataset('initialization cases', [
+    'default params' => [
+        'params' => [],
+        'expected' => [
+            'id'       => 'tags',
+            'multiple' => true,
+            'wide'     => true,
+            'value'    => fn($value) => is_array($value),
+        ],
+    ],
+    'custom id' => [
+        'params' => ['id' => 'custom_tags_id'],
+        'expected' => [
+            'id'       => 'custom_tags_id',
+            'multiple' => true,
+            'wide'     => true,
+            'value'    => fn($value) => is_array($value),
+        ],
+    ],
+    'custom value' => [
+        'params' => ['value' => ['1', '2']],
+        'expected' => [
+            'id'       => 'tags',
+            'multiple' => true,
+            'wide'     => true,
+            'value'    => ['1', '2'],
+        ],
+    ],
+    'custom multiple' => [
+        'params' => ['multiple' => false],
+        'expected' => [
+            'id'       => 'tags',
+            'multiple' => false,
+            'wide'     => true,
+            'value'    => fn($value) => is_array($value),
+        ],
+    ],
+    'custom wide' => [
+        'params' => ['wide' => false],
+        'expected' => [
+            'id'       => 'tags',
+            'multiple' => true,
+            'wide'     => false,
+            'value'    => fn($value) => is_array($value),
+        ],
+    ],
+    'custom hint' => [
+        'params' => ['hint' => 'Custom hint'],
+        'expected' => [
+            'id'       => 'tags',
+            'multiple' => true,
+            'wide'     => true,
+            'hint'     => 'Custom hint',
+            'value'    => fn($value) => is_array($value),
+        ],
+    ],
+    'custom empty' => [
+        'params' => ['empty' => 'Custom empty'],
+        'expected' => [
+            'id'       => 'tags',
+            'multiple' => true,
+            'wide'     => true,
+            'empty'    => 'Custom empty',
+            'value'    => fn($value) => is_array($value),
+        ],
+    ],
+    'custom maxValues' => [
+        'params' => ['maxValues' => 5],
+        'expected' => [
+            'id'        => 'tags',
+            'multiple'  => true,
+            'wide'      => true,
+            'maxValues' => 5,
+            'value'     => fn($value) => is_array($value),
+        ],
+    ],
+    'custom data' => [
+        'params' => ['data' => [['label' => 'Custom Tag', 'value' => '999']]],
+        'expected' => [
+            'id'       => 'tags',
+            'multiple' => true,
+            'wide'     => true,
+            'data'     => [['label' => 'Custom Tag', 'value' => '999']],
+            'value'    => fn($value) => is_array($value),
+        ],
+    ],
+]);
 
-    $select = new TagSelect($mockTagList);
-
-    $config = $select->getParams();
-
-    expect($config['id'])->toBe('tags')
-        ->and($config['multiple'])->toBeTrue()
-        ->and($config['wide'])->toBeTrue()
-        ->and($config['value'])->toBeArray();
-});
-
-it('initializes with custom id parameter', function () {
-    $mockTagList = Mockery::mock(TagList::class);
-    $mockTagList->shouldReceive('__invoke')->andReturn([]);
-
-    $params = ['id' => 'custom_tags_id'];
-    $select = new TagSelect($mockTagList, $params);
-
-    $config = $select->getParams();
-
-    expect($config['id'])->toBe('custom_tags_id');
-});
-
-it('initializes with custom value parameter', function () {
-    $mockTagList = Mockery::mock(TagList::class);
-    $mockTagList->shouldReceive('__invoke')->andReturn([]);
-
-    $params = ['value' => ['1', '2']];
-    $select = new TagSelect($mockTagList, $params);
-
-    $config = $select->getParams();
-
-    expect($config['value'])->toBe(['1', '2']);
-});
-
-it('initializes with custom multiple parameter', function () {
-    $mockTagList = Mockery::mock(TagList::class);
-    $mockTagList->shouldReceive('__invoke')->andReturn([]);
-
-    $params = ['multiple' => false];
-    $select = new TagSelect($mockTagList, $params);
-
-    $config = $select->getParams();
-
-    expect($config['multiple'])->toBeFalse();
-});
-
-it('initializes with custom wide parameter', function () {
-    $mockTagList = Mockery::mock(TagList::class);
-    $mockTagList->shouldReceive('__invoke')->andReturn([]);
-
-    $params = ['wide' => false];
-    $select = new TagSelect($mockTagList, $params);
-
-    $config = $select->getParams();
-
-    expect($config['wide'])->toBeFalse();
-});
-
-it('initializes with custom hint parameter', function () {
-    $mockTagList = Mockery::mock(TagList::class);
-    $mockTagList->shouldReceive('__invoke')->andReturn([]);
-
-    $params = ['hint' => 'Custom hint'];
-    $select = new TagSelect($mockTagList, $params);
-
-    $config = $select->getParams();
-
-    expect($config['hint'])->toBe('Custom hint');
-});
-
-it('initializes with custom empty parameter', function () {
-    $mockTagList = Mockery::mock(TagList::class);
-    $mockTagList->shouldReceive('__invoke')->andReturn([]);
-
-    $params = ['empty' => 'Custom empty'];
-    $select = new TagSelect($mockTagList, $params);
-
-    $config = $select->getParams();
-
-    expect($config['empty'])->toBe('Custom empty');
-});
-
-it('initializes with custom max_values parameter', function () {
-    $mockTagList = Mockery::mock(TagList::class);
-    $mockTagList->shouldReceive('__invoke')->andReturn([]);
-
-    $params = ['max_values' => 5];
-    $select = new TagSelect($mockTagList, $params);
+it('initializes with params', function ($params, $expected) {
+    $select = new TagSelect(app(TagList::class), $params);
 
     $config = $select->getParams();
 
-    expect($config['max_values'])->toBe(5);
-});
-
-it('initializes with custom data parameter', function () {
-    $mockTagList = Mockery::mock(TagList::class);
-    $mockTagList->shouldReceive('__invoke')->andReturn([]);
-
-    $customData = [['label' => 'Custom Tag', 'value' => '999']];
-    $params = ['data' => $customData];
-    $select = new TagSelect($mockTagList, $params);
-
-    $config = $select->getParams();
-
-    expect($config['data'])->toBe($customData);
-});
-
-it('merges default and custom params', function () {
-    $mockTagList = Mockery::mock(TagList::class);
-    $mockTagList->shouldReceive('__invoke')->andReturn([]);
-
-    $params = ['id' => 'custom_id'];
-    $select = new TagSelect($mockTagList, $params);
-
-    $config = $select->getParams();
-
-    expect($config['id'])->toBe('custom_id')
-        ->and($config['multiple'])->toBeTrue(); // default
-});
+    foreach ($expected as $key => $value) {
+        if (is_callable($value)) {
+            expect($value($config[$key]))->toBeTrue();
+        } else {
+            expect($config[$key])->toBe($value);
+        }
+    }
+})->with('initialization cases');
 
 it('returns config array', function () {
-    $mockTagList = Mockery::mock(TagList::class);
-    $mockTagList->shouldReceive('__invoke')->andReturn([]);
-
-    $select = new TagSelect($mockTagList);
+    $select = new TagSelect(app(TagList::class));
 
     $config = $select->getParams();
 
@@ -174,10 +148,7 @@ it('returns config array', function () {
 });
 
 it('returns data array', function () {
-    $mockTagList = Mockery::mock(TagList::class);
-    $mockTagList->shouldReceive('__invoke')->andReturn([]);
-
-    $select = new TagSelect($mockTagList);
+    $select = new TagSelect(app(TagList::class));
 
     $data = $select->getData();
 
@@ -185,9 +156,6 @@ it('returns data array', function () {
 });
 
 it('renders to string', function () {
-    $mockTagList = Mockery::mock(TagList::class);
-    $mockTagList->shouldReceive('__invoke')->andReturn([]);
-
     $mockRenderer = Mockery::mock();
     $mockRenderer->shouldReceive('render')
         ->once()
@@ -195,27 +163,15 @@ it('renders to string', function () {
 
     AppMockRegistry::set(SelectRenderer::class, $mockRenderer);
 
-    $select = new TagSelect($mockTagList);
+    $select = new TagSelect(app(TagList::class));
 
     $result = (string) $select;
 
     expect($result)->toBe('<select></select>');
 });
 
-it('handles empty params', function () {
-    $mockTagList = Mockery::mock(TagList::class);
-    $mockTagList->shouldReceive('__invoke')->andReturn([]);
-
-    $select = new TagSelect($mockTagList, []);
-
-    expect($select->getParams())->toBeArray();
-});
-
 it('template is set correctly', function () {
-    $mockTagList = Mockery::mock(TagList::class);
-    $mockTagList->shouldReceive('__invoke')->andReturn([]);
-
-    $select = new TagSelect($mockTagList);
+    $select = new TagSelect(app(TagList::class));
 
     $reflection = new ReflectionClass($select);
     $property = $reflection->getProperty('template');

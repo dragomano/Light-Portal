@@ -192,7 +192,7 @@ it('can get prev next links', function (
     ]));
 
     $this->sql->shouldReceive('prepareStatementForSqlObject')->andReturn($prevStatementMock, $nextStatementMock);
-    $this->sql->shouldReceive('getSqlStringForSqlObject')->andReturn('SELECT * FROM lp_pages');
+    $this->sql->shouldReceive('getSqlStringForSqlObject')->andReturn(/** @lang text */ 'SELECT * FROM lp_pages');
 
     // Set user as admin to avoid DB query in Permission::all()
     User::$me->is_admin = true;
@@ -216,7 +216,7 @@ it('can get prev next links', function (
         $pagesForSorting = array_filter($pagesForSorting, fn($p) => $p['category_id'] == $pageData['category_id']);
     }
     usort($pagesForSorting, $cmpMap[$sorting]);
-
+    /*
     $currentIndex = null;
     foreach ($pagesForSorting as $i => $item) {
         if ($item['id'] == $pageData['id']) {
@@ -228,7 +228,7 @@ it('can get prev next links', function (
     $prev = $currentIndex > 0 ? $pagesForSorting[$currentIndex - 1] : null;
     $next = $currentIndex < count($pagesForSorting) - 1 ? $pagesForSorting[$currentIndex + 1] : null;
 
-    /* file_put_contents('test_output.txt', json_encode([
+    file_put_contents('test_output.txt', json_encode([
         'sorting'        => $sorting,
         'category_id'    => $pageData['category_id'],
         'withinCategory' => $withinCategory,
@@ -236,7 +236,8 @@ it('can get prev next links', function (
         'selected'       => $pageData,
         'prev'           => $prev,
         'next'           => $next
-    ], JSON_PRETTY_PRINT) . PHP_EOL, FILE_APPEND); */
+    ], JSON_PRETTY_PRINT) . PHP_EOL, FILE_APPEND);
+    */
 
     expect($links[0])->toBe($expectedPrevTitle)
         ->and($links[1])->toBe($expectedPrevSlug)
