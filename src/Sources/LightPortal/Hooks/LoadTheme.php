@@ -22,7 +22,7 @@ use Bugo\LightPortal\Enums\Placement;
 use Bugo\LightPortal\Enums\PluginType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Events\HasEvents;
-use Bugo\LightPortal\Repositories\BlockRepository;
+use Bugo\LightPortal\Lists\BlockList;
 use Bugo\LightPortal\Utils\SessionManager;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 
@@ -54,7 +54,7 @@ class LoadTheme
 	protected function defineVars(): void
 	{
 		Utils::$context['lp_quantities']    = app(SessionManager::class)();
-		Utils::$context['lp_active_blocks'] = app(BlockRepository::class)->getActive();
+		Utils::$context['lp_active_blocks'] = app(BlockList::class)();
 
 		Utils::$context['lp_block_placements'] = Placement::all();
 		Utils::$context['lp_plugin_types']     = PluginType::all();

@@ -14,5 +14,5 @@ namespace Bugo\LightPortal\Repositories;
 
 interface BlockRepositoryInterface
 {
-	public function getAll(): array;
+	public function getAll(array $filters = [], bool $grouped = true): array;
 }

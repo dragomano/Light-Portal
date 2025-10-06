@@ -89,6 +89,7 @@
 			<value>BlockExport::class</value>
 			<value>BlockFactory::class</value>
 			<value>BlockImport::class</value>
+			<value>BlockList::class</value>
 			<value>BlockRepository::class</value>
 			<value>BlockRepositoryInterface::class</value>
 			<value>BlockValidator::class</value>

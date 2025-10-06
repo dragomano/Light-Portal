@@ -50,6 +50,7 @@ use Bugo\LightPortal\DataHandlers\Imports\PluginImport;
 use Bugo\LightPortal\DataHandlers\Imports\TagImport;
 use Bugo\LightPortal\Events\EventManager;
 use Bugo\LightPortal\Events\EventManagerFactory;
+use Bugo\LightPortal\Lists\BlockList;
 use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\Lists\IconList;
 use Bugo\LightPortal\Lists\PageList;
@@ -120,6 +121,7 @@ class ServiceProvider extends AbstractServiceProvider
 		BlockExport::class,
 		BlockFactory::class,
 		BlockImport::class,
+		BlockList::class,
 		BlockRepository::class,
 		BlockValidator::class,
 		BoardArticle::class,
@@ -268,11 +270,13 @@ class ServiceProvider extends AbstractServiceProvider
 		$container->add(TagRepositoryInterface::class, TagRepository::class);
 		$container->add(PluginRepositoryInterface::class, PluginRepository::class);
 
-		$container->add(IconList::class);
+		$container->add(BlockList::class)->addArgument(BlockRepositoryInterface::class);
 		$container->add(CategoryList::class)->addArgument(CategoryRepositoryInterface::class);
+		$container->add(IconList::class);
 		$container->add(PageList::class)->addArgument(PageRepositoryInterface::class);
-		$container->add(TagList::class)->addArgument(TagRepositoryInterface::class);
 		$container->add(PluginList::class);
+		$container->add(TagList::class)->addArgument(TagRepositoryInterface::class);
+
 		$container->add(SessionManager::class);
 
 		$container->add(BlockArea::class)->addArgument(BlockRepositoryInterface::class);

@@ -20,11 +20,9 @@ use Bugo\Compat\Msg;
 use Bugo\Compat\Security;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Lists\PluginList;
 use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 
 use function Bugo\LightPortal\app;
@@ -38,22 +36,47 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 
 	protected string $entity = 'block';
 
-	public function getAll(): array
+	public function getAll(array $filters = [], bool $grouped = true): array
 	{
-		$result = Db::$db->query('
-			SELECT
+		$queryString = '';
+		$queryParams = $this->getLangQueryParams();
+
+		if (isset($filters['status'])) {
+			$queryString .= ' AND b.status = {int:status}';
+			$queryParams['status'] = $filters['status'];
+		}
+
+		$includeParams = $filters['include_params'] ?? false;
+
+		$selectFields = '
 				b.*,
 				COALESCE(NULLIF(t.title, {string:empty_string}), tf.title, {string:empty_string}) AS title,
-				COALESCE(NULLIF(t.description, {string:empty_string}), tf.description, {string:empty_string}) AS description
+				COALESCE(NULLIF(t.description, {string:empty_string}), tf.description, {string:empty_string}) AS description';
+
+		if ($includeParams) {
+			$selectFields .= ',
+				bp.name, bp.value';
+		}
+
+		$fromClause = '
 			FROM {db_prefix}lp_blocks AS b
 				LEFT JOIN {db_prefix}lp_translations AS t ON (
 					b.block_id = t.item_id AND t.type = {literal:block} AND t.lang = {string:lang}
 				)
 				LEFT JOIN {db_prefix}lp_translations AS tf ON (
 					b.block_id = tf.item_id AND tf.type = {literal:block} AND tf.lang = {string:fallback_lang}
-				)
+				)';
+
+		if ($includeParams) {
+			$fromClause .= '
+				LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {literal:block})';
+		}
+
+		$result = Db::$db->query('
+			SELECT' . $selectFields . $fromClause . '
+			WHERE 1=1' . $queryString . '
 			ORDER BY b.placement DESC, b.priority',
-			$this->getLangQueryParams()
+			$queryParams
 		);
 
 		$currentBlocks = [];
@@ -61,23 +84,51 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 			Lang::censorText($row['title']);
 			Lang::censorText($row['description']);
 
-			$currentBlocks[$row['placement']][$row['block_id']] ??= [
-				'icon'        => Icon::parse($row['icon']),
-				'type'        => $row['type'],
-				'priority'    => $row['priority'],
-				'permissions' => $row['permissions'],
-				'status'      => $row['status'],
-				'areas'       => str_replace(',', PHP_EOL, (string) $row['areas']),
-				'title'       => $row['title'],
-				'description' => $row['description'],
-			];
+			if ($grouped) {
+				$currentBlocks[$row['placement']][$row['block_id']] ??= [
+					'icon'        => Icon::parse($row['icon']),
+					'type'        => $row['type'],
+					'priority'    => $row['priority'],
+					'permissions' => $row['permissions'],
+					'status'      => $row['status'],
+					'areas'       => str_replace(',', PHP_EOL, (string) $row['areas']),
+					'title'       => $row['title'],
+					'description' => $row['description'],
+				];
 
-			$this->prepareMissingBlockTypes($row['type']);
+				if ($includeParams && ! empty($row['name'])) {
+					$currentBlocks[$row['placement']][$row['block_id']]['parameters'][$row['name']] = $row['value'];
+				}
+
+				$this->prepareMissingBlockTypes($row['type']);
+			} else {
+				$currentBlocks[$row['block_id']] ??= [
+					'id'            => (int) $row['block_id'],
+					'icon'          => $row['icon'],
+					'type'          => $row['type'],
+					'placement'     => $row['placement'],
+					'priority'      => (int) $row['priority'],
+					'permissions'   => (int) $row['permissions'],
+					'areas'         => explode(',', (string) $row['areas']),
+					'title_class'   => $row['title_class'],
+					'content_class' => $row['content_class'],
+					'title'         => $row['title'],
+					'content'       => $row['content'] ?? '',
+				];
+
+				if ($includeParams && ! empty($row['name'])) {
+					$currentBlocks[$row['block_id']]['parameters'][$row['name']] = $row['value'];
+				}
+			}
 		}
 
 		Db::$db->free_result($result);
 
-		return array_merge(array_flip(array_keys(Utils::$context['lp_block_placements'])), $currentBlocks);
+		if ($grouped) {
+			return array_merge(array_flip(array_keys(Utils::$context['lp_block_placements'])), $currentBlocks);
+		}
+
+		return $currentBlocks;
 	}
 
 	public function getData(int $item): array
@@ -246,61 +297,6 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 				]
 			);
 		}
-	}
-
-	public function getActive(): array
-	{
-		if (Setting::hideBlocksInACP())
-			return [];
-
-		return $this->langCache('active_blocks')
-			->setFallback(function () {
-				$result = Db::$db->query('
-				SELECT
-					b.*, bp.name, bp.value,
-					COALESCE(t.title, tf.title, {string:empty_string}) AS title,
-					COALESCE(NULLIF(t.content, {string:empty_string}), tf.content, {string:empty_string}) AS content
-				FROM {db_prefix}lp_blocks AS b
-					LEFT JOIN {db_prefix}lp_translations AS t ON (
-						b.block_id = t.item_id AND t.type = {literal:block} AND t.lang = {string:lang}
-					)
-					LEFT JOIN {db_prefix}lp_translations AS tf ON (
-						b.block_id = tf.item_id AND tf.type = {literal:block} AND tf.lang = {string:fallback_lang}
-					)
-					LEFT JOIN {db_prefix}lp_params AS bp ON (b.block_id = bp.item_id AND bp.type = {literal:block})
-				WHERE b.status = {int:status}' . $this->getTranslationFilter() . '
-				ORDER BY b.placement, b.priority',
-					array_merge($this->getLangQueryParams(), ['status' => Status::ACTIVE->value])
-				);
-
-				$blocks = [];
-				while ($row = Db::$db->fetch_assoc($result)) {
-					Lang::censorText($row['title']);
-					Lang::censorText($row['content']);
-
-					$blocks[$row['block_id']] ??= [
-						'id'            => (int) $row['block_id'],
-						'icon'          => $row['icon'],
-						'type'          => $row['type'],
-						'placement'     => $row['placement'],
-						'priority'      => (int) $row['priority'],
-						'permissions'   => (int) $row['permissions'],
-						'areas'         => explode(',', (string) $row['areas']),
-						'title_class'   => $row['title_class'],
-						'content_class' => $row['content_class'],
-						'title'         => $row['title'],
-						'content'       => $row['content'],
-					];
-
-					if ($row['name']) {
-						$blocks[$row['block_id']]['parameters'][$row['name']] = $row['value'];
-					}
-				}
-
-				Db::$db->free_result($result);
-
-				return $blocks;
-			});
 	}
 
 	private function addData(): int
