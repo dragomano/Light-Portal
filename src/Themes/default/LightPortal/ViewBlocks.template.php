@@ -132,6 +132,11 @@ function lp_show_blocks(string $panel = ''): void
 	echo $panelDirection ? /** @lang text */ '<div class="row">' : '';
 
 	foreach (Utils::$context['lp_blocks'][$panel] as $block) {
+		// Skip empty content blocks
+		if (in_array($block['type'], array_keys(Utils::$context['lp_content_types'])) && empty($block['content'])) {
+			continue;
+		}
+
 		$customClass = empty($block['custom_class']) ? '' : (' ' . $block['custom_class']);
 		$class = 'block_' . $block['type'] . $panelDirectionClass . $customClass;
 
