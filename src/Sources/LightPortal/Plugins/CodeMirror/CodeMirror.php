@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 30.09.25
+ * @version 06.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\CodeMirror;
@@ -16,21 +16,18 @@ namespace Bugo\LightPortal\Plugins\CodeMirror;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\PluginType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\HookAttribute;
-use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Plugins\PluginAttribute;
+use Bugo\LightPortal\Plugins\Editor;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-#[PluginAttribute(type: PluginType::EDITOR)]
-class CodeMirror extends Plugin
+class CodeMirror extends Editor
 {
 	private array $modes = [
-		'html' => 'HTML', 'php' => 'PHP', 'markdown' => 'Markdown', 'pug' => 'Pug', 'twig' => 'Twig'
+		'html' => 'HTML', 'php' => 'PHP', 'markdown' => 'Markdown', 'pug' => 'Pug', 'twig' => 'Twig',
 	];
 
 	#[HookAttribute(PortalHook::addSettings)]
@@ -45,7 +42,7 @@ class CodeMirror extends Plugin
 	{
 		$object = $e->args->object;
 
-		if ($object['type'] === 'bbc' || (isset($object['options']['content']) && $object['options']['content'] === 'bbc'))
+		if (! $this->isContentSupported($object))
 			return;
 
 		if (empty($modes = array_filter(explode(',', $this->context['modes'] ?? ''))))
@@ -277,5 +274,10 @@ class CodeMirror extends Plugin
 				'link' => 'https://github.com/codemirror/codemirror5?tab=MIT-1-ov-file'
 			]
 		];
+	}
+
+	protected function getSupportedContentTypes(): array
+	{
+		return array_keys($this->modes);
 	}
 }

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 30.09.25
+ * @version 06.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\EasyMarkdownEditor;
@@ -16,23 +16,20 @@ namespace Bugo\LightPortal\Plugins\EasyMarkdownEditor;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\PluginType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\HookAttribute;
-use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Plugins\PluginAttribute;
+use Bugo\LightPortal\Plugins\Editor;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-#[PluginAttribute(type: PluginType::EDITOR)]
-class EasyMarkdownEditor extends Plugin
+class EasyMarkdownEditor extends Editor
 {
 	#[HookAttribute(PortalHook::prepareEditor)]
 	public function prepareEditor(Event $e): void
 	{
-		if ($e->args->object['type'] !== 'markdown')
+		if (! $this->isContentSupported($e->args->object))
 			return;
 
 		Lang::load('Editor');
@@ -177,5 +174,10 @@ class EasyMarkdownEditor extends Plugin
 				'link' => 'https://github.com/Ionaru/easy-markdown-editor/blob/master/LICENSE'
 			]
 		];
+	}
+
+	protected function getSupportedContentTypes(): array
+	{
+		return ['markdown'];
 	}
 }
