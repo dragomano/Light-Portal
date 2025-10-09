@@ -38,6 +38,7 @@ final class PlacementSelect extends AbstractSelect
 		return [
 			'id'       => 'placement',
 			'multiple' => false,
+			'search'   => false,
 			'wide'     => false,
 			'hint'     => Lang::$txt['lp_block_placement_select'],
 			'value'    => Utils::$context['lp_block']['placement'] ?? '',

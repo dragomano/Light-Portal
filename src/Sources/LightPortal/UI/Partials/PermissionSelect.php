@@ -44,6 +44,7 @@ final class PermissionSelect extends AbstractSelect
 		return [
 			'id'       => 'permissions',
 			'multiple' => false,
+			'search'   => false,
 			'wide'     => false,
 			'hint'     => '',
 			'value'    => Utils::$context['lp_' . $entity]['permissions'] ?? 0,

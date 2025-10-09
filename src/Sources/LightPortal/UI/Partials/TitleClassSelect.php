@@ -41,6 +41,7 @@ final class TitleClassSelect extends AbstractSelect
 		return [
 			'id'       => 'title_class',
 			'multiple' => false,
+			'search'   => false,
 			'wide'     => false,
 			'hint'     => Lang::$txt['no'],
 			'data'     => TitleClass::values() ?? [],

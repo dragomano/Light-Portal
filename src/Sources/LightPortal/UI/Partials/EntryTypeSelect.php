@@ -44,6 +44,7 @@ final class EntryTypeSelect extends AbstractSelect
 		return [
 			'id'       => 'entry_type',
 			'multiple' => false,
+			'search'   => false,
 			'wide'     => false,
 			'hint'     => '',
 			'value'    => Utils::$context['lp_page']['entry_type'] ?? EntryType::DEFAULT->name(),

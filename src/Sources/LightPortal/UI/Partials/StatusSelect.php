@@ -38,6 +38,7 @@ final class StatusSelect extends AbstractSelect
 		return [
 			'id'       => 'status',
 			'multiple' => false,
+			'search'   => false,
 			'wide'     => false,
 			'hint'     => '',
 			'value'    => Utils::$context['lp_page']['status'] ?? 1,

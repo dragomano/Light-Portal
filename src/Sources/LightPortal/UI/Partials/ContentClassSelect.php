@@ -41,6 +41,7 @@ final class ContentClassSelect extends AbstractSelect
 		return [
 			'id'       => 'content_class',
 			'multiple' => false,
+			'search'   => false,
 			'wide'     => false,
 			'hint'     => Lang::$txt['no'],
 			'data'     => ContentClass::values() ?? [],
