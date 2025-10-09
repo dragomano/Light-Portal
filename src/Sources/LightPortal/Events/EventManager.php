@@ -22,6 +22,8 @@ class EventManager
 {
 	private readonly DoctrineEventManager $eventManager;
 
+	private array $methodMap = [];
+
 	private array $contentHooks = [
 		PortalHook::prepareBlockParams,
 		PortalHook::validateBlockParams,
@@ -40,9 +42,11 @@ class EventManager
 		$this->eventManager = new DoctrineEventManager();
 	}
 
-	public function addHookListener(PortalHook $hook, PluginInterface $listener): void
+	public function addHookListener(PortalHook $hook, PluginInterface $listener, string $methodName): void
 	{
 		$this->eventManager->addEventListener($hook->name, $listener);
+
+		$this->methodMap[$listener->getSnakeName()][$hook->name] = $methodName;
 	}
 
 	public function dispatch(PortalHook $hook, array $params = []): void
@@ -67,7 +71,7 @@ class EventManager
 
 			$event = new Event($args);
 
-			$listener->{$hook->name}($event);
+			$listener->{$this->methodMap[$listener->getSnakeName()][$hook->name] ?? $hook->name}($event);
 		}
 	}
 
