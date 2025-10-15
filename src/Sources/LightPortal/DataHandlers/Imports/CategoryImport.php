@@ -12,8 +12,8 @@
 
 namespace Bugo\LightPortal\DataHandlers\Imports;
 
+use Bugo\LightPortal\Database\PortalSqlInterface;
 use Bugo\LightPortal\DataHandlers\Traits\HasSlug;
-use Bugo\LightPortal\Utils\DatabaseInterface;
 use Bugo\LightPortal\Utils\ErrorHandlerInterface;
 use Bugo\LightPortal\Utils\FileInterface;
 
@@ -26,9 +26,13 @@ class CategoryImport extends XmlImporter
 
 	protected string $entity = 'categories';
 
-	public function __construct(FileInterface $file, DatabaseInterface $db, ErrorHandlerInterface $errorHandler)
+	public function __construct(
+		PortalSqlInterface $sql,
+		FileInterface $file,
+		ErrorHandlerInterface $errorHandler
+	)
 	{
-		parent::__construct($this->entity, $file, $db, $errorHandler);
+		parent::__construct($this->entity, $sql, $file, $errorHandler);
 	}
 
 	protected function processItems(): void
@@ -57,21 +61,7 @@ class CategoryImport extends XmlImporter
 
 		$this->startTransaction($items);
 
-		$results = $this->insertData(
-			'lp_categories',
-			'replace',
-			$items,
-			[
-				'category_id' => 'int',
-				'parent_id'   => 'int',
-				'slug'        => 'string-255',
-				'icon'        => 'string-60',
-				'priority'    => 'int',
-				'status'      => 'int',
-			],
-			['category_id'],
-		);
-
+		$results = $this->insertData('lp_categories', $items, ['category_id'], true);
 		$results = $this->replaceTranslations($translations, $results);
 
 		$this->finishTransaction($results);

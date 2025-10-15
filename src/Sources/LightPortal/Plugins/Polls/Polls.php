@@ -8,13 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 01.10.25
+ * @version 11.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\Polls;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalHook;
@@ -157,24 +156,19 @@ class Polls extends SsiBlock
 
 	private function getAll(): array
 	{
-		$result = Db::$db->query('
-			SELECT t.id_topic, p.question
-			FROM {db_prefix}topics AS t
-				INNER JOIN {db_prefix}polls AS p ON (p.id_poll = t.id_poll)
-				INNER JOIN {db_prefix}boards AS b ON (b.id_board = t.id_board)
-			WHERE {query_see_board}
-				AND t.approved = {int:is_approved}',
-			[
-				'is_approved' => 1
-			]
-		);
+		$select = $this->sql->select()
+			->from(['t' => 'topics'])
+			->columns(['id_topic'])
+			->join(['p' => 'polls'], 'p.id_poll = t.id_poll', ['question'])
+			->join(['b' => 'boards'], 'b.id_board = t.id_board')
+			->where(['t.approved' => 1]);
+
+		$result = $this->sql->execute($select);
 
 		$polls = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			$polls[$row['id_topic']] = $row['question'];
 		}
-
-		Db::$db->free_result($result);
 
 		return $polls;
 	}

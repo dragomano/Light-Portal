@@ -14,7 +14,6 @@
 
 namespace Bugo\LightPortal\Lists;
 
-use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Repositories\BlockRepositoryInterface;
 use Bugo\LightPortal\Utils\Setting;
 
@@ -30,9 +29,6 @@ readonly class BlockList implements ListInterface
 		if (Setting::hideBlocksInACP())
 			return [];
 
-		return $this->repository->getAll([
-			'status'         => Status::ACTIVE->value,
-			'include_params' => true,
-		], false);
+		return $this->repository->getAll(0, 0, 'placement DESC, priority', 'list');
 	}
 }

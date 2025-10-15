@@ -13,7 +13,6 @@
 namespace Bugo\LightPortal\Lists;
 
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Repositories\CategoryRepositoryInterface;
 
 if (! defined('SMF'))
@@ -29,18 +28,13 @@ readonly class CategoryList implements ListInterface
 			0,
 			$this->repository->getTotalCount(),
 			'priority',
-			'AND c.status = {int:status}' . $this->repository->getTranslationFilter(
-				'c', 'category_id', ['title', 'description']
-			),
-			['status' => Status::ACTIVE->value]
+			'list'
 		);
 
-		$processedItems = [
-			0 => [
-				'icon'  => '',
-				'title' => Lang::$txt['lp_no_category'],
-			]
-		];
+		$processedItems = [[
+			'icon'  => '',
+			'title' => Lang::$txt['lp_no_category'],
+		]];
 
 		foreach ($items as $id => $item) {
 			$processedItems[$id] = [

@@ -17,12 +17,10 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 
-use function Bugo\LightPortal\app;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
-class Setting
+class Setting implements SettingInterface
 {
 	public static function get(
 		string $key,
@@ -136,7 +134,9 @@ class Setting
 	{
 		$hideBlocks = self::get('lp_hide_blocks_in_acp', 'bool', false);
 
-		return $hideBlocks && app(Request::class)->is('admin');
+		$admin = isset(Utils::$context['current_action']) && Utils::$context['current_action'] === 'admin';
+
+		return $hideBlocks && $admin;
 	}
 
 	public static function getDisabledActions(): array
@@ -151,6 +151,12 @@ class Setting
 
 	protected static function transformArray(string $value, string $from): array
 	{
-		return $from === 'json' ? Utils::jsonDecode($value, true) : array_filter(explode(',', $value));
+		if ($from === 'json') {
+			return Utils::jsonDecode($value, true);
+		}
+
+		$array = explode(',', $value);
+
+		return array_filter($array, fn($v) => $v !== '');
 	}
 }

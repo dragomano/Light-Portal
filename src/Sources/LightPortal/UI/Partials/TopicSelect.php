@@ -13,8 +13,8 @@
 namespace Bugo\LightPortal\UI\Partials;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
+use Bugo\LightPortal\Utils\ForumPermissions;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -47,25 +47,25 @@ final class TopicSelect extends AbstractSelect
 			return [];
 		}
 
-		$result = Db::$db->query('
-			SELECT t.id_topic, m.subject
-			FROM {db_prefix}topics AS t
-				INNER JOIN {db_prefix}messages AS m ON (m.id_msg = t.id_first_msg)
-			WHERE t.id_topic IN ({array_int:topics})
-				AND t.approved = {int:is_approved}
-				AND t.id_poll = {int:id_poll}
-				AND t.id_redirect_topic = {int:id_redirect_topic}
-				AND {query_wanna_see_board}',
-			[
-				'topics'            => $topics,
-				'is_approved'       => 1,
-				'id_poll'           => 0,
-				'id_redirect_topic' => 0,
-			]
-		);
+		$select = $this->sql->select()
+			->from(['t' => 'topics'])
+			->columns(['id_topic'])
+			->join(['m' => 'messages'], 'm.id_msg = t.id_first_msg', ['subject'])
+			->where([
+				't.id_topic'          => $topics,
+				't.approved'          => 1,
+				't.id_poll'           => 0,
+				't.id_redirect_topic' => 0,
+			]);
+
+		if (ForumPermissions::shouldApplyBoardPermissionCheck()) {
+			$select->where(ForumPermissions::canSeeBoard());
+		}
+
+		$result = $this->sql->execute($select);
 
 		$topics = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			Lang::censorText($row['subject']);
 
 			$topics[] = [
@@ -73,8 +73,6 @@ final class TopicSelect extends AbstractSelect
 				'value' => $row['id_topic'],
 			];
 		}
-
-		Db::$db->free_result($result);
 
 		return $topics;
 	}

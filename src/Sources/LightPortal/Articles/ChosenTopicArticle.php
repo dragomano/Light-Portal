@@ -29,7 +29,7 @@ final class ChosenTopicArticle extends TopicArticle
 
 		$this->selectedTopics = Setting::get('lp_frontpage_topics', 'array', []);
 
-		$this->wheres[] = 'AND t.id_topic IN ({array_int:selected_topics})';
+		$this->wheres[] = ['t.id_topic' => $this->selectedTopics];
 
 		$this->params['selected_topics'] = $this->selectedTopics;
 	}

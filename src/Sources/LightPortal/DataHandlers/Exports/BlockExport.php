@@ -14,11 +14,13 @@ namespace Bugo\LightPortal\DataHandlers\Exports;
 
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Database\PortalSqlInterface;
 use Bugo\LightPortal\Repositories\BlockRepositoryInterface;
-use Bugo\LightPortal\Utils\DatabaseInterface;
 use Bugo\LightPortal\Utils\ErrorHandlerInterface;
 use Bugo\LightPortal\Utils\FilesystemInterface;
 use Exception;
+use Laminas\Db\Sql\Predicate\Expression;
+use Laminas\Db\Sql\Select;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -29,18 +31,19 @@ class BlockExport extends XmlExporter
 
 	public function __construct(
 		private readonly BlockRepositoryInterface $repository,
-		DatabaseInterface $database,
+		PortalSqlInterface $sql,
 		FilesystemInterface $filesystem,
 		ErrorHandlerInterface $errorHandler
-	) {
-		parent::__construct($this->entity, $database, $filesystem, $errorHandler);
+	)
+	{
+		parent::__construct($this->entity, $sql, $filesystem, $errorHandler);
 	}
 
 	public function main(): void
 	{
 		parent::main();
 
-		Utils::$context['lp_current_blocks'] = $this->repository->getAll();
+		Utils::$context['lp_current_blocks'] = $this->repository->getAll(0, 0, 'placement DESC, priority');
 	}
 
 	protected function setupUi(): void
@@ -60,29 +63,37 @@ class BlockExport extends XmlExporter
 		$blocks = $this->hasEntityInRequest() ? $this->request()->get($this->entity) : [];
 
 		try {
-			$result = $this->db->query('
-				SELECT
-					b.*, pt.lang, pp.name, pp.value,
-					COALESCE(pt.title, {string:empty_string}) AS title,
-					COALESCE(pt.content, {string:empty_string}) AS content,
-					COALESCE(pt.description, {string:empty_string}) AS description
-				FROM {db_prefix}lp_blocks AS b
-					LEFT JOIN {db_prefix}lp_translations AS pt ON (
-						b.block_id = pt.item_id AND pt.type = {literal:block}
-					)
-					LEFT JOIN {db_prefix}lp_params AS pp ON (
-						b.block_id = pp.item_id AND pp.type = {literal:block}
-					)
-				WHERE 1=1' . (empty($blocks) ? '' : '
-					AND b.block_id IN ({array_int:blocks})'),
-				[
-					'empty_string' => '',
-					'blocks'       => $blocks,
-				]
-			);
+			$select = $this->sql->select()
+				->from(['b' => 'lp_blocks'])
+				->join(
+					['t' => 'lp_translations'],
+					new Expression('b.block_id = t.item_id AND t.type = ?', ['block']),
+					[
+						'lang'        => new Expression('t.lang'),
+						'title'       => new Expression('COALESCE(t.title, "")'),
+						'content'     => new Expression('COALESCE(t.content, "")'),
+						'description' => new Expression('COALESCE(t.description, "")'),
+					],
+					Select::JOIN_LEFT
+				)
+				->join(
+					['p' => 'lp_params'],
+					new Expression('b.block_id = p.item_id AND p.type = ?', ['block']),
+					[
+						'name'  => new Expression('p.name'),
+						'value' => new Expression('p.value'),
+					],
+					Select::JOIN_LEFT
+				);
+
+			if ($blocks !== []) {
+				$select->where->in('b.block_id', $blocks);
+			}
+
+			$result = $this->sql->execute($select);
 
 			$items = [];
-			while ($row = $this->db->fetchAssoc($result)) {
+			foreach ($result as $row) {
 				$items[$row['block_id']] ??= [
 					'block_id'      => $row['block_id'],
 					'icon'          => $row['icon'],
@@ -112,8 +123,6 @@ class BlockExport extends XmlExporter
 					$items[$row['block_id']]['params'][$row['name']] = trim($row['value']);
 				}
 			}
-
-			$this->db->freeResult($result);
 		} catch (Exception) {
 			return [];
 		}
@@ -140,21 +149,21 @@ class BlockExport extends XmlExporter
 	{
 		return [
 			'titles' => [
-				'type' => 'element',
-				'useCDATA' => false
-			],
-			'params' => [
-				'type' => 'element',
-				'useCDATA' => false
+				'type'     => 'element',
+				'useCDATA' => false,
 			],
 			'contents' => [
-				'type' => 'element',
-				'useCDATA' => true
+				'type'     => 'element',
+				'useCDATA' => true,
 			],
 			'descriptions' => [
-				'type' => 'element',
-				'useCDATA' => true
-			]
+				'type'     => 'element',
+				'useCDATA' => true,
+			],
+			'params' => [
+				'type'     => 'element',
+				'useCDATA' => false,
+			],
 		];
 	}
 }

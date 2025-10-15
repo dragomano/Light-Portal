@@ -13,31 +13,35 @@
 namespace Bugo\LightPortal\DataHandlers\Exports;
 
 use Bugo\Bricks\Tables\IdColumn;
+use Bugo\LightPortal\Database\PortalSqlInterface;
+use Bugo\LightPortal\DataHandlers\Traits\HasUiTable;
 use Bugo\LightPortal\Repositories\CategoryRepositoryInterface;
 use Bugo\LightPortal\UI\Tables\CheckboxColumn;
 use Bugo\LightPortal\UI\Tables\IconColumn;
 use Bugo\LightPortal\UI\Tables\TitleColumn;
-use Bugo\LightPortal\Utils\DatabaseInterface;
 use Bugo\LightPortal\Utils\ErrorHandlerInterface;
 use Bugo\LightPortal\Utils\FilesystemInterface;
 use Exception;
+use Laminas\Db\Sql\Predicate\Expression;
+use Laminas\Db\Sql\Select;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 class CategoryExport extends XmlExporter
 {
-	use ExportTableTrait;
+	use HasUiTable;
 
 	protected string $entity = 'categories';
 
 	public function __construct(
 		private readonly CategoryRepositoryInterface $repository,
-		DatabaseInterface $database,
+		PortalSqlInterface $sql,
 		FilesystemInterface $filesystem,
 		ErrorHandlerInterface $errorHandler
-	) {
-		parent::__construct($this->entity, $database, $filesystem, $errorHandler);
+	)
+	{
+		parent::__construct($this->entity, $sql, $filesystem, $errorHandler);
 	}
 
 	protected function setupUi(): void
@@ -66,25 +70,27 @@ class CategoryExport extends XmlExporter
 		$categories = $this->hasEntityInRequest() ? $this->request()->get($this->entity) : [];
 
 		try {
-			$result = $this->db->query('
-				SELECT
-					c.*, pt.lang,
-					COALESCE(pt.title, {string:empty_string}) AS title,
-					COALESCE(pt.description, {string:empty_string}) AS description
-				FROM {db_prefix}lp_categories AS c
-					LEFT JOIN {db_prefix}lp_translations AS pt ON (
-						c.category_id = pt.item_id AND pt.type = {literal:category}
-					)
-				WHERE 1=1' . (empty($categories) ? '' : '
-					AND c.category_id IN ({array_int:categories})'),
-				[
-					'empty_string' => '',
-					'categories'   => $categories,
-				]
-			);
+			$select = $this->sql->select()
+				->from(['c' => 'lp_categories'])
+				->join(
+					['t' => 'lp_translations'],
+					new Expression('c.category_id = t.item_id AND t.type = ?', ['category']),
+					[
+						'lang'        => new Expression('t.lang'),
+						'title'       => new Expression('COALESCE(t.title, "")'),
+						'description' => new Expression('COALESCE(t.description, "")'),
+					],
+					Select::JOIN_LEFT
+				);
+
+			if ($categories !== []) {
+				$select->where->in('c.category_id', $categories);
+			}
+
+			$result = $this->sql->execute($select);
 
 			$items = [];
-			while ($row = $this->db->fetchAssoc($result)) {
+			foreach ($result as $row) {
 				if (! isset($row['category_id'])) {
 					continue;
 				}
@@ -110,8 +116,6 @@ class CategoryExport extends XmlExporter
 					$items[$categoryId]['descriptions'][$row['lang']] = trim($row['description']);
 				}
 			}
-
-			$this->db->freeResult($result);
 		} catch (Exception) {
 			return [];
 		}
@@ -135,12 +139,12 @@ class CategoryExport extends XmlExporter
 	{
 		return [
 			'titles' => [
-				'type' => 'element',
-				'useCDATA' => false
+				'type'     => 'element',
+				'useCDATA' => false,
 			],
 			'descriptions' => [
-				'type' => 'element',
-				'useCDATA' => true
+				'type'     => 'element',
+				'useCDATA' => true,
 			]
 		];
 	}

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 04.10.25
+ * @version 13.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\RecentPosts;
@@ -147,10 +147,18 @@ class RecentPosts extends SsiBlock
 
 	public function getData(ParamWrapper $parameters): array
 	{
-		$excludeBoards = empty($parameters['exclude_boards']) ? [] : explode(',', (string) $parameters['exclude_boards']);
-		$includeBoards = empty($parameters['include_boards']) ? [] : explode(',', (string) $parameters['include_boards']);
-		$excludeTopics = empty($parameters['exclude_topics']) ? [] : explode(',', (string) $parameters['exclude_topics']);
-		$includeTopics = empty($parameters['include_topics']) ? [] : explode(',', (string) $parameters['include_topics']);
+		$excludeBoards = empty($parameters['exclude_boards'])
+			? []
+			: explode(',', (string) $parameters['exclude_boards']);
+		$includeBoards = empty($parameters['include_boards'])
+			? []
+			: explode(',', (string) $parameters['include_boards']);
+		$excludeTopics = empty($parameters['exclude_topics'])
+			? []
+			: explode(',', (string) $parameters['exclude_topics']);
+		$includeTopics = empty($parameters['include_topics'])
+			? []
+			: explode(',', (string) $parameters['include_topics']);
 
 		$numPosts = Str::typed('int', $parameters['num_posts'], default: 10);
 

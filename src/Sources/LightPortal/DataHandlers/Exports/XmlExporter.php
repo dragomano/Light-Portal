@@ -80,8 +80,8 @@ abstract class XmlExporter extends AbstractExport
 							$xmlChild = $xmlName->appendChild($xml->createElement($k));
 							$xmlChild->appendChild(
 								$rule['useCDATA']
-									? $xml->createCDATASection($v)
-									: $xml->createTextNode($v)
+									? $xml->createCDATASection((string) $v)
+									: $xml->createTextNode((string) $v)
 							);
 						} elseif ($rule['type'] === 'subitem') {
 							$xmlSubElement = $xmlName->appendChild($xml->createElement($rule['elementName']));
@@ -95,8 +95,8 @@ abstract class XmlExporter extends AbstractExport
 
 								$xmlSubElementChild->appendChild(
 									$rule['subFields'][$label]['useCDATA']
-										? $xml->createCDATASection($text)
-										: $xml->createTextNode($text)
+										? $xml->createCDATASection((string) $text)
+										: $xml->createTextNode((string) $text)
 								);
 							}
 						}

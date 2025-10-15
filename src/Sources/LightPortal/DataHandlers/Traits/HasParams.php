@@ -14,22 +14,11 @@ namespace Bugo\LightPortal\DataHandlers\Traits;
 
 trait HasParams
 {
-	protected function replaceParams(array $params, array $results): array
+	protected function replaceParams(array $params, array $results, bool $replace = true): array
 	{
 		if ($params === [] || $results === [])
 			return [];
 
-		return $this->insertData(
-			'lp_params',
-			'replace',
-			$params,
-			[
-				'item_id' => 'int',
-				'type'    => 'string',
-				'name'    => 'string',
-				'value'   => 'string',
-			],
-			['item_id', 'type', 'name'],
-		);
+		return $this->insertData('lp_params', $params, ['item_id', 'type', 'name'], $replace);
 	}
 }

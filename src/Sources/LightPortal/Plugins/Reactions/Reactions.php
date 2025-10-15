@@ -8,12 +8,11 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 01.10.25
+ * @version 11.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\Reactions;
 
-use Bugo\Compat\Db;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
@@ -195,44 +194,35 @@ class Reactions extends Plugin
 
 	private function getReactions(int $id, string $entity = 'page'): array
 	{
-		$result = Db::$db->query('
-			SELECT value
-			FROM {db_prefix}lp_params
-			WHERE item_id = {int:id}
-				AND type = {string:entity}
-				AND name = {literal:reactions}
-			LIMIT 1',
-			[
-				'id'     => $id,
-				'entity' => $entity,
-			]
-		);
+		$select = $this->sql->select()
+			->from('lp_params')
+			->columns(['value'])
+			->where([
+				'item_id' => $id,
+				'type'    => $entity,
+				'name'    => $this->name
+			])
+			->limit(1);
 
-		[$reactions] = Db::$db->fetch_row($result);
+		$result = $this->sql->execute($select);
 
-		Db::$db->free_result($result);
+		$row = $result->current();
 
-		return json_decode($reactions ?? '', true) ?? [];
+		return json_decode($row['value'] ?? '', true) ?? [];
 	}
 
 	private function addReaction(int $id, string $value, string $slug, string $entity = 'page'): void
 	{
-		Db::$db->insert('replace',
-			'{db_prefix}lp_params',
-			[
-				'item_id' => 'int',
-				'type'    => 'string',
-				'name'    => 'string',
-				'value'   => 'string'
-			],
-			[
+		$replace = $this->sql->replace('lp_params')
+			->setConflictKeys(['item_id', 'type', 'name'])
+			->values([
 				'item_id' => $id,
 				'type'    => $entity,
 				'name'    => $this->name,
 				'value'   => $value
-			],
-			['item_id', 'type', 'name']
-		);
+			]);
+
+		$this->sql->execute($replace);
 
 		$this->cache()->forget('page_' . $slug . ($entity === 'comment' ? '_comments' : ''));
 

@@ -1,0 +1,162 @@
+<?php declare(strict_types=1);
+
+/**
+ * @package Light Portal
+ * @link https://dragomano.ru/mods/light-portal
+ * @author Bugo <bugo@dragomano.ru>
+ * @copyright 2019-2025 Bugo
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
+ *
+ * @version 3.0
+ */
+
+namespace Bugo\LightPortal\Database;
+
+use Bugo\LightPortal\Database\Operations\PortalDelete;
+use Bugo\LightPortal\Database\Operations\PortalInsert;
+use Bugo\LightPortal\Database\Operations\PortalReplace;
+use Bugo\LightPortal\Database\Operations\PortalSelect;
+use Bugo\LightPortal\Database\Operations\PortalUpdate;
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Adapter\Driver\ResultInterface;
+use Laminas\Db\Metadata\Source\Factory as MetadataFactory;
+use Laminas\Db\Sql\PreparableSqlInterface;
+use Laminas\Db\Sql\Sql;
+use PDO;
+use PDOStatement;
+use Throwable;
+
+if (! defined('SMF'))
+	die('No direct access...');
+
+class PortalSql extends Sql implements PortalSqlInterface
+{
+	/* @var PortalAdapterInterface */
+	protected $adapter;
+
+	private readonly string $prefix;
+
+	public function __construct(PortalAdapterInterface $adapter)
+	{
+		parent::__construct($adapter);
+
+		$this->prefix = $adapter->getPrefix();
+	}
+
+	public function getPrefix(): string
+	{
+		return $this->prefix;
+	}
+
+	public function tableExists(string $table): bool
+	{
+		$platform  = strtolower($this->adapter->getTitle());
+		$tableName = $this->prefix . $table;
+
+		try {
+			if ($platform === 'sqlite') {
+				/** @var PDO $pdo */
+				$pdo = $this->adapter->getDriver()->getConnection()->getResource();
+				/** @var PDOStatement $stmt */
+				$stmt = $pdo->prepare(
+					/** @lang text */ "SELECT 1 FROM sqlite_master WHERE type='table' AND name=?"
+				);
+				$stmt->execute([$tableName]);
+
+				return (bool) $stmt->fetchColumn();
+			}
+
+			$metadata = MetadataFactory::createSourceFromAdapter($this->adapter);
+
+			return in_array($tableName, $metadata->getTableNames(), true);
+		} catch (Throwable) {
+			return false;
+		}
+	}
+
+	public function columnExists(string $table, string $column): bool
+	{
+		$platform  = strtolower($this->adapter->getTitle());
+		$tableName = $this->prefix . $table;
+
+		if ($platform === 'sqlite') {
+			try {
+				$statement = $this->adapter->query(
+					"PRAGMA table_info($tableName)",
+					Adapter::QUERY_MODE_EXECUTE
+				);
+				$result = $statement->execute();
+
+				foreach ($result as $row) {
+					if ($row['name'] === $column) {
+						return true;
+					}
+				}
+
+				return false;
+			} catch (Throwable) {
+				return false;
+			}
+		}
+
+		try {
+			$metadata = MetadataFactory::createSourceFromAdapter($this->adapter);
+
+			return in_array($column, $metadata->getColumnNames($tableName));
+		} catch (Throwable) {
+			return false;
+		}
+	}
+
+	public function getAdapter(): PortalAdapterInterface
+	{
+		return $this->adapter;
+	}
+
+	public function getTransaction(): PortalTransactionInterface
+	{
+		return new PortalTransaction($this->adapter);
+	}
+
+	public function select($table = null): PortalSelect
+	{
+		return new PortalSelect($table, $this->prefix);
+	}
+
+	public function insert($table = null): PortalInsert
+	{
+		return new PortalInsert($table, $this->prefix);
+	}
+
+	public function update($table = null): PortalUpdate
+	{
+		return new PortalUpdate($table, $this->prefix);
+	}
+
+	public function delete($table = null): PortalDelete
+	{
+		return new PortalDelete($table, $this->prefix);
+	}
+
+	public function replace($table = null): PortalReplace
+	{
+		return new PortalReplace($table, $this->prefix);
+	}
+
+	public function execute(PreparableSqlInterface $sqlObject): ResultInterface
+	{
+		if ($sqlObject instanceof PortalReplace) {
+			if ($sqlObject->isBatch()) {
+				return $sqlObject->executeBatchReplace($this->adapter);
+			}
+
+			return $sqlObject->executeReplace($this->adapter);
+		}
+
+		if ($sqlObject instanceof PortalInsert && $sqlObject->isBatch()) {
+			return $sqlObject->executeBatch($this->adapter);
+		}
+
+		return $this->prepareStatementForSqlObject($sqlObject)->execute();
+	}
+}

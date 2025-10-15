@@ -13,7 +13,6 @@
 namespace Bugo\LightPortal\Articles;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\EntryType;
@@ -26,14 +25,21 @@ use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasParamJoins;
+use Bugo\LightPortal\Utils\Traits\HasTranslationJoins;
+use Laminas\Db\Sql\Predicate\Expression;
+use Laminas\Db\Sql\Select;
 
 use const LP_PAGE_URL;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-class PageArticle extends AbstractArticle
+class PageArticle extends AbstractArticle implements PageArticleInterface
 {
+	use HasParamJoins;
+	use HasTranslationJoins;
+
 	protected array $selectedCategories = [];
 
 	public function init(): void
@@ -45,7 +51,6 @@ class PageArticle extends AbstractArticle
 		}
 
 		$this->params = [
-			'empty_string'        => '',
 			'lang'                => User::$me->language,
 			'fallback_lang'       => Config::$language,
 			'status'              => Status::ACTIVE->value,
@@ -76,7 +81,7 @@ class PageArticle extends AbstractArticle
 			PortalHook::frontPages,
 			[
 				'columns' => &$this->columns,
-				'tables'  => &$this->tables,
+				'joins'   => &$this->joins,
 				'params'  => &$this->params,
 				'wheres'  => &$this->wheres,
 				'orders'  => &$this->orders,
@@ -106,61 +111,81 @@ class PageArticle extends AbstractArticle
 
 	public function getData(int $start, int $limit, string $sortType = null): iterable
 	{
-		$this->sorting = $sortType;
+		$this->setSorting($sortType);
 
-		$this->params += [
-			'start' => $start,
-			'limit' => $limit,
-			'sort'  => $this->orders[$this->sorting],
+		$this->prepareParams($start, $limit);
+
+		$select = $this->sql->select()
+			->from(['p' => 'lp_pages'])
+			->join(
+				['cat' => 'lp_categories'],
+				'cat.category_id = p.category_id',
+				['cat_icon' => 'icon'],
+				Select::JOIN_LEFT
+			)
+			->join(
+				['mem' => 'members'],
+				'p.author_id = mem.id_member',
+				['author_name' => new Expression('COALESCE(mem.real_name, "")')],
+				Select::JOIN_LEFT
+			)
+			->join(
+				['com' => 'lp_comments'],
+				'p.last_comment_id = com.id',
+				[
+					'comment_date'      => 'created_at',
+					'comment_author_id' => 'author_id',
+					'comment_message'   => 'message',
+				],
+				Select::JOIN_LEFT
+			)
+			->join(
+				['com_mem' => 'members'],
+				'com.author_id = com_mem.id_member',
+				['comment_author_name' => new Expression('COALESCE(com_mem.real_name, "")')],
+				Select::JOIN_LEFT
+			);
+
+		$this->addParamJoins($select, [
+			'params' => [
+				'allow_comments' => [
+					'alias' => 'par',
+					'columns' => [
+						'num_comments' => new Expression(
+							'CASE WHEN COALESCE(par.value, "0") != "0" THEN p.num_comments ELSE 0 END'
+						)
+					]
+				]
+			]
+		]);
+
+		$this->addTranslationJoins($select, ['fields' => ['title', 'content', 'description']]);
+		$this->addTranslationJoins($select, [
+			'primary' => 'cat.category_id',
+			'entity'  => 'category',
+			'fields'  => ['cat_title' => 'title'],
+			'alias'   => 'cat_t',
+		]);
+
+		$columns = [
+			Select::SQL_STAR,
+			'date' => new Expression('GREATEST(p.created_at, p.updated_at)'),
 		];
 
-		$result = Db::$db->query(/** @lang text */ '
-			SELECT
-				p.*, GREATEST(p.created_at, p.updated_at) AS date,
-				CASE WHEN COALESCE(par.value, "0") != "0" THEN p.num_comments ELSE 0 END AS num_comments,
-				COALESCE(t.title, tf.title, {string:empty_string}) AS title,
-				COALESCE(t.content, tf.content, {string:empty_string}) AS content,
-				COALESCE(t.description, tf.description, {string:empty_string}) AS description,
-				(
-					SELECT title
-					FROM {db_prefix}lp_translations
-					WHERE item_id = cat.category_id
-						AND type = {literal:category}
-						AND lang IN ({string:lang}, {string:fallback_lang})
-					ORDER BY lang = {string:lang} DESC
-					LIMIT 1
-				) AS cat_title,
-				mem.real_name AS author_name, cat.icon as cat_icon, COALESCE(com.created_at, p.created_at) AS comment_date,
-				com.author_id AS comment_author_id, mem2.real_name AS comment_author_name,
-				com.message AS comment_message' . (empty($this->columns) ? '' : ', ' . implode(', ', $this->columns)) . '
-			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}lp_categories AS cat ON (cat.category_id = p.category_id)
-				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
-				LEFT JOIN {db_prefix}lp_comments AS com ON (p.last_comment_id = com.id)
-				LEFT JOIN {db_prefix}members AS mem2 ON (com.author_id = mem2.id_member)
-				LEFT JOIN {db_prefix}lp_translations AS t ON (
-					p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang}
-				)
-				LEFT JOIN {db_prefix}lp_translations AS tf ON (
-					p.page_id = tf.item_id AND tf.type = {literal:page} AND tf.lang = {string:fallback_lang}
-				)
-				LEFT JOIN {db_prefix}lp_params AS par ON (
-					par.item_id = p.page_id AND par.type = {literal:page} AND par.name = {literal:allow_comments}
-				)' . (empty($this->tables) ? '' : '
-				' . implode("\n\t\t\t\t\t", $this->tables)) . '
-			WHERE p.status = {int:status}
-				AND p.deleted_at = 0
-				AND p.entry_type = {string:entry_type}
-				AND p.created_at <= {int:current_time}
-				AND p.permissions IN ({array_int:permissions})' . (empty($this->selectedCategories) ? '' : '
-				AND p.category_id IN ({array_int:selected_categories})') . (empty($this->wheres) ? '' : '
-				' . implode("\n\t\t\t\t\t", $this->wheres)) . '
-			ORDER BY {raw:sort}
-			LIMIT {int:start}, {int:limit}',
-			$this->params,
-		);
+		$select->columns($columns);
 
-		while ($row = Db::$db->fetch_assoc($result)) {
+		$this->applyColumns($select);
+		$this->applyJoins($select);
+		$this->applyWheres($select);
+
+		$select
+			->order($this->params['sort'])
+			->limit($this->params['limit'])
+			->offset($this->params['start']);
+
+		$result = $this->sql->execute($select);
+
+		foreach ($result as $row) {
 			Lang::censorText($row['title']);
 			Lang::censorText($row['content']);
 			Lang::censorText($row['description']);
@@ -171,13 +196,13 @@ class PageArticle extends AbstractArticle
 			$row['content'] = Content::parse($row['content'], $row['type']);
 
 			$page = [
-				'id'           => (int) $row['page_id'],
+				'id'           => $row['page_id'],
 				'section'      => $this->getSectionData($row),
 				'author'       => $this->getAuthorData($row),
 				'date'         => $this->getDate($row),
-				'created'      => (int) $row['created_at'],
-				'updated'      => (int) $row['updated_at'],
-				'last_comment' => (int) $row['comment_date'],
+				'created'      => $row['created_at'],
+				'updated'      => $row['updated_at'],
+				'last_comment' => $row['comment_date'],
 				'link'         => LP_PAGE_URL . $row['slug'],
 				'views'        => $this->getViewsData($row),
 				'replies'      => $this->getRepliesData($row),
@@ -198,31 +223,26 @@ class PageArticle extends AbstractArticle
 
 			yield $row['page_id'] => Avatar::getWithItems([$page])[0] ?? [];
 		}
-
-		Db::$db->free_result($result);
 	}
 
 	public function getTotalCount(): int
 	{
-		$result = Db::$db->query(/** @lang text */ '
-			SELECT COUNT(p.page_id)
-			FROM {db_prefix}lp_pages AS p' . (empty($this->tables) ? '' : '
-				' . implode("\n\t\t\t\t\t", $this->tables)) . '
-			WHERE p.status = {int:status}
-				AND p.deleted_at = 0
-				AND p.entry_type = {string:entry_type}
-				AND p.created_at <= {int:current_time}
-				AND p.permissions IN ({array_int:permissions})' . (empty($this->selectedCategories) ? '' : '
-				AND p.category_id IN ({array_int:selected_categories})') . (empty($this->wheres) ? '' : '
-				' . implode("\n\t\t\t\t\t", $this->wheres)),
-			$this->params,
-		);
+		$select = $this->sql->select()
+			->from(['p' => 'lp_pages'])
+			->columns(['count' => new Expression('COUNT(p.page_id)')])
+			->join(
+				['cat' => 'lp_categories'],
+				'cat.category_id = p.category_id',
+				[],
+				Select::JOIN_LEFT
+			);
 
-		[$count] = Db::$db->fetch_row($result);
+		$this->applyJoins($select);
+		$this->applyWheres($select);
 
-		Db::$db->free_result($result);
+		$result = $this->sql->execute($select)->current();
 
-		return (int) $count;
+		return $result['count'];
 	}
 
 	public function prepareTags(array &$pages): void
@@ -230,31 +250,27 @@ class PageArticle extends AbstractArticle
 		if ($pages === [])
 			return;
 
-		$result = Db::$db->query('
-			SELECT tag.*, pt.page_id, COALESCE(t.title, tf.title, {string:empty_string}) AS title
-			FROM {db_prefix}lp_tags AS tag
-				LEFT JOIN {db_prefix}lp_page_tag AS pt ON (tag.tag_id = pt.tag_id)
-				LEFT JOIN {db_prefix}lp_translations AS t ON (
-					pt.tag_id = t.item_id AND t.type = {literal:tag} AND t.lang = {string:lang}
-				)
-				LEFT JOIN {db_prefix}lp_translations AS tf ON (
-					pt.tag_id = tf.item_id AND tf.type = {literal:tag} AND tf.lang = {string:fallback_lang}
-				)
-			WHERE pt.page_id IN ({array_int:pages})
-				AND tag.status = {int:status}
-			ORDER BY title',
-			[
-				'empty_string'  => '',
-				'lang'          => User::$me->language,
-				'fallback_lang' => Config::$language,
-				'pages'         => array_keys($pages),
-				'status'        => Status::ACTIVE->value,
-			]
-		);
+		$select = $this->sql->select()
+			->from(['tag' => 'lp_tags'])
+			->join(
+				['pt' => 'lp_page_tag'],
+				'tag.tag_id = pt.tag_id',
+				['page_id'],
+				Select::JOIN_LEFT
+			)
+			->where(['pt.page_id' => array_keys($pages)])
+			->where(['tag.status' => Status::ACTIVE->value])
+			->order('title');
 
-		while ($row = Db::$db->fetch_assoc($result)) {
+		$this->addTranslationJoins($select, ['primary' => 'pt.tag_id', 'entity' => 'tag']);
+
+		$result = $this->sql->execute($select);
+
+		foreach ($result as $row) {
 			if ($row['title'] === '')
 				continue;
+
+			Lang::censorText($row['title']);
 
 			$pages[$row['page_id']]['tags'][] = [
 				'slug' => $row['slug'],
@@ -263,8 +279,24 @@ class PageArticle extends AbstractArticle
 				'name' => $row['title'],
 			];
 		}
+	}
 
-		Db::$db->free_result($result);
+	protected function applyBaseConditions(Select $select): void
+	{
+		$select->where([
+			'p.status'          => $this->params['status'],
+			'p.deleted_at'      => 0,
+			'p.entry_type'      => $this->params['entry_type'],
+			'p.created_at <= ?' => $this->params['current_time'],
+		]);
+
+		$select->where(new Expression('(cat.status = ? OR cat.category_id IS NULL)', $this->params['status']));
+
+		if (! empty($this->selectedCategories)) {
+			$select->where(['p.category_id' => $this->params['selected_categories']]);
+		}
+
+		$select->where(['p.permissions' => $this->params['permissions']]);
 	}
 
 	private function getSectionData(array $row): array
@@ -287,7 +319,7 @@ class PageArticle extends AbstractArticle
 		}
 
 		return [
-			'id'   => (int) $authorId,
+			'id'   => $authorId,
 			'link' => Config::$scripturl . '?action=profile;u=' . $authorId,
 			'name' => $authorName,
 		];
@@ -296,20 +328,20 @@ class PageArticle extends AbstractArticle
 	private function getDate(array $row): int
 	{
 		if (str_contains($this->sorting, 'last_comment') && $row['comment_date']) {
-			return (int) $row['comment_date'];
+			return $row['comment_date'];
 		}
 
 		if (str_contains($this->sorting, 'updated')) {
-			return (int) $row['date'];
+			return $row['date'];
 		}
 
-		return (int) $row['created_at'];
+		return $row['created_at'];
 	}
 
 	private function getViewsData(array $row): array
 	{
 		return [
-			'num'   => (int) $row['num_views'],
+			'num'   => $row['num_views'],
 			'title' => Lang::$txt['lp_views'],
 			'after' => '',
 		];
@@ -318,7 +350,7 @@ class PageArticle extends AbstractArticle
 	private function getRepliesData(array $row): array
 	{
 		return [
-			'num'   => Setting::getCommentBlock() === 'default' ? (int) $row['num_comments'] : 0,
+			'num'   => Setting::getCommentBlock() === 'default' ? $row['num_comments'] : 0,
 			'title' => Lang::$txt['lp_comments'],
 			'after' => '',
 		];
@@ -326,7 +358,7 @@ class PageArticle extends AbstractArticle
 
 	private function isNew(array $row): bool
 	{
-		return User::$me->last_login < $row['date'] && (int) $row['author_id'] !== User::$me->id;
+		return User::$me->last_login < $row['date'] && $row['author_id'] !== User::$me->id;
 	}
 
 	private function getImage(array $row): string
@@ -341,7 +373,7 @@ class PageArticle extends AbstractArticle
 	{
 		return User::$me->is_admin
 			|| User::$me->allowedTo('light_portal_manage_pages_any')
-			|| (User::$me->allowedTo('light_portal_manage_pages_own') && (int) $row['author_id'] === User::$me->id);
+			|| (User::$me->allowedTo('light_portal_manage_pages_own') && $row['author_id'] === User::$me->id);
 	}
 
 	private function getEditLink(array $row): string

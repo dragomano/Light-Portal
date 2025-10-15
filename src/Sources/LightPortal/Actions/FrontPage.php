@@ -22,6 +22,7 @@ use Bugo\LightPortal\Articles\BoardArticle;
 use Bugo\LightPortal\Articles\ChosenPageArticle;
 use Bugo\LightPortal\Articles\ChosenTopicArticle;
 use Bugo\LightPortal\Articles\PageArticle;
+use Bugo\LightPortal\Articles\PageArticleInterface;
 use Bugo\LightPortal\Articles\TopicArticle;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Events\HasEvents;
@@ -263,7 +264,7 @@ final class FrontPage implements ActionInterface
 			return $item;
 		});
 
-		if ($this->article instanceof PageArticle) {
+		if ($this->article instanceof PageArticleInterface) {
 			$pages = $articles->toArray();
 			$this->article->prepareTags($pages);
 			$articles = new Collection('mixed', $pages);

@@ -23,7 +23,6 @@ use Bugo\Compat\{Config, Lang, Theme};
 use Bugo\Compat\{Time, User, Utils};
 use Bugo\Compat\Actions\Admin\ACP;
 use Bugo\Compat\WebFetch\WebFetchApi;
-use Bugo\LightPortal\Areas\Traits\HasQuery;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
 use Bugo\LightPortal\Renderers\RendererInterface;
@@ -40,7 +39,6 @@ if (! defined('SMF'))
 
 final class BasicConfig extends AbstractConfig
 {
-	use HasQuery;
 	use HasSession;
 
 	public const TAB_BASE = 'base';

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 24.09.25
+ * @version 13.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\DummyArticleCards;
@@ -22,6 +22,7 @@ use Bugo\LightPortal\Enums\PortalSubAction;
 use Bugo\LightPortal\Utils\Traits\HasCache;
 use DateTime;
 use Exception;
+use Laminas\Db\Sql\Select;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -77,11 +78,13 @@ class DummyArticle extends AbstractArticle
 				'is_new'    => random_int(0, 1),
 				'views'     => [
 					'num'   => random_int(0, 9999),
-					'title' => Lang::$txt['lp_views']
+					'title' => Lang::$txt['lp_views'],
+					'after' => '',
 				],
 				'replies'   => [
 					'num'   => random_int(0, 9999),
-					'title' => Lang::$txt['lp_replies']
+					'title' => Lang::$txt['lp_replies'],
+					'after' => '',
 				],
 				'css_class' => random_int(0, 1) ? ' sticky' : '',
 				'image'     => $image,
@@ -125,4 +128,6 @@ class DummyArticle extends AbstractArticle
 
 		return Utils::jsonDecode($data, true)['users'] ?? [];
 	}
+
+	protected function applyBaseConditions(Select $select): void {}
 }

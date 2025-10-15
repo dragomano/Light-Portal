@@ -12,8 +12,8 @@
 
 namespace Bugo\LightPortal\DataHandlers\Imports;
 
+use Bugo\LightPortal\Database\PortalSqlInterface;
 use Bugo\LightPortal\DataHandlers\Traits\HasSlug;
-use Bugo\LightPortal\Utils\DatabaseInterface;
 use Bugo\LightPortal\Utils\ErrorHandlerInterface;
 use Bugo\LightPortal\Utils\FileInterface;
 use SimpleXMLElement;
@@ -27,9 +27,13 @@ class TagImport extends XmlImporter
 
 	protected string $entity = 'tags';
 
-	public function __construct(FileInterface $file, DatabaseInterface $db, ErrorHandlerInterface $errorHandler)
+	public function __construct(
+		PortalSqlInterface $sql,
+		FileInterface $file,
+		ErrorHandlerInterface $errorHandler
+	)
 	{
-		parent::__construct($this->entity, $file, $db, $errorHandler);
+		parent::__construct($this->entity, $sql, $file, $errorHandler);
 	}
 
 	protected function processItems(): void
@@ -57,19 +61,7 @@ class TagImport extends XmlImporter
 
 		$this->startTransaction($items);
 
-		$results = $this->insertData(
-			'lp_tags',
-			'replace',
-			$items,
-			[
-				'tag_id' => 'int',
-				'slug'   => 'string-255',
-				'icon'   => 'string-60',
-				'status' => 'int',
-			],
-			['tag_id'],
-		);
-
+		$results = $this->insertData('lp_tags', $items, ['tag_id'], true);
 		$results = $this->replaceTranslations($translations, $results);
 		$results = $this->replacePages($pages, $results);
 
@@ -97,15 +89,6 @@ class TagImport extends XmlImporter
 		if ($pages === [] || $results === [])
 			return [];
 
-		return $this->insertData(
-			'lp_page_tag',
-			'replace',
-			$pages,
-			[
-				'page_id' => 'int',
-				'tag_id'  => 'int',
-			],
-			['page_id', 'tag_id'],
-		);
+		return $this->insertData('lp_page_tag', $pages, ['page_id', 'tag_id'], true);
 	}
 }

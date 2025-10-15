@@ -27,18 +27,6 @@ abstract class AbstractCustomCategoryImport extends AbstractCustomImport
 
 	protected function getResults(array $items): array
 	{
-		return $this->insertData(
-			'lp_categories',
-			'',
-			$items,
-			[
-				'parent_id'   => 'int',
-				'slug'        => 'string-255',
-				'icon'        => 'string-60',
-				'priority'    => 'int',
-				'status'      => 'int',
-			],
-			['category_id'],
-		);
+		return $this->insertData('lp_categories', $items);
 	}
 }

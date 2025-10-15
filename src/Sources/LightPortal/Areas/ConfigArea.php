@@ -12,7 +12,6 @@
 
 namespace Bugo\LightPortal\Areas;
 
-use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
@@ -40,6 +39,7 @@ use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasCache;
 use Bugo\LightPortal\Utils\Traits\HasForumHooks;
+use Bugo\LightPortal\Utils\Traits\HasPortalSql;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 
 use function Bugo\LightPortal\app;
@@ -54,6 +54,7 @@ final class ConfigArea
 {
 	use HasCache;
 	use HasEvents;
+	use HasPortalSql;
 	use HasRequest;
 	use HasForumHooks;
 
@@ -221,11 +222,11 @@ final class ConfigArea
 		User::$me->isAllowedTo('admin_forum');
 
 		$areas = [
-			'basic'    => [new BasicConfig(), 'show'],
-			'extra'    => [new ExtraConfig(), 'show'],
-			'panels'   => [new PanelConfig(), 'show'],
-			'misc'     => [new MiscConfig(), 'show'],
-			'feedback' => [new FeedbackConfig(), 'show'],
+			'basic'    => [app(BasicConfig::class), 'show'],
+			'extra'    => [app(ExtraConfig::class), 'show'],
+			'panels'   => [app(PanelConfig::class), 'show'],
+			'misc'     => [app(MiscConfig::class), 'show'],
+			'feedback' => [app(FeedbackConfig::class), 'show'],
 		];
 
 		// Tabs
@@ -238,8 +239,8 @@ final class ConfigArea
 				Lang::getTxt('lp_base_info', [
 					LP_VERSION,
 					PHP_VERSION,
-					Utils::$smcFunc['db_title'],
-					Db::$db->get_version(),
+					$this->getPortalSql()->getAdapter()->getTitle(),
+					$this->getPortalSql()->getAdapter()->getVersion(),
 				]),
 			'tabs' => [
 				'basic' => [],

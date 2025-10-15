@@ -2,7 +2,7 @@
 
 return [
 	'title' => 'Sudoku',
-	'description' => 'Sudoku is a logic-based puzzle in which the player must fill the empty cells with digits from 1 to 9 such that each row, each column, and each of the nine 3x3 squares contains all of the digits from 1 to 9 without repetition.',
+	'description' => 'Sudoku is a logic puzzle where you fill a 9x9 grid with digits 1-9 so that each row, column, and 3x3 subgrid contains all digits without repetition.',
 	'difficulty' => 'The difficulty of the game',
 	'check_button' => 'Check the solution',
 	'you_won' => 'Congratulations! You have solved the puzzle.',

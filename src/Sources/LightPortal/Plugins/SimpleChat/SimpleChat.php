@@ -8,12 +8,11 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 01.10.25
+ * @version 10.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleChat;
 
-use Bugo\Compat\Db;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalHook;
@@ -54,13 +53,14 @@ class SimpleChat extends Block
 	{
 		parent::__construct();
 
-		$this->chat = new Chat($this->name);
+		$this->chat = new Chat($this->name, $this->sql);
 	}
 
 	#[HookAttribute(PortalHook::addSettings)]
 	public function addSettings(): void
 	{
-		$this->chat->prepareTable();
+		$table = new Table($this->sql);
+		$table->createTable();
 	}
 
 	#[HookAttribute(PortalHook::prepareBlockParams)]
@@ -132,13 +132,8 @@ class SimpleChat extends Block
 	#[HookAttribute(PortalHook::onBlockRemoving)]
 	public function onBlockRemoving(Event $e): void
 	{
-		Db::$db->query('
-			DELETE FROM {db_prefix}lp_simple_chat_messages
-			WHERE block_id IN ({array_int:items})',
-			[
-				'items' => $e->args->items,
-			]
-		);
+		$delete = $this->sql->delete('lp_simple_chat_messages')->where(['block_id' => $e->args->items]);
+		$this->sql->execute($delete);
 	}
 
 	private function loadDependencies(): void

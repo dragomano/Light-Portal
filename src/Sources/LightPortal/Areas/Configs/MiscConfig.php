@@ -17,7 +17,7 @@ use Bugo\Bricks\Settings\ConfigBuilder;
 use Bugo\Bricks\Settings\IntConfig;
 use Bugo\Bricks\Settings\TextConfig;
 use Bugo\Bricks\Settings\TitleConfig;
-use Bugo\Compat\{Config, Db, Lang};
+use Bugo\Compat\{Config, Lang};
 use Bugo\Compat\{User, Utils};
 use Bugo\Compat\Actions\Admin\ACP;
 use Bugo\LightPortal\Tasks\Maintainer;
@@ -69,21 +69,19 @@ final class MiscConfig extends AbstractConfig
 		if ($this->request()->has('save')) {
 			User::$me->checkSession();
 
-			Db::$db->query('
-				DELETE FROM {db_prefix}background_tasks
-				WHERE task_file LIKE {string:task_file}',
-				[
-					'task_file' => '%$sourcedir/LightPortal%'
-				]
-			);
+			$delete = $this->getPortalSql()->delete('background_tasks');
+			$delete->where->like('task_file', '%$sourcedir/LightPortal%');
+			$this->getPortalSql()->execute($delete);
 
 			if ($this->request()->has('lp_weekly_cleaning')) {
-				Db::$db->insert('insert',
-					'{db_prefix}background_tasks',
-					['task_file' => 'string-255', 'task_class' => 'string-255', 'task_data' => 'string'],
-					['$sourcedir/LightPortal/Tasks/Maintainer.php', '\\' . Maintainer::class, ''],
-					['id_task']
-				);
+				$insert = $this->getPortalSql()->insert('background_tasks')
+					->values([
+						'task_file'    => '$sourcedir/LightPortal/Tasks/Maintainer.php',
+						'task_class'   => '\\' . Maintainer::class,
+						'task_data'    => '',
+					]);
+
+				$this->getPortalSql()->execute($insert);
 			}
 
 			$saveVars = $configVars;

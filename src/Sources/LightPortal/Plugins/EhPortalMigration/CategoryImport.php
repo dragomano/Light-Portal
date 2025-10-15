@@ -8,18 +8,17 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 23.09.25
+ * @version 09.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\EhPortalMigration;
 
 use Bugo\Bricks\Tables\Column;
-use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\LightPortal\DataHandlers\Imports\Custom\AbstractCustomCategoryImport;
 use Bugo\LightPortal\UI\Tables\CheckboxColumn;
 use Bugo\LightPortal\UI\Tables\TitleColumn;
+use Laminas\Db\Sql\Expression;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -46,77 +45,68 @@ class CategoryImport extends AbstractCustomCategoryImport
 
 	public function getAll(int $start = 0, int $limit = 0, string $sort = 'id_category'): array
 	{
-		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'sp_categories')))
+		if (! $this->sql->tableExists('sp_categories'))
 			return [];
 
-		$result = Db::$db->query('
-			SELECT id_category, name AS title, publish AS status
-			FROM {db_prefix}sp_categories
-			ORDER BY {raw:sort}
-			LIMIT {int:start}, {int:limit}',
-			[
-				'sort'  => $sort,
-				'start' => $start,
-				'limit' => $limit,
-			]
-		);
+		$select = $this->sql->select()
+			->from('sp_categories')
+			->columns(['id_category', 'title' => 'name', 'publish'])
+			->order($sort)
+			->limit($limit)
+			->offset($start);
+
+		$result = $this->sql->execute($select);
 
 		$items = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			$items[$row['id_category']] = [
 				'id'     => $row['id_category'],
 				'title'  => $row['title'],
-				'status' => $row['status'],
+				'status' => $row['publish'],
 			];
 		}
-
-		Db::$db->free_result($result);
 
 		return $items;
 	}
 
 	public function getTotalCount(): int
 	{
-		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'sp_categories')))
+		if (! $this->sql->tableExists('sp_categories'))
 			return 0;
 
-		$result = Db::$db->query(/** @lang text */ '
-			SELECT COUNT(*)
-			FROM {db_prefix}sp_categories',
-		);
+		$select = $this->sql->select()
+			->from('sp_categories')
+			->columns(['count' => new Expression('COUNT(*)')]);
 
-		[$count] = Db::$db->fetch_row($result);
+		$result = $this->sql->execute($select)->current();
 
-		Db::$db->free_result($result);
-
-		return (int) $count;
+		return $result['count'];
 	}
 
 	protected function getItems(array $ids): array
 	{
-		$result = Db::$db->query(/** @lang text */ '
-			SELECT id_category, name AS title, publish AS status
-			FROM {db_prefix}sp_categories' . (empty($ids) ? '' : '
-			WHERE id_category IN ({array_int:categories})'),
-			[
-				'categories' => $ids,
-			]
-		);
+		$select = $this->sql->select()
+			->from('sp_categories')
+			->columns(['id_category', 'title' => 'name', 'publish']);
+
+		if ($ids !== []) {
+			$select->where->in('id_category', $ids);
+		}
+
+		$result = $this->sql->execute($select);
 
 		$items = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			$items[$row['id_category']] = [
 				'title'       => $row['title'],
 				'parent_id'   => 0,
-				'slug'        => '',
+				'slug'        => $this->generateSlug(['english' => $row['title']]),
 				'icon'        => '',
 				'description' => '',
 				'priority'    => 0,
-				'status'      => (int) $row['status'],
+				'status'      => $row['publish'],
 			];
 		}
-
-		Db::$db->free_result($result);
 
 		return $items;
 	}

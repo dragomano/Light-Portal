@@ -16,8 +16,8 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Sapi;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Database\PortalSqlInterface;
 use Bugo\LightPortal\DataHandlers\DataHandler;
-use Bugo\LightPortal\Utils\DatabaseInterface;
 use Bugo\LightPortal\Utils\ErrorHandlerInterface;
 use Bugo\LightPortal\Utils\FilesystemInterface;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
@@ -35,12 +35,12 @@ abstract class AbstractExport extends DataHandler
 
 	public function __construct(
 		protected string $entity,
-		protected DatabaseInterface $db,
+		protected PortalSqlInterface $sql,
 		protected FilesystemInterface $filesystem,
 		protected ErrorHandlerInterface $errorHandler
 	)
 	{
-		parent::__construct($db, $errorHandler);
+		parent::__construct($sql, $errorHandler);
 	}
 
 	abstract protected function getData(): array;

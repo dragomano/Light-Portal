@@ -8,13 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 01.10.25
+ * @version 10.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\TagList;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\LightPortal\Actions\Tag;
 use Bugo\LightPortal\Enums\PortalHook;
@@ -27,6 +26,7 @@ use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\RadioField;
 use Bugo\LightPortal\Utils\Str;
+use Laminas\Db\Sql\Predicate\Expression;
 
 use function Bugo\LightPortal\app;
 
@@ -88,27 +88,27 @@ class TagList extends Block
 		if (! class_exists('\Bugo\Optimus\Handlers\TagHandler'))
 			return [];
 
-		$result = Db::$db->query('
-			SELECT ok.id, ok.name, COUNT(olk.keyword_id) AS frequency
-			FROM {db_prefix}optimus_keywords AS ok
-				INNER JOIN {db_prefix}optimus_log_keywords AS olk ON (ok.id = olk.keyword_id)
-			GROUP BY ok.id, ok.name
-			ORDER BY {raw:sort}',
-			[
-				'sort' => $sort,
-			]
-		);
+		$select = $this->sql->select()
+			->from(['ok' => 'optimus_keywords'])
+			->columns([
+				'id',
+				'name',
+				'frequency' => new Expression('COUNT(olk.keyword_id)')
+			])
+			->join(['olk' => 'optimus_log_keywords'], 'ok.id = olk.keyword_id')
+			->group(['ok.id', 'ok.name'])
+			->order($sort);
+
+		$result = $this->sql->execute($select);
 
 		$keywords = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			$keywords[] = [
 				'title'     => $row['name'],
 				'link'      => Config::$scripturl . '?action=keywords;id=' . $row['id'],
 				'frequency' => $row['frequency'],
 			];
 		}
-
-		Db::$db->free_result($result);
 
 		return $keywords;
 	}
@@ -125,7 +125,7 @@ class TagList extends Block
 		if ($source === 'lp_tags') {
 			$tagList = $this->userCache($this->name . '_addon_b' . $e->args->id)
 				->setLifeTime($e->args->cacheTime)
-				->setFallback(fn() => app(Tag::class)->getAll(0, 0, $sorting === 'name' ? 'title' : 'frequency DESC'));
+				->setFallback(fn() => app(Tag::class)->getAll(sort: $sorting === 'name' ? 'title' : 'frequency DESC'));
 		} else {
 			$tagList = $this->userCache($this->name . '_addon_b' . $e->args->id)
 				->setLifeTime($e->args->cacheTime)

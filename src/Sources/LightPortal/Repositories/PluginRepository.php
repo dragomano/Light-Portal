@@ -12,7 +12,7 @@
 
 namespace Bugo\LightPortal\Repositories;
 
-use Bugo\Compat\Db;
+use Bugo\LightPortal\Database\PortalSqlInterface;
 use Bugo\LightPortal\Utils\Traits\HasCache;
 
 if (! defined('SMF'))
@@ -22,21 +22,16 @@ final class PluginRepository implements PluginRepositoryInterface
 {
 	use HasCache;
 
+	public function __construct(protected PortalSqlInterface $sql) {}
+
 	public function addSettings(array $settings = []): void
 	{
 		if ($settings === [])
 			return;
 
-		Db::$db->insert('replace',
-			'{db_prefix}lp_plugins',
-			[
-				'name'   => 'string',
-				'config' => 'string',
-				'value'  => 'string',
-			],
-			$settings,
-			['name', 'config']
-		);
+		$replace = $this->sql->replace('lp_plugins')->batch($settings);
+
+		$this->sql->execute($replace);
 
 		$this->cache()->forget('plugin_settings');
 	}
@@ -44,17 +39,15 @@ final class PluginRepository implements PluginRepositoryInterface
 	public function getSettings(): array
 	{
 		return $this->cache()->remember('plugin_settings', function () {
-			$result = Db::$db->query(/** @lang text */ '
-				SELECT name, config, value
-				FROM {db_prefix}lp_plugins',
-			);
+			$select = $this->sql->select('lp_plugins')
+				->columns(['name', 'config', 'value']);
+
+			$result = $this->sql->execute($select);
 
 			$settings = [];
-			while ($row = Db::$db->fetch_assoc($result)) {
+			foreach ($result as $row) {
 				$settings[$row['name']][$row['config']] = $row['value'];
 			}
-
-			Db::$db->free_result($result);
 
 			return $settings;
 		}, 3 * 24 * 60 * 60);
@@ -65,38 +58,16 @@ final class PluginRepository implements PluginRepositoryInterface
 		if ($settings === [])
 			return;
 
-		$newSettings = $oldSettings = [];
+		$newSettings = [];
 		foreach ($settings as $config => $value) {
-			if (empty($value))
-				$oldSettings[] = $config;
-
-			if ($value) {
-				$newSettings[] = [
-					'name'   => $name,
-					'config' => $config,
-					'value'  => $value,
-				];
-			}
+			$newSettings[] = [
+				'name'   => $name,
+				'config' => $config,
+				'value'  => $value,
+			];
 		}
 
-		$this->removeSettings($name, $oldSettings);
 		$this->addSettings($newSettings);
-	}
-
-	public function removeSettings(string $name, array $settings = []): void
-	{
-		if ($settings === [])
-			return;
-
-		Db::$db->query('
-			DELETE FROM {db_prefix}lp_plugins
-			WHERE name = {string:name}
-				AND config IN ({array_string:settings})',
-			[
-				'name'     => $name,
-				'settings' => $settings,
-			]
-		);
 
 		$this->cache()->forget('plugin_settings');
 	}

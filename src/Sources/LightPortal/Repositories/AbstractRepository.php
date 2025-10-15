@@ -13,16 +13,21 @@
 namespace Bugo\LightPortal\Repositories;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Msg;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Database\PortalSqlInterface;
+use Bugo\LightPortal\Database\PortalTransactionInterface;
+use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\Traits\HasCache;
+use Bugo\LightPortal\Utils\Traits\HasParamJoins;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 use Bugo\LightPortal\Utils\Traits\HasResponse;
 use Bugo\LightPortal\Utils\Traits\HasSession;
+use Bugo\LightPortal\Utils\Traits\HasTranslationJoins;
+use Laminas\Db\Sql\Predicate\Expression;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -30,17 +35,20 @@ if (! defined('SMF'))
 abstract class AbstractRepository implements RepositoryInterface
 {
 	use HasCache;
+	use HasParamJoins;
 	use HasRequest;
 	use HasResponse;
 	use HasSession;
+	use HasTranslationJoins;
 
 	protected string $entity;
 
-	abstract public function getData(int $item): array;
+	protected PortalTransactionInterface $transaction;
 
-	abstract public function setData(int $item = 0): void;
-
-	abstract public function remove(array $items): void;
+	public function __construct(protected PortalSqlInterface $sql)
+	{
+		$this->transaction = $this->sql->getTransaction();
+	}
 
 	public function toggleStatus(array $items = []): void
 	{
@@ -52,49 +60,43 @@ abstract class AbstractRepository implements RepositoryInterface
 			default    => $this->entity . 's',
 		};
 
-		Db::$db->query('
-			UPDATE {db_prefix}lp_' . $table . '
-			SET status = CASE status
-				WHEN 1 THEN 0
-				WHEN 0 THEN 1
-				WHEN 2 THEN 1
-				WHEN 3 THEN 0
-				ELSE status
-			END
-			WHERE ' . $this->entity . '_id IN ({array_int:items})',
-			[
-				'items' => $items,
-			]
-		);
+		$tableName = 'lp_' . $table;
+
+		$caseExpression = "CASE status WHEN 1 THEN 0 WHEN 0 THEN 1 WHEN 2 THEN 1 WHEN 3 THEN 0 ELSE status END";
+
+		$update = $this->sql->update($tableName);
+		$update->set(['status' => new Expression($caseExpression)]);
+		$update->where->in($this->entity . '_id', $items);
+
+		$this->sql->execute($update);
 
 		$this->session('lp')->free('active_' . $table);
 	}
 
 	public function getTranslationFilter(
-		string $tableAlias = 'b',
-		string $idField = 'block_id',
+		string $tableAlias = 'p',
+		string $idField = 'page_id',
 		array $fields = ['title', 'content', 'description']
-	): string
+	): Expression
 	{
 		$fieldConditions = [];
 		foreach ($fields as $field) {
-			$fieldConditions[] = "$field != {string:empty_string}";
+			$fieldConditions[] = "$field != ''";
 		}
 
 		$fieldsSql = implode(' OR ', $fieldConditions);
 
-		return " AND EXISTS (
-			SELECT 1 FROM {db_prefix}lp_translations
-			WHERE item_id = $tableAlias.$idField
-				AND type = {literal:$this->entity}
-				AND lang IN ({string:lang}, {string:fallback_lang})
-				AND ($fieldsSql)
-		)";
+		$where = "item_id = $tableAlias.$idField AND type = ? AND lang IN (?, ?) AND ($fieldsSql)";
+		$sql = "EXISTS (SELECT 1 FROM {$this->sql->getPrefix()}lp_translations WHERE $where)";
+
+		$params = $this->getLangQueryParams();
+
+		return new Expression($sql, [$this->entity, $params['lang'], $params['fallback_lang']]);
 	}
 
 	protected function prepareBbcContent(array &$entity): void
 	{
-		if ($entity['type'] !== 'bbc')
+		if ($entity['type'] !== ContentType::BBC->name())
 			return;
 
 		$entity['content'] = Utils::htmlspecialchars($entity['content'], ENT_QUOTES);
@@ -102,9 +104,18 @@ abstract class AbstractRepository implements RepositoryInterface
 		Msg::preparseCode($entity['content']);
 	}
 
-	protected function saveTranslations(int $item, string $method = ''): void
+	protected function getLangQueryParams(): array
 	{
-		$rows = [
+		return [
+			'lang'          => User::$me->language,
+			'fallback_lang' => Config::$language,
+			'guest'         => Lang::$txt['guest_title'],
+		];
+	}
+
+	protected function saveTranslations(int $item, bool $replace = false): void
+	{
+		$values = [
 			'item_id'     => $item,
 			'type'        => $this->entity,
 			'lang'        => User::$me->language,
@@ -113,38 +124,32 @@ abstract class AbstractRepository implements RepositoryInterface
 			'description' => Utils::htmlspecialchars(Utils::$context['lp_' . $this->entity]['description'] ?? ''),
 		];
 
-		$params = [
-			'item_id'     => 'int',
-			'type'        => 'string',
-			'lang'        => 'string',
-			'title'       => 'string-255',
-			'content'     => 'string',
-			'description' => 'string-510',
-		];
+		$sqlObject = $replace
+			? $this->sql->replace('lp_translations')->setConflictKeys(['item_id', 'type', 'lang'])->values($values)
+			: $this->sql->insert('lp_translations')->values($values);
 
 		if (! Language::isDefault()) {
 			$default = $this->getDefaultTranslations($item);
 
 			foreach (['title', 'content', 'description'] as $field) {
-				if ($rows[$field] === $default[$field]) {
-					unset($rows[$field], $params[$field]);
+				if ($values[$field] === $default[$field]) {
+					unset($values[$field]);
 				}
 			}
 		}
 
-		Db::$db->insert($method, '{db_prefix}lp_translations', $params, $rows, ['item_id', 'type', 'lang']);
+		$this->sql->execute($sqlObject);
 	}
 
-	protected function saveOptions(int $item, string $method = ''): void
+	protected function saveOptions(int $item, bool $replace = false): void
 	{
 		if (empty(Utils::$context['lp_' . $this->entity]['options']))
 			return;
 
-		$params = [];
+		$rows = [];
 		foreach (Utils::$context['lp_' . $this->entity]['options'] as $name => $value) {
 			$value = is_array($value) ? implode(',', $value) : $value;
-
-			$params[] = [
+			$rows[] = [
 				'item_id' => $item,
 				'type'    => $this->entity,
 				'name'    => $name,
@@ -152,51 +157,28 @@ abstract class AbstractRepository implements RepositoryInterface
 			];
 		}
 
-		if ($params === [])
+		if ($rows === [])
 			return;
 
-		Db::$db->insert($method,
-			'{db_prefix}lp_params',
-			[
-				'item_id' => 'int',
-				'type'    => 'string',
-				'name'    => 'string',
-				'value'   => 'string',
-			],
-			$params,
-			['item_id', 'type', 'name'],
-		);
-	}
+		$sqlObject = $replace
+			? $this->sql->replace('lp_params')->setConflictKeys(['item_id', 'type'])->batch($rows)
+			: $this->sql->insert('lp_params')->batch($rows);
 
-	protected function getLangQueryParams(): array
-	{
-		return [
-			'empty_string'  => '',
-			'lang'          => User::$me->language,
-			'fallback_lang' => Config::$language,
-			'guest'         => Lang::$txt['guest_title'],
-		];
+		$this->sql->execute($sqlObject);
 	}
 
 	private function getDefaultTranslations(int $item): array
 	{
-		$result = Db::$db->query('
-			SELECT title, content, description
-			FROM {db_prefix}lp_translations
-			WHERE item_id = {int:item_id}
-				AND type = {string:type}
-				AND lang = {string:lang}',
-			[
-				'item_id' => $item,
-				'type'    => $this->entity,
-				'lang'    => Config::$language,
-			]
-		);
+		$select = $this->sql->select('lp_translations')
+			->columns(['title', 'content', 'description'])
+			->where([
+				'item_id = ?' => $item,
+				'type = ?'    => $this->entity,
+				'lang = ?'    => Config::$language,
+			]);
 
-		$translations = Db::$db->fetch_assoc($result) ?: ['title' => null, 'content' => null, 'description' => null];
+		$result = $this->sql->execute($select)->current();
 
-		Db::$db->free_result($result);
-
-		return $translations;
+		return $result ?: ['title' => null, 'content' => null, 'description' => null];
 	}
 }

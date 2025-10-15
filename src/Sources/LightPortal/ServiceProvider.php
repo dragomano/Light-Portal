@@ -16,6 +16,7 @@ use Bugo\Bricks\Breadcrumbs\BreadcrumbBuilder;
 use Bugo\Bricks\Breadcrumbs\BreadcrumbPresenter;
 use Bugo\Bricks\Forms\FormPresenter;
 use Bugo\Bricks\Forms\FormRenderer;
+use Bugo\Bricks\Tables\Interfaces\TablePresenterInterface;
 use Bugo\Bricks\Tables\TablePresenter;
 use Bugo\LightPortal\Actions\Block;
 use Bugo\LightPortal\Actions\BoardIndex;
@@ -29,6 +30,11 @@ use Bugo\LightPortal\Actions\Tag;
 use Bugo\LightPortal\Areas\BlockArea;
 use Bugo\LightPortal\Areas\CategoryArea;
 use Bugo\LightPortal\Areas\ConfigArea;
+use Bugo\LightPortal\Areas\Configs\BasicConfig;
+use Bugo\LightPortal\Areas\Configs\ExtraConfig;
+use Bugo\LightPortal\Areas\Configs\FeedbackConfig;
+use Bugo\LightPortal\Areas\Configs\MiscConfig;
+use Bugo\LightPortal\Areas\Configs\PanelConfig;
 use Bugo\LightPortal\Areas\CreditArea;
 use Bugo\LightPortal\Areas\PageArea;
 use Bugo\LightPortal\Areas\PluginArea;
@@ -38,6 +44,9 @@ use Bugo\LightPortal\Articles\ChosenPageArticle;
 use Bugo\LightPortal\Articles\ChosenTopicArticle;
 use Bugo\LightPortal\Articles\PageArticle;
 use Bugo\LightPortal\Articles\TopicArticle;
+use Bugo\LightPortal\Database\PortalAdapterFactory;
+use Bugo\LightPortal\Database\PortalSql;
+use Bugo\LightPortal\Database\PortalSqlInterface;
 use Bugo\LightPortal\DataHandlers\Exports\BlockExport;
 use Bugo\LightPortal\DataHandlers\Exports\CategoryExport;
 use Bugo\LightPortal\DataHandlers\Exports\PageExport;
@@ -56,9 +65,6 @@ use Bugo\LightPortal\Lists\IconList;
 use Bugo\LightPortal\Lists\PageList;
 use Bugo\LightPortal\Lists\PluginList;
 use Bugo\LightPortal\Lists\TagList;
-use Bugo\LightPortal\Migrations\PortalAdapter;
-use Bugo\LightPortal\Migrations\PortalAdapterFactory;
-use Bugo\LightPortal\Migrations\PortalAdapterInterface;
 use Bugo\LightPortal\Models\BlockFactory;
 use Bugo\LightPortal\Models\CategoryFactory;
 use Bugo\LightPortal\Models\PageFactory;
@@ -74,6 +80,9 @@ use Bugo\LightPortal\Repositories\BlockRepositoryInterface;
 use Bugo\LightPortal\Repositories\CategoryRepository;
 use Bugo\LightPortal\Repositories\CategoryRepositoryInterface;
 use Bugo\LightPortal\Repositories\CommentRepository;
+use Bugo\LightPortal\Repositories\CommentRepositoryInterface;
+use Bugo\LightPortal\Repositories\PageListRepository;
+use Bugo\LightPortal\Repositories\PageListRepositoryInterface;
 use Bugo\LightPortal\Repositories\PageRepository;
 use Bugo\LightPortal\Repositories\PageRepositoryInterface;
 use Bugo\LightPortal\Repositories\PluginRepository;
@@ -87,14 +96,13 @@ use Bugo\LightPortal\UI\Tables\TableRenderer;
 use Bugo\LightPortal\UI\View;
 use Bugo\LightPortal\Utils\Cache;
 use Bugo\LightPortal\Utils\CacheInterface;
-use Bugo\LightPortal\Utils\Database;
-use Bugo\LightPortal\Utils\DatabaseInterface;
 use Bugo\LightPortal\Utils\ErrorHandler;
 use Bugo\LightPortal\Utils\ErrorHandlerInterface;
 use Bugo\LightPortal\Utils\File;
 use Bugo\LightPortal\Utils\FileInterface;
 use Bugo\LightPortal\Utils\Filesystem;
 use Bugo\LightPortal\Utils\FilesystemInterface;
+use Bugo\LightPortal\Utils\Notifier;
 use Bugo\LightPortal\Utils\Post;
 use Bugo\LightPortal\Utils\PostInterface;
 use Bugo\LightPortal\Utils\Request;
@@ -114,253 +122,436 @@ if (! defined('SMF'))
 
 class ServiceProvider extends AbstractServiceProvider
 {
-	private const SERVICES = [
-		AssetHandler::class,
-		Block::class,
-		BlockArea::class,
-		BlockExport::class,
-		BlockFactory::class,
-		BlockImport::class,
-		BlockList::class,
-		BlockRepository::class,
-		BlockValidator::class,
-		BoardArticle::class,
-		BoardIndex::class,
-		BreadcrumbBuilder::class,
-		BreadcrumbPresenter::class,
-		BreadcrumbRenderer::class,
-		BreadcrumbWrapper::class,
-		Cache::class,
-		CacheInterface::class,
-		CardListInterface::class,
-		Category::class,
-		CategoryArea::class,
-		CategoryExport::class,
-		CategoryFactory::class,
-		CategoryImport::class,
-		CategoryList::class,
-		CategoryRepository::class,
-		CategoryValidator::class,
-		ChosenPageArticle::class,
-		ChosenTopicArticle::class,
-		Comment::class,
-		CommentRepository::class,
-		ConfigArea::class,
-		ConfigHandler::class,
-		CreditArea::class,
-		Database::class,
-		DatabaseInterface::class,
-		ErrorHandlerInterface::class,
-		EventManager::class,
-		EventManagerFactory::class,
-		File::class,
-		FileInterface::class,
-		Filesystem::class,
-		FilesystemInterface::class,
-		FormPresenter::class,
-		FormRenderer::class,
-		FrontPage::class,
-		IconList::class,
-		Integration::class,
-		LangHandler::class,
-		Page::class,
-		PageArea::class,
-		PageArticle::class,
-		PageExport::class,
-		PageFactory::class,
-		PageImport::class,
-		PageList::class,
-		PageRepository::class,
-		PageValidator::class,
-		PluginArea::class,
-		PluginExport::class,
-		PluginHandler::class,
-		PluginImport::class,
-		PluginList::class,
-		PluginRepository::class,
-		PluginRepositoryInterface::class,
-		PortalAdapter::class,
-		PortalAdapterInterface::class,
-		PortalApp::class,
-		Post::class,
-		PostInterface::class,
-		RendererInterface::class,
-		Request::class,
-		RequestInterface::class,
-		Response::class,
-		SelectRenderer::class,
-		Session::class,
-		SessionManager::class,
-		TablePresenter::class,
-		TableRenderer::class,
-		Tag::class,
-		TagArea::class,
-		TagExport::class,
-		TagFactory::class,
-		TagImport::class,
-		TagList::class,
-		TagRepository::class,
-		TagValidator::class,
-		TopicArticle::class,
-		View::class,
-		Weaver::class,
-	];
+	private ?array $serviceIds = null;
 
 	public function provides(string $id): bool
 	{
-		return in_array($id, self::SERVICES, true);
+		if ($this->serviceIds === null) {
+			$this->serviceIds = array_column($this->getFlattenedDefinitions(), 'id');
+		}
+
+		return in_array($id, $this->serviceIds, true);
 	}
 
 	public function register(): void
 	{
 		$container = $this->getContainer();
 
-		$container->add(Database::class);
-		$container->add(DatabaseInterface::class, Database::class);
+		foreach ($this->getFlattenedDefinitions() as $definition) {
+			if (isset($definition['concrete'])) {
+				$serviceDefinition = $container->add($definition['id'], $definition['concrete']);
+			} else {
+				$serviceDefinition = $container->add($definition['id']);
+			}
 
-		$container->add(PortalAdapterInterface::class, fn() => PortalAdapterFactory::create());
+			if (isset($definition['arguments']) && is_array($definition['arguments'])) {
+				$serviceDefinition->addArguments($definition['arguments']);
+			}
 
-		$container->add(PortalApp::class);
-		$container->add(Integration::class);
-		$container->add(ConfigArea::class);
-		$container->add(CreditArea::class);
+			if (isset($definition['shared'])) {
+				$serviceDefinition->setShared($definition['shared']);
+			}
+		}
+	}
 
-		$container->add(View::class, fn() => new View(realpath(__DIR__ . '/../../Themes/default/LightPortal')));
-		$container->add(SelectRenderer::class)->addArgument(View::class);
+	private function getFlattenedDefinitions(): array
+	{
+		return array_merge(...array_values($this->getDefinitions()));
+	}
 
-		$container->add(RendererInterface::class, Blade::class);
-		$container->add(TablePresenter::class)->addArgument(TableRenderer::class);
-		$container->add(TableRenderer::class);
-		$container->add(FormPresenter::class)->addArgument(FormRenderer::class);
-		$container->add(FormRenderer::class);
+	private function getDefinitions(): array
+	{
+		return [
+			'core' => [
+				[
+					'id' => PortalSqlInterface::class,
+					'concrete' => fn() => new PortalSql(PortalAdapterFactory::create()),
+				],
+				['id' => PortalApp::class],
+				['id' => Integration::class],
+				['id' => ConfigArea::class],
+				['id' => CreditArea::class],
+			],
 
-		$container->add(PageArticle::class);
-		$container->add(TopicArticle::class);
-		$container->add(BoardArticle::class);
-		$container->add(ChosenPageArticle::class);
-		$container->add(ChosenTopicArticle::class);
+			'view_and_renderers' => [
+				[
+					'id' => View::class,
+					'concrete' => fn() => new View(realpath(__DIR__ . '/../../Themes/default/LightPortal')),
+				],
+				[
+					'id' => SelectRenderer::class,
+					'arguments' => [View::class],
+				],
+				[
+					'id' => RendererInterface::class,
+					'concrete' => Blade::class,
+				],
+				[
+					'id' => TablePresenterInterface::class,
+					'concrete' => TablePresenter::class,
+					'arguments' => [TableRenderer::class],
+				],
+				['id' => TableRenderer::class],
+				[
+					'id' => FormPresenter::class,
+					'arguments' => [FormRenderer::class],
+				],
+				['id' => FormRenderer::class],
+			],
 
-		$container->add(EventManager::class);
-		$container->add(AssetHandler::class);
-		$container->add(ConfigHandler::class);
-		$container->add(LangHandler::class);
-		$container->add(EventManagerFactory::class);
-		$container->add(PluginHandler::class, fn() => fn(array $plugins = []) => new PluginHandler($plugins));
+			'actions' => [
+				['id' => BoardIndex::class],
+				[
+					'id' => FrontPage::class,
+					'arguments' => [RendererInterface::class],
+				],
+				['id' => Block::class],
+				[
+					'id' => Page::class,
+					'arguments' => [PageRepositoryInterface::class],
+				],
+				[
+					'id' => Comment::class,
+					'concrete' => Comment::class,
+					'arguments' => [CommentRepositoryInterface::class, Notifier::class],
+				],
+				[
+					'id' => Category::class,
+					'arguments' => [
+						CardListInterface::class,
+						PageListRepositoryInterface::class,
+					],
+				],
+				[
+					'id' => Tag::class,
+					'arguments' => [
+						CardListInterface::class,
+						PageListRepositoryInterface::class,
+					],
+				],
+				[
+					'id' => CardListInterface::class,
+					'concrete' => CardList::class,
+				],
+			],
 
-		$container->add(CacheInterface::class, Cache::class);
-		$container->add(Request::class);
-		$container->add(RequestInterface::class, Request::class);
-		$container->add(Response::class);
-		$container->add(Post::class);
-		$container->add(PostInterface::class, Post::class);
-		$container->add(File::class);
-		$container->add(FileInterface::class, File::class);
-		$container->add(Session::class);
+			'articles' => [
+				[
+					'id' => PageArticle::class,
+					'arguments' => [PortalSqlInterface::class],
+				],
+				[
+					'id' => TopicArticle::class,
+					'arguments' => [PortalSqlInterface::class],
+				],
+				[
+					'id' => BoardArticle::class,
+					'arguments' => [PortalSqlInterface::class],
+				],
+				[
+					'id' => ChosenPageArticle::class,
+					'arguments' => [PortalSqlInterface::class],
+				],
+				[
+					'id' => ChosenTopicArticle::class,
+					'arguments' => [PortalSqlInterface::class],
+				],
+			],
 
-		$container->add(CommentRepository::class);
-		$container->add(PluginRepository::class);
-		$container->add(BlockRepository::class);
-		$container->add(CategoryRepository::class);
-		$container->add(TagRepository::class);
+			'handlers_and_managers' => [
+				['id' => EventManager::class],
+				['id' => AssetHandler::class],
+				['id' => ConfigHandler::class],
+				['id' => LangHandler::class],
+				['id' => EventManagerFactory::class],
+				[
+					'id' => PluginHandler::class,
+					'concrete' => fn() => fn(array $plugins = []) => new PluginHandler($plugins),
+				],
+			],
 
-		$container->add(BlockRepositoryInterface::class, BlockRepository::class);
-		$container->add(PageRepositoryInterface::class, PageRepository::class)
-			->addArgument(PortalAdapterInterface::class);
-		$container->add(CategoryRepositoryInterface::class, CategoryRepository::class);
-		$container->add(TagRepositoryInterface::class, TagRepository::class);
-		$container->add(PluginRepositoryInterface::class, PluginRepository::class);
+			'repositories' => [
+				[
+					'id' => BlockRepositoryInterface::class,
+					'concrete' => BlockRepository::class,
+					'arguments' => [PortalSqlInterface::class],
+				],
+				[
+					'id' => CategoryRepositoryInterface::class,
+					'concrete' => CategoryRepository::class,
+					'arguments' => [PortalSqlInterface::class],
+				],
+				[
+					'id' => CommentRepositoryInterface::class,
+					'concrete' => CommentRepository::class,
+					'arguments' => [PortalSqlInterface::class],
+				],
+				[
+					'id' => PageListRepositoryInterface::class,
+					'concrete' => PageListRepository::class,
+					'arguments' => [PortalSqlInterface::class],
+				],
+				[
+					'id' => PageRepositoryInterface::class,
+					'concrete' => PageRepository::class,
+					'arguments' => [PortalSqlInterface::class, Notifier::class],
+				],
+				[
+					'id' => PluginRepositoryInterface::class,
+					'concrete' => PluginRepository::class,
+					'arguments' => [PortalSqlInterface::class],
+				],
+				[
+					'id' => TagRepositoryInterface::class,
+					'concrete' => TagRepository::class,
+					'arguments' => [PortalSqlInterface::class],
+				],
+			],
 
-		$container->add(BlockList::class)->addArgument(BlockRepositoryInterface::class);
-		$container->add(CategoryList::class)->addArgument(CategoryRepositoryInterface::class);
-		$container->add(IconList::class);
-		$container->add(PageList::class)->addArgument(PageRepositoryInterface::class);
-		$container->add(PluginList::class);
-		$container->add(TagList::class)->addArgument(TagRepositoryInterface::class);
+			'lists' => [
+				[
+					'id' => BlockList::class,
+					'arguments' => [BlockRepositoryInterface::class],
+				],
+				[
+					'id' => CategoryList::class,
+					'arguments' => [CategoryRepositoryInterface::class],
+				],
+				['id' => IconList::class],
+				[
+					'id' => PageList::class,
+					'arguments' => [PageRepositoryInterface::class],
+				],
+				['id' => PluginList::class],
+				[
+					'id' => TagList::class,
+					'arguments' => [TagRepositoryInterface::class],
+				],
+			],
 
-		$container->add(SessionManager::class);
+			'utils' => [
+				[
+					'id' => CacheInterface::class,
+					'concrete' => Cache::class,
+				],
+				['id' => Request::class],
+				[
+					'id' => RequestInterface::class,
+					'concrete' => Request::class,
+				],
+				['id' => Response::class],
+				['id' => Post::class],
+				[
+					'id' => PostInterface::class,
+					'concrete' => Post::class,
+				],
+				['id' => File::class],
+				[
+					'id' => FileInterface::class,
+					'concrete' => File::class,
+				],
+				['id' => Session::class],
+				[
+					'id' => SessionManager::class,
+					'arguments' => [PortalSqlInterface::class],
+				],
+				[
+					'id' => Notifier::class,
+					'arguments' => [PortalSqlInterface::class],
+				],
+				['id' => ErrorHandler::class],
+				[
+					'id' => ErrorHandlerInterface::class,
+					'concrete' => ErrorHandler::class,
+				],
+				['id' => Filesystem::class],
+				[
+					'id' => FilesystemInterface::class,
+					'concrete' => Filesystem::class,
+				],
+			],
 
-		$container->add(BlockArea::class)->addArgument(BlockRepositoryInterface::class);
-		$container->add(BlockExport::class)
-			->addArgument(BlockRepositoryInterface::class)
-			->addArgument(DatabaseInterface::class)
-			->addArgument(FilesystemInterface::class)
-			->addArgument(ErrorHandlerInterface::class);
-		$container->add(BlockImport::class)
-			->addArgument(FileInterface::class)
-			->addArgument(DatabaseInterface::class)
-			->addArgument(ErrorHandlerInterface::class);
-		$container->add(PageArea::class)->addArgument(PageRepositoryInterface::class);
-		$container->add(PageExport::class)
-			->addArgument(PageRepositoryInterface::class)
-			->addArgument(DatabaseInterface::class)
-			->addArgument(FilesystemInterface::class)
-			->addArgument(ErrorHandlerInterface::class);
-		$container->add(PageImport::class)
-			->addArgument(FileInterface::class)
-			->addArgument(DatabaseInterface::class)
-			->addArgument(ErrorHandlerInterface::class);
-		$container->add(CategoryArea::class)->addArgument(CategoryRepositoryInterface::class);
-		$container->add(CategoryExport::class)
-			->addArgument(CategoryRepositoryInterface::class)
-			->addArgument(DatabaseInterface::class)
-			->addArgument(FilesystemInterface::class)
-			->addArgument(ErrorHandlerInterface::class);
-		$container->add(CategoryImport::class)
-			->addArgument(FileInterface::class)
-			->addArgument(DatabaseInterface::class)
-			->addArgument(ErrorHandlerInterface::class);
-		$container->add(TagArea::class)->addArgument(TagRepositoryInterface::class);
-		$container->add(TagExport::class)
-			->addArgument(TagRepositoryInterface::class)
-			->addArgument(DatabaseInterface::class)
-			->addArgument(FilesystemInterface::class)
-			->addArgument(ErrorHandlerInterface::class);
-		$container->add(TagImport::class)
-			->addArgument(FileInterface::class)
-			->addArgument(DatabaseInterface::class)
-			->addArgument(ErrorHandlerInterface::class);
-		$container->add(PluginArea::class)->addArgument(PluginRepositoryInterface::class);
-		$container->add(PluginExport::class)
-			->addArgument(DatabaseInterface::class)
-			->addArgument(FilesystemInterface::class)
-			->addArgument(ErrorHandlerInterface::class);
-		$container->add(PluginImport::class)
-			->addArgument(FileInterface::class)
-			->addArgument(DatabaseInterface::class)
-			->addArgument(ErrorHandlerInterface::class);
+			'configs' => [
+				['id' => BasicConfig::class],
+				['id' => ExtraConfig::class],
+				['id' => PanelConfig::class],
+				['id' => MiscConfig::class],
+				['id' => FeedbackConfig::class],
+			],
 
-		$container->add(ErrorHandler::class);
-		$container->add(ErrorHandlerInterface::class, ErrorHandler::class);
+			'block_area_export_import' => [
+				[
+					'id' => BlockArea::class,
+					'arguments' => [BlockRepositoryInterface::class],
+				],
+				[
+					'id' => BlockExport::class,
+					'concrete' => BlockExport::class,
+					'arguments' => [
+						BlockRepositoryInterface::class,
+						PortalSqlInterface::class,
+						FilesystemInterface::class,
+						ErrorHandlerInterface::class,
+					],
+				],
+				[
+					'id' => BlockImport::class,
+					'concrete' => BlockImport::class,
+					'arguments' => [
+						FileInterface::class,
+						PortalSqlInterface::class,
+						ErrorHandlerInterface::class,
+					],
+				],
+			],
 
-		$container->add(Filesystem::class);
-		$container->add(FilesystemInterface::class, Filesystem::class);
+			'page_area_export_import' => [
+				[
+					'id' => PageArea::class,
+					'arguments' => [PageRepositoryInterface::class],
+				],
+				[
+					'id' => PageExport::class,
+					'concrete' => PageExport::class,
+					'arguments' => [
+						PageRepositoryInterface::class,
+						PortalSqlInterface::class,
+						FilesystemInterface::class,
+						ErrorHandlerInterface::class,
+					],
+				],
+				[
+					'id' => PageImport::class,
+					'concrete' => PageImport::class,
+					'arguments' => [
+						FileInterface::class,
+						PortalSqlInterface::class,
+						ErrorHandlerInterface::class,
+					],
+				],
+			],
 
-		$container->add(BoardIndex::class);
-		$container->add(FrontPage::class)->addArgument(RendererInterface::class);
-		$container->add(Block::class);
-		$container->add(Page::class)->addArgument(PageRepositoryInterface::class);
-		$container->add(Comment::class)->addArgument(CommentRepository::class);
-		$container->add(Category::class)->addArgument(CardListInterface::class);
-		$container->add(Tag::class)->addArgument(CardListInterface::class);
-		$container->add(CardListInterface::class, CardList::class);
+			'category_area_export_import' => [
+				[
+					'id' => CategoryArea::class,
+					'arguments' => [CategoryRepositoryInterface::class],
+				],
+				[
+					'id' => CategoryExport::class,
+					'concrete' => CategoryExport::class,
+					'arguments' => [
+						CategoryRepositoryInterface::class,
+						PortalSqlInterface::class,
+						FilesystemInterface::class,
+						ErrorHandlerInterface::class,
+					],
+				],
+				[
+					'id' => CategoryImport::class,
+					'concrete' => CategoryImport::class,
+					'arguments' => [
+						FileInterface::class,
+						PortalSqlInterface::class,
+						ErrorHandlerInterface::class,
+					],
+				],
+			],
 
-		$container->add(BlockValidator::class);
-		$container->add(BlockFactory::class);
-		$container->add(CategoryValidator::class);
-		$container->add(CategoryFactory::class);
-		$container->add(PageValidator::class);
-		$container->add(PageFactory::class);
-		$container->add(TagValidator::class);
-		$container->add(TagFactory::class);
+			'tag_area_export_import' => [
+				[
+					'id' => TagArea::class,
+					'arguments' => [TagRepositoryInterface::class],
+				],
+				[
+					'id' => TagExport::class,
+					'concrete' => TagExport::class,
+					'arguments' => [
+						TagRepositoryInterface::class,
+						PortalSqlInterface::class,
+						FilesystemInterface::class,
+						ErrorHandlerInterface::class,
+					],
+				],
+				[
+					'id' => TagImport::class,
+					'concrete' => TagImport::class,
+					'arguments' => [
+						FileInterface::class,
+						PortalSqlInterface::class,
+						ErrorHandlerInterface::class,
+					],
+				],
+			],
 
-		$container->add(BreadcrumbRenderer::class);
-		$container->add(BreadcrumbPresenter::class)->addArgument(BreadcrumbRenderer::class);
-		$container->add(BreadcrumbBuilder::class, static fn() => BreadcrumbBuilder::make())->setShared(false);
-		$container->add(BreadcrumbWrapper::class)
-			->addArgument(BreadcrumbBuilder::class)
-			->addArgument(BreadcrumbPresenter::class)
-			->setShared(false);
+			'plugin_area_export_import' => [
+				[
+					'id' => PluginArea::class,
+					'arguments' => [PluginRepositoryInterface::class],
+				],
+				[
+					'id' => PluginExport::class,
+					'concrete' => PluginExport::class,
+					'arguments' => [
+						PortalSqlInterface::class,
+						FilesystemInterface::class,
+						ErrorHandlerInterface::class,
+					],
+				],
+				[
+					'id' => PluginImport::class,
+					'concrete' => PluginImport::class,
+					'arguments' => [
+						FileInterface::class,
+						PortalSqlInterface::class,
+						ErrorHandlerInterface::class,
+					],
+				],
+			],
 
-		$container->add(Weaver::class, Weaver::class)->setShared(false);
+			'validators_and_factories' => [
+				[
+					'id' => BlockValidator::class,
+					'arguments' => [PortalSqlInterface::class],
+				],
+				['id' => BlockFactory::class],
+				[
+					'id' => CategoryValidator::class,
+					'arguments' => [PortalSqlInterface::class],
+				],
+				['id' => CategoryFactory::class],
+				[
+					'id' => PageValidator::class,
+					'arguments' => [PortalSqlInterface::class],
+				],
+				['id' => PageFactory::class],
+				[
+					'id' => TagValidator::class,
+					'arguments' => [PortalSqlInterface::class],
+				],
+				['id' => TagFactory::class],
+			],
+
+			'other' => [
+				['id' => BreadcrumbRenderer::class],
+				[
+					'id' => BreadcrumbPresenter::class,
+					'arguments' => [BreadcrumbRenderer::class],
+				],
+				[
+					'id' => BreadcrumbBuilder::class,
+					'concrete' => static fn() => BreadcrumbBuilder::make(),
+					'shared' => false,
+				],
+				[
+					'id' => BreadcrumbWrapper::class,
+					'arguments' => [BreadcrumbBuilder::class, BreadcrumbPresenter::class],
+					'shared' => false,
+				],
+				[
+					'id' => Weaver::class,
+					'shared' => false,
+				],
+			],
+		];
 	}
 }

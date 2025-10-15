@@ -12,9 +12,9 @@
 
 namespace Bugo\LightPortal\Utils\Traits;
 
-use Bugo\Compat\Db;
 use Bugo\Compat\Theme;
 use Bugo\LightPortal\Utils\Setting;
+use Laminas\Db\Sql\Where;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -36,27 +36,26 @@ trait HasThemes
 	public function getForumThemes(): array
 	{
 		if (($themes = $this->cache()->get('forum_themes')) === null) {
-			$result = Db::$db->query('
-				SELECT id_theme, value
-				FROM {db_prefix}themes
-				WHERE id_theme IN ({array_int:themes})
-					AND variable = {literal:name}',
-				[
-					'themes' => Setting::get('knownThemes', 'array', []),
-				]
-			);
+			$select = $this->sql->select()
+				->from('themes')
+				->columns(['id_theme', 'value'])
+				->where(function (Where $where) {
+					$where->in('id_theme', Setting::get('knownThemes', 'array', []));
+					$where->equalTo('variable', 'name');
+				});
+
+			$result = $this->sql->execute($select);
 
 			$themes = [];
-			while ($row = Db::$db->fetch_assoc($result)) {
+			foreach ($result as $row) {
 				$themes[$row['id_theme']] = [
-					'id'   => (int) $row['id_theme'],
+					'id'   => $row['id_theme'],
 					'name' => $row['value'],
 				];
 			}
 
-			Db::$db->free_result($result);
-
 			$themes = array_column($themes, 'name', 'id');
+
 			$this->cache()->put('forum_themes', $themes);
 		}
 

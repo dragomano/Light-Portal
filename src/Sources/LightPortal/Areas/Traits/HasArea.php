@@ -22,12 +22,14 @@ use Bugo\LightPortal\UI\Fields\TextField;
 use Bugo\LightPortal\Utils\Editor;
 use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasTablePresenter;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 trait HasArea
 {
+	use HasTablePresenter;
 	use HasQuery;
 
 	public function createBbcEditor(string $content = ''): void
@@ -51,7 +53,7 @@ trait HasArea
 		return $object['content'];
 	}
 
-	public function prepareTitleFields(string $entity = 'page', bool $required = true): void
+	public function prepareTitleFields(bool $required = true): void
 	{
 		Security::checkSubmitOnce('register');
 
@@ -60,8 +62,7 @@ trait HasArea
 
 		$title = TextField::make('title', Lang::$txt['lp_title'])
 			->setTab(Tab::CONTENT)
-			->setAttribute('x-model', 'title')
-			->setValue(Utils::$context['lp_' . $entity]['title']);
+			->setAttribute('x-model', 'title');
 
 		if (Language::isDefault() && $required) {
 			$title->required();

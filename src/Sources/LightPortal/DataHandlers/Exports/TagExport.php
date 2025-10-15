@@ -13,30 +13,34 @@
 namespace Bugo\LightPortal\DataHandlers\Exports;
 
 use Bugo\Bricks\Tables\IdColumn;
+use Bugo\LightPortal\Database\PortalSqlInterface;
+use Bugo\LightPortal\DataHandlers\Traits\HasUiTable;
 use Bugo\LightPortal\Repositories\TagRepositoryInterface;
 use Bugo\LightPortal\UI\Tables\CheckboxColumn;
 use Bugo\LightPortal\UI\Tables\IconColumn;
 use Bugo\LightPortal\UI\Tables\TitleColumn;
-use Bugo\LightPortal\Utils\DatabaseInterface;
 use Bugo\LightPortal\Utils\ErrorHandlerInterface;
 use Bugo\LightPortal\Utils\FilesystemInterface;
+use Laminas\Db\Sql\Predicate\Expression;
+use Laminas\Db\Sql\Select;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 class TagExport extends XmlExporter
 {
-	use ExportTableTrait;
+	use HasUiTable;
 
 	protected string $entity = 'tags';
 
 	public function __construct(
 		private readonly TagRepositoryInterface $repository,
-		DatabaseInterface $database,
+		PortalSqlInterface $sql,
 		FilesystemInterface $filesystem,
 		ErrorHandlerInterface $errorHandler
-	) {
-		parent::__construct($this->entity, $database, $filesystem, $errorHandler);
+	)
+	{
+		parent::__construct($this->entity, $sql, $filesystem, $errorHandler);
 	}
 
 	protected function setupUi(): void
@@ -63,25 +67,32 @@ class TagExport extends XmlExporter
 
 		$tags = $this->hasEntityInRequest() ? $this->request()->get($this->entity) : [];
 
-		$query = '
-			SELECT tag.*, pt.page_id, t.lang, COALESCE(t.title, {string:empty_string}) AS title
-			FROM {db_prefix}lp_tags AS tag
-				LEFT JOIN {db_prefix}lp_page_tag AS pt ON (tag.tag_id = pt.tag_id)
-				LEFT JOIN {db_prefix}lp_translations AS t ON (
-					tag.tag_id = t.item_id AND t.type = {literal:tag}
-				)
-			WHERE 1=1' . (empty($tags) ? '' : '
-				AND tag.tag_id IN ({array_int:tags})');
+		$select = $this->sql->select()
+			->from(['tag' => 'lp_tags'])
+			->join(
+				['pt' => 'lp_page_tag'],
+				'tag.tag_id = pt.tag_id',
+				['page_id' => new Expression('pt.page_id')],
+				Select::JOIN_LEFT
+			)
+			->join(
+				['t' => 'lp_translations'],
+				new Expression('tag.tag_id = t.item_id AND t.type = ?', ['tag']),
+				[
+					'lang'  => new Expression('t.lang'),
+					'title' => new Expression('COALESCE(t.title, "")'),
+				],
+				Select::JOIN_LEFT
+			);
 
-		$params = [
-			'empty_string' => '',
-			'tags'         => $tags,
-		];
+		if ($tags !== []) {
+			$select->where->in('tag.tag_id', $tags);
+		}
 
-		$result = $this->db->query($query, $params);
+		$result = $this->sql->execute($select);
 
 		$items = [];
-		while ($row = $this->db->fetchAssoc($result)) {
+		foreach ($result as $row) {
 			$items[$row['tag_id']] ??= [
 				'tag_id' => $row['tag_id'],
 				'slug'   => $row['slug'],
@@ -99,8 +110,6 @@ class TagExport extends XmlExporter
 				];
 			}
 		}
-
-		$this->db->freeResult($result);
 
 		return $items;
 	}
@@ -121,16 +130,16 @@ class TagExport extends XmlExporter
 	{
 		return [
 			'titles' => [
-				'type' => 'element',
-				'useCDATA' => false
+				'type'     => 'element',
+				'useCDATA' => false,
 			],
 			'pages' => [
-				'type' => 'subitem',
+				'type'        => 'subitem',
 				'elementName' => 'page',
-				'subFields' => [
+				'subFields'   => [
 					'id' => [
 						'isAttribute' => true,
-						'useCDATA' => false
+						'useCDATA'    => false,
 					]
 				]
 			]

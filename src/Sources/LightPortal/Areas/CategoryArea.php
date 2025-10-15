@@ -14,7 +14,6 @@ namespace Bugo\LightPortal\Areas;
 
 use Bugo\Bricks\Tables\Column;
 use Bugo\Bricks\Tables\IdColumn;
-use Bugo\Bricks\Tables\TablePresenter;
 use Bugo\Compat\Config;
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
@@ -46,7 +45,7 @@ use const LP_NAME;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final readonly class CategoryArea
+final readonly class CategoryArea implements AreaInterface
 {
 	use HasArea;
 
@@ -54,10 +53,6 @@ final readonly class CategoryArea
 
 	public function main(): void
 	{
-		Theme::loadTemplate('LightPortal/ManageCategories');
-
-		Utils::$context['template_layers'][] = 'manage_categories';
-
 		Utils::$context['page_title']  = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_categories_manage'];
 		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_categories';
 
@@ -68,9 +63,16 @@ final readonly class CategoryArea
 
 		$this->doActions();
 
+		Theme::loadJavaScriptFile('light_portal/Sortable.min.js');
+
 		$builder = PortalTableBuilder::make('lp_categories', Lang::$txt['lp_categories'])
 			->setDefaultSortColumn('priority')
-			->setScript('const entity = new Category();')
+			->setScript('const entity = new Category();
+		new Sortable(document.querySelector("#lp_categories tbody"), {
+			handle: ".handle",
+			animation: 150,
+			onSort: e => entity.updatePriority(e)
+		})')
 			->withCreateButton('categories')
 			->setItems($this->repository->getAll(...))
 			->setCount($this->repository->getTotalCount(...))
@@ -88,7 +90,7 @@ final readonly class CategoryArea
 				ContextMenuColumn::make()
 			]);
 
-		app(TablePresenter::class)->show($builder);
+		$this->getTablePresenter()->show($builder);
 	}
 
 	public function add(): void
@@ -197,7 +199,7 @@ final readonly class CategoryArea
 
 	private function prepareFormFields(): void
 	{
-		$this->prepareTitleFields('category');
+		$this->prepareTitleFields();
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
 			->setTab(Tab::APPEARANCE)
@@ -232,7 +234,7 @@ final readonly class CategoryArea
 
 		Security::checkSubmitOnce('free');
 
-		Utils::$context['preview_title']   = Utils::$context['lp_category']['title'] ?? '';
+		Utils::$context['preview_title']   = Str::decodeHtmlEntities(Utils::$context['lp_category']['title'] ?? '');
 		Utils::$context['preview_content'] = Utils::htmlspecialchars(Utils::$context['lp_category']['description'], ENT_QUOTES);
 
 		Str::cleanBbcode(Utils::$context['preview_title']);

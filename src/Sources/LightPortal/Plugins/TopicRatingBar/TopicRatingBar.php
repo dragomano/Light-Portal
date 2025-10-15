@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 01.10.25
+ * @version 10.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\TopicRatingBar;
@@ -21,6 +21,7 @@ use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\Utils\Str;
+use Laminas\Db\Sql\Select;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -34,9 +35,12 @@ class TopicRatingBar extends Plugin
 		if (! class_exists('TopicRatingBar'))
 			return;
 
-		$e->args->columns[] = 'tr.total_votes, tr.total_value';
-
-		$e->args->tables[] = 'LEFT JOIN {db_prefix}topic_ratings AS tr ON (t.id_topic = tr.id)';
+		$e->args->joins[] = fn(Select $select) => $select->join(
+			['tr' => 'topic_ratings'],
+			't.id_topic = tr.id',
+			['total_votes', 'total_value'],
+			Select::JOIN_LEFT
+		);
 	}
 
 	#[HookAttribute(PortalHook::frontTopicsRow)]

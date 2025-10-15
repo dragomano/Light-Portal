@@ -16,8 +16,8 @@ use AppendIterator;
 use Bugo\Compat\Sapi;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Database\PortalSqlInterface;
 use Bugo\LightPortal\Lists\PluginList;
-use Bugo\LightPortal\Utils\DatabaseInterface;
 use Bugo\LightPortal\Utils\ErrorHandlerInterface;
 use Bugo\LightPortal\Utils\FilesystemInterface;
 use FilesystemIterator;
@@ -35,11 +35,12 @@ class PluginExport extends AbstractExport
 	protected string $entity = 'plugins';
 
 	public function __construct(
-		DatabaseInterface $database,
+		PortalSqlInterface $sql,
 		FilesystemInterface $filesystem,
 		ErrorHandlerInterface $errorHandler
-	) {
-		parent::__construct($this->entity, $database, $filesystem, $errorHandler);
+	)
+	{
+		parent::__construct($this->entity, $sql, $filesystem, $errorHandler);
 	}
 
 	protected function setupUi(): void

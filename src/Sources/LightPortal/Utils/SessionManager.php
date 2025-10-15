@@ -12,18 +12,20 @@
 
 namespace Bugo\LightPortal\Utils;
 
-use Bugo\Compat\Db;
 use Bugo\Compat\User;
-use Bugo\LightPortal\Enums\EntryType;
+use Bugo\LightPortal\Database\PortalSqlInterface;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Utils\Traits\HasSession;
+use Laminas\Db\Sql\Expression;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class SessionManager
+final readonly class SessionManager
 {
 	use HasSession;
+
+	public function __construct(private PortalSqlInterface $sql) {}
 
 	public function __invoke(): array
 	{
@@ -41,20 +43,13 @@ final class SessionManager
 	private function getActiveBlocksCount(): int
 	{
 		if ($this->session('lp')->get('active_blocks') === null) {
-			$result = Db::$db->query('
-				SELECT COUNT(block_id)
-				FROM {db_prefix}lp_blocks
-				WHERE status = {int:status}',
-				[
-					'status' => Status::ACTIVE->value,
-				]
-			);
+			$select = $this->sql->select('lp_blocks')
+				->columns(['count' => new Expression('COUNT(block_id)')])
+				->where(['status' => Status::ACTIVE->value]);
 
-			[$count] = Db::$db->fetch_row($result);
+			$result = $this->sql->execute($select)->current();
 
-			Db::$db->free_result($result);
-
-			$this->session('lp')->put('active_blocks', (int) $count);
+			$this->session('lp')->put('active_blocks', $result['count']);
 		}
 
 		return $this->session('lp')->get('active_blocks') ?? 0;
@@ -65,25 +60,20 @@ final class SessionManager
 		$key = User::$me->allowedTo('light_portal_manage_pages_any') ? '' : ('_u' . User::$me->id);
 
 		if ($this->session('lp')->get('active_pages' . $key) === null) {
-			$result = Db::$db->query('
-				SELECT COUNT(page_id)
-				FROM {db_prefix}lp_pages
-				WHERE status = {int:status}
-					AND deleted_at = 0
-					AND entry_type = {string:entry_type}' . (User::$me->allowedTo('light_portal_manage_pages_any') ? '' : '
-					AND author_id = {int:author}'),
-				[
+			$select = $this->sql->select('lp_pages')
+				->columns(['count' => new Expression('COUNT(page_id)')])
+				->where([
 					'status'     => Status::ACTIVE->value,
-					'entry_type' => EntryType::DEFAULT->name(),
-					'author'     => User::$me->id,
-				]
-			);
+					'deleted_at' => 0,
+				]);
 
-			[$count] = Db::$db->fetch_row($result);
+			if (! User::$me->allowedTo('light_portal_manage_pages_any')) {
+				$select->where(['author_id' => User::$me->id]);
+			}
 
-			Db::$db->free_result($result);
+			$result = $this->sql->execute($select)->current();
 
-			$this->session('lp')->put('active_pages' . $key, (int) $count);
+			$this->session('lp')->put('active_pages' . $key, $result['count']);
 		}
 
 		return $this->session('lp')->get('active_pages' . $key) ?? 0;
@@ -94,23 +84,16 @@ final class SessionManager
 		$key = User::$me->allowedTo('light_portal_manage_pages_any') ? '' : ('_u' . User::$me->id);
 
 		if ($this->session('lp')->get('my_pages' . $key) === null) {
-			$result = Db::$db->query('
-				SELECT COUNT(page_id)
-				FROM {db_prefix}lp_pages
-				WHERE author_id = {int:author}
-					AND deleted_at = 0
-					AND entry_type = {string:entry_type}',
-				[
-					'author'     => User::$me->id,
-					'entry_type' => EntryType::DEFAULT->name(),
-				]
-			);
+			$select = $this->sql->select('lp_pages')
+				->columns(['count' => new Expression('COUNT(page_id)')])
+				->where([
+					'author_id'  => User::$me->id,
+					'deleted_at' => 0,
+				]);
 
-			[$count] = Db::$db->fetch_row($result);
+			$result = $this->sql->execute($select)->current();
 
-			Db::$db->free_result($result);
-
-			$this->session('lp')->put('my_pages' . $key, (int) $count);
+			$this->session('lp')->put('my_pages' . $key, $result['count']);
 		}
 
 		return $this->session('lp')->get('my_pages' . $key) ?? 0;
@@ -119,21 +102,16 @@ final class SessionManager
 	private function getUnapprovedPagesCount(): int
 	{
 		if ($this->session('lp')->get('unapproved_pages') === null) {
-			$result = Db::$db->query('
-				SELECT COUNT(page_id)
-				FROM {db_prefix}lp_pages
-				WHERE status = {int:status}
-					AND deleted_at = 0',
-				[
-					'status' => Status::UNAPPROVED->value,
-				]
-			);
+			$select = $this->sql->select('lp_pages')
+				->columns(['count' => new Expression('COUNT(page_id)')])
+				->where([
+					'status'     => Status::UNAPPROVED->value,
+					'deleted_at' => 0,
+				]);
 
-			[$count] = Db::$db->fetch_row($result);
+			$result = $this->sql->execute($select)->current();
 
-			Db::$db->free_result($result);
-
-			$this->session('lp')->put('unapproved_pages', (int) $count);
+			$this->session('lp')->put('unapproved_pages', $result['count']);
 		}
 
 		return $this->session('lp')->get('unapproved_pages') ?? 0;
@@ -142,17 +120,13 @@ final class SessionManager
 	private function getDeletedPagesCount(): int
 	{
 		if ($this->session('lp')->get('deleted_pages') === null) {
-			$result = Db::$db->query(/** @lang text */ '
-				SELECT COUNT(page_id)
-				FROM {db_prefix}lp_pages
-				WHERE deleted_at <> 0',
-			);
+			$select = $this->sql->select('lp_pages')
+				->columns(['count' => new Expression('COUNT(page_id)')]);
+			$select->where->notEqualTo('deleted_at', 0);
 
-			[$count] = Db::$db->fetch_row($result);
+			$result = $this->sql->execute($select)->current();
 
-			Db::$db->free_result($result);
-
-			$this->session('lp')->put('deleted_pages', (int) $count);
+			$this->session('lp')->put('deleted_pages', $result['count']);
 		}
 
 		return $this->session('lp')->get('deleted_pages') ?? 0;
@@ -161,20 +135,13 @@ final class SessionManager
 	private function getActiveCategoriesCount(): int
 	{
 		if ($this->session('lp')->get('active_categories') === null) {
-			$result = Db::$db->query('
-				SELECT COUNT(category_id)
-				FROM {db_prefix}lp_categories
-				WHERE status = {int:status}',
-				[
-					'status' => Status::ACTIVE->value,
-				]
-			);
+			$select = $this->sql->select('lp_categories')
+				->columns(['count' => new Expression('COUNT(category_id)')])
+				->where(['status' => Status::ACTIVE->value]);
 
-			[$count] = Db::$db->fetch_row($result);
+			$result = $this->sql->execute($select)->current();
 
-			Db::$db->free_result($result);
-
-			$this->session('lp')->put('active_categories', (int) $count);
+			$this->session('lp')->put('active_categories', (int) $result['count']);
 		}
 
 		return $this->session('lp')->get('active_categories') ?? 0;
@@ -183,20 +150,13 @@ final class SessionManager
 	private function getActiveTagsCount(): int
 	{
 		if ($this->session('lp')->get('active_tags') === null) {
-			$result = Db::$db->query('
-				SELECT COUNT(tag_id)
-				FROM {db_prefix}lp_tags
-				WHERE status = {int:status}',
-				[
-					'status' => Status::ACTIVE->value,
-				]
-			);
+			$select = $this->sql->select('lp_tags')
+				->columns(['count' => new Expression('COUNT(tag_id)')])
+				->where(['status' => Status::ACTIVE->value]);
 
-			[$count] = Db::$db->fetch_row($result);
+			$result = $this->sql->execute($select)->current();
 
-			Db::$db->free_result($result);
-
-			$this->session('lp')->put('active_tags', (int) $count);
+			$this->session('lp')->put('active_tags', (int) $result['count']);
 		}
 
 		return $this->session('lp')->get('active_tags') ?? 0;

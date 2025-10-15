@@ -13,14 +13,16 @@
 namespace Bugo\LightPortal\Repositories;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Db;
+use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Logging;
 use Bugo\Compat\Msg;
 use Bugo\Compat\Security;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Database\PortalSqlInterface;
 use Bugo\LightPortal\Enums\AlertAction;
+use Bugo\LightPortal\Enums\ContentType;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\NotifyType;
 use Bugo\LightPortal\Enums\Permission;
@@ -29,14 +31,13 @@ use Bugo\LightPortal\Enums\PortalSubAction;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Lists\CategoryList;
-use Bugo\LightPortal\Migrations\PortalAdapterInterface;
-use Bugo\LightPortal\Migrations\PortalSqlInterface;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\Notify;
+use Bugo\LightPortal\Utils\Notifier;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Exception;
 use Laminas\Db\Sql\Predicate\Expression;
 use Laminas\Db\Sql\Select;
 
@@ -47,154 +48,159 @@ use const LP_PAGE_URL;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class PageRepository extends AbstractRepository implements PageRepositoryInterface
+final class PageRepository extends AbstractRepository implements PageRepositoryInterface, DataManagerInterface
 {
 	use HasEvents;
 
 	protected string $entity = 'page';
 
-	protected PortalSqlInterface $sql;
-
-	public function __construct(protected PortalAdapterInterface $adapter)
+	public function __construct(protected PortalSqlInterface $sql, protected Notifier $notifier)
 	{
-		$this->sql = $adapter->getSqlBuilder();
+		parent::__construct($sql);
 	}
 
 	public function getAll(
 		int $start,
 		int $limit,
 		string $sort,
-		string $queryString = '',
-		array $queryParams = []
+		string $filter = '',
+		array $whereConditions = []
 	): array
 	{
-		$result = Db::$db->query('
-			SELECT
-				p.*, GREATEST(p.created_at, p.updated_at) AS date,
-				COALESCE(mem.real_name, {string:guest}) AS author_name,
-				COALESCE(t.title, tf.title, {string:empty_string}) AS title
-			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
-				LEFT JOIN {db_prefix}lp_params AS par ON (
-					p.page_id = par.item_id AND par.type = {literal:page} AND par.name = {literal:allow_comments}
-				)
-				LEFT JOIN {db_prefix}lp_translations AS t ON (
-					p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang}
-				)
-				LEFT JOIN {db_prefix}lp_translations AS tf ON (
-					p.page_id = tf.item_id AND tf.type = {literal:page} AND tf.lang = {string:fallback_lang}
-				)
-			WHERE 1=1' . (empty($queryString) ? '' : '
-				' . $queryString) . '
-			ORDER BY {raw:sort}
-			LIMIT {int:start}, {int:limit}',
-			array_merge($queryParams, $this->getLangQueryParams(), [
-				'user_id' => User::$me->id,
-				'sort'    => $sort,
-				'start'   => $start,
-				'limit'   => $limit,
+		$params = $this->getLangQueryParams();
+
+		$select = $this->sql->select()
+			->from(['p' => 'lp_pages'])
+			->columns([
+				Select::SQL_STAR,
+				'date' => new Expression('GREATEST(p.created_at, p.updated_at)'),
 			])
-		);
+			->join(
+				['mem' => 'members'],
+				'p.author_id = mem.id_member',
+				['author_name' => new Expression('COALESCE(mem.real_name, ?)', [$params['guest']])],
+				Select::JOIN_LEFT
+			)
+			->order($sort)
+			->limit($limit)
+			->offset($start);
+
+		$this->addParamJoins($select, ['params' => ['allow_comments' => ['alias' => 'par']]]);
+
+		$this->addTranslationJoins($select);
+
+		if ($filter === 'list') {
+			$select->where([
+				'p.status = ?'      => Status::ACTIVE->value,
+				'p.entry_type = ?'  => EntryType::DEFAULT->name(),
+				'p.deleted_at = ?'  => 0,
+				'p.created_at <= ?' => time(),
+			]);
+
+			$select->where(['p.permissions' => Permission::all()]);
+			$select->where($this->getTranslationFilter());
+		}
+
+		if ($whereConditions) {
+			$select->where($whereConditions);
+		}
+
+		$result = $this->sql->execute($select);
 
 		$items = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			Lang::censorText($row['title']);
 
 			$items[$row['page_id']] = [
-				'id'           => (int) $row['page_id'],
-				'category_id'  => (int) $row['category_id'],
+				'id'           => $row['page_id'],
+				'category_id'  => $row['category_id'],
 				'slug'         => $row['slug'],
 				'type'         => $row['type'],
 				'entry_type'   => $row['entry_type'],
-				'status'       => (int) $row['status'],
-				'num_views'    => (int) $row['num_views'],
-				'num_comments' => (int) $row['num_comments'],
-				'author_id'    => (int) $row['author_id'],
+				'status'       => $row['status'],
+				'num_views'    => $row['num_views'],
+				'num_comments' => $row['num_comments'],
+				'author_id'    => $row['author_id'],
 				'author_name'  => $row['author_name'],
-				'date'         => DateTime::relative((int) $row['date']),
-				'created_at'   => (int) $row['created_at'],
-				'updated_at'   => (int) $row['updated_at'],
+				'date'         => DateTime::relative($row['date']),
+				'created_at'   => $row['created_at'],
+				'updated_at'   => $row['updated_at'],
 				'is_front'     => Setting::isFrontpage($row['slug']),
-				'title'        => $row['title'],
+				'title'        => Str::decodeHtmlEntities($row['title']),
 			];
 		}
-
-		Db::$db->free_result($result);
 
 		return $items;
 	}
 
-	public function getTotalCount(string $queryString = '', array $queryParams = []): int
+	public function getTotalCount(string $filter = '', array $whereConditions = []): int
 	{
-		$result = Db::$db->query('
-			SELECT COUNT(p.page_id)
-			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}lp_translations AS t ON (
-					p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang}
-				)
-			WHERE 1=1' . (empty($queryString) ? '' : '
-				' . $queryString),
-			array_merge($queryParams, $this->getLangQueryParams(), ['user_id' => User::$me->id])
-		);
+		$select = $this->sql->select()
+			->from(['p' => 'lp_pages'])
+			->columns(['count' => new Expression('COUNT(page_id)')]);
 
-		[$count] = Db::$db->fetch_row($result);
+		$this->addTranslationJoins($select);
 
-		Db::$db->free_result($result);
+		if ($whereConditions) {
+			$select->where($whereConditions);
+		}
 
-		return (int) $count;
+		$result = $this->sql->execute($select)->current();
+
+		return $result['count'];
 	}
 
 	public function getData(int|string $item): array
 	{
-		if ($item === 0 || $item === '')
+		if (empty($item))
 			return [];
 
-		$result = Db::$db->query('
-			SELECT
-				p.*, pp.name, pp.value,
-				COALESCE(mem.real_name, {string:guest}) AS author_name,
-				COALESCE(NULLIF(t.title, {string:empty_string}), tf.title, {string:empty_string}) AS title,
-				COALESCE(NULLIF(t.content, {string:empty_string}), tf.content, {string:empty_string}) AS content,
-				COALESCE(NULLIF(t.description, {string:empty_string}), tf.description, {string:empty_string}) AS description,
-				CASE WHEN pac.value != \'0\' THEN p.num_comments ELSE 0 END AS num_comments,
-				COALESCE(com.created_at, 0) AS sort_value
-			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
-				LEFT JOIN {db_prefix}lp_translations AS t ON (
-					p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang}
-				)
-				LEFT JOIN {db_prefix}lp_translations AS tf ON (
-					p.page_id = tf.item_id AND tf.type = {literal:page} AND tf.lang = {string:fallback_lang}
-				)
-				LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {literal:page})
-				LEFT JOIN {db_prefix}lp_params AS pac ON (p.page_id = pac.item_id AND pac.type = {literal:page} AND pac.name = {literal:allow_comments})
-				LEFT JOIN {db_prefix}lp_comments AS com ON (com.id = p.last_comment_id)
-			WHERE p.' . (is_int($item) ? 'page_id = {int:item}' : 'slug = {string:item}'),
-			array_merge(
-				$this->getLangQueryParams(),
-				[
-					'item' => $item,
-				]
-			)
-		);
+		$params = $this->getLangQueryParams();
 
-		while ($row = Db::$db->fetch_assoc($result)) {
+		$select = $this->sql->select()
+			->from(['p' => 'lp_pages'])
+			->join(
+				['mem' => 'members'],
+				'p.author_id = mem.id_member',
+				['author_name' => new Expression('COALESCE(mem.real_name, ?)', [$params['guest']])],
+				Select::JOIN_LEFT
+			)
+			->join(
+				['com' => 'lp_comments'],
+				'com.id = p.last_comment_id',
+				['comment_date' => 'created_at'],
+				Select::JOIN_LEFT
+			)
+			->where(['p.' . (is_int($item) ? 'page_id = ?' : 'slug = ?') => $item]);
+
+		$this->addParamJoins($select);
+		$this->addParamJoins($select, ['params' => ['allow_comments' => ['alias' => 'pac']]]);
+
+		$this->addTranslationJoins($select, ['fields' => ['title', 'content', 'description']]);
+
+		$result = $this->sql->execute($select);
+
+		foreach ($result as $row) {
+			if ($row['type'] === ContentType::BBC->name()) {
+				$row['content'] = Msg::un_preparsecode($row['content'] ?? '');
+			}
+
 			$data ??= [
-				'id'              => (int) $row['page_id'],
-				'category_id'     => (int) $row['category_id'],
-				'author_id'       => (int) $row['author_id'],
+				'id'              => $row['page_id'],
+				'category_id'     => $row['category_id'],
+				'author_id'       => $row['author_id'],
 				'author'          => $row['author_name'],
 				'slug'            => $row['slug'],
 				'type'            => $row['type'],
 				'entry_type'      => $row['entry_type'],
-				'permissions'     => (int) $row['permissions'],
-				'status'          => (int) $row['status'],
-				'num_views'       => (int) $row['num_views'],
-				'num_comments'    => (int) $row['num_comments'],
-				'created_at'      => (int) $row['created_at'],
-				'updated_at'      => (int) $row['updated_at'],
-				'last_comment_id' => (int) $row['last_comment_id'],
-				'sort_value'      => (int) $row['sort_value'],
+				'permissions'     => $row['permissions'],
+				'status'          => $row['status'],
+				'num_views'       => $row['num_views'],
+				'num_comments'    => $row['num_comments'],
+				'created_at'      => $row['created_at'],
+				'updated_at'      => $row['updated_at'],
+				'last_comment_id' => $row['last_comment_id'],
+				'sort_value'      => $row['comment_date'],
 				'image'           => $this->getImageFromContent($row['content'], $row['type']),
 				'title'           => $row['title'],
 				'content'         => $row['content'],
@@ -203,8 +209,6 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 
 			$data['options'][$row['name']] = $row['value'];
 		}
-
-		Db::$db->free_result($result);
 
 		return $data ?? [];
 	}
@@ -219,11 +223,9 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 
 		$this->prepareBbcContent(Utils::$context['lp_page']);
 
-		if (empty($item)) {
-			$item = $this->addData();
-		} else {
-			$this->updateData($item);
-		}
+		empty($item)
+			? $item = $this->addData(Utils::$context['lp_page'])
+			: $this->updateData($item, Utils::$context['lp_page']);
 
 		$this->cache()->flush();
 
@@ -243,15 +245,10 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 		if ($items === [])
 			return;
 
-		Db::$db->query('
-			UPDATE {db_prefix}lp_pages
-			SET deleted_at = {int:time}
-			WHERE page_id IN ({array_int:items})',
-			[
-				'time'  => time(),
-				'items' => $items,
-			]
-		);
+		$update = $this->sql->update('lp_pages');
+		$update->set(['deleted_at' => time()]);
+		$update->where->in('page_id', $items);
+		$this->sql->execute($update);
 
 		$this->session()->free('lp');
 	}
@@ -261,14 +258,10 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 		if ($items === [])
 			return;
 
-		Db::$db->query('
-			UPDATE {db_prefix}lp_pages
-			SET deleted_at = 0
-			WHERE page_id IN ({array_int:items})',
-			[
-				'items' => $items,
-			]
-		);
+		$update = $this->sql->update('lp_pages');
+		$update->set(['deleted_at' => 0]);
+		$update->where->in('page_id', $items);
+		$this->sql->execute($update);
 
 		$this->session()->free('lp');
 	}
@@ -280,49 +273,34 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 
 		$this->events()->dispatch(PortalHook::onPageRemoving, ['items' => $items]);
 
-		Db::$db->query('
-			DELETE FROM {db_prefix}lp_pages
-			WHERE page_id IN ({array_int:items})',
-			[
-				'items' => $items,
-			]
-		);
+		$deletePages = $this->sql->delete('lp_pages');
+		$deletePages->where->in('page_id', $items);
+		$this->sql->execute($deletePages);
 
-		Db::$db->query('
-			DELETE FROM {db_prefix}lp_translations
-			WHERE item_id IN ({array_int:items})
-				AND type = {literal:page}',
-			[
-				'items' => $items,
-			]
-		);
+		$deleteTranslations = $this->sql->delete('lp_translations');
+		$deleteTranslations->where->in('item_id', $items);
+		$deleteTranslations->where->equalTo('type', $this->entity);
+		$this->sql->execute($deleteTranslations);
 
-		Db::$db->query('
-			DELETE FROM {db_prefix}lp_params
-			WHERE item_id IN ({array_int:items})
-				AND type = {literal:page}',
-			[
-				'items' => $items,
-			]
-		);
+		$deleteParams = $this->sql->delete('lp_params');
+		$deleteParams->where->in('item_id', $items);
+		$deleteParams->where->equalTo('type', $this->entity);
+		$this->sql->execute($deleteParams);
 
-		Db::$db->query('
-			DELETE FROM {db_prefix}lp_page_tag
-			WHERE page_id IN ({array_int:items})',
-			[
-				'items' => $items,
-			]
-		);
+		$deletePageTag = $this->sql->delete('lp_page_tag');
+		$deletePageTag->where->in('page_id', $items);
+		$this->sql->execute($deletePageTag);
 
-		$result = Db::$db->query('
-			SELECT id FROM {db_prefix}lp_comments
-			WHERE page_id IN ({array_int:items})',
-			[
-				'items' => $items,
-			]
-		);
+		$commentsToRemove = $this->sql->select('lp_comments')->columns(['id']);
+		$commentsToRemove->where->in('page_id', $items);
+		$result = $this->sql->execute($commentsToRemove);
 
-		app(CommentRepository::class)->removeFromResult($result);
+		$commentIds = [];
+		foreach ($result as $row) {
+			$commentIds[] = $row['id'];
+		}
+
+		app(CommentRepositoryInterface::class)->remove($commentIds);
 
 		$this->session()->free('lp');
 	}
@@ -340,8 +318,8 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 			'last_comment'      => ['field' => 'COALESCE(com.created_at, p.created_at)', 'direction' => 'asc'],
 			'title;desc'        => ['field' => 'LOWER(COALESCE(t.title, tf.title))', 'direction' => 'desc'],
 			'title'             => ['field' => 'LOWER(COALESCE(t.title, tf.title))', 'direction' => 'asc'],
-			'author_name;desc'  => ['field' => 'COALESCE(mem.real_name, ?)', 'direction' => 'desc', 'bind' => $params['guest']],
-			'author_name'       => ['field' => 'COALESCE(mem.real_name, ?)', 'direction' => 'asc', 'bind' => $params['guest']],
+			'author_name;desc'  => ['field' => 'LOWER(COALESCE(mem.real_name, ?))', 'direction' => 'desc', 'bind' => $params['guest']],
+			'author_name'       => ['field' => 'LOWER(COALESCE(mem.real_name, ?))', 'direction' => 'asc', 'bind' => $params['guest']],
 			'num_views;desc'    => ['field' => 'p.num_views', 'direction' => 'desc'],
 			'num_views'         => ['field' => 'p.num_views', 'direction' => 'asc'],
 			'num_replies;desc'  => ['field' => 'p.num_comments', 'direction' => 'desc'],
@@ -367,6 +345,7 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 		$categories = Setting::get('lp_frontpage_categories', 'array', []);
 
 		$baseWhere = [
+			'p.page_id != ?'    => $page['id'],
 			'p.created_at <= ?' => time(),
 			'p.entry_type = ?'  => EntryType::DEFAULT->name(),
 			'p.status = ?'      => Status::ACTIVE->value,
@@ -400,8 +379,14 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 			$prevWhereParams = [$currentSortValue, $currentSortValue, $currentSecondaryValue];
 		}
 
-		$nextWhereSql = '(' . $sortField . ' ' . $nextPrimaryOp . ' ? OR (' . $sortField . ' = ? AND ' . $secondaryField . ' ' . $nextSecondaryOp . ' ?))';
-		$prevWhereSql = '(' . $sortField . ' ' . $prevPrimaryOp . ' ? OR (' . $sortField . ' = ? AND ' . $secondaryField . ' ' . $prevSecondaryOp . ' ?))';
+		$nextWhereSql = sprintf(
+			'(%s %s ? OR (%s = ? AND %s %s ?))',
+			$sortField, $nextPrimaryOp, $sortField, $secondaryField, $nextSecondaryOp
+		);
+		$prevWhereSql = sprintf(
+			'(%s %s ? OR (%s = ? AND %s %s ?))',
+			$sortField, $prevPrimaryOp, $sortField, $secondaryField, $prevSecondaryOp
+		);
 
 		$nextWhere = new Expression($nextWhereSql, $nextWhereParams);
 		$prevWhere = new Expression($prevWhereSql, $prevWhereParams);
@@ -410,41 +395,23 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 
 		$base = $this->sql->select()
 			->from(['p' => 'lp_pages'])
-			->columns([
-				'page_id',
-				'slug',
-				'title' => new Expression('COALESCE(t.title, tf.title)')
-			])
-			->join(
-				['t' => 'lp_translations'],
-				new Expression(
-					't.item_id = p.page_id AND t.type = ? AND t.lang = ?',
-					['page', $params['lang']]
-				),
-				[],
-				Select::JOIN_LEFT
-			)
-			->join(
-				['tf' => 'lp_translations'],
-				new Expression(
-					'tf.item_id = p.page_id AND tf.type = ? AND tf.lang = ?',
-					['page', $params['fallback_lang']]
-				),
-				[],
-				Select::JOIN_LEFT
-			)
+			->columns(['page_id', 'slug'])
 			->where(['(t.lang IN (?) OR tf.lang IN (?))' => [$languages, $languages]])
-			->where(new Expression(
-				"EXISTS (SELECT 1 FROM " . Config::$db_prefix . "lp_translations
-				WHERE item_id = p.page_id AND type = 'page' AND lang IN (?, ?) AND (title != '' OR content != ''))",
-				[User::$me->language, Config::$language]
-			))
-			->having(['title IS NOT NULL']);
+			->where($baseWhere)
+			->where(['COALESCE(t.title, tf.title, "") != ?' => ['']]);
+
+		$this->addTranslationJoins($base);
+
+		$where = "item_id = p.page_id AND type = ? AND lang IN (?) AND (title != ? OR content != ?)";
+		$sql = "EXISTS (SELECT 1 FROM {$this->sql->getPrefix()}lp_translations WHERE $where)";
+		$base->where(new Expression(
+			$sql, [$this->entity, array_unique([User::$me->language, Config::$language]), '', '']
+		));
 
 		if (str_contains($sorting, 'last_comment')) {
 			$base->join(
 				['com' => 'lp_comments'],
-				'com.id = p.last_comment_id',
+				new Expression('com.id = p.last_comment_id'),
 				['created_at'],
 				Select::JOIN_LEFT
 			);
@@ -453,33 +420,39 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 		if (str_contains($sorting, 'author_name')) {
 			$base->join(
 				['mem' => 'members'],
-				'mem.id_member = p.author_id',
+				new Expression('mem.id_member = p.author_id'),
 				['real_name'],
 				Select::JOIN_LEFT
 			);
 		}
 
-		$listOrder = [
-			new Expression($sortField . ' ' . $sortDirection, $sortBind !== null ? [$sortBind] : []),
-			new Expression($secondaryField . ' ' . $sortDirection),
+		$prevOrder = [
+			new Expression(
+				$sortField . ' ' . ($listAsc ? 'DESC' : 'ASC'),
+				$sortBind !== null ? [$sortBind] : []
+			),
+			new Expression($secondaryField . ' ' . ($listAsc ? 'DESC' : 'ASC')),
 			new Expression('CASE WHEN t.title IS NOT NULL THEN 1 WHEN tf.title IS NOT NULL THEN 2 END')
 		];
 
-		$reverseOrder = [
-			new Expression($sortField . ' ' . ($listAsc ? 'DESC' : 'ASC'), $sortBind !== null ? [$sortBind] : []),
-			new Expression($secondaryField . ' ' . ($listAsc ? 'DESC' : 'ASC')),
+		$nextOrder = [
+			new Expression(
+				$sortField . ' ' . $sortDirection,
+				$sortBind !== null ? [$sortBind] : []
+			),
+			new Expression($secondaryField . ' ' . $sortDirection),
 			new Expression('CASE WHEN t.title IS NOT NULL THEN 1 WHEN tf.title IS NOT NULL THEN 2 END')
 		];
 
 		$prev = clone $base;
 		$next = clone $base;
 
-		$prev->where($baseWhere)->where($prevWhere)->order($reverseOrder)->limit(1);
-		$next->where($baseWhere)->where($nextWhere)->order($listOrder)->limit(1);
+		$prev->where($prevWhere)->order($prevOrder)->limit(1);
+		$next->where($nextWhere)->order($nextOrder)->limit(1);
 
 		$result = [
-			'prev' => $this->sql->prepareStatementForSqlObject($prev)->execute()->current() ?: [],
-			'next' => $this->sql->prepareStatementForSqlObject($next)->execute()->current() ?: [],
+			'prev' => $this->sql->execute($prev)->current() ?: [],
+			'next' => $this->sql->execute($next)->current() ?: [],
 		];
 
 		return [
@@ -493,52 +466,58 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 	public function getRelatedPages(array $page): array
 	{
 		$titleWords = explode(' ', $page['title']);
-		$slugWords  = explode('_', (string) $page['slug']);
+		$slugWords  = explode('-', (string) $page['slug']);
+		$titleCount = count($titleWords);
+		$slugCount  = count($slugWords);
 
-		$searchFormula = '';
+		$searchConditions = [];
+
 		foreach ($titleWords as $key => $word) {
-			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE
-			WHEN lower(t.title) LIKE lower(\'%' . htmlentities($word) . '%\')
-			THEN ' . (count($titleWords) - $key) * 2 . ' ELSE 0 END';
+			$searchConditions[] = sprintf(
+				'CASE WHEN LOWER(t.title) LIKE LOWER("%%%s%%") THEN %d ELSE 0 END',
+				$word,
+				($titleCount - $key) * 2
+			);
 		}
 
 		foreach ($slugWords as $key => $word) {
-			$searchFormula .= ' + CASE
-			WHEN lower(p.slug) LIKE lower(\'%' . $word . '%\')
-			THEN ' . (count($slugWords) - $key) . ' ELSE 0 END';
+			$searchConditions[] = sprintf(
+				'CASE WHEN LOWER(p.slug) LIKE LOWER("%%%s%%") THEN %d ELSE 0 END',
+				$word,
+				$slugCount - $key
+			);
 		}
 
-		$result = Db::$db->query('
-			SELECT
-				p.page_id, p.slug, p.type, (' . $searchFormula . ') AS related,
-				COALESCE(t.title, tf.title, {string:empty_string}) AS title,
-				COALESCE(t.content, tf.content, {string:empty_string}) AS content
-			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}lp_translations AS t ON (
-					p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang}
-				)
-				LEFT JOIN {db_prefix}lp_translations AS tf ON (
-					p.page_id = tf.item_id AND tf.type = {literal:page} AND tf.lang = {string:fallback_lang}
-				)
-			WHERE (' . $searchFormula . ') > 0
-				AND p.status = {int:status}
-				AND entry_type = {string:type}
-				AND p.created_at <= {int:current_time}
-				AND p.permissions IN ({array_int:permissions})
-				AND p.page_id != {int:current_page}' . $this->getTranslationFilter('p', 'page_id') . '
-			ORDER BY related DESC
-			LIMIT 4',
-			array_merge($this->getLangQueryParams(), [
-				'status'       => $page['status'],
-				'type'         => $page['entry_type'],
-				'current_time' => time(),
-				'permissions'  => Permission::all(),
-				'current_page' => $page['id'],
+		$searchFormula = implode(' + ', $searchConditions);
+
+		$select = $this->sql->select()
+			->from(['p' => 'lp_pages'])
+			->columns([
+				'page_id',
+				'slug',
+				'type',
+				'related' => new Expression($searchFormula),
 			])
-		);
+			->where([
+				'p.status'          => $page['status'],
+				'p.entry_type'      => $page['entry_type'],
+				'p.created_at <= ?' => time(),
+				'p.page_id != ?'    => $page['id'],
+			]);
+
+		$this->addTranslationJoins($select, ['fields' => ['title', 'content']]);
+
+		$select->where->in('p.permissions', Permission::all());
+		$select
+			->where(new Expression($searchFormula . ' > 0'))
+			->where($this->getTranslationFilter())
+			->order('related DESC')
+			->limit(4);
+
+		$result = $this->sql->execute($select);
 
 		$items = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			if (Setting::isFrontpage($row['slug']))
 				continue;
 
@@ -555,73 +534,70 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 			];
 		}
 
-		Db::$db->free_result($result);
-
 		return $items;
 	}
 
 	public function updateNumViews(int $item): void
 	{
-		Db::$db->query('
-			UPDATE {db_prefix}lp_pages
-			SET num_views = num_views + 1
-			WHERE page_id = {int:item}
-				AND status NOT IN ({array_int:statuses})',
-			[
-				'item'     => $item,
-				'statuses' => [Status::INACTIVE->value, Status::UNAPPROVED->value],
-			]
-		);
+		$update = $this->sql->update('lp_pages');
+		$update->set(['num_views' => new Expression('num_views + 1')]);
+		$update->where(['page_id = ?' => $item]);
+		$update->where->notIn('status', [Status::INACTIVE->value, Status::UNAPPROVED->value]);
+
+		$this->sql->execute($update);
 	}
 
 	public function getMenuItems(): array
 	{
 		return $this->langCache('menu_pages')
 			->setFallback(function () {
-				$result = Db::$db->query('
-				SELECT
-					p.page_id, p.slug, p.permissions, pp2.value AS icon,
-					(
-						SELECT title
-						FROM {db_prefix}lp_translations
-						WHERE item_id = p.page_id
-							AND type = {literal:page}
-							AND lang IN ({string:lang}, {string:fallback_lang})
-						ORDER BY lang = {string:lang} DESC
-						LIMIT 1
-					) AS page_title
-				FROM {db_prefix}lp_pages AS p
-					LEFT JOIN {db_prefix}lp_params AS pp ON (p.page_id = pp.item_id AND pp.type = {literal:page})
-					LEFT JOIN {db_prefix}lp_params AS pp2 ON (
-						p.page_id = pp2.item_id AND pp2.type = {literal:page} AND pp2.name = {literal:page_icon}
-					)
-				WHERE p.status = {int:status}
-					AND p.entry_type IN ({array_string:types})
-					AND p.created_at <= {int:current_time}
-					AND pp.name = {literal:show_in_menu}
-					AND pp.value = {string:show_in_menu}' . $this->getTranslationFilter('p', 'page_id', ['title']),
-					array_merge($this->getLangQueryParams(), [
-						'types'        => EntryType::withoutDrafts(),
-						'status'       => Status::ACTIVE->value,
-						'current_time' => time(),
-						'show_in_menu' => '1',
+				$params = $this->getLangQueryParams();
+
+				$subSelect = $this->sql->select()
+					->from('lp_translations')
+					->columns(['title'])
+					->where(new Expression('item_id = p.page_id'));
+				$subSelect->where->equalTo('type', $this->entity);
+				$subSelect->where->in('lang', [$params['lang'], $params['fallback_lang']]);
+				$subSelect
+					->order(new Expression('lang = ? DESC', [$params['lang']]))
+					->limit(1);
+
+				$select = $this->sql->select()
+					->from(['p' => 'lp_pages'])
+					->columns([
+						'page_id',
+						'slug',
+						'permissions',
+						'icon' => new Expression('pp2.value'),
+						'page_title' => $subSelect,
 					])
-				);
+					->where([
+						'p.status'          => Status::ACTIVE->value,
+						'p.deleted_at'      => 0,
+						'p.created_at <= ?' => time(),
+						'pp.value = ?'      => '1',
+					]);
+
+				$this->addParamJoins($select, ['params' => ['show_in_menu', 'page_icon']]);
+
+				$select->where->in('p.entry_type', EntryType::withoutDrafts());
+				$select->where($this->getTranslationFilter('p', 'page_id', ['title']));
+
+				$result = $this->sql->execute($select);
 
 				$pages = [];
-				while ($row = Db::$db->fetch_assoc($result)) {
+				foreach ($result as $row) {
 					Lang::censorText($row['page_title']);
 
 					$pages[$row['page_id']] = [
-						'id'          => (int) $row['page_id'],
+						'id'          => $row['page_id'],
 						'slug'        => $row['slug'],
-						'permissions' => (int) $row['permissions'],
+						'permissions' => $row['permissions'],
 						'icon'        => $row['icon'],
 						'title'       => $row['page_title'],
 					];
 				}
-
-				Db::$db->free_result($result);
 
 				return $pages;
 			});
@@ -634,20 +610,23 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 
 		$isAuthor = $data['author_id'] && $data['author_id'] == User::$me->id;
 
-		$data['created']  = DateTime::relative((int) $data['created_at']);
-		$data['updated']  = DateTime::relative((int) $data['updated_at']);
+		$data['created']  = DateTime::relative($data['created_at']);
+		$data['updated']  = DateTime::relative($data['updated_at']);
 		$data['can_view'] = Permission::canViewItem($data['permissions']) || User::$me->is_admin || $isAuthor;
 		$data['can_edit'] = User::$me->is_admin
 			|| User::$me->allowedTo('light_portal_manage_pages_any')
 			|| (User::$me->allowedTo('light_portal_manage_pages_own') && $isAuthor);
 
-		if ($data['type'] === 'bbc') {
+		if ($data['type'] === ContentType::BBC->name()) {
 			$data['content'] = Msg::un_preparsecode($data['content']);
 		}
 
 		if (! empty($data['category_id'])) {
 			$categories = app(CategoryList::class)();
-			$data['category'] = $categories[$data['category_id']]['title'];
+
+			if (isset($categories[$data['category_id']])) {
+				$data['category'] = $categories[$data['category_id']]['title'];
+			}
 		}
 
 		$data['tags'] = $this->getTags($data['id']);
@@ -655,128 +634,129 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 		$this->events()->dispatch(PortalHook::preparePageData, ['data' => &$data, 'isAuthor' => $isAuthor]);
 	}
 
-	private function addData(): int
+	private function addData(array $data): int
 	{
-		Db::$db->transaction('begin');
+		try {
+			$this->transaction->begin();
 
-		$item = (int) Db::$db->insert('',
-			'{db_prefix}lp_pages',
-			array_merge([
-				'category_id' => 'int',
-				'author_id'   => 'int',
-				'slug'        => 'string-255',
-				'type'        => 'string',
-				'entry_type'  => 'string',
-				'permissions' => 'int',
-				'status'      => 'int',
-				'created_at'  => 'int',
-			], Config::$db_type === 'postgresql' ? ['page_id' => 'int'] : []),
-			array_merge([
-				Utils::$context['lp_page']['category_id'],
-				Utils::$context['lp_page']['author_id'],
-				Utils::$context['lp_page']['slug'],
-				Utils::$context['lp_page']['type'],
-				Utils::$context['lp_page']['entry_type'],
-				Utils::$context['lp_page']['permissions'],
-				Utils::$context['lp_page']['status'],
-				$this->getPublishTime(),
-			], Config::$db_type === 'postgresql' ? [$this->getAutoIncrementValue()] : []),
-			['page_id'],
-			1
-		);
+			$insert = $this->sql->insert('lp_pages')
+				->values([
+					'category_id' => $data['category_id'],
+					'author_id'   => $data['author_id'],
+					'slug'        => $data['slug'],
+					'type'        => $data['type'],
+					'entry_type'  => $data['entry_type'],
+					'permissions' => $data['permissions'],
+					'status'      => $data['status'],
+					'created_at'  => $this->getPublishTime($data),
+				]);
 
-		if (empty($item)) {
-			Db::$db->transaction('rollback');
+			$result = $this->sql->execute($insert);
+
+			$item = (int) $result->getGeneratedValue();
+
+			if (empty($item)) {
+				$this->transaction->rollback();
+
+				return 0;
+			}
+
+			$this->events()->dispatch(PortalHook::onPageSaving, ['item' => $item]);
+
+			$this->saveTranslations($item);
+			$this->saveOptions($item);
+			$this->saveTags($item);
+
+			$this->transaction->commit();
+
+			// Notify page moderators about new page
+			$options = [
+				'item'      => $item,
+				'time'      => $this->getPublishTime($data),
+				'author_id' => $data['author_id'],
+				'title'     => $data['title'],
+				'url'       => LP_PAGE_URL . $data['slug']
+			];
+
+			if (! User::$me->allowedTo('light_portal_manage_pages_any')) {
+				$this->notifier->notify(NotifyType::NEW_PAGE->name(), AlertAction::PAGE_UNAPPROVED->name(), $options);
+			}
+
+			return $item;
+		} catch (Exception $e) {
+			$this->transaction->rollback();
+
+			ErrorHandler::fatal($e->getMessage(), false);
+
 			return 0;
 		}
-
-		$this->events()->dispatch(PortalHook::onPageSaving, ['item' => $item]);
-
-		$this->saveTranslations($item);
-		$this->saveTags($item);
-		$this->saveOptions($item);
-
-		Db::$db->transaction();
-
-		// Notify page moderators about new page
-		$options = [
-			'item'      => $item,
-			'time'      => $this->getPublishTime(),
-			'author_id' => Utils::$context['lp_page']['author_id'],
-			'title'     => Utils::$context['lp_page']['title'],
-			'url'       => LP_PAGE_URL . Utils::$context['lp_page']['slug']
-		];
-
-		if (! User::$me->allowedTo('light_portal_manage_pages_any')) {
-			Notify::send(NotifyType::NEW_PAGE->name(), AlertAction::PAGE_UNAPPROVED->name(), $options);
-		}
-
-		return $item;
 	}
 
-	private function updateData(int $item): void
+	private function updateData(int $item, array $data): void
 	{
-		Db::$db->transaction('begin');
+		try {
+			$this->transaction->begin();
 
-		Db::$db->query('
-			UPDATE {db_prefix}lp_pages
-			SET category_id = {int:category_id}, author_id = {int:author_id}, slug = {string:slug},
-				type = {string:type}, entry_type = {string:entry_type}, permissions = {int:permissions},
-				status = {int:status}, updated_at = {int:updated_at}
-			WHERE page_id = {int:page_id}',
-			[
-				'category_id' => Utils::$context['lp_page']['category_id'],
-				'author_id'   => Utils::$context['lp_page']['author_id'],
-				'slug'        => Utils::$context['lp_page']['slug'],
-				'type'        => Utils::$context['lp_page']['type'],
-				'entry_type'  => Utils::$context['lp_page']['entry_type'],
-				'permissions' => Utils::$context['lp_page']['permissions'],
-				'status'      => Utils::$context['lp_page']['status'],
-				'updated_at'  => time(),
-				'page_id'     => $item,
-			]
-		);
+			$update = $this->sql->update('lp_pages')
+				->set([
+					'category_id' => $data['category_id'],
+					'author_id'   => $data['author_id'],
+					'slug'        => $data['slug'],
+					'type'        => $data['type'],
+					'entry_type'  => $data['entry_type'],
+					'permissions' => $data['permissions'],
+					'status'      => $data['status'],
+					'updated_at'  => time(),
+				])
+				->where(['page_id = ?' => $item]);
 
-		$this->events()->dispatch(PortalHook::onPageSaving, ['item' => $item]);
+			$this->sql->execute($update);
 
-		$this->saveTranslations($item, 'replace');
-		$this->saveTags($item, 'replace');
-		$this->saveOptions($item, 'replace');
+			$this->events()->dispatch(PortalHook::onPageSaving, ['item' => $item]);
 
-		if (Utils::$context['lp_page']['author_id'] !== User::$me->id) {
-			$title = Utils::$context['lp_page']['title'];
+			$this->saveTranslations($item, true);
+			$this->saveTags($item, true);
+			$this->saveOptions($item, true);
 
-			Logging::logAction('update_lp_page', [
-				'page' => Str::html('a', $title)->href(LP_PAGE_URL . Utils::$context['lp_page']['slug'])
-			]);
+			if ($data['author_id'] !== User::$me->id) {
+				$title = $data['title'];
+
+				Logging::logAction('update_lp_page', [
+					$this->entity => Str::html('a', $title)->href(LP_PAGE_URL . $data['slug'])
+				]);
+			}
+
+			$this->transaction->commit();
+		} catch (Exception $e) {
+			$this->transaction->rollback();
+
+			ErrorHandler::fatal($e->getMessage(), false);
 		}
-
-		Db::$db->transaction();
 	}
 
 	private function getTags(int $item): array
 	{
-		$result = Db::$db->query('
-			SELECT tag.tag_id, tag.icon, COALESCE(t.title, tf.title, {string:empty_string}) AS title
-			FROM {db_prefix}lp_tags AS tag
-				INNER JOIN {db_prefix}lp_page_tag AS pt ON (tag.tag_id = pt.tag_id)
-				LEFT JOIN {db_prefix}lp_translations AS t ON (
-					tag.tag_id = t.item_id AND t.type = {literal:tag} AND t.lang = {string:lang}
-				)
-				LEFT JOIN {db_prefix}lp_translations AS tf ON (
-					tag.tag_id = tf.item_id AND tf.type = {literal:tag} AND tf.lang = {string:fallback_lang}
-				)
-			WHERE tag.status = {int:status}
-				AND pt.page_id = {int:page_id}' . $this->getTranslationFilter('tag', 'tag_id', ['title']) . '
-			ORDER BY title',
-			array_merge($this->getLangQueryParams(), [
-				'status'  => Status::ACTIVE->value,
-				'page_id' => $item,
+		$select = $this->sql->select()
+			->from(['tag' => 'lp_tags'])
+			->columns(['tag_id', 'icon'])
+			->join(
+				['pt' => 'lp_page_tag'],
+				'tag.tag_id = pt.tag_id',
+				[]
+			)
+			->where([
+				'tag.status' => Status::ACTIVE->value,
+				'pt.page_id' => $item,
 			])
-		);
+			->where($this->getTranslationFilter('tag', 'tag_id', ['title']))
+			->order('title');
+
+		$this->addTranslationJoins($select, ['primary' => 'tag.tag_id', 'entity' => 'tag']);
+
+		$result = $this->sql->execute($select);
 
 		$items = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			Lang::censorText($row['title']);
 
 			$items[$row['tag_id']] = [
@@ -786,71 +766,44 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 			];
 		}
 
-		Db::$db->free_result($result);
-
 		return $items;
 	}
 
-	private function saveTags(int $item, string $method = ''): void
+	private function saveTags(int $item, bool $replace = false): void
 	{
-		Db::$db->query('
-			DELETE FROM {db_prefix}lp_page_tag
-			WHERE page_id = {int:item}',
-			[
-				'item' => $item,
-			]
-		);
-
-		$relations = [];
+		$rows = [];
 		foreach (Utils::$context['lp_' . $this->entity]['tags'] as $tag) {
-			$relations[] = [
+			$rows[] = [
 				'page_id' => $item,
 				'tag_id'  => $tag,
 			];
 		}
 
-		if ($relations === [])
+		if ($rows === [])
 			return;
 
-		Db::$db->insert($method,
-			'{db_prefix}lp_page_tag',
-			[
-				'page_id' => 'int',
-				'tag_id'  => 'int',
-			],
-			$relations,
-			['page_id', 'tag_id'],
-		);
+		$sqlObject = $replace
+			? $this->sql->replace('lp_page_tag')->setConflictKeys(['page_id', 'tag_id'])->batch($rows)
+			: $this->sql->insert('lp_page_tag')->batch($rows);
+
+		$this->sql->execute($sqlObject);
 	}
 
-	private function getPublishTime(): int
+	private function getPublishTime(array $data): int
 	{
 		$publishTime = time();
 
-		if (Utils::$context['lp_page']['date']) {
-			$publishTime = strtotime((string) Utils::$context['lp_page']['date']);
+		if ($data['date']) {
+			$publishTime = strtotime((string) $data['date']);
 		}
 
-		if (Utils::$context['lp_page']['time']) {
+		if ($data['time']) {
 			$publishTime = strtotime(
-				date('Y-m-d', $publishTime) . ' ' . Utils::$context['lp_page']['time']
+				date('Y-m-d', $publishTime) . ' ' . $data['time']
 			);
 		}
 
 		return $publishTime;
-	}
-
-	private function getAutoIncrementValue(): int
-	{
-		$result = Db::$db->query(/** @lang text */ "
-			SELECT setval('{db_prefix}lp_pages_seq', (SELECT MAX(page_id) FROM {db_prefix}lp_pages))"
-		);
-
-		[$value] = Db::$db->fetch_row($result);
-
-		Db::$db->free_result($result);
-
-		return (int) $value + 1;
 	}
 
 	private function getImageFromContent(string $content, string $type): string
@@ -872,5 +825,4 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 
 		return '';
 	}
-
 }

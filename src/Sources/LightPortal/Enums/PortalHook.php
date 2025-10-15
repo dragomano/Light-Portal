@@ -107,7 +107,7 @@ enum PortalHook
 			self::frontTopics => new class(...$data) {
 				public function __construct(
 					public array &$columns,
-					public array &$tables,
+					public array &$joins,
 					public array &$params,
 					public array &$wheres,
 					public array &$orders

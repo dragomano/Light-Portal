@@ -5,22 +5,6 @@ use Bugo\Compat\{Theme, Utils};
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Utils\Icon;
 
-function template_manage_categories_above() {}
-
-function template_manage_categories_below(): void
-{
-	echo '
-	<script src="', Theme::$current->settings['default_theme_url'], '/scripts/light_portal/Sortable.min.js"></script>
-	<script>
-		const category = new Category();
-		new Sortable(document.querySelector("#lp_categories tbody"), {
-			handle: ".handle",
-			animation: 150,
-			onSort: e => category.updatePriority(e)
-		});
-	</script>';
-}
-
 function template_category_post(): void
 {
 	if (isset(Utils::$context['preview_content']) && empty(Utils::$context['post_errors'])) {

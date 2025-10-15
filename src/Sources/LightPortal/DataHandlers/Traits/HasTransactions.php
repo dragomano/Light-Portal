@@ -22,7 +22,7 @@ trait HasTransactions
 
 	protected function startTransaction(array $items): void
 	{
-		$this->db->transaction();
+		$this->sql->getTransaction()->begin();
 
 		Utils::$context['import_successful'] = count($items);
 	}
@@ -30,11 +30,11 @@ trait HasTransactions
 	protected function finishTransaction(array $results): void
 	{
 		if ($results === [] && Utils::$context['import_successful'] === 0) {
-			$this->db->transaction('rollback');
+			$this->sql->getTransaction()->rollback();
 
 			$this->errorHandler->fatal('lp_import_failed', false);
 		} else {
-			$this->db->transaction('commit');
+			$this->sql->getTransaction()->commit();
 		}
 
 		$entityText = Lang::getTxt('lp_' . $this->entity . '_set', [

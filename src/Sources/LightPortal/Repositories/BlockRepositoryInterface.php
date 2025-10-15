@@ -14,5 +14,7 @@ namespace Bugo\LightPortal\Repositories;
 
 interface BlockRepositoryInterface
 {
-	public function getAll(array $filters = [], bool $grouped = true): array;
+	public function getAll(int $start, int $limit, string $sort, string $filter = ''): array;
+
+	public function updatePriority(array $blocks = [], string $placement = ''): void;
 }

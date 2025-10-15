@@ -8,16 +8,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 23.09.25
+ * @version 09.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\TinyPortalMigration;
 
-use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\LightPortal\DataHandlers\Imports\Custom\AbstractCustomCategoryImport;
 use Bugo\LightPortal\UI\Tables\CheckboxColumn;
 use Bugo\LightPortal\UI\Tables\TitleColumn;
+use Laminas\Db\Sql\Expression;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -41,79 +40,70 @@ class CategoryImport extends AbstractCustomCategoryImport
 
 	public function getAll(int $start = 0, int $limit = 0, string $sort = 'id'): array
 	{
-		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'tp_variables')))
+		if (! $this->sql->tableExists('tp_variables'))
 			return [];
 
-		$result = Db::$db->query('
-			SELECT id, value1 AS title
-			FROM {db_prefix}tp_variables
-			WHERE type = {literal:category}
-			ORDER BY {raw:sort}
-			LIMIT {int:start}, {int:limit}',
-			[
-				'sort'  => $sort,
-				'start' => $start,
-				'limit' => $limit,
-			]
-		);
+		$select = $this->sql->select()
+			->from('tp_variables')
+			->columns(['id', 'title' => 'value1'])
+			->where(['type' => 'category'])
+			->order($sort)
+			->limit($limit)
+			->offset($start);
+
+		$result = $this->sql->execute($select);
 
 		$items = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			$items[$row['id']] = [
 				'id'    => $row['id'],
 				'title' => $row['title'],
 			];
 		}
 
-		Db::$db->free_result($result);
-
 		return $items;
 	}
 
 	public function getTotalCount(): int
 	{
-		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'tp_variables')))
+		if (! $this->sql->tableExists('tp_variables'))
 			return 0;
 
-		$result = Db::$db->query('
-			SELECT COUNT(*)
-			FROM {db_prefix}tp_variables
-			WHERE type = {literal:category}',
-		);
+		$select = $this->sql->select()
+			->from('tp_variables')
+			->columns(['count' => new Expression('COUNT(*)')])
+			->where(['type' => 'category']);
 
-		[$count] = Db::$db->fetch_row($result);
+		$result = $this->sql->execute($select)->current();
 
-		Db::$db->free_result($result);
-
-		return (int) $count;
+		return $result['count'];
 	}
 
 	protected function getItems(array $ids): array
 	{
-		$result = Db::$db->query('
-			SELECT id, value1 AS title
-			FROM {db_prefix}tp_variables
-			WHERE type = {literal:category}' . (empty($ids) ? '' : '
-				AND id IN ({array_int:categories})'),
-			[
-				'categories' => $ids,
-			]
-		);
+		$select = $this->sql->select()
+			->from('tp_variables')
+			->columns(['id', 'title' => 'value1'])
+			->where(['type' => 'category']);
+
+		if ($ids !== []) {
+			$select->where->in('id', $ids);
+		}
+
+		$result = $this->sql->execute($select);
 
 		$items = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			$items[$row['id']] = [
 				'title'       => $row['title'],
 				'parent_id'   => 0,
-				'slug'        => '',
+				'slug'        => $this->generateSlug(['english' => $row['title']]),
 				'icon'        => '',
 				'description' => '',
 				'priority'    => 0,
 				'status'      => 1,
 			];
 		}
-
-		Db::$db->free_result($result);
 
 		return $items;
 	}

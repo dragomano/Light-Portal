@@ -18,12 +18,14 @@ use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalSubAction;
 use Bugo\LightPortal\Lists\CategoryList;
+use Bugo\LightPortal\Repositories\PageListRepositoryInterface;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasBreadcrumbs;
+use Bugo\LightPortal\Utils\Traits\HasTablePresenter;
 
 use function Bugo\LightPortal\app;
 
@@ -35,6 +37,12 @@ if (! defined('SMF'))
 abstract class AbstractPageList implements PageListInterface
 {
 	use HasBreadcrumbs;
+	use HasTablePresenter;
+
+	public function __construct(
+		protected readonly CardListInterface $cardList,
+		protected readonly PageListRepositoryInterface $repository
+	) {}
 
 	abstract public function showAll();
 
@@ -56,12 +64,12 @@ abstract class AbstractPageList implements PageListInterface
 			$row['content'] = Content::parse($row['content'], $row['type']);
 
 			$items[$row['page_id']] = [
-				'id'        => (int) $row['page_id'],
+				'id'        => $row['page_id'],
 				'section'   => $this->getSectionData($row),
 				'slug'      => $row['slug'],
 				'author'    => $this->getAuthorData($row),
-				'date'      => DateTime::relative((int) $row['date']),
-				'datetime'  => date('Y-m-d', (int) $row['date']),
+				'date'      => DateTime::relative($row['date']),
+				'datetime'  => date('Y-m-d', $row['date']),
 				'link'      => $this->getLink($row),
 				'views'     => $this->getViewsData($row),
 				'replies'   => $this->getRepliesData($row),
@@ -89,7 +97,7 @@ abstract class AbstractPageList implements PageListInterface
 		if (empty($categories = app(CategoryList::class)()))
 			return [];
 
-		if (isset($row['category_id'])) {
+		if (isset($row['category_id']) && isset($categories[$row['category_id']])) {
 			return [
 				'name' => $categories[$row['category_id']]['title'],
 				'link' => PortalSubAction::CATEGORIES->url() . ';id=' . $row['category_id'],
@@ -102,7 +110,7 @@ abstract class AbstractPageList implements PageListInterface
 	private function getAuthorData(array $row): array
 	{
 		return [
-			'id'   => $authorId = (int) $row['author_id'],
+			'id'   => $authorId = $row['author_id'],
 			'link' => empty($row['author_name']) ? '' : Config::$scripturl . '?action=profile;u=' . $authorId,
 			'name' => $row['author_name'],
 		];
@@ -116,7 +124,7 @@ abstract class AbstractPageList implements PageListInterface
 	private function getViewsData(array $row): array
 	{
 		return [
-			'num'   => (int) $row['num_views'],
+			'num'   => $row['num_views'],
 			'title' => Lang::$txt['lp_views'],
 		];
 	}
@@ -124,14 +132,14 @@ abstract class AbstractPageList implements PageListInterface
 	private function getRepliesData(array $row): array
 	{
 		return [
-			'num'   => Setting::getCommentBlock() === 'default' ? (int) $row['num_comments'] : 0,
+			'num'   => Setting::getCommentBlock() === 'default' ? $row['num_comments'] : 0,
 			'title' => Lang::$txt['lp_comments'],
 		];
 	}
 
 	private function isNew(array $row): bool
 	{
-		return User::$me->last_login < $row['date'] && (int) $row['author_id'] !== User::$me->id;
+		return User::$me->last_login < $row['date'] && $row['author_id'] !== User::$me->id;
 	}
 
 	private function getImage(array $row): string
@@ -139,7 +147,7 @@ abstract class AbstractPageList implements PageListInterface
 		$image = '';
 
 		if (Setting::get('lp_show_images_in_articles', 'bool', false)) {
-			$image = Str::getImageFromText((string) $row['content']);
+			$image = Str::getImageFromText($row['content']);
 		}
 
 		if ($image === '') {
@@ -154,7 +162,7 @@ abstract class AbstractPageList implements PageListInterface
 		if (User::$me->is_admin)
 			return true;
 
-		return User::$me->allowedTo('light_portal_manage_pages_own') && (int) $row['author_id'] === User::$me->id;
+		return User::$me->allowedTo('light_portal_manage_pages_own') && $row['author_id'] === User::$me->id;
 	}
 
 	private function getEditLink(array $row): string

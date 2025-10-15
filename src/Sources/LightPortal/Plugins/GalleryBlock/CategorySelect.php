@@ -8,13 +8,11 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 04.10.25
+ * @version 15.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\GalleryBlock;
 
-use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\LightPortal\UI\Partials\AbstractSelect;
 use Bugo\LightPortal\Utils\Traits\HasCache;
@@ -52,26 +50,22 @@ final class CategorySelect extends AbstractSelect
 
 	private function getGalleryCategories(): array
 	{
-		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'gallery_cat')))
+		if (! $this->sql->tableExists('gallery_cat'))
 			return [];
 
 		if (($categories = $this->cache()->get('smf_gallery_categories')) === null) {
-			$result = Db::$db->query('
-				SELECT id_cat, title
-				FROM {db_prefix}gallery_cat
-				WHERE redirect = {int:redirect}
-				ORDER BY roworder',
-				[
-					'redirect' => 0,
-				]
-			);
+			$select = $this->sql->select()
+				->from('gallery_cat')
+				->columns(['id_cat', 'title'])
+				->where(['redirect' => 0])
+				->order('roworder');
+
+			$result = $this->sql->execute($select);
 
 			$categories = [];
-			while ($row = Db::$db->fetch_assoc($result)) {
+			foreach ($result as $row) {
 				$categories[$row['id_cat']] = $row['title'];
 			}
-
-			Db::$db->free_result($result);
 
 			$this->cache()->put('smf_gallery_categories', $categories);
 		}

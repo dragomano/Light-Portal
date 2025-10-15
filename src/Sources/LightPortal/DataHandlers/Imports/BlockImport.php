@@ -12,7 +12,7 @@
 
 namespace Bugo\LightPortal\DataHandlers\Imports;
 
-use Bugo\LightPortal\Utils\DatabaseInterface;
+use Bugo\LightPortal\Database\PortalSqlInterface;
 use Bugo\LightPortal\Utils\ErrorHandlerInterface;
 use Bugo\LightPortal\Utils\FileInterface;
 
@@ -23,9 +23,13 @@ class BlockImport extends XmlImporter
 {
 	protected string $entity = 'blocks';
 
-	public function __construct(FileInterface $file, DatabaseInterface $db, ErrorHandlerInterface $errorHandler)
+	public function __construct(
+		PortalSqlInterface $sql,
+		FileInterface $file,
+		ErrorHandlerInterface $errorHandler
+	)
 	{
-		parent::__construct($this->entity, $file, $db, $errorHandler);
+		parent::__construct($this->entity, $sql, $file, $errorHandler);
 	}
 
 	protected function processItems(): void
@@ -52,25 +56,7 @@ class BlockImport extends XmlImporter
 
 		$this->startTransaction($items);
 
-		$results = $this->insertData(
-			'lp_blocks',
-			'replace',
-			$items,
-			[
-				'block_id'      => 'int',
-				'icon'          => 'string-60',
-				'type'          => 'string-30',
-				'placement'     => 'string-10',
-				'priority'      => 'int',
-				'permissions'   => 'int',
-				'status'        => 'int',
-				'areas'         => 'string',
-				'title_class'   => 'string',
-				'content_class' => 'string',
-			],
-			['block_id'],
-		);
-
+		$results = $this->insertData('lp_blocks', $items, ['block_id'], true);
 		$results = $this->replaceTranslations($translations, $results);
 		$results = $this->replaceParams($params, $results);
 

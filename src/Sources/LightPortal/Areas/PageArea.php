@@ -14,7 +14,6 @@ namespace Bugo\LightPortal\Areas;
 
 use Bugo\Bricks\Tables\DateColumn;
 use Bugo\Bricks\Tables\IdColumn;
-use Bugo\Bricks\Tables\TablePresenter;
 use Bugo\Compat\Config;
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
@@ -29,7 +28,6 @@ use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\Models\PageFactory;
 use Bugo\LightPortal\Repositories\PageRepositoryInterface;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
@@ -53,6 +51,7 @@ use Bugo\LightPortal\Utils\Language;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Validators\PageValidator;
+use Laminas\Db\Sql\Predicate\Expression;
 
 use function Bugo\LightPortal\app;
 
@@ -61,7 +60,7 @@ use const LP_NAME;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class PageArea
+final class PageArea implements AreaInterface
 {
 	use HasArea;
 
@@ -73,15 +72,25 @@ final class PageArea
 
 	private int $status;
 
+	private ?int $userId = null;
+
+	private bool $isModerate = false;
+
+	private bool $isDeleted = false;
+
+	private ?string $entryType = null;
+
 	public function __construct(private readonly PageRepositoryInterface $repository) {}
 
 	public function main(): void
 	{
+		$this->loadParamsFromRequest();
+
 		$this->checkUser();
 
 		Lang::load('Packages');
 
-		if ($this->request()->has('moderate'))
+		if ($this->isModerate)
 			Theme::addInlineCss('
 		#lp_pages .num_views, #lp_pages .num_comments {
 			display: none;
@@ -91,7 +100,10 @@ final class PageArea
 		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_pages;sa=main';
 
 		$menu = Utils::$context['admin_menu_name'];
-		$key  = User::$me->allowedTo('light_portal_manage_pages_any') && $this->request()->hasNot('u') ? 'all' : 'own';
+
+		$key = User::$me->allowedTo('light_portal_manage_pages_any') && ! $this->userId
+			? 'all' : 'own';
+
 		$tabs = [
 			'title'       => LP_NAME,
 			'description' => implode('', [
@@ -100,11 +112,11 @@ final class PageArea
 			]),
 		];
 
-		if ($this->request()->has('moderate')) {
+		if ($this->isModerate) {
 			$tabs['description'] = Lang::$txt['lp_pages_unapproved_description'];
 		}
 
-		if ($this->request()->has('deleted')) {
+		if ($this->isDeleted) {
 			$tabs['description'] = Lang::$txt['lp_pages_deleted_description'];
 		}
 
@@ -114,6 +126,8 @@ final class PageArea
 		$this->massActions();
 		$this->calculateParams();
 		$this->calculateTypes();
+
+		Utils::$context['lp_selected_page_type'] = $this->entryType;
 
 		$builder = PortalTableBuilder::make('lp_pages', Lang::$txt['lp_pages_extra'])
 			->setScript('const entity = new Page();')
@@ -138,7 +152,7 @@ final class PageArea
 					]) . ' ' . Str::html('a', [
 						'class' => 'bbc_link' . ($entry['is_front'] ? ' _highlight' : ''),
 						'href'  => $entry['is_front'] ? Config::$scripturl : (LP_PAGE_URL . $entry['slug']),
-					])->setText($entry['title'])
+					])->setText($entry['title']),
 				),
 				PageStatusColumn::make(status: $this->status),
 				PageContextMenuColumn::make()
@@ -161,7 +175,7 @@ final class PageArea
 			->addColumn(CheckboxColumn::make(name: 'mass', entity: 'items'))
 			->addRow(PageButtonsRow::make());
 
-		app(TablePresenter::class)->show($builder);
+		$this->getTablePresenter()->show($builder);
 
 		$this->changeTableTitle();
 	}
@@ -292,19 +306,24 @@ final class PageArea
 		]);
 
 		$items = $this->request()->get('items') ?? [];
+
 		switch (filter_input(INPUT_POST, 'page_actions')) {
 			case 'delete':
 				$this->repository->remove($items);
 				break;
+
 			case 'delete_forever':
 				$this->repository->removePermanently($items);
 				break;
+
 			case 'toggle':
 				$this->repository->toggleStatus($items);
 				break;
+
 			case 'promote_up':
 				$this->promote($items);
 				break;
+
 			case 'promote_down':
 				$this->promote($items, 'down');
 				break;
@@ -315,49 +334,68 @@ final class PageArea
 		$this->response()->redirect($redirect);
 	}
 
+	private function loadParamsFromRequest(): void
+	{
+		$pageParams = [];
+		$encodedParams = $this->request()->get('params');
+		if ($encodedParams) {
+			$decodedParams = Utils::$smcFunc['json_decode'](base64_decode($encodedParams), true);
+			if (is_array($decodedParams)) {
+				$pageParams = $decodedParams;
+			}
+		}
+
+		$this->userId     = $this->request()->get('u') ? (int) $this->request()->get('u') : ($pageParams['u'] ?? null);
+		$this->isModerate = $this->request()->has('moderate') || ($pageParams['moderate'] ?? false);
+		$this->isDeleted  = $this->request()->has('deleted') || ($pageParams['deleted'] ?? false);
+		$this->entryType  = $this->request()->get('type') ?: ($pageParams['type'] ?? null);
+	}
+
 	private function calculateParams(): void
 	{
-		$searchParamString = trim((string) $this->request()->get('search'));
+		$searchString = trim((string) $this->request()->get('search'));
+
+		$search = Utils::$smcFunc['strtolower']($searchString);
+
 		$searchParams = [
-			'string' => Utils::htmlspecialchars($searchParamString),
+			'string'   => Utils::htmlspecialchars($searchString),
+			'u'        => $this->userId ? (int) $this->userId : null,
+			'moderate' => $this->isModerate,
+			'deleted'  => $this->isDeleted,
+			'type'     => $this->entryType,
 		];
 
-		Utils::$context['search_params'] = empty($searchParamString)
+		Utils::$context['search_params'] = empty(array_filter($searchParams))
 			? '' : base64_encode((string) Utils::$smcFunc['json_encode']($searchParams));
 
 		Utils::$context['search'] = [
 			'string' => $searchParams['string'],
 		];
 
-		$this->params = [
-			(
-				empty($searchParams['string'])
-				? ''
-				: ' AND (INSTR(LOWER(p.slug), {string:search}) > 0 OR INSTR(LOWER(t.title), {string:search}) > 0)'
-			) . (
-				$this->request()->has('u') ?
-				' AND p.author_id = {int:user_id} AND p.deleted_at = 0'
-				: ''
-			) . (
-				$this->request()->has('moderate')
-				? ' AND p.status = {int:unapproved} AND p.deleted_at = 0'
-				: ''
-			) . (
-				$this->request()->has('deleted')
-				? ' AND p.deleted_at <> 0'
-				: ''
-			) . (
-				$this->request()->hasNot(['u', 'moderate', 'deleted'])
-				? ' AND p.status IN ({array_int:statuses}) AND p.deleted_at = 0'
-				: ''
-			) . ' AND p.entry_type = {string:entry_type}',
-			[
-				'search'     => Utils::$smcFunc['strtolower']($searchParams['string']),
-				'unapproved' => Status::UNAPPROVED->value,
-				'statuses'   => [Status::INACTIVE->value, Status::ACTIVE->value],
-				'entry_type' => $this->request()->get('type') ?? EntryType::DEFAULT->name(),
-			],
-		];
+		$whereConditions = [];
+		if (! empty($search)) {
+			$whereConditions[] = new Expression(
+				'LOWER(p.slug) LIKE ? OR LOWER(t.title) LIKE ?',
+				['%' . $search . '%', '%' . $search . '%']
+			);
+		}
+
+		if ($this->userId) {
+			$whereConditions['p.author_id'] = (int) $this->userId;
+			$whereConditions['p.deleted_at'] = 0;
+		} elseif ($this->isModerate) {
+			$whereConditions['p.status'] = Status::UNAPPROVED->value;
+			$whereConditions['p.deleted_at'] = 0;
+		} elseif ($this->isDeleted) {
+			$whereConditions[] = new Expression('p.deleted_at <> 0');
+		} else {
+			$whereConditions['p.status'] = [Status::INACTIVE->value, Status::ACTIVE->value];
+			$whereConditions['p.deleted_at'] = 0;
+		}
+
+		$whereConditions['p.entry_type'] = $this->entryType ?? EntryType::DEFAULT->name();
+
+		$this->params = ['', $whereConditions];
 	}
 
 	private function calculateTypes(): void
@@ -366,13 +404,13 @@ final class PageArea
 		$this->type = '';
 		$this->status = Status::ACTIVE->value;
 
-		if ($this->request()->has('u')) {
+		if ($this->userId) {
 			$this->browseType = 'own';
-			$this->type = ';u=' . User::$me->id;
-		} elseif ($this->request()->has('moderate')) {
+			$this->type = ';u=' . $this->userId;
+		} elseif ($this->isModerate) {
 			$this->browseType = 'mod';
 			$this->type = ';moderate';
-		} elseif ($this->request()->has('deleted')) {
+		} elseif ($this->isDeleted) {
 			$this->browseType = 'del';
 			$this->type = ';deleted';
 		}
@@ -497,7 +535,7 @@ final class PageArea
 	{
 		$this->prepareTitleFields();
 
-		if (Utils::$context['lp_page']['type'] !== 'bbc') {
+		if (Utils::$context['lp_page']['type'] !== ContentType::BBC->name()) {
 			TextareaField::make('content', Lang::$txt['lp_content'])
 				->setTab(Tab::CONTENT)
 				->setAttribute('style', 'height: 300px')
@@ -526,7 +564,6 @@ final class PageArea
 				'id'       => 'category_id',
 				'multiple' => false,
 				'wide'     => false,
-				'data'     => app(CategoryList::class)(),
 				'value'    => Utils::$context['lp_page']['category_id'],
 			]));
 
@@ -615,7 +652,7 @@ final class PageArea
 
 		Security::checkSubmitOnce('free');
 
-		Utils::$context['preview_title']   = Utils::$context['lp_page']['title'] ?? '';
+		Utils::$context['preview_title']   = Str::decodeHtmlEntities(Utils::$context['lp_page']['title'] ?? '');
 		Utils::$context['preview_content'] = Utils::htmlspecialchars(Utils::$context['lp_page']['content'], ENT_QUOTES);
 
 		Str::cleanBbcode(Utils::$context['preview_title']);
@@ -639,7 +676,7 @@ final class PageArea
 
 	private function checkUser(): void
 	{
-		if (! User::$me->allowedTo('light_portal_manage_pages_any') && $this->request()->hasNot('u')) {
+		if (! User::$me->allowedTo('light_portal_manage_pages_any') && ! $this->userId) {
 			$this->response()->redirect('action=admin;area=lp_pages;u=' . User::$me->id);
 		}
 	}

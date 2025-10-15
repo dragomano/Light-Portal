@@ -8,22 +8,21 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 23.09.25
+ * @version 09.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\TinyPortalMigration;
 
 use Bugo\Bricks\Tables\IdColumn;
-use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\Parsers\BBCodeParser;
-use Bugo\Compat\Utils;
 use Bugo\LightPortal\DataHandlers\Imports\Custom\AbstractCustomPageImport;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\UI\Tables\CheckboxColumn;
 use Bugo\LightPortal\UI\Tables\PageSlugColumn;
 use Bugo\LightPortal\UI\Tables\TitleColumn;
 use Bugo\LightPortal\Utils\DateTime;
+use Laminas\Db\Sql\Predicate\Expression;
+use Laminas\Db\Sql\Select;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -50,90 +49,86 @@ class PageImport extends AbstractCustomPageImport
 
 	public function getAll(int $start = 0, int $limit = 0, string $sort = 'id'): array
 	{
-		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'tp_articles')))
+		if (! $this->sql->tableExists('tp_articles'))
 			return [];
 
-		$result = Db::$db->query('
-			SELECT id, date, subject, author_id, off, views, shortname, type
-			FROM {db_prefix}tp_articles
-			ORDER BY {raw:sort}
-			LIMIT {int:start}, {int:limit}',
-			[
-				'sort'  => $sort,
-				'start' => $start,
-				'limit' => $limit,
-			]
-		);
+		$select = $this->sql->select()
+			->from('tp_articles')
+			->columns(['id', 'date', 'subject', 'author_id', 'off', 'views', 'shortname', 'type'])
+			->order($sort)
+			->limit($limit)
+			->offset($start);
+
+		$result = $this->sql->execute($select);
 
 		$items = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			$items[$row['id']] = [
 				'id'         => $row['id'],
-				'slug'       => $row['shortname'] ?: $this->getSlug($row),
+				'slug'       => $row['shortname'] ?: $this->generateSlug(['english' => $row['subject']]),
 				'type'       => $row['type'],
-				'status'     => (int) empty($row['off']),
+				'status'     => empty($row['off']),
 				'num_views'  => $row['views'],
 				'author_id'  => $row['author_id'],
-				'created_at' => DateTime::relative((int) $row['date']),
+				'created_at' => DateTime::relative($row['date']),
 				'title'      => $row['subject'],
 			];
 		}
-
-		Db::$db->free_result($result);
 
 		return $items;
 	}
 
 	public function getTotalCount(): int
 	{
-		if (empty(Db::$db->list_tables(false, Config::$db_prefix. 'tp_articles')))
+		if (! $this->sql->tableExists('tp_articles'))
 			return 0;
 
-		$result = Db::$db->query(/** @lang text */ '
-			SELECT COUNT(*)
-			FROM {db_prefix}tp_articles',
-		);
+		$select = $this->sql->select()
+			->from('tp_articles')
+			->columns(['count' => new Expression('COUNT(*)')]);
 
-		[$count] = Db::$db->fetch_row($result);
+		$result = $this->sql->execute($select)->current();
 
-		Db::$db->free_result($result);
-
-		return (int) $count;
+		return $result['count'];
 	}
 
 	protected function getItems(array $ids): array
 	{
-		$result = Db::$db->query('
-			SELECT
-				a.id, a.date, a.body, a.intro, a.subject, a.author_id, a.off, a.options, a.comments, a.views,
-				a.shortname, a.type, a.pub_start, a.pub_end, v.value3
-			FROM {db_prefix}tp_articles AS a
-				LEFT JOIN {db_prefix}tp_variables AS v ON (
-					a.category = v.id AND v.type = {string:type}
-				)' . (empty($ids) ? '' : '
-			WHERE a.id IN ({array_int:pages})'),
-			[
-				'type'  => 'category',
-				'pages' => $ids,
-			]
-		);
+		$select = $this->sql->select()
+			->from(['a' => 'tp_articles'])
+			->columns([
+				'id', 'date', 'body', 'intro', 'subject', 'author_id', 'off', 'options',
+				'comments', 'views', 'shortname', 'type', 'pub_start', 'pub_end',
+			])
+			->join(
+				['v' => 'tp_variables'],
+				new Expression('a.category = v.id AND v.type = ?', ['category']),
+				['value3'],
+				Select::JOIN_LEFT
+			);
+
+		if ($ids !== []) {
+			$select->where->in('a.id', $ids);
+		}
+
+		$result = $this->sql->execute($select);
 
 		$items = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			$items[$row['id']] = [
-				'page_id'         => (int) $row['id'],
+				'page_id'         => $row['id'],
 				'category_id'     => 0,
-				'author_id'       => (int) $row['author_id'],
-				'slug'            => $row['shortname'] ?: $this->getSlug($row),
+				'author_id'       => $row['author_id'],
+				'slug'            => $row['shortname'] ?: $this->generateSlug(['english' => $row['subject']]),
 				'description'     => strip_tags((string) BBCodeParser::load()->parse($row['intro'])),
 				'content'         => $row['body'],
 				'type'            => $row['type'],
 				'entry_type'      => EntryType::DEFAULT->name(),
 				'permissions'     => $this->getPermission($row),
-				'status'          => (int) empty($row['off']),
-				'num_views'       => (int) $row['views'],
-				'num_comments'    => (int) $row['comments'],
-				'created_at'      => (int) $row['date'],
+				'status'          => empty($row['off']),
+				'num_views'       => $row['views'],
+				'num_comments'    => $row['comments'],
+				'created_at'      => $row['date'],
 				'updated_at'      => 0,
 				'deleted_at'      => 0,
 				'last_comment_id' => 0,
@@ -142,18 +137,11 @@ class PageImport extends AbstractCustomPageImport
 			];
 		}
 
-		Db::$db->free_result($result);
-
 		return $items;
 	}
 
 	protected function extractPermissions(array $row): int|array
 	{
 		return array_map('intval', explode(',', (string) $row['value3']));
-	}
-
-	private function getSlug(array $row): string
-	{
-		return Utils::$smcFunc['strtolower'](explode(' ', (string) $row['subject'])[0]) . $row['id'];
 	}
 }

@@ -26,7 +26,7 @@ use function Bugo\LightPortal\app;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class Content
+class Content
 {
 	public static function prepare(
 		string $type = 'bbc',

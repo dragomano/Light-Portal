@@ -8,15 +8,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 04.10.25
+ * @version 12.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\ArticleList;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
-use Bugo\Compat\User;
 use Bugo\Compat\Parsers\BBCodeParser;
 use Bugo\LightPortal\Enums\ContentClass;
 use Bugo\LightPortal\Enums\EntryType;
@@ -33,9 +31,11 @@ use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\RadioField;
 use Bugo\LightPortal\UI\Partials\SelectFactory;
 use Bugo\LightPortal\Utils\Content;
+use Bugo\LightPortal\Utils\ForumPermissions;
 use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Bugo\LightPortal\Utils\Traits\HasTranslationJoins;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -43,6 +43,8 @@ if (! defined('LP_NAME'))
 #[PluginAttribute(icon: 'far fa-file-alt', showContentClass: false)]
 class ArticleList extends Block
 {
+	use HasTranslationJoins;
+
 	#[HookAttribute(PortalHook::prepareBlockParams)]
 	public function prepareBlockParams(Event $e): void
 	{
@@ -82,7 +84,7 @@ class ArticleList extends Block
 		RadioField::make('display_type', $this->txt['display_type'])
 			->setTab(Tab::CONTENT)
 			->setOptions($this->txt['display_type_set'])
-			->setValue($options['display_type']);
+			->setValue(Str::typed('int', $options['display_type']));
 
 		CustomField::make('include_topics', $this->txt['include_topics'])
 			->setTab(Tab::CONTENT)
@@ -186,32 +188,30 @@ class ArticleList extends Block
 		if (empty($parameters['include_topics']))
 			return [];
 
-		$result = Db::$db->query('
-			SELECT m.id_topic, m.id_msg, m.subject, m.body, m.smileys_enabled
-			FROM {db_prefix}topics AS t
-				INNER JOIN {db_prefix}messages AS m ON (t.id_first_msg = m.id_msg)
-				INNER JOIN {db_prefix}boards AS b ON (t.id_board = b.id_board)
-			WHERE t.id_topic IN ({array_int:topics})
-				AND {query_wanna_see_board}
-				AND t.approved = {int:is_approved}
-				AND m.approved = {int:is_approved}
-			ORDER BY t.id_last_msg DESC',
-			[
-				'topics'      => explode(',', (string) $parameters['include_topics']),
-				'is_approved' => 1,
-			]
-		);
+		$select = $this->sql->select()
+			->from(['t' => 'topics'])
+			->columns([])
+			->join(
+				['m' => 'messages'],
+				't.id_first_msg = m.id_msg',
+				['id_topic', 'id_msg', 'subject', 'body', 'smileys_enabled']
+			)
+			->join(['b' => 'boards'], 't.id_board = b.id_board', [])
+			->where(['t.id_topic' => explode(',', (string) $parameters['include_topics'])])
+			->where(['t.approved' => 1, 'm.approved' => 1]);
+
+		if (ForumPermissions::shouldApplyBoardPermissionCheck()) {
+			$select->where(ForumPermissions::canSeeBoard());
+		}
+
+		$select->order('t.id_last_msg DESC');
+
+		$result = $this->sql->execute($select);
 
 		$topics = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			Lang::censorText($row['subject']);
 			Lang::censorText($row['body']);
-
-			$value = null;
-			$image = empty($parameters['seek_images'])
-				? ''
-				: preg_match('/\[img.*]([^]\[]+)\[\/img]/U', $row['body'], $value);
-			$image = $value ? array_pop($value) : ($image ?: Config::$modSettings['lp_image_placeholder'] ?? '');
 
 			$body = BBCodeParser::load()->parse($row['body'], (bool) $row['smileys_enabled'], $row['id_msg']);
 
@@ -219,11 +219,9 @@ class ArticleList extends Block
 				'id'          => $row['id_topic'],
 				'title'       => $row['subject'],
 				'description' => Str::getTeaser($body),
-				'image'       => $image,
+				'image'       => $this->getImage($row['body'], ! empty($parameters['seek_images'])),
 			];
 		}
-
-		Db::$db->free_result($result);
 
 		return $topics;
 	}
@@ -233,40 +231,25 @@ class ArticleList extends Block
 		if (empty($parameters['include_pages']))
 			return [];
 
-		$result = Db::$db->query('
-			SELECT
-				p.page_id, p.slug, p.type,
-				COALESCE(NULLIF(t.title, {string:empty_string}), tf.title, {string:empty_string}) AS title,
-				COALESCE(NULLIF(t.content, {string:empty_string}), tf.content, {string:empty_string}) AS content,
-				COALESCE(NULLIF(t.description, {string:empty_string}), tf.description, {string:empty_string}) AS description
-			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}lp_translations AS t ON (
-					p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang}
-				)
-				LEFT JOIN {db_prefix}lp_translations AS tf ON (
-					p.page_id = tf.item_id AND tf.type = {literal:page} AND tf.lang = {string:fallback_lang}
-				)
-			WHERE p.status = {int:status}
-				AND p.entry_type = {string:entry_type}
-				AND p.deleted_at = 0
-				AND p.created_at <= {int:current_time}
-				AND p.permissions IN ({array_int:permissions})
-				AND p.page_id IN ({array_int:pages})
-			ORDER BY p.page_id DESC',
-			[
-				'empty_string'  => '',
-				'lang'          => User::$me->language,
-				'fallback_lang' => Config::$language,
-				'status'        => Status::ACTIVE->value,
-				'entry_type'    => EntryType::DEFAULT->name(),
-				'current_time'  => time(),
-				'permissions'   => Permission::all(),
-				'pages'         => explode(',', (string) $parameters['include_pages']),
-			]
-		);
+		$select = $this->sql->select()
+			->from(['p' => 'lp_pages'])
+			->columns(['page_id', 'slug', 'type'])
+			->where([
+				'p.status'          => Status::ACTIVE->value,
+				'p.entry_type'      => EntryType::DEFAULT->name(),
+				'p.deleted_at'      => 0,
+				'p.created_at <= ?' => time(),
+			])
+			->where(['p.permissions' => Permission::all()])
+			->where(['p.page_id' => explode(',', (string) $parameters['include_pages'])])
+			->order('p.page_id DESC');
+
+		$this->addTranslationJoins($select, ['fields' => ['title', 'content', 'description']]);
+
+		$result = $this->sql->execute($select);
 
 		$pages = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			if (Setting::isFrontpage($row['slug']))
 				continue;
 
@@ -287,8 +270,14 @@ class ArticleList extends Block
 			];
 		}
 
-		Db::$db->free_result($result);
-
 		return $pages;
+	}
+
+	private function getImage(mixed $body, bool $seekImages = true)
+	{
+		$value = null;
+		$image = $seekImages ? preg_match('/\[img.*]([^]\[]+)\[\/img]/U', $body, $value) : '';
+
+		return $value ? array_pop($value) : ($image ?: Config::$modSettings['lp_image_placeholder'] ?? '');
 	}
 }

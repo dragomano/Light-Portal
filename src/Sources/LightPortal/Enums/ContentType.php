@@ -49,10 +49,11 @@ enum ContentType
 	{
 		$types = self::all();
 
-		return array_reduce(array_keys($types), function($carry, $type) use ($types) {
+		return array_reduce(array_keys($types), function($carry, $type) {
 			$carry[$type] = [
 				'icon' => self::icon($type),
 			];
+
 			return $carry;
 		}, []);
 	}

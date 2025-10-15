@@ -8,16 +8,16 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 30.09.25
+ * @version 12.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\Search;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\ForumHook;
 use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\PortalHook;
@@ -29,6 +29,9 @@ use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasView;
+use Bugo\LightPortal\Utils\Traits\HasTranslationJoins;
+use Laminas\Db\Sql\Predicate\Expression;
+use Laminas\Db\Sql\Select;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -37,6 +40,7 @@ if (! defined('LP_NAME'))
 class Search extends Block
 {
 	use HasView;
+	use HasTranslationJoins;
 
 	#[HookAttribute(PortalHook::addSettings)]
 	public function addSettings(Event $e): void
@@ -148,46 +152,53 @@ class Search extends Block
 		foreach ($titleWords as $key => $word) {
 			$word = htmlentities($word);
 
-			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE WHEN lower(t.title) = lower(\'' . $word . '\') THEN ' . (count($titleWords) - $key) * 5 . ' ELSE 0 END';
-			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE WHEN lower(t.title) LIKE lower(\'%' . $word . '%\') THEN ' . (count($titleWords) - $key) * 4 . ' ELSE 0 END';
-			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE WHEN lower(t.content) LIKE lower(\'%' . $word . '%\') THEN ' . (count($titleWords) - $key) * 3 . ' ELSE 0 END';
-			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE WHEN lower(p.slug) = lower(\'' . $word . '\') THEN ' . (count($titleWords) - $key) * 2 . ' ELSE 0 END';
-			$searchFormula .= ($searchFormula ? ' + ' : '') . 'CASE WHEN lower(p.slug) LIKE lower(\'%' . $word . '%\') THEN ' . (count($titleWords) - $key) . ' ELSE 0 END';
+			$searchFormula .= ($searchFormula ? ' + ' : '')
+				. 'CASE WHEN lower(t.title) = lower(\'' . $word . '\') THEN '
+				. (count($titleWords) - $key) * 5 . ' ELSE 0 END';
+			$searchFormula .= ($searchFormula ? ' + ' : '')
+				. 'CASE WHEN lower(t.title) LIKE lower(\'%' . $word . '%\') THEN '
+				. (count($titleWords) - $key) * 4 . ' ELSE 0 END';
+			$searchFormula .= ($searchFormula ? ' + ' : '')
+				. 'CASE WHEN lower(t.content) LIKE lower(\'%' . $word . '%\') THEN '
+				. (count($titleWords) - $key) * 3 . ' ELSE 0 END';
+			$searchFormula .= ($searchFormula ? ' + ' : '')
+				. 'CASE WHEN lower(p.slug) = lower(\'' . $word . '\') THEN '
+				. (count($titleWords) - $key) * 2 . ' ELSE 0 END';
+			$searchFormula .= ($searchFormula ? ' + ' : '')
+				. 'CASE WHEN lower(p.slug) LIKE lower(\'%' . $word . '%\') THEN '
+				. (count($titleWords) - $key) . ' ELSE 0 END';
 		}
 
-		$result = Db::$db->query('
-			SELECT
-				p.slug, p.type, GREATEST(p.created_at, p.updated_at) AS date,
-				(' . $searchFormula . ') AS related, mem.id_member, mem.real_name,
-				COALESCE(t.title, tf.title, {string:empty_string}) AS title,
-				COALESCE(t.content, tf.content, {string:empty_string}) AS content
-			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}lp_translations AS t ON (
-					p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:current_lang}
-				)
-				LEFT JOIN {db_prefix}lp_translations AS tf ON (
-					p.page_id = tf.item_id AND tf.type = {literal:page} AND tf.lang = {string:fallback_lang}
-				)
-				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
-			WHERE (' . $searchFormula . ') > 0
-				AND p.status = {int:status}
-				AND p.deleted_at = 0
-				AND p.created_at <= {int:current_time}
-				AND p.permissions IN ({array_int:permissions})
-			ORDER BY related DESC
-			LIMIT 10',
-			[
-				'empty_string'  => '',
-				'current_lang'  => Utils::$context['user']['language'],
-				'fallback_lang' => Config::$language,
-				'status'        => 1,
-				'current_time'  => time(),
-				'permissions'   => Permission::all(),
-			]
-		);
+		$select = $this->sql->select()
+			->from(['p' => 'lp_pages'])
+			->columns([
+				'slug', 'type',
+				'date'    => new Expression('GREATEST(p.created_at, p.updated_at)'),
+				'related' => new Expression('(' . $searchFormula . ')'),
+			])
+			->join(
+				['mem' => 'members'],
+				'p.author_id = mem.id_member',
+				['id_member', 'real_name'],
+				Select::JOIN_LEFT
+			)
+			->where(new Expression('(' . $searchFormula . ') > 0'))
+			->where([
+				'status'          => 1,
+				'deleted_at'      => 0,
+				'created_at <= ?' => time(),
+				'p.entry_type'    => EntryType::DEFAULT->name(),
+				'permissions'     => Permission::all(),
+			])
+			->order('related DESC')
+			->limit(10);
+
+		$this->addTranslationJoins($select, ['fields' => ['title', 'content']]);
+
+		$result = $this->sql->execute($select);
 
 		$items = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			Lang::censorText($row['title']);
 			Lang::censorText($row['content']);
 
@@ -195,17 +206,21 @@ class Search extends Block
 
 			$items[] = [
 				'link'    => LP_PAGE_URL . $row['slug'],
-				'author'  => empty($row['id_member'])
-					? Lang::$txt['guest']
-					: ('<a href="' . Config::$scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>'),
-				'date'    => DateTime::relative((int) $row['date']),
+				'author'  => $this->getLink($row),
+				'date'    => DateTime::relative($row['date']),
 				'title'   => $row['title'],
 				'content' => Str::getTeaser($row['content']),
 			];
 		}
 
-		Db::$db->free_result($result);
-
 		return $items;
+	}
+
+	private function getLink(array $row): string
+	{
+		if (empty($row['id_member']))
+			return Lang::$txt['guest'];
+
+		return '<a href="' . Config::$scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>';
 	}
 }

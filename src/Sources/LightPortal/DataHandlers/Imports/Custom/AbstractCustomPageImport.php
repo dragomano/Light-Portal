@@ -33,28 +33,7 @@ abstract class AbstractCustomPageImport extends AbstractCustomImport
 
 	protected function getResults(array $items): array
 	{
-		return $this->insertData(
-			'lp_pages',
-			'replace',
-			$items,
-			[
-				'page_id'         => 'int',
-				'category_id'     => 'int',
-				'author_id'       => 'int',
-				'slug'            => 'string-255',
-				'type'            => 'string-10',
-				'entry_type'      => 'string-10',
-				'permissions'     => 'int',
-				'status'          => 'int',
-				'num_views'       => 'int',
-				'num_comments'    => 'int',
-				'created_at'      => 'int',
-				'updated_at'      => 'int',
-				'deleted_at'      => 'int',
-				'last_comment_id' => 'int',
-			],
-			['page_id'],
-		);
+		return $this->insertData('lp_pages', $items);
 	}
 
 	protected function importItems(array $items): array
@@ -75,8 +54,8 @@ abstract class AbstractCustomPageImport extends AbstractCustomImport
 		if ($results === [])
 			return [];
 
-		$this->replaceParams($params, $results);
-		$this->replaceComments($comments, $results);
+		$this->replaceParams($params, $results, replace: false);
+		$this->replaceComments($comments, $results, replace: false);
 
 		return $results;
 	}

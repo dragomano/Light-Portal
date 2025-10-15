@@ -13,20 +13,12 @@
 namespace Bugo\LightPortal\Actions;
 
 use Bugo\Bricks\Tables\Column;
-use Bugo\Bricks\Tables\TablePresenter;
-use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
-use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\EntryType;
-use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\PortalSubAction;
-use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Lists\TagList;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
-use Bugo\LightPortal\Utils\Icon;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
@@ -39,8 +31,6 @@ if (! defined('SMF'))
 final class Tag extends AbstractPageList
 {
 	use HasRequest;
-
-	public function __construct(private readonly CardListInterface $cardList) {}
 
 	public function show(): void
 	{
@@ -61,8 +51,7 @@ final class Tag extends AbstractPageList
 
 		$tag = $tags[$tag['id']];
 		Utils::$context['page_title'] = sprintf(Lang::$txt['lp_all_tags_by_key'], $tag['title']);
-		Utils::$context['current_tag'] = $tag['id'];
-		Utils::$context['canonical_url']  = PortalSubAction::TAGS->url() . ';id=' . $tag['id'];
+		Utils::$context['canonical_url'] = PortalSubAction::TAGS->url() . ';id=' . $tag['id'];
 		Utils::$context['robot_no_index'] = true;
 
 		$this->breadcrumbs()
@@ -76,84 +65,14 @@ final class Tag extends AbstractPageList
 
 	public function getPages(int $start, int $limit, string $sort): array
 	{
-		$result = Db::$db->query('
-			SELECT
-				p.*, GREATEST(p.created_at, p.updated_at) AS date,
-				COALESCE(mem.real_name, {string:empty_string}) AS author_name,
-				COALESCE(com.created_at, 0) AS comment_date,
-				COALESCE(NULLIF(t.title, {string:empty_string}), tf.title, {string:empty_string}) AS title,
-				COALESCE(NULLIF(t.content, {string:empty_string}), tf.content, {string:empty_string}) AS content,
-				COALESCE(NULLIF(t.description, {string:empty_string}), tf.description, {string:empty_string}) AS description
-			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
-				INNER JOIN {db_prefix}lp_page_tag AS pt ON (p.page_id = pt.page_id)
-				INNER JOIN {db_prefix}lp_tags AS tag ON (pt.tag_id = tag.tag_id)
-				LEFT JOIN {db_prefix}lp_comments AS com ON (p.last_comment_id = com.id)
-				LEFT JOIN {db_prefix}lp_translations AS t ON (
-					p.page_id = t.item_id AND t.type = {literal:page} AND t.lang = {string:lang}
-				)
-				LEFT JOIN {db_prefix}lp_translations AS tf ON (
-					p.page_id = tf.item_id AND tf.type = {literal:page} AND tf.lang = {string:fallback_lang}
-				)
-			WHERE pt.tag_id = {int:id}
-				AND tag.status = {int:status}
-				AND p.status = {int:status}
-				AND p.deleted_at = 0
-				AND p.entry_type IN ({array_string:types})
-				AND p.created_at <= {int:current_time}
-				AND p.permissions IN ({array_int:permissions})
-			ORDER BY {raw:sort}
-			LIMIT {int:start}, {int:limit}',
-			[
-				'empty_string'  => '',
-				'lang'          => User::$me->language,
-				'fallback_lang' => Config::$language,
-				'id'            => Utils::$context['current_tag'],
-				'status'        => Status::ACTIVE->value,
-				'types'         => EntryType::withoutDrafts(),
-				'current_time'  => time(),
-				'permissions'   => Permission::all(),
-				'sort'          => $sort,
-				'start'         => $start,
-				'limit'         => $limit,
-			]
+		return $this->getPreparedResults(
+			$this->repository->getPagesByTag((int) $this->request()->get('id'), $start, $limit, $sort)
 		);
-
-		$rows = Db::$db->fetch_all($result);
-
-		Db::$db->free_result($result);
-
-		return $this->getPreparedResults($rows);
 	}
 
 	public function getTotalPages(): int
 	{
-		$result = Db::$db->query('
-			SELECT COUNT(p.page_id)
-			FROM {db_prefix}lp_pages AS p
-				INNER JOIN {db_prefix}lp_page_tag AS pt ON (p.page_id = pt.page_id)
-				INNER JOIN {db_prefix}lp_tags AS tag ON (pt.tag_id = tag.tag_id)
-			WHERE pt.tag_id = {int:id}
-				AND tag.status = {int:status}
-				AND p.status  = {int:status}
-				AND p.deleted_at = 0
-				AND p.entry_type IN ({array_string:types})
-				AND p.created_at <= {int:current_time}
-				AND p.permissions IN ({array_int:permissions})',
-			[
-				'id'           => Utils::$context['current_tag'],
-				'status'       => Status::ACTIVE->value,
-				'types'        => EntryType::withoutDrafts(),
-				'current_time' => time(),
-				'permissions'  => Permission::all(),
-			]
-		);
-
-		[$count] = Db::$db->fetch_row($result);
-
-		Db::$db->free_result($result);
-
-		return (int) $count;
+		return $this->repository->getTotalPagesByTag((int) $this->request()->get('id'));
 	}
 
 	public function showAll(): void
@@ -164,7 +83,7 @@ final class Tag extends AbstractPageList
 
 		$this->breadcrumbs()->add(Utils::$context['page_title']);
 
-		app(TablePresenter::class)->show(
+		$this->getTablePresenter()->show(
 			PortalTableBuilder::make('tags', Utils::$context['page_title'])
 				->withParams(
 					Setting::get('defaultMaxListItems', 'int', 50),
@@ -193,88 +112,11 @@ final class Tag extends AbstractPageList
 
 	public function getAll(int $start = 0, int $limit = 0, string $sort = 'title'): array
 	{
-		$result = Db::$db->query('
-			SELECT
-				tag.tag_id, tag.slug, tag.icon, COUNT(DISTINCT p.page_id) AS frequency,
-				(
-					SELECT COALESCE(NULLIF(t.title, {string:empty_string}), tf.title, {string:empty_string})
-					FROM (SELECT 1) AS dummy
-						LEFT JOIN {db_prefix}lp_translations AS t ON (
-							t.item_id = tag.tag_id AND t.type = {literal:tag} AND t.lang = {string:lang}
-						)
-						LEFT JOIN {db_prefix}lp_translations AS tf ON (
-							tf.item_id = tag.tag_id AND tf.type = {literal:tag} AND tf.lang = {string:fallback_lang}
-						)
-					LIMIT 1
-				) AS title
-			FROM {db_prefix}lp_pages AS p
-				INNER JOIN {db_prefix}lp_page_tag AS pt ON (p.page_id = pt.page_id)
-				INNER JOIN {db_prefix}lp_tags AS tag ON (pt.tag_id = tag.tag_id)
-			WHERE p.status = {int:status}
-				AND p.deleted_at = 0
-				AND p.entry_type IN ({array_string:types})
-				AND p.created_at <= {int:current_time}
-				AND p.permissions IN ({array_int:permissions})
-				AND tag.status = {int:status}
-			GROUP BY tag.tag_id, tag.slug, tag.icon, title
-			ORDER BY {raw:sort}' . ($limit ? '
-			LIMIT {int:start}, {int:limit}' : ''),
-			[
-				'empty_string'  => '',
-				'lang'          => User::$me->language,
-				'fallback_lang' => Config::$language,
-				'status'        => Status::ACTIVE->value,
-				'types'         => EntryType::withoutDrafts(),
-				'current_time'  => time(),
-				'permissions'   => Permission::all(),
-				'sort'          => $sort,
-				'start'         => $start,
-				'limit'         => $limit,
-			]
-		);
-
-		$items = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
-			$items[$row['tag_id']] = [
-				'slug'      => $row['slug'],
-				'icon'      => Icon::parse($row['icon']),
-				'link'      => PortalSubAction::TAGS->url() . ';id=' . $row['tag_id'],
-				'frequency' => (int) $row['frequency'],
-				'title'     => $row['title'],
-			];
-		}
-
-		Db::$db->free_result($result);
-
-		return $items;
+		return $this->repository->getTagsWithPageCount($start, $limit, $sort);
 	}
 
 	public function getTotalCount(): int
 	{
-		$result = Db::$db->query(/** @lang text */ '
-			SELECT COUNT(DISTINCT tag.tag_id) AS unique_tag_count
-			FROM {db_prefix}lp_pages AS p
-				INNER JOIN {db_prefix}lp_page_tag AS pt ON (p.page_id = pt.page_id)
-				INNER JOIN {db_prefix}lp_tags AS tag ON (pt.tag_id = tag.tag_id)
-			WHERE p.status = {int:status}
-				AND p.deleted_at = 0
-				AND p.entry_type IN ({array_string:types})
-				AND p.created_at <= {int:current_time}
-				AND p.permissions IN ({array_int:permissions})
-				AND tag.status = {int:status}
-			LIMIT 1',
-			[
-				'status'       => Status::ACTIVE->value,
-				'types'        => EntryType::withoutDrafts(),
-				'current_time' => time(),
-				'permissions' => Permission::all(),
-			]
-		);
-
-		[$count] = Db::$db->fetch_row($result);
-
-		Db::$db->free_result($result);
-
-		return (int) $count;
+		return $this->repository->getTotalTagsWithPages();
 	}
 }

@@ -16,16 +16,18 @@ use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Database\PortalSqlInterface;
 use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Repositories\PluginRepository;
+use Bugo\LightPortal\Repositories\PluginRepositoryInterface;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasCache;
 use Bugo\LightPortal\Utils\Traits\HasBreadcrumbs;
+use Bugo\LightPortal\Utils\Traits\HasCache;
+use Bugo\LightPortal\Utils\Traits\HasForumHooks;
+use Bugo\LightPortal\Utils\Traits\HasPortalSql;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 use Bugo\LightPortal\Utils\Traits\HasResponse;
 use Bugo\LightPortal\Utils\Traits\HasSession;
-use Bugo\LightPortal\Utils\Traits\HasForumHooks;
 use ReflectionClass;
 use Stringable;
 
@@ -39,9 +41,12 @@ abstract class Plugin implements PluginInterface, Stringable
 	use HasBreadcrumbs;
 	use HasCache;
 	use HasForumHooks;
+	use HasPortalSql;
 	use HasRequest;
 	use HasResponse;
 	use HasSession;
+
+	protected PortalSqlInterface $sql;
 
 	protected string $name;
 
@@ -52,13 +57,15 @@ abstract class Plugin implements PluginInterface, Stringable
 	public function __construct(
 		public string $type = 'other',
 		public string $icon = 'fas fa-puzzle-piece',
-		public bool $saveable = true
+		public bool $saveable = true,
 	)
 	{
 		$this->name     = $this->getSnakeName();
 		$this->type     = $this->getPluginType();
 		$this->icon     = $this->getPluginIcon();
 		$this->saveable = $this->isPluginSaveable();
+
+		$this->sql = $this->getPortalSql();
 
 		$this->context = &Utils::$context['lp_' . $this->name . '_plugin'];
 
@@ -127,7 +134,7 @@ abstract class Plugin implements PluginInterface, Stringable
 			}
 		}
 
-		app(PluginRepository::class)->addSettings($settings);
+		app(PluginRepositoryInterface::class)->addSettings($settings);
 	}
 
 	public function loadExternalResources(array $resources): void
