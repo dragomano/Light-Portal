@@ -461,9 +461,7 @@ public function frontAssets(): void
 #[HookAttribute(PortalHook::frontTopics)]
 public function frontTopics(Event $e): void
 {
-    $e->args->columns[] = 't.num_replies';
-    $e->args->wheres[] = 't.num_replies > {int:min_replies}';
-    $e->args->params['min_replies'] = 10;
+    $e->args->wheres[] = ['t.num_replies > ?' => 1];
 }
 ```
 
@@ -487,10 +485,14 @@ public function frontTopicsRow(Event $e): void
 #[HookAttribute(PortalHook::frontPages)]
 public function frontPages(Event $e): void
 {
-    $e->args->columns[] = 'lp.num_comments';
-    $e->args->tables[] = 'LEFT JOIN {db_prefix}lp_comments AS lc ON (lp.page_id = lc.page_id)';
-    $e->args->wheres[] = 'lc.approved = {int:approved}';
-    $e->args->params['approved'] = 1;
+    $e->args->joins[] = fn(Select $select) => $select->join(
+        ['lc' => 'lp_comments'],
+        'lp.page_id = lc.page_id',
+        ['num_comments'],
+        Select::JOIN_LEFT
+    );
+
+    $e->args->wheres[] = ['lc.approved' => 1];
 }
 ```
 
@@ -514,9 +516,9 @@ public function frontPagesRow(Event $e): void
 #[HookAttribute(PortalHook::frontBoards)]
 public function frontBoards(Event $e): void
 {
-    $e->args->columns[] = 'b.num_topics';
-    $e->args->wheres[] = 'b.num_topics > {int:min_topics}';
-    $e->args->params['min_topics'] = 5;
+    $e->args->columns['num_topics'] = new Expression('MIN(b.num_topics)');
+
+    $e->args->wheres[] = fn(Select $select) => $select->where->greaterThan('b.num_topics', 5);
 }
 ```
 
