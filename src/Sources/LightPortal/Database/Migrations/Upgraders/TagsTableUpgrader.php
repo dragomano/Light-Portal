@@ -15,16 +15,12 @@ namespace Bugo\LightPortal\Database\Migrations\Upgraders;
 if (! defined('SMF'))
 	die('No direct access...');
 
-class TitlesTableUpgrader extends AbstractTableUpgrader
+class TagsTableUpgrader extends AbstractTableUpgrader
 {
-	protected string $tableName = 'lp_titles';
+	protected string $tableName = 'lp_tags';
 
 	public function upgrade(): void
 	{
-		$this->addColumn('content', ['type' => 'mediumtext', 'nullable' => true]);
-		$this->addColumn('description', ['nullable' => true, 'size' => 510]);
-
-		$this->changeColumn('value', 'title');
-		$this->renameTable('lp_translations');
+		$this->addColumn('slug', ['nullable' => true]);
 	}
 }

@@ -16,5 +16,7 @@ interface BlockRepositoryInterface
 {
 	public function getAll(int $start, int $limit, string $sort, string $filter = ''): array;
 
+	public function getTotalCount(string $filter = '', array $whereConditions = []): int;
+
 	public function updatePriority(array $blocks = [], string $placement = ''): void;
 }

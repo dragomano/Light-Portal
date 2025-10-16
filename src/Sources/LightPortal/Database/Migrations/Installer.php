@@ -31,6 +31,7 @@ use Bugo\LightPortal\Database\Migrations\Upgraders\CategoriesTableUpgrader;
 use Bugo\LightPortal\Database\Migrations\Upgraders\CommentsTableUpgrader;
 use Bugo\LightPortal\Database\Migrations\Upgraders\PagesTableUpgrader;
 use Bugo\LightPortal\Database\Migrations\Upgraders\TableUpgraderInterface;
+use Bugo\LightPortal\Database\Migrations\Upgraders\TagsTableUpgrader;
 use Bugo\LightPortal\Database\Migrations\Upgraders\TitlesTableUpgrader;
 use Bugo\LightPortal\Database\Migrations\Upgraders\TranslationsTableUpgrader;
 use Bugo\LightPortal\Database\PortalAdapterFactory;
@@ -140,6 +141,7 @@ class Installer implements InstallerInterface
 			PagesTableUpgrader::class,
 			BlocksTableUpgrader::class,
 			CategoriesTableUpgrader::class,
+			TagsTableUpgrader::class,
 			TranslationsTableUpgrader::class,
 			CommentsTableUpgrader::class,
 		];

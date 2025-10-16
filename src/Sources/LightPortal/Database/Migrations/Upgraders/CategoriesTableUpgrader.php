@@ -12,8 +12,6 @@
 
 namespace Bugo\LightPortal\Database\Migrations\Upgraders;
 
-use Bugo\LightPortal\Database\Migrations\Columns\UnsignedInteger;
-use Laminas\Db\Sql\Ddl\Column\ColumnInterface;
 use Laminas\Db\Sql\Expression;
 
 if (! defined('SMF'))
@@ -27,28 +25,8 @@ class CategoriesTableUpgrader extends AbstractTableUpgrader
 	{
 		$this->migrateData();
 
-		$this->addColumn('slug', ['default' => '']);
-		$this->addColumn('parent_id', ['type' => 'int', 'size' => 10, 'default' => 0]);
-	}
-
-	protected function defineColumn(string $columnName, array $params = []): ColumnInterface
-	{
-		$type     = $params['type'] ?? 'varchar';
-		$nullable = $params['nullable'] ?? false;
-		$default  = $params['default'] ?? null;
-
-		if ($type === 'int') {
-			$column = new UnsignedInteger($columnName, $nullable, $default);
-			$size   = $params['size'] ?? null;
-
-			if ($size) {
-				$column->setOption('length', $size);
-			}
-
-			return $column;
-		}
-
-		return parent::defineColumn($columnName, $params);
+		$this->addColumn('slug', ['nullable' => true]);
+		$this->addColumn('parent_id', ['unsigned' => true, 'type' => 'int', 'size' => 10, 'default' => 0]);
 	}
 
 	protected function migrateData(): void

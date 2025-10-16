@@ -112,8 +112,7 @@ final readonly class Page implements ActionInterface
 		if (empty($slug))
 			return [];
 
-		$data = $this->cache('page_' . $slug)
-			->setFallback(fn() => app(PageRepositoryInterface::class)->getData($slug));
+		$data = $this->langCache('page_' . $slug)->setFallback(fn() => $this->repository->getData($slug));
 
 		$this->repository->prepareData($data);
 

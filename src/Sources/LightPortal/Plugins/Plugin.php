@@ -121,20 +121,17 @@ abstract class Plugin implements PluginInterface, Stringable
 
 	public function addDefaultValues(array $values): void
 	{
-		$settings = [];
-		foreach ($values as $option => $value) {
-			if (! isset($this->context[$option])) {
-				$settings[] = [
-					'name'   => $this->name,
-					'option' => $option,
-					'value'  => $value,
-				];
-
-				$this->context[$option] = $value;
+		$new = [];
+		foreach ($values as $config => $value) {
+			if (! isset($this->context[$config])) {
+				$new[$config] = $value;
+				$this->context[$config] = $value;
 			}
 		}
 
-		app(PluginRepositoryInterface::class)->addSettings($settings);
+		if ($new) {
+			app(PluginRepositoryInterface::class)->changeSettings($this->name, $new);
+		}
 	}
 
 	public function loadExternalResources(array $resources): void

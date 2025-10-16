@@ -126,6 +126,20 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 		return $currentBlocks;
 	}
 
+	public function getTotalCount(string $filter = '', array $whereConditions = []): int
+	{
+		$select = $this->sql->select('lp_blocks')
+			->columns(['count' => new Expression('COUNT(block_id)')]);
+
+		if ($whereConditions) {
+			$select->where($whereConditions);
+		}
+
+		$result = $this->sql->execute($select)->current();
+
+		return $result['count'];
+	}
+
 	public function getData(int $item): array
 	{
 		if ($item === 0)

@@ -201,14 +201,13 @@ class ServiceProvider extends AbstractServiceProvider
 
 			'actions' => [
 				['id' => BoardIndex::class],
-				[
-					'id' => FrontPage::class,
-					'arguments' => [RendererInterface::class],
-				],
 				['id' => Block::class],
 				[
-					'id' => Page::class,
-					'arguments' => [PageRepositoryInterface::class],
+					'id' => Category::class,
+					'arguments' => [
+						CardListInterface::class,
+						PageListRepositoryInterface::class,
+					],
 				],
 				[
 					'id' => Comment::class,
@@ -216,11 +215,12 @@ class ServiceProvider extends AbstractServiceProvider
 					'arguments' => [CommentRepositoryInterface::class, Notifier::class],
 				],
 				[
-					'id' => Category::class,
-					'arguments' => [
-						CardListInterface::class,
-						PageListRepositoryInterface::class,
-					],
+					'id' => FrontPage::class,
+					'arguments' => [RendererInterface::class],
+				],
+				[
+					'id' => Page::class,
+					'arguments' => [PageRepositoryInterface::class],
 				],
 				[
 					'id' => Tag::class,
@@ -353,7 +353,12 @@ class ServiceProvider extends AbstractServiceProvider
 				['id' => Session::class],
 				[
 					'id' => SessionManager::class,
-					'arguments' => [PortalSqlInterface::class],
+					'arguments' => [
+						BlockRepositoryInterface::class,
+						PageRepositoryInterface::class,
+						CategoryRepositoryInterface::class,
+						TagRepositoryInterface::class,
+					],
 				],
 				[
 					'id' => Notifier::class,
@@ -398,8 +403,8 @@ class ServiceProvider extends AbstractServiceProvider
 					'id' => BlockImport::class,
 					'concrete' => BlockImport::class,
 					'arguments' => [
-						FileInterface::class,
 						PortalSqlInterface::class,
+						FileInterface::class,
 						ErrorHandlerInterface::class,
 					],
 				],
@@ -424,8 +429,8 @@ class ServiceProvider extends AbstractServiceProvider
 					'id' => PageImport::class,
 					'concrete' => PageImport::class,
 					'arguments' => [
-						FileInterface::class,
 						PortalSqlInterface::class,
+						FileInterface::class,
 						ErrorHandlerInterface::class,
 					],
 				],
@@ -450,8 +455,8 @@ class ServiceProvider extends AbstractServiceProvider
 					'id' => CategoryImport::class,
 					'concrete' => CategoryImport::class,
 					'arguments' => [
-						FileInterface::class,
 						PortalSqlInterface::class,
+						FileInterface::class,
 						ErrorHandlerInterface::class,
 					],
 				],
@@ -476,8 +481,8 @@ class ServiceProvider extends AbstractServiceProvider
 					'id' => TagImport::class,
 					'concrete' => TagImport::class,
 					'arguments' => [
-						FileInterface::class,
 						PortalSqlInterface::class,
+						FileInterface::class,
 						ErrorHandlerInterface::class,
 					],
 				],
@@ -501,8 +506,8 @@ class ServiceProvider extends AbstractServiceProvider
 					'id' => PluginImport::class,
 					'concrete' => PluginImport::class,
 					'arguments' => [
-						FileInterface::class,
 						PortalSqlInterface::class,
+						FileInterface::class,
 						ErrorHandlerInterface::class,
 					],
 				],

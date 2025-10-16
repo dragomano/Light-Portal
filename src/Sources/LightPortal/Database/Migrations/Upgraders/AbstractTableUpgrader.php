@@ -13,6 +13,7 @@
 namespace Bugo\LightPortal\Database\Migrations\Upgraders;
 
 use Bugo\Compat\Config;
+use Bugo\LightPortal\Database\Migrations\Columns\MediumText;
 use Bugo\LightPortal\Database\PortalSqlInterface;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Ddl\AlterTable;
@@ -20,7 +21,6 @@ use Laminas\Db\Sql\Ddl\Column\Column;
 use Laminas\Db\Sql\Ddl\Column\ColumnInterface;
 use Laminas\Db\Sql\Ddl\Column\Integer;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
-use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\SqlInterface;
 
 if (! defined('SMF'))
@@ -49,9 +49,10 @@ abstract class AbstractTableUpgrader implements TableUpgraderInterface
 		$default  = $params['default'] ?? null;
 
 		$column = match ($type) {
-			'varchar' => new Varchar($columnName, $size, $nullable, $default),
-			'int'     => new Integer($columnName, $nullable, $default),
-			default   => new Column($columnName, $nullable, $default, options: ['type' => $type]),
+			'mediumtext' => new MediumText($columnName, nullable: $params['nullable'] ?? false, default: $params['default'] ?? null),
+			'varchar'    => new Varchar($columnName, $size, $nullable, $default),
+			'int'        => new Integer($columnName, $nullable, $default),
+			default      => new Column($columnName, $nullable, $default, options: ['type' => $type]),
 		};
 
 		if ($type === 'int' && $size) {
@@ -154,30 +155,18 @@ abstract class AbstractTableUpgrader implements TableUpgraderInterface
 	{
 		$lang = Config::$language ?? 'english';
 
-		$select = $this->sql->select('lp_translations');
-		$select->columns(['count' => new Expression('COUNT(*)')], false);
-		$select->where([
+		$update = $this->sql->update('lp_translations');
+		$update->set([
+			'content'     => $content,
+			'description' => $description,
+		]);
+		$update->where([
 			'item_id' => $itemId,
 			'type'    => $type,
 			'lang'    => $lang,
 		]);
 
-		$result = $this->sql->execute($select);
-
-		$row = $result->current();
-
-		if ($row['count'] == 0) {
-			$insert = $this->sql->insert('lp_translations');
-			$insert->values([
-				'item_id'     => $itemId,
-				'type'        => $type,
-				'lang'        => $lang,
-				'content'     => $content,
-				'description' => $description,
-			]);
-
-			$this->sql->execute($insert);
-		}
+		$this->sql->execute($update);
 	}
 
 	protected function isSqlite(): bool
@@ -208,7 +197,7 @@ abstract class AbstractTableUpgrader implements TableUpgraderInterface
 			}
 
 			if ($column['dflt_value'] !== null) {
-				$def .= ' DEFAULT ' . $column['dflt_value'];
+				$def .= ' DEFAULT ' . $this->sql->getAdapter()->getPlatform()->quoteValue($column['dflt_value']);
 			}
 
 			if ($column['pk']) {
@@ -244,11 +233,11 @@ abstract class AbstractTableUpgrader implements TableUpgraderInterface
 
 		$quotedIndexName = $indexName;
 		if ($platformName === 'mysql') {
-			$quotedIndexName = $this->sql->getAdapter()->getPlatform()->quoteValue($indexName);
+			$quotedIndexName = $this->sql->getAdapter()->getPlatform()->quoteIdentifier($indexName);
 		}
 
 		if ($platformName === 'mysql') {
-			$checkSql = "SHOW INDEX FROM $fullTableName WHERE Key_name = $quotedIndexName";
+			$checkSql = "SHOW INDEX FROM $fullTableName WHERE Key_name = '$indexName'";
 			$result = $this->sql->getAdapter()->query($checkSql, Adapter::QUERY_MODE_EXECUTE);
 
 			if (empty($result->toArray())) {

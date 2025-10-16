@@ -14,9 +14,9 @@ namespace Bugo\LightPortal\Database\Migrations\Creators;
 
 use Bugo\Compat\Config;
 use Bugo\LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
+use Bugo\LightPortal\Database\Migrations\Columns\MediumText;
 use Bugo\LightPortal\Database\Migrations\Columns\UnsignedInteger;
 use Bugo\LightPortal\Database\Migrations\PortalTable;
-use Laminas\Db\Sql\Ddl\Column\Text;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
 use Laminas\Db\Sql\Ddl\Constraint\UniqueKey;
 
@@ -34,7 +34,7 @@ class TranslationsTableCreator extends AbstractTableCreator
 		$type        = new Varchar('type', 30, default: 'block');
 		$lang        = new Varchar('lang', 20);
 		$title       = new Varchar('title', 255, true);
-		$content     = new Text('content', nullable: true);
+		$content     = new MediumText('content', nullable: true);
 		$description = new Varchar('description', 510, true);
 
 		$table->addAutoIncrementColumn($id);

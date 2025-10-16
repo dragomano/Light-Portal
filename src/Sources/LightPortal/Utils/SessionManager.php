@@ -13,10 +13,12 @@
 namespace Bugo\LightPortal\Utils;
 
 use Bugo\Compat\User;
-use Bugo\LightPortal\Database\PortalSqlInterface;
 use Bugo\LightPortal\Enums\Status;
+use Bugo\LightPortal\Repositories\BlockRepositoryInterface;
+use Bugo\LightPortal\Repositories\CategoryRepositoryInterface;
+use Bugo\LightPortal\Repositories\PageRepositoryInterface;
+use Bugo\LightPortal\Repositories\TagRepositoryInterface;
 use Bugo\LightPortal\Utils\Traits\HasSession;
-use Laminas\Db\Sql\Expression;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -25,140 +27,95 @@ final readonly class SessionManager
 {
 	use HasSession;
 
-	public function __construct(private PortalSqlInterface $sql) {}
+	public function __construct(
+		private BlockRepositoryInterface $blockRepository,
+		private PageRepositoryInterface $pageRepository,
+		private CategoryRepositoryInterface $categoryRepository,
+		private TagRepositoryInterface $tagRepository
+	) {}
 
 	public function __invoke(): array
 	{
+		$result = [];
+
+		foreach ($this->getCountConfig() as $key => $config) {
+			$result[$key] = $this->getCount($key);
+		}
+
+		return $result;
+	}
+
+	private function getCountConfig(): array
+	{
+		$userKey = User::$me->allowedTo('light_portal_manage_pages_any') ? '' : ('_u' . User::$me->id);
+
+		$activePagesConditions = [
+			'status'     => Status::ACTIVE->value,
+			'deleted_at' => 0,
+		];
+
+		if (! User::$me->allowedTo('light_portal_manage_pages_any')) {
+			$activePagesConditions['author_id'] = User::$me->id;
+		}
+
 		return [
-			'active_blocks'     => $this->getActiveBlocksCount(),
-			'active_pages'      => $this->getActivePagesCount(),
-			'my_pages'          => $this->getMyPagesCount(),
-			'unapproved_pages'  => $this->getUnapprovedPagesCount(),
-			'deleted_pages'     => $this->getDeletedPagesCount(),
-			'active_categories' => $this->getActiveCategoriesCount(),
-			'active_tags'       => $this->getActiveTagsCount(),
+			'active_blocks' => [
+				'repository' => $this->blockRepository,
+				'conditions' => ['status' => Status::ACTIVE->value]
+			],
+			'active_pages' => [
+				'cache_key' => 'active_pages' . $userKey,
+				'repository' => $this->pageRepository,
+				'conditions' => $activePagesConditions
+			],
+			'my_pages' => [
+				'cache_key' => 'my_pages' . $userKey,
+				'repository' => $this->pageRepository,
+				'conditions' => [
+					'author_id'  => User::$me->id,
+					'deleted_at' => 0,
+				]
+			],
+			'unapproved_pages' => [
+				'repository' => $this->pageRepository,
+				'conditions' => [
+					'status'     => Status::UNAPPROVED->value,
+					'deleted_at' => 0,
+				]
+			],
+			'deleted_pages' => [
+				'repository' => $this->pageRepository,
+				'conditions' => ['deleted_at != ?' => 0]
+			],
+			'active_categories' => [
+				'repository' => $this->categoryRepository,
+				'conditions' => ['status' => Status::ACTIVE->value]
+			],
+			'active_tags' => [
+				'repository' => $this->tagRepository,
+				'conditions' => ['status' => Status::ACTIVE->value]
+			],
 		];
 	}
 
-	private function getActiveBlocksCount(): int
+	private function getCount(string $type): int
 	{
-		if ($this->session('lp')->get('active_blocks') === null) {
-			$select = $this->sql->select('lp_blocks')
-				->columns(['count' => new Expression('COUNT(block_id)')])
-				->where(['status' => Status::ACTIVE->value]);
+		$config = $this->getCountConfig()[$type];
 
-			$result = $this->sql->execute($select)->current();
+		$cacheKey = $config['cache_key'] ?? $type;
 
-			$this->session('lp')->put('active_blocks', $result['count']);
-		}
-
-		return $this->session('lp')->get('active_blocks') ?? 0;
+		return $this->getCachedCount($cacheKey, $config['repository'], $config['conditions']);
 	}
 
-	private function getActivePagesCount(): int
+	private function getCachedCount(string $cacheKey, object $repository, array|callable $conditions = []): int
 	{
-		$key = User::$me->allowedTo('light_portal_manage_pages_any') ? '' : ('_u' . User::$me->id);
+		if ($this->session('lp')->get($cacheKey) === null) {
+			$whereConditions = is_callable($conditions) ? $conditions() : $conditions;
 
-		if ($this->session('lp')->get('active_pages' . $key) === null) {
-			$select = $this->sql->select('lp_pages')
-				->columns(['count' => new Expression('COUNT(page_id)')])
-				->where([
-					'status'     => Status::ACTIVE->value,
-					'deleted_at' => 0,
-				]);
-
-			if (! User::$me->allowedTo('light_portal_manage_pages_any')) {
-				$select->where(['author_id' => User::$me->id]);
-			}
-
-			$result = $this->sql->execute($select)->current();
-
-			$this->session('lp')->put('active_pages' . $key, $result['count']);
+			$count = $repository->getTotalCount('', $whereConditions);
+			$this->session('lp')->put($cacheKey, $count);
 		}
 
-		return $this->session('lp')->get('active_pages' . $key) ?? 0;
-	}
-
-	private function getMyPagesCount(): int
-	{
-		$key = User::$me->allowedTo('light_portal_manage_pages_any') ? '' : ('_u' . User::$me->id);
-
-		if ($this->session('lp')->get('my_pages' . $key) === null) {
-			$select = $this->sql->select('lp_pages')
-				->columns(['count' => new Expression('COUNT(page_id)')])
-				->where([
-					'author_id'  => User::$me->id,
-					'deleted_at' => 0,
-				]);
-
-			$result = $this->sql->execute($select)->current();
-
-			$this->session('lp')->put('my_pages' . $key, $result['count']);
-		}
-
-		return $this->session('lp')->get('my_pages' . $key) ?? 0;
-	}
-
-	private function getUnapprovedPagesCount(): int
-	{
-		if ($this->session('lp')->get('unapproved_pages') === null) {
-			$select = $this->sql->select('lp_pages')
-				->columns(['count' => new Expression('COUNT(page_id)')])
-				->where([
-					'status'     => Status::UNAPPROVED->value,
-					'deleted_at' => 0,
-				]);
-
-			$result = $this->sql->execute($select)->current();
-
-			$this->session('lp')->put('unapproved_pages', $result['count']);
-		}
-
-		return $this->session('lp')->get('unapproved_pages') ?? 0;
-	}
-
-	private function getDeletedPagesCount(): int
-	{
-		if ($this->session('lp')->get('deleted_pages') === null) {
-			$select = $this->sql->select('lp_pages')
-				->columns(['count' => new Expression('COUNT(page_id)')]);
-			$select->where->notEqualTo('deleted_at', 0);
-
-			$result = $this->sql->execute($select)->current();
-
-			$this->session('lp')->put('deleted_pages', $result['count']);
-		}
-
-		return $this->session('lp')->get('deleted_pages') ?? 0;
-	}
-
-	private function getActiveCategoriesCount(): int
-	{
-		if ($this->session('lp')->get('active_categories') === null) {
-			$select = $this->sql->select('lp_categories')
-				->columns(['count' => new Expression('COUNT(category_id)')])
-				->where(['status' => Status::ACTIVE->value]);
-
-			$result = $this->sql->execute($select)->current();
-
-			$this->session('lp')->put('active_categories', (int) $result['count']);
-		}
-
-		return $this->session('lp')->get('active_categories') ?? 0;
-	}
-
-	private function getActiveTagsCount(): int
-	{
-		if ($this->session('lp')->get('active_tags') === null) {
-			$select = $this->sql->select('lp_tags')
-				->columns(['count' => new Expression('COUNT(tag_id)')])
-				->where(['status' => Status::ACTIVE->value]);
-
-			$result = $this->sql->execute($select)->current();
-
-			$this->session('lp')->put('active_tags', (int) $result['count']);
-		}
-
-		return $this->session('lp')->get('active_tags') ?? 0;
+		return $this->session('lp')->get($cacheKey) ?? 0;
 	}
 }

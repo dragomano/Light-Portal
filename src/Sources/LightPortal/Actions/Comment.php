@@ -31,8 +31,6 @@ use Bugo\LightPortal\Utils\Traits\HasCache;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 use Bugo\LightPortal\Utils\Traits\HasResponse;
 
-use function Bugo\LightPortal\app;
-
 use const LP_BASE_URL;
 
 if (! defined('SMF'))
@@ -78,7 +76,7 @@ final class Comment implements ActionInterface
 	private function get(): never
 	{
 		$comments = $this->cache('page_' . $this->pageSlug . '_comments')
-			->setFallback(fn() => app(CommentRepositoryInterface::class)->getByPageId(Utils::$context['lp_page']['id']));
+			->setFallback(fn() => $this->repository->getByPageId(Utils::$context['lp_page']['id']));
 
 		$comments = array_map(function ($comment) {
 			$comment['human_date']    = DateTime::relative($comment['created_at']);
