@@ -8,6 +8,7 @@ use Bugo\LightPortal\UI\Partials\ContentClassSelect;
 use Bugo\LightPortal\UI\Partials\SelectInterface;
 use Bugo\LightPortal\UI\Partials\SelectRenderer;
 use Tests\AppMockRegistry;
+use Tests\ReflectionAccessor;
 
 beforeEach(function () {
     Lang::$txt['no'] = 'No';
@@ -58,7 +59,7 @@ dataset('initialization cases', [
             'id'       => 'content_class',
             'multiple' => true,
             'wide'     => false,
-            'value'    => '',
+            'value'    => [],
         ],
     ],
     'custom wide' => [
@@ -136,11 +137,9 @@ it('renders to string', function () {
 });
 
 
-it('template is set correctly', function () {
-    $select = new ContentClassSelect();
+it('correctly sets the template', function () {
+    $select = new ReflectionAccessor(new ContentClassSelect());
+    $property = $select->getProtectedProperty('template');
 
-    $reflection = new ReflectionClass($select);
-    $property = $reflection->getProperty('template');
-
-    expect($property->getValue($select))->toBe('preview_select');
+    expect($property)->toBe('preview_select');
 });

@@ -8,6 +8,7 @@ use Bugo\LightPortal\UI\Partials\TitleClassSelect;
 use Bugo\LightPortal\UI\Partials\SelectInterface;
 use Bugo\LightPortal\UI\Partials\SelectRenderer;
 use Tests\AppMockRegistry;
+use Tests\ReflectionAccessor;
 
 beforeEach(function () {
     Lang::$txt['no'] = 'No';
@@ -135,11 +136,9 @@ it('handles empty params', function () {
     expect($select->getParams())->toBeArray();
 });
 
-it('template is set correctly', function () {
-    $select = new TitleClassSelect();
+it('correctly sets the template', function () {
+    $select = new ReflectionAccessor(new TitleClassSelect());
+    $property = $select->getProtectedProperty('template');
 
-    $reflection = new ReflectionClass($select);
-    $property = $reflection->getProperty('template');
-
-    expect($property->getValue($select))->toBe('preview_select');
+    expect($property)->toBe('preview_select');
 });

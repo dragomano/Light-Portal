@@ -8,6 +8,7 @@ use Bugo\LightPortal\UI\Partials\PermissionSelect;
 use Bugo\LightPortal\UI\Partials\SelectInterface;
 use Bugo\LightPortal\UI\Partials\SelectRenderer;
 use Tests\AppMockRegistry;
+use Tests\ReflectionAccessor;
 
 beforeEach(function () {
     Lang::$txt['lp_permissions'] = [
@@ -61,12 +62,13 @@ it('initializes with custom value parameter', function () {
 });
 
 it('initializes with custom multiple parameter', function () {
-    $params = ['multiple' => true];
+    $params = ['multiple' => true, 'value' => '0'];
     $select = new PermissionSelect($params);
 
     $config = $select->getParams();
 
-    expect($config['multiple'])->toBeTrue();
+    expect($config['multiple'])->toBeTrue()
+        ->and($config['value'])->toBe(['0']);
 });
 
 it('initializes with custom wide parameter', function () {
@@ -155,11 +157,9 @@ it('handles empty params', function () {
     expect($select->getParams())->toBeArray();
 });
 
-it('template is set correctly', function () {
-    $select = new PermissionSelect();
+it('correctly sets the template', function () {
+    $select = new ReflectionAccessor(new PermissionSelect());
+    $property = $select->getProtectedProperty('template');
 
-    $reflection = new ReflectionClass($select);
-    $property = $reflection->getProperty('template');
-
-    expect($property->getValue($select))->toBe('virtual_select');
+    expect($property)->toBe('virtual_select');
 });

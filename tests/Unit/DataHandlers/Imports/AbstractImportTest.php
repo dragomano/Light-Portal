@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Database\PortalSqlInterface;
 use Bugo\LightPortal\DataHandlers\Imports\AbstractImport;
-use Bugo\LightPortal\Utils\DatabaseInterface;
 use Bugo\LightPortal\Utils\ErrorHandlerInterface;
 use Bugo\LightPortal\Utils\File;
 use Bugo\LightPortal\Utils\FileInterface;
@@ -13,31 +13,25 @@ use Bugo\LightPortal\Utils\Traits\HasRequest;
 arch()
     ->expect(AbstractImport::class)
     ->toBeAbstract()
-    ->toUseTrait(HasRequest::class)
-    ->toHaveMethods(['files', 'main', 'getFile']);
+    ->toUseTrait(HasRequest::class);
 
 it('sets max_file_size in constructor', function () {
     $originalValue = Utils::$context['max_file_size'] ?? null;
 
     try {
-        // Mock dependencies
+        $sqlMock = Mockery::mock(PortalSqlInterface::class);
         $fileMock = Mockery::mock(FileInterface::class);
-        $dbMock = Mockery::mock(DatabaseInterface::class);
         $errorHandlerMock = Mockery::mock(ErrorHandlerInterface::class);
 
-        // Mock Sapi::memoryReturnBytes to return expected bytes
         $expectedBytes = 10 * 1024 * 1024; // 10MB in bytes
 
-        // We need to mock the static methods, so we'll use a partial mock approach
-        $mock = Mockery::mock(AbstractImport::class, [$fileMock, $dbMock, $errorHandlerMock])->makePartial();
+        $mock = Mockery::mock(AbstractImport::class, [$sqlMock, $fileMock, $errorHandlerMock])->makePartial();
         $mock->shouldAllowMockingProtectedMethods();
 
-        // Manually set the max_file_size in context as the constructor would
         Utils::$context['max_file_size'] = $expectedBytes;
 
         expect(Utils::$context['max_file_size'])->toBe($expectedBytes);
     } finally {
-        // Restore original value
         if ($originalValue !== null) {
             Utils::$context['max_file_size'] = $originalValue;
         } else {
@@ -47,11 +41,11 @@ it('sets max_file_size in constructor', function () {
 });
 
 it('returns false when file not found', function () {
-    $fileInterfaceMock = Mockery::mock(FileInterface::class);
-    $dbMock = Mockery::mock(DatabaseInterface::class);
+    $sqlMock = Mockery::mock(PortalSqlInterface::class);
+    $fileMock = Mockery::mock(FileInterface::class);
     $errorHandlerMock = Mockery::mock(ErrorHandlerInterface::class);
 
-    $mock = Mockery::mock(AbstractImport::class, [$fileInterfaceMock, $dbMock, $errorHandlerMock])->makePartial();
+    $mock = Mockery::mock(AbstractImport::class, [$sqlMock, $fileMock, $errorHandlerMock])->makePartial();
     $mock->shouldAllowMockingProtectedMethods();
 
     $fileMock = Mockery::mock(File::class);
@@ -64,11 +58,11 @@ it('returns false when file not found', function () {
 });
 
 it('returns false for invalid file type', function () {
-    $fileInterfaceMock = Mockery::mock(FileInterface::class);
-    $dbMock = Mockery::mock(DatabaseInterface::class);
+    $sqlMock = Mockery::mock(PortalSqlInterface::class);
+    $fileMock = Mockery::mock(FileInterface::class);
     $errorHandlerMock = Mockery::mock(ErrorHandlerInterface::class);
 
-    $mock = Mockery::mock(AbstractImport::class, [$fileInterfaceMock, $dbMock, $errorHandlerMock])->makePartial();
+    $mock = Mockery::mock(AbstractImport::class, [$sqlMock, $fileMock, $errorHandlerMock])->makePartial();
     $mock->shouldAllowMockingProtectedMethods();
 
     // Mock file with invalid type
@@ -87,14 +81,13 @@ it('returns false for invalid file type', function () {
 });
 
 it('returns SimpleXMLElement for valid xml file', function () {
-    $fileInterfaceMock = Mockery::mock(FileInterface::class);
-    $dbMock = Mockery::mock(DatabaseInterface::class);
+    $sqlMock = Mockery::mock(PortalSqlInterface::class);
+    $fileMock = Mockery::mock(FileInterface::class);
     $errorHandlerMock = Mockery::mock(ErrorHandlerInterface::class);
 
-    $mock = Mockery::mock(AbstractImport::class, [$fileInterfaceMock, $dbMock, $errorHandlerMock])->makePartial();
+    $mock = Mockery::mock(AbstractImport::class, [$sqlMock, $fileMock, $errorHandlerMock])->makePartial();
     $mock->shouldAllowMockingProtectedMethods();
 
-    // Create temporary XML file
     $xmlContent = <<<'XML'
 <?xml version="1.0" encoding="UTF-8"?>
 <light_portal>
@@ -129,10 +122,9 @@ XML;
     $tempFile = tempnam(sys_get_temp_dir(), 'test_xml');
     file_put_contents($tempFile, $xmlContent);
 
-    // Mock file
     $file = [
-        'type' => 'text/xml',
-        'tmp_name' => $tempFile
+        'type'     => 'text/xml',
+        'tmp_name' => $tempFile,
     ];
 
     $fileMock = Mockery::mock(File::class);

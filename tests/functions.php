@@ -26,7 +26,13 @@ if (! function_exists('fatal_lang_error')) {
 if (! function_exists('log_error')) {
     $GLOBALS['log_error_calls'] = [];
 
-    function log_error(string $error_message, string|bool $error_type = 'general', string $file = '', int $line = 0, ?array $backtrace = null): string
+    function log_error(
+        string $error_message,
+        string|bool $error_type = 'general',
+        string $file = '',
+        int $line = 0,
+        ?array $backtrace = null
+    ): string
     {
         $GLOBALS['log_error_calls'][] = [
             'message' => $error_message,
@@ -133,7 +139,7 @@ if (! function_exists('allowedTo')) {
 }
 
 if (! function_exists('boardsAllowedTo')) {
-    function boardsAllowedTo($permissions, $check_access = true, $simple = true): array
+    function boardsAllowedTo(...$params): array
     {
         return [];
     }
@@ -148,20 +154,20 @@ if (! function_exists('membersAllowedTo')) {
 
 // Define app function for dependency injection
 if (! function_exists('add_integration_function')) {
-    function add_integration_function(string $name, string $function, bool $permanent = true, string $file = '', bool $object = false): void
+    function add_integration_function(...$parms): void
     {
     }
 }
 
 if (! function_exists('call_integration_hook')) {
-    function call_integration_hook(string $name, array $parameters = []): array
+    function call_integration_hook(...$parms): array
     {
         return [];
     }
 }
 
 if (! function_exists('remove_integration_function')) {
-    function remove_integration_function(string $name, string $function, bool $permanent = true, string $file = '', bool $object = false): void
+    function remove_integration_function(...$params): void
     {
     }
 }
@@ -201,7 +207,8 @@ if (! function_exists('parse_bbc')) {
 }
 
 if (! function_exists('loadMemberData')) {
-    function loadMemberData($users, $type = false, $set = 'normal') {
+    function loadMemberData($users, $type = false, $set = 'normal'): array
+    {
         return [];
     }
 }
@@ -221,7 +228,8 @@ if (! function_exists('shorten_subject')) {
 }
 
 if (! function_exists('constructPageIndex')) {
-    function constructPageIndex($base_url, $start, $num_items, $per_page, $short_format = false, $show_prevnext = true, $template_overrides = []) {
+    function constructPageIndex(...$params): string
+    {
         return '<div>Mocked Page Index</div>';
     }
 }
@@ -229,5 +237,19 @@ if (! function_exists('constructPageIndex')) {
 if (! function_exists('obExit')) {
     function obExit($header = null): void
     {
+    }
+}
+
+if (! function_exists('un_htmlspecialchars')) {
+    function un_htmlspecialchars(string $string): string
+    {
+        return $string;
+    }
+}
+
+if (! function_exists('un_preparsecode')) {
+    function un_preparsecode(string $string): string
+    {
+        return $string;
     }
 }

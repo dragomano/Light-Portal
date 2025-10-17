@@ -77,7 +77,7 @@ it('throws exception for unknown type', function () {
     expect(fn() => SelectFactory::create('unknown'))->toThrow(InvalidArgumentException::class);
 });
 
-it('all created selects implement SelectInterface', function () {
+it('checks that all created selects implement SelectInterface', function () {
     $types = ['action', 'area', 'board', 'content_class', 'entry_type', 'icon', 'page_icon', 'permission', 'placement', 'status', 'title_class', 'topic'];
 
     foreach ($types as $type) {

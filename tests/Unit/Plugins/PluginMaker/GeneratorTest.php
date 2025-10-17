@@ -6,6 +6,7 @@ require_once __DIR__ . '/../../../../src/Sources/LightPortal/Plugins/PluginMaker
 
 use Bugo\LightPortal\Plugins\PluginMaker\Generator;
 use Nette\PhpGenerator\Literal;
+use Tests\ReflectionAccessor;
 
 dataset('getPluginType cases', [
     'empty types array'                   => [[], null],
@@ -24,12 +25,9 @@ dataset('getPluginType cases', [
 it('returns correct plugin type', function ($types, $expected) {
     $plugin = ['types' => $types, 'name' => 'TestPlugin', 'icon' => ''];
 
-    $generator = new Generator($plugin);
+    $generator = new ReflectionAccessor(new Generator($plugin));
 
-    $reflection = new ReflectionClass($generator);
-    $method = $reflection->getMethod('getPluginType');
-
-    $result = $method->invoke($generator);
+    $result = $generator->callProtectedMethod('getPluginType');
 
     if ($expected === null) {
         expect($result)->toBeNull();

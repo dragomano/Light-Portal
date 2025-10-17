@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Database\PortalSqlInterface;
+use Bugo\LightPortal\Database\PortalTransactionInterface;
 use Bugo\LightPortal\DataHandlers\Traits\HasTransactions;
-use Bugo\LightPortal\Utils\DatabaseInterface;
 use Bugo\LightPortal\Utils\ErrorHandlerInterface;
+use Laminas\Db\Adapter\Driver\ConnectionInterface;
 use Mockery\LegacyMockInterface;
 use Mockery\MockInterface;
 
 beforeEach(function () {
-    $this->dbMock = Mockery::mock(DatabaseInterface::class);
+    $this->sqlMock = Mockery::mock(PortalSqlInterface::class);
     $this->errorHandlerMock = Mockery::mock(ErrorHandlerInterface::class);
 
     $this->testClass = new class {
@@ -19,13 +21,13 @@ beforeEach(function () {
 
         public string $entity = 'test_entity';
 
-        public mixed $db;
+        public mixed $sql;
 
         public mixed $errorHandler;
 
-        public function __construct($db = null, $errorHandler = null)
+        public function __construct($sql = null, $errorHandler = null)
         {
-            $this->db = $db;
+            $this->sql = $sql;
             $this->errorHandler = $errorHandler;
         }
 
@@ -46,83 +48,105 @@ beforeEach(function () {
     };
 });
 
-it('startTransaction begins transaction and sets context', function () {
-    // Mock Db
-    $this->dbMock
-        ->shouldReceive('transaction')
-        ->withNoArgs()
-        ->andReturn(true)
-        ->once();
+describe('startTransaction', function () {
+    it('begins transaction and sets context', function () {
+        $transactionMock = Mockery::mock(PortalTransactionInterface::class);
+        $transactionMock->shouldReceive('begin')->withNoArgs()->once();
 
-    $this->testClass = new (get_class($this->testClass))($this->dbMock);
+        $this->sqlMock
+            ->shouldReceive('getTransaction')
+            ->withNoArgs()
+            ->andReturn($transactionMock)
+            ->once();
 
-    // Mock Utils
-    Utils::$context = [];
+        $this->testClass = new (get_class($this->testClass))($this->sqlMock);
 
-    $items = [['id' => 1], ['id' => 2]];
+        Utils::$context = [];
 
-    $this->testClass->testStartTransaction($items);
+        $items = [['id' => 1], ['id' => 2]];
 
-    expect(Utils::$context['import_successful'])->toBe(2);
+        $this->testClass->testStartTransaction($items);
+
+        expect(Utils::$context['import_successful'])->toBe(2);
+    });
 });
 
-it('finishTransaction commits when results exist', function () {
-    // Mock Db
-    $this->dbMock->shouldReceive('transaction')->withNoArgs()->once();
-    $this->dbMock->shouldReceive('transaction')->with('commit')->once();
+describe('finishTransaction', function () {
+    it('commits when results exist', function () {
+        $transactionMock = Mockery::mock(PortalTransactionInterface::class);
+        $transactionMock->shouldReceive('begin')->withNoArgs()->once();
 
-    $this->testClass = new (get_class($this->testClass))($this->dbMock);
+        $commitTransactionMock = Mockery::mock(PortalTransactionInterface::class);
+        $commitTransactionMock->shouldReceive('commit')->withNoArgs()->once();
 
-    // Mock Utils
-    Utils::$context = ['import_successful' => 2];
+        $this->sqlMock
+            ->shouldReceive('getTransaction')
+            ->withNoArgs()
+            ->andReturn($transactionMock, $commitTransactionMock)
+            ->twice();
 
-    // Mock Lang
-    Lang::$txt = [
-        'lp_import_success' => 'Import successful: ',
-        'lp_test_entity_set' => '{test_entity, plural, one {# test entity} other {# test entities}}'
-    ];
+        $this->testClass = new (get_class($this->testClass))($this->sqlMock);
 
-    $this->testClass->testStartTransaction([['id' => 1], ['id' => 2]]); // Sets context
-    $this->testClass->testFinishTransaction([1, 2]);
+        Utils::$context = ['import_successful' => 2];
 
-    expect(Utils::$context['import_successful'])->toContain('Import successful');
-});
+        Lang::$txt = [
+            'lp_import_success' => 'Import successful: ',
+            'lp_test_entity_set' => '{test_entity, plural, one {# test entity} other {# test entities}}'
+        ];
 
-it('finishTransaction rolls back when no results', function () {
-    // Mock Db
-    $this->dbMock->shouldReceive('transaction')->with('rollback')->once();
+        $this->testClass->testStartTransaction([['id' => 1], ['id' => 2]]);
+        $this->testClass->testFinishTransaction([1, 2]);
 
-    // Mock Error Handler
-    $this->errorHandlerMock
-        ->shouldReceive('fatal')
-        ->with('lp_import_failed', false)
-        ->once()
-        ->andThrow(new Exception('lp_import_failed'));
+        expect(Utils::$context['import_successful'])->toContain('Import successful');
+    });
 
-    $testClass = new (get_class($this->testClass))($this->dbMock, $this->errorHandlerMock);
+    it('rolls back when no results', function () {
+        $connectionMock = Mockery::mock(ConnectionInterface::class);
+        $rollbackTransactionMock = Mockery::mock(PortalTransactionInterface::class);
+        $rollbackTransactionMock->shouldReceive('rollback')->withNoArgs()->andReturn($connectionMock)->once();
 
-    // Set import_successful to 0 to trigger rollback
-    Utils::$context = ['import_successful' => 0];
+        $this->sqlMock
+            ->shouldReceive('getTransaction')
+            ->withNoArgs()
+            ->andReturn($rollbackTransactionMock)
+            ->once();
 
-    $testClass->testFinishTransaction([]);
-})->throws(Exception::class);
+        $this->errorHandlerMock
+            ->shouldReceive('fatal')
+            ->with('lp_import_failed', false)
+            ->once()
+            ->andThrow(new Exception('lp_import_failed'));
 
-it('finishTransaction flushes cache', function () {
-    // Mock Db
-    $this->dbMock->shouldReceive('transaction')->withNoArgs()->once();
-    $this->dbMock->shouldReceive('transaction')->with('commit')->once();
+        $testClass = new (get_class($this->testClass))($this->sqlMock, $this->errorHandlerMock);
 
-    $testClass = new (get_class($this->testClass))($this->dbMock);
+        Utils::$context = ['import_successful' => 0];
 
-    // Mock Utils
-    Utils::$context = ['import_successful' => 1];
+        $testClass->testFinishTransaction([]);
+    })->throws(Exception::class);
 
-    // Mock Lang
-    Lang::$txt = [
-        'lp_import_success' => 'Import successful: ',
-        'lp_test_entity_set' => '{test_entity, plural, one {# test entity} other {# test entities}}'
-    ];
+    it('flushes cache', function () {
+        $transactionMock = Mockery::mock(PortalTransactionInterface::class);
+        $transactionMock->shouldReceive('begin')->withNoArgs()->once();
 
-    $testClass->testStartTransaction([['id' => 1]]); // Sets context
-    $testClass->testFinishTransaction([1]);
+        $commitTransactionMock = Mockery::mock(PortalTransactionInterface::class);
+        $commitTransactionMock->shouldReceive('commit')->withNoArgs()->once();
+
+        $this->sqlMock
+            ->shouldReceive('getTransaction')
+            ->withNoArgs()
+            ->andReturn($transactionMock, $commitTransactionMock)
+            ->twice();
+
+        $testClass = new (get_class($this->testClass))($this->sqlMock);
+
+        Utils::$context = ['import_successful' => 1];
+
+        Lang::$txt = [
+            'lp_import_success' => 'Import successful: ',
+            'lp_test_entity_set' => '{test_entity, plural, one {# test entity} other {# test entities}}'
+        ];
+
+        $testClass->testStartTransaction([['id' => 1]]);
+        $testClass->testFinishTransaction([1]);
+    });
 });

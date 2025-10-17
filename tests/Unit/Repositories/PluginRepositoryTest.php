@@ -3,9 +3,8 @@
 declare(strict_types=1);
 
 use Bugo\LightPortal\Repositories\PluginRepository;
+use Bugo\LightPortal\Repositories\PluginRepositoryInterface;
 
 arch()
     ->expect(PluginRepository::class)
-    ->toHaveMethods([
-        'addSettings', 'getSettings', 'changeSettings', 'removeSettings',
-    ]);
+    ->toImplement(PluginRepositoryInterface::class);

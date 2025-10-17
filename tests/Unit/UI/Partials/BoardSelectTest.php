@@ -9,6 +9,7 @@ use Bugo\LightPortal\UI\Partials\SelectInterface;
 use Bugo\LightPortal\UI\Partials\SelectRenderer;
 use Bugo\LightPortal\Utils\MessageIndex;
 use Tests\AppMockRegistry;
+use Tests\ReflectionAccessor;
 
 beforeEach(function () {
     Lang::$txt['lp_frontpage_boards_select'] = 'Select boards';
@@ -152,11 +153,9 @@ it('renders to string', function () {
     expect($result)->toBe('<select></select>');
 });
 
-it('template is set correctly', function () {
-    $select = new BoardSelect();
+it('correctly sets the template', function () {
+    $select = new ReflectionAccessor(new BoardSelect());
+    $property = $select->getProtectedProperty('template');
 
-    $reflection = new ReflectionClass($select);
-    $property = $reflection->getProperty('template');
-
-    expect($property->getValue($select))->toBe('virtual_select');
+    expect($property)->toBe('virtual_select');
 });

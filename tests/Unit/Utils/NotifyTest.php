@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Utils\Notify;
+use Bugo\LightPortal\Utils\Notifier;
 
 arch()
-    ->expect(Notify::class)
-    ->toHaveMethod('send');
+    ->expect(Notifier::class)
+    ->toHaveMethod('notify');

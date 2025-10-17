@@ -33,29 +33,27 @@
 			<directory>src/Sources/LightPortal/Libs</directory>
 			<directory>src/Sources/LightPortal/Plugins</directory>
 			<file>src/Sources/LightPortal/Actions/index.php</file>
-			<file>src/Sources/LightPortal/Areas/index.php</file>
 			<file>src/Sources/LightPortal/Areas/Configs/index.php</file>
-			<file>src/Sources/LightPortal/Areas/Exports/index.php</file>
-			<file>src/Sources/LightPortal/Areas/Imports/Custom/index.php</file>
-			<file>src/Sources/LightPortal/Areas/Imports/index.php</file>
-			<file>src/Sources/LightPortal/Areas/Imports/Traits/index.php</file>
 			<file>src/Sources/LightPortal/Areas/Traits/index.php</file>
+			<file>src/Sources/LightPortal/Areas/index.php</file>
 			<file>src/Sources/LightPortal/Articles/index.php</file>
-			<file>src/Sources/LightPortal/DataHandlers/index.php</file>
+			<file>src/Sources/LightPortal/Database/Migrations/Columns/index.php</file>
+			<file>src/Sources/LightPortal/Database/Migrations/Creators/index.php</file>
+			<file>src/Sources/LightPortal/Database/Migrations/Operations/index.php</file>
+			<file>src/Sources/LightPortal/Database/Migrations/Upgraders/index.php</file>
+			<file>src/Sources/LightPortal/Database/Migrations/index.php</file>
+			<file>src/Sources/LightPortal/Database/Operations/index.php</file>
+			<file>src/Sources/LightPortal/Database/index.php</file>
 			<file>src/Sources/LightPortal/DataHandlers/Exports/index.php</file>
-			<file>src/Sources/LightPortal/DataHandlers/Imports/index.php</file>
 			<file>src/Sources/LightPortal/DataHandlers/Imports/Custom/index.php</file>
+			<file>src/Sources/LightPortal/DataHandlers/Imports/index.php</file>
 			<file>src/Sources/LightPortal/DataHandlers/Traits/index.php</file>
-			<file>src/Sources/LightPortal/Enums/index.php</file>
+			<file>src/Sources/LightPortal/DataHandlers/index.php</file>
 			<file>src/Sources/LightPortal/Enums/Traits/index.php</file>
+			<file>src/Sources/LightPortal/Enums/index.php</file>
 			<file>src/Sources/LightPortal/Events/index.php</file>
 			<file>src/Sources/LightPortal/Hooks/index.php</file>
 			<file>src/Sources/LightPortal/Lists/index.php</file>
-			<file>src/Sources/LightPortal/Migrations/Columns/index.php</file>
-			<file>src/Sources/LightPortal/Migrations/Creators/index.php</file>
-			<file>src/Sources/LightPortal/Migrations/Operations/index.php</file>
-			<file>src/Sources/LightPortal/Migrations/Upgraders/index.php</file>
-			<file>src/Sources/LightPortal/Migrations/index.php</file>
 			<file>src/Sources/LightPortal/Models/index.php</file>
 			<file>src/Sources/LightPortal/Renderers/index.php</file>
 			<file>src/Sources/LightPortal/Repositories/index.php</file>
@@ -66,8 +64,8 @@
 			<file>src/Sources/LightPortal/UI/Partials/index.php</file>
 			<file>src/Sources/LightPortal/UI/Tables/index.php</file>
 			<file>src/Sources/LightPortal/UI/index.php</file>
-			<file>src/Sources/LightPortal/Utils/index.php</file>
 			<file>src/Sources/LightPortal/Utils/Traits/index.php</file>
+			<file>src/Sources/LightPortal/Utils/index.php</file>
 			<file>src/Sources/LightPortal/Validators/index.php</file>
 			<file>src/Sources/LightPortal/app.php</file>
 			<file>src/Sources/LightPortal/create_index.php</file>

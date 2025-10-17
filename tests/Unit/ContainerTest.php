@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 use Bugo\LightPortal\Container;
 use League\Container\Container as LeagueContainer;
+use Tests\ReflectionAccessor;
 
 beforeEach(function () {
-    // Reset the singleton for each test
-    $reflection = new ReflectionClass(Container::class);
-    $property = $reflection->getProperty('container');
-    $property->setValue(null);
+    $this->container = new ReflectionAccessor(new Container());
+    $this->container->setProtectedProperty('container', null);
 });
 
 it('is a singleton', function () {
@@ -29,10 +28,7 @@ it('get returns service from container', function () {
     $mockContainer = Mockery::mock(LeagueContainer::class);
     $mockContainer->shouldReceive('get')->with('test_service')->andReturn('mocked_service');
 
-    // Inject the mock container
-    $reflection = new ReflectionClass(Container::class);
-    $property = $reflection->getProperty('container');
-    $property->setValue($mockContainer);
+    $this->container->setProtectedProperty('container', $mockContainer);
 
     $result = Container::get('test_service');
 
@@ -40,23 +36,14 @@ it('get returns service from container', function () {
 });
 
 it('get handles exceptions gracefully', function () {
-    // Test that get method exists and is callable
     expect(Container::class)->toHaveMethod('get');
 
-    // Test with a real container that might not have the service
     $result = Container::get('nonexistent_service_' . uniqid());
 
-    // Should return false for unknown services
     expect($result)->toBeFalse();
 });
 
 it('init initializes container with ServiceProvider', function () {
-    // Reset container first
-    $reflection = new ReflectionClass(Container::class);
-    $property = $reflection->getProperty('container');
-    $property->setValue(null);
-
-    // Call getInstance which calls init
     $container = Container::getInstance();
 
     expect($container)->toBeInstanceOf(LeagueContainer::class)

@@ -2,131 +2,132 @@
 
 declare(strict_types=1);
 
+use Bugo\LightPortal\Database\PortalSql;
 use Bugo\LightPortal\DataHandlers\Imports\TagImport;
-use Bugo\LightPortal\Utils\DatabaseInterface;
+use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Utils\ErrorHandlerInterface;
 use Bugo\LightPortal\Utils\FileInterface;
-use Tests\Fixtures;
-use Tests\Unit\DataHandlers\DataHandlerTestTrait;
+use Tests\ReflectionAccessor;
+use Tests\Table;
+use Tests\TestAdapterFactory;
 
-uses(DataHandlerTestTrait::class);
+beforeEach(function () {
+    $this->fileMock = Mockery::mock(FileInterface::class);
+    $this->errorHandlerMock = Mockery::mock(ErrorHandlerInterface::class)->shouldIgnoreMissing();
 
-dataset('tag scenarios', [
-    ['with_description'],
-    ['without_description'],
-]);
+    $adapter = TestAdapterFactory::create();
+    $adapter->query(Table::TAGS->value)->execute();
+    $adapter->query(Table::PAGE_TAG->value)->execute();
+    $adapter->query(Table::TRANSLATIONS->value)->execute();
 
-function generateTagXml($descriptionScenario): string
+    $this->sql = new PortalSql($adapter);
+});
+
+function generateTagXml(array $scenario): string
 {
-    $descriptionTag = $descriptionScenario === 'with_description' ? '<descriptions><english>Test description</english><russian>Тестовое описание</russian></descriptions>' : '';
+    $titlesXml = '';
+    if (! empty($scenario['titles'])) {
+        $titlesXml = '<titles>';
+        foreach ($scenario['titles'] as $lang => $title) {
+            $titlesXml .= "<$lang>$title</$lang>";
+        }
+
+        $titlesXml .= '</titles>';
+    }
+
+    $icon = $scenario['icon'] ?? '';
+
+    $pagesXml = '';
+    if (! empty($scenario['pages'])) {
+        $pagesXml = '<pages>';
+        foreach ($scenario['pages'] as $pageId) {
+            $pagesXml .= "<page id=\"$pageId\"/>";
+        }
+
+        $pagesXml .= '</pages>';
+    }
 
     return <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
 <light_portal>
     <tags>
-        <item tag_id="1">
-            <icon>fas fa-tag</icon>
-            <status>1</status>
-            <titles>
-                <english>Test Tag</english>
-                <russian>Тестовый тег</russian>
-            </titles>
-            {$descriptionTag}
-            <pages>
-                <item id="1"/>
-                <item id="2"/>
-            </pages>
+        <item tag_id="{$scenario['tag_id']}" status="{$scenario['status']}">
+            <slug>{$scenario['slug']}</slug>
+            <icon>$icon</icon>
+            {$titlesXml}
+            {$pagesXml}
         </item>
     </tags>
 </light_portal>
 XML;
 }
 
-beforeEach(function () {
-    $this->fileMock = Mockery::mock(FileInterface::class);
-    $this->dbMock = Mockery::mock(DatabaseInterface::class);
-    $this->errorHandlerMock = Mockery::mock(ErrorHandlerInterface::class)
-        ->shouldReceive('log')
-        ->andReturnNull() // Allow log calls without throwing exceptions
-        ->getMock();
-});
+dataset('tag scenarios', [
+    'full' => [[
+        'tag_id' => 1,
+        'slug'   => 'full-tag',
+        'icon'   => 'fas fa-tag',
+        'status' => Status::ACTIVE->value,
+        'titles' => ['english' => 'Test Tag', 'russian' => 'Тестовый тег'],
+        'pages'  => [1, 2],
+    ]],
+    'no_pages' => [[
+        'tag_id' => 2,
+        'slug'   => 'no-pages-tag',
+        'icon'   => 'fas fa-minus',
+        'status' => Status::INACTIVE->value,
+        'titles' => ['english' => 'No Pages'],
+        'pages'  => [],
+    ]],
+    'no_icon' => [[
+        'tag_id' => 3,
+        'slug'   => 'no-icon-tag',
+        'status' => Status::ACTIVE->value,
+        'titles' => ['english' => 'No Icon Tag'],
+        'pages'  => [3],
+    ]],
+    'english_only' => [[
+        'tag_id' => 4,
+        'slug'   => 'english-only-tag',
+        'icon'   => 'fas fa-star',
+        'status' => Status::ACTIVE->value,
+        'titles' => ['english' => 'English Only'],
+        'pages'  => [],
+    ]],
+]);
 
-it('correctly processes XML data', function ($descriptionScenario) {
-    // Mock Db
-    $this->dbMock = $this->createDatabaseMock();
+it('imports tags correctly for all scenarios', function (array $scenario) {
+    $xml = simplexml_load_string(generateTagXml($scenario));
 
-    $import = Mockery::mock(TagImport::class, [$this->fileMock, $this->dbMock, $this->errorHandlerMock])->makePartial();
-    $import->shouldAllowMockingProtectedMethods();
-    $import->shouldReceive('processItems')->passthru();
+    $import = new ReflectionAccessor(new TagImport($this->sql, $this->fileMock, $this->errorHandlerMock));
+    $import->setProtectedProperty('xml', $xml);
+    $import->callProtectedMethod('processItems');
 
-    // Mock XML
-    $xml = simplexml_load_string(generateTagXml($descriptionScenario));
+    $rows = iterator_to_array(
+        $this->sql->getAdapter()->query(/** @lang text */ 'SELECT * FROM lp_tags')->execute()
+    );
 
-    // Set XML directly using reflection since injectXml method doesn't exist
-    $reflection = new ReflectionClass($import);
-    $xmlProperty = $reflection->getProperty('xml');
-    $xmlProperty->setValue($import, $xml);
+    $tag = array_filter($rows, fn($r) => $r['slug'] === $scenario['slug']);
+    $tag = reset($tag);
 
-    // Mock parseXml to return true
-    $import->shouldReceive('parseXml')->andReturn(true);
+    expect($tag)->not->toBeNull()
+        ->and($tag['slug'])->toBe($scenario['slug'])
+        ->and($tag['icon'] ?? '')->toBe($scenario['icon'] ?? '')
+        ->and($tag['status'])->toBe($scenario['status']);
 
-    // Mock trait methods
-    $import->shouldReceive('extractTranslations')->andReturn(Fixtures::getTranslationData());
-    $import->shouldReceive('extractPages')->andReturn([['page_id' => 1, 'tag_id' => '1'], ['page_id' => 2, 'tag_id' => '1']]);
-    $import->shouldReceive('insertData')
-        ->with(
-            'lp_tags',
-            'replace',
-            Mockery::any(),
-            Mockery::any(),
-            ['tag_id']
-        )
-        ->andReturn([1]);
-    $import->shouldReceive('replaceTranslations')->with(Mockery::any(), Mockery::any())->once();
-    $import->shouldReceive('replacePages')->with(Mockery::any(), Mockery::any())->once();
+    $pages = iterator_to_array(
+        $this->sql->getAdapter()
+            ->query(/** @lang text */ 'SELECT * FROM lp_page_tag WHERE tag_id = ?')
+            ->execute([$scenario['tag_id']])
+    );
+    expect(count($pages))->toBe(count($scenario['pages']));
 
-    $import->shouldAllowMockingProtectedMethods();
-    $import->processItems();
+    foreach ($scenario['titles'] ?? [] as $lang => $title) {
+        $transRow = iterator_to_array(
+            $this->sql->getAdapter()
+                ->query(/** @lang text */ 'SELECT * FROM lp_translations WHERE type = ? AND item_id = ? AND lang = ?')
+                ->execute(['tag', $scenario['tag_id'], $lang])
+        );
+        expect(reset($transRow)['title'])->toBe($title);
+    }
 })->with('tag scenarios');
-
-it('handles XML import with fixtures data for tags', function () {
-    // Mock Db
-    $this->dbMock = $this->createDatabaseMock();
-
-    $import = Mockery::mock(TagImport::class, [$this->fileMock, $this->dbMock, $this->errorHandlerMock])->makePartial();
-    $import->shouldAllowMockingProtectedMethods();
-    $import->shouldReceive('processItems')->passthru();
-
-    // Use fixtures to generate XML
-    $xmlString = Fixtures::getTagXmlData();
-    $xml = simplexml_load_string($xmlString);
-
-    // Extract pages count from XML for assertion
-    $pagesCount = count($xml->tags->item->pages->page);
-
-    // Set XML using reflection
-    $reflection = new ReflectionClass($import);
-    $xmlProperty = $reflection->getProperty('xml');
-    $xmlProperty->setValue($import, $xml);
-
-    // Mock methods
-    $import->shouldReceive('parseXml')->andReturn(true);
-    $import->shouldReceive('extractTranslations')->andReturn(Fixtures::getTranslationData());
-    $import->shouldReceive('extractPages')->andReturn([['page_id' => 1, 'tag_id' => '1']]);
-    $import->shouldReceive('insertData')
-        ->with(
-            'lp_tags',
-            'replace',
-            Mockery::type('array'),
-            Mockery::type('array'),
-            ['tag_id']
-        )
-        ->andReturn([1]);
-    $import->shouldReceive('replaceTranslations')->with(Mockery::any(), Mockery::any())->once();
-    $import->shouldReceive('replacePages')->with(Mockery::any(), Mockery::any())->once();
-
-    $import->processItems();
-
-    // Assert pages are processed (edge case for tags with pages)
-    expect($pagesCount)->toBeGreaterThanOrEqual(0);
-});
