@@ -78,7 +78,7 @@ abstract class AbstractField
 	{
 		if ($value instanceof SelectInterface) {
 			$this->setAttribute('value', (string) $value);
-		} elseif (is_callable($value)) {
+		} elseif (is_callable($value) && ! is_string($value)) {
 			$result = $value(...$params);
 
 			if ($result instanceof SelectInterface) {

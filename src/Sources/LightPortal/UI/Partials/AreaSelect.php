@@ -83,4 +83,12 @@ final class AreaSelect extends AbstractSelect
 			'value'    => $this->normalizeValue(Utils::$context['lp_block']['areas'] ?? ''),
 		]);
 	}
+
+	protected function normalizeValue(mixed $value): array
+	{
+		return array_map(
+			static fn($item) => preg_replace('/=(-)(?=\d)/', '=', $item),
+			parent::normalizeValue($value)
+		);
+	}
 }

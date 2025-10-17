@@ -62,8 +62,9 @@ class PluginImport extends AbstractImport
 
 		try {
 			$zip = new ZipArchive();
-			$zip->open($file['tmp_name']);
-			$zip->deleteName('package-info.xml');
+			if ($zip->open($file['tmp_name']) !== true) {
+				return false;
+			}
 
 			$plugin = pathinfo((string) $file['name'], PATHINFO_FILENAME);
 			$pluginPhp = $plugin . '/' . $plugin . '.php';
@@ -71,21 +72,10 @@ class PluginImport extends AbstractImport
 
 			if ($zip->locateName($pluginPhp) !== false) {
 				return $zip->extractTo(LP_ADDON_DIR);
-			} elseif ($zip->locateName($plugin . '.php') !== false) {
-				return $zip->extractTo($addonDir);
 			}
 
-			for ($i = 0; $i < $zip->numFiles; $i++) {
-				$fileInfoArr = $zip->statIndex($i);
-
-				if (! str_contains($fileInfoArr['name'], '/')) {
-					continue;
-				}
-
-				[$dirName, $fileName] = explode('/', $fileInfoArr['name'], 2);
-				if ($fileName === $dirName . '.php') {
-					return $zip->extractTo(LP_ADDON_DIR);
-				}
+			if ($zip->locateName($plugin . '.php') !== false) {
+				return $zip->extractTo($addonDir);
 			}
 
 			$this->errorHandler->fatal('lp_wrong_import_file', false);
@@ -93,6 +83,6 @@ class PluginImport extends AbstractImport
 			$this->errorHandler->fatal('lp_import_failed', false);
 		}
 
-		return true;
+		return false;
 	}
 }

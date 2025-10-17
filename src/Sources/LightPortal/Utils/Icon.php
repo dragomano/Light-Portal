@@ -23,7 +23,7 @@ use function Bugo\LightPortal\app;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class Icon
+class Icon
 {
 	public static function get(string $name, string $title = '', string $prefix = ''): string
 	{

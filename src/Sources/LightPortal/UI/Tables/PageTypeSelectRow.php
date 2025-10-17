@@ -17,10 +17,7 @@ use Bugo\Bricks\Tables\RowPosition;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\EntryType;
-use Bugo\LightPortal\Utils\Request;
 use Bugo\LightPortal\Utils\Str;
-
-use function Bugo\LightPortal\app;
 
 class PageTypeSelectRow extends Row
 {
@@ -33,7 +30,7 @@ class PageTypeSelectRow extends Row
 
 			$types .= Str::html('option', [
 				'value'    => $type,
-				'selected' => app(Request::class)->has('type') && app(Request::class)->get('type') === $type,
+				'selected' => (Utils::$context['lp_selected_page_type'] ?? null) === $type,
 			])->setText($text);
 		}
 

@@ -12,6 +12,8 @@
 
 namespace Bugo\LightPortal\UI\Partials;
 
+use Bugo\LightPortal\Database\PortalSqlInterface;
+
 use function Bugo\LightPortal\app;
 
 if (! defined('SMF'))
@@ -21,9 +23,17 @@ abstract class AbstractSelect implements SelectInterface
 {
 	protected string $template = 'virtual_select';
 
+	protected PortalSqlInterface $sql;
+
 	public function __construct(protected array $params = [])
 	{
+		$this->sql = app(PortalSqlInterface::class);
+
 		$this->params = array_merge($this->getDefaultParams(), $params);
+
+		if ($this->params['multiple'] ?? false) {
+			$this->params['value'] = $this->normalizeValue($this->params['value'] ?? '');
+		}
 	}
 
 	public function __toString(): string
@@ -46,6 +56,6 @@ abstract class AbstractSelect implements SelectInterface
 	{
 		$value = is_array($value) ? $value : explode(',', $value ?? '');
 
-		return array_map('strval', array_values(array_filter($value)));
+		return array_map('strval', array_values(array_filter($value, fn($v) => $v !== '')));
 	}
 }

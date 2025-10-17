@@ -19,6 +19,4 @@ interface PluginRepositoryInterface
 	public function getSettings(): array;
 
 	public function changeSettings(string $name, array $settings = []): void;
-
-	public function removeSettings(string $name, array $settings = []): void;
 }

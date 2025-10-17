@@ -8,13 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 03.10.25
+ * @version 11.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\GalleryBlock;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\PortalHook;
@@ -27,6 +26,7 @@ use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\NumberField;
 use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Str;
+use Laminas\Db\Sql\Select;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -71,31 +71,32 @@ class GalleryBlock extends Block
 
 	public function getData(ParamWrapper $parameters): array
 	{
-		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'gallery_pic')))
+		if (! $this->sql->tableExists('gallery_pic'))
 			return [];
 
 		$categories = empty($parameters['categories']) ? [] : explode(',', (string) $parameters['categories']);
 
-		$result = Db::$db->query('
-			SELECT
-				p.id_picture, p.width, p.height, p.allowcomments, p.id_cat, p.keywords, p.commenttotal AS num_comments,
-				p.filename, p.approved, p.views, p.title, p.id_member, m.real_name, p.date, p.description, c.title AS cat_name
-			FROM {db_prefix}gallery_pic AS p
-				LEFT JOIN {db_prefix}gallery_cat AS c ON (c.id_cat = p.id_cat)
-				LEFT JOIN {db_prefix}members AS m ON (m.id_member = p.id_member)
-			WHERE p.approved = {int:approved}' . ($categories ? '
-				AND p.id_cat IN ({array_int:categories})' : '') . '
-			ORDER BY p.date DESC
-			LIMIT {int:limit}',
-			[
-				'approved'   => 1,
-				'categories' => $categories,
-				'limit'      => Str::typed('int', $parameters['num_images'], default: 10),
-			]
-		);
+		$select = $this->sql->select()
+			->from(['p' => 'gallery_pic'])
+			->columns([
+				'id_picture', 'width', 'height', 'allowcomments', 'id_cat', 'keywords',
+				'num_comments' => 'commenttotal', 'filename', 'approved', 'views',
+				'title', 'id_member', 'date', 'description',
+			])
+			->join(['c' => 'gallery_cat'], 'c.id_cat = p.id_cat', ['cat_name' => 'title'], Select::JOIN_LEFT)
+			->join(['m' => 'members'], 'm.id_member = p.id_member', ['real_name'], Select::JOIN_LEFT)
+			->where(['p.approved' => 1])
+			->order('p.date DESC')
+			->limit(Str::typed('int', $parameters['num_images'], default: 10));
+
+		if ($categories) {
+			$select->where->in('p.id_cat', $categories);
+		}
+
+		$result = $this->sql->execute($select);
 
 		$images = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			$images[$row['id_picture']] = [
 				'id' => $row['id_picture'],
 				'section' => [
@@ -111,7 +112,7 @@ class GalleryBlock extends Block
 				'title'  => $row['title'],
 				'link'   => Config::$scripturl . '?action=gallery;sa=view;pic=' . $row['id_picture'],
 				'image'     => (Config::$modSettings['gallery_url'] ?? (Config::$boardurl . '/gallery/')) . $row['filename'],
-				'can_edit'  => User::$me->allowedTo('smfgallery_manage') || (User::$me->allowedTo('smfgallery_edit') && $row['id_member'] == User::$me->id),
+				'can_edit'  => $this->isCanEdit($row['id_member']),
 				'edit_link' => Config::$scripturl . '?action=gallery;sa=edit;pic=' . $row['id_picture'],
 			];
 
@@ -119,8 +120,6 @@ class GalleryBlock extends Block
 				$images[$row['id_picture']]['teaser'] = Str::getTeaser($row['description']);
 			}
 		}
-
-		Db::$db->free_result($result);
 
 		return $images;
 	}
@@ -151,9 +150,9 @@ class GalleryBlock extends Block
 			$item = Str::html('div', ['class' => 'item']);
 			$link = Str::html('a', ['href' => $image['link']]);
 			$img = Str::html('img', [
-				'src' => $image['image'],
+				'src'   => $image['image'],
 				'title' => $image['title'],
-				'alt' => $image['title'],
+				'alt'   => $image['title'],
 			]);
 
 			$link->addHtml($img);
@@ -162,5 +161,11 @@ class GalleryBlock extends Block
 		}
 
 		echo $galleryBlock;
+	}
+
+	private function isCanEdit(int $userId): bool
+	{
+		return User::$me->allowedTo('smfgallery_manage')
+			|| (User::$me->allowedTo('smfgallery_edit') && $userId == User::$me->id);
 	}
 }

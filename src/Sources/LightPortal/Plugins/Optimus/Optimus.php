@@ -8,13 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 01.10.25
+ * @version 10.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\Optimus;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\LightPortal\Enums\PluginType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
@@ -42,7 +41,7 @@ class Optimus extends Plugin
 		if (empty($this->context['use_topic_descriptions']) || ! $this->isOptimusLoaded())
 			return;
 
-		$e->args->columns[] = 't.optimus_description';
+		$e->args->columns[] = 'optimus_description';
 	}
 
 	#[HookAttribute(PortalHook::frontTopicsRow)]
@@ -56,7 +55,7 @@ class Optimus extends Plugin
 
 		if (! empty($this->context['show_topic_keywords'])) {
 			$topics[$row['id_topic']]['tags'] = $this->cache('topic_keywords')
-				->setFallback(fn() => $this->getKeywords((int) $row['id_topic']));
+				->setFallback(fn() => $this->getKeywords($row['id_topic']));
 		}
 
 		if (
@@ -73,22 +72,25 @@ class Optimus extends Plugin
 		if (empty($topic))
 			return [];
 
-		$result = Db::$db->query(/** @lang text */ '
-			SELECT ok.id, ok.name, olk.topic_id
-			FROM {db_prefix}optimus_keywords AS ok
-				INNER JOIN {db_prefix}optimus_log_keywords AS olk ON (ok.id = olk.keyword_id)
-			ORDER BY olk.topic_id, ok.id',
-		);
+		$select = $this->sql->select()
+			->from(['ok' => 'optimus_keywords'])
+			->join(
+				['olk' => 'optimus_log_keywords'],
+				'ok.id = olk.keyword_id',
+				['topic_id']
+			)
+			->order('olk.topic_id')
+			->order('ok.id');
+
+		$result = $this->sql->execute($select);
 
 		$keywords = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			$keywords[$row['topic_id']][] = [
 				'name' => $row['name'],
 				'href' => Config::$scripturl . '?action=keywords;id=' . $row['id'],
 			];
 		}
-
-		Db::$db->free_result($result);
 
 		return $keywords[$topic] ?? [];
 	}

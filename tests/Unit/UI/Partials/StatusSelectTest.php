@@ -8,6 +8,7 @@ use Bugo\LightPortal\UI\Partials\StatusSelect;
 use Bugo\LightPortal\UI\Partials\SelectInterface;
 use Bugo\LightPortal\UI\Partials\SelectRenderer;
 use Tests\AppMockRegistry;
+use Tests\ReflectionAccessor;
 
 beforeEach(function () {
     Lang::$txt['lp_page_status_set'] = [
@@ -54,12 +55,13 @@ it('initializes with custom value parameter', function () {
 });
 
 it('initializes with custom multiple parameter', function () {
-    $params = ['multiple' => true];
+    $params = ['multiple' => true, 'value' => '1'];
     $select = new StatusSelect($params);
 
     $config = $select->getParams();
 
-    expect($config['multiple'])->toBeTrue();
+    expect($config['multiple'])->toBeTrue()
+        ->and($config['value'])->toBe(['1']);
 });
 
 it('initializes with custom wide parameter', function () {
@@ -139,11 +141,9 @@ it('handles empty params', function () {
     expect($select->getParams())->toBeArray();
 });
 
-it('template is set correctly', function () {
-    $select = new StatusSelect();
+it('correctly sets the template', function () {
+    $select = new ReflectionAccessor(new StatusSelect());
+    $property = $select->getProtectedProperty('template');
 
-    $reflection = new ReflectionClass($select);
-    $property = $reflection->getProperty('template');
-
-    expect($property->getValue($select))->toBe('virtual_select');
+    expect($property)->toBe('virtual_select');
 });

@@ -9,6 +9,7 @@ use Bugo\LightPortal\UI\Partials\SelectInterface;
 use Bugo\LightPortal\UI\Partials\SelectRenderer;
 use Tests\AppMockRegistry;
 
+use Tests\ReflectionAccessor;
 use function Bugo\LightPortal\app;
 
 beforeEach(function () {
@@ -159,11 +160,121 @@ it('renders to string', function () {
     expect($result)->toBe('<select></select>');
 });
 
-it('template is set correctly', function () {
-    $select = new PageSelect(app(PageList::class));
+it('constructs with PageList dependency', function () {
+	$pageList = app(PageList::class);
+	$select = new PageSelect($pageList);
 
-    $reflection = new ReflectionClass($select);
-    $property = $reflection->getProperty('template');
+	expect($select)->toBeInstanceOf(PageSelect::class);
+});
 
-    expect($property->getValue($select))->toBe('virtual_select');
+it('constructs with PageList dependency using app helper', function () {
+	$select = new PageSelect(app(PageList::class));
+
+	expect($select)->toBeInstanceOf(PageSelect::class);
+});
+
+it('returns data array from getData method', function () {
+	$select = new PageSelect(app(PageList::class));
+
+	$data = $select->getData();
+
+	expect($data)->toBeArray();
+});
+
+it('returns correct default params from getDefaultParams', function () {
+	$select = new PageSelect(app(PageList::class));
+
+	$params = $select->getParams();
+
+	expect($params['id'])->toBe('lp_frontpage_pages')
+		->and($params['multiple'])->toBeTrue()
+		->and($params['wide'])->toBeTrue()
+		->and($params['more'])->toBeTrue()
+		->and($params['hint'])->toBe(Lang::$txt['lp_frontpage_pages_select'])
+		->and($params['empty'])->toBe(Lang::$txt['lp_frontpage_pages_no_items']);
+});
+
+it('handles Config with lp_frontpage_pages setting', function () {
+	$select = new PageSelect(app(PageList::class));
+
+	$params = $select->getParams();
+
+	expect($params['value'])->toBeArray();
+});
+
+it('processes data correctly in getData method', function () {
+	$select = new PageSelect(app(PageList::class));
+
+	$data = $select->getData();
+
+	expect($data)->toBeArray();
+
+	if (!empty($data)) {
+		expect($data[0])->toHaveKey('label')
+			->and($data[0])->toHaveKey('value')
+			->and($data[0]['value'])->toBeInt();
+	}
+});
+
+it('verifies getDefaultParams returns all required keys', function () {
+	$select = new PageSelect(app(PageList::class));
+
+	$params = $select->getParams();
+
+	expect($params)->toHaveKey('id')
+		->and($params)->toHaveKey('multiple')
+		->and($params)->toHaveKey('wide')
+		->and($params)->toHaveKey('more')
+		->and($params)->toHaveKey('hint')
+		->and($params)->toHaveKey('empty')
+		->and($params)->toHaveKey('value');
+});
+
+it('verifies getDefaultParams returns correct default values', function () {
+	$select = new PageSelect(app(PageList::class));
+
+	$params = $select->getParams();
+
+	expect($params['id'])->toBe('lp_frontpage_pages')
+		->and($params['multiple'])->toBeTrue()
+		->and($params['wide'])->toBeTrue()
+		->and($params['more'])->toBeTrue()
+		->and($params['value'])->toBeArray();
+});
+
+it('verifies getDefaultParams hint and empty use language strings', function () {
+	$select = new PageSelect(app(PageList::class));
+
+	$params = $select->getParams();
+
+	expect($params['hint'])->toBeString()
+		->and($params['empty'])->toBeString()
+		->and($params['hint'])->not()->toBeEmpty()
+		->and($params['empty'])->not()->toBeEmpty();
+});
+
+it('ensures getData method calls PageList correctly', function () {
+	$pageList = app(PageList::class);
+	$select = new PageSelect($pageList);
+
+	$data = $select->getData();
+
+	expect($data)->toBeArray();
+});
+
+it('tests getData with parent constructor initialization', function () {
+	$select = new PageSelect(app(PageList::class));
+
+	$data = $select->getData();
+	$params = $select->getParams();
+
+	expect($data)->toBeArray()
+		->and($params)->toBeArray();
+});
+
+it('correctly sets the template', function () {
+    $select = new ReflectionAccessor(new PageSelect(app(PageList::class)));
+    $property = $select->getProtectedProperty('template');
+
+    expect($property)->toBe('virtual_select');
 });

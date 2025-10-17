@@ -13,7 +13,6 @@
 namespace Bugo\LightPortal\Areas;
 
 use Bugo\Bricks\Tables\IdColumn;
-use Bugo\Bricks\Tables\TablePresenter;
 use Bugo\Compat\Config;
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
@@ -44,7 +43,7 @@ use const LP_NAME;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final readonly class TagArea
+final readonly class TagArea implements AreaInterface
 {
 	use HasArea;
 
@@ -76,7 +75,7 @@ final readonly class TagArea
 				ContextMenuColumn::make()
 			]);
 
-		app(TablePresenter::class)->show($builder);
+		$this->getTablePresenter()->show($builder);
 	}
 
 	public function add(): void
@@ -184,7 +183,7 @@ final readonly class TagArea
 
 	private function prepareFormFields(): void
 	{
-		$this->prepareTitleFields('tag');
+		$this->prepareTitleFields();
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
 			->setTab(Tab::APPEARANCE)
@@ -214,7 +213,7 @@ final readonly class TagArea
 
 		Security::checkSubmitOnce('free');
 
-		Utils::$context['preview_title'] = Utils::$context['lp_tag']['title'] ?? '';
+		Utils::$context['preview_title'] = Str::decodeHtmlEntities(Utils::$context['lp_tag']['title'] ?? '');
 
 		Str::cleanBbcode(Utils::$context['preview_title']);
 

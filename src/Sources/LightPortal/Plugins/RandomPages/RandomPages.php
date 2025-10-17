@@ -8,13 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 04.10.25
+ * @version 11.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\RandomPages;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\EntryType;
@@ -33,6 +32,8 @@ use Bugo\LightPortal\UI\Partials\SelectFactory;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Str;
+use Laminas\Db\Sql\Predicate\Expression;
+use Laminas\Db\Sql\Select;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -93,11 +94,18 @@ class RandomPages extends Block
 
 	public function getData(ParamWrapper $parameters): array
 	{
-		$excludeCategories = empty($parameters['exclude_categories']) ? null : explode(',', (string) $parameters['exclude_categories']);
-		$includeCategories = empty($parameters['include_categories']) ? null : explode(',', (string) $parameters['include_categories']);
+		$excludeCategories = empty($parameters['exclude_categories'])
+			? []
+			: array_map('intval', explode(',', (string) $parameters['exclude_categories']));
 
-		if (empty($pagesCount = Str::typed('int', $parameters['num_pages'])))
+		$includeCategories = empty($parameters['include_categories'])
+			? []
+			: array_map('intval', explode(',', (string) $parameters['include_categories']));
+
+		$pagesCount = Str::typed('int', $parameters['num_pages']);
+		if (empty($pagesCount)) {
 			return [];
+		}
 
 		$params = [
 			'lang'               => User::$me->language,
@@ -112,143 +120,94 @@ class RandomPages extends Block
 			'limit'              => $pagesCount,
 		];
 
-		if (Config::$db_type === 'postgresql') {
-			$result = Db::$db->query('
-				WITH RECURSIVE r AS (
-					WITH b AS (
-						SELECT min(p.page_id), (
-							SELECT p.page_id FROM {db_prefix}lp_pages AS p
-							WHERE p.status = {int:status}
-								AND p.entry_type = {string:entry_type}
-								AND p.deleted_at = 0
-								AND p.created_at <= {int:current_time}
-								AND p.permissions IN ({array_int:permissions})' . (empty($excludeCategories) ? '' : '
-								AND p.category_id NOT IN ({array_int:exclude_categories})') . (empty($includeCategories) ? '' : '
-								AND p.category_id IN ({array_int:categories})') . '
-							ORDER BY p.page_id DESC
-							LIMIT 1 OFFSET {int:limit} - 1
-						) max
-						FROM {db_prefix}lp_pages AS p
-						WHERE p.status = {int:status}
-							AND p.entry_type = {string:entry_type}
-							AND p.deleted_at = 0
-							AND p.created_at <= {int:current_time}
-							AND p.permissions IN ({array_int:permissions})' . (empty($excludeCategories) ? '' : '
-							AND p.category_id NOT IN ({array_int:exclude_categories})') . (empty($includeCategories) ? '' : '
-							AND p.category_id IN ({array_int:include_categories})') . '
-					)
-					(
-						SELECT p.page_id, min, max, array[]::integer[] || p.page_id AS a, 0 AS n
-						FROM {db_prefix}lp_pages AS p, b
-						WHERE p.status = {int:status}
-							AND p.entry_type = {string:entry_type}
-							AND p.deleted_at = 0
-							AND p.created_at <= {int:current_time}
-							AND p.permissions IN ({array_int:permissions})
-							AND p.page_id >= min + ((max - min) * random())::int' . (empty($excludeCategories) ? '' : '
-							AND p.category_id NOT IN ({array_int:exclude_categories})') . (empty($includeCategories) ? '' : '
-							AND p.category_id IN ({array_int:include_categories})') . '
-						LIMIT 1
-					) UNION ALL (
-						SELECT p.page_id, min, max, a || p.page_id, r.n + 1 AS n
-						FROM {db_prefix}lp_pages AS p, r
-						WHERE p.status = {int:status}
-							AND p.entry_type = {string:entry_type}
-							AND p.deleted_at = 0
-							AND p.created_at <= {int:current_time}
-							AND p.permissions IN ({array_int:permissions})
-							AND p.page_id >= min + ((max - min) * random())::int
-							AND p.page_id <> all(a)' . (empty($includeCategories) ? '' : '
-							AND p.category_id IN ({array_int:categories})') . '
-							AND r.n + 1 < {int:limit}
-						LIMIT 1
-					)
-				)
-				SELECT p.page_id
-				FROM {db_prefix}lp_pages AS p, r
-				WHERE r.page_id = p.page_id',
-				$params
-			);
+		$selectPages = $this->sql->select();
+		$selectPages->from(['p' => 'lp_pages'])
+			->columns(['page_id'])
+			->where([
+				'p.status'          => $params['status'],
+				'p.entry_type'      => $params['entry_type'],
+				'p.deleted_at'      => 0,
+				'p.created_at <= ?' => $params['current_time'],
+			])
+			->where->in('p.permissions', $params['permissions']);
 
-			$pageIds = [];
-			while ($row = Db::$db->fetch_assoc($result)) {
-				$pageIds[] = $row['page_id'];
-			}
-
-			Db::$db->free_result($result);
-
-			if (empty($pageIds)) {
-				$parameters['num_pages'] = $pagesCount - 1;
-
-				return $this->getData($parameters);
-			}
-
-			$result = Db::$db->query('
-				SELECT
-					p.page_id, p.slug, p.created_at, p.num_views,
-					COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id,
-					(
-						SELECT title
-						FROM {db_prefix}lp_translations
-						WHERE item_id = p.page_id
-							AND type = {literal:page}
-							AND lang IN ({string:lang}, {string:fallback_lang})
-						ORDER BY lang = {string:lang} DESC
-						LIMIT 1
-					) AS page_title
-				FROM {db_prefix}lp_pages AS p
-					LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
-				WHERE p.page_id IN ({array_int:page_ids})',
-				[
-					'guest'    => Lang::$txt['guest_title'],
-					'page_ids' => $pageIds,
-				]
-			);
-		} else {
-			$result = Db::$db->query('
-				SELECT
-					p.page_id, p.slug, p.created_at, p.num_views,
-					COALESCE(mem.real_name, {string:guest}) AS author_name, mem.id_member AS author_id,
-					(
-						SELECT title
-						FROM {db_prefix}lp_translations
-						WHERE item_id = p.page_id
-							AND type = {literal:page}
-							AND lang IN ({string:lang}, {string:fallback_lang})
-						ORDER BY lang = {string:lang} DESC
-						LIMIT 1
-					) AS page_title
-				FROM {db_prefix}lp_pages AS p
-					LEFT JOIN {db_prefix}members AS mem ON (p.author_id = mem.id_member)
-				WHERE p.status = {int:status}
-					AND p.entry_type = {string:entry_type}
-					AND p.deleted_at = 0
-					AND p.created_at <= {int:current_time}
-					AND p.permissions IN ({array_int:permissions})' . (empty($excludeCategories) ? '' : '
-					AND p.category_id NOT IN ({array_int:exclude_categories})') . (empty($includeCategories) ? '' : '
-					AND p.category_id IN ({array_int:include_categories})') . '
-				ORDER BY RAND()
-				LIMIT {int:limit}',
-				$params
-			);
+		if (! empty($excludeCategories)) {
+			$selectPages->where->notIn('p.category_id', $excludeCategories);
 		}
 
+		if (! empty($includeCategories)) {
+			$selectPages->where->in('p.category_id', $includeCategories);
+		}
+
+		$selectPages->order(new Expression('MD5(CONCAT(p.page_id, CURRENT_TIMESTAMP))'));
+		$selectPages->limit($pagesCount);
+
+		$result = $this->sql->execute($selectPages);
+
+		$pageIds = [];
+		foreach ($result as $row) {
+			$pageIds[] = $row['page_id'];
+		}
+
+		if (empty($pageIds)) {
+			$parameters['num_pages'] = $pagesCount - 1;
+
+			return $this->getData($parameters);
+		}
+
+		$select = $this->sql->select();
+		$select->from(['p' => 'lp_pages'])
+			->columns([
+				'page_id',
+				'slug',
+				'created_at',
+				'num_views',
+				'author_id',
+			])
+			->join(
+				['mem' => 'members'],
+				'p.author_id = mem.id_member',
+				['author_name' => new Expression('COALESCE(mem.real_name, ?)', [$params['guest']])],
+				Select::JOIN_LEFT
+			);
+
+		$subSelect = $this->sql->select();
+		$subSelect->from('lp_translations')
+			->columns(['title'])
+			->where(['type' => 'page']);
+		$subSelect->where->addPredicate(new Expression('item_id = p.page_id'));
+		$subSelect->where->in('lang', [$params['lang'], $params['fallback_lang']]);
+		$subSelect->order(new Expression('lang = ? DESC', [$params['lang']]));
+		$subSelect->limit(1);
+
+		$select->columns([
+			'page_id',
+			'slug',
+			'created_at',
+			'num_views',
+			'author_id',
+			'author_name' => new Expression('COALESCE(mem.real_name, ?)', [$params['guest']]),
+			'page_title'  => $subSelect,
+		]);
+
+		$select->where->in('p.page_id', $pageIds);
+
+		$result = $this->sql->execute($select);
+
 		$pages = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			Lang::censorText($row['page_title']);
 
 			$pages[] = [
-				'page_id'     => (int) $row['page_id'],
+				'page_id'     => $row['page_id'],
 				'slug'        => $row['slug'],
-				'created_at'  => (int) $row['created_at'],
-				'num_views'   => (int) $row['num_views'],
-				'author_id'   => (int) $row['author_id'],
+				'created_at'  => $row['created_at'],
+				'num_views'   => $row['num_views'],
+				'author_id'   => $row['author_id'],
 				'author_name' => $row['author_name'],
 				'title'       => $row['page_title'],
 			];
 		}
-
-		Db::$db->free_result($result);
 
 		return $pages;
 	}

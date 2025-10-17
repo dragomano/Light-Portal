@@ -14,31 +14,35 @@ namespace Bugo\LightPortal\DataHandlers\Exports;
 
 use Bugo\Bricks\Tables\IdColumn;
 use Bugo\Compat\Config;
+use Bugo\LightPortal\Database\PortalSqlInterface;
+use Bugo\LightPortal\DataHandlers\Traits\HasUiTable;
 use Bugo\LightPortal\Repositories\PageRepositoryInterface;
 use Bugo\LightPortal\UI\Tables\CheckboxColumn;
 use Bugo\LightPortal\UI\Tables\PageSlugColumn;
 use Bugo\LightPortal\UI\Tables\TitleColumn;
-use Bugo\LightPortal\Utils\DatabaseInterface;
 use Bugo\LightPortal\Utils\ErrorHandlerInterface;
 use Bugo\LightPortal\Utils\FilesystemInterface;
 use Bugo\LightPortal\Utils\Str;
+use Laminas\Db\Sql\Predicate\Expression;
+use Laminas\Db\Sql\Select;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 class PageExport extends XmlExporter
 {
-	use ExportTableTrait;
+	use HasUiTable;
 
 	protected string $entity = 'pages';
 
 	public function __construct(
 		private readonly PageRepositoryInterface $repository,
-		DatabaseInterface $database,
+		PortalSqlInterface $sql,
 		FilesystemInterface $filesystem,
 		ErrorHandlerInterface $errorHandler
-	) {
-		parent::__construct($this->entity, $database, $filesystem, $errorHandler);
+	)
+	{
+		parent::__construct($this->entity, $sql, $filesystem, $errorHandler);
 	}
 
 	protected function setupUi(): void
@@ -68,35 +72,49 @@ class PageExport extends XmlExporter
 
 		$pages = $this->hasEntityInRequest() ? $this->request()->get($this->entity) : [];
 
-		$query = '
-			SELECT
-				p.*, pt.lang, pp.name, pp.value,
-				COALESCE(pt.title, {string:empty_string}) AS title,
-				COALESCE(pt.content, {string:empty_string}) AS content,
-				COALESCE(pt.description, {string:empty_string}) AS description,
-				com.id, com.parent_id, com.author_id AS com_author_id, com.message, com.created_at AS com_created_at
-			FROM {db_prefix}lp_pages AS p
-				LEFT JOIN {db_prefix}lp_translations AS pt ON (
-					p.page_id = pt.item_id AND pt.type = {literal:page}
-				)
-				LEFT JOIN {db_prefix}lp_params AS pp ON (
-					p.page_id = pp.item_id AND pp.type = {literal:page}
-				)
-				LEFT JOIN {db_prefix}lp_comments AS com ON (
-					p.page_id = com.page_id
-				)
-			WHERE 1=1' . (empty($pages) ? '' : '
-				AND p.page_id IN ({array_int:pages})');
+		$select = $this->sql->select()
+			->from(['p' => 'lp_pages'])
+			->join(
+				['t' => 'lp_translations'],
+				new Expression('p.page_id = t.item_id AND t.type = ?', ['page']),
+				[
+					'lang'        => new Expression('t.lang'),
+					'title'       => new Expression('COALESCE(t.title, "")'),
+					'content'     => new Expression('COALESCE(t.content, "")'),
+					'description' => new Expression('COALESCE(t.description, "")'),
+				],
+				Select::JOIN_LEFT
+			)
+			->join(
+				['pp' => 'lp_params'],
+				new Expression('p.page_id = pp.item_id AND pp.type = ?', ['page']),
+				[
+					'name'  => new Expression('pp.name'),
+					'value' => new Expression('pp.value'),
+				],
+				Select::JOIN_LEFT
+			)
+			->join(
+				['com' => 'lp_comments'],
+				'p.page_id = com.page_id',
+				[
+					'id'             => new Expression('com.id'),
+					'parent_id'      => new Expression('com.parent_id'),
+					'com_author_id'  => new Expression('com.author_id'),
+					'message'        => new Expression('com.message'),
+					'com_created_at' => new Expression('com.created_at'),
+				],
+				Select::JOIN_LEFT
+			);
 
-		$params = [
-			'empty_string' => '',
-			'pages'        => $pages,
-		];
+		if ($pages !== []) {
+			$select->where->in('p.page_id', $pages);
+		}
 
-		$result = $this->db->query($query, $params);
+		$result = $this->sql->execute($select);
 
 		$items = [];
-		while ($row = $this->db->fetchAssoc($result)) {
+		foreach ($result as $row) {
 			$items[$row['page_id']] ??= [
 				'page_id'         => $row['page_id'],
 				'category_id'     => $row['category_id'],
@@ -141,8 +159,6 @@ class PageExport extends XmlExporter
 			}
 		}
 
-		$this->db->freeResult($result);
-
 		return $items;
 	}
 
@@ -165,44 +181,44 @@ class PageExport extends XmlExporter
 	{
 		return [
 			'titles' => [
-				'type' => 'element',
-				'useCDATA' => false
-			],
-			'params' => [
-				'type' => 'element',
-				'useCDATA' => false
+				'type'     => 'element',
+				'useCDATA' => false,
 			],
 			'contents' => [
-				'type' => 'element',
-				'useCDATA' => true
+				'type'     => 'element',
+				'useCDATA' => true,
 			],
 			'descriptions' => [
-				'type' => 'element',
-				'useCDATA' => true
+				'type'     => 'element',
+				'useCDATA' => true,
+			],
+			'params' => [
+				'type'     => 'element',
+				'useCDATA' => false,
 			],
 			'comments' => [
-				'type' => 'subitem',
+				'type'        => 'subitem',
 				'elementName' => 'comment',
-				'subFields' => [
+				'subFields'   => [
 					'id' => [
 						'isAttribute' => true,
-						'useCDATA' => false
+						'useCDATA'    => false,
 					],
 					'parent_id' => [
 						'isAttribute' => true,
-						'useCDATA' => false
+						'useCDATA'    => false,
 					],
 					'author_id' => [
 						'isAttribute' => true,
-						'useCDATA' => false
+						'useCDATA'    => false,
 					],
 					'message' => [
 						'isAttribute' => false,
-						'useCDATA' => true
+						'useCDATA'    => true,
 					],
 					'created_at' => [
 						'isAttribute' => true,
-						'useCDATA' => false
+						'useCDATA'    => false,
 					]
 				]
 			]

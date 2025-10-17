@@ -14,6 +14,7 @@ namespace Bugo\LightPortal\Validators;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Database\PortalSqlInterface;
 use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 
@@ -28,7 +29,7 @@ abstract class AbstractValidator implements ValidatorInterface
 
 	protected array $errors = [];
 
-	public function __construct()
+	public function __construct(protected PortalSqlInterface $sql)
 	{
 		$this->filters['title'] = [
 			'filter'  => FILTER_CALLBACK,

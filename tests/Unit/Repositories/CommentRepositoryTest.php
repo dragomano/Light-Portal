@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
+use Bugo\LightPortal\Repositories\AbstractRepository;
 use Bugo\LightPortal\Repositories\CommentRepository;
+use Bugo\LightPortal\Repositories\CommentRepositoryInterface;
 
 arch()
     ->expect(CommentRepository::class)
-    ->toHaveMethods([
-        'getAll', 'getByPageId', 'save', 'update', 'remove', 'removeFromResult', 'updateLastCommentId',
-    ]);
+    ->toImplement(CommentRepositoryInterface::class)
+    ->toExtend(AbstractRepository::class);

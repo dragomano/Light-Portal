@@ -18,17 +18,13 @@ interface PageRepositoryInterface extends RepositoryInterface
 		int $start,
 		int $limit,
 		string $sort,
-		string $queryString = '',
-		array $queryParams = []
+		string $filter = '',
+		array $whereConditions = []
 	): array;
 
-	public function getTotalCount(string $queryString = '', array $queryParams = []): int;
+	public function getTotalCount(string $filter = '', array $whereConditions = []): int;
 
 	public function getData(int|string $item): array;
-
-	public function setData(int $item = 0): void;
-
-	public function remove(array $items): void;
 
 	public function restore(array $items): void;
 

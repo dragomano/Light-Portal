@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 30.09.25
+ * @version 13.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\BlogMode;
@@ -16,12 +16,13 @@ namespace Bugo\LightPortal\Plugins\BlogMode;
 use Bugo\Bricks\Tables\Column;
 use Bugo\Bricks\Tables\DateColumn;
 use Bugo\Bricks\Tables\IdColumn;
-use Bugo\Bricks\Tables\TablePresenter;
+use Bugo\Bricks\Tables\Interfaces\TablePresenterInterface;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Configs\BasicConfig;
+use Bugo\LightPortal\Database\PortalSqlInterface;
 use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Enums\ForumHook;
 use Bugo\LightPortal\Enums\PortalHook;
@@ -81,7 +82,7 @@ class BlogMode extends Plugin
 
 		$e->args->modes[$this->mode] = BlogArticle::class;
 
-		app()->add(BlogArticle::class);
+		app()->add(BlogArticle::class)->addArgument(PortalSqlInterface::class);
 
 		Config::$modSettings['lp_frontpage_mode'] = $this->mode;
 	}
@@ -221,8 +222,11 @@ class BlogMode extends Plugin
 		);
 
 		$params = [
-			'AND p.author_id = {int:current_user} AND p.entry_type = {string:entry_type}',
-			['current_user' => $memID, 'entry_type' => BlogArticle::TYPE],
+			'',
+			[
+				'p.author_id = ?'  => $memID,
+				'p.entry_type = ?' => BlogArticle::TYPE,
+			],
 		];
 
 		$builder = PortalTableBuilder::make('user_blogs', $this->txt['entries'])
@@ -253,7 +257,7 @@ class BlogMode extends Plugin
 					->setHtml(Str::html('span', ['class' => 'main_icons modify_button'])), 'centertext'),
 		);
 
-		app(TablePresenter::class)->show($builder);
+		app(TablePresenterInterface::class)->show($builder);
 	}
 
 	public function profilePopup(array &$items): void

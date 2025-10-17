@@ -13,28 +13,29 @@
 namespace Bugo\LightPortal\Articles;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Parsers\BBCodeParser;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalHook;
+use Bugo\LightPortal\Utils\ForumPermissions;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Laminas\Db\Sql\Predicate\Expression;
+use Laminas\Db\Sql\Select;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 class BoardArticle extends AbstractArticle
 {
-	private array $selectedBoards = [];
+	protected array $selectedBoards = [];
 
 	public function init(): void
 	{
 		$this->selectedBoards = Setting::get('lp_frontpage_boards', 'array', []);
 
 		$this->params = [
-			'blank_string'    => '',
 			'current_member'  => User::$me->id,
 			'selected_boards' => $this->selectedBoards,
 		];
@@ -43,7 +44,7 @@ class BoardArticle extends AbstractArticle
 			'created;desc'      => 'm.poster_time DESC',
 			'created'           => 'm.poster_time',
 			'updated;desc'      => 'GREATEST(m.poster_time, m.modified_time) DESC',
-			'updated'           => 'GREATEST(m.poster_time, m.modified_time) DESC',
+			'updated'           => 'GREATEST(m.poster_time, m.modified_time)',
 			'last_comment;desc' => 'b.id_last_msg DESC',
 			'last_comment'      => 'b.id_last_msg',
 			'title;desc'        => 'b.name DESC',
@@ -56,7 +57,7 @@ class BoardArticle extends AbstractArticle
 			PortalHook::frontBoards,
 			[
 				'columns' => &$this->columns,
-				'tables'  => &$this->tables,
+				'joins'   => &$this->joins,
 				'params'  => &$this->params,
 				'wheres'  => &$this->wheres,
 				'orders'  => &$this->orders,
@@ -82,60 +83,86 @@ class BoardArticle extends AbstractArticle
 
 	public function getData(int $start, int $limit, string $sortType = null): iterable
 	{
-		$this->sorting = $sortType ?: $this->sorting;
+		$this->setSorting($sortType);
 
 		if (empty($this->selectedBoards))
 			return;
 
-		$this->params += [
-			'start' => $start,
-			'limit' => $limit,
-			'sort'  => $this->orders[$this->sorting],
+		$this->prepareParams($start, $limit);
+
+		$select = $this->sql->select()
+			->from(['b' => 'boards'])
+			->join(
+				['c' => 'categories'],
+				'b.id_cat = c.id_cat',
+				['cat_name' => 'name']
+			)
+			->join(
+				['m' => 'messages'],
+				'b.id_last_msg = m.id_msg',
+				[
+					'id_msg', 'id_topic', 'poster_time', 'modified_time',
+					'last_updated' => new Expression('GREATEST(m.poster_time, m.modified_time)')
+				],
+				Select::JOIN_LEFT
+			);
+
+		$columns = [
+			'id_board', 'name', 'description', 'redirect', 'id_last_msg', 'num_posts',
+			'is_redirect' => new Expression("CASE WHEN b.redirect != '' THEN 1 ELSE 0 END"),
 		];
 
-		$result = Db::$db->query('
-			SELECT
-				b.id_board, b.name, b.description, b.redirect, b.id_last_msg,
-				CASE WHEN b.redirect != {string:blank_string} THEN 1 ELSE 0 END AS is_redirect, b.num_posts,
-				GREATEST(m.poster_time, m.modified_time) AS last_updated, m.id_msg, m.id_topic,
-				c.name AS cat_name,' . (
-					User::$me->is_guest
-						? ' 1 AS is_read, 0 AS new_from'
-						: ' (CASE WHEN COALESCE(lb.id_msg, 0) >= b.id_last_msg THEN 1 ELSE 0 END) AS is_read,
-						COALESCE(lb.id_msg, -1) + 1 AS new_from'
-					) . (
-						empty(Config::$modSettings['lp_show_images_in_articles'])
-							? ''
-							: ', COALESCE(a.id_attach, 0) AS attach_id'
-					) . (empty($this->columns) ? '' : ',
-				' . implode(', ', $this->columns)) . '
-			FROM {db_prefix}boards AS b
-				INNER JOIN {db_prefix}categories AS c ON (b.id_cat = c.id_cat)
-				LEFT JOIN {db_prefix}messages AS m ON (b.id_last_msg = m.id_msg)' . (User::$me->is_guest ? '' : '
-				LEFT JOIN {db_prefix}log_boards AS lb ON (
-					b.id_board = lb.id_board AND lb.id_member = {int:current_member}
-				)') . (empty(Config::$modSettings['lp_show_images_in_articles']) ? '' : '
-				LEFT JOIN {db_prefix}attachments AS a ON (
-					b.id_last_msg = a.id_msg AND a.id_thumb <> 0 AND a.width > 0 AND a.height > 0
-				)') . (empty($this->tables) ? '' : '
-				' . implode("\n\t\t\t\t\t", $this->tables)) . '
-			WHERE b.id_board IN ({array_int:selected_boards})
-				AND {query_see_board}' . (empty($this->wheres) ? '' : '
-				' . implode("\n\t\t\t\t\t", $this->wheres)) . '
-			ORDER BY {raw:sort}
-			LIMIT {int:start}, {int:limit}',
-			$this->params,
-		);
+		if (! User::$me->is_guest) {
+			$select->join(
+				['lb' => 'log_boards'],
+				new Expression(
+					'b.id_board = lb.id_board AND lb.id_member = ?',
+					[$this->params['current_member']]
+				),
+				[],
+				Select::JOIN_LEFT
+			);
+			$columns['is_read']  = new Expression('CASE WHEN COALESCE(lb.id_msg, 0) >= b.id_last_msg THEN 1 ELSE 0 END');
+			$columns['new_from'] = new Expression('COALESCE(lb.id_msg, -1) + 1');
+		} else {
+			$columns['is_read']  = new Expression('1');
+			$columns['new_from'] = new Expression('0');
+		}
 
-		while ($row = Db::$db->fetch_assoc($result)) {
+		if (! empty(Config::$modSettings['lp_show_images_in_articles'])) {
+			$select->join(
+				['a' => 'attachments'],
+				new Expression(
+					'b.id_last_msg = a.id_msg AND a.id_thumb <> 0 AND a.width > 0 AND a.height > 0'
+				),
+				[],
+				Select::JOIN_LEFT
+			);
+			$columns['attach_id'] = new Expression('COALESCE(a.id_attach, 0)');
+		}
+
+		$select->columns($columns);
+
+		$this->applyColumns($select);
+		$this->applyJoins($select);
+		$this->applyWheres($select);
+
+		$select
+			->order($this->params['sort'])
+			->limit($this->params['limit'])
+			->offset($this->params['start']);
+
+		$result = $this->sql->execute($select);
+
+		foreach ($result as $row) {
 			$row['description'] = BBCodeParser::load()->parse(
 				$row['description'], false, '', Utils::$context['description_allowed_tags']
 			);
 
 			$board = [
-				'id'           => (int) $row['id_board'],
+				'id'           => $row['id_board'],
 				'date'         => $this->getDate($row),
-				'last_comment' => (int) $row['id_last_msg'],
+				'last_comment' => $row['id_last_msg'],
 				'title'        => $this->getTitle($row),
 				'link'         => $this->getLink($row),
 				'is_new'       => empty($row['is_read']),
@@ -157,8 +184,6 @@ class BoardArticle extends AbstractArticle
 
 			yield $row['id_board'] => $board;
 		}
-
-		Db::$db->free_result($result);
 	}
 
 	public function getTotalCount(): int
@@ -166,27 +191,39 @@ class BoardArticle extends AbstractArticle
 		if (empty($this->selectedBoards))
 			return 0;
 
-		$result = Db::$db->query(/** @lang text */ '
-			SELECT COUNT(b.id_board)
-			FROM {db_prefix}boards AS b
-				INNER JOIN {db_prefix}categories AS c ON (b.id_cat = c.id_cat)' . (empty($this->tables) ? '' : '
-				' . implode("\n\t\t\t\t\t", $this->tables)) . '
-			WHERE b.id_board IN ({array_int:selected_boards})
-				AND {query_see_board}' . (empty($this->wheres) ? '' : '
-				' . implode("\n\t\t\t\t\t", $this->wheres)),
-			$this->params,
-		);
+		$select = $this->sql->select()
+			->from(['b' => 'boards'])
+			->join(
+				['c' => 'categories'],
+				'b.id_cat = c.id_cat',
+				[]
+			)
+			->columns(['count' => new Expression('COUNT(b.id_board)')]);
 
-		[$count] = Db::$db->fetch_row($result);
+		$this->applyJoins($select);
+		$this->applyWheres($select);
 
-		Db::$db->free_result($result);
+		$result = $this->sql->execute($select)->current();
 
-		return (int) $count;
+		return ($result['count'] ?? 0);
+	}
+
+	protected function applyBaseConditions(Select $select): void
+	{
+		if (! empty($this->selectedBoards)) {
+			$select->where(['b.id_board' => $this->selectedBoards]);
+		}
+
+		if (ForumPermissions::shouldApplyBoardPermissionCheck()) {
+			$select->where(ForumPermissions::canSeeBoard('b'));
+		}
 	}
 
 	private function getDate(array $row): int
 	{
-		return str_contains($this->sorting, 'updated') && $row['last_updated'] ? (int) $row['last_updated'] : (int) $row['poster_time'];
+		return str_contains($this->sorting, 'updated') && $row['last_updated']
+			? $row['last_updated']
+			: $row['poster_time'];
 	}
 
 	private function getTitle(array $row): string
@@ -204,7 +241,7 @@ class BoardArticle extends AbstractArticle
 	private function getRepliesData(array $row): array
 	{
 		return [
-			'num'   => (int) $row['num_posts'],
+			'num'   => $row['num_posts'],
 			'title' => Lang::$txt['lp_replies'],
 			'after' => '',
 		];
@@ -223,7 +260,7 @@ class BoardArticle extends AbstractArticle
 		}
 
 		if ($row['is_redirect'] && empty($image)) {
-			$image = 'https://mini.s-shot.ru/300x200/JPEG/300/Z100/?' . urlencode(trim((string) $row['redirect']));
+			$image = 'https://mini.s-shot.ru/300x200/JPEG/300/Z100/?' . urlencode(trim($row['redirect']));
 		}
 
 		return $image;
@@ -246,7 +283,7 @@ class BoardArticle extends AbstractArticle
 
 	private function prepareTeaser(array &$board, array $row): void
 	{
-		if (empty(Config::$modSettings['lp_show_teaser']))
+		if (empty(Config::$modSettings['lp_show_teaser']) || empty($row['description']))
 			return;
 
 		$board['teaser'] = Str::getTeaser($row['description']);

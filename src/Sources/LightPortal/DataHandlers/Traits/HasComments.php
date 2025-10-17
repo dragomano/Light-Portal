@@ -14,24 +14,11 @@ namespace Bugo\LightPortal\DataHandlers\Traits;
 
 trait HasComments
 {
-	protected function replaceComments(array $comments, array $results): array
+	protected function replaceComments(array $comments, array $results, bool $replace = true): array
 	{
 		if ($comments === [] || $results === [])
 			return [];
 
-		return $this->insertData(
-			'lp_comments',
-			'replace',
-			$comments,
-			[
-				'id'         => 'int',
-				'parent_id'  => 'int',
-				'page_id'    => 'int',
-				'author_id'  => 'int',
-				'message'    => 'string',
-				'created_at' => 'int',
-			],
-			['id', 'page_id'],
-		);
+		return $this->insertData('lp_comments', $comments, ['id', 'page_id'], $replace);
 	}
 }

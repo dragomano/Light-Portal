@@ -12,8 +12,11 @@
 
 namespace Bugo\LightPortal\Articles;
 
+use Bugo\LightPortal\Database\PortalSqlInterface;
 use Bugo\LightPortal\Events\HasEvents;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
+use Laminas\Db\Sql\Predicate\Expression;
+use Laminas\Db\Sql\Select;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -27,13 +30,15 @@ abstract class AbstractArticle implements ArticleInterface
 
 	protected array $columns = [];
 
-	protected array $tables  = [];
+	protected array $joins   = [];
 
 	protected array $wheres  = [];
 
 	protected array $params  = [];
 
 	protected array $orders  = [];
+
+	public function __construct(protected PortalSqlInterface $sql) {}
 
 	abstract public function init(): void;
 
@@ -42,4 +47,62 @@ abstract class AbstractArticle implements ArticleInterface
 	abstract public function getData(int $start, int $limit, string $sortType = null): iterable;
 
 	abstract public function getTotalCount(): int;
+
+	abstract protected function applyBaseConditions(Select $select): void;
+
+	protected function setSorting(?string $sortType): void
+	{
+		$this->sorting = $sortType ?: $this->sorting;
+	}
+
+	protected function prepareParams(int $start, int $limit): void
+	{
+		$this->params += [
+			'start' => $start,
+			'limit' => $limit,
+			'sort'  => new Expression($this->orders[$this->sorting]),
+		];
+	}
+
+	protected function applyColumns(Select $select): void
+	{
+		$existingColumns = $select->getRawState(Select::COLUMNS) ?? [];
+
+		$additionalColumns = [];
+		foreach ($this->columns as $column) {
+			if (is_string($column) && str_contains($column, ',')) {
+				$parts = array_map('trim', explode(',', $column));
+				$additionalColumns = array_merge($additionalColumns, $parts);
+			} elseif (is_array($column)) {
+				$additionalColumns = array_merge($additionalColumns, $column);
+			} else {
+				$additionalColumns[] = $column;
+			}
+		}
+
+		$mergedColumns = array_merge($existingColumns, $additionalColumns);
+		$select->columns($mergedColumns);
+	}
+
+	protected function applyJoins(Select $select): void
+	{
+		foreach ($this->joins as $join) {
+			if (is_callable($join)) {
+				$join($select);
+			}
+		}
+	}
+
+	protected function applyWheres(Select $select): void
+	{
+		$this->applyBaseConditions($select);
+
+		foreach ($this->wheres as $where) {
+			if (is_callable($where)) {
+				$where($select);
+			} else {
+				$select->where($where);
+			}
+		}
+	}
 }

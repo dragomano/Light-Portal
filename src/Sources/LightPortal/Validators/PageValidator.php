@@ -12,10 +12,10 @@
 
 namespace Bugo\LightPortal\Validators;
 
-use Bugo\Compat\Db;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Utils\Language;
+use Laminas\Db\Sql\Expression;
 
 class PageValidator extends AbstractValidator
 {
@@ -88,21 +88,15 @@ class PageValidator extends AbstractValidator
 
 	protected function isUnique(): bool
 	{
-		$result = Db::$db->query('
-			SELECT COUNT(page_id)
-			FROM {db_prefix}lp_pages
-			WHERE slug = {string:slug}
-				AND page_id != {int:item}',
-			[
-				'slug' => $this->filteredData['slug'],
-				'item' => $this->filteredData['page_id'],
-			]
-		);
+		$select = $this->sql->select('lp_pages')
+			->columns(['count' => new Expression('COUNT(page_id)')])
+			->where([
+				'slug = ?' => $this->filteredData['slug'],
+				'page_id != ?' => $this->filteredData['page_id'],
+			]);
 
-		[$count] = Db::$db->fetch_row($result);
+		$result = $this->sql->execute($select)->current();
 
-		Db::$db->free_result($result);
-
-		return $count == 0;
+		return $result['count'] == 0;
 	}
 }

@@ -23,7 +23,7 @@ use Bugo\LightPortal\UI\Fields\TextField;
 if (! defined('SMF'))
 	die('No direct access...');
 
-abstract class AbstractConfig
+abstract class AbstractConfig implements ConfigInterface
 {
 	use HasArea;
 

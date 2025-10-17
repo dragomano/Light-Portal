@@ -29,7 +29,7 @@ final class ChosenPageArticle extends PageArticle
 
 		$this->selectedPages = Setting::get('lp_frontpage_pages', 'array', []);
 
-		$this->wheres[] = 'AND p.page_id IN ({array_int:selected_pages})';
+		$this->wheres[] = ['p.page_id' => $this->selectedPages];
 
 		$this->params['selected_pages'] = $this->selectedPages;
 	}

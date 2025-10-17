@@ -2,24 +2,24 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\DataHandlers\Traits\CanInsertDataTrait;
+use Bugo\LightPortal\DataHandlers\Traits\HasInserts;
 use Bugo\LightPortal\DataHandlers\Traits\HasParams;
 
 beforeEach(function () {
     $this->testClass = new class {
         use HasParams;
-        use CanInsertDataTrait;
+        use HasInserts;
 
-        public mixed $db;
+        public mixed $sql;
 
-        public function __construct($db = null)
+        public function __construct($sql = null)
         {
-            $this->db = $db;
+            $this->sql = $sql;
         }
 
-        public function callReplaceParams(array $params, array $results): void
+        public function callReplaceParams(array $params, array $results): array
         {
-            $this->replaceParams($params, $results);
+            return $this->replaceParams($params, $results);
         }
     };
 });
@@ -39,14 +39,24 @@ it('does nothing when params or results are empty', function () {
 });
 
 it('processes params correctly', function () {
-    // Mock Db
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('insert')
-        ->with('replace', '{db_prefix}lp_params', Mockery::any(), Mockery::any(), ['item_id', 'type', 'name'], 2)
-        ->once()
-        ->andReturn([10, 11]);
+    $sqlMock = Mockery::mock();
+    $sqlMock->shouldReceive('replace')
+        ->with('lp_params')
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('setConflictKeys')
+        ->with(['item_id', 'type', 'name'])
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('batch')
+        ->andReturnSelf()
+        ->byDefault();
 
-    $this->testClass = new (get_class($this->testClass))($dbMock);
+    $resultMock = Mockery::mock();
+    $resultMock->shouldReceive('getAffectedRows')->andReturn(2);
+    $resultMock->shouldReceive('getGeneratedValue')->andReturn(10);
+
+    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
+
+    $this->testClass = new (get_class($this->testClass))($sqlMock);
 
     $params = [
         [
@@ -65,23 +75,30 @@ it('processes params correctly', function () {
 
     $results = [10, 11];
 
-    $this->testClass->callReplaceParams($params, $results);
+    $result = $this->testClass->callReplaceParams($params, $results);
+
+    expect($result)->toBe([10, 11]);
 });
 
 it('handles single param correctly', function () {
-    // Mock Db
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('insert')
-        ->with('replace', '{db_prefix}lp_params', [
-            'item_id' => 'int',
-            'type' => 'string',
-            'name' => 'string',
-            'value' => 'string',
-        ], Mockery::any(), ['item_id', 'type', 'name'], 2)
-        ->once()
-        ->andReturn([1]);
+    $sqlMock = Mockery::mock();
+    $sqlMock->shouldReceive('replace')
+        ->with('lp_params')
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('setConflictKeys')
+        ->with(['item_id', 'type', 'name'])
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('batch')
+        ->andReturnSelf()
+        ->byDefault();
 
-    $this->testClass = new (get_class($this->testClass))($dbMock);
+    $resultMock = Mockery::mock();
+    $resultMock->shouldReceive('getAffectedRows')->andReturn(1);
+    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
+
+    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
+
+    $this->testClass = new (get_class($this->testClass))($sqlMock);
 
     $params = [
         [
@@ -94,23 +111,30 @@ it('handles single param correctly', function () {
 
     $results = [1];
 
-    $this->testClass->callReplaceParams($params, $results);
+    $result = $this->testClass->callReplaceParams($params, $results);
+
+    expect($result)->toBe([1]);
 });
 
 it('handles multiple items with different params', function () {
-    // Mock Db
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('insert')
-        ->with('replace', '{db_prefix}lp_params', [
-            'item_id' => 'int',
-            'type' => 'string',
-            'name' => 'string',
-            'value' => 'string',
-        ], Mockery::any(), ['item_id', 'type', 'name'], 2)
-        ->once()
-        ->andReturn([1, 2, 3]);
+    $sqlMock = Mockery::mock();
+    $sqlMock->shouldReceive('replace')
+        ->with('lp_params')
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('setConflictKeys')
+        ->with(['item_id', 'type', 'name'])
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('batch')
+        ->andReturnSelf()
+        ->byDefault();
 
-    $this->testClass = new (get_class($this->testClass))($dbMock);
+    $resultMock = Mockery::mock();
+    $resultMock->shouldReceive('getAffectedRows')->andReturn(3);
+    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
+
+    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
+
+    $this->testClass = new (get_class($this->testClass))($sqlMock);
 
     $params = [
         [
@@ -135,23 +159,30 @@ it('handles multiple items with different params', function () {
 
     $results = [1, 2, 3];
 
-    $this->testClass->callReplaceParams($params, $results);
+    $result = $this->testClass->callReplaceParams($params, $results);
+
+    expect($result)->toBe([1, 2, 3]);
 });
 
 it('uses correct table name', function () {
-    // Mock Db
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('insert')
-        ->with('replace', '{db_prefix}lp_params', [
-            'item_id' => 'int',
-            'type' => 'string',
-            'name' => 'string',
-            'value' => 'string',
-        ], Mockery::any(), ['item_id', 'type', 'name'], 2)
-        ->once()
-        ->andReturn([1]);
+    $sqlMock = Mockery::mock();
+    $sqlMock->shouldReceive('replace')
+        ->with('lp_params')
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('setConflictKeys')
+        ->with(['item_id', 'type', 'name'])
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('batch')
+        ->andReturnSelf()
+        ->byDefault();
 
-    $this->testClass = new (get_class($this->testClass))($dbMock);
+    $resultMock = Mockery::mock();
+    $resultMock->shouldReceive('getAffectedRows')->andReturn(1);
+    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
+
+    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
+
+    $this->testClass = new (get_class($this->testClass))($sqlMock);
 
     $params = [
         [
@@ -164,5 +195,7 @@ it('uses correct table name', function () {
 
     $results = [1];
 
-    $this->testClass->callReplaceParams($params, $results);
+    $result = $this->testClass->callReplaceParams($params, $results);
+
+    expect($result)->toBe([1]);
 });

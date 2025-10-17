@@ -8,17 +8,16 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 01.10.25
+ * @version 10.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleChat;
 
-use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\Parsers\BBCodeParser;
 use Bugo\Compat\Time;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Database\PortalSqlInterface;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Traits\HasCache;
@@ -40,7 +39,7 @@ class Chat
 
 	private ParamWrapper $parameters;
 
-	public function __construct(private readonly string $name) {}
+	public function __construct(private readonly string $name, private readonly PortalSqlInterface $sql) {}
 
 	public function setInSidebar(bool $inSidebar): self
 	{
@@ -56,32 +55,21 @@ class Chat
 		return $this;
 	}
 
-	public function prepareTable(): void
-	{
-		if (! empty(Db::$db->list_tables(false, Config::$db_prefix . 'lp_simple_chat_messages')))
-			return;
-
-		$this->createChatTable();
-	}
-
 	public function getMessages(int $blockId): array
 	{
-		$result = Db::$db->query(/** @lang text */ '
-			SELECT chat.id, chat.block_id, chat.user_id, chat.message, chat.created_at, mem.real_name
-			FROM {db_prefix}lp_simple_chat_messages AS chat
-				INNER JOIN {db_prefix}members AS mem ON (chat.user_id = mem.id_member)' . ($blockId ? '
-			WHERE chat.block_id = {int:id}' : '') . '
-			ORDER BY chat.created_at DESC',
-			[
-				'id' => $blockId,
-			]
-		);
+		$select = $this->sql->select()
+			->from(['chat' => 'lp_simple_chat_messages'])
+			->columns(['id', 'block_id', 'user_id', 'message', 'created_at'])
+			->join(['mem' => 'members'], 'chat.user_id = mem.id_member', ['real_name'])
+			->order('chat.created_at DESC');
 
-		$messages = $this->processMessages($result, $blockId);
+		if ($blockId) {
+			$select->where(['chat.block_id' => $blockId]);
+		}
 
-		Db::$db->free_result($result);
+		$result = $this->sql->execute($select);
 
-		return $messages;
+		return $this->processMessages($result, $blockId);
 	}
 
 	public function addMessage(): void
@@ -137,67 +125,18 @@ class Chat
 		]);
 	}
 
-	private function createChatTable(): void
-	{
-		$table = [
-			'name' => 'lp_simple_chat_messages',
-			'columns' => [
-				[
-					'name'     => 'id',
-					'type'     => 'int',
-					'size'     => 10,
-					'unsigned' => true,
-					'auto'     => true,
-				],
-				[
-					'name'     => 'block_id',
-					'type'     => 'int',
-					'size'     => 10,
-					'unsigned' => true,
-				],
-				[
-					'name'     => 'user_id',
-					'type'     => 'int',
-					'size'     => 10,
-					'unsigned' => true,
-				],
-				[
-					'name' => 'message',
-					'type' => 'varchar',
-					'size' => 255,
-					'null' => false,
-				],
-				[
-					'name'     => 'created_at',
-					'type'     => 'int',
-					'size'     => 10,
-					'unsigned' => true,
-					'default'  => 0,
-				]
-			],
-			'indexes' => [
-				[
-					'type'    => 'primary',
-					'columns' => ['id'],
-				]
-			]
-		];
-
-		Db::$db->create_table('{db_prefix}' . $table['name'], $table['columns'], $table['indexes']);
-	}
-
 	private function processMessages($result, int $blockId): array
 	{
 		$messages = [];
 
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			$messages[$row['block_id']][] = [
 				'id'         => $row['id'],
 				'block_id'   => $row['block_id'],
 				'message'    => BBCodeParser::load()->parse($row['message']),
 				'created_at' => Time::stringFromUnix($row['created_at']),
 				'author'     => [
-					'id'   => (int) $row['user_id'],
+					'id'   => $row['user_id'],
 					'name' => str_replace('&#39;', '\'', $row['real_name']),
 				],
 			];
@@ -212,23 +151,19 @@ class Chat
 
 	private function createMessage(array $data): array
 	{
-		$id = Db::$db->insert('',
-			'{db_prefix}lp_simple_chat_messages',
-			[
-				'block_id'   => 'int',
-				'user_id'    => 'int',
-				'message'    => 'string-255',
-				'created_at' => 'int',
-			],
-			[
-				'block_id'   => $data['block_id'],
-				'user_id'    => User::$me->id,
-				'message'    => $message = Utils::htmlspecialchars($data['message']),
-				'created_at' => $time = time(),
-			],
-			['id'],
-			1
-		);
+		$message = Utils::htmlspecialchars($data['message']);
+		$time = time();
+
+		$insert = $this->sql->insert('lp_simple_chat_messages')->values([
+			'block_id'   => $data['block_id'],
+			'user_id'    => User::$me->id,
+			'message'    => $message,
+			'created_at' => $time,
+		]);
+
+		$result = $this->sql->execute($insert);
+
+		$id = $result->getGeneratedValue();
 
 		return [
 			'id'         => $id,
@@ -244,12 +179,7 @@ class Chat
 
 	private function removeMessageFromDatabase(int $id): void
 	{
-		Db::$db->query('
-            DELETE FROM {db_prefix}lp_simple_chat_messages
-            WHERE id = {int:id}',
-			[
-				'id' => $id,
-			]
-		);
+		$delete = $this->sql->delete('lp_simple_chat_messages')->where(['id' => $id]);
+		$this->sql->execute($delete);
 	}
 }

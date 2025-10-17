@@ -8,6 +8,7 @@ use Bugo\LightPortal\UI\Partials\ActionSelect;
 use Bugo\LightPortal\UI\Partials\SelectInterface;
 use Bugo\LightPortal\UI\Partials\SelectRenderer;
 use Tests\AppMockRegistry;
+use Tests\ReflectionAccessor;
 
 beforeEach(function () {
     Config::$modSettings['lp_disabled_actions'] = 'action1,action2';
@@ -111,11 +112,9 @@ it('renders to string', function () {
     expect($result)->toBe('<select></select>');
 });
 
-it('template is set correctly', function () {
-    $select = new ActionSelect();
+it('correctly sets the template', function () {
+    $select = new ReflectionAccessor(new ActionSelect());
+    $property = $select->getProtectedProperty('template');
 
-    $reflection = new ReflectionClass($select);
-    $property = $reflection->getProperty('template');
-
-    expect($property->getValue($select))->toBe('virtual_select');
+    expect($property)->toBe('virtual_select');
 });

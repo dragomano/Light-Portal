@@ -12,7 +12,7 @@
 
 namespace Bugo\LightPortal\Validators;
 
-use Bugo\Compat\Db;
+use Laminas\Db\Sql\Expression;
 
 class TagValidator extends AbstractValidator
 {
@@ -32,21 +32,15 @@ class TagValidator extends AbstractValidator
 
 	protected function isUnique(): bool
 	{
-		$result = Db::$db->query('
-			SELECT COUNT(tag_id)
-			FROM {db_prefix}lp_tags
-			WHERE slug = {string:slug}
-				AND tag_id != {int:item}',
-			[
-				'slug' => $this->filteredData['slug'],
-				'item' => $this->filteredData['tag_id'],
-			]
-		);
+		$select = $this->sql->select('lp_tags')
+			->columns(['count' => new Expression('COUNT(tag_id)')])
+			->where([
+				'slug = ?' => $this->filteredData['slug'],
+				'tag_id != ?' => $this->filteredData['tag_id'],
+			]);
 
-		[$count] = Db::$db->fetch_row($result);
+		$result = $this->sql->execute($select)->current();
 
-		Db::$db->free_result($result);
-
-		return $count == 0;
+		return $result['count'] == 0;
 	}
 }

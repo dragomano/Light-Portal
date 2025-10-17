@@ -20,27 +20,14 @@ abstract class AbstractCustomBlockImport extends AbstractCustomImport
 
 	protected string $entity = 'blocks';
 
-	abstract protected function getType(string $type): string;
+	abstract protected function getType(mixed $type): string;
 
-	abstract protected function getPlacement(string $col): string;
+	abstract protected function getPlacement(int $col): string;
 
 	abstract protected function extractPermissions(array $row): int|array;
 
 	protected function getResults(array $items): array
 	{
-		return $this->insertData(
-			'lp_blocks',
-			'',
-			$items,
-			[
-				'type'          => 'string',
-				'placement'     => 'string',
-				'permissions'   => 'int',
-				'status'        => 'int',
-				'title_class'   => 'string',
-				'content_class' => 'string',
-			],
-			['block_id'],
-		);
+		return $this->insertData('lp_blocks', $items);
 	}
 }

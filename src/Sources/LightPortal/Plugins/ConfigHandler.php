@@ -13,7 +13,7 @@
 namespace Bugo\LightPortal\Plugins;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Repositories\PluginRepository;
+use Bugo\LightPortal\Repositories\PluginRepositoryInterface;
 
 use function Bugo\LightPortal\app;
 
@@ -23,7 +23,7 @@ class ConfigHandler
 
 	public function handle(string $snakeName): void
 	{
-		self::$settings ??= app(PluginRepository::class)->getSettings();
+		self::$settings ??= app(PluginRepositoryInterface::class)->getSettings();
 
 		// @TODO These variables are still needed in some templates
 		Utils::$context['lp_' . $snakeName . '_plugin'] = self::$settings[$snakeName] ?? [];

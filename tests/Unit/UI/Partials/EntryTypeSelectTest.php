@@ -8,6 +8,7 @@ use Bugo\LightPortal\UI\Partials\EntryTypeSelect;
 use Bugo\LightPortal\UI\Partials\SelectInterface;
 use Bugo\LightPortal\UI\Partials\SelectRenderer;
 use Tests\AppMockRegistry;
+use Tests\ReflectionAccessor;
 
 beforeEach(function () {
     Utils::$context['lp_page_types'] = [
@@ -143,11 +144,9 @@ it('handles empty params', function () {
     expect($select->getParams())->toBeArray();
 });
 
-it('template is set correctly', function () {
-    $select = new EntryTypeSelect();
+it('correctly sets the template', function () {
+    $select = new ReflectionAccessor(new EntryTypeSelect());
+    $property = $select->getProtectedProperty('template');
 
-    $reflection = new ReflectionClass($select);
-    $property = $reflection->getProperty('template');
-
-    expect($property->getValue($select))->toBe('virtual_select');
+    expect($property)->toBe('virtual_select');
 });

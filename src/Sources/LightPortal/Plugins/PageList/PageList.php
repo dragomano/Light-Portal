@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 04.10.25
+ * @version 13.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\PageList;
@@ -16,10 +16,8 @@ namespace Bugo\LightPortal\Plugins\PageList;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\LightPortal\Enums\EntryType;
-use Bugo\LightPortal\Enums\Permission;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\PortalSubAction;
-use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\Plugins\Block;
@@ -105,29 +103,23 @@ class PageList extends Block
 	{
 		$allCategories = app(CategoryList::class)();
 
-		$categories = empty($parameters['categories']) ? null : explode(',', (string) $parameters['categories']);
+		$categories = explode(',', (string) $parameters['categories']);
 		$sort = Str::typed('string', $parameters['sort'], default: 'page_id');
 		$numPages = Str::typed('int', $parameters['num_pages'], default: 10);
 		$type = Str::typed('string', $parameters['types'], default: EntryType::DEFAULT->name());
 
-		$queryString = '
-			AND p.status = {int:status}
-			AND p.deleted_at = 0
-			AND p.entry_type = {string:entry_type}
-			AND p.created_at <= {int:current_time}
-			AND p.permissions IN ({array_int:permissions})' . ($categories ? '
-			AND p.category_id IN ({array_int:categories})' : '');
+		$whereConditions = ['p.entry_type = ?' => $type];
 
-		$queryParams = [
-			'status'       => Status::ACTIVE->value,
-			'entry_type'   => $type,
-			'current_time' => time(),
-			'permissions'  => Permission::all(),
-			'categories'   => $categories,
-		];
+		if ($categories && $categories[0] !== '') {
+			$whereConditions['p.category_id'] = $categories;
+		}
 
 		$items = app(PageRepositoryInterface::class)->getAll(
-			0, $numPages, $sort . ' DESC', $queryString, $queryParams
+			0,
+			$numPages,
+			$sort . ' DESC',
+			'list',
+			$whereConditions
 		);
 
 		$pages = [];

@@ -49,11 +49,15 @@ if (! defined('LP_PAGE_URL')) {
 }
 
 if (! defined('LP_ADDON_DIR')) {
-    define('LP_ADDON_DIR', __DIR__ . '/addons');
+    define('LP_ADDON_DIR', sys_get_temp_dir() . '/addons');
 }
 
 if (! defined('LP_ALIAS_PATTERN')) {
     define('LP_ALIAS_PATTERN', '^[a-z][a-z0-9\-]+$');
+}
+
+if (! defined('LP_CACHE_TIME')) {
+    define('LP_CACHE_TIME', 72000);
 }
 
 require_once __DIR__ . '/functions.php';

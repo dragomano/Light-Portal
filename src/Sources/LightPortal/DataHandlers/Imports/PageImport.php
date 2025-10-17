@@ -12,10 +12,10 @@
 
 namespace Bugo\LightPortal\DataHandlers\Imports;
 
+use Bugo\LightPortal\Database\PortalSqlInterface;
 use Bugo\LightPortal\DataHandlers\Traits\HasComments;
 use Bugo\LightPortal\DataHandlers\Traits\HasSlug;
 use Bugo\LightPortal\Enums\EntryType;
-use Bugo\LightPortal\Utils\DatabaseInterface;
 use Bugo\LightPortal\Utils\ErrorHandlerInterface;
 use Bugo\LightPortal\Utils\FileInterface;
 use SimpleXMLElement;
@@ -30,9 +30,13 @@ class PageImport extends XmlImporter
 
 	protected string $entity = 'pages';
 
-	public function __construct(FileInterface $file, DatabaseInterface $db, ErrorHandlerInterface $errorHandler)
+	public function __construct(
+		PortalSqlInterface $sql,
+		FileInterface $file,
+		ErrorHandlerInterface $errorHandler
+	)
 	{
-		parent::__construct($this->entity, $file, $db, $errorHandler);
+		parent::__construct($this->entity, $sql, $file, $errorHandler);
 	}
 
 	protected function processItems(): void
@@ -78,29 +82,7 @@ class PageImport extends XmlImporter
 
 		$this->startTransaction($items);
 
-		$results = $this->insertData(
-			'lp_pages',
-			'replace',
-			$items,
-			[
-				'page_id'         => 'int',
-				'category_id'     => 'int',
-				'author_id'       => 'int',
-				'slug'            => 'string-255',
-				'type'            => 'string-10',
-				'entry_type'      => 'string-10',
-				'permissions'     => 'int',
-				'status'          => 'int',
-				'num_views'       => 'int',
-				'num_comments'    => 'int',
-				'created_at'      => 'int',
-				'updated_at'      => 'int',
-				'deleted_at'      => 'int',
-				'last_comment_id' => 'int',
-			],
-			['page_id'],
-		);
-
+		$results = $this->insertData('lp_pages', $items, ['page_id'], true);
 		$results = $this->replaceTranslations($translations, $results);
 		$results = $this->replaceParams($params, $results);
 		$results = $this->replaceComments($comments, $results);

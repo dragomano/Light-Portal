@@ -8,14 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 23.09.25
+ * @version 09.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\TinyPortalMigration;
 
 use Bugo\Bricks\Tables\Column;
-use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\DataHandlers\Imports\Custom\AbstractCustomBlockImport;
@@ -25,6 +23,7 @@ use Bugo\LightPortal\Enums\Placement;
 use Bugo\LightPortal\Enums\TitleClass;
 use Bugo\LightPortal\UI\Tables\CheckboxColumn;
 use Bugo\LightPortal\UI\Tables\TitleColumn;
+use Laminas\Db\Sql\Expression;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -56,25 +55,21 @@ class BlockImport extends AbstractCustomBlockImport
 
 	public function getAll(int $start = 0, int $limit = 0, string $sort = 'id'): array
 	{
-		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'tp_blocks')))
+		if (! $this->sql->tableExists('tp_blocks'))
 			return [];
 
-		$result = Db::$db->query('
-			SELECT id, type, title, bar
-			FROM {db_prefix}tp_blocks
-			WHERE type IN ({array_int:types})
-			ORDER BY {raw:sort}
-			LIMIT {int:start}, {int:limit}',
-			[
-				'types' => $this->supportedTypes,
-				'sort'  => $sort,
-				'start' => $start,
-				'limit' => $limit,
-			]
-		);
+		$select = $this->sql->select()
+			->from('tp_blocks')
+			->columns(['id', 'type', 'title', 'bar'])
+			->where(['type' => $this->supportedTypes])
+			->order($sort)
+			->limit($limit)
+			->offset($start);
+
+		$result = $this->sql->execute($select);
 
 		$items = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			$items[$row['id']] = [
 				'id'        => $row['id'],
 				'type'      => Lang::$txt['lp_' . $this->getType($row['type'])]['title'],
@@ -83,76 +78,66 @@ class BlockImport extends AbstractCustomBlockImport
 			];
 		}
 
-		Db::$db->free_result($result);
-
 		return $items;
 	}
 
 	public function getTotalCount(): int
 	{
-		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'tp_blocks')))
+		if (! $this->sql->tableExists('tp_blocks'))
 			return 0;
 
-		$result = Db::$db->query('
-			SELECT COUNT(*)
-			FROM {db_prefix}tp_blocks
-			WHERE type IN ({array_int:types})',
-			[
-				'types' => $this->supportedTypes,
-			]
-		);
+		$select = $this->sql->select()
+			->from('tp_blocks')
+			->columns(['count' => new Expression('COUNT(*)')])
+			->where(['type' => $this->supportedTypes]);
 
-		[$count] = Db::$db->fetch_row($result);
+		$result = $this->sql->execute($select)->current();
 
-		Db::$db->free_result($result);
-
-		return (int) $count;
+		return $result['count'];
 	}
 
 	protected function getItems(array $ids): array
 	{
-		$result = Db::$db->query('
-			SELECT id, type, title, body, access, bar
-			FROM {db_prefix}tp_blocks
-			WHERE type IN ({array_int:types})' . (empty($ids) ? '' : '
-				AND id IN ({array_int:blocks})'),
-			[
-				'types'  => $this->supportedTypes,
-				'blocks' => $ids,
-			]
-		);
+		$select = $this->sql->select()
+			->from('tp_blocks')
+			->columns(['id', 'type', 'title', 'body', 'access', 'bar', 'off'])
+			->where(['type' => $this->supportedTypes]);
+
+		if ($ids !== []) {
+			$select->where->in('id', $ids);
+		}
+
+		$result = $this->sql->execute($select);
 
 		$items = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			$items[$row['id']] = [
 				'type'          => $this->getType($row['type']),
 				'title'         => $row['title'],
 				'content'       => $row['body'],
 				'placement'     => $this->getPlacement($row['bar']),
 				'permissions'   => $this->getPermission($row),
-				'status'        => 0,
+				'status'        => $row['off'] === 0 ? 1 : 0,
 				'title_class'   => TitleClass::first(),
 				'content_class' => ContentClass::first(),
 			];
 		}
 
-		Db::$db->free_result($result);
-
 		return $items;
 	}
 
-	protected function getType(string $type): string
+	protected function getType(mixed $type): string
 	{
-		return match ((int) $type) {
+		return match ($type) {
 			5  => ContentType::BBC->name(),
 			10 => ContentType::PHP->name(),
 			default => ContentType::HTML->name(),
 		};
 	}
 
-	protected function getPlacement(string $col): string
+	protected function getPlacement(int $col): string
 	{
-		return match ((int) $col) {
+		return match ($col) {
 			1 => Placement::LEFT->name(),
 			2 => Placement::RIGHT->name(),
 			5 => Placement::FOOTER->name(),

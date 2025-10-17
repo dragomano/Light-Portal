@@ -31,90 +31,106 @@ use const LP_PAGE_PARAM;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class Block implements ActionInterface
+class Block implements ActionInterface
 {
 	use HasRequest;
 
 	public function show(): void
 	{
-		if (Setting::hideBlocksInACP() || $this->request()->is('devtools') || $this->request()->has('preview'))
+		if ($this->shouldSkipRendering()) {
 			return;
+		}
 
-		if (empty(Utils::$context['template_layers']) || empty(Utils::$context['lp_active_blocks']))
+		$blocks = $this->getVisibleBlocks();
+		if (empty($blocks)) {
 			return;
+		}
 
-		if (empty(User::$me->allowedTo('light_portal_view')) || empty($blocks = $this->getFilteredByAreas()))
+		$this->prepareBlocks($blocks);
+		$this->injectPortalLayer();
+	}
+
+	protected function shouldSkipRendering(): bool
+	{
+		$req = $this->request();
+
+		return Setting::hideBlocksInACP()
+			|| $req->is('devtools')
+			|| $req->has('preview')
+			|| empty(Utils::$context['template_layers'])
+			|| empty(Utils::$context['lp_active_blocks'])
+			|| empty(User::$me->allowedTo('light_portal_view'));
+	}
+
+	protected function getVisibleBlocks(): array
+	{
+		$blocks = $this->getFilteredByAreas();
+		if (empty($blocks)) {
+			return [];
+		}
+
+		return array_filter($blocks, static fn($b) => Permission::canViewItem($b['permissions']) !== false);
+	}
+
+	protected function prepareBlocks(array $blocks): void
+	{
+		foreach ($blocks as $key => $block) {
+			$block['can_edit'] = Utils::$context['user']['is_admin'];
+			$block['content']  = $this->resolveContent($block);
+			$block['title']    = $this->buildTitle($block);
+
+			Utils::$context['lp_blocks'][$block['placement']][$key] = $block;
+		}
+	}
+
+	protected function resolveContent(array $block): string
+	{
+		if (! empty($block['content'])) {
+			return Content::parse($block['content'], $block['type']);
+		}
+
+		$params = Utils::$context['lp_active_blocks'][$block['id']]['parameters'] ?? [];
+
+		return Content::prepare($block['type'], $block['id'], LP_CACHE_TIME, $params);
+	}
+
+	protected function buildTitle(array $block): string
+	{
+		if (! empty($block['parameters']['hide_header'])) {
+			return '';
+		}
+
+		$title = $block['title'] ?? '';
+		$icon  = Icon::parse($block['icon'] ?? '');
+
+		if (! empty($block['parameters']['link_in_title'])) {
+			$title = Str::html('a', $title)->href($block['parameters']['link_in_title']);
+		}
+
+		return $icon . $title;
+	}
+
+	protected function injectPortalLayer(): void
+	{
+		$layers = Utils::$context['template_layers'];
+		$pos    = array_search('body', $layers, true);
+
+		if ($pos === false) {
 			return;
-
-		foreach ($blocks as $item => $data) {
-			if (Permission::canViewItem($data['permissions']) === false)
-				continue;
-
-			$data['can_edit'] = Utils::$context['user']['is_admin'];
-
-			$data['content'] = empty($data['content'])
-				? Content::prepare(
-					$data['type'],
-					$data['id'],
-					LP_CACHE_TIME,
-					Utils::$context['lp_active_blocks'][$data['id']]['parameters'] ?? []
-				)
-				: Content::parse($data['content'], $data['type']);
-
-			Utils::$context['lp_blocks'][$data['placement']][$item] = $data;
-
-			if (empty($data['parameters']['hide_header'])) {
-				$title = $data['title'];
-				$icon  = Icon::parse(Utils::$context['lp_blocks'][$data['placement']][$item]['icon']);
-
-				if (! empty($data['parameters']['link_in_title'])) {
-					$title = Str::html('a', $title)->href($data['parameters']['link_in_title']);
-				}
-			} else {
-				$title = $icon = '';
-			}
-
-			Utils::$context['lp_blocks'][$data['placement']][$item]['title'] = $icon . $title;
 		}
 
 		Theme::loadTemplate('LightPortal/ViewBlocks');
 
-		$counter = 0;
-		foreach (Utils::$context['template_layers'] as $layer) {
-			$counter++;
-
-			if ($layer === 'body')
-				break;
-		}
-
 		Utils::$context['template_layers'] = array_merge(
-			array_slice(Utils::$context['template_layers'], 0, $counter, true),
+			array_slice($layers, 0, $pos + 1, true),
 			['lp_portal'],
-			array_slice(Utils::$context['template_layers'], $counter, null, true)
+			array_slice($layers, $pos + 1, null, true)
 		);
 	}
 
-	private function getFilteredByAreas(): array
+	protected function getFilteredByAreas(): array
 	{
-		$area = Utils::$context['current_action'] ?: (
-			empty(Config::$modSettings['lp_frontpage_mode']) ? Action::FORUM->value : LP_ACTION
-		);
-
-		if (Setting::isStandaloneMode()) {
-			if (Config::$modSettings['lp_standalone_url'] === $this->request()->url()) {
-				$area = LP_ACTION;
-			} elseif (empty(Utils::$context['current_action'])) {
-				$area = Action::FORUM->value;
-			}
-		}
-
-		if (isset(Utils::$context['current_board']) || isset(Utils::$context['lp_page'])) {
-			$area = '';
-		}
-
-		if (! empty(Utils::$context['lp_page']['slug']) && Setting::isFrontpage(Utils::$context['lp_page']['slug'])) {
-			$area = LP_ACTION;
-		}
+		$area = $this->resolveCurrentArea();
 
 		return array_filter(Utils::$context['lp_active_blocks'], function ($block) use ($area) {
 			$tempAreas = $block['areas'];
@@ -160,37 +176,87 @@ final class Block implements ActionInterface
 			if (isset($block['areas']['topics']) && ! empty(Utils::$context['current_topic']))
 				return true;
 
-			$boards = $topics = [];
-			foreach ($tempAreas as $areas) {
-				$entity = explode('=', (string) $areas);
+			$entities = $this->collectAllowedEntities($tempAreas);
 
-				if ($entity[0] === 'board') {
-					$boards = $this->getAllowedIds($entity[1]);
-				}
-
-				if ($entity[0] === 'topic') {
-					$topics = $this->getAllowedIds($entity[1]);
-				}
-			}
-
-			return in_array(Utils::$context['current_board'], $boards)
-				|| (isset(Utils::$context['current_topic']) && in_array(Utils::$context['current_topic'], $topics));
+			return in_array(Utils::$context['current_board'], $entities['boards'])
+				|| (isset(Utils::$context['current_topic'])
+					&& in_array(Utils::$context['current_topic'], $entities['topics']));
 		});
 	}
 
-	private function getAllowedIds(string $entity = ''): array
+	protected function resolveCurrentArea(): string
+	{
+		$area = Utils::$context['current_action'] ?: (
+			empty(Config::$modSettings['lp_frontpage_mode']) ? Action::FORUM->value : LP_ACTION
+		);
+
+		if (Setting::isStandaloneMode()) {
+			if (Config::$modSettings['lp_standalone_url'] === $this->request()->url()) {
+				$area = LP_ACTION;
+			} elseif (empty(Utils::$context['current_action'])) {
+				$area = Action::FORUM->value;
+			}
+		}
+
+		if (isset(Utils::$context['current_board']) || isset(Utils::$context['lp_page'])) {
+			$area = '';
+		}
+
+		if (! empty(Utils::$context['lp_page']['slug']) && Setting::isFrontpage(Utils::$context['lp_page']['slug'])) {
+			$area = LP_ACTION;
+		}
+
+		return $area;
+	}
+
+	protected function collectAllowedEntities(array $areas): array
+	{
+		$boards = $topics = [];
+
+		foreach ($areas as $area) {
+			$entity = explode('=', (string) $area, 2);
+
+			if ($entity[0] === 'board') {
+				$boards = array_merge($boards, $this->getAllowedIds($entity[1]));
+			}
+
+			if ($entity[0] === 'topic') {
+				$topics = array_merge($topics, $this->getAllowedIds($entity[1]));
+			}
+		}
+
+		return [
+			'boards' => array_unique($boards),
+			'topics' => array_unique($topics),
+		];
+	}
+
+	protected function getAllowedIds(string $entity = ''): array
 	{
 		$ids = [];
 
+		if (empty($entity)) {
+			return [];
+		}
+
 		$items = explode('|', $entity);
 		foreach ($items as $item) {
+			$item = trim($item);
+			if (empty($item)) {
+				continue;
+			}
+
 			if (str_contains($item, '-')) {
-				$range = explode('-', $item);
-				for ($i = $range[0]; $i <= $range[1]; $i++) {
+				[$start, $end] = explode('-', $item);
+				$start = (int) $start;
+				$end   = (int) $end;
+				$step  = $start <= $end ? 1 : -1;
+
+				for ($i = $start; $i != $end + $step; $i += $step) {
 					$ids[] = $i;
 				}
 			} else {
-				$ids[] = $item;
+				$ids[] = (int) $item;
 			}
 		}
 

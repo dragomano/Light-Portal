@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.10.25
+ * @version 09.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
@@ -19,9 +19,10 @@ use Bugo\Compat\Security;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Areas\Traits\HasArea;
+use Bugo\LightPortal\Database\PortalSqlInterface;
 use Bugo\LightPortal\Enums\PluginType;
 use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Repositories\PluginRepository;
+use Bugo\LightPortal\Repositories\PluginRepositoryInterface;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\SelectField;
@@ -112,7 +113,7 @@ class Handler
 
 	private function validateData(): void
 	{
-		$postData = (new Validator())->validate();
+		$postData = (new Validator(app(PortalSqlInterface::class)))->validate();
 
 		Utils::$context['lp_plugin'] = [
 			'name'       => $postData['name'] ?? Utils::$context['lp_plugin']['name'] = self::PLUGIN_NAME,
@@ -374,7 +375,7 @@ class Handler
 
 	private function saveAuthorData(): void
 	{
-		app(PluginRepository::class)->changeSettings('plugin_maker', [
+		app(PluginRepositoryInterface::class)->changeSettings('plugin_maker', [
 			'author'  => Utils::$context['lp_plugin']['author'],
 			'email'   => Utils::$context['lp_plugin']['email'],
 			'site'    => Utils::$context['lp_plugin']['site'],

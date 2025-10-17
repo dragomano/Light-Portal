@@ -11,7 +11,6 @@
 
 namespace Bugo\LightPortal\DataHandlers\Imports\Custom;
 
-use Bugo\Bricks\Tables\TablePresenter;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Sapi;
@@ -23,7 +22,7 @@ use Bugo\LightPortal\UI\Tables\ImportButtonsRow;
 use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 
-use function Bugo\LightPortal\app;
+use Bugo\LightPortal\Utils\Traits\HasTablePresenter;
 
 use const LP_NAME;
 
@@ -34,6 +33,7 @@ abstract class AbstractCustomImport extends DataHandler implements CustomImportI
 {
 	use HasDataOperations;
 	use HasRequest;
+	use HasTablePresenter;
 
 	protected string $type = 'custom';
 
@@ -62,7 +62,7 @@ abstract class AbstractCustomImport extends DataHandler implements CustomImportI
 
 		$this->run();
 
-		app(TablePresenter::class)->show(
+		$this->getTablePresenter()->show(
 			PortalTableBuilder::make($this->uiTableId, Lang::$txt['lp_' . $this->entity . '_import'])
 				->withParams(50, defaultSortColumn: $this->sortColumn)
 				->setItems($this->getAll(...))
@@ -120,7 +120,7 @@ abstract class AbstractCustomImport extends DataHandler implements CustomImportI
 				$translations[$key]['item_id'] = $value;
 			}
 
-			$results = $this->replaceTranslations($translations, $results, '');
+			$results = $this->replaceTranslations($translations, $results, false);
 		}
 
 		return $results;

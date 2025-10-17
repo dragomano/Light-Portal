@@ -12,7 +12,7 @@
 
 namespace Bugo\LightPortal\Validators;
 
-use Bugo\Compat\Db;
+use Laminas\Db\Sql\Expression;
 
 class CategoryValidator extends AbstractValidator
 {
@@ -33,21 +33,15 @@ class CategoryValidator extends AbstractValidator
 
 	protected function isUnique(): bool
 	{
-		$result = Db::$db->query('
-			SELECT COUNT(category_id)
-			FROM {db_prefix}lp_categories
-			WHERE slug = {string:slug}
-				AND category_id != {int:item}',
-			[
-				'slug' => $this->filteredData['slug'],
-				'item' => $this->filteredData['category_id'],
-			]
-		);
+		$select = $this->sql->select('lp_categories')
+			->columns(['count' => new Expression('COUNT(category_id)')])
+			->where([
+				'slug = ?' => $this->filteredData['slug'],
+				'category_id != ?' => $this->filteredData['category_id'],
+			]);
 
-		[$count] = Db::$db->fetch_row($result);
+		$result = $this->sql->execute($select)->current();
 
-		Db::$db->free_result($result);
-
-		return $count == 0;
+		return $result['count'] == 0;
 	}
 }

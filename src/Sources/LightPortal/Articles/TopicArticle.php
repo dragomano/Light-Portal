@@ -13,14 +13,16 @@
 namespace Bugo\LightPortal\Articles;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Parsers\BBCodeParser;
 use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Utils\Avatar;
+use Bugo\LightPortal\Utils\ForumPermissions;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Laminas\Db\Sql\Predicate\Expression;
+use Laminas\Db\Sql\Select;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -46,7 +48,7 @@ class TopicArticle extends AbstractArticle
 			'created;desc'      => 'mf.poster_time DESC',
 			'created'           => 'mf.poster_time',
 			'updated;desc'      => 'GREATEST(mf.poster_time, mf.modified_time) DESC',
-			'updated'           => 'GREATEST(mf.poster_time, mf.modified_time) DESC',
+			'updated'           => 'GREATEST(mf.poster_time, mf.modified_time)',
 			'last_comment;desc' => 't.id_last_msg DESC',
 			'last_comment'      => 't.id_last_msg',
 			'title;desc'        => 'mf.subject DESC',
@@ -63,7 +65,7 @@ class TopicArticle extends AbstractArticle
 			PortalHook::frontTopics,
 			[
 				'columns' => &$this->columns,
-				'tables'  => &$this->tables,
+				'joins'   => &$this->joins,
 				'params'  => &$this->params,
 				'wheres'  => &$this->wheres,
 				'orders'  => &$this->orders,
@@ -93,71 +95,105 @@ class TopicArticle extends AbstractArticle
 
 	public function getData(int $start, int $limit, string $sortType = null): iterable
 	{
-		$this->sorting = $sortType ?: $this->sorting;
+		$this->setSorting($sortType);
 
-		if (empty($this->selectedBoards) && Setting::isFrontpageMode('all_topics')) {
+		if (empty($this->selectedBoards))
 			return;
-		}
 
-		$this->params += [
-			'start' => $start,
-			'limit' => $limit,
-			'sort'  => $this->orders[$this->sorting],
+		$this->prepareParams($start, $limit);
+
+		$select = $this->sql->select()
+			->from(['t' => 'topics'])
+			->join(
+				['ml' => 'messages'],
+				't.id_last_msg = ml.id_msg',
+				[
+					'id_msg', 'last_poster_id' => 'id_member', 'last_poster_name' => 'poster_name',
+					'last_body' => 'body', 'last_msg_time' => 'poster_time', 'id_msg_modified'
+				]
+			)
+			->join(
+				['mf' => 'messages'],
+				't.id_first_msg = mf.id_msg',
+				[
+					'subject', 'body', 'smileys_enabled', 'poster_time', 'id_member',
+					'date' => new Expression('GREATEST(mf.poster_time, mf.modified_time)')
+				]
+			)
+			->join(
+				['b' => 'boards'],
+				't.id_board = b.id_board',
+				['name']
+			)
+			->join(
+				['mem' => 'members'],
+				'mf.id_member = mem.id_member',
+				['poster_name' => new Expression('COALESCE(mem.real_name, mf.poster_name)')],
+				Select::JOIN_LEFT
+			);
+
+		$columns = [
+			'id_topic', 'id_board', 'num_views', 'num_replies', 'is_sticky', 'id_first_msg', 'id_member_started',
 		];
 
-		$result = Db::$db->query('
-			SELECT
-				t.id_topic, t.id_board, t.num_views, t.num_replies, t.is_sticky, t.id_first_msg, t.id_member_started,
-				mf.subject, mf.body AS body, mf.smileys_enabled, COALESCE(mem.real_name, mf.poster_name) AS poster_name,
-				mf.poster_time, mf.id_member, ml.id_msg, ml.id_member AS last_poster_id, ml.poster_name AS last_poster_name,
-				ml.body AS last_body, ml.poster_time AS last_msg_time, GREATEST(mf.poster_time, mf.modified_time) AS date,
-				b.name, ' . (empty(Config::$modSettings['lp_show_images_in_articles']) ? '' : '(
-					SELECT id_attach
-					FROM {db_prefix}attachments
-					WHERE id_msg = t.id_first_msg
-						AND width <> 0
-						AND height <> 0
-						AND approved = {int:is_approved}
-						AND attachment_type = {int:attachment_type}
-					ORDER BY id_attach
-					LIMIT 1
-				) AS id_attach, ') . (
-					User::$me->is_guest
-						? '0'
-						: 'COALESCE(lt.id_msg, lmr.id_msg, -1) + 1'
-				) . ' AS new_from, ml.id_msg_modified' . (empty($this->columns) ? '' : ',
-				' . implode(', ', $this->columns)) . '
-			FROM {db_prefix}topics AS t
-				INNER JOIN {db_prefix}messages AS ml ON (t.id_last_msg = ml.id_msg)
-				INNER JOIN {db_prefix}messages AS mf ON (t.id_first_msg = mf.id_msg)
-				INNER JOIN {db_prefix}boards AS b ON (t.id_board = b.id_board)
-				LEFT JOIN {db_prefix}members AS mem ON (mf.id_member = mem.id_member)' . (
-					User::$me->is_guest ? '' : '
-				LEFT JOIN {db_prefix}log_topics AS lt ON (
-					t.id_topic = lt.id_topic AND lt.id_member = {int:current_member}
-				)
-				LEFT JOIN {db_prefix}log_mark_read AS lmr ON (
-					t.id_board = lmr.id_board AND lmr.id_member = {int:current_member}
-				)') . (empty($this->tables) ? '' : '
-				' . implode("\n\t\t\t\t\t", $this->tables)) . '
-			WHERE t.id_poll = {int:id_poll}
-				AND t.approved = {int:is_approved}
-				AND t.id_redirect_topic = {int:id_redirect_topic}' . (empty($this->selectedBoards) ? '' : '
-				AND t.id_board IN ({array_int:selected_boards})') . '
-				AND {query_wanna_see_board}' . (empty($this->wheres) ? '' : '
-				' . implode("\n\t\t\t\t\t", $this->wheres)) . '
-			ORDER BY {raw:sort}
-			LIMIT {int:start}, {int:limit}',
-			$this->params,
-		);
+		if (! User::$me->is_guest) {
+			$select->join(
+				['lt' => 'log_topics'],
+				new Expression(
+					't.id_topic = lt.id_topic AND lt.id_member = ?',
+					[$this->params['current_member']]
+				),
+				[],
+				Select::JOIN_LEFT
+			)
+				->join(
+					['lmr' => 'log_mark_read'],
+					new Expression(
+						't.id_board = lmr.id_board AND lmr.id_member = ?',
+						[$this->params['current_member']]
+					),
+					[],
+					Select::JOIN_LEFT
+				);
+			$columns['new_from'] = new Expression('COALESCE(lt.id_msg, lmr.id_msg, -1) + 1');
+		} else {
+			$columns['new_from'] = new Expression('0');
+		}
 
-		while ($row = Db::$db->fetch_assoc($result)) {
+		if (! empty(Config::$modSettings['lp_show_images_in_articles'])) {
+			$select->join(
+				['a' => 'attachments'],
+				new Expression(
+					'a.id_msg = t.id_first_msg AND a.width <> 0 AND a.height <> 0 AND a.approved = ? AND a.attachment_type = ?',
+					[$this->params['is_approved'], $this->params['attachment_type']]
+				),
+				[],
+				Select::JOIN_LEFT
+			);
+			$columns['id_attach'] = new Expression('MIN(a.id_attach)');
+			$select->group('t.id_topic');
+		}
+
+		$select->columns($columns);
+
+		$this->applyColumns($select);
+		$this->applyJoins($select);
+		$this->applyWheres($select);
+
+		$select
+			->order($this->params['sort'])
+			->limit($this->params['limit'])
+			->offset($this->params['start']);
+
+		$result = $this->sql->execute($select);
+
+		foreach ($result as $row) {
 			$topic = [
-				'id'           => (int) $row['id_topic'],
+				'id'           => $row['id_topic'],
 				'section'      => $this->getSectionData($row),
 				'author'       => $this->getAuthorData($row),
 				'date'         => $this->getDate($row),
-				'last_comment' => (int) $row['last_msg_time'],
+				'last_comment' => $row['last_msg_time'],
 				'title'        => $this->getTitle($row),
 				'link'         => $this->getLink($row),
 				'is_new'       => $this->isNew($row),
@@ -179,34 +215,45 @@ class TopicArticle extends AbstractArticle
 
 			yield $row['id_topic'] => Avatar::getWithItems([$topic])[0] ?? [];
 		}
-
-		Db::$db->free_result($result);
 	}
 
 	public function getTotalCount(): int
 	{
-		if (empty($this->selectedBoards) && Setting::isFrontpageMode('all_topics'))
+		if (empty($this->selectedBoards))
 			return 0;
 
-		$result = Db::$db->query(/** @lang text */ '
-			SELECT COUNT(t.id_topic)
-			FROM {db_prefix}topics AS t
-				INNER JOIN {db_prefix}boards AS b ON (t.id_board = b.id_board)' . (empty($this->tables) ? '' : '
-				' . implode("\n\t\t\t\t\t", $this->tables)) . '
-			WHERE t.approved = {int:is_approved}
-				AND t.id_poll = {int:id_poll}
-				AND t.id_redirect_topic = {int:id_redirect_topic}' . (empty($this->selectedBoards) ? '' : '
-				AND t.id_board IN ({array_int:selected_boards})') . '
-				AND {query_wanna_see_board}' . (empty($this->wheres) ? '' : '
-				' . implode("\n\t\t\t\t\t", $this->wheres)),
-			$this->params,
-		);
+		$select = $this->sql->select()
+			->from(['t' => 'topics'])
+			->columns(['count' => new Expression('COUNT(t.id_topic)')])
+			->join(
+				['b' => 'boards'],
+				't.id_board = b.id_board',
+				[]
+			);
 
-		[$count] = Db::$db->fetch_row($result);
+		$this->applyJoins($select);
+		$this->applyWheres($select);
 
-		Db::$db->free_result($result);
+		$result = $this->sql->execute($select)->current();
 
-		return (int) $count;
+		return ($result['count'] ?? 0);
+	}
+
+	protected function applyBaseConditions(Select $select): void
+	{
+		$select->where([
+			't.id_poll'           => $this->params['id_poll'],
+			't.approved'          => $this->params['is_approved'],
+			't.id_redirect_topic' => $this->params['id_redirect_topic'],
+		]);
+
+		if (! empty($this->selectedBoards)) {
+			$select->where(['t.id_board' => $this->selectedBoards]);
+		}
+
+		if (ForumPermissions::shouldApplyBoardPermissionCheck()) {
+			$select->where(ForumPermissions::canSeeBoard());
+		}
 	}
 
 	private function getSectionData(array $row): array
@@ -219,24 +266,27 @@ class TopicArticle extends AbstractArticle
 
 	private function getAuthorData(array $row): array
 	{
+		$authorId   = (str_contains($this->sorting, 'last_comment') ? $row['last_poster_id'] : $row['id_member']);
+		$authorName = str_contains($this->sorting, 'last_comment') ? $row['last_poster_name'] : $row['poster_name'];
+
 		return [
-			'id'   => $authorId = (int) (str_contains($this->sorting, 'last_comment') ? $row['last_poster_id'] : $row['id_member']),
+			'id'   => $authorId,
 			'link' => Config::$scripturl . '?action=profile;u=' . $authorId,
-			'name' => str_contains($this->sorting, 'last_comment') ? $row['last_poster_name'] : $row['poster_name'],
+			'name' => $authorName,
 		];
 	}
 
 	private function getDate(array $row): int
 	{
 		if (str_contains($this->sorting, 'last_comment') && $row['last_msg_time']) {
-			return (int) $row['last_msg_time'];
+			return $row['last_msg_time'];
 		}
 
 		if (str_contains($this->sorting, 'updated')) {
-			return (int) $row['date'];
+			return $row['date'];
 		}
 
-		return (int) $row['poster_time'];
+		return $row['poster_time'];
 	}
 
 	private function getTitle(array $row): string
@@ -255,16 +305,16 @@ class TopicArticle extends AbstractArticle
 
 	private function isNew(array $row): bool
 	{
-		if (empty($row['new_from']))
+		if (User::$me->is_guest || empty($row['new_from']))
 			return false;
 
-		return $row['new_from'] <= $row['id_msg_modified'] && (int) $row['last_poster_id'] !== User::$me->id;
+		return $row['new_from'] <= $row['id_msg_modified'] && $row['last_poster_id'] !== User::$me->id;
 	}
 
 	private function getViewsData(array $row): array
 	{
 		return [
-			'num'   => (int) $row['num_views'],
+			'num'   => $row['num_views'],
 			'title' => Lang::$txt['lp_views'],
 			'after' => '',
 		];
@@ -273,7 +323,7 @@ class TopicArticle extends AbstractArticle
 	private function getRepliesData(array $row): array
 	{
 		return [
-			'num'   => (int) $row['num_replies'],
+			'num'   => $row['num_replies'],
 			'title' => Lang::$txt['lp_replies'],
 			'after' => '',
 		];
@@ -293,7 +343,7 @@ class TopicArticle extends AbstractArticle
 
 	private function canEdit(array $row): bool
 	{
-		return User::$me->is_admin || (User::$me->id && (int) $row['id_member'] === User::$me->id);
+		return User::$me->is_admin || (User::$me->id && $row['id_member'] === User::$me->id);
 	}
 
 	private function getEditLink(array $row): string

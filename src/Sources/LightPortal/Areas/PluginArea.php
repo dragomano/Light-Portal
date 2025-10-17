@@ -44,9 +44,9 @@ if (! defined('SMF'))
 final readonly class PluginArea
 {
 	use HasCache;
+	use HasEvents;
 	use HasRequest;
 	use HasResponse;
-	use HasEvents;
 
 	public function __construct(private PluginRepository $repository) {}
 

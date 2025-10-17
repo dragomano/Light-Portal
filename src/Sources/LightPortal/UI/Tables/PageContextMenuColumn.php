@@ -14,7 +14,7 @@ namespace Bugo\LightPortal\UI\Tables;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Utils\Request;
+use Bugo\LightPortal\Utils\RequestInterface;
 use Bugo\LightPortal\Utils\Str;
 
 use function Bugo\LightPortal\app;
@@ -23,6 +23,8 @@ class PageContextMenuColumn extends ContextMenuColumn
 {
 	public static function make(string $name = 'actions', string $title = ''): static
 	{
+		$request = app(RequestInterface::class);
+
 		return parent::make($name, $title)
 			->setData(fn($entry) => /** @lang text */ '
 				<div data-id="' . $entry['id'] . '" x-data="{ showContextMenu: false }">
@@ -30,7 +32,7 @@ class PageContextMenuColumn extends ContextMenuColumn
 						' . IconButton::make('ellipsis', ['x-on:click.prevent' => 'showContextMenu = true'], 'button floatnone') . '
 						<div class="roundframe" x-show="showContextMenu" x-transition.duration.500ms>
 							<ul>' . (
-								app(Request::class)->has('deleted') ? (
+								$request->has('deleted') ? (
 									Str::html('li')->addHtml(
 										Link::make(Lang::$txt['restore_message'], ['x-on:click.prevent' => 'showContextMenu = false; entity.restore($root)'])
 									) .

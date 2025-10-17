@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 use Bugo\LightPortal\DataHandlers\DataHandler;
 use Bugo\LightPortal\DataHandlers\Exports\AbstractExport;
-use Bugo\LightPortal\Utils\DatabaseInterface;
 use Bugo\LightPortal\Utils\ErrorHandlerInterface;
 use Bugo\LightPortal\Utils\FilesystemInterface;
 use Bugo\LightPortal\Utils\RequestInterface;
+use Bugo\LightPortal\Database\PortalSqlInterface;
 
 arch()->expect(AbstractExport::class)
     ->toBeAbstract()
@@ -23,7 +23,7 @@ arch()->expect(AbstractExport::class)
 
 it('should call getFile and downloadFile when file exists', function () {
     $entity = 'test';
-    $database = Mockery::mock(DatabaseInterface::class);
+    $database = Mockery::mock(PortalSqlInterface::class);
     $filesystem = Mockery::mock(FilesystemInterface::class);
     $errorHandler = Mockery::mock(ErrorHandlerInterface::class);
 
@@ -37,7 +37,7 @@ it('should call getFile and downloadFile when file exists', function () {
 
 it('should do nothing when getFile returns empty', function () {
     $entity = 'test';
-    $database = Mockery::mock(DatabaseInterface::class);
+    $database = Mockery::mock(PortalSqlInterface::class);
     $filesystem = Mockery::mock(FilesystemInterface::class);
     $errorHandler = Mockery::mock(ErrorHandlerInterface::class);
 
@@ -51,7 +51,7 @@ it('should do nothing when getFile returns empty', function () {
 
 it('should handle existing file correctly', function () {
     $entity = 'test';
-    $database = Mockery::mock(DatabaseInterface::class);
+    $database = Mockery::mock(PortalSqlInterface::class);
     $filesystem = Mockery::mock(FilesystemInterface::class);
     $errorHandler = Mockery::mock(ErrorHandlerInterface::class);
 
@@ -98,7 +98,7 @@ it('should handle existing file correctly', function () {
 
 it('should do nothing when file does not exist', function () {
     $entity = 'test';
-    $database = Mockery::mock(DatabaseInterface::class);
+    $database = Mockery::mock(PortalSqlInterface::class);
     $filesystem = Mockery::mock(FilesystemInterface::class);
     $errorHandler = Mockery::mock(ErrorHandlerInterface::class);
 
@@ -122,7 +122,7 @@ it('should do nothing when file does not exist', function () {
 
 it('should return closure that yields items', function () {
     $entity = 'test';
-    $database = Mockery::mock(DatabaseInterface::class);
+    $database = Mockery::mock(PortalSqlInterface::class);
     $filesystem = Mockery::mock(FilesystemInterface::class);
     $errorHandler = Mockery::mock(ErrorHandlerInterface::class);
 
@@ -143,7 +143,7 @@ it('should return closure that yields items', function () {
 });
 
 it('should return true when no entity and no export_all', function () {
-    $database = Mockery::mock(DatabaseInterface::class);
+    $database = Mockery::mock(PortalSqlInterface::class);
     $filesystem = Mockery::mock(FilesystemInterface::class);
     $errorHandler = Mockery::mock(ErrorHandlerInterface::class);
 
@@ -160,7 +160,7 @@ it('should return true when no entity and no export_all', function () {
 });
 
 it('should return false when has entity', function () {
-    $database = Mockery::mock(DatabaseInterface::class);
+    $database = Mockery::mock(PortalSqlInterface::class);
     $filesystem = Mockery::mock(FilesystemInterface::class);
     $errorHandler = Mockery::mock(ErrorHandlerInterface::class);
 
@@ -176,7 +176,7 @@ it('should return false when has entity', function () {
 });
 
 it('should return true when has entity and no export_all', function () {
-    $database = Mockery::mock(DatabaseInterface::class);
+    $database = Mockery::mock(PortalSqlInterface::class);
     $filesystem = Mockery::mock(FilesystemInterface::class);
     $errorHandler = Mockery::mock(ErrorHandlerInterface::class);
 
@@ -193,7 +193,7 @@ it('should return true when has entity and no export_all', function () {
 });
 
 it('should return false when no entity', function () {
-    $database = Mockery::mock(DatabaseInterface::class);
+    $database = Mockery::mock(PortalSqlInterface::class);
     $filesystem = Mockery::mock(FilesystemInterface::class);
     $errorHandler = Mockery::mock(ErrorHandlerInterface::class);
 

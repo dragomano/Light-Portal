@@ -8,16 +8,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 23.09.25
+ * @version 09.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\EhPortalMigration;
 
 use Bugo\Bricks\Tables\IdColumn;
-use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\User;
-use Bugo\Compat\Utils;
 use Bugo\LightPortal\DataHandlers\Imports\Custom\AbstractCustomPageImport;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\Permission;
@@ -25,6 +22,7 @@ use Bugo\LightPortal\UI\Tables\CheckboxColumn;
 use Bugo\LightPortal\UI\Tables\PageSlugColumn;
 use Bugo\LightPortal\UI\Tables\TitleColumn;
 use Bugo\LightPortal\Utils\DateTime;
+use Laminas\Db\Sql\Expression;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -33,7 +31,7 @@ class PageImport extends AbstractCustomPageImport
 {
 	protected string $langKey = 'lp_eh_portal_migration';
 
-	protected string $formAction = 'import_from_eh';
+	protected string $formAction = 'import_from_ep';
 
 	protected string $uiTableId = 'eh_pages';
 
@@ -52,26 +50,25 @@ class PageImport extends AbstractCustomPageImport
 
 	public function getAll(int $start = 0, int $limit = 0, string $sort = 'id_page'): array
 	{
-		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'sp_pages')))
+		if (! $this->sql->tableExists('sp_pages'))
 			return [];
 
-		$result = Db::$db->query('
-			SELECT id_page, namespace, title, body, type, permission_set, groups_allowed, views, status
-			FROM {db_prefix}sp_pages
-			ORDER BY {raw:sort}
-			LIMIT {int:start}, {int:limit}',
-			[
-				'sort'  => $sort,
-				'start' => $start,
-				'limit' => $limit,
-			]
-		);
+		$select = $this->sql->select()
+			->from('sp_pages')
+			->columns([
+				'id_page', 'namespace', 'title', 'body', 'type', 'permission_set', 'groups_allowed', 'views', 'status',
+			])
+			->order($sort)
+			->limit($limit)
+			->offset($start);
+
+		$result = $this->sql->execute($select);
 
 		$items = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			$items[$row['id_page']] = [
 				'id'         => $row['id_page'],
-				'slug'       => $row['namespace'] ?: $this->getSlug($row),
+				'slug'       => $row['namespace'] ?: $this->generateSlug(['english' => $row['title']]),
 				'type'       => $row['type'],
 				'status'     => $row['status'],
 				'num_views'  => $row['views'],
@@ -81,53 +78,51 @@ class PageImport extends AbstractCustomPageImport
 			];
 		}
 
-		Db::$db->free_result($result);
-
 		return $items;
 	}
 
 	public function getTotalCount(): int
 	{
-		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'sp_pages')))
+		if (! $this->sql->tableExists('sp_pages'))
 			return 0;
 
-		$result = Db::$db->query(/** @lang text */ '
-			SELECT COUNT(*)
-			FROM {db_prefix}sp_pages',
-		);
+		$select = $this->sql->select()
+			->from('sp_pages')
+			->columns(['count' => new Expression('COUNT(*)')]);
 
-		[$count] = Db::$db->fetch_row($result);
+		$result = $this->sql->execute($select)->current();
 
-		Db::$db->free_result($result);
-
-		return (int) $count;
+		return $result['count'];
 	}
 
 	protected function getItems(array $ids): array
 	{
-		$result = Db::$db->query(/** @lang text */ '
-			SELECT id_page, namespace, title, body, type, permission_set, groups_allowed, views, status
-			FROM {db_prefix}sp_pages' . (empty($ids) ? '' : '
-			WHERE id_page IN ({array_int:pages})'),
-			[
-				'pages' => $ids,
-			]
-		);
+		$select = $this->sql->select()
+			->from('sp_pages')
+			->columns([
+				'id_page', 'namespace', 'title', 'body', 'type', 'permission_set', 'groups_allowed', 'views', 'status',
+			]);
+
+		if ($ids !== []) {
+			$select->where->in('id_page', $ids);
+		}
+
+		$result = $this->sql->execute($select);
 
 		$items = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			$items[$row['id_page']] = [
-				'page_id'         => (int) $row['id_page'],
+				'page_id'         => $row['id_page'],
 				'category_id'     => 0,
 				'author_id'       => User::$me->id,
-				'slug'            => $row['namespace'] ?: $this->getSlug($row),
+				'slug'            => $row['namespace'] ?: $this->generateSlug(['english' => $row['title']]),
 				'description'     => '',
 				'content'         => $row['body'],
 				'type'            => $row['type'],
 				'entry_type'      => EntryType::DEFAULT->name(),
 				'permissions'     => $this->getPermission($row),
-				'status'          => (int) $row['status'],
-				'num_views'       => (int) $row['views'],
+				'status'          => $row['status'],
+				'num_views'       => $row['views'],
 				'num_comments'    => 0,
 				'created_at'      => time(),
 				'updated_at'      => 0,
@@ -137,27 +132,20 @@ class PageImport extends AbstractCustomPageImport
 			];
 		}
 
-		Db::$db->free_result($result);
-
 		return $items;
 	}
 
 	protected function extractPermissions(array $row): int|array
 	{
 		if (! empty($row['permission_set'])) {
-			return (int) $row['permission_set'];
+			return $row['permission_set'];
 		}
 
-		return match ((int) $row['groups_allowed']) {
+		return match ($row['groups_allowed']) {
 			-1      => Permission::GUEST->value,
 			0       => Permission::MEMBER->value,
 			1       => Permission::ADMIN->value,
 			default => Permission::ALL->value,
 		};
-	}
-
-	private function getSlug(array $row): string
-	{
-		return Utils::$smcFunc['strtolower'](explode(' ', (string) $row['title'])[0]) . $row['id_page'];
 	}
 }

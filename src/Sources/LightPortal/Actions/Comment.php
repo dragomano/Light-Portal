@@ -22,17 +22,14 @@ use Bugo\LightPortal\Enums\NotifyType;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\VarType;
 use Bugo\LightPortal\Events\HasEvents;
-use Bugo\LightPortal\Repositories\CommentRepository;
-use Bugo\LightPortal\Utils\Avatar;
+use Bugo\LightPortal\Repositories\CommentRepositoryInterface;
 use Bugo\LightPortal\Utils\DateTime;
-use Bugo\LightPortal\Utils\Notify;
+use Bugo\LightPortal\Utils\Notifier;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasCache;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 use Bugo\LightPortal\Utils\Traits\HasResponse;
-
-use function Bugo\LightPortal\app;
 
 use const LP_BASE_URL;
 
@@ -48,7 +45,10 @@ final class Comment implements ActionInterface
 
 	private string $pageSlug;
 
-	public function __construct(private readonly CommentRepository $repository)
+	public function __construct(
+		private readonly CommentRepositoryInterface $repository,
+		private readonly Notifier $notifier
+	)
 	{
 		$this->setPageSlug(Utils::$context['lp_page']['slug']);
 	}
@@ -76,7 +76,7 @@ final class Comment implements ActionInterface
 	private function get(): never
 	{
 		$comments = $this->cache('page_' . $this->pageSlug . '_comments')
-			->setFallback(fn() => app(CommentRepository::class)->getByPageId(Utils::$context['lp_page']['id']));
+			->setFallback(fn() => $this->repository->getByPageId(Utils::$context['lp_page']['id']));
 
 		$comments = array_map(function ($comment) {
 			$comment['human_date']    = DateTime::relative($comment['created_at']);
@@ -156,21 +156,6 @@ final class Comment implements ActionInterface
 		if ($item) {
 			$this->repository->updateLastCommentId($item, $pageId);
 
-			$result = [
-				'id'           => $item,
-				'parent_id'    => $parentId,
-				'message'      => $message,
-				'created_at'   => $time,
-				'published_at' => date('Y-m-d', $time),
-				'human_date'   => DateTime::relative($time),
-				'can_edit'     => true,
-				'poster'       => [
-					'id'     => User::$me->id,
-					'name'   => User::$me->name,
-					'avatar' => Avatar::get(User::$me->id),
-				],
-			];
-
 			$options = [
 				'item'      => $item,
 				'time'      => $time,
@@ -182,15 +167,15 @@ final class Comment implements ActionInterface
 			$this->mentionMembers($verifiedMembers, $options);
 
 			empty($parentId)
-				? Notify::send(NotifyType::NEW_COMMENT->name(), AlertAction::PAGE_COMMENT->name(), $options)
-				: Notify::send(NotifyType::NEW_REPLY->name(), AlertAction::PAGE_COMMENT_REPLY->name(), $options);
+				? $this->notifier->notify(NotifyType::NEW_COMMENT->name(), AlertAction::PAGE_COMMENT->name(), $options)
+				: $this->notifier->notify(NotifyType::NEW_REPLY->name(), AlertAction::PAGE_COMMENT_REPLY->name(), $options);
 
 			$this->cache()->forget('page_' . $this->pageSlug . '_comments');
 		}
 
 		http_response_code(201);
 
-		$this->response()->exit($result);
+		$this->response()->exit($this->repository->getData($item));
 	}
 
 	private function getMembersToMention(string &$message): array
@@ -226,7 +211,7 @@ final class Comment implements ActionInterface
 		foreach ($verifiedMembers as $member) {
 			$options['author_id'] = (int) $member['id'];
 
-			Notify::send(NotifyType::NEW_MENTION->name(), AlertAction::PAGE_COMMENT_MENTION->name(), $options);
+			$this->notifier->notify(NotifyType::NEW_MENTION->name(), AlertAction::PAGE_COMMENT_MENTION->name(), $options);
 		}
 	}
 
@@ -266,7 +251,7 @@ final class Comment implements ActionInterface
 		$this->response()->exit($result);
 	}
 
-	private function remove(): never
+	private function remove(): void
 	{
 		$item = (int) $this->request()->json('comment_id');
 
@@ -274,11 +259,9 @@ final class Comment implements ActionInterface
 			$this->response()->exit(['success' => false]);
 		}
 
-		$items = $this->repository->remove($item, $this->pageSlug);
+		$this->repository->remove([$item]);
 
 		$this->cache()->forget('page_' . $this->pageSlug . '_comments');
-
-		$this->response()->exit(['success' => true, 'items' => $items]);
 	}
 
 	private function getTree(array $data): array

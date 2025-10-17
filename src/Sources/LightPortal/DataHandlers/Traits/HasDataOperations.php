@@ -14,8 +14,8 @@ namespace Bugo\LightPortal\DataHandlers\Traits;
 
 trait HasDataOperations
 {
+	use HasInserts;
+	use HasParams;
 	use HasTransactions;
 	use HasTranslations;
-	use HasParams;
-	use CanInsertDataTrait;
 }

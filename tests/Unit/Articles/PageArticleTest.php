@@ -3,277 +3,366 @@
 declare(strict_types=1);
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Db;
-use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\LightPortal\Articles\PageArticle;
-use Bugo\LightPortal\Articles\ArticleInterface;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Enums\PortalSubAction;
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Utils\Avatar;
-use Bugo\LightPortal\Utils\Content;
-use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\Setting;
+use Bugo\LightPortal\Database\Operations\PortalSelect;
+use Bugo\LightPortal\Database\PortalSqlInterface;
 use Bugo\LightPortal\Events\EventManager;
-use Bugo\Compat\Permission;
+use Bugo\LightPortal\Utils\CacheInterface;
+use Laminas\Db\Adapter\Driver\ResultInterface;
+use Tests\ReflectionAccessor;
 
 it('initializes parameters with all_pages frontpage mode', function () {
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('query')->andReturn('mock_result');
-    $dbMock->shouldReceive('fetch_all')->andReturn([]);
-    $dbMock->shouldReceive('free_result');
-
-    $reflection = new \ReflectionClass('Bugo\Compat\Db');
-    $reflection->setStaticPropertyValue('db', $dbMock);
-
-    $permissionMock = Mockery::mock('overload:' . Permission::class);
-    $permissionMock->shouldReceive('all')->andReturn([1, 2, 3]);
-
-    $userMock = Mockery::mock('Bugo\Compat\User');
-    $userReflection = new \ReflectionClass('Bugo\Compat\User');
-    $userReflection->setStaticPropertyValue('me', $userMock);
+    $userMock = Mockery::mock(User::class);
     $userMock->language = 'english';
     $userMock->groups = [1, 2, 3];
     $userMock->is_admin = false;
     $userMock->id = 1;
     $userMock->shouldReceive('allowedTo')->andReturn(false);
 
-    $configReflection = new \ReflectionClass('Bugo\Compat\Config');
-    $configReflection->setStaticPropertyValue('language', 'english');
-    $configReflection->setStaticPropertyValue('modSettings', [
-        'lp_frontpage_mode' => 'all_pages'
-    ]);
+    Config::$language = 'english';
+    Config::$modSettings['lp_frontpage_mode'] = 'all_pages';
 
     $eventMock = Mockery::mock(EventManager::class);
     $eventMock->shouldReceive('dispatch')->andReturn(null);
 
-    // Set the event manager mock in global variable for namespace_functions.php
     $GLOBALS['event_manager_mock'] = $eventMock;
 
-    $article = new PageArticle();
+    $portalSqlMock = Mockery::mock(PortalSqlInterface::class);
+    $portalSqlMock
+        ->shouldReceive('select')
+        ->andReturn(Mockery::mock()->shouldIgnoreMissing());
+    $portalSqlMock
+        ->shouldReceive('execute')
+        ->andReturn(Mockery::mock()->shouldReceive('current')->andReturn(['id_member' => []]));
+
+    $article = new PageArticle($portalSqlMock);
     $article->init();
 
-    $paramsReflection = new \ReflectionProperty(PageArticle::class, 'params');
-    $params = $paramsReflection->getValue($article);
+    $accessorArticle = new ReflectionAccessor($article);
+    $params = $accessorArticle->getProtectedProperty('params');
 
     expect($params['selected_categories'])->toBe([0]);
 });
 
 it('initializes parameters and dispatches hook', function () {
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('query')->andReturn('mock_result');
-    $dbMock->shouldReceive('fetch_all')->andReturn([]);
-    $dbMock->shouldReceive('free_result');
-
-    $reflection = new \ReflectionClass('Bugo\Compat\Db');
-    $reflection->setStaticPropertyValue('db', $dbMock);
-
-    $permissionMock = Mockery::mock('overload:' . Permission::class);
-    $permissionMock->shouldReceive('all')->andReturn([1, 2, 3]);
-
-    // Use a simpler approach - create a mock that doesn't conflict with existing classes
     $settingMock = Mockery::mock('SettingMock');
     $settingMock->shouldReceive('get')->with('lp_frontpage_categories', 'array', [])->andReturn([]);
     $settingMock->shouldReceive('isFrontpageMode')->with('all_pages')->andReturn(false);
 
-    // Set up the mock in the global namespace to intercept calls
     $GLOBALS['SettingMock'] = $settingMock;
 
-    $userMock = Mockery::mock('Bugo\Compat\User');
-    $userReflection = new \ReflectionClass('Bugo\Compat\User');
-    $userReflection->setStaticPropertyValue('me', $userMock);
+    $userMock = Mockery::mock(User::class);
     $userMock->language = 'russian';
     $userMock->groups = [1, 2, 3];
     $userMock->is_admin = false;
     $userMock->id = 1;
     $userMock->shouldReceive('allowedTo')->andReturn(false);
 
-    $configMock = Mockery::mock('Bugo\Compat\Config');
-    $configReflection = new \ReflectionClass('Bugo\Compat\Config');
-    $configReflection->setStaticPropertyValue('language', 'english');
+    Config::$language = 'english';
 
-    $article = new PageArticle();
+    $portalSqlMock = Mockery::mock(PortalSqlInterface::class);
+    $portalSqlMock
+        ->shouldReceive('select')->andReturn(Mockery::mock()->shouldIgnoreMissing());
+    $portalSqlMock
+        ->shouldReceive('execute')->andReturn(Mockery::mock()->shouldReceive('current')->andReturn(['id_member' => []]));
+    $portalSqlMock->shouldReceive('getTransaction')->andReturn(Mockery::mock()->shouldIgnoreMissing());
+
+    $cacheMock = Mockery::mock(CacheInterface::class);
+    $cacheMock->shouldReceive('remember')->with('board_moderators', Mockery::on(function () {
+        $portalSqlMock = Mockery::mock(PortalSqlInterface::class);
+        $portalSqlMock->shouldReceive('select')->andReturn(Mockery::mock()->shouldIgnoreMissing());
+        $portalSqlMock->shouldReceive('execute')->andReturn(Mockery::mock()->shouldReceive('current')->andReturn(['id_member' => []]));
+
+        $GLOBALS['app_mocks'][PortalSqlInterface::class] = $portalSqlMock;
+
+        return true;
+    }))->andReturn([]);
+
+    $GLOBALS['app_mocks'] = [
+        PortalSqlInterface::class => $portalSqlMock,
+        CacheInterface::class => $cacheMock,
+    ];
+    $portalSqlMock->shouldReceive('getTransaction')->andReturn(Mockery::mock()->shouldIgnoreMissing());
+
+    $cacheMock = Mockery::mock(CacheInterface::class);
+    $cacheMock->shouldReceive('remember')->with('board_moderators', Mockery::on(function () {
+        $portalSqlMock = Mockery::mock(PortalSqlInterface::class);
+        $portalSqlMock->shouldReceive('select')->andReturn(Mockery::mock()->shouldIgnoreMissing());
+        $portalSqlMock
+            ->shouldReceive('execute')
+            ->andReturn(Mockery::mock()->shouldReceive('current')->andReturn(['id_member' => []]));
+
+        $GLOBALS['app_mocks'][PortalSqlInterface::class] = $portalSqlMock;
+
+        return true;
+    }))->andReturn([]);
+
+    $GLOBALS['app_mocks'] = [
+        PortalSqlInterface::class => $portalSqlMock,
+        CacheInterface::class     => $cacheMock,
+    ];
+    $article = new PageArticle($portalSqlMock);
 
     $eventMock = Mockery::mock(EventManager::class);
     $eventMock->shouldReceive('dispatch')
         ->andReturn(null);
 
-    // Set the event manager mock in global variable for namespace_functions.php
     $GLOBALS['event_manager_mock'] = $eventMock;
 
     $article->init();
 
-    $paramsReflection = new \ReflectionProperty(PageArticle::class, 'params');
+    $paramsReflection = new ReflectionProperty(PageArticle::class, 'params');
     $params = $paramsReflection->getValue($article);
 
-    $ordersReflection = new \ReflectionProperty(PageArticle::class, 'orders');
+    $ordersReflection = new ReflectionProperty(PageArticle::class, 'orders');
     $orders = $ordersReflection->getValue($article);
 
-    expect($params)->toHaveKey('empty_string');
-    expect($params)->toHaveKey('lang');
-    expect($params)->toHaveKey('selected_categories');
-    expect($orders)->toHaveKey('created;desc');
+    expect($params)->toHaveKey('lang')
+        ->and($params)->toHaveKey('selected_categories')
+        ->and($orders)->toHaveKey('created;desc');
 });
 
 it('returns sorting options', function () {
-    $article = new PageArticle();
+    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
 
     $options = $article->getSortingOptions();
 
-    expect($options)->toBeArray();
-    expect($options)->toHaveKey('created;desc');
-    expect($options)->toHaveKey('title');
+    expect($options)->toBeArray()
+        ->and($options)->toHaveKey('created;desc')
+        ->and($options)->toHaveKey('title');
 });
 
-it('skips rows with empty title in getData', function () {
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('query')->andReturn('perm_result');
-    $dbMock->shouldReceive('fetch_all')->andReturn([]);
-    $dbMock->shouldReceive('free_result')->once();
-    // For getData
-    $dbMock->shouldReceive('query')->andReturn('data_result');
-    $dbMock->shouldReceive('fetch_assoc')->andReturn([
-        'page_id' => 1,
-        'title' => '', // Empty title should be skipped
-        'content' => 'Test content',
-        'description' => '',
-        'author_id' => 1,
-        'author_name' => 'Test Author',
-        'created_at' => 1234567890,
-        'updated_at' => 1234567890,
-        'num_views' => 10,
-        'num_comments' => 5,
-        'comment_date' => 0,
-        'date' => 1234567890,
-        'cat_icon' => 'fas fa-folder',
-        'cat_title' => 'Test Category',
-        'category_id' => 1,
-        'comment_author_id' => 0,
-        'comment_author_name' => '',
-        'comment_message' => '',
-        'type' => 'bbc',
-        'slug' => 'test-page',
-    ], false);
-    $dbMock->shouldReceive('free_result');
+it('skips rows with empty title in getData', closure: function () {
+    $selectMock = Mockery::mock(PortalSelect::class);
+    $selectMock->shouldReceive('from')->andReturnSelf();
+    $selectMock->shouldReceive('join')->andReturnSelf();
+    $selectMock->shouldReceive('columns')->andReturnSelf();
+    $selectMock->shouldReceive('order')->andReturnSelf();
+    $selectMock->shouldReceive('limit')->andReturnSelf();
+    $selectMock->shouldReceive('offset')->andReturnSelf();
+    $selectMock->shouldReceive('where')->andReturnSelf();
+    $selectMock->shouldReceive('getRawState')->andReturn([]);
 
-    $reflection = new \ReflectionClass('Bugo\Compat\Db');
-    $reflection->setStaticPropertyValue('db', $dbMock);
+    $portalSqlMock = Mockery::mock(PortalSqlInterface::class);
+    $portalSqlMock->shouldReceive('select')->andReturn($selectMock);
 
-    $permissionMock = Mockery::mock('overload:' . Permission::class);
-    $permissionMock->shouldReceive('all')->andReturn([1, 2, 3]);
+    $resultMock = Mockery::mock(ResultInterface::class);
+    $testData = [
+        [
+            'page_id'             => 1,
+            'title'               => '',
+            'slug'                => 'test-page',
+            'author_id'           => 1,
+            'author_name'         => 'Test Author',
+            'created_at'          => time(),
+            'updated_at'          => time(),
+            'num_views'           => 10,
+            'num_comments'        => 0,
+            'category_id'         => 1,
+            'cat_title'           => 'Test Category',
+            'cat_icon'            => 'fas fa-folder',
+            'comment_date'        => null,
+            'comment_author_id'   => 0,
+            'comment_author_name' => '',
+            'type'                => 'bbc',
+            'content'             => 'Test content',
+            'description'         => 'Test description',
+        ]
+    ];
 
-    $article = new PageArticle();
+    $resultMock->shouldReceive('current')->andReturn($testData[0], null);
+    $resultMock->shouldReceive('valid')->andReturn(true, false);
+    $resultMock->shouldReceive('next');
+    $resultMock->shouldReceive('key')->andReturn(0);
+    $resultMock->shouldReceive('rewind');
+
+    $portalSqlMock->shouldReceive('execute')->andReturn($resultMock);
+
+    $article = new PageArticle($portalSqlMock);
     $article->init();
 
-    $reflection = new \ReflectionMethod($article, 'getData');
-    $reflection->setAccessible(true);
+    $reflection = new ReflectionAccessor($article);
 
-    $result = $reflection->invoke($article, 0, 10, 'created;desc');
+    $result = $reflection->callProtectedMethod('getData', [0, 10, 'created;desc']);
 
-    // Convert iterator to array - should be empty since title is empty
+    expect(iterator_to_array($result))->toBeEmpty();
+});
+
+it('processes rows with non-empty title in getData', function () {
+    Config::$modSettings['avatar_url'] = '';
+
+    $userLoadedMock = Mockery::mock();
+    $userLoadedMock->shouldReceive('format')->andReturn([
+        'name'   => 'Test Author',
+        'avatar' => ['image' => 'avatar_image'],
+    ]);
+
+    $accessor = new ReflectionAccessor(new User());
+    $accessor->setProtectedProperty('loaded', [1 => $userLoadedMock]);
+
+    $selectMock = Mockery::mock(PortalSelect::class);
+    $selectMock->shouldReceive('from')->andReturnSelf();
+    $selectMock->shouldReceive('join')->andReturnSelf();
+    $selectMock->shouldReceive('columns')->andReturnSelf();
+    $selectMock->shouldReceive('order')->andReturnSelf();
+    $selectMock->shouldReceive('limit')->andReturnSelf();
+    $selectMock->shouldReceive('offset')->andReturnSelf();
+    $selectMock->shouldReceive('where')->andReturnSelf();
+    $selectMock->shouldReceive('getRawState')->andReturn([]);
+
+    $portalSqlMock = Mockery::mock(PortalSqlInterface::class);
+    $portalSqlMock->shouldReceive('select')->andReturn($selectMock);
+
+    $resultMock = Mockery::mock(ResultInterface::class);
+    $testData = [
+        [
+            'page_id'             => 1,
+            'title'               => 'Test Page Title',
+            'slug'                => 'test-page',
+            'author_id'           => 1,
+            'author_name'         => 'Test Author',
+            'created_at'          => time(),
+            'updated_at'          => time(),
+            'date'                => time(),
+            'num_views'           => 10,
+            'num_comments'        => 0,
+            'category_id'         => 1,
+            'cat_title'           => 'Test Category',
+            'cat_icon'            => 'fas fa-folder',
+            'comment_date'        => null,
+            'comment_author_id'   => 0,
+            'comment_author_name' => '',
+            'type'                => 'bbc',
+            'content'             => 'Test content',
+            'description'         => 'Test description',
+        ]
+    ];
+
+    $resultMock->shouldReceive('current')->andReturn($testData[0], null);
+    $resultMock->shouldReceive('valid')->andReturn(true, false);
+    $resultMock->shouldReceive('next');
+    $resultMock->shouldReceive('key')->andReturn(0);
+    $resultMock->shouldReceive('rewind');
+
+    $portalSqlMock->shouldReceive('execute')->andReturn($resultMock);
+
+    $article = new PageArticle($portalSqlMock);
+    $article->init();
+
+    $reflection = new ReflectionAccessor($article);
+
+    $result = $reflection->callProtectedMethod('getData', [0, 10, 'created;desc']);
+
     $data = iterator_to_array($result);
-    expect($data)->toBeEmpty();
+    expect($data)->toHaveCount(1)
+        ->and($data[1])->toHaveKey('title')
+        ->and($data[1]['title'])->toBe('Test Page Title');
 });
 
 it('retrieves data with mocked Db', function () {
-    $dbMock = Mockery::mock();
-    // For Permission in init()
-    $dbMock->shouldReceive('query')->andReturn('perm_result');
-    $dbMock->shouldReceive('fetch_all')->andReturn([]);
-    $dbMock->shouldReceive('free_result')->once();
-    // For getData
-    $dbMock->shouldReceive('query')->andReturn('data_result');
-    $dbMock->shouldReceive('fetch_assoc')->andReturn([
-        'page_id' => 1,
-        'title' => 'Test Page',
-        'content' => 'Test content',
-        'description' => '',
-        'author_id' => 1,
-        'author_name' => 'Test Author',
-        'created_at' => 1234567890,
-        'updated_at' => 1234567890,
-        'num_views' => 10,
-        'num_comments' => 5,
-        'comment_date' => 0,
-        'date' => 1234567890,
-        'cat_icon' => 'fas fa-folder',
-        'cat_title' => 'Test Category',
-        'category_id' => 1,
-        'comment_author_id' => 0,
-        'comment_author_name' => '',
-        'comment_message' => '',
-        'type' => 'bbc',
-        'slug' => 'test-page',
-    ], false);
-    $dbMock->shouldReceive('free_result');
-
-    $reflection = new \ReflectionClass('Bugo\Compat\Db');
-    $reflection->setStaticPropertyValue('db', $dbMock);
-
-    $permissionMock = Mockery::mock('overload:' . Permission::class);
-    $permissionMock->shouldReceive('all')->andReturn([1, 2, 3]);
-
     Config::$modSettings['avatar_url'] = '';
 
-    // Mock User::$loaded to provide proper data structure for Avatar
     $userLoadedMock = Mockery::mock();
     $userLoadedMock->shouldReceive('format')->andReturn([
-        'name' => 'Test Author',
-        'avatar' => ['image' => 'avatar_image']
+        'name'   => 'Test Author',
+        'avatar' => ['image' => 'avatar_image'],
     ]);
 
-    // Use reflection to set User::$loaded
-    $userReflection = new \ReflectionClass('Bugo\Compat\User');
-    $loadedProperty = $userReflection->getProperty('loaded');
-    $loadedProperty->setAccessible(true);
-    $loadedProperty->setValue([1 => $userLoadedMock]);
+    $accessor = new ReflectionAccessor(new User());
+    $accessor->setProtectedProperty('loaded', [1 => $userLoadedMock]);
 
-    $article = new PageArticle();
-    $article->init(); // Initialize params
+    $selectMock = Mockery::mock(PortalSelect::class);
+    $selectMock->shouldReceive('from')->andReturnSelf();
+    $selectMock->shouldReceive('join')->andReturnSelf();
+    $selectMock->shouldReceive('columns')->andReturnSelf();
+    $selectMock->shouldReceive('order')->andReturnSelf();
+    $selectMock->shouldReceive('limit')->andReturnSelf();
+    $selectMock->shouldReceive('offset')->andReturnSelf();
+    $selectMock->shouldReceive('where')->andReturnSelf();
+    $selectMock->shouldReceive('group')->andReturnSelf();
+    $selectMock->shouldReceive('having')->andReturnSelf();
+    $selectMock->shouldReceive('quantifier')->andReturnSelf();
+    $selectMock->shouldReceive('combine')->andReturnSelf();
+    $selectMock->shouldReceive('getRawState')->andReturn([]);
 
-    // Test getData method directly, mocking the yield behavior
-    $reflection = new \ReflectionMethod($article, 'getData');
-    $reflection->setAccessible(true);
+    $resultMock = Mockery::mock(ResultInterface::class);
+    $testData = [
+        [
+            'page_id'             => 1,
+            'title'               => 'Test Page',
+            'slug'                => 'test-page',
+            'author_id'           => 1,
+            'author_name'         => 'Test Author',
+            'created_at'          => time(),
+            'updated_at'          => time(),
+            'date'                => time(),
+            'num_views'           => 10,
+            'num_comments'        => 0,
+            'category_id'         => 1,
+            'cat_title'           => 'Test Category',
+            'cat_icon'            => 'fas fa-folder',
+            'comment_date'        => null,
+            'comment_author_id'   => 0,
+            'comment_author_name' => '',
+            'type'                => 'bbc',
+            'content'             => 'Test content',
+            'description'         => 'Test description',
+        ]
+    ];
 
-    // Test the data processing
-    $result = $reflection->invoke($article, 0, 10, 'created;desc');
+    $resultMock->shouldReceive('current')->andReturn($testData[0], null);
+    $resultMock->shouldReceive('valid')->andReturn(true, false);
+    $resultMock->shouldReceive('next');
+    $resultMock->shouldReceive('key')->andReturn(0);
+    $resultMock->shouldReceive('rewind');
 
-    // Convert iterator to array for testing
-    $data = [];
-    foreach ($result as $key => $value) {
-        $data[$key] = $value;
-    }
+    $portalSqlMock = Mockery::mock(PortalSqlInterface::class);
+    $portalSqlMock->shouldReceive('select')->andReturn($selectMock);
+    $portalSqlMock->shouldReceive('execute')->andReturn($resultMock);
 
-    expect($data)->toBeArray();
-    expect($data)->toHaveKey(1); // Should have the test page we mocked
+    $article = new PageArticle($portalSqlMock);
+    $article->init();
 
-    // Check that the test page has the expected structure
-    expect($data[1])->toHaveKey('id');
-    expect($data[1])->toHaveKey('title');
-    expect($data[1])->toHaveKey('author');
-    expect($data[1]['title'])->toBe('Test Page');
+    $accessor = new ReflectionAccessor($article);
+    $result = $accessor->callProtectedMethod('getData', [0, 10, 'created;desc']);
+
+    $data = array_map(function ($value) {
+        return $value;
+    }, iterator_to_array($result));
+
+    expect($data)->toBeArray()
+        ->and($data)->toHaveKey(1)
+        ->and($data[1])->toHaveKey('id')
+        ->and($data[1])->toHaveKey('title')
+        ->and($data[1])->toHaveKey('author')
+        ->and($data[1]['title'])->toBe('Test Page');
 });
 
 it('returns total count with mocked Db', function () {
-    $dbMock = Mockery::mock();
-    // For Permission in init()
-    $dbMock->shouldReceive('query')->andReturn('perm_result');
-    $dbMock->shouldReceive('fetch_all')->andReturn([]);
-    $dbMock->shouldReceive('free_result')->once();
-    // For getTotalCount
-    $dbMock->shouldReceive('query')->andReturn('count_result');
-    $dbMock->shouldReceive('fetch_row')->andReturn([42]);
-    $dbMock->shouldReceive('free_result');
+    $portalSqlMock = Mockery::mock(PortalSqlInterface::class);
+    $selectMock = Mockery::mock(PortalSelect::class);
+    $portalSqlMock->shouldReceive('select')->andReturn($selectMock);
 
-    $reflection = new \ReflectionClass('Bugo\Compat\Db');
-    $reflection->setStaticPropertyValue('db', $dbMock);
+    $selectMock->shouldReceive('from')->andReturnSelf();
+    $selectMock->shouldReceive('columns')->andReturnSelf();
+    $selectMock->shouldReceive('join')->andReturnSelf();
+    $selectMock->shouldReceive('where')->andReturnSelf();
+    $selectMock->shouldReceive('order')->andReturnSelf();
+    $selectMock->shouldReceive('limit')->andReturnSelf();
+    $selectMock->shouldReceive('offset')->andReturnSelf();
 
-    $permissionMock = Mockery::mock('overload:' . Permission::class);
-    $permissionMock->shouldReceive('all')->andReturn([1, 2, 3]);
+    $whereMock1 = Mockery::mock();
+    $whereMock1->shouldReceive('in')->andReturnSelf();
+    $whereMock2 = Mockery::mock();
+    $whereMock2->shouldReceive('in')->andReturnSelf();
 
-    $article = new PageArticle();
-    $article->init(); // Initialize params
+    $selectMock->shouldReceive('where')->andReturn($whereMock1, $whereMock2);
+    $resultMock = Mockery::mock(ResultInterface::class);
+    $resultMock->shouldReceive('current')->andReturn(['count' => 42]);
+    $portalSqlMock->shouldReceive('execute')->andReturn($resultMock);
+    $article = new PageArticle($portalSqlMock);
+    $article->init();
 
     $count = $article->getTotalCount();
 
@@ -281,34 +370,53 @@ it('returns total count with mocked Db', function () {
 });
 
 it('skips empty pages array in prepareTags', function () {
-    $article = new PageArticle();
-
-    $reflection = new \ReflectionMethod($article, 'prepareTags');
-    $reflection->setAccessible(true);
+    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
+    $accessor = new ReflectionAccessor($article);
 
     $pages = [];
-    $reflection->invokeArgs($article, [&$pages]);
+    $accessor->callProtectedMethod('prepareTags', [$pages]);
 
-    // Should not modify empty array
     expect($pages)->toBeEmpty();
 });
 
 it('skips tags with empty title in prepareTags', function () {
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('query')->andReturn('tag_result');
-    $dbMock->shouldReceive('fetch_assoc')->andReturn([
+    $selectMock = Mockery::mock(PortalSelect::class);
+
+    $selectMock->shouldReceive('from')->andReturnSelf();
+    $selectMock->shouldReceive('join')->andReturnSelf();
+    $selectMock->shouldReceive('where')->andReturnSelf();
+    $selectMock->shouldReceive('order')->andReturnSelf();
+    $selectMock->shouldReceive('addTranslationJoins')->andReturnSelf();
+
+    $resultMock = Mockery::mock(ResultInterface::class);
+    $resultMock->shouldReceive('current')->andReturn([
         'page_id' => 1,
-        'tag_id' => 1,
-        'slug' => 'test-tag',
-        'icon' => 'fas fa-tag',
-        'title' => '', // Empty title should be skipped
-    ], false);
-    $dbMock->shouldReceive('free_result');
+        'tag_id'  => 1,
+        'slug'    => 'test-tag',
+        'icon'    => 'fas fa-tag',
+        'title'   => '',
+    ]);
+    $resultMock->shouldReceive('valid')->andReturn(true, false);
+    $resultMock->shouldReceive('next')->once();
+    $resultMock->shouldReceive('key')->andReturn(0);
+    $resultMock->shouldReceive('rewind')->once();
 
-    $reflection = new \ReflectionClass('Bugo\Compat\Db');
-    $reflection->setStaticPropertyValue('db', $dbMock);
+    $portalSqlMock = Mockery::mock(PortalSqlInterface::class);
 
-    $article = new PageArticle();
+    $portalSqlMock->shouldReceive('select')->andReturn($selectMock);
+    $portalSqlMock->shouldReceive('execute')->andReturn($resultMock);
+    $article = new PageArticle($portalSqlMock);
+
+    $paramsReflection = new ReflectionProperty(PageArticle::class, 'params');
+    $paramsReflection->setValue($article, [
+        'lang'                => 'english',
+        'fallback_lang'       => 'english',
+        'status'              => 1,
+        'entry_type'          => 'page',
+        'current_time'        => time(),
+        'permissions'         => [1,2,3],
+        'selected_categories' => [0],
+    ]);
 
     $pages = [
         1 => ['id' => 1],
@@ -316,384 +424,330 @@ it('skips tags with empty title in prepareTags', function () {
 
     $article->prepareTags($pages);
 
-    // Should not add tags when title is empty
     expect($pages[1])->not->toHaveKey('tags');
 });
 
 it('prepares tags with mocked Db', function () {
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('query')->andReturn('tag_result');
-    $dbMock->shouldReceive('fetch_assoc')->andReturn([
+    $selectMock = Mockery::mock(PortalSelect::class);
+    $selectMock->shouldReceive('from')->andReturnSelf();
+    $selectMock->shouldReceive('join')->andReturnSelf();
+    $selectMock->shouldReceive('where')->andReturnSelf();
+    $selectMock->shouldReceive('order')->andReturnSelf();
+    $selectMock->shouldReceive('from')->andReturnSelf();
+    $selectMock->shouldReceive('join')->andReturnSelf();
+    $selectMock->shouldReceive('where')->andReturnSelf();
+    $selectMock->shouldReceive('order')->andReturnSelf();
+    $selectMock->shouldReceive('from')->andReturnSelf();
+    $selectMock->shouldReceive('join')->andReturnSelf();
+    $selectMock->shouldReceive('where')->andReturnSelf();
+    $selectMock->shouldReceive('order')->andReturnSelf();
+
+    $resultMock = Mockery::mock(ResultInterface::class);
+    $resultMock->shouldReceive('current')->andReturn([
         'page_id' => 1,
-        'tag_id' => 1,
-        'slug' => 'test-tag',
-        'icon' => 'fas fa-tag',
-        'title' => 'Test Tag',
-    ], false);
-    $dbMock->shouldReceive('free_result');
+        'tag_id'  => 1,
+        'slug'    => 'test-tag',
+        'icon'    => 'fas fa-tag',
+        'title'   => 'Test Tag',
+    ]);
+    $resultMock->shouldReceive('valid')->andReturn(true, false);
+    $resultMock->shouldReceive('next')->andReturn(null);
+    $resultMock->shouldReceive('key')->andReturn(0);
+    $resultMock->shouldReceive('rewind')->andReturn(null);
 
-    $reflection = new \ReflectionClass('Bugo\Compat\Db');
-    $reflection->setStaticPropertyValue('db', $dbMock);
+    $portalSqlMock = Mockery::mock(PortalSqlInterface::class);
+    $portalSqlMock->shouldReceive('select')->andReturn($selectMock);
+    $portalSqlMock->shouldReceive('execute')->andReturn($resultMock);
+    $portalSqlMock->shouldReceive('execute')->andReturn($resultMock);
 
-    $article = new PageArticle();
+    Config::$modSettings['avatar_url'] = '';
 
     $pages = [
         1 => ['id' => 1],
         2 => ['id' => 2],
     ];
 
-    $article->prepareTags($pages);
+    $article  = new PageArticle($portalSqlMock);
+    $accessor = new ReflectionAccessor($article);
+    $accessor->setProtectedProperty('params', [
+        'lang'                => 'english',
+        'fallback_lang'       => 'english',
+        'status'              => 1,
+        'entry_type'          => 'page',
+        'current_time'        => time(),
+        'permissions'         => [1,2,3],
+        'selected_categories' => [0],
+    ]);
+    $accessor->callProtectedMethod('prepareTags', [&$pages]);
 
-    expect($pages[1])->toHaveKey('tags');
-    expect($pages[1]['tags'])->toBeArray();
+    expect($pages[1])->toHaveKey('tags')
+        ->and($pages[1]['tags'])->toBeArray();
 });
 
 it('returns section data', function () {
-    $article = new PageArticle();
-
-    $reflection = new \ReflectionMethod($article, 'getSectionData');
-    $reflection->setAccessible(true);
+    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
+    $accessor = new ReflectionAccessor($article);
 
     $row = [
-        'cat_icon' => 'fas fa-folder',
+        'cat_icon'    => 'fas fa-folder',
         'category_id' => 1,
-        'cat_title' => 'Test Category'
+        'cat_title'   => 'Test Category',
     ];
 
-    $result = $reflection->invoke($article, $row);
+    $result = $accessor->callProtectedMethod('getSectionData', [$row]);
 
-    expect($result)->toBeArray();
-    expect($result)->toHaveKey('icon');
-    expect($result)->toHaveKey('name');
-    expect($result)->toHaveKey('link');
-    expect($result['icon'])->toBe('<i class="fas fa-folder" aria-hidden="true"></i> ');
-    expect($result['name'])->toBe('Test Category');
+    expect($result)->toBeArray()
+        ->and($result)->toHaveKey('icon')
+        ->and($result)->toHaveKey('name')
+        ->and($result)->toHaveKey('link')
+        ->and($result['icon'])->toBe('<i class="fas fa-folder" aria-hidden="true"></i> ')
+        ->and($result['name'])->toBe('Test Category');
 });
 
 it('returns author data for page author', function () {
-    $article = new PageArticle();
-
-    // Set default sorting
-    $sortingProperty = new \ReflectionProperty($article, 'sorting');
-    $sortingProperty->setAccessible(true);
-    $sortingProperty->setValue($article, 'created;desc');
-
-    $reflection = new \ReflectionMethod($article, 'getAuthorData');
-    $reflection->setAccessible(true);
-
     $row = [
-        'author_id' => 123,
-        'author_name' => 'Test Author',
-        'num_comments' => 0,
-        'comment_author_id' => 0,
-        'comment_author_name' => ''
+        'author_id'           => 123,
+        'author_name'         => 'Test Author',
+        'num_comments'        => 0,
+        'comment_author_id'   => 0,
+        'comment_author_name' => '',
     ];
 
-    $result = $reflection->invoke($article, $row);
+    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
+    $accessor = new ReflectionAccessor($article);
+    $accessor->setProtectedProperty('sorting', 'created;desc');
+    $result = $accessor->callProtectedMethod('getAuthorData', [$row]);
 
-    expect($result)->toBeArray();
-    expect($result)->toHaveKey('id');
-    expect($result)->toHaveKey('link');
-    expect($result)->toHaveKey('name');
-    expect($result['id'])->toBe(123);
-    expect($result['name'])->toBe('Test Author');
+    expect($result)->toBeArray()
+        ->and($result)->toHaveKey('id')
+        ->and($result)->toHaveKey('link')
+        ->and($result)->toHaveKey('name')
+        ->and($result['id'])->toBe(123)
+        ->and($result['name'])->toBe('Test Author');
 });
 
 it('returns author data for comment author when sorting by last_comment', function () {
-    $article = new PageArticle();
-
-    // Set sorting to include last_comment
-    $sortingProperty = new \ReflectionProperty($article, 'sorting');
-    $sortingProperty->setAccessible(true);
-    $sortingProperty->setValue($article, 'last_comment;desc');
-
-    $reflection = new \ReflectionMethod($article, 'getAuthorData');
-    $reflection->setAccessible(true);
-
     $row = [
-        'author_id' => 123,
-        'author_name' => 'Page Author',
-        'comment_author_id' => 456,
+        'author_id'           => 123,
+        'author_name'         => 'Page Author',
+        'comment_author_id'   => 456,
         'comment_author_name' => 'Comment Author',
-        'num_comments' => 5
+        'num_comments'        => 5,
     ];
 
-    $result = $reflection->invoke($article, $row);
+    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
+    $accessor = new ReflectionAccessor($article);
+    $accessor->setProtectedProperty('sorting', 'last_comment;desc');
+    $result = $accessor->callProtectedMethod('getAuthorData', [$row]);
 
-    expect($result['id'])->toBe(456);
-    expect($result['name'])->toBe('Comment Author');
+    expect($result['id'])->toBe(456)
+        ->and($result['name'])->toBe('Comment Author');
 });
 
 it('returns date based on sorting type', function () {
-    $article = new PageArticle();
-
-    // Set default sorting first
-    $sortingProperty = new \ReflectionProperty($article, 'sorting');
-    $sortingProperty->setAccessible(true);
-    $sortingProperty->setValue($article, 'created;desc');
-
-    $reflection = new \ReflectionMethod($article, 'getDate');
-    $reflection->setAccessible(true);
-
-    // Test default (created_at)
     $row = [
-        'created_at' => 1000,
-        'date' => 2000,
-        'comment_date' => 3000
+        'created_at'   => 1000,
+        'date'         => 2000,
+        'comment_date' => 3000,
     ];
 
-    $result = $reflection->invoke($article, $row);
+    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
+    $accessor = new ReflectionAccessor($article);
+
+    $accessor->setProtectedProperty('sorting', 'created;desc');
+    $result = $accessor->callProtectedMethod('getDate', [$row]);
     expect($result)->toBe(1000);
 
-    // Test last_comment sorting
-    $sortingProperty->setValue($article, 'last_comment;desc');
-
-    $result = $reflection->invoke($article, $row);
+    $accessor->setProtectedProperty('sorting', 'last_comment;desc');
+    $result = $accessor->callProtectedMethod('getDate', [$row]);
     expect($result)->toBe(3000);
 
-    // Test updated sorting
-    $sortingProperty->setValue($article, 'updated;desc');
-    $result = $reflection->invoke($article, $row);
+    $accessor->setProtectedProperty('sorting', 'updated;desc');
+    $result = $accessor->callProtectedMethod('getDate', [$row]);
     expect($result)->toBe(2000);
 });
 
 it('returns views data', function () {
-    $article = new PageArticle();
+    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
+    $accessor = new ReflectionAccessor($article);
 
-    $reflection = new \ReflectionMethod($article, 'getViewsData');
-    $reflection->setAccessible(true);
+    $result = $accessor->callProtectedMethod('getViewsData', [['num_views' => 42]]);
 
-    $row = ['num_views' => 42];
-
-    $result = $reflection->invoke($article, $row);
-
-    expect($result)->toBeArray();
-    expect($result)->toHaveKey('num');
-    expect($result)->toHaveKey('title');
-    expect($result)->toHaveKey('after');
-    expect($result['num'])->toBe(42);
+    expect($result)->toBeArray()
+        ->and($result)->toHaveKey('num')
+        ->and($result)->toHaveKey('title')
+        ->and($result)->toHaveKey('after')
+        ->and($result['num'])->toBe(42);
 });
 
 it('returns replies data structure', function () {
-    $configReflection = new \ReflectionClass('Bugo\Compat\Config');
-    $configReflection->setStaticPropertyValue('modSettings', [
-        'lp_comment_block' => 'default'
-    ]);
+    Config::$modSettings['lp_comment_block'] = 'default';
 
-    $article = new PageArticle();
+    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
+    $accessor = new ReflectionAccessor($article);
 
-    $reflection = new \ReflectionMethod($article, 'getRepliesData');
-    $reflection->setAccessible(true);
+    $result = $accessor->callProtectedMethod('getRepliesData', [['num_comments' => 7]]);
 
-    $row = ['num_comments' => 7];
-
-    $result = $reflection->invoke($article, $row);
-
-    expect($result)->toBeArray();
-    expect($result)->toHaveKey('num');
-    expect($result)->toHaveKey('title');
-    expect($result)->toHaveKey('after');
-    expect($result['num'])->toBeInt();
+    expect($result)->toBeArray()
+        ->and($result)->toHaveKey('num')
+        ->and($result)->toHaveKey('title')
+        ->and($result)->toHaveKey('after')
+        ->and($result['num'])->toBeInt();
 });
 
 it('checks if page is new', function () {
-    $article = new PageArticle();
-
-    $reflection = new \ReflectionMethod($article, 'isNew');
-    $reflection->setAccessible(true);
-
-    // Mock User::$me
-    $userMock = Mockery::mock('Bugo\Compat\User');
-    $userReflection = new \ReflectionClass('Bugo\Compat\User');
-    $userReflection->setStaticPropertyValue('me', $userMock);
+    $userMock = Mockery::mock(User::class);
     $userMock->last_login = 500;
     $userMock->id = 1;
 
+    $accessorUser = new ReflectionAccessor($userMock);
+    $accessorUser->setProtectedProperty('me', $userMock);
+
     $row = [
-        'date' => 1000,
-        'author_id' => 2
+        'date'      => 1000,
+        'author_id' => 2,
     ];
 
-    $result = $reflection->invoke($article, $row);
+    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
+    $accessor = new ReflectionAccessor($article);
+
+    $result = $accessor->callProtectedMethod('isNew', [$row]);
     expect($result)->toBeTrue();
 
-    // Test when user is the author
     $row['author_id'] = 1;
-    $result = $reflection->invoke($article, $row);
+    $result = $accessor->callProtectedMethod('isNew', [$row]);
     expect($result)->toBeFalse();
 
-    // Test when page is older than last login
     $row['date'] = 400;
     $row['author_id'] = 2;
-    $result = $reflection->invoke($article, $row);
+    $result = $accessor->callProtectedMethod('isNew', [$row]);
     expect($result)->toBeFalse();
 });
 
 it('gets image from content', function () {
-    $article = new PageArticle();
+    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
 
-    $reflection = new \ReflectionMethod($article, 'getImage');
-    $reflection->setAccessible(true);
+    Config::$modSettings['lp_show_images_in_articles'] = 1;
+    Config::$modSettings['smileys_url'] = '';
 
-    // Mock Config::$modSettings
-    $configMock = Mockery::mock('Bugo\Compat\Config');
-    $configReflection = new \ReflectionClass('Bugo\Compat\Config');
-    $configReflection->setStaticPropertyValue('modSettings', ['lp_show_images_in_articles' => 1, 'smileys_url' => '']);
+    $row = ['content' => 'Some content with <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAB..." alt="test"> image'];
 
-    $row = ['content' => 'Some content with <img src="test.jpg"> image'];
+    $reflection = new ReflectionAccessor($article);
 
-    $result = $reflection->invoke($article, $row);
+    $result = $reflection->callProtectedMethod('getImage', [$row]);
     expect($result)->toBeString();
 
-    // Test when images are disabled
-    $configReflection->setStaticPropertyValue('modSettings', ['lp_show_images_in_articles' => 0, 'smileys_url' => '']);
-    $result = $reflection->invoke($article, $row);
+    Config::$modSettings['lp_show_images_in_articles'] = 0;
+    Config::$modSettings['smileys_url'] = '';
+
+    $result = $reflection->callProtectedMethod('getImage', [$row]);
     expect($result)->toBe('');
 });
 
 it('checks edit permissions structure', function () {
-    $article = new PageArticle();
+    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
 
-    $reflection = new \ReflectionMethod($article, 'canEdit');
-    $reflection->setAccessible(true);
-
-    // Mock User::$me with basic structure
-    $userMock = Mockery::mock('Bugo\Compat\User');
-    $userReflection = new \ReflectionClass('Bugo\Compat\User');
-    $userReflection->setStaticPropertyValue('me', $userMock);
-    $userMock->is_admin = true; // Set as admin to avoid permission checks
+    $userMock = Mockery::mock(User::class);
+    $userMock->is_admin = true;
     $userMock->id = 1;
 
-    $row = ['author_id' => 2];
+    $accessorUser = new ReflectionAccessor($userMock);
+    $accessorUser->setProtectedProperty('me', $userMock);
 
-    // Test as admin
-    $result = $reflection->invoke($article, $row);
+    $reflection = new ReflectionAccessor($article);
+    $result = $reflection->callProtectedMethod('canEdit', [['author_id' => 2]]);
+
     expect($result)->toBeTrue();
 });
 
 it('gets edit link', function () {
-    $article = new PageArticle();
+    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
 
-    $reflection = new \ReflectionMethod($article, 'getEditLink');
-    $reflection->setAccessible(true);
+    $reflection = new ReflectionAccessor($article);
+    $result = $reflection->callProtectedMethod('getEditLink', [['page_id' => 42]]);
 
-    $row = ['page_id' => 42];
-
-    $result = $reflection->invoke($article, $row);
-
-    expect($result)->toBeString();
-    expect($result)->toContain('action=admin;area=lp_pages;sa=edit;id=42');
+    expect($result)->toBeString()
+        ->and($result)->toContain('action=admin;area=lp_pages;sa=edit;id=42');
 });
 
 it('prepares teaser with last comment content', function () {
-    $article = new PageArticle();
+    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
 
-    // Set sorting to last_comment
-    $sortingProperty = new \ReflectionProperty($article, 'sorting');
-    $sortingProperty->setAccessible(true);
-    $sortingProperty->setValue($article, 'last_comment;desc');
+    $reflection = new ReflectionAccessor($article);
+    $reflection->setProtectedProperty('sorting', 'last_comment;desc');
 
-    $reflection = new \ReflectionMethod($article, 'prepareTeaser');
-    $reflection->setAccessible(true);
-
-    // Mock Config::$modSettings
-    $configMock = Mockery::mock('Bugo\Compat\Config');
-    $configReflection = new \ReflectionClass('Bugo\Compat\Config');
-    $configReflection->setStaticPropertyValue('modSettings', ['lp_show_teaser' => 1]);
+    Config::$modSettings['lp_show_teaser'] = 1;
 
     $page = [];
     $row = [
-        'description' => 'Test description',
-        'content' => 'Test content',
-        'num_comments' => 5, // Has comments
-        'comment_message' => 'Test comment message'
+        'description'     => 'Test description',
+        'content'         => 'Test content',
+        'num_comments'    => 5,
+        'comment_message' => 'Test comment message',
     ];
 
-    $reflection->invokeArgs($article, [&$page, $row]);
+    $accessor = new ReflectionAccessor($article);
+    $accessor->callProtectedMethod('prepareTeaser', [&$page, $row]);
+
     expect($page)->toHaveKey('teaser');
 });
 
 it('prepares teaser with description when available', function () {
-    $article = new PageArticle();
+    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
+    $accessor = new ReflectionAccessor($article);
+    $accessor->setProtectedProperty('sorting', 'created;desc');
 
-    // Set default sorting
-    $sortingProperty = new \ReflectionProperty($article, 'sorting');
-    $sortingProperty->setAccessible(true);
-    $sortingProperty->setValue($article, 'created;desc');
-
-    $reflection = new \ReflectionMethod($article, 'prepareTeaser');
-    $reflection->setAccessible(true);
-
-    // Mock Config::$modSettings
-    $configMock = Mockery::mock('Bugo\Compat\Config');
-    $configReflection = new \ReflectionClass('Bugo\Compat\Config');
-    $configReflection->setStaticPropertyValue('modSettings', ['lp_show_teaser' => 1]);
+    Config::$modSettings['lp_show_teaser'] = 1;
 
     $page = [];
     $row = [
-        'description' => 'Test description', // Has description
-        'content' => 'Test content',
-        'num_comments' => 0,
-        'comment_message' => ''
+        'description'     => 'Test description',
+        'content'         => 'Test content',
+        'num_comments'    => 0,
+        'comment_message' => '',
     ];
 
-    $reflection->invokeArgs($article, [&$page, $row]);
+    $accessor->callProtectedMethod('prepareTeaser', [&$page, $row]);
+
     expect($page)->toHaveKey('teaser');
 });
 
 it('prepares teaser with content when no description', function () {
-    $article = new PageArticle();
+    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
+    $accessor = new ReflectionAccessor($article);
+    $accessor->setProtectedProperty('sorting', 'created;desc');
 
-    // Set default sorting
-    $sortingProperty = new \ReflectionProperty($article, 'sorting');
-    $sortingProperty->setAccessible(true);
-    $sortingProperty->setValue($article, 'created;desc');
-
-    $reflection = new \ReflectionMethod($article, 'prepareTeaser');
-    $reflection->setAccessible(true);
-
-    // Mock Config::$modSettings
-    $configMock = Mockery::mock('Bugo\Compat\Config');
-    $configReflection = new \ReflectionClass('Bugo\Compat\Config');
-    $configReflection->setStaticPropertyValue('modSettings', ['lp_show_teaser' => 1]);
+    Config::$modSettings['lp_show_teaser'] = 1;
 
     $page = [];
     $row = [
-        'description' => '', // No description
-        'content' => 'Test content', // Use content
-        'num_comments' => 0,
-        'comment_message' => ''
+        'description'     => '',
+        'content'         => 'Test content',
+        'num_comments'    => 0,
+        'comment_message' => '',
     ];
 
-    $reflection->invokeArgs($article, [&$page, $row]);
+    $accessor->callProtectedMethod('prepareTeaser', [&$page, $row]);
+
     expect($page)->toHaveKey('teaser');
 });
 
 it('prepares teaser structure', function () {
-    // Mock Config::$modSettings
-    $configMock = Mockery::mock('Bugo\Compat\Config');
-    $configReflection = new \ReflectionClass('Bugo\Compat\Config');
-    $configReflection->setStaticPropertyValue('modSettings', ['lp_show_teaser' => 1]);
+    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
+    $accessor = new ReflectionAccessor($article);
+    $accessor->setProtectedProperty('sorting', 'created;desc');
 
-    $article = new PageArticle();
-
-    // Set default sorting first
-    $sortingProperty = new \ReflectionProperty($article, 'sorting');
-    $sortingProperty->setAccessible(true);
-    $sortingProperty->setValue($article, 'created;desc');
-
-    $reflection = new \ReflectionMethod($article, 'prepareTeaser');
-    $reflection->setAccessible(true);
+    Config::$modSettings['lp_show_teaser'] = 1;
 
     $page = [];
     $row = [
-        'description' => 'Test description',
-        'content' => 'Test content',
-        'num_comments' => 0,
-        'comment_message' => ''
+        'description'     => 'Test description',
+        'content'         => 'Test content',
+        'num_comments'    => 0,
+        'comment_message' => '',
     ];
 
-    // Test that the method doesn't crash and modifies the page array
-    $reflection->invokeArgs($article, [&$page, $row]);
+    $accessor->callProtectedMethod('prepareTeaser', [&$page, $row]);
+
     expect($page)->toBeArray();
 });

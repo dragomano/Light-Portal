@@ -12,11 +12,10 @@
 
 namespace Bugo\LightPortal\Hooks;
 
-use Bugo\Compat\Config;
-use Bugo\Compat\Db;
-use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Utils\Traits\HasCache;
+use Bugo\LightPortal\Utils\Traits\HasPortalSql;
+use Bugo\LightPortal\Utils\Traits\HasTranslationJoins;
 
 use const LP_CACHE_TIME;
 use const LP_PAGE_PARAM;
@@ -24,6 +23,8 @@ use const LP_PAGE_PARAM;
 class BuildRoute
 {
 	use HasCache;
+	use HasPortalSql;
+	use HasTranslationJoins;
 
 	private ?array $categories;
 
@@ -32,54 +33,46 @@ class BuildRoute
 	public function __construct()
 	{
 		if (($this->categories = $this->cache()->get('lp_sef_categories', LP_CACHE_TIME)) === null) {
-			$result = Db::$db->query(/** @lang text */ '
-				SELECT c.category_id, COALESCE(c.slug, t.title, tf.title) AS title
-				FROM {db_prefix}lp_categories AS c
-					LEFT JOIN {db_prefix}lp_translations AS t ON (
-						c.category_id = t.item_id AND t.type = {literal:category} AND t.lang = {string:lang}
-					)
-					LEFT JOIN {db_prefix}lp_translations AS tf ON (
-						c.category_id = tf.item_id AND tf.type = {literal:category} AND tf.lang = {string:fallback_lang}
-					)
-				ORDER BY c.category_id',
-				[
-					'lang'          => User::$me->language,
-					'fallback_lang' => Config::$language,
-				]
-			);
+			$select = $this->getPortalSql()->select()
+				->from(['c' => 'lp_categories'])
+				->columns(['category_id', 'slug'])
+				->order('c.category_id');
+
+			$this->addTranslationJoins($select, [
+				'primary' => 'c.category_id',
+				'entity'  => 'category',
+			]);
+
+			$result = $this->getPortalSql()->execute($select);
 
 			$this->categories[0] = urlencode('no-category');
-			while ($row = Db::$db->fetch_assoc($result)) {
-				$this->categories[$row['category_id']] = urlencode(Utils::$smcFunc['strtolower']($row['title']));
+			foreach ($result as $row) {
+				$this->categories[$row['category_id']] = empty($row['title'])
+					? $row['slug']
+					: urlencode(Utils::$smcFunc['strtolower']($row['title']));
 			}
-
-			Db::$db->free_result($result);
 
 			$this->cache()->put('lp_sef_categories', $this->categories, LP_CACHE_TIME);
 		}
 
 		if (($this->tags = $this->cache()->get('lp_sef_tags', LP_CACHE_TIME)) === null) {
-			$result = Db::$db->query(/** @lang text */ '
-				SELECT tag.tag_id, COALESCE(tag.slug, t.title, tf.title) AS title
-				FROM {db_prefix}lp_tags AS tag
-					LEFT JOIN {db_prefix}lp_translations AS t ON (
-						tag.tag_id = t.item_id AND t.type = {literal:tag} AND t.lang = {string:lang}
-					)
-					LEFT JOIN {db_prefix}lp_translations AS tf ON (
-						tag.tag_id = tf.item_id AND tf.type = {literal:tag} AND tf.lang = {string:fallback_lang}
-					)
-				ORDER BY tag.tag_id',
-				[
-					'lang'          => User::$me->language,
-					'fallback_lang' => Config::$language,
-				]
-			);
+			$select = $this->getPortalSql()->select()
+				->from(['tag' => 'lp_tags'])
+				->columns(['tag_id', 'slug'])
+				->order('tag.tag_id');
 
-			while ($row = Db::$db->fetch_assoc($result)) {
-				$this->tags[$row['tag_id']] = urlencode(Utils::$smcFunc['strtolower']($row['title']));
+			$this->addTranslationJoins($select, [
+				'primary' => 'tag.tag_id',
+				'entity'  => 'tag',
+			]);
+
+			$result = $this->getPortalSql()->execute($select);
+
+			foreach ($result as $row) {
+				$this->tags[$row['tag_id']] = empty($row['title'])
+					? $row['slug']
+					: urlencode(Utils::$smcFunc['strtolower']($row['title']));
 			}
-
-			Db::$db->free_result($result);
 
 			$this->cache()->put('lp_sef_tags', $this->tags, LP_CACHE_TIME);
 		}

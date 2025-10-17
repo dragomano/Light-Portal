@@ -12,16 +12,18 @@
 
 namespace Bugo\LightPortal\Repositories;
 
+use Laminas\Db\Sql\Predicate\Expression;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
 interface RepositoryInterface
 {
-	public function getData(int $item): array;
-
-	public function setData(int $item = 0): void;
-
-	public function remove(array $items): void;
-
 	public function toggleStatus(array $items = []): void;
+
+	public function getTranslationFilter(
+		string $tableAlias = 'p',
+		string $idField = 'page_id',
+		array $fields = ['title', 'content', 'description']
+	): Expression;
 }

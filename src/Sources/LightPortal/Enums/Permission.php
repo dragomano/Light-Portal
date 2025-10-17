@@ -12,8 +12,8 @@
 
 namespace Bugo\LightPortal\Enums;
 
-use Bugo\Compat\Db;
 use Bugo\Compat\User;
+use Bugo\LightPortal\Database\PortalSqlInterface;
 use Bugo\LightPortal\Enums\Traits\HasValues;
 use Bugo\LightPortal\Utils\CacheInterface;
 
@@ -76,16 +76,20 @@ enum Permission: int
 		$cache = app(CacheInterface::class);
 
 		return $cache->remember('board_moderators', function () {
-			$result = Db::$db->query(/** @lang text */ '
-				SELECT id_member
-				FROM {db_prefix}moderators'
-			);
+			$sql = app(PortalSqlInterface::class);
 
-			$items = Db::$db->fetch_all($result);
+			$select = $sql->select()
+				->from('moderators')
+				->columns(['id_member']);
 
-			Db::$db->free_result($result);
+			$result = $sql->execute($select);
 
-			return array_column($items, 'id_member');
+			$moderators = [];
+			foreach ($result as $row) {
+				$moderators[] = $row['id_member'];
+			}
+
+			return $moderators;
 		});
 	}
 }

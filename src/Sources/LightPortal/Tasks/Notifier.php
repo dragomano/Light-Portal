@@ -14,20 +14,29 @@ namespace Bugo\LightPortal\Tasks;
 
 use Bugo\Compat\Actions\Notify;
 use Bugo\Compat\Config;
-use Bugo\Compat\Db;
-use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Mail;
 use Bugo\Compat\Tasks\BackgroundTask;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Database\PortalSqlInterface;
 use Bugo\LightPortal\Enums\AlertAction;
 use Bugo\LightPortal\Enums\NotifyType;
-use ErrorException;
+
+use function Bugo\LightPortal\app;
 
 final class Notifier extends BackgroundTask
 {
+	private PortalSqlInterface $sql;
+
+	public function __construct(array $details)
+	{
+		parent::__construct($details);
+
+		$this->sql = app(PortalSqlInterface::class);
+	}
+
 	public function execute(): bool
 	{
 		$members = match ($this->_details['content_type']) {
@@ -107,7 +116,8 @@ final class Notifier extends BackgroundTask
 		}
 
 		if ($rows) {
-			$this->insertRows($rows);
+			$insert = $this->sql->insert('user_alerts')->batch($rows);
+			$this->sql->execute($insert);
 
 			User::updateMemberData($notifies['alert'], ['alerts' => '+']);
 		}
@@ -139,64 +149,36 @@ final class Notifier extends BackgroundTask
 			);
 
 			foreach ($recipients as $email) {
-				try {
-					Mail::send(
-						$email,
-						$emaildata['subject'],
-						$emaildata['body'],
-						null,
-						'page#' . $this->_details['content_id'],
-						$emaildata['is_html'],
-						2
-					);
-				} catch (ErrorException $e) {
-					ErrorHandler::log("[LP] notifications: {$e->getMessage()}", file: $e->getFile(), line: $e->getLine());
-				}
+				Mail::send(
+					$email,
+					$emaildata['subject'],
+					$emaildata['body'],
+					null,
+					'page#' . $this->_details['content_id'],
+					$emaildata['is_html'],
+					2
+				);
 			}
 		}
 	}
 
-	private function insertRows(array $rows): void
-	{
-		Db::$db->insert('',
-			'{db_prefix}user_alerts',
-			[
-				'alert_time'        => 'int',
-				'id_member'         => 'int',
-				'id_member_started' => 'int',
-				'member_name'       => 'string',
-				'content_type'      => 'string',
-				'content_id'        => 'int',
-				'content_action'    => 'string',
-				'is_read'           => 'int',
-				'extra'             => 'string'
-			],
-			$rows,
-			['id_alert']
-		);
-	}
-
 	private function getMemberEmails(array $notifies): array
 	{
-		$result = Db::$db->query('
-			SELECT id_member, lngfile, email_address
-			FROM {db_prefix}members
-			WHERE id_member IN ({array_int:members})',
-			[
-				'members' => $notifies['email'],
-			]
-		);
+		$select = $this->sql->select()
+			->from('members')
+			->columns(['id_member', 'lngfile', 'email_address'])
+			->where->in('id_member', $notifies['email']);
+
+		$result = $this->sql->execute($select);
 
 		$emails = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			if (empty($row['lngfile'])) {
 				$row['lngfile'] = Config::$language;
 			}
 
 			$emails[$row['lngfile']][$row['id_member']] = $row['email_address'];
 		}
-
-		Db::$db->free_result($result);
 
 		return $emails;
 	}

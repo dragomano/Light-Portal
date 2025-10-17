@@ -8,13 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 01.10.25
+ * @version 10.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\TopPages;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\Permission;
@@ -30,6 +29,7 @@ use Bugo\LightPortal\UI\Fields\RadioField;
 use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
+use Laminas\Db\Sql\Predicate\Expression;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -79,36 +79,36 @@ class TopPages extends Block
 		$type = Str::typed('string', $parameters['popularity_type'], default: 'comments');
 		$numPages = Str::typed('int', $parameters['num_pages'], default: 10);
 
-		$result = Db::$db->query('
-			SELECT p.page_id, p.slug, p.type, p.num_views, p.num_comments,
-				(
-					SELECT title
-					FROM {db_prefix}lp_translations
-					WHERE item_id = p.page_id
-						AND type = {literal:page}
-						AND lang IN ({string:lang}, {string:fallback_lang})
-					ORDER BY lang = {string:lang} DESC
-					LIMIT 1
-				) AS page_title
-			FROM {db_prefix}lp_pages AS p
-			WHERE p.status = {int:status}
-				AND p.deleted_at = 0
-				AND p.created_at <= {int:current_time}
-				AND p.permissions IN ({array_int:permissions})
-			ORDER BY ' . ($type === 'comments' ? 'p.num_comments' : 'p.num_views') . ' DESC
-			LIMIT {int:limit}',
-			[
-				'lang'          => User::$me->language,
-				'fallback_lang' => Config::$language,
-				'status'        => Status::ACTIVE->value,
-				'current_time'  => time(),
-				'permissions'   => Permission::all(),
-				'limit'         => $numPages,
-			]
-		);
+		$subQuery = $this->sql->select()
+			->from('lp_translations')
+			->columns(['title'])
+			->where([
+				'item_id = p.page_id',
+				'type = ?' => 'page',
+				new Expression('lang IN (?, ?)', [User::$me->language, Config::$language]),
+			])
+			->order(new Expression('lang = ? DESC', [User::$me->language]))
+			->limit(1);
+
+		$select = $this->sql->select()
+			->from(['p' => 'lp_pages'])
+			->columns([
+				'page_id', 'slug', 'type', 'num_views', 'num_comments',
+				'page_title' => $subQuery,
+			])
+			->where([
+				'status'          => Status::ACTIVE->value,
+				'deleted_at'      => 0,
+				'created_at <= ?' => time(),
+				'permissions'     => Permission::all(),
+			])
+			->order('p.num_' . $type . ' DESC')
+			->limit($numPages);
+
+		$result = $this->sql->execute($select);
 
 		$pages = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			if (Setting::isFrontpage($row['slug']))
 				continue;
 
@@ -121,8 +121,6 @@ class TopPages extends Block
 				'title'        => $row['page_title'],
 			];
 		}
-
-		Db::$db->free_result($result);
 
 		return $pages;
 	}
@@ -165,7 +163,7 @@ class TopPages extends Block
 						? $page['num_' . $type]
 						: Lang::getTxt('lp_' . $type . '_set', [$type => $page['num_' . $type]]);
 
-					$dd->addHtml(Str::html('span', $countText));
+					$dd->addHtml(Str::html('span', (string) $countText));
 
 					$dl->addHtml($dt);
 					$dl->addHtml($dd);

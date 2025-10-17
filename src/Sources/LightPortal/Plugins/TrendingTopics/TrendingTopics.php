@@ -8,13 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 04.10.25
+ * @version 10.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\TrendingTopics;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Tab;
@@ -29,6 +28,8 @@ use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\DateTime;
 use Bugo\LightPortal\Utils\ParamWrapper;
 use Bugo\LightPortal\Utils\Str;
+use Laminas\Db\Sql\Predicate\Expression;
+use Laminas\Db\Sql\Select;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -87,43 +88,52 @@ class TrendingTopics extends Block
 	public function getData(ParamWrapper $parameters): array
 	{
 		$timePeriod = Str::typed('string', $parameters['time_period'], default: $this->timePeriod[1]);
-		$numTopics = Str::typed('int', $parameters['num_topics'], default: 10);
+		$numTopics  = Str::typed('int', $parameters['num_topics'], default: 10);
 
 		if (empty($numTopics))
 			return [];
 
-		$result = Db::$db->query('
-			SELECT DISTINCT t.id_topic, t.id_member_started, t.num_replies,
-				COALESCE(mem.real_name, mf.poster_name) AS poster_name, mf.subject,
-				ml.id_msg, ml.poster_time
-			FROM {db_prefix}topics t
-				INNER JOIN {db_prefix}messages AS ml ON (ml.id_msg = t.id_last_msg)
-				INNER JOIN {db_prefix}messages AS mf ON (mf.id_msg = t.id_first_msg)
-				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = t.id_member_started)
-			WHERE ml.poster_time >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL {raw:period}))
-			ORDER BY t.num_replies DESC
-			LIMIT {int:limit}',
-			[
-				'period' => strtoupper($timePeriod),
-				'limit'  => $numTopics,
-			]
-		);
+		$interval = strtoupper($timePeriod);
+
+		$select = $this->sql->select()
+			->quantifier(Select::QUANTIFIER_DISTINCT)
+			->from(['t' => 'topics'])
+			->columns(['id_topic', 'id_member_started', 'num_replies'])
+			->join(
+				['ml' => 'messages'],
+				't.id_last_msg = ml.id_msg',
+				['id_msg', 'poster_time']
+			)
+			->join(
+				['mf' => 'messages'],
+				't.id_first_msg = mf.id_msg',
+				['subject']
+			)
+			->join(
+				['mem' => 'members'],
+				'mem.id_member = t.id_member_started',
+				['poster_name' => new Expression('COALESCE(mem.real_name, mf.poster_name)')],
+				Select::JOIN_LEFT
+			)
+			->where(new Expression("ml.poster_time >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL $interval))"))
+			->order('t.num_replies DESC')
+			->limit($numTopics);
+
+		$result = $this->sql->execute($select);
 
 		$topics = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			$topics[$row['id_topic']] = [
 				'subject'     => $row['subject'],
-				'id_msg'      => (int) $row['id_msg'],
-				'poster_time' => DateTime::relative((int) $row['poster_time']),
-				'num_replies' => (int) $row['num_replies'],
+				'id_msg'      => $row['id_msg'],
+				'poster_time' => DateTime::relative($row['poster_time']),
+				'num_replies' => $row['num_replies'],
 				'poster'      => [
-					'id'   => (int) $row['id_member_started'],
+					'id'   => $row['id_member_started'],
 					'name' => $row['poster_name'],
 				],
 			];
 		}
-
-		Db::$db->free_result($result);
 
 		return $parameters['show_avatars'] ? Avatar::getWithItems($topics, 'poster') : $topics;
 	}

@@ -84,13 +84,13 @@
 		</strings>
 		<strings name="app_service_classes">
 			<value>AssetHandler::class</value>
+			<value>BasicConfig::class</value>
 			<value>Block::class</value>
 			<value>BlockArea::class</value>
 			<value>BlockExport::class</value>
 			<value>BlockFactory::class</value>
 			<value>BlockImport::class</value>
 			<value>BlockList::class</value>
-			<value>BlockRepository::class</value>
 			<value>BlockRepositoryInterface::class</value>
 			<value>BlockValidator::class</value>
 			<value>BoardArticle::class</value>
@@ -99,7 +99,6 @@
 			<value>BreadcrumbPresenter::class</value>
 			<value>BreadcrumbRenderer::class</value>
 			<value>BreadcrumbWrapper::class</value>
-			<value>Cache::class</value>
 			<value>CacheInterface::class</value>
 			<value>CardListInterface::class</value>
 			<value>Category::class</value>
@@ -108,22 +107,21 @@
 			<value>CategoryFactory::class</value>
 			<value>CategoryImport::class</value>
 			<value>CategoryList::class</value>
-			<value>CategoryRepository::class</value>
 			<value>CategoryRepositoryInterface::class</value>
 			<value>CategoryValidator::class</value>
 			<value>ChosenPageArticle::class</value>
 			<value>ChosenTopicArticle::class</value>
 			<value>Comment::class</value>
-			<value>CommentRepository::class</value>
+			<value>CommentRepositoryInterface::class</value>
 			<value>ConfigArea::class</value>
 			<value>ConfigHandler::class</value>
 			<value>CreditArea::class</value>
-			<value>Database::class</value>
-			<value>DatabaseInterface::class</value>
 			<value>ErrorHandler::class</value>
 			<value>ErrorHandlerInterface::class</value>
 			<value>EventManager::class</value>
 			<value>EventManagerFactory::class</value>
+			<value>ExtraConfig::class</value>
+			<value>FeedbackConfig::class</value>
 			<value>File::class</value>
 			<value>FileInterface::class</value>
 			<value>Filesystem::class</value>
@@ -134,6 +132,8 @@
 			<value>IconList::class</value>
 			<value>Integration::class</value>
 			<value>LangHandler::class</value>
+			<value>MiscConfig::class</value>
+			<value>Notifier::class</value>
 			<value>Page::class</value>
 			<value>PageArea::class</value>
 			<value>PageArticle::class</value>
@@ -141,27 +141,28 @@
 			<value>PageFactory::class</value>
 			<value>PageImport::class</value>
 			<value>PageList::class</value>
-			<value>PageRepository::class</value>
+			<value>PageListRepositoryInterface::class</value>
 			<value>PageRepositoryInterface::class</value>
 			<value>PageValidator::class</value>
+			<value>PanelConfig::class</value>
 			<value>PluginArea::class</value>
 			<value>PluginExport::class</value>
 			<value>PluginHandler::class</value>
 			<value>PluginImport::class</value>
 			<value>PluginList::class</value>
-			<value>PluginRepository::class</value>
 			<value>PluginRepositoryInterface::class</value>
 			<value>PortalApp::class</value>
+			<value>PortalSqlInterface::class</value>
 			<value>Post::class</value>
 			<value>PostInterface::class</value>
 			<value>RendererInterface::class</value>
-			<value>RepositoryInterface::class</value>
 			<value>Request::class</value>
 			<value>RequestInterface::class</value>
 			<value>Response::class</value>
+			<value>SelectRenderer::class</value>
 			<value>Session::class</value>
 			<value>SessionManager::class</value>
-			<value>TablePresenter::class</value>
+			<value>TablePresenterInterface::class</value>
 			<value>TableRenderer::class</value>
 			<value>Tag::class</value>
 			<value>TagArea::class</value>
@@ -169,10 +170,10 @@
 			<value>TagFactory::class</value>
 			<value>TagImport::class</value>
 			<value>TagList::class</value>
-			<value>TagRepository::class</value>
 			<value>TagRepositoryInterface::class</value>
 			<value>TagValidator::class</value>
 			<value>TopicArticle::class</value>
+			<value>View::class</value>
 			<value>Weaver::class</value>
 		</strings>
 	</collections>

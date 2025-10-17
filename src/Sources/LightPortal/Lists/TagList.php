@@ -14,7 +14,6 @@
 
 namespace Bugo\LightPortal\Lists;
 
-use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Repositories\TagRepositoryInterface;
 
 if (! defined('SMF'))
@@ -30,10 +29,7 @@ readonly class TagList implements ListInterface
 			0,
 			$this->repository->getTotalCount(),
 			'title',
-			'AND tag.status = {int:status}' . $this->repository->getTranslationFilter(
-				'tag', 'tag_id', ['title']
-			),
-			['status' => Status::ACTIVE->value]
+			'list'
 		);
 	}
 }

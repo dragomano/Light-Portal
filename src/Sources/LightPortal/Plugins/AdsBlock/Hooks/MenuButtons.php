@@ -8,19 +8,20 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 24.09.25
+ * @version 11.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\AdsBlock\Hooks;
 
-use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Plugins\AdsBlock\Placement;
+use Bugo\LightPortal\Utils\Traits\HasPortalSql;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 
 class MenuButtons
 {
+	use HasPortalSql;
 	use HasRequest;
 
 	public function __invoke(): void
@@ -173,14 +174,10 @@ class MenuButtons
 
 	private function disableBlock(int $item): void
 	{
-		Db::$db->query('
-			UPDATE {db_prefix}lp_blocks
-			SET status = {int:status}
-			WHERE block_id = {int:item}',
-			[
-				'status' => 0,
-				'item'   => $item,
-			]
-		);
+		$update = $this->getPortalSql()->update('lp_blocks')
+			->set(['status' => 0])
+			->where(['block_id' => $item]);
+
+		$this->getPortalSql()->execute($update);
 	}
 }

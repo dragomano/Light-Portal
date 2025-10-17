@@ -14,13 +14,13 @@ namespace Bugo\LightPortal\Repositories;
 
 interface TagRepositoryInterface extends RepositoryInterface
 {
-	public function getAll(int $start, int $limit, string $sort): array;
+	public function getAll(
+		int $start,
+		int $limit,
+		string $sort,
+       string $filter = '',
+		array $whereConditions = []
+	): array;
 
-	public function getTotalCount(): int;
-
-	public function getData(int $item): array;
-
-	public function setData(int $item = 0): void;
-
-	public function remove(array $items): void;
+	public function getTotalCount(string $filter = '', array $whereConditions = []): int;
 }

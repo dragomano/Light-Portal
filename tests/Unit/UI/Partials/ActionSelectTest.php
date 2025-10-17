@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\LightPortal\UI\Partials\ActionSelect;
+use Tests\ReflectionAccessor;
 
 beforeEach(function () {
     Config::$modSettings['lp_disabled_actions'] = 'action1,action2';
@@ -51,7 +52,7 @@ it('returns data with labels and values', function ($setting, $expected_data) {
     expect($data)->toBe($expected_data);
 })->with('data scenarios for labels');
 
-it('config includes value from data', function ($setting, $expected_data, $expected_value) {
+it('checks that config includes value from data', function ($setting, $expected_data, $expected_value) {
     Config::$modSettings['lp_disabled_actions'] = $setting;
 
     $select = new ActionSelect();
@@ -60,7 +61,7 @@ it('config includes value from data', function ($setting, $expected_data, $expec
     expect($config['value'])->toBe($expected_value);
 })->with('data scenarios');
 
-it('config with custom params overrides defaults', function () {
+it('checks that config with custom params overrides defaults', function () {
     $params = ['id' => 'custom_actions', 'multiple' => false];
     $select = new ActionSelect($params);
 
@@ -90,11 +91,9 @@ it('initializes with custom parameter', function ($param, $value) {
     expect($config[$param])->toBe($value);
 })->with('custom params');
 
-it('template is virtual_select', function () {
-    $select = new ActionSelect();
+it('checks that the template is virtual_select', function () {
+    $select = new ReflectionAccessor(new ActionSelect());
+    $property = $select->getProtectedProperty('template');
 
-    $reflection = new ReflectionClass($select);
-    $property = $reflection->getProperty('template');
-
-    expect($property->getValue($select))->toBe('virtual_select');
+    expect($property)->toBe('virtual_select');
 });

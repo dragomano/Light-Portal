@@ -13,57 +13,112 @@
 namespace Bugo\LightPortal\Repositories;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Db;
+use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
 use Bugo\LightPortal\Enums\NotifyType;
 use Bugo\LightPortal\Utils\Avatar;
 use Bugo\LightPortal\Utils\Setting;
+use Exception;
+use Laminas\Db\Sql\Predicate\Expression;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class CommentRepository
+final class CommentRepository extends AbstractRepository implements CommentRepositoryInterface
 {
+	protected string $entity = 'comment';
+
 	public function getAll(): array
 	{
 		return $this->getByPageId();
 	}
 
+	public function getData(int $item): array
+	{
+		if ($item === 0)
+			return [];
+
+		$select = $this->sql->select()
+			->from(['com' => 'lp_comments'])
+			->join(
+				['mem' => 'members'],
+				'com.author_id = mem.id_member',
+				['author_name' => 'real_name']
+			)
+			->where(['com.id = ?' => $item]);
+
+		$this->addParamJoins($select, [
+			'primary' => 'com.id',
+			'entity'  => $this->entity,
+		]);
+
+		$result = $this->sql->execute($select);
+
+		foreach ($result as $row) {
+			Lang::censorText($row['message']);
+
+			$data ??= [
+				'id'         => $row['id'],
+				'page_id'    => $row['page_id'],
+				'parent_id'  => $row['parent_id'],
+				'message'    => htmlspecialchars_decode($row['message']),
+				'created_at' => $row['created_at'],
+				'can_edit'   => $this->isCanEdit($row['created_at']),
+				'poster'     => [
+					'id'     => $row['author_id'],
+					'name'   => $row['author_name'],
+					'avatar' => Avatar::get($row['author_id']),
+				],
+			];
+
+			if (isset($row['name'])) {
+				$data['params'][$row['name']] = $row['value'];
+			}
+		}
+
+		return $data ?? [];
+	}
+
 	public function getByPageId(int $id = 0): array
 	{
 		$sorts = [
-			'com.created_at',
-			'com.created_at DESC',
+			'created_at',
+			'created_at DESC',
 		];
 
-		$result = Db::$db->query(/** @lang text */ '
-			SELECT com.id, com.parent_id, com.page_id, com.author_id, com.message, com.created_at,
-				mem.real_name AS author_name, par.name, par.value
-			FROM {db_prefix}lp_comments AS com
-				INNER JOIN {db_prefix}members AS mem ON (com.author_id = mem.id_member)
-				LEFT JOIN {db_prefix}lp_params AS par ON (
-					com.id = par.item_id AND par.type = {literal:comment}
-				)' . ($id ? '
-			WHERE com.page_id = {int:id}' : '') . '
-			ORDER BY ' . $sorts[Config::$modSettings['lp_comment_sorting'] ?? 0],
-			[
-				'id' => $id,
-			]
-		);
+		$select = $this->sql->select()
+			->from(['com' => 'lp_comments'])
+			->join(
+				['mem' => 'members'],
+				'com.author_id = mem.id_member',
+				['author_name' => 'real_name']
+			)
+			->order($sorts[Config::$modSettings['lp_comment_sorting'] ?? 0]);
+
+		if ($id > 0) {
+			$select->where(['com.page_id = ?' => $id]);
+		}
+
+		$this->addParamJoins($select, [
+			'primary' => 'com.id',
+			'entity'  => $this->entity,
+		]);
+
+		$result = $this->sql->execute($select);
 
 		$comments = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			Lang::censorText($row['message']);
 
 			$comments[$row['id']] = [
-				'id'         => (int) $row['id'],
-				'page_id'    => (int) $row['page_id'],
-				'parent_id'  => (int) $row['parent_id'],
+				'id'         => $row['id'],
+				'page_id'    => $row['page_id'],
+				'parent_id'  => $row['parent_id'],
 				'message'    => htmlspecialchars_decode($row['message']),
-				'created_at' => (int) $row['created_at'],
-				'can_edit'   => $this->isCanEdit((int) $row['created_at']),
+				'created_at' => $row['created_at'],
+				'can_edit'   => $this->isCanEdit($row['created_at']),
 				'poster'     => [
-					'id'   => (int) $row['author_id'],
+					'id'   => $row['author_id'],
 					'name' => $row['author_name'],
 				],
 			];
@@ -73,160 +128,118 @@ final class CommentRepository
 			}
 		}
 
-		Db::$db->free_result($result);
-
 		return Avatar::getWithItems($comments, 'poster');
 	}
 
 	public function save(array $data): int
 	{
-		$item = Db::$db->insert('',
-			'{db_prefix}lp_comments',
-			[
-				'parent_id'  => 'int',
-				'page_id'    => 'int',
-				'author_id'  => 'int',
-				'message'    => 'string-65534',
-				'created_at' => 'int',
-			],
-			$data,
-			['id', 'page_id'],
-			1
-		);
+		$insert = $this->sql->insert('lp_comments')
+			->values([
+				'parent_id'  => $data['parent_id'],
+				'page_id'    => $data['page_id'],
+				'author_id'  => $data['author_id'],
+				'message'    => $data['message'],
+				'created_at' => $data['created_at'],
+			]);
 
-		return (int) $item;
+		$result = $this->sql->execute($insert);
+
+		return (int) $result->getGeneratedValue();
 	}
 
 	public function update(array $data): void
 	{
-		Db::$db->query('
-			UPDATE {db_prefix}lp_comments
-			SET message = {string:message}
-			WHERE id = {int:id}
-				AND author_id = {int:user}',
-			$data
-		);
+		$update = $this->sql->update('lp_comments')
+			->set(['message' => $data['message']])
+			->where([
+				'id = ?'        => $data['id'],
+				'author_id = ?' => $data['user']
+			]);
+
+		$this->sql->execute($update);
 	}
 
-	public function remove(int $item, string $pageSlug): array
+	public function remove(array $items): void
 	{
-		$result = Db::$db->query('
-			SELECT id
-			FROM {db_prefix}lp_comments
-			WHERE id = {int:item}
-				OR parent_id = {int:item}',
-			[
-				'item' => $item,
-			]
-		);
-
-		$items = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
-			$items[] = (int) $row['id'];
-		}
-
-		Db::$db->free_result($result);
-
-		if ($items === []) {
-			return [];
-		}
-
-		Db::$db->query('
-			DELETE FROM {db_prefix}lp_comments
-			WHERE id IN ({array_int:items})',
-			[
-				'items' => $items,
-			]
-		);
-
-		Db::$db->query('
-			UPDATE {db_prefix}lp_pages
-			SET num_comments = CASE
-				WHEN num_comments < {int:num_items} THEN 0
-				ELSE num_comments - {int:num_items}
-				END
-			WHERE slug = {string:slug}',
-			[
-				'num_items' => count($items),
-				'slug'      => $pageSlug,
-			]
-		);
-
-		Db::$db->query('
-			DELETE FROM {db_prefix}lp_params
-			WHERE item_id IN ({array_int:items})
-				AND type = {literal:comment}',
-			[
-				'items' => $items,
-			]
-		);
-
-		Db::$db->query('
-			DELETE FROM {db_prefix}user_alerts
-			WHERE content_type = {string:type}
-				AND content_id IN ({array_int:items})',
-			[
-				'type'  => NotifyType::NEW_COMMENT->name(),
-				'items' => $items,
-			]
-		);
-
-		Db::$db->query('
-			UPDATE {db_prefix}lp_pages
-			SET last_comment_id = (
-				SELECT COALESCE(MAX(com.id), 0)
-				FROM {db_prefix}lp_comments AS com
-					LEFT JOIN {db_prefix}lp_pages AS p ON (p.page_id = com.page_id)
-				WHERE p.slug = {string:slug}
-			)
-			WHERE slug = {string:slug}',
-			[
-				'slug' => $pageSlug,
-			]
-		);
-
-		return $items;
-	}
-
-	public function removeFromResult(object|bool $result): void
-	{
-		$comments = Db::$db->fetch_all($result);
-		$comments = array_column($comments, 'id');
-
-		Db::$db->free_result($result);
-
-		if ($comments === [])
+		if ($items === [])
 			return;
 
-		Db::$db->query('
-			DELETE FROM {db_prefix}lp_comments
-			WHERE id IN ({array_int:items})',
-			[
-				'items' => $comments,
-			]
-		);
+		$select = $this->sql->select('lp_comments')->columns(['id', 'page_id']);
+		$select->where->in('id', $items)->or->in('parent_id', $items);
+		$result = $this->sql->execute($select);
 
-		Db::$db->query('
-			DELETE FROM {db_prefix}lp_params
-			WHERE item_id IN ({array_int:items})
-				AND type = {literal:comment}',
-			[
-				'items' => $comments,
-			]
-		);
+		$allItems = $pageIds = [];
+		foreach ($result as $row) {
+			$allItems[] = $row['id'];
+			$pageIds[] = $row['page_id'];
+		}
+
+		if ($allItems === [])
+			return;
+
+		$pageIds = array_unique($pageIds);
+
+		try {
+			$this->transaction->begin();
+
+			$deleteComments = $this->sql->delete('lp_comments');
+			$deleteComments->where->in('id', $allItems);
+			$this->sql->execute($deleteComments);
+
+			foreach ($pageIds as $pageId) {
+				$update = $this->sql->update('lp_pages')
+					->set([
+						'num_comments' => new Expression(
+							'CASE WHEN num_comments < ? THEN 0 ELSE num_comments - ? END',
+							[count($allItems), count($allItems)]
+						)
+					])
+					->where(['page_id = ?' => $pageId]);
+				$this->sql->execute($update);
+
+				$subSelect = $this->sql->select()
+					->from(['com' => 'lp_comments'])
+					->columns([new Expression('COALESCE(MAX(com.id), 0)')])
+					->where(['com.page_id = ?' => $pageId]);
+
+				$updateLast = $this->sql->update('lp_pages')
+					->set(['last_comment_id' => $subSelect])
+					->where(['page_id = ?' => $pageId]);
+				$this->sql->execute($updateLast);
+			}
+
+			$deleteParams = $this->sql->delete('lp_params');
+			$deleteParams->where->in('item_id', $allItems);
+			$deleteParams->where->equalTo('type', $this->entity);
+			$this->sql->execute($deleteParams);
+
+			$deleteAlerts = $this->sql->delete('user_alerts');
+			$deleteAlerts->where([
+				'content_type = ?' => NotifyType::NEW_COMMENT->name(),
+			]);
+			$deleteAlerts->where->in('content_id', $allItems);
+			$this->sql->execute($deleteAlerts);
+
+			$this->transaction->commit();
+
+			$this->response()->exit(['success' => true, 'items' => $allItems]);
+		} catch (Exception $e) {
+			$this->transaction->rollback();
+
+			ErrorHandler::fatal($e->getMessage(), false);
+		}
 	}
 
 	public function updateLastCommentId(int $item, int $pageId): void
 	{
-		Db::$db->query('
-			UPDATE {db_prefix}lp_pages
-			SET num_comments = num_comments + 1, last_comment_id = {int:item}
-			WHERE page_id = {int:page_id}',
-			[
-				'item'    => $item,
-				'page_id' => $pageId,
-			]
-		);
+		$update = $this->sql->update('lp_pages')
+			->set([
+				'num_comments'    => new Expression('num_comments + 1'),
+				'last_comment_id' => $item,
+			])
+			->where(['page_id = ?' => $pageId]);
+
+		$this->sql->execute($update);
 	}
 
 	private function isCanEdit(int $date): bool

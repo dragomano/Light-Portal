@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 use Bugo\LightPortal\DataHandlers\Traits\HasSlug;
 
-if (! defined('LP_ALIAS_PATTERN')) {
-    define('LP_ALIAS_PATTERN', '^[a-z][a-z0-9\-]+$');
-}
-
 beforeEach(function () {
     $this->testClass = new class {
         use HasSlug;
@@ -39,8 +35,8 @@ beforeEach(function () {
                         $translations[$index]['content'] = $content;
                     } else {
                         $translations[] = [
-                            'lang' => $lang,
-                            'title' => '',
+                            'lang'    => $lang,
+                            'title'   => '',
                             'content' => $content,
                         ];
                     }
@@ -56,9 +52,9 @@ beforeEach(function () {
                         $translations[$index]['description'] = $description;
                     } else {
                         $translations[] = [
-                            'lang' => $lang,
-                            'title' => '',
-                            'description' => $description,
+                            'lang'        => $lang,
+                            'title'       => '',
+                            'description' =>  $description,
                         ];
                     }
 
@@ -114,21 +110,6 @@ beforeEach(function () {
             return $slug;
         }
 
-        public function getPrefixForEntity(bool $full = false): string
-        {
-            return $full ? 'page' : 'page-';
-        }
-
-        public function getShortPrefix(): string
-        {
-            return 'page';
-        }
-
-        public function generateShortId(): string
-        {
-            return substr((string) time(), -6);
-        }
-
         public function callInitializeSlugAndTranslations($item, int $entityId, array &$titles): string
         {
             return $this->initializeSlugAndTranslations($item, $entityId, $titles);
@@ -143,7 +124,7 @@ beforeEach(function () {
 
 it('initializes slug and translations with provided slug', function () {
     $item = (object) [
-        'slug' => 'test-page',
+        'slug'   => 'test-page',
         'titles' => [
             'english' => 'Test Page',
             'russian' => 'Тестовая страница',
@@ -163,7 +144,7 @@ it('initializes slug and translations with provided slug', function () {
 
 it('generates temp slug when slug is empty', function () {
     $item = (object) [
-        'slug' => '',
+        'slug'   => '',
         'titles' => [
             'english' => 'Test Page',
         ],
@@ -180,7 +161,7 @@ it('generates temp slug when slug is empty', function () {
 
 it('handles null slug correctly', function () {
     $item = (object) [
-        'slug' => null,
+        'slug'   => null,
         'titles' => [
             'english' => 'Test Page',
         ],
@@ -246,7 +227,7 @@ it('processes multiple translation fields', function () {
 
 it('handles unicode characters in translations', function () {
     $item = (object) [
-        'slug' => 'unicode-test',
+        'slug'   => 'unicode-test',
         'titles' => [
             'russian' => 'Страница с юникодом: 中文 русский עברית',
             'chinese' => '中文页面',
@@ -263,7 +244,7 @@ it('handles unicode characters in translations', function () {
 
 it('handles emoji in translations', function () {
     $item = (object) [
-        'slug' => 'emoji-test',
+        'slug'   => 'emoji-test',
         'titles' => [
             'english' => 'Page with emoji 🚀 🌟',
         ],
@@ -279,14 +260,14 @@ it('handles emoji in translations', function () {
 it('updates slugs for items with temp prefix', function () {
     $items = [
         [
-            'id' => 1,
-            'slug' => 'temp-1',
-            'title' => 'Test Page 1',
+            'id'    => 1,
+            'slug'  => 'temp-1',
+            'title' =>  'Test Page 1',
         ],
         [
-            'id' => 2,
-            'slug' => 'temp-2',
-            'title' => 'Test Page 2',
+            'id'    => 2,
+            'slug'  => 'temp-2',
+            'title' =>  'Test Page 2',
         ],
     ];
 
@@ -304,14 +285,14 @@ it('updates slugs for items with temp prefix', function () {
 it('leaves non-temp slugs unchanged', function () {
     $items = [
         [
-            'id' => 1,
-            'slug' => 'existing-slug',
-            'title' => 'Test Page 1',
+            'id'    => 1,
+            'slug'  => 'existing-slug',
+            'title' =>  'Test Page 1',
         ],
         [
-            'id' => 2,
-            'slug' => 'temp-2',
-            'title' => 'Test Page 2',
+            'id'    => 2,
+            'slug'  => 'temp-2',
+            'title' =>  'Test Page 2',
         ],
     ];
 
@@ -329,13 +310,13 @@ it('leaves non-temp slugs unchanged', function () {
 it('handles missing titles gracefully', function () {
     $items = [
         [
-            'id' => 1,
-            'slug' => 'temp-1',
-            'title' => 'Test Page 1',
+            'id'    => 1,
+            'slug'  => 'temp-1',
+            'title' =>  'Test Page 1',
         ],
     ];
 
-    $titles = []; // Нет переводов
+    $titles = []; // No translations available
 
     $this->testClass->callUpdateSlugs($items, $titles, 'id');
 
@@ -345,13 +326,13 @@ it('handles missing titles gracefully', function () {
 it('handles empty titles array', function () {
     $items = [
         [
-            'id' => 1,
-            'slug' => 'temp-1',
-            'title' => '',
+            'id'    => 1,
+            'slug'  => 'temp-1',
+            'title' =>  '',
         ],
     ];
 
-    $titles = [1 => []]; // Пустой массив переводов
+    $titles = [1 => []];
 
     $this->testClass->callUpdateSlugs($items, $titles, 'id');
 
@@ -362,13 +343,13 @@ it('processes multiple items with different id keys', function () {
     $items = [
         [
             'page_id' => 1,
-            'slug' => 'temp-1',
-            'title' => 'Test Page 1',
+            'slug'    => 'temp-1',
+            'title'   => 'Test Page 1',
         ],
         [
             'page_id' => 2,
-            'slug' => 'temp-2',
-            'title' => 'Test Page 2',
+            'slug'    => 'temp-2',
+            'title'   => 'Test Page 2',
         ],
     ];
 
@@ -386,9 +367,9 @@ it('processes multiple items with different id keys', function () {
 it('handles unicode titles in slug generation', function () {
     $items = [
         [
-            'id' => 1,
-            'slug' => 'temp-1',
-            'title' => 'Страница с unicode 中文 русский',
+            'id'    => 1,
+            'slug'  => 'temp-1',
+            'title' =>  'Страница с unicode 中文 русский',
         ],
     ];
 
@@ -404,9 +385,9 @@ it('handles unicode titles in slug generation', function () {
 it('handles emoji in titles', function () {
     $items = [
         [
-            'id' => 1,
-            'slug' => 'temp-1',
-            'title' => 'Page with emoji 🚀 🌟',
+            'id'    => 1,
+            'slug'  => 'temp-1',
+            'title' =>  'Page with emoji 🚀 🌟',
         ],
     ];
 
@@ -422,9 +403,9 @@ it('handles emoji in titles', function () {
 it('handles special characters in titles', function () {
     $items = [
         [
-            'id' => 1,
-            'slug' => 'temp-1',
-            'title' => 'Page with special chars: éñünicôdé!',
+            'id'    => 1,
+            'slug'  => 'temp-1',
+            'title' =>  'Page with special chars: éñünicôdé!',
         ],
     ];
 
@@ -440,9 +421,9 @@ it('handles special characters in titles', function () {
 it('handles multilingual titles with priority', function () {
     $items = [
         [
-            'id' => 1,
-            'slug' => 'temp-1',
-            'title' => 'Test Page',
+            'id'    => 1,
+            'slug'  => 'temp-1',
+            'title' =>  'Test Page',
         ],
     ];
 
@@ -450,7 +431,7 @@ it('handles multilingual titles with priority', function () {
         1 => [
             'english' => 'English Title',
             'russian' => 'Русское название',
-            'german' => 'Deutscher Titel',
+            'german'  => 'Deutscher Titel',
         ],
     ];
 
@@ -464,9 +445,9 @@ it('handles very long titles', function () {
 
     $items = [
         [
-            'id' => 1,
-            'slug' => 'temp-1',
-            'title' => $longTitle,
+            'id'    => 1,
+            'slug'  => 'temp-1',
+            'title' =>  $longTitle,
         ],
     ];
 
@@ -483,9 +464,9 @@ it('handles very long titles', function () {
 it('handles titles with numbers and mixed case', function () {
     $items = [
         [
-            'id' => 1,
-            'slug' => 'temp-1',
-            'title' => 'Page 123 Test CASE',
+            'id'    => 1,
+            'slug'  => 'temp-1',
+            'title' =>  'Page 123 Test CASE',
         ],
     ];
 
@@ -510,19 +491,19 @@ it('handles empty items array', function () {
 it('handles items with mixed temp and non-temp slugs', function () {
     $items = [
         [
-            'id' => 1,
-            'slug' => 'existing-slug',
-            'title' => 'Existing Page',
+            'id'    => 1,
+            'slug'  => 'existing-slug',
+            'title' =>  'Existing Page',
         ],
         [
-            'id' => 2,
-            'slug' => 'temp-2',
-            'title' => 'Temp Page',
+            'id'    => 2,
+            'slug'  => 'temp-2',
+            'title' =>  'Temp Page',
         ],
         [
-            'id' => 3,
-            'slug' => 'another-existing',
-            'title' => 'Another Page',
+            'id'    => 3,
+            'slug'  => 'another-existing',
+            'title' =>  'Another Page',
         ],
     ];
 

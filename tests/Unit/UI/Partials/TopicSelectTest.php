@@ -2,22 +2,19 @@
 
 declare(strict_types=1);
 
-use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\LightPortal\UI\Partials\TopicSelect;
 use Bugo\LightPortal\UI\Partials\SelectInterface;
 use Bugo\LightPortal\UI\Partials\SelectRenderer;
+use Bugo\LightPortal\Database\PortalSqlInterface;
+use Bugo\LightPortal\Database\Operations\PortalSelect;
+use Laminas\Db\Adapter\Driver\ResultInterface;
 use Tests\AppMockRegistry;
+use Tests\ReflectionAccessor;
 
 beforeEach(function () {
     Lang::$txt['lp_frontpage_topics_select'] = 'Select topics';
     Lang::$txt['lp_frontpage_topics_no_items'] = 'No topics';
-
-    $mockResult = Mockery::mock();
-    Db::$db = Mockery::mock();
-    Db::$db->shouldReceive('query')->andReturn($mockResult);
-    Db::$db->shouldReceive('fetch_assoc')->with($mockResult)->andReturn(['id_topic' => 1, 'subject' => 'Topic 1'], null);
-    Db::$db->shouldReceive('free_result')->with($mockResult);
 });
 
 it('implements SelectInterface', function () {
@@ -151,11 +148,166 @@ it('handles empty params', function () {
     expect($select->getParams())->toBeArray();
 });
 
-it('template is set correctly', function () {
-    $select = new TopicSelect();
+it('correctly sets the template', function () {
+    $select = new ReflectionAccessor(new TopicSelect());
 
-    $reflection = new ReflectionClass($select);
-    $property = $reflection->getProperty('template');
+	$property = $select->getProtectedProperty('template');
 
-    expect($property->getValue($select))->toBe('topic_select');
+	expect($property)->toBe('topic_select');
+});
+
+it('returns empty array for empty topics', function () {
+	$select = new TopicSelect(['value' => []]);
+
+	$data = $select->getData();
+
+	expect($data)->toBeArray()
+		->and($data)->toBeEmpty();
+});
+
+it('returns empty array for null topics', function () {
+	$select = new TopicSelect(['value' => null]);
+
+	$data = $select->getData();
+
+	expect($data)->toBeArray()
+		->and($data)->toBeEmpty();
+});
+
+it('builds correct SQL query for topics with board permissions', function () {
+	$sqlMock = Mockery::mock(PortalSqlInterface::class);
+	$selectMock = Mockery::mock(PortalSelect::class);
+	$resultMock = Mockery::mock(ResultInterface::class);
+
+	$sqlMock->shouldReceive('select')->andReturn($selectMock);
+	$sqlMock->shouldReceive('execute')->andReturn($resultMock);
+	$selectMock->shouldReceive('from')->with(['t' => 'topics'])->andReturn($selectMock);
+	$selectMock->shouldReceive('columns')->with(['id_topic'])->andReturn($selectMock);
+	$selectMock
+        ->shouldReceive('join')
+        ->with(['m' => 'messages'], 'm.id_msg = t.id_first_msg', ['subject'])
+        ->andReturn($selectMock);
+	$selectMock->shouldReceive('where')->andReturn($selectMock);
+
+	$resultMock->shouldReceive('rewind')->andReturn(null);
+	$resultMock->shouldReceive('current')->andReturn(false);
+	$resultMock->shouldReceive('next')->andReturn(null);
+	$resultMock->shouldReceive('valid')->andReturn(false);
+
+	AppMockRegistry::set(PortalSqlInterface::class, $sqlMock);
+
+	$select = new TopicSelect(['value' => ['1', '2']]);
+	$data = $select->getData();
+
+	expect($data)->toBeArray();
+});
+
+it('builds correct SQL query for topics without board permissions', function () {
+	$sqlMock = Mockery::mock(PortalSqlInterface::class);
+	$selectMock = Mockery::mock(PortalSelect::class);
+	$resultMock = Mockery::mock(ResultInterface::class);
+
+	$sqlMock->shouldReceive('select')->andReturn($selectMock);
+	$sqlMock->shouldReceive('execute')->andReturn($resultMock);
+	$selectMock->shouldReceive('from')->with(['t' => 'topics'])->andReturn($selectMock);
+	$selectMock->shouldReceive('columns')->with(['id_topic'])->andReturn($selectMock);
+	$selectMock
+        ->shouldReceive('join')
+        ->with(['m' => 'messages'], 'm.id_msg = t.id_first_msg', ['subject'])
+        ->andReturn($selectMock);
+	$selectMock->shouldReceive('where')->andReturn($selectMock);
+
+	$resultMock->shouldReceive('rewind')->andReturn(null);
+	$resultMock->shouldReceive('current')->andReturn(false);
+	$resultMock->shouldReceive('next')->andReturn(null);
+	$resultMock->shouldReceive('valid')->andReturn(false);
+
+	AppMockRegistry::set(PortalSqlInterface::class, $sqlMock);
+
+	$select = new TopicSelect(['value' => ['1', '2']]);
+	$data = $select->getData();
+
+	expect($data)->toBeArray();
+});
+
+it('processes topic results with text censoring', function () {
+	$testSubject = 'Test Topic Subject';
+
+	$sqlMock = Mockery::mock(PortalSqlInterface::class);
+	$selectMock = Mockery::mock(PortalSelect::class);
+	$resultMock = Mockery::mock(ResultInterface::class);
+
+	$topics = [
+		['id_topic' => 1, 'subject' => $testSubject],
+	];
+
+	$sqlMock->shouldReceive('select')->andReturn($selectMock);
+	$sqlMock->shouldReceive('execute')->andReturn($resultMock);
+	$selectMock->shouldReceive('from')->andReturn($selectMock);
+	$selectMock->shouldReceive('columns')->andReturn($selectMock);
+	$selectMock->shouldReceive('join')->andReturn($selectMock);
+	$selectMock->shouldReceive('where')->andReturn($selectMock);
+
+	$resultMock->shouldReceive('rewind')->andReturn(null);
+	$resultMock->shouldReceive('current')->andReturn(
+		$topics[0],
+		false
+	);
+	$resultMock->shouldReceive('next')->andReturn(null);
+	$resultMock->shouldReceive('valid')->andReturn(
+		true,
+		false
+	);
+
+	AppMockRegistry::set(PortalSqlInterface::class, $sqlMock);
+
+	$select = new TopicSelect(['value' => ['1']]);
+	$data = $select->getData();
+
+	expect($data)->toBeArray()
+		->and($data)->toHaveCount(1)
+		->and($data[0])->toHaveKey('label', $testSubject)
+		->and($data[0])->toHaveKey('value', 1);
+});
+
+it('handles database errors gracefully', function () {
+	$sqlMock = Mockery::mock(PortalSqlInterface::class);
+	$selectMock = Mockery::mock(PortalSelect::class);
+
+	$sqlMock->shouldReceive('select')->andReturn($selectMock);
+	$sqlMock->shouldReceive('execute')->andThrow(new Exception('Database error'));
+	$selectMock->shouldReceive('from')->andReturn($selectMock);
+	$selectMock->shouldReceive('columns')->andReturn($selectMock);
+	$selectMock->shouldReceive('join')->andReturn($selectMock);
+	$selectMock->shouldReceive('where')->andReturn($selectMock);
+
+	AppMockRegistry::set(PortalSqlInterface::class, $sqlMock);
+
+	$select = new TopicSelect(['value' => ['1', '2']]);
+
+	expect(fn() => $select->getData())->toThrow(Exception::class, 'Database error');
+});
+
+it('normalizes string values to array', function () {
+    $select = new ReflectionAccessor(new TopicSelect(['value' => '1,2,3']));
+
+	$result = $select->callProtectedMethod('normalizeValue', ['1,2,3']);
+
+	expect($result)->toBe(['1', '2', '3']);
+});
+
+it('normalizes array values', function () {
+    $select = new ReflectionAccessor(new TopicSelect(['value' => ['1', '2', '3']]));
+
+	$result = $select->callProtectedMethod('normalizeValue', [['1', '2', '3']]);
+
+	expect($result)->toBe(['1', '2', '3']);
+});
+
+it('filters empty values in normalization', function () {
+    $select = new ReflectionAccessor(new TopicSelect(['value' => ['0', '1', '', '2', null, '3']]));
+
+	$result = $select->callProtectedMethod('normalizeValue', [['0', '1', '', '2', null, '3']]);
+
+	expect($result)->toBe(['0', '1', '2', '', '3']);
 });

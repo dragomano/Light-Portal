@@ -8,6 +8,7 @@ use Bugo\LightPortal\UI\Partials\AreaSelect;
 use Bugo\LightPortal\UI\Partials\SelectInterface;
 use Bugo\LightPortal\UI\Partials\SelectRenderer;
 use Tests\AppMockRegistry;
+use Tests\ReflectionAccessor;
 
 beforeEach(function () {
     Lang::$txt['lp_block_areas_subtext'] = 'Select areas';
@@ -149,11 +150,9 @@ it('renders to string', function () {
 });
 
 
-it('template is set correctly', function () {
-    $select = new AreaSelect();
+it('correctly sets the template', function () {
+    $select = new ReflectionAccessor(new AreaSelect());
+    $property = $select->getProtectedProperty('template');
 
-    $reflection = new ReflectionClass($select);
-    $property = $reflection->getProperty('template');
-
-    expect($property->getValue($select))->toBe('virtual_select');
+    expect($property)->toBe('virtual_select');
 });

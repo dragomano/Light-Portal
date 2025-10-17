@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\DataHandlers\Traits\CanInsertDataTrait;
+use Bugo\LightPortal\DataHandlers\Traits\HasInserts;
 use Bugo\LightPortal\DataHandlers\Traits\HasComments;
 
 beforeEach(function () {
     $this->testClass = new class {
         use HasComments;
-        use CanInsertDataTrait;
+        use HasInserts;
 
-        public mixed $db;
+        public mixed $sql;
 
-        public function __construct($db = null)
+        public function __construct($sql = null)
         {
-            $this->db = $db;
+            $this->sql = $sql;
         }
 
         public function callReplaceComments(array $comments, array $results): array
@@ -59,20 +59,24 @@ it('returns empty array when both arrays are empty', function () {
 });
 
 it('processes single comment correctly', function () {
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('insert')
-        ->with('replace', '{db_prefix}lp_comments', [
-            'id' => 'int',
-            'parent_id' => 'int',
-            'page_id' => 'int',
-            'author_id' => 'int',
-            'message' => 'string',
-            'created_at' => 'int',
-        ], Mockery::any(), ['id', 'page_id'], 2)
-        ->once()
-        ->andReturn([1]);
+    $sqlMock = Mockery::mock();
+    $sqlMock->shouldReceive('replace')
+        ->with('lp_comments')
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('setConflictKeys')
+        ->with(['id', 'page_id'])
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('batch')
+        ->andReturnSelf()
+        ->byDefault();
 
-    $this->testClass = new (get_class($this->testClass))($dbMock);
+    $resultMock = Mockery::mock();
+    $resultMock->shouldReceive('getAffectedRows')->andReturn(1);
+    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
+
+    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
+
+    $this->testClass = new (get_class($this->testClass))($sqlMock);
 
     $comments = [
         [
@@ -92,20 +96,24 @@ it('processes single comment correctly', function () {
 });
 
 it('processes multiple comments correctly', function () {
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('insert')
-        ->with('replace', '{db_prefix}lp_comments', [
-            'id' => 'int',
-            'parent_id' => 'int',
-            'page_id' => 'int',
-            'author_id' => 'int',
-            'message' => 'string',
-            'created_at' => 'int',
-        ], Mockery::any(), ['id', 'page_id'], 2)
-        ->once()
-        ->andReturn([1, 2, 3]);
+    $sqlMock = Mockery::mock();
+    $sqlMock->shouldReceive('replace')
+        ->with('lp_comments')
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('setConflictKeys')
+        ->with(['id', 'page_id'])
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('batch')
+        ->andReturnSelf()
+        ->byDefault();
 
-    $this->testClass = new (get_class($this->testClass))($dbMock);
+    $resultMock = Mockery::mock();
+    $resultMock->shouldReceive('getAffectedRows')->andReturn(3);
+    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
+
+    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
+
+    $this->testClass = new (get_class($this->testClass))($sqlMock);
 
     $comments = [
         [
@@ -139,20 +147,24 @@ it('processes multiple comments correctly', function () {
 });
 
 it('handles comments with parent_id correctly', function () {
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('insert')
-        ->with('replace', '{db_prefix}lp_comments', [
-            'id' => 'int',
-            'parent_id' => 'int',
-            'page_id' => 'int',
-            'author_id' => 'int',
-            'message' => 'string',
-            'created_at' => 'int',
-        ], Mockery::any(), ['id', 'page_id'], 2)
-        ->once()
-        ->andReturn([1, 2]);
+    $sqlMock = Mockery::mock();
+    $sqlMock->shouldReceive('replace')
+        ->with('lp_comments')
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('setConflictKeys')
+        ->with(['id', 'page_id'])
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('batch')
+        ->andReturnSelf()
+        ->byDefault();
 
-    $this->testClass = new (get_class($this->testClass))($dbMock);
+    $resultMock = Mockery::mock();
+    $resultMock->shouldReceive('getAffectedRows')->andReturn(2);
+    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
+
+    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
+
+    $this->testClass = new (get_class($this->testClass))($sqlMock);
 
     $comments = [
         [
@@ -181,20 +193,24 @@ it('handles comments with parent_id correctly', function () {
 });
 
 it('handles comments with different page_id correctly', function () {
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('insert')
-        ->with('replace', '{db_prefix}lp_comments', [
-            'id' => 'int',
-            'parent_id' => 'int',
-            'page_id' => 'int',
-            'author_id' => 'int',
-            'message' => 'string',
-            'created_at' => 'int',
-        ], Mockery::any(), ['id', 'page_id'], 2)
-        ->once()
-        ->andReturn([1, 2]);
+    $sqlMock = Mockery::mock();
+    $sqlMock->shouldReceive('replace')
+        ->with('lp_comments')
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('setConflictKeys')
+        ->with(['id', 'page_id'])
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('batch')
+        ->andReturnSelf()
+        ->byDefault();
 
-    $this->testClass = new (get_class($this->testClass))($dbMock);
+    $resultMock = Mockery::mock();
+    $resultMock->shouldReceive('getAffectedRows')->andReturn(2);
+    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
+
+    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
+
+    $this->testClass = new (get_class($this->testClass))($sqlMock);
 
     $comments = [
         [
@@ -221,20 +237,24 @@ it('handles comments with different page_id correctly', function () {
 });
 
 it('handles comments with special characters in message', function () {
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('insert')
-        ->with('replace', '{db_prefix}lp_comments', [
-            'id' => 'int',
-            'parent_id' => 'int',
-            'page_id' => 'int',
-            'author_id' => 'int',
-            'message' => 'string',
-            'created_at' => 'int',
-        ], Mockery::any(), ['id', 'page_id'], 2)
-        ->once()
-        ->andReturn([1]);
+    $sqlMock = Mockery::mock();
+    $sqlMock->shouldReceive('replace')
+        ->with('lp_comments')
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('setConflictKeys')
+        ->with(['id', 'page_id'])
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('batch')
+        ->andReturnSelf()
+        ->byDefault();
 
-    $this->testClass = new (get_class($this->testClass))($dbMock);
+    $resultMock = Mockery::mock();
+    $resultMock->shouldReceive('getAffectedRows')->andReturn(1);
+    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
+
+    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
+
+    $this->testClass = new (get_class($this->testClass))($sqlMock);
 
     $comments = [
         [
@@ -254,20 +274,24 @@ it('handles comments with special characters in message', function () {
 });
 
 it('handles comments with minimum required fields', function () {
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('insert')
-        ->with('replace', '{db_prefix}lp_comments', [
-            'id' => 'int',
-            'parent_id' => 'int',
-            'page_id' => 'int',
-            'author_id' => 'int',
-            'message' => 'string',
-            'created_at' => 'int',
-        ], Mockery::any(), ['id', 'page_id'], 2)
-        ->once()
-        ->andReturn([1]);
+    $sqlMock = Mockery::mock();
+    $sqlMock->shouldReceive('replace')
+        ->with('lp_comments')
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('setConflictKeys')
+        ->with(['id', 'page_id'])
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('batch')
+        ->andReturnSelf()
+        ->byDefault();
 
-    $this->testClass = new (get_class($this->testClass))($dbMock);
+    $resultMock = Mockery::mock();
+    $resultMock->shouldReceive('getAffectedRows')->andReturn(1);
+    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
+
+    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
+
+    $this->testClass = new (get_class($this->testClass))($sqlMock);
 
     $comments = [
         [
@@ -287,20 +311,24 @@ it('handles comments with minimum required fields', function () {
 });
 
 it('handles comments with zero values correctly', function () {
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('insert')
-        ->with('replace', '{db_prefix}lp_comments', [
-            'id' => 'int',
-            'parent_id' => 'int',
-            'page_id' => 'int',
-            'author_id' => 'int',
-            'message' => 'string',
-            'created_at' => 'int',
-        ], Mockery::any(), ['id', 'page_id'], 2)
-        ->once()
-        ->andReturn([1]);
+    $sqlMock = Mockery::mock();
+    $sqlMock->shouldReceive('replace')
+        ->with('lp_comments')
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('setConflictKeys')
+        ->with(['id', 'page_id'])
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('batch')
+        ->andReturnSelf()
+        ->byDefault();
 
-    $this->testClass = new (get_class($this->testClass))($dbMock);
+    $resultMock = Mockery::mock();
+    $resultMock->shouldReceive('getAffectedRows')->andReturn(1);
+    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
+
+    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
+
+    $this->testClass = new (get_class($this->testClass))($sqlMock);
 
     $comments = [
         [
@@ -321,13 +349,24 @@ it('handles comments with zero values correctly', function () {
 });
 
 it('uses correct table name lp_comments', function () {
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('insert')
-        ->with('replace', '{db_prefix}lp_comments', Mockery::any(), Mockery::any(), ['id', 'page_id'], 2)
-        ->once()
-        ->andReturn([1]);
+    $sqlMock = Mockery::mock();
+    $sqlMock->shouldReceive('replace')
+        ->with('lp_comments')
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('setConflictKeys')
+        ->with(['id', 'page_id'])
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('batch')
+        ->andReturnSelf()
+        ->byDefault();
 
-    $this->testClass = new (get_class($this->testClass))($dbMock);
+    $resultMock = Mockery::mock();
+    $resultMock->shouldReceive('getAffectedRows')->andReturn(1);
+    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
+
+    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
+
+    $this->testClass = new (get_class($this->testClass))($sqlMock);
 
     $comments = [
         [
@@ -347,20 +386,24 @@ it('uses correct table name lp_comments', function () {
 });
 
 it('uses correct column types for comments', function () {
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('insert')
-        ->with('replace', '{db_prefix}lp_comments', [
-            'id' => 'int',
-            'parent_id' => 'int',
-            'page_id' => 'int',
-            'author_id' => 'int',
-            'message' => 'string',
-            'created_at' => 'int',
-        ], Mockery::any(), ['id', 'page_id'], 2)
-        ->once()
-        ->andReturn([1]);
+    $sqlMock = Mockery::mock();
+    $sqlMock->shouldReceive('replace')
+        ->with('lp_comments')
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('setConflictKeys')
+        ->with(['id', 'page_id'])
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('batch')
+        ->andReturnSelf()
+        ->byDefault();
 
-    $this->testClass = new (get_class($this->testClass))($dbMock);
+    $resultMock = Mockery::mock();
+    $resultMock->shouldReceive('getAffectedRows')->andReturn(1);
+    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
+
+    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
+
+    $this->testClass = new (get_class($this->testClass))($sqlMock);
 
     $comments = [
         [
@@ -380,13 +423,23 @@ it('uses correct column types for comments', function () {
 });
 
 it('uses correct keys for comments', function () {
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('insert')
-        ->with('replace', Mockery::any(), Mockery::any(), Mockery::any(), ['id', 'page_id'], 2)
-        ->once()
-        ->andReturn([1]);
+    $sqlMock = Mockery::mock();
+    $sqlMock->shouldReceive('replace')
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('setConflictKeys')
+        ->with(['id', 'page_id'])
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('batch')
+        ->andReturnSelf()
+        ->byDefault();
 
-    $this->testClass = new (get_class($this->testClass))($dbMock);
+    $resultMock = Mockery::mock();
+    $resultMock->shouldReceive('getAffectedRows')->andReturn(1);
+    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
+
+    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
+
+    $this->testClass = new (get_class($this->testClass))($sqlMock);
 
     $comments = [
         [
@@ -406,20 +459,24 @@ it('uses correct keys for comments', function () {
 });
 
 it('handles empty message correctly', function () {
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('insert')
-        ->with('replace', '{db_prefix}lp_comments', [
-            'id' => 'int',
-            'parent_id' => 'int',
-            'page_id' => 'int',
-            'author_id' => 'int',
-            'message' => 'string',
-            'created_at' => 'int',
-        ], Mockery::any(), ['id', 'page_id'], 2)
-        ->once()
-        ->andReturn([1]);
+    $sqlMock = Mockery::mock();
+    $sqlMock->shouldReceive('replace')
+        ->with('lp_comments')
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('setConflictKeys')
+        ->with(['id', 'page_id'])
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('batch')
+        ->andReturnSelf()
+        ->byDefault();
 
-    $this->testClass = new (get_class($this->testClass))($dbMock);
+    $resultMock = Mockery::mock();
+    $resultMock->shouldReceive('getAffectedRows')->andReturn(1);
+    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
+
+    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
+
+    $this->testClass = new (get_class($this->testClass))($sqlMock);
 
     $comments = [
         [
@@ -439,20 +496,24 @@ it('handles empty message correctly', function () {
 });
 
 it('handles very long message correctly', function () {
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('insert')
-        ->with('replace', '{db_prefix}lp_comments', [
-            'id' => 'int',
-            'parent_id' => 'int',
-            'page_id' => 'int',
-            'author_id' => 'int',
-            'message' => 'string',
-            'created_at' => 'int',
-        ], Mockery::any(), ['id', 'page_id'], 2)
-        ->once()
-        ->andReturn([1]);
+    $sqlMock = Mockery::mock();
+    $sqlMock->shouldReceive('replace')
+        ->with('lp_comments')
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('setConflictKeys')
+        ->with(['id', 'page_id'])
+        ->andReturnSelf();
+    $sqlMock->shouldReceive('batch')
+        ->andReturnSelf()
+        ->byDefault();
 
-    $this->testClass = new (get_class($this->testClass))($dbMock);
+    $resultMock = Mockery::mock();
+    $resultMock->shouldReceive('getAffectedRows')->andReturn(1);
+    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
+
+    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
+
+    $this->testClass = new (get_class($this->testClass))($sqlMock);
 
     $longMessage = str_repeat('This is a very long comment message. ', 100);
 

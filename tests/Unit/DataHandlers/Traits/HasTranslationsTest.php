@@ -2,44 +2,58 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\DataHandlers\Traits\CanInsertDataTrait;
+use Bugo\LightPortal\Database\Operations\PortalInsert;
+use Bugo\LightPortal\Database\Operations\PortalReplace;
+use Bugo\LightPortal\Database\Operations\PortalUpdate;
+use Bugo\LightPortal\Database\PortalSql;
+use Laminas\Db\Adapter\Driver\ResultInterface;
+use Bugo\LightPortal\DataHandlers\Traits\HasInserts;
 use Bugo\LightPortal\DataHandlers\Traits\HasTranslations;
 
 beforeEach(function () {
-    $this->testClass = new class {
+    $this->sql = Mockery::mock(PortalSql::class)->shouldIgnoreMissing();
+
+    $this->portalReplaceMock = Mockery::mock(PortalReplace::class)->shouldIgnoreMissing();
+    $this->portalReplaceMock->shouldReceive('setConflictKeys')->andReturnSelf();
+    $this->portalReplaceMock->shouldReceive('batch')->andReturnSelf();
+
+    $this->portalInsertMock = Mockery::mock(PortalInsert::class)->shouldIgnoreMissing();
+    $this->portalInsertMock->shouldReceive('setConflictKeys')->andReturnSelf();
+    $this->portalInsertMock->shouldReceive('batch')->andReturnSelf();
+
+    $this->resultMock = Mockery::mock(ResultInterface::class);
+
+    $this->updateMock = new PortalUpdate(null, '');
+
+    $this->sql->shouldReceive('replace')->andReturn($this->portalReplaceMock);
+    $this->sql->shouldReceive('insert')->andReturn($this->portalInsertMock);
+    $this->sql->shouldReceive('update')->andReturn($this->updateMock);
+    $this->sql->shouldReceive('query')->andReturn(true);
+
+    $this->testClass = new class ($this->sql) {
         use HasTranslations;
-        use CanInsertDataTrait;
+        use HasInserts;
 
         public string $entity = 'test_entity';
 
-        public mixed $db;
+        public mixed $sql;
 
-        public function __construct($db = null)
+        public function __construct($sql = null)
         {
-            $this->db = $db;
+            $this->sql = $sql;
         }
 
-        public function callReplaceTranslations(array $translations, array $results, string $method = 'replace'): array
+        public function callReplaceTranslations(array $translations, array $results, bool $replace = true): array
         {
-            return $this->replaceTranslations($translations, $results, $method);
+            return $this->replaceTranslations($translations, $results, $replace);
         }
     };
 });
 
 it('processes translations with replace method', function () {
-    // Mock Db
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('insert')
-        ->with('replace', '{db_prefix}lp_translations', Mockery::any(), Mockery::any(), ['item_id', 'type', 'lang'], 2)
-        ->once()
-        ->andReturn([1]);
-
-    $dbMock->shouldReceive('query')
-        ->with(Mockery::any(), Mockery::any())
-        ->once()
-        ->andReturn(true);
-
-    $this->testClass = new (get_class($this->testClass))($dbMock);
+    $this->resultMock->shouldReceive('getAffectedRows')->andReturn(1);
+    $this->resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
+    $this->sql->shouldReceive('execute')->andReturn($this->resultMock);
 
     $translations = [
         'english' => [
@@ -60,19 +74,10 @@ it('processes translations with replace method', function () {
 });
 
 it('processes translations with insert method', function () {
-    // Mock Db
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('insert')
-        ->with('insert', '{db_prefix}lp_translations', Mockery::any(), Mockery::any(), ['id'], 2)
-        ->once()
-        ->andReturn([1]);
+    $this->resultMock->shouldReceive('getAffectedRows')->andReturn(1);
+    $this->resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
+    $this->sql->shouldReceive('execute')->andReturn($this->resultMock);
 
-    $dbMock->shouldReceive('query')
-        ->with(Mockery::any(), Mockery::any())
-        ->once()
-        ->andReturn(true);
-
-    $this->testClass = new (get_class($this->testClass))($dbMock);
 
     $translations = [
         [
@@ -87,23 +92,16 @@ it('processes translations with insert method', function () {
 
     $results = [1];
 
-    $result = $this->testClass->callReplaceTranslations($translations, $results, 'insert');
+    $result = $this->testClass->callReplaceTranslations($translations, $results, false);
 
     expect($result)->toBe($results);
 });
 
 it('handles database insert errors (insertData returns false)', function () {
-    // Mock Db
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('insert')
-        ->with('replace', '{db_prefix}lp_translations', Mockery::any(), Mockery::any(), ['item_id', 'type', 'lang'], 2)
-        ->once()
-        ->andReturn(null);
+    $this->resultMock->shouldReceive('getAffectedRows')->andReturn(0);
+    $this->sql->shouldReceive('execute')->andReturn($this->resultMock);
 
-    // UPDATE query should not be called when insert fails
-    $dbMock->shouldNotReceive('query');
-
-    $this->testClass = new (get_class($this->testClass))($dbMock);
+    $this->sql->shouldNotReceive('execute');
 
     $translations = [
         [
@@ -118,26 +116,16 @@ it('handles database insert errors (insertData returns false)', function () {
 
     $results = [1];
 
-    // When insertData returns false, the method returns empty array
     $result = $this->testClass->callReplaceTranslations($translations, $results);
 
     expect($result)->toBe([]);
 });
 
 it('handles NULL values in translation fields', function () {
-    // Mock Db
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('insert')
-        ->with('replace', '{db_prefix}lp_translations', Mockery::any(), Mockery::any(), ['item_id', 'type', 'lang'], 2)
-        ->once()
-        ->andReturn([1]);
+    $this->resultMock->shouldReceive('getAffectedRows')->andReturn(1);
+    $this->resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
+    $this->sql->shouldReceive('execute')->andReturn($this->resultMock);
 
-    $dbMock->shouldReceive('query')
-        ->with(Mockery::any(), Mockery::any())
-        ->once()
-        ->andReturn(true);
-
-    $this->testClass = new (get_class($this->testClass))($dbMock);
 
     $translations = [
         [
@@ -158,19 +146,11 @@ it('handles NULL values in translation fields', function () {
 });
 
 it('handles numeric array keys', function () {
-    // Mock Db
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('insert')
-        ->with('replace', '{db_prefix}lp_translations', Mockery::any(), Mockery::any(), ['item_id', 'type', 'lang'], 2)
-        ->once()
-        ->andReturn([1, 2]);
+    $this->resultMock->shouldReceive('getAffectedRows')->andReturn(2);
+    $this->resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
+    $this->sql->shouldReceive('execute')->andReturn($this->resultMock);
 
-    $dbMock->shouldReceive('query')
-        ->with(Mockery::any(), Mockery::any())
-        ->once()
-        ->andReturn(true);
 
-    $this->testClass = new (get_class($this->testClass))($dbMock);
 
     $translations = [
         0 => [
@@ -199,19 +179,11 @@ it('handles numeric array keys', function () {
 });
 
 it('handles very long field values', function () {
-    // Mock Db
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('insert')
-        ->with('replace', '{db_prefix}lp_translations', Mockery::any(), Mockery::any(), ['item_id', 'type', 'lang'], 2)
-        ->once()
-        ->andReturn([1]);
+    $this->resultMock->shouldReceive('getAffectedRows')->andReturn(1);
+    $this->resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
+    $this->sql->shouldReceive('execute')->andReturn($this->resultMock);
 
-    $dbMock->shouldReceive('query')
-        ->with(Mockery::any(), Mockery::any())
-        ->once()
-        ->andReturn(true);
 
-    $this->testClass = new (get_class($this->testClass))($dbMock);
 
     $longTitle = str_repeat('A very long title ', 100); // Over 255 chars
     $longDescription = str_repeat('A very long description ', 100); // Over 255 chars
@@ -237,19 +209,10 @@ it('handles very long field values', function () {
 
 
 it('handles database exceptions during SQL operations', function () {
-    // Mock Db
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('insert')
-        ->with('replace', '{db_prefix}lp_translations', Mockery::any(), Mockery::any(), ['item_id', 'type', 'lang'], 2)
-        ->once()
-        ->andReturn([1, 2]);
-
-    $dbMock->shouldReceive('query')
-        ->with(Mockery::any(), Mockery::any())
-        ->once()
-        ->andThrow(new Exception('Database connection error'));
-
-    $this->testClass = new (get_class($this->testClass))($dbMock);
+    $this->resultMock->shouldReceive('getAffectedRows')->andReturn(1);
+    $this->resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
+    $this->sql->shouldReceive('execute')->with(Mockery::type('Bugo\LightPortal\Database\Operations\PortalReplace'))->andReturn($this->resultMock);
+    $this->sql->shouldReceive('execute')->with(Mockery::type('Bugo\LightPortal\Database\Operations\PortalUpdate'))->andThrow(new Exception('Database connection error'));
 
     $translations = [
         [
@@ -271,19 +234,11 @@ it('handles database exceptions during SQL operations', function () {
 });
 
 it('updates NULL values in database', function () {
-    // Mock Db
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('insert')
-        ->with('replace', '{db_prefix}lp_translations', Mockery::any(), Mockery::any(), ['item_id', 'type', 'lang'], 2)
-        ->once()
-        ->andReturn([1, 2]);
+    $this->resultMock->shouldReceive('getAffectedRows')->andReturn(2);
+    $this->resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
+    $this->sql->shouldReceive('execute')->andReturn($this->resultMock);
 
-    $dbMock->shouldReceive('query')
-        ->with(Mockery::any(), Mockery::any())
-        ->once()
-        ->andReturn(true);
 
-    $this->testClass = new (get_class($this->testClass))($dbMock);
 
     $translations = [
         [
@@ -304,19 +259,11 @@ it('updates NULL values in database', function () {
 });
 
 it('handles complex translation data', function () {
-    // Mock Db
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('insert')
-        ->with('replace', '{db_prefix}lp_translations', Mockery::any(), Mockery::any(), ['item_id', 'type', 'lang'], 2)
-        ->once()
-        ->andReturn([5, 6]);
+    $this->resultMock->shouldReceive('getAffectedRows')->andReturn(2);
+    $this->resultMock->shouldReceive('getGeneratedValue')->andReturn(5);
+    $this->sql->shouldReceive('execute')->andReturn($this->resultMock);
 
-    $dbMock->shouldReceive('query')
-        ->with(Mockery::any(), Mockery::any())
-        ->once()
-        ->andReturn(true);
 
-    $this->testClass = new (get_class($this->testClass))($dbMock);
 
     $translations = [
         [
@@ -345,33 +292,13 @@ it('handles complex translation data', function () {
 });
 
 it('uses correct column definitions for replace method', function () {
-    // Mock Db
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('insert')
-        ->with(
-            'replace',
-            '{db_prefix}lp_translations',
-            [
-                'item_id'     => 'int',
-                'type'        => 'string-30',
-                'lang'        => 'string-60',
-                'title'       => 'string-255',
-                'content'     => 'string',
-                'description' => 'string-255',
-            ],
-            Mockery::any(),
-            ['item_id', 'type', 'lang'],
-            2
-        )
-        ->once()
-        ->andReturn([1]);
+    $this->resultMock->shouldReceive('getAffectedRows')->andReturn(1);
+    $this->resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
+    $this->sql->shouldReceive('execute')->andReturn($this->resultMock);
 
-    $dbMock->shouldReceive('query')
-        ->with(Mockery::any(), Mockery::any())
-        ->once()
-        ->andReturn(true);
+    $this->portalReplaceMock->shouldReceive('batch')->andReturnSelf();
 
-    $this->testClass = new (get_class($this->testClass))($dbMock);
+
 
     $translations = [
         [
@@ -392,33 +319,13 @@ it('uses correct column definitions for replace method', function () {
 });
 
 it('uses correct column definitions for insert method', function () {
-    // Mock Db
-    $dbMock = Mockery::mock();
-    $dbMock->shouldReceive('insert')
-        ->with(
-            'insert',
-            '{db_prefix}lp_translations',
-            [
-                'type'        => 'string-30',
-                'lang'        => 'string-60',
-                'title'       => 'string-255',
-                'content'     => 'string',
-                'description' => 'string-255',
-                'item_id'     => 'int',
-            ],
-            Mockery::any(),
-            ['id'],
-            2
-        )
-        ->once()
-        ->andReturn([1]);
+    $this->resultMock->shouldReceive('getAffectedRows')->andReturn(1);
+    $this->resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
+    $this->sql->shouldReceive('execute')->andReturn($this->resultMock);
 
-    $dbMock->shouldReceive('query')
-        ->with(Mockery::any(), Mockery::any())
-        ->once()
-        ->andReturn(true);
+    $this->portalInsertMock->shouldReceive('batch')->andReturnSelf();
 
-    $this->testClass = new (get_class($this->testClass))($dbMock);
+
 
     $translations = [
         [
@@ -433,19 +340,16 @@ it('uses correct column definitions for insert method', function () {
 
     $results = [1];
 
-    $result = $this->testClass->callReplaceTranslations($translations, $results, 'insert');
+    $result = $this->testClass->callReplaceTranslations($translations, $results, false);
 
     expect($result)->toBe($results);
 });
 
 it('handles empty arrays early return', function () {
-    $this->testClass = new (get_class($this->testClass))(null);
-
-    // Test with empty translations array
     $result = $this->testClass->callReplaceTranslations([], [1]);
+
     expect($result)->toBe([]);
 
-    // Test with empty results array
     $translations = [
         'english' => [
             'item_id'     => '1',

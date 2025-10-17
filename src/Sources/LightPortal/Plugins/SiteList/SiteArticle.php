@@ -8,7 +8,7 @@
  * @license Individual (for sponsors)
  *
  * @category plugin
- * @version 27.09.25
+ * @version 13.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\SiteList;
@@ -17,6 +17,7 @@ use Bugo\Compat\Config;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Articles\AbstractArticle;
+use Laminas\Db\Sql\Select;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -59,4 +60,6 @@ class SiteArticle extends AbstractArticle
 
 		return count($this->sites);
 	}
+
+	protected function applyBaseConditions(Select $select): void {}
 }

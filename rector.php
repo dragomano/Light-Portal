@@ -9,8 +9,7 @@ return RectorConfig::configure()
 		__DIR__ . '/src',
 	])
 	->withSkip([
-		__DIR__ . '/src/database.php',
-		__DIR__ . '**/Tasks/Notifier.php',
+		__DIR__ . '**/Tasks/*',
 		__DIR__ . '**/Libs/*',
 		__DIR__ . '**/vendor/*',
 		NullToStrictStringFuncCallArgRector::class,

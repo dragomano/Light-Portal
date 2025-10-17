@@ -12,7 +12,6 @@
 
 namespace Bugo\LightPortal\Areas\Traits;
 
-use Bugo\Compat\Db;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PortalHook;
@@ -21,8 +20,10 @@ use Bugo\LightPortal\Lists\IconList;
 use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasCache;
+use Bugo\LightPortal\Utils\Traits\HasPortalSql;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 use Bugo\LightPortal\Utils\Traits\HasResponse;
+use Laminas\Db\Sql\Predicate\Expression;
 
 use function Bugo\LightPortal\app;
 
@@ -33,10 +34,11 @@ trait HasQuery
 {
 	use HasCache;
 	use HasEvents;
+	use HasPortalSql;
 	use HasRequest;
 	use HasResponse;
 
-	private function prepareIconList(): void
+	protected function prepareIconList(): void
 	{
 		if ($this->request()->hasNot('icons'))
 			return;
@@ -65,7 +67,7 @@ trait HasQuery
 		$this->response()->exit($results);
 	}
 
-	private function getFaIcons(): array
+	protected function getFaIcons(): array
 	{
 		$cacheTTL = 30 * 24 * 60 * 60;
 
@@ -78,7 +80,7 @@ trait HasQuery
 		return $icons;
 	}
 
-	private function prepareTopicList(): void
+	protected function prepareTopicList(): void
 	{
 		if ($this->request()->hasNot('topic_by_subject'))
 			return;
@@ -88,28 +90,27 @@ trait HasQuery
 		if (empty($search = $data['search']))
 			return;
 
-		$result = Db::$db->query('
-			SELECT t.id_topic, m.subject
-			FROM {db_prefix}topics AS t
-				INNER JOIN {db_prefix}messages AS m ON (m.id_msg = t.id_first_msg)
-			WHERE t.id_poll = {int:id_poll}
-				AND t.approved = {int:is_approved}
-				AND t.id_redirect_topic = {int:id_redirect_topic}
-				AND t.id_board != {int:recycle_board}
-				AND INSTR(LOWER(m.subject), {string:subject}) > 0
-			ORDER BY m.subject
-			LIMIT 100',
-			[
-				'id_poll'           => 0,
-				'is_approved'       => 1,
-				'id_redirect_topic' => 0,
-				'recycle_board'     => Setting::get('recycle_board', 'int', 0),
-				'subject'           => trim((string) Utils::$smcFunc['strtolower']($search)),
-			]
-		);
+		$select = $this->getPortalSql()->select()
+			->from(['t' => 'topics'])
+			->columns(['id_topic'])
+			->join(['m' => 'messages'], 'm.id_msg = t.id_first_msg', ['subject'])
+			->where([
+				't.id_poll = ?'           => 0,
+				't.approved = ?'          => 1,
+				't.id_redirect_topic = ?' => 0,
+				't.id_board != ?'         => Setting::get('recycle_board', 'int', 0),
+			])
+			->where(new Expression(
+				'LOWER(m.subject) LIKE ?',
+				['%' . trim(Utils::$smcFunc['strtolower']($search)) . '%']
+			))
+			->order('m.subject')
+			->limit(100);
+
+		$result = $this->getPortalSql()->execute($select);
 
 		$topics = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			Lang::censorText($row['subject']);
 
 			$topics[] = [
@@ -117,8 +118,6 @@ trait HasQuery
 				'subject' => $row['subject'],
 			];
 		}
-
-		Db::$db->free_result($result);
 
 		$this->response()->exit($topics);
 	}

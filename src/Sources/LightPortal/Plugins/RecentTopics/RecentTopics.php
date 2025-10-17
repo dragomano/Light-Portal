@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 04.10.25
+ * @version 13.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\RecentTopics;
@@ -125,8 +125,12 @@ class RecentTopics extends SsiBlock
 
 	public function getData(ParamWrapper $parameters): array
 	{
-		$excludeBoards = empty($parameters['exclude_boards']) ? null : explode(',', (string) $parameters['exclude_boards']);
-		$includeBoards = empty($parameters['include_boards']) ? null : explode(',', (string) $parameters['include_boards']);
+		$excludeBoards = empty($parameters['exclude_boards'])
+			? null
+			: explode(',', (string) $parameters['exclude_boards']);
+		$includeBoards = empty($parameters['include_boards'])
+			? null
+			: explode(',', (string) $parameters['include_boards']);
 
 		$topics = $this->getFromSSI(
 			'recentTopics',

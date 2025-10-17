@@ -14,7 +14,8 @@
     "ext-dom": "*",
     "ext-libxml": "*",
     "ext-pdo": "*",
-    "ext-simplexml": "*"
+    "ext-simplexml": "*",
+    "ext-zip": "*"
   },
   "require-dev": {
     "consolidation/robo": "^5.1",
@@ -35,11 +36,11 @@
   },
   "scripts": {
     "check": "vendor/bin/rector process --dry-run --clear-cache",
-    "tests": "vendor/bin/pest --colors=always",
-    "tests-debug": "vendor/bin/pest --colors=always --display-warnings",
-    "tests-coverage": "vendor/bin/pest --colors=always --coverage --min=30",
-    "tests-coverage-clover": "vendor/bin/pest --colors=always --min=30 --coverage-clover coverage.xml",
-    "tests-coverage-html": "vendor/bin/pest --colors=always --min=30 --coverage-html coverage",
+    "tests": "php -d memory_limit=512M vendor/bin/pest --colors=always",
+    "tests-debug": "php -d memory_limit=512M vendor/bin/pest --colors=always --display-warnings",
+    "tests-coverage": "php -d memory_limit=512M vendor/bin/pest --colors=always --coverage --min=30",
+    "tests-coverage-clover": "php -d memory_limit=512M vendor/bin/pest --colors=always --min=30 --coverage-clover coverage.xml",
+    "tests-coverage-html": "php -d memory_limit=512M vendor/bin/pest --colors=always --min=30 --coverage-html coverage",
     "assets": [
       "pnpm update",
       "pnpm run build",

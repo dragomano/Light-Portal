@@ -12,18 +12,20 @@
 
 namespace Bugo\LightPortal\Repositories;
 
-use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Security;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Utils\Icon;
+use Bugo\LightPortal\Utils\Str;
+use Exception;
+use Laminas\Db\Sql\Predicate\Expression;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class CategoryRepository extends AbstractRepository implements CategoryRepositoryInterface
+final class CategoryRepository extends AbstractRepository implements CategoryRepositoryInterface, DataManagerInterface
 {
 	protected string $entity = 'category';
 
@@ -31,69 +33,65 @@ final class CategoryRepository extends AbstractRepository implements CategoryRep
 		int $start,
 		int $limit,
 		string $sort,
-		string $queryString = '',
-		array $queryParams = []
+		string $filter = '',
+		array $whereConditions = []
 	): array
 	{
-		$result = Db::$db->query(/** @lang text */ '
-			SELECT
-				c.*,
-				COALESCE(t.title, tf.title, {string:empty_string}) AS title,
-				COALESCE(t.description, tf.description, {string:empty_string}) AS description
-			FROM {db_prefix}lp_categories AS c
-				LEFT JOIN {db_prefix}lp_translations AS t ON (
-					c.category_id = t.item_id AND t.type = {literal:category} AND t.lang = {string:lang}
-				)
-				LEFT JOIN {db_prefix}lp_translations AS tf ON (
-					c.category_id = tf.item_id AND tf.type = {literal:category} AND tf.lang = {string:fallback_lang}
-				)
-			WHERE 1=1' . (empty($queryString) ? '' : '
-				' . $queryString) . '
-			ORDER BY {raw:sort}
-			LIMIT {int:start}, {int:limit}',
-			array_merge($queryParams, $this->getLangQueryParams(), [
-				'sort'  => $sort,
-				'start' => $start,
-				'limit' => $limit,
-			])
-		);
+		$select = $this->sql->select()
+			->from(['c' => 'lp_categories'])
+			->order($sort)
+			->limit($limit)
+			->offset($start);
+
+		$this->addTranslationJoins($select, [
+			'primary' => 'c.category_id',
+			'entity'  => $this->entity,
+			'fields'  => ['title', 'description'],
+		]);
+
+		if ($filter === 'list') {
+			$select
+				->where(['c.status = ?' => Status::ACTIVE->value])
+				->where($this->getTranslationFilter('c', 'category_id', ['title', 'description']));
+		}
+
+		if ($whereConditions) {
+			$select->where($whereConditions);
+		}
+
+		$result = $this->sql->execute($select);
 
 		$items = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			Lang::censorText($row['title']);
 			Lang::censorText($row['description']);
 
 			$items[$row['category_id']] = [
-				'id'          => (int) $row['category_id'],
+				'id'          => $row['category_id'],
 				'slug'        => $row['slug'],
 				'icon'        => Icon::parse($row['icon']),
-				'priority'    => (int) $row['priority'],
-				'status'      => (int) $row['status'],
-				'title'       => $row['title'],
+				'priority'    => $row['priority'],
+				'status'      => $row['status'],
+				'title'       => Str::decodeHtmlEntities($row['title']),
 				'description' => $row['description'],
 			];
 		}
 
-		Db::$db->free_result($result);
-
 		return $items;
 	}
 
-	public function getTotalCount(string $queryString = '', array $queryParams = []): int
+	public function getTotalCount(string $filter = '', array $whereConditions = []): int
 	{
-		$result = Db::$db->query(/** @lang text */ '
-			SELECT COUNT(category_id)
-			FROM {db_prefix}lp_categories
-			WHERE 1=1' . (empty($queryString) ? '' : '
-				' . $queryString),
-			$queryParams
-		);
+		$select = $this->sql->select('lp_categories')
+			->columns(['count' => new Expression('COUNT(category_id)')]);
 
-		[$count] = Db::$db->fetch_row($result);
+		if ($whereConditions) {
+			$select->where($whereConditions);
+		}
 
-		Db::$db->free_result($result);
+		$result = $this->sql->execute($select)->current();
 
-		return (int) $count;
+		return $result['count'];
 	}
 
 	public function getData(int $item): array
@@ -101,38 +99,29 @@ final class CategoryRepository extends AbstractRepository implements CategoryRep
 		if ($item === 0)
 			return [];
 
-		$result = Db::$db->query('
-			SELECT
-				c.*,
-				COALESCE(t.title, {string:empty_string}) AS title,
-				COALESCE(t.description, {string:empty_string}) AS description
-			FROM {db_prefix}lp_categories AS c
-				LEFT JOIN {db_prefix}lp_translations AS t ON (
-					c.category_id = t.item_id AND t.type = {literal:category} AND t.lang = {string:lang}
-				)
-			WHERE c.category_id = {int:item}',
-			array_merge($this->getLangQueryParams(), compact('item'))
-		);
+		$select = $this->sql->select()
+			->from(['c' => 'lp_categories'])
+			->where(['c.category_id = ?' => $item]);
 
-		if (empty(Db::$db->num_rows($result))) {
-			Utils::$context['error_link'] = Config::$scripturl . '?action=admin;area=lp_categories';
+		$this->addTranslationJoins($select, [
+			'primary' => 'c.category_id',
+			'entity'  => $this->entity,
+			'fields'  => ['title', 'description'],
+		]);
 
-			ErrorHandler::fatalLang('lp_category_not_found', false, status: 404);
-		}
+		$result = $this->sql->execute($select);
 
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			$data ??= [
-				'id'          => (int) $row['category_id'],
+				'id'          => $row['category_id'],
 				'slug'        => $row['slug'],
 				'icon'        => $row['icon'],
-				'priority'    => (int) $row['priority'],
-				'status'      => (int) $row['status'],
+				'priority'    => $row['priority'],
+				'status'      => $row['status'],
 				'title'       => $row['title'],
 				'description' => $row['description'],
 			];
 		}
-
-		Db::$db->free_result($result);
 
 		return $data ?? [];
 	}
@@ -145,11 +134,9 @@ final class CategoryRepository extends AbstractRepository implements CategoryRep
 
 		Security::checkSubmitOnce('check');
 
-		if (empty($item)) {
-			$item = $this->addData();
-		} else {
-			$this->updateData($item);
-		}
+		empty($item)
+			? $item = $this->addData(Utils::$context['lp_category'])
+			: $this->updateData($item, Utils::$context['lp_category']);
 
 		$this->cache()->flush();
 
@@ -169,32 +156,19 @@ final class CategoryRepository extends AbstractRepository implements CategoryRep
 		if ($items === [])
 			return;
 
-		Db::$db->query('
-			DELETE FROM {db_prefix}lp_categories
-			WHERE category_id IN ({array_int:items})',
-			[
-				'items' => $items,
-			]
-		);
+		$delete = $this->sql->delete('lp_categories');
+		$delete->where->in('category_id', $items);
+		$this->sql->execute($delete);
 
-		Db::$db->query('
-			DELETE FROM {db_prefix}lp_translations
-			WHERE item_id IN ({array_int:items})
-				AND type = {literal:category}',
-			[
-				'items' => $items,
-			]
-		);
+		$deleteTranslations = $this->sql->delete('lp_translations');
+		$deleteTranslations->where->in('item_id', $items);
+		$deleteTranslations->where->equalTo('type', $this->entity);
+		$this->sql->execute($deleteTranslations);
 
-		Db::$db->query('
-			UPDATE {db_prefix}lp_pages
-			SET category_id = {int:category}
-			WHERE category_id IN ({array_int:items})',
-			[
-				'category' => 0,
-				'items'    => $items,
-			]
-		);
+		$updatePages = $this->sql->update('lp_pages');
+		$updatePages->set(['category_id' => 0]);
+		$updatePages->where->in('category_id', $items);
+		$this->sql->execute($updatePages);
 
 		$this->cache()->flush();
 
@@ -206,93 +180,98 @@ final class CategoryRepository extends AbstractRepository implements CategoryRep
 		if ($categories === [])
 			return;
 
-		$conditions = '';
+		$caseConditions = [];
+		$ids = [];
 		foreach ($categories as $priority => $item) {
-			$conditions .= ' WHEN category_id = ' . $item . ' THEN ' . $priority;
+			$caseConditions[] = 'WHEN category_id = ? THEN ?';
+			$ids[] = $item;
+			$ids[] = $priority;
 		}
 
-		if ($conditions === '')
+		if ($caseConditions === [])
 			return;
 
-		Db::$db->query(/** @lang text */ '
-			UPDATE {db_prefix}lp_categories
-			SET priority = CASE ' . $conditions . ' ELSE priority END
-			WHERE category_id IN ({array_int:categories})',
-			[
-				'categories' => $categories,
-			]
-		);
+		$caseSql = implode(' ', $caseConditions);
+
+		$update = $this->sql->update('lp_categories');
+		$update->set(['priority' => new Expression('CASE ' . $caseSql . ' ELSE priority END', $ids)]);
+		$update->where->in('category_id', array_values($categories));
+
+		$this->sql->execute($update);
 
 		$this->cache()->forget('all_categories');
 	}
 
-	private function getPriority(): int
+	private function addData(array $data): int
 	{
-		$result = Db::$db->query(/** @lang text */ '
-			SELECT MAX(priority) + 1
-			FROM {db_prefix}lp_categories',
-		);
+		try {
+			$this->transaction->begin();
 
-		[$priority] = Db::$db->fetch_row($result);
+			$insert = $this->sql->insert('lp_categories')
+				->values([
+					'slug'     => $data['slug'],
+					'icon'     => $data['icon'],
+					'priority' => $this->getPriority(),
+					'status'   => $data['status'],
+				]);
 
-		Db::$db->free_result($result);
+			$result = $this->sql->execute($insert);
 
-		return (int) $priority;
-	}
+			$item = (int) $result->getGeneratedValue();
 
-	private function addData(): int
-	{
-		Db::$db->transaction('begin');
+			if (empty($item)) {
+				$this->transaction->rollback();
 
-		$item = (int) Db::$db->insert('',
-			'{db_prefix}lp_categories',
-			[
-				'slug'     => 'string',
-				'icon'     => 'string-60',
-				'priority' => 'int',
-				'status'   => 'int',
-			],
-			[
-				Utils::$context['lp_category']['slug'],
-				Utils::$context['lp_category']['icon'],
-				$this->getPriority(),
-				Utils::$context['lp_category']['status'],
-			],
-			['category_id'],
-			1
-		);
+				return 0;
+			}
 
-		if (empty($item)) {
-			Db::$db->transaction('rollback');
+			$this->saveTranslations($item);
+
+			$this->transaction->commit();
+
+			return $item;
+		} catch (Exception $e) {
+			$this->transaction->rollback();
+
+			ErrorHandler::fatal($e->getMessage(), false);
+
 			return 0;
 		}
-
-		$this->saveTranslations($item);
-
-		Db::$db->transaction();
-
-		return $item;
 	}
 
-	private function updateData(int $item): void
+	private function updateData(int $item, array $data): void
 	{
-		Db::$db->transaction('begin');
+		try {
+			$this->transaction->begin();
 
-		Db::$db->query('
-			UPDATE {db_prefix}lp_categories
-			SET slug = {string:slug}, icon = {string:icon}, priority = {int:priority}, status = {int:status}
-			WHERE category_id = {int:category_id}',
-			[
-				'slug'        => Utils::$context['lp_category']['slug'],
-				'icon'        => Utils::$context['lp_category']['icon'],
-				'priority'    => Utils::$context['lp_category']['priority'],
-				'status'      => Utils::$context['lp_category']['status'],
-				'category_id' => $item,
-			]
-		);
+			$update = $this->sql->update('lp_categories')
+				->set([
+					'slug'     => $data['slug'],
+					'icon'     => $data['icon'],
+					'priority' => $data['priority'],
+					'status'   => $data['status'],
+				])
+				->where(['category_id = ?' => $item]);
 
-		$this->saveTranslations($item, 'replace');
+			$this->sql->execute($update);
 
-		Db::$db->transaction();
+			$this->saveTranslations($item, true);
+
+			$this->transaction->commit();
+		} catch (Exception $e) {
+			$this->transaction->rollback();
+
+			ErrorHandler::fatal($e->getMessage(), false);
+		}
+	}
+
+	private function getPriority(): int
+	{
+		$select = $this->sql->select('lp_categories')
+			->columns(['priority' => new Expression('MAX(priority) + 1')]);
+
+		$result = $this->sql->execute($select)->current();
+
+		return $result['priority'] ?? 0;
 	}
 }

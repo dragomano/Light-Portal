@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Bugo\LightPortal;
 
-use Bugo\Compat\Db;
+use Bugo\LightPortal\Database\Operations\PortalSelect;
 use Bugo\LightPortal\Events\EventManager;
 use Bugo\LightPortal\Lists\CategoryList;
 use Bugo\LightPortal\Lists\PageList;
@@ -15,6 +15,9 @@ use Bugo\LightPortal\Repositories\TagRepositoryInterface;
 use Bugo\LightPortal\UI\Partials\SelectRenderer;
 use Bugo\LightPortal\UI\View;
 use Bugo\LightPortal\Utils\CacheInterface;
+use Bugo\LightPortal\Database\PortalSqlInterface;
+use Bugo\LightPortal\Utils\RequestInterface;
+use Laminas\Db\Adapter\Driver\ResultInterface;
 use Tests\AppMockRegistry;
 use Mockery;
 
@@ -64,8 +67,25 @@ if (! function_exists('Bugo\\LightPortal\\app')) {
                 {
                 }
             };
+        } elseif (str_contains($service, 'PortalSqlInterface')) {
+            $mock = Mockery::mock(PortalSqlInterface::class);
+            $selectMock = Mockery::mock(PortalSelect::class);
+            $selectMock->shouldReceive('from')->andReturnSelf();
+            $selectMock->shouldReceive('columns')->andReturnSelf();
+            $selectMock->shouldReceive('join')->andReturnSelf();
+            $selectMock->shouldReceive('where')->andReturnSelf();
+            $selectMock->shouldReceive('order')->andReturnSelf();
+            $selectMock->shouldIgnoreMissing();
+            $mock->shouldReceive('select')->andReturn($selectMock);
+            $resultMock = Mockery::mock(ResultInterface::class);
+            $resultMock->shouldReceive('current')->andReturn(['id_member' => []]);
+            $resultMock->shouldReceive('valid')->andReturn(false);
+            $resultMock->shouldReceive('next')->andReturn(null);
+            $resultMock->shouldReceive('key')->andReturn(0);
+            $resultMock->shouldReceive('rewind')->andReturn(null);
+            $mock->shouldReceive('execute')->andReturn($resultMock);
+            return $mock;
         } elseif (str_contains($service, 'EventManagerFactory')) {
-            // Check if we have a test-specific event manager mock
             if (isset($GLOBALS['event_manager_mock'])) {
                 return new class($GLOBALS['event_manager_mock']) {
                     private EventManager $eventManagerMock;
@@ -112,7 +132,6 @@ if (! function_exists('Bugo\\LightPortal\\app')) {
                 return $mock;
             }
 
-            // Create default CategoryList with mocked dependencies
             $mockRepo = Mockery::mock(CategoryRepositoryInterface::class);
             $mockRepo->shouldReceive('getTotalCount')->andReturn(0);
             $mockRepo->shouldReceive('getAll')->andReturn([]);
@@ -124,7 +143,6 @@ if (! function_exists('Bugo\\LightPortal\\app')) {
                 return $mock;
             }
 
-            // Create default TagList with mocked dependencies
             $mockRepo = Mockery::mock(TagRepositoryInterface::class);
             $mockRepo->shouldReceive('getTotalCount')->andReturn(0);
             $mockRepo->shouldReceive('getAll')->andReturn([]);
@@ -136,20 +154,25 @@ if (! function_exists('Bugo\\LightPortal\\app')) {
                 return $mock;
             }
 
-            // Create default PageList with mocked dependencies
             $mockRepo = Mockery::mock(PageRepositoryInterface::class);
             $mockRepo->shouldReceive('getTotalCount')->andReturn(0);
             $mockRepo->shouldReceive('getAll')->andReturn([]);
             $mockRepo->shouldReceive('getTranslationFilter')->andReturn('');
 
-            // Mock Db for Permission::all()
-            $mockDb = Mockery::mock();
-            $mockDb->shouldReceive('query')->andReturn((object)['num_rows' => 0]);
-            $mockDb->shouldReceive('fetch_all')->andReturn([]);
-            $mockDb->shouldReceive('free_result');
-            Db::$db = $mockDb;
-
             return new PageList($mockRepo);
+        } elseif (str_contains($service, 'RequestInterface')) {
+            if ($mock = AppMockRegistry::get(RequestInterface::class)) {
+                return $mock;
+            }
+
+            $mock = Mockery::mock(RequestInterface::class);
+            $mock->shouldReceive('is')->andReturn(false);
+            $mock->shouldReceive('has')->andReturn(false);
+            $mock->shouldReceive('url')->andReturn('');
+            $mock->shouldReceive('input')->andReturn('');
+            $mock->shouldIgnoreMissing();
+
+            return $mock;
         }
 
         return null;

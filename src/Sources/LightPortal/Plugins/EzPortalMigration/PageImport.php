@@ -8,22 +8,20 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 23.09.25
+ * @version 09.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\EzPortalMigration;
 
 use Bugo\Bricks\Tables\IdColumn;
-use Bugo\Compat\Config;
-use Bugo\Compat\Db;
 use Bugo\Compat\User;
-use Bugo\Compat\Utils;
 use Bugo\LightPortal\DataHandlers\Imports\Custom\AbstractCustomPageImport;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\UI\Tables\CheckboxColumn;
 use Bugo\LightPortal\UI\Tables\PageSlugColumn;
 use Bugo\LightPortal\UI\Tables\TitleColumn;
 use Bugo\LightPortal\Utils\DateTime;
+use Laminas\Db\Sql\Expression;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -51,84 +49,77 @@ class PageImport extends AbstractCustomPageImport
 
 	public function getAll(int $start = 0, int $limit = 0, string $sort = 'id_page'): array
 	{
-		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'ezp_page')))
+		if (! $this->sql->tableExists('ezp_page'))
 			return [];
 
-		$result = Db::$db->query('
-			SELECT id_page, date, title, views
-			FROM {db_prefix}ezp_page
-			ORDER BY {raw:sort}
-			LIMIT {int:start}, {int:limit}',
-			[
-				'sort'  => $sort,
-				'start' => $start,
-				'limit' => $limit,
-			]
-		);
+		$select = $this->sql->select()
+			->from('ezp_page')
+			->columns(['id_page', 'date', 'title', 'views'])
+			->order($sort)
+			->limit($limit)
+			->offset($start);
+
+		$result = $this->sql->execute($select);
 
 		$items = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			$items[$row['id_page']] = [
 				'id'         => $row['id_page'],
-				'slug'       => $this->getSlug($row),
+				'slug'       => $this->generateSlug(['english' => $row['title']]),
 				'type'       => 'html',
 				'status'     => 1,
 				'num_views'  => $row['views'],
 				'author_id'  => User::$me->id,
-				'created_at' => DateTime::relative((int) $row['date']),
+				'created_at' => DateTime::relative($row['date']),
 				'title'      => $row['title'],
 			];
 		}
-
-		Db::$db->free_result($result);
 
 		return $items;
 	}
 
 	public function getTotalCount(): int
 	{
-		if (empty(Db::$db->list_tables(false, Config::$db_prefix . 'ezp_page')))
+		if (! $this->sql->tableExists('ezp_page'))
 			return 0;
 
-		$result = Db::$db->query(/** @lang text */ '
-			SELECT COUNT(*)
-			FROM {db_prefix}ezp_page',
-		);
+		$select = $this->sql->select()
+			->from('ezp_page')
+			->columns(['count' => new Expression('COUNT(*)')]);
 
-		[$count] = Db::$db->fetch_row($result);
+		$result = $this->sql->execute($select)->current();
 
-		Db::$db->free_result($result);
-
-		return (int) $count;
+		return $result['count'];
 	}
 
 	protected function getItems(array $ids): array
 	{
-		$result = Db::$db->query(/** @lang text */ '
-			SELECT id_page, date, title, content, views, permissions
-			FROM {db_prefix}ezp_page' . (empty($ids) ? '' : '
-			WHERE id_page IN ({array_int:pages})'),
-			[
-				'pages' => $ids,
-			]
-		);
+		$select = $this->sql->select()
+			->from('ezp_page')
+			->columns(['id_page', 'date', 'title', 'content', 'views', 'permissions']);
+
+		if ($ids !== []) {
+			$select->where->in('id_page', $ids);
+		}
+
+		$result = $this->sql->execute($select);
 
 		$items = [];
-		while ($row = Db::$db->fetch_assoc($result)) {
+		foreach ($result as $row) {
 			$items[$row['id_page']] = [
-				'page_id'         => (int) $row['id_page'],
+				'page_id'         => $row['id_page'],
 				'category_id'     => 0,
 				'author_id'       => User::$me->id,
-				'slug'            => $this->getSlug($row),
+				'slug'            => $this->generateSlug(['english' => $row['title']]),
 				'description'     => '',
 				'content'         => $row['content'],
 				'type'            => 'html',
 				'entry_type'      => EntryType::DEFAULT->name(),
 				'permissions'     => $this->getPermission($row),
 				'status'          => 1,
-				'num_views'       => (int) $row['views'],
+				'num_views'       => $row['views'],
 				'num_comments'    => 0,
-				'created_at'      => (int) $row['date'],
+				'created_at'      => $row['date'],
 				'updated_at'      => 0,
 				'deleted_at'      => 0,
 				'last_comment_id' => 0,
@@ -136,18 +127,11 @@ class PageImport extends AbstractCustomPageImport
 			];
 		}
 
-		Db::$db->free_result($result);
-
 		return $items;
 	}
 
 	protected function extractPermissions(array $row): int|array
 	{
 		return array_map('intval', explode(',', (string) $row['permissions']));
-	}
-
-	private function getSlug(array $row): string
-	{
-		return Utils::$smcFunc['strtolower'](explode(' ', (string) $row['title'])[0]) . $row['id_page'];
 	}
 }

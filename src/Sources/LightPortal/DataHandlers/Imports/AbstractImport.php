@@ -16,8 +16,8 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Sapi;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use Bugo\LightPortal\Database\PortalSqlInterface;
 use Bugo\LightPortal\DataHandlers\DataHandler;
-use Bugo\LightPortal\Utils\DatabaseInterface;
 use Bugo\LightPortal\Utils\ErrorHandlerInterface;
 use Bugo\LightPortal\Utils\FileInterface;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
@@ -33,13 +33,13 @@ abstract class AbstractImport extends DataHandler
 	use HasRequest;
 
 	public function __construct(
+		protected PortalSqlInterface $sql,
 		protected FileInterface $file,
-		protected DatabaseInterface $db,
 		protected ErrorHandlerInterface $errorHandler,
 		protected bool|SimpleXMLElement $xml = false
 	)
 	{
-		parent::__construct($db, $errorHandler);
+		parent::__construct($sql, $errorHandler);
 
 		Utils::$context['max_file_size'] = Sapi::memoryReturnBytes(ini_get('upload_max_filesize'));
 	}

@@ -11,7 +11,6 @@ src/Sources/LightPortal/Libs/*
 src/Sources/LightPortal/packages/*
 src/Sources/index.php
 composer.lock
-debug_check_db.php
 
 src/Themes/default/languages/LightPortal/*
 !src/Themes/default/languages/LightPortal/index.php

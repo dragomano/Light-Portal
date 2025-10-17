@@ -49,7 +49,7 @@ use const LP_PAGE_PARAM;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final readonly class BlockArea
+final readonly class BlockArea implements AreaInterface
 {
 	use HasArea;
 	use HasEvents;
@@ -71,7 +71,7 @@ final readonly class BlockArea
 
 		$this->doActions();
 
-		Utils::$context['lp_current_blocks'] = $this->repository->getAll();
+		Utils::$context['lp_current_blocks'] = $this->repository->getAll(0, 0, 'placement DESC, priority');
 	}
 
 	public function add(): void
@@ -255,7 +255,7 @@ final readonly class BlockArea
 
 	private function prepareFormFields(): void
 	{
-		$this->prepareTitleFields('block', false);
+		$this->prepareTitleFields(false);
 
 		TextField::make('description', Lang::$txt['lp_block_note'])
 			->setTab(Tab::CONTENT)
@@ -263,7 +263,7 @@ final readonly class BlockArea
 			->setValue(Utils::$context['lp_block']['description']);
 
 		if (isset(Utils::$context['lp_block']['options']['content'])) {
-			if (Utils::$context['lp_block']['type'] !== 'bbc') {
+			if (Utils::$context['lp_block']['type'] !== ContentType::BBC->name()) {
 				TextareaField::make('content', Lang::$txt['lp_content'])
 					->setTab(Tab::CONTENT)
 					->setValue($this->prepareContent(Utils::$context['lp_block']));
@@ -369,7 +369,7 @@ final readonly class BlockArea
 
 		Security::checkSubmitOnce('free');
 
-		Utils::$context['preview_title']   = Utils::$context['lp_block']['title'] ?? '';
+		Utils::$context['preview_title']   = Str::decodeHtmlEntities(Utils::$context['lp_block']['title'] ?? '');
 		Utils::$context['preview_content'] = Utils::htmlspecialchars(Utils::$context['lp_block']['content'], ENT_QUOTES);
 
 		Str::cleanBbcode(Utils::$context['preview_title']);

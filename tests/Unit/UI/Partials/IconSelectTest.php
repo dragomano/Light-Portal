@@ -7,6 +7,7 @@ use Bugo\LightPortal\UI\Partials\IconSelect;
 use Bugo\LightPortal\UI\Partials\SelectInterface;
 use Bugo\LightPortal\UI\Partials\SelectRenderer;
 use Tests\AppMockRegistry;
+use Tests\ReflectionAccessor;
 
 beforeEach(function () {
     Utils::$context['lp_block']['icon'] = 'fas fa-star';
@@ -148,11 +149,9 @@ it('handles empty params', function () {
     expect($select->getParams())->toBeArray();
 });
 
-it('template is set correctly', function () {
-    $select = new IconSelect();
+it('correctly sets the template', function () {
+    $select = new ReflectionAccessor(new IconSelect());
+    $property = $select->getProtectedProperty('template');
 
-    $reflection = new ReflectionClass($select);
-    $property = $reflection->getProperty('template');
-
-    expect($property->getValue($select))->toBe('icon_select');
+    expect($property)->toBe('icon_select');
 });

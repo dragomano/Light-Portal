@@ -12,9 +12,11 @@
 
 namespace Bugo\LightPortal\DataHandlers\Traits;
 
+use Laminas\Db\Sql\Predicate\Expression;
+
 trait HasTranslations
 {
-	protected function replaceTranslations(array $translations, array $results, string $method = 'replace'): array
+	protected function replaceTranslations(array $translations, array $results, bool $replace = true): array
 	{
 		if ($translations === [] || $results === [])
 			return [];
@@ -29,43 +31,38 @@ trait HasTranslations
 
 		$results = $this->insertData(
 			'lp_translations',
-			$method,
 			$translations,
-			$method === 'replace' ? [
-				'item_id'     => 'int',
-				'type'        => 'string-30',
-				'lang'        => 'string-60',
-				'title'       => 'string-255',
-				'content'     => 'string',
-				'description' => 'string-255',
-			] : [
-				'type'        => 'string-30',
-				'lang'        => 'string-60',
-				'title'       => 'string-255',
-				'content'     => 'string',
-				'description' => 'string-255',
-				'item_id'     => 'int',
-			],
-			$method === 'replace' ? ['item_id', 'type', 'lang'] : ['id'],
+			['item_id', 'type', 'lang'],
+			replace: $replace
 		);
 
-		if (! $results)
+		if (! $results) {
 			return [];
+		}
 
-		$this->db->query('
-			UPDATE {db_prefix}lp_translations
-			SET title = NULLIF(title, {string:empty_string}),
-				content = NULLIF(content, {string:empty_string}),
-				description = NULLIF(description, {string:empty_string})
-			WHERE id IN ({array_int:ids})
-				AND (title = {string:empty_string}
-				OR content = {string:empty_string}
-				OR description = {string:empty_string})',
-			[
-				'ids'          => $results,
-				'empty_string' => '',
-			]
-		);
+		$update = $this->sql->update('lp_translations')
+			->set([
+				'title'       => new Expression('NULLIF(title, ?)', ['']),
+				'content'     => new Expression('NULLIF(content, ?)', ['']),
+				'description' => new Expression('NULLIF(description, ?)', ['']),
+			]);
+
+		$whereClause = $update->where;
+
+		if ($whereClause === null) {
+			return [];
+		}
+
+		$where = $update->where;
+		$where->in('id', $results);
+		$where->and
+			->nest()
+			->equalTo('title', '')
+			->or->equalTo('content', '')
+			->or->equalTo('description', '')
+			->unnest();
+
+		$this->sql->execute($update);
 
 		return $results;
 	}
