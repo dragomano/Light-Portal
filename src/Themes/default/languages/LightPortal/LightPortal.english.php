@@ -136,6 +136,7 @@ $txt['lp_misc_info'] = 'There are additional portal settings that will be useful
 $txt['lp_debug_and_caching'] = 'Debugging and caching';
 $txt['lp_show_debug_info'] = 'Show the portal\'s loading time';
 $txt['lp_show_debug_info_help'] = 'This information will be available to administrators only!';
+$txt['lp_show_portal_queries'] = 'Show the portal\'s queries';
 $txt['lp_cache_interval'] = 'The cache update interval';
 $txt['lp_compatibility_mode'] = 'Compatibility mode';
 $txt['lp_portal_action'] = 'The value of the <strong>action</strong> parameter of the portal';
