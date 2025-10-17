@@ -152,15 +152,19 @@ final class BasicConfig extends AbstractConfig
 				->setCallback(static fn() => SelectFactory::action())
 				->setTab(self::TAB_STANDALONE),
 			PermissionsConfig::make('light_portal_view')
+				->setPostInput('<small class="floatright">' . Lang::$txt['groups_light_portal_view'] . '</small>')
 				->setHelp('permissionhelp_light_portal_view')
 				->setTab(self::TAB_PERMISSIONS),
 			PermissionsConfig::make('light_portal_manage_pages_own')
+				->setPostInput('<small class="floatright">' . Lang::$txt['groups_light_portal_manage_pages_own'] . '</small>')
 				->setHelp('permissionhelp_light_portal_manage_pages_own')
 				->setTab(self::TAB_PERMISSIONS),
 			PermissionsConfig::make('light_portal_manage_pages_any')
+				->setPostInput('<small class="floatright">' . Lang::$txt['groups_light_portal_manage_pages_any'] . '</small>')
 				->setHelp('permissionhelp_light_portal_manage_pages')
 				->setTab(self::TAB_PERMISSIONS),
 			PermissionsConfig::make('light_portal_approve_pages')
+				->setPostInput('<small class="floatright">' . Lang::$txt['groups_light_portal_approve_pages'] . '</small>')
 				->setHelp('permissionhelp_light_portal_approve_pages')
 				->setTab(self::TAB_PERMISSIONS),
 		]);
