@@ -65,7 +65,10 @@ final readonly class CategoryArea implements AreaInterface
 
 		Theme::loadJavaScriptFile('light_portal/Sortable.min.js');
 
-		$builder = PortalTableBuilder::make('lp_categories', Lang::$txt['lp_categories'])
+		$count = Utils::$context['lp_quantities']['active_categories'];
+		$count = empty($count) ? '' : " ($count)";
+
+		$builder = PortalTableBuilder::make('lp_categories', Lang::$txt['lp_categories'] . $count)
 			->setDefaultSortColumn('priority')
 			->setScript('const entity = new Category();
 		new Sortable(document.querySelector("#lp_categories tbody"), {

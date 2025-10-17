@@ -61,7 +61,10 @@ final readonly class TagArea implements AreaInterface
 
 		$this->doActions();
 
-		$builder = PortalTableBuilder::make('lp_tags', Lang::$txt['lp_tags'])
+		$count = Utils::$context['lp_quantities']['active_tags'];
+		$count = empty($count) ? '' : " ($count)";
+
+		$builder = PortalTableBuilder::make('lp_tags', Lang::$txt['lp_tags'] . $count)
 			->setDefaultSortColumn('title')
 			->setScript('const entity = new Tag();')
 			->withCreateButton('tags')
