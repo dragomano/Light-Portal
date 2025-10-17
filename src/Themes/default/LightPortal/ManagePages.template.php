@@ -75,7 +75,7 @@ function template_page_post(): void
 		method="post"
 		accept-charset="', Utils::$context['character_set'], '"
 		onsubmit="submitonce(this);"
-		x-data="{ title: \'', Utils::$context['lp_page']['title'], '\' }"
+		x-data="{ title: \'', addslashes(Utils::$context['lp_page']['title']), '\' }"
 	>
 		<div class="roundframe">
 			<div class="lp_tabs">

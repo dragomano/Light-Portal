@@ -32,7 +32,7 @@ function template_tag_post(): void
 		method="post"
 		accept-charset="', Utils::$context['character_set'], '"
 		onsubmit="submitonce(this);"
-		x-data="{ title: \'', Utils::$context['lp_tag']['title'], '\' }"
+		x-data="{ title: \'', addslashes(Utils::$context['lp_tag']['title']), '\' }"
 	>
 		<div class="roundframe', isset(Utils::$context['preview_content']) ? '' : ' noup', '">
 			<div class="lp_tabs">

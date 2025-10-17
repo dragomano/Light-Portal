@@ -243,7 +243,7 @@ function template_block_post(): void
 		method="post"
 		accept-charset="', Utils::$context['character_set'], '"
 		onsubmit="submitonce(this);"
-		x-data="{ title: \'', Utils::$context['lp_block']['title'], '\' }"
+		x-data="{ title: \'', addslashes(Utils::$context['lp_block']['title']), '\' }"
 	>
 		<div class="windowbg">
 			<div class="lp_tabs">

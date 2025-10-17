@@ -33,7 +33,7 @@ function template_category_post(): void
 		method="post"
 		accept-charset="', Utils::$context['character_set'], '"
 		onsubmit="submitonce(this);"
-		x-data="{ title: \'', Utils::$context['lp_category']['title'], '\' }"
+		x-data="{ title: \'', addslashes(Utils::$context['lp_category']['title']), '\' }"
 	>
 		<div class="roundframe', isset(Utils::$context['preview_content']) ? '' : ' noup', '">
 			<div class="lp_tabs">
