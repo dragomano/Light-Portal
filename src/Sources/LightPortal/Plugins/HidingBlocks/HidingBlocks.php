@@ -8,17 +8,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 04.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\HidingBlocks;
 
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\UI\Fields\CustomField;
@@ -33,7 +31,6 @@ class HidingBlocks extends Plugin
 
 	private array $classes = ['xs', 'sm', 'md', 'lg', 'xl'];
 
-	#[HookAttribute(PortalHook::init)]
 	public function init(): void
 	{
 		foreach (Utils::$context['lp_active_blocks'] as $id => $block) {
@@ -53,19 +50,16 @@ class HidingBlocks extends Plugin
 		}
 	}
 
-	#[HookAttribute(PortalHook::prepareBlockParams)]
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->baseParams[self::PARAM] = [];
 	}
 
-	#[HookAttribute(PortalHook::validateBlockParams)]
 	public function validateBlockParams(Event $e): void
 	{
 		$e->args->baseParams[self::PARAM] = FILTER_DEFAULT;
 	}
 
-	#[HookAttribute(PortalHook::prepareBlockFields)]
 	public function prepareBlockFields(Event $e): void
 	{
 		CustomField::make(self::PARAM, $this->txt[self::PARAM])

@@ -8,15 +8,13 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 01.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\Snowflakes;
 
 use Bugo\Compat\Theme;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 
@@ -36,7 +34,6 @@ class Snowflakes extends Plugin
 		'snowdrifts_count' => 10,
 	];
 
-	#[HookAttribute(PortalHook::init)]
 	public function init(): void
 	{
 		Theme::loadCSSFile('light_portal/snowflakes/snow.min.css');
@@ -53,7 +50,6 @@ class Snowflakes extends Plugin
 			});', true);
 	}
 
-	#[HookAttribute(PortalHook::addSettings)]
 	public function addSettings(Event $e): void
 	{
 		$this->addDefaultValues($this->params);
@@ -67,14 +63,12 @@ class Snowflakes extends Plugin
 		$settings[$this->name][] = ['range', 'snowdrifts_count', 'max' => 10];
 	}
 
-	#[HookAttribute(PortalHook::prepareAssets)]
 	public function prepareAssets(Event $e): void
 	{
 		$e->args->assets['css'][$this->name][] = 'https://cdn.jsdelivr.net/gh/Alaev-Co/snowflakes/dist/snow.min.css';
 		$e->args->assets['scripts'][$this->name][] = 'https://cdn.jsdelivr.net/gh/Alaev-Co/snowflakes/dist/Snow.min.js';
 	}
 
-	#[HookAttribute(PortalHook::credits)]
 	public function credits(Event $e): void
 	{
 		$e->args->links[] = [

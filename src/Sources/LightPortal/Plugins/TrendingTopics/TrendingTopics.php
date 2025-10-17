@@ -8,18 +8,16 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\TrendingTopics;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\NumberField;
@@ -38,10 +36,9 @@ if (! defined('LP_NAME'))
 class TrendingTopics extends Block
 {
 	private array $timePeriod = [
-		'1 day', '1 week', '2 week', '1 month', '2 month', '4 month', '6 month', '8 month', '1 year'
+		'1 day', '1 week', '2 week', '1 month', '2 month', '4 month', '6 month', '8 month', '1 year',
 	];
 
-	#[HookAttribute(PortalHook::prepareBlockParams)]
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -52,7 +49,6 @@ class TrendingTopics extends Block
 		];
 	}
 
-	#[HookAttribute(PortalHook::validateBlockParams)]
 	public function validateBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -63,7 +59,6 @@ class TrendingTopics extends Block
 		];
 	}
 
-	#[HookAttribute(PortalHook::prepareBlockFields)]
 	public function prepareBlockFields(Event $e): void
 	{
 		$options = $e->args->options;
@@ -138,7 +133,6 @@ class TrendingTopics extends Block
 		return $parameters['show_avatars'] ? Avatar::getWithItems($topics, 'poster') : $topics;
 	}
 
-	#[HookAttribute(PortalHook::prepareContent)]
 	public function prepareContent(Event $e): void
 	{
 		$parameters = $e->args->parameters;

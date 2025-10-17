@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 13.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\BlogMode;
@@ -25,9 +25,7 @@ use Bugo\LightPortal\Areas\Configs\BasicConfig;
 use Bugo\LightPortal\Database\PortalSqlInterface;
 use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Enums\ForumHook;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\Repositories\PageRepositoryInterface;
@@ -62,7 +60,6 @@ class BlogMode extends Plugin
 		$this->pageRepository = app(PageRepositoryInterface::class);
 	}
 
-	#[HookAttribute(PortalHook::addSettings)]
 	public function addSettings(Event $e): void
 	{
 		$this->addDefaultValues([
@@ -74,7 +71,6 @@ class BlogMode extends Plugin
 		$e->args->settings[$this->name][] = ['check', 'show_blogs_in_profiles'];
 	}
 
-	#[HookAttribute(PortalHook::frontModes)]
 	public function frontModes(Event $e): void
 	{
 		if ($this->request()->isNot($this->blogAction))
@@ -87,7 +83,6 @@ class BlogMode extends Plugin
 		Config::$modSettings['lp_frontpage_mode'] = $this->mode;
 	}
 
-	#[HookAttribute(PortalHook::extendBasicConfig)]
 	public function extendBasicConfig(Event $e): void
 	{
 		Lang::$txt['groups_light_portal_post_blog_entries'] = $this->txt['group_permission'];
@@ -110,7 +105,6 @@ class BlogMode extends Plugin
 		);
 	}
 
-	#[HookAttribute(PortalHook::init)]
 	public function init(): void
 	{
 		if (empty(User::$me->allowedTo('light_portal_view')))

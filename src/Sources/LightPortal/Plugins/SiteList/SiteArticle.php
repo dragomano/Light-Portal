@@ -8,7 +8,7 @@
  * @license Individual (for sponsors)
  *
  * @category plugin
- * @version 13.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\SiteList;

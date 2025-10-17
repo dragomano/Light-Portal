@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 11.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\RandomTopics;
@@ -16,11 +16,9 @@ namespace Bugo\LightPortal\Plugins\RandomTopics;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\CustomField;
@@ -38,7 +36,6 @@ if (! defined('LP_NAME'))
 #[PluginAttribute(icon: 'fas fa-random')]
 class RandomTopics extends Block
 {
-	#[HookAttribute(PortalHook::prepareBlockParams)]
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -49,7 +46,6 @@ class RandomTopics extends Block
 		];
 	}
 
-	#[HookAttribute(PortalHook::validateBlockParams)]
 	public function validateBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -60,7 +56,6 @@ class RandomTopics extends Block
 		];
 	}
 
-	#[HookAttribute(PortalHook::prepareBlockFields)]
 	public function prepareBlockFields(Event $e): void
 	{
 		$options = $e->args->options;
@@ -191,7 +186,6 @@ class RandomTopics extends Block
 		return $topics;
 	}
 
-	#[HookAttribute(PortalHook::prepareContent)]
 	public function prepareContent(Event $e): void
 	{
 		$parameters = $e->args->parameters;

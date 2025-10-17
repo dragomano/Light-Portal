@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 04.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\ExtendedMetaTags;
@@ -16,10 +16,8 @@ namespace Bugo\LightPortal\Plugins\ExtendedMetaTags;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\ForumHook;
 use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\UI\Fields\VirtualSelectField;
@@ -37,7 +35,6 @@ class ExtendedMetaTags extends Plugin
 
 	private array $meta_rating = ['', '14 years', 'adult', 'general', 'mature', 'restricted', 'save for kids'];
 
-	#[HookAttribute(PortalHook::init)]
 	public function init(): void
 	{
 		$this->applyHook(ForumHook::themeContext);
@@ -61,21 +58,18 @@ class ExtendedMetaTags extends Plugin
 		}
 	}
 
-	#[HookAttribute(PortalHook::preparePageParams)]
 	public function preparePageParams(Event $e): void
 	{
 		$e->args->params['meta_robots'] = '';
 		$e->args->params['meta_rating'] = '';
 	}
 
-	#[HookAttribute(PortalHook::validatePageParams)]
 	public function validatePageParams(Event $e): void
 	{
 		$e->args->params['meta_robots'] = FILTER_DEFAULT;
 		$e->args->params['meta_rating'] = FILTER_DEFAULT;
 	}
 
-	#[HookAttribute(PortalHook::preparePageFields)]
 	public function preparePageFields(Event $e): void
 	{
 		VirtualSelectField::make('meta_robots', $this->txt['meta_robots'])

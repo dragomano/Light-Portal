@@ -8,16 +8,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 01.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\MaterialDesignIcons;
 
 use Bugo\Compat\Theme;
 use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\Plugins\Plugin;
 
@@ -32,7 +30,6 @@ class MaterialDesignIcons extends Plugin
 {
 	private string $prefix = 'mdi mdi-';
 
-	#[HookAttribute(PortalHook::init)]
 	public function init(): void
 	{
 		Theme::loadCSSFile(
@@ -44,7 +41,6 @@ class MaterialDesignIcons extends Plugin
 		);
 	}
 
-	#[HookAttribute(PortalHook::prepareIconList)]
 	public function prepareIconList(Event $e): void
 	{
 		$mdIcons = $this->cache()->remember('all_md_icons', function () {
@@ -62,7 +58,6 @@ class MaterialDesignIcons extends Plugin
 		$e->args->icons = array_merge($e->args->icons, $mdIcons);
 	}
 
-	#[HookAttribute(PortalHook::credits)]
 	public function credits(Event $e): void
 	{
 		$e->args->links[] = [

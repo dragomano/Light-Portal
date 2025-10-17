@@ -8,15 +8,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 01.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\LineAwesomeIcons;
 
 use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 
@@ -29,13 +27,11 @@ if (! defined('LP_NAME'))
 #[PluginAttribute(type: PluginType::ICONS)]
 class LineAwesomeIcons extends Plugin
 {
-	#[HookAttribute(PortalHook::preloadStyles)]
 	public function preloadStyles(Event $e): void
 	{
 		$e->args->styles[] = 'https://cdn.jsdelivr.net/npm/line-awesome@1/dist/line-awesome/css/line-awesome.min.css';
 	}
 
-	#[HookAttribute(PortalHook::prepareIconList)]
 	public function prepareIconList(Event $e): void
 	{
 		$laIcons = $this->cache()->remember('all_la_icons', fn() => $this->getIconList(), 30 * 24 * 60 * 60);
@@ -43,7 +39,6 @@ class LineAwesomeIcons extends Plugin
 		$e->args->icons = array_merge($e->args->icons, $laIcons);
 	}
 
-	#[HookAttribute(PortalHook::credits)]
 	public function credits(Event $e): void
 	{
 		$e->args->links[] = [

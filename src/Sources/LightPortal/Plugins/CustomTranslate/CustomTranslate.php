@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 30.09.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\CustomTranslate;
@@ -17,9 +17,7 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\ForumHook;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\Utils\Str;
@@ -44,7 +42,6 @@ class CustomTranslate extends Plugin
 		'Svenska', 'Türkçe', 'Українська', '中文 (简体)',
 	];
 
-	#[HookAttribute(PortalHook::init)]
 	public function init(): void
 	{
 		$this->applyHook(ForumHook::menuButtons);
@@ -66,7 +63,6 @@ class CustomTranslate extends Plugin
 		Utils::$context['ctw_lang_titles'] = array_combine($this->langCodes, $this->langTitles);
 	}
 
-	#[HookAttribute(PortalHook::addLayerBelow)]
 	public function addLayerBelow(): void
 	{
 		if (! $this->canShowWidget() || empty(Utils::$context['ctw_lang_titles']))
@@ -110,7 +106,6 @@ class CustomTranslate extends Plugin
 			->addHtml($langLinks);
 	}
 
-	#[HookAttribute(PortalHook::addSettings)]
 	public function addSettings(Event $e): void
 	{
 		$e->args->settings[$this->name][] = ['multiselect', 'languages', array_combine(
@@ -118,7 +113,6 @@ class CustomTranslate extends Plugin
 		)];
 	}
 
-	#[HookAttribute(PortalHook::credits)]
 	public function credits(Event $e): void
 	{
 		$e->args->links[] = [

@@ -8,18 +8,16 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 10.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleChat;
 
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\NumberField;
@@ -56,20 +54,17 @@ class SimpleChat extends Block
 		$this->chat = new Chat($this->name, $this->sql);
 	}
 
-	#[HookAttribute(PortalHook::addSettings)]
 	public function addSettings(): void
 	{
 		$table = new Table($this->sql);
 		$table->createTable();
 	}
 
-	#[HookAttribute(PortalHook::prepareBlockParams)]
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = $this->defaultParams;
 	}
 
-	#[HookAttribute(PortalHook::validateBlockParams)]
 	public function validateBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -80,7 +75,6 @@ class SimpleChat extends Block
 		];
 	}
 
-	#[HookAttribute(PortalHook::prepareBlockFields)]
 	public function prepareBlockFields(Event $e): void
 	{
 		$options = $e->args->options;
@@ -103,7 +97,6 @@ class SimpleChat extends Block
 			->setValue($options['refresh_interval']);
 	}
 
-	#[HookAttribute(PortalHook::prepareContent)]
 	public function prepareContent(Event $e): void
 	{
 		$this->loadDependencies();
@@ -129,7 +122,6 @@ class SimpleChat extends Block
 		]);
 	}
 
-	#[HookAttribute(PortalHook::onBlockRemoving)]
 	public function onBlockRemoving(Event $e): void
 	{
 		$delete = $this->sql->delete('lp_simple_chat_messages')->where(['block_id' => $e->args->items]);

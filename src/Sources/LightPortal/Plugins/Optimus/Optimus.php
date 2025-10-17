@@ -8,16 +8,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\Optimus;
 
 use Bugo\Compat\Config;
 use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\Optimus\Prime;
@@ -28,14 +26,12 @@ if (! defined('LP_NAME'))
 #[PluginAttribute(type: PluginType::ARTICLE)]
 class Optimus extends Plugin
 {
-	#[HookAttribute(PortalHook::addSettings)]
 	public function addSettings(Event $e): void
 	{
 		$e->args->settings[$this->name][] = ['check', 'use_topic_descriptions'];
 		$e->args->settings[$this->name][] = ['check', 'show_topic_keywords'];
 	}
 
-	#[HookAttribute(PortalHook::frontTopics)]
 	public function frontTopics(Event $e): void
 	{
 		if (empty($this->context['use_topic_descriptions']) || ! $this->isOptimusLoaded())
@@ -44,7 +40,6 @@ class Optimus extends Plugin
 		$e->args->columns[] = 'optimus_description';
 	}
 
-	#[HookAttribute(PortalHook::frontTopicsRow)]
 	public function frontTopicsRow(Event $e): void
 	{
 		if (! $this->isOptimusLoaded())

@@ -8,15 +8,13 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 01.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\Calculator;
 
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\Utils\Traits\HasView;
 
@@ -31,7 +29,6 @@ class Calculator extends Block
 {
 	use HasView;
 
-	#[HookAttribute(PortalHook::prepareContent)]
 	public function prepareContent(Event $e): void
 	{
 		echo $this->view(params: ['id' => $e->args->id]);

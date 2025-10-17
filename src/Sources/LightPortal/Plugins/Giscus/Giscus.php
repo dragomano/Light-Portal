@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 01.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\Giscus;
@@ -16,9 +16,7 @@ namespace Bugo\LightPortal\Plugins\Giscus;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\Utils\Setting;
@@ -61,13 +59,11 @@ class Giscus extends Plugin
 		'fro'                    => 'Fro',
 	];
 
-	#[HookAttribute(PortalHook::init)]
 	public function init(): void
 	{
 		Lang::$txt['lp_comment_block_set'][$this->name] = 'Giscus';
 	}
 
-	#[HookAttribute(PortalHook::addSettings)]
 	public function addSettings(Event $e): void
 	{
 		$this->addDefaultValues([
@@ -103,7 +99,6 @@ class Giscus extends Plugin
 		$settings[$this->name][] = ['select', 'theme', $this->themes];
 	}
 
-	#[HookAttribute(PortalHook::comments)]
 	public function comments(): void
 	{
 		if (Setting::getCommentBlock() !== $this->name)

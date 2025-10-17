@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 10.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleChat;

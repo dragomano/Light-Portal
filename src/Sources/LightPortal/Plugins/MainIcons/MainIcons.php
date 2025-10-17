@@ -8,15 +8,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 01.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\MainIcons;
 
 use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 
@@ -31,7 +29,6 @@ class MainIcons extends Plugin
 {
 	private string $prefix = 'main_icons ';
 
-	#[HookAttribute(PortalHook::prepareIconList)]
 	public function prepareIconList(Event $e): void
 	{
 		$mainIcons = $this->cache()->remember('all_main_icons', function () {

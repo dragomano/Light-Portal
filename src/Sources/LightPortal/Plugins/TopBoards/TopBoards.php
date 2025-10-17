@@ -8,15 +8,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 01.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\TopBoards;
 
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\Plugins\SsiBlock;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
@@ -30,7 +28,6 @@ if (! defined('LP_NAME'))
 #[PluginAttribute(icon: 'fas fa-balance-scale-left')]
 class TopBoards extends SsiBlock
 {
-	#[HookAttribute(PortalHook::prepareBlockParams)]
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -40,7 +37,6 @@ class TopBoards extends SsiBlock
 		];
 	}
 
-	#[HookAttribute(PortalHook::validateBlockParams)]
 	public function validateBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -50,7 +46,6 @@ class TopBoards extends SsiBlock
 		];
 	}
 
-	#[HookAttribute(PortalHook::prepareBlockFields)]
 	public function prepareBlockFields(Event $e): void
 	{
 		$options = $e->args->options;
@@ -67,7 +62,6 @@ class TopBoards extends SsiBlock
 			->setValue($options['show_numbers_only']);
 	}
 
-	#[HookAttribute(PortalHook::prepareContent)]
 	public function prepareContent(Event $e): void
 	{
 		$parameters = $e->args->parameters;

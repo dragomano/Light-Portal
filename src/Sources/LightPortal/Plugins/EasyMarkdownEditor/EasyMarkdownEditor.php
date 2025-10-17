@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 06.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\EasyMarkdownEditor;
@@ -16,9 +16,7 @@ namespace Bugo\LightPortal\Plugins\EasyMarkdownEditor;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\Editor;
 
 if (! defined('LP_NAME'))
@@ -26,7 +24,6 @@ if (! defined('LP_NAME'))
 
 class EasyMarkdownEditor extends Editor
 {
-	#[HookAttribute(PortalHook::prepareEditor)]
 	public function prepareEditor(Event $e): void
 	{
 		if (! $this->isContentSupported($e->args->object))
@@ -162,7 +159,6 @@ class EasyMarkdownEditor extends Editor
 		});', true);
 	}
 
-	#[HookAttribute(PortalHook::credits)]
 	public function credits(Event $e): void
 	{
 		$e->args->links[] = [

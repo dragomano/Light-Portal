@@ -8,17 +8,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 30.09.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\SimpleFeeder;
 
 use Bugo\Compat\Config;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\UrlField;
@@ -31,7 +29,6 @@ if (! defined('LP_NAME'))
 #[PluginAttribute(icon: 'fas fa-rss')]
 class SimpleFeeder extends Block
 {
-	#[HookAttribute(PortalHook::prepareBlockParams)]
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -40,7 +37,6 @@ class SimpleFeeder extends Block
 		];
 	}
 
-	#[HookAttribute(PortalHook::validateBlockParams)]
 	public function validateBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -49,7 +45,6 @@ class SimpleFeeder extends Block
 		];
 	}
 
-	#[HookAttribute(PortalHook::prepareBlockFields)]
 	public function prepareBlockFields(Event $e): void
 	{
 		$options = $e->args->options;
@@ -77,7 +72,6 @@ class SimpleFeeder extends Block
 		return $rss ? ['data' => $rss->channel->item] : [];
 	}
 
-	#[HookAttribute(PortalHook::prepareContent)]
 	public function prepareContent(Event $e): void
 	{
 		$parameters = $e->args->parameters;

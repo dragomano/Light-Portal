@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 30.09.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\Disqus;
@@ -17,9 +17,7 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\Utils\Setting;
@@ -31,13 +29,11 @@ if (! defined('LP_NAME'))
 #[PluginAttribute(type: PluginType::COMMENT)]
 class Disqus extends Plugin
 {
-	#[HookAttribute(PortalHook::init)]
 	public function init(): void
 	{
 		Lang::$txt['lp_comment_block_set'][$this->name] = 'Disqus';
 	}
 
-	#[HookAttribute(PortalHook::addSettings)]
 	public function addSettings(Event $e): void
 	{
 		$e->args->settings[$this->name][] = [
@@ -48,7 +44,6 @@ class Disqus extends Plugin
 		];
 	}
 
-	#[HookAttribute(PortalHook::comments)]
 	public function comments(): void
 	{
 		if (Setting::getCommentBlock() !== $this->name || empty($this->context['shortname']))
@@ -70,7 +65,6 @@ class Disqus extends Plugin
 			</script>';
 	}
 
-	#[HookAttribute(PortalHook::frontAssets)]
 	public function frontAssets(): void
 	{
 		if (Setting::getCommentBlock() !== $this->name || empty(Utils::$context['lp_frontpage_articles']))

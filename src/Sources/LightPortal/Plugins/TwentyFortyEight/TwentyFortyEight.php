@@ -8,14 +8,12 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 04.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\TwentyFortyEight;
 
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\GameBlock;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 
 if (! defined('LP_NAME'))
@@ -24,7 +22,6 @@ if (! defined('LP_NAME'))
 #[PluginAttribute(icon: 'fas fa-table-cells')]
 class TwentyFortyEight extends GameBlock
 {
-	#[HookAttribute(PortalHook::prepareContent)]
 	public function prepareContent(): void
 	{
 		echo '

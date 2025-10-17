@@ -7,12 +7,6 @@ order: 4
 
 Light Portal is wonderfully extensible thanks to plugins. Hooks allow plugins to interact with various components of the portal.
 
-:::warning Important
-
-Starting from version 3.0, hooks are defined using PHP attributes. You can name methods anything - the main thing is to specify the required `#[HookAttribute(PortalHook::hookName)]` attribute.
-
-:::
-
 ## Basic hooks
 
 ### init
@@ -20,7 +14,6 @@ Starting from version 3.0, hooks are defined using PHP attributes. You can name 
 > redefining $txt variables, running SMF hooks, etc.
 
 ```php
-#[HookAttribute(PortalHook::init)]
 public function init(): void
 {
     /* call integrate_actions hook */
@@ -41,7 +34,6 @@ public function actions(): void
 > parsing content of custom block/page types
 
 ```php
-#[HookAttribute(PortalHook::parseContent)]
 public function parseContent(Event $e): void
 {
     $e->args->content = Content::parse($e->args->content, 'html');
@@ -53,7 +45,6 @@ public function parseContent(Event $e): void
 > adding custom content of your plugin
 
 ```php
-#[HookAttribute(PortalHook::prepareContent)]
 public function prepareContent(Event $e): void
 {
     $this->setTemplate();
@@ -71,7 +62,6 @@ public function prepareContent(Event $e): void
 > adding any code on block/page editing area
 
 ```php
-#[HookAttribute(PortalHook::prepareEditor)]
 public function prepareEditor(Event $e): void
 {
     if ($e->args->object['type'] !== 'markdown')
@@ -95,7 +85,6 @@ public function prepareEditor(Event $e): void
 ::: code-group
 
 ```php [PHP]
-#[HookAttribute(PortalHook::preloadStyles)]
 public function preloadStyles(Event $e): void
 {
     $e->args->styles[] = 'https://cdn.jsdelivr.net/npm/@flaticon/flaticon-uicons@1/css/all/all.css';
@@ -120,7 +109,6 @@ public function preloadStyles(Event $e): void
 > adding your block parameters
 
 ```php
-#[HookAttribute(PortalHook::prepareBlockParams)]
 public function prepareBlockParams(Event $e): void
 {
     $e->args->params = [
@@ -138,7 +126,6 @@ public function prepareBlockParams(Event $e): void
 > adding custom validating rules when block adding/editing
 
 ```php
-#[HookAttribute(PortalHook::validateBlockParams)]
 public function validateBlockParams(Event $e): void
 {
     $e->args->params = [
@@ -156,7 +143,6 @@ public function validateBlockParams(Event $e): void
 > adding custom error handling when block adding/editing
 
 ```php
-#[HookAttribute(PortalHook::findBlockErrors)]
 public function findBlockErrors(Event $e): void
 {
     if ($e->args->data['placement'] !== 'ads')
@@ -175,7 +161,6 @@ public function findBlockErrors(Event $e): void
 > adding custom fields to the block post area
 
 ```php
-#[HookAttribute(PortalHook::prepareBlockFields)]
 public function prepareBlockFields(Event $e): void
 {
     RadioField::make('display_type', $this->txt['display_type'])
@@ -197,7 +182,6 @@ public function prepareBlockFields(Event $e): void
 > custom actions on removing blocks
 
 ```php
-#[HookAttribute(PortalHook::onBlockRemoving)]
 public function onBlockRemoving(Event $e): void
 {
     foreach ($e->args->items as $item) {
@@ -213,7 +197,6 @@ public function onBlockRemoving(Event $e): void
 > adding your page parameters
 
 ```php
-#[HookAttribute(PortalHook::preparePageParams)]
 public function preparePageParams(Event $e): void
 {
     $e->args->params['meta_robots'] = '';
@@ -226,7 +209,6 @@ public function preparePageParams(Event $e): void
 > adding custom validating rules when page adding/editing
 
 ```php
-#[HookAttribute(PortalHook::validatePageParams)]
 public function validatePageParams(Event $e): void
 {
     $e->args->params['meta_robots'] = FILTER_DEFAULT;
@@ -243,7 +225,6 @@ public function validatePageParams(Event $e): void
 > adding custom fields to the page post area
 
 ```php
-#[HookAttribute(PortalHook::preparePageFields)]
 public function preparePageFields(Event $e): void
 {
     VirtualSelectField::make('meta_robots', $this->txt['meta_robots'])
@@ -262,7 +243,6 @@ public function preparePageFields(Event $e): void
 > custom actions on custom page import
 
 ```php
-#[HookAttribute(PortalHook::onCustomPageImport)]
 public function onCustomPageImport(Event $e): void
 {
     $e->args->items = array_map(function ($item) {
@@ -278,7 +258,6 @@ public function onCustomPageImport(Event $e): void
 > custom actions on removing pages
 
 ```php
-#[HookAttribute(PortalHook::onPageRemoving)]
 public function onPageRemoving(Event $e): void
 {
     foreach ($e->args->items as $item) {
@@ -292,7 +271,6 @@ public function onPageRemoving(Event $e): void
 > additional preparing the portal current page data
 
 ```php
-#[HookAttribute(PortalHook::preparePageData)]
 public function preparePageData(Event $e): void
 {
     $this->setTemplate()->withLayer('ads_placement_page');
@@ -312,7 +290,6 @@ public function preparePageData(Event $e): void
 > adding custom comment script to the portal current page view
 
 ```php
-#[HookAttribute(PortalHook::comments)]
 public function comments(): void
 {
     if (! empty(Config::$modSettings['lp_show_comment_block']) && Config::$modSettings['lp_show_comment_block'] === 'disqus' && ! empty($this->context['shortname'])) {
@@ -330,7 +307,6 @@ public function comments(): void
 > adding custom buttons below each comment
 
 ```php
-#[HookAttribute(PortalHook::commentButtons)]
 public function commentButtons(Event $e): void
 {
     if (empty(Utils::$context['lp_page']['options']['allow_reactions']))
@@ -358,7 +334,6 @@ public function commentButtons(Event $e): void
 > adding custom settings of your plugin
 
 ```php
-#[HookAttribute(PortalHook::addSettings)]
 public function addSettings(Event $e): void
 {
     $e->args->settings[$this->name][] = [
@@ -375,7 +350,6 @@ public function addSettings(Event $e): void
 > additional actions after plugin settings saving
 
 ```php
-#[HookAttribute(PortalHook::saveSettings)]
 public function saveSettings(Event $e): void
 {
     $this->cache()->flush();
@@ -387,7 +361,6 @@ public function saveSettings(Event $e): void
 > saving external styles, scripts, and images to improve resource speed loading
 
 ```php
-#[HookAttribute(PortalHook::prepareAssets)]
 public function prepareAssets(Event $e): void
 {
     $e->args->assets['css'][$this->name][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css';
@@ -402,7 +375,6 @@ public function prepareAssets(Event $e): void
 > adding custom modes for the frontpage
 
 ```php
-#[HookAttribute(PortalHook::frontModes)]
 public function frontModes(Event $e): void
 {
     $$e->args->modes[$this->mode] = CustomArticle::class;
@@ -416,7 +388,6 @@ public function frontModes(Event $e): void
 > adding custom logic on the frontpage
 
 ```php
-#[HookAttribute(PortalHook::frontLayouts)]
 public function frontLayouts(Event $e): void
 {
     if (! str_contains($e->args->layout, $this->extension))
@@ -431,7 +402,6 @@ public function frontLayouts(Event $e): void
 > lets add custom layout extensions
 
 ```php
-#[HookAttribute(PortalHook::layoutExtensions)]
 public function layoutExtensions(Event $e): void
 {
     $e->args->extensions[] = '.twig';
@@ -443,7 +413,6 @@ public function layoutExtensions(Event $e): void
 > adding custom scripts and styles on the frontpage
 
 ```php
-#[HookAttribute(PortalHook::frontAssets)]
 public function frontAssets(): void
 {
     $this->loadExternalResources([
@@ -458,7 +427,6 @@ public function frontAssets(): void
 > adding custom columns, tables, wheres, params and orders to _init_ function
 
 ```php
-#[HookAttribute(PortalHook::frontTopics)]
 public function frontTopics(Event $e): void
 {
     $e->args->wheres[] = ['t.num_replies > ?' => 1];
@@ -470,7 +438,6 @@ public function frontTopics(Event $e): void
 > various manipulations with query results to _getData_ function
 
 ```php
-#[HookAttribute(PortalHook::frontTopicsRow)]
 public function frontTopicsRow(Event $e): void
 {
     $e->args->articles[$e->args->row['id_topic']]['replies'] = $e->args->row['num_replies'] ?? 0;
@@ -479,10 +446,9 @@ public function frontTopicsRow(Event $e): void
 
 ### frontPages
 
-> adding custom columns, tables, wheres, params and orders to _init_ function
+> adding custom columns, joins, where conditions, params and orders to _init_ function
 
 ```php
-#[HookAttribute(PortalHook::frontPages)]
 public function frontPages(Event $e): void
 {
     $e->args->joins[] = fn(Select $select) => $select->join(
@@ -501,7 +467,6 @@ public function frontPages(Event $e): void
 > various manipulations with query results to _getData_ function
 
 ```php
-#[HookAttribute(PortalHook::frontPagesRow)]
 public function frontPagesRow(Event $e): void
 {
     $e->args->articles[$e->args->row['id']]['comments'] = $e->args->row['num_comments'] ?? 0;
@@ -513,7 +478,6 @@ public function frontPagesRow(Event $e): void
 > adding custom columns, tables, wheres, params and orders to _init_ function
 
 ```php
-#[HookAttribute(PortalHook::frontBoards)]
 public function frontBoards(Event $e): void
 {
     $e->args->columns['num_topics'] = new Expression('MIN(b.num_topics)');
@@ -527,7 +491,6 @@ public function frontBoards(Event $e): void
 > various manipulations with query results to _getData_ function
 
 ```php
-#[HookAttribute(PortalHook::frontBoardsRow)]
 public function frontBoardsRow(Event $e): void
 {
     $e->args->articles[$e->args->row['id_board']]['custom_field'] = 'value';
@@ -541,7 +504,6 @@ public function frontBoardsRow(Event $e): void
 > adding custom list of icons (instead of FontAwesome)
 
 ```php
-#[HookAttribute(PortalHook::prepareIconList)]
 public function prepareIconList(Event $e): void
 {
     if (($mainIcons = $this->cache()->get('all_main_icons', 30 * 24 * 60 * 60)) === null) {
@@ -564,7 +526,6 @@ public function prepareIconList(Event $e): void
 > adding custom template for displaying icons
 
 ```php
-#[HookAttribute(PortalHook::prepareIconTemplate)]
 public function prepareIconTemplate(Event $e): void
 {
     $e->args->template = "<i class=\"custom-class {$e->args->icon}\" aria-hidden=\"true\"></i>";
@@ -576,7 +537,6 @@ public function prepareIconTemplate(Event $e): void
 > ability to extend interface icons available via `Utils::$context['lp_icon_set']` array
 
 ```php
-#[HookAttribute(PortalHook::changeIconSet)]
 public function changeIconSet(Event $e): void
 {
     $e->args->set['snowman'] = 'fa-solid fa-snowman';
@@ -590,7 +550,6 @@ public function changeIconSet(Event $e): void
 > adding custom configs in the portal basic settings area
 
 ```php
-#[HookAttribute(PortalHook::extendBasicConfig)]
 public function extendBasicConfig(Event $e): void
 {
     $e->args->configVars[] = ['text', 'option_key', 'subtext' => $this->txt['my_mod_description']];
@@ -602,7 +561,6 @@ public function extendBasicConfig(Event $e): void
 > adding the portal custom areas in the Administration Center
 
 ```php
-#[HookAttribute(PortalHook::extendAdminAreas)]
 public function extendAdminAreas(Event $e): void
 {
     if (User::$info['is_admin']) {
@@ -618,7 +576,6 @@ public function extendAdminAreas(Event $e): void
 > adding custom tabs into Block area settings
 
 ```php
-#[HookAttribute(PortalHook::extendBlockAreas)]
 public function extendBlockAreas(Event $e): void
 {
     $e->args->areas['import_from_tp'] = [new BlockImport(), 'main'];
@@ -630,7 +587,6 @@ public function extendBlockAreas(Event $e): void
 > adding custom tabs into Page area settings
 
 ```php
-#[HookAttribute(PortalHook::extendPageAreas)]
 public function extendPageAreas(Event $e): void
 {
     $e->args->areas['import_from_ep'] = [new Import(), 'main'];
@@ -642,7 +598,6 @@ public function extendPageAreas(Event $e): void
 > adding custom tabs into Category area settings
 
 ```php
-#[HookAttribute(PortalHook::extendCategoryAreas)]
 public function extendCategoryAreas(Event $e): void
 {
     $e->args->areas['import_from_tp'] = [new Import(), 'main'];
@@ -658,7 +613,6 @@ public function extendCategoryAreas(Event $e): void
 > adding custom tabs into Plugin area settings
 
 ```php
-#[HookAttribute(PortalHook::extendPluginAreas)]
 public function extendPluginAreas(Event $e): void
 {
     $e->args->areas['add'] = [new Handler(), 'add'];
@@ -672,7 +626,6 @@ public function extendPluginAreas(Event $e): void
 > adding copyrights of used libraries/scripts, etc.
 
 ```php
-#[HookAttribute(PortalHook::credits)]
 public function credits(Event $e): void
 {
     $e->args->links[] = [
@@ -692,7 +645,6 @@ public function credits(Event $e): void
 > handling download requests for portal attachments
 
 ```php
-#[HookAttribute(PortalHook::downloadRequest)]
 public function downloadRequest(Event $e): void
 {
     if ($e->args->attachRequest['id'] === (int) $this->request()->get('attach')) {

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 10.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\TopPages;
@@ -17,11 +17,9 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\Permission;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Status;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\NumberField;
@@ -37,7 +35,6 @@ if (! defined('LP_NAME'))
 #[PluginAttribute(icon: 'fas fa-balance-scale-left')]
 class TopPages extends Block
 {
-	#[HookAttribute(PortalHook::prepareBlockParams)]
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -47,7 +44,6 @@ class TopPages extends Block
 		];
 	}
 
-	#[HookAttribute(PortalHook::validateBlockParams)]
 	public function validateBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -57,7 +53,6 @@ class TopPages extends Block
 		];
 	}
 
-	#[HookAttribute(PortalHook::prepareBlockFields)]
 	public function prepareBlockFields(Event $e): void
 	{
 		$options = $e->args->options;
@@ -125,7 +120,6 @@ class TopPages extends Block
 		return $pages;
 	}
 
-	#[HookAttribute(PortalHook::prepareContent)]
 	public function prepareContent(Event $e): void
 	{
 		$parameters = $e->args->parameters;

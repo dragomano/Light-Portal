@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 01.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\MainMenu;
@@ -18,9 +18,7 @@ use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\Action;
 use Bugo\LightPortal\Enums\ForumHook;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\Utils\Language;
@@ -39,7 +37,6 @@ class MainMenu extends Plugin
 {
 	use HasView;
 
-	#[HookAttribute(PortalHook::init)]
 	public function init(): void
 	{
 		$this->applyHook(ForumHook::menuButtons);
@@ -59,7 +56,6 @@ class MainMenu extends Plugin
 		}
 	}
 
-	#[HookAttribute(PortalHook::frontLayouts)]
 	public function frontLayouts(): void
 	{
 		if (
@@ -72,7 +68,6 @@ class MainMenu extends Plugin
 		}
 	}
 
-	#[HookAttribute(PortalHook::addSettings)]
 	public function addSettings(Event $e): void
 	{
 		$e->args->settings[$this->name][] = ['callback', 'items', $this->getTemplate()];
@@ -87,7 +82,6 @@ class MainMenu extends Plugin
 		return $this->view();
 	}
 
-	#[HookAttribute(PortalHook::saveSettings)]
 	public function saveSettings(Event $e): void
 	{
 		if (! isset($e->args->settings['items']))

@@ -7,12 +7,6 @@ order: 2
 
 Plugins are the extensions that expand the capabilities of the Light Portal. To create your own plugin, just follow the instructions below.
 
-:::warning Important
-
-Starting from version 3.0, Light Portal uses PHP attributes for plugin configuration. Methods can be named anything - the main thing is to specify the required attributes for hooks. The old system with properties `$type`, `$icon` is still supported for backward compatibility, but it is recommended to use the new enum-based system for better type safety.
-
-:::
-
 ## Using PluginType enum
 
 For better type safety and IDE support, you can use the `PluginType` enum instead of string values for the `type` parameter:
@@ -50,7 +44,7 @@ Available PluginType values:
 - `PluginType::SEO` - For SEO
 - `PluginType::SSI` - For blocks with SSI functions
 
-For plugins extending `Block`, `Games`, or `SSI` classes, the type is automatically inherited and doesn't need to be specified explicitly.
+For plugins extending `Block`, `Editor`, `GameBlock`, or `SSIBlock` classes, the type is automatically inherited and doesn't need to be specified explicitly.
 
 :::info Note
 
@@ -103,9 +97,7 @@ namespace Bugo\LightPortal\Plugins\HelloWorld;
 
 use Bugo\Compat\{Config, Lang, Utils};
 use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 
@@ -115,7 +107,6 @@ if (! defined('LP_NAME'))
 #[PluginAttribute(icon: 'fas fa-globe')]
 class HelloWorld extends Plugin
 {
-    #[HookAttribute(PortalHook::init)]
     public function init(): void
     {
         echo 'Hello world!';
@@ -157,9 +148,7 @@ Add this plugin as a block type to display top topics on your portal pages.
 
 namespace Bugo\LightPortal\Plugins\TopTopics;
 
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\Plugins\SSI;
 
@@ -169,7 +158,6 @@ if (! defined('LP_NAME'))
 #[PluginAttribute(icon: 'fas fa-star')]
 class TopTopics extends SSI
 {
-    #[HookAttribute(PortalHook::prepareContent)]
     public function prepareContent(Event $e): void
     {
         $data = $this->getFromSSI('topTopics', 'views', 10, 'array');
@@ -194,9 +182,7 @@ The Calculator plugin is a simple block that displays a calculator widget. Here'
 
 namespace Bugo\LightPortal\Plugins\Calculator;
 
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Utils\Traits\HasView;
@@ -209,7 +195,6 @@ class Calculator extends Block
 {
     use HasView;
 
-    #[HookAttribute(PortalHook::prepareContent)]
     public function prepareContent(Event $e): void
     {
         echo $this->view(params: ['id' => $e->args->id]);
@@ -287,8 +272,6 @@ This plugin can be used in blocks or pages to display formatted dates. The `init
 
 namespace Bugo\LightPortal\Plugins\CarbonDate;
 
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Carbon\Carbon;
@@ -299,7 +282,6 @@ if (! defined('LP_NAME'))
 #[PluginAttribute]
 class CarbonDate extends Plugin
 {
-    #[HookAttribute(PortalHook::init)]
     public function init(): void
     {
         require_once __DIR__ . '/vendor/autoload.php';

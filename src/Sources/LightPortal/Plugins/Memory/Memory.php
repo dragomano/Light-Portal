@@ -8,17 +8,15 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 01.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\Memory;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\GameBlock;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 
 if (! defined('LP_NAME'))
@@ -30,13 +28,11 @@ if (! defined('LP_NAME'))
 #[PluginAttribute(icon: 'fas fa-memory')]
 class Memory extends GameBlock
 {
-	#[HookAttribute(PortalHook::prepareAssets)]
 	public function prepareAssets(Event $e): void
 	{
 		$e->args->assets['scripts'][$this->name][] = Config::$boardurl . '/Sources/LightPortal/Plugins/Memory/memory.js';
 	}
 
-	#[HookAttribute(PortalHook::prepareContent)]
 	public function prepareContent(): void
 	{
 		$this->handleApi();
@@ -48,7 +44,6 @@ class Memory extends GameBlock
 		</script>';
 	}
 
-	#[HookAttribute(PortalHook::credits)]
 	public function credits(Event $e): void
 	{
 		$e->args->links[] = [

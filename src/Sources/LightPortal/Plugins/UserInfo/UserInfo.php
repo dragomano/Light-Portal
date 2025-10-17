@@ -8,16 +8,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 30.09.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\UserInfo;
 
 use Bugo\Compat\User;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\Utils\Traits\HasView;
 
@@ -36,7 +34,6 @@ class UserInfo extends Block
 		return User::$loaded[User::$me->id]->format();
 	}
 
-	#[HookAttribute(PortalHook::prepareContent)]
 	public function prepareContent(Event $e): void
 	{
 		if (User::$me->is_guest) {

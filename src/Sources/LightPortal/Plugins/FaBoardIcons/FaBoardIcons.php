@@ -8,16 +8,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 01.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\FaBoardIcons;
 
 use Bugo\Compat\Config;
 use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\Utils\Str;
@@ -28,7 +26,6 @@ if (! defined('LP_NAME'))
 #[PluginAttribute(type: PluginType::ARTICLE)]
 class FaBoardIcons extends Plugin
 {
-	#[HookAttribute(PortalHook::frontBoards)]
 	public function frontBoards(Event $e): void
 	{
 		if (! $this->isBaseModInstalled())
@@ -37,7 +34,6 @@ class FaBoardIcons extends Plugin
 		$e->args->columns[] = 'b.fabi_icon, b.fabi_color';
 	}
 
-	#[HookAttribute(PortalHook::frontBoardsRow)]
 	public function frontBoardsRow(Event $e): void
 	{
 		if (! $this->isBaseModInstalled())

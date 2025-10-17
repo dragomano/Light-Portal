@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 11.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\Reactions;
@@ -17,9 +17,7 @@ use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
@@ -38,26 +36,22 @@ class Reactions extends Plugin
 
 	private const PARAM = 'allow_reactions';
 
-	#[HookAttribute(PortalHook::preparePageParams)]
 	public function preparePageParams(Event $e): void
 	{
 		$e->args->params[self::PARAM] = false;
 	}
 
-	#[HookAttribute(PortalHook::validatePageParams)]
 	public function validatePageParams(Event $e): void
 	{
 		$e->args->params[self::PARAM] = FILTER_VALIDATE_BOOLEAN;
 	}
 
-	#[HookAttribute(PortalHook::preparePageFields)]
 	public function preparePageFields(Event $e): void
 	{
 		CheckboxField::make(self::PARAM, $this->txt[self::PARAM])
 			->setValue($e->args->options[self::PARAM]);
 	}
 
-	#[HookAttribute(PortalHook::preparePageData)]
 	public function preparePageData(Event $e): void
 	{
 		[$data, $isAuthor] = [$e->args->data, $e->args->isAuthor];
@@ -124,7 +118,6 @@ class Reactions extends Plugin
 		}
 	}
 
-	#[HookAttribute(PortalHook::afterPageContent)]
 	public function afterPageContent(): void
 	{
 		if (empty(Utils::$context['lp_page']['options'][self::PARAM]))
@@ -133,7 +126,6 @@ class Reactions extends Plugin
 		echo $this->view('page_reactions');
 	}
 
-	#[HookAttribute(PortalHook::commentButtons)]
 	public function commentButtons(Event $e): void
 	{
 		if (empty(Utils::$context['lp_page']['options'][self::PARAM]))

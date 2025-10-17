@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 04.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\AdsBlock;
@@ -20,11 +20,9 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\ForumHook;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\Plugins\AdsBlock\Hooks\MenuButtons;
 use Bugo\LightPortal\Plugins\AdsBlock\Hooks\PrepareDisplayContext;
@@ -44,7 +42,6 @@ class AdsBlock extends Block
 {
 	use RepliesComparisonTrait;
 
-	#[HookAttribute(PortalHook::init)]
 	public function init(): void
 	{
 		if (! function_exists('lp_show_blocks')) {
@@ -55,7 +52,6 @@ class AdsBlock extends Block
 		$this->applyHook(ForumHook::prepareDisplayContext, PrepareDisplayContext::class);
 	}
 
-	#[HookAttribute(PortalHook::extendBlockAreas)]
 	public function extendBlockAreas(): void
 	{
 		$form = FormBuilder::make('ads_block_form')
@@ -80,13 +76,11 @@ class AdsBlock extends Block
 		Utils::$context['insert_after_template'] .= ob_get_clean();
 	}
 
-	#[HookAttribute(PortalHook::addSettings)]
 	public function addSettings(Event $e): void
 	{
 		$e->args->settings[$this->name][] = ['range', 'min_replies'];
 	}
 
-	#[HookAttribute(PortalHook::prepareBlockParams)]
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -100,7 +94,6 @@ class AdsBlock extends Block
 		];
 	}
 
-	#[HookAttribute(PortalHook::validateBlockParams)]
 	public function validateBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -113,7 +106,6 @@ class AdsBlock extends Block
 		];
 	}
 
-	#[HookAttribute(PortalHook::prepareBlockFields)]
 	public function prepareBlockFields(Event $e): void
 	{
 		Theme::addInlineCss('
@@ -178,7 +170,6 @@ class AdsBlock extends Block
 			>');
 	}
 
-	#[HookAttribute(PortalHook::findBlockErrors)]
 	public function findBlockErrors(Event $e): void
 	{
 		if ($e->args->data['placement'] !== 'ads')
@@ -191,13 +182,11 @@ class AdsBlock extends Block
 		}
 	}
 
-	#[HookAttribute(PortalHook::parseContent)]
 	public function parseContent(Event $e): void
 	{
 		$e->args->content = Content::parse($e->args->content, 'html');
 	}
 
-	#[HookAttribute(PortalHook::addLayerAbove)]
 	public function addLayerAbove(): void
 	{
 		match (true) {
@@ -208,7 +197,6 @@ class AdsBlock extends Block
 		};
 	}
 
-	#[HookAttribute(PortalHook::addLayerBelow)]
 	public function addLayerBelow(): void
 	{
 		match (true) {

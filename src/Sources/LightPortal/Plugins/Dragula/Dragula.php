@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 30.09.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\Dragula;
@@ -16,9 +16,7 @@ namespace Bugo\LightPortal\Plugins\Dragula;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\LightPortal\Enums\Placement;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 
@@ -31,7 +29,6 @@ if (! defined('LP_NAME'))
 #[PluginAttribute]
 class Dragula extends Plugin
 {
-	#[HookAttribute(PortalHook::init)]
 	public function init(): void
 	{
 		if (! User::$me->allowedTo('admin_forum'))
@@ -51,7 +48,6 @@ class Dragula extends Plugin
 		Theme::addInlineJavaScript('handleDragging()', true);
 	}
 
-	#[HookAttribute(PortalHook::credits)]
 	public function credits(Event $e): void
 	{
 		$e->args->links[] = [

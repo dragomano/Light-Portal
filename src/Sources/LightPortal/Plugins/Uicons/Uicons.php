@@ -8,15 +8,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 01.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\Uicons;
 
 use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 
@@ -31,13 +29,11 @@ class Uicons extends Plugin
 {
 	private string $prefix = 'fi fi-';
 
-	#[HookAttribute(PortalHook::preloadStyles)]
 	public function preloadStyles(Event $e): void
 	{
 		$e->args->styles[] = 'https://cdn.jsdelivr.net/npm/@flaticon/flaticon-uicons@1/css/all/all.css';
 	}
 
-	#[HookAttribute(PortalHook::addSettings)]
 	public function addSettings(Event $e): void
 	{
 		$this->addDefaultValues([
@@ -53,7 +49,6 @@ class Uicons extends Plugin
 		];
 	}
 
-	#[HookAttribute(PortalHook::prepareIconList)]
 	public function prepareIconList(Event $e): void
 	{
 		$uIcons = $this->cache()->remember('all_uicons', function () {
@@ -73,7 +68,6 @@ class Uicons extends Plugin
 		$e->args->icons = array_merge($e->args->icons, $uIcons);
 	}
 
-	#[HookAttribute(PortalHook::credits)]
 	public function credits(Event $e): void
 	{
 		$e->args->links[] = [

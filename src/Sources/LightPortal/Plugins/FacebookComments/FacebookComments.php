@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 01.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\FacebookComments;
@@ -17,9 +17,7 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\Utils\Setting;
@@ -36,13 +34,11 @@ class FacebookComments extends Plugin
 
 	private array $sortOrder = ['reverse-time', 'time'];
 
-	#[HookAttribute(PortalHook::init)]
 	public function init(): void
 	{
 		Lang::$txt['lp_comment_block_set']['facebook'] = 'Facebook';
 	}
 
-	#[HookAttribute(PortalHook::addSettings)]
 	public function addSettings(Event $e): void
 	{
 		$this->addDefaultValues([
@@ -67,7 +63,6 @@ class FacebookComments extends Plugin
 		$settings[$this->name][] = ['multiselect', 'dark_themes', $this->getForumThemes()];
 	}
 
-	#[HookAttribute(PortalHook::comments)]
 	public function comments(): void
 	{
 		if (Setting::getCommentBlock() !== 'facebook')
@@ -96,7 +91,6 @@ class FacebookComments extends Plugin
 			></div>';
 	}
 
-	#[HookAttribute(PortalHook::frontAssets)]
 	public function frontAssets(): void
 	{
 		if (Setting::getCommentBlock() !== 'facebook' || empty(Utils::$context['lp_frontpage_articles']))

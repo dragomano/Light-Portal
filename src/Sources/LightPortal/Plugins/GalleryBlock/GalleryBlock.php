@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 11.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\GalleryBlock;
@@ -16,11 +16,9 @@ namespace Bugo\LightPortal\Plugins\GalleryBlock;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\UI\Fields\CustomField;
 use Bugo\LightPortal\UI\Fields\NumberField;
@@ -34,7 +32,6 @@ if (! defined('LP_NAME'))
 #[PluginAttribute(icon: 'fas fa-image')]
 class GalleryBlock extends Block
 {
-	#[HookAttribute(PortalHook::prepareBlockParams)]
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -44,7 +41,6 @@ class GalleryBlock extends Block
 		];
 	}
 
-	#[HookAttribute(PortalHook::validateBlockParams)]
 	public function validateBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -53,7 +49,6 @@ class GalleryBlock extends Block
 		];
 	}
 
-	#[HookAttribute(PortalHook::prepareBlockFields)]
 	public function prepareBlockFields(Event $e): void
 	{
 		CustomField::make('categories', $this->txt['categories'])
@@ -124,7 +119,6 @@ class GalleryBlock extends Block
 		return $images;
 	}
 
-	#[HookAttribute(PortalHook::prepareContent)]
 	public function prepareContent(Event $e): void
 	{
 		if (! User::$me->allowedTo('smfgallery_view')) {

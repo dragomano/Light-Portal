@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 06.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\PluginMaker;
@@ -23,7 +23,6 @@ use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Editor;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\GameBlock;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\Plugins\SsiBlock;
@@ -115,7 +114,6 @@ class Generator
 		$namespace->addUse(Utils::class);
 		$namespace->addUse(Event::class);
 		$namespace->addUse(PluginAttribute::class);
-		$namespace->addUse(HookAttribute::class);
 		$namespace->addUse(PluginType::class);
 		$namespace->addUse(PortalHook::class);
 
@@ -186,7 +184,6 @@ class Generator
 		$this->class
 			->addMethod(PortalHook::frontLayouts->name)
 			->setReturnType('void')
-			->addAttribute(HookAttribute::class, [$this->hookLiteral(PortalHook::frontLayouts)])
 			->addBody("if (! str_contains(Config::\$modSettings['lp_frontpage_layout'], \$this->extension))")
 			->addBody("\treturn;" . PHP_EOL)
 			->addBody("require_once __DIR__ . '/vendor/autoload.php';" . PHP_EOL)
@@ -204,7 +201,6 @@ class Generator
 		$this->class
 			->addMethod(PortalHook::layoutExtensions->name)
 			->setReturnType('void')
-			->addAttribute(HookAttribute::class, [$this->hookLiteral(PortalHook::layoutExtensions)])
 			->setBody("\$e->args->extensions[] = \$this->extension;")
 			->addParameter('e')
 			->setType(Event::class);
@@ -214,8 +210,7 @@ class Generator
 	{
 		$method = $this->class
 			->addMethod(PortalHook::init->name)
-			->setReturnType('void')
-			->addAttribute(HookAttribute::class, [$this->hookLiteral(PortalHook::init)]);
+			->setReturnType('void');
 
 		match (true) {
 			$this->hasType(PluginType::PARSER) => $method->setBody(
@@ -238,8 +233,7 @@ class Generator
 
 		$method = $this->class
 			->addMethod(PortalHook::extendAdminAreas->name)
-			->setReturnType('void')
-			->addAttribute(HookAttribute::class, [$this->hookLiteral(PortalHook::extendAdminAreas)]);
+			->setReturnType('void');
 
 		$method
 			->addParameter('e')
@@ -255,8 +249,7 @@ class Generator
 
 		$method = $this->class
 			->addMethod(PortalHook::prepareBlockParams->name)
-			->setReturnType('void')
-			->addAttribute(HookAttribute::class, [$this->hookLiteral(PortalHook::prepareBlockParams)]);
+			->setReturnType('void');
 
 		$method
 			->addParameter('e')
@@ -283,8 +276,7 @@ class Generator
 
 		$method = $this->class
 			->addMethod(PortalHook::validateBlockParams->name)
-			->setReturnType('void')
-			->addAttribute(HookAttribute::class, [$this->hookLiteral(PortalHook::validateBlockParams)]);
+			->setReturnType('void');
 
 		$method
 			->addParameter('e')
@@ -311,8 +303,7 @@ class Generator
 
 		$method = $this->class
 			->addMethod(PortalHook::prepareBlockFields->name)
-			->setReturnType('void')
-			->addAttribute(HookAttribute::class, [$this->hookLiteral(PortalHook::prepareBlockFields)]);
+			->setReturnType('void');
 
 		$method
 			->addParameter('e')
@@ -330,8 +321,7 @@ class Generator
 
 		$method = $this->class
 			->addMethod(PortalHook::preparePageParams->name)
-			->setReturnType('void')
-			->addAttribute(HookAttribute::class, [$this->hookLiteral(PortalHook::preparePageParams)]);
+			->setReturnType('void');
 
 		$method
 			->addParameter('e')
@@ -354,8 +344,7 @@ class Generator
 
 		$method = $this->class
 			->addMethod(PortalHook::validatePageParams->name)
-			->setReturnType('void')
-			->addAttribute(HookAttribute::class, [$this->hookLiteral(PortalHook::validatePageParams)]);
+			->setReturnType('void');
 
 		$method
 			->addParameter('e')
@@ -382,8 +371,7 @@ class Generator
 
 		$method = $this->class
 			->addMethod(PortalHook::preparePageFields->name)
-			->setReturnType('void')
-			->addAttribute(HookAttribute::class, [$this->hookLiteral(PortalHook::preparePageFields)]);
+			->setReturnType('void');
 
 		$method
 			->addParameter('e')
@@ -401,8 +389,7 @@ class Generator
 
 		$method = $this->class
 			->addMethod(PortalHook::addSettings->name)
-			->setReturnType('void')
-			->addAttribute(HookAttribute::class, [$this->hookLiteral(PortalHook::addSettings)]);
+			->setReturnType('void');
 
 		$method
 			->addParameter('e')
@@ -441,8 +428,7 @@ class Generator
 
 		$method = $this->class
 			->addMethod(PortalHook::parseContent->name)
-			->setReturnType('void')
-			->addAttribute(HookAttribute::class, [$this->hookLiteral(PortalHook::parseContent)]);
+			->setReturnType('void');
 
 		$method
 			->addParameter('e')
@@ -468,8 +454,7 @@ class Generator
 
 		$method = $this->class
 			->addMethod(PortalHook::prepareContent->name)
-			->setReturnType('void')
-			->addAttribute(HookAttribute::class, [$this->hookLiteral(PortalHook::prepareContent)]);
+			->setReturnType('void');
 
 		$method
 			->addParameter('e')
@@ -491,8 +476,7 @@ class Generator
 
 		$method = $this->class
 			->addMethod(PortalHook::prepareEditor->name)
-			->setReturnType('void')
-			->addAttribute(HookAttribute::class, [$this->hookLiteral(PortalHook::prepareEditor)]);
+			->setReturnType('void');
 
 		$method
 			->addParameter('e')
@@ -523,8 +507,7 @@ class Generator
 
 		$method = $this->class
 			->addMethod(PortalHook::comments->name)
-			->setReturnType('void')
-			->addAttribute(HookAttribute::class, [$this->hookLiteral(PortalHook::comments)]);
+			->setReturnType('void');
 
 		$method
 			->addBody("if (Setting::getCommentBlock() !== \$this->name)")
@@ -539,8 +522,7 @@ class Generator
 
 		$method = $this->class
 			->addMethod(PortalHook::credits->name)
-			->setReturnType('void')
-			->addAttribute(HookAttribute::class, [$this->hookLiteral(PortalHook::credits)]);
+			->setReturnType('void');
 
 		$method
 			->addParameter('e')
@@ -793,10 +775,5 @@ class Generator
 		$typeNames = array_map(fn(PluginType $t) => $t->name(), $types);
 
 		return (bool) array_intersect($typeNames, $this->plugin['types']);
-	}
-
-	private function hookLiteral(PortalHook $hook): Literal
-	{
-		return new Literal('PortalHook::' . $hook->name);
 	}
 }

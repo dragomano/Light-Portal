@@ -8,16 +8,14 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 01.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\Sudoku;
 
 use Bugo\Compat\Theme;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\GameBlock;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\UI\Fields\RangeField;
 use Bugo\LightPortal\Utils\Str;
@@ -33,7 +31,6 @@ class Sudoku extends GameBlock
 {
 	private int $difficulty = 40;
 
-	#[HookAttribute(PortalHook::prepareBlockParams)]
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -41,7 +38,6 @@ class Sudoku extends GameBlock
 		];
 	}
 
-	#[HookAttribute(PortalHook::validateBlockParams)]
 	public function validateBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -49,7 +45,6 @@ class Sudoku extends GameBlock
 		];
 	}
 
-	#[HookAttribute(PortalHook::prepareBlockFields)]
 	public function prepareBlockFields(Event $e): void
 	{
 		RangeField::make('difficulty', $this->txt['difficulty'])
@@ -59,7 +54,6 @@ class Sudoku extends GameBlock
 			->setValue($e->args->options['difficulty']);
 	}
 
-	#[HookAttribute(PortalHook::prepareContent)]
 	public function prepareContent(Event $e): void
 	{
 		[$id, $parameters] = [$e->args->id, $e->args->parameters];

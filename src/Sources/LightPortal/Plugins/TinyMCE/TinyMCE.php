@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 06.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\TinyMCE;
@@ -16,9 +16,7 @@ namespace Bugo\LightPortal\Plugins\TinyMCE;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\Editor;
 use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasThemes;
@@ -33,7 +31,6 @@ class TinyMCE extends Editor
 {
 	use HasThemes;
 
-	#[HookAttribute(PortalHook::addSettings)]
 	public function addSettings(Event $e): void
 	{
 		$link = Str::html('a', [
@@ -46,7 +43,6 @@ class TinyMCE extends Editor
 		$e->args->settings[$this->name][] = ['multiselect', 'dark_themes', $this->getForumThemes()];
 	}
 
-	#[HookAttribute(PortalHook::prepareEditor)]
 	public function prepareEditor(Event $e): void
 	{
 		$object = $e->args->object;
@@ -89,7 +85,6 @@ class TinyMCE extends Editor
 		});', true);
 	}
 
-	#[HookAttribute(PortalHook::credits)]
 	public function credits(Event $e): void
 	{
 		$e->args->links[] = [

@@ -8,18 +8,16 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 01.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\Events;
 
 use Bugo\Compat\Actions\Calendar;
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Enums\Tab;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\UI\Fields\CheckboxField;
 use Bugo\LightPortal\UI\Fields\NumberField;
@@ -39,7 +37,6 @@ class Events extends Block
 {
 	use HasView;
 
-	#[HookAttribute(PortalHook::prepareBlockParams)]
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -51,7 +48,6 @@ class Events extends Block
 		];
 	}
 
-	#[HookAttribute(PortalHook::validateBlockParams)]
 	public function validateBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -63,7 +59,6 @@ class Events extends Block
 		];
 	}
 
-	#[HookAttribute(PortalHook::prepareBlockFields)]
 	public function prepareBlockFields(Event $e): void
 	{
 		Lang::load('ManageCalendar');
@@ -91,7 +86,6 @@ class Events extends Block
 			->setValue($options['update_interval']);
 	}
 
-	#[HookAttribute(PortalHook::changeIconSet)]
 	public function changeIconSet(Event $e): void
 	{
 		$e->args->set['cake']  = 'fas fa-cake-candles';
@@ -116,7 +110,6 @@ class Events extends Block
 		return Calendar::getCalendarList($todayDate, $futureDate, $options);
 	}
 
-	#[HookAttribute(PortalHook::prepareContent)]
 	public function prepareContent(Event $e): void
 	{
 		$parameters = $e->args->parameters;

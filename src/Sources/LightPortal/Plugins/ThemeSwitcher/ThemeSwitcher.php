@@ -8,18 +8,16 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 30.09.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\ThemeSwitcher;
 
 use Bugo\Compat\Theme;
 use Bugo\LightPortal\Enums\ForumHook;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
 use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasThemes;
 
@@ -31,7 +29,6 @@ class ThemeSwitcher extends Block
 {
 	use HasThemes;
 
-	#[HookAttribute(PortalHook::init)]
 	public function init(): void
 	{
 		$this->applyHook(ForumHook::manageThemes);
@@ -44,7 +41,6 @@ class ThemeSwitcher extends Block
 		}
 	}
 
-	#[HookAttribute(PortalHook::prepareContent)]
 	public function prepareContent(Event $e): void
 	{
 		$themes = $this->getForumThemes();

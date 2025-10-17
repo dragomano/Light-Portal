@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 12.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\Search;
@@ -20,10 +20,8 @@ use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\EntryType;
 use Bugo\LightPortal\Enums\ForumHook;
 use Bugo\LightPortal\Enums\Permission;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Block;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\Utils\Content;
 use Bugo\LightPortal\Utils\DateTime;
@@ -42,7 +40,6 @@ class Search extends Block
 	use HasView;
 	use HasTranslationJoins;
 
-	#[HookAttribute(PortalHook::addSettings)]
 	public function addSettings(Event $e): void
 	{
 		$this->addDefaultValues([
@@ -52,14 +49,12 @@ class Search extends Block
 		$e->args->settings[$this->name][] = ['range', 'min_chars', 'min' => 1, 'max' => 10];
 	}
 
-	#[HookAttribute(PortalHook::prepareAssets)]
 	public function prepareAssets(Event $e): void
 	{
 		$e->args->assets['css'][$this->name][] = 'https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.css';
 		$e->args->assets['scripts'][$this->name][] = 'https://cdn.jsdelivr.net/npm/pixabay-javascript-autocomplete@1/auto-complete.min.js';
 	}
 
-	#[HookAttribute(PortalHook::prepareContent)]
 	public function prepareContent(): void
 	{
 		Theme::loadCSSFile('light_portal/search/auto-complete.css');
@@ -71,7 +66,6 @@ class Search extends Block
 		]);
 	}
 
-	#[HookAttribute(PortalHook::credits)]
 	public function credits(Event $e): void
 	{
 		$e->args->links[] = [
@@ -85,7 +79,6 @@ class Search extends Block
 		];
 	}
 
-	#[HookAttribute(PortalHook::init)]
 	public function init(): void
 	{
 		$this->applyHook(ForumHook::actions);

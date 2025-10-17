@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 30.09.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\HelloPortal;
@@ -17,9 +17,7 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use Bugo\LightPortal\Enums\ForumHook;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\Utils\Str;
@@ -44,7 +42,6 @@ class HelloPortal extends Plugin
 		$this->steps = $this->getStepData();
 	}
 
-	#[HookAttribute(PortalHook::init)]
 	public function init(): void
 	{
 		$this->applyHook(ForumHook::menuButtons);
@@ -104,7 +101,6 @@ class HelloPortal extends Plugin
 		}');
 	}
 
-	#[HookAttribute(PortalHook::addLayerAbove)]
 	public function addLayerAbove(): void
 	{
 		if (! $this->canShowTourButton())
@@ -125,7 +121,6 @@ class HelloPortal extends Plugin
 		}
 	}
 
-	#[HookAttribute(PortalHook::addSettings)]
 	public function addSettings(Event $e): void
 	{
 		$settings = &$e->args->settings;
@@ -140,7 +135,6 @@ class HelloPortal extends Plugin
 		$settings[$this->name][] = ['check', 'disable_interaction'];
 	}
 
-	#[HookAttribute(PortalHook::credits)]
 	public function credits(Event $e): void
 	{
 		$e->args->links[] = [

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 13.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\DummyArticleCards;
@@ -16,9 +16,7 @@ namespace Bugo\LightPortal\Plugins\DummyArticleCards;
 use Bugo\Compat\Config;
 use Bugo\LightPortal\Database\PortalSqlInterface;
 use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 
@@ -32,7 +30,6 @@ class DummyArticleCards extends Plugin
 {
 	private string $mode = 'dummy_articles_cards';
 
-	#[HookAttribute(PortalHook::frontModes)]
 	public function frontModes(Event $e): void
 	{
 		$e->args->modes[$this->mode] = DummyArticle::class;
@@ -42,7 +39,6 @@ class DummyArticleCards extends Plugin
 		Config::$modSettings['lp_frontpage_mode'] = $this->mode;
 	}
 
-	#[HookAttribute(PortalHook::credits)]
 	public function credits(Event $e): void
 	{
 		$e->args->links[] = [

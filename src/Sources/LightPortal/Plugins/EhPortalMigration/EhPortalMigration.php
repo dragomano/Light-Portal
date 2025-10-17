@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 08.10.25
+ * @version 17.10.25
  */
 
 namespace Bugo\LightPortal\Plugins\EhPortalMigration;
@@ -16,9 +16,7 @@ namespace Bugo\LightPortal\Plugins\EhPortalMigration;
 use Bugo\Compat\User;
 use Bugo\LightPortal\Database\PortalSqlInterface;
 use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Enums\PortalHook;
 use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\HookAttribute;
 use Bugo\LightPortal\Plugins\Plugin;
 use Bugo\LightPortal\Plugins\PluginAttribute;
 use Bugo\LightPortal\Utils\ErrorHandlerInterface;
@@ -34,7 +32,6 @@ class EhPortalMigration extends Plugin
 {
 	private const AREA = 'import_from_ep';
 
-	#[HookAttribute(PortalHook::extendAdminAreas)]
 	public function extendAdminAreas(Event $e): void
 	{
 		$areas = &$e->args->areas;
@@ -54,7 +51,6 @@ class EhPortalMigration extends Plugin
 		}
 	}
 
-	#[HookAttribute(PortalHook::extendBlockAreas)]
 	public function extendBlockAreas(Event $e): void
 	{
 		app()->add(BlockImport::class)
@@ -63,7 +59,6 @@ class EhPortalMigration extends Plugin
 		$e->args->areas[self::AREA] = [app(BlockImport::class), 'main'];
 	}
 
-	#[HookAttribute(PortalHook::extendPageAreas)]
 	public function extendPageAreas(Event $e): void
 	{
 		app()->add(PageImport::class)
@@ -72,7 +67,6 @@ class EhPortalMigration extends Plugin
 		$e->args->areas[self::AREA] = [app(PageImport::class), 'main'];
 	}
 
-	#[HookAttribute(PortalHook::extendCategoryAreas)]
 	public function extendCategoryAreas(Event $e): void
 	{
 		app()->add(CategoryImport::class)
