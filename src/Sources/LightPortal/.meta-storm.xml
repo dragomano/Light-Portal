@@ -174,7 +174,6 @@
 			<value>TagValidator::class</value>
 			<value>TopicArticle::class</value>
 			<value>View::class</value>
-			<value>Weaver::class</value>
 		</strings>
 	</collections>
 </meta-storm>

@@ -36,7 +36,6 @@ use Bugo\LightPortal\Utils\Traits\HasCache;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 use Bugo\LightPortal\Utils\Traits\HasResponse;
 use Bugo\LightPortal\Utils\Traits\HasSorting;
-use Bugo\LightPortal\Utils\Weaver;
 use Ramsey\Collection\Collection;
 use Ramsey\Collection\CollectionInterface;
 
@@ -115,11 +114,7 @@ final class FrontPage implements ActionInterface
 
 				$this->updateStart($total, $start, $limit);
 
-				$articles = app(Weaver::class)(
-					fn() => $this->article->getData($start, $limit, Utils::$context['lp_current_sorting']),
-					false
-				);
-
+				$articles = $this->article->getData($start, $limit, Utils::$context['lp_current_sorting']);
 				$articles = iterator_to_array($articles);
 
 				return ['total' => $total, 'articles' => $articles];

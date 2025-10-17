@@ -110,7 +110,6 @@ use Bugo\LightPortal\Utils\RequestInterface;
 use Bugo\LightPortal\Utils\Response;
 use Bugo\LightPortal\Utils\Session;
 use Bugo\LightPortal\Utils\SessionManager;
-use Bugo\LightPortal\Utils\Weaver;
 use Bugo\LightPortal\Validators\BlockValidator;
 use Bugo\LightPortal\Validators\CategoryValidator;
 use Bugo\LightPortal\Validators\PageValidator;
@@ -550,10 +549,6 @@ class ServiceProvider extends AbstractServiceProvider
 				[
 					'id' => BreadcrumbWrapper::class,
 					'arguments' => [BreadcrumbBuilder::class, BreadcrumbPresenter::class],
-					'shared' => false,
-				],
-				[
-					'id' => Weaver::class,
 					'shared' => false,
 				],
 			],

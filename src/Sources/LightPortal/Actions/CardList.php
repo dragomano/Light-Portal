@@ -19,7 +19,6 @@ use Bugo\LightPortal\Utils\Setting;
 use Bugo\LightPortal\Utils\Str;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 use Bugo\LightPortal\Utils\Traits\HasSorting;
-use Bugo\LightPortal\Utils\Weaver;
 
 use function Bugo\LightPortal\app;
 
@@ -41,7 +40,7 @@ class CardList implements CardListInterface
 		$front = app(FrontPage::class);
 		$front->updateStart($itemsCount, $start, $limit);
 
-		$articles = app(Weaver::class)(fn() => $entity->getPages($start, $limit, $this->getOrderBy()));
+		$articles = $entity->getPages($start, $limit, $this->getOrderBy());
 
 		Utils::$context['page_index'] = new PageIndex(
 			Utils::$context['canonical_url'], $start, $itemsCount, $limit

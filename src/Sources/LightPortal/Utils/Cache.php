@@ -15,8 +15,6 @@ namespace Bugo\LightPortal\Utils;
 use Bugo\Compat\Cache\CacheApi;
 use Bugo\LightPortal\Utils\Traits\HasRequest;
 
-use function Bugo\LightPortal\app;
-
 use const LP_CACHE_TIME;
 
 if (! defined('SMF'))
@@ -74,7 +72,7 @@ final class Cache implements CacheInterface
 
 	public function setFallback(callable $callback): mixed
 	{
-		return $this->remember($this->key, fn() => app(Weaver::class)($callback), $this->lifeTime);
+		return $this->remember($this->key, $callback, $this->lifeTime);
 	}
 
 	public function get(string $key, ?int $time = null): mixed
