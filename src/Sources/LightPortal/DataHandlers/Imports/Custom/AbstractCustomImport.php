@@ -93,9 +93,9 @@ abstract class AbstractCustomImport extends DataHandler implements CustomImportI
 
 		$this->startTransaction($items);
 
-		$results = $this->importItems($items);
+		$this->importItems($items);
 
-		$this->finishTransaction($results);
+		$this->finishTransaction();
 	}
 
 	protected function importItems(array $items): array
@@ -120,7 +120,7 @@ abstract class AbstractCustomImport extends DataHandler implements CustomImportI
 				$translations[$key]['item_id'] = $value;
 			}
 
-			$results = $this->replaceTranslations($translations, $results, false);
+			$results = $this->replaceTranslations($translations, false);
 		}
 
 		return $results;

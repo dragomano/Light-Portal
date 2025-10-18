@@ -27,9 +27,9 @@ trait HasTransactions
 		Utils::$context['import_successful'] = count($items);
 	}
 
-	protected function finishTransaction(array $results): void
+	protected function finishTransaction(): void
 	{
-		if ($results === [] && Utils::$context['import_successful'] === 0) {
+		if (Utils::$context['import_successful'] === 0) {
 			$this->sql->getTransaction()->rollback();
 
 			$this->errorHandler->fatal('lp_import_failed', false);

@@ -74,7 +74,12 @@ final class ExtraConfig extends AbstractConfig
 			IntConfig::make('lp_num_comments_per_page')
 				->setJavaScript(':disabled="comment_block !== \'default\'"'),
 			SelectConfig::make('lp_comment_sorting')
-				->setOptions([Lang::$txt['lp_sort_by_created'], Lang::$txt['lp_sort_by_created_desc']])
+				->setOptions([
+					Lang::$txt['lp_sort_by_created'],
+					Lang::$txt['lp_sort_by_created_desc'],
+					Lang::$txt['lp_sort_by_updated'],
+					Lang::$txt['lp_sort_by_updated_desc'],
+				])
 				->setJavaScript(':disabled="comment_block !== \'default\'"'),
 			CallbackConfig::make('comment_settings_after'),
 			DividerConfig::make(),

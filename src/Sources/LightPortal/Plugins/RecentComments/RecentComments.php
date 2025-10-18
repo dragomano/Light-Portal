@@ -8,12 +8,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 19.10.25
  */
 
 namespace LightPortal\Plugins\RecentComments;
 
 use Bugo\Compat\Lang;
+use Laminas\Db\Sql\Predicate\Expression;
+use Laminas\Db\Sql\Select;
 use LightPortal\Enums\EntryType;
 use LightPortal\Enums\Permission;
 use LightPortal\Plugins\Block;
@@ -23,8 +25,7 @@ use LightPortal\UI\Fields\NumberField;
 use LightPortal\UI\Fields\RangeField;
 use LightPortal\Utils\DateTime;
 use LightPortal\Utils\Str;
-use Laminas\Db\Sql\Predicate\Expression;
-use Laminas\Db\Sql\Select;
+use LightPortal\Utils\Traits\HasTranslationJoins;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -35,6 +36,8 @@ if (! defined('LP_NAME'))
 #[PluginAttribute(icon: 'fas fa-comments')]
 class RecentComments extends Block
 {
+	use HasTranslationJoins;
+
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -112,7 +115,7 @@ class RecentComments extends Block
 				Select::JOIN_LEFT
 			)
 			->columns([
-				'id', 'page_id', 'message', 'created_at',
+				'id', 'page_id', 'created_at',
 				'num_comments' => $numCommentsSubquery
 			])
 			->where([
@@ -126,15 +129,21 @@ class RecentComments extends Block
 			->order('com.created_at DESC')
 			->limit($commentsCount);
 
+		$this->addTranslationJoins($select, [
+			'primary' => 'com.id',
+			'entity'  => 'comment',
+			'fields'  => ['content'],
+		]);
+
 		$result = $this->sql->execute($select);
 
 		$comments = [];
 		foreach ($result as $row) {
-			Lang::censorText($row['message']);
+			Lang::censorText($row['content']);
 
 			$comments[$row['id']] = [
 				'link'        => LP_PAGE_URL . $row['slug'] . '#comment=' . $row['id'],
-				'message'     => Str::getTeaser($row['message'], $length),
+				'message'     => Str::getTeaser($row['content'], $length),
 				'created_at'  => $row['created_at'],
 				'author_name' => $row['author_name'],
 			];

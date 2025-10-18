@@ -37,11 +37,9 @@ class PagesTableUpgrader extends AbstractTableUpgrader
 			'description' => new Expression("COALESCE(description, '')"),
 		]);
 
-		$result = $this->sql->execute($select);
+		$rows = $this->sql->execute($select);
 
-		foreach ($result as $row) {
-			$this->migrateRowToTranslations($row['page_id'], 'page', $row['content'], $row['description']);
-		}
+		$this->migrateRowsToTranslations('page_id', 'page', $rows);
 
 		$this->dropColumn('content');
 		$this->dropColumn('description');

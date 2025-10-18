@@ -37,11 +37,9 @@ class CategoriesTableUpgrader extends AbstractTableUpgrader
 			'description' => new Expression("COALESCE(description, '')"),
 		]);
 
-		$result = $this->sql->execute($select);
+		$rows = $this->sql->execute($select);
 
-		foreach ($result as $row) {
-			$this->migrateRowToTranslations($row['category_id'], 'category', '', $row['description']);
-		}
+		$this->migrateRowsToTranslations('category_id', 'category', $rows);
 
 		$this->dropColumn('description');
 	}

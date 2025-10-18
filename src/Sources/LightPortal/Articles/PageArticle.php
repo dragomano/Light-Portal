@@ -135,7 +135,6 @@ class PageArticle extends AbstractArticle implements PageArticleInterface
 				[
 					'comment_date'      => 'created_at',
 					'comment_author_id' => 'author_id',
-					'comment_message'   => 'message',
 				],
 				Select::JOIN_LEFT
 			)

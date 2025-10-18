@@ -56,10 +56,10 @@ class BlockImport extends XmlImporter
 
 		$this->startTransaction($items);
 
-		$results = $this->insertData('lp_blocks', $items, ['block_id'], true);
-		$results = $this->replaceTranslations($translations, $results);
-		$results = $this->replaceParams($params, $results);
+		$this->insertData('lp_blocks', $items, ['block_id'], true);
+		$this->replaceTranslations($translations);
+		$this->replaceParams($params);
 
-		$this->finishTransaction($results);
+		$this->finishTransaction();
 	}
 }

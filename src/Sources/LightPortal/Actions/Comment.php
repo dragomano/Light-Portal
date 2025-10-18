@@ -75,12 +75,14 @@ final class Comment implements ActionInterface
 
 	private function get(): never
 	{
-		$comments = $this->cache('page_' . $this->pageSlug . '_comments')
+		$comments = $this->langCache('page_' . $this->pageSlug . '_comments')
 			->setFallback(fn() => $this->repository->getByPageId(Utils::$context['lp_page']['id']));
 
 		$comments = array_map(function ($comment) {
 			$comment['human_date']    = DateTime::relative($comment['created_at']);
 			$comment['published_at']  = date('Y-m-d', $comment['created_at']);
+			$comment['human_update']  = DateTime::relative($comment['updated_at']);
+			$comment['updated_at']    = date('Y-m-d', $comment['updated_at']);
 			$comment['authorial']     = Utils::$context['lp_page']['author_id'] === $comment['poster']['id'];
 			$comment['extra_buttons'] = [];
 
@@ -170,7 +172,7 @@ final class Comment implements ActionInterface
 				? $this->notifier->notify(NotifyType::NEW_COMMENT->name(), AlertAction::PAGE_COMMENT->name(), $options)
 				: $this->notifier->notify(NotifyType::NEW_REPLY->name(), AlertAction::PAGE_COMMENT_REPLY->name(), $options);
 
-			$this->cache()->forget('page_' . $this->pageSlug . '_comments');
+			$this->cache()->forget('page_' . $this->pageSlug . '_comments_u' . User::$me->id . '_' . User::$me->language);
 		}
 
 		http_response_code(201);
@@ -194,7 +196,7 @@ final class Comment implements ActionInterface
 		return preg_replace_callback(
 			'/\[member=(\d+)](.*?)\[\/member]/',
 			function (array $matches) {
-				$id = $matches[1];
+				$id   = $matches[1];
 				$name = $matches[2];
 
 				return "[@$name](" . Config::$scripturl . '?action=profile;u=' . $id . ")";
@@ -246,7 +248,7 @@ final class Comment implements ActionInterface
 			'message' => $message,
 		];
 
-		$this->cache()->forget('page_' . $this->pageSlug . '_comments');
+		$this->cache()->forget('page_' . $this->pageSlug . '_comments_u' . User::$me->id . '_' . User::$me->language);
 
 		$this->response()->exit($result);
 	}
@@ -261,7 +263,7 @@ final class Comment implements ActionInterface
 
 		$this->repository->remove([$item]);
 
-		$this->cache()->forget('page_' . $this->pageSlug . '_comments');
+		$this->cache()->forget('page_' . $this->pageSlug . '_comments_u' . User::$me->id . '_' . User::$me->language);
 	}
 
 	private function getTree(array $data): array

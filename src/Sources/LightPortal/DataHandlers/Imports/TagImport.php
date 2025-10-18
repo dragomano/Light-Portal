@@ -61,11 +61,11 @@ class TagImport extends XmlImporter
 
 		$this->startTransaction($items);
 
-		$results = $this->insertData('lp_tags', $items, ['tag_id'], true);
-		$results = $this->replaceTranslations($translations, $results);
-		$results = $this->replacePages($pages, $results);
+		$this->insertData('lp_tags', $items, ['tag_id'], true);
+		$this->replaceTranslations($translations);
+		$this->replacePages($pages);
 
-		$this->finishTransaction($results);
+		$this->finishTransaction();
 	}
 
 	protected function extractPages(SimpleXMLElement $item, int $id): array
@@ -84,10 +84,11 @@ class TagImport extends XmlImporter
 		return $pages;
 	}
 
-	protected function replacePages(array $pages, array $results): array
+	protected function replacePages(array $pages): array
 	{
-		if ($pages === [] || $results === [])
+		if ($pages === []) {
 			return [];
+		}
 
 		return $this->insertData('lp_page_tag', $pages, ['page_id', 'tag_id'], true);
 	}

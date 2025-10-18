@@ -61,9 +61,9 @@ class CategoryImport extends XmlImporter
 
 		$this->startTransaction($items);
 
-		$results = $this->insertData('lp_categories', $items, ['category_id'], true);
-		$results = $this->replaceTranslations($translations, $results);
+		$this->insertData('lp_categories', $items, ['category_id'], true);
+		$this->replaceTranslations($translations);
 
-		$this->finishTransaction($results);
+		$this->finishTransaction();
 	}
 }

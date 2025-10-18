@@ -16,10 +16,11 @@ use Laminas\Db\Sql\Predicate\Expression;
 
 trait HasTranslations
 {
-	protected function replaceTranslations(array $translations, array $results, bool $replace = true): array
+	protected function replaceTranslations(array $translations = [], bool $replace = true): array
 	{
-		if ($translations === [] || $results === [])
+		if ($translations === []) {
 			return [];
+		}
 
 		foreach ($translations as $id => $translation) {
 			foreach (['title', 'content', 'description'] as $field) {

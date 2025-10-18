@@ -35,11 +35,9 @@ class BlocksTableUpgrader extends AbstractTableUpgrader
 			'description' => new Expression("COALESCE(note, '')"),
 		]);
 
-		$result = $this->sql->execute($select);
+		$rows = $this->sql->execute($select);
 
-		foreach ($result as $row) {
-			$this->migrateRowToTranslations($row['block_id'], 'block', $row['content'], $row['description']);
-		}
+		$this->migrateRowsToTranslations('block_id', 'block', $rows);
 
 		$this->dropColumn('content');
 		$this->dropColumn('note');

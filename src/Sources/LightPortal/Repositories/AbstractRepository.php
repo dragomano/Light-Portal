@@ -17,6 +17,7 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Msg;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
+use Laminas\Db\Sql\Predicate\Expression;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Database\PortalTransactionInterface;
 use LightPortal\Enums\ContentType;
@@ -27,7 +28,6 @@ use LightPortal\Utils\Traits\HasRequest;
 use LightPortal\Utils\Traits\HasResponse;
 use LightPortal\Utils\Traits\HasSession;
 use LightPortal\Utils\Traits\HasTranslationJoins;
-use Laminas\Db\Sql\Predicate\Expression;
 
 if (! defined('SMF'))
 	die('No direct access...');
