@@ -10,15 +10,15 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Areas\Configs;
+namespace LightPortal\Areas\Configs;
 
 use Bugo\Compat\{Config, Lang, Utils};
-use Bugo\LightPortal\Areas\Traits\HasArea;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\CustomField;
-use Bugo\LightPortal\UI\Fields\NumberField;
-use Bugo\LightPortal\UI\Fields\SelectField;
-use Bugo\LightPortal\UI\Fields\TextField;
+use LightPortal\Areas\Traits\HasArea;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\CustomField;
+use LightPortal\UI\Fields\NumberField;
+use LightPortal\UI\Fields\SelectField;
+use LightPortal\UI\Fields\TextField;
 
 if (! defined('SMF'))
 	die('No direct access...');

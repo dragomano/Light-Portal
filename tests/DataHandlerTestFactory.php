@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use Bugo\LightPortal\Utils\RequestInterface;
+use LightPortal\Utils\RequestInterface;
 use InvalidArgumentException;
 use Mockery;
 

@@ -10,14 +10,14 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Hooks;
+namespace LightPortal\Hooks;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\Action;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
-use Bugo\LightPortal\Utils\Traits\HasResponse;
+use LightPortal\Enums\Action;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Utils\Traits\HasResponse;
 
 if (! defined('SMF'))
 	die('No direct access...');

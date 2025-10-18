@@ -11,28 +11,28 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\PageList;
+namespace LightPortal\Plugins\PageList;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Enums\EntryType;
-use Bugo\LightPortal\Enums\PortalSubAction;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Lists\CategoryList;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\Repositories\PageRepositoryInterface;
-use Bugo\LightPortal\UI\Fields\CustomField;
-use Bugo\LightPortal\UI\Fields\NumberField;
-use Bugo\LightPortal\UI\Fields\VirtualSelectField;
-use Bugo\LightPortal\UI\Partials\SelectFactory;
-use Bugo\LightPortal\Utils\DateTime;
-use Bugo\LightPortal\Utils\ParamWrapper;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Enums\EntryType;
+use LightPortal\Enums\PortalSubAction;
+use LightPortal\Enums\Tab;
+use LightPortal\Lists\CategoryList;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Repositories\PageRepositoryInterface;
+use LightPortal\UI\Fields\CustomField;
+use LightPortal\UI\Fields\NumberField;
+use LightPortal\UI\Fields\VirtualSelectField;
+use LightPortal\UI\Partials\SelectFactory;
+use LightPortal\Utils\DateTime;
+use LightPortal\Utils\ParamWrapper;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

@@ -11,7 +11,7 @@
  * @version 24.09.25
  */
 
-namespace Bugo\LightPortal\Plugins\PluginMaker;
+namespace LightPortal\Plugins\PluginMaker;
 
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;

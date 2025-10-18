@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Enums\Action;
+use LightPortal\Enums\Action;
 
 arch()
     ->expect(Action::class)

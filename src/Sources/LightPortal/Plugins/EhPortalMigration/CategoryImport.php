@@ -11,13 +11,13 @@
  * @version 09.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\EhPortalMigration;
+namespace LightPortal\Plugins\EhPortalMigration;
 
 use Bugo\Bricks\Tables\Column;
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\DataHandlers\Imports\Custom\AbstractCustomCategoryImport;
-use Bugo\LightPortal\UI\Tables\CheckboxColumn;
-use Bugo\LightPortal\UI\Tables\TitleColumn;
+use LightPortal\DataHandlers\Imports\Custom\AbstractCustomCategoryImport;
+use LightPortal\UI\Tables\CheckboxColumn;
+use LightPortal\UI\Tables\TitleColumn;
 use Laminas\Db\Sql\Expression;
 
 if (! defined('LP_NAME'))

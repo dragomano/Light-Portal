@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Repositories;
+namespace LightPortal\Repositories;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\ErrorHandler;
@@ -20,28 +20,28 @@ use Bugo\Compat\Msg;
 use Bugo\Compat\Security;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\Enums\AlertAction;
-use Bugo\LightPortal\Enums\ContentType;
-use Bugo\LightPortal\Enums\EntryType;
-use Bugo\LightPortal\Enums\NotifyType;
-use Bugo\LightPortal\Enums\Permission;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Enums\PortalSubAction;
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Events\HasEvents;
-use Bugo\LightPortal\Lists\CategoryList;
-use Bugo\LightPortal\Utils\Content;
-use Bugo\LightPortal\Utils\DateTime;
-use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\Notifier;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Enums\AlertAction;
+use LightPortal\Enums\ContentType;
+use LightPortal\Enums\EntryType;
+use LightPortal\Enums\NotifyType;
+use LightPortal\Enums\Permission;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Enums\PortalSubAction;
+use LightPortal\Enums\Status;
+use LightPortal\Events\HasEvents;
+use LightPortal\Lists\CategoryList;
+use LightPortal\Utils\Content;
+use LightPortal\Utils\DateTime;
+use LightPortal\Utils\Icon;
+use LightPortal\Utils\Notifier;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
 use Exception;
 use Laminas\Db\Sql\Predicate\Expression;
 use Laminas\Db\Sql\Select;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 use const LP_PAGE_URL;
 

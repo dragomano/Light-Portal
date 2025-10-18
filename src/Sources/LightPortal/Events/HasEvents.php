@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Bugo\LightPortal\Events;
+namespace LightPortal\Events;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 trait HasEvents
 {

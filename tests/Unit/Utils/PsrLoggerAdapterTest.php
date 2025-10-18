@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Utils\ErrorHandlerInterface;
-use Bugo\LightPortal\Utils\PsrLoggerAdapter;
+use LightPortal\Utils\ErrorHandlerInterface;
+use LightPortal\Utils\PsrLoggerAdapter;
 use Psr\Log\LoggerInterface;
 
 it('implements PSR-3 LoggerInterface', function () {

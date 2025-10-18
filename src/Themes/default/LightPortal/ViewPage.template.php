@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
 use Bugo\Compat\{Config, Lang, Theme, Utils};
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\EventManagerFactory;
-use Bugo\LightPortal\Utils\{Icon, Setting};
+use LightPortal\Enums\PortalHook;
+use LightPortal\Events\EventManagerFactory;
+use LightPortal\Utils\{Icon, Setting};
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 function template_show_page(): void
 {

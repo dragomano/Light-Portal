@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Lists\ListInterface;
-use Bugo\LightPortal\Lists\PageList;
+use LightPortal\Lists\ListInterface;
+use LightPortal\Lists\PageList;
 
 arch()
     ->expect(PageList::class)

@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Utils\Traits;
+namespace LightPortal\Utils\Traits;
 
 use Laminas\Db\Sql\Predicate\Expression;
 use Laminas\Db\Sql\Select;

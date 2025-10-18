@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Utils;
+namespace LightPortal\Utils;
 
 use Bugo\Compat\Editor as BaseEditor;
 use Bugo\Compat\Lang;

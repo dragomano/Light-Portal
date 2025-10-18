@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\UI\Partials\BoardSelect;
-use Bugo\LightPortal\UI\Partials\SelectInterface;
-use Bugo\LightPortal\UI\Partials\SelectRenderer;
-use Bugo\LightPortal\Utils\MessageIndex;
+use LightPortal\UI\Partials\BoardSelect;
+use LightPortal\UI\Partials\SelectInterface;
+use LightPortal\UI\Partials\SelectRenderer;
+use LightPortal\Utils\MessageIndex;
 use Tests\AppMockRegistry;
 use Tests\ReflectionAccessor;
 

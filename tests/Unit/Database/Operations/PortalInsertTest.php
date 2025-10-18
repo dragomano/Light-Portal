@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-use Bugo\LightPortal\Database\Operations\PortalInsert;
 use Laminas\Db\Adapter\AdapterInterface;
 use Laminas\Db\Adapter\Driver\ResultInterface;
+use LightPortal\Database\Operations\PortalInsert;
 use Tests\ReflectionAccessor;
 
 describe('PortalInsert', function () {

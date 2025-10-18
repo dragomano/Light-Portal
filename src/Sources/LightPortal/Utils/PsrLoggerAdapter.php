@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Utils;
+namespace LightPortal\Utils;
 
 use Psr\Log\LoggerInterface;
 use Stringable;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Hooks\FetchAlerts;
+use LightPortal\Hooks\FetchAlerts;
 
 arch()
     ->expect(FetchAlerts::class)

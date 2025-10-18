@@ -10,13 +10,13 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\DataHandlers\Traits;
+namespace LightPortal\DataHandlers\Traits;
 
 use Bugo\Bricks\Tables\RowPosition;
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\UI\Tables\ExportButtonsRow;
-use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
-use Bugo\LightPortal\Utils\Traits\HasTablePresenter;
+use LightPortal\UI\Tables\ExportButtonsRow;
+use LightPortal\UI\Tables\PortalTableBuilder;
+use LightPortal\Utils\Traits\HasTablePresenter;
 
 if (! defined('SMF'))
 	die('No direct access...');

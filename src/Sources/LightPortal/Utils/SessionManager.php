@@ -10,15 +10,15 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Utils;
+namespace LightPortal\Utils;
 
 use Bugo\Compat\User;
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Repositories\BlockRepositoryInterface;
-use Bugo\LightPortal\Repositories\CategoryRepositoryInterface;
-use Bugo\LightPortal\Repositories\PageRepositoryInterface;
-use Bugo\LightPortal\Repositories\TagRepositoryInterface;
-use Bugo\LightPortal\Utils\Traits\HasSession;
+use LightPortal\Enums\Status;
+use LightPortal\Repositories\BlockRepositoryInterface;
+use LightPortal\Repositories\CategoryRepositoryInterface;
+use LightPortal\Repositories\PageRepositoryInterface;
+use LightPortal\Repositories\TagRepositoryInterface;
+use LightPortal\Utils\Traits\HasSession;
 
 if (! defined('SMF'))
 	die('No direct access...');

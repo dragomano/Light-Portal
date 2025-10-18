@@ -11,14 +11,14 @@
  * @version 24.09.25
  */
 
-namespace Bugo\LightPortal\Plugins\TwigLayouts;
+namespace LightPortal\Plugins\TwigLayouts;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Sapi;
 use Bugo\Compat\Parsers\BBCodeParser;
-use Bugo\LightPortal\Renderers\AbstractRenderer;
-use Bugo\LightPortal\Utils\Icon;
+use LightPortal\Renderers\AbstractRenderer;
+use LightPortal\Utils\Icon;
 use Twig\Environment;
 use Twig\Error\Error;
 use Twig\Loader\FilesystemLoader;

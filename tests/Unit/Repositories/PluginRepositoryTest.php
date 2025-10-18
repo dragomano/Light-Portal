@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Repositories\PluginRepository;
-use Bugo\LightPortal\Repositories\PluginRepositoryInterface;
+use LightPortal\Repositories\PluginRepository;
+use LightPortal\Repositories\PluginRepositoryInterface;
 
 arch()
     ->expect(PluginRepository::class)

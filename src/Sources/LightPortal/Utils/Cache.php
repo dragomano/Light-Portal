@@ -10,10 +10,10 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Utils;
+namespace LightPortal\Utils;
 
 use Bugo\Compat\Cache\CacheApi;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Utils\Traits\HasRequest;
 
 use const LP_CACHE_TIME;
 

@@ -10,9 +10,9 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Articles;
+namespace LightPortal\Articles;
 
-use Bugo\LightPortal\Utils\Setting;
+use LightPortal\Utils\Setting;
 
 if (! defined('SMF'))
 	die('No direct access...');

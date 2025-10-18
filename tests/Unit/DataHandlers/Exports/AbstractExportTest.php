@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\DataHandlers\DataHandler;
-use Bugo\LightPortal\DataHandlers\Exports\AbstractExport;
-use Bugo\LightPortal\Utils\ErrorHandlerInterface;
-use Bugo\LightPortal\Utils\FilesystemInterface;
-use Bugo\LightPortal\Utils\RequestInterface;
-use Bugo\LightPortal\Database\PortalSqlInterface;
+use LightPortal\DataHandlers\DataHandler;
+use LightPortal\DataHandlers\Exports\AbstractExport;
+use LightPortal\Utils\ErrorHandlerInterface;
+use LightPortal\Utils\FilesystemInterface;
+use LightPortal\Utils\RequestInterface;
+use LightPortal\Database\PortalSqlInterface;
 
 arch()->expect(AbstractExport::class)
     ->toBeAbstract()

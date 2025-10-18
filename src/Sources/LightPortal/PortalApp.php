@@ -10,10 +10,10 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal;
+namespace LightPortal;
 
-use Bugo\LightPortal\Areas\ConfigArea;
-use Bugo\LightPortal\Areas\CreditArea;
+use LightPortal\Areas\ConfigArea;
+use LightPortal\Areas\CreditArea;
 
 if (! defined('SMF'))
 	die('No direct access...');

@@ -10,12 +10,12 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Lists;
+namespace LightPortal\Lists;
 
 use Bugo\FontAwesome\Icon as FontAwesome;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\HasEvents;
-use Bugo\LightPortal\Utils\Icon;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Events\HasEvents;
+use LightPortal\Utils\Icon;
 
 if (! defined('SMF'))
 	die('No direct access...');

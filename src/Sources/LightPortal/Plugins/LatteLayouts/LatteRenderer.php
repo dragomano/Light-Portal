@@ -11,13 +11,13 @@
  * @version 24.09.25
  */
 
-namespace Bugo\LightPortal\Plugins\LatteLayouts;
+namespace LightPortal\Plugins\LatteLayouts;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Sapi;
-use Bugo\LightPortal\Renderers\AbstractRenderer;
-use Bugo\LightPortal\Utils\Icon;
+use LightPortal\Renderers\AbstractRenderer;
+use LightPortal\Utils\Icon;
 use Exception;
 use Latte\Engine;
 use Latte\Essential\RawPhpExtension;

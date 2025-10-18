@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Areas\Configs;
+namespace LightPortal\Areas\Configs;
 
 use Bugo\Bricks\Settings\CallbackConfig;
 use Bugo\Bricks\Settings\CheckConfig;
@@ -23,14 +23,14 @@ use Bugo\Compat\{Config, Lang, Theme};
 use Bugo\Compat\{Time, User, Utils};
 use Bugo\Compat\Actions\Admin\ACP;
 use Bugo\Compat\WebFetch\WebFetchApi;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Enums\VarType;
-use Bugo\LightPortal\Renderers\RendererInterface;
-use Bugo\LightPortal\UI\Partials\SelectFactory;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasSession;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Enums\VarType;
+use LightPortal\Renderers\RendererInterface;
+use LightPortal\UI\Partials\SelectFactory;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasSession;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 use const LP_VERSION;
 

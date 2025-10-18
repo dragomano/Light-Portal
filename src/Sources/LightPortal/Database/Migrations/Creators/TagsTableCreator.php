@@ -10,11 +10,11 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Database\Migrations\Creators;
+namespace LightPortal\Database\Migrations\Creators;
 
-use Bugo\LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
-use Bugo\LightPortal\Database\Migrations\Columns\TinyInteger;
-use Bugo\LightPortal\Database\Migrations\PortalTable;
+use LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
+use LightPortal\Database\Migrations\Columns\TinyInteger;
+use LightPortal\Database\Migrations\PortalTable;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
 
 if (! defined('SMF'))

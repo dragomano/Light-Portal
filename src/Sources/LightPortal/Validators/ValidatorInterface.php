@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Validators;
+namespace LightPortal\Validators;
 
 interface ValidatorInterface
 {

@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Models\ModelInterface;
-use Bugo\LightPortal\Models\TagModel;
+use LightPortal\Models\ModelInterface;
+use LightPortal\Models\TagModel;
 
 arch()
     ->expect(TagModel::class)

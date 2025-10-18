@@ -10,9 +10,9 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Models;
+namespace LightPortal\Models;
 
-use Bugo\LightPortal\Enums\Status;
+use LightPortal\Enums\Status;
 
 class TagModel extends AbstractModel
 {

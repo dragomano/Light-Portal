@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Database;
+namespace LightPortal\Database;
 
 use Laminas\Db\Adapter\Platform\PlatformInterface;
 use Laminas\Db\Adapter\Profiler\Profiler;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Hooks\WhosOnline;
+use LightPortal\Hooks\WhosOnline;
 
 arch()
     ->expect(WhosOnline::class)

@@ -12,7 +12,7 @@ Plugins are the extensions that expand the capabilities of the Light Portal. To 
 For better type safety and IDE support, you can use the `PluginType` enum instead of string values for the `type` parameter:
 
 ```php
-use Bugo\LightPortal\Enums\PluginType;
+use LightPortal\Enums\PluginType;
 
 // Instead of: #[PluginAttribute(type: 'editor')]
 #[PluginAttribute(type: PluginType::EDITOR)]
@@ -93,13 +93,13 @@ File `index.php` can be copied from folders of other plugins. The file `HelloWor
 ```php:line-numbers {17}
 <?php declare(strict_types=1);
 
-namespace Bugo\LightPortal\Plugins\HelloWorld;
+namespace LightPortal\Plugins\HelloWorld;
 
 use Bugo\Compat\{Config, Lang, Utils};
-use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Plugins\PluginAttribute;
+use LightPortal\Enums\PluginType;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\Plugin;
+use LightPortal\Plugins\PluginAttribute;
 
 if (! defined('LP_NAME'))
     die('No direct access...');
@@ -146,11 +146,11 @@ Add this plugin as a block type to display top topics on your portal pages.
 ```php:line-numbers {17}
 <?php declare(strict_types=1);
 
-namespace Bugo\LightPortal\Plugins\TopTopics;
+namespace LightPortal\Plugins\TopTopics;
 
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\Plugins\SSI;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SSI;
 
 if (! defined('LP_NAME'))
     die('No direct access...');
@@ -180,12 +180,12 @@ The Calculator plugin is a simple block that displays a calculator widget. Here'
 ```php:line-numbers {14,25}
 <?php declare(strict_types=1);
 
-namespace Bugo\LightPortal\Plugins\Calculator;
+namespace LightPortal\Plugins\Calculator;
 
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Utils\Traits\HasView;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\Block;
+use LightPortal\Utils\Traits\HasView;
 
 if (! defined('LP_NAME'))
     die('No direct access...');
@@ -270,10 +270,10 @@ This plugin can be used in blocks or pages to display formatted dates. The `init
 ```php:line-numbers {17}
 <?php declare(strict_types=1);
 
-namespace Bugo\LightPortal\Plugins\CarbonDate;
+namespace LightPortal\Plugins\CarbonDate;
 
-use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\Plugin;
+use LightPortal\Plugins\PluginAttribute;
 use Carbon\Carbon;
 
 if (! defined('LP_NAME'))

@@ -11,11 +11,11 @@
  * @version 15.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\GalleryBlock;
+namespace LightPortal\Plugins\GalleryBlock;
 
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\UI\Partials\AbstractSelect;
-use Bugo\LightPortal\Utils\Traits\HasCache;
+use LightPortal\UI\Partials\AbstractSelect;
+use LightPortal\Utils\Traits\HasCache;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

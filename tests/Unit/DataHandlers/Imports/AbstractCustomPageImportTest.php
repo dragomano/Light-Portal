@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\DataHandlers\Imports\Custom\AbstractCustomImport;
-use Bugo\LightPortal\DataHandlers\Imports\Custom\AbstractCustomPageImport;
+use LightPortal\DataHandlers\Imports\Custom\AbstractCustomImport;
+use LightPortal\DataHandlers\Imports\Custom\AbstractCustomPageImport;
 
 arch()
     ->expect(AbstractCustomPageImport::class)

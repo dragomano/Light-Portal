@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use Bugo\LightPortal\Database\PortalAdapter;
-use Bugo\LightPortal\Database\PortalAdapterInterface;
+use LightPortal\Database\PortalAdapter;
+use LightPortal\Database\PortalAdapterInterface;
 
 class TestAdapterFactory
 {

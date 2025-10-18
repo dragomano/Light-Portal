@@ -12,10 +12,10 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Lists;
+namespace LightPortal\Lists;
 
-use Bugo\LightPortal\Repositories\BlockRepositoryInterface;
-use Bugo\LightPortal\Utils\Setting;
+use LightPortal\Repositories\BlockRepositoryInterface;
+use LightPortal\Utils\Setting;
 
 if (! defined('SMF'))
 	die('No direct access...');

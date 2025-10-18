@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-use Bugo\LightPortal\Database\Operations\PortalUpdate;
+use LightPortal\Database\Operations\PortalUpdate;
 use Tests\ReflectionAccessor;
 
 describe('PortalUpdate', function () {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Utils\SessionManager;
+use LightPortal\Utils\SessionManager;
 
 arch()
     ->expect(SessionManager::class)

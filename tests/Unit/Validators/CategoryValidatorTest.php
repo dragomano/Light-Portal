@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Validators\CategoryValidator;
-use Bugo\LightPortal\Validators\ValidatorInterface;
+use LightPortal\Validators\CategoryValidator;
+use LightPortal\Validators\ValidatorInterface;
 
 arch()
     ->expect(CategoryValidator::class)

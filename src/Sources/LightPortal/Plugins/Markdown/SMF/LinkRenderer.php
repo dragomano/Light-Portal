@@ -11,7 +11,7 @@
  * @version 24.05.24
  */
 
-namespace Bugo\LightPortal\Plugins\Markdown\SMF;
+namespace LightPortal\Plugins\Markdown\SMF;
 
 use League\CommonMark\Extension\CommonMark\Node\Inline\Link;
 use League\CommonMark\Node\Node;

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Database\PortalSql;
-use Bugo\LightPortal\DataHandlers\Imports\PageImport;
-use Bugo\LightPortal\Enums\ContentType;
-use Bugo\LightPortal\Enums\EntryType;
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Utils\ErrorHandlerInterface;
-use Bugo\LightPortal\Utils\FileInterface;
+use LightPortal\Database\PortalSql;
+use LightPortal\DataHandlers\Imports\PageImport;
+use LightPortal\Enums\ContentType;
+use LightPortal\Enums\EntryType;
+use LightPortal\Enums\Status;
+use LightPortal\Utils\ErrorHandlerInterface;
+use LightPortal\Utils\FileInterface;
 use Tests\ReflectionAccessor;
 use Tests\Table;
 use Tests\TestAdapterFactory;

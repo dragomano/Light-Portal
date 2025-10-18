@@ -5,15 +5,15 @@ declare(strict_types=1);
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Lists\TagList;
-use Bugo\LightPortal\Repositories\TagRepositoryInterface;
-use Bugo\LightPortal\UI\Partials\TagSelect;
-use Bugo\LightPortal\UI\Partials\SelectInterface;
-use Bugo\LightPortal\UI\Partials\SelectRenderer;
+use LightPortal\Lists\TagList;
+use LightPortal\Repositories\TagRepositoryInterface;
+use LightPortal\UI\Partials\TagSelect;
+use LightPortal\UI\Partials\SelectInterface;
+use LightPortal\UI\Partials\SelectRenderer;
 use Tests\AppMockRegistry;
 
 use Tests\ReflectionAccessor;
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 beforeEach(function () {
     Lang::$txt['lp_page_tags_placeholder'] = 'Select tags';

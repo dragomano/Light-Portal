@@ -10,14 +10,14 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\UI\Partials;
+namespace LightPortal\UI\Partials;
 
-use Bugo\LightPortal\Lists\CategoryList;
-use Bugo\LightPortal\Lists\PageList;
-use Bugo\LightPortal\Lists\TagList;
+use LightPortal\Lists\CategoryList;
+use LightPortal\Lists\PageList;
+use LightPortal\Lists\TagList;
 use InvalidArgumentException;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 if (! defined('SMF'))
 	die('No direct access...');

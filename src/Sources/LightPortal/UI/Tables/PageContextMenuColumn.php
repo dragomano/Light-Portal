@@ -10,14 +10,14 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\UI\Tables;
+namespace LightPortal\UI\Tables;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Utils\RequestInterface;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Utils\RequestInterface;
+use LightPortal\Utils\Str;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 class PageContextMenuColumn extends ContextMenuColumn
 {

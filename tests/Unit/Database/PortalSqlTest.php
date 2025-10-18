@@ -2,14 +2,6 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Database\Operations\PortalDelete;
-use Bugo\LightPortal\Database\Operations\PortalInsert;
-use Bugo\LightPortal\Database\Operations\PortalReplace;
-use Bugo\LightPortal\Database\Operations\PortalSelect;
-use Bugo\LightPortal\Database\Operations\PortalUpdate;
-use Bugo\LightPortal\Database\PortalAdapterInterface;
-use Bugo\LightPortal\Database\PortalSql;
-use Bugo\LightPortal\Database\PortalTransactionInterface;
 use Laminas\Db\Adapter\Driver\ConnectionInterface;
 use Laminas\Db\Adapter\Driver\DriverInterface;
 use Laminas\Db\Adapter\Driver\ResultInterface;
@@ -18,6 +10,14 @@ use Laminas\Db\Adapter\Platform\PlatformInterface;
 use Laminas\Db\Adapter\StatementContainerInterface;
 use Laminas\Db\Metadata\Source\Factory as MetadataFactory;
 use Laminas\Db\Sql\PreparableSqlInterface;
+use LightPortal\Database\Operations\PortalDelete;
+use LightPortal\Database\Operations\PortalInsert;
+use LightPortal\Database\Operations\PortalReplace;
+use LightPortal\Database\Operations\PortalSelect;
+use LightPortal\Database\Operations\PortalUpdate;
+use LightPortal\Database\PortalAdapterInterface;
+use LightPortal\Database\PortalSql;
+use LightPortal\Database\PortalTransactionInterface;
 
 describe('PortalSql', function () {
     beforeEach(function () {

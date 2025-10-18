@@ -11,17 +11,17 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\CategoryList;
+namespace LightPortal\Plugins\CategoryList;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Actions\Category;
-use Bugo\LightPortal\Enums\PortalSubAction;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Actions\Category;
+use LightPortal\Enums\PortalSubAction;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Utils\Str;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

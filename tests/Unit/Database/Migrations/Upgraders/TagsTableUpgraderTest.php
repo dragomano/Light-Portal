@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Database\Migrations\Upgraders\TagsTableUpgrader;
-use Bugo\LightPortal\Database\PortalSql;
+use LightPortal\Database\Migrations\Upgraders\TagsTableUpgrader;
+use LightPortal\Database\PortalSql;
 use Tests\TestAdapterFactory;
 
 describe('TagsTableUpgraderTest', function () {

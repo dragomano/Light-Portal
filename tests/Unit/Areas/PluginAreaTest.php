@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Areas\PluginArea;
-use Bugo\LightPortal\Events\HasEvents;
-use Bugo\LightPortal\Utils\Traits\HasCache;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
-use Bugo\LightPortal\Utils\Traits\HasResponse;
+use LightPortal\Areas\PluginArea;
+use LightPortal\Events\HasEvents;
+use LightPortal\Utils\Traits\HasCache;
+use LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Utils\Traits\HasResponse;
 
 arch()
     ->expect(PluginArea::class)

@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Enums\Traits;
+namespace LightPortal\Enums\Traits;
 
 trait HasNames
 {

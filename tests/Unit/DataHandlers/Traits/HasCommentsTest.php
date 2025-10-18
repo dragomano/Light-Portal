@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\DataHandlers\Traits\HasInserts;
-use Bugo\LightPortal\DataHandlers\Traits\HasComments;
+use LightPortal\DataHandlers\Traits\HasInserts;
+use LightPortal\DataHandlers\Traits\HasComments;
 
 beforeEach(function () {
     $this->testClass = new class {

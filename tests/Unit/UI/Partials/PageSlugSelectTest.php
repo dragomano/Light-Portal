@@ -3,14 +3,14 @@
 declare(strict_types=1);
 
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Lists\PageList;
-use Bugo\LightPortal\UI\Partials\PageSlugSelect;
-use Bugo\LightPortal\UI\Partials\SelectInterface;
-use Bugo\LightPortal\UI\Partials\SelectRenderer;
+use LightPortal\Lists\PageList;
+use LightPortal\UI\Partials\PageSlugSelect;
+use LightPortal\UI\Partials\SelectInterface;
+use LightPortal\UI\Partials\SelectRenderer;
 use Tests\AppMockRegistry;
 
 use Tests\ReflectionAccessor;
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 beforeEach(function () {
     Lang::$txt['lp_frontpage_pages_no_items'] = 'No pages';

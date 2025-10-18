@@ -10,14 +10,14 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Repositories;
+namespace LightPortal\Repositories;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Enums\NotifyType;
-use Bugo\LightPortal\Utils\Avatar;
-use Bugo\LightPortal\Utils\Setting;
+use LightPortal\Enums\NotifyType;
+use LightPortal\Utils\Avatar;
+use LightPortal\Utils\Setting;
 use Exception;
 use Laminas\Db\Sql\Predicate\Expression;
 

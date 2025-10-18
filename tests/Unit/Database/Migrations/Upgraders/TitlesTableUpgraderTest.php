@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use Bugo\Compat\Config;
-use Bugo\LightPortal\Database\Migrations\Upgraders\TitlesTableUpgrader;
-use Bugo\LightPortal\Database\PortalSql;
+use LightPortal\Database\Migrations\Upgraders\TitlesTableUpgrader;
+use LightPortal\Database\PortalSql;
 use Tests\ReflectionAccessor;
 use Tests\TestAdapterFactory;
 

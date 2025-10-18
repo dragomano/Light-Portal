@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\UI\Partials\SelectInterface;
-use Bugo\LightPortal\UI\Partials\SelectRenderer;
-use Bugo\LightPortal\UI\View;
+use LightPortal\UI\Partials\SelectInterface;
+use LightPortal\UI\Partials\SelectRenderer;
+use LightPortal\UI\View;
 
 use Tests\ReflectionAccessor;
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 beforeEach(function () {
     Lang::$txt = array_merge(Lang::$txt, [

@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Lists\CategoryList;
-use Bugo\LightPortal\Lists\ListInterface;
+use LightPortal\Lists\CategoryList;
+use LightPortal\Lists\ListInterface;
 
 arch()
     ->expect(CategoryList::class)

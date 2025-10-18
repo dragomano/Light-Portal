@@ -10,11 +10,11 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Plugins;
+namespace LightPortal\Plugins;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
-use Bugo\LightPortal\Utils\Language;
+use LightPortal\Utils\Language;
 
 class LangHandler
 {

@@ -11,18 +11,18 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\RecentComments;
+namespace LightPortal\Plugins\RecentComments;
 
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Enums\EntryType;
-use Bugo\LightPortal\Enums\Permission;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\UI\Fields\NumberField;
-use Bugo\LightPortal\UI\Fields\RangeField;
-use Bugo\LightPortal\Utils\DateTime;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Enums\EntryType;
+use LightPortal\Enums\Permission;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\UI\Fields\NumberField;
+use LightPortal\UI\Fields\RangeField;
+use LightPortal\Utils\DateTime;
+use LightPortal\Utils\Str;
 use Laminas\Db\Sql\Predicate\Expression;
 use Laminas\Db\Sql\Select;
 

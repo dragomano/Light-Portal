@@ -9,18 +9,18 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\DataHandlers\Imports;
+namespace LightPortal\DataHandlers\Imports;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Sapi;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\DataHandlers\DataHandler;
-use Bugo\LightPortal\Utils\ErrorHandlerInterface;
-use Bugo\LightPortal\Utils\FileInterface;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\DataHandlers\DataHandler;
+use LightPortal\Utils\ErrorHandlerInterface;
+use LightPortal\Utils\FileInterface;
+use LightPortal\Utils\Traits\HasRequest;
 use SimpleXMLElement;
 
 use const LP_NAME;

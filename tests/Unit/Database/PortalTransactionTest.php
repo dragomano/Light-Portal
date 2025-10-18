@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Database\PortalAdapterInterface;
-use Bugo\LightPortal\Database\PortalTransaction;
 use Laminas\Db\Adapter\Driver\ConnectionInterface;
 use Laminas\Db\Adapter\Driver\DriverInterface;
+use LightPortal\Database\PortalAdapterInterface;
+use LightPortal\Database\PortalTransaction;
 use Tests\ReflectionAccessor;
 
 describe('PortalTransaction', function () {

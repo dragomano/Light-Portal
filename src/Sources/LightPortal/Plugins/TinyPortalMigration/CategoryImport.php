@@ -11,11 +11,11 @@
  * @version 09.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\TinyPortalMigration;
+namespace LightPortal\Plugins\TinyPortalMigration;
 
-use Bugo\LightPortal\DataHandlers\Imports\Custom\AbstractCustomCategoryImport;
-use Bugo\LightPortal\UI\Tables\CheckboxColumn;
-use Bugo\LightPortal\UI\Tables\TitleColumn;
+use LightPortal\DataHandlers\Imports\Custom\AbstractCustomCategoryImport;
+use LightPortal\UI\Tables\CheckboxColumn;
+use LightPortal\UI\Tables\TitleColumn;
 use Laminas\Db\Sql\Expression;
 
 if (! defined('LP_NAME'))

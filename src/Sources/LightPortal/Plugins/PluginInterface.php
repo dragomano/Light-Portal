@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Plugins;
+namespace LightPortal\Plugins;
 
 interface PluginInterface
 {

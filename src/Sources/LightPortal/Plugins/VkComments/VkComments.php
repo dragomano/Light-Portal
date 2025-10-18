@@ -11,15 +11,15 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\VkComments;
+namespace LightPortal\Plugins\VkComments;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\Utils\Setting;
+use LightPortal\Enums\PluginType;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\Plugin;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Utils\Setting;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

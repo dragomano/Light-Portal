@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\DataHandlers\Exports\PluginExport;
-use Bugo\LightPortal\Utils\ErrorHandlerInterface;
-use Bugo\LightPortal\Utils\FilesystemInterface;
-use Bugo\LightPortal\Utils\RequestInterface;
+use LightPortal\DataHandlers\Exports\PluginExport;
+use LightPortal\Utils\ErrorHandlerInterface;
+use LightPortal\Utils\FilesystemInterface;
+use LightPortal\Utils\RequestInterface;
 use Tests\AppMockRegistry;
 use Tests\DataHandlerTestTrait;
 

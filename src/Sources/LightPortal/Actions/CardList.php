@@ -10,17 +10,17 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Actions;
+namespace LightPortal\Actions;
 
 use Bugo\Compat\PageIndex;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Articles\PageArticle;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
-use Bugo\LightPortal\Utils\Traits\HasSorting;
+use LightPortal\Articles\PageArticle;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Utils\Traits\HasSorting;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 class CardList implements CardListInterface
 {

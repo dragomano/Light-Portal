@@ -10,10 +10,10 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\UI\Fields;
+namespace LightPortal\UI\Fields;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Utils\Str;
 
 if (! defined('SMF'))
 	die('No direct access...');

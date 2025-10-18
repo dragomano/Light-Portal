@@ -10,13 +10,13 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Utils\Traits;
+namespace LightPortal\Utils\Traits;
 
-use Bugo\LightPortal\Utils\FileInterface;
-use Bugo\LightPortal\Utils\PostInterface;
-use Bugo\LightPortal\Utils\RequestInterface;
+use LightPortal\Utils\FileInterface;
+use LightPortal\Utils\PostInterface;
+use LightPortal\Utils\RequestInterface;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 trait HasRequest
 {

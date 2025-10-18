@@ -11,19 +11,19 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\SiteList;
+namespace LightPortal\Plugins\SiteList;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Enums\VarType;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\Utils\Traits\HasView;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Enums\PluginType;
+use LightPortal\Enums\VarType;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\Plugin;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Utils\Traits\HasView;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

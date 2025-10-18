@@ -10,22 +10,22 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\DataHandlers\Exports;
+namespace LightPortal\DataHandlers\Exports;
 
 use AppendIterator;
 use Bugo\Compat\Sapi;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\Lists\PluginList;
-use Bugo\LightPortal\Utils\ErrorHandlerInterface;
-use Bugo\LightPortal\Utils\FilesystemInterface;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Lists\PluginList;
+use LightPortal\Utils\ErrorHandlerInterface;
+use LightPortal\Utils\FilesystemInterface;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use ZipArchive;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 if (! defined('SMF'))
 	die('No direct access...');

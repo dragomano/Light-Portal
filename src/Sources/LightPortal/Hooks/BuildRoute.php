@@ -10,12 +10,12 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Hooks;
+namespace LightPortal\Hooks;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Utils\Traits\HasCache;
-use Bugo\LightPortal\Utils\Traits\HasPortalSql;
-use Bugo\LightPortal\Utils\Traits\HasTranslationJoins;
+use LightPortal\Utils\Traits\HasCache;
+use LightPortal\Utils\Traits\HasPortalSql;
+use LightPortal\Utils\Traits\HasTranslationJoins;
 
 use const LP_CACHE_TIME;
 use const LP_PAGE_PARAM;

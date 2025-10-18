@@ -10,11 +10,11 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Articles;
+namespace LightPortal\Articles;
 
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\Events\HasEvents;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Events\HasEvents;
+use LightPortal\Utils\Traits\HasRequest;
 use Laminas\Db\Sql\Predicate\Expression;
 use Laminas\Db\Sql\Select;
 

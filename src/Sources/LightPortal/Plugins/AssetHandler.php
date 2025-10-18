@@ -10,11 +10,11 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Plugins;
+namespace LightPortal\Plugins;
 
 use Bugo\Compat\Theme;
 use Bugo\Compat\WebFetch\WebFetchApi;
-use Bugo\LightPortal\Utils\Setting;
+use LightPortal\Utils\Setting;
 use MatthiasMullie\Minify\CSS;
 use MatthiasMullie\Minify\JS;
 

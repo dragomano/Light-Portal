@@ -10,15 +10,15 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Repositories;
+namespace LightPortal\Repositories;
 
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Security;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Enums\Status;
+use LightPortal\Utils\Icon;
+use LightPortal\Utils\Str;
 use Exception;
 use Laminas\Db\Sql\Predicate\Expression;
 

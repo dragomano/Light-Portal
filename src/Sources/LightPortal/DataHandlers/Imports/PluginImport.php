@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\DataHandlers\Imports;
+namespace LightPortal\DataHandlers\Imports;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;

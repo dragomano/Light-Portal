@@ -10,36 +10,36 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Actions;
+namespace LightPortal\Actions;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\PageIndex;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Articles\ArticleInterface;
-use Bugo\LightPortal\Articles\BoardArticle;
-use Bugo\LightPortal\Articles\ChosenPageArticle;
-use Bugo\LightPortal\Articles\ChosenTopicArticle;
-use Bugo\LightPortal\Articles\PageArticle;
-use Bugo\LightPortal\Articles\PageArticleInterface;
-use Bugo\LightPortal\Articles\TopicArticle;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\HasEvents;
-use Bugo\LightPortal\Renderers\RendererInterface;
-use Bugo\LightPortal\Utils\DateTime;
-use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasBreadcrumbs;
-use Bugo\LightPortal\Utils\Traits\HasCache;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
-use Bugo\LightPortal\Utils\Traits\HasResponse;
-use Bugo\LightPortal\Utils\Traits\HasSorting;
+use LightPortal\Articles\ArticleInterface;
+use LightPortal\Articles\BoardArticle;
+use LightPortal\Articles\ChosenPageArticle;
+use LightPortal\Articles\ChosenTopicArticle;
+use LightPortal\Articles\PageArticle;
+use LightPortal\Articles\PageArticleInterface;
+use LightPortal\Articles\TopicArticle;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Events\HasEvents;
+use LightPortal\Renderers\RendererInterface;
+use LightPortal\Utils\DateTime;
+use LightPortal\Utils\Icon;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasBreadcrumbs;
+use LightPortal\Utils\Traits\HasCache;
+use LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Utils\Traits\HasResponse;
+use LightPortal\Utils\Traits\HasSorting;
 use Ramsey\Collection\Collection;
 use Ramsey\Collection\CollectionInterface;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 use const LP_BASE_URL;
 

@@ -11,14 +11,14 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\BootstrapIcons;
+namespace LightPortal\Plugins\BootstrapIcons;
 
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Plugins\PluginAttribute;
+use LightPortal\Enums\PluginType;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\Plugin;
+use LightPortal\Plugins\PluginAttribute;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

@@ -11,22 +11,22 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\TagList;
+namespace LightPortal\Plugins\TagList;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Actions\Tag;
-use Bugo\LightPortal\Enums\PortalSubAction;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\RadioField;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Actions\Tag;
+use LightPortal\Enums\PortalSubAction;
+use LightPortal\Enums\Tab;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\RadioField;
+use LightPortal\Utils\Str;
 use Laminas\Db\Sql\Predicate\Expression;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

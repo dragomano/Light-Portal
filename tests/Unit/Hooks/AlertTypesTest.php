@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Hooks\AlertTypes;
+use LightPortal\Hooks\AlertTypes;
 
 arch()
     ->expect(AlertTypes::class)

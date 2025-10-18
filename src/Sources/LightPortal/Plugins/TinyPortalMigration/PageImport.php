@@ -11,16 +11,16 @@
  * @version 09.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\TinyPortalMigration;
+namespace LightPortal\Plugins\TinyPortalMigration;
 
 use Bugo\Bricks\Tables\IdColumn;
 use Bugo\Compat\Parsers\BBCodeParser;
-use Bugo\LightPortal\DataHandlers\Imports\Custom\AbstractCustomPageImport;
-use Bugo\LightPortal\Enums\EntryType;
-use Bugo\LightPortal\UI\Tables\CheckboxColumn;
-use Bugo\LightPortal\UI\Tables\PageSlugColumn;
-use Bugo\LightPortal\UI\Tables\TitleColumn;
-use Bugo\LightPortal\Utils\DateTime;
+use LightPortal\DataHandlers\Imports\Custom\AbstractCustomPageImport;
+use LightPortal\Enums\EntryType;
+use LightPortal\UI\Tables\CheckboxColumn;
+use LightPortal\UI\Tables\PageSlugColumn;
+use LightPortal\UI\Tables\TitleColumn;
+use LightPortal\Utils\DateTime;
 use Laminas\Db\Sql\Predicate\Expression;
 use Laminas\Db\Sql\Select;
 

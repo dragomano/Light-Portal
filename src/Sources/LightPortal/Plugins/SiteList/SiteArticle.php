@@ -11,12 +11,12 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\SiteList;
+namespace LightPortal\Plugins\SiteList;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Articles\AbstractArticle;
+use LightPortal\Articles\AbstractArticle;
 use Laminas\Db\Sql\Select;
 
 if (! defined('LP_NAME'))

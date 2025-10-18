@@ -10,11 +10,11 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Events;
+namespace LightPortal\Events;
 
-use Bugo\LightPortal\Plugins\PluginHandler;
+use LightPortal\Plugins\PluginHandler;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 final class EventManagerFactory
 {

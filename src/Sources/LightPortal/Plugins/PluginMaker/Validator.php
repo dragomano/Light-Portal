@@ -11,15 +11,15 @@
  * @version 09.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\PluginMaker;
+namespace LightPortal\Plugins\PluginMaker;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\Lists\PluginList;
-use Bugo\LightPortal\Validators\AbstractValidator;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Lists\PluginList;
+use LightPortal\Validators\AbstractValidator;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

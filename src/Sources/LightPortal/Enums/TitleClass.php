@@ -10,10 +10,10 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Enums;
+namespace LightPortal\Enums;
 
-use Bugo\LightPortal\Enums\Traits\HasHtml;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Enums\Traits\HasHtml;
+use LightPortal\Utils\Str;
 
 enum TitleClass: string
 {

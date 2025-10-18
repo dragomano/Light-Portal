@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\DataHandlers\Traits;
+namespace LightPortal\DataHandlers\Traits;
 
 trait HasComments
 {

@@ -10,14 +10,14 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Models;
+namespace LightPortal\Models;
 
-use Bugo\LightPortal\Enums\ContentClass;
-use Bugo\LightPortal\Enums\Permission;
-use Bugo\LightPortal\Enums\Placement;
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Enums\TitleClass;
-use Bugo\LightPortal\Utils\Setting;
+use LightPortal\Enums\ContentClass;
+use LightPortal\Enums\Permission;
+use LightPortal\Enums\Placement;
+use LightPortal\Enums\Status;
+use LightPortal\Enums\TitleClass;
+use LightPortal\Utils\Setting;
 
 if (! defined('SMF'))
 	die('No direct access...');

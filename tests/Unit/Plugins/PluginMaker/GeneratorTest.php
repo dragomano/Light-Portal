@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../../../../src/Sources/LightPortal/Plugins/PluginMaker/Generator.php';
 
-use Bugo\LightPortal\Plugins\PluginMaker\Generator;
+use LightPortal\Plugins\PluginMaker\Generator;
 use Nette\PhpGenerator\Literal;
 use Tests\ReflectionAccessor;
 

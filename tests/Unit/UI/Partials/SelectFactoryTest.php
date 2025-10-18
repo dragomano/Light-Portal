@@ -5,16 +5,16 @@ declare(strict_types=1);
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Lists\CategoryList;
-use Bugo\LightPortal\Lists\ListInterface;
-use Bugo\LightPortal\UI\Partials\ActionSelect;
-use Bugo\LightPortal\UI\Partials\AreaSelect;
-use Bugo\LightPortal\UI\Partials\BoardSelect;
-use Bugo\LightPortal\UI\Partials\CategorySelect;
-use Bugo\LightPortal\UI\Partials\ContentClassSelect;
-use Bugo\LightPortal\UI\Partials\SelectFactory;
-use Bugo\LightPortal\UI\Partials\SelectInterface;
-use Bugo\LightPortal\Utils\MessageIndex;
+use LightPortal\Lists\CategoryList;
+use LightPortal\Lists\ListInterface;
+use LightPortal\UI\Partials\ActionSelect;
+use LightPortal\UI\Partials\AreaSelect;
+use LightPortal\UI\Partials\BoardSelect;
+use LightPortal\UI\Partials\CategorySelect;
+use LightPortal\UI\Partials\ContentClassSelect;
+use LightPortal\UI\Partials\SelectFactory;
+use LightPortal\UI\Partials\SelectInterface;
+use LightPortal\Utils\MessageIndex;
 use Tests\AppMockRegistry;
 
 beforeEach(function () {

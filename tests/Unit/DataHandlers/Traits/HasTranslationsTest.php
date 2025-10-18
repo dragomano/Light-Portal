@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Database\Operations\PortalInsert;
-use Bugo\LightPortal\Database\Operations\PortalReplace;
-use Bugo\LightPortal\Database\Operations\PortalUpdate;
-use Bugo\LightPortal\Database\PortalSql;
+use LightPortal\Database\Operations\PortalInsert;
+use LightPortal\Database\Operations\PortalReplace;
+use LightPortal\Database\Operations\PortalUpdate;
+use LightPortal\Database\PortalSql;
 use Laminas\Db\Adapter\Driver\ResultInterface;
-use Bugo\LightPortal\DataHandlers\Traits\HasInserts;
-use Bugo\LightPortal\DataHandlers\Traits\HasTranslations;
+use LightPortal\DataHandlers\Traits\HasInserts;
+use LightPortal\DataHandlers\Traits\HasTranslations;
 
 beforeEach(function () {
     $this->sql = Mockery::mock(PortalSql::class)->shouldIgnoreMissing();
@@ -211,8 +211,8 @@ it('handles very long field values', function () {
 it('handles database exceptions during SQL operations', function () {
     $this->resultMock->shouldReceive('getAffectedRows')->andReturn(1);
     $this->resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
-    $this->sql->shouldReceive('execute')->with(Mockery::type('Bugo\LightPortal\Database\Operations\PortalReplace'))->andReturn($this->resultMock);
-    $this->sql->shouldReceive('execute')->with(Mockery::type('Bugo\LightPortal\Database\Operations\PortalUpdate'))->andThrow(new Exception('Database connection error'));
+    $this->sql->shouldReceive('execute')->with(Mockery::type('LightPortal\Database\Operations\PortalReplace'))->andReturn($this->resultMock);
+    $this->sql->shouldReceive('execute')->with(Mockery::type('LightPortal\Database\Operations\PortalUpdate'))->andThrow(new Exception('Database connection error'));
 
     $translations = [
         [

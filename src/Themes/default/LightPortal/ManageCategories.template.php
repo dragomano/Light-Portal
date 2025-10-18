@@ -2,8 +2,8 @@
 
 use Bugo\Compat\{Config, Lang};
 use Bugo\Compat\{Theme, Utils};
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Utils\Icon;
+use LightPortal\Enums\Tab;
+use LightPortal\Utils\Icon;
 
 function template_category_post(): void
 {

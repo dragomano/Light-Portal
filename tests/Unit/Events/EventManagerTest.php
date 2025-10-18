@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Events\EventManager;
+use LightPortal\Events\EventManager;
 
 arch()
     ->expect(EventManager::class)

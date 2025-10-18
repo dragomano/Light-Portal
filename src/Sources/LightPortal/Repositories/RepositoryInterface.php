@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Repositories;
+namespace LightPortal\Repositories;
 
 use Laminas\Db\Sql\Predicate\Expression;
 

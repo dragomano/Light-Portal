@@ -11,18 +11,18 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\Polls;
+namespace LightPortal\Plugins\Polls;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\Plugins\SsiBlock;
-use Bugo\LightPortal\UI\Fields\InputField;
-use Bugo\LightPortal\UI\Fields\SelectField;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Enums\Tab;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SsiBlock;
+use LightPortal\UI\Fields\InputField;
+use LightPortal\UI\Fields\SelectField;
+use LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

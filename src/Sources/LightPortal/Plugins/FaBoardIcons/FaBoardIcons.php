@@ -11,14 +11,14 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\FaBoardIcons;
+namespace LightPortal\Plugins\FaBoardIcons;
 
 use Bugo\Compat\Config;
-use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Enums\PluginType;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\Plugin;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

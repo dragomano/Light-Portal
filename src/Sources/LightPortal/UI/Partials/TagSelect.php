@@ -10,12 +10,12 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\UI\Partials;
+namespace LightPortal\UI\Partials;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Lists\TagList;
-use Bugo\LightPortal\Utils\Setting;
+use LightPortal\Lists\TagList;
+use LightPortal\Utils\Setting;
 
 if (! defined('SMF'))
 	die('No direct access...');

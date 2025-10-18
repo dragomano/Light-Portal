@@ -10,10 +10,10 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Validators;
+namespace LightPortal\Validators;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\PortalHook;
+use LightPortal\Enums\PortalHook;
 
 class BlockValidator extends AbstractValidator
 {

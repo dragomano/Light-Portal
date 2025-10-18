@@ -10,17 +10,17 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Tasks;
+namespace LightPortal\Tasks;
 
 use Bugo\Compat\Tasks\BackgroundTask;
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\Repositories\CommentRepositoryInterface;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use Laminas\Db\Sql\Where;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Repositories\CommentRepositoryInterface;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 final class Maintainer extends BackgroundTask
 {

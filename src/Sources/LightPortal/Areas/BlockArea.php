@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Areas;
+namespace LightPortal\Areas;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\ErrorHandler;
@@ -18,29 +18,29 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Security;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Areas\Traits\HasArea;
-use Bugo\LightPortal\Enums\BlockAreaType;
-use Bugo\LightPortal\Enums\ContentType;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Events\HasEvents;
-use Bugo\LightPortal\Models\BlockFactory;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Repositories\BlockRepositoryInterface;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\CustomField;
-use Bugo\LightPortal\UI\Fields\TextareaField;
-use Bugo\LightPortal\UI\Fields\TextField;
-use Bugo\LightPortal\UI\Fields\UrlField;
-use Bugo\LightPortal\UI\Partials\SelectFactory;
-use Bugo\LightPortal\Utils\Content;
-use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\Language;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Validators\BlockValidator;
+use LightPortal\Areas\Traits\HasArea;
+use LightPortal\Enums\BlockAreaType;
+use LightPortal\Enums\ContentType;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Enums\Tab;
+use LightPortal\Events\HasEvents;
+use LightPortal\Models\BlockFactory;
+use LightPortal\Plugins\Block;
+use LightPortal\Repositories\BlockRepositoryInterface;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\CustomField;
+use LightPortal\UI\Fields\TextareaField;
+use LightPortal\UI\Fields\TextField;
+use LightPortal\UI\Fields\UrlField;
+use LightPortal\UI\Partials\SelectFactory;
+use LightPortal\Utils\Content;
+use LightPortal\Utils\Icon;
+use LightPortal\Utils\Language;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
+use LightPortal\Validators\BlockValidator;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 use function template_show_areas_info;
 
 use const LP_NAME;

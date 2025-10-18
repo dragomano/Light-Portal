@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Utils\DateTime;
+use LightPortal\Utils\DateTime;
 
 arch()
     ->expect(DateTime::class)

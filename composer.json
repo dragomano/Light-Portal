@@ -1,7 +1,7 @@
 {
   "autoload": {
     "psr-4": {
-      "Bugo\\LightPortal\\": "src\\Sources\\LightPortal"
+      "LightPortal\\": "src\\Sources\\LightPortal"
     }
   },
   "autoload-dev": {

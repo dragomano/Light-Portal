@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-use Bugo\LightPortal\Database\Migrations\Installer;
+use LightPortal\Database\Migrations\Installer;
 
 class PortalSetup
 {

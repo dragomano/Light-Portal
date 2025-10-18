@@ -11,7 +11,7 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\CurrentMonth;
+namespace LightPortal\Plugins\CurrentMonth;
 
 use Bugo\Compat\Actions\Calendar;
 use Bugo\Compat\Config;
@@ -19,10 +19,10 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\Utils\Traits\HasView;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Utils\Traits\HasView;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

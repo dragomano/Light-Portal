@@ -10,16 +10,16 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\UI\Tables;
+namespace LightPortal\UI\Tables;
 
 use Bugo\Bricks\Tables\Row;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
-use Bugo\LightPortal\Utils\RequestInterface;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Utils\RequestInterface;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 class PageButtonsRow extends Row
 {

@@ -10,23 +10,23 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Hooks;
+namespace LightPortal\Hooks;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\ContentType;
-use Bugo\LightPortal\Enums\EntryType;
-use Bugo\LightPortal\Enums\Placement;
-use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\HasEvents;
-use Bugo\LightPortal\Lists\BlockList;
-use Bugo\LightPortal\Utils\SessionManager;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Enums\ContentType;
+use LightPortal\Enums\EntryType;
+use LightPortal\Enums\Placement;
+use LightPortal\Enums\PluginType;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Events\HasEvents;
+use LightPortal\Lists\BlockList;
+use LightPortal\Utils\SessionManager;
+use LightPortal\Utils\Traits\HasRequest;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 if (! defined('SMF'))
 	die('No direct access...');

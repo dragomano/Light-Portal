@@ -11,18 +11,18 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\TinyPortalMigration;
+namespace LightPortal\Plugins\TinyPortalMigration;
 
 use Bugo\Compat\User;
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\Utils\ErrorHandlerInterface;
-use Bugo\LightPortal\Utils\Icon;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Enums\PluginType;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\Plugin;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Utils\ErrorHandlerInterface;
+use LightPortal\Utils\Icon;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

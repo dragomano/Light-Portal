@@ -10,22 +10,22 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Hooks;
+namespace LightPortal\Hooks;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Actions\Block;
-use Bugo\LightPortal\Enums\Action;
-use Bugo\LightPortal\Enums\Permission;
-use Bugo\LightPortal\Repositories\PageRepositoryInterface;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasBreadcrumbs;
+use LightPortal\Actions\Block;
+use LightPortal\Enums\Action;
+use LightPortal\Enums\Permission;
+use LightPortal\Repositories\PageRepositoryInterface;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasBreadcrumbs;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 use const LP_ACTION;
 use const LP_PAGE_URL;

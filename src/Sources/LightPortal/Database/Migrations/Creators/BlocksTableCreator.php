@@ -10,14 +10,14 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Database\Migrations\Creators;
+namespace LightPortal\Database\Migrations\Creators;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
-use Bugo\LightPortal\Database\Migrations\Columns\TinyInteger;
-use Bugo\LightPortal\Database\Migrations\PortalTable;
-use Bugo\LightPortal\Enums\ContentClass;
-use Bugo\LightPortal\Enums\TitleClass;
+use LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
+use LightPortal\Database\Migrations\Columns\TinyInteger;
+use LightPortal\Database\Migrations\PortalTable;
+use LightPortal\Enums\ContentClass;
+use LightPortal\Enums\TitleClass;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
 
 if (! defined('SMF'))

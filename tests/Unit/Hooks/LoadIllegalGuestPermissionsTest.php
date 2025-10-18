@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Hooks\LoadIllegalGuestPermissions;
+use LightPortal\Hooks\LoadIllegalGuestPermissions;
 
 arch()
     ->expect(LoadIllegalGuestPermissions::class)

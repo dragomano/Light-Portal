@@ -10,13 +10,13 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Database;
+namespace LightPortal\Database;
 
-use Bugo\LightPortal\Database\Operations\PortalDelete;
-use Bugo\LightPortal\Database\Operations\PortalInsert;
-use Bugo\LightPortal\Database\Operations\PortalReplace;
-use Bugo\LightPortal\Database\Operations\PortalSelect;
-use Bugo\LightPortal\Database\Operations\PortalUpdate;
+use LightPortal\Database\Operations\PortalDelete;
+use LightPortal\Database\Operations\PortalInsert;
+use LightPortal\Database\Operations\PortalReplace;
+use LightPortal\Database\Operations\PortalSelect;
+use LightPortal\Database\Operations\PortalUpdate;
 use Laminas\Db\Adapter\Driver\ResultInterface;
 use Laminas\Db\Sql\PreparableSqlInterface;
 

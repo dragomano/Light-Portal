@@ -11,10 +11,10 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\TwentyFortyEight;
+namespace LightPortal\Plugins\TwentyFortyEight;
 
-use Bugo\LightPortal\Plugins\GameBlock;
-use Bugo\LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\GameBlock;
+use LightPortal\Plugins\PluginAttribute;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

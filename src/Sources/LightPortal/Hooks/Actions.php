@@ -10,20 +10,20 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Hooks;
+namespace LightPortal\Hooks;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\User;
-use Bugo\LightPortal\Actions\BoardIndex;
-use Bugo\LightPortal\Actions\Category;
-use Bugo\LightPortal\Actions\FrontPage;
-use Bugo\LightPortal\Actions\Tag;
-use Bugo\LightPortal\Enums\Action;
-use Bugo\LightPortal\Enums\PortalSubAction;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Traits\HasCache;
+use LightPortal\Actions\BoardIndex;
+use LightPortal\Actions\Category;
+use LightPortal\Actions\FrontPage;
+use LightPortal\Actions\Tag;
+use LightPortal\Enums\Action;
+use LightPortal\Enums\PortalSubAction;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Traits\HasCache;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 use const LP_ACTION;
 

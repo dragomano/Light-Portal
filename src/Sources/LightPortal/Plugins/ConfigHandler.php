@@ -10,12 +10,12 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Plugins;
+namespace LightPortal\Plugins;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Repositories\PluginRepositoryInterface;
+use LightPortal\Repositories\PluginRepositoryInterface;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 class ConfigHandler
 {

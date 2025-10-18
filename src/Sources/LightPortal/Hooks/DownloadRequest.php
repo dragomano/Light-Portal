@@ -10,11 +10,11 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Hooks;
+namespace LightPortal\Hooks;
 
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\HasEvents;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Events\HasEvents;
 
 if (! defined('SMF'))
 	die('No direct access...');

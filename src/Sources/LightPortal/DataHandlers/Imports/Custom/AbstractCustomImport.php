@@ -9,20 +9,20 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\DataHandlers\Imports\Custom;
+namespace LightPortal\DataHandlers\Imports\Custom;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Sapi;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\DataHandlers\DataHandler;
-use Bugo\LightPortal\DataHandlers\Traits\HasDataOperations;
-use Bugo\LightPortal\Enums\Permission;
-use Bugo\LightPortal\UI\Tables\ImportButtonsRow;
-use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
+use LightPortal\DataHandlers\DataHandler;
+use LightPortal\DataHandlers\Traits\HasDataOperations;
+use LightPortal\Enums\Permission;
+use LightPortal\UI\Tables\ImportButtonsRow;
+use LightPortal\UI\Tables\PortalTableBuilder;
+use LightPortal\Utils\Traits\HasRequest;
 
-use Bugo\LightPortal\Utils\Traits\HasTablePresenter;
+use LightPortal\Utils\Traits\HasTablePresenter;
 
 use const LP_NAME;
 

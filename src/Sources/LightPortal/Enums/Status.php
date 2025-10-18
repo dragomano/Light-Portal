@@ -10,9 +10,9 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Enums;
+namespace LightPortal\Enums;
 
-use Bugo\LightPortal\Enums\Traits\HasValues;
+use LightPortal\Enums\Traits\HasValues;
 
 enum Status: int
 {

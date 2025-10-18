@@ -10,12 +10,12 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Plugins;
+namespace LightPortal\Plugins;
 
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\Placement;
-use Bugo\LightPortal\Enums\PluginType;
+use LightPortal\Enums\Placement;
+use LightPortal\Enums\PluginType;
 use ReflectionClass;
 use ReflectionException;
 

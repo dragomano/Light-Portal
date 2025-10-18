@@ -11,25 +11,25 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\RandomPages;
+namespace LightPortal\Plugins\RandomPages;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
-use Bugo\LightPortal\Enums\EntryType;
-use Bugo\LightPortal\Enums\Permission;
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\CustomField;
-use Bugo\LightPortal\UI\Fields\NumberField;
-use Bugo\LightPortal\UI\Partials\SelectFactory;
-use Bugo\LightPortal\Utils\DateTime;
-use Bugo\LightPortal\Utils\ParamWrapper;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Enums\EntryType;
+use LightPortal\Enums\Permission;
+use LightPortal\Enums\Status;
+use LightPortal\Enums\Tab;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\CustomField;
+use LightPortal\UI\Fields\NumberField;
+use LightPortal\UI\Partials\SelectFactory;
+use LightPortal\Utils\DateTime;
+use LightPortal\Utils\ParamWrapper;
+use LightPortal\Utils\Str;
 use Laminas\Db\Sql\Predicate\Expression;
 use Laminas\Db\Sql\Select;
 

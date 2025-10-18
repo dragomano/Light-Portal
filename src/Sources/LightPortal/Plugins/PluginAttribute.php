@@ -10,10 +10,10 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Plugins;
+namespace LightPortal\Plugins;
 
 use Attribute;
-use Bugo\LightPortal\Enums\PluginType;
+use LightPortal\Enums\PluginType;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

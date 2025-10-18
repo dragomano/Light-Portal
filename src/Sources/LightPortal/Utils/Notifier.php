@@ -10,12 +10,12 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Utils;
+namespace LightPortal\Utils;
 
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\Tasks\Notifier as NotifierTask;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Tasks\Notifier as NotifierTask;
 
 if (! defined('SMF'))
 	die('No direct access...');

@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Tests;
 
 use Bugo\FontAwesome\Icon;
-use Bugo\LightPortal\Enums\ContentClass;
-use Bugo\LightPortal\Enums\ContentType;
-use Bugo\LightPortal\Enums\EntryType;
-use Bugo\LightPortal\Enums\Placement;
-use Bugo\LightPortal\Enums\TitleClass;
+use LightPortal\Enums\ContentClass;
+use LightPortal\Enums\ContentType;
+use LightPortal\Enums\EntryType;
+use LightPortal\Enums\Placement;
+use LightPortal\Enums\TitleClass;
 use Faker\Factory;
 use Faker\Generator;
 

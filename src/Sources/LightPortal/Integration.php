@@ -10,31 +10,31 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal;
+namespace LightPortal;
 
-use Bugo\LightPortal\Enums\ForumHook;
-use Bugo\LightPortal\Hooks\Actions;
-use Bugo\LightPortal\Hooks\AlertTypes;
-use Bugo\LightPortal\Hooks\BuildRoute;
-use Bugo\LightPortal\Hooks\CurrentAction;
-use Bugo\LightPortal\Hooks\DefaultAction;
-use Bugo\LightPortal\Hooks\DeleteMembers;
-use Bugo\LightPortal\Hooks\DisplayButtons;
-use Bugo\LightPortal\Hooks\DownloadRequest;
-use Bugo\LightPortal\Hooks\FetchAlerts;
-use Bugo\LightPortal\Hooks\Init;
-use Bugo\LightPortal\Hooks\LoadIllegalGuestPermissions;
-use Bugo\LightPortal\Hooks\LoadPermissions;
-use Bugo\LightPortal\Hooks\LoadTheme;
-use Bugo\LightPortal\Hooks\MenuButtons;
-use Bugo\LightPortal\Hooks\PermissionsList;
-use Bugo\LightPortal\Hooks\PreCssOutput;
-use Bugo\LightPortal\Hooks\ProfileAreas;
-use Bugo\LightPortal\Hooks\ProfilePopup;
-use Bugo\LightPortal\Hooks\Redirect;
-use Bugo\LightPortal\Hooks\RouteParsers;
-use Bugo\LightPortal\Hooks\WhosOnline;
-use Bugo\LightPortal\Utils\Traits\HasForumHooks;
+use LightPortal\Enums\ForumHook;
+use LightPortal\Hooks\Actions;
+use LightPortal\Hooks\AlertTypes;
+use LightPortal\Hooks\BuildRoute;
+use LightPortal\Hooks\CurrentAction;
+use LightPortal\Hooks\DefaultAction;
+use LightPortal\Hooks\DeleteMembers;
+use LightPortal\Hooks\DisplayButtons;
+use LightPortal\Hooks\DownloadRequest;
+use LightPortal\Hooks\FetchAlerts;
+use LightPortal\Hooks\Init;
+use LightPortal\Hooks\LoadIllegalGuestPermissions;
+use LightPortal\Hooks\LoadPermissions;
+use LightPortal\Hooks\LoadTheme;
+use LightPortal\Hooks\MenuButtons;
+use LightPortal\Hooks\PermissionsList;
+use LightPortal\Hooks\PreCssOutput;
+use LightPortal\Hooks\ProfileAreas;
+use LightPortal\Hooks\ProfilePopup;
+use LightPortal\Hooks\Redirect;
+use LightPortal\Hooks\RouteParsers;
+use LightPortal\Hooks\WhosOnline;
+use LightPortal\Utils\Traits\HasForumHooks;
 
 use const SMF_VERSION;
 

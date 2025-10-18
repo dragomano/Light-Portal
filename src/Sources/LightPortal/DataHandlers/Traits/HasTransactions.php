@@ -10,11 +10,11 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\DataHandlers\Traits;
+namespace LightPortal\DataHandlers\Traits;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Utils\Traits\HasCache;
+use LightPortal\Utils\Traits\HasCache;
 
 trait HasTransactions
 {

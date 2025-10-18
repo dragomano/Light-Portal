@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Areas\Configs;
+namespace LightPortal\Areas\Configs;
 
 use Bugo\Compat\Actions\Admin\Permissions;
 use Bugo\Compat\Config;

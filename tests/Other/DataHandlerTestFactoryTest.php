@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Utils\FilesystemInterface;
-use Bugo\LightPortal\Utils\RequestInterface;
+use LightPortal\Utils\FilesystemInterface;
+use LightPortal\Utils\RequestInterface;
 use Tests\DataHandlerTestFactory;
 use Tests\Fixtures;
 

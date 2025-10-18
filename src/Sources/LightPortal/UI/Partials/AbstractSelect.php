@@ -10,11 +10,11 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\UI\Partials;
+namespace LightPortal\UI\Partials;
 
-use Bugo\LightPortal\Database\PortalSqlInterface;
+use LightPortal\Database\PortalSqlInterface;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 if (! defined('SMF'))
 	die('No direct access...');

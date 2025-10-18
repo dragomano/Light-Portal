@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Database\Migrations;
+namespace LightPortal\Database\Migrations;
 
 interface InstallerInterface
 {

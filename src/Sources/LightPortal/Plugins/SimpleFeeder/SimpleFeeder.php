@@ -11,17 +11,17 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\SimpleFeeder;
+namespace LightPortal\Plugins\SimpleFeeder;
 
 use Bugo\Compat\Config;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\UrlField;
-use Bugo\LightPortal\Utils\DateTime;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Enums\Tab;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\UrlField;
+use LightPortal\Utils\DateTime;
+use LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

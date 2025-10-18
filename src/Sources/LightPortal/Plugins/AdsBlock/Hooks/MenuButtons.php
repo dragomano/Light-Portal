@@ -11,13 +11,13 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\AdsBlock\Hooks;
+namespace LightPortal\Plugins\AdsBlock\Hooks;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Plugins\AdsBlock\Placement;
-use Bugo\LightPortal\Utils\Traits\HasPortalSql;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Plugins\AdsBlock\Placement;
+use LightPortal\Utils\Traits\HasPortalSql;
+use LightPortal\Utils\Traits\HasRequest;
 
 class MenuButtons
 {

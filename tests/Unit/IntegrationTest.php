@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Integration;
+use LightPortal\Integration;
 
 arch()
     ->expect(Integration::class)

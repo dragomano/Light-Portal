@@ -10,39 +10,39 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Areas;
+namespace LightPortal\Areas;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Areas\Configs\BasicConfig;
-use Bugo\LightPortal\Areas\Configs\ExtraConfig;
-use Bugo\LightPortal\Areas\Configs\FeedbackConfig;
-use Bugo\LightPortal\Areas\Configs\MiscConfig;
-use Bugo\LightPortal\Areas\Configs\PanelConfig;
-use Bugo\LightPortal\DataHandlers\Exports\BlockExport;
-use Bugo\LightPortal\DataHandlers\Exports\CategoryExport;
-use Bugo\LightPortal\DataHandlers\Exports\PageExport;
-use Bugo\LightPortal\DataHandlers\Exports\PluginExport;
-use Bugo\LightPortal\DataHandlers\Exports\TagExport;
-use Bugo\LightPortal\DataHandlers\Imports\BlockImport;
-use Bugo\LightPortal\DataHandlers\Imports\CategoryImport;
-use Bugo\LightPortal\DataHandlers\Imports\PageImport;
-use Bugo\LightPortal\DataHandlers\Imports\PluginImport;
-use Bugo\LightPortal\DataHandlers\Imports\TagImport;
-use Bugo\LightPortal\Enums\ForumHook;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\HasEvents;
-use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasCache;
-use Bugo\LightPortal\Utils\Traits\HasForumHooks;
-use Bugo\LightPortal\Utils\Traits\HasPortalSql;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Areas\Configs\BasicConfig;
+use LightPortal\Areas\Configs\ExtraConfig;
+use LightPortal\Areas\Configs\FeedbackConfig;
+use LightPortal\Areas\Configs\MiscConfig;
+use LightPortal\Areas\Configs\PanelConfig;
+use LightPortal\DataHandlers\Exports\BlockExport;
+use LightPortal\DataHandlers\Exports\CategoryExport;
+use LightPortal\DataHandlers\Exports\PageExport;
+use LightPortal\DataHandlers\Exports\PluginExport;
+use LightPortal\DataHandlers\Exports\TagExport;
+use LightPortal\DataHandlers\Imports\BlockImport;
+use LightPortal\DataHandlers\Imports\CategoryImport;
+use LightPortal\DataHandlers\Imports\PageImport;
+use LightPortal\DataHandlers\Imports\PluginImport;
+use LightPortal\DataHandlers\Imports\TagImport;
+use LightPortal\Enums\ForumHook;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Events\HasEvents;
+use LightPortal\Utils\Icon;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasCache;
+use LightPortal\Utils\Traits\HasForumHooks;
+use LightPortal\Utils\Traits\HasPortalSql;
+use LightPortal\Utils\Traits\HasRequest;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 use const LP_NAME;
 use const LP_VERSION;

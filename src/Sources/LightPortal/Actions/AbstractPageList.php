@@ -10,24 +10,24 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Actions;
+namespace LightPortal\Actions;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\PortalSubAction;
-use Bugo\LightPortal\Lists\CategoryList;
-use Bugo\LightPortal\Repositories\PageListRepositoryInterface;
-use Bugo\LightPortal\Utils\Avatar;
-use Bugo\LightPortal\Utils\Content;
-use Bugo\LightPortal\Utils\DateTime;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasBreadcrumbs;
-use Bugo\LightPortal\Utils\Traits\HasTablePresenter;
+use LightPortal\Enums\PortalSubAction;
+use LightPortal\Lists\CategoryList;
+use LightPortal\Repositories\PageListRepositoryInterface;
+use LightPortal\Utils\Avatar;
+use LightPortal\Utils\Content;
+use LightPortal\Utils\DateTime;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasBreadcrumbs;
+use LightPortal\Utils\Traits\HasTablePresenter;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 use const LP_PAGE_URL;
 

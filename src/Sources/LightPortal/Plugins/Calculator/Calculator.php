@@ -11,12 +11,12 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\Calculator;
+namespace LightPortal\Plugins\Calculator;
 
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\Utils\Traits\HasView;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Utils\Traits\HasView;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

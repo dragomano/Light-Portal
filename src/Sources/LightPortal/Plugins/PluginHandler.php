@@ -10,17 +10,17 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Plugins;
+namespace LightPortal\Plugins;
 
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\EventManager;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Events\EventManager;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
 use Throwable;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

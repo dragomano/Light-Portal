@@ -11,15 +11,15 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\HidingBlocks;
+namespace LightPortal\Plugins\HidingBlocks;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\UI\Fields\CustomField;
+use LightPortal\Enums\PluginType;
+use LightPortal\Enums\Tab;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\Plugin;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\UI\Fields\CustomField;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

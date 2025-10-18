@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-use Bugo\LightPortal\Database\Operations\PortalDelete;
+use LightPortal\Database\Operations\PortalDelete;
 use Tests\ReflectionAccessor;
 
 describe('PortalDelete', function () {

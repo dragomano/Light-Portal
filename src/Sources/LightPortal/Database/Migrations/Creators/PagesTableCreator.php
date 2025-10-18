@@ -10,16 +10,16 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Database\Migrations\Creators;
+namespace LightPortal\Database\Migrations\Creators;
 
-use Bugo\LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
-use Bugo\LightPortal\Database\Migrations\Columns\MediumInteger;
-use Bugo\LightPortal\Database\Migrations\Columns\TinyInteger;
-use Bugo\LightPortal\Database\Migrations\Columns\UnsignedInteger;
-use Bugo\LightPortal\Database\Migrations\PortalTable;
-use Bugo\LightPortal\Enums\ContentType;
-use Bugo\LightPortal\Enums\EntryType;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
+use LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
+use LightPortal\Database\Migrations\Columns\MediumInteger;
+use LightPortal\Database\Migrations\Columns\TinyInteger;
+use LightPortal\Database\Migrations\Columns\UnsignedInteger;
+use LightPortal\Database\Migrations\PortalTable;
+use LightPortal\Enums\ContentType;
+use LightPortal\Enums\EntryType;
 
 if (! defined('SMF'))
 	die('No direct access...');

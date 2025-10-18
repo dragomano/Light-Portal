@@ -10,11 +10,11 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Database\Migrations\Upgraders;
+namespace LightPortal\Database\Migrations\Upgraders;
 
 use Bugo\Compat\Config;
-use Bugo\LightPortal\Database\Migrations\Columns\MediumText;
-use Bugo\LightPortal\Database\PortalSqlInterface;
+use LightPortal\Database\Migrations\Columns\MediumText;
+use LightPortal\Database\PortalSqlInterface;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Ddl\AlterTable;
 use Laminas\Db\Sql\Ddl\Column\Column;

@@ -11,7 +11,7 @@
  * @version 22.12.24
  */
 
-namespace Bugo\LightPortal\Plugins\DummyArticleCards;
+namespace LightPortal\Plugins\DummyArticleCards;
 
 use Exception;
 

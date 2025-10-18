@@ -10,18 +10,18 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Areas;
+namespace LightPortal\Areas;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\ForumHook;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\HasEvents;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasForumHooks;
+use LightPortal\Enums\ForumHook;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Events\HasEvents;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasForumHooks;
 
 use const LP_NAME;
 use const LP_VERSION;

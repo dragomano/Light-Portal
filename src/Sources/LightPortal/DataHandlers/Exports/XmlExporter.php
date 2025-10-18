@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\DataHandlers\Exports;
+namespace LightPortal\DataHandlers\Exports;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Sapi;

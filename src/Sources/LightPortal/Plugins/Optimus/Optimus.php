@@ -11,13 +11,13 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\Optimus;
+namespace LightPortal\Plugins\Optimus;
 
 use Bugo\Compat\Config;
-use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\Plugins\Plugin;
+use LightPortal\Enums\PluginType;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\Plugin;
 use Bugo\Optimus\Prime;
 
 if (! defined('LP_NAME'))

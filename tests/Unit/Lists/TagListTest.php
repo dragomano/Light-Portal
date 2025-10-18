@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Lists\ListInterface;
-use Bugo\LightPortal\Lists\TagList;
+use LightPortal\Lists\ListInterface;
+use LightPortal\Lists\TagList;
 
 arch()
     ->expect(TagList::class)

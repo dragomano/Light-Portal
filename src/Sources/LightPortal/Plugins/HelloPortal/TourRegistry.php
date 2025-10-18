@@ -11,9 +11,9 @@
  * @version 25.09.25
  */
 
-namespace Bugo\LightPortal\Plugins\HelloPortal;
+namespace LightPortal\Plugins\HelloPortal;
 
-use Bugo\LightPortal\Utils\Setting;
+use LightPortal\Utils\Setting;
 
 use const LP_PAGE_PARAM;
 

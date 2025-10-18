@@ -2,10 +2,10 @@
 
 use Bugo\Compat\{Config, Lang};
 use Bugo\Compat\{Theme, Utils};
-use Bugo\LightPortal\Enums\ContentClass;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Enums\TitleClass;
-use Bugo\LightPortal\Utils\Icon;
+use LightPortal\Enums\ContentClass;
+use LightPortal\Enums\Tab;
+use LightPortal\Enums\TitleClass;
+use LightPortal\Utils\Icon;
 
 function template_manage_blocks(): void
 {

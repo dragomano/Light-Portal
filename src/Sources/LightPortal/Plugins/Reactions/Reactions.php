@@ -11,17 +11,17 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\Reactions;
+namespace LightPortal\Plugins\Reactions;
 
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\Utils\Traits\HasView;
+use LightPortal\Enums\PluginType;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\Plugin;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\Utils\Traits\HasView;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

@@ -11,19 +11,19 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\Chart;
+namespace LightPortal\Plugins\Chart;
 
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\CustomField;
-use Bugo\LightPortal\UI\Fields\TextField;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasView;
+use LightPortal\Enums\Tab;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\CustomField;
+use LightPortal\UI\Fields\TextField;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasView;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

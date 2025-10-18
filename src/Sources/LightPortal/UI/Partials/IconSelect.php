@@ -10,10 +10,10 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\UI\Partials;
+namespace LightPortal\UI\Partials;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Utils\Icon;
+use LightPortal\Utils\Icon;
 
 if (! defined('SMF'))
 	die('No direct access...');

@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Areas;
+namespace LightPortal\Areas;
 
 use Bugo\Bricks\Tables\DateColumn;
 use Bugo\Bricks\Tables\IdColumn;
@@ -22,38 +22,38 @@ use Bugo\Compat\Security;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Areas\Traits\HasArea;
-use Bugo\LightPortal\Enums\ContentType;
-use Bugo\LightPortal\Enums\EntryType;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Models\PageFactory;
-use Bugo\LightPortal\Repositories\PageRepositoryInterface;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\CustomField;
-use Bugo\LightPortal\UI\Fields\TextareaField;
-use Bugo\LightPortal\UI\Fields\TextField;
-use Bugo\LightPortal\UI\Partials\SelectFactory;
-use Bugo\LightPortal\UI\Tables\CheckboxColumn;
-use Bugo\LightPortal\UI\Tables\NumViewsColumn;
-use Bugo\LightPortal\UI\Tables\PageButtonsRow;
-use Bugo\LightPortal\UI\Tables\PageContextMenuColumn;
-use Bugo\LightPortal\UI\Tables\PageSearchRow;
-use Bugo\LightPortal\UI\Tables\PageSlugColumn;
-use Bugo\LightPortal\UI\Tables\PageStatusColumn;
-use Bugo\LightPortal\UI\Tables\PageTypeSelectRow;
-use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
-use Bugo\LightPortal\UI\Tables\TitleColumn;
-use Bugo\LightPortal\Utils\Content;
-use Bugo\LightPortal\Utils\DateTime;
-use Bugo\LightPortal\Utils\Language;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Validators\PageValidator;
 use Laminas\Db\Sql\Predicate\Expression;
+use LightPortal\Areas\Traits\HasArea;
+use LightPortal\Enums\ContentType;
+use LightPortal\Enums\EntryType;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Enums\Status;
+use LightPortal\Enums\Tab;
+use LightPortal\Models\PageFactory;
+use LightPortal\Repositories\PageRepositoryInterface;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\CustomField;
+use LightPortal\UI\Fields\TextareaField;
+use LightPortal\UI\Fields\TextField;
+use LightPortal\UI\Partials\SelectFactory;
+use LightPortal\UI\Tables\CheckboxColumn;
+use LightPortal\UI\Tables\NumViewsColumn;
+use LightPortal\UI\Tables\PageButtonsRow;
+use LightPortal\UI\Tables\PageContextMenuColumn;
+use LightPortal\UI\Tables\PageSearchRow;
+use LightPortal\UI\Tables\PageSlugColumn;
+use LightPortal\UI\Tables\PageStatusColumn;
+use LightPortal\UI\Tables\PageTypeSelectRow;
+use LightPortal\UI\Tables\PortalTableBuilder;
+use LightPortal\UI\Tables\TitleColumn;
+use LightPortal\Utils\Content;
+use LightPortal\Utils\DateTime;
+use LightPortal\Utils\Language;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
+use LightPortal\Validators\PageValidator;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 use const LP_NAME;
 

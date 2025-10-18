@@ -10,17 +10,17 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Hooks;
+namespace LightPortal\Hooks;
 
 use Bugo\Compat\Config;
-use Bugo\LightPortal\Actions\ActionInterface;
-use Bugo\LightPortal\Actions\BoardIndex;
-use Bugo\LightPortal\Actions\FrontPage;
-use Bugo\LightPortal\Actions\Page;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Actions\ActionInterface;
+use LightPortal\Actions\BoardIndex;
+use LightPortal\Actions\FrontPage;
+use LightPortal\Actions\Page;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Traits\HasRequest;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 use const LP_PAGE_PARAM;
 

@@ -12,7 +12,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Lists;
+namespace LightPortal\Lists;
 
 use const LP_ADDON_DIR;
 

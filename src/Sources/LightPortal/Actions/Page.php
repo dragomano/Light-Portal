@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Actions;
+namespace LightPortal\Actions;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\ErrorHandler;
@@ -18,22 +18,22 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\EntryType;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Enums\PortalSubAction;
-use Bugo\LightPortal\Events\HasEvents;
-use Bugo\LightPortal\Repositories\PageRepositoryInterface;
-use Bugo\LightPortal\Utils\Content;
-use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Traits\HasCache;
-use Bugo\LightPortal\Utils\Traits\HasBreadcrumbs;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
-use Bugo\LightPortal\Utils\Traits\HasResponse;
-use Bugo\LightPortal\Utils\Traits\HasSorting;
+use LightPortal\Enums\EntryType;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Enums\PortalSubAction;
+use LightPortal\Events\HasEvents;
+use LightPortal\Repositories\PageRepositoryInterface;
+use LightPortal\Utils\Content;
+use LightPortal\Utils\Icon;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Traits\HasCache;
+use LightPortal\Utils\Traits\HasBreadcrumbs;
+use LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Utils\Traits\HasResponse;
+use LightPortal\Utils\Traits\HasSorting;
 use SimpleSEF;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 use const LP_ACTION;
 use const LP_PAGE_PARAM;

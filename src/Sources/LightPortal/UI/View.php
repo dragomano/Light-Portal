@@ -10,15 +10,15 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\UI;
+namespace LightPortal\UI;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Renderers\Blade as GlobalBlade;
-use Bugo\LightPortal\Renderers\PurePHP as GlobalPurePHP;
-use Bugo\LightPortal\Renderers\RendererInterface;
+use LightPortal\Renderers\Blade as GlobalBlade;
+use LightPortal\Renderers\PurePHP as GlobalPurePHP;
+use LightPortal\Renderers\RendererInterface;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

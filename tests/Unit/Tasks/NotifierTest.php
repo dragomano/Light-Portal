@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Bugo\Compat\Tasks\BackgroundTask;
-use Bugo\LightPortal\Tasks\Notifier;
+use LightPortal\Tasks\Notifier;
 
 arch()
     ->expect(Notifier::class)

@@ -10,10 +10,10 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Database\Migrations\Creators;
+namespace LightPortal\Database\Migrations\Creators;
 
-use Bugo\LightPortal\Database\Migrations\PortalTable;
-use Bugo\LightPortal\Database\PortalSqlInterface;
+use LightPortal\Database\Migrations\PortalTable;
+use LightPortal\Database\PortalSqlInterface;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Ddl\DropTable;
 use Laminas\Db\Sql\Expression;

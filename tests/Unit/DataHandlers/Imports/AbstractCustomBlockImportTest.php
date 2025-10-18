@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\DataHandlers\Imports\Custom\AbstractCustomBlockImport;
-use Bugo\LightPortal\DataHandlers\Imports\Custom\AbstractCustomImport;
+use LightPortal\DataHandlers\Imports\Custom\AbstractCustomBlockImport;
+use LightPortal\DataHandlers\Imports\Custom\AbstractCustomImport;
 
 arch()
     ->expect(AbstractCustomBlockImport::class)

@@ -10,15 +10,15 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Repositories;
+namespace LightPortal\Repositories;
 
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Enums\EntryType;
-use Bugo\LightPortal\Enums\Permission;
-use Bugo\LightPortal\Enums\PortalSubAction;
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Enums\EntryType;
+use LightPortal\Enums\Permission;
+use LightPortal\Enums\PortalSubAction;
+use LightPortal\Enums\Status;
+use LightPortal\Utils\Icon;
+use LightPortal\Utils\Str;
 use Laminas\Db\Sql\Predicate\Expression;
 use Laminas\Db\Sql\Select;
 use Laminas\Db\Sql\Where;

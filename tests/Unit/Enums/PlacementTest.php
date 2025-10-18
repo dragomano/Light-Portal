@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Enums\Placement;
+use LightPortal\Enums\Placement;
 
 arch()
     ->expect(Placement::class)

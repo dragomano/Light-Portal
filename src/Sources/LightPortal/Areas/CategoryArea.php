@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Areas;
+namespace LightPortal\Areas;
 
 use Bugo\Bricks\Tables\Column;
 use Bugo\Bricks\Tables\IdColumn;
@@ -20,25 +20,25 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Security;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Areas\Traits\HasArea;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Models\CategoryFactory;
-use Bugo\LightPortal\Repositories\CategoryRepositoryInterface;
-use Bugo\LightPortal\UI\Fields\CustomField;
-use Bugo\LightPortal\UI\Fields\TextareaField;
-use Bugo\LightPortal\UI\Fields\TextField;
-use Bugo\LightPortal\UI\Partials\SelectFactory;
-use Bugo\LightPortal\UI\Tables\ContextMenuColumn;
-use Bugo\LightPortal\UI\Tables\IconColumn;
-use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
-use Bugo\LightPortal\UI\Tables\StatusColumn;
-use Bugo\LightPortal\UI\Tables\TitleColumn;
-use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\Language;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Validators\CategoryValidator;
+use LightPortal\Areas\Traits\HasArea;
+use LightPortal\Enums\Tab;
+use LightPortal\Models\CategoryFactory;
+use LightPortal\Repositories\CategoryRepositoryInterface;
+use LightPortal\UI\Fields\CustomField;
+use LightPortal\UI\Fields\TextareaField;
+use LightPortal\UI\Fields\TextField;
+use LightPortal\UI\Partials\SelectFactory;
+use LightPortal\UI\Tables\ContextMenuColumn;
+use LightPortal\UI\Tables\IconColumn;
+use LightPortal\UI\Tables\PortalTableBuilder;
+use LightPortal\UI\Tables\StatusColumn;
+use LightPortal\UI\Tables\TitleColumn;
+use LightPortal\Utils\Icon;
+use LightPortal\Utils\Language;
+use LightPortal\Utils\Str;
+use LightPortal\Validators\CategoryValidator;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 use const LP_NAME;
 

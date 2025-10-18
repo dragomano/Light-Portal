@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\DataHandlers\Exports\CategoryExport;
-use Bugo\LightPortal\Repositories\CategoryRepositoryInterface;
-use Bugo\LightPortal\Utils\ErrorHandlerInterface;
-use Bugo\LightPortal\Utils\FilesystemInterface;
+use LightPortal\DataHandlers\Exports\CategoryExport;
+use LightPortal\Repositories\CategoryRepositoryInterface;
+use LightPortal\Utils\ErrorHandlerInterface;
+use LightPortal\Utils\FilesystemInterface;
 use Tests\AppMockRegistry;
 use Tests\DataHandlerTestTrait;
 use Tests\Fixtures;

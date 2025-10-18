@@ -11,15 +11,15 @@
  * @version 24.09.25
  */
 
-namespace Bugo\LightPortal\Plugins\BlogMode;
+namespace LightPortal\Plugins\BlogMode;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Actions\FrontPage;
-use Bugo\LightPortal\Utils\Traits\HasBreadcrumbs;
+use LightPortal\Actions\FrontPage;
+use LightPortal\Utils\Traits\HasBreadcrumbs;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
 use Bugo\Compat\{Config, Lang, Theme, Utils};
-use Bugo\LightPortal\Areas\Configs\BasicConfig;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\UI\Partials\SelectFactory;
-use Bugo\LightPortal\Utils\Icon;
+use LightPortal\Areas\Configs\BasicConfig;
+use LightPortal\Enums\Tab;
+use LightPortal\UI\Partials\SelectFactory;
+use LightPortal\Utils\Icon;
 
 function template_callback_frontpage_mode_settings_middle(): void
 {

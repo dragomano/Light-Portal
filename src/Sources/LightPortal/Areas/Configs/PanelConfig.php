@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Areas\Configs;
+namespace LightPortal\Areas\Configs;
 
 use Bugo\Bricks\Settings\CallbackConfig;
 use Bugo\Bricks\Settings\CheckConfig;
@@ -18,9 +18,9 @@ use Bugo\Bricks\Settings\ConfigBuilder;
 use Bugo\Compat\{Config, Lang, Theme};
 use Bugo\Compat\{User, Utils};
 use Bugo\Compat\Actions\Admin\ACP;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
-use Bugo\LightPortal\Utils\Traits\HasSession;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Utils\Traits\HasSession;
 
 if (! defined('SMF'))
 	die('No direct access...');

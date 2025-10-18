@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\UI\Partials\PlacementSelect;
-use Bugo\LightPortal\UI\Partials\SelectInterface;
-use Bugo\LightPortal\UI\Partials\SelectRenderer;
+use LightPortal\UI\Partials\PlacementSelect;
+use LightPortal\UI\Partials\SelectInterface;
+use LightPortal\UI\Partials\SelectRenderer;
 use Tests\AppMockRegistry;
 use Tests\ReflectionAccessor;
 

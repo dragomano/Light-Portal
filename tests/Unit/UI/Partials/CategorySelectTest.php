@@ -3,14 +3,14 @@
 declare(strict_types=1);
 
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Lists\CategoryList;
-use Bugo\LightPortal\UI\Partials\CategorySelect;
-use Bugo\LightPortal\UI\Partials\SelectInterface;
-use Bugo\LightPortal\UI\Partials\SelectRenderer;
+use LightPortal\Lists\CategoryList;
+use LightPortal\UI\Partials\CategorySelect;
+use LightPortal\UI\Partials\SelectInterface;
+use LightPortal\UI\Partials\SelectRenderer;
 use Tests\AppMockRegistry;
 
 use Tests\ReflectionAccessor;
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 beforeEach(function () {
     Lang::$txt['lp_frontpage_categories_select'] = 'Select categories';

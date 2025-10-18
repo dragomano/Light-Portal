@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Bugo\Compat\Routable;
-use Bugo\LightPortal\Routes\Forum;
+use LightPortal\Routes\Forum;
 
 arch()
     ->expect(Forum::class)

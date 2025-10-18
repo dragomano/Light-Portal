@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Database\Migrations\Upgraders;
+namespace LightPortal\Database\Migrations\Upgraders;
 
 use Laminas\Db\Sql\Expression;
 

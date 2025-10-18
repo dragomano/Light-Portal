@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Database\Migrations\Columns;
+namespace LightPortal\Database\Migrations\Columns;
 
 use Laminas\Db\Sql\Ddl\Column\AbstractLengthColumn;
 

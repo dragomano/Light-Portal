@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\DataHandlers\Traits\HasInserts;
+use LightPortal\DataHandlers\Traits\HasInserts;
 
 beforeEach(function () {
     $this->testClass = new class {

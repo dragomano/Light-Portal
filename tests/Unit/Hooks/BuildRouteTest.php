@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Hooks\BuildRoute;
+use LightPortal\Hooks\BuildRoute;
 
 arch()
     ->expect(BuildRoute::class)

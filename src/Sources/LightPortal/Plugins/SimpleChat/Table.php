@@ -11,12 +11,12 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\SimpleChat;
+namespace LightPortal\Plugins\SimpleChat;
 
-use Bugo\LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
-use Bugo\LightPortal\Database\Migrations\Columns\UnsignedInteger;
-use Bugo\LightPortal\Database\Migrations\Creators\AbstractTableCreator;
-use Bugo\LightPortal\Database\Migrations\PortalTable;
+use LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
+use LightPortal\Database\Migrations\Columns\UnsignedInteger;
+use LightPortal\Database\Migrations\Creators\AbstractTableCreator;
+use LightPortal\Database\Migrations\PortalTable;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
 
 class Table extends AbstractTableCreator

@@ -10,14 +10,14 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Enums;
+namespace LightPortal\Enums;
 
 use Bugo\Compat\User;
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\Enums\Traits\HasValues;
-use Bugo\LightPortal\Utils\CacheInterface;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Enums\Traits\HasValues;
+use LightPortal\Utils\CacheInterface;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 enum Permission: int
 {

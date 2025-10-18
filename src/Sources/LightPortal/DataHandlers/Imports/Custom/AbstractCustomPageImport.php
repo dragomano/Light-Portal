@@ -9,11 +9,11 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\DataHandlers\Imports\Custom;
+namespace LightPortal\DataHandlers\Imports\Custom;
 
-use Bugo\LightPortal\DataHandlers\Traits\HasComments;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\HasEvents;
+use LightPortal\DataHandlers\Traits\HasComments;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Events\HasEvents;
 
 if (! defined('SMF'))
 	die('No direct access...');

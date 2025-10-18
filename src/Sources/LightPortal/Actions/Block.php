@@ -10,19 +10,19 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Actions;
+namespace LightPortal\Actions;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\Action;
-use Bugo\LightPortal\Enums\Permission;
-use Bugo\LightPortal\Utils\Content;
-use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Enums\Action;
+use LightPortal\Enums\Permission;
+use LightPortal\Utils\Content;
+use LightPortal\Utils\Icon;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasRequest;
 
 use const LP_ACTION;
 use const LP_CACHE_TIME;

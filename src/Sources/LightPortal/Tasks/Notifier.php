@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Tasks;
+namespace LightPortal\Tasks;
 
 use Bugo\Compat\Actions\Notify;
 use Bugo\Compat\Config;
@@ -20,11 +20,11 @@ use Bugo\Compat\Tasks\BackgroundTask;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\Enums\AlertAction;
-use Bugo\LightPortal\Enums\NotifyType;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Enums\AlertAction;
+use LightPortal\Enums\NotifyType;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 final class Notifier extends BackgroundTask
 {

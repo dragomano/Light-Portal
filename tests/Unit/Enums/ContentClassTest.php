@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Enums\ContentClass;
+use LightPortal\Enums\ContentClass;
 
 arch()
     ->expect(ContentClass::class)

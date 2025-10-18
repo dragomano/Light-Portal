@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Database\Migrations\Creators\BlocksTableCreator;
-use Bugo\LightPortal\Database\PortalSql;
+use LightPortal\Database\Migrations\Creators\BlocksTableCreator;
+use LightPortal\Database\PortalSql;
 use Bugo\Compat\Utils;
 use Tests\ReflectionAccessor;
 use Tests\TestAdapterFactory;

@@ -10,11 +10,11 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Renderers;
+namespace LightPortal\Renderers;
 
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Sapi;
-use Bugo\LightPortal\Utils\Icon;
+use LightPortal\Utils\Icon;
 use eftec\bladeone\BladeOne;
 use Exception;
 

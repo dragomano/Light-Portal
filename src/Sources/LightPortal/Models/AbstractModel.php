@@ -10,9 +10,9 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Models;
+namespace LightPortal\Models;
 
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Utils\Str;
 use stdClass;
 
 if (! defined('SMF'))

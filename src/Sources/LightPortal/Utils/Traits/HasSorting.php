@@ -10,11 +10,11 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Utils\Traits;
+namespace LightPortal\Utils\Traits;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Articles\ArticleInterface;
-use Bugo\LightPortal\Utils\Setting;
+use LightPortal\Articles\ArticleInterface;
+use LightPortal\Utils\Setting;
 
 trait HasSorting
 {

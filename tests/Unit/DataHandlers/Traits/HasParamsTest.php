@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\DataHandlers\Traits\HasInserts;
-use Bugo\LightPortal\DataHandlers\Traits\HasParams;
+use LightPortal\DataHandlers\Traits\HasInserts;
+use LightPortal\DataHandlers\Traits\HasParams;
 
 beforeEach(function () {
     $this->testClass = new class {

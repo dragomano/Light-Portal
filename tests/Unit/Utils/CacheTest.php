@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Utils\Cache;
-use Bugo\LightPortal\Utils\CacheInterface;
+use LightPortal\Utils\Cache;
+use LightPortal\Utils\CacheInterface;
 
 arch()
     ->expect(Cache::class)

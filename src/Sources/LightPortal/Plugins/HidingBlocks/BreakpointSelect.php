@@ -11,10 +11,10 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\HidingBlocks;
+namespace LightPortal\Plugins\HidingBlocks;
 
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\UI\Partials\AbstractSelect;
+use LightPortal\UI\Partials\AbstractSelect;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

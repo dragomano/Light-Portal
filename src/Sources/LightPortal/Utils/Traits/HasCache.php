@@ -10,12 +10,12 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Utils\Traits;
+namespace LightPortal\Utils\Traits;
 
 use Bugo\Compat\User;
-use Bugo\LightPortal\Utils\CacheInterface;
+use LightPortal\Utils\CacheInterface;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 trait HasCache
 {

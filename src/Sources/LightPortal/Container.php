@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal;
+namespace LightPortal;
 
 use Bugo\Compat\ErrorHandler;
 use League\Container\Container as LeagueContainer;

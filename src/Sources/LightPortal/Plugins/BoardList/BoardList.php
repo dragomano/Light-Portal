@@ -11,21 +11,21 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\BoardList;
+namespace LightPortal\Plugins\BoardList;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\ContentClass;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Enums\TitleClass;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\UI\Fields\CustomField;
-use Bugo\LightPortal\UI\Partials\SelectFactory;
-use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\MessageIndex;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Enums\ContentClass;
+use LightPortal\Enums\Tab;
+use LightPortal\Enums\TitleClass;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\UI\Fields\CustomField;
+use LightPortal\UI\Partials\SelectFactory;
+use LightPortal\Utils\Icon;
+use LightPortal\Utils\MessageIndex;
+use LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

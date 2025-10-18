@@ -11,16 +11,16 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\TopTopics;
+namespace LightPortal\Plugins\TopTopics;
 
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\Plugins\SsiBlock;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\NumberField;
-use Bugo\LightPortal\UI\Fields\RadioField;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SsiBlock;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\NumberField;
+use LightPortal\UI\Fields\RadioField;
+use LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

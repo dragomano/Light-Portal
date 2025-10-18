@@ -10,10 +10,10 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\UI\Tables;
+namespace LightPortal\UI\Tables;
 
 use Bugo\Bricks\Tables\Column;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Utils\Str;
 
 class CheckboxColumn extends Column
 {

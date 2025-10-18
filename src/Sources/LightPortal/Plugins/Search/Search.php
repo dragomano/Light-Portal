@@ -11,23 +11,23 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\Search;
+namespace LightPortal\Plugins\Search;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\EntryType;
-use Bugo\LightPortal\Enums\ForumHook;
-use Bugo\LightPortal\Enums\Permission;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\Utils\Content;
-use Bugo\LightPortal\Utils\DateTime;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasView;
-use Bugo\LightPortal\Utils\Traits\HasTranslationJoins;
+use LightPortal\Enums\EntryType;
+use LightPortal\Enums\ForumHook;
+use LightPortal\Enums\Permission;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Utils\Content;
+use LightPortal\Utils\DateTime;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasView;
+use LightPortal\Utils\Traits\HasTranslationJoins;
 use Laminas\Db\Sql\Predicate\Expression;
 use Laminas\Db\Sql\Select;
 

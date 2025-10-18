@@ -10,18 +10,18 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Utils;
+namespace LightPortal\Utils;
 
 use Bugo\Compat\IntegrationHook;
 use Bugo\Compat\Parsers\BBCodeParser;
 use Bugo\Compat\Sapi;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\ContentType;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\EventManagerFactory;
+use LightPortal\Enums\ContentType;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Events\EventManagerFactory;
 use ParseError;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 if (! defined('SMF'))
 	die('No direct access...');

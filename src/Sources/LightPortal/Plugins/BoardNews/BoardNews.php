@@ -11,20 +11,20 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\BoardNews;
+namespace LightPortal\Plugins\BoardNews;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\Plugins\SsiBlock;
-use Bugo\LightPortal\UI\Fields\NumberField;
-use Bugo\LightPortal\UI\Fields\RangeField;
-use Bugo\LightPortal\Utils\MessageIndex;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Enums\Tab;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SsiBlock;
+use LightPortal\UI\Fields\NumberField;
+use LightPortal\UI\Fields\RangeField;
+use LightPortal\Utils\MessageIndex;
+use LightPortal\Utils\Str;
 use Nette\Utils\Html;
 
 if (! defined('LP_NAME'))

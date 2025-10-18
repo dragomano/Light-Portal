@@ -11,11 +11,11 @@
  * @version 03.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\PluginMaker;
+namespace LightPortal\Plugins\PluginMaker;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\UI\Partials\AbstractSelect;
+use LightPortal\UI\Partials\AbstractSelect;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

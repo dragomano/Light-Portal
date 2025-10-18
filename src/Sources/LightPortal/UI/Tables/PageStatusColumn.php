@@ -10,12 +10,12 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\UI\Tables;
+namespace LightPortal\UI\Tables;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Enums\Status;
+use LightPortal\Utils\Str;
 
 class PageStatusColumn extends StatusColumn
 {

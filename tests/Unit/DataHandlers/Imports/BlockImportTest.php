@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Database\PortalSql;
-use Bugo\LightPortal\DataHandlers\Imports\BlockImport;
-use Bugo\LightPortal\Enums\ContentClass;
-use Bugo\LightPortal\Enums\Placement;
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Enums\TitleClass;
-use Bugo\LightPortal\Utils\ErrorHandlerInterface;
-use Bugo\LightPortal\Utils\FileInterface;
+use LightPortal\Database\PortalSql;
+use LightPortal\DataHandlers\Imports\BlockImport;
+use LightPortal\Enums\ContentClass;
+use LightPortal\Enums\Placement;
+use LightPortal\Enums\Status;
+use LightPortal\Enums\TitleClass;
+use LightPortal\Utils\ErrorHandlerInterface;
+use LightPortal\Utils\FileInterface;
 use Tests\ReflectionAccessor;
 use Tests\Table;
 use Tests\TestAdapterFactory;

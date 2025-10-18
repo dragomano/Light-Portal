@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Enums\EntryType;
+use LightPortal\Enums\EntryType;
 
 arch()
     ->expect(EntryType::class)

@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\DataHandlers\Imports\Custom;
+namespace LightPortal\DataHandlers\Imports\Custom;
 
 interface CustomImportInterface
 {

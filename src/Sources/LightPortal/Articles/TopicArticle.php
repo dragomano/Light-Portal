@@ -10,17 +10,17 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Articles;
+namespace LightPortal\Articles;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Parsers\BBCodeParser;
 use Bugo\Compat\User;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Utils\Avatar;
-use Bugo\LightPortal\Utils\ForumPermissions;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Utils\Avatar;
+use LightPortal\Utils\ForumPermissions;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
 use Laminas\Db\Sql\Predicate\Expression;
 use Laminas\Db\Sql\Select;
 

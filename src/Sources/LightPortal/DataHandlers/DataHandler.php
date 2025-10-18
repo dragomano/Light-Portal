@@ -10,13 +10,13 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\DataHandlers;
+namespace LightPortal\DataHandlers;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\User;
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\DataHandlers\Traits\HasDataOperations;
-use Bugo\LightPortal\Utils\ErrorHandlerInterface;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\DataHandlers\Traits\HasDataOperations;
+use LightPortal\Utils\ErrorHandlerInterface;
 
 use const LP_ALIAS_PATTERN;
 

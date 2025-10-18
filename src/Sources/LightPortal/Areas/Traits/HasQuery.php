@@ -10,22 +10,22 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Areas\Traits;
+namespace LightPortal\Areas\Traits;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\HasEvents;
-use Bugo\LightPortal\Lists\IconList;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasCache;
-use Bugo\LightPortal\Utils\Traits\HasPortalSql;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
-use Bugo\LightPortal\Utils\Traits\HasResponse;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Events\HasEvents;
+use LightPortal\Lists\IconList;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasCache;
+use LightPortal\Utils\Traits\HasPortalSql;
+use LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Utils\Traits\HasResponse;
 use Laminas\Db\Sql\Predicate\Expression;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 if (! defined('SMF'))
 	die('No direct access...');

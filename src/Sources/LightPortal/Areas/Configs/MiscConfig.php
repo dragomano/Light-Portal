@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Areas\Configs;
+namespace LightPortal\Areas\Configs;
 
 use Bugo\Bricks\Settings\CheckConfig;
 use Bugo\Bricks\Settings\ConfigBuilder;
@@ -20,9 +20,9 @@ use Bugo\Bricks\Settings\TitleConfig;
 use Bugo\Compat\{Config, Lang};
 use Bugo\Compat\{User, Utils};
 use Bugo\Compat\Actions\Admin\ACP;
-use Bugo\LightPortal\Tasks\Maintainer;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
-use Bugo\LightPortal\Utils\Traits\HasSession;
+use LightPortal\Tasks\Maintainer;
+use LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Utils\Traits\HasSession;
 
 use const LP_ACTION;
 use const LP_CACHE_TIME;

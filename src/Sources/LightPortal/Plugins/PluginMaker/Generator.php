@@ -11,30 +11,30 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\PluginMaker;
+namespace LightPortal\Plugins\PluginMaker;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Editor;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\GameBlock;
-use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\Plugins\SsiBlock;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\ColorField;
-use Bugo\LightPortal\UI\Fields\CustomField;
-use Bugo\LightPortal\UI\Fields\NumberField;
-use Bugo\LightPortal\UI\Fields\RadioField;
-use Bugo\LightPortal\UI\Fields\RangeField;
-use Bugo\LightPortal\UI\Fields\SelectField;
-use Bugo\LightPortal\UI\Fields\TextField;
-use Bugo\LightPortal\Utils\Setting;
+use LightPortal\Enums\PluginType;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Editor;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\GameBlock;
+use LightPortal\Plugins\Plugin;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SsiBlock;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\ColorField;
+use LightPortal\UI\Fields\CustomField;
+use LightPortal\UI\Fields\NumberField;
+use LightPortal\UI\Fields\RadioField;
+use LightPortal\UI\Fields\RangeField;
+use LightPortal\UI\Fields\SelectField;
+use LightPortal\UI\Fields\TextField;
+use LightPortal\Utils\Setting;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\Literal;
 use Nette\PhpGenerator\Method;
@@ -106,7 +106,7 @@ class Generator
 
 	private function getNamespace(): PhpNamespace
 	{
-		$namespace = new PhpNamespace('Bugo\LightPortal\Plugins\\' . $this->plugin['name']);
+		$namespace = new PhpNamespace('LightPortal\Plugins\\' . $this->plugin['name']);
 		$namespace->addUse($this->getExtendedClass());
 		$namespace->addUse(Config::class);
 		$namespace->addUse(Lang::class);

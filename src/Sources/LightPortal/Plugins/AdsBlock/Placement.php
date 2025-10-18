@@ -11,10 +11,10 @@
  * @version 28.11.24
  */
 
-namespace Bugo\LightPortal\Plugins\AdsBlock;
+namespace LightPortal\Plugins\AdsBlock;
 
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Enums\Traits\HasNames;
+use LightPortal\Enums\Traits\HasNames;
 
 enum Placement
 {

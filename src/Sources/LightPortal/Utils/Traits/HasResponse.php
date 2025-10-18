@@ -10,11 +10,11 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Utils\Traits;
+namespace LightPortal\Utils\Traits;
 
-use Bugo\LightPortal\Utils\Response;
+use LightPortal\Utils\Response;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 trait HasResponse
 {

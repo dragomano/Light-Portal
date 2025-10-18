@@ -10,11 +10,11 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Validators;
+namespace LightPortal\Validators;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Utils\Language;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Utils\Language;
 use Laminas\Db\Sql\Expression;
 
 class PageValidator extends AbstractValidator

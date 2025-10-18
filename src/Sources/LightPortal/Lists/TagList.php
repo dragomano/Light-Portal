@@ -12,9 +12,9 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Lists;
+namespace LightPortal\Lists;
 
-use Bugo\LightPortal\Repositories\TagRepositoryInterface;
+use LightPortal\Repositories\TagRepositoryInterface;
 
 if (! defined('SMF'))
 	die('No direct access...');

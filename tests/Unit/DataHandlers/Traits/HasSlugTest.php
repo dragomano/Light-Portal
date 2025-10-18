@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\DataHandlers\Traits\HasSlug;
+use LightPortal\DataHandlers\Traits\HasSlug;
 
 beforeEach(function () {
     $this->testClass = new class {

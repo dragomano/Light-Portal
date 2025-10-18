@@ -10,11 +10,11 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Database\Migrations\Creators;
+namespace LightPortal\Database\Migrations\Creators;
 
-use Bugo\LightPortal\Database\Migrations\Columns\UnsignedInteger;
-use Bugo\LightPortal\Database\Migrations\PortalTable;
 use Laminas\Db\Sql\Ddl\Constraint\PrimaryKey;
+use LightPortal\Database\Migrations\Columns\UnsignedInteger;
+use LightPortal\Database\Migrations\PortalTable;
 
 if (! defined('SMF'))
 	die('No direct access...');

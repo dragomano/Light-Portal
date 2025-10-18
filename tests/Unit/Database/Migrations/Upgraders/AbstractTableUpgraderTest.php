@@ -3,16 +3,16 @@
 declare(strict_types=1);
 
 use Bugo\Compat\Config;
-use Bugo\LightPortal\Database\Migrations\Columns\MediumText;
-use Bugo\LightPortal\Database\Operations\PortalUpdate;
-use Bugo\LightPortal\Database\PortalAdapterInterface;
-use Bugo\LightPortal\Database\Migrations\Upgraders\AbstractTableUpgrader;
-use Bugo\LightPortal\Database\PortalSql;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Ddl\Column\Column;
 use Laminas\Db\Sql\Ddl\Column\Integer;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
 use Laminas\Db\Sql\SqlInterface;
+use LightPortal\Database\Migrations\Columns\MediumText;
+use LightPortal\Database\Operations\PortalUpdate;
+use LightPortal\Database\PortalAdapterInterface;
+use LightPortal\Database\Migrations\Upgraders\AbstractTableUpgrader;
+use LightPortal\Database\PortalSql;
 use Tests\ReflectionAccessor;
 
 describe('AbstractTableUpgrader', function () {

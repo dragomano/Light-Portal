@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Utils\Notifier;
+use LightPortal\Utils\Notifier;
 
 arch()
     ->expect(Notifier::class)

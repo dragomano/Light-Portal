@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Enums\ContentClass;
-use Bugo\LightPortal\Enums\TitleClass;
+use LightPortal\Enums\ContentClass;
+use LightPortal\Enums\TitleClass;
 
 it('works with real ContentClass enum', function () {
     $values = ContentClass::values();

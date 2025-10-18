@@ -12,7 +12,7 @@ declare(strict_types=1);
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Renderers;
+namespace LightPortal\Renderers;
 
 use Bugo\Compat\ErrorHandler;
 use Exception;

@@ -10,10 +10,10 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Repositories;
+namespace LightPortal\Repositories;
 
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\Utils\Traits\HasCache;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Utils\Traits\HasCache;
 
 if (! defined('SMF'))
 	die('No direct access...');

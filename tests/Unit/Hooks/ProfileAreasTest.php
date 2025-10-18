@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Hooks\ProfileAreas;
+use LightPortal\Hooks\ProfileAreas;
 
 arch()
     ->expect(ProfileAreas::class)

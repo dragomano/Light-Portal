@@ -10,14 +10,14 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\UI\Tables;
+namespace LightPortal\UI\Tables;
 
 use Bugo\Bricks\Tables\TableBuilder;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Utils\Icon;
+use LightPortal\Utils\Str;
 
 class PortalTableBuilder extends TableBuilder implements PortalTableBuilderInterface
 {

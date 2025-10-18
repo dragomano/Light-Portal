@@ -10,11 +10,11 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\DataHandlers\Imports;
+namespace LightPortal\DataHandlers\Imports;
 
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\Utils\ErrorHandlerInterface;
-use Bugo\LightPortal\Utils\FileInterface;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Utils\ErrorHandlerInterface;
+use LightPortal\Utils\FileInterface;
 use SimpleXMLElement;
 
 if (! defined('SMF'))

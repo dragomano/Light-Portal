@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Plugins\ConfigHandler;
+use LightPortal\Plugins\ConfigHandler;
 
 arch()
     ->expect(ConfigHandler::class)

@@ -10,11 +10,11 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\UI\Fields;
+namespace LightPortal\UI\Fields;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\UI\Partials\SelectInterface;
+use LightPortal\Enums\Tab;
+use LightPortal\UI\Partials\SelectInterface;
 
 if (! defined('SMF'))
 	die('No direct access...');

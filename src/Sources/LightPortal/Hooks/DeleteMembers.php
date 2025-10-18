@@ -10,10 +10,10 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Hooks;
+namespace LightPortal\Hooks;
 
-use Bugo\LightPortal\Utils\Traits\HasCache;
-use Bugo\LightPortal\Utils\Traits\HasPortalSql;
+use LightPortal\Utils\Traits\HasCache;
+use LightPortal\Utils\Traits\HasPortalSql;
 
 if (! defined('SMF'))
 	die('No direct access...');

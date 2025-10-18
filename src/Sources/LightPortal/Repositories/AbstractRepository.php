@@ -10,23 +10,23 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Repositories;
+namespace LightPortal\Repositories;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Msg;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\Database\PortalTransactionInterface;
-use Bugo\LightPortal\Enums\ContentType;
-use Bugo\LightPortal\Utils\Language;
-use Bugo\LightPortal\Utils\Traits\HasCache;
-use Bugo\LightPortal\Utils\Traits\HasParamJoins;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
-use Bugo\LightPortal\Utils\Traits\HasResponse;
-use Bugo\LightPortal\Utils\Traits\HasSession;
-use Bugo\LightPortal\Utils\Traits\HasTranslationJoins;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Database\PortalTransactionInterface;
+use LightPortal\Enums\ContentType;
+use LightPortal\Utils\Language;
+use LightPortal\Utils\Traits\HasCache;
+use LightPortal\Utils\Traits\HasParamJoins;
+use LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Utils\Traits\HasResponse;
+use LightPortal\Utils\Traits\HasSession;
+use LightPortal\Utils\Traits\HasTranslationJoins;
 use Laminas\Db\Sql\Predicate\Expression;
 
 if (! defined('SMF'))

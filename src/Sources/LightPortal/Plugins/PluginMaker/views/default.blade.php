@@ -1,4 +1,4 @@
-@php use Bugo\LightPortal\Enums\Tab; @endphp
+@php use LightPortal\Enums\Tab; @endphp
 
 @unless (empty($context['lp_addon_dir_is_not_writable']))
 	<div class="errorbox">{{ $context['lp_addon_dir_is_not_writable'] }}</div>

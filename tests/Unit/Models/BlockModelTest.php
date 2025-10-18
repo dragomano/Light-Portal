@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Models\BlockModel;
-use Bugo\LightPortal\Models\ModelInterface;
+use LightPortal\Models\BlockModel;
+use LightPortal\Models\ModelInterface;
 
 arch()
     ->expect(BlockModel::class)

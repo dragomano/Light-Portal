@@ -11,7 +11,7 @@
  * @version 06.11.24
  */
 
-namespace Bugo\LightPortal\Plugins\AdsBlock;
+namespace LightPortal\Plugins\AdsBlock;
 
 use Bugo\Compat\Utils;
 

@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Database\Migrations\PortalTable;
-use Bugo\LightPortal\Database\Migrations\Creators\AbstractTableCreator;
-use Bugo\LightPortal\Database\Operations\PortalSelect;
-use Bugo\LightPortal\Database\Operations\PortalInsert;
-use Bugo\LightPortal\Database\PortalAdapterInterface;
-use Bugo\LightPortal\Database\PortalSqlInterface;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Adapter\Driver\ResultInterface;
 use Laminas\Db\Metadata\Source\Factory as MetadataFactory;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\SqlInterface;
+use LightPortal\Database\Migrations\PortalTable;
+use LightPortal\Database\Migrations\Creators\AbstractTableCreator;
+use LightPortal\Database\Operations\PortalSelect;
+use LightPortal\Database\Operations\PortalInsert;
+use LightPortal\Database\PortalAdapterInterface;
+use LightPortal\Database\PortalSqlInterface;
 use Tests\ReflectionAccessor;
 
 describe('AbstractTableCreator', function () {

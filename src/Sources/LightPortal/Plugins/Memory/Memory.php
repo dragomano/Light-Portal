@@ -11,13 +11,13 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\Memory;
+namespace LightPortal\Plugins\Memory;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\GameBlock;
-use Bugo\LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\GameBlock;
+use LightPortal\Plugins\PluginAttribute;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

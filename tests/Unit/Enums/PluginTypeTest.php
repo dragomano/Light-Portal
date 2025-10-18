@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Enums\PluginType;
+use LightPortal\Enums\PluginType;
 
 arch()
     ->expect(PluginType::class)

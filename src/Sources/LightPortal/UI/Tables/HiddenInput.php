@@ -10,9 +10,9 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\UI\Tables;
+namespace LightPortal\UI\Tables;
 
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Utils\Str;
 
 class HiddenInput
 {

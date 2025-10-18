@@ -10,15 +10,15 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Utils;
+namespace LightPortal\Utils;
 
 use Bugo\FontAwesome\IconBuilder;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\EventManagerFactory;
-use Bugo\LightPortal\Lists\IconList;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Events\EventManagerFactory;
+use LightPortal\Lists\IconList;
 use InvalidArgumentException;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 if (! defined('SMF'))
 	die('No direct access...');

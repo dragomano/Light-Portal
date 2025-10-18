@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Lists\ListInterface;
-use Bugo\LightPortal\Lists\PluginList;
+use LightPortal\Lists\ListInterface;
+use LightPortal\Lists\PluginList;
 
 arch()
     ->expect(PluginList::class)

@@ -11,7 +11,7 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\AdsBlock;
+namespace LightPortal\Plugins\AdsBlock;
 
 use Bugo\Bricks\Forms\FormBuilder;
 use Bugo\Bricks\Forms\FormPresenter;
@@ -19,20 +19,20 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\ForumHook;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\Plugins\AdsBlock\Hooks\MenuButtons;
-use Bugo\LightPortal\Plugins\AdsBlock\Hooks\PrepareDisplayContext;
-use Bugo\LightPortal\UI\Fields\CustomField;
-use Bugo\LightPortal\UI\Fields\TextareaField;
-use Bugo\LightPortal\UI\Fields\TextField;
-use Bugo\LightPortal\UI\Partials\SelectFactory;
-use Bugo\LightPortal\Utils\Content;
+use LightPortal\Enums\ForumHook;
+use LightPortal\Enums\Tab;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\AdsBlock\Hooks\MenuButtons;
+use LightPortal\Plugins\AdsBlock\Hooks\PrepareDisplayContext;
+use LightPortal\UI\Fields\CustomField;
+use LightPortal\UI\Fields\TextareaField;
+use LightPortal\UI\Fields\TextField;
+use LightPortal\UI\Partials\SelectFactory;
+use LightPortal\Utils\Content;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

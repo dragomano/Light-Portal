@@ -11,23 +11,23 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\RecentTopics;
+namespace LightPortal\Plugins\RecentTopics;
 
 use Bugo\Compat\Config;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\Plugins\SsiBlock;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\CustomField;
-use Bugo\LightPortal\UI\Fields\NumberField;
-use Bugo\LightPortal\UI\Fields\RadioField;
-use Bugo\LightPortal\UI\Partials\SelectFactory;
-use Bugo\LightPortal\Utils\Avatar;
-use Bugo\LightPortal\Utils\DateTime;
-use Bugo\LightPortal\Utils\ParamWrapper;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasView;
+use LightPortal\Enums\Tab;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SsiBlock;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\CustomField;
+use LightPortal\UI\Fields\NumberField;
+use LightPortal\UI\Fields\RadioField;
+use LightPortal\UI\Partials\SelectFactory;
+use LightPortal\Utils\Avatar;
+use LightPortal\Utils\DateTime;
+use LightPortal\Utils\ParamWrapper;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasView;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

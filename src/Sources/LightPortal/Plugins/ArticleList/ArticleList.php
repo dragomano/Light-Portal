@@ -11,29 +11,29 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\ArticleList;
+namespace LightPortal\Plugins\ArticleList;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Parsers\BBCodeParser;
-use Bugo\LightPortal\Enums\ContentClass;
-use Bugo\LightPortal\Enums\EntryType;
-use Bugo\LightPortal\Enums\Permission;
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\CustomField;
-use Bugo\LightPortal\UI\Fields\RadioField;
-use Bugo\LightPortal\UI\Partials\SelectFactory;
-use Bugo\LightPortal\Utils\Content;
-use Bugo\LightPortal\Utils\ForumPermissions;
-use Bugo\LightPortal\Utils\ParamWrapper;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasTranslationJoins;
+use LightPortal\Enums\ContentClass;
+use LightPortal\Enums\EntryType;
+use LightPortal\Enums\Permission;
+use LightPortal\Enums\Status;
+use LightPortal\Enums\Tab;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\CustomField;
+use LightPortal\UI\Fields\RadioField;
+use LightPortal\UI\Partials\SelectFactory;
+use LightPortal\Utils\Content;
+use LightPortal\Utils\ForumPermissions;
+use LightPortal\Utils\ParamWrapper;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasTranslationJoins;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

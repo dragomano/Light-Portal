@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Enums\PortalSubAction;
+use LightPortal\Enums\PortalSubAction;
 
 arch()
     ->expect(PortalSubAction::class)

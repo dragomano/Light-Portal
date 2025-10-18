@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Hooks\CurrentAction;
+use LightPortal\Hooks\CurrentAction;
 
 arch()
     ->expect(CurrentAction::class)

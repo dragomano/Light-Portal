@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Database\PortalAdapter;
-use Bugo\LightPortal\Database\PortalAdapterFactory;
-use Bugo\LightPortal\Database\PortalProfiler;
 use Bugo\Compat\Config;
 use Laminas\Db\Adapter\Platform\PlatformInterface;
+use LightPortal\Database\PortalAdapter;
+use LightPortal\Database\PortalAdapterFactory;
+use LightPortal\Database\PortalProfiler;
 
 describe('PortalAdapterFactory', function () {
     beforeEach(function () {
@@ -21,7 +21,7 @@ describe('PortalAdapterFactory', function () {
         $this->profilerMock = Mockery::mock(PortalProfiler::class);
         $this->platformMock = Mockery::mock(PlatformInterface::class);
 
-        $this->portalAdapterFactoryMock = Mockery::mock('alias:Bugo\LightPortal\Database\PortalAdapterFactory');
+        $this->portalAdapterFactoryMock = Mockery::mock('alias:LightPortal\Database\PortalAdapterFactory');
         $this->portalAdapterFactoryMock->shouldReceive('getPlatform')->andReturn($this->platformMock);
     });
 

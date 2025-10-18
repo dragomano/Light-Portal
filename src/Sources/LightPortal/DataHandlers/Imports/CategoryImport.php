@@ -10,12 +10,12 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\DataHandlers\Imports;
+namespace LightPortal\DataHandlers\Imports;
 
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\DataHandlers\Traits\HasSlug;
-use Bugo\LightPortal\Utils\ErrorHandlerInterface;
-use Bugo\LightPortal\Utils\FileInterface;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\DataHandlers\Traits\HasSlug;
+use LightPortal\Utils\ErrorHandlerInterface;
+use LightPortal\Utils\FileInterface;
 
 if (! defined('SMF'))
 	die('No direct access...');

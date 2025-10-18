@@ -10,11 +10,11 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Enums;
+namespace LightPortal\Enums;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
-use Bugo\LightPortal\Enums\Traits\HasNames;
+use LightPortal\Enums\Traits\HasNames;
 
 enum ContentType
 {

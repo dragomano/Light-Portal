@@ -10,12 +10,12 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Hooks;
+namespace LightPortal\Hooks;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Utils\DateTime;
-use Bugo\LightPortal\Utils\Setting;
+use LightPortal\Utils\DateTime;
+use LightPortal\Utils\Setting;
 
 if (! defined('SMF'))
 	die('No direct access...');

@@ -10,10 +10,10 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Enums;
+namespace LightPortal\Enums;
 
-use Bugo\LightPortal\Renderers\RendererInterface;
-use Bugo\LightPortal\Utils\ParamWrapper;
+use LightPortal\Renderers\RendererInterface;
+use LightPortal\Utils\ParamWrapper;
 
 enum PortalHook
 {

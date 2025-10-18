@@ -10,14 +10,14 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Models;
+namespace LightPortal\Models;
 
 use Bugo\Compat\User;
-use Bugo\LightPortal\Enums\ContentType;
-use Bugo\LightPortal\Enums\EntryType;
-use Bugo\LightPortal\Enums\Permission;
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Utils\Setting;
+use LightPortal\Enums\ContentType;
+use LightPortal\Enums\EntryType;
+use LightPortal\Enums\Permission;
+use LightPortal\Enums\Status;
+use LightPortal\Utils\Setting;
 
 class PageModel extends AbstractModel
 {

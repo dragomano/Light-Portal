@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Database;
+namespace LightPortal\Database;
 
 use Bugo\Compat\Config;
 use Laminas\Db\Adapter\Platform\Mysql;

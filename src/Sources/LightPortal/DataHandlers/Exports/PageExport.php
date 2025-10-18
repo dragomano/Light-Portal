@@ -10,21 +10,21 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\DataHandlers\Exports;
+namespace LightPortal\DataHandlers\Exports;
 
 use Bugo\Bricks\Tables\IdColumn;
 use Bugo\Compat\Config;
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\DataHandlers\Traits\HasUiTable;
-use Bugo\LightPortal\Repositories\PageRepositoryInterface;
-use Bugo\LightPortal\UI\Tables\CheckboxColumn;
-use Bugo\LightPortal\UI\Tables\PageSlugColumn;
-use Bugo\LightPortal\UI\Tables\TitleColumn;
-use Bugo\LightPortal\Utils\ErrorHandlerInterface;
-use Bugo\LightPortal\Utils\FilesystemInterface;
-use Bugo\LightPortal\Utils\Str;
 use Laminas\Db\Sql\Predicate\Expression;
 use Laminas\Db\Sql\Select;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\DataHandlers\Traits\HasUiTable;
+use LightPortal\Repositories\PageRepositoryInterface;
+use LightPortal\UI\Tables\CheckboxColumn;
+use LightPortal\UI\Tables\PageSlugColumn;
+use LightPortal\UI\Tables\TitleColumn;
+use LightPortal\Utils\ErrorHandlerInterface;
+use LightPortal\Utils\FilesystemInterface;
+use LightPortal\Utils\Str;
 
 if (! defined('SMF'))
 	die('No direct access...');

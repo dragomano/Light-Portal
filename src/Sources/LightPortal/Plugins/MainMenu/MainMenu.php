@@ -11,18 +11,18 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\MainMenu;
+namespace LightPortal\Plugins\MainMenu;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\Action;
-use Bugo\LightPortal\Enums\ForumHook;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\Utils\Language;
-use Bugo\LightPortal\Utils\Traits\HasView;
+use LightPortal\Enums\Action;
+use LightPortal\Enums\ForumHook;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\Plugin;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Utils\Language;
+use LightPortal\Utils\Traits\HasView;
 
 use const LP_ACTION;
 

@@ -11,7 +11,7 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\BlogMode;
+namespace LightPortal\Plugins\BlogMode;
 
 use Bugo\Bricks\Tables\Column;
 use Bugo\Bricks\Tables\DateColumn;
@@ -21,20 +21,20 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Areas\Configs\BasicConfig;
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\Enums\Action;
-use Bugo\LightPortal\Enums\ForumHook;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\Repositories\PageRepositoryInterface;
-use Bugo\LightPortal\UI\Tables\NumViewsColumn;
-use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
-use Bugo\LightPortal\UI\Tables\TitleColumn;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Areas\Configs\BasicConfig;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Enums\Action;
+use LightPortal\Enums\ForumHook;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\Plugin;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Repositories\PageRepositoryInterface;
+use LightPortal\UI\Tables\NumViewsColumn;
+use LightPortal\UI\Tables\PortalTableBuilder;
+use LightPortal\UI\Tables\TitleColumn;
+use LightPortal\Utils\Str;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
 use Bugo\Compat\{Config, Lang, Utils};
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Utils\Icon;
+use LightPortal\Enums\Tab;
+use LightPortal\Utils\Icon;
 
 function template_tag_post(): void
 {

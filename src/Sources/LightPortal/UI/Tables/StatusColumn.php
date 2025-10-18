@@ -10,11 +10,11 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\UI\Tables;
+namespace LightPortal\UI\Tables;
 
 use Bugo\Bricks\Tables\Column;
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Enums\Status;
+use LightPortal\Enums\Status;
 
 class StatusColumn extends Column
 {

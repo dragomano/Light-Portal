@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Hooks\MenuButtons;
+use LightPortal\Hooks\MenuButtons;
 
 arch()
     ->expect(MenuButtons::class)

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Utils\Str;
 
 arch()
     ->expect(Str::class)

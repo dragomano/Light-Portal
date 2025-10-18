@@ -11,9 +11,9 @@
  */
 
 use Bugo\Compat\{Config, Lang, Utils};
-use Bugo\LightPortal\Actions\FrontPage;
+use LightPortal\Actions\FrontPage;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 $ssi = __DIR__ . DIRECTORY_SEPARATOR . 'SSI.php';
 if (! file_exists($ssi)) {

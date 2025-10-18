@@ -11,16 +11,16 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\DummyArticleCards;
+namespace LightPortal\Plugins\DummyArticleCards;
 
 use Bugo\Compat\Config;
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Plugins\PluginAttribute;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Enums\PluginType;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\Plugin;
+use LightPortal\Plugins\PluginAttribute;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

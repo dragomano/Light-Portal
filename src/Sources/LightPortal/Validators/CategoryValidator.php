@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Validators;
+namespace LightPortal\Validators;
 
 use Laminas\Db\Sql\Expression;
 

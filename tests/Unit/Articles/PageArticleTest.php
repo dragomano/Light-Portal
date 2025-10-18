@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 use Bugo\Compat\Config;
 use Bugo\Compat\User;
-use Bugo\LightPortal\Articles\PageArticle;
-use Bugo\LightPortal\Database\Operations\PortalSelect;
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\Events\EventManager;
-use Bugo\LightPortal\Utils\CacheInterface;
 use Laminas\Db\Adapter\Driver\ResultInterface;
+use LightPortal\Articles\PageArticle;
+use LightPortal\Database\Operations\PortalSelect;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Events\EventManager;
+use LightPortal\Utils\CacheInterface;
 use Tests\ReflectionAccessor;
 
 it('initializes parameters with all_pages frontpage mode', function () {

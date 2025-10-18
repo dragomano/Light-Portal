@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Articles\ChosenPageArticle;
-use Bugo\LightPortal\Articles\ArticleInterface;
-use Bugo\LightPortal\Articles\PageArticle;
+use LightPortal\Articles\ChosenPageArticle;
+use LightPortal\Articles\ArticleInterface;
+use LightPortal\Articles\PageArticle;
 
 arch()
     ->expect(ChosenPageArticle::class)

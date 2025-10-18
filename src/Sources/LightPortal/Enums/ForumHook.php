@@ -10,9 +10,9 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Enums;
+namespace LightPortal\Enums;
 
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Utils\Str;
 
 enum ForumHook
 {

@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Database\PortalAdapter;
-use Bugo\LightPortal\Database\PortalSql;
+use LightPortal\Database\PortalAdapter;
+use LightPortal\Database\PortalSql;
 
 describe('PortalAdapter', function () {
     it('returns the correct prefix from connection parameters', function () {

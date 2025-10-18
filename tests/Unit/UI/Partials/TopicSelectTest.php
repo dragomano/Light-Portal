@@ -3,12 +3,12 @@
 declare(strict_types=1);
 
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\UI\Partials\TopicSelect;
-use Bugo\LightPortal\UI\Partials\SelectInterface;
-use Bugo\LightPortal\UI\Partials\SelectRenderer;
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\Database\Operations\PortalSelect;
 use Laminas\Db\Adapter\Driver\ResultInterface;
+use LightPortal\UI\Partials\TopicSelect;
+use LightPortal\UI\Partials\SelectInterface;
+use LightPortal\UI\Partials\SelectRenderer;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Database\Operations\PortalSelect;
 use Tests\AppMockRegistry;
 use Tests\ReflectionAccessor;
 

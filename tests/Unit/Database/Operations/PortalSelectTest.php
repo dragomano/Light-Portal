@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-use Bugo\LightPortal\Database\Operations\PortalSelect;
+use LightPortal\Database\Operations\PortalSelect;
 use Tests\ReflectionAccessor;
 
 describe('PortalSelect', function () {

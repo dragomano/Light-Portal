@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\DataHandlers\Exports\PageExport;
-use Bugo\LightPortal\Enums\ContentType;
-use Bugo\LightPortal\Enums\EntryType;
-use Bugo\LightPortal\Enums\Permission;
-use Bugo\LightPortal\Repositories\PageRepositoryInterface;
-use Bugo\LightPortal\Utils\ErrorHandlerInterface;
-use Bugo\LightPortal\Utils\FilesystemInterface;
-use Bugo\LightPortal\Utils\RequestInterface;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\DataHandlers\Exports\PageExport;
+use LightPortal\Enums\ContentType;
+use LightPortal\Enums\EntryType;
+use LightPortal\Enums\Permission;
+use LightPortal\Repositories\PageRepositoryInterface;
+use LightPortal\Utils\ErrorHandlerInterface;
+use LightPortal\Utils\FilesystemInterface;
+use LightPortal\Utils\RequestInterface;
 use Tests\AppMockRegistry;
 use Tests\DataHandlerTestTrait;
 

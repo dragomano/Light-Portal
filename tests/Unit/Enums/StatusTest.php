@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Enums\Status;
+use LightPortal\Enums\Status;
 
 arch()
     ->expect(Status::class)

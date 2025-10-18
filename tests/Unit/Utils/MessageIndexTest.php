@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Bugo\Compat\Config;
-use Bugo\LightPortal\Utils\MessageIndex;
+use LightPortal\Utils\MessageIndex;
 
 beforeEach(function () {
     $mockMessageIndex = Mockery::mock('overload:' . MessageIndex::class);

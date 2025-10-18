@@ -2,26 +2,26 @@
 
 declare(strict_types=1);
 
-namespace Bugo\LightPortal;
+namespace LightPortal;
 
-use Bugo\LightPortal\Database\Operations\PortalSelect;
-use Bugo\LightPortal\Events\EventManager;
-use Bugo\LightPortal\Lists\CategoryList;
-use Bugo\LightPortal\Lists\PageList;
-use Bugo\LightPortal\Lists\TagList;
-use Bugo\LightPortal\Repositories\CategoryRepositoryInterface;
-use Bugo\LightPortal\Repositories\PageRepositoryInterface;
-use Bugo\LightPortal\Repositories\TagRepositoryInterface;
-use Bugo\LightPortal\UI\Partials\SelectRenderer;
-use Bugo\LightPortal\UI\View;
-use Bugo\LightPortal\Utils\CacheInterface;
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\Utils\RequestInterface;
 use Laminas\Db\Adapter\Driver\ResultInterface;
-use Tests\AppMockRegistry;
+use LightPortal\Database\Operations\PortalSelect;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Events\EventManager;
+use LightPortal\Lists\CategoryList;
+use LightPortal\Lists\PageList;
+use LightPortal\Lists\TagList;
+use LightPortal\Repositories\CategoryRepositoryInterface;
+use LightPortal\Repositories\PageRepositoryInterface;
+use LightPortal\Repositories\TagRepositoryInterface;
+use LightPortal\UI\Partials\SelectRenderer;
+use LightPortal\UI\View;
+use LightPortal\Utils\CacheInterface;
+use LightPortal\Utils\RequestInterface;
 use Mockery;
+use Tests\AppMockRegistry;
 
-if (! function_exists('Bugo\\LightPortal\\app')) {
+if (! function_exists('LightPortal\\app')) {
     function app(string $service = ''): mixed
     {
         if ($mock = AppMockRegistry::get($service)) {

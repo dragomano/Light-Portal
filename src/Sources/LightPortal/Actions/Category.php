@@ -10,21 +10,21 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Actions;
+namespace LightPortal\Actions;
 
 use Bugo\Bricks\Tables\Column;
 use Bugo\Compat\Config;
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\PortalSubAction;
-use Bugo\LightPortal\Lists\CategoryList;
-use Bugo\LightPortal\UI\Tables\PortalTableBuilder;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Enums\PortalSubAction;
+use LightPortal\Lists\CategoryList;
+use LightPortal\UI\Tables\PortalTableBuilder;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasRequest;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 if (! defined('SMF'))
 	die('No direct access...');

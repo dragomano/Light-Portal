@@ -11,30 +11,30 @@
  * @version 09.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\PluginMaker;
+namespace LightPortal\Plugins\PluginMaker;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Security;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Areas\Traits\HasArea;
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Repositories\PluginRepositoryInterface;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\CustomField;
-use Bugo\LightPortal\UI\Fields\SelectField;
-use Bugo\LightPortal\UI\Fields\TextField;
-use Bugo\LightPortal\UI\Fields\UrlField;
-use Bugo\LightPortal\UI\Partials\SelectFactory;
-use Bugo\LightPortal\Utils\Language;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
-use Bugo\LightPortal\Utils\Traits\HasView;
+use LightPortal\Areas\Traits\HasArea;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Enums\PluginType;
+use LightPortal\Enums\Tab;
+use LightPortal\Repositories\PluginRepositoryInterface;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\CustomField;
+use LightPortal\UI\Fields\SelectField;
+use LightPortal\UI\Fields\TextField;
+use LightPortal\UI\Fields\UrlField;
+use LightPortal\UI\Partials\SelectFactory;
+use LightPortal\Utils\Language;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Utils\Traits\HasView;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 use const LP_ADDON_DIR;
 use const LP_ADDON_PATTERN;

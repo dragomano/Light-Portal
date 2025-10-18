@@ -11,19 +11,19 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\SimpleChat;
+namespace LightPortal\Plugins\SimpleChat;
 
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\NumberField;
-use Bugo\LightPortal\UI\Fields\RadioField;
-use Bugo\LightPortal\Utils\ParamWrapper;
-use Bugo\LightPortal\Utils\Traits\HasView;
+use LightPortal\Enums\Tab;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\NumberField;
+use LightPortal\UI\Fields\RadioField;
+use LightPortal\Utils\ParamWrapper;
+use LightPortal\Utils\Traits\HasView;
 
 use const LP_BASE_URL;
 

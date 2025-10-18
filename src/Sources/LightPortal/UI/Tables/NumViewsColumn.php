@@ -10,11 +10,11 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\UI\Tables;
+namespace LightPortal\UI\Tables;
 
 use Bugo\Bricks\Tables\Column;
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Utils\Icon;
+use LightPortal\Utils\Icon;
 
 class NumViewsColumn extends Column
 {

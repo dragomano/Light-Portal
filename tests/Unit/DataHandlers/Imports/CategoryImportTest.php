@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-use Bugo\LightPortal\Database\PortalSql;
-use Bugo\LightPortal\DataHandlers\Imports\CategoryImport;
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Utils\ErrorHandlerInterface;
-use Bugo\LightPortal\Utils\FileInterface;
+use LightPortal\Database\PortalSql;
+use LightPortal\DataHandlers\Imports\CategoryImport;
+use LightPortal\Enums\Status;
+use LightPortal\Utils\ErrorHandlerInterface;
+use LightPortal\Utils\FileInterface;
 use Tests\ReflectionAccessor;
 use Tests\Table;
 use Tests\TestAdapterFactory;

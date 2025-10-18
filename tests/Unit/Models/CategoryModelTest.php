@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Models\CategoryModel;
-use Bugo\LightPortal\Models\ModelInterface;
+use LightPortal\Models\CategoryModel;
+use LightPortal\Models\ModelInterface;
 
 arch()
     ->expect(CategoryModel::class)

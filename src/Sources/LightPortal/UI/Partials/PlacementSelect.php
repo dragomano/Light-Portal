@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\UI\Partials;
+namespace LightPortal\UI\Partials;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;

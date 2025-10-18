@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Database\Operations;
+namespace LightPortal\Database\Operations;
 
 use Laminas\Db\Sql\Delete;
 

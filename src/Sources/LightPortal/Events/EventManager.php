@@ -10,12 +10,12 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Events;
+namespace LightPortal\Events;
 
-use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\PluginInterface;
+use LightPortal\Enums\PluginType;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginInterface;
 use Doctrine\Common\EventManager as DoctrineEventManager;
 
 class EventManager

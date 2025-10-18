@@ -10,10 +10,10 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Utils\Traits;
+namespace LightPortal\Utils\Traits;
 
 use Bugo\Compat\IntegrationHook;
-use Bugo\LightPortal\Enums\ForumHook;
+use LightPortal\Enums\ForumHook;
 
 if (! defined('SMF'))
 	die('No direct access...');

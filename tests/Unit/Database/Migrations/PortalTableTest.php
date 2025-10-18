@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Database\Migrations\PortalTable;
 use Laminas\Db\Sql\Ddl\Column\Integer;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
+use LightPortal\Database\Migrations\PortalTable;
 
 describe('PortalTable', function () {
     beforeEach(function () {

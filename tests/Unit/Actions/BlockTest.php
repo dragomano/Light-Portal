@@ -5,10 +5,10 @@ declare(strict_types=1);
 use Bugo\Compat\Config;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Actions\Block;
-use Bugo\LightPortal\Actions\ActionInterface;
-use Bugo\LightPortal\Enums\Action;
-use Bugo\LightPortal\Enums\Permission;
+use LightPortal\Actions\Block;
+use LightPortal\Actions\ActionInterface;
+use LightPortal\Enums\Action;
+use LightPortal\Enums\Permission;
 use Tests\AppMockRegistry;
 use Tests\ReflectionAccessor;
 

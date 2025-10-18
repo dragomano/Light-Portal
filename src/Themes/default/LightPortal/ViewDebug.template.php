@@ -3,9 +3,9 @@
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Database\PortalSqlInterface;
+use LightPortal\Database\PortalSqlInterface;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 function template_debug_above(): void
 {

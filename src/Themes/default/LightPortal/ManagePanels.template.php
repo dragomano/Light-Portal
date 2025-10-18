@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 use Bugo\Compat\{Config, Lang, Utils};
-use Bugo\LightPortal\Utils\{Icon, Setting};
+use LightPortal\Utils\{Icon, Setting};
 
 function template_callback_panel_layout(): void
 {

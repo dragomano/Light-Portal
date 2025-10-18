@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Renderers\PurePHP;
-use Bugo\LightPortal\Renderers\RendererInterface;
+use LightPortal\Renderers\PurePHP;
+use LightPortal\Renderers\RendererInterface;
 
 arch()
     ->expect(PurePHP::class)

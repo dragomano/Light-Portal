@@ -11,13 +11,13 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\CodeMirror;
+namespace LightPortal\Plugins\CodeMirror;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\Editor;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\Editor;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

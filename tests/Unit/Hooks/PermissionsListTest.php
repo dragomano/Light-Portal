@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Hooks\PermissionsList;
+use LightPortal\Hooks\PermissionsList;
 
 arch()
     ->expect(PermissionsList::class)

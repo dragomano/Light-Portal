@@ -10,17 +10,17 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\DataHandlers\Exports;
+namespace LightPortal\DataHandlers\Exports;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Sapi;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\DataHandlers\DataHandler;
-use Bugo\LightPortal\Utils\ErrorHandlerInterface;
-use Bugo\LightPortal\Utils\FilesystemInterface;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\DataHandlers\DataHandler;
+use LightPortal\Utils\ErrorHandlerInterface;
+use LightPortal\Utils\FilesystemInterface;
+use LightPortal\Utils\Traits\HasRequest;
 use Closure;
 use JetBrains\PhpStorm\NoReturn;
 

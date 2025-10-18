@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Bugo\Compat\User;
-use Bugo\LightPortal\Enums\Permission;
+use LightPortal\Enums\Permission;
 
 arch()
     ->expect(Permission::class)

@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
 use Bugo\Compat\{Config, Utils};
-use Bugo\LightPortal\Enums\ContentClass;
-use Bugo\LightPortal\Enums\TitleClass;
-use Bugo\LightPortal\Utils\{Icon, Setting};
+use LightPortal\Enums\ContentClass;
+use LightPortal\Enums\TitleClass;
+use LightPortal\Utils\{Icon, Setting};
 
 /**
  * @layer lp_portal

@@ -10,14 +10,14 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\UI\Tables;
+namespace LightPortal\UI\Tables;
 
 use Bugo\Bricks\Tables\Row;
 use Bugo\Bricks\Tables\RowPosition;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\EntryType;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Enums\EntryType;
+use LightPortal\Utils\Str;
 
 class PageTypeSelectRow extends Row
 {

@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal;
+namespace LightPortal;
 
 if (! defined('SMF'))
 	die('We gotta get out of here!');

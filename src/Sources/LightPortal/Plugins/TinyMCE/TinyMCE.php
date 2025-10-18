@@ -11,15 +11,15 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\TinyMCE;
+namespace LightPortal\Plugins\TinyMCE;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\Editor;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasThemes;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\Editor;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasThemes;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

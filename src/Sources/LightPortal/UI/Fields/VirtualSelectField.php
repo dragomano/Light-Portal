@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\UI\Fields;
+namespace LightPortal\UI\Fields;
 
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;

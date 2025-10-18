@@ -10,13 +10,13 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Validators;
+namespace LightPortal\Validators;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\Events\HasEvents;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Events\HasEvents;
+use LightPortal\Utils\Traits\HasRequest;
 
 abstract class AbstractValidator implements ValidatorInterface
 {

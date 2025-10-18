@@ -10,19 +10,19 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Areas\Traits;
+namespace LightPortal\Areas\Traits;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Security;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\ContentType;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\UI\Fields\TextField;
-use Bugo\LightPortal\Utils\Editor;
-use Bugo\LightPortal\Utils\Language;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasTablePresenter;
+use LightPortal\Enums\ContentType;
+use LightPortal\Enums\Tab;
+use LightPortal\UI\Fields\TextField;
+use LightPortal\Utils\Editor;
+use LightPortal\Utils\Language;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasTablePresenter;
 
 if (! defined('SMF'))
 	die('No direct access...');

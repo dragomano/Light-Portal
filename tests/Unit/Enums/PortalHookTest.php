@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Enums\PortalHook;
+use LightPortal\Enums\PortalHook;
 
 arch()
     ->expect(PortalHook::class)

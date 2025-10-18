@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Actions\Page;
-use Bugo\LightPortal\Actions\ActionInterface;
+use LightPortal\Actions\Page;
+use LightPortal\Actions\ActionInterface;
 
 arch()
     ->expect(Page::class)

@@ -11,15 +11,15 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\DummyArticleCards;
+namespace LightPortal\Plugins\DummyArticleCards;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Articles\AbstractArticle;
-use Bugo\LightPortal\Enums\PortalSubAction;
-use Bugo\LightPortal\Utils\Traits\HasCache;
+use LightPortal\Articles\AbstractArticle;
+use LightPortal\Enums\PortalSubAction;
+use LightPortal\Utils\Traits\HasCache;
 use DateTime;
 use Exception;
 use Laminas\Db\Sql\Select;

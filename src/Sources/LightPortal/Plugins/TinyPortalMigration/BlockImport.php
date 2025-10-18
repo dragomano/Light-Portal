@@ -11,18 +11,18 @@
  * @version 09.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\TinyPortalMigration;
+namespace LightPortal\Plugins\TinyPortalMigration;
 
 use Bugo\Bricks\Tables\Column;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\DataHandlers\Imports\Custom\AbstractCustomBlockImport;
-use Bugo\LightPortal\Enums\ContentClass;
-use Bugo\LightPortal\Enums\ContentType;
-use Bugo\LightPortal\Enums\Placement;
-use Bugo\LightPortal\Enums\TitleClass;
-use Bugo\LightPortal\UI\Tables\CheckboxColumn;
-use Bugo\LightPortal\UI\Tables\TitleColumn;
+use LightPortal\DataHandlers\Imports\Custom\AbstractCustomBlockImport;
+use LightPortal\Enums\ContentClass;
+use LightPortal\Enums\ContentType;
+use LightPortal\Enums\Placement;
+use LightPortal\Enums\TitleClass;
+use LightPortal\UI\Tables\CheckboxColumn;
+use LightPortal\UI\Tables\TitleColumn;
 use Laminas\Db\Sql\Expression;
 
 if (! defined('LP_NAME'))

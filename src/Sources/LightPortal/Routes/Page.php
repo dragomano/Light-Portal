@@ -10,11 +10,11 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Routes;
+namespace LightPortal\Routes;
 
 use Bugo\Compat\Routable;
-use Bugo\LightPortal\Enums\Action;
-use Bugo\LightPortal\Utils\Response;
+use LightPortal\Enums\Action;
+use LightPortal\Utils\Response;
 
 use const LP_PAGE_PARAM;
 

@@ -10,10 +10,10 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Utils\Traits;
+namespace LightPortal\Utils\Traits;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\UI\View;
+use LightPortal\UI\View;
 use ReflectionClass;
 
 if (! defined('SMF'))

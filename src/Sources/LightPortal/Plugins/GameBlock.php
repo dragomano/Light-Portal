@@ -10,9 +10,9 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Plugins;
+namespace LightPortal\Plugins;
 
-use Bugo\LightPortal\Enums\PluginType;
+use LightPortal\Enums\PluginType;
 
 #[PluginAttribute(type: [PluginType::BLOCK, PluginType::GAMES])]
 abstract class GameBlock extends Block

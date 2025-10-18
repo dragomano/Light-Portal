@@ -10,12 +10,12 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Renderers;
+namespace LightPortal\Renderers;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\HasEvents;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Events\HasEvents;
 
 abstract class AbstractRenderer implements RendererInterface
 {

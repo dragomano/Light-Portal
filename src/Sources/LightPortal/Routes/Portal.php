@@ -10,13 +10,13 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Routes;
+namespace LightPortal\Routes;
 
 use Bugo\Compat\Routable;
-use Bugo\LightPortal\Enums\PortalSubAction;
-use Bugo\LightPortal\Utils\CacheInterface;
+use LightPortal\Enums\PortalSubAction;
+use LightPortal\Utils\CacheInterface;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 use const LP_ACTION;
 

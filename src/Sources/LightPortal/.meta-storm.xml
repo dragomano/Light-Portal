@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <meta-storm xmlns="meta-storm">
 	<definitions>
-		<classMethod class="\Bugo\LightPortal\Utils\Icon" method="get" argument="0">
-			<arrayKeys xpath="\Bugo\LightPortal\Lists\IconList.$set"/>
+		<classMethod class="\LightPortal\Utils\Icon" method="get" argument="0">
+			<arrayKeys xpath="\LightPortal\Lists\IconList.$set"/>
 		</classMethod>
-		<classMethod class="\Bugo\LightPortal\Utils\Setting" method="isFrontpageMode" argument="0">
-			<arrayKeys xpath="\Bugo\LightPortal\Actions\FrontPage.$modes"/>
+		<classMethod class="\LightPortal\Utils\Setting" method="isFrontpageMode" argument="0">
+			<arrayKeys xpath="\LightPortal\Actions\FrontPage.$modes"/>
 			<collection name="frontpage_modes"/>
 		</classMethod>
-		<classProperty class="\Bugo\LightPortal\Plugins\Plugin" property="type" targetInArray="key">
+		<classProperty class="\LightPortal\Plugins\Plugin" property="type" targetInArray="key">
 			<collection name="plugin_types"/>
 			<stopCompletion/>
 		</classProperty>
-		<classMethod class="\Bugo\LightPortal\Utils\Setting" method="get" argument="0">
+		<classMethod class="\LightPortal\Utils\Setting" method="get" argument="0">
 			<collection name="get_settings"/>
 			<stopCompletion/>
 		</classMethod>
-		<classMethod class="\Bugo\LightPortal\Utils\Str" method="typed" argument="0">
+		<classMethod class="\LightPortal\Utils\Str" method="typed" argument="0">
 			<collection name="typed_methods"/>
 		</classMethod>
-		<function name="\Bugo\LightPortal\app" argument="0">
+		<function name="\LightPortal\app" argument="0">
 			<collection name="app_service_classes"/>
 		</function>
 	</definitions>

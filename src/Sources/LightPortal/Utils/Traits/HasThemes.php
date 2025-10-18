@@ -10,10 +10,10 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Utils\Traits;
+namespace LightPortal\Utils\Traits;
 
 use Bugo\Compat\Theme;
-use Bugo\LightPortal\Utils\Setting;
+use LightPortal\Utils\Setting;
 use Laminas\Db\Sql\Where;
 
 if (! defined('SMF'))

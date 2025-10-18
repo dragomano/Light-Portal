@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\Database\PortalTransactionInterface;
-use Bugo\LightPortal\DataHandlers\Traits\HasTransactions;
-use Bugo\LightPortal\Utils\ErrorHandlerInterface;
 use Laminas\Db\Adapter\Driver\ConnectionInterface;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Database\PortalTransactionInterface;
+use LightPortal\DataHandlers\Traits\HasTransactions;
+use LightPortal\Utils\ErrorHandlerInterface;
 use Mockery\LegacyMockInterface;
 use Mockery\MockInterface;
 

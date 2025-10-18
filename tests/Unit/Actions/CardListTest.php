@@ -3,16 +3,15 @@
 declare(strict_types=1);
 
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Actions\CardList;
-use Bugo\LightPortal\Actions\FrontPage;
-use Bugo\LightPortal\Actions\PageListInterface;
+use LightPortal\Actions\CardList;
+use LightPortal\Actions\FrontPage;
+use LightPortal\Actions\PageListInterface;
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Articles\PageArticle;
-use Bugo\LightPortal\Renderers\RendererInterface;
-use Bugo\LightPortal\Utils\RequestInterface;
-use Bugo\LightPortal\Utils\Session;
-use Bugo\LightPortal\Utils\Weaver;
+use LightPortal\Articles\PageArticle;
+use LightPortal\Renderers\RendererInterface;
+use LightPortal\Utils\RequestInterface;
+use LightPortal\Utils\Session;
 use Tests\AppMockRegistry;
 
 beforeEach(function () {
@@ -88,10 +87,6 @@ it('should show pages and set context properly without calling obExit', function
     $frontPageMock->shouldReceive('getNumColumns')->andReturn(3);
     $frontPageMock->shouldReceive('prepareTemplates')->once();
     AppMockRegistry::set(FrontPage::class, $frontPageMock);
-
-    $weaverMock = Mockery::mock(Weaver::class);
-    $weaverMock->shouldReceive('__invoke')->andReturnUsing(fn($fn) => $fn());
-    AppMockRegistry::set(Weaver::class, $weaverMock);
 
     // Set context
     Utils::$context['lp_current_sorting'] = 'created;desc';

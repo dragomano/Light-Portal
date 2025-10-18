@@ -11,20 +11,20 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\Events;
+namespace LightPortal\Plugins\Events;
 
 use Bugo\Compat\Actions\Calendar;
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\NumberField;
-use Bugo\LightPortal\UI\Fields\RangeField;
-use Bugo\LightPortal\Utils\ParamWrapper;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasView;
+use LightPortal\Enums\Tab;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\NumberField;
+use LightPortal\UI\Fields\RangeField;
+use LightPortal\Utils\ParamWrapper;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasView;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

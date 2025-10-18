@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 use Bugo\Compat\{Lang, Utils};
-use Bugo\LightPortal\Utils\Icon;
+use LightPortal\Utils\Icon;
 
 function template_portal_credits(): void
 {

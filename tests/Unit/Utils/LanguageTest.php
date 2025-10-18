@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Utils\Language;
+use LightPortal\Utils\Language;
 
 arch()
     ->expect(Language::class)

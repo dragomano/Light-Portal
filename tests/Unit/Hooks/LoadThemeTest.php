@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Hooks\LoadTheme;
+use LightPortal\Hooks\LoadTheme;
 
 arch()
     ->expect(LoadTheme::class)

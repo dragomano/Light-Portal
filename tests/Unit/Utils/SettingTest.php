@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Utils\Setting;
+use LightPortal\Utils\Setting;
 
 arch()
     ->expect(Setting::class)

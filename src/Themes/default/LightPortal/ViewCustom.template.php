@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Events\EventManagerFactory;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Events\EventManagerFactory;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 /**
  * @layer custom

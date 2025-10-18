@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Utils\File;
-use Bugo\LightPortal\Utils\GlobalArray;
+use LightPortal\Utils\File;
+use LightPortal\Utils\GlobalArray;
 
 arch()
     ->expect(File::class)

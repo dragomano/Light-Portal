@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Bugo\LightPortal\UI\Breadcrumbs;
+namespace LightPortal\UI\Breadcrumbs;
 
 use Bugo\Bricks\RendererInterface;
 use Bugo\Compat\Utils;

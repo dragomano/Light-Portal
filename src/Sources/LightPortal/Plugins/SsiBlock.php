@@ -10,10 +10,10 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Plugins;
+namespace LightPortal\Plugins;
 
 use Bugo\Compat\ServerSideIncludes;
-use Bugo\LightPortal\Enums\PluginType;
+use LightPortal\Enums\PluginType;
 
 #[PluginAttribute(type: [PluginType::BLOCK, PluginType::SSI])]
 abstract class SsiBlock extends Block

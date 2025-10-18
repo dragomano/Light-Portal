@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Database\Migrations\Creators\CategoriesTableCreator;
-use Bugo\LightPortal\Database\PortalSql;
+use LightPortal\Database\Migrations\Creators\CategoriesTableCreator;
+use LightPortal\Database\PortalSql;
 use Tests\ReflectionAccessor;
 use Tests\TestAdapterFactory;
 

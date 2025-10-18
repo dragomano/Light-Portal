@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Tests\Unit\DataHandlers\Imports;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\DataHandlers\Imports\PluginImport;
-use Bugo\LightPortal\Utils\ErrorHandlerInterface;
-use Bugo\LightPortal\Utils\File;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\DataHandlers\Imports\PluginImport;
+use LightPortal\Utils\ErrorHandlerInterface;
+use LightPortal\Utils\File;
 use FilesystemIterator;
 use Mockery;
 use RecursiveDirectoryIterator;

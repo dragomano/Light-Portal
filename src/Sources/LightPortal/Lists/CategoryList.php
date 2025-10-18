@@ -10,10 +10,10 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Lists;
+namespace LightPortal\Lists;
 
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\Repositories\CategoryRepositoryInterface;
+use LightPortal\Repositories\CategoryRepositoryInterface;
 
 if (! defined('SMF'))
 	die('No direct access...');

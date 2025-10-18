@@ -10,24 +10,24 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Repositories;
+namespace LightPortal\Repositories;
 
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Msg;
 use Bugo\Compat\Security;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\ContentType;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Events\HasEvents;
-use Bugo\LightPortal\Lists\PluginList;
-use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\Str;
 use Exception;
 use Laminas\Db\Sql\Predicate\Expression;
+use LightPortal\Enums\ContentType;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Enums\Status;
+use LightPortal\Events\HasEvents;
+use LightPortal\Lists\PluginList;
+use LightPortal\Utils\Icon;
+use LightPortal\Utils\Str;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 if (! defined('SMF'))
 	die('No direct access...');

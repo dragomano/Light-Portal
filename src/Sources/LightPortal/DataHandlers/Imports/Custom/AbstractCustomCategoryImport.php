@@ -9,7 +9,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\DataHandlers\Imports\Custom;
+namespace LightPortal\DataHandlers\Imports\Custom;
 
 if (! defined('SMF'))
 	die('No direct access...');

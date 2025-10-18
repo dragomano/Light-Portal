@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\DataHandlers\Exports\TagExport;
-use Bugo\LightPortal\Repositories\TagRepositoryInterface;
-use Bugo\LightPortal\Utils\ErrorHandlerInterface;
-use Bugo\LightPortal\Utils\FilesystemInterface;
-use Bugo\LightPortal\Utils\RequestInterface;
+use LightPortal\DataHandlers\Exports\TagExport;
+use LightPortal\Repositories\TagRepositoryInterface;
+use LightPortal\Utils\ErrorHandlerInterface;
+use LightPortal\Utils\FilesystemInterface;
+use LightPortal\Utils\RequestInterface;
 use Tests\AppMockRegistry;
 use Tests\DataHandlerTestTrait;
 use Tests\Fixtures;

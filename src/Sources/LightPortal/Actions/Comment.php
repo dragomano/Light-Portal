@@ -10,26 +10,26 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Actions;
+namespace LightPortal\Actions;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Mentions;
 use Bugo\Compat\PageIndex;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\AlertAction;
-use Bugo\LightPortal\Enums\NotifyType;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Enums\VarType;
-use Bugo\LightPortal\Events\HasEvents;
-use Bugo\LightPortal\Repositories\CommentRepositoryInterface;
-use Bugo\LightPortal\Utils\DateTime;
-use Bugo\LightPortal\Utils\Notifier;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasCache;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
-use Bugo\LightPortal\Utils\Traits\HasResponse;
+use LightPortal\Enums\AlertAction;
+use LightPortal\Enums\NotifyType;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Enums\VarType;
+use LightPortal\Events\HasEvents;
+use LightPortal\Repositories\CommentRepositoryInterface;
+use LightPortal\Utils\DateTime;
+use LightPortal\Utils\Notifier;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasCache;
+use LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Utils\Traits\HasResponse;
 
 use const LP_BASE_URL;
 

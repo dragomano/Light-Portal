@@ -11,19 +11,19 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\SimpleChat;
+namespace LightPortal\Plugins\SimpleChat;
 
 use Bugo\Compat\Parsers\BBCodeParser;
 use Bugo\Compat\Time;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\Utils\Avatar;
-use Bugo\LightPortal\Utils\ParamWrapper;
-use Bugo\LightPortal\Utils\Traits\HasCache;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
-use Bugo\LightPortal\Utils\Traits\HasResponse;
-use Bugo\LightPortal\Utils\Traits\HasView;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Utils\Avatar;
+use LightPortal\Utils\ParamWrapper;
+use LightPortal\Utils\Traits\HasCache;
+use LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Utils\Traits\HasResponse;
+use LightPortal\Utils\Traits\HasView;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

@@ -11,12 +11,12 @@
  * @version 24.09.25
  */
 
-namespace Bugo\LightPortal\Plugins\AdsBlock\Hooks;
+namespace LightPortal\Plugins\AdsBlock\Hooks;
 
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Plugins\AdsBlock\Placement;
-use Bugo\LightPortal\Plugins\AdsBlock\RepliesComparisonTrait;
+use LightPortal\Plugins\AdsBlock\Placement;
+use LightPortal\Plugins\AdsBlock\RepliesComparisonTrait;
 
 class PrepareDisplayContext
 {

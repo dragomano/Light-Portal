@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Database\Migrations\Upgraders\CommentsTableUpgrader;
-use Bugo\LightPortal\Database\PortalSql;
+use LightPortal\Database\Migrations\Upgraders\CommentsTableUpgrader;
+use LightPortal\Database\PortalSql;
 use Tests\TestAdapterFactory;
 
 describe('CommentsTableUpgrader', function () {

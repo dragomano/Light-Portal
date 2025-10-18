@@ -11,14 +11,14 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\Sudoku;
+namespace LightPortal\Plugins\Sudoku;
 
 use Bugo\Compat\Theme;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\GameBlock;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\UI\Fields\RangeField;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\GameBlock;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\UI\Fields\RangeField;
+use LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

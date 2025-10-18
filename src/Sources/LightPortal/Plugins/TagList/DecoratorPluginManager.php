@@ -11,7 +11,7 @@
  * @version 23.04.25
  */
 
-namespace Bugo\LightPortal\Plugins\TagList;
+namespace LightPortal\Plugins\TagList;
 
 use Laminas\ServiceManager\AbstractPluginManager;
 use Laminas\ServiceManager\Exception\InvalidServiceException;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Enums\VarType;
+use LightPortal\Enums\VarType;
 
 arch()
     ->expect(VarType::class)

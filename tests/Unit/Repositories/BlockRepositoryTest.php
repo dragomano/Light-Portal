@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Repositories\AbstractRepository;
-use Bugo\LightPortal\Repositories\BlockRepository;
+use LightPortal\Repositories\AbstractRepository;
+use LightPortal\Repositories\BlockRepository;
 
 arch()
     ->expect(BlockRepository::class)

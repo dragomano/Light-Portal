@@ -10,34 +10,34 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Database\Migrations;
+namespace LightPortal\Database\Migrations;
 
 use Bugo\Compat\Cache\CacheApi;
 use Bugo\Compat\Config;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Database\Migrations\Creators\BlocksTableCreator;
-use Bugo\LightPortal\Database\Migrations\Creators\CategoriesTableCreator;
-use Bugo\LightPortal\Database\Migrations\Creators\CommentsTableCreator;
-use Bugo\LightPortal\Database\Migrations\Creators\PagesTableCreator;
-use Bugo\LightPortal\Database\Migrations\Creators\PageTagTableCreator;
-use Bugo\LightPortal\Database\Migrations\Creators\ParamsTableCreator;
-use Bugo\LightPortal\Database\Migrations\Creators\PluginsTableCreator;
-use Bugo\LightPortal\Database\Migrations\Creators\TableCreatorInterface;
-use Bugo\LightPortal\Database\Migrations\Creators\TagsTableCreator;
-use Bugo\LightPortal\Database\Migrations\Creators\TranslationsTableCreator;
-use Bugo\LightPortal\Database\Migrations\Upgraders\BlocksTableUpgrader;
-use Bugo\LightPortal\Database\Migrations\Upgraders\CategoriesTableUpgrader;
-use Bugo\LightPortal\Database\Migrations\Upgraders\CommentsTableUpgrader;
-use Bugo\LightPortal\Database\Migrations\Upgraders\PagesTableUpgrader;
-use Bugo\LightPortal\Database\Migrations\Upgraders\TableUpgraderInterface;
-use Bugo\LightPortal\Database\Migrations\Upgraders\TagsTableUpgrader;
-use Bugo\LightPortal\Database\Migrations\Upgraders\TitlesTableUpgrader;
-use Bugo\LightPortal\Database\Migrations\Upgraders\TranslationsTableUpgrader;
-use Bugo\LightPortal\Database\PortalAdapterFactory;
-use Bugo\LightPortal\Database\PortalSql;
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Database\Migrations\Creators\BlocksTableCreator;
+use LightPortal\Database\Migrations\Creators\CategoriesTableCreator;
+use LightPortal\Database\Migrations\Creators\CommentsTableCreator;
+use LightPortal\Database\Migrations\Creators\PagesTableCreator;
+use LightPortal\Database\Migrations\Creators\PageTagTableCreator;
+use LightPortal\Database\Migrations\Creators\ParamsTableCreator;
+use LightPortal\Database\Migrations\Creators\PluginsTableCreator;
+use LightPortal\Database\Migrations\Creators\TableCreatorInterface;
+use LightPortal\Database\Migrations\Creators\TagsTableCreator;
+use LightPortal\Database\Migrations\Creators\TranslationsTableCreator;
+use LightPortal\Database\Migrations\Upgraders\BlocksTableUpgrader;
+use LightPortal\Database\Migrations\Upgraders\CategoriesTableUpgrader;
+use LightPortal\Database\Migrations\Upgraders\CommentsTableUpgrader;
+use LightPortal\Database\Migrations\Upgraders\PagesTableUpgrader;
+use LightPortal\Database\Migrations\Upgraders\TableUpgraderInterface;
+use LightPortal\Database\Migrations\Upgraders\TagsTableUpgrader;
+use LightPortal\Database\Migrations\Upgraders\TitlesTableUpgrader;
+use LightPortal\Database\Migrations\Upgraders\TranslationsTableUpgrader;
+use LightPortal\Database\PortalAdapterFactory;
+use LightPortal\Database\PortalSql;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Utils\Traits\HasRequest;
 
 if (! defined('SMF'))
 	die('No direct access...');

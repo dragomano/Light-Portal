@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Database\Migrations\Creators\CommentsTableCreator;
-use Bugo\LightPortal\Database\PortalSql;
+use LightPortal\Database\Migrations\Creators\CommentsTableCreator;
+use LightPortal\Database\PortalSql;
 use Tests\ReflectionAccessor;
 use Tests\TestAdapterFactory;
 

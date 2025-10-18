@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\ServiceProvider;
+use LightPortal\ServiceProvider;
 use League\Container\Container as LeagueContainer;
 use League\Container\Definition\DefinitionInterface;
 use Tests\ReflectionAccessor;

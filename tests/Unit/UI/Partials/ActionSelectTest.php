@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
-use Bugo\LightPortal\UI\Partials\ActionSelect;
+use LightPortal\UI\Partials\ActionSelect;
 use Tests\ReflectionAccessor;
 
 beforeEach(function () {

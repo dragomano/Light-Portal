@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\EntryType;
-use Bugo\LightPortal\UI\Partials\EntryTypeSelect;
-use Bugo\LightPortal\UI\Partials\SelectInterface;
-use Bugo\LightPortal\UI\Partials\SelectRenderer;
+use LightPortal\Enums\EntryType;
+use LightPortal\UI\Partials\EntryTypeSelect;
+use LightPortal\UI\Partials\SelectInterface;
+use LightPortal\UI\Partials\SelectRenderer;
 use Tests\AppMockRegistry;
 use Tests\ReflectionAccessor;
 

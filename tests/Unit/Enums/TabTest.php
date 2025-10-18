@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\LightPortal\Enums\Tab;
+use LightPortal\Enums\Tab;
 
 arch()
     ->expect(Tab::class)

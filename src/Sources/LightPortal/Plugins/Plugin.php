@@ -10,28 +10,28 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Plugins;
+namespace LightPortal\Plugins;
 
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Repositories\PluginRepositoryInterface;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasBreadcrumbs;
-use Bugo\LightPortal\Utils\Traits\HasCache;
-use Bugo\LightPortal\Utils\Traits\HasForumHooks;
-use Bugo\LightPortal\Utils\Traits\HasPortalSql;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
-use Bugo\LightPortal\Utils\Traits\HasResponse;
-use Bugo\LightPortal\Utils\Traits\HasSession;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Enums\PluginType;
+use LightPortal\Repositories\PluginRepositoryInterface;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasBreadcrumbs;
+use LightPortal\Utils\Traits\HasCache;
+use LightPortal\Utils\Traits\HasForumHooks;
+use LightPortal\Utils\Traits\HasPortalSql;
+use LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Utils\Traits\HasResponse;
+use LightPortal\Utils\Traits\HasSession;
 use ReflectionClass;
 use Stringable;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

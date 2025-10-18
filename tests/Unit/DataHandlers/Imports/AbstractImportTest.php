@@ -3,12 +3,12 @@
 declare(strict_types=1);
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Database\PortalSqlInterface;
-use Bugo\LightPortal\DataHandlers\Imports\AbstractImport;
-use Bugo\LightPortal\Utils\ErrorHandlerInterface;
-use Bugo\LightPortal\Utils\File;
-use Bugo\LightPortal\Utils\FileInterface;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\DataHandlers\Imports\AbstractImport;
+use LightPortal\Utils\ErrorHandlerInterface;
+use LightPortal\Utils\File;
+use LightPortal\Utils\FileInterface;
+use LightPortal\Utils\Traits\HasRequest;
 
 arch()
     ->expect(AbstractImport::class)

@@ -11,14 +11,14 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\TopicRatingBar;
+namespace LightPortal\Plugins\TopicRatingBar;
 
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\Plugin;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\Utils\Str;
+use LightPortal\Enums\PluginType;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\Plugin;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Utils\Str;
 use Laminas\Db\Sql\Select;
 
 if (! defined('LP_NAME'))

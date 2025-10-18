@@ -10,7 +10,7 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Areas;
+namespace LightPortal\Areas;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
@@ -18,22 +18,22 @@ use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Bugo\Compat\WebFetch\WebFetchApi;
-use Bugo\LightPortal\Enums\PluginType;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Enums\VarType;
-use Bugo\LightPortal\Events\HasEvents;
-use Bugo\LightPortal\Lists\PluginList;
-use Bugo\LightPortal\Repositories\PluginRepository;
-use Bugo\LightPortal\Utils\DateTime;
-use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\Language;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasCache;
-use Bugo\LightPortal\Utils\Traits\HasRequest;
-use Bugo\LightPortal\Utils\Traits\HasResponse;
+use LightPortal\Enums\PluginType;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Enums\VarType;
+use LightPortal\Events\HasEvents;
+use LightPortal\Lists\PluginList;
+use LightPortal\Repositories\PluginRepository;
+use LightPortal\Utils\DateTime;
+use LightPortal\Utils\Icon;
+use LightPortal\Utils\Language;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasCache;
+use LightPortal\Utils\Traits\HasRequest;
+use LightPortal\Utils\Traits\HasResponse;
 
-use function Bugo\LightPortal\app;
+use function LightPortal\app;
 
 use const LP_NAME;
 use const LP_VERSION;

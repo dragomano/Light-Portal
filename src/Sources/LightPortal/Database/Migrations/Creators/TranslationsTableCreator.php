@@ -10,13 +10,13 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Database\Migrations\Creators;
+namespace LightPortal\Database\Migrations\Creators;
 
 use Bugo\Compat\Config;
-use Bugo\LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
-use Bugo\LightPortal\Database\Migrations\Columns\MediumText;
-use Bugo\LightPortal\Database\Migrations\Columns\UnsignedInteger;
-use Bugo\LightPortal\Database\Migrations\PortalTable;
+use LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
+use LightPortal\Database\Migrations\Columns\MediumText;
+use LightPortal\Database\Migrations\Columns\UnsignedInteger;
+use LightPortal\Database\Migrations\PortalTable;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
 use Laminas\Db\Sql\Ddl\Constraint\UniqueKey;
 

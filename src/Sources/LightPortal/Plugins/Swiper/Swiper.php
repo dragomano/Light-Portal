@@ -11,23 +11,23 @@
  * @version 17.10.25
  */
 
-namespace Bugo\LightPortal\Plugins\Swiper;
+namespace LightPortal\Plugins\Swiper;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use Bugo\LightPortal\Enums\Tab;
-use Bugo\LightPortal\Plugins\Block;
-use Bugo\LightPortal\Plugins\Event;
-use Bugo\LightPortal\Plugins\PluginAttribute;
-use Bugo\LightPortal\UI\Fields\CheckboxField;
-use Bugo\LightPortal\UI\Fields\CustomField;
-use Bugo\LightPortal\UI\Fields\RadioField;
-use Bugo\LightPortal\UI\Fields\RangeField;
-use Bugo\LightPortal\UI\Fields\SelectField;
-use Bugo\LightPortal\Utils\ParamWrapper;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasView;
+use LightPortal\Enums\Tab;
+use LightPortal\Plugins\Block;
+use LightPortal\Plugins\Event;
+use LightPortal\Plugins\PluginAttribute;
+use LightPortal\UI\Fields\CheckboxField;
+use LightPortal\UI\Fields\CustomField;
+use LightPortal\UI\Fields\RadioField;
+use LightPortal\UI\Fields\RangeField;
+use LightPortal\UI\Fields\SelectField;
+use LightPortal\Utils\ParamWrapper;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasView;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');

@@ -10,23 +10,23 @@
  * @version 3.0
  */
 
-namespace Bugo\LightPortal\Articles;
+namespace LightPortal\Articles;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
-use Bugo\LightPortal\Enums\EntryType;
-use Bugo\LightPortal\Enums\Permission;
-use Bugo\LightPortal\Enums\PortalHook;
-use Bugo\LightPortal\Enums\PortalSubAction;
-use Bugo\LightPortal\Enums\Status;
-use Bugo\LightPortal\Utils\Avatar;
-use Bugo\LightPortal\Utils\Content;
-use Bugo\LightPortal\Utils\Icon;
-use Bugo\LightPortal\Utils\Setting;
-use Bugo\LightPortal\Utils\Str;
-use Bugo\LightPortal\Utils\Traits\HasParamJoins;
-use Bugo\LightPortal\Utils\Traits\HasTranslationJoins;
+use LightPortal\Enums\EntryType;
+use LightPortal\Enums\Permission;
+use LightPortal\Enums\PortalHook;
+use LightPortal\Enums\PortalSubAction;
+use LightPortal\Enums\Status;
+use LightPortal\Utils\Avatar;
+use LightPortal\Utils\Content;
+use LightPortal\Utils\Icon;
+use LightPortal\Utils\Setting;
+use LightPortal\Utils\Str;
+use LightPortal\Utils\Traits\HasParamJoins;
+use LightPortal\Utils\Traits\HasTranslationJoins;
 use Laminas\Db\Sql\Predicate\Expression;
 use Laminas\Db\Sql\Select;
 
