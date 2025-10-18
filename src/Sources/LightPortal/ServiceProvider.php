@@ -109,6 +109,7 @@ use LightPortal\Utils\PostInterface;
 use LightPortal\Utils\Request;
 use LightPortal\Utils\RequestInterface;
 use LightPortal\Utils\Response;
+use LightPortal\Utils\ResponseInterface;
 use LightPortal\Utils\Session;
 use LightPortal\Utils\SessionManager;
 use LightPortal\Validators\BlockValidator;
@@ -210,7 +211,6 @@ class ServiceProvider extends AbstractServiceProvider
 				],
 				[
 					'id' => Comment::class,
-					'concrete' => Comment::class,
 					'arguments' => [CommentRepositoryInterface::class, Notifier::class],
 				],
 				[
@@ -339,6 +339,10 @@ class ServiceProvider extends AbstractServiceProvider
 					'concrete' => Request::class,
 				],
 				['id' => Response::class],
+				[
+					'id' => ResponseInterface::class,
+					'concrete' => Response::class,
+				],
 				['id' => Post::class],
 				[
 					'id' => PostInterface::class,

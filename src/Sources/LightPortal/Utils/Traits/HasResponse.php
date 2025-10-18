@@ -12,14 +12,14 @@
 
 namespace LightPortal\Utils\Traits;
 
-use LightPortal\Utils\Response;
+use LightPortal\Utils\ResponseInterface;
 
 use function LightPortal\app;
 
 trait HasResponse
 {
-	public function response(): Response
+	public function response(): ResponseInterface
 	{
-		return app(Response::class);
+		return app(ResponseInterface::class);
 	}
 }

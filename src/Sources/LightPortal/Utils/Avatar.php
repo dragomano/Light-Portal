@@ -45,7 +45,7 @@ class Avatar
 				'height'  => 100,
 				'src'     => Config::$modSettings['avatar_url'] . '/default.png',
 				'loading' => 'lazy',
-				'alt'     => $data['name'],
+				'alt'     => $data['name'] ?? '',
 			])->toHtml();
 	}
 

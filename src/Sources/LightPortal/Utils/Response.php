@@ -14,7 +14,7 @@ namespace LightPortal\Utils;
 
 use Bugo\Compat\Utils;
 
-class Response
+class Response implements ResponseInterface
 {
 	public function json(mixed $data, int $flags = 0): false|string
 	{
