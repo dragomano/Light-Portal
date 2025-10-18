@@ -64,6 +64,7 @@ class IconList implements ListInterface
 		'meteor'        => 'meteor',
 		'pager'         => 'pager',
 		'panels'        => 'table-columns',
+		'pencil'        => 'pencil',
 		'plus_circle'   => 'circle-plus',
 		'plus'          => 'plus fa-beat',
 		'preview'       => 'eye',
