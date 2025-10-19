@@ -85,9 +85,9 @@ it('returns correct nested field rules', function () {
         // Check comments configuration: subitem structure with comment elements
         ->and($nestedRules['comments']['type'])->toBe('subitem')
         ->and($nestedRules['comments']['elementName'])->toBe('comment')
-        // Verify comments have id field and message uses CDATA
+        // Verify comments have id field and messages use CDATA
         ->and($nestedRules['comments']['subFields'])->toHaveKey('id')
-        ->and($nestedRules['comments']['subFields']['message']['useCDATA'])->toBeTrue();
+        ->and($nestedRules['comments']['subFields']['messages']['useCDATA'])->toBeTrue();
 });
 
 it('returns correct entity name', function () {
@@ -141,7 +141,9 @@ it('handles various page export scenarios', function (
                 'id'         => 1,
                 'parent_id'  => 0,
                 'author_id'  => 1,
-                'message'    => 'Maiores neque amet numquam quos non et sed sed. Rerum doloremque non ducimus incidunt dolores delectus.',
+                'messages'   => [
+                    'english' => 'Maiores neque amet numquam quos non et sed sed. Rerum doloremque non ducimus incidunt dolores delectus.',
+                ],
                 'created_at' => time(),
             ]
         ];
@@ -162,7 +164,9 @@ it('handles various page export scenarios', function (
     if ($hasComments) {
         expect($result[1])->toHaveKey('comments')
             ->and($result[1]['comments'])->toHaveKey(1)
-            ->and($result[1]['comments'][1]['message'])->toBe('Maiores neque amet numquam quos non et sed sed. Rerum doloremque non ducimus incidunt dolores delectus.');
+            ->and($result[1]['comments'][1])->toHaveKey('messages')
+            ->and($result[1]['comments'][1]['messages'])->toHaveKey('english')
+            ->and($result[1]['comments'][1]['messages']['english'])->toBe('Maiores neque amet numquam quos non et sed sed. Rerum doloremque non ducimus incidunt dolores delectus.');
     } else {
         expect($result[1])->not()->toHaveKey('comments');
     }

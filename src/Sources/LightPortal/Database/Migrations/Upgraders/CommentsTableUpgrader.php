@@ -12,6 +12,8 @@
 
 namespace LightPortal\Database\Migrations\Upgraders;
 
+use Laminas\Db\Sql\Expression;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
@@ -21,6 +23,26 @@ class CommentsTableUpgrader extends AbstractTableUpgrader
 
 	public function upgrade(): void
 	{
+		$this->addColumn('updated_at', ['unsigned' => true, 'type' => 'int', 'default' => 0]);
+
+		$this->migrateData();
+
 		$this->addIndex('idx_comments_created_at', ['created_at']);
+		$this->addIndex('idx_comments_updated_at', ['updated_at']);
+	}
+
+	protected function migrateData(): void
+	{
+		$select = $this->sql->select('lp_comments');
+		$select->columns([
+			'id',
+			'content' => new Expression("COALESCE(message, '')"),
+		]);
+
+		$rows = $this->sql->execute($select);
+
+		$this->migrateRowsToTranslations('id', 'comment', $rows);
+
+		$this->dropColumn('message');
 	}
 }

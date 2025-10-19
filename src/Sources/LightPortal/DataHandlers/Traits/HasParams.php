@@ -14,11 +14,16 @@ namespace LightPortal\DataHandlers\Traits;
 
 trait HasParams
 {
-	protected function replaceParams(array $params, array $results, bool $replace = true): array
+	protected function replaceParams(array $params = [], bool $replace = true): array
 	{
-		if ($params === [] || $results === [])
+		if ($params === []) {
 			return [];
+		}
 
-		return $this->insertData('lp_params', $params, ['item_id', 'type', 'name'], $replace);
+		echo "replaceParams called with " . count($params) . " params\n";
+		$result = $this->insertData('lp_params', $params, ['item_id', 'type', 'name'], $replace);
+		echo "replaceParams returning " . count($result) . " results\n";
+
+		return $result;
 	}
 }

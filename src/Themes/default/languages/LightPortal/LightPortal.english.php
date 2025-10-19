@@ -377,6 +377,7 @@ $txt['lp_comments_title'] = '{count, plural,
 	other {# comments}
 }';
 $txt['lp_comment_placeholder'] = 'Leave a comment...';
+$txt['lp_updated'] = 'Updated';
 
 // Alerts
 $txt['alert_page_comment'] = 'When my page gets a comment';

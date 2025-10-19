@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from 'svelte-i18n';
   import { fade } from 'svelte/transition';
-  import { userState } from '../../js/states.svelte';
+  import { iconState, userState } from '../../js/states.svelte';
   import { CommentItem, EditForm, ReplyForm, MarkdownPreview } from './index.js';
   import Button from '../BaseButton.svelte';
   import type { AddCommentType, Comment, RemoveCommentType, UpdateCommentType } from '../types';
@@ -79,10 +79,17 @@
           {comment.poster.name}
         </span>
         <div class="comment_date bg" class:even class:odd>
-          <time itemprop="datePublished" datetime={comment.published_at}>
-            {@html comment.human_date}
-            <a class="bbc_link" href={`#comment=${comment.id}`}>#{comment.id}</a>
-          </time>
+          {#if comment.updated_at === '1970-01-01'}
+            <time itemprop="datePublished" datetime={comment.published_at}>
+              {@html comment.human_date}
+            </time>
+          {:else}
+            <time itemprop="datePublished" datetime={comment.published_at}></time>
+            <time itemprop="dateModified" datetime={comment.updated_at}>
+              {$_('updated')} {@html iconState['pencil']}{@html comment.human_update}
+            </time>
+          {/if}
+          <a class="bbc_link" href={`#comment=${comment.id}`}>#{comment.id}</a>
         </div>
       </div>
 

@@ -8,11 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 18.10.25
  */
 
 namespace LightPortal\Plugins\TinyPortalMigration;
 
+use Bugo\Compat\Config;
 use Bugo\Compat\User;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Enums\PluginType;
@@ -130,7 +131,7 @@ class TinyPortalMigration extends Plugin
 				'parent_id'  => 0,
 				'page_id'    => $row['item_id'],
 				'author_id'  => $row['member_id'],
-				'message'    => $row['comment'],
+				'messages'   => [Config::$language => $row['comment']],
 				'created_at' => $row['datetime'],
 			];
 		}

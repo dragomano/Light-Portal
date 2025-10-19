@@ -15,11 +15,12 @@ namespace LightPortal\Repositories;
 use Bugo\Compat\Config;
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
+use Bugo\Compat\Utils;
+use Exception;
+use Laminas\Db\Sql\Predicate\Expression;
 use LightPortal\Enums\NotifyType;
 use LightPortal\Utils\Avatar;
 use LightPortal\Utils\Setting;
-use Exception;
-use Laminas\Db\Sql\Predicate\Expression;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -35,8 +36,9 @@ final class CommentRepository extends AbstractRepository implements CommentRepos
 
 	public function getData(int $item): array
 	{
-		if ($item === 0)
+		if ($item === 0) {
 			return [];
+		}
 
 		$select = $this->sql->select()
 			->from(['com' => 'lp_comments'])
@@ -52,17 +54,24 @@ final class CommentRepository extends AbstractRepository implements CommentRepos
 			'entity'  => $this->entity,
 		]);
 
+		$this->addTranslationJoins($select, [
+			'primary' => 'com.id',
+			'entity'  => $this->entity,
+			'fields'  => ['content'],
+		]);
+
 		$result = $this->sql->execute($select);
 
 		foreach ($result as $row) {
-			Lang::censorText($row['message']);
+			Lang::censorText($row['content']);
 
 			$data ??= [
 				'id'         => $row['id'],
 				'page_id'    => $row['page_id'],
 				'parent_id'  => $row['parent_id'],
-				'message'    => htmlspecialchars_decode($row['message']),
+				'message'    => htmlspecialchars_decode($row['content']),
 				'created_at' => $row['created_at'],
+				'updated_at' => $row['updated_at'],
 				'can_edit'   => $this->isCanEdit($row['created_at']),
 				'poster'     => [
 					'id'     => $row['author_id'],
@@ -84,6 +93,8 @@ final class CommentRepository extends AbstractRepository implements CommentRepos
 		$sorts = [
 			'created_at',
 			'created_at DESC',
+			'updated_at',
+			'updated_at DESC',
 		];
 
 		$select = $this->sql->select()
@@ -104,18 +115,25 @@ final class CommentRepository extends AbstractRepository implements CommentRepos
 			'entity'  => $this->entity,
 		]);
 
+		$this->addTranslationJoins($select, [
+			'primary' => 'com.id',
+			'entity'  => $this->entity,
+			'fields'  => ['content'],
+		]);
+
 		$result = $this->sql->execute($select);
 
 		$comments = [];
 		foreach ($result as $row) {
-			Lang::censorText($row['message']);
+			Lang::censorText($row['content']);
 
 			$comments[$row['id']] = [
 				'id'         => $row['id'],
 				'page_id'    => $row['page_id'],
 				'parent_id'  => $row['parent_id'],
-				'message'    => htmlspecialchars_decode($row['message']),
+				'message'    => htmlspecialchars_decode($row['content']),
 				'created_at' => $row['created_at'],
+				'updated_at' => $row['updated_at'],
 				'can_edit'   => $this->isCanEdit($row['created_at']),
 				'poster'     => [
 					'id'   => $row['author_id'],
@@ -138,25 +156,38 @@ final class CommentRepository extends AbstractRepository implements CommentRepos
 				'parent_id'  => $data['parent_id'],
 				'page_id'    => $data['page_id'],
 				'author_id'  => $data['author_id'],
-				'message'    => $data['message'],
 				'created_at' => $data['created_at'],
 			]);
 
 		$result = $this->sql->execute($insert);
 
-		return (int) $result->getGeneratedValue();
+		$item = (int) $result->getGeneratedValue();
+
+		if ($item && ! empty($data['message'])) {
+			Utils::$context['lp_comment']['content'] = $data['message'];
+
+			$this->saveTranslations($item);
+		}
+
+		return $item;
 	}
 
 	public function update(array $data): void
 	{
 		$update = $this->sql->update('lp_comments')
-			->set(['message' => $data['message']])
+			->set(['updated_at' => time()])
 			->where([
 				'id = ?'        => $data['id'],
 				'author_id = ?' => $data['user']
 			]);
 
 		$this->sql->execute($update);
+
+		if (! empty($data['message'])) {
+			Utils::$context['lp_comment']['content'] = $data['message'];
+
+			$this->saveTranslations($data['id'], true);
+		}
 	}
 
 	public function remove(array $items): void
@@ -171,7 +202,7 @@ final class CommentRepository extends AbstractRepository implements CommentRepos
 		$allItems = $pageIds = [];
 		foreach ($result as $row) {
 			$allItems[] = $row['id'];
-			$pageIds[] = $row['page_id'];
+			$pageIds[]  = $row['page_id'];
 		}
 
 		if ($allItems === [])
@@ -212,6 +243,11 @@ final class CommentRepository extends AbstractRepository implements CommentRepos
 			$deleteParams->where->in('item_id', $allItems);
 			$deleteParams->where->equalTo('type', $this->entity);
 			$this->sql->execute($deleteParams);
+
+			$deleteTranslations = $this->sql->delete('lp_translations');
+			$deleteTranslations->where->in('item_id', $allItems);
+			$deleteTranslations->where->equalTo('type', $this->entity);
+			$this->sql->execute($deleteTranslations);
 
 			$deleteAlerts = $this->sql->delete('user_alerts');
 			$deleteAlerts->where([

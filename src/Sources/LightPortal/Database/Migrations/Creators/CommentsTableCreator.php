@@ -17,7 +17,6 @@ use LightPortal\Database\Migrations\Columns\MediumInteger;
 use LightPortal\Database\Migrations\Columns\SmallInteger;
 use LightPortal\Database\Migrations\Columns\UnsignedInteger;
 use LightPortal\Database\Migrations\PortalTable;
-use Laminas\Db\Sql\Ddl\Column\Text;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -32,16 +31,17 @@ class CommentsTableCreator extends AbstractTableCreator
 		$parentId  = new UnsignedInteger('parent_id');
 		$pageId    = new SmallInteger('page_id');
 		$authorId  = new MediumInteger('author_id');
-		$message   = new Text('message');
 		$createdAt = new UnsignedInteger('created_at');
+		$updatedAt = new UnsignedInteger('updated_at');
 
 		$table->addAutoIncrementColumn($id);
 		$table->addColumn($parentId);
 		$table->addColumn($pageId);
 		$table->addColumn($authorId);
-		$table->addColumn($message);
 		$table->addColumn($createdAt);
+		$table->addColumn($updatedAt);
 
 		$table->addIndex(['created_at'], 'idx_comments_created_at');
+		$table->addIndex(['updated_at'], 'idx_comments_updated_at');
 	}
 }

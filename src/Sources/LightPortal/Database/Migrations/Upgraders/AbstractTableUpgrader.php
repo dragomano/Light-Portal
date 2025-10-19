@@ -13,15 +13,16 @@
 namespace LightPortal\Database\Migrations\Upgraders;
 
 use Bugo\Compat\Config;
-use LightPortal\Database\Migrations\Columns\MediumText;
-use LightPortal\Database\PortalSqlInterface;
 use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Adapter\Driver\ResultInterface;
 use Laminas\Db\Sql\Ddl\AlterTable;
 use Laminas\Db\Sql\Ddl\Column\Column;
 use Laminas\Db\Sql\Ddl\Column\ColumnInterface;
 use Laminas\Db\Sql\Ddl\Column\Integer;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
 use Laminas\Db\Sql\SqlInterface;
+use LightPortal\Database\Migrations\Columns\MediumText;
+use LightPortal\Database\PortalSqlInterface;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -151,22 +152,52 @@ abstract class AbstractTableUpgrader implements TableUpgraderInterface
 		$this->sql->getAdapter()->query($sql, Adapter::QUERY_MODE_EXECUTE);
 	}
 
-	protected function migrateRowToTranslations(int $itemId, string $type, string $content, string $description): void
+	protected function migrateRowsToTranslations(string $primary, string $type, ResultInterface $rows): void
 	{
 		$lang = Config::$language ?? 'english';
 
-		$update = $this->sql->update('lp_translations');
-		$update->set([
-			'content'     => $content,
-			'description' => $description,
-		]);
-		$update->where([
-			'item_id' => $itemId,
-			'type'    => $type,
-			'lang'    => $lang,
-		]);
+		foreach ($rows as $row) {
+			$itemId      = $row[$primary];
+			$title       = $row['title'] ?? '';
+			$content     = $row['content'] ?? '';
+			$description = $row['description'] ?? '';
 
-		$this->sql->execute($update);
+			$select = $this->sql->select('lp_translations')
+				->where([
+					'item_id' => $itemId,
+					'type'    => $type,
+					'lang'    => $lang,
+				]);
+
+			$result = $this->sql->execute($select);
+
+			if ($result->count() > 0) {
+				$update = $this->sql->update('lp_translations')
+					->set([
+						'content'     => $content,
+						'description' => $description,
+					])
+					->where([
+						'item_id' => $itemId,
+						'type'    => $type,
+						'lang'    => $lang,
+					]);
+
+				$this->sql->execute($update);
+			} else {
+				$insert = $this->sql->insert('lp_translations')
+					->values([
+						'item_id'     => $itemId,
+						'type'        => $type,
+						'lang'        => $lang,
+						'title'       => $title,
+						'content'     => $content,
+						'description' => $description,
+					]);
+
+				$this->sql->execute($insert);
+			}
+		}
 	}
 
 	protected function isSqlite(): bool

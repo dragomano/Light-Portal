@@ -54,9 +54,35 @@ abstract class AbstractCustomPageImport extends AbstractCustomImport
 		if ($results === [])
 			return [];
 
-		$this->replaceParams($params, $results, replace: false);
-		$this->replaceComments($comments, $results, replace: false);
+		$this->replaceParams($params, false);
+
+		$commentTranslations = $this->extractCommentMessages($comments);
+
+		$this->replaceComments($comments, false);
+		$this->replaceCommentTranslations($commentTranslations);
 
 		return $results;
+	}
+
+	protected function extractCommentMessages(array &$comments): array
+	{
+		$translations = [];
+
+		foreach ($comments as &$comment) {
+			if (isset($comment['messages'])) {
+				foreach ($comment['messages'] as $lang => $message) {
+					$translations[] = [
+						'item_id' => $comment['id'],
+						'type'    => 'comment',
+						'lang'    => $lang,
+						'content' => $message,
+					];
+				}
+
+				unset($comment['messages']);
+			}
+		}
+
+		return $translations;
 	}
 }

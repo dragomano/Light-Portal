@@ -101,8 +101,17 @@ class PageExport extends XmlExporter
 					'id'             => new Expression('com.id'),
 					'parent_id'      => new Expression('com.parent_id'),
 					'com_author_id'  => new Expression('com.author_id'),
-					'message'        => new Expression('com.message'),
 					'com_created_at' => new Expression('com.created_at'),
+					'com_updated_at' => new Expression('com.updated_at'),
+				],
+				Select::JOIN_LEFT
+			)
+			->join(
+				['ct' => 'lp_translations'],
+				new Expression('com.id = ct.item_id AND ct.type = ?', ['comment']),
+				[
+					'comment_lang'    => new Expression('ct.lang'),
+					'comment_content' => new Expression('COALESCE(ct.content, "")'),
 				],
 				Select::JOIN_LEFT
 			);
@@ -148,14 +157,18 @@ class PageExport extends XmlExporter
 				$items[$row['page_id']]['params'][$row['name']] = trim($row['value']);
 			}
 
-			if ($row['message'] && trim($row['message'])) {
-				$items[$row['page_id']]['comments'][$row['id']] = [
+			if ($row['comment_content'] && trim($row['comment_content'])) {
+				$items[$row['page_id']]['comments'][$row['id']] ??= [
 					'id'         => $row['id'],
 					'parent_id'  => $row['parent_id'],
 					'author_id'  => $row['com_author_id'],
-					'message'    => trim($row['message']),
 					'created_at' => $row['com_created_at'],
+					'updated_at' => $row['com_updated_at'],
 				];
+
+				if ($row['comment_lang']) {
+					$items[$row['page_id']]['comments'][$row['id']]['messages'][$row['comment_lang']] = trim($row['comment_content']);
+				}
 			}
 		}
 
@@ -212,11 +225,15 @@ class PageExport extends XmlExporter
 						'isAttribute' => true,
 						'useCDATA'    => false,
 					],
-					'message' => [
-						'isAttribute' => false,
-						'useCDATA'    => true,
+					'messages' => [
+						'type'     => 'element',
+						'useCDATA' => true,
 					],
 					'created_at' => [
+						'isAttribute' => true,
+						'useCDATA'    => false,
+					],
+					'updated_at' => [
 						'isAttribute' => true,
 						'useCDATA'    => false,
 					]

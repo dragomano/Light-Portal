@@ -14,11 +14,21 @@ namespace LightPortal\DataHandlers\Traits;
 
 trait HasComments
 {
-	protected function replaceComments(array $comments, array $results, bool $replace = true): array
+	protected function replaceComments(array $comments = [], bool $replace = true): array
 	{
-		if ($comments === [] || $results === [])
+		if ($comments === []) {
 			return [];
+		}
 
 		return $this->insertData('lp_comments', $comments, ['id', 'page_id'], $replace);
+	}
+
+	protected function replaceCommentTranslations(array $translations = []): array
+	{
+		if ($translations === []) {
+			return [];
+		}
+
+		return $this->insertData('lp_translations', $translations, ['item_id', 'type', 'lang'], true);
 	}
 }

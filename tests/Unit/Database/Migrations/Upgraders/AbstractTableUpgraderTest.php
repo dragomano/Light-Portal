@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 use Bugo\Compat\Config;
 use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Adapter\Driver\ResultInterface;
 use Laminas\Db\Sql\Ddl\Column\Column;
 use Laminas\Db\Sql\Ddl\Column\Integer;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
 use Laminas\Db\Sql\SqlInterface;
 use LightPortal\Database\Migrations\Columns\MediumText;
 use LightPortal\Database\Operations\PortalUpdate;
+use LightPortal\Database\Operations\PortalSelect;
+use LightPortal\Database\Operations\PortalInsert;
 use LightPortal\Database\PortalAdapterInterface;
 use LightPortal\Database\Migrations\Upgraders\AbstractTableUpgrader;
 use LightPortal\Database\PortalSql;
@@ -286,20 +289,96 @@ describe('AbstractTableUpgrader', function () {
         expect(true)->toBeTrue();
     });
 
-    it('migrates row to translations by updating existing record', function () {
+    it('migrates rows to translations using update when record exists', function () {
         $this->adapter->shouldReceive('getTitle')->andReturn('MySQL');
 
+        $rows = [
+            ['page_id' => 1, 'content' => 'Test content 1', 'description' => 'Test description 1'],
+        ];
+
+        $resultMock = mock(ResultInterface::class);
+        $resultMock->shouldReceive('rewind');
+        $resultMock->shouldReceive('valid')->andReturn(true, false);
+        $resultMock->shouldReceive('current')->andReturn($rows[0]);
+        $resultMock->shouldReceive('next')->once();
+
+        $selectMock = mock(PortalSelect::class);
+        $selectMock
+            ->shouldReceive('where')
+            ->with(['item_id' => 1, 'type' => 'page', 'lang' => 'english'])
+            ->andReturnSelf();
+
+        $this->sql->shouldReceive('select')->with('lp_translations')->andReturn($selectMock);
+
+        $selectResultMock = mock(ResultInterface::class);
+        $selectResultMock->shouldReceive('count')->andReturn(1);
+
+        $this->sql->shouldReceive('execute')->with($selectMock)->andReturn($selectResultMock);
+
         $updateMock = mock(PortalUpdate::class);
-        $updateMock->shouldReceive('set')->once();
-        $updateMock->shouldReceive('where')->once();
+        $updateMock
+            ->shouldReceive('set')
+            ->with(['content' => 'Test content 1', 'description' => 'Test description 1'])
+            ->andReturnSelf();
+        $updateMock
+            ->shouldReceive('where')
+            ->with(['item_id' => 1, 'type' => 'page', 'lang' => 'english'])
+            ->andReturnSelf();
 
         $this->sql->shouldReceive('update')->with('lp_translations')->andReturn($updateMock);
-        $this->sql->shouldReceive('execute')->with($updateMock)->once();
+        $this->sql->shouldReceive('execute')->with($updateMock);
 
         Config::$language = 'english';
 
         $upgrader = new ReflectionAccessor($this->upgrader);
-        $upgrader->callProtectedMethod('migrateRowToTranslations', [1, 'page', 'Test content', 'Test description']);
+        $upgrader->callProtectedMethod('migrateRowsToTranslations', ['page_id', 'page', $resultMock]);
+
+        expect(true)->toBeTrue();
+    });
+
+    it('migrates rows to translations using insert when record does not exist', function () {
+        $this->adapter->shouldReceive('getTitle')->andReturn('MySQL');
+
+        $rows = [
+            ['page_id' => 1, 'title' => '', 'content' => 'Test content 1', 'description' => 'Test description 1'],
+        ];
+
+        $resultMock = mock(ResultInterface::class);
+        $resultMock->shouldReceive('rewind');
+        $resultMock->shouldReceive('valid')->andReturn(true, false);
+        $resultMock->shouldReceive('current')->andReturn($rows[0]);
+        $resultMock->shouldReceive('next')->once();
+
+        $selectMock = mock(PortalSelect::class);
+        $selectMock
+            ->shouldReceive('where')
+            ->with(['item_id' => 1, 'type' => 'page', 'lang' => 'english'])
+            ->andReturnSelf();
+
+        $this->sql->shouldReceive('select')->with('lp_translations')->andReturn($selectMock);
+
+        $selectResultMock = mock(ResultInterface::class);
+        $selectResultMock->shouldReceive('count')->andReturn(0);
+
+        $this->sql->shouldReceive('execute')->with($selectMock)->andReturn($selectResultMock);
+
+        $insertMock = mock(PortalInsert::class);
+        $insertMock->shouldReceive('values')->with([
+            'item_id'     => 1,
+            'type'        => 'page',
+            'lang'        => 'english',
+            'title'       => '',
+            'content'     => 'Test content 1',
+            'description' => 'Test description 1',
+        ])->andReturnSelf();
+
+        $this->sql->shouldReceive('insert')->with('lp_translations')->andReturn($insertMock);
+        $this->sql->shouldReceive('execute')->with($insertMock);
+
+        Config::$language = 'english';
+
+        $upgrader = new ReflectionAccessor($this->upgrader);
+        $upgrader->callProtectedMethod('migrateRowsToTranslations', ['page_id', 'page', $resultMock]);
 
         expect(true)->toBeTrue();
     });

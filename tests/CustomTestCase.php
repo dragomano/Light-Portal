@@ -25,6 +25,9 @@ class CustomTestCase extends TestCase
         Utils::$context = &$GLOBALS['context'];
         Utils::$smcFunc = &$GLOBALS['smcFunc'];
 
+        Utils::$smcFunc['strtolower'] = fn($string) => strtolower($string);
+        Utils::$smcFunc['htmlspecialchars'] = fn($string, $flags = ENT_COMPAT, $encoding = 'UTF-8') => htmlspecialchars($string, $flags, $encoding);
+
         Utils::$context['admin_menu_name'] = 'admin';
         Utils::$context['right_to_left'] = false;
 

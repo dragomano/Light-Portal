@@ -36,16 +36,21 @@ describe('PagesTableUpgrader', function () {
         ")->execute();
 
         $this->adapter->query(/** @lang text */ "
-            INSERT INTO lp_pages (page_id, category_id, author_id, alias, title, content, description, type, permissions, status, created_at, updated_at) VALUES
-            (1, 1, 1, 'test-page-1', 'Test Page 1', 'Test content 1', 'Test description 1', 'bbc', 1, 1, 1672531200, 1672531200),
-            (2, 1, 1, 'test-page-2', 'Test Page 2', 'Test content 2', 'Test description 2', 'bbc', 1, 1, 1672617600, 1672617600)
+            INSERT INTO lp_pages (
+                page_id, category_id, author_id, alias, title, content,
+                description, type, permissions, status, created_at, updated_at
+            ) VALUES
+                (1, 1, 1, 'test-page-1', 'Test Page 1', 'Test content 1',
+                'Test description 1', 'bbc', 1, 1, 1672531200, 1672531200),
+                (2, 1, 1, 'test-page-2', 'Test Page 2', 'Test content 2',
+                'Test description 2', 'bbc', 1, 1, 1672617600, 1672617600)
         ")->execute();
 
         // Insert existing translations with title (simulating records that already exist for pages)
         $this->adapter->query(/** @lang text */ "
             INSERT INTO lp_translations (item_id, type, lang, title) VALUES
-            (1, 'page', 'english', 'Test Page 1'),
-            (2, 'page', 'english', 'Test Page 2')
+                (1, 'page', 'english', 'Test Page 1'),
+                (2, 'page', 'english', 'Test Page 2')
         ")->execute();
 
         $this->upgrader = new PagesTableUpgrader($this->sql);

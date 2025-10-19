@@ -39,7 +39,6 @@ describe('CommentsTableCreatorTest', function () {
             ->and($sql)->toContain('parent_id')
             ->and($sql)->toContain('page_id')
             ->and($sql)->toContain('author_id')
-            ->and($sql)->toContain('message')
             ->and($sql)->toContain('created_at');
     });
 

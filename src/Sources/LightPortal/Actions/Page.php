@@ -382,11 +382,12 @@ final readonly class Page implements ActionInterface
 			'image'         => Lang::$editortxt['insert_image'],
 			'list'          => Lang::$editortxt['bullet_list'],
 			'task_list'     => Lang::$txt['lp_task_list'],
+			'updated'       => Lang::$txt['lp_updated'],
 		];
 
 		$pageUrl = Utils::$context['lp_page']['url'];
 
-		if (class_exists(SimpleSEF::class, false)) {
+		if (class_exists('\SimpleSEF', false)) {
 			$pageUrl = (new SimpleSEF())->getSefUrl($pageUrl);
 		}
 

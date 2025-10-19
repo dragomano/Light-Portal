@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Bugo\Compat\Config;
 use LightPortal\Database\PortalSql;
 use LightPortal\DataHandlers\Imports\PageImport;
 use LightPortal\Enums\ContentType;
@@ -24,6 +25,8 @@ beforeEach(function () {
     $adapter->query(Table::TRANSLATIONS->value)->execute();
 
     $this->sql = new PortalSql($adapter);
+
+    Config::$language = 'english';
 });
 
 function generatePageXml(array $pages): string
@@ -53,6 +56,21 @@ function generatePageXml(array $pages): string
 
         $comments = '';
         foreach ($page['comments'] ?? [] as $comment) {
+            $messageElement = '';
+
+            if (isset($comment['messages'])) {
+                // New format
+                $messages = '';
+                foreach ($comment['messages'] as $lang => $message) {
+                    $messages .= "<$lang><![CDATA[$message]]></$lang>";
+                }
+
+                $messageElement = "<messages>$messages</messages>";
+            } elseif (isset($comment['message'])) {
+                // Old format
+                $messageElement = "<message><![CDATA[{$comment['message']}]]></message>";
+            }
+
             $comments .= <<<XML
 <comment
     id="{$comment['id']}"
@@ -60,7 +78,7 @@ function generatePageXml(array $pages): string
     author_id="{$comment['author_id']}"
     created_at="{$comment['created_at']}"
 >
-    <message><![CDATA[{$comment['message']}]]></message>
+    $messageElement
 </comment>
 XML;
         }
@@ -120,10 +138,16 @@ it('imports pages with comments and params correctly', function () {
             'titles'          => ['english' => 'Test Page', 'russian' => 'Тестовая страница'],
             'contents'        => ['english' => 'Page content here', 'russian' => 'Содержимое страницы'],
             'descriptions'    => ['english' => 'English description', 'russian' => 'Русское описание'],
-            'comments'        => [
-                ['id' => 1, 'parent_id' => 0, 'author_id' => 2, 'message' => 'Comment 1', 'created_at' => time()],
-            ],
             'params'          => ['show_title' => '1', 'show_author_and_date' => '1'],
+            'comments'        => [
+                [
+                    'id'         => 1,
+                    'parent_id'  => 0,
+                    'author_id'  => 2,
+                    'messages'   => ['english' => 'Comment 1', 'russian' => 'Комментарий 1'],
+                    'created_at' => time(),
+                ],
+            ],
         ],
     ];
 
@@ -141,7 +165,7 @@ it('imports pages with comments and params correctly', function () {
     $translations = iterator_to_array(
         $this->sql->getAdapter()->query(/** @lang text */ 'SELECT * FROM lp_translations')->execute()
     );
-    expect(count($translations))->toBe(2); // english + russian
+    expect(count($translations))->toBe(4); // english + russian for title + english + russian for comment
 
     $params = iterator_to_array(
         $this->sql->getAdapter()->query(/** @lang text */ 'SELECT * FROM lp_params')->execute()
@@ -152,6 +176,150 @@ it('imports pages with comments and params correctly', function () {
         $this->sql->getAdapter()->query(/** @lang text */ 'SELECT * FROM lp_comments')->execute()
     );
     expect(count($comments))->toBe(1);
+});
+
+it('imports pages with multilingual comments correctly', function () {
+    $pages = [
+        [
+            'page_id'         => 3,
+            'category_id'     => 1,
+            'author_id'       => 1,
+            'slug'            => 'page-3',
+            'type'            => ContentType::HTML->name(),
+            'entry_type'      => EntryType::DEFAULT->name(),
+            'permissions'     => 3,
+            'status'          => Status::ACTIVE->value,
+            'num_views'       => 0,
+            'num_comments'    => 2,
+            'created_at'      => time(),
+            'updated_at'      => 0,
+            'deleted_at'      => 0,
+            'last_comment_id' => 2,
+            'titles'          => ['english' => 'Page 3', 'russian' => 'Страница 3'],
+            'contents'        => ['english' => 'Content 3', 'russian' => 'Содержимое 3'],
+            'comments'        => [
+                [
+                    'id'         => 1,
+                    'parent_id'  => 0,
+                    'author_id'  => 2,
+                    'messages'   => ['english' => 'First comment', 'russian' => 'Первый комментарий'],
+                    'created_at' => time(),
+                ],
+                [
+                    'id'         => 2,
+                    'parent_id'  => 1,
+                    'author_id'  => 3,
+                    'messages'   => ['english' => 'Reply comment', 'russian' => 'Ответ на комментарий'],
+                    'created_at' => time(),
+                ],
+            ],
+        ],
+    ];
+
+    $xml = simplexml_load_string(generatePageXml($pages));
+
+    $import = new ReflectionAccessor(new PageImport($this->sql, $this->fileMock, $this->errorHandlerMock));
+    $import->setProtectedProperty('xml', $xml);
+    $import->callProtectedMethod('processItems');
+
+    $rows = iterator_to_array(
+        $this->sql->getAdapter()->query(/** @lang text */ 'SELECT * FROM lp_pages')->execute()
+    );
+    expect(count($rows))->toBe(1);
+
+    $comments = iterator_to_array(
+        $this->sql->getAdapter()->query(/** @lang text */ 'SELECT * FROM lp_comments ORDER BY id')->execute()
+    );
+    expect(count($comments))->toBe(2)
+        ->and($comments[0]['id'])->toBe(1)
+        ->and($comments[0]['parent_id'])->toBe(0)
+        ->and($comments[0]['page_id'])->toBe(3)
+        ->and($comments[0]['author_id'])->toBe(2)
+        ->and($comments[1]['id'])->toBe(2)
+        ->and($comments[1]['parent_id'])->toBe(1)
+        ->and($comments[1]['page_id'])->toBe(3)
+        ->and($comments[1]['author_id'])->toBe(3);
+
+    $commentTranslations = iterator_to_array(
+        $this->sql->getAdapter()->query(/** @lang text */ 'SELECT * FROM lp_translations WHERE type = ? ORDER BY item_id, lang', ['comment'])
+    );
+    expect(count($commentTranslations))->toBe(4)
+        ->and($commentTranslations[0]['item_id'])->toBe(1)
+        ->and($commentTranslations[0]['type'])->toBe('comment')
+        ->and($commentTranslations[0]['lang'])->toBe('english')
+        ->and($commentTranslations[0]['content'])->toBe('First comment')
+        ->and($commentTranslations[1]['item_id'])->toBe(1)
+        ->and($commentTranslations[1]['type'])->toBe('comment')
+        ->and($commentTranslations[1]['lang'])->toBe('russian')
+        ->and($commentTranslations[1]['content'])->toBe('Первый комментарий')
+        ->and($commentTranslations[2]['item_id'])->toBe(2)
+        ->and($commentTranslations[2]['type'])->toBe('comment')
+        ->and($commentTranslations[2]['lang'])->toBe('english')
+        ->and($commentTranslations[2]['content'])->toBe('Reply comment')
+        ->and($commentTranslations[3]['item_id'])->toBe(2)
+        ->and($commentTranslations[3]['type'])->toBe('comment')
+        ->and($commentTranslations[3]['lang'])->toBe('russian')
+        ->and($commentTranslations[3]['content'])->toBe('Ответ на комментарий'); // 2 comments * 2 languages
+});
+
+it('imports pages with old format comments correctly', function () {
+    $pages = [
+        [
+            'page_id'         => 4,
+            'category_id'     => 1,
+            'author_id'       => 1,
+            'slug'            => 'page-4',
+            'type'            => ContentType::HTML->name(),
+            'entry_type'      => EntryType::DEFAULT->name(),
+            'permissions'     => 3,
+            'status'          => Status::ACTIVE->value,
+            'num_views'       => 0,
+            'num_comments'    => 1,
+            'created_at'      => time(),
+            'updated_at'      => 0,
+            'deleted_at'      => 0,
+            'last_comment_id' => 1,
+            'titles'          => ['english' => 'Page 4'],
+            'contents'        => ['english' => 'Content 4'],
+            'comments'        => [
+                [
+                    'id'         => 1,
+                    'parent_id'  => 0,
+                    'author_id'  => 2,
+                    'message'    => 'Old format comment',
+                    'created_at' => time(),
+                ],
+            ],
+        ],
+    ];
+
+    $xml = simplexml_load_string(generatePageXml($pages));
+
+    $import = new ReflectionAccessor(new PageImport($this->sql, $this->fileMock, $this->errorHandlerMock));
+    $import->setProtectedProperty('xml', $xml);
+    $import->callProtectedMethod('processItems');
+
+    $rows = iterator_to_array(
+        $this->sql->getAdapter()->query(/** @lang text */ 'SELECT * FROM lp_pages')->execute()
+    );
+    expect(count($rows))->toBe(1);
+
+    $comments = iterator_to_array(
+        $this->sql->getAdapter()->query(/** @lang text */ 'SELECT * FROM lp_comments')->execute()
+    );
+    expect(count($comments))->toBe(1)
+        ->and($comments[0]['id'])->toBe(1)
+        ->and($comments[0]['page_id'])->toBe(4)
+        ->and($comments[0]['author_id'])->toBe(2);
+
+    $commentTranslations = iterator_to_array(
+        $this->sql->getAdapter()->query(/** @lang text */ 'SELECT * FROM lp_translations WHERE type = ? ORDER BY item_id, lang', ['comment'])
+    );
+    expect(count($commentTranslations))->toBe(1)
+        ->and($commentTranslations[0]['item_id'])->toBe(1)
+        ->and($commentTranslations[0]['type'])->toBe('comment')
+        ->and($commentTranslations[0]['lang'])->toBe('english')
+        ->and($commentTranslations[0]['content'])->toBe('Old format comment');
 });
 
 it('imports pages without comments or params gracefully', function () {

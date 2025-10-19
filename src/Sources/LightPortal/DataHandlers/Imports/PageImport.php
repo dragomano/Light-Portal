@@ -12,6 +12,7 @@
 
 namespace LightPortal\DataHandlers\Imports;
 
+use Bugo\Compat\Config;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\DataHandlers\Traits\HasComments;
 use LightPortal\DataHandlers\Traits\HasSlug;
@@ -41,7 +42,7 @@ class PageImport extends XmlImporter
 
 	protected function processItems(): void
 	{
-		$items = $translations = $params = $comments = [];
+		$items = $translations = $params = $comments = $commentTranslations = [];
 		$pageTitles = [];
 
 		foreach ($this->xml->{$this->entity}->item as $item) {
@@ -73,21 +74,23 @@ class PageImport extends XmlImporter
 				'last_comment_id' => intval($item['last_comment_id']),
 			];
 
-			$translations = array_merge($translations, $this->extractTranslations($item, $pageId));
-			$params = array_merge($params, $this->extractParams($item, $pageId));
-			$comments = array_merge($comments, $this->extractComments($item, $pageId));
+			$translations        = array_merge($translations, $this->extractTranslations($item, $pageId));
+			$params              = array_merge($params, $this->extractParams($item, $pageId));
+			$comments            = array_merge($comments, $this->extractComments($item, $pageId));
+			$commentTranslations = array_merge($commentTranslations, $this->extractCommentTranslations($item));
 		}
 
 		$this->updateSlugs($items, $pageTitles, 'page_id');
 
 		$this->startTransaction($items);
 
-		$results = $this->insertData('lp_pages', $items, ['page_id'], true);
-		$results = $this->replaceTranslations($translations, $results);
-		$results = $this->replaceParams($params, $results);
-		$results = $this->replaceComments($comments, $results);
+		$this->insertData('lp_pages', $items, ['page_id'], true);
+		$this->replaceTranslations($translations);
+		$this->replaceParams($params);
+		$this->replaceComments($comments);
+		$this->replaceCommentTranslations($commentTranslations);
 
-		$this->finishTransaction($results);
+		$this->finishTransaction();
 	}
 
 	protected function extractComments(SimpleXMLElement $item, int $id): array
@@ -101,12 +104,51 @@ class PageImport extends XmlImporter
 					'parent_id'  => intval($commentItem['parent_id']),
 					'page_id'    => $id,
 					'author_id'  => intval($commentItem['author_id']),
-					'message'    => (string) $commentItem->message,
 					'created_at' => intval($commentItem['created_at']),
+					'updated_at' => intval($commentItem['updated_at']),
 				];
 			}
 		}
 
 		return $comments;
+	}
+
+	protected function extractCommentTranslations(SimpleXMLElement $item): array
+	{
+		$translations = [];
+
+		if ($item->comments ?? null) {
+			foreach ($item->comments->children() as $commentItem) {
+				$commentId = intval($commentItem['id']);
+
+				if (isset($commentItem->messages)) {
+					// New format: <messages><english>...</english><russian>...</russian></messages>
+					foreach ($commentItem->messages->children() as $lang => $contentElement) {
+						$content = (string) $contentElement;
+						if (! empty($content)) {
+							$translations[] = [
+								'item_id' => $commentId,
+								'type'    => 'comment',
+								'lang'    => $lang,
+								'content' => $content,
+							];
+						}
+					}
+				} elseif (isset($commentItem->message)) {
+					// Old format: <message>Single text content</message>
+					$message = (string) $commentItem->message;
+					if (! empty($message)) {
+						$translations[] = [
+							'item_id' => $commentId,
+							'type'    => 'comment',
+							'lang'    => Config::$language, // Default language
+							'content' => $message,
+						];
+					}
+				}
+			}
+		}
+
+		return $translations;
 	}
 }
