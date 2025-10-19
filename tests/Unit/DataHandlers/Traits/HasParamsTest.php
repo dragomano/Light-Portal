@@ -2,200 +2,226 @@
 
 declare(strict_types=1);
 
+use LightPortal\Database\PortalSql;
+use LightPortal\Database\PortalSqlInterface;
 use LightPortal\DataHandlers\Traits\HasInserts;
 use LightPortal\DataHandlers\Traits\HasParams;
+use Tests\Table;
+use Tests\TestAdapterFactory;
 
 beforeEach(function () {
-    $this->testClass = new class {
+    $adapter = TestAdapterFactory::create();
+    $adapter->query(Table::PARAMS->value)->execute();
+
+    $this->sql = new PortalSql($adapter);
+
+    $this->testClass = new class($this->sql) {
         use HasParams;
         use HasInserts;
 
-        public mixed $sql;
+        public PortalSqlInterface $sql;
 
-        public function __construct($sql = null)
+        public function __construct(PortalSqlInterface $sql)
         {
             $this->sql = $sql;
         }
 
-        public function callReplaceParams(array $params, array $results): array
+        public function callReplaceParams(array $params = [], bool $replace = true): array
         {
-            return $this->replaceParams($params, $results);
+            return $this->replaceParams($params, $replace);
         }
     };
 });
 
-it('does nothing when params or results are empty', function () {
-    $this->testClass = new (get_class($this->testClass))();
+it('handles empty params array', function () {
+    $result = $this->testClass->callReplaceParams();
 
-    // Empty params
-    $results = [1, 2];
-    $this->testClass->callReplaceParams([], $results);
-
-    // Empty results
-    $results = [];
-    $this->testClass->callReplaceParams([['item_id' => '1']], $results);
-
-    expect(true)->toBeTrue();
+    expect($result)->toBe([]);
 });
 
-it('processes params correctly', function () {
-    $sqlMock = Mockery::mock();
-    $sqlMock->shouldReceive('replace')
-        ->with('lp_params')
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('setConflictKeys')
-        ->with(['item_id', 'type', 'name'])
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('batch')
-        ->andReturnSelf()
-        ->byDefault();
-
-    $resultMock = Mockery::mock();
-    $resultMock->shouldReceive('getAffectedRows')->andReturn(2);
-    $resultMock->shouldReceive('getGeneratedValue')->andReturn(10);
-
-    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
-
-    $this->testClass = new (get_class($this->testClass))($sqlMock);
-
-    $params = [
+dataset('add params', [
+    'one record' => [
         [
-            'item_id' => '1',
-            'type' => 'test_type',
-            'name' => 'param1',
-            'value' => 'value1',
+            [
+                'item_id' => '1',
+                'type'    => 'block',
+                'name'    => 'display_type',
+                'value'   => 'list',
+            ]
+        ],
+        1,
+        [
+            [
+                'item_id' => '1',
+                'type'    => 'block',
+                'name'    => 'display_type',
+                'value'   => 'list',
+            ]
+        ]
+    ],
+    'multiple records' => [
+        [
+            [
+                'item_id' => '1',
+                'type'    => 'block',
+                'name'    => 'display_type',
+                'value'   => 'list',
+            ],
+            [
+                'item_id' => '1',
+                'type'    => 'block',
+                'name'    => 'show_title',
+                'value'   => '1',
+            ]
+        ],
+        2,
+        [
+            [
+                'item_id' => '1',
+                'type'    => 'block',
+                'name'    => 'display_type',
+                'value'   => 'list',
+            ],
+            [
+                'item_id' => '1',
+                'type'    => 'block',
+                'name'    => 'show_title',
+                'value'   => '1',
+            ]
+        ]
+    ]
+]);
+
+it('adds param records', function (array $params, int $expectedCount, array $checks) {
+    // Ensure table is empty before adding
+    $rows = $this->sql->getAdapter()
+        ->query(/** @lang text */ 'SELECT COUNT(*) as count FROM lp_params')->execute();
+    $count = $rows->current()['count'];
+    expect($count)->toBe(0);
+
+    $result = $this->testClass->callReplaceParams($params);
+
+    expect($result)->toBeArray()->toHaveCount($expectedCount);
+
+    foreach ($checks as $check) {
+        $rows = $this->sql->getAdapter()
+            ->query(
+                /** @lang text */ 'SELECT * FROM lp_params WHERE item_id = ? AND type = ? AND name = ?',
+                [$check['item_id'], $check['type'], $check['name']]
+            );
+        $data = $rows->current();
+
+        expect($data['value'])->toBe($check['value']);
+    }
+})->with('add params');
+
+dataset('replace params', [
+    'one record' => [
+        [
+            [
+                'item_id' => '1',
+                'type'    => 'block',
+                'name'    => 'display_type',
+                'value'   => 'grid',
+            ]
+        ],
+        1,
+        [
+            [
+                'item_id' => '1',
+                'type'    => 'block',
+                'name'    => 'display_type',
+                'value'   => 'grid',
+            ]
         ],
         [
-            'item_id' => '1',
-            'type' => 'test_type',
-            'name' => 'param2',
-            'value' => 'value2',
+            [
+                'item_id' => '1',
+                'type'    => 'block',
+                'name'    => 'display_type',
+                'value'   => 'list',
+            ]
         ]
-    ];
-
-    $results = [10, 11];
-
-    $result = $this->testClass->callReplaceParams($params, $results);
-
-    expect($result)->toBe([10, 11]);
-});
-
-it('handles single param correctly', function () {
-    $sqlMock = Mockery::mock();
-    $sqlMock->shouldReceive('replace')
-        ->with('lp_params')
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('setConflictKeys')
-        ->with(['item_id', 'type', 'name'])
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('batch')
-        ->andReturnSelf()
-        ->byDefault();
-
-    $resultMock = Mockery::mock();
-    $resultMock->shouldReceive('getAffectedRows')->andReturn(1);
-    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
-
-    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
-
-    $this->testClass = new (get_class($this->testClass))($sqlMock);
-
-    $params = [
+    ],
+    'multiple records' => [
         [
-            'item_id' => '5',
-            'type' => 'block',
-            'name' => 'display_type',
-            'value' => 'list',
-        ]
-    ];
-
-    $results = [1];
-
-    $result = $this->testClass->callReplaceParams($params, $results);
-
-    expect($result)->toBe([1]);
-});
-
-it('handles multiple items with different params', function () {
-    $sqlMock = Mockery::mock();
-    $sqlMock->shouldReceive('replace')
-        ->with('lp_params')
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('setConflictKeys')
-        ->with(['item_id', 'type', 'name'])
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('batch')
-        ->andReturnSelf()
-        ->byDefault();
-
-    $resultMock = Mockery::mock();
-    $resultMock->shouldReceive('getAffectedRows')->andReturn(3);
-    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
-
-    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
-
-    $this->testClass = new (get_class($this->testClass))($sqlMock);
-
-    $params = [
+            [
+                'item_id' => '1',
+                'type'    => 'block',
+                'name'    => 'display_type',
+                'value'   => 'grid',
+            ],
+            [
+                'item_id' => '1',
+                'type'    => 'block',
+                'name'    => 'cache_time',
+                'value'   => '600',
+            ]
+        ],
+        2,
         [
-            'item_id' => '1',
-            'type' => 'block',
-            'name' => 'show_title',
-            'value' => '1',
+            [
+                'item_id' => '1',
+                'type'    => 'block',
+                'name'    => 'display_type',
+                'value'   => 'grid',
+            ],
+            [
+                'item_id' => '1',
+                'type'    => 'block',
+                'name'    => 'cache_time',
+                'value'   => '600',
+            ]
         ],
         [
-            'item_id' => '1',
-            'type' => 'block',
-            'name' => 'cache_time',
-            'value' => '300',
-        ],
-        [
-            'item_id' => '2',
-            'type' => 'block',
-            'name' => 'show_title',
-            'value' => '0',
+            [
+                'item_id' => '1',
+                'type'    => 'block',
+                'name'    => 'display_type',
+                'value'   => 'list',
+            ],
+            [
+                'item_id' => '1',
+                'type'    => 'block',
+                'name'    => 'show_title',
+                'value'   => '1',
+            ]
         ]
-    ];
+    ]
+]);
 
-    $results = [1, 2, 3];
+it('replaces param records', function (
+    array $params,
+    int $expectedCount,
+    array $checks,
+    array $initialParams
+) {
+    $this->testClass->callReplaceParams($initialParams);
 
-    $result = $this->testClass->callReplaceParams($params, $results);
+    // Verify initial params are in the database
+    foreach ($initialParams as $initial) {
+        $rows = $this->sql->getAdapter()
+            ->query(
+                /** @lang text */ 'SELECT * FROM lp_params WHERE item_id = ? AND type = ? AND name = ?',
+                [$initial['item_id'], $initial['type'], $initial['name']]
+            );
+        $data = $rows->current();
 
-    expect($result)->toBe([1, 2, 3]);
-});
+        expect($data['value'])->toBe($initial['value']);
+    }
 
-it('uses correct table name', function () {
-    $sqlMock = Mockery::mock();
-    $sqlMock->shouldReceive('replace')
-        ->with('lp_params')
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('setConflictKeys')
-        ->with(['item_id', 'type', 'name'])
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('batch')
-        ->andReturnSelf()
-        ->byDefault();
+    $result = $this->testClass->callReplaceParams($params);
 
-    $resultMock = Mockery::mock();
-    $resultMock->shouldReceive('getAffectedRows')->andReturn(1);
-    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
+    expect($result)->toBeArray()->toHaveCount($expectedCount);
 
-    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
+    foreach ($checks as $check) {
+        $rows = $this->sql->getAdapter()
+            ->query(
+                /** @lang text */ 'SELECT * FROM lp_params WHERE item_id = ? AND type = ? AND name = ?',
+                [$check['item_id'], $check['type'], $check['name']]
+            );
+        $data = $rows->current();
 
-    $this->testClass = new (get_class($this->testClass))($sqlMock);
-
-    $params = [
-        [
-            'item_id' => '1',
-            'type' => 'test_type',
-            'name' => 'test',
-            'value' => 'value',
-        ]
-    ];
-
-    $results = [1];
-
-    $result = $this->testClass->callReplaceParams($params, $results);
-
-    expect($result)->toBe([1]);
-});
+        expect($data['value'])->toBe($check['value']);
+    }
+})->with('replace params');

@@ -9,11 +9,9 @@ use Tests\ReflectionAccessor;
 describe('PortalReplace', function () {
     beforeEach(function () {
         $this->platform = mock(PlatformInterface::class);
-        $this->adapter = mock(AdapterInterface::class);
         $this->result = mock(ResultInterface::class);
-
+        $this->adapter = mock(AdapterInterface::class);
         $this->adapter->shouldReceive('getPlatform')->andReturn($this->platform);
-
         $this->replace = new PortalReplace();
     });
 

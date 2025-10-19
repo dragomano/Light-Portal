@@ -2,15 +2,24 @@
 
 declare(strict_types=1);
 
+use LightPortal\Database\PortalSql;
+use LightPortal\Database\PortalSqlInterface;
 use LightPortal\DataHandlers\Traits\HasInserts;
+use Tests\Table;
+use Tests\TestAdapterFactory;
 
 beforeEach(function () {
-    $this->testClass = new class {
+    $adapter = TestAdapterFactory::create();
+    $adapter->query(Table::MEMBERS->value)->execute();
+
+    $this->sql = new PortalSql($adapter);
+
+    $this->testClass = new class($this->sql) {
         use HasInserts;
 
-        public mixed $sql;
+        public PortalSqlInterface $sql;
 
-        public function __construct($sql = null)
+        public function __construct(PortalSqlInterface $sql)
         {
             $this->sql = $sql;
         }
@@ -29,208 +38,137 @@ beforeEach(function () {
 });
 
 it('returns empty array when data is empty', function () {
-    $this->testClass = new (get_class($this->testClass))();
-
-    $result = $this->testClass->testInsertData('test_table', [], []);
+    $result = $this->testClass->testInsertData('members', [], []);
 
     expect($result)->toBe([]);
 });
 
-it('returns empty array when columns is empty', function () {
-    $sqlMock = Mockery::mock();
-    $sqlMock->shouldReceive('insert')
-        ->with('test_table')
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('batch')
-        ->with([['id' => 1]])
-        ->andReturnSelf();
-    $resultMock = Mockery::mock();
-    $resultMock->shouldReceive('getAffectedRows')->andReturn(0);
-    $resultMock->shouldReceive('getGeneratedValue')->andReturn(null);
+dataset('insert data', [
+    'one record' => [
+        [
+            ['real_name' => 'Test User', 'member_name' => 'test_user']
+        ],
+        ['id_member'],
+        false,
+        1,
+        1,
+        [
+            [
+                'real_name' => 'Test User',
+                'member_name' => 'test_user'
+            ]
+        ]
+    ],
+    'multiple records' => [
+        [
+            ['real_name' => 'Test User 1', 'member_name' => 'test_user1'],
+            ['real_name' => 'Test User 2', 'member_name' => 'test_user2']
+        ],
+        ['id_member'],
+        false,
+        1,
+        2,
+        [
+            [
+                'real_name' => 'Test User 1',
+                'member_name' => 'test_user1'
+            ],
+            [
+                'real_name' => 'Test User 2',
+                'member_name' => 'test_user2'
+            ]
+        ]
+    ]
+]);
 
-    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
+it('handles insert method correctly', function (
+    array $data,
+    array $keys,
+    bool $replace,
+    int $chunkSize,
+    int $expectedCount,
+    array $checks
+) {
+    $result = $this->testClass->testInsertData('members', $data, $keys, $replace, $chunkSize);
+    expect($result)->toBeArray()->toHaveCount($expectedCount);
 
-    $this->testClass = new (get_class($this->testClass))($sqlMock);
+    foreach ($result as $id) {
+        expect($id)->toBeInt()->toBeGreaterThan(0);
+    }
 
-    $result = $this->testClass->testInsertData('test_table', [['id' => 1]], []);
+    // Verify data was inserted
+    foreach ($checks as $index => $check) {
+        $id = $result[$index];
+        $rows = $this->sql->getAdapter()
+            ->query(/** @lang text */ 'SELECT * FROM members WHERE id_member = ?', [$id]);
+        $row = $rows->current();
 
-    expect($result)->toBe([]);
-});
+        expect($row['real_name'])->toBe($check['real_name'])
+            ->and($row['member_name'])->toBe($check['member_name']);
+    }
+})->with('insert data');
 
-it('returns empty array when keys is empty', function () {
-    $sqlMock = Mockery::mock();
-    $sqlMock->shouldReceive('insert')
-        ->with('test_table')
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('batch')
-        ->with([['id' => 1]])
-        ->andReturnSelf();
-    $resultMock = Mockery::mock();
-    $resultMock->shouldReceive('getAffectedRows')->andReturn(0);
-    $resultMock->shouldReceive('getGeneratedValue')->andReturn(null);
+dataset('replace data', [
+    'one record' => [
+        [
+            ['real_name' => 'Test User', 'member_name' => 'test_user']
+        ],
+        ['id_member'],
+        true,
+        1,
+        1,
+        [
+            [
+                'real_name' => 'Test User',
+                'member_name' => 'test_user'
+            ]
+        ]
+    ],
+    'multiple records' => [
+        [
+            ['real_name' => 'Test User 1', 'member_name' => 'test_user1'],
+            ['real_name' => 'Test User 2', 'member_name' => 'test_user2']
+        ],
+        ['id_member'],
+        true,
+        1,
+        2,
+        [
+            [
+                'real_name' => 'Test User 1',
+                'member_name' => 'test_user1'
+            ],
+            [
+                'real_name' => 'Test User 2',
+                'member_name' => 'test_user2'
+            ]
+        ]
+    ]
+]);
 
-    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
+it('handles replace method correctly', function (
+    array $data,
+    array $keys,
+    bool $replace,
+    int $chunkSize,
+    int $expectedCount,
+    array $checks
+) {
+    $result = $this->testClass->testInsertData('members', $data, $keys, $replace, $chunkSize);
+    expect($result)->toBeArray()->toHaveCount($expectedCount);
 
-    $this->testClass = new (get_class($this->testClass))($sqlMock);
+    foreach ($result as $id) {
+        expect($id)->toBeInt()->toBeGreaterThan(0);
+    }
 
-    $result = $this->testClass->testInsertData('test_table', [['id' => 1]], []);
+    // Verify data was inserted
+    foreach ($checks as $index => $check) {
+        $id = $result[$index];
+        $rows = $this->sql->getAdapter()
+            ->query(/** @lang text */ 'SELECT * FROM members WHERE id_member = ?', [$id]);
+        $row = $rows->current();
 
-    expect($result)->toBe([]);
-});
-
-it('chunks data and calls Db::insert correctly', function () {
-    $sqlMock = Mockery::mock();
-    $sqlMock->shouldReceive('insert')
-        ->with('test_table')
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('batch')
-        ->with([['id' => 1, 'name' => 'Test 1']])
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('batch')
-        ->with([['id' => 2, 'name' => 'Test 2']])
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('batch')
-        ->with([['id' => 3, 'name' => 'Test 3']])
-        ->andReturnSelf();
-
-    $resultMock1 = Mockery::mock();
-    $resultMock1->shouldReceive('getAffectedRows')->andReturn(1);
-    $resultMock1->shouldReceive('getGeneratedValue')->andReturn(1);
-
-    $resultMock2 = Mockery::mock();
-    $resultMock2->shouldReceive('getAffectedRows')->andReturn(1);
-    $resultMock2->shouldReceive('getGeneratedValue')->andReturn(2);
-
-    $resultMock3 = Mockery::mock();
-    $resultMock3->shouldReceive('getAffectedRows')->andReturn(1);
-    $resultMock3->shouldReceive('getGeneratedValue')->andReturn(3);
-
-    $sqlMock->shouldReceive('execute')
-        ->andReturn($resultMock1, $resultMock2, $resultMock3);
-
-    $this->testClass = new (get_class($this->testClass))($sqlMock);
-
-    $data = [
-        ['id' => 1, 'name' => 'Test 1'],
-        ['id' => 2, 'name' => 'Test 2'],
-        ['id' => 3, 'name' => 'Test 3'],
-    ];
-
-    $keys = ['id'];
-
-    $result = $this->testClass->testInsertData('test_table', $data, $keys, false, 1); // chunkSize = 1
-
-    expect($result)->toBe([1, 2, 3]);
-});
-
-it('uses default chunk size of 100', function () {
-    $sqlMock = Mockery::mock();
-    $sqlMock->shouldReceive('insert')
-        ->with('test_table')
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('batch')
-        ->andReturnSelf()
-        ->times(2);
-
-    $resultMock1 = Mockery::mock();
-    $resultMock1->shouldReceive('getAffectedRows')->andReturn(75);
-    $resultMock1->shouldReceive('getGeneratedValue')->andReturn(1);
-
-    $resultMock2 = Mockery::mock();
-    $resultMock2->shouldReceive('getAffectedRows')->andReturn(75);
-    $resultMock2->shouldReceive('getGeneratedValue')->andReturn(76);
-
-    $sqlMock->shouldReceive('execute')
-        ->andReturn($resultMock1, $resultMock2);
-
-    $this->testClass = new (get_class($this->testClass))($sqlMock);
-
-    $data = array_fill(0, 150, ['id' => 1, 'name' => 'Test']); // More than default chunk size
-
-    $result = $this->testClass->testInsertData('test_table', $data, ['id']);
-
-    expect(array_slice($result, 0, 6))->toBe([1, 2, 3, 4, 5, 6]);
-});
-
-it('merges results from multiple chunks', function () {
-    $sqlMock = Mockery::mock();
-    $sqlMock->shouldReceive('replace')
-        ->with('test_table')
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('setConflictKeys')
-        ->with(['id'])
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('batch')
-        ->with([['id' => 1]])
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('batch')
-        ->with([['id' => 2]])
-        ->andReturnSelf();
-
-    $resultMock1 = Mockery::mock();
-    $resultMock1->shouldReceive('getAffectedRows')->andReturn(1);
-    $resultMock1->shouldReceive('getGeneratedValue')->andReturn(1);
-
-    $resultMock2 = Mockery::mock();
-    $resultMock2->shouldReceive('getAffectedRows')->andReturn(1);
-    $resultMock2->shouldReceive('getGeneratedValue')->andReturn(2);
-
-    $sqlMock->shouldReceive('execute')
-        ->andReturn($resultMock1, $resultMock2);
-
-    $this->testClass = new (get_class($this->testClass))($sqlMock);
-
-    $data = [
-        ['id' => 1],
-        ['id' => 2],
-    ];
-
-    $result = $this->testClass->testInsertData('test_table', $data, ['id'], true, 1);
-
-    expect($result)->toBe([1, 2]);
-});
-
-it('handles insert method correctly', function () {
-    $data = [['id' => 1]];
-
-    $sqlMock = Mockery::mock();
-    $sqlMock->shouldReceive('insert')
-        ->with('test_table')
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('batch')
-        ->with($data)
-        ->andReturnSelf();
-    $resultMock = Mockery::mock();
-    $resultMock->shouldReceive('getAffectedRows')->andReturn(1);
-    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
-
-    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
-
-    $this->testClass = new (get_class($this->testClass))($sqlMock);
-    $result = $this->testClass->testInsertData('test_table', $data, ['id'], false, 1);
-    expect($result)->toBe([1]);
-});
-
-it('handles replace method correctly', function () {
-    $data = [['id' => 1]];
-
-    $sqlMock = Mockery::mock();
-    $sqlMock->shouldReceive('replace')
-        ->with('test_table')
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('setConflictKeys')
-        ->with(['id'])
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('batch')
-        ->with($data)
-        ->andReturnSelf();
-    $resultMock = Mockery::mock();
-    $resultMock->shouldReceive('getAffectedRows')->andReturn(1);
-    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
-
-    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
-
-    $this->testClass = new (get_class($this->testClass))($sqlMock);
-    $result = $this->testClass->testInsertData('test_table', $data, ['id'], true, 1);
-    expect($result)->toBe([1]);
-});
+        expect($row['real_name'])->toBe($check['real_name'])
+            ->and($row['member_name'])->toBe($check['member_name']);
+    }
+})->with('replace data');

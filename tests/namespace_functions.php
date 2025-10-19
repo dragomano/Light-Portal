@@ -18,6 +18,7 @@ use LightPortal\UI\Partials\SelectRenderer;
 use LightPortal\UI\View;
 use LightPortal\Utils\CacheInterface;
 use LightPortal\Utils\RequestInterface;
+use LightPortal\Utils\ResponseInterface;
 use Mockery;
 use Tests\AppMockRegistry;
 
@@ -68,7 +69,6 @@ if (! function_exists('LightPortal\\app')) {
                 }
             };
         } elseif (str_contains($service, 'PortalSqlInterface')) {
-            $mock = Mockery::mock(PortalSqlInterface::class);
             $selectMock = Mockery::mock(PortalSelect::class);
             $selectMock->shouldReceive('from')->andReturnSelf();
             $selectMock->shouldReceive('columns')->andReturnSelf();
@@ -76,14 +76,18 @@ if (! function_exists('LightPortal\\app')) {
             $selectMock->shouldReceive('where')->andReturnSelf();
             $selectMock->shouldReceive('order')->andReturnSelf();
             $selectMock->shouldIgnoreMissing();
-            $mock->shouldReceive('select')->andReturn($selectMock);
+
             $resultMock = Mockery::mock(ResultInterface::class);
             $resultMock->shouldReceive('current')->andReturn(['id_member' => []]);
             $resultMock->shouldReceive('valid')->andReturn(false);
             $resultMock->shouldReceive('next')->andReturn(null);
             $resultMock->shouldReceive('key')->andReturn(0);
             $resultMock->shouldReceive('rewind')->andReturn(null);
+
+            $mock = Mockery::mock(PortalSqlInterface::class);
+            $mock->shouldReceive('select')->andReturn($selectMock);
             $mock->shouldReceive('execute')->andReturn($resultMock);
+
             return $mock;
         } elseif (str_contains($service, 'EventManagerFactory')) {
             if (isset($GLOBALS['event_manager_mock'])) {
@@ -171,6 +175,15 @@ if (! function_exists('LightPortal\\app')) {
             $mock->shouldReceive('url')->andReturn('');
             $mock->shouldReceive('input')->andReturn('');
             $mock->shouldIgnoreMissing();
+
+            return $mock;
+        } elseif (str_contains($service, 'ResponseInterface')) {
+            if ($mock = AppMockRegistry::get(ResponseInterface::class)) {
+                return $mock;
+            }
+
+            $mock = Mockery::mock(ResponseInterface::class);
+            $mock->shouldReceive('exit')->andReturn(null);
 
             return $mock;
         }

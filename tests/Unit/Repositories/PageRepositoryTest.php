@@ -28,6 +28,8 @@ arch()
     ->toImplement(DataManagerInterface::class);
 
 beforeEach(function() {
+    fake()->seed(12345); // Fix random data for consistent test results
+
     Lang::$txt['guest_title'] = 'Guest';
     Lang::$txt['today'] = 'Today at';
     Lang::$txt['yesterday'] = 'Yesterday at';
@@ -37,8 +39,6 @@ beforeEach(function() {
     Lang::$txt['lp_time_label_ago'] = ' ago';
 
     User::$me->language = 'english';
-
-    Utils::$smcFunc['strtolower'] = fn($string) => strtolower($string);
 
     $adapter = TestAdapterFactory::create();
     $adapter->query(Table::PAGES->value)->execute();
@@ -197,8 +197,13 @@ it('can get data by id', function () {
     ")->execute();
 
     $this->sql->getAdapter()->query(/** @lang text */ "
-        INSERT INTO lp_comments (parent_id, page_id, author_id, message, created_at)
-        VALUES (0, 1, 1, 'Test comment', " . time() . ")
+        INSERT INTO lp_comments (parent_id, page_id, author_id, created_at, updated_at)
+        VALUES (0, 1, 1, ?, 0)
+    ", [time()]);
+
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_translations (item_id, type, lang, content)
+        VALUES (1, 'comment', 'english', 'Test comment')
     ")->execute();
 
     $result = $this->repository->getData(1);
@@ -261,6 +266,7 @@ it('returns empty array when item is empty', function () {
         ->and($result)->toBeEmpty();
 });
 
+fake()->seed(12345); // Ensure consistent fake data across runs
 $commentCounter = 1001;
 $mockData = [];
 for ($i = 0; $i < 36; $i++) {
@@ -413,7 +419,7 @@ dataset('prev and next links', function() use ($mockData, $cmpMap, $allowedCateg
                 };
             };
 
-            $listAsc = !str_contains($sorting, ';desc');
+            $listAsc = ! str_contains($sorting, ';desc');
             $nextPrimaryOp = $listAsc ? '>' : '<';
             $nextSecondaryOp = $listAsc ? '>' : '<';
             $prevPrimaryOp = $listAsc ? '<' : '>';
@@ -442,14 +448,32 @@ dataset('prev and next links', function() use ($mockData, $cmpMap, $allowedCateg
                 };
             };
 
-            $nextWhere = function($item) use ($currentPrimary, $currentSecondary, $nextPrimaryOp, $nextSecondaryOp, $getItemPrimary, $sorting, $compare) {
+            $nextWhere = function ($item) use (
+                $currentPrimary,
+                $currentSecondary,
+                $nextPrimaryOp,
+                $nextSecondaryOp,
+                $getItemPrimary,
+                $sorting,
+                $compare
+            ) {
                 $itemPrimary = $getItemPrimary($item, $sorting);
+
                 return $compare($itemPrimary, $currentPrimary, $nextPrimaryOp) ||
                     ($itemPrimary == $currentPrimary && $compare($item['created_at'], $currentSecondary, $nextSecondaryOp));
             };
 
-            $prevWhere = function($item) use ($currentPrimary, $currentSecondary, $prevPrimaryOp, $prevSecondaryOp, $getItemPrimary, $sorting, $compare) {
+            $prevWhere = function ($item) use (
+                $currentPrimary,
+                $currentSecondary,
+                $prevPrimaryOp,
+                $prevSecondaryOp,
+                $getItemPrimary,
+                $sorting,
+                $compare
+            ) {
                 $itemPrimary = $getItemPrimary($item, $sorting);
+
                 return $compare($itemPrimary, $currentPrimary, $prevPrimaryOp) ||
                     ($itemPrimary == $currentPrimary && $compare($item['created_at'], $currentSecondary, $prevSecondaryOp));
             };
@@ -458,12 +482,12 @@ dataset('prev and next links', function() use ($mockData, $cmpMap, $allowedCateg
 
             $nextCandidates = array_filter($candidates, $nextWhere);
             usort($nextCandidates, $cmp);
-            $next = !empty($nextCandidates) ? $nextCandidates[0] : null;
+            $next = ! empty($nextCandidates) ? $nextCandidates[0] : null;
 
             $prevCmp = function($a, $b) use ($cmp) { return $cmp($b, $a); };
             $prevCandidates = array_filter($candidates, $prevWhere);
             usort($prevCandidates, $prevCmp);
-            $prev = !empty($prevCandidates) ? $prevCandidates[0] : null;
+            $prev = ! empty($prevCandidates) ? $prevCandidates[0] : null;
 
             if (empty($next) && empty($prev)) {
                 continue;
@@ -547,19 +571,19 @@ it('can get prev next links', function (
     }
 
     $pageStmt = $adapter->createStatement(/** @lang text */ "
-    INSERT INTO lp_pages (
-        page_id, category_id, author_id, slug, type, entry_type, permissions, status,
-        num_views, num_comments, created_at, updated_at, deleted_at, last_comment_id
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?)
-");
+        INSERT INTO lp_pages (
+            page_id, category_id, author_id, slug, type, entry_type, permissions, status,
+            num_views, num_comments, created_at, updated_at, deleted_at, last_comment_id
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?)
+    ");
 
     $transStmt = $adapter->createStatement(/** @lang text */ "
-    INSERT INTO lp_translations (item_id, type, lang, title, content, description) VALUES (?, ?, ?, ?, ?, ?)
-");
+        INSERT INTO lp_translations (item_id, type, lang, title, content, description) VALUES (?, ?, ?, ?, ?, ?)
+    ");
 
     $commentStmt = $adapter->createStatement(/** @lang text */ "
-    INSERT INTO lp_comments (id, parent_id, page_id, author_id, message, created_at) VALUES (?, ?, ?, ?, ?, ?)
-");
+        INSERT INTO lp_comments (id, parent_id, page_id, author_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)
+    ");
 
     foreach ($pagesForSorting as $page) {
         $pageStmt->execute([
@@ -575,7 +599,7 @@ it('can get prev next links', function (
             $page['num_comments'],
             $page['created_at'],
             $page['updated_at'],
-            $page['last_comment_id']
+            $page['last_comment_id'],
         ]);
 
         $transStmt->execute([
@@ -584,7 +608,7 @@ it('can get prev next links', function (
             'english',
             $page['title'],
             'Test content',
-            'Test description'
+            'Test description',
         ]);
 
         if ($page['last_comment_id'] > 0) {
@@ -593,16 +617,22 @@ it('can get prev next links', function (
                 0,
                 $page['id'],
                 $page['author_id'],
-                'Test comment',
-                $page['sort_value']
+                $page['sort_value'],
+                0,
             ]);
+
+            $this->sql->getAdapter()->query(/** @lang text */ "
+                INSERT INTO lp_translations (item_id, type, lang, content)
+                VALUES (?, 'comment', 'english', 'Test comment')
+            ", [$page['last_comment_id']]);
         }
     }
 
     User::$me->is_admin = true;
     User::$me->language = 'english';
+
     Config::$language = 'english';
-    Utils::$smcFunc['strtolower'] = 'strtolower';
+
     Utils::$context['lp_current_sorting'] = $sorting;
 
     $links = $this->repository->getPrevNextLinks($pageData, $withinCategory);

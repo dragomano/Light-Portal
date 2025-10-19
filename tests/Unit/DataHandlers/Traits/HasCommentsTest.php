@@ -2,534 +2,366 @@
 
 declare(strict_types=1);
 
+use LightPortal\Database\PortalSql;
+use LightPortal\Database\PortalSqlInterface;
 use LightPortal\DataHandlers\Traits\HasInserts;
 use LightPortal\DataHandlers\Traits\HasComments;
+use LightPortal\DataHandlers\Traits\HasTranslations;
+use Tests\Table;
+use Tests\TestAdapterFactory;
 
 beforeEach(function () {
-    $this->testClass = new class {
+    $adapter = TestAdapterFactory::create();
+    $adapter->query(Table::COMMENTS->value)->execute();
+    $adapter->query(Table::TRANSLATIONS->value)->execute();
+
+    $this->sql = new PortalSql($adapter);
+
+    $this->testClass = new class($this->sql) {
         use HasComments;
         use HasInserts;
+        use HasTranslations;
 
-        public mixed $sql;
+        public PortalSqlInterface $sql;
 
-        public function __construct($sql = null)
+        public function __construct(PortalSqlInterface $sql)
         {
             $this->sql = $sql;
         }
 
-        public function callReplaceComments(array $comments, array $results): array
+        public function callReplaceComments(array $comments = [], bool $replace = true): array
         {
-            return $this->replaceComments($comments, $results);
+            return $this->replaceComments($comments, $replace);
+        }
+
+        public function callReplaceCommentTranslations(array $translations = []): array
+        {
+            return $this->replaceCommentTranslations($translations);
         }
     };
 });
 
-it('returns empty array when comments array is empty', function () {
-    $this->testClass = new (get_class($this->testClass))();
-
-    $result = $this->testClass->callReplaceComments([], [1, 2, 3]);
+it('handles empty comments array', function () {
+    $result = $this->testClass->callReplaceComments();
 
     expect($result)->toBe([]);
 });
 
-it('returns empty array when results array is empty', function () {
-    $this->testClass = new (get_class($this->testClass))();
-
-    $comments = [
+dataset('add comments', [
+    'one record' => [
         [
-            'id' => 1,
-            'page_id' => 1,
-            'author_id' => 1,
-            'message' => 'Test comment',
-            'created_at' => time(),
-        ]
-    ];
-
-    $result = $this->testClass->callReplaceComments($comments, []);
-
-    expect($result)->toBe([]);
-});
-
-it('returns empty array when both arrays are empty', function () {
-    $this->testClass = new (get_class($this->testClass))();
-
-    $result = $this->testClass->callReplaceComments([], []);
-
-    expect($result)->toBe([]);
-});
-
-it('processes single comment correctly', function () {
-    $sqlMock = Mockery::mock();
-    $sqlMock->shouldReceive('replace')
-        ->with('lp_comments')
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('setConflictKeys')
-        ->with(['id', 'page_id'])
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('batch')
-        ->andReturnSelf()
-        ->byDefault();
-
-    $resultMock = Mockery::mock();
-    $resultMock->shouldReceive('getAffectedRows')->andReturn(1);
-    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
-
-    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
-
-    $this->testClass = new (get_class($this->testClass))($sqlMock);
-
-    $comments = [
-        [
-            'id' => 1,
-            'page_id' => 1,
-            'author_id' => 1,
-            'message' => 'Test comment',
-            'created_at' => time(),
-        ]
-    ];
-
-    $results = [1];
-
-    $result = $this->testClass->callReplaceComments($comments, $results);
-
-    expect($result)->toBe([1]);
-});
-
-it('processes multiple comments correctly', function () {
-    $sqlMock = Mockery::mock();
-    $sqlMock->shouldReceive('replace')
-        ->with('lp_comments')
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('setConflictKeys')
-        ->with(['id', 'page_id'])
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('batch')
-        ->andReturnSelf()
-        ->byDefault();
-
-    $resultMock = Mockery::mock();
-    $resultMock->shouldReceive('getAffectedRows')->andReturn(3);
-    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
-
-    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
-
-    $this->testClass = new (get_class($this->testClass))($sqlMock);
-
-    $comments = [
-        [
-            'id' => 1,
-            'page_id' => 1,
-            'author_id' => 1,
-            'message' => 'First comment',
-            'created_at' => time(),
+            [
+                'id'         => 1,
+                'page_id'    => 1,
+                'author_id'  => 1,
+                'created_at' => time(),
+            ]
         ],
         [
-            'id' => 2,
-            'page_id' => 1,
-            'author_id' => 2,
-            'message' => 'Second comment',
-            'created_at' => time(),
+            [
+                'item_id' => 1,
+                'type'    => 'comment',
+                'lang'    => 'english',
+                'content' => 'Test comment',
+            ]
+        ],
+        1,
+        [
+            [
+                'id'         => 1,
+                'page_id'    => 1,
+                'author_id'  => 1,
+            ]
         ],
         [
-            'id' => 3,
-            'page_id' => 1,
-            'author_id' => 1,
-            'message' => 'Third comment',
-            'created_at' => time(),
+            [
+                'item_id' => 1,
+                'lang'    => 'english',
+                'content' => 'Test comment',
+            ]
         ]
-    ];
-
-    $results = [1, 2, 3];
-
-    $result = $this->testClass->callReplaceComments($comments, $results);
-
-    expect($result)->toBe([1, 2, 3]);
-});
-
-it('handles comments with parent_id correctly', function () {
-    $sqlMock = Mockery::mock();
-    $sqlMock->shouldReceive('replace')
-        ->with('lp_comments')
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('setConflictKeys')
-        ->with(['id', 'page_id'])
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('batch')
-        ->andReturnSelf()
-        ->byDefault();
-
-    $resultMock = Mockery::mock();
-    $resultMock->shouldReceive('getAffectedRows')->andReturn(2);
-    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
-
-    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
-
-    $this->testClass = new (get_class($this->testClass))($sqlMock);
-
-    $comments = [
+    ],
+    'multiple records' => [
         [
-            'id' => 1,
-            'parent_id' => 0,
-            'page_id' => 1,
-            'author_id' => 1,
-            'message' => 'Parent comment',
-            'created_at' => time(),
+            [
+                'id'         => 1,
+                'page_id'    => 1,
+                'author_id'  => 1,
+                'created_at' => time(),
+            ],
+            [
+                'id'         => 2,
+                'page_id'    => 1,
+                'author_id'  => 2,
+                'created_at' => time(),
+            ]
         ],
         [
-            'id' => 2,
-            'parent_id' => 1,
-            'page_id' => 1,
-            'author_id' => 2,
-            'message' => 'Reply comment',
-            'created_at' => time(),
-        ]
-    ];
-
-    $results = [1, 2];
-
-    $result = $this->testClass->callReplaceComments($comments, $results);
-
-    expect($result)->toBe([1, 2]);
-});
-
-it('handles comments with different page_id correctly', function () {
-    $sqlMock = Mockery::mock();
-    $sqlMock->shouldReceive('replace')
-        ->with('lp_comments')
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('setConflictKeys')
-        ->with(['id', 'page_id'])
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('batch')
-        ->andReturnSelf()
-        ->byDefault();
-
-    $resultMock = Mockery::mock();
-    $resultMock->shouldReceive('getAffectedRows')->andReturn(2);
-    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
-
-    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
-
-    $this->testClass = new (get_class($this->testClass))($sqlMock);
-
-    $comments = [
+            [
+                'item_id' => 1,
+                'type'    => 'comment',
+                'lang'    => 'english',
+                'content' => 'First comment',
+            ],
+            [
+                'item_id' => 2,
+                'type'    => 'comment',
+                'lang'    => 'english',
+                'content' => 'Second comment',
+            ]
+        ],
+        2,
         [
-            'id' => 1,
-            'page_id' => 1,
-            'author_id' => 1,
-            'message' => 'Comment for page 1',
-            'created_at' => time(),
+            [
+                'id'         => 1,
+                'page_id'    => 1,
+                'author_id'  => 1,
+            ],
+            [
+                'id'         => 2,
+                'page_id'    => 1,
+                'author_id'  => 2,
+            ]
         ],
         [
-            'id' => 2,
-            'page_id' => 2,
-            'author_id' => 2,
-            'message' => 'Comment for page 2',
-            'created_at' => time(),
+            [
+                'item_id' => 1,
+                'lang'    => 'english',
+                'content' => 'First comment',
+            ],
+            [
+                'item_id' => 2,
+                'lang'    => 'english',
+                'content' => 'Second comment',
+            ]
         ]
-    ];
+    ]
+]);
 
-    $results = [1, 2];
+it('adds comment records', function (
+    array $comments,
+    array $translations,
+    int $expectedCount,
+    array $commentChecks,
+    array $translationChecks
+) {
+    // Ensure table is empty before adding
+    $rows = $this->sql->getAdapter()
+        ->query(/** @lang text */ 'SELECT COUNT(*) as count FROM lp_comments')->execute();
+    $count = $rows->current()['count'];
+    expect($count)->toBe(0);
 
-    $result = $this->testClass->callReplaceComments($comments, $results);
+    $result = $this->testClass->callReplaceComments($comments);
+    $translationResult = $this->testClass->callReplaceCommentTranslations($translations);
 
-    expect($result)->toBe([1, 2]);
-});
+    expect($result)->toBeArray()->toHaveCount($expectedCount)
+        ->and($translationResult)->toBeArray()->toHaveCount($expectedCount);
 
-it('handles comments with special characters in message', function () {
-    $sqlMock = Mockery::mock();
-    $sqlMock->shouldReceive('replace')
-        ->with('lp_comments')
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('setConflictKeys')
-        ->with(['id', 'page_id'])
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('batch')
-        ->andReturnSelf()
-        ->byDefault();
+    foreach ($commentChecks as $check) {
+        $rows = $this->sql->getAdapter()
+            ->query(
+                /** @lang text */ 'SELECT * FROM lp_comments WHERE id = ?',
+                [$check['id']]
+            );
+        $data = $rows->current();
 
-    $resultMock = Mockery::mock();
-    $resultMock->shouldReceive('getAffectedRows')->andReturn(1);
-    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
+        expect($data['id'])->toBe($check['id'])
+            ->and($data['page_id'])->toBe($check['page_id'])
+            ->and($data['author_id'])->toBe($check['author_id']);
+    }
 
-    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
+    foreach ($translationChecks as $check) {
+        $rows = $this->sql->getAdapter()
+            ->query(
+                /** @lang text */ 'SELECT * FROM lp_translations WHERE item_id = ? AND type = ? AND lang = ?',
+                [$check['item_id'], 'comment', $check['lang']]
+            );
+        $data = $rows->current();
 
-    $this->testClass = new (get_class($this->testClass))($sqlMock);
+        expect($data['content'])->toBe($check['content']);
+    }
+})->with('add comments');
 
-    $comments = [
+dataset('replace comments', [
+    'one record' => [
         [
-            'id' => 1,
-            'page_id' => 1,
-            'author_id' => 1,
-            'message' => 'Comment with special chars: éñünicôdé, 中文, русский, 🚀',
-            'created_at' => time(),
-        ]
-    ];
-
-    $results = [1];
-
-    $result = $this->testClass->callReplaceComments($comments, $results);
-
-    expect($result)->toBe([1]);
-});
-
-it('handles comments with minimum required fields', function () {
-    $sqlMock = Mockery::mock();
-    $sqlMock->shouldReceive('replace')
-        ->with('lp_comments')
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('setConflictKeys')
-        ->with(['id', 'page_id'])
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('batch')
-        ->andReturnSelf()
-        ->byDefault();
-
-    $resultMock = Mockery::mock();
-    $resultMock->shouldReceive('getAffectedRows')->andReturn(1);
-    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
-
-    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
-
-    $this->testClass = new (get_class($this->testClass))($sqlMock);
-
-    $comments = [
+            [
+                'id'         => 1,
+                'page_id'    => 1,
+                'author_id'  => 1,
+                'created_at' => time(),
+            ]
+        ],
         [
-            'id' => 1,
-            'page_id' => 1,
-            'author_id' => 1,
-            'message' => 'Minimal comment',
-            'created_at' => time(),
-        ]
-    ];
-
-    $results = [1];
-
-    $result = $this->testClass->callReplaceComments($comments, $results);
-
-    expect($result)->toBe([1]);
-});
-
-it('handles comments with zero values correctly', function () {
-    $sqlMock = Mockery::mock();
-    $sqlMock->shouldReceive('replace')
-        ->with('lp_comments')
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('setConflictKeys')
-        ->with(['id', 'page_id'])
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('batch')
-        ->andReturnSelf()
-        ->byDefault();
-
-    $resultMock = Mockery::mock();
-    $resultMock->shouldReceive('getAffectedRows')->andReturn(1);
-    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
-
-    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
-
-    $this->testClass = new (get_class($this->testClass))($sqlMock);
-
-    $comments = [
+            [
+                'item_id' => 1,
+                'type'    => 'comment',
+                'lang'    => 'english',
+                'content' => 'Updated comment',
+            ]
+        ],
+        1,
         [
-            'id' => 0,
-            'parent_id' => 0,
-            'page_id' => 0,
-            'author_id' => 0,
-            'message' => 'Comment with zeros',
-            'created_at' => 0,
-        ]
-    ];
-
-    $results = [1];
-
-    $result = $this->testClass->callReplaceComments($comments, $results);
-
-    expect($result)->toBe([1]);
-});
-
-it('uses correct table name lp_comments', function () {
-    $sqlMock = Mockery::mock();
-    $sqlMock->shouldReceive('replace')
-        ->with('lp_comments')
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('setConflictKeys')
-        ->with(['id', 'page_id'])
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('batch')
-        ->andReturnSelf()
-        ->byDefault();
-
-    $resultMock = Mockery::mock();
-    $resultMock->shouldReceive('getAffectedRows')->andReturn(1);
-    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
-
-    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
-
-    $this->testClass = new (get_class($this->testClass))($sqlMock);
-
-    $comments = [
+            [
+                'id'         => 1,
+                'page_id'    => 1,
+                'author_id'  => 1,
+                'content'    => 'Updated comment',
+            ]
+        ],
         [
-            'id' => 1,
-            'page_id' => 1,
-            'author_id' => 1,
-            'message' => 'Test comment',
-            'created_at' => time(),
-        ]
-    ];
-
-    $results = [1];
-
-    $result = $this->testClass->callReplaceComments($comments, $results);
-
-    expect($result)->toBe([1]);
-});
-
-it('uses correct column types for comments', function () {
-    $sqlMock = Mockery::mock();
-    $sqlMock->shouldReceive('replace')
-        ->with('lp_comments')
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('setConflictKeys')
-        ->with(['id', 'page_id'])
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('batch')
-        ->andReturnSelf()
-        ->byDefault();
-
-    $resultMock = Mockery::mock();
-    $resultMock->shouldReceive('getAffectedRows')->andReturn(1);
-    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
-
-    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
-
-    $this->testClass = new (get_class($this->testClass))($sqlMock);
-
-    $comments = [
+            [
+                'id'         => 1,
+                'page_id'    => 1,
+                'author_id'  => 1,
+                'created_at' => time(),
+            ]
+        ],
         [
-            'id' => 1,
-            'page_id' => 1,
-            'author_id' => 1,
-            'message' => 'Test comment',
-            'created_at' => time(),
+            [
+                'item_id' => 1,
+                'type'    => 'comment',
+                'lang'    => 'english',
+                'content' => 'Original comment',
+            ]
         ]
-    ];
-
-    $results = [1];
-
-    $result = $this->testClass->callReplaceComments($comments, $results);
-
-    expect($result)->toBe([1]);
-});
-
-it('uses correct keys for comments', function () {
-    $sqlMock = Mockery::mock();
-    $sqlMock->shouldReceive('replace')
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('setConflictKeys')
-        ->with(['id', 'page_id'])
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('batch')
-        ->andReturnSelf()
-        ->byDefault();
-
-    $resultMock = Mockery::mock();
-    $resultMock->shouldReceive('getAffectedRows')->andReturn(1);
-    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
-
-    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
-
-    $this->testClass = new (get_class($this->testClass))($sqlMock);
-
-    $comments = [
+    ],
+    'multiple records' => [
         [
-            'id' => 1,
-            'page_id' => 1,
-            'author_id' => 1,
-            'message' => 'Test comment',
-            'created_at' => time(),
-        ]
-    ];
-
-    $results = [1];
-
-    $result = $this->testClass->callReplaceComments($comments, $results);
-
-    expect($result)->toBe([1]);
-});
-
-it('handles empty message correctly', function () {
-    $sqlMock = Mockery::mock();
-    $sqlMock->shouldReceive('replace')
-        ->with('lp_comments')
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('setConflictKeys')
-        ->with(['id', 'page_id'])
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('batch')
-        ->andReturnSelf()
-        ->byDefault();
-
-    $resultMock = Mockery::mock();
-    $resultMock->shouldReceive('getAffectedRows')->andReturn(1);
-    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
-
-    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
-
-    $this->testClass = new (get_class($this->testClass))($sqlMock);
-
-    $comments = [
+            [
+                'id'         => 1,
+                'page_id'    => 1,
+                'author_id'  => 1,
+                'created_at' => time(),
+            ],
+            [
+                'id'         => 2,
+                'page_id'    => 1,
+                'author_id'  => 2,
+                'created_at' => time(),
+            ]
+        ],
         [
-            'id' => 1,
-            'page_id' => 1,
-            'author_id' => 1,
-            'message' => '',
-            'created_at' => time(),
-        ]
-    ];
-
-    $results = [1];
-
-    $result = $this->testClass->callReplaceComments($comments, $results);
-
-    expect($result)->toBe([1]);
-});
-
-it('handles very long message correctly', function () {
-    $sqlMock = Mockery::mock();
-    $sqlMock->shouldReceive('replace')
-        ->with('lp_comments')
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('setConflictKeys')
-        ->with(['id', 'page_id'])
-        ->andReturnSelf();
-    $sqlMock->shouldReceive('batch')
-        ->andReturnSelf()
-        ->byDefault();
-
-    $resultMock = Mockery::mock();
-    $resultMock->shouldReceive('getAffectedRows')->andReturn(1);
-    $resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
-
-    $sqlMock->shouldReceive('execute')->andReturn($resultMock);
-
-    $this->testClass = new (get_class($this->testClass))($sqlMock);
-
-    $longMessage = str_repeat('This is a very long comment message. ', 100);
-
-    $comments = [
+            [
+                'item_id' => 1,
+                'type'    => 'comment',
+                'lang'    => 'english',
+                'content' => 'Updated first comment',
+            ],
+            [
+                'item_id' => 2,
+                'type'    => 'comment',
+                'lang'    => 'english',
+                'content' => 'Updated second comment',
+            ]
+        ],
+        2,
         [
-            'id' => 1,
-            'page_id' => 1,
-            'author_id' => 1,
-            'message' => $longMessage,
-            'created_at' => time(),
+            [
+                'id'         => 1,
+                'page_id'    => 1,
+                'author_id'  => 1,
+                'content'    => 'Updated first comment',
+            ],
+            [
+                'id'         => 2,
+                'page_id'    => 1,
+                'author_id'  => 2,
+                'content'    => 'Updated second comment',
+            ]
+        ],
+        [
+            [
+                'id'         => 1,
+                'page_id'    => 1,
+                'author_id'  => 1,
+                'created_at' => time(),
+            ],
+            [
+                'id'         => 2,
+                'page_id'    => 1,
+                'author_id'  => 2,
+                'created_at' => time(),
+            ]
+        ],
+        [
+            [
+                'item_id' => 1,
+                'type'    => 'comment',
+                'lang'    => 'english',
+                'content' => 'Original first comment',
+            ],
+            [
+                'item_id' => 2,
+                'type'    => 'comment',
+                'lang'    => 'english',
+                'content' => 'Original second comment',
+            ]
         ]
-    ];
+    ]
+]);
 
-    $results = [1];
+it('replaces comment records', function (
+    array $comments,
+    array $translations,
+    int $expectedCount,
+    array $checks,
+    array $initialComments,
+    array $initialTranslations
+) {
+    $this->testClass->callReplaceComments($initialComments);
+    $this->testClass->callReplaceCommentTranslations($initialTranslations);
 
-    $result = $this->testClass->callReplaceComments($comments, $results);
+    // Verify initial comments and translations are in the database
+    foreach ($initialComments as $initial) {
+        $rows = $this->sql->getAdapter()
+            ->query(
+            /** @lang text */ 'SELECT * FROM lp_comments WHERE id = ?',
+                [$initial['id']]
+            );
+        $data = $rows->current();
 
-    expect($result)->toBe([1]);
-});
+        expect($data['id'])->toBe($initial['id'])
+            ->and($data['page_id'])->toBe($initial['page_id'])
+            ->and($data['author_id'])->toBe($initial['author_id']);
+    }
+
+    foreach ($initialTranslations as $initial) {
+        $rows = $this->sql->getAdapter()
+            ->query(
+            /** @lang text */ 'SELECT * FROM lp_translations WHERE item_id = ? AND type = ? AND lang = ?',
+                [$initial['item_id'], 'comment', $initial['lang']]
+            );
+        $data = $rows->current();
+
+        expect($data['content'])->toBe($initial['content']);
+    }
+
+    $result = $this->testClass->callReplaceComments($comments);
+    $translationResult = $this->testClass->callReplaceCommentTranslations($translations);
+
+    expect($result)->toBeArray()->toHaveCount($expectedCount)
+        ->and($translationResult)->toBeArray()->toHaveCount($expectedCount);
+
+    foreach ($checks as $check) {
+        $rows = $this->sql->getAdapter()
+            ->query(
+            /** @lang text */ 'SELECT * FROM lp_comments WHERE id = ?',
+                [$check['id']]
+            );
+        $data = $rows->current();
+
+        expect($data['id'])->toBe($check['id'])
+            ->and($data['page_id'])->toBe($check['page_id'])
+            ->and($data['author_id'])->toBe($check['author_id']);
+
+        $translationRows = $this->sql->getAdapter()
+            ->query(
+            /** @lang text */ 'SELECT * FROM lp_translations WHERE item_id = ? AND type = ? AND lang = ?',
+                [$check['id'], 'comment', 'english']
+            );
+        $translationData = $translationRows->current();
+
+        expect($translationData['content'])->toBe($check['content']);
+    }
+})->with('replace comments');

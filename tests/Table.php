@@ -12,8 +12,8 @@ enum Table: string
             icon TEXT NULL,
             type TEXT NOT NULL,
             placement TEXT NOT NULL,
-            priority INTEGER NOT NULL,
-            permissions INTEGER NOT NULL,
+            priority INTEGER NOT NULL DEFAULT 0,
+            permissions INTEGER NOT NULL DEFAULT 0,
             status INTEGER NOT NULL DEFAULT 1,
             areas TEXT NOT NULL DEFAULT \'all\',
             title_class TEXT NULL,
@@ -23,21 +23,21 @@ enum Table: string
     case CATEGORIES = /** @lang text */ '
         CREATE TABLE lp_categories (
             category_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            parent_id INTEGER NOT NULL,
+            parent_id INTEGER NOT NULL DEFAULT 0,
             slug TEXT NOT NULL UNIQUE,
             icon TEXT,
-            priority INTEGER NOT NULL,
+            priority INTEGER NOT NULL DEFAULT 0,
             status INTEGER NOT NULL DEFAULT 1
         )';
 
     case COMMENTS = /** @lang text */ '
         CREATE TABLE lp_comments (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            parent_id INTEGER NOT NULL,
-            page_id INTEGER NOT NULL,
-            author_id INTEGER NOT NULL,
-            message TEXT NOT NULL,
-            created_at INTEGER NOT NULL
+            parent_id INTEGER NOT NULL DEFAULT 0,
+            page_id INTEGER NOT NULL DEFAULT 0,
+            author_id INTEGER NOT NULL DEFAULT 0,
+            created_at INTEGER NOT NULL DEFAULT 0,
+            updated_at INTEGER NOT NULL DEFAULT 0
         )';
 
     case PAGE_TAG = /** @lang text */ '
@@ -50,19 +50,19 @@ enum Table: string
     case PAGES = /** @lang text */ '
         CREATE TABLE lp_pages (
             page_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            category_id INTEGER NOT NULL,
-            author_id INTEGER NOT NULL,
+            category_id INTEGER NOT NULL DEFAULT 0,
+            author_id INTEGER NOT NULL DEFAULT 0,
             slug TEXT NOT NULL,
             type TEXT NOT NULL DEFAULT \'bbc\',
             entry_type TEXT NOT NULL DEFAULT \'default\',
-            permissions INTEGER NOT NULL,
+            permissions INTEGER NOT NULL DEFAULT 0,
             status INTEGER NOT NULL DEFAULT 1,
-            num_views INTEGER NOT NULL,
-            num_comments INTEGER NOT NULL,
+            num_views INTEGER NOT NULL DEFAULT 0,
+            num_comments INTEGER NOT NULL DEFAULT 0,
             created_at INTEGER NOT NULL,
-            updated_at INTEGER NOT NULL,
-            deleted_at INTEGER NOT NULL,
-            last_comment_id INTEGER NOT NULL
+            updated_at INTEGER NOT NULL DEFAULT 0,
+            deleted_at INTEGER NOT NULL DEFAULT 0,
+            last_comment_id INTEGER NOT NULL DEFAULT 0
         )';
 
     case PARAMS = /** @lang text */ '
@@ -110,5 +110,19 @@ enum Table: string
             id_member INTEGER PRIMARY KEY AUTOINCREMENT,
             real_name TEXT NOT NULL,
             member_name TEXT NOT NULL
+        )';
+
+    case USER_ALERTS = /** @lang text */ '
+        CREATE TABLE user_alerts (
+            id_alert INTEGER PRIMARY KEY AUTOINCREMENT,
+            alert_time INTEGER NOT NULL DEFAULT 0,
+            id_member INTEGER NOT NULL DEFAULT 0,
+            id_member_started INTEGER NOT NULL DEFAULT 0,
+            member_name TEXT NOT NULL DEFAULT "",
+            content_type TEXT NOT NULL DEFAULT "",
+            content_id INTEGER NOT NULL DEFAULT 0,
+            content_action TEXT NOT NULL DEFAULT "",
+            is_read INTEGER NOT NULL DEFAULT 0,
+            extra TEXT NOT NULL DEFAULT ""
         )';
 }

@@ -2,135 +2,48 @@
 
 declare(strict_types=1);
 
-use LightPortal\Database\Operations\PortalInsert;
-use LightPortal\Database\Operations\PortalReplace;
-use LightPortal\Database\Operations\PortalUpdate;
 use LightPortal\Database\PortalSql;
-use Laminas\Db\Adapter\Driver\ResultInterface;
+use LightPortal\Database\PortalSqlInterface;
 use LightPortal\DataHandlers\Traits\HasInserts;
 use LightPortal\DataHandlers\Traits\HasTranslations;
+use Tests\Table;
+use Tests\TestAdapterFactory;
 
 beforeEach(function () {
-    $this->sql = Mockery::mock(PortalSql::class)->shouldIgnoreMissing();
+    $adapter = TestAdapterFactory::create();
+    $adapter->query(Table::TRANSLATIONS->value)->execute();
 
-    $this->portalReplaceMock = Mockery::mock(PortalReplace::class)->shouldIgnoreMissing();
-    $this->portalReplaceMock->shouldReceive('setConflictKeys')->andReturnSelf();
-    $this->portalReplaceMock->shouldReceive('batch')->andReturnSelf();
+    $this->sql = new PortalSql($adapter);
 
-    $this->portalInsertMock = Mockery::mock(PortalInsert::class)->shouldIgnoreMissing();
-    $this->portalInsertMock->shouldReceive('setConflictKeys')->andReturnSelf();
-    $this->portalInsertMock->shouldReceive('batch')->andReturnSelf();
-
-    $this->resultMock = Mockery::mock(ResultInterface::class);
-
-    $this->updateMock = new PortalUpdate(null, '');
-
-    $this->sql->shouldReceive('replace')->andReturn($this->portalReplaceMock);
-    $this->sql->shouldReceive('insert')->andReturn($this->portalInsertMock);
-    $this->sql->shouldReceive('update')->andReturn($this->updateMock);
-    $this->sql->shouldReceive('query')->andReturn(true);
-
-    $this->testClass = new class ($this->sql) {
+    $this->testClass = new class($this->sql) {
         use HasTranslations;
         use HasInserts;
 
-        public string $entity = 'test_entity';
+        public PortalSqlInterface $sql;
 
-        public mixed $sql;
-
-        public function __construct($sql = null)
+        public function __construct(PortalSqlInterface $sql)
         {
             $this->sql = $sql;
         }
 
-        public function callReplaceTranslations(array $translations, array $results, bool $replace = true): array
+        public function callReplaceTranslations(array $translations, bool $replace = true): array
         {
-            return $this->replaceTranslations($translations, $results, $replace);
+            return $this->replaceTranslations($translations, $replace);
         }
     };
 });
 
-it('processes translations with replace method', function () {
-    $this->resultMock->shouldReceive('getAffectedRows')->andReturn(1);
-    $this->resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
-    $this->sql->shouldReceive('execute')->andReturn($this->resultMock);
-
-    $translations = [
-        'english' => [
-            'item_id'     => '1',
-            'type'        => 'test_type',
-            'lang'        => 'english',
-            'title'       => 'Test Title',
-            'content'     => 'Test Content',
-            'description' => 'Test Description',
-        ]
-    ];
-
-    $results = [1];
-
-    $result = $this->testClass->callReplaceTranslations($translations, $results);
-
-    expect($result)->toBe($results);
-});
-
-it('processes translations with insert method', function () {
-    $this->resultMock->shouldReceive('getAffectedRows')->andReturn(1);
-    $this->resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
-    $this->sql->shouldReceive('execute')->andReturn($this->resultMock);
-
-
-    $translations = [
-        [
-            'item_id'     => '1',
-            'type'        => 'test_type',
-            'lang'        => 'english',
-            'title'       => 'Test Title',
-            'content'     => 'Test Content',
-            'description' => 'Test Description',
-        ]
-    ];
-
-    $results = [1];
-
-    $result = $this->testClass->callReplaceTranslations($translations, $results, false);
-
-    expect($result)->toBe($results);
-});
-
-it('handles database insert errors (insertData returns false)', function () {
-    $this->resultMock->shouldReceive('getAffectedRows')->andReturn(0);
-    $this->sql->shouldReceive('execute')->andReturn($this->resultMock);
-
-    $this->sql->shouldNotReceive('execute');
-
-    $translations = [
-        [
-            'item_id'     => '1',
-            'type'        => 'test_type',
-            'lang'        => 'english',
-            'title'       => 'Test Title',
-            'content'     => 'Test Content',
-            'description' => 'Test Description',
-        ]
-    ];
-
-    $results = [1];
-
-    $result = $this->testClass->callReplaceTranslations($translations, $results);
+it('handles empty translations array', function () {
+    $result = $this->testClass->callReplaceTranslations([]);
 
     expect($result)->toBe([]);
 });
 
 it('handles NULL values in translation fields', function () {
-    $this->resultMock->shouldReceive('getAffectedRows')->andReturn(1);
-    $this->resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
-    $this->sql->shouldReceive('execute')->andReturn($this->resultMock);
-
-
     $translations = [
         [
             'item_id'     => '1',
-            'type'        => 'test_type',
+            'type'        => 'test_entity',
             'lang'        => 'english',
             'title'       => null,
             'content'     => null,
@@ -138,86 +51,24 @@ it('handles NULL values in translation fields', function () {
         ]
     ];
 
-    $results = [1];
+    $result = $this->testClass->callReplaceTranslations($translations);
 
-    $result = $this->testClass->callReplaceTranslations($translations, $results);
+    expect($result)->toBe([1]);
 
-    expect($result)->toBe($results);
+    $rows = $this->sql->getAdapter()
+        ->query(/** @lang text */ 'SELECT * FROM lp_translations WHERE item_id = ? AND lang = ?', ['1', 'english']);
+    $data = $rows->current();
+
+    expect($data['title'])->toBeNull()
+        ->and($data['content'])->toBeNull()
+        ->and($data['description'])->toBeNull();
 });
 
-it('handles numeric array keys', function () {
-    $this->resultMock->shouldReceive('getAffectedRows')->andReturn(2);
-    $this->resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
-    $this->sql->shouldReceive('execute')->andReturn($this->resultMock);
-
-
-
-    $translations = [
-        0 => [
-            'item_id'     => '1',
-            'type'        => 'test_type',
-            'lang'        => 'english',
-            'title'       => 'Title 1',
-            'content'     => 'Content 1',
-            'description' => 'Description 1',
-        ],
-        1 => [
-            'item_id'     => '2',
-            'type'        => 'test_type',
-            'lang'        => 'russian',
-            'title'       => 'Заголовок 2',
-            'content'     => 'Содержимое 2',
-            'description' => 'Описание 2',
-        ]
-    ];
-
-    $results = [1, 2];
-
-    $result = $this->testClass->callReplaceTranslations($translations, $results);
-
-    expect($result)->toBe($results);
-});
-
-it('handles very long field values', function () {
-    $this->resultMock->shouldReceive('getAffectedRows')->andReturn(1);
-    $this->resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
-    $this->sql->shouldReceive('execute')->andReturn($this->resultMock);
-
-
-
-    $longTitle = str_repeat('A very long title ', 100); // Over 255 chars
-    $longDescription = str_repeat('A very long description ', 100); // Over 255 chars
-    $longContent = str_repeat('A very long content ', 1000); // Very long content
-
+it('handles empty string values in translation fields', function () {
     $translations = [
         [
             'item_id'     => '1',
-            'type'        => 'test_type',
-            'lang'        => 'english',
-            'title'       => $longTitle,
-            'content'     => $longContent,
-            'description' => $longDescription,
-        ]
-    ];
-
-    $results = [1];
-
-    $result = $this->testClass->callReplaceTranslations($translations, $results);
-
-    expect($result)->toBe($results);
-});
-
-
-it('handles database exceptions during SQL operations', function () {
-    $this->resultMock->shouldReceive('getAffectedRows')->andReturn(1);
-    $this->resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
-    $this->sql->shouldReceive('execute')->with(Mockery::type('LightPortal\Database\Operations\PortalReplace'))->andReturn($this->resultMock);
-    $this->sql->shouldReceive('execute')->with(Mockery::type('LightPortal\Database\Operations\PortalUpdate'))->andThrow(new Exception('Database connection error'));
-
-    $translations = [
-        [
-            'item_id'     => '1',
-            'type'        => 'test_type',
+            'type'        => 'test_entity',
             'lang'        => 'english',
             'title'       => '',
             'content'     => '',
@@ -225,142 +76,232 @@ it('handles database exceptions during SQL operations', function () {
         ]
     ];
 
-    $results = [1, 2];
+    $result = $this->testClass->callReplaceTranslations($translations);
 
-    // Should throw exception
-    expect(function () use ($translations, $results) {
-        $this->testClass->callReplaceTranslations($translations, $results);
-    })->toThrow(Exception::class, 'Database connection error');
+    expect($result)->toBe([1]);
+
+    $rows = $this->sql->getAdapter()
+        ->query(/** @lang text */ 'SELECT * FROM lp_translations WHERE item_id = ? AND lang = ?', ['1', 'english']);
+    $data = $rows->current();
+
+    expect($data['title'])->toBeNull()
+        ->and($data['content'])->toBeNull()
+        ->and($data['description'])->toBeNull();
 });
 
-it('updates NULL values in database', function () {
-    $this->resultMock->shouldReceive('getAffectedRows')->andReturn(2);
-    $this->resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
-    $this->sql->shouldReceive('execute')->andReturn($this->resultMock);
-
-
-
-    $translations = [
+dataset('add translations', [
+    'one record' => [
         [
-            'item_id'     => '1',
-            'type'        => 'test_type',
-            'lang'        => 'english',
-            'title'       => '',
-            'content'     => '',
-            'description' => '',
+            [
+                'item_id'     => '1',
+                'type'        => 'test_entity',
+                'lang'        => 'english',
+                'title'       => 'New Title',
+                'content'     => 'New Content',
+                'description' => 'New Description',
+            ]
+        ],
+        1,
+        [
+            [
+                'item_id'     => '1',
+                'lang'        => 'english',
+                'title'       => 'New Title',
+                'content'     => 'New Content',
+                'description' => 'New Description',
+            ]
         ]
-    ];
-
-    $results = [1, 2];
-
-    $result = $this->testClass->callReplaceTranslations($translations, $results);
-
-    expect($result)->toBe($results);
-});
-
-it('handles complex translation data', function () {
-    $this->resultMock->shouldReceive('getAffectedRows')->andReturn(2);
-    $this->resultMock->shouldReceive('getGeneratedValue')->andReturn(5);
-    $this->sql->shouldReceive('execute')->andReturn($this->resultMock);
-
-
-
-    $translations = [
+    ],
+    'multiple records' => [
         [
-            'item_id'     => '1',
-            'type'        => 'block',
-            'lang'        => 'english',
-            'title'       => 'Block Title',
-            'content'     => '<p>Block content</p>',
-            'description' => 'Block description',
+            [
+                'item_id'     => '1',
+                'type'        => 'test_entity',
+                'lang'        => 'english',
+                'title'       => 'New Title 1',
+                'content'     => 'New Content 1',
+                'description' => 'New Description 1',
+            ],
+            [
+                'item_id'     => '2',
+                'type'        => 'test_entity',
+                'lang'        => 'russian',
+                'title'       => 'Новый Заголовок 2',
+                'content'     => 'Новое Содержимое 2',
+                'description' => 'Новое Описание 2',
+            ]
+        ],
+        2,
+        [
+            [
+                'item_id'     => '1',
+                'lang'        => 'english',
+                'title'       => 'New Title 1',
+                'content'     => 'New Content 1',
+                'description' => 'New Description 1',
+            ],
+            [
+                'item_id'     => '2',
+                'lang'        => 'russian',
+                'title'       => 'Новый Заголовок 2',
+                'content'     => 'Новое Содержимое 2',
+                'description' => 'Новое Описание 2',
+            ]
+        ]
+    ]
+]);
+
+it('adds translation records', function (array $translations, int $expectedCount, array $checks) {
+    // Ensure table is empty before adding
+    $rows = $this->sql->getAdapter()
+        ->query(/** @lang text */ 'SELECT COUNT(*) as count FROM lp_translations')->execute();
+    $count = $rows->current()['count'];
+    expect($count)->toBe(0);
+
+    $result = $this->testClass->callReplaceTranslations($translations);
+
+    expect($result)->toBeArray()->toHaveCount($expectedCount);
+
+    foreach ($checks as $check) {
+        $rows = $this->sql->getAdapter()
+            ->query(
+                /** @lang text */ 'SELECT * FROM lp_translations WHERE item_id = ? AND lang = ?',
+                [$check['item_id'], $check['lang']]
+            );
+        $data = $rows->current();
+
+        expect($data['title'])->toBe($check['title'])
+            ->and($data['content'])->toBe($check['content'])
+            ->and($data['description'])->toBe($check['description']);
+    }
+})->with('add translations');
+
+dataset('replace translations', [
+    'one record' => [
+        [
+            [
+                'item_id'     => '1',
+                'type'        => 'test_entity',
+                'lang'        => 'english',
+                'title'       => 'Updated Title',
+                'content'     => 'Updated Content',
+                'description' => 'Updated Description',
+            ]
+        ],
+        1,
+        [
+            [
+                'item_id'     => '1',
+                'lang'        => 'english',
+                'title'       => 'Updated Title',
+                'content'     => 'Updated Content',
+                'description' => 'Updated Description',
+            ]
         ],
         [
-            'item_id'     => '1',
-            'type'        => 'block',
-            'lang'        => 'russian',
-            'title'       => 'Заголовок блока',
-            'content'     => '<p>Содержимое блока</p>',
-            'description' => 'Описание блока',
+            [
+                'item_id'     => '1',
+                'type'        => 'test_entity',
+                'lang'        => 'english',
+                'title'       => 'Original Title',
+                'content'     => 'Original Content',
+                'description' => 'Original Description',
+            ]
         ]
-    ];
-
-    $results = [5, 6];
-
-    $result = $this->testClass->callReplaceTranslations($translations, $results);
-
-    expect($result)->toBe($results);
-});
-
-it('uses correct column definitions for replace method', function () {
-    $this->resultMock->shouldReceive('getAffectedRows')->andReturn(1);
-    $this->resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
-    $this->sql->shouldReceive('execute')->andReturn($this->resultMock);
-
-    $this->portalReplaceMock->shouldReceive('batch')->andReturnSelf();
-
-
-
-    $translations = [
+    ],
+    'multiple records' => [
         [
-            'item_id'     => '1',
-            'type'        => 'test_type',
-            'lang'        => 'english',
-            'title'       => 'Title',
-            'content'     => 'Content',
-            'description' => 'Description',
-        ]
-    ];
-
-    $results = [1];
-
-    $result = $this->testClass->callReplaceTranslations($translations, $results);
-
-    expect($result)->toBe($results);
-});
-
-it('uses correct column definitions for insert method', function () {
-    $this->resultMock->shouldReceive('getAffectedRows')->andReturn(1);
-    $this->resultMock->shouldReceive('getGeneratedValue')->andReturn(1);
-    $this->sql->shouldReceive('execute')->andReturn($this->resultMock);
-
-    $this->portalInsertMock->shouldReceive('batch')->andReturnSelf();
-
-
-
-    $translations = [
+            [
+                'item_id'     => '1',
+                'type'        => 'test_entity',
+                'lang'        => 'english',
+                'title'       => 'Updated Title 1',
+                'content'     => 'Updated Content 1',
+                'description' => 'Updated Description 1',
+            ],
+            [
+                'item_id'     => '2',
+                'type'        => 'test_entity',
+                'lang'        => 'russian',
+                'title'       => 'Обновленный Заголовок 2',
+                'content'     => 'Обновленное Содержимое 2',
+                'description' => 'Обновленное Описание 2',
+            ]
+        ],
+        2,
         [
-            'item_id'     => '1',
-            'type'        => 'test_type',
-            'lang'        => 'english',
-            'title'       => 'Title',
-            'content'     => 'Content',
-            'description' => 'Description',
+            [
+                'item_id'     => '1',
+                'lang'        => 'english',
+                'title'       => 'Updated Title 1',
+                'content'     => 'Updated Content 1',
+                'description' => 'Updated Description 1',
+            ],
+            [
+                'item_id'     => '2',
+                'lang'        => 'russian',
+                'title'       => 'Обновленный Заголовок 2',
+                'content'     => 'Обновленное Содержимое 2',
+                'description' => 'Обновленное Описание 2',
+            ]
+        ],
+        [
+            [
+                'item_id'     => '1',
+                'type'        => 'test_entity',
+                'lang'        => 'english',
+                'title'       => 'Original Title 1',
+                'content'     => 'Original Content 1',
+                'description' => 'Original Description 1',
+            ],
+            [
+                'item_id'     => '2',
+                'type'        => 'test_entity',
+                'lang'        => 'russian',
+                'title'       => 'Оригинальный Заголовок 2',
+                'content'     => 'Оригинальное Содержимое 2',
+                'description' => 'Оригинальное Описание 2',
+            ]
         ]
-    ];
+    ]
+]);
 
-    $results = [1];
+it('replaces translation records', function (
+    array $translations,
+    int $expectedCount,
+    array $checks,
+    array $initialTranslations
+) {
+    $this->testClass->callReplaceTranslations($initialTranslations);
 
-    $result = $this->testClass->callReplaceTranslations($translations, $results, false);
+    // Verify initial translations are in the database
+    foreach ($initialTranslations as $initial) {
+        $rows = $this->sql->getAdapter()
+            ->query(
+                /** @lang text */ 'SELECT * FROM lp_translations WHERE item_id = ? AND lang = ?',
+                [$initial['item_id'], $initial['lang']]
+            );
+        $data = $rows->current();
 
-    expect($result)->toBe($results);
-});
+        expect($data['title'])->toBe($initial['title'])
+            ->and($data['content'])->toBe($initial['content'])
+            ->and($data['description'])->toBe($initial['description']);
+    }
 
-it('handles empty arrays early return', function () {
-    $result = $this->testClass->callReplaceTranslations([], [1]);
+    $result = $this->testClass->callReplaceTranslations($translations);
 
-    expect($result)->toBe([]);
+    expect($result)->toBeArray()->toHaveCount($expectedCount);
 
-    $translations = [
-        'english' => [
-            'item_id'     => '1',
-            'type'        => 'test_type',
-            'lang'        => 'english',
-            'title'       => 'Test Title',
-            'content'     => 'Test Content',
-            'description' => 'Test Description',
-        ]
-    ];
+    foreach ($checks as $check) {
+        $rows = $this->sql->getAdapter()
+            ->query(
+                /** @lang text */ 'SELECT * FROM lp_translations WHERE item_id = ? AND lang = ?',
+                [$check['item_id'], $check['lang']]
+            );
+        $data = $rows->current();
 
-    $result = $this->testClass->callReplaceTranslations($translations, []);
-    expect($result)->toBe([]);
-});
+        expect($data['title'])->toBe($check['title'])
+            ->and($data['content'])->toBe($check['content'])
+            ->and($data['description'])->toBe($check['description']);
+    }
+})->with('replace translations');
