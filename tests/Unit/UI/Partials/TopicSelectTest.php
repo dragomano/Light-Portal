@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Bugo\Compat\Lang;
-use Laminas\Db\Adapter\Driver\ResultInterface;
+use LightPortal\Database\PortalResultInterface;
 use LightPortal\UI\Partials\TopicSelect;
 use LightPortal\UI\Partials\SelectInterface;
 use LightPortal\UI\Partials\SelectRenderer;
@@ -177,7 +177,7 @@ it('returns empty array for null topics', function () {
 it('builds correct SQL query for topics with board permissions', function () {
 	$sqlMock = Mockery::mock(PortalSqlInterface::class);
 	$selectMock = Mockery::mock(PortalSelect::class);
-	$resultMock = Mockery::mock(ResultInterface::class);
+	$resultMock = Mockery::mock(PortalResultInterface::class);
 
 	$sqlMock->shouldReceive('select')->andReturn($selectMock);
 	$sqlMock->shouldReceive('execute')->andReturn($resultMock);
@@ -205,7 +205,7 @@ it('builds correct SQL query for topics with board permissions', function () {
 it('builds correct SQL query for topics without board permissions', function () {
 	$sqlMock = Mockery::mock(PortalSqlInterface::class);
 	$selectMock = Mockery::mock(PortalSelect::class);
-	$resultMock = Mockery::mock(ResultInterface::class);
+	$resultMock = Mockery::mock(PortalResultInterface::class);
 
 	$sqlMock->shouldReceive('select')->andReturn($selectMock);
 	$sqlMock->shouldReceive('execute')->andReturn($resultMock);
@@ -235,7 +235,7 @@ it('processes topic results with text censoring', function () {
 
 	$sqlMock = Mockery::mock(PortalSqlInterface::class);
 	$selectMock = Mockery::mock(PortalSelect::class);
-	$resultMock = Mockery::mock(ResultInterface::class);
+	$resultMock = Mockery::mock(PortalResultInterface::class);
 
 	$topics = [
 		['id_topic' => 1, 'subject' => $testSubject],

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
+use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Adapter\Driver\ConnectionInterface;
 use Laminas\Db\Adapter\Driver\DriverInterface;
 use Laminas\Db\Adapter\Driver\ResultInterface;
 use Laminas\Db\Adapter\Driver\StatementInterface;
 use Laminas\Db\Adapter\Platform\PlatformInterface;
 use Laminas\Db\Adapter\StatementContainerInterface;
-use Laminas\Db\Metadata\Source\Factory as MetadataFactory;
 use Laminas\Db\Sql\PreparableSqlInterface;
 use LightPortal\Database\Operations\PortalDelete;
 use LightPortal\Database\Operations\PortalInsert;
@@ -16,21 +16,22 @@ use LightPortal\Database\Operations\PortalReplace;
 use LightPortal\Database\Operations\PortalSelect;
 use LightPortal\Database\Operations\PortalUpdate;
 use LightPortal\Database\PortalAdapterInterface;
+use LightPortal\Database\PortalResult;
 use LightPortal\Database\PortalSql;
 use LightPortal\Database\PortalTransactionInterface;
 
 describe('PortalSql', function () {
     beforeEach(function () {
         $platform = mock(PlatformInterface::class);
-        $platform->shouldReceive('getName')->andReturn('MySQL');
+        $platform->shouldReceive('getName')->andReturn('SQLite');
 
         $adapter = mock(PortalAdapterInterface::class);
         $adapter->shouldReceive('getPrefix')->andReturn('smf_');
         $adapter->shouldReceive('getPlatform')->andReturn($platform);
-        $adapter->shouldReceive('getTitle')->andReturn('MySQL');
+        $adapter->shouldReceive('getTitle')->andReturn('SQLite');
 
         $driver = mock(DriverInterface::class);
-        $driver->shouldReceive('getDatabasePlatformName')->andReturn('MySQL');
+        $driver->shouldReceive('getDatabasePlatformName')->andReturn('SQLite');
         $adapter->shouldReceive('getDriver')->andReturn($driver);
 
         $this->sql = new PortalSql($adapter);
@@ -120,22 +121,52 @@ describe('PortalSql', function () {
     });
 
     it('checks if table exists', function () {
-        $metadataFactory = mock('alias:' . MetadataFactory::class);
-        $metadataFactory->shouldReceive('createSourceFromAdapter')
-            ->andReturn(mock([
-                'getTableNames' => ['smf_lp_blocks', 'smf_lp_pages']
-            ]));
+        $pdo = mock(PDO::class);
+        $stmt = mock(PDOStatement::class);
+        $stmt->shouldReceive('execute')->andReturn(true);
+        $stmt->shouldReceive('fetchColumn')->andReturn(1, 0);
+
+        $pdo->shouldReceive('prepare')->andReturn($stmt);
+
+        $connection = mock(ConnectionInterface::class);
+        $connection->shouldReceive('getResource')->andReturn($pdo);
+
+        $this->sql->getAdapter()->getDriver()
+            ->shouldReceive('getConnection')
+            ->andReturn($connection);
 
         expect($this->sql->tableExists('lp_blocks'))->toBeTrue()
             ->and($this->sql->tableExists('lp_nonexistent'))->toBeFalse();
     });
 
     it('checks if column exists', function () {
-        $metadataFactory = mock('alias:' . MetadataFactory::class);
-        $metadataFactory->shouldReceive('createSourceFromAdapter')
-            ->andReturn(mock([
-                'getColumnNames' => ['block_id', 'title', 'content']
-            ]));
+        $result = mock(ResultInterface::class);
+        $result->shouldReceive('execute')->andReturn($result);
+
+        $this->sql->getAdapter()
+            ->shouldReceive('query')
+            ->with("PRAGMA table_info(smf_lp_blocks)", Adapter::QUERY_MODE_EXECUTE)
+            ->andReturn($result);
+
+        // Mock the iterator behavior
+        $iterator = new ArrayIterator([
+            ['name' => 'block_id'],
+            ['name' => 'title'],
+            ['name' => 'content']
+        ]);
+
+        $result->shouldReceive('current')->andReturnUsing(function () use ($iterator) {
+            return $iterator->current();
+        });
+        $result->shouldReceive('valid')->andReturnUsing(function () use ($iterator) {
+            return $iterator->valid();
+        });
+        $result->shouldReceive('next')->andReturnUsing(function () use ($iterator) {
+            $iterator->next();
+        });
+        $result->shouldReceive('rewind')->andReturnUsing(function () use ($iterator) {
+            $iterator->rewind();
+        });
 
         expect($this->sql->columnExists('lp_blocks', 'title'))->toBeTrue()
             ->and($this->sql->columnExists('lp_blocks', 'nonexistent'))->toBeFalse();
@@ -162,7 +193,7 @@ describe('PortalSql', function () {
             ->andReturn($statementContainer);
 
 
-        expect($this->sql->execute($sqlObject))->toBe($result);
+        expect($this->sql->execute($sqlObject))->toEqual(new PortalResult($result, $this->sql->getAdapter()));
     });
 
     it('executes batch insert queries', function () {
@@ -174,7 +205,7 @@ describe('PortalSql', function () {
             ->with($this->sql->getAdapter())
             ->andReturn($result);
 
-        expect($this->sql->execute($insert))->toBe($result);
+        expect($this->sql->execute($insert))->toEqual(new PortalResult($result, $this->sql->getAdapter()));
     });
 
     it('executes batch replace queries', function () {
@@ -186,7 +217,7 @@ describe('PortalSql', function () {
             ->with($this->sql->getAdapter())
             ->andReturn($result);
 
-        expect($this->sql->execute($replace))->toBe($result);
+        expect($this->sql->execute($replace))->toEqual(new PortalResult($result, $this->sql->getAdapter()));
     });
 
     it('executes single replace queries', function () {
@@ -198,6 +229,6 @@ describe('PortalSql', function () {
             ->with($this->sql->getAdapter())
             ->andReturn($result);
 
-        expect($this->sql->execute($replace))->toBe($result);
+        expect($this->sql->execute($replace))->toEqual(new PortalResult($result, $this->sql->getAdapter()));
     });
 });

@@ -2,12 +2,15 @@
 
 use Laminas\Db\Adapter\AdapterInterface;
 use Laminas\Db\Adapter\Driver\ResultInterface;
+use Laminas\Db\Adapter\Platform\PlatformInterface;
 use LightPortal\Database\Operations\PortalInsert;
 use Tests\ReflectionAccessor;
 
 describe('PortalInsert', function () {
     beforeEach(function () {
+        $this->platform = mock(PlatformInterface::class);
         $this->adapter = mock(AdapterInterface::class);
+        $this->adapter->shouldReceive('getPlatform')->andReturn($this->platform);
         $this->result = mock(ResultInterface::class);
 
         $this->insert = new PortalInsert();
@@ -67,6 +70,8 @@ describe('PortalInsert', function () {
             ];
             $this->insert->into('test_table');
 
+            $this->platform->shouldReceive('getName')->andReturn('MySQL');
+
             $this->adapter->shouldReceive('query')
                 ->once()
                 ->with(/** @lang text */ 'INSERT INTO test_table (id,name,email) VALUES (?,?,?),(?,?,?)', [1, 'John Doe', 'john@example.com', 2, 'Jane Doe', 'jane@example.com'])
@@ -83,6 +88,8 @@ describe('PortalInsert', function () {
                 ['id' => 2, 'name' => 'Jane Doe', 'email' => 'jane@example.com'],
             ];
             $this->insert->into('test_table');
+
+            $this->platform->shouldReceive('getName')->andReturn('PostgreSQL');
 
             $this->adapter->shouldReceive('query')
                 ->once()

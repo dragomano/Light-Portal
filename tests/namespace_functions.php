@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace LightPortal;
 
-use Laminas\Db\Adapter\Driver\ResultInterface;
 use LightPortal\Database\Operations\PortalSelect;
+use LightPortal\Database\PortalResultInterface;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Events\EventManager;
 use LightPortal\Lists\CategoryList;
@@ -77,7 +77,7 @@ if (! function_exists('LightPortal\\app')) {
             $selectMock->shouldReceive('order')->andReturnSelf();
             $selectMock->shouldIgnoreMissing();
 
-            $resultMock = Mockery::mock(ResultInterface::class);
+            $resultMock = Mockery::mock(PortalResultInterface::class);
             $resultMock->shouldReceive('current')->andReturn(['id_member' => []]);
             $resultMock->shouldReceive('valid')->andReturn(false);
             $resultMock->shouldReceive('next')->andReturn(null);

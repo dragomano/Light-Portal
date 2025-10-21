@@ -279,3 +279,40 @@ it('can update last comment id for page', function () {
     expect($page['last_comment_id'])->toBe(5)
         ->and($page['num_comments'])->toBe(1);
 });
+
+it('filters out comments without translations', function () {
+    $time = time();
+
+    User::$me->language = 'english';
+
+    Config::$language = 'english';
+
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_comments (id, parent_id, page_id, author_id, created_at, updated_at)
+        VALUES
+            (1, 0, 1, 1, ?, 0),
+            (2, 0, 1, 2, ?, 0)
+    ", [$time, $time + 60]);
+
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO members (id_member, real_name, member_name)
+        VALUES
+            (1, 'English Author', 'english_author'),
+            (2, 'Russian Author', 'russian_author')
+    ")->execute();
+
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_translations (item_id, type, lang, content)
+        VALUES
+            (1, 'comment', 'english', 'Comment in English'),
+            (2, 'comment', 'russian', 'Комментарий только на русском')
+    ")->execute();
+
+    $result = $this->repository->getByPageId(1);
+
+    expect($result)->toBeArray()
+        ->and($result)->toHaveCount(1)
+        ->and($result)->toHaveKey(1)
+        ->and($result)->not->toHaveKey(2)
+        ->and($result[1]['message'])->toBe('Comment in English');
+});

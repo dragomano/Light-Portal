@@ -7,6 +7,7 @@ use Bugo\Compat\User;
 use Laminas\Db\Adapter\Driver\ResultInterface;
 use LightPortal\Articles\PageArticle;
 use LightPortal\Database\Operations\PortalSelect;
+use LightPortal\Database\PortalResultInterface;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Events\EventManager;
 use LightPortal\Utils\CacheInterface;
@@ -147,7 +148,7 @@ it('skips rows with empty title in getData', closure: function () {
     $portalSqlMock = Mockery::mock(PortalSqlInterface::class);
     $portalSqlMock->shouldReceive('select')->andReturn($selectMock);
 
-    $resultMock = Mockery::mock(ResultInterface::class);
+    $resultMock = Mockery::mock(PortalResultInterface::class);
     $testData = [
         [
             'page_id'             => 1,
@@ -214,7 +215,7 @@ it('processes rows with non-empty title in getData', function () {
     $portalSqlMock = Mockery::mock(PortalSqlInterface::class);
     $portalSqlMock->shouldReceive('select')->andReturn($selectMock);
 
-    $resultMock = Mockery::mock(ResultInterface::class);
+    $resultMock = Mockery::mock(PortalResultInterface::class);
     $testData = [
         [
             'page_id'             => 1,
@@ -286,7 +287,7 @@ it('retrieves data with mocked Db', function () {
     $selectMock->shouldReceive('combine')->andReturnSelf();
     $selectMock->shouldReceive('getRawState')->andReturn([]);
 
-    $resultMock = Mockery::mock(ResultInterface::class);
+    $resultMock = Mockery::mock(PortalResultInterface::class);
     $testData = [
         [
             'page_id'             => 1,
@@ -358,7 +359,7 @@ it('returns total count with mocked Db', function () {
     $whereMock2->shouldReceive('in')->andReturnSelf();
 
     $selectMock->shouldReceive('where')->andReturn($whereMock1, $whereMock2);
-    $resultMock = Mockery::mock(ResultInterface::class);
+    $resultMock = Mockery::mock(PortalResultInterface::class);
     $resultMock->shouldReceive('current')->andReturn(['count' => 42]);
     $portalSqlMock->shouldReceive('execute')->andReturn($resultMock);
     $article = new PageArticle($portalSqlMock);
@@ -388,7 +389,7 @@ it('skips tags with empty title in prepareTags', function () {
     $selectMock->shouldReceive('order')->andReturnSelf();
     $selectMock->shouldReceive('addTranslationJoins')->andReturnSelf();
 
-    $resultMock = Mockery::mock(ResultInterface::class);
+    $resultMock = Mockery::mock(PortalResultInterface::class);
     $resultMock->shouldReceive('current')->andReturn([
         'page_id' => 1,
         'tag_id'  => 1,
@@ -442,7 +443,7 @@ it('prepares tags with mocked Db', function () {
     $selectMock->shouldReceive('where')->andReturnSelf();
     $selectMock->shouldReceive('order')->andReturnSelf();
 
-    $resultMock = Mockery::mock(ResultInterface::class);
+    $resultMock = Mockery::mock(PortalResultInterface::class);
     $resultMock->shouldReceive('current')->andReturn([
         'page_id' => 1,
         'tag_id'  => 1,

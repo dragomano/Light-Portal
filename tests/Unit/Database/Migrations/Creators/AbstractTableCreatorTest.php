@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Adapter\Driver\ResultInterface;
-use Laminas\Db\Metadata\Source\Factory as MetadataFactory;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\SqlInterface;
-use LightPortal\Database\Migrations\PortalTable;
 use LightPortal\Database\Migrations\Creators\AbstractTableCreator;
-use LightPortal\Database\Operations\PortalSelect;
+use LightPortal\Database\Migrations\PortalTable;
 use LightPortal\Database\Operations\PortalInsert;
+use LightPortal\Database\Operations\PortalSelect;
 use LightPortal\Database\PortalAdapterInterface;
+use LightPortal\Database\PortalResultInterface;
 use LightPortal\Database\PortalSqlInterface;
 use Tests\ReflectionAccessor;
 
@@ -43,8 +43,6 @@ describe('AbstractTableCreator', function () {
         };
 
         $this->creator = new (get_class($this->testClass))($this->sql);
-
-        $this->metadataFactory = Mockery::mock('alias:' . MetadataFactory::class);
     });
 
     afterEach(function () {
@@ -125,7 +123,7 @@ describe('AbstractTableCreator', function () {
             ->andReturnSelf();
 
         $this->sql->shouldReceive('select')->with('test_table')->andReturn($select);
-        $resultMock = Mockery::mock(ResultInterface::class);
+        $resultMock = Mockery::mock(PortalResultInterface::class);
         $resultMock->shouldReceive('current')->andReturn(['count' => $count]);
         $this->sql->shouldReceive('execute')->with($select)->andReturn($resultMock);
 

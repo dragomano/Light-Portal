@@ -10,11 +10,12 @@ use Laminas\Db\Sql\Ddl\Column\Integer;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
 use Laminas\Db\Sql\SqlInterface;
 use LightPortal\Database\Migrations\Columns\MediumText;
-use LightPortal\Database\Operations\PortalUpdate;
-use LightPortal\Database\Operations\PortalSelect;
-use LightPortal\Database\Operations\PortalInsert;
-use LightPortal\Database\PortalAdapterInterface;
 use LightPortal\Database\Migrations\Upgraders\AbstractTableUpgrader;
+use LightPortal\Database\Operations\PortalInsert;
+use LightPortal\Database\Operations\PortalSelect;
+use LightPortal\Database\Operations\PortalUpdate;
+use LightPortal\Database\PortalAdapterInterface;
+use LightPortal\Database\PortalResultInterface;
 use LightPortal\Database\PortalSql;
 use Tests\ReflectionAccessor;
 
@@ -296,7 +297,7 @@ describe('AbstractTableUpgrader', function () {
             ['page_id' => 1, 'content' => 'Test content 1', 'description' => 'Test description 1'],
         ];
 
-        $resultMock = mock(ResultInterface::class);
+        $resultMock = mock(PortalResultInterface::class);
         $resultMock->shouldReceive('rewind');
         $resultMock->shouldReceive('valid')->andReturn(true, false);
         $resultMock->shouldReceive('current')->andReturn($rows[0]);
@@ -310,7 +311,7 @@ describe('AbstractTableUpgrader', function () {
 
         $this->sql->shouldReceive('select')->with('lp_translations')->andReturn($selectMock);
 
-        $selectResultMock = mock(ResultInterface::class);
+        $selectResultMock = mock(PortalResultInterface::class);
         $selectResultMock->shouldReceive('count')->andReturn(1);
 
         $this->sql->shouldReceive('execute')->with($selectMock)->andReturn($selectResultMock);
@@ -343,7 +344,7 @@ describe('AbstractTableUpgrader', function () {
             ['page_id' => 1, 'title' => '', 'content' => 'Test content 1', 'description' => 'Test description 1'],
         ];
 
-        $resultMock = mock(ResultInterface::class);
+        $resultMock = mock(PortalResultInterface::class);
         $resultMock->shouldReceive('rewind');
         $resultMock->shouldReceive('valid')->andReturn(true, false);
         $resultMock->shouldReceive('current')->andReturn($rows[0]);
@@ -357,7 +358,7 @@ describe('AbstractTableUpgrader', function () {
 
         $this->sql->shouldReceive('select')->with('lp_translations')->andReturn($selectMock);
 
-        $selectResultMock = mock(ResultInterface::class);
+        $selectResultMock = mock(PortalResultInterface::class);
         $selectResultMock->shouldReceive('count')->andReturn(0);
 
         $this->sql->shouldReceive('execute')->with($selectMock)->andReturn($selectResultMock);

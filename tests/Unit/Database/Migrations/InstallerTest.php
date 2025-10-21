@@ -5,7 +5,6 @@ declare(strict_types=1);
 use Bugo\Compat\Cache\CacheApi;
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
-use Laminas\Db\Adapter\Driver\ResultInterface;
 use LightPortal\Database\Migrations\Installer;
 use LightPortal\Database\Operations\PortalDelete;
 use LightPortal\Database\Operations\PortalInsert;
@@ -13,6 +12,7 @@ use LightPortal\Database\Operations\PortalSelect;
 use LightPortal\Database\Operations\PortalUpdate;
 use LightPortal\Database\PortalAdapterFactory;
 use LightPortal\Database\PortalAdapterInterface;
+use LightPortal\Database\PortalResultInterface;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Utils\PostInterface;
 use Tests\ReflectionAccessor;
@@ -53,7 +53,7 @@ describe('Installer', function () {
 
         $this->portalSqlMock
             ->shouldReceive('execute')
-            ->andReturn(Mockery::mock(ResultInterface::class, ['current' => ['count' => 0]]));
+            ->andReturn(Mockery::mock(PortalResultInterface::class, ['current' => ['count' => 0]]));
 
         Mockery::spy(Config::class)->shouldReceive('updateModSettings')->andReturn(null);
         Mockery::spy(CacheApi::class)->shouldReceive('clean');
