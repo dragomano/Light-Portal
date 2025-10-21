@@ -2,7 +2,7 @@
 description: Instructions on how to add custom comments for portal pages
 ---
 
-# Add custom comment system
+# Add own comment system
 
 Suppose you're not happy with the default commenting system and you decide to integrate an outside service.
 

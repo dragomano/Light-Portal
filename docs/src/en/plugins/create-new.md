@@ -13,6 +13,7 @@ For better type safety and IDE support, you can use the `PluginType` enum instea
 
 ```php
 use LightPortal\Enums\PluginType;
+use LightPortal\Plugins\PluginAttribute;
 
 // Instead of: #[PluginAttribute(type: 'editor')]
 #[PluginAttribute(type: PluginType::EDITOR)]
@@ -95,9 +96,6 @@ File `index.php` can be copied from folders of other plugins. The file `HelloWor
 
 namespace LightPortal\Plugins\HelloWorld;
 
-use Bugo\Compat\{Config, Lang, Utils};
-use LightPortal\Enums\PluginType;
-use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Plugin;
 use LightPortal\Plugins\PluginAttribute;
 
@@ -150,13 +148,13 @@ namespace LightPortal\Plugins\TopTopics;
 
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\PluginAttribute;
-use LightPortal\Plugins\SSI;
+use LightPortal\Plugins\SsiBlock;
 
 if (! defined('LP_NAME'))
     die('No direct access...');
 
 #[PluginAttribute(icon: 'fas fa-star')]
-class TopTopics extends SSI
+class TopTopics extends SsiBlock
 {
     public function prepareContent(Event $e): void
     {
@@ -272,14 +270,12 @@ This plugin can be used in blocks or pages to display formatted dates. The `init
 
 namespace LightPortal\Plugins\CarbonDate;
 
-use LightPortal\Plugins\Plugin;
-use LightPortal\Plugins\PluginAttribute;
 use Carbon\Carbon;
+use LightPortal\Plugins\Plugin;
 
 if (! defined('LP_NAME'))
     die('No direct access...');
 
-#[PluginAttribute]
 class CarbonDate extends Plugin
 {
     public function init(): void
