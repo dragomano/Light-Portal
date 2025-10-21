@@ -24,7 +24,7 @@ class PortalUpdate extends Update
 		parent::__construct($table);
 	}
 
-	public function table($table): self
+	public function table($table): static
 	{
 		$table = $this->prefix . $table;
 

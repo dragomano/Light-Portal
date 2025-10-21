@@ -12,16 +12,15 @@
 
 namespace LightPortal\Database;
 
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Metadata\Source\Factory as MetadataFactory;
+use Laminas\Db\Sql\PreparableSqlInterface;
+use Laminas\Db\Sql\Sql;
 use LightPortal\Database\Operations\PortalDelete;
 use LightPortal\Database\Operations\PortalInsert;
 use LightPortal\Database\Operations\PortalReplace;
 use LightPortal\Database\Operations\PortalSelect;
 use LightPortal\Database\Operations\PortalUpdate;
-use Laminas\Db\Adapter\Adapter;
-use Laminas\Db\Adapter\Driver\ResultInterface;
-use Laminas\Db\Metadata\Source\Factory as MetadataFactory;
-use Laminas\Db\Sql\PreparableSqlInterface;
-use Laminas\Db\Sql\Sql;
 use PDO;
 use PDOStatement;
 use Throwable;
@@ -123,9 +122,9 @@ class PortalSql extends Sql implements PortalSqlInterface
 		return new PortalSelect($table, $this->prefix);
 	}
 
-	public function insert($table = null): PortalInsert
+	public function insert($table = null, array|string $returning = null): PortalInsert
 	{
-		return new PortalInsert($table, $this->prefix);
+		return new PortalInsert($table, $this->prefix, $returning);
 	}
 
 	public function update($table = null): PortalUpdate
@@ -138,25 +137,29 @@ class PortalSql extends Sql implements PortalSqlInterface
 		return new PortalDelete($table, $this->prefix);
 	}
 
-	public function replace($table = null): PortalReplace
+	public function replace($table = null, array|string $returning = null): PortalReplace
 	{
-		return new PortalReplace($table, $this->prefix);
+		return new PortalReplace($table, $this->prefix, $returning);
 	}
 
-	public function execute(PreparableSqlInterface $sqlObject): ResultInterface
+	public function execute(PreparableSqlInterface $sqlObject): PortalResultInterface
 	{
 		if ($sqlObject instanceof PortalReplace) {
 			if ($sqlObject->isBatch()) {
-				return $sqlObject->executeBatchReplace($this->adapter);
+				$result = $sqlObject->executeBatchReplace($this->adapter);
+			} else {
+				$result = $sqlObject->executeReplace($this->adapter);
 			}
-
-			return $sqlObject->executeReplace($this->adapter);
+		} elseif ($sqlObject instanceof PortalInsert) {
+			if ($sqlObject->isBatch()) {
+				$result = $sqlObject->executeBatch($this->adapter);
+			} else {
+				$result = $sqlObject->executeInsert($this->adapter);
+			}
+		} else {
+			$result = $this->prepareStatementForSqlObject($sqlObject)->execute();
 		}
 
-		if ($sqlObject instanceof PortalInsert && $sqlObject->isBatch()) {
-			return $sqlObject->executeBatch($this->adapter);
-		}
-
-		return $this->prepareStatementForSqlObject($sqlObject)->execute();
+		return new PortalResult($result, $this->adapter);
 	}
 }

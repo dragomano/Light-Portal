@@ -29,7 +29,7 @@ class PortalSelect extends Select
 		parent::__construct($table);
 	}
 
-	public function from($table): self
+	public function from($table): static
 	{
 		if (is_string($table)) {
 			$table = $this->prefix . $table;
@@ -48,7 +48,7 @@ class PortalSelect extends Select
 		return parent::from($table);
 	}
 
-	public function join($name, $on, $columns = self::SQL_STAR, $type = self::JOIN_INNER): self
+	public function join($name, $on, $columns = self::SQL_STAR, $type = self::JOIN_INNER): static
 	{
 		if (is_string($name)) {
 			$name = $this->prefix . $name;

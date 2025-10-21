@@ -207,7 +207,7 @@ final class CategoryRepository extends AbstractRepository implements CategoryRep
 		try {
 			$this->transaction->begin();
 
-			$insert = $this->sql->insert('lp_categories')
+			$insert = $this->sql->insert('lp_categories', 'category_id')
 				->values([
 					'slug'     => $data['slug'],
 					'icon'     => $data['icon'],
@@ -217,7 +217,7 @@ final class CategoryRepository extends AbstractRepository implements CategoryRep
 
 			$result = $this->sql->execute($insert);
 
-			$item = (int) $result->getGeneratedValue();
+			$item = (int) $result->getGeneratedValue('category_id');
 
 			if (empty($item)) {
 				$this->transaction->rollback();

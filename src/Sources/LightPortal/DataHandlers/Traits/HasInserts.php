@@ -38,23 +38,26 @@ trait HasInserts
 				? $this->sql->replace($table)->setConflictKeys($keys)->batch($chunk)
 				: $this->sql->insert($table)->batch($chunk);
 
+			$idColumn = $this->getIdColumn($table);
+			$sqlObject->setReturning($idColumn);
+
 			$result = $this->sql->execute($sqlObject);
 
-			if ($result->getAffectedRows() === 0) {
-				return [];
-			}
-
-			$generatedIds = [];
-			if ($firstId = $result->getGeneratedValue()) {
-				$affected = $result->getAffectedRows();
-				for ($j = 0; $j < $affected; $j++) {
-					$generatedIds[] = $firstId + $j;
-				}
-			}
-
-			$results[] = $generatedIds;
+			$results[] = $result->getGeneratedValues($idColumn);
 		}
 
 		return array_merge(...$results);
+	}
+
+	private function getIdColumn(string $table): string
+	{
+		return match ($table) {
+			'lp_pages' => 'page_id',
+			'lp_blocks' => 'block_id',
+			'lp_categories' => 'category_id',
+			'lp_tags', 'lp_page_tag' => 'tag_id',
+			'members' => 'id_member',
+			default => 'id',
+		};
 	}
 }

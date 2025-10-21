@@ -639,7 +639,7 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 		try {
 			$this->transaction->begin();
 
-			$insert = $this->sql->insert('lp_pages')
+			$insert = $this->sql->insert('lp_pages', 'page_id')
 				->values([
 					'category_id' => $data['category_id'],
 					'author_id'   => $data['author_id'],
@@ -653,7 +653,7 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 
 			$result = $this->sql->execute($insert);
 
-			$item = (int) $result->getGeneratedValue();
+			$item = (int) $result->getGeneratedValue('page_id');
 
 			if (empty($item)) {
 				$this->transaction->rollback();

@@ -36,7 +36,11 @@ class PortalAdapter extends Adapter implements PortalAdapterInterface
 
 	public function getVersion(): string
 	{
-		$result = $this->query('SELECT VERSION() AS version', self::QUERY_MODE_EXECUTE);
+		if ($this->getTitle() === 'SQLite') {
+			$result = $this->query('SELECT sqlite_version() AS version', self::QUERY_MODE_EXECUTE);
+		} else {
+			$result = $this->query('SELECT VERSION() AS version', self::QUERY_MODE_EXECUTE);
+		}
 
 		return $result->current()['version'];
 	}

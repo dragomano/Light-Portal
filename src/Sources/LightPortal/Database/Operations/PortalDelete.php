@@ -24,7 +24,7 @@ class PortalDelete extends Delete
 		parent::__construct($table);
 	}
 
-	public function from($table): self
+	public function from($table): static
 	{
 		$table = $this->prefix . $table;
 

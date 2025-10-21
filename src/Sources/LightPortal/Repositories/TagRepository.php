@@ -172,7 +172,7 @@ final class TagRepository extends AbstractRepository implements TagRepositoryInt
 		try {
 			$this->transaction->begin();
 
-			$insert = $this->sql->insert('lp_tags')
+			$insert = $this->sql->insert('lp_tags', 'tag_id')
 				->values([
 					'slug'   => $data['slug'],
 					'icon'   => $data['icon'],
@@ -181,7 +181,7 @@ final class TagRepository extends AbstractRepository implements TagRepositoryInt
 
 			$result = $this->sql->execute($insert);
 
-			$item = (int) $result->getGeneratedValue();
+			$item = (int) $result->getGeneratedValue('tag_id');
 
 			if (empty($item)) {
 				$this->transaction->rollback();

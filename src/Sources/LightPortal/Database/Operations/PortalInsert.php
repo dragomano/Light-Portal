@@ -14,7 +14,10 @@ namespace LightPortal\Database\Operations;
 
 use Laminas\Db\Adapter\AdapterInterface;
 use Laminas\Db\Adapter\Driver\ResultInterface;
+use Laminas\Db\ResultSet\ResultSet;
 use Laminas\Db\Sql\Insert;
+use LightPortal\Database\PortalAdapter;
+use LightPortal\Database\ResultSetWrapper;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -23,21 +26,38 @@ class PortalInsert extends Insert
 {
 	protected array $batchValues = [];
 
+	protected ?array $returning = null;
+
 	private bool $isBatchMode = false;
 
-	public function __construct($table = null, private readonly string $prefix = '')
+	public function __construct(
+		$table = null,
+		private readonly string $prefix = '',
+		array|string $returning = null
+	)
 	{
 		parent::__construct($table);
+
+		if ($returning !== null) {
+			$this->setReturning($returning);
+		}
 	}
 
-	public function into($table): self
+	public function into($table): static
 	{
 		$table = $this->prefix . $table;
 
 		return parent::into($table);
 	}
 
-	public function batch(array $values): self
+	public function setReturning(array|string $columns): static
+	{
+		$this->returning = (array) $columns;
+
+		return $this;
+	}
+
+	public function batch(array $values): static
 	{
 		$this->batchValues = $values;
 		$this->isBatchMode = true;
@@ -50,13 +70,34 @@ class PortalInsert extends Insert
 		return $this->isBatchMode;
 	}
 
+	public function executeInsert(AdapterInterface $adapter): ResultInterface
+	{
+		$columns = $this->getColumns();
+		$values  = $this->getValues();
+
+		$columnList   = implode(',', $columns);
+		$placeholders = implode(',', array_fill(0, count($values), '?'));
+
+		$sql = sprintf(
+			"INSERT INTO %s (%s) VALUES (%s)%s",
+			$this->table,
+			$columnList,
+			$placeholders,
+			$this->isMariaDb($adapter) ? '' : $this->getReturning($adapter)
+		);
+
+		$stmt = $adapter->createStatement($sql, array_values($values));
+
+		return $stmt->execute();
+	}
+
 	public function executeBatch(AdapterInterface $adapter): ResultInterface
 	{
 		if (empty($this->batchValues)) {
 			return $adapter->query('SELECT 1 WHERE 0 = 1', []);
 		}
 
-		$columns = array_keys($this->batchValues[0]);
+		$columns    = array_keys($this->batchValues[0]);
 		$columnList = implode(',', $columns);
 
 		$placeholders = $allValues = [];
@@ -66,17 +107,22 @@ class PortalInsert extends Insert
 		}
 
 		$sql = sprintf(
-			"INSERT INTO %s (%s) VALUES %s",
+			"INSERT INTO %s (%s) VALUES %s%s",
 			$this->table,
 			$columnList,
-			implode(',', $placeholders)
+			implode(',', $placeholders),
+			$this->getReturning($adapter)
 		);
 
-		$result = $adapter->query($sql, $allValues);
+		$queryResult = $adapter->query($sql, $allValues);
 
 		$this->resetBatch();
 
-		return $result;
+		if ($this->returning && $queryResult instanceof ResultSet) {
+			return new ResultSetWrapper($queryResult);
+		}
+
+		return $queryResult;
 	}
 
 	protected function resetBatch(): void
@@ -93,5 +139,21 @@ class PortalInsert extends Insert
 	protected function getColumns(): array
 	{
 		return $this->getRawState()['columns'] ?? [];
+	}
+
+	protected function getReturning(AdapterInterface $adapter): string
+	{
+		$platform = $adapter->getPlatform()->getName();
+		if (in_array($platform, ['PostgreSQL', 'SQLite'], true) || $this->isMariaDb($adapter)) {
+			return $this->returning ? ' RETURNING ' . implode(', ', $this->returning) : '';
+		}
+
+		return '';
+	}
+
+	protected function isMariaDb(AdapterInterface $adapter): bool
+	{
+		return $adapter instanceof PortalAdapter
+			&& stripos($adapter->getVersion(), 'MariaDB') !== false;
 	}
 }

@@ -283,7 +283,7 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 		try {
 			$this->transaction->begin();
 
-			$insert = $this->sql->insert('lp_blocks')
+			$insert = $this->sql->insert('lp_blocks', 'block_id')
 				->values([
 					'icon'          => $data['icon'],
 					'type'          => $data['type'],
@@ -298,7 +298,7 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 
 			$result = $this->sql->execute($insert);
 
-			$item = (int) $result->getGeneratedValue();
+			$item = (int) $result->getGeneratedValue('block_id');
 
 			if (empty($item)) {
 				$this->transaction->rollback();

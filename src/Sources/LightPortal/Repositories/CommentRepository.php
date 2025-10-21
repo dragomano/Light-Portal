@@ -125,6 +125,9 @@ final class CommentRepository extends AbstractRepository implements CommentRepos
 
 		$comments = [];
 		foreach ($result as $row) {
+			if ($row['content'] === '')
+				continue;
+
 			Lang::censorText($row['content']);
 
 			$comments[$row['id']] = [
@@ -151,7 +154,7 @@ final class CommentRepository extends AbstractRepository implements CommentRepos
 
 	public function save(array $data): int
 	{
-		$insert = $this->sql->insert('lp_comments')
+		$insert = $this->sql->insert('lp_comments', 'id')
 			->values([
 				'parent_id'  => $data['parent_id'],
 				'page_id'    => $data['page_id'],

@@ -12,13 +12,12 @@
 
 namespace LightPortal\Database;
 
+use Laminas\Db\Sql\PreparableSqlInterface;
 use LightPortal\Database\Operations\PortalDelete;
 use LightPortal\Database\Operations\PortalInsert;
 use LightPortal\Database\Operations\PortalReplace;
 use LightPortal\Database\Operations\PortalSelect;
 use LightPortal\Database\Operations\PortalUpdate;
-use Laminas\Db\Adapter\Driver\ResultInterface;
-use Laminas\Db\Sql\PreparableSqlInterface;
 
 interface PortalSqlInterface
 {
@@ -42,5 +41,5 @@ interface PortalSqlInterface
 
 	public function replace($table = null): PortalReplace;
 
-	public function execute(PreparableSqlInterface $sqlObject): ResultInterface;
+	public function execute(PreparableSqlInterface $sqlObject): PortalResultInterface;
 }

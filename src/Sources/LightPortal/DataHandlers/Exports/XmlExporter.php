@@ -87,17 +87,29 @@ abstract class XmlExporter extends AbstractExport
 							$xmlSubElement = $xmlName->appendChild($xml->createElement($rule['elementName']));
 
 							foreach ($v as $label => $text) {
-								$xmlSubElementChild = $xmlSubElement->appendChild(
-									$rule['subFields'][$label]['isAttribute']
-										? $xml->createAttribute($label)
-										: $xml->createElement($label)
-								);
+								if (isset($rule['subFields'][$label]['type']) && $rule['subFields'][$label]['type'] === 'element' && is_array($text)) {
+									$xmlNested = $xmlSubElement->appendChild($xml->createElement($label));
+									foreach ($text as $nestedKey => $nestedValue) {
+										$xmlNestedChild = $xmlNested->appendChild($xml->createElement($nestedKey));
+										$xmlNestedChild->appendChild(
+											$rule['subFields'][$label]['useCDATA']
+												? $xml->createCDATASection((string) $nestedValue)
+												: $xml->createTextNode((string) $nestedValue)
+										);
+									}
+								} else {
+									$xmlSubElementChild = $xmlSubElement->appendChild(
+										$rule['subFields'][$label]['isAttribute'] ?? false
+											? $xml->createAttribute($label)
+											: $xml->createElement($label)
+									);
 
-								$xmlSubElementChild->appendChild(
-									$rule['subFields'][$label]['useCDATA']
-										? $xml->createCDATASection((string) $text)
-										: $xml->createTextNode((string) $text)
-								);
+									$xmlSubElementChild->appendChild(
+										$rule['subFields'][$label]['useCDATA'] ?? false
+											? $xml->createCDATASection((string) $text)
+											: $xml->createTextNode((string) $text)
+									);
+								}
 							}
 						}
 					}

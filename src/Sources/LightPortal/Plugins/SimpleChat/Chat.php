@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 17.10.25
+ * @version 20.10.25
  */
 
 namespace LightPortal\Plugins\SimpleChat;
@@ -154,19 +154,18 @@ class Chat
 		$message = Utils::htmlspecialchars($data['message']);
 		$time = time();
 
-		$insert = $this->sql->insert('lp_simple_chat_messages')->values([
-			'block_id'   => $data['block_id'],
-			'user_id'    => User::$me->id,
-			'message'    => $message,
-			'created_at' => $time,
-		]);
+		$insert = $this->sql->insert('lp_simple_chat_messages', 'id')
+			->values([
+				'block_id'   => $data['block_id'],
+				'user_id'    => User::$me->id,
+				'message'    => $message,
+				'created_at' => $time,
+			]);
 
 		$result = $this->sql->execute($insert);
 
-		$id = $result->getGeneratedValue();
-
 		return [
-			'id'         => $id,
+			'id'         => $result->getGeneratedValue(),
 			'message'    => BBCodeParser::load()->parse($message),
 			'created_at' => Time::stringFromUnix($time),
 			'author'     => [

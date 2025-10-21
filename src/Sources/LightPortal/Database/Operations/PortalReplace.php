@@ -14,6 +14,8 @@ namespace LightPortal\Database\Operations;
 
 use Laminas\Db\Adapter\AdapterInterface;
 use Laminas\Db\Adapter\Driver\ResultInterface;
+use Laminas\Db\ResultSet\ResultSet;
+use LightPortal\Database\ResultSetWrapper;
 use RuntimeException;
 
 if (! defined('SMF'))
@@ -41,13 +43,46 @@ class PortalReplace extends PortalInsert
 		};
 	}
 
+	public function executeBatchReplace(AdapterInterface $adapter): ResultInterface
+	{
+		if (empty($this->batchValues)) {
+			return $adapter->query('SELECT 1 WHERE 0 = 1', []);
+		}
+
+		$platform = $adapter->getPlatform()->getName();
+
+		return match ($platform) {
+			'MySQL', 'SQLite' => $this->executeBatchReplaceInto($adapter),
+			'PostgreSQL' => $this->executeBatchUpsert($adapter),
+			default => throw new RuntimeException("Batch REPLACE operation not supported for platform: $platform"),
+		};
+	}
+
 	protected function getQueryData(): array
 	{
 		$columns = $this->getColumns();
 		$values  = $this->getValues();
-		$placeholders = '(' . implode(',', array_fill(0, count($columns), '?')) . ')';
+		$placeholders = $this->buildPlaceholders(count($columns));
 
 		return [$columns, $values, $placeholders];
+	}
+
+	protected function getBatchQueryData(): array
+	{
+		$columns = array_keys($this->batchValues[0]);
+		$placeholders = $allValues = [];
+
+		foreach ($this->batchValues as $row) {
+			$placeholders[] = $this->buildPlaceholders(count($columns));
+			$allValues = array_merge($allValues, array_values($row));
+		}
+
+		return [$columns, $placeholders, $allValues];
+	}
+
+	protected function buildPlaceholders(int $count): string
+	{
+		return '(' . implode(',', array_fill(0, $count, '?')) . ')';
 	}
 
 	protected function buildColumnList(AdapterInterface $adapter, array $columns): string
@@ -55,6 +90,21 @@ class PortalReplace extends PortalInsert
 		$quotedColumns = array_map([$adapter->getPlatform(), 'quoteIdentifier'], $columns);
 
 		return implode(',', $quotedColumns);
+	}
+
+	protected function buildUpdateClause(AdapterInterface $adapter, array $columns): string
+	{
+		return implode(', ', array_map(
+			fn($col) => sprintf('%1$s = EXCLUDED.%1$s', $adapter->getPlatform()->quoteIdentifier($col)),
+			$columns
+		));
+	}
+
+	protected function buildConflictClause(AdapterInterface $adapter, array $defaultColumns): string
+	{
+		$conflictColumns = $this->conflictKeys ?: $defaultColumns;
+
+		return implode(',', array_map([$adapter->getPlatform(), 'quoteIdentifier'], $conflictColumns));
 	}
 
 	private function executeReplaceInto(AdapterInterface $adapter): ResultInterface
@@ -79,103 +129,81 @@ class PortalReplace extends PortalInsert
 		[$columns, $values, $placeholders] = $this->getQueryData();
 		$columnList = $this->buildColumnList($adapter, $columns);
 
-		$updateClause = implode(', ', array_map(
-			fn($col) => sprintf('%1$s = EXCLUDED.%1$s', $adapter->getPlatform()->quoteIdentifier($col)),
-			$columns
-		));
-
-		$conflictColumns = $this->conflictKeys ?: [$columns[0]];
-		$conflictList = implode(',', array_map([$adapter->getPlatform(), 'quoteIdentifier'], $conflictColumns));
+		$updateClause = $this->buildUpdateClause($adapter, $columns);
+		$conflictList = $this->buildConflictClause($adapter, [$columns[0]]);
 
 		$table = $adapter->getPlatform()->quoteIdentifier($this->table);
 
 		$sql = sprintf(
-			/** @lang text */ "INSERT INTO %s (%s) VALUES %s ON CONFLICT (%s) DO UPDATE SET %s",
+		/** @lang text */ "INSERT INTO %s (%s) VALUES %s ON CONFLICT (%s) DO UPDATE SET %s%s",
 			$table,
 			$columnList,
 			$placeholders,
 			$conflictList,
-			$updateClause
+			$updateClause,
+			$this->getReturning($adapter)
 		);
 
-		return $adapter->query($sql, array_values($values));
-	}
+		$result = $adapter->query($sql, array_values($values));
 
-	public function executeBatchReplace(AdapterInterface $adapter): ResultInterface
-	{
-		if (empty($this->batchValues)) {
-			return $adapter->query('SELECT 1 WHERE 0 = 1', []);
+		if ($this->returning && $result instanceof ResultSet) {
+			return new ResultSetWrapper($result);
 		}
-
-		$platform = $adapter->getPlatform()->getName();
-
-		return match ($platform) {
-			'MySQL', 'SQLite' => $this->executeBatchReplaceInto($adapter),
-			'PostgreSQL' => $this->executeBatchUpsert($adapter),
-			default => throw new RuntimeException("Batch REPLACE operation not supported for platform: $platform"),
-		};
-	}
-
-	private function executeBatchReplaceInto(AdapterInterface $adapter): ResultInterface
-	{
-		$columns = array_keys($this->batchValues[0]);
-		$columnList = $this->buildColumnList($adapter, $columns);
-
-		$placeholders = $allValues = [];
-		foreach ($this->batchValues as $row) {
-			$placeholders[] = '(' . implode(',', array_fill(0, count($columns), '?')) . ')';
-			$allValues = array_merge($allValues, array_values($row));
-		}
-
-		$table = $adapter->getPlatform()->quoteIdentifier($this->table);
-
-		$sql = sprintf(
-			"REPLACE INTO %s (%s) VALUES %s",
-			$table,
-			$columnList,
-			implode(',', $placeholders)
-		);
-
-		$result = $adapter->query($sql, $allValues);
-
-		$this->resetBatch();
 
 		return $result;
 	}
 
-	private function executeBatchUpsert(AdapterInterface $adapter): ResultInterface
+	private function executeBatchReplaceInto(AdapterInterface $adapter): ResultInterface
 	{
-		$columns = array_keys($this->batchValues[0]);
+		[$columns, $placeholders, $allValues] = $this->getBatchQueryData();
 		$columnList = $this->buildColumnList($adapter, $columns);
-
-		$placeholders = $allValues = [];
-		foreach ($this->batchValues as $row) {
-			$placeholders[] = '(' . implode(',', array_fill(0, count($columns), '?')) . ')';
-			$allValues = array_merge($allValues, array_values($row));
-		}
-
-		$updateClause = implode(', ', array_map(
-			fn($col) => sprintf('%1$s = EXCLUDED.%1$s', $adapter->getPlatform()->quoteIdentifier($col)),
-			$columns
-		));
-
-		$conflictColumns = $this->conflictKeys ?: [$columns[0]];
-		$conflictList = implode(',', array_map([$adapter->getPlatform(), 'quoteIdentifier'], $conflictColumns));
 
 		$table = $adapter->getPlatform()->quoteIdentifier($this->table);
 
 		$sql = sprintf(
-			/** @lang text */ "INSERT INTO %s (%s) VALUES %s ON CONFLICT (%s) DO UPDATE SET %s",
+			"REPLACE INTO %s (%s) VALUES %s%s",
+			$table,
+			$columnList,
+			implode(',', $placeholders),
+			$this->getReturning($adapter)
+		);
+
+		$queryResult = $adapter->query($sql, $allValues);
+
+		if ($this->returning && $queryResult instanceof ResultSet) {
+			return new ResultSetWrapper($queryResult);
+		}
+
+		return $queryResult;
+	}
+
+	private function executeBatchUpsert(AdapterInterface $adapter): ResultInterface
+	{
+		[$columns, $placeholders, $allValues] = $this->getBatchQueryData();
+		$columnList = $this->buildColumnList($adapter, $columns);
+
+		$updateClause = $this->buildUpdateClause($adapter, $columns);
+		$conflictList = $this->buildConflictClause($adapter, [$columns[0]]);
+
+		$table = $adapter->getPlatform()->quoteIdentifier($this->table);
+
+		$sql = sprintf(
+		/** @lang text */ "INSERT INTO %s (%s) VALUES %s ON CONFLICT (%s) DO UPDATE SET %s%s",
 			$table,
 			$columnList,
 			implode(',', $placeholders),
 			$conflictList,
-			$updateClause
+			$updateClause,
+			$this->getReturning($adapter)
 		);
 
 		$result = $adapter->query($sql, $allValues);
 
 		$this->resetBatch();
+
+		if ($this->returning && $result instanceof ResultSet) {
+			return new ResultSetWrapper($result);
+		}
 
 		return $result;
 	}
