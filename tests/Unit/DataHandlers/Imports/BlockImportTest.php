@@ -10,8 +10,8 @@ use LightPortal\Enums\Status;
 use LightPortal\Enums\TitleClass;
 use LightPortal\Utils\ErrorHandlerInterface;
 use LightPortal\Utils\FileInterface;
+use Tests\PortalTable;
 use Tests\ReflectionAccessor;
-use Tests\Table;
 use Tests\TestAdapterFactory;
 
 beforeEach(function () {
@@ -19,9 +19,9 @@ beforeEach(function () {
     $this->errorHandlerMock = Mockery::mock(ErrorHandlerInterface::class)->shouldIgnoreMissing();
 
     $adapter = TestAdapterFactory::create();
-    $adapter->query(Table::BLOCKS->value)->execute();
-    $adapter->query(Table::TRANSLATIONS->value)->execute();
-    $adapter->query(Table::PARAMS->value)->execute();
+    $adapter->query(PortalTable::BLOCKS->value)->execute();
+    $adapter->query(PortalTable::TRANSLATIONS->value)->execute();
+    $adapter->query(PortalTable::PARAMS->value)->execute();
 
     $this->sql = new PortalSql($adapter);
 });

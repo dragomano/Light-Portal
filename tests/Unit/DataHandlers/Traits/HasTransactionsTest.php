@@ -11,12 +11,12 @@ use LightPortal\Utils\ErrorHandler;
 use LightPortal\Utils\ErrorHandlerInterface;
 use Mockery\LegacyMockInterface;
 use Mockery\MockInterface;
-use Tests\Table;
+use Tests\PortalTable;
 use Tests\TestAdapterFactory;
 
 beforeEach(function () {
     $adapter = TestAdapterFactory::create();
-    $adapter->query(Table::TAGS->value)->execute();
+    $adapter->query(PortalTable::TAGS->value)->execute();
 
     $this->sql = new PortalSql($adapter);
     $this->errorHandler = new ErrorHandler();

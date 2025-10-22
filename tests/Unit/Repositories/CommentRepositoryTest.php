@@ -9,6 +9,7 @@ use LightPortal\Database\PortalSql;
 use LightPortal\Repositories\AbstractRepository;
 use LightPortal\Repositories\CommentRepository;
 use LightPortal\Repositories\CommentRepositoryInterface;
+use Tests\PortalTable;
 use Tests\Table;
 use Tests\TestAdapterFactory;
 
@@ -21,10 +22,10 @@ beforeEach(function() {
     User::$me->language = 'english';
 
     $adapter = TestAdapterFactory::create();
-    $adapter->query(Table::COMMENTS->value)->execute();
-    $adapter->query(Table::PAGES->value)->execute();
-    $adapter->query(Table::PARAMS->value)->execute();
-    $adapter->query(Table::TRANSLATIONS->value)->execute();
+    $adapter->query(PortalTable::COMMENTS->value)->execute();
+    $adapter->query(PortalTable::PAGES->value)->execute();
+    $adapter->query(PortalTable::PARAMS->value)->execute();
+    $adapter->query(PortalTable::TRANSLATIONS->value)->execute();
     $adapter->query(Table::MEMBERS->value)->execute();
     $adapter->query(Table::USER_ALERTS->value)->execute();
 

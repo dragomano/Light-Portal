@@ -16,6 +16,7 @@ use LightPortal\Repositories\DataManagerInterface;
 use LightPortal\Repositories\PageRepository;
 use LightPortal\Repositories\PageRepositoryInterface;
 use LightPortal\Utils\Notifier;
+use Tests\PortalTable;
 use Tests\Table;
 use Tests\TestAdapterFactory;
 use Tests\Unit\Repositories\PageRepositoryTestProvider;
@@ -39,14 +40,14 @@ beforeEach(function() {
     User::$me->groups = [0];
 
     $adapter = TestAdapterFactory::create();
-    $adapter->query(Table::PAGES->value)->execute();
-    $adapter->query(Table::COMMENTS->value)->execute();
-    $adapter->query(Table::PARAMS->value)->execute();
-    $adapter->query(Table::TRANSLATIONS->value)->execute();
-    $adapter->query(Table::CATEGORIES->value)->execute();
+    $adapter->query(PortalTable::CATEGORIES->value)->execute();
+    $adapter->query(PortalTable::COMMENTS->value)->execute();
+    $adapter->query(PortalTable::PAGE_TAG->value)->execute();
+    $adapter->query(PortalTable::PAGES->value)->execute();
+    $adapter->query(PortalTable::PARAMS->value)->execute();
+    $adapter->query(PortalTable::TAGS->value)->execute();
+    $adapter->query(PortalTable::TRANSLATIONS->value)->execute();
     $adapter->query(Table::MEMBERS->value)->execute();
-    $adapter->query(Table::TAGS->value)->execute();
-    $adapter->query(Table::PAGE_TAG->value)->execute();
 
     // Enable SQLite function for GREATEST
     $pdo = $adapter->getDriver()->getConnection()->getResource();

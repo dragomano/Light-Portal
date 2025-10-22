@@ -6,12 +6,12 @@ use LightPortal\Database\PortalSql;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\DataHandlers\Traits\HasInserts;
 use LightPortal\DataHandlers\Traits\HasParams;
-use Tests\Table;
+use Tests\PortalTable;
 use Tests\TestAdapterFactory;
 
 beforeEach(function () {
     $adapter = TestAdapterFactory::create();
-    $adapter->query(Table::PARAMS->value)->execute();
+    $adapter->query(PortalTable::PARAMS->value)->execute();
 
     $this->sql = new PortalSql($adapter);
 

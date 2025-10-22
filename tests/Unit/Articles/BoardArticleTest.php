@@ -22,101 +22,13 @@ beforeEach(function() {
     Utils::$context['description_allowed_tags'] = [];
 
     $adapter = TestAdapterFactory::create();
+    $adapter->query(Table::ATTACHMENTS->value)->execute();
+    $adapter->query(Table::BOARD_PERMISSIONS_VIEW->value)->execute();
+    $adapter->query(Table::BOARDS->value)->execute();
+    $adapter->query(Table::CATEGORIES->value)->execute();
+    $adapter->query(Table::LOG_BOARDS->value)->execute();
     $adapter->query(Table::MEMBERS->value)->execute();
-
-    $adapter->query(/** @lang text */ "
-        CREATE TABLE categories (
-            id_cat INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL DEFAULT '',
-            cat_order INTEGER NOT NULL DEFAULT 0
-        )
-    ")->execute();
-
-    $adapter->query(/** @lang text */ "
-        CREATE TABLE boards (
-            id_board INTEGER PRIMARY KEY AUTOINCREMENT,
-            id_cat INTEGER NOT NULL DEFAULT 0,
-            child_level INTEGER NOT NULL DEFAULT 0,
-            id_parent INTEGER NOT NULL DEFAULT 0,
-            board_order INTEGER NOT NULL DEFAULT 0,
-            id_last_msg INTEGER DEFAULT 0,
-            id_msg_updated INTEGER NOT NULL DEFAULT 0,
-            member_groups TEXT NOT NULL DEFAULT '-1,0',
-            id_profile INTEGER NOT NULL DEFAULT 1,
-            name TEXT NOT NULL DEFAULT '',
-            description TEXT NOT NULL DEFAULT '',
-            num_topics INTEGER NOT NULL DEFAULT 0,
-            num_posts INTEGER NOT NULL DEFAULT 0,
-            count_posts INTEGER NOT NULL DEFAULT 0,
-            id_theme INTEGER NOT NULL DEFAULT 0,
-            override_theme INTEGER NOT NULL DEFAULT 0,
-            id_moderator INTEGER NOT NULL DEFAULT 0,
-            id_moderator_group INTEGER NOT NULL DEFAULT 0,
-            member_groups_moderator TEXT NOT NULL DEFAULT '',
-            redirect TEXT NOT NULL DEFAULT '',
-            deny_member_groups TEXT NOT NULL DEFAULT '',
-            board_type TEXT NOT NULL DEFAULT 'default'
-        )
-    ")->execute();
-
-    $adapter->query(/** @lang text */ "
-        CREATE TABLE messages (
-            id_msg INTEGER PRIMARY KEY AUTOINCREMENT,
-            id_topic INTEGER NOT NULL,
-            id_board INTEGER NOT NULL,
-            poster_time INTEGER NOT NULL DEFAULT 0,
-            id_member INTEGER NOT NULL,
-            id_msg_modified INTEGER NOT NULL DEFAULT 0,
-            subject TEXT NOT NULL,
-            poster_name TEXT NOT NULL,
-            poster_email TEXT NOT NULL,
-            poster_ip TEXT NOT NULL,
-            smileys_enabled INTEGER NOT NULL DEFAULT 1,
-            modified_time INTEGER NOT NULL DEFAULT 0,
-            modified_name TEXT NOT NULL DEFAULT '',
-            modified_reason TEXT NOT NULL DEFAULT '',
-            body TEXT NOT NULL,
-            icon TEXT NOT NULL DEFAULT 'xx',
-            approved INTEGER NOT NULL DEFAULT 1
-        )
-    ")->execute();
-
-    $adapter->query(/** @lang text */ "
-        CREATE TABLE attachments (
-            id_attach INTEGER PRIMARY KEY AUTOINCREMENT,
-            id_thumb INTEGER NOT NULL DEFAULT 0,
-            id_msg INTEGER NOT NULL DEFAULT 0,
-            id_member INTEGER NOT NULL DEFAULT 0,
-            attachment_type INTEGER NOT NULL DEFAULT 0,
-            filename TEXT NOT NULL DEFAULT '',
-            file_hash TEXT NOT NULL DEFAULT '',
-            fileext TEXT NOT NULL DEFAULT '',
-            size INTEGER NOT NULL DEFAULT 0,
-            downloads INTEGER NOT NULL DEFAULT 0,
-            width INTEGER NOT NULL DEFAULT 0,
-            height INTEGER NOT NULL DEFAULT 0,
-            mime_type TEXT NOT NULL DEFAULT '',
-            approved INTEGER NOT NULL DEFAULT 1
-        )
-    ")->execute();
-
-    $adapter->query(/** @lang text */ "
-        CREATE TABLE log_boards (
-            id_member INTEGER NOT NULL,
-            id_board INTEGER NOT NULL,
-            id_msg INTEGER NOT NULL,
-            PRIMARY KEY (id_member, id_board)
-        )
-    ")->execute();
-
-    $adapter->query(/** @lang text */ "
-        CREATE TABLE board_permissions_view (
-            id_group INTEGER NOT NULL DEFAULT 0,
-            id_board INTEGER NOT NULL,
-            deny INTEGER NOT NULL,
-            PRIMARY KEY (id_group, id_board, deny)
-        )
-    ")->execute();
+    $adapter->query(Table::MESSAGES->value)->execute();
 
     $adapter->query(/** @lang text */ "
         INSERT INTO board_permissions_view (id_group, id_board, deny) VALUES

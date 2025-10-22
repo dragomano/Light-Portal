@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use Bugo\Compat\Config;
 use Bugo\Compat\User;
-use LightPortal\Articles\ChosenPageArticle;
 use LightPortal\Articles\ArticleInterface;
+use LightPortal\Articles\ChosenPageArticle;
 use LightPortal\Articles\PageArticle;
 use LightPortal\Database\PortalSql;
 use LightPortal\Enums\ContentType;
@@ -14,6 +14,7 @@ use LightPortal\Enums\Permission;
 use LightPortal\Enums\Status;
 use LightPortal\Repositories\PageRepositoryInterface;
 use Tests\AppMockRegistry;
+use Tests\PortalTable;
 use Tests\ReflectionAccessor;
 use Tests\Table;
 use Tests\TestAdapterFactory;
@@ -24,14 +25,14 @@ beforeEach(function() {
     User::$me->groups = [0];
 
     $adapter = TestAdapterFactory::create();
-    $adapter->query(Table::PAGES->value)->execute();
-    $adapter->query(Table::COMMENTS->value)->execute();
-    $adapter->query(Table::PARAMS->value)->execute();
-    $adapter->query(Table::TRANSLATIONS->value)->execute();
-    $adapter->query(Table::CATEGORIES->value)->execute();
+    $adapter->query(PortalTable::CATEGORIES->value)->execute();
+    $adapter->query(PortalTable::COMMENTS->value)->execute();
+    $adapter->query(PortalTable::PAGE_TAG->value)->execute();
+    $adapter->query(PortalTable::PAGES->value)->execute();
+    $adapter->query(PortalTable::PARAMS->value)->execute();
+    $adapter->query(PortalTable::TAGS->value)->execute();
+    $adapter->query(PortalTable::TRANSLATIONS->value)->execute();
     $adapter->query(Table::MEMBERS->value)->execute();
-    $adapter->query(Table::TAGS->value)->execute();
-    $adapter->query(Table::PAGE_TAG->value)->execute();
 
     // Enable SQLite function for GREATEST
     $pdo = $adapter->getDriver()->getConnection()->getResource();

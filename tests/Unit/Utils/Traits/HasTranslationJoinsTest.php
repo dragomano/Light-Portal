@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-use Laminas\Db\Sql\Select;
 use Laminas\Db\Sql\Predicate\Expression;
+use Laminas\Db\Sql\Select;
 use LightPortal\Database\PortalSql;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Utils\Traits\HasTranslationJoins;
+use Tests\PortalTable;
 use Tests\ReflectionAccessor;
-use Tests\Table;
 use Tests\TestAdapterFactory;
 
 beforeEach(function () {
     $adapter = TestAdapterFactory::create();
-    $adapter->query(Table::PAGES->value)->execute();
-    $adapter->query(Table::TRANSLATIONS->value)->execute();
+    $adapter->query(PortalTable::PAGES->value)->execute();
+    $adapter->query(PortalTable::TRANSLATIONS->value)->execute();
 
     $this->sql = new PortalSql($adapter);
 

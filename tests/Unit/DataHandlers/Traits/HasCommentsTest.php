@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 use LightPortal\Database\PortalSql;
 use LightPortal\Database\PortalSqlInterface;
-use LightPortal\DataHandlers\Traits\HasInserts;
 use LightPortal\DataHandlers\Traits\HasComments;
+use LightPortal\DataHandlers\Traits\HasInserts;
 use LightPortal\DataHandlers\Traits\HasTranslations;
-use Tests\Table;
+use Tests\PortalTable;
 use Tests\TestAdapterFactory;
 
 beforeEach(function () {
     $adapter = TestAdapterFactory::create();
-    $adapter->query(Table::COMMENTS->value)->execute();
-    $adapter->query(Table::TRANSLATIONS->value)->execute();
+    $adapter->query(PortalTable::COMMENTS->value)->execute();
+    $adapter->query(PortalTable::TRANSLATIONS->value)->execute();
 
     $this->sql = new PortalSql($adapter);
 
