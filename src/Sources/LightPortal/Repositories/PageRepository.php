@@ -20,6 +20,10 @@ use Bugo\Compat\Msg;
 use Bugo\Compat\Security;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
+use Exception;
+use Generator;
+use Laminas\Db\Sql\Predicate\Expression;
+use Laminas\Db\Sql\Select;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Enums\AlertAction;
 use LightPortal\Enums\ContentType;
@@ -37,9 +41,6 @@ use LightPortal\Utils\Icon;
 use LightPortal\Utils\Notifier;
 use LightPortal\Utils\Setting;
 use LightPortal\Utils\Str;
-use Exception;
-use Laminas\Db\Sql\Predicate\Expression;
-use Laminas\Db\Sql\Select;
 
 use function LightPortal\app;
 
@@ -634,6 +635,44 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 		$this->events()->dispatch(PortalHook::preparePageData, ['data' => &$data, 'isAuthor' => $isAuthor]);
 	}
 
+	public function fetchTags(iterable $pageIds): Generator
+	{
+		$pageIds = is_array($pageIds) ? $pageIds : iterator_to_array($pageIds);
+		if ($pageIds === []) {
+			return;
+		}
+
+		$select = $this->sql->select()
+			->from(['tag' => 'lp_tags'])
+			->join(
+				['pt' => 'lp_page_tag'],
+				'tag.tag_id = pt.tag_id',
+				['page_id']
+			)
+			->where([
+				'tag.status' => Status::ACTIVE->value,
+				'pt.page_id' => $pageIds,
+			])
+			->where($this->getTranslationFilter('tag', 'tag_id', ['title'], 'tag'))
+			->order('title');
+
+		$this->addTranslationJoins($select, ['primary' => 'tag.tag_id', 'entity' => 'tag']);
+
+		$result = $this->sql->execute($select);
+
+		foreach ($result as $row) {
+			Lang::censorText($row['title']);
+
+			yield $row['page_id'] => [
+				'tag_id' => $row['tag_id'],
+				'slug'   => $row['slug'],
+				'icon'   => Icon::parse($row['icon'] ?: 'fas fa-tag'),
+				'href'   => PortalSubAction::TAGS->url() . ';id=' . $row['tag_id'],
+				'name'   => $row['title'],
+			];
+		}
+	}
+
 	private function addData(array $data): int
 	{
 		try {
@@ -736,37 +775,13 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 
 	private function getTags(int $item): array
 	{
-		$select = $this->sql->select()
-			->from(['tag' => 'lp_tags'])
-			->columns(['tag_id', 'icon'])
-			->join(
-				['pt' => 'lp_page_tag'],
-				'tag.tag_id = pt.tag_id',
-				[]
-			)
-			->where([
-				'tag.status' => Status::ACTIVE->value,
-				'pt.page_id' => $item,
-			])
-			->where($this->getTranslationFilter('tag', 'tag_id', ['title'], 'tag'))
-			->order('title');
+		$tags = [];
 
-		$this->addTranslationJoins($select, ['primary' => 'tag.tag_id', 'entity' => 'tag']);
-
-		$result = $this->sql->execute($select);
-
-		$items = [];
-		foreach ($result as $row) {
-			Lang::censorText($row['title']);
-
-			$items[$row['tag_id']] = [
-				'icon'  => Icon::parse($row['icon'] ?: 'fas fa-tag'),
-				'href'  => PortalSubAction::TAGS->url() . ';id=' . $row['tag_id'],
-				'title' => $row['title'],
-			];
+		foreach ($this->fetchTags([$item]) as $tag) {
+			$tags[$tag['tag_id']] = $tag;
 		}
 
-		return $items;
+		return $tags;
 	}
 
 	private function saveTags(int $item, bool $replace = false): void

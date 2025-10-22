@@ -22,6 +22,7 @@ use LightPortal\Enums\Permission;
 use LightPortal\Enums\PortalHook;
 use LightPortal\Enums\PortalSubAction;
 use LightPortal\Enums\Status;
+use LightPortal\Repositories\PageRepositoryInterface;
 use LightPortal\Utils\Avatar;
 use LightPortal\Utils\Content;
 use LightPortal\Utils\Icon;
@@ -29,6 +30,8 @@ use LightPortal\Utils\Setting;
 use LightPortal\Utils\Str;
 use LightPortal\Utils\Traits\HasParamJoins;
 use LightPortal\Utils\Traits\HasTranslationJoins;
+
+use function LightPortal\app;
 
 use const LP_PAGE_URL;
 
@@ -242,35 +245,13 @@ class PageArticle extends AbstractArticle implements PageArticleInterface
 
 	public function prepareTags(array &$pages): void
 	{
-		if ($pages === [])
+		if ($pages === []) {
 			return;
+		}
 
-		$select = $this->sql->select()
-			->from(['tag' => 'lp_tags'])
-			->join(
-				['pt' => 'lp_page_tag'],
-				'tag.tag_id = pt.tag_id',
-				['page_id'],
-				Select::JOIN_LEFT
-			)
-			->where(['pt.page_id' => array_keys($pages)])
-			->where(['tag.status' => Status::ACTIVE->value])
-			->where($this->getTranslationFilter('tag', 'tag_id', ['title'], 'tag'))
-			->order('title');
-
-		$this->addTranslationJoins($select, ['primary' => 'pt.tag_id', 'entity' => 'tag']);
-
-		$result = $this->sql->execute($select);
-
-		foreach ($result as $row) {
-			Lang::censorText($row['title']);
-
-			$pages[$row['page_id']]['tags'][] = [
-				'slug' => $row['slug'],
-				'icon' => Icon::parse($row['icon']),
-				'href' => PortalSubAction::TAGS->url() . ';id=' . $row['tag_id'],
-				'name' => $row['title'],
-			];
+		$repository = app(PageRepositoryInterface::class);
+		foreach ($repository->fetchTags(array_keys($pages)) as $pageId => $tag) {
+			$pages[$pageId]['tags'][] = $tag;
 		}
 	}
 

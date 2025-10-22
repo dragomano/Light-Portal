@@ -96,7 +96,7 @@ function template_show_page(): void
 
 		foreach (Utils::$context['lp_page']['tags'] as $tag) {
 			echo '
-				<a class="button" href="', $tag['href'], '">', $tag['icon'], $tag['title'], '</a>';
+				<a class="button" href="', $tag['href'], '">', $tag['icon'], $tag['name'], '</a>';
 		}
 
 		echo '
