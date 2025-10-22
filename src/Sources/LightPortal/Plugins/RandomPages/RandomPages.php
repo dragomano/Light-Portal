@@ -8,14 +8,15 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 21.10.25
  */
 
 namespace LightPortal\Plugins\RandomPages;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
-use Bugo\Compat\User;
+use Laminas\Db\Sql\Predicate\Expression;
+use Laminas\Db\Sql\Select;
 use LightPortal\Enums\EntryType;
 use LightPortal\Enums\Permission;
 use LightPortal\Enums\Status;
@@ -30,8 +31,7 @@ use LightPortal\UI\Partials\SelectFactory;
 use LightPortal\Utils\DateTime;
 use LightPortal\Utils\ParamWrapper;
 use LightPortal\Utils\Str;
-use Laminas\Db\Sql\Predicate\Expression;
-use Laminas\Db\Sql\Select;
+use LightPortal\Utils\Traits\HasTranslationJoins;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -39,6 +39,8 @@ if (! defined('LP_NAME'))
 #[PluginAttribute(icon: 'fas fa-random')]
 class RandomPages extends Block
 {
+	use HasTranslationJoins;
+
 	public function prepareBlockParams(Event $e): void
 	{
 		$e->args->params = [
@@ -103,28 +105,25 @@ class RandomPages extends Block
 		}
 
 		$params = [
-			'lang'               => User::$me->language,
-			'fallback_lang'      => Config::$language,
-			'guest'              => Lang::$txt['guest_title'],
-			'status'             => Status::ACTIVE->value,
-			'entry_type'         => EntryType::DEFAULT->name(),
-			'current_time'       => time(),
-			'permissions'        => Permission::all(),
-			'exclude_categories' => $excludeCategories,
-			'include_categories' => $includeCategories,
-			'limit'              => $pagesCount,
+			'guest'          => Lang::$txt['guest_title'],
+			'status'         => Status::ACTIVE->value,
+			'entry_type'     => EntryType::DEFAULT->name(),
+			'current_time'   => time(),
+			'permissions'    => Permission::all(),
 		];
 
-		$selectPages = $this->sql->select();
-		$selectPages->from(['p' => 'lp_pages'])
+		$selectPages = $this->sql->select()
+			->from(['p' => 'lp_pages'])
 			->columns(['page_id'])
 			->where([
 				'p.status'          => $params['status'],
 				'p.entry_type'      => $params['entry_type'],
 				'p.deleted_at'      => 0,
 				'p.created_at <= ?' => $params['current_time'],
+				'p.permissions'     => $params['permissions'],
 			])
-			->where->in('p.permissions', $params['permissions']);
+			->order(new Expression('MD5(CONCAT(p.page_id, CURRENT_TIMESTAMP))'))
+			->limit($pagesCount);
 
 		if (! empty($excludeCategories)) {
 			$selectPages->where->notIn('p.category_id', $excludeCategories);
@@ -133,9 +132,6 @@ class RandomPages extends Block
 		if (! empty($includeCategories)) {
 			$selectPages->where->in('p.category_id', $includeCategories);
 		}
-
-		$selectPages->order(new Expression('MD5(CONCAT(p.page_id, CURRENT_TIMESTAMP))'));
-		$selectPages->limit($pagesCount);
 
 		$result = $this->sql->execute($selectPages);
 
@@ -150,8 +146,8 @@ class RandomPages extends Block
 			return $this->getData($parameters);
 		}
 
-		$select = $this->sql->select();
-		$select->from(['p' => 'lp_pages'])
+		$select = $this->sql->select()
+			->from(['p' => 'lp_pages'])
 			->columns([
 				'page_id',
 				'slug',
@@ -166,14 +162,9 @@ class RandomPages extends Block
 				Select::JOIN_LEFT
 			);
 
-		$subSelect = $this->sql->select();
-		$subSelect->from('lp_translations')
-			->columns(['title'])
-			->where(['type' => 'page']);
-		$subSelect->where->addPredicate(new Expression('item_id = p.page_id'));
-		$subSelect->where->in('lang', [$params['lang'], $params['fallback_lang']]);
-		$subSelect->order(new Expression('lang = ? DESC', [$params['lang']]));
-		$subSelect->limit(1);
+		$this->addTranslationJoins($select);
+
+		$select->where(new Expression('COALESCE(NULLIF(t.title, ""), tf.title, "") <> ""'));
 
 		$select->columns([
 			'page_id',
@@ -182,7 +173,6 @@ class RandomPages extends Block
 			'num_views',
 			'author_id',
 			'author_name' => new Expression('COALESCE(mem.real_name, ?)', [$params['guest']]),
-			'page_title'  => $subSelect,
 		]);
 
 		$select->where->in('p.page_id', $pageIds);
@@ -191,7 +181,7 @@ class RandomPages extends Block
 
 		$pages = [];
 		foreach ($result as $row) {
-			Lang::censorText($row['page_title']);
+			Lang::censorText($row['title']);
 
 			$pages[] = [
 				'page_id'     => $row['page_id'],
@@ -200,7 +190,7 @@ class RandomPages extends Block
 				'num_views'   => $row['num_views'],
 				'author_id'   => $row['author_id'],
 				'author_name' => $row['author_name'],
-				'title'       => $row['page_title'],
+				'title'       => $row['title'],
 			];
 		}
 

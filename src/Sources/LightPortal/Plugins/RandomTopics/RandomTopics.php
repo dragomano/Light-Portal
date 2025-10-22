@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 21.10.25
  */
 
 namespace LightPortal\Plugins\RandomTopics;
@@ -16,6 +16,8 @@ namespace LightPortal\Plugins\RandomTopics;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
+use Laminas\Db\Sql\Predicate\Expression;
+use Laminas\Db\Sql\Select;
 use LightPortal\Enums\Tab;
 use LightPortal\Plugins\Block;
 use LightPortal\Plugins\Event;
@@ -27,8 +29,6 @@ use LightPortal\UI\Partials\SelectFactory;
 use LightPortal\Utils\DateTime;
 use LightPortal\Utils\ParamWrapper;
 use LightPortal\Utils\Str;
-use Laminas\Db\Sql\Predicate\Expression;
-use Laminas\Db\Sql\Select;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -100,8 +100,8 @@ class RandomTopics extends Block
 			return [];
 		}
 
-		$selectTopics = $this->sql->select();
-		$selectTopics->from(['t' => 'topics'])
+		$selectTopics = $this->sql->select()
+			->from(['t' => 'topics'])
 			->columns(['id_topic'])
 			->where(['t.approved' => 1, 't.id_redirect_topic' => 0])
 			->order(new Expression("MD5(CONCAT(t.id_topic, CURRENT_TIMESTAMP))"))
@@ -130,8 +130,8 @@ class RandomTopics extends Block
 
 		$columns = ['num_views'];
 
-		$select = $this->sql->select();
-		$select->from(['t' => 'topics'])
+		$select = $this->sql->select()
+			->from(['t' => 'topics'])
 			->join(
 				['ml' => 'messages'],
 				't.id_last_msg = ml.id_msg', ['id_topic', 'id_msg', 'id_msg_modified']

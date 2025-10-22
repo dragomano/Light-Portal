@@ -13,7 +13,6 @@
 namespace LightPortal\Repositories;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
 use Bugo\Compat\Msg;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
@@ -73,27 +72,6 @@ abstract class AbstractRepository implements RepositoryInterface
 		$this->session('lp')->free('active_' . $table);
 	}
 
-	public function getTranslationFilter(
-		string $tableAlias = 'p',
-		string $idField = 'page_id',
-		array $fields = ['title', 'content', 'description']
-	): Expression
-	{
-		$fieldConditions = [];
-		foreach ($fields as $field) {
-			$fieldConditions[] = "$field != ''";
-		}
-
-		$fieldsSql = implode(' OR ', $fieldConditions);
-
-		$where = "item_id = $tableAlias.$idField AND type = ? AND lang IN (?, ?) AND ($fieldsSql)";
-		$sql = "EXISTS (SELECT 1 FROM {$this->sql->getPrefix()}lp_translations WHERE $where)";
-
-		$params = $this->getLangQueryParams();
-
-		return new Expression($sql, [$this->entity, $params['lang'], $params['fallback_lang']]);
-	}
-
 	protected function prepareBbcContent(array &$entity): void
 	{
 		if ($entity['type'] !== ContentType::BBC->name())
@@ -102,15 +80,6 @@ abstract class AbstractRepository implements RepositoryInterface
 		$entity['content'] = Utils::htmlspecialchars($entity['content'], ENT_QUOTES);
 
 		Msg::preparseCode($entity['content']);
-	}
-
-	protected function getLangQueryParams(): array
-	{
-		return [
-			'lang'          => User::$me->language,
-			'fallback_lang' => Config::$language,
-			'guest'         => Lang::$txt['guest_title'],
-		];
 	}
 
 	protected function saveTranslations(int $item, bool $replace = false): void

@@ -15,6 +15,8 @@ namespace LightPortal\Articles;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
+use Laminas\Db\Sql\Predicate\Expression;
+use Laminas\Db\Sql\Select;
 use LightPortal\Enums\EntryType;
 use LightPortal\Enums\Permission;
 use LightPortal\Enums\PortalHook;
@@ -27,8 +29,6 @@ use LightPortal\Utils\Setting;
 use LightPortal\Utils\Str;
 use LightPortal\Utils\Traits\HasParamJoins;
 use LightPortal\Utils\Traits\HasTranslationJoins;
-use Laminas\Db\Sql\Predicate\Expression;
-use Laminas\Db\Sql\Select;
 
 use const LP_PAGE_URL;
 
@@ -158,7 +158,6 @@ class PageArticle extends AbstractArticle implements PageArticleInterface
 			]
 		]);
 
-		$this->addTranslationJoins($select, ['fields' => ['title', 'content', 'description']]);
 		$this->addTranslationJoins($select, [
 			'primary' => 'cat.category_id',
 			'entity'  => 'category',
@@ -188,9 +187,6 @@ class PageArticle extends AbstractArticle implements PageArticleInterface
 			Lang::censorText($row['title']);
 			Lang::censorText($row['content']);
 			Lang::censorText($row['description']);
-
-			if ($row['title'] === '')
-				continue;
 
 			$row['content'] = Content::parse($row['content'], $row['type']);
 
@@ -259,6 +255,7 @@ class PageArticle extends AbstractArticle implements PageArticleInterface
 			)
 			->where(['pt.page_id' => array_keys($pages)])
 			->where(['tag.status' => Status::ACTIVE->value])
+			->where($this->getTranslationFilter('tag', 'tag_id', ['title'], 'tag'))
 			->order('title');
 
 		$this->addTranslationJoins($select, ['primary' => 'pt.tag_id', 'entity' => 'tag']);
@@ -266,9 +263,6 @@ class PageArticle extends AbstractArticle implements PageArticleInterface
 		$result = $this->sql->execute($select);
 
 		foreach ($result as $row) {
-			if ($row['title'] === '')
-				continue;
-
 			Lang::censorText($row['title']);
 
 			$pages[$row['page_id']]['tags'][] = [
@@ -282,6 +276,8 @@ class PageArticle extends AbstractArticle implements PageArticleInterface
 
 	protected function applyBaseConditions(Select $select): void
 	{
+		$this->addTranslationJoins($select, ['fields' => ['title', 'content', 'description']]);
+
 		$select->where([
 			'p.status'          => $this->params['status'],
 			'p.deleted_at'      => 0,
@@ -289,13 +285,17 @@ class PageArticle extends AbstractArticle implements PageArticleInterface
 			'p.created_at <= ?' => $this->params['current_time'],
 		]);
 
-		$select->where(new Expression('(cat.status = ? OR cat.category_id IS NULL)', $this->params['status']));
+		$select->where(new Expression('(cat.status = ? OR p.category_id = 0)', $this->params['status']));
 
 		if (! empty($this->selectedCategories)) {
 			$select->where(['p.category_id' => $this->params['selected_categories']]);
 		}
 
 		$select->where(['p.permissions' => $this->params['permissions']]);
+
+		$select->where(new Expression(
+			'COALESCE(NULLIF(t.title, ""), tf.title, "") <> ""'
+		));
 	}
 
 	private function getSectionData(array $row): array

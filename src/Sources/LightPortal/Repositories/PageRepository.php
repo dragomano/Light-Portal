@@ -748,7 +748,7 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 				'tag.status' => Status::ACTIVE->value,
 				'pt.page_id' => $item,
 			])
-			->where($this->getTranslationFilter('tag', 'tag_id', ['title']))
+			->where($this->getTranslationFilter('tag', 'tag_id', ['title'], 'tag'))
 			->order('title');
 
 		$this->addTranslationJoins($select, ['primary' => 'tag.tag_id', 'entity' => 'tag']);

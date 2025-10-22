@@ -14,6 +14,7 @@ namespace LightPortal\Lists;
 
 use Bugo\Compat\Lang;
 use LightPortal\Repositories\CategoryRepositoryInterface;
+use LightPortal\Utils\Icon;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -32,8 +33,10 @@ readonly class CategoryList implements ListInterface
 		);
 
 		$processedItems = [[
-			'icon'  => '',
-			'title' => Lang::$txt['lp_no_category'],
+			'slug'     => 'uncategorized',
+			'icon'     => Icon::parse('fas folder-open'),
+			'priority' => 0,
+			'title'    => Lang::$txt['lp_no_category'],
 		]];
 
 		foreach ($items as $id => $item) {

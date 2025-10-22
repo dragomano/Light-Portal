@@ -51,7 +51,7 @@ final class TagRepository extends AbstractRepository implements TagRepositoryInt
 		if ($filter === 'list') {
 			$select
 				->where(['tag.status = ?' => Status::ACTIVE->value])
-				->where($this->getTranslationFilter('tag', 'tag_id', ['title']));
+				->where($this->getTranslationFilter('tag', 'tag_id', ['title'], 'tag'));
 		}
 
 		if ($whereConditions) {

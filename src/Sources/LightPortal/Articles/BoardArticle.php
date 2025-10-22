@@ -17,12 +17,12 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Parsers\BBCodeParser;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
+use Laminas\Db\Sql\Predicate\Expression;
+use Laminas\Db\Sql\Select;
 use LightPortal\Enums\PortalHook;
 use LightPortal\Utils\ForumPermissions;
 use LightPortal\Utils\Setting;
 use LightPortal\Utils\Str;
-use Laminas\Db\Sql\Predicate\Expression;
-use Laminas\Db\Sql\Select;
 
 if (! defined('SMF'))
 	die('No direct access...');

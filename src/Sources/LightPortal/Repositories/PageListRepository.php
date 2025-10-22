@@ -13,15 +13,15 @@
 namespace LightPortal\Repositories;
 
 use Bugo\Compat\Lang;
+use Laminas\Db\Sql\Predicate\Expression;
+use Laminas\Db\Sql\Select;
+use Laminas\Db\Sql\Where;
 use LightPortal\Enums\EntryType;
 use LightPortal\Enums\Permission;
 use LightPortal\Enums\PortalSubAction;
 use LightPortal\Enums\Status;
 use LightPortal\Utils\Icon;
 use LightPortal\Utils\Str;
-use Laminas\Db\Sql\Predicate\Expression;
-use Laminas\Db\Sql\Select;
-use Laminas\Db\Sql\Where;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -49,6 +49,8 @@ final class PageListRepository extends AbstractRepository implements PageListRep
 
 		$this->addTranslationJoins($select, ['fields' => ['title', 'content', 'description']]);
 
+		$select->where($this->getTranslationFilter());
+
 		$result = $this->sql->execute($select);
 
 		$rows = [];
@@ -66,6 +68,8 @@ final class PageListRepository extends AbstractRepository implements PageListRep
 			->columns(['count' => new Expression('COUNT(DISTINCT p.page_id)')])
 			->where($this->getCategoryWhere($categoryId));
 
+		$select->where($this->getTranslationFilter());
+
 		$result = $this->sql->execute($select)->current();
 
 		return $result['count'];
@@ -82,7 +86,11 @@ final class PageListRepository extends AbstractRepository implements PageListRep
 			->join(
 				['c' => 'lp_categories'],
 				'p.category_id = c.category_id',
-				['slug', 'icon', 'priority'],
+				[
+					'slug'     => new Expression('COALESCE(c.slug, "uncategorized")'),
+					'icon'     => new Expression('COALESCE(c.icon, "fas folder-open")'),
+					'priority' => new Expression('COALESCE(c.priority, 0)'),
+				],
 				Select::JOIN_LEFT)
 			->where($this->getCommonCategoriesWhere())
 			->group(['c.category_id', 'c.slug', 'c.icon', 'c.priority', 'title', 'description'])
@@ -92,7 +100,25 @@ final class PageListRepository extends AbstractRepository implements PageListRep
 			'primary' => 'c.category_id',
 			'entity'  => 'category',
 			'fields'  => ['title', 'description'],
+			'columns' => [
+				'title' => new Expression('
+					CASE
+						WHEN p.category_id = 0 THEN ?
+						ELSE COALESCE(NULLIF(t.title, ""), tf.title, "")
+					END', [Lang::$txt['lp_no_category']]
+				),
+				'description' => new Expression('
+					CASE
+						WHEN p.category_id = 0 THEN ""
+						ELSE COALESCE(NULLIF(t.description, ""), tf.description, "")
+					END'
+				)
+			]
 		]);
+
+		$select->where(new Expression(
+			'(p.category_id = 0 OR COALESCE(NULLIF(t.title, ""), tf.title, "") <> "")'
+		));
 
 		if ($limit) {
 			$select->limit($limit)->offset($start);
@@ -108,7 +134,7 @@ final class PageListRepository extends AbstractRepository implements PageListRep
 				'link'        => PortalSubAction::CATEGORIES->url() . ';id=' . $row['category_id'],
 				'priority'    => $row['priority'],
 				'num_pages'   => $row['frequency'],
-				'title'       => Str::decodeHtmlEntities($row['title'] ?: Lang::$txt['lp_no_category']),
+				'title'       => Str::decodeHtmlEntities($row['title']),
 				'description' => $row['description'] ?? '',
 			];
 		}
@@ -124,6 +150,16 @@ final class PageListRepository extends AbstractRepository implements PageListRep
 			->join(['c' => 'lp_categories'], 'p.category_id = c.category_id', [], Select::JOIN_LEFT)
 			->where($this->getCommonCategoriesWhere())
 			->limit(1);
+
+		$this->addTranslationJoins($select, [
+			'primary' => 'c.category_id',
+			'entity'  => 'category',
+			'columns' => [],
+		]);
+
+		$select->where(new Expression(
+			'(p.category_id = 0 OR COALESCE(NULLIF(t.title, ""), tf.title, "") <> "")'
+		));
 
 		$result = $this->sql->execute($select)->current();
 
@@ -149,7 +185,9 @@ final class PageListRepository extends AbstractRepository implements PageListRep
 			->limit($limit)
 			->offset($start);
 
-		$this->addTranslationJoins($select, ['fields' => ['title', 'content', 'description']]);
+		$this->addTranslationJoins($select, ['fields' => ['title', 'content', 'description'], 'tag']);
+
+		$select->where($this->getTranslationFilter());
 
 		$result = $this->sql->execute($select);
 
@@ -170,6 +208,8 @@ final class PageListRepository extends AbstractRepository implements PageListRep
 			->join(['tag' => 'lp_tags'], 'pt.tag_id = tag.tag_id', [])
 			->where($this->getTagWhere($tagId));
 
+		$select->where($this->getTranslationFilter());
+
 		$result = $this->sql->execute($select)->current();
 
 		return $result['count'];
@@ -187,6 +227,8 @@ final class PageListRepository extends AbstractRepository implements PageListRep
 			->order($sort);
 
 		$this->addTranslationJoins($select, ['primary' => 'tag.tag_id', 'entity' => 'tag']);
+
+		$select->where($this->getTranslationFilter('tag', 'tag_id', ['title'], 'tag'));
 
 		if ($limit) {
 			$select->limit($limit)->offset($start);
@@ -217,6 +259,8 @@ final class PageListRepository extends AbstractRepository implements PageListRep
 			->join(['tag' => 'lp_tags'], 'pt.tag_id = tag.tag_id', [])
 			->where($this->getCommonTagWhere())
 			->limit(1);
+
+		$select->where($this->getTranslationFilter('tag', 'tag_id', ['title'], 'tag'));
 
 		$result = $this->sql->execute($select)->current();
 
@@ -252,6 +296,7 @@ final class PageListRepository extends AbstractRepository implements PageListRep
 	{
 		$where = new Where();
 		$where
+			->greaterThanOrEqualTo('p.category_id', 0)
 			->nest()
 			->equalTo('c.status', Status::ACTIVE->value)
 			->or->equalTo('p.category_id', 0)
