@@ -21,12 +21,13 @@ class CustomTestCase extends TestCase
 
         Config::$sourcedir = __DIR__ . '/files';
         Config::$scripturl = 'https://example.com';
+        Config::$modSettings = ['avatar_url' => '', 'smileys_url' => 'https://example.com/Smileys'];
 
         Utils::$context = &$GLOBALS['context'];
         Utils::$smcFunc = &$GLOBALS['smcFunc'];
 
-        Utils::$smcFunc['strtolower'] = fn($string) => strtr($string, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz');
-        Utils::$smcFunc['htmlspecialchars'] = fn($string, $flags = ENT_COMPAT, $encoding = 'UTF-8') => htmlspecialchars($string, $flags, $encoding);
+        Utils::$smcFunc['strtolower'] = 'strtolower';
+        Utils::$smcFunc['htmlspecialchars'] = 'htmlspecialchars';
 
         Utils::$context['admin_menu_name'] = 'admin';
         Utils::$context['right_to_left'] = false;
@@ -37,12 +38,17 @@ class CustomTestCase extends TestCase
 
         User::$me = new User(1);
         User::$me->name = 'TestUser';
-        User::$me->groups = [1];
+        User::$me->groups = [0];
+        User::$me->is_guest = false;
+        User::$me->is_admin = false;
+        User::$me->allowedTo = fn($permission) => false;
 
         array_map(fn($u) => new $u(), [
             Config::class,
             Lang::class,
         ]);
+
+        Lang::$txt['guest_title'] = 'Guest';
     }
 
     public static function tearDownAfterClass(): void

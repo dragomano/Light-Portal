@@ -30,7 +30,6 @@ beforeEach(function () {
     Lang::$txt['date']        = 'Date';
     Lang::$txt['author']      = 'Author';
     Lang::$txt['views']       = 'Views';
-    Lang::$txt['guest_title'] = 'Guest';
     Lang::$txt['lp_no_items'] = 'No items';
     Lang::$txt['lp_title']    = 'Title';
 });

@@ -17,7 +17,7 @@ class PageRepositoryTestProvider
     {
         User::$me = new User(1);
         User::$me->language = 'english';
-        User::$me->groups = [];
+        User::$me->groups = [0];
 
         fake()->seed(12345); // Ensure consistent fake data across runs
         $commentCounter = 1001;

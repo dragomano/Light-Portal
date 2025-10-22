@@ -109,7 +109,9 @@ enum Table: string
         CREATE TABLE members (
             id_member INTEGER PRIMARY KEY AUTOINCREMENT,
             real_name TEXT NOT NULL,
-            member_name TEXT NOT NULL
+            member_name TEXT NOT NULL,
+            id_group INTEGER,
+            avatar TEXT
         )';
 
     case USER_ALERTS = /** @lang text */ '

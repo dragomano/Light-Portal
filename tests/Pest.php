@@ -28,6 +28,12 @@ if (! isset($GLOBALS['scripturl'])) {
     $GLOBALS['scripturl'] = 'https://example.com';
 }
 
+if (! isset($GLOBALS['modSettings'])) {
+    $GLOBALS['modSettings'] = [];
+    $GLOBALS['modSettings']['avatar_url'] = '';
+    $GLOBALS['modSettings']['smileys_url'] = 'https://example.com/Smileys';
+}
+
 if (! defined('LP_NAME')) {
     define('LP_NAME', 'Light Portal');
 }

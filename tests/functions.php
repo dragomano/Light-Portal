@@ -202,7 +202,18 @@ if (! function_exists('parse_bbc')) {
         string|int $cache_id = '',
         array $parse_tags = []
     ): array|string {
-        return $message;
+        $pattern = '/\[img](.*?)\[\/img]/i';
+        $replacement = '<img src="$1" alt="">';
+        $message = preg_replace($pattern, $replacement, $message);
+
+        $pattern_attr = '/\[img\s+width=(\d+)\s+height=(\d+)\](.*?)\[\/img\]/i';
+        $replacement_attr = '<img src="$3" alt="" width="$1" height="$2">';
+        $message = preg_replace($pattern_attr, $replacement_attr, $message);
+
+        $pattern_short = '/\[img=(.*?)\]/i';
+        $replacement_short = '<img src="$1" alt="">';
+
+        return preg_replace($pattern_short, $replacement_short, $message);
     }
 }
 

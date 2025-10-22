@@ -4,497 +4,352 @@ declare(strict_types=1);
 
 use Bugo\Compat\Config;
 use Bugo\Compat\User;
-use Laminas\Db\Adapter\Driver\ResultInterface;
 use LightPortal\Articles\PageArticle;
-use LightPortal\Database\Operations\PortalSelect;
-use LightPortal\Database\PortalResultInterface;
-use LightPortal\Database\PortalSqlInterface;
-use LightPortal\Events\EventManager;
-use LightPortal\Utils\CacheInterface;
+use LightPortal\Database\PortalSql;
+use LightPortal\Enums\ContentType;
+use LightPortal\Enums\EntryType;
+use LightPortal\Enums\Permission;
+use LightPortal\Enums\Status;
+use LightPortal\Repositories\PageRepositoryInterface;
+use Tests\AppMockRegistry;
 use Tests\ReflectionAccessor;
+use Tests\Table;
+use Tests\TestAdapterFactory;
 
-it('initializes parameters with all_pages frontpage mode', function () {
-    $userMock = Mockery::mock(User::class);
-    $userMock->language = 'english';
-    $userMock->groups = [1, 2, 3];
-    $userMock->is_admin = false;
-    $userMock->id = 1;
-    $userMock->shouldReceive('allowedTo')->andReturn(false);
+beforeEach(function() {
+    User::$me = new User(1);
+    User::$me->language = 'english';
+    User::$me->groups = [0];
 
-    Config::$language = 'english';
-    Config::$modSettings['lp_frontpage_mode'] = 'all_pages';
+    $adapter = TestAdapterFactory::create();
+    $adapter->query(Table::PAGES->value)->execute();
+    $adapter->query(Table::COMMENTS->value)->execute();
+    $adapter->query(Table::PARAMS->value)->execute();
+    $adapter->query(Table::TRANSLATIONS->value)->execute();
+    $adapter->query(Table::CATEGORIES->value)->execute();
+    $adapter->query(Table::MEMBERS->value)->execute();
+    $adapter->query(Table::TAGS->value)->execute();
+    $adapter->query(Table::PAGE_TAG->value)->execute();
 
-    $eventMock = Mockery::mock(EventManager::class);
-    $eventMock->shouldReceive('dispatch')->andReturn(null);
+    // Enable SQLite function for GREATEST
+    $pdo = $adapter->getDriver()->getConnection()->getResource();
+    $pdo->sqliteCreateFunction('GREATEST', function ($a, $b) {
+        return max($a, $b);
+    });
 
-    $GLOBALS['event_manager_mock'] = $eventMock;
+    $this->sql = new PortalSql($adapter);
+    $this->article = new PageArticle($this->sql);
 
-    $portalSqlMock = Mockery::mock(PortalSqlInterface::class);
-    $portalSqlMock
-        ->shouldReceive('select')
-        ->andReturn(Mockery::mock()->shouldIgnoreMissing());
-    $portalSqlMock
-        ->shouldReceive('execute')
-        ->andReturn(Mockery::mock()->shouldReceive('current')->andReturn(['id_member' => []]));
-
-    $article = new PageArticle($portalSqlMock);
-    $article->init();
-
-    $accessorArticle = new ReflectionAccessor($article);
-    $params = $accessorArticle->getProtectedProperty('params');
-
-    expect($params['selected_categories'])->toBe([0]);
+    $mockRepository = Mockery::mock(PageRepositoryInterface::class);
+    $mockRepository->shouldReceive('fetchTags')->andReturn(new ArrayIterator([]));
+    AppMockRegistry::set(PageRepositoryInterface::class, $mockRepository);
 });
 
-it('initializes parameters and dispatches hook', function () {
-    $settingMock = Mockery::mock('SettingMock');
-    $settingMock->shouldReceive('get')->with('lp_frontpage_categories', 'array', [])->andReturn([]);
-    $settingMock->shouldReceive('isFrontpageMode')->with('all_pages')->andReturn(false);
+it('can initialize with real database', function () {
+    $this->article->init();
 
-    $GLOBALS['SettingMock'] = $settingMock;
-
-    $userMock = Mockery::mock(User::class);
-    $userMock->language = 'russian';
-    $userMock->groups = [1, 2, 3];
-    $userMock->is_admin = false;
-    $userMock->id = 1;
-    $userMock->shouldReceive('allowedTo')->andReturn(false);
-
-    Config::$language = 'english';
-
-    $portalSqlMock = Mockery::mock(PortalSqlInterface::class);
-    $portalSqlMock
-        ->shouldReceive('select')->andReturn(Mockery::mock()->shouldIgnoreMissing());
-    $portalSqlMock
-        ->shouldReceive('execute')->andReturn(Mockery::mock()->shouldReceive('current')->andReturn(['id_member' => []]));
-    $portalSqlMock->shouldReceive('getTransaction')->andReturn(Mockery::mock()->shouldIgnoreMissing());
-
-    $cacheMock = Mockery::mock(CacheInterface::class);
-    $cacheMock->shouldReceive('remember')->with('board_moderators', Mockery::on(function () {
-        $portalSqlMock = Mockery::mock(PortalSqlInterface::class);
-        $portalSqlMock->shouldReceive('select')->andReturn(Mockery::mock()->shouldIgnoreMissing());
-        $portalSqlMock->shouldReceive('execute')->andReturn(Mockery::mock()->shouldReceive('current')->andReturn(['id_member' => []]));
-
-        $GLOBALS['app_mocks'][PortalSqlInterface::class] = $portalSqlMock;
-
-        return true;
-    }))->andReturn([]);
-
-    $GLOBALS['app_mocks'] = [
-        PortalSqlInterface::class => $portalSqlMock,
-        CacheInterface::class => $cacheMock,
-    ];
-    $portalSqlMock->shouldReceive('getTransaction')->andReturn(Mockery::mock()->shouldIgnoreMissing());
-
-    $cacheMock = Mockery::mock(CacheInterface::class);
-    $cacheMock->shouldReceive('remember')->with('board_moderators', Mockery::on(function () {
-        $portalSqlMock = Mockery::mock(PortalSqlInterface::class);
-        $portalSqlMock->shouldReceive('select')->andReturn(Mockery::mock()->shouldIgnoreMissing());
-        $portalSqlMock
-            ->shouldReceive('execute')
-            ->andReturn(Mockery::mock()->shouldReceive('current')->andReturn(['id_member' => []]));
-
-        $GLOBALS['app_mocks'][PortalSqlInterface::class] = $portalSqlMock;
-
-        return true;
-    }))->andReturn([]);
-
-    $GLOBALS['app_mocks'] = [
-        PortalSqlInterface::class => $portalSqlMock,
-        CacheInterface::class     => $cacheMock,
-    ];
-    $article = new PageArticle($portalSqlMock);
-
-    $eventMock = Mockery::mock(EventManager::class);
-    $eventMock->shouldReceive('dispatch')
-        ->andReturn(null);
-
-    $GLOBALS['event_manager_mock'] = $eventMock;
-
-    $article->init();
-
-    $paramsReflection = new ReflectionProperty(PageArticle::class, 'params');
-    $params = $paramsReflection->getValue($article);
-
-    $ordersReflection = new ReflectionProperty(PageArticle::class, 'orders');
-    $orders = $ordersReflection->getValue($article);
-
-    expect($params)->toHaveKey('lang')
-        ->and($params)->toHaveKey('selected_categories')
-        ->and($orders)->toHaveKey('created;desc');
+    expect($this->article)->toBeInstanceOf(PageArticle::class);
 });
 
-it('returns sorting options', function () {
-    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
-
-    $options = $article->getSortingOptions();
-
-    expect($options)->toBeArray()
-        ->and($options)->toHaveKey('created;desc')
-        ->and($options)->toHaveKey('title');
-});
-
-it('skips rows with empty title in getData', closure: function () {
-    $selectMock = Mockery::mock(PortalSelect::class);
-    $selectMock->shouldReceive('from')->andReturnSelf();
-    $selectMock->shouldReceive('join')->andReturnSelf();
-    $selectMock->shouldReceive('columns')->andReturnSelf();
-    $selectMock->shouldReceive('order')->andReturnSelf();
-    $selectMock->shouldReceive('limit')->andReturnSelf();
-    $selectMock->shouldReceive('offset')->andReturnSelf();
-    $selectMock->shouldReceive('where')->andReturnSelf();
-    $selectMock->shouldReceive('getRawState')->andReturn([]);
-
-    $portalSqlMock = Mockery::mock(PortalSqlInterface::class);
-    $portalSqlMock->shouldReceive('select')->andReturn($selectMock);
-
-    $resultMock = Mockery::mock(PortalResultInterface::class);
-    $testData = [
-        [
-            'page_id'             => 1,
-            'title'               => '',
-            'slug'                => 'test-page',
-            'author_id'           => 1,
-            'author_name'         => 'Test Author',
-            'created_at'          => time(),
-            'updated_at'          => time(),
-            'num_views'           => 10,
-            'num_comments'        => 0,
-            'category_id'         => 1,
-            'cat_title'           => 'Test Category',
-            'cat_icon'            => 'fas fa-folder',
-            'comment_date'        => null,
-            'comment_author_id'   => 0,
-            'comment_author_name' => '',
-            'type'                => 'bbc',
-            'content'             => 'Test content',
-            'description'         => 'Test description',
-        ]
-    ];
-
-    $resultMock->shouldReceive('current')->andReturn($testData[0], null);
-    $resultMock->shouldReceive('valid')->andReturn(true, false);
-    $resultMock->shouldReceive('next');
-    $resultMock->shouldReceive('key')->andReturn(0);
-    $resultMock->shouldReceive('rewind');
-
-    $portalSqlMock->shouldReceive('execute')->andReturn($resultMock);
-
-    $article = new PageArticle($portalSqlMock);
-    $article->init();
-
-    $reflection = new ReflectionAccessor($article);
-
-    $result = $reflection->callProtectedMethod('getData', [0, 10, 'created;desc']);
-
-    expect(iterator_to_array($result))->toBeEmpty();
-});
-
-it('processes rows with non-empty title in getData', function () {
-    Config::$modSettings['avatar_url'] = '';
-
-    $userLoadedMock = Mockery::mock();
-    $userLoadedMock->shouldReceive('format')->andReturn([
-        'name'   => 'Test Author',
-        'avatar' => ['image' => 'avatar_image'],
+it('can get all pages data with real database', function () {
+    $now = time();
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_pages (
+            category_id, author_id, slug, type, entry_type, permissions, status,
+            num_views, num_comments, created_at, updated_at, deleted_at, last_comment_id
+        ) VALUES
+            (0, 1, 'test-page-1', ?, ?, ?, ?, 10, 5, ?, 0, 0, 0),
+            (0, 1, 'test-page-2', ?, ?, ?, ?, 20, 3, ?, 0, 0, 0)
+    ", [
+        ContentType::BBC->name(),
+        EntryType::DEFAULT->name(),
+        Permission::ALL->value,
+        Status::ACTIVE->value,
+        $now,
+        ContentType::BBC->name(),
+        EntryType::DEFAULT->name(),
+        Permission::ALL->value,
+        Status::ACTIVE->value,
+        $now,
     ]);
 
-    $accessor = new ReflectionAccessor(new User());
-    $accessor->setProtectedProperty('loaded', [1 => $userLoadedMock]);
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO members (id_member, real_name, member_name)
+        VALUES (1, 'Test Author', 'test_author')
+    ")->execute();
 
-    $selectMock = Mockery::mock(PortalSelect::class);
-    $selectMock->shouldReceive('from')->andReturnSelf();
-    $selectMock->shouldReceive('join')->andReturnSelf();
-    $selectMock->shouldReceive('columns')->andReturnSelf();
-    $selectMock->shouldReceive('order')->andReturnSelf();
-    $selectMock->shouldReceive('limit')->andReturnSelf();
-    $selectMock->shouldReceive('offset')->andReturnSelf();
-    $selectMock->shouldReceive('where')->andReturnSelf();
-    $selectMock->shouldReceive('getRawState')->andReturn([]);
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_translations (item_id, type, lang, title, content, description)
+        VALUES
+            (1, 'page', 'english', 'Test Page 1', 'Test content 1', 'Test description 1'),
+            (2, 'page', 'english', 'Test Page 2', 'Test content 2', 'Test description 2')
+    ")->execute();
 
-    $portalSqlMock = Mockery::mock(PortalSqlInterface::class);
-    $portalSqlMock->shouldReceive('select')->andReturn($selectMock);
-
-    $resultMock = Mockery::mock(PortalResultInterface::class);
-    $testData = [
-        [
-            'page_id'             => 1,
-            'title'               => 'Test Page Title',
-            'slug'                => 'test-page',
-            'author_id'           => 1,
-            'author_name'         => 'Test Author',
-            'created_at'          => time(),
-            'updated_at'          => time(),
-            'date'                => time(),
-            'num_views'           => 10,
-            'num_comments'        => 0,
-            'category_id'         => 1,
-            'cat_title'           => 'Test Category',
-            'cat_icon'            => 'fas fa-folder',
-            'comment_date'        => null,
-            'comment_author_id'   => 0,
-            'comment_author_name' => '',
-            'type'                => 'bbc',
-            'content'             => 'Test content',
-            'description'         => 'Test description',
-        ]
-    ];
-
-    $resultMock->shouldReceive('current')->andReturn($testData[0], null);
-    $resultMock->shouldReceive('valid')->andReturn(true, false);
-    $resultMock->shouldReceive('next');
-    $resultMock->shouldReceive('key')->andReturn(0);
-    $resultMock->shouldReceive('rewind');
-
-    $portalSqlMock->shouldReceive('execute')->andReturn($resultMock);
-
-    $article = new PageArticle($portalSqlMock);
-    $article->init();
-
-    $reflection = new ReflectionAccessor($article);
-
-    $result = $reflection->callProtectedMethod('getData', [0, 10, 'created;desc']);
+    $this->article->init();
+    $result = $this->article->getData(0, 10, 'created;desc');
 
     $data = iterator_to_array($result);
-    expect($data)->toHaveCount(1)
-        ->and($data[1])->toHaveKey('title')
-        ->and($data[1]['title'])->toBe('Test Page Title');
-});
-
-it('retrieves data with mocked Db', function () {
-    Config::$modSettings['avatar_url'] = '';
-
-    $userLoadedMock = Mockery::mock();
-    $userLoadedMock->shouldReceive('format')->andReturn([
-        'name'   => 'Test Author',
-        'avatar' => ['image' => 'avatar_image'],
-    ]);
-
-    $accessor = new ReflectionAccessor(new User());
-    $accessor->setProtectedProperty('loaded', [1 => $userLoadedMock]);
-
-    $selectMock = Mockery::mock(PortalSelect::class);
-    $selectMock->shouldReceive('from')->andReturnSelf();
-    $selectMock->shouldReceive('join')->andReturnSelf();
-    $selectMock->shouldReceive('columns')->andReturnSelf();
-    $selectMock->shouldReceive('order')->andReturnSelf();
-    $selectMock->shouldReceive('limit')->andReturnSelf();
-    $selectMock->shouldReceive('offset')->andReturnSelf();
-    $selectMock->shouldReceive('where')->andReturnSelf();
-    $selectMock->shouldReceive('group')->andReturnSelf();
-    $selectMock->shouldReceive('having')->andReturnSelf();
-    $selectMock->shouldReceive('quantifier')->andReturnSelf();
-    $selectMock->shouldReceive('combine')->andReturnSelf();
-    $selectMock->shouldReceive('getRawState')->andReturn([]);
-
-    $resultMock = Mockery::mock(PortalResultInterface::class);
-    $testData = [
-        [
-            'page_id'             => 1,
-            'title'               => 'Test Page',
-            'slug'                => 'test-page',
-            'author_id'           => 1,
-            'author_name'         => 'Test Author',
-            'created_at'          => time(),
-            'updated_at'          => time(),
-            'date'                => time(),
-            'num_views'           => 10,
-            'num_comments'        => 0,
-            'category_id'         => 1,
-            'cat_title'           => 'Test Category',
-            'cat_icon'            => 'fas fa-folder',
-            'comment_date'        => null,
-            'comment_author_id'   => 0,
-            'comment_author_name' => '',
-            'type'                => 'bbc',
-            'content'             => 'Test content',
-            'description'         => 'Test description',
-        ]
-    ];
-
-    $resultMock->shouldReceive('current')->andReturn($testData[0], null);
-    $resultMock->shouldReceive('valid')->andReturn(true, false);
-    $resultMock->shouldReceive('next');
-    $resultMock->shouldReceive('key')->andReturn(0);
-    $resultMock->shouldReceive('rewind');
-
-    $portalSqlMock = Mockery::mock(PortalSqlInterface::class);
-    $portalSqlMock->shouldReceive('select')->andReturn($selectMock);
-    $portalSqlMock->shouldReceive('execute')->andReturn($resultMock);
-
-    $article = new PageArticle($portalSqlMock);
-    $article->init();
-
-    $accessor = new ReflectionAccessor($article);
-    $result = $accessor->callProtectedMethod('getData', [0, 10, 'created;desc']);
-
-    $data = array_map(function ($value) {
-        return $value;
-    }, iterator_to_array($result));
 
     expect($data)->toBeArray()
+        ->and($data)->toHaveCount(2)
         ->and($data)->toHaveKey(1)
-        ->and($data[1])->toHaveKey('id')
-        ->and($data[1])->toHaveKey('title')
-        ->and($data[1])->toHaveKey('author')
-        ->and($data[1]['title'])->toBe('Test Page');
+        ->and($data)->toHaveKey(2)
+        ->and($data[1]['title'])->toBe('Test Page 1')
+        ->and($data[2]['title'])->toBe('Test Page 2')
+        ->and($data[1]['views']['num'])->toBe(10)
+        ->and($data[2]['views']['num'])->toBe(20);
 });
 
-it('returns total count with mocked Db', function () {
-    $portalSqlMock = Mockery::mock(PortalSqlInterface::class);
-    $selectMock = Mockery::mock(PortalSelect::class);
-    $portalSqlMock->shouldReceive('select')->andReturn($selectMock);
+it('can get total count with real database', function () {
+    $now = time();
 
-    $selectMock->shouldReceive('from')->andReturnSelf();
-    $selectMock->shouldReceive('columns')->andReturnSelf();
-    $selectMock->shouldReceive('join')->andReturnSelf();
-    $selectMock->shouldReceive('where')->andReturnSelf();
-    $selectMock->shouldReceive('order')->andReturnSelf();
-    $selectMock->shouldReceive('limit')->andReturnSelf();
-    $selectMock->shouldReceive('offset')->andReturnSelf();
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_pages (
+            category_id, author_id, slug, type, entry_type, permissions, status,
+            num_views, num_comments, created_at, updated_at, deleted_at, last_comment_id
+        ) VALUES
+            (0, 1, 'test-page-1', ?, ?, ?, ?, 10, 5, ?, 0, 0, 0),
+            (0, 1, 'test-page-2', ?, ?, ?, ?, 20, 3, ?, 0, 0, 0),
+            (0, 2, 'test-page-3', ?, ?, ?, ?, 15, 7, ?, 0, 0, 0)
+    ", [
+        ContentType::BBC->name(),
+        EntryType::DEFAULT->name(),
+        Permission::ALL->value,
+        Status::ACTIVE->value,
+        $now,
+        ContentType::BBC->name(),
+        EntryType::DEFAULT->name(),
+        Permission::ALL->value,
+        Status::ACTIVE->value,
+        $now,
+        ContentType::BBC->name(),
+        EntryType::DEFAULT->name(),
+        Permission::ALL->value,
+        Status::ACTIVE->value,
+        $now,
+    ]);
 
-    $whereMock1 = Mockery::mock();
-    $whereMock1->shouldReceive('in')->andReturnSelf();
-    $whereMock2 = Mockery::mock();
-    $whereMock2->shouldReceive('in')->andReturnSelf();
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_translations (item_id, type, lang, title, content, description)
+        VALUES
+            (1, 'page', 'english', 'Test Page 1', 'Content 1', 'Description 1'),
+            (2, 'page', 'english', 'Test Page 2', 'Content 2', 'Description 2'),
+            (3, 'page', 'english', 'Test Page 3', 'Content 3', 'Description 3')
+    ")->execute();
 
-    $selectMock->shouldReceive('where')->andReturn($whereMock1, $whereMock2);
-    $resultMock = Mockery::mock(PortalResultInterface::class);
-    $resultMock->shouldReceive('current')->andReturn(['count' => 42]);
-    $portalSqlMock->shouldReceive('execute')->andReturn($resultMock);
-    $article = new PageArticle($portalSqlMock);
-    $article->init();
+    $this->article->init();
+    $count = $this->article->getTotalCount();
 
-    $count = $article->getTotalCount();
-
-    expect($count)->toBe(42);
+    expect($count)->toBe(3);
 });
 
-it('skips empty pages array in prepareTags', function () {
-    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
-    $accessor = new ReflectionAccessor($article);
+it('can prepare tags with real database', function () {
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_pages (
+            category_id, author_id, slug, type, entry_type, permissions, status,
+            num_views, num_comments, created_at, updated_at, deleted_at, last_comment_id
+        ) VALUES (0, 1, 'test-page', ?, ?, ?, ?, 10, 5, ?, 0, 0, 0)
+    ", [
+        ContentType::BBC->name(),
+        EntryType::DEFAULT->name(),
+        Permission::ALL->value,
+        Status::ACTIVE->value,
+        time(),
+    ]);
 
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_tags (slug, icon, status)
+        VALUES ('test-tag', 'fas fa-tag', ?)
+    ", [Status::ACTIVE->value]);
+
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_page_tag (page_id, tag_id)
+        VALUES (1, 1)
+    ")->execute();
+
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_translations (item_id, type, lang, title)
+        VALUES (1, 'tag', 'english', 'Test Tag')
+    ")->execute();
+
+    $mockRepository = Mockery::mock(PageRepositoryInterface::class);
+    $mockRepository->shouldReceive('fetchTags')->andReturn(new ArrayIterator([
+        1 => [
+            'tag_id' => 1,
+            'slug' => 'test-tag',
+            'icon' => 'fas fa-tag',
+            'href' => '/portal/tag/test-tag',
+            'name' => 'Test Tag',
+        ],
+    ]));
+    AppMockRegistry::set(PageRepositoryInterface::class, $mockRepository);
+
+    $pages = [
+        1 => ['id' => 1],
+    ];
+
+    $this->article->init();
+    $this->article->prepareTags($pages);
+
+    expect($pages[1])->toHaveKey('tags')
+        ->and($pages[1]['tags'])->toBeArray()
+        ->and($pages[1]['tags'])->toHaveCount(1)
+        ->and($pages[1]['tags'][0]['name'])->toBe('Test Tag')
+        ->and($pages[1]['tags'][0]['slug'])->toBe('test-tag');
+});
+
+it('returns empty when no pages for prepareTags', function () {
     $pages = [];
-    $accessor->callProtectedMethod('prepareTags', [$pages]);
+
+    $this->article->init();
+    $this->article->prepareTags($pages);
 
     expect($pages)->toBeEmpty();
 });
 
-it('skips tags with empty title in prepareTags', function () {
-    $selectMock = Mockery::mock(PortalSelect::class);
+it('can get sorting options', function () {
+    $options = $this->article->getSortingOptions();
 
-    $selectMock->shouldReceive('from')->andReturnSelf();
-    $selectMock->shouldReceive('join')->andReturnSelf();
-    $selectMock->shouldReceive('where')->andReturnSelf();
-    $selectMock->shouldReceive('order')->andReturnSelf();
-    $selectMock->shouldReceive('addTranslationJoins')->andReturnSelf();
-
-    $resultMock = Mockery::mock(PortalResultInterface::class);
-    $resultMock->shouldReceive('current')->andReturn([
-        'page_id' => 1,
-        'tag_id'  => 1,
-        'slug'    => 'test-tag',
-        'icon'    => 'fas fa-tag',
-        'title'   => '',
-    ]);
-    $resultMock->shouldReceive('valid')->andReturn(true, false);
-    $resultMock->shouldReceive('next')->once();
-    $resultMock->shouldReceive('key')->andReturn(0);
-    $resultMock->shouldReceive('rewind')->once();
-
-    $portalSqlMock = Mockery::mock(PortalSqlInterface::class);
-
-    $portalSqlMock->shouldReceive('select')->andReturn($selectMock);
-    $portalSqlMock->shouldReceive('execute')->andReturn($resultMock);
-    $article = new PageArticle($portalSqlMock);
-
-    $paramsReflection = new ReflectionProperty(PageArticle::class, 'params');
-    $paramsReflection->setValue($article, [
-        'lang'                => 'english',
-        'fallback_lang'       => 'english',
-        'status'              => 1,
-        'entry_type'          => 'page',
-        'current_time'        => time(),
-        'permissions'         => [1,2,3],
-        'selected_categories' => [0],
-    ]);
-
-    $pages = [
-        1 => ['id' => 1],
-    ];
-
-    $article->prepareTags($pages);
-
-    expect($pages[1])->not->toHaveKey('tags');
+    expect($options)->toBeArray()
+        ->and($options)->toHaveKey('created;desc')
+        ->and($options)->toHaveKey('title')
+        ->and($options)->toHaveKey('num_views;desc');
 });
 
-it('prepares tags with mocked Db', function () {
-    $selectMock = Mockery::mock(PortalSelect::class);
-    $selectMock->shouldReceive('from')->andReturnSelf();
-    $selectMock->shouldReceive('join')->andReturnSelf();
-    $selectMock->shouldReceive('where')->andReturnSelf();
-    $selectMock->shouldReceive('order')->andReturnSelf();
-    $selectMock->shouldReceive('from')->andReturnSelf();
-    $selectMock->shouldReceive('join')->andReturnSelf();
-    $selectMock->shouldReceive('where')->andReturnSelf();
-    $selectMock->shouldReceive('order')->andReturnSelf();
-    $selectMock->shouldReceive('from')->andReturnSelf();
-    $selectMock->shouldReceive('join')->andReturnSelf();
-    $selectMock->shouldReceive('where')->andReturnSelf();
-    $selectMock->shouldReceive('order')->andReturnSelf();
+it('can handle pages with categories in real database', function () {
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_categories (category_id, icon, status, slug)
+        VALUES (1, 'fas fa-folder', ?, 'test-category')
+    ", [Status::ACTIVE->value]);
 
-    $resultMock = Mockery::mock(PortalResultInterface::class);
-    $resultMock->shouldReceive('current')->andReturn([
-        'page_id' => 1,
-        'tag_id'  => 1,
-        'slug'    => 'test-tag',
-        'icon'    => 'fas fa-tag',
-        'title'   => 'Test Tag',
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_translations (item_id, type, lang, title)
+        VALUES (1, 'category', 'english', 'Test Category')
+    ")->execute();
+
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_pages (
+            category_id, author_id, slug, type, entry_type, permissions, status,
+            num_views, num_comments, created_at, updated_at, deleted_at, last_comment_id
+        ) VALUES (1, 1, 'category-page', ?, ?, ?, ?, 5, 2, ?, 0, 0, 0)
+    ", [
+        ContentType::BBC->name(),
+        EntryType::DEFAULT->name(),
+        Permission::ALL->value,
+        Status::ACTIVE->value,
+        time(),
     ]);
-    $resultMock->shouldReceive('valid')->andReturn(true, false);
-    $resultMock->shouldReceive('next')->andReturn(null);
-    $resultMock->shouldReceive('key')->andReturn(0);
-    $resultMock->shouldReceive('rewind')->andReturn(null);
 
-    $portalSqlMock = Mockery::mock(PortalSqlInterface::class);
-    $portalSqlMock->shouldReceive('select')->andReturn($selectMock);
-    $portalSqlMock->shouldReceive('execute')->andReturn($resultMock);
-    $portalSqlMock->shouldReceive('execute')->andReturn($resultMock);
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO members (id_member, real_name, member_name)
+        VALUES (1, 'Author', 'author')
+    ")->execute();
 
-    Config::$modSettings['avatar_url'] = '';
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_translations (item_id, type, lang, title, content, description)
+        VALUES (1, 'page', 'english', 'Category Page', 'Content', 'Description')
+    ")->execute();
 
-    $pages = [
-        1 => ['id' => 1],
-        2 => ['id' => 2],
-    ];
+    $this->article->init();
+    $result = $this->article->getData(0, 10, 'created;desc');
 
-    $article  = new PageArticle($portalSqlMock);
-    $accessor = new ReflectionAccessor($article);
-    $accessor->setProtectedProperty('params', [
-        'lang'                => 'english',
-        'fallback_lang'       => 'english',
-        'status'              => 1,
-        'entry_type'          => 'page',
-        'current_time'        => time(),
-        'permissions'         => [1,2,3],
-        'selected_categories' => [0],
+    $data = iterator_to_array($result);
+
+    expect($data)->toHaveCount(1)
+        ->and($data[1]['section']['name'])->toBe('Test Category')
+        ->and($data[1]['title'])->toBe('Category Page');
+});
+
+it('can handle pages with comments in real database', function () {
+    Config::$modSettings['lp_comment_block'] = 'default';
+
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_pages (
+            category_id, author_id, slug, type, entry_type, permissions, status,
+            num_views, num_comments, created_at, updated_at, deleted_at, last_comment_id
+        ) VALUES (0, 1, 'commented-page', ?, ?, ?, ?, 15, 1, ?, 0, 0, 1)
+    ", [
+        ContentType::BBC->name(),
+        EntryType::DEFAULT->name(),
+        Permission::ALL->value,
+        Status::ACTIVE->value,
+        time(),
     ]);
-    $accessor->callProtectedMethod('prepareTags', [&$pages]);
 
-    expect($pages[1])->toHaveKey('tags')
-        ->and($pages[1]['tags'])->toBeArray();
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_params (item_id, type, name, value)
+        VALUES (1, 'page', 'allow_comments', '1')
+    ")->execute();
+
+    $commentTime = time() - 3600; // 1 hour ago
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_comments (id, parent_id, page_id, author_id, created_at, updated_at)
+        VALUES (1, 0, 1, 2, ?, 0)
+    ", [$commentTime]);
+
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO members (id_member, real_name, member_name)
+        VALUES
+            (1, 'Page Author', 'page_author'),
+            (2, 'Comment Author', 'comment_author')
+    ")->execute();
+
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_translations (item_id, type, lang, title, content, description)
+        VALUES
+            (1, 'page', 'english', 'Commented Page', 'Page content', 'Page description'),
+            (1, 'comment', 'english', 'Comment content', '', '')
+    ")->execute();
+
+    $this->article->init();
+    $result = $this->article->getData(0, 10, 'last_comment;desc');
+
+    $data = iterator_to_array($result);
+
+    expect($data)->toHaveCount(1)
+        ->and($data[1]['replies']['num'])->toBe(1);
+});
+
+it('skips rows with empty title in getData with real database', function () {
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_pages (
+            category_id, author_id, slug, type, entry_type, permissions, status,
+            num_views, num_comments, created_at, updated_at, deleted_at, last_comment_id
+        ) VALUES (0, 1, 'empty-title-page', ?, ?, ?, ?, 10, 0, ?, 0, 0, 0)
+    ", [
+        ContentType::BBC->name(),
+        EntryType::DEFAULT->name(),
+        Permission::ALL->value,
+        Status::ACTIVE->value,
+        time(),
+    ]);
+
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO members (id_member, real_name, member_name)
+        VALUES (1, 'Test Author', 'test_author')
+    ")->execute();
+
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_translations (item_id, type, lang, title, content, description)
+        VALUES (1, 'page', 'english', '', 'Test content', 'Test description')
+    ")->execute();
+
+    $this->article->init();
+    $result = $this->article->getData(0, 10, 'created;desc');
+
+    $data = iterator_to_array($result);
+
+    expect($data)->toBeEmpty();
 });
 
 it('returns section data', function () {
-    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
-    $accessor = new ReflectionAccessor($article);
-
     $row = [
         'cat_icon'    => 'fas fa-folder',
         'category_id' => 1,
         'cat_title'   => 'Test Category',
     ];
 
+    $accessor = new ReflectionAccessor($this->article);
     $result = $accessor->callProtectedMethod('getSectionData', [$row]);
 
     expect($result)->toBeArray()
@@ -514,8 +369,7 @@ it('returns author data for page author', function () {
         'comment_author_name' => '',
     ];
 
-    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
-    $accessor = new ReflectionAccessor($article);
+    $accessor = new ReflectionAccessor($this->article);
     $accessor->setProtectedProperty('sorting', 'created;desc');
     $result = $accessor->callProtectedMethod('getAuthorData', [$row]);
 
@@ -536,8 +390,7 @@ it('returns author data for comment author when sorting by last_comment', functi
         'num_comments'        => 5,
     ];
 
-    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
-    $accessor = new ReflectionAccessor($article);
+    $accessor = new ReflectionAccessor($this->article);
     $accessor->setProtectedProperty('sorting', 'last_comment;desc');
     $result = $accessor->callProtectedMethod('getAuthorData', [$row]);
 
@@ -552,8 +405,7 @@ it('returns date based on sorting type', function () {
         'comment_date' => 3000,
     ];
 
-    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
-    $accessor = new ReflectionAccessor($article);
+    $accessor = new ReflectionAccessor($this->article);
 
     $accessor->setProtectedProperty('sorting', 'created;desc');
     $result = $accessor->callProtectedMethod('getDate', [$row]);
@@ -569,8 +421,7 @@ it('returns date based on sorting type', function () {
 });
 
 it('returns views data', function () {
-    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
-    $accessor = new ReflectionAccessor($article);
+    $accessor = new ReflectionAccessor($this->article);
 
     $result = $accessor->callProtectedMethod('getViewsData', [['num_views' => 42]]);
 
@@ -584,8 +435,7 @@ it('returns views data', function () {
 it('returns replies data structure', function () {
     Config::$modSettings['lp_comment_block'] = 'default';
 
-    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
-    $accessor = new ReflectionAccessor($article);
+    $accessor = new ReflectionAccessor($this->article);
 
     $result = $accessor->callProtectedMethod('getRepliesData', [['num_comments' => 7]]);
 
@@ -593,24 +443,19 @@ it('returns replies data structure', function () {
         ->and($result)->toHaveKey('num')
         ->and($result)->toHaveKey('title')
         ->and($result)->toHaveKey('after')
-        ->and($result['num'])->toBeInt();
+        ->and($result['num'])->toBe(7);
 });
 
 it('checks if page is new', function () {
-    $userMock = Mockery::mock(User::class);
-    $userMock->last_login = 500;
-    $userMock->id = 1;
-
-    $accessorUser = new ReflectionAccessor($userMock);
-    $accessorUser->setProtectedProperty('me', $userMock);
+    User::$me = new User(1);
+    User::$me->last_login = 500;
 
     $row = [
         'date'      => 1000,
         'author_id' => 2,
     ];
 
-    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
-    $accessor = new ReflectionAccessor($article);
+    $accessor = new ReflectionAccessor($this->article);
 
     $result = $accessor->callProtectedMethod('isNew', [$row]);
     expect($result)->toBeTrue();
@@ -626,56 +471,42 @@ it('checks if page is new', function () {
 });
 
 it('gets image from content', function () {
-    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
-
     Config::$modSettings['lp_show_images_in_articles'] = 1;
-    Config::$modSettings['smileys_url'] = '';
 
     $row = ['content' => 'Some content with <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAB..." alt="test"> image'];
 
-    $reflection = new ReflectionAccessor($article);
+    $accessor = new ReflectionAccessor($this->article);
 
-    $result = $reflection->callProtectedMethod('getImage', [$row]);
+    $result = $accessor->callProtectedMethod('getImage', [$row]);
     expect($result)->toBeString();
 
     Config::$modSettings['lp_show_images_in_articles'] = 0;
-    Config::$modSettings['smileys_url'] = '';
 
-    $result = $reflection->callProtectedMethod('getImage', [$row]);
+    $result = $accessor->callProtectedMethod('getImage', [$row]);
     expect($result)->toBe('');
 });
 
 it('checks edit permissions structure', function () {
-    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
+    User::$me = new User(1);
+    User::$me->is_admin = true;
 
-    $userMock = Mockery::mock(User::class);
-    $userMock->is_admin = true;
-    $userMock->id = 1;
-
-    $accessorUser = new ReflectionAccessor($userMock);
-    $accessorUser->setProtectedProperty('me', $userMock);
-
-    $reflection = new ReflectionAccessor($article);
-    $result = $reflection->callProtectedMethod('canEdit', [['author_id' => 2]]);
+    $accessor = new ReflectionAccessor($this->article);
+    $result = $accessor->callProtectedMethod('canEdit', [['author_id' => 2]]);
 
     expect($result)->toBeTrue();
 });
 
 it('gets edit link', function () {
-    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
-
-    $reflection = new ReflectionAccessor($article);
-    $result = $reflection->callProtectedMethod('getEditLink', [['page_id' => 42]]);
+    $accessor = new ReflectionAccessor($this->article);
+    $result = $accessor->callProtectedMethod('getEditLink', [['page_id' => 42]]);
 
     expect($result)->toBeString()
         ->and($result)->toContain('action=admin;area=lp_pages;sa=edit;id=42');
 });
 
 it('prepares teaser with last comment content', function () {
-    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
-
-    $reflection = new ReflectionAccessor($article);
-    $reflection->setProtectedProperty('sorting', 'last_comment;desc');
+    $accessor = new ReflectionAccessor($this->article);
+    $accessor->setProtectedProperty('sorting', 'last_comment;desc');
 
     Config::$modSettings['lp_show_teaser'] = 1;
 
@@ -687,15 +518,13 @@ it('prepares teaser with last comment content', function () {
         'comment_message' => 'Test comment message',
     ];
 
-    $accessor = new ReflectionAccessor($article);
     $accessor->callProtectedMethod('prepareTeaser', [&$page, $row]);
 
     expect($page)->toHaveKey('teaser');
 });
 
 it('prepares teaser with description when available', function () {
-    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
-    $accessor = new ReflectionAccessor($article);
+    $accessor = new ReflectionAccessor($this->article);
     $accessor->setProtectedProperty('sorting', 'created;desc');
 
     Config::$modSettings['lp_show_teaser'] = 1;
@@ -714,8 +543,7 @@ it('prepares teaser with description when available', function () {
 });
 
 it('prepares teaser with content when no description', function () {
-    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
-    $accessor = new ReflectionAccessor($article);
+    $accessor = new ReflectionAccessor($this->article);
     $accessor->setProtectedProperty('sorting', 'created;desc');
 
     Config::$modSettings['lp_show_teaser'] = 1;
@@ -734,8 +562,7 @@ it('prepares teaser with content when no description', function () {
 });
 
 it('prepares teaser structure', function () {
-    $article = new PageArticle(Mockery::mock(PortalSqlInterface::class));
-    $accessor = new ReflectionAccessor($article);
+    $accessor = new ReflectionAccessor($this->article);
     $accessor->setProtectedProperty('sorting', 'created;desc');
 
     Config::$modSettings['lp_show_teaser'] = 1;
@@ -751,4 +578,203 @@ it('prepares teaser structure', function () {
     $accessor->callProtectedMethod('prepareTeaser', [&$page, $row]);
 
     expect($page)->toBeArray();
+});
+
+it('processes rows with non-empty title in getData with real database', function () {
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_pages (
+            category_id, author_id, slug, type, entry_type, permissions, status,
+            num_views, num_comments, created_at, updated_at, deleted_at, last_comment_id
+        ) VALUES (0, 1, 'test-page', ?, ?, ?, ?, 10, 0, ?, 0, 0, 0)
+    ", [
+        ContentType::BBC->name(),
+        EntryType::DEFAULT->name(),
+        Permission::ALL->value,
+        Status::ACTIVE->value,
+        time(),
+    ]);
+
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO members (id_member, real_name, member_name)
+        VALUES (1, 'Test Author', 'test_author')
+    ")->execute();
+
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_translations (item_id, type, lang, title, content, description)
+        VALUES (1, 'page', 'english', 'Test Page Title', 'Test content', 'Test description')
+    ")->execute();
+
+    $this->article->init();
+    $result = $this->article->getData(0, 10, 'created;desc');
+
+    $data = iterator_to_array($result);
+    expect($data)->toHaveCount(1)
+        ->and($data[1])->toHaveKey('title')
+        ->and($data[1]['title'])->toBe('Test Page Title');
+});
+
+it('skips tags with empty title in prepareTags with real database', function () {
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_pages (
+            category_id, author_id, slug, type, entry_type, permissions, status,
+            num_views, num_comments, created_at, updated_at, deleted_at, last_comment_id
+        ) VALUES (0, 1, 'test-page', ?, ?, ?, ?, 10, 5, ?, 0, 0, 0)
+    ", [
+        ContentType::BBC->name(),
+        EntryType::DEFAULT->name(),
+        Permission::ALL->value,
+        Status::ACTIVE->value,
+        time(),
+    ]);
+
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_tags (slug, icon, status)
+        VALUES ('test-tag', 'fas fa-tag', ?)
+    ", [Status::ACTIVE->value]);
+
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_page_tag (page_id, tag_id)
+        VALUES (1, 1)
+    ")->execute();
+
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_translations (item_id, type, lang, title)
+        VALUES (1, 'tag', 'english', '')
+    ")->execute();
+
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_translations (item_id, type, lang, title, content, description)
+        VALUES (1, 'page', 'english', 'Test Page', 'Test content', 'Test description')
+    ")->execute();
+
+    $pages = [
+        1 => ['id' => 1],
+    ];
+
+    $this->article->init();
+
+    $this->article->prepareTags($pages);
+
+    expect($pages[1])->not->toHaveKey('tags');
+});
+
+it('filters pages by selected categories', function () {
+    Config::$modSettings['lp_frontpage_categories'] = '1,2';
+
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_categories (category_id, icon, status, slug)
+        VALUES
+            (1, 'fas fa-folder', ?, 'category-1'),
+            (2, 'fas fa-folder', ?, 'category-2'),
+            (3, 'fas fa-folder', ?, 'category-3')
+    ", [
+        Status::ACTIVE->value,
+        Status::ACTIVE->value,
+        Status::ACTIVE->value,
+    ]);
+
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_translations (item_id, type, lang, title)
+        VALUES
+            (1, 'category', 'english', 'Category 1'),
+            (2, 'category', 'english', 'Category 2'),
+            (3, 'category', 'english', 'Category 3')
+    ")->execute();
+
+    // Insert pages: some in categories 1 and 2, some without category (0), some in category 3
+    $now = time();
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_pages (
+            category_id, author_id, slug, type, entry_type, permissions, status,
+            num_views, num_comments, created_at, updated_at, deleted_at, last_comment_id
+        ) VALUES
+            (1, 1, 'page-in-cat-1', ?, ?, ?, ?, 10, 5, ?, 0, 0, 0),
+            (2, 1, 'page-in-cat-2', ?, ?, ?, ?, 15, 3, ?, 0, 0, 0),
+            (0, 1, 'page-no-cat', ?, ?, ?, ?, 20, 2, ?, 0, 0, 0),
+            (3, 1, 'page-in-cat-3', ?, ?, ?, ?, 25, 1, ?, 0, 0, 0)
+    ", [
+        ContentType::BBC->name(),
+        EntryType::DEFAULT->name(),
+        Permission::ALL->value,
+        Status::ACTIVE->value,
+        $now,
+        ContentType::BBC->name(),
+        EntryType::DEFAULT->name(),
+        Permission::ALL->value,
+        Status::ACTIVE->value,
+        $now,
+        ContentType::BBC->name(),
+        EntryType::DEFAULT->name(),
+        Permission::ALL->value,
+        Status::ACTIVE->value,
+        $now,
+        ContentType::BBC->name(),
+        EntryType::DEFAULT->name(),
+        Permission::ALL->value,
+        Status::ACTIVE->value,
+        $now,
+    ]);
+
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO members (id_member, real_name, member_name)
+        VALUES (1, 'Test Author', 'test_author')
+    ")->execute();
+
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_translations (item_id, type, lang, title, content, description)
+        VALUES
+            (1, 'page', 'english', 'Page in Category 1', 'Content 1', 'Description 1'),
+            (2, 'page', 'english', 'Page in Category 2', 'Content 2', 'Description 2'),
+            (3, 'page', 'english', 'Page without Category', 'Content 3', 'Description 3'),
+            (4, 'page', 'english', 'Page in Category 3', 'Content 4', 'Description 4')
+    ")->execute();
+
+    $this->article->init();
+    $result = $this->article->getData(0, 10, 'created;desc');
+
+    $data = iterator_to_array($result);
+
+    expect($data)->toHaveCount(2)
+        ->and($data)->toHaveKey(1)
+        ->and($data)->toHaveKey(2)
+        ->and($data[1]['title'])->toBe('Page in Category 1')
+        ->and($data[2]['title'])->toBe('Page in Category 2');
+});
+
+it('handles empty selected categories with category 0', function () {
+    Config::$modSettings['lp_frontpage_categories'] = '';
+    Config::$modSettings['lp_frontpage_mode'] = 'all_pages';
+
+    // Insert page without category (category_id=0)
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_pages (
+            category_id, author_id, slug, type, entry_type, permissions, status,
+            num_views, num_comments, created_at, updated_at, deleted_at, last_comment_id
+        ) VALUES (0, 1, 'page-no-cat', ?, ?, ?, ?, 10, 0, ?, 0, 0, 0)
+    ", [
+        ContentType::BBC->name(),
+        EntryType::DEFAULT->name(),
+        Permission::ALL->value,
+        Status::ACTIVE->value,
+        time(),
+    ]);
+
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO members (id_member, real_name, member_name)
+        VALUES (1, 'Test Author', 'test_author')
+    ")->execute();
+
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO lp_translations (item_id, type, lang, title, content, description)
+        VALUES (1, 'page', 'english', 'Page without Category', 'Test content', 'Test description')
+    ")->execute();
+
+    $this->article->init();
+    $result = $this->article->getData(0, 10, 'created;desc');
+
+    $data = iterator_to_array($result);
+
+    expect($data)->toHaveCount(1)
+        ->and($data)->toHaveKey(1)
+        ->and($data[1]['title'])->toBe('Page without Category');
 });

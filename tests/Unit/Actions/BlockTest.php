@@ -90,9 +90,6 @@ describe('Block::show()', function () {
     it('should return early if getFilteredByAreas() returns empty array', function () {
         Utils::$context['lp_active_blocks'] = [1 => ['id' => 1]];
 
-        User::$me = new User(1);
-        User::$me->allowedTo = fn(...$params) => true;
-
         $blockMock = Mockery::mock(Block::class)->makePartial();
         $blockMock->shouldAllowMockingProtectedMethods();
         $blockMock->shouldReceive('getFilteredByAreas')->once()->andReturn([]);
@@ -117,8 +114,6 @@ describe('Block::show()', function () {
             ]
         ];
 
-        User::$me = new User(1);
-        User::$me->is_admin = false;
         User::$me->is_guest = true;
 
         $blockMock = Mockery::mock(Block::class)->makePartial();
@@ -145,10 +140,6 @@ describe('Block::show()', function () {
             ]
         ];
 
-        User::$me = new User(1);
-        User::$me->allowedTo = fn(...$params) => true;
-        User::$me->is_admin = true;
-
         $blockMock = Mockery::mock(Block::class)->makePartial();
         $blockMock->shouldAllowMockingProtectedMethods();
         $blockMock->show();
@@ -172,8 +163,6 @@ describe('Block::show()', function () {
             ]
         ];
 
-        User::$me = new User(1);
-        User::$me->allowedTo = fn(...$params) => true;
         User::$me->is_admin = true;
 
         $blockMock = Mockery::mock(Block::class)->makePartial();
@@ -213,11 +202,7 @@ describe('Block::show()', function () {
             ]
         ];
 
-        User::$me = new User(1);
-        User::$me->allowedTo = fn(...$params) => true;
-        User::$me->is_admin = true;
         User::$me->is_guest = false;
-        User::$me->id = 1;
 
         $block = new Block();
         $block->show();

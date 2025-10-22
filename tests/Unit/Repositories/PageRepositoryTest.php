@@ -20,8 +20,6 @@ use Tests\Table;
 use Tests\TestAdapterFactory;
 use Tests\Unit\Repositories\PageRepositoryTestProvider;
 
-use function Pest\Faker\fake;
-
 arch()
     ->expect(PageRepository::class)
     ->toExtend(AbstractRepository::class)
@@ -29,9 +27,6 @@ arch()
     ->toImplement(DataManagerInterface::class);
 
 beforeEach(function() {
-    fake()->seed(12345); // Fix random data for consistent test results
-
-    Lang::$txt['guest_title'] = 'Guest';
     Lang::$txt['today'] = 'Today at';
     Lang::$txt['yesterday'] = 'Yesterday at';
     Lang::$txt['lp_just_now'] = 'just now';
@@ -41,7 +36,7 @@ beforeEach(function() {
 
     User::$me = new User(1);
     User::$me->language = 'english';
-    User::$me->groups = [];
+    User::$me->groups = [0];
 
     $adapter = TestAdapterFactory::create();
     $adapter->query(Table::PAGES->value)->execute();

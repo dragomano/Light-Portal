@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use LightPortal\Database\PortalSql;
@@ -19,10 +18,6 @@ arch()
     ->toImplement(CommentRepositoryInterface::class);
 
 beforeEach(function() {
-    Lang::$txt['guest_title'] = 'Guest';
-
-    Config::$modSettings['avatar_url'] = '';
-
     User::$me->language = 'english';
 
     $adapter = TestAdapterFactory::create();

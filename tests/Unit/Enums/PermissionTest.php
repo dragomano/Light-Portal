@@ -85,7 +85,6 @@ describe('Permission::canViewItem', function () {
         User::$me->is_admin = true;
         User::$me->is_guest = false;
         User::$me->id = 1;
-        User::$me->groups = [];
 
         expect(Permission::canViewItem(Permission::MOD))->toBeTrue();
     });
@@ -95,7 +94,7 @@ describe('Permission::canViewItem', function () {
         User::$me->is_admin = false;
         User::$me->is_guest = false;
         User::$me->id = 1;
-        User::$me->groups = [];
+        User::$me->groups = [0];
 
         expect(Permission::canViewItem(Permission::MOD))->toBeFalse();
     });
@@ -143,7 +142,6 @@ describe('Permission::all', function () {
         User::$me->is_admin = true;
         User::$me->is_guest = false;
         User::$me->id = 1;
-        User::$me->groups = [];
 
         $expected = [0, 1, 2, 3, 4]; // ADMIN, GUEST, MEMBER, ALL, MOD
 
@@ -155,7 +153,6 @@ describe('Permission::all', function () {
         User::$me->is_admin = false;
         User::$me->is_guest = true;
         User::$me->id = 0;
-        User::$me->groups = [];
 
         $expected = [1, 3]; // GUEST, ALL
 
@@ -205,7 +202,6 @@ describe('Permission::isAdminOrModerator', function () {
         User::$me->is_admin = true;
         User::$me->is_guest = false;
         User::$me->id = 1;
-        User::$me->groups = [];
 
         expect(Permission::isAdminOrModerator())->toBeTrue();
     });
