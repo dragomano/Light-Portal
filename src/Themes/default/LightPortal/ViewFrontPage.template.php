@@ -93,7 +93,7 @@ function show_sort_dropdown(): string
 /**
  * Template of header for category pages and tags
  */
-function template_category_above(): void
+function template_list_above(): void
 {
 	echo '
 	<div class="cat_bar">
@@ -112,11 +112,6 @@ function template_category_above(): void
 		</h3>
 	</div>';
 
-	if (empty(Utils::$context['lp_frontpage_articles'])) {
-		echo '
-	<div class="information">', Lang::$txt['lp_no_items'], '</div>';
-	}
-
 	if (empty(Utils::$context['description']))
 		return;
 
@@ -126,7 +121,7 @@ function template_category_above(): void
 	</div>';
 }
 
-function template_category_below()
+function template_list_below()
 {
 }
 

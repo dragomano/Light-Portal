@@ -51,8 +51,8 @@ class CardList implements CardListInterface
 		Utils::$context['lp_frontpage_articles']    = $articles;
 		Utils::$context['lp_frontpage_num_columns'] = $front->getNumColumns();
 
-		/* @uses template_category_above, template_category_below */
-		Utils::$context['template_layers'][] = 'category';
+		/* @uses template_list_above, template_list_below */
+		Utils::$context['template_layers'][] = 'list';
 
 		$front->prepareTemplates();
 
