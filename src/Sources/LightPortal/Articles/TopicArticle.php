@@ -331,11 +331,14 @@ class TopicArticle extends AbstractArticle
 
 	private function getImage(array $row): string
 	{
-		$image = empty(Config::$modSettings['lp_show_images_in_articles'])
-			? '' : Str::getImageFromText(BBCodeParser::load()->parse($row['body'], false));
+		if (empty(Config::$modSettings['lp_show_images_in_articles'])) {
+			return '';
+		}
+
+		$image = Str::getImageFromText(BBCodeParser::load()->parse($row['body'], false));
 
 		if (! empty($row['id_attach']) && empty($image)) {
-			$image = $this->getLink($row) . ';attach=' . $row['id_attach'] . ';image';
+			return $this->getLink($row) . ';attach=' . $row['id_attach'] . ';image';
 		}
 
 		return $image;

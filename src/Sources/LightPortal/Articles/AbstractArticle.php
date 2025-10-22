@@ -26,7 +26,7 @@ abstract class AbstractArticle implements ArticleInterface
 	use HasEvents;
 	use HasRequest;
 
-	protected string $sorting;
+	protected string $sorting = 'created;desc';
 
 	protected array $columns = [];
 
@@ -52,7 +52,7 @@ abstract class AbstractArticle implements ArticleInterface
 
 	protected function setSorting(?string $sortType): void
 	{
-		$this->sorting = $sortType ?: $this->sorting;
+		$this->sorting = $sortType && isset($this->orders[$sortType]) ? $sortType : $this->sorting;
 	}
 
 	protected function prepareParams(int $start, int $limit): void

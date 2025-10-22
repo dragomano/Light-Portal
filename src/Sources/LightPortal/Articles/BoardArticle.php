@@ -125,8 +125,8 @@ class BoardArticle extends AbstractArticle
 			$columns['is_read']  = new Expression('CASE WHEN COALESCE(lb.id_msg, 0) >= b.id_last_msg THEN 1 ELSE 0 END');
 			$columns['new_from'] = new Expression('COALESCE(lb.id_msg, -1) + 1');
 		} else {
-			$columns['is_read']  = new Expression('1');
-			$columns['new_from'] = new Expression('0');
+			$columns['is_read']  = new Expression('"1"');
+			$columns['new_from'] = new Expression('"0"');
 		}
 
 		if (! empty(Config::$modSettings['lp_show_images_in_articles'])) {
