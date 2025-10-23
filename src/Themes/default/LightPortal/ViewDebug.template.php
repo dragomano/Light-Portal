@@ -1,5 +1,6 @@
 <?php declare(strict_types=1);
 
+use Bugo\Compat\BrowserDetector;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
@@ -9,7 +10,7 @@ use function LightPortal\app;
 
 function template_debug_above(): void
 {
-	if (empty(Config::$modSettings['lp_show_portal_queries']))
+	if (empty(Config::$modSettings['lp_show_portal_queries']) || BrowserDetector::isBrowser('is_mobile'))
 		return;
 
 	$sql = app(PortalSqlInterface::class);
