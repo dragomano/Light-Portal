@@ -52,6 +52,7 @@ final class MiscConfig extends AbstractConfig
 			CheckConfig::make('lp_show_debug_info')
 				->setHelp('lp_show_debug_info_help'),
 			CheckConfig::make('lp_show_portal_queries')
+				->setDisabled(empty(Config::$modSettings['lp_show_debug_info']))
 				->setHelp('lp_show_debug_info_help'),
 			IntConfig::make('lp_cache_interval')
 				->setPostInput(Lang::$txt['seconds']),
