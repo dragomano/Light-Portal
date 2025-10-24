@@ -10,4 +10,4 @@ use LightPortal\Utils\Traits\HasResponse;
 
 arch()
     ->expect(PluginArea::class)
-    ->toUseTraits([HasCache::class, HasEvents::class, HasRequest::class, HasResponse::class]);
+    ->toUseTraits([HasCache::class, HasRequest::class, HasResponse::class]);

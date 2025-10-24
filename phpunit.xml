@@ -36,6 +36,8 @@
 			<file>src/Sources/LightPortal/Areas/Configs/index.php</file>
 			<file>src/Sources/LightPortal/Areas/Traits/index.php</file>
 			<file>src/Sources/LightPortal/Areas/index.php</file>
+			<file>src/Sources/LightPortal/Articles/Queries/index.php</file>
+			<file>src/Sources/LightPortal/Articles/Services/index.php</file>
 			<file>src/Sources/LightPortal/Articles/index.php</file>
 			<file>src/Sources/LightPortal/Database/Migrations/Columns/index.php</file>
 			<file>src/Sources/LightPortal/Database/Migrations/Creators/index.php</file>
