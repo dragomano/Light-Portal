@@ -44,6 +44,14 @@ use LightPortal\Articles\BoardArticle;
 use LightPortal\Articles\ChosenPageArticle;
 use LightPortal\Articles\ChosenTopicArticle;
 use LightPortal\Articles\PageArticle;
+use LightPortal\Articles\Queries\BoardArticleQuery;
+use LightPortal\Articles\Queries\ChosenPageArticleQuery;
+use LightPortal\Articles\Queries\ChosenTopicArticleQuery;
+use LightPortal\Articles\Queries\PageArticleQuery;
+use LightPortal\Articles\Queries\TopicArticleQuery;
+use LightPortal\Articles\Services\BoardArticleService;
+use LightPortal\Articles\Services\PageArticleService;
+use LightPortal\Articles\Services\TopicArticleService;
 use LightPortal\Articles\TopicArticle;
 use LightPortal\Database\PortalAdapterFactory;
 use LightPortal\Database\PortalSql;
@@ -58,8 +66,10 @@ use LightPortal\DataHandlers\Imports\CategoryImport;
 use LightPortal\DataHandlers\Imports\PageImport;
 use LightPortal\DataHandlers\Imports\PluginImport;
 use LightPortal\DataHandlers\Imports\TagImport;
+use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Events\EventManager;
 use LightPortal\Events\EventManagerFactory;
+use LightPortal\Events\EventManagerProxy;
 use LightPortal\Lists\BlockList;
 use LightPortal\Lists\CategoryList;
 use LightPortal\Lists\IconList;
@@ -236,24 +246,71 @@ class ServiceProvider extends AbstractServiceProvider
 
 			'articles' => [
 				[
-					'id' => PageArticle::class,
-					'arguments' => [PortalSqlInterface::class],
-				],
-				[
-					'id' => TopicArticle::class,
-					'arguments' => [PortalSqlInterface::class],
-				],
-				[
 					'id' => BoardArticle::class,
-					'arguments' => [PortalSqlInterface::class],
+					'arguments' => [BoardArticleService::class],
+				],
+				[
+					'id' => BoardArticleService::class,
+					'arguments' => [BoardArticleQuery::class, EventDispatcherInterface::class],
+				],
+				[
+					'id' => BoardArticleQuery::class,
+					'arguments' => [PortalSqlInterface::class, EventDispatcherInterface::class],
 				],
 				[
 					'id' => ChosenPageArticle::class,
-					'arguments' => [PortalSqlInterface::class],
+					'concrete' => fn() => new ChosenPageArticle(
+						new PageArticleService(
+							$this->container->get(ChosenPageArticleQuery::class),
+							$this->container->get(EventDispatcherInterface::class),
+							$this->container->get(PageRepositoryInterface::class)
+						)
+					),
+				],
+				[
+					'id' => ChosenPageArticleQuery::class,
+					'arguments' => [PortalSqlInterface::class, EventDispatcherInterface::class],
 				],
 				[
 					'id' => ChosenTopicArticle::class,
-					'arguments' => [PortalSqlInterface::class],
+					'concrete' => fn() => new ChosenTopicArticle(
+						new TopicArticleService(
+							$this->container->get(ChosenTopicArticleQuery::class),
+							$this->container->get(EventDispatcherInterface::class)
+						)
+					),
+				],
+				[
+					'id' => ChosenTopicArticleQuery::class,
+					'arguments' => [PortalSqlInterface::class, EventDispatcherInterface::class],
+				],
+				[
+					'id' => PageArticle::class,
+					'arguments' => [PageArticleService::class],
+				],
+				[
+					'id' => PageArticleService::class,
+					'arguments' => [
+						PageArticleQuery::class,
+						EventDispatcherInterface::class,
+						PageRepositoryInterface::class,
+					],
+				],
+				[
+					'id' => PageArticleQuery::class,
+					'arguments' => [PortalSqlInterface::class, EventDispatcherInterface::class],
+				],
+				[
+					'id' => TopicArticle::class,
+					'arguments' => [TopicArticleService::class],
+				],
+				[
+					'id' => TopicArticleService::class,
+					'arguments' => [TopicArticleQuery::class, EventDispatcherInterface::class],
+				],
+				[
+					'id' => TopicArticleQuery::class,
+					'arguments' => [PortalSqlInterface::class, EventDispatcherInterface::class],
 				],
 			],
 
@@ -267,6 +324,11 @@ class ServiceProvider extends AbstractServiceProvider
 					'id' => PluginHandler::class,
 					'concrete' => fn() => fn(array $plugins = []) => new PluginHandler($plugins),
 				],
+				[
+					'id' => EventDispatcherInterface::class,
+					'concrete' => EventManagerProxy::class,
+					'arguments' => [EventManagerFactory::class],
+				]
 			],
 
 			'repositories' => [
@@ -494,7 +556,7 @@ class ServiceProvider extends AbstractServiceProvider
 			'plugin_area_export_import' => [
 				[
 					'id' => PluginArea::class,
-					'arguments' => [PluginRepositoryInterface::class],
+					'arguments' => [PluginRepositoryInterface::class, EventDispatcherInterface::class],
 				],
 				[
 					'id' => PluginExport::class,

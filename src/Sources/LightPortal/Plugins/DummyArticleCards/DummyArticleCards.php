@@ -8,13 +8,12 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 23.10.25
  */
 
 namespace LightPortal\Plugins\DummyArticleCards;
 
 use Bugo\Compat\Config;
-use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Enums\PluginType;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Plugin;
@@ -34,7 +33,7 @@ class DummyArticleCards extends Plugin
 	{
 		$e->args->modes[$this->mode] = DummyArticle::class;
 
-		app()->add(DummyArticle::class)->addArgument(PortalSqlInterface::class);
+		app()->add(DummyArticle::class);
 
 		Config::$modSettings['lp_frontpage_mode'] = $this->mode;
 	}

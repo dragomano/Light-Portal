@@ -10,15 +10,8 @@
  * @version 3.0
  */
 
-namespace LightPortal\Articles;
+namespace LightPortal\Articles\Services;
 
-interface ArticleInterface
-{
-	public function init(): void;
+use LightPortal\Articles\ArticleInterface;
 
-	public function getSortingOptions(): array;
-
-	public function getData(int $start, int $limit, ?string $sortType): iterable;
-
-	public function getTotalCount(): int;
-}
+interface ArticleServiceInterface extends ArticleInterface {}

@@ -10,15 +10,19 @@
  * @version 3.0
  */
 
-namespace LightPortal\Articles;
+namespace LightPortal\Articles\Queries;
 
-interface ArticleInterface
+interface ArticleQueryInterface
 {
-	public function init(): void;
+	public function init(array $params): void;
 
-	public function getSortingOptions(): array;
+	public function setSorting(?string $sortType): void;
 
-	public function getData(int $start, int $limit, ?string $sortType): iterable;
+	public function getSorting(): string;
+
+	public function prepareParams(int $start, int $limit): void;
+
+	public function getRawData(): iterable;
 
 	public function getTotalCount(): int;
 }

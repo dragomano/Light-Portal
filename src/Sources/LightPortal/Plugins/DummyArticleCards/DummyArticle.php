@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 23.10.25
  */
 
 namespace LightPortal\Plugins\DummyArticleCards;
@@ -17,17 +17,16 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use LightPortal\Articles\AbstractArticle;
+use LightPortal\Articles\ArticleInterface;
 use LightPortal\Enums\PortalSubAction;
 use LightPortal\Utils\Traits\HasCache;
 use DateTime;
 use Exception;
-use Laminas\Db\Sql\Select;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class DummyArticle extends AbstractArticle
+class DummyArticle implements ArticleInterface
 {
 	use HasCache;
 
@@ -128,6 +127,4 @@ class DummyArticle extends AbstractArticle
 
 		return Utils::jsonDecode($data, true)['users'] ?? [];
 	}
-
-	protected function applyBaseConditions(Select $select): void {}
 }

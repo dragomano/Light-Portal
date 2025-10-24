@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 23.10.25
  */
 
 namespace LightPortal\Plugins\BlogMode;
@@ -22,9 +22,12 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use LightPortal\Areas\Configs\BasicConfig;
+use LightPortal\Articles\PageArticle;
+use LightPortal\Articles\Services\PageArticleService;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Enums\Action;
 use LightPortal\Enums\ForumHook;
+use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Plugin;
 use LightPortal\Plugins\PluginAttribute;
@@ -78,7 +81,16 @@ class BlogMode extends Plugin
 
 		$e->args->modes[$this->mode] = BlogArticle::class;
 
-		app()->add(BlogArticle::class)->addArgument(PortalSqlInterface::class);
+		app()->add(BlogArticleQuery::class)
+			->addArguments([PortalSqlInterface::class, EventDispatcherInterface::class]);
+
+		app()->add(BlogArticle::class, fn() => new PageArticle(
+			new PageArticleService(
+				app()->get(BlogArticleQuery::class),
+				app()->get(EventDispatcherInterface::class),
+				app()->get(PageRepositoryInterface::class)
+			)
+		));
 
 		Config::$modSettings['lp_frontpage_mode'] = $this->mode;
 	}

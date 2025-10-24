@@ -21,9 +21,9 @@ use Bugo\Compat\WebFetch\WebFetchApi;
 use LightPortal\Enums\PluginType;
 use LightPortal\Enums\PortalHook;
 use LightPortal\Enums\VarType;
-use LightPortal\Events\HasEvents;
+use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Lists\PluginList;
-use LightPortal\Repositories\PluginRepository;
+use LightPortal\Repositories\PluginRepositoryInterface;
 use LightPortal\Utils\DateTime;
 use LightPortal\Utils\Icon;
 use LightPortal\Utils\Language;
@@ -44,11 +44,13 @@ if (! defined('SMF'))
 final readonly class PluginArea
 {
 	use HasCache;
-	use HasEvents;
 	use HasRequest;
 	use HasResponse;
 
-	public function __construct(private PluginRepository $repository) {}
+	public function __construct(
+		private PluginRepositoryInterface $repository,
+		private EventDispatcherInterface $events
+	) {}
 
 	public function main(): void
 	{
@@ -81,8 +83,9 @@ final readonly class PluginArea
 
 		$settings = [];
 
-		// Plugin authors can add settings here
-		$this->events(Utils::$context['lp_plugins'])->dispatch(PortalHook::addSettings, ['settings' => &$settings]);
+		$this->events
+			->withPlugins(Utils::$context['lp_plugins'])
+			->dispatch(PortalHook::addSettings, ['settings' => &$settings]);
 
 		$this->handleSave($settings);
 		$this->prepareAddonList($settings);
@@ -153,8 +156,9 @@ final readonly class PluginArea
 			}
 		}
 
-		// Plugin authors can do additional actions after settings saving
-		$this->events(Utils::$context['lp_plugins'])->dispatch(PortalHook::saveSettings, ['settings' => &$settings]);
+		$this->events
+			->withPlugins(Utils::$context['lp_plugins'])
+			->dispatch(PortalHook::saveSettings, ['settings' => &$settings]);
 
 		$this->repository->changeSettings($name, $settings);
 

@@ -39,4 +39,6 @@ interface PageRepositoryInterface extends RepositoryInterface
 	public function getMenuItems(): array;
 
 	public function prepareData(?array &$data): void;
+
+	public function fetchTags(array $pageIds): iterable;
 }

@@ -13,12 +13,17 @@
 
 namespace LightPortal\Plugins\BlogMode;
 
-use LightPortal\Articles\PageArticle;
+use LightPortal\Articles\Queries\PageArticleQuery;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class BlogArticle extends PageArticle
+class BlogArticleQuery extends PageArticleQuery
 {
-	public const TYPE = 'blog';
+	public function init(array $params): void
+	{
+		$params['entry_type'] = BlogArticle::TYPE;
+
+		parent::init($params);
+	}
 }

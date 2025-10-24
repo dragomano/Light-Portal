@@ -8,14 +8,13 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 23.10.25
  */
 
 namespace LightPortal\Plugins\SiteList;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
-use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Enums\PluginType;
 use LightPortal\Enums\VarType;
 use LightPortal\Plugins\Event;
@@ -71,7 +70,7 @@ class SiteList extends Plugin
 	{
 		$e->args->modes[$this->mode] = SiteArticle::class;
 
-		app()->add(SiteArticle::class)->addArgument(PortalSqlInterface::class);
+		app()->add(SiteArticle::class);
 
 		Config::$modSettings['lp_frontpage_mode'] = $this->mode;
 	}

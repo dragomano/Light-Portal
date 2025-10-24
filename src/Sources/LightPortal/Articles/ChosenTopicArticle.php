@@ -12,41 +12,7 @@
 
 namespace LightPortal\Articles;
 
-use LightPortal\Utils\Setting;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class ChosenTopicArticle extends TopicArticle
-{
-	private array $selectedTopics = [];
-
-	public function init(): void
-	{
-		parent::init();
-
-		$this->selectedBoards = [];
-
-		$this->selectedTopics = Setting::get('lp_frontpage_topics', 'array', []);
-
-		$this->wheres[] = ['t.id_topic' => $this->selectedTopics];
-
-		$this->params['selected_topics'] = $this->selectedTopics;
-	}
-
-	public function getData(int $start, int $limit, string $sortType = null): iterable
-	{
-		if (empty($this->selectedTopics))
-			return [];
-
-		return parent::getData($start, $limit, $sortType);
-	}
-
-	public function getTotalCount(): int
-	{
-		if (empty($this->selectedTopics))
-			return 0;
-
-		return parent::getTotalCount();
-	}
-}
+class ChosenTopicArticle extends TopicArticle {}

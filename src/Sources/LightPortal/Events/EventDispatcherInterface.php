@@ -10,17 +10,15 @@
  * @version 3.0
  */
 
-namespace LightPortal\Articles;
+namespace LightPortal\Events;
 
-use LightPortal\Articles\Services\BoardArticleService;
+use LightPortal\Enums\PortalHook;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
-class BoardArticle extends AbstractArticle
+interface EventDispatcherInterface
 {
-	public function __construct(BoardArticleService $service)
-	{
-		parent::__construct($service);
-	}
+	public function dispatch(PortalHook $hook, array $params = []): void;
+
+	public function withPlugins(array $plugins): self;
+
+	public function getAll(string $event = ''): array;
 }

@@ -8,7 +8,7 @@
  * @license Individual (for sponsors)
  *
  * @category plugin
- * @version 17.10.25
+ * @version 23.10.25
  */
 
 namespace LightPortal\Plugins\SiteList;
@@ -16,13 +16,12 @@ namespace LightPortal\Plugins\SiteList;
 use Bugo\Compat\Config;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use LightPortal\Articles\AbstractArticle;
-use Laminas\Db\Sql\Select;
+use LightPortal\Articles\ArticleInterface;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class SiteArticle extends AbstractArticle
+class SiteArticle implements ArticleInterface
 {
 	private array $sites = [];
 
@@ -36,7 +35,7 @@ class SiteArticle extends AbstractArticle
 		return [];
 	}
 
-	public function getData(int $start, int $limit, string $sortType = null): iterable
+	public function getData(int $start, int $limit, ?string $sortType): iterable
 	{
 		foreach ($this->sites as $url => $data) {
 			$item = [
@@ -60,6 +59,4 @@ class SiteArticle extends AbstractArticle
 
 		return count($this->sites);
 	}
-
-	protected function applyBaseConditions(Select $select): void {}
 }

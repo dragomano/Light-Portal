@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 21.10.25
+ * @version 22.10.25
  */
 
 namespace LightPortal\Plugins\RandomTopics;
@@ -148,7 +148,7 @@ class RandomTopics extends Block
 			);
 
 		if (User::$me->is_guest) {
-			$columns['is_read'] = new Expression('1');
+			$columns['is_read'] = new Expression('"1"');
 		} else {
 			$select->join(
 				['lt' => 'log_topics'],
