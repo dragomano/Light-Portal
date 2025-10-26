@@ -41,6 +41,7 @@ class CustomTestCase extends TestCase
         User::$me->groups = [0];
         User::$me->is_guest = false;
         User::$me->is_admin = false;
+        User::$me->permissions = ['manage_boards'];
         User::$me->allowedTo = fn($permission) => false;
 
         array_map(fn($u) => new $u(), [
@@ -56,5 +57,14 @@ class CustomTestCase extends TestCase
         parent::tearDownAfterClass();
 
         Mockery::close();
+    }
+
+    protected function setUp(): void
+    {
+    }
+
+    protected function tearDown(): void
+    {
+        AppMockRegistry::clear();
     }
 }

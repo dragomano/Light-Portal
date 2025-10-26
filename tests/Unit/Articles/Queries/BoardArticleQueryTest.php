@@ -5,11 +5,11 @@ declare(strict_types=1);
 use Bugo\Compat\Config;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
+use Laminas\Db\Sql\Select;
 use Laminas\Db\Sql\Where;
 use LightPortal\Articles\Queries\BoardArticleQuery;
 use LightPortal\Database\PortalSql;
 use LightPortal\Events\EventDispatcherInterface;
-use Prophecy\Prophet;
 use Tests\ReflectionAccessor;
 use Tests\Table;
 use Tests\TestAdapterFactory;
@@ -45,10 +45,8 @@ beforeEach(function() {
 
     $this->sql = new PortalSql($adapter);
 
-    $this->prophet = new Prophet();
-
-    $prophecy = $this->prophet->prophesize(EventDispatcherInterface::class);
-    $this->eventsMock = $prophecy->reveal();
+    $this->eventsMock = mock(EventDispatcherInterface::class);
+    $this->eventsMock->shouldReceive('dispatch')->andReturn(null)->byDefault();
 
     $this->query = new BoardArticleQuery($this->sql, $this->eventsMock);
 });
@@ -135,11 +133,24 @@ it('returns total count correctly', function () {
     ")->execute();
 
     $this->sql->getAdapter()->query(/** @lang text */ "
-        INSERT INTO boards (id_board, id_cat, name, description)
-        VALUES (1, 1, 'Board 1', 'Desc 1'), (2, 1, 'Board 2', 'Desc 2'), (3, 1, 'Board 3', 'Desc 3')
+        INSERT INTO members (id_member, real_name, member_name, id_group)
+        VALUES (1, 'Test Author', 'test_author', 0)
+    ")->execute();
+
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO boards (id_board, id_cat, name, description, id_last_msg)
+        VALUES (1, 1, 'Board 1', 'Desc 1', 1), (2, 1, 'Board 2', 'Desc 2', 2)
+    ")->execute();
+
+    $this->sql->getAdapter()->query(/** @lang text */ "
+        INSERT INTO messages (id_msg, id_topic, id_board, poster_time, id_member, subject, poster_name, poster_email, poster_ip, body, approved, modified_time)
+        VALUES (1, 1, 1, 1000, 1, 'Test Message 1', 'Test Author', 'test@example.com', '127.0.0.1', 'Content 1', 1, 1000),
+            (2, 2, 2, 2000, 1, 'Test Message 2', 'Test Author', 'test@example.com', '127.0.0.1', 'Content 2', 1, 2000)
     ")->execute();
 
     $this->query->init(['selected_boards' => [1, 2]]);
+    $this->query->setSorting('created;desc');
+    $this->query->prepareParams(0, 10);
 
     $count = $this->query->getTotalCount();
 
@@ -162,4 +173,56 @@ it('returns zero count when no boards selected', function () {
     $count = $this->query->getTotalCount();
 
     expect($count)->toBe(0);
+});
+
+it('applies custom columns when set', function () {
+    $this->query->init(['selected_boards' => [1]]);
+
+    $accessor = new ReflectionAccessor($this->query);
+    $accessor->setProtectedProperty('columns', ['custom_column']);
+
+    $select = $this->sql->select()->from('boards');
+    $accessor->callProtectedMethod('applyColumns', [$select]);
+
+    $rawState = $select->getRawState(Select::COLUMNS);
+
+    expect($rawState)->toContain('custom_column');
+});
+
+it('applies custom joins when set', function () {
+    $this->query->init(['selected_boards' => [1]]);
+
+    $accessor = new ReflectionAccessor($this->query);
+
+    $joinApplied = false;
+    $accessor->setProtectedProperty('joins', [
+        function ($sel) use (&$joinApplied) {
+            $joinApplied = true;
+            $sel->join('custom_table', 'condition');
+        }
+    ]);
+
+    $select = $this->sql->select()->from('boards');
+    $accessor->callProtectedMethod('applyJoins', [$select]);
+
+    expect($joinApplied)->toBeTrue();
+});
+
+it('applies custom wheres when set', function () {
+    $this->query->init(['selected_boards' => [1]]);
+
+    $accessor = new ReflectionAccessor($this->query);
+
+    $whereApplied = false;
+    $accessor->setProtectedProperty('wheres', [
+        function ($sel) use (&$whereApplied) {
+            $whereApplied = true;
+            $sel->where('custom_condition');
+        }
+    ]);
+
+    $select = $this->sql->select()->from('boards');
+    $accessor->callProtectedMethod('applyWheres', [$select]);
+
+    expect($whereApplied)->toBeTrue();
 });

@@ -15,9 +15,9 @@ use function Pest\Faker\fake;
 uses(DataHandlerTestTrait::class);
 
 beforeEach(function () {
-    $this->repository = Mockery::mock(CategoryRepositoryInterface::class);
-    $this->fileMock = Mockery::mock(FilesystemInterface::class);
-    $this->errorHandlerMock = Mockery::mock(ErrorHandlerInterface::class);
+    $this->repository = mock(CategoryRepositoryInterface::class);
+    $this->fileMock = mock(FilesystemInterface::class);
+    $this->errorHandlerMock = mock(ErrorHandlerInterface::class);
 
     $mocks = $this->setupDataHandlerTestEnvironment([
         'databaseOptions' => ['fetchAssocResult' => 'skip'],
@@ -70,7 +70,7 @@ dataset('category export scenarios', function () {
 });
 
 it('getData processes category data correctly', function ($icon, $description, $priority, $status, $slug) {
-    $export = Mockery::mock(CategoryExport::class, [$this->repository, $this->sqlMock, $this->fileMock, $this->errorHandlerMock])->makePartial();
+    $export = mock(CategoryExport::class, [$this->repository, $this->sqlMock, $this->fileMock, $this->errorHandlerMock])->makePartial();
     $export->shouldAllowMockingProtectedMethods();
 
     $this->requestMock->shouldReceive('isEmpty')->with('categories')->andReturn(false);
@@ -123,7 +123,7 @@ dataset('category file export counts', function () {
 });
 
 it('getFile calls createXmlFile with category attributes', function ($count) {
-    $export = Mockery::mock(CategoryExport::class, [$this->repository, $this->sqlMock, $this->fileMock, $this->errorHandlerMock])
+    $export = mock(CategoryExport::class, [$this->repository, $this->sqlMock, $this->fileMock, $this->errorHandlerMock])
         ->makePartial();
     $export->shouldAllowMockingProtectedMethods();
 
@@ -232,7 +232,7 @@ it('should generate invalid data for validation testing', function () {
 });
 
 it('should handle database error gracefully during export', function () {
-    $export = Mockery::mock(
+    $export = mock(
         CategoryExport::class,
         [$this->repository, $this->sqlMock, $this->fileMock, $this->errorHandlerMock]
     )->makePartial();

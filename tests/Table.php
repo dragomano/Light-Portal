@@ -119,6 +119,15 @@ enum Table: string
             approved INTEGER NOT NULL DEFAULT 1
         )';
 
+    case THEMES = /** @lang text */ '
+        CREATE TABLE themes (
+            id_theme INTEGER NOT NULL DEFAULT 1,
+            id_member INTEGER NOT NULL DEFAULT 0,
+            variable TEXT NOT NULL,
+            value TEXT NOT NULL,
+            PRIMARY KEY (id_theme, id_member, variable)
+        )';
+
     case TOPICS = /** @lang text */ '
         CREATE TABLE topics (
             id_topic INTEGER PRIMARY KEY AUTOINCREMENT,

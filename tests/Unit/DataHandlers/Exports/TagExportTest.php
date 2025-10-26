@@ -20,11 +20,11 @@ dataset('tag export scenarios', [
 ]);
 
 beforeEach(function () {
-    $this->repository       = Mockery::mock(TagRepositoryInterface::class);
-    $this->requestMock      = Mockery::mock(RequestInterface::class);
+    $this->repository       = mock(TagRepositoryInterface::class);
+    $this->requestMock      = mock(RequestInterface::class);
     $this->sqlMock          = $this->createDatabaseMock();
-    $this->fileMock         = Mockery::mock(FilesystemInterface::class);
-    $this->errorHandlerMock = Mockery::mock(ErrorHandlerInterface::class);
+    $this->fileMock         = mock(FilesystemInterface::class);
+    $this->errorHandlerMock = mock(ErrorHandlerInterface::class);
 
     AppMockRegistry::set(RequestInterface::class, $this->requestMock);
 });
@@ -34,7 +34,7 @@ afterEach(function () {
 });
 
 it('getData processes tag data', function ($hasPages, $hasFrequency) {
-    $export = Mockery::mock(
+    $export = mock(
         TagExport::class,
         [$this->repository, $this->sqlMock, $this->fileMock, $this->errorHandlerMock]
     )
@@ -93,7 +93,7 @@ it('getData processes tag data', function ($hasPages, $hasFrequency) {
 })->with('tag export scenarios');
 
 it('getFile calls createXmlFile with tag attributes', function () {
-    $export = Mockery::mock(TagExport::class, [$this->repository, $this->sqlMock, $this->fileMock, $this->errorHandlerMock])
+    $export = mock(TagExport::class, [$this->repository, $this->sqlMock, $this->fileMock, $this->errorHandlerMock])
         ->makePartial();
     $export->shouldAllowMockingProtectedMethods();
 

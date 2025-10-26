@@ -25,7 +25,7 @@ it('getInstance returns LeagueContainer instance', function () {
 });
 
 it('get returns service from container', function () {
-    $mockContainer = Mockery::mock(LeagueContainer::class);
+    $mockContainer = mock(LeagueContainer::class);
     $mockContainer->shouldReceive('get')->with('test_service')->andReturn('mocked_service');
 
     $this->container->setProtectedProperty('container', $mockContainer);

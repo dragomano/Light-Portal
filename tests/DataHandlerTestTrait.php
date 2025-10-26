@@ -27,7 +27,7 @@ trait DataHandlerTestTrait
 {
     protected function mockRequestMethods(array $methods = []): RequestInterface
     {
-        $requestMock = Mockery::mock(RequestInterface::class);
+        $requestMock = mock(RequestInterface::class);
 
         $defaultMethods = [
             'isEmpty' => false,
@@ -41,7 +41,7 @@ trait DataHandlerTestTrait
         $allMethods = array_merge($defaultMethods, $methods);
 
         foreach ($allMethods as $method => $returnValue) {
-            if ($method === 'get' && is_callable($returnValue)) {
+            if (is_callable($returnValue)) {
                 $requestMock->shouldReceive($method)->andReturnUsing($returnValue);
             } else {
                 $requestMock->shouldReceive($method)->andReturn($returnValue);
@@ -85,7 +85,7 @@ trait DataHandlerTestTrait
         array $methods = []
     ): Mockery\MockInterface
     {
-        $mock = Mockery::mock($class, $constructorArgs)->makePartial()->shouldAllowMockingProtectedMethods();
+        $mock = mock($class, $constructorArgs)->makePartial()->shouldAllowMockingProtectedMethods();
 
         foreach ($methods as $method => $returnValue) {
             $mock->shouldReceive($method)->andReturn($returnValue);
@@ -102,7 +102,7 @@ trait DataHandlerTestTrait
 
     protected function createErrorHandlerMock(array $options = []): Mockery\MockInterface
     {
-        $mock = Mockery::mock(ErrorHandlerInterface::class);
+        $mock = mock(ErrorHandlerInterface::class);
         $mock->shouldReceive('fatal')->andReturnNull();
         $mock->shouldReceive('log')->andReturnNull();
         $mock->shouldReceive('handle')->andReturnNull();
@@ -126,29 +126,29 @@ trait DataHandlerTestTrait
 
     protected function createDatabaseMock(): Mockery\MockInterface
     {
-        $connectionMock = Mockery::mock(ConnectionInterface::class);
+        $connectionMock = mock(ConnectionInterface::class);
 
-        $transactionMock = Mockery::mock(PortalTransactionInterface::class);
+        $transactionMock = mock(PortalTransactionInterface::class);
         $transactionMock->allows([
             'begin'    => $connectionMock,
             'commit'   => $connectionMock,
             'rollback' => $connectionMock,
         ]);
 
-        $resultMock = Mockery::mock(ResultInterface::class);
+        $resultMock = mock(ResultInterface::class);
         $resultMock->allows([
             'getAffectedRows'   => 1,
             'getGeneratedValue' => 1,
         ]);
 
-        $whereMock = Mockery::mock();
+        $whereMock = mock();
         $whereMock->allows([
             'in'      => $whereMock,
             'equalTo' => $whereMock,
             'or'      => $whereMock,
         ]);
 
-        $updateMock = Mockery::mock(PortalUpdate::class);
+        $updateMock = mock(PortalUpdate::class);
         $updateMock->allows([
             'set'     => $updateMock,
             'where'   => $whereMock,
@@ -157,17 +157,17 @@ trait DataHandlerTestTrait
             'columns' => $updateMock,
         ]);
 
-        $replaceMock = Mockery::mock(PortalReplace::class);
+        $replaceMock = mock(PortalReplace::class);
         $replaceMock->allows([
             'setConflictKeys' => $replaceMock,
             'batch'           => $replaceMock,
         ]);
 
-        $insertMock = Mockery::mock(PortalInsert::class)
+        $insertMock = mock(PortalInsert::class)
             ->shouldReceive('batch')->andReturnSelf()
             ->getMock();
 
-        $selectMock = Mockery::mock(PortalSelect::class);
+        $selectMock = mock(PortalSelect::class);
         $selectMock->allows([
             'from'    => $selectMock,
             'join'    => $selectMock,
@@ -177,17 +177,17 @@ trait DataHandlerTestTrait
             'offset'  => $selectMock,
         ]);
 
-        $portalSqlMock = Mockery::mock(PortalSqlInterface::class);
+        $portalSqlMock = mock(PortalSqlInterface::class);
         $portalSqlMock->allows([
             'getPrefix'      => 'lp_',
             'tableExists'    => true,
             'columnExists'   => true,
-            'getAdapter'     => Mockery::mock(PortalAdapterInterface::class),
+            'getAdapter'     => mock(PortalAdapterInterface::class),
             'getTransaction' => $transactionMock,
             'select'         => $selectMock,
             'insert'         => $insertMock,
             'update'         => $updateMock,
-            'delete'         => Mockery::mock(PortalDelete::class),
+            'delete'         => mock(PortalDelete::class),
             'replace'        => $replaceMock,
             'execute'        => $resultMock,
             'query'          => $resultMock,
@@ -212,7 +212,7 @@ trait DataHandlerTestTrait
 
         $config = array_merge($defaults, $options);
 
-        $mock = Mockery::mock();
+        $mock = mock();
 
         $mock->shouldReceive('extractTranslations')
             ->andReturn($config['extractTranslationsReturn']);
@@ -410,7 +410,7 @@ trait DataHandlerTestTrait
         $mocks = [];
 
         foreach ($elementData as $element) {
-            $elementMock = Mockery::mock(SimpleXMLElement::class);
+            $elementMock = mock(SimpleXMLElement::class);
 
             // Set up element attributes and content
             if (is_array($element)) {
@@ -480,7 +480,7 @@ trait DataHandlerTestTrait
      */
     protected function createXmlImporterMock(string $importerClass, array $options = []): Mockery\MockInterface
     {
-        $mock = Mockery::mock($importerClass)->makePartial()->shouldAllowMockingProtectedMethods();
+        $mock = mock($importerClass)->makePartial()->shouldAllowMockingProtectedMethods();
 
         $defaults = [
             'xmlData'                   => [],
@@ -630,7 +630,7 @@ trait DataHandlerTestTrait
             );
         }
 
-        $mock = Mockery::mock($importClass, $constructorArgs)->makePartial();
+        $mock = mock($importClass, $constructorArgs)->makePartial();
         $mock->shouldAllowMockingProtectedMethods();
 
         $mock->shouldReceive('parseXml')->andReturn($config['parseXmlReturn']);

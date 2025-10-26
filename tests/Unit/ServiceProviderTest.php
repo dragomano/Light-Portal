@@ -26,8 +26,8 @@ it('provides returns false for unregistered services', function () {
 });
 
 it('registers adds all services to container', function () {
-    $mockContainer = Mockery::mock(LeagueContainer::class);
-    $mockDefinition = Mockery::mock(DefinitionInterface::class);
+    $mockContainer = mock(LeagueContainer::class);
+    $mockDefinition = mock(DefinitionInterface::class);
     $mockContainer->shouldReceive('add')
         ->andReturn($mockDefinition)
         ->zeroOrMoreTimes();
@@ -44,8 +44,8 @@ it('registers adds all services to container', function () {
 });
 
 it('registers configures container properly', function () {
-    $mockContainer = Mockery::mock(LeagueContainer::class);
-    $mockDefinition = Mockery::mock(DefinitionInterface::class);
+    $mockContainer = mock(LeagueContainer::class);
+    $mockDefinition = mock(DefinitionInterface::class);
     $mockContainer->shouldReceive('add')
         ->andReturn($mockDefinition)
         ->zeroOrMoreTimes();

@@ -6,7 +6,7 @@ use Bugo\Compat\Config;
 use LightPortal\Utils\MessageIndex;
 
 beforeEach(function () {
-    $mockMessageIndex = Mockery::mock('overload:' . MessageIndex::class);
+    $mockMessageIndex = mock('overload:' . MessageIndex::class);
     $mockMessageIndex->shouldReceive('getBoardList')->andReturnUsing(function ($boardListOptions) {
         $recycleBoard = Config::$modSettings['recycle_board'] ?? null;
 

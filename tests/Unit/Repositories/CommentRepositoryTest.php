@@ -6,6 +6,7 @@ use Bugo\Compat\Config;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use LightPortal\Database\PortalSql;
+use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Repositories\AbstractRepository;
 use LightPortal\Repositories\CommentRepository;
 use LightPortal\Repositories\CommentRepositoryInterface;
@@ -29,8 +30,9 @@ beforeEach(function() {
     $adapter->query(Table::MEMBERS->value)->execute();
     $adapter->query(Table::USER_ALERTS->value)->execute();
 
-    $this->sql = new PortalSql($adapter);
-    $this->repository = new CommentRepository($this->sql);
+    $this->sql        = new PortalSql($adapter);
+    $this->dispatcher = mock(EventDispatcherInterface::class);
+    $this->repository = new CommentRepository($this->sql, $this->dispatcher);
 });
 
 it('can get comment data with translations', function () {
@@ -199,9 +201,9 @@ it('can remove comment and translations', function () {
 
     // Mock response to prevent exit() in remove method
     /** @var CommentRepository|Mockery\MockInterface $repository */
-    $repository = Mockery::mock($this->repository)->makePartial();
+    $repository = mock($this->repository)->makePartial();
     $repository->shouldReceive('response')
-        ->andReturn(Mockery::mock()->shouldReceive('exit')->andThrow(new Exception('exit')));
+        ->andReturn(mock()->shouldReceive('exit')->andThrow(new Exception('exit')));
 
     expect(function() use ($repository) {
         $repository->remove([1]);

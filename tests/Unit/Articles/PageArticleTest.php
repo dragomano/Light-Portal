@@ -9,25 +9,19 @@ use LightPortal\Articles\Queries\PageArticleQuery;
 use LightPortal\Articles\Services\PageArticleService;
 use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Repositories\PageRepositoryInterface;
-use Prophecy\Prophet;
 
 beforeEach(function() {
-    $this->prophet = new Prophet();
+    $this->queryMock = mock(PageArticleQuery::class);
+    $this->queryMock->shouldReceive('getTotalCount')->andReturn(0);
+    $this->queryMock->shouldReceive('getSorting')->andReturn('created;desc');
+    $this->queryMock->shouldReceive('getRawData')->andReturn([]);
 
-    $queryProphecy = $this->prophet->prophesize(PageArticleQuery::class);
-    $queryProphecy->getTotalCount()->willReturn(0);
-    $queryProphecy->getSorting()->willReturn('created;desc');
-    $queryProphecy->getRawData()->willReturn([]);
+    $eventsMock     = mock(EventDispatcherInterface::class);
+    $repositoryMock = mock(PageRepositoryInterface::class);
 
-    $eventsProphecy = $this->prophet->prophesize(EventDispatcherInterface::class);
-    $repositoryProphecy = $this->prophet->prophesize(PageRepositoryInterface::class);
+    $service = new PageArticleService($this->queryMock, $eventsMock, $repositoryMock);
 
-    $this->service = new PageArticleService(
-        $queryProphecy->reveal(),
-        $eventsProphecy->reveal(),
-        $repositoryProphecy->reveal()
-    );
-    $this->article = new PageArticle($this->service);
+    $this->article = new PageArticle($service);
 });
 
 arch()
@@ -40,6 +34,8 @@ it('accepts PageArticleService in constructor', function () {
 });
 
 it('delegates init to service', function () {
+    $this->queryMock->expects('init')->with(Mockery::type('array'));
+
     $this->article->init();
 
     expect(true)->toBeTrue();
@@ -53,7 +49,11 @@ it('delegates getSortingOptions to service', function () {
 });
 
 it('delegates getData to service', function () {
+    $this->queryMock->expects('setSorting')->with('created;desc');
+    $this->queryMock->expects('prepareParams')->with(0, 10);
+
     $result = $this->article->getData(0, 10, 'created;desc');
+
     $data = iterator_to_array($result);
 
     expect($data)->toBeArray();
@@ -67,6 +67,7 @@ it('delegates getTotalCount to service', function () {
 
 it('delegates prepareTags to service', function () {
     $pages = [];
+
     $this->article->prepareTags($pages);
 
     expect($pages)->toBeArray();

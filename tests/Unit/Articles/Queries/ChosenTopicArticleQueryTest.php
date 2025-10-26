@@ -8,7 +8,6 @@ use Laminas\Db\Sql\Where;
 use LightPortal\Articles\Queries\ChosenTopicArticleQuery;
 use LightPortal\Database\PortalSql;
 use LightPortal\Events\EventDispatcherInterface;
-use Prophecy\Prophet;
 use Tests\Table;
 use Tests\TestAdapterFactory;
 
@@ -36,10 +35,8 @@ beforeEach(function() {
 
     $this->sql = new PortalSql($adapter);
 
-    $this->prophet = new Prophet();
-
-    $prophecy = $this->prophet->prophesize(EventDispatcherInterface::class);
-    $this->eventsMock = $prophecy->reveal();
+    $this->eventsMock = mock(EventDispatcherInterface::class);
+    $this->eventsMock->shouldReceive('dispatch')->andReturn(null)->byDefault();
 
     $this->query = new ChosenTopicArticleQuery($this->sql, $this->eventsMock);
 });

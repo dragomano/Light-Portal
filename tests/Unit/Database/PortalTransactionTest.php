@@ -10,10 +10,10 @@ use Tests\ReflectionAccessor;
 
 describe('PortalTransaction', function () {
     it('sets connection from adapter in constructor', function () {
-        $connection = Mockery::mock(ConnectionInterface::class);
-        $driver = Mockery::mock(DriverInterface::class);
+        $connection = mock(ConnectionInterface::class);
+        $driver = mock(DriverInterface::class);
         $driver->shouldReceive('getConnection')->andReturn($connection);
-        $adapter = Mockery::mock(PortalAdapterInterface::class);
+        $adapter = mock(PortalAdapterInterface::class);
         $adapter->shouldReceive('getDriver')->andReturn($driver);
 
         $transaction = new ReflectionAccessor(new PortalTransaction($adapter));
@@ -23,11 +23,11 @@ describe('PortalTransaction', function () {
     });
 
     it('begins transaction and returns connection', function () {
-        $connection = Mockery::mock(ConnectionInterface::class);
+        $connection = mock(ConnectionInterface::class);
         $connection->shouldReceive('beginTransaction')->andReturn($connection);
-        $driver = Mockery::mock(DriverInterface::class);
+        $driver = mock(DriverInterface::class);
         $driver->shouldReceive('getConnection')->andReturn($connection);
-        $adapter = Mockery::mock(PortalAdapterInterface::class);
+        $adapter = mock(PortalAdapterInterface::class);
         $adapter->shouldReceive('getDriver')->andReturn($driver);
 
         $transaction = new PortalTransaction($adapter);
@@ -38,11 +38,11 @@ describe('PortalTransaction', function () {
     });
 
     it('rolls back transaction and returns connection', function () {
-        $connection = Mockery::mock(ConnectionInterface::class);
+        $connection = mock(ConnectionInterface::class);
         $connection->shouldReceive('rollback')->andReturn($connection);
-        $driver = Mockery::mock(DriverInterface::class);
+        $driver = mock(DriverInterface::class);
         $driver->shouldReceive('getConnection')->andReturn($connection);
-        $adapter = Mockery::mock(PortalAdapterInterface::class);
+        $adapter = mock(PortalAdapterInterface::class);
         $adapter->shouldReceive('getDriver')->andReturn($driver);
 
         $transaction = new PortalTransaction($adapter);
@@ -53,11 +53,11 @@ describe('PortalTransaction', function () {
     });
 
     it('commits transaction and returns connection', function () {
-        $connection = Mockery::mock(ConnectionInterface::class);
+        $connection = mock(ConnectionInterface::class);
         $connection->shouldReceive('commit')->andReturn($connection);
-        $driver = Mockery::mock(DriverInterface::class);
+        $driver = mock(DriverInterface::class);
         $driver->shouldReceive('getConnection')->andReturn($connection);
-        $adapter = Mockery::mock(PortalAdapterInterface::class);
+        $adapter = mock(PortalAdapterInterface::class);
         $adapter->shouldReceive('getDriver')->andReturn($driver);
 
         $transaction = new PortalTransaction($adapter);

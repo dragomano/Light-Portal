@@ -7,25 +7,22 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use LightPortal\Database\PortalSql;
+use LightPortal\Database\PortalTransactionInterface;
 use LightPortal\Enums\ContentType;
 use LightPortal\Enums\EntryType;
 use LightPortal\Enums\Permission;
 use LightPortal\Enums\Status;
+use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Repositories\AbstractRepository;
 use LightPortal\Repositories\DataManagerInterface;
 use LightPortal\Repositories\PageRepository;
 use LightPortal\Repositories\PageRepositoryInterface;
-use LightPortal\Utils\Notifier;
+use LightPortal\Utils\NotifierInterface;
 use Tests\PortalTable;
+use Tests\ReflectionAccessor;
 use Tests\Table;
 use Tests\TestAdapterFactory;
 use Tests\Unit\Repositories\PageRepositoryTestProvider;
-
-arch()
-    ->expect(PageRepository::class)
-    ->toExtend(AbstractRepository::class)
-    ->toImplement(PageRepositoryInterface::class)
-    ->toImplement(DataManagerInterface::class);
 
 beforeEach(function() {
     Lang::$txt['today'] = 'Today at';
@@ -56,14 +53,37 @@ beforeEach(function() {
     });
 
     $this->sql = new PortalSql($adapter);
-    $this->notifier = mock(Notifier::class);
-    $this->repository = new PageRepository($this->sql, $this->notifier);
+
+    $transactionMock = mock(PortalTransactionInterface::class);
+    $transactionMock->shouldReceive('begin')->andReturnUsing(function () use ($adapter) {
+        $adapter->getDriver()->getConnection()->beginTransaction();
+    });
+    $transactionMock->shouldReceive('commit')->andReturnUsing(function () use ($adapter) {
+        $adapter->getDriver()->getConnection()->commit();
+    });
+    $transactionMock->shouldReceive('rollback')->andReturnUsing(function () use ($adapter) {
+        $adapter->getDriver()->getConnection()->rollback();
+    });
+
+    $this->transaction = $transactionMock;
+
+    $dispatcherMock = mock(EventDispatcherInterface::class);
+    $this->dispatcher = $dispatcherMock;
+
+    $notifierMock = mock(NotifierInterface::class);
+    $this->notifier = $notifierMock;
+
+    $this->repository = new PageRepository($this->sql, $this->dispatcher, $this->notifier);
+
+    $reflection = new ReflectionAccessor($this->repository);
+    $reflection->setProtectedProperty('transaction', $this->transaction);
 });
 
-function ascii_strtolower($string): string
-{
-    return strtr($string, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz');
-}
+arch()
+    ->expect(PageRepository::class)
+    ->toExtend(AbstractRepository::class)
+    ->toImplement(PageRepositoryInterface::class)
+    ->toImplement(DataManagerInterface::class);
 
 it('can get all pages with default parameters', function () {
     // Insert test data
@@ -299,7 +319,7 @@ it('returns empty array when translations are missing', function () {
 });
 
 $provider = new PageRepositoryTestProvider();
-[$dataset, $mockData, $cmpMap, $allowedCategories] = $provider->generatePrevNextTestData();
+[$dataset, $mockData, $cmpMap] = $provider->generatePrevNextTestData();
 
 it('can get prev next links', function (
     $sorting,
@@ -312,7 +332,7 @@ it('can get prev next links', function (
     $expectedNextId,
     $withinCategory,
     $pagesForSorting
-) use ($mockData, $cmpMap, $allowedCategories) {
+) use ($mockData, $cmpMap) {
     $pageData = null;
 
     foreach ($mockData as $item) {
@@ -418,12 +438,9 @@ it('can get prev next links', function (
         }
     }
 
-    User::$me->is_admin = true;
-    User::$me->language = 'english';
-
-    Config::$language = 'english';
-
     Utils::$context['lp_current_sorting'] = $sorting;
+
+    Config::$modSettings['lp_frontpage_categories'] = implode(',', range(0, 10));
 
     $links = $this->repository->getPrevNextLinks($pageData, $withinCategory);
 

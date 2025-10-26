@@ -229,7 +229,7 @@ it('processes tag data structures correctly', function ($tagList, $expected) {
 })->with('tag data structures');
 
 it('renders to string', function () {
-    $mockRenderer = Mockery::mock();
+    $mockRenderer = mock();
     $mockRenderer->shouldReceive('render')
         ->once()
         ->andReturn('<select></select>');
@@ -277,7 +277,7 @@ it('tests getDefaultParams calls prepareSelectedValues', function () {
 
 describe('getData', function () {
     it('calls TagList as function', function () {
-        $repositoryMock = Mockery::mock(TagRepositoryInterface::class);
+        $repositoryMock = mock(TagRepositoryInterface::class);
         $repositoryMock->shouldReceive('getAll')->andReturn([
             1 => ['icon' => '📝', 'title' => 'Test Tag'],
             2 => ['icon' => '⭐', 'title' => 'Featured Tag']
@@ -295,7 +295,7 @@ describe('getData', function () {
     });
 
     it('handles empty TagList result', function () {
-        $repositoryMock = Mockery::mock(TagRepositoryInterface::class);
+        $repositoryMock = mock(TagRepositoryInterface::class);
         $repositoryMock->shouldReceive('getAll')->andReturn([]);
         $repositoryMock->shouldReceive('getTotalCount')->andReturn(0);
 
@@ -307,7 +307,7 @@ describe('getData', function () {
     });
 
     it('handles TagList with special characters in titles', function () {
-        $repositoryMock = Mockery::mock(TagRepositoryInterface::class);
+        $repositoryMock = mock(TagRepositoryInterface::class);
         $repositoryMock->shouldReceive('getAll')->andReturn([
             1 => ['icon' => '🎵', 'title' => 'Rock & Roll'],
             2 => ['icon' => '📺', 'title' => 'TV Shows & Movies'],
@@ -456,7 +456,7 @@ it('integrates with AbstractSelect parent class', function () {
     $params = $select->getParams();
     expect($params)->toBeArray();
 
-    $mockRenderer = Mockery::mock();
+    $mockRenderer = mock();
     $mockRenderer->shouldReceive('render')->andReturn('<select>test</select>');
     AppMockRegistry::set(SelectRenderer::class, $mockRenderer);
 
@@ -465,7 +465,7 @@ it('integrates with AbstractSelect parent class', function () {
 });
 
 it('integrates TagList with data transformation', function () {
-    $repositoryMock = Mockery::mock(TagRepositoryInterface::class);
+    $repositoryMock = mock(TagRepositoryInterface::class);
     $repositoryMock->shouldReceive('getAll')->andReturn([
         1 => ['icon' => '🔥', 'title' => 'Hot'],
         2 => ['icon' => '', 'title' => 'Regular'],
@@ -546,7 +546,7 @@ it('handles edge case with boolean-like context values', function () {
 it('handles edge case with very long tag titles', function () {
     $longTitle = str_repeat('Very long title ', 50);
 
-    $repositoryMock = Mockery::mock(TagRepositoryInterface::class);
+    $repositoryMock = mock(TagRepositoryInterface::class);
     $repositoryMock->shouldReceive('getAll')->andReturn([
         1 => ['icon' => '📝', 'title' => $longTitle],
         2 => ['icon' => '⭐', 'title' => 'Short'],
@@ -564,7 +564,7 @@ it('handles edge case with very long tag titles', function () {
 });
 
 it('handles edge case with unicode and emoji in tag data', function () {
-    $repositoryMock = Mockery::mock(TagRepositoryInterface::class);
+    $repositoryMock = mock(TagRepositoryInterface::class);
     $repositoryMock->shouldReceive('getAll')->andReturn([
         1 => ['icon' => '🚀', 'title' => 'Ракета'], // Russian
         2 => ['icon' => '🎯', 'title' => '目标'], // Chinese
@@ -629,7 +629,7 @@ it('handles edge case with deeply nested context', function () {
 });
 
 it('correctly initializes TagList dependency', function () {
-    $repositoryMock = Mockery::mock(TagRepositoryInterface::class);
+    $repositoryMock = mock(TagRepositoryInterface::class);
     $repositoryMock->shouldReceive('getAll')->andReturn([]);
     $repositoryMock->shouldReceive('getTotalCount')->andReturn(0);
 

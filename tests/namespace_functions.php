@@ -19,7 +19,7 @@ use LightPortal\UI\View;
 use LightPortal\Utils\CacheInterface;
 use LightPortal\Utils\RequestInterface;
 use LightPortal\Utils\ResponseInterface;
-use Mockery;
+use LightPortal\Utils\SessionInterface;
 use Tests\AppMockRegistry;
 
 if (! function_exists('LightPortal\\app')) {
@@ -51,12 +51,12 @@ if (! function_exists('LightPortal\\app')) {
                     return null;
                 }
 
-                public function get(string $key, int $time): null
+                public function get(string $key, int $time = null): null
                 {
                     return null;
                 }
 
-                public function put(string $key, mixed $value, int $time): void
+                public function put(string $key, mixed $value, int $time = null): void
                 {
                 }
 
@@ -69,7 +69,7 @@ if (! function_exists('LightPortal\\app')) {
                 }
             };
         } elseif (str_contains($service, 'PortalSqlInterface')) {
-            $selectMock = Mockery::mock(PortalSelect::class);
+            $selectMock = mock(PortalSelect::class);
             $selectMock->shouldReceive('from')->andReturnSelf();
             $selectMock->shouldReceive('columns')->andReturnSelf();
             $selectMock->shouldReceive('join')->andReturnSelf();
@@ -77,14 +77,14 @@ if (! function_exists('LightPortal\\app')) {
             $selectMock->shouldReceive('order')->andReturnSelf();
             $selectMock->shouldIgnoreMissing();
 
-            $resultMock = Mockery::mock(PortalResultInterface::class);
+            $resultMock = mock(PortalResultInterface::class);
             $resultMock->shouldReceive('current')->andReturn(['id_member' => []]);
             $resultMock->shouldReceive('valid')->andReturn(false);
             $resultMock->shouldReceive('next')->andReturn(null);
             $resultMock->shouldReceive('key')->andReturn(0);
             $resultMock->shouldReceive('rewind')->andReturn(null);
 
-            $mock = Mockery::mock(PortalSqlInterface::class);
+            $mock = mock(PortalSqlInterface::class);
             $mock->shouldReceive('select')->andReturn($selectMock);
             $mock->shouldReceive('execute')->andReturn($resultMock);
 
@@ -105,7 +105,7 @@ if (! function_exists('LightPortal\\app')) {
                 };
             }
 
-            $eventManagerMock = Mockery::mock(EventManager::class);
+            $eventManagerMock = mock(EventManager::class);
             $eventManagerMock->shouldReceive('dispatch')->byDefault()->andReturn(null);
 
             return new class($eventManagerMock) {
@@ -127,7 +127,7 @@ if (! function_exists('LightPortal\\app')) {
 
             return null;
         } elseif (str_contains($service, 'View')) {
-            $mockView = Mockery::mock('overload:' . View::class);
+            $mockView = mock('overload:' . View::class);
             $mockView->shouldReceive('render')->andReturn('<div>rendered</div>');
 
             return $mockView;
@@ -136,7 +136,7 @@ if (! function_exists('LightPortal\\app')) {
                 return $mock;
             }
 
-            $mockRepo = Mockery::mock(CategoryRepositoryInterface::class);
+            $mockRepo = mock(CategoryRepositoryInterface::class);
             $mockRepo->shouldReceive('getTotalCount')->andReturn(0);
             $mockRepo->shouldReceive('getAll')->andReturn([]);
             $mockRepo->shouldReceive('getTranslationFilter')->andReturn('');
@@ -147,7 +147,7 @@ if (! function_exists('LightPortal\\app')) {
                 return $mock;
             }
 
-            $mockRepo = Mockery::mock(TagRepositoryInterface::class);
+            $mockRepo = mock(TagRepositoryInterface::class);
             $mockRepo->shouldReceive('getTotalCount')->andReturn(0);
             $mockRepo->shouldReceive('getAll')->andReturn([]);
             $mockRepo->shouldReceive('getTranslationFilter')->andReturn('');
@@ -158,7 +158,7 @@ if (! function_exists('LightPortal\\app')) {
                 return $mock;
             }
 
-            $mockRepo = Mockery::mock(PageRepositoryInterface::class);
+            $mockRepo = mock(PageRepositoryInterface::class);
             $mockRepo->shouldReceive('getTotalCount')->andReturn(0);
             $mockRepo->shouldReceive('getAll')->andReturn([]);
             $mockRepo->shouldReceive('getTranslationFilter')->andReturn('');
@@ -169,9 +169,11 @@ if (! function_exists('LightPortal\\app')) {
                 return $mock;
             }
 
-            $mock = Mockery::mock(RequestInterface::class);
+            $mock = mock(RequestInterface::class);
             $mock->shouldReceive('is')->andReturn(false);
             $mock->shouldReceive('has')->andReturn(false);
+            $mock->shouldReceive('hasNot')->andReturn(true);
+            $mock->shouldReceive('put')->andReturn(null);
             $mock->shouldReceive('url')->andReturn('');
             $mock->shouldReceive('input')->andReturn('');
             $mock->shouldIgnoreMissing();
@@ -182,8 +184,40 @@ if (! function_exists('LightPortal\\app')) {
                 return $mock;
             }
 
-            $mock = Mockery::mock(ResponseInterface::class);
+            $mock = mock(ResponseInterface::class);
             $mock->shouldReceive('exit')->andReturn(null);
+
+            return $mock;
+        } elseif (str_contains($service, 'SessionInterface')) {
+            if ($mock = AppMockRegistry::get(SessionInterface::class)) {
+                return $mock;
+            }
+
+            $mock = mock(SessionInterface::class);
+            $mock->shouldReceive('withKey')->andReturnSelf();
+            $mock->shouldReceive('isEmpty')->andReturn(false);
+            $mock->shouldReceive('get')->andReturn('');
+            $mock->shouldReceive('put')->andReturn(null);
+            $mock->shouldIgnoreMissing();
+
+            return $mock;
+        } elseif (str_contains($service, 'PostInterface')) {
+            if ($mock = AppMockRegistry::get('PostInterface')) {
+                return $mock;
+            }
+
+            $mock = mock('LightPortal\Utils\PostInterface');
+            $mock->shouldReceive('set')->andReturn(null);
+            $mock->shouldReceive('get')->andReturn('');
+            $mock->shouldReceive('all')->andReturn([]);
+            $mock->shouldReceive('has')->andReturn(false);
+            $mock->shouldReceive('hasNot')->andReturn(true);
+            $mock->shouldReceive('put')->andReturn(null);
+            $mock->shouldReceive('only')->andReturn([]);
+            $mock->shouldReceive('except')->andReturn([]);
+            $mock->shouldReceive('isEmpty')->andReturn(false);
+            $mock->shouldReceive('isNotEmpty')->andReturn(false);
+            $mock->shouldIgnoreMissing();
 
             return $mock;
         }

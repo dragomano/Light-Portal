@@ -20,7 +20,7 @@ it('has required methods', function () {
 });
 
 it('maps PSR-3 levels to SMF types correctly', function () {
-    $errorHandlerMock = Mockery::mock(ErrorHandlerInterface::class);
+    $errorHandlerMock = mock(ErrorHandlerInterface::class);
 
     $logger = new PsrLoggerAdapter($errorHandlerMock);
 
@@ -84,7 +84,7 @@ it('maps PSR-3 levels to SMF types correctly', function () {
 });
 
 it('delegates emergency calls to log method correctly', function () {
-    $errorHandlerMock = Mockery::mock(ErrorHandlerInterface::class);
+    $errorHandlerMock = mock(ErrorHandlerInterface::class);
     $errorHandlerMock->shouldReceive('log')
         ->with('Emergency message', 'critical', ['user' => 'test'])
         ->once();
@@ -95,7 +95,7 @@ it('delegates emergency calls to log method correctly', function () {
 });
 
 it('delegates alert calls to log method correctly', function () {
-    $errorHandlerMock = Mockery::mock(ErrorHandlerInterface::class);
+    $errorHandlerMock = mock(ErrorHandlerInterface::class);
     $errorHandlerMock->shouldReceive('log')
         ->with('Alert message', 'critical', [])
         ->once();
@@ -106,7 +106,7 @@ it('delegates alert calls to log method correctly', function () {
 });
 
 it('delegates critical calls to log method correctly', function () {
-    $errorHandlerMock = Mockery::mock(ErrorHandlerInterface::class);
+    $errorHandlerMock = mock(ErrorHandlerInterface::class);
     $errorHandlerMock->shouldReceive('log')
         ->with('Critical message', 'critical', [])
         ->once();
@@ -117,7 +117,7 @@ it('delegates critical calls to log method correctly', function () {
 });
 
 it('delegates error calls to log method correctly', function () {
-    $errorHandlerMock = Mockery::mock(ErrorHandlerInterface::class);
+    $errorHandlerMock = mock(ErrorHandlerInterface::class);
     $errorHandlerMock->shouldReceive('log')
         ->with('Error message', 'general', [])
         ->once();
@@ -128,7 +128,7 @@ it('delegates error calls to log method correctly', function () {
 });
 
 it('delegates warning calls to log method correctly', function () {
-    $errorHandlerMock = Mockery::mock(ErrorHandlerInterface::class);
+    $errorHandlerMock = mock(ErrorHandlerInterface::class);
     $errorHandlerMock->shouldReceive('log')
         ->with('Warning message', 'general', [])
         ->once();
@@ -139,7 +139,7 @@ it('delegates warning calls to log method correctly', function () {
 });
 
 it('delegates notice calls to log method correctly', function () {
-    $errorHandlerMock = Mockery::mock(ErrorHandlerInterface::class);
+    $errorHandlerMock = mock(ErrorHandlerInterface::class);
     $errorHandlerMock->shouldReceive('log')
         ->with('Notice message', 'general', [])
         ->once();
@@ -150,7 +150,7 @@ it('delegates notice calls to log method correctly', function () {
 });
 
 it('delegates info calls to log method correctly', function () {
-    $errorHandlerMock = Mockery::mock(ErrorHandlerInterface::class);
+    $errorHandlerMock = mock(ErrorHandlerInterface::class);
     $errorHandlerMock->shouldReceive('log')
         ->with('Info message', 'general', [])
         ->once();
@@ -161,7 +161,7 @@ it('delegates info calls to log method correctly', function () {
 });
 
 it('delegates debug calls to log method correctly', function () {
-    $errorHandlerMock = Mockery::mock(ErrorHandlerInterface::class);
+    $errorHandlerMock = mock(ErrorHandlerInterface::class);
     $errorHandlerMock->shouldReceive('log')
         ->with('Debug message', 'debug', [])
         ->once();
@@ -172,7 +172,7 @@ it('delegates debug calls to log method correctly', function () {
 });
 
 it('handles Stringable message objects', function () {
-    $errorHandlerMock = Mockery::mock(ErrorHandlerInterface::class);
+    $errorHandlerMock = mock(ErrorHandlerInterface::class);
     $errorHandlerMock->shouldReceive('log')
         ->with('Stringable message', 'general', [])
         ->once();
@@ -190,7 +190,7 @@ it('handles Stringable message objects', function () {
 });
 
 it('passes context array to error handler', function () {
-    $errorHandlerMock = Mockery::mock(ErrorHandlerInterface::class);
+    $errorHandlerMock = mock(ErrorHandlerInterface::class);
     $context = ['key' => 'value', 'number' => 42];
     $errorHandlerMock->shouldReceive('log')
         ->with('Test', 'general', $context)

@@ -86,45 +86,45 @@ class Fixtures
     public static function getBlocksData(int $count = 1): array
     {
         return static::generateBaseData($count, [
-            'block_id' => fn($i) => (string) ($i - 1),
-            'icon' => fn() => static::getRandomIcon(),
-            'type' => fn() => static::faker()->randomElement([...ContentType::names(), 'markdown']),
-            'placement' => fn() => static::faker()->randomElement(Placement::names()),
-            'priority' => fn() => (string) static::faker()->numberBetween(1, 10),
-            'permissions' => fn() => (string) static::faker()->numberBetween(0, 3),
-            'status' => fn() => (string) static::faker()->numberBetween(0, 1),
-            'areas' => fn() => static::faker()->randomElement(self::AREAS),
-            'title_class' => fn() => static::faker()->randomElement(TitleClass::values()),
+            'block_id'      => fn($i) => (string) ($i - 1),
+            'icon'          => fn() => static::getRandomIcon(),
+            'type'          => fn() => static::faker()->randomElement([...ContentType::names(), 'markdown']),
+            'placement'     => fn() => static::faker()->randomElement(Placement::names()),
+            'priority'      => fn() => (string) static::faker()->numberBetween(1, 10),
+            'permissions'   => fn() => (string) static::faker()->numberBetween(0, 3),
+            'status'        => fn() => (string) static::faker()->numberBetween(0, 1),
+            'areas'         => fn() => static::faker()->randomElement(self::AREAS),
+            'title_class'   => fn() => static::faker()->randomElement(TitleClass::values()),
             'content_class' => fn() => static::faker()->randomElement(ContentClass::values()),
-            'titles' => fn() => static::generateLocalizedContent(fn($faker) => $faker->sentence(3)),
-            'contents' => fn() => static::generateLocalizedContent(fn($faker) => $faker->paragraph(2)),
-            'params' => fn() => static::generateRandomParams(self::BLOCK_PARAMS),
-            'created_at' => strtotime('-5 months'),
-            'updated_at' => strtotime('-1 month'),
+            'titles'        => fn() => static::generateLocalizedContent(fn($faker) => $faker->sentence(3)),
+            'contents'      => fn() => static::generateLocalizedContent(fn($faker) => $faker->paragraph(2)),
+            'params'        => fn() => static::generateRandomParams(self::BLOCK_PARAMS),
+            'created_at'    => strtotime('-5 months'),
+            'updated_at'    => strtotime('-1 month'),
         ]);
     }
 
     public static function getPagesData(int $count = 1): array
     {
         return static::generateBaseData($count, [
-            'page_id' => fn($i) => (string) $i,
-            'category_id' => fn() => (string) static::faker()->numberBetween(1, 5),
-            'author_id' => fn() => (string) static::faker()->numberBetween(1, 100),
-            'slug' => fn() => static::faker()->slug(3),
-            'type' => fn() => static::faker()->randomElement([...ContentType::names(), 'markdown']),
-            'entry_type' => fn() => static::faker()->randomElement(EntryType::names()),
-            'permissions' => fn() => (string) static::faker()->numberBetween(0, 3),
-            'status' => fn() => (string) static::faker()->numberBetween(0, 1),
-            'num_views' => fn() => (string) static::faker()->numberBetween(0, 1000),
+            'page_id'      => fn($i) => (string) $i,
+            'category_id'  => fn() => (string) static::faker()->numberBetween(1, 5),
+            'author_id'    => fn() => (string) static::faker()->numberBetween(1, 100),
+            'slug'         => fn() => static::faker()->slug(3),
+            'type'         => fn() => static::faker()->randomElement([...ContentType::names(), 'markdown']),
+            'entry_type'   => fn() => static::faker()->randomElement(EntryType::names()),
+            'permissions'  => fn() => (string) static::faker()->numberBetween(0, 3),
+            'status'       => fn() => (string) static::faker()->numberBetween(0, 1),
+            'num_views'    => fn() => (string) static::faker()->numberBetween(0, 1000),
             'num_comments' => fn() => (string) static::faker()->numberBetween(0, 50),
-            'created_at' => fn() => (string) static::faker()->dateTimeBetween('-1 year', '-1 month')->getTimestamp(),
-            'updated_at' => fn() => (string) static::faker()->dateTimeBetween('-1 month')->getTimestamp(),
-            'deleted_at' => '0',
-            'titles' => fn() => static::generateLocalizedContent(fn($faker) => $faker->sentence(4)),
-            'contents' => fn() => static::generateLocalizedContent(fn($faker) => $faker->paragraph(3)),
+            'created_at'   => fn() => (string) static::faker()->dateTimeBetween('-1 year', '-1 month')->getTimestamp(),
+            'updated_at'   => fn() => (string) static::faker()->dateTimeBetween('-1 month')->getTimestamp(),
+            'deleted_at'   => '0',
+            'titles'       => fn() => static::generateLocalizedContent(fn($faker) => $faker->sentence(4)),
+            'contents'     => fn() => static::generateLocalizedContent(fn($faker) => $faker->paragraph(3)),
             'descriptions' => fn() => static::generateLocalizedContent(fn($faker) => $faker->sentence(10)),
-            'params' => fn() => static::generateRandomParams(self::PAGE_PARAMS),
-            'comments' => fn($i) => static::generateComments($i, static::faker()->numberBetween(0, 5)),
+            'params'       => fn() => static::generateRandomParams(self::PAGE_PARAMS),
+            'comments'     => fn($i) => static::generateComments($i, static::faker()->numberBetween(0, 5)),
         ]);
     }
 
@@ -142,15 +142,15 @@ class Fixtures
     public static function getCategoriesData(int $count = 1): array
     {
         return static::generateBaseData($count, [
-            'category_id' => fn($i) => (string) ($i - 1),
-            'slug' => fn() => static::faker()->unique()->slug(2),
-            'icon' => fn() => static::getRandomIcon(),
-            'priority' => fn() => (string) static::faker()->numberBetween(1, 10),
-            'status' => fn() => (string) static::faker()->numberBetween(0, 1),
-            'titles' => fn() => static::generateLocalizedContent(fn($faker) => $faker->words(2, true)),
+            'category_id'  => fn($i) => (string) ($i - 1),
+            'slug'         => fn() => static::faker()->unique()->slug(2),
+            'icon'         => fn() => static::getRandomIcon(),
+            'priority'     => fn() => (string) static::faker()->numberBetween(1, 10),
+            'status'       => fn() => (string) static::faker()->numberBetween(0, 1),
+            'titles'       => fn() => static::generateLocalizedContent(fn($faker) => $faker->words(2, true)),
             'descriptions' => fn() => static::generateLocalizedContent(fn($faker) => $faker->sentence()),
-            'created_at' => strtotime('-7 months'),
-            'updated_at' => strtotime('-2 weeks'),
+            'created_at'   => strtotime('-7 months'),
+            'updated_at'   => strtotime('-2 weeks'),
         ]);
     }
 
@@ -158,11 +158,11 @@ class Fixtures
     {
         return static::generateBaseData($count, [
             'tag_id' => fn($i) => (string) ($i - 1),
-            'slug' => fn() => static::faker()->unique()->slug(2),
-            'icon' => fn() => static::getRandomIcon(),
+            'slug'   => fn() => static::faker()->unique()->slug(2),
+            'icon'   => fn() => static::getRandomIcon(),
             'status' => fn() => (string) static::faker()->numberBetween(0, 1),
             'titles' => fn() => static::generateLocalizedContent(fn($faker) => $faker->word()),
-            'pages' => fn() => static::generateTagPages(static::faker()->numberBetween(1, 5)),
+            'pages'  => fn() => static::generateTagPages(static::faker()->numberBetween(1, 5)),
         ]);
     }
 
@@ -177,9 +177,9 @@ class Fixtures
         $languageLocales = [
             'english' => 'en_US',
             'russian' => 'ru_RU',
-            'german' => 'de_DE',
-            'french' => 'fr_FR',
-            'spanish' => 'es_ES'
+            'german'  => 'de_DE',
+            'french'  => 'fr_FR',
+            'spanish' => 'es_ES',
         ];
 
         $languages = array_keys($languageLocales);
@@ -275,18 +275,18 @@ class Fixtures
         return match ($modelType) {
             'block' => [
                 'min_values' => [
-                    'priority' => 1,
+                    'priority'    => 1,
                     'permissions' => 0,
-                    'status' => 0,
+                    'status'      => 0,
                 ],
                 'max_values' => [
-                    'priority' => 10,
+                    'priority'    => 10,
                     'permissions' => 3,
-                    'status' => 1,
+                    'status'      => 1,
                 ],
                 'edge_cases' => [
-                    'very_long_title' => static::faker()->sentence(50),
-                    'very_long_content' => static::faker()->paragraph(20),
+                    'very_long_title'     => static::faker()->sentence(50),
+                    'very_long_content'   => static::faker()->paragraph(20),
                     'special_chars_title' => 'Title with spéciál chärs & <script>',
                 ],
             ],

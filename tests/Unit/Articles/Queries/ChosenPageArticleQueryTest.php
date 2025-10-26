@@ -11,15 +11,16 @@ use LightPortal\Enums\EntryType;
 use LightPortal\Enums\Permission;
 use LightPortal\Enums\Status;
 use LightPortal\Events\EventDispatcherInterface;
-use Prophecy\Prophet;
 use Tests\PortalTable;
 use Tests\Table;
 use Tests\TestAdapterFactory;
 
 beforeEach(function() {
     User::$me = new User(1);
-    User::$me->language = 'english';
+    User::$me->language = 'russian';
     User::$me->groups = [0];
+
+    Config::$language = 'english';
 
     $adapter = TestAdapterFactory::create();
     $adapter->query(PortalTable::CATEGORIES->value)->execute();
@@ -39,10 +40,8 @@ beforeEach(function() {
 
     $this->sql = new PortalSql($adapter);
 
-    $this->prophet = new Prophet();
-
-    $prophecy = $this->prophet->prophesize(EventDispatcherInterface::class);
-    $this->eventsMock = $prophecy->reveal();
+    $this->eventsMock = mock(EventDispatcherInterface::class);
+    $this->eventsMock->shouldReceive('dispatch')->andReturn(null)->byDefault();
 
     $this->query = new ChosenPageArticleQuery($this->sql, $this->eventsMock);
 });
@@ -87,6 +86,7 @@ it('can get selected pages data with real database', function () {
         INSERT INTO lp_translations (item_id, type, lang, title, content, description)
         VALUES
             (1, 'page', 'english', 'Test Page 1', 'Test content 1', 'Test description 1'),
+            (1, 'page', 'russian', 'Тестовая Страница 1', 'Тестовый контент 1', 'Тестовое описание 1'),
             (2, 'page', 'english', 'Test Page 2', 'Test content 2', 'Test description 2'),
             (3, 'page', 'english', 'Test Page 3', 'Test content 3', 'Test description 3')
     ")->execute();
@@ -110,7 +110,7 @@ it('can get selected pages data with real database', function () {
         ->and($data)->toHaveCount(2)
         ->and($data)->toHaveKey(0)
         ->and($data)->toHaveKey(1)
-        ->and($data[0]['title'])->toBe('Test Page 1')
+        ->and($data[0]['title'])->toBe('Тестовая Страница 1')
         ->and($data[1]['title'])->toBe('Test Page 2')
         ->and($data[0]['num_views'])->toBe(10)
         ->and($data[1]['num_views'])->toBe(20);
@@ -156,8 +156,10 @@ it('can get total count for selected pages', function () {
         INSERT INTO lp_translations (item_id, type, lang, title, content, description)
         VALUES
             (1, 'page', 'english', 'Test Page 1', 'Content 1', 'Description 1'),
+            (1, 'page', 'russian', 'Тестовая Страница 1', 'Контент 1', 'Описание 1'),
             (2, 'page', 'english', 'Test Page 2', 'Content 2', 'Description 2'),
-            (3, 'page', 'english', 'Test Page 3', 'Content 3', 'Description 3')
+            (3, 'page', 'english', 'Test Page 3', 'Content 3', 'Description 3'),
+            (3, 'page', 'russian', 'Тестовая Страница 3', 'Контент 3', 'Описание 3')
     ")->execute();
 
     $this->query->init([
@@ -220,8 +222,10 @@ it('filters pages correctly based on selected pages', function () {
         VALUES
             (1, 'page', 'english', 'Page 1', 'Content 1', 'Description 1'),
             (2, 'page', 'english', 'Page 2', 'Content 2', 'Description 2'),
+            (2, 'page', 'russian', 'Страница 2', 'Контент 2', 'Описание 2'),
             (3, 'page', 'english', 'Page 3', 'Content 3', 'Description 3'),
-            (4, 'page', 'english', 'Page 4', 'Content 4', 'Description 4')
+            (4, 'page', 'english', 'Page 4', 'Content 4', 'Description 4'),
+            (4, 'page', 'russian', 'Страница 4', 'Контент 4', 'Описание 4')
     ")->execute();
 
     $this->query->init([
@@ -242,8 +246,8 @@ it('filters pages correctly based on selected pages', function () {
     expect($data)->toHaveCount(2)
         ->and($data)->toHaveKey(0)
         ->and($data)->toHaveKey(1)
-        ->and($data[0]['title'])->toBe('Page 2')
-        ->and($data[1]['title'])->toBe('Page 4');
+        ->and($data[0]['title'])->toBe('Страница 2')
+        ->and($data[1]['title'])->toBe('Страница 4');
 });
 
 it('returns empty when no selected pages for getRawData', function () {

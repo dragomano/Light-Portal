@@ -38,7 +38,7 @@ beforeEach(function () {
 
         public function cache(): MockInterface|LegacyMockInterface|null
         {
-            return Mockery::mock()->shouldReceive('flush')->once()->getMock();
+            return mock()->shouldReceive('flush')->once()->getMock();
         }
 
         public function testStartTransaction(array $items): void

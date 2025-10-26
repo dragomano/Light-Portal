@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use Bugo\Compat\Config;
+use Bugo\Compat\User;
+
 if (! function_exists('memoryReturnBytes')) {
     function memoryReturnBytes(string $val): int
     {
@@ -134,7 +137,7 @@ if (! function_exists('isAllowedTo')) {
 if (! function_exists('allowedTo')) {
     function allowedTo($permission): bool
     {
-        return true;
+        return in_array($permission, User::$me->permissions ?? []);
     }
 }
 
@@ -181,6 +184,7 @@ if (! function_exists('clean_cache')) {
 if (! function_exists('updateSettings')) {
     function updateSettings(array $settings): void
     {
+        Config::$modSettings = array_merge(Config::$modSettings, $settings);
     }
 }
 
@@ -206,11 +210,11 @@ if (! function_exists('parse_bbc')) {
         $replacement = '<img src="$1" alt="">';
         $message = preg_replace($pattern, $replacement, $message);
 
-        $pattern_attr = '/\[img\s+width=(\d+)\s+height=(\d+)\](.*?)\[\/img\]/i';
+        $pattern_attr = '/\[img\s+width=(\d+)\s+height=(\d+)](.*?)\[\/img]/i';
         $replacement_attr = '<img src="$3" alt="" width="$1" height="$2">';
         $message = preg_replace($pattern_attr, $replacement_attr, $message);
 
-        $pattern_short = '/\[img=(.*?)\]/i';
+        $pattern_short = '/\[img=(.*?)]/i';
         $replacement_short = '<img src="$1" alt="">';
 
         return preg_replace($pattern_short, $replacement_short, $message);
@@ -262,5 +266,24 @@ if (! function_exists('un_preparsecode')) {
     function un_preparsecode(string $string): string
     {
         return $string;
+    }
+}
+
+if (! function_exists('theme_inline_permissions')) {
+    function theme_inline_permissions($permission): void
+    {
+    }
+}
+
+if (! function_exists('checkSubmitOnce')) {
+    function checkSubmitOnce($action): bool
+    {
+        return true;
+    }
+}
+
+if (! function_exists('preparsecode')) {
+    function preparsecode(&$message): void
+    {
     }
 }

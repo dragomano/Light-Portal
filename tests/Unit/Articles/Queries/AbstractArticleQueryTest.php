@@ -2,21 +2,18 @@
 
 declare(strict_types=1);
 
+use Laminas\Db\Sql\Predicate\Expression;
 use Laminas\Db\Sql\Select;
+use Laminas\Db\Sql\Where;
 use LightPortal\Articles\Queries\AbstractArticleQuery;
 use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Enums\PortalHook;
 use LightPortal\Events\EventDispatcherInterface;
-use Prophecy\Prophet;
 use Tests\ReflectionAccessor;
 
 beforeEach(function() {
-    $this->prophet = new Prophet();
-
-    $sqlProphecy = $this->prophet->prophesize(PortalSqlInterface::class);
-    $this->sqlMock = $sqlProphecy->reveal();
-
-    $eventsProphecy = $this->prophet->prophesize(EventDispatcherInterface::class);
-    $this->eventsMock = $eventsProphecy->reveal();
+    $this->sqlMock    = mock(PortalSqlInterface::class);
+    $this->eventsMock = mock(EventDispatcherInterface::class);
 
     $this->query = new class($this->sqlMock, $this->eventsMock) extends AbstractArticleQuery {
         protected function buildDataSelect(): Select
@@ -31,7 +28,16 @@ beforeEach(function() {
 
         protected function applyBaseConditions(Select $select): void
         {
-            // Empty implementation for testing
+        }
+
+        protected function getOrders(): array
+        {
+            return ['created;desc' => 'test'];
+        }
+
+        protected function getEventHook(): PortalHook
+        {
+            return PortalHook::frontBoards;
         }
     };
 });
@@ -41,9 +47,10 @@ it('returns default sorting when getSorting is called', function () {
 });
 
 it('sets custom sorting when setSorting is called with valid sort type', function () {
+    $this->eventsMock->shouldReceive('dispatch')->once();
+
     $this->query->init([]);
 
-    // Manually set orders for testing
     $accessor = new ReflectionAccessor($this->query);
     $accessor->setProtectedProperty('orders', ['custom' => 'custom_order']);
 
@@ -55,7 +62,6 @@ it('sets custom sorting when setSorting is called with valid sort type', functio
 it('applies columns correctly when applyColumns is called', function () {
     $select = new Select();
 
-    // Manually set columns
     $accessor = new ReflectionAccessor($this->query);
     $accessor->setProtectedProperty('columns', [
         'column1',
@@ -77,7 +83,6 @@ it('applies columns correctly when applyColumns is called', function () {
 it('applies joins correctly when applyJoins is called', function () {
     $select = new Select();
 
-    // Manually set joins
     $accessor = new ReflectionAccessor($this->query);
 
     $joinCalled = false;
@@ -96,7 +101,6 @@ it('applies joins correctly when applyJoins is called', function () {
 it('applies wheres correctly when applyWheres is called', function () {
     $select = new Select();
 
-    // Manually set wheres
     $accessor = new ReflectionAccessor($this->query);
 
     $whereCalled = false;
@@ -110,6 +114,67 @@ it('applies wheres correctly when applyWheres is called', function () {
 
     $accessor->callProtectedMethod('applyWheres', [$select]);
 
-    // Check if wheres were applied
     expect($whereCalled)->toBeTrue();
+});
+
+it('returns correct orders array when getOrders is called', function () {
+    $accessor = new ReflectionAccessor($this->query);
+    $orders = $accessor->callProtectedMethod('getOrders');
+
+    expect($orders)->toBeArray()
+        ->and($orders)->toHaveKey('created;desc')
+        ->and($orders['created;desc'])->toBe('test');
+});
+
+it('returns correct event hook when getEventHook is called', function () {
+    $accessor = new ReflectionAccessor($this->query);
+    $hook = $accessor->callProtectedMethod('getEventHook');
+
+    expect($hook)->toBeInstanceOf(PortalHook::class)
+        ->and($hook)->toBe(PortalHook::frontBoards);
+});
+
+it('applies base conditions correctly when applyBaseConditions is called', function () {
+    $select = new Select();
+
+    $query = new class($this->sqlMock, $this->eventsMock) extends AbstractArticleQuery {
+        protected function buildDataSelect(): Select
+        {
+            return $this->sql->select()->from('test_table');
+        }
+
+        protected function buildCountSelect(): Select
+        {
+            return $this->sql->select()->from('test_table')->columns(['count' => 'COUNT(*)']);
+        }
+
+        protected function applyBaseConditions(Select $select): void
+        {
+            $select->where('status = ?', 'active');
+        }
+
+        protected function getOrders(): array
+        {
+            return ['created;desc' => 'test'];
+        }
+
+        protected function getEventHook(): PortalHook
+        {
+            return PortalHook::frontBoards;
+        }
+    };
+
+    $accessor = new ReflectionAccessor($query);
+    $accessor->callProtectedMethod('applyBaseConditions', [$select]);
+
+    $rawState = $select->getRawState(Select::WHERE);
+    expect($rawState)->toBeInstanceOf(Where::class);
+
+    $predicates = $rawState->getPredicates();
+    expect($predicates)->toBeArray()
+        ->and($predicates)->toHaveCount(1);
+
+    $predicate = $predicates[0][1];
+    expect($predicate)->toBeInstanceOf(Expression::class)
+        ->and($predicate->getExpression())->toBe('status = ?');
 });

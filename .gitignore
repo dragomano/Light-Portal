@@ -11,6 +11,10 @@ src/Sources/LightPortal/Libs/*
 src/Sources/LightPortal/packages/*
 src/Sources/index.php
 composer.lock
+run_tests.bat
+tests/Other/demo.sqlite
+tests/Other/RealDatabaseOperationsTest.php
+tests/test_databases.php
 
 src/Themes/default/languages/LightPortal/*
 !src/Themes/default/languages/LightPortal/index.php

@@ -18,13 +18,13 @@ use Tests\ReflectionAccessor;
 
 describe('AbstractTableCreator', function () {
     beforeEach(function () {
-        $this->adapter = Mockery::mock(PortalAdapterInterface::class);
+        $this->adapter = mock(PortalAdapterInterface::class);
         $this->adapter
             ->shouldReceive('getPlatform')
-            ->andReturn(Mockery::mock(['getName' => 'MySQL', 'quoteIdentifierChain' => fn($x) => $x]));
+            ->andReturn(mock(['getName' => 'MySQL', 'quoteIdentifierChain' => fn($x) => $x]));
         $this->adapter->shouldReceive('getCurrentSchema')->andReturn(null);
 
-        $this->sql = Mockery::mock('alias:AbstractTableCreatorSql', PortalSqlInterface::class);
+        $this->sql = mock('alias:AbstractTableCreatorSql', PortalSqlInterface::class);
         $this->sql->shouldReceive('getPrefix')->andReturn('smf_');
         $this->sql->shouldReceive('getAdapter')->andReturn($this->adapter);
 
@@ -68,7 +68,7 @@ describe('AbstractTableCreator', function () {
     });
 
     it('executes sql', function () {
-        $builder = Mockery::mock(SqlInterface::class);
+        $builder = mock(SqlInterface::class);
         $this->sql->shouldReceive('buildSqlString')->with($builder)->andReturn('SELECT 1');
         $this->adapter->shouldReceive('query')->with('SELECT 1', Adapter::QUERY_MODE_EXECUTE)->once();
 
@@ -116,19 +116,19 @@ describe('AbstractTableCreator', function () {
     })->with([true, false]);
 
     it('handles inserting default data based on existence', function ($where, $count, $shouldInsert) {
-        $select = Mockery::mock(PortalSelect::class);
+        $select = mock(PortalSelect::class);
         $select->shouldReceive('where')->with($where)->andReturnSelf();
         $select->shouldReceive('columns')
             ->with(['count' => new Expression('COUNT(*)')], false)
             ->andReturnSelf();
 
         $this->sql->shouldReceive('select')->with('test_table')->andReturn($select);
-        $resultMock = Mockery::mock(PortalResultInterface::class);
+        $resultMock = mock(PortalResultInterface::class);
         $resultMock->shouldReceive('current')->andReturn(['count' => $count]);
         $this->sql->shouldReceive('execute')->with($select)->andReturn($resultMock);
 
         if ($shouldInsert) {
-            $insert = Mockery::mock(PortalInsert::class);
+            $insert = mock(PortalInsert::class);
             $insert->shouldReceive('columns')->with(['id', 'name'])->andReturnSelf();
             $insert->shouldReceive('values')->with([1, 'test'])->andReturnSelf();
 

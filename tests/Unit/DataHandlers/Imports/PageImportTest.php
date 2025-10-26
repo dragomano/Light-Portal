@@ -15,8 +15,8 @@ use Tests\ReflectionAccessor;
 use Tests\TestAdapterFactory;
 
 beforeEach(function () {
-    $this->fileMock = Mockery::mock(FileInterface::class);
-    $this->errorHandlerMock = Mockery::mock(ErrorHandlerInterface::class)->shouldIgnoreMissing();
+    $this->fileMock = mock(FileInterface::class);
+    $this->errorHandlerMock = mock(ErrorHandlerInterface::class)->shouldIgnoreMissing();
 
     $adapter = TestAdapterFactory::create();
     $adapter->query(PortalTable::PAGES->value)->execute();

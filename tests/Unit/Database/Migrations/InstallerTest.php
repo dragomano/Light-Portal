@@ -19,41 +19,41 @@ use Tests\ReflectionAccessor;
 
 describe('Installer', function () {
     beforeEach(function () {
-        $this->adapter = Mockery::mock(PortalAdapterInterface::class);
+        $this->adapter = mock(PortalAdapterInterface::class);
         $this->adapter->shouldReceive('getPrefix')->andReturn('smf_');
         $this->adapter
             ->shouldReceive('getPlatform')
-            ->andReturn(Mockery::mock(['getName' => 'MySQL', 'quoteIdentifierChain' => fn($x) => $x]));
+            ->andReturn(mock(['getName' => 'MySQL', 'quoteIdentifierChain' => fn($x) => $x]));
         $this->adapter->shouldReceive('getCurrentSchema')->andReturn(null);
         $this->adapter->shouldReceive('query')->andReturnUsing(function ($sql) {});
 
-        $this->adapterFactoryMock = Mockery::mock('alias:' . PortalAdapterFactory::class);
+        $this->adapterFactoryMock = mock('alias:' . PortalAdapterFactory::class);
         $this->adapterFactoryMock->shouldReceive('create')->andReturn($this->adapter);
 
-        $this->portalSqlMock = Mockery::mock(PortalSqlInterface::class);
+        $this->portalSqlMock = mock(PortalSqlInterface::class);
         $this->portalSqlMock->shouldReceive('getPrefix')->andReturn('smf_');
         $this->portalSqlMock->shouldReceive('getAdapter')->andReturn($this->adapter);
         $this->portalSqlMock->shouldReceive('buildSqlString')->andReturn('mocked sql');
         $this->portalSqlMock->shouldReceive('tableExists')->andReturn(false);
         $this->portalSqlMock->shouldReceive('columnExists')->andReturn(false);
-        $selectMock = Mockery::mock(PortalSelect::class)->shouldAllowMockingProtectedMethods();
+        $selectMock = mock(PortalSelect::class)->shouldAllowMockingProtectedMethods();
         $selectMock->shouldReceive('columns')->andReturnSelf();
         $selectMock->shouldReceive('where')->andReturnSelf();
         $this->portalSqlMock->shouldReceive('select')->andReturn($selectMock);
 
-        $insertMock = Mockery::mock(PortalInsert::class)->shouldAllowMockingProtectedMethods();
+        $insertMock = mock(PortalInsert::class)->shouldAllowMockingProtectedMethods();
         $insertMock->shouldReceive('columns')->andReturnSelf();
         $insertMock->shouldReceive('values')->andReturnSelf();
         $this->portalSqlMock->shouldReceive('insert')->andReturn($insertMock);
 
-        $deleteMock = Mockery::mock(PortalDelete::class)->shouldAllowMockingProtectedMethods();
+        $deleteMock = mock(PortalDelete::class)->shouldAllowMockingProtectedMethods();
         $reflection = new ReflectionAccessor($deleteMock);
-        $reflection->setProtectedProperty('where', Mockery::mock(['like' => null]));
+        $reflection->setProtectedProperty('where', mock(['like' => null]));
         $this->portalSqlMock->shouldReceive('delete')->andReturn($deleteMock);
 
         $this->portalSqlMock
             ->shouldReceive('execute')
-            ->andReturn(Mockery::mock(PortalResultInterface::class, ['current' => ['count' => 0]]));
+            ->andReturn(mock(PortalResultInterface::class, ['current' => ['count' => 0]]));
 
         Mockery::spy(Config::class)->shouldReceive('updateModSettings')->andReturn(null);
         Mockery::spy(CacheApi::class)->shouldReceive('clean');
@@ -61,7 +61,7 @@ describe('Installer', function () {
 
         Utils::$context = ['right_to_left' => false];
 
-        $this->installer = Mockery::mock(Installer::class)->makePartial();
+        $this->installer = mock(Installer::class)->makePartial();
         $this->installer->shouldAllowMockingProtectedMethods();
 
         $reflection = new ReflectionAccessor($this->installer);
@@ -95,7 +95,7 @@ describe('Installer', function () {
         $this->installer->shouldReceive('cleanBackgroundTasks');
         $this->installer->shouldReceive('updateSettings');
 
-        $post = Mockery::mock(PostInterface::class);
+        $post = mock(PostInterface::class);
         $post->shouldReceive('hasNot')->with('do_db_changes')->andReturn(true);
         $this->installer->shouldReceive('post')->andReturn($post);
 
@@ -141,7 +141,7 @@ describe('Installer', function () {
     });
 
     it('cleans background tasks', function () {
-        $deleteMock = Mockery::mock(PortalDelete::class);
+        $deleteMock = mock(PortalDelete::class);
         $deleteMock
             ->shouldReceive('where')
             ->with(['task_file LIKE ?' => '%$sourcedir/LightPortal%'])
@@ -171,7 +171,7 @@ describe('Installer', function () {
     });
 
     it('updates settings', function () {
-        $updateMock = Mockery::mock(PortalUpdate::class);
+        $updateMock = mock(PortalUpdate::class);
         $updateMock->shouldReceive('set')->andReturnSelf()->once();
         $updateMock->shouldReceive('where')->andReturnSelf()->once();
 
@@ -190,7 +190,7 @@ describe('Installer', function () {
         $this->installer->shouldReceive('removePortalPermissions');
         $this->installer->shouldReceive('updateSettings');
 
-        $post = Mockery::mock(PostInterface::class);
+        $post = mock(PostInterface::class);
         $post->shouldReceive('hasNot')->with('do_db_changes')->andReturn(false);
         $this->installer->shouldReceive('post')->andReturn($post);
 

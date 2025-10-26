@@ -23,11 +23,11 @@ arch()->expect(AbstractExport::class)
 
 it('should call getFile and downloadFile when file exists', function () {
     $entity = 'test';
-    $database = Mockery::mock(PortalSqlInterface::class);
-    $filesystem = Mockery::mock(FilesystemInterface::class);
-    $errorHandler = Mockery::mock(ErrorHandlerInterface::class);
+    $database = mock(PortalSqlInterface::class);
+    $filesystem = mock(FilesystemInterface::class);
+    $errorHandler = mock(ErrorHandlerInterface::class);
 
-    $mock = Mockery::mock(AbstractExport::class, [$entity, $database, $filesystem, $errorHandler])->makePartial();
+    $mock = mock(AbstractExport::class, [$entity, $database, $filesystem, $errorHandler])->makePartial();
     $mock->shouldAllowMockingProtectedMethods();
     $mock->shouldReceive('getFile')->andReturn('/tmp/test.xml');
     $mock->shouldReceive('downloadFile')->with('/tmp/test.xml')->once();
@@ -37,11 +37,11 @@ it('should call getFile and downloadFile when file exists', function () {
 
 it('should do nothing when getFile returns empty', function () {
     $entity = 'test';
-    $database = Mockery::mock(PortalSqlInterface::class);
-    $filesystem = Mockery::mock(FilesystemInterface::class);
-    $errorHandler = Mockery::mock(ErrorHandlerInterface::class);
+    $database = mock(PortalSqlInterface::class);
+    $filesystem = mock(FilesystemInterface::class);
+    $errorHandler = mock(ErrorHandlerInterface::class);
 
-    $mock = Mockery::mock(AbstractExport::class, [$entity, $database, $filesystem, $errorHandler])->makePartial();
+    $mock = mock(AbstractExport::class, [$entity, $database, $filesystem, $errorHandler])->makePartial();
     $mock->shouldAllowMockingProtectedMethods();
     $mock->shouldReceive('getFile')->andReturn('');
     $mock->shouldReceive('downloadFile')->never();
@@ -51,11 +51,11 @@ it('should do nothing when getFile returns empty', function () {
 
 it('should handle existing file correctly', function () {
     $entity = 'test';
-    $database = Mockery::mock(PortalSqlInterface::class);
-    $filesystem = Mockery::mock(FilesystemInterface::class);
-    $errorHandler = Mockery::mock(ErrorHandlerInterface::class);
+    $database = mock(PortalSqlInterface::class);
+    $filesystem = mock(FilesystemInterface::class);
+    $errorHandler = mock(ErrorHandlerInterface::class);
 
-    $mock = Mockery::mock(AbstractExport::class, [$entity, $database, $filesystem, $errorHandler])->makePartial();
+    $mock = mock(AbstractExport::class, [$entity, $database, $filesystem, $errorHandler])->makePartial();
     $mock->shouldAllowMockingProtectedMethods();
 
     // Create a temporary file
@@ -98,11 +98,11 @@ it('should handle existing file correctly', function () {
 
 it('should do nothing when file does not exist', function () {
     $entity = 'test';
-    $database = Mockery::mock(PortalSqlInterface::class);
-    $filesystem = Mockery::mock(FilesystemInterface::class);
-    $errorHandler = Mockery::mock(ErrorHandlerInterface::class);
+    $database = mock(PortalSqlInterface::class);
+    $filesystem = mock(FilesystemInterface::class);
+    $errorHandler = mock(ErrorHandlerInterface::class);
 
-    $mock = Mockery::mock(AbstractExport::class, [$entity, $database, $filesystem, $errorHandler])->makePartial();
+    $mock = mock(AbstractExport::class, [$entity, $database, $filesystem, $errorHandler])->makePartial();
     $mock->shouldAllowMockingProtectedMethods();
 
     $mock->shouldReceive('fileExists')->with('/nonexistent/file.xml')->andReturn(false);
@@ -122,11 +122,11 @@ it('should do nothing when file does not exist', function () {
 
 it('should return closure that yields items', function () {
     $entity = 'test';
-    $database = Mockery::mock(PortalSqlInterface::class);
-    $filesystem = Mockery::mock(FilesystemInterface::class);
-    $errorHandler = Mockery::mock(ErrorHandlerInterface::class);
+    $database = mock(PortalSqlInterface::class);
+    $filesystem = mock(FilesystemInterface::class);
+    $errorHandler = mock(ErrorHandlerInterface::class);
 
-    $mock = Mockery::mock(AbstractExport::class, [$entity, $database, $filesystem, $errorHandler])->makePartial();
+    $mock = mock(AbstractExport::class, [$entity, $database, $filesystem, $errorHandler])->makePartial();
     $mock->shouldAllowMockingProtectedMethods();
 
     $items = ['a', 'b', 'c'];
@@ -143,13 +143,13 @@ it('should return closure that yields items', function () {
 });
 
 it('should return true when no entity and no export_all', function () {
-    $database = Mockery::mock(PortalSqlInterface::class);
-    $filesystem = Mockery::mock(FilesystemInterface::class);
-    $errorHandler = Mockery::mock(ErrorHandlerInterface::class);
+    $database = mock(PortalSqlInterface::class);
+    $filesystem = mock(FilesystemInterface::class);
+    $errorHandler = mock(ErrorHandlerInterface::class);
 
-    $mock = Mockery::mock(AbstractExport::class, ['test_entity', $database, $filesystem, $errorHandler])->makePartial();
+    $mock = mock(AbstractExport::class, ['test_entity', $database, $filesystem, $errorHandler])->makePartial();
 
-    $request = Mockery::mock(RequestInterface::class);
+    $request = mock(RequestInterface::class);
     $request->shouldReceive('isEmpty')->with('test_entity')->andReturn(true);
     $request->shouldReceive('hasNot')->with('export_all')->andReturn(true);
 
@@ -160,13 +160,13 @@ it('should return true when no entity and no export_all', function () {
 });
 
 it('should return false when has entity', function () {
-    $database = Mockery::mock(PortalSqlInterface::class);
-    $filesystem = Mockery::mock(FilesystemInterface::class);
-    $errorHandler = Mockery::mock(ErrorHandlerInterface::class);
+    $database = mock(PortalSqlInterface::class);
+    $filesystem = mock(FilesystemInterface::class);
+    $errorHandler = mock(ErrorHandlerInterface::class);
 
-    $mock = Mockery::mock(AbstractExport::class, ['test_entity', $database, $filesystem, $errorHandler])->makePartial();
+    $mock = mock(AbstractExport::class, ['test_entity', $database, $filesystem, $errorHandler])->makePartial();
 
-    $request = Mockery::mock(RequestInterface::class);
+    $request = mock(RequestInterface::class);
     $request->shouldReceive('isEmpty')->with('test_entity')->andReturn(false);
 
     $mock->shouldReceive('request')->andReturn($request);
@@ -176,13 +176,13 @@ it('should return false when has entity', function () {
 });
 
 it('should return true when has entity and no export_all', function () {
-    $database = Mockery::mock(PortalSqlInterface::class);
-    $filesystem = Mockery::mock(FilesystemInterface::class);
-    $errorHandler = Mockery::mock(ErrorHandlerInterface::class);
+    $database = mock(PortalSqlInterface::class);
+    $filesystem = mock(FilesystemInterface::class);
+    $errorHandler = mock(ErrorHandlerInterface::class);
 
-    $mock = Mockery::mock(AbstractExport::class, ['test_entity', $database, $filesystem, $errorHandler])->makePartial();
+    $mock = mock(AbstractExport::class, ['test_entity', $database, $filesystem, $errorHandler])->makePartial();
 
-    $request = Mockery::mock(RequestInterface::class);
+    $request = mock(RequestInterface::class);
     $request->shouldReceive('get')->with('test_entity')->andReturn([1, 2]);
     $request->shouldReceive('hasNot')->with('export_all')->andReturn(true);
 
@@ -193,13 +193,13 @@ it('should return true when has entity and no export_all', function () {
 });
 
 it('should return false when no entity', function () {
-    $database = Mockery::mock(PortalSqlInterface::class);
-    $filesystem = Mockery::mock(FilesystemInterface::class);
-    $errorHandler = Mockery::mock(ErrorHandlerInterface::class);
+    $database = mock(PortalSqlInterface::class);
+    $filesystem = mock(FilesystemInterface::class);
+    $errorHandler = mock(ErrorHandlerInterface::class);
 
-    $mock = Mockery::mock(AbstractExport::class, ['test_entity', $database, $filesystem, $errorHandler])->makePartial();
+    $mock = mock(AbstractExport::class, ['test_entity', $database, $filesystem, $errorHandler])->makePartial();
 
-    $request = Mockery::mock(RequestInterface::class);
+    $request = mock(RequestInterface::class);
     $request->shouldReceive('get')->with('test_entity')->andReturn(null);
 
     $mock->shouldReceive('request')->andReturn($request);

@@ -29,7 +29,7 @@ beforeEach(function () {
 
     Config::$modSettings['recycle_board'] = null;
 
-    $messageIndexMock = Mockery::mock('alias:' . MessageIndex::class);
+    $messageIndexMock = mock('alias:' . MessageIndex::class);
     $messageIndexMock->shouldReceive('getBoardList')->andReturn([['name' => 'Test Category', 'boards' => [1 => ['name' => 'Test Board']]]]);
 });
 

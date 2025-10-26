@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 use Bugo\Compat\Config;
 use Bugo\Compat\User;
+use Laminas\Db\Sql\Select;
 use Laminas\Db\Sql\Where;
 use LightPortal\Articles\Queries\TopicArticleQuery;
 use LightPortal\Database\PortalSql;
 use LightPortal\Events\EventDispatcherInterface;
-use Prophecy\Prophet;
 use Tests\ReflectionAccessor;
 use Tests\Table;
 use Tests\TestAdapterFactory;
@@ -39,10 +39,8 @@ beforeEach(function() {
 
     $this->sql = new PortalSql($adapter);
 
-    $this->prophet = new Prophet();
-
-    $prophecy = $this->prophet->prophesize(EventDispatcherInterface::class);
-    $this->eventsMock = $prophecy->reveal();
+    $this->eventsMock = mock(EventDispatcherInterface::class);
+    $this->eventsMock->shouldReceive('dispatch')->andReturn(null)->byDefault();
 
     $this->query = new TopicArticleQuery($this->sql, $this->eventsMock);
 });
@@ -251,4 +249,64 @@ it('applies base conditions correctly', function () {
     $where = $state['where'];
 
     expect($where)->toBeInstanceOf(Where::class);
+});
+
+it('applies custom columns when set', function () {
+    $this->query->init(['selected_boards' => [1]]);
+
+    $accessor = new ReflectionAccessor($this->query);
+    $accessor->setProtectedProperty('columns', ['custom_topic_column']);
+
+    $select = $this->sql->select()->from('topics');
+    $accessor->callProtectedMethod('applyColumns', [$select]);
+
+    $rawState = $select->getRawState(Select::COLUMNS);
+
+    expect($rawState)->toContain('custom_topic_column');
+});
+
+it('applies custom joins when set', function () {
+    $this->query->init(['selected_boards' => [1]]);
+
+    $accessor = new ReflectionAccessor($this->query);
+
+    $joinApplied = false;
+    $accessor->setProtectedProperty('joins', [
+        function ($sel) use (&$joinApplied) {
+            $joinApplied = true;
+            $sel->join('custom_topics_table', 'topic_condition');
+        }
+    ]);
+
+    $select = $this->sql->select()->from('topics');
+    $accessor->callProtectedMethod('applyJoins', [$select]);
+
+    expect($joinApplied)->toBeTrue();
+});
+
+it('applies custom wheres when set', function () {
+    $this->query->init([
+        'selected_boards'   => [1],
+        'id_poll'           => null,
+        'is_approved'       => 1,
+        'id_redirect_topic' => 0,
+        'recycle_board'     => null,
+        'attachment_type'   => 0,
+        'current_member'    => 1,
+    ]);
+
+    $accessor = new ReflectionAccessor($this->query);
+
+    $whereApplied = false;
+    $accessor->setProtectedProperty('wheres', [
+        function ($sel) use (&$whereApplied) {
+            $whereApplied = true;
+            $sel->where('custom_topic_condition');
+        }
+    ]);
+
+    $select = $this->sql->select()->from('topics');
+    $accessor->callProtectedMethod('applyWheres', [$select]);
+
+    expect($whereApplied)->toBeTrue();
 });

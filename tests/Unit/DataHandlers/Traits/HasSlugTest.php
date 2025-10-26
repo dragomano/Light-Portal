@@ -9,9 +9,9 @@ use LightPortal\Utils\ErrorHandlerInterface;
 use LightPortal\Utils\FileInterface;
 
 beforeEach(function () {
-    $sql          = Mockery::mock(PortalSqlInterface::class);
-    $file         = Mockery::mock(FileInterface::class);
-    $errorHandler = Mockery::mock(ErrorHandlerInterface::class);
+    $sql          = mock(PortalSqlInterface::class);
+    $file         = mock(FileInterface::class);
+    $errorHandler = mock(ErrorHandlerInterface::class);
 
     $this->testClass = new class($sql, $file, $errorHandler) extends PageImport {
         use HasSlug;

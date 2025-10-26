@@ -18,10 +18,10 @@ describe('PortalAdapterFactory', function () {
         $this->originalDbPasswd = Config::$db_passwd ?? 'pass';
         $this->originalDbPort   = Config::$db_port ?? 3306;
 
-        $this->profilerMock = Mockery::mock(PortalProfiler::class);
-        $this->platformMock = Mockery::mock(PlatformInterface::class);
+        $this->profilerMock = mock(PortalProfiler::class);
+        $this->platformMock = mock(PlatformInterface::class);
 
-        $this->portalAdapterFactoryMock = Mockery::mock('alias:LightPortal\Database\PortalAdapterFactory');
+        $this->portalAdapterFactoryMock = mock('alias:LightPortal\Database\PortalAdapterFactory');
         $this->portalAdapterFactoryMock->shouldReceive('getPlatform')->andReturn($this->platformMock);
     });
 
@@ -44,7 +44,7 @@ describe('PortalAdapterFactory', function () {
         Config::$db_passwd = 'pass';
         Config::$db_port = 3306;
 
-        $adapterMock = Mockery::mock(PortalAdapter::class);
+        $adapterMock = mock(PortalAdapter::class);
         $adapterMock->shouldReceive('getConfig')->andReturn([
             'driver'   => 'Pdo_Mysql',
             'database' => 'test_db',
@@ -73,7 +73,7 @@ describe('PortalAdapterFactory', function () {
         Config::$db_user   = 'pg_user';
         Config::$db_passwd = 'pg_pass';
 
-        $adapterMock = Mockery::mock(PortalAdapter::class);
+        $adapterMock = mock(PortalAdapter::class);
         $adapterMock->shouldReceive('getConfig')->andReturn([
             'driver'   => 'Pdo_Pgsql',
             'database' => 'pg_db',
@@ -101,7 +101,7 @@ describe('PortalAdapterFactory', function () {
         Config::$db_user   = '';
         Config::$db_passwd = '';
 
-        $adapterMock = Mockery::mock(PortalAdapter::class);
+        $adapterMock = mock(PortalAdapter::class);
         $adapterMock->shouldReceive('getConfig')->andReturn([
             'driver'   => 'Pdo_Sqlite',
             'database' => 'sqlite_file.db',
@@ -125,7 +125,7 @@ describe('PortalAdapterFactory', function () {
         Config::$db_name   = 'smf_db';
         Config::$db_prefix = '`smf_db`.smf_';
 
-        $adapterMock = Mockery::mock(PortalAdapter::class);
+        $adapterMock = mock(PortalAdapter::class);
         $adapterMock->shouldReceive('getConfig')->andReturn([
             'driver'   => 'Pdo_Mysql',
             'database' => 'smf_db',
@@ -158,7 +158,7 @@ describe('PortalAdapterFactory', function () {
             'custom_option' => 'value',
         ];
 
-        $adapterMock = Mockery::mock(PortalAdapter::class);
+        $adapterMock = mock(PortalAdapter::class);
         $adapterMock->shouldReceive('getConfig')->andReturn([
             'driver'        => 'Pdo_Mysql',
             'database'      => 'test_db',

@@ -2,59 +2,48 @@
 
 declare(strict_types=1);
 
-use LightPortal\Articles\AbstractArticle;
-use LightPortal\Articles\ArticleInterface;
 use LightPortal\Articles\BoardArticle;
-use LightPortal\Articles\Queries\BoardArticleQuery;
 use LightPortal\Articles\Services\BoardArticleService;
+use LightPortal\Articles\Queries\BoardArticleQuery;
 use LightPortal\Events\EventDispatcherInterface;
-use Prophecy\Prophet;
 
 beforeEach(function() {
-    $this->prophet = new Prophet();
-
-    $queryProphecy = $this->prophet->prophesize(BoardArticleQuery::class);
-    $queryProphecy->getTotalCount()->willReturn(0);
-    $queryProphecy->getSorting()->willReturn('created;desc');
-    $queryProphecy->getRawData()->willReturn([]);
-
-    $eventsProphecy = $this->prophet->prophesize(EventDispatcherInterface::class);
-
-    $this->service = new BoardArticleService($queryProphecy->reveal(), $eventsProphecy->reveal());
-    $this->article = new BoardArticle($this->service);
+    $this->queryMock = mock(BoardArticleQuery::class);
+    $this->events    = mock(EventDispatcherInterface::class);
+    $this->service   = new BoardArticleService($this->queryMock, $this->events);
+    $this->article   = new BoardArticle($this->service);
 });
 
-arch()
-    ->expect(BoardArticle::class)
-    ->toExtend(AbstractArticle::class)
-    ->toImplement(ArticleInterface::class);
+it('initializes service on init', function () {
+    $this->queryMock->expects('init')->with(Mockery::type('array'));
 
-it('accepts BoardArticleService in constructor', function () {
-    expect($this->article)->toBeInstanceOf(BoardArticle::class);
-});
-
-it('delegates init to service', function () {
     $this->article->init();
 
     expect(true)->toBeTrue();
 });
 
-it('delegates getSortingOptions to service', function () {
+it('returns sorting options', function () {
     $options = $this->article->getSortingOptions();
 
     expect($options)->toBeArray()
-        ->and($options)->toHaveKey('created;desc');
+        ->and($options)->toHaveKey('created;desc')
+        ->and($options)->toHaveKey('updated;desc');
 });
 
-it('delegates getData to service', function () {
-    $result = $this->article->getData(0, 10, 'created;desc');
-    $data = iterator_to_array($result);
+it('returns data from service', function () {
+    $this->queryMock->expects('setSorting')->with('created;desc');
+    $this->queryMock->expects('prepareParams')->with(0, 10);
+    $this->queryMock->expects('getRawData')->andReturn([]);
+
+    $data = iterator_to_array($this->article->getData(0, 10, 'created;desc'));
 
     expect($data)->toBeArray();
 });
 
-it('delegates getTotalCount to service', function () {
+it('returns total count from service', function () {
+    $this->queryMock->expects('getTotalCount')->andReturn(25);
+
     $count = $this->article->getTotalCount();
 
-    expect($count)->toBe(0);
+    expect($count)->toBe(25);
 });

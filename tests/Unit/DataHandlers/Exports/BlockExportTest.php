@@ -22,13 +22,13 @@ use function Pest\Faker\fake;
 uses(DataHandlerTestTrait::class);
 
 beforeEach(function () {
-    $this->repository = Mockery::mock(BlockRepositoryInterface::class);
-    $this->requestMock = Mockery::mock(RequestInterface::class);
-    $this->sqlMock = Mockery::mock(PortalSqlInterface::class);
-    $this->fileMock = Mockery::mock(FilesystemInterface::class);
-    $this->errorHandlerMock = Mockery::mock(ErrorHandlerInterface::class);
+    $this->repository = mock(BlockRepositoryInterface::class);
+    $this->requestMock = mock(RequestInterface::class);
+    $this->sqlMock = mock(PortalSqlInterface::class);
+    $this->fileMock = mock(FilesystemInterface::class);
+    $this->errorHandlerMock = mock(ErrorHandlerInterface::class);
 
-    $this->export = Mockery::mock(
+    $this->export = mock(
         BlockExport::class,
         [$this->repository, $this->sqlMock, $this->fileMock, $this->errorHandlerMock]
     )

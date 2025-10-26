@@ -2,59 +2,52 @@
 
 declare(strict_types=1);
 
-use LightPortal\Articles\AbstractArticle;
-use LightPortal\Articles\ArticleInterface;
 use LightPortal\Articles\TopicArticle;
-use LightPortal\Articles\Queries\TopicArticleQuery;
 use LightPortal\Articles\Services\TopicArticleService;
+use LightPortal\Articles\Queries\TopicArticleQuery;
 use LightPortal\Events\EventDispatcherInterface;
-use Prophecy\Prophet;
 
 beforeEach(function() {
-    $this->prophet = new Prophet();
-
-    $queryProphecy = $this->prophet->prophesize(TopicArticleQuery::class);
-    $queryProphecy->getTotalCount()->willReturn(0);
-    $queryProphecy->getSorting()->willReturn('created;desc');
-    $queryProphecy->getRawData()->willReturn([]);
-
-    $eventsProphecy = $this->prophet->prophesize(EventDispatcherInterface::class);
-
-    $this->service = new TopicArticleService($queryProphecy->reveal(), $eventsProphecy->reveal());
-    $this->article = new TopicArticle($this->service);
+    $this->queryMock = mock(TopicArticleQuery::class);
+    $this->events    = mock(EventDispatcherInterface::class);
+    $this->service   = new TopicArticleService($this->queryMock, $this->events);
+    $this->article   = new TopicArticle($this->service);
 });
 
-arch()
-    ->expect(TopicArticle::class)
-    ->toExtend(AbstractArticle::class)
-    ->toImplement(ArticleInterface::class);
+it('initializes service on init', function () {
+    $this->queryMock->expects('init')
+        ->with(Mockery::on(function ($params) {
+            return isset($params['current_member']) && isset($params['is_approved']);
+        }))->once();
 
-it('accepts TopicArticleService in constructor', function () {
-    expect($this->article)->toBeInstanceOf(TopicArticle::class);
-});
-
-it('delegates init to service', function () {
     $this->article->init();
 
     expect(true)->toBeTrue();
 });
 
-it('delegates getSortingOptions to service', function () {
+it('returns sorting options', function () {
     $options = $this->article->getSortingOptions();
 
     expect($options)->toBeArray()
-        ->and($options)->toHaveKey('created;desc');
+        ->and($options)->toHaveKey('created;desc')
+        ->and($options)->toHaveKey('updated;desc')
+        ->and($options)->toHaveKey('author_name;desc');
 });
 
-it('delegates getData to service', function () {
-    $result = $this->article->getData(0, 10, 'created;desc');
-    $data = iterator_to_array($result);
+it('returns data from service', function () {
+    $this->queryMock->expects('setSorting')->with('created;desc')->once();
+    $this->queryMock->expects('prepareParams')->with(0, 10)->once();
+    $this->queryMock->expects('getRawData')->andReturn([]);
+
+    $data = iterator_to_array($this->article->getData(0, 10, 'created;desc'));
 
     expect($data)->toBeArray();
 });
 
-it('delegates getTotalCount to service', function () {
+it('returns total count from service', function () {
+    $this->queryMock->expects()->getTotalCount()->andReturn(30);
+
     $count = $this->article->getTotalCount();
 
-    expect($count)->toBe(0);
+    expect($count)->toBe(30);
 });

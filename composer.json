@@ -19,15 +19,15 @@
   },
   "require-dev": {
     "consolidation/robo": "^5.1",
-    "mikey179/vfsstream": "^1.6",
+    "dg/bypass-finals": "^1.9",
     "mockery/mockery": "^2.0.x-dev",
     "pear/archive_tar": "^1.6",
     "pestphp/pest": "^3.8",
     "pestphp/pest-plugin-faker": "^3.0",
-    "rector/rector": "^2.1",
-    "phpspec/prophecy": "^1.23"
+    "rector/rector": "^2.1"
   },
   "config": {
+    "sort-packages": true,
     "platform": {
       "php": "8.2"
     },
@@ -39,9 +39,9 @@
     "check": "vendor/bin/rector process --dry-run --clear-cache",
     "tests": "php -d memory_limit=512M vendor/bin/pest --colors=always",
     "tests-debug": "php -d memory_limit=512M vendor/bin/pest --colors=always --display-warnings",
-    "tests-coverage": "php -d memory_limit=512M vendor/bin/pest --colors=always --coverage --min=30",
-    "tests-coverage-clover": "php -d memory_limit=512M vendor/bin/pest --colors=always --min=30 --coverage-clover coverage.xml",
-    "tests-coverage-html": "php -d memory_limit=512M vendor/bin/pest --colors=always --min=30 --coverage-html coverage",
+    "tests-coverage": "php -d memory_limit=512M vendor/bin/pest --colors=always --coverage --min=40",
+    "tests-coverage-clover": "php -d memory_limit=512M vendor/bin/pest --colors=always --min=40 --coverage-clover coverage.xml",
+    "tests-coverage-html": "php -d memory_limit=512M vendor/bin/pest --colors=always --min=40 --coverage-html coverage",
     "assets": [
       "pnpm update",
       "pnpm run build",

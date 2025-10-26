@@ -38,13 +38,13 @@ dataset('page export scenarios', function () {
 });
 
 beforeEach(function () {
-    $this->repository = Mockery::mock(PageRepositoryInterface::class);
-    $this->requestMock = Mockery::mock(RequestInterface::class);
-    $this->sqlMock = Mockery::mock(PortalSqlInterface::class);
-    $this->filesystemMock = Mockery::mock(FilesystemInterface::class);
-    $this->errorHandlerMock = Mockery::mock(ErrorHandlerInterface::class);
+    $this->repository = mock(PageRepositoryInterface::class);
+    $this->requestMock = mock(RequestInterface::class);
+    $this->sqlMock = mock(PortalSqlInterface::class);
+    $this->filesystemMock = mock(FilesystemInterface::class);
+    $this->errorHandlerMock = mock(ErrorHandlerInterface::class);
 
-    $this->export = Mockery::mock(PageExport::class, [
+    $this->export = mock(PageExport::class, [
         $this->repository,
         $this->sqlMock,
         $this->filesystemMock,

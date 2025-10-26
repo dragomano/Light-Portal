@@ -135,7 +135,7 @@ it('returns data array', function () {
 });
 
 it('renders to string', function () {
-    $mockRenderer = Mockery::mock();
+    $mockRenderer = mock();
     $mockRenderer->shouldReceive('render')
         ->once()
         ->andReturn('<select></select>');

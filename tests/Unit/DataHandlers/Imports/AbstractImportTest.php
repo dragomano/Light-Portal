@@ -19,13 +19,13 @@ it('sets max_file_size in constructor', function () {
     $originalValue = Utils::$context['max_file_size'] ?? null;
 
     try {
-        $sqlMock = Mockery::mock(PortalSqlInterface::class);
-        $fileMock = Mockery::mock(FileInterface::class);
-        $errorHandlerMock = Mockery::mock(ErrorHandlerInterface::class);
+        $sqlMock = mock(PortalSqlInterface::class);
+        $fileMock = mock(FileInterface::class);
+        $errorHandlerMock = mock(ErrorHandlerInterface::class);
 
         $expectedBytes = 10 * 1024 * 1024; // 10MB in bytes
 
-        $mock = Mockery::mock(AbstractImport::class, [$sqlMock, $fileMock, $errorHandlerMock])->makePartial();
+        $mock = mock(AbstractImport::class, [$sqlMock, $fileMock, $errorHandlerMock])->makePartial();
         $mock->shouldAllowMockingProtectedMethods();
 
         Utils::$context['max_file_size'] = $expectedBytes;
@@ -41,14 +41,14 @@ it('sets max_file_size in constructor', function () {
 });
 
 it('returns false when file not found', function () {
-    $sqlMock = Mockery::mock(PortalSqlInterface::class);
-    $fileMock = Mockery::mock(FileInterface::class);
-    $errorHandlerMock = Mockery::mock(ErrorHandlerInterface::class);
+    $sqlMock = mock(PortalSqlInterface::class);
+    $fileMock = mock(FileInterface::class);
+    $errorHandlerMock = mock(ErrorHandlerInterface::class);
 
-    $mock = Mockery::mock(AbstractImport::class, [$sqlMock, $fileMock, $errorHandlerMock])->makePartial();
+    $mock = mock(AbstractImport::class, [$sqlMock, $fileMock, $errorHandlerMock])->makePartial();
     $mock->shouldAllowMockingProtectedMethods();
 
-    $fileMock = Mockery::mock(File::class);
+    $fileMock = mock(File::class);
     $fileMock->shouldReceive('get')->with('import_file')->andReturnNull();
     $mock->shouldReceive('files')->andReturn($fileMock);
 
@@ -58,11 +58,11 @@ it('returns false when file not found', function () {
 });
 
 it('returns false for invalid file type', function () {
-    $sqlMock = Mockery::mock(PortalSqlInterface::class);
-    $fileMock = Mockery::mock(FileInterface::class);
-    $errorHandlerMock = Mockery::mock(ErrorHandlerInterface::class);
+    $sqlMock = mock(PortalSqlInterface::class);
+    $fileMock = mock(FileInterface::class);
+    $errorHandlerMock = mock(ErrorHandlerInterface::class);
 
-    $mock = Mockery::mock(AbstractImport::class, [$sqlMock, $fileMock, $errorHandlerMock])->makePartial();
+    $mock = mock(AbstractImport::class, [$sqlMock, $fileMock, $errorHandlerMock])->makePartial();
     $mock->shouldAllowMockingProtectedMethods();
 
     // Mock file with invalid type
@@ -71,7 +71,7 @@ it('returns false for invalid file type', function () {
         'tmp_name' => '/tmp/test.xml'
     ];
 
-    $fileMock = Mockery::mock(File::class);
+    $fileMock = mock(File::class);
     $fileMock->shouldReceive('get')->with('import_file')->andReturn($file);
     $mock->shouldReceive('files')->andReturn($fileMock);
 
@@ -81,11 +81,11 @@ it('returns false for invalid file type', function () {
 });
 
 it('returns SimpleXMLElement for valid xml file', function () {
-    $sqlMock = Mockery::mock(PortalSqlInterface::class);
-    $fileMock = Mockery::mock(FileInterface::class);
-    $errorHandlerMock = Mockery::mock(ErrorHandlerInterface::class);
+    $sqlMock = mock(PortalSqlInterface::class);
+    $fileMock = mock(FileInterface::class);
+    $errorHandlerMock = mock(ErrorHandlerInterface::class);
 
-    $mock = Mockery::mock(AbstractImport::class, [$sqlMock, $fileMock, $errorHandlerMock])->makePartial();
+    $mock = mock(AbstractImport::class, [$sqlMock, $fileMock, $errorHandlerMock])->makePartial();
     $mock->shouldAllowMockingProtectedMethods();
 
     $xmlContent = <<<'XML'
@@ -127,7 +127,7 @@ XML;
         'tmp_name' => $tempFile,
     ];
 
-    $fileMock = Mockery::mock(File::class);
+    $fileMock = mock(File::class);
     $fileMock->shouldReceive('get')->with('import_file')->andReturn($file);
     $mock->shouldReceive('files')->andReturn($fileMock);
 

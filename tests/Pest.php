@@ -25,13 +25,25 @@ if (! isset($GLOBALS['smcFunc'])) {
 }
 
 if (! isset($GLOBALS['scripturl'])) {
-    $GLOBALS['scripturl'] = 'https://example.com';
+    $GLOBALS['scripturl'] = 'https://example.com/index.php';
 }
 
 if (! isset($GLOBALS['modSettings'])) {
     $GLOBALS['modSettings'] = [];
     $GLOBALS['modSettings']['avatar_url'] = '';
     $GLOBALS['modSettings']['smileys_url'] = 'https://example.com/Smileys';
+}
+
+if (! isset($GLOBALS['_POST'])) {
+    $GLOBALS['_POST'] = [];
+}
+
+if (! isset($GLOBALS['_REQUEST'])) {
+    $GLOBALS['_REQUEST'] = [];
+}
+
+if (! isset($GLOBALS['_FILES'])) {
+    $GLOBALS['_FILES'] = [];
 }
 
 if (! defined('LP_NAME')) {
@@ -64,6 +76,10 @@ if (! defined('LP_ALIAS_PATTERN')) {
 
 if (! defined('LP_CACHE_TIME')) {
     define('LP_CACHE_TIME', 72000);
+}
+
+if (! defined('LP_AREAS_PATTERN')) {
+    define('LP_AREAS_PATTERN', '^[a-z][a-z0-9=|\-,!]+$');
 }
 
 require_once __DIR__ . '/functions.php';

@@ -11,7 +11,7 @@ arch()
     ->extending(AbstractCustomImport::class);
 
 it('has required properties', function () {
-    $mock = Mockery::mock(AbstractCustomPageImport::class)->makePartial();
+    $mock = mock(AbstractCustomPageImport::class)->makePartial();
     $mock->shouldAllowMockingProtectedMethods();
 
     $typeReflection = new ReflectionProperty($mock, 'type');

@@ -19,22 +19,23 @@ use LightPortal\Database\PortalAdapterInterface;
 use LightPortal\Database\PortalResult;
 use LightPortal\Database\PortalSql;
 use LightPortal\Database\PortalTransactionInterface;
+use Tests\ReflectionAccessor;
 
 describe('PortalSql', function () {
     beforeEach(function () {
         $platform = mock(PlatformInterface::class);
         $platform->shouldReceive('getName')->andReturn('SQLite');
 
-        $adapter = mock(PortalAdapterInterface::class);
-        $adapter->shouldReceive('getPrefix')->andReturn('smf_');
-        $adapter->shouldReceive('getPlatform')->andReturn($platform);
-        $adapter->shouldReceive('getTitle')->andReturn('SQLite');
+        $this->adapter = mock(PortalAdapterInterface::class);
+        $this->adapter->shouldReceive('getPrefix')->andReturn('smf_');
+        $this->adapter->shouldReceive('getPlatform')->andReturn($platform);
+        $this->adapter->shouldReceive('getTitle')->andReturn('SQLite');
 
         $driver = mock(DriverInterface::class);
         $driver->shouldReceive('getDatabasePlatformName')->andReturn('SQLite');
-        $adapter->shouldReceive('getDriver')->andReturn($driver);
+        $this->adapter->shouldReceive('getDriver')->andReturn($driver);
 
-        $this->sql = new PortalSql($adapter);
+        $this->sql = new PortalSql($this->adapter);
     });
 
     it('returns PortalDelete from delete method without table', function () {
@@ -121,19 +122,13 @@ describe('PortalSql', function () {
     });
 
     it('checks if table exists', function () {
-        $pdo = mock(PDO::class);
-        $stmt = mock(PDOStatement::class);
-        $stmt->shouldReceive('execute')->andReturn(true);
-        $stmt->shouldReceive('fetchColumn')->andReturn(1, 0);
+        $result = mock(ResultInterface::class);
+        $result->shouldReceive('current')->andReturn(['1' => 1], null);
 
-        $pdo->shouldReceive('prepare')->andReturn($stmt);
+        $this->adapter->shouldReceive('query')->andReturn($result);
 
-        $connection = mock(ConnectionInterface::class);
-        $connection->shouldReceive('getResource')->andReturn($pdo);
-
-        $this->sql->getAdapter()->getDriver()
-            ->shouldReceive('getConnection')
-            ->andReturn($connection);
+        $accessor = new ReflectionAccessor($this->sql);
+        $accessor->setProtectedProperty('adapter', $this->adapter);
 
         expect($this->sql->tableExists('lp_blocks'))->toBeTrue()
             ->and($this->sql->tableExists('lp_nonexistent'))->toBeFalse();

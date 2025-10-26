@@ -78,7 +78,7 @@ class DataHandlerTestFactory
 
     private function createCustomMock(string $interface, array $options): Mockery\MockInterface
     {
-        $mock = Mockery::mock($interface);
+        $mock = mock($interface);
 
         if (isset($options['methods'])) {
             foreach ($options['methods'] as $method => $returnValue) {

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use LightPortal\Articles\AbstractArticle;
 use LightPortal\Articles\ArticleInterface;
 use LightPortal\Articles\ChosenPageArticle;
+use LightPortal\Articles\PageArticle;
 
 arch()
     ->expect(ChosenPageArticle::class)
-    ->toExtend(AbstractArticle::class)
+    ->toExtend(PageArticle::class)
     ->toImplement(ArticleInterface::class);

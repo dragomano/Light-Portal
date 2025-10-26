@@ -16,7 +16,7 @@ beforeEach(function () {
 
     Config::$modSettings['recycle_board'] = null;
 
-    $mockMessageIndex = Mockery::mock('overload:' . MessageIndex::class);
+    $mockMessageIndex = mock('overload:' . MessageIndex::class);
     $mockMessageIndex->shouldReceive('getBoardList')->andReturn([
         [
             'name' => 'Category 1',
@@ -139,7 +139,7 @@ it('returns data array', function () {
 });
 
 it('renders to string', function () {
-    $mockRenderer = Mockery::mock();
+    $mockRenderer = mock();
     $mockRenderer->shouldReceive('render')
         ->once()
         ->andReturn('<select></select>');

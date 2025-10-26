@@ -13,10 +13,10 @@ use Tests\DataHandlerTestTrait;
 uses(DataHandlerTestTrait::class);
 
 beforeEach(function () {
-    $this->requestMock = Mockery::mock(RequestInterface::class);
+    $this->requestMock = mock(RequestInterface::class);
     $this->sqlMock = $this->createDatabaseMock();
-    $this->fileMock = Mockery::mock(FilesystemInterface::class);
-    $this->errorHandlerMock = Mockery::mock(ErrorHandlerInterface::class);
+    $this->fileMock = mock(FilesystemInterface::class);
+    $this->errorHandlerMock = mock(ErrorHandlerInterface::class);
 
     AppMockRegistry::set(RequestInterface::class, $this->requestMock);
 });
@@ -27,7 +27,7 @@ afterEach(function () {
 
 describe('getData', function () {
     it('returns empty array when entity is empty', function () {
-        $export = Mockery::mock(PluginExport::class, [$this->sqlMock, $this->fileMock, $this->errorHandlerMock])->makePartial();
+        $export = mock(PluginExport::class, [$this->sqlMock, $this->fileMock, $this->errorHandlerMock])->makePartial();
 
         $this->requestMock->shouldReceive('isEmpty')->with('plugins')->andReturn(true);
         $this->requestMock->shouldReceive('hasNot')->with('export_all')->andReturn(true);
@@ -41,7 +41,7 @@ describe('getData', function () {
     });
 
     it('returns selected plugins when provided', function () {
-        $export = Mockery::mock(PluginExport::class, [$this->sqlMock, $this->fileMock, $this->errorHandlerMock])->makePartial();
+        $export = mock(PluginExport::class, [$this->sqlMock, $this->fileMock, $this->errorHandlerMock])->makePartial();
 
         $this->requestMock->shouldReceive('isEmpty')->with('plugins')->andReturn(false);
         $this->requestMock->shouldReceive('hasNot')->with('export_all')->andReturn(true);
@@ -57,7 +57,7 @@ describe('getData', function () {
     });
 
     it('returns all plugins when export_all', function () {
-        $export = Mockery::mock(PluginExport::class, [$this->sqlMock, $this->fileMock, $this->errorHandlerMock])->makePartial();
+        $export = mock(PluginExport::class, [$this->sqlMock, $this->fileMock, $this->errorHandlerMock])->makePartial();
 
         Utils::$context['lp_plugins'] = ['HelloPortal', 'TopTopics'];
 
@@ -76,7 +76,7 @@ describe('getData', function () {
 
 describe('getFile', function () {
     it('returns empty string when no dirs', function () {
-        $export = Mockery::mock(PluginExport::class, [$this->sqlMock, $this->fileMock, $this->errorHandlerMock])->makePartial();
+        $export = mock(PluginExport::class, [$this->sqlMock, $this->fileMock, $this->errorHandlerMock])->makePartial();
         $export->shouldAllowMockingProtectedMethods();
         $export->shouldReceive('request')->andReturn($this->requestMock);
         $export->shouldReceive('run')->andReturn();
@@ -103,7 +103,7 @@ describe('createPackage ', function () {
             sys_get_temp_dir() . '/addons/TopTopics'
         );
 
-        $export = Mockery::mock(PluginExport::class, [$this->sqlMock, $this->fileMock, $this->errorHandlerMock])->makePartial();
+        $export = mock(PluginExport::class, [$this->sqlMock, $this->fileMock, $this->errorHandlerMock])->makePartial();
         $export->shouldAllowMockingProtectedMethods();
 
         $result = $export->createPackage($dirs);
@@ -120,7 +120,7 @@ describe('createPackage ', function () {
 });
 
 it('handles ZipArchive creation failure', function () {
-    $export = Mockery::mock(PluginExport::class, [$this->sqlMock, $this->fileMock, $this->errorHandlerMock])->makePartial();
+    $export = mock(PluginExport::class, [$this->sqlMock, $this->fileMock, $this->errorHandlerMock])->makePartial();
     $export->shouldAllowMockingProtectedMethods();
 
     // For failure test, use temp dir but make TestPlugin a file instead of directory

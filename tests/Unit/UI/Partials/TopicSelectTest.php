@@ -128,7 +128,7 @@ it('returns data array', function () {
 });
 
 it('renders to string', function () {
-    $mockRenderer = Mockery::mock();
+    $mockRenderer = mock();
     $mockRenderer->shouldReceive('render')
         ->once()
         ->andReturn('<select></select>');
@@ -175,9 +175,9 @@ it('returns empty array for null topics', function () {
 });
 
 it('builds correct SQL query for topics with board permissions', function () {
-	$sqlMock = Mockery::mock(PortalSqlInterface::class);
-	$selectMock = Mockery::mock(PortalSelect::class);
-	$resultMock = Mockery::mock(PortalResultInterface::class);
+	$sqlMock = mock(PortalSqlInterface::class);
+	$selectMock = mock(PortalSelect::class);
+	$resultMock = mock(PortalResultInterface::class);
 
 	$sqlMock->shouldReceive('select')->andReturn($selectMock);
 	$sqlMock->shouldReceive('execute')->andReturn($resultMock);
@@ -203,9 +203,9 @@ it('builds correct SQL query for topics with board permissions', function () {
 });
 
 it('builds correct SQL query for topics without board permissions', function () {
-	$sqlMock = Mockery::mock(PortalSqlInterface::class);
-	$selectMock = Mockery::mock(PortalSelect::class);
-	$resultMock = Mockery::mock(PortalResultInterface::class);
+	$sqlMock = mock(PortalSqlInterface::class);
+	$selectMock = mock(PortalSelect::class);
+	$resultMock = mock(PortalResultInterface::class);
 
 	$sqlMock->shouldReceive('select')->andReturn($selectMock);
 	$sqlMock->shouldReceive('execute')->andReturn($resultMock);
@@ -233,9 +233,9 @@ it('builds correct SQL query for topics without board permissions', function () 
 it('processes topic results with text censoring', function () {
 	$testSubject = 'Test Topic Subject';
 
-	$sqlMock = Mockery::mock(PortalSqlInterface::class);
-	$selectMock = Mockery::mock(PortalSelect::class);
-	$resultMock = Mockery::mock(PortalResultInterface::class);
+	$sqlMock = mock(PortalSqlInterface::class);
+	$selectMock = mock(PortalSelect::class);
+	$resultMock = mock(PortalResultInterface::class);
 
 	$topics = [
 		['id_topic' => 1, 'subject' => $testSubject],
@@ -271,8 +271,8 @@ it('processes topic results with text censoring', function () {
 });
 
 it('handles database errors gracefully', function () {
-	$sqlMock = Mockery::mock(PortalSqlInterface::class);
-	$selectMock = Mockery::mock(PortalSelect::class);
+	$sqlMock = mock(PortalSqlInterface::class);
+	$selectMock = mock(PortalSelect::class);
 
 	$sqlMock->shouldReceive('select')->andReturn($selectMock);
 	$sqlMock->shouldReceive('execute')->andThrow(new Exception('Database error'));

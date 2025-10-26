@@ -103,8 +103,8 @@ function addDirectoryToZip(ZipArchive $zip, string $directory, string $baseName)
 }
 
 beforeEach(function () {
-    $this->sqlMock = Mockery::mock(PortalSqlInterface::class);
-    $this->errorHandlerMock = Mockery::mock(ErrorHandlerInterface::class)->shouldIgnoreMissing();
+    $this->sqlMock = mock(PortalSqlInterface::class);
+    $this->errorHandlerMock = mock(ErrorHandlerInterface::class)->shouldIgnoreMissing();
 
     unset(Utils::$context['import_successful']);
 });
