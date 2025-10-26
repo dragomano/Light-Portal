@@ -41,5 +41,5 @@ interface PortalSqlInterface
 
 	public function replace($table = null): PortalReplace;
 
-	public function execute(PreparableSqlInterface $sqlObject): PortalResultInterface;
+	public function execute(PreparableSqlInterface $sqlObject): ?PortalResultInterface;
 }

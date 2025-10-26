@@ -12,6 +12,7 @@
 
 namespace LightPortal\Database;
 
+use Bugo\Compat\ErrorHandler;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Metadata\Source\Factory as MetadataFactory;
 use Laminas\Db\Sql\PreparableSqlInterface;
@@ -138,24 +139,38 @@ class PortalSql extends Sql implements PortalSqlInterface
 		return new PortalReplace($table, $this->prefix, $returning);
 	}
 
-	public function execute(PreparableSqlInterface $sqlObject): PortalResultInterface
+	public function execute(PreparableSqlInterface $sqlObject): ?PortalResultInterface
 	{
-		if ($sqlObject instanceof PortalReplace) {
-			if ($sqlObject->isBatch()) {
-				$result = $sqlObject->executeBatchReplace($this->adapter);
+		try {
+			if ($sqlObject instanceof PortalReplace) {
+				if ($sqlObject->isBatch()) {
+					$result = $sqlObject->executeBatchReplace($this->adapter);
+				} else {
+					$result = $sqlObject->executeReplace($this->adapter);
+				}
+			} elseif ($sqlObject instanceof PortalInsert) {
+				if ($sqlObject->isBatch()) {
+					$result = $sqlObject->executeBatch($this->adapter);
+				} else {
+					$result = $sqlObject->executeInsert($this->adapter);
+				}
 			} else {
-				$result = $sqlObject->executeReplace($this->adapter);
+				$result = $this->prepareStatementForSqlObject($sqlObject)->execute();
 			}
-		} elseif ($sqlObject instanceof PortalInsert) {
-			if ($sqlObject->isBatch()) {
-				$result = $sqlObject->executeBatch($this->adapter);
-			} else {
-				$result = $sqlObject->executeInsert($this->adapter);
-			}
-		} else {
-			$result = $this->prepareStatementForSqlObject($sqlObject)->execute();
+
+			return new PortalResult($result, $this->adapter);
+		} catch (Throwable $e) {
+			$profiler = $this->adapter->getProfiler();
+			$profiles = $profiler->getProfiles();
+
+			$sql  = $profiles[count($profiles) - 1]['sql'] ?? '';
+			$file = $e->getTrace()[1]['file'] ?? '';
+			$line = $e->getTrace()[1]['line'] ?? '';
+
+			ErrorHandler::log('[LP] queries: ' . $e->getMessage() . PHP_EOL . PHP_EOL . $sql, file: $file, line: $line);
+			ErrorHandler::fatal($e->getMessage(), false);
 		}
 
-		return new PortalResult($result, $this->adapter);
+		return null;
 	}
 }

@@ -242,6 +242,8 @@ class MenuButtons
 			|| empty(Utils::$context['template_layers'])
 			|| $this->request()->is('devtools')
 			|| $this->request()->is('xmlhttp')
+			|| $this->request()->has('backtrace')
+			|| $this->request()->has('file')
 		) {
 			return;
 		}
