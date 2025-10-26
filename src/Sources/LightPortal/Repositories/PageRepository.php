@@ -33,12 +33,12 @@ use LightPortal\Enums\Permission;
 use LightPortal\Enums\PortalHook;
 use LightPortal\Enums\PortalSubAction;
 use LightPortal\Enums\Status;
-use LightPortal\Events\HasEvents;
+use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Lists\CategoryList;
 use LightPortal\Utils\Content;
 use LightPortal\Utils\DateTime;
 use LightPortal\Utils\Icon;
-use LightPortal\Utils\Notifier;
+use LightPortal\Utils\NotifierInterface;
 use LightPortal\Utils\Setting;
 use LightPortal\Utils\Str;
 
@@ -51,13 +51,15 @@ if (! defined('SMF'))
 
 final class PageRepository extends AbstractRepository implements PageRepositoryInterface, DataManagerInterface
 {
-	use HasEvents;
-
 	protected string $entity = 'page';
 
-	public function __construct(protected PortalSqlInterface $sql, protected Notifier $notifier)
+	public function __construct(
+		protected PortalSqlInterface $sql,
+		protected EventDispatcherInterface $dispatcher,
+		protected NotifierInterface $notifier
+	)
 	{
-		parent::__construct($sql);
+		parent::__construct($sql, $dispatcher);
 	}
 
 	public function getAll(
@@ -272,7 +274,7 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 		if ($items === [])
 			return;
 
-		$this->events()->dispatch(PortalHook::onPageRemoving, ['items' => $items]);
+		$this->dispatcher->dispatch(PortalHook::onPageRemoving, ['items' => $items]);
 
 		$deletePages = $this->sql->delete('lp_pages');
 		$deletePages->where->in('page_id', $items);
@@ -433,7 +435,8 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 				$sortBind !== null ? [$sortBind] : []
 			),
 			new Expression($secondaryField . ' ' . ($listAsc ? 'DESC' : 'ASC')),
-			new Expression('CASE WHEN t.title IS NOT NULL THEN 1 WHEN tf.title IS NOT NULL THEN 2 END')
+			new Expression('CASE WHEN t.title IS NOT NULL THEN 1 WHEN tf.title IS NOT NULL THEN 2 END'),
+			new Expression('p.page_id ' . ($listAsc ? 'DESC' : 'ASC'))
 		];
 
 		$nextOrder = [
@@ -442,7 +445,8 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 				$sortBind !== null ? [$sortBind] : []
 			),
 			new Expression($secondaryField . ' ' . $sortDirection),
-			new Expression('CASE WHEN t.title IS NOT NULL THEN 1 WHEN tf.title IS NOT NULL THEN 2 END')
+			new Expression('CASE WHEN t.title IS NOT NULL THEN 1 WHEN tf.title IS NOT NULL THEN 2 END'),
+			new Expression('p.page_id ' . ($listAsc ? 'ASC' : 'DESC'))
 		];
 
 		$prev = clone $base;
@@ -524,13 +528,11 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 
 			$row['content'] = Content::parse($row['content'], $row['type']);
 
-			$image = Str::getImageFromText($row['content']);
-
 			$items[$row['page_id']] = [
 				'id'    => $row['page_id'],
 				'slug'  => $row['slug'],
 				'link'  => LP_PAGE_URL . $row['slug'],
-				'image' => $image ?: (Config::$modSettings['lp_image_placeholder'] ?? ''),
+				'image' => Str::getImageFromText($row['content']),
 				'title' => $row['title'],
 			];
 		}
@@ -632,7 +634,7 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 
 		$data['tags'] = $this->getTags($data['id']);
 
-		$this->events()->dispatch(PortalHook::preparePageData, ['data' => &$data, 'isAuthor' => $isAuthor]);
+		$this->dispatcher->dispatch(PortalHook::preparePageData, ['data' => &$data, 'isAuthor' => $isAuthor]);
 	}
 
 	public function fetchTags(iterable $pageIds): Generator
@@ -700,7 +702,7 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 				return 0;
 			}
 
-			$this->events()->dispatch(PortalHook::onPageSaving, ['item' => $item]);
+			$this->dispatcher->dispatch(PortalHook::onPageSaving, ['item' => $item]);
 
 			$this->saveTranslations($item);
 			$this->saveOptions($item);
@@ -751,7 +753,7 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 
 			$this->sql->execute($update);
 
-			$this->events()->dispatch(PortalHook::onPageSaving, ['item' => $item]);
+			$this->dispatcher->dispatch(PortalHook::onPageSaving, ['item' => $item]);
 
 			$this->saveTranslations($item, true);
 			$this->saveTags($item, true);

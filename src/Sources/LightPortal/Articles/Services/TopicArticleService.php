@@ -26,16 +26,16 @@ use LightPortal\Utils\Str;
 if (! defined('SMF'))
 	die('No direct access...');
 
-readonly class TopicArticleService implements ArticleServiceInterface
+class TopicArticleService extends AbstractArticleService
 {
-	public function __construct(
-		private TopicArticleQuery $query,
-		private EventDispatcherInterface $events
-	) {}
-
-	public function init(): void
+	public function __construct(TopicArticleQuery $query, EventDispatcherInterface $dispatcher)
 	{
-		$params = [
+		parent::__construct($query, $dispatcher);
+	}
+
+	public function getParams(): array
+	{
+		return [
 			'current_member'    => User::$me->id,
 			'is_approved'       => 1,
 			'id_poll'           => 0,
@@ -44,8 +44,6 @@ readonly class TopicArticleService implements ArticleServiceInterface
 			'recycle_board'     => Setting::get('recycle_board', 'int', 0),
 			'selected_boards'   => Setting::get('lp_frontpage_boards', 'array', []),
 		];
-
-		$this->query->init($params);
 	}
 
 	public function getSortingOptions(): array
@@ -68,150 +66,9 @@ readonly class TopicArticleService implements ArticleServiceInterface
 		];
 	}
 
-	public function getData(int $start, int $limit, ?string $sortType): iterable
+	protected function getRules(array $row): array
 	{
-		$this->query->setSorting($sortType);
-		$this->query->prepareParams($start, $limit);
-
-		foreach ($this->query->getRawData() as $row) {
-			$topic = [
-				'id'           => $row['id_topic'],
-				'section'      => $this->getSectionData($row),
-				'author'       => $this->getAuthorData($row),
-				'date'         => $this->getDate($row),
-				'last_comment' => $row['last_msg_time'],
-				'title'        => $this->getTitle($row),
-				'link'         => $this->getLink($row),
-				'is_new'       => $this->isNew($row),
-				'views'        => $this->getViewsData($row),
-				'replies'      => $this->getRepliesData($row),
-				'css_class'    => $row['is_sticky'] ? ' sticky' : '',
-				'image'        => $this->getImage($row),
-				'can_edit'     => $this->canEdit($row),
-				'edit_link'    => $this->getEditLink($row),
-			];
-
-			$this->prepareTeaser($topic, $row);
-
-			$articles = [$row['id_topic'] => $topic];
-
-			$this->events->dispatch(PortalHook::frontTopicsRow, ['articles' => &$articles, 'row' => $row]);
-
-			$topic = $articles[$row['id_topic']];
-
-			yield $row['id_topic'] => Avatar::getWithItems([$topic])[0] ?? [];
-		}
-	}
-
-	public function getTotalCount(): int
-	{
-		return $this->query->getTotalCount();
-	}
-
-	private function getSectionData(array $row): array
-	{
-		return [
-			'name' => $row['name'],
-			'link' => Config::$scripturl . '?board=' . $row['id_board'] . '.0',
-		];
-	}
-
-	private function getAuthorData(array $row): array
-	{
-		$authorId   = (str_contains($this->query->getSorting(), 'last_comment') ? $row['last_poster_id'] : $row['id_member']);
-		$authorName = str_contains($this->query->getSorting(), 'last_comment') ? $row['last_poster_name'] : $row['poster_name'];
-
-		return [
-			'id'   => $authorId,
-			'link' => Config::$scripturl . '?action=profile;u=' . $authorId,
-			'name' => $authorName,
-		];
-	}
-
-	private function getDate(array $row): int
-	{
-		if (str_contains($this->query->getSorting(), 'last_comment') && $row['last_msg_time']) {
-			return $row['last_msg_time'];
-		}
-
-		if (str_contains($this->query->getSorting(), 'updated')) {
-			return $row['date'];
-		}
-
-		return $row['poster_time'];
-	}
-
-	private function getTitle(array $row): string
-	{
-		Str::cleanBbcode($row['subject']);
-
-		Lang::censorText($row['subject']);
-
-		return $row['subject'];
-	}
-
-	private function getLink(array $row): string
-	{
-		return Config::$scripturl . '?topic=' . $row['id_topic'] . '.0';
-	}
-
-	private function isNew(array $row): bool
-	{
-		if (User::$me->is_guest || empty($row['new_from']))
-			return false;
-
-		return $row['new_from'] <= $row['id_msg_modified'] && $row['last_poster_id'] !== User::$me->id;
-	}
-
-	private function getViewsData(array $row): array
-	{
-		return [
-			'num'   => $row['num_views'],
-			'title' => Lang::$txt['lp_views'],
-			'after' => '',
-		];
-	}
-
-	private function getRepliesData(array $row): array
-	{
-		return [
-			'num'   => $row['num_replies'],
-			'title' => Lang::$txt['lp_replies'],
-			'after' => '',
-		];
-	}
-
-	private function getImage(array $row): string
-	{
-		if (empty(Config::$modSettings['lp_show_images_in_articles'])) {
-			return '';
-		}
-
-		$image = Str::getImageFromText(BBCodeParser::load()->parse($row['body'], false));
-
-		if (! empty($row['id_attach']) && empty($image)) {
-			return $this->getLink($row) . ';attach=' . $row['id_attach'] . ';image';
-		}
-
-		return $image;
-	}
-
-	private function canEdit(array $row): bool
-	{
-		return User::$me->is_admin || (User::$me->id && $row['id_member'] === User::$me->id);
-	}
-
-	private function getEditLink(array $row): string
-	{
-		return Config::$scripturl . '?action=post;msg=' . $row['id_first_msg'] . ';topic=' . $row['id_topic'] . '.0';
-	}
-
-	private function prepareTeaser(array &$topic, array $row): void
-	{
-		if (empty(Config::$modSettings['lp_show_teaser']))
-			return;
-
-		$body = (string) (str_contains($this->query->getSorting(), 'last_comment') ? $row['last_body'] : $row['body']);
+		$body = $row['body'];
 
 		Lang::censorText($body);
 
@@ -219,8 +76,103 @@ readonly class TopicArticleService implements ArticleServiceInterface
 		$body = preg_replace('~\[quote.*].*?\[/quote]~Usi', '', $body);
 		$body = preg_replace('~\[table.*].*?\[/table]~Usi', '', $body);
 		$body = preg_replace('~\[code.*].*?\[/code]~Usi', '', $body);
-		$body = BBCodeParser::load()->parse($body, (bool) $row['smileys_enabled'], (int) $row['id_first_msg']);
 
-		$topic['teaser'] = Str::getTeaser($body);
+		$parsedBody = BBCodeParser::load()->parse($body, (bool) $row['smileys_enabled'], (int) $row['id_first_msg']);
+
+		return [
+			'id' => fn($row) => $row['id_topic'],
+
+			'section' => fn($row) => [
+				'name' => $row['name'],
+				'link' => Config::$scripturl . '?board=' . $row['id_board'] . '.0',
+			],
+
+			'author' => fn($row) => [
+				'id'   => $row['id_member'],
+				'link' => Config::$scripturl . '?action=profile;u=' . $row['id_member'],
+				'name' => $row['poster_name'],
+			],
+
+			'date' => function($row) {
+				if (str_contains($this->query->getSorting(), 'updated')) {
+					return $row['date'];
+				}
+
+				return $row['poster_time'];
+			},
+
+			'last_comment' => fn($row) => $row['last_msg_time'],
+
+			'title' => function ($row) {
+				$title = $row['subject'];
+
+				Lang::censorText($title);
+				Str::cleanBbcode($title);
+
+				return $title;
+			},
+
+			'link' => fn($row) => Config::$scripturl . '?topic=' . $row['id_topic'] . '.0',
+
+			'is_new' => function ($row) {
+				if (User::$me->is_guest || empty($row['new_from'])) {
+					return false;
+				}
+
+				return $row['new_from'] <= $row['id_msg_modified'] && $row['last_poster_id'] !== User::$me->id;
+			},
+
+			'views' => fn($row) => [
+				'num'   => $row['num_views'],
+				'title' => Lang::$txt['lp_views'],
+				'after' => '',
+			],
+
+			'replies' => fn($row) => [
+				'num'   => $row['num_replies'],
+				'title' => Lang::$txt['lp_replies'],
+				'after' => '',
+			],
+
+			'css_class' => fn($row) => empty($row['is_sticky']) ? '' : ' sticky',
+
+			'image' => function ($row) use ($parsedBody) {
+				if (empty(Config::$modSettings['lp_show_images_in_articles'])) {
+					return '';
+				}
+
+				$image = Str::getImageFromText($parsedBody);
+
+				if (! empty($row['id_attach']) && empty($image)) {
+					return Config::$scripturl . '?topic=' . $row['id_topic'] . ';attach=' . $row['id_attach'] . ';image';
+				}
+
+				return $image;
+			},
+
+			'can_edit' => fn($row) => User::$me->is_admin
+				|| (! User::$me->is_guest && $row['id_member'] === User::$me->id),
+
+			'edit_link' => fn($row) => Config::$scripturl
+				. '?action=post;msg=' . $row['id_first_msg'] . ';topic=' . $row['id_topic'] . '.0',
+
+			'teaser' => function() use ($parsedBody) {
+				if (empty(Config::$modSettings['lp_show_teaser'])) {
+					return '';
+				}
+
+				return Str::getTeaser($parsedBody);
+			},
+		];
+	}
+
+	protected function getEventHook(): PortalHook
+	{
+		return PortalHook::frontTopicsRow;
+	}
+
+	protected function finalizeItem(array $item): array
+	{
+		return Avatar::getWithItems([$item])[0] ?? $item;
 	}
 }

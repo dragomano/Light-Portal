@@ -12,120 +12,170 @@
 
 namespace LightPortal;
 
-use Bugo\Bricks\Breadcrumbs\BreadcrumbBuilder;
-use Bugo\Bricks\Breadcrumbs\BreadcrumbPresenter;
-use Bugo\Bricks\Forms\FormPresenter;
-use Bugo\Bricks\Forms\FormRenderer;
-use Bugo\Bricks\Tables\Interfaces\TablePresenterInterface;
-use Bugo\Bricks\Tables\TablePresenter;
+use Bugo\Bricks\Breadcrumbs\{
+	BreadcrumbBuilder,
+	BreadcrumbPresenter,
+};
+use Bugo\Bricks\Forms\{
+	FormPresenter,
+	FormRenderer,
+};
+use Bugo\Bricks\Tables\{
+	Interfaces\TablePresenterInterface,
+	TablePresenter,
+};
 use League\Container\ServiceProvider\AbstractServiceProvider;
-use LightPortal\Actions\Block;
-use LightPortal\Actions\BoardIndex;
-use LightPortal\Actions\CardList;
-use LightPortal\Actions\CardListInterface;
-use LightPortal\Actions\Category;
-use LightPortal\Actions\Comment;
-use LightPortal\Actions\FrontPage;
-use LightPortal\Actions\Page;
-use LightPortal\Actions\Tag;
-use LightPortal\Areas\BlockArea;
-use LightPortal\Areas\CategoryArea;
-use LightPortal\Areas\ConfigArea;
-use LightPortal\Areas\Configs\BasicConfig;
-use LightPortal\Areas\Configs\ExtraConfig;
-use LightPortal\Areas\Configs\FeedbackConfig;
-use LightPortal\Areas\Configs\MiscConfig;
-use LightPortal\Areas\Configs\PanelConfig;
-use LightPortal\Areas\CreditArea;
-use LightPortal\Areas\PageArea;
-use LightPortal\Areas\PluginArea;
-use LightPortal\Areas\TagArea;
-use LightPortal\Articles\BoardArticle;
-use LightPortal\Articles\ChosenPageArticle;
-use LightPortal\Articles\ChosenTopicArticle;
-use LightPortal\Articles\PageArticle;
-use LightPortal\Articles\Queries\BoardArticleQuery;
-use LightPortal\Articles\Queries\ChosenPageArticleQuery;
-use LightPortal\Articles\Queries\ChosenTopicArticleQuery;
-use LightPortal\Articles\Queries\PageArticleQuery;
-use LightPortal\Articles\Queries\TopicArticleQuery;
-use LightPortal\Articles\Services\BoardArticleService;
-use LightPortal\Articles\Services\PageArticleService;
-use LightPortal\Articles\Services\TopicArticleService;
-use LightPortal\Articles\TopicArticle;
-use LightPortal\Database\PortalAdapterFactory;
-use LightPortal\Database\PortalSql;
-use LightPortal\Database\PortalSqlInterface;
-use LightPortal\DataHandlers\Exports\BlockExport;
-use LightPortal\DataHandlers\Exports\CategoryExport;
-use LightPortal\DataHandlers\Exports\PageExport;
-use LightPortal\DataHandlers\Exports\PluginExport;
-use LightPortal\DataHandlers\Exports\TagExport;
-use LightPortal\DataHandlers\Imports\BlockImport;
-use LightPortal\DataHandlers\Imports\CategoryImport;
-use LightPortal\DataHandlers\Imports\PageImport;
-use LightPortal\DataHandlers\Imports\PluginImport;
-use LightPortal\DataHandlers\Imports\TagImport;
-use LightPortal\Events\EventDispatcherInterface;
-use LightPortal\Events\EventManager;
-use LightPortal\Events\EventManagerFactory;
-use LightPortal\Events\EventManagerProxy;
-use LightPortal\Lists\BlockList;
-use LightPortal\Lists\CategoryList;
-use LightPortal\Lists\IconList;
-use LightPortal\Lists\PageList;
-use LightPortal\Lists\PluginList;
-use LightPortal\Lists\TagList;
-use LightPortal\Models\BlockFactory;
-use LightPortal\Models\CategoryFactory;
-use LightPortal\Models\PageFactory;
-use LightPortal\Models\TagFactory;
-use LightPortal\Plugins\AssetHandler;
-use LightPortal\Plugins\ConfigHandler;
-use LightPortal\Plugins\LangHandler;
-use LightPortal\Plugins\PluginHandler;
-use LightPortal\Renderers\Blade;
-use LightPortal\Renderers\RendererInterface;
-use LightPortal\Repositories\BlockRepository;
-use LightPortal\Repositories\BlockRepositoryInterface;
-use LightPortal\Repositories\CategoryRepository;
-use LightPortal\Repositories\CategoryRepositoryInterface;
-use LightPortal\Repositories\CommentRepository;
-use LightPortal\Repositories\CommentRepositoryInterface;
-use LightPortal\Repositories\PageListRepository;
-use LightPortal\Repositories\PageListRepositoryInterface;
-use LightPortal\Repositories\PageRepository;
-use LightPortal\Repositories\PageRepositoryInterface;
-use LightPortal\Repositories\PluginRepository;
-use LightPortal\Repositories\PluginRepositoryInterface;
-use LightPortal\Repositories\TagRepository;
-use LightPortal\Repositories\TagRepositoryInterface;
-use LightPortal\UI\Breadcrumbs\BreadcrumbRenderer;
-use LightPortal\UI\Breadcrumbs\BreadcrumbWrapper;
+use LightPortal\Actions\{
+	Block,
+	BoardIndex,
+	CardList,
+	CardListInterface,
+	Category,
+	CategoryIndex,
+	CategoryPageList,
+	Comment,
+	FrontPage,
+	Page,
+	Tag,
+	TagIndex,
+	TagPageList,
+};
+use LightPortal\Areas\{
+	BlockArea,
+	CategoryArea,
+	PageArea,
+	PluginArea,
+	TagArea,
+};
+use LightPortal\Areas\Configs\{
+	BasicConfig,
+	ExtraConfig,
+	FeedbackConfig,
+	MiscConfig,
+	PanelConfig,
+};
+use LightPortal\Articles\{
+	BoardArticle,
+	ChosenPageArticle,
+	ChosenTopicArticle,
+	PageArticle,
+	TopicArticle,
+};
+use LightPortal\Articles\Queries\{
+	BoardArticleQuery,
+	ChosenPageArticleQuery,
+	ChosenTopicArticleQuery,
+	PageArticleQuery,
+	TagPageArticleQuery,
+	TopicArticleQuery,
+};
+use LightPortal\Articles\Services\{
+	BoardArticleService,
+	CategoryPageArticleService,
+	PageArticleService,
+	TagPageArticleService,
+	TopicArticleService,
+};
+use LightPortal\Database\{
+	PortalAdapterFactory,
+	PortalSql,
+	PortalSqlInterface,
+};
+use LightPortal\DataHandlers\Exports\{
+	BlockExport,
+	CategoryExport,
+	PageExport,
+	PluginExport,
+	TagExport,
+};
+use LightPortal\DataHandlers\Imports\{
+	BlockImport,
+	CategoryImport,
+	PageImport,
+	PluginImport,
+	TagImport,
+};
+use LightPortal\Events\{
+	EventDispatcherInterface,
+	EventManager,
+	EventManagerFactory,
+	EventManagerProxy,
+};
+use LightPortal\Hooks\Integration;
+use LightPortal\Lists\{
+	BlockList,
+	CategoryList,
+	IconList,
+	PageList,
+	PluginList,
+	TagList,
+};
+use LightPortal\Models\{
+	BlockFactory,
+	CategoryFactory,
+	PageFactory,
+	TagFactory,
+};
+use LightPortal\Plugins\{
+	AssetHandler,
+	ConfigHandler,
+	LangHandler,
+	PluginHandler,
+};
+use LightPortal\Renderers\{
+	Blade,
+	RendererInterface,
+};
+use LightPortal\Repositories\{
+	BlockRepository,
+	BlockRepositoryInterface,
+	CategoryIndexRepository,
+	CategoryRepository,
+	CategoryRepositoryInterface,
+	CommentRepository,
+	CommentRepositoryInterface,
+	PageRepository,
+	PageRepositoryInterface,
+	PluginRepository,
+	PluginRepositoryInterface,
+	TagIndexRepository,
+	TagRepository,
+	TagRepositoryInterface,
+};
+use LightPortal\UI\View;
+use LightPortal\UI\Breadcrumbs\{
+	BreadcrumbRenderer,
+	BreadcrumbWrapper,
+};
 use LightPortal\UI\Partials\SelectRenderer;
 use LightPortal\UI\Tables\TableRenderer;
-use LightPortal\UI\View;
-use LightPortal\Utils\Cache;
-use LightPortal\Utils\CacheInterface;
-use LightPortal\Utils\ErrorHandler;
-use LightPortal\Utils\ErrorHandlerInterface;
-use LightPortal\Utils\File;
-use LightPortal\Utils\FileInterface;
-use LightPortal\Utils\Filesystem;
-use LightPortal\Utils\FilesystemInterface;
-use LightPortal\Utils\Notifier;
-use LightPortal\Utils\Post;
-use LightPortal\Utils\PostInterface;
-use LightPortal\Utils\Request;
-use LightPortal\Utils\RequestInterface;
-use LightPortal\Utils\Response;
-use LightPortal\Utils\ResponseInterface;
-use LightPortal\Utils\Session;
-use LightPortal\Utils\SessionManager;
-use LightPortal\Validators\BlockValidator;
-use LightPortal\Validators\CategoryValidator;
-use LightPortal\Validators\PageValidator;
-use LightPortal\Validators\TagValidator;
+use LightPortal\Utils\{
+	Cache,
+	CacheInterface,
+	ErrorHandler,
+	ErrorHandlerInterface,
+	File,
+	FileInterface,
+	Filesystem,
+	FilesystemInterface,
+	Notifier,
+	NotifierInterface,
+	Post,
+	PostInterface,
+	Request,
+	RequestInterface,
+	Response,
+	ResponseInterface,
+	Session,
+	SessionInterface,
+	SessionManager,
+};
+use LightPortal\Validators\{
+	BlockValidator,
+	CategoryValidator,
+	PageValidator,
+	TagValidator,
+};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -179,8 +229,6 @@ class ServiceProvider extends AbstractServiceProvider
 				],
 				['id' => PortalApp::class],
 				['id' => Integration::class],
-				['id' => ConfigArea::class],
-				['id' => CreditArea::class],
 			],
 
 			'view_and_renderers' => [
@@ -213,34 +261,48 @@ class ServiceProvider extends AbstractServiceProvider
 				['id' => BoardIndex::class],
 				['id' => Block::class],
 				[
+					'id' => CardListInterface::class,
+					'concrete' => CardList::class,
+				],
+				[
 					'id' => Category::class,
-					'arguments' => [
-						CardListInterface::class,
-						PageListRepositoryInterface::class,
-					],
+					'arguments' => [CategoryPageList::class, CategoryIndex::class],
+				],
+				[
+					'id' => CategoryIndex::class,
+					'arguments' => [CategoryIndexRepository::class],
+				],
+				[
+					'id' => CategoryPageList::class,
+					'arguments' => [CardListInterface::class, CategoryPageArticleService::class],
 				],
 				[
 					'id' => Comment::class,
-					'arguments' => [CommentRepositoryInterface::class, Notifier::class],
-				],
-				[
-					'id' => FrontPage::class,
-					'arguments' => [RendererInterface::class],
-				],
-				[
-					'id' => Page::class,
-					'arguments' => [PageRepositoryInterface::class],
-				],
-				[
-					'id' => Tag::class,
 					'arguments' => [
-						CardListInterface::class,
-						PageListRepositoryInterface::class,
+						CommentRepositoryInterface::class,
+						EventDispatcherInterface::class,
+						NotifierInterface::class,
 					],
 				],
 				[
-					'id' => CardListInterface::class,
-					'concrete' => CardList::class,
+					'id' => FrontPage::class,
+					'arguments' => [RendererInterface::class, EventDispatcherInterface::class],
+				],
+				[
+					'id' => Page::class,
+					'arguments' => [PageRepositoryInterface::class, EventDispatcherInterface::class],
+				],
+				[
+					'id' => Tag::class,
+					'arguments' => [TagPageList::class, TagIndex::class],
+				],
+				[
+					'id' => TagIndex::class,
+					'arguments' => [TagIndexRepository::class],
+				],
+				[
+					'id' => TagPageList::class,
+					'arguments' => [CardListInterface::class, TagPageArticleService::class],
 				],
 			],
 
@@ -250,12 +312,20 @@ class ServiceProvider extends AbstractServiceProvider
 					'arguments' => [BoardArticleService::class],
 				],
 				[
+					'id' => BoardArticleQuery::class,
+					'arguments' => [PortalSqlInterface::class, EventDispatcherInterface::class],
+				],
+				[
 					'id' => BoardArticleService::class,
 					'arguments' => [BoardArticleQuery::class, EventDispatcherInterface::class],
 				],
 				[
-					'id' => BoardArticleQuery::class,
-					'arguments' => [PortalSqlInterface::class, EventDispatcherInterface::class],
+					'id' => CategoryPageArticleService::class,
+					'arguments' => [
+						PageArticleQuery::class,
+						EventDispatcherInterface::class,
+						PageRepositoryInterface::class,
+					],
 				],
 				[
 					'id' => ChosenPageArticle::class,
@@ -289,6 +359,10 @@ class ServiceProvider extends AbstractServiceProvider
 					'arguments' => [PageArticleService::class],
 				],
 				[
+					'id' => PageArticleQuery::class,
+					'arguments' => [PortalSqlInterface::class, EventDispatcherInterface::class],
+				],
+				[
 					'id' => PageArticleService::class,
 					'arguments' => [
 						PageArticleQuery::class,
@@ -297,20 +371,28 @@ class ServiceProvider extends AbstractServiceProvider
 					],
 				],
 				[
-					'id' => PageArticleQuery::class,
+					'id' => TagPageArticleQuery::class,
 					'arguments' => [PortalSqlInterface::class, EventDispatcherInterface::class],
+				],
+				[
+					'id' => TagPageArticleService::class,
+					'arguments' => [
+						TagPageArticleQuery::class,
+						EventDispatcherInterface::class,
+						PageRepositoryInterface::class,
+					],
 				],
 				[
 					'id' => TopicArticle::class,
 					'arguments' => [TopicArticleService::class],
 				],
 				[
-					'id' => TopicArticleService::class,
-					'arguments' => [TopicArticleQuery::class, EventDispatcherInterface::class],
-				],
-				[
 					'id' => TopicArticleQuery::class,
 					'arguments' => [PortalSqlInterface::class, EventDispatcherInterface::class],
+				],
+				[
+					'id' => TopicArticleService::class,
+					'arguments' => [TopicArticleQuery::class, EventDispatcherInterface::class],
 				],
 			],
 
@@ -335,27 +417,30 @@ class ServiceProvider extends AbstractServiceProvider
 				[
 					'id' => BlockRepositoryInterface::class,
 					'concrete' => BlockRepository::class,
-					'arguments' => [PortalSqlInterface::class],
+					'arguments' => [PortalSqlInterface::class, EventDispatcherInterface::class],
+				],
+				[
+					'id' => CategoryIndexRepository::class,
+					'arguments' => [PortalSqlInterface::class, EventDispatcherInterface::class],
 				],
 				[
 					'id' => CategoryRepositoryInterface::class,
 					'concrete' => CategoryRepository::class,
-					'arguments' => [PortalSqlInterface::class],
+					'arguments' => [PortalSqlInterface::class, EventDispatcherInterface::class],
 				],
 				[
 					'id' => CommentRepositoryInterface::class,
 					'concrete' => CommentRepository::class,
-					'arguments' => [PortalSqlInterface::class],
-				],
-				[
-					'id' => PageListRepositoryInterface::class,
-					'concrete' => PageListRepository::class,
-					'arguments' => [PortalSqlInterface::class],
+					'arguments' => [PortalSqlInterface::class, EventDispatcherInterface::class],
 				],
 				[
 					'id' => PageRepositoryInterface::class,
 					'concrete' => PageRepository::class,
-					'arguments' => [PortalSqlInterface::class, Notifier::class],
+					'arguments' => [
+						PortalSqlInterface::class,
+						EventDispatcherInterface::class,
+						NotifierInterface::class,
+					],
 				],
 				[
 					'id' => PluginRepositoryInterface::class,
@@ -363,9 +448,13 @@ class ServiceProvider extends AbstractServiceProvider
 					'arguments' => [PortalSqlInterface::class],
 				],
 				[
+					'id' => TagIndexRepository::class,
+					'arguments' => [PortalSqlInterface::class, EventDispatcherInterface::class],
+				],
+				[
 					'id' => TagRepositoryInterface::class,
 					'concrete' => TagRepository::class,
-					'arguments' => [PortalSqlInterface::class],
+					'arguments' => [PortalSqlInterface::class, EventDispatcherInterface::class],
 				],
 			],
 
@@ -378,7 +467,10 @@ class ServiceProvider extends AbstractServiceProvider
 					'id' => CategoryList::class,
 					'arguments' => [CategoryRepositoryInterface::class],
 				],
-				['id' => IconList::class],
+				[
+					'id' => IconList::class,
+					'arguments' => [EventDispatcherInterface::class],
+				],
 				[
 					'id' => PageList::class,
 					'arguments' => [PageRepositoryInterface::class],
@@ -395,27 +487,39 @@ class ServiceProvider extends AbstractServiceProvider
 					'id' => CacheInterface::class,
 					'concrete' => Cache::class,
 				],
-				['id' => Request::class],
 				[
-					'id' => RequestInterface::class,
-					'concrete' => Request::class,
+					'id' => ErrorHandlerInterface::class,
+					'concrete' => ErrorHandler::class,
 				],
-				['id' => Response::class],
-				[
-					'id' => ResponseInterface::class,
-					'concrete' => Response::class,
-				],
-				['id' => Post::class],
-				[
-					'id' => PostInterface::class,
-					'concrete' => Post::class,
-				],
-				['id' => File::class],
 				[
 					'id' => FileInterface::class,
 					'concrete' => File::class,
 				],
-				['id' => Session::class],
+				[
+					'id' => FilesystemInterface::class,
+					'concrete' => Filesystem::class,
+				],
+				[
+					'id' => NotifierInterface::class,
+					'concrete' => Notifier::class,
+					'arguments' => [PortalSqlInterface::class],
+				],
+				[
+					'id' => PostInterface::class,
+					'concrete' => Post::class,
+				],
+				[
+					'id' => RequestInterface::class,
+					'concrete' => Request::class,
+				],
+				[
+					'id' => ResponseInterface::class,
+					'concrete' => Response::class,
+				],
+				[
+					'id' => SessionInterface::class,
+					'concrete' => Session::class,
+				],
 				[
 					'id' => SessionManager::class,
 					'arguments' => [
@@ -425,24 +529,13 @@ class ServiceProvider extends AbstractServiceProvider
 						TagRepositoryInterface::class,
 					],
 				],
-				[
-					'id' => Notifier::class,
-					'arguments' => [PortalSqlInterface::class],
-				],
-				['id' => ErrorHandler::class],
-				[
-					'id' => ErrorHandlerInterface::class,
-					'concrete' => ErrorHandler::class,
-				],
-				['id' => Filesystem::class],
-				[
-					'id' => FilesystemInterface::class,
-					'concrete' => Filesystem::class,
-				],
 			],
 
 			'configs' => [
-				['id' => BasicConfig::class],
+				[
+					'id' => BasicConfig::class,
+					'arguments' => [EventDispatcherInterface::class],
+				],
 				['id' => ExtraConfig::class],
 				['id' => PanelConfig::class],
 				['id' => MiscConfig::class],
@@ -452,11 +545,10 @@ class ServiceProvider extends AbstractServiceProvider
 			'block_area_export_import' => [
 				[
 					'id' => BlockArea::class,
-					'arguments' => [BlockRepositoryInterface::class],
+					'arguments' => [BlockRepositoryInterface::class, EventDispatcherInterface::class],
 				],
 				[
 					'id' => BlockExport::class,
-					'concrete' => BlockExport::class,
 					'arguments' => [
 						BlockRepositoryInterface::class,
 						PortalSqlInterface::class,
@@ -466,7 +558,6 @@ class ServiceProvider extends AbstractServiceProvider
 				],
 				[
 					'id' => BlockImport::class,
-					'concrete' => BlockImport::class,
 					'arguments' => [
 						PortalSqlInterface::class,
 						FileInterface::class,
@@ -478,11 +569,10 @@ class ServiceProvider extends AbstractServiceProvider
 			'page_area_export_import' => [
 				[
 					'id' => PageArea::class,
-					'arguments' => [PageRepositoryInterface::class],
+					'arguments' => [PageRepositoryInterface::class, EventDispatcherInterface::class],
 				],
 				[
 					'id' => PageExport::class,
-					'concrete' => PageExport::class,
 					'arguments' => [
 						PageRepositoryInterface::class,
 						PortalSqlInterface::class,
@@ -492,7 +582,6 @@ class ServiceProvider extends AbstractServiceProvider
 				],
 				[
 					'id' => PageImport::class,
-					'concrete' => PageImport::class,
 					'arguments' => [
 						PortalSqlInterface::class,
 						FileInterface::class,
@@ -508,7 +597,6 @@ class ServiceProvider extends AbstractServiceProvider
 				],
 				[
 					'id' => CategoryExport::class,
-					'concrete' => CategoryExport::class,
 					'arguments' => [
 						CategoryRepositoryInterface::class,
 						PortalSqlInterface::class,
@@ -518,7 +606,6 @@ class ServiceProvider extends AbstractServiceProvider
 				],
 				[
 					'id' => CategoryImport::class,
-					'concrete' => CategoryImport::class,
 					'arguments' => [
 						PortalSqlInterface::class,
 						FileInterface::class,
@@ -534,7 +621,6 @@ class ServiceProvider extends AbstractServiceProvider
 				],
 				[
 					'id' => TagExport::class,
-					'concrete' => TagExport::class,
 					'arguments' => [
 						TagRepositoryInterface::class,
 						PortalSqlInterface::class,
@@ -544,7 +630,6 @@ class ServiceProvider extends AbstractServiceProvider
 				],
 				[
 					'id' => TagImport::class,
-					'concrete' => TagImport::class,
 					'arguments' => [
 						PortalSqlInterface::class,
 						FileInterface::class,
@@ -560,7 +645,6 @@ class ServiceProvider extends AbstractServiceProvider
 				],
 				[
 					'id' => PluginExport::class,
-					'concrete' => PluginExport::class,
 					'arguments' => [
 						PortalSqlInterface::class,
 						FilesystemInterface::class,
@@ -569,7 +653,6 @@ class ServiceProvider extends AbstractServiceProvider
 				],
 				[
 					'id' => PluginImport::class,
-					'concrete' => PluginImport::class,
 					'arguments' => [
 						PortalSqlInterface::class,
 						FileInterface::class,
@@ -579,26 +662,26 @@ class ServiceProvider extends AbstractServiceProvider
 			],
 
 			'validators_and_factories' => [
+				['id' => BlockFactory::class],
+				['id' => CategoryFactory::class],
+				['id' => PageFactory::class],
+				['id' => TagFactory::class],
 				[
 					'id' => BlockValidator::class,
-					'arguments' => [PortalSqlInterface::class],
+					'arguments' => [PortalSqlInterface::class, EventDispatcherInterface::class],
 				],
-				['id' => BlockFactory::class],
 				[
 					'id' => CategoryValidator::class,
-					'arguments' => [PortalSqlInterface::class],
+					'arguments' => [PortalSqlInterface::class, EventDispatcherInterface::class],
 				],
-				['id' => CategoryFactory::class],
 				[
 					'id' => PageValidator::class,
-					'arguments' => [PortalSqlInterface::class],
+					'arguments' => [PortalSqlInterface::class, EventDispatcherInterface::class],
 				],
-				['id' => PageFactory::class],
 				[
 					'id' => TagValidator::class,
-					'arguments' => [PortalSqlInterface::class],
+					'arguments' => [PortalSqlInterface::class, EventDispatcherInterface::class],
 				],
-				['id' => TagFactory::class],
 			],
 
 			'other' => [

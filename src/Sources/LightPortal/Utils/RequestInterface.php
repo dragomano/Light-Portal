@@ -12,7 +12,7 @@
 
 namespace LightPortal\Utils;
 
-interface RequestInterface
+interface RequestInterface extends GlobalArrayInterface
 {
 	public function is(string $action, string $type = 'action'): bool;
 

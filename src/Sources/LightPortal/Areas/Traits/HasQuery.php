@@ -15,7 +15,6 @@ namespace LightPortal\Areas\Traits;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use LightPortal\Enums\PortalHook;
-use LightPortal\Events\HasEvents;
 use LightPortal\Lists\IconList;
 use LightPortal\Utils\Setting;
 use LightPortal\Utils\Str;
@@ -33,7 +32,6 @@ if (! defined('SMF'))
 trait HasQuery
 {
 	use HasCache;
-	use HasEvents;
 	use HasPortalSql;
 	use HasRequest;
 	use HasResponse;
@@ -52,7 +50,7 @@ trait HasQuery
 		$template = Str::html('i', ['class' => '%1$s'])
 			->setAttribute('aria-hidden', 'true') . '&nbsp;%1$s';
 
-		$this->events()->dispatch(PortalHook::prepareIconList, ['icons' => &$icons, 'template' => &$template]);
+		$this->dispatcher->dispatch(PortalHook::prepareIconList, ['icons' => &$icons, 'template' => &$template]);
 
 		$icons = array_filter($icons, static fn($item) => str_contains((string) $item, $search));
 

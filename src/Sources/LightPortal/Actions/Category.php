@@ -12,120 +12,28 @@
 
 namespace LightPortal\Actions;
 
-use Bugo\Bricks\Tables\Column;
-use Bugo\Compat\Config;
-use Bugo\Compat\ErrorHandler;
-use Bugo\Compat\Lang;
-use Bugo\Compat\Utils;
-use LightPortal\Enums\PortalSubAction;
-use LightPortal\Lists\CategoryList;
-use LightPortal\UI\Tables\PortalTableBuilder;
-use LightPortal\Utils\Setting;
-use LightPortal\Utils\Str;
 use LightPortal\Utils\Traits\HasRequest;
-
-use function LightPortal\app;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class Category extends AbstractPageList
+final class Category implements ActionInterface
 {
 	use HasRequest;
+
+	public function __construct(
+		private readonly PageListInterface $pageList,
+		private readonly IndexInterface $categoryIndex,
+	) {}
 
 	public function show(): void
 	{
 		if ($this->request()->hasNot('id')) {
-			$this->showAll();
+			$this->categoryIndex->show();
+
+			return;
 		}
 
-		$category = [
-			'id' => Str::typed('int', $this->request()->get('id'))
-		];
-
-		$categories = app(CategoryList::class)();
-		if (array_key_exists($category['id'], $categories) === false) {
-			Utils::$context['error_link'] = PortalSubAction::CATEGORIES->url();
-			Lang::$txt['back'] = Lang::$txt['lp_all_categories'];
-			ErrorHandler::fatalLang('lp_category_not_found', false, status: 404);
-		}
-
-		if ($category['id'] === 0) {
-			Utils::$context['page_title'] = Lang::$txt['lp_all_pages_without_category'];
-		} else {
-			$category = $categories[$category['id']];
-			Utils::$context['page_title'] = sprintf(Lang::$txt['lp_all_pages_with_category'], $category['title']);
-		}
-
-		Utils::$context['description'] = $category['description'] ?? '';
-		Utils::$context['lp_category_edit_link'] = Config::$scripturl . '?action=admin;area=lp_categories;sa=edit;id=' . $category['id'];
-		Utils::$context['canonical_url'] = PortalSubAction::CATEGORIES->url() . ';id=' . $category['id'];
-		Utils::$context['robot_no_index'] = true;
-
-		$this->breadcrumbs()
-			->add(Lang::$txt['lp_all_categories'], PortalSubAction::CATEGORIES->url())
-			->add($category['title'] ?? Lang::$txt['lp_no_category']);
-
-		$this->cardList->show($this);
-
-		Utils::obExit();
-	}
-
-	public function getPages(int $start, int $limit, string $sort): array
-	{
-		return $this->getPreparedResults(
-			$this->repository->getPagesByCategory((int) $this->request()->get('id'), $start, $limit, $sort)
-		);
-	}
-
-	public function getTotalPages(): int
-	{
-		return $this->repository->getTotalPagesByCategory((int) $this->request()->get('id'));
-	}
-
-	public function showAll(): void
-	{
-		Utils::$context['page_title']     = Lang::$txt['lp_all_categories'];
-		Utils::$context['canonical_url']  = PortalSubAction::CATEGORIES->url();
-		Utils::$context['robot_no_index'] = true;
-
-		$this->breadcrumbs()->add(Utils::$context['page_title']);
-
-		$this->getTablePresenter()->show(
-			PortalTableBuilder::make('categories', Utils::$context['page_title'])
-				->withParams(
-					Setting::get('defaultMaxListItems', 'int', 50),
-					Lang::$txt['lp_no_categories'],
-					Utils::$context['canonical_url'],
-					'title'
-				)
-				->setItems($this->getAll(...))
-				->setCount($this->getTotalCount(...))
-				->addColumns([
-					Column::make('title', Lang::$txt['lp_category'])
-						->setData(static fn($entry) => $entry['icon'] . ' ' . Str::html('a', $entry['title'])
-							->href($entry['link']) . (empty($entry['description'])
-								? ''
-								: Str::html('p', $entry['description'])
-							->class('smalltext')))
-						->setSort('title DESC', 'title'),
-					Column::make('num_pages', Lang::$txt['lp_total_pages_column'])
-						->setStyle('width: 16%')
-						->setData('num_pages', 'centertext')
-						->setSort('frequency DESC', 'frequency'),
-				])
-		);
-
-		Utils::obExit();
-	}
-
-	public function getAll(int $start = 0, int $limit = 0, string $sort = 'title'): array
-	{
-		return $this->repository->getCategoriesWithPageCount($start, $limit, $sort);
-	}
-
-	public function getTotalCount(): int
-	{
-		return $this->repository->getTotalCategoriesWithPages();
+		$this->pageList->show();
 	}
 }

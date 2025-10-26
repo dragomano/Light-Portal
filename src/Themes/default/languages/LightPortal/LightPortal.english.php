@@ -52,7 +52,6 @@ $txt['lp_frontpage_topics_select'] = 'Select the desired topics';
 $txt['lp_frontpage_topics_no_items'] = 'There are no approved topics';
 $txt['lp_frontpage_article_sorting'] = 'Sort articles';
 $txt['lp_frontpage_article_sorting_set'] = ['last_comment;desc' => 'By last comment', 'created;desc' => 'By posting date (new first)', 'updated;desc' => 'By last update (fresh first)', 'title;desc' => 'By title', 'author_name;desc' => 'By author name'];
-$txt['lp_frontpage_article_sorting_help'] = 'When you select the first option, the article cards display the dates and the latest commentators (if they are available).';
 $txt['lp_show_layout_switcher'] = 'Show layout switcher';
 $txt['lp_show_sort_dropdown'] = 'Show sort dropdown';
 $txt['lp_frontpage_num_columns'] = 'Number of columns for displaying articles';

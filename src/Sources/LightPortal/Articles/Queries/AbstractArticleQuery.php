@@ -15,6 +15,7 @@ namespace LightPortal\Articles\Queries;
 use Laminas\Db\Sql\Predicate\Expression;
 use Laminas\Db\Sql\Select;
 use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Enums\PortalHook;
 use LightPortal\Events\EventDispatcherInterface;
 
 if (! defined('SMF'))
@@ -36,12 +37,25 @@ abstract class AbstractArticleQuery implements ArticleQueryInterface
 
 	public function __construct(
 		protected readonly PortalSqlInterface $sql,
-		protected readonly EventDispatcherInterface $events
+		protected readonly EventDispatcherInterface $dispatcher
 	) {}
 
 	public function init(array $params): void
 	{
 		$this->params = $params;
+
+		$this->orders = $this->getOrders();
+
+		$this->dispatcher->dispatch(
+			$this->getEventHook(),
+			[
+				'columns' => &$this->columns,
+				'joins'   => &$this->joins,
+				'params'  => &$this->params,
+				'wheres'  => &$this->wheres,
+				'orders'  => &$this->orders,
+			]
+		);
 	}
 
 	public function setSorting(?string $sortType): void
@@ -67,6 +81,8 @@ abstract class AbstractArticleQuery implements ArticleQueryInterface
 	{
 		$select = $this->buildDataSelect();
 
+		assert($select instanceof Select);
+
 		$this->applyColumns($select);
 		$this->applyJoins($select);
 		$this->applyWheres($select);
@@ -90,6 +106,10 @@ abstract class AbstractArticleQuery implements ArticleQueryInterface
 
 		return (int) ($result['count'] ?? 0);
 	}
+
+	abstract protected function getOrders(): array;
+
+	abstract protected function getEventHook(): PortalHook;
 
 	abstract protected function applyBaseConditions(Select $select): void;
 

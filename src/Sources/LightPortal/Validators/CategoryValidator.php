@@ -36,7 +36,7 @@ class CategoryValidator extends AbstractValidator
 		$select = $this->sql->select('lp_categories')
 			->columns(['count' => new Expression('COUNT(category_id)')])
 			->where([
-				'slug = ?' => $this->filteredData['slug'],
+				'slug = ?'         => $this->filteredData['slug'],
 				'category_id != ?' => $this->filteredData['category_id'],
 			]);
 

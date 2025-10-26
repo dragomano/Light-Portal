@@ -47,49 +47,74 @@ abstract class AbstractConfig implements ConfigInterface
 	protected function prepareConfigFields(array $configVars): void
 	{
 		$i = 0;
-
-		$factoryCache = [];
-		foreach (Utils::$context['config_vars'] as $var) {
+		foreach ($this->createFieldsGenerator() as $var) {
 			$name = $var['name'];
 			$type = $var['type'];
 
-			$label = $var['label'] ?? Lang::$txt[$name] ?? '';
-			$after = $var['postinput'] ?? '';
-
-			$description = isset($var['help']) ? Lang::$txt[$var['help']] ?? '' : '';
-
-			$varFactory = null;
-			$value = null;
+			$varFactory   = null;
+			$value        = null;
 			$defaultValue = null;
+			$data         = [];
 
 			if (! in_array($type, ['callback', 'permissions'])) {
-				$cacheKey = $name . ':' . $type;
-				$varFactory = $factoryCache[$cacheKey] ??= new VarFactory($name, $type);
+				$varFactory = new VarFactory($name, $type);
+
 				$value = $varFactory->getValue($data = $configVars[$i][2] ?? []);
+
 				$defaultValue = $varFactory->getDefaultValue();
 			}
 
-			$field = match ($type) {
-				'check'       => CheckboxField::make($name, $label),
-				'int'         => NumberField::make($name, $label),
-				'text'        => TextField::make($name, $label)->placeholder($var['placeholder'] ?? ''),
-				'select'      => SelectField::make($name, $label)->setAttributes($var['attributes'] ?? [])->setOptions($data ?? []),
-				'callback'    => CustomField::make($name, $label)->setValue($var['callback'] ?? (new VarFactory($name, $type))->createTemplateCallback()),
-				'permissions' => CustomField::make($name, Lang::$txt['permissionname_' . $name])->setValue((new VarFactory($name, $type))->createPermissionsCallback()),
-				default       => null,
-			};
-
-			$field?->setTab($var['tab'])
-				->setAfter($after)
-				->setDescription($description);
-
-			if (! in_array($var['type'], ['callback', 'permissions'])) {
-				$field?->setValue($value ?? $defaultValue);
-			}
+			$this->createFieldByType($type, $name, $var, $data, $value, $defaultValue);
 
 			$i++;
 		}
 
 		$this->preparePostFields();
+	}
+
+	private function createFieldByType(
+		string $type,
+		string $name,
+		array $var,
+		array $data = [],
+		mixed $value = null,
+		mixed $defaultValue = null
+	): void
+	{
+		$label = $var['label'] ?? (Lang::$txt[$name] ?? '');
+		$after = $var['postinput'] ?? '';
+
+		$description = isset($var['help']) ? (Lang::$txt[$var['help']] ?? '') : '';
+
+		$field = match ($type) {
+			'check'       => CheckboxField::make($name, $label),
+			'int'         => NumberField::make($name, $label),
+			'text'        => TextField::make($name, $label)->placeholder($var['placeholder'] ?? ''),
+			'select'      => SelectField::make($name, $label)
+								->setAttributes($var['attributes'] ?? [])
+								->setOptions($data),
+			'callback'    => CustomField::make($name, $label)
+								->setValue($var['callback'] ?? (new VarFactory($name, $type))
+								->createTemplateCallback()),
+			'permissions' => CustomField::make($name, Lang::$txt['permissionname_' . $name])
+								->setValue((new VarFactory($name, $type))
+								->createPermissionsCallback()),
+			default       => null,
+		};
+
+		$field?->setTab($var['tab'])
+			->setAfter($after)
+			->setDescription($description);
+
+		if (! in_array($type, ['callback', 'permissions'])) {
+			$field?->setValue($value ?? $defaultValue);
+		}
+	}
+
+	private function createFieldsGenerator(): iterable
+	{
+		foreach (Utils::$context['config_vars'] as $var) {
+			yield $var;
+		}
 	}
 }

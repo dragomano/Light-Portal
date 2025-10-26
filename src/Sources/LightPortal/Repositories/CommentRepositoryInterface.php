@@ -14,8 +14,6 @@ namespace LightPortal\Repositories;
 
 interface CommentRepositoryInterface extends RepositoryInterface
 {
-	public function getAll(): array;
-
 	public function getByPageId(int $id = 0): array;
 
 	public function save(array $data): int;

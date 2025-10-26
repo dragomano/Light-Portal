@@ -50,7 +50,6 @@
 			<value>lp_frontpage_mode</value>
 			<value>lp_frontpage_num_columns</value>
 			<value>lp_frontpage_title</value>
-			<value>lp_image_placeholder</value>
 			<value>lp_num_items_per_page</value>
 			<value>lp_portal_menu</value>
 			<value>lp_show_avatars</value>
@@ -94,6 +93,8 @@
 			<value>BlockRepositoryInterface::class</value>
 			<value>BlockValidator::class</value>
 			<value>BoardArticle::class</value>
+			<value>BoardArticleQuery::class</value>
+			<value>BoardArticleService::class</value>
 			<value>BoardIndex::class</value>
 			<value>BreadcrumbBuilder::class</value>
 			<value>BreadcrumbPresenter::class</value>
@@ -106,25 +107,27 @@
 			<value>CategoryExport::class</value>
 			<value>CategoryFactory::class</value>
 			<value>CategoryImport::class</value>
+			<value>CategoryIndex::class</value>
+			<value>CategoryIndexRepository::class</value>
 			<value>CategoryList::class</value>
+			<value>CategoryPageArticleService::class</value>
+			<value>CategoryPageList::class</value>
 			<value>CategoryRepositoryInterface::class</value>
 			<value>CategoryValidator::class</value>
 			<value>ChosenPageArticle::class</value>
+			<value>ChosenPageArticleQuery::class</value>
 			<value>ChosenTopicArticle::class</value>
+			<value>ChosenTopicArticleQuery::class</value>
 			<value>Comment::class</value>
 			<value>CommentRepositoryInterface::class</value>
-			<value>ConfigArea::class</value>
 			<value>ConfigHandler::class</value>
-			<value>CreditArea::class</value>
-			<value>ErrorHandler::class</value>
 			<value>ErrorHandlerInterface::class</value>
+			<value>EventDispatcherInterface::class</value>
 			<value>EventManager::class</value>
 			<value>EventManagerFactory::class</value>
 			<value>ExtraConfig::class</value>
 			<value>FeedbackConfig::class</value>
-			<value>File::class</value>
 			<value>FileInterface::class</value>
-			<value>Filesystem::class</value>
 			<value>FilesystemInterface::class</value>
 			<value>FormPresenter::class</value>
 			<value>FormRenderer::class</value>
@@ -133,15 +136,16 @@
 			<value>Integration::class</value>
 			<value>LangHandler::class</value>
 			<value>MiscConfig::class</value>
-			<value>Notifier::class</value>
+			<value>NotifierInterface::class</value>
 			<value>Page::class</value>
 			<value>PageArea::class</value>
 			<value>PageArticle::class</value>
+			<value>PageArticleQuery::class</value>
+			<value>PageArticleService::class</value>
 			<value>PageExport::class</value>
 			<value>PageFactory::class</value>
 			<value>PageImport::class</value>
 			<value>PageList::class</value>
-			<value>PageListRepositoryInterface::class</value>
 			<value>PageRepositoryInterface::class</value>
 			<value>PageValidator::class</value>
 			<value>PanelConfig::class</value>
@@ -153,14 +157,12 @@
 			<value>PluginRepositoryInterface::class</value>
 			<value>PortalApp::class</value>
 			<value>PortalSqlInterface::class</value>
-			<value>Post::class</value>
 			<value>PostInterface::class</value>
 			<value>RendererInterface::class</value>
-			<value>Request::class</value>
 			<value>RequestInterface::class</value>
-			<value>Response::class</value>
+			<value>ResponseInterface::class</value>
 			<value>SelectRenderer::class</value>
-			<value>Session::class</value>
+			<value>SessionInterface::class</value>
 			<value>SessionManager::class</value>
 			<value>TablePresenterInterface::class</value>
 			<value>TableRenderer::class</value>
@@ -169,10 +171,17 @@
 			<value>TagExport::class</value>
 			<value>TagFactory::class</value>
 			<value>TagImport::class</value>
+			<value>TagIndex::class</value>
+			<value>TagIndexRepository::class</value>
 			<value>TagList::class</value>
+			<value>TagPageArticleQuery::class</value>
+			<value>TagPageArticleService::class</value>
+			<value>TagPageList::class</value>
 			<value>TagRepositoryInterface::class</value>
 			<value>TagValidator::class</value>
 			<value>TopicArticle::class</value>
+			<value>TopicArticleQuery::class</value>
+			<value>TopicArticleService::class</value>
 			<value>View::class</value>
 		</strings>
 	</collections>

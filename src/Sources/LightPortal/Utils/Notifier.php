@@ -20,9 +20,9 @@ use LightPortal\Tasks\Notifier as NotifierTask;
 if (! defined('SMF'))
 	die('No direct access...');
 
-class Notifier
+readonly class Notifier implements NotifierInterface
 {
-	public function __construct(private readonly PortalSqlInterface $sql) {}
+	public function __construct(private PortalSqlInterface $sql) {}
 
 	public function notify(string $type, string $action, array $options = []): void
 	{

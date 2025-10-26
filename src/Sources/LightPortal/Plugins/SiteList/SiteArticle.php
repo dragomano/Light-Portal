@@ -5,10 +5,10 @@
  * @link https://custom.simplemachines.org/index.php?mod=4244
  * @author Bugo <bugo@dragomano.ru>
  * @copyright 2021-2025 Bugo
- * @license Individual (for sponsors)
+ * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 23.10.25
+ * @version 26.10.25
  */
 
 namespace LightPortal\Plugins\SiteList;
@@ -45,7 +45,7 @@ class SiteArticle implements ArticleInterface
 				'can_edit'  => User::$me->is_admin,
 				'link'      => $url,
 				'teaser'    => $data[2] ?? '',
-				'image'     => $data[0] ?: ('https://mini.s-shot.ru/?' . urlencode($url))
+				'image'     => $data[0] ?: ('https://image.thum.io/get/' . $url)
 			];
 
 			yield $url => $item;

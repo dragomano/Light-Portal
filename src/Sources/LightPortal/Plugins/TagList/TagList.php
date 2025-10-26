@@ -8,14 +8,14 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 26.10.25
  */
 
 namespace LightPortal\Plugins\TagList;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
-use LightPortal\Actions\Tag;
+use LightPortal\Actions\TagIndex;
 use LightPortal\Enums\PortalSubAction;
 use LightPortal\Enums\Tab;
 use LightPortal\Plugins\Block;
@@ -119,7 +119,7 @@ class TagList extends Block
 		if ($source === 'lp_tags') {
 			$tagList = $this->userCache($this->name . '_addon_b' . $e->args->id)
 				->setLifeTime($e->args->cacheTime)
-				->setFallback(fn() => app(Tag::class)->getAll(sort: $sorting === 'name' ? 'title' : 'frequency DESC'));
+				->setFallback(fn() => app(TagIndex::class)->getAll(sort: $sorting === 'name' ? 'title' : 'frequency DESC'));
 		} else {
 			$tagList = $this->userCache($this->name . '_addon_b' . $e->args->id)
 				->setLifeTime($e->args->cacheTime)

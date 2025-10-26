@@ -47,14 +47,12 @@ class Str
 
 	public static function getImageFromText(string $text): string
 	{
-		preg_match('/<img(.*)src(.*)=(.*)"(?<src>.*)"/U', $text, $value);
+		preg_match('/<img[^>]+src="([^"]+)"/i', $text, $m);
+		$src = $m[1] ?? '';
 
-		$result = $value['src'] ??= '';
-
-		if (empty($result) || str_contains($result, (string) Config::$modSettings['smileys_url']))
-			return '';
-
-		return $result;
+		return (! $src || str_contains($src, (string) Config::$modSettings['smileys_url']))
+			? (Config::$modSettings['lp_image_placeholder'] ?? '')
+			: $src;
 	}
 
 	public static function decodeHtmlEntities(string $string): string

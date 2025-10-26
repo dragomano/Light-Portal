@@ -49,7 +49,7 @@ final readonly class PluginArea
 
 	public function __construct(
 		private PluginRepositoryInterface $repository,
-		private EventDispatcherInterface $events
+		private EventDispatcherInterface $dispatcher
 	) {}
 
 	public function main(): void
@@ -83,7 +83,7 @@ final readonly class PluginArea
 
 		$settings = [];
 
-		$this->events
+		$this->dispatcher
 			->withPlugins(Utils::$context['lp_plugins'])
 			->dispatch(PortalHook::addSettings, ['settings' => &$settings]);
 
@@ -156,7 +156,7 @@ final readonly class PluginArea
 			}
 		}
 
-		$this->events
+		$this->dispatcher
 			->withPlugins(Utils::$context['lp_plugins'])
 			->dispatch(PortalHook::saveSettings, ['settings' => &$settings]);
 

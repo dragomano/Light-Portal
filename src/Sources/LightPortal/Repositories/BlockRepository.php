@@ -22,7 +22,6 @@ use Laminas\Db\Sql\Predicate\Expression;
 use LightPortal\Enums\ContentType;
 use LightPortal\Enums\PortalHook;
 use LightPortal\Enums\Status;
-use LightPortal\Events\HasEvents;
 use LightPortal\Lists\PluginList;
 use LightPortal\Utils\Icon;
 use LightPortal\Utils\Str;
@@ -34,11 +33,15 @@ if (! defined('SMF'))
 
 final class BlockRepository extends AbstractRepository implements BlockRepositoryInterface, DataManagerInterface
 {
-	use HasEvents;
-
 	protected string $entity = 'block';
 
-	public function getAll(int $start, int $limit, string $sort, string $filter = ''): array
+	public function getAll(
+		int $start,
+		int $limit,
+		string $sort,
+		string $filter = '',
+		array $whereConditions = []
+	): array
 	{
 		$grouped = $filter !== 'list';
 
@@ -63,6 +66,10 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 				'primary' => 'b.block_id',
 				'entity'  => $this->entity,
 			]);
+		}
+
+		if ($whereConditions) {
+			$select->where($whereConditions);
 		}
 
 		if ($limit > 0) {
@@ -231,7 +238,7 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 		if ($items === [])
 			return;
 
-		$this->events()->dispatch(PortalHook::onBlockRemoving, ['items' => $items]);
+		$this->dispatcher->dispatch(PortalHook::onBlockRemoving, ['items' => $items]);
 
 		$delete = $this->sql->delete('lp_blocks');
 		$delete->where->in('block_id', $items);
@@ -306,7 +313,7 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 				return 0;
 			}
 
-			$this->events()->dispatch(PortalHook::onBlockSaving, ['item' => $item]);
+			$this->dispatcher->dispatch(PortalHook::onBlockSaving, ['item' => $item]);
 
 			$this->saveTranslations($item);
 			$this->saveOptions($item);
@@ -342,7 +349,7 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 
 			$this->sql->execute($update);
 
-			$this->events()->dispatch(PortalHook::onBlockSaving, ['item' => $item]);
+			$this->dispatcher->dispatch(PortalHook::onBlockSaving, ['item' => $item]);
 
 			$this->saveTranslations($item, true);
 			$this->saveOptions($item, true);

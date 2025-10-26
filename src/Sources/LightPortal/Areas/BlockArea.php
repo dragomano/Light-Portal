@@ -23,7 +23,7 @@ use LightPortal\Enums\BlockAreaType;
 use LightPortal\Enums\ContentType;
 use LightPortal\Enums\PortalHook;
 use LightPortal\Enums\Tab;
-use LightPortal\Events\HasEvents;
+use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Models\BlockFactory;
 use LightPortal\Plugins\Block;
 use LightPortal\Repositories\BlockRepositoryInterface;
@@ -52,9 +52,11 @@ if (! defined('SMF'))
 final readonly class BlockArea implements AreaInterface
 {
 	use HasArea;
-	use HasEvents;
 
-	public function __construct(private BlockRepositoryInterface $repository) {}
+	public function __construct(
+		private BlockRepositoryInterface $repository,
+		private EventDispatcherInterface $dispatcher
+	) {}
 
 	public function main(): void
 	{
@@ -218,7 +220,7 @@ final readonly class BlockArea implements AreaInterface
 
 		$params = [];
 
-		$this->events()->dispatch(
+		$this->dispatcher->dispatch(
 			PortalHook::prepareBlockParams,
 			[
 				'baseParams' => &$baseParams,
@@ -311,7 +313,7 @@ final readonly class BlockArea implements AreaInterface
 
 		Utils::$context['lp_block_tab_appearance'] = true;
 
-		$this->events()->dispatch(
+		$this->dispatcher->dispatch(
 			PortalHook::prepareBlockFields,
 			[
 				'options' => Utils::$context['lp_block']['options'],
@@ -357,7 +359,7 @@ final readonly class BlockArea implements AreaInterface
 
 	private function prepareEditor(): void
 	{
-		$this->events()->dispatch(PortalHook::prepareEditor, ['object' => Utils::$context['lp_block']]);
+		$this->dispatcher->dispatch(PortalHook::prepareEditor, ['object' => Utils::$context['lp_block']]);
 	}
 
 	private function preparePreview(): void

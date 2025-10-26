@@ -12,16 +12,16 @@
 
 namespace LightPortal\Utils\Traits;
 
-use LightPortal\Utils\Session;
+use LightPortal\Utils\SessionInterface;
 
 use function LightPortal\app;
 
 trait HasSession
 {
-	public function session(?string $key = null): Session
+	public function session(?string $key = null): SessionInterface
 	{
 		return $key === null
-			? app(Session::class)
-			: app(Session::class)->withKey($key);
+			? app(SessionInterface::class)
+			: app(SessionInterface::class)->withKey($key);
 	}
 }

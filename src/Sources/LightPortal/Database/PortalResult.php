@@ -25,10 +25,6 @@ readonly class PortalResult implements PortalResultInterface
 	{
 		$driver = strtolower($this->adapter->getDriver()->getDatabasePlatformName());
 
-		if ($driver === 'sqlite') {
-			return $this->adapter->getDriver()->getConnection()->getLastGeneratedValue();
-		}
-
 		if ($driver === 'postgresql') {
 			if ($this->result->isQueryResult()) {
 				$this->result->rewind();

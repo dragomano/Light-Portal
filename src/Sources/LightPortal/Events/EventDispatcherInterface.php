@@ -18,7 +18,7 @@ interface EventDispatcherInterface
 {
 	public function dispatch(PortalHook $hook, array $params = []): void;
 
-	public function withPlugins(array $plugins): self;
+	public function withPlugins(array $plugins): EventDispatcherInterface;
 
 	public function getAll(string $event = ''): array;
 }

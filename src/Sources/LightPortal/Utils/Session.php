@@ -15,7 +15,7 @@ namespace LightPortal\Utils;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class Session extends GlobalArray
+class Session extends GlobalArray implements SessionInterface
 {
 	public function __construct(?string $key = null)
 	{

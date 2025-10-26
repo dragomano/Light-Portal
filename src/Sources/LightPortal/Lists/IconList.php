@@ -14,7 +14,7 @@ namespace LightPortal\Lists;
 
 use Bugo\FontAwesome\Icon as FontAwesome;
 use LightPortal\Enums\PortalHook;
-use LightPortal\Events\HasEvents;
+use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Utils\Icon;
 
 if (! defined('SMF'))
@@ -22,8 +22,6 @@ if (! defined('SMF'))
 
 class IconList implements ListInterface
 {
-	use HasEvents;
-
 	private string $prefix = 'fa-solid fa-';
 
 	private array $set = [
@@ -94,6 +92,8 @@ class IconList implements ListInterface
 		'views'         => 'eye',
 	];
 
+	public function __construct(protected ?EventDispatcherInterface $dispatcher = null) {}
+
 	public function __invoke(): array
 	{
 		$set = array_map(fn($icon): string => $this->prefix . $icon, $this->set);
@@ -103,8 +103,7 @@ class IconList implements ListInterface
 		$set['save']      = 'fa-regular fa-floppy-disk';
 		$set['big_image'] = 'fa-regular fa-image fa-5x';
 
-		// Plugin authors can extend the icon set
-		$this->events()->dispatch(PortalHook::changeIconSet, ['set' => &$set]);
+		$this->dispatcher->dispatch(PortalHook::changeIconSet, ['set' => &$set]);
 
 		return array_map(static fn($icon): string => Icon::parse($icon), $set);
 	}

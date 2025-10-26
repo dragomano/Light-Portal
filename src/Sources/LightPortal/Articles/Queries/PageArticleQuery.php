@@ -26,11 +26,9 @@ class PageArticleQuery extends AbstractArticleQuery
 	use HasParamJoins;
 	use HasTranslationJoins;
 
-	public function init(array $params): void
+	protected function getOrders(): array
 	{
-		parent::init($params);
-
-		$this->orders = [
+		return [
 			'created;desc'      => 'p.created_at DESC',
 			'created'           => 'p.created_at',
 			'updated;desc'      => 'GREATEST(p.created_at, p.updated_at) DESC',
@@ -46,17 +44,11 @@ class PageArticleQuery extends AbstractArticleQuery
 			'num_replies;desc'  => 'p.num_comments DESC',
 			'num_replies'       => 'p.num_comments',
 		];
+	}
 
-		$this->events->dispatch(
-			PortalHook::frontPages,
-			[
-				'columns' => &$this->columns,
-				'joins'   => &$this->joins,
-				'params'  => &$this->params,
-				'wheres'  => &$this->wheres,
-				'orders'  => &$this->orders,
-			]
-		);
+	protected function getEventHook(): PortalHook
+	{
+		return PortalHook::frontPages;
 	}
 
 	protected function buildDataSelect(): Select

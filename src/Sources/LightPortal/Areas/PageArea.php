@@ -29,6 +29,7 @@ use LightPortal\Enums\EntryType;
 use LightPortal\Enums\PortalHook;
 use LightPortal\Enums\Status;
 use LightPortal\Enums\Tab;
+use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Models\PageFactory;
 use LightPortal\Repositories\PageRepositoryInterface;
 use LightPortal\UI\Fields\CheckboxField;
@@ -80,7 +81,10 @@ final class PageArea implements AreaInterface
 
 	private ?string $entryType = null;
 
-	public function __construct(private readonly PageRepositoryInterface $repository) {}
+	public function __construct(
+		private readonly PageRepositoryInterface $repository,
+		private readonly EventDispatcherInterface $dispatcher
+	) {}
 
 	public function main(): void
 	{
@@ -493,7 +497,7 @@ final class PageArea implements AreaInterface
 
 		$params = [];
 
-		$this->events()->dispatch(
+		$this->dispatcher->dispatch(
 			PortalHook::preparePageParams,
 			[
 				'params' => &$params,
@@ -629,7 +633,7 @@ final class PageArea implements AreaInterface
 				->setValue(Utils::$context['lp_page']['options']['allow_comments']);
 		}
 
-		$this->events()->dispatch(
+		$this->dispatcher->dispatch(
 			PortalHook::preparePageFields,
 			[
 				'options' => Utils::$context['lp_page']['options'],
@@ -642,7 +646,7 @@ final class PageArea implements AreaInterface
 
 	private function prepareEditor(): void
 	{
-		$this->events()->dispatch(PortalHook::prepareEditor, ['object' => Utils::$context['lp_page']]);
+		$this->dispatcher->dispatch(PortalHook::prepareEditor, ['object' => Utils::$context['lp_page']]);
 	}
 
 	private function preparePreview(): void

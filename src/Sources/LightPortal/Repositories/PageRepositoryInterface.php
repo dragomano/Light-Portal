@@ -14,16 +14,6 @@ namespace LightPortal\Repositories;
 
 interface PageRepositoryInterface extends RepositoryInterface
 {
-	public function getAll(
-		int $start,
-		int $limit,
-		string $sort,
-		string $filter = '',
-		array $whereConditions = []
-	): array;
-
-	public function getTotalCount(string $filter = '', array $whereConditions = []): int;
-
 	public function getData(int|string $item): array;
 
 	public function restore(array $items): void;

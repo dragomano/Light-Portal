@@ -13,7 +13,9 @@ namespace LightPortal\DataHandlers\Imports\Custom;
 
 use LightPortal\DataHandlers\Traits\HasComments;
 use LightPortal\Enums\PortalHook;
-use LightPortal\Events\HasEvents;
+use LightPortal\Events\EventDispatcherInterface;
+
+use function LightPortal\app;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -21,7 +23,6 @@ if (! defined('SMF'))
 abstract class AbstractCustomPageImport extends AbstractCustomImport
 {
 	use HasComments;
-	use HasEvents;
 
 	protected string $type = 'page';
 
@@ -40,7 +41,9 @@ abstract class AbstractCustomPageImport extends AbstractCustomImport
 	{
 		$params = $comments = [];
 
-		$this->events()->dispatch(
+		$dispatcher = app(EventDispatcherInterface::class);
+
+		$dispatcher->dispatch(
 			PortalHook::onCustomPageImport,
 			[
 				'items'    => &$items,

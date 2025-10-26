@@ -24,11 +24,9 @@ if (! defined('SMF'))
 
 class TopicArticleQuery extends AbstractArticleQuery
 {
-	public function init(array $params): void
+	protected function getOrders(): array
 	{
-		parent::init($params);
-
-		$this->orders = [
+		return [
 			'created;desc'      => 'mf.poster_time DESC',
 			'created'           => 'mf.poster_time',
 			'updated;desc'      => 'GREATEST(mf.poster_time, mf.modified_time) DESC',
@@ -44,17 +42,11 @@ class TopicArticleQuery extends AbstractArticleQuery
 			'num_replies;desc'  => 't.num_replies DESC',
 			'num_replies'       => 't.num_replies',
 		];
+	}
 
-		$this->events->dispatch(
-			PortalHook::frontTopics,
-			[
-				'columns' => &$this->columns,
-				'joins'   => &$this->joins,
-				'params'  => &$this->params,
-				'wheres'  => &$this->wheres,
-				'orders'  => &$this->orders,
-			]
-		);
+	protected function getEventHook(): PortalHook
+	{
+		return PortalHook::frontTopics;
 	}
 
 	protected function buildDataSelect(): Select
@@ -147,7 +139,6 @@ class TopicArticleQuery extends AbstractArticleQuery
 				[]
 			);
 	}
-
 
 	protected function applyBaseConditions(Select $select): void
 	{

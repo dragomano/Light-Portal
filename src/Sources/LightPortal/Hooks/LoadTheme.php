@@ -21,7 +21,6 @@ use LightPortal\Enums\EntryType;
 use LightPortal\Enums\Placement;
 use LightPortal\Enums\PluginType;
 use LightPortal\Enums\PortalHook;
-use LightPortal\Events\HasEvents;
 use LightPortal\Lists\BlockList;
 use LightPortal\Utils\SessionManager;
 use LightPortal\Utils\Traits\HasRequest;
@@ -31,10 +30,9 @@ use function LightPortal\app;
 if (! defined('SMF'))
 	die('No direct access...');
 
-class LoadTheme
+class LoadTheme extends AbstractHook
 {
 	use HasCommonChecks;
-	use HasEvents;
 	use HasRequest;
 
 	public function __invoke(): void
@@ -48,7 +46,7 @@ class LoadTheme
 		$this->loadAssets();
 
 		// Run all init methods for active plugins
-		$this->events()->dispatch(PortalHook::init);
+		$this->dispatcher->dispatch(PortalHook::init);
 	}
 
 	protected function defineVars(): void

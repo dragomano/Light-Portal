@@ -35,7 +35,7 @@ class TagValidator extends AbstractValidator
 		$select = $this->sql->select('lp_tags')
 			->columns(['count' => new Expression('COUNT(tag_id)')])
 			->where([
-				'slug = ?' => $this->filteredData['slug'],
+				'slug = ?'    => $this->filteredData['slug'],
 				'tag_id != ?' => $this->filteredData['tag_id'],
 			]);
 

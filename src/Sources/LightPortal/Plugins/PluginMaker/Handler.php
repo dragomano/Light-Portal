@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 09.10.25
+ * @version 24.10.25
  */
 
 namespace LightPortal\Plugins\PluginMaker;
@@ -22,6 +22,7 @@ use LightPortal\Areas\Traits\HasArea;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Enums\PluginType;
 use LightPortal\Enums\Tab;
+use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Repositories\PluginRepositoryInterface;
 use LightPortal\UI\Fields\CheckboxField;
 use LightPortal\UI\Fields\CustomField;
@@ -113,7 +114,9 @@ class Handler
 
 	private function validateData(): void
 	{
-		$postData = (new Validator(app(PortalSqlInterface::class)))->validate();
+		app()->add(Validator::class)->addArguments([PortalSqlInterface::class, EventDispatcherInterface::class]);
+
+		$postData = app(Validator::class)->validate();
 
 		Utils::$context['lp_plugin'] = [
 			'name'       => $postData['name'] ?? Utils::$context['lp_plugin']['name'] = self::PLUGIN_NAME,

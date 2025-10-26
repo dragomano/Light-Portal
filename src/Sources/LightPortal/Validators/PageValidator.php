@@ -51,7 +51,7 @@ class PageValidator extends AbstractValidator
 	{
 		$filters = [];
 
-		$this->events()->dispatch(
+		$this->dispatcher->dispatch(
 			PortalHook::validatePageParams,
 			[
 				'params' => &$filters,
@@ -77,7 +77,7 @@ class PageValidator extends AbstractValidator
 
 		$this->checkSlug();
 
-		$this->events()->dispatch(
+		$this->dispatcher->dispatch(
 			PortalHook::findPageErrors,
 			[
 				'errors' => &$this->errors,

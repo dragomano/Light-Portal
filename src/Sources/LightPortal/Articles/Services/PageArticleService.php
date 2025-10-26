@@ -32,17 +32,20 @@ use LightPortal\Utils\Str;
 if (! defined('SMF'))
 	die('No direct access...');
 
-readonly class PageArticleService implements ArticleServiceInterface
+class PageArticleService extends AbstractArticleService
 {
 	public function __construct(
-		private PageArticleQuery $query,
-		private EventDispatcherInterface $events,
-		private PageRepositoryInterface $repository
-	) {}
-
-	public function init(): void
+		PageArticleQuery $query,
+		EventDispatcherInterface $dispatcher,
+		protected PageRepositoryInterface $repository
+	)
 	{
-		$params = [
+		parent::__construct($query, $dispatcher);
+	}
+
+	public function getParams(): array
+	{
+		return [
 			'lang'                => User::$me->language,
 			'fallback_lang'       => Config::$language,
 			'status'              => Status::ACTIVE->value,
@@ -52,8 +55,6 @@ readonly class PageArticleService implements ArticleServiceInterface
 			'permissions'         => Permission::all(),
 			'selected_categories' => Setting::get('lp_frontpage_categories', 'array', []),
 		];
-
-		$this->query->init($params);
 	}
 
 	public function getSortingOptions(): array
@@ -76,151 +77,95 @@ readonly class PageArticleService implements ArticleServiceInterface
 		];
 	}
 
-	public function getData(int $start, int $limit, ?string $sortType): iterable
-	{
-		$this->query->setSorting($sortType);
-		$this->query->prepareParams($start, $limit);
-
-		foreach ($this->query->getRawData() as $row) {
-			Lang::censorText($row['title']);
-			Lang::censorText($row['content']);
-			Lang::censorText($row['description']);
-
-			$row['content'] = Content::parse($row['content'], $row['type']);
-
-			$page = [
-				'id'           => $row['page_id'],
-				'section'      => $this->getSectionData($row),
-				'author'       => $this->getAuthorData($row),
-				'date'         => $this->getDate($row),
-				'created'      => $row['created_at'],
-				'updated'      => $row['updated_at'],
-				'last_comment' => $row['comment_date'],
-				'link'         => LP_PAGE_URL . $row['slug'],
-				'views'        => $this->getViewsData($row),
-				'replies'      => $this->getRepliesData($row),
-				'is_new'       => $this->isNew($row),
-				'image'        => $this->getImage($row),
-				'can_edit'     => $this->canEdit($row),
-				'edit_link'    => $this->getEditLink($row),
-				'title'        => $row['title'],
-			];
-
-			$this->prepareTeaser($page, $row);
-
-			$articles = [$row['page_id'] => $page];
-
-			$this->events->dispatch(PortalHook::frontPagesRow, ['articles' => &$articles, 'row' => $row]);
-
-			$page = $articles[$row['page_id']];
-
-			yield $row['page_id'] => Avatar::getWithItems([$page])[0] ?? [];
-		}
-	}
-
-	public function getTotalCount(): int
-	{
-		return $this->query->getTotalCount();
-	}
-
-	public function prepareTags(array &$pages): void
-	{
-		if ($pages === []) {
+	public function prepareTags(array &$pages): void {
+		if ($pages === [])
 			return;
-		}
 
 		foreach ($this->repository->fetchTags(array_keys($pages)) as $pageId => $tag) {
 			$pages[$pageId]['tags'][] = $tag;
 		}
 	}
 
-	protected function getSectionData(array $row): array
+	protected function getRules(array $row): array
 	{
+		Lang::censorText($row['title']);
+		Lang::censorText($row['content']);
+		Lang::censorText($row['description']);
+
+		$content = Content::parse($row['content'], $row['type']);
+
 		return [
-			'icon' => Icon::parse($row['cat_icon']),
-			'name' => empty($row['category_id']) ? '' : $row['cat_title'],
-			'link' => empty($row['category_id']) ? '' : (PortalSubAction::CATEGORIES->url() . ';id=' . $row['category_id']),
+			'id' => fn($row) => $row['page_id'],
+
+			'section' => fn($row) => [
+				'icon' => Icon::parse($row['cat_icon']),
+				'name' => empty($row['category_id']) ? '' : Str::decodeHtmlEntities($row['cat_title']),
+				'link' => empty($row['category_id']) ? '' : (PortalSubAction::CATEGORIES->url() . ';id=' . $row['category_id']),
+			],
+
+			'author' => fn($row) => [
+				'id'   => $row['author_id'],
+				'link' => Config::$scripturl . '?action=profile;u=' . $row['author_id'],
+				'name' => $row['author_name'],
+			],
+
+			'date' => fn($row) => str_contains($this->query->getSorting(), 'updated') ? $row['date'] : $row['created_at'],
+
+			'created' => fn($row) => $row['created_at'],
+
+			'updated' => fn($row) => $row['updated_at'],
+
+			'last_comment' => fn($row) => $row['comment_date'],
+
+			'link' => fn($row) => LP_PAGE_URL . $row['slug'],
+
+			'views' => fn($row) => [
+				'num'   => $row['num_views'],
+				'title' => Lang::$txt['lp_views'],
+				'after' => '',
+			],
+
+			'replies' => fn($row) => [
+				'num'   => Setting::getCommentBlock() === 'default' ? $row['num_comments'] : 0,
+				'title' => Lang::$txt['lp_comments'],
+				'after' => '',
+			],
+
+			'is_new' => fn($row) => User::$me->last_login < $row['date'] && $row['author_id'] !== User::$me->id,
+
+			'image' => function () use ($content) {
+				if (empty(Config::$modSettings['lp_show_images_in_articles'])) {
+					return '';
+				}
+
+				return Str::getImageFromText($content);
+			},
+
+			'can_edit' => fn($row) => User::$me->is_admin
+				|| User::$me->allowedTo('light_portal_manage_pages_any')
+				|| (User::$me->allowedTo('light_portal_manage_pages_own') && $row['author_id'] === User::$me->id),
+
+			'edit_link' => fn($row) => Config::$scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $row['page_id'],
+
+			'title' => fn($row) => Str::decodeHtmlEntities($row['title']),
+
+			'teaser' => function ($row) use ($content) {
+				if (empty(Config::$modSettings['lp_show_teaser'])) {
+					return '';
+				}
+
+				return Str::getTeaser($row['description'] ?: $content);
+			},
 		];
 	}
 
-	protected function getAuthorData(array $row): array
+	protected function getEventHook(): PortalHook
 	{
-		$authorId   = $row['author_id'];
-		$authorName = $row['author_name'];
-
-		if (str_contains($this->query->getSorting(), 'last_comment') && $row['num_comments']) {
-			$authorId   = $row['comment_author_id'];
-			$authorName = $row['comment_author_name'];
-		}
-
-		return [
-			'id'   => $authorId,
-			'link' => Config::$scripturl . '?action=profile;u=' . $authorId,
-			'name' => $authorName,
-		];
+		return PortalHook::frontPagesRow;
 	}
 
-	protected function getDate(array $row): int
+	protected function finalizeItem(array $item): array
 	{
-		if (str_contains($this->query->getSorting(), 'last_comment') && $row['comment_date']) {
-			return $row['comment_date'];
-		}
-
-		if (str_contains($this->query->getSorting(), 'updated')) {
-			return $row['date'];
-		}
-
-		return $row['created_at'];
-	}
-
-	protected function getViewsData(array $row): array
-	{
-		return [
-			'num'   => $row['num_views'],
-			'title' => Lang::$txt['lp_views'],
-			'after' => '',
-		];
-	}
-
-	protected function getRepliesData(array $row): array
-	{
-		return [
-			'num'   => Setting::getCommentBlock() === 'default' ? $row['num_comments'] : 0,
-			'title' => Lang::$txt['lp_comments'],
-			'after' => '',
-		];
-	}
-
-	protected function isNew(array $row): bool
-	{
-		return User::$me->last_login < $row['date'] && $row['author_id'] !== User::$me->id;
-	}
-
-	protected function getImage(array $row): string
-	{
-		if (empty(Config::$modSettings['lp_show_images_in_articles']))
-			return '';
-
-		return Str::getImageFromText($row['content']);
-	}
-
-	protected function canEdit(array $row): bool
-	{
-		return User::$me->is_admin
-			|| User::$me->allowedTo('light_portal_manage_pages_any')
-			|| (User::$me->allowedTo('light_portal_manage_pages_own') && $row['author_id'] === User::$me->id);
-	}
-
-	protected function getEditLink(array $row): string
-	{
-		return Config::$scripturl . '?action=admin;area=lp_pages;sa=edit;id=' . $row['page_id'];
-	}
-
-	protected function prepareTeaser(array &$page, array $row): void
-	{
-		if (empty(Config::$modSettings['lp_show_teaser']))
-			return;
-
-		$page['teaser'] = Str::getTeaser($row['description'] ?: $row['content']);
+		return Avatar::getWithItems([$item])[0] ?? $item;
 	}
 }

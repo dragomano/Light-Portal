@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 09.10.25
+ * @version 25.10.25
  */
 
 namespace LightPortal\Plugins\PluginMaker;
@@ -16,6 +16,7 @@ namespace LightPortal\Plugins\PluginMaker;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Lists\PluginList;
 use LightPortal\Validators\AbstractValidator;
 
@@ -62,9 +63,9 @@ class Validator extends AbstractValidator
 		'components' => FILTER_VALIDATE_BOOLEAN,
 	];
 
-	public function __construct(protected PortalSqlInterface $sql)
+	public function __construct(protected PortalSqlInterface $sql, protected EventDispatcherInterface $dispatcher)
 	{
-		parent::__construct($sql);
+		parent::__construct($sql, $dispatcher);
 
 		$this->filters['titles'] = [
 			'filter'  => FILTER_CALLBACK,
@@ -102,11 +103,11 @@ class Validator extends AbstractValidator
 
 	protected function checkName(): void
 	{
-		$nameValue = $this->post()->get('name');
+		$nameValue     = $this->post()->get('name');
 		$validatedName = $this->filteredData['name'] ?? null;
 
-		$isEmptyName = empty($nameValue);
-		$isInvalidName = ! $isEmptyName && $validatedName === false;
+		$isEmptyName     = empty($nameValue);
+		$isInvalidName   = ! $isEmptyName && $validatedName === false;
 		$isNonUniqueName = ! $isEmptyName && $validatedName !== false && ! $this->isUnique();
 
 		if ($isEmptyName) {

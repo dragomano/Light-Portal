@@ -15,16 +15,13 @@ namespace LightPortal\Hooks;
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
 use LightPortal\Enums\PortalHook;
-use LightPortal\Events\HasEvents;
 use LightPortal\Utils\Str;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-class PreCssOutput
+class PreCssOutput extends AbstractHook
 {
-	use HasEvents;
-
 	public function __invoke(): void
 	{
 		if (isset(Utils::$context['uninstalling']))
@@ -46,7 +43,7 @@ class PreCssOutput
 			$styles[] = 'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7/css/all.min.css';
 		}
 
-		$this->events()->dispatch(PortalHook::preloadStyles, ['styles' => &$styles]);
+		$this->dispatcher->dispatch(PortalHook::preloadStyles, ['styles' => &$styles]);
 
 		foreach ($styles as $style) {
 			echo "\n\t" . Str::html('link', [

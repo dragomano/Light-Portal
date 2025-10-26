@@ -12,15 +12,4 @@
 
 namespace LightPortal\Repositories;
 
-interface TagRepositoryInterface extends RepositoryInterface
-{
-	public function getAll(
-		int $start,
-		int $limit,
-		string $sort,
-       string $filter = '',
-		array $whereConditions = []
-	): array;
-
-	public function getTotalCount(string $filter = '', array $whereConditions = []): int;
-}
+interface TagRepositoryInterface extends RepositoryInterface {}

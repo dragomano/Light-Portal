@@ -21,10 +21,10 @@ use LightPortal\Enums\AlertAction;
 use LightPortal\Enums\NotifyType;
 use LightPortal\Enums\PortalHook;
 use LightPortal\Enums\VarType;
-use LightPortal\Events\HasEvents;
+use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Repositories\CommentRepositoryInterface;
 use LightPortal\Utils\DateTime;
-use LightPortal\Utils\Notifier;
+use LightPortal\Utils\NotifierInterface;
 use LightPortal\Utils\Setting;
 use LightPortal\Utils\Str;
 use LightPortal\Utils\Traits\HasCache;
@@ -39,7 +39,6 @@ if (! defined('SMF'))
 final class Comment implements ActionInterface
 {
 	use HasCache;
-	use HasEvents;
 	use HasRequest;
 	use HasResponse;
 
@@ -47,7 +46,8 @@ final class Comment implements ActionInterface
 
 	public function __construct(
 		private readonly CommentRepositoryInterface $repository,
-		private readonly Notifier $notifier
+		private readonly EventDispatcherInterface $dispatcher,
+		private readonly NotifierInterface $notifier
 	)
 	{
 		$this->setPageSlug(Utils::$context['lp_page']['slug']);
@@ -86,7 +86,7 @@ final class Comment implements ActionInterface
 			$comment['authorial']     = Utils::$context['lp_page']['author_id'] === $comment['poster']['id'];
 			$comment['extra_buttons'] = [];
 
-			$this->events()->dispatch(
+			$this->dispatcher->dispatch(
 				PortalHook::commentButtons,
 				[
 					'comment' => $comment,

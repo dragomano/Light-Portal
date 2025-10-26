@@ -12,7 +12,7 @@
 
 namespace LightPortal\Utils;
 
-interface FileInterface
+interface FileInterface extends GlobalArrayInterface
 {
 	public function free(string $key): void;
 }

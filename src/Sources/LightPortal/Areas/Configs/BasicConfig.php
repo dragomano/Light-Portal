@@ -20,6 +20,7 @@ use Bugo\Bricks\Settings\PermissionsConfig;
 use Bugo\Bricks\Settings\SelectConfig;
 use Bugo\Bricks\Settings\TextConfig;
 use Bugo\Compat\{Config, Lang, Theme};
+use LightPortal\Events\EventDispatcherInterface;
 use Bugo\Compat\{Time, User, Utils};
 use Bugo\Compat\Actions\Admin\ACP;
 use Bugo\Compat\WebFetch\WebFetchApi;
@@ -48,6 +49,8 @@ final class BasicConfig extends AbstractConfig
 	public const TAB_STANDALONE = 'standalone';
 
 	public const TAB_PERMISSIONS = 'permissions';
+
+	public function __construct(private readonly EventDispatcherInterface $dispatcher) {}
 
 	public function show(): void
 	{
@@ -99,7 +102,6 @@ final class BasicConfig extends AbstractConfig
 				->setTab(self::TAB_BASE),
 			SelectConfig::make('lp_frontpage_article_sorting')
 				->setOptions(Lang::$txt['lp_frontpage_article_sorting_set'])
-				->setHelp('lp_frontpage_article_sorting_help')
 				->setTab(self::TAB_BASE),
 			CheckConfig::make('lp_show_layout_switcher')
 				->setTab(self::TAB_BASE),
@@ -175,7 +177,7 @@ final class BasicConfig extends AbstractConfig
 
 		Utils::$context['sub_template'] = 'portal_basic_settings';
 
-		$this->events()->dispatch(PortalHook::extendBasicConfig, ['configVars' => &$configVars]);
+		$this->dispatcher->dispatch(PortalHook::extendBasicConfig, ['configVars' => &$configVars]);
 
 		// Save
 		if ($this->request()->has('save')) {

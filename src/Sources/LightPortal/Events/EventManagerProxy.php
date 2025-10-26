@@ -24,7 +24,7 @@ readonly class EventManagerProxy implements EventDispatcherInterface
 		$manager->dispatch($hook, $params);
 	}
 
-	public function withPlugins(array $plugins): self
+	public function withPlugins(array $plugins): EventDispatcherInterface
 	{
 		return new self($this->factory, $plugins);
 	}

@@ -29,9 +29,32 @@ final class CommentRepository extends AbstractRepository implements CommentRepos
 {
 	protected string $entity = 'comment';
 
-	public function getAll(): array
+	public function getAll(
+		int $start,
+		int $limit,
+		string $sort,
+		string $filter = '',
+		array $whereConditions = []
+	): array
 	{
 		return $this->getByPageId();
+	}
+
+	public function getTotalCount(string $filter = '', array $whereConditions = []): int
+	{
+		$select = $this->sql->select()
+			->from(['com' => 'lp_comments'])
+			->columns(['count' => new Expression('COUNT(id)')]);
+
+		$this->addTranslationJoins($select);
+
+		if ($whereConditions) {
+			$select->where($whereConditions);
+		}
+
+		$result = $this->sql->execute($select)->current();
+
+		return $result['count'];
 	}
 
 	public function getData(int $item): array

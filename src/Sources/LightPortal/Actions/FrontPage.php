@@ -25,7 +25,7 @@ use LightPortal\Articles\PageArticle;
 use LightPortal\Articles\PageArticleInterface;
 use LightPortal\Articles\TopicArticle;
 use LightPortal\Enums\PortalHook;
-use LightPortal\Events\HasEvents;
+use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Renderers\RendererInterface;
 use LightPortal\Utils\DateTime;
 use LightPortal\Utils\Icon;
@@ -43,11 +43,10 @@ use function LightPortal\app;
 
 use const LP_BASE_URL;
 
-final class FrontPage implements ActionInterface
+class FrontPage implements ActionInterface
 {
 	use HasCache;
 	use HasBreadcrumbs;
-	use HasEvents;
 	use HasRequest;
 	use HasResponse;
 	use HasSorting;
@@ -62,9 +61,12 @@ final class FrontPage implements ActionInterface
 		'chosen_topics' => ChosenTopicArticle::class,
 	];
 
-	public function __construct(private RendererInterface $renderer)
+	public function __construct(
+		private RendererInterface $renderer,
+		private readonly EventDispatcherInterface $dispatcher
+	)
 	{
-		$this->events()->dispatch(PortalHook::frontModes, ['modes' => &$this->modes]);
+		$this->dispatcher->dispatch(PortalHook::frontModes, ['modes' => &$this->modes]);
 
 		$this->article = array_key_exists(Config::$modSettings['lp_frontpage_mode'], $this->modes)
 			? app($this->modes[Config::$modSettings['lp_frontpage_mode']])
@@ -122,7 +124,7 @@ final class FrontPage implements ActionInterface
 
 		[$articlesData, $itemsCount] = [$data['articles'], $data['total']];
 
-		$articles = new Collection('mixed', $articlesData);
+		$articles = new Collection('array', $articlesData);
 
 		Utils::$context['total_articles'] = $itemsCount;
 
@@ -148,7 +150,7 @@ final class FrontPage implements ActionInterface
 
 		Utils::$context['lp_frontpage_articles'] = $articles->toArray();
 
-		$this->events()->dispatch(PortalHook::frontAssets);
+		$this->dispatcher->dispatch(PortalHook::frontAssets);
 	}
 
 	public function prepareTemplates(): void
@@ -176,7 +178,7 @@ final class FrontPage implements ActionInterface
 		];
 
 		// You can add your own logic here
-		$this->events()->dispatch(
+		$this->dispatcher->dispatch(
 			PortalHook::frontLayouts,
 			[
 				'renderer' => &$this->renderer,
@@ -248,10 +250,6 @@ final class FrontPage implements ActionInterface
 				$item['date']     = DateTime::relative($item['date']);
 			}
 
-			if (empty($item['image'])) {
-				$item['image'] = Setting::get('lp_image_placeholder', 'string', '');
-			}
-
 			if (! empty($item['views']['num'])) {
 				$item['views']['num'] = $this->getFriendlyNumber($item['views']['num']);
 			}
@@ -262,7 +260,7 @@ final class FrontPage implements ActionInterface
 		if ($this->article instanceof PageArticleInterface) {
 			$pages = $articles->toArray();
 			$this->article->prepareTags($pages);
-			$articles = new Collection('mixed', $pages);
+			$articles = new Collection('array', $pages);
 		}
 
 		return $articles;

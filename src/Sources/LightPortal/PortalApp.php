@@ -12,8 +12,7 @@
 
 namespace LightPortal;
 
-use LightPortal\Areas\ConfigArea;
-use LightPortal\Areas\CreditArea;
+use LightPortal\Hooks\Integration;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -26,7 +25,5 @@ final class PortalApp
 			return;
 
 		app(Integration::class)();
-		app(ConfigArea::class)();
-		app(CreditArea::class)();
 	}
 }

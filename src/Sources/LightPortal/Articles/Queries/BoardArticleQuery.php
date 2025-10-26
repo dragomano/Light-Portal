@@ -24,11 +24,27 @@ if (! defined('SMF'))
 
 class BoardArticleQuery extends AbstractArticleQuery
 {
-	public function init(array $params): void
+	public function getRawData(): iterable
 	{
-		parent::init($params);
+		if (empty($this->params['selected_boards'])) {
+			return [];
+		}
 
-		$this->orders = [
+		return parent::getRawData();
+	}
+
+	public function getTotalCount(): int
+	{
+		if (empty($this->params['selected_boards'])) {
+			return 0;
+		}
+
+		return parent::getTotalCount();
+	}
+
+	protected function getOrders(): array
+	{
+		return [
 			'created;desc'      => 'm.poster_time DESC',
 			'created'           => 'm.poster_time',
 			'updated;desc'      => 'GREATEST(m.poster_time, m.modified_time) DESC',
@@ -40,17 +56,11 @@ class BoardArticleQuery extends AbstractArticleQuery
 			'num_replies;desc'  => 'b.num_posts DESC',
 			'num_replies'       => 'b.num_posts',
 		];
+	}
 
-		$this->events->dispatch(
-			PortalHook::frontBoards,
-			[
-				'columns' => &$this->columns,
-				'joins'   => &$this->joins,
-				'params'  => &$this->params,
-				'wheres'  => &$this->wheres,
-				'orders'  => &$this->orders,
-			]
-		);
+	protected function getEventHook(): PortalHook
+	{
+		return PortalHook::frontBoards;
 	}
 
 	protected function buildDataSelect(): Select
@@ -120,25 +130,12 @@ class BoardArticleQuery extends AbstractArticleQuery
 				['c' => 'categories'],
 				'b.id_cat = c.id_cat',
 				[]
+			)
+			->join(
+				['m' => 'messages'],
+				'b.id_last_msg = m.id_msg',
+				[]
 			);
-	}
-
-	public function getRawData(): iterable
-	{
-		if (empty($this->params['selected_boards'])) {
-			return [];
-		}
-
-		return parent::getRawData();
-	}
-
-	public function getTotalCount(): int
-	{
-		if (empty($this->params['selected_boards'])) {
-			return 0;
-		}
-
-		return parent::getTotalCount();
 	}
 
 	protected function applyBaseConditions(Select $select): void

@@ -15,19 +15,21 @@ namespace LightPortal\Renderers;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use LightPortal\Enums\PortalHook;
-use LightPortal\Events\HasEvents;
+use LightPortal\Events\EventDispatcherInterface;
+
+use function LightPortal\app;
 
 abstract class AbstractRenderer implements RendererInterface
 {
-	use HasEvents;
-
 	protected string $templateDir;
 
 	protected string $customDir;
 
-	public function __construct()
+	public function __construct(protected ?EventDispatcherInterface $dispatcher = null)
 	{
 		Theme::loadEssential();
+
+		$this->dispatcher = $dispatcher ?: app(EventDispatcherInterface::class);
 
 		$path = Theme::$current->settings['default_theme_dir'];
 
@@ -55,8 +57,7 @@ abstract class AbstractRenderer implements RendererInterface
 
 		$extensions = [static::DEFAULT_EXTENSION];
 
-		// You can add custom extensions for layouts
-		$this->events()->dispatch(PortalHook::layoutExtensions, ['extensions' => &$extensions]);
+		$this->dispatcher->dispatch(PortalHook::layoutExtensions, ['extensions' => &$extensions]);
 
 		foreach ($extensions as $extension) {
 			$layouts = array_merge(

@@ -10,17 +10,22 @@
  * @version 3.0
  */
 
-namespace LightPortal\Areas;
+namespace LightPortal\Hooks;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
+use LightPortal\Areas\BlockArea;
+use LightPortal\Areas\CategoryArea;
 use LightPortal\Areas\Configs\BasicConfig;
 use LightPortal\Areas\Configs\ExtraConfig;
 use LightPortal\Areas\Configs\FeedbackConfig;
 use LightPortal\Areas\Configs\MiscConfig;
 use LightPortal\Areas\Configs\PanelConfig;
+use LightPortal\Areas\PageArea;
+use LightPortal\Areas\PluginArea;
+use LightPortal\Areas\TagArea;
 use LightPortal\DataHandlers\Exports\BlockExport;
 use LightPortal\DataHandlers\Exports\CategoryExport;
 use LightPortal\DataHandlers\Exports\PageExport;
@@ -31,14 +36,11 @@ use LightPortal\DataHandlers\Imports\CategoryImport;
 use LightPortal\DataHandlers\Imports\PageImport;
 use LightPortal\DataHandlers\Imports\PluginImport;
 use LightPortal\DataHandlers\Imports\TagImport;
-use LightPortal\Enums\ForumHook;
 use LightPortal\Enums\PortalHook;
-use LightPortal\Events\HasEvents;
 use LightPortal\Utils\Icon;
 use LightPortal\Utils\Setting;
 use LightPortal\Utils\Str;
 use LightPortal\Utils\Traits\HasCache;
-use LightPortal\Utils\Traits\HasForumHooks;
 use LightPortal\Utils\Traits\HasPortalSql;
 use LightPortal\Utils\Traits\HasRequest;
 
@@ -47,24 +49,13 @@ use function LightPortal\app;
 use const LP_NAME;
 use const LP_VERSION;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
-final class ConfigArea
+class AdminAreas extends AbstractHook
 {
 	use HasCache;
-	use HasEvents;
 	use HasPortalSql;
 	use HasRequest;
-	use HasForumHooks;
 
-	public function __invoke(): void
-	{
-		$this->applyHook(ForumHook::adminAreas);
-		$this->applyHook(ForumHook::helpadmin);
-	}
-
-	public function adminAreas(array &$areas): void
+	public function __invoke(array &$areas): void
 	{
 		Theme::loadCSSFile('light_portal/virtual-select.min.css');
 		Theme::loadJavaScriptFile('light_portal/virtual-select.min.js');
@@ -203,18 +194,7 @@ final class ConfigArea
 			}
 		}
 
-		$this->events()->dispatch(PortalHook::extendAdminAreas, ['areas' => &$areas['lp_portal']['areas']]);
-	}
-
-	public function helpadmin(): void
-	{
-		Lang::$txt['lp_menu_separate_subsection_title_help'] = Lang::getTxt(
-			'lp_menu_separate_subsection_title_help',
-			[
-				'<var>{lp_pages}</var>',
-				'<var>$txt[`lp_pages`]</var>',
-			]
-		);
+		$this->dispatcher->dispatch(PortalHook::extendAdminAreas, ['areas' => &$areas['lp_portal']['areas']]);
 	}
 
 	public function settingAreas(): void
@@ -233,9 +213,9 @@ final class ConfigArea
 		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
 			'title' => LP_NAME,
 			'description' => Str::html('img')
-				->class('floatright')
-				->setAttribute('src', 'https://user-images.githubusercontent.com/229402/143980485-16ba84b8-9d8d-4c06-abeb-af949d594f66.png')
-				->setAttribute('alt', LP_NAME . ' logo') .
+					->class('floatright')
+					->setAttribute('src', 'https://user-images.githubusercontent.com/229402/143980485-16ba84b8-9d8d-4c06-abeb-af949d594f66.png')
+					->setAttribute('alt', LP_NAME . ' logo') .
 				Lang::getTxt('lp_base_info', [
 					LP_VERSION,
 					PHP_VERSION,
@@ -277,7 +257,7 @@ final class ConfigArea
 			'import' => [app(BlockImport::class), 'main'],
 		];
 
-		$this->events()->dispatch(PortalHook::extendBlockAreas, ['areas' => &$areas]);
+		$this->dispatcher->dispatch(PortalHook::extendBlockAreas, ['areas' => &$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -294,7 +274,7 @@ final class ConfigArea
 			'import' => [app(PageImport::class), 'main'],
 		];
 
-		$this->events()->dispatch(PortalHook::extendPageAreas, ['areas' => &$areas]);
+		$this->dispatcher->dispatch(PortalHook::extendPageAreas, ['areas' => &$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -311,7 +291,7 @@ final class ConfigArea
 			'import' => [app(CategoryImport::class), 'main'],
 		];
 
-		$this->events()->dispatch(PortalHook::extendCategoryAreas, ['areas' => &$areas]);
+		$this->dispatcher->dispatch(PortalHook::extendCategoryAreas, ['areas' => &$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -328,7 +308,7 @@ final class ConfigArea
 			'import' => [app(TagImport::class), 'main'],
 		];
 
-		$this->events()->dispatch(PortalHook::extendTagAreas, ['areas' => &$areas]);
+		$this->dispatcher->dispatch(PortalHook::extendTagAreas, ['areas' => &$areas]);
 
 		$this->callActionFromAreas($areas);
 	}
@@ -346,7 +326,7 @@ final class ConfigArea
 			$areas['import'] = [app(PluginImport::class), 'main'];
 		}
 
-		$this->events()->dispatch(PortalHook::extendPluginAreas, ['areas' => &$areas]);
+		$this->dispatcher->dispatch(PortalHook::extendPluginAreas, ['areas' => &$areas]);
 
 		$this->callActionFromAreas($areas);
 	}

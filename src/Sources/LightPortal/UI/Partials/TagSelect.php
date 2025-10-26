@@ -59,7 +59,7 @@ final class TagSelect extends AbstractSelect
 	{
 		$values = [];
 		foreach (Utils::$context['lp_page']['tags'] ?? [] as $tagId => $tagData) {
-			$values[] = is_array($tagData) ? $tagId : Utils::escapeJavaScript($tagData);
+			$values[] = is_array($tagData) ? $tagId : $tagData;
 		}
 
 		return $values;

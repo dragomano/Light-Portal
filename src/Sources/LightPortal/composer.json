@@ -3,6 +3,7 @@
     "php": "~8.2",
     "ext-dom": "*",
     "ext-intl": "*",
+    "ext-pdo": "*",
     "ext-simplexml": "*",
     "ext-zip": "*",
     "bugo/fa-icon-builder": "^0.2",

@@ -21,8 +21,6 @@ use LightPortal\Database\Operations\PortalInsert;
 use LightPortal\Database\Operations\PortalReplace;
 use LightPortal\Database\Operations\PortalSelect;
 use LightPortal\Database\Operations\PortalUpdate;
-use PDO;
-use PDOStatement;
 use Throwable;
 
 if (! defined('SMF'))
@@ -54,15 +52,13 @@ class PortalSql extends Sql implements PortalSqlInterface
 
 		try {
 			if ($platform === 'sqlite') {
-				/** @var PDO $pdo */
-				$pdo = $this->adapter->getDriver()->getConnection()->getResource();
-				/** @var PDOStatement $stmt */
-				$stmt = $pdo->prepare(
-					/** @lang text */ "SELECT 1 FROM sqlite_master WHERE type='table' AND name=?"
-				);
-				$stmt->execute([$tableName]);
+				$result = $this->adapter
+					->query(
+						/** @lang text */ "SELECT 1 FROM sqlite_master WHERE type = ? AND name = ?",
+						['table', $tableName]
+					);
 
-				return (bool) $stmt->fetchColumn();
+				return (bool) $result->current();
 			}
 
 			$metadata = MetadataFactory::createSourceFromAdapter($this->adapter);

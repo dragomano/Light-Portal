@@ -10,30 +10,9 @@
  * @version 3.0
  */
 
-namespace LightPortal;
+namespace LightPortal\Hooks;
 
 use LightPortal\Enums\ForumHook;
-use LightPortal\Hooks\Actions;
-use LightPortal\Hooks\AlertTypes;
-use LightPortal\Hooks\BuildRoute;
-use LightPortal\Hooks\CurrentAction;
-use LightPortal\Hooks\DefaultAction;
-use LightPortal\Hooks\DeleteMembers;
-use LightPortal\Hooks\DisplayButtons;
-use LightPortal\Hooks\DownloadRequest;
-use LightPortal\Hooks\FetchAlerts;
-use LightPortal\Hooks\Init;
-use LightPortal\Hooks\LoadIllegalGuestPermissions;
-use LightPortal\Hooks\LoadPermissions;
-use LightPortal\Hooks\LoadTheme;
-use LightPortal\Hooks\MenuButtons;
-use LightPortal\Hooks\PermissionsList;
-use LightPortal\Hooks\PreCssOutput;
-use LightPortal\Hooks\ProfileAreas;
-use LightPortal\Hooks\ProfilePopup;
-use LightPortal\Hooks\Redirect;
-use LightPortal\Hooks\RouteParsers;
-use LightPortal\Hooks\WhosOnline;
 use LightPortal\Utils\Traits\HasForumHooks;
 
 use const SMF_VERSION;
@@ -66,6 +45,8 @@ final class Integration
 		$this->applyHook(ForumHook::currentAction, CurrentAction::class);
 		$this->applyHook(ForumHook::menuButtons, MenuButtons::class);
 		$this->applyHook(ForumHook::displayButtons, DisplayButtons::class);
+		$this->applyHook(ForumHook::adminAreas, AdminAreas::class);
+		$this->applyHook(ForumHook::helpadmin, HelpAdmin::class);
 		$this->applyHook(ForumHook::deleteMembers, DeleteMembers::class);
 		$this->applyHook(ForumHook::alertTypes, AlertTypes::class);
 		$this->applyHook(ForumHook::fetchAlerts, FetchAlerts::class);
@@ -73,5 +54,6 @@ final class Integration
 		$this->applyHook(ForumHook::profilePopup, ProfilePopup::class);
 		$this->applyHook(ForumHook::downloadRequest, DownloadRequest::class);
 		$this->applyHook(ForumHook::whosOnline, WhosOnline::class);
+		$this->applyHook(ForumHook::credits, Credits::class);
 	}
 }

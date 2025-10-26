@@ -14,8 +14,6 @@ namespace LightPortal\Actions;
 
 interface PageListInterface extends ActionInterface
 {
-	public function showAll();
-
 	public function getPages(int $start, int $limit, string $sort): array;
 
 	public function getTotalPages(): int;

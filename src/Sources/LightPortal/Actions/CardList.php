@@ -22,6 +22,9 @@ use LightPortal\Utils\Traits\HasSorting;
 
 use function LightPortal\app;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 class CardList implements CardListInterface
 {
 	use HasRequest;
@@ -40,7 +43,7 @@ class CardList implements CardListInterface
 		$front = app(FrontPage::class);
 		$front->updateStart($itemsCount, $start, $limit);
 
-		$articles = $entity->getPages($start, $limit, $this->getOrderBy());
+		$articles = $entity->getPages($start, $limit, Utils::$context['lp_current_sorting']);
 
 		Utils::$context['page_index'] = new PageIndex(
 			Utils::$context['canonical_url'], $start, $itemsCount, $limit
@@ -57,27 +60,5 @@ class CardList implements CardListInterface
 		$front->prepareTemplates();
 
 		Utils::obExit();
-	}
-
-	public function getOrderBy(): string
-	{
-		$sortingTypes = [
-			'title;desc'        => 'title DESC',
-			'title'             => 'title',
-			'created;desc'      => 'p.created_at DESC',
-			'created'           => 'p.created_at',
-			'updated;desc'      => 'p.updated_at DESC',
-			'updated'           => 'p.updated_at',
-			'author_name;desc'  => 'author_name DESC',
-			'author_name'       => 'author_name',
-			'num_views;desc'    => 'p.num_views DESC',
-			'num_views'         => 'p.num_views',
-			'last_comment;desc' => 'COALESCE(com.created_at, 0) DESC',
-			'last_comment'      => 'COALESCE(com.created_at, 0)',
-			'num_replies;desc'  => 'p.num_comments DESC',
-			'num_replies'       => 'p.num_comments',
-		];
-
-		return $sortingTypes[Utils::$context['lp_current_sorting']] ?? 'p.created_at DESC';
 	}
 }

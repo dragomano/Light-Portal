@@ -12,18 +12,18 @@
 
 namespace LightPortal\Repositories;
 
-use Laminas\Db\Sql\Predicate\Expression;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
 interface RepositoryInterface
 {
-	public function toggleStatus(array $items = []): void;
+	public function getAll(
+		int $start,
+		int $limit,
+		string $sort,
+		string $filter = '',
+		array $whereConditions = []
+	): array;
 
-	public function getTranslationFilter(
-		string $tableAlias = 'p',
-		string $idField = 'page_id',
-		array $fields = ['title', 'content', 'description']
-	): Expression;
+	public function getTotalCount(string $filter = '', array $whereConditions = []): int;
 }

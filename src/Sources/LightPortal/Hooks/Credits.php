@@ -10,39 +10,22 @@
  * @version 3.0
  */
 
-namespace LightPortal\Areas;
+namespace LightPortal\Hooks;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
-use LightPortal\Enums\ForumHook;
 use LightPortal\Enums\PortalHook;
-use LightPortal\Events\HasEvents;
 use LightPortal\Utils\Str;
-use LightPortal\Utils\Traits\HasForumHooks;
 
 use const LP_NAME;
 use const LP_VERSION;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
-/**
- * See ?action=credits;sa=light_portal
- */
-final class CreditArea
+class Credits extends AbstractHook
 {
-	use HasEvents;
-	use HasForumHooks;
-
 	public function __invoke(): void
-	{
-		$this->applyHook(ForumHook::credits);
-	}
-
-	public function credits(): void
 	{
 		Utils::$context['credits_modifications'][] = $this->getLink();
 
@@ -68,19 +51,19 @@ final class CreditArea
 			: 'https://custom.simplemachines.org/mods/index.php?mod=4244';
 
 		$license = Lang::$txt['credits_license'] . ': ' . Str::html('a', [
-			'href'   => 'https://github.com/dragomano/Light-Portal/blob/master/LICENSE',
-			'target' => '_blank',
-			'rel'    => 'noopener',
-		])->setText('GNU GPLv3');
+				'href'   => 'https://github.com/dragomano/Light-Portal/blob/master/LICENSE',
+				'target' => '_blank',
+				'rel'    => 'noopener',
+			])->setText('GNU GPLv3');
 
 		return Str::html('a', [
-			'href'   => $link,
-			'target' => '_blank',
-			'rel'    => 'noopener',
-			'title'  => LP_VERSION,
-		])->setText(LP_NAME) . ' | &copy; ' . Str::html('a', [
-			'href' => Config::$scripturl . '?action=credits;sa=light_portal',
-		])->setHtml('2019&ndash;' . date('Y')) . ', Bugo | ' . $license;
+				'href'   => $link,
+				'target' => '_blank',
+				'rel'    => 'noopener',
+				'title'  => LP_VERSION,
+			])->setText(LP_NAME) . ' | &copy; ' . Str::html('a', [
+				'href' => Config::$scripturl . '?action=credits;sa=light_portal',
+			])->setHtml('2019&ndash;' . date('Y')) . ', Bugo | ' . $license;
 	}
 
 	private function prepareComponents(): void
@@ -286,7 +269,7 @@ final class CreditArea
 			],
 		];
 
-		$this->events()->dispatch(PortalHook::credits, ['links' => &$links]);
+		$this->dispatcher->dispatch(PortalHook::credits, ['links' => &$links]);
 
 		shuffle($links);
 

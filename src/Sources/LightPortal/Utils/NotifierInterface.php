@@ -10,14 +10,9 @@
  * @version 3.0
  */
 
-namespace LightPortal\Events;
+namespace LightPortal\Utils;
 
-use function LightPortal\app;
-
-trait HasEvents
+interface NotifierInterface
 {
-	public function events(array $plugins = []): EventManager
-	{
-		return app(EventManagerFactory::class)($plugins);
-	}
+	public function notify(string $type, string $action, array $options = []): void;
 }

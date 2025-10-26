@@ -20,6 +20,7 @@ use Laminas\Db\Sql\Predicate\Expression;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Database\PortalTransactionInterface;
 use LightPortal\Enums\ContentType;
+use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Utils\Language;
 use LightPortal\Utils\Traits\HasCache;
 use LightPortal\Utils\Traits\HasParamJoins;
@@ -44,7 +45,7 @@ abstract class AbstractRepository implements RepositoryInterface
 
 	protected PortalTransactionInterface $transaction;
 
-	public function __construct(protected PortalSqlInterface $sql)
+	public function __construct(protected PortalSqlInterface $sql, protected EventDispatcherInterface $dispatcher)
 	{
 		$this->transaction = $this->sql->getTransaction();
 	}

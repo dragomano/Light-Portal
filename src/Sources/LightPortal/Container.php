@@ -14,8 +14,7 @@ namespace LightPortal;
 
 use Bugo\Compat\ErrorHandler;
 use League\Container\Container as LeagueContainer;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
+use Throwable;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -42,7 +41,7 @@ class Container
 	{
 		try {
 			return self::getInstance()->get($service);
-		} catch (NotFoundExceptionInterface | ContainerExceptionInterface $e) {
+		} catch (Throwable $e) {
 			ErrorHandler::log('[LP] container: ' . $e->getMessage(), file: $e->getFile(), line: $e->getLine());
 		}
 

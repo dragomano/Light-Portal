@@ -21,7 +21,7 @@ use Bugo\Compat\Utils;
 use LightPortal\Enums\EntryType;
 use LightPortal\Enums\PortalHook;
 use LightPortal\Enums\PortalSubAction;
-use LightPortal\Events\HasEvents;
+use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Repositories\PageRepositoryInterface;
 use LightPortal\Utils\Content;
 use LightPortal\Utils\Icon;
@@ -46,12 +46,14 @@ final readonly class Page implements ActionInterface
 {
 	use HasCache;
 	use HasBreadcrumbs;
-	use HasEvents;
 	use HasRequest;
 	use HasResponse;
 	use HasSorting;
 
-	public function __construct(private PageRepositoryInterface $repository) {}
+	public function __construct(
+		private PageRepositoryInterface $repository,
+		private EventDispatcherInterface $dispatcher
+	) {}
 
 	public function show(): void
 	{
@@ -340,7 +342,7 @@ final readonly class Page implements ActionInterface
 
 		Lang::load('Editor');
 
-		$this->events()->dispatch(PortalHook::comments);
+		$this->dispatcher->dispatch(PortalHook::comments);
 
 		if (isset(Utils::$context['lp_' . Setting::getCommentBlock() . '_comment_block']))
 			return;

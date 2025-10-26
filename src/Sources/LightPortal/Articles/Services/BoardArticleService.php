@@ -26,22 +26,20 @@ use LightPortal\Utils\Str;
 if (! defined('SMF'))
 	die('No direct access...');
 
-readonly class BoardArticleService implements ArticleServiceInterface
+class BoardArticleService extends AbstractArticleService
 {
-	public function __construct(
-		private BoardArticleQuery $query,
-		private EventDispatcherInterface $events
-	) {}
-
-	public function init(): void
+	public function __construct(BoardArticleQuery $query, EventDispatcherInterface $dispatcher)
 	{
-		$params = [
+		parent::__construct($query, $dispatcher);
+	}
+
+	public function getParams(): array
+	{
+		return [
 			'current_member'  => User::$me->id,
 			'recycle_board'   => Setting::get('recycle_board', 'int', 0),
 			'selected_boards' => Setting::get('lp_frontpage_boards', 'array', []),
 		];
-
-		$this->query->init($params);
 	}
 
 	public function getSortingOptions(): array
@@ -60,115 +58,86 @@ readonly class BoardArticleService implements ArticleServiceInterface
 		];
 	}
 
-	public function getData(int $start, int $limit, ?string $sortType): iterable
+	protected function getRules(array $row): array
 	{
-		$this->query->setSorting($sortType);
-		$this->query->prepareParams($start, $limit);
+		Lang::censorText($row['name']);
+		Lang::censorText($row['cat_name']);
+		Lang::censorText($row['description']);
 
-		foreach ($this->query->getRawData() as $row) {
-			$row['description'] = BBCodeParser::load()->parse(
-				$row['description'], false, '', Utils::$context['description_allowed_tags']
-			);
+		$description = BBCodeParser::load()->parse(
+			$row['description'], false, '', Utils::$context['description_allowed_tags']
+		);
 
-			$board = [
-				'id'           => $row['id_board'],
-				'date'         => $this->getDate($row),
-				'last_comment' => $row['id_last_msg'],
-				'title'        => $this->getTitle($row),
-				'link'         => $this->getLink($row),
-				'is_new'       => empty($row['is_read']),
-				'replies'      => $this->getRepliesData($row),
-				'image'        => $this->getImage($row),
-				'can_edit'     => $this->canEdit(),
-				'edit_link'    => $this->getEditLink($row),
-				'category'     => $this->getCategory($row),
-				'is_redirect'  => $row['is_redirect'],
-			];
-
-			$this->prepareTeaser($board, $row);
-
-			$articles = [$row['id_board'] => $board];
-
-			$this->events->dispatch(PortalHook::frontBoardsRow, ['articles' => &$articles, 'row' => $row]);
-
-			$board = $articles[$row['id_board']];
-
-			yield $row['id_board'] => $board;
-		}
-	}
-
-	public function getTotalCount(): int
-	{
-		return $this->query->getTotalCount();
-	}
-
-	private function getDate(array $row): int
-	{
-		return str_contains($this->query->getSorting(), 'updated') && $row['last_updated']
-			? $row['last_updated']
-			: $row['poster_time'];
-	}
-
-	private function getTitle(array $row): string
-	{
-		return BBCodeParser::load()->parse($row['name'], false, '', Utils::$context['description_allowed_tags']);
-	}
-
-	private function getLink(array $row): string
-	{
-		return $row['is_redirect']
-			? $row['redirect'] . '" rel="nofollow noopener'
-			: (Config::$scripturl . '?board=' . $row['id_board'] . '.0');
-	}
-
-	private function getRepliesData(array $row): array
-	{
 		return [
-			'num'   => $row['num_posts'],
-			'title' => Lang::$txt['lp_replies'],
-			'after' => '',
+			'id' => fn($row) => $row['id_board'],
+
+			'date' => function ($row) {
+				return str_contains($this->query->getSorting(), 'updated') && $row['last_updated']
+					? $row['last_updated']
+					: $row['poster_time'];
+			},
+
+			'last_comment' => fn($row) => $row['id_last_msg'],
+
+			'title' => fn($row) => $row['name'],
+
+			'link' => fn($row) => $row['is_redirect']
+				? $row['redirect'] . '" rel="nofollow noopener'
+				: (Config::$scripturl . '?board=' . $row['id_board'] . '.0'),
+
+			'is_new' => fn($row) => empty($row['is_read']),
+
+			'replies' => fn($row) => [
+				'num'   => $row['num_posts'],
+				'title' => Lang::$txt['lp_replies'],
+				'after' => '',
+			],
+
+			'image' => function ($row) use ($description) {
+				if (empty(Config::$modSettings['lp_show_images_in_articles'])) {
+					return '';
+				}
+
+				$image = Str::getImageFromText($description);
+
+				if ($row['attach_id'] && empty($image)) {
+					$image = Config::$scripturl . '?action=dlattach;topic=' . $row['id_topic'] . ';attach='
+						. $row['attach_id'] . ';image';
+				}
+
+				if ($row['is_redirect'] && empty($image)) {
+					$image = 'https://image.thum.io/get/' . trim($row['redirect']);
+				}
+
+				return $image;
+			},
+
+			'can_edit' => fn($row) => User::$me->is_admin || User::$me->allowedTo('manage_boards'),
+
+			'edit_link' => fn($row) => Config::$scripturl
+				. '?action=admin;area=manageboards;sa=board;boardid=' . $row['id_board'],
+
+			'category' => fn($row) => $row['cat_name'],
+
+			'is_redirect' => fn($row) => $row['is_redirect'],
+
+			'teaser' => function () use ($description) {
+				if (empty(Config::$modSettings['lp_show_teaser'])) {
+					return '';
+				}
+
+				return Str::getTeaser($description);
+			},
 		];
 	}
 
-	private function getImage(array $row): string
+	protected function getEventHook(): PortalHook
 	{
-		if (empty(Config::$modSettings['lp_show_images_in_articles']))
-			return '';
-
-		$image = Str::getImageFromText($row['description']);
-
-		if ($row['attach_id'] && empty($image)) {
-			$image = Config::$scripturl . '?action=dlattach;topic=' . $row['id_topic'] . ';attach='
-				. $row['attach_id'] . ';image';
-		}
-
-		if ($row['is_redirect'] && empty($image)) {
-			$image = 'https://mini.s-shot.ru/300x200/JPEG/300/Z100/?' . urlencode(trim($row['redirect']));
-		}
-
-		return $image;
+		return PortalHook::frontBoardsRow;
 	}
 
-	private function canEdit(): bool
+	protected function finalizeItem(array $item): array
 	{
-		return User::$me->is_admin || User::$me->allowedTo('manage_boards');
-	}
-
-	private function getEditLink(array $row): string
-	{
-		return Config::$scripturl . '?action=admin;area=manageboards;sa=board;boardid=' . $row['id_board'];
-	}
-
-	private function getCategory(array $row): string
-	{
-		return BBCodeParser::load()->parse($row['cat_name'], false, '', Utils::$context['description_allowed_tags']);
-	}
-
-	private function prepareTeaser(array &$board, array $row): void
-	{
-		if (empty(Config::$modSettings['lp_show_teaser']) || empty($row['description']))
-			return;
-
-		$board['teaser'] = Str::getTeaser($row['description']);
+		return $item;
 	}
 }
