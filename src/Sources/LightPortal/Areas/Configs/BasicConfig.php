@@ -151,7 +151,7 @@ final class BasicConfig extends AbstractConfig
 			CallbackConfig::make('standalone_mode_settings_after')
 				->setLabel(Lang::$txt['lp_disabled_actions'])
 				->setHelp('lp_disabled_actions_help')
-				->setCallback(static fn() => SelectFactory::action())
+				->setCallback(SelectFactory::action(...))
 				->setTab(self::TAB_STANDALONE),
 			PermissionsConfig::make('light_portal_view')
 				->setPostInput('<small class="floatright">' . Lang::$txt['groups_light_portal_view'] . '</small>')

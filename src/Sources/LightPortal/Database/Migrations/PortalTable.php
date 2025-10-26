@@ -95,7 +95,7 @@ class PortalTable extends CreateTable
 			foreach ($indexes as $index) {
 				$indexName = $platform->quoteIdentifier($index->getName());
 				$tableName = $platform->quoteIdentifier($this->table);
-				$quotedColumns = array_map(fn($col) => $platform->quoteIdentifier($col), $index->getColumns());
+				$quotedColumns = array_map($platform->quoteIdentifier(...), $index->getColumns());
 				$columnList = implode(', ', $quotedColumns);
 				$indexStatements[] = "CREATE INDEX IF NOT EXISTS $indexName ON $tableName ($columnList)";
 			}

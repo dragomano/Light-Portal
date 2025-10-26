@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 26.10.25
  */
 
 namespace LightPortal\Plugins\BoardList;
@@ -73,7 +73,7 @@ class BoardList extends Block
 	{
 		$boardList = $this->userCache($this->name . '_addon_b' . $e->args->id)
 			->setLifeTime($e->args->cacheTime)
-			->setFallback(fn() => MessageIndex::getBoardList());
+			->setFallback(MessageIndex::getBoardList(...));
 
 		if (empty($boardList))
 			return;

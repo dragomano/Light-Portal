@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 22.10.25
+ * @version 26.10.25
  */
 
 namespace LightPortal\Plugins\RandomTopics;
@@ -89,11 +89,11 @@ class RandomTopics extends Block
 	{
 		$excludeBoards = empty($parameters['exclude_boards'])
 			? []
-			: array_map('intval', explode(',', (string) $parameters['exclude_boards']));
+			: array_map(intval(...), explode(',', (string) $parameters['exclude_boards']));
 
 		$includeBoards = empty($parameters['include_boards'])
 			? []
-			: array_map('intval', explode(',', (string) $parameters['include_boards']));
+			: array_map(intval(...), explode(',', (string) $parameters['include_boards']));
 
 		$topicsCount = Str::typed('int', $parameters['num_topics']);
 		if (empty($topicsCount)) {

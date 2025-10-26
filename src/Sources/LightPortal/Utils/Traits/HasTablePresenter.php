@@ -16,9 +16,6 @@ use Bugo\Bricks\Tables\Interfaces\TablePresenterInterface;
 
 use function LightPortal\app;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
 trait HasTablePresenter
 {
 	public function getTablePresenter(): TablePresenterInterface

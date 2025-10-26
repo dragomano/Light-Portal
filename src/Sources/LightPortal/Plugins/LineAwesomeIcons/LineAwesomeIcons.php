@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 26.10.25
  */
 
 namespace LightPortal\Plugins\LineAwesomeIcons;
@@ -34,7 +34,7 @@ class LineAwesomeIcons extends Plugin
 
 	public function prepareIconList(Event $e): void
 	{
-		$laIcons = $this->cache()->remember('all_la_icons', fn() => $this->getIconList(), 30 * 24 * 60 * 60);
+		$laIcons = $this->cache()->remember('all_la_icons', $this->getIconList(...), 30 * 24 * 60 * 60);
 
 		$e->args->icons = array_merge($e->args->icons, $laIcons);
 	}

@@ -78,7 +78,7 @@
 	<extensions>
 		<bootstrap class="DG\BypassFinals\PHPUnitExtension">
 			<parameter name="bypassFinal" value="true"/>
-			<parameter name="bypassReadOnly" value="false"/>
+			<parameter name="bypassReadOnly" value="true"/>
 		</bootstrap>
 	</extensions>
 </phpunit>

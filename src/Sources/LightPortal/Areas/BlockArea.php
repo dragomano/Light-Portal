@@ -276,31 +276,29 @@ final readonly class BlockArea implements AreaInterface
 
 		CustomField::make('placement', Lang::$txt['lp_block_placement'])
 			->setTab(Tab::ACCESS_PLACEMENT)
-			->setValue(static fn() => SelectFactory::placement());
+			->setValue(SelectFactory::placement(...));
 
 		CustomField::make('permissions', Lang::$txt['edit_permissions'])
 			->setTab(Tab::ACCESS_PLACEMENT)
-			->setValue(static fn() => SelectFactory::permission([
-				'type' => 'block'
-			]));
+			->setValue(static fn() => SelectFactory::permission(['type' => 'block']));
 
 		CustomField::make('areas', Lang::$txt['lp_block_areas'])
 			->setTab(Tab::ACCESS_PLACEMENT)
 			->setDescription($this->getAreasInfo())
-			->setValue(static fn() => SelectFactory::area());
+			->setValue(SelectFactory::area(...));
 
 		CustomField::make('icon', Lang::$txt['current_icon'])
 			->setTab(Tab::APPEARANCE)
-			->setValue(static fn() => SelectFactory::icon());
+			->setValue(SelectFactory::icon(...));
 
 		CustomField::make('title_class', Lang::$txt['lp_block_title_class'])
 			->setTab(Tab::APPEARANCE)
-			->setValue(static fn() => SelectFactory::titleClass());
+			->setValue(SelectFactory::titleClass(...));
 
 		if (Block::showContentClassField(Utils::$context['lp_block']['type'])) {
 			CustomField::make('content_class', Lang::$txt['lp_block_content_class'])
 				->setTab(Tab::APPEARANCE)
-				->setValue(static fn() => SelectFactory::contentClass());
+				->setValue(SelectFactory::contentClass(...));
 		}
 
 		CheckboxField::make('hide_header', Lang::$txt['lp_block_hide_header'])

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 21.10.25
+ * @version 26.10.25
  */
 
 namespace LightPortal\Plugins\RandomPages;
@@ -93,11 +93,11 @@ class RandomPages extends Block
 	{
 		$excludeCategories = empty($parameters['exclude_categories'])
 			? []
-			: array_map('intval', explode(',', (string) $parameters['exclude_categories']));
+			: array_map(intval(...), explode(',', (string) $parameters['exclude_categories']));
 
 		$includeCategories = empty($parameters['include_categories'])
 			? []
-			: array_map('intval', explode(',', (string) $parameters['include_categories']));
+			: array_map(intval(...), explode(',', (string) $parameters['include_categories']));
 
 		$pagesCount = Str::typed('int', $parameters['num_pages']);
 		if (empty($pagesCount)) {

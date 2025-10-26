@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 09.10.25
+ * @version 26.10.25
  */
 
 namespace LightPortal\Plugins\TinyPortalMigration;
@@ -142,6 +142,6 @@ class PageImport extends AbstractCustomPageImport
 
 	protected function extractPermissions(array $row): int|array
 	{
-		return array_map('intval', explode(',', (string) $row['value3']));
+		return array_map(intval(...), explode(',', (string) $row['value3']));
 	}
 }

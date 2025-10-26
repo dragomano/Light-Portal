@@ -17,13 +17,13 @@ use LightPortal\Utils\Traits\HasRequest;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class Category implements ActionInterface
+final readonly class Category implements ActionInterface
 {
 	use HasRequest;
 
 	public function __construct(
-		private readonly PageListInterface $pageList,
-		private readonly IndexInterface $categoryIndex,
+		private PageListInterface $pageList,
+		private IndexInterface $categoryIndex,
 	) {}
 
 	public function show(): void

@@ -13,11 +13,8 @@
 namespace LightPortal\Utils\Traits;
 
 use Bugo\Compat\Theme;
-use LightPortal\Utils\Setting;
 use Laminas\Db\Sql\Where;
-
-if (! defined('SMF'))
-	die('No direct access...');
+use LightPortal\Utils\Setting;
 
 trait HasThemes
 {

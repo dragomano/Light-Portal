@@ -692,7 +692,7 @@ class ServiceProvider extends AbstractServiceProvider
 				],
 				[
 					'id' => BreadcrumbBuilder::class,
-					'concrete' => static fn() => BreadcrumbBuilder::make(),
+					'concrete' => BreadcrumbBuilder::make(...),
 					'shared' => false,
 				],
 				[

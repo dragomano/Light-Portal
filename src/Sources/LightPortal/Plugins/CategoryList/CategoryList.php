@@ -38,7 +38,7 @@ class CategoryList extends Block
 	{
 		$categories = $this->userCache($this->name . '_addon')
 			->setLifeTime($e->args->cacheTime)
-			->setFallback(fn() => $this->getData());
+			->setFallback($this->getData(...));
 
 		if (empty($categories)) {
 			echo $this->txt['no_items'];

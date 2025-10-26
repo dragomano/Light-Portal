@@ -551,16 +551,16 @@ final class PageArea implements AreaInterface
 		if (Utils::$context['user']['is_admin']) {
 			CustomField::make('show_in_menu', Lang::$txt['lp_page_show_in_menu'])
 				->setTab(Tab::ACCESS_PLACEMENT)
-				->setValue(static fn() => SelectFactory::pageIcon());
+				->setValue(SelectFactory::pageIcon(...));
 
 			CustomField::make('status', Lang::$txt['status'])
 				->setTab(Tab::ACCESS_PLACEMENT)
-				->setValue(static fn() => SelectFactory::status());
+				->setValue(SelectFactory::status(...));
 		}
 
 		CustomField::make('permissions', Lang::$txt['edit_permissions'])
 			->setTab(Tab::ACCESS_PLACEMENT)
-			->setValue(static fn() => SelectFactory::permission());
+			->setValue(SelectFactory::permission(...));
 
 		CustomField::make('category_id', Lang::$txt['lp_category'])
 			->setTab(Tab::ACCESS_PLACEMENT)
@@ -573,7 +573,7 @@ final class PageArea implements AreaInterface
 
 		CustomField::make('entry_type', Lang::$txt['lp_page_type'])
 			->setTab(Tab::ACCESS_PLACEMENT)
-			->setValue(static fn() => SelectFactory::entryType());
+			->setValue(SelectFactory::entryType(...));
 
 		TextField::make('slug', Lang::$txt['lp_slug'])
 			->setTab(Tab::SEO)
@@ -599,7 +599,7 @@ final class PageArea implements AreaInterface
 		} else {
 			CustomField::make('tags', Lang::$txt['lp_tags'])
 				->setTab(Tab::SEO)
-				->setValue(static fn() => SelectFactory::tag());
+				->setValue(SelectFactory::tag(...));
 		}
 
 		if (Utils::$context['lp_page']['created_at'] >= time()) {

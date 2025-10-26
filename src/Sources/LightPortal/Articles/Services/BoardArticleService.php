@@ -71,11 +71,9 @@ class BoardArticleService extends AbstractArticleService
 		return [
 			'id' => fn($row) => $row['id_board'],
 
-			'date' => function ($row) {
-				return str_contains($this->query->getSorting(), 'updated') && $row['last_updated']
-					? $row['last_updated']
-					: $row['poster_time'];
-			},
+			'date' => fn($row) => str_contains($this->query->getSorting(), 'updated') && $row['last_updated']
+				? $row['last_updated']
+				: $row['poster_time'],
 
 			'last_comment' => fn($row) => $row['id_last_msg'],
 

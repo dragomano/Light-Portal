@@ -105,7 +105,7 @@ class IconList implements ListInterface
 
 		$this->dispatcher->dispatch(PortalHook::changeIconSet, ['set' => &$set]);
 
-		return array_map(static fn($icon): string => Icon::parse($icon), $set);
+		return array_map(Icon::parse(...), $set);
 	}
 
 	public function getList(): array

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 26.10.25
  */
 
 namespace LightPortal\Plugins\CurrentMonth;
@@ -64,7 +64,7 @@ class CurrentMonth extends Block
 
 		$calendarData = $this->userCache($this->name . '_addon')
 			->setLifeTime($e->args->cacheTime)
-			->setFallback(fn() => $this->getData());
+			->setFallback($this->getData(...));
 
 		if ($calendarData) {
 			$calendarData['block_id'] = $id;

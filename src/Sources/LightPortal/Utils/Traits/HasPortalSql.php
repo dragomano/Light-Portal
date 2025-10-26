@@ -16,9 +16,6 @@ use LightPortal\Database\PortalSqlInterface;
 
 use function LightPortal\app;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
 trait HasPortalSql
 {
 	public function getPortalSql(): PortalSqlInterface

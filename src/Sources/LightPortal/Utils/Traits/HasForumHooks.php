@@ -15,9 +15,6 @@ namespace LightPortal\Utils\Traits;
 use Bugo\Compat\IntegrationHook;
 use LightPortal\Enums\ForumHook;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
 trait HasForumHooks
 {
 	protected function applyHook(ForumHook $hook, ?string $class = null): void

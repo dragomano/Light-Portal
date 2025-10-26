@@ -56,6 +56,6 @@ abstract class AbstractSelect implements SelectInterface
 	{
 		$value = is_array($value) ? $value : explode(',', $value ?? '');
 
-		return array_map('strval', array_values(array_filter($value, fn($v) => $v !== '')));
+		return array_map(strval(...), array_values(array_filter($value, fn($v) => $v !== '')));
 	}
 }

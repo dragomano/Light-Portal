@@ -17,13 +17,13 @@ use LightPortal\Utils\Traits\HasRequest;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class Tag implements ActionInterface
+final readonly class Tag implements ActionInterface
 {
 	use HasRequest;
 
 	public function __construct(
-		private readonly PageListInterface $pageList,
-		private readonly IndexInterface $tagIndex,
+		private PageListInterface $pageList,
+		private IndexInterface $tagIndex,
 	) {}
 
 	public function show(): void

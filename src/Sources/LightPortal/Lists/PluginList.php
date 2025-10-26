@@ -26,6 +26,6 @@ class PluginList implements ListInterface
 		if (empty($dirs = glob(LP_ADDON_DIR . '/*', GLOB_ONLYDIR)))
 			return [];
 
-		return array_map(static fn($item): string => basename($item), $dirs);
+		return array_map(basename(...), $dirs);
 	}
 }

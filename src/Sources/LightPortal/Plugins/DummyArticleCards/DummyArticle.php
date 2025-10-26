@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 23.10.25
+ * @version 26.10.25
  */
 
 namespace LightPortal\Plugins\DummyArticleCards;
@@ -44,11 +44,11 @@ class DummyArticle implements ArticleInterface
 	{
 		$products = $this->cache('active_layout_addon_demo_products')
 			->setLifeTime(21600)
-			->setFallback(fn() => $this->getProducts());
+			->setFallback($this->getProducts(...));
 
 		$users = $this->cache('active_layout_addon_demo_users')
 			->setLifeTime(21600)
-			->setFallback(fn() => $this->getUsers());
+			->setFallback($this->getUsers(...));
 
 		$demoArticles = [];
 
@@ -109,7 +109,7 @@ class DummyArticle implements ArticleInterface
 	{
 		$products = $this->cache('active_layout_addon_demo_products')
 			->setLifeTime(21600)
-			->setFallback(fn() => $this->getProducts());
+			->setFallback($this->getProducts(...));
 
 		return count($products);
 	}

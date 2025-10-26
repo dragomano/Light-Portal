@@ -16,9 +16,6 @@ use Bugo\Compat\Utils;
 use LightPortal\UI\View;
 use ReflectionClass;
 
-if (! defined('SMF'))
-	die('No direct access...');
-
 trait HasView
 {
 	private ?View $view = null;

@@ -120,7 +120,7 @@ abstract class AbstractArticleQuery implements ArticleQueryInterface
 		$additionalColumns = [];
 		foreach ($this->columns as $column) {
 			if (is_string($column) && str_contains($column, ',')) {
-				$parts = array_map('trim', explode(',', $column));
+				$parts = array_map(trim(...), explode(',', $column));
 				$additionalColumns = array_merge($additionalColumns, $parts);
 			} elseif (is_array($column)) {
 				$additionalColumns = array_merge($additionalColumns, $column);
