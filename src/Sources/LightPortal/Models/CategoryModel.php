@@ -14,6 +14,9 @@ namespace LightPortal\Models;
 
 use LightPortal\Enums\Status;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 class CategoryModel extends AbstractModel
 {
 	public int $id;

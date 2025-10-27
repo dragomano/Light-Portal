@@ -20,6 +20,9 @@ use LightPortal\Utils\Traits\HasTranslationJoins;
 use const LP_CACHE_TIME;
 use const LP_PAGE_PARAM;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 class BuildRoute
 {
 	use HasCache;

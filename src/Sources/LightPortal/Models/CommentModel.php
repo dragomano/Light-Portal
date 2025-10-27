@@ -14,6 +14,9 @@ namespace LightPortal\Models;
 
 use Bugo\Compat\User;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 class CommentModel extends AbstractModel
 {
 	public int $id;

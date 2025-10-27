@@ -95,7 +95,7 @@ trait HasTranslationJoins
 
 		$fieldsSql = implode(' AND ', $fieldConditions);
 
-		$where = "item_id = $tableAlias.$idField AND type = ? AND lang IN (?, ?) AND ($fieldsSql)";
+		$where = "item_id = $tableAlias.$idField AND type = ? AND lang IN (?, ?) AND $fieldsSql";
 		$sql = "EXISTS (SELECT 1 FROM {$this->sql->getPrefix()}lp_translations WHERE $where)";
 
 		$params = $this->getLangQueryParams();

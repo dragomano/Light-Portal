@@ -16,9 +16,12 @@ use Bugo\Compat\Actions\Admin\Permissions;
 use Bugo\Compat\Config;
 use Closure;
 
-class VarFactory
+if (! defined('SMF'))
+	die('No direct access...');
+
+readonly class VarFactory
 {
-	public function __construct(private readonly string $name, private readonly string $type) {}
+	public function __construct(private string $name, private string $type) {}
 
 	public function createTemplateCallback(): Closure
 	{

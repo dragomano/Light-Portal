@@ -23,6 +23,9 @@ use LightPortal\Utils\Str;
 use const LP_NAME;
 use const LP_VERSION;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 class Credits extends AbstractHook
 {
 	public function __invoke(): void

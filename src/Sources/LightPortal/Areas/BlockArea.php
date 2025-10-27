@@ -146,9 +146,9 @@ final readonly class BlockArea implements AreaInterface
 		}
 
 		if ($this->request()->has('remove')) {
-			$this->repository->remove([$item]);
+			$this->repository->remove($item);
 
-			$this->cache()->forget('active_blocks');
+			$this->langCache('active_blocks')->forget();
 
 			$this->response()->redirect('action=admin;area=lp_blocks;sa=main');
 		}
@@ -169,21 +169,21 @@ final readonly class BlockArea implements AreaInterface
 		$data = $this->request()->json();
 
 		match (true) {
-			isset($data['clone_block']) => $this->makeCopy((int) $data['clone_block']),
-			isset($data['delete_item']) => $this->repository->remove([(int) $data['delete_item']]),
-			isset($data['toggle_item']) => $this->repository->toggleStatus([(int) $data['toggle_item']]),
+			isset($data['clone_block']) => $this->makeCopy($data['clone_block']),
+			isset($data['delete_item']) => $this->repository->remove($data['delete_item']),
+			isset($data['toggle_item']) => $this->repository->toggleStatus($data['toggle_item']),
 			isset($data['update_priority']) => $this->repository->updatePriority($data['update_priority'], $data['update_placement']),
 			default => null,
 		};
 
-		$this->cache()->flush();
+		$this->langCache('active_blocks')->forget();
 
 		exit;
 	}
 
 	private function makeCopy(int $item): void
 	{
-		if ($item === 0)
+		if (empty($item))
 			return;
 
 		$this->request()->put('clone', true);
@@ -203,7 +203,7 @@ final readonly class BlockArea implements AreaInterface
 			];
 		}
 
-		$this->cache()->forget('active_blocks');
+		$this->langCache('active_blocks')->forget();
 
 		$this->response()->exit($result);
 	}

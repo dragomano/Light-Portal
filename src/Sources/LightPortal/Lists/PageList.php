@@ -15,21 +15,22 @@
 namespace LightPortal\Lists;
 
 use LightPortal\Repositories\PageRepositoryInterface;
+use LightPortal\Utils\Traits\HasCache;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 readonly class PageList implements ListInterface
 {
+	use HasCache;
+
 	public function __construct(private PageRepositoryInterface $repository) {}
 
 	public function __invoke(): array
 	{
-		return $this->repository->getAll(
-			0,
-			$this->repository->getTotalCount(),
-			'title',
-			'list'
-		);
+		return $this->langCache('active_pages')
+			->setFallback(
+				fn() => $this->repository->getAll(0, $this->repository->getTotalCount(), 'title', 'list')
+			);
 	}
 }

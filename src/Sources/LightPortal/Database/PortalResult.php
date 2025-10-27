@@ -17,6 +17,9 @@ use Laminas\Db\Adapter\Driver\ResultInterface;
 use PDOStatement;
 use Throwable;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 readonly class PortalResult implements PortalResultInterface
 {
 	public function __construct(private ResultInterface $result, private AdapterInterface $adapter) {}

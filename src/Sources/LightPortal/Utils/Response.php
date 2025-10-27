@@ -14,6 +14,9 @@ namespace LightPortal\Utils;
 
 use Bugo\Compat\Utils;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 class Response implements ResponseInterface
 {
 	public function json(mixed $data, int $flags = 0): false|string

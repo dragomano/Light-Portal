@@ -30,10 +30,6 @@ class MessageIndex extends BaseMessageIndex
 			'excluded_boards' => $recycleBoard === null ? null : [$recycleBoard],
 		];
 
-		if (isset($boardListOptions['included_boards'])) {
-			unset($defaultOptions['excluded_boards']);
-		}
-
 		$options = array_merge($defaultOptions, $boardListOptions);
 
 		return parent::getBoardList($options);

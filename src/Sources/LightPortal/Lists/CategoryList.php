@@ -15,41 +15,47 @@ namespace LightPortal\Lists;
 use Bugo\Compat\Lang;
 use LightPortal\Repositories\CategoryRepositoryInterface;
 use LightPortal\Utils\Icon;
+use LightPortal\Utils\Traits\HasCache;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 readonly class CategoryList implements ListInterface
 {
+	use HasCache;
+
 	public function __construct(private CategoryRepositoryInterface $repository) {}
 
 	public function __invoke(): array
 	{
-		$items = $this->repository->getAll(
-			0,
-			$this->repository->getTotalCount(),
-			'priority',
-			'list'
-		);
+		return $this->langCache('active_categories')
+			->setFallback(function () {
+				$items = $this->repository->getAll(
+					0,
+					$this->repository->getTotalCount(),
+					'priority',
+					'list'
+				);
 
-		$processedItems = [[
-			'slug'     => 'uncategorized',
-			'icon'     => Icon::parse('fas folder-open'),
-			'priority' => 0,
-			'title'    => Lang::$txt['lp_no_category'],
-		]];
+				$processedItems = [[
+					'slug'     => 'uncategorized',
+					'icon'     => Icon::parse('fas folder-open'),
+					'priority' => 0,
+					'title'    => Lang::$txt['lp_no_category'],
+				]];
 
-		foreach ($items as $id => $item) {
-			$processedItems[$id] = [
-				'id'          => $item['id'],
-				'slug'        => $item['slug'],
-				'icon'        => $item['icon'],
-				'priority'    => $item['priority'],
-				'title'       => $item['title'],
-				'description' => $item['description'],
-			];
-		}
+				foreach ($items as $id => $item) {
+					$processedItems[$id] = [
+						'id'          => $item['id'],
+						'slug'        => $item['slug'],
+						'icon'        => $item['icon'],
+						'priority'    => $item['priority'],
+						'title'       => $item['title'],
+						'description' => $item['description'],
+					];
+				}
 
-		return $processedItems;
+				return $processedItems;
+			});
 	}
 }

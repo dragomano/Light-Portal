@@ -16,6 +16,9 @@ use LightPortal\Plugins\PluginHandler;
 
 use function LightPortal\app;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 final class EventManagerFactory
 {
 	private static array $plugins = [];

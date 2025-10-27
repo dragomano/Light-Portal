@@ -25,6 +25,7 @@ use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Repositories\PageRepositoryInterface;
 use LightPortal\Utils\Avatar;
 use LightPortal\Utils\Content;
+use LightPortal\Utils\DateTime;
 use LightPortal\Utils\Icon;
 use LightPortal\Utils\Setting;
 use LightPortal\Utils\Str;
@@ -77,12 +78,13 @@ class PageArticleService extends AbstractArticleService
 		];
 	}
 
-	public function prepareTags(array &$pages): void {
-		if ($pages === [])
+	protected function enrichArticles(array &$articles): void
+	{
+		if ($articles === [])
 			return;
 
-		foreach ($this->repository->fetchTags(array_keys($pages)) as $pageId => $tag) {
-			$pages[$pageId]['tags'][] = $tag;
+		foreach ($this->repository->fetchTags(array_keys($articles)) as $pageId => $tag) {
+			$articles[$pageId]['tags'][] = $tag;
 		}
 	}
 
@@ -93,6 +95,8 @@ class PageArticleService extends AbstractArticleService
 		Lang::censorText($row['description']);
 
 		$content = Content::parse($row['content'], $row['type']);
+
+		$date = str_contains($this->query->getSorting(), 'updated') ? $row['date'] : $row['created_at'];
 
 		return [
 			'id' => fn($row) => $row['page_id'],
@@ -109,18 +113,22 @@ class PageArticleService extends AbstractArticleService
 				'name' => $row['author_name'],
 			],
 
-			'date' => fn($row) => str_contains($this->query->getSorting(), 'updated') ? $row['date'] : $row['created_at'],
-
 			'created' => fn($row) => $row['created_at'],
 
 			'updated' => fn($row) => $row['updated_at'],
+
+			'datetime' => fn($row) => date('Y-m-d', $date),
+
+			'raw_date' => fn($row) => $date,
+
+			'date' => fn($row) => DateTime::relative($date),
 
 			'last_comment' => fn($row) => $row['comment_date'],
 
 			'link' => fn($row) => LP_PAGE_URL . $row['slug'],
 
 			'views' => fn($row) => [
-				'num'   => $row['num_views'],
+				'num'   => $this->getFriendlyNumber($row['num_views']),
 				'title' => Lang::$txt['lp_views'],
 				'after' => '',
 			],
@@ -131,7 +139,8 @@ class PageArticleService extends AbstractArticleService
 				'after' => '',
 			],
 
-			'is_new' => fn($row) => User::$me->last_login < $row['date'] && $row['author_id'] !== User::$me->id,
+			'is_new' => fn($row) => ! User::$me->is_guest
+				&& User::$me->last_login < $row['date'] && $row['author_id'] !== User::$me->id,
 
 			'image' => function () use ($content) {
 				if (empty(Config::$modSettings['lp_show_images_in_articles'])) {
@@ -167,5 +176,24 @@ class PageArticleService extends AbstractArticleService
 	protected function finalizeItem(array $item): array
 	{
 		return Avatar::getWithItems([$item])[0] ?? $item;
+	}
+
+	private function getFriendlyNumber(int $value = 0): string
+	{
+		if ($value < 10000) {
+			return (string) $value;
+		}
+
+		$k   = 10 ** 3;
+		$mil = 10 ** 6;
+		$bil = 10 ** 9;
+
+		if ($value >= $bil) {
+			return number_format($value / $bil, 1) . 'B';
+		} elseif ($value >= $mil) {
+			return number_format($value / $mil, 1) . 'M';
+		}
+
+		return number_format($value / $k, 1) . 'K';
 	}
 }

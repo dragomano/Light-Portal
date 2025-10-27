@@ -17,6 +17,9 @@ namespace LightPortal\Renderers;
 use Bugo\Compat\ErrorHandler;
 use Exception;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 class PurePHP extends AbstractRenderer
 {
 	public const DEFAULT_TEMPLATE = 'default.php';

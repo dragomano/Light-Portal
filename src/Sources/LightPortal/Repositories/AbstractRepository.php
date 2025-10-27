@@ -50,8 +50,10 @@ abstract class AbstractRepository implements RepositoryInterface
 		$this->transaction = $this->sql->getTransaction();
 	}
 
-	public function toggleStatus(array $items = []): void
+	public function toggleStatus(mixed $items = []): void
 	{
+		$items = (array) $items;
+
 		if ($items === [])
 			return;
 
@@ -83,15 +85,15 @@ abstract class AbstractRepository implements RepositoryInterface
 		Msg::preparseCode($entity['content']);
 	}
 
-	protected function saveTranslations(int $item, bool $replace = false): void
+	protected function saveTranslations(array $data, bool $replace = false): void
 	{
 		$values = [
-			'item_id'     => $item,
+			'item_id'     => $data['id'],
 			'type'        => $this->entity,
 			'lang'        => User::$me->language,
-			'title'       => Utils::$context['lp_' . $this->entity]['title'] ?? '',
-			'content'     => Utils::$context['lp_' . $this->entity]['content'] ?? '',
-			'description' => Utils::htmlspecialchars(Utils::$context['lp_' . $this->entity]['description'] ?? ''),
+			'title'       => $data['title'] ?? '',
+			'content'     => $data['content'] ?? '',
+			'description' => Utils::htmlspecialchars($data['description'] ?? ''),
 		];
 
 		$sqlObject = $replace
@@ -99,7 +101,7 @@ abstract class AbstractRepository implements RepositoryInterface
 			: $this->sql->insert('lp_translations')->values($values);
 
 		if (! Language::isDefault()) {
-			$default = $this->getDefaultTranslations($item);
+			$default = $this->getDefaultTranslations($data['id']);
 
 			foreach (['title', 'content', 'description'] as $field) {
 				if ($values[$field] === $default[$field]) {
@@ -111,16 +113,16 @@ abstract class AbstractRepository implements RepositoryInterface
 		$this->sql->execute($sqlObject);
 	}
 
-	protected function saveOptions(int $item, bool $replace = false): void
+	protected function saveOptions(array $data, bool $replace = false): void
 	{
-		if (empty(Utils::$context['lp_' . $this->entity]['options']))
+		if (empty($data['options']))
 			return;
 
 		$rows = [];
-		foreach (Utils::$context['lp_' . $this->entity]['options'] as $name => $value) {
+		foreach ($data['options'] as $name => $value) {
 			$value = is_array($value) ? implode(',', $value) : $value;
 			$rows[] = [
-				'item_id' => $item,
+				'item_id' => $data['id'],
 				'type'    => $this->entity,
 				'name'    => $name,
 				'value'   => $value,

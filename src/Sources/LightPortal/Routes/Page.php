@@ -14,7 +14,9 @@ namespace LightPortal\Routes;
 
 use Bugo\Compat\Routable;
 use LightPortal\Enums\Action;
-use LightPortal\Utils\Response;
+use LightPortal\Utils\ResponseInterface;
+
+use function LightPortal\app;
 
 use const LP_PAGE_PARAM;
 
@@ -40,7 +42,7 @@ class Page implements Routable
 
 		// We need to redirect from "/pages" to "/"
 		if (empty($route)) {
-			(new Response())->redirect();
+			app(ResponseInterface::class)->redirect();
 		}
 
 		$params[LP_PAGE_PARAM] = array_shift($route);

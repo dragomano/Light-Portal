@@ -21,7 +21,6 @@ use Bugo\Compat\Security;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use Exception;
-use Generator;
 use Laminas\Db\Sql\Predicate\Expression;
 use Laminas\Db\Sql\Select;
 use LightPortal\Database\PortalSqlInterface;
@@ -155,8 +154,9 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 
 	public function getData(int|string $item): array
 	{
-		if (empty($item))
+		if (empty($item)) {
 			return [];
+		}
 
 		$params = $this->getLangQueryParams();
 
@@ -213,6 +213,8 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 			$data['options'][$row['name']] = $row['value'];
 		}
 
+		$this->prepareData($data);
+
 		return $data ?? [];
 	}
 
@@ -243,8 +245,10 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 		}
 	}
 
-	public function remove(array $items): void
+	public function remove(mixed $items): void
 	{
+		$items = (array) $items;
+
 		if ($items === [])
 			return;
 
@@ -256,8 +260,10 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 		$this->session()->free('lp');
 	}
 
-	public function restore(array $items): void
+	public function restore(mixed $items): void
 	{
+		$items = (array) $items;
+
 		if ($items === [])
 			return;
 
@@ -269,8 +275,10 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 		$this->session()->free('lp');
 	}
 
-	public function removePermanently(array $items): void
+	public function removePermanently(mixed $items): void
 	{
+		$items = (array) $items;
+
 		if ($items === [])
 			return;
 
@@ -637,7 +645,7 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 		$this->dispatcher->dispatch(PortalHook::preparePageData, ['data' => &$data, 'isAuthor' => $isAuthor]);
 	}
 
-	public function fetchTags(iterable $pageIds): Generator
+	public function fetchTags(iterable $pageIds): iterable
 	{
 		$pageIds = is_array($pageIds) ? $pageIds : iterator_to_array($pageIds);
 		if ($pageIds === []) {
@@ -704,9 +712,11 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 
 			$this->dispatcher->dispatch(PortalHook::onPageSaving, ['item' => $item]);
 
-			$this->saveTranslations($item);
-			$this->saveOptions($item);
-			$this->saveTags($item);
+			$data['id'] = $item;
+
+			$this->saveTranslations($data);
+			$this->saveOptions($data);
+			$this->saveTags($data);
 
 			$this->transaction->commit();
 
@@ -755,9 +765,9 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 
 			$this->dispatcher->dispatch(PortalHook::onPageSaving, ['item' => $item]);
 
-			$this->saveTranslations($item, true);
-			$this->saveTags($item, true);
-			$this->saveOptions($item, true);
+			$this->saveTranslations($data, true);
+			$this->saveTags($data, true);
+			$this->saveOptions($data, true);
 
 			if ($data['author_id'] !== User::$me->id) {
 				$title = $data['title'];
@@ -786,12 +796,12 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 		return $tags;
 	}
 
-	private function saveTags(int $item, bool $replace = false): void
+	private function saveTags(array $data, bool $replace = false): void
 	{
 		$rows = [];
-		foreach (Utils::$context['lp_' . $this->entity]['tags'] as $tag) {
+		foreach ($data['tags'] as $tag) {
 			$rows[] = [
-				'page_id' => $item,
+				'page_id' => $data['id'],
 				'tag_id'  => $tag,
 			];
 		}

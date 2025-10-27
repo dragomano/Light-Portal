@@ -18,6 +18,9 @@ use LightPortal\Utils\Icon;
 use eftec\bladeone\BladeOne;
 use Exception;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 class Blade extends AbstractRenderer
 {
 	public const DEFAULT_TEMPLATE = 'default.blade.php';

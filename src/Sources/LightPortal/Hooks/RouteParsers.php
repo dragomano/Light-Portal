@@ -20,6 +20,9 @@ use LightPortal\Routes\Portal;
 
 use const LP_ACTION;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 class RouteParsers
 {
 	public function __invoke(): void

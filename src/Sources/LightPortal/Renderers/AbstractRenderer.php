@@ -19,6 +19,9 @@ use LightPortal\Events\EventDispatcherInterface;
 
 use function LightPortal\app;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 abstract class AbstractRenderer implements RendererInterface
 {
 	protected string $templateDir;

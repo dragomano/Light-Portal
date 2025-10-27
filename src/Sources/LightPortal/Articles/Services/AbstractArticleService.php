@@ -16,6 +16,9 @@ use LightPortal\Articles\Queries\ArticleQueryInterface;
 use LightPortal\Enums\PortalHook;
 use LightPortal\Events\EventDispatcherInterface;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 abstract class AbstractArticleService implements ArticleServiceInterface
 {
 	public function __construct(
@@ -35,17 +38,21 @@ abstract class AbstractArticleService implements ArticleServiceInterface
 		$this->query->setSorting($sortType);
 		$this->query->prepareParams($start, $limit);
 
+		$articles = [];
+
 		foreach ($this->query->getRawData() as $row) {
 			$item = array_map(fn($callback) => $callback($row), $this->getRules($row));
 
-			$articles = [$item['id'] => $item];
+			$tempArticles = [$item['id'] => $item];
+			$this->dispatcher->dispatch($this->getEventHook(), ['articles' => &$tempArticles, 'row' => $row]);
+			$item = $tempArticles[$item['id']];
 
-			$this->dispatcher->dispatch($this->getEventHook(), ['articles' => &$articles, 'row' => $row]);
-
-			$item = $articles[$item['id']];
-
-			yield $item['id'] => $this->finalizeItem($item);
+			$articles[$item['id']] = $this->finalizeItem($item);
 		}
+
+		$this->enrichArticles($articles);
+
+		yield from $articles;
 	}
 
 	final public function getTotalCount(): int
@@ -58,4 +65,6 @@ abstract class AbstractArticleService implements ArticleServiceInterface
 	abstract protected function getEventHook(): PortalHook;
 
 	abstract protected function finalizeItem(array $item): array;
+
+	protected function enrichArticles(array &$articles): void {}
 }

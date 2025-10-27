@@ -15,21 +15,22 @@
 namespace LightPortal\Lists;
 
 use LightPortal\Repositories\TagRepositoryInterface;
+use LightPortal\Utils\Traits\HasCache;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 readonly class TagList implements ListInterface
 {
+	use HasCache;
+
 	public function __construct(private TagRepositoryInterface $repository) {}
 
 	public function __invoke(): array
 	{
-		return $this->repository->getAll(
-			0,
-			$this->repository->getTotalCount(),
-			'title',
-			'list'
-		);
+		return $this->langCache('active_tags')
+			->setFallback(
+				fn () => $this->repository->getAll(0, $this->repository->getTotalCount(), 'title', 'list')
+			);
 	}
 }

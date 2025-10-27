@@ -156,8 +156,10 @@ final class CategoryRepository extends AbstractRepository implements CategoryRep
 		}
 	}
 
-	public function remove(array $items): void
+	public function remove(mixed $items): void
 	{
+		$items = (array) $items;
+
 		if ($items === [])
 			return;
 
@@ -230,7 +232,9 @@ final class CategoryRepository extends AbstractRepository implements CategoryRep
 				return 0;
 			}
 
-			$this->saveTranslations($item);
+			$data['id'] = $item;
+
+			$this->saveTranslations($data);
 
 			$this->transaction->commit();
 
@@ -260,7 +264,7 @@ final class CategoryRepository extends AbstractRepository implements CategoryRep
 
 			$this->sql->execute($update);
 
-			$this->saveTranslations($item, true);
+			$this->saveTranslations($data, true);
 
 			$this->transaction->commit();
 		} catch (Exception $e) {

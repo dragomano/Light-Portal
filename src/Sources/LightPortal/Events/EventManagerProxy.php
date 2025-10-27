@@ -14,6 +14,9 @@ namespace LightPortal\Events;
 
 use LightPortal\Enums\PortalHook;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 readonly class EventManagerProxy implements EventDispatcherInterface
 {
 	public function __construct(private EventManagerFactory $factory, private array $plugins = []) {}
@@ -24,7 +27,7 @@ readonly class EventManagerProxy implements EventDispatcherInterface
 		$manager->dispatch($hook, $params);
 	}
 
-	public function withPlugins(array $plugins): EventDispatcherInterface
+	public function withPlugins(array $plugins): self
 	{
 		return new self($this->factory, $plugins);
 	}

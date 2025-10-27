@@ -203,7 +203,6 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 	public function setData(int $item = 0): void
 	{
 		if (isset(Utils::$context['post_errors']) || $this->request()->hasNot(['save', 'save_exit', 'clone'])) {
-			Utils::$context['lp_block']['id'] = 0;
 			return;
 		}
 
@@ -233,8 +232,10 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 		}
 	}
 
-	public function remove(array $items): void
+	public function remove(mixed $items): void
 	{
+		$items = (array) $items;
+
 		if ($items === [])
 			return;
 
@@ -315,8 +316,10 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 
 			$this->dispatcher->dispatch(PortalHook::onBlockSaving, ['item' => $item]);
 
-			$this->saveTranslations($item);
-			$this->saveOptions($item);
+			$data['id'] = $item;
+
+			$this->saveTranslations($data);
+			$this->saveOptions($data);
 
 			$this->transaction->commit();
 
@@ -351,8 +354,8 @@ final class BlockRepository extends AbstractRepository implements BlockRepositor
 
 			$this->dispatcher->dispatch(PortalHook::onBlockSaving, ['item' => $item]);
 
-			$this->saveTranslations($item, true);
-			$this->saveOptions($item, true);
+			$this->saveTranslations($data, true);
+			$this->saveOptions($data, true);
 
 			$this->transaction->commit();
 		} catch (Exception $e) {

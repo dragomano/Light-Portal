@@ -62,9 +62,9 @@ class PortalProfiler extends Profiler
 
 		$relevantFrame = null;
 		foreach ($backtrace as $frame) {
-			$file = $frame['file'] ?? '';
-			$function = $frame['function'] ?? '';
-			$class = $frame['class'] ?? '';
+			$file      = $frame['file'] ?? '';
+			$function  = $frame['function'] ?? '';
+			$class     = $frame['class'] ?? '';
 			$isIgnored = false;
 
 			if (
@@ -86,9 +86,9 @@ class PortalProfiler extends Profiler
 
 		if ($relevantFrame) {
 			return [
-				'file'     => $relevantFrame['file'] ?? 'unknown',
-				'line'     => $relevantFrame['line'] ?? 0,
-				'function' => $relevantFrame['function'] ?? 'unknown',
+				'file'       => $relevantFrame['file'] ?? 'unknown',
+				'line'       => $relevantFrame['line'] ?? 0,
+				'function'   => $relevantFrame['function'] ?? 'unknown',
 				'full_trace' => array_slice($backtrace, 0, 5),
 			];
 		}
@@ -105,11 +105,13 @@ class PortalProfiler extends Profiler
 
 		foreach ($params as $key => $value) {
 			$placeholder = ':' . $key;
+
 			if ($value === null) {
 				$escapedValue = 'NULL';
 			} else {
 				$escapedValue = $this->platform->quoteTrustedValue($value);
 			}
+
 			$sql = str_replace($placeholder, $escapedValue, $sql);
 		}
 
@@ -117,6 +119,130 @@ class PortalProfiler extends Profiler
 		$sql = preg_replace("/OFFSET\s+'?(\d+)'?/", 'OFFSET $1', $sql);
 		$sql = preg_replace('/`([^`]+)`/', '$1', $sql);
 
+		return $this->formatSql($sql);
+	}
+
+	protected function formatSql(string $sql, int $indentLevel = 0): string
+	{
+		$sql       = preg_replace('/\s+/', ' ', trim($sql));
+		$indent    = str_repeat('    ', $indentLevel);
+		$subIndent = str_repeat('    ', $indentLevel + 1);
+
+		$sql = $this->formatSubqueries($sql, $indentLevel);
+
+		$sql = preg_replace_callback(
+			'/(SELECT)\s+(.*?)(\s+FROM)/is',
+			function ($matches) use ($indent, $subIndent) {
+				$selectPart = trim($matches[2]);
+				$columns = $this->splitColumnsSmart($selectPart);
+
+				if (count($columns) <= 2 && strlen($selectPart) < 100) {
+					return $indent . $matches[1] . ' ' . $selectPart . $matches[3];
+				}
+
+				$formatted = $indent . $matches[1] . "\n";
+				$formatted .= $subIndent . implode(",\n" . $subIndent, $columns);
+
+				return $formatted . $matches[3];
+			},
+			$sql
+		);
+
+		$keywords = [
+			'FROM', 'WHERE', 'ORDER BY', 'GROUP BY', 'HAVING', 'LIMIT', 'OFFSET',
+			'LEFT JOIN', 'RIGHT JOIN', 'INNER JOIN', 'OUTER JOIN', 'CROSS JOIN',
+		];
+
+		foreach ($keywords as $keyword) {
+			$sql = preg_replace(
+				'/\s+' . preg_quote($keyword, '/') . '\s+/i',
+				"\n" . $indent . $keyword . ' ',
+				$sql
+			);
+		}
+
+		$sql = preg_replace_callback(
+			'/(\s+)(AND|OR)(\s+)(?![^()]*\))/i',
+			function ($matches) use ($subIndent) {
+				$operator = strtoupper($matches[2]);
+
+				return "\n" . $subIndent . $operator . ' ';
+			},
+			$sql
+		);
+
+		$sql = preg_replace_callback(
+			'/((?:LEFT|RIGHT|INNER|OUTER|CROSS)?\s*JOIN\s+.*?\s+ON\s+.*?)(\n\s+AND\s+)/is',
+			fn($matches) => $matches[1] . "\n" . $subIndent . 'AND ',
+			$sql
+		);
+
 		return trim($sql);
+	}
+
+	protected function formatSubqueries(string $sql, int $indentLevel): string
+	{
+		$offset = 0;
+
+		while (preg_match('/\(\s*(SELECT\s+.*?)\s*\)/is', $sql, $matches, PREG_OFFSET_CAPTURE, $offset)) {
+			$fullMatch = $matches[0][0];
+			$subquery  = $matches[1][0];
+			$position  = intval($matches[0][1]);
+
+			$formatted = $this->formatSql($subquery, $indentLevel + 2);
+
+			$subIndent   = str_repeat('    ', $indentLevel + 1);
+			$endIndent   = str_repeat('    ', $indentLevel + 1);
+			$replacement = "(\n" . $subIndent . str_replace("\n", "\n" . $subIndent, $formatted) . "\n" . $endIndent . ")";
+
+			$sql = substr_replace($sql, $replacement, $position, strlen($fullMatch));
+
+			$offset = $position + strlen($replacement);
+		}
+
+		return $sql;
+	}
+
+	protected function splitColumnsSmart(string $selectPart): array
+	{
+		$columns       = [];
+		$currentColumn = '';
+		$parenCount    = 0;
+		$inString      = false;
+		$stringChar    = '';
+
+		for ($i = 0; $i < strlen($selectPart); $i++) {
+			$char = $selectPart[$i];
+
+			if (($char === "'" || $char === '"') && ($i === 0 || $selectPart[$i - 1] !== '\\')) {
+				if (! $inString) {
+					$inString = true;
+					$stringChar = $char;
+				} elseif ($char === $stringChar) {
+					$inString = false;
+				}
+			}
+
+			if (! $inString) {
+				if ($char === '(') {
+					$parenCount++;
+				} elseif ($char === ')') {
+					$parenCount--;
+				}
+			}
+
+			if ($char === ',' && $parenCount === 0 && ! $inString) {
+				$columns[] = trim($currentColumn);
+				$currentColumn = '';
+			} else {
+				$currentColumn .= $char;
+			}
+		}
+
+		if (! empty($currentColumn)) {
+			$columns[] = trim($currentColumn);
+		}
+
+		return $columns;
 	}
 }

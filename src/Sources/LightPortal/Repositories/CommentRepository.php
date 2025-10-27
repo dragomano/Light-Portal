@@ -15,7 +15,6 @@ namespace LightPortal\Repositories;
 use Bugo\Compat\Config;
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
-use Bugo\Compat\Utils;
 use Exception;
 use Laminas\Db\Sql\Predicate\Expression;
 use LightPortal\Enums\NotifyType;
@@ -144,13 +143,12 @@ final class CommentRepository extends AbstractRepository implements CommentRepos
 			'fields'  => ['content'],
 		]);
 
+		$select->where($this->getTranslationFilter('com', 'id', ['content'], 'comment'));
+
 		$result = $this->sql->execute($select);
 
 		$comments = [];
 		foreach ($result as $row) {
-			if ($row['content'] === '')
-				continue;
-
 			Lang::censorText($row['content']);
 
 			$comments[$row['id']] = [
@@ -190,9 +188,10 @@ final class CommentRepository extends AbstractRepository implements CommentRepos
 		$item = (int) $result->getGeneratedValue();
 
 		if ($item && ! empty($data['message'])) {
-			Utils::$context['lp_comment']['content'] = $data['message'];
+			$data['content'] = $data['message'];
+			$data['id'] = $item;
 
-			$this->saveTranslations($item);
+			$this->saveTranslations($data);
 		}
 
 		return $item;
@@ -210,14 +209,16 @@ final class CommentRepository extends AbstractRepository implements CommentRepos
 		$this->sql->execute($update);
 
 		if (! empty($data['message'])) {
-			Utils::$context['lp_comment']['content'] = $data['message'];
+			$data['content'] = $data['message'];
 
-			$this->saveTranslations($data['id'], true);
+			$this->saveTranslations($data, true);
 		}
 	}
 
-	public function remove(array $items): void
+	public function remove(mixed $items): void
 	{
+		$items = (array) $items;
+
 		if ($items === [])
 			return;
 

@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 20.10.25
+ * @version 27.10.25
  */
 
 namespace LightPortal\Plugins\SimpleChat;
@@ -142,7 +142,7 @@ class Chat
 			];
 		}
 
-		if ($this->parameters['show_avatars'] && $messages[$blockId]) {
+		if ($this->parameters['show_avatars'] && isset($messages[$blockId])) {
 			$messages[$blockId] = Avatar::getWithItems($messages[$blockId]);
 		}
 

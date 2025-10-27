@@ -168,11 +168,14 @@ final class Comment implements ActionInterface
 
 			$this->mentionMembers($verifiedMembers, $options);
 
-			empty($parentId)
-				? $this->notifier->notify(NotifyType::NEW_COMMENT->name(), AlertAction::PAGE_COMMENT->name(), $options)
-				: $this->notifier->notify(NotifyType::NEW_REPLY->name(), AlertAction::PAGE_COMMENT_REPLY->name(), $options);
+			[$type, $action] = match (empty($parentId)) {
+				true  => [NotifyType::NEW_COMMENT, AlertAction::PAGE_COMMENT],
+				false => [NotifyType::NEW_REPLY, AlertAction::PAGE_COMMENT_REPLY],
+			};
 
-			$this->cache()->forget('page_' . $this->pageSlug . '_comments_u' . User::$me->id . '_' . User::$me->language);
+			$this->notifier->notify($type->name(), $action->name(), $options);
+
+			$this->langCache('page_' . $this->pageSlug . '_comments')->forget();
 		}
 
 		http_response_code(201);
@@ -182,8 +185,9 @@ final class Comment implements ActionInterface
 
 	private function getMembersToMention(string &$message): array
 	{
-		if (! Setting::canMention())
+		if (! Setting::canMention()) {
 			return [];
+		}
 
 		$members = Mentions::getMentionedMembers($message);
 		$message = Mentions::getBody($message, $members);
@@ -213,7 +217,11 @@ final class Comment implements ActionInterface
 		foreach ($verifiedMembers as $member) {
 			$options['author_id'] = (int) $member['id'];
 
-			$this->notifier->notify(NotifyType::NEW_MENTION->name(), AlertAction::PAGE_COMMENT_MENTION->name(), $options);
+			$this->notifier->notify(
+				NotifyType::NEW_MENTION->name(),
+				AlertAction::PAGE_COMMENT_MENTION->name(),
+				$options
+			);
 		}
 	}
 
@@ -248,7 +256,7 @@ final class Comment implements ActionInterface
 			'message' => $message,
 		];
 
-		$this->cache()->forget('page_' . $this->pageSlug . '_comments_u' . User::$me->id . '_' . User::$me->language);
+		$this->langCache('page_' . $this->pageSlug . '_comments')->forget();
 
 		$this->response()->exit($result);
 	}
@@ -261,9 +269,9 @@ final class Comment implements ActionInterface
 			$this->response()->exit(['success' => false]);
 		}
 
-		$this->repository->remove([$item]);
+		$this->repository->remove($item);
 
-		$this->cache()->forget('page_' . $this->pageSlug . '_comments_u' . User::$me->id . '_' . User::$me->language);
+		$this->langCache('page_' . $this->pageSlug . '_comments')->forget();
 	}
 
 	private function getTree(array $data): array

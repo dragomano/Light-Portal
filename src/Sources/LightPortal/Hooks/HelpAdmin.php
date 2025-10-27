@@ -14,6 +14,9 @@ namespace LightPortal\Hooks;
 
 use Bugo\Compat\Lang;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 class HelpAdmin
 {
 	public function __invoke(): void

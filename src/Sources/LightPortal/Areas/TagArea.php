@@ -135,9 +135,9 @@ final readonly class TagArea implements AreaInterface
 		Language::prepareList();
 
 		if ($this->request()->has('remove')) {
-			$this->repository->remove([$item]);
+			$this->repository->remove($item);
 
-			$this->cache()->flush();
+			$this->langCache('active_tags')->forget();
 
 			$this->response()->redirect('action=admin;area=lp_tags');
 		}
@@ -163,12 +163,12 @@ final readonly class TagArea implements AreaInterface
 		$data = $this->request()->json();
 
 		match (true) {
-			isset($data['delete_item']) => $this->repository->remove([(int) $data['delete_item']]),
-			isset($data['toggle_item']) => $this->repository->toggleStatus([(int) $data['toggle_item']]),
+			isset($data['delete_item']) => $this->repository->remove($data['delete_item']),
+			isset($data['toggle_item']) => $this->repository->toggleStatus($data['toggle_item']),
 			default => null,
 		};
 
-		$this->cache()->flush();
+		$this->langCache('active_tags')->forget();
 
 		exit;
 	}

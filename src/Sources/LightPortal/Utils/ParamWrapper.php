@@ -14,6 +14,9 @@ namespace LightPortal\Utils;
 
 use ArrayAccess;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 class ParamWrapper implements ArrayAccess
 {
 	public function __construct(private array $storage = []) {}

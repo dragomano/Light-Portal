@@ -111,14 +111,11 @@ final readonly class Page implements ActionInterface
 
 	public function getDataBySlug(string $slug): array
 	{
-		if (empty($slug))
+		if (empty($slug)) {
 			return [];
+		}
 
-		$data = $this->langCache('page_' . $slug)->setFallback(fn() => $this->repository->getData($slug));
-
-		$this->repository->prepareData($data);
-
-		return $data;
+		return $this->langCache('page_' . $slug)->setFallback(fn() => $this->repository->getData($slug));
 	}
 
 	private function handleEmptySlug(): void
@@ -302,7 +299,8 @@ final readonly class Page implements ActionInterface
 		);
 		$withinCategory = $this->request()->has('from_category') ? true : $withinCategory;
 
-		[$prevTitle, $prevSlug, $nextTitle, $nextSlug] = $this->repository->getPrevNextLinks($page, $withinCategory);
+		[$prevTitle, $prevSlug, $nextTitle, $nextSlug] = $this->langCache('page_' . $page['slug'] . '_prev_next')
+			->setFallback(fn() => $this->repository->getPrevNextLinks($page, $withinCategory));
 
 		$suffix = $withinCategory ? ';from_category' : '';
 
@@ -329,7 +327,8 @@ final readonly class Page implements ActionInterface
 		if (empty(Utils::$context['lp_page']['options']['show_related_pages']))
 			return;
 
-		Utils::$context['lp_page']['related_pages'] = $this->repository->getRelatedPages($page);
+		Utils::$context['lp_page']['related_pages'] = $this->langCache('page_' . $page['slug'] . '_related')
+			->setFallback(fn() => $this->repository->getRelatedPages($page));
 	}
 
 	private function prepareComments(): void
@@ -354,9 +353,8 @@ final readonly class Page implements ActionInterface
 
 	private function handleApi(): void
 	{
-		if ($this->request()->hasNot('fetch_data')) {
+		if ($this->request()->hasNot('fetch_data'))
 			return;
-		}
 
 		$this->response()->exit($this->preparedData());
 	}

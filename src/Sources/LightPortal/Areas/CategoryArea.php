@@ -150,9 +150,9 @@ final readonly class CategoryArea implements AreaInterface
 		Language::prepareList();
 
 		if ($this->request()->has('remove')) {
-			$this->repository->remove([$item]);
+			$this->repository->remove($item);
 
-			$this->cache()->forget('all_categories');
+			$this->langCache('active_categories')->forget();
 
 			$this->response()->redirect('action=admin;area=lp_categories');
 		}
@@ -178,13 +178,13 @@ final readonly class CategoryArea implements AreaInterface
 		$data = $this->request()->json();
 
 		match (true) {
-			isset($data['delete_item']) => $this->repository->remove([(int) $data['delete_item']]),
-			isset($data['toggle_item']) => $this->repository->toggleStatus([(int) $data['toggle_item']]),
+			isset($data['delete_item']) => $this->repository->remove($data['delete_item']),
+			isset($data['toggle_item']) => $this->repository->toggleStatus($data['toggle_item']),
 			isset($data['update_priority']) => $this->repository->updatePriority($data['update_priority']),
 			default => null,
 		};
 
-		$this->cache()->flush();
+		$this->langCache('active_categories')->forget();
 
 		exit;
 	}

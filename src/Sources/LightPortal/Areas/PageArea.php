@@ -242,11 +242,7 @@ final class PageArea implements AreaInterface
 			'description' => Lang::$txt['lp_pages_edit_description'],
 		];
 
-		$data = $this->repository->getData($item);
-
-		$this->repository->prepareData($data);
-
-		Utils::$context['lp_current_page'] = $data;
+		Utils::$context['lp_current_page'] = $this->repository->getData($item);
 
 		if (empty(Utils::$context['lp_current_page'])) {
 			ErrorHandler::fatalLang('lp_page_not_found', false, status: 404);
@@ -265,7 +261,7 @@ final class PageArea implements AreaInterface
 				]);
 			}
 
-			$this->repository->remove([$item]);
+			$this->repository->remove($item);
 
 			$this->cache()->flush();
 
@@ -288,10 +284,10 @@ final class PageArea implements AreaInterface
 		$data = $this->request()->json();
 
 		match (true) {
-			isset($data['delete_item']) => $this->repository->remove([(int) $data['delete_item']]),
-			isset($data['toggle_item']) => $this->repository->toggleStatus([(int) $data['toggle_item']]),
-			isset($data['restore_item']) => $this->repository->restore([(int) $data['restore_item']]),
-			isset($data['remove_forever']) => $this->repository->removePermanently([(int) $data['remove_forever']]),
+			isset($data['delete_item']) => $this->repository->remove($data['delete_item']),
+			isset($data['toggle_item']) => $this->repository->toggleStatus($data['toggle_item']),
+			isset($data['restore_item']) => $this->repository->restore($data['restore_item']),
+			isset($data['remove_forever']) => $this->repository->removePermanently($data['remove_forever']),
 			default => null,
 		};
 

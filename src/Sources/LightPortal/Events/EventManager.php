@@ -18,6 +18,9 @@ use LightPortal\Plugins\Event;
 use LightPortal\Plugins\PluginInterface;
 use Doctrine\Common\EventManager as DoctrineEventManager;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 class EventManager
 {
 	private readonly DoctrineEventManager $eventManager;

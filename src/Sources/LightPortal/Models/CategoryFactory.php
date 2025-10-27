@@ -14,6 +14,9 @@ namespace LightPortal\Models;
 
 use LightPortal\Utils\Str;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 class CategoryFactory extends AbstractFactory
 {
 	protected string $modelClass = CategoryModel::class;

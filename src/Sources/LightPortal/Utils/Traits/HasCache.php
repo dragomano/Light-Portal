@@ -36,20 +36,12 @@ trait HasCache
 
 	protected function appendUserSuffix(?string $key): ?string
 	{
-		if ($key) {
-			$key .= $this->getUserSuffix();
-		}
-
-		return $key;
+		return $key ? $key . $this->getUserSuffix() : null;
 	}
 
 	protected function appendLangSuffix(?string $key): ?string
 	{
-		if ($key) {
-			$key .= $this->getLangSuffix();
-		}
-
-		return $key;
+		return $key ? $key . $this->getLangSuffix() : null;
 	}
 
 	protected function getUserSuffix(): string

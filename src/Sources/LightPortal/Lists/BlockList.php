@@ -16,19 +16,26 @@ namespace LightPortal\Lists;
 
 use LightPortal\Repositories\BlockRepositoryInterface;
 use LightPortal\Utils\Setting;
+use LightPortal\Utils\Traits\HasCache;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 readonly class BlockList implements ListInterface
 {
+	use HasCache;
+
 	public function __construct(private BlockRepositoryInterface $repository) {}
 
 	public function __invoke(): array
 	{
-		if (Setting::hideBlocksInACP())
+		if (Setting::hideBlocksInACP()) {
 			return [];
+		}
 
-		return $this->repository->getAll(0, 0, 'placement DESC, priority', 'list');
+		return $this->langCache('active_blocks')
+			->setFallback(
+				fn() => $this->repository->getAll(0, 0, 'placement DESC, priority', 'list')
+			);
 	}
 }

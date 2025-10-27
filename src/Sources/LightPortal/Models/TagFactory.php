@@ -12,6 +12,9 @@
 
 namespace LightPortal\Models;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 class TagFactory extends AbstractFactory
 {
 	protected string $modelClass = TagModel::class;

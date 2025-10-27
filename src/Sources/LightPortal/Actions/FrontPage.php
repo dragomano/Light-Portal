@@ -22,12 +22,10 @@ use LightPortal\Articles\BoardArticle;
 use LightPortal\Articles\ChosenPageArticle;
 use LightPortal\Articles\ChosenTopicArticle;
 use LightPortal\Articles\PageArticle;
-use LightPortal\Articles\PageArticleInterface;
 use LightPortal\Articles\TopicArticle;
 use LightPortal\Enums\PortalHook;
 use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Renderers\RendererInterface;
-use LightPortal\Utils\DateTime;
 use LightPortal\Utils\Icon;
 use LightPortal\Utils\Setting;
 use LightPortal\Utils\Str;
@@ -42,6 +40,9 @@ use Ramsey\Collection\CollectionInterface;
 use function LightPortal\app;
 
 use const LP_BASE_URL;
+
+if (! defined('SMF'))
+	die('No direct access...');
 
 class FrontPage implements ActionInterface
 {
@@ -128,13 +129,9 @@ class FrontPage implements ActionInterface
 
 		Utils::$context['total_articles'] = $itemsCount;
 
-		$articles = $this->postProcess($articles);
-
 		$this->preLoadImages($articles);
 
-		Utils::$context['page_index'] = new PageIndex(
-			LP_BASE_URL, $start, $itemsCount, $limit
-		);
+		Utils::$context['page_index'] = new PageIndex(LP_BASE_URL, $start, $itemsCount, $limit);
 
 		Utils::$context['start'] = $this->request()->get('start');
 
@@ -236,36 +233,6 @@ class FrontPage implements ActionInterface
 		$start = (int) abs($start);
 	}
 
-	private function postProcess(CollectionInterface $articles): CollectionInterface
-	{
-		$articles = $articles->map(function ($item) {
-			if (Utils::$context['user']['is_guest']) {
-				$item['is_new'] = false;
-				$item['views']['num'] = 0;
-			}
-
-			if (isset($item['date'])) {
-				$item['datetime'] = date('Y-m-d', $item['date']);
-				$item['raw_date'] = $item['date'];
-				$item['date']     = DateTime::relative($item['date']);
-			}
-
-			if (! empty($item['views']['num'])) {
-				$item['views']['num'] = $this->getFriendlyNumber($item['views']['num']);
-			}
-
-			return $item;
-		});
-
-		if ($this->article instanceof PageArticleInterface) {
-			$pages = $articles->toArray();
-			$this->article->prepareTags($pages);
-			$articles = new Collection('array', $pages);
-		}
-
-		return $articles;
-	}
-
 	private function preLoadImages(CollectionInterface $articles): void
 	{
 		$images = $articles->column('image');
@@ -277,24 +244,6 @@ class FrontPage implements ActionInterface
 				'href' => $image,
 			]);
 		}
-	}
-
-	private function getFriendlyNumber(int $value = 0): string
-	{
-		if ($value < 10000)
-			return (string) $value;
-
-		$k   = 10 ** 3;
-		$mil = 10 ** 6;
-		$bil = 10 ** 9;
-
-		if ($value >= $bil) {
-			return number_format($value / $bil, 1) . 'B';
-		} elseif ($value >= $mil) {
-			return number_format($value / $mil, 1) . 'M';
-		}
-
-		return number_format($value / $k, 1) . 'K';
 	}
 
 	private function simplePaginate(string $url, int $total, int $limit): string

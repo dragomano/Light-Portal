@@ -15,6 +15,7 @@ namespace LightPortal\Routes;
 use Bugo\Compat\Routable;
 use LightPortal\Enums\PortalSubAction;
 use LightPortal\Utils\CacheInterface;
+use Throwable;
 
 use function LightPortal\app;
 
@@ -24,7 +25,11 @@ class Portal implements Routable
 {
 	public static function getDataFromCache(string $type = 'categories'): array
 	{
-		return app(CacheInterface::class)->get('lp_sef_' . $type) ?: [];
+		try {
+			return app(CacheInterface::class)->get('lp_sef_' . $type) ?: [];
+		} catch (Throwable) {
+			return [];
+		}
 	}
 
 	public static function getCachedName(string $id, string $type = 'categories'): string

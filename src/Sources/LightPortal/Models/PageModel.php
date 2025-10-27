@@ -19,6 +19,9 @@ use LightPortal\Enums\Permission;
 use LightPortal\Enums\Status;
 use LightPortal\Utils\Setting;
 
+if (! defined('SMF'))
+	die('No direct access...');
+
 class PageModel extends AbstractModel
 {
 	public int $id;

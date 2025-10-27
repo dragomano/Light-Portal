@@ -144,8 +144,10 @@ final class TagRepository extends AbstractRepository implements TagRepositoryInt
 		}
 	}
 
-	public function remove(array $items): void
+	public function remove(mixed $items): void
 	{
+		$items = (array) $items;
+
 		if ($items === [])
 			return;
 
@@ -189,7 +191,9 @@ final class TagRepository extends AbstractRepository implements TagRepositoryInt
 				return 0;
 			}
 
-			$this->saveTranslations($item);
+			$data['id'] = $item;
+
+			$this->saveTranslations($data);
 
 			$this->transaction->commit();
 
@@ -218,7 +222,7 @@ final class TagRepository extends AbstractRepository implements TagRepositoryInt
 
 			$this->sql->execute($update);
 
-			$this->saveTranslations($item, true);
+			$this->saveTranslations($data, true);
 
 			$this->transaction->commit();
 		} catch (Exception $e) {
