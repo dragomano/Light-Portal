@@ -19,10 +19,6 @@ beforeEach(function () {
     Utils::$context['lp_page']['entry_type'] = EntryType::DEFAULT->name();
 });
 
-afterEach(function () {
-    Mockery::close();
-});
-
 it('implements SelectInterface', function () {
     $select = new EntryTypeSelect();
 

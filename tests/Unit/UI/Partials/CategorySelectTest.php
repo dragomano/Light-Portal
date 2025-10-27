@@ -7,18 +7,21 @@ use LightPortal\Lists\CategoryList;
 use LightPortal\UI\Partials\CategorySelect;
 use LightPortal\UI\Partials\SelectInterface;
 use LightPortal\UI\Partials\SelectRenderer;
+use LightPortal\Utils\CacheInterface;
 use Tests\AppMockRegistry;
-
 use Tests\ReflectionAccessor;
+
 use function LightPortal\app;
 
 beforeEach(function () {
     Lang::$txt['lp_frontpage_categories_select'] = 'Select categories';
     Lang::$txt['lp_no_category'] = 'No category';
-});
 
-afterEach(function () {
-    Mockery::close();
+    // Mock CacheInterface to execute fallback function
+    $cacheMock = mock(CacheInterface::class);
+    $cacheMock->shouldReceive('withKey')->andReturn($cacheMock);
+    $cacheMock->shouldReceive('setFallback')->andReturnUsing(fn ($fallback) => $fallback());
+    AppMockRegistry::set(CacheInterface::class, $cacheMock);
 });
 
 it('implements SelectInterface', function () {

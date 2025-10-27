@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Laminas\Db\Adapter\Adapter;
-use Laminas\Db\Adapter\Driver\ResultInterface;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\SqlInterface;
@@ -43,10 +42,6 @@ describe('AbstractTableCreator', function () {
         };
 
         $this->creator = new (get_class($this->testClass))($this->sql);
-    });
-
-    afterEach(function () {
-        Mockery::close();
     });
 
     dataset('insert scenarios', [

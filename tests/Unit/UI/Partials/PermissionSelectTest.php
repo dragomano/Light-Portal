@@ -22,10 +22,6 @@ beforeEach(function () {
     Utils::$context['lp_page']['permissions'] = 0;
 });
 
-afterEach(function () {
-    Mockery::close();
-});
-
 it('implements SelectInterface', function () {
     $select = new PermissionSelect();
 

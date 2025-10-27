@@ -68,10 +68,6 @@ describe('Installer', function () {
         $reflection->setProtectedProperty('sql', $this->portalSqlMock);
     });
 
-    afterEach(function () {
-        Mockery::close();
-    });
-
     dataset('table modes', ['install', 'uninstall']);
 
     it('constructs with null parameters', function () {

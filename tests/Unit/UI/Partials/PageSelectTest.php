@@ -7,18 +7,21 @@ use LightPortal\Lists\PageList;
 use LightPortal\UI\Partials\PageSelect;
 use LightPortal\UI\Partials\SelectInterface;
 use LightPortal\UI\Partials\SelectRenderer;
+use LightPortal\Utils\CacheInterface;
 use Tests\AppMockRegistry;
-
 use Tests\ReflectionAccessor;
+
 use function LightPortal\app;
 
 beforeEach(function () {
     Lang::$txt['lp_frontpage_pages_select'] = 'Select pages';
     Lang::$txt['lp_frontpage_pages_no_items'] = 'No pages';
-});
 
-afterEach(function () {
-    Mockery::close();
+    // Mock CacheInterface to execute fallback function
+    $cacheMock = mock(CacheInterface::class);
+    $cacheMock->shouldReceive('withKey')->andReturn($cacheMock);
+    $cacheMock->shouldReceive('setFallback')->andReturnUsing(fn ($fallback) => $fallback());
+    AppMockRegistry::set(CacheInterface::class, $cacheMock);
 });
 
 it('implements SelectInterface', function () {

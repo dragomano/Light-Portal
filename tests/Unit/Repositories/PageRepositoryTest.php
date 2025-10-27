@@ -68,6 +68,7 @@ beforeEach(function() {
     $this->transaction = $transactionMock;
 
     $dispatcherMock = mock(EventDispatcherInterface::class);
+    $dispatcherMock->shouldReceive('dispatch')->andReturnNull()->byDefault();
     $this->dispatcher = $dispatcherMock;
 
     $notifierMock = mock(NotifierInterface::class);

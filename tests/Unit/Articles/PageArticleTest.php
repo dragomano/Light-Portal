@@ -64,11 +64,3 @@ it('delegates getTotalCount to service', function () {
 
     expect($count)->toBe(0);
 });
-
-it('delegates prepareTags to service', function () {
-    $pages = [];
-
-    $this->article->prepareTags($pages);
-
-    expect($pages)->toBeArray();
-});

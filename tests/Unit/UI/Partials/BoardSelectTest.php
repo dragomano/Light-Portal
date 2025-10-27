@@ -15,21 +15,6 @@ beforeEach(function () {
     Lang::$txt['lp_frontpage_boards_select'] = 'Select boards';
 
     Config::$modSettings['recycle_board'] = null;
-
-    $mockMessageIndex = mock('overload:' . MessageIndex::class);
-    $mockMessageIndex->shouldReceive('getBoardList')->andReturn([
-        [
-            'name' => 'Category 1',
-            'boards' => [
-                1 => ['name' => 'Board 1'],
-                2 => ['name' => 'Board 2'],
-            ]
-        ]
-    ]);
-});
-
-afterEach(function () {
-    Mockery::close();
 });
 
 it('implements SelectInterface', function () {
@@ -131,7 +116,15 @@ it('returns config array', function () {
 });
 
 it('returns data array', function () {
-    $select = new BoardSelect();
+    $select = new BoardSelect(['data' => [
+        [
+            'name' => 'Category 1',
+            'boards' => [
+                1 => ['name' => 'Board 1'],
+                2 => ['name' => 'Board 2'],
+            ]
+        ]
+    ]]);
 
     $data = $select->getData();
 

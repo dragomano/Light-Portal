@@ -24,10 +24,6 @@ beforeEach(function () {
     Utils::$context['lp_block']['areas'] = 'home,forum';
 });
 
-afterEach(function () {
-    Mockery::close();
-});
-
 it('implements SelectInterface', function () {
     $select = new AreaSelect();
 

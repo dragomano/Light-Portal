@@ -17,10 +17,6 @@ beforeEach(function () {
     Lang::$txt['no'] = 'No';
 });
 
-afterEach(function () {
-    Mockery::close();
-});
-
 it('implements SelectInterface', function () {
     $select = new ActionSelect();
 

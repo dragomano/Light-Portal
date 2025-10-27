@@ -6,7 +6,6 @@ use LightPortal\DataHandlers\Exports\CategoryExport;
 use LightPortal\Repositories\CategoryRepositoryInterface;
 use LightPortal\Utils\ErrorHandlerInterface;
 use LightPortal\Utils\FilesystemInterface;
-use Tests\AppMockRegistry;
 use Tests\DataHandlerTestTrait;
 use Tests\Fixtures;
 
@@ -30,11 +29,6 @@ beforeEach(function () {
 
     $this->requestMock = $mocks['request'];
     $this->sqlMock = $this->createDatabaseMock();
-});
-
-afterEach(function () {
-    AppMockRegistry::clear();
-    Mockery::close();
 });
 
 dataset('category export scenarios', function () {

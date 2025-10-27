@@ -20,10 +20,6 @@ beforeEach(function () {
     Utils::$context['lp_block']['placement'] = 'header';
 });
 
-afterEach(function () {
-    Mockery::close();
-});
-
 it('implements SelectInterface', function () {
     $select = new PlacementSelect();
 

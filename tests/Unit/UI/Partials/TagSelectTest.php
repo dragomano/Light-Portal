@@ -10,9 +10,10 @@ use LightPortal\Repositories\TagRepositoryInterface;
 use LightPortal\UI\Partials\TagSelect;
 use LightPortal\UI\Partials\SelectInterface;
 use LightPortal\UI\Partials\SelectRenderer;
+use LightPortal\Utils\CacheInterface;
 use Tests\AppMockRegistry;
-
 use Tests\ReflectionAccessor;
+
 use function LightPortal\app;
 
 beforeEach(function () {
@@ -25,10 +26,12 @@ beforeEach(function () {
     ];
 
     Config::$modSettings['lp_page_maximum_tags'] = 5;
-});
 
-afterEach(function () {
-    Mockery::close();
+    // Mock CacheInterface to execute fallback function
+    $cacheMock = mock(CacheInterface::class);
+    $cacheMock->shouldReceive('withKey')->andReturn($cacheMock);
+    $cacheMock->shouldReceive('setFallback')->andReturnUsing(fn ($fallback) => $fallback());
+    AppMockRegistry::set(CacheInterface::class, $cacheMock);
 });
 
 it('implements SelectInterface', function () {
@@ -189,7 +192,7 @@ dataset('tag data structures', [
         ],
     ],
     'empty tag list' => [
-        'tagList' => [],
+        'tagList'  => [],
         'expected' => [],
     ],
     'tags with empty titles' => [

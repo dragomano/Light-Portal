@@ -54,11 +54,6 @@ beforeEach(function () {
     AppMockRegistry::set(RequestInterface::class, $this->requestMock);
 });
 
-afterEach(function () {
-    AppMockRegistry::clear();
-    Mockery::close();
-});
-
 it('returns correct attribute fields', function () {
     $attributeFields = $this->export->shouldAllowMockingProtectedMethods()->getAttributeFields();
 

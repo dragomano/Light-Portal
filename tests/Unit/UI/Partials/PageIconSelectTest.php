@@ -14,10 +14,6 @@ beforeEach(function () {
     Utils::$context['lp_page']['options']['show_in_menu'] = true;
 });
 
-afterEach(function () {
-    Mockery::close();
-});
-
 it('implements SelectInterface', function () {
     $select = new PageIconSelect();
 

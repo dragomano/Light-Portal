@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Bugo\Compat\Config;
+use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use LightPortal\Articles\Queries\PageArticleQuery;
 use LightPortal\Articles\Services\PageArticleService;
@@ -320,7 +321,7 @@ dataset('guest page rules data', [
             'id'        => 4,
             'title'     => 'New Guest Page',
             'link'      => 'https://example.com/index.php?page=new-guest-page',
-            'is_new'    => true,
+            'is_new'    => false,
             'image'     => '',
             'can_edit'  => false,
             'edit_link' => 'https://example.com/index.php?action=admin;area=lp_pages;sa=edit;id=4',
@@ -351,7 +352,7 @@ dataset('guest page rules data', [
             'id'        => 5,
             'title'     => 'Another New Guest Page',
             'link'      => 'https://example.com/index.php?page=another-new-guest-page',
-            'is_new'    => true,
+            'is_new'    => false,
             'image'     => '',
             'can_edit'  => false,
             'edit_link' => 'https://example.com/index.php?action=admin;area=lp_pages;sa=edit;id=5',
@@ -492,6 +493,8 @@ beforeEach(function() {
     Config::$modSettings['lp_show_teaser'] = 1;
     Config::$scripturl = 'https://example.com/index.php';
 
+    Lang::$txt['lang_locale'] = 'ru_RU';
+
     $this->queryMock = mock(PageArticleQuery::class);
     $this->queryMock->shouldReceive('getSorting')->andReturn('created;desc');
 
@@ -563,6 +566,8 @@ it('returns data iterator', function () {
     $this->queryMock->shouldReceive('prepareParams')->with(0, 10);
     $this->queryMock->shouldReceive('getRawData')->andReturn($rows);
 
+    $this->pageRepository->shouldReceive('fetchTags')->with([1])->andReturn([]);
+
     $data = iterator_to_array($this->service->getData(0, 10, 'created;desc'));
 
     expect($data)->toBeArray()->and($data)->toHaveKey(1);
@@ -612,7 +617,8 @@ it('prepares tags for pages', function () {
             yield 2 => $tag2;
         })());
 
-    $this->service->prepareTags($pages);
+    $accessor = new ReflectionAccessor($this->service);
+    $accessor->callProtectedMethod('enrichArticles', [&$pages]);
 
     expect($pages[1]['tags'])->toHaveCount(2)
         ->and($pages[1]['tags'])->toContain($tag1)
@@ -694,7 +700,7 @@ it('returns rules array from getRules method', function () {
         ->and($views)->toHaveKey('num')
         ->and($views)->toHaveKey('title')
         ->and($views)->toHaveKey('after')
-        ->and($views['num'])->toBe(50);
+        ->and($views['num'])->toBe('50');
 });
 
 it('returns date based on sorting type for pages', function () {
@@ -724,7 +730,7 @@ it('returns date based on sorting type for pages', function () {
     $serviceCreated = new PageArticleService($queryMockCreated, $this->events, $this->pageRepository);
     $accessorCreated = new ReflectionAccessor($serviceCreated);
     $rulesCreated = $accessorCreated->callProtectedMethod('getRules', [$row]);
-    expect($rulesCreated['date']($row))->toBe(1000);
+    expect($rulesCreated['date']($row))->toBe('1 января 1970 г.');
 
     // Test with updated sorting - create separate service instance for this test
     $queryMockUpdated = mock(PageArticleQuery::class);
@@ -732,7 +738,7 @@ it('returns date based on sorting type for pages', function () {
     $serviceUpdated = new PageArticleService($queryMockUpdated, $this->events, $this->pageRepository);
     $accessorUpdated = new ReflectionAccessor($serviceUpdated);
     $rulesUpdated = $accessorUpdated->callProtectedMethod('getRules', [$row]);
-    expect($rulesUpdated['date']($row))->toBe(2000);
+    expect($rulesUpdated['date']($row))->toBe('1 января 1970 г.');
 });
 
 it('returns unique page fields (created and updated)', function () {

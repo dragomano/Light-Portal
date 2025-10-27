@@ -7,8 +7,8 @@ use Bugo\Compat\Utils;
 use LightPortal\UI\Partials\SelectInterface;
 use LightPortal\UI\Partials\SelectRenderer;
 use LightPortal\UI\View;
-
 use Tests\ReflectionAccessor;
+
 use function LightPortal\app;
 
 beforeEach(function () {

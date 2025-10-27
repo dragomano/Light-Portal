@@ -5,8 +5,6 @@ declare(strict_types=1);
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use LightPortal\Lists\CategoryList;
-use LightPortal\Lists\ListInterface;
 use LightPortal\UI\Partials\ActionSelect;
 use LightPortal\UI\Partials\AreaSelect;
 use LightPortal\UI\Partials\BoardSelect;
@@ -14,6 +12,7 @@ use LightPortal\UI\Partials\CategorySelect;
 use LightPortal\UI\Partials\ContentClassSelect;
 use LightPortal\UI\Partials\SelectFactory;
 use LightPortal\UI\Partials\SelectInterface;
+use LightPortal\Utils\CacheInterface;
 use LightPortal\Utils\MessageIndex;
 use Tests\AppMockRegistry;
 
@@ -22,6 +21,7 @@ beforeEach(function () {
     Lang::$txt['lp_block_areas_subtext'] = 'Select areas';
     Lang::$txt['lp_frontpage_topics_select'] = 'Select topics';
     Lang::$txt['lp_frontpage_topics_no_items'] = 'No topics';
+    Lang::$txt['lp_no_category'] = 'Uncategorized';
 
     Utils::$context['user'] = ['is_admin' => true];
     Utils::$context['lp_block'] = ['areas' => 'home,forum'];
@@ -29,12 +29,14 @@ beforeEach(function () {
 
     Config::$modSettings['recycle_board'] = null;
 
-    $messageIndexMock = mock('alias:' . MessageIndex::class);
+    $messageIndexMock = mock(MessageIndex::class)->makePartial();
     $messageIndexMock->shouldReceive('getBoardList')->andReturn([['name' => 'Test Category', 'boards' => [1 => ['name' => 'Test Board']]]]);
-});
 
-afterEach(function () {
-    Mockery::close();
+    // Mock CacheInterface to return array instead of null for CategoryList
+    $cacheMock = mock(CacheInterface::class);
+    $cacheMock->shouldReceive('withKey')->andReturn($cacheMock);
+    $cacheMock->shouldReceive('setFallback')->andReturn([]);
+    AppMockRegistry::set(CacheInterface::class, $cacheMock);
 });
 
 it('creates action select', function () {

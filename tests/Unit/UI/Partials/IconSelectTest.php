@@ -14,10 +14,6 @@ beforeEach(function () {
     Utils::$context['lp_block']['type'] = 'block';
 });
 
-afterEach(function () {
-    Mockery::close();
-});
-
 it('implements SelectInterface', function () {
     $select = new IconSelect();
 
