@@ -13,25 +13,23 @@ function template_debug_above(): void
 	if (empty(Config::$modSettings['lp_show_portal_queries']) || BrowserDetector::isBrowser('is_mobile'))
 		return;
 
-	$sql = app(PortalSqlInterface::class);
-	$profiler = $sql->getAdapter()->getProfiler();
+	$sql          = app(PortalSqlInterface::class);
+	$profiler     = $sql->getAdapter()->getProfiler();
 	$totalQueries = count($profiler->getProfiles());
 
-	if ($totalQueries === 0) {
+	if ($totalQueries === 0)
 		return;
-	}
 
 	echo '
 	<div class="cat_bar">
 		<h3 class="catbg">', sprintf(Lang::$txt['debug_queries_used'], $totalQueries), '</h3>
 	</div>
-	<table class="table_grid">
-		<tbody>';
+	<div class="debug-queries-container roundframe">';
 
 	$index = 1;
 	foreach ($profiler->getProfiles() as $profile) {
-		$sqlText = htmlspecialchars($profile['sql']);
-		$time = number_format($profile['elapse'], 6);
+		$sqlText  = htmlspecialchars($profile['sql']);
+		$time     = number_format($profile['elapse'], 6);
 		$location = 'unknown';
 
 		if (isset($profile['backtrace']) && $profile['backtrace']) {
@@ -44,22 +42,24 @@ function template_debug_above(): void
 		}
 
 		echo sprintf('
-			<tr class="windowbg">
-				<td>%s</td>
-				<td>%s</td>
-				<td>%ss</td>
-				<td>%s</td>
-			</tr>',
+			<div class="query-item windowbg">
+				<div class="query-header">
+					<span class="query-index">#%s</span>
+					<span class="query-time">%s %s</span>
+					<span class="query-location">%s</span>
+				</div>
+				<div class="query-sql">%s</div>
+			</div>',
 			$index++,
-			$sqlText,
 			$time,
-			$location
+			Lang::$txt['seconds'],
+			$location,
+			$sqlText
 		);
 	}
 
 	echo '
-		</tbody>
-	</table>';
+	</div>';
 }
 
 function template_debug_below(): void
