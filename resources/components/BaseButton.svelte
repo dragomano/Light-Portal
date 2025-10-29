@@ -26,7 +26,7 @@
     ? { tag: 'button', class: 'button', role: undefined }
     : { tag: 'span', class: undefined, role: 'button' };
 
-  const preparedIcon = iconState[icon] ?? '';
+  const preparedIcon = iconState && (iconState[icon] ?? '');
 </script>
 
 <svelte:element

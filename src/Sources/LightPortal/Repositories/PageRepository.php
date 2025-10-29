@@ -645,9 +645,8 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 		$this->dispatcher->dispatch(PortalHook::preparePageData, ['data' => &$data, 'isAuthor' => $isAuthor]);
 	}
 
-	public function fetchTags(iterable $pageIds): iterable
+	public function fetchTags(array $pageIds): iterable
 	{
-		$pageIds = is_array($pageIds) ? $pageIds : iterator_to_array($pageIds);
 		if ($pageIds === []) {
 			return;
 		}

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 29.10.25
  */
 
 namespace LightPortal\Plugins\Chart;
@@ -16,6 +16,7 @@ namespace LightPortal\Plugins\Chart;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use LightPortal\Enums\Tab;
+use LightPortal\Plugins\AssetBuilder;
 use LightPortal\Plugins\Block;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\PluginAttribute;
@@ -121,7 +122,9 @@ class Chart extends Block
 
 	public function prepareAssets(Event $e): void
 	{
-		$e->args->assets['scripts'][$this->name][] = 'https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js';
+		$builder = new AssetBuilder($this);
+		$builder->scripts()->add('https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js');
+		$builder->appendTo($e->args->assets);
 	}
 
 	public function prepareContent(Event $e): void

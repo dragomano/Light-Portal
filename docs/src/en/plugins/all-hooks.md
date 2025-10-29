@@ -363,8 +363,10 @@ public function saveSettings(Event $e): void
 ```php
 public function prepareAssets(Event $e): void
 {
-    $e->args->assets['css'][$this->name][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/tiny-slider.css';
-    $e->args->assets['scripts'][$this->name][] = 'https://cdn.jsdelivr.net/npm/tiny-slider@2/dist/min/tiny-slider.js';
+    $builder = new AssetBuilder($this);
+    $builder->scripts()->add('https://cdn.jsdelivr.net/npm/apexcharts@3/dist/apexcharts.min.js');
+    $builder->css()->add('https://cdn.jsdelivr.net/npm/apexcharts@3/dist/apexcharts.min.css');
+    $builder->appendTo($e->args->assets);
 }
 ```
 

@@ -17,4 +17,33 @@ use LightPortal\Enums\PluginType;
 #[PluginAttribute(type: [PluginType::BLOCK, PluginType::GAMES])]
 abstract class GameBlock extends Block
 {
+	protected function isApiRequestForThisBlock(Event $e): bool
+	{
+		if (! $this->request()->has('api')) {
+			return false;
+		}
+
+		if ($this->request()->get('api') !== $this->name) {
+			return false;
+		}
+
+		if ($this->request()->get('id') != $e->args->id) {
+			return false;
+		}
+
+		return true;
+	}
+
+	protected function handleApiRequest(Event $e): void
+	{
+		if (! $this->isApiRequestForThisBlock($e))
+			return;
+
+		$this->response()->exit($this->getApiData($e));
+	}
+
+	protected function getApiData(Event $e): array
+	{
+		return [];
+	}
 }

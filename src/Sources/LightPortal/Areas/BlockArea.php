@@ -181,7 +181,7 @@ final readonly class BlockArea implements AreaInterface
 		exit;
 	}
 
-	private function makeCopy(int $item): void
+	private function makeCopy(string $item): void
 	{
 		if (empty($item))
 			return;
@@ -192,7 +192,7 @@ final readonly class BlockArea implements AreaInterface
 			'success' => false,
 		];
 
-		Utils::$context['lp_block'] = $this->repository->getData($item);
+		Utils::$context['lp_block'] = $this->repository->getData(intval($item));
 
 		$this->repository->setData();
 

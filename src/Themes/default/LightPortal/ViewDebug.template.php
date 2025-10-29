@@ -10,6 +10,15 @@ use function LightPortal\app;
 
 function template_debug_above(): void
 {
+}
+
+function template_debug_below(): void
+{
+	echo '
+	<div class="centertext clear noticebox smalltext" style="margin-top: 2px">
+		', Utils::$context['lp_load_page_stats'], '
+	</div>';
+
 	if (empty(Config::$modSettings['lp_show_portal_queries']) || BrowserDetector::isBrowser('is_mobile'))
 		return;
 
@@ -59,13 +68,5 @@ function template_debug_above(): void
 	}
 
 	echo '
-	</div>';
-}
-
-function template_debug_below(): void
-{
-	echo '
-	<div class="centertext clear noticebox smalltext" style="margin-top: 2px">
-		', Utils::$context['lp_load_page_stats'], '
 	</div>';
 }

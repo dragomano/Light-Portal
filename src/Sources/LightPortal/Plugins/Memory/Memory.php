@@ -8,13 +8,13 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 17.10.25
+ * @version 29.10.25
  */
 
 namespace LightPortal\Plugins\Memory;
 
-use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
+use LightPortal\Plugins\AssetBuilder;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\GameBlock;
 use LightPortal\Plugins\PluginAttribute;
@@ -30,17 +30,19 @@ class Memory extends GameBlock
 {
 	public function prepareAssets(Event $e): void
 	{
-		$e->args->assets['scripts'][$this->name][] = Config::$boardurl . '/Sources/LightPortal/Plugins/Memory/memory.js';
+		$builder = new AssetBuilder($this);
+		$builder->scripts()->add('memory.js');
+		$builder->appendTo($e->args->assets);
 	}
 
-	public function prepareContent(): void
+	public function prepareContent(Event $e): void
 	{
-		$this->handleApi();
+		$this->handleApiRequest($e);
 
 		echo /** @lang text */ '
-		<div class="memory_game"></div>
+		<div class="memory_game" id="memory_game_' . $e->args->id . '"></div>
 		<script type="module">
-			usePortalApi("' . LP_BASE_URL . ';api=' . $this->name . '", "memory/memory.js")
+			usePortalApi("' . LP_BASE_URL . ';api=' . $this->name . ';id=' . $e->args->id . '", "memory/memory.js")
 		</script>';
 	}
 
@@ -57,21 +59,8 @@ class Memory extends GameBlock
 		];
 	}
 
-	private function handleApi(): void
+	protected function getApiData(Event $e): array
 	{
-		if ($this->request()->hasNot('api'))
-			return;
-
-		$this->response()->exit($this->preparedData());
-	}
-
-	private function preparedData(): array
-	{
-		return [
-			'txt'     => $this->txt,
-			'context' => [
-				'locale'  => Lang::$txt['lang_dictionary'],
-			],
-		];
+		return ['txt' => $this->txt, 'context' => ['locale' => Lang::$txt['lang_dictionary']]];
 	}
 }

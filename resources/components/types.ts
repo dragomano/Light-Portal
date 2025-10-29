@@ -10,12 +10,14 @@ export interface Comment {
   created_at: number;
   extra_buttons: string[];
   human_date: string;
+  human_update: string;
   id: number;
   message: string;
   page_id: number;
   parent_id: number;
   poster: Poster;
   published_at: string;
+  updated_at: string;
   replies: Comment[];
 }
 

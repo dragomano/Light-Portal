@@ -36,27 +36,26 @@ class AssetHandler
 
 	public function prepare(array $assets): void
 	{
+		$themeDir = Theme::$current->settings['default_theme_dir'];
+
 		foreach (['css', 'scripts', 'images'] as $type) {
 			if (empty($assets[$type]))
 				continue;
 
+			$parentDir = $themeDir . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR . 'light_portal';
+
+			$this->makeDir($parentDir);
+
 			foreach ($assets[$type] as $snakeName => $links) {
-				if (empty($snakeName))
+				if (empty($assets[$type][$snakeName]))
 					continue;
 
-				$directory = $type . '/light_portal/' . $snakeName;
-				$path = Theme::$current->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . $directory;
+				$directory = $parentDir . DIRECTORY_SEPARATOR . $snakeName;
 
-				if (! is_dir($path)) {
-					@mkdir($path);
-					@copy(__DIR__ . '/index.php', $path . '/index.php');
-				}
+				$this->makeDir($directory);
 
 				foreach ($links as $link) {
-					if (is_file($filename = $path . DIRECTORY_SEPARATOR . basename((string) $link)))
-						continue;
-
-					file_put_contents($filename, WebFetchApi::fetch($link), LOCK_EX);
+					$this->downloadAsset($directory, $link);
 				}
 			}
 		}
@@ -77,9 +76,7 @@ class AssetHandler
 				$this->{$type}->add($file);
 			}
 
-			if (($maxFilemtime = filemtime($file)) > $this->{'max' . ucfirst($type) . 'Filemtime'}) {
-				$this->{'max' . ucfirst($type) . 'Filemtime'} = $maxFilemtime;
-			}
+			$this->updateMaxFilemtime($type, $file);
 		}
 	}
 
@@ -96,6 +93,34 @@ class AssetHandler
 			$this->maxJsFilemtime,
 			[$this->js, 'minify']
 		);
+	}
+
+	private function makeDir(string $path): void
+	{
+		if (! is_dir($path)) {
+			@mkdir($path, 0755, true);
+			@copy(__DIR__ . '/index.php', $path . '/index.php');
+		}
+	}
+
+	private function downloadAsset(string $directory, string $link): void
+	{
+		$filename = $directory . DIRECTORY_SEPARATOR . basename($link);
+
+		if (is_file($filename))
+			return;
+
+		file_put_contents($filename, WebFetchApi::fetch($link), LOCK_EX);
+	}
+
+	private function updateMaxFilemtime(string $type, string $file): void
+	{
+		$maxFilemtime = filemtime($file);
+		$property = 'max' . ucfirst($type) . 'Filemtime';
+
+		if ($maxFilemtime > $this->{$property}) {
+			$this->{$property} = $maxFilemtime;
+		}
 	}
 
 	private function minifyFile(string $filePath, int $maxFilemtime, callable $minifyFunction): void

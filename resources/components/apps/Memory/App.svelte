@@ -112,7 +112,7 @@
 
     button {
       margin-top: 20px;
-      padding: 10px 20px;
+      padding: 5px 10px;
       background-color: #3498db;
       color: white;
       border: none;
