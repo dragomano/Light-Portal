@@ -105,8 +105,6 @@ final readonly class Page implements ActionInterface
 		$this->prepareRelatedPages();
 		$this->prepareComments();
 		$this->updateNumViews();
-
-		Theme::loadJavaScriptFile('light_portal/bundle.min.js', ['defer' => true]);
 	}
 
 	public function getDataBySlug(string $slug): array

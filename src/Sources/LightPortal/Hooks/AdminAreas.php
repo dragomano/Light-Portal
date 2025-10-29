@@ -59,8 +59,6 @@ class AdminAreas extends AbstractHook
 	{
 		Theme::loadCSSFile('light_portal/virtual-select.min.css');
 		Theme::loadJavaScriptFile('light_portal/virtual-select.min.js');
-
-		Theme::loadJavaScriptFile('light_portal/bundle.min.js', ['defer' => true]);
 		Theme::loadJavaScriptFile('light_portal/portal.js', ['minimize' => true]);
 
 		Lang::load('ManageSettings');

@@ -68,6 +68,7 @@ class LoadTheme extends AbstractHook
 		Theme::loadCSSFile('light_portal/portal.css');
 		Theme::loadCSSFile('light_portal/plugins.css');
 		Theme::loadCSSFile('portal_custom.css');
+		Theme::loadJavaScriptFile('light_portal/bundle.min.js', ['defer' => true]);
 		Theme::loadJavaScriptFile('light_portal/plugins.js', ['minimize' => true]);
 	}
 
