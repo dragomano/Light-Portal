@@ -42,6 +42,13 @@ src/Themes/default/scripts/light_portal/*
 !**/Plugins/**/langs
 !**/Plugins/**/langs/english.php
 
+src/Sources/LightPortal/Plugins/ChessBoard/images/markers.svg
+src/Sources/LightPortal/Plugins/ChessBoard/images/standard.svg
+src/Sources/LightPortal/Plugins/ChessBoard/images/staunty.svg
+src/Sources/LightPortal/Plugins/ChessBoard/stockfish/stockfish-17.1-lite-single-03e3232.js
+src/Sources/LightPortal/Plugins/ChessBoard/stockfish/stockfish-17.1-lite-single-03e3232.wasm
+src/Sources/LightPortal/Plugins/ChessBoard/chessboard.css
+src/Sources/LightPortal/Plugins/ChessBoard/chessboard.js
 src/Sources/LightPortal/Plugins/Memory/memory.js
 
 *.zip
