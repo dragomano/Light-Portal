@@ -128,8 +128,6 @@ class PortalProfiler extends Profiler
 		$indent    = str_repeat('    ', $indentLevel);
 		$subIndent = str_repeat('    ', $indentLevel + 1);
 
-		$sql = $this->formatSubqueries($sql, $indentLevel);
-
 		$sql = preg_replace_callback(
 			'/(SELECT)\s+(.*?)(\s+FROM)/is',
 			function ($matches) use ($indent, $subIndent) {
@@ -177,30 +175,17 @@ class PortalProfiler extends Profiler
 			$sql
 		);
 
-		return trim($sql);
-	}
+		$sql = preg_replace_callback(
+			'/IN\s*\((.*?)\)/is',
+			function ($matches) {
+				$content = preg_replace('/\s+/', ' ', $matches[1]);
 
-	protected function formatSubqueries(string $sql, int $indentLevel): string
-	{
-		$offset = 0;
+				return 'IN (' . trim($content) . ')';
+			},
+			$sql
+		);
 
-		while (preg_match('/\(\s*(SELECT\s+.*?)\s*\)/is', $sql, $matches, PREG_OFFSET_CAPTURE, $offset)) {
-			$fullMatch = $matches[0][0];
-			$subquery  = $matches[1][0];
-			$position  = intval($matches[0][1]);
-
-			$formatted = $this->formatSql($subquery, $indentLevel + 2);
-
-			$subIndent   = str_repeat('    ', $indentLevel + 1);
-			$endIndent   = str_repeat('    ', $indentLevel + 1);
-			$replacement = "(\n" . $subIndent . str_replace("\n", "\n" . $subIndent, $formatted) . "\n" . $endIndent . ")";
-
-			$sql = substr_replace($sql, $replacement, $position, strlen($fullMatch));
-
-			$offset = $position + strlen($replacement);
-		}
-
-		return $sql;
+		return $this->formatSubqueries($sql, $indentLevel);
 	}
 
 	protected function splitColumnsSmart(string $selectPart): array
@@ -212,37 +197,95 @@ class PortalProfiler extends Profiler
 		$stringChar    = '';
 
 		for ($i = 0; $i < strlen($selectPart); $i++) {
-			$char = $selectPart[$i];
+			$char     = $selectPart[$i];
+			$prevChar = $i === 0 ? '' : $selectPart[$i - 1];
 
-			if (($char === "'" || $char === '"') && ($i === 0 || $selectPart[$i - 1] !== '\\')) {
-				if (! $inString) {
-					$inString = true;
-					$stringChar = $char;
-				} elseif ($char === $stringChar) {
-					$inString = false;
-				}
-			}
-
-			if (! $inString) {
-				if ($char === '(') {
-					$parenCount++;
-				} elseif ($char === ')') {
-					$parenCount--;
-				}
-			}
+			$this->updateStringAndParenState($char, $prevChar, $inString, $stringChar, $parenCount);
 
 			if ($char === ',' && $parenCount === 0 && ! $inString) {
-				$columns[] = trim($currentColumn);
+				$columns[]     = trim($currentColumn);
 				$currentColumn = '';
 			} else {
 				$currentColumn .= $char;
 			}
 		}
 
-		if (! empty($currentColumn)) {
+		if ($currentColumn !== '') {
 			$columns[] = trim($currentColumn);
 		}
 
 		return $columns;
+	}
+
+	protected function updateStringAndParenState(
+		string $char,
+		string $prevChar,
+		bool &$inString,
+		string &$stringChar,
+		int &$parenCount
+	): void
+	{
+		if (($char === "'" || $char === '"') && $prevChar !== '\\') {
+			if (! $inString) {
+				$inString   = true;
+				$stringChar = $char;
+			} elseif ($char === $stringChar) {
+				$inString = false;
+			}
+		}
+
+		if (! $inString) {
+			if ($char === '(') {
+				$parenCount++;
+			} elseif ($char === ')') {
+				$parenCount--;
+			}
+		}
+	}
+
+	protected function formatSubqueries(string $sql, int $indentLevel): string
+	{
+		$offset = 0;
+		while (($openPos = strpos($sql, '(SELECT', $offset)) !== false) {
+			$closePos = $this->findClosingBracket($sql, $openPos);
+
+			if ($closePos !== -1) {
+				$subquery  = substr($sql, $openPos + 1, $closePos - $openPos - 1);
+				$formatted = $this->formatSql($subquery, $indentLevel + 1);
+				$subIndent = str_repeat('    ', $indentLevel + 1);
+
+				$lines             = explode("\n", $formatted);
+				$indentedLines     = array_map(fn($line) => $subIndent . $line, $lines);
+				$formattedSubquery = implode("\n", $indentedLines);
+				$replacement       = "(\n" . $formattedSubquery . "\n" . $subIndent . ")";
+
+				$sql = substr_replace($sql, $replacement, $openPos, $closePos - $openPos + 1);
+
+				$offset = $openPos + strlen($replacement);
+			} else {
+				$offset = $openPos + 1;
+			}
+		}
+
+		return $sql;
+	}
+
+	protected function findClosingBracket(string $sql, int $openPos): int
+	{
+		$parenCount = 1;
+		$closePos   = $openPos + 1;
+		$inString   = false;
+		$stringChar = '';
+
+		while ($parenCount > 0 && $closePos < strlen($sql)) {
+			$char     = $sql[$closePos];
+			$prevChar = $closePos === 0 ? '' : $sql[$closePos - 1];
+
+			$this->updateStringAndParenState($char, $prevChar, $inString, $stringChar, $parenCount);
+
+			$closePos++;
+		}
+
+		return $parenCount === 0 ? $closePos - 1 : -1;
 	}
 }
