@@ -20,12 +20,12 @@ use Bugo\Compat\Utils;
 use Bugo\Compat\WebFetch\WebFetchApi;
 use LightPortal\Enums\PluginType;
 use LightPortal\Enums\PortalHook;
-use LightPortal\Enums\VarType;
 use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Lists\PluginList;
 use LightPortal\Repositories\PluginRepositoryInterface;
 use LightPortal\Utils\DateTime;
 use LightPortal\Utils\Icon;
+use LightPortal\Utils\InputFilter;
 use LightPortal\Utils\Language;
 use LightPortal\Utils\Setting;
 use LightPortal\Utils\Str;
@@ -49,7 +49,8 @@ final readonly class PluginArea
 
 	public function __construct(
 		private PluginRepositoryInterface $repository,
-		private EventDispatcherInterface $dispatcher
+		private EventDispatcherInterface $dispatcher,
+		private InputFilter $inputFilter
 	) {}
 
 	public function main(): void
@@ -138,23 +139,8 @@ final readonly class PluginArea
 		User::$me->checkSession();
 
 		$name = $this->request()->get('plugin_name');
-		$settings = [];
 
-		foreach ($configVars[$name] as $var) {
-			if ($this->request()->has($var[1])) {
-				if ($var[0] === 'check') {
-					$settings[$var[1]] = VarType::BOOLEAN->filter($this->request()->get($var[1]));
-				} elseif ($var[0] === 'int') {
-					$settings[$var[1]] = VarType::INTEGER->filter($this->request()->get($var[1]));
-				} elseif ($var[0] === 'float') {
-					$settings[$var[1]] = VarType::FLOAT->filter($this->request()->get($var[1]));
-				} elseif ($var[0] === 'url') {
-					$settings[$var[1]] = VarType::URL->filter($this->request()->get($var[1]));
-				} else {
-					$settings[$var[1]] = $this->request()->get($var[1]);
-				}
-			}
-		}
+		$settings = $this->inputFilter->filter($configVars[$name]);
 
 		$this->dispatcher
 			->withPlugins(Utils::$context['lp_plugins'])

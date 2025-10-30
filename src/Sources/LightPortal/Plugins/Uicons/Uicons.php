@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 29.10.25
  */
 
 namespace LightPortal\Plugins\Uicons;
@@ -17,6 +17,7 @@ use LightPortal\Enums\PluginType;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Plugin;
 use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SettingsFactory;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -41,12 +42,10 @@ class Uicons extends Plugin
 			'corner' => 'r',
 		]);
 
-		$e->args->settings[$this->name][] = [
-			'select', 'weight', array_combine(['r', 'b', 's'], $this->txt['weight_set'])
-		];
-		$e->args->settings[$this->name][] = [
-			'select', 'corner', array_combine(['r', 's'], $this->txt['corner_set'])
-		];
+		$e->args->settings[$this->name] = SettingsFactory::make()
+			->select('weight', array_combine(['r', 'b', 's'], $this->txt['weight_set']))
+			->select('corner', array_combine(['r', 's'], $this->txt['corner_set']))
+			->toArray();
 	}
 
 	public function prepareIconList(Event $e): void

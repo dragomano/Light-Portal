@@ -23,7 +23,7 @@ use Bugo\Bricks\Settings\TitleConfig;
 use Bugo\Compat\{Config, Lang, Theme};
 use Bugo\Compat\{User, Utils};
 use Bugo\Compat\Actions\Admin\ACP;
-use LightPortal\Enums\VarType;
+use LightPortal\Utils\InputFilter;
 use LightPortal\Utils\Setting;
 use LightPortal\Utils\Str;
 use LightPortal\Utils\Traits\HasSession;
@@ -34,6 +34,8 @@ if (! defined('SMF'))
 final class ExtraConfig extends AbstractConfig
 {
 	use HasSession;
+
+	public function __construct(private readonly InputFilter $inputFilter) {}
 
 	public function show(): void
 	{
@@ -128,19 +130,18 @@ final class ExtraConfig extends AbstractConfig
 		if ($this->request()->has('save')) {
 			User::$me->checkSession();
 
-			if ($this->request()->isNotEmpty('lp_menu_separate_subsection_href')) {
-				$this->post()->put(
-					'lp_menu_separate_subsection_href',
-					VarType::URL->filter($this->request()->get('lp_menu_separate_subsection_href'))
-				);
-			}
+			$urlSettings = $this->inputFilter->filter([
+				['url', 'lp_menu_separate_subsection_href'],
+				['url', 'lp_fa_custom'],
+				['url', 'lp_fa_kit'],
+			]);
 
-			if ($this->request()->isNotEmpty('lp_fa_custom')) {
-				$this->post()->put('lp_fa_custom', VarType::URL->filter($this->request()->get('lp_fa_custom')));
-			}
-
-			if ($this->request()->isNotEmpty('lp_fa_kit')) {
-				$this->post()->put('lp_fa_kit', VarType::URL->filter($this->request()->get('lp_fa_kit')));
+			foreach ($urlSettings as $key => $value) {
+				if ($value !== false) {
+					$this->post()->put($key, $value);
+				} else {
+					$this->post()->put($key, '');
+				}
 			}
 
 			$saveVars = $configVars;

@@ -14,6 +14,9 @@ namespace LightPortal\Plugins;
 
 use Doctrine\Common\EventArgs;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class Event extends EventArgs
 {
 	public function __construct(public object $args) {}

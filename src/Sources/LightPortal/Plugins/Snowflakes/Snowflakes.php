@@ -18,6 +18,7 @@ use LightPortal\Plugins\AssetBuilder;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Plugin;
 use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SettingsFactory;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -55,13 +56,13 @@ class Snowflakes extends Plugin
 	{
 		$this->addDefaultValues($this->params);
 
-		$settings = &$e->args->settings;
-
-		$settings[$this->name][] = ['color', 'icon_color'];
-		$settings[$this->name][] = ['int', 'icon_size', 'min' => 1];
-		$settings[$this->name][] = ['range', 'snowflakes_count'];
-		$settings[$this->name][] = ['check', 'enable_snowdrifts'];
-		$settings[$this->name][] = ['range', 'snowdrifts_count', 'max' => 10];
+		$e->args->settings[$this->name] = SettingsFactory::make()
+			->color('icon_color')
+			->int('icon_size', ['min' => 1])
+			->range('snowflakes_count')
+			->check('enable_snowdrifts')
+			->range('snowdrifts_count', ['max' => 10])
+			->toArray();
 	}
 
 	public function prepareAssets(Event $e): void

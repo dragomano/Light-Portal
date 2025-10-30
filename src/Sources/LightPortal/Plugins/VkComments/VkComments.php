@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 29.10.25
  */
 
 namespace LightPortal\Plugins\VkComments;
@@ -19,6 +19,7 @@ use LightPortal\Enums\PluginType;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Plugin;
 use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SettingsFactory;
 use LightPortal\Utils\Setting;
 
 if (! defined('LP_NAME'))
@@ -34,21 +35,17 @@ class VkComments extends Plugin
 
 	public function addSettings(Event $e): void
 	{
-		$this->addDefaultValues([
-			'comments_per_page' => 10,
-		]);
+		$this->addDefaultValues(['comments_per_page' => 10]);
 
-		$settings = &$e->args->settings;
-
-		$settings['vk_comments'][] = [
-			'text',
-			'api_id',
-			'subtext' => $this->txt['api_id_subtext'],
-			'required' => true
-		];
-		$settings['vk_comments'][] = ['int', 'comments_per_page'];
-		$settings['vk_comments'][] = ['check', 'allow_attachments'];
-		$settings['vk_comments'][] = ['check', 'auto_publish'];
+		$e->args->settings[$this->name] = SettingsFactory::make()
+			->text('api_id', [
+				'subtext'  => $this->txt['api_id_subtext'],
+				'required' => true,
+			])
+			->int('comments_per_page')
+			->check('allow_attachments')
+			->check('auto_publish')
+			->toArray();
 	}
 
 	public function comments(): void

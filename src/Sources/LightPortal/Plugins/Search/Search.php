@@ -24,6 +24,7 @@ use LightPortal\Plugins\AssetBuilder;
 use LightPortal\Plugins\Block;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SettingsFactory;
 use LightPortal\Utils\Content;
 use LightPortal\Utils\DateTime;
 use LightPortal\Utils\Str;
@@ -43,11 +44,11 @@ class Search extends Block
 
 	public function addSettings(Event $e): void
 	{
-		$this->addDefaultValues([
-			'min_chars' => 3,
-		]);
+		$this->addDefaultValues(['min_chars' => 3]);
 
-		$e->args->settings[$this->name][] = ['range', 'min_chars', 'min' => 1, 'max' => 10];
+		$e->args->settings[$this->name] = SettingsFactory::make()
+			->range('min_chars', ['min' => 1, 'max' => 10])
+			->toArray();
 	}
 
 	public function prepareAssets(Event $e): void

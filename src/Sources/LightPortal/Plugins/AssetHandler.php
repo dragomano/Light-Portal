@@ -18,6 +18,9 @@ use LightPortal\Utils\Setting;
 use MatthiasMullie\Minify\CSS;
 use MatthiasMullie\Minify\JS;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class AssetHandler
 {
 	private readonly CSS $css;

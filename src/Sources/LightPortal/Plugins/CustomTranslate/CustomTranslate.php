@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 29.10.25
  */
 
 namespace LightPortal\Plugins\CustomTranslate;
@@ -20,6 +20,7 @@ use LightPortal\Enums\ForumHook;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Plugin;
 use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SettingsFactory;
 use LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
@@ -108,9 +109,9 @@ class CustomTranslate extends Plugin
 
 	public function addSettings(Event $e): void
 	{
-		$e->args->settings[$this->name][] = ['multiselect', 'languages', array_combine(
-			$this->langCodes, $this->txt['languages_set']
-		)];
+		$e->args->settings[$this->name] = SettingsFactory::make()
+			->multiselect('languages', array_combine($this->langCodes, $this->txt['languages_set']))
+			->toArray();
 	}
 
 	public function credits(Event $e): void

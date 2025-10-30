@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 30.10.25
  */
 
 namespace LightPortal\Plugins\Reactions;
@@ -73,8 +73,10 @@ class Reactions extends Plugin
 								comment: event.detail.comment
 							})
 							.then(response => {
-								window["commentReactions" + event.detail.comment].showButtons = false
-								window["commentReactions" + event.detail.comment].reactions = response.data
+								if (window.commentReactions && window.commentReactions[event.detail.comment]) {
+									window.commentReactions[event.detail.comment].showButtons = false
+									window.commentReactions[event.detail.comment].reactions = response.data
+								}
 							})
 						: axios
 							.get(pageUrl + ";get_reactions")
@@ -88,7 +90,6 @@ class Reactions extends Plugin
 		$reactions = json_decode($data['options'][$this->name] ?? '', true) ?? [];
 
 		Utils::$context['reaction_buttons'] = $this->getButtons();
-		Utils::$context['prepared_buttons'] = json_decode(Utils::$context['reaction_buttons'], true);
 		Utils::$context['prepared_reactions'] = json_decode($this->getReactionsWithCount($reactions), true);
 
 		if ($this->request()->has('get_reactions')) {
@@ -135,10 +136,10 @@ class Reactions extends Plugin
 
 		$comment['can_react'] = $comment['poster']['id'] !== User::$me->id;
 		$comment[$this->name] = json_decode($comment['params'][$this->name] ?? '', true) ?? [];
-		$comment['prepared_reactions'] = $this->getReactionsWithCount($comment[$this->name]);
-		$comment['prepared_buttons'] = json_decode($comment['prepared_reactions'], true);
+		$comment['prepared_reactions'] = json_decode($this->getReactionsWithCount($comment[$this->name]), true);
+		$comment['prepared_buttons'] = $comment['prepared_reactions'];
 
-		$e->args->buttons[] = $this->view('comments_reactions', ['comment' => $comment]);
+		$e->args->buttons[] = $this->view('comments_reactions', compact('comment'));
 	}
 
 	private function getReactionsWithCount(array $reactions): string
@@ -146,9 +147,9 @@ class Reactions extends Plugin
 		return $this->response()->json(array_count_values($reactions) ?? '', JSON_FORCE_OBJECT);
 	}
 
-	private function getButtons(): string
+	private function getButtons(): array
 	{
-		$buttons = [
+		return [
 			[
 				'name' => 'like',
 				'title' => $this->txt['titles'][0],
@@ -180,8 +181,6 @@ class Reactions extends Plugin
 				'emoji' => '😡',
 			]
 		];
-
-		return json_encode($buttons);
 	}
 
 	private function getReactions(int $id, string $entity = 'page'): array
@@ -192,7 +191,7 @@ class Reactions extends Plugin
 			->where([
 				'item_id' => $id,
 				'type'    => $entity,
-				'name'    => $this->name
+				'name'    => $this->name,
 			])
 			->limit(1);
 
@@ -211,12 +210,12 @@ class Reactions extends Plugin
 				'item_id' => $id,
 				'type'    => $entity,
 				'name'    => $this->name,
-				'value'   => $value
+				'value'   => $value,
 			]);
 
 		$this->sql->execute($replace);
 
-		$this->cache()->forget('page_' . $slug . ($entity === 'comment' ? '_comments' : ''));
+		$this->langCache('page_' . $slug . ($entity === 'comment' ? '_comments' : ''))->forget();
 
 		$this->response()->exit(['success' => true]);
 	}

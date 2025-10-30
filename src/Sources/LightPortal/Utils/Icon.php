@@ -38,8 +38,9 @@ class Icon
 
 	public static function parse(?string $icon = ''): string
 	{
-		if (empty($icon))
+		if (empty($icon)) {
 			return '';
+		}
 
 		try {
 			$template = IconBuilder::make($icon)->ariaHidden()->html() . ' ';

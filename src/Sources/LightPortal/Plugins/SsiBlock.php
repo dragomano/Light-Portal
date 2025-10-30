@@ -15,6 +15,9 @@ namespace LightPortal\Plugins;
 use Bugo\Compat\ServerSideIncludes;
 use LightPortal\Enums\PluginType;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 #[PluginAttribute(type: [PluginType::BLOCK, PluginType::SSI])]
 abstract class SsiBlock extends Block
 {

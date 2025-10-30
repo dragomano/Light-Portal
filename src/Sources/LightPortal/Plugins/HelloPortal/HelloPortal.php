@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 29.10.25
  */
 
 namespace LightPortal\Plugins\HelloPortal;
@@ -20,6 +20,7 @@ use LightPortal\Enums\ForumHook;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Plugin;
 use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SettingsFactory;
 use LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
@@ -123,16 +124,14 @@ class HelloPortal extends Plugin
 
 	public function addSettings(Event $e): void
 	{
-		$settings = &$e->args->settings;
-
-		$settings[$this->name][] = [
-			'select', 'theme', array_combine($this->themes, $this->txt['theme_set'])
-		];
-		$settings[$this->name][] = ['check', 'show_progress'];
-		$settings[$this->name][] = ['check', 'show_buttons'];
-		$settings[$this->name][] = ['check', 'exit_on_overlay_click'];
-		$settings[$this->name][] = ['check', 'keyboard_navigation'];
-		$settings[$this->name][] = ['check', 'disable_interaction'];
+		$e->args->settings[$this->name] = SettingsFactory::make()
+			->select('theme', array_combine($this->themes, $this->txt['theme_set']))
+			->check('show_progress')
+			->check('show_buttons')
+			->check('exit_on_overlay_click')
+			->check('keyboard_navigation')
+			->check('disable_interaction')
+			->toArray();
 	}
 
 	public function credits(Event $e): void

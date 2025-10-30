@@ -75,7 +75,7 @@ final class Comment implements ActionInterface
 
 	private function get(): never
 	{
-		$comments = $this->langCache('page_' . $this->pageSlug . '_comments')
+		$rawComments = $this->langCache('page_' . $this->pageSlug . '_comments')
 			->setFallback(fn() => $this->repository->getByPageId(Utils::$context['lp_page']['id']));
 
 		$comments = array_map(function ($comment) {
@@ -95,7 +95,7 @@ final class Comment implements ActionInterface
 			);
 
 			return $comment;
-		}, $comments);
+		}, $rawComments);
 
 		$start = (int) $this->request()->get('start');
 		$limit = Setting::get('lp_num_comments_per_page', 'int', 10);
@@ -134,8 +134,8 @@ final class Comment implements ActionInterface
 		}
 
 		$parentId = VarType::INTEGER->filter($data['parent_id']);
-		$message  = Utils::htmlspecialchars($data['message']);
 		$author   = VarType::INTEGER->filter($data['author']);
+		$message  = Utils::htmlspecialchars($data['message']);
 		$pageId   = Utils::$context['lp_page']['id'];
 		$pageUrl  = Utils::$context['canonical_url'];
 

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 29.10.25
  */
 
 namespace LightPortal\Plugins\AdsBlock;
@@ -26,6 +26,7 @@ use LightPortal\Plugins\Event;
 use LightPortal\Plugins\PluginAttribute;
 use LightPortal\Plugins\AdsBlock\Hooks\MenuButtons;
 use LightPortal\Plugins\AdsBlock\Hooks\PrepareDisplayContext;
+use LightPortal\Plugins\SettingsFactory;
 use LightPortal\UI\Fields\CustomField;
 use LightPortal\UI\Fields\TextareaField;
 use LightPortal\UI\Fields\TextField;
@@ -78,7 +79,7 @@ class AdsBlock extends Block
 
 	public function addSettings(Event $e): void
 	{
-		$e->args->settings[$this->name][] = ['range', 'min_replies'];
+		$e->args->settings[$this->name] = SettingsFactory::make()->range('min_replies')->toArray();
 	}
 
 	public function prepareBlockParams(Event $e): void

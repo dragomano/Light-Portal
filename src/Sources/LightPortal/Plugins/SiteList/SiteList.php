@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 23.10.25
+ * @version 29.10.25
  */
 
 namespace LightPortal\Plugins\SiteList;
@@ -20,6 +20,7 @@ use LightPortal\Enums\VarType;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Plugin;
 use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SettingsFactory;
 use LightPortal\Utils\Traits\HasView;
 
 use function LightPortal\app;
@@ -36,7 +37,7 @@ class SiteList extends Plugin
 
 	public function addSettings(Event $e): void
 	{
-		$e->args->settings[$this->name][] = ['callback', 'urls', $this->view()];
+		$e->args->settings[$this->name] = SettingsFactory::make()->custom('urls', $this->view())->toArray();
 	}
 
 	public function addLayerBelow(): void

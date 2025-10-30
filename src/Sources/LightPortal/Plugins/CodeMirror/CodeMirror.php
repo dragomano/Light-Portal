@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 29.10.25
  */
 
 namespace LightPortal\Plugins\CodeMirror;
@@ -18,6 +18,7 @@ use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Editor;
+use LightPortal\Plugins\SettingsFactory;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -30,8 +31,10 @@ class CodeMirror extends Editor
 
 	public function addSettings(Event $e): void
 	{
-		$e->args->settings[$this->name][] = ['multiselect', 'modes', $this->modes];
-		$e->args->settings[$this->name][] = ['desc', 'small_hint'];
+		$e->args->settings[$this->name] = SettingsFactory::make()
+			->multiselect('modes', $this->modes)
+			->desc('small_hint')
+			->toArray();
 	}
 
 	public function prepareEditor(Event $e): void

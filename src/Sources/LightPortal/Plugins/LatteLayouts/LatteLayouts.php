@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 17.10.25
+ * @version 29.10.25
  */
 
 namespace LightPortal\Plugins\LatteLayouts;
@@ -19,6 +19,7 @@ use LightPortal\Enums\PluginType;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Plugin;
 use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SettingsFactory;
 use LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
@@ -37,9 +38,11 @@ class LatteLayouts extends Plugin
 			Theme::$current->settings['default_theme_dir'] . DIRECTORY_SEPARATOR . 'portal_layouts'
 		);
 
-		$e->args->settings[$this->name][] = ['desc', 'note'];
-		$e->args->settings[$this->name][] = ['title', 'example'];
-		$e->args->settings[$this->name][] = ['callback', '_', $this->showExamples()];
+		$e->args->settings[$this->name] = SettingsFactory::make()
+			->desc('note')
+			->title('example')
+			->custom('_', $this->showExamples())
+			->toArray();
 	}
 
 	public function frontLayouts(Event $e): void

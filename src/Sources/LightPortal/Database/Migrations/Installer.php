@@ -66,8 +66,9 @@ class Installer implements InstallerInterface
 		$this->cleanBackgroundTasks();
 		$this->updateSettings();
 
-		if ($this->post()->hasNot('do_db_changes'))
+		if ($this->post()->hasNot('do_db_changes')) {
 			return true;
+		}
 
 		$this->processTables('uninstall');
 		$this->removePortalSettings();
@@ -80,6 +81,7 @@ class Installer implements InstallerInterface
 	public function upgrade(): bool
 	{
 		$this->processUpgradeTasks();
+		$this->removeErrorLogs();
 
 		CacheApi::clean();
 
@@ -215,5 +217,12 @@ class Installer implements InstallerInterface
 		$update->where(['variable' => 'settings_updated']);
 
 		$this->sql->execute($update);
+	}
+
+	protected function removeErrorLogs(): void
+	{
+		$delete = $this->sql->delete('log_errors');
+
+		$this->sql->execute($delete);
 	}
 }

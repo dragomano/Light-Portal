@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 29.10.25
  */
 
 namespace LightPortal\Plugins\MainMenu;
@@ -21,6 +21,7 @@ use LightPortal\Enums\ForumHook;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Plugin;
 use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SettingsFactory;
 use LightPortal\Utils\Language;
 use LightPortal\Utils\Traits\HasView;
 
@@ -70,7 +71,7 @@ class MainMenu extends Plugin
 
 	public function addSettings(Event $e): void
 	{
-		$e->args->settings[$this->name][] = ['callback', 'items', $this->getTemplate()];
+		$e->args->settings[$this->name] = SettingsFactory::make()->custom('items', $this->getTemplate())->toArray();
 	}
 
 	public function getTemplate(): string

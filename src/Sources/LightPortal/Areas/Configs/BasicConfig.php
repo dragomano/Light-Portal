@@ -20,14 +20,14 @@ use Bugo\Bricks\Settings\PermissionsConfig;
 use Bugo\Bricks\Settings\SelectConfig;
 use Bugo\Bricks\Settings\TextConfig;
 use Bugo\Compat\{Config, Lang, Theme};
-use LightPortal\Events\EventDispatcherInterface;
 use Bugo\Compat\{Time, User, Utils};
 use Bugo\Compat\Actions\Admin\ACP;
 use Bugo\Compat\WebFetch\WebFetchApi;
 use LightPortal\Enums\PortalHook;
-use LightPortal\Enums\VarType;
+use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Renderers\RendererInterface;
 use LightPortal\UI\Partials\SelectFactory;
+use LightPortal\Utils\InputFilter;
 use LightPortal\Utils\Str;
 use LightPortal\Utils\Traits\HasSession;
 
@@ -50,7 +50,10 @@ final class BasicConfig extends AbstractConfig
 
 	public const TAB_PERMISSIONS = 'permissions';
 
-	public function __construct(private readonly EventDispatcherInterface $dispatcher) {}
+	public function __construct(
+		private readonly EventDispatcherInterface $dispatcher,
+		private readonly InputFilter $inputFilter
+	) {}
 
 	public function show(): void
 	{
@@ -183,16 +186,17 @@ final class BasicConfig extends AbstractConfig
 		if ($this->request()->has('save')) {
 			User::$me->checkSession();
 
-			if ($this->request()->isNotEmpty('lp_image_placeholder')) {
-				$this->post()->put(
-					'lp_image_placeholder', VarType::URL->filter($this->request()->get('lp_image_placeholder'))
-				);
-			}
+			$specialSettings = $this->inputFilter->filter([
+				['url', 'lp_image_placeholder'],
+				['url', 'lp_standalone_url'],
+			]);
 
-			if ($this->request()->isNotEmpty('lp_standalone_url')) {
-				$this->post()->put(
-					'lp_standalone_url', VarType::URL->filter($this->request()->get('lp_standalone_url'))
-				);
+			foreach ($specialSettings as $key => $value) {
+				if ($value !== false) {
+					$this->post()->put($key, $value);
+				} else {
+					$this->post()->put($key, '');
+				}
 			}
 
 			$saveVars = $configVars;

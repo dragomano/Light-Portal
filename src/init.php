@@ -61,6 +61,11 @@ class PortalSetup
 		return $this->installer;
 	}
 
+	public function backupPluginDirectory(): void
+	{
+		self::renameDirectory('LightPortal/Plugins', 'LightPortal/Plugins_backup');
+	}
+
 	public function copyPortalFiles(): void
 	{
 		self::copyDirectory(__DIR__ . '/Sources/LightPortal', dirname(__DIR__, 2) . '/Sources/LightPortal');
@@ -79,6 +84,28 @@ class PortalSetup
 	public function finalize(string $message): void
 	{
 		echo $message;
+	}
+
+	public static function renameDirectory(string $oldName, string $newName): bool
+	{
+		$oldPath = dirname(__DIR__, 2) . '/Sources/' . $oldName;
+		$newPath = dirname(__DIR__, 2) . '/Sources/' . $newName;
+
+		if (! is_dir($oldPath)) {
+			throw new RuntimeException("Source directory '$oldPath' does not exist or is not a directory.");
+		}
+
+		if (is_dir($newPath)) {
+			throw new RuntimeException("Destination directory '$newPath' already exists.");
+		}
+
+		$result = rename($oldPath, $newPath);
+
+		if (! $result) {
+			throw new RuntimeException("Failed to rename directory from '$oldPath' to '$newPath'.");
+		}
+
+		return true;
 	}
 
 	public static function copyDirectory(string $source, string $destination): bool

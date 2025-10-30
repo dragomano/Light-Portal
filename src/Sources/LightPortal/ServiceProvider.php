@@ -12,18 +12,9 @@
 
 namespace LightPortal;
 
-use Bugo\Bricks\Breadcrumbs\{
-	BreadcrumbBuilder,
-	BreadcrumbPresenter,
-};
-use Bugo\Bricks\Forms\{
-	FormPresenter,
-	FormRenderer,
-};
-use Bugo\Bricks\Tables\{
-	Interfaces\TablePresenterInterface,
-	TablePresenter,
-};
+use Bugo\Bricks\Breadcrumbs\{BreadcrumbBuilder, BreadcrumbPresenter,};
+use Bugo\Bricks\Forms\{FormPresenter, FormRenderer,};
+use Bugo\Bricks\Tables\{Interfaces\TablePresenterInterface, TablePresenter,};
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use LightPortal\Actions\{
 	Block,
@@ -142,13 +133,13 @@ use LightPortal\Repositories\{
 	TagRepository,
 	TagRepositoryInterface,
 };
-use LightPortal\UI\View;
 use LightPortal\UI\Breadcrumbs\{
 	BreadcrumbRenderer,
 	BreadcrumbWrapper,
 };
 use LightPortal\UI\Partials\SelectRenderer;
 use LightPortal\UI\Tables\TableRenderer;
+use LightPortal\UI\View;
 use LightPortal\Utils\{
 	Cache,
 	CacheInterface,
@@ -158,6 +149,7 @@ use LightPortal\Utils\{
 	FileInterface,
 	Filesystem,
 	FilesystemInterface,
+	InputFilter,
 	Notifier,
 	NotifierInterface,
 	Post,
@@ -534,9 +526,12 @@ class ServiceProvider extends AbstractServiceProvider
 			'configs' => [
 				[
 					'id' => BasicConfig::class,
-					'arguments' => [EventDispatcherInterface::class],
+					'arguments' => [EventDispatcherInterface::class, InputFilter::class],
 				],
-				['id' => ExtraConfig::class],
+				[
+					'id' => ExtraConfig::class,
+					'arguments' => [InputFilter::class],
+				],
 				['id' => PanelConfig::class],
 				['id' => MiscConfig::class],
 				['id' => FeedbackConfig::class],
@@ -641,7 +636,11 @@ class ServiceProvider extends AbstractServiceProvider
 			'plugin_area_export_import' => [
 				[
 					'id' => PluginArea::class,
-					'arguments' => [PluginRepositoryInterface::class, EventDispatcherInterface::class],
+					'arguments' => [
+						PluginRepositoryInterface::class,
+						EventDispatcherInterface::class,
+						InputFilter::class,
+					],
 				],
 				[
 					'id' => PluginExport::class,
@@ -659,6 +658,7 @@ class ServiceProvider extends AbstractServiceProvider
 						ErrorHandlerInterface::class,
 					],
 				],
+				['id' => InputFilter::class],
 			],
 
 			'validators_and_factories' => [

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 23.10.25
+ * @version 29.10.25
  */
 
 namespace LightPortal\Plugins\BlogMode;
@@ -31,6 +31,7 @@ use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Plugin;
 use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SettingsFactory;
 use LightPortal\Repositories\PageRepositoryInterface;
 use LightPortal\UI\Tables\NumViewsColumn;
 use LightPortal\UI\Tables\PortalTableBuilder;
@@ -70,8 +71,10 @@ class BlogMode extends Plugin
 			'show_blogs_in_profiles' => false,
 		]);
 
-		$e->args->settings[$this->name][] = ['text', 'blog_action'];
-		$e->args->settings[$this->name][] = ['check', 'show_blogs_in_profiles'];
+		$e->args->settings[$this->name] = SettingsFactory::make()
+			->text('blog_action')
+			->check('show_blogs_in_profiles')
+			->toArray();
 	}
 
 	public function frontModes(Event $e): void

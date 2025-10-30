@@ -17,6 +17,9 @@ use LightPortal\Repositories\PluginRepositoryInterface;
 
 use function LightPortal\app;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class ConfigHandler
 {
 	private static array $settings;

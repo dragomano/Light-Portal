@@ -10,6 +10,7 @@ if (! $installer->upgrade()) {
 }
 
 try {
+	$setup->backupPluginDirectory();
 	$setup->copyPortalFiles();
 } catch (RuntimeException $e) {
 	$setup->handleError($e->getMessage());

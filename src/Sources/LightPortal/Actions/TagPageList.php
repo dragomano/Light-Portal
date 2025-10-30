@@ -52,7 +52,7 @@ class TagPageList extends AbstractPageList
 
 		$this->breadcrumbs()
 			->add(Lang::$txt['lp_all_page_tags'], PortalSubAction::TAGS->url())
-			->add($tag['title']);
+			->add($tag['title'], before: $tag['icon']);
 
 		$this->cardList->show($this);
 

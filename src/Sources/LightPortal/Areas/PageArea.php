@@ -242,7 +242,11 @@ final class PageArea implements AreaInterface
 			'description' => Lang::$txt['lp_pages_edit_description'],
 		];
 
-		Utils::$context['lp_current_page'] = $this->repository->getData($item);
+		$data = $this->repository->getData($item);
+
+		$this->repository->prepareData($data);
+
+		Utils::$context['lp_current_page'] = $data;
 
 		if (empty(Utils::$context['lp_current_page'])) {
 			ErrorHandler::fatalLang('lp_page_not_found', false, status: 404);

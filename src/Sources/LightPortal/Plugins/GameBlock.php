@@ -14,6 +14,9 @@ namespace LightPortal\Plugins;
 
 use LightPortal\Enums\PluginType;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 #[PluginAttribute(type: [PluginType::BLOCK, PluginType::GAMES])]
 abstract class GameBlock extends Block
 {

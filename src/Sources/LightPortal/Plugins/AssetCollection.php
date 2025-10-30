@@ -14,6 +14,9 @@ namespace LightPortal\Plugins;
 
 use Bugo\Compat\Config;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 abstract class AssetCollection
 {
 	protected array $items = [];

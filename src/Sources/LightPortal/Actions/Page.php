@@ -113,7 +113,11 @@ final readonly class Page implements ActionInterface
 			return [];
 		}
 
-		return $this->langCache('page_' . $slug)->setFallback(fn() => $this->repository->getData($slug));
+		$data = $this->langCache('page_' . $slug)->setFallback(fn() => $this->repository->getData($slug));
+
+		$this->repository->prepareData($data);
+
+		return $data;
 	}
 
 	private function handleEmptySlug(): void
@@ -175,10 +179,11 @@ final readonly class Page implements ActionInterface
 
 			Utils::$context['canonical_url'] = LP_PAGE_URL . $slug;
 
-			if (isset(Utils::$context['lp_page']['category'])) {
+			if (! empty(Utils::$context['lp_page']['cat_title'])) {
 				$this->breadcrumbs()->add(
-					Utils::$context['lp_page']['category'],
-					PortalSubAction::CATEGORIES->url() . ';id=' . Utils::$context['lp_page']['category_id']
+					Utils::$context['lp_page']['cat_title'],
+					PortalSubAction::CATEGORIES->url() . ';id=' . Utils::$context['lp_page']['category_id'],
+					Utils::$context['lp_page']['cat_icon']
 				);
 			}
 
@@ -265,11 +270,11 @@ final readonly class Page implements ActionInterface
 			];
 		}
 
-		if (isset(Utils::$context['lp_page']['category'])) {
+		if (! empty(Utils::$context['lp_page']['cat_title'])) {
 			Utils::$context['meta_tags'][] = [
 				'prefix'   => 'article: https://ogp.me/ns/article#',
 				'property' => 'article:section',
-				'content'  => Utils::$context['lp_page']['category'],
+				'content'  => Utils::$context['lp_page']['cat_title'],
 			];
 		}
 

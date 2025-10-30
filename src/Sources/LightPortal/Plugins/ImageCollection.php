@@ -12,6 +12,9 @@
 
 namespace LightPortal\Plugins;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class ImageCollection extends AssetCollection
 {
 	protected string $type = 'images';

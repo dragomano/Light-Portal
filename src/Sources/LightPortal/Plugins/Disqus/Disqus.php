@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 29.10.25
  */
 
 namespace LightPortal\Plugins\Disqus;
@@ -20,6 +20,7 @@ use LightPortal\Enums\PluginType;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Plugin;
 use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SettingsFactory;
 use LightPortal\Utils\Setting;
 use LightPortal\Utils\Str;
 
@@ -36,12 +37,12 @@ class Disqus extends Plugin
 
 	public function addSettings(Event $e): void
 	{
-		$e->args->settings[$this->name][] = [
-			'text',
-			'shortname',
-			'subtext' => $this->txt['shortname_subtext'],
-			'required' => true,
-		];
+		$e->args->settings[$this->name] = SettingsFactory::make()
+			->text('shortname', [
+				'subtext'  => $this->txt['shortname_subtext'],
+				'required' => true,
+			])
+			->toArray();
 	}
 
 	public function comments(): void

@@ -33,7 +33,6 @@ use LightPortal\Enums\PortalHook;
 use LightPortal\Enums\PortalSubAction;
 use LightPortal\Enums\Status;
 use LightPortal\Events\EventDispatcherInterface;
-use LightPortal\Lists\CategoryList;
 use LightPortal\Utils\Content;
 use LightPortal\Utils\DateTime;
 use LightPortal\Utils\Icon;
@@ -163,6 +162,12 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 		$select = $this->sql->select()
 			->from(['p' => 'lp_pages'])
 			->join(
+				['cat' => 'lp_categories'],
+				'cat.category_id = p.category_id',
+				['cat_icon' => 'icon'],
+				Select::JOIN_LEFT
+			)
+			->join(
 				['mem' => 'members'],
 				'p.author_id = mem.id_member',
 				['author_name' => new Expression('COALESCE(mem.real_name, ?)', [$params['guest']])],
@@ -180,6 +185,13 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 		$this->addParamJoins($select, ['params' => ['allow_comments' => ['alias' => 'pac']]]);
 
 		$this->addTranslationJoins($select, ['fields' => ['title', 'content', 'description']]);
+
+		$this->addTranslationJoins($select, [
+			'primary' => 'cat.category_id',
+			'entity'  => 'category',
+			'fields'  => ['cat_title' => 'title'],
+			'alias'   => 'cat_t',
+		]);
 
 		$result = $this->sql->execute($select);
 
@@ -208,12 +220,13 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 				'title'           => $row['title'],
 				'content'         => $row['content'],
 				'description'     => $row['description'],
+				'cat_title'       => $row['cat_title'],
+				'cat_icon'        => Icon::parse($row['cat_icon']),
+				'tags'            => $this->getTags($row['page_id']),
 			];
 
 			$data['options'][$row['name']] = $row['value'];
 		}
-
-		$this->prepareData($data);
 
 		return $data ?? [];
 	}
@@ -631,16 +644,6 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 		if ($data['type'] === ContentType::BBC->name()) {
 			$data['content'] = Msg::un_preparsecode($data['content']);
 		}
-
-		if (! empty($data['category_id'])) {
-			$categories = app(CategoryList::class)();
-
-			if (isset($categories[$data['category_id']])) {
-				$data['category'] = $categories[$data['category_id']]['title'];
-			}
-		}
-
-		$data['tags'] = $this->getTags($data['id']);
 
 		$this->dispatcher->dispatch(PortalHook::preparePageData, ['data' => &$data, 'isAuthor' => $isAuthor]);
 	}

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 29.10.25
  */
 
 namespace LightPortal\Plugins\FacebookComments;
@@ -20,6 +20,7 @@ use LightPortal\Enums\PluginType;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Plugin;
 use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SettingsFactory;
 use LightPortal\Utils\Setting;
 use LightPortal\Utils\Str;
 use LightPortal\Utils\Traits\HasThemes;
@@ -47,20 +48,12 @@ class FacebookComments extends Plugin
 			'comment_order_by'  => 'reverse-time',
 		]);
 
-		$settings = &$e->args->settings;
-
-		$settings[$this->name][] = [
-			'text',
-			'app_id',
-			'subtext' => $this->txt['app_id_subtext']
-		];
-		$settings[$this->name][] = ['int', 'comments_per_page'];
-		$settings[$this->name][] = [
-			'select',
-			'comment_order_by',
-			array_combine($this->sortOrder, $this->txt['comment_order_by_set'])
-		];
-		$settings[$this->name][] = ['multiselect', 'dark_themes', $this->getForumThemes()];
+		$e->args->settings[$this->name] = SettingsFactory::make()
+			->text('app_id', ['subtext' => $this->txt['app_id_subtext']])
+			->int('comments_per_page')
+			->select('comment_order_by', array_combine($this->sortOrder, $this->txt['comment_order_by_set']))
+			->multiselect('dark_themes', $this->getForumThemes())
+			->toArray();
 	}
 
 	public function comments(): void

@@ -336,12 +336,16 @@ public function commentButtons(Event $e): void
 ```php
 public function addSettings(Event $e): void
 {
-    $e->args->settings[$this->name][] = [
-        'text',
-        'shortname',
-        'subtext' => $this->txt['shortname_subtext'],
-        'required' => true,
-    ];
+    $this->addDefaultValues(['some_color' => '#ff00ad']);
+
+    $e->args->settings[$this->name] = SettingsFactory::make()
+        ->text('some_text')
+        ->check('some_check')
+        ->int('some_int', ['min' => 1])
+        ->select('some_select', [1, 2, 3])
+        ->color('some_color')
+        ->range('some_range', ['max' => 10])
+        ->toArray();
 }
 ```
 

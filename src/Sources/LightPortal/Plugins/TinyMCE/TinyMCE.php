@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 17.10.25
+ * @version 29.10.25
  */
 
 namespace LightPortal\Plugins\TinyMCE;
@@ -18,6 +18,7 @@ use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Editor;
+use LightPortal\Plugins\SettingsFactory;
 use LightPortal\Utils\Str;
 use LightPortal\Utils\Traits\HasThemes;
 
@@ -39,8 +40,10 @@ class TinyMCE extends Editor
 			'href'   => 'https://www.tiny.cloud/auth/signup/',
 		])->setText($this->txt['api_key_subtext']);
 
-		$e->args->settings[$this->name][] = ['text', 'api_key', 'subtext' => $link->toHtml()];
-		$e->args->settings[$this->name][] = ['multiselect', 'dark_themes', $this->getForumThemes()];
+		$e->args->settings[$this->name] = SettingsFactory::make()
+			->text('api_key', ['subtext' => $link->toHtml()])
+			->multiselect('dark_themes', $this->getForumThemes())
+			->toArray();
 	}
 
 	public function prepareEditor(Event $e): void

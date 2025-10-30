@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 29.10.25
  */
 
 namespace LightPortal\Plugins\Giscus;
@@ -19,6 +19,7 @@ use LightPortal\Enums\PluginType;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Plugin;
 use LightPortal\Plugins\PluginAttribute;
+use LightPortal\Plugins\SettingsFactory;
 use LightPortal\Utils\Setting;
 
 if (! defined('LP_NAME'))
@@ -66,37 +67,27 @@ class Giscus extends Plugin
 
 	public function addSettings(Event $e): void
 	{
-		$this->addDefaultValues([
-			'theme' => 'preferred_color_scheme',
-		]);
+		$this->addDefaultValues(['theme' => 'preferred_color_scheme']);
 
-		$settings = &$e->args->settings;
-
-		$settings[$this->name][] = [
-			'text',
-			'repo',
-			'subtext' => sprintf($this->txt['repo_subtext'], $this->url),
-			'required' => true
-		];
-		$settings[$this->name][] = [
-			'text',
-			'repo_id',
-			'subtext' => sprintf($this->txt['repo_id_subtext'], $this->url),
-			'required' => true
-		];
-		$settings[$this->name][] = [
-			'text',
-			'category',
-			'subtext' => sprintf($this->txt['category_subtext'], $this->url),
-			'required' => true
-		];
-		$settings[$this->name][] = [
-			'text',
-			'category_id',
-			'subtext' => sprintf($this->txt['category_id_subtext'], $this->url),
-			'required' => true
-		];
-		$settings[$this->name][] = ['select', 'theme', $this->themes];
+		$e->args->settings[$this->name] = SettingsFactory::make()
+			->text('repo', [
+				'subtext'  => sprintf($this->txt['repo_subtext'], $this->url),
+				'required' => true,
+			])
+			->text('repo_id', [
+				'subtext'  => sprintf($this->txt['repo_id_subtext'], $this->url),
+				'required' => true,
+			])
+			->text('category', [
+				'subtext'  => sprintf($this->txt['category_subtext'], $this->url),
+				'required' => true,
+			])
+			->text('category_id', [
+				'subtext'  => sprintf($this->txt['category_id_subtext'], $this->url),
+				'required' => true,
+			])
+			->select('theme', $this->themes)
+			->toArray();
 	}
 
 	public function comments(): void

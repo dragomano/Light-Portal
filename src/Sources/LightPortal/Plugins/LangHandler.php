@@ -16,6 +16,9 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use LightPortal\Utils\Language;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 class LangHandler
 {
 	private const PREFIX = 'lp_';

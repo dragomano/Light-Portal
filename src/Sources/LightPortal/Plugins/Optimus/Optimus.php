@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 29.10.25
  */
 
 namespace LightPortal\Plugins\Optimus;
@@ -19,6 +19,7 @@ use LightPortal\Plugins\Event;
 use LightPortal\Plugins\PluginAttribute;
 use LightPortal\Plugins\Plugin;
 use Bugo\Optimus\Prime;
+use LightPortal\Plugins\SettingsFactory;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -28,8 +29,10 @@ class Optimus extends Plugin
 {
 	public function addSettings(Event $e): void
 	{
-		$e->args->settings[$this->name][] = ['check', 'use_topic_descriptions'];
-		$e->args->settings[$this->name][] = ['check', 'show_topic_keywords'];
+		$e->args->settings[$this->name] = SettingsFactory::make()
+			->check('use_topic_descriptions')
+			->check('show_topic_keywords')
+			->toArray();
 	}
 
 	public function frontTopics(Event $e): void

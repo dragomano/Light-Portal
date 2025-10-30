@@ -12,6 +12,9 @@
 
 namespace LightPortal\Plugins;
 
+if (! defined('LP_NAME'))
+	die('No direct access...');
+
 readonly class AssetBuilder
 {
 	private string $pluginName;
