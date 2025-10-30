@@ -27,10 +27,6 @@ use Tests\Unit\Repositories\PageRepositoryTestProvider;
 beforeEach(function() {
     Lang::$txt['today'] = 'Today at';
     Lang::$txt['yesterday'] = 'Yesterday at';
-    Lang::$txt['lp_just_now'] = 'just now';
-    Lang::$txt['lp_tomorrow'] = 'Tomorrow at';
-    Lang::$txt['lp_time_label_in'] = 'in %s';
-    Lang::$txt['lp_time_label_ago'] = ' ago';
 
     User::$me = new User(1);
     User::$me->language = 'english';

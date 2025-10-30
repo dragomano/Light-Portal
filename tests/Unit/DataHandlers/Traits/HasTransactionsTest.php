@@ -65,10 +65,8 @@ describe('startTransaction', function () {
 
 describe('finishTransaction', function () {
     it('commits when results exist', function () {
-        Lang::$txt = [
-            'lp_import_success'  => 'Import successful: %s',
-            'lp_test_entity_set' => '{test_entity, plural, one {# test entity} other {# test entities}}',
-        ];
+        Lang::$txt['lp_import_success'] = 'Import successful: %s';
+        Lang::$txt['lp_test_entity_set'] = '{test_entity, plural, one {# test entity} other {# test entities}}';
 
         $this->testClass->testStartTransaction([['id' => 1], ['id' => 2]]);
         $this->testClass->testFinishTransaction();
@@ -77,18 +75,16 @@ describe('finishTransaction', function () {
     });
 
     it('rolls back when no results', function () {
-        Utils::$context = ['import_successful' => 0];
+        Utils::$context['import_successful'] = 0;
 
         expect(fn() => $this->testClass->testFinishTransaction())->toThrow(Exception::class);
     });
 
     it('flushes cache', function () {
-        Utils::$context = ['import_successful' => 1];
+        Utils::$context['import_successful'] = 1;
 
-        Lang::$txt = [
-            'lp_import_success'  => 'Import successful: ',
-            'lp_test_entity_set' => '{test_entity, plural, one {# test entity} other {# test entities}}',
-        ];
+        Lang::$txt['lp_import_success'] = 'Import successful: ';
+        Lang::$txt['lp_test_entity_set'] = '{test_entity, plural, one {# test entity} other {# test entities}}';
 
         $this->testClass->testStartTransaction([['id' => 1]]);
         $this->testClass->testFinishTransaction();

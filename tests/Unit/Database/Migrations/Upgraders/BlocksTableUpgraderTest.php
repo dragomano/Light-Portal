@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Bugo\Compat\Config;
 use LightPortal\Database\Migrations\Creators\TranslationsTableCreator;
 use LightPortal\Database\Migrations\Upgraders\BlocksTableUpgrader;
 use LightPortal\Database\PortalSql;
@@ -10,8 +9,6 @@ use Tests\TestAdapterFactory;
 
 describe('BlocksTableUpgraderTest', function () {
     beforeEach(function () {
-        Config::$language = 'english';
-
         $this->adapter = TestAdapterFactory::create();
         $this->sql     = new PortalSql($this->adapter);
 

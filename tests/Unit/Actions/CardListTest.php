@@ -16,12 +16,10 @@ use LightPortal\Utils\SessionInterface;
 use Tests\AppMockRegistry;
 
 beforeEach(function () {
-    Config::$scripturl = 'https://example.com/index.php';
     Config::$modSettings['lp_frontpage_mode'] = 'all_pages';
 
     Utils::$context['lp_current_sorting'] = 'created;desc';
     Utils::$context['canonical_url'] = 'https://example.com/canonical';
-
     Utils::$context['form_action'] = 'https://example.com';
     Utils::$context['session_var'] = 'session';
     Utils::$context['session_id']  = '123';

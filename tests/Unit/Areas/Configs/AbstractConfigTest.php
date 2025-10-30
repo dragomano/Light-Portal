@@ -21,7 +21,6 @@ beforeEach(function () {
     {
         public function show(): void
         {
-            // Implementation for testing
         }
     };
 });
@@ -145,6 +144,7 @@ it('handles empty config vars array', function () {
     $reflection = new ReflectionAccessor($this->config);
 
     Utils::$context['config_vars'] = [];
+    Utils::$context['posting_fields'] = [];
 
     // This should not throw an exception even with empty config vars
     $reflection->callProtectedMethod('prepareConfigFields', [[]]);

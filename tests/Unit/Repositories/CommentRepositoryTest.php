@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Bugo\Compat\Config;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use LightPortal\Database\PortalSql;
@@ -20,8 +19,6 @@ arch()
     ->toImplement(CommentRepositoryInterface::class);
 
 beforeEach(function() {
-    User::$me->language = 'english';
-
     $adapter = TestAdapterFactory::create();
     $adapter->query(PortalTable::COMMENTS->value)->execute();
     $adapter->query(PortalTable::PAGES->value)->execute();
@@ -280,10 +277,6 @@ it('can update last comment id for page', function () {
 
 it('filters out comments without translations', function () {
     $time = time();
-
-    User::$me->language = 'english';
-
-    Config::$language = 'english';
 
     $this->sql->getAdapter()->query(/** @lang text */ "
         INSERT INTO lp_comments (id, parent_id, page_id, author_id, created_at, updated_at)

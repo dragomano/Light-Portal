@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-use Bugo\Compat\Config;
 use Laminas\Db\Adapter\Adapter;
-use Laminas\Db\Adapter\Driver\ResultInterface;
 use Laminas\Db\Sql\Ddl\Column\Column;
 use Laminas\Db\Sql\Ddl\Column\Integer;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
@@ -329,8 +327,6 @@ describe('AbstractTableUpgrader', function () {
         $this->sql->shouldReceive('update')->with('lp_translations')->andReturn($updateMock);
         $this->sql->shouldReceive('execute')->with($updateMock);
 
-        Config::$language = 'english';
-
         $upgrader = new ReflectionAccessor($this->upgrader);
         $upgrader->callProtectedMethod('migrateRowsToTranslations', ['page_id', 'page', $resultMock]);
 
@@ -375,8 +371,6 @@ describe('AbstractTableUpgrader', function () {
 
         $this->sql->shouldReceive('insert')->with('lp_translations')->andReturn($insertMock);
         $this->sql->shouldReceive('execute')->with($insertMock);
-
-        Config::$language = 'english';
 
         $upgrader = new ReflectionAccessor($this->upgrader);
         $upgrader->callProtectedMethod('migrateRowsToTranslations', ['page_id', 'page', $resultMock]);

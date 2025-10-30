@@ -491,7 +491,6 @@ dataset('author page rules data', [
 beforeEach(function() {
     Config::$modSettings['lp_show_images_in_articles'] = 1;
     Config::$modSettings['lp_show_teaser'] = 1;
-    Config::$scripturl = 'https://example.com/index.php';
 
     Lang::$txt['lang_locale'] = 'ru_RU';
 

@@ -19,8 +19,6 @@ beforeEach(function() {
     Config::$modSettings['lp_show_images_in_articles'] = 0;
     Config::$modSettings['lp_show_teaser'] = 1;
 
-    Config::$scripturl = 'https://example.com/forum';
-
     Utils::$context['description_allowed_tags'] = [];
 
     $adapter = TestAdapterFactory::create();

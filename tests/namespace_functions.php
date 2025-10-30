@@ -17,6 +17,7 @@ use LightPortal\Repositories\TagRepositoryInterface;
 use LightPortal\UI\Partials\SelectRenderer;
 use LightPortal\UI\View;
 use LightPortal\Utils\CacheInterface;
+use LightPortal\Utils\PostInterface;
 use LightPortal\Utils\RequestInterface;
 use LightPortal\Utils\ResponseInterface;
 use LightPortal\Utils\SessionInterface;
@@ -206,7 +207,7 @@ if (! function_exists('LightPortal\\app')) {
                 return $mock;
             }
 
-            $mock = mock('LightPortal\Utils\PostInterface');
+            $mock = mock(PostInterface::class);
             $mock->shouldReceive('set')->andReturn(null);
             $mock->shouldReceive('get')->andReturn('');
             $mock->shouldReceive('all')->andReturn([]);

@@ -89,7 +89,6 @@ it('main method sets up context correctly', function () {
         $GLOBALS['context']['page_title'] = 'Portal - Block export';
         $GLOBALS['context']['page_area_title'] = 'Block export';
         $GLOBALS['context']['form_action'] = Config::$scripturl . '?action=admin;area=lp_blocks;sa=export';
-        $GLOBALS['context']['admin_menu_name'] = 'admin';
         $GLOBALS['context']['admin']['tab_data'] = [
             'title'       => 'Light Portal',
             'description' => 'Block export description',

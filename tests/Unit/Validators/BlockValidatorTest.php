@@ -16,17 +16,12 @@ beforeEach(function () {
     $this->request    = mock(RequestInterface::class);
     $this->post       = mock(PostInterface::class);
 
-    Utils::$context = [
-        'lp_current_block' => [
-            'type' => 'test_block',
-        ],
-    ];
+    Utils::$context = [];
+    Utils::$context['lp_current_block'] = ['type' => 'test_block'];
 
-    Lang::$txt = [
-        'lp_post_error_no_title'       => 'Title is required',
-        'lp_post_error_no_areas'       => 'Areas are required',
-        'lp_post_error_no_valid_areas' => 'Areas are not valid',
-    ];
+    Lang::$txt['lp_post_error_no_title'] = 'Title is required';
+    Lang::$txt['lp_post_error_no_areas'] = 'Areas are required';
+    Lang::$txt['lp_post_error_no_valid_areas'] = 'Areas are not valid';
 
     $this->validator = new class(
         $this->sql,

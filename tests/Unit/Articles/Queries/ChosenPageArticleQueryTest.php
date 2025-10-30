@@ -20,8 +20,6 @@ beforeEach(function() {
     User::$me->language = 'russian';
     User::$me->groups = [0];
 
-    Config::$language = 'english';
-
     $adapter = TestAdapterFactory::create();
     $adapter->query(PortalTable::CATEGORIES->value)->execute();
     $adapter->query(PortalTable::COMMENTS->value)->execute();

@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Bugo\Compat\Config;
 use LightPortal\Database\Migrations\Creators\TranslationsTableCreator;
 use LightPortal\Database\PortalSql;
 use Tests\ReflectionAccessor;
@@ -10,9 +9,6 @@ use Tests\TestAdapterFactory;
 
 describe('TranslationsTableCreatorTest', function () {
     beforeEach(function () {
-        Config::$language = 'english';
-        Config::$mbname = 'Test Forum';
-
         $this->adapter = TestAdapterFactory::create();
         $this->sql     = new PortalSql($this->adapter);
         $this->creator = new TranslationsTableCreator($this->sql);

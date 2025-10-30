@@ -16,22 +16,11 @@
 	<source>
 		<include>
 			<directory>src/Sources/LightPortal</directory>
-			<file>src/Sources/LightPortal/Plugins/AssetHandler.php</file>
-			<file>src/Sources/LightPortal/Plugins/Block.php</file>
-			<file>src/Sources/LightPortal/Plugins/ConfigHandler.php</file>
-			<file>src/Sources/LightPortal/Plugins/Event.php</file>
-			<file>src/Sources/LightPortal/Plugins/GameBlock.php</file>
-			<file>src/Sources/LightPortal/Plugins/HookAttribute.php</file>
-			<file>src/Sources/LightPortal/Plugins/LangHandler.php</file>
-			<file>src/Sources/LightPortal/Plugins/Plugin.php</file>
-			<file>src/Sources/LightPortal/Plugins/PluginAttribute.php</file>
-			<file>src/Sources/LightPortal/Plugins/PluginHandler.php</file>
-			<file>src/Sources/LightPortal/Plugins/SsiBlock.php</file>
 		</include>
 		<exclude>
 			<directory>src/Sources/LightPortal/.idea</directory>
 			<directory>src/Sources/LightPortal/Libs</directory>
-			<directory>src/Sources/LightPortal/Plugins</directory>
+			<directory>src/Sources/LightPortal/Plugins/*</directory>
 			<file>src/Sources/LightPortal/Actions/index.php</file>
 			<file>src/Sources/LightPortal/Areas/Configs/index.php</file>
 			<file>src/Sources/LightPortal/Areas/Traits/index.php</file>
@@ -57,6 +46,7 @@
 			<file>src/Sources/LightPortal/Hooks/index.php</file>
 			<file>src/Sources/LightPortal/Lists/index.php</file>
 			<file>src/Sources/LightPortal/Models/index.php</file>
+			<file>src/Sources/LightPortal/Plugins/index.php</file>
 			<file>src/Sources/LightPortal/Renderers/index.php</file>
 			<file>src/Sources/LightPortal/Repositories/index.php</file>
 			<file>src/Sources/LightPortal/Routes/index.php</file>

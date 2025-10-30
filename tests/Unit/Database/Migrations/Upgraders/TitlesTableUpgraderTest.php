@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Bugo\Compat\Config;
 use LightPortal\Database\Migrations\Upgraders\TitlesTableUpgrader;
 use LightPortal\Database\PortalSql;
 use Tests\ReflectionAccessor;
@@ -10,8 +9,6 @@ use Tests\TestAdapterFactory;
 
 describe('TitlesTableUpgrader', function () {
     beforeEach(function () {
-        Config::$language = 'english';
-
         $this->adapter = TestAdapterFactory::create();
         $this->sql     = new PortalSql($this->adapter);
 

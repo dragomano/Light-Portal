@@ -17,12 +17,10 @@ beforeEach(function () {
 
     Utils::$context = [];
 
-    Lang::$txt = [
-        'lp_post_error_no_title'       => 'Title is required',
-        'lp_post_error_no_slug'        => 'Slug is required',
-        'lp_post_error_no_valid_slug'  => 'Slug is not valid',
-        'lp_post_error_no_unique_slug' => 'Slug must be unique',
-    ];
+    Lang::$txt['lp_post_error_no_title'] = 'Title is required';
+    Lang::$txt['lp_post_error_no_slug'] = 'Slug is required';
+    Lang::$txt['lp_post_error_no_valid_slug'] = 'Slug is not valid';
+    Lang::$txt['lp_post_error_no_unique_slug'] = 'Slug must be unique';
 
     $this->validator = new class(
         $this->sql,

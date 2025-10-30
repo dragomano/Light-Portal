@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Bugo\Compat\Config;
 use LightPortal\Database\PortalSql;
 use LightPortal\DataHandlers\Imports\PageImport;
 use LightPortal\Enums\ContentType;
@@ -25,8 +24,6 @@ beforeEach(function () {
     $adapter->query(PortalTable::TRANSLATIONS->value)->execute();
 
     $this->sql = new PortalSql($adapter);
-
-    Config::$language = 'english';
 });
 
 function generatePageXml(array $pages): string

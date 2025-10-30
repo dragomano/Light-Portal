@@ -431,7 +431,6 @@ dataset('author board rules data', [
 ]);
 
 beforeEach(function() {
-    Config::$scripturl = 'https://example.com/index.php';
     Config::$modSettings['lp_show_images_in_articles'] = 1;
     Config::$modSettings['lp_show_teaser'] = 1;
 
