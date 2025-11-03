@@ -12,7 +12,7 @@
 
 namespace LightPortal\Repositories;
 
-interface PageRepositoryInterface extends RepositoryInterface
+interface PageRepositoryInterface extends DataManagerInterface
 {
 	public function getData(int|string $item): array;
 

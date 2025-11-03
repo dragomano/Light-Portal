@@ -62,8 +62,9 @@ class TagExport extends XmlExporter
 
 	protected function getData(): array
 	{
-		if ($this->isEntityEmpty())
+		if ($this->isEntityEmpty()) {
 			return [];
+		}
 
 		$tags = $this->hasEntityInRequest() ? $this->request()->get($this->entity) : [];
 

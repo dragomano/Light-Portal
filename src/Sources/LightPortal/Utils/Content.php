@@ -14,12 +14,11 @@ namespace LightPortal\Utils;
 
 use Bugo\Compat\IntegrationHook;
 use Bugo\Compat\Parsers\BBCodeParser;
-use Bugo\Compat\Sapi;
 use Bugo\Compat\Utils;
 use LightPortal\Enums\ContentType;
 use LightPortal\Enums\PortalHook;
 use LightPortal\Events\EventManagerFactory;
-use ParseError;
+use LightPortal\Renderers\PurePHP;
 
 use function LightPortal\app;
 
@@ -63,27 +62,9 @@ class Content
 		} elseif ($type === ContentType::HTML->name()) {
 			return Utils::htmlspecialcharsDecode($content);
 		} elseif ($type === ContentType::PHP->name()) {
-			$content = trim(Utils::htmlspecialcharsDecode($content) ?? '');
-			$content = str_replace('<?php', '', $content);
-			$content = str_replace('?>', '', $content);
+			$renderer = app(PurePHP::class);
 
-			ob_start();
-
-			try {
-				$tempFile = tempnam(Sapi::getTempDir(), 'code');
-
-				file_put_contents(
-					$tempFile, '<?php ' . html_entity_decode($content, ENT_COMPAT, 'UTF-8')
-				);
-
-				include $tempFile;
-
-				unlink($tempFile);
-			} catch (ParseError $p) {
-				echo $p->getMessage();
-			}
-
-			return ob_get_clean();
+			return $renderer->renderString($content);
 		}
 
 		app(EventManagerFactory::class)()->dispatch(

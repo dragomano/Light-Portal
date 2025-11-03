@@ -29,8 +29,9 @@ abstract class XmlExporter extends AbstractExport
 
 	protected function createXmlFile(array $items): string
 	{
-		if ($items === [])
+		if ($items === []) {
 			return '';
+		}
 
 		try {
 			$xml = new DomDocument('1.0', 'utf-8');

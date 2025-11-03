@@ -12,7 +12,7 @@
 
 namespace LightPortal\Utils\Traits;
 
-use Bugo\Compat\Utils;
+use LightPortal\UI\TemplateLoader;
 use LightPortal\UI\View;
 use ReflectionClass;
 
@@ -20,16 +20,9 @@ trait HasView
 {
 	private ?View $view = null;
 
-	public function useLayerAbove(string $template = 'default', array $params = []): void
-	{
-		Utils::$context['template_layers'][] = 'custom';
-		Utils::$context['lp_layer_above_content'] = $this->view($template, $params);
-	}
-
 	public function useCustomTemplate(string $template = 'default', array $params = []): void
 	{
-		Utils::$context['sub_template'] = 'custom';
-		Utils::$context['lp_custom_content'] = $this->view($template, $params);
+		TemplateLoader::fromFile('partials/_content', ['content' => $this->view($template, $params)]);
 	}
 
 	public function view(string $template = 'default', array $params = []): string
@@ -41,8 +34,7 @@ trait HasView
 	{
 		if (! $this->view) {
 			$reflection = new ReflectionClass(static::class);
-			$baseDir = dirname($reflection->getFileName());
-			$this->view = new View($baseDir);
+			$this->view = new View(dirname($reflection->getFileName()));
 		}
 
 		return $this->view;

@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 /**
  * @package Light Portal
@@ -15,6 +13,8 @@ declare(strict_types=1);
 namespace LightPortal\Renderers;
 
 use Bugo\Compat\ErrorHandler;
+use Bugo\Compat\Sapi;
+use Bugo\Compat\Utils;
 use Exception;
 
 if (! defined('SMF'))
@@ -28,8 +28,9 @@ class PurePHP extends AbstractRenderer
 
 	public function render(string $layout, array $params = []): string
 	{
-		if (empty($layout))
+		if (empty($layout)) {
 			return '';
+		}
 
 		ob_start();
 
@@ -46,5 +47,41 @@ class PurePHP extends AbstractRenderer
 		}
 
 		return ob_get_clean();
+	}
+
+	public function renderString(string $string, array $params = []): string
+	{
+		if (empty($string)) {
+			return '';
+		}
+
+		ob_start();
+
+		try {
+			extract($params, EXTR_SKIP);
+
+			$tempFile = $this->createTempFile($string);
+
+			require $tempFile;
+
+			unlink($tempFile);
+		} catch (Exception $e) {
+			ErrorHandler::fatal($e->getMessage(), false);
+		}
+
+		return ob_get_clean();
+	}
+
+	private function createTempFile(string $content): string
+	{
+		$content = trim(Utils::htmlspecialcharsDecode($content) ?? '');
+		$content = preg_replace('/^<\?php\s*/i', '', $content);
+		$content = preg_replace('/\?>\s*$/i', '', $content);
+
+		$tempFile = tempnam(Sapi::getTempDir(), 'lp_render_');
+
+		file_put_contents($tempFile, '<?php ' . $content);
+
+		return $tempFile;
 	}
 }

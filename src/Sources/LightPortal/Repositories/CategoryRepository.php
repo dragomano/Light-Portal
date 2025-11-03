@@ -25,7 +25,7 @@ use Laminas\Db\Sql\Predicate\Expression;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class CategoryRepository extends AbstractRepository implements CategoryRepositoryInterface, DataManagerInterface
+final class CategoryRepository extends AbstractRepository implements CategoryRepositoryInterface
 {
 	protected string $entity = 'category';
 

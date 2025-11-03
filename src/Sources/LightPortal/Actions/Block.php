@@ -13,11 +13,11 @@
 namespace LightPortal\Actions;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use LightPortal\Enums\Action;
 use LightPortal\Enums\Permission;
+use LightPortal\UI\TemplateLoader;
 use LightPortal\Utils\Content;
 use LightPortal\Utils\Icon;
 use LightPortal\Utils\Setting;
@@ -119,8 +119,9 @@ class Block implements ActionInterface
 			return;
 		}
 
-		Theme::loadTemplate('LightPortal/ViewBlocks');
+		TemplateLoader::fromFile();
 
+		/* @uses template_lp_portal_above, template_lp_portal_below */
 		Utils::$context['template_layers'] = array_merge(
 			array_slice($layers, 0, $pos + 1, true),
 			['lp_portal'],

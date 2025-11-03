@@ -12,15 +12,14 @@
 
 namespace LightPortal\DataHandlers\Exports;
 
-use Bugo\Compat\Theme;
-use Bugo\Compat\Utils;
-use LightPortal\Database\PortalSqlInterface;
-use LightPortal\Repositories\BlockRepositoryInterface;
-use LightPortal\Utils\ErrorHandlerInterface;
-use LightPortal\Utils\FilesystemInterface;
 use Exception;
 use Laminas\Db\Sql\Predicate\Expression;
 use Laminas\Db\Sql\Select;
+use LightPortal\Database\PortalSqlInterface;
+use LightPortal\Repositories\BlockRepositoryInterface;
+use LightPortal\UI\TemplateLoader;
+use LightPortal\Utils\ErrorHandlerInterface;
+use LightPortal\Utils\FilesystemInterface;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -39,26 +38,20 @@ class BlockExport extends XmlExporter
 		parent::__construct($this->entity, $sql, $filesystem, $errorHandler);
 	}
 
-	public function main(): void
-	{
-		parent::main();
-
-		Utils::$context['lp_current_blocks'] = $this->repository->getAll(0, 0, 'placement DESC, priority');
-	}
-
 	protected function setupUi(): void
 	{
 		parent::setupUi();
 
-		Theme::loadTemplate('LightPortal/ManageImpex');
+		$blocks = $this->repository->getAll(0, 0, 'placement DESC, priority');
 
-		Utils::$context['sub_template'] = 'manage_export_blocks';
+		TemplateLoader::fromFile('admin/block_export', ['blocks' => $this->prepareBlocks($blocks)]);
 	}
 
 	protected function getData(): array
 	{
-		if ($this->isEntityEmpty())
+		if ($this->isEntityEmpty()) {
 			return [];
+		}
 
 		$blocks = $this->hasEntityInRequest() ? $this->request()->get($this->entity) : [];
 
@@ -165,5 +158,18 @@ class BlockExport extends XmlExporter
 				'useCDATA' => false,
 			],
 		];
+	}
+
+	private function prepareBlocks(array $blocks = []): array
+	{
+		$hasArrays = false;
+		foreach ($blocks as $placement) {
+			if (is_array($placement)) {
+				$hasArrays = true;
+				break;
+			}
+		}
+
+		return $hasArrays ? $blocks : [];
 	}
 }

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 24.10.25
+ * @version 30.10.25
  */
 
 namespace LightPortal\Plugins\PluginMaker;
@@ -51,6 +51,8 @@ class Handler
 	use HasView;
 
 	private const PLUGIN_NAME = 'MyNewAddon';
+
+	public function __construct(private readonly EventDispatcherInterface $dispatcher) {}
 
 	public function add(): void
 	{

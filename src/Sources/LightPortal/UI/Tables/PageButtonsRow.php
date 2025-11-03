@@ -15,6 +15,7 @@ namespace LightPortal\UI\Tables;
 use Bugo\Bricks\Tables\Row;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
+use LightPortal\Enums\FrontPageMode;
 use LightPortal\Utils\RequestInterface;
 use LightPortal\Utils\Setting;
 use LightPortal\Utils\Str;
@@ -38,12 +39,12 @@ class PageButtonsRow extends Row
 				->setText(Lang::$txt['lp_action_toggle'])
 			: '';
 
-		$promoteUp = Setting::isFrontpageMode('chosen_pages')
+		$promoteUp = Setting::isFrontpageMode(FrontPageMode::CHOSEN_PAGES->value)
 			? Str::html('option', ['value' => 'promote_up'])
 				->setText(Lang::$txt['lp_promote_to_fp'])
 			: '';
 
-		$promoteDown = Setting::isFrontpageMode('chosen_pages')
+		$promoteDown = Setting::isFrontpageMode(FrontPageMode::CHOSEN_PAGES->value)
 			? Str::html('option', ['value' => 'promote_down'])
 				->setText(Lang::$txt['lp_remove_from_fp'])
 			: '';

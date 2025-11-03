@@ -14,6 +14,7 @@ namespace LightPortal\Hooks;
 
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
+use LightPortal\Enums\FrontPageMode;
 use LightPortal\Enums\PortalSubAction;
 use LightPortal\Utils\Setting;
 
@@ -24,7 +25,7 @@ class DisplayButtons
 {
 	public function __invoke(): void
 	{
-		if (empty(User::$me->is_admin) || Setting::isFrontpageMode('chosen_topics') === false)
+		if (empty(User::$me->is_admin) || Setting::isFrontpageMode(FrontPageMode::CHOSEN_TOPICS->value) === false)
 			return;
 
 		Utils::$context['normal_buttons']['lp_promote'] = [

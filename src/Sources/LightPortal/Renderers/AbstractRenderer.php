@@ -36,16 +36,30 @@ abstract class AbstractRenderer implements RendererInterface
 
 		$path = Theme::$current->settings['default_theme_dir'];
 
-		$this->templateDir = $path . '/LightPortal/layouts';
-		$this->customDir   = $path . '/portal_layouts';
+		$this->setTemplateDir($path . '/LightPortal/layouts');
+		$this->setCustomDir($path . '/portal_layouts');
 	}
 
 	abstract public function render(string $layout, array $params = []): string;
 
+	abstract public function renderString(string $string, array $params = []): string;
+
+	public function setTemplateDir(string $dir): static
+	{
+		$this->templateDir = $dir;
+
+		return $this;
+	}
+
+	public function setCustomDir(string $dir): static
+	{
+		$this->customDir = $dir;
+
+		return $this;
+	}
+
 	public function getLayouts(): array
 	{
-		Theme::loadTemplate('LightPortal/ViewFrontPage');
-
 		$layouts = $this->collectLayouts();
 
 		$default = $layouts[static::DEFAULT_TEMPLATE];

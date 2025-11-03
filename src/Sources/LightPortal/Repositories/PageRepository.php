@@ -47,7 +47,7 @@ use const LP_PAGE_URL;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class PageRepository extends AbstractRepository implements PageRepositoryInterface, DataManagerInterface
+final class PageRepository extends AbstractRepository implements PageRepositoryInterface
 {
 	protected string $entity = 'page';
 

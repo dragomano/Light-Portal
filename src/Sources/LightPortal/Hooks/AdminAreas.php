@@ -348,8 +348,19 @@ class AdminAreas extends AbstractHook
 			return;
 
 		if (str_contains((string) $this->request()->get('area'), 'lp_')) {
-			Theme::loadTemplate('LightPortal/ViewDocs');
+			$supportedLangs = ['ru', 'el', 'it', 'ar', 'es', 'de', 'nl', 'pl', 'uk', 'fr', 'tr', 'sl'];
+			$lang = in_array(Lang::$txt['lang_dictionary'], $supportedLangs) ? Lang::$txt['lang_dictionary'] : '';
 
+			Utils::$context['lp_reference_links'] = [
+				[
+					'text'   => Lang::$txt['admin_search_type_online'],
+					'icon'   => 'fa-solid fa-book',
+					'href'   => 'https://dragomano.github.io/Light-Portal/' . $lang,
+					'params' => 'target="_blank" rel="noopener"',
+				],
+			];
+
+			/* @uses template_lp_docs_above, template_lp_docs_below */
 			Utils::$context['template_layers'][] = 'lp_docs';
 		}
 	}

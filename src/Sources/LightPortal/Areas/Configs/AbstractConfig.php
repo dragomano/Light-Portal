@@ -19,6 +19,7 @@ use LightPortal\UI\Fields\CustomField;
 use LightPortal\UI\Fields\NumberField;
 use LightPortal\UI\Fields\SelectField;
 use LightPortal\UI\Fields\TextField;
+use LightPortal\Utils\Traits\HasSession;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -26,6 +27,7 @@ if (! defined('SMF'))
 abstract class AbstractConfig implements ConfigInterface
 {
 	use HasArea;
+	use HasSession;
 
 	abstract public function show(): void;
 
@@ -86,19 +88,15 @@ abstract class AbstractConfig implements ConfigInterface
 
 		$description = isset($var['help']) ? (Lang::$txt[$var['help']] ?? '') : '';
 
+		$factory = new VarFactory($name, $type);
+
 		$field = match ($type) {
 			'check'       => CheckboxField::make($name, $label),
 			'int'         => NumberField::make($name, $label),
 			'text'        => TextField::make($name, $label)->placeholder($var['placeholder'] ?? ''),
-			'select'      => SelectField::make($name, $label)
-								->setAttributes($var['attributes'] ?? [])
-								->setOptions($data),
-			'callback'    => CustomField::make($name, $label)
-								->setValue($var['callback'] ?? (new VarFactory($name, $type))
-								->createTemplateCallback()),
-			'permissions' => CustomField::make($name, Lang::$txt['permissionname_' . $name])
-								->setValue((new VarFactory($name, $type))
-								->createPermissionsCallback()),
+			'select'      => SelectField::make($name, $label)->setAttributes($var['attributes'] ?? [])->setOptions($data),
+			'callback'    => CustomField::make($name, $label)->setValue($var['callback'] ?? $factory->createTemplateCallback()),
+			'permissions' => CustomField::make($name, Lang::$txt['permissionname_' . $name])->setValue($factory->createPermissionsCallback()),
 			default       => null,
 		};
 

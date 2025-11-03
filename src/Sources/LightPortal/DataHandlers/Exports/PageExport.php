@@ -67,8 +67,9 @@ class PageExport extends XmlExporter
 
 	protected function getData(): array
 	{
-		if ($this->isEntityEmpty())
+		if ($this->isEntityEmpty()) {
 			return [];
+		}
 
 		$pages = $this->hasEntityInRequest() ? $this->request()->get($this->entity) : [];
 

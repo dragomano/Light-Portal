@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 24.09.25
+ * @version 01.11.25
  */
 
 namespace LightPortal\Plugins\AdsBlock\Hooks;
@@ -16,104 +16,218 @@ namespace LightPortal\Plugins\AdsBlock\Hooks;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use LightPortal\Plugins\AdsBlock\Placement;
-use LightPortal\Plugins\AdsBlock\RepliesComparisonTrait;
+use LightPortal\Plugins\AdsBlock\HasMagicThings;
 
 class PrepareDisplayContext
 {
-	use RepliesComparisonTrait;
+	use HasMagicThings;
 
 	public function __invoke(array $output): void
 	{
-		if (empty(Utils::$context['lp_ads_blocks']) || ($this->isRepliesBelowMinimum()))
+		if (! $this->shouldProcessAds())
 			return;
 
+		$context = $this->buildContext($output);
+
+		$this->handleBeforeFirstPost($context);
+		$this->handleBeforeEveryFirstPost($context);
+		$this->handleAfterFirstPost($context);
+		$this->handleAfterEveryFirstPost($context);
+		$this->handleBeforeEveryLastPost($context);
+		$this->handleBeforeLastPost($context);
+		$this->handleAfterEveryLastPost($context);
+		$this->handleAfterLastPost($context);
+	}
+
+	private function shouldProcessAds(): bool
+	{
+		return ! empty(Utils::$context['lp_ads_blocks']) && ! $this->isRepliesBelowMinimum();
+	}
+
+	private function buildContext(array $output): array
+	{
 		$showOldestFirst = empty(Theme::$current->options['view_newest_first']);
 
-		$counter = $output['counter'] + 1;
+		return [
+			'output'            => $output,
+			'show_oldest_first' => $showOldestFirst,
+			'counter'           => $output['counter'] + 1,
+			'current_counter'   =>  $showOldestFirst
+				? Utils::$context['start']
+				: Utils::$context['total_visible_posts'] - Utils::$context['start'],
+		];
+	}
 
-		$currentCounter = $showOldestFirst
-			? Utils::$context['start']
-			: Utils::$context['total_visible_posts'] - Utils::$context['start'];
+	private function hasBlock(string $placement): bool
+	{
+		return ! empty(Utils::$context['lp_ads_blocks'][$placement]);
+	}
 
-		if (
-			Utils::$context['lp_ads_blocks'][Placement::BEFORE_FIRST_POST->name()]
-			&& $currentCounter == $output['counter']
-			&& empty(Utils::$context['start'])
-		) {
-			lp_show_blocks(Placement::BEFORE_FIRST_POST->name());
+	private function handleBeforeFirstPost(array $context): void
+	{
+		if (! $this->hasBlock(Placement::BEFORE_FIRST_POST->name()))
+			return;
+
+		if ($context['current_counter'] === $context['output']['counter'] && empty(Utils::$context['start'])) {
+			$this->showBlocks(Placement::BEFORE_FIRST_POST->name());
+		}
+	}
+
+	private function handleBeforeEveryFirstPost(array $context): void
+	{
+		if (! $this->hasBlock(Placement::BEFORE_EVERY_FIRST_POST->name()))
+			return;
+
+		if ($context['current_counter'] === $context['output']['counter']) {
+			$this->showBlocks(Placement::BEFORE_EVERY_FIRST_POST->name());
+		}
+	}
+
+	private function handleAfterFirstPost(array $context): void
+	{
+		if (! $this->hasBlock(Placement::AFTER_FIRST_POST->name()))
+			return;
+
+		$targetCounter = $context['show_oldest_first']
+			? 2
+			: Utils::$context['total_visible_posts'] - 2;
+
+		if ($context['counter'] === $targetCounter) {
+			$this->showBlocks(Placement::AFTER_FIRST_POST->name());
+		}
+	}
+
+	private function handleAfterEveryFirstPost(array $context): void
+	{
+		if (! $this->hasBlock(Placement::AFTER_EVERY_FIRST_POST->name()))
+			return;
+
+		$targetCounter = $context['show_oldest_first']
+			? Utils::$context['start'] + 1
+			: $context['current_counter'] - 1;
+
+		if ($context['output']['counter'] === $targetCounter) {
+			$this->showBlocks(Placement::AFTER_EVERY_FIRST_POST->name());
+		}
+	}
+
+	private function handleBeforeEveryLastPost(array $context): void
+	{
+		if (! $this->hasBlock(Placement::BEFORE_EVERY_LAST_POST->name()))
+			return;
+
+		if ($this->isBeforeEveryLastPost($context)) {
+			$this->showBlocks(Placement::BEFORE_EVERY_LAST_POST->name());
+		}
+	}
+
+	private function isBeforeEveryLastPost(array $context): bool
+	{
+		$counter = $context['counter'];
+		$messagesPerPage = Utils::$context['messages_per_page'];
+
+		if ($context['show_oldest_first']) {
+			return $counter === Utils::$context['total_visible_posts'] || $counter % $messagesPerPage === 0;
 		}
 
-		if (
-			Utils::$context['lp_ads_blocks'][Placement::BEFORE_EVERY_FIRST_POST->name()]
-			&& $currentCounter == $output['counter']
-		) {
-			lp_show_blocks(Placement::BEFORE_EVERY_FIRST_POST->name());
-		}
+		return $context['output']['id'] === Utils::$context['topic_first_message']
+			|| (Utils::$context['total_visible_posts'] - $counter) % $messagesPerPage === 0;
+	}
 
-		if (
-			Utils::$context['lp_ads_blocks']['after_first_post']
-			&& ($counter == ($showOldestFirst ? 2 : Utils::$context['total_visible_posts'] - 2))
-		) {
-			lp_show_blocks('after_first_post');
-		}
+	private function handleBeforeLastPost(array $context): void
+	{
+		if (! $this->hasBlock(Placement::BEFORE_LAST_POST->name()))
+			return;
 
-		if (
-			Utils::$context['lp_ads_blocks']['after_every_first_post']
-			&& ($output['counter'] == ($showOldestFirst ? Utils::$context['start'] + 1 : $currentCounter - 1))
-		) {
-			lp_show_blocks('after_every_first_post');
-		}
+		$targetMessage = $context['show_oldest_first']
+			? Utils::$context['topic_last_message']
+			: Utils::$context['topic_first_message'];
 
-		$beforeEveryLastPost = $showOldestFirst
-			? $counter == Utils::$context['total_visible_posts'] || $counter % Utils::$context['messages_per_page'] == 0
-			: (
-				$output['id'] == Utils::$context['topic_first_message']
-				|| (Utils::$context['total_visible_posts'] - $counter) % Utils::$context['messages_per_page'] == 0
+		if ($context['output']['id'] === $targetMessage) {
+			$this->showBlocks(Placement::BEFORE_LAST_POST->name());
+		}
+	}
+
+	private function handleAfterEveryLastPost(array $context): void
+	{
+		if (! $this->hasBlock(Placement::AFTER_EVERY_LAST_POST->name()))
+			return;
+
+		$counter = $context['counter'];
+		$messagesPerPage = Utils::$context['messages_per_page'];
+
+		if ($counter === Utils::$context['total_visible_posts'] || $counter % $messagesPerPage === 0) {
+			$this->injectBlockWithJs(
+				$context['output']['id'],
+				Placement::AFTER_EVERY_LAST_POST->name(),
+				'afterend',
+				'quickModForm > div.windowbg:last-of-type'
 			);
-
-		if (Utils::$context['lp_ads_blocks'][Placement::BEFORE_EVERY_LAST_POST->name()] && $beforeEveryLastPost) {
-			lp_show_blocks(Placement::BEFORE_EVERY_LAST_POST->name());
 		}
+	}
 
-		if (
-			Utils::$context['lp_ads_blocks'][Placement::BEFORE_LAST_POST->name()]
-			&& $output['id'] == ($showOldestFirst ? Utils::$context['topic_last_message'] : Utils::$context['topic_first_message'])
-		) {
-			lp_show_blocks(Placement::BEFORE_LAST_POST->name());
+	private function handleAfterLastPost(array $context): void
+	{
+		if (! $this->hasBlock(Placement::AFTER_LAST_POST->name()))
+			return;
+
+		$targetMessage = $context['show_oldest_first']
+			? Utils::$context['topic_last_message']
+			: Utils::$context['topic_first_message'];
+
+		if ($context['output']['id'] === $targetMessage) {
+			$this->injectBlockWithJs(
+				$context['output']['id'],
+				Placement::AFTER_LAST_POST->name(),
+				'beforeend',
+				'quickModForm',
+				true
+			);
 		}
+	}
 
-		if (
-			Utils::$context['lp_ads_blocks'][Placement::AFTER_EVERY_LAST_POST->name()]
-			&& ($counter == Utils::$context['total_visible_posts'] || $counter % Utils::$context['messages_per_page'] == 0)
-		) {
-			$afterEveryLastPost = function (): string {
-				ob_start();
-				lp_show_blocks(Placement::AFTER_EVERY_LAST_POST->name());
-				return ob_get_clean();
-			};
+	private function injectBlockWithJs(
+		string $postId,
+		string $placement,
+		string $position,
+		string $selector,
+		bool $useId = false
+	): void {
+		$blockContent   = $this->captureBlockOutput($placement);
+		$uniqueVar      = $this->generateUniqueVar($postId, $position);
+		$selectorMethod = $useId ? 'getElementById' : 'querySelector';
+		$selectorValue  = $useId ? "\"$selector\"" : "\"#$selector\"";
 
-			Theme::addInlineJavaScript('
-	    let quickModFormAfter' . $output['id'] . ' = document.querySelector("#quickModForm > div.windowbg:last-of-type");
-	    if (quickModFormAfter' . $output['id'] . ') {
-	        quickModFormAfter' . $output['id'] . '.insertAdjacentHTML("afterend", ' . Utils::escapeJavaScript($afterEveryLastPost()) . ');
-	    }', true);
-		}
+		$script = sprintf(
+			'let %s = document.%s(%s);
+			if (%s) {
+				%s.insertAdjacentHTML("%s", %s);
+			}',
+			$uniqueVar,
+			$selectorMethod,
+			$selectorValue,
+			$uniqueVar,
+			$uniqueVar,
+			$position,
+			Utils::escapeJavaScript($blockContent)
+		);
 
-		if (
-			Utils::$context['lp_ads_blocks'][Placement::AFTER_LAST_POST->name()]
-			&& $output['id'] == ($showOldestFirst ? Utils::$context['topic_last_message'] : Utils::$context['topic_first_message'])
-		) {
-			$afterLastPost = function (): string {
-				ob_start();
-				lp_show_blocks(Placement::AFTER_LAST_POST->name());
-				return ob_get_clean();
-			};
+		Theme::addInlineJavaScript($script, true);
+	}
 
-			Theme::addInlineJavaScript('
-	    let quickModFormBefore' . $output['id'] . ' = document.getElementById("quickModForm");
-	    if (quickModFormBefore' . $output['id'] . ') {
-	        quickModFormBefore' . $output['id'] . '.insertAdjacentHTML("beforeend", ' . Utils::escapeJavaScript($afterLastPost()) . ');
-	    }', true);
-		}
+	private function captureBlockOutput(string $placement): string
+	{
+		ob_start();
+
+		$this->showBlocks($placement);
+
+		return ob_get_clean();
+	}
+
+	private function generateUniqueVar(string $postId, string $position): string
+	{
+		$prefix = ucfirst(str_replace('end', '', $position));
+
+		return "quickModForm$prefix$postId";
 	}
 }

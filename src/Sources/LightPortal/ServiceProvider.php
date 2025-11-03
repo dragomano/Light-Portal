@@ -12,162 +12,40 @@
 
 namespace LightPortal;
 
-use Bugo\Bricks\Breadcrumbs\{BreadcrumbBuilder, BreadcrumbPresenter,};
-use Bugo\Bricks\Forms\{FormPresenter, FormRenderer,};
-use Bugo\Bricks\Tables\{Interfaces\TablePresenterInterface, TablePresenter,};
+use Bugo\Bricks\Breadcrumbs\{BreadcrumbBuilder, BreadcrumbPresenter};
+use Bugo\Bricks\Forms\{FormPresenter, FormRenderer};
+use Bugo\Bricks\Tables\{Interfaces\TablePresenterInterface, TablePresenter};
 use League\Container\ServiceProvider\AbstractServiceProvider;
-use LightPortal\Actions\{
-	Block,
-	BoardIndex,
-	CardList,
-	CardListInterface,
-	Category,
-	CategoryIndex,
-	CategoryPageList,
-	Comment,
-	FrontPage,
-	Page,
-	Tag,
-	TagIndex,
-	TagPageList,
-};
-use LightPortal\Areas\{
-	BlockArea,
-	CategoryArea,
-	PageArea,
-	PluginArea,
-	TagArea,
-};
-use LightPortal\Areas\Configs\{
-	BasicConfig,
-	ExtraConfig,
-	FeedbackConfig,
-	MiscConfig,
-	PanelConfig,
-};
-use LightPortal\Articles\{
-	BoardArticle,
-	ChosenPageArticle,
-	ChosenTopicArticle,
-	PageArticle,
-	TopicArticle,
-};
-use LightPortal\Articles\Queries\{
-	BoardArticleQuery,
-	ChosenPageArticleQuery,
-	ChosenTopicArticleQuery,
-	PageArticleQuery,
-	TagPageArticleQuery,
-	TopicArticleQuery,
-};
-use LightPortal\Articles\Services\{
-	BoardArticleService,
-	CategoryPageArticleService,
-	PageArticleService,
-	TagPageArticleService,
-	TopicArticleService,
-};
-use LightPortal\Database\{
-	PortalAdapterFactory,
-	PortalSql,
-	PortalSqlInterface,
-};
-use LightPortal\DataHandlers\Exports\{
-	BlockExport,
-	CategoryExport,
-	PageExport,
-	PluginExport,
-	TagExport,
-};
-use LightPortal\DataHandlers\Imports\{
-	BlockImport,
-	CategoryImport,
-	PageImport,
-	PluginImport,
-	TagImport,
-};
-use LightPortal\Events\{
-	EventDispatcherInterface,
-	EventManager,
-	EventManagerFactory,
-	EventManagerProxy,
-};
+use LightPortal\Actions\{Block, BoardIndex, CardList, CardListInterface, Category, CategoryIndex, CategoryPageList};
+use LightPortal\Actions\{Comment, FrontPage, Page, Tag, TagIndex, TagPageList};
+use LightPortal\Areas\{BlockArea, CategoryArea, PageArea, PluginArea, TagArea};
+use LightPortal\Areas\Configs\{BasicConfig, ExtraConfig, FeedbackConfig, MiscConfig, PanelConfig};
+use LightPortal\Articles\{BoardArticle, ChosenPageArticle, ChosenTopicArticle, PageArticle, TopicArticle};
+use LightPortal\Articles\Queries\{BoardArticleQuery, ChosenPageArticleQuery, ChosenTopicArticleQuery, PageArticleQuery};
+use LightPortal\Articles\Queries\{TagPageArticleQuery, TopicArticleQuery};
+use LightPortal\Articles\Services\{BoardArticleService, CategoryPageArticleService, PageArticleService};
+use LightPortal\Articles\Services\{TagPageArticleService, TopicArticleService};
+use LightPortal\Database\{PortalAdapterFactory, PortalSql, PortalSqlInterface};
+use LightPortal\DataHandlers\Exports\{BlockExport, CategoryExport, PageExport, PluginExport, TagExport};
+use LightPortal\DataHandlers\Imports\{BlockImport, CategoryImport, PageImport, PluginImport, TagImport};
+use LightPortal\Events\{EventDispatcherInterface, EventManager, EventManagerFactory, EventManagerProxy};
 use LightPortal\Hooks\Integration;
-use LightPortal\Lists\{
-	BlockList,
-	CategoryList,
-	IconList,
-	PageList,
-	PluginList,
-	TagList,
-};
-use LightPortal\Models\{
-	BlockFactory,
-	CategoryFactory,
-	PageFactory,
-	TagFactory,
-};
-use LightPortal\Plugins\{
-	AssetHandler,
-	ConfigHandler,
-	LangHandler,
-	PluginHandler,
-};
-use LightPortal\Renderers\{
-	Blade,
-	RendererInterface,
-};
-use LightPortal\Repositories\{
-	BlockRepository,
-	BlockRepositoryInterface,
-	CategoryIndexRepository,
-	CategoryRepository,
-	CategoryRepositoryInterface,
-	CommentRepository,
-	CommentRepositoryInterface,
-	PageRepository,
-	PageRepositoryInterface,
-	PluginRepository,
-	PluginRepositoryInterface,
-	TagIndexRepository,
-	TagRepository,
-	TagRepositoryInterface,
-};
-use LightPortal\UI\Breadcrumbs\{
-	BreadcrumbRenderer,
-	BreadcrumbWrapper,
-};
+use LightPortal\Lists\{BlockList, CategoryList, IconList, PageList, PluginList, TagList};
+use LightPortal\Models\{BlockFactory, CategoryFactory, PageFactory, TagFactory};
+use LightPortal\Plugins\{AssetHandler, ConfigHandler, LangHandler, PluginHandler};
+use LightPortal\Renderers\{Blade, PurePHP, RendererInterface};
+use LightPortal\Repositories\{BlockRepository, BlockRepositoryInterface, CategoryIndexRepository, CategoryRepository};
+use LightPortal\Repositories\{CategoryRepositoryInterface, CommentRepository, CommentRepositoryInterface};
+use LightPortal\Repositories\{PageRepository, PageRepositoryInterface, PluginRepository, PluginRepositoryInterface};
+use LightPortal\Repositories\{TagIndexRepository, TagRepository, TagRepositoryInterface};
+use LightPortal\UI\Breadcrumbs\{BreadcrumbRenderer, BreadcrumbWrapper};
 use LightPortal\UI\Partials\SelectRenderer;
 use LightPortal\UI\Tables\TableRenderer;
 use LightPortal\UI\View;
-use LightPortal\Utils\{
-	Cache,
-	CacheInterface,
-	ErrorHandler,
-	ErrorHandlerInterface,
-	File,
-	FileInterface,
-	Filesystem,
-	FilesystemInterface,
-	InputFilter,
-	Notifier,
-	NotifierInterface,
-	Post,
-	PostInterface,
-	Request,
-	RequestInterface,
-	Response,
-	ResponseInterface,
-	Session,
-	SessionInterface,
-	SessionManager,
-};
-use LightPortal\Validators\{
-	BlockValidator,
-	CategoryValidator,
-	PageValidator,
-	TagValidator,
-};
+use LightPortal\Utils\{Cache, CacheInterface, ErrorHandler, ErrorHandlerInterface, File, FileInterface, Filesystem};
+use LightPortal\Utils\{FilesystemInterface, InputFilter, Notifier, NotifierInterface, Post, PostInterface, Request};
+use LightPortal\Utils\{RequestInterface, Response, ResponseInterface, Session, SessionInterface, SessionManager};
+use LightPortal\Validators\{BlockValidator, CategoryValidator, PageValidator, TagValidator};
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -224,6 +102,7 @@ class ServiceProvider extends AbstractServiceProvider
 			],
 
 			'view_and_renderers' => [
+				['id' => Blade::class],
 				[
 					'id' => View::class,
 					'concrete' => fn() => new View(realpath(__DIR__ . '/../../Themes/default/LightPortal')),
@@ -232,6 +111,7 @@ class ServiceProvider extends AbstractServiceProvider
 					'id' => SelectRenderer::class,
 					'arguments' => [View::class],
 				],
+				['id' => PurePHP::class],
 				[
 					'id' => RendererInterface::class,
 					'concrete' => Blade::class,
@@ -588,7 +468,7 @@ class ServiceProvider extends AbstractServiceProvider
 			'category_area_export_import' => [
 				[
 					'id' => CategoryArea::class,
-					'arguments' => [CategoryRepositoryInterface::class],
+					'arguments' => [CategoryRepositoryInterface::class, EventDispatcherInterface::class],
 				],
 				[
 					'id' => CategoryExport::class,
@@ -612,7 +492,7 @@ class ServiceProvider extends AbstractServiceProvider
 			'tag_area_export_import' => [
 				[
 					'id' => TagArea::class,
-					'arguments' => [TagRepositoryInterface::class],
+					'arguments' => [TagRepositoryInterface::class, EventDispatcherInterface::class],
 				],
 				[
 					'id' => TagExport::class,

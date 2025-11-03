@@ -14,7 +14,6 @@ namespace LightPortal\Areas\Traits;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Security;
-use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use LightPortal\Enums\ContentType;
 use LightPortal\Enums\Tab;
@@ -69,6 +68,10 @@ trait HasArea
 		}
 	}
 
+	protected function prepareContentFields(): void {}
+
+	protected function dispatchFieldsEvent(): void {}
+
 	public function preparePostFields(): void
 	{
 		foreach (Utils::$context['posting_fields'] as $item => $data) {
@@ -85,8 +88,6 @@ trait HasArea
 				->class('roundframe smalltext')
 				->setHtml($data['input']['after']);
 		}
-
-		Theme::loadTemplate('LightPortal/ManageSettings');
 	}
 
 	public function getPreviewTitle(string $prefix = ''): string

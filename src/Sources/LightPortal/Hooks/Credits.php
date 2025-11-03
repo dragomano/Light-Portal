@@ -14,10 +14,10 @@ namespace LightPortal\Hooks;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
-use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use LightPortal\Enums\PortalHook;
+use LightPortal\UI\TemplateLoader;
 use LightPortal\Utils\Str;
 
 use const LP_NAME;
@@ -39,9 +39,7 @@ class Credits extends AbstractHook
 
 			Utils::$context['page_title'] = LP_NAME . ' - ' . Lang::$txt['lp_used_components'];
 
-			Theme::loadTemplate('LightPortal/ViewCredits');
-
-			Utils::$context['sub_template'] = 'portal_credits';
+			TemplateLoader::fromFile('credits');
 
 			Utils::obExit();
 		}

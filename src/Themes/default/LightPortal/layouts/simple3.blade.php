@@ -7,7 +7,7 @@
 		@foreach ($context['lp_frontpage_articles'] as $article)
 			<div>
 				@unless (empty($article['image']))
-					<img class="lazy" data-src="{{ $article['image'] }}" width="311" height="155" alt="{{ $article['title'] }}">
+					<img class="lazy" src="" data-src="{{ $article['image'] }}" width="311" height="155" alt="{{ $article['title'] }}">
 				@endunless
 
 				<div class="title">

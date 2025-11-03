@@ -23,6 +23,7 @@ use LightPortal\Enums\PortalHook;
 use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Lists\PluginList;
 use LightPortal\Repositories\PluginRepositoryInterface;
+use LightPortal\UI\TemplateLoader;
 use LightPortal\Utils\DateTime;
 use LightPortal\Utils\Icon;
 use LightPortal\Utils\InputFilter;
@@ -57,12 +58,9 @@ final readonly class PluginArea
 	{
 		Lang::load('ManageMaintenance');
 
-		Theme::loadTemplate('LightPortal/ManagePlugins');
-
-		Utils::$context['sub_template'] = 'manage_plugins';
-
 		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_plugins_manage'];
-		Utils::$context['post_url']   = Config::$scripturl . '?action=admin;area=lp_plugins;save';
+
+		Utils::$context['post_url'] = Config::$scripturl . '?action=admin;area=lp_plugins;save';
 
 		Utils::$context['lp_plugins_api_endpoint'] = Config::$scripturl . '?action=admin;area=lp_plugins;api';
 
@@ -92,6 +90,8 @@ final readonly class PluginArea
 		$this->prepareAddonList($settings);
 		$this->prepareAddonChart();
 		$this->handleApi();
+
+		TemplateLoader::fromFile('admin/plugin_index');
 	}
 
 	private function handleToggle(): void

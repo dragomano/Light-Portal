@@ -3,12 +3,12 @@
 @yield('extra_html')
 
 <script>
-	VirtualSelect.init(Object.assign({!! $initJs !!}, {
+	window['VirtualSelect'].init(Object.assign({!! $initJs !!}, {
 		labelRenderer: function (data) {
 			return `<i class="${data.value}"></i> ${data.value}`;
 		},
 		onServerSearch: async function (search, virtualSelect) {
-			await axios.post("{{ $context['form_action'] }};icons", {
+			await window['axios'].post("{{ $context['form_action'] }};icons", {
 				search,
 				@yield('extra_params')
 			})

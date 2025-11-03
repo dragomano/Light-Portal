@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 29.10.25
+ * @version 02.11.25
  */
 
 namespace LightPortal\Plugins\HelloPortal;
@@ -21,7 +21,6 @@ use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Plugin;
 use LightPortal\Plugins\PluginAttribute;
 use LightPortal\Plugins\SettingsFactory;
-use LightPortal\Utils\Str;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -32,7 +31,7 @@ if (! defined('LP_NAME'))
 #[PluginAttribute]
 class HelloPortal extends Plugin
 {
-	private array $themes = [false, 'dark', 'modern', 'flattener'];
+	private array $themes = ['', 'dark', 'modern', 'flattener'];
 
 	private readonly string $steps;
 
@@ -54,6 +53,12 @@ class HelloPortal extends Plugin
 			return;
 
 		Lang::load('Post');
+
+		Utils::$context['lp_reference_links'][] = [
+			'icon'   => 'fas fa-circle-info',
+			'text'   => Lang::$txt['lp_hello_portal']['tour_button'],
+			'params' => 'x-on:click.prevent="runTour()" x-data',
+		];
 
 		$resources = [
 			['type' => 'css', 'url' => 'https://cdn.jsdelivr.net/npm/intro.js@4/minified/introjs.min.css'],
@@ -100,26 +105,6 @@ class HelloPortal extends Plugin
 				scrollTo: "tooltip"
 			}).start();
 		}');
-	}
-
-	public function addLayerAbove(): void
-	{
-		if (! $this->canShowTourButton())
-			return;
-
-		if (str_contains((string) $this->request()->get('area'), 'lp_')) {
-			echo Str::html('div')
-				->class('infobox centertext')
-				->addHtml(
-					Str::html('button', [
-						'x-on:click.prevent' => 'runTour()',
-						'x-data' => '',
-					])
-						->class('button')
-						->setText(Lang::$txt['lp_hello_portal']['tour_button'])
-				)
-				->toHtml();
-		}
 	}
 
 	public function addSettings(Event $e): void

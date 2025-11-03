@@ -15,6 +15,7 @@ namespace LightPortal\Areas\Configs;
 use Bugo\Compat\Actions\Admin\Permissions;
 use Bugo\Compat\Config;
 use Closure;
+use LightPortal\UI\TemplateLoader;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -26,13 +27,9 @@ readonly class VarFactory
 	public function createTemplateCallback(): Closure
 	{
 		return fn() => function() {
-			if (! function_exists('template_callback_' . $this->name)) {
-				return '';
-			}
-
 			ob_start();
 
-			call_user_func('template_callback_' . $this->name);
+			echo TemplateLoader::fromFile('admin/callbacks/' . $this->name, useSubTemplate: false);
 
 			return (string) ob_get_clean();
 		};

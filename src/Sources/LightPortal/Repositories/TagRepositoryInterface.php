@@ -12,4 +12,4 @@
 
 namespace LightPortal\Repositories;
 
-interface TagRepositoryInterface extends RepositoryInterface {}
+interface TagRepositoryInterface extends DataManagerInterface {}
