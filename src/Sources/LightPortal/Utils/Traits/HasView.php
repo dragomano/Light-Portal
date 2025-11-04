@@ -14,11 +14,12 @@ namespace LightPortal\Utils\Traits;
 
 use LightPortal\UI\TemplateLoader;
 use LightPortal\UI\View;
+use LightPortal\UI\ViewInterface;
 use ReflectionClass;
 
 trait HasView
 {
-	private ?View $view = null;
+	private ?ViewInterface $view = null;
 
 	public function useCustomTemplate(string $template = 'default', array $params = []): void
 	{
@@ -30,11 +31,11 @@ trait HasView
 		return $this->viewInstance()->render($template, $params);
 	}
 
-	protected function viewInstance(): View
+	protected function viewInstance(): ViewInterface
 	{
 		if (! $this->view) {
 			$reflection = new ReflectionClass(static::class);
-			$this->view = new View(dirname($reflection->getFileName()));
+			$this->view = new View(dirname($reflection->getFileName()) . '/views');
 		}
 
 		return $this->view;

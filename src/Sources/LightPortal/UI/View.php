@@ -25,31 +25,31 @@ use function LightPortal\app;
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-readonly class View
+class View implements ViewInterface
 {
-	protected string $views;
-
-	public function __construct(private string $baseDir, private string $viewDir = 'views')
-	{
-		$this->views = $this->baseDir . DIRECTORY_SEPARATOR . $this->viewDir;
-	}
+	public function __construct(private string $templateDir = '') {}
 
 	public function render(string $template = 'default', array $params = []): string
 	{
 		$tpl  = str_replace('.', DIRECTORY_SEPARATOR, $template);
-		$file = $this->getFile($tpl, $this->views);
+		$file = $this->getFile($tpl);
 
 		if ($file === '') {
 			return '';
 		}
 
-		$params = $this->getDefaultParams() + $params;
-
+		$params   = $this->getDefaultParams() + $params;
 		$renderer = $this->makeRenderer($file);
-
-		$layout = $this->prepareLayout($file, $renderer);
+		$layout   = $this->prepareLayout($file, $renderer);
 
 		return $renderer->render($layout, $params);
+	}
+
+	public function setTemplateDir(string $dir): static
+	{
+		$this->templateDir = $dir;
+
+		return $this;
 	}
 
 	private function getDefaultParams(): array
@@ -64,19 +64,16 @@ readonly class View
 		];
 	}
 
-	private function getFile(string $tpl, string $views): string
+	private function getFile(string $tpl): string
 	{
-		$candidates = [];
-		if (! str_contains($tpl, '.')) {
-			$candidates[] = $tpl . '.blade.php';
-			$candidates[] = $tpl . '.php';
-		} else {
-			$candidates[] = $tpl;
-		}
+		$candidates = [
+			$tpl . '.blade.php',
+			$tpl . '.php',
+		];
 
 		$file = '';
-		foreach ($candidates as $cand) {
-			$path = $views . DIRECTORY_SEPARATOR . $cand;
+		foreach ($candidates as $candidate) {
+			$path = $this->templateDir . DIRECTORY_SEPARATOR . $candidate;
 			if (is_file($path)) {
 				$file = $path;
 				break;
@@ -89,14 +86,14 @@ readonly class View
 	private function makeRenderer(string $file): RendererInterface
 	{
 		$renderer = str_ends_with($file, '.blade.php') ? app(Blade::class) : app(PurePHP::class);
-		$renderer->setTemplateDir($this->views)->setCustomDir($this->views);
+		$renderer->setTemplateDir($this->templateDir)->setCustomDir($this->templateDir);
 
 		return $renderer;
 	}
 
 	private function prepareLayout(string $file, RendererInterface $renderer): string
 	{
-		$layout = str_replace($this->views . DIRECTORY_SEPARATOR, '', $file);
+		$layout = str_replace($this->templateDir . DIRECTORY_SEPARATOR, '', $file);
 
 		if ($renderer instanceof Blade) {
 			$layout = str_replace(DIRECTORY_SEPARATOR, '.', $layout);

@@ -26,7 +26,7 @@ interface CacheInterface
 
 	public function put(string $key, mixed $value, int $time): void;
 
-	public function forget(string $key): void;
+	public function forget(?string $key = null): void;
 
 	public function flush(): void;
 }

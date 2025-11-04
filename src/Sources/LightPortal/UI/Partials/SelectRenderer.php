@@ -14,14 +14,17 @@ namespace LightPortal\UI\Partials;
 
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use LightPortal\UI\View;
+use LightPortal\UI\ViewInterface;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 readonly class SelectRenderer
 {
-	public function __construct(private View $view) {}
+	public function __construct(private ViewInterface $view)
+	{
+		$view->setTemplateDir(realpath(dirname(__DIR__, 4) . '/Themes/default/LightPortal/views'));
+	}
 
 	public function render(SelectInterface $select, array $params = []): string
 	{

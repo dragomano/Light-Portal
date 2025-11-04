@@ -333,8 +333,16 @@ final readonly class PluginArea
 
 	private function removeAssets(): void
 	{
-		@unlink(Theme::$current->settings['default_theme_dir'] . '/css/light_portal/plugins.css');
-		@unlink(Theme::$current->settings['default_theme_dir'] . '/scripts/light_portal/plugins.js');
+		$cssFile = Theme::$current->settings['default_theme_dir'] . '/css/light_portal/plugins.css';
+		$jsFile  = Theme::$current->settings['default_theme_dir'] . '/scripts/light_portal/plugins.js';
+
+		if (is_file($cssFile)) {
+			@unlink($cssFile);
+		}
+
+		if (is_file($jsFile)) {
+			@unlink($jsFile);
+		}
 	}
 
 	private function extendPluginList(): void

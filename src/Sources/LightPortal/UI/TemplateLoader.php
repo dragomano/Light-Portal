@@ -19,7 +19,7 @@ if (! defined('SMF'))
 
 class TemplateLoader
 {
-	private static ?View $view = null;
+	private static ?ViewInterface $view = null;
 
 	private static string $content = '';
 
@@ -76,7 +76,7 @@ class TemplateLoader
 	private static function initView(): void
 	{
 		if (self::$view === null) {
-			self::$view = new View(self::getTemplateBasePath(), '');
+			self::$view = new View(self::getTemplateBasePath());
 		}
 	}
 

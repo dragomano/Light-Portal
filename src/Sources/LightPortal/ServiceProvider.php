@@ -41,7 +41,7 @@ use LightPortal\Repositories\{TagIndexRepository, TagRepository, TagRepositoryIn
 use LightPortal\UI\Breadcrumbs\{BreadcrumbRenderer, BreadcrumbWrapper};
 use LightPortal\UI\Partials\SelectRenderer;
 use LightPortal\UI\Tables\TableRenderer;
-use LightPortal\UI\View;
+use LightPortal\UI\{View, ViewInterface};
 use LightPortal\Utils\{Cache, CacheInterface, ErrorHandler, ErrorHandlerInterface, File, FileInterface, Filesystem};
 use LightPortal\Utils\{FilesystemInterface, InputFilter, Notifier, NotifierInterface, Post, PostInterface, Request};
 use LightPortal\Utils\{RequestInterface, Response, ResponseInterface, Session, SessionInterface, SessionManager};
@@ -104,17 +104,22 @@ class ServiceProvider extends AbstractServiceProvider
 			'view_and_renderers' => [
 				['id' => Blade::class],
 				[
-					'id' => View::class,
-					'concrete' => fn() => new View(realpath(__DIR__ . '/../../Themes/default/LightPortal')),
+					'id' => FormPresenter::class,
+					'arguments' => [FormRenderer::class],
 				],
-				[
-					'id' => SelectRenderer::class,
-					'arguments' => [View::class],
-				],
+				['id' => FormRenderer::class],
 				['id' => PurePHP::class],
 				[
 					'id' => RendererInterface::class,
 					'concrete' => Blade::class,
+				],
+				[
+					'id' => SelectRenderer::class,
+					'arguments' => [ViewInterface::class],
+				],
+				[
+					'id' => ViewInterface::class,
+					'concrete' => View::class,
 				],
 				[
 					'id' => TablePresenterInterface::class,
@@ -122,11 +127,6 @@ class ServiceProvider extends AbstractServiceProvider
 					'arguments' => [TableRenderer::class],
 				],
 				['id' => TableRenderer::class],
-				[
-					'id' => FormPresenter::class,
-					'arguments' => [FormRenderer::class],
-				],
-				['id' => FormRenderer::class],
 			],
 
 			'actions' => [
