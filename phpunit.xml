@@ -61,6 +61,7 @@
 			<file>src/Sources/LightPortal/Validators/index.php</file>
 			<file>src/Sources/LightPortal/app.php</file>
 			<file>src/Sources/LightPortal/create_index.php</file>
+			<file>src/Sources/LightPortal/functions.php</file>
 			<file>src/Sources/LightPortal/index.php</file>
 			<file>src/Sources/LightPortal/update_plugins.php</file>
 		</exclude>

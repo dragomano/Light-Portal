@@ -10,7 +10,6 @@ use LightPortal\DataHandlers\Imports\PluginImport;
 use LightPortal\Utils\ErrorHandlerInterface;
 use LightPortal\Utils\File;
 use FilesystemIterator;
-use Mockery;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RuntimeException;

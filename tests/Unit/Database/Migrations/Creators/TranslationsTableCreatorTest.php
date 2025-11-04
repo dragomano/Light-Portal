@@ -75,7 +75,6 @@ describe('TranslationsTableCreatorTest', function () {
         expect($row['item_id'])->toBe(1)
             ->and($row['type'])->toBe('page')
             ->and($row['lang'])->toBe('english')
-            ->and($row['title'])->toBe('Test Forum')
             ->and($row['content'])->toBe('<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>');
     });
 

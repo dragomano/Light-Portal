@@ -61,5 +61,5 @@ it('should show pages and set context properly without calling obExit', function
     expect(Utils::$context['start'])->toBe(0)
         ->and(Utils::$context['lp_frontpage_articles'])->toBe([])
         ->and(Utils::$context['lp_frontpage_num_columns'])->toBe(3)
-        ->and(Utils::$context['template_layers'])->toContain('list');
+        ->and(Utils::$context['template_layers'])->toContain('lp_list');
 });

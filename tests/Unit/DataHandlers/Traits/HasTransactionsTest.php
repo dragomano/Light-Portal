@@ -65,13 +65,12 @@ describe('startTransaction', function () {
 
 describe('finishTransaction', function () {
     it('commits when results exist', function () {
-        Lang::$txt['lp_import_success'] = 'Import successful: %s';
         Lang::$txt['lp_test_entity_set'] = '{test_entity, plural, one {# test entity} other {# test entities}}';
 
         $this->testClass->testStartTransaction([['id' => 1], ['id' => 2]]);
         $this->testClass->testFinishTransaction();
 
-        expect(Utils::$context['import_successful'])->toBe('Import successful: 2 test entities');
+        expect(Utils::$context['import_successful'])->toBe('Imported: 2 test entities');
     });
 
     it('rolls back when no results', function () {
@@ -83,7 +82,6 @@ describe('finishTransaction', function () {
     it('flushes cache', function () {
         Utils::$context['import_successful'] = 1;
 
-        Lang::$txt['lp_import_success'] = 'Import successful: ';
         Lang::$txt['lp_test_entity_set'] = '{test_entity, plural, one {# test entity} other {# test entities}}';
 
         $this->testClass->testStartTransaction([['id' => 1]]);

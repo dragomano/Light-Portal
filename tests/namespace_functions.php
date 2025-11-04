@@ -9,13 +9,16 @@ use LightPortal\Database\PortalResultInterface;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Events\EventManager;
 use LightPortal\Lists\CategoryList;
+use LightPortal\Lists\ListInterface;
 use LightPortal\Lists\PageList;
 use LightPortal\Lists\TagList;
+use LightPortal\Renderers\Blade;
+use LightPortal\Renderers\PurePHP;
 use LightPortal\Repositories\CategoryRepositoryInterface;
 use LightPortal\Repositories\PageRepositoryInterface;
 use LightPortal\Repositories\TagRepositoryInterface;
 use LightPortal\UI\Partials\SelectRenderer;
-use LightPortal\UI\View;
+use LightPortal\UI\ViewInterface;
 use LightPortal\Utils\CacheInterface;
 use LightPortal\Utils\PostInterface;
 use LightPortal\Utils\RequestInterface;
@@ -57,17 +60,11 @@ if (! function_exists('LightPortal\\app')) {
                     return null;
                 }
 
-                public function put(string $key, mixed $value, int $time = null): void
-                {
-                }
+                public function put(string $key, mixed $value, int $time = null): void {}
 
-                public function forget(string $key): void
-                {
-                }
+                public function forget(?string $key = null): void {}
 
-                public function flush(): void
-                {
-                }
+                public function flush(): void {}
             };
         } elseif (str_contains($service, 'PortalSqlInterface')) {
             $selectMock = mock(PortalSelect::class);
@@ -127,11 +124,38 @@ if (! function_exists('LightPortal\\app')) {
             }
 
             return null;
-        } elseif (str_contains($service, 'View')) {
-            $mockView = mock('overload:' . View::class);
-            $mockView->shouldReceive('render')->andReturn('<div>rendered</div>');
+        } elseif (str_contains($service, 'ViewInterface')) {
+            if ($mock = AppMockRegistry::get(ViewInterface::class)) {
+                return $mock;
+            }
+
+            $mockView = mock(ViewInterface::class);
+            $mockView->shouldReceive('setTemplateDir')->byDefault()->andReturn($mockView);
+            $mockView->shouldReceive('render')->byDefault()->andReturn('<div>rendered</div>');
 
             return $mockView;
+        } elseif (str_contains($service, 'Blade')) {
+            if ($mock = AppMockRegistry::get('Blade')) {
+                return $mock;
+            }
+
+            $mock = mock(Blade::class);
+            $mock->shouldReceive('setTemplateDir')->byDefault()->andReturn($mock);
+            $mock->shouldReceive('setCustomDir')->byDefault()->andReturn($mock);
+            $mock->shouldReceive('render')->byDefault()->andReturn('<div>blade rendered</div>');
+
+            return $mock;
+        } elseif (str_contains($service, 'PurePHP')) {
+            if ($mock = AppMockRegistry::get('PurePHP')) {
+                return $mock;
+            }
+
+            $mock = mock(PurePHP::class);
+            $mock->shouldReceive('setTemplateDir')->byDefault()->andReturn($mock);
+            $mock->shouldReceive('setCustomDir')->byDefault()->andReturn($mock);
+            $mock->shouldReceive('render')->byDefault()->andReturn('<div>pure php rendered</div>');
+
+            return $mock;
         } elseif (str_contains($service, 'CategoryList')) {
             if ($mock = AppMockRegistry::get(CategoryList::class)) {
                 return $mock;
@@ -154,6 +178,17 @@ if (! function_exists('LightPortal\\app')) {
             $mockRepo->shouldReceive('getTranslationFilter')->andReturn('');
 
             return new TagList($mockRepo);
+        } elseif (str_contains($service, 'PluginList')) {
+            if ($mock = AppMockRegistry::get('PluginList')) {
+                return $mock;
+            }
+
+            return new class implements ListInterface {
+                public function __invoke(): array
+                {
+                    return ['TestPlugin'];
+                }
+            };
         } elseif (str_contains($service, 'PageList')) {
             if ($mock = AppMockRegistry::get(PageList::class)) {
                 return $mock;

@@ -6,9 +6,7 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Theme;
 use LightPortal\Database\PortalSql;
 use LightPortal\Database\PortalSqlInterface;
-use LightPortal\Utils\CacheInterface;
 use LightPortal\Utils\Traits\HasThemes;
-use Tests\AppMockRegistry;
 use Tests\Table;
 use Tests\TestAdapterFactory;
 
@@ -17,47 +15,6 @@ beforeEach(function () {
     $adapter->query(Table::THEMES->value)->execute();
 
     $this->sql = new PortalSql($adapter);
-
-    $mockCache = new class implements CacheInterface {
-        public function withKey(?string $key): CacheInterface
-        {
-            return $this;
-        }
-
-        public function setLifeTime(int $lifeTime): CacheInterface
-        {
-            return $this;
-        }
-
-        public function remember(string $key, callable $callback, ?int $time = null): mixed
-        {
-            return $callback();
-        }
-
-        public function setFallback(callable $callback): null
-        {
-            return null;
-        }
-
-        public function get(string $key, ?int $time = null): null
-        {
-            return null;
-        }
-
-        public function put(string $key, mixed $value, ?int $time = null): void
-        {
-        }
-
-        public function forget(string $key): void
-        {
-        }
-
-        public function flush(): void
-        {
-        }
-    };
-
-    AppMockRegistry::set(CacheInterface::class, $mockCache);
 
     $this->testClass = new class($this->sql) {
         use HasThemes;
@@ -80,9 +37,7 @@ beforeEach(function () {
         }
     };
 
-    $themeCurrent = new stdClass();
-    $themeCurrent->settings = ['theme_id' => 1];
-    Theme::$current = $themeCurrent;
+    Theme::$current->settings = ['theme_id' => 1];
 
     Config::$modSettings['knownThemes'] = '1';
 });
