@@ -14,10 +14,10 @@ namespace LightPortal\DataHandlers\Imports;
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Sapi;
-use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\DataHandlers\DataHandler;
+use LightPortal\UI\TemplateLoader;
 use LightPortal\Utils\ErrorHandlerInterface;
 use LightPortal\Utils\FileInterface;
 use LightPortal\Utils\Traits\HasRequest;
@@ -59,10 +59,6 @@ abstract class AbstractImport extends DataHandler
 
 	protected function setupUi(): void
 	{
-		Theme::loadTemplate('LightPortal/ManageImpex');
-
-		Utils::$context['sub_template'] = 'manage_import';
-
 		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_' . $this->entity . '_import'];
 		Utils::$context['page_area_title'] = Lang::$txt['lp_' . $this->entity . '_import'];
 		Utils::$context['page_area_info'] = Lang::$txt['lp_' . $this->entity . '_import_info'];
@@ -74,6 +70,8 @@ abstract class AbstractImport extends DataHandler
 		];
 
 		Utils::$context['lp_file_type'] = 'text/xml';
+
+		TemplateLoader::fromFile('admin/import');
 	}
 
 	protected function getFile(string $name = 'import_file'): SimpleXMLElement|bool

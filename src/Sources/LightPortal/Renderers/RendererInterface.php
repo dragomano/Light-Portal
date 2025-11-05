@@ -16,5 +16,7 @@ interface RendererInterface
 {
 	public function render(string $layout, array $params = []): string;
 
+	public function renderString(string $string, array $params = []): string;
+
 	public function getLayouts(): array;
 }

@@ -2,74 +2,112 @@
 
 declare(strict_types=1);
 
-use Bugo\Compat\Utils;
-use LightPortal\UI\View;
+use LightPortal\UI\ViewInterface;
 use LightPortal\Utils\Traits\HasView;
-use Tests\ReflectionAccessor;
 
 beforeEach(function () {
-    mock('overload:LightPortal\UI\View')
-        ->shouldReceive('render')
-        ->andReturn('<div>rendered</div>');
+    $this->mockView = mock(ViewInterface::class);
+});
 
-    $this->testClass = new class {
+it('returns rendered content from view method', function () {
+    $this->mockView->shouldReceive('render')
+        ->once()
+        ->with('test_template', ['param' => 'value'])
+        ->andReturn('<div>rendered content</div>');
+
+    $testClass = new class {
         use HasView;
 
-        public function callUseLayerAbove(string $template = 'default', array $params = []): void
+        public function setView(ViewInterface $view): void
         {
-            $this->useLayerAbove($template, $params);
+            $this->view = $view;
         }
+    };
 
-        public function callUseCustomTemplate(string $template = 'default', array $params = []): void
+    $testClass->setView($this->mockView);
+
+    $result = $testClass->view('test_template', ['param' => 'value']);
+
+    expect($result)->toBe('<div>rendered content</div>');
+});
+
+it('returns rendered content from view method with default template', function () {
+    $this->mockView->shouldReceive('render')
+        ->once()
+        ->with('default', [])
+        ->andReturn('<div>default content</div>');
+
+    $testClass = new class {
+        use HasView;
+
+        public function setView(ViewInterface $view): void
         {
-            $this->useCustomTemplate($template, $params);
+            $this->view = $view;
         }
+    };
 
-        public function callView(string $template = 'default', array $params = []): string
-        {
-            return $this->view($template, $params);
-        }
+    $testClass->setView($this->mockView);
 
-        public function callViewInstance(): View
+    $result = $testClass->view();
+
+    expect($result)->toBe('<div>default content</div>');
+});
+
+it('initializes view instance when not set', function () {
+    $testClass = new class {
+        use HasView;
+
+        public function callViewInstance(): ViewInterface
         {
             return $this->viewInstance();
         }
     };
 
-    $this->reflection = new ReflectionAccessor($this->testClass);
+    $viewInstance = $testClass->callViewInstance();
 
-    Utils::$context = [];
+    expect($viewInstance)->toBeInstanceOf(ViewInterface::class);
 });
 
-it('sets layer above content correctly', function () {
-    $this->testClass->callUseLayerAbove('default', ['param' => 'value']);
+it('reuses existing view instance', function () {
+    $testClass = new class {
+        use HasView;
 
-    expect(Utils::$context['template_layers'])->toContain('custom')
-        ->and(Utils::$context['lp_layer_above_content'])->toBeString();
+        public function setView(ViewInterface $view): void
+        {
+            $this->view = $view;
+        }
+
+        public function callViewInstance(): ViewInterface
+        {
+            return $this->viewInstance();
+        }
+    };
+
+    $testClass->setView($this->mockView);
+
+    $viewInstance = $testClass->callViewInstance();
+
+    expect($viewInstance)->toBe($this->mockView);
 });
 
-it('sets custom template correctly', function () {
-    $this->testClass->callUseCustomTemplate('default', ['param' => 'value']);
+it('calls useCustomTemplate method', function () {
+    $this->mockView->shouldReceive('render')
+        ->once()
+        ->with('custom_template', ['key' => 'value'])
+        ->andReturn('<p>custom content</p>');
 
-    expect(Utils::$context['sub_template'])->toBe('custom')
-        ->and(Utils::$context['lp_custom_content'])->toBeString();
+    $testClass = new class {
+        use HasView;
+
+        public function setView(ViewInterface $view): void
+        {
+            $this->view = $view;
+        }
+    };
+
+    $testClass->setView($this->mockView);
+    $testClass->useCustomTemplate('custom_template', ['key' => 'value']);
+
+    expect(true)->toBeTrue();
 });
 
-it('renders view correctly', function () {
-    $result = $this->testClass->callView('default', ['param' => 'value']);
-
-    expect($result)->toBeString();
-});
-
-it('returns view instance correctly', function () {
-    $viewInstance = $this->testClass->callViewInstance();
-
-    expect($viewInstance)->toBeInstanceOf(View::class);
-});
-
-it('caches view instance', function () {
-    $viewInstance1 = $this->testClass->callViewInstance();
-    $viewInstance2 = $this->testClass->callViewInstance();
-
-    expect($viewInstance1)->toBe($viewInstance2);
-});

@@ -19,15 +19,17 @@ use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use LightPortal\Enums\EntryType;
+use LightPortal\Enums\FrontPageMode;
 use LightPortal\Enums\PortalHook;
 use LightPortal\Enums\PortalSubAction;
 use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Repositories\PageRepositoryInterface;
+use LightPortal\UI\TemplateLoader;
 use LightPortal\Utils\Content;
 use LightPortal\Utils\Icon;
 use LightPortal\Utils\Setting;
-use LightPortal\Utils\Traits\HasCache;
 use LightPortal\Utils\Traits\HasBreadcrumbs;
+use LightPortal\Utils\Traits\HasCache;
 use LightPortal\Utils\Traits\HasRequest;
 use LightPortal\Utils\Traits\HasResponse;
 use LightPortal\Utils\Traits\HasSorting;
@@ -95,16 +97,14 @@ final readonly class Page implements ActionInterface
 			$this->request()->has(LP_PAGE_PARAM) ? ';' : '?'
 		);
 
-		Theme::loadTemplate('LightPortal/ViewPage');
-
-		Utils::$context['sub_template'] = 'show_page';
-
 		$this->handlePromoteAction();
 		$this->prepareMetadata();
 		$this->prepareNavigationLinks();
 		$this->prepareRelatedPages();
 		$this->prepareComments();
 		$this->updateNumViews();
+
+		TemplateLoader::fromFile('page_view');
 	}
 
 	public function getDataBySlug(string $slug): array
@@ -122,7 +122,7 @@ final readonly class Page implements ActionInterface
 
 	private function handleEmptySlug(): void
 	{
-		if (Setting::isFrontpageMode('chosen_page') && Config::$modSettings['lp_frontpage_chosen_page']) {
+		if (Setting::isFrontpageMode(FrontPageMode::CHOSEN_PAGE->value) && Config::$modSettings['lp_frontpage_chosen_page']) {
 			Utils::$context['lp_page'] = $this->getDataBySlug(Config::$modSettings['lp_frontpage_chosen_page']);
 		} else {
 			Config::updateModSettings(['lp_frontpage_mode' => 0]);

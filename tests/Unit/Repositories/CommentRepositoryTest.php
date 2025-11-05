@@ -12,6 +12,7 @@ use LightPortal\Repositories\CommentRepositoryInterface;
 use Tests\PortalTable;
 use Tests\Table;
 use Tests\TestAdapterFactory;
+use Tests\TestExitException;
 
 arch()
     ->expect(CommentRepository::class)
@@ -200,11 +201,9 @@ it('can remove comment and translations', function () {
     /** @var CommentRepository|Mockery\MockInterface $repository */
     $repository = mock($this->repository)->makePartial();
     $repository->shouldReceive('response')
-        ->andReturn(mock()->shouldReceive('exit')->andThrow(new Exception('exit')));
+        ->andReturn(mock()->shouldReceive('exit')->andThrow(new TestExitException()));
 
-    expect(function() use ($repository) {
-        $repository->remove([1]);
-    })->toThrow(TypeError::class);
+    expect(fn() => $repository->remove([1]))->toThrow(TypeError::class);
 
     $commentsAfter = $this->sql->getAdapter()
         ->query(/** @lang text */ 'SELECT COUNT(*) as count FROM lp_comments')->execute();

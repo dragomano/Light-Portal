@@ -40,9 +40,9 @@
     "check": "vendor/bin/rector process --dry-run --clear-cache",
     "tests": "php -d memory_limit=512M vendor/bin/pest --colors=always",
     "tests-debug": "php -d memory_limit=512M vendor/bin/pest --colors=always --display-warnings",
-    "tests-coverage": "php -d memory_limit=512M vendor/bin/pest --colors=always --coverage --min=40",
-    "tests-coverage-clover": "php -d memory_limit=512M vendor/bin/pest --colors=always --min=40 --coverage-clover coverage.xml",
-    "tests-coverage-html": "php -d memory_limit=512M vendor/bin/pest --colors=always --min=40 --coverage-html coverage",
+    "tests-coverage": "php -d memory_limit=512M vendor/bin/pest --colors=always --coverage --min=50",
+    "tests-coverage-clover": "php -d memory_limit=512M vendor/bin/pest --colors=always --min=50 --coverage-clover coverage.xml",
+    "tests-coverage-html": "php -d memory_limit=512M vendor/bin/pest --colors=always --min=50 --coverage-html coverage",
     "assets": [
       "pnpm update",
       "pnpm run build",

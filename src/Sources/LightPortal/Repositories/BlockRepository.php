@@ -31,7 +31,7 @@ use function LightPortal\app;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class BlockRepository extends AbstractRepository implements BlockRepositoryInterface, DataManagerInterface
+final class BlockRepository extends AbstractRepository implements BlockRepositoryInterface
 {
 	protected string $entity = 'block';
 

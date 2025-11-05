@@ -12,7 +12,7 @@
 
 namespace LightPortal\Repositories;
 
-interface BlockRepositoryInterface extends RepositoryInterface
+interface BlockRepositoryInterface extends DataManagerInterface
 {
 	public function updatePriority(array $blocks = [], string $placement = ''): void;
 }

@@ -12,7 +12,7 @@
 
 namespace LightPortal\Repositories;
 
-interface CategoryRepositoryInterface extends RepositoryInterface
+interface CategoryRepositoryInterface extends DataManagerInterface
 {
 	public function updatePriority(array $categories = []): void;
 }

@@ -8,12 +8,11 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 01.11.25
  */
 
 namespace LightPortal\Plugins\AdsBlock\Hooks;
 
-use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use LightPortal\Plugins\AdsBlock\Placement;
 use LightPortal\Utils\Traits\HasPortalSql;
@@ -26,8 +25,6 @@ class MenuButtons
 
 	public function __invoke(): void
 	{
-		Utils::$context['lp_block_placements']['ads'] = Lang::$txt['lp_ads_block']['ads_type'];
-
 		$this->prepareAdsPlacements();
 
 		if ((empty(Utils::$context['current_board']) && empty(Utils::$context['lp_page'])))
@@ -65,8 +62,9 @@ class MenuButtons
 
 	private function getData(): array
 	{
-		if (empty(Utils::$context['lp_blocks']['ads']))
+		if (empty(Utils::$context['lp_blocks']['ads'])) {
 			return [];
+		}
 
 		$blocks = [];
 		foreach (array_keys(Placement::all()) as $position) {
@@ -97,8 +95,9 @@ class MenuButtons
 
 	private function getByPosition(string $position): array
 	{
-		if (empty($position))
+		if (empty($position)) {
 			return [];
+		}
 
 		return array_filter(
 			Utils::$context['lp_blocks']['ads'],

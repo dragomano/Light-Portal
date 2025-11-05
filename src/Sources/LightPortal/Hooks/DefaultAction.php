@@ -17,6 +17,7 @@ use LightPortal\Actions\ActionInterface;
 use LightPortal\Actions\BoardIndex;
 use LightPortal\Actions\FrontPage;
 use LightPortal\Actions\Page;
+use LightPortal\Enums\FrontPageMode;
 use LightPortal\Utils\Setting;
 use LightPortal\Utils\Traits\HasRequest;
 
@@ -38,7 +39,7 @@ class DefaultAction
 
 	private function determineAction(): ActionInterface
 	{
-		if ($this->request()->isNotEmpty(LP_PAGE_PARAM) || Setting::isFrontpageMode('chosen_page')) {
+		if ($this->request()->isNotEmpty(LP_PAGE_PARAM) || Setting::isFrontpageMode(FrontPageMode::CHOSEN_PAGE->value)) {
 			return app(Page::class);
 		}
 

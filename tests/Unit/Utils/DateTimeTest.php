@@ -11,13 +11,15 @@ describe('DateTime', function () {
         Lang::$txt['today'] = 'Today at ';
         Lang::$txt['yesterday'] = 'Yesterday at ';
         Lang::$txt['lang_locale'] = 'en_US';
+
+        $this->accessor = new ReflectionAccessor(new DateTime());
     });
 
     describe('DateTime::get', function () {
         it('returns current DateTime when no timestamp provided', function () {
-            $before = time();
+            $before   = time();
             $dateTime = DateTime::get();
-            $after = time();
+            $after    = time();
 
             expect($dateTime)
                 ->toBeInstanceOf(\DateTime::class)
@@ -27,7 +29,7 @@ describe('DateTime', function () {
 
         it('returns DateTime for specific timestamp', function () {
             $timestamp = 1609459200; // 2021-01-01 00:00:00 UTC
-            $dateTime = DateTime::get($timestamp);
+            $dateTime  = DateTime::get($timestamp);
 
             expect($dateTime)
                 ->toBeInstanceOf(\DateTime::class)
@@ -66,43 +68,49 @@ describe('DateTime', function () {
 
         it('returns "Today at" for earlier today', function () {
             $now = time();
-            $todayMorning = strtotime('today 08:00:00');
+            // Create a time earlier today (but not too recent to avoid "minutes ago")
+            $todayMorning = strtotime('today ' . date('H', $now - 7200) . ':00:00'); // 2 hours ago
 
-            if ($now > $todayMorning) {
+            if ($now > $todayMorning && ($now - $todayMorning) > 7200) { // More than 2 hours ago
                 $result = DateTime::relative($todayMorning);
-                expect($result)->toStartWith('Today at ');
+
+                expect($result)->toStartWith(Lang::$txt['today']);
             } else {
                 expect(true)->toBeTrue();
             }
         });
 
         it('returns "Yesterday at" for yesterday', function () {
-            $yesterday = strtotime('yesterday 15:00:00');
-            $result = DateTime::relative($yesterday);
+            $yesterday = strtotime('-1 day 15:00:00');
+            $result    = DateTime::relative($yesterday);
 
             expect($result)->toStartWith('Yesterday at ');
         });
 
         it('returns "Tomorrow at" for tomorrow', function () {
-            $tomorrow = strtotime('tomorrow 10:00:00');
-            $result = DateTime::relative($tomorrow);
+            $tomorrow = strtotime('+1 day 10:00:00');
+            $result   = DateTime::relative($tomorrow);
 
             expect($result)->toStartWith(Lang::$txt['lp_tomorrow']);
         });
 
-        it('returns "In X hours" for future hours', function ($hours) {
-            $baseTime = strtotime('08:00:00');
-            $futureTime = $baseTime + ($hours * 3600);
+        it('returns "In X hours" for future hours', function () {
+            $currentHour = (int) date('H');
+            $maxSafeHours = min(22 - $currentHour, 14);
+
+            $hours = rand(1, max(1, $maxSafeHours));
+
+            $futureTime = time() + ($hours * 3600);
             $result = DateTime::relative($futureTime);
 
             expect($result)
                 ->toStartWith('In ')
                 ->toContain('hour');
-        })->with([10, 12, 14]);
+        });
 
         it('returns "In X minutes" for future minutes', function ($minutes) {
             $futureTime = time() + ($minutes * 60);
-            $result = DateTime::relative($futureTime);
+            $result     = DateTime::relative($futureTime);
 
             expect($result)
                 ->toStartWith('In ')
@@ -111,7 +119,7 @@ describe('DateTime', function () {
 
         it('returns "In X seconds" for future seconds', function ($seconds) {
             $futureTime = time() + $seconds;
-            $result = DateTime::relative($futureTime);
+            $result     = DateTime::relative($futureTime);
 
             expect($result)
                 ->toStartWith('In ')
@@ -120,7 +128,7 @@ describe('DateTime', function () {
 
         it('returns "In X days" for future within a week', function ($days) {
             $futureTime = time() + ($days * 86400);
-            $result = DateTime::relative($futureTime);
+            $result     = DateTime::relative($futureTime);
 
             expect($result)
                 ->toStartWith('In ')
@@ -191,7 +199,7 @@ describe('DateTime', function () {
 
         it('handles past year dates', function () {
             $lastYear = strtotime('-1 year');
-            $result = DateTime::relative($lastYear);
+            $result   = DateTime::relative($lastYear);
 
             expect($result)->toBeString()->not->toBeEmpty();
         });
@@ -318,9 +326,7 @@ describe('DateTime', function () {
             }
 
             $timestamp = strtotime('2024-03-15 14:30:00');
-
-            $reflection = new ReflectionAccessor(new DateTime());
-            $result = $reflection->callProtectedMethod(
+            $result    = $this->accessor->callProtectedMethod(
                 'getLocalDate',
                 [$timestamp, IntlDateFormatter::LONG, IntlDateFormatter::SHORT]
             );
@@ -335,9 +341,7 @@ describe('DateTime', function () {
             }
 
             $timestamp = strtotime('2024-03-15 14:30:00');
-
-            $reflection = new ReflectionAccessor(new DateTime());
-            $result = $reflection->callProtectedMethod('getLocalDate', [$timestamp, $dateType, $timeType]);
+            $result    = $this->accessor->callProtectedMethod('getLocalDate', [$timestamp, $dateType, $timeType]);
 
             expect($result)->toBeString()->not->toBeEmpty();
         })->with([
@@ -357,9 +361,7 @@ describe('DateTime', function () {
             }
 
             $timestamp = time();
-
-            $reflection = new ReflectionAccessor(new DateTime());
-            $result = $reflection->callProtectedMethod(
+            $result    = $this->accessor->callProtectedMethod(
                 'getLocalDate',
                 [$timestamp, IntlDateFormatter::FULL, IntlDateFormatter::SHORT]
             );
@@ -370,8 +372,7 @@ describe('DateTime', function () {
 
     describe('DateTime::parseDate', function () {
         it('parses valid dates correctly', function ($dateStr, $expectedYear, $expectedMonth, $expectedDay) {
-            $reflection = new ReflectionAccessor(new DateTime());
-            $result = $reflection->callProtectedMethod('parseDate', [$dateStr]);
+            $result = $this->accessor->callProtectedMethod('parseDate', [$dateStr]);
 
             expect($result)
                 ->toBeInstanceOf(\DateTime::class)
@@ -386,8 +387,7 @@ describe('DateTime', function () {
         ]);
 
         it('returns null for invalid date formats', function ($dateStr) {
-            $reflection = new ReflectionAccessor(new DateTime());
-            $result = $reflection->callProtectedMethod('parseDate', [$dateStr]);
+            $result = $this->accessor->callProtectedMethod('parseDate', [$dateStr]);
 
             expect($result)->toBeNull();
         })->with([
@@ -402,8 +402,7 @@ describe('DateTime', function () {
         ]);
 
         it('returns null when DateTime construction throws exception', function ($dateStr) {
-            $reflection = new ReflectionAccessor(new DateTime());
-            $result = $reflection->callProtectedMethod('parseDate', [$dateStr]);
+            $result = $this->accessor->callProtectedMethod('parseDate', [$dateStr]);
 
             expect($result)->toBeNull();
         })->with([

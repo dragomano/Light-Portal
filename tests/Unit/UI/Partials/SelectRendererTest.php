@@ -6,13 +6,13 @@ use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 use LightPortal\UI\Partials\SelectInterface;
 use LightPortal\UI\Partials\SelectRenderer;
-use LightPortal\UI\View;
+use LightPortal\UI\ViewInterface;
 use Tests\ReflectionAccessor;
 
 use function LightPortal\app;
 
 beforeEach(function () {
-    Lang::$txt = array_merge(Lang::$txt, [
+    Lang::$txt += [
         'no_matches'   => 'No matches',
         'search'       => 'Search',
         'all'          => 'All',
@@ -20,14 +20,111 @@ beforeEach(function () {
         'check_all'    => 'Check all',
         'post_options' => 'Post options',
         'no'           => 'No',
-        'lp_example'   => 'Example',
-    ]);
+    ];
 
-    Utils::$context = array_merge(Utils::$context, [
-        'right_to_left' => false,
-    ]);
+    Utils::$context['right_to_left'] = false;
 
-    $this->testClass = new class implements SelectInterface {
+    $this->renderer = new ReflectionAccessor(new SelectRenderer(app(ViewInterface::class)));
+});
+
+it('builds init options for virtual select template', function () {
+    $config = [
+        'id'                       => 'test_id',
+        'multiple'                 => true,
+        'search'                   => false,
+        'hint'                     => 'Custom hint',
+        'value'                    => 'option1,option2',
+        'disabled'                 => true,
+        'empty'                    => 'No options',
+        'wide'                     => false,
+        'allowNew'                 => true,
+        'more'                     => true,
+        'maxValues'                => 3,
+        'showSelectedOptionsFirst' => true,
+        'data'                     => [
+            ['label' => 'Option 1', 'value' => 'opt1'],
+            ['label' => 'Option 2', 'value' => 'opt2'],
+        ]
+    ];
+    $template = 'virtual_select';
+    $templateData = [
+        'id'      => 'test_id',
+        'data'    => $config['data'],
+        'config'  => $config,
+        'txt'     => Lang::$txt,
+        'context' => Utils::$context,
+    ];
+
+    $result = $this->renderer->callProtectedMethod('buildInitOptions', [$config, $template, $templateData]);
+
+    expect($result)->toBeArray()
+        ->and($result)->toHaveKey('ele')
+        ->and($result)->toHaveKey('multiple')
+        ->and($result)->toHaveKey('search')
+        ->and($result)->toHaveKey('placeholder')
+        ->and($result)->toHaveKey('options')
+        ->and($result)->toHaveKey('selectedValue')
+        ->and($result)->toHaveKey('disabled')
+        ->and($result)->toHaveKey('noOptionsText')
+        ->and($result)->toHaveKey('allowNewOption')
+        ->and($result)->toHaveKey('moreText')
+        ->and($result)->toHaveKey('maxValues')
+        ->and($result)->toHaveKey('showSelectedOptionsFirst')
+        ->and($result['ele'])->toBe('#test_id')
+        ->and($result['multiple'])->toBeTrue()
+        ->and($result['search'])->toBeFalse()
+        ->and($result['placeholder'])->toBe('Custom hint')
+        ->and($result['options'])->toBe($config['data'])
+        ->and($result['selectedValue'])->toBe('option1,option2')
+        ->and($result['disabled'])->toBeTrue()
+        ->and($result['noOptionsText'])->toBe('No options')
+        ->and($result['allowNewOption'])->toBeTrue()
+        ->and($result['moreText'])->toBe('Post options')
+        ->and($result['maxValues'])->toBe(3)
+        ->and($result['showSelectedOptionsFirst'])->toBeTrue();
+
+});
+
+it('builds init options for preview select template', function () {
+    $config       = ['id' => 'test_id'];
+    $template     = 'preview_select';
+    $templateData = [
+        'id'      => 'test_id',
+        'data'    => [],
+        'config'  => $config,
+        'txt'     => Lang::$txt,
+        'context' => Utils::$context,
+    ];
+
+    $result = $this->renderer->callProtectedMethod('buildInitOptions', [$config, $template, $templateData]);
+
+    expect($result)->toBeArray()
+        ->and($result)->toHaveKey('showSelectedOptionsFirst')
+        ->and($result)->toHaveKey('optionHeight')
+        ->and($result['showSelectedOptionsFirst'])->toBeTrue()
+        ->and($result['optionHeight'])->toBe('60px');
+});
+
+it('builds init options for icon select template', function () {
+    $config       = ['id' => 'test_id'];
+    $template     = 'icon_select';
+    $templateData = [
+        'id'      => 'test_id',
+        'data'    => [],
+        'config'  => $config,
+        'txt'     => Lang::$txt,
+        'context' => Utils::$context,
+    ];
+
+    $result = $this->renderer->callProtectedMethod('buildInitOptions', [$config, $template, $templateData]);
+
+    expect($result)->toBeArray()
+        ->and($result)->toHaveKey('allowNewOption')
+        ->and($result['allowNewOption'])->toBeTrue();
+});
+
+it('tests generateId method with reflection', function () {
+    $testClass = new class implements SelectInterface {
         private array $params;
 
         private array $data;
@@ -67,115 +164,9 @@ beforeEach(function () {
             return '';
         }
     };
-});
 
-it('builds init options for virtual select template', function () {
-    $config = [
-        'id'                       => 'test_id',
-        'multiple'                 => true,
-        'search'                   => false,
-        'hint'                     => 'Custom hint',
-        'value'                    => 'option1,option2',
-        'disabled'                 => true,
-        'empty'                    => 'No options',
-        'wide'                     => false,
-        'allowNew'                 => true,
-        'more'                     => true,
-        'maxValues'                => 3,
-        'showSelectedOptionsFirst' => true,
-        'data'                     => [
-            ['label' => 'Option 1', 'value' => 'opt1'],
-            ['label' => 'Option 2', 'value' => 'opt2'],
-        ]
-    ];
-    $template = 'virtual_select';
-    $templateData = [
-        'id'      => 'test_id',
-        'data'    => $config['data'],
-        'config'  => $config,
-        'txt'     => Lang::$txt,
-        'context' => Utils::$context,
-    ];
-
-    $renderer = new ReflectionAccessor(new SelectRenderer(app(View::class)));
-
-    $result = $renderer->callProtectedMethod('buildInitOptions', [$config, $template, $templateData]);
-
-    expect($result)->toBeArray()
-        ->and($result)->toHaveKey('ele')
-        ->and($result)->toHaveKey('multiple')
-        ->and($result)->toHaveKey('search')
-        ->and($result)->toHaveKey('placeholder')
-        ->and($result)->toHaveKey('options')
-        ->and($result)->toHaveKey('selectedValue')
-        ->and($result)->toHaveKey('disabled')
-        ->and($result)->toHaveKey('noOptionsText')
-        ->and($result)->toHaveKey('allowNewOption')
-        ->and($result)->toHaveKey('moreText')
-        ->and($result)->toHaveKey('maxValues')
-        ->and($result)->toHaveKey('showSelectedOptionsFirst')
-        ->and($result['ele'])->toBe('#test_id')
-        ->and($result['multiple'])->toBeTrue()
-        ->and($result['search'])->toBeFalse()
-        ->and($result['placeholder'])->toBe('Custom hint')
-        ->and($result['options'])->toBe($config['data'])
-        ->and($result['selectedValue'])->toBe('option1,option2')
-        ->and($result['disabled'])->toBeTrue()
-        ->and($result['noOptionsText'])->toBe('No options')
-        ->and($result['allowNewOption'])->toBeTrue()
-        ->and($result['moreText'])->toBe('Post options')
-        ->and($result['maxValues'])->toBe(3)
-        ->and($result['showSelectedOptionsFirst'])->toBeTrue();
-
-});
-
-it('builds init options for preview select template', function () {
-    $config = ['id' => 'test_id'];
-    $template = 'preview_select';
-    $templateData = [
-        'id'      => 'test_id',
-        'data'    => [],
-        'config'  => $config,
-        'txt'     => Lang::$txt,
-        'context' => Utils::$context,
-    ];
-
-    $renderer = new ReflectionAccessor(new SelectRenderer(app(View::class)));
-
-    $result = $renderer->callProtectedMethod('buildInitOptions', [$config, $template, $templateData]);
-
-    expect($result)->toBeArray()
-        ->and($result)->toHaveKey('showSelectedOptionsFirst')
-        ->and($result)->toHaveKey('optionHeight')
-        ->and($result['showSelectedOptionsFirst'])->toBeTrue()
-        ->and($result['optionHeight'])->toBe('60px');
-});
-
-it('builds init options for icon select template', function () {
-    $config = ['id' => 'test_id'];
-    $template = 'icon_select';
-    $templateData = [
-        'id'      => 'test_id',
-        'data'    => [],
-        'config'  => $config,
-        'txt'     => Lang::$txt,
-        'context' => Utils::$context,
-    ];
-
-    $renderer = new ReflectionAccessor(new SelectRenderer(app(View::class)));
-
-    $result = $renderer->callProtectedMethod('buildInitOptions', [$config, $template, $templateData]);
-
-    expect($result)->toBeArray()
-        ->and($result)->toHaveKey('allowNewOption')
-        ->and($result['allowNewOption'])->toBeTrue();
-});
-
-it('tests generateId method with reflection', function () {
-    $renderer = new ReflectionAccessor(new SelectRenderer(app(View::class)));
-
-    $select = new $this->testClass(['id' => 'custom_id']);
-    $result = $renderer->callProtectedMethod('generateId', [$select]);
+    $select = new $testClass(['id' => 'custom_id']);
+    $result = $this->renderer->callProtectedMethod('generateId', [$select]);
 
     expect($result)->toContain('lp_select_renderer_test');
 });
@@ -187,9 +178,7 @@ it('tests formatPrettyOptions method with reflection', function () {
         'search'   => true,
     ];
 
-    $renderer = new ReflectionAccessor(new SelectRenderer(app(View::class)));
-
-    $result = $renderer->callProtectedMethod('formatPrettyOptions', [$options]);
+    $result = $this->renderer->callProtectedMethod('formatPrettyOptions', [$options]);
 
     expect($result)->toBeString()
         ->and($result)->toContain('"ele": "#test_id"')
@@ -198,8 +187,8 @@ it('tests formatPrettyOptions method with reflection', function () {
 });
 
 it('tests buildInitOptions method with reflection', function () {
-    $config = ['id' => 'test_id', 'multiple' => true];
-    $template = 'virtual_select';
+    $config       = ['id' => 'test_id', 'multiple' => true];
+    $template     = 'virtual_select';
     $templateData = [
         'id'      => 'test_id',
         'data'    => [],
@@ -208,9 +197,7 @@ it('tests buildInitOptions method with reflection', function () {
         'context' => Utils::$context,
     ];
 
-    $renderer = new ReflectionAccessor(new SelectRenderer(app(View::class)));
-
-    $result = $renderer->callProtectedMethod('buildInitOptions', [$config, $template, $templateData]);
+    $result = $this->renderer->callProtectedMethod('buildInitOptions', [$config, $template, $templateData]);
 
     expect($result)->toBeArray()
         ->and($result)->toHaveKey('ele')
@@ -221,14 +208,12 @@ it('tests buildInitOptions method with reflection', function () {
 });
 
 it('tests buildPreviewSelectOptions method with reflection', function () {
-    $config = ['id' => 'test_id'];
-    $txt = Lang::$txt;
+    $config  = ['id' => 'test_id'];
+    $txt     = Lang::$txt;
     $context = Utils::$context;
-    $id = 'test_id';
+    $id      = 'test_id';
 
-    $renderer = new ReflectionAccessor(new SelectRenderer(app(View::class)));
-
-    $result = $renderer->callProtectedMethod('buildPreviewSelectOptions', [$config, $txt, $context, $id]);
+    $result = $this->renderer->callProtectedMethod('buildPreviewSelectOptions', [$config, $txt, $context, $id]);
 
     expect($result)->toBeArray()
         ->and($result)->toHaveKey('showSelectedOptionsFirst')
@@ -238,14 +223,12 @@ it('tests buildPreviewSelectOptions method with reflection', function () {
 });
 
 it('tests buildIconSelectOptions method with reflection', function () {
-    $config = ['id' => 'test_id'];
-    $txt = Lang::$txt;
+    $config  = ['id' => 'test_id'];
+    $txt     = Lang::$txt;
     $context = Utils::$context;
-    $id = 'test_id';
+    $id      = 'test_id';
 
-    $renderer = new ReflectionAccessor(new SelectRenderer(app(View::class)));
-
-    $result = $renderer->callProtectedMethod('buildIconSelectOptions', [$config, $txt, $context, $id]);
+    $result = $this->renderer->callProtectedMethod('buildIconSelectOptions', [$config, $txt, $context, $id]);
 
     expect($result)->toBeArray()
         ->and($result)->toHaveKey('allowNewOption')
@@ -253,14 +236,12 @@ it('tests buildIconSelectOptions method with reflection', function () {
 });
 
 it('tests buildPageIconSelectOptions method with reflection', function () {
-    $config = ['id' => 'test_id'];
-    $txt = Lang::$txt;
+    $config  = ['id' => 'test_id'];
+    $txt     = Lang::$txt;
     $context = Utils::$context;
-    $id = 'test_id';
+    $id      = 'test_id';
 
-    $renderer = new ReflectionAccessor(new SelectRenderer(app(View::class)));
-
-    $result = $renderer->callProtectedMethod('buildPageIconSelectOptions', [$config, $txt, $context, $id]);
+    $result = $this->renderer->callProtectedMethod('buildPageIconSelectOptions', [$config, $txt, $context, $id]);
 
     expect($result)->toBeArray()
         ->and($result)->toHaveKey('allowNewOption')
@@ -268,14 +249,12 @@ it('tests buildPageIconSelectOptions method with reflection', function () {
 });
 
 it('tests buildVirtualSelectOptions method with reflection', function () {
-    $config = ['id' => 'test_id', 'multiple' => true, 'disabled' => true, 'empty' => 'No options'];
-    $txt = Lang::$txt;
+    $config  = ['id' => 'test_id', 'multiple' => true, 'disabled' => true, 'empty' => 'No options'];
+    $txt     = Lang::$txt;
     $context = Utils::$context;
-    $id = 'test_id';
+    $id      = 'test_id';
 
-    $renderer = new ReflectionAccessor(new SelectRenderer(app(View::class)));
-
-    $result = $renderer->callProtectedMethod('buildVirtualSelectOptions', [$config, $txt, $context, $id]);
+    $result = $this->renderer->callProtectedMethod('buildVirtualSelectOptions', [$config, $txt, $context, $id]);
 
     expect($result)->toBeArray()
         ->and($result)->toHaveKey('ele')
@@ -291,14 +270,12 @@ it('tests buildVirtualSelectOptions method with reflection', function () {
 it('tests RTL direction in virtual select options', function () {
     Utils::$context['right_to_left'] = true;
 
-    $config = ['id' => 'test_id'];
-    $txt = Lang::$txt;
+    $config  = ['id' => 'test_id'];
+    $txt     = Lang::$txt;
     $context = Utils::$context;
-    $id = 'test_id';
+    $id      = 'test_id';
 
-    $renderer = new ReflectionAccessor(new SelectRenderer(app(View::class)));
-
-    $result = $renderer->callProtectedMethod('buildVirtualSelectOptions', [$config, $txt, $context, $id]);
+    $result = $this->renderer->callProtectedMethod('buildVirtualSelectOptions', [$config, $txt, $context, $id]);
 
     expect($result)->toHaveKey('textDirection')
         ->and($result['textDirection'])->toBe('rtl');
@@ -321,13 +298,12 @@ it('tests all virtual select options with complete config', function () {
         'maxValues' => 3,
         'showSelectedOptionsFirst' => true,
     ];
-    $txt = Lang::$txt;
+
+    $txt     = Lang::$txt;
     $context = Utils::$context;
-    $id = 'test_id';
+    $id      = 'test_id';
 
-    $renderer = new ReflectionAccessor(new SelectRenderer(app(View::class)));
-
-    $result = $renderer->callProtectedMethod('buildVirtualSelectOptions', [$config, $txt, $context, $id]);
+    $result = $this->renderer->callProtectedMethod('buildVirtualSelectOptions', [$config, $txt, $context, $id]);
 
     expect($result)->toHaveKey('multiple')
         ->and($result)->toHaveKey('search')
@@ -350,4 +326,77 @@ it('tests all virtual select options with complete config', function () {
         ->and($result['moreText'])->toBe($txt['post_options'])
         ->and($result['maxValues'])->toBe(3)
         ->and($result['showSelectedOptionsFirst'])->toBeTrue();
+});
+
+it('renders select with virtual select template', function () {
+    $mockView = mock(ViewInterface::class);
+    $mockView->shouldReceive('setTemplateDir')
+        ->once()
+        ->andReturnSelf();
+    $mockView->shouldReceive('render')
+        ->once()
+        ->with('virtual_select', Mockery::on(function ($arg) {
+            return isset($arg['id'], $arg['data'], $arg['config'], $arg['txt'], $arg['context'], $arg['initJs']) &&
+                   str_starts_with($arg['id'], 'lp_');
+        }))
+        ->andReturn('<div>rendered</div>');
+
+    $renderer = new SelectRenderer($mockView);
+
+    $select = new class implements SelectInterface {
+        public function getParams(): array
+        {
+            return []; // no id provided, should generate one
+        }
+
+        public function getData(): array
+        {
+            return [['label' => 'Option 1', 'value' => 'opt1']];
+        }
+
+        public function __toString(): string
+        {
+            return '';
+        }
+    };
+
+    $result = $renderer->render($select, ['template' => 'virtual_select']);
+
+    expect($result)->toBe('<div>rendered</div>');
+});
+
+it('renders select with page_icon_select template', function () {
+    $mockView = mock(ViewInterface::class);
+    $mockView->shouldReceive('setTemplateDir')
+        ->once()
+        ->andReturnSelf();
+    $mockView->shouldReceive('render')
+        ->once()
+        ->with('page_icon_select', Mockery::on(function ($arg) {
+            return isset($arg['id'], $arg['data'], $arg['config'], $arg['txt'], $arg['context'], $arg['initJs']);
+        }))
+        ->andReturn('<div>page icon rendered</div>');
+
+    $renderer = new SelectRenderer($mockView);
+
+    $select = new class implements SelectInterface {
+        public function getParams(): array
+        {
+            return ['id' => 'page_icon_select_test'];
+        }
+
+        public function getData(): array
+        {
+            return [['label' => 'Icon 1', 'value' => 'fas fa-star']];
+        }
+
+        public function __toString(): string
+        {
+            return '';
+        }
+    };
+
+    $result = $renderer->render($select, ['template' => 'page_icon_select']);
+
+    expect($result)->toBe('<div>page icon rendered</div>');
 });

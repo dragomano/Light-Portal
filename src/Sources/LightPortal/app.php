@@ -16,6 +16,7 @@ if (! defined('SMF'))
 	die('We gotta get out of here!');
 
 require_once __DIR__ . '/Libs/autoload.php';
+require_once __DIR__ . '/functions.php';
 
 if (! function_exists('app')) {
 	/**

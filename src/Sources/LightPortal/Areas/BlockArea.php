@@ -13,12 +13,8 @@
 namespace LightPortal\Areas;
 
 use Bugo\Compat\Config;
-use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Lang;
-use Bugo\Compat\Security;
-use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use LightPortal\Areas\Traits\HasArea;
 use LightPortal\Enums\BlockAreaType;
 use LightPortal\Enums\ContentType;
 use LightPortal\Enums\PortalHook;
@@ -27,6 +23,7 @@ use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Models\BlockFactory;
 use LightPortal\Plugins\Block;
 use LightPortal\Repositories\BlockRepositoryInterface;
+use LightPortal\UI\TemplateLoader;
 use LightPortal\UI\Fields\CheckboxField;
 use LightPortal\UI\Fields\CustomField;
 use LightPortal\UI\Fields\TextareaField;
@@ -35,218 +32,115 @@ use LightPortal\UI\Fields\UrlField;
 use LightPortal\UI\Partials\SelectFactory;
 use LightPortal\Utils\Content;
 use LightPortal\Utils\Icon;
-use LightPortal\Utils\Language;
 use LightPortal\Utils\Setting;
 use LightPortal\Utils\Str;
 use LightPortal\Validators\BlockValidator;
 
-use function LightPortal\app;
-use function template_show_areas_info;
-
-use const LP_NAME;
 use const LP_PAGE_PARAM;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-final readonly class BlockArea implements AreaInterface
+final class BlockArea extends AbstractArea
 {
-	use HasArea;
-
-	public function __construct(
-		private BlockRepositoryInterface $repository,
-		private EventDispatcherInterface $dispatcher
-	) {}
-
-	public function main(): void
+	public function __construct(BlockRepositoryInterface $repository, EventDispatcherInterface $dispatcher)
 	{
-		Theme::loadTemplate('LightPortal/ManageBlocks');
-
-		Utils::$context['sub_template'] = 'manage_blocks';
-
-		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_blocks_manage'];
-
-		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
-			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_blocks_manage_description'],
-		];
-
-		$this->doActions();
-
-		Utils::$context['lp_current_blocks'] = $this->repository->getAll(0, 0, 'placement DESC, priority');
+		parent::__construct($repository, $dispatcher);
 	}
 
-	public function add(): void
+	protected function getEntityName(): string
 	{
-		Theme::loadTemplate('LightPortal/ManageBlocks');
+		return 'block';
+	}
 
-		Utils::$context['sub_template'] = 'block_add';
+	protected function getEntityNamePlural(): string
+	{
+		return 'blocks';
+	}
 
-		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_blocks_add_title'];
-
-		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_blocks;sa=add';
-
-		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
-			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_blocks_add_description'],
+	protected function getCustomActionHandlers(): array
+	{
+		return [
+			'clone_block'     => fn($data) => $this->handleClone($data['clone_block']),
+			'update_priority' => fn($data) => $this->getRepository()
+				->updatePriority($data['update_priority'], $data['update_placement']),
 		];
+	}
 
+	protected function getValidatorClass(): string
+	{
+		return BlockValidator::class;
+	}
+
+	protected function getFactoryClass(): string
+	{
+		return BlockFactory::class;
+	}
+
+	protected function getMainFormActionSuffix(): string
+	{
+		return ';sa=add';
+	}
+
+	protected function getRemoveRedirectSuffix(): string
+	{
+		return ';sa=main';
+	}
+
+	protected function shouldFlushCache(): bool
+	{
+		return true;
+	}
+
+	protected function shouldRequireTitleFields(): bool
+	{
+		return false;
+	}
+
+	protected function showMainContent(): void
+	{
+		Utils::$context['lp_current_blocks'] = $this->repository->getAll(0, 0, 'placement DESC, priority');
+
+		TemplateLoader::fromFile('admin/block_index');
+	}
+
+	protected function setupAdditionalAddContext(): void
+	{
 		Lang::$txt['lp_blocks_add_instruction'] = sprintf(
-			Lang::$txt['lp_blocks_add_instruction'], Config::$scripturl . '?action=admin;area=lp_plugins'
+			Lang::$txt['lp_blocks_add_instruction'],
+			Config::$scripturl . '?action=admin;area=lp_plugins'
 		);
 
 		Utils::$context['lp_current_block']['placement'] = $this->request()->get('placement') ?: 'top';
 
 		$this->prepareBlockList();
 
+		TemplateLoader::fromFile('admin/block_add');
+
 		$json = $this->request()->json();
 		$type = $json['add_block'] ?? $this->request()->get('add_block') ?? '';
 
-		if (empty($type) && empty($json['search']))
+		$this->shouldProcessAddForm = ! (empty($type) && empty($json['search']));
+
+		if (! $this->shouldProcessAddForm)
 			return;
 
 		Utils::$context['lp_current_block']['type'] = $type;
 		Utils::$context['lp_current_block']['icon'] ??= Utils::$context['lp_loaded_addons'][$type]['icon'] ?? '';
-
-		Language::prepareList();
-
-		$this->validateData();
-		$this->prepareFormFields();
-		$this->prepareEditor();
-		$this->preparePreview();
-
-		$this->repository->setData();
-
-		Utils::$context['sub_template'] = 'block_post';
 	}
 
-	public function edit(): void
-	{
-		$item = Str::typed('int', $this->request()->get('block_id') ?: $this->request()->get('id'));
-
-		Theme::loadTemplate('LightPortal/ManageBlocks');
-
-		Utils::$context['sub_template'] = 'block_post';
-
-		Utils::$context['page_title'] = Lang::$txt['lp_portal'] . ' - ' . Lang::$txt['lp_blocks_edit_title'];
-
-		Utils::$context['form_action'] = Config::$scripturl . '?action=admin;area=lp_blocks;sa=edit;id=' . $item;
-
-		Utils::$context[Utils::$context['admin_menu_name']]['tab_data'] = [
-			'title'       => LP_NAME,
-			'description' => Lang::$txt['lp_blocks_edit_description'],
-		];
-
-		Language::prepareList();
-
-		Utils::$context['lp_current_block'] = $this->repository->getData($item);
-
-		if (empty(Utils::$context['lp_current_block'])) {
-			ErrorHandler::fatalLang('lp_block_not_found', false, status: 404);
-		}
-
-		if ($this->request()->has('remove')) {
-			$this->repository->remove($item);
-
-			$this->langCache('active_blocks')->forget();
-
-			$this->response()->redirect('action=admin;area=lp_blocks;sa=main');
-		}
-
-		$this->validateData();
-		$this->prepareFormFields();
-		$this->prepareEditor();
-		$this->preparePreview();
-
-		$this->repository->setData(Utils::$context['lp_current_block']['id']);
-	}
-
-	private function doActions(): void
-	{
-		if ($this->request()->hasNot('actions'))
-			return;
-
-		$data = $this->request()->json();
-
-		match (true) {
-			isset($data['clone_block']) => $this->makeCopy($data['clone_block']),
-			isset($data['delete_item']) => $this->repository->remove($data['delete_item']),
-			isset($data['toggle_item']) => $this->repository->toggleStatus($data['toggle_item']),
-			isset($data['update_priority']) => $this->repository->updatePriority($data['update_priority'], $data['update_placement']),
-			default => null,
-		};
-
-		$this->langCache('active_blocks')->forget();
-
-		exit;
-	}
-
-	private function makeCopy(string $item): void
-	{
-		if (empty($item))
-			return;
-
-		$this->request()->put('clone', true);
-
-		$result = [
-			'success' => false,
-		];
-
-		Utils::$context['lp_block'] = $this->repository->getData(intval($item));
-
-		$this->repository->setData();
-
-		if (Utils::$context['lp_block']['id']) {
-			$result = [
-				'id'      => Utils::$context['lp_block']['id'],
-				'success' => true,
-			];
-		}
-
-		$this->langCache('active_blocks')->forget();
-
-		$this->response()->exit($result);
-	}
-
-	private function getDefaultOptions(): array
-	{
-		$baseParams = [
-			'hide_header' => false,
-		];
-
-		if (in_array(Utils::$context['lp_current_block']['type'], array_keys(Utils::$context['lp_content_types']))) {
-			$baseParams['content'] = true;
-		}
-
-		$params = [];
-
-		$this->dispatcher->dispatch(
-			PortalHook::prepareBlockParams,
-			[
-				'baseParams' => &$baseParams,
-				'params'     => &$params,
-				'type'       => Utils::$context['lp_current_block']['type'],
-			]
-		);
-
-		return array_merge($baseParams, $params);
-	}
-
-	private function validateData(): void
+	protected function prepareValidationContext(): void
 	{
 		$options = $this->getDefaultOptions();
 
 		$this->post()->put('type', Utils::$context['lp_current_block']['type']);
 
 		Utils::$context['lp_current_block']['options'] ??= $options;
+	}
 
-		$validatedData = app(BlockValidator::class)->validate();
-
-		$block = app(BlockFactory::class)->create(
-			array_merge(Utils::$context['lp_current_block'], $validatedData)
-		);
-
-		Utils::$context['lp_block'] = $block->toArray();
+	protected function postProcessValidation(): void
+	{
+		$options = $this->getDefaultOptions();
 
 		$missingKeys = array_diff_key($options, Utils::$context['lp_block']['options']);
 
@@ -255,14 +149,14 @@ final readonly class BlockArea implements AreaInterface
 		}
 	}
 
-	private function prepareFormFields(): void
-	{
-		$this->prepareTitleFields(false);
+	protected function prepareCommonFields(): void {}
 
+	protected function prepareSpecificFields(): void
+	{
 		TextField::make('description', Lang::$txt['lp_block_note'])
 			->setTab(Tab::CONTENT)
 			->setAttribute('maxlength', 255)
-			->setValue(Utils::$context['lp_block']['description']);
+			->setValue(Utils::$context['lp_block']['description'] ?? '');
 
 		if (isset(Utils::$context['lp_block']['options']['content'])) {
 			if (Utils::$context['lp_block']['type'] !== ContentType::BBC->name()) {
@@ -308,9 +202,10 @@ final readonly class BlockArea implements AreaInterface
 			UrlField::make('link_in_title', Lang::$txt['lp_block_link_in_title'])
 				->setValue(Utils::$context['lp_block']['options']['link_in_title']);
 		}
+	}
 
-		Utils::$context['lp_block_tab_appearance'] = true;
-
+	protected function dispatchFieldsEvent(): void
+	{
 		$this->dispatcher->dispatch(
 			PortalHook::prepareBlockFields,
 			[
@@ -318,8 +213,85 @@ final readonly class BlockArea implements AreaInterface
 				'type'    => Utils::$context['lp_current_block']['type'],
 			]
 		);
+	}
 
-		$this->preparePostFields();
+	protected function prepareEditor(): void
+	{
+		$this->dispatcher->dispatch(PortalHook::prepareEditor, ['object' => Utils::$context['lp_block']]);
+	}
+
+	protected function preparePreviewContent(array $entity): void
+	{
+		Utils::$context['preview_content'] = Utils::htmlspecialchars($entity['content'] ?? '', ENT_QUOTES);
+
+		Lang::censorText(Utils::$context['preview_content']);
+
+		Utils::$context['preview_content'] = empty(Utils::$context['preview_content'])
+			? Content::prepare(
+				$entity['type'],
+				$entity['id'],
+				0,
+				$entity['options'] ?? []
+			)
+			: Content::parse(Utils::$context['preview_content'], $entity['type']);
+	}
+
+	protected function finalizePreviewTitle(array $entity): void
+	{
+		Utils::$context['preview_title'] = $this->getPreviewTitle(
+			Icon::parse($entity['icon'] ?? '')
+		);
+
+		if (! empty($entity['options']['hide_header'])) {
+			Utils::$context['preview_title'] = Utils::$context['lp_block']['title_class'] = '';
+		}
+	}
+
+	private function handleClone(mixed $item): void
+	{
+		if (empty($item))
+			return;
+
+		$this->request()->put('clone', true);
+
+		$result = ['success' => false];
+
+		Utils::$context['lp_block'] = $this->repository->getData(intval($item));
+
+		$this->repository->setData();
+
+		if (Utils::$context['lp_block']['id']) {
+			$result = [
+				'id'      => Utils::$context['lp_block']['id'],
+				'success' => true,
+			];
+		}
+
+		$this->clearCache();
+
+		$this->response()->exit($result);
+	}
+
+	private function getDefaultOptions(): array
+	{
+		$baseParams = ['hide_header' => false];
+
+		if (in_array(Utils::$context['lp_current_block']['type'], array_keys(Utils::$context['lp_content_types']))) {
+			$baseParams['content'] = true;
+		}
+
+		$params = [];
+
+		$this->dispatcher->dispatch(
+			PortalHook::prepareBlockParams,
+			[
+				'baseParams' => &$baseParams,
+				'params'     => &$params,
+				'type'       => Utils::$context['lp_current_block']['type'],
+			]
+		);
+
+		return array_merge($baseParams, $params);
 	}
 
 	private function getAreasInfo(): string
@@ -348,53 +320,7 @@ final readonly class BlockArea implements AreaInterface
 
 		Utils::$context['lp_possible_areas'] = array_combine($exampleAreas, $descriptions);
 
-		ob_start();
-
-		template_show_areas_info();
-
-		return ob_get_clean();
-	}
-
-	private function prepareEditor(): void
-	{
-		$this->dispatcher->dispatch(PortalHook::prepareEditor, ['object' => Utils::$context['lp_block']]);
-	}
-
-	private function preparePreview(): void
-	{
-		if ($this->request()->hasNot('preview'))
-			return;
-
-		$this->cache()->flush();
-
-		Security::checkSubmitOnce('free');
-
-		Utils::$context['preview_title']   = Str::decodeHtmlEntities(Utils::$context['lp_block']['title'] ?? '');
-		Utils::$context['preview_content'] = Utils::htmlspecialchars(Utils::$context['lp_block']['content'], ENT_QUOTES);
-
-		Str::cleanBbcode(Utils::$context['preview_title']);
-
-		Lang::censorText(Utils::$context['preview_title']);
-		Lang::censorText(Utils::$context['preview_content']);
-
-		Utils::$context['preview_content'] = empty(Utils::$context['preview_content'])
-			? Content::prepare(
-				Utils::$context['lp_block']['type'],
-				Utils::$context['lp_block']['id'],
-				0,
-				Utils::$context['lp_block']['options'] ?? []
-			)
-			: Content::parse(Utils::$context['preview_content'], Utils::$context['lp_block']['type']);
-
-		Utils::$context['page_title'] = Lang::$txt['preview'] . (
-			Utils::$context['preview_title'] ? ' - ' . Utils::$context['preview_title'] : ''
-		);
-
-		Utils::$context['preview_title'] = $this->getPreviewTitle(Icon::parse(Utils::$context['lp_block']['icon']));
-
-		if (! empty(Utils::$context['lp_block']['options']['hide_header'])) {
-			Utils::$context['preview_title'] = Utils::$context['lp_block']['title_class'] = '';
-		}
+		return TemplateLoader::fromFile('admin/show_areas_info');
 	}
 
 	private function prepareBlockList(): void
@@ -402,14 +328,15 @@ final readonly class BlockArea implements AreaInterface
 		$plugins = array_merge(Setting::getEnabledPlugins(), array_keys(ContentType::all()));
 
 		Utils::$context['lp_loaded_addons'] = array_merge(
-			Utils::$context['lp_loaded_addons'] ?? [], ContentType::default()
+			Utils::$context['lp_loaded_addons'] ?? [],
+			ContentType::default()
 		);
 
 		Utils::$context['lp_all_blocks'] = [];
+
 		foreach ($plugins as $addon) {
 			$addon = Str::getSnakeName($addon);
 
-			// We need blocks only
 			if (! isset(Lang::$txt['lp_' . $addon]['title']) || isset(Utils::$context['lp_all_blocks'][$addon]))
 				continue;
 
@@ -417,11 +344,20 @@ final readonly class BlockArea implements AreaInterface
 				'type'  => $addon,
 				'icon'  => Utils::$context['lp_loaded_addons'][$addon]['icon'],
 				'title' => Lang::$txt['lp_' . $addon]['title'],
-				'desc'  => Lang::$txt['lp_' . $addon]['block_desc'] ?? Lang::$txt['lp_' . $addon]['description']
+				'desc'  => Lang::$txt['lp_' . $addon]['block_desc'] ?? Lang::$txt['lp_' . $addon]['description'],
 			];
 		}
 
 		$titles = array_column(Utils::$context['lp_all_blocks'], 'title');
 		array_multisort($titles, SORT_ASC, Utils::$context['lp_all_blocks']);
+	}
+
+	private function getRepository(): BlockRepositoryInterface
+	{
+		$repository = $this->repository;
+
+		assert($repository instanceof BlockRepositoryInterface);
+
+		return $repository;
 	}
 }

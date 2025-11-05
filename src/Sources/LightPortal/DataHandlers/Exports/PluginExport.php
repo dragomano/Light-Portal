@@ -14,13 +14,13 @@ namespace LightPortal\DataHandlers\Exports;
 
 use AppendIterator;
 use Bugo\Compat\Sapi;
-use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use FilesystemIterator;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Lists\PluginList;
+use LightPortal\UI\TemplateLoader;
 use LightPortal\Utils\ErrorHandlerInterface;
 use LightPortal\Utils\FilesystemInterface;
-use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use ZipArchive;
@@ -47,17 +47,16 @@ class PluginExport extends AbstractExport
 	{
 		parent::setupUi();
 
-		Theme::loadTemplate('LightPortal/ManageImpex');
-
-		Utils::$context['sub_template'] = 'manage_export_plugins';
-
 		Utils::$context['lp_plugins'] = app(PluginList::class)();
+
+		TemplateLoader::fromFile('admin/plugin_export');
 	}
 
 	protected function getData(): array
 	{
-		if ($this->isEntityEmpty())
+		if ($this->isEntityEmpty()) {
 			return [];
+		}
 
 		return $this->request()->has('export_all')
 			? Utils::$context['lp_plugins']
@@ -66,8 +65,9 @@ class PluginExport extends AbstractExport
 
 	protected function getFile(): string
 	{
-		if (empty($dirs = $this->getData()))
+		if (empty($dirs = $this->getData())) {
 			return '';
+		}
 
 		return $this->createPackage($dirs) ?? '';
 	}

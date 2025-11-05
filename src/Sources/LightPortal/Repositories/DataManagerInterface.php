@@ -12,11 +12,13 @@
 
 namespace LightPortal\Repositories;
 
-interface DataManagerInterface
+interface DataManagerInterface extends RepositoryInterface
 {
 	public function getData(int $item): array;
 
 	public function setData(int $item = 0): void;
 
-	public function remove(array $items): void;
+	public function toggleStatus(mixed $items = []): void;
+
+	public function remove(mixed $items): void;
 }

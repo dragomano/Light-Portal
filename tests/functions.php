@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Bugo\Compat\Config;
 use Bugo\Compat\User;
+use Bugo\Compat\Utils;
 
 if (! function_exists('memoryReturnBytes')) {
     function memoryReturnBytes(string $val): int
@@ -15,14 +16,12 @@ if (! function_exists('memoryReturnBytes')) {
 if (! function_exists('fatal_error')) {
     function fatal_error(string $error, string|bool $log = 'general', int $status = 500): void
     {
-        throw new Exception("Fatal error: $error");
     }
 }
 
 if (! function_exists('fatal_lang_error')) {
     function fatal_lang_error(string $error, string|bool $log = 'general', array $sprintf = [], int $status = 403): void
     {
-        throw new Exception("Fatal lang error: $error");
     }
 }
 
@@ -38,11 +37,11 @@ if (! function_exists('log_error')) {
     ): string
     {
         $GLOBALS['log_error_calls'][] = [
-            'message' => $error_message,
-            'type' => $error_type,
-            'file' => $file,
-            'line' => $line,
-            'backtrace' => $backtrace
+            'message'   => $error_message,
+            'type'      => $error_type,
+            'file'      => $file,
+            'line'      => $line,
+            'backtrace' => $backtrace,
         ];
 
         return 'logged';
@@ -75,14 +74,32 @@ if (! function_exists('addJavaScriptVar')) {
 }
 
 if (! function_exists('addInlineCss')) {
-    function addInlineCss(string $css): void
+    function addInlineCss(string $css): bool
     {
+        if (empty($css)) {
+            return false;
+        }
+
+        Utils::$context['css_header'] ??= [];
+
+        Utils::$context['css_header'][] = $css;
+
+        return true;
     }
 }
 
 if (! function_exists('addInlineJavaScript')) {
-    function addInlineJavaScript(string $javascript, $defer = false): void
+    function addInlineJavaScript(string $javascript, $defer = false): bool
     {
+        if (empty($javascript)) {
+            return false;
+        }
+
+        Utils::$context['javascript_inline'] ??= [];
+
+        Utils::$context['javascript_inline'][($defer === true ? 'defer' : 'standard')][] = $javascript;
+
+        return true;
     }
 }
 
@@ -206,15 +223,15 @@ if (! function_exists('parse_bbc')) {
         string|int $cache_id = '',
         array $parse_tags = []
     ): array|string {
-        $pattern = '/\[img](.*?)\[\/img]/i';
+        $pattern     = '/\[img](.*?)\[\/img]/i';
         $replacement = '<img src="$1" alt="">';
-        $message = preg_replace($pattern, $replacement, $message);
+        $message     = preg_replace($pattern, $replacement, $message);
 
-        $pattern_attr = '/\[img\s+width=(\d+)\s+height=(\d+)](.*?)\[\/img]/i';
+        $pattern_attr     = '/\[img\s+width=(\d+)\s+height=(\d+)](.*?)\[\/img]/i';
         $replacement_attr = '<img src="$3" alt="" width="$1" height="$2">';
-        $message = preg_replace($pattern_attr, $replacement_attr, $message);
+        $message          = preg_replace($pattern_attr, $replacement_attr, $message);
 
-        $pattern_short = '/\[img=(.*?)]/i';
+        $pattern_short     = '/\[img=(.*?)]/i';
         $replacement_short = '<img src="$1" alt="">';
 
         return preg_replace($pattern_short, $replacement_short, $message);
@@ -292,5 +309,50 @@ if (! function_exists('getBoardList')) {
     function getBoardList(array $options = []): array
     {
         return $options;
+    }
+}
+
+if (! function_exists('loadLanguage')) {
+    function loadLanguage($filename, $lang = '', $fatal = true, $force_reload = false)
+    {
+    }
+}
+
+if (! function_exists('fetch_web_data')) {
+    function fetch_web_data($url, $post_data = [], $keep_alive = false)
+    {
+        return json_encode(['donate' => [], 'download' => []]);
+    }
+}
+
+if (! function_exists('smf_json_decode')) {
+    function smf_json_decode($json, $returnAsArray = null)
+    {
+        return json_decode($json, $returnAsArray ?? true);
+    }
+}
+if (! function_exists('checkSession')) {
+    function checkSession($type = 'post', $from_action = '', $is_fatal = true): string
+    {
+        return '';
+    }
+}
+
+if (! function_exists('logAction')) {
+    function logAction(string $action, array $extra = []): int
+    {
+        return 1;
+    }
+}
+
+if (! function_exists('create_control_richedit')) {
+    function create_control_richedit(array $options): void
+    {
+    }
+}
+
+if (! function_exists('template_control_richedit')) {
+    function template_control_richedit($editor_id, $smiley_container, $bbc_container): void
+    {
     }
 }

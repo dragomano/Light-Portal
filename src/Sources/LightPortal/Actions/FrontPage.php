@@ -18,14 +18,11 @@ use Bugo\Compat\PageIndex;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use LightPortal\Articles\ArticleInterface;
-use LightPortal\Articles\BoardArticle;
-use LightPortal\Articles\ChosenPageArticle;
-use LightPortal\Articles\ChosenTopicArticle;
-use LightPortal\Articles\PageArticle;
-use LightPortal\Articles\TopicArticle;
+use LightPortal\Enums\FrontPageMode;
 use LightPortal\Enums\PortalHook;
 use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Renderers\RendererInterface;
+use LightPortal\UI\TemplateLoader;
 use LightPortal\Utils\Icon;
 use LightPortal\Utils\Setting;
 use LightPortal\Utils\Str;
@@ -54,24 +51,24 @@ class FrontPage implements ActionInterface
 
 	private ArticleInterface $article;
 
-	private array $modes = [
-		'all_pages'     => PageArticle::class,
-		'all_topics'    => TopicArticle::class,
-		'chosen_boards' => BoardArticle::class,
-		'chosen_pages'  => ChosenPageArticle::class,
-		'chosen_topics' => ChosenTopicArticle::class,
-	];
+	private array $modes = [];
 
 	public function __construct(
 		private RendererInterface $renderer,
 		private readonly EventDispatcherInterface $dispatcher
 	)
 	{
+		foreach (FrontPageMode::cases() as $case) {
+			if ($class = $case->getArticleClass()) {
+				$this->modes[$case->value] = $class;
+			}
+		}
+
 		$this->dispatcher->dispatch(PortalHook::frontModes, ['modes' => &$this->modes]);
 
 		$this->article = array_key_exists(Config::$modSettings['lp_frontpage_mode'], $this->modes)
 			? app($this->modes[Config::$modSettings['lp_frontpage_mode']])
-			: app($this->modes['all_pages']);
+			: app($this->modes[FrontPageMode::ALL_PAGES->value]);
 	}
 
 	public function show(): void
@@ -152,16 +149,6 @@ class FrontPage implements ActionInterface
 
 	public function prepareTemplates(): void
 	{
-		if (empty(Utils::$context['lp_frontpage_articles'])) {
-			/* @uses template_empty */
-			Utils::$context['sub_template'] = 'empty';
-		} else {
-			/* @uses template_wrong_template, template_layout */
-			Utils::$context['sub_template'] = empty(Config::$modSettings['lp_frontpage_layout'])
-				? 'wrong_template'
-				: 'layout';
-		}
-
 		Utils::$context['lp_frontpage_layouts'] = $this->renderer->getLayouts();
 
 		$this->prepareToolbar();
@@ -174,7 +161,6 @@ class FrontPage implements ActionInterface
 			'modSettings' => Config::$modSettings,
 		];
 
-		// You can add your own logic here
 		$this->dispatcher->dispatch(
 			PortalHook::frontLayouts,
 			[
@@ -184,25 +170,9 @@ class FrontPage implements ActionInterface
 			]
 		);
 
-		Utils::$context['lp_layout_content'] = $this->renderer->render($currentLayout, $params);
-	}
+		$content = $this->renderer->render($currentLayout, $params);
 
-	public function prepareToolbar(): void
-	{
-		/* @uses template_toolbar_above, template_toolbar_below */
-		Utils::$context['template_layers'][] = 'toolbar';
-
-		if ($this->session('lp')->isEmpty('frontpage_layout')) {
-			Utils::$context['lp_current_layout'] = $this->request()->get('layout')
-				?? Config::$modSettings['lp_frontpage_layout'] ?? $this->renderer::DEFAULT_TEMPLATE;
-		} else {
-			Utils::$context['lp_current_layout'] = $this->request()->get('layout')
-				?? $this->session('lp')->get('frontpage_layout');
-		}
-
-		$this->session('lp')->put('frontpage_layout', Utils::$context['lp_current_layout']);
-
-		Config::$modSettings['lp_frontpage_layout'] = $this->session('lp')->get('frontpage_layout');
+		TemplateLoader::fromFile($this->getCurrentTemplate(), compact('content'));
 	}
 
 	public function getNumColumns(): int
@@ -231,6 +201,33 @@ class FrontPage implements ActionInterface
 		}
 
 		$start = (int) abs($start);
+	}
+
+	private function prepareToolbar(): void
+	{
+		/* @uses template_lp_home_toolbar_above, template_lp_home_toolbar_below */
+		Utils::$context['template_layers'][] = 'lp_home_toolbar';
+
+		if ($this->session('lp')->isEmpty('frontpage_layout')) {
+			Utils::$context['lp_current_layout'] = $this->request()->get('layout')
+				?? Config::$modSettings['lp_frontpage_layout'] ?? $this->renderer::DEFAULT_TEMPLATE;
+		} else {
+			Utils::$context['lp_current_layout'] = $this->request()->get('layout')
+				?? $this->session('lp')->get('frontpage_layout');
+		}
+
+		$this->session('lp')->put('frontpage_layout', Utils::$context['lp_current_layout']);
+
+		Config::$modSettings['lp_frontpage_layout'] = $this->session('lp')->get('frontpage_layout');
+	}
+
+	private function getCurrentTemplate(): string
+	{
+		return match (true) {
+			empty(Utils::$context['lp_frontpage_articles']) => 'empty',
+			empty(Config::$modSettings['lp_frontpage_layout']) => 'wrong',
+			default => 'home',
+		};
 	}
 
 	private function preLoadImages(CollectionInterface $articles): void

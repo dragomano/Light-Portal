@@ -22,6 +22,9 @@
 		<function name="\LightPortal\app" argument="0">
 			<collection name="app_service_classes"/>
 		</function>
+		<classMethod class="\LightPortal\UI\TemplateLoader" method="fromFile" argument="0">
+			<files extension="blade.php" xpath="$project/public/Themes/default/LightPortal"/>
+		</classMethod>
 	</definitions>
 	<collections>
 		<strings name="frontpage_modes">
@@ -84,6 +87,7 @@
 		<strings name="app_service_classes">
 			<value>AssetHandler::class</value>
 			<value>BasicConfig::class</value>
+			<value>Blade::class</value>
 			<value>Block::class</value>
 			<value>BlockArea::class</value>
 			<value>BlockExport::class</value>
@@ -158,6 +162,7 @@
 			<value>PortalApp::class</value>
 			<value>PortalSqlInterface::class</value>
 			<value>PostInterface::class</value>
+			<value>PurePHP::class</value>
 			<value>RendererInterface::class</value>
 			<value>RequestInterface::class</value>
 			<value>ResponseInterface::class</value>

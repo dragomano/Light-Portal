@@ -14,7 +14,6 @@ namespace LightPortal\Hooks;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
-use Bugo\Compat\Theme;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use LightPortal\Actions\Block;
@@ -24,6 +23,7 @@ use LightPortal\Repositories\PageRepositoryInterface;
 use LightPortal\Utils\Setting;
 use LightPortal\Utils\Str;
 use LightPortal\Utils\Traits\HasBreadcrumbs;
+use LightPortal\Utils\Traits\HasPortalSql;
 
 use function LightPortal\app;
 
@@ -37,6 +37,7 @@ class MenuButtons
 {
 	use HasCommonChecks;
 	use HasBreadcrumbs;
+	use HasPortalSql;
 
 	public function __invoke(array &$buttons): void
 	{
@@ -45,9 +46,8 @@ class MenuButtons
 
 		app(Block::class)->show();
 
-		Theme::loadTemplate('LightPortal/ViewCustom');
-
-		Utils::$context['template_layers'][] = 'custom';
+		/* @uses template_lp_custom_above, template_lp_custom_below */
+		Utils::$context['template_layers'][] = 'lp_custom';
 
 		$this->prepareAdminButtons($buttons);
 		$this->prepareModerationButtons($buttons);
@@ -237,8 +237,7 @@ class MenuButtons
 	protected function showDebugInfo(): void
 	{
 		if (
-			empty(Config::$modSettings['lp_show_debug_info'])
-			|| empty(Utils::$context['user']['is_admin'])
+			empty(Utils::$context['user']['is_admin'])
 			|| empty(Utils::$context['template_layers'])
 			|| $this->request()->is('devtools')
 			|| $this->request()->is('xmlhttp')
@@ -248,24 +247,21 @@ class MenuButtons
 			return;
 		}
 
-		Utils::$context['lp_load_page_stats'] = Lang::getTxt('lp_load_page_stats', [
-			Lang::getTxt('lp_seconds_set', [
-				'seconds' => microtime(true) - Utils::$context['lp_load_time']
-			]),
-		]);
-
-		Theme::loadTemplate('LightPortal/ViewDebug');
-
-		if (empty($key = array_search('lp_portal', Utils::$context['template_layers'], true))) {
-			Utils::$context['template_layers'][] = 'debug';
-			return;
+		if (! empty(Config::$modSettings['lp_show_debug_info'])) {
+			Utils::$context['lp_load_page_stats'] = Lang::getTxt('lp_load_page_stats', [
+				Lang::getTxt('lp_seconds_set', [
+					'seconds' => microtime(true) - Utils::$context['lp_load_time'],
+				]),
+			]);
 		}
 
-		Utils::$context['template_layers'] = array_merge(
-			array_slice(Utils::$context['template_layers'], 0, $key, true),
-			['debug'],
-			array_slice(Utils::$context['template_layers'], $key, null, true)
-		);
+		if (empty(Config::$modSettings['lp_show_portal_queries']))
+			return;
+
+		$sql = $this->getPortalSql();
+		$profiler = $sql->getAdapter()->getProfiler();
+
+		Utils::$context['lp_portal_queries'] = $profiler->getProfiles();
 	}
 
 	protected function fixCanonicalUrl(): void

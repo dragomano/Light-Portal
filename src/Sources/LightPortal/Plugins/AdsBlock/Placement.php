@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 28.11.24
+ * @version 01.11.25
  */
 
 namespace LightPortal\Plugins\AdsBlock;
@@ -20,20 +20,20 @@ enum Placement
 {
 	use HasNames;
 
-	case BOARD_TOP;
-	case BOARD_BOTTOM;
-	case TOPIC_TOP;
-	case TOPIC_BOTTOM;
-	case BEFORE_FIRST_POST;
-	case BEFORE_EVERY_FIRST_POST;
-	case BEFORE_EVERY_LAST_POST;
-	case BEFORE_LAST_POST;
-	case AFTER_FIRST_POST;
 	case AFTER_EVERY_FIRST_POST;
 	case AFTER_EVERY_LAST_POST;
+	case AFTER_FIRST_POST;
 	case AFTER_LAST_POST;
-	case PAGE_TOP;
+	case BEFORE_EVERY_FIRST_POST;
+	case BEFORE_EVERY_LAST_POST;
+	case BEFORE_FIRST_POST;
+	case BEFORE_LAST_POST;
+	case BOARD_BOTTOM;
+	case BOARD_TOP;
 	case PAGE_BOTTOM;
+	case PAGE_TOP;
+	case TOPIC_BOTTOM;
+	case TOPIC_TOP;
 
 	public static function all(): array
 	{

@@ -8,16 +8,19 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 30.10.25
  */
 
 namespace LightPortal\Plugins\PluginMaker;
 
 use Bugo\Compat\Utils;
+use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Plugins\Event;
 use LightPortal\Plugins\Plugin;
 use LightPortal\Plugins\PluginAttribute;
 use LightPortal\Utils\Icon;
+
+use function LightPortal\app;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -49,7 +52,9 @@ class PluginMaker extends Plugin
 
 	public function extendPluginAreas(Event $e): void
 	{
-		$e->args->areas['add'] = [new Handler, 'add'];
+		app()->add(Handler::class)->addArgument(EventDispatcherInterface::class);
+
+		$e->args->areas['add'] = [app(Handler::class), 'add'];
 	}
 
 	public function credits(Event $e): void

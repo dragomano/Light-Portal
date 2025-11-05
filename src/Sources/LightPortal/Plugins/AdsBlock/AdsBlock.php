@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 29.10.25
+ * @version 02.11.25
  */
 
 namespace LightPortal\Plugins\AdsBlock;
@@ -41,13 +41,11 @@ if (! defined('LP_NAME'))
 #[PluginAttribute(icon: 'fas fa-ad')]
 class AdsBlock extends Block
 {
-	use RepliesComparisonTrait;
+	use HasMagicThings;
 
 	public function init(): void
 	{
-		if (! function_exists('lp_show_blocks')) {
-			Theme::loadTemplate('LightPortal/ViewBlocks');
-		}
+		Utils::$context['lp_block_placements']['ads'] = Lang::$txt['lp_ads_block']['ads_type'];
 
 		$this->applyHook(ForumHook::menuButtons, MenuButtons::class);
 		$this->applyHook(ForumHook::prepareDisplayContext, PrepareDisplayContext::class);
@@ -190,21 +188,34 @@ class AdsBlock extends Block
 
 	public function addLayerAbove(): void
 	{
-		match (true) {
-			! empty(Utils::$context['lp_page']) => lp_show_blocks(Placement::PAGE_TOP->name()),
-			! empty(Utils::$context['current_board']) => lp_show_blocks(Placement::BOARD_TOP->name()),
-			! empty(Utils::$context['current_topic']) && ! $this->isRepliesBelowMinimum() => lp_show_blocks(Placement::TOPIC_TOP->name()),
-			default => null
-		};
+		$this->addLayer([
+			'lp_page'       => Placement::PAGE_TOP,
+			'current_board' => Placement::BOARD_TOP,
+			'current_topic' => Placement::TOPIC_TOP,
+		]);
 	}
 
 	public function addLayerBelow(): void
 	{
-		match (true) {
-			! empty(Utils::$context['lp_page']) => lp_show_blocks(Placement::PAGE_BOTTOM->name()),
-			! empty(Utils::$context['current_board']) => lp_show_blocks(Placement::BOARD_BOTTOM->name()),
-			! empty(Utils::$context['current_topic']) && ! $this->isRepliesBelowMinimum() => lp_show_blocks(Placement::TOPIC_BOTTOM->name()),
-			default => null
-		};
+		$this->addLayer([
+			'lp_page'       => Placement::PAGE_BOTTOM,
+			'current_board' => Placement::BOARD_BOTTOM,
+			'current_topic' => Placement::TOPIC_BOTTOM,
+		]);
+	}
+
+	private function addLayer(array $placements): void
+	{
+		foreach ($placements as $contextKey => $placement) {
+			if (! empty(Utils::$context[$contextKey])) {
+				if ($contextKey === 'current_topic' && $this->isRepliesBelowMinimum()) {
+					continue;
+				}
+
+				$this->showBlocks($placement->name());
+
+				return;
+			}
+		}
 	}
 }

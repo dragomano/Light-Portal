@@ -1,7 +1,7 @@
 @php use LightPortal\Enums\Tab; @endphp
 
 @unless (empty($context['lp_addon_dir_is_not_writable']))
-	<div class="errorbox">{{ $context['lp_addon_dir_is_not_writable'] }}</div>
+	<div class="errorbox">{!! $context['lp_addon_dir_is_not_writable'] !!}</div>
 @endunless
 
 <div class="cat_bar">
@@ -12,7 +12,7 @@
 	<div class="errorbox">
 		<ul>
 			@foreach ($context['post_errors'] as $error)
-				<li>{{ $error }}</li>
+				<li>{!! $error !!}</li>
 			@endforeach
 		</ul>
 	</div>
@@ -46,189 +46,189 @@
 			</div>
 			<div data-content>
 				<section class="bg even active_content" data-content="common">
-					{{ template_portal_tab($fields) }}
+					@portalTab($fields)
 				</section>
 				<section class="bg even" data-content="copyright">
-					{{ template_portal_tab($fields, 'copyright') }}
+					@portalTab($fields, 'copyright')
 				</section>
 				<section class="bg even" data-content="settings">
 					<table class="add_option centertext" x-data="plugin.handleOptions()">
 						<tbody>
-						<template x-for="(option, index) in options" :key="index">
-							<tr class="windowbg">
-								<td colspan="4">
-									<table class="plugin_options table_grid">
-										<thead>
-										<tr class="title_bar">
-											<th style="width: 20%"></th>
-											<th colspan="3">
-												<span>{{ $txt['lp_plugin_maker']['option'] }}</span>
-												<button type="button" class="button" @click="removeOption(index)">
-													<span class="main_icons delete"></span> <span class="remove_label">{{ $txt['remove'] }}</span>
-												</button>
-											</th>
-										</tr>
-										</thead>
-										<tbody>
-										<tr class="windowbg">
-											<td colspan="4">
-												<div class="infobox">{{ $txt['lp_plugin_maker']['option_desc'] }}</div>
-											</td>
-										</tr>
-										<tr class="windowbg" x-data="{ option_name: $id('option-name') }">
-											<td>
-												<label :for="option_name">
-													<strong>{{ $txt['lp_plugin_maker']['option_name'] }}</strong>
-												</label>
-											</td>
-											<td colspan="3">
-												<input
-													type="text"
-													x-model="option.name"
-													name="option_name[]"
-													:id="option_name"
-													pattern="^[a-z][a-z_]+$"
-													maxlength="100"
-													placeholder="option_name"
-													required
-												>
-											</td>
-										</tr>
-										<tr
-											class="windowbg"
-											x-data="{ type_id: $id('option-type'), default_id: $id('option-default') }"
-										>
-											<td>
-												<label :for="type_id">
-													<strong>{{ $txt['lp_plugin_maker']['option_type'] }}</strong>
-												</label>
-											</td>
-											<td>
-												<select
-													x-model="option.type"
-													name="option_type[]"
-													:id="type_id"
-												>
-													@foreach ($context['lp_plugin_option_types'] as $type => $name)
-														<option value="{{ $type }}">{{ $name }}</option>
-													@endforeach
-												</select>
-											</td>
-											<td>
-												<label :for="default_id">
-													<strong>{{ $txt['lp_plugin_maker']['option_default_value'] }}</strong>
-												</label>
-											</td>
-											<td>
-												<template x-if="option.type == 'text'">
-													<input
-														x-model="option.default"
-														:name="`option_defaults[${index}]`"
-														:id="default_id"
-													>
-												</template>
-												<template x-if="option.type == 'url'">
-													<input
-														type="url"
-														x-model="option.default"
-														:name="`option_defaults[${index}]`"
-														:id="default_id"
-													>
-												</template>
-												<template x-if="option.type == 'color'">
-													<input
-														type="color"
-														x-model="option.default"
-														:name="`option_defaults[${index}]`"
-														:id="default_id"
-													>
-												</template>
-												<template x-if="['int', 'range'].includes(option.type)">
-													<input
-														type="number"
-														min="0"
-														step="1"
-														x-model="option.default"
-														:name="`option_defaults[${index}]`"
-														:id="default_id"
-													>
-												</template>
-												<template x-if="option.type == 'float'">
-													<input
-														type="number"
-														min="0"
-														step="0.1"
-														x-model="option.default"
-														:name="`option_defaults[${index}]`"
-														:id="default_id"
-													>
-												</template>
-												<template x-if="option.type == 'check'">
-													<input
-														type="checkbox"
-														x-model="option.default"
-														:name="`option_defaults[${index}]`"
-														:id="default_id"
-													>
-												</template>
-												<template x-if="['multiselect', 'select'].includes(option.type)">
-													<input
-														x-model="option.default"
-														:name="`option_defaults[${index}]`"
-														:id="default_id"
-													>
-												</template>
-												<template x-if="['title', 'desc', 'callback'].includes(option.type)">
-													<span>{{ $txt['no'] }}</span>
-												</template>
-											</td>
-										</tr>
-										<template x-if="! ['multiselect', 'select'].includes(option.type)">
-											<tr class="windowbg" style="display: none">
+							<template x-for="(option, index) in options" :key="index">
+								<tr class="windowbg">
+									<td colspan="4">
+										<table class="plugin_options table_grid">
+											<thead>
+											<tr class="title_bar">
+												<th style="width: 20%"></th>
+												<th colspan="3">
+													<span>{{ $txt['lp_plugin_maker']['option'] }}</span>
+													<button type="button" class="button" @click="removeOption(index)">
+														<span class="main_icons delete"></span> <span class="remove_label">{{ $txt['remove'] }}</span>
+													</button>
+												</th>
+											</tr>
+											</thead>
+											<tbody>
+											<tr class="windowbg">
 												<td colspan="4">
-													<input x-model="option.variants" name="option_variants[]">
+													<div class="infobox">{{ $txt['lp_plugin_maker']['option_desc'] }}</div>
 												</td>
 											</tr>
-										</template>
-										<template x-if="['multiselect', 'select'].includes(option.type)">
-											<tr class="windowbg">
-												<td><strong>{{ $txt['lp_plugin_maker']['option_variants'] }}</strong></td>
+											<tr class="windowbg" x-data="{ option_name: $id('option-name') }">
+												<td>
+													<label :for="option_name">
+														<strong>{{ $txt['lp_plugin_maker']['option_name'] }}</strong>
+													</label>
+												</td>
 												<td colspan="3">
 													<input
-														x-model="option.variants"
-														name="option_variants[]"
-														placeholder="{{ $txt['lp_plugin_maker']['option_variants_placeholder'] }}"
+														type="text"
+														x-model="option.name"
+														name="option_name[]"
+														:id="option_name"
+														pattern="^[a-z][a-z_]+$"
+														maxlength="100"
+														placeholder="option_name"
+														required
 													>
 												</td>
 											</tr>
-										</template>
-										<tr class="windowbg">
-											<td><strong>{{ $txt['lp_plugin_maker']['option_translations'] }}</strong></td>
-											<td colspan="3">
-												<table class="table_grid">
-													<tbody>
-														@foreach ($context['lp_languages'] as $key => $lang)
-															<tr class="windowbg">
-																<td>
-																	<input
-																		type="text"
-																		x-model="option.translations['{{ $key }}']"
-																		name="option_translations[{{ $key }}][]"
-																		{{ $key === 'english' ? ' required ' : '' }}
-																		placeholder="{{ $lang['name'] }}"
-																	>
-																</td>
-															</tr>
+											<tr
+												class="windowbg"
+												x-data="{ type_id: $id('option-type'), default_id: $id('option-default') }"
+											>
+												<td>
+													<label :for="type_id">
+														<strong>{{ $txt['lp_plugin_maker']['option_type'] }}</strong>
+													</label>
+												</td>
+												<td>
+													<select
+														x-model="option.type"
+														name="option_type[]"
+														:id="type_id"
+													>
+														@foreach ($context['lp_plugin_option_types'] as $type => $name)
+															<option value="{{ $type }}">{{ $name }}</option>
 														@endforeach
-													</tbody>
-												</table>
-											</td>
-										</tr>
-										</tbody>
-									</table>
-								</td>
-							</tr>
-						</template>
+													</select>
+												</td>
+												<td>
+													<label :for="default_id">
+														<strong>{{ $txt['lp_plugin_maker']['option_default_value'] }}</strong>
+													</label>
+												</td>
+												<td>
+													<template x-if="option.type == 'text'">
+														<input
+															x-model="option.default"
+															:name="`option_defaults[${index}]`"
+															:id="default_id"
+														>
+													</template>
+													<template x-if="option.type == 'url'">
+														<input
+															type="url"
+															x-model="option.default"
+															:name="`option_defaults[${index}]`"
+															:id="default_id"
+														>
+													</template>
+													<template x-if="option.type == 'color'">
+														<input
+															type="color"
+															x-model="option.default"
+															:name="`option_defaults[${index}]`"
+															:id="default_id"
+														>
+													</template>
+													<template x-if="['int', 'range'].includes(option.type)">
+														<input
+															type="number"
+															min="0"
+															step="1"
+															x-model="option.default"
+															:name="`option_defaults[${index}]`"
+															:id="default_id"
+														>
+													</template>
+													<template x-if="option.type == 'float'">
+														<input
+															type="number"
+															min="0"
+															step="0.1"
+															x-model="option.default"
+															:name="`option_defaults[${index}]`"
+															:id="default_id"
+														>
+													</template>
+													<template x-if="option.type == 'check'">
+														<input
+															type="checkbox"
+															x-model="option.default"
+															:name="`option_defaults[${index}]`"
+															:id="default_id"
+														>
+													</template>
+													<template x-if="['multiselect', 'select'].includes(option.type)">
+														<input
+															x-model="option.default"
+															:name="`option_defaults[${index}]`"
+															:id="default_id"
+														>
+													</template>
+													<template x-if="['title', 'desc', 'callback'].includes(option.type)">
+														<span>{{ $txt['no'] }}</span>
+													</template>
+												</td>
+											</tr>
+											<template x-if="! ['multiselect', 'select'].includes(option.type)">
+												<tr class="windowbg" style="display: none">
+													<td colspan="4">
+														<input x-model="option.variants" name="option_variants[]">
+													</td>
+												</tr>
+											</template>
+											<template x-if="['multiselect', 'select'].includes(option.type)">
+												<tr class="windowbg">
+													<td><strong>{{ $txt['lp_plugin_maker']['option_variants'] }}</strong></td>
+													<td colspan="3">
+														<input
+															x-model="option.variants"
+															name="option_variants[]"
+															placeholder="{{ $txt['lp_plugin_maker']['option_variants_placeholder'] }}"
+														>
+													</td>
+												</tr>
+											</template>
+											<tr class="windowbg">
+												<td><strong>{{ $txt['lp_plugin_maker']['option_translations'] }}</strong></td>
+												<td colspan="3">
+													<table class="table_grid">
+														<tbody>
+															@foreach ($context['lp_languages'] as $key => $lang)
+																<tr class="windowbg">
+																	<td>
+																		<input
+																			type="text"
+																			x-model="option.translations['{{ $key }}']"
+																			name="option_translations[{{ $key }}][]"
+																			{{ $key === 'english' ? ' required ' : '' }}
+																			placeholder="{{ $lang['name'] }}"
+																		>
+																	</td>
+																</tr>
+															@endforeach
+														</tbody>
+													</table>
+												</td>
+											</tr>
+											</tbody>
+										</table>
+									</td>
+								</tr>
+							</template>
 						</tbody>
 						<tfoot>
 						<tr>
@@ -242,7 +242,7 @@
 					</table>
 				</section>
 				<section class="bg even" data-content="tuning">
-					{{ template_portal_tab($fields, Tab::TUNING) }}
+					@portalTab($fields, Tab::TUNING)
 				</section>
 			</div>
 		</div>

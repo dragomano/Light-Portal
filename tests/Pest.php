@@ -5,7 +5,10 @@ declare(strict_types=1);
 use Tests\CustomTestCase;
 
 $txt['custom_profile_icon'] = 'Icon';
+$txt['status'] = 'Status';
+$txt['preview'] = 'Preview';
 $txt['guest_title'] = 'Guest';
+$txt['theme_template_error'] = 'Unable to load the \'%1$s\' template.';
 
 require_once __DIR__ . '/../src/Themes/default/languages/LightPortal/LightPortal.english.php';
 
@@ -16,7 +19,6 @@ $GLOBALS['context'] = [
     'right_to_left'   => false,
 ];
 
-$GLOBALS['mbname']    = 'Test Forum';
 $GLOBALS['smcFunc']   = [];
 $GLOBALS['sourcedir'] = __DIR__ . '/files';
 $GLOBALS['boardurl']  = 'https://example.com/';
@@ -29,7 +31,7 @@ $GLOBALS['modSettings'] = [
 ];
 
 $GLOBALS['settings'] = [
-    'default_theme_dir' => '/themes/default',
+    'default_theme_dir' => __DIR__ . '/../src/Themes/default',
 ];
 
 $GLOBALS['_INITIAL_STATE'] = [

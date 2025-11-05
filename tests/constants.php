@@ -35,3 +35,7 @@ if (! defined('LP_CACHE_TIME')) {
 if (! defined('LP_AREAS_PATTERN')) {
     define('LP_AREAS_PATTERN', '^[a-z][a-z0-9=|\-,!]+$');
 }
+
+if (! defined('LP_PLUGIN_LIST')) {
+    define('LP_PLUGIN_LIST', 'https://d8d75ea98b25aa12.mokky.dev/json');
+}

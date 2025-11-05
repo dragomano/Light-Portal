@@ -16,6 +16,7 @@ use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
+use LightPortal\Enums\FrontPageMode;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -52,7 +53,7 @@ class Setting implements SettingInterface
 			return false;
 		}
 
-		return self::isFrontpageMode('chosen_page') && $chosenPage === $slug;
+		return self::isFrontpageMode(FrontPageMode::CHOSEN_PAGE->value) && $chosenPage === $slug;
 	}
 
 	public static function isFrontpageMode(string $mode): bool
@@ -113,6 +114,14 @@ class Setting implements SettingInterface
 	public static function getRightPanelWidth(): array
 	{
 		return self::get('lp_right_panel_width', 'array', ['lg' => 3, 'xl' => 2], 'json');
+	}
+
+	public static function getColumnWidth(string $size): int
+	{
+		$leftWidth  = empty(Utils::$context['lp_blocks']['left'])  ? 0 : self::getLeftPanelWidth()[$size];
+		$rightWidth = empty(Utils::$context['lp_blocks']['right']) ? 0 : self::getRightPanelWidth()[$size];
+
+		return 12 - ($leftWidth + $rightWidth);
 	}
 
 	public static function getPanelDirection(string $panel): string

@@ -14,27 +14,24 @@ namespace LightPortal\Areas\Configs;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
-use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
-use LightPortal\Utils\Traits\HasRequest;
+use LightPortal\UI\TemplateLoader;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class FeedbackConfig extends AbstractConfig
 {
-	use HasRequest;
-
 	public function show(): void
 	{
-		Theme::loadTemplate('LightPortal/ManageFeedback');
-
-		Utils::$context['page_title'] = Lang::$txt['lp_feedback'];
-
-		Utils::$context['success_url'] = Config::$scripturl . '?action=admin;area=lp_settings;sa=feedback;success';
-
+		Utils::$context['page_title']    = Lang::$txt['lp_feedback'];
+		Utils::$context['success_url']   = Config::$scripturl . '?action=admin;area=lp_settings;sa=feedback;success';
 		Utils::$context['feedback_sent'] = $this->request()->has('success');
 
-		Utils::$context['sub_template'] = 'feedback';
+		$adapter = $this->getPortalSql()->getAdapter();
+
+		TemplateLoader::fromFile('admin/feedback', [
+			'database' => $adapter->getTitle() . ' ' . $adapter->getVersion(),
+		]);
 	}
 }

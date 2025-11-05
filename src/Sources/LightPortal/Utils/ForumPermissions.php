@@ -34,9 +34,11 @@ class ForumPermissions
 
 	public static function shouldApplyBoardPermissionCheck(): bool
 	{
-		$canSeeAllBoards = in_array(1, User::$me->groups)
-			|| array_intersect(User::$me->groups, explode(',', Config::$modSettings['board_manager_groups'] ?? '')) !== [];
+		$boardManagerGroups = explode(',', Config::$modSettings['board_manager_groups'] ?? '');
 
-		return ! $canSeeAllBoards;
+		$hasFullAccess = in_array(1, User::$me->groups)
+			|| ! empty(array_intersect(User::$me->groups, $boardManagerGroups));
+
+		return ! $hasFullAccess;
 	}
 }

@@ -21,8 +21,6 @@ use Bugo\Compat\{Config, Lang};
 use Bugo\Compat\{User, Utils};
 use Bugo\Compat\Actions\Admin\ACP;
 use LightPortal\Tasks\Maintainer;
-use LightPortal\Utils\Traits\HasRequest;
-use LightPortal\Utils\Traits\HasSession;
 
 use const LP_ACTION;
 use const LP_CACHE_TIME;
@@ -33,9 +31,6 @@ if (! defined('SMF'))
 
 final class MiscConfig extends AbstractConfig
 {
-	use HasRequest;
-	use HasSession;
-
 	public function show(): void
 	{
 		Utils::$context['page_title'] = Lang::$txt['lp_misc'];
@@ -52,7 +47,6 @@ final class MiscConfig extends AbstractConfig
 			CheckConfig::make('lp_show_debug_info')
 				->setHelp('lp_show_debug_info_help'),
 			CheckConfig::make('lp_show_portal_queries')
-				->setDisabled(empty(Config::$modSettings['lp_show_debug_info']))
 				->setHelp('lp_show_debug_info_help'),
 			IntConfig::make('lp_cache_interval')
 				->setPostInput(Lang::$txt['seconds']),

@@ -25,7 +25,7 @@ use Laminas\Db\Sql\Predicate\Expression;
 if (! defined('SMF'))
 	die('No direct access...');
 
-final class TagRepository extends AbstractRepository implements TagRepositoryInterface, DataManagerInterface
+final class TagRepository extends AbstractRepository implements TagRepositoryInterface
 {
 	protected string $entity = 'tag';
 
