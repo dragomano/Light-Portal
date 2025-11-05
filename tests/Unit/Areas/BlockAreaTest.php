@@ -11,7 +11,6 @@ use LightPortal\Enums\PortalHook;
 use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Models\BlockFactory;
 use LightPortal\Repositories\BlockRepositoryInterface;
-use LightPortal\UI\Partials\SelectRenderer;
 use LightPortal\Utils\RequestInterface;
 use LightPortal\Utils\ResponseInterface;
 use LightPortal\Validators\BlockValidator;
@@ -148,45 +147,78 @@ it('prepareCommonFields can be called without errors', function () {
     expect(true)->toBeTrue();
 });
 
-it('prepareSpecificFields can be called with mocked renderer', function () {
-    $mockRenderer = mock(SelectRenderer::class);
-    $mockRenderer->shouldReceive('render')->andReturn('<select></select>');
-    AppMockRegistry::set(SelectRenderer::class, $mockRenderer);
+describe('prepareSpecificFields', function () {
+    beforeEach(function () {
+        Utils::$context['lp_block'] = [
+            'options' => ['content' => true, 'hide_header' => true],
+            'type'    => 'html',
+            'content' => 'test content',
+        ];
 
-    $this->accessor->callProtectedMethod('prepareSpecificFields');
+        Utils::$context['user']['is_admin'] = false;
+        Utils::$context['posting_fields'] = [];
+    });
 
-    expect(true)->toBeTrue();
-});
+    it('creates correct fields', function ($setup, $expectations) {
+        foreach ($setup as $key => $value) {
+            match ($key) {
+                'type'          => Utils::$context['lp_block']['type'] = $value,
+                'is_admin'      => Utils::$context['user']['is_admin'] = $value,
+                'link_in_title' => Utils::$context['lp_block']['options']['link_in_title'] = $value,
+                default         => null,
+            };
+        }
 
-it('prepareSpecificFields creates textarea field for non-BBC content type', function () {
-    Utils::$context['lp_block'] = [
-        'options' => ['content' => true, 'hide_header' => true],
-        'type'    => 'html',
-        'content' => 'test content',
-    ];
+        $this->accessor->callProtectedMethod('prepareSpecificFields');
 
-    $mockRenderer = mock(SelectRenderer::class);
-    $mockRenderer->shouldReceive('render')->andReturn('<select></select>');
-    AppMockRegistry::set(SelectRenderer::class, $mockRenderer);
-
-    $this->accessor->callProtectedMethod('prepareSpecificFields');
-
-    expect(true)->toBeTrue();
-});
-
-it('prepareSpecificFields creates url field for link_in_title option', function () {
-    Utils::$context['lp_block'] = [
-        'options' => ['link_in_title' => 'https://example.com', 'hide_header' => true],
-        'type'    => 'html',
-    ];
-
-    $mockRenderer = mock(SelectRenderer::class);
-    $mockRenderer->shouldReceive('render')->andReturn('<select></select>');
-    AppMockRegistry::set(SelectRenderer::class, $mockRenderer);
-
-    $this->accessor->callProtectedMethod('prepareSpecificFields');
-
-    expect(true)->toBeTrue();
+        foreach ($expectations as $type => $checks) {
+            match ($type) {
+                'has_keys' => expect(Utils::$context['posting_fields'])->toHaveKeys($checks),
+                'not_has_keys' => array_map(fn($key) => expect(Utils::$context['posting_fields'])->not->toHaveKey($key), $checks),
+                'post_box_name' => is_null($checks)
+                    ? expect(isset(Utils::$context['post_box_name']))->toBeFalse()
+                    : expect(Utils::$context['post_box_name'])->toBe($checks),
+                default => null,
+            };
+        }
+    })->with([
+        'html type creates textarea field' => [
+            'setup'             => ['type' => 'html'],
+            'expectations'      => [
+                'post_box_name' => null,
+                'has_keys'      => ['content'],
+            ],
+        ],
+        'bbc type creates BBC field' => [
+            'setup'             => ['type' => 'bbc', 'is_admin' => true],
+            'expectations'      => [
+                'post_box_name' => 'content',
+                'has_keys'      => ['content'],
+            ],
+        ],
+        'always creates common fields' => [
+            'setup'        => ['is_admin' => true],
+            'expectations' => [
+                'has_keys' => [
+                    'description', 'placement', 'permissions', 'areas', 'icon', 'title_class', 'hide_header',
+                ],
+            ],
+        ],
+        'with link_in_title option' => [
+            'setup'              => ['link_in_title' => 'https://example.com'],
+            'expectations'       => [
+                'has_keys'       => ['link_in_title'],
+                'link_in_title' => true,
+            ],
+        ],
+        'without link_in_title option' => [
+            'setup'              => [],
+            'expectations'       => [
+                'not_has_keys'  => ['link_in_title'],
+                'link_in_title' => false,
+            ],
+        ],
+    ]);
 });
 
 it('dispatchFieldsEvent dispatches event', function () {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Bugo\Compat\Config;
 use Bugo\Compat\User;
+use Bugo\Compat\Utils;
 
 if (! function_exists('memoryReturnBytes')) {
     function memoryReturnBytes(string $val): int
@@ -73,14 +74,32 @@ if (! function_exists('addJavaScriptVar')) {
 }
 
 if (! function_exists('addInlineCss')) {
-    function addInlineCss(string $css): void
+    function addInlineCss(string $css): bool
     {
+        if (empty($css)) {
+            return false;
+        }
+
+        Utils::$context['css_header'] ??= [];
+
+        Utils::$context['css_header'][] = $css;
+
+        return true;
     }
 }
 
 if (! function_exists('addInlineJavaScript')) {
-    function addInlineJavaScript(string $javascript, $defer = false): void
+    function addInlineJavaScript(string $javascript, $defer = false): bool
     {
+        if (empty($javascript)) {
+            return false;
+        }
+
+        Utils::$context['javascript_inline'] ??= [];
+
+        Utils::$context['javascript_inline'][($defer === true ? 'defer' : 'standard')][] = $javascript;
+
+        return true;
     }
 }
 
@@ -323,5 +342,17 @@ if (! function_exists('logAction')) {
     function logAction(string $action, array $extra = []): int
     {
         return 1;
+    }
+}
+
+if (! function_exists('create_control_richedit')) {
+    function create_control_richedit(array $options): void
+    {
+    }
+}
+
+if (! function_exists('template_control_richedit')) {
+    function template_control_richedit($editor_id, $smiley_container, $bbc_container): void
+    {
     }
 }

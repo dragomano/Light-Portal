@@ -9,6 +9,7 @@ use LightPortal\Database\PortalResultInterface;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Events\EventManager;
 use LightPortal\Lists\CategoryList;
+use LightPortal\Lists\IconList;
 use LightPortal\Lists\ListInterface;
 use LightPortal\Lists\PageList;
 use LightPortal\Lists\TagList;
@@ -123,7 +124,10 @@ if (! function_exists('LightPortal\\app')) {
                 return $mock;
             }
 
-            return null;
+            $mock = mock(SelectRenderer::class);
+            $mock->shouldReceive('render')->andReturn('<select><option>Test</option></select>');
+
+            return $mock;
         } elseif (str_contains($service, 'ViewInterface')) {
             if ($mock = AppMockRegistry::get(ViewInterface::class)) {
                 return $mock;
@@ -154,6 +158,16 @@ if (! function_exists('LightPortal\\app')) {
             $mock->shouldReceive('setTemplateDir')->byDefault()->andReturn($mock);
             $mock->shouldReceive('setCustomDir')->byDefault()->andReturn($mock);
             $mock->shouldReceive('render')->byDefault()->andReturn('<div>pure php rendered</div>');
+
+            return $mock;
+        } elseif (str_contains($service, 'IconList')) {
+            if ($mock = AppMockRegistry::get(IconList::class)) {
+                return $mock;
+            }
+
+            $mock = mock(IconList::class);
+            $mock->shouldReceive('__invoke')->byDefault()->andReturn(['plus' => '<i class="fas fa-plus"></i>']);
+            $mock->shouldReceive('dispatch')->byDefault()->andReturn(null);
 
             return $mock;
         } elseif (str_contains($service, 'CategoryList')) {

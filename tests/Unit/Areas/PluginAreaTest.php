@@ -10,7 +10,6 @@ use LightPortal\Areas\PluginArea;
 use LightPortal\Enums\PluginType;
 use LightPortal\Enums\PortalHook;
 use LightPortal\Events\EventDispatcherInterface;
-use LightPortal\Lists\IconList;
 use LightPortal\Repositories\PluginRepositoryInterface;
 use LightPortal\Utils\FilesystemInterface;
 use LightPortal\Utils\InputFilter;
@@ -50,10 +49,6 @@ beforeEach(function () {
         'settings'       => 'Settings',
         'save'           => 'Save',
     ];
-
-    $iconListMock = mock(IconList::class);
-    $iconListMock->shouldReceive('__invoke')->andReturn(['test-icon' => '<i class="test-icon"></i>']);
-    AppMockRegistry::set(IconList::class, $iconListMock);
 });
 
 describe('PluginArea::main()', function () {

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
 use Bugo\Compat\User;
 use Bugo\Compat\Utils;
@@ -9,7 +10,9 @@ use LightPortal\Areas\AbstractArea;
 use LightPortal\Areas\AreaInterface;
 use LightPortal\Areas\PageArea;
 use LightPortal\Enums\EntryType;
+use LightPortal\Enums\Tab;
 use LightPortal\Events\EventDispatcherInterface;
+use LightPortal\Lists\CategoryList;
 use LightPortal\Lists\IconList;
 use LightPortal\Models\PageFactory;
 use LightPortal\Repositories\PageRepositoryInterface;
@@ -31,6 +34,7 @@ beforeEach(function () {
     Lang::$txt += [
         'date'   => 'Date',
         'search' => 'Search',
+        'edit_permissions' => 'Edit permissions',
     ];
 });
 
@@ -88,6 +92,9 @@ it('returns correct main form action suffix', function () {
 it('returns correct main tab data', function () {
     User::$me->allowedTo(['light_portal_manage_pages_any']);
 
+    $this->accessor->setProtectedProperty('isModerate', true);
+    $this->accessor->setProtectedProperty('isDeleted', true);
+
     $result = $this->accessor->callProtectedMethod('getMainTabData');
 
     expect($result)->toBeArray()
@@ -125,6 +132,25 @@ it('buildTable returns PortalTableBuilder instance', function () {
     expect($result)->toBeInstanceOf(PortalTableBuilderInterface::class);
 });
 
+it('afterMain correctly runs', function () {
+    Lang::$txt['all'] = 'all';
+    Lang::$txt['awaiting_approval'] = 'Awaiting approval';
+
+    Utils::$context['lp_pages'] = ['title' => ''];
+    Utils::$context['form_action'] = 'https://example.com?action=admin;area=lp_pages';
+    Utils::$context['lp_quantities'] = [
+        'active_pages'     => 0,
+        'my_pages'         => 0,
+        'unapproved_pages' => 0,
+        'deleted_pages'    => 0,
+    ];
+
+    $this->accessor->setProtectedProperty('browseType', 'all');
+    $this->accessor->callProtectedMethod('afterMain');
+
+    expect(Utils::$context['lp_pages']['title'])->toContain(Utils::$context['form_action']);
+});
+
 it('setupAdditionalAddContext prepares page list and sets context', function () {
     Utils::$context += [
         'lp_content_types' => ['bbc' => 'BBC'],
@@ -136,7 +162,6 @@ it('setupAdditionalAddContext prepares page list and sets context', function () 
     $requestMock->shouldReceive('json')->andReturn([]);
     $requestMock->shouldReceive('get')->with('add_page')->andReturn('bbc');
     $requestMock->shouldReceive('get')->with('search')->andReturn('');
-
     $this->accessor->setProtectedProperty('request', $requestMock);
 
     $this->accessor->callProtectedMethod('setupAdditionalAddContext');
@@ -189,6 +214,163 @@ it('prepareCommonFields does nothing', function () {
     $this->accessor->callProtectedMethod('prepareCommonFields');
 
     expect(true)->toBeTrue();
+});
+
+describe('prepareSpecificFields', function () {
+    beforeEach(function () {
+        Utils::$context['lp_page'] = [
+            'type'        => 'bbc',
+            'content'     => 'test content',
+            'options'     => [
+                'show_title'           => true,
+                'show_in_menu'         => false,
+                'show_author_and_date' => true,
+                'show_related_pages'   => false,
+                'allow_comments'       => false,
+            ],
+            'category_id' => 1,
+            'description' => 'Test description',
+            'created_at'  => time() - 1000,
+        ];
+
+        Utils::$context['user']['is_admin'] = false;
+        Utils::$context['lp_quantities']['active_tags'] = 0;
+        Utils::$context['posting_fields'] = [];
+
+        $categoryListMock = mock(CategoryList::class);
+        $categoryListMock->shouldReceive('__invoke')->andReturn([
+            [
+                'category_id' => 1,
+                'icon'        => 'fas fa-folder',
+                'title'       => 'Test Category',
+                'slug'        => 'test-category',
+                'description' => '',
+            ]
+        ]);
+        AppMockRegistry::set(CategoryList::class, $categoryListMock);
+    });
+
+    it('creates correct fields', function ($setup, $expectations) {
+        foreach ($setup as $key => $value) {
+            match ($key) {
+                'type'                  => Utils::$context['lp_page']['type'] = $value,
+                'is_admin'              => Utils::$context['user']['is_admin'] = $value,
+                'active_tags'           => Utils::$context['lp_quantities']['active_tags'] = $value,
+                'created_at'            => Utils::$context['lp_page']['created_at'] = $value,
+                'date'                  => Utils::$context['lp_page']['date'] = $value,
+                'time'                  => Utils::$context['lp_page']['time'] = $value,
+                'lp_show_related_pages' => Config::$modSettings['lp_show_related_pages'] = $value,
+                'lp_comment_block'      => Config::$modSettings['lp_comment_block'] = $value,
+                default                 => null,
+            };
+        }
+
+        $this->accessor->callProtectedMethod('prepareSpecificFields');
+
+        foreach ($expectations as $type => $checks) {
+            match ($type) {
+                'has_keys' => expect(Utils::$context['posting_fields'])->toHaveKeys($checks),
+                'not_has_keys' => array_map(fn($key) => expect(Utils::$context['posting_fields'])->not->toHaveKey($key), $checks),
+                'post_box_name' => is_null($checks)
+                    ? expect(isset(Utils::$context['post_box_name']))->toBeFalse()
+                    : expect(Utils::$context['post_box_name'])->toBe($checks),
+                'tag_in_seo_tab' => $checks
+                    ? expect(Utils::$context['posting_fields']['tags']['input']['tab'])->toBe(Tab::SEO->name())
+                    : expect(Utils::$context['posting_fields']['tags']['input']['tab'])->not->toBe(Tab::SEO->name()),
+                default => null,
+            };
+        }
+    })->with([
+        'html type creates textarea field' => [
+            'setup'             => ['type' => 'html'],
+            'expectations'      => [
+                'post_box_name' => null,
+                'has_keys'      => ['content'],
+            ],
+        ],
+        'bbc type creates BBC field' => [
+            'setup'             => ['type' => 'bbc', 'is_admin' => true],
+            'expectations'      => [
+                'post_box_name' => 'content',
+                'has_keys'      => ['content'],
+            ],
+        ],
+        'admin has special fields' => [
+            'setup'        => ['is_admin' => true],
+            'expectations' => [
+                'has_keys' => ['show_in_menu', 'status'],
+            ],
+        ],
+        'non-admin has no special fields' => [
+            'setup'            => ['is_admin' => false],
+            'expectations'     => [
+                'not_has_keys' => ['show_in_menu', 'status'],
+            ],
+        ],
+        'always creates common fields' => [
+            'setup'        => ['is_admin' => true],
+            'expectations' => [
+                'has_keys' => [
+                    'permissions', 'category_id', 'entry_type', 'slug',
+                    'description', 'show_title', 'show_author_and_date',
+                ],
+            ],
+        ],
+        'with active tags in SEO tab' => [
+            'setup'              => ['active_tags' => 5],
+            'expectations'       => [
+                'has_keys'       => ['tags'],
+                'tag_in_seo_tab' => true,
+            ],
+        ],
+        'without active tags not in SEO tab' => [
+            'setup'              => ['active_tags' => 0],
+            'expectations'       => [
+                'has_keys'       => ['tags'],
+                'tag_in_seo_tab' => false,
+            ],
+        ],
+        'future page has datetime field' => [
+            'setup'          => [
+                'created_at' => time() + 86400,
+                'date'       => '2024-12-25',
+                'time'       => '12:00',
+            ],
+            'expectations'   => [
+                'has_keys'   => ['datetime'],
+            ],
+        ],
+        'past page has no datetime field' => [
+            'setup'            => ['created_at' => time() - 1000],
+            'expectations'     => [
+                'not_has_keys' => ['datetime'],
+            ],
+        ],
+        'related pages enabled' => [
+            'setup'        => ['lp_show_related_pages' => true],
+            'expectations' => [
+                'has_keys' => ['show_related_pages'],
+            ],
+        ],
+        'related pages disabled' => [
+            'setup'            => ['lp_show_related_pages' => false],
+            'expectations'     => [
+                'not_has_keys' => ['show_related_pages'],
+            ],
+        ],
+        'comments enabled' => [
+            'setup'        => ['lp_comment_block' => 'default'],
+            'expectations' => [
+                'has_keys' => ['allow_comments'],
+            ],
+        ],
+        'comments disabled' => [
+            'setup'            => ['lp_comment_block' => 'none'],
+            'expectations'     => [
+                'not_has_keys' => ['allow_comments'],
+            ],
+        ],
+    ]);
 });
 
 it('dispatchFieldsEvent dispatches event', function () {
@@ -328,15 +510,13 @@ it('beforeMain loads params and checks user', function () {
     $requestMock = mock(RequestInterface::class);
     $requestMock->shouldReceive('get')->with('params')->andReturn([]);
     $requestMock->shouldReceive('get')->with('u')->andReturn(1);
-    $requestMock->shouldReceive('has')->with('moderate')->andReturn(false);
+    $requestMock->shouldReceive('has')->with('moderate')->andReturn(true);
     $requestMock->shouldReceive('has')->with('deleted')->andReturn(false);
     $requestMock->shouldReceive('get')->with('type')->andReturn(null);
     AppMockRegistry::set(RequestInterface::class, $requestMock);
     $this->accessor->setProtectedProperty('request', $requestMock);
 
     $this->accessor->callProtectedMethod('beforeMain');
-
-    expect(true)->toBeTrue();
 });
 
 it('performMassActions handles delete action', function () {

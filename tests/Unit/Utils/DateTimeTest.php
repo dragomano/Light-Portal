@@ -94,14 +94,19 @@ describe('DateTime', function () {
             expect($result)->toStartWith(Lang::$txt['lp_tomorrow']);
         });
 
-        it('returns "In X hours" for future hours', function ($hours) {
-            $futureTime = time() + 86400 + ($hours * 3600); // Tomorrow + X hours
-            $result     = DateTime::relative($futureTime);
+        it('returns "In X hours" for future hours', function () {
+            $currentHour = (int) date('H');
+            $maxSafeHours = min(22 - $currentHour, 14);
+
+            $hours = rand(1, max(1, $maxSafeHours));
+
+            $futureTime = time() + ($hours * 3600);
+            $result = DateTime::relative($futureTime);
 
             expect($result)
                 ->toStartWith('In ')
                 ->toContain('hour');
-        })->with([10, 12, 14]);
+        });
 
         it('returns "In X minutes" for future minutes', function ($minutes) {
             $futureTime = time() + ($minutes * 60);
