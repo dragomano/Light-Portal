@@ -1,4 +1,4 @@
-<table class="table_grid centertext" x-data="handleSites()">
+<table class="table_grid centertext" x-data="handleSites?.()">
 	<tbody>
 	<template x-for="(site, index) in sites" :key="index">
 		<tr class="popup_content">

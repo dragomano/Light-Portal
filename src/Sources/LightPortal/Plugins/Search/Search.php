@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 29.10.25
+ * @version 05.11.25
  */
 
 namespace LightPortal\Plugins\Search;
@@ -205,7 +205,7 @@ class Search extends Block
 				'link'    => LP_PAGE_URL . $row['slug'],
 				'author'  => $this->getLink($row),
 				'date'    => DateTime::relative($row['date']),
-				'title'   => $row['title'],
+				'title'   => Str::decodeHtmlEntities($row['title']),
 				'content' => Str::getTeaser($row['content']),
 			];
 		}

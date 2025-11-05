@@ -45,7 +45,6 @@ use LightPortal\UI\Tables\PageTypeSelectRow;
 use LightPortal\UI\Tables\PortalTableBuilder;
 use LightPortal\UI\Tables\PortalTableBuilderInterface;
 use LightPortal\UI\Tables\TitleColumn;
-use LightPortal\Utils\DateTime;
 use LightPortal\Utils\Setting;
 use LightPortal\Utils\Str;
 use LightPortal\Validators\PageValidator;
@@ -270,10 +269,6 @@ final class PageArea extends AbstractArea
 
 	protected function postProcessValidation(): void
 	{
-		$dateTime = DateTime::get();
-		Utils::$context['lp_page']['date'] ??= $dateTime->format('Y-m-d');
-		Utils::$context['lp_page']['time'] ??= $dateTime->format('H:i');
-
 		$options = $this->getDefaultOptions();
 
 		$missingKeys = array_diff_key($options, Utils::$context['lp_page']['options']);
@@ -398,7 +393,7 @@ final class PageArea extends AbstractArea
 	{
 		if (Utils::$context['lp_current_page']['author_id'] !== User::$me->id) {
 			Logging::logAction('remove_lp_page', [
-				'page' => Utils::$context['lp_current_page']['title']
+				'page' => Utils::$context['lp_current_page']['title'],
 			]);
 		}
 	}
@@ -459,7 +454,7 @@ final class PageArea extends AbstractArea
 				'type'  => $type,
 				'icon'  => ContentType::icon($type) ?: Utils::$context['lp_loaded_addons'][$type]['icon'],
 				'title' => Lang::$txt['lp_' . $type]['title'] ?? $title,
-				'desc'  => Lang::$txt['lp_' . $type]['block_desc'] ?? Lang::$txt['lp_' . $type]['description']
+				'desc'  => Lang::$txt['lp_' . $type]['block_desc'] ?? Lang::$txt['lp_' . $type]['description'],
 			];
 		}
 

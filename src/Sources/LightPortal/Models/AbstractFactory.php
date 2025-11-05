@@ -27,12 +27,12 @@ abstract class AbstractFactory implements FactoryInterface
 			Str::cleanBbcode($data['title']);
 		}
 
-		$data = $this->modifyData($data);
+		$data = $this->populate($data);
 
 		return new $this->modelClass($data);
 	}
 
-	protected function modifyData(array $data): array
+	protected function populate(array $data): array
 	{
 		return $data;
 	}

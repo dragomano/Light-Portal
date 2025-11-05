@@ -57,13 +57,13 @@ abstract class Plugin implements PluginInterface, Stringable
 	public function __construct(
 		public string $type = 'other',
 		public string $icon = 'fas fa-puzzle-piece',
-		public bool $saveable = true,
+		public bool $showSaveButton = true,
 	)
 	{
-		$this->name     = $this->getSnakeName();
-		$this->type     = $this->getPluginType();
-		$this->icon     = $this->getPluginIcon();
-		$this->saveable = $this->isPluginSaveable();
+		$this->name = $this->getSnakeName();
+		$this->type = $this->getPluginType();
+		$this->icon = $this->getPluginIcon();
+		$this->showSaveButton = $this->isPluginHasSaveButton();
 
 		$this->sql = $this->getPortalSql();
 
@@ -107,11 +107,11 @@ abstract class Plugin implements PluginInterface, Stringable
 		return $pluginAttr->icon ?? $this->icon;
 	}
 
-	public function isPluginSaveable(): bool
+	public function isPluginHasSaveButton(): bool
 	{
 		$pluginAttr = $this->getPluginAttribute();
 
-		return $pluginAttr->saveable ?? $this->saveable;
+		return $pluginAttr->showSaveButton ?? $this->showSaveButton;
 	}
 
 	public function isEnabled(): bool
@@ -153,7 +153,7 @@ abstract class Plugin implements PluginInterface, Stringable
 		$reflection = new ReflectionClass($this);
 		$inheritedType = null;
 		$inheritedIcon = null;
-		$inheritedSaveable = null;
+		$inheritedShowSaveButton = null;
 
 		$classes = [];
 		do {
@@ -178,15 +178,15 @@ abstract class Plugin implements PluginInterface, Stringable
 				$inheritedIcon = $attr->icon;
 			}
 
-			if ($attr->saveable !== null) {
-				$inheritedSaveable = $attr->saveable;
+			if ($attr->showSaveButton !== null) {
+				$inheritedShowSaveButton = $attr->showSaveButton;
 			}
 		}
 
 		return new PluginAttribute(
 			type: $inheritedType,
 			icon: $inheritedIcon,
-			saveable: $inheritedSaveable
+			showSaveButton: $inheritedShowSaveButton
 		);
 	}
 }

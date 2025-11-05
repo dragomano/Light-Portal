@@ -12,78 +12,38 @@
 
 namespace LightPortal\Models;
 
-use Bugo\Compat\User;
-use LightPortal\Enums\ContentType;
-use LightPortal\Enums\EntryType;
-use LightPortal\Enums\Permission;
-use LightPortal\Enums\Status;
-use LightPortal\Utils\Setting;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
 class PageModel extends AbstractModel
 {
-	public int $id;
+	protected array $fields = [
+		'id'              => 0,
+		'category_id'     => 0,
+		'author_id'       => 0,
+		'slug'            => '',
+		'type'            => '',
+		'entry_type'      => '',
+		'permissions'     => 0,
+		'status'          => 0,
+		'num_views'       => 0,
+		'created_at'      => 0,
+		'updated_at'      => 0,
+		'deleted_at'      => 0,
+		'last_comment_id' => 0,
+	];
 
-	public int $categoryId;
+	protected array $extraFields = [
+		'title'       => '',
+		'content'     => '',
+		'description' => '',
+		'date'        => '',
+		'time'        => '',
+		'tags'        => [],
+		'options'     => [],
+	];
 
-	public int $authorId;
-
-	public string $slug;
-
-	public string $type;
-
-	public string $entryType;
-
-	public int $permissions;
-
-	public int $status;
-
-	public int $numViews;
-
-	public int $createdAt;
-
-	public int $updatedAt;
-
-	public int $deletedAt;
-
-	public int $lastCommentId;
-
-	public string $title;
-
-	public string $description;
-
-	public string $content;
-
-	public array $tags = [];
-
-	public array $options = [];
-
-	public function __construct(array $data)
-	{
-		$permissions = Setting::get('lp_permissions_default', 'int', Permission::MEMBER->value);
-		$status = User::$me->allowedTo('light_portal_approve_pages')
-			? Status::ACTIVE->value
-			: Status::UNAPPROVED->value;
-
-		$this->id            = $data['page_id'] ?? $data['id'] ?? 0;
-		$this->categoryId    = $data['category_id'] ?? 0;
-		$this->authorId      = $data['author_id'] ?? User::$me->id;
-		$this->slug          = $data['slug'] ?? '';
-		$this->type          = $data['type'] ?? ContentType::BBC->name();
-		$this->entryType     = $data['entry_type'] ?? EntryType::DEFAULT->name();
-		$this->permissions   = $data['permissions'] ?? $permissions;
-        $this->status        = $data['status'] ?? $status;
-        $this->numViews      = $data['num_views'] ?? 0;
-        $this->createdAt     = $data['created_at'] ?? time();
-        $this->updatedAt     = $data['updated_at'] ?? 0;
-        $this->deletedAt     = $data['deleted_at'] ?? 0;
-        $this->lastCommentId = $data['last_comment_id'] ?? 0;
-        $this->title         = $data['title'] ?? '';
-		$this->description   = $data['description'] ?? '';
-		$this->content       = $data['content'] ?? '';
-		$this->tags          = $data['tags'] ?? [];
-        $this->options       = $data['options'] ?? [];
-	}
+	protected array $aliases = [
+		'page_id' => 'id',
+	];
 }

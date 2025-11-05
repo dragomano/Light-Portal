@@ -24,7 +24,7 @@ class PluginAttribute
 	public function __construct(
 		public PluginType|array|null $type = null,
 		public ?string $icon = null,
-		public ?bool $saveable = null,
+		public ?bool $showSaveButton = null,
 		public ?bool $showContentClass = null
 	) {}
 }

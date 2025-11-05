@@ -12,6 +12,7 @@
 
 namespace LightPortal\Models;
 
+use LightPortal\Enums\Status;
 use LightPortal\Utils\Str;
 
 if (! defined('SMF'))
@@ -21,8 +22,10 @@ class CategoryFactory extends AbstractFactory
 {
 	protected string $modelClass = CategoryModel::class;
 
-	protected function modifyData(array $data): array
+	protected function populate(array $data): array
 	{
+		$data['status'] ??= Status::ACTIVE->value;
+
 		if (! empty($data['description'])) {
 			Str::cleanBbcode($data['description']);
 		}

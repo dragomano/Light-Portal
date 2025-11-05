@@ -1,16 +1,7 @@
 <script>
 	function handleSites() {
 		return {
-			sites: [
-				@foreach ($urls as $url => $data)
-				{
-					url: "{{ $url }}",
-					image: "{{ $data[0] }}",
-					title: "{{ $data[1] }}",
-					desc: "{{ $data[2] }}"
-				},
-				@endforeach
-			],
+			sites: {!! $sites ?: '[]' !!},
 			add() {
 				this.sites.push({
 					url: "",

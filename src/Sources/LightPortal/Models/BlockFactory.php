@@ -12,6 +12,12 @@
 
 namespace LightPortal\Models;
 
+use LightPortal\Enums\ContentClass;
+use LightPortal\Enums\Permission;
+use LightPortal\Enums\Placement;
+use LightPortal\Enums\Status;
+use LightPortal\Enums\TitleClass;
+use LightPortal\Utils\Setting;
 use LightPortal\Utils\Str;
 
 if (! defined('SMF'))
@@ -21,8 +27,18 @@ class BlockFactory extends AbstractFactory
 {
 	protected string $modelClass = BlockModel::class;
 
-	protected function modifyData(array $data): array
+	protected function populate(array $data): array
 	{
+		$data['placement'] ??= Placement::TOP->name();
+
+		$data['permissions'] ??= Setting::get('lp_permissions_default', 'int', Permission::MEMBER->value);
+
+		$data['status'] ??= Status::ACTIVE->value;
+
+		$data['title_class'] ??= TitleClass::first();
+
+		$data['content_class'] ??= ContentClass::first();
+
 		if (! empty($data['description'])) {
 			Str::cleanBbcode($data['description']);
 		}

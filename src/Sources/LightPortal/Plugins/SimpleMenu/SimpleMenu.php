@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 05.11.25
  */
 
 namespace LightPortal\Plugins\SimpleMenu;
@@ -70,8 +70,9 @@ class SimpleMenu extends Block
 
 	public function getData(string $items): array
 	{
-		if (empty($items))
+		if (empty($items)) {
 			return [];
+		}
 
 		$ul = Str::html('ul', ['class' => 'dropmenu']);
 
@@ -83,16 +84,16 @@ class SimpleMenu extends Block
 			$ext = true;
 			if (! str_starts_with((string) $link, 'http')) {
 				$active = $link == Utils::$context['current_action'];
-				$link = Config::$scripturl . '?action=' . $link;
-				$ext = false;
+				$link   = Config::$scripturl . '?action=' . $link;
+				$ext    = false;
 			}
 
 			$li = Str::html('li', ['style' => 'width: 100%']);
 			$a = Str::html('a', [
-				'href' => $link,
-				'class' => empty($active) ? null : 'active',
+				'href'   => $link,
+				'class'  => empty($active) ? null : 'active',
 				'target' => empty($ext) ? null : '_blank',
-				'rel' => empty($ext) ? null : 'noopener',
+				'rel'    => empty($ext) ? null : 'noopener',
 			])->setText($title);
 
 			$li->addHtml($a);

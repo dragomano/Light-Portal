@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 26.10.25
+ * @version 05.11.25
  */
 
 namespace LightPortal\Plugins\RandomPages;
@@ -190,7 +190,7 @@ class RandomPages extends Block
 				'num_views'   => $row['num_views'],
 				'author_id'   => $row['author_id'],
 				'author_name' => $row['author_name'],
-				'title'       => $row['title'],
+				'title'       => Str::decodeHtmlEntities($row['title']),
 			];
 		}
 

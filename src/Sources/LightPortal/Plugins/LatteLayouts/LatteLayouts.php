@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 29.10.25
+ * @version 05.11.25
  */
 
 namespace LightPortal\Plugins\LatteLayouts;
@@ -25,7 +25,7 @@ use LightPortal\Utils\Str;
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-#[PluginAttribute(type: PluginType::FRONTPAGE, saveable: false)]
+#[PluginAttribute(type: PluginType::FRONTPAGE, showSaveButton: false)]
 class LatteLayouts extends Plugin
 {
 	private string $extension = '.latte';

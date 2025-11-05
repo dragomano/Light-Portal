@@ -34,7 +34,7 @@ enum FrontPageMode: string
 
 	public function getArticleClass(): ?string
 	{
-		return match($this) {
+		return match ($this) {
 			self::ALL_PAGES => PageArticle::class,
 			self::ALL_TOPICS => TopicArticle::class,
 			self::CHOSEN_BOARDS => BoardArticle::class,

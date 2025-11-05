@@ -55,20 +55,20 @@
       icon="simple"
       style="opacity: {isCardView ? '.5' : '1'}"
       aria-label={$_('list_view')}
-      onclick={() => $layout = LAYOUT_LIST}
+      onclick={() => ($layout = LAYOUT_LIST)}
     />
     <Button
       tag="span"
       icon="tile"
       style="opacity: {isCardView ? '1' : '.5'}"
       aria-label={$_('card_view')}
-      onclick={() => $layout = LAYOUT_CARD}
+      onclick={() => ($layout = LAYOUT_CARD)}
     />
   </div>
 </div>
 
 <div id="addon_list" class:addon_list={isCardView}>
-  {#each filteredPlugins as plugin (plugin.snake_name)}
+  {#each filteredPlugins as plugin (plugin.snakeName)}
     <PluginItem item={plugin} />
   {/each}
 </div>

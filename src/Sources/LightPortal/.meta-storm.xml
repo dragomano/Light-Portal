@@ -4,14 +4,6 @@
 		<classMethod class="\LightPortal\Utils\Icon" method="get" argument="0">
 			<arrayKeys xpath="\LightPortal\Lists\IconList.$set"/>
 		</classMethod>
-		<classMethod class="\LightPortal\Utils\Setting" method="isFrontpageMode" argument="0">
-			<arrayKeys xpath="\LightPortal\Actions\FrontPage.$modes"/>
-			<collection name="frontpage_modes"/>
-		</classMethod>
-		<classProperty class="\LightPortal\Plugins\Plugin" property="type" targetInArray="key">
-			<collection name="plugin_types"/>
-			<stopCompletion/>
-		</classProperty>
 		<classMethod class="\LightPortal\Utils\Setting" method="get" argument="0">
 			<collection name="get_settings"/>
 			<stopCompletion/>
@@ -27,25 +19,6 @@
 		</classMethod>
 	</definitions>
 	<collections>
-		<strings name="frontpage_modes">
-			<value>chosen_page</value>
-		</strings>
-		<strings name="plugin_types">
-			<value>article</value>
-			<value>block_options</value>
-			<value>block</value>
-			<value>comment</value>
-			<value>editor</value>
-			<value>frontpage</value>
-			<value>games</value>
-			<value>icons</value>
-			<value>impex</value>
-			<value>other</value>
-			<value>page_options</value>
-			<value>parser</value>
-			<value>seo</value>
-			<value>ssi</value>
-		</strings>
 		<strings name="get_settings">
 			<value>lp_cache_enable</value>
 			<value>lp_cache_time</value>
@@ -137,6 +110,7 @@
 			<value>FormRenderer::class</value>
 			<value>FrontPage::class</value>
 			<value>IconList::class</value>
+			<value>InputFilter::class</value>
 			<value>Integration::class</value>
 			<value>LangHandler::class</value>
 			<value>MiscConfig::class</value>
@@ -187,7 +161,7 @@
 			<value>TopicArticle::class</value>
 			<value>TopicArticleQuery::class</value>
 			<value>TopicArticleService::class</value>
-			<value>View::class</value>
+			<value>ViewInterface::class</value>
 		</strings>
 	</collections>
 </meta-storm>

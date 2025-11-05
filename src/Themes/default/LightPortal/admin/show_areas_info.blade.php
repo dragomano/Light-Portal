@@ -8,7 +8,7 @@
 		@foreach ($context['lp_possible_areas'] as $area => $where_to_display)
 			<tr class="windowbg">
 				<td class="righttext"><strong>{{ $area }}</strong></td>
-				<td class="lefttext">{{ $where_to_display }}</td>
+				<td class="lefttext">{!! $where_to_display !!}</td>
 			</tr>
 		@endforeach
 	</tbody>

@@ -12,10 +12,19 @@
 
 namespace LightPortal\Models;
 
+use LightPortal\Enums\Status;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
 class TagFactory extends AbstractFactory
 {
 	protected string $modelClass = TagModel::class;
+
+	protected function populate(array $data): array
+	{
+		$data['status'] ??= Status::ACTIVE->value;
+
+		return $data;
+	}
 }

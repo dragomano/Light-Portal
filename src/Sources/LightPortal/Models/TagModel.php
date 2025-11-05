@@ -12,29 +12,23 @@
 
 namespace LightPortal\Models;
 
-use LightPortal\Enums\Status;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
 class TagModel extends AbstractModel
 {
-	public int $id;
+	protected array $fields = [
+		'id'     => 0,
+		'slug'   => '',
+		'icon'   => '',
+		'status' => 0,
+	];
 
-	public string $slug;
+	protected array $extraFields = [
+		'title' => '',
+	];
 
-	public string $icon;
-
-	public int $status;
-
-	public string $title;
-
-	public function __construct(array $data)
-	{
-		$this->id     = $data['tag_id'] ?? $data['id'] ?? 0;
-		$this->slug   = $data['slug'] ?? '';
-		$this->icon   = $data['icon'] ?? '';
-		$this->status = $data['status'] ?? Status::ACTIVE->value;
-		$this->title  = $data['title'] ?? '';
-	}
+	protected array $aliases = [
+		'tag_id' => 'id',
+	];
 }

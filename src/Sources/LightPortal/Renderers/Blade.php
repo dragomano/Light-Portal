@@ -15,6 +15,7 @@ namespace LightPortal\Renderers;
 use Bugo\Compat\ErrorHandler;
 use Bugo\Compat\Sapi;
 use Bugo\Compat\Theme;
+use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use eftec\bladeone\BladeOne;
 use Exception;
@@ -77,6 +78,7 @@ class Blade extends AbstractRenderer
 	{
 		$blade = new BladeOne([$this->templateDir, $this->customDir], Sapi::getTempDir());
 		$blade->setBaseUrl(Theme::$current->settings['default_theme_url'] . '/scripts/light_portal');
+		$blade->setCanFunction(fn(string $permission): bool => User::$me->allowedTo($permission));
 
 		$this->setupDirectives($blade);
 
@@ -108,7 +110,7 @@ class Blade extends AbstractRenderer
 			}
 
 			$div = Str::html('div')->class('errorbox');
-			$ul = Str::html('ul');
+			$ul  = Str::html('ul');
 
 			foreach (Utils::$context['post_errors'] as $error) {
 				$ul->addHtml(Str::html('li')->addHtml($error));

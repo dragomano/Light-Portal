@@ -166,7 +166,7 @@ class Generator
 	{
 		if ($this->hasType(PluginType::FRONTPAGE)) {
 			$this->class
-				->addProperty('saveable', false)
+				->addProperty('showSaveButton', false)
 				->setType('bool');
 
 			$this->class

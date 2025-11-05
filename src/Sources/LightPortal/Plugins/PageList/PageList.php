@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 05.11.25
  */
 
 namespace LightPortal\Plugins\PageList;
@@ -128,7 +128,7 @@ class PageList extends Block
 				'category_id'   => $row['category_id'],
 				'category_name' => $allCategories[$row['category_id']]['title'],
 				'category_link' => PortalSubAction::CATEGORIES->url() . ';id=' . $row['category_id'],
-				'title'         => $row['title'],
+				'title'         => Str::decodeHtmlEntities($row['title']),
 				'author_id'     => $row['author_id'],
 				'author_name'   => $row['author_name'],
 				'slug'          => $row['slug'],

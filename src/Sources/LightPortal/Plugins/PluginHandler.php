@@ -65,10 +65,10 @@ final readonly class PluginHandler
 
 		$plugins = array_map(function (PluginInterface $plugin) {
 			$data = get_object_vars($plugin);
-			$data['name']     = $plugin->getCamelName();
-			$data['type']     = $plugin->getPluginType();
-			$data['icon']     = $plugin->getPluginIcon();
-			$data['saveable'] = $plugin->isPluginSaveable();
+			$data['name'] = $plugin->getCamelName();
+			$data['type'] = $plugin->getPluginType();
+			$data['icon'] = $plugin->getPluginIcon();
+			$data['showSaveButton'] = $plugin->isPluginHasSaveButton();
 
 			return [$plugin->getSnakeName() => $data];
 		}, $warehouse);

@@ -59,13 +59,13 @@ export interface Plugin {
   name?: string;
   version?: string;
   outdated?: string;
-  snake_name?: string;
+  snakeName?: string;
   desc?: string;
   status?: string;
   types?: string[];
   special?: string;
   settings?: string[];
-  saveable?: boolean;
+  showSaveButton?: boolean;
 }
 
 export interface DonateInfo {

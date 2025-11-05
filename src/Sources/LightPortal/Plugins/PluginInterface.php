@@ -22,7 +22,7 @@ interface PluginInterface
 
 	public function getPluginIcon(): string;
 
-	public function isPluginSaveable(): bool;
+	public function isPluginHasSaveButton(): bool;
 
 	public function addDefaultValues(array $values): void;
 

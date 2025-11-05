@@ -12,35 +12,25 @@
 
 namespace LightPortal\Models;
 
-use LightPortal\Enums\Status;
-
 if (! defined('SMF'))
 	die('No direct access...');
 
 class CategoryModel extends AbstractModel
 {
-	public int $id;
+	protected array $fields = [
+		'id'       => 0,
+		'slug'     => '',
+		'icon'     => '',
+		'priority' => 0,
+		'status'   => 0,
+	];
 
-	public string $slug;
+	protected array $extraFields = [
+		'title'       => '',
+		'description' => '',
+	];
 
-	public string $icon;
-
-	public int $priority;
-
-	public int $status;
-
-	public string $title;
-
-	public string $description;
-
-	public function __construct(array $data)
-	{
-		$this->id          = $data['category_id'] ?? $data['id'] ?? 0;
-		$this->slug        = $data['slug'] ?? '';
-		$this->icon        = $data['icon'] ?? '';
-		$this->priority    = $data['priority'] ?? 0;
-		$this->status      = $data['status'] ?? Status::ACTIVE->value;
-		$this->title       = $data['title'] ?? '';
-		$this->description = $data['description'] ?? '';
-	}
+	protected array $aliases = [
+		'category_id' => 'id',
+	];
 }

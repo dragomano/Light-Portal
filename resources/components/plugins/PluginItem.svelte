@@ -16,8 +16,12 @@
   let show = $state(false);
   let toggled = $state(item.status === 'on');
   let outdated = $state(item.outdated);
-  let settingsId = $state(item.snake_name + '_' + appState.sessionId);
-  let index = $state(Object.values(pluginState.list).findIndex((plugin: Plugin) => plugin.snake_name === item.snake_name));
+  let settingsId = $state(item.snakeName + '_' + appState.sessionId);
+  let index = $state(
+    Object.values(pluginState.list).findIndex(
+      (plugin: Plugin) => plugin.snakeName === item.snakeName
+    )
+  );
 
   const { donate: donateIcon, download: downloadIcon } = iconState;
   const donateLink = $derived(pluginState.donate[item.name].link);
@@ -25,7 +29,9 @@
   const specialLink = $derived(item.special === 'can_donate' ? donateLink : downloadLink);
   const specialIcon = $derived(item.special === 'can_donate' ? donateIcon : downloadIcon);
   const key = $derived(item.special === 'can_donate' ? 'donate' : 'download');
-  const specialDesc = $derived(pluginState[key][item.name]?.languages[contextState.lang ?? 'english']);
+  const specialDesc = $derived(
+    pluginState[key][item.name]?.languages[contextState.lang ?? 'english']
+  );
   const showToggle = $derived(!item.special && Object.keys(item.types)[0] !== $_('not_applicable'));
 
   const toggle = async () => {

@@ -47,7 +47,7 @@
 	</button>
 </div>
 
-<script src="{{ $settings['default_theme_url'] }}/scripts/light_portal/Sortable.min.js"></script>
+<script src="@asset('Sortable.min.js')"></script>
 
 <script>
 	document.addEventListener("alpine:initialized", () => {

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 26.10.25
+ * @version 05.11.25
  */
 
 namespace LightPortal\Plugins\ArticleList;
@@ -259,7 +259,7 @@ class ArticleList extends Block
 				'id'          => $row['page_id'],
 				'slug'        => $row['slug'],
 				'image'       => $image,
-				'title'       => $row['title'],
+				'title'       => Str::decodeHtmlEntities($row['title']),
 				'description' => Str::getTeaser($row['description'] ?: strip_tags($row['content'])),
 			];
 		}

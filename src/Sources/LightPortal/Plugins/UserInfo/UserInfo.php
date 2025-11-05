@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 26.10.25
+ * @version 05.11.25
  */
 
 namespace LightPortal\Plugins\UserInfo;
@@ -46,8 +46,6 @@ class UserInfo extends Block
 			->setLifeTime($e->args->cacheTime)
 			->setFallback($this->getData(...));
 
-		echo $this->view(params: [
-			'user' => $userData,
-		]);
+		echo $this->view(params: ['user' => $userData]);
 	}
 }

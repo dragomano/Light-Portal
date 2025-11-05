@@ -23,7 +23,7 @@
 		</li>
 	@endunless
 
-	@if (User::$me->allowedTo('light_portal_manage_pages_own'))
+	@can ('light_portal_manage_pages_own')
 		<li class="lefttext">
 			<hr>
 			@icon('plus_circle', $txt['lp_pages_add'] ?? '')
@@ -31,17 +31,17 @@
 				{{ $txt['lp_pages_add'] }}
 			</a>
 		</li>
-	@endif
+	@endcan
 
-	@if (User::$me->allowedTo('light_portal_manage_pages_any'))
+	@can ('light_portal_manage_pages_any')
 		<li class="lefttext">
 			<hr>
-			@icon('pager', $txt['lp_page_moderation'] ?? '')
+			@icon('pager', $txt['lp_user_info']['moderate_pages'] ?? '')
 			<a href="{{ $scripturl }}?action=admin;area=lp_pages;sa=main;moderate;{{ $context['session_var'] }}={{ $context['session_id'] }}">
-				{{ $txt['lp_page_moderation'] }}
+				{{ $txt['lp_user_info']['moderate_pages'] }}
 			</a>
 		</li>
-	@endif
+	@endcan
 
 	<li>
 		<hr>
@@ -51,7 +51,9 @@
         </span>
 		<span class="floatright">
             @icon('sign_out_alt', $txt['logout'] ?? '')
-            <a href="{{ $scripturl }}?action=logout;{{ $context['session_var'] }}={{ $context['session_id'] }}">{{ $txt['logout'] }}</a>
+            <a href="{{ $scripturl }}?action=logout;{{ $context['session_var'] }}={{ $context['session_id'] }}">
+				{{ $txt['logout'] }}
+			</a>
         </span>
 	</li>
 </ul>

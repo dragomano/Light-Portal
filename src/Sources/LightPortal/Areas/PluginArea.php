@@ -178,16 +178,16 @@ final readonly class PluginArea
 			}
 
 			return [
-				'name'       => $item,
-				'version'    => $version,
-				'outdated'   => $outdated,
-				'snake_name' => $snakeName,
-				'desc'       => $outdated ?? Lang::$txt['lp_' . $snakeName]['description'] ?? '',
-				'status'     => in_array($item, Setting::getEnabledPlugins()) ? 'on' : 'off',
-				'types'      => $this->getTypes($snakeName),
-				'special'    => $special ?? '',
-				'settings'   => $configVars[$snakeName] ?? [],
-				'saveable'   => $pluginData['saveable'] ?? false,
+				'name'           => $item,
+				'version'        => $version,
+				'outdated'       => $outdated,
+				'snakeName'      => $snakeName,
+				'desc'           => $outdated ?? Lang::$txt['lp_' . $snakeName]['description'] ?? '',
+				'status'         => in_array($item, Setting::getEnabledPlugins()) ? 'on' : 'off',
+				'types'          => $this->getTypes($snakeName),
+				'special'        => $special ?? '',
+				'settings'       => $configVars[$snakeName] ?? [],
+				'showSaveButton' => $pluginData['showSaveButton'] ?? false,
 			];
 		}, Utils::$context['lp_plugins']);
 	}
@@ -196,8 +196,9 @@ final readonly class PluginArea
 	{
 		$file = LP_ADDON_DIR . DIRECTORY_SEPARATOR . $item . DIRECTORY_SEPARATOR . $item . '.php';
 
-		if (! is_file($file))
+		if (! is_file($file)) {
 			return '';
+		}
 
 		$docBlock = file_get_contents($file, length: 400);
 

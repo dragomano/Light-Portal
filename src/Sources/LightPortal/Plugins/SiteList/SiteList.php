@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 04.11.25
+ * @version 05.11.25
  */
 
 namespace LightPortal\Plugins\SiteList;
@@ -36,14 +36,11 @@ class SiteList extends Plugin
 
 	public function addSettings(Event $e): void
 	{
-		$e->args->settings[$this->name] = SettingsFactory::make()->custom('urls', $this->view())->toArray();
-	}
+		$e->args->settings[$this->name] = SettingsFactory::make()
+			->custom('urls', $this->view())
+			->toArray();
 
-	public function addLayerBelow(): void
-	{
-		$urls = Utils::jsonDecode($this->context['urls'] ?? '', true);
-
-		echo $this->view('handle_sites', ['urls' => $urls ?? []]);
+		$this->prepareUrls();
 	}
 
 	public function saveSettings(Event $e): void
@@ -56,7 +53,7 @@ class SiteList extends Plugin
 		if ($this->request()->has('url')) {
 			foreach ($this->request()->get('url') as $key => $value) {
 				$sites[VarType::URL->filter($value)] = [
-					VarType::URL->filter($this->request()->get('image')[$key]),
+					(string) VarType::URL->filter($this->request()->get('image')[$key]),
 					$this->request()->get('title')[$key],
 					$this->request()->get('desc')[$key],
 				];
@@ -73,5 +70,22 @@ class SiteList extends Plugin
 		app()->add(SiteArticle::class);
 
 		$e->args->currentMode = $this->mode;
+	}
+
+	private function prepareUrls(): void
+	{
+		$urls = Utils::jsonDecode($this->context['urls'] ?? '', true);
+
+		$sites = [];
+		foreach ($urls as $url => $data) {
+			$sites[] = [
+				'url'   => $url,
+				'image' => $data[0],
+				'title' => $data[1],
+				'desc'  => $data[2],
+			];
+		}
+
+		Utils::$context['insert_after_template'] .= $this->view('handle_sites', ['sites' => json_encode($sites)]);
 	}
 }
