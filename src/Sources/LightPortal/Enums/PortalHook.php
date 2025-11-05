@@ -126,7 +126,7 @@ enum PortalHook
 				) {}
 			},
 			self::frontModes => new class(...$data) {
-				public function __construct(public array &$modes) {}
+				public function __construct(public array &$modes, public string &$currentMode) {}
 			},
 			self::layoutExtensions => new class(...$data) {
 				public function __construct(public array &$extensions) {}

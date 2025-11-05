@@ -64,10 +64,18 @@ class FrontPage implements ActionInterface
 			}
 		}
 
-		$this->dispatcher->dispatch(PortalHook::frontModes, ['modes' => &$this->modes]);
+		$currentMode = Setting::get('lp_frontpage_mode', 'string', '');
 
-		$this->article = array_key_exists(Config::$modSettings['lp_frontpage_mode'], $this->modes)
-			? app($this->modes[Config::$modSettings['lp_frontpage_mode']])
+		$this->dispatcher->dispatch(
+			PortalHook::frontModes,
+			[
+				'modes'       => &$this->modes,
+				'currentMode' => &$currentMode,
+			]
+		);
+
+		$this->article = array_key_exists($currentMode, $this->modes)
+			? app($this->modes[$currentMode])
 			: app($this->modes[FrontPageMode::ALL_PAGES->value]);
 	}
 

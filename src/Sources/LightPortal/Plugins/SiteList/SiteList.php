@@ -8,12 +8,11 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 29.10.25
+ * @version 04.11.25
  */
 
 namespace LightPortal\Plugins\SiteList;
 
-use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
 use LightPortal\Enums\PluginType;
 use LightPortal\Enums\VarType;
@@ -73,6 +72,6 @@ class SiteList extends Plugin
 
 		app()->add(SiteArticle::class);
 
-		Config::$modSettings['lp_frontpage_mode'] = $this->mode;
+		$e->args->currentMode = $this->mode;
 	}
 }

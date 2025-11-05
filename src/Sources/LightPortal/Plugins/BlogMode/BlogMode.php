@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 29.10.25
+ * @version 04.11.25
  */
 
 namespace LightPortal\Plugins\BlogMode;
@@ -95,7 +95,7 @@ class BlogMode extends Plugin
 			)
 		));
 
-		Config::$modSettings['lp_frontpage_mode'] = $this->mode;
+		$e->args->currentMode = $this->mode;
 	}
 
 	public function extendBasicConfig(Event $e): void

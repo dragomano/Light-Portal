@@ -385,7 +385,7 @@ public function frontModes(Event $e): void
 {
     $$e->args->modes[$this->mode] = CustomArticle::class;
 
-    Config::$modSettings['lp_frontpage_mode'] = $this->mode;
+    $e->args->currentMode = $this->mode;
 }
 ```
 
