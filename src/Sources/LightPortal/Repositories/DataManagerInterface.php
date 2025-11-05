@@ -20,5 +20,5 @@ interface DataManagerInterface extends RepositoryInterface
 
 	public function toggleStatus(mixed $items = []): void;
 
-	public function remove(array $items): void;
+	public function remove(mixed $items): void;
 }
