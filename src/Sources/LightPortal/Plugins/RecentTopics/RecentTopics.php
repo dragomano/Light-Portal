@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 06.11.25
  */
 
 namespace LightPortal\Plugins\RecentTopics;
@@ -25,9 +25,9 @@ use LightPortal\UI\Fields\RadioField;
 use LightPortal\UI\Partials\SelectFactory;
 use LightPortal\Utils\Avatar;
 use LightPortal\Utils\DateTime;
-use LightPortal\Utils\ParamWrapper;
 use LightPortal\Utils\Str;
 use LightPortal\Utils\Traits\HasView;
+use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -118,14 +118,10 @@ class RecentTopics extends SsiBlock
 			->setValue($options['update_interval']);
 	}
 
-	public function getData(ParamWrapper $parameters): array
+	public function getData(NamedParameterMap $parameters): array
 	{
-		$excludeBoards = empty($parameters['exclude_boards'])
-			? null
-			: explode(',', (string) $parameters['exclude_boards']);
-		$includeBoards = empty($parameters['include_boards'])
-			? null
-			: explode(',', (string) $parameters['include_boards']);
+		$excludeBoards = array_filter(explode(',', $parameters['exclude_boards'] ?? ''));
+		$includeBoards = array_filter(explode(',', $parameters['include_boards'] ?? ''));
 
 		$topics = $this->getFromSSI(
 			'recentTopics',
@@ -135,8 +131,9 @@ class RecentTopics extends SsiBlock
 			'array'
 		);
 
-		if (empty($topics))
+		if (empty($topics)) {
 			return [];
+		}
 
 		array_walk($topics,
 			static fn(&$topic) => $topic['timestamp'] = DateTime::relative((int) $topic['timestamp'])

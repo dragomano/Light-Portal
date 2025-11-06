@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 06.11.25
  */
 
 namespace LightPortal\Plugins\Swiper;
@@ -25,9 +25,9 @@ use LightPortal\UI\Fields\CustomField;
 use LightPortal\UI\Fields\RadioField;
 use LightPortal\UI\Fields\RangeField;
 use LightPortal\UI\Fields\SelectField;
-use LightPortal\Utils\ParamWrapper;
 use LightPortal\Utils\Str;
 use LightPortal\Utils\Traits\HasView;
+use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -118,10 +118,11 @@ class Swiper extends Block
 			->setValue($options['show_scrollbar']);
 	}
 
-	public function getData(int|string $id, ParamWrapper $parameters): array
+	public function getData(int|string $id, NamedParameterMap $parameters): array
 	{
-		if (empty($parameters['images']))
+		if (empty($parameters['images'])) {
 			return [];
+		}
 
 		$swiper = Str::html('div', [
 			'id'    => 'swiper' . $id,

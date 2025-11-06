@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 06.11.25
  */
 
 namespace LightPortal\Plugins\TrendingTopics;
@@ -24,10 +24,10 @@ use LightPortal\UI\Fields\NumberField;
 use LightPortal\UI\Fields\SelectField;
 use LightPortal\Utils\Avatar;
 use LightPortal\Utils\DateTime;
-use LightPortal\Utils\ParamWrapper;
 use LightPortal\Utils\Str;
 use Laminas\Db\Sql\Predicate\Expression;
 use Laminas\Db\Sql\Select;
+use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -80,13 +80,14 @@ class TrendingTopics extends Block
 			->setValue($options['num_topics']);
 	}
 
-	public function getData(ParamWrapper $parameters): array
+	public function getData(NamedParameterMap $parameters): array
 	{
-		$timePeriod = Str::typed('string', $parameters['time_period'], default: $this->timePeriod[1]);
-		$numTopics  = Str::typed('int', $parameters['num_topics'], default: 10);
+		$timePeriod = $parameters->get('time_period', $this->timePeriod[1]);
+		$numTopics  = $parameters->get('num_topics', 10);
 
-		if (empty($numTopics))
+		if (empty($numTopics)) {
 			return [];
+		}
 
 		$interval = strtoupper($timePeriod);
 

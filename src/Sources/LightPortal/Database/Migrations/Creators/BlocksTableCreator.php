@@ -16,6 +16,7 @@ use Bugo\Compat\Utils;
 use LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
 use LightPortal\Database\Migrations\Columns\TinyInteger;
 use LightPortal\Database\Migrations\PortalTable;
+use LightPortal\Enums\Action;
 use LightPortal\Enums\ContentClass;
 use LightPortal\Enums\TitleClass;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
@@ -36,7 +37,7 @@ class BlocksTableCreator extends AbstractTableCreator
 		$priority     = new TinyInteger('priority');
 		$permissions  = new TinyInteger('permissions');
 		$status       = new TinyInteger('status', default: 1);
-		$areas        = new Varchar('areas', 255, default: 'all');
+		$areas        = new Varchar('areas', 255, default: Action::ALL->value);
 		$titleClass   = new Varchar('title_class', 255, true);
 		$contentClass = new Varchar('content_class', 255, true);
 

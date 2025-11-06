@@ -18,6 +18,7 @@ use LightPortal\Enums\PortalHook;
 use LightPortal\Events\EventManager;
 use LightPortal\Utils\Setting;
 use LightPortal\Utils\Str;
+use Ramsey\Collection\Collection;
 use Throwable;
 
 use function LightPortal\app;
@@ -63,17 +64,16 @@ final readonly class PluginHandler
 			ErrorHandler::log('[LP] pluginHandler: ' . $e->getMessage(), file: $e->getFile(), line: $e->getLine());
 		}
 
-		$plugins = array_map(function (PluginInterface $plugin) {
+		$pluginsCollection = new Collection(PluginInterface::class, $warehouse);
+
+		$processed = $pluginsCollection->map(function (PluginInterface $plugin) {
 			$data = get_object_vars($plugin);
 			$data['name'] = $plugin->getCamelName();
-			$data['type'] = $plugin->getPluginType();
-			$data['icon'] = $plugin->getPluginIcon();
-			$data['showSaveButton'] = $plugin->isPluginHasSaveButton();
 
 			return [$plugin->getSnakeName() => $data];
-		}, $warehouse);
+		});
 
-		return array_merge(...$plugins);
+		return array_merge(...$processed->toArray());
 	}
 
 	public function getManager(): EventManager

@@ -16,19 +16,19 @@ namespace LightPortal\Plugins\TinyPortalMigration;
 use Bugo\Bricks\Tables\Column;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
-use LightPortal\DataHandlers\Imports\Custom\AbstractCustomBlockImport;
+use Laminas\Db\Sql\Expression;
+use LightPortal\DataHandlers\Imports\Database\AbstractDatabaseBlockImport;
 use LightPortal\Enums\ContentClass;
 use LightPortal\Enums\ContentType;
 use LightPortal\Enums\Placement;
 use LightPortal\Enums\TitleClass;
 use LightPortal\UI\Tables\CheckboxColumn;
 use LightPortal\UI\Tables\TitleColumn;
-use Laminas\Db\Sql\Expression;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class BlockImport extends AbstractCustomBlockImport
+class BlockImport extends AbstractDatabaseBlockImport
 {
 	protected string $langKey    = 'lp_tiny_portal_migration';
 

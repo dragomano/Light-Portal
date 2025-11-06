@@ -12,6 +12,7 @@
 
 namespace LightPortal\Models;
 
+use LightPortal\Enums\Action;
 use LightPortal\Enums\ContentClass;
 use LightPortal\Enums\Permission;
 use LightPortal\Enums\Placement;
@@ -34,6 +35,8 @@ class BlockFactory extends AbstractFactory
 		$data['permissions'] ??= Setting::get('lp_permissions_default', 'int', Permission::MEMBER->value);
 
 		$data['status'] ??= Status::ACTIVE->value;
+
+		$data['areas'] ??= Action::ALL->value;
 
 		$data['title_class'] ??= TitleClass::first();
 

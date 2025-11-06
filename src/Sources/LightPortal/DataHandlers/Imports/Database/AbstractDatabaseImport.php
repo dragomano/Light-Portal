@@ -9,7 +9,7 @@
  * @version 3.0
  */
 
-namespace LightPortal\DataHandlers\Imports\Custom;
+namespace LightPortal\DataHandlers\Imports\Database;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Lang;
@@ -21,7 +21,6 @@ use LightPortal\Enums\Permission;
 use LightPortal\UI\Tables\ImportButtonsRow;
 use LightPortal\UI\Tables\PortalTableBuilder;
 use LightPortal\Utils\Traits\HasRequest;
-
 use LightPortal\Utils\Traits\HasTablePresenter;
 
 use const LP_NAME;
@@ -29,7 +28,7 @@ use const LP_NAME;
 if (! defined('SMF'))
 	die('No direct access...');
 
-abstract class AbstractCustomImport extends DataHandler implements CustomImportInterface
+abstract class AbstractDatabaseImport extends DataHandler implements DatabaseImportInterface
 {
 	use HasDataOperations;
 	use HasRequest;

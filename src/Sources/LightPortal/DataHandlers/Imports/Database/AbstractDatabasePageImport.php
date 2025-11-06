@@ -9,7 +9,7 @@
  * @version 3.0
  */
 
-namespace LightPortal\DataHandlers\Imports\Custom;
+namespace LightPortal\DataHandlers\Imports\Database;
 
 use LightPortal\DataHandlers\Traits\HasComments;
 use LightPortal\Enums\PortalHook;
@@ -20,7 +20,7 @@ use function LightPortal\app;
 if (! defined('SMF'))
 	die('No direct access...');
 
-abstract class AbstractCustomPageImport extends AbstractCustomImport
+abstract class AbstractDatabasePageImport extends AbstractDatabaseImport
 {
 	use HasComments;
 

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 26.10.25
+ * @version 06.11.25
  */
 
 namespace LightPortal\Plugins\CategoryList;
@@ -22,6 +22,8 @@ use LightPortal\Plugins\PluginAttribute;
 use LightPortal\Utils\Str;
 
 use function LightPortal\app;
+
+use const LP_ACTION;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -45,7 +47,7 @@ class CategoryList extends Block
 			return;
 		}
 
-		$currentCat = Utils::$context['current_action'] === 'portal'
+		$currentCat = Utils::$context['current_action'] === LP_ACTION
 			&& $this->request()->has('sa')
 			&& $this->request()->get('sa') === PortalSubAction::CATEGORIES->name()
 				? Str::typed('int', $this->request()->get('id')) : false;

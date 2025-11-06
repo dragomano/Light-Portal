@@ -9,12 +9,12 @@
  * @version 3.0
  */
 
-namespace LightPortal\DataHandlers\Imports\Custom;
+namespace LightPortal\DataHandlers\Imports\Database;
 
 if (! defined('SMF'))
 	die('No direct access...');
 
-abstract class AbstractCustomBlockImport extends AbstractCustomImport
+abstract class AbstractDatabaseBlockImport extends AbstractDatabaseImport
 {
 	protected string $type = 'block';
 

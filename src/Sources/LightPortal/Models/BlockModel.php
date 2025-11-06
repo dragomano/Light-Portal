@@ -25,7 +25,7 @@ class BlockModel extends AbstractModel
 		'priority'      => 0,
 		'permissions'   => 0,
 		'status'        => 0,
-		'areas'         => 'all',
+		'areas'         => '',
 		'title_class'   => '',
 		'content_class' => '',
 	];

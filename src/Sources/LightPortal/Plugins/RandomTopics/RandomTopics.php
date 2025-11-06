@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 26.10.25
+ * @version 06.11.25
  */
 
 namespace LightPortal\Plugins\RandomTopics;
@@ -27,8 +27,8 @@ use LightPortal\UI\Fields\CustomField;
 use LightPortal\UI\Fields\NumberField;
 use LightPortal\UI\Partials\SelectFactory;
 use LightPortal\Utils\DateTime;
-use LightPortal\Utils\ParamWrapper;
 use LightPortal\Utils\Str;
+use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -85,15 +85,10 @@ class RandomTopics extends Block
 	}
 
 
-	public function getData(ParamWrapper $parameters): array
+	public function getData(NamedParameterMap $parameters): array
 	{
-		$excludeBoards = empty($parameters['exclude_boards'])
-			? []
-			: array_map(intval(...), explode(',', (string) $parameters['exclude_boards']));
-
-		$includeBoards = empty($parameters['include_boards'])
-			? []
-			: array_map(intval(...), explode(',', (string) $parameters['include_boards']));
+		$excludeBoards = array_filter(array_map(intval(...), explode(',', $parameters['exclude_boards'] ?? '')));
+		$includeBoards = array_filter(array_map(intval(...), explode(',', $parameters['include_boards'] ?? '')));
 
 		$topicsCount = Str::typed('int', $parameters['num_topics']);
 		if (empty($topicsCount)) {

@@ -13,6 +13,7 @@
 namespace LightPortal\Hooks;
 
 use Bugo\Compat\Utils;
+use LightPortal\Enums\Action;
 use LightPortal\Utils\Traits\HasCache;
 use LightPortal\Utils\Traits\HasPortalSql;
 use LightPortal\Utils\Traits\HasTranslationJoins;
@@ -84,7 +85,7 @@ class BuildRoute
 	public function __invoke(&$route_base, array $params): void
 	{
 		if (isset($params[LP_PAGE_PARAM])) {
-			$route_base = 'pages';
+			$route_base = Action::PAGES->value;
 		}
 	}
 }

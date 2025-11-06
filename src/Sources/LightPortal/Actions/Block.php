@@ -137,10 +137,14 @@ class Block implements ActionInterface
 			$tempAreas = $block['areas'];
 			$block['areas'] = array_flip($block['areas']);
 
-			if (isset($block['areas']['!' . $area]) && $tempAreas[0] === 'all')
+			if (isset($block['areas'][Action::PORTAL->value])) {
+				$block['areas'][LP_ACTION] = $block['areas'][Action::PORTAL->value];
+			}
+
+			if (isset($block['areas']['!' . $area]) && $tempAreas[0] === Action::ALL->value)
 				return false;
 
-			if (isset($block['areas']['all']) || isset($block['areas'][$area]))
+			if (isset($block['areas'][Action::ALL->value]) || isset($block['areas'][$area]))
 				return true;
 
 			if (
@@ -155,13 +159,13 @@ class Block implements ActionInterface
 			if (isset(Utils::$context['lp_page']['slug'])) {
 				if (
 					isset($block['areas']['!' . LP_PAGE_PARAM . '=' . Utils::$context['lp_page']['slug']])
-					&& $tempAreas[0] === 'pages'
+					&& $tempAreas[0] === Action::PAGES->value
 				) {
 					return false;
 				}
 
 				if (
-					isset($block['areas']['pages'])
+					isset($block['areas'][Action::PAGES->value])
 					|| isset($block['areas'][LP_PAGE_PARAM . '=' . Utils::$context['lp_page']['slug']])
 				) {
 					return true;
@@ -171,17 +175,17 @@ class Block implements ActionInterface
 			if (empty(Utils::$context['current_board']))
 				return false;
 
-			if (isset($block['areas']['boards']) && empty(Utils::$context['current_topic']))
+			if (isset($block['areas'][Action::BOARDS->value]) && empty(Utils::$context['current_topic']))
 				return true;
 
-			if (isset($block['areas']['topics']) && ! empty(Utils::$context['current_topic']))
+			if (isset($block['areas'][Action::TOPICS->value]) && ! empty(Utils::$context['current_topic']))
 				return true;
 
 			$entities = $this->collectAllowedEntities($tempAreas);
 
-			return in_array(Utils::$context['current_board'], $entities['boards'])
+			return in_array(Utils::$context['current_board'], $entities[Action::BOARDS->value])
 				|| (isset(Utils::$context['current_topic'])
-					&& in_array(Utils::$context['current_topic'], $entities['topics']));
+					&& in_array(Utils::$context['current_topic'], $entities[Action::TOPICS->value]));
 		});
 	}
 
@@ -227,8 +231,8 @@ class Block implements ActionInterface
 		}
 
 		return [
-			'boards' => array_unique($boards),
-			'topics' => array_unique($topics),
+			Action::BOARDS->value => array_unique($boards),
+			Action::TOPICS->value => array_unique($topics),
 		];
 	}
 

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.25
+ * @version 06.11.25
  */
 
 namespace LightPortal\Plugins\RandomPages;
@@ -29,9 +29,9 @@ use LightPortal\UI\Fields\CustomField;
 use LightPortal\UI\Fields\NumberField;
 use LightPortal\UI\Partials\SelectFactory;
 use LightPortal\Utils\DateTime;
-use LightPortal\Utils\ParamWrapper;
 use LightPortal\Utils\Str;
 use LightPortal\Utils\Traits\HasTranslationJoins;
+use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -89,15 +89,10 @@ class RandomPages extends Block
 			->setValue($options['show_num_views']);
 	}
 
-	public function getData(ParamWrapper $parameters): array
+	public function getData(NamedParameterMap $parameters): array
 	{
-		$excludeCategories = empty($parameters['exclude_categories'])
-			? []
-			: array_map(intval(...), explode(',', (string) $parameters['exclude_categories']));
-
-		$includeCategories = empty($parameters['include_categories'])
-			? []
-			: array_map(intval(...), explode(',', (string) $parameters['include_categories']));
+		$excludeCategories = array_filter(array_map(intval(...), explode(',', $parameters['exclude_categories'] ?? '')));
+		$includeCategories = array_filter(array_map(intval(...), explode(',', $parameters['include_categories'] ?? '')));
 
 		$pagesCount = Str::typed('int', $parameters['num_pages']);
 		if (empty($pagesCount)) {

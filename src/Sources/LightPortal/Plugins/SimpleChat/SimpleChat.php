@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 17.10.25
+ * @version 06.11.25
  */
 
 namespace LightPortal\Plugins\SimpleChat;
@@ -22,9 +22,11 @@ use LightPortal\Plugins\PluginAttribute;
 use LightPortal\UI\Fields\CheckboxField;
 use LightPortal\UI\Fields\NumberField;
 use LightPortal\UI\Fields\RadioField;
-use LightPortal\Utils\ParamWrapper;
 use LightPortal\Utils\Traits\HasView;
 
+use Ramsey\Collection\Map\NamedParameterMap;
+
+use const LP_ACTION;
 use const LP_BASE_URL;
 
 if (! defined('LP_NAME'))
@@ -124,7 +126,9 @@ class SimpleChat extends Block
 
 	public function onBlockRemoving(Event $e): void
 	{
-		$delete = $this->sql->delete('lp_simple_chat_messages')->where(['block_id' => $e->args->items]);
+		$delete = $this->sql->delete('lp_simple_chat_messages')
+			->where(['block_id' => $e->args->items]);
+
 		$this->sql->execute($delete);
 	}
 
@@ -140,10 +144,12 @@ class SimpleChat extends Block
 		);
 	}
 
-	private function mergeWithDefaultParams(ParamWrapper $parameters): ParamWrapper
+	private function mergeWithDefaultParams(NamedParameterMap $parameters): NamedParameterMap
 	{
 		foreach ($this->defaultParams as $key => $value) {
-			$parameters[$key] ??= $value;
+			if (! $parameters->containsKey($key)) {
+				$parameters->put($key, $value);
+			}
 		}
 
 		return $parameters;
@@ -158,7 +164,7 @@ class SimpleChat extends Block
 
 	private function handleChatRequests(int $id, int $cacheTime): void
 	{
-		if ($this->request()->isNot('portal') || $this->request()->has('preview')) {
+		if ($this->request()->isNot(LP_ACTION) || $this->request()->has('preview')) {
 			return;
 		}
 

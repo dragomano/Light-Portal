@@ -14,6 +14,7 @@ namespace LightPortal\Hooks;
 
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
+use LightPortal\Enums\Action;
 use LightPortal\Utils\DateTime;
 use LightPortal\Utils\Setting;
 
@@ -35,7 +36,7 @@ class Init
 		define('LP_ADDON_DIR', dirname(__DIR__) . '/Plugins');
 		define('LP_ADDON_URL', Config::$boardurl . '/Sources/LightPortal/Plugins');
 		define('LP_CACHE_TIME', Setting::get('lp_cache_interval', 'int', 72000));
-		define('LP_ACTION', Setting::get('lp_portal_action', 'string', 'portal'));
+		define('LP_ACTION', Setting::get('lp_portal_action', 'string', Action::PORTAL->value));
 		define('LP_PAGE_PARAM', Setting::get('lp_page_param', 'string', 'page'));
 		define('LP_BASE_URL', Config::$scripturl . '?action=' . LP_ACTION);
 		define('LP_PAGE_URL', Config::$scripturl . '?' . LP_PAGE_PARAM . '=');

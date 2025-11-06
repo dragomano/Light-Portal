@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.25
+ * @version 06.11.25
  */
 
 namespace LightPortal\Plugins\ArticleList;
@@ -30,10 +30,10 @@ use LightPortal\UI\Fields\RadioField;
 use LightPortal\UI\Partials\SelectFactory;
 use LightPortal\Utils\Content;
 use LightPortal\Utils\ForumPermissions;
-use LightPortal\Utils\ParamWrapper;
 use LightPortal\Utils\Setting;
 use LightPortal\Utils\Str;
 use LightPortal\Utils\Traits\HasTranslationJoins;
+use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -177,10 +177,11 @@ class ArticleList extends Block
 		}
 	}
 
-	public function getTopics(ParamWrapper $parameters): array
+	public function getTopics(NamedParameterMap $parameters): array
 	{
-		if (empty($parameters['include_topics']))
+		if (empty($parameters['include_topics'])) {
 			return [];
+		}
 
 		$select = $this->sql->select()
 			->from(['t' => 'topics'])
@@ -220,10 +221,11 @@ class ArticleList extends Block
 		return $topics;
 	}
 
-	public function getPages(ParamWrapper $parameters): array
+	public function getPages(NamedParameterMap $parameters): array
 	{
-		if (empty($parameters['include_pages']))
+		if (empty($parameters['include_pages'])) {
 			return [];
+		}
 
 		$select = $this->sql->select()
 			->from(['p' => 'lp_pages'])

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 06.11.25
  */
 
 namespace LightPortal\Plugins\Events;
@@ -22,9 +22,9 @@ use LightPortal\Plugins\PluginAttribute;
 use LightPortal\UI\Fields\CheckboxField;
 use LightPortal\UI\Fields\NumberField;
 use LightPortal\UI\Fields\RangeField;
-use LightPortal\Utils\ParamWrapper;
 use LightPortal\Utils\Str;
 use LightPortal\Utils\Traits\HasView;
+use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -92,19 +92,19 @@ class Events extends Block
 		$e->args->set['event'] = 'fas fa-calendar-days';
 	}
 
-	public function getData(ParamWrapper $parameters): array
+	public function getData(NamedParameterMap $parameters): array
 	{
 		$now = time();
 		$todayDate = date('Y-m-d', $now);
 
 		$futureDate = empty($parameters['days_in_future'])
 			? $todayDate
-			: date('Y-m-d', ($now + (int) $parameters['days_in_future'] * 24 * 60 * 60));
+			: date('Y-m-d', ($now + $parameters['days_in_future'] * 24 * 60 * 60));
 
 		$options = [
-			'show_birthdays' => (bool) $parameters['show_birthdays'],
-			'show_holidays'  => (bool) $parameters['show_holidays'],
-			'show_events'    => (bool) $parameters['show_events'],
+			'show_birthdays' => $parameters['show_birthdays'],
+			'show_holidays'  => $parameters['show_holidays'],
+			'show_events'    => $parameters['show_events'],
 		];
 
 		return Calendar::getCalendarList($todayDate, $futureDate, $options);

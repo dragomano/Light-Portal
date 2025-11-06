@@ -13,15 +13,15 @@
 
 namespace LightPortal\Plugins\TinyPortalMigration;
 
-use LightPortal\DataHandlers\Imports\Custom\AbstractCustomCategoryImport;
+use Laminas\Db\Sql\Expression;
+use LightPortal\DataHandlers\Imports\Database\AbstractDatabaseCategoryImport;
 use LightPortal\UI\Tables\CheckboxColumn;
 use LightPortal\UI\Tables\TitleColumn;
-use Laminas\Db\Sql\Expression;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class CategoryImport extends AbstractCustomCategoryImport
+class CategoryImport extends AbstractDatabaseCategoryImport
 {
 	protected string $langKey = 'lp_tiny_portal_migration';
 

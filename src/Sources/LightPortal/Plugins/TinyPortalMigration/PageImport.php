@@ -15,19 +15,19 @@ namespace LightPortal\Plugins\TinyPortalMigration;
 
 use Bugo\Bricks\Tables\IdColumn;
 use Bugo\Compat\Parsers\BBCodeParser;
-use LightPortal\DataHandlers\Imports\Custom\AbstractCustomPageImport;
+use Laminas\Db\Sql\Predicate\Expression;
+use Laminas\Db\Sql\Select;
+use LightPortal\DataHandlers\Imports\Database\AbstractDatabasePageImport;
 use LightPortal\Enums\EntryType;
 use LightPortal\UI\Tables\CheckboxColumn;
 use LightPortal\UI\Tables\PageSlugColumn;
 use LightPortal\UI\Tables\TitleColumn;
 use LightPortal\Utils\DateTime;
-use Laminas\Db\Sql\Predicate\Expression;
-use Laminas\Db\Sql\Select;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class PageImport extends AbstractCustomPageImport
+class PageImport extends AbstractDatabasePageImport
 {
 	protected string $langKey = 'lp_tiny_portal_migration';
 

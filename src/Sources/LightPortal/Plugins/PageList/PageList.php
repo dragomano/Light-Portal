@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 05.11.25
+ * @version 06.11.25
  */
 
 namespace LightPortal\Plugins\PageList;
@@ -28,9 +28,10 @@ use LightPortal\UI\Fields\NumberField;
 use LightPortal\UI\Fields\VirtualSelectField;
 use LightPortal\UI\Partials\SelectFactory;
 use LightPortal\Utils\DateTime;
-use LightPortal\Utils\ParamWrapper;
 use LightPortal\Utils\Setting;
 use LightPortal\Utils\Str;
+
+use Ramsey\Collection\Map\NamedParameterMap;
 
 use function LightPortal\app;
 
@@ -94,14 +95,14 @@ class PageList extends Block
 			->setValue($options['num_pages']);
 	}
 
-	public function getData(ParamWrapper $parameters): array
+	public function getData(NamedParameterMap $parameters): array
 	{
 		$allCategories = app(CategoryList::class)();
 
-		$categories = explode(',', (string) $parameters['categories']);
-		$sort = Str::typed('string', $parameters['sort'], default: 'page_id');
-		$numPages = Str::typed('int', $parameters['num_pages'], default: 10);
-		$type = Str::typed('string', $parameters['types'], default: EntryType::DEFAULT->name());
+		$categories = explode(',', $parameters['categories']);
+		$sort = $parameters->get('sort', 'page_id');
+		$numPages = $parameters->get('num_pages', 10);
+		$type = $parameters->get('types', EntryType::DEFAULT->name());
 
 		$whereConditions = ['p.entry_type = ?' => $type];
 

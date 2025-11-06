@@ -10,9 +10,9 @@
  * @version 3.0
  */
 
-namespace LightPortal\DataHandlers\Imports\Custom;
+namespace LightPortal\DataHandlers\Imports\Database;
 
-interface CustomImportInterface
+interface DatabaseImportInterface
 {
 	public function getAll(int $start, int $limit, string $sort): array;
 

@@ -12,9 +12,22 @@
 
 namespace LightPortal\Enums;
 
+use LightPortal\Enums\Traits\HasValues;
+
 enum Action: string
 {
+	use HasValues;
+
+	case ALL = 'all';
+	case BOARDS = 'boards';
 	case FORUM = 'forum';
 	case HOME = 'home';
 	case PAGES = 'pages';
+	case PORTAL = 'portal';
+	case TOPICS = 'topics';
+
+	public static function select(): array
+	{
+		return array_combine(self::values(), self::values());
+	}
 }

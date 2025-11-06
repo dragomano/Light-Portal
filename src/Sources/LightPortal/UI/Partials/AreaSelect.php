@@ -15,21 +15,15 @@ namespace LightPortal\UI\Partials;
 use Bugo\Compat\Lang;
 use Bugo\Compat\Utils;
 
+use LightPortal\Enums\Action;
+
+use const LP_ACTION;
+
 if (! defined('SMF'))
 	die('No direct access...');
 
 final class AreaSelect extends AbstractSelect
 {
-	private const BASE_AREAS = [
-		'all'    => 'all',
-		'portal' => 'portal',
-		'home'   => 'home',
-		'forum'  => 'forum',
-		'pages'  => 'pages',
-		'boards' => 'boards',
-		'topics' => 'topics',
-	];
-
 	public function getData(): array
 	{
 		Lang::$txt['lp_block_areas_set']['pm'] = Lang::$txt['personal_messages'];
@@ -43,9 +37,10 @@ final class AreaSelect extends AbstractSelect
 		Lang::$txt['lp_block_areas_set']['warehouse'] = Lang::$txt['warehouse_title'] ?? 'warehouse';
 		Lang::$txt['lp_block_areas_set']['media'] = Lang::$txt['levgal'] ?? Lang::$txt['mgallery_title'] ?? 'media';
 		Lang::$txt['lp_block_areas_set']['gallery'] = Lang::$txt['smfgallery_menu'] ?? 'gallery';
+		Lang::$txt['lp_block_areas_set']['portal'] = sprintf(Lang::$txt['lp_block_areas_set']['portal'], LP_ACTION);
 
 		$value = $this->params['value'] ?? [];
-		$allData = array_merge(self::BASE_AREAS, array_combine($value, $value));
+		$allData = array_merge(Action::select(), array_combine($value, $value));
 
 		$data = [];
 		foreach ($allData as $value => $text) {

@@ -189,7 +189,7 @@ $txt['lp_block_areas_values']['topic_range'] = 'in topics with identifiers 1, 2,
 $txt['lp_block_areas_values']['topic_set'] = 'in topics with identifiers 3, and 7';
 $txt['lp_block_areas_set']['all'] = 'Everywhere';
 $txt['lp_block_areas_set']['home'] = 'Main page of the portal';
-$txt['lp_block_areas_set']['portal'] = 'Portal area (action=portal)';
+$txt['lp_block_areas_set']['portal'] = 'Portal area (action=%s)';
 $txt['lp_block_areas_set']['forum'] = 'Main page of the forum';
 $txt['lp_block_areas_set']['pages'] = 'All portal pages';
 $txt['lp_block_areas_set']['boards'] = 'All forum boards';

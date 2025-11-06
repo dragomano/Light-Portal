@@ -15,19 +15,19 @@ namespace LightPortal\Plugins\EhPortalMigration;
 
 use Bugo\Bricks\Tables\IdColumn;
 use Bugo\Compat\User;
-use LightPortal\DataHandlers\Imports\Custom\AbstractCustomPageImport;
+use Laminas\Db\Sql\Expression;
+use LightPortal\DataHandlers\Imports\Database\AbstractDatabasePageImport;
 use LightPortal\Enums\EntryType;
 use LightPortal\Enums\Permission;
 use LightPortal\UI\Tables\CheckboxColumn;
 use LightPortal\UI\Tables\PageSlugColumn;
 use LightPortal\UI\Tables\TitleColumn;
 use LightPortal\Utils\DateTime;
-use Laminas\Db\Sql\Expression;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
 
-class PageImport extends AbstractCustomPageImport
+class PageImport extends AbstractDatabasePageImport
 {
 	protected string $langKey = 'lp_eh_portal_migration';
 

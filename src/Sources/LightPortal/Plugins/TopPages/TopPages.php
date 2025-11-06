@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 06.11.25
  */
 
 namespace LightPortal\Plugins\TopPages;
@@ -24,10 +24,10 @@ use LightPortal\Plugins\PluginAttribute;
 use LightPortal\UI\Fields\CheckboxField;
 use LightPortal\UI\Fields\NumberField;
 use LightPortal\UI\Fields\RadioField;
-use LightPortal\Utils\ParamWrapper;
 use LightPortal\Utils\Setting;
 use LightPortal\Utils\Str;
 use Laminas\Db\Sql\Predicate\Expression;
+use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -69,10 +69,10 @@ class TopPages extends Block
 			->setValue($options['show_numbers_only']);
 	}
 
-	public function getData(ParamWrapper $parameters): array
+	public function getData(NamedParameterMap $parameters): array
 	{
-		$type = Str::typed('string', $parameters['popularity_type'], default: 'comments');
-		$numPages = Str::typed('int', $parameters['num_pages'], default: 10);
+		$type = $parameters->get('popularity_type', 'comments');
+		$numPages = $parameters->get('num_pages', 10);
 
 		$subQuery = $this->sql->select()
 			->from('lp_translations')

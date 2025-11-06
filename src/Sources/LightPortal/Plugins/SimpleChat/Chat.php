@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 27.10.25
+ * @version 06.11.25
  */
 
 namespace LightPortal\Plugins\SimpleChat;
@@ -19,11 +19,11 @@ use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use LightPortal\Database\PortalSqlInterface;
 use LightPortal\Utils\Avatar;
-use LightPortal\Utils\ParamWrapper;
 use LightPortal\Utils\Traits\HasCache;
 use LightPortal\Utils\Traits\HasRequest;
 use LightPortal\Utils\Traits\HasResponse;
 use LightPortal\Utils\Traits\HasView;
+use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -37,7 +37,7 @@ class Chat
 
 	private bool $inSidebar = false;
 
-	private ParamWrapper $parameters;
+	private NamedParameterMap $parameters;
 
 	public function __construct(private readonly string $name, private readonly PortalSqlInterface $sql) {}
 
@@ -48,7 +48,7 @@ class Chat
 		return $this;
 	}
 
-	public function setParameters(ParamWrapper $parameters): self
+	public function setParameters(NamedParameterMap $parameters): self
 	{
 		$this->parameters = $parameters;
 

@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 06.11.25
  */
 
 namespace LightPortal\Plugins\RecentPosts;
@@ -26,9 +26,9 @@ use LightPortal\UI\Fields\RadioField;
 use LightPortal\UI\Partials\SelectFactory;
 use LightPortal\Utils\Avatar;
 use LightPortal\Utils\DateTime;
-use LightPortal\Utils\ParamWrapper;
 use LightPortal\Utils\Str;
 use LightPortal\Utils\Traits\HasView;
+use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -140,22 +140,14 @@ class RecentPosts extends SsiBlock
 			->setValue($options['update_interval']);
 	}
 
-	public function getData(ParamWrapper $parameters): array
+	public function getData(NamedParameterMap $parameters): array
 	{
-		$excludeBoards = empty($parameters['exclude_boards'])
-			? []
-			: explode(',', (string) $parameters['exclude_boards']);
-		$includeBoards = empty($parameters['include_boards'])
-			? []
-			: explode(',', (string) $parameters['include_boards']);
-		$excludeTopics = empty($parameters['exclude_topics'])
-			? []
-			: explode(',', (string) $parameters['exclude_topics']);
-		$includeTopics = empty($parameters['include_topics'])
-			? []
-			: explode(',', (string) $parameters['include_topics']);
+		$excludeBoards = array_filter(explode(',', $parameters['exclude_boards'] ?? ''));
+		$includeBoards = array_filter(explode(',', $parameters['include_boards'] ?? ''));
+		$excludeTopics = array_filter(explode(',', $parameters['exclude_topics'] ?? ''));
+		$includeTopics = array_filter(explode(',', $parameters['include_topics'] ?? ''));
 
-		$numPosts = Str::typed('int', $parameters['num_posts'], default: 10);
+		$numPosts = $parameters->get('num_posts', 10);
 
 		$minMessageId = Config::$modSettings['maxMsgID'] - (
 			empty(Utils::$context['min_message_posts']) ? 25 : Utils::$context['min_message_posts']
@@ -189,8 +181,9 @@ class RecentPosts extends SsiBlock
 			Str::typed('boolExtended', $parameters['limit_body'])
 		);
 
-		if (empty($posts))
+		if (empty($posts)) {
 			return [];
+		}
 
 		array_walk($posts,
 			static fn(&$post) => $post['timestamp'] = DateTime::relative((int) $post['timestamp'])

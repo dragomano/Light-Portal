@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 06.11.25
  */
 
 namespace LightPortal\Plugins\BoardStats;
@@ -22,8 +22,8 @@ use LightPortal\Plugins\PluginAttribute;
 use LightPortal\Plugins\SsiBlock;
 use LightPortal\UI\Fields\CheckboxField;
 use LightPortal\UI\Fields\NumberField;
-use LightPortal\Utils\ParamWrapper;
 use LightPortal\Utils\Str;
+use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -79,7 +79,7 @@ class BoardStats extends SsiBlock
 			->setValue($options['update_interval']);
 	}
 
-	public function getData(ParamWrapper $parameters): array
+	public function getData(NamedParameterMap $parameters): array
 	{
 		if (
 			empty($parameters['show_latest_member'])
@@ -107,7 +107,7 @@ class BoardStats extends SsiBlock
 		$parameters = $e->args->parameters;
 
 		$boardStats = $this->userCache($this->name . '_addon_b' . $e->args->id)
-			->setLifeTime(Str::typed('int', $parameters['update_interval']))
+			->setLifeTime($parameters->get('update_interval', 0))
 			->setFallback(fn() => $this->getData($parameters));
 
 		if (empty($boardStats))

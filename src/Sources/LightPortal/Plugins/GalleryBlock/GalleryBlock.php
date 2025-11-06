@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 17.10.25
+ * @version 06.11.25
  */
 
 namespace LightPortal\Plugins\GalleryBlock;
@@ -22,9 +22,9 @@ use LightPortal\Plugins\Event;
 use LightPortal\Plugins\PluginAttribute;
 use LightPortal\UI\Fields\CustomField;
 use LightPortal\UI\Fields\NumberField;
-use LightPortal\Utils\ParamWrapper;
 use LightPortal\Utils\Str;
 use Laminas\Db\Sql\Select;
+use Ramsey\Collection\Map\NamedParameterMap;
 
 if (! defined('LP_NAME'))
 	die('No direct access...');
@@ -64,12 +64,13 @@ class GalleryBlock extends Block
 			->setValue($e->args->options['num_images']);
 	}
 
-	public function getData(ParamWrapper $parameters): array
+	public function getData(NamedParameterMap $parameters): array
 	{
-		if (! $this->sql->tableExists('gallery_pic'))
+		if (! $this->sql->tableExists('gallery_pic')) {
 			return [];
+		}
 
-		$categories = empty($parameters['categories']) ? [] : explode(',', (string) $parameters['categories']);
+		$categories = empty($parameters['categories']) ? [] : explode(',', $parameters['categories']);
 
 		$select = $this->sql->select()
 			->from(['p' => 'gallery_pic'])
