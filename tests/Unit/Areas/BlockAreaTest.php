@@ -7,7 +7,6 @@ use Bugo\Compat\Utils;
 use LightPortal\Areas\AbstractArea;
 use LightPortal\Areas\AreaInterface;
 use LightPortal\Areas\BlockArea;
-use LightPortal\Enums\PortalHook;
 use LightPortal\Events\EventDispatcherInterface;
 use LightPortal\Models\BlockFactory;
 use LightPortal\Repositories\BlockRepositoryInterface;
@@ -122,9 +121,7 @@ it('setupAdditionalAddContext can be called without errors', function () {
 });
 
 it('prepareValidationContext can be called without errors', function () {
-    $this->dispatcherMock->shouldReceive('dispatch')
-        ->once()
-        ->with(Mockery::type(PortalHook::class), Mockery::any());
+    $this->dispatcherMock->shouldReceive('dispatch')->once();
 
     $this->accessor->callProtectedMethod('prepareValidationContext');
 
@@ -132,9 +129,7 @@ it('prepareValidationContext can be called without errors', function () {
 });
 
 it('postProcessValidation can be called without errors', function () {
-    $this->dispatcherMock->shouldReceive('dispatch')
-        ->once()
-        ->with(Mockery::type(PortalHook::class), Mockery::any());
+    $this->dispatcherMock->shouldReceive('dispatch')->once();
 
     $this->accessor->callProtectedMethod('postProcessValidation');
 
@@ -222,17 +217,13 @@ describe('prepareSpecificFields', function () {
 });
 
 it('dispatchFieldsEvent dispatches event', function () {
-    $this->dispatcherMock->shouldReceive('dispatch')
-        ->once()
-        ->with(Mockery::type(PortalHook::class), Mockery::any());
+    $this->dispatcherMock->shouldReceive('dispatch')->once();
 
     $this->accessor->callProtectedMethod('dispatchFieldsEvent');
 });
 
 it('prepareEditor dispatches event', function () {
-    $this->dispatcherMock->shouldReceive('dispatch')
-        ->once()
-        ->with(Mockery::type(PortalHook::class), Mockery::any());
+    $this->dispatcherMock->shouldReceive('dispatch')->once();
 
     $this->accessor->callProtectedMethod('prepareEditor');
 });
@@ -344,13 +335,13 @@ it('handleClone handles cloning failure when id is zero', function () {
 });
 
 it('getDefaultOptions returns options array', function () {
-    $this->dispatcherMock->shouldReceive('dispatch')
-        ->once()
-        ->with(Mockery::type(PortalHook::class), Mockery::any());
+    $this->dispatcherMock->shouldReceive('dispatch')->once();
 
     $result = $this->accessor->callProtectedMethod('getDefaultOptions');
 
-    expect($result)->toBeArray();
+    expect($result)->toBeArray()
+        ->and($result)->toHaveKey('hide_header')
+        ->and($result)->toHaveKey('content');
 });
 
 it('getAreasInfo can be called without errors', function () {

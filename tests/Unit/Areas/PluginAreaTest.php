@@ -251,13 +251,13 @@ describe('PluginArea::prepareAddonList()', function () {
                 'name',
                 'version',
                 'outdated',
-                'snake_name',
+                'snakeName',
                 'desc',
                 'status',
                 'types',
                 'special',
                 'settings',
-                'saveable',
+                'showSaveButton',
             ]);
     });
 
