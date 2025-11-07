@@ -12,12 +12,12 @@
 
 namespace LightPortal\Database\Migrations\Creators;
 
-use LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
-use LightPortal\Database\Migrations\Columns\UnsignedInteger;
-use LightPortal\Database\Migrations\PortalTable;
 use Laminas\Db\Sql\Ddl\Column\Text;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
 use Laminas\Db\Sql\Ddl\Constraint\UniqueKey;
+use LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
+use LightPortal\Database\Migrations\Columns\UnsignedInteger;
+use LightPortal\Database\Migrations\PortalTable;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -28,7 +28,9 @@ class ParamsTableCreator extends AbstractTableCreator
 
 	protected function defineColumns(PortalTable $table): void
 	{
-		$id     = new AutoIncrementInteger();
+		$platform = $this->sql->getAdapter()->getPlatform();
+
+		$id     = new AutoIncrementInteger(options: ['platform' => $platform]);
 		$itemId = new UnsignedInteger('item_id');
 		$type   = new Varchar('type', 30, default: 'block');
 		$name   = new Varchar('name', 255);
@@ -44,12 +46,12 @@ class ParamsTableCreator extends AbstractTableCreator
 		$table->addConstraint($compositeUniqueKey);
 	}
 
-	public function insertDefaultData(): void
+	protected function getDefaultData(): array
 	{
-		$this->insertDefaultIfNotExists(
-			['item_id' => 1, 'type' => 'page', 'name' => 'show_author_and_date'],
-			['item_id', 'type', 'name', 'value'],
-			[1, 'page', 'show_author_and_date', 0]
-		);
+		return [
+			['id' => 1, 'item_id' => 1, 'type' => 'page', 'name' => 'show_author_and_date'],
+			['id', 'item_id', 'type', 'name', 'value'],
+			[1, 1, 'page', 'show_author_and_date', 0],
+		];
 	}
 }

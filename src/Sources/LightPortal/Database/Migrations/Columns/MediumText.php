@@ -12,9 +12,21 @@
 
 namespace LightPortal\Database\Migrations\Columns;
 
+use Laminas\Db\Adapter\Platform\Postgresql;
 use Laminas\Db\Sql\Ddl\Column\AbstractLengthColumn;
 
 class MediumText extends AbstractLengthColumn
 {
 	protected $type = 'MEDIUMTEXT';
+
+	public function __construct($name, $length = null, $nullable = false, $default = null, array $options = [])
+	{
+		$platform = $options['platform'] ?? null;
+
+		if ($platform instanceof Postgresql) {
+			$this->type = 'TEXT';
+		}
+
+		parent::__construct($name, $length, $nullable, $default, $options);
+	}
 }

@@ -12,16 +12,28 @@
 
 namespace LightPortal\Database\Migrations\Columns;
 
+use Laminas\Db\Adapter\Platform\Postgresql;
+use ReflectionClass;
+use ReflectionException;
+
 class AutoIncrementInteger extends UnsignedInteger
 {
 	public function __construct($name = 'id', $nullable = false, $default = null, array $options = [])
 	{
-		parent::__construct($name, $nullable, $default, $options);
+		$platform = $options['platform'] ?? null;
 
-		$defaultOptions = [
-			'autoincrement' => true,
-		];
+		if ($platform instanceof Postgresql) {
+			parent::__construct($name, $nullable, $default, $options);
 
-		$this->setOptions(array_merge($defaultOptions, $options));
+			try {
+				$reflection = new ReflectionClass($this);
+				$typeProp = $reflection->getParentClass()->getProperty('type');
+				$typeProp->setValue($this, 'SERIAL');
+			} catch (ReflectionException) {}
+		} else {
+			$options = array_merge(['autoincrement' => true], $options);
+
+			parent::__construct($name, $nullable, $default, $options);
+		}
 	}
 }

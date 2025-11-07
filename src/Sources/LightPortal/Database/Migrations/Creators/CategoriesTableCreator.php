@@ -12,11 +12,10 @@
 
 namespace LightPortal\Database\Migrations\Creators;
 
+use Laminas\Db\Sql\Ddl\Column\Varchar;
 use LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
-use LightPortal\Database\Migrations\Columns\TinyInteger;
 use LightPortal\Database\Migrations\Columns\UnsignedInteger;
 use LightPortal\Database\Migrations\PortalTable;
-use Laminas\Db\Sql\Ddl\Column\Varchar;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -27,12 +26,14 @@ class CategoriesTableCreator extends AbstractTableCreator
 
 	protected function defineColumns(PortalTable $table): void
 	{
-		$id       = new AutoIncrementInteger('category_id');
+		$platform = $this->sql->getAdapter()->getPlatform();
+
+		$id       = new AutoIncrementInteger('category_id', options: ['platform' => $platform]);
 		$parentId = new UnsignedInteger('parent_id');
 		$slug     = new Varchar('slug', 255);
 		$icon     = new Varchar('icon', 60, true);
-		$priority = new TinyInteger('priority');
-		$status   = new TinyInteger('status', default: 1);
+		$priority = new UnsignedInteger('priority');
+		$status   = new UnsignedInteger('status', default: 1);
 
 		$table->addAutoIncrementColumn($id);
 		$table->addColumn($parentId);
@@ -40,5 +41,10 @@ class CategoriesTableCreator extends AbstractTableCreator
 		$table->addColumn($icon);
 		$table->addColumn($priority);
 		$table->addColumn($status);
+	}
+
+	protected function getDefaultData() : array
+	{
+		return [];
 	}
 }

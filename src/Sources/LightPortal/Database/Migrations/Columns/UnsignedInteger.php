@@ -18,12 +18,8 @@ class UnsignedInteger extends Integer
 {
 	public function __construct($name = null, $nullable = false, $default = 0, array $options = [])
 	{
+		$options = array_merge(['unsigned' => true], $options);
+
 		parent::__construct($name, $nullable, $default, $options);
-
-		$defaultOptions = [
-			'unsigned' => true,
-		];
-
-		$this->setOptions(array_merge($defaultOptions, $options));
 	}
 }

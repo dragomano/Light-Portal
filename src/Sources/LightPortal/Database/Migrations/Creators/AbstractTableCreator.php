@@ -12,12 +12,12 @@
 
 namespace LightPortal\Database\Migrations\Creators;
 
-use LightPortal\Database\Migrations\PortalTable;
-use LightPortal\Database\PortalSqlInterface;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Ddl\DropTable;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\SqlInterface;
+use LightPortal\Database\Migrations\PortalTable;
+use LightPortal\Database\PortalSqlInterface;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -39,6 +39,12 @@ abstract class AbstractTableCreator implements TableCreatorInterface
 		$this->table = new PortalTable($this->getFullTableName());
 		$this->defineColumns($this->table);
 		$this->executeSql($this->table);
+
+		$adapter = $this->sql->getAdapter();
+
+		foreach ($this->table->getIndexSqlStatements($adapter->getPlatform()) as $indexSql) {
+			$adapter->query($indexSql, Adapter::QUERY_MODE_EXECUTE);
+		}
 	}
 
 	public function getSql(): string
@@ -51,7 +57,16 @@ abstract class AbstractTableCreator implements TableCreatorInterface
 		return $this->sql->buildSqlString($this->table);
 	}
 
-	public function insertDefaultData(): void {}
+	public function insertDefaultData(): void
+	{
+		$data = $this->getDefaultData();
+
+		if (empty($data)) {
+			return;
+		}
+
+		$this->insertDefaultIfNotExists(...$data);
+	}
 
 	public function dropTable(): void
 	{
@@ -64,6 +79,8 @@ abstract class AbstractTableCreator implements TableCreatorInterface
 	}
 
 	abstract protected function defineColumns(PortalTable $table): void;
+
+	abstract protected function getDefaultData(): array;
 
 	protected function getFullTableName(): string
 	{
@@ -83,14 +100,21 @@ abstract class AbstractTableCreator implements TableCreatorInterface
 		$select->columns(['count' => new Expression('COUNT(*)')], false);
 		$select->where($where);
 
-		$result = $this->sql->execute($select);
-
-		$row = $result->current();
+		$row = $this->sql->execute($select)->current();
 
 		if ($row['count'] == 0) {
 			$insert = $this->sql->insert($this->tableName);
-			$insert->columns($columns)->values($values);
 
+			if (is_array($values[0])) {
+				foreach ($values as $value) {
+					$insert->columns($columns)->values($value);
+					$this->sql->execute($insert);
+				}
+
+				return;
+			}
+
+			$insert->columns($columns)->values($values);
 			$this->sql->execute($insert);
 		}
 	}

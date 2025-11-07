@@ -167,7 +167,12 @@ class PortalSql extends Sql implements PortalSqlInterface
 			$file = $e->getTrace()[1]['file'] ?? '';
 			$line = $e->getTrace()[1]['line'] ?? '';
 
-			ErrorHandler::log('[LP] queries: ' . $e->getMessage() . PHP_EOL . PHP_EOL . $sql, file: $file, line: $line);
+			ErrorHandler::log(
+				'[LP] queries: ' . $e->getMessage() . PHP_EOL . PHP_EOL . $sql,
+				file: $file,
+				line: $line
+			);
+
 			ErrorHandler::fatal($e->getMessage(), false);
 		}
 

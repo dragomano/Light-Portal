@@ -13,12 +13,12 @@
 namespace LightPortal\Database\Migrations\Creators;
 
 use Bugo\Compat\Config;
+use Laminas\Db\Sql\Ddl\Column\Varchar;
+use Laminas\Db\Sql\Ddl\Constraint\UniqueKey;
 use LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
 use LightPortal\Database\Migrations\Columns\MediumText;
 use LightPortal\Database\Migrations\Columns\UnsignedInteger;
 use LightPortal\Database\Migrations\PortalTable;
-use Laminas\Db\Sql\Ddl\Column\Varchar;
-use Laminas\Db\Sql\Ddl\Constraint\UniqueKey;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -29,12 +29,14 @@ class TranslationsTableCreator extends AbstractTableCreator
 
 	protected function defineColumns(PortalTable $table): void
 	{
-		$id          = new AutoIncrementInteger();
+		$platform = $this->sql->getAdapter()->getPlatform();
+
+		$id          = new AutoIncrementInteger(options: ['platform' => $platform]);
 		$itemId      = new UnsignedInteger('item_id');
 		$type        = new Varchar('type', 30, default: 'block');
 		$lang        = new Varchar('lang', 20);
 		$title       = new Varchar('title', 255, true);
-		$content     = new MediumText('content', nullable: true);
+		$content     = new MediumText('content', nullable: true, options: ['platform' => $platform]);
 		$description = new Varchar('description', 510, true);
 
 		$table->addAutoIncrementColumn($id);
@@ -49,12 +51,19 @@ class TranslationsTableCreator extends AbstractTableCreator
 		$table->addConstraint($compositeUniqueKey);
 	}
 
-	public function insertDefaultData(): void
+	protected function getDefaultData(): array
 	{
-		$this->insertDefaultIfNotExists(
-			['item_id' => 1, 'type' => 'page', 'lang' => Config::$language],
-			['item_id', 'type', 'lang', 'title', 'content'],
-			[1, 'page', Config::$language, Config::$mbname, '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>']
-		);
+		return [
+			['id' => 1, 'item_id' => 1, 'type' => 'page', 'lang' => Config::$language],
+			['id', 'item_id', 'type', 'lang', 'title', 'content'],
+			[
+				1,
+				1,
+				'page',
+				Config::$language,
+				Config::$mbname,
+				'<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>',
+			],
+		];
 	}
 }

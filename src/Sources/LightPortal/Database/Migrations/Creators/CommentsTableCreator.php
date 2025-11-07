@@ -13,8 +13,6 @@
 namespace LightPortal\Database\Migrations\Creators;
 
 use LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
-use LightPortal\Database\Migrations\Columns\MediumInteger;
-use LightPortal\Database\Migrations\Columns\SmallInteger;
 use LightPortal\Database\Migrations\Columns\UnsignedInteger;
 use LightPortal\Database\Migrations\PortalTable;
 
@@ -27,10 +25,12 @@ class CommentsTableCreator extends AbstractTableCreator
 
 	protected function defineColumns(PortalTable $table): void
 	{
-		$id        = new AutoIncrementInteger();
+		$platform = $this->sql->getAdapter()->getPlatform();
+
+		$id        = new AutoIncrementInteger(options: ['platform' => $platform]);
 		$parentId  = new UnsignedInteger('parent_id');
-		$pageId    = new SmallInteger('page_id');
-		$authorId  = new MediumInteger('author_id');
+		$pageId    = new UnsignedInteger('page_id');
+		$authorId  = new UnsignedInteger('author_id');
 		$createdAt = new UnsignedInteger('created_at');
 		$updatedAt = new UnsignedInteger('updated_at');
 
@@ -41,7 +41,12 @@ class CommentsTableCreator extends AbstractTableCreator
 		$table->addColumn($createdAt);
 		$table->addColumn($updatedAt);
 
-		$table->addIndex(['created_at'], 'idx_comments_created_at');
-		$table->addIndex(['updated_at'], 'idx_comments_updated_at');
+		$table->addIndex('idx_comments_created_at', ['created_at']);
+		$table->addIndex('idx_comments_updated_at', ['updated_at']);
+	}
+
+	protected function getDefaultData(): array
+	{
+		return [];
 	}
 }

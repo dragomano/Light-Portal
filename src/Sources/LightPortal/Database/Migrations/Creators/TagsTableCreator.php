@@ -12,10 +12,10 @@
 
 namespace LightPortal\Database\Migrations\Creators;
 
-use LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
-use LightPortal\Database\Migrations\Columns\TinyInteger;
-use LightPortal\Database\Migrations\PortalTable;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
+use LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
+use LightPortal\Database\Migrations\Columns\UnsignedInteger;
+use LightPortal\Database\Migrations\PortalTable;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -26,14 +26,21 @@ class TagsTableCreator extends AbstractTableCreator
 
 	protected function defineColumns(PortalTable $table): void
 	{
-		$tagId  = new AutoIncrementInteger('tag_id');
+		$platform = $this->sql->getAdapter()->getPlatform();
+
+		$tagId  = new AutoIncrementInteger('tag_id', options: ['platform' => $platform]);
 		$slug   = new Varchar('slug', 255);
 		$icon   = new Varchar('icon', 60, true);
-		$status = new TinyInteger('status', default: 1);
+		$status = new UnsignedInteger('status', default: 1);
 
 		$table->addAutoIncrementColumn($tagId);
 		$table->addUniqueColumn($slug);
 		$table->addColumn($icon);
 		$table->addColumn($status);
+	}
+
+	protected function getDefaultData(): array
+	{
+		return [];
 	}
 }

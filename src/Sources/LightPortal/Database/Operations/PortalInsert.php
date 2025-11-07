@@ -153,7 +153,6 @@ class PortalInsert extends Insert
 
 	protected function isMariaDb(AdapterInterface $adapter): bool
 	{
-		return $adapter instanceof PortalAdapter
-			&& stripos($adapter->getVersion(), 'MariaDB') !== false;
+		return $adapter instanceof PortalAdapter && stripos($adapter->getVersion(), 'MariaDB') !== false;
 	}
 }

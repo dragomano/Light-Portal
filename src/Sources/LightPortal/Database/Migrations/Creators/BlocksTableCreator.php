@@ -13,13 +13,13 @@
 namespace LightPortal\Database\Migrations\Creators;
 
 use Bugo\Compat\Utils;
+use Laminas\Db\Sql\Ddl\Column\Varchar;
 use LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
-use LightPortal\Database\Migrations\Columns\TinyInteger;
+use LightPortal\Database\Migrations\Columns\UnsignedInteger;
 use LightPortal\Database\Migrations\PortalTable;
 use LightPortal\Enums\Action;
 use LightPortal\Enums\ContentClass;
 use LightPortal\Enums\TitleClass;
-use Laminas\Db\Sql\Ddl\Column\Varchar;
 
 if (! defined('SMF'))
 	die('No direct access...');
@@ -30,13 +30,15 @@ class BlocksTableCreator extends AbstractTableCreator
 
 	protected function defineColumns(PortalTable $table): void
 	{
-		$id           = new AutoIncrementInteger('block_id');
+		$platform = $this->sql->getAdapter()->getPlatform();
+
+		$id           = new AutoIncrementInteger('block_id', options: ['platform' => $platform]);
 		$icon         = new Varchar('icon', 60, true);
 		$type         = new Varchar('type', 30);
 		$placement    = new Varchar('placement', 10);
-		$priority     = new TinyInteger('priority');
-		$permissions  = new TinyInteger('permissions');
-		$status       = new TinyInteger('status', default: 1);
+		$priority     = new UnsignedInteger('priority');
+		$permissions  = new UnsignedInteger('permissions');
+		$status       = new UnsignedInteger('status', default: 1);
 		$areas        = new Varchar('areas', 255, default: Action::ALL->value);
 		$titleClass   = new Varchar('title_class', 255, true);
 		$contentClass = new Varchar('content_class', 255, true);
@@ -53,12 +55,20 @@ class BlocksTableCreator extends AbstractTableCreator
 		$table->addColumn($contentClass);
 	}
 
-	public function insertDefaultData(): void
+	protected function getDefaultData(): array
 	{
-		$this->insertDefaultIfNotExists(
+		return [
 			['block_id' => 1],
 			['block_id', 'icon', 'type', 'placement', 'permissions', 'title_class', 'content_class'],
-			[1, 'fas fa-user', 'user_info', Utils::$context['right_to_left'] ? 'left' : 'right', 3, TitleClass::first(), ContentClass::first()]
-		);
+			[
+				1,
+				'fas fa-user',
+				'user_info',
+				Utils::$context['right_to_left'] ? 'left' : 'right',
+				3,
+				TitleClass::first(),
+				ContentClass::first(),
+			],
+		];
 	}
 }

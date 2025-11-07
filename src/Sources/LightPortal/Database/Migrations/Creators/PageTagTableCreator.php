@@ -34,4 +34,9 @@ class PageTagTableCreator extends AbstractTableCreator
 		$compositePrimaryKey = new PrimaryKey(['page_id', 'tag_id']);
 		$table->addConstraint($compositePrimaryKey);
 	}
+
+	protected function getDefaultData(): array
+	{
+		return [];
+	}
 }

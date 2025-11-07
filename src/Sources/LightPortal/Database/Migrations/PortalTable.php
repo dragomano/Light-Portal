@@ -13,7 +13,7 @@
 namespace LightPortal\Database\Migrations;
 
 use Laminas\Db\Adapter\Platform\PlatformInterface;
-use Laminas\Db\Adapter\Platform\Sql92;
+use Laminas\Db\Adapter\Platform\Sql92 as DefaultAdapterPlatform;
 use Laminas\Db\Sql\Ddl\Column\ColumnInterface;
 use Laminas\Db\Sql\Ddl\Constraint\PrimaryKey;
 use Laminas\Db\Sql\Ddl\Constraint\UniqueKey;
@@ -25,6 +25,9 @@ if (! defined('SMF'))
 
 class PortalTable extends CreateTable
 {
+	private array $separateIndexes = [];
+
+
 	public function addAutoIncrementColumn(ColumnInterface $column): static
 	{
 		$this->addColumn($column);
@@ -62,7 +65,7 @@ class PortalTable extends CreateTable
 		return $this;
 	}
 
-	public function addIndex(array $columns, string $name): static
+	public function addIndex(string $name, array $columns): static
 	{
 		$index = new Index($columns, $name);
 		$this->addConstraint($index);
@@ -72,16 +75,17 @@ class PortalTable extends CreateTable
 
 	public function getSqlString(PlatformInterface|null $adapterPlatform = null): string
 	{
-		$platform = $adapterPlatform ?? new Sql92();
+		$platform = $adapterPlatform ?? new DefaultAdapterPlatform();
 		$platformName = strtolower($platform->getName());
 
-		if ($platformName === 'sqlite') {
+		if (in_array($platformName, ['sqlite', 'postgresql'])) {
 			$originalConstraints = $this->constraints;
-			$filteredConstraints = $indexes = [];
+			$filteredConstraints = [];
+			$this->separateIndexes = [];
 
 			foreach ($this->constraints as $constraint) {
 				if ($constraint instanceof Index) {
-					$indexes[] = $constraint;
+					$this->separateIndexes[] = $constraint;
 				} else {
 					$filteredConstraints[] = $constraint;
 				}
@@ -91,18 +95,38 @@ class PortalTable extends CreateTable
 			$createSql = parent::getSqlString($adapterPlatform);
 			$this->constraints = $originalConstraints;
 
-			$indexStatements = [];
-			foreach ($indexes as $index) {
-				$indexName = $platform->quoteIdentifier($index->getName());
-				$tableName = $platform->quoteIdentifier($this->table);
-				$quotedColumns = array_map($platform->quoteIdentifier(...), $index->getColumns());
-				$columnList = implode(', ', $quotedColumns);
-				$indexStatements[] = "CREATE INDEX IF NOT EXISTS $indexName ON $tableName ($columnList)";
-			}
-
-			return $createSql . (empty($indexStatements) ? '' : '; ' . implode('; ', $indexStatements));
+			return $createSql;
 		}
 
 		return parent::getSqlString($adapterPlatform);
+	}
+
+	public function getIndexSqlStatements(PlatformInterface|null $adapterPlatform = null): array
+	{
+		$platform = $adapterPlatform ?? new DefaultAdapterPlatform();
+		$platformName = strtolower($platform->getName());
+
+		if (! in_array($platformName, ['sqlite', 'postgresql'])) {
+			return [];
+		}
+
+		if (empty($this->separateIndexes)) {
+			foreach ($this->constraints as $constraint) {
+				if ($constraint instanceof Index) {
+					$this->separateIndexes[] = $constraint;
+				}
+			}
+		}
+
+		$indexStatements = [];
+		foreach ($this->separateIndexes as $index) {
+			$indexName = $platform->quoteIdentifier($index->getName());
+			$tableName = $platform->quoteIdentifier($this->table);
+			$quotedColumns = array_map($platform->quoteIdentifier(...), $index->getColumns());
+			$columnList = implode(', ', $quotedColumns);
+			$indexStatements[] = "CREATE INDEX $indexName ON $tableName ($columnList)";
+		}
+
+		return $indexStatements;
 	}
 }
