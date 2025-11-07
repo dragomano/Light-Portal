@@ -12,6 +12,13 @@ class RoboFile extends Tasks
 		'src/Themes/default/scripts/light_portal/plugins.js',
 	];
 
+	private array $defaultPlugins = [
+		'CodeMirror',
+		'HelloPortal',
+		'ThemeSwitcher',
+		'UserInfo',
+	];
+
 	private array $premiumPlugins = [
 		'ApexCharts',
 		'DiceBear',
@@ -60,7 +67,7 @@ class RoboFile extends Tasks
 		'dutch',
 		'french',
 		'german',
-		'norvegian',
+		'norwegian',
 		'portuguese_pt',
 		'spanish_es',
 		'spanish_latin',
@@ -138,6 +145,7 @@ class RoboFile extends Tasks
 			->exclude('.meta-storm.xml')
 			->exclude([...$this->baseExclusions, ...$this->premiumPlugins])
 			->exclude($this->getChildren())
+			->exclude(['langs/(?!index|english).*\.php'])
 			->exclude(['languages/LightPortal/(?!index|LightPortal\.english).*\.php'])
 			->run();
 	}
@@ -186,11 +194,12 @@ class RoboFile extends Tasks
 	{
 		$directories = glob(__DIR__ . '/src/Sources/LightPortal/Plugins/*', GLOB_ONLYDIR);
 
-		$names = [];
-		foreach ($directories as $path) {
-			$names[] = 'Plugins/' . basename($path);
-		}
-
-		return $names;
+		return array_map(
+			fn($path) => 'Plugins/' . basename($path),
+			array_filter(
+				$directories,
+				fn($path) => ! in_array(basename($path), $this->defaultPlugins)
+			)
+		);
 	}
 }

@@ -7,7 +7,7 @@
 	</li>
 
 	@unless (empty($user['avatar']))
-		<li>{!! $user['avatar']['image'] !!}</li>
+		<li><a href="{{ $user['href'] }}">{!! $user['avatar']['image'] !!}</a></li>
 	@endunless
 
 	<li>{{ $user['primary_group'] ?: ($user['post_group'] ?: '') }}</li>
@@ -43,17 +43,11 @@
 		</li>
 	@endcan
 
-	<li>
+	<li class="lefttext">
 		<hr>
-		<span class="floatleft">
-            @icon('user', $txt['profile'] ?? '')
-            <a href="{{ $user['href'] }}">{{ $txt['profile'] }}</a>
-        </span>
-		<span class="floatright">
-            @icon('sign_out_alt', $txt['logout'] ?? '')
-            <a href="{{ $scripturl }}?action=logout;{{ $context['session_var'] }}={{ $context['session_id'] }}">
-				{{ $txt['logout'] }}
-			</a>
-        </span>
+		@icon('sign_out_alt', $txt['logout'] ?? '')
+		<a href="{{ $scripturl }}?action=logout;{{ $context['session_var'] }}={{ $context['session_id'] }}">
+			{{ $txt['logout'] }}
+		</a>
 	</li>
 </ul>

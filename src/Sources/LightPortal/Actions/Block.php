@@ -17,7 +17,6 @@ use Bugo\Compat\User;
 use Bugo\Compat\Utils;
 use LightPortal\Enums\Action;
 use LightPortal\Enums\Permission;
-use LightPortal\UI\TemplateLoader;
 use LightPortal\Utils\Content;
 use LightPortal\Utils\Icon;
 use LightPortal\Utils\Setting;
@@ -47,7 +46,6 @@ class Block implements ActionInterface
 		}
 
 		$this->prepareBlocks($blocks);
-		$this->injectPortalLayer();
 	}
 
 	protected function shouldSkipRendering(): bool
@@ -108,25 +106,6 @@ class Block implements ActionInterface
 		}
 
 		return $icon . $title;
-	}
-
-	protected function injectPortalLayer(): void
-	{
-		$layers = Utils::$context['template_layers'];
-		$pos    = array_search('body', $layers, true);
-
-		if ($pos === false) {
-			return;
-		}
-
-		TemplateLoader::fromFile();
-
-		/* @uses template_lp_portal_above, template_lp_portal_below */
-		Utils::$context['template_layers'] = array_merge(
-			array_slice($layers, 0, $pos + 1, true),
-			['lp_portal'],
-			array_slice($layers, $pos + 1, null, true)
-		);
 	}
 
 	protected function getFilteredByAreas(): array

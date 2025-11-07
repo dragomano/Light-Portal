@@ -1,24 +1,25 @@
 @php use Bugo\Compat\Utils; @endphp
+@php $avatarUrl = "{$modSettings['avatar_url']}/default.png" @endphp
 
 <ul class="centertext">
 	<li>{{ $txt['hello_member'] }} {{ $txt['guest'] }}</li>
 	<li>
 		<img
 			alt="*"
-			src="{{ $modSettings['avatar_url'] }}/default.png"
+			src="{{ $avatarUrl }}"
 			width="100"
 			height="100"
 		>
 	</li>
-	<li style="display: flex">
+	<li style="display: flex; gap: 20px">
 		@unless (empty($context['can_register']))
-			<span class="floatleft">
+			<span>
                 @icon('user_plus', $txt['register'] ?? '')
                 <a href="{{ $scripturl }}?action=signup">{{ $txt['register'] }}</a>
             </span>
 		@endunless
 
-		<span @class(['floatright' => ! empty($context['can_register'])])>
+		<span @class(['centertext' => ! empty($context['can_register'])])>
             @icon('sign_in_alt', $txt['login'] ?? '')
             <a
 				href="{{ $scripturl }}?action=login"

@@ -33,17 +33,19 @@ class TagIndexRepository extends AbstractIndexRepository
 	): array
 	{
 		$select = $this->sql->select()
-			->from(['p' => 'lp_pages'])
-			->columns(['frequency' => new Expression('COUNT(DISTINCT p.page_id)')])
-			->join(['pt' => 'lp_page_tag'], 'p.page_id = pt.page_id', [])
-			->join(['tag' => 'lp_tags'], 'pt.tag_id = tag.tag_id', ['tag_id', 'slug', 'icon'])
+			->from(['tag' => 'lp_tags'])
+			->columns([
+				'tag_id', 'slug', 'icon',
+				'frequency' => new Expression('COUNT(pt.page_id)')
+			])
+			->join(['pt' => 'lp_page_tag'], 'tag.tag_id = pt.tag_id', [])
+			->join(['p' => 'lp_pages'], 'pt.page_id = p.page_id', [])
 			->where($this->getCommonTagWhere())
-			->group(['tag.tag_id', 'tag.slug', 'tag.icon', 't.title', 'tf.title'])
+			->group(['tag.tag_id', 'tag.slug', 'tag.icon'])
 			->order(new Expression($sort));
 
 		$this->addTranslationJoins($select, ['primary' => 'tag.tag_id', 'entity' => 'tag']);
 
-		$select->where($this->getTranslationFilter());
 		$select->where($this->getTranslationFilter('tag', 'tag_id', ['title'], 'tag'));
 
 		if ($limit) {
@@ -69,14 +71,13 @@ class TagIndexRepository extends AbstractIndexRepository
 	public function getTotalCount(string $filter = '', array $whereConditions = []): int
 	{
 		$select = $this->sql->select()
-			->from(['p' => 'lp_pages'])
+			->from(['tag' => 'lp_tags'])
 			->columns(['count' => new Expression('COUNT(DISTINCT tag.tag_id)')])
-			->join(['pt' => 'lp_page_tag'], 'p.page_id = pt.page_id', [])
-			->join(['tag' => 'lp_tags'], 'pt.tag_id = tag.tag_id', [])
+			->join(['pt' => 'lp_page_tag'], 'tag.tag_id = pt.tag_id', [])
+			->join(['p' => 'lp_pages'], 'pt.page_id = p.page_id', [])
 			->where($this->getCommonTagWhere())
 			->limit(1);
 
-		$select->where($this->getTranslationFilter());
 		$select->where($this->getTranslationFilter('tag', 'tag_id', ['title'], 'tag'));
 
 		$result = $this->sql->execute($select)->current();

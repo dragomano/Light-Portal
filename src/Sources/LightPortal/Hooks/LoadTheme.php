@@ -44,6 +44,7 @@ class LoadTheme extends AbstractHook
 
 		$this->defineVars();
 		$this->loadAssets();
+		$this->injectPortalLayer();
 
 		// Run all init methods for active plugins
 		$this->dispatcher->dispatch(PortalHook::init);
@@ -70,6 +71,23 @@ class LoadTheme extends AbstractHook
 		Theme::loadCSSFile('portal_custom.css');
 		Theme::loadJavaScriptFile('light_portal/bundle.min.js', ['defer' => true]);
 		Theme::loadJavaScriptFile('light_portal/plugins.js', ['minimize' => true]);
+	}
+
+	protected function injectPortalLayer(): void
+	{
+		$layers = Utils::$context['template_layers'];
+		$pos = array_search('body', $layers, true);
+
+		if ($pos === false) {
+			return;
+		}
+
+		/* @uses template_lp_portal_above, template_lp_portal_below */
+		Utils::$context['template_layers'] = array_merge(
+			array_slice($layers, 0, $pos + 1, true),
+			['lp_portal'],
+			array_slice($layers, $pos + 1, null, true)
+		);
 	}
 
 	protected function loadFontAwesome(): void

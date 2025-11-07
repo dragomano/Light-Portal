@@ -20,10 +20,6 @@ trait HasParams
 			return [];
 		}
 
-		echo "replaceParams called with " . count($params) . " params\n";
-		$result = $this->insertData('lp_params', $params, ['item_id', 'type', 'name'], $replace);
-		echo "replaceParams returning " . count($result) . " results\n";
-
-		return $result;
+		return $this->insertData('lp_params', $params, ['item_id', 'type', 'name'], $replace);
 	}
 }

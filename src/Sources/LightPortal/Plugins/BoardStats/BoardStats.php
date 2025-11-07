@@ -107,7 +107,7 @@ class BoardStats extends SsiBlock
 		$parameters = $e->args->parameters;
 
 		$boardStats = $this->userCache($this->name . '_addon_b' . $e->args->id)
-			->setLifeTime($parameters->get('update_interval', 0))
+			->setLifeTime(Str::typed('int', $parameters['update_interval']))
 			->setFallback(fn() => $this->getData($parameters));
 
 		if (empty($boardStats))

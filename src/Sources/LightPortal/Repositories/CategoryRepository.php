@@ -52,12 +52,7 @@ final class CategoryRepository extends AbstractRepository implements CategoryRep
 		if ($filter === 'list') {
 			$select
 				->where(['c.status = ?' => Status::ACTIVE->value])
-				->where($this->getTranslationFilter(
-					'c',
-					'category_id',
-					['title', 'description'],
-					'category'
-				));
+				->where($this->getTranslationFilter('c', 'category_id', ['title'], 'category'));
 		}
 
 		if ($whereConditions) {
