@@ -26,14 +26,16 @@
 			$block['title'] .= '<a class="floatright block_edit" href="' . $editLink . '">' . $editIcon . '</a>';
 		}
 
+		$titleHtml = '';
+
 		// Render block parts
 		if (! empty($block['title'])) {
 			$titleClass = TitleClass::values()[$block['title_class'] ?? ''] ?? '%s';
-			$titleHtml = sprintf($titleClass, $block['title']);
+			$titleHtml  = sprintf($titleClass, $block['title']);
 		}
 
 		$contentClass = ContentClass::values()[$block['content_class'] ?? ''] ?? '%s';
-		$contentHtml = sprintf($contentClass, $block['content']);
+		$contentHtml  = sprintf($contentClass, $block['content']);
 	@endphp
 
 	<aside id="block_{{ $block['id'] }}" class="{{ $class }}">

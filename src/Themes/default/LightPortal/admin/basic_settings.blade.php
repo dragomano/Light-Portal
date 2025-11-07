@@ -18,7 +18,7 @@
 	method="post"
 	accept-charset="{{ $context['character_set'] }}"
 	onsubmit="submitonce(this);"
-	x-data="{ frontpage_mode: '{{ $modSettings['lp_frontpage_mode'] ?? FrontPageMode::DEFAULT }}' }"
+	x-data="{ frontpage_mode: '{{ $modSettings['lp_frontpage_mode'] ?? FrontPageMode::DEFAULT->value }}' }"
 	@change-mode.window="frontpage_mode = $event.detail.front"
 >
 	@php $message = $context['settings_message'] ?? ''; @endphp

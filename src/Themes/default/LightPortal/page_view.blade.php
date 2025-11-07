@@ -69,9 +69,9 @@
                     </span>
 					{{ $context['lp_page']['post_author'] ?? '' }}
 					<time class="floatright" datetime="{{ date('c', $context['lp_page']['created_at']) }}" itemprop="datePublished">
-						@icon('date'){{ $context['lp_page']['created'] }}
+						@icon('date'){!! $context['lp_page']['created'] !!}
 						@unless (empty($context['lp_page']['updated_at']))
-							/ {{ $context['lp_page']['updated'] }}
+							/ {!! $context['lp_page']['updated'] !!}
 							<meta itemprop="dateModified" content="{{ date('c', $context['lp_page']['updated_at']) }}">
 						@endunless
 					</time>
@@ -85,14 +85,14 @@
 			{{ $context['lp_page']['author'] }} - {{ $context['page_title'] }}
 		</h3>
 
-		@if (! empty($context['lp_page']['tags']) && ! empty($modSettings['lp_show_tags_on_page']))
+		@unless (empty($context['lp_page']['tags']) || empty($modSettings['lp_show_tags_on_page']))
 			<div class="smalltext">
 				@foreach ($context['lp_page']['tags'] as $tag)
 					<a class="button" href="{{ $tag['href'] }}">{!! $tag['icon'] !!}{{ $tag['name'] }}</a>
 				@endforeach
 			</div>
 			<hr>
-		@endif
+		@endunless
 
 		@php app(EventManagerFactory::class)()->dispatch(PortalHook::beforePageContent) @endphp
 

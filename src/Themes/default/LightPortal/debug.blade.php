@@ -4,11 +4,11 @@
 	</div>
 @endunless
 
-@if (! empty($context['lp_portal_queries']))
+@unless (empty($context['lp_portal_queries']))
 	@php $totalQueries = count($context['lp_portal_queries']); @endphp
 
 	@if ($totalQueries > 0)
-		<div class="cat_bar">
+		<div class="cat_bar" style="margin-top: 4px">
 			<h3 class="catbg">{{ sprintf($txt['debug_queries_used'], $totalQueries) }}</h3>
 		</div>
 		<div class="debug-queries-container roundframe">
@@ -39,4 +39,4 @@
 			@endforeach
 		</div>
 	@endif
-@endif
+@endunless

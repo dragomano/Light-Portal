@@ -30,7 +30,7 @@ function template_lp_portal_above(): void
 {
 	echo TemplateLoader::fromFile('block_view', [
 		'layout' => 'above',
-		'blocks' => Utils::$context['lp_blocks'],
+		'blocks' => Utils::$context['lp_blocks'] ?? [],
 	], false);
 }
 
@@ -38,7 +38,7 @@ function template_lp_portal_below(): void
 {
 	echo TemplateLoader::fromFile('block_view', [
 		'layout' => 'below',
-		'blocks' => Utils::$context['lp_blocks'],
+		'blocks' => Utils::$context['lp_blocks'] ?? [],
 	], false);
 
 	echo TemplateLoader::fromFile('debug', useSubTemplate: false);

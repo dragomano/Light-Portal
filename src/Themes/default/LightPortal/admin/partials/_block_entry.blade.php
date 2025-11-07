@@ -1,6 +1,6 @@
 @php use LightPortal\Utils\Icon; @endphp
 
-@if (! empty($id) && ! empty($data))
+@unless (empty($id) || empty($data))
 	@php
 		$title = ($data['description'] ?: $data['title']) ?: '';
 		$status = empty($data['status']) ? 'false' : 'true';
@@ -66,7 +66,7 @@
 							</a>
 						</li>
 
-						@isset($txt['lp_' . $data['type']]['title'])
+						@isset ($txt['lp_' . $data['type']]['title'])
 							<li>
 								<a href="{{ $scripturl }}?action=admin;area=lp_blocks;sa=edit;id={{ $id }}" class="button">
 									{{ $txt['modify'] }}
@@ -84,4 +84,4 @@
 			</div>
 		</td>
 	</tr>
-@endif
+@endunless

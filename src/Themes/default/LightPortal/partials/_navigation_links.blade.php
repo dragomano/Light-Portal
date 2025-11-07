@@ -1,4 +1,4 @@
-@if (! empty($context['lp_page']['prev']) || ! empty($context['lp_page']['next']))
+@unless (empty($context['lp_page']['prev']) && empty($context['lp_page']['next']))
 	<div class="generic_list_wrapper">
 		@unless (empty($context['lp_page']['prev']))
 			<a class="floatleft" href="{{ $context['lp_page']['prev']['link'] }}">
@@ -12,4 +12,4 @@
 			</a>
 		@endunless
 	</div>
-@endif
+@endunless
