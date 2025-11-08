@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Adapter\Platform\PlatformInterface;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\SqlInterface;
@@ -20,7 +21,15 @@ describe('AbstractTableCreator', function () {
         $this->adapter = mock(PortalAdapterInterface::class);
         $this->adapter
             ->shouldReceive('getPlatform')
-            ->andReturn(mock(['getName' => 'MySQL', 'quoteIdentifierChain' => fn($x) => $x]));
+            ->andReturnUsing(function () {
+                $platformMock = mock(PlatformInterface::class);
+                $platformMock->shouldReceive('getName')->andReturn('MySQL');
+                $platformMock->shouldReceive('quoteIdentifier')->andReturnUsing(fn($x) => $x);
+                $platformMock->shouldReceive('quoteIdentifierChain')->andReturnUsing(fn($x) => $x);
+
+                return $platformMock;
+            });
+        $this->adapter->shouldReceive('getTitle')->andReturn('MySQL')->byDefault();
         $this->adapter->shouldReceive('getCurrentSchema')->andReturn(null);
 
         $this->sql = mock('alias:AbstractTableCreatorSql', PortalSqlInterface::class);
@@ -38,6 +47,11 @@ describe('AbstractTableCreator', function () {
 
                 $table->addColumn($id);
                 $table->addColumn($name);
+            }
+
+            protected function getDefaultData(): array
+            {
+                return [];
             }
         };
 

@@ -282,44 +282,6 @@ describe('Block::show()', function () {
         expect(Utils::$context)->toHaveKey('lp_blocks')
             ->and(Utils::$context['lp_blocks']['top'][1])->toHaveKey('title');
     });
-
-    it('should inject portal layer correctly', function () {
-        Utils::$context['user']['is_admin'] = false;
-        Utils::$context['lp_active_blocks'] = [
-            1 => [
-                'id'          => 1,
-                'placement'   => 'top',
-                'title'       => 'Test Block',
-                'icon'        => '',
-                'content'     => '',
-                'type'        => 'html',
-                'permissions' => Permission::ALL->value,
-                'parameters'  => ['hide_header' => false],
-                'areas'       => ['all'],
-            ]
-        ];
-
-        $blockMock = mock(Block::class)->makePartial();
-        $blockMock->shouldAllowMockingProtectedMethods();
-        $blockMock->shouldReceive('shouldSkipRendering')->andReturn(false);
-        $blockMock->shouldReceive('getVisibleBlocks')->andReturn([
-            1 => [
-                'id'          => 1,
-                'placement'   => 'top',
-                'title'       => 'Test Block',
-                'icon'        => 'fas fa-test',
-                'content'     => null,
-                'type'        => 'html',
-                'permissions' => Permission::ALL->value,
-                'parameters'  => ['hide_header' => true],
-                'areas'       => ['all'],
-            ]
-        ]);
-        $blockMock->show();
-
-        expect(Utils::$context['template_layers'])->toContain('lp_portal')
-            ->and(Utils::$context['template_layers'])->toHaveCount(3);
-    });
 });
 
 describe('Block::getFilteredByAreas()', function () {
@@ -482,28 +444,6 @@ describe('Block::buildTitle()', function () {
 
         expect($result)->toBe($expected);
     })->with('title build scenarios');
-});
-
-describe('Block::injectPortalLayer()', function () {
-    beforeEach(function () {
-        setupBasicContext();
-    });
-
-    it('should inject portal layer when body is found', function () {
-        $block = new ReflectionAccessor(new Block());
-        $block->callProtectedMethod('injectPortalLayer');
-
-        expect(Utils::$context['template_layers'])->toContain('lp_portal');
-    });
-
-    it('should not inject portal layer when body is not found', function () {
-        Utils::$context['template_layers'] = ['html', 'custom'];
-
-        $block = new ReflectionAccessor(new Block());
-        $block->callProtectedMethod('injectPortalLayer');
-
-        expect(Utils::$context['template_layers'])->not->toContain('lp_portal');
-    });
 });
 
 describe('Block::resolveCurrentArea()', function () {

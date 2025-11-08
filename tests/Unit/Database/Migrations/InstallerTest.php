@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Bugo\Compat\Cache\CacheApi;
 use Bugo\Compat\Config;
 use Bugo\Compat\Utils;
+use Laminas\Db\Adapter\Platform\PlatformInterface;
 use LightPortal\Database\Migrations\Installer;
 use LightPortal\Database\Operations\PortalDelete;
 use LightPortal\Database\Operations\PortalInsert;
@@ -21,9 +22,14 @@ describe('Installer', function () {
     beforeEach(function () {
         $this->adapter = mock(PortalAdapterInterface::class);
         $this->adapter->shouldReceive('getPrefix')->andReturn('smf_');
-        $this->adapter
-            ->shouldReceive('getPlatform')
-            ->andReturn(mock(['getName' => 'MySQL', 'quoteIdentifierChain' => fn($x) => $x]));
+
+        $this->platform = mock(PlatformInterface::class);
+        $this->platform->shouldReceive('getName')->andReturn('MySQL');
+        $this->platform->shouldReceive('quoteIdentifier')->andReturnUsing(fn($identifier) => $identifier);
+        $this->platform->shouldReceive('quoteIdentifierChain')->andReturnUsing(fn($identifiers) => $identifiers);
+
+        $this->adapter->shouldReceive('getPlatform')->andReturn($this->platform);
+        $this->adapter->shouldReceive('getTitle')->andReturn('MySQL')->byDefault();
         $this->adapter->shouldReceive('getCurrentSchema')->andReturn(null);
         $this->adapter->shouldReceive('query')->andReturnUsing(function ($sql) {});
 
@@ -36,19 +42,23 @@ describe('Installer', function () {
         $this->portalSqlMock->shouldReceive('buildSqlString')->andReturn('mocked sql');
         $this->portalSqlMock->shouldReceive('tableExists')->andReturn(false);
         $this->portalSqlMock->shouldReceive('columnExists')->andReturn(false);
+
         $selectMock = mock(PortalSelect::class)->shouldAllowMockingProtectedMethods();
         $selectMock->shouldReceive('columns')->andReturnSelf();
         $selectMock->shouldReceive('where')->andReturnSelf();
+
         $this->portalSqlMock->shouldReceive('select')->andReturn($selectMock);
 
         $insertMock = mock(PortalInsert::class)->shouldAllowMockingProtectedMethods();
         $insertMock->shouldReceive('columns')->andReturnSelf();
         $insertMock->shouldReceive('values')->andReturnSelf();
+
         $this->portalSqlMock->shouldReceive('insert')->andReturn($insertMock);
 
         $deleteMock = mock(PortalDelete::class)->shouldAllowMockingProtectedMethods();
         $reflection = new ReflectionAccessor($deleteMock);
         $reflection->setProtectedProperty('where', mock(['like' => null]));
+
         $this->portalSqlMock->shouldReceive('delete')->andReturn($deleteMock);
 
         $this->portalSqlMock
@@ -69,12 +79,6 @@ describe('Installer', function () {
     });
 
     dataset('table modes', ['install', 'uninstall']);
-
-    it('constructs with null parameters', function () {
-        $installer = new Installer();
-
-        expect($installer)->toBeInstanceOf(Installer::class);
-    });
 
     it('installs the portal successfully', function () {
         $this->installer->shouldReceive('processTables')->with('install');
@@ -109,14 +113,20 @@ describe('Installer', function () {
     });
 
     it('returns correct creators list', function () {
-        $reflection = new ReflectionAccessor(new Installer());
+        $sql = mock(PortalSqlInterface::class);
+        $sql->shouldReceive('getAdapter')->andReturn($this->adapter);
+
+        $reflection = new ReflectionAccessor(new Installer($sql));
         $creators = $reflection->callProtectedMethod('getCreators');
 
         expect($creators)->toBeArray();
     });
 
     it('returns correct upgraders list', function () {
-        $reflection = new ReflectionAccessor(new Installer());
+        $sql = mock(PortalSqlInterface::class);
+        $sql->shouldReceive('getAdapter')->andReturn($this->adapter);
+
+        $reflection = new ReflectionAccessor(new Installer($sql));
         $upgraders = $reflection->callProtectedMethod('getUpgraders');
 
         expect($upgraders)->toBeArray();
@@ -153,14 +163,20 @@ describe('Installer', function () {
     });
 
     it('sets default settings', function () {
-        $reflection = new ReflectionAccessor(new Installer());
+        $sql = mock(PortalSqlInterface::class);
+        $sql->shouldReceive('getAdapter')->andReturn($this->adapter);
+
+        $reflection = new ReflectionAccessor(new Installer($sql));
         $reflection->callProtectedMethod('setDefaultSettings');
 
         expect(true)->toBeTrue();
     });
 
     it('sets directory permissions', function () {
-        $reflection = new ReflectionAccessor(new Installer());
+        $sql = mock(PortalSqlInterface::class);
+        $sql->shouldReceive('getAdapter')->andReturn($this->adapter);
+
+        $reflection = new ReflectionAccessor(new Installer($sql));
         $reflection->callProtectedMethod('setDirectoryPermissions');
 
         expect(true)->toBeTrue();
