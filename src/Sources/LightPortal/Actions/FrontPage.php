@@ -242,9 +242,6 @@ class FrontPage implements ActionInterface
 	{
 		$images = array_filter($articles->column('image'));
 
-		if (empty($images))
-			return;
-
 		foreach ($images as $image) {
 			Utils::$context['html_headers'] .= "\n\t" . Str::html('link', [
 				'rel'  => 'preload',

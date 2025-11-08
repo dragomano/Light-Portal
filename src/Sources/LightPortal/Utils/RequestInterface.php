@@ -18,6 +18,8 @@ interface RequestInterface extends GlobalArrayInterface
 
 	public function isNot(string $action, string $type = 'action'): bool;
 
+	public function sa(string $action): bool;
+
 	public function json(?string $key = null, mixed $default = null): mixed;
 
 	public function url(): string;

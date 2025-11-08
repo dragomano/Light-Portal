@@ -8,7 +8,7 @@
  * @license https://opensource.org/licenses/MIT MIT
  *
  * @category plugin
- * @version 17.10.25
+ * @version 07.11.25
  */
 
 namespace LightPortal\Plugins\SimpleChat;
@@ -36,5 +36,10 @@ class Table extends AbstractTableCreator
 		$table->addColumn($userId);
 		$table->addColumn($message);
 		$table->addColumn($createdAt);
+	}
+
+	protected function getDefaultData(): array
+	{
+		return [];
 	}
 }

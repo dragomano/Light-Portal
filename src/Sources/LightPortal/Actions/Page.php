@@ -122,7 +122,10 @@ final readonly class Page implements ActionInterface
 
 	private function handleEmptySlug(): void
 	{
-		if (Setting::isFrontpageMode(FrontPageMode::CHOSEN_PAGE->value) && Config::$modSettings['lp_frontpage_chosen_page']) {
+		if (
+			Setting::isFrontpageMode(FrontPageMode::CHOSEN_PAGE->value)
+			&& isset(Config::$modSettings['lp_frontpage_chosen_page'])
+		) {
 			Utils::$context['lp_page'] = $this->getDataBySlug(Config::$modSettings['lp_frontpage_chosen_page']);
 		} else {
 			Config::updateModSettings(['lp_frontpage_mode' => 0]);

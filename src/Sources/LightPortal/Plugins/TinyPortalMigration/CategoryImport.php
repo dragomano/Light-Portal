@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 09.10.25
+ * @version 08.11.25
  */
 
 namespace LightPortal\Plugins\TinyPortalMigration;
@@ -40,8 +40,9 @@ class CategoryImport extends AbstractDatabaseCategoryImport
 
 	public function getAll(int $start = 0, int $limit = 0, string $sort = 'id'): array
 	{
-		if (! $this->sql->tableExists('tp_variables'))
+		if (! $this->sql->tableExists('tp_variables')) {
 			return [];
+		}
 
 		$select = $this->sql->select()
 			->from('tp_variables')
@@ -66,8 +67,9 @@ class CategoryImport extends AbstractDatabaseCategoryImport
 
 	public function getTotalCount(): int
 	{
-		if (! $this->sql->tableExists('tp_variables'))
+		if (! $this->sql->tableExists('tp_variables')) {
 			return 0;
+		}
 
 		$select = $this->sql->select()
 			->from('tp_variables')
@@ -76,7 +78,7 @@ class CategoryImport extends AbstractDatabaseCategoryImport
 
 		$result = $this->sql->execute($select)->current();
 
-		return $result['count'];
+		return (int) $result['count'];
 	}
 
 	protected function getItems(array $ids): array

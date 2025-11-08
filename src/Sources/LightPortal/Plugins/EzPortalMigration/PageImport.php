@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 26.10.25
+ * @version 08.11.25
  */
 
 namespace LightPortal\Plugins\EzPortalMigration;
@@ -49,8 +49,9 @@ class PageImport extends AbstractDatabasePageImport
 
 	public function getAll(int $start = 0, int $limit = 0, string $sort = 'id_page'): array
 	{
-		if (! $this->sql->tableExists('ezp_page'))
+		if (! $this->sql->tableExists('ezp_page')) {
 			return [];
+		}
 
 		$select = $this->sql->select()
 			->from('ezp_page')
@@ -80,8 +81,9 @@ class PageImport extends AbstractDatabasePageImport
 
 	public function getTotalCount(): int
 	{
-		if (! $this->sql->tableExists('ezp_page'))
+		if (! $this->sql->tableExists('ezp_page')) {
 			return 0;
+		}
 
 		$select = $this->sql->select()
 			->from('ezp_page')
@@ -89,7 +91,7 @@ class PageImport extends AbstractDatabasePageImport
 
 		$result = $this->sql->execute($select)->current();
 
-		return $result['count'];
+		return (int) $result['count'];
 	}
 
 	protected function getItems(array $ids): array

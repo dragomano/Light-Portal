@@ -23,7 +23,6 @@ use LightPortal\Enums\PluginType;
 use LightPortal\Enums\PortalHook;
 use LightPortal\Lists\BlockList;
 use LightPortal\Utils\SessionManager;
-use LightPortal\Utils\Traits\HasRequest;
 
 use function LightPortal\app;
 
@@ -33,7 +32,6 @@ if (! defined('SMF'))
 class LoadTheme extends AbstractHook
 {
 	use HasCommonChecks;
-	use HasRequest;
 
 	public function __invoke(): void
 	{

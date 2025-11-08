@@ -8,7 +8,7 @@
  * @license https://spdx.org/licenses/GPL-3.0-or-later.html GPL-3.0-or-later
  *
  * @category plugin
- * @version 09.10.25
+ * @version 08.11.25
  */
 
 namespace LightPortal\Plugins\EhPortalMigration;
@@ -55,8 +55,9 @@ class BlockImport extends AbstractDatabaseBlockImport
 
 	public function getAll(int $start = 0, int $limit = 0, string $sort = 'id_block'): array
 	{
-		if (! $this->sql->tableExists('sp_blocks'))
+		if (! $this->sql->tableExists('sp_blocks')) {
 			return [];
+		}
 
 		$select = $this->sql->select()
 			->from('sp_blocks')
@@ -83,8 +84,9 @@ class BlockImport extends AbstractDatabaseBlockImport
 
 	public function getTotalCount(): int
 	{
-		if (! $this->sql->tableExists('sp_blocks'))
+		if (! $this->sql->tableExists('sp_blocks')) {
 			return 0;
+		}
 
 		$select = $this->sql->select()
 			->from('sp_blocks')
@@ -93,7 +95,7 @@ class BlockImport extends AbstractDatabaseBlockImport
 
 		$result = $this->sql->execute($select)->current();
 
-		return $result['count'];
+		return (int) $result['count'];
 	}
 
 	protected function getItems(array $ids): array

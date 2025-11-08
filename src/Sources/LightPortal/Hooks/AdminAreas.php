@@ -42,7 +42,6 @@ use LightPortal\Utils\Setting;
 use LightPortal\Utils\Str;
 use LightPortal\Utils\Traits\HasCache;
 use LightPortal\Utils\Traits\HasPortalSql;
-use LightPortal\Utils\Traits\HasRequest;
 
 use function LightPortal\app;
 
@@ -52,11 +51,14 @@ use const LP_VERSION;
 class AdminAreas extends AbstractHook
 {
 	use HasCache;
+	use HasCommonChecks;
 	use HasPortalSql;
-	use HasRequest;
 
 	public function __invoke(array &$areas): void
 	{
+		if ($this->isPortalCanBeLoaded() === false)
+			return;
+
 		Theme::loadCSSFile('light_portal/virtual-select.min.css');
 		Theme::loadJavaScriptFile('light_portal/virtual-select.min.js');
 		Theme::loadJavaScriptFile('light_portal/portal.js', ['minimize' => true]);
@@ -335,9 +337,9 @@ class AdminAreas extends AbstractHook
 
 		Utils::$context['sub_template'] = 'show_settings';
 
-		Utils::$context['sub_action'] = $this->request()->has('sa') && isset($areas[$this->request()->get('sa')])
-			? $this->request()->get('sa')
-			: $defaultAction;
+		$sa = $this->request()->get('sa');
+
+		Utils::$context['sub_action'] = isset($areas[$sa]) ? $sa : $defaultAction;
 
 		call_user_func($areas[Utils::$context['sub_action']]);
 	}

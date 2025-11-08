@@ -32,6 +32,11 @@ class Request extends GlobalArray implements RequestInterface
 		return empty($this->is($action, $type));
 	}
 
+	public function sa(string $action): bool
+	{
+		return $this->is($action, 'sa');
+	}
+
 	public function json(?string $key = null, mixed $default = null): mixed
 	{
 		$input = file_get_contents('php://input');

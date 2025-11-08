@@ -33,6 +33,7 @@ trait HasCommonChecks
 			! defined('LP_NAME')
 			|| isset(Utils::$context['uninstalling'])
 			|| $this->request()->is('printpage')
+			|| $this->request()->sa('uninstall2')
 		) {
 			Config::$modSettings['minimize_files'] = 0;
 			return false;

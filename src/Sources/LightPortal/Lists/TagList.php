@@ -30,7 +30,7 @@ readonly class TagList implements ListInterface
 	{
 		return $this->langCache('active_tags')
 			->setFallback(
-				fn () => $this->repository->getAll(0, $this->repository->getTotalCount(), 'title', 'list')
+				fn() => $this->repository->getAll(0, $this->repository->getTotalCount(), 'title', 'list')
 			);
 	}
 }
