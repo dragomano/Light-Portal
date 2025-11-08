@@ -28,9 +28,7 @@ class ParamsTableCreator extends AbstractTableCreator
 
 	protected function defineColumns(PortalTable $table): void
 	{
-		$platform = $this->sql->getAdapter()->getPlatform();
-
-		$id     = new AutoIncrementInteger(options: ['platform' => $platform]);
+		$id     = new AutoIncrementInteger();
 		$itemId = new UnsignedInteger('item_id');
 		$type   = new Varchar('type', 30, default: 'block');
 		$name   = new Varchar('name', 255);

@@ -74,7 +74,7 @@ trait HasTranslationJoins
 			}
 
 			$columns[$aliasName] = new Expression(
-				sprintf('COALESCE(NULLIF(%1$s.%2$s, ""), %3$s.%2$s, "")', $alias, $field, $aliasFallback)
+				sprintf('COALESCE(NULLIF(%1$s.%2$s, \'\'), %3$s.%2$s, \'\')', $alias, $field, $aliasFallback)
 			);
 		}
 
@@ -84,7 +84,7 @@ trait HasTranslationJoins
 	public function getTranslationFilter(
 		string $tableAlias = 'p',
 		string $idField = 'page_id',
-		array $fields = ['title', 'content', 'description'],
+		array $fields = ['title', 'content'],
 		string $entity = 'page'
 	): Expression
 	{

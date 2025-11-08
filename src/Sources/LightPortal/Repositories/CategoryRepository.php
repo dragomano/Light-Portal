@@ -83,7 +83,7 @@ final class CategoryRepository extends AbstractRepository implements CategoryRep
 	public function getTotalCount(string $filter = '', array $whereConditions = []): int
 	{
 		$select = $this->sql->select('lp_categories')
-			->columns(['count' => new Expression('COUNT(category_id)')]);
+			->columns(['count' => new Expression('COUNT(DISTINCT category_id)')]);
 
 		if ($whereConditions) {
 			$select->where($whereConditions);
@@ -91,13 +91,14 @@ final class CategoryRepository extends AbstractRepository implements CategoryRep
 
 		$result = $this->sql->execute($select)->current();
 
-		return $result['count'];
+		return (int) $result['count'];
 	}
 
 	public function getData(int $item): array
 	{
-		if ($item === 0)
+		if ($item === 0) {
 			return [];
+		}
 
 		$select = $this->sql->select()
 			->from(['c' => 'lp_categories'])

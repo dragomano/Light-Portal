@@ -43,7 +43,7 @@ final class CommentRepository extends AbstractRepository implements CommentRepos
 	{
 		$select = $this->sql->select()
 			->from(['com' => 'lp_comments'])
-			->columns(['count' => new Expression('COUNT(id)')]);
+			->columns(['id']);
 
 		$this->addTranslationJoins($select);
 
@@ -51,9 +51,13 @@ final class CommentRepository extends AbstractRepository implements CommentRepos
 			$select->where($whereConditions);
 		}
 
-		$result = $this->sql->execute($select)->current();
+		$countSelect = $this->sql->select()
+			->from(['sub' => $select])
+			->columns(['count' => new Expression('COUNT(*)')]);
 
-		return $result['count'];
+		$result = $this->sql->execute($countSelect)->current();
+
+		return (int) $result['count'];
 	}
 
 	public function getData(int $item): array

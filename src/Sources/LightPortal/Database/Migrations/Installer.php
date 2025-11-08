@@ -16,6 +16,7 @@ use Bugo\Compat\Cache\CacheApi;
 use Bugo\Compat\Config;
 use Bugo\Compat\Theme;
 use Bugo\Compat\Utils;
+use Laminas\Db\Adapter\Adapter;
 use LightPortal\Database\Migrations\Creators\BlocksTableCreator;
 use LightPortal\Database\Migrations\Creators\CategoriesTableCreator;
 use LightPortal\Database\Migrations\Creators\CommentsTableCreator;
@@ -49,11 +50,14 @@ class Installer implements InstallerInterface
 	public function __construct(protected ?PortalSqlInterface $sql = null)
 	{
 		$this->sql ??= new PortalSql(PortalAdapterFactory::create());
+
+		DbPlatform::set($this->sql->getAdapter()->getPlatform());
 	}
 
 	public function install(): bool
 	{
 		$this->processTables('install');
+		$this->fixPostgresSequences();
 		$this->cleanBackgroundTasks();
 		$this->setDefaultSettings();
 		$this->setDirectoryPermissions();
@@ -147,6 +151,36 @@ class Installer implements InstallerInterface
 			TranslationsTableUpgrader::class,
 			CommentsTableUpgrader::class,
 		];
+	}
+
+	protected function fixPostgresSequences(): void
+	{
+		if ($this->sql->getAdapter()->getTitle() !== 'PostgreSQL')
+			return;
+
+		$sequences = [
+			['table' => 'lp_blocks', 'column' => 'block_id'],
+			['table' => 'lp_categories', 'column' => 'category_id'],
+			['table' => 'lp_comments', 'column' => 'id'],
+			['table' => 'lp_pages', 'column' => 'page_id'],
+			['table' => 'lp_params', 'column' => 'id'],
+			['table' => 'lp_plugins', 'column' => 'id'],
+			['table' => 'lp_tags', 'column' => 'tag_id'],
+			['table' => 'lp_translations', 'column' => 'id'],
+		];
+
+		foreach ($sequences as $seq) {
+			$sequenceName = sprintf('%s_%s_seq', $this->sql->getPrefix() . $seq['table'], $seq['column']);
+
+			$sql = sprintf(
+				/** @lang text */ "SELECT setval('%s', COALESCE((SELECT MAX(%s) FROM %s), 1), true)",
+				$sequenceName,
+				$seq['column'],
+				$this->sql->getPrefix() . $seq['table']
+			);
+
+			$this->sql->getAdapter()->query($sql, Adapter::QUERY_MODE_EXECUTE);
+		}
 	}
 
 	protected function cleanBackgroundTasks(): void

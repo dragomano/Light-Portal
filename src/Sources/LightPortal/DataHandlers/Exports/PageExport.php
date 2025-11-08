@@ -80,9 +80,9 @@ class PageExport extends XmlExporter
 				new Expression('p.page_id = t.item_id AND t.type = ?', ['page']),
 				[
 					'lang'        => new Expression('t.lang'),
-					'title'       => new Expression('COALESCE(t.title, "")'),
-					'content'     => new Expression('COALESCE(t.content, "")'),
-					'description' => new Expression('COALESCE(t.description, "")'),
+					'title'       => new Expression("COALESCE(t.title, '')"),
+					'content'     => new Expression("COALESCE(t.content, '')"),
+					'description' => new Expression("COALESCE(t.description, '')"),
 				],
 				Select::JOIN_LEFT
 			)
@@ -112,7 +112,7 @@ class PageExport extends XmlExporter
 				new Expression('com.id = ct.item_id AND ct.type = ?', ['comment']),
 				[
 					'comment_lang'    => new Expression('ct.lang'),
-					'comment_content' => new Expression('COALESCE(ct.content, "")'),
+					'comment_content' => new Expression("COALESCE(ct.content, '')"),
 				],
 				Select::JOIN_LEFT
 			);

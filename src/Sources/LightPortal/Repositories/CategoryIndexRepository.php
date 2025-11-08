@@ -44,8 +44,8 @@ class CategoryIndexRepository extends AbstractIndexRepository
 				['c' => 'lp_categories'],
 				'p.category_id = c.category_id',
 				[
-					'slug'     => new Expression('COALESCE(c.slug, "uncategorized")'),
-					'icon'     => new Expression('COALESCE(c.icon, "fas folder-open")'),
+					'slug'     => new Expression("COALESCE(c.slug, 'uncategorized')"),
+					'icon'     => new Expression("COALESCE(c.icon, 'fas folder-open')"),
 					'priority' => new Expression('COALESCE(c.priority, 0)'),
 				],
 				Select::JOIN_LEFT)
@@ -58,23 +58,23 @@ class CategoryIndexRepository extends AbstractIndexRepository
 			'entity'  => 'category',
 			'fields'  => ['title', 'description'],
 			'columns' => [
-				'title' => new Expression('
+				'title' => new Expression("
 					CASE
 						WHEN p.category_id = 0 THEN ?
-						ELSE COALESCE(NULLIF(t.title, ""), tf.title, "")
-					END', [Lang::$txt['lp_no_category']]
+						ELSE COALESCE(NULLIF(t.title, ''), tf.title, '')
+					END", [Lang::$txt['lp_no_category']]
 				),
-				'description' => new Expression('
+				'description' => new Expression("
 					CASE
-						WHEN p.category_id = 0 THEN ""
-						ELSE COALESCE(NULLIF(t.description, ""), tf.description, "")
-					END'
+						WHEN p.category_id = 0 THEN ''
+						ELSE COALESCE(NULLIF(t.description, ''), tf.description, '')
+					END"
 				)
 			]
 		]);
 
 		$select->where(new Expression(
-			'(p.category_id = 0 OR COALESCE(NULLIF(t.title, ""), tf.title, "") <> "")'
+			"(p.category_id = 0 OR COALESCE(NULLIF(t.title, ''), tf.title, '') <> '')"
 		));
 
 		if ($limit) {
@@ -115,12 +115,12 @@ class CategoryIndexRepository extends AbstractIndexRepository
 		]);
 
 		$select->where(new Expression(
-			'(p.category_id = 0 OR COALESCE(NULLIF(t.title, ""), tf.title, "") <> "")'
+			"(p.category_id = 0 OR COALESCE(NULLIF(t.title, ''), tf.title, '') <> '')"
 		));
 
 		$result = $this->sql->execute($select)->current();
 
-		return $result['count'];
+		return (int) $result['count'];
 	}
 
 	protected function getCommonCategoriesWhere(): Where

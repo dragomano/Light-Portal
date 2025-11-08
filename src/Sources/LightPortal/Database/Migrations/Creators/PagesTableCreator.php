@@ -14,6 +14,8 @@ namespace LightPortal\Database\Migrations\Creators;
 
 use Laminas\Db\Sql\Ddl\Column\Varchar;
 use LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
+use LightPortal\Database\Migrations\Columns\MediumInteger;
+use LightPortal\Database\Migrations\Columns\TinyInteger;
 use LightPortal\Database\Migrations\Columns\UnsignedInteger;
 use LightPortal\Database\Migrations\PortalTable;
 use LightPortal\Enums\ContentType;
@@ -28,16 +30,14 @@ class PagesTableCreator extends AbstractTableCreator
 
 	protected function defineColumns(PortalTable $table): void
 	{
-		$platform = $this->sql->getAdapter()->getPlatform();
-
-		$id          = new AutoIncrementInteger('page_id', options: ['platform' => $platform]);
+		$id          = new AutoIncrementInteger('page_id');
 		$categoryId  = new UnsignedInteger('category_id');
-		$authorId    = new UnsignedInteger('author_id');
+		$authorId    = new MediumInteger('author_id');
 		$slug        = new Varchar('slug', 255);
 		$type        = new Varchar('type', 10, default: ContentType::BBC->name());
 		$entryType   = new Varchar('entry_type', 10, default: EntryType::DEFAULT->name());
-		$permissions = new UnsignedInteger('permissions');
-		$status      = new UnsignedInteger('status', default: 1);
+		$permissions = new TinyInteger('permissions');
+		$status      = new TinyInteger('status', default: 1);
 		$numViews    = new UnsignedInteger('num_views');
 		$numComments = new UnsignedInteger('num_comments');
 		$createdAt   = new UnsignedInteger('created_at');

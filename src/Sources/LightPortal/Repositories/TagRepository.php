@@ -87,13 +87,14 @@ final class TagRepository extends AbstractRepository implements TagRepositoryInt
 
 		$result = $this->sql->execute($select)->current();
 
-		return $result['count'];
+		return (int) $result['count'];
 	}
 
 	public function getData(int $item): array
 	{
-		if ($item === 0)
+		if ($item === 0) {
 			return [];
+		}
 
 		$select = $this->sql->select()
 			->from(['tag' => 'lp_tags'])

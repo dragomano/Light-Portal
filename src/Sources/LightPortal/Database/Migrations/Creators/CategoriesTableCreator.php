@@ -14,6 +14,7 @@ namespace LightPortal\Database\Migrations\Creators;
 
 use Laminas\Db\Sql\Ddl\Column\Varchar;
 use LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
+use LightPortal\Database\Migrations\Columns\TinyInteger;
 use LightPortal\Database\Migrations\Columns\UnsignedInteger;
 use LightPortal\Database\Migrations\PortalTable;
 
@@ -26,14 +27,12 @@ class CategoriesTableCreator extends AbstractTableCreator
 
 	protected function defineColumns(PortalTable $table): void
 	{
-		$platform = $this->sql->getAdapter()->getPlatform();
-
-		$id       = new AutoIncrementInteger('category_id', options: ['platform' => $platform]);
+		$id       = new AutoIncrementInteger('category_id');
 		$parentId = new UnsignedInteger('parent_id');
 		$slug     = new Varchar('slug', 255);
 		$icon     = new Varchar('icon', 60, true);
-		$priority = new UnsignedInteger('priority');
-		$status   = new UnsignedInteger('status', default: 1);
+		$priority = new TinyInteger('priority');
+		$status   = new TinyInteger('status', default: 1);
 
 		$table->addAutoIncrementColumn($id);
 		$table->addColumn($parentId);

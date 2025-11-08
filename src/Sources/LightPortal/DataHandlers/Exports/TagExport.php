@@ -81,7 +81,7 @@ class TagExport extends XmlExporter
 				new Expression('tag.tag_id = t.item_id AND t.type = ?', ['tag']),
 				[
 					'lang'  => new Expression('t.lang'),
-					'title' => new Expression('COALESCE(t.title, "")'),
+					'title' => new Expression("COALESCE(t.title, '')"),
 				],
 				Select::JOIN_LEFT
 			);

@@ -20,7 +20,7 @@ trait HasComments
 			return [];
 		}
 
-		return $this->insertData('lp_comments', $comments, ['id', 'page_id'], $replace);
+		return $this->insertData('lp_comments', $comments, ['id'], $replace);
 	}
 
 	protected function replaceCommentTranslations(array $translations = []): array

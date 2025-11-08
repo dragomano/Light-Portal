@@ -138,7 +138,7 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 	{
 		$select = $this->sql->select()
 			->from(['p' => 'lp_pages'])
-			->columns(['count' => new Expression('COUNT(page_id)')]);
+			->columns(['page_id']);
 
 		$this->addTranslationJoins($select);
 
@@ -146,9 +146,13 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 			$select->where($whereConditions);
 		}
 
-		$result = $this->sql->execute($select)->current();
+		$countSelect = $this->sql->select()
+			->from(['sub' => $select])
+			->columns(['count' => new Expression('COUNT(*)')]);
 
-		return $result['count'];
+		$result = $this->sql->execute($countSelect)->current();
+
+		return (int) $result['count'];
 	}
 
 	public function getData(int|string $item): array
@@ -422,7 +426,7 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 			->columns(['page_id', 'slug'])
 			->where(['(t.lang IN (?) OR tf.lang IN (?))' => [$languages, $languages]])
 			->where($baseWhere)
-			->where(['COALESCE(t.title, tf.title, "") != ?' => ['']]);
+			->where(["COALESCE(t.title, tf.title, '') != ?" => ['']]);
 
 		$this->addTranslationJoins($base);
 
@@ -500,7 +504,7 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 
 		foreach ($titleWords as $key => $word) {
 			$searchConditions[] = sprintf(
-				'CASE WHEN LOWER(t.title) LIKE LOWER("%%%s%%") THEN %d ELSE 0 END',
+				"CASE WHEN LOWER(t.title) LIKE LOWER('%%%s%%') THEN %d ELSE 0 END",
 				$word,
 				($titleCount - $key) * 2
 			);
@@ -508,7 +512,7 @@ final class PageRepository extends AbstractRepository implements PageRepositoryI
 
 		foreach ($slugWords as $key => $word) {
 			$searchConditions[] = sprintf(
-				'CASE WHEN LOWER(p.slug) LIKE LOWER("%%%s%%") THEN %d ELSE 0 END',
+				"CASE WHEN LOWER(p.slug) LIKE LOWER('%%%s%%') THEN %d ELSE 0 END",
 				$word,
 				$slugCount - $key
 			);

@@ -125,7 +125,7 @@ class BoardArticleQuery extends AbstractArticleQuery
 	{
 		return $this->sql->select()
 			->from(['b' => 'boards'])
-			->columns(['count' => new Expression('COUNT(b.id_board)')])
+			->columns(['id_board'])
 			->join(
 				['c' => 'categories'],
 				'b.id_cat = c.id_cat',

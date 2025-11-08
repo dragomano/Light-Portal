@@ -27,9 +27,7 @@ class PluginsTableCreator extends AbstractTableCreator
 
 	protected function defineColumns(PortalTable $table): void
 	{
-		$platform = $this->sql->getAdapter()->getPlatform();
-
-		$id     = new AutoIncrementInteger(options: ['platform' => $platform]);
+		$id     = new AutoIncrementInteger();
 		$name   = new Varchar('name', 100, false);
 		$config = new Varchar('config', 100, false);
 		$value  = new Text('value', nullable: true);
@@ -53,6 +51,7 @@ class PluginsTableCreator extends AbstractTableCreator
 				[2, 'hello_portal', 'show_buttons', '1'],
 				[3, 'hello_portal', 'show_progress', '1'],
 				[4, 'hello_portal', 'theme', 'flattener'],
+				[5, 'code_mirror', 'modes', 'html,php,markdown'],
 			]
 		];
 	}

@@ -41,6 +41,6 @@ class TagValidator extends AbstractValidator
 
 		$result = $this->sql->execute($select)->current();
 
-		return $result['count'] == 0;
+		return (int) $result['count'] === 0;
 	}
 }

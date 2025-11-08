@@ -13,6 +13,8 @@
 namespace LightPortal\Database\Migrations\Creators;
 
 use LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
+use LightPortal\Database\Migrations\Columns\MediumInteger;
+use LightPortal\Database\Migrations\Columns\SmallInteger;
 use LightPortal\Database\Migrations\Columns\UnsignedInteger;
 use LightPortal\Database\Migrations\PortalTable;
 
@@ -25,12 +27,10 @@ class CommentsTableCreator extends AbstractTableCreator
 
 	protected function defineColumns(PortalTable $table): void
 	{
-		$platform = $this->sql->getAdapter()->getPlatform();
-
-		$id        = new AutoIncrementInteger(options: ['platform' => $platform]);
+		$id        = new AutoIncrementInteger();
 		$parentId  = new UnsignedInteger('parent_id');
-		$pageId    = new UnsignedInteger('page_id');
-		$authorId  = new UnsignedInteger('author_id');
+		$pageId    = new SmallInteger('page_id');
+		$authorId  = new MediumInteger('author_id');
 		$createdAt = new UnsignedInteger('created_at');
 		$updatedAt = new UnsignedInteger('updated_at');
 

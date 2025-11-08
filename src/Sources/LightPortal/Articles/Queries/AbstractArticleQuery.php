@@ -102,9 +102,13 @@ abstract class AbstractArticleQuery implements ArticleQueryInterface
 		$this->applyJoins($select);
 		$this->applyWheres($select);
 
-		$result = $this->sql->execute($select)->current();
+		$countSelect = $this->sql->select()
+			->from(['sub' => $select])
+			->columns(['count' => new Expression('COUNT(*)')]);
 
-		return (int) ($result['count'] ?? 0);
+		$result = $this->sql->execute($countSelect)->current();
+
+		return (int) $result['count'];
 	}
 
 	abstract protected function getOrders(): array;

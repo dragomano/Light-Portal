@@ -13,6 +13,7 @@
 namespace LightPortal\Database\Migrations\Columns;
 
 use Laminas\Db\Adapter\Platform\Postgresql;
+use LightPortal\Database\Migrations\DbPlatform;
 use ReflectionClass;
 use ReflectionException;
 
@@ -20,7 +21,7 @@ class AutoIncrementInteger extends UnsignedInteger
 {
 	public function __construct($name = 'id', $nullable = false, $default = null, array $options = [])
 	{
-		$platform = $options['platform'] ?? null;
+		$platform = DbPlatform::get();
 
 		if ($platform instanceof Postgresql) {
 			parent::__construct($name, $nullable, $default, $options);

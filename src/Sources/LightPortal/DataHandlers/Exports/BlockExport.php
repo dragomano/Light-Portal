@@ -63,9 +63,9 @@ class BlockExport extends XmlExporter
 					new Expression('b.block_id = t.item_id AND t.type = ?', ['block']),
 					[
 						'lang'        => new Expression('t.lang'),
-						'title'       => new Expression('COALESCE(t.title, "")'),
-						'content'     => new Expression('COALESCE(t.content, "")'),
-						'description' => new Expression('COALESCE(t.description, "")'),
+						'title'       => new Expression("COALESCE(t.title, '')"),
+						'content'     => new Expression("COALESCE(t.content, '')"),
+						'description' => new Expression("COALESCE(t.description, '')"),
 					],
 					Select::JOIN_LEFT
 				)

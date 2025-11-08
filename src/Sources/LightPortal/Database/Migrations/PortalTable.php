@@ -27,7 +27,6 @@ class PortalTable extends CreateTable
 {
 	private array $separateIndexes = [];
 
-
 	public function addAutoIncrementColumn(ColumnInterface $column): static
 	{
 		$this->addColumn($column);
@@ -73,7 +72,7 @@ class PortalTable extends CreateTable
 		return $this;
 	}
 
-	public function getSqlString(PlatformInterface|null $adapterPlatform = null): string
+	public function getSqlString(?PlatformInterface $adapterPlatform = null): string
 	{
 		$platform = $adapterPlatform ?? new DefaultAdapterPlatform();
 		$platformName = strtolower($platform->getName());
@@ -101,7 +100,7 @@ class PortalTable extends CreateTable
 		return parent::getSqlString($adapterPlatform);
 	}
 
-	public function getIndexSqlStatements(PlatformInterface|null $adapterPlatform = null): array
+	public function getIndexSqlStatements(?PlatformInterface $adapterPlatform = null): array
 	{
 		$platform = $adapterPlatform ?? new DefaultAdapterPlatform();
 		$platformName = strtolower($platform->getName());

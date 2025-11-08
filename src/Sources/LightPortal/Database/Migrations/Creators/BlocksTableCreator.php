@@ -15,7 +15,7 @@ namespace LightPortal\Database\Migrations\Creators;
 use Bugo\Compat\Utils;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
 use LightPortal\Database\Migrations\Columns\AutoIncrementInteger;
-use LightPortal\Database\Migrations\Columns\UnsignedInteger;
+use LightPortal\Database\Migrations\Columns\TinyInteger;
 use LightPortal\Database\Migrations\PortalTable;
 use LightPortal\Enums\Action;
 use LightPortal\Enums\ContentClass;
@@ -30,15 +30,13 @@ class BlocksTableCreator extends AbstractTableCreator
 
 	protected function defineColumns(PortalTable $table): void
 	{
-		$platform = $this->sql->getAdapter()->getPlatform();
-
-		$id           = new AutoIncrementInteger('block_id', options: ['platform' => $platform]);
+		$id           = new AutoIncrementInteger('block_id');
 		$icon         = new Varchar('icon', 60, true);
 		$type         = new Varchar('type', 30);
 		$placement    = new Varchar('placement', 10);
-		$priority     = new UnsignedInteger('priority');
-		$permissions  = new UnsignedInteger('permissions');
-		$status       = new UnsignedInteger('status', default: 1);
+		$priority     = new TinyInteger('priority');
+		$permissions  = new TinyInteger('permissions');
+		$status       = new TinyInteger('status', default: 1);
 		$areas        = new Varchar('areas', 255, default: Action::ALL->value);
 		$titleClass   = new Varchar('title_class', 255, true);
 		$contentClass = new Varchar('content_class', 255, true);

@@ -82,7 +82,7 @@ class TagIndexRepository extends AbstractIndexRepository
 
 		$result = $this->sql->execute($select)->current();
 
-		return $result['count'];
+		return (int) $result['count'];
 	}
 
 	protected function getCommonTagWhere(): Where

@@ -159,7 +159,7 @@ class RandomPages extends Block
 
 		$this->addTranslationJoins($select);
 
-		$select->where(new Expression('COALESCE(NULLIF(t.title, ""), tf.title, "") <> ""'));
+		$select->where(new Expression("COALESCE(NULLIF(t.title, ''), tf.title, '') <> ''"));
 
 		$select->columns([
 			'page_id',

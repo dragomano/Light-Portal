@@ -29,14 +29,12 @@ class TranslationsTableCreator extends AbstractTableCreator
 
 	protected function defineColumns(PortalTable $table): void
 	{
-		$platform = $this->sql->getAdapter()->getPlatform();
-
-		$id          = new AutoIncrementInteger(options: ['platform' => $platform]);
+		$id          = new AutoIncrementInteger();
 		$itemId      = new UnsignedInteger('item_id');
 		$type        = new Varchar('type', 30, default: 'block');
 		$lang        = new Varchar('lang', 20);
 		$title       = new Varchar('title', 255, true);
-		$content     = new MediumText('content', nullable: true, options: ['platform' => $platform]);
+		$content     = new MediumText('content', nullable: true);
 		$description = new Varchar('description', 510, true);
 
 		$table->addAutoIncrementColumn($id);

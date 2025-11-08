@@ -77,8 +77,8 @@ class CategoryExport extends XmlExporter
 					new Expression('c.category_id = t.item_id AND t.type = ?', ['category']),
 					[
 						'lang'        => new Expression('t.lang'),
-						'title'       => new Expression('COALESCE(t.title, "")'),
-						'description' => new Expression('COALESCE(t.description, "")'),
+						'title'       => new Expression("COALESCE(t.title, '')"),
+						'description' => new Expression("COALESCE(t.description, '')"),
 					],
 					Select::JOIN_LEFT
 				);

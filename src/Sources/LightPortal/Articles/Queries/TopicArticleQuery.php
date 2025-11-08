@@ -132,7 +132,7 @@ class TopicArticleQuery extends AbstractArticleQuery
 	{
 		return $this->sql->select()
 			->from(['t' => 'topics'])
-			->columns(['count' => new Expression('COUNT(t.id_topic)')])
+			->columns(['id_topic'])
 			->join(
 				['b' => 'boards'],
 				't.id_board = b.id_board',

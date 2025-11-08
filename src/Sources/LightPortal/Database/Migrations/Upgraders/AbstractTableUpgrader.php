@@ -50,7 +50,7 @@ abstract class AbstractTableUpgrader implements TableUpgraderInterface
 		$default  = $params['default'] ?? null;
 
 		$column = match ($type) {
-			'mediumtext' => new MediumText($columnName, nullable: $params['nullable'] ?? false, default: $params['default'] ?? null),
+			'mediumtext' => new MediumText($columnName, nullable: $nullable, default: $default),
 			'varchar'    => new Varchar($columnName, $size, $nullable, $default),
 			'int'        => new Integer($columnName, $nullable, $default),
 			default      => new Column($columnName, $nullable, $default, options: ['type' => $type]),
@@ -71,6 +71,15 @@ abstract class AbstractTableUpgrader implements TableUpgraderInterface
 	protected function executeSql(SqlInterface $builder): void
 	{
 		$sqlString = $this->sql->buildSqlString($builder);
+
+		$platform = $this->sql->getAdapter()->getTitle();
+		if ($platform === 'PostgreSQL') {
+			$sqlString = preg_replace(
+				'/\b(INTEGER|SMALLINT|BIGINT|INT)\(\d+\)/i',
+				'$1',
+				$sqlString
+			);
+		}
 
 		$this->sql->getAdapter()->query($sqlString, Adapter::QUERY_MODE_EXECUTE);
 	}
@@ -97,12 +106,32 @@ abstract class AbstractTableUpgrader implements TableUpgraderInterface
 		if ($action === 'add') {
 			$alter->addColumn($this->defineColumn($columnName, $params));
 		} elseif ($action === 'change') {
-			$alter->changeColumn($columnName, $this->defineColumn($newName, $params));
+			if ($columnName !== $newName) {
+				$this->renameColumn($columnName, $newName);
+			}
+
+			if ($params) {
+				$alter->changeColumn($newName, $this->defineColumn($newName, $params));
+			} else {
+				return;
+			}
 		} elseif ($action === 'drop') {
 			$alter->dropColumn($columnName);
 		}
 
 		$this->executeSql($alter);
+	}
+
+	protected function renameColumn(string $oldName, string $newName): void
+	{
+		$sql = sprintf(
+			'ALTER TABLE %s RENAME COLUMN %s TO %s',
+			$this->getFullTableName(),
+			$this->sql->getAdapter()->getPlatform()->quoteIdentifier($oldName),
+			$this->sql->getAdapter()->getPlatform()->quoteIdentifier($newName)
+		);
+
+		$this->sql->getAdapter()->query($sql, Adapter::QUERY_MODE_EXECUTE);
 	}
 
 	protected function addColumn(string $columnName, array $params = []): void
@@ -281,4 +310,3 @@ abstract class AbstractTableUpgrader implements TableUpgraderInterface
 		}
 	}
 }
-

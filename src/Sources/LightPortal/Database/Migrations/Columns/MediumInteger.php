@@ -13,21 +13,20 @@
 namespace LightPortal\Database\Migrations\Columns;
 
 use Laminas\Db\Adapter\Platform\Postgresql;
-use Laminas\Db\Sql\Ddl\Column\AbstractLengthColumn;
 use LightPortal\Database\Migrations\DbPlatform;
 
-class MediumText extends AbstractLengthColumn
+class MediumInteger extends UnsignedInteger
 {
-	protected $type = 'MEDIUMTEXT';
+	protected $type = 'MEDIUMINT';
 
-	public function __construct($name, $length = null, $nullable = false, $default = null, array $options = [])
+	public function __construct($name = null, $nullable = false, $default = 0, array $options = [])
 	{
 		$platform = DbPlatform::get();
 
 		if ($platform instanceof Postgresql) {
-			$this->type = 'TEXT';
+			$this->type = 'INTEGER';
 		}
 
-		parent::__construct($name, $length, $nullable, $default, $options);
+		parent::__construct($name, $nullable, $default, $options);
 	}
 }

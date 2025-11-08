@@ -64,7 +64,7 @@ class PageArticleQuery extends AbstractArticleQuery
 			->join(
 				['mem' => 'members'],
 				'p.author_id = mem.id_member',
-				['author_name' => new Expression('COALESCE(mem.real_name, "")')],
+				['author_name' => new Expression("COALESCE(mem.real_name, '')")],
 				Select::JOIN_LEFT
 			)
 			->join(
@@ -79,7 +79,7 @@ class PageArticleQuery extends AbstractArticleQuery
 			->join(
 				['com_mem' => 'members'],
 				'com.author_id = com_mem.id_member',
-				['comment_author_name' => new Expression('COALESCE(com_mem.real_name, "")')],
+				['comment_author_name' => new Expression("COALESCE(com_mem.real_name, '')")],
 				Select::JOIN_LEFT
 			);
 
@@ -89,7 +89,7 @@ class PageArticleQuery extends AbstractArticleQuery
 					'alias' => 'par',
 					'columns' => [
 						'num_comments' => new Expression(
-							'CASE WHEN COALESCE(par.value, "0") != "0" THEN p.num_comments ELSE 0 END'
+							"CASE WHEN COALESCE(par.value, '0') != '0' THEN p.num_comments ELSE 0 END"
 						)
 					]
 				]
@@ -117,7 +117,7 @@ class PageArticleQuery extends AbstractArticleQuery
 	{
 		return $this->sql->select()
 			->from(['p' => 'lp_pages'])
-			->columns(['count' => new Expression('COUNT(p.page_id)')])
+			->columns(['page_id'])
 			->join(
 				['cat' => 'lp_categories'],
 				'cat.category_id = p.category_id',
@@ -143,6 +143,6 @@ class PageArticleQuery extends AbstractArticleQuery
 
 		$select->where(['p.permissions' => $this->params['permissions']]);
 		$select->where(new Expression('(cat.status = ? OR p.category_id = 0)', $this->params['status']));
-		$select->where(new Expression('COALESCE(NULLIF(t.title, ""), tf.title, "") <> ""'));
+		$select->where(new Expression("COALESCE(NULLIF(t.title, ''), tf.title, '') <> ''"));
 	}
 }
