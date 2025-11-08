@@ -8,7 +8,19 @@
   let { message = $bindable(''), ...rest } = $props();
   let textarea: HTMLTextAreaElement = $state();
 
-  const uuid = 'id-' + crypto.randomUUID();
+  const generateUUID = () => {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      const r = (Math.random() * 16) | 0;
+      const v = c === 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+  };
+
+  const uuid = 'id-' + generateUUID();
 
   const oninput = (e: Event) => {
     const target = e.target as HTMLTextAreaElement;
@@ -34,8 +46,7 @@
   <md-task-list><Button icon="task" aria-label={$_('task_list')} /></md-task-list>
 </markdown-toolbar>
 
-<textarea {...rest} bind:this={textarea} bind:value={message} id={uuid} {oninput}
-></textarea>
+<textarea {...rest} bind:this={textarea} bind:value={message} id={uuid} {oninput}></textarea>
 
 <style>
   markdown-toolbar {
