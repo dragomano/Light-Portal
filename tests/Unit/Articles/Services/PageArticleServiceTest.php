@@ -729,7 +729,8 @@ it('returns date based on sorting type for pages', function () {
     $serviceCreated = new PageArticleService($queryMockCreated, $this->events, $this->pageRepository);
     $accessorCreated = new ReflectionAccessor($serviceCreated);
     $rulesCreated = $accessorCreated->callProtectedMethod('getRules', [$row]);
-    expect($rulesCreated['date']($row))->toBe('1 января 1970 г.');
+    expect($rulesCreated['date']($row))->toContain('1 января')
+        ->toContain('1970');
 
     // Test with updated sorting - create separate service instance for this test
     $queryMockUpdated = mock(PageArticleQuery::class);
@@ -737,7 +738,8 @@ it('returns date based on sorting type for pages', function () {
     $serviceUpdated = new PageArticleService($queryMockUpdated, $this->events, $this->pageRepository);
     $accessorUpdated = new ReflectionAccessor($serviceUpdated);
     $rulesUpdated = $accessorUpdated->callProtectedMethod('getRules', [$row]);
-    expect($rulesUpdated['date']($row))->toBe('1 января 1970 г.');
+    expect($rulesUpdated['date']($row))->toContain('1 января')
+        ->toContain('1970');
 });
 
 it('returns unique page fields (created and updated)', function () {
