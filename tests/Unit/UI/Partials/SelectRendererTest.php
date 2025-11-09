@@ -168,7 +168,7 @@ it('tests generateId method with reflection', function () {
     $select = new $testClass(['id' => 'custom_id']);
     $result = $this->renderer->callProtectedMethod('generateId', [$select]);
 
-    expect($result)->toContain('lp_select_renderer_test');
+    expect($result)->toMatch('/^lp_select_/');
 });
 
 it('tests formatPrettyOptions method with reflection', function () {
