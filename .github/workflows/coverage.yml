@@ -12,6 +12,7 @@ on:
       - master
     paths:
       - 'src/**'
+      - '.github/workflows/coverage.yml'
 
 jobs:
   test:
